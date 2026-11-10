@@ -6,9 +6,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
-public import Mathlib.Topology.Order.OrderClosed
+
+import Mathlib.Analysis.Convex.Function
 
 /-!
 # Exposed sets
@@ -43,7 +43,7 @@ Prove lemmas relating exposed sets and points to the intrinsic frontier.
 
 @[expose] public section
 
-open Affine Set
+open Set
 
 section PreorderSemiring
 

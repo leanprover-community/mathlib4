@@ -6,8 +6,8 @@ Authors: Vincent Beffara
 module
 
 public import Mathlib.Analysis.Complex.RemovableSingularity
-public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
+
+import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 
 /-!
 # Locally uniform limits of holomorphic functions
@@ -26,7 +26,7 @@ subset of the complex plane.
 @[expose] public section
 
 
-open Set Metric MeasureTheory Filter Complex intervalIntegral
+open Set Metric Filter Complex
 
 open scoped Real Topology
 
@@ -60,7 +60,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
   simp only [cderiv, norm_smul]
   refine (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq ?_)
-  simp [field, abs_of_nonneg Real.pi_pos.le]
+  simp [field]
 
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by

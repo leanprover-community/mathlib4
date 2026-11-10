@@ -6,7 +6,6 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.RingTheory.WittVector.Complete
-public import Mathlib.RingTheory.WittVector.Teichmuller
 
 /-!
 # Teichmuller Series
@@ -31,7 +30,7 @@ Show that the Teichmuller series is unique.
 
 public section
 
-open Ideal Quotient
+open Ideal
 namespace WittVector
 
 variable {p : ℕ} [hp : Fact (Nat.Prime p)]

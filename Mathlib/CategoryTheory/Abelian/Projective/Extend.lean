@@ -15,7 +15,6 @@ Given a projective resolution `R` of an object `X` in an abelian category `C`,
 we define `R.cochainComplex : CochainComplex C ℤ`, which is the extension
 of `R.complex : ChainComplex C ℕ`, and the quasi-isomorphism
 `R.π' : R.cochainComplex ⟶ (CochainComplex.singleFunctor C 0).obj X`.
-
 -/
 
 @[expose] public section
@@ -117,7 +116,6 @@ lemma hom'_comp_π' :
     φ.hom' ≫ R'.π' = R.π' ≫ (CochainComplex.singleFunctor C 0).map f :=
   HomologicalComplex.to_single_hom_ext (by
     simp [hom'_f _ 0 0 rfl, π'_f_zero, CochainComplex.singleFunctor,
-      CochainComplex.singleFunctors,
       HomologicalComplex.single, HomologicalComplex.singleObjXSelf,
       HomologicalComplex.singleObjXIsoOfEq])
 

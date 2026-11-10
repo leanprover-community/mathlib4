@@ -120,9 +120,11 @@ open TopologicalSpace Topology
 
 universe u
 
-variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
+variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*}
 
-open Set OpenPartialHomeomorph Manifold
+open Set OpenPartialHomeomorph
+
+open scoped Manifold
 
 /-! ### Charted spaces -/
 
@@ -276,8 +278,9 @@ theorem ChartedSpace.locallyPathConnectedSpace [LocallyPathConnectedSpace H] :
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
   · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
-    refine e.continuousOn_symm.mono <| subset_trans ?_ e.image_source_subset
-    exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
+    refine e.continuousOn_symm.mono ?_
+    unfold t
+    grw [pathComponentIn_subset, inter_subset_right, e.image_source_subset]
   · exact (image_mono pathComponentIn_subset).trans
       (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
 
@@ -317,7 +320,7 @@ theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M 
   apply discreteTopology_iff_isOpen_singleton.2 (fun x ↦ ?_)
   have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
     isOpen_inter_preimage _ (isOpen_discrete _)
-  convert! this
+  convert this
   refine Subset.antisymm (by simp) ?_
   simp only [subset_singleton_iff, mem_inter_iff, mem_preimage, mem_singleton_iff, and_imp]
   intro y hy h'y
@@ -351,6 +354,7 @@ theorem chartedSpaceSelf_atlas {H : Type*} [TopologicalSpace H] {e : OpenPartial
   Iff.rfl
 
 /-- In the model space, `chartAt` is always the identity. -/
+@[simp, mfld_simps]
 theorem chartAt_self_eq {H : Type*} [TopologicalSpace H] {x : H} :
     chartAt H x = OpenPartialHomeomorph.refl H := rfl
 
@@ -400,11 +404,13 @@ solves this problem. -/
 
 /-- Same thing as `H × H'`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
+@[implicit_reducible]
 def ModelProd (H : Type*) (H' : Type*) :=
   H × H'
 
 /-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
 see note [Manifold type tags]. -/
+@[implicit_reducible]
 def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 
@@ -462,7 +468,6 @@ theorem prodChartedSpace_chartAt :
     chartAt (ModelProd H H') x = (chartAt H x.fst).prod (chartAt H' x.snd) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by
   ext1
   · simp [atlas, ChartedSpace.atlas]
@@ -659,8 +664,8 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
     @OpenPartialHomeomorph M H c.toTopologicalSpace _ :=
   { __ := c.toTopologicalSpace
     __ := e
-    open_source := by convert! c.open_source' he
-    open_target := by convert! c.open_target he
+    open_source := by convert c.open_source' he
+    open_target := by convert c.open_target he
     continuousOn_toFun := by
       let : TopologicalSpace M := c.toTopologicalSpace
       rw [continuousOn_open_iff (c.open_source' he)]

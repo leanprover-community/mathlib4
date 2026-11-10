@@ -21,7 +21,6 @@ We provide the following results:
 * if both categories involved have a zero object, then a functor preserves zero morphisms if and
   only if it preserves the zero object;
 * functors which preserve initial or terminal objects preserve zero morphisms.
-
 -/
 
 @[expose] public section
@@ -69,7 +68,6 @@ theorem map_eq_zero_iff (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X
     rintro rfl
     exact F.map_zero _ _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesZeroMorphisms F where
   map_zero X Y := by
@@ -83,7 +81,6 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
     · simp only [← Category.assoc, ← F.map_comp, zero_comp]
     · simp
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D) [IsRightAdjoint G] :
     PreservesZeroMorphisms G where
   map_zero X Y := by
@@ -103,7 +100,6 @@ instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F]
       F.map (0 : X ⟶ Y) = F.map (0 ≫ F.preimage (0 : F.obj Y ⟶ F.obj Y)) := by rw [zero_comp]
       _ = 0 := by rw [F.map_comp, F.map_preimage, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 instance preservesZeroMorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] :
     (F ⋙ G).PreservesZeroMorphisms := ⟨by simp⟩

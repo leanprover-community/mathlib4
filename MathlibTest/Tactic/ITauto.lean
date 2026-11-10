@@ -56,13 +56,12 @@ example (b : Bool) : ¬b ∨ b := by itauto *
 example (p : Prop) : ¬p ∨ p := by itauto! [p]
 example (p : Prop) : ¬p ∨ p := by itauto! *
 
-set_option linter.unusedVariables false in
 set_option linter.unusedTactic false in
 -- failure tests
 example (p q r : Prop) : True := by
-  haveI : p ∨ ¬p := by (fail_if_success itauto); sorry
-  clear this; haveI : ¬(p ↔ q) → ¬p → q := by (fail_if_success itauto); sorry
-  clear this; haveI : ¬(p ↔ q) → (r ↔ q) → (p ↔ ¬r) := by (fail_if_success itauto); sorry
+  have : p ∨ ¬p := by (fail_if_success itauto); grind
+  clear this; have : ¬(p ↔ q) → ¬p → q := by (fail_if_success itauto); grind
+  clear this; have : ¬(p ↔ q) → (r ↔ q) → (p ↔ ¬r) := by (fail_if_success itauto); grind
   trivial
 
 example (P : Nat → Prop) (n : Nat)

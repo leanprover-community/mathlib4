@@ -6,14 +6,14 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
-public import Mathlib.Logic.Small.Basic
+
+import Mathlib.Logic.Small.Basic
 
 /-!
 # Small classes of morphisms
 
 A class of morphisms `W : MorphismProperty C` is `w`-small
 if the corresponding set in `Set (Arrow C)` is.
-
 -/
 
 public section

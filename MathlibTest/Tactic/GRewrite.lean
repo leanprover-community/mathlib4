@@ -3,15 +3,17 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Tactic.GRewrite
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.NormNum
 
 /- In many examples in this module, we rewrite expressions which do not make it into the final term.
 
@@ -104,12 +106,12 @@ example (h₁ : X ⊆ Y) (h₂ : Y ⊆ Z) (h₃ : a ∈ X) : False := by
 
 example (h₁ : Y ⊇ W) : X ⊂ (Y ∪ Z) := by
   grw [h₁]
-  guard_target =ₛ X ⊂ (W ∪ Z)
+  guard_target = X ⊂ (W ∪ Z)
   exact test_sorry
 
 example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   grw [← h₁]
-  guard_target =ₛ X ⊂ (W ∪ Z)
+  guard_target = X ⊂ (W ∪ Z)
   exact h₂
 
 -- Binder names are preserved:
@@ -222,7 +224,7 @@ example {s s' : Set ℕ} (h : s' ⊆ s) (h2 : BddAbove s) : BddAbove s' := by
 
 example {s s' t : Set α} (h : s ⊆ s') : (s' ∩ t).Nonempty := by
   grw [← h]
-  guard_target =ₛ (s ∩ t).Nonempty
+  guard_target = (s ∩ t).Nonempty
   exact test_sorry
 
 end nontransitive_grw_lemmas
@@ -487,6 +489,12 @@ example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
 
 example (h₁ : a ≤ b) (h₂ : b < c) : a < c := by
   by_contra!; grw [← h₂, ← h₁] at this; contrapose! this; rfl
+
+example (h₁ : a < b) (h₂ : b ≤ c) : c > a := by
+  grw [h₁, h₂]
+
+example (h₁ : a < b) (h₂ : b ≤ c) : c > a := by
+  grw [← h₂, ← h₁]
 
 -- Strict inequalities can also be used as non-strict ones:
 example (h₁ : a < b) (h₂ : b < c) : a ≤ c := by

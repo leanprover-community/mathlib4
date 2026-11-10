@@ -15,7 +15,6 @@ the functors `opOp C : C ⥤ Cᵒᵖᵒᵖ` and `unopUnop C : Cᵒᵖᵒᵖ ⥤ 
 We also show that the unit and counit isomorphisms of the equivalence
 `opOpEquivalence C : Cᵒᵖᵒᵖ ≌ C` are compatible with shifts, which is summarized
 by the property `(opOpEquivalence C).IsTriangulated`.
-
 -/
 
 @[expose] public section
@@ -32,8 +31,6 @@ namespace Opposite
 
 namespace OpOpCommShift
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism expressing the commutation of the functor `opOp C : C ⥤ Cᵒᵖᵒᵖ`
 with the shift by `n : ℤ`. -/
 def iso (n : ℤ) :
@@ -66,8 +63,6 @@ end OpOpCommShift
 
 namespace UnopUnopCommShift
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism expressing the commutation of the functor `unopUnop C : Cᵒᵖᵒᵖ ⥤ C`
 with the shift by `n : ℤ`. -/
 def iso (n : ℤ) :
@@ -98,19 +93,15 @@ lemma iso_inv_app (X : Cᵒᵖᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
 
 end UnopUnopCommShift
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open OpOpCommShift in
 instance : (opOp C).CommShift ℤ where
   commShiftIso := iso _
   commShiftIso_zero := by
     ext X
-    refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
     simp [iso_hom_app X 0 0, shiftFunctorZero_op_inv_app,
       shiftFunctorZero_op_hom_app]
   commShiftIso_add p q := by
     ext X
-    refine Quiver.Hom.unop_inj (Quiver.Hom.unop_inj ?_)
     simp [← shiftFunctorAdd'_eq_shiftFunctorAdd, ← unop_comp_assoc, ← Functor.map_comp,
       fun X n ↦ iso_hom_app X n (-n) (add_neg_cancel n),
       shiftFunctor_op_map _ q (-q),
@@ -119,8 +110,6 @@ instance : (opOp C).CommShift ℤ where
       shiftFunctorAdd'_op_hom_app _ (-p) (-q) (-(p + q)) (by lia) p q (p + q)
         (neg_add_cancel p) (neg_add_cancel q) (neg_add_cancel (p + q))]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open UnopUnopCommShift in
 instance : (unopUnop C).CommShift ℤ where
   commShiftIso := iso _
@@ -178,8 +167,6 @@ instance : (opOpEquivalence C).functor.CommShift ℤ :=
 instance : (opOpEquivalence C).inverse.CommShift ℤ :=
   inferInstanceAs ((opOp C).CommShift ℤ)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (opOpEquivalence C).CommShift ℤ :=
   Equivalence.CommShift.mk'' _ _
     { shift_comm n := by
@@ -193,7 +180,6 @@ variable [Preadditive C] [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Ad
   [Pretriangulated C]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : (opOp C).IsTriangulated where
   map_distinguished T hT := by
     refine isomorphic_distinguished _ (op_distinguished _ (op_distinguished _ hT)) _
