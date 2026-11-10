@@ -151,7 +151,7 @@ theorem _root_.OrderIso.ofLex_finsuppLexCongrLeft_apply (x : Lex (α →₀ N)) 
     ofLex (eαβ.finsuppLexCongrLeft N x) = Finsupp.equivCongrLeft eαβ.toEquiv (ofLex x) := rfl
 
 @[simp]
-theorem _root_.OrderIso.ofColex_finsuppLexCongrLeft_apply (x : Colex (α →₀ N)) :
+theorem _root_.OrderIso.ofColex_finsuppColexCongrLeft_apply (x : Colex (α →₀ N)) :
     ofColex (eαβ.finsuppColexCongrLeft N x) = Finsupp.equivCongrLeft eαβ.toEquiv (ofColex x) := rfl
 
 @[simp]
