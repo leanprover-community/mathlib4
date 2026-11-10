@@ -395,7 +395,7 @@ theorem Module.finrank_pos [IsDomain R] [IsTorsionFree R M] [h : Nontrivial M] :
     0 < finrank R M :=
   finrank_pos_iff.mpr h
 
-instance [IsDomain R] [IsTorsionFree R M] [Nontrivial M] : NeZero (finrank R M) :=
+instance (priority := low) [IsDomain R] [IsTorsionFree R M] [Nontrivial M] : NeZero (finrank R M) :=
   ⟨finrank_pos.ne'⟩
 
 /-- See `Module.finrank_zero_iff` for the stronger version with `IsTorsionFree R M`. -/
