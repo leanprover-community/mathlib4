@@ -141,9 +141,10 @@ theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
   have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
   have : Nonempty K := hnonempty.to_subtype
   let ι : K → X := Subtype.val
-  obtain ⟨μ, hμ, hμmreg, hμprob⟩ :=
+  obtain ⟨μm, hμ, hμmreg, hμprob⟩ :=
     exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
-  have : μ.Regular := hμmreg
+  let μ : ProbabilityMeasure K := ⟨μm, hμprob⟩
+  have : (μ : Measure K).Regular := hμmreg
   have hιmeas : Measurable ι :=  measurable_subtype_coe
   let ν := μ.map ι
   use ν
@@ -153,16 +154,15 @@ theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
   have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
     intro
     rfl
-  -- `ν` is concentrated on `K`
-  have hK : K ∈ ae (ν : Measure X) := by
-    rw [mem_ae_iff]
-    simpa [ν, ι] using
-      (μ.map_apply₀ hιmeas.aemeasurable hcomp.nullMeasurableSet.compl)
-  have hf : AEMeasurable f ν := by
-    rw [← Measure.restrict_eq_self_of_ae_mem hK]
-    exact hfcont.aemeasurable hcomp.measurableSet
-  exact ⟨hιmp.of_semiconj hμ hsemi hf, inferInstance, inferInstance,
-    Measure.support_subset_of_isClosed hcomp.isClosed hK⟩
+  have hfmeas : AEMeasurable f ν :=
+    (MeasurableEmbedding.subtype_coe hcomp.measurableSet).aemeasurable_map_iff.2
+      hfcont.domRestrict.measurable.aemeasurable
+  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, inferInstance, ?_⟩
+  -- Now we prove that the invariant measure is supported on the forward invariant set
+  apply Measure.support_subset_of_isClosed hcomp.isClosed
+  rw [MeasureTheory.mem_ae_iff]
+  simpa [ν, ι] using
+    (ProbabilityMeasure.map_apply' μ hιmeas.aemeasurable hcomp.isClosed.measurableSet.compl)
 
 end KrylovBogolyubov
 
