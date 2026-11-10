@@ -159,6 +159,9 @@ theorem mem_adjoint_domain_iff (y : F) : y ∈ T†.domain ↔ Continuous ((inne
 
 variable {T}
 
+/-- A vector `y` belongs to the domain of the adjoint if the functional `x ↦ ⟪y, T x⟫`
+on `T.domain` can be represented as an inner product with a vector of `E`.
+See `mem_adjoint_domain_iff_exists` for the converse in the case of a densely defined operator. -/
 theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, ⟪w, x⟫ = ⟪y, T x⟫) :
     y ∈ T†.domain := by
   obtain ⟨w, hw⟩ := h
