@@ -18,7 +18,6 @@ We introduce binomial expansions using `embDomain`.
 
 ## Main results
   * coefficients of powers of binomials
-
 -/
 
 @[expose] public section

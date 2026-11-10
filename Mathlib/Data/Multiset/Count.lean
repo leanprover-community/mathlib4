@@ -10,7 +10,6 @@ public import Mathlib.Data.Multiset.ZeroCons
 
 /-!
 # Counting multiplicity in a multiset
-
 -/
 
 @[expose] public section

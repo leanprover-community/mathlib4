@@ -80,7 +80,6 @@ For example, `quo_add_sum_rem_div_unique` has the conclusion
 The name of the lemmas shows one side of the equality hypothesis (the other is the same),
 and in order we have
 `q` (`quo`), `+` (`add`), `∑` (`sum`), `r i` (`rem`), `/` (`div`).
-
 -/
 
 public section

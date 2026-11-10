@@ -13,7 +13,6 @@ public import Mathlib.SetTheory.Cardinal.Regular
 Given `X : Type u` and `κ : Cardinal.{v}`, we introduce a predicate
 `HasCardinalLT X κ` expressing that
 `Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ`.
-
 -/
 
 @[expose] public section

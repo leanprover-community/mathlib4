@@ -38,7 +38,6 @@ is used to prove Shapiro's lemma in
   `A : Rep k G`, this is a natural isomorphism between the functor sending `B : Rep k H` to
   `(Ind(φ)(A) ⊗ B)_H` and the one sending `B` to `(A ⊗ Res(φ)(B))_G`. Used to prove Shapiro's
   lemma.
-
 -/
 
 @[expose] public section

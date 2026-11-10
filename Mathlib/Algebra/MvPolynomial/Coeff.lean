@@ -14,7 +14,6 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 ## Main Results
 
 * `MvPolynomial.coeff_add_pow`: the formula for the `d`th coefficient of `(X 0 + X 1) ^ n`.
-
 -/
 
 public section

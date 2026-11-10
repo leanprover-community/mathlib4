@@ -29,7 +29,6 @@ to that integral as `risk` in lemma names.
 * `bayesRisk ℓ P π`: the Bayes risk with respect to the prior `π`, minimum of the average
   risks over all estimators, that is over all Markov kernels `κ : Kernel 𝓧 𝓨`.
 * `minimaxRisk ℓ P`: minimax risk, infimum over all estimators of the maximum over `θ` of the risk.
-
 -/
 
 @[expose] public section

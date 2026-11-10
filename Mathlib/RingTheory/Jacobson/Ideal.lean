@@ -43,7 +43,6 @@ Furthermore when `I` is a two-sided ideal of `R`
 ## Tags
 
 Jacobson, Jacobson radical, Local Ideal
-
 -/
 
 @[expose] public section

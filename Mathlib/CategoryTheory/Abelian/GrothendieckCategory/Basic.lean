@@ -39,7 +39,6 @@ Relevant implications of `IsGrothendieckAbelian` are established in
 ## References
 
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
-
 -/
 
 public section

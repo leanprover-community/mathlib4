@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 If an additive concrete category `C` has an additive forgetful functor to `Ab`
 which preserves homology, then a short complex `S` in `C` is exact
 if and only if it is so after applying the functor `forget₂ C Ab`.
-
 -/
 
 @[expose] public section

@@ -26,7 +26,6 @@ modulo summability and multipliability. The complete proof for formal power seri
 ## References
 
 https://math.stackexchange.com/questions/55738/how-to-prove-eulers-pentagonal-theorem-some-hints-will-help
-
 -/
 
 namespace Pentagonal
