@@ -998,7 +998,7 @@ theorem affineIndepOn_pair_iff {p : ι → P} {i j : ι} (hij : i ≠ j) :
     Set.insert_sdiff_self_of_notMem (by simpa), linearIndepOn_singleton_iff, vsub_ne_zero]
 
 /-- Two points are affinely independent (as a set, so this is trivial when they are equal). -/
-theorem affineIndepOn_pair {p₁ p₂ : P} : AffineIndepOn k id {p₁, p₂} := by
+theorem affineIndepOn_pair (p₁ p₂ : P) : AffineIndepOn k id {p₁, p₂} := by
   rcases eq_or_ne p₁ p₂ with rfl | h
   · simp
   · exact (affineIndepOn_pair_iff k h).mpr h
@@ -1008,7 +1008,7 @@ theorem affineIndepOn_pair {p₁ p₂ : P} : AffineIndepOn k id {p₁, p₂} := 
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [← affineIndepOn_id_range_iff (Matrix.injective_pair_iff_ne.mpr h)]
-  simpa using affineIndepOn_pair k (p₁ := p₂) (p₂ := p₁)
+  simpa using affineIndepOn_pair k p₂ p₁
 
 variable {k}
 

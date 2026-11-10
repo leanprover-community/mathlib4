@@ -800,7 +800,6 @@ lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V
     obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hpy
     have ht : t = 0 := by simpa [hx] using hfy
     simp [ht]
-  have hf : f ≠ 0 := by aesop
   ext v
   obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y ∈ LinearMap.ker f, ∃ z ∈ p, y + z = v := by
     have : v ∈ (⊤ : Submodule K V₁) := Submodule.mem_top

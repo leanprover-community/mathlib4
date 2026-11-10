@@ -268,9 +268,7 @@ lemma affineSpan_image_ne_top_of_encard_le_finrank {s : Set ι}
 
 lemma affineSpan_range_ne_top_of_card_le_finrank (hι : ENat.card ι ≤ finrank k V) (p : ι → P) :
     affineSpan k (Set.range p) ≠ ⊤ := by
-  have : Finite ι := ENat.card_lt_top.mp <| hι.trans_lt <| ENat.natCast_lt_top _
-  simpa using
-    affineSpan_image_ne_top_of_encard_le_finrank k (s := Set.univ) (by simpa) p
+    simpa using affineSpan_image_ne_top_of_encard_le_finrank k (s := .univ) (by simpa) p
 
 /-- The `vectorSpan` of an indexed family of `n + 1` points has
 dimension at most `n`. -/
