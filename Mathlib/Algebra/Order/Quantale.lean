@@ -88,10 +88,8 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
 structure Quantale (α : Type*)
   [Semigroup α] [CompleteLattice α] [IsQuantale α]
 
-section
-
-variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
-variable {x y : α} {s : Set α}
+variable {α ι : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {x y z : α} {s : Set α} {f : ι → α}
 
 @[to_additive]
 theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_distrib _ _
@@ -99,12 +97,7 @@ theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSu
 @[to_additive]
 theorem sSup_mul_distrib : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mul_distrib _ _
 
-end
-
 namespace Quantale
-
-variable {α ι : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
-variable {x y z : α} {f : ι → α}
 
 /-- Left- and right-residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
