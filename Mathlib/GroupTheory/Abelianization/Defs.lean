@@ -145,6 +145,11 @@ theorem lift_of_comp :
 theorem map_of (x : G) : map f (of x) = of (f x) :=
   rfl
 
+@[to_additive]
+lemma map_ker_le_ker_map (f : G →* H) : f.ker.map of ≤ (Abelianization.map f).ker := by
+  rintro _ ⟨x, hx, rfl⟩
+  simp_all [MonoidHom.mem_ker]
+
 @[to_additive (attr := simp)]
 theorem map_id : map (MonoidHom.id G) = MonoidHom.id (Abelianization G) :=
   hom_ext _ _ rfl
@@ -162,12 +167,7 @@ end Map
 
 section Quotient
 
-variable (N : Subgroup G) [N.Normal] {H : Type u} [Group H]
-
-@[to_additive]
-lemma map_ker_le_ker_map (f : G →* H) : f.ker.map of ≤ (Abelianization.map f).ker := by
-  rintro _ ⟨x, hx, rfl⟩
-  simp_all [MonoidHom.mem_ker]
+variable (N : Subgroup G) [N.Normal]
 
 /-- Abelianizing a quotient `G ⧸ N` is the same as abelianizing `G`
 and then quotienting by the image of `N`. -/
