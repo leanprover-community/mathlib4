@@ -207,8 +207,8 @@ theorem IsConstOn.congr {β : Type*} {f g : α → β} {s : Set α} (hf : IsCons
     (h : Set.EqOn f g s) : IsConstOn g s :=
   fun _ hx _ hy ↦ (h hx).symm.trans <| (hf hx hy).trans (h hy)
 
-theorem _root_.Set.EqOn.isConstOn_iff {β : Type*} {f g : α → β} {s : Set α}
-    (h : Set.EqOn f g s) : IsConstOn f s ↔ IsConstOn g s :=
+theorem _root_.Set.EqOn.isConstOn_iff {β : Type*} {f g : α → β} {s : Set α} (h : Set.EqOn f g s) :
+    IsConstOn f s ↔ IsConstOn g s :=
   ⟨(·.congr h), (·.congr h.symm)⟩
 
 @[simp]
@@ -263,8 +263,7 @@ alias ⟨IsConstOn.exists_eqOn_const, _⟩ := isConstOn_iff_exists_eqOn_const
 /-- A function `α → β` is constant on a non-empty set `s` if and only if there is `b : β` so that
 the function agrees with `Function.const α b` on `s`. -/
 theorem isConstOn_iff_exists_eqOn_const_of_nonempty {β : Type*} {f : α → β} {s : Set α}
-    (hs : s.Nonempty) :
-    IsConstOn f s ↔ ∃ b, Set.EqOn f (const α b) s :=
+    (hs : s.Nonempty) : IsConstOn f s ↔ ∃ b, Set.EqOn f (const α b) s :=
   isConstOn_iff_exists_forall_eq_of_nonempty hs
 
 /-- Postcomposition preserves being constant on a set. -/
@@ -274,13 +273,13 @@ theorem IsConstOn.comp_left {f : α → β} {s : Set α} (hf : IsConstOn f s) (g
 
 /-- Precomposing a function constant on `t` with a function mapping `s` to `t` gives a function
 constant on `s`. -/
-theorem IsConstOn.comp_right {α' : Type*} {g : α' → γ} {t : Set α'} (hg : IsConstOn g t)
-    {f : α → α'} {s : Set α} (hf : Set.MapsTo f s t) :
+theorem IsConstOn.comp_right {γ : Type*} {g : γ → γ} {t : Set γ} (hg : IsConstOn g t)
+    {f : α → γ} {s : Set α} (hf : Set.MapsTo f s t) :
     IsConstOn (g ∘ f) s :=
   fun _ hx _ hy ↦ hg (hf hx) (hf hy)
 
 /-- Precomposing a constant function gives a function constant on any set. -/
-theorem IsConst.isConstOn_comp {α' : Sort*} {g : α' → γ} (hg : IsConst g) (f : α → α')
+theorem IsConst.isConstOn_comp {γ : Sort*} {g : γ → γ} (hg : IsConst g) (f : α → γ)
     (s : Set α) : IsConstOn (g ∘ f) s :=
   (hg.comp_right f).isConstOn
 
@@ -319,11 +318,6 @@ theorem IsConstOn.injOn_iff {β : Type*} {f : α → β} {s : Set α} (h : IsCon
 theorem _root_.Set.InjOn.isConstOn_iff {β : Type*} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
     IsConstOn f s ↔ s.Subsingleton :=
   (and_iff_left h).symm.trans (isConstOn_and_injOn_iff f s)
-
-@[simp]
-theorem Injective.isConstOn_iff {β : Type*} {f : α → β} {s : Set α} (h : Injective f) :
-    IsConstOn f s ↔ s.Subsingleton :=
-  Set.InjOn.isConstOn_iff fun _ _ _ _ hxy ↦ h hxy
 
 end IsConstOn
 
