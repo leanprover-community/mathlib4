@@ -144,10 +144,10 @@ section CoeLemmas
 variable (A B : SpecialLinearGroup n R)
 
 /-- Make a `A : SL n R` from `A : Matrix n n R ` and `det A = 1`. -/
-def mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup n R := ⟨A, h⟩
+protected def mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup n R := ⟨A, h⟩
 
 @[simp]
-theorem coe_mk (A : Matrix n n R) (h : det A = 1) : mk A h = A :=
+theorem coe_mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup.mk A h = A :=
     rfl
 
 @[simp]
@@ -236,7 +236,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 
 @[simp]
 theorem coe_map_mk (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
-    SpecialLinearGroup.map f (mk A h) = A.map f := rfl
+    SpecialLinearGroup.map f ( SpecialLinearGroup.mk A h) = A.map f := rfl
 
 @[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
@@ -472,23 +472,23 @@ theorem SL2_inv_expl_det (A : SL(2, R)) :
   (det_fin_two _).trans (by simpa [-det_coe, det_fin_two, mul_comm] using A.2)
 
 theorem SL2_inv_expl (A : SL(2, R)) :
-    A⁻¹ = mk !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] (SL2_inv_expl_det A) := by
+    A⁻¹ =  SpecialLinearGroup.mk !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] (SL2_inv_expl_det A) := by
   ext
   simp [adjugate_fin_two]
 
 theorem eta_fin_two (g : SL(2, R)) :
-    g = mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← eta_fin_two]) :=
+    g =  SpecialLinearGroup.mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← eta_fin_two]) :=
   Subtype.ext (Matrix.eta_fin_two g.1)
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1),
-    P (mk !![a, b; c, d] (by rwa [det_fin_two_of]))) (g : SL(2, R)) : P g := by
+    P (SpecialLinearGroup.mk !![a, b; c, d] (by rwa [det_fin_two_of]))) (g : SL(2, R)) : P g := by
   rw [eta_fin_two g]
   exact h _ _ _ _ ((det_fin_two _).symm.trans g.2)
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : g 1 0 = 0) :
-    ∃ (a b : R) (h : a ≠ 0), g = mk !![a, b; 0, a⁻¹] (by simp [h]) := by
+    ∃ (a b : R) (h : a ≠ 0), g = SpecialLinearGroup.mk !![a, b; 0, a⁻¹] (by simp [h]) := by
   induction g using Matrix.SpecialLinearGroup.fin_two_induction with | h a b c d h_det =>
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
@@ -918,11 +918,11 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
-  mk !![0, -1; 1, 0] (by simp [det_fin_two_of])
+  SpecialLinearGroup.mk !![0, -1; 1, 0] (by simp [det_fin_two_of])
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
 def T : SL(2, ℤ) :=
-  mk !![1, 1; 0, 1] (by simp [det_fin_two_of])
+  SpecialLinearGroup.mk !![1, 1; 0, 1] (by simp [det_fin_two_of])
 
 @[simp]
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=

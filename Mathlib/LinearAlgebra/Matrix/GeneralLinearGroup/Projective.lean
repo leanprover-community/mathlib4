@@ -97,7 +97,7 @@ namespace SpecialLinearGroup
 
 /-- The natural map from `SL(n, R)` to `PGL(n, R)` by composing the maps from `SL` to `GL` and the
   quotient map from `GL` to `PGL`. -/
-abbrev toPGL : SpecialLinearGroup n R →* PGL(n, R) := ProjGenLinGroup.mk.comp toGL
+abbrev toPGL : SpecialLinearGroup n R →* PGL(n, R) := mk.comp toGL
 
 lemma toPGL_ker : toPGL.ker = Subgroup.center (SpecialLinearGroup n R) := by
   ext; simp [toGL_mem_center_iff]
@@ -115,7 +115,7 @@ def toPGL : ProjectiveSpecialLinearGroup n R →* PGL(n, R) :=
 
 @[simp]
 lemma toPGL_mk (g : SpecialLinearGroup n R) :
-    ProjectiveSpecialLinearGroup.toPGL g = ProjGenLinGroup.mk (toGL g) := rfl
+    ProjectiveSpecialLinearGroup.toPGL g = mk (toGL g) := rfl
 
 lemma toPGL_injective :
     Function.Injective (ProjectiveSpecialLinearGroup.toPGL (n := n) (R := R)) :=
