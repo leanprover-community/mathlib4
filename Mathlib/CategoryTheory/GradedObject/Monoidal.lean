@@ -467,6 +467,7 @@ section TensorUnit
 variable [DecidableEq I] [HasInitial C]
 
 /-- The unit of the tensor product on graded objects is `(single₀ I).obj (𝟙_ C)`. -/
+@[implicit_reducible]
 noncomputable def tensorUnit : GradedObject I C := (single₀ I).obj (𝟙_ C)
 
 /-- The canonical isomorphism `tensorUnit 0 ≅ 𝟙_ C` -/

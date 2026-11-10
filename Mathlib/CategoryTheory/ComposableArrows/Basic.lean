@@ -504,13 +504,13 @@ end
 
 /-- The map `ComposableArrows C m → ComposableArrows C n` obtained by precomposition with
 a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def whiskerLeft (F : ComposableArrows C m) (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
     ComposableArrows C n := Φ ⋙ F
 
 /-- The functor `ComposableArrows C m ⥤ ComposableArrows C n` obtained by precomposition with
 a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
     ComposableArrows C m ⥤ ComposableArrows C n where
   obj F := F.whiskerLeft Φ
@@ -556,14 +556,14 @@ abbrev δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
 lemma precomp_δ₀ {X : C} (f : X ⟶ F.left) : (F.precomp f).δ₀ = F := rfl
 
 /-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.castSucc`. -/
-@[simps]
+@[simps, implicit_reducible]
 def _root_.Fin.castSuccFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   obj i := i.castSucc
   map hij := hij
 
 /-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
 the last arrow. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def δlastFunctor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
   whiskerLeftFunctor (Fin.castSuccFunctor (n + 1))
 
@@ -662,6 +662,7 @@ variable
 
 set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 2`. -/
+@[implicit_reducible]
 def homMk₂ : f ⟶ g := homMkSucc app₀ (homMk₁ app₁ app₂ w₁) w₀
 
 set_option backward.privateInPublic true in
@@ -740,6 +741,7 @@ variable
 
 set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 3`. -/
+@[implicit_reducible]
 def homMk₃ : f ⟶ g := homMkSucc app₀ (homMk₂ app₁ app₂ app₃ w₁ w₂) w₀
 
 set_option backward.privateInPublic true in
@@ -812,6 +814,7 @@ variable
 
 set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 4`. -/
+@[implicit_reducible]
 def homMk₄ : f ⟶ g := homMkSucc app₀ (homMk₃ app₁ app₂ app₃ app₄ w₁ w₂ w₃) w₀
 
 set_option backward.privateInPublic true in
@@ -899,6 +902,7 @@ variable
 
 set_option backward.privateInPublic true in
 /-- Constructor for morphisms in `ComposableArrows C 5`. -/
+@[implicit_reducible]
 def homMk₅ : f ⟶ g := homMkSucc app₀ (homMk₄ app₁ app₂ app₃ app₄ app₅ w₁ w₂ w₃ w₄) w₀
 
 set_option backward.privateInPublic true in

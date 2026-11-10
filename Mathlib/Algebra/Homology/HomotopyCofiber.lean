@@ -419,7 +419,6 @@ noncomputable def mapArrowHom (α : Arrow.mk φ ⟶ Arrow.mk φ') :
         simp [reassoc_of% dsimp% α.w])).trans (((inrCompHomotopy φ' H).compLeft α.left).trans
       (Homotopy.ofEq (by simp))))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mapArrowHom_id : mapArrowHom φ φ H (𝟙 _) = 𝟙 _ := by
   ext i
@@ -429,7 +428,6 @@ lemma mapArrowHom_id : mapArrowHom φ φ H (𝟙 _) = 𝟙 _ := by
     all_goals simp [mapArrowHom, desc_f _ _ _ _ _ hi, inrCompHomotopy_hom _ _ _ _ hi]
   · exact ext_to_X' _ _ hi (by simp [mapArrowHom, desc_f' _ _ _ _ hi])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapArrowHom_comp
     (α : Arrow.mk φ ⟶ Arrow.mk φ') (β : Arrow.mk φ' ⟶ Arrow.mk φ'') :
@@ -723,23 +721,25 @@ noncomputable def mapHomologicalComplexObjIso :
       (Arrow.isoMk (Iso.refl _) ((H.mapHomologicalComplex c).mapBiprod F F) (by
         apply biprod.hom_ext <;> simp [← Functor.map_comp]))
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ι₀_mapHomologicalComplexObjIso_hom :
     (H.mapHomologicalComplex c).map (cylinder.ι₀ F) ≫ (mapHomologicalComplexObjIso F H hc).hom =
       cylinder.ι₀ _ := by
-  dsimp [mapHomologicalComplexObjIso, ι₀, homotopyCofiber.mapArrowHom]
+  dsimp [mapHomologicalComplexObjIso, ι₀]
+  simp only [Arrow.mk_left, homotopyCofiber.mapArrowIso_hom, homotopyCofiber.mapArrowHom]
+  dsimp
   rw [Functor.map_comp, assoc, homotopyCofiber.inr_mapHomologicalComplexObjIso_hom_assoc,
     homotopyCofiber.inr_desc, ← Category.assoc]
   congr 1
   apply biprod.hom_ext <;> simp [← Functor.map_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma map_ι₁_mapHomologicalComplexObjIso_hom :
     (H.mapHomologicalComplex c).map (cylinder.ι₁ F) ≫ (mapHomologicalComplexObjIso F H hc).hom =
       cylinder.ι₁ _ := by
-  dsimp [mapHomologicalComplexObjIso, ι₁, homotopyCofiber.mapArrowHom]
+  dsimp [mapHomologicalComplexObjIso, ι₁]
+  simp only [Arrow.mk_left, homotopyCofiber.mapArrowIso_hom, homotopyCofiber.mapArrowHom]
+  dsimp
   rw [Functor.map_comp, assoc, homotopyCofiber.inr_mapHomologicalComplexObjIso_hom_assoc,
     homotopyCofiber.inr_desc, ← Category.assoc]
   congr 1

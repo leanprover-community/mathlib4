@@ -86,13 +86,12 @@ variable (C c r₀)
 
 /-- The functor `SpectralSequence C c r₀ ⥤ HomologicalComplex C (c r)` which
 sends a spectral sequence to its `r`th page. -/
-@[simps]
+@[simps, implicit_reducible]
 def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
     SpectralSequence C c r₀ ⥤ HomologicalComplex C (c r) where
   obj E := E.page r
   map f := f.hom r
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between the homology of a spectral sequence on the
 object `pq : κ` of the `r`th page and the corresponding object on the next page. -/
 @[simps!]

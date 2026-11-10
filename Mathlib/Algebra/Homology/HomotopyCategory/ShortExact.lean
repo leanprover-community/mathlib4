@@ -129,8 +129,6 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
 
 open ComposableArrows
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 include hS in
 lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
   quasiIsoAt n := by
@@ -144,17 +142,9 @@ lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
         ((homologyFunctorFactors C (up ℤ) _).hom.app _)
         ((homologyFunctorFactors C (up ℤ) _).hom.app _)
         ((homologyFunctorFactors C (up ℤ) _).hom.naturality S.f)
-        (by
-          erw [(homologyFunctorFactors C (up ℤ) n).hom.naturality_assoc]
-          -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
-          dsimp [-Fin.reduceFinMk]
-          rw [← HomologicalComplex.homologyMap_comp, inr_descShortComplex])
-        (by
-          -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
-          dsimp [-Fin.reduceFinMk]
-          erw [homologySequenceδ_triangleh hS]
-          simp only [Functor.comp_obj, HomologicalComplex.homologyFunctor_obj, assoc,
-            Iso.inv_hom_id_app, comp_id])
+        (by simp [dsimp% (homologyFunctorFactors C (up ℤ) n).hom.naturality_assoc (inr S.f),
+            ← HomologicalComplex.homologyMap_comp])
+        (by simp [dsimp% homologySequenceδ_triangleh hS])
         ((homologyFunctorFactors C (up ℤ) _).hom.naturality S.f)
     have : IsIso ((homologyFunctorFactors C (up ℤ) n).hom.app (mappingCone S.f) ≫
         HomologicalComplex.homologyMap (descShortComplex S) n) := by
@@ -162,7 +152,9 @@ lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
         ((homologyFunctor C (up ℤ) 0).homologySequenceComposableArrows₅_exact _
           (mappingCone_triangleh_distinguished S.f) n _ rfl).δlast
         (composableArrows₅_exact hS n _ rfl).δlast φ
-      all_goals dsimp [φ]; infer_instance
+      all_goals
+      · dsimp [φ, homMkSucc, homMk₄, homMk₃, homMk₂, homMk₁]
+        infer_instance
     apply IsIso.of_isIso_comp_left ((homologyFunctorFactors C (up ℤ) n).hom.app (mappingCone S.f))
 
 @[reassoc]

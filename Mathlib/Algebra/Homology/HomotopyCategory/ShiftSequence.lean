@@ -182,6 +182,10 @@ noncomputable instance :
     (homologyFunctor C (ComplexShape.up ℤ))
     (homologyFunctorFactors C (ComplexShape.up ℤ))
 
+@[simp]
+lemma shift_homologyFunctor (n : ℤ) :
+    (homologyFunctor C (.up ℤ) 0).shift n = homologyFunctor C (.up ℤ) n := rfl
+
 variable {C}
 
 lemma homologyShiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :

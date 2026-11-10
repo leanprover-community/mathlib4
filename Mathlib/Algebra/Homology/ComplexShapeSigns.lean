@@ -121,12 +121,12 @@ class TensorSigns where
   ε' : Multiplicative I →* ℤˣ
   rel_add (p q r : I) (hpq : c.Rel p q) : c.Rel (p + r) (q + r)
   add_rel (p q r : I) (hpq : c.Rel p q) : c.Rel (r + p) (r + q)
-  ε'_succ (p q : I) (hpq : c.Rel p q) : ε' q = - ε' p
+  ε'_succ (p q : I) (hpq : c.Rel p q) : ε' (.ofAdd q) = - ε' (.ofAdd p)
 
 variable [TensorSigns c]
 
 /-- The signs which appear in the vertical differential of the total complex. -/
-abbrev ε (i : I) : ℤˣ := TensorSigns.ε' c i
+abbrev ε (i : I) : ℤˣ := TensorSigns.ε' c (.ofAdd i)
 
 lemma rel_add {p q : I} (hpq : c.Rel p q) (r : I) : c.Rel (p + r) (q + r) :=
   TensorSigns.rel_add _ _ _ hpq
@@ -163,30 +163,21 @@ instance : TotalComplexShape c c c where
     dsimp
     rw [neg_mul, one_mul, mul_one, c.ε_succ h, neg_neg]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] pow_add in
 instance : TensorSigns (ComplexShape.down ℕ) where
-  ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
+  ε' := MonoidHom.mk' (fun i => (-1 : ℤˣ) ^ i.toAdd) (by simp)
   rel_add p q r (hpq : q + 1 = p) := by dsimp; lia
   add_rel p q r (hpq : q + 1 = p) := by dsimp; lia
-  ε'_succ := by
-    rintro _ q rfl
-    dsimp
-    rw [pow_add, pow_one, mul_neg, mul_one, neg_neg]
+  ε'_succ := by rintro _ q rfl; simp
 
 @[simp]
 lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 instance : TensorSigns (ComplexShape.up ℤ) where
-  ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
+  ε' := MonoidHom.mk' (fun i ↦ Int.negOnePow i.toAdd) (by simp [Int.negOnePow_add])
   rel_add p q r (hpq : p + 1 = q) := by dsimp; lia
   add_rel p q r (hpq : p + 1 = q) := by dsimp; lia
-  ε'_succ := by
-    rintro p _ rfl
-    dsimp
-    rw [Int.negOnePow_succ]
+  ε'_succ := by rintro p _ rfl; simp [Int.negOnePow_succ]
 
 @[simp]
 lemma ε_up_ℤ (n : ℤ) : (ComplexShape.up ℤ).ε n = n.negOnePow := rfl
