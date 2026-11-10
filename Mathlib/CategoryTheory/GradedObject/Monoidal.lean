@@ -22,7 +22,6 @@ preservation of certain coproducts by the tensor products in `C`, we
 obtain a monoidal category structure on `GradedObject I C`.
 In particular, if `C` has finite coproducts to which the tensor
 product commutes, we obtain a monoidal category structure on `GradedObject ℕ C`.
-
 -/
 
 @[expose] public section

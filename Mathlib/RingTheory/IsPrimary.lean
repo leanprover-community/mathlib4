@@ -31,7 +31,6 @@ to define the nilpotency of `r : R`.
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
   Chapter 4, Exercise 21.
-
 -/
 
 @[expose] public section

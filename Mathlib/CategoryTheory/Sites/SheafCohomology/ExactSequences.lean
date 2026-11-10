@@ -31,7 +31,6 @@ so the objects in it are really `AddCommGrpCat.of (H F n)`). To do this, you can
   first morphism is `H.map` applied to `f.τ₁`.
 * `CategoryTheory.Sheaf.H.longSequenceFunctor`: This is the functor that sends a short exact
   sequence to its long exact sequence on cohomology and sends morphisms to `longSequenceHom`.
-
 -/
 
 @[expose] public section

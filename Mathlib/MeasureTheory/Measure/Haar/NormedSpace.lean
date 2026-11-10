@@ -10,7 +10,6 @@ public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
 # Basic properties of Haar measures on real vector spaces
-
 -/
 
 public section
