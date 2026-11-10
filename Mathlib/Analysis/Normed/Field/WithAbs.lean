@@ -356,9 +356,13 @@ theorem map_coe (x : WithAbs v) : map v w (x : v.Completion) = WithAbs.map v w (
     (WithAbs.isometry_map v w).continuous x
 
 @[simp]
-theorem map_comp : (map v w).comp (map u v) = map u w :=
+theorem map_comp_map : (map v w).comp (map u v) = map u w :=
   DFunLike.ext' <| ext ((continuous_map v w).comp (continuous_map u v)) (continuous_map u w)
     (by simp [IsScalarTower.algebraMap_apply J K L])
+
+@[simp]
+theorem map_map (x : u.Completion) : map v w (map u v x) = map u w x :=
+  congr($(map_comp_map u v w) x)
 
 /-- If `w` lies over `v` with completions `K_v` and `L_w`, then there is a unique `K_v`-algebra
 structure on `L_w` satisfying both `IsScalarTower K K_v L_w` and `ContinuousSMul K_v L_w`,
