@@ -656,20 +656,6 @@ lemma one_add_inv_pow_le_exp {n : ℕ} : (1 + (n : ℝ)⁻¹) ^ n ≤ exp 1 := b
   · field
   · simp
 
-private lemma sum_choose_le_mul_sum_choose_mul_pow {d m : ℕ} (hd : (0 : ℝ) < d)
-    (hm : (0 : ℝ) < m) (hdm : (d : ℝ) ≤ m) :
-    ∑ i ∈ .range (d + 1), (m.choose i : ℝ) ≤
-      (m / d : ℝ) ^ d * ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i := by
-  calc ∑ i ∈ .range (d + 1), (m.choose i : ℝ)
-    _ = ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ i := by
-        congr! with i; simp [mul_assoc, ← mul_pow, hd.ne', hm.ne']
-    _ ≤ ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ d := by
-        gcongr with i hi
-        · exact (one_le_div₀ hd).2 hdm
-        · exact Finset.mem_range_succ_iff.1 hi
-    _ = (m / d : ℝ) ^ d * ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i := by
-        rw [← Finset.sum_mul, mul_comm]
-
 /-- For `d ≤ m`, the number of subsets of size at most `d` of an `m`-element set,
 `∑ i ≤ d, m.choose i`, is at most `(exp 1 / d * m) ^ d`. -/
 lemma sum_choose_le_exp_pow {d m : ℕ} (hdm : d ≤ m) :
@@ -678,8 +664,14 @@ lemma sum_choose_le_exp_pow {d m : ℕ} (hdm : d ≤ m) :
   · simp
   have hm : (0 : ℝ) < m := mod_cast hd.trans_le hdm
   calc ∑ i ∈ .range (d + 1), (m.choose i : ℝ)
-      ≤ (m / d : ℝ) ^ d * ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i :=
-        sum_choose_le_mul_sum_choose_mul_pow (mod_cast hd) hm (mod_cast hdm)
+    _ = ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ i := by
+        congr! with i; simp [mul_assoc, ← mul_pow, hd.ne', hm.ne']
+    _ ≤ ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ d := by
+        gcongr with i hi
+        · exact (one_le_div₀ (mod_cast hd)).2 (mod_cast hdm)
+        · exact Finset.mem_range_succ_iff.1 hi
+    _ = (m / d : ℝ) ^ d * ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i := by
+        rw [← Finset.sum_mul, mul_comm]
     _ ≤ (m / d : ℝ) ^ d * (1 + d / m : ℝ) ^ m := by
         gcongr; grw [hdm, add_comm 1, add_pow]; congr! 1 with i; ring
     _ ≤ (m / d : ℝ) ^ d * exp 1 ^ d := by
