@@ -939,7 +939,7 @@ lemma krullDimLE_iff_orderDual {n : ℕ} {α : Type*} [Preorder α] :
   rw [Order.krullDimLE_iff, Order.krullDimLE_iff, krullDim_orderDual]
 
 lemma krullDimLE_iff_coheight_le_isMin {X : Type*} [Preorder X] {n : ℕ} :
-    Order.KrullDimLE n X ↔ (∀ x : X, n ≤ coheight x → IsMin x) := by
+    Order.KrullDimLE n X ↔ ∀ x : X, n ≤ coheight x → IsMin x := by
   rw [Order.krullDimLE_iff]
   refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ?_⟩
   · by_contra hxy
