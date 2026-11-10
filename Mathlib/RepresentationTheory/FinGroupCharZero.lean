@@ -28,7 +28,6 @@ an algebraically closed field in which the order of `G` is invertible:
   space of dimension `1`.
 * `FDRep.simple_iff_char_is_norm_one`: when `k` is characteristic zero, `V` is simple
   if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
-
 -/
 
 public section
@@ -108,7 +107,7 @@ lemma simple_iff_end_is_rank_one [NeZero (Nat.card G : k)] (V : FDRep k G) :
         have hιφ : 𝟙 _ = ι ≫ φ := (Injective.comp_factorThru (𝟙 _) ι).symm
         apply_fun (· ≫ ι) at hιφ
         simp_all
-      obtain ⟨c, hc⟩ : ∃ c : k, c • _ = 𝟙 V := (finrank_eq_one_iff_of_nonzero' _ hφι).mp h (𝟙 V)
+      obtain ⟨c, hc⟩ : ∃ c : k, c • _ = 𝟙 V := (finrank_eq_one_iff_of_ne_zero' _ hφι).mp h (𝟙 V)
       refine Preadditive.epi_of_cancel_zero _ (fun g hg ↦ ?_)
       apply_fun (· ≫ g) at hc
       simpa [hg] using hc.symm

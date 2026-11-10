@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 - `AlgebraicGeometry.Scheme.Hom.fiberHomeo`: `f.fiber y` is homeomorphic to `f ⁻¹' {y}`.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage`: Finite morphisms have finite fibers.
 - `AlgebraicGeometry.Scheme.Hom.discrete_fiber`: Finite morphisms have discrete fibers.
-
 -/
 
 @[expose] public section

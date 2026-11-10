@@ -24,7 +24,7 @@ For the next section, we define regular rings as Noetherian rings whose localiza
 are regular local rings.
 (Note that a regular local ring is a regular ring, but this is not immediate under this definition).
 
-# Main Definition and Results
+## Main definitions and results
 
 * `IsRegularLocalRing` : A Noetherian local ring is regular if
   `(maximalIdeal R).spanFinrank = ringKrullDim R`,
@@ -39,7 +39,6 @@ are regular local rings.
 ## TODO
 Show that regular local rings are regular under this definition.
 This follows from localizations of regular local rings being regular (@Thmoas-Guan).
-
 -/
 
 public section

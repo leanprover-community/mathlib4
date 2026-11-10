@@ -23,7 +23,6 @@ the constructed localized categories: this is done by showing that the product
 functor `W₁.Q.prod W₂.Q : C₁ × C₂ ⥤ W₁.Localization × W₂.Localization` satisfies
 the strict universal property of the localization for `W₁.prod W₂`. The general
 case follows by transporting this result through equivalences of categories.
-
 -/
 
 @[expose] public section

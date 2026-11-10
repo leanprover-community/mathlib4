@@ -20,7 +20,6 @@ for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preshea
 and `R` a sheaf of rings.
 In particular, if `α` is the identity of `R.val`, we obtain the
 sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
-
 -/
 
 @[expose] public section
@@ -116,7 +115,6 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
-
 # The Lie algebra `sl₂` and its representations
 
 The Lie algebra `sl₂` is the unique simple Lie algebra of minimal rank, 1, and as such occupies a
@@ -22,7 +21,6 @@ about `sl₂`.
   representation of a Lie algebra relative to a distinguished `sl₂` triple.
 * `IsSl2Triple.HasPrimitiveVectorWith.exists_nat`: the eigenvalue of a primitive vector must be a
   natural number if the representation is finite-dimensional.
-
 -/
 
 @[expose] public section
@@ -159,7 +157,7 @@ lemma lie_h_pow_toEnd_f (n : ℕ) :
   induction n with
   | zero => simpa using P.lie_h
   | succ n ih =>
-    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+    rw [pow_succ', mul_apply_eq_comp, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
       leibniz_lie h, t.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
     congr
     ring
@@ -169,10 +167,10 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
   induction n with
   | zero =>
       simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
-        pow_zero, Module.End.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
+        pow_zero, one_apply_eq_self, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
         add_zero]
   | succ n ih =>
-    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
+    rw [pow_succ', mul_apply_eq_comp, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
       lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f P, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr
@@ -237,7 +235,7 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
   induction n with
   | zero => simpa using hm
   | succ n ih =>
-    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+    rw [pow_succ', mul_apply_eq_comp, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
       leibniz_lie h, IsSl2Triple.lie_h_e_smul R t, smul_lie, ih, lie_smul, ← add_smul]
     congr 1
     ring
