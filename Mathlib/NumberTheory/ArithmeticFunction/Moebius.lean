@@ -198,6 +198,13 @@ theorem coe_moebius_mul_coe_zeta [Ring R] : (μ * ζ : ArithmeticFunction R) = 1
 theorem coe_zeta_mul_coe_moebius [Ring R] : (ζ * μ : ArithmeticFunction R) = 1 := by
   rw [← coe_coe, ← intCoe_mul, coe_zeta_mul_moebius, intCoe_one]
 
+/-- The classical identity `∑ n ≤ N, μ n * (N / n) = 1` for `N ≠ 0`. -/
+theorem sum_Ioc_moebius_mul_div_eq_one [Ring R] {N : ℕ} (hN : N ≠ 0) :
+    ∑ n ∈ Ioc 0 N, (μ n : R) * (N / n : ℕ) = 1 := by
+  simp_rw [← intCoe_apply, ← sum_Ioc_mul_zeta_eq_sum, coe_moebius_mul_coe_zeta]
+  rw [sum_eq_single_of_mem 1 (by simp [one_le_iff_ne_zero, hN]) fun n _ ↦ one_apply_ne,
+    one_one]
+
 section CommRing
 
 variable [CommRing R]
