@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 In this file, we provide an instance expressing that `SimplicialObject C`
 and `CosimplicialObject C` are idempotent complete categories when the
 category `C` is.
-
 -/
 
 public section

@@ -29,7 +29,6 @@ the 0th component of which must be nonzero.
 
 * `WittVector.iterate_verschiebung_mul_coeff` : an identity from [Haze09]
 * `WittVector.instIsDomain`
-
 -/
 
 @[expose] public section

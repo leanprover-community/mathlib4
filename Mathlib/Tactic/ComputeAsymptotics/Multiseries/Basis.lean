@@ -16,7 +16,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 * `WellFormedBasis basis`: a predicate meaning that all functions from `basis` tend to `atTop`,
   and `basis` is sorted such that if
   `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
-
 -/
 
 @[expose] public section

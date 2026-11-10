@@ -24,7 +24,6 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 * `MeasureTheory.Submartingale.stoppedProcess`: the stopped process of a submartingale with
   respect to a stopping time is a submartingale.
 * `MeasureTheory.maximal_ineq`: Doob's maximal inequality.
-
 -/
 
 public section

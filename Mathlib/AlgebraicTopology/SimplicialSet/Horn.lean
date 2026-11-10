@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.Subfunctor.Equalizer
 # Horns
 
 This file introduces horns `Λ[n, i]`.
-
 -/
 
 @[expose] public section

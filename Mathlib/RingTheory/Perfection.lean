@@ -22,7 +22,6 @@ given a valuation to `ℝ≥0`.
 ## TODO
 
 Define the valuation on the tilt, and define a characteristic predicate for the tilt.
-
 -/
 
 @[expose] public section

@@ -25,7 +25,6 @@ if all `Ext Y X i` vanish when `n ≤ i`. This defines a type class
 
 We also define the Injective dimension in `WithBot ℕ∞` as `injectiveDimension`,
 `injectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
-
 -/
 
 @[expose] public section

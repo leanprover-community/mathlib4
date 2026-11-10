@@ -23,7 +23,6 @@ if and only if it can be factored into a closed immersion followed by an open im
 - `isImmersion_iff_exists_of_quasiCompact`:
   A quasicompact morphism is a (locally-closed) immersion if and only if it can be factored into
   an open immersion followed by a closed immersion.
-
 -/
 
 @[expose] public section

@@ -80,7 +80,6 @@ considerations:
 ## Tags
 
 weak convergence of measures, finite measure
-
 -/
 
 @[expose] public section
