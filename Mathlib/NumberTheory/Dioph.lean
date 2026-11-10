@@ -210,8 +210,6 @@ instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 instance : AddCommGroup (Poly α) := fast_instance% FunLike.addCommGroup
 
 instance : AddGroupWithOne (Poly α) where
-  natCast := fun n => Poly.const n
-  intCast := Poly.const
 
 instance : CommRing (Poly α) := fast_instance% FunLike.commRing
 
