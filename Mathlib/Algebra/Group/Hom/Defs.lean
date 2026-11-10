@@ -1038,10 +1038,10 @@ instance [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
 instance [MulOne M] [MulOneClass N] : One (M →* N) :=
   ⟨⟨⟨fun _ => 1, rfl⟩, fun _ _ => (one_mul 1).symm⟩⟩
 
-@[deprecated zero_apply +typeChanged (since := "2026-10-29")]
+@[deprecated zero_apply +typeChanged (since := "2026-11-10")]
 protected theorem ZeroHom.zero_apply [Zero M] [Zero N] (x : M) : (0 : ZeroHom M N) x = 0 := rfl
 
-@[to_additive existing, deprecated one_apply +typeChanged (since := "2026-10-29")]
+@[to_additive existing, deprecated one_apply +typeChanged (since := "2026-11-10")]
 protected theorem OneHom.one_apply [One M] [One N] (x : M) : (1 : OneHom M N) x = 1 := rfl
 
 @[to_additive (attr := simp)]

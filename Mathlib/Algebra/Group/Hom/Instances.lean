@@ -49,12 +49,12 @@ instance MonoidHom.instPow [MulOneClass M] [CommMonoid N] : Pow (M →* N) ℕ w
       map_one' := by simp
       map_mul' x y := by simp [mul_pow] }
 
-@[deprecated smul_apply +typeChanged (since := "2026-10-29")]
+@[deprecated smul_apply +typeChanged (since := "2026-11-10")]
 lemma ZeroHom.nsmul_apply [Zero M] [AddMonoid N] (f : ZeroHom M N) (n : ℕ) (x : M) :
     (n • f) x = n • f x :=
   rfl
 
-@[to_additive existing, deprecated pow_apply +typeChanged (since := "2026-10-29")]
+@[to_additive existing, deprecated pow_apply +typeChanged (since := "2026-11-10")]
 protected lemma OneHom.pow_apply [One M] [Monoid N] (f : OneHom M N) (n : ℕ) (x : M) :
     (f ^ n) x = f x ^ n :=
   rfl
@@ -96,12 +96,12 @@ instance MonoidHom.instZPow [MulOneClass M] [CommGroup N] : Pow (M →* N) ℤ w
       map_one' := by simp
       map_mul' x y := by simp [mul_zpow] }
 
-@[deprecated smul_apply +typeChanged (since := "2026-10-29")]
+@[deprecated smul_apply +typeChanged (since := "2026-11-10")]
 lemma ZeroHom.zsmul_apply [Zero M] [AddGroup N] (f : ZeroHom M N) (z : ℤ) (x : M) :
     (z • f) x = z • f x :=
   rfl
 
-@[to_additive existing, deprecated pow_apply +typeChanged (since := "2026-10-29")]
+@[to_additive existing, deprecated pow_apply +typeChanged (since := "2026-11-10")]
 lemma OneHom.zpow_apply [One M] [Group N] (f : OneHom M N) (z : ℤ) (x : M) :
     (f ^ z) x = f x ^ z :=
   rfl
