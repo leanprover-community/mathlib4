@@ -67,7 +67,7 @@ open Bundle Filter Set OpenPartialHomeomorph
 open Function (id_def)
 open scoped Manifold Topology ContDiff
 
-variable {n : ℕ∞ω} {𝕜 B F M : Type*} {E : B → Type*}
+variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
@@ -199,21 +199,38 @@ theorem contMDiffAt_totalSpace_iff {f : M → TotalSpace F E} {x₀ : M} :
 
 @[deprecated (since := "2026-11-02")] alias contMDiffAt_totalSpace := contMDiffAt_totalSpace_iff
 
+/-- Characterization of `C^n` sections of a pullback vector bundle within a set at a point -/
+-- TODO: what's a good name for this lemma?
+theorem contMDiffWithinAt_section_iff' {b : M → B} {a : Set M} {x₀ : M}
+    (hb : ContMDiffWithinAt IM IB n b a x₀) {s : ∀ x, E (b x)} :
+    ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F (b x) (s x)) a x₀ ↔
+      ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (b x₀) ⟨b x, s x⟩).2) a x₀ := by
+  simp_rw [contMDiffWithinAt_totalSpace_iff, and_iff_right_iff_imp]
+  intro; exact hb
+
 /-- Characterization of `C^n` sections within a set at a point of a vector bundle. -/
 theorem contMDiffWithinAt_section_iff {s : ∀ x, E x} {a : Set B} {x₀ : B} :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
-      ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
-  simp_rw [contMDiffWithinAt_totalSpace_iff, and_iff_right_iff_imp]
-  intro; exact contMDiffWithinAt_id
+      ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ :=
+  contMDiffWithinAt_section_iff' contMDiffWithinAt_id
 
 @[deprecated (since := "2026-11-02")]
 alias contMDiffWithinAt_section := contMDiffWithinAt_section_iff
 
+/-- Characterization of `C^n` sections of a pullback vector bundle at a point -/
+-- TODO: what's a good name for this lemma?
+theorem contMDiffAt_section_iff' {b : M → B} {x₀ : M} {s : ∀ x, E (b x)}
+    (hb : ContMDiffAt IM IB n b x₀) :
+    ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F (b x) (s x)) x₀ ↔
+      ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (b x₀) ⟨b x, s x⟩).2) x₀ := by
+  simp_rw [contMDiffAt_totalSpace_iff, and_iff_right_iff_imp]
+  intro; exact hb
+
 /-- Characterization of `C^n` sections of a vector bundle. -/
 theorem contMDiffAt_section_iff {s : ∀ x, E x} (x₀ : B) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
-      ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
-  simp_rw [contMDiffAt_totalSpace_iff, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
+      ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ :=
+  contMDiffAt_section_iff' contMDiffAt_id
 
 @[deprecated (since := "2026-11-02")] alias contMDiffAt_section := contMDiffAt_section_iff
 
@@ -452,6 +469,14 @@ theorem Bundle.Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → Total
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x :=
   ⟨(hp.change_section_trivialization · he he'), (hp.change_section_trivialization · he' he)⟩
 
+theorem Bundle.Trivialization.contMDiffAt_snd_comp_iff₂ {f : M → TotalSpace F E}
+    (hp : ContMDiffAt IM IB n (π F E ∘ f) x)
+    (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
+    ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ (e (f y)).2) x ↔
+      ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) x := by
+  simpa [← contMDiffWithinAt_univ] using
+    e.contMDiffWithinAt_snd_comp_iff₂ hp he he'
+
 end ContMDiffCoordChange
 
 variable [IsManifold IB n B] in
@@ -532,12 +557,22 @@ theorem contMDiffOn (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
   rw [e.contMDiffOn_iff (mapsTo_id _)] at this
   exact (this.1.prodMk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
+theorem contMDiffAt (e : Trivialization F (π F E)) [MemTrivializationAtlas e]
+    {x} (hx : x ∈ e.source) :
+    ContMDiffAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e x :=
+  e.contMDiffOn.contMDiffAt (e.open_source.mem_nhds hx)
+
 theorem contMDiffOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toOpenPartialHomeomorph.symm e.target := by
   rw [e.contMDiffOn_iff e.toOpenPartialHomeomorph.mapsTo_symm]
   refine ⟨contMDiffOn_fst.congr fun x hx ↦ e.proj_symm_apply hx,
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
+
+theorem contMDiffAt_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e]
+    {x} (hx : x ∈ e.target) :
+    ContMDiffAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toOpenPartialHomeomorph.symm x :=
+  e.contMDiffOn_symm.contMDiffAt (e.open_target.mem_nhds hx)
 
 /-- Smoothness of a `C^n` section at `x₀` within a set `a` can be determined
 using any trivialisation whose `baseSet` contains `x₀`. -/
