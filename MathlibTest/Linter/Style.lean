@@ -202,15 +202,15 @@ set_option allowUnsafeReducibility true in
 attribute [instance_reducible] Int.add
 
 /--
-warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
+warning: Please, use `·` (typed as `\.`) instead of `.` as `cdot`.
 
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 ---
-warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
+warning: Please, use `·` (typed as `\.`) instead of `.` as `cdot`.
 
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 ---
-warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
+warning: Please, use `·` (typed as `\.`) instead of `.` as `cdot`.
 
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 -/
@@ -222,7 +222,7 @@ instance : Inhabited Nat where
         . exact 0
 
 /--
-warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
+warning: Please, use `·` (typed as `\.`) instead of `.` as `cdot`.
 
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 -/
@@ -230,7 +230,7 @@ Note: This linter can be disabled with `set_option linter.style.cdot false`
 example : Add Nat where add := (. + ·)
 
 /--
-warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
+warning: Please, use `·` (typed as `\.`) instead of `.` as `cdot`.
 
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 -/
@@ -238,15 +238,15 @@ Note: This linter can be disabled with `set_option linter.style.cdot false`
 example : Add Nat where add := (. + ·)
 
 /--
-warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
----
 warning: This central dot `·` is isolated; please merge it with the next line.
 
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
+
+Note: This linter can be disabled with `set_option linter.style.cdot false`
+---
+warning: Please, use `·` (typed as `\.`) instead of `.` as `cdot`.
 
 Note: This linter can be disabled with `set_option linter.style.cdot false`
 -/
@@ -275,11 +275,11 @@ end cdotLinter
 set_option linter.style.dollarSyntax true
 
 /--
-warning: Please use '<|' instead of '$' for the pipe operator.
+warning: Please use `<|` instead of `$` for the pipe operator.
 
 Note: This linter can be disabled with `set_option linter.style.dollarSyntax false`
 ---
-warning: Please use '<|' instead of '$' for the pipe operator.
+warning: Please use `<|` instead of `$` for the pipe operator.
 
 Note: This linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
@@ -296,8 +296,8 @@ section lambdaSyntaxLinter
 set_option linter.style.lambdaSyntax true
 
 /--
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
@@ -305,8 +305,8 @@ Note: This linter can be disabled with `set_option linter.style.lambdaSyntax fal
 example : ℕ → ℕ := λ _ ↦ 0
 
 /--
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
@@ -318,8 +318,8 @@ def foo : Bool := by
 example : ℕ → ℕ := fun n ↦ n - 1
 
 /--
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
@@ -329,18 +329,18 @@ example : ℕ → ℕ := by exact λ n ↦ 3 * n + 1
 /--
 warning: declaration uses `sorry`
 ---
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
@@ -352,18 +352,18 @@ example : ℕ → ℕ → ℕ → ℕ := by
   exact λ _a ↦ fun _b ↦ λ _c ↦ 0
 
 /--
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
@@ -384,8 +384,8 @@ example : True := by
 -- the inner set_option is ignore (in either direction).
 -- As this seems unlikely to occur by accident and its use is dubious, we don't worry about this.
 /--
-warning: Please use 'fun' and not 'λ' to define anonymous functions.
-The 'λ' syntax is deprecated in mathlib4.
+warning: Please use `fun` and not `λ` to define anonymous functions.
+The `λ` syntax is deprecated in mathlib4.
 
 Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/

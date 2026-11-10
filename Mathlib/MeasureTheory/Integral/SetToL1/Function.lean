@@ -335,7 +335,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     rw [Lp.tendsto_Lp_iff_tendsto_eLpNorm']
     have M n : AEStronglyMeasurable ((F_lp n : α → E) - (f_lp : α → E)) μ :=
       (Lp.aestronglyMeasurable (F_lp n)).sub (Lp.aestronglyMeasurable f_lp)
-    simp_rw [eLpNorm_one_eq_lintegral_enorm (M _), Pi.sub_apply]
+    simp_rw [eLpNorm_one_eq_lintegral_eNorm (M _), Pi.sub_apply]
     refine (tendsto_congr' ?_).mp hfs
     filter_upwards [hfsi] with i hi
     refine lintegral_congr_ae ?_

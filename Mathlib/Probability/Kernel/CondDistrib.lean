@@ -394,7 +394,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
   refine ⟨fun x => hf.mk f x.2, hf.stronglyMeasurable_mk.comp_measurable measurable_snd, ?_⟩
   suffices h : QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
     QuasiMeasurePreserving.ae_eq_comp h hf.ae_eq_mk
-  refine ⟨measurable_snd, Measure.AbsolutelyContinuous.mk fun s hs hμs => ?_⟩
+  refine ⟨measurable_snd.aemeasurable, Measure.AbsolutelyContinuous.mk fun s hs hμs => ?_⟩
   rw [Measure.map_apply measurable_snd hs, Measure.map_apply_of_aemeasurable]
   · rw [← univ_prod, mk_preimage_prod, preimage_univ, univ_inter, preimage_id']
     exact hμs
@@ -407,7 +407,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   have hf := hf_int.1.comp_snd_map_prodMk hX (mΩ := mΩ) (mβ := mβ)
   refine ⟨hf, ?_⟩
-  rw [hasFiniteIntegral_iff_enorm, lintegral_map' hf.enorm (hX.prodMk aemeasurable_id)]
+  rw [hasFiniteIntegral_iff_eNorm, lintegral_map' hf.eNorm (hX.prodMk aemeasurable_id)]
   exact hf_int.2
 
 theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace Ω}
