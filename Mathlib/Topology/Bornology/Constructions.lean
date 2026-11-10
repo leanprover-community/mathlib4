@@ -127,9 +127,12 @@ theorem isBounded_induced {α β : Type*} [Bornology β] {f : α → β} {s : Se
     @IsBounded α (Bornology.induced f) s ↔ IsBounded (f '' s) :=
   compl_mem_comap
 
-theorem isBounded_image_subtype_val {p : α → Prop} {s : Set { x // p x }} :
+theorem isBounded_image_subtypeVal {p : α → Prop} {s : Set { x // p x }} :
     IsBounded (Subtype.val '' s) ↔ IsBounded s :=
   isBounded_induced.symm
+
+@[deprecated (since := "2026-11-10")]
+alias isBounded_image_subtype_val := isBounded_image_subtypeVal
 
 end Bornology
 

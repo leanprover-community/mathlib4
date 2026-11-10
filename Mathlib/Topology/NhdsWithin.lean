@@ -642,10 +642,12 @@ lemma Topology.IsInducing.map_nhdsSet_eq {f : α → β} (hf : IsInducing f) (s 
     (𝓝ˢ s).map f = 𝓝ˢ[range f] (f '' s) :=
   hf.eq_induced ▸ map_nhdsSet_induced_eq s
 
-lemma map_nhdsSet_subtype_val {s : Set α} (t : Set s) :
+lemma map_nhdsSet_subtypeVal {s : Set α} (t : Set s) :
     map (↑) (𝓝ˢ t) = 𝓝ˢ[s] ((↑) '' t) := by
   rw [IsInducing.subtypeVal.map_nhdsSet_eq, Subtype.range_val]
 
+@[deprecated (since := "2026-11-10")] alias map_nhdsSet_subtype_val := map_nhdsSet_subtypeVal
+
 lemma mem_nhdsSet_subtype_iff_nhdsSetWithin {s : Set α} {t u : Set s} :
     u ∈ 𝓝ˢ t ↔ (↑) '' u ∈ 𝓝ˢ[s] ((↑) '' t) := by
-  rw [← map_nhdsSet_subtype_val, image_mem_map_iff Subtype.val_injective]
+  rw [← map_nhdsSet_subtypeVal, image_mem_map_iff Subtype.val_injective]

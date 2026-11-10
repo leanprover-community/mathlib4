@@ -178,7 +178,7 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
     rw [nhds_basis_opens' x |>.exists_iff this] at H
     obtain ⟨U, ⟨U_mem, U_open⟩, H⟩ := H
     rw [← closure_subset_iff_isClosed,
-      ← U_open.isOpenMap_subtype_val.preimage_closure_eq_closure_preimage (by fun_prop),
+      ← U_open.isOpenMap_subtypeVal.preimage_closure_eq_closure_preimage (by fun_prop),
       Subtype.preimage_val_subset_preimage_val_iff] at H
     exact ⟨U, U_mem, by simpa using H⟩
   tfae_have 3 ↔ 4 := by grind [subset_closure]

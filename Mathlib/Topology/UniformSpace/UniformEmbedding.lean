@@ -143,6 +143,9 @@ theorem isUniformEmbedding_subtypeVal {p : α → Prop} :
   { comap_uniformity := rfl
     injective := Subtype.val_injective }
 
+@[deprecated (since := "2026-11-10")]
+alias isUniformEmbedding_subtype_val := isUniformEmbedding_subtypeVal
+
 theorem isUniformEmbedding_set_inclusion {s t : Set α} (hst : s ⊆ t) :
     IsUniformEmbedding (inclusion hst) where
   comap_uniformity := by rw [uniformity_subtype, uniformity_subtype, comap_comap]; rfl
@@ -274,7 +277,7 @@ theorem IsUniformEmbedding.isComplete_iff {f : α → β} {s : Set α} (hf : IsU
 /-- Sets of a subtype are complete iff their image under the coercion is complete. -/
 theorem Subtype.isComplete_iff {p : α → Prop} {s : Set { x // p x }} :
     IsComplete s ↔ IsComplete ((↑) '' s : Set α) :=
-  isUniformEmbedding_subtype_val.isComplete_iff.symm
+  isUniformEmbedding_subtypeVal.isComplete_iff.symm
 
 alias ⟨isComplete_of_complete_image, _⟩ := isComplete_image_iff
 
@@ -310,7 +313,7 @@ theorem completeSpace_congr {e : α ≃ β} (he : IsUniformEmbedding e) :
   he.completeSpace_congr e.surjective
 
 theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s := by
-  rw [completeSpace_iff_isComplete_range isUniformEmbedding_subtype_val.isUniformInducing,
+  rw [completeSpace_iff_isComplete_range isUniformEmbedding_subtypeVal.isUniformInducing,
     Subtype.range_coe]
 
 alias ⟨_, IsComplete.completeSpace_coe⟩ := completeSpace_coe_iff_isComplete
@@ -534,15 +537,15 @@ variable {s : Set α} {f : s → β}
 
 theorem extend_exists [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
     ∃ b, Tendsto f (comap (↑) (𝓝 a)) (𝓝 b) :=
-  uniformly_extend_exists (isUniformInducing_val s) hs.denseRange_val hf a
+  uniformly_extend_exists (isUniformInducing_val s) hs.denseRange_subtypeVal hf a
 
 theorem extend_spec [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
     Tendsto f (comap (↑) (𝓝 a)) (𝓝 (hs.extend f a)) :=
-  uniformly_extend_spec (isUniformInducing_val s) hs.denseRange_val hf a
+  uniformly_extend_spec (isUniformInducing_val s) hs.denseRange_subtypeVal hf a
 
 theorem uniformContinuous_extend [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) :
     UniformContinuous (hs.extend f) :=
-  uniformContinuous_uniformly_extend (isUniformInducing_val s) hs.denseRange_val hf
+  uniformContinuous_uniformly_extend (isUniformInducing_val s) hs.denseRange_subtypeVal hf
 
 variable [T0Space β]
 

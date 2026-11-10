@@ -290,7 +290,7 @@ theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen
   refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => ?_) ?_
   · simp only [mem_iUnion, mem_image] at hu
     rcases hu with ⟨i, s, sb, rfl⟩
-    exact (Uo i).isOpenMap_subtype_val _ ((hb i).isOpen sb)
+    exact (Uo i).isOpenMap_subtypeVal _ ((hb i).isOpen sb)
   · intro a u ha uo
     rcases iUnion_eq_univ_iff.1 Uc a with ⟨i, hi⟩
     lift a to ↥(U i) using hi
@@ -672,7 +672,7 @@ theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {
     [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
   let ⟨t, htc, htd⟩ := exists_countable_dense s
   ⟨(↑) '' t, Subtype.coe_image_subset s t, htc.image Subtype.val,
-    hs.denseRange_val.dense_image continuous_subtypeVal htd⟩
+    hs.denseRange_subtypeVal.dense_image continuous_subtypeVal htd⟩
 
 /-- Let `s` be a dense set in a topological space `α` with partial order structure. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable

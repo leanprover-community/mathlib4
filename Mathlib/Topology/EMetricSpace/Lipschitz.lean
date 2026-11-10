@@ -207,8 +207,10 @@ protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 
 /-- The inclusion of a subset is 1-Lipschitz. -/
-protected theorem subtype_val (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
+protected theorem subtypeVal (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
+
+@[deprecated (since := "2026-11-10")] alias subtype_val := LipschitzWith.subtypeVal
 
 theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f x)) :
     LipschitzWith K (fun x => ⟨f x, hp x⟩ : α → { y // p y }) :=
