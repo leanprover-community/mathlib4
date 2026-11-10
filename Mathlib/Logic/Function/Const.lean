@@ -203,6 +203,14 @@ theorem IsConstOn.mono {f : α → β} {s t : Set α} (hf : IsConstOn f t) (hst 
     IsConstOn f s :=
   fun _ hx _ hy ↦ hf (hst hx) (hst hy)
 
+theorem IsConstOn.congr {β : Type*} {f g : α → β} {s : Set α} (hf : IsConstOn f s)
+    (h : Set.EqOn f g s) : IsConstOn g s :=
+  fun _ hx _ hy ↦ (h hx).symm.trans <| (hf hx hy).trans (h hy)
+
+theorem _root_.Set.EqOn.isConstOn_iff {β : Type*} {f g : α → β} {s : Set α}
+    (h : Set.EqOn f g s) : IsConstOn f s ↔ IsConstOn g s :=
+  ⟨(·.congr h), (·.congr h.symm)⟩
+
 @[simp]
 protected theorem IsConstOn.const (b : β) (s : Set α) :
     IsConstOn (const α b) s :=
@@ -285,7 +293,6 @@ theorem not_isConstOn_iff_exists_apply_ne {f : α → β} {s : Set α} :
   simp [isConstOn_iff]
 
 /-- The identity function is constant on a set if and only if the set is a subsingleton. -/
-@[simp]
 theorem isConstOn_id_iff {s : Set α} : IsConstOn id s ↔ s.Subsingleton :=
   ⟨fun h _ hx _ hy ↦ h hx hy, (.of_subsingleton · _)⟩
 
@@ -308,19 +315,15 @@ theorem IsConstOn.injOn_iff {β : Type*} {f : α → β} {s : Set α} (h : IsCon
     Set.InjOn f s ↔ s.Subsingleton :=
   (and_iff_right h).symm.trans (isConstOn_and_injOn_iff f s)
 
+@[simp]
 theorem _root_.Set.InjOn.isConstOn_iff {β : Type*} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
     IsConstOn f s ↔ s.Subsingleton :=
   (and_iff_left h).symm.trans (isConstOn_and_injOn_iff f s)
 
-/-- If `f` is constant on `s` and maps `s` onto `t`, then `t` is a subsingleton. -/
-theorem IsConstOn.subsingleton_of_surjOn {β : Type*} {f : α → β} {s : Set α} {t : Set β}
-    (hf : IsConstOn f s) (h : Set.SurjOn f s t) : t.Subsingleton :=
-  (Set.subsingleton_image_iff.mpr hf).anti h
-
-/-- Every function mapping `s` into a subsingleton is constant on `s`. -/
-theorem IsConstOn.of_mapsTo_of_subsingleton {β : Type*} {f : α → β} {s : Set α} {t : Set β}
-    (hf : Set.MapsTo f s t) (ht : t.Subsingleton) : IsConstOn f s :=
-  fun _ hx _ hy ↦ ht (hf hx) (hf hy)
+@[simp]
+theorem Injective.isConstOn_iff {β : Type*} {f : α → β} {s : Set α} (h : Injective f) :
+    IsConstOn f s ↔ s.Subsingleton :=
+  Set.InjOn.isConstOn_iff fun _ _ _ _ hxy ↦ h hxy
 
 end IsConstOn
 
