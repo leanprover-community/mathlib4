@@ -16,7 +16,6 @@ In a `κ`-accessible category `C`, the inclusion of the full subcategory
 of `κ`-presentable objects is a dense functor. This expresses canonically
 any object `X : C` as a colimit of `κ`-presentable objects, and we show
 that this is a `κ`-filtered colimit.
-
 -/
 
 public section

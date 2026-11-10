@@ -17,7 +17,6 @@ objects `X₁ : C₁`, `X₂ : C₂` and `X₃ : C₃` to `G.obj ((F₁₂.obj X
 Similarly, given two bifunctors `F : C₁ ⥤ C₂₃ ⥤ C₄` and `G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃`, we define
 the trifunctor `bifunctorComp₂₃ F G₂₃ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` which sends three
 objects `X₁ : C₁`, `X₂ : C₂` and `X₃ : C₃` to `(F.obj X₁).obj ((G₂₃.obj X₂).obj X₃)`.
-
 -/
 
 @[expose] public section
@@ -39,7 +38,6 @@ def bifunctorComp₁₂Obj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ �
   map {X₂ Y₂} φ :=
     { app := fun X₃ => (G.map ((F₁₂.obj X₁).map φ)).app X₃ }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given two bifunctors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂` and `G : C₁₂ ⥤ C₃ ⥤ C₄`, this is
 the trifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` obtained by composition. -/
 @[simps, implicit_reducible]
@@ -54,7 +52,6 @@ def bifunctorComp₁₂ (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C
         dsimp
         simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `bifunctorComp₁₂Functor`. -/
 @[simps, implicit_reducible]
 def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
@@ -73,7 +70,6 @@ def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
         dsimp
         simp only [← NatTrans.comp_app, NatTrans.naturality] }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `bifunctorComp₁₂Functor`. -/
 @[simps, implicit_reducible]
 def bifunctorComp₁₂FunctorMap {F₁₂ F₁₂' : C₁ ⥤ C₂ ⥤ C₁₂} (φ : F₁₂ ⟶ F₁₂') :
@@ -116,7 +112,6 @@ def bifunctorComp₂₃Obj (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C
   map {X₂ Y₂} φ :=
     { app X₃ := (F.obj X₁).map ((G₂₃.map φ).app X₃) }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given two bifunctors `F : C₁ ⥤ C₂₃ ⥤ C₄` and `G₂₃ : C₂ ⥤ C₃ ⥤ C₄`, this is
 the trifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` obtained by composition. -/
 @[simps, implicit_reducible]
@@ -127,7 +122,6 @@ def bifunctorComp₂₃ (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃
     { app := fun X₂ =>
         { app := fun X₃ => (F.map φ).app ((G₂₃.obj X₂).obj X₃) } }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
 @[simps, implicit_reducible]
 def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
@@ -142,7 +136,6 @@ def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
             dsimp
             simp } }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
 @[simps, implicit_reducible]
 def bifunctorComp₂₃FunctorMap {F F' : C₁ ⥤ C₂₃ ⥤ C₄} (φ : F ⟶ F') :

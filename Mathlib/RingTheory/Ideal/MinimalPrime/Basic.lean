@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
 
 /-!
-
 # Minimal primes
 
 We provide various results concerning the minimal primes above an ideal.
@@ -24,7 +23,6 @@ We provide various results concerning the minimal primes above an ideal.
 
 Further results that need the theory of localizations can be found in
 `Mathlib/RingTheory/Ideal/MinimalPrime/Localization.lean`.
-
 -/
 
 @[expose] public section

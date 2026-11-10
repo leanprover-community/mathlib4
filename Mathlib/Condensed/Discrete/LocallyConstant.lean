@@ -11,7 +11,6 @@ public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 public import Mathlib.Topology.FiberPartition
 
 /-!
-
 # The sheaf of locally constant maps on `CompHausLike P`
 
 This file proves that under suitable conditions, the functor from the category of sets to the
@@ -65,7 +64,6 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 * `LightCondSet.LocallyConstant.iso`: the functor `LightCondSet.LocallyConstant.functor` is
   isomorphic to the functor `LightCondensed.discrete (Type _)` (the constant sheaf functor from sets
   to light condensed sets).
-
 -/
 
 @[expose] public section
@@ -99,7 +97,7 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   { hom := ↾fun f ↦ (f : C(Y, X))
-    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
+    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr (by fun_prop)⟩ }
 
 section Adjunction
 
@@ -200,7 +198,6 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The counit is natural in `S : CompHausLike P` -/
 @[simps! app]
 noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
@@ -248,7 +245,6 @@ noncomputable def functorIso :
   NatIso.ofComponents (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
     (functorToPresheavesIso P hs X))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/

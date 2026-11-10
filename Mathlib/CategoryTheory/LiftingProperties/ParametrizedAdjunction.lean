@@ -15,7 +15,6 @@ If we have a parametrized adjunction `adj₂ : F ⊣₂ G`,
 we show that `sq₁₂.ι` has the left lifting property with respect to
 `f₃` if and only if `f₂` has the left lifting property with respect
 to `sq₁₃.π`: this is the lemma `ParametrizedAdjunction.hasLiftingProperty_iff`.
-
 -/
 
 @[expose] public section
@@ -37,7 +36,6 @@ variable {F G} (adj₂ : F ⊣₂ G)
   {X₃ Y₃ : C₃} {f₃ : X₃ ⟶ Y₃}
   (sq₁₂ : F.PushoutObjObj f₁ f₂) (sq₁₃ : G.PullbackObjObj f₁ f₃)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, and structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`, there are
 as many commutative squares with left map `sq₁₂.ι` and right map `f₃`

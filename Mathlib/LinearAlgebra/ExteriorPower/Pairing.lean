@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.TensorPower.Pairing
 
 We construct the pairing
 `exteriorPower.pairingDual : ⋀[R]^n (Module.Dual R M) →ₗ[R] (Module.Dual R (⋀[R]^n M))`.
-
 -/
 
 @[expose] public section

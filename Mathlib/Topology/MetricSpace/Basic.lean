@@ -12,7 +12,6 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 /-!
 # Basic properties of metric spaces, and instances.
-
 -/
 
 public section
