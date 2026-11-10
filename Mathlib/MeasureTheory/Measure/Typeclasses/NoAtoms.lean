@@ -48,7 +48,7 @@ measurable subsets have measure either `0` or `μ s`. -/
 structure IsAtom (μ : Measure α) (s : Set α) : Prop where
   measurableSet : MeasurableSet s
   pos : 0 < μ s
-  measure_eq_zero_or_eq : ∀ t ⊆ s, MeasurableSet t → μ t = 0 ∨ μ t = μ s
+  measure_eq_zero_or_eq' : ∀ t ⊆ s, MeasurableSet t → μ t = 0 ∨ μ t = μ s
 
 theorem isAtom_iff_not_exists :
     μ.IsAtom s ↔
@@ -65,10 +65,10 @@ theorem isAtom_singleton_iff [MeasurableSingletonClass α] {x : α} :
 namespace IsAtom
 
 /-- A version of `IsAtom.measure_eq_zero_or_eq` for subsets `t` which need not be measurable. -/
-theorem measure_eq_zero_or_eq' (h : μ.IsAtom s) {t : Set α} (hts : t ⊆ s) :
+theorem measure_eq_zero_or_eq (h : μ.IsAtom s) {t : Set α} (hts : t ⊆ s) :
     μ t = 0 ∨ μ t = μ s := by
   obtain ⟨u, -, hus, hu, hut⟩ := exists_measurable_superset_of_subset μ hts h.measurableSet
-  exact hut ▸ h.measure_eq_zero_or_eq u hus hu
+  exact hut ▸ h.measure_eq_zero_or_eq' u hus hu
 
 theorem not_exists (h : μ.IsAtom s) :
     ¬∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := (isAtom_iff_not_exists.mp h).2.2
@@ -76,7 +76,7 @@ theorem not_exists (h : μ.IsAtom s) :
 /-- A version of `IsAtom.not_exists` for subsets `t` which need not be measurable. -/
 theorem not_exists' (h : μ.IsAtom s) : ¬∃ t ⊆ s, 0 < μ t ∧ μ t < μ s := by
   rintro ⟨t, hts, ht, hts'⟩
-  rcases h.measure_eq_zero_or_eq' hts with h' | h'
+  rcases h.measure_eq_zero_or_eq hts with h' | h'
   · exact ht.ne' h'
   · exact hts'.ne h'
 
