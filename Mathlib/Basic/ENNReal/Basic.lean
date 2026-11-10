@@ -205,9 +205,13 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.c
 
 @[simp] theorem none_eq_top : (none : ℝ≥0∞) = ∞ := rfl
 
-@[simp] theorem some_eq_coe (a : ℝ≥0) : (Option.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
+@[simp] theorem optionSome_eq_ofNNReal (a : ℝ≥0) : (Option.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
-@[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
+@[deprecated (since := "2026-11-10")] alias some_eq_coe := optionSome_eq_ofNNReal
+
+@[simp] theorem withTopSome_eq_ofNNReal (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
+
+@[deprecated (since := "2026-11-10")] alias some_eq_coe' := withTopSome_eq_ofNNReal
 
 lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
 

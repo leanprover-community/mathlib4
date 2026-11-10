@@ -63,8 +63,12 @@ theorem none_eq_bot : (none : WithBot α) = (⊥ : WithBot α) :=
   rfl
 
 @[to_dual]
-theorem some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α) :=
+theorem optionSome_eq_some (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α) :=
   rfl
+
+@[deprecated (since := "2026-11-10")] alias some_eq_coe := optionSome_eq_some
+@[deprecated (since := "2026-11-10")]
+alias _root_.WithTop.some_eq_coe := _root_.WithTop.optionSome_eq_some
 
 @[to_dual (attr := simp)]
 theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
