@@ -360,7 +360,7 @@ def decreasingInduction' {motive : ℕ → Sort*}
 `motive 0 (b + 1)` is true for all `b` and for all `a < b`, `motive (a + 1) b` is true and
 `motive a (b + 1)` is true implies `motive (a + 1) (b + 1)` is true. -/
 @[elab_as_elim]
-theorem diag_induction (motive : ℕ → ℕ → Prop)
+theorem diagonal_induction (motive : ℕ → ℕ → Prop)
     (diag : ∀ a, motive (a + 1) (a + 1)) (zero_succ : ∀ b, motive 0 (b + 1))
     (ind : ∀ a b, a < b → motive (a + 1) b → motive a (b + 1) → motive (a + 1) (b + 1)) :
     ∀ a b, a < b → motive a b
@@ -370,9 +370,11 @@ theorem diag_induction (motive : ℕ → ℕ → Prop)
     · have : a + 1 = b ∨ a + 1 < b := by lia
       rcases this with (rfl | h)
       · exact diag _
-      apply diag_induction motive diag zero_succ ind (a + 1) b h
-    apply diag_induction motive diag zero_succ ind a (b + 1)
+      apply diagonal_induction motive diag zero_succ ind (a + 1) b h
+    apply diagonal_induction motive diag zero_succ ind a (b + 1)
     apply Nat.lt_of_le_of_lt (Nat.le_succ _) h
+
+@[deprecated (since := "2026-09-06")] alias diag_induction := diagonal_induction
 
 /-! ### `mod`, `dvd` -/
 

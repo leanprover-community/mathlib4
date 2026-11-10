@@ -291,9 +291,12 @@ lemma prod_fiberwise' (s : Finset ι) (g : ι → κ) (f : κ → M) :
 end bij
 
 @[to_additive (attr := simp)]
-lemma prod_diag (s : Finset ι) (f : ι × ι → M) :
-    ∏ i ∈ s.diag, f i = ∏ i ∈ s, f (i, i) := by
-  simp [diag]
+lemma prod_diagonal (s : Finset ι) (f : ι × ι → M) :
+    ∏ i ∈ s.diagonal, f i = ∏ i ∈ s, f (i, i) := by
+  simp [diagonal]
+
+@[deprecated (since := "2026-09-06")] alias prod_diag := prod_diagonal
+@[deprecated (since := "2026-09-06")] alias sum_diag := sum_diagonal
 
 @[to_additive]
 theorem prod_image' [DecidableEq ι] {s : Finset κ} {g : κ → ι} (h : κ → M)

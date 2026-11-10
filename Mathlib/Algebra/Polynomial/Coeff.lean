@@ -99,7 +99,7 @@ over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
 by using `Finset.Nat.sum_antidiagonal_eq_sum_range_succ`. -/
 theorem coeff_mul (p q : R[X]) (n : ℕ) :
     coeff (p * q) n = ∑ x ∈ antidiagonal n, coeff p x.1 * coeff q x.2 :=
-  AddMonoidAlgebra.coeff_mul_antidiag p q n _ Finset.mem_antidiagonal
+  AddMonoidAlgebra.coeff_mul_antidiagonal p q n _ Finset.mem_antidiagonal
 
 @[simp]
 theorem mul_coeff_zero (p q : R[X]) : coeff (p * q) 0 = coeff p 0 * coeff q 0 := by simp [coeff_mul]
