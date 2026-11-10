@@ -19,7 +19,6 @@ Tests for the Markov category and copy-discard category implementation.
 * Comonoid laws: comultiplication and counit axioms
 * Markov category laws: naturality of discard and terminal unit
 * Simp automation for comonoid and discard naturality
-
 -/
 
 universe u

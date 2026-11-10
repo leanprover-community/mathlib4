@@ -11,7 +11,6 @@ public import Mathlib.ModelTheory.Algebra.Field.CharP
 public import Mathlib.ModelTheory.Satisfiability
 
 /-!
-
 # The First-Order Theory of Algebraically Closed Fields
 
 This file defines the theory of algebraically closed fields of characteristic `p`, as well
@@ -40,7 +39,6 @@ The first-order theory of algebraically closed fields, along with the Lefschetz 
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
-
 -/
 
 @[expose] public section
@@ -212,7 +210,8 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     simp only [s, Finset.mem_biUnion, Finset.mem_attach, true_and,
       Subtype.exists, not_exists] at hpψ
     exact (f ψ (hT0 hψ)).2 p (hpψ _ hψ)
-  refine Set.Finite.subset (Finset.finite_toSet s) (Set.compl_subset_comm.2 ?_)
+  refine Set.Finite.subset (Finset.finite_toSet s)
+    ((Set.compl_subset_comm (s := {p : Nat.Primes | Theory.ACF ↑p ⊨ᵇ φ})).2 ?_)
   intro p hp
   exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h
 

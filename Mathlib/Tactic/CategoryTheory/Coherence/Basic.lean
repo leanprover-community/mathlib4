@@ -6,10 +6,10 @@ Authors: Yuma Mizuno
 module
 
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import Mathlib.Tactic.ToDual
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The Core function for `monoidal` and `bicategory` tactics
@@ -22,7 +22,6 @@ and bicategories. Using `main`, we will define the following tactics:
 The `main` first normalizes the both sides using `eval`, then compares the corresponding components.
 It closes the goal at non-structural parts with `rfl` and the goal at structural parts by
 `pureCoherence`.
-
 -/
 
 public meta section

@@ -19,7 +19,6 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 * `piCongrRight`: `Equiv.piCongrRight` as a continuous linear equivalence.
 * `Fin.consEquivL`: `Fin.consEquiv` as a continuous linear equivalence.
 * `ContinuousLinearMap.finCons`: `Fin.cons` in the codomain of continuous linear maps.
-
 -/
 
 @[expose] public section

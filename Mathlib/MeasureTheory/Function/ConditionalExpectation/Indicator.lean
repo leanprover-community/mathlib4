@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
-
 # Conditional expectation of indicator functions
 
 This file proves some results about the conditional expectation of an indicator function and
@@ -20,13 +19,10 @@ a restricted measure.
 * `MeasureTheory.condExp_indicator`: If `s` is an `m`-measurable set, then the conditional
   expectation of the indicator function of `s` is almost everywhere equal to the indicator
   of `s` of the conditional expectation. Namely, `𝔼[s.indicator f | m] = s.indicator 𝔼[f | m]` a.e.
-
 -/
 
 public section
 
-
-noncomputable section
 
 open MeasureTheory.Lp Filter
 

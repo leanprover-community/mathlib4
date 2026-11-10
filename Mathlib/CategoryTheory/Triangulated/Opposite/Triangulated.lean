@@ -16,7 +16,6 @@ that `Cᵒᵖ` is triangulated if `C` is triangulated.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-
 -/
 
 public section
@@ -53,7 +52,7 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
       exact congr($(Functor.map_injective _ congr($(eq₂).unop)).op).symm
     · have := op_distinguished _ o.mem
       dsimp at this
-      convert! this using 2
+      convert this using 2
       rw [Category.assoc, Functor.map_comp, Functor.map_comp,
         ← opShiftFunctorEquivalence_counitIso_hom_app_shift,
         ← opShiftFunctorEquivalence_counitIso_inv_naturality_assoc, Iso.inv_hom_id_app_assoc]

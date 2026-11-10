@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Localization.BaseChange
 - `KaehlerDifferential.tensorKaehlerEquiv`: `(B ⊗[A] Ω[A⁄R]) ≃ₗ[B] Ω[B⁄S]` for `B = S ⊗[R] A`.
 - `KaehlerDifferential.isLocalizedModule_of_isLocalizedModule`:
   `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
-
 -/
 
 @[expose] public section
@@ -212,7 +211,7 @@ then `Ω[B⁄S]` is the base change of `Ω[A⁄R]` along `R → S`.
 -/
 lemma isBaseChange [h : Algebra.IsPushout R S A B] :
     IsBaseChange S ((map R S A B).restrictScalars R) := by
-  convert!
+  convert
     (TensorProduct.isBaseChange R Ω[A⁄R] S).comp
       (IsBaseChange.ofEquiv (tensorKaehlerEquivBase R S A B))
   refine LinearMap.ext fun x ↦ ?_

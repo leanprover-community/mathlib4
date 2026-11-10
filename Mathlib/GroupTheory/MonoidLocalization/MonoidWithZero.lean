@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.GroupTheory.MonoidLocalization.Maps
+
 import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
-
 -/
 
 @[expose] public section

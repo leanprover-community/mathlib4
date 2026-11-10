@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finsupp.WellFounded
 
 /-! # Monomial orders
 
@@ -51,7 +51,6 @@ and `MonomialOrder.lex_lt_iff` rewrite the ordering as comparisons in the type `
 
 In algebraic geometry, when the finitely many variables are indexed by integers,
 it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvPolynomial.X 1 > … `
-
 -/
 
 @[expose] public section

@@ -33,7 +33,6 @@ it does not exist).
 * `NumberField.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
 * `NumberField.dirichletDensity_nonneg` — the Dirichlet density is nonnegative.
 * `NumberField.dirichletDensity_le_one` — the Dirichlet density is at most `1`.
-
 -/
 
 public section
@@ -69,8 +68,7 @@ theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 �
     S.primeIdealZetaSum s ≤ S.ncard := by
   replace hS := hS.to_subtype
   grw [primeIdealZetaSum_def, Real.rpow_le_one_of_one_le_of_nonpos] <;>
-  simp [Summable.of_finite, Nat.one_le_iff_ne_zero,
-    Ideal.absNorm_eq_zero_iff, hs, HeightOneSpectrum.ne_bot]
+  simp [Summable.of_finite, Nat.one_le_iff_ne_zero, hs, HeightOneSpectrum.ne_bot]
 
 /-- `S` has Dirichlet density `δ` when the ratio of the partial sum over `S` to the sum over all
 nonzero prime ideals,

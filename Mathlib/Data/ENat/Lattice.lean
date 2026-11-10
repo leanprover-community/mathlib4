@@ -6,8 +6,9 @@ Authors: Yury Kudryashov, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Data.ENat.SuccOrder
+public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 public import Mathlib.Order.Lattice.Nat
+public import Mathlib.Order.SuccPred.ENat
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -16,7 +17,6 @@ This instance is not in `Data.ENat.Basic` to avoid dependency on `Finset`s.
 
 We also restate some lemmas about `WithTop` for `ENat` to have versions that use `Nat.cast` instead
 of `WithTop.some`.
-
 -/
 
 public section

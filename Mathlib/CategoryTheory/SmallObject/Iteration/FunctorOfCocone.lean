@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 Given a functor `F : Set.Iio j ⥤ C` and `c : Cocone F`, we define
 an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
-
 -/
 
 @[expose] public section
@@ -68,7 +67,6 @@ lemma map_id (i : J) (hi : i ≤ j) :
   dsimp [map]
   grind
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (hi₃ : i₃ ≤ j) :
     map c i₁ i₃ (hi.trans hi') hi₃ =
       map c i₁ i₂ hi (hi'.trans hi₃) ≫

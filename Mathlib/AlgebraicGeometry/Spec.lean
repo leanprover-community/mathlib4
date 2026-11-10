@@ -5,8 +5,8 @@ Authors: Kim Morrison, Justus Springer
 -/
 module
 
-public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.AlgebraicGeometry.StructureSheaf
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.
@@ -27,7 +27,6 @@ a forgetful functor.
 ## Related results
 
 The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaSpecAdjunction.lean`.
-
 -/
 
 @[expose] public section

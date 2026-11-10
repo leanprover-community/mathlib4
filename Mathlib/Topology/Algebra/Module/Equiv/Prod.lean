@@ -17,7 +17,6 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 * `prodProdProdComm`: `LinearEquiv.prodProdProdComm` as a continuous linear equivalence.
 * `prodUnique`: `Equiv.prodUnique` as a continuous linear equivalence.
 * `uniqueProd`: `Equiv.uniqueProd` as a continuous linear equivalence.
-
 -/
 
 @[expose] public section
@@ -69,6 +68,9 @@ def prodComm : (M₁ × M₂) ≃L[R] M₂ × M₁ where
 
 @[simp] lemma prodComm_symm : (prodComm R M₁ M₂).symm = prodComm R M₂ M₁ := rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm R M₁ M₂).trans (prodComm R M₂ M₁) = .refl _ _ := rfl
+
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem _root_.ContinuousLinearMap.coprod_comp_prodComm
     [ContinuousAdd M₃] (f : M₁ →L[R] M₃) (g : M₂ →L[R] M₃) :
@@ -112,6 +114,7 @@ section prodProdProdComm
 
 variable (R M₁ M₂ M₃ M₄)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product of topological modules is four-way commutative up to continuous linear isomorphism.
 This is `LinearEquiv.prodProdProdComm` prodAssoc as a continuous linear equivalence. -/
 def prodProdProdComm : ((M₁ × M₂) × M₃ × M₄) ≃L[R] (M₁ × M₃) × M₂ × M₄ where

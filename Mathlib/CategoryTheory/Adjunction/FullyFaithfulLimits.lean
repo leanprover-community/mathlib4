@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Limits
+
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Preservation of colimits and reflective adjunctions
@@ -17,7 +18,6 @@ We show that if colimits of shape `J` exist in `C`, then a functor
 
 In particular, a functor from a category of sheaves preserves colimits
 iff it does so after precomposition with the sheafification functor.
-
 -/
 
 public section
@@ -35,7 +35,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 include adj
 
-set_option backward.defeqAttrib.useBackward true in
 lemma preservesColimitsOfShape_iff (J : Type u) [Category.{v} J]
     [HasColimitsOfShape J C] [G.Full] [G.Faithful] :
     PreservesColimitsOfShape J H ↔ PreservesColimitsOfShape J (F ⋙ H) := by

@@ -19,7 +19,6 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
   "fibered colimits", i.e. of applying the colimit to each fiber of the functor.
 * Derives `HasColimitsOfShape (Grothendieck F) H` with `F : C ⥤ Cat` from the presence of colimits
   on each fiber shape `F.obj X` and on the base category `C`.
-
 -/
 
 @[expose] public section
@@ -83,7 +82,6 @@ def fiberwiseColimit : C ⥤ H where
       conv_rhs => enter [2, 1]; rw [eqToHom_map (F.map (𝟙 Z)).toFunctor]
       conv_rhs => rw [eqToHom_trans, eqToHom_trans]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (H) (F) in
 /-- Similar to `colimit` and `colim`, taking fiberwise colimits is a functor

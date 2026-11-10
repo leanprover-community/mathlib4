@@ -37,7 +37,6 @@ TODO (@joelriou):
   `ComposableArrows C n ⥤ ComposableArrows C m` which correspond to simplicial operations
   (specifically faces) with good definitional properties (this might be necessary for
   up to `n = 7` in order to formalize spectral sequences following Verdier)
-
 -/
 
 @[expose] public section
@@ -1067,7 +1066,6 @@ def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `(G.mapComposableArrows 1).obj (.mk₁ f)` and
 `.mk₁ (G.map f)`. -/
 @[implicit_reducible, simps!]
@@ -1075,7 +1073,6 @@ def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
     (G.mapComposableArrows 1).obj (.mk₁ f) ≅ .mk₁ (G.map f) :=
   isoMk₁ (Iso.refl _) (Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
 `.mk₂ (G.map f) (G.map g)`. -/
 @[implicit_reducible, simps!]

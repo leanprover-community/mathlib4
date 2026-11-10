@@ -6,6 +6,7 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
+
 import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
@@ -27,7 +28,6 @@ https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injective
 ## TODO
 
 * Reimplement `injectiveSeminorm`.
-
 -/
 
 @[expose] public section

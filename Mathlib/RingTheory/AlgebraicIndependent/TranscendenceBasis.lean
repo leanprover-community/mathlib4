@@ -28,7 +28,6 @@ This file defines the transcendence basis as a maximal algebraically independent
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
-
 -/
 
 @[expose] public section
@@ -183,7 +182,7 @@ theorem IsTranscendenceBasis.polynomial [Nonempty ι] [Subsingleton ι] :
   have := (nonempty_unique ι).some
   refine (isTranscendenceBasis_equiv (Equiv.equivPUnit.{_, 1} _).symm).mp <|
     (MvPolynomial.uniqueAlgEquiv R PUnit).symm.isTranscendenceBasis_iff.mp ?_
-  convert! IsTranscendenceBasis.mvPolynomial PUnit R
+  convert IsTranscendenceBasis.mvPolynomial PUnit R
   ext; simp
 
 variable {ι R}
