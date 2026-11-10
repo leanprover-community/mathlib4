@@ -14,7 +14,6 @@ In this file we define various instances related to scalar multiplications for `
 
 Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
 typeclass searches.
-
 -/
 
 public section
