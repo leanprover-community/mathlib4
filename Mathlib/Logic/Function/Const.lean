@@ -166,10 +166,6 @@ variable {α : Type*}
 
 /-- A function is constant on a set `s` if it takes equal values at any two points of `s`.
 
-Note that every function is constant on the empty set, and more generally on any subsingleton.
-A function is constant on `Set.univ` if and only if it is `Function.IsConst`,
-see `isConstOn_univ`.
-
 The intended use is for expressing that a function is constant on `s` when the exact constant
 value is not known, not unique or not easy to express. To state the constant value explicitly,
 use `Set.EqOn f (Function.const α b) s`. -/
@@ -228,12 +224,6 @@ theorem isConstOn_empty (f : α → β) : IsConstOn f ∅ :=
 @[simp]
 theorem isConstOn_singleton (f : α → β) (a : α) : IsConstOn f {a} :=
   .of_subsingleton (Set.subsingleton_singleton) f
-
-/-- All functions to a subsingleton codomain are constant on any set. -/
-@[simp]
-theorem IsConstOn.of_subsingleton_codomain [Subsingleton β] (f : α → β) (s : Set α) :
-    IsConstOn f s :=
-  (IsConst.of_subsingleton_codomain f).isConstOn
 
 theorem IsConstOn.of_forall_eq {f : α → β} {s : Set α} (b : β) (h : ∀ x ∈ s, f x = b) :
     IsConstOn f s :=
