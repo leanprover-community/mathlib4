@@ -313,7 +313,7 @@ theorem _root_.MeasurableEmbedding.integrableOn_range_iff_comap [MeasurableSpace
 
 theorem integrableOn_iff_comap_subtypeVal (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ Integrable (f ∘ (↑) : s → ε) (μ.comap (↑)) := by
-  rw [← (MeasurableEmbedding.subtype_coe hs).integrableOn_range_iff_comap, Subtype.range_val]
+  rw [← (MeasurableEmbedding.subtypeVal hs).integrableOn_range_iff_comap, Subtype.range_val]
 
 theorem integrableOn_map_equiv [MeasurableSpace β] (e : α ≃ᵐ β) {f : β → ε} {μ : Measure α}
     {s : Set β} : IntegrableOn f s (μ.map e) ↔ IntegrableOn (f ∘ e) (e ⁻¹' s) μ := by

@@ -157,7 +157,7 @@ lemma aestronglyMeasurable_id_of_isSeparable [TopologicalSpace α]
     · simp [Function.extend_val_apply, hx]
     · simp [hx]
   rw [this]
-  exact (MeasurableEmbedding.subtype_coe isClosed_closure.measurableSet).stronglyMeasurable_extend
+  exact (MeasurableEmbedding.subtypeVal isClosed_closure.measurableSet).stronglyMeasurable_extend
     h stronglyMeasurable_const
 
 namespace AEStronglyMeasurable

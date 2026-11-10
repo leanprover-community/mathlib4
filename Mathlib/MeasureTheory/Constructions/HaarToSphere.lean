@@ -66,7 +66,7 @@ variable [BorelSpace E]
 theorem toSphere_apply' {s : Set (sphere (0 : E) 1)} (hs : MeasurableSet s) :
     μ.toSphere s = dim E * μ (Ioo (0 : ℝ) 1 • ((↑) '' s)) := by
   rw [toSphere, smul_apply, fst_apply hs, restrict_apply (measurable_fst hs),
-    ((MeasurableEmbedding.subtype_coe (measurableSet_singleton _).compl).comp
+    ((MeasurableEmbedding.subtypeVal (measurableSet_singleton _).compl).comp
       (Homeomorph.measurableEmbedding _)).comap_apply,
     image_comp, Homeomorph.image_symm, univ_prod, ← Set.prod_eq, nsmul_eq_mul, toSphere_apply_aux]
 

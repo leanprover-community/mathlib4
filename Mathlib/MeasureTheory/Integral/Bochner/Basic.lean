@@ -1132,7 +1132,7 @@ theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : 
     (hs : MeasurableSet s) (f : α → G) :
     ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) = ∫ x in s, f x ∂μ := by
   rw [← map_comap_subtypeVal hs]
-  exact ((MeasurableEmbedding.subtype_coe hs).integral_map _).symm
+  exact ((MeasurableEmbedding.subtypeVal hs).integral_map _).symm
 
 attribute [local instance] Measure.Subtype.measureSpace in
 theorem integral_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (f : α → G) :

@@ -1187,7 +1187,7 @@ theorem lintegral_image_eq_lintegral_abs_det_fderiv_mul (hs : MeasurableSet s)
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).lintegral_map]
   simp only [Set.domRestrict_apply, ← Function.comp_apply (f := g)]
-  rw [← (MeasurableEmbedding.subtype_coe hs).lintegral_map, map_comap_subtypeVal hs,
+  rw [← (MeasurableEmbedding.subtypeVal hs).lintegral_map, map_comap_subtypeVal hs,
     setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ _ _ _ hs]
   · simp only [Pi.mul_apply]
   · simp only [eventually_true, ENNReal.ofReal_lt_top]
@@ -1203,7 +1203,7 @@ theorem integrableOn_image_iff_integrableOn_abs_det_fderiv_smul (hs : Measurable
   rw [IntegrableOn, ← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).integrable_map_iff]
   simp only [Set.domRestrict_eq, ← Function.comp_assoc, ENNReal.ofReal]
-  rw [← (MeasurableEmbedding.subtype_coe hs).integrable_map_iff, map_comap_subtypeVal hs,
+  rw [← (MeasurableEmbedding.subtypeVal hs).integrable_map_iff, map_comap_subtypeVal hs,
     restrict_withDensity hs, integrable_withDensity_iff_integrable_coe_smul₀]
   · simp_rw [IntegrableOn, Real.coe_toNNReal _ (abs_nonneg _), Function.comp_apply]
   · exact aemeasurable_toNNReal_abs_det_fderivWithin μ hs hf'
@@ -1217,7 +1217,7 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).integral_map]
   simp only [Set.domRestrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
-  rw [← (MeasurableEmbedding.subtype_coe hs).integral_map, map_comap_subtypeVal hs,
+  rw [← (MeasurableEmbedding.subtypeVal hs).integral_map, map_comap_subtypeVal hs,
     setIntegral_withDensity_eq_setIntegral_smul₀
       (aemeasurable_toNNReal_abs_det_fderivWithin μ hs hf') _ hs]
   congr with x

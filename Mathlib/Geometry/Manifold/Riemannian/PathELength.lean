@@ -123,7 +123,7 @@ lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {a b : ℝ}
   have : MeasurePreserving (Subtype.val : Icc a b → ℝ) volume
     (volume.restrict (Icc a b)) := measurePreserving_subtypeVal measurableSet_Icc
   rw [← MeasurePreserving.lintegral_comp_emb this
-    (MeasurableEmbedding.subtype_coe measurableSet_Icc)]
+    (MeasurableEmbedding.subtypeVal measurableSet_Icc)]
   congr
   ext t
   have : t = projIcc a b h.out.le (t : ℝ) := by simp

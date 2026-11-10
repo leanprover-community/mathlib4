@@ -74,7 +74,7 @@ protected theorem limUnder [hE : Nonempty E] [IsCompletelyMetrizableSpace E]
     · rw [Function.extend_val_apply hx]
     · rw [Function.extend_val_apply' hx, limUnder_of_not_tendsto hx]
   rw [this]
-  exact (MeasurableEmbedding.subtype_coe mconv).stronglyMeasurable_extend hconv
+  exact (MeasurableEmbedding.subtypeVal mconv).stronglyMeasurable_extend hconv
     stronglyMeasurable_const
 
 end MeasureTheory.StronglyMeasurable

@@ -172,7 +172,7 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
   rw [← (AddCircle.measurePreserving_mk T t).map_eq]
   convert this.symm using 1
   · rw [← map_comap_subtypeVal m _]
-    exact MeasurableEmbedding.lintegral_map (MeasurableEmbedding.subtype_coe m) _
+    exact MeasurableEmbedding.lintegral_map (MeasurableEmbedding.subtypeVal m) _
   · congr 1
     have : ((↑) : Ioc t (t + T) → AddCircle T) = ((↑) : ℝ → AddCircle T) ∘ ((↑) : _ → ℝ) := by
       ext1 x; rfl

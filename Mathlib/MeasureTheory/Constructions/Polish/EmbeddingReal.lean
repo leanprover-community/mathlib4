@@ -60,7 +60,7 @@ theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s �
 /-- Any standard Borel space embeds measurably into the reals. -/
 theorem exists_measurableEmbedding_real : ∃ f : α → ℝ, MeasurableEmbedding f := by
   obtain ⟨s, hs, ⟨e⟩⟩ := exists_subset_real_measurableEquiv α
-  exact ⟨(↑) ∘ e, (MeasurableEmbedding.subtype_coe hs).comp e.measurableEmbedding⟩
+  exact ⟨(↑) ∘ e, (MeasurableEmbedding.subtypeVal hs).comp e.measurableEmbedding⟩
 
 /-- A measurable embedding of a standard Borel space into `ℝ`. -/
 noncomputable

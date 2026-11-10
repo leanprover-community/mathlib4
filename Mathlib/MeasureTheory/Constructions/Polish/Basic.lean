@@ -590,7 +590,7 @@ theorem measurableSet_preimage_iff_inter_range {f : X → Z} [CountablySeparated
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
   rw [hf.measurableSet_preimage_iff_preimage_val, inter_comm,
-    ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
+    ← (MeasurableEmbedding.subtypeVal hr).measurableSet_image, Subtype.image_preimage_coe]
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space
 to a countably separated measurable space,
@@ -872,7 +872,7 @@ theorem ContinuousOn.measurableEmbedding [BorelSpace β]
     measurableSet_image' := by
       intro u hu
       have A : MeasurableSet (((↑) : s → γ) '' u) :=
-        (MeasurableEmbedding.subtype_coe hs).measurableSet_image.2 hu
+        (MeasurableEmbedding.subtypeVal hs).measurableSet_image.2 hu
       have B : MeasurableSet (f '' ((↑) : s → γ) '' u) :=
         A.image_of_continuousOn_injOn (f_cont.mono (Subtype.coe_image_subset s u))
           (f_inj.mono (Subtype.coe_image_subset s u))
