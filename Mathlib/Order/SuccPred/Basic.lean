@@ -464,7 +464,7 @@ theorem Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioo a (succ b) = Ioc a b 
 theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
     succ a = succ b ↔ a = b := by
   rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha,
-    succ_lt_succ_iff_of_not_isMax ha hb]
+    succ_lt_succ_iff_of_not_isMax hb]
 
 @[to_dual pred_le_iff_eq_or_le]
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
