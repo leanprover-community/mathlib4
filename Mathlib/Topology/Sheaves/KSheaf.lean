@@ -121,17 +121,17 @@ end KPresheaf
 
 variable [T2Space X]
 
-variable (X A) in
+variable (A X) in
 /-- The object property of being a K-sheaf -/
-abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := fun P ↦ P.IsKSheaf
+abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := IsKSheaf
 
-variable (X A) in
+variable (A X) in
 /-- The category of K-sheaves taking values in `A` on a T2-Space. -/
 abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
 
 namespace KSheaf
 
-/-- If `P` is a K-sheaf, its the evidence that for any `K` a compact subset of `X`,
+/-- If `P` is a K-sheaf, this is the evidence that for any `K` a compact subset of `X`,
  `P.obj.coconeOfCompacts K` is a colimit cocone
 -/
 @[no_expose]
@@ -151,8 +151,7 @@ noncomputable def descOfOpenClosure (P : KSheaf A X) (K : Compacts X) {Z : A}
 lemma hom_ext_of_compacts (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op K) ⟶ W}
     (w : ∀ V, dsimp% (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f =
     (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f') : f = f' :=
-  ((Functor.Final.isColimitWhiskerEquiv K.openRcNhdsToCompactNhds_mono.functor.op _).symm
-    (P.isColimit K)).hom_ext w
+  KPresheaf.hom_ext_of_isColimit_coconeOfCompacts _ (P.isColimit K) w
 
 end KSheaf
 
