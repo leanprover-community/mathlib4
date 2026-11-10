@@ -35,8 +35,8 @@ section CommRing
 variable [CommRing R]
 
 theorem Subsemiring.IsPreordering.sumSq [IsSemireal R] : (Subsemiring.sumSq R).IsPreordering where
-  mem_of_isSquare h := by grind [membership, Subsemiring.mem_sumSq, IsSquare.isSumSq]
-  neg_one_notMem := by grind [membership, Subsemiring.mem_sumSq, IsSemireal.not_isSumSq_neg_one]
+  mem_of_isSquare h := by grind [membership]
+  neg_one_notMem := by grind [membership, IsSemireal.not_isSumSq_neg_one]
 
 variable {R} in
 theorem Subsemiring.IsPreordering.isSemireal {P : Subsemiring R} (hP : P.IsPreordering) :
@@ -54,4 +54,4 @@ instance [Field R] [IsSemireal R] : IsFormallyReal R :=
   .of_eq_zero_of_eq_zero_of_mul_self_add <| fun {s} {a} _ h ↦ by
     by_contra
     apply IsSemireal.one_add_ne_zero (s := s * a⁻¹ ^ 2) <;>
-      grind [inv_pow, IsSumSq.mul, IsSquare.isSumSq, isSquare_inv, IsSquare.sq]
+      grind [inv_pow]
