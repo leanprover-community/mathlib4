@@ -60,7 +60,7 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
     simp only [ContinuousMap.coe_add, ← map_add, diagonal_add, Function.comp_apply]
     rfl
   commutes' r := by
-    simp only [Function.comp_def, algebraMap_apply, smul_eq_mul, mul_one]
+    simp only [Function.comp_def, ContinuousMap.algebraMap_apply, smul_eq_mul, mul_one]
     rw [← mul_one (algebraMap _ _ _), ← coe_mul_star_self hA.eigenvectorUnitary,
       ← Algebra.left_comm, coe_star, ← mul_assoc, conjStarAlgAut_apply]
     rfl
