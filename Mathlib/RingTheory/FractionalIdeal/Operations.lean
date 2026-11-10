@@ -550,17 +550,18 @@ def spanFinset {ι : Type*} (s : Finset ι) (f : ι → K) : FractionalIdeal R�
       rw [smul_comm]
       exact IsLocalization.isInteger_smul hx⟩
 
-@[simp] lemma spanFinset_coe {ι : Type*} (s : Finset ι) (f : ι → K) :
+@[simp] lemma coeToSubmodule_spanFinset {ι : Type*} (s : Finset ι) (f : ι → K) :
     (spanFinset R₁ s f : Submodule R₁ K) = Submodule.span R₁ (f '' s) :=
   rfl
+
+@[deprecated (since := "2026-11-10")] alias spanFinset_coe := coeToSubmodule_spanFinset
 
 variable {R₁}
 
 @[simp]
 theorem spanFinset_eq_zero {ι : Type*} {s : Finset ι} {f : ι → K} :
     spanFinset R₁ s f = 0 ↔ ∀ j ∈ s, f j = 0 := by
-  simp only [← coeToSubmodule_inj, spanFinset_coe, coeToSubmodule_zero, Submodule.span_eq_bot,
-    Set.mem_image, Finset.mem_coe, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  simp [← coeToSubmodule_inj]
 
 theorem spanFinset_ne_zero {ι : Type*} {s : Finset ι} {f : ι → K} :
     spanFinset R₁ s f ≠ 0 ↔ ∃ j ∈ s, f j ≠ 0 := by simp
@@ -934,10 +935,12 @@ def adjoinIntegral (hx : IsIntegral R x) : FractionalIdeal S P :=
   ⟨_, isFractional_adjoin_integral S x hx⟩
 
 @[simp]
-theorem adjoinIntegral_coe (hx : IsIntegral R x) :
+theorem coeToSubmodule_adjoinIntegral (hx : IsIntegral R x) :
     (adjoinIntegral S x hx : Submodule R P) =
       (Subalgebra.toSubmodule (Algebra.adjoin R ({x} : Set P))) :=
   rfl
+
+@[deprecated (since := "2026-11-10")] alias adjoinIntegral_coe := coeToSubmodule_adjoinIntegral
 
 theorem mem_adjoinIntegral_self (hx : IsIntegral R x) : x ∈ adjoinIntegral S x hx :=
   Algebra.subset_adjoin (Set.mem_singleton x)
