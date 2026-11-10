@@ -118,7 +118,7 @@ lemma edgeFinset_eq_empty : G.edgeFinset = ∅ ↔ G = ⊥ := by
 
 @[simp]
 lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
-  rw [← Finset.ne_empty_iff_nonempty, edgeFinset_eq_empty.ne]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
   Set.toFinset_card _

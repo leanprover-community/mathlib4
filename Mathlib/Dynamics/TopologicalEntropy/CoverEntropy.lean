@@ -255,8 +255,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ coverMincard T F U n ↔ F.Nonempty := by
-  rw [Order.one_le_iff_ne_zero, ← ne_empty_iff_nonempty, not_iff_not]
-  exact coverMincard_eq_zero_iff T F U n
+  simp [Order.one_le_iff_ne_zero, coverMincard_eq_zero_iff]
 
 lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     coverMincard T F U 0 = 1 := by

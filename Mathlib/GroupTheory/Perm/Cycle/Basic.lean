@@ -981,9 +981,8 @@ def subtypePerm_of_support_le (c : Perm α) {s : Finset α}
 
 /-- Support of a cycle is nonempty -/
 theorem IsCycle.nonempty_support {g : Perm α} (hg : g.IsCycle) :
-    g.support.Nonempty := by
-  rw [← Finset.ne_empty_iff_nonempty, ne_eq, support_eq_empty_iff]
-  exact IsCycle.ne_one hg
+    g.support.Nonempty :=
+  let ⟨x, hx, _⟩ := hg; ⟨x, mem_support.2 hx⟩
 
 /-- Centralizer of a cycle is a power of that cycle on the cycle -/
 theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :

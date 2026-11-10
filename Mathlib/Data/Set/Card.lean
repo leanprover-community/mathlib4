@@ -110,10 +110,10 @@ theorem coe_fintypeCard [Fintype s] : Fintype.card s = s.encard := by
   rw [encard_eq_zero]
 
 theorem nonempty_of_encard_ne_zero (h : s.encard ≠ 0) : s.Nonempty := by
-  rwa [← ne_empty_iff_nonempty, Ne, ← encard_eq_zero]
+  simpa using h
 
 theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
-  rw [ne_eq, encard_eq_zero, ← ne_empty_iff_nonempty]
+  simp
 
 @[simp] theorem encard_pos : 0 < s.encard ↔ s.Nonempty := by
   rw [pos_iff_ne_zero, encard_ne_zero]
@@ -708,7 +708,7 @@ theorem ncard_le_card [Finite α] (s : Set α) : s.ncard ≤ Nat.card α :=
   rw [ncard_eq_zero]
 
 theorem ncard_pos (hs : s.Finite := by toFinite_tac) : 0 < s.ncard ↔ s.Nonempty := by
-  rw [pos_iff_ne_zero, Ne, ncard_eq_zero hs, ← ne_empty_iff_nonempty]
+  simp [pos_iff_ne_zero, ncard_eq_zero hs]
 
 protected alias ⟨_, Nonempty.ncard_pos⟩ := ncard_pos
 
@@ -1118,9 +1118,8 @@ theorem ncard_sdiff_add_ncard (s t : Set α) (hs : s.Finite := by toFinite_tac)
 @[deprecated (since := "2026-06-03")] alias ncard_diff_add_ncard := ncard_sdiff_add_ncard
 
 theorem sdiff_nonempty_of_ncard_lt_ncard (h : s.ncard < t.ncard)
-    (hs : s.Finite := by toFinite_tac) : (t \ s).Nonempty := by
-  rw [← Set.ne_empty_iff_nonempty, Ne, sdiff_eq_empty]
-  exact fun h' ↦ h.not_ge (ncard_le_ncard h' hs)
+    (hs : s.Finite := by toFinite_tac) : (t \ s).Nonempty :=
+  sdiff_nonempty.2 fun h' ↦ h.not_ge (ncard_le_ncard h' hs)
 
 @[deprecated (since := "2026-06-03")]
 alias diff_nonempty_of_ncard_lt_ncard := sdiff_nonempty_of_ncard_lt_ncard
