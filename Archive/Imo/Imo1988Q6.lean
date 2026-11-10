@@ -119,8 +119,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
       solve_by_elim
   -- To finish the main proof, we need to show that the exceptional locus is nonempty.
   -- So we assume that the exceptional locus is empty, and work towards deriving a contradiction.
-  rw [← Set.ne_empty_iff_nonempty]
-  intro exceptional_empty
+  by_contra! exceptional_empty
   -- Observe that S is nonempty.
   have S_nonempty : S.Nonempty := by
     -- It contains the image of p.
