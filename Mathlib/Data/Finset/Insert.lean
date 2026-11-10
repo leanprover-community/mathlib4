@@ -30,7 +30,6 @@ all ways to construct a `Finset` by adding one element.
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

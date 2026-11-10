@@ -16,7 +16,6 @@ import Mathlib.Tactic.NormNum
 # The fixed submodule of a linear map
 
 - `LinearMap.fixedSubmodule`: the submodule of a linear map consisting of its fixed points.
-
 -/
 
 @[expose] public section

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Galois.Action
 
 /-!
-
 # Fiber functors are (faithfully) full
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
@@ -25,7 +24,6 @@ follows easily from the faithfulness of `F`. In this file we show that `H` is al
 The main input for this is that the induced functor `H : C ⥤ Action FintypeCat (Aut F)`
 preserves connectedness, which translates to the fact that `Aut F` acts transitively on
 the fibers of connected objects.
-
 -/
 
 public section

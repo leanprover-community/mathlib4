@@ -18,7 +18,6 @@ import Mathlib.Algebra.Category.ModuleCat.Projective
 In this file, we proved that projective dimension equal to supremum over localizations
 
 ## Main definition and results
-
 -/
 
 public section

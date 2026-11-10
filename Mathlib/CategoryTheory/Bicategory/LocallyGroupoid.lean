@@ -24,7 +24,6 @@ through the inclusion from `Pith B` to `B` (see
 
 ## References
 - [Kerodon, section 1.2.2](https://kerodon.net/tag/02GD).
-
 -/
 
 @[expose] public section

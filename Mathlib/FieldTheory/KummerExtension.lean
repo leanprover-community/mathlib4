@@ -53,7 +53,6 @@ TODO: treat the case where the characteristic `p` of the field divides `n`, so t
 contains a primitive `n`-th root of unity.
 For the Galois group part, this is Artin-Schreier theory;
 it also holds that `X ^ p - C a` is irreducible iff `a` is not a `p`-th power in `K`.
-
 -/
 
 @[expose] public section

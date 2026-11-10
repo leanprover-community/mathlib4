@@ -25,7 +25,6 @@ The factorization map is `AlgebraicGeometry.Scheme.Hom.normalizationDesc`, and t
 is `AlgebraicGeometry.Scheme.Hom.normalization.hom_ext`.
 
 We also show that normalization commutes with disjoint unions and smooth base change.
-
 -/
 
 @[expose] public noncomputable section

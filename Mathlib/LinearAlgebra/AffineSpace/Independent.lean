@@ -29,7 +29,6 @@ This file defines affinely independent families of points.
 ## References
 
 * https://en.wikipedia.org/wiki/Affine_space
-
 -/
 
 @[expose] public section

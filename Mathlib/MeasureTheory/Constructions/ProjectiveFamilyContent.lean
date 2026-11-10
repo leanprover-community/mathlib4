@@ -31,7 +31,6 @@ the Kolmogorov extension theorem.
 
 * `projectiveFamilyContent`: additive content on the measurable cylinders, defined from a projective
   family of measures.
-
 -/
 
 @[expose] public section

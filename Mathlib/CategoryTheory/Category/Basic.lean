@@ -28,7 +28,6 @@ Users may like to add `g ⊚ f` for composition in the standard convention, usin
 ```lean
 local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    -- type as \oo
 ```
-
 -/
 
 @[expose] public section
@@ -165,7 +164,6 @@ Implementation notes:
 * `apply_rfl`:
   `rfl` is a macro that attempts both `eq_refl` and `apply_rfl`. Since `apply_rfl`
   subsumes `eq_refl`, we can use `apply_rfl` instead. This fails twice as fast as `rfl`.
-
 -/
 macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; apply_rfl))
 

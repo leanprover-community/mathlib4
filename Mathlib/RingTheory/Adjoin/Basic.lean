@@ -20,7 +20,6 @@ This file contains basic results on `Algebra.adjoin`.
 ## Tags
 
 adjoin, algebra
-
 -/
 
 public section

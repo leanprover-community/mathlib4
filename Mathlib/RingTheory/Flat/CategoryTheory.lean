@@ -25,7 +25,6 @@ In this file we prove that tensoring with a flat module is an exact functor.
 ## TODO
 
 - Relate flatness with `Tor`
-
 -/
 
 public section

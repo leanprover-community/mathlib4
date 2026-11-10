@@ -22,7 +22,6 @@ are also discrete, both in the form of explicit equivalences and through the
   and `Discrete J ⊕ Discrete K`.
 * `IsDiscrete.prod`: an `IsDiscrete` instance on the product of two discrete categories.
 * `IsDiscrete.sum`: an `IsDiscrete` instance on the sum of two discrete categories.
-
 -/
 
 @[expose] public section

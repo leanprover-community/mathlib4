@@ -17,7 +17,6 @@ This file defines the edge cuts and bridges of a graph.
 * `IsEdgeCut`: a set of edges between a set of vertices and its complement.
 * `IsBridge`: an edge that forms a singleton edge cut (an isthmus / bridge edge).
 * `IsBond`: a bond of a graph is a minimal nonempty edge cut.
-
 -/
 
 public section

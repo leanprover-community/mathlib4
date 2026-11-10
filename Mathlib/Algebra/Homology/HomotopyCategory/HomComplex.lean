@@ -31,7 +31,6 @@ We follow the signs conventions appearing in the introduction of
 
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
-
 -/
 
 @[expose] public section
@@ -236,7 +235,6 @@ It is advisable to use a `p₂` that has good definitional properties
 
 When `z₁` or `z₂` is a `0`-cochain, there is a better choice of `p₂`, and this leads
 to the two simplification lemmas `comp_zero_cochain_v` and `zero_cochain_comp_v`.
-
 -/
 
 lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
@@ -991,7 +989,7 @@ noncomputable def HomComplex.Cocycle.isKernel' (hm : n + 1 = m) :
     IsLimit (KernelFork.ofι (f := (linearHomComplex R K L).d n m)
       (ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L _)) (by cat_disch)) :=
   isLimitOfReflects (forget₂ _ (AddCommGrpCat.{v}))
-    ((KernelFork.isLimitMapConeEquiv ..).2 (Cocycle.isKernel K L n m hm))
+    ((KernelFork.isLimitMapConeEquiv ..).invFun (Cocycle.isKernel K L n m hm))
 
 variable (R K L) in
 lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
@@ -999,6 +997,6 @@ lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
     dsimp% (((Cocycle.isKernel' R K L m p hp).lift
       (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp))) x).1 = δ n m x :=
   congr($((Cocycle.isKernel' R K L m p hp).fac
-      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).1 x)
+      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).hom' x)
 
 end CochainComplex
