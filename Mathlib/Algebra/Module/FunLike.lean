@@ -72,4 +72,6 @@ protected theorem moduleIsTorsionFree [Module M F] [IsSMulApply M F]
     [Module.IsTorsionFree M β] : Module.IsTorsionFree M F :=
   DFunLike.coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
 
+end ModuleInstance
+
 end FunLike
