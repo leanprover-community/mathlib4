@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Category.Bipointed
 public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.Hom.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of bounded orders
 
@@ -41,6 +44,11 @@ instance : CoeSort BddOrd Type* :=
 /-- Construct a bundled `BddOrd` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `BddOrd.of X` as `↧X`. -/
+@[app_delab BddOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 /-- The type of morphisms in `BddOrd R`. -/
 @[ext]

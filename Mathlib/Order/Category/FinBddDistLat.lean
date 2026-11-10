@@ -9,6 +9,9 @@ public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Category.BddDistLat
 public import Mathlib.Order.Category.FinPartOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite bounded distributive lattices
 
@@ -43,6 +46,11 @@ attribute [instance] FinBddDistLat.isFintype
 /-- Construct a bundled `FinBddDistLat` from a `Fintype` `BoundedOrder` `DistribLattice`. -/
 abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] [Fintype α] : FinBddDistLat where
   carrier := α
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FinBddDistLat.of X` as `↧X`. -/
+@[app_delab FinBddDistLat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 /-- Construct a bundled `FinBddDistLat` from a `Nonempty` `Fintype` `DistribLattice`. -/
 abbrev of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDistLat where
@@ -154,12 +162,12 @@ instance : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩
 
 instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := BddDistLat.ofHom f.hom
 
 instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
-  forget₂.obj X := .of X
-  forget₂.map f := ConcreteCategory.ofHom (OrderHomClass.toOrderHom f.hom)
+  forget₂.obj X := ↧X
+  forget₂.map f := ConcreteCategory.ofHom (.ofClass f.hom)
 
 /-- Constructs an equivalence between finite distributive lattices from an order isomorphism
 between them. -/

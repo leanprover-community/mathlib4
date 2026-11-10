@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.Immersion
-public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-! # Smooth embeddings
 
@@ -41,15 +40,12 @@ This will be useful to define embedded submanifolds.
   is a smooth embedding
 * `IsLocalDiffeomorph.isSmoothEmbedding`, `Diffeomorph.isSmoothEmbedding`:
   a local diffeomorphism (and in particular, a diffeomorphism) is a smooth embedding
-
 -/
 
 open scoped ContDiff
 open Topology
 
 public section
-
-noncomputable section
 
 namespace Manifold
 

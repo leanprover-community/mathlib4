@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Topology.Covering.AddCircle
-public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Maps on the unit circle
@@ -155,7 +155,7 @@ theorem mem_centeredArc_div {z : Circle} {s : ℝ} {n : ℕ} (hs : s ≤ π)
     contrapose! h2
     simp [centeredArc_eq_empty h2]
   have hn0 : n ≠ 0 := by
-    contrapose! h1
+    contrapose h1
     simp [h1]
   have hn : 1 ≤ (n : ℝ) := by simpa [Nat.one_le_iff_ne_zero]
   rw [mem_centeredArc ((div_le_self hs0.le hn).trans hs),
@@ -276,12 +276,12 @@ lemma disjoint_path_image_Ioc (h : x ≠ y) :
 
 lemma compl_path_image_Ioc (h : x ≠ y) : (path x y '' Ioc 0 1)ᶜ = path y x '' Ioc 0 1 :=
   (compl_subset_iff_union.mpr <| path_image_Ioc_union h).antisymm
-    <| (disjoint_path_image_Ioc h.symm).subset_compl_right
+    (disjoint_path_image_Ioc h.symm).subset_compl_right
 
 lemma compl_range_path (h : x ≠ y) : (range (path x y))ᶜ = path y x '' Ioo 0 1 := by
-  rw [range_path, ← Ioc_insert_left (by simp), image_insert_eq,
+  rw [range_path, ← insert_left_Ioc (by simp), image_insert_eq,
     ← path_image_Ioc_of_ne h, ← union_singleton, compl_union, compl_path_image_Ioc h,
-    ← Ioo_insert_right (by simp), image_insert_eq, (y.path x).target, exp_arg,
+    ← insert_right_Ioo (by simp), image_insert_eq, (y.path x).target, exp_arg,
     insert_inter_of_notMem (by simp), inter_eq_left]
   rintro z ⟨t, ht, rfl⟩
   exact (path_injective_of_ne h.symm).ne ht.2.ne |>.trans_eq (y.path x).target
@@ -296,8 +296,8 @@ lemma range_path_ssubset_univ (x y : Circle) : range (path x y) ⊂ univ := by
   linarith
 
 lemma range_path_inter_range_path (h : x ≠ y) : range (path x y) ∩ range (path y x) = {x, y} := by
-  rw [← image_univ, ← image_univ, unitInterval.univ_eq_Icc, ← Ioc_insert_left (by simp),
-    ← Ioo_insert_right (by simp)]
+  rw [← image_univ, ← image_univ, unitInterval.univ_eq_Icc, ← insert_left_Ioc (by simp),
+    ← insert_right_Ioo (by simp)]
   have h : Disjoint ((x.path y) '' Ioo 0 1) ((y.path x) '' Ioo 0 1) := by
     refine (disjoint_path_image_Ioc h).mono ?_ ?_ <;> exact image_mono Ioo_subset_Ioc_self
   grind [image_insert_eq]
@@ -448,7 +448,7 @@ open AddCircle
 
 theorem Circle.isAddQuotientCoveringMap_exp :
     IsAddQuotientCoveringMap exp (AddSubgroup.zmultiples (2 * π)) := by
-  convert! (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
+  convert (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
   on_goal 2 => simp
   ext; simp [homeomorphCircle_apply, toCircle]
 
@@ -468,7 +468,7 @@ theorem Circle.hasBasis_centeredArc_div_two_pow :
     (fun _ _ ↦ by positivity) (by simp) ?_
   simp_rw [div_eq_mul_inv, pow_succ, mul_inv_rev, ← mul_assoc]
   rw [← mul_zero (π * 2⁻¹)]
-  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by norm_num))
+  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by simp))
     |>.const_mul _
 
 theorem Circle.isOpen_centeredArc (r : ℝ) : IsOpen (centeredArc r) := by
@@ -502,13 +502,12 @@ theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
   refine Topology.IsQuotientMap.isQuotientCoveringMap_of_isDiscrete_ker_monoidHom
     (f := zpowGroupHom (α := Circle) n) ?_ (Set.Finite.isDiscrete <| .of_preimage ?_ e.surjective)
   · refine .of_comp e.continuous (continuous_zpow n) ?_
-    convert!
+    convert
       e.isQuotientMap.comp <|
         IsUnit.isQuotientMap_zsmul (M := ℝ) (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ)))
           isQuotientMap_quotient_mk' n hn
     ext; simp [zpowGroupHom, e, homeomorphCircle_apply, toCircle_zsmul]
-  · convert! finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
-    ext
+  · convert finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
     simp [e, homeomorphCircle_apply, ← toCircle_zsmul, ← (injective_toCircle one_ne_zero).eq_iff]
 
 theorem Circle.isQuotientCoveringMap_npow (n : ℕ) [NeZero n] :

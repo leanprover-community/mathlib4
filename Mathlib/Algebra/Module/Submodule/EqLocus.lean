@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Module.Submodule.Ker
 
 ## Tags
 linear algebra, vector space, module
-
 -/
 
 @[expose] public section
@@ -47,7 +46,7 @@ def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
       -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
-      simpa only [map_smulₛₗ _] using congr_arg (τ₁₂ r • ·) hx }
+      simpa only [map_smulₛₗ _] using congr(τ₁₂ r • $hx) }
 
 @[simp]
 theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ eqLocus f g ↔ f x = g x :=
@@ -78,7 +77,7 @@ include τ₁₂ in
 theorem eqOn_sup {f g : F} {S T : Submodule R M}
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
     Set.EqOn f g ↑(S ⊔ T) := by
-  rw [← LinearMap.coe_coe (f := f), ← LinearMap.coe_coe (f := g), ← le_eqLocus] at hS hT ⊢
+  rw [← LinearMap.coe_ofClass (f := f), ← LinearMap.coe_ofClass (f := g), ← le_eqLocus] at hS hT ⊢
   exact sup_le hS hT
 
 include τ₁₂ in

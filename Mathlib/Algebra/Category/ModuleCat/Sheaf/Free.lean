@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Colimits
-public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
+
+import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
 # Free sheaves of modules
@@ -22,7 +22,6 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
   into an adjunction between `freeFunctor` and the evaluation functor at `X`.
   (Alternatively, assuming specific universe parameters, we could show that
   `freeFunctor` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
-
 -/
 
 @[expose] public section
@@ -115,7 +114,7 @@ lemma sectionsMap_freeHomEquiv_symm_freeSection
   obtain ⟨f, rfl⟩ := (freeHomEquiv M).surjective f
   cat_disch
 
-@[reassoc (attr := simp)]
+@[map (attr := reassoc (attr := simp))]
 lemma ιFree_freeMap (i : I) :
     ιFree (R := R) i ≫ freeMap f = ιFree (f i) := by
   rw [← unitHomEquiv_symm_freeHomEquiv_apply, freeHomEquiv_freeMap]
@@ -138,7 +137,7 @@ lemma freeFunctor_obj (X : Type u) :
 lemma freeFunctor_map {X Y : Type u} (f : X ⟶ Y) :
     dsimp% (freeFunctor (R := R)).map f = freeMap f :=
   Cofan.IsColimit.hom_ext (isColimitFreeCofan _) _ _
-    (fun i ↦ (Sigma.ι_desc _ _).trans (ιFree_freeMap f i).symm)
+    (fun i ↦ (Sigma.ι_comp_desc _ _).trans (ιFree_freeMap f i).symm)
 
 instance : PreservesColimitsOfSize.{v₂, u₂} (freeFunctor (R := R)) :=
   inferInstanceAs (PreservesColimitsOfSize.{v₂, u₂} (sigmaConst.obj _))
@@ -206,15 +205,11 @@ lemma ιFree_mapFreeIso_hom (η : unit S ≅ F.obj (unit R)) (i : I) :
     ιFree i ≫ (mapFreeIso F I η).hom = η.hom ≫ F.map (ιFree i) :=
   ιFree_mapFree _ _ _ _
 
-@[deprecated (since := "2026-04-21")] alias ιFree_mapFree_inv := ιFree_mapFreeIso_hom
-
 @[reassoc (attr := simp)]
 lemma map_ιFree_mapFreeIso_inv (η : unit S ≅ F.obj (unit R)) (i : I) :
     F.map (ιFree i) ≫ (mapFreeIso F I η).inv = η.inv ≫ ιFree i :=
   IsColimit.ι_map (isColimitOfPreserves F (isColimitFreeCofan I)) (freeCofan I)
     (Discrete.natTrans fun _ ↦ η.inv) (Discrete.mk i)
-
-@[deprecated (since := "2026-04-21")] alias map_ιFree_mapFree_hom := map_ιFree_mapFreeIso_inv
 
 end
 

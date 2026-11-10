@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-!
 # The left lifting property is stable under transfinite composition
@@ -49,7 +48,6 @@ This is constructed by transfinite induction on `j`:
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
   `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
 * When `j` is a limit element, we use the "continuity" of `F`.
-
 -/
 
 @[expose] public section
@@ -108,7 +106,6 @@ include sq' in
 lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
   rw [← sq'.w₁, assoc, sq'.w₂, Cocone.w_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given `sq' : SqStruct c p f g j`, this is the commutative square
 ```
@@ -127,7 +124,6 @@ lemma sq [SuccOrder J] :
     CommSq sq'.f' (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g) where
   w := by simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `sqFunctor`. -/
 @[simps]
 def map {j' : J} (α : j' ⟶ j) : SqStruct c p f g j' where
@@ -159,7 +155,7 @@ noncomputable def liftHom : F.obj j ⟶ X :=
     (Cocone.mk _
       { app := fun i ↦ (s.1 ⟨i⟩).f'
         naturality i i' g := by
-          have := congr_arg SqStruct.f' (s.2 g.op)
+          have := congr(SqStruct.f' $(s.2 g.op))
           dsimp at this ⊢
           rw [this, comp_id] })
 
@@ -222,15 +218,14 @@ include hF hc
 
 variable {c f g} (sq : CommSq f (c.ι.app ⊥) p g)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasLift : sq.HasLift := by
   obtain ⟨s, hs⟩ := (wellOrderInductionData c f g hF).surjective { w₂ := sq.w, .. }
-  replace hs := congr_arg SqStruct.f' hs
+  replace hs := congr(SqStruct.f' $hs)
   dsimp at hs
   let t : Cocone F := Cocone.mk X
     { app j := (s.1 ⟨j⟩).f'
-      naturality j j' g := by simpa using congr_arg SqStruct.f' (s.2 g.op) }
+      naturality j j' g := by simpa using congr(SqStruct.f' $(s.2 g.op)) }
   let l := hc.desc t
   have hl (j : J) : c.ι.app j ≫ l = (s.1 ⟨j⟩).f' := hc.fac t j
   exact ⟨⟨{

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Category.Lat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of linear orders
 
@@ -21,6 +24,11 @@ open CategoryTheory
 universe u
 
 namespace LinOrd
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `LinOrd.of X` as `↧X`. -/
+@[app_delab LinOrd.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]
@@ -121,7 +129,7 @@ instance : Inhabited LinOrd :=
   ⟨of PUnit⟩
 
 instance hasForgetToLat : HasForget₂ LinOrd Lat where
-  forget₂.obj X := .of X
+  forget₂.obj X := ↧X
   forget₂.map f := Lat.ofHom (OrderHomClass.toLatticeHom _ _ f.hom)
 
 /-- Constructs an equivalence between linear orders from an order isomorphism between them. -/

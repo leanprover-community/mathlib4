@@ -5,12 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Basic.IsEmpty.Basic
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Basic
+
+import Mathlib.Basic.IsEmpty.Basic
 
 /-!
 # Injective functions
@@ -32,6 +32,7 @@ structure Embedding (α : Sort*) (β : Sort*) where
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
+@[macro_inline]
 instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
   coe_injective f g h := by { cases f; cases g; congr }
@@ -79,7 +80,7 @@ theorem toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
   rfl
 
 theorem toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
-  fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
+  fun _ _ h ↦ by rw [DFunLike.ext'_iff] at h ⊢; exact h
 
 instance coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
@@ -133,7 +134,7 @@ theorem coe_refl (α : Sort*) : ⇑(Embedding.refl α) = id := rfl
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : ⇑(f.trans g) = ⇑g ∘ ⇑f := rfl
 
 @[simp]
@@ -256,13 +257,15 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
     rintro ⟨⟩ ⟨⟩ _
     rfl⟩
 
-/-- The equivalence `one ↪ α` with `α`, for `Unique one`. -/
-def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
+/-- The equivalence `α ↪ β` with `β`, for `Unique α`. -/
+def _root_.Equiv.embeddingUnique {α β : Type*} [Unique α] : (α ↪ β) ≃ β where
   toFun f := f default
-  invFun a := {
-    toFun := fun _ ↦ a
+  invFun b := {
+    toFun := fun _ ↦ b
     inj' x y h := by simp [Unique.uniq inferInstance] }
   left_inv f := by ext; simp [Unique.uniq]
+
+@[deprecated (since := "2026-11-02")] alias oneEmbeddingEquiv := Equiv.embeddingUnique
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]

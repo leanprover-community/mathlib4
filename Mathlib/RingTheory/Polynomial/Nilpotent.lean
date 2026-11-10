@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.Algebra.Polynomial.Identities
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
@@ -20,10 +19,11 @@ This file is a place for results related to nilpotency in (single-variable) poly
 ## Main results:
 * `Polynomial.isNilpotent_iff`
 * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
-
 -/
 
 public section
+
+open AddMonoidAlgebra
 
 namespace Polynomial
 
@@ -81,7 +81,7 @@ protected lemma isNilpotent_iff :
       obtain ⟨k, hk⟩ := hpr
       replace hp : eval 0 p = 0 := by rwa [coeff_zero_eq_aeval_zero] at hp₀
       refine isNilpotent_C_iff.mpr ⟨k, ?_⟩
-      simpa [coeff_zero_eq_aeval_zero, hp] using congr_arg (fun q ↦ coeff q 0) hk
+      simpa [coeff_zero_eq_aeval_zero, hp] using congr(coeff $hk 0)
     rcases i with - | i
     · simpa [hp₀] using hr
     simp only [coeff_add, coeff_C_succ, add_zero]
@@ -138,7 +138,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
   constructor
   · refine .of_mul_eq_one (Q.coeff 0) ?_
     have h := (mul_coeff_zero P Q).symm
-    rwa [hQ, coeff_one_zero] at h
+    rwa [hQ, AddMonoidAlgebra.coeff_one_zero] at h
   · intro n hn
     rw [nilpotent_iff_mem_prime]
     intro I hI
@@ -190,9 +190,6 @@ theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
 
 instance : IsLocalHom (C : _ →+* Polynomial R) where
   map_nonunit := by simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
-
-instance : IsLocalHom (algebraMap R (Polynomial R)) :=
-  inferInstanceAs (IsLocalHom C)
 
 end CommRing
 

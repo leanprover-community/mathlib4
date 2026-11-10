@@ -5,12 +5,11 @@ Authors: Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Algebra.ContinuedFractions.Determinant
 public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.ContinuedFractions.Determinant
 public import Mathlib.Data.Nat.Fib.Basic
-public import Mathlib.Tactic.Monotonicity
-public import Mathlib.Tactic.GCongr
+
+import Mathlib.Tactic.Monotonicity
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
@@ -45,7 +44,6 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 ## References
 
 - [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
-
 -/
 
 @[expose] public section
