@@ -20,7 +20,6 @@ The implementation follows these steps:
 2. Simplify arithmetic expressions involving infinities, making (in)equalities either trivial
    or free of infinities. This step uses the `enat_to_nat_top` simp set.
 3. Translate the remaining goals from `ENat` to `Nat` using the `enat_to_nat_coe` simp set.
-
 -/
 
 public meta section

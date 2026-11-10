@@ -31,7 +31,6 @@ For the Flypitch project:
   hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
-
 -/
 
 @[expose] public section

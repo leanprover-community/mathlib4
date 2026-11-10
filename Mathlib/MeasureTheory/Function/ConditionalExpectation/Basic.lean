@@ -69,10 +69,9 @@ expectation. This would generalise `MeasureTheory.condExp_mul_of_stronglyMeasura
 ## Tags
 
 conditional expectation, conditional expected value
-
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace MeasureTheory.Lp Filter
 open scoped ENNReal Topology MeasureTheory
@@ -98,7 +97,7 @@ It is defined as 0 if any one of the following conditions is true:
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
 @[wikidata Q772232]
-noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
+noncomputable def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
   if hm : m ≤ m₀ then
     if h : SigmaFinite (μ.trim hm) ∧ Integrable f μ then
       if StronglyMeasurable[m] f then f
@@ -444,7 +443,7 @@ theorem condExp_tsum [CompleteSpace E]
   have B : ∑' (n : ι), ‖condExpL1 hm μ (f n)‖ₑ ≠ ∞ := by
     apply (lt_of_le_of_lt ?_ hf'.lt_top).ne
     gcongr with i
-    exact (enorm_setToFun_le _ (by simp)).trans_eq (by simp)
+    exact (eNorm_setToFun_le _ (by simp)).trans_eq (by simp)
   have C := coeFn_tsum (f := fun i ↦ condExpL1 hm μ (f i)) B
   filter_upwards [A, C] with a ha h'a
   simp_all [condExpL1, setToFun_tsum]

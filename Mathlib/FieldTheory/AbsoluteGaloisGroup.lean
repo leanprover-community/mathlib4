@@ -26,7 +26,6 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
 
 ## Tags
 field, algebraic closure, galois group, abelianization
-
 -/
 
 @[expose] public noncomputable section

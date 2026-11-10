@@ -60,7 +60,6 @@ errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 @[expose] public section
@@ -412,7 +411,6 @@ variable {W} {κ} [Fact κ.IsRegular]
 
 include hW
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLocal_reflectionObj :
     W.isLocal (reflectionObj W Z κ) := by
   let H := transfiniteCompositionOfShapeReflection W Z κ

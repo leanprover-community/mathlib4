@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Shift.Linear
 
 /-!
 # The derived category of a linear abelian category is linear
-
 -/
 
 public section

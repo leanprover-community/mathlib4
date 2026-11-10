@@ -28,7 +28,6 @@ This file defines the altitudes of a simplex and their feet.
 ## References
 
 * <https://en.wikipedia.org/wiki/Altitude_(triangle)>
-
 -/
 
 @[expose] public section
