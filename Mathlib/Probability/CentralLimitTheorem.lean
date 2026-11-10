@@ -219,4 +219,26 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
       (hindep.comp (fun _ x ↦ ⟪t, x⟫) (by fun_prop))
       (fun i ↦ (hident i).comp (u := fun x ↦ ⟪t, x⟫) (by fun_prop)))
 
+/-- **Multivariate Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω →
+EuclideanSpace ℝ ι` that are independent, identically distributed, centered and with an
+identity covariance matrix, and a random variable `Y : Ω' → EuclideanSpace ℝ ι` following
+`stdGaussian (EuclideanSpace ℝ ι)`, the sequence `n ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k`
+converges to `Y` in distribution. -/
+theorem tendstoInDistribution_inv_sqrt_smul_sum_stdGaussian
+    (hY : HasLaw Y (stdGaussian (EuclideanSpace ℝ ι)) P') (h0 : P[X 0] = 0)
+    (h1 : ∀ i j, cov[(X 0 · i), (X 0 · j); P] = (1 : Matrix _ _ _) i j)
+    (hindep : iIndepFun X P)
+    (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
+    TendstoInDistribution
+      (fun (n : ℕ) ω ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k ω) atTop Y (fun _ ↦ P) P' := by
+  apply tendstoInDistribution_inv_sqrt_smul_sum
+    (S := 1) (by simpa [h0] using hY) h0 h1 _ hindep hident
+  refine MemLp.of_eval_piLp fun i ↦ ?_
+  have hXi : AEStronglyMeasurable (fun ω ↦ X 0 ω i) P :=
+    ((PiLp.continuous_ofLp 2 _).comp_aestronglyMeasurable
+      (hident 0).aemeasurable_fst.aestronglyMeasurable).eval
+  apply memLp_two_of_variance_ne_zero hXi
+  rw [← covariance_self hXi.aemeasurable, h1]
+  simp
+
 end Multivariate
