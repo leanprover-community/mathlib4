@@ -35,6 +35,7 @@ open Nat
 namespace Nat
 
 /-- `primeFactorsList n` is the prime factorization of `n`, listed in increasing order. -/
+@[oeis A027746 "starting from the 2nd element"]
 def primeFactorsList : ℕ → List ℕ
   | 0 => []
   | 1 => []

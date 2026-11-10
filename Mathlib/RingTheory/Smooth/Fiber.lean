@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Smooth.Local
 import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
-
 # Flat and smooth fibers imply smooth
 
 ## Main results

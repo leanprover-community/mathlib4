@@ -8,19 +8,35 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
-public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Sets.BaseChangeNhds
-public import Mathlib.Topology.Maps.Proper.Basic
+
 
 /-!
-# Ksheaves
+# K-sheaves
 
-We define K-sheaves on a T2 topological space with value in an arbitrary category.
+We define K-sheaves on `X` a T2 topological space with value in an arbitrary category `A`.
+
+This corespond to the `F : (Compacts X)ᵒᵖ ⥤ A` such that:
+- `F.obj (∅)` is terminal.
+- For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is obtained by
+  gluing `F.obj K₁` and `F.obj K₂` over `F.obj K₁ ∩ K₂`.
+- For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts
+  subsets `L` of `X`such that `K` is in the interior of `L`.
 
 One may expect this notion to come from sheaves on a site of compact subset of a topological space
 but there is no corresponding Grothendieck topology on compact subsets, in particular
-because the `nonempty_isColimit_coconeOfCompacts` condition can't be expressed as a
-limit condition.
+because the `nonempty_isColimit_coconeOfCompacts` condition can't be expressed as a sheaf condition.
+
+However this category turns out to be equivalent to the category of sheaves over `X`,
+and is thus a topos.
+
+TODO: provide the equivalence of category (Yannis Monbru Carcelero)
+
+## References
+
+*[J. Pardon, *An algebraic approach to virtual fundamental cycles on moduli
+spaces of pseudo-holomorphic curves*, Section A.1][Pardon2016]
+*[Jacob Lurie, *Higher Topos Theory*, Section 1.1.5][LurieHTT]
 -/
 
 @[expose] public section
@@ -34,21 +50,21 @@ variable {A : Type u} [Category.{v} A] {X : TopCat.{w}}
 namespace TopCat
 
 variable (A X) in
-/-- The category of `A`-valued presheaves on a (bundled) topological space `X` -/
+/-- The category of `A`-valued K-presheaves on a (bundled) topological space `X` -/
 abbrev KPresheaf : Type max u v w := (Compacts X)ᵒᵖ ⥤ A
 
 namespace KPresheaf
 
 /-- The pushforward of a KPresheaf by a proper map -/
 def pushforwardObj {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') (F : KPresheaf A X) :
-    (KPresheaf A Y) := ((Functor.whiskeringLeft _ _ _ ).obj
+    (KPresheaf A Y) := ((Functor.whiskeringLeft _ _ _).obj
   (Compacts.properPreimage_mono pf).functor.op).obj F
 
 /-- The pushforward by a proper map as a functor over KPresheaves -/
 def pushforward {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') :
     KPresheaf A X ⥤ KPresheaf A Y where
   obj := pushforwardObj pf
-  map := ((Functor.whiskeringLeft _ _ _ ).obj
+  map := ((Functor.whiskeringLeft _ _ _).obj
   (Compacts.properPreimage_mono pf).functor.op).map
 
 /-- If `P` is a KPresheaf, and `K` a compact subset then `P.obj (op K)` is equiped with a
@@ -64,41 +80,50 @@ def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
     rw [← P.map_comp, Category.comp_id]
     rfl
 
-/-- For `P` a KPresheaf, and `K` a compact subset then `P.obj (op K)` is equiped with a
+/-- For `P` a K-presheaf, and `K` a compact subset then `P.obj (op K)` is equipped with a
 structure of cocone over the diagram defined by the `P.obj (op (closure (U : Set X))`
-for `U` an open
-neighbourhood of `K` -/
+for `U` an open neighbourhood of `K` -/
 @[simps!, implicit_reducible]
 def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X) :=
   Cocone.whisker K.openRcNhdsToCompactNhds_mono.functor.op <| P.coconeOfCompacts K
 
 variable [T2Space X]
 
-/-- For`K`a compact and `P`a KPresheaf verifying the third axiom of KSheaves, this is
-a recipe to build maps from `P.obj(op K)` by only using the open relatively
+/-- For `K` a compact and `P` a K-presheaf verifying the third axiom of K-sheaves, this is
+a recipe to build maps from `P.obj (op K)` by only using the open relatively
 compact neighbourhoods and not all the compacts neighbourhoods. -/
-noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X)
-    (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G)
-    (α : (K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.mono_coe _).functor.op ⋙ P) ⟶ G) :
-    P.obj (op K) ⟶ t.pt :=
-  ((Functor.Final.isColimitWhiskerEquiv _ _).symm h ).map t α
+@[no_expose]
+noncomputable def descOfOpenClosure (P : KPresheaf A X) (K : Compacts X)
+    (h : (IsColimit (P.coconeOfCompacts K))) {Z : A}
+    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.mono_coe _).functor.op ⋙ P ⟶
+      (Functor.const _).obj Z) :
+    P.obj (op K) ⟶ Z :=
+  ((Functor.Final.isColimitWhiskerEquiv
+    K.openRcNhdsToCompactNhds_mono.functor.op _).symm h).desc (Cocone.mk _ ι)
+
+@[reassoc (attr := simp)]
+lemma map_comp_descOfOpenClosure (P : KPresheaf A X) {K : Compacts X} (V : K.openRcNhds)
+    (h : (IsColimit (P.coconeOfCompacts K))) {Z : A}
+    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.mono_coe _).functor.op ⋙ P ⟶
+      (Functor.const _).obj Z) :
+    dsimp% P.map (op (homOfLE (V.property.2.trans subset_closure))) ≫ P.descOfOpenClosure K h ι =
+      ι.app (op V) :=
+  ((Functor.Final.isColimitWhiskerEquiv
+    K.openRcNhdsToCompactNhds_mono.functor.op _).symm h).fac (Cocone.mk _ ι) (op V)
 
 @[ext]
 lemma hom_ext_of_isColimit_coconeOfCompacts (P : KPresheaf A X) {K : Compacts X}
-    (h : (IsColimit (P.coconeOfCompacts K)))
+    (h : IsColimit (P.coconeOfCompacts K))
     {W : A} {f f' : P.obj (op K) ⟶ W}
     (w : ∀ V, dsimp% (P.coconeOfClosureOfOpens K).ι.app V ≫ f =
       (P.coconeOfClosureOfOpens K).ι.app V ≫ f') :
     f = f' :=
   ((Functor.Final.isColimitWhiskerEquiv K.openRcNhdsToCompactNhds_mono.functor.op
-    _  ).symm h).hom_ext w
+    _).symm h).hom_ext w
 
-/-- The Ksheaf condition. It's a generalisation of the one of J.Pardon that
-correspond to the one of J.Lurie in the case of usual categories.
-
-There is no corresponding Grothendieck topology on compact subsets, in particular
-because the nonempty_isColimit_coconeOfCompacts condition can't be expressed as a
-limit condition. -/
+/-- The K-sheaf condition. It's a generalisation of the one of J.Pardon (definition A.1.4) that
+  correspond to the one of J.Lurie (definition 7.3.4.1) in the case of usual categories.
+-/
 structure IsKSheaf (P : KPresheaf A X) : Prop where
   nonempty_isTerminal : Nonempty (IsTerminal (P.obj (op ⊥)))
   isPullback {K₁ K₂ K₃ K₄ : Compacts X} (h : Lattice.BicartSq K₁ K₂ K₃ K₄) :
@@ -112,30 +137,30 @@ end KPresheaf
 variable [T2Space X]
 
 variable (X A) in
-/-- The object property of being a KSheaf -/
+/-- The object property of being a K-sheaf -/
 abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := fun P ↦ P.IsKSheaf
 
 variable (X A) in
-/-- The category of Ksheaves taking values in `A` on a T2Space. -/
+/-- The category of K-sheaves taking values in `A` on a T2-Space. -/
 abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
 
 namespace KSheaf
 
-/-- If `P`is a KSheaf, its the evidence that for any `K`a compact subset of `X`,
- `P.obj.coconeOfCompacts K`is a colimit cocone
+/-- If `P` is a K-sheaf, its the evidence that for any `K` a compact subset of `X`,
+ `P.obj.coconeOfCompacts K` is a colimit cocone
 -/
+@[no_expose]
 noncomputable def isColimit (P : KSheaf A X) (K : Compacts X) :
     IsColimit (P.obj.coconeOfCompacts K) :=
   (P.property.nonempty_isColimit_coconeOfCompacts K).some
 
-/-- For`K`a compact and `P`a KSheaf, this is a recipe to build maps from
+/-- For `K` a compact and `P` a K-sheaf, this is a recipe to build maps from
 `P.obj (op K)` by only using the open relatively compact neighbourhoods and not
 all the compacts neighbourhoods. -/
-noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.openRcNhds)ᵒᵖ ⥤ A}
-    (t : Cocone G)
-    (α : (K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.mono_coe _).functor.op ⋙ P.obj) ⟶ G) :
-    P.obj.obj (op K) ⟶ t.pt :=
-  ((Functor.Final.isColimitWhiskerEquiv _ _).symm (P.isColimit K)).map t α
+noncomputable def descOfOpenClosure (P : KSheaf A X) (K : Compacts X) {Z : A}
+    (ι : K.openRcNhdsToCompactNhds_mono.functor.op ⋙ (Set.mono_coe _).functor.op ⋙ P.obj ⟶
+      (Functor.const _).obj Z) :
+    P.obj.obj (op K) ⟶ Z := P.obj.descOfOpenClosure K (P.isColimit K) ι
 
 @[ext]
 lemma hom_ext_of_compacts (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op K) ⟶ W}
@@ -159,7 +184,7 @@ lemma pushforwardObj_isKSheaf : (F.obj.pushforwardObj pf).IsKSheaf where
   nonempty_isColimit_coconeOfCompacts K :=
     Nonempty.intro <|
     (Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsOfProperMap_mono pf K).functor.op)
-      _ ).invFun
+      _).invFun
       (F.isColimit (properPreimage pf K))
 
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
@@ -181,7 +206,8 @@ lemma pushforward_id [LocallyCompactSpace X] :
 lemma pushforward_comp {Z : TopCat.{w}} [T2Space Z] [LocallyCompactSpace Z] {g : Y ⟶ Z}
     (pg : IsProperMap g.hom') :
     pushforward (A := A) pf ⋙ pushforward pg =
-    pushforward (f := f ≫ g ) (IsProperMap.comp (f := f) (g := g) pg pf) := rfl
+    pushforward (f := f ≫ g) (IsProperMap.comp (f := f) (g := g) pg pf) := rfl
+
 end KSheaf
 
 end TopCat
