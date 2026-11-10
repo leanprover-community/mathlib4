@@ -31,8 +31,6 @@ assert_not_exists tangentBundleCore
 open scoped Topology Manifold
 open Function Set Bundle ChartedSpace
 
-section DerivativesProperties
-
 /-! ### Unique differentiability sets in manifolds -/
 
 variable
@@ -803,6 +801,19 @@ lemma mdifferentiable_of_mdifferentiableOn_iUnion_of_isOpen {ι : Type*} {s : ι
 
 end mdifferentiableOn_union
 
+lemma injective_fderivWithin_writtenInExtChartAt {f : M → M'} {s : Set M} {p : M}
+    (hf : Injective (mfderiv[s] f p)) :
+    Injective (fderivWithin 𝕜 (writtenInExtChartAt I I' p f)
+      ((extChartAt I p).symm ⁻¹' s ∩ range I) (extChartAt I p p)) := by
+  rw [mfderivWithin, ite_eq_left (mdifferentiableWithinAt_of_mfderivWithin_injective hf)] at hf
+  exact hf
+
+lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M → M'} {p : M}
+    (hf : (mfderiv% f p).IsInvertible) :
+    (fderivWithin 𝕜 (writtenInExtChartAt I I' p f) (range I) (extChartAt I p p)).IsInvertible := by
+  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)] at hf
+  exact hf
+
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem HasMFDerivWithinAt.continuousWithinAt (h : HasMFDerivAt[s] f x f') :
@@ -1274,5 +1285,3 @@ theorem tangentMap_comp_at (p : TangentBundle I M) (hg : MDiffAt g (f p.1)) (hf 
 theorem tangentMap_comp (hg : MDiff g) (hf : MDiff f) :
     tangentMap% (g ∘ f) = tangentMap% g ∘ tangentMap% f := by
   ext p : 1; exact tangentMap_comp_at _ (hg _) (hf _)
-
-end DerivativesProperties
