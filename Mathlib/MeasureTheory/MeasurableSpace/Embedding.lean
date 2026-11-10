@@ -54,7 +54,7 @@ inverse `g : Set.range f → α`”, see `MeasurableEmbedding.measurable_rangeSp
 One more interpretation: `f` is a measurable embedding if it defines a measurable equivalence to its
 range and the range is a measurable set. One implication is formalized as
 `MeasurableEmbedding.equivRange`; the other one follows from
-`MeasurableEquiv.measurableEmbedding`, `MeasurableEmbedding.subtype_coe`, and
+`MeasurableEquiv.measurableEmbedding`, `MeasurableEmbedding.subtypeVal`, and
 `MeasurableEmbedding.comp`. -/
 structure MeasurableEmbedding [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop where
   /-- A measurable embedding is injective. -/
@@ -83,10 +83,12 @@ theorem comp (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
   ⟨hg.injective.comp hf.injective, hg.measurable.comp hf.measurable, fun s hs => by
     rwa [image_comp, hg.measurableSet_image, hf.measurableSet_image]⟩
 
-theorem subtype_coe (hs : MeasurableSet s) : MeasurableEmbedding ((↑) : s → α) where
+theorem subtypeVal (hs : MeasurableSet s) : MeasurableEmbedding ((↑) : s → α) where
   injective := Subtype.coe_injective
   measurable := measurable_subtypeVal
   measurableSet_image' := fun _ => MeasurableSet.subtype_image hs
+
+@[deprecated (since := "2026-11-10")] alias subtype_coe := subtypeVal
 
 theorem measurableSet_range (hf : MeasurableEmbedding f) : MeasurableSet (range f) := by
   rw [← image_univ]
@@ -99,7 +101,7 @@ theorem measurableSet_preimage (hf : MeasurableEmbedding f) {s : Set β} :
 theorem measurable_rangeSplitting (hf : MeasurableEmbedding f) :
     Measurable (rangeSplitting f) := fun s hs => by
   rwa [preimage_rangeSplitting hf.injective,
-    ← (subtype_coe hf.measurableSet_range).measurableSet_image, ← image_comp,
+    ← (subtypeVal hf.measurableSet_range).measurableSet_image, ← image_comp,
     coe_comp_rangeFactorization, hf.measurableSet_image]
 
 theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β → γ} (hg : Measurable g)
@@ -169,7 +171,7 @@ end gluing
 theorem MeasurableSet.exists_measurable_proj {_ : MeasurableSpace α}
     (hs : MeasurableSet s) (hne : s.Nonempty) : ∃ f : α → s, Measurable f ∧ ∀ x : s, f x = x :=
   let ⟨f, hfm, hf⟩ :=
-    (MeasurableEmbedding.subtype_coe hs).exists_measurable_extend measurable_id fun _ =>
+    (MeasurableEmbedding.subtypeVal hs).exists_measurable_extend measurable_id fun _ =>
       hne.to_subtype
   ⟨f, hfm, congr_fun hf⟩
 
@@ -706,7 +708,7 @@ theorem of_measurable_inverse_on_range {g : range f → α} (hf₁ : Measurable 
   set e : α ≃ᵐ range f :=
     ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective rangeFactorization_surjective⟩,
       hf₁.subtype_mk, hg⟩
-  exact (MeasurableEmbedding.subtype_coe hf₂).comp e.measurableEmbedding
+  exact (subtypeVal hf₂).comp e.measurableEmbedding
 
 theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (range f))
     (hg : Measurable g) (H : LeftInverse g f) : MeasurableEmbedding f :=

@@ -948,13 +948,13 @@ section Subtype
 
 theorem comap_subtypeVal_apply {_m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
     (μ : Measure α) (t : Set s) : comap (↑) μ t = μ ((↑) '' t) :=
-  (MeasurableEmbedding.subtype_coe hs).comap_apply _ _
+  (MeasurableEmbedding.subtypeVal hs).comap_apply _ _
 
 @[deprecated (since := "2026-11-10")] alias comap_subtype_coe_apply := comap_subtypeVal_apply
 
 theorem map_comap_subtypeVal {m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
     (μ : Measure α) : (comap (↑) μ).map ((↑) : s → α) = μ.restrict s := by
-  rw [(MeasurableEmbedding.subtype_coe hs).map_comap, Subtype.range_coe]
+  rw [(MeasurableEmbedding.subtypeVal hs).map_comap, Subtype.range_coe]
 
 @[deprecated (since := "2026-11-10")] alias map_comap_subtype_coe := map_comap_subtypeVal
 
@@ -962,7 +962,7 @@ theorem map_comap_subtypeVal {m0 : MeasurableSpace α} {s : Set α} (hs : Measur
 theorem ae_restrict_iff_subtype {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ (x : s) ∂comap ((↑) : s → α) μ, p x := by
-  rw [← map_comap_subtypeVal hs, (MeasurableEmbedding.subtype_coe hs).ae_map_iff]
+  rw [← map_comap_subtypeVal hs, (MeasurableEmbedding.subtypeVal hs).ae_map_iff]
 
 variable [MeasureSpace α] {s t : Set α}
 
@@ -973,12 +973,17 @@ Note the instance is provided earlier as `Subtype.measureSpace`.
 -/
 attribute [local instance] Subtype.measureSpace
 
-theorem volume_set_coe_def (s : Set α) : (volume : Measure s) = comap ((↑) : s → α) volume :=
+theorem volume_set_subtypeVal_def (s : Set α) : (volume : Measure s) = comap ((↑) : s → α) volume :=
   rfl
 
-theorem MeasurableSet.map_coe_volume {s : Set α} (hs : MeasurableSet s) :
+theorem MeasurableSet.map_subtypeVal_volume {s : Set α} (hs : MeasurableSet s) :
     volume.map ((↑) : s → α) = restrict volume s := by
-  rw [volume_set_coe_def, (MeasurableEmbedding.subtype_coe hs).map_comap volume, Subtype.range_coe]
+  rw [volume_set_subtypeVal_def, (MeasurableEmbedding.subtypeVal hs).map_comap volume,
+    Subtype.range_coe]
+
+@[deprecated (since := "2026-11-10")] alias volume_set_coe_def := volume_set_subtypeVal_def
+@[deprecated (since := "2026-11-10")]
+alias MeasurableSet.map_coe_volume := MeasurableSet.map_subtypeVal_volume
 
 theorem volume_image_subtypeVal {s : Set α} (hs : MeasurableSet s) (t : Set s) :
     volume ((↑) '' t : Set α) = volume t :=
@@ -989,7 +994,7 @@ theorem volume_image_subtypeVal {s : Set α} (hs : MeasurableSet s) (t : Set s) 
 @[simp]
 theorem volume_preimage_coe (hs : NullMeasurableSet s) (ht : MeasurableSet t) :
     volume (((↑) : s → α) ⁻¹' t) = volume (t ∩ s) := by
-  rw [volume_set_coe_def,
+  rw [volume_set_subtypeVal_def,
     comap_apply₀ _ _ Subtype.coe_injective
       (fun h => MeasurableSet.nullMeasurableSet_subtypeVal hs)
       (measurable_subtypeVal ht).nullMeasurableSet,
