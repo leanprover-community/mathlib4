@@ -19,7 +19,6 @@ real constant which we call `mulEquivHaarChar φ`.
 * `mulEquivHaarChar φ`: the positive real such that `(mulEquivHaarChar φ) • map φ μ = μ`
   for `μ` a regular Haar measure.
 * `addEquivAddHaarChar φ`: the additive version.
-
 -/
 
 @[expose] public section
@@ -105,7 +104,7 @@ lemma mulEquivHaarChar_smul_preimage
     (μ : Measure G) [IsHaarMeasure μ] [Regular μ] {X : Set G} (φ : G ≃ₜ* G) :
     mulEquivHaarChar φ • μ (φ ⁻¹' X) = μ X := by
   nth_rw 2 [← mulEquivHaarChar_smul_map μ φ]
-  simp only [Measure.smul_apply, nnreal_smul_coe_apply]
+  simp only [nnreal_smul_coe_apply, smul_apply]
   exact congr_arg _ (MeasurableEquiv.map_apply φ.toMeasurableEquiv X).symm
 
 @[to_additive (attr := simp)]
@@ -144,7 +143,7 @@ lemma mulEquivHaarChar_eq_one_of_compactSpace [CompactSpace G] (φ : G ≃ₜ* G
     _ = μ.haarScalarFactor (map φ μ) • (map φ μ univ) := by
           rw [map_apply (map_continuous φ).measurable .univ, Set.preimage_univ, hμ]
     _ = μ univ := by
-          conv_rhs => rw [isMulInvariant_eq_smul_of_compactSpace μ (map φ μ), Measure.smul_apply]
+          conv_rhs => rw [isMulInvariant_eq_smul_of_compactSpace μ (map φ μ), smul_apply]
     _ = 1 := hμ
 
 end MeasureTheory

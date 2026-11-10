@@ -11,11 +11,9 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
-
 # Residue Field of local rings
 
 We prove basic properties of the residue field of a local ring.
-
 -/
 
 @[expose] public section
@@ -183,7 +181,7 @@ section FiniteDimensional
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
 instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
-  ⟨(((local_hom_TFAE (algebraMap R S)).out 1 5 rfl rfl).mp inferInstance).symm⟩
+  ⟨(((local_hom_tfae (algebraMap R S)).out 1 5 rfl rfl).mp inferInstance).symm⟩
 
 instance : Algebra (ResidueField R) (ResidueField S) :=
   Ideal.Quotient.algebraOfLiesOver _ _

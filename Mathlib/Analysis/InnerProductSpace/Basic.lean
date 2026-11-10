@@ -25,7 +25,6 @@ This file proves many basic properties of inner product spaces (real or complex)
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 @[expose] public section
@@ -206,7 +205,7 @@ theorem real_inner_self_nonneg {x : F} : 0 ≤ ⟪x, x⟫_ℝ :=
   @inner_self_nonneg ℝ F _ _ _ x
 
 theorem inner_self_ofReal_re (x : E) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ :=
-  ((RCLike.is_real_TFAE (⟪x, x⟫ : 𝕜)).out 3 4).2 (inner_self_im (𝕜 := 𝕜) x)
+  ((RCLike.is_real_tfae (⟪x, x⟫ : 𝕜)).out 3 4).2 (inner_self_im (𝕜 := 𝕜) x)
 
 @[simp]
 theorem inner_self_eq_norm_sq_to_K (x : E) : ⟪x, x⟫ = (‖x‖ : 𝕜) ^ 2 := by
@@ -457,12 +456,16 @@ theorem norm_inner_le_norm (x y : E) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
   let : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   exact InnerProductSpace.Core.norm_inner_le_norm x y
 
-theorem nnnorm_inner_le_nnnorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
+theorem nnNorm_inner_le_nnNorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * ‖y‖₊ :=
   norm_inner_le_norm x y
 
-lemma enorm_inner_le_enorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
+@[deprecated (since := "2026-10-31")] alias nnnorm_inner_le_nnnorm := nnNorm_inner_le_nnNorm
+
+lemma eNorm_inner_le_eNorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
   grw [← ofReal_norm, norm_inner_le_norm]
   simp
+
+@[deprecated (since := "2026-11-06")] alias enorm_inner_le_enorm := eNorm_inner_le_eNorm
 
 theorem re_inner_le_norm (x y : E) : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ :=
   le_trans (re_le_norm ⟪x, y⟫) (norm_inner_le_norm x y)
@@ -498,14 +501,20 @@ theorem parallelogram_law_with_norm (x y : E) :
   simp_rw [sq, parallelogram_law_with_norm_mul 𝕜 x y]
 
 include 𝕜 in
-theorem parallelogram_law_with_nnnorm_mul (x y : E) :
+theorem parallelogram_law_with_nnNorm_mul (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
   Subtype.ext <| parallelogram_law_with_norm_mul 𝕜 x y
 
+@[deprecated (since := "2026-10-31")]
+alias parallelogram_law_with_nnnorm_mul := parallelogram_law_with_nnNorm_mul
+
 include 𝕜 in
-theorem parallelogram_law_with_nnnorm (x y : E) :
+theorem parallelogram_law_with_nnNorm (x y : E) :
     ‖x + y‖₊ ^ 2 + ‖x - y‖₊ ^ 2 = 2 * (‖x‖₊ ^ 2 + ‖y‖₊ ^ 2) := by
-  simp_rw [sq, parallelogram_law_with_nnnorm_mul 𝕜 x y]
+  simp_rw [sq, parallelogram_law_with_nnNorm_mul 𝕜 x y]
+
+@[deprecated (since := "2026-10-31")]
+alias parallelogram_law_with_nnnorm := parallelogram_law_with_nnNorm
 
 variable {𝕜}
 

@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 
 /-!
-
 # Trail, Path, and Cycle
 
 In a simple graph,
@@ -416,10 +415,8 @@ theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) 
 
 theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
     (p.take n).IsPath := by
-  replace h : (p.take (p.length - 1)).IsPath := h.isPath_dropLast
-  suffices ((p.take (p.length - 1)).take n).IsPath by
-    rwa [take_take, isPath_copy, show min (p.length - 1) n = n by omega] at this
-  exact h.take n
+  have : ((p.take (p.length - 1)).take n).IsPath := h.isPath_dropLast.take n
+  rwa [take_take, isPath_copy, Nat.min_eq_right <| by lia] at this
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
@@ -1292,6 +1289,30 @@ theorem isCycle_transfer {p : G.Walk v v} (h) : (p.transfer H h).IsCycle ↔ p.I
   simp [isCycle_def]
 
 protected alias ⟨_, IsCycle.transfer⟩ := isCycle_transfer
+
+end Walk
+
+/-! ### Inducing -/
+
+namespace Walk
+
+variable {G} {u v : V} {s : Set V} {p : G.Walk u v} {c : G.Walk u u}
+
+@[simp]
+lemma isTrail_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsTrail ↔ p.IsTrail := by
+  simp [isTrail_def, edges_induce, List.nodup_map_iff, Injective.eq_def]
+
+@[simp]
+lemma isPath_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsPath ↔ p.IsPath := by
+  simp [isPath_def]
+
+@[simp]
+lemma isCircuit_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCircuit ↔ c.IsCircuit := by
+  simp [isCircuit_def]
+
+@[simp]
+lemma isCycle_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCycle ↔ c.IsCycle := by
+  simp [isCycle_def]
 
 end Walk
 

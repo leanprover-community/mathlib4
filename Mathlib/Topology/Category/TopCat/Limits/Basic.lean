@@ -62,7 +62,7 @@ def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v, u} F)
           rw [← S.w f]
           rfl⟩
       continuous_toFun :=
-        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).hom.2) fun x i j f => by
+        Continuous.subtype_mk (by fun_prop) fun x i j f => by
           dsimp
           rw [← S.w f]
           rfl }
@@ -262,7 +262,6 @@ lemma isOpen_iff_of_isColimit (X : Set c.pt) :
   · simp only [← isOpen_coinduced]
     apply isOpen_iSup_iff
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isClosed_iff_of_isColimit (X : Set c.pt) :
     IsClosed X ↔ ∀ (j : J), IsClosed (c.ι.app j ⁻¹' X) := by
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,

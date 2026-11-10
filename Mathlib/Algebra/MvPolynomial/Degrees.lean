@@ -46,7 +46,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `p : MvPolynomial σ R`
-
 -/
 
 @[expose] public section
@@ -186,7 +185,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   rintro ⟨d, hd, hi⟩
   obtain ⟨x, rfl, hx⟩ := coeff_rename_ne_zero _ _ _ hd
   simp only [Finsupp.mapDomain, Finsupp.mem_support_iff] at hi
-  rw [sum_apply, Finsupp.sum] at hi
+  rw [Finsupp.sum_apply, Finsupp.sum] at hi
   contrapose! hi
   rw [Finset.sum_eq_zero]
   intro j hj

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.RCLike.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm properties of the extension of continuous `ℝ`-linear functionals to `𝕜`-linear functionals
 
