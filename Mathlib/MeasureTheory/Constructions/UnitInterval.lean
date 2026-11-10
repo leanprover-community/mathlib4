@@ -40,11 +40,16 @@ lemma measurableEmbedding_subtypeVal : MeasurableEmbedding ((↑) : I → ℝ) w
   measurable := measurable_subtype_coe
   measurableSet_image' _ := measurableSet_Icc.subtype_image
 
+@[deprecated (since := "2026-11-10")]
+alias measurableEmbedding_coe := measurableEmbedding_subtypeVal
+
 lemma volume_apply {s : Set I} : volume s = volume (Subtype.val '' s) :=
   measurableEmbedding_coe.comap_apply ..
 
 lemma measurePreserving_subtypeVal : MeasurePreserving ((↑) : I → ℝ) volume (volume.restrict I) :=
   measurePreserving_subtype_coe measurableSet_Icc
+
+@[deprecated (since := "2026-11-10")] alias measurePreserving_coe := measurePreserving_subtypeVal
 
 instance : NullSingletonClass (volume : Measure I) where
   measure_singleton x := by simp [volume_apply]

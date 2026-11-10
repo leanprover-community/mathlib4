@@ -241,6 +241,9 @@ lemma measurePreserving_subtypeVal {s : Set α} (hs : MeasurableSet s) :
   measurable := measurable_subtype_coe
   map_eq := map_comap_subtype_coe hs _
 
+@[deprecated (since := "2026-11-10")]
+alias measurePreserving_subtype_coe := measurePreserving_subtypeVal
+
 namespace MeasurableEquiv
 
 theorem measurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :

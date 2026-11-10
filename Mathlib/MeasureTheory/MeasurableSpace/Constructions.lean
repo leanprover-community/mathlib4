@@ -192,6 +192,8 @@ variable [MeasurableSpace α]
 theorem measurable_subtypeVal {p : α → Prop} : Measurable ((↑) : Subtype p → α) :=
   MeasurableSpace.le_map_comap
 
+@[deprecated (since := "2026-11-10")] alias measurable_subtype_coe := measurable_subtypeVal
+
 instance Subtype.instMeasurableSingletonClass {p : α → Prop} [MeasurableSingletonClass α] :
     MeasurableSingletonClass (Subtype p) where
   measurableSet_singleton x :=
@@ -216,6 +218,8 @@ theorem MeasurableSet.subtype_image {s : Set α} {t : Set s} (hs : MeasurableSet
 theorem Measurable.subtypeVal {p : β → Prop} {f : α → Subtype p} (hf : Measurable f) :
     Measurable fun a : α => (f a : β) :=
   measurable_subtype_coe.comp hf
+
+@[deprecated (since := "2026-11-10")] alias Measurable.subtype_coe := Measurable.subtypeVal
 
 alias Measurable.subtype_val := Measurable.subtypeVal
 

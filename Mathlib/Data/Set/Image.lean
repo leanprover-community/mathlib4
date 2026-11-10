@@ -179,6 +179,9 @@ theorem preimage_subtypeVal_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
     exact eq_empty_iff_forall_notMem.mp H x ⟨x_in_s, ⟨x_in_u, x_in_v⟩⟩
   · grind
 
+@[deprecated (since := "2026-11-10")]
+alias preimage_subtype_coe_eq_compl := preimage_subtypeVal_eq_compl
+
 lemma preimage_subset {s t} (hs : s ⊆ f '' t) (hf : Set.InjOn f (f ⁻¹' s)) : f ⁻¹' s ⊆ t := by
   rintro a ha
   obtain ⟨b, hb, hba⟩ := hs ha

@@ -513,6 +513,9 @@ theorem nhdsWithin_eq_map_subtypeVal {s : Set α} {a : α} (h : a ∈ s) :
     𝓝[s] a = map ((↑) : s → α) (𝓝 ⟨a, h⟩) :=
   (map_nhds_subtype_val ⟨a, h⟩).symm
 
+@[deprecated (since := "2026-11-10")]
+alias nhdsWithin_eq_map_subtype_coe := nhdsWithin_eq_map_subtypeVal
+
 theorem mem_nhds_subtype_iff_nhdsWithin {s : Set α} {a : s} {t : Set s} :
     t ∈ 𝓝 a ↔ (↑) '' t ∈ 𝓝[s] (a : α) := by
   rw [← map_nhds_subtype_val, image_mem_map_iff Subtype.val_injective]

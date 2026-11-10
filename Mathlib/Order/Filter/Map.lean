@@ -497,6 +497,8 @@ theorem _root_.Function.Surjective.filter_map_top {f : α → β} (hf : Surjecti
 theorem subtypeVal_map_comap (s : Set α) (f : Filter α) :
     map ((↑) : s → α) (comap ((↑) : s → α) f) = f ⊓ 𝓟 s := by rw [map_comap, Subtype.range_coe]
 
+@[deprecated (since := "2026-11-10")] alias subtype_coe_map_comap := subtypeVal_map_comap
+
 theorem image_mem_of_mem_comap {f : Filter α} {c : β → α} (h : range c ∈ f) {W : Set β}
     (W_in : W ∈ comap c f) : c '' W ∈ f := by
   rw [← map_comap_of_mem h]

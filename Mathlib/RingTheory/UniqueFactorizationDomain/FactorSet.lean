@@ -194,6 +194,8 @@ theorem map_subtypeVal_factors' {a : α} :
     (factors' a).map (↑) = (factors a).map Associates.mk := by
   simp [factors', Multiset.map_pmap, Multiset.pmap_eq_map]
 
+@[deprecated (since := "2026-11-10")] alias map_subtype_coe_factors' := map_subtypeVal_factors'
+
 theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
   obtain rfl | hb := eq_or_ne b 0
   · rw [associated_zero_iff_eq_zero] at h

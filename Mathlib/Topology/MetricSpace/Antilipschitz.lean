@@ -185,6 +185,8 @@ theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSp
 theorem subtypeVal (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.domRestrict s
 
+@[deprecated (since := "2026-11-10")] alias subtype_coe := subtypeVal
+
 @[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
