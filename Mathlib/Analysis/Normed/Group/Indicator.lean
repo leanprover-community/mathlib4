@@ -5,13 +5,14 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.Normed.Group.Basic
+
+import Mathlib.Algebra.Order.Group.Indicator
 
 /-!
 # Indicator function and (e)norm
 
-This file contains a few simple lemmas about `Set.indicator`, `norm` and `enorm`.
+This file contains a few simple lemmas about `Set.indicator`, `norm` and `eNorm`.
 
 ## Tags
 indicator, norm
@@ -26,21 +27,33 @@ section ESeminormedAddMonoid
 variable {α ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
   {s t : Set α} (f : α → ε) (a : α)
 
-lemma enorm_indicator_eq_indicator_enorm :
+lemma eNorm_indicator_eq_indicator_eNorm :
     ‖indicator s f a‖ₑ = indicator s (fun a => ‖f a‖ₑ) a :=
-  flip congr_fun a (indicator_comp_of_zero (enorm_zero (E := ε))).symm
+  congr($((indicator_comp_of_zero (eNorm_zero (E := ε))).symm) a)
 
-theorem enorm_indicator_le_of_subset (h : s ⊆ t) (f : α → ε) (a : α) :
+@[deprecated (since := "2026-11-06")]
+alias enorm_indicator_eq_indicator_enorm := eNorm_indicator_eq_indicator_eNorm
+
+theorem eNorm_indicator_le_of_subset (h : s ⊆ t) (f : α → ε) (a : α) :
     ‖indicator s f a‖ₑ ≤ ‖indicator t f a‖ₑ := by
-  simp only [enorm_indicator_eq_indicator_enorm]
+  simp only [eNorm_indicator_eq_indicator_eNorm]
   grw [h]
 
-theorem indicator_enorm_le_enorm_self : indicator s (fun a => ‖f a‖ₑ) a ≤ ‖f a‖ₑ :=
+@[deprecated (since := "2026-11-06")]
+alias enorm_indicator_le_of_subset := eNorm_indicator_le_of_subset
+
+theorem indicator_eNorm_le_eNorm_self : indicator s (fun a => ‖f a‖ₑ) a ≤ ‖f a‖ₑ :=
   indicator_le_self' (fun _ _ ↦ zero_le) a
 
-theorem enorm_indicator_le_enorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖ₑ := by
-  rw [enorm_indicator_eq_indicator_enorm]
-  apply indicator_enorm_le_enorm_self
+@[deprecated (since := "2026-11-06")]
+alias indicator_enorm_le_enorm_self := indicator_eNorm_le_eNorm_self
+
+theorem eNorm_indicator_le_eNorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖ₑ := by
+  rw [eNorm_indicator_eq_indicator_eNorm]
+  apply indicator_eNorm_le_eNorm_self
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_indicator_le_enorm_self := eNorm_indicator_le_eNorm_self
 
 end ESeminormedAddMonoid
 
@@ -49,11 +62,14 @@ section SeminormedAddGroup
 variable {α E : Type*} [SeminormedAddGroup E] {s t : Set α} (f : α → E) (a : α)
 
 theorem norm_indicator_eq_indicator_norm : ‖indicator s f a‖ = indicator s (fun a => ‖f a‖) a :=
-  flip congr_fun a (indicator_comp_of_zero norm_zero).symm
+  congr($((indicator_comp_of_zero norm_zero).symm) a)
 
-theorem nnnorm_indicator_eq_indicator_nnnorm :
+theorem nnNorm_indicator_eq_indicator_nnNorm :
     ‖indicator s f a‖₊ = indicator s (fun a => ‖f a‖₊) a :=
-  flip congr_fun a (indicator_comp_of_zero nnnorm_zero).symm
+  congr($((indicator_comp_of_zero nnNorm_zero).symm) a)
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_indicator_eq_indicator_nnnorm := nnNorm_indicator_eq_indicator_nnNorm
 
 theorem norm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
     ‖indicator s f a‖ ≤ ‖indicator t f a‖ := by

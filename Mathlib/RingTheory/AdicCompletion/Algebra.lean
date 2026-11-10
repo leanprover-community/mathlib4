@@ -28,7 +28,6 @@ We do not make a separate adic completion type in algebra case, to not duplicate
 module-theoretic results on adic completions. This choice does cause some trouble though,
 since `I ^ n • ⊤` is not defeq to `I ^ n`. We try to work around most of the trouble by
 providing as much API as possible.
-
 -/
 
 @[expose] public section
@@ -402,9 +401,9 @@ def liftAlgHom (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
     (hf : ∀ {m n : ℕ} (hle : m ≤ n),
       (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m) :
     A →ₐ[R] AdicCompletion I S where
-  __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; exact congr($(hf hle) x)
+  __ := liftRingHom I (fun n ↦ (f n).toRingHom) <| fun hle ↦ by ext x; congrm $(hf hle) x
   commutes' r := ext_evalₐ fun n ↦ by
-    simp [evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; exact congr($(hf hle) x)]
+    simp [evalₐ_liftRingHom _ _ <| fun hle ↦ by ext x; congrm $(hf hle) x]
 
 variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
   (hf : ∀ {m n : ℕ} (hle : m ≤ n),
@@ -413,7 +412,7 @@ variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
 @[simp]
 lemma evalₐ_liftAlgHom (n : ℕ) (x : A) :
     evalₐ I n (liftAlgHom I f hf x) = f n x :=
-  evalₐ_liftRingHom _ _ (fun hle ↦ by ext x; exact congr($(hf hle) x)) _ _
+  evalₐ_liftRingHom _ _ (fun hle ↦ by ext x; congrm $(hf hle) x) _ _
 
 @[simp]
 lemma evalOneₐ_liftAlgHom (x : A) :

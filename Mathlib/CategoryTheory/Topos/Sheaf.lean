@@ -5,13 +5,10 @@ Authors: Edward van de Meent
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
-public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
-
 # (Elementary) Sheaf Topos
 
 We define a subobject classifier for categories of sheaves of (large enough) types.
@@ -36,7 +33,6 @@ Let `C` refer to a category with (when relevant) Grothendieck topology `J`.
 ## TODOS:
 
 * generalize `Presheaf.isClosed_χ_app_apply_of` to only assuming `G` is separated
-
 -/
 
 @[expose] public section
@@ -109,7 +105,7 @@ lemma Presheaf.χ_unique (m : F ⟶ G) (χ' : G ⟶ Functor.sieves C)
   simp only [χ_app, Opposite.op_unop]
   rw [Sieve.mem_iff_pullback_eq_top, ← Quiver.Hom.unop_op f]
   dsimp
-  have := ConcreteCategory.congr_hom (Functor.sieves_map C (f.op)) (χ'.app X x)
+  have := congr($(Functor.sieves_map C f.op) (χ'.app X x))
   rw [← dsimp% this, ← dsimp% NatTrans.naturality_apply χ' f.op x]
   constructor
   · intro h
@@ -213,7 +209,7 @@ lemma χ_unique (m : F ⟶ G) [Mono m] (χ' : G ⟶ Sheaf.Ω J)
   apply Presheaf.χ_unique _
   have pb : IsPullback (𝟙 G.obj) χ'.hom (χ'.hom ≫ (closedSieves J).ι)
     (closedSieves J).ι := IsPullback.of_horiz_isIso_mono (by simp)
-  have : IsPullback m.hom ?_ χ'.hom <| (truth J).hom := by
+  have : IsPullback m.hom ?_ χ'.hom (truth J).hom := by
     simpa using hχ'.map (sheafToPresheaf J _)
   simpa using this.paste_horiz pb
 

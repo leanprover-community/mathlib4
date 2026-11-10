@@ -5,16 +5,14 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Data.Finsupp.Lex
-public import Mathlib.Data.Finsupp.WellFounded
-public import Mathlib.Data.List.TFAE
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finsupp.WellFounded
 
 /-! # Monomial orders
 
 ## Monomial orders
 
-A *monomial order* is well ordering relation on a type of the form `σ →₀ ℕ` which
+A *monomial order* is a well ordering relation on a type of the form `σ →₀ ℕ` which
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
 get them as instances.
@@ -53,7 +51,6 @@ and `MonomialOrder.lex_lt_iff` rewrite the ordering as comparisons in the type `
 
 In algebraic geometry, when the finitely many variables are indexed by integers,
 it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvPolynomial.X 1 > … `
-
 -/
 
 @[expose] public section
