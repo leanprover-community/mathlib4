@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-
 # Locally surjective maps of presheaves.
 
 Let `X` be a topological space, `ℱ` and `𝒢` presheaves on `X`, `T : ℱ ⟶ 𝒢` a map.
@@ -23,7 +22,6 @@ In this file we formulate two notions for what it means for
   2. For each `x : X`, the map of *stalks* `Tₓ : ℱₓ ⟶ 𝒢ₓ` is surjective.
 
 We prove that these are equivalent.
-
 -/
 
 @[expose] public section
@@ -55,7 +53,7 @@ such that `$T_*(s_V) = t|_V$`.
 
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
-def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
+abbrev IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :

@@ -62,11 +62,6 @@ theorem induce_eq_top : G.induce s = ⊤ ↔ G.IsClique s := by
   · ext ⟨v, hv⟩ ⟨w, hw⟩
     simpa using ⟨Adj.ne, h hv hw⟩
 
-/-- A clique is a set of vertices whose induced graph is complete. -/
-@[deprecated induce_eq_top +typeChanged (since := "2026-04-23")]
-theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ :=
-  induce_eq_top.symm
-
 theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
   simp [IsChain, G.symm.iff]
 
@@ -769,10 +764,9 @@ theorem cliqueNum_top : (⊤ : SimpleGraph α).cliqueNum = Nat.card α := by
     apply cliqueNum_le_natCard _ |>.antisymm
     grw [Nat.card_eq_fintype_card, ← Finset.card_univ, IsClique.card_le_cliqueNum]
     apply IsClique.top
-  · rw [Nat.card_eq_zero_of_infinite]
-    apply Set.Infinite.Nat.sSup_eq_zero
-    rw [Set.eq_univ_of_forall (Finset.exists_card_eq · |>.imp fun _ hn ↦ ⟨.top _, hn⟩)]
-    exact Set.infinite_univ
+  · rw [Nat.card_eq_zero_of_infinite, cliqueNum]
+    convert Set.Infinite.Nat.sSup_eq_zero Set.infinite_univ using 2
+    exact Set.eq_univ_of_forall (Finset.exists_card_eq · |>.imp fun _ hn ↦ ⟨.top _, hn⟩)
 
 -- TODO: generalize from `Finite α` to `Finite G.edgeSet`
 variable (α) in

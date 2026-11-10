@@ -10,7 +10,6 @@ public import Mathlib.Probability.Kernel.Basic
 
 /-!
 # Bochner integrals of kernels
-
 -/
 
 public section

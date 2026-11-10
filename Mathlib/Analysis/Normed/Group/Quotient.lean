@@ -91,7 +91,6 @@ which uses the topological structure and the group structure to build the unifor
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
 the previous paragraph kicks in.
-
 -/
 
 @[expose] public section
@@ -154,7 +153,8 @@ lemma norm_lt_iff : ‖x‖ < r ↔ ∃ m : M, ↑m = x ∧ ‖m‖ < r := by
 lemma nhds_one_hasBasis : (𝓝 (1 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ {x | ‖x‖ < ε} := by
   have : ∀ ε : ℝ, mk '' ball (1 : M) ε = {x : M ⧸ S | ‖x‖ < ε} := by
     refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
-    rw [ball_one_eq, mem_ofPred_eq, norm_lt_iff, mem_image]
+    rw [ball_one_eq]
+    simp only [mem_image, mem_ofPred_eq, norm_lt_iff]
     exact exists_congr fun _ ↦ and_comm
   rw [← mk_one, nhds_eq, ← funext this]
   exact .map _ Metric.nhds_basis_ball

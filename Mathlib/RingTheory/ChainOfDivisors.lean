@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.Order.Atoms
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-/-!
 
+/-!
 # Chains of divisors
 
 The results in this file show that in the monoid `Associates M` of a `UniqueFactorizationMonoid`
@@ -32,7 +32,6 @@ and the set of factors of `a`.
 - Create a structure for chains of divisors.
 - Simplify proof of `mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors` using
   `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.
-
 -/
 
 @[expose] public section

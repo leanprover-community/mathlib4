@@ -29,7 +29,6 @@ This file defines affinely independent families of points.
 ## References
 
 * https://en.wikipedia.org/wiki/Affine_space
-
 -/
 
 @[expose] public section
@@ -953,6 +952,10 @@ theorem exists_affineIndependent (s : Set P) :
     · use p
       simp only [Equiv.coe_vaddConst, Set.singleton_union, Set.mem_inter_iff]
       exact ⟨mem_affineSpan k (Set.mem_insert p _), mem_affineSpan k hp⟩
+
+theorem exists_affineIndepOn (s : Set P) :
+    ∃ t ⊆ s, affineSpan k t = affineSpan k s ∧ AffineIndepOn k id t :=
+  exists_affineIndependent k V s
 
 variable {V}
 
