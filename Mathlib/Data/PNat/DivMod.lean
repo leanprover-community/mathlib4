@@ -20,20 +20,38 @@ natural quotient.
 
 namespace PNat
 
-/-- Auxiliary function for positive remainder and quotient. -/
+/-- We define `m % k` and `m / k` in the same way as for `ℕ`
+  except that when `m = n * k` we take `m % k = k` and
+  `m / k = n - 1`.  This ensures that `m % k` is always positive
+  and `m = (m % k) + k * (m / k)` in all cases.  Later we
+  define a function `divExact` which gives the usual `m / k`
+  in the case where `k` divides `m`.
+-/
 def modDivAux : ℕ+ → ℕ → ℕ → ℕ+ × ℕ
   | k, 0, q => ⟨k, q.pred⟩
   | _, r + 1, q => ⟨⟨r + 1, Nat.succ_pos r⟩, q⟩
 
-/-- The positive remainder and quotient associated to two positive naturals. -/
+/-- `modDiv m k = (m % k, m / k)`.
+  We define `m % k` and `m / k` in the same way as for `ℕ`
+  except that when `m = n * k` we take `m % k = k` and
+  `m / k = n - 1`.  This ensures that `m % k` is always positive
+  and `m = (m % k) + k * (m / k)` in all cases.  Later we
+  define a function `divExact` which gives the usual `m / k`
+  in the case where `k` divides `m`.
+-/
 def modDiv (m k : ℕ+) : ℕ+ × ℕ :=
   modDivAux k ((m : ℕ) % (k : ℕ)) ((m : ℕ) / (k : ℕ))
 
-/-- Positive remainder, with zero remainders represented by the divisor. -/
+/-- We define `m % k` in the same way as for `ℕ`
+  except that when `m = n * k` we take `m % k = k` This ensures that `m % k` is always positive.
+-/
 def mod (m k : ℕ+) : ℕ+ :=
   (modDiv m k).1
 
-/-- Quotient paired with `mod`, with exact divisions represented by the predecessor quotient. -/
+/-- We define `m / k` in the same way as for `ℕ` except that when `m = n * k` we take
+  `m / k = n - 1`. This ensures that `m = (m % k) + k * (m / k)` in all cases. Later we
+  define a function `divExact` which gives the usual `m / k` in the case where `k` divides `m`.
+-/
 def div (m k : ℕ+) : ℕ :=
   (modDiv m k).2
 
@@ -59,7 +77,7 @@ theorem div_coe (m k : ℕ+) :
     rw [ite_eq_right n.succ_ne_zero]
     rfl
 
-/-- If `k ∣ m`, `divExact m k` is the usual positive quotient. -/
+/-- If `h : k ∣ m`, then `k * (divExact m k) = m`. Note that this is not equal to `m / k`. -/
 def divExact (m k : ℕ+) : ℕ+ :=
   ⟨(div m k).succ, Nat.succ_pos _⟩
 
