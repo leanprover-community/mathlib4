@@ -240,10 +240,10 @@ instance denselyOrdered [LT α] [LT β] [DenselyOrdered α] [DenselyOrdered β] 
     match a, b, h with
     | inl _, inl _, LiftRel.inl h =>
       let ⟨c, ha, hb⟩ := exists_between h
-      ⟨toLex (inl c), LiftRel.inl ha, LiftRel.inl hb⟩
+      ⟨inl c, LiftRel.inl ha, LiftRel.inl hb⟩
     | inr _, inr _, LiftRel.inr h =>
       let ⟨c, ha, hb⟩ := exists_between h
-      ⟨toLex (inr c), LiftRel.inr ha, LiftRel.inr hb⟩⟩
+      ⟨inr c, LiftRel.inr ha, LiftRel.inr hb⟩⟩
 
 @[simp]
 theorem denselyOrdered_iff [LT α] [LT β] :
@@ -280,6 +280,7 @@ end Disjoint
 
 namespace Lex
 
+open _root_.Lex
 
 /-- The linear sum of two orders -/
 notation3:30 α " ⊕ₗ " β:29 => _root_.Lex (α ⊕ β)
@@ -296,12 +297,12 @@ abbrev _root_.Sum.inrₗ (x : β) : α ⊕ₗ β :=
   toLex (Sum.inr x)
 
 /-- The linear/lexicographical `≤` on a sum. -/
-protected instance LE [LE α] [LE β] : LE (α ⊕ₗ β) :=
-  ⟨Lex (· ≤ ·) (· ≤ ·)⟩
+protected instance LE [LE α] [LE β] : LE (α ⊕ₗ β) where
+  le x y := Lex (· ≤ ·) (· ≤ ·) x.ofLex y.ofLex
 
 /-- The linear/lexicographical `<` on a sum. -/
-protected instance LT [LT α] [LT β] : LT (α ⊕ₗ β) :=
-  ⟨Lex (· < ·) (· < ·)⟩
+protected instance LT [LT α] [LT β] : LT (α ⊕ₗ β) where
+  lt x y := Lex (· < ·) (· < ·) x.ofLex y.ofLex
 
 @[simp]
 theorem toLex_le_toLex [LE α] [LE β] {a b : α ⊕ β} :
@@ -328,7 +329,7 @@ theorem inr_le_inr_iff [LE α] [LE β] {a b : β} : toLex (inr a : α ⊕ β) �
 theorem inl_lt_inl_iff [LT α] [LT β] {a b : α} : toLex (inl a : α ⊕ β) < toLex (inl b) ↔ a < b :=
   lex_inl_inl
 
-theorem inr_lt_inr_iff [LT α] [LT β] {a b : β} : toLex (inr a : α ⊕ₗ β) < toLex (inr b) ↔ a < b :=
+theorem inr_lt_inr_iff [LT α] [LT β] {a b : β} : toLex (inr a : α ⊕ β) < toLex (inr b) ↔ a < b :=
   lex_inr_inr
 
 theorem inl_le_inr [LE α] [LE β] (a : α) (b : β) : toLex (inl a) ≤ toLex (inr b) :=
@@ -377,20 +378,20 @@ section Preorder
 
 variable [Preorder α] [Preorder β]
 
-instance preorder : Preorder (α ⊕ₗ β) :=
-  { Lex.LE, Lex.LT with
-    le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
-    le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
-    lt_iff_le_not_ge := fun a b => by
-      refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
-      · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
-        · exact hba.not_gt (inl_lt_inl_iff.1 hab)
-        · exact hba.not_gt (inr_lt_inr_iff.1 hab)
-        · exact not_inr_lt_inl hab
-      · rintro ⟨⟨hab⟩ | ⟨hab⟩ | ⟨a, b⟩, hba⟩
-        · exact Lex.inl (hab.lt_of_not_ge fun h => hba <| Lex.inl h)
-        · exact Lex.inr (hab.lt_of_not_ge fun h => hba <| Lex.inr h)
-        · exact Lex.sep _ _ }
+instance : Preorder (α ⊕ₗ β) where
+  le_refl := by rintro ⟨_ | _⟩ <;> simp
+  le_trans _ _ _ := trans_of (Lex (· ≤ ·) (· ≤ ·))
+  lt_iff_le_not_ge := by
+    rintro ⟨a⟩ ⟨b⟩
+    refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
+    · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
+      · exact hba.not_gt (inl_lt_inl_iff.1 hab)
+      · exact hba.not_gt (inr_lt_inr_iff.1 hab)
+      · exact not_inr_lt_inl hab
+    · rintro ⟨⟨hab⟩ | ⟨hab⟩ | ⟨a, b⟩, hba⟩
+      · exact Lex.inl (hab.lt_of_not_ge fun h => hba <| Lex.inl h)
+      · exact Lex.inr (hab.lt_of_not_ge fun h => hba <| Lex.inr h)
+      · exact Lex.sep _ _
 
 theorem toLex_mono : Monotone (@toLex (α ⊕ β)) := fun _ _ h => h.lex
 
@@ -410,20 +411,17 @@ theorem inr_strictMono : StrictMono (toLex ∘ inr : β → α ⊕ₗ β) :=
 
 end Preorder
 
-instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ₗ β) :=
-  { Lex.preorder with le_antisymm := fun _ _ => antisymm_of (Lex (· ≤ ·) (· ≤ ·)) }
+instance [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ₗ β) where
+  le_antisymm _ _ h₁ h₂ := Lex.ext (antisymm_of (Lex (· ≤ ·) (· ≤ ·)) h₁ h₂)
 
-instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
-  { Lex.partialOrder with
-    le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
-    toDecidableLE := instDecidableRelSumLex,
-    toDecidableLT := instDecidableRelSumLex,
-    toDecidableEq := instDecidableEqSum }
+instance [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) where
+  le_total x y := total_of (Lex (· ≤ ·) (· ≤ ·)) x.ofLex y.ofLex
+  toDecidableLE x y := instDecidableRelSumLex x.ofLex y.ofLex
 
 /-- The lexicographical bottom of a sum is the bottom of the left component. -/
 instance orderBot [LE α] [OrderBot α] [LE β] :
     OrderBot (α ⊕ₗ β) where
-  bot := inl ⊥
+  bot := ⟨inl ⊥⟩
   bot_le := by
     rintro (a | b)
     · exact Lex.inl bot_le
@@ -436,7 +434,7 @@ theorem inl_bot [LE α] [OrderBot α] [LE β] : toLex (inl ⊥ : α ⊕ β) = �
 /-- The lexicographical top of a sum is the top of the right component. -/
 instance orderTop [LE α] [LE β] [OrderTop β] :
     OrderTop (α ⊕ₗ β) where
-  top := inr ⊤
+  top := ⟨inr ⊤⟩
   le_top := by
     rintro (a | b)
     · exact Lex.sep _ _
@@ -452,36 +450,36 @@ instance boundedOrder [LE α] [LE β] [OrderBot α] [OrderTop β] : BoundedOrder
 instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (α ⊕ₗ β) :=
   ⟨fun a =>
     match a with
-    | inl a =>
+    | ⟨inl a⟩ =>
       let ⟨b, h⟩ := exists_lt a
       ⟨toLex (inl b), inl_lt_inl_iff.2 h⟩
-    | inr a =>
+    | ⟨inr a⟩ =>
       let ⟨b, h⟩ := exists_lt a
       ⟨toLex (inr b), inr_lt_inr_iff.2 h⟩⟩
 
 instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder (α ⊕ₗ β) :=
   ⟨fun a =>
     match a with
-    | inl a =>
+    | ⟨inl a⟩ =>
       let ⟨b, h⟩ := exists_gt a
       ⟨toLex (inl b), inl_lt_inl_iff.2 h⟩
-    | inr a =>
+    | ⟨inr a⟩ =>
       let ⟨b, h⟩ := exists_gt a
       ⟨toLex (inr b), inr_lt_inr_iff.2 h⟩⟩
 
 instance noMinOrder_of_nonempty [LT α] [LT β] [NoMinOrder α] [Nonempty α] : NoMinOrder (α ⊕ₗ β) :=
   ⟨fun a =>
     match a with
-    | inl a =>
+    | ⟨inl a⟩ =>
       let ⟨b, h⟩ := exists_lt a
       ⟨toLex (inl b), inl_lt_inl_iff.2 h⟩
-    | inr _ => ⟨toLex (inl <| Classical.arbitrary α), inl_lt_inr _ _⟩⟩
+    | ⟨inr _⟩ => ⟨toLex (inl <| Classical.arbitrary α), inl_lt_inr _ _⟩⟩
 
 instance noMaxOrder_of_nonempty [LT α] [LT β] [NoMaxOrder β] [Nonempty β] : NoMaxOrder (α ⊕ₗ β) :=
   ⟨fun a =>
     match a with
-    | inl _ => ⟨toLex (inr <| Classical.arbitrary β), inl_lt_inr _ _⟩
-    | inr a =>
+    | ⟨inl _⟩ => ⟨toLex (inr <| Classical.arbitrary β), inl_lt_inr _ _⟩
+    | ⟨inr a⟩ =>
       let ⟨b, h⟩ := exists_gt a
       ⟨toLex (inr b), inr_lt_inr_iff.2 h⟩⟩
 
@@ -489,13 +487,13 @@ instance denselyOrdered_of_noMaxOrder [LT α] [LT β] [DenselyOrdered α] [Dense
     [NoMaxOrder α] : DenselyOrdered (α ⊕ₗ β) :=
   ⟨fun a b h =>
     match a, b, h with
-    | inl _, inl _, Lex.inl h =>
+    | ⟨inl _⟩, ⟨inl _⟩, Lex.inl h =>
       let ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inl c), inl_lt_inl_iff.2 ha, inl_lt_inl_iff.2 hb⟩
-    | inl a, inr _, Lex.sep _ _ =>
+    | ⟨inl a⟩, ⟨inr _⟩, Lex.sep _ _ =>
       let ⟨c, h⟩ := exists_gt a
       ⟨toLex (inl c), inl_lt_inl_iff.2 h, inl_lt_inr _ _⟩
-    | inr _, inr _, Lex.inr h =>
+    | ⟨inr _⟩, ⟨inr _⟩, Lex.inr h =>
       let ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inr c), inr_lt_inr_iff.2 ha, inr_lt_inr_iff.2 hb⟩⟩
 
@@ -503,18 +501,18 @@ instance denselyOrdered_of_noMinOrder [LT α] [LT β] [DenselyOrdered α] [Dense
     [NoMinOrder β] : DenselyOrdered (α ⊕ₗ β) :=
   ⟨fun a b h =>
     match a, b, h with
-    | inl _, inl _, Lex.inl h =>
+    | ⟨inl _⟩, ⟨inl _⟩, Lex.inl h =>
       let ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inl c), inl_lt_inl_iff.2 ha, inl_lt_inl_iff.2 hb⟩
-    | inl _, inr b, Lex.sep _ _ =>
+    | ⟨inl _⟩, ⟨inr b⟩, Lex.sep _ _ =>
       let ⟨c, h⟩ := exists_lt b
       ⟨toLex (inr c), inl_lt_inr _ _, inr_lt_inr_iff.2 h⟩
-    | inr _, inr _, Lex.inr h =>
+    | ⟨inr _⟩, ⟨inr _⟩, Lex.inr h =>
       let ⟨c, ha, hb⟩ := exists_between h
       ⟨toLex (inr c), inr_lt_inr_iff.2 ha, inr_lt_inr_iff.2 hb⟩⟩
 
 instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ⊕ₗ β) :=
-  Sum.lex_wf wellFounded_lt wellFounded_lt
+  InvImage.wf Lex.ofLex (Sum.lex_wf wellFounded_lt wellFounded_lt)
 
 instance [LT α] [LT β] [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α ⊕ₗ β) := by
   unfold WellFoundedGT
@@ -533,7 +531,7 @@ end Sum
 /-! ### Order isomorphisms -/
 
 
-open OrderDual Sum
+open OrderDual Sum Lex
 
 namespace OrderIso
 
@@ -602,16 +600,16 @@ theorem sumAssoc_symm_apply_inr_inr : (sumAssoc α β γ).symm (inr (inr c)) = i
   rfl
 
 /-- `orderDual` is distributive over `⊕` up to an order isomorphism. -/
-def sumDualDistrib (α β : Type*) [LE α] [LE β] : (α ⊕ β)ᵒᵈ ≃o αᵒᵈ ⊕ βᵒᵈ :=
-  { Equiv.refl _ with
-    map_rel_iff' := by
-      rintro (a | a) (b | b)
-      · change inl (toDual a) ≤ inl (toDual b) ↔ toDual (inl a) ≤ toDual (inl b)
-        simp [toDual_le_toDual, inl_le_inl_iff]
-      · exact iff_of_false (@not_inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _) not_inr_le_inl
-      · exact iff_of_false (@not_inr_le_inl (OrderDual α) (OrderDual β) _ _ _ _) not_inl_le_inr
-      · change inr (toDual a) ≤ inr (toDual b) ↔ toDual (inr a) ≤ toDual (inr b)
-        simp [toDual_le_toDual, inr_le_inr_iff] }
+def sumDualDistrib (α β : Type*) [LE α] [LE β] : (α ⊕ β)ᵒᵈ ≃o αᵒᵈ ⊕ βᵒᵈ where
+  toEquiv := Equiv.refl _
+  map_rel_iff' := by
+    rintro (a | a) (b | b)
+    · change inl (toDual a) ≤ inl (toDual b) ↔ toDual (inl a) ≤ toDual (inl b)
+      simp [toDual_le_toDual]
+    · exact iff_of_false (@not_inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _) not_inr_le_inl
+    · exact iff_of_false (@not_inr_le_inl (OrderDual α) (OrderDual β) _ _ _ _) not_inl_le_inr
+    · change inr (toDual a) ≤ inr (toDual b) ↔ toDual (inr a) ≤ toDual (inr b)
+      simp [toDual_le_toDual]
 
 @[simp]
 theorem sumDualDistrib_inl : sumDualDistrib α β (toDual (inl a)) = inl (toDual a) :=
@@ -632,7 +630,7 @@ theorem sumDualDistrib_symm_inr : (sumDualDistrib α β).symm (inr (toDual b)) =
 /-- `Equiv.sumCongr` promoted to an order isomorphism between lexicographic sums. -/
 @[simps! apply]
 def sumLexCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ₗ β₁ ≃o α₂ ⊕ₗ β₂ where
-  toEquiv := ofLex.trans ((Equiv.sumCongr ea eb).trans toLex)
+  toEquiv := ofLexEquiv.trans ((Equiv.sumCongr ea eb).trans ofLexEquiv.symm)
   map_rel_iff' := by simp_rw [Lex.forall]; rintro (a | a) (b | b) <;> simp
 
 @[simp]
@@ -650,9 +648,10 @@ theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
   ext; simp
 
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
-def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
-  { Equiv.sumAssoc α β γ with
-    map_rel_iff' := fun {a b} =>
+def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ where
+  toEquiv := ofLexEquiv.trans (ofLexEquiv.sumCongr (Equiv.refl _)) |>.trans (Equiv.sumAssoc α β γ)
+    |>.trans ((Equiv.refl _).sumCongr ofLexEquiv.symm) |>.trans ofLexEquiv.symm
+  map_rel_iff' {a b} :=
       ⟨fun h =>
         match a, b, h with
         | inlₗ (inlₗ _), inlₗ (inlₗ _), Lex.inl h => Lex.inl <| Lex.inl h
@@ -668,7 +667,7 @@ def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕�
         | inlₗ (inlₗ _), inrₗ _, Lex.sep _ _ => Lex.sep _ _
         | inlₗ (inrₗ _), inlₗ (inrₗ _), Lex.inl (Lex.inr h) => Lex.inr <| Lex.inl h
         | inlₗ (inrₗ _), inrₗ _, Lex.sep _ _ => Lex.inr <| Lex.sep _ _
-        | inrₗ _, inrₗ _, Lex.inr h => Lex.inr <| Lex.inr h⟩ }
+        | inrₗ _, inrₗ _, Lex.inr h => Lex.inr <| Lex.inr h⟩
 
 @[simp]
 theorem sumLexAssoc_apply_inl_inl :
@@ -686,62 +685,66 @@ theorem sumLexAssoc_apply_inr :
   rfl
 
 @[simp]
-theorem sumLexAssoc_symm_apply_inl : (sumLexAssoc α β γ).symm (inl a) = inl (inl a) :=
+theorem sumLexAssoc_symm_apply_inl : (sumLexAssoc α β γ).symm ⟨inl a⟩ = ⟨inl ⟨inl a⟩⟩ :=
   rfl
 
 @[simp]
-theorem sumLexAssoc_symm_apply_inr_inl : (sumLexAssoc α β γ).symm (inr (inl b)) = inl (inr b) :=
+theorem sumLexAssoc_symm_apply_inr_inl : (sumLexAssoc α β γ).symm ⟨inr ⟨inl b⟩⟩ = ⟨inl ⟨inr b⟩⟩ :=
   rfl
 
 @[simp]
-theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c)) = inr c :=
+theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm ⟨inr ⟨inr c⟩⟩ = ⟨inr c⟩ :=
   rfl
 
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
-def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
-  { Equiv.sumComm α β with
-    map_rel_iff' := fun {a b} => by
-      rcases a with (a | a) <;> rcases b with (b | b)
-      · change
-          toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
-            toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
-        simp [toDual_le_toDual]
-      · exact iff_of_false (@Lex.not_inr_le_inl (OrderDual β) (OrderDual α) _ _ _ _)
-          Lex.not_inr_le_inl
-      · exact iff_of_true (@Lex.inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _)
-          (Lex.inl_le_inr _ _)
-      · change
-          toLex (inl <| toDual a) ≤ toLex (inl <| toDual b) ↔
-            toDual (toLex <| inr a) ≤ toDual (toLex <| inr b)
-        simp [toDual_le_toDual] }
+def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ where
+  toEquiv := ofLexEquiv.trans <| (Equiv.sumComm α β).trans ofLexEquiv.symm
+  map_rel_iff' := by
+    rintro ⟨a | a⟩ ⟨b | b⟩
+    · change toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
+        toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
+      simp [toDual_le_toDual]
+    · exact iff_of_false (@Lex.not_inr_le_inl (OrderDual β) (OrderDual α) _ _ _ _)
+        Lex.not_inr_le_inl
+    · exact iff_of_true (@Lex.inl_le_inr (OrderDual β) (OrderDual α) _ _ _ _)
+        (Lex.inl_le_inr _ _)
+    · change toLex (inl <| toDual a) ≤ toLex (inl <| toDual b) ↔
+        toDual (toLex <| inr a) ≤ toDual (toLex <| inr b)
+      simp [toDual_le_toDual]
 
 @[simp]
 theorem sumLexDualAntidistrib_inl :
-    sumLexDualAntidistrib α β (toDual (inl a)) = inr (toDual a) :=
+    sumLexDualAntidistrib α β (toDual ⟨inl a⟩) = ⟨inr (toDual a)⟩ :=
   rfl
 
 @[simp]
 theorem sumLexDualAntidistrib_inr :
-    sumLexDualAntidistrib α β (toDual (inr b)) = inl (toDual b) :=
+    sumLexDualAntidistrib α β (toDual ⟨inr b⟩) = ⟨inl (toDual b)⟩ :=
   rfl
 
 @[simp]
 theorem sumLexDualAntidistrib_symm_inl :
-    (sumLexDualAntidistrib α β).symm (inl (toDual b)) = toDual (inr b) :=
+    (sumLexDualAntidistrib α β).symm ⟨inl (toDual b)⟩ = ⟨toDual (inr b)⟩ :=
   rfl
 
 @[simp]
 theorem sumLexDualAntidistrib_symm_inr :
-    (sumLexDualAntidistrib α β).symm (inr (toDual a)) = toDual (inl a) :=
+    (sumLexDualAntidistrib α β).symm ⟨inr (toDual a)⟩ = ⟨toDual (inl a)⟩ :=
   rfl
 
 /-- `Equiv.sumEmpty` as an `OrderIso` with the lexicographic sum. -/
-def sumLexEmpty [IsEmpty β] : Lex (α ⊕ β) ≃o α :=
-  RelIso.sumLexEmpty ..
+def sumLexEmpty [IsEmpty β] : Lex (α ⊕ β) ≃o α where
+  toEquiv := ofLexEquiv.trans (Equiv.sumEmpty α β)
+  map_rel_iff' := by
+    rintro ⟨a | a⟩ ⟨b | b⟩
+    exacts [by simp, isEmptyElim b, isEmptyElim a, isEmptyElim a]
 
 /-- `Equiv.emptySum` as an `OrderIso` with the lexicographic sum. -/
-def emptySumLex [IsEmpty β] : Lex (β ⊕ α) ≃o α :=
-  RelIso.emptySumLex ..
+def emptySumLex [IsEmpty β] : Lex (β ⊕ α) ≃o α where
+  toEquiv := ofLexEquiv.trans (Equiv.emptySum β α)
+  map_rel_iff' := by
+    rintro ⟨a | a⟩ ⟨b | b⟩
+    exacts [isEmptyElim a, isEmptyElim a, isEmptyElim b, by simp]
 
 @[simp]
 lemma sumLexEmpty_apply_inl [IsEmpty β] (x : α) : sumLexEmpty (β := β) (toLex <| .inl x) = x :=
@@ -760,17 +763,17 @@ namespace WithBot
 set_option backward.isDefEq.respectTransparency false in
 /-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `Unit` and `↑a` to
 `a`. -/
-def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
-  ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, fun {a b} => by
+def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α where
+  toEquiv := (Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm ..).trans ofLexEquiv.symm
+  map_rel_iff' {a b} := by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
+      Equiv.sumComm_apply, swap, ofLexEquiv_symm_apply, Lex.toLex_le_toLex, le_refl]
     cases a <;> cases b
     · simp only [elim_inr, lex_inl_inl, bot_le]
     · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
     · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
       exact not_coe_le_bot _
     · simp only [elim_inl, lex_inr_inr, coe_le_coe]
-  ⟩
 
 @[simp]
 theorem orderIsoPUnitSumLex_bot : @orderIsoPUnitSumLex α _ ⊥ = toLex (inl PUnit.unit) :=
@@ -796,16 +799,17 @@ namespace WithTop
 set_option backward.isDefEq.respectTransparency false in
 /-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `Unit` and `↑a` to
 `a`. -/
-def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
-  ⟨(Equiv.optionEquivSumPUnit α).trans toLex, fun {a b} => by
+def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit where
+  toEquiv := (Equiv.optionEquivSumPUnit α).trans ofLexEquiv.symm
+  map_rel_iff' {a b} := by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      Lex.toLex_le_toLex, le_refl]
+      ofLexEquiv_symm_apply, Lex.toLex_le_toLex, le_refl]
     cases a <;> cases b
     · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]
       exact not_top_le_coe _
     · simp only [Lex.sep, le_top]
-    · simp only [lex_inl_inl, coe_le_coe]⟩
+    · simp only [lex_inl_inl, coe_le_coe]
 
 @[simp]
 theorem orderIsoSumLexPUnit_top : @orderIsoSumLexPUnit α _ ⊤ = toLex (inr PUnit.unit) :=
