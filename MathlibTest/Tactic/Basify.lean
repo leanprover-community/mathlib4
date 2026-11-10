@@ -195,6 +195,12 @@ example : ∀ a : no_index ℝ≥0∞, a ≤ a + 1 := by
   basify
   linarith
 
+/-- Type annotations such as `optParam` in a binder type, which `intro` keeps. -/
+example : ∀ a : optParam ℝ≥0∞ 1, a ≤ a + 1 := by
+  intro a
+  basify
+  linarith
+
 /-! ### Numerals -/
 
 section Numerals
