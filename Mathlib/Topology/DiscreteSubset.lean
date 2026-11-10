@@ -36,7 +36,6 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 We define the filter `Filter.codiscreteWithin S`, which is the supremum of all `𝓝[S \ {x}] x`.
 This is the filter of all open codiscrete sets within S. We also define `Filter.codiscrete` as
 `Filter.codiscreteWithin univ`, which is the filter of all open codiscrete sets in the space.
-
 -/
 
 @[expose] public section

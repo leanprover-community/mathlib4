@@ -52,9 +52,12 @@ theorem inv_zero' : (0 : FractionalIdeal R₁⁰ K)⁻¹ = 0 := div_zero
 theorem inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     J⁻¹ = ⟨(1 : FractionalIdeal R₁⁰ K) / J, isFractional_div_of_ne_zero h⟩ := div_of_ne_zero h
 
-theorem coe_inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
+theorem coeToSubmodule_inv_of_ne_zero {J : FractionalIdeal R₁⁰ K} (h : J ≠ 0) :
     (↑J⁻¹ : Submodule R₁ K) = IsLocalization.coeSubmodule K ⊤ / (J : Submodule R₁ K) := by
-  simp_rw [inv_of_ne_zero _ h, coe_one, coe_mk, IsLocalization.coeSubmodule_top]
+  simp_rw [inv_of_ne_zero _ h, coeToSubmodule_one, coeToSubmodule_mk,
+    IsLocalization.coeSubmodule_top]
+
+@[deprecated (since := "2026-11-09")] alias coe_inv_of_ne_zero := coeToSubmodule_inv_of_ne_zero
 
 variable {K}
 
@@ -135,7 +138,7 @@ theorem mul_generator_self_inv {R₁ : Type*} [CommRing R₁] [Algebra R₁ K] [
     (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)] (h : I ≠ 0) :
     I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 := by
   -- Rewrite only the `I` that appears alone.
-  conv_lhs => congr; rw [eq_spanSingleton_of_principal I]
+  conv_lhs => enter [1]; rw [eq_spanSingleton_of_principal I]
   rw [← map_mul, mul_inv_cancel₀, map_one]
   intro generator_I_eq_zero
   apply h
@@ -178,7 +181,7 @@ lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
     algebraMap R₁ K (I.den : R₁) ∈ I⁻¹ := by
   rw [mem_inv_iff hI]
   intro i hi
-  rw [← Algebra.smul_def (I.den : R₁) i, ← mem_coe, coe_one]
+  rw [← Algebra.smul_def (I.den : R₁) i, ← mem_coeToSubmodule, coeToSubmodule_one]
   suffices Submodule.map (Algebra.linearMap R₁ K) I.num ≤ 1 from
     this <| (den_mul_self_eq_num I).symm ▸ smul_mem_pointwise_smul i I.den I.coeToSubmodule hi
   apply le_trans <| map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top])

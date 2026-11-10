@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Order.Hom.Monoid
 
 * `Subgroup.topOrderMonoidIso` : the order preserving isomorphism from the top subgroup
   to the group.
-
 -/
 
 public section

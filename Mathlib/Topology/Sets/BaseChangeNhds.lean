@@ -18,7 +18,6 @@ This file builds base changes for `.compactsInside`, `openNhds`.
 
 It also contains the evidences that `openRcNhds_to_openNhds`and
  `openRcNhds_to_compactNhds` are initials functors.
-
 -/
 
 @[expose] public section

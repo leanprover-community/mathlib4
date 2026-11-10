@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Measurable functions in normed spaces
-
 -/
 
 public section

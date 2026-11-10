@@ -28,7 +28,6 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
   The same holds for open thickenings.
 * `IsCompact.cthickening_eq_biUnion_closedBall`: if `s` is compact, `cthickening δ s` is the union
   of `closedBall`s of radius `δ` around `x : E`.
-
 -/
 
 @[expose] public section

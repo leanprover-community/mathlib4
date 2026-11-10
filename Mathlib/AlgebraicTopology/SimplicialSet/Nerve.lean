@@ -18,7 +18,6 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 ## References
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
-
 -/
 
 @[expose] public section

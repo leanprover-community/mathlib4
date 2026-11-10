@@ -16,7 +16,6 @@ In this file we define a typeclass for measures that are positive on nonempty op
 `MeasureTheory.Measure.IsOpenPosMeasure`. Examples include (additive) Haar measures, as well as
 measures that have positive density with respect to a Haar measure. We also prove some basic facts
 about these measures.
-
 -/
 
 public section

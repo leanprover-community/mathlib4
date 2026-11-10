@@ -33,7 +33,6 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 ## Notation
 
 * `E →SLₚₜ[σ] F` is space of continuous linear maps equipped with pointwise convergence topology.
-
 -/
 
 @[expose] public section

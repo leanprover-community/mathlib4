@@ -34,7 +34,6 @@ This file contains some finiteness results of tensor product.
 ## Tags
 
 tensor product, finitely generated
-
 -/
 
 public section

@@ -21,7 +21,6 @@ import Mathlib.RingTheory.LocalProperties.Exactness
 
 * `Module.injective_of_localization_maximal` : For module `M` over Noetherian ring `R`,
   being injective can be checked at localization at maximal ideals.
-
 -/
 
 universe u v

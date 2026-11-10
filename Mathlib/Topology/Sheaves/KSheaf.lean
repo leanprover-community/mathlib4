@@ -5,32 +5,29 @@ Authors: Yannis Monbru Carcelero
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
+public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Sets.BaseChangeNhds
-
 
 /-!
 # K-sheaves
 
 We define K-sheaves on `X` a T2 topological space with value in an arbitrary category `A`.
 
-This corespond to the `F : (Compacts X)ᵒᵖ ⥤ A` such that:
+This coresponds to the presheaves `F : (Compacts X)ᵒᵖ ⥤ A` such that:
 - `F.obj (∅)` is terminal.
-- For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is obtained by
-  gluing `F.obj K₁` and `F.obj K₂` over `F.obj K₁ ∩ K₂`.
+- For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is the pullback
+  of `F.obj K₁` and `F.obj K₂` over `F.obj (K₁ ∩ K₂)`.
 - For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts
-  subsets `L` of `X`such that `K` is in the interior of `L`.
+  subsets `L` of `X` such that `K` is in the interior of `L`.
 
-One may expect this notion to come from sheaves on a site of compact subset of a topological space
-but there is no corresponding Grothendieck topology on compact subsets, in particular
-because the `nonempty_isColimit_coconeOfCompacts` condition can't be expressed as a sheaf condition.
-
-However this category turns out to be equivalent to the category of sheaves over `X`,
-and is thus a topos.
-
-TODO: provide the equivalence of category (Yannis Monbru Carcelero)
+The category of K-sheaves is a topos, because it is equivalent to the category of sheaves over `X`
+(TODO Yannis Monbru Carcelero), but the condition that `K`-presheaves need to verify to
+be `K`-sheaves is *not* expressed as the sheaf condition for a Grothendieck topology on
+compact sets. Indeed, two of three conditions do involve limits, but the third
+`nonempty_isColimit_coconeOfCompact` involves colimits.
 
 ## References
 
@@ -55,19 +52,21 @@ abbrev KPresheaf : Type max u v w := (Compacts X)ᵒᵖ ⥤ A
 
 namespace KPresheaf
 
-/-- The pushforward of a KPresheaf by a proper map -/
+/-- The pushforward of a K-presheaf by a proper map -/
+@[simps!]
 def pushforwardObj {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') (F : KPresheaf A X) :
     (KPresheaf A Y) := ((Functor.whiskeringLeft _ _ _).obj
   (Compacts.properPreimage_mono pf).functor.op).obj F
 
-/-- The pushforward by a proper map as a functor over KPresheaves -/
+/-- The pushforward by a proper map as a functor over K-presheaves -/
+@[simps, implicit_reducible]
 def pushforward {Y : TopCat.{w}} {f : X ⟶ Y} (pf : IsProperMap f.hom') :
     KPresheaf A X ⥤ KPresheaf A Y where
   obj := pushforwardObj pf
   map := ((Functor.whiskeringLeft _ _ _).obj
   (Compacts.properPreimage_mono pf).functor.op).map
 
-/-- If `P` is a KPresheaf, and `K` a compact subset then `P.obj (op K)` is equiped with a
+/-- If `P` is a K-presheaf, and `K` a compact subset then `P.obj (op K)` is equiped with a
 structure of cocone over the diagram defined by the `P.obj (op L)` for `L` a compact
 neighbourhood of `K` -/
 @[simps, implicit_reducible]
@@ -136,17 +135,28 @@ end KPresheaf
 
 variable [T2Space X]
 
-variable (X A) in
+variable (A X) in
 /-- The object property of being a K-sheaf -/
-abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := fun P ↦ P.IsKSheaf
+abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := IsKSheaf
 
-variable (X A) in
+variable (A X) in
 /-- The category of K-sheaves taking values in `A` on a T2-Space. -/
-abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
+abbrev KSheaf := (KPresheaf.isKSheaf A X).FullSubcategory
+
+instance : (KPresheaf.isKSheaf A X).IsClosedUnderIsomorphisms where
+  of_iso e h :=
+    { nonempty_isTerminal := ⟨h.nonempty_isTerminal.some.ofIso (e.app _)⟩
+      isPullback sq :=
+        (h.isPullback sq).of_iso (e.app _) (e.app _) (e.app _) (e.app _)
+          (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
+      nonempty_isColimit_coconeOfCompacts K :=
+        ⟨(IsColimit.equivOfNatIsoOfIso (Functor.isoWhiskerLeft _ e) _ _
+            (by exact Cocone.ext (e.app _)))
+          (h.nonempty_isColimit_coconeOfCompacts K).some⟩ }
 
 namespace KSheaf
 
-/-- If `P` is a K-sheaf, its the evidence that for any `K` a compact subset of `X`,
+/-- If `P` is a K-sheaf, this is the evidence that for any `K` a compact subset of `X`,
  `P.obj.coconeOfCompacts K` is a colimit cocone
 -/
 @[no_expose]
@@ -166,8 +176,7 @@ noncomputable def descOfOpenClosure (P : KSheaf A X) (K : Compacts X) {Z : A}
 lemma hom_ext_of_compacts (P : KSheaf A X) {K : Compacts X} {W : A} {f f' : P.obj.obj (op K) ⟶ W}
     (w : ∀ V, dsimp% (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f =
     (P.obj.coconeOfClosureOfOpens K).ι.app V ≫ f') : f = f' :=
-  ((Functor.Final.isColimitWhiskerEquiv K.openRcNhdsToCompactNhds_mono.functor.op _).symm
-    (P.isColimit K)).hom_ext w
+  KPresheaf.hom_ext_of_isColimit_coconeOfCompacts _ (P.isColimit K) w
 
 open Compacts
 
@@ -190,19 +199,22 @@ lemma pushforwardObj_isKSheaf : (F.obj.pushforwardObj pf).IsKSheaf where
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
     (pf : IsProperMap f.hom')
 
-/-- The pushforward of a Ksheaf by a proper map as a Ksheaf -/
+/-- The pushforward of a K-sheaf by a proper map as a K-sheaf -/
+@[simps]
 def pushforwardObj (F : KSheaf A X) : (KSheaf A Y) := ⟨_, F.pushforwardObj_isKSheaf pf⟩
 
-/-- The pushforward of a KSheaf as a functor -/
+/-- The pushforward of a K-presheaf as a functor -/
 @[simps!, implicit_reducible]
 def pushforward : KSheaf A X ⥤ KSheaf A Y :=
   ObjectProperty.lift _
   (ObjectProperty.ι KPresheaf.IsKSheaf ⋙ (KPresheaf.pushforward pf))
   (fun F ↦ F.pushforwardObj_isKSheaf pf)
 
+@[simp]
 lemma pushforward_id [LocallyCompactSpace X] :
     pushforward (f := 𝟙 X) (isProperMap_id) = Functor.id (KSheaf A X) := rfl
 
+@[simp]
 lemma pushforward_comp {Z : TopCat.{w}} [T2Space Z] [LocallyCompactSpace Z] {g : Y ⟶ Z}
     (pg : IsProperMap g.hom') :
     pushforward (A := A) pf ⋙ pushforward pg =

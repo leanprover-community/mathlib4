@@ -23,7 +23,6 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
   Fourier transform of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`.
 * `SchwartzMap.integral_bilin_fourier_eq`: The Fourier transform is self-adjoint.
 * `SchwartzMap.integral_inner_fourier_fourier`: Plancherel's theorem for Schwartz functions.
-
 -/
 
 open scoped Finset

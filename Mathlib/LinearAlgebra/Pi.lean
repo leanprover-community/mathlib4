@@ -25,7 +25,6 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
   - `LinearMap.single`
 - pi types in the domain:
   - `LinearMap.diag`
-
 -/
 
 @[expose] public section
@@ -620,7 +619,6 @@ definitionally equal to the result using `LinearMap.vecCons`, as `Fin.cases` and
 application do not commute definitionally.
 
 Versions for when `f₁ f₂ f₃` are bilinear maps are also provided.
-
 -/
 
 

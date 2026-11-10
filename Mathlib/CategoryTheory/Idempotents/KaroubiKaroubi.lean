@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 In this file, we construct the equivalence of categories
 `KaroubiKaroubi.equivalence C : Karoubi C ≌ Karoubi (Karoubi C)` for any category `C`.
-
 -/
 
 @[expose] public section

@@ -15,7 +15,6 @@ This file defines the category `ShortComplex C` of diagrams
 
 Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
-
 -/
 
 @[expose] public section
