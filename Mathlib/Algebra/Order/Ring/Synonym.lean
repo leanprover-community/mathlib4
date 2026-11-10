@@ -106,60 +106,73 @@ theorem ofDual_ofNat [NatCast R] (n : ℕ) [n.AtLeastTwo] :
 
 namespace Lex
 
-instance [Distrib R] : Distrib (Lex R) := inferInstanceAs <| Distrib R
+instance [Distrib R] : Distrib (Lex R) where
+  left_distrib _ _ _ := Lex.ext (left_distrib ..)
+  right_distrib _ _ _ := Lex.ext (right_distrib ..)
 
-instance [Mul R] [Add R] [LeftDistribClass R] : LeftDistribClass (Lex R) :=
-  inferInstanceAs <| LeftDistribClass R
+instance [Mul R] [Add R] [LeftDistribClass R] : LeftDistribClass (Lex R) where
+  left_distrib _ _ _ := Lex.ext (left_distrib ..)
 
-instance [Mul R] [Add R] [RightDistribClass R] : RightDistribClass (Lex R) :=
-  inferInstanceAs <| RightDistribClass R
+instance [Mul R] [Add R] [RightDistribClass R] : RightDistribClass (Lex R) where
+  right_distrib _ _ _ := Lex.ext (right_distrib ..)
 
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (Lex R) :=
-  inferInstanceAs <| NonUnitalNonAssocSemiring R
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (Lex R) where
+  zero_mul _ := Lex.ext (zero_mul _)
+  mul_zero _ := Lex.ext (mul_zero _)
 
-instance [NonUnitalSemiring R] : NonUnitalSemiring (Lex R) := inferInstanceAs <| NonUnitalSemiring R
+instance [NonUnitalSemiring R] : NonUnitalSemiring (Lex R) where
 
-instance [NatCast R] : NatCast (Lex R) := inferInstanceAs <| NatCast R
+instance [NatCast R] : NatCast (Lex R) where natCast n := ⟨n⟩
 
-instance [IntCast R] : IntCast (Lex R) := inferInstanceAs <| IntCast R
+instance [IntCast R] : IntCast (Lex R) where intCast n := ⟨n⟩
 
-instance [AddMonoidWithOne R] : AddMonoidWithOne (Lex R) := inferInstanceAs <| AddMonoidWithOne R
+instance [AddMonoidWithOne R] : AddMonoidWithOne (Lex R) where
+  natCast_zero := Lex.ext AddMonoidWithOne.natCast_zero
+  natCast_succ _ := Lex.ext (AddMonoidWithOne.natCast_succ _)
 
-instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (Lex R) :=
-  inferInstanceAs <| AddCommMonoidWithOne R
+instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (Lex R) where
 
-instance [AddGroupWithOne R] : AddGroupWithOne (Lex R) := inferInstanceAs <| AddGroupWithOne R
+instance [AddGroupWithOne R] : AddGroupWithOne (Lex R) where
+  intCast_ofNat _ := Lex.ext (AddGroupWithOne.intCast_ofNat _)
+  intCast_negSucc _ := Lex.ext (AddGroupWithOne.intCast_negSucc _)
 
-instance [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) :=
-  inferInstanceAs <| AddCommGroupWithOne R
+instance [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) where
 
-instance [NonAssocSemiring R] : NonAssocSemiring (Lex R) := inferInstanceAs <| NonAssocSemiring R
+instance [NonAssocSemiring R] : NonAssocSemiring (Lex R) where
 
-instance [Semiring R] : Semiring (Lex R) := inferInstanceAs <| Semiring R
+instance [Semiring R] : Semiring (Lex R) where
 
-instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (Lex R) :=
-  inferInstanceAs <| NonUnitalCommSemiring R
+instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (Lex R) where
 
-instance [CommSemiring R] : CommSemiring (Lex R) := inferInstanceAs <| CommSemiring R
+instance [CommSemiring R] : CommSemiring (Lex R) where
 
-instance [Mul R] [HasDistribNeg R] : HasDistribNeg (Lex R) := inferInstanceAs <| HasDistribNeg R
+instance [Mul R] [HasDistribNeg R] : HasDistribNeg (Lex R) where
+  neg_mul _ _ := Lex.ext (neg_mul ..)
+  mul_neg _ _ := Lex.ext (mul_neg ..)
 
-instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing (Lex R) :=
-  inferInstanceAs <| NonUnitalNonAssocRing R
+instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing (Lex R) where
 
-instance [NonUnitalRing R] : NonUnitalRing (Lex R) := inferInstanceAs <| NonUnitalRing R
+instance [NonUnitalRing R] : NonUnitalRing (Lex R) where
 
-instance [NonAssocRing R] : NonAssocRing (Lex R) := inferInstanceAs <| NonAssocRing R
+instance [NonAssocRing R] : NonAssocRing (Lex R) where
 
-instance [Ring R] : Ring (Lex R) := inferInstanceAs <| Ring R
+instance [Ring R] : Ring (Lex R) where
 
-instance [NonUnitalCommRing R] : NonUnitalCommRing (Lex R) := inferInstanceAs <| NonUnitalCommRing R
+instance [NonUnitalCommRing R] : NonUnitalCommRing (Lex R) where
 
-instance [CommRing R] : CommRing (Lex R) := inferInstanceAs <| CommRing R
+instance [CommRing R] : CommRing (Lex R) where
 
-instance [Ring R] [IsDomain R] : IsDomain (Lex R) := inferInstanceAs <| IsDomain R
+instance [Ring R] [IsDomain R] : IsDomain (Lex R) where
+  mul_left_cancel_of_ne_zero ha := by
+    rw [isLeftRegular_toLex]
+    exact IsLeftCancelMulZero.mul_left_cancel_of_ne_zero fun hc ↦ ha (ofLex_inj.mp hc)
+  mul_right_cancel_of_ne_zero ha := by
+    rw [isRightRegular_toLex]
+    exact IsRightCancelMulZero.mul_right_cancel_of_ne_zero fun hc ↦ ha (ofLex_inj.mp hc)
 
 end Lex
+
+open Lex
 
 @[simp]
 theorem toLex_natCast [NatCast R] (n : ℕ) : toLex (n : R) = n :=

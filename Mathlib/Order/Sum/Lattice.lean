@@ -30,10 +30,10 @@ variable [SemilatticeSup α] [SemilatticeSup β]
 set_option linter.unusedVariables false in
 instance instSemilatticeSup : SemilatticeSup (α ⊕ₗ β) where
   sup
-    | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊔ a₂)
-    | inlₗ a₁, inrₗ b₂ => inr b₂
-    | inrₗ b₁, inlₗ a₂ => inr b₁
-    | inrₗ b₁, inrₗ b₂ => inr (b₁ ⊔ b₂)
+    | inlₗ a₁, inlₗ a₂ => ⟨inl (a₁ ⊔ a₂)⟩
+    | inlₗ a₁, inrₗ b₂ => ⟨inr b₂⟩
+    | inrₗ b₁, inlₗ a₂ => ⟨inr b₁⟩
+    | inrₗ b₁, inrₗ b₂ => ⟨inr (b₁ ⊔ b₂)⟩
   le_sup_left
     | inlₗ a₁, inlₗ a₂ => inl_le_inl_iff.2 le_sup_left
     | inlₗ a₁, inrₗ b₂ => inl_le_inr _ _
@@ -51,8 +51,8 @@ instance instSemilatticeSup : SemilatticeSup (α ⊕ₗ β) where
     | inrₗ b₁, inlₗ a₂, inrₗ b₃, Lex.inr h₁₃, Lex.sep _ _ => inr_le_inr_iff.2 h₁₃
     | inrₗ b₁, inrₗ b₂, inrₗ b₃, Lex.inr h₁₃, Lex.inr h₂₃ => inr_le_inr_iff.2 <| sup_le h₁₃ h₂₃
 
-@[simp] lemma inl_sup (a₁ a₂ : α) : (inlₗ (a₁ ⊔ a₂) : α ⊕ β) = inlₗ a₁ ⊔ inlₗ a₂ := rfl
-@[simp] lemma inr_sup (b₁ b₂ : β) : (inrₗ (b₁ ⊔ b₂) : α ⊕ β) = inrₗ b₁ ⊔ inrₗ b₂ := rfl
+@[simp] lemma inl_sup (a₁ a₂ : α) : (inlₗ (a₁ ⊔ a₂) : α ⊕ₗ β) = inlₗ a₁ ⊔ inlₗ a₂ := rfl
+@[simp] lemma inr_sup (b₁ b₂ : β) : (inrₗ (b₁ ⊔ b₂) : α ⊕ₗ β) = inrₗ b₁ ⊔ inrₗ b₂ := rfl
 
 end SemilatticeSup
 
@@ -63,10 +63,10 @@ variable [SemilatticeInf α] [SemilatticeInf β]
 set_option linter.unusedVariables false in
 instance instSemilatticeInf : SemilatticeInf (α ⊕ₗ β) where
   inf
-    | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊓ a₂)
-    | inlₗ a₁, inrₗ b₂ => inl a₁
-    | inrₗ b₁, inlₗ a₂ => inl a₂
-    | inrₗ b₁, inrₗ b₂ => inr (b₁ ⊓ b₂)
+    | inlₗ a₁, inlₗ a₂ => ⟨inl (a₁ ⊓ a₂)⟩
+    | inlₗ a₁, inrₗ b₂ => ⟨inl a₁⟩
+    | inrₗ b₁, inlₗ a₂ => ⟨inl a₂⟩
+    | inrₗ b₁, inrₗ b₂ => ⟨inr (b₁ ⊓ b₂)⟩
   inf_le_left
     | inlₗ a₁, inlₗ a₂ => inl_le_inl_iff.2 inf_le_left
     | inlₗ a₁, inrₗ b₂ => le_rfl
@@ -84,8 +84,8 @@ instance instSemilatticeInf : SemilatticeInf (α ⊕ₗ β) where
     | inlₗ a₁, inrₗ b₂, inrₗ b₃, Lex.sep _ _, Lex.sep _ _ => Lex.sep _ _
     | inrₗ b₁, inrₗ b₂, inrₗ b₃, Lex.inr h₁₃, Lex.inr h₂₃ => inr_le_inr_iff.2 <| le_inf h₁₃ h₂₃
 
-@[simp] lemma inl_inf (a₁ a₂ : α) : (inlₗ (a₁ ⊓ a₂) : α ⊕ β) = inlₗ a₁ ⊓ inlₗ a₂ := rfl
-@[simp] lemma inr_inf (b₁ b₂ : β) : (inrₗ (b₁ ⊓ b₂) : α ⊕ β) = inrₗ b₁ ⊓ inrₗ b₂ := rfl
+@[simp] lemma inl_inf (a₁ a₂ : α) : (inlₗ (a₁ ⊓ a₂) : α ⊕ₗ β) = inlₗ a₁ ⊓ inlₗ a₂ := rfl
+@[simp] lemma inr_inf (b₁ b₂ : β) : (inrₗ (b₁ ⊓ b₂) : α ⊕ₗ β) = inrₗ b₁ ⊓ inrₗ b₂ := rfl
 
 end SemilatticeInf
 

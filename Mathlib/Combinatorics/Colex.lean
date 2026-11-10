@@ -102,7 +102,8 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
 
 instance instPartialOrder : PartialOrder (Colex (Finset α)) where
   le_refl _ _ ha ha' := (ha' ha).elim
-  le_antisymm _ _ hst hts := private (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_antisymm _ _ hst hts :=
+    private Colex.ext ((antisymm_aux hst hts).antisymm (antisymm_aux hts hst))
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -131,7 +132,7 @@ lemma toColex_mono : Monotone (@toColex (Finset α)) :=
 /-- If `s ⊂ t`, then `s < t` in the colex order. Note the converse does not hold, as inclusion does
 not form a linear order. -/
 lemma toColex_strictMono : StrictMono (@toColex (Finset α)) :=
-  toColex_mono.strictMono_of_injective toColex.injective
+  toColex_mono.strictMono_of_injective ofColexEquiv.symm.injective
 
 /-- If `s ⊆ t`, then `s ≤ t` in the colex order. Note the converse does not hold, as inclusion does
 not form a linear order. -/
@@ -269,7 +270,7 @@ instance instLinearOrder : LinearOrder (Colex (Finset α)) where
     obtain rfl | hts := eq_or_ne t s
     · simp
     have ⟨a, ha, hamax⟩ := exists_max_image _ id
-      (symmDiff_nonempty.2 <| ofColex.injective.ne_iff.2 hts)
+      (symmDiff_nonempty.2 <| ofColexEquiv.injective.ne_iff.2 hts)
     simp_rw [mem_symmDiff] at ha hamax
     exact ha.imp (fun ha b hbs hbt ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inr ⟨hbs, hbt⟩⟩)
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)
@@ -281,7 +282,7 @@ open scoped symmDiff
 set_option backward.privateInPublic true in
 private lemma max_mem_aux {s t : Colex (Finset α)} (hst : s ≠ t) :
     (ofColex s ∆ ofColex t).Nonempty := by
-  simpa
+  simpa [ofColex_inj]
 
 lemma toColex_lt_toColex_iff_exists_forall_lt :
     toColex s < toColex t ↔ ∃ a ∈ t, a ∉ s ∧ ∀ b ∈ s, b ∉ t → b < a := by
@@ -309,8 +310,8 @@ lemma toColex_le_toColex_iff_max'_mem :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma le_iff_max'_mem {s t : Colex (Finset α)} :
-    s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t :=
-  toColex_le_toColex_iff_max'_mem
+    s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t := by
+  simpa [ofColex_inj] using toColex_le_toColex_iff_max'_mem (s := s.ofColex) (t := t.ofColex)
 
 lemma toColex_lt_toColex_iff_max'_mem :
     toColex s < toColex t ↔ ∃ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
@@ -512,7 +513,7 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
     Function.Injective (fun s : Finset ℕ ↦ ∑ i ∈ s, n ^ i) := by
   intro _ _ h
   rwa [le_antisymm_iff, geomSum_le_geomSum_iff_toColex_le_toColex hn,
-    geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff] at h
+    geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, ← ofColex_inj] at h
 
 theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i ∈ s, n ^ i :=
   (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
@@ -542,8 +543,8 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i �
 @[simps] def orderIsoColex : ℕ ≃o Colex (Finset ℕ) where
   toFun n := toColex (equivBitIndices n)
   invFun s := equivBitIndices.symm (ofColex s)
-  left_inv n := equivBitIndices.symm_apply_apply n
-  right_inv s := equivBitIndices.apply_symm_apply _
+  left_inv n := by simp
+  right_inv s := by simp
   map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le)]
 
 end Nat
