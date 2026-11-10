@@ -416,6 +416,7 @@ noncomputable abbrev precomp (α : Ext X Y n) (Z : C) {a b : ℕ} (h : n + a = b
 
 end Ext
 
+/-- Auxiliary definition for `extFunctor`. -/
 @[simps, implicit_reducible]
 noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} where
   obj Y := ↧(Ext X Y n)
