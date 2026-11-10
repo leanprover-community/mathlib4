@@ -351,7 +351,7 @@ theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ from Subtype.coe_inj.mpr this
   rw [isPreconnected_iff_preconnectedSpace] at hS
   rw [isDiscrete_iff_discreteTopology] at hT
-  apply hc.mapsToRestrict hTm |>.isConst_of_preconnectedSpace
+  exact hc.mapsToRestrict hTm |>.isConst_of_preconnectedSpace _ _
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
