@@ -707,8 +707,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
     (hi : (finSuccEquiv R n f).coeff i ≠ 0) :
     totalDegree ((finSuccEquiv R n f).coeff i) + i ≤ totalDegree f := by
   have hf'_sup : ((finSuccEquiv R n f).coeff i).support.Nonempty := by
-    rw [← Finset.ne_empty_iff_nonempty, ne_eq, support_eq_empty]
-    exact hi
+    rwa [support_nonempty]
   -- Let σ be a monomial index of ((finSuccEquiv R n p).coeff i) of maximal total degree
   have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
                           (fun s => Finsupp.sum s fun _ e => e)
