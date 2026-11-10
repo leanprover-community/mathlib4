@@ -241,7 +241,8 @@ theorem isConstOn_iff_exists_forall_eq [Nonempty β] {f : α → β} {s : Set α
 that `f a = b` for all `a ∈ s`. -/
 theorem isConstOn_iff_exists_forall_eq_of_nonempty {f : α → β} {s : Set α} (hs : s.Nonempty) :
     IsConstOn f s ↔ ∃ b, ∀ x ∈ s, f x = b :=
-  have := Nonempty.intro (f hs.some); isConstOn_iff_exists_forall_eq
+  have := Nonempty.intro (f hs.some)
+  isConstOn_iff_exists_forall_eq
 
 /-- A function `α → β` to a non-empty codomain is constant on `s` if and only if there is `b : β`
 so that the function agrees with `Function.const α b` on `s`. -/
