@@ -402,9 +402,12 @@ theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
 theorem IsOpen.isOpenMap_subtypeVal {s : Set X} (hs : IsOpen s) : IsOpenMap ((↑) : s → X) :=
   hs.isOpenEmbedding_subtypeVal.isOpenMap
 
+@[deprecated (since := "2026-11-10")]
+alias IsOpen.isOpenMap_subtype_val := IsOpen.isOpenMap_subtypeVal
+
 theorem IsOpenMap.domRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : IsOpen s) :
     IsOpenMap (s.domRestrict f) :=
-  hf.comp hs.isOpenMap_subtype_val
+  hf.comp hs.isOpenMap_subtypeVal
 
 @[deprecated (since := "2026-07-19")] alias IsOpenMap.restrict := IsOpenMap.domRestrict
 
@@ -416,9 +419,12 @@ theorem IsClosed.isClosedMap_subtypeVal {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
   hs.isClosedEmbedding_subtypeVal.isClosedMap
 
+@[deprecated (since := "2026-11-10")]
+alias IsClosed.isClosedMap_subtype_val := IsClosed.isClosedMap_subtypeVal
+
 theorem IsClosedMap.domRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set X}
     (hs : IsClosed s) : IsClosedMap (s.domRestrict f) :=
-  hf.comp hs.isClosedMap_subtype_val
+  hf.comp hs.isClosedMap_subtypeVal
 
 @[deprecated (since := "2026-07-19")] alias IsClosedMap.restrict := IsClosedMap.domRestrict
 
@@ -457,11 +463,11 @@ theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
 
 theorem IsOpenMap.subtype_map {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y} (hs : IsOpen s)
     (hst : ∀ x ∈ s, f x ∈ t) : IsOpenMap (Subtype.map f hst) :=
-  (hf.comp hs.isOpenMap_subtype_val).subtype_mk _
+  (hf.comp hs.isOpenMap_subtypeVal).subtype_mk _
 
 theorem IsClosedMap.subtype_map {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
     (hs : IsClosed s) (hst : ∀ x ∈ s, f x ∈ t) : IsClosedMap (Subtype.map f hst) :=
-  (hf.comp hs.isClosedMap_subtype_val).subtype_mk _
+  (hf.comp hs.isClosedMap_subtypeVal).subtype_mk _
 
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
   continuous_id.subtype_map h
@@ -681,7 +687,7 @@ lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ clos
 theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
     frontier (s ∩ t) ∩ t = frontier s ∩ t := by
   simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
-    ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtypeVal,
+    ht.isOpenMap_subtypeVal.preimage_frontier_eq_frontier_preimage continuous_subtypeVal,
     Subtype.preimage_coe_self_inter]
 
 section SetNotation
@@ -719,12 +725,12 @@ lemma IsClosed.image_val {s : Set X} {t : Set s} (ht : IsClosed t) :
 
 @[simp] lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
     IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
-  ⟨fun h ↦ by simpa using hs.isOpenMap_subtype_val _ h,
+  ⟨fun h ↦ by simpa using hs.isOpenMap_subtypeVal _ h,
     fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
 
 @[simp] lemma IsClosed.inter_preimage_val_iff {s t : Set X} (hs : IsClosed s) :
     IsClosed (s ↓∩ t) ↔ IsClosed (s ∩ t) :=
-  ⟨fun h ↦ by simpa using hs.isClosedMap_subtype_val _ h,
+  ⟨fun h ↦ by simpa using hs.isClosedMap_subtypeVal _ h,
     fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
 
 end SetNotation
