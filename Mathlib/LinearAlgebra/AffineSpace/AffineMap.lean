@@ -421,10 +421,16 @@ instance : One (P1 →ᵃ[k] P1) where
 
 instance : IsOneApplyEqSelf (P1 →ᵃ[k] P1) where
 
+@[simp]
+lemma one_linear : (1 : P1 →ᵃ[k] P1).linear = LinearMap.id := rfl
+
 instance : Mul (P1 →ᵃ[k] P1) where
   mul := comp
 
 instance : IsMulApplyEqComp (P1 →ᵃ[k] P1) where
+
+@[simp]
+lemma mul_linear (f g : P1 →ᵃ[k] P1) : (f * g).linear = f.linear ∘ₗ g.linear := rfl
 
 instance : Pow (P1 →ᵃ[k] P1) ℕ where
   pow f n := ⟨(⇑f)^[n], f.linear ^ n, by
@@ -434,22 +440,18 @@ instance : Pow (P1 →ᵃ[k] P1) ℕ where
 
 instance : IsNPowApplyEqIterate (P1 →ᵃ[k] P1) where
 
+@[simp]
+lemma pow_linear (f : P1 →ᵃ[k] P1) (n : ℕ) : (f ^ n).linear = f.linear ^ n := rfl
+
 instance : Monoid (P1 →ᵃ[k] P1) := fast_instance% FunLike.compMonoid
 
 @[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-11-02")]
 theorem coe_mul (f g : P1 →ᵃ[k] P1) : ⇑(f * g) = f ∘ g :=
   rfl
 
-@[simp]
-lemma mul_linear (f g : P1 →ᵃ[k] P1) : (f * g).linear = f.linear ∘ₗ g.linear :=
-  rfl
-
 @[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-11-02")]
 theorem coe_one : ⇑(1 : P1 →ᵃ[k] P1) = _root_.id :=
   rfl
-
-@[simp]
-lemma one_linear : (1 : P1 →ᵃ[k] P1).linear = LinearMap.id := rfl
 
 /-- `AffineMap.linear` on endomorphisms is a `MonoidHom`. -/
 @[simps]

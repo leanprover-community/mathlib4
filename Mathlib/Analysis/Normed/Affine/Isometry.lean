@@ -251,10 +251,17 @@ instance : One (P →ᵃⁱ[𝕜] P) where
 
 instance : IsOneApplyEqSelf (P →ᵃⁱ[𝕜] P) where
 
+@[simp]
+theorem toAffineMap_one : (1 : P →ᵃⁱ[𝕜] P).toAffineMap = 1 := rfl
+
 instance : Mul (P →ᵃⁱ[𝕜] P) where
   mul := comp
 
 instance : IsMulApplyEqComp (P →ᵃⁱ[𝕜] P) where
+
+@[simp]
+theorem toAffineMap_mul (f g : P →ᵃⁱ[𝕜] P) : (f * g).toAffineMap = f.toAffineMap * g.toAffineMap :=
+  rfl
 
 instance : Pow (P →ᵃⁱ[𝕜] P) ℕ where
   pow f n :=
@@ -262,9 +269,12 @@ instance : Pow (P →ᵃⁱ[𝕜] P) ℕ where
       norm_map x := by
         induction n with
         | zero => rfl
-        | succ n hn => simp [pow_succ', hn] }
+        | succ n hn => simp [pow_succ', hn, -AffineMap.pow_linear] }
 
 instance : IsNPowApplyEqIterate (P →ᵃⁱ[𝕜] P) where
+
+@[simp]
+theorem toAffineMap_pow (f : P →ᵃⁱ[𝕜] P) (n : ℕ) : (f ^ n).toAffineMap = f.toAffineMap ^ n := rfl
 
 instance : Monoid (P →ᵃⁱ[𝕜] P) := fast_instance% FunLike.compMonoid
 
