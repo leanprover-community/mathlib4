@@ -346,8 +346,7 @@ lemma IsClopen.isPreconnected_iff {s : Set α} (hs : IsClopen s) :
     rintro ⟨a, b, ha, hb, ha', hb', hab, rfl⟩ H
     exact (H a b ha.isOpen hb.isOpen subset_rfl (by rwa [union_inter_cancel_left])
       (by rwa [union_inter_cancel_right])).ne_empty (by grind)
-  · rw [← ne_empty_iff_nonempty]
-    intro h
+  · by_contra! h
     exact H (s ∩ a) (s ∩ b)
       (isClopen_inter_of_disjoint_cover_clopen' hs hsab ha hb (by grind))
       (isClopen_inter_of_disjoint_cover_clopen' hs (by grind) hb ha (by grind))

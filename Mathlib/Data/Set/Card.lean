@@ -722,7 +722,7 @@ theorem finite_of_ncard_pos (hs : 0 < s.ncard) : s.Finite :=
   finite_of_ncard_ne_zero hs.ne.symm
 
 theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
-  rw [← ne_empty_iff_nonempty]; rintro rfl; simp at hs
+  by_contra! rfl; simp at hs
 
 @[simp] theorem ncard_singleton (a : α) : ({a} : Set α).ncard = 1 := by
   simp [ncard]

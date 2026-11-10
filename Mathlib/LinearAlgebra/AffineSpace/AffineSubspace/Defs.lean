@@ -764,8 +764,7 @@ instance : Nontrivial (AffineSubspace k P) :=
   ⟨⟨⊥, ⊤, bot_ne_top k V P⟩⟩
 
 theorem nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s.Nonempty := by
-  rw [← Set.ne_empty_iff_nonempty]
-  rintro rfl
+  by_contra! rfl
   rw [AffineSubspace.span_empty] at h
   exact bot_ne_top k V P h
 

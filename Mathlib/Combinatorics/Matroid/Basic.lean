@@ -452,7 +452,7 @@ theorem empty_not_isBase [h : RankPos M] : ¬M.IsBase ∅ :=
   h.empty_not_isBase
 
 theorem IsBase.nonempty [RankPos M] (hB : M.IsBase B) : B.Nonempty := by
-  rw [← ne_empty_iff_nonempty]; rintro rfl; exact M.empty_not_isBase hB
+  by_contra! rfl; exact M.empty_not_isBase hB
 
 theorem IsBase.rankPos_of_nonempty (hB : M.IsBase B) (h : B.Nonempty) : M.RankPos := by
   rw [rankPos_iff]
@@ -599,7 +599,7 @@ theorem IsBase.indep (hB : M.IsBase B) : M.Indep B :=
   Exists.elim M.exists_isBase (fun _ hB ↦ hB.indep.subset (empty_subset _))
 
 theorem Dep.nonempty (hD : M.Dep D) : D.Nonempty := by
-  rw [← ne_empty_iff_nonempty]; rintro rfl; exact hD.not_indep M.empty_indep
+  by_contra! rfl; exact hD.not_indep M.empty_indep
 
 theorem Indep.finite [RankFinite M] (hI : M.Indep I) : I.Finite :=
   let ⟨_, hB, hIB⟩ := hI.exists_isBase_superset
