@@ -94,10 +94,12 @@ and addition given pointwise.
 
 TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
 -/
+@[to_additive]
 def FreeAbelianGroup : Type u :=
   Additive <| Group.Abelianization <| FreeGroup α
 deriving Inhabited, AddCommGroup
 
+@[to_additive]
 instance [IsEmpty α] : Unique (FreeAbelianGroup α) :=
   inferInstanceAs <| Unique (delta% FreeAbelianGroup α)
 
@@ -106,6 +108,7 @@ variable {α}
 namespace FreeAbelianGroup
 
 /-- The canonical map from `α` to `FreeAbelianGroup α`. -/
+@[to_additive /-- The canonical map from `α` to `FreeAbelianGroup α`. -/]
 def of (x : α) : FreeAbelianGroup α :=
   Additive.ofMul <| Group.Abelianization.of <| FreeGroup.of x
 

@@ -20,6 +20,9 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
   its commutator subgroup.
 * `Group.Abelianization.map`: lifts a group homomorphism to a homomorphism between the
   abelianizations.
+* `Group.Abelianization.quotientMulEquiv`: for a normal subgroup `N` of `G`, the
+  abelianization of `G ⧸ N` is isomorphic to the quotient of the abelianization of `G` by the
+  image of `N`.
 * `MulEquiv.abelianizationCongr`: Isomorphic groups have isomorphic abelianizations.
 -/
 
@@ -157,6 +160,37 @@ theorem map_map_apply {I : Type w} [Group I] {g : H →* I} {x : Abelianization 
   congr($(map_comp _ _) x)
 
 end Map
+
+section Quotient
+
+-- Let `N` be a normal subgroup of `G`.
+variable (N : Subgroup G) [N.Normal]
+
+/-- Abelianizing a quotient `G ⧸ N` is the same as abelianizing `G`
+and then quotienting by the image of `N`. -/
+@[to_additive
+/-- Abelianizing a quotient `G ⧸ N` is the same as abelianizing `G`
+and then quotienting by the image of `N`. -/]
+def quotientMulEquiv : Abelianization (G ⧸ N) ≃* Abelianization G ⧸ N.map of :=
+ MonoidHom.toMulEquiv
+    (lift <| QuotientGroup.lift N ((QuotientGroup.mk' _).comp of) <| fun _ h ↦
+      (QuotientGroup.eq_one_iff _).mpr (Subgroup.mem_map_of_mem of h))
+    (QuotientGroup.lift _ (map (QuotientGroup.mk' N)) <| fun y ⟨x, hx, hxy⟩ ↦
+      hxy ▸ (congrArg of ((QuotientGroup.eq_one_iff _).mpr hx)).trans (map_one of))
+    (by ext; rfl)
+    (by ext; rfl)
+
+@[to_additive (attr := simp)]
+theorem quotientMulEquiv_of_mk (x : G) :
+    quotientMulEquiv N (of (x : G ⧸ N)) = (of x : Abelianization G ⧸ N.map of) :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem quotientMulEquiv_symm_mk_of (x : G) :
+    (quotientMulEquiv N).symm (of x : Abelianization G ⧸ N.map of) = of (x : G ⧸ N) :=
+  rfl
+
+end Quotient
 
 end Abelianization
 

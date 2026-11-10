@@ -4938,7 +4938,6 @@ public import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 public import Mathlib.Geometry.RingedSpace.SheafedSpace
 public import Mathlib.Geometry.RingedSpace.Stalks
-public import Mathlib.GroupTheory.Abelianization.Basic
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.Archimedean
