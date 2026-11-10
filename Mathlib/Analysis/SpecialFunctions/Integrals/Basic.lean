@@ -274,7 +274,7 @@ lemma integral_exp_mul_I_eq_sinc (r : ℝ) :
   norm_cast
   field
 
-private integral_log_from_zero_of_pos {b : ℝ} (ht : 0 < b) :
+private lemma integral_log_from_zero_of_pos {b : ℝ} (ht : 0 < b) :
     ∫ s in 0..b, log s = b * log b - b := by
   -- Compute the integral by giving a primitive and considering it limit as x approaches 0 from
   -- the right. The following lines were suggested by Gareth Ma on Zulip.
