@@ -16,12 +16,12 @@ public import Mathlib.Topology.Sets.BaseChangeNhds
 
 We define K-sheaves on `X` a T2 topological space with value in an arbitrary category `A`.
 
-This corespond to the `F : (Compacts X)ᵒᵖ ⥤ A` such that:
+This coresponds to the presheaves `F : (Compacts X)ᵒᵖ ⥤ A` such that:
 - `F.obj (∅)` is terminal.
 - For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is obtained by
-  gluing `F.obj K₁` and `F.obj K₂` over `F.obj K₁ ∩ K₂`.
+  gluing `F.obj K₁` and `F.obj K₂` over `F.obj (K₁ ∩ K₂)`.
 - For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts
-  subsets `L` of `X`such that `K` is in the interior of `L`.
+  subsets `L` of `X` such that `K` is in the interior of `L`.
 
 One may expect this notion to come from sheaves on a site of compact subset of a topological space
 but there is no corresponding Grothendieck topology on compact subsets, in particular
