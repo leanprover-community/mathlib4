@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anouk Brose, Sébastien Gouëzel, Justus Springer
+Authors: Sébastien Gouëzel, Justus Springer, Anouk Brose
 -/
 module
 
@@ -165,7 +165,7 @@ theorem halfOpenParallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
   refine (e.arrowCongr (.refl K)).exists_congr fun t ↦ ?_
   simp [← e.sum_comp, e.forall_congr_left]
 
-theorem halfOpenParallelepiped_prod (v : ι → E) (w : ι' → F) :
+theorem halfOpenParallelepiped_sumElim (v : ι → E) (w : ι' → F) :
     halfOpenParallelepiped K (Sum.elim (LinearMap.inl K E F ∘ v) (LinearMap.inr K E F ∘ w)) =
       halfOpenParallelepiped K v ×ˢ halfOpenParallelepiped K w := by
   ext ⟨x, y⟩
