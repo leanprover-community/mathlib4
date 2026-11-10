@@ -6,7 +6,7 @@ Authors: Aaron Liu
 module
 
 public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Data.Dyadic.OrderedRing
+public import Mathlib.Data.Dyadic.Basic
 public import Mathlib.RingTheory.Localization.Defs
 
 /-!
