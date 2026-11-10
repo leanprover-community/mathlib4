@@ -79,7 +79,7 @@ variable {R : Type u} [CommRing R] {D : Type u₁} [Category.{v₁} D]
 variable {E : Type u₂} [Category.{v₂} E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
 /-- The diagram `ringModIdeals (I' ⋙ I)` is isomorphism (in fact, definitionally equal)
-to the the diagram `I' ⋙ ringModIdeals I`. -/
+to the diagram `I' ⋙ ringModIdeals I`. -/
 def ringModIdealComp : ringModIdeals (I' ⋙ I) ≅ I' ⋙ ringModIdeals I :=
   NatIso.ofComponents (fun _ ↦ .refl _)
 
@@ -211,7 +211,8 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
     Functor.Initial (idealPowersToSelfLERadical J) where
   out J' := by
     apply +allowSynthFailures zigzag_isConnected
-    · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fg J'.2 (isNoetherian_def.mp hR _)
+    · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fg J'.property
+        (isNoetherian_def.mp hR _)
       exact ⟨CostructuredArrow.mk (⟨⟨⟨hk⟩⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
     · intro j1 j2
       apply Relation.ReflTransGen.single

@@ -23,7 +23,6 @@ This file studies linear maps on inner product spaces.
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 @[expose] public section
@@ -313,11 +312,15 @@ lemma toLinearMap_rankOne (x : E) (y : F) :
 @[simp] theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
   rw [rankOne_def, norm_smulRight_apply, innerSL_apply_norm, mul_comm]
 
-@[simp] theorem nnnorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
+@[simp] theorem nnNorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
   NNReal.eq <| norm_rankOne _ _
 
-@[simp] theorem enorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
-  ENNReal.coe_inj.mpr <| nnnorm_rankOne _ _
+@[deprecated (since := "2026-10-31")] alias nnnorm_rankOne := nnNorm_rankOne
+
+@[simp] theorem eNorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
+  ENNReal.coe_inj.mpr <| nnNorm_rankOne _ _
+
+@[deprecated (since := "2026-11-06")] alias enorm_rankOne := eNorm_rankOne
 
 @[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
 

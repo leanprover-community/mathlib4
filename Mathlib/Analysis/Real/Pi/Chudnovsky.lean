@@ -35,7 +35,6 @@ but at present we are a long way off.
 ## References
 * [Milla, *A detailed proof of the Chudnovsky formula*][Milla_2018]
 * [Chen and Glebov, *On Chudnovsky--Ramanujan type formulae*][Chen_Glebov_2018]
-
 -/
 
 @[expose] public section

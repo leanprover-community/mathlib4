@@ -16,7 +16,6 @@ public import Mathlib.Order.ScottContinuity
 - `ScottContinuous_prod_of_ScottContinuous`: A function is Scott continuous on a product space if it
   is Scott continuous in each variable.
 - `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
-
 -/
 
 public section
@@ -39,12 +38,8 @@ lemma ScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
       rw [singleton_prod, image_image f (fun b ↦ (a, b))]
       exact h₁ _ (mem_image_of_mem (fun d ↦ Prod.snd '' d) hX) (Nonempty.image Prod.snd hd₁)
         (DirectedOn.snd hd₂) (isLUB_prod.mp hdp).2) _, Set.range]
-  convert
-    (h₂ _ (mem_image_of_mem (fun d ↦ Prod.fst '' d) hX) (Nonempty.image Prod.fst hd₁)
-      (DirectedOn.fst hd₂) (isLUB_prod.mp hdp).1)
-  ext : 1
-  simp_all only [Subtype.exists, mem_image, Prod.exists,
-    exists_and_right, exists_eq_right, exists_prop, mem_ofPred_eq]
+  simpa [Set.image] using
+     h₂ _ (mem_image_of_mem (Prod.fst '' ·) hX) (hd₁.image Prod.fst) hd₂.fst (isLUB_prod.mp hdp).1
 
 lemma ScottContinuous.fromProd {γ : Type*} [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} (h₁ : ∀ a, ScottContinuous (fun b => f (a, b)))

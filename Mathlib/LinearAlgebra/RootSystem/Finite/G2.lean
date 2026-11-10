@@ -39,7 +39,6 @@ stronger assumptions on the coefficients than here.
 Once sufficient API for `RootPairing.Base` has been developed:
 * Add `def EmbeddedG2.toBase [P.EmbeddedG2] : P.Base` with `support := {long P, short P}`
 * Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).
-
 -/
 
 @[expose] public section

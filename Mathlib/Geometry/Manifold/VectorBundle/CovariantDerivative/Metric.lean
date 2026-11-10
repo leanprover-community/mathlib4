@@ -39,7 +39,6 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
   `Hom(V, W)`. When this induced connection has been defined in Mathlib, rephrase the definition of
   `CovariantDerivative.derivMetricTensor`, to be simply the covariant derivative of the
   metric tensor (considered as a section of `Hom(V, Hom(V, ℝ))`).
-
 -/
 open Bundle NormedSpace
 open scoped Manifold ContDiff
@@ -99,12 +98,13 @@ theorem tensorial_derivMetricTensorAux₁ (τ : Π x, V x) (hτ : MDiffAt (T% τ
   smul hf hσ := by
     ext X₀
     simp [mvfderiv_fun_mul hf (hσ.inner_bundle hτ),
-      cov.isCovariantDerivativeOn.leibniz hσ hf, inner_add_left, inner_smul_left]
+      cov.isCovariantDerivativeOnUniv.leibniz hσ hf, inner_add_left,
+      inner_smul_left]
     ring
   add hσ hσ' := by
     ext X₀
     simp [mvfderiv_fun_add (hσ.inner_bundle hτ) (hσ'.inner_bundle hτ),
-      cov.isCovariantDerivativeOn.add hσ hσ', inner_add_left]
+      cov.isCovariantDerivativeOnUniv.add hσ hσ', inner_add_left]
     abel
 
 theorem tensorial_derivMetricTensorAux₂ (σ : Π x, V x) (hσ : MDiffAt (T% σ) x) :
@@ -112,12 +112,13 @@ theorem tensorial_derivMetricTensorAux₂ (σ : Π x, V x) (hσ : MDiffAt (T% σ
   smul hf hτ := by
     ext X₀
     simp [mvfderiv_fun_mul hf (hσ.inner_bundle hτ),
-      cov.isCovariantDerivativeOn.leibniz hτ hf, inner_add_right, inner_smul_right]
+      cov.isCovariantDerivativeOnUniv.leibniz hτ hf, inner_add_right,
+      inner_smul_right]
     ring
   add hτ hτ' := by
     ext X₀
     simp [mvfderiv_fun_add (hσ.inner_bundle hτ) (hσ.inner_bundle hτ'),
-      cov.isCovariantDerivativeOn.add hτ hτ', inner_add_right]
+      cov.isCovariantDerivativeOnUniv.add hτ hτ', inner_add_right]
     abel
 
 variable {I} [ContMDiffVectorBundle 1 F V I] in

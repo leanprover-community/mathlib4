@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Limits.Opposites
 # Products and coproducts in `C` and `Cᵒᵖ`
 
 We construct products and coproducts in the opposite categories.
-
 -/
 
 @[expose] public section
@@ -181,7 +180,6 @@ theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z 
   erw [opCoproductIsoProduct'_inv_comp_inj, IsLimit.fac]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert!
@@ -280,7 +278,6 @@ theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)
   rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α) → X ⟶ Z a) :
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a ↦ (π a).op) := by
   convert!

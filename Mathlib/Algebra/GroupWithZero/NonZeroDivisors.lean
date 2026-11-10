@@ -30,7 +30,6 @@ This file declares the notations:
 
 Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access this notation in
 your own code.
-
 -/
 
 @[expose] public section
@@ -41,7 +40,7 @@ open Function
 
 lemma Irreducible.coe_ne_zero {M₀ S : Type*} [MonoidWithZero M₀] [SetLike S M₀]
     [SubmonoidClass S M₀] {s : S} {x : s} (hx : Irreducible x) : (x : M₀) ≠ 0 :=
-  fun h ↦ hx.1 <| by simpa using hx.2 (a := x) (b := x) (by ext; simp [h])
+  fun h ↦ hx.not_isUnit <| by simpa using hx.isUnit_or_isUnit (a := x) (b := x) (by ext; simp [h])
 
 section
 variable (M₀ : Type*) [MonoidWithZero M₀] {x : M₀}
@@ -58,7 +57,7 @@ lemma mem_nonZeroDivisorsLeft_iff : x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, x 
 
 lemma notMem_nonZeroDivisorsLeft_iff :
     x ∉ nonZeroDivisorsLeft M₀ ↔ {y | x * y = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsLeft_iff] using! Set.nonempty_def.symm
+  simp [mem_nonZeroDivisorsLeft_iff, Set.Nonempty]
 
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
@@ -72,7 +71,7 @@ lemma mem_nonZeroDivisorsRight_iff : x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, 
 
 lemma notMem_nonZeroDivisorsRight_iff :
     x ∉ nonZeroDivisorsRight M₀ ↔ {y | y * x = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsRight_iff] using! Set.nonempty_def.symm
+  simp [mem_nonZeroDivisorsRight_iff, Set.Nonempty]
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by
@@ -221,7 +220,7 @@ lemma IsRightRegular.mem_nonZeroDivisorsRight (h : IsRightRegular r) :
     r ∈ nonZeroDivisorsRight M₀ := fun _x hx ↦ h.mul_right_eq_zero_iff.mp hx
 
 lemma IsRegular.mem_nonZeroDivisors (h : IsRegular r) : r ∈ M₀⁰ :=
-  ⟨h.1.mem_nonZeroDivisorsLeft, h.2.mem_nonZeroDivisorsRight⟩
+  ⟨h.left.mem_nonZeroDivisorsLeft, h.right.mem_nonZeroDivisorsRight⟩
 
 lemma noZeroDivisors_iff_forall_mem_nonZeroDivisorsLeft :
     NoZeroDivisors M₀ ↔ ∀ x : M₀, x ≠ 0 → x ∈ nonZeroDivisorsLeft M₀ :=

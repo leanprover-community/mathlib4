@@ -15,7 +15,6 @@ import Mathlib.Data.ZMod.QuotientGroup
 
 This file provides lemmas about when a submodule of a free ℤ-module is a subgroup of finite
 index.
-
 -/
 
 public section
