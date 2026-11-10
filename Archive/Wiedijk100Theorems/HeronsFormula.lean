@@ -32,14 +32,12 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   We show this by equating this formula to `a * b * sin γ`, where `γ` is the angle opposite
   the side `c`.
 -/
-public theorem heron {p₁ p₂ p₃ : P} (h1 : p₁ ≠ p₂) :
+public theorem heron {p₁ p₂ p₃ : P} (h1 : p₁ ≠ p₂) (h2 : p₃ ≠ p₂) :
     let a := dist p₁ p₂
     let b := dist p₃ p₂
     let c := dist p₁ p₃
     let s := (a + b + c) / 2
     1 / 2 * a * b * sin (∠ p₁ p₂ p₃) = √(s * (s - a) * (s - b) * (s - c)) := by
-  rcases eq_or_ne p₃ p₂ with rfl | h2
-  · simp
   intro a b c s
   let γ := ∠ p₁ p₂ p₃
   obtain := (dist_pos.mpr h1).ne', (dist_pos.mpr h2).ne'
