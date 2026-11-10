@@ -377,6 +377,7 @@ lemma RelCWComplex.FiniteDimensional.eq_skeletonLT [T2Space X] (C : Set X) {D : 
 
 /-- For a finite dimensional relative CW-complex (C,D) we can find a natural number `m` such that
  either `C` equals the `m skeleton` of C or `C = D`. -/
+@[alias_in CWComplex]
 lemma RelCWComplex.FiniteDimensional.eq_skeleton [T2Space X] (C : Set X) {D : Set X}
     [RelCWComplex C D] (hX : FiniteDimensional C) : (∃ (m : ℕ), C = skeleton C m) ∨ C = D := by
   obtain ⟨m, hm⟩ := hX.eq_skeletonLT
@@ -393,7 +394,7 @@ lemma RelCWComplex.FiniteDimensional.eq_skeleton [T2Space X] (C : Set X) {D : Se
     exact Nat.one_le_cast_iff_ne_zero.2 h0
 
 /-- For a finite dimensional CW-complex `C` we can find a natural number `m` such that
- either `C` equals the `m skeleton` of C or `C = ∅`. -/
+  `C` equals the `m skeleton` of C or `C = ∅`. -/
 lemma CWComplex.FiniteDimensional.eq_skeleton [T2Space X] (C : Set X)
     [CWComplex C] (hX : FiniteDimensional C) : (∃ (m : ℕ), C = skeleton C m) ∨ C = ∅ := by
   exact RelCWComplex.FiniteDimensional.eq_skeleton C hX
