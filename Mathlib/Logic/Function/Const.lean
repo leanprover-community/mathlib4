@@ -20,6 +20,7 @@ function takes the same value at every pair of points of a given set.
 Note that a function with empty domain is considered constant.
 If a constant function has non-empty codomain, then it can be represented by `Function.const`,
 see `isConst_iff_exists_eq_const`.
+
 -/
 
 public section
@@ -191,20 +192,28 @@ theorem isConstOn_univ (f : α → β) : IsConstOn f Set.univ ↔ IsConst f := b
 theorem IsConst.isConstOn {f : α → β} {s : Set α} (hf : IsConst f) : IsConstOn f s :=
   fun x _ y _ ↦ hf x y
 
-theorem IsConstOn.mono {f : α → β} {s t : Set α} (hf : IsConstOn f t) (hst : s ⊆ t) :
+theorem IsConstOn.anti {f : α → β} {s t : Set α} (hf : IsConstOn f t) (hst : s ⊆ t) :
     IsConstOn f s :=
   fun _ hx _ hy ↦ hf (hst hx) (hst hy)
 
-theorem IsConstOn.congr {β : Type*} {f g : α → β} {s : Set α} (hf : IsConstOn f s)
+theorem IsConstOn.of_eqOn {β : Type*} {f g : α → β} {s : Set α} (hf : IsConstOn f s)
     (h : Set.EqOn f g s) : IsConstOn g s :=
   fun _ hx _ hy ↦ (h hx).symm.trans <| (hf hx hy).trans (h hy)
 
+theorem IsConstOn.congr {β : Type*} {f g : α → β} {s t : Set α} (hf : IsConstOn f s)
+    (h : Set.EqOn f g s) (hst : s = t) : IsConstOn g t :=
+  hst ▸ hf.of_eqOn h
+
 theorem _root_.Set.EqOn.isConstOn_iff {β : Type*} {f g : α → β} {s : Set α} (h : Set.EqOn f g s) :
     IsConstOn f s ↔ IsConstOn g s :=
-  ⟨(·.congr h), (·.congr h.symm)⟩
+  ⟨(·.of_eqOn h), (·.of_eqOn h.symm)⟩
 
 @[simp]
 protected theorem IsConstOn.const (b : β) (s : Set α) : IsConstOn (const α b) s :=
+  (IsConst.const b).isConstOn
+
+@[simp]
+protected theorem IsConstOn.fun_const (b : β) (s : Set α) : IsConstOn (fun _ : α ↦ b) s :=
   (IsConst.const b).isConstOn
 
 /-- Every function is constant on a subsingleton set. -/
