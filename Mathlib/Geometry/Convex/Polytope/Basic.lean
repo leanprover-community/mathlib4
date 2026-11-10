@@ -5,10 +5,9 @@ Authors: Martin Winter
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.Hull
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
 /-!
 # Convex polytopes
