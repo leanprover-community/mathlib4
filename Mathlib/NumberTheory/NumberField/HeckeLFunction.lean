@@ -34,7 +34,8 @@ open IsDedekindDomain
 variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
   [Algebra R K] [IsFractionRing R K]
 
-/-- A Hecke character is a character on the idele class group. -/
+/-- A Hecke character is a character on the idele class group. This is only mathematically
+correct under the addition assumptions `[IsIntegralClosure ℤ R K]` and `[NumberField K]` -/
 abbrev HeckeCharacter := (IdeleClassGroup R K) →ₜ* ℂ
 
 variable {R K} (χ : HeckeCharacter R K)
