@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 module
 
 public import Mathlib.Data.PNat.Algebra
-public import Mathlib.Data.PNat.Order
+public import Mathlib.Data.PNat.Order.Basic
 
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Tactic.Basify.Attr
