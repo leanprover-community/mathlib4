@@ -75,9 +75,11 @@ theorem le_self_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≤ (1 : Fractio
 
 variable (K)
 
-theorem coe_ideal_le_self_mul_inv (I : Ideal R₁) :
+theorem coeIdeal_le_self_mul_inv (I : Ideal R₁) :
     (I : FractionalIdeal R₁⁰ K) ≤ I * (I : FractionalIdeal R₁⁰ K)⁻¹ :=
   le_self_mul_inv coeIdeal_le_one
+
+@[deprecated (since := "2026-11-09")] alias coe_ideal_le_self_mul_inv := coeIdeal_le_self_mul_inv
 
 /-- `I⁻¹` is the inverse of `I` if `I` has an inverse. -/
 theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J = I⁻¹ :=
@@ -109,30 +111,37 @@ theorem spanSingleton_div_self {x : K} (hx : x ≠ 0) :
     spanSingleton R₁⁰ x / spanSingleton R₁⁰ x = 1 := by
   rw [spanSingleton_div_spanSingleton, div_self hx, map_one]
 
-theorem coe_ideal_span_singleton_div_self {x : R₁} (hx : x ≠ 0) :
+theorem coeIdeal_span_singleton_div_self {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K) / Ideal.span ({x} : Set R₁) = 1 := by
   rw [coeIdeal_span_singleton,
     spanSingleton_div_self K <|
       (map_ne_zero_iff _ <| FaithfulSMul.algebraMap_injective R₁ K).mpr hx]
+@[deprecated (since := "2026-11-09")]
+alias coe_ideal_span_singleton_div_self := coeIdeal_span_singleton_div_self
 
 theorem spanSingleton_mul_inv {x : K} (hx : x ≠ 0) :
     spanSingleton R₁⁰ x * (spanSingleton R₁⁰ x)⁻¹ = 1 := by
   rw [spanSingleton_inv, ← map_mul, mul_inv_cancel₀ hx, map_one]
 
-theorem coe_ideal_span_singleton_mul_inv {x : R₁} (hx : x ≠ 0) :
+theorem coeIdeal_span_singleton_mul_inv {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K) *
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K)⁻¹ = 1 := by
   rw [coeIdeal_span_singleton,
     spanSingleton_mul_inv K <|
       (map_ne_zero_iff _ <| FaithfulSMul.algebraMap_injective R₁ K).mpr hx]
+@[deprecated (since := "2026-11-09")]
+alias coe_ideal_span_singleton_mul_inv := coeIdeal_span_singleton_mul_inv
 
 theorem spanSingleton_inv_mul {x : K} (hx : x ≠ 0) :
     (spanSingleton R₁⁰ x)⁻¹ * spanSingleton R₁⁰ x = 1 := by
   rw [mul_comm, spanSingleton_mul_inv K hx]
 
-theorem coe_ideal_span_singleton_inv_mul {x : R₁} (hx : x ≠ 0) :
+theorem coeIdeal_span_singleton_inv_mul {x : R₁} (hx : x ≠ 0) :
     (Ideal.span ({x} : Set R₁) : FractionalIdeal R₁⁰ K)⁻¹ * Ideal.span ({x} : Set R₁) = 1 := by
-  rw [mul_comm, coe_ideal_span_singleton_mul_inv K hx]
+  rw [mul_comm, coeIdeal_span_singleton_mul_inv K hx]
+
+@[deprecated (since := "2026-11-09")]
+alias coe_ideal_span_singleton_inv_mul := coeIdeal_span_singleton_inv_mul
 
 theorem mul_generator_self_inv {R₁ : Type*} [CommRing R₁] [Algebra R₁ K] [IsLocalization R₁⁰ K]
     (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (I : Submodule R₁ K)] (h : I ≠ 0) :
