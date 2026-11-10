@@ -23,7 +23,6 @@ faithful.
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*,
   Proposition 2.3.5, Chapitre II][verdier1996]
-
 -/
 
 @[expose] public section

@@ -17,7 +17,6 @@ we introduce specific definitions and lemmas for the homology
 of homological complexes in concrete categories. In particular,
 we give a computation of the connecting homomorphism of
 the homology sequence in terms of (co)cycles.
-
 -/
 
 @[expose] public section

@@ -23,7 +23,6 @@ TODO:
   the product functor with `F`, i.e. for all `X` and `Y`, there is a
   natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
 - use these results in order to show that the category of sheaves of types is Cartesian closed
-
 -/
 
 @[expose] public section

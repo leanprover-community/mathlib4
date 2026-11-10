@@ -15,7 +15,6 @@ Let `F : J ⥤ Cᵒᵖ` be a functor. We show that a presheaf `P : Cᵒᵖ ⥤ T
 preserves the limit of `F` iff `P` is a local object with respect to a suitable
 family of morphisms in `Cᵒᵖ ⥤ Type w` (this family contains `1` or `0` morphism
 depending on whether the limit of `F` exists or not).
-
 -/
 
 @[expose] public section

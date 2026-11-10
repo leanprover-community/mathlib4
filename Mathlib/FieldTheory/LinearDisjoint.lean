@@ -130,7 +130,6 @@ The following results are related to the equivalent characterizations in
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
 -/
 
 @[expose] public section

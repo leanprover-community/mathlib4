@@ -25,7 +25,6 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
 ## Notation
 
 * `κ ∥ₖ η = ProbabilityTheory.Kernel.parallelComp κ η`
-
 -/
 
 public section

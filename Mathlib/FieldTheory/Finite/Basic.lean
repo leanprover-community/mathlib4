@@ -45,7 +45,6 @@ and `q` is notation for the cardinality of `K`.
 While `Fintype Kˣ` can be inferred from `Fintype K` in the presence of `DecidableEq K`,
 in this file we take the `Fintype Kˣ` argument directly to reduce the chance of typeclass
 diamonds, as `Fintype` carries data.
-
 -/
 
 @[expose] public section

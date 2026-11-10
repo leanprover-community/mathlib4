@@ -14,7 +14,6 @@ import Mathlib.Algebra.Group.Units.Opposite
 # Local rings
 
 We prove basic properties of local rings.
-
 -/
 
 public section

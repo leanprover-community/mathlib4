@@ -17,7 +17,6 @@ In this file, we show that in the category of functors `ShortComplex C ⥤ C`,
 - the functor `opcyclesFunctor C` is the cokernel of `π₁ ⟶ π₂`;
 - the functor `homologyFunctor C` is the cokernel of `π₁ ⟶ cyclesFunctor C`;
 - the functor `homologyFunctor C` is the kernel of `opcyclesFunctor C ⟶ π₃`.
-
 -/
 
 @[expose] public section

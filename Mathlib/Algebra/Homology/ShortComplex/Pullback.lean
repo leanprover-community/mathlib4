@@ -15,7 +15,6 @@ Given a short complex `S` and a morphism `f : Y ⟶ S.X₃`, we construct the sh
 if the ambient category is abelian.
 
 This is dual to `ShortComplex.push`, see `Mathlib/Algebra/Homology/ShortComplex/Pushout.lean`.
-
 -/
 
 @[expose] public section

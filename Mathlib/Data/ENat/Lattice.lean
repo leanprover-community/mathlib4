@@ -17,7 +17,6 @@ This instance is not in `Data.ENat.Basic` to avoid dependency on `Finset`s.
 
 We also restate some lemmas about `WithTop` for `ENat` to have versions that use `Nat.cast` instead
 of `WithTop.some`.
-
 -/
 
 public section

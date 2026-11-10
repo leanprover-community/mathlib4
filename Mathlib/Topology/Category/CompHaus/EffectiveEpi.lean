@@ -24,7 +24,6 @@ equivalent.
 
 - Define regular categories, and show that `CompHaus` is regular.
 - Define coherent categories, and show that `CompHaus` is actually coherent.
-
 -/
 
 public section

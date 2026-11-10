@@ -16,7 +16,6 @@ The limit cone for `S : LightProfinite` is `S.asLimitCone`, the fact that it's a
 `S.asLimit`.
 
 We also prove that the projection and transition maps in this limit are surjective.
-
 -/
 
 @[expose] public section

@@ -27,7 +27,6 @@ The conditional expectation of an `L²` function is defined in
 ## Main definitions
 
 * `condExpL1`: Conditional expectation of a function as a linear map from `L1` to itself.
-
 -/
 
 @[expose] public section
@@ -116,7 +115,7 @@ theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
   rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), measureReal_def,
     ← ENNReal.toReal_mul,
     ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
-    ofReal_integral_norm_eq_lintegral_enorm]
+    ofReal_integral_norm_eq_lintegral_eNorm]
   swap; · rw [← memLp_one_iff_integrable]; exact Lp.memLp _
   have h_eq :
     ∫⁻ a, ‖condExpIndL1Fin hm hs hμs x a‖ₑ ∂μ = ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖ₑ ∂μ := by

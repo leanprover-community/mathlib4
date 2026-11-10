@@ -19,7 +19,6 @@ In this file, it is shown that if `L : C ⥤ D` is
 a localization functor for `W : MorphismProperty C` and that
 `W` is stable under finite products, then `D` has finite
 products, and `L` preserves finite products.
-
 -/
 
 @[expose] public section

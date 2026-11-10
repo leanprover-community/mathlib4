@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Multilinear.Finsupp
 
 This file proves lemmas about the action of multilinear maps on basis vectors and constructs a
 basis for multilinear maps given bases on the domain and codomain.
-
 -/
 
 @[expose] public section
@@ -21,13 +20,13 @@ basis for multilinear maps given bases on the domain and codomain.
 
 open MultilinearMap
 
-variable {ι R : Type*} [CommSemiring R]
+variable {ι R S : Type*} [CommSemiring R] [CommSemiring S] {σ : R →+* S}
   {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-  {N : Type*} [AddCommMonoid N] [Module R N]
+  {N : Type*} [AddCommMonoid N] [Module S N]
 
 /-- Two multilinear maps indexed by a `Fintype` are equal if they are equal when all arguments
 are basis vectors. -/
-theorem Module.Basis.ext_multilinear [Finite ι] {f g : (Π i, M i) →ₘₗ[R] N} {ιM : ι → Type*}
+theorem Module.Basis.ext_multilinear [Finite ι] {f g : (Π i, M i) →ₘₛₗ[σ] N} {ιM : ι → Type*}
     (e : ∀ i, Basis (ιM i) R (M i))
     (h : ∀ v : (i : ι) → ιM i, (f fun i ↦ e i (v i)) = g fun i ↦ e i (v i)) : f = g := by
   cases nonempty_fintype ι
