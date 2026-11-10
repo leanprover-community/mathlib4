@@ -12,7 +12,6 @@ import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
-
 # Injective Dimension in ModuleCat
 
 This file deals with preservation of `injectiveDimension` in (semi) linear equivalences.

@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.FreeCommRing
 
 /-!
-
 # Constructing Ring terms from MvPolynomial
 
 This file provides tools for constructing ring terms that can be evaluated to particular
