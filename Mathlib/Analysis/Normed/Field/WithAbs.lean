@@ -407,7 +407,8 @@ theorem algebra_eq_of_liesOver : ‹_› = algebraOfLiesOver v w :=
 @[deprecated (since := "2026-10-28")] alias algebraMap_apply := algebraMap_apply_of_liesOver
 @[deprecated (since := "2026-10-28")] alias algebra_eq := algebra_eq_of_liesOver
 
-instance : IsScalarTower u.Completion v.Completion w.Completion := by
+instance instIsScalarTower_of_isScalarTower :
+    IsScalarTower u.Completion v.Completion w.Completion := by
   apply IsScalarTower.of_algebraMap_eq'
   simp [AbsoluteValue.Completion.algebraMap_eq_of_liesOver]
 
