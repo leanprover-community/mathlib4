@@ -575,7 +575,7 @@ Q574902:
 
 Q576478:
   title: Liouville's theorem (complex analysis)
-  decl: Differentiable.apply_eq_apply_of_bounded
+  decl: Differentiable.isConst_of_bounded
 
 Q578555:
   title: Noether's theorem
