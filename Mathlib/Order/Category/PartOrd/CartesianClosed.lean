@@ -23,16 +23,15 @@ universe u
 open CategoryTheory Limits
 open scoped MonoidalCategory
 
-instance : ExponentialIdeal (forget₂ PartOrd.{u} Preord.{u}) := by
-  apply ExponentialIdeal.mk'
-  intro P A
-  let B := (ihom A).obj ((forget₂ PartOrd Preord).obj P)
-  let : PartialOrder B :=
-    { B.str with
-      le_antisymm F G hFG hGF :=
-        Functor.eq_of_iso (C := P) (D := A) (fun _ _ h ↦ h.some.to_eq)
-          (iso_of_both_ways (C := A ⥤ P) hFG.some hGF.some) }
-  exact ⟨.of B, ⟨.refl _⟩⟩
+instance : ExponentialIdeal (forget₂ PartOrd.{u} Preord.{u}) :=
+  ExponentialIdeal.mk' _ fun P A ↦
+    let B := (ihom A).obj ((forget₂ PartOrd Preord).obj P)
+    let : PartialOrder B :=
+      { B.str with
+        le_antisymm _ _ hFG hGF :=
+          Functor.eq_of_iso (C := P) (D := A) (fun _ _ h ↦ h.some.to_eq)
+            (iso_of_both_ways (C := A ⥤ P) hFG.some hGF.some) }
+    ⟨.of B, ⟨.refl _⟩⟩
 
 namespace PartOrd
 
