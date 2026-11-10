@@ -63,7 +63,6 @@ is not differentiable on the right at that point, and similarly differentiabilit
 
 * `convexOn_of_deriv`, `convexOn_of_deriv2_nonneg` : if the derivative of a function
   is increasing or its second derivative is nonnegative, then the original function is convex.
-
 -/
 
 public section

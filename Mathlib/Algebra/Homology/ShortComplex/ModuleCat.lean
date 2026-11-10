@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 In this file, the homology of a short complex `S` of abelian groups is identified
 with the quotient of `LinearMap.ker S.g` by the image of the morphism
 `S.moduleCatToCycles : S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`.
-
 -/
 
 @[expose] public section

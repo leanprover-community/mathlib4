@@ -12,7 +12,6 @@ import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.ClopenBox
 
 /-!
-
 # Light profinite spaces
 
 We construct the category `LightProfinite` of light profinite topological spaces. These are
@@ -28,7 +27,6 @@ essentially small categories.
 
 The category `LightProfinite` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section

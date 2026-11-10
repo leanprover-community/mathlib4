@@ -20,8 +20,8 @@ set_option doc.verso.suggestions false
 /-!
 # Dyadic rationals
 
-This file provides general API for Dyadic rationals that are used in Mathlib but not available in
-core.
+This file provides general API for Dyadic rationals that are used in the Inclusion tactic but not
+available in core.
 -/
 
 @[expose] public section

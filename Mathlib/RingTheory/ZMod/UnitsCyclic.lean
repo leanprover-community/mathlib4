@@ -55,7 +55,6 @@ The case of prime numbers is also an instance:
 The proofs mostly follow [Ireland and Rosen,
   *A classical introduction to modern number theory*, chapter 4]
   [IrelandRosen1990].
-
 -/
 
 public section

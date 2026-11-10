@@ -34,7 +34,6 @@ left adjoint to the functor equipping a module with the trivial representation.
 * `Rep.coinvariantsTensorFreeLEquiv A α`: given a representation `A` and a type `α`, this is the
   `k`-linear equivalence between `(A ⊗ (α →₀ k[G]))_G` and `α →₀ A` sending
   `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a))`. This is useful for group homology.
-
 -/
 
 @[expose] public section
@@ -452,7 +451,7 @@ section Finsupp
 
 open MonoidalCategory Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u) [DecidableEq α]
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u)
 
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(A ⊗ (α →₀ k[G]))_G →ₗ[k] (α →₀ A)` sending

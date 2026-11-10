@@ -20,7 +20,6 @@ if the induced map on hom types is a morphism of `R`-modules.
 `Functor.Linear` is a `Prop`-valued class, defined by saying that
 for every two objects `X` and `Y`, the map
 `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of `R`-modules.
-
 -/
 
 @[expose] public section

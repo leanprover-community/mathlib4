@@ -274,7 +274,6 @@ The rules for `HypothesisOp`s are:
   occur in `I`, but it may not occur in the source hypothesis or `e`.
 * All remaining theorem arguments must be determined by matching the theorem or by typeclass
   synthesis.
-
 -/
 
 public meta section

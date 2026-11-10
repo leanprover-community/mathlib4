@@ -26,7 +26,6 @@ We also show that a left adjoint commutes with a left Kan extension. Under the a
 
 At the moment, the results are stated for left Kan extensions and left Kan lifts. We can prove the
 similar results for right Kan extensions and right Kan lifts.
-
 -/
 
 @[expose] public section
