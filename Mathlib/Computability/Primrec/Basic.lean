@@ -862,7 +862,7 @@ theorem subtypeVal_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} 
     haveI := Primcodable.subtype hp
     (Primrec fun a => (f a).1) ↔ Primrec f := by
   let := Primcodable.subtype hp
-  refine ⟨fun h => ?_, fun hf => subtype_val.comp hf⟩
+  refine ⟨fun h => ?_, fun hf => subtypeVal.comp hf⟩
   refine Nat.Primrec.of_eq h fun n => ?_
   rcases @decode α _ n with - | a; · rfl
   simp; rfl
@@ -873,7 +873,7 @@ theorem subtype_mk {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f :
     {h : ∀ a, p (f a)} (hf : Primrec f) :
     haveI := Primcodable.subtype hp
     Primrec fun a => @Subtype.mk β p (f a) (h a) :=
-  subtype_val_iff.1 hf
+  subtypeVal_iff.1 hf
 
 theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
     Primrec f → Primrec fun a => (f a).get (h a) := by
@@ -888,11 +888,11 @@ theorem ulower_down : Primrec (ULower.down : α → ULower α) :=
 
 theorem ulower_up : Primrec (ULower.up : ULower α → α) :=
   letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  option_get (Primrec.decode₂.comp (subtype_val (hp := Primcodable.mem_range_encode)))
+  option_get (Primrec.decode₂.comp (subtypeVal (hp := Primcodable.mem_range_encode)))
 
 theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f := by
   let : Primcodable { a // a < n } := Primcodable.subtype (nat_lt.comp .id (const _))
-  exact (Iff.trans (by rfl) subtype_val_iff).trans (of_equiv_iff _)
+  exact (Iff.trans (by rfl) subtypeVal_iff).trans (of_equiv_iff _)
 
 theorem fin_val {n} : Primrec (fun (i : Fin n) => (i : ℕ)) :=
   fin_val_iff.2 .id

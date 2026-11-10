@@ -452,7 +452,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
   continuousOn_invFun := by
     exact continuousOn_of_forall_continuousAt
-      (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
+      (fun _ ↦ continuousAt_subtypeVal.comp ∘ continuousAt_equivIco p a)
 
 end Continuity
 

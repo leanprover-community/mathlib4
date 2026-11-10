@@ -165,7 +165,7 @@ def ContMDiff.smoothSheafHom (f : M → P) (hf : ContMDiff IM IP ∞ f) :
   hom.app U := ↾fun g ↦ ⟨g ∘ Set.restrictPreimage _ f, by
     apply ContMDiff.comp (I' := IP) g.2
     rw [← ContMDiff.subtypeVal_comp_iff]
-    exact hf.comp contMDiff_subtype_val⟩
+    exact hf.comp contMDiff_subtypeVal⟩
 
 end TypeCat
 

@@ -181,7 +181,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
     Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
   rw [tendsto_subtype_rng, Vector.cons_val]
-  exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
+  exact tendsto_fst.cons (Tendsto.comp continuousAt_subtypeVal tendsto_snd)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
@@ -191,7 +191,7 @@ theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
   | ⟨l, hl⟩ => by
     rw [insertIdx, tendsto_subtype_rng]
     simp only [insertIdx_val]
-    exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
+    exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtypeVal tendsto_snd : _)
 
 /-- Continuity of `Vector.insertIdx`. -/
 theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
@@ -209,7 +209,7 @@ theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
   | ⟨l, hl⟩ => by
     rw [ContinuousAt, Vector.eraseIdx, tendsto_subtype_rng]
     simp only [Vector.eraseIdx_val]
-    exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
+    exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtypeVal
 
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     Continuous (Vector.eraseIdx i : Vector α (n + 1) → Vector α n) :=

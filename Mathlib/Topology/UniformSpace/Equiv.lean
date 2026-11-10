@@ -214,13 +214,13 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
   uniformContinuous_invFun := by
     rw [hf.isUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
       Equiv.self_comp_ofInjective_symm]
-    exact uniformContinuous_subtype_val
+    exact uniformContinuous_subtypeVal
   toEquiv := Equiv.ofInjective f hf.injective
 
 /-- If two sets are equal, then they are uniformly equivalent. -/
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
-  uniformContinuous_toFun := uniformContinuous_subtype_val.subtype_mk _
-  uniformContinuous_invFun := uniformContinuous_subtype_val.subtype_mk _
+  uniformContinuous_toFun := uniformContinuous_subtypeVal.subtype_mk _
+  uniformContinuous_invFun := uniformContinuous_subtypeVal.subtype_mk _
   toEquiv := Set.equivOfEq h
 
 /-- Product of two uniform isomorphisms. -/
@@ -395,9 +395,9 @@ def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α 
 /-- A subset of a uniform space is uniformly isomorphic to its image under a uniform isomorphism.
 -/
 def image (e : α ≃ᵤ β) (s : Set α) : s ≃ᵤ e '' s where
-  uniformContinuous_toFun := (e.uniformContinuous.comp uniformContinuous_subtype_val).subtype_mk _
+  uniformContinuous_toFun := (e.uniformContinuous.comp uniformContinuous_subtypeVal).subtype_mk _
   uniformContinuous_invFun :=
-    (e.symm.uniformContinuous.comp uniformContinuous_subtype_val).subtype_mk _
+    (e.symm.uniformContinuous.comp uniformContinuous_subtypeVal).subtype_mk _
   toEquiv := e.toEquiv.image s
 
 /-- A uniform isomorphism `e : α ≃ᵤ β` lifts to subtypes `{ a : α // p a } ≃ᵤ { b : β // q b }`

@@ -702,7 +702,7 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
   (simpleFunc.isDenseInducing hp_ne_top).dense
 
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
-  simpa only [denseRange_subtype_val] using! simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
+  simpa only [denseRange_subtypeVal] using! simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 variable (α E 𝕜)

@@ -194,7 +194,7 @@ lemma ChartedSpace.locallyRingedSpace_comp {f : M → N} (hf : ContMDiff IM IN �
 -- is also a smooth immersion.
 instance (U : Opens M) :
     LocallyRingedSpace.IsOpenImmersion
-      (ChartedSpace.locallyRingedSpaceMap _ (contMDiff_subtype_val (I := IM) (U := U))) where
+      (ChartedSpace.locallyRingedSpaceMap _ (contMDiff_subtypeVal (I := IM) (U := U))) where
   base_open := U.isOpenEmbedding'
   c_iso V := by
     rw [ConcreteCategory.isIso_iff_bijective]
@@ -209,7 +209,7 @@ instance (U : Opens M) :
       refine ⟨⟨g ∘ b.symm, ContMDiff.comp hg ?_⟩, Subtype.ext <| funext fun _ ↦ ?_⟩
       · refine (ContMDiff.subtypeVal_comp_iff V' _).mp ?_
         rw [← ContMDiff.subtypeVal_comp_iff]
-        convert contMDiff_subtype_val
+        convert contMDiff_subtypeVal
         ext x
         congrm $(b.apply_symm_apply x).1
       · change g _ = _
@@ -222,12 +222,12 @@ def ChartedSpace.restrictLocallyRingedSpaceIso (U : Opens M) :
     (locallyRingedSpace IM M).restrict U.isOpenEmbedding ≅
       locallyRingedSpace IM U where
   hom := LocallyRingedSpace.IsOpenImmersion.lift
-    (locallyRingedSpaceMap _ contMDiff_subtype_val)
+    (locallyRingedSpaceMap _ contMDiff_subtypeVal)
     (LocallyRingedSpace.ofRestrict _ _) (by rfl)
   inv := LocallyRingedSpace.IsOpenImmersion.lift
     ((locallyRingedSpace IM M).ofRestrict U.isOpenEmbedding)
-    (locallyRingedSpaceMap _ contMDiff_subtype_val) (by rfl)
+    (locallyRingedSpaceMap _ contMDiff_subtypeVal) (by rfl)
   hom_inv_id := by
     simp [← cancel_mono ((locallyRingedSpace IM M).ofRestrict U.isOpenEmbedding)]
   inv_hom_id := by
-    simp [← cancel_mono (locallyRingedSpaceMap _ contMDiff_subtype_val)]
+    simp [← cancel_mono (locallyRingedSpaceMap _ contMDiff_subtypeVal)]

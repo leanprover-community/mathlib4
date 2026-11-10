@@ -427,7 +427,7 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   continuous_invFun := by
     rw [continuous_iff_continuousAt]
     intro x
-    exact (continuousAt_arg_coe_angle x.coe_ne_zero).comp continuousAt_subtype_val
+    exact (continuousAt_arg_coe_angle x.coe_ne_zero).comp continuousAt_subtypeVal
 
 theorem homeomorphCircle'_apply_mk (x : ℝ) : homeomorphCircle' x = Circle.exp x := rfl
 

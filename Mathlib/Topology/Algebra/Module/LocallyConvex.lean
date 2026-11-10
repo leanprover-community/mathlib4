@@ -114,7 +114,7 @@ theorem Convex.locallyPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [
   let ⟨t, ht⟩ := (mem_nhds_subtype S x s).mp hs
   let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.1).mem_iff.mp ht.1
   refine ⟨(↑) ⁻¹' t', ⟨?_, ?_⟩, (preimage_mono ht'.2).trans ht.2⟩
-  · exact continuousAt_subtype_val.preimage_mem_nhds ht'.1.1
+  · exact continuousAt_subtypeVal.preimage_mem_nhds ht'.1.1
   · refine Subtype.preimage_coe_self_inter _ _ ▸ IsPathConnected.preimage_coe ?_ inter_subset_left
     exact (hS.inter ht'.1.2).isPathConnected ⟨x, x.2, mem_of_mem_nhds ht'.1.1⟩
 
