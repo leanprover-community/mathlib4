@@ -144,7 +144,7 @@ theorem IsStarNormal.instContinuousFunctionalCalculus :
   exists_cfc_of_predicate a ha := by
     have : Isometry ((StarAlgebra.elemental ℂ a).subtype.comp
         (continuousFunctionalCalculus a).toStarAlgHom) :=
-      isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+      isometry_subtypeVal.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     refine ⟨_, this.continuous, this.injective, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
     case hom_id => congrm $(continuousFunctionalCalculus_map_id a).val
     case hom_map_spectrum =>
@@ -161,7 +161,7 @@ lemma cfcHom_eq_of_isStarNormal (a : A) [ha : IsStarNormal a] :
     cfcHom ha =
       (StarAlgebra.elemental ℂ a).subtype.comp (continuousFunctionalCalculus a).toStarAlgHom := by
   refine cfcHom_eq_of_continuous_of_map_id ha _ ?_ ?_
-  · exact continuous_subtype_val.comp
+  · exact continuous_subtypeVal.comp
       (StarAlgEquiv.isometry (continuousFunctionalCalculus a)).continuous
   · simp [continuousFunctionalCalculus_map_id a]
 
@@ -169,7 +169,7 @@ instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℂ A IsStarNormal where
   isometric a ha := by
     rw [cfcHom_eq_of_isStarNormal]
-    exact isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
+    exact isometry_subtypeVal.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
 
 instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=

@@ -187,7 +187,7 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
   obtain ⟨f, hf, hf', hf''⟩ := Module.FinitePresentation.exists_free_localizedModule_powers
     x.asIdeal.primeCompl (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
     (Localization.AtPrime x.asIdeal)
-  refine ⟨Subtype.val ⁻¹' basicOpen f, (basicOpen f).2.preimage continuous_subtype_val, hf, ?_⟩
+  refine ⟨Subtype.val ⁻¹' basicOpen f, (basicOpen f).2.preimage continuous_subtypeVal, hf, ?_⟩
   rintro ⟨p, hp''⟩ hp
   let p' := Algebra.algebraMapSubmonoid (Localization (.powers f)) p.asIdeal.primeCompl
   have hp' : Submonoid.powers f ≤ p.asIdeal.primeCompl := by

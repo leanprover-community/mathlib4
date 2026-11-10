@@ -549,8 +549,8 @@ protected theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph
   let φ : E ≃ₗ[𝕜] g.graph :=
     (LinearEquiv.ofLeftInverse this).trans (LinearEquiv.ofEq _ _ g.graph_eq_range_prod.symm)
   let ψ : g.graph ≃L[𝕜] E :=
-    φ.symm.toContinuousLinearEquivOfContinuous continuous_subtype_val.fst
-  exact (continuous_subtype_val.comp ψ.symm.continuous).snd
+    φ.symm.toContinuousLinearEquivOfContinuous continuous_subtypeVal.fst
+  exact (continuous_subtypeVal.comp ψ.symm.continuous).snd
 
 /-- A useful form of the **closed graph theorem** : let `f` be a linear map between two Banach
 spaces. To show that `f` is continuous, it suffices to show that for any convergent sequence

@@ -63,7 +63,7 @@ lemma PrespectralSpace.of_isOpenCover
   refine .of_isTopologicalBasis (hU.isTopologicalBasis fun i ↦ isTopologicalBasis) ?_
   simp only [Set.mem_iUnion, Set.mem_image, Set.mem_ofPred_eq, forall_exists_index, and_imp,
     forall_comm (α := Set _), forall_apply_eq_imp_iff₂]
-  exact fun i V hV hV' ↦ hV'.image continuous_subtype_val
+  exact fun i V hV hV' ↦ hV'.image continuous_subtypeVal
 
 lemma PrespectralSpace.of_isInducing [PrespectralSpace Y]
     (f : X → Y) (hf : IsInducing f) (hf' : IsSpectralMap f) : PrespectralSpace X :=

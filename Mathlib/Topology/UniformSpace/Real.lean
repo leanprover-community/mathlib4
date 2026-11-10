@@ -49,7 +49,7 @@ instance : CompleteSpace ℝ≥0 :=
 
 @[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
-  continuous_subtype_val
+  continuous_subtypeVal
 
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
 @[simps -fullyApplied]

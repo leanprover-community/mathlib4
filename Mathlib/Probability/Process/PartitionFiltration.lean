@@ -78,7 +78,7 @@ lemma measurable_memPartitionSet_subtype (ht : ∀ n, MeasurableSet (t n)) (n : 
 
 lemma measurable_partitionFiltration_memPartitionSet (ht : ∀ n, MeasurableSet (t n)) (n : ℕ) :
     Measurable[partitionFiltration ht n] (memPartitionSet t n) :=
-  measurable_subtype_coe.comp (measurable_memPartitionSet_subtype ht _ _)
+  measurable_subtypeVal.comp (measurable_memPartitionSet_subtype ht _ _)
 
 lemma measurable_memPartitionSet (ht : ∀ n, MeasurableSet (t n)) (n : ℕ) :
     Measurable (memPartitionSet t n) :=
@@ -129,7 +129,7 @@ lemma measurable_countablePartitionSet_subtype (n : ℕ)
 lemma measurable_countableFiltration_countablePartitionSet (α : Type*)
     [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
     Measurable[countableFiltration α n] (countablePartitionSet n) :=
-  measurable_subtype_coe.comp (measurable_countablePartitionSet_subtype _ _)
+  measurable_subtypeVal.comp (measurable_countablePartitionSet_subtype _ _)
 
 lemma measurable_countablePartitionSet (α : Type*) [MeasurableSpace α] [CountablyGenerated α]
     (n : ℕ) :

@@ -113,7 +113,7 @@ protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace 
 is path connected in `p` then the complement of `q` is path connected in `E`. -/
 theorem isPathConnected_compl_of_isPathConnected_compl_zero {p q : Submodule ℝ E}
     (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) : IsPathConnected (qᶜ : Set E) := by
-  convert (hpc.image continuous_subtype_val).add q.isPathConnected
+  convert (hpc.image continuous_subtypeVal).add q.isPathConnected
   trans Submodule.prodEquivOfIsCompl p q hpq '' ({0}ᶜ ×ˢ univ)
   · rw [prod_univ, LinearEquiv.image_eq_preimage_symm]
     ext

@@ -299,7 +299,7 @@ theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
   toIsEmbedding := .inclusion i
   isOpen_range := by
     rw [Set.range_inclusion i]
-    exact U.isOpen.preimage continuous_subtype_val
+    exact U.isOpen.preimage continuous_subtypeVal
 
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]

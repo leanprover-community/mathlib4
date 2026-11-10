@@ -100,7 +100,7 @@ theorem lintegral_map_equiv (f : β → ℝ≥0∞) (g : α ≃ᵐ β) :
 
 theorem lintegral_subtype_comap {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     ∫⁻ x : s, f x ∂(μ.comap (↑)) = ∫⁻ x in s, f x ∂μ := by
-  rw [← (MeasurableEmbedding.subtype_coe hs).lintegral_map, map_comap_subtype_coe hs]
+  rw [← (MeasurableEmbedding.subtype_coe hs).lintegral_map, map_comap_subtypeVal hs]
 
 theorem setLIntegral_subtype {s : Set α} (hs : MeasurableSet s) (t : Set s) (f : α → ℝ≥0∞) :
     ∫⁻ x in t, f x ∂(μ.comap (↑)) = ∫⁻ x in (↑) '' t, f x ∂μ := by

@@ -146,7 +146,7 @@ instance Set.separableSpace [SeparableSpace α] (s : Set α) : SeparableSpace s 
     rw [isOpen_singleton_iff_punctured_nhds] at hxiso
     have : NeBot (𝓝[≠] x) := ⟨hxiso⟩
     have hWinf : (Subtype.val ⁻¹' W).Infinite :=
-      infinite_of_mem_nhds x ((hWo.preimage continuous_subtype_val).mem_nhds hWx)
+      infinite_of_mem_nhds x ((hWo.preimage continuous_subtypeVal).mem_nhds hWx)
     by_contra! h
     exact hWinf (finite_of_forall_not_lt_lt fun a ha b hb c hc hab hbc ↦
       (h b b.2 ⟨a, ha, hab⟩).subset ⟨hc, hbc⟩)

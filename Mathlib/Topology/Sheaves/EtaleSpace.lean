@@ -138,7 +138,7 @@ noncomputable def homeomorph (U : Opens X)
     simp only [mem_ofPred_eq] at hmem
     rcases hmem with ⟨hyV, hgf⟩
     rcases F.germ_eq _ _ _ _ _ hgf with ⟨W, hyW, ιWU, ιWV, hW⟩
-    filter_upwards [W.isOpen.preimage continuous_subtype_val |>.mem_nhds hyW] with z hz
+    filter_upwards [W.isOpen.preimage continuous_subtypeVal |>.mem_nhds hyW] with z hz
     use ιWV.le hz
     rw [← F.germ_res_apply ιWU z hz, hW, F.germ_res_apply]
 

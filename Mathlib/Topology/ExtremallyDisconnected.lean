@@ -105,7 +105,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   have hZ₂ : IsClosed Z₂ := isClosed_closure.prod (T1Space.t1 false)
   have hZ : IsClosed Z := hZ₁.union hZ₂
   let f : Z → X := Prod.fst ∘ Subtype.val
-  have f_cont : Continuous f := continuous_fst.comp continuous_subtype_val
+  have f_cont : Continuous f := continuous_fst.comp continuous_subtypeVal
   have f_sur : Surjective f := by
     intro x
     by_cases hx : x ∈ U
@@ -114,11 +114,11 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   have : CompactSpace Z := isCompact_iff_compactSpace.mp hZ.isCompact
   obtain ⟨g, hg, g_sec⟩ := h continuous_id f_cont f_sur
   let φ := Subtype.val ∘ g
-  have hφ : Continuous φ := continuous_subtype_val.comp hg
+  have hφ : Continuous φ := continuous_subtypeVal.comp hg
   have hφ₁ : ∀ x, (φ x).1 = x := congr_fun g_sec
   suffices closure U = φ ⁻¹' Z₂ by
     rw [this, preimage_comp, ← isClosed_compl_iff, ← preimage_compl,
-      ← preimage_subtype_coe_eq_compl Subset.rfl]
+      ← preimage_subtypeVal_eq_compl Subset.rfl]
     · exact hZ₁.preimage hφ
     · rw [hZ₁₂.inter_eq, inter_empty]
   refine (closure_minimal ?_ <| hZ₂.preimage hφ).antisymm fun x hx => ?_
@@ -264,7 +264,7 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
     (isClosed_eq (φ_cont.comp continuous_fst) (f_cont.comp continuous_snd)).isCompact
   -- apply Lemma 2.4 to get closed $E$ satisfying "Zorn subset condition"
   let X₁ : D → A := Prod.fst ∘ Subtype.val
-  have X₁_cont : Continuous X₁ := continuous_fst.comp continuous_subtype_val
+  have X₁_cont : Continuous X₁ := continuous_fst.comp continuous_subtypeVal
   have X₁_surj : X₁.Surjective := fun a => ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
   rcases exists_compact_surjective_zorn_subset X₁_cont X₁_surj with ⟨E, _, E_onto, E_min⟩
   -- apply Lemma 2.3 to get homeomorphism $\pi_1|_E : E \to A$
@@ -275,7 +275,7 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   let ρ' := ExtremallyDisconnected.homeoCompactToT2 ρ_cont ρ_surj E_min
   -- prove $\rho := \pi_2|_E \circ \pi_1|_E^{-1}$ satisfies $\phi = f \circ \rho$
   let X₂ : D → B := Prod.snd ∘ Subtype.val
-  have X₂_cont : Continuous X₂ := continuous_snd.comp continuous_subtype_val
+  have X₂_cont : Continuous X₂ := continuous_snd.comp continuous_subtypeVal
   refine ⟨E.domRestrict X₂ ∘ ρ'.symm,
     ⟨X₂_cont.continuousOn.domRestrict.comp ρ'.symm.continuous, ?_⟩⟩
   suffices f ∘ E.domRestrict X₂ = φ ∘ ρ' by

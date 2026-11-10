@@ -76,10 +76,10 @@ noncomputable def toTrivialization' {x : X} [Nonempty I] (h : IsEvenlyCovered f 
     open_source := hfU
     open_target := hU.prod isOpen_univ
     continuousOn_toFun := continuousOn_iff_continuous_domRestrict.mpr <|
-      ((continuous_subtype_val.prodMap continuous_id).comp H.continuous).congr
+      ((continuous_subtypeVal.prodMap continuous_id).comp H.continuous).congr
       fun ⟨e, (he : f e ∈ U)⟩ ↦ by simp [Prod.map, he]
     continuousOn_invFun := continuousOn_iff_continuous_domRestrict.mpr <|
-      ((continuous_subtype_val.comp H.symm.continuous).comp (by fun_prop :
+      ((continuous_subtypeVal.comp H.symm.continuous).comp (by fun_prop :
         Continuous fun ui ↦ ⟨⟨_, ui.2.1⟩, ui.1.2⟩)).congr fun ⟨⟨x, i⟩, ⟨hx, _⟩⟩ ↦ by simp [hx]
     baseSet := U
     open_baseSet := hU
@@ -127,7 +127,7 @@ theorem of_trivialization [DiscreteTopology I] {x : X} {t : Trivialization I f}
       (continuousOn_iff_continuous_domRestrict.mp <| t.continuousOn_toFun.mono t.source_eq.ge).congr
       fun e ↦ by simp [t.mk_proj_snd' e.2]
     continuous_invFun := IsInducing.subtypeVal.continuous_iff.mpr <|
-      t.continuousOn_invFun.comp_continuous (continuous_subtype_val.prodMap continuous_id)
+      t.continuousOn_invFun.comp_continuous (continuous_subtypeVal.prodMap continuous_id)
       fun ⟨x, _⟩ ↦ t.target_eq ▸ ⟨x.2, ⟨⟩⟩ }, fun _ ↦ by simp⟩
 
 variable (I) in
@@ -142,7 +142,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem restrictPreimage {x : X} (hxs : x ∈ s) (h : IsEvenlyCovered f x I) :
     IsEvenlyCovered (s.restrictPreimage f) ⟨x, hxs⟩ I :=
   have ⟨inst, U, hxU, hU, hfU, H, hH⟩ := h
-  ⟨inst, Subtype.val ⁻¹' U, hxU, hU.preimage (by fun_prop), hfU.preimage continuous_subtype_val,
+  ⟨inst, Subtype.val ⁻¹' U, hxU, hU.preimage (by fun_prop), hfU.preimage continuous_subtypeVal,
     { toFun e := (⟨⟨(H ⟨e, e.2⟩).1, hH _ ▸ e.1.2⟩, by simpa only [hH] using! e.2⟩, (H ⟨e, e.2⟩).2)
       invFun x := ⟨⟨H.symm (⟨x.1, x.1.2⟩, x.2), by simp [← hH]⟩, by simp [← hH]⟩
       left_inv _ := by simp, right_inv _ := by simp }, fun _ ↦ by ext; apply hH⟩

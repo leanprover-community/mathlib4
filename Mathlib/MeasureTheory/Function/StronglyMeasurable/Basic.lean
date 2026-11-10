@@ -716,7 +716,7 @@ theorem _root_.stronglyMeasurable_iff_measurable_separable {m : MeasurableSpace 
   refine ⟨fun H ↦ ⟨H.measurable, H.isSeparable_range⟩, fun ⟨Hm, Hsep⟩  ↦ ?_⟩
   have := Hsep.secondCountableTopology
   have Hm' : StronglyMeasurable (rangeFactorization f) := Hm.subtype_mk.stronglyMeasurable
-  exact continuous_subtype_val.comp_stronglyMeasurable Hm'
+  exact continuous_subtypeVal.comp_stronglyMeasurable Hm'
 
 /-- A continuous function is strongly measurable when either the source space or the target space
 is second-countable. -/

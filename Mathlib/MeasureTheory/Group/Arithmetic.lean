@@ -488,7 +488,7 @@ instance Submonoid.instMeasurableConstSMul {M α} [MeasurableSpace α] [Monoid M
 @[to_additive]
 instance Submonoid.instMeasurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
     [MulAction M α] [MeasurableSMul M α] (s : Submonoid M) : MeasurableSMul s α where
-  measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtype_coe
+  measurable_smul_const x := (measurable_smul_const (M := M) x).comp measurable_subtypeVal
 
 @[to_additive]
 instance Subgroup.instMeasurableConstSMul {G α} [MeasurableSpace α] [Group G] [MulAction G α]

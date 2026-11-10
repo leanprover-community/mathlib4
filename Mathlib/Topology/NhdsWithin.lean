@@ -142,7 +142,7 @@ theorem preimage_nhdsWithin_coinduced' {X : α → β} {s : Set β} {t : Set α}
     X ⁻¹' s ∈ 𝓝[t] a := by
   lift a to t using h
   replace hs : (fun x : t => X x) ⁻¹' s ∈ 𝓝 a := preimage_nhds_coinduced hs
-  rwa [← map_nhds_subtype_val, mem_map]
+  rwa [← map_nhds_subtypeVal, mem_map]
 
 theorem mem_nhdsWithin_of_mem_nhds {s t : Set α} {a : α} (h : s ∈ 𝓝 a) : s ∈ 𝓝[t] a :=
   mem_inf_of_left h
@@ -511,17 +511,17 @@ theorem nhdsWithin_subtype (s : Set α) (a : { x // x ∈ s }) (t : Set { x // x
 
 theorem nhdsWithin_eq_map_subtypeVal {s : Set α} {a : α} (h : a ∈ s) :
     𝓝[s] a = map ((↑) : s → α) (𝓝 ⟨a, h⟩) :=
-  (map_nhds_subtype_val ⟨a, h⟩).symm
+  (map_nhds_subtypeVal ⟨a, h⟩).symm
 
 @[deprecated (since := "2026-11-10")]
 alias nhdsWithin_eq_map_subtype_coe := nhdsWithin_eq_map_subtypeVal
 
 theorem mem_nhds_subtype_iff_nhdsWithin {s : Set α} {a : s} {t : Set s} :
     t ∈ 𝓝 a ↔ (↑) '' t ∈ 𝓝[s] (a : α) := by
-  rw [← map_nhds_subtype_val, image_mem_map_iff Subtype.val_injective]
+  rw [← map_nhds_subtypeVal, image_mem_map_iff Subtype.val_injective]
 
 theorem preimage_coe_mem_nhds_subtype {s t : Set α} {a : s} : (↑) ⁻¹' t ∈ 𝓝 a ↔ t ∈ 𝓝[s] ↑a := by
-  rw [← map_nhds_subtype_val, mem_map]
+  rw [← map_nhds_subtypeVal, mem_map]
 
 theorem eventually_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
     (∀ᶠ x : s in 𝓝 a, P x) ↔ ∀ᶠ x in 𝓝[s] a, P x :=
@@ -533,18 +533,18 @@ theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
 
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.domRestrict f) (𝓝 ⟨a, h⟩) l := by
-  rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
+  rw [nhdsWithin_eq_map_subtypeVal h, tendsto_map'_iff]; rfl
 
 theorem tendsto_nhdsWithin_inter_iff_subtype {s t : Set α} {a : α} (h : a ∈ s) (f : α → β)
     (l : Filter β) :
     Tendsto f (𝓝[s ∩ t] a) l ↔ Tendsto (s.domRestrict f) (𝓝[(↑) ⁻¹' t] ⟨a, h⟩) l := by
-  rw [nhdsWithin_inter', nhdsWithin_eq_map_subtype_coe h, ← map_inf_principal_preimage,
+  rw [nhdsWithin_inter', nhdsWithin_eq_map_subtypeVal h, ← map_inf_principal_preimage,
     tendsto_map'_iff]
   rfl
 
 theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t) {J : Set s} {a : s} :
     ClusterPt a (Filter.principal J) ↔ ∃ᶠ x in nhdsWithin a t, ∃ h : x ∈ s, (⟨x, h⟩ : s) ∈ J := by
-  rw [nhdsWithin_eq_map_subtype_coe (hst a.prop), Filter.frequently_map,
+  rw [nhdsWithin_eq_map_subtypeVal (hst a.prop), Filter.frequently_map,
     clusterPt_principal_iff_frequently,
     Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap,
     Topology.IsInducing.subtypeVal.nhds_eq_comap, Filter.frequently_comap, Subtype.coe_mk]

@@ -374,7 +374,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞ω} {U : Opens M} {
     ContMDiff I I' n (Subtype.val.extend f 1) := fun x ↦ by
   refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
   lift x to U using Subtype.coe_image_subset _ _
-    (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
+    (supp.mulTSupport_extend_one_subset continuous_subtypeVal h)
   rw [← contMDiffAt_subtype_iff]
   simp_rw [← comp_def]
   rw [extend_comp Subtype.val_injective]

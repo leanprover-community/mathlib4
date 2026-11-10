@@ -151,7 +151,7 @@ theorem semicontinuousOn_univ_iff : SemicontinuousOn r univ ↔ Semicontinuous r
     Semicontinuous (s.domRestrict r) ↔ SemicontinuousOn r s := by
   rw [SemicontinuousOn, Semicontinuous, SetCoe.forall]
   refine forall₂_congr fun a ha ↦ forall₂_congr fun b _ ↦ ?_
-  simp only [nhdsWithin_eq_map_subtype_coe ha, eventually_map, domRestrict]
+  simp only [nhdsWithin_eq_map_subtypeVal ha, eventually_map, domRestrict]
 
 theorem Semicontinuous.semicontinuousAt (h : Semicontinuous r) (x : α) :
     SemicontinuousAt r x :=

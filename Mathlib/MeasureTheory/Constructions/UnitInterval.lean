@@ -37,17 +37,17 @@ instance : IsProbabilityMeasure (volume : Measure I) where
 
 lemma measurableEmbedding_subtypeVal : MeasurableEmbedding ((↑) : I → ℝ) where
   injective := Subtype.val_injective
-  measurable := measurable_subtype_coe
+  measurable := measurable_subtypeVal
   measurableSet_image' _ := measurableSet_Icc.subtype_image
 
 @[deprecated (since := "2026-11-10")]
 alias measurableEmbedding_coe := measurableEmbedding_subtypeVal
 
 lemma volume_apply {s : Set I} : volume s = volume (Subtype.val '' s) :=
-  measurableEmbedding_coe.comap_apply ..
+  measurableEmbedding_subtypeVal.comap_apply ..
 
 lemma measurePreserving_subtypeVal : MeasurePreserving ((↑) : I → ℝ) volume (volume.restrict I) :=
-  measurePreserving_subtype_coe measurableSet_Icc
+  MeasureTheory.measurePreserving_subtypeVal measurableSet_Icc
 
 @[deprecated (since := "2026-11-10")] alias measurePreserving_coe := measurePreserving_subtypeVal
 
@@ -90,7 +90,7 @@ lemma volume_Iic : volume (Iic x) = .ofReal x := by
 
 @[simp]
 lemma volume_Iio : volume (Iio x) = .ofReal x := by
-  simp only [← volume_image_subtype_coe measurableSet_Icc, image_subtype_val_Icc_Iio,
+  simp only [← volume_image_subtypeVal measurableSet_Icc, image_subtype_val_Icc_Iio,
     Real.volume_Ico, sub_zero]
 
 @[simp]

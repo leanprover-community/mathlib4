@@ -522,7 +522,7 @@ theorem coe_rangeRestrict (f : A →A[R] B) :
 
 /-- `Subalgebra.val` as a `ContinuousAlgHom`. -/
 def _root_.Subalgebra.valA (p : Subalgebra R A) : p →A[R] A where
-  cont := continuous_subtype_val
+  cont := continuous_subtypeVal
   toAlgHom := p.val
 
 @[simp, norm_cast]

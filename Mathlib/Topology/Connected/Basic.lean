@@ -806,7 +806,7 @@ theorem Subtype.connectedSpace {s : Set α} (h : IsConnected s) : ConnectedSpace
 
 theorem isPreconnected_iff_preconnectedSpace {s : Set α} : IsPreconnected s ↔ PreconnectedSpace s :=
   ⟨Subtype.preconnectedSpace, fun h => by
-    simpa using isPreconnected_univ.image ((↑) : s → α) continuous_subtype_val.continuousOn⟩
+    simpa using isPreconnected_univ.image ((↑) : s → α) continuous_subtypeVal.continuousOn⟩
 
 theorem isConnected_iff_connectedSpace {s : Set α} : IsConnected s ↔ ConnectedSpace s :=
   ⟨Subtype.connectedSpace, fun h =>

@@ -581,10 +581,10 @@ def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : 
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
     LocallyConstant C₀ Z :=
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
-  piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
+  piecewise (h₁.preimage continuous_subtypeVal) (h₂.preimage continuous_subtypeVal)
     (by simpa [eq_univ_iff_forall] using! h₀)
-    (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩)
-    (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩) <| by
+    (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩)
+    (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩) <| by
       rintro ⟨x, hx₀⟩ ⟨hx₁ : x ∈ C₁, hx₂ : x ∈ C₂⟩
       simpa using hf x ⟨hx₁, hx₂⟩
 
@@ -596,7 +596,7 @@ lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
   let : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_left (f := (f₁.comap
-    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
+    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩))
     (hx := hx)]
   rfl
 
@@ -608,7 +608,7 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
   let : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_right (f := (f₁.comap
-    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
+    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtypeVal.restrictPreimage⟩))
     (hx := hx)]
   rfl
 

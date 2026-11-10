@@ -342,7 +342,7 @@ lemma metrizable_of_isCompact (K_cpt : IsCompact K) : TopologicalSpace.Metrizabl
   have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
   obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 E
   exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
-    (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
+    (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtypeVal)
     fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
 
 variable [ProperSpace 𝕜]
@@ -356,7 +356,7 @@ theorem isSeqCompact_of_isBounded_of_isClosed {s : Set (WeakDual 𝕜 E)}
   have b_isMetrizable : TopologicalSpace.MetrizableSpace s :=
     metrizable_of_isCompact 𝕜 E s <| isCompact_of_bounded_of_closed hb hc
   have seq_cont_phi : SeqContinuous (fun φ : s ↦ (φ : WeakDual 𝕜 E)) :=
-    continuous_iff_seqContinuous.mp continuous_subtype_val
+    continuous_iff_seqContinuous.mp continuous_subtypeVal
   simpa using IsSeqCompact.range seq_cont_phi
 
 /-- The **Sequential Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in

@@ -300,7 +300,7 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
     convert! ← e.right_inv' hx; exact e.proj_toFun _ (e.map_target' hx)
   open_target := e.open_target.preimage <| by fun_prop
   baseSet := Subtype.val ⁻¹' e.baseSet
-  open_baseSet := e.open_baseSet.preimage continuous_subtype_val
+  open_baseSet := e.open_baseSet.preimage continuous_subtypeVal
   source_eq := Set.ext fun _ ↦ Set.ext_iff.mp e.source_eq _
   target_eq := Set.ext fun _ ↦ Set.ext_iff.mp e.target_eq _
   proj_toFun _ _ := rfl
@@ -826,10 +826,10 @@ noncomputable def restrictPreimage' (e : Trivialization F proj) (s : Set B)
   __ := e.toPretrivialization.restrictPreimage' s
   open_source := e.open_source.preimage <| by fun_prop
   continuousOn_toFun := (Topology.IsInducing.subtypeVal.prodMap .id).continuousOn_iff.mpr <|
-    (e.continuousOn_toFun.comp continuous_subtype_val.continuousOn fun _ ↦ id).congr
+    (e.continuousOn_toFun.comp continuous_subtypeVal.continuousOn fun _ ↦ id).congr
       fun z hz ↦ by ext; exacts [(e.proj_toFun _ hz).symm, rfl]
   continuousOn_invFun := Topology.IsInducing.subtypeVal.continuousOn_iff.mpr <|
-    (e.continuousOn_invFun.comp (continuous_subtype_val.prodMap continuous_id).continuousOn
+    (e.continuousOn_invFun.comp (continuous_subtypeVal.prodMap continuous_id).continuousOn
       fun _ ↦ id).congr fun x hx ↦ congr_arg Subtype.val (dite_eq_left hx)
 
 /-- The restriction of a trivialization to a set with nonempty intersection with the base set. -/
@@ -851,7 +851,7 @@ noncomputable def domExtend {s : Set B} (hps : IsOpen (proj ⁻¹' s))
     convert! e.continuousOn_toFun
     ext1 ⟨x, (hx : proj x ∈ s)⟩
     simpa [Pretrivialization.domExtend] using! dite_eq_left hx
-  continuousOn_invFun := continuous_subtype_val.comp_continuousOn <| by
+  continuousOn_invFun := continuous_subtypeVal.comp_continuousOn <| by
     convert! e.continuousOn_invFun
 
 /-- Extend the base of a trivialization from a set to the whole space. -/
@@ -861,7 +861,7 @@ noncomputable def codExtend' {s : Set B} (hs : IsOpen s) {proj : Z → s} (e : T
   __ := e.toPretrivialization.codExtend' hs
   open_source := e.open_source
   continuousOn_toFun :=
-    (continuous_subtype_val.prodMap continuous_id).comp_continuousOn e.continuousOn_toFun
+    (continuous_subtypeVal.prodMap continuous_id).comp_continuousOn e.continuousOn_toFun
   continuousOn_invFun := (Topology.IsInducing.subtypeVal.prodMap .id).continuousOn_image_iff.2 <| by
     convert! e.continuousOn_invFun; ext; simp [Pretrivialization.codExtend']; rfl
 

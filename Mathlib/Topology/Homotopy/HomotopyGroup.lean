@@ -123,7 +123,7 @@ theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
   rfl
 
 instance instContinuousEval : ContinuousEval (Ω^ N X x) (I^N) X :=
-  .of_continuous_forget continuous_subtype_val
+  .of_continuous_forget continuous_subtypeVal
 
 instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := inferInstance
 
@@ -225,7 +225,7 @@ def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (M ⊕ N) X
   left_inv p := by ext; simp; rfl
   right_inv p := by ext; simp
   continuous_toFun := ((ContinuousMap.continuous_uncurry.comp' ((ContinuousMap.continuous_postcomp
-    ⟨_, continuous_subtype_val⟩).comp continuous_subtype_val)).compCM
+    ⟨_, continuous_subtypeVal⟩).comp continuous_subtypeVal)).compCM
       continuous_const).subtype_mk _
 
 end
@@ -278,7 +278,7 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
       (continuous_eval.comp <|
         Continuous.prodMap
           (ContinuousMap.continuous_curry.comp <|
-            (ContinuousMap.continuous_precomp _).comp continuous_subtype_val)
+            (ContinuousMap.continuous_precomp _).comp continuous_subtypeVal)
           continuous_id)
       _
 

@@ -211,7 +211,7 @@ lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) ↔ IsDiscrete s :=
-  ⟨fun h ↦ ⟨continuous_subtype_val.discrete_of_tendsto_cofinite_cocompact h⟩,
+  ⟨fun h ↦ ⟨continuous_subtypeVal.discrete_of_tendsto_cofinite_cocompact h⟩,
    fun hs' ↦ hs.tendsto_coe_cofinite_of_isDiscrete hs'⟩
 
 end cofinite_cocompact

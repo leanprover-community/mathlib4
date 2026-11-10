@@ -102,9 +102,9 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   let K₁ : Set (Icc a b) := projIccCM '' Subtype.val '' (K ∩ Iic ⟨b, h⟩)
   let K₂ : Set (Icc b c) := projIccCM '' Subtype.val '' (K ∩ Ici ⟨b, h⟩)
   have hK₁ : IsCompact K₁ :=
-    hK.inter_right isClosed_Iic |>.image continuous_subtype_val |>.image projIccCM.continuous
+    hK.inter_right isClosed_Iic |>.image continuous_subtypeVal |>.image projIccCM.continuous
   have hK₂ : IsCompact K₂ :=
-    hK.inter_right isClosed_Ici |>.image continuous_subtype_val |>.image projIccCM.continuous
+    hK.inter_right isClosed_Ici |>.image continuous_subtypeVal |>.image projIccCM.continuous
   have hfU : MapsTo f K₁ U := by
     rw [← concat_comp_IccInclusionLeft hfg']
     apply hfgU.comp

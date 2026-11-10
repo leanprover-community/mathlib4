@@ -130,11 +130,11 @@ lemma IsRetrocompact.isOpen_inter (hs : IsRetrocompact s) (ht : IsRetrocompact t
 
 lemma IsRetrocompact_iff_isSpectralMap_subtypeVal :
     IsRetrocompact s ↔ IsSpectralMap (Subtype.val : s → X) := by
-  refine ⟨fun hs ↦ ⟨continuous_subtype_val, fun t htopen htcomp ↦ ?_⟩, fun hs t htcomp htopen ↦ ?_⟩
+  refine ⟨fun hs ↦ ⟨continuous_subtypeVal, fun t htopen htcomp ↦ ?_⟩, fun hs t htcomp htopen ↦ ?_⟩
   · rw [IsEmbedding.subtypeVal.isCompact_iff, image_preimage_eq_inter_range,
       Subtype.range_coe_subtype, ofPred_mem_eq, inter_comm]
     exact hs htcomp htopen
-  · simpa using (hs.isCompact_preimage_of_isOpen htopen htcomp).image continuous_subtype_val
+  · simpa using (hs.isCompact_preimage_of_isOpen htopen htcomp).image continuous_subtypeVal
 
 @[stacks 005B]
 lemma IsRetrocompact.image_of_isEmbedding (hs : IsRetrocompact s) (hfemb : IsEmbedding f)
@@ -398,9 +398,9 @@ lemma IsLocallyConstructible.inter (hs : IsLocallyConstructible s) (ht : IsLocal
   change IsConstructible
     (inclusion inter_subset_left ⁻¹' (U ↓∩ s) ∩ inclusion inter_subset_right ⁻¹' (V ↓∩ t))
   exact .inter (hsU.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV)
+      .preimage continuous_subtypeVal <| hU.inter hV)
     (htV.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV)
+      .preimage continuous_subtypeVal <| hU.inter hV)
 
 lemma IsLocallyConstructible.finsetInf {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsLocallyConstructible (t i)) : IsLocallyConstructible (s.inf t) := by
@@ -437,9 +437,9 @@ lemma IsLocallyConstructible.union (hs : IsLocallyConstructible s) (ht : IsLocal
     ext; simp
   rw [this]
   exact .union (hsU.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV)
+      .preimage continuous_subtypeVal <| hU.inter hV)
     (htV.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV)
+      .preimage continuous_subtypeVal <| hU.inter hV)
 
 lemma IsLocallyConstructible.iUnion [Finite ι] {f : ι → Set X}
     (hf : ∀ i, IsLocallyConstructible (f i)) : IsLocallyConstructible (⋃ i, f i) :=

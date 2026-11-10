@@ -261,7 +261,7 @@ theorem MeasurableEmbedding.aemeasurable_comp_iff {g : β → γ} (hg : Measurab
 
 theorem aemeasurable_restrict_iff_comap_subtype {s : Set α} (hs : MeasurableSet s) {μ : Measure α}
     {f : α → β} : AEMeasurable f (μ.restrict s) ↔ AEMeasurable (f ∘ (↑) : s → β) (comap (↑) μ) := by
-  rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).aemeasurable_map_iff]
+  rw [← map_comap_subtypeVal hs, (MeasurableEmbedding.subtype_coe hs).aemeasurable_map_iff]
 
 @[to_additive]
 theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
@@ -414,7 +414,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable_of_aerange {f : α → β} {t : 
     rw [range_subset_iff] at hf't
     lift f' to α → t using hf't
     replace hf'm : NullMeasurable f' μ := hf'm.measurable'.subtype_mk
-    exact (measurable_subtype_coe.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
+    exact (measurable_subtypeVal.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
 
 section prop
 

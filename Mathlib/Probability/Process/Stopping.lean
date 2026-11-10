@@ -953,7 +953,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
   have hs : MeasurableSet[m_prod] s := @measurable_snd (Set.Iic i) Ω _ (f i) _ (hτ i)
   have h_meas_fst : ∀ t : Set (Set.Iic i × Ω),
       Measurable[m_set t] fun x : t => ((x : Set.Iic i × Ω).fst : ι) :=
-    fun t => (@measurable_subtype_coe (Set.Iic i × Ω) m_prod _).fst.subtype_val
+    fun t => (@measurable_subtypeVal (Set.Iic i × Ω) m_prod _).fst.subtype_val
   refine measurable_of_restrict_of_restrict_compl hs ?_ ?_
   · refine Measurable.min (h_meas_fst s).withTop_coe ?_
     refine measurable_of_Iic fun j ↦ ?_
@@ -969,7 +969,7 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
       rw [h_set_eq]
       suffices h_meas : @Measurable _ _ (m_set s) (f i) fun x : s ↦ (x : Set.Iic i × Ω).snd from
         h_meas (f.mono (min_le_left _ _) _ (hτ.measurableSet_le (min i j)))
-      exact measurable_snd.comp (@measurable_subtype_coe _ m_prod _)
+      exact measurable_snd.comp (@measurable_subtypeVal _ m_prod _)
   · let sc := sᶜ
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>

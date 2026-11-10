@@ -61,7 +61,7 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
   rw [cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_congr this]
   refine cfc_sub _ _ a ?_ ?_
   all_goals
-    exact continuous_subtype_val.comp_continuousOn <|
+    exact continuous_subtypeVal.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
@@ -79,7 +79,7 @@ theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialO
   rw [cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_congr this]
   refine cfcₙ_sub _ _ a ?_ (by simpa) ?_
   all_goals
-    exact continuous_subtype_val.comp_continuousOn <|
+    exact continuous_subtypeVal.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 namespace Unitization

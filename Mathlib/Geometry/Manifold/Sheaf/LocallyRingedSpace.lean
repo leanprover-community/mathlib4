@@ -201,7 +201,7 @@ instance (U : Opens M) :
     refine ⟨fun a b hab ↦ Subtype.ext ?_, fun ⟨g, hg⟩ ↦ ?_⟩
     · ext ⟨x, y, hy, rfl⟩
       congrm $(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩
-    · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtype_val⟩
+    · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtypeVal⟩
       have ha : IsOpenEmbedding a.hom := U.isOpenEmbedding'
       let V' : Opens U := (Opens.map a).obj (ha.isOpenMap.functor.obj V)
       let b : V' ≃ₜ ha.isOpenMap.functor.obj V :=

@@ -257,7 +257,7 @@ theorem extend_symm (γ : Path x y) : γ.symm.extend = (γ.extend <| 1 - ·) :=
 /-- The path obtained from a map defined on `ℝ` by restriction to the unit interval. -/
 def ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y) : Path x y where
   toFun := f ∘ ((↑) : unitInterval → ℝ)
-  continuous_toFun := hf.comp_continuous continuous_subtype_val Subtype.prop
+  continuous_toFun := hf.comp_continuous continuous_subtypeVal Subtype.prop
   source' := h₀
   target' := h₁
 
@@ -279,7 +279,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   continuous_toFun := by
     refine
       (Continuous.if_le ?_ ?_ continuous_id continuous_const (by simp)).comp
-        continuous_subtype_val <;>
+        continuous_subtypeVal <;>
     fun_prop
   source' := by simp
   target' := by norm_num
@@ -437,7 +437,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
   simp only [HasUncurry.uncurry, Path.trans]
-  refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
+  refine Continuous.if_le ?_ ?_ (continuous_subtypeVal.comp continuous_snd) continuous_const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
     exact h₁'.comp (by fun_prop)
@@ -571,7 +571,7 @@ the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s`
 theorem truncate_continuous_family {a b : X} (γ : Path a b) :
     Continuous (fun x => γ.truncate x.1 x.2.1 x.2.2 : ℝ × ℝ × I → X) :=
   γ.continuous_extend.comp
-    (((continuous_subtype_val.comp (continuous_snd.comp continuous_snd)).max continuous_fst).min
+    (((continuous_subtypeVal.comp (continuous_snd.comp continuous_snd)).max continuous_fst).min
       (continuous_fst.comp continuous_snd))
 
 @[continuity]

@@ -153,7 +153,7 @@ theorem measurePreserving_homeomorphUnitSphereProd :
   have : Ioo (0 : ℝ) r = r.1 • Ioo (0 : ℝ) 1 := by simp [LinearOrderedField.smul_Ioo r.2.out]
   have hpos : 0 < dim E := Module.finrank_pos
   rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
-    comap_subtype_coe_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
+    comap_subtypeVal_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
     smul_assoc, μ.addHaar_smul_of_nonneg r.2.out.le, Nat.sub_add_cancel hpos, Nat.cast_pred hpos,
     sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_natCast, ← ENNReal.ofReal_mul, mul_div_cancel₀]
   exacts [(Nat.cast_pos.2 hpos).ne', Nat.cast_nonneg _]
@@ -312,6 +312,6 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
         integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
         setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_]
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
-      · exact (measurable_subtype_coe.pow_const _).real_toNNReal
+      · exact (measurable_subtypeVal.pow_const _).real_toNNReal
 
 end MeasureTheory

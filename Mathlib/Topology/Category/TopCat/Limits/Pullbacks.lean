@@ -161,8 +161,8 @@ def pullbackHomeoPreimage
   continuous_toFun := by fun_prop
   continuous_invFun := by
     apply Continuous.subtype_mk
-    refine continuous_subtype_val.prodMk <| hg.isInducing.continuous_iff.mpr ?_
-    convert hf.comp continuous_subtype_val
+    refine continuous_subtypeVal.prodMk <| hg.isInducing.continuous_iff.mpr ?_
+    convert hf.comp continuous_subtypeVal
     ext x
     exact Exists.choose_spec x.2
 

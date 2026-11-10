@@ -710,8 +710,8 @@ theorem completelyNormalSpace_iff_forall_isOpen_normalSpace :
     intro x hxs hxt
     exact x.2 ⟨hxs, hxt⟩
   obtain ⟨U, V, hU, hV, hsU, htV, hUV⟩ := normal_separation
-    (isClosed_closure.preimage continuous_subtype_val)
-    (isClosed_closure.preimage continuous_subtype_val) hst
+    (isClosed_closure.preimage continuous_subtypeVal)
+    (isClosed_closure.preimage continuous_subtypeVal) hst
   rw [Topology.IsInducing.subtypeVal.isOpen_iff] at hU hV
   obtain ⟨U, hU, rfl⟩ := hU
   obtain ⟨V, hV, rfl⟩ := hV
@@ -910,7 +910,7 @@ instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] 
   refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_
   obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
   let u : Set s := ((↑) : s → X) ⁻¹' interior s
-  have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
+  have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtypeVal
   lift x to s using interior_subset xs
   have : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := exists_isClopen_mem_of_isOpen u_open_in_s xs
@@ -927,7 +927,7 @@ instance [T2Space X] [TotallyDisconnectedSpace X] [WeaklyLocallyCompactSpace X] 
           apply Set.inter_eq_self_of_subset_right interior_subset
         rw [this]
         apply isOpen_interior
-    have f2 : IsOpen v := VisClopen.2.preimage continuous_subtype_val
+    have f2 : IsOpen v := VisClopen.2.preimage continuous_subtypeVal
     have f3 : ((↑) : s → X) '' V = ((↑) : u → X) '' v := by
       rw [this, image_comp, Subtype.image_preimage_coe, inter_eq_self_of_subset_right V_sub]
     rw [f3]

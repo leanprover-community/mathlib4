@@ -809,7 +809,7 @@ alias MeasurableSet.nullMeasurableSet_subtype_coe := MeasurableSet.nullMeasurabl
 theorem NullMeasurableSet.subtypeVal {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : NullMeasurableSet t (μ.comap Subtype.val)) : NullMeasurableSet (((↑) : s → α) '' t) μ :=
   NullMeasurableSet.image _ μ Subtype.coe_injective
-    (fun _ => MeasurableSet.nullMeasurableSet_subtype_coe hs) ht
+    (fun _ => MeasurableSet.nullMeasurableSet_subtypeVal hs) ht
 
 @[deprecated (since := "2026-11-10")]
 alias NullMeasurableSet.subtype_coe := NullMeasurableSet.subtypeVal
@@ -817,14 +817,14 @@ alias NullMeasurableSet.subtype_coe := NullMeasurableSet.subtypeVal
 theorem measure_subtypeVal_le_comap (hs : NullMeasurableSet s μ) (t : Set s) :
     μ (((↑) : s → α) '' t) ≤ μ.comap Subtype.val t :=
   le_comap_apply _ _ Subtype.coe_injective (fun _ =>
-    MeasurableSet.nullMeasurableSet_subtype_coe hs) _
+    MeasurableSet.nullMeasurableSet_subtypeVal hs) _
 
 @[deprecated (since := "2026-11-10")]
 alias measure_subtype_coe_le_comap := measure_subtypeVal_le_comap
 
 theorem measure_subtypeVal_eq_zero_of_comap_eq_zero (hs : NullMeasurableSet s μ) {t : Set s}
     (ht : μ.comap Subtype.val t = 0) : μ (((↑) : s → α) '' t) = 0 :=
-  eq_bot_iff.mpr <| (measure_subtype_coe_le_comap hs t).trans ht.le
+  eq_bot_iff.mpr <| (measure_subtypeVal_le_comap hs t).trans ht.le
 
 @[deprecated (since := "2026-11-10")]
 alias measure_subtype_coe_eq_zero_of_comap_eq_zero := measure_subtypeVal_eq_zero_of_comap_eq_zero
@@ -852,18 +852,18 @@ theorem Subtype.volume_univ (hu : NullMeasurableSet u) : volume (univ : Set u) =
   rw [Subtype.volume_def, comap_apply₀ _ _ _ _ MeasurableSet.univ.nullMeasurableSet]
   · simp only [image_univ, Subtype.range_coe_subtype, ofPred_mem_eq]
   · exact Subtype.coe_injective
-  · exact fun t => MeasurableSet.nullMeasurableSet_subtype_coe hu
+  · exact fun t => MeasurableSet.nullMeasurableSet_subtypeVal hu
 
 theorem volume_subtypeVal_le_volume (hu : NullMeasurableSet u) (t : Set u) :
     volume (((↑) : u → δ) '' t) ≤ volume t :=
-  measure_subtype_coe_le_comap hu t
+  measure_subtypeVal_le_comap hu t
 
 @[deprecated (since := "2026-11-10")]
 alias volume_subtype_coe_le_volume := volume_subtypeVal_le_volume
 
 theorem volume_subtypeVal_eq_zero_of_volume_eq_zero (hu : NullMeasurableSet u) {t : Set u}
     (ht : volume t = 0) : volume (((↑) : u → δ) '' t) = 0 :=
-  measure_subtype_coe_eq_zero_of_comap_eq_zero hu ht
+  measure_subtypeVal_eq_zero_of_comap_eq_zero hu ht
 
 @[deprecated (since := "2026-11-10")]
 alias volume_subtype_coe_eq_zero_of_volume_eq_zero := volume_subtypeVal_eq_zero_of_volume_eq_zero
@@ -962,7 +962,7 @@ theorem map_comap_subtypeVal {m0 : MeasurableSpace α} {s : Set α} (hs : Measur
 theorem ae_restrict_iff_subtype {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ (x : s) ∂comap ((↑) : s → α) μ, p x := by
-  rw [← map_comap_subtype_coe hs, (MeasurableEmbedding.subtype_coe hs).ae_map_iff]
+  rw [← map_comap_subtypeVal hs, (MeasurableEmbedding.subtype_coe hs).ae_map_iff]
 
 variable [MeasureSpace α] {s t : Set α}
 
@@ -982,7 +982,7 @@ theorem MeasurableSet.map_coe_volume {s : Set α} (hs : MeasurableSet s) :
 
 theorem volume_image_subtypeVal {s : Set α} (hs : MeasurableSet s) (t : Set s) :
     volume ((↑) '' t : Set α) = volume t :=
-  (comap_subtype_coe_apply hs volume t).symm
+  (comap_subtypeVal_apply hs volume t).symm
 
 @[deprecated (since := "2026-11-10")] alias volume_image_subtype_coe := volume_image_subtypeVal
 
@@ -991,8 +991,8 @@ theorem volume_preimage_coe (hs : NullMeasurableSet s) (ht : MeasurableSet t) :
     volume (((↑) : s → α) ⁻¹' t) = volume (t ∩ s) := by
   rw [volume_set_coe_def,
     comap_apply₀ _ _ Subtype.coe_injective
-      (fun h => MeasurableSet.nullMeasurableSet_subtype_coe hs)
-      (measurable_subtype_coe ht).nullMeasurableSet,
+      (fun h => MeasurableSet.nullMeasurableSet_subtypeVal hs)
+      (measurable_subtypeVal ht).nullMeasurableSet,
     image_preimage_eq_inter_range, Subtype.range_coe]
 
 end Subtype

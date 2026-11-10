@@ -91,7 +91,7 @@ def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
   __ := Nonneg.unitsEquivPos R
   continuous_toFun := by
     rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
-    exact Continuous.subtype_val (p := (0 ≤ ·)) Units.continuous_val
+    exact Continuous.subtypeVal (p := (0 ≤ ·)) Units.continuous_val
   continuous_invFun := by
     rw [Units.continuous_iff]
     refine ⟨by fun_prop, ?_⟩

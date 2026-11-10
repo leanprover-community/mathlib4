@@ -528,7 +528,7 @@ lemma IsGreatest.nnNorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a :
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   rw [← SpectrumRestricts] at ha'
   convert IsGreatest.nnNorm_cfc (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont
-  case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
+  case hf_cont => exact continuous_subtypeVal.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 
@@ -617,7 +617,7 @@ lemma IsGreatest.nnNorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
   rw [cfcₙ_nnreal_eq_real ..]
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   convert IsGreatest.nnNorm_cfcₙ (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont (by simpa)
-  case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
+  case hf_cont => exact continuous_subtypeVal.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 

@@ -294,7 +294,7 @@ theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen
   · intro a u ha uo
     rcases iUnion_eq_univ_iff.1 Uc a with ⟨i, hi⟩
     lift a to ↥(U i) using hi
-    rcases (hb i).exists_subset_of_mem_open ha (uo.preimage continuous_subtype_val) with
+    rcases (hb i).exists_subset_of_mem_open ha (uo.preimage continuous_subtypeVal) with
       ⟨v, hvb, hav, hvu⟩
     exact ⟨(↑) '' v, mem_iUnion.2 ⟨i, mem_image_of_mem _ hvb⟩, mem_image_of_mem _ hav,
       image_subset_iff.2 hvu⟩
@@ -595,7 +595,7 @@ theorem isSeparable_range [TopologicalSpace β] [SeparableSpace α] {f : α → 
   image_univ (f := f) ▸ (isSeparable_univ_iff.2 ‹_›).image hf
 
 theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s := by
-  simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
+  simpa using isSeparable_range (continuous_subtypeVal (p := (· ∈ s)))
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
@@ -672,7 +672,7 @@ theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {
     [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
   let ⟨t, htc, htd⟩ := exists_countable_dense s
   ⟨(↑) '' t, Subtype.coe_image_subset s t, htc.image Subtype.val,
-    hs.denseRange_val.dense_image continuous_subtype_val htd⟩
+    hs.denseRange_val.dense_image continuous_subtypeVal htd⟩
 
 /-- Let `s` be a dense set in a topological space `α` with partial order structure. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable

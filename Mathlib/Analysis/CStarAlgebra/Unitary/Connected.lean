@@ -223,7 +223,7 @@ lemma Unitary.continuousOn_argSelfAdjoint :
   have hε : 0 < ε := lt_of_le_of_lt (by positivity) huε
   have huε' : dist u 1 < √ε := Real.lt_sqrt_of_sq_lt huε
   apply ContinuousOn.continuousAt ?_ (closedBall_mem_nhds_of_mem huε')
-  apply ContinuousOn.image_comp_continuous ?_ continuous_subtype_val
+  apply ContinuousOn.image_comp_continuous ?_ continuous_subtypeVal
   apply continuousOn_cfc A (s := sphere 0 1 ∩ {z | 2 * (1 - z.re) ≤ ε}) ?_ _ ?_ |>.mono
   · rintro - ⟨v, hv, rfl⟩
     simp only [Set.subset_inter_iff, Set.mem_ofPred_eq]

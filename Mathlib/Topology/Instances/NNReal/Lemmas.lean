@@ -73,7 +73,7 @@ theorem map_coe_nhdsGE (x : ℝ≥0) : (𝓝[≥] x).map toReal = 𝓝[≥] ↑x
 lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
     (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
     ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
-  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
+  continuous_subtypeVal.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
 
 @[simp, norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :

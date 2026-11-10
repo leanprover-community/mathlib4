@@ -230,7 +230,7 @@ def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f :=
       rintro _ ⟨x, rfl⟩
       obtain ⟨x, rfl⟩ := Quotient.mk''_surjective x
       rw [ToSpec.preimage_basicOpen]
-      exact (pbo (x.num : A)).2.preimage continuous_subtype_val }
+      exact (pbo (x.num : A)).2.preimage continuous_subtypeVal }
 
 variable {𝒜} in
 lemma toSpec_preimage_basicOpen {f} (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
@@ -699,7 +699,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 lemma toSpec_preimage_basicOpen {f}
     (t : NumDenSameDeg 𝒜 (.powers f)) :
     (Opens.map (toSpec 𝒜 f).base).obj (sbo (HomogeneousLocalization.mk t)) =
-      Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) :=
+      Opens.comap ⟨_, continuous_subtypeVal⟩ (pbo t.num.1) :=
   Opens.ext <| Opens.map_coe _ _ ▸ by
   convert! (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
   exact funext fun _ => toSpec_base_apply_eq _ _

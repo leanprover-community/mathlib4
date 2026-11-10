@@ -93,7 +93,7 @@ instance instSecondCountableTopology [SecondCountableTopology X] [LocallyCompact
   refine ⟨countable_iUnion fun _ ↦ countable_range _, ?_, ?_⟩
   · simp only [mem_iUnion, mem_range]
     rintro K ⟨U, n, rfl⟩
-    exact ((K U).isCompact _).image continuous_subtype_val
+    exact ((K U).isCompact _).image continuous_subtypeVal
   · intro f V hVo x hxV
     obtain ⟨U, hU, hxU, hUV⟩ : ∃ U ∈ countableBasis X, x ∈ U ∧ U ⊆ f ⁻¹' V := by
       rw [← (isBasis_countableBasis _).mem_nhds_iff]
@@ -102,7 +102,7 @@ instance instSecondCountableTopology [SecondCountableTopology X] [LocallyCompact
     lift U to countableBasis X using hU
     rcases (K U).exists_mem_nhds x with ⟨n, hn⟩
     refine ⟨K U n, mem_iUnion.2 ⟨U, mem_range_self _⟩, ?_, ?_⟩
-    · rw [← map_nhds_subtype_coe_eq_nhds x.2]
+    · rw [← map_nhds_subtypeVal_eq_nhds x.2]
       exacts [image_mem_map hn, (isOpen_of_mem_countableBasis U.2).mem_nhds x.2]
     · rw [mapsTo_image_iff]
       exact fun y _ ↦ hUV y.2

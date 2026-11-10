@@ -228,7 +228,7 @@ lemma IsPreconnected.induction₂' {s : Set α} (hs : IsPreconnected s) (P : α 
   apply PreconnectedSpace.induction₂'
   · rintro ⟨x, hx⟩
     have Z := h x hx
-    rwa [nhdsWithin_eq_map_subtype_coe] at Z
+    rwa [nhdsWithin_eq_map_subtypeVal] at Z
   · exact ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ ↦ h' a b c ha hb hc⟩
 
 /-- In a preconnected set, if a symmetric transitive relation `P x y` is true for `y` close
@@ -677,9 +677,9 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
-    · rw [preimage_subtype_coe_eq_compl hsuv H]
-      exact (v_op.preimage continuous_subtype_val).isClosed_compl
-    · exact u_op.preimage continuous_subtype_val
+    · rw [preimage_subtypeVal_eq_compl hsuv H]
+      exact (v_op.preimage continuous_subtypeVal).isClosed_compl
+    · exact u_op.preimage continuous_subtypeVal
   simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.notMem_iff_boolIndicator _).mp hy] using
     hs _ this x x_in_s y y_in_s
 

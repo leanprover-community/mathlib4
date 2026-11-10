@@ -217,7 +217,7 @@ theorem MeasurableSet.subtype_image {s : Set α} {t : Set s} (hs : MeasurableSet
 @[fun_prop]
 theorem Measurable.subtypeVal {p : β → Prop} {f : α → Subtype p} (hf : Measurable f) :
     Measurable fun a : α => (f a : β) :=
-  measurable_subtype_coe.comp hf
+  measurable_subtypeVal.comp hf
 
 @[deprecated (since := "2026-11-10")] alias Measurable.subtype_coe := Measurable.subtypeVal
 
@@ -239,7 +239,7 @@ protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable
 
 theorem Measurable.subtype_map {f : α → β} {p : α → Prop} {q : β → Prop} (hf : Measurable f)
     (hpq : ∀ x, p x → q (f x)) : Measurable (Subtype.map f hpq) :=
-  (hf.comp measurable_subtype_coe).subtype_mk
+  (hf.comp measurable_subtypeVal).subtype_mk
 
 theorem measurable_inclusion {s t : Set α} (h : s ⊆ t) : Measurable (inclusion h) :=
   measurable_id.subtype_map h
@@ -248,14 +248,14 @@ theorem MeasurableSet.image_inclusion' {s t : Set α} (h : s ⊆ t) {u : Set s}
     (hs : MeasurableSet (Subtype.val ⁻¹' s : Set t)) (hu : MeasurableSet u) :
     MeasurableSet (inclusion h '' u) := by
   rcases hu with ⟨u, hu, rfl⟩
-  convert (measurable_subtype_coe hu).inter hs
+  convert (measurable_subtypeVal hu).inter hs
   ext ⟨x, hx⟩
   simpa [@and_comm _ (_ = x)] using and_comm
 
 theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
     (hs : MeasurableSet s) (hu : MeasurableSet u) :
     MeasurableSet (inclusion h '' u) :=
-  (measurable_subtype_coe hs).image_inclusion' h hu
+  (measurable_subtypeVal hs).image_inclusion' h hu
 
 theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
@@ -568,10 +568,10 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
     · exact ht hij ⟨hxi, hxj⟩
   set f : (⋃ i, t i) → β := iUnionLift t g' ht' _ Subset.rfl
   have hfm : Measurable f := measurable_iUnionLift _ _ t_meas
-    (fun i => (hg i).comp measurable_subtype_coe)
+    (fun i => (hg i).comp measurable_subtypeVal)
   classical
     refine ⟨fun x => if hx : x ∈ ⋃ i, t i then f ⟨x, hx⟩ else g default x,
-      hfm.dite ((hg default).comp measurable_subtype_coe) (.iUnion t_meas), fun i x hx => ?_⟩
+      hfm.dite ((hg default).comp measurable_subtypeVal) (.iUnion t_meas), fun i x hx => ?_⟩
     simp only [dite_eq_left (mem_iUnion.2 ⟨i, hx⟩)]
     exact iUnionLift_of_mem ⟨x, mem_iUnion.2 ⟨i, hx⟩⟩ hx
 
@@ -682,7 +682,7 @@ theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
 
 @[fun_prop]
 theorem Set.measurable_restrict_apply (s : Set α) {f : α → γ} (hf : Measurable f) :
-    Measurable (s.domRestrict f) := hf.comp measurable_subtype_coe
+    Measurable (s.domRestrict f) := hf.comp measurable_subtypeVal
 
 @[fun_prop]
 theorem Set.measurable_restrict₂_apply {s t : Set α} (hst : s ⊆ t)
@@ -691,7 +691,7 @@ theorem Set.measurable_restrict₂_apply {s t : Set α} (hst : s ⊆ t)
 
 @[fun_prop]
 theorem Finset.measurable_restrict_apply (s : Finset α) {f : α → γ} (hf : Measurable f) :
-    Measurable (s.restrict f) := hf.comp measurable_subtype_coe
+    Measurable (s.restrict f) := hf.comp measurable_subtypeVal
 
 @[fun_prop]
 theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)

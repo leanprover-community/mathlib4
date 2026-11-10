@@ -204,8 +204,8 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
     contrapose hb with ha
     rw [← associated_zero_iff_eq_zero, ← ha]
     exact h.symm
-  rw [← Multiset.map_eq_map Subtype.coe_injective, map_subtype_coe_factors',
-    map_subtype_coe_factors', ← rel_associated_iff_map_eq_map]
+  rw [← Multiset.map_eq_map Subtype.coe_injective, map_subtypeVal_factors',
+    map_subtypeVal_factors', ← rel_associated_iff_map_eq_map]
   exact
     factors_unique irreducible_of_factor irreducible_of_factor
       ((factors_prod ha).trans <| h.trans (factors_prod hb).symm)

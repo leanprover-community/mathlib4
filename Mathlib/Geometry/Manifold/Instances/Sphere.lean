@@ -197,7 +197,7 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
 
 theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv) :=
   continuous_induced_rng.2
-    ((contDiff_stereoInvFunAux (m := 0)).continuous.comp continuous_subtype_val)
+    ((contDiff_stereoInvFunAux (m := 0)).continuous.comp continuous_subtypeVal)
 
 open scoped InnerProductSpace in
 attribute [-simp] AddSubgroupClass.coe_norm in
@@ -261,7 +261,7 @@ def stereographic (hv : ‖v‖ = 1) : OpenPartialHomeomorph (sphere (0 : E) 1) 
   open_source := isOpen_compl_singleton
   open_target := isOpen_univ
   continuousOn_toFun :=
-    continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h => by
+    continuousOn_stereoToFun.comp continuous_subtypeVal.continuousOn fun w h => by
       dsimp
       exact
         h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_eq_one hv (by simp)).mp
@@ -424,7 +424,7 @@ theorem contMDiff_coe_sphere {m : ℕ∞ω} {n : ℕ} [Fact (finrank ℝ E = n +
     ContMDiff (𝓡 n) 𝓘(ℝ, E) m ((↑) : sphere (0 : E) 1 → E) := by
   rw [contMDiff_iff]
   constructor
-  · exact continuous_subtype_val
+  · exact continuous_subtypeVal
   · intro v _
     let U : _ ≃ₗᵢ[ℝ] _ :=
       (-- Again, partially removing type ascription...

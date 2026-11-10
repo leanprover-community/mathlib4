@@ -351,8 +351,8 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
       Measurable fun a : (FiniteMeasure α × FiniteMeasure β) ↦
       a.1.toMeasure u * a.2.toMeasure v :=
     Measurable.mul
-      ((Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst))
-      ((Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
+      ((Measure.measurable_coe Hu).comp (measurable_subtypeVal.comp measurable_fst))
+      ((Measure.measurable_coe Hv).comp (measurable_subtypeVal.comp measurable_snd))
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
   simp only [mem_image2, mem_ofPred_eq, forall_exists_index, and_imp]

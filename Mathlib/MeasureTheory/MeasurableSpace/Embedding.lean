@@ -85,7 +85,7 @@ theorem comp (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
 
 theorem subtype_coe (hs : MeasurableSet s) : MeasurableEmbedding ((↑) : s → α) where
   injective := Subtype.coe_injective
-  measurable := measurable_subtype_coe
+  measurable := measurable_subtypeVal
   measurableSet_image' := fun _ => MeasurableSet.subtype_image hs
 
 theorem measurableSet_range (hf : MeasurableEmbedding f) : MeasurableSet (range f) := by
@@ -108,7 +108,7 @@ theorem measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} {g' : β 
   · rw [domRestrict_extend_range]
     simpa only [rangeSplitting] using! hg.comp hf.measurable_rangeSplitting
   · rw [domRestrict_extend_compl_range]
-    exact hg'.comp measurable_subtype_coe
+    exact hg'.comp measurable_subtypeVal
 
 theorem exists_measurable_extend (hf : MeasurableEmbedding f) {g : α → γ} (hg : Measurable g)
     (hne : β → Nonempty γ) : ∃ g' : β → γ, Measurable g' ∧ g' ∘ f = g :=
@@ -478,9 +478,9 @@ def subtypePiEquivPi {p : (a : δ') → π a → Prop} :
     { f : (a : δ') → π a // ∀ (a : δ'), p a (f a) } ≃ᵐ ((a : δ') → { b : π a // p a b }) where
   toEquiv := .subtypePiEquivPi
   measurable_toFun := .of_eval (fun a =>
-    ((measurable_pi_apply a).comp measurable_subtype_coe).subtype_mk)
+    ((measurable_pi_apply a).comp measurable_subtypeVal).subtype_mk)
   measurable_invFun := (Measurable.of_eval (fun a =>
-    measurable_subtype_coe.comp (measurable_pi_apply a))).subtype_mk
+    measurable_subtypeVal.comp (measurable_pi_apply a))).subtype_mk
 
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
@@ -627,7 +627,7 @@ to the sum of `s` and `sᶜ`. -/
 def sumCompl {s : Set α} [DecidablePred (· ∈ s)] (hs : MeasurableSet s) :
     s ⊕ (sᶜ : Set α) ≃ᵐ α where
   toEquiv := .sumCompl (· ∈ s)
-  measurable_toFun := measurable_subtype_coe.sumElim measurable_subtype_coe
+  measurable_toFun := measurable_subtypeVal.sumElim measurable_subtypeVal
   measurable_invFun := Measurable.dite measurable_inl measurable_inr hs
 
 /-- Convert a measurable involutive function `f` to a measurable permutation with
@@ -692,7 +692,7 @@ noncomputable def equivImage (s : Set α) (hf : MeasurableEmbedding f) : s ≃�
   measurable_invFun := by
     rintro t ⟨u, hu, rfl⟩
     simpa [preimage_preimage, Set.image_symm_preimage hf.injective]
-      using measurable_subtype_coe (hf.measurableSet_image' hu)
+      using measurable_subtypeVal (hf.measurableSet_image' hu)
 
 /-- The domain of `f` is equivalent to its range as measurable spaces,
   if `f` is a measurable embedding -/
@@ -710,7 +710,7 @@ theorem of_measurable_inverse_on_range {g : range f → α} (hf₁ : Measurable 
 
 theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (range f))
     (hg : Measurable g) (H : LeftInverse g f) : MeasurableEmbedding f :=
-  of_measurable_inverse_on_range hf₁ hf₂ (hg.comp measurable_subtype_coe) H
+  of_measurable_inverse_on_range hf₁ hf₂ (hg.comp measurable_subtypeVal) H
 
 /-- The **measurable Schröder-Bernstein Theorem**: given measurable embeddings
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`. -/

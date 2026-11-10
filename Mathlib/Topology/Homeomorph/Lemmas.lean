@@ -347,7 +347,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   -- TODO: by continuity!
   continuous_toFun := e.continuous.continuousOn.mapsToRestrict (mapsTo_image _ _)
-  continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
+  continuous_invFun := (e.symm.continuous.comp continuous_subtypeVal).codRestrict _
   toEquiv := e.toEquiv.image s
 
 set_option backward.defeqAttrib.useBackward true in
@@ -361,9 +361,9 @@ def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
 def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   toEquiv := Equiv.Set.prod s t
   continuous_toFun :=
-    (continuous_subtype_val.fst.subtype_mk _).prodMk (continuous_subtype_val.snd.subtype_mk _)
+    (continuous_subtypeVal.fst.subtype_mk _).prodMk (continuous_subtypeVal.snd.subtype_mk _)
   continuous_invFun :=
-    (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
+    (continuous_subtypeVal.fst'.prodMk continuous_subtypeVal.snd').subtype_mk _
 
 section
 

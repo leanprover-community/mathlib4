@@ -31,7 +31,7 @@ variable {R V P : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpac
 /-- Embedding of an affine subspace to the ambient space, as a continuous affine map. -/
 def subtypeA (s : AffineSubspace R P) [Nonempty s] : s →ᴬ[R] P where
   toAffineMap := s.subtype
-  cont := continuous_subtype_val
+  cont := continuous_subtypeVal
 
 @[simp] lemma coe_subtypeA (s : AffineSubspace R P) [Nonempty s] : ⇑s.subtypeA = Subtype.val :=
   rfl
@@ -66,9 +66,9 @@ noncomputable def affineSubspaceMap (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P)
     s ≃ᴬ[R] s.map e.toAffineMap :=
   { e.toAffineEquiv.affineSubspaceMap s with
     continuous_toFun := by simpa [Topology.IsEmbedding.subtypeVal.continuous_iff] using!
-      (e.continuous.comp continuous_subtype_val).congr fun _ => rfl
+      (e.continuous.comp continuous_subtypeVal).congr fun _ => rfl
     continuous_invFun := by simpa [Topology.IsEmbedding.subtypeVal.continuous_iff] using!
-      (e.continuous_invFun.comp continuous_subtype_val).congr fun x ↦
+      (e.continuous_invFun.comp continuous_subtypeVal).congr fun x ↦
         (e.eq_symm_apply.mpr
           (AffineEquiv.affineSubspaceMap_apply_symm_apply e.toAffineEquiv s x)).symm }
 

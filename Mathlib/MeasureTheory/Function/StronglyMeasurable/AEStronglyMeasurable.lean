@@ -149,7 +149,7 @@ lemma aestronglyMeasurable_id_of_isSeparable [TopologicalSpace α]
     Filter.mem_of_superset h2 (fun x hx ↦ by simp [subset_closure hx])⟩
   have h : StronglyMeasurable ((↑) : closure s → α) := by
     have := h1.closure.secondCountableTopology
-    exact continuous_subtype_val.stronglyMeasurable
+    exact continuous_subtypeVal.stronglyMeasurable
   have : (closure s).piecewise id (fun _ ↦ a) =
       ((↑) : closure s → α).extend ((↑) : closure s → α) (fun _ ↦ a) := by
     ext x

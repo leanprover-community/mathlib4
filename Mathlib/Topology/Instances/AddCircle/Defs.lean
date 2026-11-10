@@ -411,11 +411,11 @@ variable [TopologicalSpace 𝕜]
 
 @[continuity]
 theorem continuous_equivIco_symm : Continuous (equivIco p a).symm :=
-  continuous_quotient_mk'.comp continuous_subtype_val
+  continuous_quotient_mk'.comp continuous_subtypeVal
 
 @[continuity]
 theorem continuous_equivIoc_symm : Continuous (equivIoc p a).symm :=
-  continuous_quotient_mk'.comp continuous_subtype_val
+  continuous_quotient_mk'.comp continuous_subtypeVal
 
 variable [OrderTopology 𝕜] {x : AddCircle p}
 
@@ -785,7 +785,7 @@ def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot
     · apply continuousWithinAt_toIocMod_Iic
     · apply continuousWithinAt_toIcoMod_Ici
   continuous_invFun :=
-    continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtype_val)
+    continuous_quot_lift _ ((AddCircle.continuous_mk' p).comp continuous_subtypeVal)
 
 /-! We now show that a continuous function on `[a, a + p]` satisfying `f a = f (a + p)` is the
 pullback of a continuous function on `AddCircle p`, by first showing that

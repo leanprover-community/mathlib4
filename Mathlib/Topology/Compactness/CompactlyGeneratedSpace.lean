@@ -338,7 +338,7 @@ theorem compactlyGeneratedSpace_of_isClosed_of_t2
   rw [Set.inter_comm, ← Subtype.image_preimage_coe]
   apply hK.isClosed.isClosedMap_subtype_val
   have : CompactSpace ↑K := isCompact_iff_compactSpace.1 hK
-  exact hs _ Subtype.val continuous_subtype_val
+  exact hs _ Subtype.val continuous_subtypeVal
 
 open scoped Set.Notation in
 /-- Let `s ⊆ X`. Suppose that `X` is Hausdorff, and that to prove that `s` is open,
@@ -349,7 +349,7 @@ theorem compactlyGeneratedSpace_of_isOpen_of_t2
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isOpen fun s hs ↦ h s fun K hK ↦ ?_
   have : CompactSpace ↑K := isCompact_iff_compactSpace.1 hK
-  exact hs _ Subtype.val continuous_subtype_val
+  exact hs _ Subtype.val continuous_subtypeVal
 
 /-- A Hausdorff and weakly locally compact space is compactly generated. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] :

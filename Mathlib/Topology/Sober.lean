@@ -221,8 +221,8 @@ lemma TopologicalSpace.IsOpenCover.quasiSober_iff_forall {ι : Type*} {U : ι �
   use H.genericPoint
   apply le_antisymm
   · simpa [h'.closure_subset_iff, h'.closure_eq] using!
-      continuous_subtype_val.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
-  rw [← image_singleton, ← closure_image_closure continuous_subtype_val,
+      continuous_subtypeVal.closure_preimage_subset _ H.isGenericPoint_genericPoint_closure.mem
+  rw [← image_singleton, ← closure_image_closure continuous_subtypeVal,
     H.isGenericPoint_genericPoint_closure.def]
   refine (subset_closure_inter_of_isPreirreducible_of_isOpen h (U i).isOpen ⟨x, ⟨hx, hi⟩⟩).trans
     (closure_mono ?_)

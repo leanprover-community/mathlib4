@@ -199,7 +199,7 @@ theorem ker_projectionOntoL (h : IsTopCompl p q) :
 
 theorem isQuotientMap_projectionOnto (h : IsTopCompl p q) :
     IsQuotientMap (p.projectionOnto q h.isCompl) :=
-  .of_inverse continuous_subtype_val (p.projectionOntoL q h).continuous
+  .of_inverse continuous_subtypeVal (p.projectionOntoL q h).continuous
     (projectionOntoL_apply_left h)
 
 theorem isQuotientMap_projectionOntoL (h : IsTopCompl p q) :
@@ -416,12 +416,12 @@ theorem IsCompl.isTopCompl_iff_continuous_symm_prodEquivOfIsCompl (h : IsCompl p
     IsTopCompl p q ↔ Continuous (p.prodEquivOfIsCompl q h).symm :=
   ⟨fun hTop ↦ ((p.projectionOntoL q hTop).prod (q.projectionOntoL p hTop.symm)).continuous.congr
     fun x ↦ (prodEquivOfIsCompl_symm_apply h x).symm,
-  fun hCont ↦ ⟨h, continuous_subtype_val.comp <| continuous_fst.comp hCont⟩⟩
+  fun hCont ↦ ⟨h, continuous_subtypeVal.comp <| continuous_fst.comp hCont⟩⟩
 
 /-- The linear equivalence `Submodule.prodEquivOfIsCompl` from a pair of complementary submodules is
 always continuous. -/
 theorem continuous_prodEquivOfIsCompl (h : IsCompl p q) : Continuous (p.prodEquivOfIsCompl q h) :=
-  (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
+  (continuous_subtypeVal.comp continuous_fst).add (continuous_subtypeVal.comp continuous_snd)
 
 /-- Two complementary submodules are topological complements if and only if the linear equivalence
 `Submodule.prodEquivOfIsCompl` is a homeomorphism. -/

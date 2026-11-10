@@ -414,7 +414,7 @@ end Gluing
 @[simps!]
 def subtypeVal (s : Set α) : C(s, α) where
   toFun := Subtype.val
-  continuous_toFun := continuous_subtype_val
+  continuous_toFun := continuous_subtypeVal
 
 /-- `Set.inclusion` as a bundled continuous map. -/
 @[simps!]
