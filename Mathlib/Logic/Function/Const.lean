@@ -173,13 +173,11 @@ use `Set.EqOn f (Function.const α b) s`. -/
 def IsConstOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → f x = f y
 
-theorem isConstOn_iff {f : α → β} {s : Set α} :
-    IsConstOn f s ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y :=
+theorem isConstOn_iff {f : α → β} {s : Set α} : IsConstOn f s ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y :=
   ⟨fun h _ hx _ hy ↦ h hx hy, fun h _ hx _ hy ↦ h _ hx _ hy⟩
 
-protected theorem IsConstOn.eq
-    {f : α → β} {s : Set α} (hf : IsConstOn f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s) :
-    f x = f y :=
+protected theorem IsConstOn.eq {f : α → β} {s : Set α} (hf : IsConstOn f s) {x y : α} (hx : x ∈ s)
+    (hy : y ∈ s) : f x = f y :=
   hf hx hy
 
 theorem isConstOn_iff_isConst_comp_val (f : α → β) (s : Set α) :
@@ -187,12 +185,10 @@ theorem isConstOn_iff_isConst_comp_val (f : α → β) (s : Set α) :
   ⟨fun h ⟨_, hx⟩ ⟨_, hy⟩ ↦ h hx hy, fun h x hx y hy ↦ h ⟨x, hx⟩ ⟨y, hy⟩⟩
 
 @[simp]
-theorem isConstOn_univ (f : α → β) :
-    IsConstOn f Set.univ ↔ IsConst f := by
+theorem isConstOn_univ (f : α → β) : IsConstOn f Set.univ ↔ IsConst f := by
   simp [isConstOn_iff, IsConst]
 
-theorem IsConst.isConstOn {f : α → β} {s : Set α} (hf : IsConst f) :
-    IsConstOn f s :=
+theorem IsConst.isConstOn {f : α → β} {s : Set α} (hf : IsConst f) : IsConstOn f s :=
   fun x _ y _ ↦ hf x y
 
 theorem IsConstOn.mono {f : α → β} {s t : Set α} (hf : IsConstOn f t) (hst : s ⊆ t) :
@@ -208,8 +204,7 @@ theorem _root_.Set.EqOn.isConstOn_iff {β : Type*} {f g : α → β} {s : Set α
   ⟨(·.congr h), (·.congr h.symm)⟩
 
 @[simp]
-protected theorem IsConstOn.const (b : β) (s : Set α) :
-    IsConstOn (const α b) s :=
+protected theorem IsConstOn.const (b : β) (s : Set α) : IsConstOn (const α b) s :=
   (IsConst.const b).isConstOn
 
 /-- Every function is constant on a subsingleton set. -/
