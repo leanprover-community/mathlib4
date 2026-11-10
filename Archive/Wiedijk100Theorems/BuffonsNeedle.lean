@@ -12,7 +12,6 @@ public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.Notation
 
 /-!
-
 # Freek № 99: Buffon's Needle
 
 This file proves Theorem 99 from the [100 Theorems List](https://www.cs.ru.nl/~freek/100/), also
@@ -67,7 +66,6 @@ We then show the two integrals equal their respective values `l - √(l^2 - d^2)
 * https://en.wikipedia.org/wiki/Buffon%27s_needle_problem
 * https://www.math.leidenuniv.nl/~hfinkeln/seminarium/stelling_van_Buffon.pdf
 * https://www.isa-afp.org/entries/Buffons_Needle.html
-
 -/
 
 @[expose] public section
@@ -281,8 +279,8 @@ point where `d = θ.sin * l`, which is `θ = (d / l).arcsin`.
 lemma integral_min_eq_two_mul :
     ∫ θ in 0..π, min d (θ.sin * l) = 2 * ∫ θ in 0..π / 2, min d (θ.sin * l) := by
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
-  conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
-  · simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
+  · conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
+    simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
       intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), neg_add_cancel,
       (by ring : -(π / 2) + π = π / 2), two_mul]
   all_goals exact intervalIntegrable_min_const_sin_mul d l _ _

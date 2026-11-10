@@ -15,7 +15,6 @@ import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
-
 -/
 
 @[expose] public section
@@ -347,7 +346,7 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     refine le_ciInf fun r => ?_
     obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
     refine ciInf_set_le hf (hxy.trans ?_)
-    exact_mod_cast hyr
+    exact mod_cast hyr
   · refine le_ciInf fun q => ?_
     have hq := q.prop
     rw [mem_Ioi] at hq

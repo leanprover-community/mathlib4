@@ -51,7 +51,6 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Link with periodicity
 * Lie group structure
 * Exponential equivalence to `Circle`
-
 -/
 
 @[expose] public section
@@ -299,6 +298,18 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
     exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
 
+/-- The quotient map `𝕜 → AddCircle p` is injective on `[a, a + p)`. -/
+theorem injOn_coe_Ico (a : 𝕜) : InjOn ((↑) : 𝕜 → AddCircle p) (Ico a (a + p)) := by
+  rintro x ⟨hx₀, hx⟩ y ⟨hy₀, hy⟩ hxy
+  have hp : 0 < p := by grind only
+  obtain ⟨n, hn⟩ : ∃ n : ℤ, n • p = x - y := by rw [← coe_eq_zero_iff, coe_sub, hxy, sub_self]
+  have : |x - y| < p := by grind
+  rw [← hn, abs_zsmul, abs_of_pos hp] at this
+  simp_all [sub_eq_zero, eq_comm]
+
+instance [hp : Fact (0 < p)] [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
+  .of_injective _ (zero_add p ▸ injOn_coe_Ico p 0).injective
+
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
 /-- The equivalence between `AddCircle p` and the half-open interval `[a, a + p)`, whose inverse
@@ -516,7 +527,6 @@ theorem equivAddCircle_eq [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimed
     [hp : Fact (0 < p)] (hq : q ≠ 0) :
     ⇑(equivAddCircle p q hp.out.ne' hq)
       = fun x ↦ ((equivIco p 0 x : 𝕜) * (p⁻¹ * q) : AddCircle q) := by
-  ext x
   grind [coe_equivIco, equivAddCircle_apply_mk]
 
 section
@@ -638,7 +648,7 @@ protected theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     mul_div_cancel_right₀ p h0] at ha
   rw [← ha, coe_add, ← Int.cast_natCast, Int.natMod, Int.toNat_of_nonneg, zsmul_eq_mul,
     mul_div_right_comm, eq_comm, add_eq_right, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
-  exact Int.emod_nonneg _ (by exact_mod_cast h.ne')
+  exact Int.emod_nonneg _ (mod_cast h.ne')
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by

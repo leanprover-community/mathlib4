@@ -22,7 +22,6 @@ We first define the variant `SSet.congrMapFundamentalGroupoid'`
 which takes as an input a combinatorial simplicial homotopy
 (as `h : SimplicialObject.Homotopy f g`), and we deduce the result
 for terms in `SSet.Homotopy f g` which involve a morphism `X ⊗ Δ[1] ⟶ Y`.
-
 -/
 
 @[expose] public section
@@ -40,7 +39,6 @@ namespace Edge
 open ConcreteCategory
 
 /-!
-
 Given ``h : SimplicialObject.Homotopy f g` where `f` and `g` are morphisms
 of simplicial sets `X ⟶ Y`, we define an edge `ofSimplicialObjectHomotopy h x`
 connecting `f.app _ x` and `g.app _ x` for any `x : X _⦋0⦌`.
@@ -63,7 +61,6 @@ The commutativity of the lower left triangle is justified by
 `Edge.CompStruct.ofSimplicialObjectHomotopy`, and the commutativity
 of the upper right triangle is justified by
 `Edge.CompStruct.ofSimplicialObjectHomotopy'`.
-
 -/
 
 

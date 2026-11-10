@@ -23,7 +23,6 @@ localized categories.
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 @[expose] public section
@@ -82,6 +81,15 @@ from `Φ : LocalizerMorphism W₁ W₂`. -/
 abbrev op : LocalizerMorphism W₁.op W₂.op where
   functor := Φ.functor.op
   map _ _ _ hf := Φ.map _ hf
+
+/-- The external product of two morphisms of localizers. -/
+@[simps, implicit_reducible]
+def prod {C₁' C₂' : Type*} [Category* C₁'] [Category* C₂']
+    {W₁' : MorphismProperty C₁'} {W₂' : MorphismProperty C₂'}
+    (Φ₁ : LocalizerMorphism W₁ W₂) (Φ₂ : LocalizerMorphism W₁' W₂') :
+    LocalizerMorphism (W₁.prod W₁') (W₂.prod W₂') where
+  functor := Φ₁.functor.prod Φ₂.functor
+  map _ _ f hf := ⟨Φ₁.map f.1 hf.1, Φ₂.map f.2 hf.2⟩
 
 variable (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
@@ -383,7 +391,6 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Functor.asEquivalence_counitIso_hom_app
   Functor.asEquivalence_counitIso_inv_app in
 /-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
@@ -415,7 +422,6 @@ instance : Φ.inv.IsInduced where
       (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
         (Φ.functor.asEquivalence.counitIso.app _))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isLocalizedEquivalence_of_isInduced :
     Φ.IsLocalizedEquivalence := by
   refine IsLocalizedEquivalence.of_equivalence _ (fun X Y f hf ↦ ?_)

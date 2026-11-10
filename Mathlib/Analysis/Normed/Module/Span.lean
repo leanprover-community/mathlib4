@@ -21,7 +21,6 @@ isometry.
   `𝕜 • x` for `x ≠ 0`.
 * `LinearIsometryEquiv.toSpanUnitSingleton`: For `‖x‖ = 1` the continuous linear equivalence is a
   linear isometry equivalence.
-
 -/
 
 @[expose] public section
