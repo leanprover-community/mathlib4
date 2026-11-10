@@ -52,7 +52,7 @@ lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).nat
       (by simpa using FractionalIdeal.coeIdeal_le_one)) one_ne_zero one_ne_zero
   have := Nat.card_congr this.toEquiv
   refine this.trans ?_
-  rw [FractionalIdeal.coe_one, coeIdeal_differentIdeal (K := ℚ), inv_inv]
+  rw [FractionalIdeal.coeToSubmodule_one, coeIdeal_differentIdeal (K := ℚ), inv_inv]
   let b := integralBasis K
   let b' := (Algebra.traceForm ℚ K).dualBasis (traceForm_nondegenerate ℚ K) b
   have hb : Submodule.span ℤ (Set.range b) = (1 : Submodule 𝒪 K).restrictScalars ℤ := by
@@ -62,7 +62,7 @@ lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).nat
   qify
   refine (AddSubgroup.relIndex_eq_abs_det (1 : Submodule 𝒪 K).toAddSubgroup (FractionalIdeal.dual
     ℤ ℚ 1 : FractionalIdeal 𝒪⁰ K).coeToSubmodule.toAddSubgroup ?_ b b' ?_ ?_).trans ?_
-  · rw [Submodule.toAddSubgroup_le, ← FractionalIdeal.coe_one]
+  · rw [Submodule.toAddSubgroup_le, ← FractionalIdeal.coeToSubmodule_one]
     exact FractionalIdeal.one_le_dual_one ℤ ℚ (L := K) (B := 𝒪)
   · apply AddSubgroup.toIntSubmodule.injective
     rw [AddSubgroup.toIntSubmodule_closure, hb, Submodule.toIntSubmodule_toAddSubgroup]
