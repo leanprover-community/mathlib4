@@ -18,7 +18,7 @@ We define K-sheaves on `X` a T2 topological space with value in an arbitrary cat
 
 This coresponds to the presheaves `F : (Compacts X)ᵒᵖ ⥤ A` such that:
 - `F.obj (∅)` is terminal.
-- For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is  the pullback
+- For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is the pullback
   of `F.obj K₁` and `F.obj K₂` over `F.obj (K₁ ∩ K₂)`.
 - For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts
   subsets `L` of `X` such that `K` is in the interior of `L`.
