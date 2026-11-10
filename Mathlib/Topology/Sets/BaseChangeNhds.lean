@@ -96,7 +96,7 @@ instance {K : Compacts α} [T2Space α] : K.openRcNhdsToCompactNhds_mono.functor
 variable {β : Type u_1} [TopologicalSpace β] {f : α → β} (proper_f : IsProperMap f)
 
 /-- The preimage of a compact by a proper map as a compact -/
-@[simps]
+@[simps, implicit_reducible]
 def properPreimage (K : Compacts β) : Compacts α :=
   ⟨f ⁻¹' K.carrier, IsProperMap.isCompact_preimage proper_f K.isCompact'⟩
 
@@ -104,7 +104,7 @@ lemma properPreimage_mono : Monotone (properPreimage proper_f) :=
   fun _ _ h ↦ preimage_mono (f := f) h
 
 /-- The base change of compactNhds induced by `properPreimage` -/
-@[simps]
+@[simps, implicit_reducible]
 def baseChangeCompactNhdsOfProperMap (K : Compacts β) (L : K.compactNhds) :
     (properPreimage proper_f K).compactNhds :=
   ⟨properPreimage proper_f L,

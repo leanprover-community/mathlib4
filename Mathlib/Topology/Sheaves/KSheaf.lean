@@ -188,8 +188,10 @@ lemma pushforwardObj_isKSheaf : (F.obj.pushforwardObj pf).IsKSheaf where
     exact F.property.nonempty_isTerminal
   isPullback h :=
     F.property.isPullback <|
-    Lattice.BicartSq.pushforward h (properPreimage pf)
-    (fun _ _ ↦ Compacts.ext rfl) (fun _ _ ↦ Compacts.ext rfl)
+    Lattice.BicartSq.map h <| {
+      toFun := properPreimage pf
+      map_sup' := fun _ _ ↦ Compacts.ext rfl
+      map_inf' := fun _ _ ↦ Compacts.ext rfl}
   nonempty_isColimit_coconeOfCompacts K :=
     Nonempty.intro <|
     (Functor.Final.isColimitWhiskerEquiv ((baseChangeCompactNhdsOfProperMap_mono pf K).functor.op)

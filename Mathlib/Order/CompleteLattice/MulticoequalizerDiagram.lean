@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.Order.Hom.Lattice
+public import Mathlib.Order.Hom.CompleteLattice
 
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.SetLike
@@ -66,8 +68,7 @@ lemma le₃₄ : x₃ ≤ x₄ := by grind
 lemma commSq : CommSq (homOfLE sq.le₁₂) (homOfLE sq.le₁₃)
     (homOfLE sq.le₂₄) (homOfLE sq.le₃₄) := ⟨rfl⟩
 
-lemma pushforward {S : Type v} [Lattice S] (f : T → S)
-    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) :
+lemma map {S : Type v} [Lattice S] (f : LatticeHom T S) :
     BicartSq (f x₁) (f x₂) (f x₃) (f x₄) where
   sup_eq := by rw [← map_sup, sq.sup_eq]
   inf_eq := by rw [← map_inf, sq.inf_eq]
@@ -114,12 +115,13 @@ def multicofork : Multicofork d.multispanIndex :=
     (fun _ ↦ rfl)
 
 include d
-lemma pushforward {S : Type v} [CompleteLattice S] (f : T → S)
-    (map_sup : ∀ {ι : Type u_1} (u : ι → T), ⨆ i, f (u i) = f (⨆ i, u i))
-    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+lemma map {S : Type v} [CompleteLattice S] (f : CompleteLatticeHom T S)
   : MulticoequalizerDiagram (f x) ( fun i ↦ f (u i)) (fun i j ↦ f (v i j))
     where
-  iSup_eq := by rw [map_sup u ,d.iSup_eq]
+  iSup_eq := by
+
+    sorry
+    --rw [map_sup u ,d.iSup_eq]
   eq_inf _ _ := by rw [← map_inf ,d.eq_inf]
 
 end MulticoequalizerDiagram
