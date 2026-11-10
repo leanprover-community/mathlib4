@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 ## Main results
 - `AlgebraicGeometry.isCommMonObj_of_isProper_of_geometricallyIntegral`:
   A proper geometrically integral group scheme over a field is commutative.
-
 -/
 
 public section

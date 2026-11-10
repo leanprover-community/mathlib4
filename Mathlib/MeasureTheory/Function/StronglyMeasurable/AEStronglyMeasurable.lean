@@ -39,7 +39,6 @@ measurable functions, as a basis for the Bochner integral.
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 @[expose] public section
@@ -517,16 +516,18 @@ protected theorem nnNorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
 
 @[deprecated (since := "2026-10-31")] protected alias nnnorm := AEStronglyMeasurable.nnNorm
 
-/-- The `enorm` of a strongly a.e. measurable function is a.e. measurable.
+/-- The `eNorm` of a strongly a.e. measurable function is a.e. measurable.
 
 Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnNorm`, this lemma proves
 a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
 for functions taking values in `ℝ≥0∞`, a.e. measurability is much more useful than
 a.e. strong measurability. -/
 @[fun_prop]
-protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
+protected theorem eNorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
-  (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
+  (continuous_eNorm.comp_aestronglyMeasurable hf).aemeasurable
+
+@[deprecated (since := "2026-11-06")] protected alias enorm := AEStronglyMeasurable.eNorm
 
 /-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
 
@@ -623,7 +624,7 @@ theorem comp_measurable {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpa
 theorem comp_quasiMeasurePreserving {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}
     {f : γ → α} {μ : Measure γ} {ν : Measure α} (hg : AEStronglyMeasurable g ν)
     (hf : QuasiMeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
-  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
+  (hg.mono_ac hf.absolutelyContinuous).comp_aemeasurable hf.aemeasurable
 
 theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
     ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by

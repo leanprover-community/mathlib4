@@ -21,7 +21,6 @@ to clopen sets.
 + `IsClopen.biUnion_connectedComponent_eq`: a clopen set is the union of its connected components.
 + `PreconnectedSpace.induction₂`: an induction principle for preconnected spaces.
 + `ConnectedComponents`: The connected components of a topological space, as a quotient type.
-
 -/
 
 @[expose] public section

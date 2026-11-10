@@ -38,7 +38,6 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 @[expose] public section
@@ -982,15 +981,17 @@ protected theorem nnNorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCom
 
 @[deprecated (since := "2026-10-31")] protected alias nnnorm := StronglyMeasurable.nnNorm
 
-/-- The `enorm` of a strongly measurable function is measurable.
+/-- The `eNorm` of a strongly measurable function is measurable.
 
 Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnNorm`, this lemma proves measurability,
 **not** strong measurability. This is an intentional decision: for functions taking values in
 ℝ≥0∞, measurability is much more useful than strong measurability. -/
 @[fun_prop]
-protected theorem enorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
+protected theorem eNorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
-  (continuous_enorm.comp_stronglyMeasurable hf).measurable
+  (continuous_eNorm.comp_stronglyMeasurable hf).measurable
+
+@[deprecated (since := "2026-11-06")] protected alias enorm := StronglyMeasurable.eNorm
 
 @[fun_prop]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :

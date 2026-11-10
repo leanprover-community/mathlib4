@@ -24,7 +24,6 @@ transformation is an isomorphism.
 
 ## References
 * [J. F. Jardine, *Simplicial approximation*][jardine-2004]
-
 -/
 
 @[expose] public section

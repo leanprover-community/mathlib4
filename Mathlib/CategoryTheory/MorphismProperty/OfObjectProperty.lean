@@ -16,7 +16,6 @@ import Mathlib.Tactic.SetLike
 Given two object properties `P` and `Q`, we introduce a morphism property
 `ofObjectProperty P Q`, given by all morphisms whose source satisfies `P` and
 target satisfies `Q`.
-
 -/
 
 @[expose] public section

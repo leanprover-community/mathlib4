@@ -12,7 +12,6 @@ public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
 /-!
 # Open immersions of schemes
-
 -/
 
 @[expose] public section

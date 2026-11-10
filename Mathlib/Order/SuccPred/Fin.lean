@@ -14,7 +14,6 @@ public import Mathlib.Order.SuccPred.Basic
 In this file, we show that `Fin n` is both a `SuccOrder` and a `PredOrder`. Note that they are
 also archimedean, but this is derived from the general instance for well-orderings as opposed
 to a specific `Fin` instance.
-
 -/
 
 public section

@@ -42,7 +42,6 @@ category).
 
 ## References
 * https://stacks.math.columbia.edu/tag/00WU
-
 -/
 
 @[expose] public section

@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
 # Nonempty simplicial sets
-
 -/
 
 @[expose] public section
