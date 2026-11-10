@@ -364,9 +364,11 @@ theorem contMDiffAt_subtype_iff {n : ℕ∞ω} {U : Opens M} {f : M → M'} {x :
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
   ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtype_val _ _).symm
 
-theorem contMDiff_subtype_val {n : ℕ∞ω} {U : Opens M} :
+theorem contMDiff_subtypeVal {n : ℕ∞ω} {U : Opens M} :
     ContMDiff I I n (Subtype.val : U → M) :=
   fun _ ↦ contMDiffAt_subtype_iff.mpr contMDiffAt_id
+
+@[deprecated (since := "2026-11-10")] alias contMDiff_subtype_val := contMDiff_subtypeVal
 
 @[to_additive]
 theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞ω} {U : Opens M} {f : U → M'}

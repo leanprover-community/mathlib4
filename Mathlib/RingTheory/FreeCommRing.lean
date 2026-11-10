@@ -268,7 +268,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   rwa [Polynomial.coeff_C, ite_eq_right (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X,
     ite_eq_left rfl] at this
 
-theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
+theorem map_subtypeVal_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
   refine Subring.InClosure.recOn hxs ?_ ?_ ?_ ?_
   · rw [← RingHom.comp_apply, map_one]
@@ -277,6 +277,9 @@ theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     rw [map_mul, restriction_of, dite_eq_left hps, map_mul, map_of, ih]
   · intro x y ihx ihy
     rw [map_add, map_add, ihx, ihy]
+
+@[deprecated (since := "2026-11-10")]
+alias map_subtype_val_restriction := map_subtypeVal_restriction
 
 theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite s ∧ IsSupported x s :=
   FreeCommRing.induction_on x ⟨∅, Set.finite_empty, isSupported_neg isSupported_one⟩

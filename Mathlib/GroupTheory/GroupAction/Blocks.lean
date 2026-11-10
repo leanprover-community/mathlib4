@@ -361,9 +361,12 @@ theorem IsBlock.image {H Y : Type*} [SMul H Y] {φ : G → H} (j : X →ₑ[φ] 
   exact fun g₁ g₂ hg ↦ disjoint_image_of_injective hj <| hB <| ne_of_apply_ne _ hg
 
 @[to_additive]
-theorem IsBlock.subtype_val_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
+theorem IsBlock.subtypeVal_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
     IsBlock G (Subtype.val ⁻¹' B : Set C) :=
   hB.preimage C.inclusion
+
+@[deprecated (since := "2026-11-10")]
+alias IsBlock.subtype_val_preimage := IsBlock.subtypeVal_preimage
 
 @[to_additive]
 theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :

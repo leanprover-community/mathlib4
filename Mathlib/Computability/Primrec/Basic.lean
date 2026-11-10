@@ -849,14 +849,16 @@ namespace Primrec
 variable {α : Type*} {β : Type*}
 variable [Primcodable α] [Primcodable β]
 
-theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
+theorem subtypeVal {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by
   let := Primcodable.subtype hp
   refine (Primcodable.prim (Subtype p)).of_eq fun n => ?_
   rcases @decode (Subtype p) _ n with (_ | ⟨a, h⟩) <;> rfl
 
-theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → Subtype p} :
+@[deprecated (since := "2026-11-10")] alias subtype_val := subtypeVal
+
+theorem subtypeVal_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → Subtype p} :
     haveI := Primcodable.subtype hp
     (Primrec fun a => (f a).1) ↔ Primrec f := by
   let := Primcodable.subtype hp
@@ -864,6 +866,8 @@ theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p}
   refine Nat.Primrec.of_eq h fun n => ?_
   rcases @decode α _ n with - | a; · rfl
   simp; rfl
+
+@[deprecated (since := "2026-11-10")] alias subtype_val_iff := subtypeVal_iff
 
 theorem subtype_mk {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → β}
     {h : ∀ a, p (f a)} (hf : Primrec f) :

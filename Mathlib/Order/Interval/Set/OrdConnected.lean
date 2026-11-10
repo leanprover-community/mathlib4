@@ -103,24 +103,32 @@ section Preorder
 variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[simp]
-lemma image_subtype_val_Icc {s : Set α} [OrdConnected s] (x y : s) :
+lemma image_subtypeVal_Icc {s : Set α} [OrdConnected s] (x y : s) :
     Subtype.val '' Icc x y = Icc x.1 y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Icc (by simpa) x y
 
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_Icc := image_subtypeVal_Icc
+
 @[simp]
-lemma image_subtype_val_Ico {s : Set α} [OrdConnected s] (x y : s) :
+lemma image_subtypeVal_Ico {s : Set α} [OrdConnected s] (x y : s) :
     Subtype.val '' Ico x y = Ico x.1 y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Ico (by simpa) x y
 
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_Ico := image_subtypeVal_Ico
+
 @[simp]
-lemma image_subtype_val_Ioc {s : Set α} [OrdConnected s] (x y : s) :
+lemma image_subtypeVal_Ioc {s : Set α} [OrdConnected s] (x y : s) :
     Subtype.val '' Ioc x y = Ioc x.1 y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Ioc (by simpa) x y
 
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_Ioc := image_subtypeVal_Ioc
+
 @[simp]
-lemma image_subtype_val_Ioo {s : Set α} [OrdConnected s] (x y : s) :
+lemma image_subtypeVal_Ioo {s : Set α} [OrdConnected s] (x y : s) :
     Subtype.val '' Ioo x y = Ioo x.1 y :=
   (OrderEmbedding.subtype (· ∈ s)).image_Ioo (by simpa) x y
+
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_Ioo := image_subtypeVal_Ioo
 
 theorem OrdConnected.inter {s t : Set α} (hs : OrdConnected s) (ht : OrdConnected t) :
     OrdConnected (s ∩ t) :=
@@ -319,19 +327,25 @@ theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
   simp_rw [ordConnected_iff_uIcc_subset_left hx, uIcc_comm]
 
 @[simp]
-theorem image_subtype_val_uIcc [OrdConnected s] (a b : s) :
+theorem image_subtypeVal_uIcc [OrdConnected s] (a b : s) :
     Subtype.val '' [[a, b]] = [[a.1, b.1]] := by
   simp [uIcc, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
 
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_uIcc := image_subtypeVal_uIcc
+
 @[simp]
-theorem image_subtype_val_uIoc [OrdConnected s] (a b : s) :
+theorem image_subtypeVal_uIoc [OrdConnected s] (a b : s) :
     Subtype.val '' uIoc a b = uIoc a.1 b.1 := by
   simp [uIoc, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
 
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_uIoc := image_subtypeVal_uIoc
+
 @[simp]
-theorem image_subtype_val_uIoo [OrdConnected s] (a b : s) :
+theorem image_subtypeVal_uIoo [OrdConnected s] (a b : s) :
     Subtype.val '' uIoo a b = uIoo a.1 b.1 := by
   simp [uIoo, (Subtype.mono_coe (· ∈ s)).map_inf, (Subtype.mono_coe (· ∈ s)).map_sup]
+
+@[deprecated (since := "2026-11-10")] alias image_subtype_val_uIoo := image_subtypeVal_uIoo
 
 end LinearOrder
 

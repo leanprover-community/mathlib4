@@ -484,9 +484,11 @@ theorem Continuous.rangeFactorization {f : X → Y} (hf : Continuous f) :
     Continuous (rangeFactorization f) :=
   continuous_rangeFactorization_iff.mpr hf
 
-theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
+theorem continuousAt_subtypeVal {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
   continuous_subtypeVal.continuousAt
+
+@[deprecated (since := "2026-11-10")] alias continuousAt_subtype_val := continuousAt_subtypeVal
 
 /-- The induced homeomorphism between two equal subtypes of a given topological space:
 the underlying equivalence is `Equiv.subtypeEquivProp`. -/
@@ -540,7 +542,7 @@ alias ⟨_, ContinuousAt.codRestrict⟩ := continuousAt_codRestrict_iff
 
 theorem ContinuousAt.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f s t) {x : s}
     (h2 : ContinuousAt f x) : ContinuousAt (h1.restrict f s t) x :=
-  (h2.comp continuousAt_subtype_val).codRestrict _
+  (h2.comp continuousAt_subtypeVal).codRestrict _
 
 theorem ContinuousAt.restrictPreimage {f : X → Y} {s : Set Y} {x : f ⁻¹' s} (h : ContinuousAt f x) :
     ContinuousAt (s.restrictPreimage f) x :=

@@ -264,11 +264,13 @@ lemma univ_map_subtype [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype
     univ.map (Function.Embedding.subtype p) = univ.filter p := by
   rw [← subtype_map, subtype_univ]
 
-lemma univ_val_map_subtype_val [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+lemma univ_val_map_subtypeVal [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.val.map ((↑) : { a // p a } → α) = (univ.filter p).val := by
   apply (map_val (Function.Embedding.subtype p) univ).symm.trans
   apply congr_arg
   apply univ_map_subtype
+
+@[deprecated (since := "2026-11-10")] alias univ_val_map_subtype_val := univ_val_map_subtypeVal
 
 lemma univ_val_map_subtype_restrict [Fintype α] (f : α → β)
     (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :

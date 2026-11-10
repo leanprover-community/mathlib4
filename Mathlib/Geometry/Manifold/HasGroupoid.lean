@@ -319,13 +319,16 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
     · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
 
-theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
+theorem chartAt_subtypeVal_symm_eventuallyEq (U : Opens M) {x : U} :
     (chartAt H x.val).symm =ᶠ[𝓝 (chartAt H x.val x.val)] Subtype.val ∘ (chartAt H x).symm := by
   set e := chartAt H x.val
   have heUx_nhds : (e.subtypeRestr ⟨x⟩).target ∈ 𝓝 (e x) := by
     apply (e.subtypeRestr ⟨x⟩).open_target.mem_nhds
     exact e.map_subtype_source ⟨x⟩ (mem_chart_source _ _)
   exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn ⟨x⟩)
+
+@[deprecated (since := "2026-11-10")]
+alias chartAt_subtype_val_symm_eventuallyEq := chartAt_subtypeVal_symm_eventuallyEq
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
     (chartAt H (Opens.inclusion hUV x)).symm
