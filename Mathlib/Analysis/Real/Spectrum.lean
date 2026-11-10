@@ -12,7 +12,6 @@ import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Some lemmas on the spectrum and quasispectrum of elements and positivity
-
 -/
 
 public section

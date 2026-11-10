@@ -15,7 +15,6 @@ quasi-compact.
 
 It suffices to check that preimages of affine open sets are compact
 (`quasiCompact_iff_forall_isAffineOpen`).
-
 -/
 
 public section

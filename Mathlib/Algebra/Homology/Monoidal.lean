@@ -21,7 +21,6 @@ coproducts and both left/right tensoring commute with these.
 
 In particular, we obtain a monoidal category structure on
 `ChainComplex C ℕ` when `C` is an additive monoidal category.
-
 -/
 
 @[expose] public section
@@ -145,8 +144,6 @@ end
 
 section
 
-variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
-
 instance : GradedObject.HasTensor K.X (tensorUnit C c).X :=
   GradedObject.hasTensor_of_iso (Iso.refl _) (tensorUnitIso C c)
 
@@ -220,8 +217,6 @@ noncomputable def leftUnitor :
 end LeftUnitor
 
 section RightUnitor
-
-variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
 
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :

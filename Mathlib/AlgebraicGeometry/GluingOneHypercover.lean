@@ -19,7 +19,6 @@ for sections over `D.glued` of a sheaf of types over the big Zariski site.
 
 This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
-
 -/
 
 @[expose] public section

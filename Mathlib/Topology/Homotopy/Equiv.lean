@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Homotopy.Basic
 
 /-!
-
 # Homotopy equivalences between topological spaces
 
 In this file, we define homotopy equivalences between topological spaces `X` and `Y` as a pair of
@@ -23,7 +22,6 @@ to `ContinuousMap.id`.
 
 We introduce the notation `X ≃ₕ Y` for `ContinuousMap.HomotopyEquiv X Y` in the `ContinuousMap`
 locale.
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ import Mathlib.Order.Filter.Prod
 # Limits of intervals along filters
 
 This file contains some lemmas about how filters `Ixx` behave as the endpoints tend to `±∞`.
-
 -/
 
 public section

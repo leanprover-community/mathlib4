@@ -21,7 +21,6 @@ and show that bounded below complexes of injective objects are K-injective.
 
 ## References
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
-
 -/
 
 @[expose] public section
@@ -45,7 +44,8 @@ class IsKInjective (L : CochainComplex C ℤ) : Prop where
 
 /-- A choice of homotopy to zero for a morphism from an acyclic
 cochain complex to a K-injective cochain complex. -/
-noncomputable irreducible_def IsKInjective.homotopyZero {K L : CochainComplex C ℤ} (f : K ⟶ L)
+@[no_expose]
+noncomputable def IsKInjective.homotopyZero {K L : CochainComplex C ℤ} (f : K ⟶ L)
     (hK : K.Acyclic) [L.IsKInjective] :
     Homotopy f 0 :=
   (IsKInjective.nonempty_homotopy_zero f hK).some

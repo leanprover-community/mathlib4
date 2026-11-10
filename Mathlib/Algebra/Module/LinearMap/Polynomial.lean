@@ -60,7 +60,6 @@ The proof concludes because characteristic polynomials are independent of the ch
 ## References
 
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
 -/
 
 @[expose] public section
@@ -269,7 +268,7 @@ lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
     intro kl
     rw [toMatrix_apply, tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
       basis_apply, TensorProduct.lift.tmul, coe_restrictScalars]
-    dsimp only [coe_mk, AddHom.coe_mk, smul_apply, baseChangeHom_apply]
+    dsimp only [coe_mk, AddHom.coe_mk, LinearMap.smul_apply, baseChangeHom_apply]
     rw [one_smul, Basis.baseChange_end, Basis.repr_self_apply]
 
 open LinearMap in
@@ -506,12 +505,12 @@ and denote `n := nilRank φ`.
 An element `x : L` is *nil-regular* with respect to `φ`
 if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero. -/
 def IsNilRegular (x : L) : Prop :=
-  Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0
+  (φ x).charpoly.coeff (nilRank φ) ≠ 0
 
 variable (x : L)
 
 lemma isNilRegular_def :
-    IsNilRegular φ x ↔ (Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0) := Iff.rfl
+    IsNilRegular φ x ↔ ((φ x).charpoly.coeff (nilRank φ) ≠ 0) := Iff.rfl
 
 lemma isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero :
     IsNilRegular φ x ↔
