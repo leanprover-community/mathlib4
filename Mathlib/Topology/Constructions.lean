@@ -399,7 +399,7 @@ theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
     IsOpenEmbedding ((↑) : s → X) :=
   ⟨.subtypeVal, (@Subtype.range_coe _ s).symm ▸ hs⟩
 
-theorem IsOpen.isOpenMap_subtype_val {s : Set X} (hs : IsOpen s) : IsOpenMap ((↑) : s → X) :=
+theorem IsOpen.isOpenMap_subtypeVal {s : Set X} (hs : IsOpen s) : IsOpenMap ((↑) : s → X) :=
   hs.isOpenEmbedding_subtypeVal.isOpenMap
 
 theorem IsOpenMap.domRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : IsOpen s) :
@@ -412,7 +412,7 @@ theorem IsOpenMap.domRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs :
 lemma IsClosed.isClosedEmbedding_subtypeVal {s : Set X} (hs : IsClosed s) :
     IsClosedEmbedding ((↑) : s → X) := .subtypeVal hs
 
-theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
+theorem IsClosed.isClosedMap_subtypeVal {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
   hs.isClosedEmbedding_subtypeVal.isClosedMap
 
