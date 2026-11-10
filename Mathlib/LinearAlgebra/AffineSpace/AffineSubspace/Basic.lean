@@ -19,7 +19,6 @@ and the affine span of a set of points.
 
 * `AffineSubspace.Parallel`, notation `∥`, gives the property of two affine subspaces being
   parallel (one being a translate of the other).
-
 -/
 
 @[expose] public section

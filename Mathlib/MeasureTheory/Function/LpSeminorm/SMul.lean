@@ -34,17 +34,17 @@ section IsBoundedSMul
 variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {c : 𝕜}
 
 theorem eLpNorm'_const_smul_le (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
-  eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnnorm_smul_le ..) hq
+  eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnNorm_smul_le ..) hq
 
 theorem eLpNormEssSup_const_smul_le : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul
-    (Eventually.of_forall fun _ => by simp [nnnorm_smul_le])
+    (Eventually.of_forall fun _ => by simp [nnNorm_smul_le])
 
 theorem eLpNorm_const_smul_le :
     eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (hf.const_smul c)
-      (Eventually.of_forall fun _ => by simp [nnnorm_smul_le]) _
+      (Eventually.of_forall fun _ => by simp [nnNorm_smul_le]) _
   rw [eLpNorm_of_not_aestronglyMeasurable hf]
   rcases eq_or_ne c 0 with rfl | hc
   · simp
@@ -52,7 +52,7 @@ theorem eLpNorm_const_smul_le :
     exact le_top
 
 theorem MemLp.const_smul (hf : MemLp f p μ) (c : 𝕜) : MemLp (c • f) p μ :=
-  (eLpNorm_const_smul_le).trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf)
+  (eLpNorm_const_smul_le).trans_lt (by finiteness)
 
 theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
   hf.const_smul c
@@ -71,11 +71,11 @@ variable {𝕜 : Type*} [NormedRing 𝕜]
 
 theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul'
-    (Eventually.of_forall fun _ ↦ le_of_eq (enorm_smul ..)) hq
+    (Eventually.of_forall fun _ ↦ le_of_eq (eNorm_smul ..)) hq
 
 theorem eLpNormEssSup_const_smul_le' : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul'
-    (Eventually.of_forall fun _ => by simp [enorm_smul])
+    (Eventually.of_forall fun _ => by simp [eNorm_smul])
 
 end ENormSMulClass
 
@@ -89,7 +89,7 @@ theorem eLpNorm_const_smul_le' [ContinuousConstSMul 𝕜 ε] :
     eLpNorm (c • f) p μ ≤ ‖c‖ₑ * eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · refine eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' (hf.const_smul c)
-      (Eventually.of_forall fun _ => le_of_eq (enorm_smul ..)) _
+      (Eventually.of_forall fun _ => le_of_eq (eNorm_smul ..)) _
   rw [eLpNorm_of_not_aestronglyMeasurable hf]
   rcases eq_or_ne c 0 with rfl | hc
   · simp
@@ -120,14 +120,14 @@ variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [Module 𝕜 F] [NormSMulClass
 theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
     eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by
   obtain rfl | hc := eq_or_ne c 0
-  · simp [eLpNorm'_eq_lintegral_enorm, hq_pos]
+  · simp [eLpNorm'_eq_lintegral_eNorm, hq_pos]
   refine le_antisymm (eLpNorm'_const_smul_le hq_pos) <| ENNReal.mul_le_of_le_div' ?_
-  simpa [enorm_inv, hc, ENNReal.div_eq_inv_mul]
+  simpa [eNorm_inv, hc, ENNReal.div_eq_inv_mul]
     using eLpNorm'_const_smul_le (c := c⁻¹) (f := c • f) hq_pos
 
 theorem eLpNormEssSup_const_smul (c : 𝕜) (f : α → F) :
     eLpNormEssSup (c • f) μ = ‖c‖ₑ * eLpNormEssSup f μ := by
-  simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, enorm_smul,
+  simp_rw [eLpNormEssSup_eq_essSup_eNorm, Pi.smul_apply, eNorm_smul,
     ENNReal.essSup_const_mul]
 
 theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Measure α) :
@@ -135,7 +135,7 @@ theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Meas
   obtain rfl | hc := eq_or_ne c 0
   · simp
   refine le_antisymm eLpNorm_const_smul_le <| ENNReal.mul_le_of_le_div' ?_
-  simpa [enorm_inv, hc, ENNReal.div_eq_inv_mul]
+  simpa [eNorm_inv, hc, ENNReal.div_eq_inv_mul]
     using eLpNorm_const_smul_le (c := c⁻¹) (f := c • f)
 
 lemma eLpNorm_nsmul [NormedSpace ℝ F] (n : ℕ) (f : α → F) :
@@ -160,7 +160,7 @@ theorem eLpNorm_const_mul_ennreal {f : α → ℝ≥0∞} {c : ℝ≥0∞} (hf :
   rcases eq_or_ne p 0 with rfl | hp
   · simp [hf, hcf]
   rcases eq_or_ne p ∞ with rfl | hp'
-  · simp only [eLpNorm_exponent_top, hf, hcf, eLpNormEssSup, enorm_eq_self, c.essSup_const_mul]
+  · simp only [eLpNorm_exponent_top, hf, hcf, eLpNormEssSup, eNorm_eq_self, c.essSup_const_mul]
   simp only [eLpNorm_eq_eLpNorm' hp hp', hf, (hf.aemeasurable.const_mul c).aestronglyMeasurable]
   exact eLpNorm'_const_mul_ennreal (ENNReal.toReal_pos hp hp') hf
 
@@ -200,11 +200,11 @@ variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [MulActionWith
 lemma eLpNorm_const_smul_nnreal {f : α → ε} {c : ℝ≥0} :
     eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · simpa [enorm_smul, ← eLpNorm_enorm _ (hf.const_smul _), ← eLpNorm_enorm _ hf]
-      using eLpNorm_const_mul_ennreal hf.enorm.aestronglyMeasurable
+  · simpa [eNorm_smul, ← eLpNorm_eNorm _ (hf.const_smul _), ← eLpNorm_eNorm _ hf]
+      using eLpNorm_const_mul_ennreal hf.eNorm.aestronglyMeasurable
   rcases eq_or_ne c 0 with rfl | hc
   · simp
-  simp only [NNReal.enorm_eq_coe, hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable,
+  simp only [NNReal.eNorm_eq_coe, hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable,
     ne_eq, ENNReal.coe_eq_zero, hc, ENNReal.mul_top]
   apply eLpNorm_of_not_aestronglyMeasurable
   rwa [aestronglyMeasurable_const_smul_iff₀ hc (f := f)]

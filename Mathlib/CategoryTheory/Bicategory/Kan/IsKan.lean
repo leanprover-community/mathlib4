@@ -38,7 +38,6 @@ in the namespace `StructuredArrow.IsUniversal`.
 
 ## References
 https://ncatlab.org/nlab/show/Kan+extension
-
 -/
 
 @[expose] public section

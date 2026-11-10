@@ -1280,7 +1280,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr
     rw [eLpNorm_exponent_top hf']
-    refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
+    refine eLpNormEssSup_le_of_ae_nnNorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
     simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using!
       one_add_le_sup_seminorm_apply (m := (k, 0)) (le_refl k) (le_refl 0) f x
@@ -1293,7 +1293,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
 theorem eLpNorm_lt_top (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] [SecondCountableTopologyEither E F] : eLpNorm f p μ < ⊤ := by
   rcases eLpNorm_le_seminorm ℝ F p μ with ⟨k, C, hC⟩
-  exact lt_of_le_of_lt (hC f) (ENNReal.mul_lt_top ENNReal.coe_lt_top ENNReal.ofReal_lt_top)
+  exact lt_of_le_of_lt (hC f) (by finiteness)
 
 variable [SecondCountableTopologyEither E F]
 

@@ -23,7 +23,6 @@ Formal (univariate) power series over a local ring form a local ring.
 Formal (univariate) power series over a field form a discrete valuation ring, and a normalization
 monoid. The definition `residueFieldOfPowerSeries` provides the isomorphism between the residue
 field of `k⟦X⟧` and `k`, when `k` is a field.
-
 -/
 
 @[expose] public section

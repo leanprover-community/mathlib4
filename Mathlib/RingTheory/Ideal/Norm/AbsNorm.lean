@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 import Mathlib.RingTheory.Norm.Basic
 
 /-!
-
 # Ideal norms
 
 This file defines the absolute ideal norm `Ideal.absNorm (I : Ideal R) : ℕ` as the cardinality of

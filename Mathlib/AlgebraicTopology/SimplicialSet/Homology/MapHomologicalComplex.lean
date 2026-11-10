@@ -18,7 +18,6 @@ chain complex of `R₁`-modules of `X` with coefficients in `M₁`. In this file
 we obtain a formulation of this result where the extension of scalars
 functor `ModuleCat R₁ ⥤ ModuleCat R₂` is replaced by an arbitrary functor
 `F : C ⥤ D` which commutes with coproducts.
-
 -/
 
 @[expose] public section

@@ -25,7 +25,6 @@ see the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgumen
 
 ## References
 * https://ncatlab.org/nlab/show/small+object+argument
-
 -/
 
 @[expose] public section

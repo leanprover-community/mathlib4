@@ -289,7 +289,7 @@ theorem continuousWithinAt_variationOnFromTo_inter_Ici_iff (hg : BoundedVariatio
   simp only [ContinuousWithinAt, tendsto_iff_edist_tendsto_0] at h ⊢
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h (by simp)
   filter_upwards [self_mem_nhdsWithin] with y hy
-  grw [edist_eq_enorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
+  grw [eDist_eq_eNorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
     variationOnFromTo.eq_of_le _ _ hy.2,
     eVariationOn.edist_le (s := s ∩ Icc x y) _ (by grind) (by grind)]
   have : eVariationOn g (s ∩ Icc x y) ≠ ∞ := hg.mono inter_subset_left
@@ -331,8 +331,8 @@ theorem continuousWithinAt_variationOnFromTo_inter_Iic_iff (hg : BoundedVariatio
   simp only [ContinuousWithinAt, tendsto_iff_edist_tendsto_0] at h ⊢
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h (by simp)
   filter_upwards [self_mem_nhdsWithin] with y hy
-  grw [edist_eq_enorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
-    variationOnFromTo.eq_of_ge _ _ hy.2, enorm_neg,
+  grw [eDist_eq_eNorm_sub, variationOnFromTo.sub_right hg.locallyBoundedVariationOn as hy.1 xs,
+    variationOnFromTo.eq_of_ge _ _ hy.2, eNorm_neg,
     eVariationOn.edist_le (s := s ∩ Icc y x) _ (by grind) (by grind)]
   have : eVariationOn g (s ∩ Icc y x) ≠ ∞ := hg.mono inter_subset_left
   simp [this]

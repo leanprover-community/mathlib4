@@ -11,7 +11,6 @@ public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-!
-
 # Formal (multivariate) power series - Truncation
 
 * `MvPowerSeries.truncFinset s p` restricts the support of a multivariate power series `p`
@@ -50,7 +49,6 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
 
 * `MvPowerSeries.truncTotal` : the truncation of a multivariate formal power series at
   a total degree `n` when the index `σ` is finite
-
 -/
 
 @[expose] public section

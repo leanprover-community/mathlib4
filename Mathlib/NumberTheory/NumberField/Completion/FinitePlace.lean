@@ -442,7 +442,7 @@ instance : Module.Finite Kv Lw :=
     rintro _ ⟨l, rfl⟩
     exact ⟨1 ⊗ₜ l, by simp [Φ, Algebra.algHom]⟩
   .of_surjective Φ (by
-    rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
+    rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.isClosed_of_finiteDimensional.closure_eq]
     exact h_dense.closure_range)
 
 end HeightOneSpectrum

@@ -27,7 +27,6 @@ elementary properties, like locally convex spaces.
 
 * `LinearMap.extendRCLike`
 * `ContinuousLinearMap.extendRCLike`
-
 -/
 
 @[expose] public section

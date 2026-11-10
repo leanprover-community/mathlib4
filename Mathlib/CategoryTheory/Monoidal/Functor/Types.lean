@@ -12,7 +12,6 @@ public import Mathlib.Control.Basic
 # Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`
 
 This allows us to use Lean's `Type`-based applicative functors in category theory.
-
 -/
 
 public section

@@ -24,7 +24,6 @@ This file defines lemmas and theorems about the power series for large and small
 ## TODO
 
 * Prove the small Schröder numbers power series.
-
 -/
 
 @[expose] public section

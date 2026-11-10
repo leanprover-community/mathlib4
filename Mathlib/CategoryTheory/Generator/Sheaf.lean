@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Sites.Limits
 
 In this file, we show that if `J : GrothendieckTopology C` and `A` is a preadditive
 category which has a separator (and suitable coproducts), then `Sheaf J A` has a separator.
-
 -/
 
 @[expose] public section

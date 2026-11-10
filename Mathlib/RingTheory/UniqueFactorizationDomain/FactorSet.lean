@@ -17,7 +17,6 @@ public import Mathlib.Tactic.Ring
 
 ## TODO
 * set up the complete lattice structure on `FactorSet`.
-
 -/
 
 @[expose] public section
