@@ -27,7 +27,6 @@ The conditional expectation of an `L²` function is defined in
 ## Main definitions
 
 * `condExpL1`: Conditional expectation of a function as a linear map from `L1` to itself.
-
 -/
 
 @[expose] public section
@@ -104,7 +103,7 @@ theorem condExpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : �
   grw [Lp.coeFn_smul, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndL1Fin_ae_eq_condExpIndSMul,
     condExpIndSMul_smul, Lp.coeFn_smul]
 
-theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs : MeasurableSet s)
+theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
     condExpIndL1Fin hm hs hμs (c • x) = c • condExpIndL1Fin hm hs hμs x := by
   ext1
@@ -116,7 +115,7 @@ theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
   rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), measureReal_def,
     ← ENNReal.toReal_mul,
     ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
-    ofReal_integral_norm_eq_lintegral_enorm]
+    ofReal_integral_norm_eq_lintegral_eNorm]
   swap; · rw [← memLp_one_iff_integrable]; exact Lp.memLp _
   have h_eq :
     ∫⁻ a, ‖condExpIndL1Fin hm hs hμs x a‖ₑ ∂μ = ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖ₑ ∂μ := by
@@ -124,7 +123,7 @@ theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
     filter_upwards [condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x] with z hz
     rw [hz]
   rw [h_eq, ofReal_norm]
-  exact lintegral_nnnorm_condExpIndSMul_le hm hs hμs x
+  exact lintegral_nnNorm_condExpIndSMul_le hm hs hμs x
 
 theorem condExpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (hst : Disjoint s t) (x : G) :
@@ -186,7 +185,7 @@ theorem condExpIndL1_smul (c : ℝ) (x : G) :
   · simp_rw [condExpIndL1_of_measurableSet_of_measure_ne_top hs hμs]
     exact condExpIndL1Fin_smul hs hμs c x
 
-theorem condExpIndL1_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
+theorem condExpIndL1_smul' [NormedSpace ℝ F] (c : 𝕜) (x : F) :
     condExpIndL1 hm μ s (c • x) = c • condExpIndL1 hm μ s x := by
   by_cases hs : MeasurableSet s
   swap; · simp_rw [condExpIndL1_of_not_measurableSet hs]; rw [smul_zero]
@@ -252,7 +251,7 @@ theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[�
   grw [condExpInd_ae_eq_condExpIndSMul hm MeasurableSet.empty (by simp), condExpIndSMul_empty,
     zero_apply, Lp.coeFn_zero, Lp.coeFn_zero]
 
-theorem condExpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
+theorem condExpInd_smul' [NormedSpace ℝ F] (c : 𝕜) (x : F) :
     condExpInd F hm μ s (c • x) = c • condExpInd F hm μ s x :=
   condExpIndL1_smul' c x
 

@@ -11,7 +11,6 @@ public import Mathlib.RepresentationTheory.Basic
 # Subrepresentations
 
 This file defines subrepresentations of a monoid representation.
-
 -/
 
 @[expose] public section

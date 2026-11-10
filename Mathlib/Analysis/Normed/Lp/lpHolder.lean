@@ -22,7 +22,6 @@ Although it would be possible to bundle the uniformly bounded family of bilinear
 `B : lp (fun i ↦ E i →L[𝕜] F i →L[𝕜] G i) ∞`, this has some downsides. For example, we would
 then have to bundle `fun i ↦ (B i).flip` into a term of this type in order to use it, so we opt to
 leave `B` unbundled.
-
 -/
 
 @[expose] public section

@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
-
 # Adhesive categories
 
 ## Main definitions
@@ -37,7 +36,6 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 ## References
 - https://ncatlab.org/nlab/show/adhesive+category
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
-
 -/
 
 @[expose] public section

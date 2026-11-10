@@ -19,7 +19,6 @@ applied to the morphism from `U` to the terminal object.
 This isomorphism is used in order to show that, as an augmented object (over `T`),
 the Cech object `U.cech` has an extra degeneracy when there is a
 morphism `T ⟶ U.obj i₀` for some `i₀`.
-
 -/
 
 @[expose] public section

@@ -17,7 +17,6 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 ## Main statements
 
 * `gcd_eq_gcd_ab`: states Bézout's lemma for Euclidean domains.
-
 -/
 
 public section

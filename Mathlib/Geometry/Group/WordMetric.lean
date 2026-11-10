@@ -44,7 +44,6 @@ family given by `Group.Generators`. The word length defines a norm on `G` induci
 ## Tags
 
 word metric, word length, geometric group theory
-
 -/
 
 @[expose] public section

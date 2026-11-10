@@ -16,7 +16,6 @@ This file contains basic results on `Algebra.adjoin`, specifically on adjoining 
 ## Tags
 
 adjoin, algebra, ringhom
-
 -/
 
 @[expose] public section

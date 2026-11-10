@@ -22,7 +22,6 @@ This file was obtained by dualizing the definitions in
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
-
 -/
 
 @[expose] public section

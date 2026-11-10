@@ -26,7 +26,6 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 * `Matrix.isUnit_fromBlocks_zero₂₁`, `Matrix.isUnit_fromBlocks_zero₁₂`: invertibility of a
   block triangular matrix.
 * `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
-
 -/
 
 @[expose] public section
