@@ -144,8 +144,7 @@ def findLucasWitness (factorizer : Factorizer) (p : ℕ) : CoreM (ℕ × List (�
   for root in 2...1024 do
     if let some factorization := LucasWitness.factorization? { root, primeFactors } p then
       return (root, factorization)
-  throwError "primality failed to find a witness for {p}; provide the certificate at \
-    `.witnesses […]`"
+  throwError "primality failed to find a witness for {p}"
 
 -- TODO: add more witness types (Pocklington variants).
 /-- The witness of a primality certificate for one prime, tagged by the certificate type. -/

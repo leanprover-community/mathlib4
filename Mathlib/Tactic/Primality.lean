@@ -20,6 +20,16 @@ open Lean Meta Elab Tactic Qq Mathlib.Meta.NormNum
 
 namespace Mathlib.Tactic.Primality
 
+/-- Proves `Nat.Prime p` by constructing a certificate with `build` and turning it into a proof
+with `certifyPrime`. By default `build` searches for the witnesses, so the caller supplies no hints.
+A caller with witnesses passes `Cert.ofWitnesses …` as `build`, and one with candidate prime factors
+passes `Cert.search { factors := … }`. A caller with a complete certificate calls `certifyPrime`
+directly. `build` may use the primes proved in the state. The proofs constructed on the way are
+added to the state, so calls that thread it share them. -/
+def provePrime (p : ℕ) (build : Std.HashSet ℕ → ℕ → CoreM Cert := Cert.search {}) :
+    StateT (Std.HashMap ℕ Expr) MetaM Q(Nat.Prime $p) := do
+  certifyPrime p (← build (.ofArray (← get).keysArray) p)
+
 /-- Configuration for `primality`. -/
 structure Config where
   /-- The certificate configuration to use. -/
@@ -77,7 +87,9 @@ elab_rules : tactic
   | `(tactic| primality $cfg:optConfig $[[$hs,*]]?) => withMainContext do
     let build : Std.HashSet ℕ → ℕ → CoreM Cert :=
       match (← elabPrimalityConfig cfg).cert with
-      | .search searchCfg => Cert.search searchCfg
+      | .search searchCfg => fun known p ↦ do
+        try Cert.search searchCfg known p
+        catch e => throwError "{e.toMessageData}; provide the certificate at `.witnesses […]`"
       | .witnesses witnesses => Cert.ofWitnesses <| witnesses.map fun (.lucas w) ↦
         Witness.lucas { w with primeFactors := w.primeFactors.eraseDups }
     let known ← elabKnownPrimes <| hs.map (·.getElems) |>.getD #[]
@@ -87,8 +99,7 @@ elab_rules : tactic
       have e : Q(ℕ) := e
       let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
         throwError "{e} does not evaluate to a numeral; try simplifying it first"
-      let cert ← build (.ofArray known.keysArray) p
-      let hp : Q(Nat.Prime $pQ) ← StateT.run' (certifyPrime p cert) known
+      let hp : Q(Nat.Prime $pQ) ← StateT.run' (provePrime p build) known
       g.assign q(isNat.natElim (p := Nat.Prime) $pn $hp)
 
 end Mathlib.Tactic.Primality

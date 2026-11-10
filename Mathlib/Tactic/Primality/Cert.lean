@@ -31,7 +31,8 @@ inductive Cert : Type where
   `factorization`, each prime factor with its exponent and certificate. -/
   | lucas (root : ℕ) (factorization : List (ℕ × ℕ × Cert))
 
-/-- Proves `Nat.Prime p` from the certificate `cert`. Each prime is proved only once. -/
+/-- Proves `Nat.Prime p` from the certificate `cert`. Each intermediate prime is proved only
+once. -/
 partial def certifyPrime (p : ℕ) (cert : Cert) :
     StateT (Std.HashMap ℕ Expr) MetaM Q(Nat.Prime $p) := do
   if let some pf := (← get)[p]? then
