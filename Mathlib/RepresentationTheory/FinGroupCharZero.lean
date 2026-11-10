@@ -89,33 +89,30 @@ then an object of `FDRep k G` is simple if and only if its space of endomorphism
 a `k`-vector space of dimension `1`.
 -/
 lemma simple_iff_end_is_rank_one [NeZero (Nat.card G : k)] (V : FDRep k G) :
-    Simple V ↔ Module.finrank k (V ⟶ V) = 1 where
-  mp h :=
-    have : Finite G := Nat.finite_of_card_ne_zero fun h ↦ NeZero.ne (Nat.card G : k) (by simp [h])
-    finrank_endomorphism_simple_eq_one k V
-  mpr h := by
-    have : Finite G := Nat.finite_of_card_ne_zero fun h ↦ NeZero.ne (Nat.card G : k) (by simp [h])
-    refine { mono_isIso_iff_nonzero {W} f _ := ⟨fun hf habs ↦ ?_, fun hf ↦ ?_⟩ }
-    · rw [habs, isIsoZero_iff_source_target_isZero] at hf
-      obtain ⟨g, hg⟩ : ∃ g : V ⟶ V, g ≠ 0 :=
-        (Module.finrank_pos_iff_exists_ne_zero (R := k)).mp (by grind)
-      exact hg (hf.2.eq_zero_of_src g)
-    · suffices Epi f by exact isIso_of_mono_of_epi f
-      suffices Epi (Abelian.image.ι f) by
-        rw [← Abelian.image.fac f]
-        exact epi_comp _ _
-      rw [← Abelian.image.fac f] at hf
-      set ι := Abelian.image.ι f
-      set φ := Injective.factorThru (𝟙 _) ι
-      have hφι : φ ≫ ι ≠ 0 := by
-        intro habs
-        have hιφ : 𝟙 _ = ι ≫ φ := (Injective.comp_factorThru (𝟙 _) ι).symm
-        apply_fun (· ≫ ι) at hιφ
-        simp_all
-      obtain ⟨c, hc⟩ : ∃ c : k, c • _ = 𝟙 V := (finrank_eq_one_iff_of_ne_zero' _ hφι).mp h (𝟙 V)
-      refine Preadditive.epi_of_cancel_zero _ (fun g hg ↦ ?_)
-      apply_fun (· ≫ g) at hc
-      simpa [hg] using hc.symm
+    Simple V ↔ Module.finrank k (V ⟶ V) = 1 := by
+  have : Finite G := Nat.finite_of_card_ne_zero fun h ↦ NeZero.ne (Nat.card G : k) (by simp [h])
+  refine ⟨fun _ ↦ finrank_endomorphism_simple_eq_one k V, fun h ↦ ?_⟩
+  refine { mono_isIso_iff_nonzero {W} f _ := ⟨fun hf habs ↦ ?_, fun hf ↦ ?_⟩ }
+  · rw [habs, isIsoZero_iff_source_target_isZero] at hf
+    obtain ⟨g, hg⟩ : ∃ g : V ⟶ V, g ≠ 0 :=
+      (Module.finrank_pos_iff_exists_ne_zero (R := k)).mp (by grind)
+    exact hg (hf.2.eq_zero_of_src g)
+  · suffices Epi f by exact isIso_of_mono_of_epi f
+    suffices Epi (Abelian.image.ι f) by
+      rw [← Abelian.image.fac f]
+      exact epi_comp _ _
+    rw [← Abelian.image.fac f] at hf
+    set ι := Abelian.image.ι f
+    set φ := Injective.factorThru (𝟙 _) ι
+    have hφι : φ ≫ ι ≠ 0 := by
+      intro habs
+      have hιφ : 𝟙 _ = ι ≫ φ := (Injective.comp_factorThru (𝟙 _) ι).symm
+      apply_fun (· ≫ ι) at hιφ
+      simp_all
+    obtain ⟨c, hc⟩ : ∃ c : k, c • _ = 𝟙 V := (finrank_eq_one_iff_of_ne_zero' _ hφι).mp h (𝟙 V)
+    refine Preadditive.epi_of_cancel_zero _ (fun g hg ↦ ?_)
+    apply_fun (· ≫ g) at hc
+    simpa [hg] using hc.symm
 
 omit [Finite G] in
 /--
