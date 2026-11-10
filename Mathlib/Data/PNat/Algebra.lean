@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Positive.Ring
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.PNat.Notation
+
 import Mathlib.Tactic.Basify.Attr
 
 /-!

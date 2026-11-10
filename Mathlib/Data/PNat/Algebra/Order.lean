@@ -5,9 +5,10 @@ Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 module
 
-import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.PNat.Algebra
 public import Mathlib.Data.PNat.Order
+
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Tactic.Basify.Attr
 
 /-!

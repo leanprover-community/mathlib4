@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.Nat.Fib.Basic
+
+import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
 # Zeckendorf's Theorem
