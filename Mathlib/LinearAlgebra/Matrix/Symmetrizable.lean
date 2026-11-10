@@ -107,7 +107,7 @@ end IsSymmetrizable
 
 /-- A matrix is positively symmetrizable if it is symmetric when multiplied by a diagonal matrix of
 positive diagonal entries. -/
-def IsPosSymmetrizable [Semiring R] [IsDomain R] [LT R]
+def IsPosSymmetrizable [Semiring R] [LT R]
     (M : Matrix ι ι R) : Prop :=
   ∃ d : ι → R, (∀ i, 0 < d i) ∧ ∀ i j, d i * M i j = d j * M j i
 
@@ -124,7 +124,7 @@ lemma IsSymm.IsPosSymmetrizable [Semiring R] [IsDomain R] [PartialOrder R] [Zero
   use 1
   simp [h.apply]
 
-lemma isPosSymmetrizable_iff [DecidableEq ι] [Fintype ι] [Semiring R] [IsDomain R] [LT R] :
+lemma isPosSymmetrizable_iff [DecidableEq ι] [Fintype ι] [Semiring R] [LT R] :
     M.IsPosSymmetrizable ↔ ∃ d : ι → R, (∀ i, 0 < d i) ∧ ((diagonal d) * M).IsSymm := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨d, hd, h⟩ := h
@@ -159,8 +159,8 @@ lemma transpose_isPosSymmetrizable_iff [Finite ι] [CommSemiring R] [IsDomain R]
     M.IsPosSymmetrizable ↔ Mᵀ.IsPosSymmetrizable :=
   ⟨transpose_transpose M ▸ .transpose, .transpose⟩
 
-lemma IsPosSymmetrizable.submatrix [Semiring R] [IsDomain R] [Preorder R] (f : κ → ι)
-    (h : M.IsPosSymmetrizable) :(M.submatrix f f).IsPosSymmetrizable := by
+lemma IsPosSymmetrizable.submatrix [Semiring R] [Preorder R] (f : κ → ι)
+    (h : M.IsPosSymmetrizable) : (M.submatrix f f).IsPosSymmetrizable := by
   obtain ⟨d, hd, h⟩ := h
   use d ∘ f
   simp [hd, h]
@@ -176,8 +176,7 @@ lemma IsPosSymmetrizable.eq_zero_iff [Semiring R] [IsDomain R] [Preorder R]
     rw [hij, mul_zero, zero_eq_mul] at h
     exact h.resolve_left (hd i).ne.symm
 
-lemma isPosSymmetrizable_iff_of_offDiag_eq [Semiring R] [IsDomain R] [LT R]
-    (h : ∀ i j, i ≠ j → M i j = N i j) :
+lemma isPosSymmetrizable_iff_of_offDiag_eq [Semiring R] [LT R] (h : ∀ i j, i ≠ j → M i j = N i j) :
     M.IsPosSymmetrizable ↔ N.IsPosSymmetrizable := by
   refine ⟨fun hM ↦ ?_, fun hM ↦ ?_⟩
   · obtain ⟨d, hd, hM⟩ := hM
@@ -193,19 +192,18 @@ lemma isPosSymmetrizable_iff_of_offDiag_eq [Semiring R] [IsDomain R] [LT R]
     · rw [hij]
     · rw [h i j hij, hM, h j i hij.symm]
 
-lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [IsDomain R] [LT R]
-    (d : ι → R) : (M + diagonal d).IsPosSymmetrizable ↔ M.IsPosSymmetrizable := by
+lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [LT R] (d : ι → R) :
+    (M + diagonal d).IsPosSymmetrizable ↔ M.IsPosSymmetrizable := by
   rw [isPosSymmetrizable_iff_of_offDiag_eq]
   intro _ _ h
   simp [h]
 
 /-- Extends positive symmetry from the complement of an index `v` to the full matrix,
 given a positive symmetry condition on the entries with `v`. -/
-lemma IsPosSymmetrizable.extend_index [Semiring R] [IsDomain R] [PartialOrder R] [ZeroLEOneClass R]
-    [PosMulStrictMono R] {v : ι} (e : {i : ι // i ≠ v} → R) (he : ∀ i, 0 < e i) (a b : R)
-    (ha : 0 < a) (hb : 0 < b) (hE : ∀ i j, e i * M i.1 j.1 = e j * M j.1 i.1)
-    (h : ∀ j (h : j ≠ v), b * M v j = a * e ⟨j, h⟩ * M j v) :
-    M.IsPosSymmetrizable := by
+lemma IsPosSymmetrizable.extend_index {v : ι} [Semiring R] [PartialOrder R] [PosMulStrictMono R]
+    (e : {i : ι // i ≠ v} → R) (he : ∀ i, 0 < e i) (a b : R) (ha : 0 < a) (hb : 0 < b)
+    (hE : ∀ i j, e i * M i.1 j.1 = e j * M j.1 i.1) (h : ∀ j (h : j ≠ v),
+    b * M v j = a * e ⟨j, h⟩ * M j v) : M.IsPosSymmetrizable := by
   classical
   use fun i ↦ if hi : i = v then b else a * e ⟨i, hi⟩
   refine ⟨fun i ↦ ?_, fun i j ↦ ?_⟩
