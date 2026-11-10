@@ -106,10 +106,10 @@ lemma isCardinalPresentable_of_fullSubcategory
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
     [P.IsClosedUnderCardinalFilteredColimits κ]
     (hX : IsCardinalPresentable X.obj κ := by infer_instance) :
-    IsCardinalPresentable X κ := by
+    IsCardinalPresentable X κ :=
   let e : coyoneda.obj (op X) ≅ P.ι ⋙ coyoneda.obj (op X.obj) :=
     NatIso.ofComponents (fun _ ↦ P.fullyFaithfulι.homEquiv.toIso)
-  exact Functor.isCardinalAccessible_of_natIso e.symm _
+  Functor.isCardinalAccessible_of_natIso e.symm _
 
 /-- If `P : ObjectProperty C`, we say that `P` is an accessibly embedded
 full subcategory when `P` is closed under `κ`-filtered colimits

@@ -243,25 +243,25 @@ lemma isCardinalPresentable_iff_of_isEquivalence
 
 instance (X : C) [LocallySmall.{w} C] [IsCardinalPresentable X κ] :
     (shrinkCoyoneda.{w}.obj (op X)).IsCardinalAccessible κ where
-  preservesColimitOfShape J _ _ := by
+  preservesColimitOfShape J _ _ :=
     have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
     have := preservesColimitsOfShape_of_natIso (J := J)
       (shrinkCoyonedaObjCompUliftFunctorIso (op X)).symm
-    exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor
+    preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor
 
 instance (X : C) [LocallySmall.{w} C] :
-    PreservesColimitsOfSize.{w, w} (coyoneda.obj (op (shrinkYoneda.{w}.obj X))) := by
+    PreservesColimitsOfSize.{w, w} (coyoneda.obj (op (shrinkYoneda.{w}.obj X))) :=
   have e : coyoneda.obj (op (shrinkYoneda.{w}.obj X)) ≅
       (evaluation ..).obj (op X) ⋙ uliftFunctor.{u₁} :=
     NatIso.ofComponents (fun P ↦ (shrinkYonedaEquiv.trans Equiv.ulift.symm).toIso)
-  exact preservesColimits_of_natIso e.symm
+  preservesColimits_of_natIso e.symm
 
 instance (X : Cᵒᵖ) [LocallySmall.{w} C] :
-    PreservesColimitsOfSize.{w, w} (coyoneda.obj (op (shrinkCoyoneda.{w}.obj X))) := by
+    PreservesColimitsOfSize.{w, w} (coyoneda.obj (op (shrinkCoyoneda.{w}.obj X))) :=
   have e : coyoneda.obj (op (shrinkCoyoneda.{w}.obj X)) ≅
       (evaluation ..).obj X.unop ⋙ uliftFunctor.{u₁} :=
     NatIso.ofComponents (fun _ ↦ (shrinkCoyonedaEquiv.trans Equiv.ulift.symm).toIso)
-  exact preservesColimits_of_natIso e.symm
+  preservesColimits_of_natIso e.symm
 
 example (X : C) [LocallySmall.{w} C] :
     IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ := inferInstance
