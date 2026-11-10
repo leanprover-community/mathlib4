@@ -37,9 +37,9 @@ open scoped TensorProduct MonoidalCategory
 noncomputable instance instMonoidalCategoryStruct :
     MonoidalCategoryStruct.{u} (CoalgCat R) where
   tensorObj X Y := of R (X ⊗[R] Y)
-  whiskerLeft X _ _ f := ofHom (f.1.lTensor X)
-  whiskerRight f X := ofHom (f.1.rTensor X)
-  tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.1 g.1)
+  whiskerLeft X _ _ f := ofHom (f.toCoalgHom'.lTensor X)
+  whiskerRight f X := ofHom (f.toCoalgHom'.rTensor X)
+  tensorHom f g := ofHom (Coalgebra.TensorProduct.map f.toCoalgHom' g.toCoalgHom')
   tensorUnit := ↧R
   associator X Y Z := (Coalgebra.TensorProduct.assoc R R X Y Z).toCoalgIso
   leftUnitor X := (Coalgebra.TensorProduct.lid R X).toCoalgIso

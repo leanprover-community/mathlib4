@@ -32,6 +32,7 @@ protected theorem isScalarTower [SMul M M'] [IsScalarTower M M' β] : IsScalarTo
   smul_assoc _ _ _ := by apply DFunLike.ext; simp
 
 include i in
+@[to_additive]
 protected theorem smulCommClass [SMulCommClass M M' β] : SMulCommClass M M' F where
   smul_comm _ _ _ := by apply DFunLike.ext; simp [smul_comm]
 
