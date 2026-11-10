@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # A module over a division ring is Noetherian if and only if it is finite.
-
 -/
 
 @[expose] public section

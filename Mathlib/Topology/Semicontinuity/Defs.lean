@@ -56,7 +56,6 @@ We also define variants of these two notions for `On`/`At`/`WithinAt`.
 
 * <https://en.wikipedia.org/wiki/Semi-continuity>
 * <https://en.wikipedia.org/wiki/Hemicontinuity>
-
 -/
 
 @[expose] public section

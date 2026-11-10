@@ -25,7 +25,6 @@ This file provides results about maps between tensor products of `R`-algebras.
 ## References
 
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
-
 -/
 
 @[expose] public section
@@ -741,9 +740,9 @@ end
 
 section
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
-variable [Algebra R A] [Algebra R B] [Algebra R S]
-variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
+variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S] [CommSemiring T]
+variable [Algebra R A] [Algebra R B] [Algebra R S] [Algebra R T]
+variable (f : A →ₐ[R] S) (g : B →ₐ[R] S) (h : S →ₐ[R] T)
 variable (R)
 
 /-- `LinearMap.mul'` as an `AlgHom` over the algebra. -/
@@ -829,6 +828,10 @@ theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
     ← AlgHom.comp_assoc, ← AlgHom.comp_assoc, lmul'_comp_includeLeft, lmul'_comp_includeRight,
     AlgHom.id_comp, AlgHom.id_comp]
 
+@[simp]
+theorem comp_productMap : h.comp (productMap f g) = productMap (h.comp f) (h.comp g) :=
+  Algebra.TensorProduct.ext' (by simp)
+
 end
 
 end TensorProduct
@@ -864,10 +867,7 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
     (fun a b f g ↦ by
       apply LinearMap.ext
       intro x
-      simp only [tensorProduct, mul_comm a b, Module.End.mul_eq_comp,
-        TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul, coe_restrictScalars,
-        coe_mk, AddHom.coe_mk, mul_smul, smul_apply, baseChangeHom_apply, baseChange_comp,
-        comp_apply, Algebra.mul_smul_comm, Algebra.smul_mul_assoc])
+      simp [tensorProduct, mul_comm a b, End.mul_eq_comp, mul_smul, baseChange_comp])
     (by
       apply LinearMap.ext
       intro x

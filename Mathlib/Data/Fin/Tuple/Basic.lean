@@ -77,7 +77,6 @@ For a **pivot** `p : Fin (n + 1)`,
   hypothesis that `h : ∃ i, p i`.
 * `Fin.append a b` : append two tuples.
 * `Fin.repeat n a` : repeat a tuple `n` times.
-
 -/
 
 @[expose] public section

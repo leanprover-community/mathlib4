@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.Basic
 Given a category `C` and `P : ObjectProperty C`, we define
 a category structure on the type `P.FullSubcategory`
 of objects in `C` satisfying `P`.
-
 -/
 
 @[expose] public section

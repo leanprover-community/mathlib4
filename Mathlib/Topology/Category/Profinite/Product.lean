@@ -26,7 +26,6 @@ Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
   isomorphism
 - `Profinite.asLimitindexConeIso` is the induced isomorphism of cones.
 - `Profinite.indexCone_isLimit` says that `indexCone` is a limit cone.
-
 -/
 
 @[expose] public section

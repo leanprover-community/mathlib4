@@ -236,6 +236,31 @@ def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
 def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
   flippingEquiv.trans curryingEquiv
 
+/-- If `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` are functors, and `F : D₁ ⥤ D₂ ⥤ E`
+and `G : C₁ ⥤ C₂ ⥤ E` are bifunctors, this is the bijection between
+the natural transformations `(((whiskeringLeft₂ E).obj L₁).obj L₂).obj F ⟶ G` of
+bifunctors, and the natural transformations of functors
+`L₁.prod L₂ ⋙ uncurry.obj F ⟶ uncurry.obj G`. -/
+@[implicit_reducible, simps!]
+def whiskeringLeft₂HomEquiv {C₁ C₂ D₁ D₂ : Type*} [Category* C₁] [Category* C₂]
+    [Category* D₁] [Category* D₂] {F : D₁ ⥤ D₂ ⥤ E} {G : C₁ ⥤ C₂ ⥤ E}
+    {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} :
+    ((((whiskeringLeft₂ E).obj L₁).obj L₂).obj F ⟶ G) ≃
+      (L₁.prod L₂ ⋙ uncurry.obj F ⟶ uncurry.obj G) where
+  toFun α :=
+    { app := fun ⟨X₁, X₂⟩ ↦ (α.app X₁).app X₂
+      naturality X Y f := by
+        simp [dsimp% (α.app Y.1).naturality f.2,
+          reassoc_of% dsimp% congr($(α.naturality f.1).app X.2)] }
+  invFun β :=
+    { app X₁ :=
+        { app X₂ := β.app (X₁, X₂)
+          naturality {X₂ Y₂} f₂ := by
+            simpa using β.naturality ((𝟙 X₁, f₂) : (X₁, X₂) ⟶ (X₁, Y₂)) }
+      naturality {X₁ Y₁} f₁ := by
+        ext X₂
+        simpa using β.naturality ((f₁, 𝟙 X₂) : (X₁, X₂) ⟶ (Y₁, X₂)) }
+
 end Functor
 
 end CategoryTheory

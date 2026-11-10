@@ -20,7 +20,6 @@ a `C`-category structure coming from another source (e.g. the type of simplicial
 see `Mathlib/AlgebraicTopology/SimplicialCategory/SimplicialObject.lean`).
 
 All structure field values are defined in `Mathlib/CategoryTheory/Closed/Monoidal.lean`.
-
 -/
 
 public section

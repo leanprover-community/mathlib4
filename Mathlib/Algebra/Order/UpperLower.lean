@@ -106,15 +106,15 @@ instance : One (UpperSet α) :=
 
 @[to_additive]
 instance : Mul (UpperSet α) :=
-  ⟨fun s t ↦ ⟨image2 (· * ·) s t, s.2.mul_right⟩⟩
+  ⟨fun s t ↦ ⟨image2 (· * ·) s t, s.upper'.mul_right⟩⟩
 
 @[to_additive]
 instance : Div (UpperSet α) :=
-  ⟨fun s t ↦ ⟨image2 (· / ·) s t, s.2.div_right⟩⟩
+  ⟨fun s t ↦ ⟨image2 (· / ·) s t, s.upper'.div_right⟩⟩
 
 @[to_additive]
 instance : SMul α (UpperSet α) :=
-  ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
+  ⟨fun a s ↦ ⟨(a • ·) '' s, s.upper'.smul⟩⟩
 
 omit [IsOrderedMonoid α] in
 @[to_additive (attr := simp, norm_cast)]
@@ -167,15 +167,15 @@ instance : One (LowerSet α) :=
 
 @[to_additive]
 instance : Mul (LowerSet α) :=
-  ⟨fun s t ↦ ⟨image2 (· * ·) s t, s.2.mul_right⟩⟩
+  ⟨fun s t ↦ ⟨image2 (· * ·) s t, s.lower'.mul_right⟩⟩
 
 @[to_additive]
 instance : Div (LowerSet α) :=
-  ⟨fun s t ↦ ⟨image2 (· / ·) s t, s.2.div_right⟩⟩
+  ⟨fun s t ↦ ⟨image2 (· / ·) s t, s.lower'.div_right⟩⟩
 
 @[to_additive]
 instance : SMul α (LowerSet α) :=
-  ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
+  ⟨fun a s ↦ ⟨(a • ·) '' s, s.lower'.smul⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=

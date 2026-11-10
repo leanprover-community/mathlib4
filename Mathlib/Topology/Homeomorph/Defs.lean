@@ -30,7 +30,6 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
   is a homeomorphism.
 
 * `IsHomeomorph`: the predicate that a function is a homeomorphism
-
 -/
 
 @[expose] public section

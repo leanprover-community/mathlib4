@@ -21,7 +21,6 @@ the `SSet` if a category of functors to the category
 of types and that the category of types have chosen
 finite products. As a result, we obtain a monoidal
 category structure on `SSet`.
-
 -/
 
 @[expose] public section

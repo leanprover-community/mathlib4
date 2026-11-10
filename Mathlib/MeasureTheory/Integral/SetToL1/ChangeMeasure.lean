@@ -45,7 +45,7 @@ theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive �
       (𝓝 <| setToFun μ T hT f) :=
   tendsto_setToFun_of_L1 hT _ hfi.aestronglyMeasurable
     (Eventually.of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
-    (SimpleFunc.tendsto_approxOn_L1_enorm hfm _ hs (hfi.sub h₀i).2)
+    (SimpleFunc.tendsto_approxOn_L1_eNorm hfm _ hs (hfi.sub h₀i).2)
 
 theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
     (hT : DominatedFinMeasAdditive μ T C) [MeasurableSpace E] [BorelSpace E] {f : α → E}
@@ -153,8 +153,8 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
   · intro c s hs hμs
     have hμ's : μ' s ≠ ∞ := by
       refine ((hμ'_le s).trans_lt ?_).ne
-      rw [Measure.smul_apply, smul_eq_mul]
-      exact ENNReal.mul_lt_top hc'.lt_top hμs
+      rw [smul_apply, smul_eq_mul]
+      finiteness
     rw [setToFun_indicator_const hT hs hμs.ne, setToFun_indicator_const hT' hs hμ's]
   · intro f₂ g₂ _ hf₂ hg₂ h_eq_f h_eq_g
     rw [setToFun_add hT hf₂ hg₂, setToFun_add hT' (h_int f₂ hf₂) (h_int g₂ hg₂), h_eq_f, h_eq_g]
@@ -238,9 +238,9 @@ theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T 
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
   rw [lt_top_iff_ne_top] at hμs
-  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top,
-    top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
-  simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
+  simp only [Ne, smul_apply, smul_eq_mul, mul_eq_top, top_ne_zero, not_false_eq_true, true_and,
+    not_or, Decidable.not_not] at hμs
+  simp [hμs.right]
 
 theorem setToFun_congr_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞)
     (hT : DominatedFinMeasAdditive μ T C) (hT_smul : DominatedFinMeasAdditive (c • μ) T C')

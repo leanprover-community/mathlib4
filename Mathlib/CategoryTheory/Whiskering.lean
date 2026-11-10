@@ -214,6 +214,7 @@ lemma NatTrans.hcomp_eq_whiskerLeft_comp_whiskerRight {F G : C ⥤ D} {H K : D �
 /-- If `α : G ≅ H` is a natural isomorphism then
 `isoWhiskerLeft F α : (F ⋙ G) ≅ (F ⋙ H)` has components `α.app (F.obj X)`.
 -/
+@[implicit_reducible]
 def isoWhiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) : F ⋙ G ≅ F ⋙ H :=
   ((whiskeringLeft C D E).obj F).mapIso α
 
@@ -239,6 +240,7 @@ lemma isoWhiskerLeft_refl (F : C ⥤ D) (G : D ⥤ E) :
 /-- If `α : G ≅ H` then
 `isoWhiskerRight α F : (G ⋙ F) ≅ (H ⋙ F)` has components `F.map_iso (α.app X)`.
 -/
+@[implicit_reducible]
 def isoWhiskerRight {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) : G ⋙ F ≅ H ⋙ F :=
   ((whiskeringRight C D E).obj F).mapIso α
 
