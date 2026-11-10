@@ -21,7 +21,7 @@ such vector-valued measures.
 
 ## Main results
 
-* `enorm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
+* `eNorm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
 * `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
 * `variation_neg`: `(-μ).variation = μ.variation`.
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
@@ -55,7 +55,7 @@ variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
   {μ ν : VectorMeasure X V} {s : Set X}
 
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
-    μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
+    μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_eNorm μ) (by simp) s := rfl
 
 @[simp]
 lemma ennrealVariation_apply (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
@@ -142,7 +142,7 @@ lemma exists_variation_le_add (μ : VectorMeasure X V) {s : Set X} (hs : Measura
       (∀ t ∈ P, MeasurableSet t) ∧ μ.variation s ≤ ∑ p ∈ P, ‖μ p‖ₑ + ε :=
   exists_variation_le_add' μ hs (mod_cast hε) hμ
 
-theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
+theorem eNorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ₑ ≤ variation μ E := by
   by_cases hE : MeasurableSet E
   swap; · simp [hE]
@@ -152,19 +152,21 @@ theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
   grw [← preVariation.sum_le _ _ (Finpartition.indiscrete hE')]
   simp
 
+@[deprecated (since := "2026-11-06")] alias enorm_measure_le_variation := eNorm_measure_le_variation
+
 @[simp]
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
-  simp only [variation, zero_apply, enorm_zero]
+  simp only [variation, zero_apply, eNorm_zero]
   exact preVariation_zero
 
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariation := by
   intro s hs
   by_cases hsm : MeasurableSet s
   · suffices ‖μ s‖ₑ ≤ 0 by simp_all
-    grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
+    grw [eNorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable hsm
 
-lemma variation_apply_le_of_forall_enorm_le {m : Measure X} (hs : MeasurableSet s)
+lemma variation_apply_le_of_forall_eNorm_le {m : Measure X} (hs : MeasurableSet s)
     (h : ∀ E, MeasurableSet E → E ⊆ s → ‖μ E‖ₑ ≤ m E) :
     μ.variation s ≤ m s := by
   simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply,
@@ -182,16 +184,22 @@ lemma variation_apply_le_of_forall_enorm_le {m : Measure X} (hs : MeasurableSet 
       rw [sup_set_eq_biUnion]
       exact measure_mono <| Set.iUnion₂_subset fun _ hp => Subtype.coe_le_coe.mpr (i.le hp)
 
-lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ m E) :
+@[deprecated (since := "2026-11-06")]
+alias variation_apply_le_of_forall_enorm_le := variation_apply_le_of_forall_eNorm_le
+
+lemma variation_le_of_forall_eNorm_le {m : Measure X} (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ m E) :
     μ.variation ≤ m :=
-  Measure.le_intro fun _ hs _ => variation_apply_le_of_forall_enorm_le hs (fun E hE _ ↦ h E hE)
+  Measure.le_intro fun _ hs _ => variation_apply_le_of_forall_eNorm_le hs (fun E hE _ ↦ h E hE)
+
+@[deprecated (since := "2026-11-06")]
+alias variation_le_of_forall_enorm_le := variation_le_of_forall_eNorm_le
 
 lemma variation_add_le [ContinuousAdd V] : variation (μ + ν) ≤ variation μ + variation ν := by
-  refine variation_le_of_forall_enorm_le fun E _ => ?_
+  refine variation_le_of_forall_eNorm_le fun E _ => ?_
   calc
-    _ ≤ ‖μ E‖ₑ + ‖ν E‖ₑ := enorm_add_le _ _
+    _ ≤ ‖μ E‖ₑ + ‖ν E‖ₑ := eNorm_add_le _ _
     _ ≤ μ.variation E + ν.variation E := by
-      gcongr <;> exact enorm_measure_le_variation _ E
+      gcongr <;> exact eNorm_measure_le_variation _ E
 
 lemma variation_finsetSum_le [ContinuousAdd V] {ι} (s : Finset ι) (μ : ι → VectorMeasure X V) :
     (∑ i ∈ s, μ i).variation ≤ ∑ i ∈ s, (μ i).variation := by
@@ -205,37 +213,37 @@ lemma variation_finsetSum_le [ContinuousAdd V] {ι} (s : Finset ι) (μ : ι →
 lemma variation_apply_eq_zero (hs : MeasurableSet s) :
     μ.variation s = 0 ↔ ∀ t, t ⊆ s → MeasurableSet t → μ t = 0 := by
   refine ⟨fun h t hts ht ↦ ?_, fun h ↦ ?_⟩
-  · rw [← enorm_eq_zero, ← le_zero_iff, ← h]
-    apply (enorm_measure_le_variation _ _).trans (measure_mono hts)
+  · rw [← eNorm_eq_zero, ← le_zero_iff, ← h]
+    apply (eNorm_measure_le_variation _ _).trans (measure_mono hts)
   · suffices μ.variation s ≤ (0 : Measure X) s by simpa
-    apply variation_apply_le_of_forall_enorm_le hs (fun t ht hts ↦ ?_)
+    apply variation_apply_le_of_forall_eNorm_le hs (fun t ht hts ↦ ?_)
     simp [h t hts ht]
 
 @[simp] lemma variation_eq_zero :
     μ.variation = 0 ↔ μ = 0 where
   mp h := by
     ext s hs
-    apply enorm_eq_zero.1
+    apply eNorm_eq_zero.1
     apply le_antisymm ?_ (by simp)
-    grw [enorm_measure_le_variation]
+    grw [eNorm_measure_le_variation]
     simp [h]
   mpr h := by simp [h]
 
 lemma variation_restrict (hs : MeasurableSet s) :
     (μ.restrict s).variation = μ.variation.restrict s := by
   apply le_antisymm
-  · apply variation_le_of_forall_enorm_le (fun t ht ↦ ?_)
+  · apply variation_le_of_forall_eNorm_le (fun t ht ↦ ?_)
     simp only [ht, Measure.restrict_apply, VectorMeasure.restrict_apply, hs]
-    apply enorm_measure_le_variation
+    apply eNorm_measure_le_variation
   · apply Measure.le_iff.2 (fun t ht ↦ ?_)
     simp only [ht, Measure.restrict_apply]
     calc μ.variation (t ∩ s)
     _ ≤ (μ.restrict s).variation (t ∩ s) := by
-      apply variation_apply_le_of_forall_enorm_le (ht.inter hs) (fun u u_meas hu ↦ ?_)
+      apply variation_apply_le_of_forall_eNorm_le (ht.inter hs) (fun u u_meas hu ↦ ?_)
       have : μ u = μ.restrict s u :=
         (VectorMeasure.restrict_eq_self _ hs u_meas (hu.trans inter_subset_right)).symm
       rw [this]
-      apply enorm_measure_le_variation
+      apply eNorm_measure_le_variation
     _ ≤ (μ.restrict s).variation t := by
       gcongr
       exact Set.inter_subset_left
@@ -253,8 +261,8 @@ variable {Y : Type*} [MeasurableSpace Y] {φ : X → Y}
 lemma variation_map_le : (μ.map φ).variation ≤ μ.variation.map φ := by
   by_cases hφ : Measurable φ; swap
   · simp [VectorMeasure.map, hφ, Measure.zero_le]
-  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-  simp [VectorMeasure.map_apply _ hφ hs, Measure.map_apply hφ hs, enorm_measure_le_variation]
+  apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
+  simp [VectorMeasure.map_apply _ hφ hs, Measure.map_apply hφ hs, eNorm_measure_le_variation]
 
 instance [IsFiniteMeasure μ.variation] : IsFiniteMeasure (μ.map φ).variation :=
   isFiniteMeasure_of_le _ variation_map_le
@@ -272,25 +280,25 @@ theorem _root_.MeasurableEmbedding.variation_map (hφ : MeasurableEmbedding φ) 
       simp [map_apply, t_meas, hφ.measurable, this]
     rw [measure_union (by grind) (hs.diff hφ.measurableSet_range), this, add_zero]
   rw [this, ← hφ.comap_preimage]
-  apply variation_le_of_forall_enorm_le (fun t ht ↦ ?_)
+  apply variation_le_of_forall_eNorm_le (fun t ht ↦ ?_)
   simp only [hφ.comap_apply]
-  apply le_trans ?_ (enorm_measure_le_variation _ _)
+  apply le_trans ?_ (eNorm_measure_le_variation _ _)
   rw [map_apply _ hφ.measurable (hφ.measurableSet_image.2 ht), preimage_image_eq _ hφ.injective]
 
 @[simp] lemma variation_dirac {x : X} {v : V} :
     (VectorMeasure.dirac x v).variation = ‖v‖ₑ • Measure.dirac x := by
   apply le_antisymm
-  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  · apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
     by_cases hx : x ∈ s <;> simp [hs, hx]
   · apply Measure.le_iff.2 (fun s hs ↦ ?_)
-    apply le_trans ?_ (enorm_measure_le_variation _ _)
+    apply le_trans ?_ (eNorm_measure_le_variation _ _)
     by_cases hx : x ∈ s <;> simp [hs, hx]
 
 @[simp] lemma variation_apply_singleton {x : X} [MeasurableSingletonClass X] :
     μ.variation {x} = ‖μ {x}‖ₑ := by
-  apply le_antisymm ?_ (enorm_measure_le_variation μ {x})
+  apply le_antisymm ?_ (eNorm_measure_le_variation μ {x})
   rw [show ‖μ {x}‖ₑ = (‖μ {x}‖ₑ • Measure.dirac x) {x} by simp]
-  apply variation_apply_le_of_forall_enorm_le (.singleton x) (fun s hs h's ↦ ?_)
+  apply variation_apply_le_of_forall_eNorm_le (.singleton x) (fun s hs h's ↦ ?_)
   obtain rfl | rfl := s.subset_singleton_iff_eq.1 h's <;> simp
 
 end Basic
@@ -301,8 +309,8 @@ variable [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
 
 theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
     ‖μ E‖ ≤ μ.variation.real E := by
-  rw [measureReal_def, ← toReal_enorm, ENNReal.toReal_le_toReal (enorm_ne_top) hE]
-  exact enorm_measure_le_variation μ E
+  rw [measureReal_def, ← toReal_eNorm, ENNReal.toReal_le_toReal (eNorm_ne_top) hE]
+  exact eNorm_measure_le_variation μ E
 
 variable (μ) in
 @[simp]
@@ -313,9 +321,9 @@ lemma variation_sub_le : (μ - ν).variation ≤ μ.variation + ν.variation := 
 
 private lemma variation_smul_le {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
     (c • μ).variation ≤ ‖c‖₊ • μ.variation := by
-  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-  simp only [smul_apply, enorm_smul, Measure.nnreal_smul_coe_apply]
-  grw [enorm_measure_le_variation, eNorm_eq_nnNorm]
+  apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
+  simp only [smul_apply, eNorm_smul, Measure.nnreal_smul_coe_apply]
+  grw [eNorm_measure_le_variation, eNorm_eq_nnNorm]
 
 lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
     (c • μ).variation = ‖c‖₊ • μ.variation := by
@@ -341,7 +349,7 @@ instance [Finite X] : IsFiniteMeasure μ.variation where
     let : Fintype X := Fintype.ofFinite X
     simp only [variation_apply, preVariation_apply, MeasurableSet.univ, ennrealToMeasure_apply,
       ennrealPreVariation_apply, preVariationFun, ↓reduceDIte, ← sup_univ_eq_ciSup]
-    exact (Finset.sup_lt_iff (by simp)).2 (fun b hb ↦ by simp [ENNReal.sum_lt_top, enorm_lt_top])
+    exact (Finset.sup_lt_iff (by simp)).2 (fun b hb ↦ by simp [ENNReal.sum_lt_top, eNorm_lt_top])
 
 instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation := by
   simp only [variation_dirac, eNorm_eq_nnNorm, Measure.coe_nnreal_smul]
@@ -351,15 +359,15 @@ instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation :
     {μ : Measure X} [IsFiniteMeasure μ] :
     μ.toSignedMeasure.variation = μ := by
   apply le_antisymm
-  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-    simp [hs, Measure.real, Real.enorm_eq_ofReal]
+  · apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
+    simp [hs, Measure.real, Real.eNorm_eq_ofReal]
   · apply Measure.le_iff.2 (fun s hs ↦ ?_)
-    apply le_trans ?_ (enorm_measure_le_variation _ _)
-    simp [hs, Measure.real, Real.enorm_eq_ofReal]
+    apply le_trans ?_ (eNorm_measure_le_variation _ _)
+    simp [hs, Measure.real, Real.eNorm_eq_ofReal]
 
 /-- For a signed measure, the variation is realized by the norm of the measure of a single set, up
 to a factor of `2` and an arbitrarily small error. -/
-lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_variation
+lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_eNorm_apply_of_lt_variation
     (μ : SignedMeasure X) {s : Set X} (hs : MeasurableSet s)
     {a : ℝ≥0∞} (ha : a < μ.variation s) :
     ∃ t ⊆ s, MeasurableSet t ∧ a < 2 * ‖μ t‖ₑ := by
@@ -417,6 +425,10 @@ lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_vari
     · simp; grind
     · exact Finset.measurableSet_biUnion _ (by grind)
     · exact hP.trans_le (by gcongr)
+
+@[deprecated (since := "2026-11-06")]
+alias _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_variation :=
+  _root_.MeasureTheory.SignedMeasure.exists_subset_lt_eNorm_apply_of_lt_variation
 
 end NormedAddCommGroup
 

@@ -65,7 +65,7 @@ of the finite set `s`.
 When the index type is a `Fintype`, the notation `∑ x, f x`, is a shorthand for
 `∑ x ∈ Finset.univ, f x`. -/]
 protected def prod [CommMonoid M] (s : Finset ι) (f : ι → M) : M :=
-  (s.1.map f).prod
+  (s.val.map f).prod
 
 @[to_additive (attr := simp)]
 theorem prod_mk [CommMonoid M] (s : Multiset ι) (hs : s.Nodup) (f : ι → M) :
@@ -73,7 +73,7 @@ theorem prod_mk [CommMonoid M] (s : Multiset ι) (hs : s.Nodup) (f : ι → M) :
   rfl
 
 @[to_additive (attr := simp)]
-theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
+theorem prod_val [CommMonoid M] (s : Finset M) : s.val.prod = s.prod id := by
   rw [Finset.prod, Multiset.map_id]
 
 end Finset
@@ -348,11 +348,11 @@ variable {s : Finset ι} {a : ι} {f : ι → M}
 
 @[to_additive]
 theorem prod_eq_multiset_prod [CommMonoid M] (s : Finset ι) (f : ι → M) :
-    ∏ x ∈ s, f x = (s.1.map f).prod :=
+    ∏ x ∈ s, f x = (s.val.map f).prod :=
   rfl
 
 @[to_additive (attr := simp)]
-lemma prod_map_val [CommMonoid M] (s : Finset ι) (f : ι → M) : (s.1.map f).prod = ∏ a ∈ s, f a :=
+lemma prod_map_val [CommMonoid M] (s : Finset ι) (f : ι → M) : (s.val.map f).prod = ∏ a ∈ s, f a :=
   rfl
 
 @[simp]
@@ -459,7 +459,8 @@ theorem prod_bij (i : ∀ a ∈ s, κ) (hi : ∀ a ha, i a ha ∈ t)
     (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) (h : ∀ a ha, f a = g (i a ha)) :
     ∏ x ∈ s, f x = ∏ x ∈ t, g x :=
-  congr(Multiset.prod $(Multiset.map_eq_map_of_bij_of_nodup f g s.2 t.2 i hi i_inj i_surj h))
+  congr(Multiset.prod
+    $(Multiset.map_eq_map_of_bij_of_nodup f g s.nodup t.nodup i hi i_inj i_surj h))
 
 /-- Reorder a product.
 
