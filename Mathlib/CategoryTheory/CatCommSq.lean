@@ -18,7 +18,6 @@ then `[CatCommSq T L R B]` contains the datum of an isomorphism `T ⋙ R ≅ L �
 
 Future work: using this notion in the development of the localization of categories
 (e.g. localization of adjunctions).
-
 -/
 
 @[expose] public section
@@ -110,7 +109,6 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
       associator _ _ _) ≪≫ (associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ leftUnitor _
 
-set_option backward.defeqAttrib.useBackward true in
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
     hInv T.symm R L B.symm (hInv T L R B h) = h := by
   ext X

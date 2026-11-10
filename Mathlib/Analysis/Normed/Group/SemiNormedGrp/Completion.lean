@@ -29,7 +29,6 @@ objects and morphisms).
   and promote the `Completion` functor below to a functor landing in this category.
 2. Prove that the functor `Completion : SemiNormedGrp ⥤ CompleteSemiNormedGrp`
   is left adjoint to the forgetful functor.
-
 -/
 
 @[expose] public section

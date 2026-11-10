@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
-
 # Smooth morphisms
 
 An `R`-algebra `A` is formally smooth if `Ω[A⁄R]` is `A`-projective and `H¹(L_{A/R}) = 0`.
@@ -43,7 +42,6 @@ Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel 
   `H¹(L_{A/R})` is isomorphic to `ker(I/I² → A ⊗[P] Ω[P⁄R])`.
 - `Algebra.FormallySmooth.iff_split_injection`: `A` is formally smooth iff
   the `P`-linear map `I/I² → A ⊗[P] Ω[P⁄R]` is split injective.
-
 -/
 
 @[expose] public section
@@ -108,7 +106,6 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
     simpa using! (Function.surjInv_eq _ _).symm
   exact ⟨l.comp g, by rw [← AlgHom.comp_assoc, ← this, AlgHom.comp_assoc, hg, AlgHom.comp_id]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance instFormallySmoothMvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P := Generators.mvPolynomial R σ
   have : Subsingleton ↥P.toExtension.ker :=

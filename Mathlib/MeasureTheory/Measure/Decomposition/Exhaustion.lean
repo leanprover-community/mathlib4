@@ -43,7 +43,6 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 ## References
 
 * [P. R. Halmos, *Measure theory*, 17.3 and 30.11][halmos1950measure]
-
 -/
 
 @[expose] public section
@@ -278,8 +277,7 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [SFinite ν]
 lemma restrict_compl_sigmaFiniteSetWRT [SFinite ν] (hμν : μ ≪ ν) :
     μ.restrict (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ • ν.restrict (μ.sigmaFiniteSetWRT ν)ᶜ := by
   ext s
-  rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT.compl,
-    Measure.smul_apply, smul_eq_mul,
+  rw [Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT.compl, smul_apply, smul_eq_mul,
     Measure.restrict_apply' measurableSet_sigmaFiniteSetWRT.compl]
   by_cases hνs : ν (s ∩ (μ.sigmaFiniteSetWRT ν)ᶜ) = 0
   · rw [hνs, mul_zero]

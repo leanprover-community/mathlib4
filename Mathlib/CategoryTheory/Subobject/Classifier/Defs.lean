@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 
 /-!
-
 # Subobject Classifier
 
 We define a structure containing the data of a subobject classifier in a category `C` as
@@ -50,7 +49,6 @@ Let `C` refer to a category with a terminal object.
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
-
 -/
 
 @[expose] public section
@@ -274,7 +272,6 @@ lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
     (Subobject.pullback (𝒞.χ i)).obj 𝒞.truth_as_subobject = .mk i :=
   Subobject.pullback_obj_mk (𝒞.isPullback i).flip
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :

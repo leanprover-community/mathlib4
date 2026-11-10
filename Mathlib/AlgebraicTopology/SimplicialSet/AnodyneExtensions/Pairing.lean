@@ -38,7 +38,6 @@ a strong anodyne extension (TODO @joelriou), and the converse is also true
 
 ## References
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
-
 -/
 
 @[expose] public section

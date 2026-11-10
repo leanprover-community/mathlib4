@@ -30,7 +30,6 @@ all ways to construct a `Finset` by adding one element.
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -267,6 +266,10 @@ theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
 
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
+  grind
+
+theorem exists_mem_cons (h : a ∉ s) (p : α → Prop) :
+    (∃ x, x ∈ cons a s h ∧ p x) ↔ p a ∨ ∃ x, x ∈ s ∧ p x := by
   grind
 
 /-- Useful in proofs by induction. -/

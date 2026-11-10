@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Category.FGModuleCat.Basic
 This file proves that `FGModuleCat R`, the category of finitely generated modules over a ring `R`,
 is essentially small, by providing an explicit small model. However, for applications, it is
 recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` instead.
-
 -/
 
 @[expose] public section

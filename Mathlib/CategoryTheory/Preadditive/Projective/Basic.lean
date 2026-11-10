@@ -26,7 +26,6 @@ epimorphism.
 Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projective object over
 `CategoryTheory.Limits.kernel f`, and `Projective.d f : Projective.left f ⟶ X` is the morphism
 `π (kernel f) ≫ kernel.ι f`.
-
 -/
 
 @[expose] public section
@@ -199,7 +198,6 @@ namespace Adjunction
 
 variable {D : Type u'} [Category.{v'} D] {F : C ⥤ D} {G : D ⥤ C}
 
-set_option backward.defeqAttrib.useBackward true in
 theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : Projective P) :
     Projective (F.obj P) where
   factors f g _ := by

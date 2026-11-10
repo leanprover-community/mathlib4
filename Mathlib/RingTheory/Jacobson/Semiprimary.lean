@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semiprimary rings
 

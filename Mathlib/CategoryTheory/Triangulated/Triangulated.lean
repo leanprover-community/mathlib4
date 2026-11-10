@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 This file contains the definition of triangulated categories, which are
 pretriangulated categories which satisfy the octahedron axiom.
-
 -/
 
 @[expose] public section
