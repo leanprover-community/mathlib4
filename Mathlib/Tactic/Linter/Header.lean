@@ -38,9 +38,9 @@ The linter allows `import`-only files and does not require a copyright statement
 
 ## Implementation
 
-The linter is a stateful linter whose state is `atStart : Bool`. It starts out `true`, and is set 
-to `false` as soon as a command which is not a header-related `set_option` is encountered. The 
-header linter ensures that that first command is a module doc-string (unless the linter has been 
+The linter is a stateful linter whose state is `atStart : Bool`. It starts out `true`, and is set
+to `false` as soon as a command which is not a header-related `set_option` is encountered. The
+header linter ensures that that first command is a module doc-string (unless the linter has been
 turned off, or the command is exempted for some reason).
 -/
 
