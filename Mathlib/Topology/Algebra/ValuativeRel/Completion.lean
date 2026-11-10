@@ -98,8 +98,12 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ}
   simp [← map_inv₀, ← map_mul, mul_sub, sub_mul, v.map_sub_swap, x_ne, y_ne]
 
 /-- A variant of `Valuation.inversion_estimate` specialized to the case `γ = v s / v r`. -/
-theorem Valuation.inversion_estimate' {x y r s : K} (hr : r ≠ 0) (hs : s ≠ 0)
+theorem Valuation.inversion_estimate' {x y r s : K}
     (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
+  rcases eq_or_ne r 0 with rfl | hr
+  · simp at h
+  rcases eq_or_ne s 0 with rfl | hs
+  · simp at h
   refine (?_ : _ < _).trans_eq <| div_mul_cancel₀ (a := v s) (b := v r) (by simpa using hr)
   grw [Valuation.inversion_estimate v (γ := (.mk0 (v s / v r) (by simp_all))) h] <;>
   simp [zero_lt_iff, hr]

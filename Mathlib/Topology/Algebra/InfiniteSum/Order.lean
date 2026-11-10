@@ -458,8 +458,9 @@ theorem tsum_image_le_tsum_comp (f : ι → α) (g : ι' → ι) (s : Set ι') :
 theorem tsum_mono_subtype (f : ι → α) (h : s ⊆ t) : ∑' x : s, f x ≤ ∑' x : t, f x :=
   tsum_comp_le_tsum_of_injective (inclusion_injective h) (f ∘ (↑))
 
-@[simp] theorem tsum_top : ∑' _ : α, (⊤ : α) = ⊤ :=
-  tsum_eq_top_of_eq_top ⟨⊤, rfl⟩
+@[simp] theorem tsum_top [Nonempty ι] : ∑' _ : ι, (⊤ : α) = ⊤ :=
+  let ⟨a⟩ := ‹Nonempty ι›
+  tsum_eq_top_of_eq_top ⟨a, rfl⟩
 
 theorem ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ⊤) (i : ι) : f i ≠ ⊤ :=
   fun hi => h <| tsum_eq_top_of_eq_top ⟨i, hi⟩
