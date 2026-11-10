@@ -24,7 +24,6 @@ category of `C₁ × C₂` with respect to `W₁.prod W₂ : MorphismProperty (C
 In the `CategoryTheory.Functor` namespace, we introduce `HasLeftDerivedFunctor₂`,
 `IsLeftDerivedFunctor₂`, `leftDerived₂` and`leftDerived₂Lift` as `2`-variable versions
 of `HasLeftDerivedFunctor`, `IsLeftDerivedFunctor`, `leftDerived` and `leftDerivedLift`.
-
 -/
 
 @[expose] public section

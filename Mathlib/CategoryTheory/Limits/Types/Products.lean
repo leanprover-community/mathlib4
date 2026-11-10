@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 We describe arbitrary products in the category of types, as well as binary products,
 and the terminal object.
-
 -/
 
 @[expose] public section

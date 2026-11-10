@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Extension.Presentation.Basic
 public import Mathlib.RingTheory.Kaehler.Polynomial
 
 /-!
-
 # Naive cotangent complex associated to a presentation.
 
 Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently a closed embedding `S ↪ Aⁿ`
@@ -34,7 +33,6 @@ defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S
 ## Implementation detail
 We actually develop these material for general extensions (i.e. surjection `P → S`) so that we can
 apply them to infinitesimal smooth (or versal) extensions later.
-
 -/
 
 @[expose] public noncomputable section

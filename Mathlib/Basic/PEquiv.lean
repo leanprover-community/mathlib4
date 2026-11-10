@@ -11,7 +11,6 @@ public import Mathlib.Data.Set.Basic
 import Batteries.Tactic.Congr
 
 /-!
-
 # Partial Equivalences
 
 In this file, we define partial equivalences `PEquiv`, which are a bijection between a subset of `α`
@@ -39,7 +38,6 @@ a definition of `⊥`, which is the empty `PEquiv` (sends all to `none`), which 
 ## Tags
 
 pequiv, partial equivalence
-
 -/
 
 @[expose] public section

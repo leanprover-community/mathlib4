@@ -25,7 +25,6 @@ We construct various limits and colimits in the category of schemes.
 ## TODO
 
 * Spec preserves finite coproducts.
-
 -/
 
 @[expose] public section

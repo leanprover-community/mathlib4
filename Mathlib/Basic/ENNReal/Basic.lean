@@ -89,7 +89,6 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 * `ℝ≥0∞`: the type of the extended nonnegative real numbers;
 * `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `Mathlib.Basic.NNReal.Defs`;
 * `∞`: a localized notation in `ENNReal` for `⊤ : ℝ≥0∞`.
-
 -/
 
 @[expose] public section

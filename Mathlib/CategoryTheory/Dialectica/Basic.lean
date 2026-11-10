@@ -34,7 +34,6 @@ in Set Theory, state in imperative programming, and others, see [Dialectica Cate
 [*Dialectica models of type theory*]: https://arxiv.org/abs/2105.00283
 [Poly]: https://github.com/sinhp/Poly
 [Dialectica Categories]: https://github.com/vcvpaiva/DialecticaCategories
-
 -/
 
 @[expose] public section

@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 
 /-!
-
 # Subobject Classifier
 
 We define a structure containing the data of a subobject classifier in a category `C` as
@@ -50,7 +49,6 @@ Let `C` refer to a category with a terminal object.
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
-
 -/
 
 @[expose] public section

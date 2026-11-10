@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
 /-!
-
 # The small affine Zariski site
 
 `X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open
@@ -25,7 +24,6 @@ which gives an equivalence of categories of sheaves (`sheafEquiv`).
 
 Note that this differs from the definition on stacks project where the arrows in the small affine
 Zariski site are arbitrary inclusions.
-
 -/
 
 @[expose] public section
