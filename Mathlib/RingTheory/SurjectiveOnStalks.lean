@@ -17,7 +17,6 @@ the development of immersions in algebraic geometry.
 A ring homomorphism `R →+* S` is surjective on stalks if `R_p →+* S_q` is surjective for all pairs
 of primes `p = f⁻¹(q)`. We show that this property is stable under composition and base change, and
 that surjections and localizations satisfy this.
-
 -/
 
 @[expose] public section
@@ -211,7 +210,7 @@ lemma SurjectiveOnStalks.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) {g : T →ₐ[R] T'} (Hg : g.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by
-  convert!
+  convert
     RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
       (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
         RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|

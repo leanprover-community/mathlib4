@@ -167,7 +167,7 @@ lemma isSymm_iff_basis {ι : Type*} (b : Basis ι R M) :
     obtain ⟨fy, ty, iy, -, hy⟩ := Submodule.mem_span_iff_exists_finset_subset.1
       (by simp : y ∈ Submodule.span R (Set.range b))
     rw [← hx, ← hy]
-    simp only [map_sum, map_smul, coe_sum, Finset.sum_apply, smul_apply, smul_eq_mul,
+    simp only [map_sum, map_smul, coe_sum, Finset.sum_apply, LinearMap.smul_apply, smul_eq_mul,
       Finset.mul_sum]
     rw [Finset.sum_comm]
     refine Finset.sum_congr rfl (fun b₁ h₁ ↦ Finset.sum_congr rfl fun b₂ h₂ ↦ ?_)
@@ -316,7 +316,7 @@ theorem Nondegenerate.congr {B : BilinForm R M} (e : M ≃ₗ[R] M') (h : B.Nond
 theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
     (congr e B).Nondegenerate ↔ B.Nondegenerate :=
   ⟨fun h => by
-    convert! h.congr e.symm
+    convert h.congr e.symm
     rw [congr_congr, e.self_trans_symm, congr_refl, LinearEquiv.refl_apply], Nondegenerate.congr e⟩
 
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :

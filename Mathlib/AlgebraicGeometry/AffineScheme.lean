@@ -6,10 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.Topology.Sheaves.CommRingCat
 public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Sheaves.CommRingCat
+
+import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 # Affine schemes
@@ -30,7 +31,6 @@ We also define predicates about affine schemes and affine open sets.
 * `AlgebraicGeometry.IsAffineOpen`: An open subset of a scheme is affine if the open subscheme is
   affine.
 * `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
-
 -/
 
 @[expose] public section
@@ -262,7 +262,7 @@ theorem isAffineOpen_opensRange {X Y : Scheme} [IsAffine X] (f : X ⟶ Y)
   exact Subtype.range_val.symm
 
 theorem isAffineOpen_top (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : X.Opens) := by
-  convert! isAffineOpen_opensRange (𝟙 X)
+  convert isAffineOpen_opensRange (𝟙 X)
   ext1
   exact Set.range_id.symm
 
@@ -506,8 +506,8 @@ lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
 include hU in
 protected theorem isCompact :
     IsCompact (U : Set X) := by
-  convert! @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1 (by fun_prop)
-  convert! hU.range_fromSpec.symm
+  convert @IsCompact.image _ _ _ _ Set.univ hU.fromSpec PrimeSpectrum.compactSpace.1 (by fun_prop)
+  convert hU.range_fromSpec.symm
   exact Set.image_univ
 
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
@@ -718,7 +718,6 @@ lemma app_basicOpen_eq_away_map {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
     ← CommRingCat.hom_comp, ← X.presheaf.map_comp]
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `f.app (Y.basicOpen r)` is isomorphic to map induced on localizations
 `Γ(Y, Y.basicOpen r) ⟶ Γ(X, X.basicOpen (f.app U r))` -/
 def appBasicOpenIsoAwayMap {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens}
@@ -835,6 +834,18 @@ theorem isLocalization_stalk (x : U) :
   clear_value y
   subst this
   exact hU.isLocalization_stalk' y hx
+
+/-- A section lies outside the prime ideal attached to a point of an affine open precisely when
+it does not vanish there, i.e. when the point lies in its basic open set. This is the
+chart-level form of `PrimeSpectrum.mem_basicOpen`. -/
+theorem mem_basicOpen_iff_notMem_primeIdealOf (x : U) (f : Γ(X, U)) :
+    (x : X) ∈ X.basicOpen f ↔ f ∉ (hU.primeIdealOf x).asIdeal := by
+  have := hU.isLocalization_stalk x
+  have h := IsLocalization.AtPrime.isUnit_to_map_iff
+    (X.presheaf.stalk (x : X)) (hU.primeIdealOf x).asIdeal f
+  rw [TopCat.Presheaf.stalk_open_algebraMap] at h
+  rw [X.mem_basicOpen' f x]
+  exact h
 
 lemma stalkMap_injective (f : X ⟶ Y) {U : Opens Y} (hU : IsAffineOpen U) (x : X)
     (hx : f x ∈ U)
@@ -972,7 +983,6 @@ def Scheme.AffineOpenCover.ofIsOpenCover {X : Scheme.{u}} {ι : Type*} (U : ι �
   covers x :=
     ⟨(hU' _).isoSpec.hom ⟨_, (hU.exists_mem x).choose_spec⟩, by simp [← Scheme.Hom.comp_apply]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the
@@ -1041,7 +1051,7 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
     obtain ⟨i, hi⟩ := Opens.mem_iSup.mp (iSup_U.ge (Set.mem_univ x))
     obtain ⟨f, g, e, hf⟩ := exists_basicOpen_le_affine_inter V.prop (U i).prop x ⟨x.prop, hi⟩
     refine ⟨f, hf, ?_⟩
-    convert! basicOpen _ g (hU i) using 1
+    convert basicOpen _ g (hU i) using 1
     ext1
     exact e
   choose f hf₁ hf₂ using this

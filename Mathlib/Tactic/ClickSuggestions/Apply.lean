@@ -5,10 +5,13 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Mathlib.Tactic.ClickSuggestions.Util
+public import Mathlib.Tactic.ClickSuggestions.SectionState
 
 import all Lean.Meta.Tactic.Apply
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Support for `apply` suggestions in `#click_suggestions`
@@ -18,7 +21,7 @@ public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta ProofWidgets Jsx
+open Lean Meta ProofWidgets
 
 /-- The structure for `apply` lemmas stored in the `RefinedDiscrTree`. -/
 structure ApplyLemma where
@@ -54,18 +57,18 @@ def ApplyKey.isDuplicate (a b : ApplyKey) : MetaM Bool :=
       <&&> isExplicitEq a.newGoals[i]!.expr b.newGoals[i]!.expr
 
 /-- Return the `apply` tactic that performs the application. -/
-private def tacticSyntax (lemmaName : Premise) (proof : Expr) (isClosing justLemmaName : Bool) :
+private def tacticSyntax (lemmaName : Premise) (proof : Expr) (solves justLemmaName : Bool) :
     MetaM (TSyntax `tactic) := do
   if justLemmaName then
     let id := mkIdent (← lemmaName.unresolveName)
     -- We can only use `exact` instead of `apply` if the proof has no explicit arguments.
-    if ← pure isClosing <&&> hasOnlyImplicitArgs proof then
+    if ← pure solves <&&> hasOnlyImplicitArgs proof then
       `(tactic| exact $id)
     else
       `(tactic| apply $id)
   else
     let proof ← withOptions (pp.mvars.set · false) (PrettyPrinter.delab proof)
-    if isClosing then
+    if solves then
       `(tactic| exact $proof)
     else
       `(tactic| refine $proof)
@@ -94,7 +97,7 @@ def ApplyLemma.try (lem : ApplyLemma) (assignableMVars : Array Expr) :
         justLemmaName := false
         continue
     newGoals := newGoals.push type
-  let isClosing := newGoals.isEmpty
+  let solves := newGoals.isEmpty
   let unhelpfulMVars ← hasUnhelpfulMVars mvars.toArray assignableMVars newGoals
   let proof ← instantiateMVars proof
   let key := {
@@ -105,20 +108,22 @@ def ApplyLemma.try (lem : ApplyLemma) (assignableMVars : Array Expr) :
     name := lem.name.toString
     newGoals := ← newGoals.mapM (abstractMVars ·)
   }
-  let tactic ← tacticSyntax lem.name proof (isClosing := isClosing) (justLemmaName := justLemmaName)
+  let tactic ← tacticSyntax lem.name proof (solves := solves) (justLemmaName := justLemmaName)
   let mut htmls := #[]
   for goal in newGoals do
-    htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
-  if isClosing then
-    htmls := #[.text "Goal accomplished! 🎉️"]
-    addSolvedSuggestion tactic
+    htmls := htmls.push
+      jsx%{<div><strong className="goal-vdash">⊢ </strong>{← exprToHtml goal}</div>}
+  if solves then
+    htmls := #[.text "Goal accomplished!"]
+    addSolvingSuggestion tactic
+  let button := if solves then "exact" else "apply"
   let filtered ←
     if unhelpfulMVars then
       pure none
     else
-      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-  htmls := htmls.push <div> {← lem.name.toHtml} </div>
-  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
+      some <$> mkSuggestion tactic button (.element "div" #[] htmls) (solves := solves)
+  htmls := htmls.push jsx%{<div>{← lem.name.toHtml}</div>}
+  let unfiltered ← mkSuggestion tactic button (.element "div" #[] htmls) (solves := solves)
   let pattern ← do
     let (_, _, e) ← forallMetaTelescopeReducing (← lem.name.getType)
     exprToHtml e

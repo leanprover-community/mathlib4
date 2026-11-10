@@ -24,7 +24,6 @@ triangulated category and `C` an abelian category. However, the definition
 ease the formalization of the compatibilities with shifts of the
 functors `C ⥤ CochainComplex C ℤ` (or `C ⥤ DerivedCategory C` (TODO))
 which sends an object `X : C` to a complex where `X` sits in a single degree.
-
 -/
 
 @[expose] public section
@@ -57,7 +56,6 @@ variable (F G H : SingleFunctors C D A)
 
 namespace SingleFunctors
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add_hom_app (n m a a' a'' : A) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha''])).hom.app X =
       (shiftFunctorAdd D m n).hom.app ((F.functor a'').obj X) ≫
@@ -65,7 +63,6 @@ lemma shiftIso_add_hom_app (n m a a' a'' : A) (ha' : n + a = a') (ha'' : m + a' 
         (F.shiftIso n a a' ha').hom.app X := by
   simp [F.shiftIso_add n m a a' a'' ha' ha'']
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add_inv_app (n m a a' a'' : A) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha''])).inv.app X =
       (F.shiftIso n a a' ha').inv.app X ≫
@@ -81,7 +78,6 @@ lemma shiftIso_add' (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
   subst hnm
   rw [shiftFunctorAdd'_eq_shiftFunctorAdd, shiftIso_add]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add'_hom_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).hom.app X =
@@ -89,7 +85,6 @@ lemma shiftIso_add'_hom_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
         ((F.shiftIso m a' a'' ha'').hom.app X)⟦n⟧' ≫ (F.shiftIso n a a' ha').hom.app X := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add'_inv_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).inv.app X =
@@ -227,7 +222,6 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
 
 variable (C A)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
 @[implicit_reducible, simps]
@@ -242,7 +236,6 @@ def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
 
 variable {C E' A}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical isomorphism `(F.postcomp G).postcomp G' ≅ F.postcomp (G ⋙ G')`. -/
 @[simps!]
 def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommShift A] :

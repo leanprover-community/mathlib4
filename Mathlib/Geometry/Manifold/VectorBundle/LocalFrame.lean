@@ -6,6 +6,7 @@ Authors: Patrick Massot, Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+
 import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 
 /-!
@@ -90,7 +91,6 @@ only meaningful on the set on which they are a local frame.
 
 ## Tags
 vector bundle, local frame, smoothness
-
 -/
 
 @[expose] public section

@@ -5,8 +5,9 @@ Authors: Jou Glasheen, Kevin Buzzard
 -/
 module
 
-import Mathlib.Analysis.Normed.Field.ProperSpace
 public import Mathlib.NumberTheory.Padics.RingHoms
+
+import Mathlib.Analysis.Normed.Field.ProperSpace
 
 /-!
 # Properness of the p-adic numbers

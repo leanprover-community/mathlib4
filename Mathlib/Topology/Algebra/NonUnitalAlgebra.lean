@@ -19,7 +19,6 @@ typeclass `ContinuousSMul` to express the latter condition.
 
 Any non-unital subalgebra of a non-unital topological algebra is itself a non-unital
 topological algebra, and its closure is again a non-unital subalgebra.
-
 -/
 
 @[expose] public section
@@ -148,7 +147,7 @@ def elemental (x : A) : NonUnitalSubalgebra R A :=
 
 namespace elemental
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 

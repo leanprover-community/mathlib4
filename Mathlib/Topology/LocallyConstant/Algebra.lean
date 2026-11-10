@@ -6,16 +6,16 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Topology.LocallyConstant.Basic
+
+import Mathlib.Algebra.GroupWithZero.Indicator
 
 /-!
 # Algebraic structure on locally constant functions
 
 This file puts algebraic structure (`Group`, `AddGroup`, etc)
 on the type of locally constant functions.
-
 -/
 
 @[expose] public section

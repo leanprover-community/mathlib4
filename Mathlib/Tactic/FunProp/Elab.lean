@@ -5,12 +5,11 @@ Authors: Tomáš Skřivan
 -/
 module
 
+public meta import Lean.Elab.ConfigEval
 public import Mathlib.Tactic.FunProp.Core
 
+meta import Lean.Elab.InfoTree.Main
 import Mathlib.Tactic.InferParam
-import Lean.Elab.InfoTree.Main
-import Lean.Elab.ConfigEval
-public meta import Lean.Elab.ConfigEval
 
 /-!
 ## `funProp` tactic syntax
@@ -58,7 +57,6 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by
 example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
   fun_prop (disch := aesop)
 ```
-
 -/
 syntax (name := funPropTacStx)
   "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic

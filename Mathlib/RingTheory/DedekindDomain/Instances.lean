@@ -5,8 +5,9 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.DedekindDomain.PID
 public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.DedekindDomain.PID
+
 import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
@@ -26,7 +27,6 @@ tower extension `R ⊆ S ⊆ T` and thus we work with `Rₚ ⊆ Sₚ ⊆ Tₚ` w
 In general one wants all the results below for any algebra satisfying `IsLocalization`, but those
 cannot be instances (since Lean has no way of guessing the submonoid). Having the instances in the
 special case of *the* localization at a prime ideal is useful in working with Dedekind domains.
-
 -/
 
 public section

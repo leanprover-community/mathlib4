@@ -5,8 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
+
 import Mathlib.Data.Fintype.Perm
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-! # Properties of `Equiv.Perm` on `Finite` types
 
@@ -20,7 +21,6 @@ Let `α` be a `Finite` type.
 * `Equiv.Perm.isCyclic_iff_card_le_two`: `Equiv.Perm α` is cyclic iff `Nat.card α ≤ 2`.
 
 * `Equiv.Perm.isMulCommutative_iff_card_le_two`: `Equiv.Perm α` is commutative iff `Nat.card α ≤ 2`.
-
 -/
 
 public section

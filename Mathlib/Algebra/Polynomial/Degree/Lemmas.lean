@@ -12,17 +12,11 @@ public import Mathlib.Algebra.Polynomial.Eval.Degree
 
 Some of the main results include
 - `natDegree_comp_le` : The degree of the composition is at most the product of degrees
-
 -/
 
 public section
 
-
-noncomputable section
-
-open Polynomial
-
-open Finset
+open AddMonoidAlgebra Finset Polynomial
 
 namespace Polynomial
 
@@ -81,7 +75,7 @@ theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n
     (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
   refine ⟨fun h => ?_, fun h => natDegree_add_le_of_degree_le h qn⟩
   refine natDegree_le_iff_coeff_eq_zero.mpr fun m hm => ?_
-  convert! natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
+  convert natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
   rw [coeff_add, natDegree_le_iff_coeff_eq_zero.mp qn _ hm, add_zero]
 
 theorem natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ n) :

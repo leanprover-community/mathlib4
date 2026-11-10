@@ -5,8 +5,8 @@ Authors: Kenny Lau, Yury Kudryashov, Amelia Livingston
 -/
 module
 
-public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.Basic
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Homomorphisms of `R`-bialgebras
@@ -23,7 +23,6 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 ## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
-
 -/
 
 @[expose] public section

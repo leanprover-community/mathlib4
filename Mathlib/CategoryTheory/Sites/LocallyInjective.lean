@@ -20,7 +20,6 @@ if `x` and `y` are two elements of some `F₁.obj U` such
 the images of `x` and `y` in `F₂.obj U` coincide, then
 the equality `x = y` must hold locally, i.e. after restriction
 by the maps of a covering sieve.
-
 -/
 
 @[expose] public section
@@ -79,7 +78,7 @@ lemma equalizerSieve_mem [IsLocallyInjective J φ]
 lemma isLocallyInjective_of_injective (hφ : ∀ (X : Cᵒᵖ), Function.Injective (φ.app X)) :
     IsLocallyInjective J φ where
   equalizerSieve_mem {X} x y h := by
-    convert! J.top_mem X.unop
+    convert J.top_mem X.unop
     ext Y f
     simp only [equalizerSieve_apply, op_unop, Sieve.top_apply, iff_true]
     apply hφ

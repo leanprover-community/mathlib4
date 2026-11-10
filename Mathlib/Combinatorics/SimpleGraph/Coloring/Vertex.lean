@@ -8,8 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Order.Setoid.Partition
+
 import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Data.Setoid.Partition
 
 /-!
 # Graph Coloring
@@ -169,8 +170,6 @@ lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
   ⟨fun ⟨C⟩ ↦ Function.isEmpty C, fun _ ↦ .of_isEmpty 0⟩
 
 alias ⟨Colorable.isEmpty, _⟩ := colorable_zero_iff
-
-@[deprecated (since := "2026-04-24")] alias isEmpty_of_colorable_zero := Colorable.isEmpty
 
 @[simp]
 theorem colorable_one_iff : G.Colorable 1 ↔ G = ⊥ := by
@@ -496,9 +495,6 @@ theorem chromaticNumber_eq_zero_iff : G.chromaticNumber = 0 ↔ IsEmpty V :=
 @[simp]
 theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
   simpa
-
-@[deprecated chromaticNumber_eq_zero_iff +typeChanged (since := "2026-04-24")]
-alias ⟨isEmpty_of_chromaticNumber_eq_zero, _⟩ := chromaticNumber_eq_zero_iff
 
 theorem chromaticNumber_eq_one_iff : G.chromaticNumber = 1 ↔ G = ⊥ ∧ Nonempty V := by
   rw [eq_iff_le_not_lt, Order.lt_one_iff_nonpos, ← not_isEmpty_iff, ← Nat.cast_one, ← Nat.cast_zero,

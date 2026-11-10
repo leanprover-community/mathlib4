@@ -6,9 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.GlueData
+public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.Opens
-public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
+
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
@@ -48,7 +49,6 @@ provided.
 * `TopCat.GlueData.preimage_image_eq_image`: The preimage of the image of some `U ⊆ U i` is
     given by XXX.
 * `TopCat.GlueData.ι_isOpenEmbedding`: Each of the `ι i`s are open embeddings.
-
 -/
 
 @[expose] public section
@@ -200,10 +200,10 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
   rcases (D.ι_eq_iff_rel _ _ _ _).mp h with ⟨_, e₁, e₂⟩
-  · dsimp only at *
-    -- Porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
-    rw [← e₁, ← e₂]
-    simp
+  dsimp only at *
+  -- Porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
+  rw [← e₁, ← e₂]
+  simp
 
 instance ι_mono (i : D.J) : Mono (𝖣.ι i) :=
   (TopCat.mono_iff_injective _).mpr (D.ι_injective _)
@@ -214,8 +214,8 @@ theorem image_inter (i j : D.J) :
   constructor
   · rintro ⟨⟨x₁, eq₁⟩, ⟨x₂, eq₂⟩⟩
     obtain ⟨y, e₁, -⟩ := (D.ι_eq_iff_rel _ _ _ _).mp (eq₁.trans eq₂.symm)
-    · subst eq₁
-      exact ⟨y, by simp [e₁]⟩
+    subst eq₁
+    exact ⟨y, by simp [e₁]⟩
   · rintro ⟨x, hx⟩
     refine ⟨⟨D.f i j x, hx⟩, ⟨D.f j i (D.t _ _ x), ?_⟩⟩
     rw [D.glue_condition_apply]
@@ -240,7 +240,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
 
 theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
     𝖣.ι j ⁻¹' 𝖣.ι i '' U = (D.t i j ≫ D.f _ _) '' D.f _ _ ⁻¹' U := by
-  convert! D.preimage_image_eq_image i j U using 1
+  convert D.preimage_image_eq_image i j U using 1
   rw [coe_comp, coe_comp, Set.image_comp]
   congr! 1
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
@@ -294,7 +294,7 @@ structure MkCore where
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
-    · convert! Subtype.ext this
+    convert! Subtype.ext this
   rw [h.V_id]
   trivial
 
@@ -427,7 +427,7 @@ def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (Equiv.ofBijective (fromOpenSubsetsGlue U)
       ⟨fromOpenSubsetsGlue_injective U,
         Set.range_eq_univ.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩)
-    (fromOpenSubsetsGlue U).hom.2 (fromOpenSubsetsGlue_isOpenMap U)
+    (map_continuous (fromOpenSubsetsGlue U).hom) (fromOpenSubsetsGlue_isOpenMap U)
 
 end GlueData
 

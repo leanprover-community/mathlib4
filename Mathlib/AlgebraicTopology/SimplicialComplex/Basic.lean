@@ -5,10 +5,11 @@ Authors: Bolton Bailey
 -/
 module
 
-public import Mathlib.Order.UpperLower.Relative
-import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Order.UpperLower.Relative
+
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Pow
 
@@ -34,7 +35,6 @@ name `Geometry.SimplicialComplex` using affine combinations in another file.
 
 * `s ∈ K` means that `s` is a face of `K`. This notation arises from a `SetLike` instance.
 * `K ≤ L` means that the faces of `K` are faces of `L`.
-
 -/
 
 @[expose] public section

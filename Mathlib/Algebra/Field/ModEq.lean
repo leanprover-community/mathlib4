@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Group.ModEq
 
 /-!
 # Congruence modulo multiples of an element in a (semi)field
@@ -23,7 +23,7 @@ section DivisionSemiring
 variable {K : Type*} [DivisionSemiring K] {a b c p : K}
 
 @[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
-  simp [modEq_iff_nsmul, add_div' _ _ _ hc, div_left_inj' hc, mul_assoc]
+  simp [modEq_iff_nsmul, add_div' _ _ _ hc, div_left_inj₀ hc, mul_assoc]
 
 @[simp] lemma mul_modEq_mul_right (hc : c ≠ 0) : a * c ≡ b * c [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
   rw [div_eq_mul_inv, ← div_modEq_div (inv_ne_zero hc), div_inv_eq_mul, div_inv_eq_mul]

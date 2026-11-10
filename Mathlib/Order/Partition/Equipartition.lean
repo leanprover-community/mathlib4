@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Set.Equitable
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Partition.Finpartition
+
 import Mathlib.Tactic.ApplyFun
 
 /-!

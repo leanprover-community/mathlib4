@@ -38,7 +38,6 @@ The proof is done by induction, using two standard constructions
 
 
 ## Reference : [Becker-Weispfenning1993]
-
 -/
 
 @[expose] public section
@@ -193,7 +192,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · intro c hc i
         by_cases hc' : c ∈ r'.support
         · exact H'.2.2 c hc' i
-        · convert! hf i
+        · convert hf i
           classical
           have := MvPolynomial.support_add hc
           rw [Finset.mem_union, Classical.or_iff_not_imp_left] at this

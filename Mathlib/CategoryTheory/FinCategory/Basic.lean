@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # Finite categories

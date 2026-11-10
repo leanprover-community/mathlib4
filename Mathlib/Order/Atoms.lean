@@ -48,7 +48,6 @@ which are lattices with only two elements, and related ideas.
 * `IsCompl.isAtom_iff_isCoatom` and `IsCompl.isCoatom_if_isAtom`: In a modular
   bounded lattice, a complement of an atom is a coatom and vice versa.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
-
 -/
 
 @[expose] public section
@@ -1011,7 +1010,7 @@ theorem ComplementedLattice.isStronglyAtomic [IsAtomic α] : IsStronglyAtomic α
     · obtain rfl : a = b := by simpa [codisjoint_bot, ← Subtype.coe_inj] using ha'.codisjoint
       exact False.elim <| hab.ne rfl
     refine ⟨d ⊔ a, IsUpperModularLattice.covBy_sup_of_inf_covBy ?_, sup_le (hd.2.trans ha'b) hab.le⟩
-    convert! hd.1.bot_covBy
+    convert hd.1.bot_covBy
     rw [← le_bot_iff, ← show a ⊓ a' = ⊥ by simpa using Subtype.coe_inj.2 ha'.inf_eq_bot, inf_comm]
     exact inf_le_inf_left _ hd.2
 

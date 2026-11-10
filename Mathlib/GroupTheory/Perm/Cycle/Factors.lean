@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Data.List.Iterate
 public import Mathlib.Data.Set.Pairwise.List
-public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.GroupTheory.NoncommPiCoprod
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.Tactic.Group
 
 /-!
@@ -438,7 +438,7 @@ theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
       have key : ∀ x ∈ σ.support ∩ τ.support, σ x = τ x := by
         intro x hx
         rw [h x (mem_support.mp (mem_of_mem_inter_left hx)), hτl x (mem_of_mem_inter_right hx)]
-      convert! hτ
+      convert hτ
       refine h3.eq_on_support_inter_nonempty_congr (h1 _ hτ) key ?_ ha
       exact key a (mem_inter_of_mem ha hτa)
 

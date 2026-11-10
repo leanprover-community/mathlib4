@@ -5,16 +5,16 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
-public import Mathlib.CategoryTheory.Limits.Types.Products
-import Mathlib.CategoryTheory.Limits.Types.Pullbacks
-public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-public import Mathlib.CategoryTheory.Limits.VanKampen
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.CategoryTheory.Limits.VanKampen
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+
+import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
-
 # Extensive categories
 
 ## Main definitions
@@ -39,7 +39,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 ## References
 - https://ncatlab.org/nlab/show/extensive+category
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
-
 -/
 
 @[expose] public section
@@ -181,7 +180,6 @@ theorem FinitaryExtensive.isPullback_initial_to_binaryCofan [FinitaryExtensive C
     IsPullback (initial.to _) (initial.to _) c.inl c.inr :=
   BinaryCofan.isPullback_initial_to_of_isVanKampen (FinitaryExtensive.vanKampen c hc)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (priority := 100) hasStrictInitialObjects_of_finitaryPreExtensive
     [FinitaryPreExtensive C] : HasStrictInitialObjects C :=
   hasStrictInitial_of_isUniversal (FinitaryPreExtensive.universal' _
@@ -253,7 +251,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
       exacts [Or.inl rfl, Or.inr rfl]
     let eX : { p : Z × PUnit // f p.fst = Sum.inl p.snd } ≃ { x : Z // f x = Sum.inl PUnit.unit } :=
-      ⟨fun p => ⟨p.1.1, by convert! p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
+      ⟨fun p => ⟨p.1.1, by convert p.2⟩, fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl,
         fun _ => by ext; rfl⟩
     let eY : { p : Z × PUnit // f p.fst = Sum.inr p.snd } ≃ { x : Z // f x = Sum.inr PUnit.unit } :=
       ⟨fun p => ⟨p.1.1, p.2.trans congr(Sum.inr $(Subsingleton.elim ..))⟩,
@@ -273,8 +271,8 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       · rfl
     · intro s m e₁ e₂
       ext x
-      simp only [TypeCat.Fun.toFun_apply, Types.binaryCoproductCocone_pt, pair_obj_left,
-        Functor.const_obj_obj, pair_obj_right, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
+      simp only [TypeCat.Fun.toFun_apply, Types.binaryCoproductCocone_pt,
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
       split_ifs
       · rw [← e₁]
         rfl
@@ -301,9 +299,9 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert! f.hom.2.1 _ isOpen_range_inl
+    convert! (map_continuous f.hom).1 _ isOpen_range_inl
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert! f.hom.2.1 _ isOpen_range_inr
+    convert! (map_continuous f.hom).1 _ isOpen_range_inr
   · convert! Set.isCompl_range_inl_range_inr.preimage f
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -330,7 +328,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         fun {l'} h₁ _ => TopCat.ext fun x =>
           hl' x (l' x) congr($h₁ x).symm⟩
       apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
-      convert! s.fst.hom.2 using 1
+      convert! map_continuous s.fst.hom using 1
       exact (funext hl).symm
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
@@ -348,7 +346,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         fun {l'} h₁ _ =>
           TopCat.ext fun x => hl' x (l' x) congr($h₁ x).symm⟩
       apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
-      convert! s.fst.hom.2 using 1
+      convert! map_continuous s.fst.hom using 1
       exact (funext hl).symm
   · intro Z f
     exact finitaryExtensiveTopCatAux Z f
@@ -357,7 +355,6 @@ end TopCat
 
 section Functor
 
-set_option backward.defeqAttrib.useBackward true in
 theorem finitaryExtensive_of_reflective
     [HasFiniteCoproducts D] [HasPullbacksOfInclusions D] [FinitaryExtensive C]
     {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
@@ -427,7 +424,6 @@ end Functor
 
 section FiniteCoproducts
 
-set_option backward.defeqAttrib.useBackward true in
 theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtensive C] {n : ℕ}
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
@@ -441,8 +437,8 @@ theorem FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin [FinitaryPreExtens
     refine IsUniversalColimit.of_iso (@isUniversalColimit_extendCofan _ _ _ _ _ _
       (IH _ (coproductIsCoproduct _)) (FinitaryPreExtensive.universal' _ (coprodIsCoprod _ _)) ?_)
       ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
-    · dsimp
-      infer_instance
+    dsimp
+    infer_instance
 
 theorem FinitaryPreExtensive.isUniversal_finiteCoproducts [FinitaryPreExtensive C] {ι : Type*}
     [Finite ι] {F : Discrete ι ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsUniversalColimit c := by
@@ -451,7 +447,6 @@ theorem FinitaryPreExtensive.isUniversal_finiteCoproducts [FinitaryPreExtensive 
   apply FinitaryPreExtensive.isUniversal_finiteCoproducts_Fin
   exact (IsColimit.whiskerEquivalenceEquiv (Discrete.equivalence e).symm) hc
 
-set_option backward.defeqAttrib.useBackward true in
 theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C] {n : ℕ}
     {F : Discrete (Fin n) ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsVanKampenColimit c := by
   let f : Fin n → C := F.obj ∘ Discrete.mk
@@ -549,7 +544,6 @@ instance FinitaryPreExtensive.hasPullbacks_of_inclusions [FinitaryPreExtensive C
   apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct (c := Cofan.mk Z i)
   exact @IsColimit.ofPointIso (t := Cofan.mk Z i) (P := _) (i := hi)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma FinitaryPreExtensive.isIso_sigmaDesc_fst [FinitaryPreExtensive C] {α : Type} [Finite α]
     {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X) {Y : C} (f : Y ⟶ X) (hπ : IsIso (Sigma.desc π)) :
     IsIso (Sigma.desc ((fun _ ↦ pullback.fst _ _) : (a : α) → pullback f (π a) ⟶ _)) := by
@@ -583,7 +577,6 @@ instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreE
   · exact FinitaryPreExtensive.isUniversal_finiteCoproducts (coproductIsCoproduct Y)
   · exact pullback.isLimit (Sigma.desc f) (Sigma.desc g)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `C` has pullbacks and is finitary (pre-)extensive, pullbacks distribute over finite
 coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`.
 For a variant, see `FinitaryPreExtensive.isIso_sigmaDesc_map`. -/

@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.NumberTheory.RamificationInertia.Galois
+
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Different
-public import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.RingTheory.Unramified.Dedekind
 
 /-!
@@ -17,7 +18,6 @@ import Mathlib.RingTheory.Unramified.Dedekind
 
 This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_mem` and
 `NumberField.abs_discr_gt_two` but is placed in a separate file to avoid large imports.
-
 -/
 public section
 
