@@ -2,6 +2,7 @@ module
 
 import Mathlib.Basic.FunLike.Basic
 import Mathlib.Data.Nat.Basic
+public import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Basic
@@ -504,9 +505,9 @@ public lemma coeFoo_bar_eq_baz : 2 = 2 := rfl
 #guard_msgs in
 #eval isMisnamedCoercionAux `coeFoo_bar_eq_baz
 
--- This lemma involves the name `coe`, but also the coercion `DFunLike.coe`. TODO fix!
-public lemma coe_f {M N : Type*} (f : M → N) : (f : M → N) = f := rfl
-/-- info: (true, "This declaration statement references the coercions(s) []") -/
+-- This lemma involves the name `coe`, but also the coercion `DFunLike.coe`: all is fine.
+public lemma coe_f {M N : Type*} (f : M ≃ N) : (f : M → N) = f := rfl
+/-- info: (false, "") -/
 #guard_msgs in
 #eval isMisnamedCoercionAux `coe_f
 
