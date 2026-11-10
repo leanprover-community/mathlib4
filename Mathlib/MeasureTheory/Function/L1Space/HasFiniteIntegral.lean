@@ -222,7 +222,7 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
 theorem HasFiniteIntegral.of_bounded_of_ne_top [IsFiniteMeasure μ]
     {X : α → ℝ≥0∞} {C : ℝ≥0∞} (hC' : C ≠ ⊤) (hC : ∀ᵐ ω ∂μ, X ω ≤ C) :
     HasFiniteIntegral X μ :=
-  (hasFiniteIntegral_const_enorm (c := C) hC').mono'_enorm hC
+  (hasFiniteIntegral_const_eNorm (c := C) hC').mono'_eNorm hC
 
 theorem HasFiniteIntegral.of_mem_Icc_of_ne_top [IsFiniteMeasure μ]
     {a b : ℝ≥0∞} (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
