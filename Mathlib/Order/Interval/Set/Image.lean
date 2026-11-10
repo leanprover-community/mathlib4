@@ -221,19 +221,29 @@ private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} 
 variable [Preorder α] {p : α → Prop}
 
 @[to_dual (attr := simp)]
-lemma preimage_subtype_val_Ici (a : {x // p x}) : (↑) ⁻¹' (Ici a.1) = Ici a := rfl
+lemma preimage_subtypeVal_Ici (a : {x // p x}) : (↑) ⁻¹' (Ici a.1) = Ici a := rfl
+
+@[deprecated (since := "2026-11-10")] alias preimage_subtype_val_Ici := preimage_subtypeVal_Ici
 
 @[to_dual (attr := simp)]
-lemma preimage_subtype_val_Ioi (a : {x // p x}) : (↑) ⁻¹' (Ioi a.1) = Ioi a := rfl
+lemma preimage_subtypeVal_Ioi (a : {x // p x}) : (↑) ⁻¹' (Ioi a.1) = Ioi a := rfl
+
+@[deprecated (since := "2026-11-10")] alias preimage_subtype_val_Ioi := preimage_subtypeVal_Ioi
 
 @[simp]
-lemma preimage_subtype_val_Icc (a b : {x // p x}) : (↑) ⁻¹' (Icc a.1 b) = Icc a b := rfl
+lemma preimage_subtypeVal_Icc (a b : {x // p x}) : (↑) ⁻¹' (Icc a.1 b) = Icc a b := rfl
+
+@[deprecated (since := "2026-11-10")] alias preimage_subtype_val_Icc := preimage_subtypeVal_Icc
 
 @[to_dual (reorder := a b) (rename := a ↔ b) (attr := simp)]
-lemma preimage_subtype_val_Ico (a b : {x // p x}) : (↑) ⁻¹' (Ico a.1 b) = Ico a b := rfl
+lemma preimage_subtypeVal_Ico (a b : {x // p x}) : (↑) ⁻¹' (Ico a.1 b) = Ico a b := rfl
+
+@[deprecated (since := "2026-11-10")] alias preimage_subtype_val_Ico := preimage_subtypeVal_Ico
 
 @[simp]
-lemma preimage_subtype_val_Ioo (a b : {x // p x}) : (↑) ⁻¹' (Ioo a.1 b) = Ioo a b := rfl
+lemma preimage_subtypeVal_Ioo (a b : {x // p x}) : (↑) ⁻¹' (Ioo a.1 b) = Ioo a b := rfl
+
+@[deprecated (since := "2026-11-10")] alias preimage_subtype_val_Ioo := preimage_subtypeVal_Ioo
 
 @[to_dual self]
 theorem image_subtype_val_Icc_subset (a b : {x // p x}) :
