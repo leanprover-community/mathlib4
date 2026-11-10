@@ -126,12 +126,14 @@ theorem hasFiniteMulSupport {I : Ideal R} (hI : I ≠ 0) :
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
 @[fun_prop]
-theorem hasFiniteMulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
+theorem hasFiniteMulSupport_coeIdeal {I : Ideal R} (hI : I ≠ 0) :
     HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) := by
   rw [HasFiniteMulSupport, mulSupport]
   simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
   exact hasFiniteMulSupport hI
+
+@[deprecated (since := "2026-11-10")] alias hasFiniteMulSupport_coe := hasFiniteMulSupport_coeIdeal
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
@@ -141,7 +143,7 @@ theorem hasFiniteMulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
       (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) := by
   rw [HasFiniteMulSupport, mulSupport]
   simp_rw [zpow_neg, Ne, inv_eq_one]
-  exact hasFiniteMulSupport_coe hI
+  exact hasFiniteMulSupport_coeIdeal hI
 
 /-- For every nonzero ideal `I` of `v`, `v^(val_v(I) + 1)` does not divide `∏_v v^(val_v(I))`. -/
 theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
@@ -224,13 +226,17 @@ variable (K)
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`, when both sides are regarded as fractional
 ideals of `R`. -/
-theorem finprod_heightOneSpectrum_factorization_coe {I : Ideal R} (hI : I ≠ 0) :
+theorem finprod_heightOneSpectrum_factorization_coeIdeal {I : Ideal R} (hI : I ≠ 0) :
     (∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) = I := by
   conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization hI]
   rw [FractionalIdeal.coeIdeal_finprod R⁰ K (le_refl _)]
   simp_rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, FractionalIdeal.coeIdeal_pow,
     zpow_natCast]
+
+@[deprecated (since := "2026-11-10")]
+alias finprod_heightOneSpectrum_factorization_coe :=
+  finprod_heightOneSpectrum_factorization_coeIdeal
 
 end Ideal
 
@@ -249,9 +255,9 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
       ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ) = I := by
   have hJ_ne_zero : J ≠ 0 := ideal_factor_ne_zero hI haJ
-  have hJ := Ideal.finprod_heightOneSpectrum_factorization_coe K hJ_ne_zero
+  have hJ := finprod_heightOneSpectrum_factorization_coeIdeal K hJ_ne_zero
   have ha_ne_zero : Ideal.span {a} ≠ 0 := constant_factor_ne_zero hI haJ
-  have ha := Ideal.finprod_heightOneSpectrum_factorization_coe K ha_ne_zero
+  have ha := finprod_heightOneSpectrum_factorization_coeIdeal K ha_ne_zero
   rw [haJ, ← div_spanSingleton, div_eq_mul_inv, ← coeIdeal_span_singleton, ← hJ, ← ha,
     ← finprod_inv_distrib]
   simp_rw [← zpow_neg]
