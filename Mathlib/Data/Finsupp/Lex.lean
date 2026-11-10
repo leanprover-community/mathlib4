@@ -130,18 +130,10 @@ This is the lexographic `OrderIso` version of `Finsupp.equivCongrLeft`. -/
 def _root_.OrderIso.finsuppLexCongrLeft :
     Lex (α →₀ N) ≃o Lex (β →₀ N) where
   toEquiv := (ofLex.trans (Finsupp.equivCongrLeft eαβ.toEquiv)).trans toLex
-  map_rel_iff' := by
-    simp only [Equiv.trans_apply, Lex.forall, ofLex_toLex, le_iff_lt_or_eq]
-    intro a b
-    rw [toLex_inj, toLex_inj, (Equiv.injective _).eq_iff]
-    apply or_congr_left
-    rw [Lex.lt_iff, Lex.lt_iff]
-    apply eαβ.symm.exists_congr
-    intro i
-    simp only [ofLex_toLex, equivCongrLeft_apply, equivMapDomain_apply, OrderIso.coe_toEquiv]
-    apply and_congr_left'
-    apply eαβ.symm.forall_congr
-    simp
+  map_rel_iff' {a} {b} := by
+    simp_rw [le_iff_lt_or_eq, (Equiv.injective _).eq_iff, Lex.lt_iff,
+      ← eαβ.exists_congr_right, ← eαβ.forall_congr_right]
+    simp [equivMapDomain]
 
 /-- Given `f : α ≃o β`, colexographic powers of `M` indexed by `α` and `β` are also isomorphic:
 `Colex (α →₀ M) ≃o Colex (β →₀ M)`.
