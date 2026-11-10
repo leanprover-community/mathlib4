@@ -40,7 +40,7 @@ variable {F} in
 /-- In a κ-filtered diagram of types, a family of size < κ in the `i`-th stage of the diagram
 collapses to the same element in the colimit if and only if it already does at some
 stage of the colimit. -/
-theorem isColimit_eq_iff'_of_hasCardinalLT
+theorem isColimit_isConst_iff_of_hasCardinalLT
     {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
     {i : J} (x : ι → F.obj i) :
     Function.IsConst (fun k ↦ t.ι.app i (x k)) ↔
@@ -66,25 +66,42 @@ theorem isColimit_eq_iff'_of_hasCardinalLT
     simp [← hb₀ ⟨k1, k2⟩, Sigma.uncurry, hq k1 k2]
   · simp [← dsimp% t.ι.naturality_apply f (x k), h k k']
 
+@[deprecated isColimit_isConst_iff_of_hasCardinalLT +typeChanged (since := "2026-11-10")]
+theorem isColimit_eq_iff'_of_hasCardinalLT
+    {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
+    {i : J} (x : ι → F.obj i) :
+    (∀ (k k' : ι), t.ι.app i (x k) = t.ι.app i (x k')) ↔
+      ∃ (j : _) (f : i ⟶ j), ∀ (k k' : ι), F.map f (x k) = F.map f (x k') :=
+  isColimit_isConst_iff_of_hasCardinalLT κ ht hι x
+
 variable {F} in
 /-- In a κ-filtered diagram of types, a family of size < κ of elements in the diagram collapses
 to the same element in the colimit if and only if it already does at some stage of the colimit. -/
-theorem isColimit_eq_iff''_of_hasCardinalLT
+theorem isColimit_isConst_iff'_of_hasCardinalLT
     {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
     {φ : ι → J} (x : (i : ι) → F.obj (φ i)) :
     Function.IsConst (fun k ↦ t.ι.app (φ k) (x k)) ↔
       ∃ (j : _) (f : (i : ι) → (φ i) ⟶ j), Function.IsConst (fun k ↦ F.map (f k) (x k)) := by
   refine ⟨fun h ↦ ?_, fun ⟨j, f, h⟩ k k' ↦ ?_⟩
-  · -- We reduce to the case of isColimit_eq_iff'_of_hasCardinalLT
+  · -- We reduce to the case of isColimit_isConst_iff_of_hasCardinalLT
     let i₀ := IsCardinalFiltered.max φ hι
     let x₀ (i : ι) : F.obj i₀ := F.map (IsCardinalFiltered.toMax φ hι i) (x i)
     have (k k' : ι) : (t.ι.app i₀) (x₀ k) = (t.ι.app i₀) (x₀ k') := by
       simp [i₀, x₀, h k k']
-    obtain ⟨j, f₀, hj⟩ := (isColimit_eq_iff'_of_hasCardinalLT κ ht hι x₀).mp this
+    obtain ⟨j, f₀, hj⟩ := (isColimit_isConst_iff_of_hasCardinalLT κ ht hι x₀).mp this
     use j, (IsCardinalFiltered.toMax φ hι · ≫ f₀)
     intro k k'
     dsimp [x₀] at hj
     simp [hj k k']
   · simp [← dsimp% t.ι.naturality_apply (f _) (x k), h k k']
+
+@[deprecated isColimit_isConst_iff'_of_hasCardinalLT +typeChanged (since := "2026-11-10")]
+theorem isColimit_eq_iff''_of_hasCardinalLT
+    {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
+    {φ : ι → J} (x : (i : ι) → F.obj (φ i)) :
+    (∀ (k k' : ι), t.ι.app _ (x k) = t.ι.app _ (x k')) ↔
+      ∃ (j : _) (f : (i : ι) → (φ i) ⟶ j), ∀ (k k' : ι),
+        F.map (f k) (x k) = F.map (f k') (x k') :=
+  isColimit_isConst_iff'_of_hasCardinalLT κ ht hι x
 
 end CategoryTheory.Limits.Types.FilteredColimit

@@ -28,7 +28,7 @@ variable
 
 -- Auxiliary version of Liouville's theorem, for real-valued harmonic functions on the complex
 -- plane.
-private theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant_aux (f : ℂ → ℝ)
+private theorem InnerProductSpace.HarmonicOnNhd.isConst_of_isBounded_aux (f : ℂ → ℝ)
     (h_harm : HarmonicOnNhd f univ) (h_bound : Bornology.IsBounded (range f)) :
     ∀ z w, f z = f w := by
   -- By assumption, there exists a holomorphic function $f$ such that $\Re(f) = u$.
@@ -49,7 +49,7 @@ private theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant_
 **Liouville's theorem for harmonic functions on the complex plane** A bounded harmonic function on
 the complex plane is constant.
 -/
-theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant (f : ℂ → E)
+theorem InnerProductSpace.HarmonicOnNhd.isConst_of_isBounded {f : ℂ → E}
     (h_harm : HarmonicOnNhd f univ) (h_bound : IsBounded (range f)) :
     Function.IsConst f := by
   intro z w
@@ -58,4 +58,11 @@ theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant (f : ℂ
   have η₁ : Bornology.IsBounded (range (ℓ ∘ f)) := by
     simpa [range_comp] using IsBounded.image ℓ h_bound
   rw [← sub_eq_zero, ← norm_eq_zero, ← h₂ℓ]
-  grind [bounded_harmonic_on_complex_plane_is_constant_aux (ℓ ∘ f) (h_harm.comp_CLM ℓ) η₁]
+  grind [isConst_of_isBounded_aux (ℓ ∘ f) (h_harm.comp_CLM ℓ) η₁]
+
+@[deprecated InnerProductSpace.HarmonicOnNhd.isConst_of_isBounded +typeChanged
+  (since := "2026-11-10")]
+theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant (f : ℂ → E)
+    (h_harm : HarmonicOnNhd f univ) (h_bound : IsBounded (range f)) :
+    ∀ z w, f z = f w :=
+  h_harm.isConst_of_isBounded h_bound

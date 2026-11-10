@@ -71,7 +71,7 @@ def isLimitConstCone : IsLimit (constCone J X) where
   fac s j := by
     dsimp
     rw [comp_id]
-    exact constant_of_preserves_morphisms _
+    exact isConst_of_preserves_morphisms _
       (fun _ _ f ↦ by simpa using s.w f) _ _
   uniq s m hm := by simpa using hm (Classical.arbitrary _)
 
@@ -82,7 +82,7 @@ def isColimitConstCocone : IsColimit (constCocone J X) where
   fac s j := by
     dsimp
     rw [id_comp]
-    exact constant_of_preserves_morphisms _
+    exact isConst_of_preserves_morphisms _
       (fun _ _ f ↦ by simpa using (s.w f).symm) _ _
   uniq s m hm := by simpa using hm (Classical.arbitrary _)
 

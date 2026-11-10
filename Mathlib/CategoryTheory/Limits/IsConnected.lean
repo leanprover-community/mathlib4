@@ -64,7 +64,7 @@ noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.
   desc s := s.ι.app Classical.ofNonempty
   fac s j := by
     ext ⟨⟩
-    refine constant_of_preserves_morphisms (α := s.pt)
+    refine isConst_of_preserves_morphisms (α := s.pt)
       (fun (k : C) ↦ s.ι.app k PUnit.unit) ?_ Classical.ofNonempty j
     intro X Y f
     congrm $((s.ι.naturality f).symm) .unit
@@ -81,7 +81,7 @@ instance instSubsingletonColimitPUnit
   allEq a b := by
     obtain ⟨c, ⟨⟩, rfl⟩ := jointly_surjective' a
     obtain ⟨d, ⟨⟩, rfl⟩ := jointly_surjective' b
-    apply constant_of_preserves_morphisms (colimit.ι (constPUnitFunctor C) · PUnit.unit)
+    apply isConst_of_preserves_morphisms (colimit.ι (constPUnitFunctor C) · PUnit.unit)
     exact fun c d f => colimit_sound f rfl
 
 /-- Given a connected index category, the colimit of the constant unit-valued functor is `PUnit`. -/

@@ -25,10 +25,10 @@ component'.
 We give some equivalent definitions:
 - A nonempty category for which every functor to a discrete category is
   constant on objects.
-  See `any_functor_const_on_obj` and `Connected.of_any_functor_const_on_obj`.
+  See `isConst_obj_of_isPreconnected` and `Connected.of_any_functor_const_on_obj`.
 - A nonempty category for which every function `F` for which the presence of a
   morphism `f : j₁ ⟶ j₂` implies `F j₁ = F j₂` must be constant everywhere.
-  See `constant_of_preserves_morphisms` and `Connected.of_constant_of_preserves_morphisms`.
+  See `isConst_of_preserves_morphisms` and `Connected.of_constant_of_preserves_morphisms`.
 - A nonempty category for which any subset of its elements containing the
   default and closed under morphisms is everything.
   See `induct_on_objects` and `Connected.of_induct`.
@@ -114,12 +114,17 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
 -/
-theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) :
+theorem isConst_obj_of_isPreconnected [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) :
     Function.IsConst F.obj := fun j j' ↦ by
   ext; exact ((isoConstant F j').hom.app j).1
 
+@[deprecated isConst_obj_of_isPreconnected +typeChanged (since := "2026-11-10")]
+theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j j' : J) :
+    F.obj j = F.obj j' :=
+  isConst_obj_of_isPreconnected F j j'
+
 /-- If any functor to a discrete category is constant on objects, J is connected.
-The converse of `any_functor_const_on_obj`.
+The converse of `isConst_obj_of_isPreconnected`.
 -/
 theorem IsPreconnected.of_any_functor_const_on_obj
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') :
@@ -128,13 +133,13 @@ theorem IsPreconnected.of_any_functor_const_on_obj
 
 instance IsPreconnected.prod [IsPreconnected J] [IsPreconnected K] : IsPreconnected (J × K) := by
   refine .of_any_functor_const_on_obj (fun {a} F ⟨j, k⟩ ⟨j', k'⟩ => ?_)
-  exact (any_functor_const_on_obj (Prod.sectL J k ⋙ F) j j').trans
-    (any_functor_const_on_obj (Prod.sectR j' K ⋙ F) k k')
+  exact (isConst_obj_of_isPreconnected (Prod.sectL J k ⋙ F) j j').trans
+    (isConst_obj_of_isPreconnected (Prod.sectR j' K ⋙ F) k k')
 
 instance IsConnected.prod [IsConnected J] [IsConnected K] : IsConnected (J × K) where
 
 /-- If any functor to a discrete category is constant on objects, J is connected.
-The converse of `any_functor_const_on_obj`.
+The converse of `isConst_obj_of_isPreconnected`.
 -/
 theorem IsConnected.of_any_functor_const_on_obj [Nonempty J]
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') : IsConnected J :=
@@ -146,17 +151,22 @@ This can be thought of as a local-to-global property.
 
 The converse is shown in `IsConnected.of_constant_of_preserves_morphisms`
 -/
-theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F : J → α)
+theorem isConst_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F : J → α)
     (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) : Function.IsConst F := fun j j' ↦ by
   simpa using
-    any_functor_const_on_obj
+    isConst_obj_of_isPreconnected
       { obj := Discrete.mk ∘ F
         map := fun f => eqToHom (by ext; exact h _ _ f) }
       j j'
 
+@[deprecated isConst_of_preserves_morphisms +typeChanged (since := "2026-11-10")]
+theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F : J → α)
+    (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) (j j' : J) : F j = F j' :=
+  isConst_of_preserves_morphisms F h j j'
+
 /-- If `J` is connected, then given any function `F` such that the presence of a
 morphism `j₁ ⟶ j₂` implies `F j₁ = F j₂`, there exists `a` such that `F j = a`
-holds for any `j`. See `constant_of_preserves_morphisms` for a different
+holds for any `j`. See `isConst_of_preserves_morphisms` for a different
 formulation of the fact that `F` is constant.
 This can be thought of as a local-to-global property.
 
@@ -165,13 +175,13 @@ The converse is shown in `IsConnected.of_constant_of_preserves_morphisms`
 theorem constant_of_preserves_morphisms' [IsConnected J] {α : Type u₂} (F : J → α)
     (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) :
     ∃ (a : α), ∀ (j : J), F j = a :=
-  ⟨F (Classical.arbitrary _), fun _ ↦ constant_of_preserves_morphisms _ h _ _⟩
+  ⟨F (Classical.arbitrary _), fun _ ↦ isConst_of_preserves_morphisms _ h _ _⟩
 
 /-- `J` is connected if: given any function `F : J → α` which is constant for any
 `j₁, j₂` for which there is a morphism `j₁ ⟶ j₂`, then `F` is constant.
 This can be thought of as a local-to-global property.
 
-The converse of `constant_of_preserves_morphisms`.
+The converse of `isConst_of_preserves_morphisms`.
 -/
 theorem IsPreconnected.of_constant_of_preserves_morphisms
     (h : ∀ {α : Type u₁} (F : J → α),
@@ -184,7 +194,7 @@ theorem IsPreconnected.of_constant_of_preserves_morphisms
 `j₁, j₂` for which there is a morphism `j₁ ⟶ j₂`, then `F` is constant.
 This can be thought of as a local-to-global property.
 
-The converse of `constant_of_preserves_morphisms`.
+The converse of `isConst_of_preserves_morphisms`.
 -/
 theorem IsConnected.of_constant_of_preserves_morphisms [Nonempty J]
     (h : ∀ {α : Type u₁} (F : J → α),
@@ -201,7 +211,7 @@ The converse is given in `IsConnected.of_induct`.
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
     (h1 : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
   let aux (j₁ j₂ : J) (f : j₁ ⟶ j₂) := congrArg ULift.up (h1 f).eq
-  injection constant_of_preserves_morphisms (fun k => ULift.up.{u₁} (k ∈ p)) aux j j₀ with i
+  injection isConst_of_preserves_morphisms (fun k => ULift.up.{u₁} (k ∈ p)) aux j j₀ with i
   rwa [i]
 
 /--
@@ -481,7 +491,7 @@ This is the key property of connected categories which we use to establish prope
 theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
     (α : (Functor.const J).obj X ⟶ (Functor.const J).obj Y) :
     ∀ j j' : J, α.app j = (α.app j' : X ⟶ Y) :=
-  @constant_of_preserves_morphisms _ _ _ (X ⟶ Y) (fun j => α.app j) fun _ _ f => by
+  @isConst_of_preserves_morphisms _ _ _ (X ⟶ Y) (fun j => α.app j) fun _ _ f => by
     simpa using (α.naturality f).symm
 
 instance [IsConnected J] : (Functor.const J : C ⥤ J ⥤ C).Full where
