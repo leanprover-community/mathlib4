@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.PNat.Prime
 
-import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Tactic.Ring
 
 /-!

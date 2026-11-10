@@ -5,7 +5,6 @@ Authors: Tian Chen
 -/
 module
 
-import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.PNat.Basic
 
 /-!
