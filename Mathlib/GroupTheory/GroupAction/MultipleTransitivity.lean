@@ -58,7 +58,6 @@ import Mathlib.SetTheory.Cardinal.Embedding
 
 These results are results about actions on types `n ↪ α` induced by an action
 on `α`, and some results are developed in this context.
-
 -/
 
 @[expose] public section

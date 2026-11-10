@@ -19,7 +19,6 @@ This file contains some results on cardinality of Ore localizations.
 
 - Prove or disprove `OreLocalization.cardinalMk_le_lift_cardinalMk_of_commute`
   with `Commute` assumption removed.
-
 -/
 
 public section

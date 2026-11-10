@@ -21,7 +21,6 @@ are developed later in the import tree. Hence in this file, they have additional
 that will be automatically satisfied in later files. The motivation here is that we already
 know that these assumptions are satisfied for open immersions and hence the cover API for open
 immersions can be used to deduce these assumptions in the general case.
-
 -/
 
 @[expose] public section

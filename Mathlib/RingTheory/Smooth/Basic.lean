@@ -42,7 +42,6 @@ Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel 
   `H¹(L_{A/R})` is isomorphic to `ker(I/I² → A ⊗[P] Ω[P⁄R])`.
 - `Algebra.FormallySmooth.iff_split_injection`: `A` is formally smooth iff
   the `P`-linear map `I/I² → A ⊗[P] Ω[P⁄R]` is split injective.
-
 -/
 
 @[expose] public section

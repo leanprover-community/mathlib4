@@ -13,7 +13,6 @@ public import Mathlib.Order.Lattice.Nat
 
 The function `dissipate` takes `s : α → Set β` with `LE α` and returns `⋂ y ≤ x, s y`.
 It is related to `accumulate s := ⋃ y ≤ x, s y`.
-
 -/
 
 @[expose] public section

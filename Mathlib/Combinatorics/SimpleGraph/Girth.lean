@@ -13,7 +13,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Diam
 
 This file defines the girth and the extended girth of a simple graph as the length of its smallest
 cycle, they give `0` or `∞` respectively if the graph is acyclic.
-
 -/
 
 @[expose] public section

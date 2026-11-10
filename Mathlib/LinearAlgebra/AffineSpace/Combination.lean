@@ -37,7 +37,6 @@ These definitions are for sums over a `Finset`; versions for a
 ## References
 
 * https://en.wikipedia.org/wiki/Affine_space
-
 -/
 
 @[expose] public section

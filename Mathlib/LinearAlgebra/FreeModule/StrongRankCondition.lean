@@ -32,7 +32,6 @@ is injective.
 * [Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*][djokovic1973]
 * [Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement
   des isomorphismes*][ribenboim1971]
-
 -/
 
 /-- Shortcut instance for the fact that any nontrivial commutative ring satisfies

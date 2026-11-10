@@ -47,7 +47,6 @@ Sometimes Landau notation may be embedded in more complex expressions, such as
 $f(n) = n ^ {1 + O(g(n))}$. This can be expressed using the existential pattern, for example:
 
   `∃ (e : ℕ → ℝ) (he : e =O[l] g), f =ᶠ[l] fun n ↦ n ^ (1 + e n)`.
-
 -/
 
 @[expose] public section

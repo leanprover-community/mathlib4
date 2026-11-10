@@ -25,7 +25,6 @@ We also show that outer measures on a type `α` form a complete lattice.
 ## Tags
 
 outer measure
-
 -/
 
 @[expose] public section

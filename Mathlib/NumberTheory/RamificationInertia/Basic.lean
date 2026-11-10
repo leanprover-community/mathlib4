@@ -38,7 +38,6 @@ We will try to relax the above hypotheses as much as possible.
 
 In this file, `e` stands for the ramification index and `f` for the inertia degree of `P` over `p`,
 leaving `p` and `P` implicit.
-
 -/
 
 deprecated_module "Use RingTheory.RamificationInertia.Basic" (since := "2026-07-01")

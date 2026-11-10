@@ -41,7 +41,6 @@ the roots of the minimal polynomial of `s` over `R`.
 ## References
 
 * https://en.wikipedia.org/wiki/Field_trace
-
 -/
 
 @[expose] public section

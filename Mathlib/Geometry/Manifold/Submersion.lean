@@ -86,7 +86,6 @@ The implementation strategy is identical to the one for immersions. See the impl
 
 **Please talk** to Michael Rothgang before working on this file, to avoid duplicate work.
 The above TODOs are the topic of Samantha Naranjo's master's thesis; it's nicer to coordinate.
-
 -/
 
 public noncomputable section

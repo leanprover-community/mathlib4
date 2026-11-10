@@ -16,7 +16,6 @@ We introduce the bundled category `BialgCat` of bialgebras over a fixed commutat
 along with the forgetful functors to `CoalgCat` and `AlgCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section

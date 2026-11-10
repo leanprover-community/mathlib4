@@ -33,7 +33,6 @@ and `Mathlib/RingTheory/Derivation/ToSquareZero.lean` for
 ## Future project
 
 - Generalize derivations into bimodules.
-
 -/
 
 @[expose] public section
