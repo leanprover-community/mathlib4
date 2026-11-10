@@ -59,6 +59,11 @@ export Module.Oriented (positiveOrientation)
 
 variable {R M}
 
+instance [Nonempty ι] [Subsingleton M] : Subsingleton (Orientation R M ι) := by
+  refine ⟨fun o ↦ ?_⟩
+  induction o using Module.Ray.ind with | h f hf =>
+  exact absurd (AlternatingMap.ext fun v ↦ by simp [Subsingleton.elim v 0]) hf
+
 /-- An equivalence between modules implies an equivalence between orientations. -/
 def Orientation.map (e : M ≃ₗ[R] N) : Orientation R M ι ≃ Orientation R N ι :=
   Module.Ray.map <| AlternatingMap.domLCongr R R ι R e
@@ -331,14 +336,20 @@ end Module.Basis
 
 /-- If the index type has cardinality equal to the finite rank, any two orientations are
 equal or negations. -/
-theorem Orientation.eq_or_eq_neg [Fintype ι] [Module.Free R M] [Module.Finite R M]
-    (x₁ x₂ : Orientation R M ι)
-    (h : Fintype.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
+theorem Orientation.eq_or_eq_neg [Module.Free R M] [Module.Finite R M] (x₁ x₂ : Orientation R M ι)
+    (h : Nat.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
   classical
-  let b := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
-  rcases b.orientation_eq_or_eq_neg x₂ with rfl | rfl
-  · exact b.orientation_eq_or_eq_neg x₁
-  · simpa [or_comm] using b.orientation_eq_or_eq_neg x₁
+  cases finite_or_infinite ι
+  · have := Fintype.ofFinite ι
+    let b : Basis ι R M :=
+      (finBasis R M).reindex (Fintype.equivFinOfCardEq (Nat.card_eq_fintype_card.symm.trans h)).symm
+    rcases b.orientation_eq_or_eq_neg x₂ with rfl | rfl
+    · exact b.orientation_eq_or_eq_neg x₁
+    · rw [neg_neg b.orientation]
+      exact (b.orientation_eq_or_eq_neg x₁).symm
+  · have : Subsingleton M :=
+      (finrank_eq_zero_iff_of_free R M).mp (h.symm.trans Nat.card_eq_zero_of_infinite)
+    simp [Subsingleton.elim x₁ x₂]
 
 end LinearOrderedCommRing
 
@@ -350,16 +361,16 @@ variable {ι : Type*}
 
 namespace Orientation
 
-variable [Fintype ι]
-
 open FiniteDimensional Module
 
 /-- If the index type has cardinality equal to the finite dimension, an orientation equals the
 negation of another orientation if and only if they are not equal. -/
 theorem ne_iff_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
-    (h : Fintype.card ι = finrank R M) : x₁ ≠ x₂ ↔ x₁ = -x₂ :=
+    (h : Nat.card ι = finrank R M) : x₁ ≠ x₂ ↔ x₁ = -x₂ :=
   ⟨fun hn => (eq_or_eq_neg x₁ x₂ h).resolve_left hn, fun he =>
     he.symm ▸ (Module.Ray.ne_neg_self x₂).symm⟩
+
+variable [Fintype ι]
 
 /-- The value of `Orientation.map` when the index type has cardinality equal to the finite
 dimension, in terms of `f.det`. -/

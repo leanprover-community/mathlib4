@@ -56,14 +56,11 @@ lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
     B.exteriorPower l (hodgeStar B hB vol hkl x) = wedgePairing vol hkl x := by
   simp
 
-variable [LinearOrder R] [IsStrictOrderedRing R]
-  [Module.Oriented R M (Fin (finrank R M))]
+variable [LinearOrder R] [IsStrictOrderedRing R] [Module.Oriented R M (Fin (finrank R M))]
 
-/-- The Hodge star associated to `B` and the positive orientation. -/
-@[expose, simps!]
-public def hodgeStarOfOrientation {k l : ℕ}
-    (hkl : k + l = finrank R M) :
+/-- The Hodge star associated to a bijective bilinear form on an oriented module. -/
+abbrev hodgeStarOfOrientation :
     ⋀[R]^k M ≃ₗ[R] ⋀[R]^l M :=
-  hodgeStar B hB (volOfOrientation (R := R) (M := M)) hkl
+  hodgeStar B hB volOfOrientation hkl
 
 end exteriorPower
