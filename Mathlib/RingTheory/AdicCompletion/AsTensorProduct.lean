@@ -33,7 +33,6 @@ As a corollary we obtain
 - Show that `ofTensorProduct` is an isomorphism for any finite free `R`-module over an arbitrary
   ring. This is mostly composing with the isomorphism to `R^n` and checking that the diagram
   commutes.
-
 -/
 
 @[expose] public section
@@ -239,7 +238,6 @@ by the previous section the first vertical map is surjective.
 
 Moreover, both rows are exact by right-exactness of the tensor product and exactness of adic
 completions over Noetherian rings. Hence we conclude by the 5-lemma.
-
 -/
 
 open CategoryTheory

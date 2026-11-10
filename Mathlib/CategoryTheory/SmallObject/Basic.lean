@@ -66,7 +66,6 @@ the file `Mathlib/CategoryTheory/SmallObject/TransfiniteCompositionLifting.lean`
 - [Alexander Grothendieck, *Sur quelques points d'algèbre homologique*][grothendieck-1957]
 - [Daniel G. Quillen, *Homotopical algebra*][Quillen1967]
 - https://ncatlab.org/nlab/show/small+object+argument
-
 -/
 
 @[expose] public section

@@ -21,7 +21,6 @@ showing it has an Iwasawa structure.
 
 * `PSL.iwasawaT` : the candidate family of subgroups for the Iwasawa structure on
   `PSL ι F` acting on the projective space `ℙ F (ι → F)` from `Matrix.SpecialLinearGroup.lineStab`.
-
 -/
 
 @[expose] public section

@@ -30,7 +30,6 @@ In this file we show that whenever `some : α → Option α` is an open embeddin
 
 TODO: Some lemmas around order topologies can likely be generalised from linear orders to pre-
 or partial orders.
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ import Mathlib.Tactic.Basify.Attr
 # `NeZero` typeclass
 
 We give basic facts about the `NeZero n` typeclass.
-
 -/
 
 public section

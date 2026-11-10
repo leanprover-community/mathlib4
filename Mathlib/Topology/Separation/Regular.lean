@@ -57,7 +57,6 @@ If the space is also Lindelöf:
 * <https://en.wikipedia.org/wiki/Separation_axiom>
 * <https://en.wikipedia.org/wiki/Normal_space>
 * [Willard's *General Topology*][zbMATH02107988]
-
 -/
 
 public section

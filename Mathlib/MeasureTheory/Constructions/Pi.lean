@@ -50,7 +50,6 @@ For a collection of σ-finite measures `μ` and a collection of measurable sets 
 ## Tags
 
 finitary product measure
-
 -/
 
 @[expose] public section

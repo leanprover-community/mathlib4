@@ -29,7 +29,6 @@ Note: This definition arose by the end of the Liquid Tensor Experiment which
 contained a structure `has_homology` which is quite similar to `S.HomologyData`.
 After the category `ShortComplex C` was introduced by J. Riou, A. Topaz suggested
 such a structure could be used as a basis for the *definition* of homology.
-
 -/
 
 @[expose] public section

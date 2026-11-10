@@ -40,7 +40,6 @@ finally solved by Andrew Wiles, assisted by Richard Taylor, in 1994 (see
 [R. Taylor and A. Wiles, *Ring-theoretic properties of certain Hecke algebras*][Taylor-Wiles-FLT]).
 An ongoing Lean formalisation of the proof, using mathlib as a dependency, is taking place at
 https://github.com/ImperialCollegeLondon/FLT .
-
 -/
 
 @[expose] public section

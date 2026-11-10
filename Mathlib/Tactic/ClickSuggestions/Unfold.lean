@@ -48,7 +48,6 @@ This is implemented with `unfoldProjDefaultInst?`.
 Additionally, we don't want to unfold into expressions involving `match` terms or other
 constants marked as `Name.isInternalDetail`, and we don't want raw projections.
 So, all such results are filtered out. This is implemented with `isUserFriendly`.
-
 -/
 
 meta section

@@ -49,7 +49,6 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
 
 * `MvPowerSeries.truncTotal` : the truncation of a multivariate formal power series at
   a total degree `n` when the index `σ` is finite
-
 -/
 
 @[expose] public section

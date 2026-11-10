@@ -10,7 +10,6 @@ public import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
 # Centers of subgroups
-
 -/
 
 @[expose] public section

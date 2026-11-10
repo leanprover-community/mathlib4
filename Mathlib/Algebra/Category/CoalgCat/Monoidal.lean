@@ -20,7 +20,6 @@ In this file, we declare a `MonoidalCategory` instance on the category of coalge
 fields given by the definitions in `Mathlib/RingTheory/Coalgebra/TensorProduct.lean`, and Prop
 fields proved by pulling back the `MonoidalCategory` instance on the category of modules,
 using `Monoidal.induced`.
-
 -/
 
 @[expose] public section
