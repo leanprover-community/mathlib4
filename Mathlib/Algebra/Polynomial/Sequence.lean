@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
-
 # Polynomial sequences
 
 We define polynomial sequences – sequences of polynomials `a₀, a₁, ...` such that the polynomial

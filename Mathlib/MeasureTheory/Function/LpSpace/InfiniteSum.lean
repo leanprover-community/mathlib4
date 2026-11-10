@@ -40,7 +40,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
     rw [← this]
     exact le_tsum (fun i ↦ eLpNorm (f i) p μ) _
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
-    filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
+    filter_upwards [H] with x hx using tsum_eNorm_ne_top_iff_summable_norm.1 hx.ne
   -- the result is straightforward in `L^∞`.
   rcases eq_top_or_lt_top p with rfl | h'p
   · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := ae_all_iff.2 fun n ↦ by
@@ -56,8 +56,8 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
   have A (s : Set X) (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
       ∀ᵐ x ∂μ, x ∈ s → ∑' n, ‖f n x‖ₑ < ∞ := by
     rw [← ae_restrict_iff' hs]
-    apply ae_lt_top' (AEMeasurable.tsum (fun i ↦ (hf i).restrict.enorm))
-    rw [lintegral_tsum (fun i ↦ (hf i).restrict.enorm)]
+    apply ae_lt_top' (AEMeasurable.tsum (fun i ↦ (hf i).restrict.eNorm))
+    rw [lintegral_tsum (fun i ↦ (hf i).restrict.eNorm)]
     apply ne_of_lt
     have : ∑' n, eLpNorm (f n) p (μ.restrict s) *
         (μ.restrict s) Set.univ ^ (1 / ENNReal.toReal 1 - 1 / p.toReal) < ∞ := by
@@ -75,7 +75,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
         simpa
     apply lt_of_le_of_lt ?_ this
     gcongr with i
-    rw [← eLpNorm_one_eq_lintegral_enorm (hf i).restrict]
+    rw [← eLpNorm_one_eq_lintegral_eNorm (hf i).restrict]
     exact eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos hp zero_lt_one
   /- We wish now to reduce to finite measure sets to apply the above. The function `f n` in `L^p`
   has a sigma-finite support, that we denote by `s n`. -/
@@ -115,14 +115,14 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) (⇑(∑' n, f n) a) := by
   have A : ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
     apply summable_norm_of_tsum_eLpNorm_ne_top hp.out
-    simpa [enorm_def] using hf
+    simpa [eNorm_def] using hf
   have B : ∀ᵐ x ∂μ, ∀ n, ⇑(∑ i ∈ range n, f i) x = ∑ i ∈ range n, f i x := by
     rw [ae_all_iff]
     exact fun i ↦ coeFn_fun_finsetSum _ _
   obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧ ∀ᵐ x ∂μ,
       Tendsto (fun i ↦ (∑ j ∈ range (ns i), f j : Lp E p μ) x) atTop (𝓝 ((∑' n, f n) x)) := by
     have : Tendsto (fun i ↦ (∑ j ∈ range i, f j)) atTop (𝓝 (∑' n, f n)) :=
-      Summable.tendsto_sum_tsum_nat (Summable.of_enorm hf)
+      Summable.tendsto_sum_tsum_nat (Summable.of_eNorm hf)
     exact (tendstoInMeasure_of_tendsto_Lp this).exists_seq_tendsto_ae
   filter_upwards [A, B, nslim] with x S h'x h''x
   apply hasSum_of_subseq_of_summable S (tendsto_finset_range.comp hns.tendsto_atTop)

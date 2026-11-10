@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
-
 # Monad operations on `MvPolynomial`
 
 This file defines two monadic operations on `MvPolynomial`. Given `p : MvPolynomial σ R`,
