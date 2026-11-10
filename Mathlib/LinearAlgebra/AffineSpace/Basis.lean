@@ -396,31 +396,45 @@ end DivisionRing
 
 end AffineBasis
 
--- namespace Module.Basis
+namespace Module.Basis
 
--- variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P] {n : ℕ}
+variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P] {n : ℕ}
 
--- /-- `0` together with the vectors of a basis of `V` indexed by `Fin n` form an affine basis of
--- `V`, indexed by `Fin (n + 1)`. -/
--- noncomputable def toAffineBasis (b : Basis ι k V) (p : P) : AffineBasis (Option ι) k P where
---   toFun
---     | .none => p
---     | .some i => (b i) +ᵥ p
---   ind' := by
---     stop
---     rw [affineIndependent_iff_linearIndependent_vsub k (Fin.cons 0 (⇑b)) 0,
---       ← linearIndependent_equiv' (finSuccAboveEquiv 0) (g := b) ?_]
---     · exact b.linearIndependent
---     · ext j
---       simp [finSuccAboveEquiv_apply]
---   tot' := SetLike.coe_injective <| by
---     stop
---     rw [Fin.range_cons, affineSpan_insert_zero, b.span_eq]
---     simp
+/-- `0` together with the vectors of a basis of `V` indexed by `Fin n` form an affine basis of
+`V`, indexed by `Fin (n + 1)`. -/
+noncomputable def toAffineBasis (b : Basis ι k V) (p : P) : AffineBasis (Option ι) k P where
+  toFun
+    | .none => p
+    | .some i => (b i) +ᵥ p
+  ind' := by
+    -- This is quite disgusting I will golf it soon
+    rw [affineIndependent_iff_linearIndependent_vsub k _ none]
+    simp only
+    convert_to LinearIndependent k fun (i : {x : Option ι // x.isSome}) ↦ (match (i : Option ι) with
+      | none => p
+      | some i => b i +ᵥ p) -ᵥ
+      p
+    · simp [Option.ne_none_iff_isSome]
+    · (expose_names; refine Function.hfunext e_1 ?_)
+      intro a a' haa'
+      simp only [ne_eq, heq_eq_eq, vsub_left_cancel_iff]
+      congr 1
+      grind[Option.ne_none_iff_isSome]
+    convert_to LinearIndependent k fun i ↦ b i
+    · refine linearIndependent_equiv' (Equiv.optionIsSomeEquiv ι) ?_
+      ext ⟨x, hx⟩
+      induction x with
+      | none => simp at hx
+      | some i => simp
+    exact b.linearIndependent
+  tot' := SetLike.coe_injective <| by
+    stop
+    rw [Fin.range_cons, affineSpan_insert_zero, b.span_eq]
+    simp
 
--- -- @[simp]
--- -- lemma coe_toAffineBasis (b : Basis (Fin n) k V) :
--- --     b.toAffineBasis (0 : V) = sorry :=
--- --   rfl
+-- @[simp]
+-- lemma coe_toAffineBasis (b : Basis (Fin n) k V) :
+--     b.toAffineBasis (0 : V) = sorry :=
+--   rfl
 
--- end Module.Basis
+end Module.Basis
