@@ -23,20 +23,25 @@ universe v u
 
 open CategoryTheory
 
+/-- A wrapper for turning a category `C` into its associated preorder of objects. -/
+structure Preorder.OfCat (C : Type u) where
+  obj : C
+
+instance (C : Type u) [Category.{v} C] : Preorder (Preorder.OfCat C) where
+  le X Y := Nonempty (X.obj ⟶ Y.obj)
+  le_refl X := ⟨𝟙 X.obj⟩
+  le_trans _ _ _ := Nonempty.map2 (· ≫ ·)
+
 /-- The preorder on the objects of a category given by the existence of a morphism. -/
 @[implicit_reducible]
-def Preord.ofCat (C : Type u) [Category.{v} C] : Preord.{u} where
-  carrier := C
-  str.le X Y := Nonempty (X ⟶ Y)
-  str.le_refl X := ⟨𝟙 X⟩
-  str.le_trans _ _ _ := Nonempty.map2 (· ≫ ·)
+def Preord.ofCat (C : Type u) [Category.{v} C] : Preord.{u} := .of (Preorder.OfCat C)
 
 /-- The functor sending a small category to its preorder of objects. -/
 @[implicit_reducible]
 def catToPreord : Cat.{u, u} ⥤ Preord.{u} where
   obj C := .ofCat C
-  map {C D} F := Preord.ofHom (X := Preord.ofCat C) (Y := Preord.ofCat D)
-    ⟨F.toFunctor.obj, fun _ _ h ↦ h.map F.toFunctor.map⟩
+  map F := Preord.ofHom
+    ⟨fun X ↦ ⟨F.toFunctor.obj X.obj⟩, fun _ _ h ↦ h.map F.toFunctor.map⟩
 
 /-- `catToPreord` is left adjoint to `preordToCat`. -/
 def catToPreordAdjunction : catToPreord.{u} ⊣ preordToCat :=
@@ -44,10 +49,10 @@ def catToPreordAdjunction : catToPreord.{u} ⊣ preordToCat :=
     { homEquiv C P :=
         { toFun f :=
             Functor.toCatHom
-              { obj := f.hom
+              { obj X := f.hom ⟨X⟩
                 map g := homOfLE (f.hom.monotone ⟨g⟩) }
-          invFun F := Preord.ofHom (X := catToPreord.obj C) (Y := P)
-            ⟨F.toFunctor.obj, fun _ _ h ↦ h.elim fun f ↦ leOfHom (F.toFunctor.map f)⟩ } }
+          invFun F := Preord.ofHom ⟨fun X ↦ F.toFunctor.obj X.obj,
+            fun _ _ h ↦ h.elim fun f ↦ leOfHom (F.toFunctor.map f)⟩ } }
 
 instance : Reflective preordToCat.{u} where
   L := catToPreord
@@ -56,6 +61,6 @@ instance : Reflective preordToCat.{u} where
 /-- A thin category is isomorphic to the category associated to its preorder of objects. -/
 noncomputable def Preord.ofCatIso (C : Type u) [SmallCategory C] [Quiver.IsThin C] :
     preordToCat.obj (ofCat C) ≅ .of C where
-  hom := Functor.toCatHom { obj := id, map f := (leOfHom f).some }
-  inv := Functor.toCatHom { obj := id, map f := homOfLE ⟨f⟩ }
+  hom := Functor.toCatHom { obj := Preorder.OfCat.obj, map f := (leOfHom f).some }
+  inv := Functor.toCatHom { obj := .mk, map f := homOfLE ⟨f⟩ }
   inv_hom_id := Cat.ext <| Functor.ext (fun _ ↦ rfl) fun _ _ _ ↦ Subsingleton.elim _ _

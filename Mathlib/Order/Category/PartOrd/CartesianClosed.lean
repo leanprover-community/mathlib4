@@ -29,8 +29,8 @@ instance : ExponentialIdeal (forget₂ PartOrd.{u} Preord.{u}) :=
     let : PartialOrder B :=
       { B.str with
         le_antisymm _ _ hFG hGF :=
-          Functor.eq_of_iso (C := P) (D := A) (fun _ _ h ↦ h.some.to_eq)
-            (iso_of_both_ways (C := A ⥤ P) hFG.some hGF.some) }
+          congrArg Preorder.OfCat.mk <| Functor.eq_of_iso (C := P)
+            (fun _ _ h ↦ h.some.to_eq) (iso_of_both_ways hFG.some hGF.some) }
     ⟨.of B, ⟨.refl _⟩⟩
 
 namespace PartOrd
