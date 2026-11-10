@@ -161,7 +161,7 @@ theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (
   · refine Finset.le_sup_of_le (b := d) ?_ le_rfl
     rw [mem_support_iff, coeff_add, Finsupp.add_apply]
     suffices q.coeff d = 0 by rw [this, add_zero]; rwa [← mem_support_iff]
-    rw [Ne, ← Finsupp.support_eq_empty, ← Ne, Finset.ne_empty_iff_nonempty] at h0
+    rw [← Finsupp.support_nonempty_iff] at h0
     obtain ⟨j, hj⟩ := h0
     contrapose! h
     rw [mem_support_iff] at hd
