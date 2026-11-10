@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finset.NAry
 public import Mathlib.Data.Nat.Find
 
 /-!
@@ -47,7 +48,7 @@ def HolorIndex (ds : List ℕ) : Type :=
 
 namespace HolorIndex
 
-variable {ds₁ ds₂ ds₃ : List ℕ}
+variable {ds ds₁ ds₂ ds₃ : List ℕ}
 
 /-- Take the first elements of a `HolorIndex`. -/
 def take : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₁
@@ -78,6 +79,40 @@ theorem drop_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.d
 
 theorem drop_drop : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.drop = t.drop
   | ⟨is, h⟩ => Subtype.ext (by simp [assocRight, drop, cast_type, List.drop_drop])
+
+instance : DecidableEq (HolorIndex ds) := Subtype.instDecidableEq
+
+variable {d : ℕ}
+
+/-- Prepend a new dimension to a `HolorIndex`. -/
+def cons (i : Fin d) (is : HolorIndex ds) : HolorIndex (d :: ds) :=
+  ⟨i :: is.1, List.Forall₂.cons i.isLt is.2⟩
+
+/-- The finite set of all `HolorIndex`s for a given list of dimensions. -/
+def all_elems : (ds : List ℕ) → Finset (HolorIndex ds)
+  | [] => {⟨[], .nil⟩}
+  | d :: ds => Finset.image₂ cons (.univ : Finset (Fin d)) (all_elems ds)
+
+instance : Fintype (HolorIndex ds) where
+  elems := all_elems ds
+  complete := by
+    induction ds with
+    | nil =>
+      rintro ⟨is, ⟨h⟩⟩
+      exact Finset.insert_eq_self.mp rfl
+    | cons d ds ih =>
+      rintro ⟨is, (h)⟩
+      cases h with
+      | @cons a _ l _ ha hl =>
+        dsimp [all_elems]
+        rw [Finset.image₂]
+        let a' : Fin d := ⟨a, ha⟩
+        have ha' : a' ∈ Finset.univ := Finset.mem_univ a'
+        let l' : HolorIndex ds := ⟨l, hl⟩
+        have hl' : l' ∈ all_elems ds := Finset.mem_coe.mp (ih l')
+        exact Finset.mem_image.mpr ⟨⟨a', l'⟩, ⟨Finset.mk_mem_product ha' (ih l'), rfl⟩⟩
+
+instance : Finite (HolorIndex ds) := by infer_instance
 
 end HolorIndex
 
