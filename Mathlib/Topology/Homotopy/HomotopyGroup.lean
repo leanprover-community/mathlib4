@@ -208,7 +208,7 @@ lemma continuous_currySum : Continuous (currySum x (M := M) (N := N)) :=
 /-- Given an element `p` in the `M`-iterated loop space of the `N`-iterated loop space of `X`,
 this induces a continuous function from `I^M × I^N` to `X`. -/
 protected def uncurry (p : Ω^ M (Ω^ N X x) const) : C((I^M) × (I^N), X) :=
-  .uncurry ⟨fun a => ⟨(p.1 a).1, ContinuousMap.continuous _⟩, (map_continuous p).subtype_val⟩
+  .uncurry ⟨fun a => ⟨(p.1 a).1, ContinuousMap.continuous _⟩, (map_continuous p).subtypeVal⟩
 
 @[simp]
 lemma uncurry_apply (p : Ω^ M (Ω^ N X x) const) (y : (I^M) × (I^N)) :

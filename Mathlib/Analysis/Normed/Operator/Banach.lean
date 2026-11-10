@@ -389,7 +389,7 @@ variable {E F : Type*}
 `f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
-  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitzWith⟩
+  ⟨_, .comp (.subtypeVal (Set.range f)) (f.equivRange hf hf').antilipschitzWith⟩
 
 /-- A choice of anti-Lipschitz constant for `f : E →L[𝕜] F` injective with closed range
 (assuming `E` and `F` are Banach spaces). -/
