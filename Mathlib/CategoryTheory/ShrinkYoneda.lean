@@ -14,7 +14,6 @@ Let `C` be a locally `w`-small category. We define the Yoneda
 embedding `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w`. (See the
 file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 `uliftYoneda`.)
-
 -/
 
 @[expose] public section
@@ -566,14 +565,14 @@ section
 variable {D : Type*} [Category* D] [LocallySmall.{w} D]
 
 /-- The natural transformation `shrinkCoyoneda.obj X ⟶ F ⋙ shrinkCoyoneda.obj (F.op.obj X)`
-when `F : C ⥤ D` and `X : Cᵒᵖ`. -/
+induced by `shrinkYonedaMap₂` when `F : C ⥤ D` and `X : Cᵒᵖ`. -/
 noncomputable def shrinkCoyonedaMap (F : C ⥤ D) (X : Cᵒᵖ) :
     shrinkCoyoneda.{w}.obj X ⟶ F ⋙ shrinkCoyoneda.{w}.obj (F.op.obj X) :=
   ((flipFunctor ..).map (shrinkYonedaMap₂ F)).app _
 
 lemma shrinkCoyonedaMap_app_shrinkCoyonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
-    (shrinkCoyonedaMap.{w} F (op X)).app _ (shrinkYonedaObjObjEquiv.symm f) =
-      shrinkYonedaObjObjEquiv.symm (F.map f) := by
+    (shrinkCoyonedaMap.{w} F (op X)).app _ (shrinkCoyonedaObjObjEquiv.symm f) =
+      shrinkCoyonedaObjObjEquiv.symm (F.map f) := by
   simp [shrinkCoyonedaMap, shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm.{w}]
 
 lemma shrinkCoyonedaMap_app (F : C ⥤ D) (X : Cᵒᵖ) (Y : C) :

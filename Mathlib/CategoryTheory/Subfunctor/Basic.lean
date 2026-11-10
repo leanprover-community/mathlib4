@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
 /-!
-
 # Subfunctor of types
 
 We define subfunctors of a type-valued functors.
@@ -18,7 +17,6 @@ We define subfunctors of a type-valued functors.
 ## Main definition
 
 `CategoryTheory.Subfunctor` : A subfunctor of a type-valued functor.
-
 -/
 
 @[expose] public section

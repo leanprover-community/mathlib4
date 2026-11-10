@@ -16,7 +16,6 @@ This file defines the permanent of a matrix, `Matrix.permanent`, and some of its
 ## Main definitions
 
 * `Matrix.permanent`: the permanent of a square matrix, as a sum over permutations
-
 -/
 
 @[expose] public section

@@ -19,7 +19,6 @@ satisfying `W`.
 Given an object property `P`, we also introduce two predicates
 `P.IsClosedUnderKernels` and `P.IsClosedUnderCokernels`, stating that all
 (co)kernels of morphisms between objects in `P` remain in `P`.
-
 -/
 
 @[expose] public section

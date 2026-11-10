@@ -39,7 +39,6 @@ are regular local rings.
 ## TODO
 Show that regular local rings are regular under this definition.
 This follows from localizations of regular local rings being regular (@Thmoas-Guan).
-
 -/
 
 public section

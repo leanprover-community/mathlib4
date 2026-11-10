@@ -17,7 +17,6 @@ lengths.
 ## References
 
 * https://en.wikipedia.org/wiki/Herons_formula
-
 -/
 
 open Real EuclideanGeometry

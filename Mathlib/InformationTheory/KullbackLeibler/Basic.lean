@@ -38,7 +38,6 @@ The definition we use extends this to finite measures by introducing a correctio
 `∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`, which is nonnegative for all finite
 measures `μ ≪ ν`. This also makes `klDiv μ ν` equal to an f-divergence: it equals the integral
 `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν`, in which `klFun x = x * log x + 1 - x`.
-
 -/
 
 public section

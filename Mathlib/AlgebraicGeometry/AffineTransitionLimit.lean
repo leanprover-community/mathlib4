@@ -14,12 +14,10 @@ import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 
 /-!
-
 # Inverse limits of schemes with affine transition maps
 
 In this file, we develop API for inverse limits of schemes with affine transition maps,
 following EGA IV 8 and https://stacks.math.columbia.edu/tag/01YT.
-
 -/
 
 @[expose] public section
@@ -366,7 +364,6 @@ lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
   exact QuasiCompact.compactSpace_of_compactSpace (c.π.app i)
 
 /-!
-
 ## Cofiltered Limits and Schemes of Finite Type
 
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,
@@ -705,7 +702,6 @@ any `s : Γ(lim Dᵢ, ⊤)` comes from `Γ(Dᵢ, ⊤)` for some `i`.
 See `AlgebraicGeometry.exists_appTop_π_eq_of_isLimit`.
 
 These two results imply that `PreservesLimit D Scheme.Γ.rightOp`, which is available as an instance.
-
 -/
 section sections
 

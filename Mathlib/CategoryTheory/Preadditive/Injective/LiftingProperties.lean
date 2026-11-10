@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 An object `I` is injective iff the morphism `I ⟶ 0` has the
 right lifting property with respect to monomorphisms,
 `injective_iff_rlp_monomorphisms_zero`.
-
 -/
 
 public section
