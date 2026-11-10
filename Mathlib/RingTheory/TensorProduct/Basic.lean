@@ -25,7 +25,6 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 ## References
 
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
-
 -/
 
 @[expose] public section
@@ -186,11 +185,7 @@ variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower
 
 unseal mul in
 protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
-  -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    congrm $this x y z
+  apply mul.assoc_iff.mpr
   ext xa xb ya yb za zb
   congrm $(mul_assoc xa ya za) ⊗ₜ $(mul_assoc xb yb zb)
 
@@ -242,7 +237,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
-lemma algebraMap_def [SMulCommClass R S A] :
+lemma algebraMap_def :
     algebraMap S (A ⊗[R] B) = includeLeftRingHom.comp (algebraMap S A) := rfl
 
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
@@ -253,7 +248,7 @@ instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
 @[simp]
-theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
+theorem algebraMap_apply (r : S) :
     algebraMap S (A ⊗[R] B) r = (algebraMap S A) r ⊗ₜ 1 :=
   rfl
 
@@ -266,11 +261,11 @@ def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
 
 @[simp]
-theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
+theorem includeLeft_apply (a : A) :
     (includeLeft : A →ₐ[S] A ⊗[R] B) a = a ⊗ₜ 1 :=
   rfl
 
-@[simp] theorem toLinearMap_includeLeft [SMulCommClass R S A] :
+@[simp] theorem toLinearMap_includeLeft :
     (includeLeft : A →ₐ[S] A ⊗[R] B).toLinearMap = (AlgebraTensorModule.mk R S A B).flip 1 := rfl
 
 /-- The algebra morphism `B →ₐ[R] A ⊗[R] B` sending `b` to `1 ⊗ₜ b`. -/
@@ -654,7 +649,7 @@ lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (al
 
 lemma Algebra.TensorProduct.includeLeft_surjective
     (S A : Type*) [CommSemiring S] [Semiring A] [Algebra S A] [Algebra R A]
-    [SMulCommClass R S A] (h : Function.Surjective (algebraMap R T)) :
+    (h : Function.Surjective (algebraMap R T)) :
     Function.Surjective (includeLeft : A →ₐ[S] A ⊗[R] T) :=
   TensorProduct.flip_mk_surjective _ h
 

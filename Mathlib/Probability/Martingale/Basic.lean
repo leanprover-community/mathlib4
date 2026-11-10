@@ -33,7 +33,6 @@ with respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 
 * `MeasureTheory.martingale_condExp f ℱ μ`: the sequence `fun i => μ[f | ℱ i]` is a
   martingale with respect to `ℱ` and `μ`.
-
 -/
 
 @[expose] public section
@@ -254,7 +253,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ
     (hg : Martingale g ℱ μ) : Submartingale (f - g) ℱ μ :=
   hf.sub_supermartingale hg.supermartingale
 
-protected theorem sup [Lattice E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+protected theorem sup [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
     [IsOrderedModule ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) :
     Submartingale (f ⊔ g) ℱ μ := by
@@ -269,7 +268,7 @@ protected theorem sup [Lattice E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedA
       (condExp_mono (hg.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
         (Eventually.of_forall fun x => le_sup_right))
 
-protected theorem pos [Lattice E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+protected theorem pos [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
     [IsOrderedModule ℝ E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
     Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale

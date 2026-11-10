@@ -39,7 +39,6 @@ metric `g` if and only if the differentiated metric tensor `∇ g` (defined by
   `Hom(V, W)`. When this induced connection has been defined in Mathlib, rephrase the definition of
   `CovariantDerivative.derivMetricTensor`, to be simply the covariant derivative of the
   metric tensor (considered as a section of `Hom(V, Hom(V, ℝ))`).
-
 -/
 open Bundle NormedSpace
 open scoped Manifold ContDiff

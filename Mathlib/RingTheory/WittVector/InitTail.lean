@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
-
 # `init` and `tail`
 
 Given a Witt vector `x`, we are sometimes interested
@@ -31,7 +30,6 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 * [Hazewinkel, *Witt Vectors*][Haze09]
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
-
 -/
 
 @[expose] public section

@@ -17,7 +17,6 @@ When `M` is finite, this is the topology that is induced by the
 embedding `StdSimplex R M → (M → R)`. In general, we use the supremum of
 the coinduced topologies for the maps `StdSimplex.map f : StdSimplex R ι → StdSimplex R M`
 where `f : ι → M` is a map from a finite set `ι`.
-
 -/
 
 universe u v
@@ -29,7 +28,7 @@ variable (R : Type u) [PartialOrder R] [Ring R] [TopologicalSpace R]
 namespace Convexity.StdSimplex
 
 /-- The topology on `StdSimplex R ι` that is induced by the embedding
-`StdSimplex R ι → (ι → R)`. This is the correct topoplogy only when
+`StdSimplex R ι → (ι → R)`. This is the correct topology only when
 `ι` is finite, see `StdSimplex.isEmbedding_toFun_comp_weights`. -/
 abbrev topologicalSpaceInduced (ι : Type*) : TopologicalSpace (StdSimplex R ι) :=
   .induced (fun t ↦ t.weights : StdSimplex R ι → ι → R) inferInstance

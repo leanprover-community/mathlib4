@@ -35,7 +35,6 @@ We show that algebraic independence is preserved under injective maps of the ind
 ## References
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
-
 -/
 
 @[expose] public section

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.MvPolynomial.Variables
 
 /-!
-
 # Monad operations on `MvPolynomial`
 
 This file defines two monadic operations on `MvPolynomial`. Given `p : MvPolynomial σ R`,
@@ -42,7 +41,6 @@ whereas `MvPolynomial.map` is the "map" operation for the other pair.
 We add a `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
 The second pair cannot be instantiated as a `Monad`,
 since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingCat`).
-
 -/
 
 @[expose] public section

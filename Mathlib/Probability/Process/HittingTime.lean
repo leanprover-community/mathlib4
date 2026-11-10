@@ -30,7 +30,6 @@ we have only proved it for the discrete case so far).
   is a stopping time
 * `MeasureTheory.Adapted.isStoppingTime_hittingAfter`: a discrete hitting time of a adapted process
   is a stopping time
-
 -/
 
 @[expose] public section
@@ -99,7 +98,7 @@ lemma hittingAfter_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι �
   classical
   simp only [hittingAfter_def, Set.mem_univ, and_true]
   rw [ite_eq_left ⟨n, le_rfl⟩]
-  exact_mod_cast csInf_Ici
+  exact mod_cast csInf_Ici
 
 end Basic
 
@@ -131,7 +130,7 @@ theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (
     u k ω ∉ s := by
   refine fun h ↦ not_le.2 hk₁ ?_
   rw [hittingAfter, ite_eq_left ⟨k, hk₂, h⟩]
-  exact_mod_cast csInf_le (s := {i | n ≤ i ∧ u i ω ∈ s}) ⟨n, fun j hj => hj.1⟩ ⟨hk₂, h⟩
+  exact mod_cast csInf_le (s := {i | n ≤ i ∧ u i ω ∈ s}) ⟨n, fun j hj => hj.1⟩ ⟨hk₂, h⟩
 
 theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m := by
@@ -164,7 +163,7 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
   split_ifs with h
-  · exact_mod_cast le_csInf (s := {i | n ≤ i ∧ u i ω ∈ s}) h fun b hb => hb.1
+  · exact mod_cast le_csInf (s := {i | n ≤ i ∧ u i ω ∈ s}) h fun b hb => hb.1
   · simp
 
 theorem le_hittingBtwn_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -219,7 +218,7 @@ lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
   rw [hittingAfter, ite_eq_left h_exists]
-  exact_mod_cast csInf_le (s := {i | n ≤ i ∧ u i ω ∈ s}) ⟨n, fun j hj => hj.1⟩ ⟨hin, his⟩
+  exact mod_cast csInf_le (s := {i | n ≤ i ∧ u i ω ∈ s}) ⟨n, fun j hj => hj.1⟩ ⟨hin, his⟩
 
 theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
     (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -433,7 +432,7 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
 is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
-    [FirstCountableTopology ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
+    [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
     {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
     IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).untopA N x : ι) := by

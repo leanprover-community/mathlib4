@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
-## The Verschiebung operator
+# The Verschiebung operator
 
 ## References
 
