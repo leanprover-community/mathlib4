@@ -138,7 +138,7 @@ theorem Filter.HasBasis.isUniformEmbedding_iff {ι ι'} {p : ι → Prop} {p' : 
       (∀ j, p j → ∃ i, p' i ∧ ∀ x y, (f x, f y) ∈ s' i → (x, y) ∈ s j) := by
   simp only [h.isUniformEmbedding_iff' h', h.uniformContinuous_iff h']
 
-theorem isUniformEmbedding_subtype_val {p : α → Prop} :
+theorem isUniformEmbedding_subtypeVal {p : α → Prop} :
     IsUniformEmbedding (Subtype.val : Subtype p → α) :=
   { comap_uniformity := rfl
     injective := Subtype.val_injective }
