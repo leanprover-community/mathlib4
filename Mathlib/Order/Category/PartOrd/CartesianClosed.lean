@@ -23,8 +23,6 @@ universe u
 open CategoryTheory Limits
 open scoped MonoidalCategory
 
-noncomputable section
-
 instance : ExponentialIdeal (forget₂ PartOrd.{u} Preord.{u}) := by
   apply ExponentialIdeal.mk'
   intro P A
@@ -44,10 +42,12 @@ def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
     (fun _ _ ↦ by ext)
 
 /-- The category of partial orders has `PUnit` as a terminal object. -/
+@[implicit_reducible]
 def terminalLimitCone : LimitCone (Functor.empty.{0} PartOrd.{u}) :=
   ⟨_, isTerminalPUnit⟩
 
 /-- The product cone of partial orders, with the usual product partial order. -/
+@[implicit_reducible]
 def prodCone (X Y : PartOrd.{u}) : BinaryFan X Y :=
   .mk (P := of (X × Y)) (ofHom .fst) (ofHom .snd)
 
@@ -60,6 +60,7 @@ def isLimitProdCone (X Y : PartOrd.{u}) : IsLimit (prodCone X Y) := by
 
 /-- The category of partial orders has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`. -/
+@[implicit_reducible]
 def binaryProductLimitCone (X Y : PartOrd.{u}) : LimitCone (pair X Y) :=
   ⟨prodCone X Y, isLimitProdCone X Y⟩
 
@@ -71,7 +72,7 @@ lemma tensorUnit_def : 𝟙_ PartOrd.{u} = of PUnit.{u + 1} := rfl
 
 instance : BraidedCategory PartOrd.{u} := .ofCartesianMonoidalCategory
 
-instance : MonoidalClosed PartOrd.{u} :=
+noncomputable instance : MonoidalClosed PartOrd.{u} :=
   cartesianClosedOfReflective (forget₂ PartOrd Preord)
 
 end PartOrd
