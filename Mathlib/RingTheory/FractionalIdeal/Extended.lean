@@ -305,8 +305,8 @@ theorem one_le_extendedHom_iff : 1 ≤ extendedHom L B I ↔ 1 ≤ I := by
   rw [← inv_le_inv_iff ((extendedHom_eq_zero_iff _ _).not.mpr hI) (by simp), inv_one, ← map_inv₀,
     extendedHom_le_one_iff, inv_le_comm hI (by simp), inv_one]
 
-theorem extendedHom_eq_one_iff (hI : I ≠ 0) : extendedHom L B I = 1 ↔ I = 1 := by
-  rw [le_antisymm_iff, extendedHom_le_one_iff, one_le_extendedHom_iff _ _ hI, ← le_antisymm_iff]
+theorem extendedHom_eq_one_iff : extendedHom L B I = 1 ↔ I = 1 := by
+  rw [le_antisymm_iff, extendedHom_le_one_iff, one_le_extendedHom_iff, ← le_antisymm_iff]
 
 variable (A K) in
 theorem extendedHom_injective :
