@@ -35,7 +35,7 @@ def corepresentableByForget : (forget (ModuleCat.{w} R)).CorepresentableBy (.of 
   homEquiv :=
     { toFun f := f.hom 1
       invFun x := ModuleCat.ofHom (LinearMap.toSpanSingleton _ _ x)
-      left_inv _ := by aesop
+      left_inv _ := by cat_disch
       right_inv _ := by simp }
 
 /-- The forget functor `ModuleCat R ⥤ Type _` is corepresentable by `R` as a module over itself. -/
