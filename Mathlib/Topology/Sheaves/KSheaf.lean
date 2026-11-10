@@ -5,7 +5,7 @@ Authors: Yannis Monbru Carcelero
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 public import Mathlib.Topology.Category.TopCat.Basic
@@ -127,7 +127,18 @@ abbrev KPresheaf.isKSheaf : ObjectProperty (KPresheaf A X) := IsKSheaf
 
 variable (A X) in
 /-- The category of K-sheaves taking values in `A` on a T2-Space. -/
-abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
+abbrev KSheaf := (KPresheaf.isKSheaf A X).FullSubcategory
+
+instance : (KPresheaf.isKSheaf A X).IsClosedUnderIsomorphisms where
+  of_iso e h :=
+    { nonempty_isTerminal := ⟨h.nonempty_isTerminal.some.ofIso (e.app _)⟩
+      isPullback sq :=
+        (h.isPullback sq).of_iso (e.app _) (e.app _) (e.app _) (e.app _)
+          (by cat_disch)  (by cat_disch) (by cat_disch) (by cat_disch)
+      nonempty_isColimit_coconeOfCompacts K :=
+        ⟨(IsColimit.equivOfNatIsoOfIso (Functor.isoWhiskerLeft _ e) _ _
+            (by exact Cocone.ext (e.app _)))
+          (h.nonempty_isColimit_coconeOfCompacts K).some⟩ }
 
 namespace KSheaf
 
