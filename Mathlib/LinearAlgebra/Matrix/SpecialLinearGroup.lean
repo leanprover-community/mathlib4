@@ -784,19 +784,19 @@ lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1)
   rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod,
     diag_decompose i₀ D hD]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The `SpecialLinearGroup` analogue of
   `Matrix.Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec`:
   every element of `SL(ι, F)` is a product of transvections,
   a diagonal matrix of determinant `1`, and transvections. -/
 theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : SpecialLinearGroup ι F) :
     ∃ (L L' : List (TransvectionStruct ι F)) (D : ι → F) (hD : det (diagonal D) = 1),
-      M = (L.map TransvectionStruct.toSpecialLinearGroup).prod * ⟨diagonal D, hD⟩ *
+      M = (L.map TransvectionStruct.toSpecialLinearGroup).prod *
+        SpecialLinearGroup.mk (diagonal D) hD *
         (L'.map TransvectionStruct.toSpecialLinearGroup).prod := by
   obtain ⟨L, L', D, hM⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M.1
   refine ⟨L, L', D, by simpa [hM] using M.2, Subtype.ext <| ?_⟩
-  simp_rw [coe_mul, ← coeMonoidHom_apply, map_list_prod, List.map_map, Function.comp_def,
-    coeMonoidHom_apply, TransvectionStruct.toSpecialLinearGroup_coe, hM]
+  simp_rw [coe_mul, ← coeMonoidHom_apply, map_list_prod]
+  simp [Function.comp_def, hM]
 
 theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup ι F → Prop)
     (M : SpecialLinearGroup ι F)
