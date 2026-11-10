@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # The center of an additive category
-
 -/
 
 public section

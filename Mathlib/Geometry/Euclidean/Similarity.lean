@@ -15,7 +15,6 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
 This file contains theorems about similarity of triangles, including conditions
 for similarity based on sides and angles.
-
 -/
 
 public section

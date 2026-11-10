@@ -17,7 +17,6 @@ Let $a$, $b$, $c$, $d$ be integers with $a > b > c > d > 0$. Suppose that
 $$ a*c + b*d = (a + b - c + d) * (-a + b + c + d). $$
 
 Prove that $a*b + c*d$ is not prime.
-
 -/
 
 variable {a b c d : ℤ}

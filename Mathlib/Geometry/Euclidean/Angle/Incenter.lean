@@ -14,7 +14,6 @@ public import Mathlib.Geometry.Euclidean.Triangle
 # Angles and incenters and excenters.
 
 This file proves lemmas relating incenters and excenters of a simplex to angle bisection.
-
 -/
 
 public section

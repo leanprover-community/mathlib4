@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.Submodule.Ker
 
 /-!
-
 # Iterate maps and comaps of submodules
 
 Some preliminary work for establishing the strong rank condition for Noetherian rings.
@@ -29,7 +28,6 @@ for Noetherian rings.
 
 The construction here is adapted from the proof in Djoković's paper
 *Epimorphisms of modules which must be isomorphisms* [djokovic1973].
-
 -/
 
 @[expose] public section
