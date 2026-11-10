@@ -66,38 +66,13 @@ theorem measure_eq_zero_or_eq (h : μ.IsAtom s) {t : Set α} (hts : t ⊆ s) :
 theorem exists_of_not_isAtom (hs : MeasurableSet s) (hμs : 0 < μ s) (h : ¬ IsAtom μ s) :
     ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
   simp only [isAtom_iff, not_and, not_forall, not_or] at h
-  obtain ⟨t, hts, ht⟩ := h hs hμs
-  use t, hts
-  --simp at ht
-  sorry
+  obtain ⟨t, hts, ht, ht₀, hts'⟩ := h hs hμs
+  exact ⟨t, hts, ht, pos_iff_ne_zero.2 ht₀, (measure_mono hts).lt_of_ne hts'⟩
 
-theorem not_isAtom_of_exists (hs : MeasurableSet s) (hμs : 0 < μ s)
-    (h : ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) : ¬ IsAtom μ s := by
-  sorry
-
-/-
-theorem not_isAtom_iff_exists  :
-    ¬ μ.IsAtom s ↔ ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
-  simp only [isAtom_iff, hs, hμs, true_and, not_forall, not_or, exists_prop (a := MeasurableSet _),
-    ← bex_def]
-  congr! with t hts <;> grind [zero_lt_iff, measure_mono (μ := μ) hts]
-
-theorem not_isAtom_iff_exists' :
-    MeasurableSet s ∧ 0 < μ s ∧ ¬ μ.IsAtom s ↔ ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
-  rw [and_iff_right_of_imp]
-  grind [not_isAtom_iff_exists]
-
-
-theorem not_exists (h : μ.IsAtom s) :
-    ¬∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := (isAtom_iff_not_exists.mp h).2.2
-
-/-- A version of `IsAtom.not_exists` for subsets `t` which need not be measurable. -/
-theorem not_exists' (h : μ.IsAtom s) : ¬∃ t ⊆ s, 0 < μ t ∧ μ t < μ s := by
-  rintro ⟨t, hts, ht, hts'⟩
-  rcases h.measure_eq_zero_or_eq hts with h' | h'
-  · exact ht.ne' h'
-  · exact hts'.ne h'
--/
+theorem not_isAtom_of_exists (h : ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) : ¬ IsAtom μ s := by
+  intro ha
+  obtain ⟨t, hts, ht₀, hts'⟩ := h
+  exact (ha.measure_eq_zero_or_eq hts).elim ht₀.ne' hts'.ne
 
 theorem measure_ne_zero (h : μ.IsAtom s) : μ s ≠ 0 :=
   h.pos.ne'
@@ -120,17 +95,17 @@ class NoAtoms (μ : Measure α) : Prop where
 theorem noAtoms_iff_forall_exists :
     NoAtoms μ ↔
       ∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
-  rw [noAtoms_iff]
-  sorry
-  --simp_rw [← not_isAtom_iff_exists']
-  --congr! with s
+  refine ⟨fun h s hs hμs ↦ IsAtom.exists_of_not_isAtom hs hμs (h.not_isAtom s),
+    fun h ↦ ⟨fun s ha ↦ ?_⟩⟩
+  obtain ⟨t, hts, -, ht⟩ := h s ha.measurableSet ha.pos
+  exact IsAtom.not_isAtom_of_exists ⟨t, hts, ht⟩ ha
 
 namespace NoAtoms
 
 /-- A constructor for `NoAtoms` in which the subset `t` need not be measurable. -/
 theorem mk' (h : ∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) :
     NoAtoms μ :=
-  (noAtoms_iff μ).2 fun s hs ↦ hs.not_exists' (h s hs.measurableSet hs.pos)
+  ⟨fun s ha ↦ IsAtom.not_isAtom_of_exists (h s ha.measurableSet ha.pos) ha⟩
 
 variable [NoAtoms μ]
 
