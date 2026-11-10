@@ -19,7 +19,6 @@ Define the Pareto measure over the reals.
 * `paretoPDF`: `ℝ≥0∞`-valued pdf,
   `paretoPDF t r = ENNReal.ofReal (paretoPDFReal t r)`.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
-
 -/
 
 @[expose] public section

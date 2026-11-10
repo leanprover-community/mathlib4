@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 Given a family of monoidal categories `C i`, we define a monoidal structure on
 `Π i, C i` where the tensor product is defined pointwise.
-
 -/
 
 @[expose] public section

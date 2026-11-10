@@ -306,7 +306,7 @@ theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
 open scoped Classical in
 theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ = w} = mult w := by
   conv_lhs =>
-    congr; congr; ext
+    enter [1, 1, _]
     rw [← mk_embedding w, mk_eq_iff, ComplexEmbedding.conjugate, star_involutive.eq_iff]
   simp_rw [Finset.filter_or, Finset.filter_eq' _ (embedding w),
     Finset.filter_eq' _ (ComplexEmbedding.conjugate (embedding w)),
@@ -541,9 +541,7 @@ end IsPrimitiveRoot
 end NumberField.InfinitePlace
 
 /-!
-
 ## The infinite place of the rationals.
-
 -/
 
 namespace Rat
