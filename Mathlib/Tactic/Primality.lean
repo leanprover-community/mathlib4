@@ -11,7 +11,8 @@ public import Mathlib.Tactic.Primality.Producers
 # `primality`
 
 Defines the frontend of the `primality` tactic, which closes goals `Nat.Prime n` using a
-certificate constructed from witnesses it finds itself or takes from the user.
+certificate constructed from witnesses it finds itself or takes from the user. It also defines
+`provePrime`, which proves `Nat.Prime p` for other meta code.
 -/
 
 public meta section
@@ -20,15 +21,15 @@ open Lean Meta Elab Tactic Qq Mathlib.Meta.NormNum
 
 namespace Mathlib.Tactic.Primality
 
-/-- Proves `Nat.Prime p` by constructing a certificate with `build` and turning it into a proof
-with `certifyPrime`. By default `build` searches for the witnesses, so the caller supplies no hints.
-A caller with witnesses passes `Cert.ofWitnesses …` as `build`, and one with candidate prime factors
-passes `Cert.search { factors := … }`. A caller with a complete certificate calls `certifyPrime`
-directly. `build` may use the primes proved in the state. The proofs constructed on the way are
-added to the state, so calls that thread it share them. -/
-def provePrime (p : ℕ) (build : Std.HashSet ℕ → ℕ → CoreM Cert := Cert.search {}) :
+/-- Proves `Nat.Prime p` by constructing a certificate with `mkCert` and turning it into a proof
+with `certifyPrime`. By default `mkCert` searches for the witnesses, so the caller supplies no
+hints. A caller with witnesses passes `Cert.ofWitnesses …` as `mkCert`, and one with candidate
+prime factors passes `Cert.search { factors := … }`. A caller with a complete certificate calls
+`certifyPrime` directly. `mkCert` may use the primes proved in the state. The proofs constructed
+on the way are added to the state, so calls that thread it share them. -/
+def provePrime (p : ℕ) (mkCert : CertBuilder := Cert.search {}) :
     StateT (Std.HashMap ℕ Expr) MetaM Q(Nat.Prime $p) := do
-  certifyPrime p (← build (.ofArray (← get).keysArray) p)
+  certifyPrime p (← mkCert (.ofArray (← get).keysArray) p)
 
 /-- Configuration for `primality`. -/
 structure Config where
@@ -85,7 +86,7 @@ syntax (name := primality) "primality" optConfig (" [" term,* "]")? : tactic
 
 elab_rules : tactic
   | `(tactic| primality $cfg:optConfig $[[$hs,*]]?) => withMainContext do
-    let build : Std.HashSet ℕ → ℕ → CoreM Cert :=
+    let mkCert : CertBuilder :=
       match (← elabPrimalityConfig cfg).cert with
       | .search searchCfg => fun known p ↦ do
         try Cert.search searchCfg known p
@@ -99,7 +100,7 @@ elab_rules : tactic
       have e : Q(ℕ) := e
       let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
         throwError "{e} does not evaluate to a numeral; try simplifying it first"
-      let hp : Q(Nat.Prime $pQ) ← StateT.run' (provePrime p build) known
+      let hp : Q(Nat.Prime $pQ) ← StateT.run' (provePrime p mkCert) known
       g.assign q(isNat.natElim (p := Nat.Prime) $pn $hp)
 
 end Mathlib.Tactic.Primality

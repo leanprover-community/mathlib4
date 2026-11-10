@@ -17,6 +17,8 @@ This file defines the producers of the witnesses of primality certificates.
 
 - Factorizers: find prime factors of `p - 1`.
 - Primitive root search: finds a primitive root mod `p`.
+
+It also builds certificates from the witnesses, which the producers find or the user provides.
 -/
 
 public meta section
@@ -142,10 +144,10 @@ def jacobi (a n : ℕ) : ℤ := Id.run do
   let mut n := n
   let mut s : ℤ := 1
   while a != 0 do
-    let (k, b) := Nat.maxPowDvdDiv 2 a
+    let (k, m) := Nat.maxPowDvdDiv 2 a
     if k % 2 == 1 && (n % 8 == 3 || n % 8 == 5) then s := -s
-    if b % 4 == 3 && n % 4 == 3 then s := -s
-    (a, n) := (n % b, b)
+    if m % 4 == 3 && n % 4 == 3 then s := -s
+    (a, n) := (n % m, m)
   return if n == 1 then s else 0
 
 /-- Searches for the root and the factorization of `p - 1` of a Lucas witness for `p`, trying
@@ -184,20 +186,21 @@ def witnessFor (witnesses : List Witness) (p : ℕ) : CoreM (ℕ × List (ℕ ×
       return (w.root, factorization)
   throwError "no provided witness certifies the primality of {p}"
 
+/-- Constructs the certificate of a prime, given the primes already proved, which need no
+certificate of their own. -/
+abbrev CertBuilder := Std.HashSet ℕ → ℕ → CoreM Cert
+
 /-- Builds the certificate of `p` from the root and the factorization of `p - 1` that `witness`
-gives for each prime, with `norm_num` below `normNumBound` and the user's proofs for the primes in
-`known`. Each prime's certificate is built once. -/
-partial def Cert.build (witness : ℕ → CoreM (ℕ × List (ℕ × ℕ))) (known : Std.HashSet ℕ)
-    (p : ℕ) : CoreM Cert :=
-  StateT.run' (go p) {}
+gives for each prime, with `norm_num` below `normNumBound` and the available proofs for the primes
+in `known`. Each prime's certificate is built once. -/
+partial def Cert.build (witness : ℕ → CoreM (ℕ × List (ℕ × ℕ))) : CertBuilder := fun known p ↦
+  StateT.run' (go p) (known.fold (·.insert · .known) {})
 where
   /-- Builds the certificate of `p`. The state caches the certificates constructed for each
   nontrivial intermediate result. -/
   go (p : ℕ) : StateT (Std.HashMap ℕ Cert) CoreM Cert := do
     if let some cert := (← get)[p]? then
       return cert
-    if known.contains p then
-      return .known
     if p < normNumBound then
       return .normNum
     let (root, factorization) ← witness p
@@ -205,13 +208,13 @@ where
     modify (·.insert p cert)
     return cert
 
-/-- Builds the certificate of `p` from the first entry of `witnesses` that fits each prime. -/
-def Cert.ofWitnesses (witnesses : List Witness) (known : Std.HashSet ℕ) (p : ℕ) : CoreM Cert :=
-  Cert.build (witnessFor witnesses) known p
+/-- Builds each prime's certificate from the first entry of `witnesses` that fits it. -/
+def Cert.ofWitnesses (witnesses : List Witness) : CertBuilder :=
+  Cert.build (witnessFor witnesses)
 
 /-- Builds the certificate of `p` from witnesses searched for with the factorizer options `cfg`,
-trying the user's primes in `known` as factors first. -/
-def Cert.search (cfg : FactorizerConfig) (known : Std.HashSet ℕ) (p : ℕ) : CoreM Cert :=
+trying the primes in `known` as factors first. -/
+def Cert.search (cfg : FactorizerConfig) : CertBuilder := fun known p ↦
   Cert.build (findLucasWitness ((Factorizer.ofArray known.toArray).then cfg.toFactorizer)) known p
 
 end Mathlib.Tactic.Primality
