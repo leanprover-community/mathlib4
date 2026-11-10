@@ -215,7 +215,7 @@ theorem map_comap_le (f : V → W) (G : SimpleGraph W) : (G.comap f).map f ≤ G
 
 theorem map_comap_eq_inf (f : W → V) : (G.comap f).map f = G ⊓ SimpleGraph.map f ⊤ := by
   ext u v
-  grind [map_adj', comap_adj, inf_adj, top_adj, Adj.ne]
+  grind [comap_adj, inf_adj, top_adj]
 
 theorem map_comap_eq {f : V → W} (hf : f.Surjective) (G : SimpleGraph W) :
     (G.comap f).map f = G := by
