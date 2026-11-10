@@ -28,7 +28,6 @@ This extension is Galois with cyclic Galois group of degree `n`, and the (arithm
 
 * `FiniteField.algEquivExtension`: any other field extension `l/k` of degree `n` is (non-uniquely)
   isomorphic to our chosen `FiniteField.Extension k p n`.
-
 -/
 
 @[expose] public section

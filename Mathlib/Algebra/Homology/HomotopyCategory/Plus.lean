@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Localization.OfQuotient
 
 In this file, we introduce the triangulated full subcategory `HomotopyCategory.Plus C`
 of `HomotopyCategory C (.up ℤ)` consisting of bounded below cochain complexes.
-
 -/
 
 @[expose] public section

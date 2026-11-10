@@ -208,7 +208,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fu
     rw [integral_finsetSum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
   · rw [variance_fun_sum fun i ↦ ((hX.eval i).map_fun _).memLp_two]
     simp only [← sum_div, ← ofReal_sum, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-      div_left_inj', ofReal_inj]
+      div_left_inj₀, ofReal_inj]
     congr with i
     rw [sum_eq_single_of_mem i (by grind) (fun j _ hij ↦ h i j hij.symm _ _),
       covariance_self ((hX.eval i).map_fun _).aemeasurable]

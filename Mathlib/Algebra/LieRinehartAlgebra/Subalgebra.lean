@@ -27,7 +27,6 @@ applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ri
 
 Currently it is assumed that the 'subalgebra' keeps the full `A` and is a subset only on the level
 of `L`.
-
 -/
 
 public section

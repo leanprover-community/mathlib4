@@ -36,7 +36,6 @@ manifold structure borrowed from `Metric.sphere`, the underlying set is
 for example, the circle is not defeq to `{z : ℂ | abs z = 1}`, which is the kernel of `Complex.abs`
 considered as a homomorphism from `ℂ` to `ℝ`, nor is it defeq to `{z : ℂ | normSq z = 1}`, which
 is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
-
 -/
 
 @[expose] public section

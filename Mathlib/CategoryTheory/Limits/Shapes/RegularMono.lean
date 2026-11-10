@@ -36,7 +36,6 @@ Additionally, we give the constructions
 We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
 `StrongMonoCategory`s resp. `StrongEpiCategory`s.
-
 -/
 
 @[expose] public section

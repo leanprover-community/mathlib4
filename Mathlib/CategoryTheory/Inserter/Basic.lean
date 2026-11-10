@@ -32,7 +32,6 @@ building block for bicategorical limits of categories.
 * Link `Inserter F (𝟭 C)` with `Endofunctor.Algebra F` when `F` is an endofunctor.
 * Link `Inserter (𝟭 C) F` with `Endofunctor.Coalgebra F` when `F` is an endofunctor.
 * Show that `Inserter F G` is an accessible category when `F` and `G` are accessible functors.
-
 -/
 
 @[expose] public section

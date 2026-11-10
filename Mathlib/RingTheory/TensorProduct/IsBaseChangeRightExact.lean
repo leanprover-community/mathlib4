@@ -33,7 +33,6 @@ N₁ --g₁--> N₂ --g₂--> N₃
 
 * `IsBaseChange.of_right_exact` : If `f₂` and `g₂` are surjective,
   `i₁` and `i₂` is base change by `S`, then `i₃` is base change by `S`.
-
 -/
 
 public section

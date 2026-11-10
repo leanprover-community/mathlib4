@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Ring.Subring.MulOpposite
 
 For every ring `A` over a commutative ring `R`, we construct an equivalence between
 subalgebras of `A / R` and that of `Aᵐᵒᵖ / R`.
-
 -/
 
 @[expose] public section

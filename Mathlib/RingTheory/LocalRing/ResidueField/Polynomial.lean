@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 ## Main results
 - `Polynomial.residueFieldMapCAlgEquiv`: `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`
 - `Polynomial.fiberEquivQuotient`: `κ(p) ⊗[R] (R[X] ⧸ I) = κ(p)[X] / I`
-
 -/
 
 @[expose] public section

@@ -19,7 +19,6 @@ by Frédéric Dupuis and Heather Macbeth for linear maps.
 
 TODO :
 * align with RingHomCompTriple
-
 -/
 
 public section
