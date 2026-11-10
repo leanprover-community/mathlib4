@@ -72,8 +72,9 @@ namespace Polynomial
 
 -- We parse `[`, `X`, `]` as separate tokens (`&"X"` matches the identifier `X` without making it a
 -- keyword) rather than introducing a `[X]` token, as the latter would make `simp [X]` lex as
--- `simp` + `[X]`. The priority makes `R[X]` win over `GetElem` notation `xs[i]` and over the
--- `AddMonoidAlgebra` notation `R[M]` (which has priority `high`).
+-- `simp` + `[X]`. The priority makes `R[X]` (where `R` is a variable) win over `GetElem` notation
+-- `xs[i]` (where `xs` and `i` are variables) and over the `AddMonoidAlgebra` notation `R[M]`
+-- (where `R` and `M` are variables) which has priority `high`.
 @[inherit_doc Polynomial]
 scoped syntax:9000 (priority := high + 1) term:max noWs "[" noWs &"X" noWs "]" : term
 
