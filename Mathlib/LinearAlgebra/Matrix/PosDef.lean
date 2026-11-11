@@ -329,10 +329,9 @@ positive semidefinite. -/
 theorem _root_.Matrix.posSemidef_iff_submatrix_finset {M : Matrix n n R} :
     M.PosSemidef ↔ ∀ s : Finset n, (M.submatrix (↑) (↑) : Matrix s s R).PosSemidef := by
   refine ⟨fun hM s ↦ hM.submatrix _, fun h ↦ ⟨?_, fun x ↦ ?_⟩⟩
+  · exact isHermitian_iff_submatrix_finset.mpr fun _ ↦ (h _).isHermitian
   · classical
-    ext i j
-    exact (h {i, j}).1.apply ⟨i, by simp⟩ ⟨j, by simp⟩
-  · simpa [Finsupp.sum, ← Finset.sum_attach x.support] using (h x.support).2 (x.subtypeDomain _)
+    simpa [Finsupp.sum, ← Finset.sum_attach x.support] using (h x.support).2 (x.subtypeDomain _)
 
 omit [Fintype m] in
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix n m R) :
