@@ -6,8 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.Nat.Basic
+
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Partial predecessor and partial subtraction on the natural numbers
@@ -20,7 +21,6 @@ wrap the result in an `Option` type instead:
 
 - `Nat.ppred`: a partial predecessor operation
 - `Nat.psub`: a partial subtraction operation
-
 -/
 
 @[expose] public section

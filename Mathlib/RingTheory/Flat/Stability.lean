@@ -6,10 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.RingTheory.IsTensorProduct
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Flatness is stable under composition and base change
@@ -89,7 +86,6 @@ section BaseChange
 
 Let `R` be a ring, `M` a flat `R`-module and `S` an `R`-algebra, then
 `S ⊗[R] M` is a flat `S`-module. This is a special case of `Module.Flat.instTensorProduct`.
-
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)

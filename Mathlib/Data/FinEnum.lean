@@ -5,12 +5,15 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Fintype.EquivFin
-public import Mathlib.Data.List.ProdSigma
 public import Mathlib.Data.List.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
+# Finitely enumerable types
+
 Type class for finitely enumerable types. The property is stronger
 than `Fintype` in that it assigns each element a rank in a finite
 enumeration.
@@ -236,7 +239,7 @@ instance [IsEmpty α] : Unique (FinEnum α) where
     congr 1
     · exact card_eq_zero
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
-      exact congrArg (α ≃ Fin ·) <| card_eq_zero
+      exact congrArg (α ≃ Fin ·) card_eq_zero
     · funext x
       exact ‹IsEmpty α›.elim x
 

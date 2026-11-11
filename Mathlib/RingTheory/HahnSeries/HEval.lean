@@ -24,7 +24,6 @@ given by substitution of the generating variable to an element of strictly posit
 ## TODO
 * `MvPowerSeries.heval`: An `R`-algebra homomorphism from `MvPowerSeries σ R` to `R⟦Γ⟧`
   (for finite σ) taking each `X i` to a positive order Hahn Series.
-
 -/
 
 @[expose] public section
@@ -33,7 +32,7 @@ open Finset Function
 
 noncomputable section
 
-variable {Γ Γ' R V α β σ : Type*}
+variable {Γ R V α β : Type*}
 
 namespace HahnSeries
 

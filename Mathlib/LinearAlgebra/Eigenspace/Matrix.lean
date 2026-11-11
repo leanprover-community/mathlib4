@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
-
 # Eigenvalues, Eigenvectors and Spectrum for Matrices
 
 This file collects results about eigenvectors, eigenvalues and spectrum specific to matrices
@@ -16,7 +15,6 @@ over a nontrivial commutative ring, nontrivial commutative ring without zero div
 
 ## Tags
 eigenspace, eigenvector, eigenvalue, spectrum, matrix
-
 -/
 
 public section
@@ -96,7 +94,6 @@ lemma iSup_eigenspace_toLin'_diagonal_eq_top :
     ⨆ μ, eigenspace (diagonal d).toLin' μ = ⊤ :=
   iSup_eigenspace_toLin_diagonal_eq_top d <| Pi.basisFun R n
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace [IsDomain R] :
     maxGenEigenspace ((diagonal d).toLin b b) μ = eigenspace ((diagonal d).toLin b b) μ := by

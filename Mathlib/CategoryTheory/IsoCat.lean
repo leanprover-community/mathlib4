@@ -5,7 +5,6 @@ Authors: Fernando Chu
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.EqToHom
 
 /-!
@@ -147,7 +146,6 @@ noncomputable def strictInv : D ⥤ C where
   map_comp _ _ := by simp [← preimage_comp]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor that is an isomorphism of categories assembles into an `IsoCat`,
 with `Functor.strictInv` as its inverse. -/
 noncomputable def asIsomorphism : IsoCat C D where
@@ -162,7 +160,6 @@ noncomputable def asIsomorphism : IsoCat C D where
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories underlying an `IsoCat`, with the unit and counit
 isomorphisms induced by the defining equalities. -/
 def IsoCat.toEquivalence (e : IsoCat C D) : C ≌ D where

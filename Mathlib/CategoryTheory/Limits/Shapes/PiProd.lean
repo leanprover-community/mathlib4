@@ -5,15 +5,14 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-/-!
 
+/-!
 # A product as a binary product
 
 We write a product indexed by `I` as a binary product of the products indexed by a subset of `I`
 and its complement.
-
 -/
 
 @[expose] public section
@@ -38,7 +37,6 @@ noncomputable def Pi.binaryFanOfProp : BinaryFan (∏ᶜ (fun (i : {x : I // P x
   BinaryFan.mk (P := ∏ᶜ X) (Pi.map' Subtype.val fun _ ↦ 𝟙 _)
     (Pi.map' Subtype.val fun _ ↦ 𝟙 _)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /--
 A product indexed by `I` is a binary product of the products indexed by a subset of `I` and its

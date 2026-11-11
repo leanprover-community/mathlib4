@@ -6,18 +6,15 @@ Authors: Nailin Guan
 
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
-
 # Some basic lemmas for manipulating `Ext` over `ModuleCat`
-
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

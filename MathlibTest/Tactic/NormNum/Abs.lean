@@ -1,6 +1,6 @@
 module
+import Mathlib.Basic.Real.Basic
 import Mathlib.Tactic.NormNum
-import Mathlib.Data.Real.Basic
 
 example : |(4 : ℤ)| = 4 := by norm_num1
 example : |(4 : ℚ)| = 4 := by norm_num1

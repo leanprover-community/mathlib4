@@ -110,6 +110,12 @@ to_dual_insert_cast StrictAntiOn := by grind only
 
 end MonotoneDef
 
+/-- `σ` is *stable* for `f` if it breaks ties by increasing index: among elements with equal
+`f`-value, `σ` preserves their order. This property does not use the order on the codomain of `f`,
+only its equality, so it is unchanged by reversing that order. -/
+def IsStable {α γ : Type*} [Preorder α] (f : α → γ) (σ : α → α) : Prop :=
+  ∀ ⦃i j⦄, i ≤ j → f (σ i) = f (σ j) → σ i ≤ σ j
+
 section Decidable
 
 variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
@@ -484,9 +490,17 @@ end LinearOrder
 theorem Subtype.mono_coe [Preorder α] (p : α → Prop) : Monotone ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
 
+lemma Set.mono_coe [Preorder α] (A : Set α) :
+    Monotone (fun (a : A) ↦ a.val) :=
+  Subtype.mono_coe _
+
 theorem Subtype.strictMono_coe [Preorder α] (p : α → Prop) :
     StrictMono ((↑) : Subtype p → α) :=
   fun _ _ ↦ id
+
+theorem Set.strictMono_coe [Preorder α] (A : Set α) :
+    StrictMono (fun (a : A) ↦ a.val) :=
+  Subtype.strictMono_coe _
 
 section Preorder
 

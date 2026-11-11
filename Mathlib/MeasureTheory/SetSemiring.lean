@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Order.SetAccumulate
 public import Mathlib.Order.SupClosed
 
 /-! # Semirings and rings of sets
@@ -46,7 +47,6 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
   * `⋃ x ∈ J, K x` are pairwise disjoint and do not contain ∅,
   * `⋃ s ∈ K x, s ⊆ x`,
   * `⋃ x ∈ J, x = ⋃ x ∈ J, ⋃ s ∈ K x, s`.
-
 -/
 
 public section
@@ -207,7 +207,7 @@ theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) w
     induction T using Finset.induction generalizing s with
     | empty => simpa
     | insert t T _ ih =>
-      simp_rw [sup_insert, id, sup_eq_union, ← sdiff_sdiff]
+      simp_rw [sup_insert, id, ← sdiff_sdiff]
       rw [coe_insert, insert_subset_iff] at hTC
       obtain ⟨htC, hTC⟩ := hTC
       refine ih ?_ hTC
@@ -506,7 +506,6 @@ protected lemma Ioc [LinearOrder α] [Nonempty α] :
     rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
     refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
     intro a ha b hb hab
-    simp [Function.onFun]
     grind
 
 end IsSetSemiring

@@ -31,7 +31,6 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 ## References
 
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
 -/
 
 public section
@@ -123,7 +122,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     · rfl
     apply AlgHom.ext
     rw [← AlgHom.comp_assoc, hg₁, AlgHom.comp_assoc]
-    simp
+    simp -implicitDefEqProofs
   have H : ∀ x y : L, ∃ α : L, x ∈ K⟮α⟯ ∧ y ∈ K⟮α⟯ := by
     intro x y
     have : FiniteDimensional K K⟮x, y⟯ := by
@@ -153,7 +152,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     change g _ (algebraMap K _ r) = _
     rw [AlgHom.commutes]
   · ext x
-    simpa using AlgHom.congr_fun (hg₁ x) (IntermediateField.AdjoinSimple.gen K x)
+    simpa using congr($(hg₁ x) (IntermediateField.AdjoinSimple.gen K x))
 
 theorem iff_isSeparable [EssFiniteType K L] :
     FormallyEtale K L ↔ Algebra.IsSeparable K L :=
@@ -223,7 +222,7 @@ def equivPiOfIsSepClosed [EssFiniteType K A] [FormallyEtale K A] [IsSepClosed K]
     Ideal.Quotient.field m.asIdeal
   ((IsArtinianRing.equivPi _).restrictScalars K).trans <|
     (AlgEquiv.piCongrRight fun _ ↦ (AlgEquiv.ofBijective (Algebra.ofId K _)
-      (IsSepClosed.algebraMap_bijective _ _)).symm).trans <|
+      (IsSepClosed.algebraMap_bijective _ _)).symm).trans
     (AlgEquiv.piCongrLeft _ (fun _ ↦ K) IsArtinianRing.primeSpectrumEquivMaximalSpectrum).symm
 
 variable {K} in

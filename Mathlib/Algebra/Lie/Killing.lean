@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.Algebra.Lie.TraceForm
 
@@ -35,7 +34,6 @@ This file contains basic definitions and results for such Lie algebras.
   has non-singular Killing form then it has trivial radical.
 * `LieIdeal.isCompl_killingCompl`: if a Lie algebra has non-singular Killing form then for all
   ideals, an ideal and its Killing orthogonal complement are complements.
-
 -/
 
 public section

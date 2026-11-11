@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
 # Specific results about `ContinuousMapZero`-valued integration
@@ -18,7 +18,6 @@ and `E` is a normed group.
 The structure of this file is largely similar to that of
 `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap`, which contains a more detailed
 module docstring.
-
 -/
 
 public section

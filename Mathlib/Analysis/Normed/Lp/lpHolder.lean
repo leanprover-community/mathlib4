@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Tactic.Positivity.Finset
+
+import Mathlib.Tactic.Positivity.Finset
 
 /-! # Hölder's inequality for `lp` spaces
 
@@ -21,7 +22,6 @@ Although it would be possible to bundle the uniformly bounded family of bilinear
 `B : lp (fun i ↦ E i →L[𝕜] F i →L[𝕜] G i) ∞`, this has some downsides. For example, we would
 then have to bundle `fun i ↦ (B i).flip` into a term of this type in order to use it, so we opt to
 leave `B` unbundled.
-
 -/
 
 @[expose] public section
@@ -36,7 +36,7 @@ section NontriviallyNormedField
 variable {α 𝕜 : Type*} {E F : α → Type*} [NontriviallyNormedField 𝕜]
 variable [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [∀ i, NormedAddCommGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)]
-variable {p q r : ℝ≥0∞}
+variable {p : ℝ≥0∞}
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A uniformly bounded family of continuous linear maps, as a continuous linear map
@@ -200,8 +200,9 @@ def holder (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK :
 @[simps!]
 noncomputable def holderₗ (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
     lp E p →ₗ[𝕜] lp F q →ₗ[𝕜] lp G r :=
-  .mk₂ 𝕜 (holder r B hBK) ?_ ?_ ?_ ?_ where finally
-    all_goals intros; ext; simp
+  .mk₂ 𝕜 (holder r B hBK) ?_ ?_ ?_ ?_
+where finally
+  all_goals intros; ext; simp
 
 /-- `lp.holder` as a continuous bilinear map. -/
 noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]

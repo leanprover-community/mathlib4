@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Ring.TransferInstance
+public import Mathlib.Algebra.Star.Basic
 
 /-! # Transfer star (algebraic) structures across `Equiv`s
 
@@ -15,7 +15,7 @@ This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 
 variable {R S : Type*}
 
-@[expose] public section
+public section
 
 namespace Equiv
 

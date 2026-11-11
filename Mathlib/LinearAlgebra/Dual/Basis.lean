@@ -41,7 +41,7 @@ noncomputable section
 namespace Module.Basis
 
 universe u v w uR uM uK uV uι
-variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
+variable {R : Type uR} {M : Type uM} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
 
@@ -57,7 +57,6 @@ theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 
   rw [toDual, constr_basis b, constr_basis b]
   simp only [eq_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
@@ -65,7 +64,6 @@ theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
   simp_rw [map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
     Finset.sum_ite_eq', Finsupp.if_mem_support]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
@@ -97,7 +95,7 @@ theorem toDual_eq_equivFun [Finite ι] (m : M) (i : ι) : b.toDual m (b i) = b.e
   rw [b.equivFun_apply, toDual_eq_repr]
 
 theorem toDual_injective : Injective b.toDual := fun x y h ↦ b.ext_elem_iff.mpr fun i ↦ by
-  simp_rw [← toDual_eq_repr]; exact DFunLike.congr_fun h _
+  simp_rw [← toDual_eq_repr]; congrm $h _
 
 theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
   b.toDual_injective (by rwa [map_zero])

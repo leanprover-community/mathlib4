@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Square root on `RCLike`
@@ -82,7 +82,6 @@ theorem RCLike.re_sqrt_ofReal {a : ℝ} :
 @[simp] theorem RCLike.sqrt_complex {a : ℂ} :
     sqrt a = a.sqrt := by simp [sqrt]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Complex.sqrt_of_nonneg {a : ℂ} (ha : 0 ≤ a) :
     a.sqrt = √a.re := by
   obtain ⟨α : ℝ, hα, rfl⟩ := RCLike.nonneg_iff_exists_ofReal.mp ha

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Topology.Category.CompHaus.Limits
 public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
-/-!
 
+/-!
 # Effective epimorphisms in `CompHaus`
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `CompHaus`.
@@ -24,7 +24,6 @@ equivalent.
 
 - Define regular categories, and show that `CompHaus` is regular.
 - Define coherent categories, and show that `CompHaus` is actually coherent.
-
 -/
 
 public section
@@ -53,7 +52,6 @@ instance : Preregular CompHaus :=
 
 example : Precoherent CompHaus.{u} := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae

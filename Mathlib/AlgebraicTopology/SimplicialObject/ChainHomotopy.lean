@@ -5,9 +5,12 @@ Authors: Fabian Odermatt
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
-public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Simplicial homotopies induce chain homotopies
@@ -25,7 +28,9 @@ of the chain homotopy as the opposite of alternating sum `∑ i, (-1)^i • H.h 
 universe v u
 
 open CategoryTheory CategoryTheory.SimplicialObject
-open SimplexCategory Simplicial Opposite AlgebraicTopology
+open SimplexCategory Opposite AlgebraicTopology
+
+open scoped Simplicial
 
 namespace CategoryTheory.SimplicialObject.Homotopy
 
@@ -118,9 +123,6 @@ private lemma comm_succ (n : ℕ) :
     grind
   have h₃ : Disjoint (Finset.disjUnion _ _ h₂) {(0, 0), (Fin.last _, Fin.last _)} := by
     rw [Finset.disjoint_iff_ne]
-    simp only [Finset.mem_insert, forall_eq_or_imp, Prod.forall]
-    rintro ⟨a, _⟩ ⟨b, _⟩
-    simp
     grind
   have h₄ : Disjoint (Finset.disjUnion _ _ h₁) (Finset.disjUnion _ _ h₃) := by
     rw [Finset.disjoint_iff_ne]
@@ -150,7 +152,6 @@ private lemma comm_succ (n : ℕ) :
 
 end ToChainHomotopy
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A simplicial homotopy between `f` and `g` induces a chain homotopy
 between the induced morphisms on the alternating face map complexes. -/
 noncomputable def toChainHomotopy (H : Homotopy f g) :

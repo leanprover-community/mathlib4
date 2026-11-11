@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.MinimalAxioms
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Minimal Axioms for a Ring
@@ -20,7 +20,6 @@ a minimum number of equalities.
 * `Ring.ofMinimalAxioms`: Define a `Ring` structure on a Type by proving a minimized set of axioms
 * `CommRing.ofMinimalAxioms`: Define a `CommRing` structure on a Type by proving a minimized set of
   axioms
-
 -/
 
 public section

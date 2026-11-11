@@ -5,7 +5,6 @@ Authors: Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
@@ -26,7 +25,6 @@ and morphisms `fst : X ⟶ P`, `snd : X ⟶ Q`, `inl : P ⟶ X` and `inr : X ⟶
 such that `inl ≫ fst = 𝟙 P`, `inl ≫ snd = 0`, `inr ≫ fst = 0`, and `inr ≫ snd = 𝟙 Q`.
 Such a `BinaryBicone` is a biproduct if the cone is a limit cone, and the cocone is a colimit
 cocone.
-
 -/
 
 @[expose] public section
@@ -39,7 +37,6 @@ open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 
-variable {J : Type w}
 universe uC' uC uD' uD
 variable {C : Type uC} [Category.{uC'} C] [HasZeroMorphisms C]
 variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
@@ -152,7 +149,7 @@ instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full w
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
-    BinaryBiconeMorphism.ext f g <| F.map_injective <| congr_arg BinaryBiconeMorphism.hom h
+    BinaryBiconeMorphism.ext f g <| F.map_injective congr(BinaryBiconeMorphism.hom $h)
 
 end BinaryBicones
 
@@ -619,7 +616,6 @@ theorem biprod.isoProd_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).hom = prod.lift biprod.fst biprod.snd := by
       ext <;> simp [biprod.isoProd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).inv = biprod.lift prod.fst prod.snd := by
@@ -635,7 +631,6 @@ theorem biprod.isoCoprod_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).inv = coprod.desc biprod.inl biprod.inr := by
   ext <;> simp [biprod.isoCoprod]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod_isoCoprod_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).hom = biprod.desc coprod.inl coprod.inr := by
@@ -757,7 +752,6 @@ theorem biprod.isIso_inl_iff_id_eq_fst_comp_inl (X Y : C) [HasBinaryBiproduct X 
   · intro h
     exact ⟨⟨biprod.fst, biprod.inl_fst, h.symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (biprod.map f g) := by
   rw [show biprod.map f g =
@@ -770,7 +764,6 @@ instance prod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     (biprod.isoProd _ _).hom by simp]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (biprod.map f g) := by
   rw [show biprod.map f g = (biprod.isoProd _ _).hom ≫ prod.map f g ≫
@@ -911,7 +904,6 @@ section
 
 variable (P Q) [HasBinaryBiproduct P Q]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `op (P ⊞ Q) ≅ op P ⊞ op Q`. -/
 def biprod.opIso : op (P ⊞ Q) ≅ op P ⊞ op Q :=
   biprod.uniqueUpToIso _ _ (getBinaryBiproductData P Q).op.isBilimit

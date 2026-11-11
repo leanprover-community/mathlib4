@@ -79,7 +79,6 @@ While `AlgHom R A B` cannot be used in the second approach, `NonUnitalAlgHom R A
 
 You should always use the first approach when working with associative unital algebras, and mimic
 the second approach only when you need to weaken a condition on either `R` or `A`.
-
 -/
 
 @[expose] public section
@@ -208,7 +207,7 @@ theorem RingHom.algebraMap_toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i 
 
 namespace Algebra
 
-variable {R : Type u} {S : Type v} {A : Type w} {B : Type*}
+variable {R : Type u} {S : Type v} {A : Type w}
 
 /-- Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
 If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `A` is an `Algebra`
@@ -240,7 +239,7 @@ abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S]
-variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+variable [Semiring A] [Algebra R A]
 
 -- We'll later use this to show `Algebra ℤ M` is a subsingleton.
 /-- To prove two algebra structures on a fixed `[CommSemiring R] [Semiring A]` agree,
@@ -421,3 +420,12 @@ theorem algebraMap.smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass 
     algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul' _ _ _
 
 end algebraMap
+
+attribute [local instance] IsUnital.toSemiring in
+/-- A unital non-unital algebra is an algebra.
+
+This constructor is primarily intended to be used within proofs since it creates bad definitional
+equalities. -/
+noncomputable abbrev IsUnital.toAlgebra {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
+    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [IsUnital A] : Algebra R A :=
+  .ofModule smul_mul_assoc mul_smul_comm

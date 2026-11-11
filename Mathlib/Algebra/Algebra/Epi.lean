@@ -5,8 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.TensorProduct.Finite
 
@@ -34,8 +32,7 @@ lemma isEpi_iff_forall_one_tmul_eq :
     Algebra.IsEpi R A ↔ ∀ a : A, 1 ⊗ₜ[R] a = a ⊗ₜ[R] 1 := by
   refine ⟨fun h a ↦ IsEpi.injective_lift_mul <| by simp, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
   have h' (x : A ⊗[R] A) : ∃ a : A, x = a ⊗ₜ 1 := by
-    induction x using TensorProduct.induction_on with
-    | zero => exact ⟨0, by simp⟩
+    induction x using TensorProduct.inductionOn with
     | tmul u v =>
       use u * v
       calc u ⊗ₜ[R] v = u ⊗ₜ[R] 1 * 1 ⊗ₜ[R] v := by simp
@@ -85,7 +82,6 @@ lemma isEpi_iff_surjective_algebraMap_of_finite [Module.Finite R A] :
   have : Subsingleton ((A ⧸ R') ⊗[R] (A ⧸ R')) := by
     refine subsingleton_of_forall_eq 0 fun y ↦ ?_
     induction y with
-    | zero => rfl
     | add a b e₁ e₂ => rwa [e₁, zero_add]
     | tmul x y =>
       obtain ⟨x, rfl⟩ := R'.mkQ_surjective x
@@ -118,7 +114,6 @@ section Module
 
 variable (M : Type*) [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If an `R`-algebra `A` is epi, then the scalar multiplication `A ⊗[R] M → M` is injective, for
 any `A`-module `M`. -/
 lemma injective_lift_lsmul :
@@ -150,7 +145,7 @@ lemma injective_lift_lsmul :
         map_smul' := by simp }
       map_add' := by intros; ext; simp [add_tmul]
       map_smul' := by intros; ext; simp [smul_tmul'] }
-  simpa [f] using! congr_arg f (tmul_comm R 1 a)
+  simpa [f] using! congr(f $(tmul_comm R 1 a))
 
 /-- A heterogeneous variant of `TensorProduct.lid` when `R → A` is epi. -/
 def _root_.TensorProduct.lid' : A ⊗[R] M ≃ₗ[A] M :=

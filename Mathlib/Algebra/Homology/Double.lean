@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.HasNoLoop
 public import Mathlib.Algebra.Homology.Single
-public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # A homological complex lying in two degrees
@@ -16,7 +15,6 @@ Given `c : ComplexShape ι`, distinct indices `i₀` and `i₁` such that `hi₀
 we construct a homological complex `double f hi₀₁` for any morphism `f : X₀ ⟶ X₁`.
 It consists of the objects `X₀` and `X₁` in degrees `i₀` and `i₁`, respectively,
 with the differential `X₀ ⟶ X₁` given by `f`, and zero everywhere else.
-
 -/
 
 @[expose] public section
@@ -151,7 +149,6 @@ lemma mkHomFromDouble_f₁ :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `c : ComplexShape ι`, and `i₀` and `i₁` be distinct indices such
 that `hi₀₁ : c.Rel i₀ i₁`, then for any `X : C`, the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X i` is corepresentable by `double (𝟙 X) hi₀₁`. -/
@@ -172,7 +169,6 @@ end
 
 variable {ι : Type*} (c : ComplexShape ι)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i` has no successor for the complex shape `c`,
 then for any `X : C`, the functor which sends `K : HomologicalComplex C c`
 to `X ⟶ K.X i` is corepresentable by `(single C c i).obj X`. -/

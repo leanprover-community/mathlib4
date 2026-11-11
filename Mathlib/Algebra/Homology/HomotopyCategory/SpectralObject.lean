@@ -17,7 +17,6 @@ category of `ℤ`-indexed cochain complexes `C` that is indexed
 by the category `CochainComplex C ℤ`.
 (It follows that to any functor `ι ⥤ CochainComplex C ℤ` (e.g. a filtered
 complex), there is an associated spectral object indexed by `ι`.)
-
 -/
 
 @[expose] public section
@@ -40,7 +39,6 @@ noncomputable def composableArrowsFunctor :
   map_comp _ _ := map_comp _ _ _ _ _ _ _ _ _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The spectral object with values in `(HomotopyCategory C (.up ℤ)` that
 is indexed by `CochainComplex C ℤ`. -/
 @[simps]

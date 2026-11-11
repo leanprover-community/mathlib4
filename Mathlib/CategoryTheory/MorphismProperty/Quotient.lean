@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.CategoryTheory.Quotient
 
 /-!
@@ -18,7 +17,6 @@ morphisms on the quotient category, i.e. `W f ↔ W g` when `homRel f g` holds.
 We denote `W.quotient homRel : MorphismProperty (Quotient homRel)` the
 induced property of morphisms: a morphism in `C` satisfies `W` iff
 `(Quotient.functor homRel).map f` does.
-
 -/
 
 @[expose] public section
@@ -59,7 +57,6 @@ def quotient [W.HasQuotient homRel] : MorphismProperty (Quotient homRel) :=
 
 variable [W.HasQuotient homRel]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quotient_iff {X Y : C} (f : X ⟶ Y) :
     W.quotient homRel ((Quotient.functor homRel).map f) ↔ W f := by
   refine ⟨fun ⟨f', hf', h⟩ ↦ ?_, fun hf ↦ ⟨f, hf, rfl⟩⟩

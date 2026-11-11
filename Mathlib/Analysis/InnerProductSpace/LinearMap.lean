@@ -23,14 +23,15 @@ This file studies linear maps on inner product spaces.
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 @[expose] public section
 
 noncomputable section
 
-open RCLike Real ComplexConjugate
+open RCLike Real
+
+open scoped ComplexConjugate
 
 open LinearMap (BilinForm)
 
@@ -49,7 +50,6 @@ section Complex_Seminormed
 
 variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A complex polarization identity, with a linear map. -/
 theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
     ⟪T y, x⟫_ℂ =
@@ -62,7 +62,6 @@ theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
     mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
     ⟪T x, y⟫_ℂ =
       (⟪T (x + y), x + y⟫_ℂ - ⟪T (x - y), x - y⟫_ℂ -
@@ -105,11 +104,8 @@ end Complex
 
 section
 
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
 variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear isometry preserves the inner product. -/
 @[simp]
 theorem LinearIsometry.inner_map_map (f : E →ₗᵢ[𝕜] E') (x y : E) : ⟪f x, f y⟫ = ⟪x, y⟫ := by
@@ -154,8 +150,8 @@ theorem LinearEquiv.isometryOfInner_toLinearEquiv (f : E ≃ₗ[𝕜] E') (h) :
 /-- A linear map is an isometry if and it preserves the inner product. -/
 theorem LinearMap.norm_map_iff_inner_map_map {F : Type*} [FunLike F E E'] [LinearMapClass F 𝕜 E E']
     (f : F) : (∀ x, ‖f x‖ = ‖x‖) ↔ (∀ x y, ⟪f x, f y⟫_𝕜 = ⟪x, y⟫_𝕜) :=
-  ⟨({ toLinearMap := LinearMapClass.linearMap f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
-    (LinearMapClass.linearMap f |>.isometryOfInner · |>.norm_map)⟩
+  ⟨({ toLinearMap := ofClass f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
+    (ofClass f |>.isometryOfInner · |>.norm_map)⟩
 
 end
 
@@ -281,7 +277,6 @@ theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
     Continuous T.reApplyInnerSelf :=
   reCLM.continuous.comp <| T.continuous.inner continuous_id
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {c : 𝕜} :
     T.reApplyInnerSelf (c • x) = ‖c‖ ^ 2 * T.reApplyInnerSelf x := by
   simp only [map_smul, ContinuousLinearMap.reApplyInnerSelf_apply, inner_smul_left,
@@ -317,11 +312,15 @@ lemma toLinearMap_rankOne (x : E) (y : F) :
 @[simp] theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
   rw [rankOne_def, norm_smulRight_apply, innerSL_apply_norm, mul_comm]
 
-@[simp] theorem nnnorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
+@[simp] theorem nnNorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
   NNReal.eq <| norm_rankOne _ _
 
-@[simp] theorem enorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
-  ENNReal.coe_inj.mpr <| nnnorm_rankOne _ _
+@[deprecated (since := "2026-10-31")] alias nnnorm_rankOne := nnNorm_rankOne
+
+@[simp] theorem eNorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
+  ENNReal.coe_inj.mpr <| nnNorm_rankOne _ _
+
+@[deprecated (since := "2026-11-06")] alias enorm_rankOne := eNorm_rankOne
 
 @[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
 
@@ -360,7 +359,6 @@ variable {F H : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 lemma rankOne_ne_zero {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 x y ≠ 0 := by
   grind [rankOne_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
     IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
   refine ⟨?_, isIdempotentElem_rankOne_self⟩

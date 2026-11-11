@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The comma category is preadditive
 
@@ -21,7 +24,7 @@ We then apply this to `Arrow T` for `T` a preadditive category.
 comma, arrow, preadditive
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

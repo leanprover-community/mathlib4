@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 public import Mathlib.Combinatorics.Additive.Dissociation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Randomising by a function of dissociated support
 
@@ -24,7 +27,7 @@ public section
 open Finset
 open scoped BigOperators ComplexConjugate
 
-variable {G : Type*} [Fintype G] [AddCommGroup G] {p : ℕ}
+variable {G : Type*} [Fintype G] [AddCommGroup G]
 
 /-- One can randomise by a function of dissociated support. -/
 lemma AddDissociated.randomisation (c : AddChar G ℂ → ℝ) (d : AddChar G ℂ → ℂ)

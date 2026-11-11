@@ -25,6 +25,8 @@ This file defines filtrations of a measurable space and σ-finite filtrations.
 * `MeasureTheory.Filtration.rightCont`: the right-continuation of a filtration.
 * `MeasureTheory.Filtration.IsRightContinuous`: a filtration is right-continuous if it is equal
   to its right-continuation.
+* `MeasureTheory.Filtration.IsComplete`: a filtration is complete with respect to a measure `μ` if
+  all its σ-algebras contain the `μ`-null sets.
 
 ## Main results
 
@@ -33,7 +35,6 @@ This file defines filtrations of a measurable space and σ-finite filtrations.
 ## Tags
 
 filtration, stochastic process
-
 -/
 
 @[expose] public section
@@ -168,7 +169,6 @@ noncomputable instance instPartialOrder : PartialOrder (Filtration ι m) where
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
   le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
 
-set_option linter.style.longLine false in
 noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
   sup := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
@@ -179,7 +179,8 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
   isLUB_sSup _ :=
-    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using! fun _ ↦ isLUB_sSup _)
+    .of_image (f := seq) .rfl
+      (by simpa only [isLUB_pi, Set.image_image] using! fun _ ↦ isLUB_sSup _)
   isGLB_sInf _ := by
     dsimp +instances [instInfSet]
     split_ifs with hn
@@ -266,7 +267,8 @@ Then you can endow `ι` with the order topology by writing
   letI := Preorder.topology ι
   haveI : OrderTopology ι := ⟨rfl⟩
 ``` -/
-noncomputable irreducible_def rightCont [PartialOrder ι] (𝓕 : Filtration ι m) : Filtration ι m :=
+@[no_expose]
+noncomputable def rightCont [PartialOrder ι] (𝓕 : Filtration ι m) : Filtration ι m :=
   letI : TopologicalSpace ι := Preorder.topology ι
   { seq i := if (𝓝[>] i).NeBot then ⨅ j > i, 𝓕 j else 𝓕 i
     mono' i j hij := by
@@ -385,6 +387,43 @@ lemma IsRightContinuous.measurableSet {𝓕 : Filtration ι m} [IsRightContinuou
 
 end IsRightContinuous
 
+section IsComplete
+
+variable [Preorder ι] {𝓕 : Filtration ι m} {μ ν : Measure Ω}
+
+/-- A filtration `𝓕` is complete with respect to a measure `μ` if for all `i`, `𝓕 i` contains all
+the `μ`-null sets. -/
+protected class IsComplete (𝓕 : Filtration ι m) (μ : Measure Ω := by volume_tac) where
+  /-- For all `t`, `𝓕 t` contains all the null sets. -/
+  measurableSet_of_null ⦃s : Set Ω⦄ (hs : μ s = 0) (t : ι) : MeasurableSet[𝓕 t] s
+
+/-- If a filtration `𝓕` is complete with respect to `μ`, then the measure `μ` restricted to the
+σ-algebra `𝓕 i` is complete. -/
+instance [𝓕.IsComplete μ] {i : ι} : (μ.trim (𝓕.le i)).IsComplete :=
+  ⟨fun _ hs ↦ IsComplete.measurableSet_of_null (measure_eq_zero_of_trim_eq_zero (𝓕.le i) hs) i⟩
+
+variable (𝓕) in
+/-- If a filtration `𝓕` on a nonempty type is complete with respect to `μ`, then `μ` is complete.
+
+This is not an instance since `𝓕` cannot be inferred from the goal. -/
+lemma IsComplete.isComplete_measure [Nonempty ι] [𝓕.IsComplete μ] : μ.IsComplete :=
+  ⟨fun _ hs ↦ 𝓕.le (Classical.arbitrary ι) _ (IsComplete.measurableSet_of_null hs _)⟩
+
+/-- A filtration that is complete with respect to `μ` is complete with respect to any measure `ν`
+such that `μ ≪ ν`. -/
+lemma IsComplete.of_absolutelyContinuous [𝓕.IsComplete μ] (hμν : μ ≪ ν) : 𝓕.IsComplete ν :=
+  ⟨fun _ hs t ↦ IsComplete.measurableSet_of_null (hμν hs) t⟩
+
+/-- If a filtration `𝓕` is complete with respect to `μ`, then a set that is `μ`-almost everywhere
+equal to a set of `𝓕 i` belongs to `𝓕 i`. -/
+lemma IsComplete.measurableSet_of_ae_eq [𝓕.IsComplete μ] {s t : Set Ω} {i : ι}
+    (ht : MeasurableSet[𝓕 i] t) (hst : s =ᵐ[μ] t) :
+    MeasurableSet[𝓕 i] s := by
+  rw [← symmDiff_symmDiff_cancel_left t s]
+  exact ht.symmDiff (IsComplete.measurableSet_of_null (measure_symmDiff_eq_zero_iff.mpr hst.symm) i)
+
+end IsComplete
+
 variable {β : ι → Type*} [∀ i, TopologicalSpace (β i)] [∀ i, MetrizableSpace (β i)]
   [mβ : ∀ i, MeasurableSpace (β i)] [∀ i, BorelSpace (β i)]
   [Preorder ι]
@@ -409,13 +448,12 @@ section
 
 open MeasurableSpace
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontrivial (β i)]
     {s : ι → Set Ω} (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β i)) fun i =>
       stronglyMeasurable_one.indicator (hsm i) := by
-  simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
-  ext1 i
+  refine Filtration.ext <| funext fun i ↦ ?_
+  simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop]
   refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_)
   · rintro _ ⟨j, hij, rfl⟩
     refine measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, ?_⟩⟩
@@ -438,47 +476,6 @@ theorem filtrationOfSet_eq_natural [∀ i, MulZeroOneClass (β i)] [∀ i, Nontr
 
 end
 
-section Limit
-
-variable {E : Type*} [Zero E] [TopologicalSpace E] {ℱ : Filtration ι m} {f : ι → Ω → E}
-  {μ : Measure Ω}
-
-open scoped Classical in
-/-- Given a process `f` and a filtration `ℱ`, if `f` converges to some `g` almost everywhere and
-`g` is `⨆ n, ℱ n`-measurable, then `limitProcess f ℱ μ` chooses said `g`, else it returns 0.
-
-This definition is used to phrase the a.e. martingale convergence theorem
-`Submartingale.ae_tendsto_limitProcess` where an L¹-bounded submartingale `f` adapted to `ℱ`
-converges to `limitProcess f ℱ μ` `μ`-almost everywhere. -/
-noncomputable def limitProcess (f : ι → Ω → E) (ℱ : Filtration ι m)
-    (μ : Measure Ω) :=
-  if h : ∃ g : Ω → E,
-    StronglyMeasurable[⨆ n, ℱ n] g ∧ ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (g ω)) then
-  Classical.choose h else 0
-
-theorem stronglyMeasurable_limitProcess : StronglyMeasurable[⨆ n, ℱ n] (limitProcess f ℱ μ) := by
-  rw [limitProcess]
-  split_ifs with h
-  exacts [(Classical.choose_spec h).1, stronglyMeasurable_zero]
-
-theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess f ℱ μ) :=
-  stronglyMeasurable_limitProcess.mono (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _)
-
-theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
-    {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hbdd : ∀ n, eLpNorm (f n) p μ ≤ R) : MemLp (limitProcess f ℱ μ) p μ := by
-  rw [limitProcess]
-  split_ifs with h
-  · refine ⟨StronglyMeasurable.aestronglyMeasurable
-      ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _)),
-      lt_of_le_of_lt (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ (Classical.choose_spec h).2)
-        (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))⟩
-    simp_rw [liminf_eq, eventually_atTop]
-    exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
-  · exact MemLp.zero
-
-end Limit
-
 section piLE
 
 /-! ### Filtration of the first events -/
@@ -499,13 +496,12 @@ def piLE : @Filtration (Π i, X i) ι _ pi where
 
 variable [LocallyFiniteOrderBot ι]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma piLE_eq_comap_frestrictLe (i : ι) : piLE (X := X) i = pi.comap (frestrictLe i) := by
-  apply le_antisymm
-  · simp_rw [piLE, ← piCongrLeft_comp_frestrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
-    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
-  · rw [← piCongrLeft_comp_restrictLe, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
-    exact MeasurableSpace.comap_mono <| Measurable.comap_le (by fun_prop)
+  refine le_antisymm (Measurable.comap_le ?_) (Measurable.comap_le ?_)
+  · exact (MeasurableEquiv.piCongrLeft (fun j : Set.Iic i ↦ X j)
+      (Equiv.IicFinsetSet i)).measurable.comp (comap_measurable _)
+  · exact (MeasurableEquiv.piCongrLeft (fun j : Finset.Iic i ↦ X j)
+      (Equiv.IicFinsetSet i).symm).measurable.comp (comap_measurable _)
 
 end piLE
 

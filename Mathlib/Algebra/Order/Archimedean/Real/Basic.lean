@@ -7,15 +7,14 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Data.Int.LeastGreatest
+import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
-
 -/
 
 @[expose] public section
@@ -144,8 +143,9 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
 theorem lt_sInf_add_pos (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) : ∃ a ∈ s, a < sInf s + ε :=
   exists_lt_of_csInf_lt h <| lt_add_of_pos_right _ hε
 
+-- TODO: shouldn't this be named `sSup_add_neg_lt`?
 theorem add_neg_lt_sSup (h : s.Nonempty) {ε : ℝ} (hε : ε < 0) : ∃ a ∈ s, sSup s + ε < a :=
-  exists_lt_of_lt_csSup h <| add_lt_iff_neg_left.2 hε
+  exists_lt_of_lt_csSup h <| add_lt_of_neg_right _ hε
 
 theorem sInf_le_iff (h : BddBelow s) (h' : s.Nonempty) :
     sInf s ≤ a ↔ ∀ ε, 0 < ε → ∃ x ∈ s, x < a + ε := by
@@ -170,11 +170,8 @@ theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
 theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
   simp [sInf_def]
 
-@[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
-  dsimp [iSup]
-  convert! Real.sSup_empty
-  rw [Set.range_eq_empty_iff]
-  infer_instance
+lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
+  simp
 
 @[simp]
 theorem iSup_const_zero : ⨆ _ : ι, (0 : ℝ) = 0 := by
@@ -190,8 +187,8 @@ theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bd
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 
-@[simp] nonrec lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
-  rw [iInf_of_isEmpty, sInf_empty]
+lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
+  simp
 
 @[simp]
 theorem iInf_const_zero : ⨅ _ : ι, (0 : ℝ) = 0 := by
@@ -349,7 +346,7 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     refine le_ciInf fun r => ?_
     obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
     refine ciInf_set_le hf (hxy.trans ?_)
-    exact_mod_cast hyr
+    exact mod_cast hyr
   · refine le_ciInf fun q => ?_
     have hq := q.prop
     rw [mem_Ioi] at hq

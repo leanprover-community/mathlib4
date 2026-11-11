@@ -6,12 +6,11 @@ Authors: Richard Hill, Andrew Yang, Edison Xie
 
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.RepresentationTheory.Continuous.TopRep
 
 /-!
-
 # Continuous cohomology
 
 We define continuous cohomology as the homology of the homogeneous cochain complex.
