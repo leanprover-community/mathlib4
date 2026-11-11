@@ -51,6 +51,8 @@ noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
   smul' x y := by rw [map_smul, gelfandRadius_smul]
 
 variable {L} in
+/-- The Gelfand radius norm of `x : L` is the Gelfand radius of multiplication of `x` on `L`.
+See `Module.Basis.gelfandRadiusNorm_apply` for a version taking an arbitrary `K`-basis of `L`. -/
 theorem gelfandRadiusNorm_def (x : L) :
     gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x) := by
   rfl
