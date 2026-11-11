@@ -17,7 +17,6 @@ and `(D, K)`. Let `Φ` be a point of `(D, K)`. Assume `hF : CoverPreserving J K 
 In this file, we define a point `Φ.comap F hF` of the site `(C, J)` and
 construct an isomorphism
 `(Φ.comap F hF).sheafFiber ≅ F.sheafPullback A J K ⋙ Φ.sheafFiber`.
-
 -/
 
 @[expose] public section
@@ -46,7 +45,7 @@ def comap : Point.{w} J where
     simp
 
 variable (A : Type*) [Category.{v} A] [HasProducts.{w} A]
-  [Functor.IsContinuous.{v} F J K]
+  [Functor.IsContinuous F J K]
 
 /-- Given a continuous functor `F : C ⥤ D` between sites `(C, J)` and `(D, K)`,
 and a point `Φ` of `(D, K)`, this is the isomorphism between

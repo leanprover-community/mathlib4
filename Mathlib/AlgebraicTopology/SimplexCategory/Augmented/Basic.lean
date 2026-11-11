@@ -5,9 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.WithTerminal.Basic
-public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
 
 /-!
 # The Augmented simplex category
@@ -22,7 +21,6 @@ We prove that functors out of `AugmentedSimplexCategory` are equivalent to augme
 objects and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to augmented simplicial
 objects, and we provide a translation of the main constructions on augmented (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
-
 -/
 
 @[expose] public section
@@ -54,6 +52,9 @@ def equivAugmentedCosimplicialObject :
     (AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C :=
   WithInitial.equivComma
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 dropping the augmentation corresponds to precomposition with
 `inclusion : SimplexCategory ⥤ AugmentedSimplexCategory`. -/
@@ -63,6 +64,9 @@ def equivAugmentedCosimplicialObjectFunctorCompDropIso :
     (Functor.whiskeringLeft _ _ C).obj inclusion :=
   .refl _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 taking the point of the augmentation corresponds to evaluation at the initial object. -/
 @[simps!]
@@ -70,9 +74,6 @@ def equivAugmentedCosimplicialObjectFunctorCompPointIso :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.point ≅
     ((evaluation _ _).obj .star : (AugmentedSimplexCategory ⥤ C) ⥤ C) :=
   .refl _
-
-@[deprecated (since := "2025-08-22")] alias equivAugmentedCosimplicialObjecFunctorCompPointIso :=
-  equivAugmentedCosimplicialObjectFunctorCompPointIso
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 the arrow attached to the cosimplicial object is the one obtained by evaluation at the unique arrow
@@ -84,6 +85,9 @@ def equivAugmentedCosimplicialObjectFunctorCompToArrowIso :
       (evaluation _ _ |>.obj <| .mk <| WithInitial.homTo <| .mk 0) :=
   .refl _
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence between functors out of `AugmentedSimplexCategory` and augmented simplicial
 objects. -/
 @[simps!]

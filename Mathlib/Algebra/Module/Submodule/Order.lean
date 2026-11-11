@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Algebra.Order.Monoid.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered instances on submodules
 -/
 
-@[expose] public section
+public section
 
 namespace Submodule
 variable {R M : Type*}

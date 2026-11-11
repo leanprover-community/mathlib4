@@ -5,9 +5,8 @@ Authors: Joseph Myers, Yaël Dillies
 -/
 module
 
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.MkIffOfInductiveProp
-public import Batteries.Data.List
+import Batteries.Data.List.Lemmas
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Triplewise predicates on list.
@@ -15,10 +14,9 @@ public import Batteries.Data.List
 ## Main definitions
 
 * `List.Triplewise` says that a predicate applies to all ordered triples of elements of a list.
-
 -/
 
-@[expose] public section
+public section
 
 
 namespace List
@@ -83,8 +81,8 @@ lemma triplewise_iff_getElem : l.Triplewise p ↔ ∀ i j k (hij : i < j) (hjk :
     refine ⟨fun ⟨hh, ht⟩ i j k hij hjk hk ↦ ?_,
             fun h ↦ ⟨fun i j hi hj hij ↦ ?_, fun i j k hij hjk hk ↦ ?_⟩⟩
     · grind
-    · simpa using h 0 (i + 1) (j + 1) (by lia) (by lia) (by lia)
-    · simpa using h (i + 1) (j + 1) (k + 1) (by lia) (by lia) (by lia)
+    · simpa using! h 0 (i + 1) (j + 1) (by lia) (by lia) (by lia)
+    · simpa using! h (i + 1) (j + 1) (k + 1) (by lia) (by lia) (by lia)
 
 lemma triplewise_append : (l₁ ++ l₂).Triplewise p ↔ l₁.Triplewise p ∧ l₂.Triplewise p ∧
     (∀ a ∈ l₁, l₂.Pairwise (p a)) ∧ ∀ a ∈ l₂, l₁.Pairwise fun x y ↦ p x y a := by

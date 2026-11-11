@@ -15,7 +15,6 @@ This file defines the category `ShortComplex C` of diagrams
 
 Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
-
 -/
 
 @[expose] public section
@@ -63,7 +62,7 @@ structure Hom (S₁ S₂ : ShortComplex C) where
   /-- the right commutative square of a morphism in `ShortComplex` -/
   comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃ := by cat_disch
 
-attribute [reassoc] Hom.comm₁₂ Hom.comm₂₃
+attribute [map (attr := reassoc)] Hom.comm₁₂ Hom.comm₂₃
 attribute [local simp] Hom.comm₁₂ Hom.comm₂₃ Hom.comm₁₂_assoc Hom.comm₂₃_assoc
 
 variable (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
@@ -123,19 +122,19 @@ variable {S₁ S₂}
 instance : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₁ : ShortComplex C ⥤ C where
   obj S := S.X₁
   map f := f.τ₁
 
 /-- The second projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₂ : ShortComplex C ⥤ C where
   obj S := S.X₂
   map f := f.τ₂
 
 /-- The third projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃
@@ -161,7 +160,7 @@ lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ 
 
 /-- The short complex in `D` obtained by applying a functor `F : C ⥤ D` to a
 short complex in `C`, assuming that `F` preserves zero morphisms. -/
-@[simps]
+@[implicit_reducible, simps]
 def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
   ShortComplex.mk (F.map S.f) (F.map S.g) (by rw [← F.map_comp, S.zero, F.map_zero])
 
@@ -173,7 +172,7 @@ def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
 
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (τ : F ⟶ G) :
     S.map F ⟶ S.map G where
   τ₁ := τ.app _
@@ -182,7 +181,7 @@ def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorph
 
 /-- The isomorphism of short complexes `S.map F ≅ S.map G` induced by
 a natural isomorphism `F ≅ G`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (τ : F ≅ G) :
     S.map F ≅ S.map G where
   hom := S.mapNatTrans τ.hom
@@ -190,7 +189,7 @@ def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphis
 
 /-- The functor `ShortComplex C ⥤ ShortComplex D` induced by a functor `C ⥤ D` which
 preserves zero morphisms. -/
-@[simps]
+@[implicit_reducible, simps]
 def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZeroMorphisms] :
     ShortComplex C ⥤ ShortComplex D where
   obj S := S.map F
@@ -242,6 +241,7 @@ lemma isIso_iff (f : S₁ ⟶ S₂) :
 def op : ShortComplex Cᵒᵖ :=
   mk S.g.op S.f.op (by simp only [← op_comp, S.zero]; rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
 @[simps]
 def opMap (φ : S₁ ⟶ S₂) : S₂.op ⟶ S₁.op where
@@ -263,6 +263,7 @@ lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
   mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero]; rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
 @[simps]
 def unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} (φ : S₁ ⟶ S₂) : S₂.unop ⟶ S₁.unop where
@@ -293,6 +294,8 @@ def unopFunctor : ShortComplex Cᵒᵖ ⥤ (ShortComplex C)ᵒᵖ where
   obj S := Opposite.op (S.unop)
   map φ := (unopMap φ).op
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The obvious equivalence of categories `(ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ`. -/
 @[simps]
 def opEquiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where

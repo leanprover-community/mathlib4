@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.TensorPower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor algebras as direct sums of tensor powers
 
@@ -84,7 +87,6 @@ def toDirectSum : TensorAlgebra R M →ₐ[R] ⨁ n, ⨂[R]^n M :=
     DirectSum.lof R ℕ (fun n => ⨂[R]^n M) _ ∘ₗ
       (LinearEquiv.symm <| PiTensorProduct.subsingletonEquiv (0 : Fin 1) : M ≃ₗ[R] _).toLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDirectSum_ι (x : M) :
     toDirectSum (ι R x) =
@@ -99,12 +101,12 @@ theorem ofDirectSum_comp_toDirectSum :
 @[simp]
 theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
     ofDirectSum (TensorAlgebra.toDirectSum x) = x :=
-  AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
+  congr($ofDirectSum_comp_toDirectSum x)
 
 @[simp]
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
-    (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg Fin h) x) =
+    (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr(Fin $h)) x) =
     GradedMonoid.mk n x :=
   Eq.symm (PiTensorProduct.gradedMonoid_eq_of_reindex_cast h rfl)
 
@@ -144,7 +146,6 @@ theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
   rw [GradedMonoid.mk_list_dProd]
   rw [TensorPower.list_prod_gradedMonoid_mk_single]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toDirectSum_comp_ofDirectSum :
     toDirectSum.comp ofDirectSum = AlgHom.id R (⨁ n, ⨂[R]^n M) := by
   ext
@@ -153,7 +154,7 @@ theorem toDirectSum_comp_ofDirectSum :
 @[simp]
 theorem toDirectSum_ofDirectSum (x : ⨁ n, ⨂[R]^n M) :
     TensorAlgebra.toDirectSum (ofDirectSum x) = x :=
-  AlgHom.congr_fun toDirectSum_comp_ofDirectSum x
+  congr($toDirectSum_comp_ofDirectSum x)
 
 /-- The tensor algebra is isomorphic to a direct sum of tensor powers. -/
 @[simps!]

@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 public import Mathlib.NumberTheory.Cyclotomic.Basic
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
 /-!
 # Instances for HasEnoughRootsOfUnity
@@ -16,7 +16,7 @@ and `n` is not divisible by the characteristic. In particular, when `F` has char
 this hold for all `n ≠ 0`.
 -/
 
-@[expose] public section
+public section
 
 variable (F : Type*) [Field F] (n k : ℕ) [NeZero (n : F)]
 
@@ -36,7 +36,7 @@ instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity F n where
     rootsOfUnity.isCyclic F n
 
 instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity F (n ^ k) :=
-  have : NeZero ((n ^ k : ℕ) : F) := by exact_mod_cast ‹NeZero (n : F)›.pow
+  have : NeZero ((n ^ k : ℕ) : F) := mod_cast ‹NeZero (n : F)›.pow
   inferInstance
 
 end IsSepClosed
@@ -57,13 +57,11 @@ end AlgebraicClosure
 
 namespace SeparableClosure
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity (SeparableClosure F) n :=
   have : NeZero (n : SeparableClosure F) :=
     ‹NeZero (n : F)›.of_injective (algebraMap F (SeparableClosure F)).injective
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity (SeparableClosure F) (n ^ k) :=
   have : NeZero (n : SeparableClosure F) :=
     ‹NeZero (n : F)›.of_injective (algebraMap F (SeparableClosure F)).injective

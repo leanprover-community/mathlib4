@@ -5,10 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.Topology.Compactification.StoneCech
-public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
 # Profinite sets have enough projectives
@@ -22,7 +21,6 @@ Let `X` be a profinite set.
 * `Profinite.projective_ultrafilter`: the space `Ultrafilter X` is a projective object
 * `Profinite.projectivePresentation`: the natural map `Ultrafilter X → X`
   is a projective presentation
-
 -/
 
 @[expose] public section
@@ -46,7 +44,7 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     use CompHausLike.ofHom _ ⟨h, hh⟩
     apply ConcreteCategory.coe_ext
     simp only [h]
-    convert denseRange_pure.equalizer (g.hom.hom.continuous.comp hh) f.hom.hom.continuous _
+    convert! denseRange_pure.equalizer (g.hom.hom.continuous.comp hh) f.hom.hom.continuous _
     have : g.hom ∘ g' = id := hg'.comp_eq_id
     rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
     rfl

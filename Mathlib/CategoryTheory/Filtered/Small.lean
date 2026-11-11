@@ -5,9 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Filtered.Basic
-public import Mathlib.Tactic.DepRewrite
 
 /-!
 # A functor from a small category to a filtered category factors through a small filtered category
@@ -100,6 +98,7 @@ private noncomputable def abstractFilteredClosureRealization : AbstractFilteredC
 
 end FilteredClosureSmall
 
+set_option backward.defeqAttrib.useBackward true in
 theorem small_fullSubcategory_filteredClosure :
     Small.{max v w} (filteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
@@ -108,12 +107,10 @@ theorem small_fullSubcategory_filteredClosure :
   induction h with
   | base x =>
       refine ⟨⟨0, ?_⟩, ?_⟩
-      · #adaptation_note
-        /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
-        simp -implicitDefEqProofs only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
-      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
-        rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · simp only [FilteredClosureSmall.abstractFilteredClosureRealization,
+          FilteredClosureSmall.bundledAbstractFilteredClosure]
         rfl
   | max hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩
@@ -252,6 +249,7 @@ private noncomputable def abstractCofilteredClosureRealization : AbstractCofilte
 
 end CofilteredClosureSmall
 
+set_option backward.defeqAttrib.useBackward true in
 theorem small_fullSubcategory_cofilteredClosure :
     Small.{max v w} (cofilteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists
@@ -261,12 +259,10 @@ theorem small_fullSubcategory_cofilteredClosure :
   induction h with
   | base x =>
     refine ⟨⟨0, ?_⟩,?_⟩
-    · #adaptation_note
-      /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
-      simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
-    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
-      rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization,
+        CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       rfl
   | min hj₁ hj₂ ih ih' =>
     rcases ih with ⟨⟨n, x⟩, rfl⟩

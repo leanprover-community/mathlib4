@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Preorder.Chain
+
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Range of `f : Fin (n + 1) → α` as a `Flag`
@@ -15,6 +16,7 @@ Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple `(f₀, …, fₙ)` such that
 - `f₀ = ⊥` and `fₙ = ⊤`;
 - `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
   this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.
+
 Then the range of `f` is a maximal chain.
 
 We formulate this result in terms of `IsMaxChain` and `Flag`.
@@ -30,6 +32,7 @@ variable {α : Type*} [PartialOrder α] [BoundedOrder α] {n : ℕ} {f : Fin (n 
 - `f₀ = ⊥` and `fₙ = ⊤`;
 - `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
   this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.
+
 Then the range of `f` is a maximal chain. -/
 theorem IsMaxChain.range_fin_of_covBy (h0 : f 0 = ⊥) (hlast : f (.last n) = ⊤)
     (hcovBy : ∀ k : Fin n, f k.castSucc ⩿ f k.succ) :
@@ -49,6 +52,7 @@ theorem IsMaxChain.range_fin_of_covBy (h0 : f 0 = ⊥) (hlast : f (.last n) = �
 - `f₀ = ⊥` and `fₙ = ⊤`;
 - `fₖ₊₁` weakly covers `fₖ` for all `0 ≤ k < n`;
   this means that `fₖ ≤ fₖ₊₁` and there is no `c` such that `fₖ<c<fₖ₊₁`.
+
 Then the range of `f` is a `Flag α`. -/
 @[simps]
 def Flag.rangeFin (f : Fin (n + 1) → α) (h0 : f 0 = ⊥) (hlast : f (.last n) = ⊤)

@@ -6,8 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Data.Set.Functor
-public import Mathlib.Order.Sublattice
 public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Order.Sublattice
 
 /-!
 # Complete Sublattices
@@ -23,7 +23,6 @@ invariant submodules of some module with respect to a linear map.
 * `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
 * `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
 * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
-
 -/
 
 @[expose] public section
@@ -62,13 +61,13 @@ variable {L : CompleteSublattice α}
 
 instance instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
-  coe_injective' L M h := by cases L; cases M; congr; exact SetLike.coe_injective' h
+  coe_injective L M h := by cases L; cases M; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (CompleteSublattice α) := .ofSetLike (CompleteSublattice α) α
+instance : PartialOrder (CompleteSublattice α) := .ofSetLike (CompleteSublattice α)
 
-theorem top_mem : ⊤ ∈ L := by simpa using L.sInfClosed' <| empty_subset _
+theorem top_mem : ⊤ ∈ L := by simpa using! L.sInfClosed' <| empty_subset _
 
-theorem bot_mem : ⊥ ∈ L := by simpa using L.sSupClosed' <| empty_subset _
+theorem bot_mem : ⊥ ∈ L := by simpa using! L.sSupClosed' <| empty_subset _
 
 instance instBot : Bot L where
   bot := ⟨⊥, bot_mem⟩
@@ -121,7 +120,7 @@ def subtype (L : CompleteSublattice α) : CompleteLatticeHom L α where
   map_sSup' _ := rfl
 
 @[simp, norm_cast] lemma coe_subtype (L : CompleteSublattice α) : L.subtype = ((↑) : L → α) := rfl
-lemma subtype_apply (L : Sublattice α) (a : L) : L.subtype a = a := rfl
+lemma subtype_apply (L : CompleteSublattice α) (a : L) : L.subtype a = a := rfl
 
 lemma subtype_injective (L : CompleteSublattice α) :
     Injective <| subtype L := Subtype.coe_injective

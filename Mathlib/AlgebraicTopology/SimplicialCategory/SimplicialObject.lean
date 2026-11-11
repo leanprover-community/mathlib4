@@ -18,10 +18,9 @@ In this file, we deduce that `SimplicialObject D` is enriched over `SSet.{v} D`
 (when `D : Type u` and `[Category.{v} D]`) and that `SimplicialObject D`
 is actually a simplicial category. In particular, the category of simplicial
 sets is a simplicial category.
-
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

@@ -5,8 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Data.EReal.Basic
 public import Mathlib.NumberTheory.LSeries.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convergence of L-series
@@ -59,14 +61,13 @@ lemma LSeriesSummable.abscissaOfAbsConv_le {f : ℕ → ℂ} {s : ℂ} (h : LSer
     abscissaOfAbsConv f ≤ s.re :=
   sInf_le <| by simpa using h.of_re_le_re (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable {f : ℕ → ℂ} {x : ℝ}
     (h : ∀ y : ℝ, x < y → LSeriesSummable f y) :
     abscissaOfAbsConv f ≤ x := by
   refine sInf_le_iff.mpr fun y hy ↦ le_of_forall_gt_imp_ge_of_dense fun a ↦ ?_
   replace hy : ∀ (a : ℝ), LSeriesSummable f a → y ≤ a := by simpa [mem_lowerBounds] using hy
   cases a with
-  | coe a₀ => exact_mod_cast fun ha ↦ hy a₀ (h a₀ ha)
+  | coe a₀ => exact mod_cast fun ha ↦ hy a₀ (h a₀ ha)
   | bot => simp
   | top => simp
 
@@ -128,7 +129,7 @@ lemma LSeries.summable_real_of_abscissaOfAbsConv_lt {f : ℕ → ℝ} {x : ℝ}
   simp only [LSeriesSummable, aux, summable_ofReal] at this
   refine this.congr_cofinite ?_
   filter_upwards [(Set.finite_singleton 0).compl_mem_cofinite] with n hn
-    using if_neg (by simpa using hn)
+    using ite_eq_right (by simpa using hn)
 
 /-- If `F` is a binary operation on `ℕ → ℂ` with the property that the `LSeries` of `F f g`
 converges whenever the `LSeries` of `f` and `g` do, then the abscissa of absolute convergence

@@ -27,7 +27,6 @@ defining objects that can be created randomly.
 ## References
 
 * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
-
 -/
 
 @[expose] public section
@@ -84,8 +83,6 @@ def range {g : Type} [RandomGen g] [Monad m] : RandGT g m (Nat × Nat) := do
 end Rand
 
 namespace Random
-
-open Rand
 
 variable [Monad m]
 
@@ -168,6 +165,6 @@ def runRand (cmd : RandT m α) : m α := do
 
 /-- Execute `RandT m α` using the global `stdGenRef` as RNG and the given `seed`. -/
 def runRandWith (seed : Nat) (cmd : RandT m α) : m α := do
-  pure <| (← cmd.run (ULift.up <| mkStdGen seed)).1
+  pure (← cmd.run (ULift.up <| mkStdGen seed)).1
 
 end IO

@@ -3,8 +3,10 @@ Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
-import Mathlib.Data.Set.Card
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Closure
 
 /-!
 # The Kuratowski closure-complement theorem
@@ -44,6 +46,8 @@ In another file it will be shown that the maximum can be realized in the real nu
 * https://en.wikipedia.org/wiki/Kuratowski%27s_closure-complement_problem
 * https://web.archive.org/web/20220212062843/http://nzjm.math.auckland.ac.nz/images/6/63/The_Kuratowski_Closure-Complement_Theorem.pdf
 -/
+
+@[expose] public section
 
 namespace Topology.ClosureCompl
 
@@ -101,8 +105,7 @@ theorem mem_theFourteen_iff_isObtainable {s t : Set X} :
 /-- **Kuratowski's closure-complement theorem**: the number of obtainable sets via closure and
 complement operations from a single set `s` is at most 14. -/
 theorem ncard_isObtainable_le_fourteen (s : Set X) : {t | IsObtainable s t}.ncard ≤ 14 := by
-  classical
-  convert Set.ncard_coe_finset _ ▸ (theFourteen s).toFinset_card_le
+  convert! Set.ncard_coe_finset _ ▸ (theFourteen s).toFinset_card_le
   simp [Set.ext_iff, mem_theFourteen_iff_isObtainable]
 
 end Topology.ClosureCompl

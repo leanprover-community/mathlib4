@@ -5,10 +5,10 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
-
 # Prime ideals
 
 This file contains the definition of `Ideal.IsPrime` for prime ideals.
@@ -23,11 +23,11 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
-open Set Function
+open Set
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
@@ -36,6 +36,7 @@ namespace Ideal
 variable [Semiring α] (I : Ideal α) {a b : α}
 
 /-- An ideal `P` of a ring `R` is prime if `P ≠ R` and `xy ∈ P → x ∈ P ∨ y ∈ P` -/
+@[wikidata Q863912]
 class IsPrime (I : Ideal α) : Prop where
   /-- The prime ideal is not the entire ring. -/
   ne_top' : I ≠ ⊤
@@ -90,9 +91,6 @@ instance isPrime_bot [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPr
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
-@[deprecated isPrime_bot (since := "2026-01-10")]
-theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime := isPrime_bot
-
 theorem IsPrime.mul_mem_iff_mem_or_mem {I : Ideal α} [I.IsTwoSided] (hI : I.IsPrime) :
     ∀ {x y : α}, x * y ∈ I ↔ x ∈ I ∨ y ∈ I := @fun x y =>
   ⟨hI.mem_or_mem, by
@@ -120,6 +118,53 @@ def primeCompl (P : Ideal α) [hp : P.IsPrime] : Submonoid α where
 @[simp]
 theorem mem_primeCompl_iff {P : Ideal α} [P.IsPrime] {x : α} :
     x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
+
+theorem primeCompl_bot [Nontrivial α] [NoZeroDivisors α] :
+    (⊥ : Ideal α).primeCompl = nonZeroDivisors α := by
+  ext
+  simp
+
+variable (S : Set (Ideal α)) (hS : ∀ P ∈ S, P.IsPrime)
+
+/-- The elements lying outside every ideal in a set of prime ideals form a submonoid. -/
+@[no_expose]
+def sInfPrimeCompl : Submonoid α :=
+  ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption))
+
+lemma sInfPrimeCompl_def :
+    sInfPrimeCompl S hS = ⨅ P ∈ S, P.primeCompl (hp := hS P (by assumption)) := by rfl
+
+@[simp]
+theorem mem_sInfPrimeCompl_iff {x : α} : x ∈ sInfPrimeCompl S hS ↔ ∀ P ∈ S, x ∉ P := by
+  simp [sInfPrimeCompl_def]
+
+@[simp]
+theorem sInfPrimeCompl_empty :
+    sInfPrimeCompl ∅ (by simp : ∀ P ∈ (∅ : Set (Ideal α)), P.IsPrime) = ⊤ := by
+  ext
+  simp
+
+@[simp]
+theorem sInfPrimeCompl_singleton (P : Ideal α) [P.IsPrime] :
+    sInfPrimeCompl {P} (by simp_all) = P.primeCompl := by
+  ext
+  simp
+
+theorem sInfPrimeCompl_union {S T : Set (Ideal α)} (hST : ∀ P ∈ S ∪ T, P.IsPrime) :
+    sInfPrimeCompl (S ∪ T) hST =
+      sInfPrimeCompl S (fun P hP ↦ hST P (Set.mem_union_left T hP)) ⊓
+      sInfPrimeCompl T (fun P hP ↦ hST P (Set.mem_union_right S hP)) := by
+  aesop
+
+theorem sInfPrimeCompl_le_primeCompl {P : Ideal α} (hP : P ∈ S) :
+    sInfPrimeCompl S hS ≤ P.primeCompl (hp := hS P hP) :=
+  fun _ hx ↦ (mem_sInfPrimeCompl_iff S hS).mp hx P hP
+
+theorem sInfPrimeCompl_anti {S T : Set (Ideal α)} (hST : S ⊆ T) (hP : ∀ P ∈ T, P.IsPrime) :
+    sInfPrimeCompl T hP ≤ sInfPrimeCompl S (fun P hPS ↦ hP P (hST hPS)) := by
+  intro x hx
+  rw [mem_sInfPrimeCompl_iff] at hx ⊢
+  exact fun P hp ↦ hx P (hST hp)
 
 end Ideal
 

@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
+public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Convex.Gauge
 
 /-!
 # Absolutely convex open sets
@@ -28,14 +28,13 @@ convex open neighborhoods of zero.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
   `gaugeSeminormFamily`.
 * `LocallyConvexSpace.toPolynormableSpace`: a locally convex space is polynormable
-
 -/
 
 @[expose] public section
 
 open NormedField Set
 
-open NNReal Pointwise Topology
+open scoped Topology
 
 variable {𝕜 E : Type*}
 
@@ -100,11 +99,12 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
   simp_rw [gaugeSeminorm_toFun]
-  exact gauge_lt_one_eq_self_of_isOpen (s.coe_convex.lift ℝ) s.coe_zero_mem s.coe_isOpen
+  exact setOfPred_gauge_lt_one_eq_self_of_isOpen (s.coe_convex.lift ℝ) s.coe_zero_mem s.coe_isOpen
 
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [LocallyConvexSpace 𝕜 E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_

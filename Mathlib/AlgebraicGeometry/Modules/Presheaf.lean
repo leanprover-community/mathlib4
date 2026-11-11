@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.AlgebraicGeometry.Scheme
-public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # The category of presheaves of modules over a scheme
@@ -17,7 +15,6 @@ of modules over `X`. As categories of presheaves of modules are
 defined for presheaves of rings (and not presheaves of commutative rings),
 we also introduce a definition `X.ringCatSheaf` for the underlying sheaf
 of rings of `X`.
-
 -/
 
 @[expose] public section

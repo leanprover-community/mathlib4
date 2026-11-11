@@ -5,13 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.LinearAlgebra.Basis.Cardinality
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+
+import Mathlib.SetTheory.Cardinal.Free
 
 /-!
 # Linear algebra properties of `FreeAlgebra R X`
@@ -37,9 +34,9 @@ variable [CommSemiring R]
 mapping `[x₁, x₂, ..., xₙ]` to the "monomial" `1 • x₁ * x₂ * ⋯ * xₙ` -/
 -- @[simps]
 noncomputable def basisFreeMonoid : Basis (FreeMonoid X) R (FreeAlgebra R X) :=
-  Finsupp.basisSingleOne.map equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv
+  Finsupp.basisSingleOne.map
+    (equivMonoidAlgebraFreeMonoid.toLinearEquiv.trans <| MonoidAlgebra.coeffLinearEquiv _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Module.Free R (FreeAlgebra R X) :=
   .of_equiv equivMonoidAlgebraFreeMonoid.symm.toLinearEquiv
 
@@ -48,13 +45,12 @@ end
 theorem rank_eq [CommRing R] [Nontrivial R] :
     Module.rank R (FreeAlgebra R X) = Cardinal.lift.{u} (Cardinal.mk (List X)) := by
   rw [← (Basis.mk_eq_rank'.{_, _, _, u} (basisFreeMonoid R X)).trans (Cardinal.lift_id _),
-    Cardinal.lift_umax.{v, u}, FreeMonoid]
+    Cardinal.lift_umax.{v, u}, Cardinal.mk_freeMonoid_eq_mk_list]
 
 end FreeAlgebra
 
 open Cardinal
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.rank_adjoin_le {R : Type u} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
     (s : Set S) : Module.rank R (adjoin R s) ≤ max #s ℵ₀ := by
   rw [adjoin_eq_range_freeAlgebra_lift]

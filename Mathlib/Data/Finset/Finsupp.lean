@@ -6,9 +6,9 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
-public import Mathlib.Data.Finsupp.Indicator
-public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Finitely supported product of finsets
@@ -35,7 +35,7 @@ noncomputable section
 
 open Finsupp
 
-open Pointwise
+open scoped Pointwise
 
 variable {ι α : Type*} [Zero α] {s : Finset ι} {f : ι →₀ α}
 

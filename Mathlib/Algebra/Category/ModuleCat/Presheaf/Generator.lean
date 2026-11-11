@@ -6,11 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Generator.Basic
+
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 
 /-!
 # Generators for the category of presheaves of modules
@@ -40,7 +40,6 @@ This is used in the definition
 `PresheafOfModules.isColimitFreeYonedaCoproductsCokernelCofork`
 in order to obtain that any presheaf of modules is a cokernel
 of a morphism between coproducts of objects in `freeYoneda R`.
-
 -/
 
 @[expose] public section
@@ -59,13 +58,12 @@ noncomputable def freeYonedaEquiv {M : PresheafOfModules.{v} R} {X : C} :
     ((free R).obj (yoneda.obj X) ⟶ M) ≃ M.obj (Opposite.op X) :=
   freeHomEquiv.trans yonedaEquiv
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma freeYonedaEquiv_symm_app (M : PresheafOfModules.{v} R) (X : C)
     (x : M.obj (Opposite.op X)) :
     (freeYonedaEquiv.symm x).app (Opposite.op X) (ModuleCat.freeMk (𝟙 _)) = x := by
-  dsimp [freeYonedaEquiv, freeHomEquiv, yonedaEquiv]
-  rw [ModuleCat.freeDesc_apply, op_id, M.presheaf.map_id]
-  rfl
+  simp [freeYonedaEquiv, freeHomEquiv, yonedaEquiv]
 
 lemma freeYonedaEquiv_comp {M N : PresheafOfModules.{v} R} {X : C}
     (m : ((free R).obj (yoneda.obj X) ⟶ M)) (φ : M ⟶ N) :
@@ -88,12 +86,16 @@ lemma isSeparating : ObjectProperty.IsSeparating (freeYoneda R) := by
   intro M N f₁ f₂ h
   ext ⟨X⟩ m
   obtain ⟨g, rfl⟩ := freeYonedaEquiv.surjective m
-  exact congr_arg freeYonedaEquiv (h _ ⟨X⟩ g)
+  congrm freeYonedaEquiv $(h _ ⟨X⟩ g)
 
 lemma isDetecting : ObjectProperty.IsDetecting (freeYoneda R) :=
   (isSeparating R).isDetecting
 
 end freeYoneda
+
+instance hasSeparator {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
+    HasSeparator (PresheafOfModules.{u} R₀) :=
+  ⟨_, (freeYoneda.isSeparating R₀).isSeparator_coproduct⟩
 
 instance wellPowered {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
     WellPowered.{u} (PresheafOfModules.{u} R₀) :=
@@ -117,16 +119,16 @@ variable {C : Type u} [Category.{v} C] {R : Cᵒᵖ ⥤ RingCat.{v}} {M : Preshe
 free presheaf of modules on the Yoneda presheaf of types corresponding to the
 underlying object of `m`. -/
 noncomputable abbrev freeYoneda (m : M.Elements) :
-    PresheafOfModules.{v} R := (free R).obj (yoneda.obj m.1.unop)
+    PresheafOfModules.{v} R := (free R).obj (yoneda.obj m.obj.unop)
 
 /-- Given an element `m : M.Elements` of a presheaf of modules `M`, this is
 the canonical morphism `m.freeYoneda ⟶ M`. -/
 noncomputable abbrev fromFreeYoneda (m : M.Elements) :
     m.freeYoneda ⟶ M :=
-  freeYonedaEquiv.symm m.2
+  freeYonedaEquiv.symm m.val
 
 lemma fromFreeYoneda_app_apply (m : M.Elements) :
-    m.fromFreeYoneda.app m.1 (ModuleCat.freeMk (𝟙 _)) = m.2 := by
+    m.fromFreeYoneda.app m.obj (ModuleCat.freeMk (𝟙 _)) = m.val := by
   apply freeYonedaEquiv_symm_app
 
 end Elements
@@ -155,26 +157,24 @@ noncomputable def fromFreeYonedaCoproduct :
 /-- Given an element `m` of a presheaf of modules `M`, this is the associated
 canonical section of the presheaf `M.freeYonedaCoproduct` over the object `m.1`. -/
 noncomputable def freeYonedaCoproductMk (m : M.Elements) :
-    M.freeYonedaCoproduct.obj m.1 :=
+    M.freeYonedaCoproduct.obj m.obj :=
   (M.ιFreeYonedaCoproduct m).app _ (ModuleCat.freeMk (𝟙 _))
 
 @[reassoc (attr := simp)]
 lemma ι_fromFreeYonedaCoproduct (m : M.Elements) :
     M.ιFreeYonedaCoproduct m ≫ M.fromFreeYonedaCoproduct = m.fromFreeYoneda := by
-  apply Sigma.ι_desc
+  apply Sigma.ι_comp_desc
 
 lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.freeYoneda.obj X) :
     M.fromFreeYonedaCoproduct.app X ((M.ιFreeYonedaCoproduct m).app X x) =
       m.fromFreeYoneda.app X x :=
-  congr_fun ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
+  congr($((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma fromFreeYonedaCoproduct_app_mk (m : M.Elements) :
-    M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.2 := by
-  dsimp [freeYonedaCoproductMk]
-  erw [M.ι_fromFreeYonedaCoproduct_apply m]
-  rw [m.fromFreeYoneda_app_apply]
+    M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.val := by
+  rw [freeYonedaCoproductMk, M.ι_fromFreeYonedaCoproduct_apply m, m.fromFreeYoneda_app_apply]
 
 instance : Epi M.fromFreeYonedaCoproduct :=
   epi_of_surjective (fun X m ↦ ⟨M.freeYonedaCoproductMk (M.elementsMk X m),

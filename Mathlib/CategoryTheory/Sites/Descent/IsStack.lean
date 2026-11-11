@@ -26,10 +26,9 @@ equivalences of categories.
 ## References
 * [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
 * [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
-
 -/
 
-@[expose] public section
+public section
 
 universe t t' v' v u' u
 

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Order.Filter.CountablyGenerated
-public import Mathlib.Tactic.GCongr
+
 import Mathlib.Algebra.Order.Group.Basic
 
 /-!
@@ -20,7 +20,7 @@ does `f`. We also prove that `Nat.cast : ℕ → R` tends to `Filter.atTop` alon
 well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a field `R`).
 -/
 
-@[expose] public section
+public section
 
 
 variable {α R : Type*}
@@ -214,20 +214,20 @@ section LinearOrderedRing
 variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R]
 
 /-- See also `Filter.Tendsto.atTop_mul_const_of_neg` for a version of this lemma for
-`LinearOrderedField`s which does not require the `Archimedean` assumption. -/
+linearly ordered fields which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atTop_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot := by
   simpa only [tendsto_neg_atTop_iff, mul_neg] using hf.atTop_mul_const' (neg_pos.mpr hr)
 
 /-- See also `Filter.Tendsto.atBot_mul_const` for a version of this lemma for
-`LinearOrderedField`s which does not require the `Archimedean` assumption. -/
+linearly ordered fields which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot := by
   simp only [← tendsto_neg_atTop_iff, ← neg_mul] at hf ⊢
   exact hf.atTop_mul_const' hr
 
 /-- See also `Filter.Tendsto.atBot_mul_const_of_neg` for a version of this lemma for
-`LinearOrderedField`s which does not require the `Archimedean` assumption. -/
+linearly ordered fields which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atBot_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop := by
   simpa only [mul_neg, tendsto_neg_atBot_iff] using hf.atBot_mul_const' (neg_pos.2 hr)

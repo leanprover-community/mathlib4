@@ -6,8 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Subobject.WellPowered
-public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # `Type u` is well-powered
@@ -28,7 +26,7 @@ but it remains to be seen whether this just pushes lumps around in the carpet.
 
 universe u
 
-open CategoryTheory
+open CategoryTheory ConcreteCategory
 
 open CategoryTheory.Subobject
 
@@ -47,10 +45,11 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
         homOfLE
           (by
             rintro a ⟨x, rfl⟩
-            exact ⟨t.hom.1 x, congr_fun t.hom.w x⟩) }
+            exact ⟨t.hom.1 x, congr_hom t.hom.w x⟩) }
   inverse :=
-    { obj := fun s => MonoOver.mk (Subtype.val : s → α)
-      map := fun {s t} b => MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
+    { obj := fun s => MonoOver.mk <| ↾(Subtype.val : s → α)
+      map := fun {s t} b => MonoOver.homMk (↾
+        fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
   unitIso :=
     NatIso.ofComponents fun f =>
       MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso

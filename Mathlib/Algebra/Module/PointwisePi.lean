@@ -5,9 +5,9 @@ Authors: Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Pointwise actions on sets in Pi types
@@ -17,12 +17,11 @@ This file contains lemmas about pointwise actions on sets in Pi types.
 ## Tags
 
 set multiplication, set addition, pointwise addition, pointwise multiplication, pi
-
 -/
 
 public section
 
-open Pointwise
+open scoped Pointwise
 
 open Set
 

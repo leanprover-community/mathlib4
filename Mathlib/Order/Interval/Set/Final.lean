@@ -9,10 +9,9 @@ public import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Final functors between intervals
-
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -25,7 +25,7 @@ but not about homogeneous bivariate polynomials encoded as `R[X][Y]`.
 
 @[expose] public section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 namespace Polynomial
 
@@ -87,7 +87,7 @@ lemma homogenize_monomial_of_lt {m n : ℕ} (h : n < m) (r : R) :
     homogenize (monomial m r) n = 0 := by
   rw [homogenize]
   apply Finset.sum_eq_zero
-  aesop (add simp coeff_monomial)
+  aesop (add simp Finsupp.single_apply)
 
 @[simp]
 lemma homogenize_X_pow {m n : ℕ} (h : m ≤ n) :
@@ -115,10 +115,10 @@ lemma coeff_homogenize (p : R[X]) (n : ℕ) (m : Fin 2 →₀ ℕ) :
     simp [*, ite_add_ite]
   | monomial k c =>
     rcases le_or_gt k n with hkn | hnk
-    · rw [homogenize_monomial hkn, coeff_monomial, MvPolynomial.coeff_monomial]
+    · rw [homogenize_monomial hkn, coeff_monomial_apply, MvPolynomial.coeff_monomial]
       have : (fun₀ | 0 => m 0 | 1 => m 1) = m := by ext i; fin_cases i <;> simp
       aesop
-    · aesop (add simp homogenize_monomial_of_lt) (add simp coeff_monomial)
+    · aesop (add simp homogenize_monomial_of_lt) (add simp Finsupp.single_apply)
 
 lemma eq_zero_of_homogenize_eq_zero {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n)
     (h : p.homogenize n = 0) :
@@ -209,12 +209,10 @@ section CommRing
 
 variable {R : Type*} [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homogenize_neg (p : R[X]) (n : ℕ) : (-p).homogenize n = -p.homogenize n :=
   map_neg (homogenizeLM n) p
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homogenize_sub (p q : R[X]) (n : ℕ) :
     (p - q).homogenize n = p.homogenize n - q.homogenize n :=
@@ -256,7 +254,7 @@ lemma toTupleMvPolynomial_one_eq (p : R[X]) :
     p.toTupleMvPolynomial 1 = (MvPolynomial.X 1) ^ p.natDegree :=
   rfl
 
-lemma isHomogenous_toTupleMvPolynomial (p : R[X]) (i : Fin 2) :
+lemma isHomogeneous_toTupleMvPolynomial (p : R[X]) (i : Fin 2) :
     (p.toTupleMvPolynomial i).IsHomogeneous p.natDegree := by
   fin_cases i
   · simp [toTupleMvPolynomial]
@@ -281,7 +279,8 @@ lemma sum_eq_natDegree_of_mem_support_homogenize (p : R[X]) {s : Fin 2 →₀ �
 /-- Summing a function over the coefficients of the homogenization of a polynomial `p`
 (of degree `p.natDegree`) gives the same result as summing over the coefficients of `p`. -/
 lemma finsuppSum_homogenize_eq {M : Type*} [AddCommMonoid M] (p : R[X]) {f : R → M} :
-    (Finsupp.sum (p.homogenize p.natDegree) fun _ c ↦ f c) = p.sum fun _ c ↦ f c := by
+    (AddMonoidAlgebra.coeff <| p.homogenize p.natDegree).sum (fun _ c ↦ f c) =
+      p.sum fun _ c ↦ f c := by
   rw [MvPolynomial.sum_def, sum_def p]
   -- We set up a bijection between the sets indexing the terms on both sides
   -- and show that it maps the terms in the one sum to those in the other.

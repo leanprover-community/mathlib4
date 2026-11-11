@@ -3,15 +3,15 @@ Copyright (c) 2024 Enrico Z. Borba. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Probability.Density
-import Mathlib.Probability.Distributions.Uniform
-import Mathlib.Probability.Notation
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.Distributions.Uniform
+public import Mathlib.Probability.Notation
 
 /-!
-
 # Freek № 99: Buffon's Needle
 
 This file proves Theorem 99 from the [100 Theorems List](https://www.cs.ru.nl/~freek/100/), also
@@ -66,8 +66,9 @@ We then show the two integrals equal their respective values `l - √(l^2 - d^2)
 * https://en.wikipedia.org/wiki/Buffon%27s_needle_problem
 * https://www.math.leidenuniv.nl/~hfinkeln/seminarium/stelling_van_Buffon.pdf
 * https://www.isa-afp.org/entries/Buffons_Needle.html
-
 -/
+
+@[expose] public section
 
 open MeasureTheory (MeasureSpace IsProbabilityMeasure Measure pdf.IsUniform)
 open ProbabilityTheory Real
@@ -96,7 +97,7 @@ Projection of a needle onto the x-axis. The needle's center is at x-coordinate `
 `l` and angle `θ`. Note, `θ` is measured relative to the y-axis, that is, a vertical needle has
 `θ = 0`.
 -/
-def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
+noncomputable def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
 
 /--
 The indicator function of whether a needle at position `⟨x, θ⟩ : ℝ × ℝ` crosses the line `x = 0`.
@@ -120,9 +121,8 @@ noncomputable def N : Ω → ℝ := needleCrossesIndicator l ∘ B
 /--
 The possible x-positions and angle relative to the y-axis of a needle.
 -/
-abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
+noncomputable abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
-set_option backward.isDefEq.respectTransparency false in
 include hd in
 lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
   simp_rw [MeasureTheory.Measure.volume_eq_prod, MeasureTheory.Measure.prod_prod, Real.volume_Icc,
@@ -196,13 +196,11 @@ lemma buffon_integral :
       ∫ (θ : ℝ) in Set.Icc 0 π,
       ∫ (_ : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
   simp_rw [N, Function.comp_apply]
-  rw [
-    ← MeasureTheory.integral_map hBₘ.aemeasurable
+  rw [← MeasureTheory.integral_map hBₘ.aemeasurable
       (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable,
-    hB, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
+    hB.map_eq, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
     ← ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
-    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
-  ]
+    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul]
   refine mul_eq_mul_left_iff.mpr (Or.inl ?_)
   have : MeasureTheory.IntegrableOn (needleCrossesIndicator l)
       (Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π) := by
@@ -222,8 +220,8 @@ lemma buffon_integral :
         -(Real.sin θ * l) / 2 ≤ x ∧ x ≤ Real.sin θ * l / 2 := by
       rw [neg_div, and_comm, ← tsub_le_iff_right, zero_sub]
     by_cases h : x ≤ Real.sin θ * l / 2 ∧ 0 ≤ x + Real.sin θ * l / 2
-    · rw [if_pos h, if_pos (this.mp h)]
-    · rw [if_neg h, if_neg (this.not.mp h)]
+    · rw [ite_eq_left h, ite_eq_left (this.mp h)]
+    · rw [ite_eq_right h, ite_eq_right (this.not.mp h)]
   simp_rw [indicator_eq, MeasureTheory.setIntegral_indicator measurableSet_Icc, Pi.one_apply]
 
 include hl in
@@ -244,7 +242,6 @@ lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
     min_div_div_right zero_le_two, neg_mul, max_neg_neg, mul_comm,
     min_eq_right ((mul_le_of_le_one_right hl.le θ.sin_le_one).trans h)]
 
-set_option backward.isDefEq.respectTransparency false in
 include hd hBₘ hB hl in
 /--
 Buffon's Needle, the short case (`l ≤ d`). The probability of the needle crossing a line
@@ -282,8 +279,8 @@ point where `d = θ.sin * l`, which is `θ = (d / l).arcsin`.
 lemma integral_min_eq_two_mul :
     ∫ θ in 0..π, min d (θ.sin * l) = 2 * ∫ θ in 0..π / 2, min d (θ.sin * l) := by
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
-  conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
-  · simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
+  · conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
+    simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
       intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), neg_add_cancel,
       (by ring : -(π / 2) + π = π / 2), two_mul]
   all_goals exact intervalIntegrable_min_const_sin_mul d l _ _

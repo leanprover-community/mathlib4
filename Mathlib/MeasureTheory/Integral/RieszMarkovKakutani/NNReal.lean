@@ -23,14 +23,15 @@ reducing the statement to the `ℝ`-version of the theorem.
 ## References
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
-
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
-open CompactlySupported CompactlySupportedContinuousMap MeasureTheory
+open CompactlySupportedContinuousMap MeasureTheory
+
+open scoped CompactlySupported
 
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X]
   [BorelSpace X]

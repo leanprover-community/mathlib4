@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Lean.Meta.Tactic.TryThis
 public meta import Batteries.Control.Nondet.Basic
 public import Batteries.Linter.UnreachableTactic
 public import Mathlib.Tactic.Basic
@@ -85,7 +84,7 @@ def suggestion (tac : TSyntax `tactic) (trees : PersistentArray InfoTree) : Tact
   We use emojis for now instead.
   -/
   -- let style? := if goals.isEmpty then some .success else none
-  let preInfo? := if goals.isEmpty then some "🎉 " else none
+  let preInfo? := if goals.isEmpty then some "🎉️ " else none
   let suggestions := collectTryThisSuggestions trees
   let suggestion := match suggestions[0]? with
   | some s => s.suggestion

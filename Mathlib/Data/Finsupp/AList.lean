@@ -16,7 +16,6 @@ public import Mathlib.Data.List.AList
 * `Finsupp.toAList`
 * `AList.lookupFinsupp`: converts an association list into a finitely supported function
   via `AList.lookup`, sending absent keys to zero.
-
 -/
 
 @[expose] public section
@@ -56,7 +55,6 @@ variable {α M : Type*} [Zero M]
 
 open List
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Converts an association list into a finitely supported function via `AList.lookup`, sending
 absent keys to zero. -/
 noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M where

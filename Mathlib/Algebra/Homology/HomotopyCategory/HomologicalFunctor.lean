@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
-public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
-/-! The homological functor
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+import Mathlib.Algebra.Homology.HomologySequence
+
+/-! # The homological functor
 
 In this file, it is shown that if `C` is an abelian category,
 then `homologyFunctor C (ComplexShape.up ℤ) n` is a homological functor
@@ -18,10 +19,9 @@ then `homologyFunctor C (ComplexShape.up ℤ) n` is a homological functor
 in the homotopy category can be characterized in terms of degreewise split
 short exact sequences of cochain complexes, this follows from the homology
 sequence associated to a short exact sequence of homological complexes.
-
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

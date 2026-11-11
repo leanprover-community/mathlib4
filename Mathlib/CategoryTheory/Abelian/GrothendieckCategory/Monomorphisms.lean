@@ -6,18 +6,18 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 
 /-!
 # Monomorphisms in Grothendieck abelian categories
 
 In this file, we show that in a Grothendieck abelian category,
 monomorphisms are stable under transfinite composition.
-
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

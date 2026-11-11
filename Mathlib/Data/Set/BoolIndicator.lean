@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.BooleanAlgebra.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator function valued in bool
 

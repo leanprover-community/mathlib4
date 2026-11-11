@@ -79,6 +79,7 @@ More precisely, let `P` be a localization of `R` at some submonoid `S`,
 then a fractional ideal `I ⊆ P` is an `R`-submodule of `P`,
 such that there is an `a ∈ S` with `a I ⊆ R`.
 -/
+@[wikidata Q1497184]
 def FractionalIdeal :=
   { I : Submodule R P // IsFractional S I }
 
@@ -161,29 +162,35 @@ section SetLike
 
 instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
-  coe_injective' := SetLike.coe_injective.comp Subtype.coe_injective
+  coe_injective := SetLike.coe_injective.comp Subtype.coe_injective
 
-instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P) P
+instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P)
 
 @[simp]
-theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
+theorem mem_coeToSubmodule {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
   Iff.rfl
+@[deprecated (since := "2026-11-09")] alias mem_coe := mem_coeToSubmodule
+
 
 /-- Partially-applied version of `FractionalIdeal.ext`. -/
-theorem coe_ext {I J : FractionalIdeal S P} : (I : Submodule R P) = (J : Submodule R P) → I = J :=
+theorem coeToSubmodule_ext {I J : FractionalIdeal S P} :
+    (I : Submodule R P) = (J : Submodule R P) → I = J :=
   Subtype.ext
+@[deprecated (since := "2026-11-09")] alias coe_ext := coeToSubmodule_ext
 
 /-- Partially-applied version of `FractionalIdeal.ext_iff`. -/
-theorem coe_ext_iff {I J : FractionalIdeal S P} :
+theorem coeToSubmodule_ext_iff {I J : FractionalIdeal S P} :
     I = J ↔ (I : Submodule R P) = (J : Submodule R P) :=
   Subtype.ext_iff
+@[deprecated (since := "2026-11-09")] alias coe_ext_iff := coeToSubmodule_ext_iff
 
 @[ext]
 theorem ext {I J : FractionalIdeal S P} : (∀ x, x ∈ I ↔ x ∈ J) → I = J :=
   SetLike.ext
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
- theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
+theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
     {I : FractionalIdeal S P} (h_nz : (I.den : R) ≠ 0) (x : I) :
     algebraMap R P (equivNum h_nz x) = I.den • x := by
   change Algebra.linearMap R P _ = _
@@ -216,9 +223,10 @@ theorem val_eq_coe (I : FractionalIdeal S P) : I.val = I :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_mk (I : Submodule R P) (hI : IsFractional S I) :
+theorem coeToSubmodule_mk (I : Submodule R P) (hI : IsFractional S I) :
     coeToSubmodule ⟨I, hI⟩ = I :=
   rfl
+@[deprecated (since := "2026-11-09")] alias coe_mk := coeToSubmodule_mk
 
 theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
     ((I : Submodule R P) : Set P) = I :=
@@ -271,9 +279,10 @@ instance : CoeTC (Ideal R) (FractionalIdeal S P) :=
   ⟨fun I => coeIdeal I⟩
 
 @[simp, norm_cast]
-theorem coe_coeIdeal (I : Ideal R) :
+theorem coeToSubmodule_coeIdeal (I : Ideal R) :
     ((I : FractionalIdeal S P) : Submodule R P) = coeSubmodule P I :=
   rfl
+@[deprecated (since := "2026-11-09")] alias coe_coeIdeal := coeToSubmodule_coeIdeal
 
 variable (S)
 
@@ -312,8 +321,9 @@ theorem mem_zero_iff {x : P} : x ∈ (0 : FractionalIdeal S P) ↔ x = 0 :=
 variable {S}
 
 @[simp, norm_cast]
-theorem coe_zero : ↑(0 : FractionalIdeal S P) = (⊥ : Submodule R P) :=
+theorem coeToSubmodule_zero : ↑(0 : FractionalIdeal S P) = (⊥ : Submodule R P) :=
   Submodule.ext fun _ => mem_zero_iff S
+@[deprecated (since := "2026-11-09")] alias coe_zero := coeToSubmodule_zero
 
 @[simp, norm_cast]
 theorem coeIdeal_bot : ((⊥ : Ideal R) : FractionalIdeal S P) = 0 :=
@@ -372,7 +382,7 @@ theorem zero_of_num_eq_bot [IsDomain R] [Module.IsTorsionFree R P] (hS : 0 ∉ S
 set_option backward.isDefEq.respectTransparency false in
 theorem num_zero_eq (h_inj : Function.Injective (algebraMap R P)) :
     num (0 : FractionalIdeal S P) = 0 := by
-  simpa [num, LinearMap.ker_eq_bot] using h_inj
+  simpa [num, LinearMap.ker_eq_bot] using! h_inj
 
 variable (S)
 
@@ -395,12 +405,18 @@ variable {S}
 
 However, this is not definitionally equal to `1 : Submodule R P`,
 which is proved in the actual `simp` lemma `coe_one`. -/
-theorem coe_one_eq_coeSubmodule_top : ↑(1 : FractionalIdeal S P) = coeSubmodule P (⊤ : Ideal R) :=
+theorem coeToSubmodule_one_eq_coeSubmodule_top :
+    ↑(1 : FractionalIdeal S P) = coeSubmodule P (⊤ : Ideal R) :=
   rfl
 
+@[deprecated (since := "2026-11-09")]
+alias coe_one_eq_coeSubmodule_top := coeToSubmodule_one_eq_coeSubmodule_top
+
 @[simp, norm_cast]
-theorem coe_one : (↑(1 : FractionalIdeal S P) : Submodule R P) = 1 := by
-  rw [coe_one_eq_coeSubmodule_top, coeSubmodule_top]
+theorem coeToSubmodule_one : (↑(1 : FractionalIdeal S P) : Submodule R P) = 1 := by
+  rw [coeToSubmodule_one_eq_coeSubmodule_top, coeSubmodule_top]
+
+@[deprecated (since := "2026-11-09")] alias coe_one := coeToSubmodule_one
 
 section Lattice
 
@@ -413,9 +429,10 @@ and ports the lattice structure on submodules to fractional ideals.
 
 
 @[simp]
-theorem coe_le_coe {I J : FractionalIdeal S P} :
+theorem coeToSubmodule_le_coeToSubmodule {I J : FractionalIdeal S P} :
     (I : Submodule R P) ≤ (J : Submodule R P) ↔ I ≤ J :=
   Iff.rfl
+@[deprecated (since := "2026-11-09")] alias coe_le_coe := coeToSubmodule_le_coeToSubmodule
 
 theorem zero_le (I : FractionalIdeal S P) : 0 ≤ I := by
   intro x hx
@@ -460,18 +477,22 @@ instance : Min (FractionalIdeal S P) :=
   ⟨fun I J => ⟨I ⊓ J, I.isFractional.inf_right J⟩⟩
 
 @[simp, norm_cast]
-theorem coe_inf (I J : FractionalIdeal S P) : ↑(I ⊓ J) = (I ⊓ J : Submodule R P) :=
+theorem coeToSubmodule_inf (I J : FractionalIdeal S P) : ↑(I ⊓ J) = (I ⊓ J : Submodule R P) :=
   rfl
+
+@[deprecated (since := "2026-11-09")] alias coe_inf := coeToSubmodule_inf
 
 instance : Max (FractionalIdeal S P) :=
   ⟨fun I J => ⟨I ⊔ J, I.isFractional.sup J.isFractional⟩⟩
 
 @[norm_cast]
-theorem coe_sup (I J : FractionalIdeal S P) : ↑(I ⊔ J) = (I ⊔ J : Submodule R P) :=
+theorem coeToSubmodule_sup (I J : FractionalIdeal S P) : ↑(I ⊔ J) = (I ⊔ J : Submodule R P) :=
   rfl
 
+@[deprecated (since := "2026-11-09")] alias coe_sup := coeToSubmodule_sup
+
 instance lattice : Lattice (FractionalIdeal S P) :=
-  Function.Injective.lattice _ Subtype.coe_injective .rfl .rfl coe_sup coe_inf
+  Function.Injective.lattice _ Subtype.coe_injective .rfl .rfl coeToSubmodule_sup coeToSubmodule_inf
 
 end Lattice
 
@@ -485,12 +506,14 @@ theorem sup_eq_add (I J : FractionalIdeal S P) : I ⊔ J = I + J :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_add (I J : FractionalIdeal S P) : (↑(I + J) : Submodule R P) = I + J :=
+theorem coeToSubmodule_add (I J : FractionalIdeal S P) : (↑(I + J) : Submodule R P) = I + J :=
   rfl
+
+@[deprecated (since := "2026-11-09")] alias coe_add := coeToSubmodule_add
 
 theorem mem_add (I J : FractionalIdeal S P) (x : P) :
     x ∈ I + J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = x := by
-  rw [← mem_coe, coe_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
+  rw [← mem_coeToSubmodule, coeToSubmodule_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
 
 @[simp, norm_cast]
 lemma coeIdeal_inf [FaithfulSMul R P] (I J : Ideal R) :
@@ -515,9 +538,10 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
 instance : SMul ℕ (FractionalIdeal S P) where smul n I := ⟨n • ↑I, I.isFractional.nsmul n⟩
 
 @[norm_cast]
-theorem coe_nsmul (n : ℕ) (I : FractionalIdeal S P) :
+theorem coeToSubmodule_nsmul (n : ℕ) (I : FractionalIdeal S P) :
     (↑(n • I) : Submodule R P) = n • (I : Submodule R P) :=
   rfl
+@[deprecated (since := "2026-11-09")] alias coe_nsmul := coeToSubmodule_nsmul
 
 theorem _root_.IsFractional.mul {I J : Submodule R P} :
     IsFractional S I → IsFractional S J → IsFractional S (I * J : Submodule R P)
@@ -546,8 +570,10 @@ This is only an auxiliary definition: the preferred way of writing `I.mul J` is 
 Elaborated terms involving `FractionalIdeal` tend to grow quite large,
 so by making definitions irreducible, we hope to avoid deep unfolds.
 -/
-irreducible_def mul (lemma := mul_def') (I J : FractionalIdeal S P) : FractionalIdeal S P :=
+@[no_expose] def mul (I J : FractionalIdeal S P) : FractionalIdeal S P :=
   ⟨I * J, I.isFractional.mul J.isFractional⟩
+
+alias mul_def' := mul.eq_def
 
 -- local attribute [semireducible] mul
 instance : Mul (FractionalIdeal S P) :=
@@ -557,12 +583,15 @@ instance : Mul (FractionalIdeal S P) :=
 theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_def (I J : FractionalIdeal S P) :
     I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul_def']
 
 @[simp, norm_cast]
-theorem coe_mul (I J : FractionalIdeal S P) : (↑(I * J) : Submodule R P) = I * J := by
-  simp only [mul_def, coe_mk]
+theorem coeToSubmodule_mul (I J : FractionalIdeal S P) : (↑(I * J) : Submodule R P) = I * J := by
+  simp only [mul_def, coeToSubmodule_mk]
+
+@[deprecated (since := "2026-11-09")] alias coe_mul := coeToSubmodule_mul
 
 @[simp, norm_cast]
 theorem coeIdeal_mul (I J : Ideal R) : (↑(I * J) : FractionalIdeal S P) = I * J := by
@@ -570,16 +599,10 @@ theorem coeIdeal_mul (I J : Ideal R) : (↑(I * J) : FractionalIdeal S P) = I * 
   exact coeToSubmodule_injective (coeSubmodule_mul _ _ _)
 
 instance : MulLeftMono (FractionalIdeal S P) where
-  elim I J J' h := by simpa only [mul_def] using mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)
+  elim I J J' h := by simpa only [mul_def] using! mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)
 
 instance : MulRightMono (FractionalIdeal S P) where
-  elim I J J' h := by simpa only [mul_def] using mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
-
-@[deprecated _root_.mul_right_mono (since := "2025-09-09")]
-protected theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := mul_right_mono
-
-@[deprecated _root_.mul_left_mono (since := "2025-09-09")]
-protected lemma mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I := mul_left_mono
+  elim I J J' h := by simpa only [mul_def] using! mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
 
 theorem mul_mem_mul {I J : FractionalIdeal S P} {i j : P} (hi : i ∈ I) (hj : j ∈ J) :
     i * j ∈ I * J := by
@@ -594,8 +617,9 @@ instance : Pow (FractionalIdeal S P) ℕ :=
   ⟨fun I n => ⟨(I : Submodule R P) ^ n, I.isFractional.pow n⟩⟩
 
 @[simp, norm_cast]
-theorem coe_pow (I : FractionalIdeal S P) (n : ℕ) : ↑(I ^ n) = (I : Submodule R P) ^ n :=
+theorem coeToSubmodule_pow (I : FractionalIdeal S P) (n : ℕ) : ↑(I ^ n) = (I : Submodule R P) ^ n :=
   rfl
+@[deprecated (since := "2026-11-09")] alias coe_pow := coeToSubmodule_pow
 
 @[elab_as_elim]
 protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} {r : P}
@@ -607,13 +631,15 @@ protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} 
 instance : NatCast (FractionalIdeal S P) :=
   ⟨Nat.unaryCast⟩
 
-theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
-  show ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
-  by induction n <;> simp [*, Nat.unaryCast]
+theorem coeToSubmodule_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n := by
+  change ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
+  induction n <;> simp [*, Nat.unaryCast]
+@[deprecated (since := "2026-11-09")] alias coe_natCast := coeToSubmodule_natCast
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
-  Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
-    (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
+  Function.Injective.commSemiring _ Subtype.coe_injective coeToSubmodule_zero coeToSubmodule_one
+    coeToSubmodule_add coeToSubmodule_mul
+    (fun _ _ => coeToSubmodule_nsmul _ _) coeToSubmodule_pow coeToSubmodule_natCast
 
 instance : CanonicallyOrderedAdd (FractionalIdeal S P) where
   exists_add_of_le h := ⟨_, (sup_eq_right.mpr h).symm⟩
@@ -631,30 +657,14 @@ variable (S P)
 @[simps]
 def coeSubmoduleHom : FractionalIdeal S P →+* Submodule R P where
   toFun := coeToSubmodule
-  map_one' := coe_one
-  map_mul' := coe_mul
-  map_zero' := coe_zero (S := S)
-  map_add' := coe_add
+  map_one' := coeToSubmodule_one
+  map_mul' := coeToSubmodule_mul
+  map_zero' := coeToSubmodule_zero
+  map_add' := coeToSubmodule_add
 
 variable {S P}
 
 section Order
-
-@[deprecated _root_.add_le_add_right (since := "2025-09-14")]
-theorem add_le_add_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' + I ≤ J' + J := _root_.add_le_add_right hIJ _
-
-@[deprecated mul_le_mul_right (since := "2025-09-14")]
-theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' * I ≤ J' * J := mul_le_mul_right hIJ _
-
-@[deprecated le_mul_of_one_le_left' (since := "2025-09-14")]
-theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I :=
-  le_mul_of_one_le_left' hI
-
-@[deprecated mul_le_of_le_one_left' (since := "2025-09-14")]
-theorem mul_self_le_self {I : FractionalIdeal S P} (hI : I ≤ 1) : I * I ≤ I :=
-  mul_le_of_le_one_left' hI
 
 theorem coeIdeal_le_one {I : Ideal R} : (I : FractionalIdeal S P) ≤ 1 := fun _ hx =>
   let ⟨y, _, hy⟩ := (mem_coeIdeal S).mp hx
@@ -666,12 +676,12 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
   · intro hJ
     refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
-      rw [mem_setOf, map_add]
+      rw [mem_ofPred, map_add]
       exact J.val.add_mem ha hb
-    · rw [mem_setOf, map_zero]
+    · rw [mem_ofPred, map_zero]
       exact J.zero_mem
     · intro c x hx
-      rw [smul_eq_mul, mem_setOf, map_mul, ← Algebra.smul_def]
+      rw [smul_eq_mul, mem_ofPred, map_mul, ← Algebra.smul_def]
       exact J.val.smul_mem c hx
     · ext x
       constructor
@@ -679,14 +689,14 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
         rwa [← eq_y]
       · intro hx
         obtain ⟨y, rfl⟩ := (mem_one_iff S).mp (hJ hx)
-        exact mem_setOf.mpr ⟨y, hx, rfl⟩
+        exact mem_ofPred.mpr ⟨y, hx, rfl⟩
   · rintro ⟨I, hI⟩
     rw [← hI]
     apply coeIdeal_le_one
 
 @[simp]
 theorem one_le {I : FractionalIdeal S P} : 1 ≤ I ↔ (1 : P) ∈ I := by
-  rw [← coe_le_coe, coe_one, Submodule.one_le, mem_coe]
+  rw [← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_one, Submodule.one_le, mem_coeToSubmodule]
 
 variable (S P)
 

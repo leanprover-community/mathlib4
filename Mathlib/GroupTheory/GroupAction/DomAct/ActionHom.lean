@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 public import Mathlib.GroupTheory.GroupAction.Hom
+
 /-!
 # Action of `Mᵈᵐᵃ` on `α →[N] β` and `A →+[N] B`
 
@@ -20,7 +21,7 @@ Add left actions of, e.g., `M` on `α →[N] β` to `Mathlib/Algebra/Group/Actio
 `SMulCommClass` instances saying that left and right actions commute.
 -/
 
-@[expose] public section
+public section
 
 namespace DomMulAct
 

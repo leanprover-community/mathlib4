@@ -5,10 +5,9 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.Eqns
-public meta import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Util.TermReduce
+
+import Mathlib.Tactic.Eqns
 
 /-!
 # Irreducible definitions
@@ -28,7 +27,6 @@ irreducible_def frobnicate (a b : Nat) :=
 example : frobnicate a 0 = a := by
   simp [frobnicate_def]
 ```
-
 -/
 
 public meta section

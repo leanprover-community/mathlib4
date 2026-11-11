@@ -5,9 +5,10 @@ Authors: Chris Hughes, Michael Stoll
 -/
 module
 
-public import Mathlib.Data.Nat.Squarefree
 public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+
+import Mathlib.Data.Nat.Squarefree
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # Sums of two squares
@@ -23,7 +24,7 @@ There is an alternative characterization as the numbers of the form `a^2 * b`, w
 natural number such that `-1` is a square modulo `b`; see `Nat.eq_sq_add_sq_iff_eq_sq_mul`.
 -/
 
-@[expose] public section
+public section
 
 
 section Fermat
@@ -99,11 +100,6 @@ theorem Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one {p n : ℕ
   have : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
   exact ZMod.mod_four_ne_three_of_sq_eq_neg_sq' one_ne_zero h
 
-@[deprecated "Note that the statement now uses `Nat.primeFactors`, \
-  you can use `Nat.mem_primeFactors` to get the previous formulation" (since := "2025-10-15")]
-alias Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one :=
-  Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one
-
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` does not have a prime factor `q` such that `q % 4 = 3`. -/
 theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n : ℕ}
@@ -123,12 +119,6 @@ theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n :
     exact ZMod.isSquare_neg_one_mul hcp hp₁ <| ih hn.of_mul_right fun q hqp => H q <|
         Nat.mem_primeFactors.mpr ⟨Nat.prime_of_mem_primeFactors hqp,
           dvd_mul_of_dvd_right (Nat.dvd_of_mem_primeFactors hqp) _, Squarefree.ne_zero hn⟩
-
-@[deprecated "Note that the statement now uses `Nat.primeFactors`, \
-  you can use `Nat.mem_primeFactors` and `Squarefree.ne_zero` to get the previous formulation"
-  (since := "2025-10-15")]
-alias ZMod.isSquare_neg_one_iff :=
-  ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` has no divisor `q` that is `≡ 3 mod 4`. -/
@@ -221,14 +211,15 @@ every prime `q` such that `q % 4 = 3` in the prime factorization of `n` is even.
 the right-hand side holds, since `padicValNat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     (∃ x y, n = x ^ 2 + y ^ 2) ↔ ∀ q ∈ n.primeFactors, q % 4 = 3 → Even (padicValNat q n) := by
+  simp_rw [padicValNat_def]
   rcases n.eq_zero_or_pos with (rfl | hn₀)
-  · exact ⟨fun _ q _ _ ↦ padicValNat.zero.symm ▸ Even.zero, fun _ ↦ ⟨0, 0, rfl⟩⟩
+  · exact ⟨fun _ q _ _ ↦ (multiplicity_zero_right q).symm ▸ Even.zero, fun _ ↦ ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
   refine eq_sq_add_sq_iff_eq_sq_mul.trans ⟨fun ⟨a, b, h₁, h₂⟩ q hq h ↦ ?_, fun H ↦ ?_⟩
   · have : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
     have : q ∣ b → q ∈ b.primeFactors := by grind
-    grind (splits := 10) [padicValNat.mul, padicValNat.pow,
-      padicValNat.eq_zero_of_not_dvd, mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one]
+    grind (splits := 10) [multiplicity_mul, multiplicity_pow,
+      multiplicity_eq_zero_of_not_dvd, mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one]
   · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := sq_mul_squarefree_of_pos hn₀
     refine ⟨a, b, hab.symm, ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three hb
       |>.mpr fun q hq hq4 ↦ ?_⟩
@@ -236,7 +227,7 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     have := Nat.primeFactors_mono <| Dvd.intro_left _ hab
     have : b.factorization q = 1 := by grind [Squarefree.natFactorization_le_one,
       Prime.dvd_iff_one_le_factorization, prime_of_mem_primeFactors, dvd_of_mem_primeFactors]
-    grind [factorization_def, prime_of_mem_primeFactors, padicValNat.mul, padicValNat.pow]
+    grind [factorization_def, prime_of_mem_primeFactors, multiplicity_mul, multiplicity_pow]
 
 end Main
 

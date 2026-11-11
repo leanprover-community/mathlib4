@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
@@ -18,10 +18,9 @@ followed by an open quotient map `ψ` satisfying `φ.range = ψ.ker`.
 
 * `TopologicalGroup.IsSES φ ψ`: A predicate stating that `φ` is a closed embedding, `ψ` is an open
   quotient map, and `φ.range = ψ.ker`.
-
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

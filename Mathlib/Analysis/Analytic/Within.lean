@@ -6,7 +6,6 @@ Authors: Geoffrey Irving
 module
 
 public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set
@@ -24,8 +23,6 @@ ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a 
 -/
 
 public section
-
-noncomputable section
 
 open scoped Topology Filter ENNReal
 open Set Filter Metric
@@ -59,7 +56,6 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
       simp only [eball_top, mem_univ] }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is `AnalyticOn` near each point in a set, it is `AnalyticOn` the set -/
 lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
     (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ AnalyticOn 𝕜 f (s ∩ u)) :
@@ -83,7 +79,6 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
             simp only [mem_ball, dist_self_add_left, yr]
         · simp only [mem_eball, yr] }⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- On open sets, `AnalyticOnNhd` and `AnalyticOn` coincide -/
 lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen s) :
     AnalyticOn 𝕜 f s ↔ AnalyticOnNhd 𝕜 f s := by
@@ -121,7 +116,7 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
   · intro h
     refine ⟨fun y ↦ p.sum (y - x), ?_, ?_⟩
     · intro y ⟨ys,yb⟩
-      simp only [mem_eball, edist_eq_enorm_sub] at yb
+      simp only [mem_eball, eDist_eq_eNorm_sub] at yb
       have e0 := p.hasSum (x := y - x) ?_
       · have e1 := (h.hasSum (y := y - x) ?_ ?_)
         · simp only [add_sub_cancel] at e1
@@ -142,9 +137,8 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
     rw [hfg]
     · exact hg.hasSum lt
     · refine ⟨ys, ?_⟩
-      simpa only [mem_eball, edist_eq_enorm_sub, add_sub_cancel_left, sub_zero] using lt
+      simpa only [mem_eball, eDist_eq_eNorm_sub, add_sub_cancel_left, sub_zero] using lt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `f` has power series `p` at `x` iff some local extension of `f` has that series -/
 lemma hasFPowerSeriesWithinAt_iff_exists_hasFPowerSeriesAt [CompleteSpace F] {f : E → F}
     {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} :

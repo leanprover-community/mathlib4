@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.Homology
 public import Mathlib.Algebra.Homology.ShortComplex.Limits
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Basic
@@ -30,7 +29,6 @@ We also provide a constructor `HomologyData.ofEpiMonoFactorisation`
 which takes as an input an epi-mono factorization `kf.pt ⟶ H ⟶ cc.pt`
 of `kf.ι ≫ cc.π` where `kf` is a limit kernel fork of `S.g` and
 `cc` is a limit cokernel cofork of `S.f`.
-
 -/
 
 @[expose] public section
@@ -42,7 +40,6 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v} C] [Abelian C] (S : ShortComplex C)
-  {D : Type u'} [Category.{v'} D] [HasZeroMorphisms D]
 
 namespace ShortComplex
 
@@ -183,6 +180,7 @@ noncomputable def ofAbelian : S.RightHomologyData := by
 
 end RightHomologyData
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The canonical `HomologyData` of a short complex `S` in an abelian category. -/
 noncomputable def HomologyData.ofAbelian : S.HomologyData where
   left := LeftHomologyData.ofAbelian S
@@ -229,7 +227,6 @@ variable {kf : KernelFork S.g} {cc : CokernelCofork S.f}
   (fac : kf.ι ≫ cc.π = π ≫ ι)
   [Epi π] [Mono ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
 Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`,
@@ -240,7 +237,6 @@ noncomputable def isoImage : H ≅ image (S.iCycles ≫ S.pOpcycles) := by
     simp [← reassoc_of% fac]
   exact image.isoStrongEpiMono _ _ this
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma isoImage_ι :
     (isoImage S hkf hcc fac).hom ≫ image.ι (S.iCycles ≫ S.pOpcycles) =
@@ -255,7 +251,6 @@ then `H` identifies to the homology of `S`. -/
 noncomputable def isoHomology : H ≅ S.homology :=
   isoImage S hkf hcc fac ≪≫ S.homologyIsoImageICyclesCompPOpcycles.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_comp_isoHomology_hom :
     π ≫ (isoHomology S hkf hcc fac).hom = (S.isoCyclesOfIsLimit hkf).hom ≫ S.homologyπ := by
@@ -270,14 +265,12 @@ lemma isoHomology_hom_comp_ι :
   simp [← cancel_epi S.homologyπ, ← cancel_epi (S.isoCyclesOfIsLimit hkf).hom,
     ← π_comp_isoHomology_hom_assoc S hkf hcc fac, ← fac]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma f'_eq :
     hkf.lift (KernelFork.ofι S.f S.zero) =
       S.toCycles ≫ (S.isoCyclesOfIsLimit hkf).inv := by
   have := Fork.IsLimit.mono hkf
   simp [← cancel_mono kf.ι]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma g'_eq : hcc.desc (CokernelCofork.ofπ S.g S.zero) =
     (S.isoOpcyclesOfIsColimit hcc).hom ≫ S.fromOpcycles := by
   have := Cofork.IsColimit.epi hcc
@@ -296,6 +289,7 @@ lemma isoHomology_inv_homologyι :
   rw [← cancel_mono (S.isoOpcyclesOfIsColimit hcc).inv, assoc, assoc, Iso.hom_inv_id,
     comp_id, ← isoHomology_hom_comp_ι S hkf hcc fac, Iso.hom_inv_id_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
@@ -315,10 +309,11 @@ noncomputable def leftHomologyData : S.LeftHomologyData where
       π_comp_isoHomology_hom, zero_comp, f'_eq,
       assoc, Iso.inv_hom_id_assoc, toCycles_comp_homologyπ]
   hπ := by
-    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).2 S.homologyIsCokernel
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).invFun S.homologyIsCokernel
     · exact parallelPair.ext (Iso.refl _) (S.isoCyclesOfIsLimit hkf)
     · exact Cofork.ext (isoHomology S hkf hcc fac) (by simp [Cofork.π])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] g'_eq in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
@@ -338,12 +333,13 @@ noncomputable def rightHomologyData : S.RightHomologyData where
     rw [id_comp, g'_eq, ← cancel_epi (isoHomology S hkf hcc fac).inv, comp_zero,
       isoHomology_hom_comp_ι_assoc, Iso.inv_hom_id_assoc, homologyι_comp_fromOpcycles]
   hι := by
-    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).2 S.homologyIsKernel
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).invFun S.homologyIsKernel
     · exact parallelPair.ext (S.isoOpcyclesOfIsColimit hcc) (Iso.refl _)
     · exact Fork.ext (isoHomology S hkf hcc fac) (by simp [Fork.ι])
 
 end ofEpiMonoFactorisation
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Let `S` be a short complex in an abelian category. Let `kf` be a
 limit kernel fork of `S.g` and `cc` a limit cokernel cofork of `S.f`.
 Let `kf.pt ⟶ H ⟶ cc.pt` be an epi-mono factorization of `kf.ι ≫ cc.π : kf.pt ⟶ cc.pt`.

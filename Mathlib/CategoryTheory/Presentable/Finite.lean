@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
@@ -16,7 +14,6 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 
 We define finitely presentable objects as a synonym for `ℵ₀`-presentable objects,
 and link this definition with the preservation of filtered colimits.
-
 -/
 
 @[expose] public section

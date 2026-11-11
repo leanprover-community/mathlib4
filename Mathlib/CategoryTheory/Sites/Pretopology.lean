@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Grothendieck
 public import Mathlib.CategoryTheory.Sites.Precoverage
+public import Mathlib.Data.Set.Lattice.Bounded
 
 /-!
 # Grothendieck pretopologies
@@ -150,9 +151,6 @@ def GrothendieckTopology.toPretopology (J : GrothendieckTopology C) : Pretopolog
     rintro Y g ⟨W, h, g, hg, rfl⟩
     exact ⟨_, h, _, ⟨_, _, _, hf, hg, rfl⟩, by simp⟩
 
-@[deprecated (since := "2025-09-19")]
-alias Pretopology.ofGrothendieck := GrothendieckTopology.toPretopology
-
 /-- We have a Galois insertion from pretopologies to Grothendieck topologies. -/
 def Pretopology.gi : GaloisInsertion
     (toGrothendieck (C := C)) (GrothendieckTopology.toPretopology (C := C)) where
@@ -171,12 +169,8 @@ lemma GrothendieckTopology.mem_toPretopology (t : GrothendieckTopology C) {X : C
     S ∈ t.toPretopology X ↔ Sieve.generate S ∈ t X :=
   Iff.rfl
 
-@[deprecated (since := "2025-09-19")]
-alias Pretopology.mem_ofGrothendieck := GrothendieckTopology.mem_toPretopology
-
 namespace Pretopology
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The trivial pretopology, in which the coverings are exactly singleton isomorphisms. This topology is
 also known as the indiscrete, coarse, or chaotic topology. -/
@@ -218,7 +212,6 @@ instance orderBot : OrderBot (Pretopology C) where
     rintro ⟨Y, f, hf, rfl⟩
     exact K.has_isos f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The trivial pretopology induces the trivial Grothendieck topology. -/
 theorem toGrothendieck_bot : toGrothendieck (C := C) ⊥ = ⊥ :=
   (gi C).gc.l_bot

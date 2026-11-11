@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.AlgCat.Monoidal
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal structure on `AlgCat` is symmetric.
 
@@ -16,7 +19,7 @@ In this file we show:
 * `AlgCat.instSymmetricCategory : SymmetricCategory (AlgCat.{u} R)`
 -/
 
-@[expose] public section
+public section
 open CategoryTheory
 
 
@@ -34,7 +37,6 @@ instance : BraidedCategory (AlgCat.{u} R) :=
 
 instance : (forget₂ (AlgCat R) (ModuleCat R)).Braided where
 
-set_option backward.isDefEq.respectTransparency false in
 instance instSymmetricCategory : SymmetricCategory (AlgCat.{u} R) :=
   .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
 
