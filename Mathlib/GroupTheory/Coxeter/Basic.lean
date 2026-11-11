@@ -205,8 +205,8 @@ local prefix:100 "s" => cs.simple
 
 @[simp]
 theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
-  have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
-  have : (PresentedGroup.mk _ (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
+  have : .of i * .of i ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
+  have : PresentedGroup.mk _ (.of i * .of i) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
   exact map_mul_eq_one cs.mulEquiv.symm this
 
