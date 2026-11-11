@@ -46,7 +46,6 @@ analogously to the standard fibers.
   morphism in the fiber category.
 - `fiber_factorization` is the statement that any morphism in `𝒳` can be factored as a morphism in
   some fiber followed by a pullback.
-
 -/
 
 @[expose] public section

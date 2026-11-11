@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.ComplexShape
 
 Let `c : ComplexShape ι`. We define a type class `c.HasNoLoop`
 which expresses that `¬ c.Rel i i` for all `i : ι`.
-
 -/
 
 public section

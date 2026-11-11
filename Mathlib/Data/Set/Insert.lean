@@ -17,7 +17,6 @@ This file provides extra lemmas about `insert`, `singleton`, and `pair`.
 ## Tags
 
 insert, singleton
-
 -/
 
 @[expose] public section

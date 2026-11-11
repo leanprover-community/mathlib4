@@ -50,7 +50,6 @@ and bounded at infinity.
 * Lemmas relating q-expansion coefficients to Fourier series, such as
   `UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn`, are placed in `Bounds.lean`, since
   the present file does not import Fourier theory.
-
 -/
 
 assert_not_exists fourierCoeffOn -- guard against import creep

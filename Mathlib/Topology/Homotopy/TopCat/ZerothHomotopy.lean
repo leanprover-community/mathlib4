@@ -15,7 +15,6 @@ public import Mathlib.Topology.Homotopy.TopCat.Path
 In this file, given `X : TopCat`, we define a bijection
 `TopCat.zerothHomotopyEquiv` between `ZerothHomotopy X` and
 `(TopCat.toSSet.obj X).π₀`.
-
 -/
 
 @[expose] public section

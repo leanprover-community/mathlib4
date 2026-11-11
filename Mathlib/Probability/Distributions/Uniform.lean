@@ -31,7 +31,6 @@ with `0` probability for elements not in the set.
 
 `ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
 Each probability is given by the count of the element divided by the size of the `Multiset`
-
 -/
 
 @[expose] public section
@@ -148,7 +147,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s P) :
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
   simp only [ind, this, lintegral_indicator hcs.measurableSet, mul_one, smul_eq_mul,
     Pi.one_apply, Pi.smul_apply]
-  rw [lintegral_mul_const _ measurable_enorm]
+  rw [lintegral_mul_const _ measurable_eNorm]
   exact ENNReal.mul_ne_top (setLIntegral_lt_top_of_isCompact hnt.2 hcs continuous_nnNorm).ne
     (ENNReal.inv_lt_top.2 (pos_iff_ne_zero.mpr hnt.1)).ne
 

@@ -37,7 +37,6 @@ instead turn on the corresponding `ofChosenFiniteProducts` declaration for that 
 - Construct an instance of chosen finite products in the category of affine scheme, using
   the tensor product.
 - Construct chosen finite products in other categories appearing "in nature".
-
 -/
 
 @[expose] public section

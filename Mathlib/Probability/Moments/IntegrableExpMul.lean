@@ -33,7 +33,6 @@ We prove the integrability of other functions for `t` in the interior of that in
   `|X| ^ p * exp (v * X)` is integrable.
 * `ProbabilityTheory.memLp_of_mem_interior_integrableExpSet`: if 0 belongs to the interior of
   `integrableExpSet X μ`, then `X` is in `ℒp` for all finite `p`.
-
 -/
 
 @[expose] public section

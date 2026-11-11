@@ -32,7 +32,6 @@ This is useful in multiple ways:
 
 `Part` is an alternative to `Option` that can be seen as the type of `True`/`False` values
 along with a term `a : α` if the value is `True`.
-
 -/
 
 @[expose] public section
