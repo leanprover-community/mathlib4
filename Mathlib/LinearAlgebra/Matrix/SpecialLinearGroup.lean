@@ -802,7 +802,7 @@ theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup
   obtain ⟨i₀, j₀, hij₀⟩ := exists_pair_ne ι
   have hP1 : P 1 := transvection_coeff_zero (F := F) hij₀ ▸ htransvec i₀ j₀ hij₀ 0
   have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) :
-    P (SpecialLinearGroup.mk (diagonal D) hD ):= by
+      P (SpecialLinearGroup.mk (diagonal D) hD) := by
     rw [diag_eq_diag2n_prod i₀ D hD]
     refine Finset.noncommProd_induction _ _ _ P hmul hP1 fun i hi => ?_
     simp [(Finset.mem_filter.1 hi).2, hdiag]
