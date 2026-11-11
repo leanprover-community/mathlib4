@@ -52,7 +52,6 @@ but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 + [putnam1951] C. R. Putnam, "On normal operators in Hilbert space"
 + [rosenblum1958] M. Rosenblum, "On a theorem of Fuglede and Putnam"
 + [cater1961] S. Cater, "Observations on a paper by Rosenblum"
-
 -/
 
 
@@ -195,6 +194,7 @@ public lemma Set.Pairwise.commute_star_left {s : Set A}
     s.Pairwise (fun x y ↦ Commute (star x) y) :=
   fun _ hx _ hy hxy ↦ (hs' _ hx).commute_star_left (hs hx hy hxy)
 
+open scoped Pointwise in
 public lemma Set.Pairwise.commute_union_star_self_iff_of_isStarNormal {s : Set A}
     (hs : ∀ x ∈ s, IsStarNormal x) :
     (s ∪ star s).Pairwise Commute ↔ s.Pairwise Commute := by

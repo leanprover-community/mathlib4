@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Ring of integers under a given valuation in a multiplicatively archimedean codomain
-
 -/
 
 public section

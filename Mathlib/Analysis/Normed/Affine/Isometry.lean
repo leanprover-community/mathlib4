@@ -31,7 +31,6 @@ We introduce the notation `P →ᵃⁱ[𝕜] P₂` for `AffineIsometry 𝕜 P P�
 for isometric equivalences, etc., the "i" here is a superscript.  This is for aesthetic reasons to
 match the superscript "a" (note that in mathlib `→ᵃ` is an affine map, since `→ₐ` has been taken by
 algebra-homomorphisms.)
-
 -/
 
 @[expose] public section
@@ -247,18 +246,43 @@ theorem comp_assoc {V₄ P₄ : Type*} [SeminormedAddCommGroup V₄] [NormedSpac
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
-instance : Monoid (P →ᵃⁱ[𝕜] P) where
+instance : One (P →ᵃⁱ[𝕜] P) where
   one := id
-  mul := comp
-  mul_assoc := comp_assoc
-  one_mul := id_comp
-  mul_one := comp_id
+
+instance : IsOneApplyEqSelf (P →ᵃⁱ[𝕜] P) where
 
 @[simp]
+theorem toAffineMap_one : (1 : P →ᵃⁱ[𝕜] P).toAffineMap = 1 := rfl
+
+instance : Mul (P →ᵃⁱ[𝕜] P) where
+  mul := comp
+
+instance : IsMulApplyEqComp (P →ᵃⁱ[𝕜] P) where
+
+@[simp]
+theorem toAffineMap_mul (f g : P →ᵃⁱ[𝕜] P) : (f * g).toAffineMap = f.toAffineMap * g.toAffineMap :=
+  rfl
+
+instance : Pow (P →ᵃⁱ[𝕜] P) ℕ where
+  pow f n :=
+    { toAffineMap := f.toAffineMap ^ n
+      norm_map x := by
+        induction n with
+        | zero => rfl
+        | succ n hn => simp [pow_succ', hn, -AffineMap.pow_linear] }
+
+instance : IsNPowApplyEqIterate (P →ᵃⁱ[𝕜] P) where
+
+@[simp]
+theorem toAffineMap_pow (f : P →ᵃⁱ[𝕜] P) (n : ℕ) : (f ^ n).toAffineMap = f.toAffineMap ^ n := rfl
+
+instance : Monoid (P →ᵃⁱ[𝕜] P) := fast_instance% FunLike.compMonoid
+
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-11-02")]
 theorem coe_one : ⇑(1 : P →ᵃⁱ[𝕜] P) = _root_.id :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-11-02")]
 theorem coe_mul (f g : P →ᵃⁱ[𝕜] P) : ⇑(f * g) = f ∘ g :=
   rfl
 

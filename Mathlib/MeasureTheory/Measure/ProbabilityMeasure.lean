@@ -70,7 +70,6 @@ composition `ENNReal.toNNReal` and the coercion to function of `MeasureTheory.Me
 ## Tags
 
 convergence in distribution, convergence in law, weak convergence of measures, probability measure
-
 -/
 
 @[expose] public section
