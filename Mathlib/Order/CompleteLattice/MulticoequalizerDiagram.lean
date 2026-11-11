@@ -116,13 +116,9 @@ def multicofork : Multicofork d.multispanIndex :=
 
 include d
 lemma map {S : Type v} [CompleteLattice S] (f : CompleteLatticeHom T S)
-  : MulticoequalizerDiagram (f x) ( fun i ↦ f (u i)) (fun i j ↦ f (v i j))
-    where
-  iSup_eq := by
-
-    sorry
-    --rw [map_sup u ,d.iSup_eq]
-  eq_inf _ _ := by rw [← map_inf ,d.eq_inf]
+  : MulticoequalizerDiagram (f x) ( fun i ↦ f (u i)) (fun i j ↦ f (v i j)) where
+  iSup_eq := by  rw [← d.iSup_eq,map_iSup]
+  eq_inf i j := by rw [d.eq_inf,map_inf]
 
 end MulticoequalizerDiagram
 

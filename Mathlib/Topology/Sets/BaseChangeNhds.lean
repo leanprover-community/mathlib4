@@ -107,8 +107,7 @@ lemma properPreimage_mono : Monotone (properPreimage proper_f) :=
 @[simps, implicit_reducible]
 def baseChangeCompactNhdsOfProperMap (K : Compacts β) (L : K.compactNhds) :
     (properPreimage proper_f K).compactNhds :=
-  ⟨properPreimage proper_f L,
-  by
+  ⟨properPreimage proper_f L, by
     obtain ⟨U, hU1, hU2⟩ := exists_open_set_nhds_of_compactsNhds L
     exact (compactNhdsMkOfOpens _
       ((Opens.map (TopCat.ofHom ( ContinuousMap.mk f proper_f.toContinuous))).obj U)
