@@ -19,11 +19,13 @@ This file develops the API for `IsStarOrtho` in a `StarOrderedRing` with `IsProp
 
 + `isStarOrtho_of_nonneg_iff`: if `0 ≤ a`, then `a ⋆⟂ b` if and only if
   `star b * a * b = 0` and `b * a * star b = 0`.
-+ `IsStarOrtho.of_le`: if `0 ≤ a ≤ b` and `b ⋆⟂ c`, then `a ⋆⟂ c`.
++ `IsStarOrtho.mono`: if `0 ≤ a ≤ b` and `b ⋆⟂ c`, then `a ⋆⟂ c`.
 + `IsStarOrtho.sum_iff`: a finite sum of nonnegative elements is star-orthogonal to `c` if and only
   if each summand is.
 + `isStarProjection_sum_iff`: a finite sum of star projections is a star projection if and only if
   they are pairwise star-orthogonal.
++ `IsStarProjection.isStarOrtho_of_add`: The sum of a star projection and a nonnegative element is
+  a star projection if and only if they are star-orthogonal.
 -/
 
 public section
@@ -39,15 +41,12 @@ variable [NonUnitalSemiring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 /-- If `0 ≤ a` and `c * a * star c = 0`, then `a * star c = 0`. -/
 lemma mul_star_eq_zero_of_mul_mul_star_eq_zero {a c : A} (ha : 0 ≤ a)
     (h : c * a * star c = 0) : a * star c = 0 := by
-  rw [StarOrderedRing.nonneg_iff] at ha
-  induction ha using AddSubmonoid.closure_induction with
-  | mem x hx =>
-    obtain ⟨x, rfl⟩ := hx
+  induction ha using StarOrderedRing.induction_on with
+  | star_mul x =>
     have : star (x * star c) * (x * star c) = 0 := by simpa [mul_assoc] using h
     rw [mul_assoc, star_mul_self_eq_zero.mp this, mul_zero]
   | zero => simp
   | add x y hx hy ihx ihy =>
-    rw [← StarOrderedRing.nonneg_iff] at hx hy
     rw [mul_add, add_mul, add_eq_zero_iff_of_nonneg (star_right_conjugate_nonneg hx c)
       (star_right_conjugate_nonneg hy c)] at h
     rw [add_mul, ihx h.1, ihy h.2, add_zero]
@@ -71,18 +70,18 @@ lemma of_nonneg {a b : A} (ha : 0 ≤ a) (h₁ : star b * a * b ≤ 0) (h₂ : b
     ⟨le_antisymm h₁ (star_left_conjugate_nonneg ha b),
       le_antisymm h₂ (star_right_conjugate_nonneg ha b)⟩
 
-lemma of_le {a b c : A} (ha : 0 ≤ a) (hab : a ≤ b) (hbc : b ⋆⟂ c) : a ⋆⟂ c := by
+lemma mono {a b c : A} (ha : 0 ≤ a) (hab : a ≤ b) (hbc : b ⋆⟂ c) : a ⋆⟂ c := by
   obtain ⟨h₁, h₂⟩ := isStarOrtho_of_nonneg_iff (ha.trans hab) |>.mp hbc
   exact .of_nonneg ha (h₁ ▸ star_left_conjugate_le_conjugate hab c)
     (h₂ ▸ star_right_conjugate_le_conjugate hab c)
 
 /-- If `0 ≤ a` and `0 ≤ b` and `(a + b) ⋆⟂ c`, then `a ⋆⟂ c`. -/
 lemma of_add_left {a b c : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : (a + b) ⋆⟂ c) : a ⋆⟂ c :=
-  h.of_le ha (le_add_of_nonneg_right hb)
+  h.mono ha (le_add_of_nonneg_right hb)
 
 /-- If `0 ≤ a` and `0 ≤ b` and `(a + b) ⋆⟂ c`, then `b ⋆⟂ c`. -/
 lemma of_add_right {a b c : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : (a + b) ⋆⟂ c) : b ⋆⟂ c :=
-  h.of_le hb (le_add_of_nonneg_left ha)
+  h.mono hb (le_add_of_nonneg_left ha)
 
 lemma add_iff {a b c : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     (a + b) ⋆⟂ c ↔ a ⋆⟂ c ∧ b ⋆⟂ c :=
@@ -90,7 +89,7 @@ lemma add_iff {a b c : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 
 lemma sum_iff {ι : Type*} {s : Finset ι} {f : ι → A} {c : A} (hf : ∀ i ∈ s, 0 ≤ f i) :
     (∑ i ∈ s, f i) ⋆⟂ c ↔ ∀ j ∈ s, f j ⋆⟂ c :=
-  ⟨fun h _j hj ↦ h.of_le (hf _ hj) (Finset.single_le_sum hf hj), sum_left⟩
+  ⟨fun h _j hj ↦ h.mono (hf _ hj) (Finset.single_le_sum hf hj), sum_left⟩
 
 /-- If each `f i` is nonnegative and `(∑ i ∈ s, f i) ⋆⟂ c`, then `f j ⋆⟂ c` for every `j ∈ s`. -/
 alias ⟨of_sum, _⟩ := sum_iff
@@ -104,7 +103,7 @@ section NonUnitalRing
 variable [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A] [IsProperStar A]
 
 /-- If `p` and `p + q` are star projections and `0 ≤ q`, then `q ⋆⟂ p`. -/
-private lemma IsStarProjection.isStarOrtho_of_add {p q : A} (hp : IsStarProjection p)
+lemma IsStarProjection.isStarOrtho_of_add {p q : A} (hp : IsStarProjection p)
     (hq : 0 ≤ q) (hr : IsStarProjection (p + q)) : q ⋆⟂ p := by
   set r := p + q
   have hpp : p * p = p := hp.isIdempotentElem.eq
@@ -127,7 +126,7 @@ lemma isStarProjection_sum_iff {ι : Type*} {s : Finset ι} {f : ι → A}
     (hf : ∀ i ∈ s, IsStarProjection (f i)) :
     IsStarProjection (∑ i ∈ s, f i) ↔ (s : Set ι).Pairwise ((· ⋆⟂ ·) on f) := by
   classical
-  refine ⟨fun hP i hi j hj hij ↦ ?_, isStarProjection_sum hf⟩
+  refine ⟨fun hP i hi j hj hij ↦ ?_, .sum hf⟩
   rw [← Finset.add_sum_erase s f hi] at hP
   have hf' (k : ι) (hk : k ∈ s.erase i) : 0 ≤ f k := (hf k (by grind)).nonneg
   exact (hf i hi).isStarOrtho_of_add (Finset.sum_nonneg hf') hP |>.of_sum hf' j
