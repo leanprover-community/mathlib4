@@ -25,7 +25,6 @@ by `s ↦ s ⊗ₜ 1 - 1 ⊗ₜ s`.
 ## Main results
 
 * `IsEffective.of_faithfullyFlat`: `IsEffective R S` is true for any faithfully flat `R`-algebra `S`
-
 -/
 
 @[expose] public section
@@ -54,7 +53,7 @@ lemma includeLeftSubRight_apply (s : S) : includeLeftSubRight R S s = s ⊗ₜ[R
 lemma includeLeftSubRight_zero_of_mem_range {s : S} (hs : s ∈ Set.range ⇑(algebraMap R S)) :
     includeLeftSubRight R S s = 0 := by
   obtain ⟨_, hr⟩ := Set.mem_range.mp hs
-  simp [includeLeftSubRight, ← hr]
+  simp [← hr, algebraMap_eq_smul_one]
 
 /-- `includeLeftSubRight R S` vanishes at `algebraMap R S r`. -/
 lemma includeLeftSubRight_algebraMap_zero (r : R) :
@@ -136,6 +135,9 @@ lemma of_isEffective_tensorProduct_of_faithfullyFlat
       ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).injective) |>.mpr ‹_›
   · ext
     simp [← Algebra.TensorProduct.linearMap_comp_rid]
+    -- The goal is TensorProduct.rid .. = TensorProduct.AlgebraTensorModule.rid ..
+    -- TODO: merge both into one definition, and remove the rfl.
+    rfl
   · ext
     simp
 

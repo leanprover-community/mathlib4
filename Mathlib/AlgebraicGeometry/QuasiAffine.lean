@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
-
 # Quasi-affine schemes
 
 ## Main results
@@ -17,7 +16,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
   This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
 - `IsQuasiAffine.of_isImmersion`:
   Any quasi-compact locally closed subscheme of a quasi-affine scheme is quasi-affine.
-
 -/
 
 @[expose] public section
@@ -56,6 +54,7 @@ lemma IsQuasiAffine.of_isImmersion
   have : IsImmersion X.toSpecΓ := .of_comp _ (Spec.map f.appTop)
   constructor
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
     Opens.IsBasis { X.basicOpen r | (r : Γ(X, ⊤)) (_ : IsAffineOpen (X.basicOpen r)) } := by
   refine Opens.isBasis_iff_nbhd.mpr fun {U x} hxU ↦ ?_
@@ -69,7 +68,6 @@ lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
   exact SetLike.coe_injective (Set.image_preimage_eq_of_subset
     (hrU.trans (Set.image_subset_range _ _)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A quasi-compact scheme is quasi-affine if
 it can be covered by affine basic opens of global sections. -/
 lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpace X]
@@ -85,7 +83,7 @@ lemma IsQuasiAffine.of_forall_exists_mem_basicOpen (X : Scheme.{u}) [CompactSpac
   obtain ⟨r, hr, hxr⟩ := H x
   refine ⟨PrimeSpectrum.basicOpen r, (X.toSpecΓ_preimage_basicOpen r).ge hxr, ?_⟩
   suffices IsOpenImmersion ((X.basicOpen r).ι ≫ X.toSpecΓ) by
-    convert this <;> rw [toSpecΓ_preimage_basicOpen]
+    convert! this <;> rw [toSpecΓ_preimage_basicOpen]
   rw [← Opens.toSpecΓ_SpecMap_presheaf_map_top]
   have := isLocalization_basicOpen_of_qcqs isCompact_univ isQuasiSeparated_univ r
   exact MorphismProperty.comp_mem _ hr.isoSpec.hom _ inferInstance (.of_isLocalization r)
@@ -99,7 +97,6 @@ lemma IsQuasiAffine.of_isAffineHom [IsAffineHom f] [Y.IsQuasiAffine] : X.IsQuasi
   rw [← preimage_basicOpen_top]
   exact ⟨hr.preimage _, hxr⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The affine basic opens of a quasi-affine scheme form an open cover. -/
 @[simps! f] def openCoverBasicOpenTop (X : Scheme.{u}) [X.IsQuasiAffine] :
     X.OpenCover :=
@@ -109,6 +106,7 @@ set_option backward.isDefEq.respectTransparency false in
     (IsQuasiAffine.isBasis_basicOpen X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   exact Opens.mem_iSup.mpr ⟨⟨r, hr⟩, hxr⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : X ⟶ Y` is an affine morphism between quasi-affine schemes, then it is the pullback of
   `Spec Γ(X, ⊤) ⟶ Spec Γ(Y, ⊤)` along the open immersion `Y ⟶ Spec Γ(Y, ⊤)`. -/

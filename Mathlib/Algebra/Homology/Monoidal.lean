@@ -21,7 +21,6 @@ coproducts and both left/right tensoring commute with these.
 
 In particular, we obtain a monoidal category structure on
 `ChainComplex C ℕ` when `C` is an additive monoidal category.
-
 -/
 
 @[expose] public section
@@ -145,8 +144,6 @@ end
 
 section
 
-variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
-
 instance : GradedObject.HasTensor K.X (tensorUnit C c).X :=
   GradedObject.hasTensor_of_iso (Iso.refl _) (tensorUnitIso C c)
 
@@ -181,6 +178,7 @@ noncomputable def leftUnitor' :
   GradedObject.Monoidal.tensorIso ((tensorUnitIso C c).symm) (Iso.refl _) ≪≫
     GradedObject.Monoidal.leftUnitor K.X
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor'_inv (i : I) :
     (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
@@ -193,10 +191,9 @@ lemma leftUnitor'_inv (i : I) :
   congr 2
   rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
   dsimp [tensorUnitIso]
-  rw [dif_pos rfl]
+  rw [dite_eq_left rfl]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma leftUnitor'_inv_comm (i j : I) :
     (leftUnitor' K).inv i ≫ (tensorObj (tensorUnit C c) K).d i j =
@@ -221,14 +218,13 @@ end LeftUnitor
 
 section RightUnitor
 
-variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
-
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :
     (tensorObj K (tensorUnit C c)).X ≅ K.X :=
   GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm) ≪≫
     GradedObject.Monoidal.rightUnitor K.X
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor'_inv (i : I) :
     (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ ((K.X i) ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
@@ -241,10 +237,9 @@ lemma rightUnitor'_inv (i : I) :
   congr 2
   rw [← cancel_epi (GradedObject.Monoidal.tensorUnit₀ (I := I)).hom, Iso.hom_inv_id_assoc]
   dsimp [tensorUnitIso]
-  rw [dif_pos rfl]
+  rw [dite_eq_left rfl]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor'_inv_comm (i j : I) :
     (rightUnitor' K).inv i ≫ (tensorObj K (tensorUnit C c)).d i j =
       K.d i j ≫ (rightUnitor' K).inv j := by

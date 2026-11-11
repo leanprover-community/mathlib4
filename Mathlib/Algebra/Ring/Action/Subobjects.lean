@@ -17,10 +17,9 @@ are defined.
 
 Instances for `Subsemiring` and `Subring` are provided next to the other scalar actions instances
 for those subobjects.
-
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

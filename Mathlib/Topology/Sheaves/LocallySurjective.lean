@@ -5,14 +5,10 @@ Authors: Sam van Gool, Jake Levinson
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Presheaf
-public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
 public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-
 # Locally surjective maps of presheaves.
 
 Let `X` be a topological space, `ℱ` and `𝒢` presheaves on `X`, `T : ℱ ⟶ 𝒢` a map.
@@ -26,7 +22,6 @@ In this file we formulate two notions for what it means for
   2. For each `x : X`, the map of *stalks* `Tₓ : ℱₓ ⟶ 𝒢ₓ` is surjective.
 
 We prove that these are equivalent.
-
 -/
 
 @[expose] public section
@@ -58,12 +53,12 @@ such that `$T_*(s_V) = t|_V$`.
 
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
-def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
+abbrev IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
-      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (_ : V ≤ U), (∃ s, (T.app _) s = t |_ V ) ∧ x ∈ V := by
+      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (_ : V ≤ U), (∃ s, (T.app _) s = t |_ V) ∧ x ∈ V := by
   refine ⟨fun h _ t x hx ↦ ?_, fun h => ⟨fun s x hx ↦ ?_⟩⟩
   · obtain ⟨V, i, hi⟩ := h.imageSieve_mem t x hx
     exact ⟨V, leOfHom i, hi⟩
@@ -88,7 +83,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     -- Let g ∈ Γₛₜ 𝒢 x be a germ.
     intro x g
     -- Represent it on an open set U ⊆ X as ⟨t, U⟩.
-    obtain ⟨U, hxU, t, rfl⟩ := 𝒢.germ_exist x g
+    obtain ⟨U, hxU, t, rfl⟩ := 𝒢.exists_germ_eq g
     -- By local surjectivity, pass to a smaller open set V
     -- on which there exists s ∈ Γ_ ℱ V mapping to t |_ V.
     rcases hT.imageSieve_mem t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
@@ -105,10 +100,10 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     intro U t x hxU
     set t_x := 𝒢.germ _ x hxU t with ht_x
     obtain ⟨s_x, hs_x : ((stalkFunctor C x).map T) s_x = t_x⟩ := hT x t_x
-    obtain ⟨V, hxV, s, rfl⟩ := ℱ.germ_exist x s_x
+    obtain ⟨V, hxV, s, rfl⟩ := ℱ.exists_germ_eq s_x
     -- rfl : ℱ.germ x s = s_x
     have key_W := 𝒢.germ_eq x hxV hxU (T.app _ s) t <| by
-      convert hs_x using 1
+      convert! hs_x using 1
       symm
       convert stalkFunctor_map_germ_apply _ _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W

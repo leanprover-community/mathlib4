@@ -6,8 +6,9 @@ Authors: Gaëtan Serré
 
 module
 
-public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon
+public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.CategoryTheory.Widesubcategory
 
 /-!
@@ -20,14 +21,13 @@ additional structures.
 We define stability classes under associators, unitors, and braidings, and use
 them to construct monoidal, braided, and symmetric structures on
 `WideSubcategory P`.
-
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
-open scoped MonoidalCategory ComonObj
+open scoped MonoidalCategory
 
 variable {C : Type*} [Category* C] (P : MorphismProperty C) [MonoidalCategory C]
 

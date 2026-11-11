@@ -25,7 +25,6 @@ synthesis like `Module 𝒪[K] 𝓀[k]`, so the plain equiv versions are provide
 
 These equivs are defined here as opposed to in the quotients file since they cannot be
 formed as ring equivs.
-
 -/
 
 @[expose] public section
@@ -65,7 +64,7 @@ def quotEquivPowQuotPowSucc (h : I.IsPrincipal) (h' : I ≠ ⊥) (n : ℕ) :
       rw [mul_comm, pow_succ, mul_assoc, mul_right_inj' (pow_ne_zero _ _)] at hy
       · rw [hI, Ideal.mem_span_singleton]
         exact ⟨y, hy⟩
-      · contrapose! h'
+      · contrapose h'
         rw [hI, h', Ideal.span_singleton_eq_bot]
   let e : (R ⧸ I) ≃ₗ[R] R ⧸ (LinearMap.ker (f.comp g)) :=
     Submodule.quotEquivOfEq I (LinearMap.ker (f ∘ₗ g)) this

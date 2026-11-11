@@ -32,7 +32,6 @@ intended to be used for constructing instances of this class. To use the univers
 generally recommended to use the lemma `IsStronglyCocartesian.universal_property` instead. The
 difference between the two is that the latter is more flexible with respect to non-definitional
 equalities.
-
 -/
 
 @[expose] public section
@@ -177,8 +176,7 @@ lemma universal_property {S' : 𝒮} {b' : 𝒳} (g : S ⟶ S') (f' : R ⟶ S') 
   have : p.IsHomLift (f ≫ g) φ' := (hf' ▸ inferInstance)
   apply IsStronglyCocartesian.universal_property' f
 
-instance isCocartesian_of_isStronglyCocartesian [p.IsStronglyCocartesian f φ] :
-    p.IsCocartesian f φ where
+instance isCocartesian_of_isStronglyCocartesian : p.IsCocartesian f φ where
   universal_property := fun φ' => universal_property p f φ (𝟙 S) f (comp_id f).symm φ'
 
 section

@@ -5,7 +5,7 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 - `LocalizedModule.map_exact`: Localization of modules is an exact functor.
 - `IsLocalizedModule.map_exact`: A variant expressed in terms of `IsLocalizedModule`.
-
 -/
 
 public section

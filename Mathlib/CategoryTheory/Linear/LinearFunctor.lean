@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.Algebra.Module.LinearMap.Rat
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Linear Functors
@@ -20,7 +20,6 @@ if the induced map on hom types is a morphism of `R`-modules.
 `Functor.Linear` is a `Prop`-valued class, defined by saying that
 for every two objects `X` and `Y`, the map
 `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of `R`-modules.
-
 -/
 
 @[expose] public section
@@ -70,7 +69,6 @@ variable {E : Type*} [Category* E] [Preadditive E] [CategoryTheory.Linear R E] (
 
 instance [Linear R G] : Linear R (F ⋙ G) where
 
-set_option backward.isDefEq.respectTransparency false in
 lemma linear_of_full_essSurj_comp [F.Full] [F.EssSurj] [Functor.Linear R (F ⋙ G)] :
     Functor.Linear R G := by
   refine ⟨fun {X Y} f r ↦ ?_⟩
@@ -121,10 +119,10 @@ section
 variable {R} [Additive F]
 
 instance natLinear : F.Linear ℕ where
-  map_smul := F.mapAddHom.map_nsmul
+  map_smul f r := F.mapAddHom.map_nsmul r f
 
 instance intLinear : F.Linear ℤ where
-  map_smul f r := F.mapAddHom.map_zsmul f r
+  map_smul f r := F.mapAddHom.map_zsmul r f
 
 variable [CategoryTheory.Linear ℚ C] [CategoryTheory.Linear ℚ D]
 

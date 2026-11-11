@@ -5,15 +5,14 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
 # Factoring through subobjects
 
 The predicate `h : P.Factors f`, for `P : Subobject Y` and `f : X ⟶ Y`
 asserts the existence of some `P.factorThru f : X ⟶ (P : C)` making the obvious diagram commute.
-
 -/
 
 @[expose] public section
@@ -26,7 +25,6 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory
 
@@ -39,7 +37,6 @@ Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
 def Factors {X Y : C} (P : MonoOver Y) (f : X ⟶ Y) : Prop :=
   ∃ g : X ⟶ (P : C), g ≫ P.arrow = f
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factors_congr {X : C} {f g : MonoOver X} {Y : C} (h : Y ⟶ X) (e : f ≅ g) :
     f.Factors h ↔ g.Factors h :=
   ⟨fun ⟨u, hu⟩ => ⟨u ≫ ((MonoOver.forget _).map e.hom).left, by simp [hu]⟩, fun ⟨u, hu⟩ =>
@@ -54,7 +51,6 @@ end MonoOver
 
 namespace Subobject
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `f : X ⟶ Y` and `P : Subobject Y`,
 `P.Factors f` expresses that there exists a factorisation of `f` through `P`.
 Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
@@ -98,6 +94,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem factors_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} : P.Factors (0 : X ⟶ Y) :=
   (factors_iff _ _).mpr ⟨0, by simp⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem factors_of_le {Y Z : C} {P Q : Subobject Y} (f : Z ⟶ Y) (h : P ≤ Q) :
     P.Factors f → Q.Factors f := by
   simp only [factors_iff]

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
-public import Mathlib.RingTheory.Support
 
 /-!
 # Smooth locus of an algebra

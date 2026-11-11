@@ -5,18 +5,17 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Properties of morphisms that are bounded by a cardinal
 
 Given `P : MorphismProperty C` and `κ : Cardinal`, we introduce a predicate
 `P.HasCardinalLT κ` saying that the cardinality of `P.toSet` is `< κ`.
-
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

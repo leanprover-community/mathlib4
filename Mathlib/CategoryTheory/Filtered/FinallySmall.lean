@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.FinallySmall
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 /-!
 # Finally small filtered categories
@@ -13,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.FinallySmall
 In this file, we show that if `C` is a filtered finally small category
 that is locally small, there exists a final functor `D ⥤ C` from
 a small filtered category. The dual result is also obtained.
-
 -/
 
 @[expose] public section
@@ -100,6 +100,14 @@ noncomputable def fromFilteredFinalModel : FilteredFinalModel.{w} C ⥤ C :=
 
 instance : (fromFilteredFinalModel.{w} C).Final :=
   (exists_of_isFiltered.{w} C).choose_spec.choose_spec.choose_spec.choose_spec
+
+open Limits in
+lemma preservesColimitsOfShape_of_isFiltered
+    {D E : Type*} [Category* D] [Category* E]
+    (F : D ⥤ E) [PreservesFilteredColimitsOfSize.{w, w} F] :
+    PreservesColimitsOfShape C F :=
+  Functor.Final.preservesColimitsOfShape_of_final
+    (FinallySmall.fromFilteredFinalModel.{w} C) _
 
 end FinallySmall
 

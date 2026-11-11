@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The units of an ordered commutative monoid form an ordered commutative group
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

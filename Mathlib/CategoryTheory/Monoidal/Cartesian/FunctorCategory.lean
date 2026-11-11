@@ -5,16 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # Functor categories have chosen finite products
 
 If `C` is a category with chosen finite products, then so is `J ⥤ C`.
-
 -/
 
 @[expose] public section
@@ -29,6 +26,7 @@ variable {J C D E : Type*} [Category* J] [Category* C] [Category* D] [Category* 
 
 namespace Functor
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
   fst X Y := { app _ := CartesianMonoidalCategory.fst _ _ }
   snd X Y := { app _ := CartesianMonoidalCategory.snd _ _ }
@@ -56,16 +54,6 @@ instance cartesianMonoidalCategory : CartesianMonoidalCategory (J ⥤ C) where
       Iso.cancel_iso_hom_right]
     congr
     subsingleton
-
-@[deprecated (since := "2026-03-07")] alias chosenTerminal := MonoidalCategory.tensorUnit
-@[deprecated (since := "2026-03-07")] alias chosenTerminalIsTerminal :=
-  CartesianMonoidalCategory.isTerminalTensorUnit
-
-@[deprecated (since := "2026-03-07")] alias chosenProd := MonoidalCategory.tensorObj
-@[deprecated (since := "2026-03-07")] alias chosenProd.fst := CartesianMonoidalCategory.fst
-@[deprecated (since := "2026-03-07")] alias chosenProd.snd := CartesianMonoidalCategory.snd
-@[deprecated (since := "2026-03-07")] alias chosenProd.isLimit :=
-  CartesianMonoidalCategory.tensorProductIsBinaryProduct
 
 namespace Monoidal
 
@@ -130,7 +118,6 @@ lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J
     (f ▷ F₂).app j ≫ snd _ _ = snd _ _ := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
@@ -147,7 +134,7 @@ instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     PreservesColimitsOfShape K (tensorLeft F) := by
   apply preservesColimitsOfShape_of_evaluation
   intro k
-  haveI : tensorLeft F ⋙ (evaluation J C).obj k ≅ (evaluation J C).obj k ⋙ tensorLeft (F.obj k) :=
+  have : tensorLeft F ⋙ (evaluation J C).obj k ≅ (evaluation J C).obj k ⋙ tensorLeft (F.obj k) :=
     NatIso.ofComponents (fun _ ↦ Iso.refl _)
   exact preservesColimitsOfShape_of_natIso this.symm
 

@@ -6,7 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Data.Countable.Defs
+public import Mathlib.Basic.Countable.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monoid action by iterates of a map
@@ -17,7 +20,7 @@ that acts on `α` by iterates of `f`, `⟨n⟩ • x = f^[n] x`.
 It is useful to convert between definitions and theorems about maps and monoid actions.
 -/
 
-@[expose] public section
+public section
 
 /-- A structure with a single field `val : ℕ`
 that additively acts on `α` by `⟨n⟩ +ᵥ x = f^[n] x`. -/

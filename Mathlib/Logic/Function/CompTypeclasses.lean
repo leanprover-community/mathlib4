@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Propositional typeclasses on several maps
@@ -19,10 +19,9 @@ by Frédéric Dupuis and Heather Macbeth for linear maps.
 
 TODO :
 * align with RingHomCompTriple
-
 -/
 
-@[expose] public section
+public section
 
 section CompTriple
 

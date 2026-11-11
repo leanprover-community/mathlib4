@@ -6,10 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
-public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
-
 # The Dold-Kan correspondence
 
 The Dold-Kan correspondence states that for any abelian category `A`, there is
@@ -118,7 +116,6 @@ what is the best way to do this. The exact design may be decided when it is need
 ## References
 * [Albrecht Dold, Homology of Symmetric Products and Other Functors of Complexes][dold1958]
 * [Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory][goerss-jardine-2009]
-
 -/
 
 @[expose] public section
@@ -146,6 +143,9 @@ def N : SimplicialObject A ⥤ ChainComplex A ℕ :=
 def Γ : ChainComplex A ℕ ⥤ SimplicialObject A :=
   Idempotents.DoldKan.Γ
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The comparison isomorphism between `normalizedMooreComplex A` and
 the functor `Idempotents.DoldKan.N` from the pseudoabelian case -/
 @[simps!]

@@ -59,7 +59,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- must contain some element of the form `(z, pure z)`. In other words, we have `z ∈ U` and
   -- `Uᶜ ∈ pure z`, which means `z ∈ Uᶜ` by the definition of pure.
   -- This is a contradiction, which completes the proof.
-    rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOf_mem.mem_nhds hUc)) with
+    rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOfPred_mem.mem_nhds hUc)) with
       ⟨⟨z, 𝒢⟩, ⟨⟨hz : z ∈ U, hz' : Uᶜ ∈ 𝒢⟩, rfl : 𝒢 = pure z⟩⟩
     exact hz' hz
 

@@ -37,14 +37,15 @@ in this file. See instead `PiNat.res`.
 ## Tags
 
 scheme, cantor scheme, lusin scheme, approximation.
-
 -/
 
 @[expose] public section
 
 namespace CantorScheme
 
-open List Function Filter Set PiNat Topology
+open List Function Filter Set PiNat
+
+open scoped Topology
 
 variable {β α : Type*} (A : List β → Set α)
 
@@ -142,7 +143,7 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
   rw [_root_.eventually_nhds_iff]
   refine ⟨(↑)⁻¹' cylinder x.1 n, ?_, ?_, by simp⟩
   · rintro y hyx
-    rw [mem_preimage, Subtype.coe_mk, cylinder_eq_res, mem_setOf] at hyx
+    rw [mem_preimage, Subtype.coe_mk, cylinder_eq_res, mem_ofPred] at hyx
     apply hn
     · rw [← hyx]
       apply map_mem

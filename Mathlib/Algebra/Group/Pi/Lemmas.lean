@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Hom.Instances
-public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Group.Pi.Hom
+public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Data.Set.Piecewise
-public import Mathlib.Logic.Pairwise
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra lemmas about products of monoids and groups
@@ -27,7 +29,7 @@ universe u v w
 
 variable {ι α : Type*}
 variable {I : Type u}
-variable {f : I → Type v} {M : ι → Type*}
+variable {f : I → Type v} {M N : ι → Type*}
 
 variable (i : I)
 
@@ -42,17 +44,16 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 
 namespace Pi
 
-@[to_additive]
-instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
-    IsMulTorsionFree (∀ i, M i) where
-  pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
-
 variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[to_additive] lemma one_mono [One β] : Monotone (1 : α → β) := monotone_const
 @[to_additive] lemma one_anti [One β] : Antitone (1 : α → β) := antitone_const
 
 end Pi
+
+@[to_additive]
+protected theorem Pi.isSelfInv_iff {ι : Type*} {G : ι → Type*} [∀ i, Inv (G i)] {x : ∀ i, G i} :
+    IsSelfInv x ↔ ∀ i, IsSelfInv (x i) := funext_iff
 
 namespace MulHom
 
@@ -63,58 +64,6 @@ theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f
 end MulHom
 
 section MulHom
-
-/-- A family of MulHom's `f a : γ →ₙ* β a` defines a MulHom `Pi.mulHom f : γ →ₙ* Π a, β a`
-given by `Pi.mulHom f x b = f b x`. -/
-@[to_additive (attr := simps)
-  /-- A family of AddHom's `f a : γ → β a` defines an AddHom `Pi.addHom f : γ → Π a, β a` given by
-  `Pi.addHom f x b = f b x`. -/]
-def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
-  toFun x i := g i x
-  map_mul' x y := funext fun i => (g i).map_mul x y
-
-@[to_additive]
-theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
-    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
-  let ⟨i⟩ := ‹Nonempty I›
-  hg i ((funext_iff.mp h :) i)
-
-/-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
-`Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
-@[to_additive (attr := simps)
-  /-- A family of additive monoid homomorphisms `f a : γ →+ β a` defines a monoid homomorphism
-  `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`. -/]
-def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : ∀ i, γ →* f i) :
-    γ →* ∀ i, f i :=
-  { Pi.mulHom fun i => (g i).toMulHom with
-    toFun := fun x i => g i x
-    map_one' := funext fun i => (g i).map_one }
-
-@[to_additive]
-theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
-    (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
-    Function.Injective (Pi.monoidHom g) :=
-  Pi.mulHom_injective (fun i => (g i).toMulHom) hg
-
-variable (f)
-variable [(i : I) → Mul (f i)]
-
-/-- Evaluation of functions into an indexed collection of semigroups at a point is a semigroup
-homomorphism.
-This is `Function.eval i` as a `MulHom`. -/
-@[to_additive (attr := simps)
-  /-- Evaluation of functions into an indexed collection of additive semigroups at a point is an
-  additive semigroup homomorphism. This is `Function.eval i` as an `AddHom`. -/]
-def Pi.evalMulHom (i : I) : (∀ i, f i) →ₙ* f i where
-  toFun g := g i
-  map_mul' _ _ := Pi.mul_apply _ _ i
-
-/-- `Function.const` as a `MulHom`. -/
-@[to_additive (attr := simps) /-- `Function.const` as an `AddHom`. -/]
-def Pi.constMulHom (α β : Type*) [Mul β] :
-    β →ₙ* α → β where
-  toFun := Function.const α
-  map_mul' _ _ := rfl
 
 /-- Coercion of a `MulHom` into a function is itself a `MulHom`.
 
@@ -127,42 +76,9 @@ def MulHom.coeFn (α β : Type*) [Mul α] [CommSemigroup β] :
   toFun g := g
   map_mul' _ _ := rfl
 
-/-- Semigroup homomorphism between the function spaces `I → α` and `I → β`, induced by a semigroup
-homomorphism `f` between `α` and `β`. -/
-@[to_additive (attr := simps) /-- Additive semigroup homomorphism between the function spaces
-  `I → α` and `I → β`, induced by an additive semigroup homomorphism `f` between `α` and `β` -/]
-protected def MulHom.compLeft {α β : Type*} [Mul α] [Mul β] (f : α →ₙ* β) (I : Type*) :
-    (I → α) →ₙ* I → β where
-  toFun h := f ∘ h
-  map_mul' _ _ := by ext; simp
-
 end MulHom
 
 section MonoidHom
-
-variable (f)
-variable [(i : I) → MulOneClass (f i)]
-
-/-- Evaluation of functions into an indexed collection of monoids at a point is a monoid
-homomorphism.
-This is `Function.eval i` as a `MonoidHom`. -/
-@[to_additive (attr := simps) /-- Evaluation of functions into an indexed collection of additive
-monoids at a point is an additive monoid homomorphism. This is `Function.eval i` as an
-`AddMonoidHom`. -/]
-def Pi.evalMonoidHom (i : I) : (∀ i, f i) →* f i where
-  toFun g := g i
-  map_one' := Pi.one_apply i
-  map_mul' _ _ := Pi.mul_apply _ _ i
-
-@[simp, norm_cast]
-lemma Pi.coe_evalMonoidHom (i : I) : ⇑(evalMonoidHom f i) = Function.eval i := rfl
-
-/-- `Function.const` as a `MonoidHom`. -/
-@[to_additive (attr := simps) /-- `Function.const` as an `AddMonoidHom`. -/]
-def Pi.constMonoidHom (α β : Type*) [MulOneClass β] : β →* α → β where
-  toFun := Function.const α
-  map_one' := rfl
-  map_mul' _ _ := rfl
 
 /-- Coercion of a `MonoidHom` into a function is itself a `MonoidHom`.
 
@@ -175,17 +91,6 @@ def MonoidHom.coeFn (α β : Type*) [MulOneClass α] [CommMonoid β] : (α →* 
   toFun g := g
   map_one' := rfl
   map_mul' _ _ := rfl
-
-/-- Monoid homomorphism between the function spaces `I → α` and `I → β`, induced by a monoid
-homomorphism `f` between `α` and `β`. -/
-@[to_additive (attr := simps)
-  /-- Additive monoid homomorphism between the function spaces `I → α` and `I → β`, induced by an
-  additive monoid homomorphism `f` between `α` and `β` -/]
-protected def MonoidHom.compLeft {α β : Type*} [MulOneClass α] [MulOneClass β] (f : α →* β)
-    (I : Type*) : (I → α) →* I → β where
-  toFun h := f ∘ h
-  map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp
 
 end MonoidHom
 
@@ -300,7 +205,7 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_of_ne h.symm, h]
+  · simp [h, eqComm]
 
 @[to_additive]
 theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
@@ -312,7 +217,7 @@ theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommM
     have hl := congr_fun h l
     have hm := congr_fun h m
     have hn := congr_fun h n
-    grind [mul_one, one_mul, mul_apply]
+    grind [mul_one, one_mul, Pi.mul_apply]
   · aesop (add simp [mulSingle_apply])
 
 end Single

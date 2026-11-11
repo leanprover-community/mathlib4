@@ -5,12 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
-public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
+
+import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
-
 # Immersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is an immersion if the underlying map of topological spaces
@@ -24,7 +23,6 @@ if and only if it can be factored into a closed immersion followed by an open im
 - `isImmersion_iff_exists_of_quasiCompact`:
   A quasicompact morphism is a (locally-closed) immersion if and only if it can be factored into
   an open immersion followed by a closed immersion.
-
 -/
 
 @[expose] public section
@@ -62,7 +60,7 @@ The first part of the factorization of an immersion `f : X ⟶ Y` to a closed im
 -/
 noncomputable
 def Scheme.Hom.liftCoborder (f : X ⟶ Y) [IsImmersion f] : X ⟶ f.coborderRange :=
-  IsOpenImmersion.lift f.coborderRange.ι f (by simpa using subset_coborder)
+  IsOpenImmersion.lift f.coborderRange.ι f (by simpa using! subset_coborder)
 
 /--
 Any (locally-closed) immersion can be factored into
@@ -92,10 +90,10 @@ instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
     simp only [Scheme.Hom.liftCoborder_ι]; infer_instance
   have : IsPreimmersion f.liftCoborder := .of_comp f.liftCoborder f.coborderRange.ι
   refine .of_isPreimmersion _ ?_
-  convert isClosed_preimage_val_coborder
+  convert! isClosed_preimage_val_coborder
   apply Set.image_injective.mpr f.coborderRange.ι.isEmbedding.injective
   rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, f.liftCoborder_ι]
-  exact (Set.image_preimage_eq_of_subset (by simpa using subset_coborder)).symm
+  exact (Set.image_preimage_eq_of_subset (by simpa using! subset_coborder)).symm
 
 instance [IsImmersion f] : IsDominant f.coborderRange.ι := by
   rw [isDominant_iff, DenseRange, Scheme.Opens.range_ι]
@@ -107,6 +105,7 @@ lemma isImmersion_eq_inf : @IsImmersion = (@IsPreimmersion ⊓
 
 namespace IsImmersion
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsZariskiLocalAtTarget @IsImmersion := by
   suffices IsZariskiLocalAtTarget
       (topologically fun {X Y} _ _ f ↦ IsLocallyClosed (Set.range f)) from
@@ -141,6 +140,7 @@ instance : MorphismProperty.IsMultiplicative @IsImmersion where
     simp only [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
     exact f.isLocallyClosed_range.image g.isEmbedding.isInducing g.isLocallyClosed_range
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion f]
     [IsImmersion g] : IsImmersion (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
@@ -155,7 +155,6 @@ lemma isImmersion_iff_exists : IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ 
   ⟨fun _ ↦ ⟨_, f.liftCoborder, f.coborderRange.ι, inferInstance, inferInstance, f.liftCoborder_ι⟩,
     fun ⟨_, _, _, _, _, e⟩ ↦ e ▸ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsImmersion where
   of_isPullback := by
     intro X Y Y' S f g f' g' H hg
@@ -170,9 +169,11 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsI
       (by simpa using H.w.symm)]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion g] : IsImmersion (Limits.pullback.fst f g) :=
   MorphismProperty.pullback_fst _ _ ‹_›
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsImmersion f] : IsImmersion (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ ‹_›
 
@@ -187,7 +188,7 @@ instance (priority := 900) (f : X ⟶ Y) [IsImmersion f] : LocallyOfFiniteType f
   rw [← f.liftCoborder_ι]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 open Limits Scheme.Pullback in
 /-- The diagonal morphism is always an immersion. -/
 @[stacks 01KJ]

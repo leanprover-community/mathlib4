@@ -17,7 +17,6 @@ implication or an iff. It also avoids creating a double negation if there alread
 * `contrapose h` first reverts the local assumption `h`, and then uses `contrapose` and `intro h`
 * `contrapose! h` first reverts the local assumption `h`, and then uses `contrapose!` and `intro h`
 * `contrapose h with new_h` uses the name `new_h` for the introduced hypothesis
-
 -/
 
 public meta section
@@ -125,12 +124,12 @@ elab_rules : tactic
 syntax (name := contrapose!)
   "contrapose!" optConfig (ppSpace colGt ident (" with " ident)?)? : tactic
 
-local elab "try_push_neg" cfg:optConfig : tactic => do
+local elab "try_push_not" cfg:optConfig : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
-    (failIfUnchanged := false)
+    (ifUnchanged := .warning)
 
 macro_rules
-  | `(tactic| contrapose! $cfg) => `(tactic| (contrapose; try_push_neg $cfg))
+  | `(tactic| contrapose! $cfg) => `(tactic| (contrapose; try_push_not $cfg))
   | `(tactic| contrapose! $cfg:optConfig $e) =>
     `(tactic| (revert $e:ident; contrapose! $cfg; intro $e:ident))
   | `(tactic| contrapose! $cfg:optConfig $e with $e') =>

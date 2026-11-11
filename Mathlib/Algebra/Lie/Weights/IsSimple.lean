@@ -5,6 +5,7 @@ Authors: Janos Wolosz
 -/
 module
 
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
@@ -138,6 +139,7 @@ lemma rootSet_apply_coroot_eq_zero_of_notMem_rootSet (I : LieIdeal K L)
     LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker, LinearMap.mem_ker]
   exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker (Submodule.mem_span_singleton_self _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The intersection of a Lie ideal and a Cartan subalgebra is the span of the coroots whose roots
 have root spaces in the ideal. -/
 lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
@@ -172,7 +174,7 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
       ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
       (hspan_I_roots_incl ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
-    have h_sum : (a : L) + b = x := congr_arg Subtype.val hab
+    have h_sum : (a : L) + b = x := congr($(hab).val)
     have h_b_eq : (b : L) = x - a := by rw [← h_sum, add_sub_cancel_left]
     rw [h_b_eq]; exact I.toSubmodule.sub_mem hxI haI
   suffices b = 0 by
@@ -186,7 +188,7 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
     · exact hspan_compl_roots_vanish ⟨μ, hμ_root⟩ hμI hb
     · exact I.root_apply_eq_zero_of_notMem_rootSet hbI hμI
   · simp only [Weight.IsNonZero, not_not] at hμ
-    exact LinearMap.mem_ker.mpr (congr_fun hμ b)
+    exact LinearMap.mem_ker.mpr congr($hμ b)
 
 lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
     {α : H.root} (hα_span : (α : Dual K H) ∈ I.rootSpan) :
@@ -224,12 +226,11 @@ end LieIdeal
 
 namespace LieAlgebra.IsKilling
 
-variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
 open LieAlgebra LieModule Module
-variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
 
--- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
-variable [IsKilling K L] [IsTriangularizable K H L]
+variable {K L : Type*} [Field K] [CharZero K]
+  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L] [IsKilling K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
 section aux
 
@@ -259,7 +260,7 @@ private theorem chi_in_q_aux (h_chi_in_q : ↑χ ∈ q) :
     have h_zero_weight : H.toLieSubmodule.incl y ∈ genWeightSpace L (0 : H → K) := by
       apply toLieSubmodule_le_rootSpace_zero
       exact y.property
-    convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
+    convert! lie_mem_genWeightSpace_of_mem_genWeightSpace hx_χ h_zero_weight
     ext h; simp
   have h_bracket_decomp : ⁅x_χ, m_α⁆ ∈
       genWeightSpace L (χ.toLinear + α.toLinear) ⊔
@@ -324,7 +325,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
     rw [hi] at h_equiv
     exact h_chi_not_in_q (h_equiv.mpr (by
       rw [hj, Weight.toLinear_neg]
-      convert q.smul_mem (-1) hαq using 1
+      convert q.smul_mem (-1) hαq
       rw [neg_smul, one_smul]))
   obtain ⟨i, hi⟩ := exists_root_index χ (Weight.coe_toLinear_ne_zero_iff.mp w_chi)
   obtain ⟨j, hj⟩ := exists_root_index α hα₀
@@ -375,6 +376,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hq hx_χ hαq in
 private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot hα₀) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
@@ -394,7 +396,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
       have hx_χ_neg : x_χ ∈ genWeightSpace L (-α.toLinear) := by
         rw [← (add_eq_zero_iff_eq_neg.mp w_plus)]
         exact hx_χ
-      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simp [ht.f_ne_zero])).mp
+      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨f, hf⟩ (by simp [ht.f_ne_zero])).mp
         (finrank_rootSpace_eq_one (-α) (by simpa using hα₀)) ⟨x_χ, hx_χ_neg⟩
       exact ⟨0, c, 0, by simpa using hc.symm⟩
     apply LieSubalgebra.lie_mem <;> [exact hx_χ_in_sl2; exact hm_α_original]
@@ -406,7 +408,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
       have hx_χ_pos : x_χ ∈ genWeightSpace L α.toLinear := by
         rw [← (sub_eq_zero.mp w_minus)]
         exact hx_χ
-      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨e, he⟩ (by simp [ht.e_ne_zero])).mp
+      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨e, he⟩ (by simp [ht.e_ne_zero])).mp
         (finrank_rootSpace_eq_one α hα₀) ⟨x_χ, hx_χ_pos⟩
       exact ⟨c, 0, 0, by simpa using hc.symm⟩
     apply LieSubalgebra.lie_mem <;> [exact hx_χ_in_sl2; exact hm_α_original]
@@ -557,7 +559,18 @@ theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K
   rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
     (lieIdealOrderIso H).isSimpleOrder_iff]
 
-instance [IsSimple K L] : (rootSystem H).IsIrreducible :=
-  isSimple_iff_isIrreducible.mpr ‹_›
-
 end LieAlgebra.IsKilling
+
+namespace LieAlgebra
+
+open LieModule
+
+variable {K L : Type*} [Field K] [CharZero K]
+  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
+
+instance instIsIrreducibleRootSystem_of_isSimple [IsSimple K L] :
+    (IsKilling.rootSystem H).IsIrreducible :=
+  LieAlgebra.IsKilling.isSimple_iff_isIrreducible.mpr ‹_›
+
+end LieAlgebra

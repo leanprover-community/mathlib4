@@ -5,8 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 
 /-!
 # Euclidean absolute values
@@ -22,7 +22,7 @@ absolute value is compatible with the Euclidean domain structure on its domain.
   mapping negative `x` to `-x`, is Euclidean.
 -/
 
-@[expose] public section
+public section
 
 @[inherit_doc]
 local infixl:50 " ≺ " => EuclideanDomain.r

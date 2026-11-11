@@ -37,10 +37,9 @@ has an antitone involution (e.g., if it is an ordered ring, then negation would 
 then any `ConditionallyCompletePartialOrder{Sup,Inf}` is automatically a
 `ConditionallyCompletePartialOrder`. Because of the `to_dual` attribute, the additional overhead
 required to add and maintain the infimum version is minimal.
-
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {α : Type*}
 
@@ -68,6 +67,9 @@ where every nonempty, directed set which is bounded above (respectively, below) 
 least upper (respectively, greatest lower) bound. -/
 class ConditionallyCompletePartialOrder (α : Type*)
     extends ConditionallyCompletePartialOrderSup α, ConditionallyCompletePartialOrderInf α where
+
+attribute [to_dual existing]
+  ConditionallyCompletePartialOrder.toConditionallyCompletePartialOrderSup
 
 variable [ConditionallyCompletePartialOrderSup α]
 variable {f : ι → α} {s : Set α} {a : α}

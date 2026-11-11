@@ -10,10 +10,9 @@ public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Quotient categories are locally small
-
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

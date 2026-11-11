@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
+
 /-!
 # Noetherian domains have unique factorization
 
@@ -15,11 +16,11 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 - IsNoetherianRing.wfDvdMonoid
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommSemiring R] [IsDomain R]
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherianRing.wfDvdMonoid [h : IsNoetherianRing R] :
     WfDvdMonoid R :=
-  WfDvdMonoid.of_setOf_isPrincipal_wellFoundedOn_gt h.wf.wellFoundedOn
+  WfDvdMonoid.of_setOfPred_isPrincipal_wellFoundedOn_gt h.wf.wellFoundedOn

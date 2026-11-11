@@ -19,12 +19,11 @@ the left and right homotopy relations coincide).
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra, I.1][Quillen1967]
-
 -/
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace HomotopicalAlgebra
 

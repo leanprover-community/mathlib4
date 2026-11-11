@@ -5,15 +5,13 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 
 /-!
-
 # Subring of opposite rings
 
 For every ring `R`, we construct an equivalence between subrings of `R` and that of `Rᵐᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -26,7 +24,7 @@ variable {ι : Sort*} {R : Type*} [NonAssocRing R]
 @[simps! coe toSubsemiring]
 protected def op (S : Subring R) : Subring Rᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
-  neg_mem' {x} hx := neg_mem (show x.unop ∈ S from hx)
+  neg_mem' := by simp
 
 attribute [norm_cast] coe_op
 
@@ -37,7 +35,7 @@ theorem mem_op {x : Rᵐᵒᵖ} {S : Subring R} : x ∈ S.op ↔ x.unop ∈ S :=
 @[simps! coe toSubsemiring]
 protected def unop (S : Subring Rᵐᵒᵖ) : Subring R where
   toSubsemiring := S.toSubsemiring.unop
-  neg_mem' {x} hx := neg_mem (show MulOpposite.op x ∈ S from hx)
+  neg_mem' := by simp
 
 attribute [norm_cast] coe_unop
 
@@ -137,7 +135,7 @@ theorem unop_iInf (S : ι → Subring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i)
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

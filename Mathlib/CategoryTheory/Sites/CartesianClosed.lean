@@ -6,18 +6,16 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
-public import Mathlib.CategoryTheory.Sites.Sheafification
-/-!
 
+/-!
 # Sheaf categories are Cartesian closed
 
 ...if the underlying presheaf category is Cartesian closed, the target category has
 (chosen) finite products, and there exists a sheafification functor.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

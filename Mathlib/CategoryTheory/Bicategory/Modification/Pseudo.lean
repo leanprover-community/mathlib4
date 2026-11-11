@@ -5,8 +5,8 @@ Authors: Calle Sönne
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!
 # Modifications between transformations of pseudofunctors
@@ -24,7 +24,6 @@ Given two pseudofunctors `F` and `G`, we define:
   between `F` and `G`, where the morphisms are modifications, and composition is given by vertical
   composition of modifications. Note that this a scoped instance in the `Pseudofunctor.StrongTrans`
   namespace, so you need to run `open scoped Pseudofunctor.StrongTrans` to access it.
-
 -/
 
 @[expose] public section
@@ -64,7 +63,7 @@ namespace Modification
 
 variable (Γ : Modification η θ)
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- The modification between the corresponding strong transformation of the underlying oplax
 functors. -/
 @[simps]

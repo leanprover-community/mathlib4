@@ -6,7 +6,6 @@ Authors: Adam Topaz, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
@@ -27,7 +26,6 @@ We also define the category of bundled additive functors.
 
 `Functor.Additive` is a `Prop`-valued class, defined by saying that for every two objects `X` and
 `Y`, the map `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of abelian groups.
-
 -/
 
 @[expose] public section
@@ -103,6 +101,10 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
     NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
+omit [F.Additive] in
+lemma additive_iff_of_iso {G : C ⥤ D} (e : F ≅ G) : F.Additive ↔ G.Additive :=
+  ⟨fun _ => additive_of_iso e, fun _ => additive_of_iso e.symm⟩
+
 variable (F)
 
 lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
@@ -119,7 +121,6 @@ lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
     dsimp
     rw [F.map_add]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma additive_of_comp_faithful
     (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
     F.Additive where
@@ -139,10 +140,28 @@ lemma Additive.of_isZero {F : C ⥤ D} (hF : IsZero F) :
   map_add {_ _ _ _} :=
     IsZero.eq_of_tgt (by
       rw [IsZero.iff_id_eq_zero]
-      exact NatTrans.congr_app ((IsZero.iff_id_eq_zero _).1 hF) _) _ _
+      congrm $((IsZero.iff_id_eq_zero _).1 hF).app _) _ _
 
 instance [HasZeroObject D] : Functor.Additive (0 : C ⥤ D) :=
   .of_isZero (isZero_zero _)
+
+omit [Preadditive C] in
+instance (F : D ⥤ E) [F.Additive] : ((Functor.whiskeringRight C D E).obj F).Additive where
+
+omit [Preadditive C] [Preadditive D] in
+instance : (Functor.whiskeringRight C D E).Additive where
+
+omit [Preadditive C] [Preadditive D] in
+instance (F : C ⥤ D) : ((Functor.whiskeringLeft C D E).obj F).Additive where
+
+omit [Preadditive D] in
+instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E ⥤ E')
+    [F.Additive] [G.Additive] : ((Functor.postcompose₂.obj F).obj G).Additive := by
+  dsimp [Functor.postcompose₂]
+  infer_instance
+
+universe w in
+instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
 
 end
 
@@ -192,6 +211,12 @@ instance (priority := 100) preservesFiniteCoproductsOfAdditive [Additive F] :
 instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
     PreservesFiniteProducts F where
   preserves _ := preservesProductsOfShape_of_preservesBiproductsOfShape F
+
+lemma hasFiniteProducts_of_additive_of_essSurj [HasFiniteProducts C] [Additive F]
+    [EssSurj F] : HasFiniteProducts D :=
+  ⟨fun _ ↦ ⟨fun K ↦ hasLimit_of_iso
+    (F := Discrete.functor (fun i ↦ F.objPreimage (K.obj ⟨i⟩)) ⋙ F)
+      (Discrete.natIso (fun _ ↦ F.objObjPreimageIso _))⟩⟩
 
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
@@ -289,30 +314,35 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
 
-lemma leftExactFunctor_le_additiveFunctor :
-    leftExactFunctor C D ≤ additiveFunctor C D :=
+lemma preservesFiniteLimits_le_additiveFunctor :
+    .preservesFiniteLimits ≤ additiveFunctor C D :=
   fun F h ↦ by
-    simp only [leftExactFunctor_iff] at h
+    simp only [ObjectProperty.preservesFiniteLimits_iff] at h
     exact Functor.additive_of_preservesBinaryBiproducts F
 
-lemma rightExactFunctor_le_additiveFunctor :
-    rightExactFunctor C D ≤ additiveFunctor C D :=
+lemma preservesFiniteColimits_le_additiveFunctor :
+    .preservesFiniteColimits ≤ additiveFunctor C D :=
   fun F h ↦ by
-    simp only [rightExactFunctor_iff] at h
+    simp only [ObjectProperty.preservesFiniteColimits_iff] at h
     exact Functor.additive_of_preservesBinaryBiproducts F
+
+@[deprecated (since := "2026-10-28")] alias leftExactFunctor_le_additiveFunctor :=
+  preservesFiniteLimits_le_additiveFunctor
+@[deprecated (since := "2026-10-28")] alias rightExactFunctor_le_additiveFunctor :=
+  preservesFiniteColimits_le_additiveFunctor
 
 lemma exactFunctor_le_additiveFunctor :
     exactFunctor C D ≤ additiveFunctor C D :=
-  (exactFunctor_le_leftExactFunctor C D).trans
-    (leftExactFunctor_le_additiveFunctor C D)
+  (exactFunctor_le_preservesFiniteColimits C D).trans
+    (preservesFiniteColimits_le_additiveFunctor C D)
 
 /-- Turn a left exact functor into an additive functor. -/
 abbrev AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE (leftExactFunctor_le_additiveFunctor C D)
+  ObjectProperty.ιOfLE (preservesFiniteLimits_le_additiveFunctor C D)
 
 /-- Turn a right exact functor into an additive functor. -/
 abbrev AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE (rightExactFunctor_le_additiveFunctor C D)
+  ObjectProperty.ιOfLE (preservesFiniteColimits_le_additiveFunctor C D)
 
 /-- Turn an exact functor into an additive functor. -/
 abbrev AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
@@ -351,13 +381,6 @@ theorem AdditiveFunctor.ofRightExact_map_hom {F G : C ⥤ᵣ D} (α : F ⟶ G) :
 theorem AdditiveFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
-
-@[deprecated (since := "2025-12-18")]
-alias AdditiveFunctor.ofLeftExact_map := AdditiveFunctor.ofLeftExact_map_hom
-@[deprecated (since := "2025-12-18")]
-alias AdditiveFunctor.ofRightExact_map := AdditiveFunctor.ofRightExact_map_hom
-@[deprecated (since := "2025-12-18")]
-alias AdditiveFunctor.ofExact_map := AdditiveFunctor.ofExact_map_hom
 
 end Exact
 

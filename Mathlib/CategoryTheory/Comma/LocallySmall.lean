@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
 
@@ -15,10 +14,9 @@ public import Mathlib.CategoryTheory.EssentiallySmall
 We introduce instances showing that the various comma categories
 are locally small when the relevant categories that are
 involved are locally small.
-
 -/
 
-@[expose] public section
+public section
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 

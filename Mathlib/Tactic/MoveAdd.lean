@@ -6,13 +6,12 @@ Authors: Arthur Paulino, Damiano Testa
 module
 
 public meta import Mathlib.Lean.Meta
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Order.Defs.LinearOrder
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Defs.LinearOrder
 
 /-!
-
 # `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.
@@ -379,6 +378,7 @@ def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
 * an array of `Expr × Bool × Syntax`, as in the output of `parseArrows`,
 * the `Name` `op` of a binary operation,
 * an `Expr`ession `tgt`.
+
 It unifies each `Expr`ession appearing as a first factor of the array with the atoms
 for the operation `op` in the expression `tgt`, returning
 * the lists of pairs of a matched subexpression with the corresponding `Bool`ean;

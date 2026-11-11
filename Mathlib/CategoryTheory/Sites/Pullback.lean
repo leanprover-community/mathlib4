@@ -8,7 +8,8 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Restrict
 public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Continuous
-public import Mathlib.CategoryTheory.Sites.LeftExact
+
+import Mathlib.CategoryTheory.Sites.LeftExact
 
 /-!
 # Pullback of sheaves
@@ -25,7 +26,6 @@ public import Mathlib.CategoryTheory.Sites.LeftExact
   `G` is continuous. In case `G` is representably flat, the pullback functor
   on sheaves commutes with finite limits: this is a morphism of sites in the
   sense of SGA 4 IV 4.9.
-
 -/
 
 @[expose] public section
@@ -72,7 +72,7 @@ def sheafPullback [HasWeakSheafify K A] : Sheaf J A ⥤ Sheaf K A :=
 
 /-- The constructed `sheafPullback G A J K` is left adjoint
 to `G.sheafPushforwardContinuous A J K`. -/
-def sheafAdjunctionContinuous [Functor.IsContinuous G J K] [HasWeakSheafify K A] :
+def sheafAdjunctionContinuous [HasWeakSheafify K A] :
     sheafPullback G A J K ⊣ G.sheafPushforwardContinuous A J K :=
   ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)

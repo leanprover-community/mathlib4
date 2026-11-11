@@ -27,7 +27,6 @@ For example, if `X` is irreducible then this will give back the original scheme 
 
 Prove that for affine schemes this subscheme structure is defined by the kernel of the
 localization away from the union of the other minimal prime ideals.
-
 -/
 
 @[expose] public section
@@ -42,7 +41,7 @@ variable (X : Scheme.{u}) (Z : Set X) (hZ : Z ∈ irreducibleComponents X) [IsNo
 def irreducibleComponentOpen : Opens X :=
   ⟨(⋃₀ (irreducibleComponents X \ {Z}))ᶜ, by
     rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
-    exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.diff.isClosed_biUnion
+    exact TopologicalSpace.NoetherianSpace.finite_irreducibleComponents.sdiff.isClosed_biUnion
       fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1⟩
 
 /-- The ideal sheaf data associated to an irreducible component of a Noetherian scheme. -/
@@ -51,7 +50,7 @@ def irreducibleComponentIdeal : X.IdealSheafData where
   supportSet := Z
   supportSet_eq_iInter_zeroLocus := by
     rw [← IdealSheafData.coe_support_eq_eq_iInter_zeroLocus, Hom.support_ker, Opens.range_ι]
-    exact (closure_sUnion_irreducibleComponents_diff_singleton
+    exact (closure_sUnion_irreducibleComponents_sdiff_singleton
       TopologicalSpace.NoetherianSpace.finite_irreducibleComponents Z hZ).symm
 
 theorem irreducibleComponentIdeal_def :

@@ -19,7 +19,7 @@ relation is automatically transitive (we don't need to take the transitive closu
 **condensation**.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -39,13 +39,11 @@ instance : LE (Quotient s) where
 theorem le_def {x y : α} :
     Quotient.mk s x ≤ Quotient.mk s y ↔ Relation.TransGen (fun x y ↦ x ≤ y ∨ x ≈ y) x y := .rfl
 
-instance : @Std.Refl (Quotient s) (· ≤ ·) where
-  refl x := by
+instance : Preorder (Quotient s) where
+  le_refl x := by
     induction x using Quotient.inductionOn with | h x
     exact .single <| .inr (refl x)
-
-instance : IsTrans (Quotient s) (· ≤ ·) where
-  trans x y z h₁ h₂ := by
+  le_trans x y z h₁ h₂ := by
     induction x using Quotient.inductionOn with | h x
     induction y using Quotient.inductionOn with | h y
     induction z using Quotient.inductionOn with | h z
@@ -58,10 +56,6 @@ instance [@Std.Total α (· ≤ ·)] : @Std.Total (Quotient s) (· ≤ ·) where
     obtain h | h := total_of (· ≤ ·) x y
     · exact .inl <| .single <| .inl h
     · exact .inr <| .single <| .inl h
-
-instance : Preorder (Quotient s) where
-  le_refl := refl
-  le_trans _ _ _ := _root_.trans
 
 end LE
 
@@ -93,7 +87,7 @@ variable [LinearOrder α] [H : ∀ x, OrdConnected (Quotient.mk s ⁻¹' {x})]
 theorem mk_le_mk {x y : α} : Quotient.mk s x ≤ Quotient.mk s y ↔ x ≤ y ∨ x ≈ y := by
   rw [← propext_iff]
   revert x y
-  apply congrFun₂ (Relation.transGen_eq_self ⟨fun x y z h₁ h₂ ↦ ?_⟩)
+  apply congrFun₂ <| @Relation.transGen_eq_self α _ ⟨fun x y z h₁ h₂ ↦ ?_⟩
   cases h₁ <;> cases h₂ <;> rename_i h₁ h₂
   · exact .inl <| h₁.trans h₂
   · rw [or_iff_not_imp_left, not_le]

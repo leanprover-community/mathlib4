@@ -120,11 +120,8 @@ def toRingEquiv : R₁ ≃+* R₂ := .ofRingHom σ σ' comp_eq₂ comp_eq
 
 This is not an instance, as for equivalences that are involutions, a better instance
 would be `RingHomInvPair e e`.
-
-This declaration should not be used as an instance to state a theorem,
-but it may be useful sometimes in the middle of a proof.
 -/
-theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
+lemma of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
 
 /-- Construct a `RingHomInvPair` from both directions of a ring equiv.

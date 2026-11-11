@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # Relative morphisms of simplicial sets
@@ -18,14 +17,15 @@ these relative morphisms and introduce the quotient type of homotopy classes.
 This is used in the file `Mathlib/AlgebraicTopology/SimplicialSet/Homotopy.lean`
 in order to define homotopies (`SSet.Homotopy`) between morphisms in the
 category of simplicial sets.
-
 -/
 
 @[expose] public section
 
 universe u
 
-open CategoryTheory Simplicial MonoidalCategory CartesianMonoidalCategory
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -64,7 +64,7 @@ variable {A B φ} (f g : RelativeMorphism A B φ)
 
 lemma map_eq_of_mem {n : SimplexCategoryᵒᵖ} (a : X.obj n) (ha : a ∈ A.obj n) :
     f.map.app n a = φ.app n ⟨a, ha⟩ :=
-  congr_fun (congr_app f.comm n) ⟨a, ha⟩
+  congr($(f.comm).app n ⟨a, ha⟩)
 
 @[simp]
 lemma map_coe {n : SimplexCategoryᵒᵖ} (a : A.obj n) :

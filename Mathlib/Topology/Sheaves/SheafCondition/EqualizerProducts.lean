@@ -5,8 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!
@@ -144,15 +142,11 @@ def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
       rintro ⟨⟩ ⟨⟩ ⟨⟩
       · simp
       · dsimp
-        ext
-        simp only [leftRes, limit.lift_map, limit.lift_π, Cone.postcompose_obj_π,
-          NatTrans.comp_app, Fan.mk_π_app, Discrete.natIso_hom_app, Iso.app_hom, Category.assoc,
-          NatTrans.naturality, limMap_π_assoc]
+        refine Pi.hom_ext _ _ fun b ↦ ?_
+        simp [leftRes]
       · dsimp [diagram]
-        ext
-        simp only [rightRes, limit.lift_map, limit.lift_π, Cone.postcompose_obj_π,
-          NatTrans.comp_app, Fan.mk_π_app, Discrete.natIso_hom_app, Iso.app_hom, Category.assoc,
-          NatTrans.naturality, limMap_π_assoc]
+        refine Pi.hom_ext _ _ fun b ↦ ?_
+        simp [rightRes]
       · simp)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -166,13 +160,9 @@ def fork.isoOfIso (α : F ≅ G) :
   fapply Fork.ext
   · apply α.app
   · dsimp
-    ext
+    refine Pi.hom_ext _ _ fun b ↦ ?_
     dsimp only [Fork.ι]
-    -- Ugh, `simp` can't unfold abbreviations.
-    simp only [res, diagram.isoOfIso, piOpens.isoOfIso, Cone.postcompose_obj_π,
-      NatTrans.comp_app, fork_π_app_walkingParallelPair_zero, NatIso.ofComponents_inv_app,
-      Functor.mapIso_inv, lim_map, limit.lift_map, Category.assoc, limit.lift_π, Fan.mk_π_app,
-      Discrete.natIso_inv_app, Iso.app_inv, NatTrans.naturality, Iso.hom_inv_id_app_assoc]
+    simp [res, diagram.isoOfIso]
 
 end SheafConditionEqualizerProducts
 
@@ -213,18 +203,19 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
           ext ij
           rcases ij with ⟨i, j⟩
           simpa [SheafConditionEqualizerProducts.leftRes]
-            using c.π.naturality (Quiver.Hom.op (Hom.left i j))
+            using! c.π.naturality (Quiver.Hom.op (Hom.left i j))
         · dsimp
           ext ij
           rcases ij with ⟨i, j⟩
           simpa [SheafConditionEqualizerProducts.rightRes]
-            using c.π.naturality (Quiver.Hom.op (Hom.right i j))
+            using! c.π.naturality (Quiver.Hom.op (Hom.right i j))
         · dsimp
           ext
           simp }
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
@@ -242,6 +233,7 @@ def coneEquivFunctor :
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps]
@@ -289,6 +281,7 @@ def coneEquivInverseObj (c : Limits.Cone (SheafConditionEqualizerProducts.diagra
           rw [F.map_id]
           simp }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
@@ -308,6 +301,7 @@ def coneEquivInverse :
         · dsimp
           rw [← f.w WalkingParallelPair.one, Category.assoc] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps]
@@ -329,12 +323,14 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
 def coneEquivUnitIso :
     𝟭 (Limits.Cone ((diagram U).op ⋙ F)) ≅ coneEquivFunctor F U ⋙ coneEquivInverse F U :=
   NatIso.ofComponents (coneEquivUnitIsoApp F U)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/
 @[simps!]
@@ -368,6 +364,7 @@ def coneEquivCounitIso :
     dsimp
     simp only [Category.comp_id, Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Cones over `diagram U ⋙ F` are the same as a cones over the usual sheaf condition equalizer diagram.
 -/
@@ -380,6 +377,7 @@ def coneEquiv :
   unitIso := coneEquivUnitIso F U
   counitIso := coneEquivCounitIso F U
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `SheafConditionEqualizerProducts.fork` is an equalizer,
 then `F.mapCone (cone U)` is a limit cone.
@@ -416,6 +414,7 @@ def isLimitMapConeOfIsLimitSheafConditionFork
               rw [← F.map_comp]
               rfl } }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `F.mapCone (cone U)` is a limit cone,
 then `SheafConditionEqualizerProducts.fork` is an equalizer.

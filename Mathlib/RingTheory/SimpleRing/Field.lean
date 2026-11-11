@@ -5,9 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.SimpleRing.Basic
-public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Simple ring and fields
@@ -15,14 +14,13 @@ public import Mathlib.Algebra.Field.Equiv
 ## Main results
 - `IsSimpleRing.center_isField`: the center of a simple ring is a field.
 - `isSimpleRing_iff_isField`: a commutative ring is simple if and only if it is a field.
-
 -/
 
 public section
 
 namespace IsSimpleRing
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 open TwoSidedIdeal in
 lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩

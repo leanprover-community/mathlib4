@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.Logic.Small.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer field structures from `α` to `Shrink α`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

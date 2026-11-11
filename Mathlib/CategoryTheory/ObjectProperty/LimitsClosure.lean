@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
@@ -17,7 +16,6 @@ In this file, given a property `P` of objects in a category `C` and
 a family of categories `J : α → Type _`, we introduce the closure
 `P.limitsClosure J` of `P` under limits of shapes `J a` for all `a : α`,
 and under certain smallness assumptions, we show that it is essentially small.
-
 -/
 
 @[expose] public section
@@ -151,6 +149,7 @@ lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     intro c hc
     exact hb' _ hc
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
     [∀ a, Small.{w} (J a)] [∀ a, LocallySmall.{w} (J a)] (b : β)
     [hb₀ : Small.{w} (Set.Iio b)] :
@@ -199,12 +198,12 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
     choose o ho ho' using hF
     obtain ⟨m, hm, hm'⟩ : ∃ (m : Ordinal.{w}) (hm : m < κ.ord), ∀ (j : J a), o j ≤ m := by
       refine ⟨⨆ j, o ((equivShrink.{w} (J a)).symm j),
-          Ordinal.iSup_lt_ord ?_ (fun _ ↦ ho _), fun j ↦ ?_⟩
+        Ordinal.iSup_lt_of_lt_cof ?_ (fun _ ↦ ho _), fun j ↦ ?_⟩
       · rw [hκ.cof_ord, ← hasCardinalLT_iff_cardinal_mk_lt _ κ,
           ← hasCardinalLT_iff_of_equiv (equivShrink.{w} (J a))]
         exact h a
       · obtain ⟨j, rfl⟩ := (equivShrink.{w} (J a)).symm.surjective j
-        exact le_ciSup (Ordinal.bddAbove_range _) _
+        exact le_ciSup Ordinal.bddAbove_of_small _
     refine monotone_transfiniteIterate _ _
       (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J) (Order.succ_le_iff.2 hm) _ ?_
     dsimp

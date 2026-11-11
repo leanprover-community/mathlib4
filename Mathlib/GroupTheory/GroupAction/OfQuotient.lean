@@ -14,10 +14,9 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 Given a `MulAction`/`MulDistribMulAction` of a group `G` on `A` and a normal subgroup `H` of `G`,
 there is a `MulAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on `fixedPoints H A`.
-
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 
@@ -59,7 +58,7 @@ open scoped FixedPoints
 
 variable {α : Type*} [Group α] [MulDistribMulAction G α]
 
-instance : MulDistribMulAction (G ⧸ H) (α^*H) :=
+instance : MulDistribMulAction (G ⧸ H) (FixedPoints.subgroup H α) :=
   inferInstanceAs <| MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H α)
 
 end MulDistribMulAction

@@ -5,12 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
-public import Mathlib.Topology.Order.IsLUB
 
-/-! ## Proper spaces
+import Mathlib.Topology.MetricSpace.Pseudo.Basic
+
+/-! # Proper spaces
 
 ## Main definitions and results
 * `ProperSpace α`: a `PseudoMetricSpace` where all closed balls are compact
@@ -20,16 +20,15 @@ public import Mathlib.Topology.Order.IsLUB
 * `secondCountable_of_proper`: proper spaces are sigma-compact, hence second countable.
 * `locallyCompact_of_proper`: proper spaces are locally compact.
 * `pi_properSpace`: finite products of proper spaces are proper.
-
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {X ι : Type*}
+variable {α : Type u} {β : Type v} {X : Type*}
 
 section ProperSpace
 
@@ -40,8 +39,10 @@ class ProperSpace (α : Type u) [PseudoMetricSpace α] : Prop where
   isCompact_closedBall : ∀ x : α, ∀ r, IsCompact (closedBall x r)
 
 export ProperSpace (isCompact_closedBall)
+attribute [compactness .] isCompact_closedBall
 
 /-- In a proper pseudometric space, all spheres are compact. -/
+@[compactness .]
 theorem isCompact_sphere {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
     IsCompact (sphere x r) :=
   (isCompact_closedBall x r).of_isClosed_subset isClosed_sphere sphere_subset_closedBall

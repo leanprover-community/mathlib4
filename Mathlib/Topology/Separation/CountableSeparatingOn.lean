@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.CountableSeparatingOn
 public import Mathlib.Topology.Separation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Countable separating families of sets in topological spaces
 
@@ -15,7 +18,7 @@ In this file we show that a T₀ topological space with second countable
 topology has a countable family of open (or closed) sets separating the points.
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*}
 

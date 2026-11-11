@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
-public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 /-!
 # The homology sequence
@@ -15,7 +14,6 @@ In this file, we construct `homologyFunctor C n : DerivedCategory C ⥤ C` for a
 show that they are homological functors which form a shift sequence, and construct
 the long exact homology sequences associated to distinguished triangles in the
 derived category.
-
 -/
 
 @[expose] public section
@@ -83,6 +81,22 @@ lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X �
     dsimp
     infer_instance
   · exact Localization.inverts Qh (HomotopyCategory.quasiIso _ _) _
+
+lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
+    IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
+  refine ⟨fun hf n ↦ inferInstance, fun hf ↦ ?_⟩
+  refine ((MorphismProperty.isomorphisms (DerivedCategory C)).arrow_iso_iff
+    (Qh.mapArrow.objObjPreimageIso (Arrow.mk f))).1 ?_
+  let g := Qh.mapArrow.objPreimage (Arrow.mk f)
+  change IsIso (Qh.map g.hom)
+  rw [isIso_Qh_map_iff, HomotopyCategory.mem_quasiIso_iff]
+  intro n
+  have e : Arrow.mk ((homologyFunctor C n).map f) ≅
+      Arrow.mk ((HomotopyCategory.homologyFunctor _ _ n).map g.hom) :=
+    ((homologyFunctor C n).mapArrow.mapIso
+      ((Qh.mapArrow.objObjPreimageIso (Arrow.mk f)).symm)) ≪≫
+      ((Functor.mapArrowFunctor _ _).mapIso (homologyFunctorFactorsh C n)).app (Arrow.mk g.hom)
+  exact ((MorphismProperty.isomorphisms C).arrow_iso_iff e).1 (hf n)
 
 instance (n : ℤ) : (homologyFunctor C n).IsHomological :=
   Functor.isHomological_of_localization Qh

@@ -7,11 +7,14 @@ module
 
 public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The complete lattice structure on two-sided ideals
 -/
 
-@[expose] public section
+public section
 
 namespace TwoSidedIdeal
 

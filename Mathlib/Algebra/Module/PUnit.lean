@@ -9,13 +9,16 @@ public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.Algebra.Ring.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances on PUnit
 
 This file collects facts about module structures on the one-element type
 -/
 
-@[expose] public section
+public section
 
 namespace PUnit
 

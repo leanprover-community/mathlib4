@@ -5,11 +5,9 @@ Authors: Nailin Guan, Yuyang Zhao
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Closure
-public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
-
 # Main definitions and results
 
 In a field extension `K/k`
@@ -23,7 +21,6 @@ In a field extension `K/k`
 ## TODO
 
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
-
 -/
 
 @[expose] public section

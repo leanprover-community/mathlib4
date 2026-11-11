@@ -13,10 +13,9 @@ public import Mathlib.Algebra.Star.Basic
 
 This file provides basic results about the star on product types defined in
 `Mathlib/Algebra/Notation/Prod.lean`.
-
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
