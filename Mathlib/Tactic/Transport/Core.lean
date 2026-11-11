@@ -14,6 +14,12 @@ public import Mathlib.Tactic.Common
 
 -- TODO: version of `getRel` that checks that the relation is a transport relation.
 
+@[expose]
+public def FunctionRel {α β : Type*} {γ : β → Type*} {δ : α → Type*}
+    (r : α → β → Prop) (r' : ∀ {a b}, γ b → δ a → Prop)
+    (g : ∀ b, γ b) (f : ∀ a, δ a) : Prop :=
+  ∀ {a b}, r a b → r' (g b) (f a)
+
 meta section
 
 open Mathlib Tactic GRewrite
@@ -56,7 +62,7 @@ structure TransportHyp where
   and whether it appears in both.
   This information is used to infer suitable names when introducing these variables. -/
   hypsPos : List (Option Nat)
-  relHyps : Array (Nat × Nat × Nat)
+  relHyps : Array (Nat × Nat × Nat × Bool)
   /-- Whether the order of the two varying arguments is the opposite from in the conclusion. -/
   isContra : Bool
 
@@ -122,13 +128,13 @@ initialize transportExt : SimpleScopedEnvExtension TransportLemma TransportLemma
 structure Context where
   translateType : Expr → MetaM Expr
   lemmas : TransportLemmas
-  relHyps : FVarIdMap Expr := {}
+  relHyps : FVarIdMap (Expr × Bool) := {}
 
 abbrev TransportM := ReaderT Context GCongrM
 
-def withRelHyps {α} (hyps : Array (FVarId × Expr)) (k : TransportM α) : TransportM α := do
+def withRelHyps {α} (hyps : Array (FVarId × Expr × Bool)) (k : TransportM α) : TransportM α := do
   for (f, h) in hyps do
-    trace[Meta.grewrite] "`{Expr.fvar f}` satisfies `{← inferType h}`"
+    trace[Meta.grewrite] "`{Expr.fvar f}` satisfies `{← inferType h.1}`"
   withReader (fun c ↦ { c with relHyps := c.relHyps.insertMany hyps }) k
 
 -- structure LCtx where
@@ -161,7 +167,8 @@ In the main subgoals, the forall binders are introduced. They are named using th
 binder names are preserved in the goal.
 -/
 def applyGCongrLemma (g : MVarId) (lem : TransportLemma) :
-    TransportM (Array (MVarId × Array (FVarId × FVarId × FVarId) × Bool) × Array MVarId) := do
+    TransportM
+      (Array (MVarId × Array (FVarId × FVarId × FVarId × Bool) × Bool) × Array MVarId) := do
   let proof ← lem.getValue
   let type ← inferType proof
   let (mvars, bis, type) ← forallMetaBoundedTelescope type lem.numHyps
@@ -201,7 +208,7 @@ def applyGCongrLemma (g : MVarId) (lem : TransportLemma) :
     let lambdaNames := if lhsNames.size ≥ rhsNames.size then lhsNames else rhsNames
     let names := h.hypsPos.map (·.elim `_ (lambdaNames.getD · `_))
     let (fvarIds, mvarId) ← mvarId.introN h.hypsPos.length names
-    let relHyps := h.relHyps.map fun (i, j, k) ↦ (fvarIds[i]!, fvarIds[j]!, fvarIds[k]!)
+    let relHyps := h.relHyps.map fun (i, j, k, b) ↦ (fvarIds[i]!, fvarIds[j]!, fvarIds[k]!, b)
     return (mvarId, relHyps, h.isContra)
   return (mainGoals, sideGoals)
 where
@@ -315,10 +322,10 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
             unless fvarIds.any (fun f ↦ lhsVars.contains f || rhsVars.contains f) do
               if let some (idxL, idxR) := pairs[(l, r)]? then
                 pairs := pairs.erase (l, r)
-                relHyps := relHyps.push (idxL, idxR, i)
+                relHyps := relHyps.push (idxL, idxR, i, true)
               else if let some (idxR, idxL) := pairs[(r, l)]? then
                 pairs := pairs.erase (r, l)
-                relHyps := relHyps.push (idxR, idxL, i)
+                relHyps := relHyps.push (idxR, idxL, i, false)
       unless pairs.isEmpty do
         return none
       let some lhsIdx := hyps.idxOf? lhs | return none
@@ -470,12 +477,13 @@ mutual
 /-- Recursively call `transportCore` to process a subgoal of a `gcongr` lemma.
 
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
-partial def processTransportHypothesis (goal : MVarId) (relHyps : Array (FVarId × FVarId × FVarId))
+partial def processTransportHypothesis (goal : MVarId)
+    (relHyps : Array (FVarId × FVarId × FVarId × Bool))
     (forward : Bool) : TransportM Bool := do
   goal.withContext do
   let relHyps :=
-    if forward then relHyps.map fun (i, _, k) ↦ (i, .fvar k)
-    else relHyps.map fun (_, j, k) ↦ (j, .fvar k)
+    if forward then relHyps.map fun (i, _, k, b) ↦ (i, .fvar k, b)
+    else relHyps.map fun (_, j, k, b) ↦ (j, .fvar k, !b)
   withRelHyps relHyps do
   let some (relName, rel?, lhs, rhs) := getRel' (← goal.getType) |
     throwError "internal `grewrite` error: invalid `gcongr` goal {goal}"
@@ -530,6 +538,32 @@ partial def processGCongrLemma (e : Expr) (rel? : Option Expr) (lem : TransportL
       dischargeSide mvarId
   return (result, goal)
 
+partial def useHypRel (hyp : Expr) (goal : MVarId) (forward : Bool) : TransportM Bool := do
+  let type := (← instantiateMVars (← inferType hyp)).headBeta
+  logInfo m!"checking out {hyp} : {type} vs {← goal.getType}"
+  if type.isAppOfArity ``FunctionRel 8 then
+    let (mvars, _, type) ← withDefault <| forallMetaTelescopeReducing type (some 3)
+    logInfo m!"type {type}"
+    if ← useHypRel (mkAppN hyp mvars) goal forward then
+      logInfo m!"1 {← inferType mvars[2]!}"
+      let some (relKind, rel?, lhs, rhs) := getRel' (← instantiateMVars (← inferType mvars[2]!))
+        | return false
+      let e ← instantiateMVars <| if forward then rhs else lhs
+      logInfo m!"2 `{rel?}` `{e}`, {forward}"
+      let some (result, proof) ← transportCore relKind rel? e forward
+        | return false
+      logInfo "3"
+      let mvar := if forward then lhs else rhs
+      unless ← isDefEq (← inferType result) (← inferType mvar) do
+        return false
+      logInfo "4"
+      goal.assign proof
+      return true
+  if ← isDefEq (← goal.getType) type then
+    goal.assign hyp
+    return true
+  return false
+
 /-- The core of the `grw` implementation. Rewrite in the expression `e` which occurs under the
 relation `relName`/`rel?`, using the `GRewriteLemma` stored in `MetaM`.
 If `e` itself cannot be rewritten, descend into subexpressions of `e` using `@[gcongr]` lemmas.
@@ -550,17 +584,19 @@ partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (f
     {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
   let e := e.cleanupAnnotations
   if let .fvar fvarId := e.getAppFn then
-    if let some hyp := (← read).relHyps.get? fvarId then
+    if let some (hyp, forward') := (← read).relHyps.get? fvarId then
       let mctx ← getMCtx
       let (mvar, goal) ← makeGCongrGoal rel? e forward
-      let applied ←
-        -- TODO: don't use apply? Just use `exact`?
-        -- We use `withImplicit` to see through `PiRel`.
-        try withImplicit <| List.isEmpty <$> goal.mvarId!.apply hyp
-        catch _ => pure false
-      if applied then
-        trace[Meta.grewrite] "rewriting `{e}` to `{mvar}`"
-        return some (← instantiateMVars mvar, goal)
+      logInfo m!"{forward}, {forward'}, {hyp}"
+      if let some goal' ←
+        if forward != forward' then
+          try some <$> goal.mvarId!.applySymm catch _ => pure none
+        else
+          pure <| some goal.mvarId! then
+        logInfo m!"{forward}, {forward'}, {hyp}"
+        if ← useHypRel hyp goal' forward' then
+          trace[Meta.grewrite] "rewriting `{e}` to `{mvar}`"
+          return some (← instantiateMVars mvar, goal)
       setMCtx mctx
   -- Try all applicable `@[transport]` lemmas.
   let lemmas ← findTransportLemmas? relKind e.toHeadIndex forward e.headNumArgs
@@ -593,7 +629,7 @@ partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (f
 
 partial def transportEqCore (e : Expr) : TransportM (Option (Expr × Expr)) := fun c c' s ↦ do
   let methods := { pre e := do
-    unless e.isApp || e.isForall do return .continue
+    unless e.isApp || e.isForall || e.isFVar do return .continue
     -- TODO: avoid running `inferType` on each visited expression.
     let α ← inferType e
     let some (e', pf) ←
@@ -601,6 +637,7 @@ partial def transportEqCore (e : Expr) : TransportM (Option (Expr × Expr)) := f
       return .continue
     return .done { expr := e', proof? := pf }
     }
+  logInfo m!"8"
   let (r, _) ← Simp.main e (← Simp.mkContext Simp.neutralConfig) (methods := methods)
   return r.proof?.map (r.expr, ·)
 
