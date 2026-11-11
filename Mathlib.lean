@@ -444,6 +444,7 @@ public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.PNatPowAssoc
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.Pi.Units
