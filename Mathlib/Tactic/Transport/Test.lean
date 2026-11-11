@@ -24,7 +24,7 @@ How to transfer from `Set` to `Finset`?
 
 -/
 
-attribute [transport] mt Or.imp exists_imp forall_imp
+attribute [transport] mt Or.imp -- exists_imp forall_imp
   Mathlib.Tactic.GCongr.imp_mono Mathlib.Tactic.GCongr.and_mono
 
 namespace TransportTest
@@ -39,12 +39,137 @@ variable {α β : Type*}
 
 -/
 
-class Transport {α β : Type*} (r : outParam <| α → β → Prop) (map : outParam <| α → β)
+class Transport {α β : Type*} (r : outParam <| α → β → Prop)
 
-variable (α β : Type*) {r : α → β → Prop} {map : α → β} [Transport r map]
+-- instance (α β : Type*) {r : α → β → Prop} [Transport (fun x y ↦ r y x)] : Transport r where
 
-class SemiMapClass [Transport r map] where
+section
+
+class SurjClass (α β : Type*) {r : α → β → Prop} [Transport r] where
+  surj (β) (a : α) : ∃ b : β, r a b
+
+class SurjClass' (α β : Type*) {r : α → β → Prop} [Transport r] where
+  surj (α) (b : β) : ∃ a : α, r a b
+
+variable {α β : Type*} {r : α → β → Prop} [Transport r]
+
+variable (β) in
+lemma surj [SurjClass α β] (a : α) : ∃ b : β, r a b := SurjClass.surj β a
+variable (α) in
+lemma surj' [SurjClass' α β] (b : β) : ∃ a : α, r a b := SurjClass'.surj α b
+
+variable {p : α → Prop} {q : β → Prop}
+
+@[transport intro]
+theorem forall_transport [SurjClass α β]
+    (h : ∀ a b, r a b → q b → p a) :
+    (∀ b, q b) → (∀ a, p a) :=
+  fun h' a ↦ (surj β a).rec fun b hb ↦ h a b hb (h' b)
+
+@[transport intro]
+theorem forall_transport' [SurjClass' α β]
+    (h : ∀ a b, r a b → p a → q b) :
+    (∀ a, p a) → (∀ b, q b) :=
+  fun h' b ↦ (surj' α b).rec fun a ha ↦ h a b ha (h' a)
+
+@[transport intro]
+theorem forall_transport_eq [SurjClass α β] [SurjClass' α β]
+    (h : ∀ a b, r a b → p a = q b) :
+    (∀ a, p a) = (∀ b, q b) :=
+  propext ⟨forall_transport' (h · · · |>.mp), forall_transport (h · · · |>.mpr)⟩
+
+@[transport intro]
+theorem exists_transport [SurjClass α β]
+    (h : ∀ a b, r a b → p a → q b) :
+    (∃ a, p a) → (∃ b, q b) :=
+  fun ⟨a, ha⟩ ↦ (surj β a).rec fun b hb ↦ ⟨b, h a b hb ha⟩
+
+@[transport intro]
+theorem exists_transport' [SurjClass' α β]
+    (h : ∀ a b, r a b → q b → p a) :
+    (∃ b, q b) → (∃ a, p a) :=
+  fun ⟨b, hb⟩ ↦ (surj' α b).rec fun a ha ↦ ⟨a, h a b ha hb⟩
+
+@[transport intro]
+theorem exists_transport_eq [SurjClass α β] [SurjClass' α β]
+    (h : ∀ a b, r a b → p a = q b) :
+    (∃ a, p a) = (∃ b, q b) :=
+  propext ⟨exists_transport (h · · · |>.mp), exists_transport' (h · · · |>.mpr)⟩
+
+end
+
+section
+
+class InjClass (α β : Type*) {r : α → β → Prop} [Transport r] where
+  inj {a b b'} : r a b → r a b' → b = b'
+
+class InjClass' (α β : Type*) {r : α → β → Prop} [Transport r] where
+  inj {a a' b} : r a b → r a' b → a = a'
+
+variable {α β : Type*} {r : α → β → Prop} [Transport r]
+
+lemma inj [InjClass α β] {a : α} {b b' : β} (h : r a b) (h' : r a b') : b = b' :=
+  InjClass.inj h h'
+
+lemma inj' [InjClass' α β] {a a' : α} {b : β} (h : r a b) (h' : r a' b) : a = a' :=
+  InjClass'.inj h h'
+
+variable {p : α → Sort*} {q : β → Sort*}
+
+variable {α β : Type*} {r : α → β → Prop} [Transport r]
+
+@[transport intro]
+theorem eq_transport [InjClass α β]
+    {a a' : α} {b b' : β}
+    (h : r a b) (h' : r a' b') : a = a' → b = b' := by
+  rintro rfl
+  exact inj h h'
+
+@[transport intro]
+theorem eq_transport' [InjClass' α β]
+    {a a' : α} {b b' : β}
+    (h : r a b) (h' : r a' b') : b = b' → a = a' := by
+  rintro rfl
+  exact inj' h h'
+
+@[transport intro]
+theorem eq_transport_eq [InjClass α β] [InjClass' α β]
+    {a a' : α} {b b' : β}
+    (h : r a b) (h' : r a' b') : (a = a') = (b = b') :=
+  propext ⟨eq_transport h h', eq_transport' h h'⟩
+
+@[transport intro]
+theorem ne_transport [InjClass α β]
+    {a a' : α} {b b' : β}
+    (h : r a b) (h' : r a' b') : b ≠ b' → a ≠ a' := by
+  contrapose
+  exact eq_transport h h'
+
+@[transport intro]
+theorem ne_transport' [InjClass' α β]
+    {a a' : α} {b b' : β}
+    (h : r a b) (h' : r a' b') : a ≠ a' → b ≠ b' := by
+  contrapose
+  exact eq_transport' h h'
+
+@[transport intro]
+theorem ne_transport_eq [InjClass α β] [InjClass' α β]
+    {a a' : α} {b b' : β}
+    (h : r a b) (h' : r a' b') : (a ≠ a') = (b ≠ b') :=
+  (eq_transport_eq h h').to_iff.ne.eq
+
+end
+
+class MapTransport {α β : Type*} (r : outParam <| α → β → Prop) (map : outParam <| α → β)
+
+variable (α β : Type*) {r : α → β → Prop} {map : α → β}
+
+instance [MapTransport r map] : Transport r where
+
+class SemiMapClass [MapTransport r map] where
   rel_map (a) : r a (map a)
+
+variable [MapTransport r map]
 
 class MapClass extends SemiMapClass α β where
   map_eq_of_rel {a b} : r a b → map a = b
@@ -67,82 +192,44 @@ lemma map_surjective [SurjMapClass α β] : Function.Surjective map := SurjMapCl
 lemma map_bijective [EquivMapClass α β] : Function.Bijective map :=
   ⟨map_injective, map_surjective α⟩
 
-variable {p : α → Sort*} {q : β → Sort*}
+instance [SemiMapClass α β] : SurjClass α β where
+  surj a := ⟨map a, rel_map a⟩
 
-@[transport intro]
-def forall_transport [SemiMapClass α β]
-    (h : ∀ a b, r a b → q b → p a) :
-    (∀ b, q b) → (∀ a, p a) :=
-  fun h' a ↦ h _ _ (rel_map a) (h' (map a))
+instance [SurjMapClass α β] : SurjClass' α β where
+  surj b := by rcases map_surjective α b with ⟨b, rfl⟩; use b, rel_map b
 
-variable {p : α → Prop} {q : β → Prop}
+instance [MapClass α β] : InjClass α β where
+  inj h h' := by rw [← map_eq_of_rel h, ← map_eq_of_rel h']
 
-@[transport intro]
-theorem exists_transport [SemiMapClass α β]
-    (h : ∀ a b, r a b → p a → q b) :
-    (∃ a, p a) → (∃ b, q b) :=
-  fun ⟨a, ha⟩ ↦ ⟨map a, h _ _ (rel_map a) ha⟩
+instance [InjMapClass α β] : InjClass' α β where
+  inj h h' := map_injective <| (map_eq_of_rel h).trans (map_eq_of_rel h').symm
 
-@[transport intro]
-theorem forall_transport_eq [SurjMapClass α β]
-    (h : ∀ a b, r a b → q b = p a) :
-    (∀ b, q b) = (∀ a, p a) := by
-  refine propext ⟨forall_transport fun _ _ ↦ (h _ _ · |>.mp), ?_⟩
-  intro h' b
-  obtain ⟨a, rfl⟩ := map_surjective α b
-  exact (h _ _ (rel_map a)).mpr (h' a)
+instance [MapClass α β] [SurjClass' α β] : SurjMapClass α β where
+  map_surjective b := by
+    rcases surj' α b with ⟨a, ha⟩
+    use a, map_eq_of_rel ha
 
-@[transport intro]
-theorem exists_transport_eq [SurjMapClass α β]
-    (h : ∀ a b, r a b → p a = q b) :
-    (∃ a, p a) = (∃ b, q b) := by
-  refine propext ⟨exists_transport fun _ _ ↦ (h _ _ · |>.mp), ?_⟩
-  intro ⟨b, h'⟩
-  obtain ⟨a, rfl⟩ := map_surjective α b
-  use a
-  exact (h _ _ (rel_map a)).mpr h'
+instance [MapClass α β] [InjClass' α β] : InjMapClass α β where
+  map_injective a a' h :=
+    inj' (b := map a) (rel_map a) (h ▸ rel_map a')
+
+
+instance : MapTransport (@Eq α) (·) where
+
+instance : EquivMapClass α α where
+  rel_map _ := rfl
+  map_eq_of_rel := id
+  map_injective := Function.injective_id
+  map_surjective := Function.surjective_id
+
 
 end MapClass
-
-section Eq
-
-variable {α β : Type*} {r : α → β → Prop} {map : α → β} [Transport r map]
-
-@[transport intro]
-theorem eq_transport [MapClass α β]
-    {a a' : α} {b b' : β}
-    (h : r a b) (h' : r a' b') : a = a' → b = b' := by
-  rintro rfl
-  rw [← map_eq_of_rel h, ← map_eq_of_rel h']
-
-@[transport intro]
-theorem eq_transport_eq [InjMapClass α β]
-    {a a' : α} {b b' : β}
-    (h : r a b) (h' : r a' b') : (a = a') = (b = b') := by
-  refine propext ⟨eq_transport h h', ?_⟩
-  rintro rfl
-  exact map_injective <| (map_eq_of_rel h).trans (map_eq_of_rel h').symm
-
-@[transport intro]
-theorem ne_transport [MapClass α β]
-    {a a' : α} {b b' : β}
-    (h : r a b) (h' : r a' b') : b ≠ b' → a ≠ a' := by
-  contrapose
-  exact eq_transport h h'
-
-@[transport]
-theorem ne_transport_eq [InjMapClass α β]
-    {a a' : α} {b b' : β}
-    (h : r a b) (h' : r a' b') : (a ≠ a') = (b ≠ b') :=
-  (eq_transport_eq h h').to_iff.ne.eq
-
-end Eq
 
 def MapRel {α β : Type*} (map : α → β) (a : α) (b : β) : Prop := map a = b
 
 namespace MapRel
 
-variable {α β : Type*} {map : α → β} [Transport (MapRel map) map]
+variable {α β : Type*} {map : α → β} [MapTransport (MapRel map) map]
 
 instance : MapClass α β where
   rel_map _ := by rfl
@@ -164,29 +251,43 @@ inductive OptionRel (r : α → β → Prop) : Option α → Option β → Prop 
   | none : OptionRel r none none
   | some {a b} : r a b → OptionRel r (some a) (some b)
 
-variable (r : α → β → Prop) {map : α → β}
+variable (r : α → β → Prop)
 
-instance [Transport r map] : Transport (OptionRel r) (.map map) where
+instance [Transport r] : Transport (OptionRel r) where
 
-variable [Transport r map]
+instance [Transport r] [SurjClass α β] : SurjClass (Option α) (Option β) where
+  surj
+    | none => ⟨none, .none⟩
+    | some a => (surj β a).rec fun b hb ↦ ⟨some b, .some hb⟩
 
-instance [SemiMapClass α β] : SemiMapClass (Option α) (Option β) where
-  rel_map
-    | none => .none
-    | some a => .some (rel_map a)
+instance [Transport r] [SurjClass' α β] : SurjClass' (Option α) (Option β) where
+  surj
+    | none => ⟨none, .none⟩
+    | some b => (surj' α b).rec fun a ha ↦ ⟨some a, .some ha⟩
 
-instance [MapClass α β] : MapClass (Option α) (Option β) where
-  map_eq_of_rel
-    | .none => congr(none)
-    | .some h => congr(some $(map_eq_of_rel h))
+instance [Transport r] [InjClass α β] : InjClass (Option α) (Option β) where
+  inj
+    | .none, .none => congr(none)
+    | .some h₁, .some h₂ => congr(some $(inj h₁ h₂))
 
-instance [InjMapClass α β] : InjMapClass (Option α) (Option β) where
-  map_injective := Option.map_injective map_injective
+instance [Transport r] [InjClass' α β] : InjClass' (Option α) (Option β) where
+  inj
+    | .none, .none => congr(none)
+    | .some h₁, .some h₂ => congr(some $(inj' h₁ h₂))
 
--- TODO:
--- instance [SurjMapClass α β] : SurjMapClass (Option α) (Option β) where
---   rel_surj := by sorry
+-- variable {map : α → β}
 
+-- instance [MapTransport r map] : MapTransport (OptionRel r) (.map map) where
+
+-- instance [MapTransport r map] [SemiMapClass α β] : SemiMapClass (Option α) (Option β) where
+--   rel_map
+--     | none => .none
+--     | some a => .some (rel_map a)
+
+-- instance [MapTransport r map] [MapClass α β] : MapClass (Option α) (Option β) where
+--   map_eq_of_rel
+--     | .none => congr(none)
+--     | .some h => congr(some $(map_eq_of_rel h))
 
 @[transport] -- TODO: variable name of `x`/`y` is not preserved
 theorem Option.elim_transport {r : α → β → Prop} {r' : α' → β' → Prop}
@@ -207,59 +308,78 @@ structure ProdRel (r : α → β → Prop) (r' : α' → β' → Prop) (a : α �
   left : r a.1 b.1
   right : r' a.2 b.2
 
-variable (r : α → β → Prop) (r' : α' → β' → Prop) {map : α → β} {map' : α' → β'}
+variable (r : α → β → Prop) (r' : α' → β' → Prop)
 
-instance [Transport r map] [Transport r' map'] : Transport (ProdRel r r') (.map map map') where
+instance [Transport r] [Transport r'] : Transport (ProdRel r r') where
 
-variable [Transport r map] [Transport r' map']
+instance [Transport r] [Transport r'] [SurjClass α β] [SurjClass α' β'] :
+    SurjClass (α × α') (β × β') where
+  surj | (a, a') => (surj β a).rec fun b hb ↦ (surj β' a').rec fun b' hb' ↦ ⟨(b, b'), ⟨hb, hb'⟩⟩
 
-instance [SemiMapClass α β] [SemiMapClass α' β'] : SemiMapClass (α × α') (β × β') where
-  rel_map | (a, b) => ⟨rel_map a, rel_map b⟩
+instance [Transport r] [Transport r'] [SurjClass' α β] [SurjClass' α' β'] :
+    SurjClass' (α × α') (β × β') where
+  surj | (b, b') => (surj' α b).rec fun a ha ↦ (surj' α' b').rec fun a' ha' ↦ ⟨(a, a'), ⟨ha, ha'⟩⟩
 
-instance [MapClass α β] [MapClass α' β'] : MapClass (α × α') (β × β') where
-  map_eq_of_rel | ⟨h, h'⟩ => congr(⟨$(map_eq_of_rel h), $(map_eq_of_rel h')⟩)
+instance [Transport r] [Transport r'] [InjClass α β] [InjClass α' β'] :
+    InjClass (α × α') (β × β') where
+  inj | ⟨h₁, h₁'⟩, ⟨h₂, h₂'⟩ => congr(($(inj h₁ h₂), $(inj h₁' h₂')))
 
-instance [InjMapClass α β] [InjMapClass α' β'] : InjMapClass (α × α') (β × β') where
-  map_injective := Function.Injective.prodMap map_injective map_injective
+instance [Transport r] [Transport r'] [InjClass' α β] [InjClass' α' β'] :
+    InjClass' (α × α') (β × β') where
+  inj | ⟨h₁, h₁'⟩, ⟨h₂, h₂'⟩ => congr(($(inj' h₁ h₂), $(inj' h₁' h₂')))
 
-instance [SurjMapClass α β] [SurjMapClass α' β'] : SurjMapClass (α × α') (β × β') where
-  map_surjective := Function.Surjective.prodMap (map_surjective α) (map_surjective α')
+-- variable {map : α → β} {map' : α' → β'}
 
-instance [EquivMapClass α β] [EquivMapClass α' β'] : EquivMapClass (α × α') (β × β') where
+-- instance [MapTransport r map] [MapTransport r' map'] :
+--     MapTransport (ProdRel r r') (.map map map') where
+
+-- variable [MapTransport r map] [MapTransport r' map']
+
+-- instance [SemiMapClass α β] [SemiMapClass α' β'] : SemiMapClass (α × α') (β × β') where
+--   rel_map | (a, b) => ⟨rel_map a, rel_map b⟩
+
+-- instance [MapClass α β] [MapClass α' β'] : MapClass (α × α') (β × β') where
+--   map_eq_of_rel | ⟨h, h'⟩ => congr(⟨$(map_eq_of_rel h), $(map_eq_of_rel h')⟩)
 
 end Prod
 
 section Pi
 
-variable {ι : Type*} {α β : ι → Type*} (r : ∀ i, α i → β i → Prop) (map : ∀ {i}, α i → β i)
+variable {ι : Type*} {α β : ι → Type*} (r : ∀ i, α i → β i → Prop)
 
 @[expose, implicit_reducible]
 def PiRel (r : ∀ i, α i → β i → Prop) (a : ∀ i, α i) (b : ∀ i, β i) : Prop :=
   ∀ i, r i (a i) (b i)
 
-instance [∀ i, Transport (r i) map] : Transport (PiRel r) (map <| · ·) where
+instance [∀ i, Transport (r i)] : Transport (PiRel r) where
 
-variable [∀ i, Transport (r i) map]
+instance [∀ i, Transport (r i)] [∀ i, SurjClass (α i) (β i)] :
+    SurjClass (∀ i, α i) (∀ i, β i) where
+  surj a := Classical.axiomOfChoice fun i ↦ surj (β i) (a i)
 
-instance [∀ i, SemiMapClass (α i) (β i)] : SemiMapClass (∀ i, α i) (∀ i, β i) where
-  rel_map x := (rel_map <| x ·)
+instance [∀ i, Transport (r i)] [∀ i, SurjClass' (α i) (β i)] :
+    SurjClass' (∀ i, α i) (∀ i, β i) where
+  surj b := Classical.axiomOfChoice fun i ↦ surj' (α i) (b i)
 
-instance [∀ i, MapClass (α i) (β i)] : MapClass (∀ i, α i) (∀ i, β i) where
-  map_eq_of_rel h := congr(fun i ↦ $(map_eq_of_rel (h i)))
+instance [∀ i, Transport (r i)] [∀ i, InjClass (α i) (β i)] :
+    InjClass (∀ i, α i) (∀ i, β i) where
+  inj h h' := funext fun i ↦ inj (h i) (h' i)
 
-instance [∀ i, InjMapClass (α i) (β i)] : InjMapClass (∀ i, α i) (∀ i, β i) where
-  map_injective a b h := by
-    ext i
-    exact map_injective congr($h i)
+instance [∀ i, Transport (r i)] [∀ i, InjClass' (α i) (β i)] :
+    InjClass' (∀ i, α i) (∀ i, β i) where
+  inj h h' := funext fun i ↦ inj' (h i) (h' i)
 
-instance [∀ i, SurjMapClass (α i) (β i)] : SurjMapClass (∀ i, α i) (∀ i, β i) where
-  map_surjective b := by
-    choose x hx using fun i (b : β i) ↦ map_surjective (α i) b
-    use fun i ↦ x i (b i)
-    ext i
-    exact hx i (b i)
+-- variable (map : ∀ {i}, α i → β i)
 
-instance [∀ i, EquivMapClass (α i) (β i)] : EquivMapClass (∀ i, α i) (∀ i, β i) where
+-- instance [∀ i, MapTransport (r i) map] : MapTransport (PiRel r) (map <| · ·) where
+
+-- variable [∀ i, MapTransport (r i) map]
+
+-- instance [∀ i, SemiMapClass (α i) (β i)] : SemiMapClass (∀ i, α i) (∀ i, β i) where
+--   rel_map x := (rel_map <| x ·)
+
+-- instance [∀ i, MapClass (α i) (β i)] : MapClass (∀ i, α i) (∀ i, β i) where
+--   map_eq_of_rel h := congr(fun i ↦ $(map_eq_of_rel (h i)))
 
 end Pi
 
@@ -269,35 +389,52 @@ variable {α β γ : Type*}
 
 -- TODO: make a relation that generalizes both `PiRel` and `FunctionRel`?
 variable (γ) in
-@[implicit_reducible]
+-- @[implicit_reducible]
 def FunctionRel (r : α → β → Prop) (g : β → γ) (f : α → γ) : Prop :=
   ∀ {a b}, r a b → f a = g b
 
-variable (r : α → β → Prop) {map : α → β}
+variable (r : α → β → Prop)
 
-instance [Transport r map] : Transport (FunctionRel γ r) (· <| map ·) where
+instance [Transport r] : Transport (FunctionRel γ r) where
 
-variable [Transport r map]
-
-instance [MapClass α β] : MapClass (β → γ) (α → γ) where
-  rel_map g := by
+instance [Transport r] [InjClass α β] [SurjClass α β] : SurjClass (β → γ) (α → γ) where
+  surj g := by
+    choose x hx using fun a : α ↦ surj β a
+    use (g <| x ·)
     intro a b h
-    exact congr(g $(map_eq_of_rel h))
-  map_eq_of_rel {g f} h := by
-    ext a
-    exact (h (rel_map a)).symm
+    exact congr(g $(inj (hx a) h))
 
-instance [SurjMapClass α β] : InjMapClass (β → γ) (α → γ) where
-  map_injective g g' h := by
+instance [Transport r] [InjClass' α β] [SurjClass' α β] : SurjClass' (β → γ) (α → γ) where
+  surj g := by
+    choose x hx using fun b : β ↦ surj' α b
+    use (g <| x ·)
+    intro a b h
+    symm
+    exact congr(g $(inj' (hx b) h))
+
+instance [Transport r] [SurjClass α β] : InjClass (β → γ) (α → γ) where
+  inj h h' := by
+    ext a
+    rcases surj β a with ⟨b, hb⟩
+    rw [h hb, h' hb]
+
+instance [Transport r] [SurjClass' α β] : InjClass' (β → γ) (α → γ) where
+  inj h h' := by
     ext b
-    obtain ⟨a, rfl⟩ := map_surjective α b
-    exact congr($h a)
+    rcases surj' α b with ⟨a, ha⟩
+    rw [← h ha, h' ha]
 
-instance [EquivMapClass α β] : EquivMapClass (β → γ) (α → γ) where
-  map_surjective f := by
-    use (f <| (Equiv.ofBijective map map_bijective).symm ·)
-    ext a
-    exact congr(f $(Equiv.ofBijective_symm_apply_apply _ _ _))
+-- variable {map : α → β}
+
+-- instance [MapTransport r map] : MapTransport (FunctionRel γ r) (· <| map ·) where
+
+-- instance [MapTransport r map] [MapClass α β] : MapClass (β → γ) (α → γ) where
+--   rel_map g := by
+--     intro a b h
+--     exact congr(g $(map_eq_of_rel h))
+--   map_eq_of_rel {g f} h := by
+--     ext a
+--     exact (h (rel_map a)).symm
 
 end Function
 
@@ -305,46 +442,71 @@ section Set
 
 variable {α β : Type*}
 
-@[implicit_reducible, expose]
 def SetRel (r : α → β → Prop) (t : Set β) (s : Set α) : Prop :=
   ∀ {a b}, r a b → (a ∈ s) = (b ∈ t)
 
-variable (r : α → β → Prop) {map : α → β}
+variable (r : α → β → Prop)
 
-instance [Transport r map] : Transport (SetRel r) ({x | map x ∈ ·}) where
+instance [Transport r] : Transport (SetRel r) where
 
-variable [Transport r map]
-
-instance [MapClass α β] : MapClass (Set β) (Set α) where
-  rel_map s := by
+instance [Transport r] [InjClass α β] [SurjClass α β] : SurjClass (Set β) (Set α) where
+  surj s := by
+    choose f hf using fun a : α ↦ surj β a
+    use {x | f x ∈ s}
     intro a b h
-    exact congr($(map_eq_of_rel h) ∈ s)
-  map_eq_of_rel {g f} h := by
-    ext a
-    exact (h (rel_map a)).symm.to_iff
+    exact congr($(inj (hf a) h) ∈ s)
 
-instance [SurjMapClass α β] : InjMapClass (Set β) (Set α) where
-  map_injective g g' h := by
-    ext b
-    obtain ⟨a, rfl⟩ := map_surjective α b
-    exact congr(a ∈ $h)
+instance [Transport r] [InjClass' α β] [SurjClass' α β] : SurjClass' (Set β) (Set α) where
+  surj s := by
+    choose f hf using fun b : β ↦ surj' α b
+    use {x | f x ∈ s}
+    intro a b h
+    symm
+    exact congr($(inj' (hf b) h) ∈ s)
 
-instance [EquivMapClass α β] : EquivMapClass (Set β) (Set α) where
-  map_surjective s := by
-    use {x | (Equiv.ofBijective map map_bijective).symm x ∈ s}
+instance [Transport r] [SurjClass α β] : InjClass (Set β) (Set α) where
+  inj h h' := by
     ext a
-    exact congr($(Equiv.ofBijective_symm_apply_apply _ _ _) ∈ s)
+    rcases surj β a with ⟨b, hb⟩
+    rw [h hb, h' hb]
+
+-- variable {map : α → β}
+
+-- instance [MapTransport r map] : MapTransport (SetRel r) ({x | map x ∈ ·}) where
+
+-- variable [MapTransport r map]
+
+-- instance [MapClass α β] : MapClass (Set β) (Set α) where
+--   rel_map s := by
+--     intro a b h
+--     exact congr($(map_eq_of_rel h) ∈ s)
+--   map_eq_of_rel {g f} h := by
+--     ext a
+--     exact (h (rel_map a)).symm.to_iff
+
+-- instance [SurjMapClass α β] : InjMapClass (Set β) (Set α) where
+--   map_injective g g' h := by
+--     ext b
+--     obtain ⟨a, rfl⟩ := map_surjective α b
+--     exact congr(a ∈ $h)
+
+-- instance [EquivMapClass α β] : EquivMapClass (Set β) (Set α) where
+--   map_surjective s := by
+--     use {x | (Equiv.ofBijective map map_bijective).symm x ∈ s}
+--     ext a
+--     exact congr($(Equiv.ofBijective_symm_apply_apply _ _ _) ∈ s)
 
 variable {r} {s t : Set α} {s' t' : Set β}
 
+-- TODO: should be able to remove `[Transport r]`?
 @[transport intro]
-theorem Set.transport_mem [SemiMapClass α β] (hs : SetRel r s' s) {a a'} (ha : r a a') :
+theorem Set.transport_mem [Transport r] (hs : SetRel r s' s) {a a'} (ha : r a a') :
     (a ∈ s) = (a' ∈ s') :=
   hs ha
 
 -- TODO: remove this lemma
 @[transport intro]
-theorem Set.transport_mem' [SemiMapClass α β] (hs : SetRel r s' s) {a a'} (ha : r a a') :
+theorem Set.transport_mem' [Transport r] (hs : SetRel r s' s) {a a'} (ha : r a a') :
     (a' ∈ s') = (a ∈ s) :=
   hs ha |>.symm
 
@@ -352,36 +514,41 @@ theorem Set.transport_mem' [SemiMapClass α β] (hs : SetRel r s' s) {a a'} (ha 
 @[transport] theorem Set.transport_empty : SetRel r ∅ ∅ := by simp [SetRel]
 
 @[transport intro]
-theorem Set.transport_subset [SurjMapClass α β] (hs : SetRel r s' s) (ht : SetRel r t' t) :
+theorem Set.transport_subset [Transport r] [SurjClass α β] [SurjClass' α β]
+    (hs : SetRel r s' s) (ht : SetRel r t' t) :
     (s ⊆ t) = (s' ⊆ t') := by
   simp_rw [Set.subset_def]
-  transport α to β
+  transport [hs, ht] α to β
   rfl
 
 @[transport intro]
-theorem Set.transport_ssubset [SurjMapClass α β] (hs : SetRel r s' s) (ht : SetRel r t' t) :
+theorem Set.transport_ssubset [Transport r] [SurjClass α β] [SurjClass' α β]
+    (hs : SetRel r s' s) (ht : SetRel r t' t) :
     (s ⊂ t) = (s' ⊂ t') := by
   simp_rw [Set.ssubset_def]
-  transport β to α
+  transport [hs, ht] β to α
   rfl
 
-variable {ι : Sort*} (s : ι → Set α) (t : ι → Set β)
+variable {ι ι' : Type*} {r' : ι → ι' → Prop} [Transport r'] (s : ι → Set α) (t : ι' → Set β)
 
 @[transport]
-theorem Set.transport_iUnion [SemiMapClass α β] (h : ∀ i, SetRel r (t i) (s i)) :
+theorem Set.transport_iUnion [Transport r] [SurjClass ι ι'] [SurjClass' ι ι']
+    (h : ∀ i i', r' i i' → SetRel r (t i') (s i)) :
     SetRel r (Set.iUnion t) (Set.iUnion s) := by
   intro a b hr
   push _ ∈ _
-  transport α to β
+  transport [h, hr] α to β, ι to ι'
   rfl
 
 @[transport]
-theorem Set.transport_iInter [SemiMapClass α β] (h : ∀ i, SetRel r (t i) (s i)) :
+theorem Set.transport_iInter [SurjClass ι ι'] [SurjClass' ι ι']
+    (h : ∀ i i', r' i i' → SetRel r (t i') (s i)) :
     SetRel r (Set.iInter t) (Set.iInter s) := by
   intro a b hr
   push _ ∈ _
-  transport β to α
-  rfl
+  apply forall_transport_eq
+  intro i i' hi
+  exact h i i' hi hr
 
 end Set
 
@@ -390,6 +557,10 @@ section Finset
 variable {α : Type*}
 
 abbrev FinsetToSetRel : Finset α → Set α → Prop := MapRel (↑)
+
+-- variable {α β : Type*} (r : α → β → Prop)
+
+-- abbrev FinsetToSetRel : Finset β → Set α → Prop := (SetRel r ↑· ·)
 
 variable {s t : Finset α} {s' t' : Set α}
 
@@ -435,7 +606,7 @@ theorem Finset.transport_inter (hs : FinsetToSetRel s s') (ht : FinsetToSetRel t
 
 -- TODO: Nonempty, membership, cardinality.
 
-instance : Transport (@FinsetToSetRel α) (↑) where
+instance : MapTransport (@FinsetToSetRel α) (↑) where
 
 instance : InjMapClass (Finset α) (Set α) := MapRel.instInjMapClass Finset.coe_injective
 
@@ -469,14 +640,14 @@ example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (·.eras
   guard_target = s.elim {a} (· \ {a}) = ∅
   sorry
 
--- In this example, transport cannot eliminate all occurrences of `s`, so it should fails.
+-- In this example, transport cannot eliminate all occurrences of `s`, so it should fail.
 /--
 error: unsolved goals
 α : Type u_1
 s t : Finset α
 s' t' : Set α
 p : Finset α → Prop
-⊢ ∀ (s : Set α), p _fvar.19324 ∧ s = s
+⊢ ∀ (s : Set α), p _fvar.21683 ∧ s = s
 -/
 #guard_msgs in
 example (p : Finset α → Prop) : ∀ s, p s ∧ s = s := by
@@ -491,17 +662,19 @@ def MyCompact (X : Type) [TopologicalSpace X] :=
 variable {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
 
 @[transport intro]
-theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [Transport r map] [SemiMapClass X Y]
+theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [MapTransport r map] [SemiMapClass X Y]
     (hf : Continuous map) {s : Set X} {t : Set Y} (h : SetRel r t s) : IsOpen t → IsOpen s := by
   convert IsOpen.preimage hf
   ext x
   exact (h (rel_map x)).to_iff
 
 -- Yay, this now works!!!
+set_option trace.Meta.synthInstance true in
+set_option trace.Meta.grewrite true in
 example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f)
     (hX : MyCompact X) : MyCompact Y := by
   unfold MyCompact
-  have : Transport (MapRel f) f := ⟨⟩; have := MapRel.instSurjMapClass hf
+  have : MapTransport (MapRel f) f := ⟨⟩; have := MapRel.instSurjMapClass hf
   transport Y to X
   exact hX
 
