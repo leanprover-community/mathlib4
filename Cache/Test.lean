@@ -513,8 +513,8 @@ private def sortedKeys (hashMap : Cache.IO.ModuleHashMap) : List String :=
 /-- `get` with a module of a downstream project (here the package `Down`) selects the Mathlib
 cache modules that it imports, also through other downstream modules, and nothing else.
 
-`Cache/test/downstream.sh` checks this against the real cache. This test covers cases that
-the real cache does not have:
+The `partial` scenario of `Cache/test/downstream.sh` checks this against the real cache. This
+test covers cases that the real cache does not have:
 * `Batteries.X`: a cache module outside the `Mathlib` closure that only a downstream module
   imports.
 * `Mathlib.C`: a cache module that only `Mathlib` imports.

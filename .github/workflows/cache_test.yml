@@ -9,14 +9,16 @@
 #
 # `cache-get` runs `lake exe cache get` against the public cache on Ubuntu
 # 26.04, whose curl 8.18 the tool runs without retries, and on Windows. The
-# main CI runs the tool on neither. The job also runs `Cache/test/downstream.sh`,
-# which tests `cache get` with a module of a downstream project.
+# main CI runs the tool on neither. The job also runs the `partial` scenario of
+# `Cache/test/downstream.sh`: `cache get` with a module of a downstream project.
 name: cache tests
 
 on:
   pull_request:
     paths:
       - 'Cache/**'
+      # The downstream project that `Cache/test/downstream.sh` tests in.
+      - 'DownstreamTest/**'
       # The `cache-test` target and the toolchain it compiles under live here;
       # a bump can break the tool's compilation even with `Cache/` untouched.
       - 'lakefile.lean'
@@ -102,6 +104,11 @@ jobs:
       - name: build cache
         run: lake build cache
 
+      # This step comes first: its build check is complete only in a checkout
+      # without Mathlib oleans.
+      - name: cache get in a downstream project
+        run: bash Cache/test/downstream.sh partial
+
       - name: cache get
         run: |
           curl --version | head -n 1
@@ -113,6 +120,3 @@ jobs:
       - name: check that the tool ran without curl retries
         if: runner.os == 'Linux'
         run: grep "without retries" cache-get.log
-
-      - name: cache get in a downstream project
-        run: bash Cache/test/downstream.sh

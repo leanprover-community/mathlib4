@@ -1180,16 +1180,12 @@ jobs:
         # the cached oleans in a dependency context. The path dependency shares mathlib's
         # `.lake/build`, so Mathlib's oleans are already in place from the steps above;
         # the dependencies' oleans are fetched into `DownstreamTest/.lake/packages/`.
+        # The script comes from `workflow-actions/`, the revision of this workflow, so
+        # that it matches this workflow also on a fork PR branch that predates it.
         if: steps.verify_cache.outputs.key_space_changed != 'true'
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        run: |
-          cd DownstreamTest
-          cp ../lean-toolchain .
-          # Skip mathlib's `post_update` hook, so that the `cache get` below is the one tested.
-          MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
-          lake exe cache --repo="${REPO}" get
-          lake build --no-build Mathlib
+        run: bash workflow-actions/Cache/test/downstream.sh full --repo="${REPO}"
 
       - name: check declarations in db files
         run: |

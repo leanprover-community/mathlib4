@@ -1,106 +1,114 @@
 #!/usr/bin/env bash
-# End-to-end test of `cache get` with a module of a downstream project.
+# Tests the Mathlib cache in `DownstreamTest/`, a downstream project that
+# requires the Mathlib checkout by path.
 #
-# Run it from the root of a Mathlib checkout with no uncommitted changes to
-# tracked files. The test copies
-# `DownstreamTest/` and makes it require Mathlib by git, at this checkout's
-# HEAD. Lake clones Mathlib into `.lake/packages/mathlib`, the same layout as in
-# a real downstream project. `DownstreamTest.Partial` imports Mathlib only
-# through the downstream module `DownstreamTest.Helper`, which imports
-# `Mathlib.Data.Nat.Basic`.
+# Usage: downstream.sh SCENARIO [CACHE_OPTION...]
 #
-# The test runs `lake exe cache get DownstreamTest.Partial` in the copy, with
-# an empty cache directory, and checks that:
-# * the cache has every file that `cache get` asks for, so `cache get` asks
-#   for no file of a downstream module;
-# * `cache get` downloads as many files as `cache get- Mathlib.Data.Nat.Basic`
-#   does in this checkout;
-# * `lake build DownstreamTest.Partial` then builds only the two downstream
-#   modules, so `cache get` got every Mathlib cache file that they need;
-# * a second `cache get DownstreamTest.Partial` downloads and unpacks nothing.
+# Run it from the root of the Mathlib checkout to test. The script sets up
+# `DownstreamTest/`, then runs the scenario. Each CACHE_OPTION, such as
+# `--repo=OWNER/REPO`, goes to every `lake exe cache` call.
 #
-# The test reads the public cache, so it needs network access. If the cache
-# does not have all the files of `Mathlib.Data.Nat.Basic` (for example, before
-# CI builds a toolchain bump), the test stops with a notice and exits 0.
+# Scenarios:
+#
+# full     `cache get` gets the cache for Mathlib and its dependencies. Then
+#          `lake build --no-build Mathlib` checks that Lake accepts the oleans
+#          in the downstream project.
+#
+# partial  `cache get DownstreamTest.Partial` gets the cache for the modules
+#          that `DownstreamTest.Partial` imports. It imports Mathlib only
+#          through the downstream module `DownstreamTest.Helper`, which imports
+#          `Mathlib.Data.Nat.Basic`. The scenario checks that:
+#          * the cache has every file that `cache get` asks for, so `cache get`
+#            asks for no file of a downstream module;
+#          * `cache get` downloads as many files as
+#            `cache get- Mathlib.Data.Nat.Basic` in the Mathlib checkout;
+#          * `lake build DownstreamTest.Partial` then builds only the two
+#            downstream modules;
+#          * a second `cache get` downloads and unpacks nothing.
+#          Both downloads start from an empty cache directory. The build check
+#          is complete only in a checkout without Mathlib oleans. If the cache
+#          does not have all the files of `Mathlib.Data.Nat.Basic` (for
+#          example, before CI builds a toolchain bump), the scenario stops with
+#          a notice and exits 0.
 
 set -euo pipefail
 
-if ! git diff --quiet HEAD --; then
-  echo "::error::The test uses Mathlib at HEAD, but this checkout has uncommitted \
-changes. Commit or stash them first."
-  exit 1
-fi
+full() {
+  lake exe cache "$@" get
+  lake build --no-build Mathlib
+}
 
-# Without this, Mathlib's `post_update` hook gets the whole cache when Lake
-# resolves the dependencies of the downstream project.
-export MATHLIB_NO_CACHE_ON_UPDATE=1
-
-work=$(mktemp -d)
-trap 'rm -rf "$work"' EXIT
-
-# Lake clones Mathlib from a one-commit copy of HEAD. CI checkouts are shallow,
-# and Lake's fetch from a shallow repository does not finish.
-src=$work/mathlib
-mkdir "$src"
-git archive HEAD | tar -x -C "$src"
-git -C "$src" init -q
-git -C "$src" add -A
-git -C "$src" -c user.name=cache-test -c user.email=cache-test@example.invalid \
-  -c commit.gpgsign=false commit -q -m "Mathlib at $(git rev-parse HEAD)"
-rev=$(git -C "$src" rev-parse HEAD)
-# Lake reads the URL in the downstream `lakefile.toml`, so it must be a native
-# path: `pwd -W` gives one in Git Bash on Windows.
-url=$(cd "$src" && (pwd -W 2>/dev/null || pwd))
-
-downstream=$work/DownstreamTest
-cp -R "$src/DownstreamTest" "$downstream"
-cp "$src/lean-toolchain" "$downstream/"
-awk -v url="$url" -v rev="$rev" '
-  /^path = / { print "git = \"" url "\""; print "rev = \"" rev "\""; next }
-  { print }' "$src/DownstreamTest/lakefile.toml" > "$downstream/lakefile.toml"
-
-missing="file(s) were not found in"
 # The number of files in the first download attempt that the log `$1` reports.
 download_count() {
   grep -m 1 -o 'Attempting to download [0-9]*' "$1" | grep -o '[0-9]*$' || true
 }
 
-MATHLIB_CACHE_DIR=$work/reference-cache lake exe cache get- Mathlib.Data.Nat.Basic 2>&1 \
-  | tee "$work/reference.log"
-if grep -q "$missing" "$work/reference.log"; then
-  echo "::notice::The cache does not have all files of Mathlib.Data.Nat.Basic. Skipped the test."
-  exit 0
-fi
-expected=$(download_count "$work/reference.log")
+partial() {
+  local missing expected selected built
+  missing="file(s) were not found in"
+  if [ -d ../.lake/build/lib/lean/Mathlib ]; then
+    echo "::warning::The Mathlib checkout has Mathlib oleans, so the build check cannot show \
+that cache get unpacked them."
+  fi
 
-cd "$downstream"
-export MATHLIB_CACHE_DIR=$work/cache
-lake exe cache get DownstreamTest.Partial 2>&1 | tee get.log
-if grep -q "$missing" get.log; then
-  echo "::error::cache get DownstreamTest.Partial asked for files that the cache does not have."
-  exit 1
-fi
-selected=$(download_count get.log)
-if [ -z "$expected" ] || [ "$selected" != "$expected" ]; then
-  echo "::error::cache get DownstreamTest.Partial downloaded ${selected:-no} files, but \
+  # The reference runs in the Mathlib checkout, so that it does not depend on how `cache`
+  # works in a downstream project.
+  (cd .. && MATHLIB_CACHE_DIR=$work/reference \
+    lake exe cache "$@" get- Mathlib.Data.Nat.Basic) 2>&1 | tee "$work/reference.log"
+  if grep -q "$missing" "$work/reference.log"; then
+    echo "::notice::The cache does not have all files of Mathlib.Data.Nat.Basic. \
+Skipped the partial scenario."
+    return
+  fi
+  expected=$(download_count "$work/reference.log")
+
+  export MATHLIB_CACHE_DIR=$work/cache
+  lake exe cache "$@" get DownstreamTest.Partial 2>&1 | tee "$work/get.log"
+  if grep -q "$missing" "$work/get.log"; then
+    echo "::error::cache get DownstreamTest.Partial asked for files that the cache does not have."
+    exit 1
+  fi
+  selected=$(download_count "$work/get.log")
+  if [ -z "$expected" ] || [ "$selected" != "$expected" ]; then
+    echo "::error::cache get DownstreamTest.Partial downloaded ${selected:-no} files, but \
 cache get- Mathlib.Data.Nat.Basic downloads ${expected:-no} files."
-  exit 1
-fi
+    exit 1
+  fi
 
-lake build DownstreamTest.Partial 2>&1 | tee build.log
-built=$(grep -o 'Built [A-Za-z0-9_.]*' build.log | sed 's/^Built //' | sort || true)
-if [ "$built" != "$(printf 'DownstreamTest.Helper\nDownstreamTest.Partial')" ]; then
-  echo "::error::lake build DownstreamTest.Partial did not build exactly the two downstream \
+  # Remove the downstream oleans of an earlier run, so that Lake builds both downstream
+  # modules.
+  rm -rf .lake/build
+  lake build DownstreamTest.Partial 2>&1 | tee "$work/build.log"
+  built=$(grep -o 'Built [A-Za-z0-9_.]*' "$work/build.log" | sed 's/^Built //' | sort || true)
+  if [ "$built" != "$(printf 'DownstreamTest.Helper\nDownstreamTest.Partial')" ]; then
+    echo "::error::lake build DownstreamTest.Partial did not build exactly the two downstream \
 modules. It built:"
-  echo "$built"
-  exit 1
-fi
+    echo "$built"
+    exit 1
+  fi
 
-lake exe cache get DownstreamTest.Partial 2>&1 | tee get-again.log
-if ! grep -q "No files to download" get-again.log || grep -q "Decompressing" get-again.log; then
-  echo "::error::A second cache get DownstreamTest.Partial downloaded or unpacked files."
-  exit 1
-fi
+  lake exe cache "$@" get DownstreamTest.Partial 2>&1 | tee "$work/get-again.log"
+  if ! grep -q "No files to download" "$work/get-again.log" \
+      || grep -q "Decompressing" "$work/get-again.log"; then
+    echo "::error::A second cache get DownstreamTest.Partial downloaded or unpacked files."
+    exit 1
+  fi
+  echo "cache get DownstreamTest.Partial got the $selected cache files that the downstream \
+modules need."
+}
 
-echo "cache get DownstreamTest.Partial got the $selected Mathlib cache files that the \
-downstream modules need."
+scenario=${1:-}
+case $scenario in
+  full | partial) shift ;;
+  *) echo "Usage: $0 full|partial [CACHE_OPTION...]" >&2; exit 2 ;;
+esac
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+
+cd DownstreamTest
+cp ../lean-toolchain .
+# Without this, Mathlib's `post_update` hook gets the whole cache, and the
+# scenario tests nothing.
+MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
+"$scenario" "$@"
