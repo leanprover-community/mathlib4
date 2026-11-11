@@ -24,7 +24,6 @@ to define only local instances of `ModelCategory`, or to set these instances on 
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * [Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory][goerss-jardine-2009]
 * https://ncatlab.org/nlab/show/model+category
-
 -/
 
 @[expose] public section
@@ -112,7 +111,6 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations 
     ⟨hw.hp, (weakEquivalence_iff _).1 (weakEquivalence_of_precomp_of_fac hw.fac)⟩
   simpa only [weakEquivalence_iff] using (of_retract this h').2
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
 using weak factorization systems. -/
 @[instance_reducible]

@@ -30,7 +30,6 @@ algebras that are graded by a collection `ℒ` of submodules.
 For now we only implement internally-graded Lie algebras; supporting the externally-graded case
 would be achieved by generalizing the `LieRing (⨁ i, ℒ i)` instance to take a family of types,
 and defining a new `GradedMonoid.GBracket` class to provide the data piecewise.
-
 -/
 
 @[expose] public section

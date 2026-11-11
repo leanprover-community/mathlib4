@@ -67,14 +67,14 @@ variable {X : Type*} {T : X → X} {U V : SetRel X X} {m n : ℕ} {F s : Set X} 
 /-- Given a subset `F`, an entourage `U` and an integer `n`, a subset `s` of `F` is a
 `(U, n)`-dynamical net of `F` if no two orbits of length `n` of points in `s` shadow each other. -/
 def IsDynNetIn (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) (s : Set X) : Prop :=
-  s ⊆ F ∧ s.PairwiseDisjoint fun x : X ↦ ball x (dynEntourage T U n)
+  s ⊆ F ∧ s.PairwiseDisjoint fun x : X ↦ (dynEntourage T U n).inv.ball x
 
 lemma IsDynNetIn.of_le (m_n : m ≤ n) (h : IsDynNetIn T F U m s) : IsDynNetIn T F U n s :=
-  ⟨h.1, PairwiseDisjoint.mono h.2 fun x ↦ ball_mono (dynEntourage_antitone T U m_n) x⟩
+  ⟨h.1, PairwiseDisjoint.mono h.2 fun x ↦ by gcongr⟩
 
 lemma IsDynNetIn.of_entourage_subset (U_V : U ⊆ V) (h : IsDynNetIn T F V n s) :
     IsDynNetIn T F U n s :=
-  ⟨h.1, PairwiseDisjoint.mono h.2 fun x ↦ ball_mono (dynEntourage_monotone T n U_V) x⟩
+  ⟨h.1, PairwiseDisjoint.mono h.2 fun x ↦ by gcongr⟩
 
 lemma isDynNetIn_empty : IsDynNetIn T F U n ∅ := ⟨empty_subset F, pairwise_empty _⟩
 
@@ -88,7 +88,8 @@ lemma isDynNetIn_singleton (T : X → X) (U : SetRel X X) (n : ℕ) (h : x ∈ F
 lemma IsDynNetIn.card_le_card_of_isDynCoverOf {s t : Finset X}
     (hs : IsDynNetIn T F U n s) (ht : IsDynCoverOf T F U n t) :
     s.card ≤ t.card := by
-  have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, z ∈ ball x (dynEntourage T U n) := by
+  have (x : X) (x_s : x ∈ s) :
+      ∃ z ∈ t, z ∈ (dynEntourage T U n).inv.ball x := by
     simpa using! ht (hs.1 x_s)
   choose! F s_t using this
   apply Finset.card_le_card_of_injOn F fun x x_s ↦ (s_t x x_s).1
@@ -176,7 +177,7 @@ lemma one_le_netMaxcard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ)
 lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxcard T F U 0 = 1 := by
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F U 0).2 h)
   intro s ⟨_, s_net⟩
-  simp only [ball, dynEntourage_zero, preimage_univ] at s_net
+  simp only [dynEntourage_zero, SetRel.inv_univ] at s_net
   norm_cast
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
@@ -184,7 +185,7 @@ lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxca
 lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F univ n = 1 := by
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F univ n).2 h)
   intro s ⟨_, s_net⟩
-  simp only [ball, dynEntourage_univ, preimage_univ] at s_net
+  simp only [dynEntourage_univ, SetRel.inv_univ] at s_net
   norm_cast
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
@@ -228,7 +229,7 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) [U.IsRefl] [U.IsSymm]
   --  We have to check that `s` is a cover for `dynEntourage T F (U ○ U) n`.
   -- If `s` is not a cover, then we can add to `s` a point `x` which is not covered
   -- and get a new net. This contradicts the maximality of `s`.
-  rw [IsDynCoverOf, isCover_iff_subset_iUnion_ball]
+  rw [IsDynCoverOf, SetRel.isCover_iff_subset_iUnion_ball]
   by_contra h
   obtain ⟨x, x_F, x_uncov⟩ := not_subset.1 h
   simp only [Finset.mem_coe, mem_iUnion, exists_prop, not_exists, not_and] at x_uncov
@@ -240,7 +241,7 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) [U.IsRefl] [U.IsSymm]
   apply larger_net.card_le_netMaxcard.not_gt
   rw [← s_card, Nat.cast_lt]
   refine (lt_add_one s.card).trans_eq (s.card_insert_of_notMem fun x_s ↦ ?_).symm
-  exact x_uncov x x_s (ball_mono (dynEntourage_monotone T n SetRel.left_subset_comp) x <|
+  exact x_uncov x x_s (SetRel.ball_mono (dynEntourage_monotone T n SetRel.left_subset_comp) x <|
     SetRel.rfl (dynEntourage T U n))
 
 /-! ### Net entropy of entourages -/

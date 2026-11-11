@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.Basic
 In this file, it is shown that if `J` and `C` are two categories (such
 that `C` has zero morphisms), then there is an equivalence of categories
 `ShortComplex.functorEquivalence J C : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`.
-
 -/
 
 @[expose] public section
@@ -30,7 +29,6 @@ namespace FunctorEquivalence
 
 attribute [local simp] ShortComplex.Hom.comm₁₂ ShortComplex.Hom.comm₂₃
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The obvious functor `ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C`. -/
 @[simps]
 def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
@@ -40,7 +38,6 @@ def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
   map φ :=
     { app := fun j => ((evaluation J C).obj j).mapShortComplex.map φ }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The obvious functor `(J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C)`. -/
 @[simps]
 def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where

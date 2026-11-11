@@ -15,7 +15,6 @@ import Mathlib.Algebra.Category.Grp.Zero
 
 In this file, we define `isFinite : ObjectProperty AddCommGrpCat` and show
 that it is a Serre class.
-
 -/
 
 @[expose] public section

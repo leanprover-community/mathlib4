@@ -43,7 +43,6 @@ sub-relation of the adjacency relation of the simple graph.
 ## TODO
 
 * Images of graph homomorphisms as subgraphs.
-
 -/
 
 @[expose] public section
@@ -95,7 +94,7 @@ def subgraphOfAdj (G : SimpleGraph V) {v w : V} (hvw : G.Adj v w) : G.Subgraph w
 
 namespace Subgraph
 
-variable {G : SimpleGraph V} {G₁ G₂ : G.Subgraph} {a b : V}
+variable {G : SimpleGraph V} {G' G₁ G₂ : G.Subgraph} {a b : V}
 
 protected theorem loopless (G' : Subgraph G) : Std.Irrefl G'.Adj where
   irrefl _ hadj := G.irrefl <| G'.adj_sub hadj
@@ -244,6 +243,19 @@ def coeNeighborSetEquiv {G' : Subgraph G} (v : G'.verts) :
     G'.coe.neighborSet v ≃ G'.neighborSet v where
   toFun w := ⟨w, w.2⟩
   invFun w := ⟨⟨w, G'.edge_vert (G'.adj_symm w.2)⟩, w.2⟩
+
+theorem image_neighborSet_coe (v : G'.verts) : (↑) '' G'.coe.neighborSet v = G'.neighborSet v := by
+  ext
+  simpa using Adj.snd_mem
+
+@[simp]
+theorem neighborSet_coe (v : G'.verts) : G'.coe.neighborSet v = (↑) ⁻¹' G'.neighborSet v := by
+  simp [← image_neighborSet_coe]
+
+variable (G') in
+@[simp]
+theorem neighborSet_spanningCoe (v : V) : G'.spanningCoe.neighborSet v = G'.neighborSet v := by
+  congr!
 
 /-- The edge set of `G'` consists of a subset of edges of `G`. -/
 def edgeSet (G' : Subgraph G) : Set (Sym2 V) := Sym2.fromRel G'.symm
@@ -832,8 +844,7 @@ theorem coe_degree (G' : Subgraph G) (v : G'.verts) [Fintype (G'.coe.neighborSet
 @[simp]
 theorem degree_spanningCoe {G' : G.Subgraph} (v : V) [Fintype (G'.neighborSet v)]
     [Fintype (G'.spanningCoe.neighborSet v)] : G'.spanningCoe.degree v = G'.degree v := by
-  rw [← card_neighborSet_eq_degree, Subgraph.degree]
-  congr!
+  simp [← card_neighborSet_eq_degree, degree]
 
 theorem degree_pos_iff_exists_adj {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)] :
     0 < G'.degree v ↔ ∃ w, G'.Adj v w := by
@@ -1274,6 +1285,64 @@ lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') := by
 
 lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
   exact (sup_le_iff.mp le_induce_union).2
+
+variable (G') in
+theorem le_induce_iUnion (s : ι → Set V) : ⨆ i, G'.induce (s i) ≤ G'.induce (⋃ i, s i) :=
+  iSup_le fun i ↦ induce_mono_right <| le_iSup s i
+
+variable (G') in
+@[simp]
+theorem induce_inter : G'.induce (s ∩ s') = G'.induce s ⊓ G'.induce s' := by
+  ext u v
+  · simp
+  · grind [induce_adj, inf_adj]
+
+variable (G') in
+@[simp]
+theorem induce_iInter [Nonempty ι] (s : ι → Set V) :
+    G'.induce (⋂ i, s i) = ⨅ i, G'.induce (s i) := by
+  ext u v
+  · simp
+  · rw [iInf_adj]
+    refine ⟨fun h ↦ ?_, fun ⟨h, _⟩ ↦ ?_⟩
+    · grind [induce_adj, Set.mem_iInter, adj_sub]
+    · grind [induce_adj, Set.mem_iInter, h <| Classical.arbitrary ι]
+
+variable (G' G'' s) in
+@[simp]
+theorem induce_sup : (G' ⊔ G'').induce s = G'.induce s ⊔ G''.induce s := by
+  ext
+  · simp
+  · grind [induce_adj, sup_adj]
+
+variable (s) in
+@[simp]
+theorem induce_iSup [Nonempty ι] (G' : ι → G.Subgraph) :
+    (⨆ i, G' i).induce s = ⨆ i, (G' i).induce s := by
+  ext <;> simp
+
+variable (G' G'' s) in
+@[simp]
+theorem induce_inf : (G' ⊓ G'').induce s = G'.induce s ⊓ G''.induce s := by
+  ext
+  · simp
+  · grind [induce_adj, inf_adj]
+
+variable (s) in
+@[simp]
+theorem induce_iInf [Nonempty ι] (G' : ι → G.Subgraph) :
+    (⨅ i, G' i).induce s = ⨅ i, (G' i).induce s := by
+  ext u v
+  · simp
+  · rw [iInf_adj]
+    refine ⟨fun h ↦ ?_, fun ⟨h, _⟩ ↦ ?_⟩
+    · grind [induce_adj, iInf_adj]
+    · grind [induce_adj, iInf_adj, h <| Classical.arbitrary ι]
+
+theorem induce_eq_inf_of_subset_verts (hs : s ⊆ G'.verts) : G'.induce s = G' ⊓ induce ⊤ s := by
+  ext u v
+  · simpa using @hs u
+  · grind [induce_adj, inf_adj, top_adj, adj_sub]
 
 theorem singletonSubgraph_eq_induce {v : V} :
     G.singletonSubgraph v = (⊤ : G.Subgraph).induce {v} := by

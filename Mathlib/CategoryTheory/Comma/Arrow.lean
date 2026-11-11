@@ -147,13 +147,11 @@ lemma ext {f g : Arrow T}
     (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g :=
   (mk_eq_mk_iff _ _).2 (by simp_all)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma arrow_mk_comp_eqToHom {X Y Y' : T} (f : X ⟶ Y) (h : Y = Y') :
     Arrow.mk (f ≫ eqToHom h) = Arrow.mk f :=
   ext rfl h.symm (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma arrow_mk_eqToHom_comp {X' X Y : T} (f : X ⟶ Y) (h : X' = X) :
     Arrow.mk (eqToHom h ≫ f) = Arrow.mk f :=
@@ -185,19 +183,16 @@ to_dual_for homMk' := homMk' v u
 
 attribute [to_dual none] homMk'_left homMk'_right
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none, reassoc]
 theorem w_mk_left {X Y : T} {f : X ⟶ Y} {g : Arrow T} (sq : mk f ⟶ g) :
     dsimp% sq.left ≫ g.hom = f ≫ sq.right :=
   sq.w
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none, reassoc (attr := simp)]
 theorem w_mk_right {f : Arrow T} {X Y : T} {g : X ⟶ Y} (sq : f ⟶ mk g) :
     dsimp% sq.left ≫ g = f.hom ≫ sq.right :=
   sq.w
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none, reassoc]
 theorem w_mk {X Y X' Y' : T} {f : X ⟶ Y} {g : X' ⟶ Y'} (sq : mk f ⟶ mk g) :
     dsimp% sq.left ≫ g = f ≫ sq.right :=
@@ -271,7 +266,6 @@ theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.h
   simp only [w, IsIso.inv_comp_eq]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual epi_right]
 instance mono_left [Mono sq] : Mono sq.left where
   right_cancellation {Z} φ ψ h := by
@@ -311,7 +305,6 @@ theorem square_from_iso_invert {X Y : T} (i : X ≅ Y) (p : Arrow T) (sq : Arrow
 
 variable {C : Type u} [Category.{v} C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A helper construction: given a square between `i` and `f ≫ g`, produce a square between
 `i` and `g`, whose top leg uses `f`:
 ```
@@ -333,7 +326,6 @@ def leftFunc : Arrow C ⥤ C where
   obj := Arrow.left
   map := Arrow.Hom.left
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation from `leftFunc` to `rightFunc`, given by the arrow itself. -/
 @[simps]
 def leftToRight : (leftFunc : Arrow C ⥤ C) ⟶ rightFunc where app f := f.hom
@@ -376,7 +368,6 @@ def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   unitIso := Functor.mapIso (mapArrowFunctor C C) e.unitIso
   counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
 
-set_option backward.defeqAttrib.useBackward true in
 instance essSurj_mapArrow (F : C ⥤ D) [F.Full] [F.EssSurj] :
     F.mapArrow.EssSurj where
   mem_essImage f :=
@@ -392,7 +383,6 @@ end Functor
 
 variable {C D : Type*} [Category* C] [Category* D]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The images of `f : Arrow C` by two isomorphic functors `F : C ⥤ D` are
 isomorphic arrows in `D`. -/
 def Arrow.isoOfNatIso {F G : C ⥤ D} (e : F ≅ G)

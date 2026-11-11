@@ -60,7 +60,6 @@ The definitions of conditional independence in this file are a particular case o
 respect to a kernel and a measure, as defined in the file
 `Mathlib/Probability/Independence/Kernel.lean`.
 The kernel used is `ProbabilityTheory.condExpKernel`.
-
 -/
 
 @[expose] public section
@@ -620,7 +619,6 @@ end FromPiSystemsToMeasurableSpaces
 section CondIndepSet
 
 /-! ### Conditional independence of measurable sets
-
 -/
 
 variable {m' m₁ m₂ : MeasurableSpace Ω} {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω]
@@ -649,7 +647,6 @@ end CondIndepSet
 section CondIndepFun
 
 /-! ### Conditional independence of random variables
-
 -/
 
 variable {β β' : Type*} {m' : MeasurableSpace Ω}
@@ -1006,14 +1003,6 @@ theorem iCondIndepFun.condIndepFun_finsetProd_of_notMem
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     CondIndepFun m' hm' (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
-
-@[deprecated (since := "2026-04-08")]
-alias iCondIndepFun.condIndepFun_finset_sum_of_notMem :=
-  iCondIndepFun.condIndepFun_finsetSum_of_notMem
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias iCondIndepFun.condIndepFun_finset_prod_of_notMem :=
-  iCondIndepFun.condIndepFun_finsetProd_of_notMem
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_prod_range_succ {f : ℕ → Ω → β}

@@ -18,7 +18,6 @@ we define `SmallHom.{w} W X Y : Type w` as the shrunk type. For any localization
 functor `L : C ⥤ D` for `W`, we provide a bijection
 `SmallHom.equiv.{w} W L : SmallHom.{w} W X Y ≃ (L.obj X ⟶ L.obj Y)` that is compatible
 with the composition of morphisms.
-
 -/
 
 @[expose] public section
@@ -262,7 +261,6 @@ noncomputable def smallHomMap (f : SmallHom.{w} W₁ X Y) :
       ((CatCommSq.iso Φ.functor W₁.Q W₂.Q _).symm.app _)
       ((Φ.localizedFunctor W₁.Q W₂.Q).map ((SmallHom.equiv W₁ W₁.Q) f)))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
     (f : SmallHom.{w} W₁ X Y) :
     (SmallHom.equiv W₂ L₂) (Φ.smallHomMap f) =
@@ -337,7 +335,6 @@ noncomputable def smallHomMap' (f : SmallHom.{w} W₁ X Y) :
   have := hasSmallLocalizedHom_of_isos.{w'} W₂ (Iso.refl X') eX.symm
   (SmallHom.mk _ eX.inv).comp ((Φ.smallHomMap f).comp (SmallHom.mk _ eY.hom))
 
-set_option backward.defeqAttrib.useBackward true in
 lemma equiv_smallHomMap' (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
     (f : SmallHom.{w} W₁ X Y) :
     SmallHom.equiv W₂ L₂ (Φ.smallHomMap' eX eY f) =

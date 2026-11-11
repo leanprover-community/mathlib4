@@ -31,7 +31,6 @@ We follow the signs conventions appearing in the introduction of
 
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
-
 -/
 
 @[expose] public section
@@ -236,7 +235,6 @@ It is advisable to use a `p₂` that has good definitional properties
 
 When `z₁` or `z₂` is a `0`-cochain, there is a better choice of `p₂`, and this leads
 to the two simplification lemmas `comp_zero_cochain_v` and `zero_cochain_comp_v`.
-
 -/
 
 lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
@@ -725,7 +723,6 @@ def toCochainLinearMap : Cocycle K L n →ₗ[R] Cochain K L n where
   map_add' := by simp
   map_smul' := by simp
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (L n) in
 /-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
@@ -783,14 +780,20 @@ lemma δ_ofHom_comp {n : ℤ} (f : F ⟶ G) (z : Cochain G K n) (m : ℤ) :
   rw [← Cocycle.ofHom_coe, δ_zero_cocycle_comp]
 
 /-- The precomposition of a cocycle with a morphism of cochain complexes. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def Cocycle.precomp {n : ℤ} (z : Cocycle G K n) (f : F ⟶ G) : Cocycle F K n :=
   Cocycle.mk ((Cochain.ofHom f).comp z (zero_add n)) _ rfl (by simp)
 
 /-- The postcomposition of a cocycle with a morphism of cochain complexes. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def Cocycle.postcomp {n : ℤ} (z : Cocycle F G n) (f : G ⟶ K) : Cocycle F K n :=
   Cocycle.mk (z.1.comp (Cochain.ofHom f) (add_zero n)) _ rfl (by simp)
+
+/-- The composition of two cocycles. -/
+@[implicit_reducible, simps!]
+def Cocycle.comp {a b c : ℤ} (z₁ : Cocycle F G a) (z₂ : Cocycle G K b) (h : a + b = c := by lia) :
+    Cocycle F K c :=
+  Cocycle.mk (z₁.1.comp z₂.1 h) _ rfl (by simp [δ_comp])
 
 namespace Cochain
 
@@ -986,7 +989,7 @@ noncomputable def HomComplex.Cocycle.isKernel' (hm : n + 1 = m) :
     IsLimit (KernelFork.ofι (f := (linearHomComplex R K L).d n m)
       (ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L _)) (by cat_disch)) :=
   isLimitOfReflects (forget₂ _ (AddCommGrpCat.{v}))
-    ((KernelFork.isLimitMapConeEquiv ..).2 (Cocycle.isKernel K L n m hm))
+    ((KernelFork.isLimitMapConeEquiv ..).invFun (Cocycle.isKernel K L n m hm))
 
 variable (R K L) in
 lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
@@ -994,6 +997,6 @@ lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
     dsimp% (((Cocycle.isKernel' R K L m p hp).lift
       (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp))) x).1 = δ n m x :=
   congr($((Cocycle.isKernel' R K L m p hp).fac
-      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).1 x)
+      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).hom' x)
 
 end CochainComplex

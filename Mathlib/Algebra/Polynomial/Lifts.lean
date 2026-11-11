@@ -39,7 +39,6 @@ In general `R` and `S` are semirings, so `lifts` is a semiring. In the case of r
 
 Since we do not assume `R` to be commutative, we cannot say in general that the set of polynomials
 that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
-
 -/
 
 @[expose] public section
@@ -129,10 +128,8 @@ theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈
   intro k
   by_cases hk : k = n
   · use 0
-    simp only [hk, map_zero, erase_same]
-  obtain ⟨i, hi⟩ := h k
-  use i
-  simp only [hi, hk, erase_ne, Ne, not_false_iff]
+    simp [hk]
+  · simpa [hk] using h k
 
 section LiftDeg
 
@@ -155,7 +152,8 @@ theorem exists_support_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
   have hq : map f q = p := by simp_rw [q, Polynomial.map_sum, map_monomial, hg, ← as_sum_support]
   have hq' : q.support = p.support := by
     simp_rw [Finset.ext_iff, mem_support_iff, q, finsetSum_coeff, coeff_monomial,
-      Finset.sum_ite_eq', ite_ne_right_iff, mem_support_iff, and_iff_left_iff_imp, not_imp_not]
+      Finsupp.single_apply, Finset.sum_ite_eq', ite_ne_right_iff, mem_support_iff,
+      and_iff_left_iff_imp, not_imp_not]
     exact fun k h ↦ by rw [← hg, h, map_zero]
   exact ⟨q, hq, hq'⟩
 

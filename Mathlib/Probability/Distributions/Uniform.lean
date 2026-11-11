@@ -22,28 +22,21 @@ Defines the uniform distribution for any set with finite measure.
 
 ## Uniform probability mass functions
 
-This file defines a number of uniform `PMF` distributions from various inputs,
-  uniformly drawing from the corresponding object.
+This file defines a number of uniform distributions from various inputs,
+uniformly drawing from the corresponding object.
 
 ### Main definitions
-`PMF.uniformOfFinset` gives each element in the set equal probability,
-  with `0` probability for elements not in the set.
+`uniformOfFinset` gives each element in the set equal probability,
+with `0` probability for elements not in the set.
 
-`PMF.uniformOfFintype` gives all elements equal probability,
-  equal to the inverse of the size of the `Fintype`.
-
-`PMF.ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
-  Each probability is given by the count of the element divided by the size of the `Multiset`
-
-## TODO
-* Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
+`ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
+Each probability is given by the count of the element divided by the size of the `Multiset`
 -/
 
 @[expose] public section
 
 open scoped Finset MeasureTheory NNReal ENNReal
 
--- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` scope :(
 open TopologicalSpace MeasureTheory.Measure PMF ProbabilityTheory
 
 noncomputable section
@@ -154,8 +147,8 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s P) :
     (s.indicator_mul_right (fun x => ↑‖x‖₊) ind).symm
   simp only [ind, this, lintegral_indicator hcs.measurableSet, mul_one, smul_eq_mul,
     Pi.one_apply, Pi.smul_apply]
-  rw [lintegral_mul_const _ measurable_enorm]
-  exact ENNReal.mul_ne_top (setLIntegral_lt_top_of_isCompact hnt.2 hcs continuous_nnnorm).ne
+  rw [lintegral_mul_const _ measurable_eNorm]
+  exact ENNReal.mul_ne_top (setLIntegral_lt_top_of_isCompact hnt.2 hcs continuous_nnNorm).ne
     (ENNReal.inv_lt_top.2 (pos_iff_ne_zero.mpr hnt.1)).ne
 
 /-- A real uniform random variable `X` with support `s` has expectation
@@ -211,7 +204,7 @@ open scoped Classical in
 @[simp]
 theorem uniformOfFinset_apply_singleton (a : α) :
     uniformOfFinset s {a} = if a ∈ s then (s.card : ℝ≥0∞)⁻¹ else 0 := by
-  rw [uniformOfFinset, finsetSum_apply]
+  rw [uniformOfFinset, sum_apply]
   split_ifs with ha
   · rw [Finset.sum_eq_single_of_mem a ha]
     · simp
@@ -220,7 +213,7 @@ theorem uniformOfFinset_apply_singleton (a : α) :
     simp
     grind
 
-@[deprecated (since := "2026-10-04")] alias _root_.uniformOfFinset_apply :=
+@[deprecated (since := "2026-10-04")] alias _root_.PMF.uniformOfFinset_apply :=
   uniformOfFinset_apply_singleton
 
 theorem uniformOfFinset_apply_singleton_of_mem (ha : a ∈ s) :
@@ -251,7 +244,7 @@ theorem uniformOfFinset_apply :
     uniformOfFinset s t = #{x ∈ s | x ∈ t} / #s :=
   calc
     uniformOfFinset s t = ∑ x ∈ s with x ∈ t, (#s : ℝ≥0∞)⁻¹ := by
-      rw [uniformOfFinset, finsetSum_apply, Finset.sum_filter]
+      rw [uniformOfFinset, sum_apply, Finset.sum_filter]
       refine Finset.sum_congr rfl fun x hx ↦ ?_
       split_ifs with hx' <;> simp_all
     _ = #{x ∈ s | x ∈ t} / #s := by
@@ -306,10 +299,10 @@ open scoped Classical in
 @[simp]
 theorem ofMultiset_apply_singleton (a : α) : ofMultiset s {a} = s.count a / (Multiset.card s) := by
   by_cases ha : a ∈ s
-  · rw [ofMultiset, finsetSum_apply, Finset.sum_eq_single_of_mem a (by simpa)]
+  · rw [ofMultiset, sum_apply, Finset.sum_eq_single_of_mem a (by simpa)]
     · simp
     · simp +contextual
-  · rw [ofMultiset, finsetSum_apply, Finset.sum_eq_zero]
+  · rw [ofMultiset, sum_apply, Finset.sum_eq_zero]
     · simp [ha]
     · simp
       grind
