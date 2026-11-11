@@ -635,7 +635,6 @@ theorem iIndep_iSup_of_disjoint {ι' : Type*} {m : ι → MeasurableSpace Ω}
   | empty =>
     intro f _
     filter_upwards [h_indep.ae_isProbabilityMeasure] with a ha
-    haveI := ha
     simp
   | @insert a s' ha ih =>
     intro f hf
