@@ -13,7 +13,7 @@ public import Mathlib.Basic.SetLike.Basic
 This file defines several typeclasses for lattice operations that agree with the
 set operation described by a `Membership` instance.
 
-We also prove lemmas about lattice operations agreeing with set membership operations.
+We also prove lemmas about lattice operations agreeing with set operations.
 
 ## Main definitions
 
