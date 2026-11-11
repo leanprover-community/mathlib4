@@ -40,14 +40,11 @@ variable [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [IsPrope
   [NonUnitalContinuousFunctionalCalculus ℂ A IsStarNormal]
 
 /-- If `a` is normal and `a ⋆⟂ b`, then `cfcₙ f a ⋆⟂ b`. -/
-lemma cfcₙ_complex_left (f : ℂ → ℂ) (h : a ⋆⟂ b) (ha : IsStarNormal a := by cfc_tac)
-    (hf : ContinuousOn f (quasispectrum ℂ a) := by cfc_cont_tac)
-    (hf0 : f 0 = 0 := by cfc_zero_tac) :
-    cfcₙ f a ⋆⟂ b := by
+lemma cfcₙ_complex_left (f : ℂ → ℂ) (h : a ⋆⟂ b) : cfcₙ f a ⋆⟂ b := by
+  refine cfcₙ_cases (· ⋆⟂ b) a f (by simp) fun hf hf0 ha ↦ ?_
   have := isCompact_iff_compactSpace.mp <|
     NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (R := ℂ) (p := IsStarNormal) a
   have h' := h.star_left_of_isStarNormal ha
-  rw [cfcₙ_apply f a]
   constructor
   · refine ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero _ _
       (by simpa using h.mul_star_eq_zero) ?_ (cfcₙHom_continuous ha) _
@@ -57,10 +54,7 @@ lemma cfcₙ_complex_left (f : ℂ → ℂ) (h : a ⋆⟂ b) (ha : IsStarNormal 
     simpa [map_star] using h'.star_mul_eq_zero
 
 /-- If `b` is normal and `a ⋆⟂ b`, then `a ⋆⟂ cfcₙ f b`. -/
-lemma cfcₙ_complex_right (f : ℂ → ℂ) (h : a ⋆⟂ b) (hb : IsStarNormal b := by cfc_tac)
-    (hf : ContinuousOn f (quasispectrum ℂ b) := by cfc_cont_tac)
-    (hf0 : f 0 = 0 := by cfc_zero_tac) :
-    a ⋆⟂ cfcₙ f b :=
+lemma cfcₙ_complex_right (f : ℂ → ℂ) (h : a ⋆⟂ b) : a ⋆⟂ cfcₙ f b :=
   (h.symm.cfcₙ_complex_left f).symm
 
 end Complex
@@ -71,13 +65,10 @@ variable [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 /-- If `a` is selfadjoint and `a ⋆⟂ b`, then `cfcₙ f a ⋆⟂ b`. -/
-lemma cfcₙ_real_left (f : ℝ → ℝ) (h : a ⋆⟂ b) (ha : IsSelfAdjoint a := by cfc_tac)
-    (hf : ContinuousOn f (quasispectrum ℝ a) := by cfc_cont_tac)
-    (hf0 : f 0 = 0 := by cfc_zero_tac) :
-    cfcₙ f a ⋆⟂ b := by
+lemma cfcₙ_real_left (f : ℝ → ℝ) (h : a ⋆⟂ b) : cfcₙ f a ⋆⟂ b := by
+  refine cfcₙ_cases (· ⋆⟂ b) a f (by simp) fun hf hf0 ha ↦ ?_
   have := isCompact_iff_compactSpace.mp <|
     NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (R := ℝ) (p := IsSelfAdjoint) a
-  rw [cfcₙ_apply f a]
   constructor
   · refine ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero _ _ ?_ ?_
       (cfcₙHom_continuous ha) _
@@ -87,10 +78,7 @@ lemma cfcₙ_real_left (f : ℝ → ℝ) (h : a ⋆⟂ b) (ha : IsSelfAdjoint a 
     all_goals simpa [map_star, cfcₙHom_id ha, ha.star_eq] using h.star_mul_eq_zero
 
 /-- If `b` is selfadjoint and `a ⋆⟂ b`, then `a ⋆⟂ cfcₙ f b`. -/
-lemma cfcₙ_real_right (f : ℝ → ℝ) (h : a ⋆⟂ b) (hb : IsSelfAdjoint b := by cfc_tac)
-    (hf : ContinuousOn f (quasispectrum ℝ b) := by cfc_cont_tac)
-    (hf0 : f 0 = 0 := by cfc_zero_tac) :
-    a ⋆⟂ cfcₙ f b :=
+lemma cfcₙ_real_right (f : ℝ → ℝ) (h : a ⋆⟂ b) : a ⋆⟂ cfcₙ f b :=
   (h.symm.cfcₙ_real_left f).symm
 
 variable [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
@@ -98,23 +86,13 @@ variable [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
 open scoped NNReal
 
 /-- If `a` is nonnegative and `a ⋆⟂ b`, then `cfcₙ f a ⋆⟂ b`. -/
-lemma cfcₙ_nnreal_left (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) (ha : 0 ≤ a := by cfc_tac)
-    (hf : ContinuousOn f (quasispectrum ℝ≥0 a) := by cfc_cont_tac)
-    (hf0 : f 0 = 0 := by cfc_zero_tac) :
-    cfcₙ f a ⋆⟂ b := by
-  rw [cfcₙ_nnreal_eq_real f a]
-  refine h.cfcₙ_real_left _ (.of_nonneg ha) ?_ (by simpa)
-  refine NNReal.continuous_coe.comp_continuousOn <|
-    hf.comp continuous_real_toNNReal.continuousOn fun x hx ↦ ?_
-  rw [← (QuasispectrumRestricts.nnreal_of_nonneg ha).algebraMap_image] at hx
-  obtain ⟨y, hy, rfl⟩ := hx
-  simpa
+lemma cfcₙ_nnreal_left (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) : cfcₙ f a ⋆⟂ b := by
+  refine cfcₙ_cases (· ⋆⟂ b) a f (by simp) fun hf hf0 ha ↦ ?_
+  rw [← cfcₙ_apply f a, cfcₙ_nnreal_eq_real f a]
+  exact h.cfcₙ_real_left _
 
 /-- If `b` is nonnegative and `a ⋆⟂ b`, then `a ⋆⟂ cfcₙ f b`. -/
-lemma cfcₙ_nnreal_right (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) (hb : 0 ≤ b := by cfc_tac)
-    (hf : ContinuousOn f (quasispectrum ℝ≥0 b) := by cfc_cont_tac)
-    (hf0 : f 0 = 0 := by cfc_zero_tac) :
-    a ⋆⟂ cfcₙ f b :=
+lemma cfcₙ_nnreal_right (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) : a ⋆⟂ cfcₙ f b :=
   (h.symm.cfcₙ_nnreal_left f).symm
 
 open CFC
