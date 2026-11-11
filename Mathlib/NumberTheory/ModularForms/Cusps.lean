@@ -395,8 +395,7 @@ end Ring
 lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictPeriods (Γ : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 := by
   ext x
-  simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix,
-    map_apply_coe]
+  simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix]
   refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr($hg 0 1)⟩, ?_⟩
   rintro ⟨m, rfl⟩
   refine ⟨ModularGroup.T ^ m, zpow_mem hΓ m, ?_⟩
@@ -457,7 +456,9 @@ lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : Modular
 
 @[simp] lemma widthInfty_SL2Z : widthInfty 𝒮ℒ = 1 := by
   rw [widthInfty, adjoinNegOne_eq_self_iff.mpr, strictWidthInfty_SL2Z]
-  exact ⟨-1, by ext; simp⟩
+  refine ⟨-1, ?_⟩
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp
 
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
@@ -628,7 +629,7 @@ namespace CongruenceSubgroup
     apply AddSubgroup.mem_map_of_mem
     rwa [Int.mem_zmultiples_iff, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
   · simp only [AddSubgroup.mem_map, AddSubgroup.mem_zmultiples_iff, existsAndEq, true_and,
-      Units.ext_iff, mapGL_coe_matrix, map_apply_coe, forall_exists_index]
+      Units.ext_iff, mapGL_coe_matrix, forall_exists_index]
     refine fun a ha ↦ ⟨ModularGroup.T ^ (a * N), by simp [ModularGroup.coe_T_zpow], ?_⟩
     ext i j
     fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow, ← ha]
