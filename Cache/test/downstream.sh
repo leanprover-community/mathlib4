@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # End-to-end test of `cache get` with a module of a downstream project.
 #
-# Run it from the root of a Mathlib checkout in which `lake build cache` has
-# run, with no uncommitted changes to tracked files. The test copies
+# Run it from the root of a Mathlib checkout with no uncommitted changes to
+# tracked files. The test copies
 # `DownstreamTest/` and makes it require Mathlib by git, at this checkout's
 # HEAD. Lake clones Mathlib into `.lake/packages/mathlib`, the same layout as in
 # a real downstream project. `DownstreamTest.Partial` imports Mathlib only
@@ -11,8 +11,8 @@
 #
 # The test runs `lake exe cache get DownstreamTest.Partial` in the copy, with
 # an empty cache directory, and checks that:
-# * `cache get` asks for no file that the cache does not have, so it asks for
-#   no file of a downstream module;
+# * the cache has every file that `cache get` asks for, so `cache get` asks
+#   for no file of a downstream module;
 # * `cache get` downloads as many files as `cache get- Mathlib.Data.Nat.Basic`
 #   does in this checkout;
 # * `lake build DownstreamTest.Partial` then builds only the two downstream
@@ -38,8 +38,8 @@ export MATHLIB_NO_CACHE_ON_UPDATE=1
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 
-# Lake clones Mathlib from a one-commit copy of HEAD. Lake cannot clone from a
-# shallow repository, and CI checkouts are shallow.
+# Lake clones Mathlib from a one-commit copy of HEAD. CI checkouts are shallow,
+# and Lake's fetch from a shallow repository does not finish.
 src=$work/mathlib
 mkdir "$src"
 git archive HEAD | tar -x -C "$src"

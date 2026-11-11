@@ -29,7 +29,7 @@ def IRDIR : FilePath :=
 
 /--
 Determine if `mod` is part of Lean core: `Init`, `Lean`, `Std` or `Lake`.
-These modules come with the toolchain, so the cache never needs to follow their imports.
+The toolchain has these packages, and their imports are only other toolchain modules.
 -/
 def isInLeanCore (mod : Name) : Bool :=
   #[`Init, `Lean, `Std, `Lake].contains mod.getRoot

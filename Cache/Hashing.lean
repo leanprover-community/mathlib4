@@ -21,11 +21,9 @@ Mathlib cache.
 * From a module in the Mathlib cache, it visits only the imports in the Mathlib cache.
   These are the imports that go into the module's hash.
 * From a module outside the Mathlib cache (for example, a module of a downstream project
-  given as an argument), it visits all imports outside Lean core. Such a module has no hash,
-  but this lets `cache` find the cache modules it imports through other downstream modules.
-
-Additionally, the `HashMemo` contains the `rootHash`, which reflects changes to Mathlib's
-Lake project settings.
+  given as an argument), it visits all imports outside Lean core. Such a module has no hash.
+  Its imports lead `cache` to the cache modules that it imports through other downstream
+  modules.
 -/
 public structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
@@ -40,10 +38,7 @@ public structure HashMemo where
   deriving Inhabited
 
 /--
-Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
-* Belongs to the given list of module names or
-* Corresponds to a module that's imported (transitively or not) by
-  some module in the list module names
+The entries of `hashMap` for `modules` and the modules that they import, transitively.
 
 A module without a hash is not in the result, but its imports are. Thus, for a module outside
 the Mathlib cache, the result contains the cache modules that it imports.
@@ -55,7 +50,7 @@ public def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Na
       if isPartOfMathlibCache mod then
         IO.println s!"{mod} is not covered by the olean cache."
       else
-        IO.println s!"{mod} is not part of the olean cache: getting the olean cache for its \
+        IO.println s!"{mod} is not in the olean cache. `cache get` gets the olean cache for its \
           imports."
   let mut hashMap := ∅
   let mut visited : Std.HashSet Name := ∅
@@ -81,11 +76,11 @@ def visitsImport (mod imp : Name) : Bool :=
 /--
 Read the imports from the raw file `content` and return an array of tuples
 `(module name, source file)`, one per import for which `keep` is `true`.
-With `skipUnknown`, an import that no package in the search path has is left out with a
-warning. Otherwise, such an import is an error.
+With `skipUnknown`, `getFileImports` prints a warning and leaves out an import that no package
+in the search path has. Without it, such an import gets the result of `findLeanSource`: an error
+for an unknown package, or a path that does not exist.
 
-Note: `fileName` is a string which is purely used for displaying an error message if
-parsing imports from `content` should fail. It is intended to be the file's name.
+`fileName` names the file in the messages: the parse error and the warning.
 -/
 def getFileImports (content : String) (keep : Name → Bool) (fileName : String := "")
     (skipUnknown := false) : CacheM <| Array (Name × FilePath) := do
@@ -97,8 +92,8 @@ def getFileImports (content : String) (keep : Name → Bool) (fileName : String 
       if !skipUnknown then
         return some (imp.module, ← sp.findLeanSource imp.module)
       let some impSourceFile ← sp.findLeanSource? imp.module | do
-        IO.println s!"Warning: no package in the search path has {imp.module}, \
-          which {fileName} imports. Skipping it."
+        IO.println s!"Warning: {fileName} imports {imp.module}, but no package in the search \
+          path has it. `cache` skips this import."
         return none
       return some (imp.module, impSourceFile)
 
@@ -136,7 +131,7 @@ The hash of a module in the Mathlib cache mixes:
 A module outside the Mathlib cache has no hash. A module with an import without a hash
 has no hash either.
 
-Note: we pass `sourceFile` along to avoid searching for it twice
+`sourceFile` is the source file of `mod`, which the caller has already found.
 -/
 partial def getHash (mod : Name) (sourceFile : FilePath) (visiting : Std.HashSet Name := ∅) :
     HashM <| Option UInt64 := do
@@ -149,8 +144,7 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visiting : Std.HashSet
     modify fun stt => { stt with depsMap := stt.depsMap.insert mod #[] }
     return none
   let content ← IO.FS.readFile sourceFile
-  -- An unknown import of a downstream module is not an error: `cache` cannot get files for
-  -- a module outside the Mathlib cache anyway.
+  -- A downstream module can import a module that no package has.
   let fileImports ← getFileImports content (visitsImport mod) mod.toString
     (skipUnknown := !isPartOfMathlibCache mod)
   let importHashes ← fileImports.mapM fun (modₙ, sourceFileₙ) =>
@@ -179,9 +173,8 @@ def roots : CacheM <| Array <| Name × FilePath := do
   return #[(`Mathlib, (mathlibDepPath / "Mathlib.lean"))]
 
 /--
-Main API to retrieve the hashes of the Lean files.
-
-`cache` visits `Mathlib` and the modules in `extraRoots`, and their imports (see `HashMemo`).
+Main API to retrieve the hashes of the Lean files. It visits `Mathlib`, the modules in
+`extraRoots`, and their imports (see `HashMemo`).
 -/
 public def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo := do
   let visitAll : HashM Unit := (extraRoots.insertMany (← roots)).forM fun mod sourceFile =>

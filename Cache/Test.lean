@@ -33,9 +33,9 @@ These tests cover the pure logic of the cache system, including:
 - Failure-line diagnostics (`splitWriteOut`, `transferDiagnostics`)
 - Utility functions (URL extraction, filename hashing, etc.)
 - Module selection for `get` with a module of a downstream project
-  (`getHashMemo`, `filterByRootModules`), and module arguments whose root
-  name is also a directory of a dependency (`leanModulesFromSpec`);
-  `Cache/test/downstream.sh` tests the downstream case end to end
+  (`getHashMemo`, `filterByRootModules`)
+- Module arguments whose root is also a directory of a dependency
+  (`leanModulesFromSpec`)
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
@@ -497,7 +497,7 @@ end RoundTrip
 section ModuleSelection
 
 open Cache.Hashing in
-/-- Build a hash memo for a fake source tree with `extraRoots` as roots. -/
+/-- Build a hash memo for a fake source tree with `Mathlib` and `extraRoots` as roots. -/
 private def hashMemoFor (dir : System.FilePath) (extraRoots : List Lean.Name) :
     IO HashMemo := do
   let roots : Std.HashMap Lean.Name System.FilePath := extraRoots.foldl (init := ∅)
@@ -513,12 +513,15 @@ private def sortedKeys (hashMap : Cache.IO.ModuleHashMap) : List String :=
 /-- `get` with a module of a downstream project (here the package `Down`) selects the Mathlib
 cache modules that it imports, also through other downstream modules, and nothing else.
 
-`Cache/test/downstream.sh` checks this against the real cache. This test covers what that
-check cannot: a cache module that only a downstream module imports (`Batteries.X`, outside
-the `Mathlib` closure), a cache module that only `Mathlib` imports (`Mathlib.C`), and an
-import from Lean core. Lean core is not on the search path of this test, so the test fails
-if `cache` tries to find a Lean core module. `Nowhere.Y` is in no package: the test fails if
-an unknown import of a downstream module stops `cache`. -/
+`Cache/test/downstream.sh` checks this against the real cache. This test covers cases that
+the real cache does not have:
+* `Batteries.X`: a cache module outside the `Mathlib` closure that only a downstream module
+  imports.
+* `Mathlib.C`: a cache module that only `Mathlib` imports.
+* `Lean.Elab`: an import from Lean core. Here it imports the cache module `Batteries.Y`,
+  so the test fails if `cache` visits the imports of Lean core modules.
+* `Nowhere.Y`: an import that no package has. The test fails if this import stops `cache`.
+-/
 def test_filterByRootModules_downstream : IO Unit := do
   let dir ← IO.FS.createTempDir
   try
@@ -531,6 +534,8 @@ def test_filterByRootModules_downstream : IO Unit := do
     write "Mathlib/B.lean" "import Mathlib.A\n"
     write "Mathlib/C.lean" "import Mathlib.A\n"
     write "Batteries/X.lean" ""
+    write "Batteries/Y.lean" ""
+    write "Lean/Elab.lean" "import Batteries.Y\n"
     write "Down/Top.lean" "import Down.Mid\nimport Down.Side\nimport Mathlib.B\n"
     write "Down/Side.lean" "import Down.Mid\n"
     write "Down/Mid.lean" "import Batteries.X\nimport Lean.Elab\nimport Nowhere.Y\n"
@@ -549,13 +554,10 @@ def test_filterByRootModules_downstream : IO Unit := do
   finally
     IO.FS.removeDirAll dir
 
-/-- A module argument resolves to the package that has its source, even when a package
-earlier in the search path has a directory with the same name as the module's root.
-
-Dependencies come first in the search path. Mathlib's repository has a directory
-`DownstreamTest/`, so in a downstream project named `DownstreamTest`, the arguments
-`DownstreamTest`, `DownstreamTest.Partial` and `DownstreamTest.+` must still resolve to the
-downstream package. Here `dep` plays Mathlib and `root` plays the downstream package `Down`. -/
+/-- A module argument resolves to the package that has its source, also when an earlier
+entry of the search path has a directory named like the module's root (see
+`findWithExtBase`). `dep` stands for a dependency with a directory `Down/`, and `root` for
+the downstream package `Down`. -/
 def test_leanModulesFromSpec_shadowedRoot : IO Unit := do
   let dir ← IO.FS.createTempDir
   try

@@ -7,11 +7,10 @@
 # a hosted runner. The Windows job guards the tool's cross-platform behavior,
 # such as the null device the marker probe and tests discard output to.
 #
-# `cache-get` runs one `lake exe cache get` against the public cache on Ubuntu
+# `cache-get` runs `lake exe cache get` against the public cache on Ubuntu
 # 26.04, whose curl 8.18 the tool runs without retries, and on Windows. The
-# main CI runs the tool on neither.
-# It also runs `Cache/test/downstream.sh`: `cache get` with a module of a
-# downstream project that requires this checkout.
+# main CI runs the tool on neither. The job also runs `Cache/test/downstream.sh`,
+# which tests `cache get` with a module of a downstream project.
 name: cache tests
 
 on:

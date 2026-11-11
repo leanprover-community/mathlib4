@@ -66,10 +66,10 @@ module is from a dependency.
 
 The result is the first entry of `sp` that has the file `mod.<ext>`. If no entry has it, the
 result is the first entry that has the directory `mod/`.
-`Lean.SearchPath.findWithExt` only checks for a directory named like the root of `mod`.
-Dependencies come first in the search path, so with that check a top-level directory of a
-dependency hides the modules of a downstream package with the same name. For example,
-Mathlib's repository has a directory `DownstreamTest/`.
+
+Dependencies come before the root package in `sp`. A dependency can have a top-level directory
+with the name of a downstream package, for example `DownstreamTest/` in Mathlib. Thus the
+module's file selects the entry, not the package's directory.
 -/
 def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) :
     BaseIO (Option FilePath) := do
@@ -82,7 +82,8 @@ def findLeanSource? (sp : SearchPath) (mod : Name) : BaseIO (Option System.FileP
 
 /--
 The source file of `mod` in the entry of `sp` that `findWithExtBase` finds.
-If no entry has it, this falls back to `Lean.findLean`, which reports an unknown package.
+If no entry has it, the result is that of `Lean.findLean`: an error for an unknown package, or
+a path that does not exist.
 -/
 def findLeanSource (sp : SearchPath) (mod : Name) : IO System.FilePath := do
   match ← sp.findLeanSource? mod with

@@ -244,7 +244,6 @@ def main (args : List String) : IO Unit := do
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`, also in a downstream project.
-    -- A downstream module only takes part when its name is an argument.
     let mod := `Mathlib
     let sp := (← read).srcSearchPath
     let sourceFile ← sp.findLeanSource mod
