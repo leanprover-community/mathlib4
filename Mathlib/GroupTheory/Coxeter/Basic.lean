@@ -188,6 +188,8 @@ protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEq
 /-- The simple reflection of `W` at the index `i`. -/
 def simple (i : B) : W := cs.mulEquiv.symm (M.simple i)
 
+@[simp] theorem mulEquiv_symm_simple (i : B) : cs.mulEquiv.symm (M.simple i) = cs.simple i := rfl
+
 @[simp]
 theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
     M.toCoxeterSystem.simple = M.simple := rfl
@@ -224,8 +226,7 @@ theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
   have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
-  unfold simple
-  rw [← map_mul, ← map_pow]
+  simp_rw [← mulEquiv_symm_simple, ← map_mul, ← map_pow]
   exact (MulEquiv.map_eq_one_iff cs.mulEquiv.symm).mpr this
 
 @[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
