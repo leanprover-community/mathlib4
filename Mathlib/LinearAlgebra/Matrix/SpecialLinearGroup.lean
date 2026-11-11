@@ -916,7 +916,7 @@ open Matrix Matrix.SpecialLinearGroup
 This element acts naturally on the Euclidean plane as a rotation about the origin by `π / 2`.
 
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
-represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
+represents the Möbius transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
   SpecialLinearGroup.mk !![0, -1; 1, 0] (by simp [det_fin_two_of])
 
