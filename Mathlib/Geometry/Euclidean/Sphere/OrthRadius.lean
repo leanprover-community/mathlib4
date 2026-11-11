@@ -18,7 +18,6 @@ This file defines the affine subspace orthogonal to the radius vector at a point
 * `EuclideanGeometry.Sphere.orthRadius`: the affine subspace orthogonal to the radius vector at
   a point (the tangent space, if that point lies in the sphere; more generally, the polar of the
   inversion of that point in the sphere).
-
 -/
 
 @[expose] public section

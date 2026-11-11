@@ -35,7 +35,6 @@ Please try to keep them in sync.
 ## Tags
 
 Beck, comonadicity, descent
-
 -/
 
 @[expose] public section

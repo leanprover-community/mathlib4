@@ -11,7 +11,6 @@ public import Mathlib.Topology.Category.Profinite.Limits
 public import Mathlib.Topology.Category.Stonean.Basic
 
 /-!
-
 # Effective epimorphisms in `Profinite`
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `Profinite`.

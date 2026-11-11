@@ -21,7 +21,6 @@ normal monomorphism is normal (`CategoryTheory.normalOfIsPullbackSndOfNormal`).
 We also define classes `IsNormalMonoCategory` and `IsNormalEpiCategory` for categories in which
 every monomorphism or epimorphism is normal, and deduce that these categories are
 `RegularMonoCategory`s resp. `RegularEpiCategory`s.
-
 -/
 
 @[expose] public section

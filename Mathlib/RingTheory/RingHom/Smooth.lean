@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Smooth.Locus
 # Smooth ring homomorphisms
 
 In this file we define smooth ring homomorphisms and show their meta properties.
-
 -/
 
 @[expose] public section

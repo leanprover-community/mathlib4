@@ -61,7 +61,6 @@ possible.
 
 ## Tags
 presheaf, over category, coyoneda
-
 -/
 
 @[expose] public section

@@ -18,7 +18,6 @@ import Mathlib.RingTheory.Polynomial.Subring
 # # Integral closure as a characteristic predicate
 
 We prove basic properties of `IsIntegralClosure`.
-
 -/
 
 @[expose] public section

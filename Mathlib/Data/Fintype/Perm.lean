@@ -17,7 +17,6 @@ import Mathlib.Algebra.Group.Nat.Defs
 
 Main declarations:
 * `permsOfFinset s`: The finset of permutations of the finset `s`.
-
 -/
 
 @[expose] public section

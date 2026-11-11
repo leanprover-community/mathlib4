@@ -36,7 +36,6 @@ Additionally, we give the constructions
 We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
 `StrongMonoCategory`s resp. `StrongEpiCategory`s.
-
 -/
 
 @[expose] public section
@@ -129,7 +128,6 @@ def Fork.IsLimit.regularMono {A B : C} {p₁ p₂ : A ⟶ B} {c : Fork p₁ p₂
 section IsRegularMono
 
 /-!
-
 Given a regular monomorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularMono`),
 this section gives an equalizer diagram
 ```
@@ -379,7 +377,6 @@ def Cofork.IsColimit.regularEpi {A B : C} {p₁ p₂ : A ⟶ B} {c : Cofork p₁
 section IsRegularEpi
 
 /-!
-
 Given a regular epimorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularEpi`),
 this section gives a coequalizer diagram
 ```

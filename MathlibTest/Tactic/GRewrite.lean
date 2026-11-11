@@ -562,6 +562,18 @@ example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
 
 end universePolymorphic
 
+example (a : ℕ) (h : a ≤ 0) : a = 0 := by grw [h]
+example (a : ℕ) (h : a ≤ 0) : 0 = a := by grw [h]
+example (a : ℕ) (h : a ≤ ⊥) : a = ⊥ := by grw [h]
+example (a : ℕ) (h : a ≤ ⊥) : ⊥ = a := by grw [h]
+example (a : WithTop ℕ) (h : ⊤ ≤ a) : a = ⊤ := by grw [← h]
+example (a : WithTop ℕ) (h : ⊤ ≤ a) : ⊤ = a := by grw [← h]
+
+example (a : Set ℕ) (h : a ≤ ∅) : a = ∅ := by grw [h]
+example (a : Set ℕ) (h : a ≤ ∅) : ∅ = a := by grw [h]
+example (a : Set ℕ) (h : .univ ≤ a) : a = .univ := by grw [← h]
+example (a : Set ℕ) (h : .univ ≤ a) : .univ = a := by grw [← h]
+
 theorem NeZero.one_lt_add_one (n : Nat) [NeZero n] : 1 < n + 1 := by simp [Nat.pos_of_neZero]
 
 -- This used to fail with an unknown free variable error,
