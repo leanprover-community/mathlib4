@@ -174,14 +174,13 @@ instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellF
     [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
-  Lex.wellFounded' (fun _ _ ↦ not_lt_zero) hι
+  InvImage.wf Lex.ofLex (Lex.wellFounded' (fun _ _ ↦ not_lt_zero) hι)
 
-set_option backward.isDefEq.respectTransparency false in
 instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFoundedLT ι]
     [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Colex (Π₀ i, α i)) :=
-  Lex.wellFoundedLT (ι := ιᵒᵈ)
+  InvImage.wf Colex.ofColex (Lex.wellFounded' (r := (· > ·)) (fun _ _ ↦ not_lt_zero) inferInstance)
 
 end DFinsupp
 
@@ -200,12 +199,12 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] [hs : ∀ i, We
 
 instance Pi.Lex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
     [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (∀ i, α i)) :=
-  Pi.Lex.wellFounded (· < ·)
+  InvImage.wf Lex.ofLex (Pi.Lex.wellFounded (· < ·))
 
 set_option backward.isDefEq.respectTransparency false in
 instance Pi.Colex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (∀ i, α i)) :=
-  Pi.Lex.wellFoundedLT (ι := ιᵒᵈ)
+  InvImage.wf Colex.ofColex (Pi.Lex.wellFounded (ι := ιᵒᵈ) (· < ·))
 
 instance Function.Lex.wellFoundedLT {α} [LinearOrder ι] [Finite ι] [LT α] [WellFoundedLT α] :
     WellFoundedLT (Lex (ι → α)) :=
@@ -218,12 +217,12 @@ theorem DFinsupp.Lex.wellFounded_of_finite [IsStrictTotalOrder ι r] [Finite ι]
 
 instance DFinsupp.Lex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ i, Zero (α i)]
     [∀ i, LT (α i)] [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (Π₀ i, α i)) :=
-  DFinsupp.Lex.wellFounded_of_finite (· < ·)
+  InvImage.wf Lex.ofLex (DFinsupp.Lex.wellFounded_of_finite (· < ·))
 
 set_option backward.isDefEq.respectTransparency false in
 instance DFinsupp.Colex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ i, Zero (α i)]
     [∀ i, LT (α i)] [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Colex (Π₀ i, α i)) :=
-  DFinsupp.Lex.wellFoundedLT_of_finite (ι := ιᵒᵈ)
+  InvImage.wf Colex.ofColex (DFinsupp.Lex.wellFounded_of_finite (ι := ιᵒᵈ) (· < ·))
 
 protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (α i)]
     [∀ i, WellFoundedLT (α i)] (hbot : ∀ ⦃i⦄ ⦃a : α i⦄, ¬a < 0) : WellFoundedLT (Π₀ i, α i) := by

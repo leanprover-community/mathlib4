@@ -22,13 +22,11 @@ operations.
 
 public section
 
-namespace Pi.Lex
 variable {ι : Type*} {α : ι → Type*} [LinearOrder ι]
+  [∀ i, CommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsOrderedCancelMonoid (α i)]
 
 @[to_additive]
-instance isOrderedCancelMonoid [∀ i, CommMonoid (α i)] [∀ i, PartialOrder (α i)]
-    [∀ i, IsOrderedCancelMonoid (α i)] :
-    IsOrderedCancelMonoid (Lex (∀ i, α i)) where
+instance Pi.Lex.isOrderedCancelMonoid : IsOrderedCancelMonoid (Lex (∀ i, α i)) where
   mul_le_mul_left _ _ hxy z :=
     hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
       Or.inr ⟨i, fun j hji => congr($(hi.1 j hji) * z.ofLex j), mul_lt_mul_left hi.2 _⟩
@@ -36,4 +34,11 @@ instance isOrderedCancelMonoid [∀ i, CommMonoid (α i)] [∀ i, PartialOrder (
     hxyz.elim (fun h => (mul_left_cancel h).le) fun ⟨i, hi⟩ =>
       Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩
 
-end Pi.Lex
+@[to_additive]
+instance Pi.Colex.isOrderedCancelMonoid : IsOrderedCancelMonoid (Colex (∀ i, α i)) where
+  mul_le_mul_left _ _ hxy z :=
+    hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hji => congr($(hi.1 j hji) * z.ofColex j), mul_lt_mul_left hi.2 _⟩
+  le_of_mul_le_mul_left _ _ _ hxyz :=
+    hxyz.elim (fun h => (mul_left_cancel h).le) fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩
