@@ -650,7 +650,7 @@ lemma exists_measure_rpow_eq_integral_cfc_rpowIntegrand₁₀ [CompleteSpace A] 
   refine ⟨μ, fun a ha => ?_⟩
   nontriviality A
   let r := sInf (spectrum ℝ a)
-  have hr : 0 < r := ha.spectrum_pos <| (spectrum.isCompact a).sInf_mem <|
+  have hr : 0 < r := ha.spectrum_pos <| (spectrum.isCompact ℝ a).sInf_mem <|
     ContinuousFunctionalCalculus.spectrum_nonempty a ha.isSelfAdjoint
   have hf : ContinuousOn (rpowIntegrandNeg p).uncurry (Ioi 0 ×ˢ spectrum ℝ a) :=
     continuousOn_rpowIntegrandNeg_uncurry _ fun _ hz ↦ (ha.spectrum_pos hz).le
@@ -659,7 +659,7 @@ lemma exists_measure_rpow_eq_integral_cfc_rpowIntegrand₁₀ [CompleteSpace A] 
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht z hz
     have hz' : 0 < z := ha.spectrum_pos hz
     rw [Real.norm_of_nonneg (rpowIntegrandNeg_nonneg ht.le hz'.le)]
-    exact antitoneOn_rpowIntegrandNeg ht hr hz' (csInf_le (spectrum.isCompact a).bddBelow hz)
+    exact antitoneOn_rpowIntegrandNeg ht hr hz' (csInf_le (spectrum.isCompact ℝ a).bddBelow hz)
   refine ⟨integrableOn_cfc measurableSet_Ioi _ _ a hf hbound (hμ r hr).1.2, ?_⟩
   rw [rpow_eq_cfc_real ha.nonneg, ← cfc_setIntegral measurableSet_Ioi _ _ a hf hbound (hμ r hr).1.2]
   congr! with x hx
