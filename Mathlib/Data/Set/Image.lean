@@ -158,6 +158,9 @@ theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
 theorem eq_preimage_subtypeVal_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
     s = Subtype.val ⁻¹' t ↔ ∀ (x) (h : p x), (⟨x, h⟩ : Subtype p) ∈ s ↔ x ∈ t := by grind
 
+@[deprecated (since := "2026-11-11")]
+alias eq_preimage_subtype_val_iff := eq_preimage_subtypeVal_iff
+
 theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻¹' s).Nonempty) :
     s.Nonempty :=
   let ⟨x, hx⟩ := hf

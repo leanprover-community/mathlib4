@@ -366,6 +366,9 @@ theorem IsBlock.subtypeVal_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
   hB.preimage C.inclusion
 
 @[deprecated (since := "2026-11-10")]
+alias _root_.AddAction.IsBlock.subtype_val_preimage := _root_.AddAction.IsBlock.subtypeVal_preimage
+
+@[deprecated (since := "2026-11-10")]
 alias IsBlock.subtype_val_preimage := IsBlock.subtypeVal_preimage
 
 @[to_additive]

@@ -283,7 +283,7 @@ theorem Dense.denseRange_subtypeVal (h : Dense s) : DenseRange ((↑) : s → X)
 
 @[deprecated (since := "2026-11-10")] alias denseRange_subtype_val := denseRange_subtypeVal
 @[deprecated (since := "2026-11-10")]
-alias Dense.denseRange_subtype_val := Dense.denseRange_subtypeVal
+alias Dense.denseRange_val := Dense.denseRange_subtypeVal
 
 theorem Continuous.range_subset_closure_image_dense {f : X → Y} (hf : Continuous f)
     (hs : Dense s) : range f ⊆ closure (f '' s) := by
