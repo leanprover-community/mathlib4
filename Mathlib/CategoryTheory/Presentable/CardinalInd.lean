@@ -166,8 +166,8 @@ See the lemma `Functor.isCardinalIndObject_iff` for an alternative characterizat
 of `κ`-ind objects as (small) `κ`-filtered colimits of representable presheaves. -/
 class IsCardinalIndObject
     [LocallySmall.{w} C] (P : Cᵒᵖ ⥤ Type w) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
-  isCardinalFiltered_elements_op (P κ) : IsCardinalFiltered P.Elementsᵒᵖ κ
-  initiallySmall_elements (P κ) : InitiallySmall.{w} P.Elements
+  isCardinalFiltered_elements_op (P κ) : IsCardinalFiltered P.Elementsᵒᵖ κ := by infer_instance
+  initiallySmall_elements (P κ) : InitiallySmall.{w} P.Elements := by infer_instance
 
 attribute [instance] IsCardinalIndObject.isCardinalFiltered_elements_op
 
