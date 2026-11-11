@@ -326,6 +326,49 @@ theorem exists_isChain_ne_nil_of_relationReflTransGen (h : Relation.ReflTransGen
     ∃ l, ∃ (hl : l ≠ []), IsChain r l ∧ l.head hl = a ∧ getLast l hl = b := by
   rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; grind
 
+/-- Every nonempty relation chain has a subchain with no duplicates and the same endpoints.
+-/
+theorem exists_isChain_cons_nodup_sublist_of_isChain {l : List α} (hchain : IsChain r (a :: l)) :
+    ∃ l', IsChain r (a :: l') ∧
+      getLast (a :: l') (cons_ne_nil _ _) = getLast (a :: l) (cons_ne_nil _ _) ∧
+      (a :: l').Nodup ∧ l' <+ l := by
+  induction l generalizing a with
+  | nil => exact ⟨[], List.isChain_singleton _, rfl, by simp, Sublist.refl _⟩
+  | cons c l ih =>
+    obtain ⟨l', hc, hlast', hnd, hsub⟩ := ih hchain.tail
+    by_cases ha : a ∈ c :: l'
+    · obtain ⟨s, t, hst⟩ := mem_iff_append.mp ha
+      have hc' : (a :: t).IsChain r := (hst ▸ hc).right_of_append
+      have hlast'' :
+        getLast (a :: t) (cons_ne_nil _ _) =
+          (a :: c :: l).getLast (cons_ne_nil _ _) := by
+        rw [← getLast_append_of_right_ne_nil s]
+        simpa [← hst]
+      have hnd' : (a :: t).Nodup := (List.nodup_append.mp (hst ▸ hnd)).2.1
+      have hsub' : t <+ c :: l := by
+        apply sublist_of_cons_sublist (a := a)
+        apply Sublist.trans ?_ (hst ▸ hsub.cons_cons c)
+        apply sublist_append_of_sublist_right (Sublist.refl _)
+      exact ⟨t, hc', hlast'', hnd', hsub'⟩
+    · refine ⟨c :: l', IsChain.cons_cons hchain.rel hc, hlast', List.nodup_cons.mpr ⟨ha, hnd⟩, ?_⟩
+      apply hsub.cons_cons
+
+/-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
+`r`-chain starting from `a` and ending on `b` with no duplicates.
+-/
+theorem exists_isChain_cons_nodup_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
+    ∃ l, IsChain r (a :: l) ∧ getLast (a :: l) (cons_ne_nil _ _) = b ∧ (a :: l).Nodup := by
+  obtain ⟨l, hc, hlast⟩ := exists_isChain_cons_of_relationReflTransGen h
+  obtain ⟨l', hc', hlast', hnd, _⟩ := exists_isChain_cons_nodup_sublist_of_isChain hc
+  exact ⟨l', hc', hlast' ▸ hlast, hnd⟩
+
+/-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
+`r`-chain starting from `a` and ending on `b` with no duplicates.
+-/
+theorem exists_isChain_ne_nil_nodup_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
+    ∃ l, ∃ (hl : l ≠ []), IsChain r l ∧ l.head hl = a ∧ getLast l hl = b ∧ l.Nodup := by
+  rcases exists_isChain_cons_nodup_of_relationReflTransGen h with ⟨l, _⟩; grind
+
 /-- Given a chain `l`, such that a predicate `p` holds for its head if it is nonempty,
 and if `r x y → p x → p y`, then the predicate is true everywhere in the chain.
 That is, we can propagate the predicate down the chain.
