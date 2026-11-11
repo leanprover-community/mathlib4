@@ -15,7 +15,6 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 ## Main definitions
 
 - `IsSimpleRing`: a predicate expressing that a ring is simple.
-
 -/
 
 public section

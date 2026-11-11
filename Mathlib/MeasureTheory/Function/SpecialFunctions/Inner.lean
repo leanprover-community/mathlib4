@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Continuous
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability of scalar products
 -/

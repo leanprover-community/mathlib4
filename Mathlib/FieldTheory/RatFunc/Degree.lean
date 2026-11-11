@@ -106,10 +106,12 @@ theorem natDegree_num_mul_right_sub_natDegree_denom_mul_left_eq_intDegree {x : K
     (mul_ne_zero hs x.denom_ne_zero) (num_ne_zero hx) x.denom_ne_zero
   rw [mul_assoc]
 
-theorem intDegree_add_le {x y : K⟮X⟯} (hy : y ≠ 0) (hxy : x + y ≠ 0) :
+theorem intDegree_add_le {x y : K⟮X⟯} (hxy : x + y ≠ 0) :
     intDegree (x + y) ≤ max (intDegree x) (intDegree y) := by
   by_cases hx : x = 0
   · simp [hx]
+  by_cases hy : y = 0
+  · simp [hy]
   rw [intDegree_add hxy, ←
     natDegree_num_mul_right_sub_natDegree_denom_mul_left_eq_intDegree hx y.denom_ne_zero,
     mul_comm y.denom, ←

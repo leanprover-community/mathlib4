@@ -40,7 +40,6 @@ section TotallyRealField
 /-
 
 ## Totally real number fields
-
 -/
 
 /-- A field `K` is totally real if all of its infinite places are real. In other words,

@@ -23,7 +23,6 @@ definition is a quotient module of `I`, but the alternative definition as an ide
 also given, and the two are `R`-equivalent as in `Ideal.cotangentEquivIdeal`.
 
 Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local ring.
-
 -/
 
 @[expose] public section
@@ -328,8 +327,8 @@ lemma CotangentSpace.map_eq_top_iff [IsNoetherianRing R] {M : Submodule R (maxim
   refine ⟨fun H ↦ eq_top_iff.mpr ?_, by rintro rfl; simp [Ideal.toCotangent_range]⟩
   refine (Submodule.map_le_map_iff_of_injective (Submodule.injective_subtype _) _ _).mp ?_
   rw [Submodule.map_top, Submodule.range_subtype]
-  apply Submodule.le_of_le_smul_of_le_jacobson_bot (IsNoetherian.noetherian _)
-    (IsLocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
+  apply Submodule.le_of_le_smul_of_le_jacobson (IsNoetherian.noetherian _)
+    (IsLocalRing.ringJacobson_eq_maximalIdeal R).ge
   rw [smul_eq_mul, ← pow_two, ← Ideal.map_toCotangent_ker, ← Submodule.map_sup,
     ← Submodule.comap_map_eq, H, Submodule.comap_top, Submodule.map_top, Submodule.range_subtype]
 
@@ -366,9 +365,9 @@ theorem rank_cotangentSpace_eq_spanrank_maximalIdeal_of_fg (fg : (maximalIdeal R
       rw [← Submodule.restrictScalars_span R (ResidueField R)
         Ideal.Quotient.mk_surjective, hs_span, Submodule.restrictScalars_top]
     obtain ⟨t, ht_inj, ht_image, ht_span⟩ :=
-      Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot s
+      Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson s
         ((Submodule.fg_top (maximalIdeal R)).mpr fg)
-        (IsLocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
+        (IsLocalRing.ringJacobson_eq_maximalIdeal R).ge
         hs_span'
     rw [← hs_card, ← ht_span, ← ht_image]
     exact le_of_le_of_eq (Submodule.spanRank_span_le_card t)

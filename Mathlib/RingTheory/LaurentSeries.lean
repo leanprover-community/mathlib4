@@ -83,7 +83,6 @@ type with a zero. They are denoted `R⸨X⸩`.
   `K⟮X⟯` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
   that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`)
   to `K⟦X⟧`.
-
 -/
 
 @[expose] public section
@@ -459,7 +458,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr Polynomial.prime_X) span_ne_zero.2,
     Ideal.count_associates_factors_eq]
-  on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
+  on_goal 1 => convert (normalized_count_X_eq_of_coe _).symm
   exacts [
     Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X Polynomial.prime_X,
     Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X prime_X,
@@ -487,7 +486,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
     polynomialValuationX K P = (PowerSeries.idealX K).valuation K⸨X⸩ P := by
   refine RatFunc.induction_on' P ?_
   intro f g h
-  rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
+  rw [Polynomial.valuation_of_mk K f g, RatFunc.mk_eq_mk' f h, Eq.comm]
   convert
     @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
       ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 (by simp [h])⟩
@@ -894,7 +893,7 @@ theorem coe_range_dense : DenseRange ((↑) : K⟮X⟯ → K⸨X⸩) := by
   simp only [UniformSpace.mem_closure_iff_symm_ball, Set.mem_univ, iff_true, Set.Nonempty,
     Set.mem_inter_iff, Set.mem_range, exists_exists_eq_and]
   intro V hV h_symm
-  rw [uniformity_eq_comap_neg_add_nhds_zero_swapped] at hV
+  rw [uniformity_eq_comap_neg_add_nhds_zero] at hV
   obtain ⟨T, hT₀, hT₁⟩ := hV
   obtain ⟨γ, hγ⟩ := Valued.mem_nhds_zero.mp hT₀
   have := embedding γ.1

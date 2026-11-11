@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
@@ -21,7 +20,6 @@ locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 public section

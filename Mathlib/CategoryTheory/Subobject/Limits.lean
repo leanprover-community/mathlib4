@@ -15,7 +15,6 @@ represented by the equalizer, kernel and image of (a pair of) morphism(s) and pr
 for `P.factors f`, where `P` is one of these special subobjects.
 
 TODO: an iff characterisation of `(imageSubobject f).Factors h`
-
 -/
 
 @[expose] public section

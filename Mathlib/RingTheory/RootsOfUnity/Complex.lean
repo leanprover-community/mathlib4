@@ -24,7 +24,6 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
   complex numbers of the form `exp (2 * π * I * (i / n))` for some `i < n`.
 * `Complex.card_rootsOfUnity`: the number of `n`-th roots of unity is exactly `n`.
 * `Complex.norm_rootOfUnity_eq_one`: A complex root of unity has norm `1`.
-
 -/
 
 public section
@@ -141,9 +140,12 @@ theorem IsPrimitiveRoot.norm'_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot �
     ‖ζ‖ = 1 :=
   Complex.norm_eq_one_of_pow_eq_one h.pow_eq_one hn
 
-theorem IsPrimitiveRoot.nnnorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
+theorem IsPrimitiveRoot.nnNorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ‖ζ‖₊ = 1 :=
   Subtype.ext <| h.norm'_eq_one hn
+
+@[deprecated (since := "2026-10-31")]
+alias IsPrimitiveRoot.nnnorm_eq_one := IsPrimitiveRoot.nnNorm_eq_one
 
 theorem IsPrimitiveRoot.arg_ext {n m : ℕ} {ζ μ : ℂ} (hζ : IsPrimitiveRoot ζ n)
     (hμ : IsPrimitiveRoot μ m) (hn : n ≠ 0) (hm : m ≠ 0) (h : ζ.arg = μ.arg) : ζ = μ :=

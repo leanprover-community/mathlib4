@@ -19,7 +19,6 @@ public import Mathlib.Data.Multiset.MapFold
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

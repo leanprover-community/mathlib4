@@ -748,7 +748,7 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
         exact hf.r_le
       _ ≤ _ := pf.div_le_radius_compContinuousLinearMap _
   r_pos := by
-    simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
+    simp only [ENNReal.div_pos_iff, ne_eq, eNorm_ne_top, not_false_eq_true, and_true]
     exact pos_iff_ne_zero.mp hf.r_pos
   hasSum hy1 hy2 := by
     convert! hf.hasSum _ _

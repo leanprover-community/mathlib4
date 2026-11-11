@@ -29,7 +29,6 @@ provide both `RootPairing.linearIndependent_iff_coxeterWeight_ne_four` and
 Several ways to avoid this duplication exist. We leave explorations of this for future work. One
 possible solution is to drop `RootPairing.pairing` and `RootPairing.coxeterWeight` entirely and rely
 solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.
-
 -/
 
 public section
@@ -230,8 +229,11 @@ lemma pairing_neg_two_neg_two_iff :
 
 variable [Module.IsTorsionFree R N]
 
-lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
+/-- See also `RootPairing.pairingIn_one_four_iff`. -/
+@[simp]
+lemma pairing_one_four_iff :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i := by
+  have h2 : IsSMulRegular R (2 : R) := smul_right_injective R two_ne_zero
   have : HasUniqueDiv M := .of_isTorsionFree R M
   have : HasUniqueDiv N := .of_isTorsionFree R N
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ ?_⟩
@@ -247,21 +249,16 @@ lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     rw [pairing, ← map_smul, ← h]
     simp
 
-lemma pairing_neg_one_neg_four_iff' (h2 : IsSMulRegular R (2 : R)) :
-    P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
-  simpa [neg_smul, ← neg_eq_iff_eq_neg] using P.pairing_one_four_iff' i (P.reflectionPerm j j) h2
-
-/-- See also `RootPairing.pairingIn_one_four_iff`. -/
-@[simp]
-lemma pairing_one_four_iff :
-    P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i :=
-  P.pairing_one_four_iff' i j <| smul_right_injective R two_ne_zero
+@[deprecated (since := "2026-11-04")] alias pairing_one_four_iff' := pairing_one_four_iff
 
 /-- See also `RootPairing.pairingIn_neg_one_neg_four_iff`. -/
 @[simp]
 lemma pairing_neg_one_neg_four_iff :
-    P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i :=
-  P.pairing_neg_one_neg_four_iff' i j <| smul_right_injective R two_ne_zero
+    P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
+  simpa [neg_smul, ← neg_eq_iff_eq_neg] using P.pairing_one_four_iff i (P.reflectionPerm j j)
+
+@[deprecated (since := "2026-11-04")]
+alias pairing_neg_one_neg_four_iff' := pairing_neg_one_neg_four_iff
 
 section IsValuedIn
 
