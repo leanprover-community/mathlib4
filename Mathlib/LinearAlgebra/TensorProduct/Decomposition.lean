@@ -158,8 +158,7 @@ namespace TensorProduct
 variable {ι κ μ R M N : Type*} [CommSemiring R]
   [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
-/-- The submodule of `M ⊗[R] N` spanned by the pure tensors of degree `m`, where the degree
-function `f` combines the degrees of the two factors. -/
+/-- The submodule of `M ⊗[R] N` corresponding to each grade given by the degree function `f`. -/
 @[expose] def gradeBy (f : ι → κ → μ) (ℳ : ι → Submodule R M) (𝒩 : κ → Submodule R N) (m : μ) :
     Submodule R (M ⊗[R] N) :=
   ⨆ (p) (q) (_ : f p q = m), Submodule.map₂ (mk R M N) (ℳ p) (𝒩 q)
@@ -183,7 +182,7 @@ theorem gradeBy_le {S : Submodule R (M ⊗[R] N)} :
 
 end GradeBy
 
-/-- The submodule of `M ⊗[R] N` spanned by the pure tensors of total degree `n`. -/
+/-- The submodule of `M ⊗[R] N` corresponding to each total degree. -/
 abbrev grade [Add ι] (ℳ : ι → Submodule R M) (𝒩 : ι → Submodule R N) (n : ι) :
     Submodule R (M ⊗[R] N) :=
   gradeBy (· + ·) ℳ 𝒩 n
