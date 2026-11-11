@@ -398,10 +398,6 @@ theorem IsStronglyCoatomic.not_isSuccPrelimit [IsStronglyCoatomic α] [NoMinOrde
     ¬IsSuccPrelimit a :=
   (IsStronglyCoatomic.not_isSuccLimit a ⟨not_isMin a, ·⟩)
 
-end StronglyAtomic
-
-section WellFounded
-
 instance [WellFoundedLT α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
     obtain ⟨m, ⟨ham, hmb⟩, hm⟩ := wellFounded_lt.has_min (.Ioc a b) ⟨b, hab, le_rfl⟩
@@ -410,7 +406,11 @@ instance [WellFoundedLT α] : IsStronglyAtomic α where
 instance [WellFoundedGT α] : IsStronglyCoatomic α :=
   isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| inferInstanceAs (IsStronglyAtomic (αᵒᵈ))
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+end StronglyAtomic
+
+section WellFounded
+
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
   inferInstance
@@ -423,12 +423,12 @@ theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α �
 @[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
-  (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
+  inferInstance
 
 @[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
-  isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)
+  inferInstance
 
 end WellFounded
 
