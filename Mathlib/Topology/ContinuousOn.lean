@@ -19,7 +19,6 @@ related to continuity, which are defined in previous definition files.
 Their basic properties studied in this file include the relationships between
 these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
-
 -/
 
 public section
@@ -56,10 +55,16 @@ theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α}
 @[deprecated (since := "2026-07-19")] alias continuousWithinAt_iff_continuousAt_restrict :=
   continuousWithinAt_iff_continuousAt_domRestrict
 
+theorem continuousWithinAt_inter_iff_continuousWithinAt_domRestrict (f : α → β) {x : α}
+    {s t : Set α} (h : x ∈ s) :
+    ContinuousWithinAt f (s ∩ t) x ↔
+      ContinuousWithinAt (s.domRestrict f) ((↑) ⁻¹' t) ⟨x, h⟩ :=
+  tendsto_nhdsWithin_inter_iff_subtype h f _
+
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : MapsTo f s t) :
     Tendsto f (𝓝[s] x) (𝓝[t] f x) :=
-  tendsto_inf.2 ⟨h, tendsto_principal.2 <| mem_inf_of_right <| mem_principal.2 <| ht⟩
+  tendsto_inf.2 ⟨h, tendsto_principal.2 <| mem_inf_of_right <| mem_principal.2 ht⟩
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin_image (h : ContinuousWithinAt f s x) :
     Tendsto f (𝓝[s] x) (𝓝[f '' s] f x) :=
@@ -191,7 +196,7 @@ theorem ContinuousOn.isOpen_inter_preimage {t : Set β}
 
 theorem ContinuousOn.isOpen_preimage {t : Set β} (h : ContinuousOn f s)
     (hs : IsOpen s) (hp : f ⁻¹' t ⊆ s) (ht : IsOpen t) : IsOpen (f ⁻¹' t) := by
-  convert! (continuousOn_open_iff hs).mp h t ht
+  convert (continuousOn_open_iff hs).mp h t ht
   rw [inter_comm, inter_eq_self_of_subset_left hp]
 
 theorem ContinuousOn.preimage_isClosed_of_isClosed {t : Set β}
@@ -891,9 +896,6 @@ theorem continuousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isClosed h.right hs ht⟩
 
-@[deprecated (since := "2026-02-20")]
-alias continouousOn_union_iff_of_isClosed := continuousOn_union_iff_of_isClosed
-
 /-- If a function is continuous on two open sets, it is also continuous on their union. -/
 theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
     (hs : IsOpen s) (ht : IsOpen t) : ContinuousOn f (s ∪ t) :=
@@ -904,9 +906,6 @@ theorem continuousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : I
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
-
-@[deprecated (since := "2026-02-20")]
-alias continouousOn_union_iff_of_isOpen := continuousOn_union_iff_of_isOpen
 
 /-- If a function is continuous on open sets `s i`, it is continuous on their union -/
 lemma ContinuousOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set α}

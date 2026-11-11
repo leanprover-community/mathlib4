@@ -255,7 +255,7 @@ instance Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp⟩, by simpa using em⟩
 
 @[simp]
-theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=
+theorem Fintype.univ_Prop [DecidableEq Prop] : (Finset.univ : Finset Prop) = {True, False} :=
   Finset.eq_of_veq <| by simp; rfl
 
 instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fintype { x // p x } :=
@@ -274,7 +274,7 @@ sets on a finite type are finite.) -/
 noncomputable def finsetEquivSet : Finset α ≃ Set α where
   toFun := (↑)
   invFun := by classical exact fun s => s.toFinset
-  left_inv s := by convert! Finset.toFinset_coe s
+  left_inv s := by convert Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 
 @[simp, norm_cast] lemma coe_finsetEquivSet : ⇑finsetEquivSet = ((↑) : Finset α → Set α) := rfl

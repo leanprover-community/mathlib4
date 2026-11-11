@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.Ring.Ideal
-public import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 # The group of units of a complete normed ring
@@ -138,7 +137,7 @@ theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
   rw [ht]
 
 theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t => 1 : R → ℝ) := by
-  simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
+  simp only [isBigO_iff, Metric.eventually_nhds_iff]
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by simp, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
   have ht' : ‖t‖ < 1 := by linarith
@@ -231,6 +230,6 @@ theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
 
 /-- Maximal ideals in normed rings with summable geometric series are closed. -/
 instance IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set R) :=
-  isClosed_of_closure_subset <| Eq.subset <| congr_arg ((↑) : Ideal R → Set R) hI.closure_eq
+  isClosed_of_closure_subset <| Eq.subset congr($hI.closure_eq)
 
 end Ideal

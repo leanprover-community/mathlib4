@@ -6,7 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Complex.Harmonic.Poisson
-public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
+public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 
 
 /-!
@@ -37,7 +37,7 @@ In preparation to the proof of Jensen's formula, compute several circle averages
 some of the terms that appear in the formula and its proof.
 -/
 
--- Auxiliary definitition for `circleAverage_re_herglotzRieszKernel_mul_log`. Shorthand for the
+-- Auxiliary definition for `circleAverage_re_herglotzRieszKernel_mul_log`. Shorthand for the
 -- integrand in our computations
 private noncomputable def herglotzLogIntegrand (w ρ : ℂ) : ℂ → ℝ :=
   (Complex.re ∘ herglotzRieszKernel 0 w) • (Real.log ‖· - ρ‖)
@@ -59,7 +59,6 @@ private lemma continuous_herglotzLogIntegrand_circle {w ρ : ℂ} {R r : ℝ} (h
   intro θ
   apply ContinuousAt.comp (continuousAt_herglotzLogIntegrand _ _) (by fun_prop)
   all_goals
-    by_contra h
     grind [norm_circleMap_zero, lt_of_le_of_lt (Complex.norm_nonneg w) hwr]
 
 open Complex in
@@ -70,7 +69,7 @@ private lemma const_mul_norm_sub_circleMap_le_norm_sub_circleMap {r₀ r R : ℝ
     sqrt (r₀ / R) * ‖circleMap 0 R θ - ρ‖ ≤ ‖circleMap 0 r θ - ρ‖ := by
   have h_cos_law (r₁ : ℝ) :
       ‖circleMap 0 r₁ θ - ρ‖ ^ 2 = r₁ ^ 2 + R ^ 2 - 2 * r₁ * R * Real.cos (θ - Complex.arg ρ) := by
-    rw [← ofReal_inj, ← normSq_eq_norm_sq, normSq_sub ]
+    rw [← ofReal_inj, ← normSq_eq_norm_sq, normSq_sub]
     suffices (circleMap 0 r₁ θ * (conj) ρ).re = r₁ * ‖ρ‖ * Real.cos (θ - ρ.arg) by
       simp [normSq_eq_norm_sq, hρ, -mul_re, this, mul_assoc]
     conv_lhs => rw [← norm_mul_exp_arg_mul_I ρ, ← circleMap_zero, conj_circleMap_zero,
@@ -345,7 +344,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     _ = (∑ᶠ u, divisor f CB u * (log R - log ‖c - u‖)) + log ‖meromorphicTrailingCoeffAt f c‖ := by
       rw [← finsum_sub_distrib]
       · simp_rw [← mul_sub]
-      repeat apply h₃f.subset (fun _ ↦ (by simp_all))
+      all_goals apply h₃f.subset (fun _ ↦ (by simp_all))
     _ = ∑ᶠ u, divisor f CB u * log (R * ‖c - u‖⁻¹) + divisor f CB c * log R
       + log ‖meromorphicTrailingCoeffAt f c‖ := by
       rw [countingFunction_finsum_eq_finsum_add hR h₃f]
@@ -392,7 +391,7 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
     (h₂f : f c ≠ 0)
     (f_bound : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ M) :
     ∑ᶠ u, divisor f (closedBall c |r|) u ≤ Real.log (M / ‖f c‖) / Real.log (R / r) := by
-  -- Push the coerssion inside the sum
+  -- Push the coercion inside the sum
   trans ∑ᶠ u, (divisor f (closedBall c |r|) u : ℝ)
   · exact map_finsum (Int.castRingHom ℝ)
       ((divisor _ _).finiteSupport <| isCompact_closedBall ..) |>.le
@@ -406,14 +405,14 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   have integral_bound : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
     apply circleAverage_mono_on_of_le_circle
     · exact (h₁f.mono sphere_subset_closedBall).meromorphicOn.circleIntegrable_log_norm
-    · peel f_bound with z hz _
+    · gconvert f_bound using 2 with z hz
       obtain (h | h) := eq_zero_or_norm_pos (f z)
       · simpa [h] using log_nonneg hM
       · gcongr
   calc
   -- Bound by the sum from Jensen's formula
   _ ≤ ∑ᶠ u, ((divisor f (closedBall c |R|)) u) * Real.log (R * ‖c - u‖⁻¹) := by
-    refine finsum_le_finsum' ?_ ?_ fun u ↦ ?_
+    refine finsum_le_finsum ?_ ?_ fun u ↦ ?_
     · exact (divisor f (closedBall c |r|)).finiteSupport (isCompact_closedBall ..) |>.subset
         fun _ _ ↦ (by simp_all)
     · exact (divisor f (closedBall c |R|)).finiteSupport (isCompact_closedBall ..) |>.subset

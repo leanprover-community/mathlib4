@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
-/-!
 
+/-!
 # Description of the covering sieves of the regular topology
 
 This file characterises the covering sieves of the regular topology.

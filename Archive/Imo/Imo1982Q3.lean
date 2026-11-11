@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios, Alex Brodbelt
 module
 
 public import Mathlib.Algebra.Order.Field.GeomSum
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset -- for `Finset.sq_sum_div_le_sum_sq_div`
 
 /-!

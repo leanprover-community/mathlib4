@@ -5,10 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.EffectiveEpi
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.AlgebraicGeometry.Sites.SheafQuasiCompact
-public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+
+import Mathlib.AlgebraicGeometry.EffectiveEpi
+import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 /-!
 # Fpqc topology
@@ -23,7 +24,6 @@ topology for flat morphisms.
 - `fpqcPrecoverage`: The precoverage given by quasi-compact, jointly-surjective families of
   flat morphisms.
 - The fpqc topology is subcanonical. This is available by `inferInstance`.
-
 -/
 
 @[expose] public section
@@ -111,6 +111,7 @@ lemma Hom.singleton_mem_fpqcPrecoverage {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f
   Hom.singleton_mem_propQCPrecoverage ‹_›
 
 /-- Any surjective, quasi-compact and flat morphism is an effective epimorphism. -/
+@[stacks 023Q "Effective epimorphism part, for the fpqc covering by a single morphism."]
 instance {X Y : Scheme} (f : X ⟶ Y) [QuasiCompact f] [Surjective f] [Flat f] : EffectiveEpi f := by
   rw [← Sieve.effectiveEpimorphic_singleton,
     Presieve.EffectiveEpimorphic.iff_forall_isSheafFor_yoneda]

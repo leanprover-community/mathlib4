@@ -5,12 +5,10 @@ Authors: Wrenna Robson
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
-
 # Submonoid of units
 
 Given a submonoid `S` of a monoid `M`, we define the subgroup `S.units` as the units of `S` as a
@@ -114,11 +112,11 @@ lemma inv_val_mem_of_mem_units (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
 
 @[to_additive]
 lemma coe_inv_val_mul_coe_val (S : Submonoid M) {x : Sˣ} :
-    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := DFunLike.congr_arg S.subtype x.inv_mul
+    ((x⁻¹ : Sˣ) : M) * ((x : Sˣ) : M) = 1 := congr(S.subtype $x.inv_mul)
 
 @[to_additive]
 lemma coe_val_mul_coe_inv_val (S : Submonoid M) {x : Sˣ} :
-    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := DFunLike.congr_arg S.subtype x.mul_inv
+    ((x : Sˣ) : M) * ((x⁻¹ : Sˣ) : M) = 1 := congr(S.subtype $x.mul_inv)
 
 @[to_additive]
 lemma mk_inv_mul_mk_eq_one (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
@@ -144,7 +142,8 @@ lemma inv_mem_units_iff (S : Submonoid M) {x : Mˣ} : x⁻¹ ∈ S.units ↔ x �
 `S` and the type of additive units of `S`. -/]
 def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
   toFun := fun ⟨_, h⟩ => ⟨⟨_, h.1⟩, ⟨_, h.2⟩, S.mk_mul_mk_inv_eq_one h, S.mk_inv_mul_mk_eq_one h⟩
-  invFun := fun x => ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x =>
+    ⟨⟨_, _, S.coe_val_mul_coe_inv_val, S.coe_inv_val_mul_coe_val⟩, ⟨x.val.2, x.inv.2⟩⟩
   map_mul' := fun _ _ => rfl
 
 @[to_additive (attr := simp)]
@@ -184,7 +183,7 @@ elements of `S`. -/
 @[to_additive /-- The equivalence between the additive subgroup of additive units of
 `S` and the additive submonoid of additive unit elements of `S`. -/]
 noncomputable def unitsEquivIsUnitSubmonoid (S : Submonoid M) : S.units ≃* IsUnit.submonoid S :=
-S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
+  S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
 
 end Units
 

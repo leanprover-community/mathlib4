@@ -13,7 +13,6 @@ public import Mathlib.Data.Multiset.AddSub
 ## Main definitions
 
 * `replicate n a` is the multiset containing only `a` with multiplicity `n`
-
 -/
 
 @[expose] public section
@@ -113,11 +112,11 @@ variable [DecidableEq α] {s t u : Multiset α}
 
 @[simp]
 theorem count_replicate_self (a : α) (n : ℕ) : count a (replicate n a) = n := by
-  convert! List.count_replicate_self (a := a)
+  convert List.count_replicate_self (a := a)
   rw [← coe_count, coe_replicate]
 
 theorem count_replicate (a b : α) (n : ℕ) : count a (replicate n b) = if b = a then n else 0 := by
-  convert! List.count_replicate (a := a)
+  convert List.count_replicate (a := a)
   · rw [← coe_count, coe_replicate]
   · simp
 

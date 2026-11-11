@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 module
 
-public import Mathlib.Algebra.Group.DivInvMonoid
+public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Data.Nat.Init
+public import Mathlib.Tactic.OfNat
 public import Mathlib.Tactic.SplitIfs
 
 /-!

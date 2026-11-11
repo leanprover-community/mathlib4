@@ -5,9 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.LocalDiffeomorph
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Analysis.Normed.Module.ContinuousInverse
+public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 
 /-! # Immersions in the sense of differentials
 
@@ -35,7 +34,6 @@ equivalence to prove that immersions compose (in nice situations).
   then `f × g` is an immersion at `(x, y)` (all in the sense of differentials)
 * `IsDiffImmersionAt.of_injective_of_finiteDimensional`: if `f : M → N` has injective `mfderiv` at
   `x` and `N` is finite-dimensional, then `f` is an immersion at `x`
-
 -/
 
 open Function Topology

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Data.Int.Cast.Defs
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Spread
 
 /-!
@@ -18,7 +17,6 @@ public import Mathlib.Tactic.Spread
 This file defines semirings, rings and domains. This is analogous to
 `Mathlib/Algebra/Group/Defs.lean` and `Mathlib/Algebra/Group/Basic.lean`, the difference being that
 those are about `+` and `*` separately, while the present file is about their interaction.
-the present file is about their interaction.
 
 ## Main definitions
 

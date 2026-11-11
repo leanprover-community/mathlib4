@@ -15,7 +15,6 @@ We introduce the bundled category `CoalgCat` of coalgebras over a fixed commutat
 along with the forgetful functor to `ModuleCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section
@@ -42,7 +41,7 @@ instance : CoeSort (CoalgCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
 @[simp] theorem moduleCat_of_toModuleCat (X : CoalgCat.{v} R) :
-    ModuleCat.of R X.toModuleCat = X.toModuleCat :=
+    ↧X.toModuleCat = X.toModuleCat :=
   rfl
 
 variable (R) in
@@ -51,6 +50,11 @@ abbrev of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
     CoalgCat R :=
   { ModuleCat.of R X with
     instCoalgebra := (inferInstance : Coalgebra R X) }
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CoalgCat.of R X` as `↧X`. -/
+@[app_delab CoalgCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
@@ -105,12 +109,12 @@ lemma hom_ext {M N : CoalgCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoa
 
 instance hasForgetToModule : HasForget₂ (CoalgCat R) (ModuleCat R) where
   forget₂ :=
-    { obj := fun M => ModuleCat.of R M
+    { obj := fun M => ↧M
       map := fun f => ModuleCat.ofHom f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgCat R) :
-    (forget₂ (CoalgCat R) (ModuleCat R)).obj X = ModuleCat.of R X :=
+    (forget₂ (CoalgCat R) (ModuleCat R)).obj X = ↧X :=
   rfl
 
 @[simp]
@@ -162,8 +166,8 @@ variable {X Y Z : CoalgCat.{v} R}
 def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   { i.hom.toCoalgHom with
     invFun := i.inv.toCoalgHom
-    left_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.3) x
-    right_inv := fun x => CoalgHom.congr_fun (congr_arg CoalgCat.Hom.toCoalgHom i.4) x }
+    left_inv := fun x => congr($(i.hom_inv_id).toCoalgHom x)
+    right_inv := fun x => congr($(i.inv_hom_id).toCoalgHom x) }
 
 @[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
     i.toCoalgEquiv = i.hom.toCoalgHom := rfl
@@ -186,4 +190,4 @@ instance CoalgCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (CoalgCat.{v} R)).map f)
     let e : X ≃ₗc[R] Y := { f.toCoalgHom, i.toEquiv with }
-    exact ⟨e.toCoalgIso.isIso_hom.1⟩
+    exact ⟨e.toCoalgIso.isIso_hom.out⟩

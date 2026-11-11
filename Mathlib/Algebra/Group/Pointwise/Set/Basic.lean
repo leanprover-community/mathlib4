@@ -5,10 +5,11 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Data.Set.NAry
+
+import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Pointwise operations of sets
@@ -215,15 +216,19 @@ theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
 
 @[to_additive (attr := simp)]
 theorem image_inv_eq_inv : (·⁻¹) '' s = s⁻¹ :=
-  congr_fun (image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _
+  congr($(image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _)
 
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
   rw [← image_inv_eq_inv, image_eq_empty]
 
-@[to_additive (attr := simp)]
-instance involutiveInv : InvolutiveInv (Set α) where
+/-- Pointwise inversion of sets is involutive in scope `Pointwise`. -/
+@[to_additive (attr := simp, instance_reducible)
+  /-- Pointwise negation of sets is involutive in scope `Pointwise`. -/]
+def involutiveInv : InvolutiveInv (Set α) where
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
+
+scoped [Pointwise] attribute [instance] Set.involutiveInv Set.involutiveNeg
 
 @[to_additive (attr := simp)]
 theorem inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=

@@ -6,7 +6,7 @@ Authors: Jalex Stark, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Ring

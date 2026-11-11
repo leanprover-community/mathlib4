@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 public import Mathlib.Tactic.Ring
 
 /-!
-
 # Study of face maps for the Dold-Kan correspondence
 
 In this file, we obtain the technical lemmas that are used in the file
@@ -22,7 +21,6 @@ on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 `HigherFacesVanish.comp_Hσ_eq_zero`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section
@@ -81,7 +79,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   · rintro ⟨k, hk⟩
     suffices φ ≫ X.δ (⟨a + 2 + k, by lia⟩ : Fin (n + 2)) = 0 by
       simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
-    convert! v ⟨a + k + 1, by lia⟩ (by rw [Fin.val_mk]; lia)
+    convert v ⟨a + k + 1, by lia⟩ (by rw [Fin.val_mk]; lia)
     dsimp
     lia
   -- cleaning up the second sum

@@ -5,11 +5,12 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Field
-public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.FieldTheory.Differential.Basic
-public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+
+import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Liouville's theorem
@@ -27,7 +28,6 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 - `IsLiouville`: A field extension being Liouville
 - `isLiouville_of_finiteDimensional`: all finite-dimensional field extensions
   (of a field with characteristic 0) are Liouville.
-
 -/
 
 public section
@@ -94,11 +94,9 @@ instance (B : IntermediateField F K)
     conv =>
       rhs
       congr
-      · rhs
-        intro x
-        rhs
+      · enter [2, x, 2]
         apply logDeriv_algebraMap (u x)
-      · apply (deriv_algebraMap v)
+      · apply deriv_algebraMap v
     simp_rw [IsScalarTower.algebraMap_apply F B K]
     norm_cast
 
@@ -187,7 +185,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       · rcongr e
         apply_fun e at h
         simp only [AlgEquiv.commutes, map_add, map_sum, map_mul] at h
-        convert! h using 2
+        convert h using 2
         · rcongr x
           simp [logDeriv, algEquiv_deriv']
         · rw [algEquiv_deriv']
