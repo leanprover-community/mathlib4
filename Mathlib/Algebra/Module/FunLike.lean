@@ -59,20 +59,6 @@ theorem toAddMonoidHom_evalLinearMap [IsZeroApply F] (x : α) :
 
 end LinearMap
 
-/-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x` and
-`0 x = 0`, `(f + g) x = f x + g x` is a `DistribSMul` if `β` is a `DistribSMul`. -/
-protected abbrev distribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M β]
-    [SMul M F] [IsZeroApply F] [IsAddApply F] [IsSMulApply M F] :
-    DistribSMul M F :=
-  DFunLike.coe_injective.distribSMul (coeAddMonoidHom F α β) FunLike.coe_smul
-
-/-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`, `0 x = 0`,
-`(f + g) x = f x + g x` is a `DistribMulAction` if `β` is a `DistribMulAction`. -/
-protected abbrev distribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β]
-    [SMul M F] [IsZeroApply F] [IsAddApply F] [IsSMulApply M F] :
-    DistribMulAction M F :=
-  DFunLike.coe_injective.distribMulAction (coeAddMonoidHom F α β) FunLike.coe_smul
-
 variable [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F]
 
 /-- A `FunLike` type is a `Module` if `β` is a `Module`. -/
