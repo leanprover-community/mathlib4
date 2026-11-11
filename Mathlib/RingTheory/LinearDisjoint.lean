@@ -20,7 +20,6 @@ import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
-
 # Linearly disjoint subalgebras
 
 This file contains basics about linearly disjoint subalgebras.
@@ -129,7 +128,6 @@ assuming `S` is commutative.
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
 -/
 
 @[expose] public section

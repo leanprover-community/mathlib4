@@ -20,7 +20,6 @@ This file lifts order structures on the `α i` to `Π₀ i, α i`.
 
 * `DFinsupp.orderEmbeddingToFun`: The order embedding from finitely supported dependent functions
   to functions.
-
 -/
 
 @[expose] public section

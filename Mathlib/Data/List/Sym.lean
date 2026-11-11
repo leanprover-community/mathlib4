@@ -23,7 +23,6 @@ from a given list. These are list versions of `Nat.multichoose`.
 
 * Prove `protected theorem Perm.sym (n : ℕ) {xs ys : List α} (h : xs ~ ys) : xs.sym n ~ ys.sym n`
   and lift the result to `Multiset` and `Finset`.
-
 -/
 
 @[expose] public section

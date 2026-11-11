@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
-
 # `1`-hypercovers and (pre)sheaves of types
 
 In this file we provide some API for working with `1`-hypercovers for sheaves of types.
@@ -24,7 +23,6 @@ In this file we provide some API for working with `1`-hypercovers for sheaves of
 - `CategoryTheory.PreOneHypercover.IsStronglySheafFor.isLimitMultifork`: If `E`
   satisfies the strong sheaf condition for `F`, then the multiequalizer diagram
   for `E` is limiting.
-
 -/
 
 universe w

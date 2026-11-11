@@ -29,7 +29,6 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 * `IsDedekindDomain.HeightOneSpectrum.primesEquiv`: the equivalence `HeightOneSpectrum R ≃
   Nat.Primes`, sending `v` to `absNorm (v.asIdeal.under ℤ)`, when `R` is the integral closure of
   `ℤ` in `ℚ`.
-
 -/
 
 public section

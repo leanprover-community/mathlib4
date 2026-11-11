@@ -15,7 +15,6 @@ public import Mathlib.Order.Category.PartOrd
 
 This defines `PartOrdEmb`, the category of partial orders with order embeddings
 as morphisms. We also show that `PartOrdEmb` has filtered colimits.
-
 -/
 
 @[expose] public section

@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 import Mathlib.RingTheory.Norm.Basic
 
 /-!
-
 # Ideal norms
 
 This file defines the absolute ideal norm `Ideal.absNorm (I : Ideal R) : ℕ` as the cardinality of
@@ -362,9 +361,11 @@ theorem isPrime_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.ab
   isPrime_of_prime
     (UniqueFactorizationMonoid.irreducible_iff_prime.mp (irreducible_of_irreducible_absNorm hI))
 
-theorem prime_of_irreducible_absNorm_span {a : S} (ha : a ≠ 0)
-    (hI : Irreducible (Ideal.absNorm (Ideal.span ({a} : Set S)))) : Prime a :=
-  (Ideal.span_singleton_prime ha).mp (isPrime_of_irreducible_absNorm hI)
+theorem prime_of_irreducible_absNorm_span {a : S}
+    (hI : Irreducible (Ideal.absNorm (Ideal.span ({a} : Set S)))) : Prime a := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp at hI
+  exact (Ideal.span_singleton_prime ha).mp (isPrime_of_irreducible_absNorm hI)
 
 theorem absNorm_mem (I : Ideal S) : ↑(Ideal.absNorm I) ∈ I := by
   obtain rfl | hI := eq_or_ne I ⊥
@@ -599,7 +600,7 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm'
     {p : ℕ} (hp : p.Prime) (I : Ideal S) (hI : p ∣ I.absNorm) :
     ∃ P : Ideal S, P.IsMaximal ∧ P.under ℤ = .span {(p : ℤ)} ∧ P ∣ I :=
   exists_isMaximal_dvd_of_dvd_absNorm (Int.prime_iff_natAbs_prime.mpr (by simpa)) _
-    (by exact_mod_cast hI)
+    (mod_cast hI)
 
 theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
     Algebra.norm ℤ x ∣ y ↔ x ∣ y := by

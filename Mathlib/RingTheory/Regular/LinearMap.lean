@@ -15,7 +15,6 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
-
 # Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
 
 Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subsingleton iff
@@ -26,7 +25,6 @@ This is the case if `Depth[I](M) = 0`.
 
 * `IsSMulRegular.subsingleton_linearMap_iff` : for `R` module `N M`, `Hom(N, M) = 0`
   iff there is a `M`-regular in `Module.annihilator R N`.
-
 -/
 
 public section

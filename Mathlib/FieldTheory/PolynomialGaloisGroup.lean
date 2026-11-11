@@ -34,7 +34,6 @@ some results about some extension `E` above `p.SplittingField`.
 - `Polynomial.Gal.card_complex_roots_eq_card_real_add_card_not_gal_inv`: The number of complex roots
   equals the number of real roots plus the number of roots not fixed by complex conjugation
   (i.e. with some imaginary component).
-
 -/
 
 @[expose] public section
@@ -142,7 +141,7 @@ theorem mapRoots_bijective [h : Fact ((p.map (algebraMap F E)).Splits)] :
     rcases hy with ⟨x, hx1, hx2⟩
     exact ⟨⟨x, (@Multiset.mem_toFinset _ (Classical.decEq _) _ _).mpr hx1⟩, Subtype.ext hx2⟩
 
-/-- A bijection between `rootSet p p.SplittingField` and `rootSet p E`. This is an auxilliary
+/-- A bijection between `rootSet p p.SplittingField` and `rootSet p E`. This is an auxiliary
 definition used to define the Galois-equivariant `Polynomial.Gal.rootsEquivRoots`, but we keep
 this definition public to help prove facts about `galAction`. -/
 def rootsEquivRootsAux [Fact ((p.map (algebraMap F E)).Splits)] :
