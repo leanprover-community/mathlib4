@@ -17,7 +17,7 @@ These annotations get into goals in three ways in this file:
 -/
 
 open Polynomial
-open scoped NNReal
+open scoped NNReal ENNReal
 
 set_option linter.unusedVariables false
 
@@ -38,7 +38,7 @@ example : no_index (x + y) + z = z + (y + x) := by
 
 /-! ### `basify` -/
 
-example : ∀ (a : ENNReal := 0), a ≤ a + 1 := by
+example : ∀ (a : ℝ≥0∞ := 0), a ≤ a + 1 := by
   intro a
   basify
   linarith
