@@ -145,19 +145,13 @@ variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
 /-- Left- and right-residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z * x ≤ y }`. -/
-@[to_additive existing
-/-- Left- and right- residuation operators on an additive quantale are similar
-to the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`. -/]
+@[to_additive existing]
 def leftMulResiduation (x y : α) := sSup {z | z * x ≤ y}
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ᵣ z ↔ y * x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x * z ≤ y }`. -/
-@[to_additive existing
-/-- Left- and right- residuation operators on an additive quantale are similar
-to the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`." -/]
+@[to_additive existing]
 def rightMulResiduation (x y : α) := sSup {z | x * z ≤ y}
 
 @[inherit_doc]
