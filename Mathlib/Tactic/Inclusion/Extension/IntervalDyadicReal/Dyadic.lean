@@ -6,6 +6,7 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Dyadic.Basic
 public import Mathlib.Data.Rat.Cast.Order
 
 set_option doc.verso true
@@ -22,34 +23,6 @@ core.
 
 namespace Inclusion.IntervalDyadicReal
 
-instance : LinearOrder Dyadic where
-  le_refl := Std.IsPreorder.le_refl
-  le_trans := Std.IsPreorder.le_trans
-  le_antisymm := Std.IsPartialOrder.le_antisymm
-  lt_iff_le_not_ge := Std.LawfulOrderLT.lt_iff
-  le_total := Std.IsLinearOrder.le_total
-  toDecidableLE := Dyadic.instDecidableLE
-
-instance : AddCommGroup Dyadic where
-  nsmul := (· * ·)
-  zsmul := (· * ·)
-  add_zero := Dyadic.add_zero
-  zero_add := Dyadic.zero_add
-  add_assoc := Dyadic.add_assoc
-  sub_eq_add_neg _ _ := rfl
-  neg_add_cancel := Dyadic.neg_add_cancel
-  add_comm := Dyadic.add_comm
-  nsmul_zero := by grind
-  nsmul_succ := by grind
-  zsmul_zero' := by grind
-  zsmul_succ' := by grind
-  zsmul_neg' := by grind
-
--- TODO: remove this once #43038 lands.
-instance : AddLeftMono Dyadic where
-  elim a b c h := Dyadic.toRat_le_toRat_iff.mp <| by
-    simpa [Dyadic.toRat_add] using add_le_add_right (Dyadic.toRat_le_toRat_iff.mpr h) c.toRat
-
 open Dyadic
 namespace Dyadic
 
@@ -60,14 +33,6 @@ theorem ofOdd_pos {n k : ℤ} {hn : n % 2 = 1} : 0 < ofOdd n k hn ↔ 0 < n := b
 @[simp]
 theorem ofOdd_nonneg {n k : ℤ} {hn : n % 2 = 1} : 0 ≤ ofOdd n k hn ↔ 0 ≤ n := by
   simp [← toRat_le_toRat_iff, toRat_ofOdd_eq_mul_two_pow, zpow_pos]
-
-@[simp]
-theorem toRat_one : toRat 1 = 1 := rfl
-
-@[simp]
-theorem toRat_ofNat {n : ℕ} [n.AtLeastTwo] : toRat ofNat(n) = ofNat(n) := by
-  rw [← Nat.cast_ofNat (R := Dyadic), ← Nat.cast_ofNat (R := ℚ)]
-  exact toRat_natCast n
 
 @[simp]
 theorem toRat_pos (x : Dyadic) : 0 < x.toRat ↔ 0 < x := by

@@ -34,7 +34,6 @@ Conversely, let `B` be a flat `A`-algebra:
 - `Module.FaithfullyFlat.of_comap_surjective`: `B` is faithfully flat over `A`,
   if the induced map on prime spectra is surjective.
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
-
 -/
 
 public section

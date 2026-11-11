@@ -148,9 +148,9 @@ private theorem abs_artanh_sub_le {n : ℕ} {x : ℝ} (hx : x ∈ Set.Ioo (-1) 1
   exact sum_range_sub_log_div_le (abs_lt.mpr hx) n
 
 private theorem div_le_pow (p N prec m n : ℕ) (hp : 2 ≤ p) (hm : 2 ^ m ≤ p ^ 2)
-    (h : (1 / p) / (1 - (1 / p) ^ 2) ≤ (1 / 2 : ℝ) ^ n) (hN : prec ≤ m * N + n) :
+    (hn : (1 / p) / (1 - (1 / p) ^ 2) ≤ (1 / 2 : ℝ) ^ n) (hN : prec ≤ m * N + n) :
     (1 / p : ℝ) ^ (2 * N + 1) / (1 - (1 / p) ^ 2) ≤ (step prec).toRat := by
-  grw [pow_succ, mul_div_assoc, h, toRat_step_real]
+  grw [pow_succ, mul_div_assoc, hn, toRat_step_real]
   apply pow_le_pow_iff_right_of_lt_one₀ (by simp) (by norm_num) |>.mpr hN |>.trans'
   rw [pow_add]
   gcongr
@@ -158,11 +158,11 @@ private theorem div_le_pow (p N prec m n : ℕ) (hp : 2 ≤ p) (hm : 2 ^ m ≤ p
   exact pow_le_pow_left₀ (by positivity) (by simpa [field] using mod_cast hm) N
 
 private theorem abs_artanh_div_sub_le (p N prec m n : ℕ) (hp : 2 ≤ p) (hm : 2 ^ m ≤ p ^ 2)
-    (h : (1 / p) / (1 - (1 / p) ^ 2) ≤ (1 / 2 : ℝ) ^ n) (hN : prec ≤ m * N + n) :
+    (hn : (1 / p) / (1 - (1 / p) ^ 2) ≤ (1 / 2 : ℝ) ^ n) (hN : prec ≤ m * N + n) :
     |artanh (1 / p) - ∑ j ∈ Finset.range N, (1 / (p : ℝ)) ^ (2 * j + 1) / (2 * j + 1)|
       ≤ (step prec).toRat := by
   grw [abs_artanh_sub_le (by simp [field]; grind), abs_of_pos (by simp; lia)]
-  exact div_le_pow p N prec m n hp hm h hN
+  exact div_le_pow p N prec m n hp hm hn hN
 
 end SmallArtanh
 
@@ -312,8 +312,8 @@ theorem logSum_le {x : Dyadic} (hx : 1 ≤ |x| ∧ |x| < 2) (prec : ℕ) :
   · rcases eq_or_eq_neg_of_abs_eq hx' with rfl | rfl <;> simp [logSum]
   replace hx' : 1 < |x| ∧ |x| < 2 := hx.imp_left (lt_of_le_of_ne · (Ne.symm hx'))
   fun_cases logSum with
-  | case1 _ hx' => rcases hx' with rfl | rfl <;> simp [← toRat_lt_toRat_iff] at hx'
-  | case2 _ => simp [← toRat_lt_toRat_iff, not_lt_of_gt] at hx'
+  | case1 _ hx' => rcases hx' with rfl | rfl <;> simp at hx'
+  | case2 _ => simp [not_lt_of_gt] at hx'
   | case3 n k hn e m P Q hPQ hx' =>
     obtain rfl : k = n.natAbs.log2 := eq_log2_of_and n k hn hx
     have hem : m ≥ 2 ^ e := Nat.log2_self_le <| by lia

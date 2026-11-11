@@ -27,7 +27,6 @@ https://ncatlab.org/nlab/show/Frobenius+reciprocity
 
 ## Tags
 Frobenius reciprocity, Cartesian closed functor
-
 -/
 
 @[expose] public section

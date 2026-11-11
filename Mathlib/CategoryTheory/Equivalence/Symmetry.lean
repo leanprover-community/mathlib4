@@ -21,7 +21,6 @@ and provides the definition of the functor that takes an equivalence to its inve
   `e` to the functor `e.inverse`.
 - `congrLeftFunctor C D E`: the functor (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ that applies
   `Equivalence.congrLeft` on objects, and whiskers left by `conjugateEquiv` on maps.
-
 -/
 
 @[expose] public section

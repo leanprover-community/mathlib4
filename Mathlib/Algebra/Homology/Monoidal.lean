@@ -21,7 +21,6 @@ coproducts and both left/right tensoring commute with these.
 
 In particular, we obtain a monoidal category structure on
 `ChainComplex C ℕ` when `C` is an additive monoidal category.
-
 -/
 
 @[expose] public section

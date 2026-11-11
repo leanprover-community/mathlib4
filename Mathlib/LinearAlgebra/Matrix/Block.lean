@@ -32,7 +32,6 @@ matrices built out of blocks.
 ## Tags
 
 matrix, diagonal, det, block triangular
-
 -/
 
 @[expose] public section
