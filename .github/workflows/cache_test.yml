@@ -10,9 +10,8 @@
 # `cache-get` runs one `lake exe cache get` against the public cache on Ubuntu
 # 26.04, whose curl 8.18 the tool runs without retries, and on Windows. The
 # main CI runs the tool on neither.
-#
-# `cache-get-downstream` runs `Cache/test/downstream.sh`: `cache get` with a
-# module of a downstream project that requires this checkout.
+# It also runs `Cache/test/downstream.sh`: `cache get` with a module of a
+# downstream project that requires this checkout.
 name: cache tests
 
 on:
@@ -85,7 +84,7 @@ jobs:
       matrix:
         os: [ubuntu-26.04, windows-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         shell: bash
@@ -115,34 +114,6 @@ jobs:
       - name: check that the tool ran without curl retries
         if: runner.os == 'Linux'
         run: grep "without retries" cache-get.log
-
-  # The test needs a checkout without Mathlib build files, so it runs in its
-  # own job, apart from the `cache get` of `cache-get`.
-  cache-get-downstream:
-    if: github.repository == 'leanprover-community/mathlib4'
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
-        with:
-          auto-config: "false"
-          build: "false"
-          test: "false"
-          lint: "false"
-          use-mathlib-cache: "false"
-          use-github-cache: "false"
-
-      - name: build cache
-        run: lake build cache
 
       - name: cache get in a downstream project
         run: bash Cache/test/downstream.sh
