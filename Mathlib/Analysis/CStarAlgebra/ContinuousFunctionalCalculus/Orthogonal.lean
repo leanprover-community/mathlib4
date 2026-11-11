@@ -98,8 +98,8 @@ lemma cfcₙ_nnReal_right (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) : a ⋆⟂ 
 open CFC
 
 lemma _root_.isStarOrtho_sqrt_right_iff (ha : 0 ≤ a) : b ⋆⟂ sqrt a ↔ b ⋆⟂ a := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h.cfcₙ_nnreal_right _⟩
-  have := h.cfcₙ_nnreal_right (fun x ↦ x * x)
+  refine ⟨fun h ↦ ?_, fun h ↦ h.cfcₙ_nnReal_right _⟩
+  have := h.cfcₙ_nnReal_right (fun x ↦ x * x)
   rwa [cfcₙ_mul .., cfcₙ_id' .., sqrt_mul_sqrt_self _] at this
 
 lemma _root_.isStarOrtho_sqrt_left_iff (ha : 0 ≤ a) : sqrt a ⋆⟂ b ↔ a ⋆⟂ b := by
