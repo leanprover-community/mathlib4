@@ -6,7 +6,8 @@ Authors: Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.MkIffOfInductiveProp
+
+import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Additional lemmas about sum types
@@ -50,9 +51,11 @@ section get
 
 variable {x : α ⊕ β}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
   cases x <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
   cases x <;> simp
 
@@ -136,7 +139,7 @@ theorem update_inr_apply_inr' {γ : α ⊕ β → Type*} [DecidableEq β] [Decid
 lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
     (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (a : α) (x : γ (.inl a)) :
     Sum.rec (update f a x) g = update (Sum.rec f g) (.inl a) x :=
-  Function.rec_update Sum.inl_injective (Sum.rec · g) (fun _ _ => rfl) (fun
+  Function.rec_update (Sum.rec · g) (fun _ _ => rfl) (fun
     | _, _, .inl _, h => (h _ rfl).elim
     | _, _, .inr _, _ => rfl) _ _ _
 
@@ -144,7 +147,7 @@ lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq �
 lemma rec_update_right {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
     (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (b : β) (x : γ (.inr b)) :
     Sum.rec f (update g b x) = update (Sum.rec f g) (.inr b) x :=
-  Function.rec_update Sum.inr_injective (Sum.rec f) (fun _ _ => rfl) (fun
+  Function.rec_update (Sum.rec f) (fun _ _ => rfl) (fun
     | _, _, .inr _, h => (h _ rfl).elim
     | _, _, .inl _, _ => rfl) _ _ _
 
@@ -271,7 +274,7 @@ theorem map_surjective {f : α → γ} {g : β → δ} :
 @[simp]
 theorem map_bijective {f : α → γ} {g : β → δ} :
     Bijective (Sum.map f g) ↔ Bijective f ∧ Bijective g :=
-  (map_injective.and map_surjective).trans <| and_and_and_comm
+  (map_injective.and map_surjective).trans and_and_and_comm
 
 end Sum
 

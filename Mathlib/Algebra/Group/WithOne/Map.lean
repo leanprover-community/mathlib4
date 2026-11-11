@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.WithOne.Defs
 public import Mathlib.Data.Option.NAry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining a zero/one to semigroups and mapping
 -/

@@ -6,8 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Generator.Presheaf
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
+
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # Categories of presheaves are locally presentable
@@ -16,7 +18,6 @@ If `A` is a locally `κ`-presentable category and `C` is a small category,
 we show that `Cᵒᵖ ⥤ A` is also locally `κ`-presentable, under the
 additional assumption that `A` has pullbacks (a condition which should
 be automatically satisfied (TODO)).
-
 -/
 
 public section
@@ -86,9 +87,23 @@ instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
   rw [isCardinalPresentable_iff] at this ⊢
   infer_instance
 
+instance {A : Type u'} [Category.{v'} A] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalLocallyPresentable A κ] [HasPullbacks A]
+    (C : Type*) [Category* C] [EssentiallySmall.{w} C] :
+    IsCardinalLocallyPresentable (C ⥤ A) κ :=
+  ((opOpEquivalence ..).trans
+    (equivSmallModel.{w} C).symm).congrLeft.isCardinalLocallyPresentable κ
+
 instance {A : Type u'} [Category.{v'} A] [IsLocallyPresentable.{w} A] [HasPullbacks A]
     (C : Type w) [SmallCategory C] :
     IsLocallyPresentable.{w} (Cᵒᵖ ⥤ A) where
+  exists_cardinal := by
+    obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} A
+    exact ⟨κ, inferInstance, inferInstance⟩
+
+instance {A : Type u'} [Category.{v'} A] [IsLocallyPresentable.{w} A] [HasPullbacks A]
+    (C : Type*) [Category* C] [EssentiallySmall.{w} C] :
+    IsLocallyPresentable.{w} (C ⥤ A) where
   exists_cardinal := by
     obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} A
     exact ⟨κ, inferInstance, inferInstance⟩

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.CategoryTheory.Sites.PreservesSheafification
 public import Mathlib.CategoryTheory.Sites.Subsheaf
-public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Locally injective morphisms of (pre)sheaves
@@ -21,7 +20,6 @@ if `x` and `y` are two elements of some `F₁.obj U` such
 the images of `x` and `y` in `F₂.obj U` coincide, then
 the equality `x = y` must hold locally, i.e. after restriction
 by the maps of a covering sieve.
-
 -/
 
 @[expose] public section
@@ -30,7 +28,7 @@ universe w v' v u' u
 
 namespace CategoryTheory
 
-open Opposite Limits
+open Opposite
 
 variable {C : Type u} [Category.{v} C]
   {D : Type u'} [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
@@ -113,7 +111,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
       equalizerSieve (F₁.map f.op x) ((F₁.map f.op y))
     refine J.superset_covering ?_ (J.transitive h (Sieve.bind S.1 T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
-      simpa using ha
+      simpa using! ha
     · intro Y f hf
       refine J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
         (equalizerSieve_mem J φ _ _ ?_)
@@ -183,7 +181,7 @@ instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type (max u v)) :
   equalizerSieve_mem {X} x y h := by
     rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
     obtain ⟨W, h₁, h₂, eq⟩ := h
-    exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
+    exact J.superset_covering (fun Y f hf => congr($(eq).val ⟨Y, f, hf⟩)) W.2
 
 set_option backward.isDefEq.respectTransparency false in
 instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type (max u v)) :

@@ -20,7 +20,6 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
 * [Rinehart, G. S., Differential forms on general commutative algebras. Zbl 0113.26204
   Trans. Am. Math. Soc. 108, 195-222 (1963).][rinehart_1963]
-
 -/
 
 @[expose] public section
@@ -44,8 +43,6 @@ class LieRinehartAlgebra (R A L : Type*) [CommRing A] [LieRing L]
     [Module A L] [LieRingModule L A] [LieRinehartRing A L]
     [CommRing R] [Algebra R A] [LieAlgebra R L] : Prop extends
     IsScalarTower R A L, LieModule R L A
-
-namespace LieRinehartAlgebra
 
 variable {R A₁ L₁ A₂ L₂ A₃ L₃ : Type*} [CommRing R]
   [CommRing A₁] [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁]
@@ -71,6 +68,8 @@ instance : LieRinehartRing A₁ (Derivation R A₁ A₁) where
 
 /-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra. -/
 instance : LieRinehartAlgebra R A₁ (Derivation R A₁ A₁) where
+
+namespace LieRinehartAlgebra
 
 /-- A morphism of Lie-Rinehart algebras, from `(A₁, L₁)` to `(A₂, L₂)`, consists of a pair of maps
 `(σ, F)` where `σ : A₁ → A₂` is a morphism of algebras and `F` is a morphism of Lie algebras, which

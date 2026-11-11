@@ -14,7 +14,6 @@ Extensions for `norm_num` that compute `Nat.factorial`, `Nat.ascFactorial` and `
 
 This is done by reducing each of these to `ascFactorial`, which is computed using a divide and
 conquer strategy that improves performance and avoids exceeding the recursion depth.
-
 -/
 
 public meta section
@@ -55,7 +54,7 @@ partial def proveAscFactorial (n l : ℕ) (en el : Q(ℕ)) :
     let ⟨b, eb, b_prf⟩ := proveAscFactorial (n + m) r enm er
     have eab : Q(ℕ) := mkRawNatLit (a * b)
     have : $eab =Q $ea * $eb := ⟨⟩
-    ⟨a * b, eab, q(by convert asc_factorial_aux $en $em $er $ea $eb $a_prf $b_prf)⟩
+    ⟨a * b, eab, q(by convert asc_factorial_aux «$en» «$em» «$er» «$ea» «$eb» «$a_prf» «$b_prf»)⟩
 
 lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (1).ascFactorial x = a) :
     IsNat (n !) a := by

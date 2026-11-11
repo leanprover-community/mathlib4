@@ -23,7 +23,6 @@ generators of `M₂`. Then, we obtain a presentation
 
 More generally, if we have an exact sequence `M₁ → M₂ → M₃ → 0`,
 we obtain a presentation of `M₃`, see `Presentation.ofExact`.
-
 -/
 
 @[expose] public section
@@ -98,6 +97,7 @@ variable (hg₁ : Submodule.span A (Set.range g₁) = ⊤)
 
 namespace cokernelSolution
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cokernel can be defined by generators and relations. -/
 noncomputable def isPresentationCore :
     Relations.Solution.IsPresentationCore.{w}
@@ -134,6 +134,9 @@ def cokernel : Presentation A (M₂ ⧸ LinearMap.range f) :=
 
 end Cokernel
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given an exact sequence of `A`-modules `M₁ → M₂ → M₃ → 0`, this is the presentation
 of `M₃` that is obtained from a presentation `pres₂` of `M₂`, a choice of generators
 `g₁ : ι → M₁` of `M₁`, and an additional data in a `Presentation.CokernelData` structure. -/

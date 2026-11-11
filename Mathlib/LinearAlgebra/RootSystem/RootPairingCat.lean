@@ -5,11 +5,12 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Hom
 public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Hom
 
 /-!
 # The category of root pairings
+
 This file defines the category of root pairings, following the definition of category of root data
 given in SGA III Exp. 21 Section 6.
 
@@ -24,12 +25,11 @@ given in SGA III Exp. 21 Section 6.
 ## Implementation details
 
 This is mostly copied from `ModuleCat`.
-
 -/
 
 public section
 
-open Set Function CategoryTheory
+open CategoryTheory
 
 noncomputable section
 

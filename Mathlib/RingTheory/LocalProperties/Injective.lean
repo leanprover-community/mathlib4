@@ -5,14 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Injective
-public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.LocalProperties.Exactness
+
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
-
 # Being injective is a local property
 
 ## Main Results
@@ -22,7 +21,6 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 
 * `Module.injective_of_localization_maximal` : For module `M` over Noetherian ring `R`,
   being injective can be checked at localization at maximal ideals.
-
 -/
 
 universe u v
@@ -91,7 +89,7 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
   rw [eq] at surj
   rw [← LinearMap.coe_restrictScalars (R := R),
     LocalizedModule.restrictScalars_map_eq m.primeCompl hM gM]
-  simpa using surj
+  simpa using! surj
 
 section
 
@@ -126,12 +124,11 @@ theorem Module.injective_of_localization_maximal' [Small.{v} R] [IsNoetherianRin
     { __ := IsLocalizedModule.linearEquiv P.primeCompl (f P)
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }
-  · intro r m
-    obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
-    apply ((Module.End.isUnit_iff _).mp
-      (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
-    dsimp
-    simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
-      IsLocalization.map_id_mk']
+  intro r m
+  obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
+  apply ((Module.End.isUnit_iff _).mp
+    (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
+  dsimp
+  simp [← map_smul, ← smul_assoc]
 
 end

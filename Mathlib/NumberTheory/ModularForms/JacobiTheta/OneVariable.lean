@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-! # Jacobi's theta function
 
@@ -98,7 +98,7 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
       _ = 2 / (1 - rexp (-π * τ.im)) * rexp (-π * τ.im) := by rw [div_mul_comm, mul_comm]
   have : ∀ n : ℕ, ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ (n + 1) := by
     intro n
-    simpa only [Int.cast_add, Int.cast_one] using norm_exp_mul_sq_le hτ (n + 1)
+    simpa only [Int.cast_add, Int.cast_one] using! norm_exp_mul_sq_le hτ (n + 1)
   have s : HasSum (fun n : ℕ =>
       rexp (-π * τ.im) ^ (n + 1)) (rexp (-π * τ.im) / (1 - rexp (-π * τ.im))) := by
     simp_rw [pow_succ', div_eq_mul_inv, hasSum_mul_left_iff (Real.exp_ne_zero _)]
@@ -111,7 +111,7 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
 /-- The norm of `jacobiTheta τ - 1` decays exponentially as `im τ → ∞`. -/
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :
     (fun τ => jacobiTheta τ - 1) =O[comap im atTop] fun τ => rexp (-π * τ.im) := by
-  simp_rw [IsBigO, IsBigOWith, Filter.eventually_comap, Filter.eventually_atTop]
+  simp_rw [isBigO_iff, Filter.eventually_comap, Filter.eventually_atTop]
   refine ⟨2 / (1 - rexp (-(π * 1))), 1, fun y hy τ hτ =>
     (norm_jacobiTheta_sub_one_le (hτ.symm ▸ zero_lt_one.trans_le hy : 0 < im τ)).trans ?_⟩
   rw [Real.norm_eq_abs, Real.abs_exp, hτ, neg_mul]

@@ -6,11 +6,12 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.Notation
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
 # `C^n` monoid
+
 A `C^n` monoid is a monoid that is also a `C^n` manifold, in which multiplication is a `C^n` map
 of the product manifold `G` × `G` into `G`.
 
@@ -265,7 +266,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
 @[to_additive]
 theorem contMDiff_pow : ∀ i : ℕ, CMDiff n fun a : G ↦ a ^ i
   | 0 => by simp only [pow_zero, contMDiff_const]
-  | k + 1 => by simpa [pow_succ] using (contMDiff_pow _).mul contMDiff_id
+  | k + 1 => by simpa [pow_succ] using! (contMDiff_pow _).mul contMDiff_id
 
 /-- Morphism of additive `C^n` monoids. -/
 structure ContMDiffAddMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H')
@@ -291,10 +292,10 @@ instance : One (ContMDiffMonoidMorphism I I' n G G') :=
 instance : Inhabited (ContMDiffMonoidMorphism I I' n G G') :=
   ⟨1⟩
 
-@[to_additive]
+@[to_additive (attr := macro_inline)]
 instance : FunLike (ContMDiffMonoidMorphism I I' n G G') G G' where
   coe a := a.toFun
-  coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
+  coe_injective f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 @[to_additive]
 instance : MonoidHomClass (ContMDiffMonoidMorphism I I' n G G') G G' where
@@ -347,23 +348,11 @@ theorem contMDiffWithinAt_finsetProd' (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x) :
   Finset.prod_induction f (fun f ↦ CMDiffAt[s] n f x) (fun _ _ hf hg ↦ hf.mul hg)
     (contMDiffWithinAt_const (c := 1)) h
 
-@[deprecated (since := "2026-04-08")]
-alias contMDiffWithinAt_finset_sum' := contMDiffWithinAt_finsetSum'
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias contMDiffWithinAt_finset_prod' := contMDiffWithinAt_finsetProd'
-
 @[to_additive]
 theorem contMDiffWithinAt_finsetProd (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x) :
     CMDiffAt[s] n (fun x ↦ ∏ i ∈ t, f i x) x := by
   simp only [← Finset.prod_apply]
   exact contMDiffWithinAt_finsetProd' h
-
-@[deprecated (since := "2026-04-08")]
-alias contMDiffWithinAt_finset_sum := contMDiffWithinAt_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias contMDiffWithinAt_finset_prod := contMDiffWithinAt_finsetProd
 
 @[to_additive]
 theorem ContMDiffAt.prod (h : ∀ i ∈ t, CMDiffAt n (f i) x₀) :
@@ -382,20 +371,10 @@ theorem contMDiffAt_finsetProd' (h : ∀ i ∈ t, CMDiffAt n (f i) x) :
     CMDiffAt n (∏ i ∈ t, f i) x :=
   contMDiffWithinAt_finsetProd' h
 
-@[deprecated (since := "2026-04-08")] alias contMDiffAt_finset_sum' := contMDiffAt_finsetSum'
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias contMDiffAt_finset_prod' := contMDiffAt_finsetProd'
-
 @[to_additive]
 theorem contMDiffAt_finsetProd (h : ∀ i ∈ t, CMDiffAt n (f i) x) :
     CMDiffAt n (fun x ↦ ∏ i ∈ t, f i x) x :=
   contMDiffWithinAt_finsetProd h
-
-@[deprecated (since := "2026-04-08")] alias contMDiffAt_finset_sum := contMDiffAt_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias contMDiffAt_finset_prod := contMDiffAt_finsetProd
 
 @[to_additive]
 theorem contMDiffOn_finprod
@@ -408,20 +387,10 @@ theorem contMDiffOn_finsetProd' (h : ∀ i ∈ t, CMDiff[s] n (f i)) :
     CMDiff[s] n (∏ i ∈ t, f i) :=
   fun x hx ↦ contMDiffWithinAt_finsetProd' fun i hi ↦ h i hi x hx
 
-@[deprecated (since := "2026-04-08")] alias contMDiffOn_finset_sum' := contMDiffOn_finsetSum'
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias contMDiffOn_finset_prod' := contMDiffOn_finsetProd'
-
 @[to_additive]
 theorem contMDiffOn_finsetProd (h : ∀ i ∈ t, CMDiff[s] n (f i)) :
     CMDiff[s] n (fun x ↦ ∏ i ∈ t, f i x) :=
   fun x hx ↦ contMDiffWithinAt_finsetProd fun i hi ↦ h i hi x hx
-
-@[deprecated (since := "2026-04-08")] alias contMDiffOn_finset_sum := contMDiffOn_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias contMDiffOn_finset_prod := contMDiffOn_finsetProd
 
 @[to_additive]
 theorem ContMDiff.prod (h : ∀ i ∈ t, CMDiff n (f i)) :
@@ -432,20 +401,10 @@ theorem ContMDiff.prod (h : ∀ i ∈ t, CMDiff n (f i)) :
 theorem contMDiff_finsetProd' (h : ∀ i ∈ t, CMDiff n (f i)) :
     CMDiff n (∏ i ∈ t, f i) := fun x ↦ contMDiffAt_finsetProd' fun i hi ↦ h i hi x
 
-@[deprecated (since := "2026-04-08")] alias contMDiff_finset_sum' := contMDiff_finsetSum'
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias contMDiff_finset_prod' := contMDiff_finsetProd'
-
 @[to_additive]
 theorem contMDiff_finsetProd (h : ∀ i ∈ t, CMDiff n (f i)) :
     CMDiff n fun x ↦ ∏ i ∈ t, f i x :=
   fun x ↦ contMDiffAt_finsetProd fun i hi ↦ h i hi x
-
-@[deprecated (since := "2026-04-08")] alias contMDiff_finset_sum := contMDiff_finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias contMDiff_finset_prod := contMDiff_finsetProd
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, CMDiff n (f i))
@@ -510,7 +469,7 @@ variable {f : M → G} {s : Set M} {x : M} (c : G)
 @[to_additive]
 theorem ContMDiffWithinAt.div_const (hf : CMDiffAt[s] n f x) :
     CMDiffAt[s] n (fun x ↦ f x / c) x := by
-  simpa only [div_eq_mul_inv] using hf.mul contMDiffWithinAt_const
+  simpa only [div_eq_mul_inv] using! hf.mul contMDiffWithinAt_const
 
 @[to_additive]
 nonrec theorem ContMDiffAt.div_const (hf : CMDiffAt n f x) :

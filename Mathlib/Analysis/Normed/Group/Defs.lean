@@ -5,12 +5,14 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Seminorm
-public import Mathlib.Topology.Order.Real
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Analysis.Normed.Group.Seminorm
 public import Mathlib.Tactic.Group
 public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.Order.Real
+
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: definitions
@@ -18,7 +20,7 @@ public import Mathlib.Topology.MetricSpace.Defs
 In this file we define 10 classes:
 
 * `Norm`, `NNNorm`: auxiliary classes endowing a type `α` with a function `norm : α → ℝ`
-  (notation: `‖x‖`) and `nnnorm : α → ℝ≥0` (notation: `‖x‖₊`), respectively;
+  (notation: `‖x‖`) and `nnNorm : α → ℝ≥0` (notation: `‖x‖₊`), respectively;
 * `Seminormed...Group`: A seminormed (additive) (commutative) group is an (additive) (commutative)
   group with a norm and a compatible pseudometric space structure:
   `∀ x y, dist x y = ‖x⁻¹ * y‖` or `∀ x y, dist x y = ‖-x + y‖`, depending on the group operation.
@@ -48,10 +50,10 @@ normed group
 public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {α E G : Type*}
 
-open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open Filter Bornology
+open ENNReal Filter NNReal
 
 /-- Auxiliary class, endowing a type `E` with a function `norm : E → ℝ` with notation `‖x‖`. This
 class is designed to be extended in more interesting classes specifying the properties of the norm.
@@ -61,90 +63,120 @@ class Norm (E : Type*) where
   /-- the `ℝ`-valued norm function. -/
   norm : E → ℝ
 
-/-- Auxiliary class, endowing a type `α` with a function `nnnorm : α → ℝ≥0` with notation `‖x‖₊`. -/
+/-- Auxiliary class, endowing a type `α` with a function `nnNorm : α → ℝ≥0` with notation `‖x‖₊`. -/
 @[notation_class]
 class NNNorm (E : Type*) where
   /-- the `ℝ≥0`-valued norm function. -/
-  nnnorm : E → ℝ≥0
+  nnNorm : E → ℝ≥0
 
-/-- Auxiliary class, endowing a type `α` with a function `enorm : α → ℝ≥0∞` with notation `‖x‖ₑ`. -/
+@[deprecated (since := "2026-10-31")] alias NNNorm.nnnorm := NNNorm.nnNorm
+export NNNorm (nnnorm)
+
+/-- Auxiliary class, endowing a type `α` with a function `eNorm : α → ℝ≥0∞` with notation `‖x‖ₑ`. -/
 @[notation_class]
 class ENorm (E : Type*) where
   /-- the `ℝ≥0∞`-valued norm function. -/
-  enorm : E → ℝ≥0∞
+  eNorm : E → ℝ≥0∞
 
-export Norm (norm)
-export NNNorm (nnnorm)
+@[deprecated (since := "2026-10-31")] alias ENorm.enorm := ENorm.eNorm
 export ENorm (enorm)
 
+export Norm (norm)
+export NNNorm (nnNorm)
+export ENorm (eNorm)
+
 @[inherit_doc] notation "‖" e "‖" => norm e
-@[inherit_doc] notation "‖" e "‖₊" => nnnorm e
-@[inherit_doc] notation "‖" e "‖ₑ" => enorm e
+@[inherit_doc] notation "‖" e "‖₊" => nnNorm e
+@[inherit_doc] notation "‖" e "‖ₑ" => eNorm e
 
 section ENorm
 variable {E : Type*} [NNNorm E] {x : E} {r : ℝ≥0}
 
-instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞)
+instance NNNorm.toENorm : ENorm E where eNorm := (‖·‖₊ : E → ℝ≥0∞)
 
-lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
+@[basify_op]
+lemma eNorm_eq_nnNorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
-@[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
+@[deprecated (since := "2026-10-31")] alias enorm_eq_nnnorm := eNorm_eq_nnNorm
 
-@[simp, norm_cast] lemma coe_le_enorm : r ≤ ‖x‖ₑ ↔ r ≤ ‖x‖₊ := by simp [enorm]
-@[simp, norm_cast] lemma enorm_le_coe : ‖x‖ₑ ≤ r ↔ ‖x‖₊ ≤ r := by simp [enorm]
-@[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [enorm]
-@[simp, norm_cast] lemma enorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [enorm]
+@[simp] lemma toNNReal_eNorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
+
+@[deprecated (since := "2026-11-06")] alias toNNReal_enorm := toNNReal_eNorm
+
+@[simp, norm_cast] lemma coe_le_eNorm : r ≤ ‖x‖ₑ ↔ r ≤ ‖x‖₊ := by simp [eNorm]
+@[simp, norm_cast] lemma eNorm_le_coe : ‖x‖ₑ ≤ r ↔ ‖x‖₊ ≤ r := by simp [eNorm]
+@[simp, norm_cast] lemma coe_lt_eNorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [eNorm]
+@[simp, norm_cast] lemma eNorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [eNorm]
+
+@[deprecated (since := "2026-11-06")] alias coe_le_enorm := coe_le_eNorm
+@[deprecated (since := "2026-11-06")] alias enorm_le_coe := eNorm_le_coe
+@[deprecated (since := "2026-11-06")] alias coe_lt_enorm := coe_lt_eNorm
+@[deprecated (since := "2026-11-06")] alias enorm_lt_coe := eNorm_lt_coe
 
 @[aesop (rule_sets := [finiteness]) safe apply, simp]
-lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
-@[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
+lemma eNorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [eNorm]
+@[simp] lemma eNorm_lt_top : ‖x‖ₑ < ∞ := by simp [eNorm]
+
+@[deprecated (since := "2026-11-06")] alias enorm_ne_top := eNorm_ne_top
+@[deprecated (since := "2026-11-06")] alias enorm_lt_top := eNorm_lt_top
 
 end ENorm
 
 /-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`
 
-NB. We do not demand that the topology is somehow defined by the enorm:
+NB. We do not demand that the topology is somehow defined by the eNorm:
 for `ℝ≥0∞` (the motivating example behind this definition), this is not true. -/
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
-  continuous_enorm : Continuous enorm
+  continuous_eNorm : Continuous eNorm
 
-/-- An e-seminormed monoid is an additive monoid endowed with a continuous enorm.
-Note that we do not ask for the enorm to be positive definite:
-non-trivial elements may have enorm zero. -/
+@[deprecated (since := "2026-11-07")]
+alias ContinuousENorm.continuous_enorm := ContinuousENorm.continuous_eNorm
+
+/-- An e-seminormed monoid is an additive monoid endowed with a continuous eNorm.
+Note that we do not ask for the eNorm to be positive definite:
+non-trivial elements may have eNorm zero. -/
 class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
     extends ContinuousENorm E, AddMonoid E where
-  enorm_zero : ‖(0 : E)‖ₑ = 0
-  protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+  eNorm_zero : ‖(0 : E)‖ₑ = 0
+  protected eNorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 -- see Note [lower instance priority]
-attribute [instance 200] ESeminormedAddMonoid.toAddMonoid
+attribute [instance 10] ESeminormedAddMonoid.toAddMonoid
 
-/-- An enormed monoid is an additive monoid endowed with a continuous enorm,
+/-- An enormed monoid is an additive monoid endowed with a continuous eNorm,
 which is positive definite: in other words, this is an `ESeminormedAddMonoid` with a positive
 definiteness condition added. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E]
     extends ESeminormedAddMonoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+  eNorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
 
-/-- An e-seminormed monoid is a monoid endowed with a continuous enorm.
-Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
+/-- An e-seminormed monoid is a monoid endowed with a continuous eNorm.
+Note that we only ask for the eNorm to be a semi-norm: non-trivial elements may have eNorm zero. -/
 @[to_additive]
 class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
-  enorm_zero : ‖(1 : E)‖ₑ = 0
-  enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+  eNorm_zero : ‖(1 : E)‖ₑ = 0
+  eNorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+alias ESeminormedMonoid.enorm_zero := ESeminormedMonoid.eNorm_zero
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+protected alias ESeminormedMonoid.enorm_mul_le := ESeminormedMonoid.eNorm_mul_le
 
 -- see Note [lower instance priority]
-attribute [instance 200] ESeminormedMonoid.toMonoid
+attribute [instance 10] ESeminormedMonoid.toMonoid
 
-/-- An enormed monoid is a monoid endowed with a continuous enorm,
+/-- An enormed monoid is a monoid endowed with a continuous eNorm,
 which is positive definite: in other words, this is an `ESeminormedMonoid` with a positive
 definiteness condition added. -/
 @[to_additive]
 class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+  eNorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+alias ENormedMonoid.enorm_eq_zero := ENormedMonoid.eNorm_eq_zero
 
 /-- An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
-enorm.
+eNorm.
 
 We don't have `ESeminormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
@@ -153,10 +185,10 @@ class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddMonoid E, AddCommMonoid E where
 
 -- see Note [lower instance priority]
-attribute [instance 200] ESeminormedAddCommMonoid.toAddCommMonoid
+attribute [instance 10] ESeminormedAddCommMonoid.toAddCommMonoid
 
 /-- An enormed commutative monoid is an additive commutative monoid
-endowed with a continuous enorm which is positive definite.
+endowed with a continuous eNorm which is positive definite.
 
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
@@ -164,19 +196,22 @@ the topology coming from `edist`. -/
 class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddCommMonoid E, ENormedAddMonoid E where
 
-/-- An e-seminormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
+/-- An e-seminormed commutative monoid is a commutative monoid endowed with a continuous eNorm. -/
 @[to_additive]
 class ESeminormedCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedMonoid E, CommMonoid E where
 
 -- see Note [lower instance priority]
-attribute [instance 200] ESeminormedCommMonoid.toCommMonoid
+attribute [instance 10] ESeminormedCommMonoid.toCommMonoid
 
-/-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm
+/-- An enormed commutative monoid is a commutative monoid endowed with a continuous eNorm
 which is positive definite. -/
 @[to_additive]
 class ENormedCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedCommMonoid E, ENormedMonoid E where
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias ENormedCommMonoid.enorm_eq_zero := ENormedCommMonoid.eNorm_eq_zero
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/
@@ -186,7 +221,7 @@ class SeminormedAddGroup (E : Type*) extends Norm E, AddGroup E, PseudoMetricSpa
   dist_eq : ∀ x y, dist x y = ‖-x + y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 200] SeminormedAddGroup.toAddGroup
+attribute [instance 10] SeminormedAddGroup.toAddGroup
 
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖` defines a
 pseudometric space structure. -/
@@ -197,7 +232,7 @@ class SeminormedGroup (E : Type*) extends Norm E, Group E, PseudoMetricSpace E w
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 200] SeminormedGroup.toGroup
+attribute [instance 10] SeminormedGroup.toGroup
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖` defines
 a metric space structure. -/
@@ -207,7 +242,7 @@ class NormedAddGroup (E : Type*) extends Norm E, AddGroup E, MetricSpace E where
   dist_eq : ∀ x y, dist x y = ‖-x + y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 200] NormedAddGroup.toAddGroup
+attribute [instance 10] NormedAddGroup.toAddGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖` defines a metric
 space structure. -/
@@ -218,7 +253,7 @@ class NormedGroup (E : Type*) extends Norm E, Group E, MetricSpace E where
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 200] NormedGroup.toGroup
+attribute [instance 10] NormedGroup.toGroup
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/
@@ -229,7 +264,7 @@ class SeminormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E,
   dist_eq : ∀ x y, dist x y = ‖-x + y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 200] SeminormedAddCommGroup.toAddCommGroup
+attribute [instance 10] SeminormedAddCommGroup.toAddCommGroup
 
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖`
 defines a pseudometric space structure. -/
@@ -240,7 +275,7 @@ class SeminormedCommGroup (E : Type*) extends Norm E, CommGroup E, PseudoMetricS
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 200] SeminormedCommGroup.toCommGroup
+attribute [instance 10] SeminormedCommGroup.toCommGroup
 
 /-- A normed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖` defines
 a metric space structure. -/
@@ -250,7 +285,7 @@ class NormedAddCommGroup (E : Type*) extends Norm E, AddCommGroup E, MetricSpace
   dist_eq : ∀ x y, dist x y = ‖-x + y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 200] NormedAddCommGroup.toAddCommGroup
+attribute [instance 10] NormedAddCommGroup.toAddCommGroup
 
 /-- A normed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖` defines a metric
 space structure. -/
@@ -261,7 +296,7 @@ class NormedCommGroup (E : Type*) extends Norm E, CommGroup E, MetricSpace E whe
   dist_eq : ∀ x y, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 -- see Note [lower instance priority]
-attribute [instance 200] NormedCommGroup.toCommGroup
+attribute [instance 10] NormedCommGroup.toCommGroup
 
 -- See note [lower instance priority]
 @[to_additive]

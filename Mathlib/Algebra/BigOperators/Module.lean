@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Summation by parts
 -/
@@ -36,7 +39,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
   rw [sum_eq_sum_Ico_succ_bot hmn]
   conv in (occs := 3) (f _ • g _) => rw [← sum_range_succ_sub_sum g]
   simp_rw [smul_sub, sum_sub_distrib, h₂, h₁]
-  conv_lhs => congr; rfl; rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
+  conv_lhs => enter [2]; rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
   have : ∀ i, f i • G (i + 1) - f (i + 1) • G (i + 1) = -((f (i + 1) - f i) • G (i + 1)) := by
     intro i
     rw [sub_smul]
@@ -49,7 +52,7 @@ theorem sum_Ioc_by_parts (hmn : m < n) :
       f n • G (n + 1) - f (m + 1) • G (m + 1)
         - ∑ i ∈ Ioc m (n - 1), (f (i + 1) - f i) • G (i + 1) := by
   simpa only [← Ico_add_one_add_one_eq_Ioc, Nat.sub_add_cancel (Nat.one_le_of_lt hmn),
-    add_tsub_cancel_right] using sum_Ico_by_parts f g (Nat.succ_lt_succ hmn)
+    add_tsub_cancel_right] using! sum_Ico_by_parts f g (Nat.succ_lt_succ hmn)
 
 variable (n)
 
@@ -62,5 +65,22 @@ theorem sum_range_by_parts :
   · simp only [range_eq_Ico]
     rw [sum_Ico_by_parts f g (Nat.pos_of_ne_zero hn), sum_range_zero, smul_zero, sub_zero]
     simp only [← range_eq_Ico]
+
+/-- **Summation by parts** for ranges, differencing the second (module) factor instead of the
+first: the mirror image of `sum_range_by_parts`. -/
+theorem sum_range_by_parts' :
+    ∑ i ∈ range n, f i • g i =
+      (∑ i ∈ range n, f i) • g (n - 1) -
+        ∑ i ∈ range (n - 1), (∑ j ∈ range (i + 1), f j) • (g (i + 1) - g i) := by
+  cases n with
+  | zero => simp
+  | succ n =>
+    simp only [Nat.add_sub_cancel]
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      rw [sum_range_succ (f := fun i ↦ f i • g i), ih]
+      simp only [sum_range_succ, smul_sub, add_smul]
+      abel
 
 end Finset

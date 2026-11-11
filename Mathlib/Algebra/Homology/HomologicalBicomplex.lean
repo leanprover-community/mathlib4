@@ -20,7 +20,6 @@ for each `i₁ : I₁`, `K.X i₁` is a column of `K`.
 In this file, we obtain the equivalence of categories
 `HomologicalComplex₂.flipEquivalence : HomologicalComplex₂ C c₁ c₂ ≌ HomologicalComplex₂ C c₂ c₁`
 which is obtained by exchanging the horizontal and vertical directions.
-
 -/
 
 @[expose] public section
@@ -66,9 +65,7 @@ def toGradedObjectFunctor : HomologicalComplex₂ C c₁ c₂ ⥤ GradedObject (
   map φ := toGradedObjectMap φ
 
 instance : (toGradedObjectFunctor C c₁ c₂).Faithful where
-  map_injective {_ _ φ₁ φ₂} h := by
-    ext i₁ i₂
-    exact congr_fun h ⟨i₁, i₂⟩
+  map_injective {_ _ φ₁ φ₂} h := by ext i₁ i₂; congrm $h ⟨i₁, i₂⟩
 
 section OfGradedObject
 
@@ -164,6 +161,7 @@ lemma flip_flip (K : HomologicalComplex₂ C c₁ c₂) : K.flip.flip = K := rfl
 
 variable (C c₁ c₂)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as a functor. -/
 @[simps]
 def flipFunctor :
@@ -175,6 +173,8 @@ def flipFunctor :
           comm' := by intros; simp }
       comm' := by intros; ext; simp }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceUnitIso :
@@ -183,6 +183,8 @@ def flipEquivalenceUnitIso :
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `HomologicalComplex₂.flipEquivalence`. -/
 @[simps!]
 def flipEquivalenceCounitIso :
@@ -191,6 +193,8 @@ def flipEquivalenceCounitIso :
     HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by simp)) (by cat_disch)) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Flipping a complex of complexes over the diagonal, as an equivalence of categories. -/
 @[simps]
 def flipEquivalence :

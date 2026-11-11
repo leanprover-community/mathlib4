@@ -5,9 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-! # Type classes for the Fourier transform
 
@@ -92,20 +90,6 @@ class ContinuousFourierInv (E : Type*) (F : outParam (Type*))
     [TopologicalSpace E] [TopologicalSpace F] [FourierTransformInv E F] where
   continuous_fourierInv : Continuous (𝓕⁻ : E → F)
 
-/-- A `FourierModule` is a function space on which the Fourier transform is a linear map. -/
-@[deprecated "use `FourierAdd` and `FourierSMul` instead" (since := "2026-01-06")]
-structure FourierModule (R : Type*) (E : Type*) (F : outParam (Type*)) [Add E] [Add F] [SMul R E]
-    [SMul R F] extends FourierTransform E F where
-  fourier_add : ∀ (f g : E), 𝓕 (f + g) = 𝓕 f + 𝓕 g
-  fourier_smul : ∀ (r : R) (f : E), 𝓕 (r • f) = r • 𝓕 f
-
-/-- A `FourierInvModule` is a function space on which the Fourier transform is a linear map. -/
-@[deprecated "use `FourierInvAdd` and `FourierInvSMul` instead" (since := "2026-01-06")]
-structure FourierInvModule (R : Type*) (E : Type*) (F : outParam (Type*)) [Add E] [Add F] [SMul R E]
-    [SMul R F] extends FourierTransformInv E F where
-  fourierInv_add : ∀ (f g : E), 𝓕⁻ (f + g) = 𝓕⁻ f + 𝓕⁻ g
-  fourierInv_smul : ∀ (r : R) (f : E), 𝓕⁻ (r • f) = r • 𝓕⁻ f
-
 namespace FourierTransform
 
 export FourierAdd (fourier_add)
@@ -135,6 +119,10 @@ theorem fourier_neg (f : E) : 𝓕 (-f) = - 𝓕 f :=
   map_neg (AddMonoidHom.mk' 𝓕 fourier_add) f
 
 @[simp]
+theorem fourier_sub (f g : E) : 𝓕 (f - g) = 𝓕 f - 𝓕 g :=
+  map_sub (AddMonoidHom.mk' 𝓕 fourier_add) f g
+
+@[simp]
 theorem fourier_sum (f : ι → E) (s : Finset ι) : 𝓕 (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕 (f i) :=
   map_sum (AddMonoidHom.mk' 𝓕 fourier_add) f s
 
@@ -151,6 +139,10 @@ theorem fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
 @[simp]
 theorem fourierInv_neg (f : E) : 𝓕⁻ (-f) = - 𝓕⁻ f :=
   map_neg (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f
+
+@[simp]
+theorem fourierInv_sub (f g : E) : 𝓕⁻ (f - g) = 𝓕⁻ f - 𝓕⁻ g :=
+  map_sub (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f g
 
 @[simp]
 theorem fourierInv_sum (f : ι → E) (s : Finset ι) : 𝓕⁻ (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕⁻ (f i) :=
@@ -264,8 +256,6 @@ variable (R E) in
 /-- The Fourier transform as a continuous linear equivalence. -/
 def fourierCLE : E ≃L[R] F where
   __ := fourierEquiv R E
-  continuous_toFun := continuous_fourier
-  continuous_invFun := continuous_fourierInv
 
 @[simp]
 lemma fourierCLE_apply (f : E) : fourierCLE R E f = 𝓕 f := rfl

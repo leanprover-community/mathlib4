@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.Category.PartOrd
-public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Finset.Image
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # Nonempty finite chains in a partially ordered type
@@ -16,7 +15,6 @@ Given a partially ordered type `X`, we introduce the type
 `NonemptyFiniteChains` of nonempty finite chains in `X`, i.e.
 nonempty finite subsets `A` of `X` such that all the elements
 in `A` are comparable.
-
 -/
 
 @[expose] public section
@@ -51,7 +49,7 @@ lemma le_iff (A B : NonemptyFiniteChains X) : A ≤ B ↔ A.finset ≤ B.finset 
 @[simp]
 lemma lt_iff (A B : NonemptyFiniteChains X) : A < B ↔ A.finset < B.finset := Iff.rfl
 
-open Classical in
+open scoped Classical in
 /-- The image of a nonempty finite chain by a monotone map. -/
 noncomputable def map (s : NonemptyFiniteChains X) (f : X →o Y) :
     NonemptyFiniteChains Y where
@@ -90,5 +88,5 @@ open PartialOrder in
 to `NonemptyFiniteChains X`. -/
 @[simps]
 noncomputable def PartOrd.nonemptyFiniteChainsFunctor : PartOrd.{u} ⥤ PartOrd.{u} where
-  obj X := .of (NonemptyFiniteChains X)
+  obj X := ↧(NonemptyFiniteChains X)
   map f := PartOrd.ofHom (NonemptyFiniteChains.orderHomMap f.hom)

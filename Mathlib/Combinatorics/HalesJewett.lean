@@ -5,11 +5,12 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Data.Fintype.Shrink
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Basic.Finite.Prod
+import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.Shrink
 
 /-!
 # The Hales-Jewett theorem
@@ -63,7 +64,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 ### References
 
 * https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
-
 -/
 
 @[expose] public section
@@ -496,7 +496,7 @@ theorem exists_mono_in_high_dimension (α κ η) [Finite α] [Finite κ] [Finite
   refine ⟨ι × Shrink η, inferInstance, fun C ↦ ?_⟩
   obtain ⟨l, hl⟩ := hι fun x ↦ C fun (i, e) ↦ x i e
   refine ⟨l.toSubspace.reindex (equivShrink.{0} η).symm (Equiv.refl _) (Equiv.refl _), ?_⟩
-  convert hl.toSubspace.reindex
+  convert! hl.toSubspace.reindex
   simp
 
 /-- A variant of the **extended Hales-Jewett theorem** `exists_mono_in_high_dimension` where the

@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
 public import Mathlib.Data.List.OffDiag
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Finsets in product types
@@ -200,19 +201,16 @@ theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s 
   contrapose!; exact nonempty_product
 
 @[simp]
-theorem singleton_product {a : α} :
-    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk_right_injective _⟩ := by
+theorem singleton_product {a : α} : ({a} : Finset α) ×ˢ t = t.map (.sectR a _) := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
 @[simp]
-lemma product_singleton : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk_left_injective _⟩ := by
+lemma product_singleton : s ×ˢ {b} = s.map (.sectL _ b) := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
-theorem singleton_product_singleton {a : α} {b : β} :
-    ({a} ×ˢ {b} : Finset _) = {(a, b)} := by
-  simp only [product_singleton, Function.Embedding.coeFn_mk, map_singleton]
+theorem singleton_product_singleton {a : α} {b : β} : ({a} ×ˢ {b} : Finset _) = {(a, b)} := rfl
 
 @[simp]
 theorem union_product [DecidableEq α] [DecidableEq β] : (s ∪ s') ×ˢ t = s ×ˢ t ∪ s' ×ˢ t := by grind
@@ -248,8 +246,7 @@ variable (s t : Finset α)
 
 /-- Given a finite set `s`, the diagonal, `s.diag` is the set of pairs of the form `(a, a)` for
 `a ∈ s`. -/
-def diag : Finset (α × α) :=
-  s.map ⟨fun a ↦ (a, a), by simp [Function.Injective]⟩
+def diag : Finset (α × α) := s.map ⟨Function.diag, Function.diag_injective⟩
 
 -- TODO: define `Multiset.offDiag`, provide basic API, use it here
 /-- Given a finite set `s`, the off-diagonal, `s.offDiag` is the set of pairs `(a, b)` with `a ≠ b`
@@ -365,6 +362,16 @@ theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   ext
   simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm
+
+/-- The number of strictly ordered pairs `(a, b)` with `a, b ∈ s` is `(#s).choose 2`. -/
+lemma card_product_filter_lt [LinearOrder α] :
+    #{x ∈ s ×ˢ s | x.1 < x.2} = (#s).choose 2 := by
+  set u : Finset (α × α) := {x ∈ s ×ˢ s | x.1 < x.2}
+  set v : Finset (α × α) := {x ∈ s ×ˢ s | x.2 < x.1}
+  have disj : Disjoint u v := by grind [disjoint_left]
+  have union : u.disjUnion v disj = s.offDiag := by grind
+  have swap : #u = #v := Finset.card_equiv (Equiv.prodComm α α) (by grind)
+  grind [Nat.mul_sub_one, offDiag_card, Nat.choose_two_right]
 
 end Diag
 

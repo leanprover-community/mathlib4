@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugating by the square root of a positive element in a C⋆-algebra
 
@@ -51,6 +54,8 @@ lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt
   conjSqrt_monotone h
 
 variable [IsSemitopologicalRing A] [T2Space A]
+
+set_option linter.overlappingInstances false
 
 @[grind =]
 lemma isStrictlyPositive_conjSqrt_iff (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :

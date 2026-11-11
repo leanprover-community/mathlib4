@@ -20,7 +20,6 @@ sets.
 
 * `lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u}`
   is the yoneda sheaf functor.
-
 -/
 
 @[expose] public section
@@ -48,6 +47,7 @@ instance : lightProfiniteToLightCondSet.Full :=
 instance : lightProfiniteToLightCondSet.Faithful :=
   inferInstanceAs ((coherentTopology LightProfinite).yoneda).Faithful
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 The functor from `LightProfinite` to `LightCondSet` factors through `TopCat`.
 -/

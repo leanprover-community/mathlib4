@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.Resolution
-public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
+public import Mathlib.CategoryTheory.Localization.Resolution
 
 /-!
 # Derivability structures
@@ -52,7 +51,6 @@ not depend on the choice of the localization functors.
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 public section
@@ -60,7 +58,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Category Localization Functor
+open Category Localization CategoryTheory.Functor
 
 variable {C₁ : Type u₁} {C₂ : Type u₂} [Category.{v₁} C₁] [Category.{v₂} C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
@@ -85,7 +83,6 @@ attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
 variable {D₁ D₂ : Type*} [Category* D₁] [Category* D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
     Φ.IsRightDerivabilityStructure ↔ TwoSquare.GuitartExact e.hom := by
   have : Φ.IsRightDerivabilityStructure ↔

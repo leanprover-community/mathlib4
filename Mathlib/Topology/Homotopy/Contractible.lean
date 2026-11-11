@@ -5,8 +5,11 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Topology.Homotopy.Equiv
+public import Mathlib.Topology.Homotopy.Path
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Contractible spaces
@@ -57,7 +60,7 @@ theorem id_nullhomotopic (X : Type*) [TopologicalSpace X] [ContractibleSpace X] 
     (ContinuousMap.id X).Nullhomotopic := by
   obtain ⟨hv⟩ := ContractibleSpace.hequiv_unit X
   use hv.invFun ()
-  convert hv.left_inv.symm
+  convert! hv.left_inv.symm
 
 theorem contractible_iff_id_nullhomotopic (Y : Type*) [TopologicalSpace Y] :
     ContractibleSpace Y ↔ (ContinuousMap.id Y).Nullhomotopic := by
@@ -72,7 +75,7 @@ theorem contractible_iff_id_nullhomotopic (Y : Type*) [TopologicalSpace Y] :
             left_inv := ?_
             right_inv := ?_ }⟩ }
   · exact h.symm
-  · convert Homotopic.refl (ContinuousMap.id Unit)
+  · convert! Homotopic.refl (ContinuousMap.id Unit)
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 

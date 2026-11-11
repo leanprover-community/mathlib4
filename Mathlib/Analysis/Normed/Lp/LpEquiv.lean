@@ -35,7 +35,6 @@ the subtype of `PreLp` satisfying `Memℓp`.
 
 * Equivalence between `lp` and `MeasureTheory.Lp`, for `f : α → E` (i.e., functions rather than
   pi-types) and the counting measure on `α`
-
 -/
 
 @[expose] public section
@@ -52,13 +51,6 @@ variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : 
 section Finite
 
 variable [Finite α]
-
-/-- When `α` is `Finite`, every `f : PreLp E p` satisfies `Memℓp f p`. -/
-theorem Memℓp.all (f : ∀ i, E i) : Memℓp f p := by
-  rcases p.trichotomy with (rfl | rfl | _h)
-  · exact memℓp_zero_iff.mpr { i : α | f i ≠ 0 }.toFinite
-  · exact memℓp_infty_iff.mpr (Set.Finite.bddAbove (Set.range fun i : α ↦ ‖f i‖).toFinite)
-  · cases nonempty_fintype α; exact memℓp_gen ⟨Finset.univ.sum _, hasSum_fintype _⟩
 
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where

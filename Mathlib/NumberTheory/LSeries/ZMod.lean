@@ -58,7 +58,9 @@ Results for completed L-functions:
 
 @[expose] public section
 
-open HurwitzZeta Complex ZMod Finset Topology Filter Set
+open HurwitzZeta Complex ZMod Finset Filter Set
+
+open scoped Topology
 
 open scoped Real
 
@@ -174,7 +176,7 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
   let V := {z : ℂ | 1 < re z} -- convergence region
   have hUo : IsOpen U := by
     by_cases h : j = 0
-    · simpa only [h, ↓reduceIte, U] using isOpen_compl_singleton
+    · simpa only [h, ↓reduceIte, U] using! isOpen_compl_singleton
     · simp only [h, ↓reduceIte, isOpen_univ, U]
   let f := LFunction (fun k ↦ stdAddChar (j * k))
   let g := expZeta (toAddCircle j)
@@ -191,7 +193,7 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
     rwa [ne_eq, toAddCircle_eq_zero]
   have hUc : IsPreconnected U := by
     by_cases h : j = 0
-    · simpa only [h, ↓reduceIte, U] using
+    · simpa only [h, ↓reduceIte, U] using!
         (isConnected_compl_singleton_of_one_lt_rank (by simp) _).isPreconnected
     · simpa only [h, ↓reduceIte, U] using isPreconnected_univ
   have hV : V ∈ 𝓝 2 := (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds (by simp)
@@ -322,7 +324,7 @@ zeta function.
 -/
 lemma completedLFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
     completedLFunction Φ s = Φ 1 * completedRiemannZeta s := by
-  rw [completedLFunction_def_even (show Φ.Even from fun _ ↦ congr_arg Φ (Subsingleton.elim ..)),
+  rw [completedLFunction_def_even (show Φ.Even from fun _ ↦ congr(Φ $(Subsingleton.elim ..))),
     Nat.cast_one, one_cpow, one_mul, ← singleton_eq_univ 0, sum_singleton, map_zero,
     completedHurwitzZetaEven_zero, Subsingleton.elim 0 1]
 
@@ -417,7 +419,7 @@ private lemma completedLFunction_one_sub_of_one_lt_even (hΦ : Φ.Even) {s : ℂ
   suffices ∑ x, Φ x * cosZeta (toAddCircle x) s = LFunction (𝓕 Φ) s by
     simpa only [cosZeta, Function.update_of_ne hs₀, ← mul_div_assoc, ← sum_div,
       LFunction_eq_completed_div_gammaFactor_even (dft_even_iff.mpr hΦ) _ (.inl hs₀),
-      div_left_inj' (Gammaℝ_ne_zero_of_re_pos (zero_lt_one.trans hs))]
+      div_left_inj₀ (Gammaℝ_ne_zero_of_re_pos (zero_lt_one.trans hs))]
   -- expand out `LFunction (𝓕 Φ)` and use parity:
   simp only [cosZeta_eq, ← mul_div_assoc _ _ (2 : ℂ), mul_add, ← sum_div, sum_add_distrib,
     LFunction_dft Φ (.inr hs₁), map_neg, div_eq_iff (two_ne_zero' ℂ), mul_two, add_left_inj]
@@ -438,7 +440,7 @@ private lemma completedLFunction_one_sub_of_one_lt_odd (hΦ : Φ.Odd) {s : ℂ} 
   -- reduce to equality with un-completed L-functions:
   suffices ∑ x, Φ x * sinZeta (toAddCircle x) s = I * LFunction (𝓕 Φ) s by
     have hs' : 0 < re (s + 1) := by simp only [add_re, one_re]; linarith
-    simpa only [sinZeta, ← mul_div_assoc, ← sum_div, div_left_inj' (Gammaℝ_ne_zero_of_re_pos hs'),
+    simpa only [sinZeta, ← mul_div_assoc, ← sum_div, div_left_inj₀ (Gammaℝ_ne_zero_of_re_pos hs'),
       LFunction_eq_completed_div_gammaFactor_odd (dft_odd_iff.mpr hΦ)]
   -- now calculate:
   calc ∑ x, Φ x * sinZeta (toAddCircle x) s
@@ -523,7 +525,7 @@ theorem completedLFunction_one_sub_odd (hΦ : Φ.Odd) (s : ℂ) :
     using completedLFunction_one_sub_of_one_lt_odd hΦ ht
   -- now apply the big hammer to finish
   rw [← analyticOnNhd_univ_iff_differentiable] at hF hG
-  exact congr_fun (hF.eq_of_eventuallyEq hG hFG) s
+  congrm $(hF.eq_of_eventuallyEq hG hFG) s
 
 end signed
 

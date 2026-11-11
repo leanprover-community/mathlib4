@@ -5,10 +5,15 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.ConjSqrt
+public import Mathlib.Algebra.Algebra.StrictPositivity
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.SpecialFunctions.Bernstein
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.Convex.Mul
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.ConjSqrt
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Order properties of `Ring.inverse` in C⋆-algebras
@@ -46,17 +51,14 @@ public lemma convexOn_ringInverse :
     simp only [smul_eq_mul]
     refine cfc_rpow fun r hr => ?_
     by_cases ha' : a = 0
-    · have hb' : b = 1 := by grind
-      simp only [ha', hb', one_mul, zero_add, gt_iff_lt]
-      grind
+    · grind
     · grind [add_pos_of_pos_of_nonneg, mul_nonneg]
   have h₂ : (a • 1 + b • z ^ (-1 : ℝ)) = cfc (fun r => (a + b * r ^ (-1 : ℝ))) z := by
     rw [CFC.rpow_eq_cfc_real zpos.nonneg]
     have hcont : ContinuousOn (fun r : ℝ => (r ^ (-1 : ℝ))) (spectrum ℝ z) :=
       ContinuousOn.rpow_const (f := id) (by fun_prop) (by grind)
     rw [← cfc_smul b _ z hcont, ← Algebra.algebraMap_eq_smul_one, ← cfc_const_add a _ z]
-    refine cfc_congr fun r hr => ?_
-    simp
+    congr! 1
   calc _ = (a • conjSqrt x 1 + b • conjSqrt x z)⁻¹ʳ := by
         rw [conjSqrt_conjSqrt_ringInverse _ _ xpos, conjSqrt_one x xpos.nonneg]
       _ = (conjSqrt x (a • 1 + b • z))⁻¹ʳ := by simp
@@ -85,6 +87,7 @@ public lemma convexOn_ringInverse :
       _ = _ := by
         rw [← ringInverse_conjSqrt _ _ xpos, conjSqrt_conjSqrt_ringInverse _ _ xpos]
 
+set_option backward.isDefEq.respectTransparency.types false in
 public lemma convexOn_ringInverse_algebraMap_add {t : ℝ} (ht : 0 < t) :
     ConvexOn ℝ (Ici (0 : A)) (fun x : A => Ring.inverse (algebraMap ℝ A t + x)) := by
   have : ∀ x ∈ Ici (0 : A), IsStrictlyPositive (algebraMap ℝ A t + x) := by grind

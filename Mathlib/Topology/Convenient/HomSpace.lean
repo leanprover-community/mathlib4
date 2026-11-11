@@ -27,7 +27,6 @@ topological spaces `Y`, `Z` and `T`.
 ## References
 * [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
   categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
-
 -/
 universe v v' v'' t u
 
@@ -100,12 +99,12 @@ def curryEquiv :
     { toFun z := g.comp ⟨fun y ↦ (y, z), (Continuous.prodMk_left z).continuousGeneratedBy⟩
       prop := by
         simpa only [continuousGeneratedBy_iff_uncurry,
-          continuousGeneratedBy_dom_prod_iff] using g.prop }
+          continuousGeneratedBy_dom_prod_iff] using! g.prop }
   invFun g :=
     { toFun x := g x.2 x.1
       prop := by
         simpa only [continuousGeneratedBy_iff_uncurry,
-          continuousGeneratedBy_dom_prod_iff] using g.prop }
+          continuousGeneratedBy_dom_prod_iff] using! g.prop }
 
 @[simp]
 lemma curryEquiv_apply_apply (g : ContinuousMapGeneratedBy X (Y × Z) T) (y : Y) (z : Z) :

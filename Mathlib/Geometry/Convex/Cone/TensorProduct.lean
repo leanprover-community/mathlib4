@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.TensorProduct.Defs
 
 /-!
 # Tensor products of cones
@@ -41,7 +40,6 @@ We define the minimal and maximal tensor products of pointed cones:
 ## References
 
 * [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
-
 -/
 
 @[expose] public section
@@ -162,6 +160,6 @@ theorem maxTensorProduct_map_le (f : G →ₗ[R] G') (g : H →ₗ[R] H')
       ((dualDistrib R G H) ((φ.comp f) ⊗ₜ[R] (ψ.comp g))) :=
     TensorProduct.ext' fun x y ↦ by simp [map_tmul]
   convert hw (φ.comp f) (fun x hx ↦ hφ ⟨x, hx, rfl⟩) (ψ.comp g) (fun y hy ↦ hψ ⟨y, hy, rfl⟩)
-  exact DFunLike.congr_fun h_eq w
+  congrm $h_eq w
 
 end PointedCone

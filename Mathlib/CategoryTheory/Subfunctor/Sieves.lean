@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!
@@ -14,7 +13,6 @@ public import Mathlib.CategoryTheory.Sites.IsSheafFor
 Given a subpresheaf `G` of a presheaf of types `F : Cᵒᵖ ⥤ Type w` and
 a section `s : F.obj U`, we define a sieve `G.sieveOfSection s : Sieve (unop U)`
 and the associated compatible family of elements with values in `G.toFunctor`.
-
 -/
 
 @[expose] public section
@@ -46,11 +44,5 @@ theorem family_of_elements_compatible {U : Cᵒᵖ} (s : F.obj U) :
   refine Subtype.ext ?_ -- Porting note: `ext1` does not work here
   change F.map g₁.op (F.map f₁.op s) = F.map g₂.op (F.map f₂.op s)
   rw [← comp_apply, ← Functor.map_comp, ← comp_apply, ← Functor.map_comp, ← op_comp, ← op_comp, e]
-
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.sieveOfSection := sieveOfSection
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.familyOfElementsOfSection :=
-  familyOfElementsOfSection
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.family_of_elements_compatible :=
-  family_of_elements_compatible
 
 end CategoryTheory.Subfunctor

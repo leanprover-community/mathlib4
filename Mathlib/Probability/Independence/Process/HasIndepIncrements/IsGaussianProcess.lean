@@ -12,7 +12,6 @@ import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 
 /-!
-
 # A stochastic process with independent increments and Gaussian marginals is Gaussian
 
 We prove that a stochastic process with independent increments and Gaussian marginals is Gaussian.
@@ -37,7 +36,6 @@ and `X tᵢ` and `X tᵢ₊₁ - X tᵢ` are independent (see `IndepFun.hasGauss
 ## Tags
 
 independent increments, Gaussian process
-
 -/
 
 open MeasureTheory Finset
@@ -65,7 +63,7 @@ lemma orderEmbOfFinWithBot_zero : I.orderEmbOfFinWithBot 0 = ⊥ := rfl
 
 lemma orderEmbOfFinWithBot_of_ne_zero (i : Fin (#I + 1)) (hi : i ≠ 0) :
     I.orderEmbOfFinWithBot i = I.orderEmbOfFin rfl (i.pred hi) := by
-  rw [orderEmbOfFinWithBot, dif_neg hi]
+  rw [orderEmbOfFinWithBot, dite_eq_right hi]
 
 @[simp]
 lemma orderEmbOfFinWithBot_succ (i : Fin #I) :

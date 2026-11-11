@@ -5,12 +5,12 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.GroupTheory.OreLocalization.Basic
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
-/-!
+import Mathlib.Data.Fintype.Pigeonhole
 
+/-!
 # Cardinality of Ore localizations
 
 This file contains some results on cardinality of Ore localizations.
@@ -19,7 +19,6 @@ This file contains some results on cardinality of Ore localizations.
 
 - Prove or disprove `OreLocalization.cardinalMk_le_lift_cardinalMk_of_commute`
   with `Commute` assumption removed.
-
 -/
 
 public section
@@ -75,8 +74,8 @@ theorem cardinalMk_le_max : #(OreLocalization S X) ≤ max (lift.{v} #S) (lift.{
   · have := lift_mk_le_lift_mk_of_surjective (oreDiv_one_surjective_of_finite_left S X)
     rw [lift_umax.{v, u}, lift_id'] at this
     exact le_max_of_le_right this
-  convert ← mk_le_of_surjective (show Surjective fun x : X × S ↦ x.1 /ₒ x.2 from
-    Quotient.mk''_surjective)
+  convert ←
+    mk_le_of_surjective (show Surjective fun x : X × S ↦ x.1 /ₒ x.2 from Quotient.mk''_surjective)
   rw [mk_prod, mul_comm]
   refine mul_eq_max ?_ ?_ <;> simp
 
@@ -94,8 +93,7 @@ theorem cardinalMk_le_lift_cardinalMk_of_commute (hc : ∀ s s' : S, Commute s s
     rwa [lift_umax.{v, u}, lift_id'] at this
   have key (x : X) (s s' : S) (h : s • x = s' • x) (hc : Commute s s') : x /ₒ s = x /ₒ s' := by
     rw [oreDiv_eq_iff]
-    refine ⟨s, s'.1, h, ?_⟩
-    · exact_mod_cast hc
+    exact ⟨s, s'.1, h, mod_cast hc⟩
   let i (x : X × S) := x.1 /ₒ x.2
   have hsurj : Surjective i := Quotient.mk''_surjective
   have hi := rightInverse_surjInv hsurj

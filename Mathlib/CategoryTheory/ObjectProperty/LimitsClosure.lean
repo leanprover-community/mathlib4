@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
@@ -17,7 +16,6 @@ In this file, given a property `P` of objects in a category `C` and
 a family of categories `J : α → Type _`, we introduce the closure
 `P.limitsClosure J` of `P` under limits of shapes `J a` for all `a : α`,
 and under certain smallness assumptions, we show that it is essentially small.
-
 -/
 
 @[expose] public section
@@ -151,6 +149,7 @@ lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     intro c hc
     exact hb' _ hc
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
     [∀ a, Small.{w} (J a)] [∀ a, LocallySmall.{w} (J a)] (b : β)
     [hb₀ : Small.{w} (Set.Iio b)] :

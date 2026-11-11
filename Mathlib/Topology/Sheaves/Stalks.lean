@@ -5,9 +5,9 @@ Authors: Kim Morrison, Justus Springer
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 public import Mathlib.Topology.Category.TopCat.OpenNhds
 public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 
 /-!
 # Stalks
@@ -42,7 +42,6 @@ https://stacks.math.columbia.edu/tag/007L
 TODO(@joelriou): refactor the definitions in this file so as to make them
 particular cases of general constructions for points of sites from
 `Mathlib/CategoryTheory/Sites/Point/Basic.lean`.
-
 -/
 
 @[expose] public section
@@ -117,6 +116,7 @@ lemma map_germ_eq_Γgerm (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : X
 
 variable {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 
+@[simp]
 theorem germ_res_apply (F : X.Presheaf C)
     {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) [ConcreteCategory C FC] (s) :
     F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s := by
@@ -215,8 +215,9 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 
 theorem stalkPushforward_iso_of_isInducing {f : X ⟶ Y} (hf : IsInducing f)
     (F : X.Presheaf C) (x : X) : IsIso (F.stalkPushforward _ f x) := by
-  haveI := Functor.initial_of_adjunction (hf.adjunctionNhds x)
-  convert (Functor.Final.colimitIso (OpenNhds.map f x).op ((OpenNhds.inclusion x).op ⋙ F)).isIso_hom
+  have := Functor.initial_of_adjunction (hf.adjunctionNhds x)
+  convert!
+    (Functor.Final.colimitIso (OpenNhds.map f x).op ((OpenNhds.inclusion x).op ⋙ F)).isIso_hom
   refine stalk_hom_ext _ fun U hU ↦ (stalkPushforward_germ _ f F _ x hU).trans ?_
   symm
   exact colimit.ι_pre ((OpenNhds.inclusion x).op ⋙ F) (OpenNhds.map f x).op _
@@ -240,6 +241,7 @@ lemma germ_stalkPullbackHom
         ((pullback C f).obj F).germ ((Opens.map f).obj U) x hU := by
   simp [stalkPullbackHom, germ, stalkFunctor, stalkPushforward]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) :
     ((pullback C f).obj F).obj (op U) ⟶ F.stalk (f x) :=
@@ -249,6 +251,7 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (
         { app := fun V => F.germ _ (f x) (V.hom.unop.le hx)
           naturality := fun _ _ i => by simp } }
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable {C} in
 @[ext]
 lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens X)ᵒᵖ)
@@ -261,7 +264,7 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
   apply ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
   simpa [pullbackPushforwardAdjunction, Functor.lanAdjunction_unit]
-    using h V (leOfHom b)
+    using! h V (leOfHom b)
 
 @[reassoc (attr := simp)]
 lemma pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk
@@ -270,7 +273,7 @@ lemma pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk
     ((pullbackPushforwardAdjunction C f).unit.app F).app (op V) ≫
       ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx =
         F.germ _ (f x) (hV hx) := by
-  simpa [pullbackPushforwardAdjunction] using
+  simpa [pullbackPushforwardAdjunction] using!
     ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).fac _
       (CostructuredArrow.mk (homOfLE hV).op)
 
@@ -337,6 +340,7 @@ section stalkSpecializes
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by
@@ -385,6 +389,7 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
 def stalkCongr (F : X.Presheaf C) {x y : X}
@@ -442,6 +447,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
   obtain ⟨W, iU, iV, e⟩ := (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)).eq_iff.mp h
   exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F ⟶ G}
     (h : ∀ U : Opens X, Function.Injective (f.app (op U))) (x : X) :
     Function.Injective ((stalkFunctor C x).map f) := fun s t hst => by
@@ -452,7 +458,7 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F 
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← f.naturality, ← f.naturality,
     ConcreteCategory.comp_apply, ConcreteCategory.comp_apply] at heq
   replace heq := h W heq
-  convert congr_arg (F.germ _ x hxW) heq using 1
+  convert! congr(F.germ _ x hxW $heq) using 1
   exacts [(F.germ_res_apply iWU₁ x hxW s).symm, (F.germ_res_apply iWU₂ x hxW t).symm]
 
 section IsBasis
@@ -461,12 +467,14 @@ variable {B : Set (Opens X)} (hB : Opens.IsBasis B)
 
 include hB
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma exists_mem_germ_eq_of_isBasis (F : X.Presheaf C) (x : X) (t : ToType (F.stalk x)) :
     ∃ (U : Opens X) (m : x ∈ U) (_ : U ∈ B) (s : ToType (F.obj (op U))), F.germ _ x m s = t := by
   obtain ⟨U, hxU, s, rfl⟩ := F.exists_germ_eq t
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := hB.exists_subset_of_mem_open hxU U.2
   exact ⟨V, hxV, hV, F.map (homOfLE hVU).op s, by rw [← ConcreteCategory.comp_apply, F.germ_res']⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
     {s : ToType (F.obj (op U))} {t : ToType (F.obj (op V))}
     (h : F.germ U x mU s = F.germ V x mV t) :
@@ -475,8 +483,8 @@ lemma germ_eq_of_isBasis (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ 
   obtain ⟨W, hxW, hWU, hWV, e⟩ := F.germ_eq x mU mV _ _ h
   obtain ⟨_, ⟨W', hW', rfl⟩, hxW', hW'W⟩ := hB.exists_subset_of_mem_open hxW W.2
   refine ⟨W', hxW', hW', hW'W.trans hWU.le, hW'W.trans hWV.le, ?_⟩
-  simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using
-    DFunLike.congr_arg (ConcreteCategory.hom (F.map (homOfLE hW'W).op)) e
+  simpa only [← ConcreteCategory.comp_apply, ← F.map_comp] using!
+    congr(ConcreteCategory.hom (F.map (homOfLE hW'W).op) $e)
 
 lemma stalkFunctor_map_injective_of_isBasis
     {F G : X.Presheaf C} {α : F ⟶ G} (hα : ∀ U ∈ B, Function.Injective (α.app (op U))) (x : X) :
@@ -515,6 +523,7 @@ Note that the analogous statement for surjectivity is false: Surjectivity on sta
 imply surjectivity of the components of a sheaf morphism. However it does imply that the morphism
 is an epi, but this fact is not yet formalized.
 -/
+set_option backward.isDefEq.respectTransparency.types false in
 theorem app_injective_of_stalkFunctor_map_injective {F : Sheaf C X} {G : Presheaf C X} (f : F.1 ⟶ G)
     (U : Opens X) (h : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f)) :
     Function.Injective (f.app (op U)) := fun s t hst =>
@@ -528,7 +537,6 @@ theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshe
   ⟨fun h U => app_injective_of_stalkFunctor_map_injective f U fun x _ => h x,
     stalkFunctor_map_injective_of_app_injective⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) :=
   ⟨@fun _𝓐 _𝓑 f _ =>
@@ -554,7 +562,7 @@ theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stal
       (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
         app_injective_of_stalkFunctor_map_injective f.1 U.unop fun _x _hx =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback
-            ((stalkFunctor C _).map f.hom)).mp <| inferInstance
+            ((stalkFunctor C _).map f.hom)).mp inferInstance
 
 include instCC in
 theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
@@ -563,7 +571,7 @@ theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
 
 /-- For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.
 We claim that it suffices to find preimages *locally*. That is, for each `x : U` we construct
-a neighborhood `V ≤ U` and a section `s : F.obj (op V))` such that `f.app (op V) s` and `t`
+a neighborhood `V ≤ U` and a section `s : F.obj (op V)` such that `f.app (op V) s` and `t`
 agree on `V`. -/
 theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f : F ⟶ G)
     (U : Opens X) (hinj : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f.1))
@@ -585,10 +593,10 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   suffices IsCompatible F.obj V sf by
     -- Since `F` is a sheaf, we can glue all the local preimages together to get a global preimage.
     obtain ⟨s, s_spec, -⟩ := F.existsUnique_gluing' V U iVU V_cover sf this
-    · use s
-      apply G.eq_of_locally_eq' V U iVU V_cover
-      intro x
-      rw [← ConcreteCategory.comp_apply, ← f.1.naturality, ConcreteCategory.comp_apply, s_spec, heq]
+    use s
+    apply G.eq_of_locally_eq' V U iVU V_cover
+    intro x
+    rw [← ConcreteCategory.comp_apply, ← f.1.naturality, ConcreteCategory.comp_apply, s_spec, heq]
   intro x y
   -- What's left to show here is that the sections `sf` are compatible, i.e. they agree on
   -- the intersections `V x ⊓ V y`. We prove this by showing that all germs are equal.
@@ -596,7 +604,6 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   intro z hz
   -- Here, we need to use injectivity of the stalk maps.
   apply hinj z ((iVU x).le ((inf_le_left : V x ⊓ V y ≤ V x) hz))
-  dsimp only
   rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply]
   simp_rw [← ConcreteCategory.comp_apply, f.1.naturality, ConcreteCategory.comp_apply, heq,
     ← ConcreteCategory.comp_apply, ← G.1.map_comp]

@@ -7,10 +7,8 @@ module
 
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Smooth.Basic
-public import Mathlib.RingTheory.Unramified.Basic
 
 /-!
-
 # Étale morphisms
 
 An `R`-algebra `A` is formally etale if `Ω[A⁄R]` and `H¹(L_{A/R})` both vanish.
@@ -24,7 +22,6 @@ under `R`-algebra homomorphisms and compositions.
 
 We show that étale is stable under algebra isomorphisms, composition and
 localization at an element.
-
 -/
 
 @[expose] public section
@@ -70,6 +67,8 @@ theorem iff_formallyUnramified_and_formallySmooth :
 theorem of_formallyUnramified_and_formallySmooth [FormallyUnramified R A]
     [FormallySmooth R A] : FormallyEtale R A :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr ⟨‹_›, ‹_›⟩
+
+instance : FormallyEtale R R := of_formallyUnramified_and_formallySmooth
 
 variable (R A) in
 lemma comp_bijective [FormallyEtale R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
@@ -128,9 +127,6 @@ lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
     Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
   ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
 
-@[deprecated (since := "2025-12-09")]
-alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
-
 end Comp
 
 lemma iff_of_surjective
@@ -140,12 +136,8 @@ lemma iff_of_surjective
   rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
     and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
 
-@[deprecated (since := "2025-12-09")]
-alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
-
 section BaseChange
 
-open scoped TensorProduct
 
 instance [FormallyEtale R A] : FormallyEtale B (B ⊗[R] A) :=
   .of_formallyUnramified_and_formallySmooth
@@ -155,7 +147,6 @@ end BaseChange
 section Localization
 
 /-!
-
 We now consider a commutative square of commutative rings
 
 ```
@@ -194,8 +185,8 @@ theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
 
 /-- The localization of a formally étale map is formally étale. -/
 theorem localization_map [FormallyEtale R S] : FormallyEtale Rₘ Sₘ := by
-  haveI : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
-  haveI : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
+  have : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
+  have : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
   exact FormallyEtale.localization_base M
 
 end Localization
@@ -222,6 +213,8 @@ end
 namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
+
+instance : Etale R R where
 
 instance [Etale R A] : Smooth R A where
 

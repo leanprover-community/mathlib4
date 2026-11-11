@@ -21,7 +21,6 @@ the behaviour with respect to composition of the pullback functors on presheaves
 of modules, by reducing these definitions and properties to the (obvious) case of the
 pushforward functors. Similar results are obtained for sheaves of modules
 in `Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous`.
-
 -/
 
 @[expose] public section
@@ -30,7 +29,7 @@ namespace CategoryTheory
 
 variable {C₀ C₁ C₂ C₃ : Type*} [Category* C₀] [Category* C₁] [Category* C₂] [Category* C₃]
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 
@@ -176,9 +175,7 @@ lemma leftAdjointCompIso_assoc
         isoWhiskerRight (leftAdjointCompIso adj₀₁ adj₁₂ adj₀₂ e₀₁₂) F₂₃ ≪≫
           leftAdjointCompIso adj₀₂ adj₂₃ adj₀₃ e₀₂₃ := by
   ext : 1
-  dsimp [leftAdjointCompIso_hom]
-  exact leftAdjointCompNatTrans_assoc _ _ _ _ _ _ _ _ _ _
-    (by simpa using congr_arg Iso.inv h)
+  exact leftAdjointCompNatTrans_assoc _ _ _ _ _ _ _ _ _ _ (by simpa using congr($(h).inv))
 
 end
 

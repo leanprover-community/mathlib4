@@ -6,10 +6,11 @@ Authors: Bianca Viray, Bryan Boehnke, Grant Yang, George Peykanu, Tianshuo Wang
 
 module
 
-public import Mathlib.RingTheory.IsAdjoinRoot
-public import Mathlib.RingTheory.LocalRing.Quotient
-public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Unramified.LocalRing
+
+import Mathlib.RingTheory.IsAdjoinRoot
+import Mathlib.RingTheory.LocalRing.Quotient
+import Mathlib.RingTheory.Smooth.Flat
 
 /-!
 # Étale extensions of local rings
@@ -49,7 +50,7 @@ future PRs:
 étale, monogenic, local ring, minimal polynomial, residue field
 -/
 
-@[expose] public section
+public section
 
 namespace IsLocalRing
 
@@ -64,8 +65,8 @@ lemma adjoin_residue_eq_top_iff_adjoin_eq_top [Algebra.FormallyUnramified R S] (
     Algebra.adjoin (ResidueField R) {residue S β} = ⊤ ↔ Algebra.adjoin R {β} = ⊤ := by
   constructor
   · intro hβ
-    refine eq_top_iff.mpr <| Submodule.le_of_le_smul_of_le_jacobson_bot
-      (Module.finite_def.mp inferInstance) (IsLocalRing.maximalIdeal_le_jacobson ⊥)
+    refine eq_top_iff.mpr <| Submodule.le_of_le_smul_of_le_jacobson
+      (Module.finite_def.mp inferInstance) (IsLocalRing.ringJacobson_eq_maximalIdeal R).ge
       (?_ : ⊤ ≤ (adjoin R {β}).toSubmodule ⊔ maximalIdeal R • ⊤)
     intro s _
     rw [adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hβ
@@ -120,7 +121,7 @@ maps to the minimal polynomial of `β mod m_S` over the residue field. -/
 lemma minpoly_map_residue [Algebra.Etale R S]
     {β : S} (hadj : Algebra.adjoin R {β} = ⊤) :
     (minpoly R β).map (residue R) = minpoly (ResidueField R) (residue S β) := by
-  have h := minpoly.monic <| Algebra.IsIntegral.isIntegral (R:=R) β
+  have h := minpoly.monic <| Algebra.IsIntegral.isIntegral (R := R) β
   -- Both monic, same degree, divisibility ⟹ equal
   refine eq_of_monic_of_dvd_of_natDegree_le
     (minpoly.monic <| Algebra.IsIntegral.isIntegral <| residue S β)

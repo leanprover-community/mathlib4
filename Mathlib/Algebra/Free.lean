@@ -7,12 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Util.CompileInductive
 
-import Mathlib.Tactic.Attr.Register
+import Mathlib.Control.Applicative
+import Mathlib.Tactic.AdaptationNote
+
 
 /-!
 # Free constructions
@@ -319,7 +319,7 @@ inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
   | left : ∀ w x y z, AddMagma.AssocRel α (w + (x + y + z)) (w + (x + (y + z)))
 
 /-- Associativity relations for a magma. -/
-@[to_additive AddMagma.AssocRel /-- Associativity relations for an additive magma. -/]
+@[to_additive AddMagma.AssocRel]
 inductive Magma.AssocRel (α : Type u) [Mul α] : α → α → Prop
   | intro : ∀ x y z, Magma.AssocRel α (x * y * z) (x * (y * z))
   | left : ∀ w x y z, Magma.AssocRel α (w * (x * y * z)) (w * (x * (y * z)))
@@ -344,14 +344,15 @@ theorem quot_mk_assoc_left (x y z w : α) :
     Quot.mk (AssocRel α) (x * (y * z * w)) = Quot.mk _ (x * (y * (z * w))) :=
   Quot.sound (AssocRel.left _ _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : Semigroup (AssocQuotient α) where
   mul x y := by
     refine Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) ?_ ?_
-    · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
+    · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩)
       · exact quot_mk_assoc_left _ _ _ _
       · rw [← quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc]
-    · rintro a₁ a₂ b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
+    · rintro a₁ a₂ b (⟨c, d, e⟩ | ⟨c, d, e, f⟩)
       · simp only [quot_mk_assoc, quot_mk_assoc_left]
       · rw [quot_mk_assoc, quot_mk_assoc, quot_mk_assoc_left, quot_mk_assoc_left,
           quot_mk_assoc_left, ← quot_mk_assoc c d, ← quot_mk_assoc c d, quot_mk_assoc_left]
@@ -468,14 +469,14 @@ variable {α : Type u}
 
 @[to_additive]
 instance : Semigroup (FreeSemigroup α) where
-  mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
+  mul L1 L2 := ⟨L1.head, L1.tail ++ L2.head :: L2.tail⟩
   mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext rfl <| List.append_assoc _ _ _
 
 @[to_additive (attr := simp)]
-theorem head_mul (x y : FreeSemigroup α) : (x * y).1 = x.1 := rfl
+theorem head_mul (x y : FreeSemigroup α) : (x * y).head = x.head := rfl
 
 @[to_additive (attr := simp)]
-theorem tail_mul (x y : FreeSemigroup α) : (x * y).2 = x.2 ++ y.1 :: y.2 := rfl
+theorem tail_mul (x y : FreeSemigroup α) : (x * y).tail = x.tail ++ y.head :: y.tail := rfl
 
 @[to_additive (attr := simp)]
 theorem mk_mul_mk (x y : α) (L1 L2 : List α) : mk x L1 * mk y L2 = mk x (L1 ++ y :: L2) := rfl
@@ -521,7 +522,7 @@ a semigroup `β`. -/
 homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
-    { toFun x := x.2.foldl (fun a b ↦ a * f b) (f x.1)
+    { toFun x := x.tail.foldl (fun a b ↦ a * f b) (f x.head)
       map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
 

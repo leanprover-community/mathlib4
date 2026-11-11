@@ -5,12 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 public import Mathlib.CategoryTheory.Localization.Triangulated
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
-public import Mathlib.CategoryTheory.Shift.Localization
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! # Triangulated subcategories
 
@@ -36,7 +34,6 @@ of an additive category is not closed under isomorphisms.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-
 -/
 
 @[expose] public section
@@ -491,7 +488,6 @@ lemma trW_monotone {Q : ObjectProperty C} (h : P ≤ Q) : P.trW ≤ Q.trW := by
   obtain ⟨Z, a, b, hT, hZ⟩ := hf
   exact ⟨Z, a, b, hT, h _ hZ⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : P.trW.RespectsIso where
   precomp {X' X Y} e (he : IsIso e) := by
     rintro f ⟨Z, g, h, mem, mem'⟩
@@ -508,12 +504,10 @@ instance [P.ContainsZero] : P.trW.ContainsIdentities := by
   rw [← trW_isoClosure]
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, prop_zero _⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma trW_of_isIso [P.ContainsZero] {X Y : C} (f : X ⟶ Y) [IsIso f] : P.trW f := by
   refine (P.trW.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smul_mem_trW_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     P.trW (n • f) ↔ P.trW f :=
   P.trW.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
@@ -557,7 +551,7 @@ lemma trW_iff_of_distinguished' [P.IsStableUnderShift ℤ]
     [P.IsClosedUnderIsomorphisms] (T : Triangle C) (hT : T ∈ distTriang C) :
     P.trW T.mor₂ ↔ P T.obj₁ := by
   simpa [P.prop_shift_iff_of_isStableUnderShift]
-    using P.trW_iff_of_distinguished _ (rot_of_distTriang _ hT)
+    using! P.trW_iff_of_distinguished _ (rot_of_distTriang _ hT)
 
 section
 
@@ -584,7 +578,6 @@ lemma inverseImage_trW_isInverted {E : Type*} [Category E]
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -603,7 +596,6 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFraction
       dsimp at eq
       rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasRightCalculusOfFractions where
   exists_rightFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -670,7 +662,7 @@ section
 
 variable [P.IsTriangulated]
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : Pretriangulated P.FullSubcategory where
   distinguishedTriangles := P.ι.mapTriangle.obj ⁻¹' (distTriang C)
   isomorphic_distinguished T₁ hT₁ T₂ e :=
@@ -703,7 +695,6 @@ instance : P.ι.IsTriangulated where
 instance [IsTriangulated C] : IsTriangulated P.FullSubcategory :=
   IsTriangulated.of_fully_faithful_triangulated_functor P.ι
 
-set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] :
     F.essImage.IsTriangulated where
   isStableUnderShiftBy n :=

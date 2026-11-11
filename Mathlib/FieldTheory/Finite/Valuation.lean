@@ -29,7 +29,7 @@ lemma valuation_algebraMap_eq_one (a : Fq) (ha : a ≠ 0) : v (algebraMap Fq A a
   grind [pow_eq_one_iff, → IsPrimePow.two_le, FiniteField.isPrimePow_card]
 
 lemma valuation_algebraMap_le_one (v : Valuation A Γ) (a : Fq) :
-    v (algebraMap Fq A a) ≤ 1 := by by_cases a = 0 <;> grind [zero_le']
+    v (algebraMap Fq A a) ≤ 1 := by by_cases a = 0 <;> grind [zero_le]
 
 instance : IsTrivialOn Fq v where
   eq_one a ha := FiniteField.valuation_algebraMap_eq_one v a ha

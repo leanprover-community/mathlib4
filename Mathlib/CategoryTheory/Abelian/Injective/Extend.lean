@@ -15,7 +15,6 @@ Given an injective resolution `R` of an object `X` in an abelian category `C`,
 we define `R.cochainComplex : CochainComplex C ℤ`, which is the extension
 of `R.cocomplex : CochainComplex C ℕ`, and the quasi-isomorphism
 `R.ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainComplex`.
-
 -/
 
 @[expose] public section
@@ -72,6 +71,7 @@ noncomputable def ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainCo
   (HomologicalComplex.extendSingleIso _ _ _ _ (by simp)).inv ≫
     (ComplexShape.embeddingUpNat.extendFunctor C).map R.ι
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι'_f_zero :
@@ -86,6 +86,7 @@ end
 
 variable [Abelian C] {X : C} (R : InjectiveResolution X)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso R.ι' := by dsimp [ι']; infer_instance
 
@@ -118,7 +119,6 @@ lemma ι'_comp_hom' :
     R.ι' ≫ φ.hom' = (CochainComplex.singleFunctor C 0).map f ≫ R'.ι' :=
   HomologicalComplex.from_single_hom_ext (by
     simp [hom'_f _ 0 0 rfl, ι'_f_zero, CochainComplex.singleFunctor,
-      CochainComplex.singleFunctors,
       HomologicalComplex.single, HomologicalComplex.singleObjXSelf,
       HomologicalComplex.singleObjXIsoOfEq])
 

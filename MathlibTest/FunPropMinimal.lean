@@ -3,11 +3,13 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp
-import Mathlib.Logic.Function.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.SuccessIfFailWithMsg
-import Aesop
+module
+
+public import Aesop
+public import Mathlib.Basic.FunLike.Basic
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.SuccessIfFailWithMsg
 
 /-! # Tests for the `fun_prop` tactic
 
@@ -15,7 +17,7 @@ This file is designed for development of fun_prop and does not depend on most of
 two function properties `Con` and `Lin` which roughly correspond to `Continuity` and `IsLinearMap`.
 -/
 
-set_option linter.style.longLine false
+@[expose] public section
 
 open Function
 
@@ -42,7 +44,7 @@ set_option linter.unusedVariables false
 @[fun_prop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := silentSorry
--- @[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y:= g x; f x y) := silentSorry
+-- @[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y := g x; f x y) := silentSorry
 @[fun_prop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := silentSorry
 
 -- Lin is missing `const` theorem
@@ -112,7 +114,7 @@ instance : CoeFun (α ->> β) (fun _ => α → β) where
 
 instance : FunLike (α -o β) α β where
   coe f := f.toFun
-  coe_injective' := silentSorry
+  coe_injective := silentSorry
 
 #eval Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``ConHom.toFun
@@ -375,8 +377,10 @@ def foo3 [Add α] (x : α) := x + x
 example [Add α] : Con (fun x : α => foo3 x) := by fun_prop [foo3]
 
 def myUncurry (f : α → β → γ) : α×β → γ := fun (x,y) => f x y
-def diag (f : α → α → α) (x : α) := f x x
+-- Namespaced to test that names are resolved
+def MyNamespace.diag (f : α → α → α) (x : α) := f x x
 
+open MyNamespace in
 theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
   fun_prop [diag, myUncurry]
 
@@ -393,9 +397,9 @@ example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by f
 end MultipleLambdaTheorems
 
 
-/-- info: `?m` is not a `fun_prop` goal! -/
+/-- error: `?m` is not a `fun_prop` goal! -/
 #guard_msgs in
-#check_failure ((by fun_prop) : ?m)
+#check ((by fun_prop) : ?m)
 
 /-- error: `Injective Nat.succ` is not a `fun_prop` goal!
 Consider marking `Function.Injective` with `@[fun_prop]`. -/
@@ -481,12 +485,12 @@ theorem Dif_Con [Add 𝕜] (f : α → β) (hf : Dif 𝕜 f) : Con f := silentSo
 
 def f4 (a : α) := a
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
 @[fun_prop]
 theorem f4_dif : Dif Nat (f4 : α → α) := silentSorry
 
-example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch := aesop)
 
 
 -- Test abbrev transparency
@@ -708,7 +712,7 @@ structure FooHom (α : Type*) where
 
 instance : FunLike (FooHom α) α (α → α) where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[fun_prop]
 theorem con_foohom' {β : Type*} {f : β → FooHom α} (hf : Con f) {g₁ : β → α} (hg₁ : Con g₁)
@@ -834,3 +838,60 @@ example : MDifferentiable Space.mwc Space.mwc (fun x : Space ↦ x + x + x) := b
   fun_prop (disch := apply_rules [Space.mwc])
 
 end MDifferentiableMock
+
+section DependentCompositionalForm
+
+-- These examples involving dependent types used to be incorrectly detected as uncurried forms
+
+@[fun_prop]
+theorem Con_subtype_mk {p : β → Prop} {f : α → β} (h : Con f) (hp : ∀ x, p (f x)) :
+  Con fun x => (⟨f x, hp x⟩ : Subtype p) := silentSorry
+
+example : Con fun x => (⟨x, trivial⟩ : {x : α // True}) := by fun_prop
+
+@[fun_prop]
+theorem Con_imp {p q : α → Prop} : Con (fun x => p x → q x) := silentSorry
+
+example {p : α → Prop} : Con (fun x => True → p x) := by fun_prop
+
+end DependentCompositionalForm
+
+section ProjTransparency
+
+def semireducibleFun (_ : Nat) := (1, 2)
+
+/--
+error: `fun_prop` was unable to prove `Con semireducibleFun`
+
+Issues:
+  No theorems found for `semireducibleFun` in order to prove `Con fun x => semireducibleFun x`
+-/
+#guard_msgs in
+example : Con semireducibleFun := by fun_prop
+
+-- This used to work because `semireducibleFun` was incorrectly unfolded
+
+/--
+error: `fun_prop` was unable to prove `Con fun x => (semireducibleFun x).fst`
+
+Issues:
+  No theorems found for `semireducibleFun` in order to prove `Con fun x => semireducibleFun x`
+-/
+#guard_msgs in
+example : Con (fun x => (semireducibleFun x).1) := by fun_prop
+
+-- Test that the backward compatibility option restores the incorrect behavior
+set_option fun_prop.projDefaultTransparency true in
+example : Con (fun x => (semireducibleFun x).1) := by fun_prop
+
+-- This example is extracted from https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/two.20fun_prop.20failures/near/627268699
+structure P where
+  val : Nat → Nat → Nat
+
+def myP (g : Nat → Nat → Nat) : P := ⟨fun x i => g x i⟩
+
+-- This used to fail because `h` was reduced to `Con (fun x i => g x i)`
+example (g : Nat → Nat → Nat) (h : Con (myP g).val) : Con (myP g).val := by
+  fun_prop
+
+end ProjTransparency

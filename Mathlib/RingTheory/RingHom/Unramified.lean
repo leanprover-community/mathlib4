@@ -6,12 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Unramified.Locus
-public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
-
 # The meta properties of unramified ring homomorphisms.
-
 -/
 
 @[expose] public section
@@ -85,7 +82,7 @@ lemma ofLocalizationPrime :
   intro x
   let Rₓ := Localization.AtPrime (x.asIdeal.comap f)
   let Sₓ := Localization.AtPrime x.asIdeal
-  letI : Algebra Rₓ Sₓ := (Localization.localRingHom _ _ _ rfl).toAlgebra
+  let : Algebra Rₓ Sₓ := (Localization.localRingHom _ _ _ rfl).toAlgebra
   have : IsScalarTower R Rₓ Sₓ := .of_algebraMap_eq
     fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm
   have : Algebra.FormallyUnramified Rₓ Sₓ := H _ _

@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
-public import Mathlib.Algebra.Category.Ring.Limits
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Geometry.RingedSpace.SheafedSpace
-public import Mathlib.Topology.Sheaves.Stalks
+
+import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Ringed spaces
@@ -19,7 +19,6 @@ We introduce the category of ringed spaces, as an alias for `SheafedSpace CommRi
 
 The facts collected in this file are typically stated for locally ringed spaces, but never actually
 make use of the locality of stalks. See for instance <https://stacks.math.columbia.edu/tag/01HZ>.
-
 -/
 
 @[expose] public section
@@ -38,8 +37,9 @@ open TopCat.Presheaf
 
 namespace AlgebraicGeometry
 
+-- The universes appear together in the type, but separately in the value.
+set_option linter.checkUnivs false in
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
-@[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
 abbrev RingedSpace : Type max (u + 1) (v + 1) :=
   SheafedSpace.{v + 1, v, u} CommRingCat.{v}
 

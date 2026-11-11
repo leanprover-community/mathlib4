@@ -5,12 +5,10 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Independence.Basic
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+public import Mathlib.Probability.Notation
 
 /-!
-
 # Probabilistic properties of the conditional expectation
 
 This file contains some properties about the conditional expectation which does not belong in
@@ -20,7 +18,6 @@ the main conditional expectation file.
 
 * `MeasureTheory.condExp_indep_eq`: If `m₁, m₂` are independent σ-algebras and `f` is an
   `m₁`-measurable function, then `𝔼[f | m₂] = 𝔼[f]` almost everywhere.
-
 -/
 
 public section
@@ -61,9 +58,9 @@ theorem condExp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
     rw [integral_add' huint hvint, smul_add, hu_eq, hv_eq,
       integral_add' huint.integrableOn hvint.integrableOn]
   · have h_integral : Continuous fun f : lpMeas E ℝ m₁ 1 μ => ∫ x, (f : Ω → E) x ∂μ := by
-      simpa using continuous_integral.comp (ContinuousLinearMap.continuous (Submodule.subtypeL _))
+      simpa using! continuous_integral.comp (ContinuousLinearMap.continuous (Submodule.subtypeL _))
     have h_setIntegral : Continuous fun f : lpMeas E ℝ m₁ 1 μ => ∫ x in s, (f : Ω → E) x ∂μ := by
-      simpa using (continuous_setIntegral s).comp
+      simpa using! (continuous_setIntegral s).comp
         (ContinuousLinearMap.continuous (Submodule.subtypeL _))
     exact isClosed_eq (Continuous.const_smul h_integral _) h_setIntegral
   · intro u v huv _ hueq

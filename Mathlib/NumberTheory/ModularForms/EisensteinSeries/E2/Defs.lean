@@ -8,16 +8,16 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
+
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 /-!
 # Eisenstein Series E2
 
 We define the Eisenstein series `E2` of weight `2` and level `1` as a limit of partial sums
 over non-symmetric intervals.
-
 -/
 
 open UpperHalfPlane hiding I
@@ -38,7 +38,7 @@ lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n ↦ eisSummand 2 
 
 @[simp]
 lemma e2Summand_zero_eq_two_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riemannZeta 2 := by
-  simpa [e2Summand, eisSummand] using
+  simpa [e2Summand, eisSummand] using!
     (two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even (k := 2) (by grind) (by simp)).symm
 
 lemma e2Summand_even (z : ℍ) : (e2Summand · z).Even := by
@@ -99,6 +99,6 @@ lemma D2_T : D2 ModularGroup.T = 0 := by
   simp [D2, ModularGroup.T]
 
 lemma D2_S (z : ℍ) : D2 ModularGroup.S z = 2 * π * I / z := by
-  simp [D2, ModularGroup.S, ModularGroup.denom_apply]
+  simp [D2, ModularGroup.denom_apply]
 
 end EisensteinSeries

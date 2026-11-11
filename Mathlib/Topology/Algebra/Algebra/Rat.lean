@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Monoid.Defs
 ## Results
 
 This is just a minimal stub for now!
-
 -/
 
 public section
@@ -25,6 +24,6 @@ section DivisionRing
 /-- The action induced by `DivisionRing.toRatAlgebra` is continuous. -/
 instance DivisionRing.continuousConstSMul_rat {A} [DivisionRing A] [TopologicalSpace A]
     [SeparatelyContinuousMul A] [CharZero A] : ContinuousConstSMul ℚ A :=
-  ⟨fun r => by simpa only [Algebra.smul_def] using continuous_id.const_mul _⟩
+  ⟨fun r => by simpa only [Algebra.smul_def] using! continuous_id.const_mul _⟩
 
 end DivisionRing

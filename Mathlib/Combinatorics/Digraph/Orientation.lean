@@ -9,7 +9,6 @@ public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
-
 # Graph Orientation
 
 This module introduces conversion operations between `Digraph`s and `SimpleGraph`s, by forgetting
@@ -56,8 +55,6 @@ both orientations are present.
 -/
 def toSimpleGraphStrict (G : Digraph V) : SimpleGraph V where
   Adj v w := v ≠ w ∧ G.Adj v w ∧ G.Adj w v
-  symm _ _ h := And.intro h.1.symm h.2.symm
-  loopless := ⟨fun _ h ↦ h.1 rfl⟩
 
 lemma toSimpleGraphStrict_subgraph_toSimpleGraphInclusive (G : Digraph V) :
     G.toSimpleGraphStrict ≤ G.toSimpleGraphInclusive :=

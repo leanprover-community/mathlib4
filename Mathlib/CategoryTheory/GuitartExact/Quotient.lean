@@ -33,7 +33,6 @@ between `f₀` and `f₁` for `P.map L`. The dual result is also obtained.
 This result shall be applied in the situation where `C₀` is a suitable
 full subcategory of a category `C` of homological complexes, and `H₀` and `H`
 are the corresponding homotopy categories (TODO @joelriou).
-
 -/
 
 public section
@@ -46,6 +45,7 @@ variable {C₀ C H₀ H : Type*} [Category* C₀] [Category* C] [Category* H₀]
   {T : C₀ ⥤ H₀} {L : C₀ ⥤ C} {R : H₀ ⥤ H} {B : C ⥤ H}
   [T.EssSurj] [T.Full] [B.Full]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma quotient_of_nonempty_leftHomotopy (e : T ⋙ R ≅ L ⋙ B)
     (he : ∀ ⦃X₀ : C₀⦄ ⦃Y : C⦄ (f₀ f₁ : L.obj X₀ ⟶ Y) (_ : B.map f₀ = B.map f₁),

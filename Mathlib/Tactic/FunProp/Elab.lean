@@ -5,7 +5,11 @@ Authors: Tomáš Skřivan
 -/
 module
 
+public meta import Lean.Elab.ConfigEval
 public import Mathlib.Tactic.FunProp.Core
+
+meta import Lean.Elab.InfoTree.Main
+import Mathlib.Tactic.InferParam
 
 /-!
 ## `funProp` tactic syntax
@@ -53,13 +57,12 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by
 example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
   fun_prop (disch := aesop)
 ```
-
 -/
 syntax (name := funPropTacStx)
   "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def assumptionDischarge : Expr → MetaM (Option Expr) :=
-  fun e => do tacticToDischarge (← `(tactic| with_reducible assumption)) e
+  fun e => do tacticToDischarge (← `(tactic| first | with_reducible assumption | infer_param)) e
 
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
@@ -89,13 +92,14 @@ def funPropTac : Tactic
         | some d =>
           match d with
           | `(discharger| (discharger:=$tac)) =>
-            pure <| tacticToDischarge (← `(tactic| first | with_reducible assumption | ($tac)))
+            pure <| tacticToDischarge
+              (← `(tactic| first | with_reducible assumption | infer_param | ($tac)))
           | _ => pure assumptionDischarge
 
-      let namesToUnfold : Array Name :=
+      let namesToUnfold ← show CoreM (Array Name) from
         match names with
-        | none => #[]
-        | some ns => ns.getElems.map (fun n => n.getId)
+        | none => pure #[]
+        | some ns => ns.getElems.mapM Elab.realizeGlobalConstNoOverloadWithInfo
 
       let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
 

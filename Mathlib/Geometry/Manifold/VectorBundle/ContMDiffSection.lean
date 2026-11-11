@@ -5,12 +5,8 @@ Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
-public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 
 /-!
 # `C^n` sections
@@ -20,7 +16,6 @@ sections of a vector bundle over a manifold `M` and prove that it's a module ove
 
 In passing, we prove that binary and finite sums, differences and scalar products of `C^n`
 sections are `C^n`.
-
 -/
 
 @[expose] public section
@@ -53,11 +48,11 @@ variable {f : M → 𝕜} {a : 𝕜} {s t : Π x : M, V x} {u : Set M} {x₀ : M
 
 lemma ContMDiffWithinAt.add_section (hs : CMDiffAt[u] n (T% s) x₀) (ht : CMDiffAt[u] n (T% t) x₀) :
     CMDiffAt[u] n (T% (s + t)) x₀ := by
-  rw [contMDiffWithinAt_section] at hs ht ⊢
+  rw [contMDiffWithinAt_section_iff] at hs ht ⊢
   set e := trivializationAt F V x₀
   refine (hs.add ht).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
     · intro x hx
       apply (e.linear 𝕜 hx).1
@@ -78,11 +73,11 @@ lemma ContMDiff.add_section (hs : CMDiff n (T% s)) (ht : CMDiff n (T% t)) :
 
 lemma ContMDiffWithinAt.neg_section
     (hs : CMDiffAt[u] n (T% s) x₀) : CMDiffAt[u] n (T% (-s)) x₀ := by
-  rw [contMDiffWithinAt_section] at hs ⊢
+  rw [contMDiffWithinAt_section_iff] at hs ⊢
   set e := trivializationAt F V x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
     · intro x hx
       apply (e.linear 𝕜 hx).map_neg
@@ -117,11 +112,11 @@ lemma ContMDiff.sub_section (hs : CMDiff n (T% s)) (ht : CMDiff n (T% t)) : CMDi
 
 lemma ContMDiffWithinAt.smul_section (hf : CMDiffAt[u] n f x₀) (hs : CMDiffAt[u] n (T% s) x₀) :
     CMDiffAt[u] n (T% (f • s)) x₀ := by
-  rw [contMDiffWithinAt_section] at hs ⊢
+  rw [contMDiffWithinAt_section_iff] at hs ⊢
   set e := trivializationAt F V x₀
   refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀)
     · intro x hx
       apply (e.linear 𝕜 hx).2
@@ -160,7 +155,7 @@ lemma ContMDiffWithinAt.sum_section {s : Finset ι}
   classical
   induction s using Finset.induction_on with
   | empty =>
-    simpa only [Finset.sum_empty] using contMDiffWithinAt_zeroSection ..
+    simpa only [Finset.sum_empty] using! contMDiffWithinAt_zeroSection ..
   | insert i s hi h =>
     simp only [Finset.sum_insert hi]
     apply (hs _ (s.mem_insert_self i)).add_section
@@ -215,7 +210,7 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
     by_contra! h
     have : i ∈ s.toFinset := by
       refine Set.mem_toFinset.mpr ?_
-      simp only [s, ne_eq, Set.mem_setOf_eq]
+      simp only [s, ne_eq, Set.mem_ofPred_eq]
       use x₀
       simpa using ⟨h, mem_of_mem_nhds hu'⟩
     exact hi this
@@ -224,7 +219,7 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
   by_contra! h
   have : i ∈ s.toFinset := by
     refine Set.mem_toFinset.mpr ?_
-    simp only [s, ne_eq, Set.mem_setOf_eq]
+    simp only [s, ne_eq, Set.mem_ofPred_eq]
     use y
     simpa using ⟨h, Set.mem_of_mem_inter_right hy⟩
   exact hi this
@@ -260,7 +255,7 @@ lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
     intro x hx
-    rw [Set.mem_setOf] at hx ⊢
+    rw [Set.mem_ofPred] at hx ⊢
     use y
     simpa using ⟨hx, mem_of_mem_nhds hu⟩
   exact Set.Finite.subset hfin this
@@ -299,9 +294,10 @@ namespace ContMDiffSection
 
 variable {I} {n} {F} {V}
 
+@[macro_inline]
 instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
-  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
+  coe_injective := by rintro ⟨⟩ ⟨⟩ h; congr
 
 variable {s t : Cₛ^n⟮I; F, V⟯}
 
@@ -371,7 +367,7 @@ theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I
   rcases z with n | n
   · refine (coe_nsmul s n).trans ?_
     simp only [Int.ofNat_eq_natCast, natCast_zsmul]
-  · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
+  · refine congr(-$(coe_nsmul s (n + 1))).trans ?_
     simp only [negSucc_zsmul]
 
 instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=

@@ -47,7 +47,7 @@ lemma baseField_essentially_unique
     [Algebra k K] [Algebra K D] [Algebra k D] [IsScalarTower k K D]
     [IsCentral k D] :
     Function.Bijective (algebraMap k K) := by
-  haveI : IsCentral K D :=
+  have : IsCentral K D :=
   { out := fun x ↦ show x ∈ Subalgebra.center k D → _ by
       simp only [center_eq_bot, mem_bot, Set.mem_range, forall_exists_index]
       rintro x rfl
@@ -61,7 +61,7 @@ lemma baseField_essentially_unique
 
 lemma of_algEquiv (e : D ≃ₐ[K] D') : IsCentral K D' where
   out x hx :=
-    have ⟨k, hk⟩ := h.1 ((MulEquivClass.apply_mem_center_iff e.symm).mpr hx)
+    have ⟨k, hk⟩ := h.out ((MulEquivClass.apply_mem_center_iff e.symm).mpr hx)
     ⟨k, by simpa [ofId] using congr(e $hk)⟩
 
 open MulOpposite in
@@ -71,7 +71,7 @@ open MulOpposite in
   `Mathlib/Algebra/BrauerGroup/Defs.lean`. -/
 instance : IsCentral K Dᵐᵒᵖ where
   out z hz :=
-    have ⟨k, hk⟩ := h.1 (MulOpposite.unop_mem_center_iff.mpr hz)
+    have ⟨k, hk⟩ := h.out (MulOpposite.unop_mem_center_iff.mpr hz)
     ⟨k, by simpa using congr(op $hk)⟩
 
 end Algebra.IsCentral

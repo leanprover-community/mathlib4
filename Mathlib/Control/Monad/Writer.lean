@@ -5,7 +5,7 @@ Authors: Simon Hudon, Edward Ayers, Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Logic.Equiv.Defs
 
 /-!
@@ -18,7 +18,6 @@ computation progresses.
 ## References
 - https://hackage.haskell.org/package/mtl-2.2.1/docs/Control-Monad-Writer-Class.html
 - [Original Mark P Jones article introducing `Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
-
 -/
 
 @[expose] public section
@@ -110,7 +109,7 @@ theorem run_bind (empty : ω) (append : ω → ω → ω)
   rfl
 
 /-- Lift an `M` to a `WriterT ω M`, using the given `empty` as the monoid unit. -/
-@[inline, implicit_reducible]
+@[inline, instance_reducible]
 protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
   monadLift := fun cmd ↦ WriterT.mk <| (fun a ↦ (a, empty)) <$> cmd
 

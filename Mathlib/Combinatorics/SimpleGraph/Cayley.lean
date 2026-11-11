@@ -24,7 +24,6 @@ The elements of `s` are called generators.
 ## TODOS
 * Add API describing behaviour w/r/t `MulOpposite`.
 * Add lemma showing this graph is the same as `SimpleGraph.circulantGraph` in appropriate settings.
-
 -/
 
 @[expose] public section
@@ -66,7 +65,7 @@ instance [Fintype M] [DecidableEq M] [DecidablePred (· ∈ s)] :
 
 variable (M) in
 /-- `mulCayley` is a left (order-)adjoint. -/
-@[to_additive]
+@[to_additive /-- `addCayley` is a left (order-)adjoint. -/]
 lemma mulCayley_gc :
     GaloisConnection (mulCayley ·) ({g : M | ∀ a, a * g ≠ a → ·.Adj (a * g) a}) := by
   intro S G
@@ -104,7 +103,7 @@ variable [MulOneClass M]
 
 @[to_additive (attr := simp)]
 theorem mulCayley_erase_one : mulCayley (s \ {1}) = mulCayley s := by
-  nth_rw 2 [← Set.diff_union_inter s {1}]
+  nth_rw 2 [← Set.sdiff_union_inter s {1}]
   rw [mulCayley_union]
   ext u v
   simp +contextual [mulCayley_adj']
@@ -115,7 +114,7 @@ theorem mulCayley_insert_one : mulCayley (insert 1 s) = mulCayley s := by
 
 @[to_additive (attr := simp)]
 theorem mulCayley_singleton_one : mulCayley ({1} : Set M) = ⊥ := by
-  rw [← mulCayley_erase_one, Set.diff_self, mulCayley_empty]
+  rw [← mulCayley_erase_one, Set.sdiff_self, mulCayley_empty]
 
 end MulOneClass
 section Group
@@ -143,7 +142,7 @@ theorem mulCayley_univ : mulCayley (Set.univ : Set M) = ⊤ := by
 
 @[to_additive (attr := simp)]
 theorem mulCayley_compl_singleton_one : mulCayley ({1}ᶜ : Set M) = ⊤ := by
-  simp [Set.compl_eq_univ_diff]
+  simp [Set.compl_eq_univ_sdiff]
 
 end Group
 
