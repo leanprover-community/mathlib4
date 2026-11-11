@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 module
 
-import Mathlib.Init
 public meta import Lean.Util.Path
+
+import Mathlib.Init
 
 /-!
 # Utility functions for finding all `.lean` files or modules in a project.
@@ -14,7 +15,6 @@ public meta import Lean.Util.Path
 TODO:
 `getLeanLibs` contains a hard-coded choice of which dependencies should be built and which ones
 should not.  Could this be made more structural and robust, possibly with extra `Lake` support?
-
 -/
 
 public meta section

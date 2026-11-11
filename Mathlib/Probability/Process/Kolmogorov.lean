@@ -36,7 +36,6 @@ of pairs can be obtained from measurability of each `X t`.
 
 * `IsKolmogorovProcess.mk_of_secondCountableTopology`: in a space with second-countable topology,
   a process is a Kolmogorov process if each `X t` is measurable and the Kolmogorov condition holds.
-
 -/
 
 @[expose] public section

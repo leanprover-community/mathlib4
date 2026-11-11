@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
-
 # Some results on tensor product of subalgebras
 
 ## Linear maps induced by multiplication for subalgebras
@@ -31,7 +30,6 @@ mainly used in the definition of linearly disjointness.
   and `Algebra.TensorProduct.rid`, as `i(R)` is not necessarily isomorphic to `R`.
 
   They are `Subalgebra` versions of `Submodule.lTensorOne` and `Submodule.rTensorOne`.
-
 -/
 
 @[expose] public section

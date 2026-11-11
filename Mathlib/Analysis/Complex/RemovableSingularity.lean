@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 public import Mathlib.Analysis.Complex.CauchyIntegral
+
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Removable singularity theorem

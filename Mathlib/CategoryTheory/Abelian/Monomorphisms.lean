@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Monomorphisms are stable under cobase change
@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 In an abelian category `C`, the class of morphisms
 `monomorphisms C` is stable under cobase change and
 `epimorphisms C` is stable under base change.
-
 -/
 
 public section

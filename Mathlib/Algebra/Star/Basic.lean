@@ -53,7 +53,7 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 
 export StarMemClass (star_mem)
 
-attribute [aesop 90% (rule_sets := [SetLike])] star_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .] star_mem
 
 namespace StarMemClass
 
@@ -623,3 +623,71 @@ end MulOpposite
 instance StarSemigroup.toOpposite_starModule [CommMonoid R] [StarMul R] :
     StarModule Rᵐᵒᵖ R :=
   ⟨fun r s => star_mul' s r.unop⟩
+
+variable (R) in
+/-- A *proper star* is when `star x * x = 0` implies `x = 0`. -/
+class IsProperStar [Mul R] [Zero R] [Star R] : Prop where
+  eq_zero_of_star_mul_self_eq_zero {x : R} : star x * x = 0 → x = 0
+
+@[simp] lemma star_mul_self_eq_zero [MulZeroClass R] [Star R] [IsProperStar R] {x : R} :
+    star x * x = 0 ↔ x = 0 :=
+  ⟨IsProperStar.eq_zero_of_star_mul_self_eq_zero, fun h ↦ by simp [h]⟩
+
+lemma star_mul_self_ne_zero [MulZeroClass R] [Star R] [IsProperStar R] {x : R} :
+    star x * x ≠ 0 ↔ x ≠ 0 := by simp
+
+@[simp] lemma mul_star_self_eq_zero [NonUnitalNonAssocSemiring R] [StarAddMonoid R]
+    [IsProperStar R] {x : R} : x * star x = 0 ↔ x = 0 := by
+  simpa using star_mul_self_eq_zero (x := star x)
+
+lemma mul_star_self_ne_zero [NonUnitalNonAssocSemiring R] [StarAddMonoid R]
+    [IsProperStar R] {x : R} : x * star x ≠ 0 ↔ x ≠ 0 := by simp
+
+instance (priority := low) [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] [StarRing R] :
+    IsProperStar R where eq_zero_of_star_mul_self_eq_zero := by simp
+
+instance {S : Type*} [MulZeroClass R] [Star R] [IsProperStar R]
+    [MulZeroClass S] [Star S] [IsProperStar S] : IsProperStar (R × S) where
+  eq_zero_of_star_mul_self_eq_zero := by simp [Prod.ext_iff]
+
+instance {ι : Type*} {S : ι → Type*} [Π i, MulZeroClass (S i)] [Π i, Star (S i)]
+    [∀ i, IsProperStar (S i)] : IsProperStar (Π i, S i) where
+  eq_zero_of_star_mul_self_eq_zero := by simp [funext_iff]
+
+instance [NonUnitalNonAssocSemiring R] [StarAddMonoid R] [IsProperStar R] : IsProperStar Rᵐᵒᵖ where
+  eq_zero_of_star_mul_self_eq_zero := by simp [← MulOpposite.op_star, ← MulOpposite.op_mul]
+
+section IsStarOrtho
+
+/-- Two elements `p` and `q` in a ⋆-ring are *star-orthogonal* if `p * star q = 0`
+and `star q * p = 0`. If `p` and `q` are both self-adjoint, this reduces to `p * q = 0`
+(see `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`).
+
+This is denoted `p ⋆⟂ q` with the notation available in the `StarRing` namespace. -/
+@[mk_iff]
+structure IsStarOrtho [NonUnitalSemiring R] [StarRing R] (p q : R) : Prop where
+  mul_star_eq_zero : p * star q = 0
+  star_mul_eq_zero : star q * p = 0
+
+@[inherit_doc]
+scoped[StarRing] infix:50 " ⋆⟂ " => IsStarOrtho
+
+open scoped StarRing
+
+variable [NonUnitalSemiring R] [StarRing R] {p q : R}
+
+lemma isStarOrtho_comm : p ⋆⟂ q ↔ q ⋆⟂ p := by
+  simp_rw [isStarOrtho_iff, ← star_eq_zero (x := p * star q), ← star_eq_zero (x := star q * p),
+    star_mul, star_star]
+
+protected alias ⟨IsStarOrtho.symm, _⟩ := isStarOrtho_comm
+
+instance : Std.Symm (· ⋆⟂ · : R → R → Prop) where
+  symm _ _ := .symm
+
+/-- A variant of `isStarOrtho_iff` which retains the ordering of the factors in the product, but
+instead moves the `star`. -/
+lemma isStarOrtho_iff' : p ⋆⟂ q ↔ p * star q = 0 ∧ star p * q = 0 := by
+  rw [isStarOrtho_iff, ← star_eq_zero (x := star p * q), star_mul, star_star]
+
+end IsStarOrtho

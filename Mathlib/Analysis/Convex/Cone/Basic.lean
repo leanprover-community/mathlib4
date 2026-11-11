@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
 module
+
 public import Mathlib.Analysis.Convex.Cone.Closure
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
@@ -39,7 +40,6 @@ The next steps are:
 ## References
 
 - [B. Gartner and J. Matousek, Cone Programming][gartnerMatousek]
-
 -/
 
 @[expose] public section

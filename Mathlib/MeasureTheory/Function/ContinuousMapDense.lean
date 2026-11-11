@@ -5,9 +5,10 @@ Authors: Heather Macbeth
 -/
 module
 
-import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -217,7 +218,7 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
     (memLp_one_iff_integrable.2 hf).exists_hasCompactSupport_eLpNorm_sub_le
       ENNReal.one_ne_top hε
   exact ⟨g, hg_support, by
-    rwa [eLpNorm_one_eq_lintegral_enorm
+    rwa [eLpNorm_one_eq_lintegral_eNorm
       ((memLp_one_iff_integrable.2 hf).sub hg_mem).aestronglyMeasurable] at hg,
     hg_cont, memLp_one_iff_integrable.1 hg_mem⟩
 
@@ -302,7 +303,7 @@ theorem Integrable.exists_boundedContinuous_lintegral_sub_le [μ.WeaklyRegular] 
   obtain ⟨g, hg, hg_mem⟩ := (memLp_one_iff_integrable.2 hf).exists_boundedContinuous_eLpNorm_sub_le
     ENNReal.one_ne_top hε
   exact ⟨g, by
-    rwa [eLpNorm_one_eq_lintegral_enorm
+    rwa [eLpNorm_one_eq_lintegral_eNorm
       ((memLp_one_iff_integrable.2 hf).sub hg_mem).aestronglyMeasurable] at hg,
     memLp_one_iff_integrable.1 hg_mem⟩
 

@@ -9,6 +9,9 @@ public import Mathlib.Data.Finsupp.Interval
 public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.NumberTheory.Divisors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about divisors and factorizations
 -/

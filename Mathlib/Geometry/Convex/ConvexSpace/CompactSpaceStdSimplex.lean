@@ -6,12 +6,12 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
-import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded
+
+import Mathlib.Data.EReal.Operations
 
 /-!
 # The standard simplex is compact
-
 -/
 
 public section

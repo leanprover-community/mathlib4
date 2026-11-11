@@ -6,8 +6,9 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Analysis.Convex.Side
-import Mathlib.Analysis.Convex.StrictCombination
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+
+import Mathlib.Analysis.Convex.StrictCombination
 
 /-!
 # Second intersection of a sphere and a line
@@ -19,7 +20,6 @@ through a point on that sphere.
 
 * `EuclideanGeometry.Sphere.secondInter` is the second intersection of a sphere with a line
   through a point on that sphere.
-
 -/
 
 @[expose] public section

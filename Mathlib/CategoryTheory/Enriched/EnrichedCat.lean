@@ -19,8 +19,6 @@ category `V`.
 * Define the bicategory of enriched ordinary categories.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 
@@ -103,11 +101,12 @@ lemma whisker_exchange {F G : EnrichedFunctor V C D} {H I : EnrichedFunctor V D 
     (α : F ⟶ G) (β : H ⟶ I) :
     whiskerLeft F β ≫ whiskerRight α I = whiskerRight α H ≫ whiskerLeft G β := by
   ext X
-  simp only [EnrichedFunctor.forget_obj, EnrichedFunctor.comp_obj,
+  simp only [EnrichedFunctor.forget_obj,
     EnrichedFunctor.category_comp_out, NatTrans.comp_app, whiskerLeft_out_app,
     whiskerRight_out_app]
   exact (β.out.naturality (α.out.app (ForgetEnrichment.of V X))).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The bicategory structure on `EnrichedCat V` for a monoidal category `V`. -/
 instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where

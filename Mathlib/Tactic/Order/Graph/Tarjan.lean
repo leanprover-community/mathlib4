@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Tactic.Order.Graph.Basic
 public import Mathlib.Tactic.Order.Graph.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tarjan's Algorithm
 

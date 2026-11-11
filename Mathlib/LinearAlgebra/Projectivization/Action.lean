@@ -6,11 +6,12 @@ Authors: David Loeffler, Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
-import Mathlib.LinearAlgebra.Transvection.Basic
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
+
 import Mathlib.LinearAlgebra.Center
+import Mathlib.LinearAlgebra.Transvection.Basic
 
 /-!
 # Group actions on projectivization
@@ -23,7 +24,6 @@ Prove that these actions are 2-transitive.
 ## TODO
 
 Generalize to the special linear group over a division ring.
-
 -/
 
 @[expose] public section

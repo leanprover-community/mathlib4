@@ -19,7 +19,6 @@ We also include some elementary results on the values of `Fintype.card` on speci
 * `Fintype.card α`: Cardinality of a fintype. Equal to `Finset.univ.card`.
 * `Finite.surjective_of_injective`: an injective function from a finite type to
   itself is also surjective.
-
 -/
 
 @[expose] public section

@@ -6,6 +6,7 @@ Authors: Adomas Baliuka
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!
@@ -38,7 +39,7 @@ The functions are also defined outside the interval `Icc 0 1` due to `log x = lo
   (`hasDerivAt_binEntropy` and `hasDerivAt_qaryEntropy`).
   In addition, due to junk values, `deriv binEntropy p = log (1 - p) - log p`
   holds everywhere (`deriv_binEntropy`).
-* they are strictly increasing on `Icc 0 (1 - 1/q))`
+* they are strictly increasing on `Icc 0 (1 - 1/q)`
   (`qaryEntropy_strictMonoOn`, `binEntropy_strictMonoOn`)
   and strictly decreasing on `Icc (1 - 1/q) 1`
   (`binEntropy_strictAntiOn` and `qaryEntropy_strictAntiOn`).
@@ -343,9 +344,9 @@ lemma deriv2_qaryEntropy :
       rw [deriv_fun_sub ?_ (differentiableAt_log xne0)]
       · rw [deriv.log differentiableAt_fun_id xne0]
         simp only [deriv_id'', one_div]
-        · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
-          simp [field, sub_ne_zero_of_ne xne1.symm, this]
-          ring
+        have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
+        simp [field, sub_ne_zero_of_ne xne1.symm, this]
+        ring
       · apply DifferentiableAt.add
         · simp only [differentiableAt_const]
         exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr xne1.symm)
@@ -440,10 +441,10 @@ lemma strictConcaveOn_qaryEntropy : StrictConcaveOn ℝ (Icc 0 1) (qaryEntropy q
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) qaryEntropy_continuous.continuousOn
   intro p hp
   rw [deriv2_qaryEntropy]
-  · simp_all only [interior_Icc, mem_Ioo]
-    apply div_neg_of_neg_of_pos
-    · norm_num [show 0 < log 2 by positivity]
-    · simp_all only [mul_pos_iff_of_pos_left, sub_pos]
+  simp_all only [interior_Icc, mem_Ioo]
+  apply div_neg_of_neg_of_pos
+  · norm_num [show 0 < log 2 by positivity]
+  · simp_all only [mul_pos_iff_of_pos_left, sub_pos]
 
 lemma strictConcave_binEntropy : StrictConcaveOn ℝ (Icc 0 1) binEntropy :=
   qaryEntropy_two ▸ strictConcaveOn_qaryEntropy

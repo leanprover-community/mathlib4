@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
+
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
@@ -16,7 +17,6 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 - `CommRingCat.nontrivial_of_isPushout_of_isField`: the pushout of non-trivial rings over a field
   is non-trivial.
-
 -/
 
 public section

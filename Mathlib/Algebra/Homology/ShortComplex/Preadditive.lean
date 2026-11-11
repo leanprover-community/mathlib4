@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
-
 -/
 
 @[expose] public section

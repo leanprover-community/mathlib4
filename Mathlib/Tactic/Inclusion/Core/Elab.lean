@@ -178,7 +178,8 @@ One can directly write inclusion and hypothesis extensions like:
 @[inclusion_ext (_ : ℝ)]
 meta def mkRealIVar : InclusionExt :=
   mkNDIVarExt `interval_dyadic_real
-    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩ mkBinarySplitCover
+    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩
+    (Interval.mkBinarySplitCover q(binarySplit))
 ```
 
 ```lean
@@ -273,7 +274,6 @@ The rules for `HypothesisOp`s are:
   occur in `I`, but it may not occur in the source hypothesis or `e`.
 * All remaining theorem arguments must be determined by matching the theorem or by typeclass
   synthesis.
-
 -/
 
 public meta section
@@ -330,7 +330,7 @@ specific ambition, for example `dyadic_interval`.
 An inclusion family is declared using `registerInclusionFamily` and can be extended using the
 `inclusion_op` and `hypothesis_op` attributes.
 The `core` family provides reasoning about logical operators `∧`, `∨`, `¬` and `=`. This family
-is recommented to be included by default.
+is recommended to be included by default.
 
 
 * `inclusion [fam₁, x := e]` sets the parameter named `x` to the value of the term `e`.

@@ -5,9 +5,9 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
-public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
@@ -39,7 +39,7 @@ set_option backward.isDefEq.respectTransparency false in
 def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where
   lift S := ofHom
     { toFun := fun s i => S.π.app ⟨i⟩ s
-      continuous_toFun := continuous_pi (fun i => (S.π.app ⟨i⟩).hom.2) }
+      continuous_toFun := by fun_prop }
   uniq := by
     intro S m h
     ext x

@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Analysis.Analytic.Composition
 public import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Normed.Operator.Mul
-public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.Normed.Ring.Units
+
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Various ways to combine analytic functions
@@ -44,7 +45,7 @@ variable {𝕝 : Type*} [NormedDivisionRing 𝕝] [NormedAlgebra 𝕜 𝕝]
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
   refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
-  simp [constFormalMultilinearSeries_apply_of_nonzero hn]
+  simp [constFormalMultilinearSeries_apply_of_ne_zero hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
     HasFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e :=
@@ -747,7 +748,7 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
         exact hf.r_le
       _ ≤ _ := pf.div_le_radius_compContinuousLinearMap _
   r_pos := by
-    simp only [ENNReal.div_pos_iff, ne_eq, enorm_ne_top, not_false_eq_true, and_true]
+    simp only [ENNReal.div_pos_iff, ne_eq, eNorm_ne_top, not_false_eq_true, and_true]
     exact pos_iff_ne_zero.mp hf.r_pos
   hasSum hy1 hy2 := by
     convert! hf.hasSum _ _

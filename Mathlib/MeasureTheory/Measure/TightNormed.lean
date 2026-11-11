@@ -29,7 +29,6 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
 * `isTightMeasureSet_range_iff_tendsto_limsup_inner`: in a finite-dimensional inner product space,
   the range of a sequence of measures `μ : ℕ → Measure E` is tight if and only if the function
   `r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖⟪y, x⟫_𝕜‖}) atTop` tends to `0` at infinity for all `y`.
-
 -/
 
 public section
@@ -220,7 +219,7 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner
   have h_map r : (μ n).map (fun x ↦ ⟪z, x⟫_𝕜) {x | r < ‖x‖} = μ n {x | r < ‖⟪z, x⟫_𝕜‖} := by
     rw [Measure.map_apply (by fun_prop)]
     · simp
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact MeasurableSet.preimage (f := fun x : 𝕜 ↦ ‖x‖) measurableSet_Ioi (by fun_prop)
   simpa [h_map] using h_tight
 
 /-- In a finite-dimensional inner product space, the range of a sequence of measures

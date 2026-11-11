@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Algebra.Group.Subgroup.Finite
 public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.Subgroup.Center
+
+import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Class Equation
@@ -21,7 +22,6 @@ This file establishes the class equation for finite groups.
 * `Group.card_center_add_sum_card_noncenter_eq_card`: The **class equation** for finite groups.
   The cardinality of a group is equal to the size of its center plus the sum of the size of all its
   nontrivial conjugacy classes. Also `Group.nat_card_center_add_sum_card_noncenter_eq_card`.
-
 -/
 
 public section

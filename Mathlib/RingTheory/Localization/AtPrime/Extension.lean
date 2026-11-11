@@ -5,9 +5,10 @@ Authors: Xavier Roblot
 -/
 module
 
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Primes in an extension of localization at prime
@@ -36,7 +37,6 @@ bijection and that the residual degree and ramification index are preserved by t
 
 - `IsDedekindDomain.primesOverEquivPrimesOver_ramificationIdx_eq`: the bijection
   `primesOverEquivPrimesOver` preserves the ramification index.
-
 -/
 
 @[expose] public section

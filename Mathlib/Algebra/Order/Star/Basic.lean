@@ -6,12 +6,12 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Group.Opposite
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Star.StarProjection
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
-public import Mathlib.Algebra.Star.StarProjection
 
 /-! # Star ordered rings
 
@@ -333,6 +333,12 @@ theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x
 theorem mul_star_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < x * star x := by
   simpa using star_mul_self_pos hx.star
 
+@[simp] theorem star_mul_self_pos_iff [IsProperStar R] {x : R} : 0 < star x * x ↔ x ≠ 0 := by
+  simp [lt_iff_le_and_ne']
+
+@[simp] theorem mul_star_self_pos_iff [IsProperStar R] {x : R} : 0 < x * star x ↔ x ≠ 0 := by
+  simp [lt_iff_le_and_ne']
+
 end NonUnitalSemiring
 
 section NonUnitalRing
@@ -456,7 +462,7 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   all_goals aesop
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
-    [NonUnitalRingHomClass F R S] [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
+    [NonUnitalRingHomClass F R S] [StarHomClass F R S] : OrderHomClass F R S where
   map_rel f := (NonUnitalStarRingHom.ofClass f).map_le_map_of_map_star
 
 instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S]

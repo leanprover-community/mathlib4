@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Analysis.BoxIntegral.UnitPartition
+
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
@@ -51,7 +52,6 @@ convention: the plain name is for the pi case, for e.g. `volume_image_eq_volume_
 the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
 `volume_image_eq_volume_div_covolume'`. When the same result exists in the
 general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
-
 -/
 
 @[expose] public section

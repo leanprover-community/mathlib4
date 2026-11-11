@@ -5,11 +5,12 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.NumberTheory.AbelSummation
+public import Mathlib.NumberTheory.LSeries.Basic
+
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-public import Mathlib.NumberTheory.AbelSummation
-public import Mathlib.NumberTheory.LSeries.Basic
 
 /-!
 # Partial sums of coefficients of L-series
@@ -31,7 +32,6 @@ L-series.
   `(∑ k ∈ Icc 1 n, f k) / n` tends to some complex number `l` when `n → ∞` and that the L-series
   `LSeries f` converges for all `s : ℝ` such that `1 < s`. Then `(s - 1) * LSeries f s` tends
   to `l` when `s → 1` with `1 < s`.
-
 -/
 
 public section
@@ -168,7 +168,7 @@ theorem LSeries_eq_mul_integral_of_nonneg (f : ℕ → ℝ) {r : ℝ} (hr : 0 �
 
 end integralrepresentation
 
-noncomputable section residue
+section residue
 
 variable {f : ℕ → ℂ} {l : ℂ}
 

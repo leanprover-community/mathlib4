@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Family
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Enumerating sets of ordinals by ordinals
 

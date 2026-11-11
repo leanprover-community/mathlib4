@@ -5,9 +5,9 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.RingTheory.Bialgebra.Basic
 
 import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
@@ -62,7 +62,6 @@ In texts, this is what the Frobenius equations are usually referred to as.
 
 * show `IsFrobenius R (A ⊗ B)`
 * show `IsFrobenius R (A × B)`
-
 -/
 
 public section

@@ -113,6 +113,14 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
       (eq_div_iff_mul_eq <| (map_ne_zero_iff _ inj).mpr hy).mp eq⟩
   exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
 
+theorem of_semifield_isLocalization
+    {R : Type*} [CommSemiring R] [NoZeroDivisors R] (S : Submonoid R)
+    (K : Type*) [Semifield K] [Algebra R K] [IsLocalization S K] :
+    IsFractionRing R K :=
+  of_le S R⁰
+    (fun s hs ↦ mem_nonZeroDivisors_of_ne_zero <| ne_zero_of_map <| (map_units K ⟨s, hs⟩).ne_zero)
+    (fun _ hr ↦ isUnit_of_mem_nonZeroDivisors <| nonZeroDivisors_le_comap S K hr)
+
 variable {R K}
 
 section CommSemiring
@@ -199,7 +207,8 @@ protected theorem isDomain : IsDomain K :=
   isDomain_of_le_nonZeroDivisors _ (le_refl (nonZeroDivisors A))
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical in
+@[no_expose]
+protected noncomputable def inv (z : K) : K := open scoped Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
@@ -240,6 +249,12 @@ lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K)
     letI := h.toField
     (IsLocalization.atUnits R _ (S := K)
       (fun _ hx ↦ Ne.isUnit (mem_nonZeroDivisors_iff_ne_zero.mp hx))).surjective
+
+/-- The ring `R` is an integral domain iff its fraction ring `K` is a field. -/
+theorem isDomain_iff_isField : IsDomain R ↔ IsField K := by
+  refine ⟨fun h ↦ (IsFractionRing.toField R).toIsField K, fun h ↦ ?_⟩
+  let := h.toField
+  exact IsDomain.of_faithfulSMul _ K
 
 end CommRing
 

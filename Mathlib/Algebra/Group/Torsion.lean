@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Patrick Luo
 -/
 module
 
+public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.SelfInv
 
 /-!
@@ -23,24 +24,28 @@ variable {M G : Type*}
 section Monoid
 variable [Monoid M]
 
-instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
-  no_nat_zero_divisors _ _ _ hk habk := IsAddTorsionFree.nsmul_right_injective hk habk
+instance [AddCommMonoid M] [HasUniqueDiv M] : Lean.Grind.NoNatZeroDivisors M where
+  no_nat_zero_divisors _ _ _ hk h := nsmul_right_injective hk h
 
-@[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
-  pow_left_injective _ _ := injective_of_subsingleton _
+@[to_additive]
+instance [Subsingleton M] : HasUniqueRoots M where
+  pow_left_injective _ _ _ _ _ := Subsingleton.elim _ _
+
+section IsMulTorsionFree
 
 variable [IsMulTorsionFree M] {n : ℕ} {a b : M}
 
-@[to_additive nsmul_right_injective]
-lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
-  IsMulTorsionFree.pow_left_injective hn
+@[to_additive]
+lemma Commute.eq_of_pow_eq_pow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n = b ^ n) : a = b :=
+  eq_of_pow_eq_pow_of_commute hn hab habn
 
-@[to_additive nsmul_right_inj]
-lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
+@[to_additive AddCommute.nsmul_right_inj]
+protected lemma Commute.pow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  ⟨hab.eq_of_pow_eq_pow hn, congrArg (· ^ n)⟩
 
 @[to_additive nsmul_eq_zero_iff_right]
 lemma pow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  rw [← pow_left_inj (a := a) hn, one_pow]
+  simpa using (Commute.one_right a).pow_left_inj hn
 
 -- We want to use `IsAddTorsion.nsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]
@@ -54,29 +59,75 @@ lemma pow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 @[to_additive two_nsmul_eq_zero]
 lemma sq_eq_one : a ^ 2 = 1 ↔ a = 1 := pow_eq_one_iff_left (by lia)
 
+end IsMulTorsionFree
+
+section HasUniqueRoots
+
+variable [HasUniqueRoots M] {n : ℕ} {a b : M}
+
+@[to_additive nsmul_right_inj]
+lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  (pow_left_injective hn).eq_iff
+
+end HasUniqueRoots
+
 end Monoid
 
+section CancelMonoid
+variable [CancelMonoid M] [IsMulTorsionFree M] {a : M}
+
+@[to_additive IsAddTorsionFree.nsmul_left_injective]
+theorem IsMulTorsionFree.pow_right_injective (ha : a ≠ 1) :
+    Function.Injective (fun n : ℕ ↦ a ^ n) := by
+  suffices ∀ {m n : ℕ} (hmn : m ≤ n) (h : a ^ m = a ^ n), m = n from fun m n h ↦
+    (Nat.le_or_le m n).elim (this · h) fun hnm ↦ (this hnm h.symm).symm
+  intro m _ hmn h
+  obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  simpa [pow_add, left_eq_mul, ha] using h
+
+@[to_additive IsAddTorsionFree.nsmul_left_injective_iff]
+theorem IsMulTorsionFree.pow_right_injective_iff :
+    Function.Injective (fun n : ℕ ↦ a ^ n) ↔ a ≠ 1 :=
+  ⟨fun h ha ↦ by simpa using @h 0 1 (by simp [ha]), pow_right_injective⟩
+
+@[to_additive (attr := simp) IsAddTorsionFree.nsmul_left_inj]
+theorem IsMulTorsionFree.pow_right_inj (ha : a ≠ 1) {n m : ℕ} : a ^ n = a ^ m ↔ n = m :=
+  (pow_right_injective ha).eq_iff
+
+end CancelMonoid
+
+/-- A commutative torsion-free monoid has unique roots.
+
+This is not an instance, to avoid an expensive instance loop with
+`HasUniqueRoots M → IsMulTorsionFree M`. -/
+@[to_additive /-- A commutative torsion-free additive monoid has unique divisibility.
+
+This is not an instance, to avoid an expensive instance loop with
+`HasUniqueDiv M → IsAddTorsionFree M`. -/]
+lemma IsMulTorsionFree.hasUniqueRoots [CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M where
+  pow_left_injective _ hn _ _ := (Commute.all _ _).eq_of_pow_eq_pow hn
+
 section Group
-variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
+variable [Group G] {n : ℤ} {a b : G}
 
-@[to_additive zsmul_right_injective]
-lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n
-  | (n + 1 : ℕ), _ => by
-    simpa [← Int.natCast_one, ← Int.natCast_add] using! pow_left_injective n.succ_ne_zero
-  | .negSucc n, _ => by simpa using! inv_injective.comp (pow_left_injective n.succ_ne_zero)
+section IsMulTorsionFree
 
-@[to_additive zsmul_right_inj]
-lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
+variable [IsMulTorsionFree G]
 
-/-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`. -/
-@[to_additive /-- Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'`
-and `zsmul_lt_zsmul_iff'`. -/]
-lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
+@[to_additive]
+lemma Commute.eq_of_zpow_eq_zpow (hab : Commute a b) (hn : n ≠ 0) (habn : a ^ n = b ^ n) :
+    a = b := by
+  cases n
+  · exact hab.eq_of_pow_eq_pow (by simpa using hn) (by simpa using habn)
+  · exact hab.eq_of_pow_eq_pow (Nat.add_one_ne_zero _) (by simpa using habn)
+
+@[to_additive AddCommute.zsmul_right_inj]
+protected lemma Commute.zpow_left_inj (hab : Commute a b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  ⟨hab.eq_of_zpow_eq_zpow hn, congrArg (· ^ n)⟩
 
 @[to_additive IsAddTorsionFree.zsmul_eq_zero_iff_right]
 lemma IsMulTorsionFree.zpow_eq_one_iff_left (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
-  rw [← zpow_left_inj (a := a) hn, one_zpow]
+  cases n <;> simp_all
 
 -- We want to use `IsAddTorsion.zsmul_eq_zero_iff` earlier than `smul_eq_zero`.
 @[to_additive (attr := simp high)]
@@ -86,11 +137,46 @@ lemma IsMulTorsionFree.zpow_eq_one_iff : a ^ n = 1 ↔ a = 1 ∨ n = 0 := by
 @[to_additive IsAddTorsionFree.zsmul_eq_zero_iff_left]
 lemma IsMulTorsionFree.zpow_eq_one_iff_right (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by simp [*]
 
+@[to_additive IsAddTorsionFree.zsmul_left_injective_iff]
+lemma IsMulTorsionFree.zpow_right_injective_iff : (a ^ · : ℤ → G).Injective ↔ a ≠ 1 := by
+  refine ⟨fun h ha ↦ by simpa using @h 0 1 (by simp [ha]), fun ha m n h ↦ ?_⟩
+  simp [← Int.sub_eq_zero, ← zpow_eq_one_iff_right ha, zpow_sub, h]
+
+@[to_additive IsAddTorsionFree.zsmul_left_injective]
+alias ⟨_, IsMulTorsionFree.zpow_right_injective⟩ :=
+  IsMulTorsionFree.zpow_right_injective_iff
+
+@[to_additive (attr := simp) IsAddTorsionFree.zsmul_left_inj]
+lemma IsMulTorsionFree.zpow_right_inj (ha : a ≠ 1) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
+  (zpow_right_injective ha).eq_iff
+
 @[to_additive] lemma self_eq_inv : a = a⁻¹ ↔ a = 1 := by rw [← sq_eq_one, sq, mul_eq_one_iff_eq_inv]
 @[to_additive] lemma inv_eq_self : a⁻¹ = a ↔ a = 1 := by rw [eq_comm, self_eq_inv]
 @[to_additive] lemma self_ne_inv : a ≠ a⁻¹ ↔ a ≠ 1 := self_eq_inv.ne
 @[to_additive] lemma inv_ne_self : a⁻¹ ≠ a ↔ a ≠ 1 := inv_eq_self.ne
 
 @[to_additive] lemma isSelfInv_iff_eq_one : IsSelfInv a ↔ a = 1 := inv_eq_self
+
+end IsMulTorsionFree
+
+section HasUniqueRoots
+
+variable [HasUniqueRoots G] {n : ℤ} {a b : G}
+
+@[to_additive zsmul_right_injective]
+lemma zpow_left_injective (hn : n ≠ 0) : Injective fun a : G ↦ a ^ n := by
+  cases n
+  · simp only [Int.ofNat_eq_natCast, zpow_natCast, Int.natCast_ne_zero] at hn ⊢
+    exact pow_left_injective hn
+  · simp only [zpow_negSucc]
+    exact inv_injective.comp (pow_left_injective (Nat.add_one_ne_zero _))
+
+@[to_additive zsmul_right_inj]
+lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  (zpow_left_injective hn).eq_iff
+
+@[to_additive (attr := deprecated (since := "2026-09-30"))] alias zpow_eq_zpow_iff' := zpow_left_inj
+
+end HasUniqueRoots
 
 end Group
