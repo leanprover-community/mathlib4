@@ -641,6 +641,8 @@ lemma continuous_coind₁Equivcoind_aux (π : ContRepresentation R G V)
     (continuous_const (y := ContinuousMap.id G)).prodMk continuous_id).comp <|
       continuous_precomp (⟨Inv.inv, continuous_inv⟩ : C(G, G))).congr fun _ ↦ rfl)
 
+/-- The coindeuced module on the trivial representation along `Unit →ₜ* G` has a continuous linear
+equivalence to `C(G, V)`. -/
 @[simps]
 def coind₁LEquivCoind (hπ : Continuous fun gv : G × V ↦ π gv.1 gv.2) :
     ↥(coindV (G := Unit) (H := G) 1 (trivial R Unit V)) ≃L[R] C(G, V) where
