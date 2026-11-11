@@ -48,7 +48,6 @@ Convergence:
   `1`.
 * `Complex.radius_regularizedGaussHGFunSeries_eq_one`: the Gaussian hypergeometric series has
   convergence radius `1`.
-
 -/
 
 @[expose] public noncomputable section

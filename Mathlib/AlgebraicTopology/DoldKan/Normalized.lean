@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
-
 # Comparison with the normalized Moore complex functor
 
 In this file, we show that when the category `A` is abelian,
@@ -24,7 +23,6 @@ the Dold-Kan equivalence
 with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

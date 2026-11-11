@@ -42,7 +42,6 @@ is too strong.
 
 * Develop a theory of base / separation / positive roots for infinite systems which specialises to
   the concept here for finite systems.
-
 -/
 
 @[expose] public section

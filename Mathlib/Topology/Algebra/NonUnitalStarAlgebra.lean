@@ -21,7 +21,6 @@ of `R` and a continuous `star` operation. We reuse typeclasses `ContinuousSMul` 
 
 Any non-unital star subalgebra of a non-unital topological star algebra is itself a
 non-unital topological star algebra, and its closure is again a non-unital star subalgebra.
-
 -/
 
 @[expose] public section

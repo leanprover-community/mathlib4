@@ -79,9 +79,6 @@ def _root_.NonUnitalStarAlgHom.ofClass [StarHomClass F A B] (f : F) : A →⋆�
 
 @[deprecated (since := "2026-09-02")] alias toNonUnitalStarAlgHom := NonUnitalStarAlgHom.ofClass
 
-instance [StarHomClass F A B] : NonUnitalStarRingHomClass F A B :=
-  NonUnitalStarRingHomClass.mk
-
 end NonUnitalStarAlgHomClass
 
 namespace NonUnitalStarAlgHom

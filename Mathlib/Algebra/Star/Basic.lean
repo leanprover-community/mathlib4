@@ -660,8 +660,8 @@ instance [NonUnitalNonAssocSemiring R] [StarAddMonoid R] [IsProperStar R] : IsPr
 section IsStarOrtho
 
 /-- Two elements `p` and `q` in a ⋆-ring are *star-orthogonal* if `p * star q = 0`
-and `star q * p = 0`. If `p` and `q` are both selfadjoint, this reduces to `p * q = 0`
-(see `isStarOrtho_iff_mul_eq_zero`).
+and `star q * p = 0`. If `p` and `q` are both self-adjoint, this reduces to `p * q = 0`
+(see `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`).
 
 This is denoted `p ⋆⟂ q` with the notation available in the `StarRing` namespace. -/
 @[mk_iff]
@@ -680,24 +680,14 @@ lemma isStarOrtho_comm : p ⋆⟂ q ↔ q ⋆⟂ p := by
   simp_rw [isStarOrtho_iff, ← star_eq_zero (x := p * star q), ← star_eq_zero (x := star q * p),
     star_mul, star_star]
 
-alias ⟨IsStarOrtho.symm, _⟩ := isStarOrtho_comm
+protected alias ⟨IsStarOrtho.symm, _⟩ := isStarOrtho_comm
 
 instance : Std.Symm (· ⋆⟂ · : R → R → Prop) where
   symm _ _ := .symm
 
+/-- A variant of `isStarOrtho_iff` which retains the ordering of the factors in the product, but
+instead moves the `star`. -/
 lemma isStarOrtho_iff' : p ⋆⟂ q ↔ p * star q = 0 ∧ star p * q = 0 := by
   rw [isStarOrtho_iff, ← star_eq_zero (x := star p * q), star_mul, star_star]
-
-namespace IsStarOrtho
-
-/-- The equation `IsStarOrtho.mul_star_eq_zero` with the roles of `p` and `q` interchanged. -/
-lemma mul_star_eq_zero' (h : p ⋆⟂ q) : q * star p = 0 :=
-  h.symm.mul_star_eq_zero
-
-/-- The equation `IsStarOrtho.star_mul_eq_zero` with the roles of `p` and `q` interchanged. -/
-lemma star_mul_eq_zero' (h : p ⋆⟂ q) : star p * q = 0 :=
-  h.symm.star_mul_eq_zero
-
-end IsStarOrtho
 
 end IsStarOrtho
