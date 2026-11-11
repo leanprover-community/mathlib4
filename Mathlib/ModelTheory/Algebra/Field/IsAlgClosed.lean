@@ -161,11 +161,8 @@ theorem ACF_categorical {p : ℕ} (κ : Cardinal) (hκ : ℵ₀ < κ) :
 
 theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsComplete := by
-  apply Categorical.isComplete.{0, 0, 0} (Order.succ ℵ₀) _
-    (ACF_categorical _ (Order.lt_succ _))
-    (Order.le_succ ℵ₀)
-  · simp only [card_ring, lift_id']
-    exact le_trans (le_of_lt (lt_aleph0_of_finite _)) (Order.le_succ _)
+  apply (ACF_categorical _ aleph0_lt_aleph_one).isComplete.{0, 0, 0} _ _ aleph0_lt_aleph_one.le
+  · trans ℵ₀ <;> simp
   · exact ACF_isSatisfiable hp
   · rintro ⟨M⟩
     let _ := fieldOfModelACF p M
