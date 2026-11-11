@@ -108,7 +108,9 @@ lemma sum_right {ι : Type*} {s : Finset ι} {f : ι → R} (h : ∀ i ∈ s, p 
     p ⋆⟂ (∑ i ∈ s, f i) :=
   (sum_left fun i hi ↦ (h i hi).symm).symm
 
-/- The properties of star-orthogonality involving multiplication below could be proven manually,
+/-! ### Multiplication
+
+The properties of star-orthogonality involving multiplication below could be proven manually,
 and sometimes with weaker hypotheses, but these are provided for convenience because they come up
 in practice. -/
 
