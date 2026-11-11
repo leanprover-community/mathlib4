@@ -457,8 +457,7 @@ theorem Bundle.Trivialization.contMDiffAt_snd_comp_iff₂ {f : M → TotalSpace 
     (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
     ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ (e (f y)).2) x ↔
       ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) x := by
-  simpa [← contMDiffWithinAt_univ] using
-    e.contMDiffWithinAt_snd_comp_iff₂ hp he he'
+  simpa [← contMDiffWithinAt_univ] using e.contMDiffWithinAt_snd_comp_iff₂ hp he he'
 
 end ContMDiffCoordChange
 
