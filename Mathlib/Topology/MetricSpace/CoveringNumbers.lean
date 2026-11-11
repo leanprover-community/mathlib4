@@ -6,9 +6,6 @@ Authors: Rémy Degenne, Markus Himmel, Lorenzo Luccioli, Alessio Rondelli, Etien
 module
 
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.EMetricSpace.Diam
-public import Mathlib.Topology.MetricSpace.MetricSeparated
 public import Mathlib.Topology.MetricSpace.Cover
 
 /-!
@@ -50,7 +47,6 @@ in the set), but we have the following inequality:
 ## References
 
 * [R. Vershynin, *High-dimensional probability*][vershynin2018high]
-
 -/
 
 @[expose] public section

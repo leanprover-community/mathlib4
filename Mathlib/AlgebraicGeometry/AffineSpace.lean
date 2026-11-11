@@ -5,8 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Monad
-public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
@@ -23,7 +21,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 - `AlgebraicGeometry.AffineSpace.homOverEquiv`:
   `S`-morphisms into `Spec 𝔸(n; S)` are equivalent to the choice of `n` global sections.
 - `AlgebraicGeometry.AffineSpace.SpecIso`: `𝔸(n; Spec R) ≅ Spec R[n]`
-
 -/
 
 @[expose] public section
@@ -56,8 +53,8 @@ lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g 
       g.hom.comp (MvPolynomial.mapEquiv _ ULift.ringEquiv.symm).toRingHom by
     ext x
     · obtain ⟨x⟩ := x
-      simpa [-map_intCast, -eq_intCast] using! DFunLike.congr_fun this (C x)
-    · simpa [-map_intCast, -eq_intCast] using! DFunLike.congr_fun this (X x)
+      simpa [-map_intCast, -eq_intCast] using! congr($this (C x))
+    · simpa [-map_intCast, -eq_intCast] using! congr($this (X x))
   ext1
   · exact RingHom.ext_int _ _
   · simpa using! h _
@@ -70,7 +67,6 @@ instance over : 𝔸(n; S).CanonicallyOver S where
 /-- The map from the affine `n`-space over `S` to the integral model `Spec ℤ[n]`. -/
 def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections.
 Use `homOverEquiv` instead.
@@ -309,7 +305,6 @@ lemma map_SpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :
     rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
         CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, map_X]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings. -/
 def mapSpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :

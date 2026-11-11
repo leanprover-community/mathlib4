@@ -5,11 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Derivatives of Schwartz functions
@@ -35,7 +33,6 @@ In this file we define the various notions of derivatives of Schwartz functions.
 * `SchwartzMap.integral_bilinear_lineDerivOp_right_eq_neg_left`: Integration by parts using the
   directional derivative `∂_{m}`
 * `SchwartzMap.integral_bilinear_laplacian_right_eq_left`: Integration by parts for the Laplacian
-
 -/
 
 @[expose] public noncomputable section
@@ -161,7 +158,7 @@ theorem tsupport_derivCLM_subset (f : 𝓢(ℝ, F)) : tsupport (derivCLM 𝕜 F 
   simp_rw [← fderiv_apply_one_eq_deriv]
   exact tsupport_fderiv_apply_subset ℝ 1
 
-variable [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 F]
+variable [NormedSpace ℝ E]
 
 theorem tsupport_fderivCLM_subset (f : 𝓢(E, F)) : tsupport (fderivCLM 𝕜 E F f) ⊆ tsupport f :=
   tsupport_fderiv_subset ℝ

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Data.Fintype.Sum
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
@@ -307,11 +306,17 @@ protected theorem edist_eq (x y : α) : edist (f x) (f y) = edist x y :=
 protected theorem continuous : Continuous f :=
   (IsometryClass.isometry f).continuous
 
-protected theorem lipschitz : LipschitzWith 1 f :=
+protected theorem lipschitzWith : LipschitzWith 1 f :=
   (IsometryClass.isometry f).lipschitzWith
 
-protected theorem antilipschitz : AntilipschitzWith 1 f :=
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := IsometryClass.lipschitzWith
+
+protected theorem antilipschitzWith : AntilipschitzWith 1 f :=
   (IsometryClass.isometry f).antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := IsometryClass.antilipschitzWith
 
 theorem ediam_image (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
   (IsometryClass.isometry f).ediam_image s
@@ -673,7 +678,7 @@ theorem diam_preimage (s : Set β) : Metric.diam (h ⁻¹' s) = Metric.diam s :=
 
 include h in
 theorem diam_univ : Metric.diam (univ : Set α) = Metric.diam (univ : Set β) :=
-  congr_arg ENNReal.toReal h.ediam_univ
+  congr($(h.ediam_univ).toReal)
 
 @[simp]
 theorem preimage_ball (h : α ≃ᵢ β) (x : β) (r : ℝ) :
@@ -754,6 +759,6 @@ instance : CoeOut F (α ≃ᵢ β) :=
   ⟨toIsometryEquiv⟩
 
 theorem toIsometryEquiv_injective : Function.Injective ((↑) : F → α ≃ᵢ β) :=
-  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ DFunLike.congr_fun e a
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr($e a)
 
 end IsometryClass

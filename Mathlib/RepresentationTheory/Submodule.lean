@@ -5,12 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Invariant
 public import Mathlib.RepresentationTheory.Basic
 
 /-!
 # Invariant submodules of a group representation
-
 -/
 
 @[expose] public section

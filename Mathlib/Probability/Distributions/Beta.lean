@@ -111,17 +111,17 @@ lemma lintegral_betaPDF_eq_one {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) :
   · simp_rw [mul_assoc, integral_const_mul]
     field_simp
     rw [div_eq_one_iff_eq (ne_of_gt (beta_pos hα hβ)), beta_eq_betaIntegralReal α β hα hβ,
-      betaIntegral, intervalIntegral.integral_of_le (by norm_num),
+      betaIntegral, intervalIntegral.integral_of_le (by simp),
       ← integral_Ioc_eq_integral_Ioo, ← RCLike.re_to_complex, ← integral_re]
     · refine setIntegral_congr_fun measurableSet_Ioc fun x ⟨hx1, hx₂⟩ ↦ ?_
       norm_cast
       rw [← Complex.ofReal_cpow, ← Complex.ofReal_cpow, RCLike.re_to_complex,
         Complex.re_mul_ofReal, Complex.ofReal_re]
       all_goals linarith
-    convert! betaIntegral_convergent (u := α) (v := β) (by simpa) (by simpa)
+    convert betaIntegral_convergent (u := α) (v := β) (by simpa) (by simpa)
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le (by simp), IntegrableOn]
   · refine ae_restrict_of_forall_mem measurableSet_Ioo (fun x hx ↦ ?_)
-    convert! betaPDFReal_pos hx.1 hx.2 hα hβ |>.le using 1
+    convert betaPDFReal_pos hx.1 hx.2 hα hβ |>.le using 1
     rw [betaPDFReal, ite_eq_left ⟨hx.1, hx.2⟩]
   · exact Measurable.aestronglyMeasurable (by fun_prop)
 

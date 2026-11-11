@@ -28,7 +28,6 @@ if it has weak kernels.
 ## References
 
 * [Peter J Freyd, *Representations in Abelian categories*, p. 99][freyd1966repabelian]
-
 -/
 
 @[expose] public section
@@ -101,7 +100,7 @@ theorem HasWeakLimit.mk {F : J ⥤ C} (d : WeakLimitCone F) : HasWeakLimit F :=
 /-- Use the axiom of choice to extract explicit `WeakLimitCone F` from `HasWeakLimit F`. -/
 @[no_expose]
 def getWeakLimitCone (F : J ⥤ C) [HasWeakLimit F] : WeakLimitCone F :=
-  Classical.choice <| HasWeakLimit.exists_weakLimitCone
+  Classical.choice HasWeakLimit.exists_weakLimitCone
 
 variable (J C) in
 /-- `C` has weak limits of shape `J` if there exists a weak limit for every functor

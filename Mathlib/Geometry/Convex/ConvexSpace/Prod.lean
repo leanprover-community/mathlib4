@@ -108,7 +108,7 @@ instance : ConvexSpace R (ι →₀ X) := .mk
     classical
     refine .onFinset (w.weights.support.biUnion Finsupp.support) (fun i ↦ w.iConvexComb (· i)) ?_
     rintro i hi
-    contrapose! hi
+    contrapose hi
     simp_all)
   (by simp)
   (fun w ↦ by ext; simp [iConvexComb_assoc])
