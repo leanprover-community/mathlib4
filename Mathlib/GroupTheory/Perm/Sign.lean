@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Conj
 public import Mathlib.Algebra.Group.Subgroup.Lattice
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Data.Finset.Fin
+public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.Perm
 public import Mathlib.Data.Fintype.Prod
@@ -17,7 +17,8 @@ public import Mathlib.Data.Int.Order.Units
 public import Mathlib.GroupTheory.Perm.Support
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.NormNum.Ineq
-public import Mathlib.Data.Finset.Sigma
+
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 
 /-!
 # Sign of a permutation
@@ -26,7 +27,6 @@ The main definition of this file is `Equiv.Perm.sign`,
 associating a `ℤˣ` sign with a permutation.
 
 Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Finite.lean`
-
 -/
 
 @[expose] public section
@@ -266,8 +266,8 @@ private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
       -1 := by
   rcases n with (_ | _ | n)
-  · norm_num at hn
-  · norm_num at hn
+  · simp at hn
+  · simp at hn
   · exact signAux_swap_zero_one' n
 
 theorem signAux_swap : ∀ {n : ℕ} {x y : Fin n} (_hxy : x ≠ y), signAux (swap x y) = -1
@@ -459,7 +459,7 @@ theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁
   have hl'₂ : (l.1.map ofSubtype).prod = f := by
     rw [l.1.prod_hom ofSubtype, l.2.1, ofSubtype_subtypePerm _ h₂]
   conv =>
-    congr
+    enter [1]
     rw [← l.2.1]
   simp_rw [← hl'₂]
   rw [sign_prod_list_swap l.2.2, sign_prod_list_swap hl', List.length_map]

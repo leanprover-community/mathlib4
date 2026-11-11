@@ -5,15 +5,15 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Localization
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Ideal.GoingDown
+public import Mathlib.RingTheory.LocalProperties.Basic
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Flat ring homomorphisms
 
 In this file we define flat ring homomorphisms and show their meta properties.
-
 -/
 
 @[expose] public section
@@ -166,7 +166,7 @@ lemma tensorProductMap {f : A →ₐ[S] C} {g : B →ₐ[R] D} (hf : f.Flat) (hg
     refine RingHom.Flat.comp ?_ (.of_bijective <| AlgEquiv.bijective _)
     change RingHom.Flat (RingHom.comp (Algebra.TensorProduct.lTensor D
       (AlgHom.restrictScalars R f)).toRingHom _)
-    exact RingHom.Flat.comp (.of_bijective <| (TensorProduct.comm R A D).bijective) (lTensor D hf)
+    exact RingHom.Flat.comp (.of_bijective (TensorProduct.comm R A D).bijective) (lTensor D hf)
 
 end
 
@@ -243,7 +243,6 @@ end CommRingCat
 
 open CategoryTheory Limits
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S ⊗[R] S → S` is flat, then also `T ⊗[R] A → T ⊗[S] A` is flat. -/
 -- TODO: If necessary, generalize the universes here by composing with suitable `ULift`
 -- isomorphisms.

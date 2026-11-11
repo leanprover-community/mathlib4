@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.MvPowerSeries.Evaluation
 public import Mathlib.RingTheory.PowerSeries.PiTopology
-public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-! # Evaluation of power series
 
@@ -41,7 +40,6 @@ the following lemmas furnish the properties of evaluation:
 * `PowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
 
 We refer to the documentation of `MvPowerSeries.eval₂` for more details.
-
 -/
 
 @[expose] public section

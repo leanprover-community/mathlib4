@@ -5,18 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Smooth.Basic
 
 /-!
-
 # Formal-smoothness of finite products of rings
 
 ## Main result
 
 - `Algebra.FormallySmooth.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-smooth
   if and only if each `A i` is `R`-formally-smooth.
-
 -/
 
 public section
@@ -37,7 +34,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
         Ideal.Quotient.eq_zero_iff_mem]
       have : Pi.single i 1 - 1 ∈ RingHom.ker (Pi.evalAlgHom R A i).toRingHom := by
         simp [RingHom.mem_ker]
-      convert! neg_mem (Ideal.pow_mem_pow this 2) using 1
+      convert neg_mem (Ideal.pow_mem_pow this 2) using 1
       simp [pow_two, sub_mul, mul_sub, ← Pi.single_mul]
     · intro x y
       change Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _

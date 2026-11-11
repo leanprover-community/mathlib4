@@ -6,8 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Data.Set.Function
-public import Mathlib.Logic.Pairwise
-public import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise
@@ -79,6 +77,10 @@ theorem Pairwise.mono (h : t ⊆ s) (hs : s.Pairwise r) : t.Pairwise r :=
 
 theorem Pairwise.mono' (H : r ≤ p) (hr : s.Pairwise r) : s.Pairwise p :=
   hr.imp H
+
+@[gcongr]
+theorem Pairwise.mono'' (h : t ⊆ s) (H : ∀ a b, r a b → p a b) : s.Pairwise r → t.Pairwise p :=
+  Pairwise.mono h ∘ Pairwise.mono' H
 
 theorem Pairwise.inter_left (hs : s.Pairwise r) (t : Set α) : (s ∩ t).Pairwise r :=
   hs.mono Set.inter_subset_left
@@ -256,6 +258,11 @@ in order to allow dot notation on `Set.PairwiseDisjoint`, even though the former
 nicely. -/
 def PairwiseDisjoint (s : Set ι) (f : ι → α) : Prop :=
   s.Pairwise (Disjoint on f)
+
+@[grind .]
+theorem PairwiseDisjoint.disjoint_of_ne (h : s.PairwiseDisjoint f) {i j : ι}
+    (hi : i ∈ s) (hj : j ∈ s) (hij : i ≠ j) : Disjoint (f i) (f j) :=
+  h hi hj hij
 
 theorem PairwiseDisjoint.subset (ht : t.PairwiseDisjoint f) (h : s ⊆ t) : s.PairwiseDisjoint f :=
   Pairwise.mono h ht

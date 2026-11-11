@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Inclusion
 public meta import Lean.Meta.Native
+public meta import Mathlib.Tactic.Inclusion.Core.Inclusion
 
 /-!
 # Core implementation of the `inclusion` tactic
@@ -17,7 +17,6 @@ This file defines the `TacticM` core of the `inclusion` tactic.
 
 The approach to the implimentation of the `kernel == true` and `native == true` options mirrors
 the approach used by the `decide` tactic (and reuses the code where possible).
-
 -/
 
 @[expose] public meta section

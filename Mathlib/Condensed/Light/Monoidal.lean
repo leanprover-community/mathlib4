@@ -7,12 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
+public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 public import Mathlib.CategoryTheory.Sites.Monoidal
 public import Mathlib.Condensed.Light.Module
-public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 
 /-!
-
 # Closed symmetric monoidal structure on light condensed modules
 
 We define a symmetric monoidal structure on light condensed modules by localizing the symmetric

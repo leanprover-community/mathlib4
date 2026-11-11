@@ -37,7 +37,6 @@ See also `PowerSeries.derivative` for the univariate setting.
   `pderiv S i (subst a f) = ∑' j, subst a (pderiv R j f) * pderiv S i (a j)`.
 - `MvPowerSeries.pderiv_subst`: the same chain rule as a `Finset.sum`, when there are only
   finitely many variables.
-
 -/
 
 @[expose] public section
@@ -199,7 +198,7 @@ end CommSemiring
 
 The `CommRing` assumption is needed because the proof uses `smul_right_inj`, which requires
 cancellation of addition in `R`; `IsAddTorsionFree` alone does not suffice. -/
-theorem pderiv.ext [CommRing R] [IsAddTorsionFree R] {f g : MvPowerSeries σ R}
+theorem pderiv.ext [CommRing R] [HasUniqueDiv R] {f g : MvPowerSeries σ R}
     (hD : ∀ i, pderiv i f = pderiv i g) (hc : constantCoeff f = constantCoeff g) : f = g := by
   ext n
   by_cases h : n = 0

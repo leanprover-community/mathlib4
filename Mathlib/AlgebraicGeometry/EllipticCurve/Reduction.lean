@@ -6,10 +6,9 @@ Authors: Bryan Wang
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
-public import Mathlib.GroupTheory.ArchimedeanDensely
+
+import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!
 # Reduction of Weierstrass curves over local fields
@@ -325,8 +324,6 @@ the valuation of its discriminant is 1. -/
 class HasGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   goodReduction : valuation K (maximalIdeal R) W.Δ = 1
 
-@[deprecated (since := "2026-03-04")] alias IsGoodReduction := HasGoodReduction
-
 lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
     HasGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
@@ -338,18 +335,15 @@ lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : I
   refine ((integralModel_Δ_eq R W ▸ hasGoodReduction_iff _ _).trans ?_).trans h
   simpa [hW] using (valuation_le_one (R := R) (K := K) _ _).ge_iff_eq.symm
 
-@[deprecated (since := "2026-03-04")] alias isGoodReduction_iff_isElliptic_reduction :=
-  hasGoodReduction_iff_isElliptic_reduction
-
 /-- A minimal Weierstrass equation has multiplicative reduction if and only if
-the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
+the valuation of its discriminant is less than 1 and the valuation of `c₄` equals 1. -/
 @[mk_iff]
 class HasMultiplicativeReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   multiplicativeReduction : valuation K (maximalIdeal R) W.c₄ = 1
 
 /-- A minimal Weierstrass equation has additive reduction if and only if
-the valuation of its discriminant is less than 1 and the valuation of `a₄` is less than 1. -/
+the valuation of its discriminant is less than 1 and the valuation of `c₄` is less than 1. -/
 @[mk_iff]
 class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
