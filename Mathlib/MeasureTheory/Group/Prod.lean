@@ -295,7 +295,7 @@ that if `f` is the characteristic function of a measurable set `t` this states t
 for a constant `c` that does not depend on `μ`.
 
 Note: There is a gap in the last step of the proof in [Halmos]. In the last line, the equality
-`g(-x) + ν(s - x) = f(x)` holds if we can prove that `0 < ν(s - x) < ∞`. The first inequality
+`g(-x) * ν(s - x) = f(x)` holds if we can prove that `0 < ν(s - x) < ∞`. The first inequality
 follows from §59, Th. D, but the second inequality is not justified. We prove this inequality for
 almost all `x` in `MeasureTheory.ae_measure_preimage_add_right_lt_top_of_ne_zero`. -/]
 theorem measure_lintegral_div_measure (sm : MeasurableSet s) (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞)

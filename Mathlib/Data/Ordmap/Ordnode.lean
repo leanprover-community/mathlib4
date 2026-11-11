@@ -90,7 +90,7 @@ instance : Inhabited (Ordnode α) :=
 /-- **Internal use only**
 
 The maximal relative difference between the sizes of
-two trees, it corresponds with the `w` in Adams' paper.
+two trees, it corresponds to the `w` in Adams' paper.
 
 According to the Haskell comment, only `(delta, ratio)` settings
 of `(3, 2)` and `(4, 2)` will work, and the proofs in
@@ -1055,8 +1055,9 @@ def updateWith (f : α → Option α) (x : α) : Ordnode α → Ordnode α
       | some a => node sz l a r
     | Ordering.gt => balanceL l y (updateWith f x r)
 
-/-- O(log n). Modify an element in the set with the given function,
-doing nothing if the key is not found.
+/-- O(log n). Insert, modify or remove the element equivalent to `x`, as `f` says: if the set has
+an element `y` equivalent to `x`, it is replaced by `a` when `f (some y) = some a` and removed when
+`f (some y) = none`; otherwise `a` is inserted when `f none = some a`.
 Note that the element returned by `f` must be equivalent to `x`.
 
 ```

@@ -9,9 +9,9 @@ meta import Mathlib.Data.Ordmap.Invariants
 the operations on `Ordnode`. Several of the others are compared here with operations on lists, on
 small inputs, and each result must be a balanced tree with the right cached sizes.
 
-`insertMin`, `insertMax`, `link`, `take`, `drop`, `splitAt`, `filter` and `partition` never
-compare elements, so they are tested on one list of each length (`filter` and `partition` with
-every predicate on its elements).
+`insertMin`, `insertMax`, `link`, `merge`, `take`, `drop`, `splitAt`, `filter` and `partition`
+never compare elements, so they are tested on one list of each length (`filter` and `partition`
+with every predicate on its elements).
 -/
 
 open Ordnode
@@ -53,6 +53,11 @@ meta def trees (a : List ℕ) : List (Ordnode ℕ) :=
 #guard (List.range 9).all fun m ↦ (List.range 9).all fun n ↦
   (trees (List.range m)).all fun l ↦ (trees (List.range' (m + 1) n)).all fun r ↦
     agrees (link l m r) (List.range (m + n + 1))
+
+-- `merge l r` is `l ++ r`
+#guard (List.range 9).all fun m ↦ (List.range 9).all fun n ↦
+  (trees (List.range m)).all fun l ↦ (trees (List.range' m n)).all fun r ↦
+    agrees (merge l r) (List.range (m + n))
 
 -- `take`, `drop` and `splitAt`
 #guard ((List.range 9).map List.range).all fun a ↦ (trees a).all fun t ↦ (List.range 9).all fun i ↦

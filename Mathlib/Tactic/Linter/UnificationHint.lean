@@ -82,7 +82,9 @@ def solveBySubstitution (xs : Array Expr) (cs : List (Expr × Expr)) (lhs rhs : 
 /-- The `unificationHint` linter checks every unification hint as a proposition: once its
 constraints `x ≟ t` on variables `x` of the hint are solved by replacing `x` with `t`, the two sides
 of the hint must be definitionally equal, as the kernel decides. A constraint that is not solved
-this way is left out, so a hint that needs such a constraint to hold is reported too. -/
+this way is left out, so a hint that needs such a constraint to hold is reported too. To silence
+such a report on a correct hint, name the hint and add `attribute [nolint unificationHint] name`
+after it. -/
 @[env_linter] public def unificationHint : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "all unification hints hold definitionally."
   errorsFound := "FOUND UNIFICATION HINTS WHOSE TWO SIDES ARE NOT DEFINITIONALLY EQUAL."
