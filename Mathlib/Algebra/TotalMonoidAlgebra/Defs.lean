@@ -18,7 +18,6 @@ this construction is called the "large algebra of a monoid" or "total algebra"
 finitely supported functions valued in `ℕ`, this construction corresponds to
 the multivariate formal power series in the large sense, where arbitrary infinite sums of
 monomials are permitted.
-
 -/
 
 @[expose] public noncomputable section

@@ -19,7 +19,6 @@ as they require more imports.
 
 Notably, this includes lemmas about `Finset.prod` as this requires importing BigOperators, and
 lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
-
 -/
 
 public section

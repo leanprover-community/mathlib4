@@ -11,9 +11,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
-
 # Some basic lemmas for manipulating `Ext` over `ModuleCat`
-
 -/
 
 public section

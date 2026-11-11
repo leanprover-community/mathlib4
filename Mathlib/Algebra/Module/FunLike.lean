@@ -13,7 +13,6 @@ In this file we define various instances related to modules for `FunLike` types.
 
 Note that currently, these are not registered as instances, but only `abbrev`s to avoid long
 typeclass searches.
-
 -/
 
 public section
@@ -114,7 +113,5 @@ protected abbrev module [IsZeroApply F] [IsAddApply F] [SMul M F] [IsSMulApply M
 protected theorem moduleIsTorsionFree [Module M F] [IsSMulApply M F]
     [Module.IsTorsionFree M β] : Module.IsTorsionFree M F :=
   DFunLike.coe_injective.moduleIsTorsionFree _ FunLike.coe_smul
-
-end ModuleInstance
 
 end FunLike

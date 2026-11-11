@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 # Functor categories have chosen finite products
 
 If `C` is a category with chosen finite products, then so is `J ⥤ C`.
-
 -/
 
 @[expose] public section

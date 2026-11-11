@@ -15,7 +15,6 @@ These are weak equalizers for functors of the form `parallelPair f 0`.
 
 If the category is preadditive, then weak equalizers exist if and only if weak kernels exist.
 (See `hasWeakEqualizer_of_hasWeakKernel` and `hasWeakKernel_of_hasWeakEqualizer`.)
-
 -/
 
 @[expose] public section

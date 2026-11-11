@@ -11,7 +11,6 @@ import Mathlib.RingTheory.Ideal.MonicSpan
 import Mathlib.RingTheory.KrullDimension.Polynomial
 
 /-!
-
 # Polynomial over Regular Ring
 
 In this file we prove that the polynomial ring over a regular ring is regular.
@@ -23,7 +22,6 @@ In this file we prove that the polynomial ring over a regular ring is regular.
 
 * `MvPolynomial.isRegularRing_of_isRegularRing` : the multivariate polynomial ring with finite
   variates over a regular ring is a regular ring.
-
 -/
 
 public section

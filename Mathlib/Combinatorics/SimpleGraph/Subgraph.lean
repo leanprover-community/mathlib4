@@ -43,7 +43,6 @@ sub-relation of the adjacency relation of the simple graph.
 ## TODO
 
 * Images of graph homomorphisms as subgraphs.
-
 -/
 
 @[expose] public section

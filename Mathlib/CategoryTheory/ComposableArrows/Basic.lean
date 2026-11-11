@@ -37,7 +37,6 @@ TODO (@joelriou):
   `ComposableArrows C n ⥤ ComposableArrows C m` which correspond to simplicial operations
   (specifically faces) with good definitional properties (this might be necessary for
   up to `n = 7` in order to formalize spectral sequences following Verdier)
-
 -/
 
 @[expose] public section

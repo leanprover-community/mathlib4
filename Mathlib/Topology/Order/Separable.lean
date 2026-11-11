@@ -26,7 +26,6 @@ In this file we prove some results about a separable linearly ordered topologica
 ## TODO
 
 Define the class of GO-spaces and generalize the hereditary separability result.
-
 -/
 
 public section

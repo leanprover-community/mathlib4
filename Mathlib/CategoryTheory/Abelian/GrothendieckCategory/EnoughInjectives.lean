@@ -61,7 +61,6 @@ Here, we split the argument into two separate facts:
 ## References
 
 - [Alexander Grothendieck, *Sur quelques points d'algèbre homologique*][grothendieck-1957]
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ public import Mathlib.Basic.Finite.Defs
 ## Main definitions and results
 
 * `FiniteGrp` is the category of finite groups.
-
 -/
 
 @[expose] public section

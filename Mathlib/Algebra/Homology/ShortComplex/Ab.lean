@@ -27,7 +27,6 @@ other categories like `ModuleCat`.
   groups to an explicit quotient.
 - `ShortComplex.ab_exact_iff` expresses that a short complex of abelian groups `S`
   is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 An object `P` is projective iff the morphism `0 ⟶ P` has the
 left lifting property with respect to epimorphisms,
 `projective_iff_llp_epimorphisms_zero`.
-
 -/
 
 public section

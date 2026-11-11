@@ -40,7 +40,6 @@ in order to avoid using real exponents. For real exponents we prove both this an
   is to define `StrictConvexOn` functions.
 - generalized mean inequality with any `p ≤ q`, including negative numbers;
 - prove that the power mean tends to the geometric mean as the exponent tends to zero.
-
 -/
 
 public section
