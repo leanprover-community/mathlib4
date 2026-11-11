@@ -3,8 +3,13 @@ Copyright (c) 2026 Emlis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emlis
 -/
+module
+
+meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
+
 import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
-import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Sqrt
+
+open Real
 
 namespace Inclusion.Tests
 
@@ -63,7 +68,7 @@ example {x : ℝ} (hx : x ∈ Set.Icc 0 1) : √x - x ∈ Set.Icc (-0.05) 0.27 :
   dyadic_interval [binSplit := 6, prec := 10]
 
 example {x : ℝ} (hx : x ∈ Set.Icc 0 1) : √x * (1 - x) ∈ Set.Icc 0 0.4 := by
-  dyadic_interval [binSplit := 6, prec := 20]
+  dyadic_interval [binSplit := 6, prec := 10]
 
 /-- error: The inclusion check failed:
 The proposition is provably false -/

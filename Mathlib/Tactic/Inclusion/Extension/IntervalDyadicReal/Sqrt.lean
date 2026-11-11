@@ -20,61 +20,75 @@ namespace Inclusion
 
 namespace IntervalDyadicReal
 
-/-- Square root of an interval. -/
+open Inclusion.IntervalDyadicReal.Dyadic
+
+/-- Computes an lower bound for `√x` with precision `prec`. -/
+@[expose]
+def lowerSqrt (lb : Dyadic) (prec : ℕ) : Dyadic :=
+  Dyadic.ofIntWithPrec ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt prec
+
+/-- Computes an upper bound for `√x` with precision `prec`. -/
+@[expose]
+def upperSqrt (ub : Dyadic) (prec : ℕ) : Dyadic :=
+  let ub' : ℕ := ⌈(ub <<< (2 * prec)).toRat⌉₊
+  let ubsqrt : ℕ := ub'.sqrt
+  if ub' ≤ ubsqrt ^ 2 then Dyadic.ofIntWithPrec ubsqrt prec
+  else Dyadic.ofIntWithPrec (ubsqrt + 1) prec
+
+/-- Square root of an `Interval Dyadic`. -/
 @[expose]
 def sqrt (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
   lb := match I.lb with
     | ⊥ => 0
-    | WithBot.some lb =>
-      if 0 ≤ lb then Dyadic.ofIntWithPrec ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt prec
-      else 0
+    | WithBot.some lb => lowerSqrt lb prec
   ub := match I.ub with
     | ⊤ => ⊤
-    | WithTop.some ub =>
-      let ub' : ℕ := ⌈(ub <<< (2 * prec)).toRat⌉₊
-      let ubsqrt : ℕ := ub'.sqrt
-      if ub' ≤ ubsqrt ^ 2 then Dyadic.ofIntWithPrec ubsqrt prec
-      else Dyadic.ofIntWithPrec (ubsqrt + 1) prec
+    | WithTop.some ub => upperSqrt ub prec
 
 private theorem toRat_shiftLeft_two_mul (d : Dyadic) (n : ℕ) :
     (d <<< (2 * n)).toRat = d.toRat * 4 ^ n := by
   norm_num [Dyadic.toRat_shiftLeft_nat, pow_mul]
 
-private theorem sqrt_mem_aux
-    (f : Dyadic ↪o ℝ) (map_zero : f 0 = 0) (map_sq : ∀ x, f (x ^ 2) = f x ^ 2)
-    {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I.map f) (prec : ℕ) :
-    √x ∈ (sqrt I prec).map f := by
-  have H (n : ℤ) (q : Dyadic) :
-      (f q ≤ f (.ofIntWithPrec n prec) ^ 2 ↔ (q <<< (2 * prec)).toRat ≤ n ^ 2) ∧
-      (f (.ofIntWithPrec n prec) ^ 2 ≤ f q ↔ n ^ 2 ≤ (q <<< (2 * prec)).toRat) := by
-    norm_num [← map_sq, ← Dyadic.toRat_le_toRat_iff, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow,
-      mul_pow, le_mul_inv_iff₀, mul_inv_le_iff₀, ← pow_mul, pow_mul', toRat_shiftLeft_two_mul]
-  have hub (n : ℕ) (q : Dyadic) (hq : x ≤ f q) (h : ⌈(q <<< (2 * prec)).toRat⌉₊ ≤ n ^ 2) :
-      √x ≤ f (.ofIntWithPrec n prec) := by
-    rw [Nat.ceil_le] at h
-    refine Real.sqrt_le_iff.mpr ⟨map_zero ▸ f.monotone ?_, hq.trans ((H n q).left.mpr (mod_cast h))⟩
-    simp [← Dyadic.toRat_le_toRat_iff, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, Dyadic.toRat_zero]
-  obtain ⟨hl, hu⟩ := (Interval.mem_map_iff f).mp hx
-  refine (Interval.mem_map_iff f).mpr ⟨fun a ha => ?_, fun a ha => ?_⟩
-  · rcases I with ⟨_ | lb, ub⟩ <;> simp only [sqrt] at ha
-    · simp [map_zero, ← WithBot.coe_eq_coe.mp ha]
-    · split_ifs at ha with h0
-      · cases ha
-        refine Real.le_sqrt_of_sq_le (((H _ lb).right.mpr ?_).trans (hl lb rfl))
-        refine Nat.le_floor_iff ?_ |>.mp ⌊(lb <<< (2 * prec)).toRat⌋₊.sqrt_le'
-        rw [toRat_shiftLeft_two_mul]
-        exact mul_nonneg (Dyadic.toRat_le_toRat_iff.mpr h0) (by simp)
-      · simp [map_zero, ← WithBot.coe_eq_coe.mp ha]
-  · rcases I with ⟨lb, _ | ub⟩ <;> simp only [sqrt] at ha
-    · cases ha
-    · split_ifs at ha with h1 <;> cases ha
-      · exact hub _ ub (hu ub rfl) h1
-      · exact_mod_cast hub _ ub (hu ub rfl) (Nat.lt_succ_sqrt' _).le
+theorem lowerSqrt_le {lb : Dyadic} {prec : ℕ} {x : ℝ} (hx : Dyadic.toReal lb ≤ x) :
+    Dyadic.toReal (lowerSqrt lb prec) ≤ √x := by
+  unfold lowerSqrt
+  unfold Dyadic.toReal at *
+  by_cases hlb : 0 ≤ lb
+  · apply Real.le_sqrt_of_sq_le
+    norm_num [Dyadic.toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, ← pow_mul, mul_comm, field]
+    grw [Dyadic.toRat_shiftLeft_nat, sq, ← Nat.cast_mul, ⌊lb.toRat * 2 ^ (prec * 2)⌋₊.sqrt_le,
+      ← Rat.cast_natCast, Nat.floor_le (by simp; simpa [← Dyadic.toRat_zero])]
+    simpa using hx
+  · have : (lb <<< (2 * prec)).toRat < 0 := by
+      rw [toRat_shiftLeft_nat]
+      exact mul_neg_of_neg_of_pos (by simp [← Dyadic.toRat_zero]; simpa using hlb) (by simp)
+    simp [Nat.floor_eq_zero.mpr <| zero_lt_one.trans' this]
+
+theorem le_upperSqrt {ub : Dyadic} {prec : ℕ} {x : ℝ} (hx : x ≤ Dyadic.toReal ub) :
+    √x ≤ Dyadic.toReal (upperSqrt ub prec) := by
+  unfold upperSqrt
+  set ub' : ℕ := ⌈(ub <<< (2 * prec)).toRat⌉₊
+  have H {n : ℕ} (hn : ub' ≤ n ^ 2) :
+      √x ≤ Dyadic.toReal (Dyadic.ofIntWithPrec n prec) := by
+    replace hn : _ ≤ (n : ℚ) ^ 2 := Nat.le_ceil (ub <<< (2 * prec)).toRat |>.trans (mod_cast hn)
+    rw [toRat_shiftLeft_nat, mul_comm 2] at hn
+    apply Real.sqrt_le_iff.mpr ⟨by simp [toReal, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow], ?_⟩
+    grw [hx, toReal, toReal, ← Rat.cast_pow, Rat.cast_le, Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow]
+    simpa [mul_pow, ← pow_mul, field] using hn
+  by_cases hub' : ub' ≤ ub'.sqrt ^ 2 <;> simp only [hub', ↓reduceIte]
+  · exact H hub'
+  · exact H ub'.lt_succ_sqrt'.le
 
 @[inclusion_op interval_dyadic_real]
-theorem sqrt_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : √x ∈ sqrt I prec :=
-  sqrt_mem_aux Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
-    (Dyadic.toReal_pow (n := 2)) hx prec
+theorem sqrt_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : √x ∈ sqrt I prec := by
+  have hx₀ : Dyadic.toReal 0 ≤ √x := by simp [Dyadic.toReal]
+  rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
+  rw [mem_iff_mem_map]
+  rcases I with ⟨_ | lb, _ | ub⟩ <;> simp only [sqrt]
+  · simpa [Interval.map] using hx₀
+  · simpa [Interval.map] using ⟨hx₀, le_upperSqrt (hx.right ub rfl)⟩
+  · simpa [Interval.map] using lowerSqrt_le (hx.left lb rfl)
+  · simpa [Interval.map] using ⟨lowerSqrt_le (hx.left lb rfl), le_upperSqrt (hx.right ub rfl)⟩
 
 end IntervalDyadicReal
 
