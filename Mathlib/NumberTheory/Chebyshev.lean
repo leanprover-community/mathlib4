@@ -656,7 +656,7 @@ open Asymptotics Filter in
 /-- Prime powers contribute a sublinear error to the Chebyshev functions. -/
 theorem isLittleO_psi_sub_theta_id : (ψ - θ) =o[atTop] id := by
   refine isBigO_psi_sub_theta_sqrt.trans_isLittleO ?_
-  rw [isLittleO_iff_tendsto (by grind)]
+  rw [isLittleO_id_iff_tendsto (by simp)]
   apply ((tendsto_const_nhds (x := (1 : ℝ))).div_atTop tendsto_sqrt_atTop).congr
   grind
 
