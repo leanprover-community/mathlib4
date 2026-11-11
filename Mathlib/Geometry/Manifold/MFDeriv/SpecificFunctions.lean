@@ -20,7 +20,6 @@ In this file, we establish differentiability results for
 - constant functions
 - products
 - arithmetic operations (such as addition and scalar multiplication).
-
 -/
 
 public section

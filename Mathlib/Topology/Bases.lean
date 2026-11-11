@@ -891,6 +891,14 @@ instance Subtype.secondCountableTopology (s : Set α) [SecondCountableTopology �
     SecondCountableTopology s :=
   secondCountableTopology_induced s α (↑)
 
+instance [SeparableSpace α] : SeparableSpace (Additive α) := ‹SeparableSpace α›
+instance [SeparableSpace α] : SeparableSpace (Multiplicative α) := ‹SeparableSpace α›
+
+instance [SecondCountableTopology α] : SecondCountableTopology (Additive α) :=
+  ‹SecondCountableTopology α›
+instance [SecondCountableTopology α] : SecondCountableTopology (Multiplicative α) :=
+  ‹SecondCountableTopology α›
+
 lemma secondCountableTopology_iInf {α ι} [Countable ι] {t : ι → TopologicalSpace α}
     (ht : ∀ i, @SecondCountableTopology α (t i)) : @SecondCountableTopology α (⨅ i, t i) := by
   rw [funext fun i => @eq_generateFrom_countableBasis α (t i) (ht i), ← generateFrom_iUnion]

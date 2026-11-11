@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicGeometry.Gluing
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 
 /-!
-
 # Basic properties of the scheme `Proj A`
 
 The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
@@ -30,7 +29,6 @@ In this file we provide basic properties of the scheme.
 - `AlgebraicGeometry.Proj.fromOfGlobalSections`:
   Given a map `f : A →+* Γ(X, ⊤)` such that the image of the irrelevant ideal under `f`
   generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`.
-
 -/
 
 @[expose] public section

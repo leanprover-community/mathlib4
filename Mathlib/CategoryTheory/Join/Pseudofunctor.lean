@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Join.Basic
 In this file, we promote the join construction to two pseudofunctors
 `Join.pseudofunctorLeft` and `Join.pseudofunctorRight`, expressing its pseudofunctoriality in
 each variable.
-
 -/
 
 @[expose] public section

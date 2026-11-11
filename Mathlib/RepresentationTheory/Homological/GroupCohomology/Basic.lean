@@ -180,6 +180,7 @@ open groupCohomology
 
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
+@[implicit_reducible]
 def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 
@@ -189,7 +190,6 @@ abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
-set_option backward.isDefEq.respectTransparency false in
 @[elab_as_elim]
 theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
     {C : groupCohomology A n → Prop} (x : groupCohomology A n)
