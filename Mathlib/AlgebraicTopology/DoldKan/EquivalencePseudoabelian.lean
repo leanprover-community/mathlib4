@@ -30,7 +30,6 @@ the composition of `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 `Γ₀` introduced in `FunctorGamma.lean`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

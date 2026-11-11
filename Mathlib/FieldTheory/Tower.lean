@@ -21,7 +21,6 @@ The formulas for the dimensions are given elsewhere by `Module.finrank_mul_finra
 ## Tags
 
 tower law
-
 -/
 
 public section

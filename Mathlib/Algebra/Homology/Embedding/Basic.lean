@@ -50,7 +50,6 @@ category of an abelian category (TODO).
   `e.truncLEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`, and a natural
   transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a quasi-isomorphism
   in degrees in the image of `e.f` (TODO);
-
 -/
 
 @[expose] public section

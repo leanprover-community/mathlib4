@@ -23,7 +23,6 @@ carries the structure of a semiring, thereby showing that the forgetful functor
 `forget₂ SemiRingCat MonCat` preserves filtered colimits.
 In particular, this implies that `forget SemiRingCat` preserves filtered colimits.
 Similarly for `CommSemiRingCat`, `RingCat` and `CommRingCat`.
-
 -/
 
 @[expose] public section

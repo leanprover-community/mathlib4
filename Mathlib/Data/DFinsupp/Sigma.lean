@@ -19,7 +19,6 @@ public import Mathlib.Data.Fintype.Quotient
   `Sigma` type. Inverse of `DFinsupp.sigmaCurry`.
 * `DFinsupp.sigmaCurryEquiv`: `DFinsupp.sigmaCurry` and `DFinsupp.sigmaUncurry` bundled into a
   bijection.
-
 -/
 
 @[expose] public section

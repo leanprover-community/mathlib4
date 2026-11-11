@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Valuation.ValuationRing
 ## Projects
 
 The order structure on `ValuationSubring K`.
-
 -/
 
 @[expose] public section

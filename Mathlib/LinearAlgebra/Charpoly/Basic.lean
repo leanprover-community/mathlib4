@@ -18,7 +18,6 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 ## Main definition
 
 * `LinearMap.charpoly f` : the characteristic polynomial of `f : M →ₗ[R] M`.
-
 -/
 
 @[expose] public section

@@ -24,7 +24,6 @@ See also `CategoryTheory.Limits.HasLimits` which further builds:
 
 ## References
 * [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
-
 -/
 
 @[expose] public section

@@ -60,7 +60,6 @@ the current `Module.Flat` to `Module.MonoFlat`.
 ## TODO
 
 * Generalize flatness to noncommutative semirings.
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
 * `freeFinsuppEquiv` is an equivalence of multilinear maps over free modules with finitely
   supported maps.
-
 -/
 
 @[expose] public section

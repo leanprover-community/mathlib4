@@ -25,7 +25,6 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 - [barwickhaine2019]: *Pyknotic objects, I. Basic notions*, 2019.
 - [scholze2019condensed]: *Lectures on Condensed Mathematics*, 2019.
-
 -/
 
 public section

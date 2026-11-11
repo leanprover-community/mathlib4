@@ -23,7 +23,6 @@ This file defines the orders induced on tropical algebraic structures by the und
 
 The order induced is the definitionally equal underlying order, which makes the proofs and
 constructions quicker to implement.
-
 -/
 
 public section

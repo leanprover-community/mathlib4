@@ -23,7 +23,6 @@ birationality and rationality.
   `sX : X ⟶ S` and `sY : Y ⟶ S`.
 - `Scheme.IsRationalOver sX`: `X` is rational over `S` via structure map `sX : X ⟶ S`,
   i.e. birational over `S` to some affine space `𝔸(n; S)`.
-
 -/
 
 @[expose] public section

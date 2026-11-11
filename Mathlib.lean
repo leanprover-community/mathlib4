@@ -443,6 +443,7 @@ public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.PNatPowAssoc
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.Pi.Units
@@ -4022,6 +4023,7 @@ public import Mathlib.Data.DFinsupp.Submonoid
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.DList.Instances
 public import Mathlib.Data.Dyadic
+public import Mathlib.Data.Dyadic.Basic
 public import Mathlib.Data.ENNReal.Action
 public import Mathlib.Data.ENNReal.Basic
 public import Mathlib.Data.ENNReal.BigOperators
@@ -4798,6 +4800,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
+public import Mathlib.Geometry.Convex.Segment
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Convex.Star
 public import Mathlib.Geometry.Diffeology.Basic
@@ -5157,6 +5160,7 @@ public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Lean.Meta.Tactic.Rewrite
 public import Mathlib.Lean.Name
 public import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Lean.Quote
 public import Mathlib.Lean.Thunk
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -8588,6 +8592,7 @@ public import Mathlib.Topology.Sheaves.Flasque
 public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.Functors
 public import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Topology.Sheaves.KSheaf
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.LocalPredicate
 public import Mathlib.Topology.Sheaves.LocallySurjective

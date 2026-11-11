@@ -57,7 +57,6 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 ## Tags
 
 rigid category, monoidal category
-
 -/
 
 @[expose] public section
