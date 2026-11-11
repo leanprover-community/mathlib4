@@ -182,8 +182,8 @@ theorem isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ} (hε_pos :
   apply Nat.find_spec <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H hε_pos
   simpa only [turanDensityConst, hε_pos, ↓reduceDIte] using h_verts
 
-/-- `turanDensityConst H ε` is at least `card W`, since the complete graph on fewer vertices has
-enough edges but not enough vertices to contain `H : SimpleGraph W`. -/
+/-- `turanDensityConst H ε` is at least `card W`, since a simple graph on fewer vertices cannot
+contain `H : SimpleGraph W`. -/
 theorem card_le_turanDensityConst [Fintype W] (H : SimpleGraph W) {ε : ℝ} (hε_pos : 0 < ε)
     (h : H.turanDensity + ε ≤ 1) : card W ≤ turanDensityConst H ε := by
   obtain ⟨f⟩ := isContained_of_card_edgeFinset H hε_pos (Fintype.card_fin _).ge ⊤ <| by
