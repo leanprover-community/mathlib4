@@ -5,7 +5,7 @@ Authors: Martin Winter
 -/
 module
 
-public import Mathlib.Order.Setoid.Basic
+public import Mathlib.Data.Set.Subsingleton
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -20,6 +20,8 @@ Note that a function with empty domain is considered constant.
 If a constant function has non-empty codomain, then it can be represented by `Function.const`,
 see `isConst_iff_exists_eq_const`.
 -/
+
+assert_not_exists CompleteLattice GaloisConnection
 
 public section
 
@@ -52,12 +54,12 @@ protected theorem IsConst.eq {f : α → β} (hf : IsConst f) (x y : α) :
 protected theorem IsConst.const (b : β) :
     IsConst (const α b) := fun _ _ ↦ rfl
 
-/-- All function on a subsingleton domain are constant. -/
+/-- All functions on a subsingleton domain are constant. -/
 @[simp]
 theorem IsConst.of_subsingleton_domain [Subsingleton α] (f : α → β) : IsConst f :=
   fun _ _ ↦ congrArg f <| Subsingleton.elim _ _
 
-/-- All function to a subsingleton codomain are constant. -/
+/-- All functions to a subsingleton codomain are constant. -/
 @[simp]
 theorem IsConst.of_subsingleton_codomain [Subsingleton β] (f : α → β) : IsConst f :=
   fun _ _ ↦ Subsingleton.elim _ _
@@ -115,11 +117,6 @@ theorem not_isConst_iff_exists_apply_ne {f : α → β} :
 @[simp]
 theorem isConst_id_iff : IsConst (id : α → α) ↔ Subsingleton α :=
   ⟨(⟨·⟩), fun _ ↦ .of_subsingleton_domain _⟩
-
-@[simp]
-theorem _root_.Setoid.ker_eq_top {α β : Type*} {f : α → β} :
-    Setoid.ker f = ⊤ ↔ IsConst f :=
-  Setoid.ker f |>.eq_top_iff
 
 @[simp]
 theorem _root_.Set.subsingleton_range_iff {β : Type*} {f : α → β} :
