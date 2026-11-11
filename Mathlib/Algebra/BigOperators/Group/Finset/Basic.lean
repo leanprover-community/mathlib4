@@ -96,9 +96,15 @@ theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
     Set.InjOn g s → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma prod_attach (s : Finset ι) (f : ι → M) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by
   classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
+
+/-- This is a specialization of `prod_attach` which `simp` is better at unifying. -/
+@[to_additive (attr := simp)]
+lemma prod_attach_index {s : Finset ι} (f : ι → κ) {h : ι → κ → M} :
+    ∏ x ∈ s.attach, h x (f x) = ∏ x ∈ s, h x (f x) :=
+  prod_attach _ fun x ↦ h x (f x)
 
 @[to_additive (attr := congr)]
 theorem prod_congr (h : s₁ = s₂) : (∀ x ∈ s₂, f x = g x) → s₁.prod f = s₂.prod g := by
