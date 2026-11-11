@@ -214,10 +214,8 @@ instance instIsDomain [Ring R] [IsDomain R] : IsDomain Rᵃᵒᵖ :=
 end AddOpposite
 
 run_cmd
-  for n in [``Distrib, ``AddCommMonoidWithOne, ``AddCommGroupWithOne, ``NonUnitalNonAssocSemiring,
-      ``NonUnitalSemiring, ``NonAssocSemiring, ``Semiring, ``NonUnitalCommSemiring, ``CommSemiring,
-      ``NonUnitalNonAssocRing, ``NonUnitalRing, ``NonAssocRing, ``Ring, ``NonUnitalCommRing,
-      ``CommRing].map Lean.mkIdent do
+  for n in [``NonAssocSemiring, ``NonUnitalSemiring, ``Semiring, ``Ring, ``CommRing
+      ].map Lean.mkIdent do
     Lean.Elab.Command.elabCommand (← `(instance [$n R] : $n Rᵈᵐᵃ := inferInstanceAs <| $n Rᵐᵒᵖ))
     Lean.Elab.Command.elabCommand (← `(instance [$n R] : $n Rᵈᵃᵃ := inferInstanceAs <| $n Rᵃᵒᵖ))
 
