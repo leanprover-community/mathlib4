@@ -86,13 +86,13 @@ variable [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
 open scoped NNReal
 
 /-- If `a` is nonnegative and `a ⋆⟂ b`, then `cfcₙ f a ⋆⟂ b`. -/
-lemma cfcₙ_nnreal_left (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) : cfcₙ f a ⋆⟂ b := by
+lemma cfcₙ_nnReal_left (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) : cfcₙ f a ⋆⟂ b := by
   refine cfcₙ_cases (· ⋆⟂ b) a f (by simp) fun hf hf0 ha ↦ ?_
   rw [← cfcₙ_apply f a, cfcₙ_nnreal_eq_real f a]
   exact h.cfcₙ_real_left _
 
 /-- If `b` is nonnegative and `a ⋆⟂ b`, then `a ⋆⟂ cfcₙ f b`. -/
-lemma cfcₙ_nnreal_right (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) : a ⋆⟂ cfcₙ f b :=
+lemma cfcₙ_nnReal_right (f : ℝ≥0 → ℝ≥0) (h : a ⋆⟂ b) : a ⋆⟂ cfcₙ f b :=
   (h.symm.cfcₙ_nnreal_left f).symm
 
 open CFC
