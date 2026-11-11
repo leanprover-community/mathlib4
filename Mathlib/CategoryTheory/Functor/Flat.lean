@@ -43,7 +43,6 @@ This definition is equivalent to left exact functors (functors that preserves fi
 * `preservesFiniteLimits_iff_lanPreservesFiniteLimits`: If `C`, `D` are small and `C` has all
   finite limits, then `F` preserves finite limits iff `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)`
   does.
-
 -/
 
 @[expose] public section

@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.EpiMono
 # Retracts
 
 Defines retracts of objects and morphisms.
-
 -/
 
 @[expose] public section

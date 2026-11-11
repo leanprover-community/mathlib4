@@ -89,7 +89,6 @@ def commaToGrothendieckPrecompFunctor : Comma L R ⥤ Grothendieck (R ⋙ functo
   map_id X := Grothendieck.ext _ _ rfl (by simp)
   map_comp f g := Grothendieck.ext _ _ rfl (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `L : C ⥤ D`, taking the Grothendieck construction of `CostructuredArrow.functor L`
 precomposed with another functor `R : E ⥤ D` results in a category which is equivalent to
 the comma category `Comma L R`. -/

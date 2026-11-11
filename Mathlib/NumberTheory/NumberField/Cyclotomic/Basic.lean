@@ -260,10 +260,7 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hodd : p ≠ 2) :
     Prime (hζ.toInteger - 1) := by
   let := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
-  refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · apply hζ.pow_ne_one_of_pos_of_lt one_ne_zero (one_lt_pow₀ hp.out.one_lt (by simp))
-    rw [sub_eq_zero] at h
-    simpa using congrArg (algebraMap _ K) h
+  refine Ideal.prime_of_irreducible_absNorm_span ?_
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
   convert Nat.prime_iff_prime_int.1 hp.out
@@ -279,10 +276,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {2 ^ (k + 1)} ℚ K
     (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1))) :
     Prime (hζ.toInteger - 1) := by
   have := IsCyclotomicExtension.numberField {2 ^ (k + 1)} ℚ K
-  refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · apply hζ.pow_ne_one_of_pos_of_lt one_ne_zero (one_lt_pow₀ (by decide) (by simp))
-    rw [sub_eq_zero] at h
-    simpa using! congrArg (algebraMap _ K) h
+  refine Ideal.prime_of_irreducible_absNorm_span ?_
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
   cases k

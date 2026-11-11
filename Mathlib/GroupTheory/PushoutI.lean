@@ -38,7 +38,6 @@ in the diagram are injective).
 ## Tags
 
 amalgamated product, pushout, group
-
 -/
 
 @[expose] public section

@@ -33,7 +33,6 @@ in the proof of the uniformization theorem for accessible categories.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 universe w v u

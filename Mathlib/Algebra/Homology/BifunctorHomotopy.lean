@@ -16,7 +16,6 @@ we show in this file that up to homotopy the morphism
 `mapBifunctorMap f₁ f₂ F c` only depends on the homotopy classes of
 the morphism `f₁` in `HomologicalComplex C c₁` and of
 the morphism `f₂` in `HomologicalComplex C c₂`.
-
 -/
 
 @[expose] public section

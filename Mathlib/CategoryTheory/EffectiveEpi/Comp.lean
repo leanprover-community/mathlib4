@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 # Composition of effective epimorphisms
 
 This file provides `EffectiveEpi` instances for certain compositions.
-
 -/
 
 @[expose] public section

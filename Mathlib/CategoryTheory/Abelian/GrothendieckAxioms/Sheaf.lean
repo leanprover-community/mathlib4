@@ -18,7 +18,6 @@ import Mathlib.CategoryTheory.Generator.Sheaf
 If `J` is a Grothendieck topology on a small category `C : Type v`,
 and `A : Type u₁` (with `Category.{v} A`) is a Grothendieck abelian category,
 then `Sheaf J A` is a Grothendieck abelian category.
-
 -/
 
 public section

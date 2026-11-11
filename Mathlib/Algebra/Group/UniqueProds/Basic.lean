@@ -178,7 +178,7 @@ See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
 See `UniqueAdd.addHom_image_iff` for a version with swapped bundling. -/]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
-  classical simp_rw [← mulHom_image_iff ⟨f, mul⟩ f.2, Finset.map_eq_image]; rfl
+  classical simp_rw [← mulHom_image_iff ⟨f, mul⟩ f.inj', Finset.map_eq_image]; rfl
 
 section Opposites
 open Finset MulOpposite

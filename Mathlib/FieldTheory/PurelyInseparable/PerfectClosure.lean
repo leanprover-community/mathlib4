@@ -36,7 +36,6 @@ This file contains basic results about relative perfect closures.
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
-
 -/
 
 @[expose] public section

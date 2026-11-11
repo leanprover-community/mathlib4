@@ -28,7 +28,6 @@ import cycle.
 ## Tags
 
 basis, bases
-
 -/
 
 @[expose] public section

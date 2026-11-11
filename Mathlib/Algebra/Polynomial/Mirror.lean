@@ -22,7 +22,6 @@ divisible by `X`.
 
 - `Polynomial.mirror_mul_of_domain`: `mirror` preserves multiplication.
 - `Polynomial.irreducible_of_mirror`: an irreducibility criterion involving `mirror`
-
 -/
 
 @[expose] public section

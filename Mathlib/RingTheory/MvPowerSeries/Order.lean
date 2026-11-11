@@ -113,7 +113,6 @@ However, when `σ` is finite, this is not necessarily an `MvPolynomial`.
 series, all of which coefficients are `1`, is the sum of all indeterminates.)
 
 TODO: Define a coercion to MvPolynomial.
-
 -/
 
 @[expose] public section

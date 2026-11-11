@@ -34,7 +34,6 @@ coincides with `P.cotangentComplex` via a canonical isomorphism `P.h1CotangentEq
   `h1CotangentEquivOfSurjective` and `cotangentExtendScalarsEquiv`.
 - `cotangentComplex_comp_h1CotangentEquivCotangent`,
   `h1CotangentEquivCotangent_comp_map`: commutativity results.
-
 -/
 
 @[expose] public section

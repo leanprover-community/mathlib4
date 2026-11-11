@@ -16,7 +16,6 @@ This file contains lemmas about "refinements" that are specific to
 the study of the homology of `HomologicalComplex`. General
 lemmas about refinements and the case of `ShortComplex` appear
 in the file `Mathlib/CategoryTheory/Abelian/Refinements.lean`.
-
 -/
 
 public section
