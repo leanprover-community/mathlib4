@@ -50,7 +50,7 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
   obtain ⟨⟨ιL, bL⟩⟩ := Module.Free.exists_basis (R := Lᵐᵒᵖ) (M := K)
   have card_ιL : ℵ₀ ≤ #ιL := by
     contrapose! hLK
-    have := @Fintype.ofFinite _ (lt_aleph0_iff_finite.mp hLK)
+    have := @Fintype.ofFinite _ (mk_lt_aleph0_iff.mp hLK)
     rw [bL.repr.toEquiv.cardinal_eq, mk_finsupp_of_fintype,
         ← MulOpposite.opEquiv.cardinal_eq] at card_K ⊢
     apply power_nat_le

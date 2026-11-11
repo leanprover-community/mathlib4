@@ -57,28 +57,15 @@ theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
 is at most the maximum of the cardinality of `α` and `ℵ₀` -/
 theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
-    #(WType β) ≤ max (lift.{v} #α) ℵ₀ :=
-  (isEmpty_or_nonempty α).elim (fun _ ↦ by simp)
-    fun hn =>
-    let m := max (lift.{v} #α) ℵ₀
-    cardinalMk_le_of_le' <|
-      calc
-        (Cardinal.sum fun a => m ^ lift.{u} #(β a)) ≤ lift.{v} #α * ⨆ a, m ^ lift.{u} #(β a) :=
-          Cardinal.sum_le_lift_mk_mul_iSup _
-        _ ≤ m * ⨆ a, m ^ lift.{u} #(β a) := mul_le_mul' (le_max_left _ _) le_rfl
-        _ = m :=
-          mul_eq_left (le_max_right _ _)
-              (ciSup_le' fun _ => pow_le (le_max_right _ _) (lt_aleph0_of_finite _)) <|
-            pos_iff_ne_zero.1 <|
-              Order.succ_le_iff.1
-                (by
-                  rw [succ_zero]
-                  obtain ⟨a⟩ : Nonempty α := hn
-                  refine le_trans ?_ (le_ciSup bddAbove_of_small a)
-                  rw [← power_zero]
-                  exact
-                    power_le_power_left
-                      (pos_iff_ne_zero.1 (aleph0_pos.trans_le (le_max_right _ _))) zero_le)
+    #(WType β) ≤ max (lift.{v} #α) ℵ₀ := by
+  cases isEmpty_or_nonempty α; · simp
+  inhabit α
+  apply cardinalMk_le_of_le'
+  grw [Cardinal.sum_le_lift_mk_mul_iSup, mul_le_mul_left (le_max_left _ ℵ₀)]
+  apply (Cardinal.mul_eq_left (le_max_right _ _) ..).le
+  · exact ciSup_le' fun _ => pow_le (le_max_right _ _) (mk_lt_aleph0 _)
+  · grw [← pos_iff_ne_zero, ← le_ciSup bddAbove_of_small default]
+    exact power_pos _ (lt_max_of_lt_right aleph0_pos)
 
 variable {β : α → Type u}
 

@@ -249,9 +249,8 @@ lemma FG.generators_ncard {p : Submodule R M} (h : p.FG) :
      ENat.card, generators_card, toNat_toENat, ← spanFinrank]
   exact (fg_iff_spanRank_eq_spanFinrank.mpr h).symm
 
-lemma FG.finite_generators {p : Submodule R M} (hp : p.FG) :
-    p.generators.Finite := by
-  rw [← Cardinal.lt_aleph0_iff_set_finite, Submodule.generators_card]
+lemma FG.finite_generators {p : Submodule R M} (hp : p.FG) : p.generators.Finite := by
+  rw [← Cardinal.mk_set_lt_aleph0_iff, Submodule.generators_card]
   exact spanRank_finite_iff_fg.mpr hp
 
 /-- The span of the generators equals the submodule. -/

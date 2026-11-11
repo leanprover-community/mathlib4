@@ -398,23 +398,35 @@ theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
 theorem mk_eq_nat_iff {α : Type u} {n : ℕ} : #α = n ↔ Nonempty (α ≃ Fin n) := by
   rw [← lift_mk_fin, ← lift_uzero #α, lift_mk_eq']
 
-theorem lt_aleph0_iff_finite {α : Type u} : #α < ℵ₀ ↔ Finite α := by
+theorem mk_lt_aleph0_iff {α : Type u} : #α < ℵ₀ ↔ Finite α := by
   simp only [lt_aleph0, mk_eq_nat_iff, finite_iff_exists_equiv_fin]
 
+@[deprecated (since := "2026-11-10")] alias lt_aleph0_iff_finite := mk_lt_aleph0_iff
+
+@[deprecated mk_lt_aleph0_iff +typeChanged (since := "2026-11-10")]
 theorem lt_aleph0_iff_fintype {α : Type u} : #α < ℵ₀ ↔ Nonempty (Fintype α) :=
-  lt_aleph0_iff_finite.trans (finite_iff_nonempty_fintype _)
-
-theorem lt_aleph0_of_finite (α : Type u) [Finite α] : #α < ℵ₀ :=
-  lt_aleph0_iff_finite.2 ‹_›
-
-theorem lt_aleph0_iff_set_finite {S : Set α} : #S < ℵ₀ ↔ S.Finite :=
-  lt_aleph0_iff_finite.trans finite_coe_iff
-
-alias ⟨_, _root_.Set.Finite.lt_aleph0⟩ := lt_aleph0_iff_set_finite
+  mk_lt_aleph0_iff.trans (finite_iff_nonempty_fintype _)
 
 @[simp]
-theorem lt_aleph0_iff_subtype_finite {p : α → Prop} : #{ x // p x } < ℵ₀ ↔ { x | p x }.Finite :=
-  lt_aleph0_iff_set_finite
+theorem mk_lt_aleph0 (α : Type u) [Finite α] : #α < ℵ₀ :=
+  mk_lt_aleph0_iff.2 ‹_›
+
+@[deprecated (since := "2026-11-10")] alias lt_aleph0_of_finite := mk_lt_aleph0
+
+theorem mk_set_lt_aleph0_iff {S : Set α} : #S < ℵ₀ ↔ S.Finite :=
+  mk_lt_aleph0_iff.trans finite_coe_iff
+
+@[deprecated (since := "2026-11-10")] alias lt_aleph0_iff_set_finite := mk_set_lt_aleph0_iff
+
+alias ⟨_, _root_.Set.Finite.mk_lt_aleph0⟩ := mk_set_lt_aleph0_iff
+
+@[deprecated (since := "2026-11-10")] alias _root_.Set.Finite.lt_aleph0 := Set.Finite.mk_lt_aleph0
+
+@[simp]
+theorem mk_subtype_lt_aleph0_iff {p : α → Prop} : #{ x // p x } < ℵ₀ ↔ { x | p x }.Finite :=
+  mk_set_lt_aleph0_iff
+
+@[deprecated (since := "2026-11-10")] alias lt_aleph0_iff_subtype_finite := mk_subtype_lt_aleph0_iff
 
 theorem mk_le_aleph0_iff : #α ≤ ℵ₀ ↔ Countable α := by
   rw [countable_iff_nonempty_embedding, aleph0, ← lift_uzero #α, lift_mk_le']
@@ -510,16 +522,12 @@ theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempt
       le_one_iff_subsingleton.and (Cardinal.one_le_iff_ne_zero.trans mk_ne_zero_iff)
 
 theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
-  rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
+  rw [← not_lt, mk_lt_aleph0_iff, not_finite_iff_infinite]
 
 lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
 
 @[simp] lemma aleph0_le_mk_set {s : Set α} : ℵ₀ ≤ #s ↔ s.Infinite := by
   rw [aleph0_le_mk_iff, Set.infinite_coe_iff]
-
-lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
-
-@[simp] lemma mk_lt_aleph0 [Finite α] : #α < ℵ₀ := mk_lt_aleph0_iff.2 ‹_›
 
 @[simp]
 theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
@@ -761,14 +769,15 @@ theorem mk_biUnion_le_lift {α : Type u} {ι : Type v} (A : ι → Set α) (s : 
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le_lift
 
-theorem finset_card_lt_aleph0 (s : Finset α) : #(↑s : Set α) < ℵ₀ :=
-  lt_aleph0_of_finite _
+theorem mk_finset_lt_aleph0 (s : Finset α) : #(↑s : Set α) < ℵ₀ := by simp
+
+@[deprecated (since := "2026-11-10")] alias finset_card_lt_aleph0 := mk_finset_lt_aleph0
 
 theorem mk_set_eq_nat_iff_finset {α} {s : Set α} {n : ℕ} :
     #s = n ↔ ∃ t : Finset α, (t : Set α) = s ∧ t.card = n := by
   constructor
   · intro h
-    lift s to Finset α using lt_aleph0_iff_set_finite.1 (h.symm ▸ natCast_lt_aleph0)
+    lift s to Finset α using mk_set_lt_aleph0_iff.1 (h.symm ▸ natCast_lt_aleph0)
     simpa using h
   · rintro ⟨t, rfl, rfl⟩
     exact mk_coe_finset
@@ -839,7 +848,7 @@ lemma card_lt_card_of_right_finite {A B : Set α} (hfin : B.Finite) (hlt : A ⊂
 lemma card_lt_card_of_left_finite {A B : Set α} (hfin : A.Finite) (hlt : A ⊂ B) : #A < #B := by
   rcases finite_or_infinite B with hfin | hinf
   · exact card_lt_card_of_right_finite hfin hlt
-  · exact (lt_aleph0_iff_subtype_finite.mpr hfin).trans_le <| Cardinal.aleph0_le_mk_iff.mpr hinf
+  · exact hfin.mk_lt_aleph0.trans_le <| aleph0_le_mk_iff.mpr hinf
 
 theorem mk_strictMono [Finite α] : StrictMono (α := Set α) (mk ∘ (↑)) :=
   fun _ s ↦ card_lt_card_of_right_finite s.toFinite

@@ -82,7 +82,7 @@ theorem compl_mem_cocardinal_of_card_lt {s : Set α} (hs : #s < c) :
 
 theorem _root_.Set.Finite.compl_mem_cocardinal {s : Set α} (hs : s.Finite) :
     sᶜ ∈ cocardinal α hreg :=
-  compl_mem_cocardinal_of_card_lt <| lt_of_lt_of_le (Finite.lt_aleph0 hs) (hreg.aleph0_le)
+  compl_mem_cocardinal_of_card_lt <| lt_of_lt_of_le hs.mk_lt_aleph0 (hreg.aleph0_le)
 
 theorem eventually_cocardinal_notMem_of_card_lt {s : Set α} (hs : #s < c) :
     ∀ᶠ x in cocardinal α hreg, x ∉ s :=
@@ -90,7 +90,7 @@ theorem eventually_cocardinal_notMem_of_card_lt {s : Set α} (hs : #s < c) :
 
 theorem _root_.Finset.eventually_cocardinal_notMem (s : Finset α) :
     ∀ᶠ x in cocardinal α hreg, x ∉ s :=
-  eventually_cocardinal_notMem_of_card_lt <| (finset_card_lt_aleph0 s).trans_le (hreg.aleph0_le)
+  eventually_cocardinal_notMem_of_card_lt <| (mk_finset_lt_aleph0 s).trans_le (hreg.aleph0_le)
 
 theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a ≠ x := by
   simpa [Set.finite_singleton x] using hreg.nat_lt 1
