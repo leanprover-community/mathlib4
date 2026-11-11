@@ -421,8 +421,8 @@ theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z)
 
 theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
+@[simp] lemma denom_S : denom S z = z := by
+  simp [denom]
 
 end SLModularAction
 
