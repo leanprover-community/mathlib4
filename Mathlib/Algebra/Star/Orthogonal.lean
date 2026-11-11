@@ -272,8 +272,8 @@ lemma IsStarProjection.sum {ι : Type*} {s : Finset ι} {f : ι → R}
   have hsa := isSelfAdjoint_sum s fun i hi ↦ (hf i hi).isSelfAdjoint
   refine ⟨?_, hsa⟩
   nth_rw 1 [IsIdempotentElem, ← hsa.star_eq, h.star_sum_mul_sum_of_isStarOrtho]
-  exact sum_congr rfl fun i hi ↦ by
-    rw [(hf i hi).isSelfAdjoint.star_eq, (hf i hi).isIdempotentElem.eq]
+  congr! with i hi
+  rw [(hf i hi).isSelfAdjoint.star_eq, (hf i hi).isIdempotentElem.eq]
 
 end NonUnitalSemiring
 
