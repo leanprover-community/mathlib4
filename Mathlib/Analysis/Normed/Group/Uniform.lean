@@ -220,12 +220,12 @@ alias uniformContinuous_nnnorm' := uniformContinuous_nnNorm'
 @[to_additive LipschitzWith.norm]
 theorem LipschitzWith.norm' {f : E → F} {K : ℝ≥0} (hf : LipschitzWith K f) :
     LipschitzWith K (fun x ↦ ‖f x‖) := by
-  simpa using lipschitzWith_one_norm'.comp hf
+  simpa using! lipschitzWith_one_norm'.comp hf
 
 @[to_additive LipschitzWith.nnnorm]
 theorem LipschitzWith.nnnorm' {f : E → F} {K : ℝ≥0} (hf : LipschitzWith K f) :
     LipschitzWith K (fun x ↦ ‖f x‖₊) := by
-  simpa using lipschitzWith_one_nnnorm'.comp hf
+  simpa using! lipschitzWith_one_nnNorm'.comp hf
 
 end SeminormedGroup
 

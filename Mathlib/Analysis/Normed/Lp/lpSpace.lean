@@ -185,28 +185,9 @@ theorem mono' {F : α → Type*} [∀ i, NormedAddCommGroup (F i)] {f : (i : α)
     Memℓp f p :=
   hg.norm.mono hfg
 
-theorem finite_dsupport {f : ∀ i, E i} (hf : Memℓp f 0) : Set.Finite { i | f i ≠ 0 } :=
-  memℓp_zero_iff.1 hf
-
-theorem bddAbove {f : ∀ i, E i} (hf : Memℓp f ∞) : BddAbove (Set.range fun i => ‖f i‖) :=
-  memℓp_infty_iff.1 hf
-
-theorem summable (hp : 0 < p.toReal) {f : ∀ i, E i} (hf : Memℓp f p) :
-    Summable fun i => ‖f i‖ ^ p.toReal :=
-  (memℓp_gen_iff hp).1 hf
-
 lemma summable_of_one {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     {x : α → E} (hx : Memℓp x 1) : Summable x :=
   .of_norm <| by simpa using hx.summable
-
-theorem neg {f : ∀ i, E i} (hf : Memℓp f p) : Memℓp (-f) p := by
-  rcases p.trichotomy with (rfl | rfl | hp)
-  · apply memℓp_zero
-    simp [hf.finite_dsupport]
-  · apply memℓp_infty
-    simpa using hf.bddAbove
-  · apply memℓp_gen
-    simpa using hf.summable hp
 
 @[simp]
 theorem neg_iff {f : ∀ i, E i} : Memℓp (-f) p ↔ Memℓp f p := by
@@ -330,14 +311,14 @@ open RCLike
 variable [RCLike 𝕜]
 
 theorem re {f : α → 𝕜} (hf : Memℓp f p) : Memℓp (fun x ↦ re (f x)) p :=
-  hf.mono <| fun x ↦ norm_re_le_norm (f x)
+  hf.norm.mono <| fun x ↦ norm_re_le_norm (f x)
 
 theorem im {f : α → 𝕜} (hf : Memℓp f p) : Memℓp (fun x ↦ im (f x)) p :=
-  hf.mono <| fun x ↦ norm_im_le_norm (f x)
+  hf.norm.mono <| fun x ↦ norm_im_le_norm (f x)
 
 theorem ofReal {f : α → ℝ} (hf : Memℓp f p) :
     Memℓp (fun x ↦ (f x : 𝕜)) p :=
-  hf.mono <| fun x ↦ by rw [norm_ofReal, Real.norm_eq_abs]
+  hf.norm.mono <| fun x ↦ by rw [norm_ofReal, Real.norm_eq_abs]
 
 end RCLike
 
