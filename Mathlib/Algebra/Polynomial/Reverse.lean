@@ -269,8 +269,10 @@ theorem reverse_trailingCoeff (f : R[X]) : f.reverse.trailingCoeff = f.leadingCo
 /-- The second-highest coefficient of `reverse f` is the coefficient of `f` one degree above its
 lowest nonzero term. -/
 theorem nextCoeff_reverse (f : R[X]) : f.reverse.nextCoeff = f.nextCoeffUp := by
-  grind [nextCoeff, nextCoeffUp, reverse_natDegree, coeff_reverse, revAt_le,
-    coeff_eq_zero_of_natDegree_lt, natTrailingDegree_le_natDegree]
+  rw [nextCoeff, nextCoeffUp, reverse_natDegree]
+  split_ifs
+  · rw [coeff_eq_zero_of_natDegree_lt (by lia)]
+  · rw [Nat.sub_sub, ← revAt_le (by lia), coeff_reverse, revAt_invol]
 
 theorem reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
     reverse (f * g) = reverse f * reverse g := by
