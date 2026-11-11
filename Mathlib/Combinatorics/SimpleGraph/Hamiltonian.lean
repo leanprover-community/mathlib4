@@ -400,10 +400,9 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
 theorem isHamiltonian_sup_edge {u v : α} :
     (G ⊔ edge u v).IsHamiltonian ↔
       G.IsHamiltonian ∨ ∃ p : G.Walk u v, p.IsHamiltonian ∧ 2 ≤ p.length := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · refine or_iff_not_imp_left.mpr fun hG ↦ ?_
-    have : Nontrivial α := ⟨u, v, by grind [sup_edge_self]⟩
-    have hadj : ¬G.Adj u v := by grind [sup_eq_left, edge_le_iff]
+  refine ⟨fun h ↦ or_iff_not_imp_left.mpr fun hG ↦ ?_, fun h ↦ ?_⟩
+  · have : Nontrivial α := ⟨u, v, by lia [sup_edge_self]⟩
+    have hadj : ¬G.Adj u v := by lia [sup_eq_left, edge_le_iff]
     rw [← show (G ⊔ edge u v).deleteEdges {s(u, v)} = G by simpa] at hG ⊢
     have ⟨p, hp⟩ := h.exists_isHamiltonianCycle u
     by_cases! huv : s(u, v) ∉ p.edges
@@ -415,11 +414,11 @@ theorem isHamiltonian_sup_edge {u v : α} :
     · grind [Walk.edges_copy, p.edges_dropLast, p.mk_penultimate_end_eq_getLast_edges hp.not_nil,
         hp.edges_nodup, List.dropLast_concat_getLast]
     · simpa using hp.isHamiltonian_dropLast
-    · simp; grind [hp.three_le_length]
+    · simp; lia [hp.three_le_length]
   · by_cases hG : G.IsHamiltonian
     · exact hG.mono le_sup_left
     have ⟨p, hp, hlen⟩ := h.resolve_left hG
-    refine hp.mapLe le_sup_left |>.isHamiltonian_of_adj ?_ <| by grind [p.length_mapLe]
+    refine hp.mapLe le_sup_left |>.isHamiltonian_of_adj ?_ <| by lia [p.length_mapLe]
     grind [hp.isPath.nil_iff_eq]
 
 theorem isHamiltonian_iff_cycleGraph_isContained (h : 3 ≤ Fintype.card α) :
