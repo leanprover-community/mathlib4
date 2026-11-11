@@ -5,17 +5,17 @@ Authors: Jiedong Jiang, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.AB
 public import Mathlib.Algebra.Category.Grp.Ulift
 public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 public import Mathlib.AlgebraicGeometry.Sites.Proetale
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.HasExt
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 
-/-!
+import Mathlib.Algebra.Category.Grp.AB
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 
+/-!
 # `ℓ`-adic cohomology of a scheme
 
 Let `X` be a scheme and `ℓ` be a prime number. In this file we define the sheaf
@@ -37,7 +37,6 @@ definition using étale cohomology. This will show that the groups defined here 
 ## References
 
 - [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
-
 -/
 
 @[expose] public section

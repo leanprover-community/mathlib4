@@ -6,7 +6,6 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.RingTheory.Finiteness.Quotient
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 
 /-!
@@ -31,7 +30,6 @@ We will try to relax the above hypotheses as much as possible.
 ## Notation
 
 In this file, `f` stands for the inertia degree of `P` over `p`, leaving `p` and `P` implicit.
-
 -/
 
 @[expose] public section

@@ -117,7 +117,7 @@ theorem IsMulTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsMu
   have hmem := MonoidHom.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
   lift g ^ ngn to N using hN.symm ▸ hmem with gn h
   obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
-  exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
+  exact isOfFinOrder_iff_pow_eq_one.mpr ⟨ngn * nn, mul_pos ngnpos nnpos, by
     rw [pow_mul, ← h, ← Subgroup.coe_pow, hnn, Subgroup.coe_one]⟩
 
 @[deprecated (since := "2026-06-30")] alias IsTorsion.extension_closed :=
@@ -511,11 +511,13 @@ end CommGroup
 
 open CommGroup (torsion)
 
-/-- Quotienting a group by its torsion subgroup yields a torsion-free group. -/
-@[to_additive
-/-- Quotienting an additive group by its torsion additive subgroup yields a torsion-free additive
-group. -/]
-instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
+/-- Quotienting a group by its torsion subgroup yields a group with unique roots. In particular,
+it is torsion-free. -/
+@[to_additive _root_.QuotientAddGroup.instHasUniqueDiv
+/-- Quotienting an additive group by its torsion additive subgroup yields an additive group with
+unique divisibility. In particular, it is torsion-free. -/]
+instance _root_.QuotientGroup.instHasUniqueRoots : HasUniqueRoots <| G ⧸ torsion G := by
+  suffices IsMulTorsionFree (G ⧸ torsion G) from IsMulTorsionFree.hasUniqueRoots
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
   obtain ⟨g⟩ := g
   obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one

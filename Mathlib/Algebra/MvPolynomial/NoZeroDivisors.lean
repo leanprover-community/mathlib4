@@ -5,17 +5,14 @@ Authors: Antoine Chambert-Loir, Bolton Bailey
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Variables
-public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 public import Mathlib.Algebra.MvPolynomial.Division
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 /-!
 # Multivariate polynomials over integral domains
 
 This file proves results about multivariate polynomials
 that hold when the coefficient (semi)ring has no zero divisors.
-
 -/
 
 public section
@@ -126,7 +123,7 @@ theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ∈ R⁰) : degreeOf j (C c * p)
     contrapose hp'
     ext m
     apply hc.1
-    simpa using congr_arg ((·.coeff m)) hp'
+    simpa using congr($(hp').coeff m)
 
 end nonZeroDivisors
 

@@ -6,13 +6,13 @@ Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.Matrix
+public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
-public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Util.Superscript
-public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -58,7 +58,6 @@ the last section, various properties of matrices are explored.
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
-
 -/
 
 @[expose] public section
@@ -114,6 +113,17 @@ analogous to `![x, y, ...]` notation. -/
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
 
+namespace EuclideanSpace
+
+variable {n : Type*}
+
+instance : Lattice (EuclideanSpace ℝ n) := (WithLp.equiv 2 (n → ℝ)).lattice
+
+instance : IsOrderedAddMonoid (EuclideanSpace ℝ n) :=
+  Function.Injective.isOrderedAddMonoid WithLp.ofLp (fun _ _ ↦ rfl) .rfl
+
+end EuclideanSpace
+
 section Notation
 open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
@@ -133,7 +143,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 meta def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
     -- check that the `WithLp.toLp _` is present
-    let p : Term ← withNaryArg 0 <| delab
+    let p : Term ← withNaryArg 0 delab
     -- to be conservative, only allow subscripts which are numerals
     guard <| p matches `($_:num)
     let `(![$elems,*]) ← withNaryArg 2 delab | failure
@@ -141,13 +151,15 @@ meta def EuclideanSpace.delabVecNotation : Delab :=
 
 end Notation
 
-theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.nnNorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖₊ = NNReal.sqrt (∑ i, ‖x i‖₊ ^ 2) :=
-  PiLp.nnnorm_eq_of_L2 x
+  PiLp.nnNorm_eq_of_L2 x
+
+@[deprecated (since := "2026-10-31")] alias EuclideanSpace.nnnorm_eq := EuclideanSpace.nnNorm_eq
 
 theorem EuclideanSpace.norm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖ = √(∑ i, ‖x i‖ ^ 2) := by
-  simpa only [Real.coe_sqrt, NNReal.coe_sum] using! congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
+  simpa only [Real.coe_sqrt, NNReal.coe_sum] using! congr(($x.nnNorm_eq : ℝ))
 
 theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖ ^ 2 = ∑ i, ‖x i‖ ^ 2 :=
@@ -156,6 +168,12 @@ theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fint
 theorem EuclideanSpace.real_norm_sq_eq {n : Type*} [Fintype n] (x : EuclideanSpace ℝ n) :
     ‖x‖ ^ 2 = ∑ i, (x i) ^ 2 := by
   simp [EuclideanSpace.norm_sq_eq]
+
+instance {n : Type*} [Fintype n] : HasSolidNorm (EuclideanSpace ℝ n) where
+  solid {x y} h := by
+    rw [← sq_le_sq₀ (norm_nonneg x) (norm_nonneg y), EuclideanSpace.real_norm_sq_eq,
+      EuclideanSpace.real_norm_sq_eq]
+    exact Finset.sum_le_sum fun i _ ↦ sq_le_sq.2 (h i)
 
 @[wikidata Q847073]
 theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
@@ -202,7 +220,7 @@ variable [Fintype ι]
 @[simp]
 theorem finrank_euclideanSpace :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  convert! (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
+  convert (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
   simp
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -299,23 +317,6 @@ variable [DecidableEq ι]
 all other coordinates. -/
 abbrev EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι := PiLp.single 2 i a
 
-@[deprecated PiLp.ofLp_single +typeChanged (since := "2026-03-15")]
-lemma EuclideanSpace.ofLp_single (i : ι) (a : 𝕜) : ofLp (single i a) = Pi.single i a := by
-  simp
-
-@[deprecated PiLp.toLp_single +typeChanged (since := "2026-03-15")]
-lemma EuclideanSpace.toLp_single (i : ι) (a : 𝕜) : toLp _ (Pi.single i a) = single i a := by
-  simp
-
-@[deprecated PiLp.single_apply +typeChanged (since := "2026-03-15")]
-theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
-    (EuclideanSpace.single i a) j = ite (j = i) a 0 := by
-  simp
-
-@[deprecated PiLp.single_eq_zero_iff +typeChanged (since := "2026-03-15")]
-theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
-    EuclideanSpace.single i a = 0 ↔ a = 0 := by simp
-
 variable [Fintype ι]
 
 theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
@@ -324,29 +325,6 @@ theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace
 
 theorem EuclideanSpace.inner_single_right (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
     ⟪v, EuclideanSpace.single i (a : 𝕜)⟫ = a * conj (v i) := by simp [PiLp.inner_apply]
-
-@[deprecated PiLp.norm_single +typeChanged (since := "2026-03-15")]
-theorem EuclideanSpace.norm_single (i : ι) (a : 𝕜) :
-    ‖EuclideanSpace.single i (a : 𝕜)‖ = ‖a‖ := by simp
-
-@[deprecated PiLp.nnnorm_single +typeChanged (since := "2026-03-15")]
-theorem EuclideanSpace.nnnorm_single (i : ι) (a : 𝕜) :
-    ‖EuclideanSpace.single i (a : 𝕜)‖₊ = ‖a‖₊ := by simp
-
-@[deprecated PiLp.dist_single_same +typeChanged (since := "2026-03-15")]
-theorem EuclideanSpace.dist_single_same (i : ι) (a b : 𝕜) :
-    dist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = dist a b := by
-  simp
-
-@[deprecated PiLp.nndist_single_same +typeChanged (since := "2026-03-15")]
-theorem EuclideanSpace.nndist_single_same (i : ι) (a b : 𝕜) :
-    nndist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = nndist a b := by
-  simp
-
-@[deprecated PiLp.edist_single_same +typeChanged (since := "2026-03-15")]
-theorem EuclideanSpace.edist_single_same (i : ι) (a b : 𝕜) :
-    edist (EuclideanSpace.single i (a : 𝕜)) (EuclideanSpace.single i (b : 𝕜)) = edist a b := by
-  simp
 
 /-- `EuclideanSpace.single` forms an orthonormal family. -/
 theorem EuclideanSpace.orthonormal_single :
@@ -416,7 +394,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         refine LinearMap.pi_ext fun i k => ?_
         have : k = k • (1 : 𝕜) := by rw [smul_eq_mul, mul_one]
         rw [this, Pi.single_smul]
-        replace h := congr_fun h i
+        replace h := congr($h i)
         simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
           coe_symm_linearEquiv, PiLp.toLp_single,
           LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
@@ -459,12 +437,16 @@ lemma norm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     ‖b i‖ = 1 := b.orthonormal.norm_eq_one i
 
 @[simp]
-lemma nnnorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖₊ = 1 := b.orthonormal.nnnorm_eq_one i
+lemma nnNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖₊ = 1 := b.orthonormal.nnNorm_eq_one i
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_one := nnNorm_eq_one
 
 @[simp]
-lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖ₑ = 1 := b.orthonormal.enorm_eq_one i
+lemma eNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖ₑ = 1 := b.orthonormal.eNorm_eq_one i
+
+@[deprecated (since := "2026-11-06")] alias enorm_eq_one := eNorm_eq_one
 
 @[simp]
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
@@ -508,7 +490,7 @@ protected theorem sum_repr_symm (b : OrthonormalBasis ι 𝕜 E) (v : EuclideanS
 
 protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E) :
     ∑ i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ := by
-  have := congr_arg (innerSL 𝕜 x) (b.sum_repr y)
+  have := congr(innerSL 𝕜 x $(b.sum_repr y))
   rw [map_sum] at this
   convert! this
   rw [map_smul, b.repr_apply_apply, mul_comm]
@@ -757,7 +739,7 @@ protected def mkOfOrthogonalEqBot (hon : Orthonormal 𝕜 v) (hsp : (span 𝕜 (
       refine Eq.ge ?_
       have : FiniteDimensional 𝕜 (span 𝕜 (range v)) :=
         FiniteDimensional.span_of_finite 𝕜 (finite_range v)
-      have : CompleteSpace (span 𝕜 (range v)) := FiniteDimensional.complete 𝕜 _
+      have : CompleteSpace (span 𝕜 (range v)) := FiniteDimensional.completeSpace 𝕜 _
       rwa [orthogonal_eq_bot_iff] at hsp)
 
 @[simp]
@@ -941,7 +923,7 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
     (a : OrthonormalBasis ι' 𝕜 E) (b : OrthonormalBasis ι 𝕜 E) :
     (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
   ext i j
-  convert! a.repr.inner_map_map (b i) (b j)
+  convert a.repr.inner_map_map (b i) (b j)
   · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
       inner_apply']
     congr
@@ -1073,7 +1055,7 @@ theorem _root_.exists_orthonormalBasis :
   ⟨w, hw, hw''⟩
 
 /-- A finite-dimensional `InnerProductSpace` has an orthonormal basis. -/
-irreducible_def stdOrthonormalBasis : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E := by
+@[no_expose] def stdOrthonormalBasis : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E := by
   let b := Classical.choose (Classical.choose_spec <| exists_orthonormalBasis 𝕜 E)
   rw [finrank_eq_card_basis b.toBasis]
   exact b.reindex (Fintype.equivFinOfCardEq rfl)
@@ -1098,7 +1080,7 @@ variable {n : ℕ} (hn : finrank 𝕜 E = n) [DecidableEq ι] {V : ι → Submod
 
 /-- Exhibit a bijection between `Fin n` and the index set of a certain basis of an `n`-dimensional
 inner product space `E`.  This should not be accessed directly, but only via the subsequent API. -/
-irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
+@[no_expose] def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     (Σ i, Fin (finrank 𝕜 (V i))) ≃ Fin n :=
   let b := hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)
@@ -1106,7 +1088,7 @@ irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
 
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. -/
-irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
+@[no_expose] def DirectSum.IsInternal.subordinateOrthonormalBasis
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     OrthonormalBasis (Fin n) 𝕜 E :=
   (hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)).reindex
@@ -1115,7 +1097,7 @@ irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. This function
 provides the mapping by which it is subordinate. -/
-irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasisIndex (a : Fin n)
+@[no_expose] def DirectSum.IsInternal.subordinateOrthonormalBasisIndex (a : Fin n)
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) : ι :=
   ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a).1
 
@@ -1133,16 +1115,16 @@ theorem DirectSum.IsInternal.exists_subordinateOrthonormalBasisIndex_eq
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) {i : ι} (hi : V i ≠ ⊥) :
     ∃ a : Fin n, hV.subordinateOrthonormalBasisIndex hn a hV' = i := by
   use hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, ⟨0, by grind [finrank_eq_zero (S := V i)]⟩⟩
-  simp [subordinateOrthonormalBasisIndex_def]
+  simp [subordinateOrthonormalBasisIndex]
 
 private def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
     {a : Fin n // hV.subordinateOrthonormalBasisIndex hn a hV' = i} ≃ Fin (finrank 𝕜 (V i)) where
-  toFun a := Fin.cast (by rw [← subordinateOrthonormalBasisIndex_def, a.property])
+  toFun a := Fin.cast (by rw [← subordinateOrthonormalBasisIndex, a.property])
     ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a).snd
   invFun b := ⟨hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, b⟩,
-    by simp [subordinateOrthonormalBasisIndex_def]⟩
-  left_inv := by grind [subordinateOrthonormalBasisIndex_def, Fin.cast_eq_self]
+    by simp [subordinateOrthonormalBasisIndex]⟩
+  left_inv := by grind [subordinateOrthonormalBasisIndex, Fin.cast_eq_self]
   right_inv := by grind
 
 theorem DirectSum.IsInternal.card_filter_subordinateOrthonormalBasisIndex_eq
@@ -1191,8 +1173,8 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
   let L3 := LSᗮ.subtypeₗᵢ.comp E.toLinearIsometry
   -- Project onto S and Sᗮ
-  haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
-  haveI : CompleteSpace V := FiniteDimensional.complete 𝕜 V
+  haveI : CompleteSpace S := FiniteDimensional.completeSpace 𝕜 S
+  haveI : CompleteSpace V := FiniteDimensional.completeSpace 𝕜 V
   let p1 := S.orthogonalProjectionOnto.toLinearMap
   let p2 := Sᗮ.orthogonalProjectionOnto.toLinearMap
   -- Build a linear map from the isometries on S and Sᗮ

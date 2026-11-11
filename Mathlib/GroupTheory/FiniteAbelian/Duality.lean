@@ -65,7 +65,7 @@ theorem exists_apply_ne_one_of_hasEnoughRootsOfUnity {a : G} (ha : a ≠ 1) :
   refine exists_apply_ne_one_aux G Mˣ (fun n hn a ha₀ ↦ ?_) ha
   have : NeZero n := ⟨fun H ↦ NeZero.ne _ <| Nat.eq_zero_of_zero_dvd (H ▸ hn)⟩
   have := HasEnoughRootsOfUnity.of_dvd M hn
-  exact ZMod.exists_monoidHom_apply_ne_one (HasEnoughRootsOfUnity.exists_primitiveRoot M n) ha₀
+  exact ZMod.exists_monoidHom_apply_ne_one (HasEnoughRootsOfUnity.exists_isPrimitiveRoot M n) ha₀
 
 variable {M} in
 @[simp]
@@ -153,7 +153,7 @@ noncomputable def monoidHomMonoidHomEquiv :
   have : HasEnoughRootsOfUnity M (Monoid.exponent (G →* Mˣ)) := by
     rwa [Monoid.exponent_eq_of_mulEquiv (monoidHom_mulEquiv_of_hasEnoughRootsOfUnity G M).some]
   (MulEquiv.mk' (Equiv.ofBijective
-    (fun g ↦ MonoidHom.mk ⟨fun φ ↦ φ g, one_apply _⟩ (by simp))
+    (fun g ↦ MonoidHom.mk ⟨fun φ ↦ φ g, MonoidHom.one_apply _⟩ (by simp))
     (by
       refine (Nat.bijective_iff_injective_and_card _).mpr ⟨fun _ _ h ↦ ?_, ?_⟩
       · rwa [mk.injEq, OneHom.mk.injEq, funext_iff, forall_apply_eq_apply_iff] at h

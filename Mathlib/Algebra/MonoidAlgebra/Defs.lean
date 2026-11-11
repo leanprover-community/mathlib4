@@ -453,7 +453,7 @@ lemma induction_linear {motive : R[M] → Prop} (x : R[M]) (zero : motive 0)
 lemma addSubmonoidClosure_single :
     AddSubmonoid.closure {x : R[M] | ∃ m r, x = single m r} = ⊤ :=
   top_unique fun x _hx => induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb =>
-    AddSubmonoid.add_mem _ <| AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩
+    AddSubmonoid.add_mem _ <| AddSubmonoid.subset_closure ⟨a, b, rfl⟩
 
 section One
 variable [One M]
@@ -479,16 +479,13 @@ end One
 section Mul
 variable [Mul M]
 
-/-- The multiplication in an additive monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.AddMonoidAlgebra.mul' [Add M] (x y : AddMonoidAlgebra R M) : AddMonoidAlgebra R M :=
-  x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ .single (m₁ + m₂) (r₁ * r₂)
 /-- The multiplication in a monoid algebra.
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[to_additive existing mul', no_expose]
+@[no_expose, to_additive (dont_translate := R) mul'
+/-- The multiplication in an additive monoid algebra.
+
+We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/]
 def mul' (x y : R[M]) : R[M] :=
   x.coeff.sum fun m₁ r₁ ↦ y.coeff.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 
@@ -657,6 +654,22 @@ lemma coeff_single_one_mul (x : R[M]) (r : R) (m : M) :
   x.coeff_single_mul_eq_mul_coeff _ (by simp)
 
 @[deprecated (since := "2026-06-18")] alias single_one_mul_apply := coeff_single_one_mul
+
+@[to_additive (dont_translate := R) coeff_mul_natCast]
+lemma coeff_mul_natCast (x : R[M]) (n : ℕ) (m : M) :
+    (x * n).coeff m = x.coeff m * n := coeff_mul_single_one ..
+
+@[to_additive (dont_translate := R) coeff_natCast_mul]
+lemma coeff_natCast_mul (x : R[M]) (n : ℕ) (m : M) :
+    (n * x).coeff m = n * x.coeff m := coeff_single_one_mul ..
+
+@[to_additive (dont_translate := R) coeff_mul_ofNat]
+lemma coeff_mul_ofNat (x : R[M]) (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (x * ofNat(n)).coeff m = x.coeff m * ofNat(n) := coeff_mul_single_one ..
+
+@[to_additive (dont_translate := R) coeff_ofNat_mul]
+lemma coeff_ofNat_mul (x : R[M]) (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (ofNat(n) * x).coeff m = ofNat(n) * x.coeff m := coeff_single_one_mul ..
 
 variable (R M : Type*) [Semiring R] [MulOneClass M] in
 /-- The embedding of a unital magma into its magma algebra. -/

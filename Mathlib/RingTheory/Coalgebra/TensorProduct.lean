@@ -8,8 +8,8 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Equiv
 
-import Mathlib.RingTheory.Coalgebra.CoassocSimps
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
 /-!
 # Tensor products of coalgebras
@@ -24,7 +24,6 @@ as a coalgebra morphism.
 
 In particular, when `R = S` we get tensor products of coalgebras, and when `A = S` we get
 the base change `S ⊗[R] B` as an `S`-coalgebra.
-
 -/
 
 @[expose] public section
@@ -127,7 +126,7 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)
   rTensor_counit_comp_comul := by
     ext x y
-    convert!
+    convert
       congr((TensorProduct.lid S _).symm
         (TensorProduct.lid _ _ $(rTensor_counit_comul (R := S) x) ⊗ₜ[R]
           TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) y)))
@@ -141,7 +140,7 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
       simp only [one_smul]
   lTensor_counit_comp_comul := by
     ext x y
-    convert!
+    convert
       congr((TensorProduct.rid S _).symm
         (TensorProduct.rid _ _ $(lTensor_counit_comul (R := S) x) ⊗ₜ[R]
           TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) y)))

@@ -6,8 +6,6 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Basic.Sign.Basic
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
@@ -31,7 +29,6 @@ This file defines affinely independent families of points.
 ## References
 
 * https://en.wikipedia.org/wiki/Affine_space
-
 -/
 
 @[expose] public section
@@ -174,7 +171,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       let f : ι → V := fun i => w i • (p i -ᵥ p i1)
       have hs2 : (∑ i ∈ (s.erase i1).subtype fun i => i ≠ i1, f i) = 0 := by
         rw [← hs]
-        convert! Finset.sum_subtype_of_mem f fun x => Finset.ne_of_mem_erase
+        convert Finset.sum_subtype_of_mem f fun x => Finset.ne_of_mem_erase
       have h2 := h ((s.erase i1).subtype fun i => i ≠ i1) (fun x => w x) hs2
       simp_rw [Finset.mem_subtype] at h2
       have h2b : ∀ i ∈ s, i ≠ i1 → w i = 0 := fun i his hi =>
@@ -455,7 +452,7 @@ alias ⟨AffineIndependent.of_affineIndepOn_id_range, _⟩ := affineIndepOn_id_r
 theorem AffineIndependent.comm_left {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
     AffineIndependent k ![p₂, p₁, p₃] := by
   rw [← affineIndependent_equiv (Equiv.swap 0 1)]
-  convert! h using 1
+  convert h using 1
   ext x
   fin_cases x <;> rfl
 
@@ -463,7 +460,7 @@ theorem AffineIndependent.comm_left {p₁ p₂ p₃ : P} (h : AffineIndependent 
 theorem AffineIndependent.comm_right {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
     AffineIndependent k ![p₁, p₃, p₂] := by
   rw [← affineIndependent_equiv (Equiv.swap 1 2)]
-  convert! h using 1
+  convert h using 1
   ext x
   fin_cases x <;> rfl
 
@@ -471,7 +468,7 @@ theorem AffineIndependent.comm_right {p₁ p₂ p₃ : P} (h : AffineIndependent
 theorem AffineIndependent.reverse_of_three {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
     AffineIndependent k ![p₃, p₂, p₁] := by
   rw [← affineIndependent_equiv (Equiv.swap 0 2)]
-  convert! h using 1
+  convert h using 1
   ext x
   fin_cases x <;> rfl
 
@@ -489,7 +486,7 @@ protected theorem AffineIndepOn.mono {p : ι → P} {s t : Set ι} (hs : AffineI
 theorem affineIndepOn_congr {p q : ι → P} {s : Set ι} (h : Set.EqOn p q s) :
     AffineIndepOn k p s ↔ AffineIndepOn k q s := by
   rw [AffineIndepOn, AffineIndepOn]
-  convert! Iff.rfl using 2
+  convert Iff.rfl using 2
   ext x
   exact h.symm x.2
 
@@ -558,7 +555,7 @@ theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : A
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i]
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
-    f.linearMap_vsub] at hai
+    f.linear_apply_vsub] at hai
   exact LinearIndependent.of_comp f.linear hai
 
 /-- If the image of a set of points in affine space under an affine transformation is affine-
@@ -576,7 +573,7 @@ theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f :
   obtain ⟨i⟩ := h
   rw [affineIndependent_iff_linearIndependent_vsub k p i] at hai
   simp_rw [affineIndependent_iff_linearIndependent_vsub k (f ∘ p) i, Function.comp_apply, ←
-    f.linearMap_vsub]
+    f.linear_apply_vsub]
   have hf' : LinearMap.ker f.linear = ⊥ := by rwa [LinearMap.ker_eq_bot, f.linear_injective_iff]
   exact LinearIndependent.map' hai f.linear hf'
 
@@ -637,7 +634,7 @@ lemma AffineIndependent.inf_affineSpan_eq_affineSpan_inter [Nontrivial k] {p : �
     replace ha := ha fs₁ fs₂ w₁ w₂ hw₁ hw₂ hw₁₂
     refine ⟨fs₁ ∩ fs₂, by grind, w₁, ?_, ?_⟩
     · rw [← hw₁, ← fs₁.sum_inter_add_sum_sdiff fs₂, eq_comm]
-      convert! add_zero _
+      convert add_zero _
       refine Finset.sum_eq_zero ?_
       intro i hi
       rw [← Set.indicator_of_mem (s := ↑fs₁) (by grind) w₁, ha, Set.indicator_of_notMem (by grind)]
@@ -956,6 +953,10 @@ theorem exists_affineIndependent (s : Set P) :
       simp only [Equiv.coe_vaddConst, Set.singleton_union, Set.mem_inter_iff]
       exact ⟨mem_affineSpan k (Set.mem_insert p _), mem_affineSpan k hp⟩
 
+theorem exists_affineIndepOn (s : Set P) :
+    ∃ t ⊆ s, affineSpan k t = affineSpan k s ∧ AffineIndepOn k id t :=
+  exists_affineIndependent k V s
+
 variable {V}
 
 variable {k} in
@@ -995,14 +996,18 @@ theorem affineIndepOn_pair_iff {p : ι → P} {i j : ι} (hij : i ≠ j) :
   rw [affineIndepOn_iff_linearIndepOn_vsub (Set.mem_insert i _), ne_comm,
     Set.insert_sdiff_self_of_notMem (by simpa), linearIndepOn_singleton_iff, vsub_ne_zero]
 
-/-- Two different points are affinely independent. -/
-theorem affineIndepOn_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndepOn k id {p₁, p₂} :=
-  (affineIndepOn_pair_iff k h).mpr h
+/-- Two points are affinely independent (as a set, so this is trivial when they are equal). -/
+theorem affineIndepOn_pair (p₁ p₂ : P) : AffineIndepOn k id {p₁, p₂} := by
+  rcases eq_or_ne p₁ p₂ with rfl | h
+  · simp
+  · exact (affineIndepOn_pair_iff k h).mpr h
+
+@[deprecated (since := "2026-11-04")] alias affineIndepOn_of_ne := affineIndepOn_pair
 
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [← affineIndepOn_id_range_iff (Matrix.injective_pair_iff_ne.mpr h)]
-  simpa using affineIndepOn_of_ne k h.symm
+  simpa using affineIndepOn_pair k p₂ p₁
 
 variable {k}
 
@@ -1056,7 +1061,7 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_notMem {s : AffineSubspace k P}
     AffineIndependent k ![p₁, p₂, p₃] := by
   have ha : AffineIndependent k fun x : { x : Fin 3 // x ≠ 2 } => ![p₁, p₂, p₃] x := by
     rw [← affineIndependent_equiv (finSuccAboveEquiv (2 : Fin 3))]
-    convert! affineIndependent_of_ne k hp₁p₂
+    convert affineIndependent_of_ne k hp₁p₂
     ext x
     fin_cases x <;> rfl
   refine ha.affineIndependent_of_notMem_span ?_
@@ -1072,7 +1077,7 @@ theorem affineIndependent_of_ne_of_mem_of_notMem_of_mem {s : AffineSubspace k P}
     (hp₁p₃ : p₁ ≠ p₃) (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∉ s) (hp₃ : p₃ ∈ s) :
     AffineIndependent k ![p₁, p₂, p₃] := by
   rw [← affineIndependent_equiv (Equiv.swap (1 : Fin 3) 2)]
-  convert! affineIndependent_of_ne_of_mem_of_mem_of_notMem hp₁p₃ hp₁ hp₃ hp₂ using 1
+  convert affineIndependent_of_ne_of_mem_of_mem_of_notMem hp₁p₃ hp₁ hp₃ hp₂ using 1
   ext x
   fin_cases x <;> rfl
 
@@ -1082,7 +1087,7 @@ theorem affineIndependent_of_ne_of_notMem_of_mem_of_mem {s : AffineSubspace k P}
     (hp₂p₃ : p₂ ≠ p₃) (hp₁ : p₁ ∉ s) (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) :
     AffineIndependent k ![p₁, p₂, p₃] := by
   rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 2)]
-  convert! affineIndependent_of_ne_of_mem_of_mem_of_notMem hp₂p₃.symm hp₃ hp₂ hp₁ using 1
+  convert affineIndependent_of_ne_of_mem_of_mem_of_notMem hp₂p₃.symm hp₃ hp₂ hp₁ using 1
   ext x
   fin_cases x <;> rfl
 
@@ -1129,10 +1134,12 @@ by `lineMap` with coefficient between 0 and 1. Then the coefficients of those tw
 combination lying in the span have the same sign. -/
 theorem sign_eq_of_affineCombination_mem_affineSpan_single_lineMap {p : ι → P}
     (h : AffineIndependent k p) {w : ι → k} {s : Finset ι} (hw : ∑ i ∈ s, w i = 1) {i₁ i₂ i₃ : ι}
-    (h₁ : i₁ ∈ s) (h₂ : i₂ ∈ s) (h₃ : i₃ ∈ s) (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
+    (h₁ : i₁ ∈ s) (h₂ : i₂ ∈ s) (h₃ : i₃ ∈ s) (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     {c : k} (hc0 : 0 < c) (hc1 : c < 1)
     (hs : s.affineCombination k p w ∈ line[k, p i₁, AffineMap.lineMap (p i₂) (p i₃) c]) :
     SignType.sign (w i₂) = SignType.sign (w i₃) := by
+  rcases eq_or_ne i₂ i₃ with rfl | h₂₃
+  · rfl
   classical
     rw [← s.affineCombination_piSingle k p h₁, ←
       s.affineCombination_affineCombinationLineMapWeights p h₂ h₃ c] at hs

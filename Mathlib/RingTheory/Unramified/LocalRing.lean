@@ -6,9 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.LocalRing.Module
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Unramified.Field
-public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Unramified algebras over local rings
@@ -68,7 +66,7 @@ set_option backward.inferInstanceAs.wrap.data false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
-  have hmR : mR ≤ maximalIdeal S := ((local_hom_TFAE (algebraMap R S)).out 1 3 rfl rfl).mp ‹_›
+  have hmR : mR ≤ maximalIdeal S := ((local_hom_tfae (algebraMap R S)).out 1 3 rfl rfl).mp ‹_›
   let : Algebra (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| Algebra (R ⧸ _) _)
   have : IsScalarTower R (ResidueField R) (S ⧸ mR) := (inferInstanceAs <| IsScalarTower R (R ⧸ _) _)
   have : FormallyUnramified (ResidueField R) (S ⧸ mR) := .of_restrictScalars R _ _
@@ -80,7 +78,8 @@ lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R
     Ideal.Quotient.nontrivial_iff.mpr <| ne_top_of_le_ne_top (maximalIdeal.isMaximal S).ne_top hmR
   have : IsLocalRing (S ⧸ mR) := .of_surjective' _ Ideal.Quotient.mk_surjective
   have : maximalIdeal (S ⧸ mR) = ⊥ := by
-    rw [← jacobson_eq_maximalIdeal _ bot_ne_top, IsArtinianRing.jacobson_eq_radical,
+    rw [← ringJacobson_eq_maximalIdeal, ← Ideal.jacobson_bot,
+      IsArtinianRing.jacobson_eq_radical,
       ← Ideal.zero_eq_bot, ← nilradical, nilradical_eq_zero]
   rwa [← isField_iff_maximalIdeal_eq] at this
 
@@ -148,6 +147,10 @@ lemma isUnramifiedAt_iff_map_eq :
 instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
   ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
 
+lemma IsUnramifiedAt.map_eq [Algebra.IsUnramifiedAt R q] :
+    p.map (algebraMap R (Localization.AtPrime q)) = maximalIdeal _ :=
+  ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).2
+
 instance [Algebra.IsUnramifiedAt R q] : Module.Finite p.ResidueField q.ResidueField :=
   Algebra.FormallyUnramified.finite_of_free _ _
 
@@ -205,7 +208,8 @@ lemma localRingHom_surjective_of_primesOver_eq_singleton
   rw [← Localization.AtPrime.algebraMap_eq]
   change Function.Surjective (Algebra.linearMap _ _)
   rw [← LinearMap.range_eq_top, ← top_le_iff]
-  apply Submodule.le_of_le_smul_of_le_jacobson_bot Module.Finite.fg_top (maximalIdeal_le_jacobson _)
+  apply Submodule.le_of_le_smul_of_le_jacobson Module.Finite.fg_top
+    (ringJacobson_eq_maximalIdeal (Localization.AtPrime p)).ge
   rw [Ideal.smul_top_eq_map, Algebra.FormallyUnramified.map_maximalIdeal]
   rintro x -
   obtain ⟨a, ha⟩ := H (algebraMap _ _ x)
