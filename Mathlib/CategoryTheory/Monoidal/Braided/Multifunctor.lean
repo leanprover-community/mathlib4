@@ -9,17 +9,13 @@ public import Mathlib.CategoryTheory.Functor.CurryingThree
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
-
 # Constructing braided categories from natural transformations between multifunctors
 
 This file provides an alternative constructor for braided categories, given a braiding
 `β : -₁ ⊗ -₂ ≅ -₂ ⊗ -₁` as a natural isomorphism between bifunctors. The hexagon identities are
 phrased as equalities of natural transformations between trifunctors
 `(-₁ ⊗ -₂) ⊗ -₃ ⟶ -₂ ⊗ (-₃ ⊗ -₁)` and `-₁ ⊗ (-₂ ⊗ -₃) ⟶ (-₃ ⊗ -₁) ⊗ -₂`.
-
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -97,7 +93,6 @@ example : (bifunctorComp₁₂ (curriedTensor C) (curriedTensor C)) =
 namespace Forward
 
 /-!
-
 ### The forward hexagon identity
 
 Given a braiding in the form of a natural isomorphism of bifunctors
@@ -125,6 +120,7 @@ firstMap₂ |            |secondMap₂            |             |
 def firstMap₂ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃' C ⟶ functor₂₃₁ C :=
   (bifunctorComp₂₃Functor.map β.hom).app _
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The bottom left map in the forward hexagon identity. -/
 @[simps!]
@@ -139,6 +135,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def secondMap₁ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃ C ⟶ functor₂₁₃ C :=
   (bifunctorComp₁₂Functor.map β.hom).app _
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The middle right map in the forward hexagon identity. -/
 @[simps!]
@@ -159,7 +156,6 @@ end Forward
 namespace Reverse
 
 /-!
-
 ### The reverse hexagon identity
 
 Given a braiding in the form of a natural isomorphism of bifunctors
@@ -205,6 +201,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def secondMap₁ (β : curriedTensor C ≅ (curriedTensor C).flip) : functor₁₂₃' C ⟶ functor₁₃₂' C :=
   (bifunctorComp₂₃Functor.obj _).map β.hom
 
+set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The middle right map in the reverse hexagon identity. -/
 @[simps!]

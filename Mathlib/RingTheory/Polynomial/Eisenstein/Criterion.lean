@@ -50,7 +50,6 @@ There are two obstructions, though :
 * The mod `P ^ 2` hypothesis will have to be rephrased to a condition
   in the second symbolic power of `P`. When `P` is a maximal ideal,
   that symbolic power coincides with `P ^ 2`, but not in general.
-
 -/
 
 public section
@@ -202,9 +201,9 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
   · rw [modByMonic_X, map_C, ne_eq, C_eq_zero, Ideal.Quotient.eq_zero_iff_mem,
       ← coeff_zero_eq_eval_zero]
     convert h0
-    · rw [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P))]
-      rw [ker_comp_of_injective]
-      · ext a; simp
-      · exact FaithfulSMul.algebraMap_injective (R ⧸ P) (FractionRing (R ⧸ P))
+    rw [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P))]
+    rw [ker_comp_of_injective]
+    · ext a; simp
+    · exact FaithfulSMul.algebraMap_injective (R ⧸ P) (FractionRing (R ⧸ P))
 
 end Polynomial

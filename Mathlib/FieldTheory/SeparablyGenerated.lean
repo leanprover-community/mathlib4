@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.Algebra.CharP.IntermediateField
 
 /-!
-
 # Separably generated extensions
 
 We aim to formalize the following result:
@@ -29,14 +28,13 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 ## Main result
 - `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
-
 -/
 
 @[expose] public noncomputable section
 
 section
 
-attribute [local instance 2000] Polynomial.isScalarTower Algebra.toSMul IsScalarTower.right
+attribute [local instance 2000] Algebra.toSMul IsScalarTower.right
 
 open MvPolynomial
 open scoped IntermediateField
@@ -136,7 +134,6 @@ theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (
       (Finsupp.mem_support_iff.mp hσi) ?_, aeval_toPolynomialAdjoinImageCompl_eq_zero hFa ..⟩
   rw [h, Polynomial.coeff_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 include hp H in
 theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa : F.aeval a = 0) :
     ∃ i, ∃ σ ∈ F.support, ¬ p ∣ σ i := by
@@ -234,7 +231,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (fun e ↦ (e rfl).elim) (fun _ _ _ ↦ ‹_›) hp.ne_one
   obtain ⟨g, hg, eq⟩ := (((minpoly k' (a i)).separable_or p (minpoly.irreducible
     (isAlgebraic_iff_isIntegral.mp <| isAlgebraic_adjoin_iff.mpr alg))).resolve_left Hsep).2
-  replace eq := congr(Polynomial.coeff $eq (σ i))
+  replace eq := congr(($eq).coeff (σ i))
   rwa [← minpoly.eq_of_irreducible hF₂irr ((Polynomial.aeval_map_algebraMap ..).trans
     (aeval_toPolynomialAdjoinImageCompl_eq_zero hFa i)), Polynomial.coeff_mul_C,
     Polynomial.coeff_expand hp.pos, ite_eq_right hi, eq_mul_inv_iff_mul_eq₀

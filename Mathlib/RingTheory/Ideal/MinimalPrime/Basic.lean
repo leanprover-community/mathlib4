@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
 
 /-!
-
 # Minimal primes
 
 We provide various results concerning the minimal primes above an ideal.
@@ -24,7 +23,6 @@ We provide various results concerning the minimal primes above an ideal.
 
 Further results that need the theory of localizations can be found in
 `Mathlib/RingTheory/Ideal/MinimalPrime/Localization.lean`.
-
 -/
 
 @[expose] public section
@@ -62,8 +60,8 @@ This is defined as `Ideal.minimalPrimes ⊥`. -/
 abbrev minimalPrimes : Set (Ideal R) :=
   {p | IsMinimalPrime p}
 
-lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} :=
-  congr(Minimal $(by simp))
+lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} := by
+  ext; simp [Ideal.IsMinimalPrime]
 
 variable {I J}
 

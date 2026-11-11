@@ -32,7 +32,6 @@ This file contains the dual results to those obtained in the file
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 @[expose] public section
@@ -82,7 +81,6 @@ lemma leftDerivedFunctorComparison_fac_app (X : C₁) :
 
 variable [Φ.IsLeftDerivabilityStructure]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hasPointwiseLeftDerivedFunctorAt_iff_of_isLeftDerivabilityStructure (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseLeftDerivedFunctorAt W₁ X ↔
       F.HasPointwiseLeftDerivedFunctorAt W₂ (Φ.functor.obj X) := by

@@ -53,7 +53,6 @@ formalization of theorems such as the Hahn embedding theorem.
 To naturally derive this order, we first define it on the underlying group via the type
 synonym (`Mul`-)`ArchimedeanOrder`, and define (`Mul`-)`ArchimedeanClass` as `Antisymmetrization` of
 the order.
-
 -/
 
 @[expose] public section
@@ -259,6 +258,11 @@ theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
 @[to_additive]
 instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
   inferInstanceAs (Subsingleton (Antisymmetrization ..))
+
+-- Shortcut instance for computability
+@[to_additive]
+instance : PartialOrder (MulArchimedeanClass M) :=
+  inferInstanceAs <| PartialOrder (Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·))
 
 @[to_additive]
 noncomputable

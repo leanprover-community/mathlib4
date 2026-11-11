@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 We introduce constructors `Cochain.fromSingleMk` and `Cocycle.fromSingleMk`
 for cochains and cocycles from a single complex. We also introduce similar
 definitions for cochains and cocycles to a single complex.
-
 -/
 
 @[expose] public section
@@ -70,6 +69,7 @@ lemma δ_fromSingleMk {p q : ℤ} (f : X ⟶ K.X q) {n : ℤ} (h : p + n = q)
 
 /-- Cochains of degree `n` from `(singleFunctor C p).obj X` to `K` identify
 to `X ⟶ K.X q` when `p + n = q`. -/
+@[simps -isSimp]
 noncomputable def fromSingleEquiv {p q n : ℤ} (h : p + n = q) :
     Cochain ((singleFunctor C p).obj X) K n ≃+ (X ⟶ K.X q) where
   toFun α := (HomologicalComplex.singleObjXSelf (.up ℤ) p X).inv ≫ α.v p q h
@@ -180,6 +180,7 @@ lemma δ_toSingleMk {p q : ℤ} (f : K.X p ⟶ X) {n : ℤ} (h : p + n = q)
 
 /-- Cochains of degree `n` from `(singleFunctor C q).obj X` to `K` identify
 to `K.X p ⟶ X` when `p + n = q`. -/
+@[simps -isSimp]
 noncomputable def toSingleEquiv {p q n : ℤ} (h : p + n = q) :
     Cochain K ((singleFunctor C q).obj X) n ≃+ (K.X p ⟶ X) where
   toFun α := α.v p q h ≫ (HomologicalComplex.singleObjXSelf (.up ℤ) q X).hom

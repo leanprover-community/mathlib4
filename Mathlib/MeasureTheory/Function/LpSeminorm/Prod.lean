@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # ℒp spaces and products
-
 -/
 
 public section
