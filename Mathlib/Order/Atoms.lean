@@ -408,8 +408,6 @@ instance [WellFoundedGT α] : IsStronglyCoatomic α :=
 
 end StronglyAtomic
 
-section WellFounded
-
 @[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
@@ -429,8 +427,6 @@ theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
   inferInstance
-
-end WellFounded
 
 namespace BooleanAlgebra
 
