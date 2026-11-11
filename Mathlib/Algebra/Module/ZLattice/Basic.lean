@@ -769,8 +769,7 @@ instance [DiscreteTopology L] (e : F ≃L[K] E) :
     DiscreteTopology (ZLattice.comap K L e.toLinearMap) :=
   ZLattice.comap_discreteTopology K L e.continuous e.injective
 
--- TODO: deprecate; there is no lattice-specific replacement yet, since this holds for any linear
--- map whose range contains `L`.
+@[deprecated Submodule.span_preimage_eq +typeChanged (since := "2026-11-11")]
 theorem ZLattice.comap_span_top (hL : span K (L : Set E) = ⊤) {e : F →ₗ[K] E}
     (he : (L : Set E) ⊆ LinearMap.range e) :
     span K (ZLattice.comap K L e : Set F) = ⊤ := by
