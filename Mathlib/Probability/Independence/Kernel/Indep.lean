@@ -619,8 +619,9 @@ theorem indep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
   · exact indepSets_piiUnionInter_of_disjoint (h_indep.congr η_eq) hST
 
 /-- Grouping an independent family of σ-algebras into pairwise disjoint sets of indices yields
-an independent family: if `m : ι → MeasurableSpace Ω` is an independent family and the sets
-`G i'` are pairwise disjoint, then `fun i' ↦ ⨆ j ∈ G i', m j` is an independent family.
+an independent family: if `m : ι → MeasurableSpace Ω` is an independent family of sub-σ-algebras
+of the ambient σ-algebra on `Ω` (that is, `m i ≤ _mΩ` for all `i`) and the sets `G i'` are
+pairwise disjoint, then `fun i' ↦ ⨆ j ∈ G i', m j` is an independent family.
 This is the indexed-family version of `indep_iSup_of_disjoint`. -/
 theorem iIndep_iSup_of_disjoint {ι' : Type*} {m : ι → MeasurableSpace Ω}
     (h_le : ∀ i, m i ≤ _mΩ) (h_indep : iIndep m κ μ) {G : ι' → Set ι}
