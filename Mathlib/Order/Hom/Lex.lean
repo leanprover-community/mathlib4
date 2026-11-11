@@ -81,12 +81,16 @@ namespace OrderIso
 
 variable [LinearOrder α] {x y : α}
 
+open Lex
+
 variable (x) in
 /-- A linear order is isomorphic to the lexicographic sum of elements less than `x` and elements
 greater or equal to `x`. -/
 def sumLexIioIci : Iio x ⊕ₗ Ici x ≃o α :=
   (sumLexCongr (refl _) (Set.orderIsoOfEq (Ici x) {y | ¬ y < x} (by ext; simp))).trans <|
-    ofRelIsoLT (RelIso.sumLexComplLeft (· < ·) x)
+    ofRelIsoLT
+      { toEquiv := ofLexEquiv.trans (RelIso.sumLexComplLeft (· < ·) x).toEquiv
+        map_rel_iff' := (RelIso.sumLexComplLeft (· < ·) x).map_rel_iff }
 
 @[simp]
 theorem sumLexIioIci_apply_inl (a : Iio x) : sumLexIioIci x (toLex <| Sum.inl a) = a :=
@@ -117,7 +121,9 @@ variable (x) in
 elements greater than `x`. -/
 def sumLexIicIoi : Iic x ⊕ₗ Ioi x ≃o α :=
   (sumLexCongr (Set.orderIsoOfEq (Iic x) {y | ¬ x < y} (by ext; simp)) (refl _)).trans <|
-    ofRelIsoLT (RelIso.sumLexComplRight (· < ·) x)
+    ofRelIsoLT
+      { toEquiv := ofLexEquiv.trans (RelIso.sumLexComplRight (· < ·) x).toEquiv
+        map_rel_iff' := (RelIso.sumLexComplRight (· < ·) x).map_rel_iff }
 
 @[simp]
 theorem sumLexIicIoi_apply_inl (a : Iic x) : sumLexIicIoi x (toLex <| Sum.inl a) = a :=
@@ -136,11 +142,11 @@ theorem sumLexIicIoi_symm_apply_of_lt {y : α} (h : x < y) :
   rw [symm_apply_eq, sumLexIicIoi_apply_inr]
 
 @[simp]
-theorem sumLexIicIoi_symm_apply_Iic (a : Iic x) : (sumLexIicIoi x).symm a = Sum.inl a :=
+theorem sumLexIicIoi_symm_apply_Iic (a : Iic x) : (sumLexIicIoi x).symm a = ⟨Sum.inl a⟩ :=
   sumLexIicIoi_symm_apply_of_le a.2
 
 @[simp]
-theorem sumLexIicIoi_symm_apply_Ioi (a : Ioi x) : (sumLexIicIoi x).symm a = Sum.inr a :=
+theorem sumLexIicIoi_symm_apply_Ioi (a : Ioi x) : (sumLexIicIoi x).symm a = ⟨Sum.inr a⟩ :=
   sumLexIicIoi_symm_apply_of_lt a.2
 
 end OrderIso
@@ -149,6 +155,8 @@ end OrderIso
 
 namespace Prod.Lex
 variable (α β : Type*)
+
+open _root_.Lex
 
 /-- Lexicographic product type with `Unique` type on the right is `OrderIso` to the left. -/
 def prodUnique [PartialOrder α] [Preorder β] [Unique β] : α ×ₗ β ≃o α where
@@ -183,12 +191,12 @@ theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
 @[simps!]
 def prodLexAssoc (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ where
-  toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
-      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLex) toLex
+  toEquiv := .trans ofLexEquiv <| .trans (.prodCongr ofLexEquiv <| .refl _) <|
+      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) ofLexEquiv.symm) ofLexEquiv.symm
   map_rel_iff' := by
-    simp only [Prod.Lex.le_iff, Prod.Lex.lt_iff, Equiv.trans_apply, Equiv.prodCongr_apply,
-      Equiv.prodAssoc_apply]
-    grind [EmbeddingLike.apply_eq_iff_eq, ofLex_toLex]
+    simp only [Equiv.trans_apply, ofLexEquiv_apply, Equiv.prodCongr_apply, Equiv.prodAssoc_apply,
+      map_apply, ofLexEquiv_symm_apply, le_iff, lt_iff, «forall», Prod.forall]
+    grind [EmbeddingLike.apply_eq_iff_eq]
 
 /-- `Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products.
 
@@ -197,15 +205,16 @@ which is not isomorphic to `ℕ ×ₗ Unit ⊕ₗ ℕ ×ₗ Unit ≃o ℕ ⊕ₗ
 @[simps!]
 def sumLexProdLexDistrib (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ⊕ₗ β) ×ₗ γ ≃o α ×ₗ γ ⊕ₗ β ×ₗ γ where
-  toEquiv := .trans ofLex <| .trans (.prodCongr ofLex <| .refl _) <|
-    .trans (.sumProdDistrib α β γ) <| .trans (.sumCongr toLex toLex) toLex
+  toEquiv := .trans ofLexEquiv <| .trans (.prodCongr ofLexEquiv <| .refl _) <|
+    .trans (.sumProdDistrib α β γ) <|
+    .trans (.sumCongr ofLexEquiv.symm ofLexEquiv.symm) ofLexEquiv.symm
   map_rel_iff' := by simp [Prod.Lex.le_iff]
 
 /-- `Equiv.prodCongr` promoted to an order isomorphism between lexicographic products. -/
 @[simps! apply]
 def prodLexCongr {α β γ δ : Type*} [Preorder α] [Preorder β]
     [Preorder γ] [Preorder δ] (ea : α ≃o β) (eb : γ ≃o δ) : α ×ₗ γ ≃o β ×ₗ δ where
-  toEquiv := ofLex.trans ((Equiv.prodCongr ea eb).trans toLex)
+  toEquiv := ofLexEquiv.trans ((Equiv.prodCongr ea eb).trans ofLexEquiv.symm)
   map_rel_iff' := by simp [Prod.Lex.le_iff]
 
 end Prod.Lex
