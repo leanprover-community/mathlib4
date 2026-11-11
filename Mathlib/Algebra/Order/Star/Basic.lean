@@ -235,7 +235,7 @@ lemma StarOrderedRing.induction_on {motive : {r : R} → 0 ≤ r → Prop}
   induction hr using AddSubmonoid.closure_induction with
   | mem x hx =>
     obtain ⟨x, rfl⟩ := hx
-    exact star_mul x
+    exact star_mul_self x
   | zero => exact zero
   | add x y hx hy ihx ihy =>
     rw [← nonneg_iff] at hx hy
@@ -244,7 +244,7 @@ lemma StarOrderedRing.induction_on {motive : {r : R} → 0 ≤ r → Prop}
 @[aesop safe apply]
 theorem star_left_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   induction ha using StarOrderedRing.induction_on with
-  | star_mul x => simpa [mul_assoc] using star_mul_self_nonneg (x * c)
+  | star_mul_self x => simpa [mul_assoc] using star_mul_self_nonneg (x * c)
   | zero => simp
   | add x y _ _ ihx ihy => simpa [mul_add, add_mul] using add_nonneg ihx ihy
 
