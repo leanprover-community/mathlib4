@@ -275,8 +275,8 @@ grind_pattern [membership] mem_of_le_of_mem => S ≤ T, x ∈ T
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simp [le_iff]
 
--- Intended to fire on goals of the form `p ≤ q`. `grind` negates the goal and moves it to the set of assumptions.
-grind_pattern not_le_iff_exists => p ≤ q where guard ¬p ≤ q
+-- Intended to fire on goals of the form `p ≤ q`. `grind` moves the goal to the set of false statements.
+grind_pattern not_le_iff_exists => p ≤ q where check ¬p ≤ q
 
 end LE
 
