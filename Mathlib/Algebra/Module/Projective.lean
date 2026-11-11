@@ -149,7 +149,7 @@ instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
       simp only [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
 
 /-- Free modules are projective. -/
-theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
+theorem Projective.of_basis (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
@@ -189,9 +189,12 @@ theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
   .of_equiv e
 
-instance {ι : Type*} [Projective R M] : Projective R (ι →₀ M) := by
-  classical
-  exact Projective.of_equiv' (finsuppLequivDFinsupp R).symm
+instance [Projective R M] : Projective R (ι →₀ M) := by
+  classical exact .of_equiv' (finsuppLequivDFinsupp R).symm
+
+instance [Finite ι] [∀ i, Projective R (A i)] : Projective R (∀ i, A i) := by
+  let := Fintype.ofFinite ι
+  exact .of_equiv' DFinsupp.linearEquivFunOnFintype
 
 instance [Projective R M] : Projective R (ULift.{w} M) :=
   Projective.of_equiv' ULift.moduleEquiv.symm
