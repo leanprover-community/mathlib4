@@ -226,18 +226,27 @@ protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) :
 theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
   hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
 
+lemma StarOrderedRing.induction_on {motive : {r : R} → 0 ≤ r → Prop}
+    (star_mul : ∀ x, motive (star_mul_self_nonneg x)) (zero : motive le_rfl)
+    (add : ∀ x y hx hy, motive hx → motive hy → motive (r := x + y) (add_nonneg hx hy))
+    {r : R} (hr : 0 ≤ r) :
+    motive hr := by
+  rw [nonneg_iff] at hr
+  induction hr using AddSubmonoid.closure_induction with
+  | mem x hx =>
+    obtain ⟨x, rfl⟩ := hx
+    exact star_mul x
+  | zero => exact zero
+  | add x y hx hy ihx ihy =>
+    rw [← nonneg_iff] at hx hy
+    exact add x y hx hy (ihx hx) (ihy hy)
+
 @[aesop safe apply]
 theorem star_left_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
-  rw [StarOrderedRing.nonneg_iff] at ha
-  refine AddSubmonoid.closure_induction (fun x hx => ?_)
-    (by rw [mul_zero, zero_mul]) (fun x y _ _ hx hy => ?_) ha
-  · obtain ⟨x, rfl⟩ := hx
-    convert star_mul_self_nonneg (x * c) using 1
-    rw [star_mul, ← mul_assoc, mul_assoc _ _ c]
-  · calc
-      0 ≤ star c * x * c + 0 := by rw [add_zero]; exact hx
-      _ ≤ star c * x * c + star c * y * c := by gcongr
-      _ ≤ _ := by rw [mul_add, add_mul]
+  induction ha using StarOrderedRing.induction_on with
+  | star_mul x => simpa [mul_assoc] using star_mul_self_nonneg (x * c)
+  | zero => simp
+  | add x y _ _ ihx ihy => simpa [mul_add, add_mul] using add_nonneg ihx ihy
 
 @[aesop safe apply]
 theorem star_right_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
