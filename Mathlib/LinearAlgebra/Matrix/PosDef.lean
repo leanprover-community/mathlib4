@@ -678,7 +678,7 @@ omit [Fintype n] in
 theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
     (B : Matrix m n R') (D : Matrix n n R') (hA : A.PosDef) [Invertible A] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
-  have aux {n : Type*} [Fintype n] (B : Matrix m n R') (D : Matrix n n R') :
+  have aux {n : Type _} [Fintype n] (B : Matrix m n R') (D : Matrix n n R') :
       (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
     rw [posSemidef_iff_dotProduct_mulVec, IsHermitian.fromBlocks₁₁ _ _ hA.1]
     refine ⟨fun h ↦ .of_dotProduct_mulVec_nonneg h.1 fun x ↦ ?_, fun h ↦ ⟨h.1, fun x ↦ ?_⟩⟩
