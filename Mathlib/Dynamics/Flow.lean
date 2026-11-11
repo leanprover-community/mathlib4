@@ -5,8 +5,8 @@ Authors: Jean Lo
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Tactic.Bound.Init
 public import Mathlib.Topology.Algebra.Group.Defs
@@ -83,19 +83,18 @@ def IsForwardInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set 
 @[deprecated (since := "2026-07-16")] alias IsInvariant.isForwardInvariant :=
   IsInvariant.isInvariantOn
 
-/-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
-`IsForwardInvariant` and `IsInvariant` are equivalent. -/
+/-- If `τ` has `0` as a bottom element, then the notions `IsForwardInvariant` and `IsInvariant` are
+equivalent. -/
 @[deprecated "use `isInvariantOn_univ` and `Ici_zero_eq_univ`" (since := "2026-07-16")]
-theorem IsForwardInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
-    {ϕ : τ → α → α} {s : Set α}
-    (h : IsForwardInvariant ϕ s) : s.IsInvariant ϕ := fun _ => h zero_le
+theorem IsForwardInvariant.isInvariant [Preorder τ] [Zero τ] [IsBotZeroClass τ]
+    {ϕ : τ → α → α} {s : Set α} (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s :=
+  fun _ => h zero_le
 
-/-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
-`IsForwardInvariant` and `IsInvariant` are equivalent. -/
+/-- If `τ` has `0` as a bottom element, then the notions `IsForwardInvariant` and `IsInvariant` are
+equivalent. -/
 @[deprecated "use `isInvariantOn_univ` and `Ici_zero_eq_univ`" (since := "2026-07-16")]
-theorem isForwardInvariant_iff_isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
-    {ϕ : τ → α → α} {s : Set α} :
-    IsForwardInvariant ϕ s ↔ s.IsInvariant ϕ :=
+theorem isForwardInvariant_iff_isInvariant [Preorder τ] [Zero τ] [IsBotZeroClass τ]
+    {ϕ : τ → α → α} {s : Set α} : IsForwardInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsForwardInvariant.isInvariant, IsInvariant.isForwardInvariant⟩
 
 end Invariant

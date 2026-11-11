@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Defs
 
 /-!
-
 # (Left) Ore sets
 
 This defines left Ore sets on arbitrary monoids.
@@ -16,7 +15,6 @@ This defines left Ore sets on arbitrary monoids.
 ## References
 
 * https://ncatlab.org/nlab/show/Ore+set
-
 -/
 
 @[expose] public section

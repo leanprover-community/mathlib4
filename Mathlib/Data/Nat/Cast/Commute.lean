@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Ring.Commute
 
 /-!
 # Cast of natural numbers: lemmas about `Commute`
-
 -/
 
 public section

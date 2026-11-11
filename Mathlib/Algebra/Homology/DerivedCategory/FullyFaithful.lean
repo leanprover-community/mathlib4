@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Homology.SingleHomology
 
 In this file, we show that for any `n : ℤ`, the functor
 `singleFunctor C n : C ⥤ DerivedCategory C` is fully faithful.
-
 -/
 
 @[expose] public section
@@ -41,7 +40,6 @@ instance (n : ℤ) : (singleFunctor C n).Faithful where
     dsimp at eq₁ eq₂
     rw [← eq₁, ← eq₂, h]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℤ) : (singleFunctor C n).Full where
   map_surjective {A B} f := by
     change Q.obj ((CochainComplex.singleFunctor C n).obj A) ⟶

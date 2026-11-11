@@ -7,12 +7,10 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.Analysis.Normed.Operator.Extend
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
-
 # Partially defined linear operators on Hilbert spaces
 
 We will develop the basics of the theory of unbounded operators on Hilbert spaces.

@@ -38,7 +38,6 @@ to obtain a spectral sequence with objects of the pages indexed
 by `ℕ × ℕ` instead of `ℤ × ℤ` when suitable conditions are satisfied by
 a spectral object indexed by `EInt` (see `coreE₂CohomologicalNat`
 and the typeclass `IsFirstQuadrant`).
-
 -/
 
 @[expose] public section

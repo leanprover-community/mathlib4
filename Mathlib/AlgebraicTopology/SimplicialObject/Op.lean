@@ -14,7 +14,6 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 In this file, we define the covariant involution `SimplicialObject.opFunctor`
 of the category of simplicial objects that is induced by the
 covariant involution `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`.
-
 -/
 
 @[expose] public section
@@ -66,7 +65,9 @@ is a covariant involution. -/
 def opFunctorCompOpFunctorIso : opFunctor (C := C) ⋙ opFunctor ≅ 𝟭 _ :=
   (Functor.whiskeringLeftObjCompIso _ _).symm ≪≫
     (Functor.whiskeringLeft _ _ _).mapIso
-    ((Functor.opHom _ _).mapIso (SimplexCategory.revCompRevIso).symm.op) ≪≫
+    ((Functor.opComp _ _).symm ≪≫
+      (Functor.opHom _ _).mapIso (SimplexCategory.revCompRevIso).symm.op ≪≫
+      Functor.opId _) ≪≫
     Functor.whiskeringLeftObjIdIso
 
 @[simp]

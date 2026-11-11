@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GradedObject
+
 /-!
 # The action of bifunctors on graded objects
 
@@ -18,7 +19,6 @@ a functor
 In case `p : I × I → I` is the addition on a monoid and `F` is the tensor product on a monoidal
 category `C`, these definitions shall be used in order to construct a monoidal structure
 on `GradedObject I C` (TODO @joelriou).
-
 -/
 
 @[expose] public section

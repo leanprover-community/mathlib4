@@ -6,8 +6,9 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Prod
-public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+
 import Mathlib.Geometry.Manifold.Notation
 
 /-!
@@ -21,19 +22,14 @@ mimicking the API for Fréchet derivatives.
 - deriving continuity from differentiability on manifolds,
 - congruence lemmas for derivatives on manifolds
 - composition lemmas and the chain rule
-
 -/
 
 public section
-
-noncomputable section
 
 assert_not_exists tangentBundleCore
 
 open scoped Topology Manifold
 open Function Set Bundle ChartedSpace
-
-section DerivativesProperties
 
 /-! ### Unique differentiability sets in manifolds -/
 
@@ -199,7 +195,7 @@ theorem mdifferentiableWithinAt_iff_target_inter' :
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
           (extChartAt I x x) := by
   simp only [MDifferentiableWithinAt, liftPropWithinAt_iff']
-  exact and_congr_right fun hc => differentiableWithinAt_congr_nhds <|
+  exact and_congr_right fun hc => differentiableWithinAt_congr_nhds
     hc.nhdsWithin_extChartAt_symm_preimage_inter_range
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
@@ -210,7 +206,7 @@ theorem mdifferentiableWithinAt_iff_target :
   have cont :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
-      and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
+      and_iff_left_of_imp (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, DifferentiableWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
     PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
     OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
@@ -397,7 +393,7 @@ theorem mdifferentiableOn_iff :
     specialize h w this
     have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
     have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
-    convert! ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
+    convert ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
@@ -473,13 +469,15 @@ theorem ContMDiffOn.mdifferentiableOn (hf : CMDiff[s] n f) (hn : n ≠ 0) : MDif
 theorem ContMDiff.mdifferentiable (hf : CMDiff n f) (hn : n ≠ 0) : MDiff f :=
   fun x => (hf x).mdifferentiableAt hn
 
+/-! ### Deriving continuity from differentiability on manifolds -/
+
+@[fun_prop]
 theorem MDifferentiableOn.continuousOn (h : MDiff[s] f) : ContinuousOn f s :=
   fun x hx => (h x hx).continuousWithinAt
 
+@[fun_prop]
 theorem MDifferentiable.continuous (h : MDiff f) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (h x).continuousAt
-
-/-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
     writtenInExtChartAt I I'' x (g ∘ f)
@@ -598,7 +596,7 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivAt[s] f x f') (ht : HasMFDerivA
     HasMFDerivAt[s ∪ t] f x f' := by
   constructor
   · exact ContinuousWithinAt.union hs.1 ht.1
-  · convert! HasFDerivWithinAt.union hs.2 ht.2 using 1
+  · convert HasFDerivWithinAt.union hs.2 ht.2 using 1
     simp only [union_inter_distrib_right, preimage_union]
 
 theorem HasMFDerivWithinAt.mono_of_mem_nhdsWithin (h : HasMFDerivAt[s] f x f') (ht : s ∈ 𝓝[t] x) :
@@ -681,10 +679,10 @@ theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f 
     mfderiv[s] f x = 0 := by
   simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
   simp only [HasMFDerivWithinAt, mfld_simps] at h
-  rw [fderivWithin, ite_eq_left (by exact h.2)]
+  rw [fderivWithin_def, ite_eq_left (by exact h.2)]
   simp
 
-theorem MDifferentiable.mfderivWithin (h : MDiffAt f x) (hxs : UniqueMDiffAt[s] x) :
+protected theorem MDifferentiable.mfderivWithin (h : MDiffAt f x) (hxs : UniqueMDiffAt[s] x) :
     mfderiv[s] f x = mfderiv% f x := by
   apply HasMFDerivWithinAt.mfderivWithin _ hxs
   exact h.hasMFDerivAt.hasMFDerivWithinAt
@@ -803,6 +801,19 @@ lemma mdifferentiable_of_mdifferentiableOn_iUnion_of_isOpen {ι : Type*} {s : ι
 
 end mdifferentiableOn_union
 
+lemma injective_fderivWithin_writtenInExtChartAt {f : M → M'} {s : Set M} {p : M}
+    (hf : Injective (mfderiv[s] f p)) :
+    Injective (fderivWithin 𝕜 (writtenInExtChartAt I I' p f)
+      ((extChartAt I p).symm ⁻¹' s ∩ range I) (extChartAt I p p)) := by
+  rw [mfderivWithin, ite_eq_left (mdifferentiableWithinAt_of_mfderivWithin_injective hf)] at hf
+  exact hf
+
+lemma isInvertible_fderivWithin_writtenInExtChartAt {f : M → M'} {p : M}
+    (hf : (mfderiv% f p).IsInvertible) :
+    (fderivWithin 𝕜 (writtenInExtChartAt I I' p f) (range I) (extChartAt I p p)).IsInvertible := by
+  rw [mfderiv, ite_eq_left (mdifferentiableAt_of_mfderiv_injective hf.injective)] at hf
+  exact hf
+
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem HasMFDerivWithinAt.continuousWithinAt (h : HasMFDerivAt[s] f x f') :
@@ -846,7 +857,7 @@ theorem preimage_extChartAt_eventuallyEqSet_compl_singleton (y : M) (h : s =ᶠ[
     (extChartAt I x).symm ⁻¹' s ∩ range I =ᶠ[𝓝[{extChartAt I x x}ᶜ] (extChartAt I x x)]
     ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) := by
   have : T1Space M := I.t1Space M
-  obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
+  obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | y ∈ s ↔ y ∈ t} :=
     mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
   rw [← extChartAt_to_inv (I := I) x] at u_mem
   have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) := by
@@ -855,11 +866,10 @@ theorem preimage_extChartAt_eventuallyEqSet_compl_singleton (y : M) (h : s =ᶠ[
   apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
     ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
   rintro z ⟨hz, h'z⟩
-  simp only [eq_iff_iff, mem_ofPred_eq]
+  simp only [mem_ofPred_eq]
   by_cases hIz : z ∈ range I
   · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
       or_false, and_true] at hz ⊢
-    rw [← eq_iff_iff]
     apply hu ⟨hz.1, ?_⟩
     push _ ∈ _ at h'z ⊢
     rw [eq_comm, (extChartAt I x).eq_symm_apply (by simp) hz.2]
@@ -1130,9 +1140,7 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivAt[u] g (f x) g')
         (hf.1.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _))
     unfold HasMFDerivWithinAt at *
     rw [← hasFDerivWithinAt_inter' this, ← extChartAt_preimage_inter_eq] at hf ⊢
-    have : writtenInExtChartAt I I' x f ((extChartAt I x) x) = (extChartAt I' (f x)) (f x) := by
-      simp only [mfld_simps]
-    rw [← this] at hg
+    rw [← writtenInExtChartAt_apply_extChartAt (I := I) (mem_extChartAt_source x)] at hg
     apply HasFDerivWithinAt.comp ((extChartAt I x) x) hg.2 hf.2 _
     intro y hy
     simp only [mfld_simps] at hy
@@ -1277,5 +1285,3 @@ theorem tangentMap_comp_at (p : TangentBundle I M) (hg : MDiffAt g (f p.1)) (hf 
 theorem tangentMap_comp (hg : MDiff g) (hf : MDiff f) :
     tangentMap% (g ∘ f) = tangentMap% g ∘ tangentMap% f := by
   ext p : 1; exact tangentMap_comp_at _ (hg _) (hf _)
-
-end DerivativesProperties

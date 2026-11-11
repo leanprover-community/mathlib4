@@ -21,7 +21,6 @@ initial functors, but we provide a more down to earth proof.
 We also obtain the dual result that if `F` is final,
 then `F.colimitTypePrecomp : (F ⋙ P).ColimitType → P.ColimitType`
 is a bijection.
-
 -/
 
 @[expose] public section
@@ -48,7 +47,7 @@ lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
   refine ⟨fun s₁ s₂ h ↦ ?_, fun t ↦ ?_⟩
   · ext Y
     let X : CostructuredArrow F Y := Classical.arbitrary _
-    have := congr_fun (congr_arg Subtype.val h) X.left
+    have := congr($(h).val X.left)
     have h₁ := s₁.property X.hom
     have h₂ := s₂.property X.hom
     dsimp at this h₁ h₂
@@ -80,7 +79,6 @@ lemma colimitTypePrecomp_ιColimitType (F : C ⥤ D) {P : D ⥤ Type w}
     colimitTypePrecomp F P ((F ⋙ P).ιColimitType i x) = P.ιColimitType (F.obj i) x :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma bijective_colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Final] :
     Function.Bijective (F.colimitTypePrecomp (P := P)) := by
   refine ⟨?_, fun x ↦ ?_⟩

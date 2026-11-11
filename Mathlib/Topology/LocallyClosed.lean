@@ -5,9 +5,9 @@ Authors: Andrew Yang, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.NhdsWithin
-public import Mathlib.Tactic.TFAE
+
+import Mathlib.Tactic.TFAE
 
 /-!
 # Locally closed sets
@@ -38,7 +38,6 @@ These are defined earlier, but most of their API should be in this file.
   4. The coborder `(closure s \ s)ᶜ` is open.
   5. `s` is the intersection of an open set and `closure s`.
   6. `s` is open in the closure of `s`.
-
 -/
 
 public section
@@ -190,8 +189,8 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
       eventuallyEqSet_iff, eventually_iff_exists_mem]
     grind
   tfae_have 4 ↔ 6 := by simp [eventuallyEqSet_iff, eventually_iff_exists_mem, Set.ext_iff]
-  tfae_have 6 → 7 := fun H ↦ H.symm.le
-  tfae_have 7 → 6 := fun H ↦ EventuallyLE.antisymm (.of_forall subset_closure) H
+  tfae_have 6 → 7 := fun H ↦ H.symm.subset
+  tfae_have 7 → 6 := fun H ↦ EventuallySubset.antisymm (.of_forall subset_closure) H
   tfae_have 7 ↔ 8 := by
     simp_rw [← eventually_mem_set, eventually_nhdsWithin_iff]
     rfl
@@ -240,20 +239,41 @@ lemma isLocallyClosedAt_iff_exists_eq_inter_closure_of_hasBasis {ι : Type*} {p 
     inter_eq_inter_mono_left h U_sub_V
   rw [isLocallyClosedAt_iff_exists_eq_inter_closure, H.exists_iff this]
 
-lemma isLocallyClosedAt_iff_exists_isClosed_eventuallyEq {x : X} : IsLocallyClosedAt s x ↔
+lemma isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet {x : X} : IsLocallyClosedAt s x ↔
     ∃ Z, IsClosed Z ∧ s =ᶠ[𝓝 x] Z :=
   (isLocallyClosedAt_tfae s x).out 1 5
 
-lemma isLocallyClosedAt_iff_eventuallyEq_closure {x : X} : IsLocallyClosedAt s x ↔
+@[deprecated (since := "2026-09-02")]
+alias isLocallyClosedAt_iff_exists_isClosed_eventuallyEq :=
+  isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet
+
+lemma isLocallyClosedAt_iff_eventuallyEqSet_closure {x : X} : IsLocallyClosedAt s x ↔
     s =ᶠ[𝓝 x] closure s :=
   (isLocallyClosedAt_tfae s x).out 1 6
 
-lemma isLocallyClosedAt_iff_closure_eventuallyLE {x : X} : IsLocallyClosedAt s x ↔
+@[deprecated (since := "2026-09-02")]
+alias isLocallyClosedAt_iff_eventuallyEq_closure :=
+  isLocallyClosedAt_iff_eventuallyEqSet_closure
+
+lemma isLocallyClosedAt_iff_closure_eventuallySubset {x : X} : IsLocallyClosedAt s x ↔
     closure s ≤ᶠ[𝓝 x] s :=
   (isLocallyClosedAt_tfae s x).out 1 7
 
+@[deprecated (since := "2026-09-02")]
+alias isLocallyClosedAt_iff_closure_eventuallyLE :=
+  isLocallyClosedAt_iff_closure_eventuallySubset
+
 lemma isLocallyClosedAt_iff_coborder_mem_nhds {x : X} : IsLocallyClosedAt s x ↔ coborder s ∈ 𝓝 x :=
   (isLocallyClosedAt_tfae s x).out 1 9
+
+lemma IsLocallyClosedAt.congr {x : X} (hs : IsLocallyClosedAt s x) (h : s =ᶠ[𝓝 x] t) :
+    IsLocallyClosedAt t x := by
+  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet] at *
+  exact hs.imp fun _ ↦ And.imp_right h.symm.trans
+
+lemma isLocallyClosedAt_congr {x : X} (h : s =ᶠ[𝓝 x] t) :
+    IsLocallyClosedAt s x ↔ IsLocallyClosedAt t x :=
+  ⟨fun hs ↦ hs.congr h, fun ht ↦ ht.congr h.symm⟩
 
 lemma interior_coborder : interior (coborder s) = {x | IsLocallyClosedAt s x} := by
   ext
@@ -261,14 +281,14 @@ lemma interior_coborder : interior (coborder s) = {x | IsLocallyClosedAt s x} :=
 
 lemma IsLocallyClosedAt.inter {x : X} (hs : IsLocallyClosedAt s x) (ht : IsLocallyClosedAt t x) :
     IsLocallyClosedAt (s ∩ t) x := by
-  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEq] at *
+  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet] at *
   obtain ⟨Z₁, hZ₁, eq₁⟩ := hs
   obtain ⟨Z₂, hZ₂, eq₂⟩ := ht
   exact ⟨Z₁ ∩ Z₂, hZ₁.inter hZ₂, eq₁.inter eq₂⟩
 
 lemma IsLocallyClosedAt.union {x : X} (hs : IsLocallyClosedAt s x) (ht : IsLocallyClosedAt t x) :
     IsLocallyClosedAt (s ∪ t) x := by
-  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEq] at *
+  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet] at *
   obtain ⟨Z₁, hZ₁, eq₁⟩ := hs
   obtain ⟨Z₂, hZ₂, eq₂⟩ := ht
   exact ⟨Z₁ ∪ Z₂, hZ₁.union hZ₂, eq₁.union eq₂⟩
