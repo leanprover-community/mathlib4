@@ -100,9 +100,9 @@ public lemma convexOn_ringInverse_algebraMap_add {t : ℝ} (ht : 0 < t) :
   rw [hici]
   apply ConvexOn.comp_affineMap
   refine ConvexOn.subset CStarAlgebra.convexOn_ringInverse ?_ (Convex.affine_image _ (convex_Ici _))
-  simp only [AffineMap.toConstProdLinearMap_symm_apply, AffineMap.coe_add,
-    LinearMap.coe_toAffineMap, LinearMap.id_coe, AffineMap.coe_const, Pi.add_apply, id_eq,
-    Function.const_apply, image_add_right, preimage_add_const_Ici, sub_neg_eq_add, zero_add, addl]
+  simp only [AffineMap.toConstProdLinearMap_symm_apply, add_apply, LinearMap.coe_toAffineMap,
+    LinearMap.id_coe, id_eq, AffineMap.const_apply, image_add_right, preimage_add_const_Ici,
+    sub_neg_eq_add, zero_add, addl]
   exact fun x hx  => IsStrictlyPositive.of_le (by grind) hx
 
 

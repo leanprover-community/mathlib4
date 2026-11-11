@@ -34,7 +34,6 @@ finite-dimensional and nontrivial, then `T` has some (nonzero) eigenvectors with
 A slightly more elaborate corollary is that if `E` is complete and `T` is a compact operator, then
 `T` has some (nonzero) eigenvector with eigenvalue either `⨆ x, ⟪T x, x⟫ / ‖x‖ ^ 2` or
 `⨅ x, ⟪T x, x⟫ / ‖x‖ ^ 2` (not necessarily both).
-
 -/
 
 public section

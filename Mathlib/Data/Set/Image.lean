@@ -30,7 +30,6 @@ public import Mathlib.Data.Set.SymmDiff
 ## Tags
 
 set, sets, image, preimage, pre-image, range
-
 -/
 
 public section
@@ -1348,7 +1347,7 @@ theorem Disjoint.preimage (f : α → β) {s t : Set β} (h : Disjoint s t) :
 
 lemma Codisjoint.preimage (f : α → β) {s t : Set β} (h : Codisjoint s t) :
     Codisjoint (f ⁻¹' s) (f ⁻¹' t) := by
-  simp only [codisjoint_iff_le_sup, Set.sup_eq_union, top_le_iff, ← Set.preimage_union] at h ⊢
+  simp only [codisjoint_iff_le_sup, top_le_iff, ← Set.preimage_union] at h ⊢
   rw [h]; rfl
 
 lemma IsCompl.preimage (f : α → β) {s t : Set β} (h : IsCompl s t) :

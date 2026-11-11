@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-!
-
 # Coherence and equivalence of categories
 
 This file proves that the coherent and regular topologies transfer nicely along equivalences of

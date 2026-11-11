@@ -16,7 +16,6 @@ instance (and similarly for other concrete categories). These instances
 are not obtained automatically because `LightProfinite.{u}` is a large category,
 but as it is essentially small, the instances can be obtained using the results
 in the file `Mathlib/CategoryTheory/Sites/Equivalence.lean`.
-
 -/
 
 public section

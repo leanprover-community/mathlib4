@@ -421,23 +421,25 @@ instance spectrum.instCompactSpaceNNReal (a : A) [CompactSpace (σ ℝ a)] :
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 @[simp]
-theorem spectrum.isCompact_nnreal (a : A) [CompactSpace (σ ℝ a)] :
+theorem spectrum.isCompact_nnReal (a : A) [CompactSpace (σ ℝ a)] :
     IsCompact (σ ℝ≥0 a) := by
   rw [isCompact_iff_compactSpace]
   infer_instance
 
-grind_pattern spectrum.isCompact_nnreal => IsCompact (σ ℝ≥0 a)
+grind_pattern spectrum.isCompact_nnReal => IsCompact (σ ℝ≥0 a)
 
 variable [HasSummableGeomSeries A]
 
-theorem spectrum.le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ σ ℝ≥0 a) :
+theorem spectrum.le_nnNorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ σ ℝ≥0 a) :
     r ≤ ‖a‖₊ := calc
   r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _
   _ ≤ ‖a‖ := norm_le_norm_of_mem hr
 
-theorem spectrum.coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ σ ℝ≥0 a) :
+@[deprecated (since := "2026-10-31")] alias spectrum.le_nnnorm_of_mem := le_nnNorm_of_mem
+
+theorem coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
     r ≤ ‖a‖ :=
-  coe_mono <| le_nnnorm_of_mem hr
+  coe_mono <| le_nnNorm_of_mem hr
 
 end NNReal
 
@@ -870,7 +872,7 @@ lemma SpectrumRestricts.nnreal_iff_spectralRadius_le {A : Type*} [Ring A] [Algeb
   simp only [spectralRadius_eq_of_unital] at ht ⊢
   have : σ ℝ a ⊆ Set.Icc (-t) t := by
     intro x hx
-    rw [Set.mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← coe_nnnorm, NNReal.coe_le_coe,
+    rw [Set.mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← coe_nnNorm, NNReal.coe_le_coe,
       ← ENNReal.coe_le_coe]
     exact le_iSup₂ x hx |>.trans ht
   rw [nnreal_iff]
@@ -884,7 +886,7 @@ lemma SpectrumRestricts.nnreal_iff_spectralRadius_le {A : Type*} [Ring A] [Algeb
   · replace h : ∀ x ∈ σ ℝ a, ‖t - x‖₊ ≤ t := by
       simpa [spectralRadius, iSup₂_le_iff, ← spectrum.singleton_sub_eq] using h
     gconvert h with x hx h_le
-    rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
+    rw [← NNReal.coe_le_coe, coe_nnNorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
 section RealNonUnital

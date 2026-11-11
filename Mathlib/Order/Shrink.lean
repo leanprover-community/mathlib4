@@ -13,7 +13,6 @@ public import Mathlib.Order.SuccPred.Basic
 
 If `α : Type v` is `u`-small, we transport various order related
 instances on `α` to `Shrink.{u} α`.
-
 -/
 
 @[expose] public section

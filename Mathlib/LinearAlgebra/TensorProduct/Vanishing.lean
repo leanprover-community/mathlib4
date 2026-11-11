@@ -54,7 +54,6 @@ is injective for every submodule $M' \subseteq M$.
 ## TODO
 
 * Prove the same theorems with $M$ and $N$ swapped.
-
 -/
 
 public section

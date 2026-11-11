@@ -20,7 +20,6 @@ sets.
 
 * `lightProfiniteToLightCondSet : LightProfinite.{u} ⥤ LightCondSet.{u}`
   is the yoneda sheaf functor.
-
 -/
 
 @[expose] public section

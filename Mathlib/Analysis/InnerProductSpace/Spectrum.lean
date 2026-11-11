@@ -63,7 +63,6 @@ Spectral theory for bounded self-adjoint operators.
 ## Tags
 
 self-adjoint operator, spectral theorem, diagonalization theorem
-
 -/
 
 @[expose] public section
@@ -425,7 +424,7 @@ variable [CompleteSpace E] {T : E →L[𝕜] E}
 
 theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
     (∀ μ, HasEigenvalue (T : End 𝕜 E) μ → μ = 0) ↔ T = 0 := by
-  rw [← enorm_eq_zero, ← T.spectralRadius_eq_eNorm hT'.isSelfAdjoint,
+  rw [← eNorm_eq_zero, ← T.spectralRadius_eq_eNorm hT'.isSelfAdjoint,
     spectralRadius_eq_of_unital, ← not_iff_not, ENNReal.iSup_eq_zero]
   push Not
   apply exists_congr

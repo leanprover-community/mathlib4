@@ -27,7 +27,6 @@ a forgetful functor.
 ## Related results
 
 The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaSpecAdjunction.lean`.
-
 -/
 
 @[expose] public section
