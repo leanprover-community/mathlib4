@@ -5,7 +5,6 @@ Authors: Ashvni Narayanan, Anne Baanen
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
@@ -416,13 +415,6 @@ theorem mem_span_integralBasis {x : K} :
 
 theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
-
-variable {K} in
-/-- A ring isomorphism between the ring of integers of `K` and a ring `B` extends to an
-isomorphism of `ℚ`-algebras between their fraction rings. -/
-noncomputable def algEquivOfRingEquiv (L : Type*) {B : Type*} [CommRing L] [Algebra ℚ L]
-    [CommRing B] [Algebra B L] [IsFractionRing B L] (f : 𝓞 K ≃+* B) : K ≃ₐ[ℚ] L :=
-  (IsFractionRing.ringEquivOfRingEquiv f).toRatAlgEquiv
 
 end NumberField
 

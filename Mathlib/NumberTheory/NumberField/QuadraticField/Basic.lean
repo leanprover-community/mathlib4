@@ -68,7 +68,7 @@ theorem isFundamentalDiscr_discr : Int.IsFundamentalDiscr (discr K) := by
 
 /-- The ring of integers of a quadratic field `K` is the quadratic algebra of discriminant
 `discr K`, see `QuadraticAlgebra.algEquivEdivEmod`. -/
-theorem nonempty_algEquiv_ringOfIntegers :
+theorem nonempty_algEquiv_quadraticAlgebra_int :
     Nonempty (𝓞 K ≃ₐ[ℤ] QuadraticAlgebra ℤ (discr K / 4) (discr K % 4)) := by
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
@@ -81,29 +81,29 @@ theorem nonempty_algEquiv_quadraticAlgebra_discr :
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
   rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv, ← QuadraticAlgebra.discr_intCast]
-  exact ⟨(algEquivOfRingEquiv _ f.toRingEquiv).trans (QuadraticAlgebra.algEquivDiscrZero (a : ℚ) b)⟩
+  exact ⟨(IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv).toRatAlgEquiv.trans
+    (QuadraticAlgebra.algEquivDiscrZero (a : ℚ) b)⟩
 
 /-- The discriminant of a quadratic field is not `1`. A more general version is the
 Hermite-Minkowski theorem, see `NumberField.abs_discr_gt_two`. -/
 theorem discr_ne_one : discr K ≠ 1 := by
-  intro h
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
-  exact QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _)
-    (discr_eq_quadraticAlgebra_discr f.toRingEquiv ▸ h ▸ IsSquare.one)
+  rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv]
+  exact fun h ↦ QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _) (h ▸ .one)
 
 /-- The square root of `discr K` lies in `K`. -/
 theorem exists_sq_eq_discr : ∃ x : K, x ^ 2 = discr K := by
-  let e := (nonempty_algEquiv_quadraticAlgebra_discr K).some
+  obtain ⟨e⟩ := nonempty_algEquiv_quadraticAlgebra_discr K
   exact ⟨e.symm ω, by simp [← map_pow, QuadraticAlgebra.omega_pow_two_eq_add]⟩
 
 /-- The discriminant of a quadratic field is not a square. -/
 theorem not_isSquare_discr : ¬ IsSquare (discr K) :=
   (Int.IsFundamentalDiscr.eq_one_of_isSquare (isFundamentalDiscr_discr K)).mt <| discr_ne_one K
 
-/-- **Stickelberger's theorem**, for quadratic fields: the discriminant is congruent to
-`0` or `1` modulo `4`. -/
-theorem discr_emod_four : discr K % 4 = 0 ∨ discr K % 4 = 1 :=
+/-- **Stickelberger's theorem**, for quadratic fields: the discriminant is congruent to `0` or
+`1` modulo `4`. -/
+theorem discr_emod_four_eq_zero_or_one : discr K % 4 = 0 ∨ discr K % 4 = 1 :=
   (isFundamentalDiscr_discr K).1
 
 variable (F : Type*) [Field F] [CharZero F] [Algebra.IsQuadraticExtension ℚ F]
@@ -112,9 +112,10 @@ variable (F : Type*) [Field F] [CharZero F] [Algebra.IsQuadraticExtension ℚ F]
 theorem nonempty_algEquiv_iff_discr_eq :
     Nonempty (K ≃ₐ[ℚ] F) ↔ discr K = discr F := by
   refine ⟨fun ⟨e⟩ ↦ discr_eq_discr_of_algEquiv K e, fun h ↦ ?_⟩
-  obtain ⟨e₁⟩ := nonempty_algEquiv_ringOfIntegers K
-  obtain ⟨e₂⟩ := nonempty_algEquiv_ringOfIntegers F
-  exact ⟨algEquivOfRingEquiv F ((h ▸ e₁).trans e₂.symm).toRingEquiv⟩
+  obtain ⟨e₁⟩ := nonempty_algEquiv_quadraticAlgebra_int K
+  obtain ⟨e₂⟩ := nonempty_algEquiv_quadraticAlgebra_int F
+  exact ⟨(IsFractionRing.ringEquivOfRingEquiv (L := F)
+    ((h ▸ e₁).trans e₂.symm).toRingEquiv).toRatAlgEquiv⟩
 
 end discr
 
