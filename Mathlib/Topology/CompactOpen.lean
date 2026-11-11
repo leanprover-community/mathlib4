@@ -39,6 +39,33 @@ compact-open, curry, function space
 
 open Set Filter TopologicalSpace Topology
 
+section CompactNhdsWithin
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+/-- If `(K, Y)` is a locally compact pair, where `K ⊆ X` carries the subspace topology, then for
+every continuous `f : X → Y`, every `x ∈ K` and every neighbourhood `V` of `f x` there is a compact
+set `L ⊆ X`, which is a neighbourhood of `x` within `K`, such that `f` maps `L` into `V`. -/
+theorem exists_mem_nhdsWithin_isCompact_mapsTo {K : Set X} [LocallyCompactPair K Y] {f : X → Y}
+    (hf : Continuous f) {x : X} (hx : x ∈ K) {V : Set Y} (hV : V ∈ 𝓝 (f x)) :
+    ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V := by
+  obtain ⟨L, hL, hLc, hLV⟩ :=
+    exists_mem_nhds_isCompact_mapsTo (x := ⟨x, hx⟩) (hf.comp continuous_subtype_val) hV
+  exact ⟨(↑) '' L, mem_nhds_subtype_iff_nhdsWithin.1 hL, hLc.image continuous_subtype_val,
+    mapsTo_image_iff.2 hLV⟩
+
+/-- If `Y` is an R₁ space, `f : X → Y` is continuous, `K ⊆ X` is compact and `x ∈ K`, then every
+neighbourhood `V` of `f x` contains the image of a compact set `L` which is a neighbourhood of `x`
+within `K`. This generalises `exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds`, which is the
+special case `K ∈ 𝓝 x`. -/
+theorem IsCompact.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space [R1Space Y] {K : Set X}
+    (hK : IsCompact K) {f : X → Y} (hf : Continuous f) {x : X} (hx : x ∈ K) {V : Set Y}
+    (hV : V ∈ 𝓝 (f x)) : ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V :=
+  have := isCompact_iff_compactSpace.1 hK
+  exists_mem_nhdsWithin_isCompact_mapsTo hf hx hV
+
+end CompactNhdsWithin
+
 namespace ContinuousMap
 
 section CompactOpen
@@ -195,6 +222,21 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
     (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo_iff_image_subset.mpr hKW))) ?_
   rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
   exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
+
+/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is continuous for the compact-open
+topologies, provided that `Y` and `Z` are R₁ spaces (e.g., regular or Hausdorff spaces).
+In particular no local compactness of `X` is required. -/
+theorem continuous_prodMk [R1Space Y] [R1Space Z] :
+    Continuous fun p : C(X, Y) × C(X, Z) ↦ p.1.prodMk p.2 := by
+  refine continuous_iff_continuousAt.2 fun ⟨f, F⟩ ↦ tendsto_nhds_compactOpen.2 fun K hK U hU H ↦ ?_
+  refine hK.induction_on (by simp [MapsTo]) (fun _ _ hst h ↦ h.mono fun _ hp ↦ hp.mono_left hst)
+    (fun _ _ hs ht ↦ (hs.and ht).mono fun _ ↦ mapsTo_union.2) fun x hx ↦ ?_
+  obtain ⟨V, W, hVo, hWo, hfV, hFW, hVWU⟩ := isOpen_prod_iff.mp hU (f x) (F x) (H hx)
+  obtain ⟨L, hL, hLc, hLVW⟩ := hK.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space
+    (f.prodMk F).continuous hx (prod_mem_nhds (hVo.mem_nhds hfV) (hWo.mem_nhds hFW))
+  exact ⟨L, hL, ((eventually_mapsTo hLc hVo fun _ hy ↦ (hLVW hy).1).prod_nhds
+    (eventually_mapsTo hLc hWo fun _ hy ↦ (hLVW hy).2)).mono
+    fun p hp y hy ↦ hVWU ⟨hp.1 hy, hp.2 hy⟩⟩
 
 variable [LocallyCompactPair Y Z]
 
