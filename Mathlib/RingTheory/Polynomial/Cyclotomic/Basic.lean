@@ -427,7 +427,7 @@ theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [Comm
       algebraMap _ _ (X ^ n - 1 : R[X]) := by
     intro n hn
     rw [← prod_cyclotomic_eq_X_pow_sub_one hn R, map_prod]
-  rw [(prod_eq_iff_prod_pow_moebius_eq_of_nonzero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
+  rw [(prod_eq_iff_prod_pow_moebius_eq_of_ne_zero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
     simp_rw [Ne, IsFractionRing.to_map_eq_zero_iff]
   · simp [cyclotomic_ne_zero]
   · intro n hn
@@ -546,7 +546,7 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
     have hrw : (∏ x ∈ n.properDivisors.erase 1, (cyclotomic x R).coeff 0) = 1 := by
       rw [Finset.prod_congr (refl (n.properDivisors.erase 1)) hcongr]
       simp only [Finset.prod_const_one]
-    simp only [hrw, mul_one, zero_sub, coeff_one_zero, coeff_X_zero, coeff_sub]
+    simp only [hrw, mul_one, zero_sub, AddMonoidAlgebra.coeff_one_zero, coeff_X_zero, coeff_sub]
   have heq : (X ^ n - 1 : R[X]).coeff 0 = -(cyclotomic n R).coeff 0 := by
     rw [← prod_cyclotomic_eq_X_pow_sub_one (zero_le_one.trans_lt hn), ←
       Nat.cons_self_properDivisors hn.ne_bot, Finset.prod_cons, mul_coeff_zero, coeff_zero_prod,
@@ -559,16 +559,18 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
 
 /-- If `(a : ℕ)` is a root of `cyclotomic n (ZMod p)`, where `p` is a prime, then `a` and `p` are
 coprime. -/
-theorem coprime_of_root_cyclotomic {n : ℕ} (hpos : 0 < n) {p : ℕ} [hprime : Fact p.Prime] {a : ℕ}
+theorem coprime_of_root_cyclotomic {n : ℕ} {p : ℕ} [hprime : Fact p.Prime] {a : ℕ}
     (hroot : IsRoot (cyclotomic n (ZMod p)) (Nat.castRingHom (ZMod p) a)) : a.Coprime p := by
+  rcases n.eq_zero_or_pos with rfl | hpos
+  · simp at hroot
   apply Nat.Coprime.symm
   rw [hprime.1.coprime_iff_not_dvd]
   intro h
   replace h := (ZMod.natCast_eq_zero_iff a p).2 h
   rw [IsRoot.def, eq_natCast, h, ← coeff_zero_eq_eval_zero] at hroot
   by_cases hone : n = 1
-  · simp only [hone, cyclotomic_one, zero_sub, coeff_one_zero, coeff_X_zero, neg_eq_zero,
-      one_ne_zero, coeff_sub] at hroot
+  · simp only [hone, cyclotomic_one, zero_sub, AddMonoidAlgebra.coeff_one_zero, coeff_X_zero,
+      neg_eq_zero, one_ne_zero, coeff_sub] at hroot
   rw [cyclotomic_coeff_zero (ZMod p) (Nat.succ_le_of_lt
     (lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hone)))] at hroot
   exact one_ne_zero hroot
@@ -579,9 +581,11 @@ section Order
 
 /-- If `(a : ℕ)` is a root of `cyclotomic n (ZMod p)`, then the multiplicative order of `a` modulo
 `p` divides `n`. -/
-theorem orderOf_root_cyclotomic_dvd {n : ℕ} (hpos : 0 < n) {p : ℕ} [Fact p.Prime] {a : ℕ}
+theorem orderOf_root_cyclotomic_dvd {n : ℕ} {p : ℕ} [Fact p.Prime] {a : ℕ}
     (hroot : IsRoot (cyclotomic n (ZMod p)) (Nat.castRingHom (ZMod p) a)) :
-    orderOf (ZMod.unitOfCoprime a (coprime_of_root_cyclotomic hpos hroot)) ∣ n := by
+    orderOf (ZMod.unitOfCoprime a (coprime_of_root_cyclotomic hroot)) ∣ n := by
+  rcases n.eq_zero_or_pos with rfl | hpos
+  · simp
   apply orderOf_dvd_of_pow_eq_one
   suffices hpow : eval (Nat.castRingHom (ZMod p) a) (X ^ n - 1 : (ZMod p)[X]) = 0 by
     simp only [eval_X, eval_one, eval_pow, eval_sub, eq_natCast] at hpow

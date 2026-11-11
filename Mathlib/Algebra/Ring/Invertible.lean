@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Theorems about additively and multiplicatively invertible elements in rings
-
 -/
 
 @[expose] public section

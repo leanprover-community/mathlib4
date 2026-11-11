@@ -26,7 +26,6 @@ In other words, for each `X : C`, we define a spectral
 object `t.spectralObject X : SpectralObject C EInt` in the
 triangulated category `C`, and this extends to a functor
 `t.spectralObjectFunctor : C ⥤ SpectralObject C EInt`.
-
 -/
 
 @[expose] public section
@@ -44,7 +43,6 @@ namespace TStructure
 
 variable (t : TStructure C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a t-structure `t` on a triangulated category `C`, this is the functor
 `ComposableArrows EInt 1 ⥤ C ⥤ C` which sends an arrows `a ⟶ b` in `EInt`
 to the functor `t.eTruncLT.obj b ⋙ t.eTruncGE.obj a`. -/

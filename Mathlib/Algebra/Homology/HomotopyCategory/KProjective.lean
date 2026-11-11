@@ -19,7 +19,6 @@ and show that bounded above complexes of projective objects are K-projective.
 
 ## References
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
-
 -/
 
 @[expose] public section
@@ -45,7 +44,8 @@ class IsKProjective (K : CochainComplex C ℤ) : Prop where
 
 /-- A choice of homotopy to zero for a morphism from a
 K-projective cochain complex to an acyclic cochain complex. -/
-noncomputable irreducible_def IsKProjective.homotopyZero
+@[no_expose]
+noncomputable def IsKProjective.homotopyZero
     {K L : CochainComplex C ℤ} (f : K ⟶ L)
     (hL : L.Acyclic) [K.IsKProjective] :
     Homotopy f 0 :=

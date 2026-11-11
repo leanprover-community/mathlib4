@@ -26,7 +26,6 @@ a cokernel cofork.
 
 ## References
 * [Posur, S., *A constructive approach to Freyd categories*][posur2021Freyd]
-
 -/
 
 @[expose] public section
@@ -110,7 +109,6 @@ variable [HasZeroObject V]
 variable (V)
 
 open ZeroObject in
-set_option backward.defeqAttrib.useBackward true in
 /-- If `V` has a zero object, this is the functor from `V` to `Arrow V`
 that sends an object `X` to the arrow `0 ⟶ X`. -/
 @[simps]
@@ -118,7 +116,6 @@ def rightFunctor : V ⥤ Arrow V where
   obj X := Arrow.mk (0 : 0 ⟶ X)
   map f := Arrow.homMk 0 f
 
-set_option backward.defeqAttrib.useBackward true in
 instance : (rightFunctor V).Additive where
   map_add {_ _ _ _} := by cat_disch
 

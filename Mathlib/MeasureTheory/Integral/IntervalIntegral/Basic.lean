@@ -233,16 +233,21 @@ theorem neg {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrab
   ⟨h.1.neg, h.2.neg⟩
 
 omit [PseudoMetrizableSpace ε] in
-theorem enorm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖ₑ) μ a b :=
-  ⟨h.1.enorm, h.2.enorm⟩
+theorem eNorm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖ₑ) μ a b :=
+  ⟨h.1.eNorm, h.2.eNorm⟩
+
+@[deprecated (since := "2026-11-06")] protected alias enorm := IntervalIntegrable.eNorm
 
 theorem norm {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖) μ a b :=
   ⟨h.1.norm, h.2.norm⟩
 
-theorem intervalIntegrable_enorm_iff {μ : Measure ℝ} {a b : ℝ}
+theorem intervalIntegrable_eNorm_iff {μ : Measure ℝ} {a b : ℝ}
     (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :
     IntervalIntegrable (fun t => ‖f t‖ₑ) μ a b ↔ IntervalIntegrable f μ a b := by
-  simp_rw [intervalIntegrable_iff, IntegrableOn, integrable_enorm_iff hf]
+  simp_rw [intervalIntegrable_iff, IntegrableOn, integrable_eNorm_iff hf]
+
+@[deprecated (since := "2026-11-06")]
+alias intervalIntegrable_enorm_iff := intervalIntegrable_eNorm_iff
 
 theorem intervalIntegrable_norm_iff {f : ℝ → E} {μ : Measure ℝ} {a b : ℝ}
     (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :
@@ -272,10 +277,12 @@ theorem mono_set' (hf : IntervalIntegrable f μ a b) (hsub : Ι c d ⊆ Ι a b) 
     IntervalIntegrable f μ c d :=
   hf.mono_set_ae <| Eventually.of_forall hsub
 
-theorem mono_fun_enorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
+theorem mono_fun_eNorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
     (hf : IntervalIntegrable f μ a b) (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (‖g ·‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] (‖f ·‖ₑ)) : IntervalIntegrable g μ a b :=
-  intervalIntegrable_iff.2 <| hf.def'.integrable.mono_enorm hgm hle
+  intervalIntegrable_iff.2 <| hf.def'.integrable.mono_eNorm hgm hle
+
+@[deprecated (since := "2026-11-06")] alias mono_fun_enorm := mono_fun_eNorm
 
 theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
@@ -283,10 +290,12 @@ theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : In
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
 
 -- XXX: the best spelling of this lemma may look slightly different (e.gl, with different domain)
-theorem mono_fun_enorm' {f : ℝ → ε} {g : ℝ → ℝ≥0∞} (hg : IntervalIntegrable g μ a b)
+theorem mono_fun_eNorm' {f : ℝ → ε} {g : ℝ → ℝ≥0∞} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
     (hle : (fun x => ‖f x‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
-  intervalIntegrable_iff.2 <| hg.def'.integrable.mono_enorm hfm hle
+  intervalIntegrable_iff.2 <| hg.def'.integrable.mono_eNorm hfm hle
+
+@[deprecated (since := "2026-11-06")] alias mono_fun_enorm' := mono_fun_eNorm'
 
 theorem mono_fun' {f : ℝ → E} {g : ℝ → ℝ} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
@@ -583,8 +592,7 @@ interval of the form `0..x`, for positive `x`.
 
 See `intervalIntegrable_of_odd` for a stronger result. -/
 lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
-    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {t : ℝ}
-    (ht : ‖f (min 0 t)‖ₑ ≠ ∞ := by finiteness) :
+    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {t : ℝ} :
     IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
   · rw [IntervalIntegrable.iff_comp_neg]
@@ -598,11 +606,10 @@ lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
 iff it is interval integrable (with respect to the volume measure) on every interval of the form
 `0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_odd
-    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ}
-    (ha : ‖f (min 0 a)‖ₑ ≠ ∞ := by finiteness) (hb : ‖f (min 0 b)‖ₑ ≠ ∞ := by finiteness) :
+    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ} :
     IntervalIntegrable f volume a b :=
   -- Split integral and apply lemma
-  (intervalIntegrable_of_odd₀ h₁f h₂f ha).symm.trans (intervalIntegrable_of_odd₀ h₁f h₂f hb)
+  (intervalIntegrable_of_odd₀ h₁f h₂f).symm.trans (intervalIntegrable_of_odd₀ h₁f h₂f)
 
 end
 
@@ -1064,7 +1071,6 @@ end Comp
 In this section we prove that `∫ x in a..b, f x ∂μ + ∫ x in b..c, f x ∂μ = ∫ x in a..c, f x ∂μ`
 as well as a few other identities trivially equivalent to this one. We also prove that
 `∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ` provided that `support f ⊆ Ioc a b`.
-
 -/
 
 section OrderClosedTopology
@@ -1273,8 +1279,7 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
   have : {x | x ≤ a₂} ∩ Ioc a₁ a₃ = Ioc a₁ a₂ := Iic_inter_Ioc_of_le h.2
   rw [integral_of_le h.1, integral_of_le (h.1.trans h.2), integral_indicator,
     Measure.restrict_restrict, this]
-  · exact measurableSet_Iic
-  all_goals apply measurableSet_Iic
+  all_goals exact measurableSet_Iic
 
 end OrderClosedTopology
 

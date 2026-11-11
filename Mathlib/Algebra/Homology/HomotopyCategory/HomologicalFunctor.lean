@@ -19,7 +19,6 @@ then `homologyFunctor C (ComplexShape.up ℤ) n` is a homological functor
 in the homotopy category can be characterized in terms of degreewise split
 short exact sequences of cochain complexes, this follows from the homology
 sequence associated to a short exact sequence of homological complexes.
-
 -/
 
 public section

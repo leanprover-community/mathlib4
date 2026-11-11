@@ -56,7 +56,7 @@ theorem _root_.Directed.measure_iUnion [Countable ι] (hd : Directed (· ⊆ ·)
   calc
     μ (⋃ n, t n) = μ (⋃ n, Td n) := by rw [iUnion_disjointed, measure_iUnion_toMeasurable]
     _ ≤ ∑' n, μ (Td n) := measure_iUnion_le _
-    _ = ⨆ I : Finset ℕ, ∑ n ∈ I, μ (Td n) := ENNReal.tsum_eq_iSup_sum
+    _ = ⨆ I : Finset ℕ, ∑ n ∈ I, μ (Td n) := tsum_eq_iSup_sum
     _ ≤ ⨆ n, μ (t n) := iSup_le fun I => by
       rcases hd.finset_le I with ⟨N, hN⟩
       calc
@@ -154,7 +154,6 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
   let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
   have hst (i : ι) : s i =ᵐ[μ] t i := by
     filter_upwards [hs] with ω hω
-    suffices ω ∈ s i ↔ ω ∈ t i from propext this
     simpa [t] using fun _ ↦ hω
   have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
   rw [iInf_congr <| fun i ↦ measure_congr <| hst i,
@@ -192,7 +191,7 @@ theorem measure_iInter_eq_iInf_measure_iInter_le [Countable ι] [Preorder ι] [I
   · rw [iInter_comm]
     exact congrArg μ <| iInter_congr fun i ↦ (biInf_const nonempty_Ici).symm
   · exact fun i j h ↦ biInter_mono (Iic_subset_Iic.2 h) fun _ _ ↦ Set.Subset.rfl
-  · exact fun i ↦ .biInter (s := {j | j ≤ i}) (to_countable _) fun _ _ ↦ h _
+  · exact fun i ↦ .biInter (to_countable _) fun _ _ ↦ h _
   · refine hfin.imp fun k hk ↦ ne_top_of_le_ne_top hk <| measure_mono <| iInter₂_subset k ?_
     rfl
 
