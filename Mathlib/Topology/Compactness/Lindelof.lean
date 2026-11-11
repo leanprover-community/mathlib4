@@ -185,8 +185,8 @@ theorem IsLindelof.indexed_countable_subcover {ι : Type v} [Nonempty ι]
     ∃ f : ℕ → ι, s ⊆ ⋃ n, U (f n) := by
   obtain ⟨c, ⟨c_count, c_cov⟩⟩ := hs.elim_countable_subcover U hUo hsU
   rcases c.eq_empty_or_nonempty with rfl | c_nonempty
-  · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty] at c_cov
-    simp only [subset_eq_empty c_cov rfl, empty_subset, exists_const]
+  · simp only [mem_empty_iff_false, iUnion_of_empty, iUnion_empty, subset_empty_iff] at c_cov
+    simp only [c_cov, empty_subset, exists_const]
   obtain ⟨f, f_surj⟩ := (Set.countable_iff_exists_surjective c_nonempty).mp c_count
   refine ⟨fun x ↦ f x, c_cov.trans <| iUnion₂_subset_iff.mpr (?_ : ∀ i ∈ c, U i ⊆ ⋃ n, U (f n))⟩
   intro x hx
@@ -238,11 +238,10 @@ theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelo
 /-- To show that a Lindelöf set intersects the intersection of a family of closed sets,
   it is sufficient to show that it intersects every countable subfamily. -/
 theorem IsLindelof.inter_iInter_nonempty {ι : Type v} (hs : IsLindelof s) (t : ι → Set X)
-    (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Set ι, u.Countable ∧ (s ∩ ⋂ i ∈ u, t i).Nonempty) :
+    (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Set ι, u.Countable → (s ∩ ⋂ i ∈ u, t i).Nonempty) :
     (s ∩ ⋂ i, t i).Nonempty := by
   contrapose! hst
-  rcases hs.elim_countable_subfamily_closed t htc hst with ⟨u, ⟨_, husub⟩⟩
-  exact ⟨u, fun _ ↦ husub⟩
+  exact hs.elim_countable_subfamily_closed t htc hst
 
 /-- For every open cover of a Lindelöf set, there exists a countable subcover. -/
 theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X} (hs : IsLindelof s)

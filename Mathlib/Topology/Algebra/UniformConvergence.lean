@@ -36,7 +36,6 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 ## Tags
 
 uniform convergence, strong dual
-
 -/
 
 public section

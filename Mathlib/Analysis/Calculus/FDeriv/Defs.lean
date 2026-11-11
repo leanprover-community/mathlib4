@@ -77,7 +77,6 @@ Generalize more results to topological vector spaces.
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
-
 -/
 
 @[expose] public section

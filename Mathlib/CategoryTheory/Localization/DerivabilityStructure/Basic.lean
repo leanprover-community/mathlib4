@@ -51,7 +51,6 @@ not depend on the choice of the localization functors.
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 public section

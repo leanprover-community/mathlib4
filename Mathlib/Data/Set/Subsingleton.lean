@@ -15,7 +15,6 @@ Defines the predicate `Subsingleton s : Prop`, saying that `s` has at most one e
 
 Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least two distinct
 elements.
-
 -/
 
 @[expose] public section
