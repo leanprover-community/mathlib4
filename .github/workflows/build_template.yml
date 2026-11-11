@@ -92,15 +92,10 @@ jobs:
           persist-credentials: false # no later step needs git credentials
 
       # Validate lake-manifest.json before "Set up build environment" downloads the dependencies.
-      # The action reads the manifests through the GitHub API and checks each dependency:
-      # - On every run: `inputRev` is `main`, `master` or a version tag, `url` is a GitHub
-      #   repository in `leanprover-community` or `leanprover`, and the pin (`rev`) is a full
-      #   commit hash.
-      # - On bors runs (`staging` and `trying`), and as warnings on other runs: a changed pin is on
-      #   its branch or is the commit of its tag, and is not older than the pin on master.
+      # The action's README.md lists the rules. On bors runs (`staging` and `trying`) every rule
+      # fails the step; on other runs most rules only warn, so a PR can test an unmerged dependency.
       # For an intentional revert, a repository admin sets the variable
-      # `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`, and the older-pin rule only warns. The admin
-      # should delete the variable after the revert merges. The action's README.md has the details.
+      # `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true` and deletes it after the revert merges.
       - name: Validate lake-manifest.json
         # The step runs only in leanprover-community/mathlib4. `bump/*` branches and PRs into them
         # track the dependencies' `nightly-testing` branches, so the step skips them. A PR's base
@@ -110,7 +105,7 @@ jobs:
           github.repository == 'leanprover-community/mathlib4'
           && !startsWith(github.ref_name, 'bump/')
           && !startsWith(github.base_ref, 'bump/')
-        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@b4731f641e0f23915f03451bccaa815e7bde21d0
+        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@f21fb01e73c89082c16d336e4a99eba5fb6c8098
         with:
           ref: ${{ inputs.pr_branch_ref }}
           strict: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
