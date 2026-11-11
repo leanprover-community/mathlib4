@@ -422,6 +422,10 @@ alias ⟨_, _root_.Set.Finite.mk_lt_aleph0⟩ := mk_set_lt_aleph0_iff
 
 @[deprecated (since := "2026-11-10")] alias _root_.Set.Finite.lt_aleph0 := Set.Finite.mk_lt_aleph0
 
+theorem mk_finset_lt_aleph0 (s : Finset α) : #(↑s : Set α) < ℵ₀ := by simp
+
+@[deprecated (since := "2026-11-10")] alias finset_card_lt_aleph0 := mk_finset_lt_aleph0
+
 @[simp]
 theorem mk_subtype_lt_aleph0_iff {p : α → Prop} : #{ x // p x } < ℵ₀ ↔ { x | p x }.Finite :=
   mk_set_lt_aleph0_iff
@@ -768,10 +772,6 @@ theorem mk_biUnion_le_lift {α : Type u} {ι : Type v} (A : ι → Set α) (s : 
     lift.{v} #(⋃ x ∈ s, A x) ≤ lift.{u} #s * ⨆ x : s, lift.{v} #(A x.1) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le_lift
-
-theorem mk_finset_lt_aleph0 (s : Finset α) : #(↑s : Set α) < ℵ₀ := by simp
-
-@[deprecated (since := "2026-11-10")] alias finset_card_lt_aleph0 := mk_finset_lt_aleph0
 
 theorem mk_set_eq_nat_iff_finset {α} {s : Set α} {n : ℕ} :
     #s = n ↔ ∃ t : Finset α, (t : Set α) = s ∧ t.card = n := by
