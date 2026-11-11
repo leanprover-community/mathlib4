@@ -90,14 +90,17 @@ protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc
 protected theorem wellFounded [RelHomClass F r s] (f : F) : WellFounded s → WellFounded r
   | ⟨H⟩ => ⟨fun _ => RelHomClass.acc f _ (H _)⟩
 
-protected theorem isWellFounded [RelHomClass F r s] (f : F) [IsWellFounded β s] :
-    IsWellFounded α r :=
-  ⟨RelHomClass.wellFounded f IsWellFounded.wf⟩
+-- TODO? deprecate `wellFounded`, and rename `wellFounded'` to `wellFounded`.
+protected theorem wellFounded' [RelHomClass F r s] (f : F) [i : WellFounded s] : WellFounded r :=
+  RelHomClass.wellFounded f i
+
+@[deprecated (since := "2026-09-07")] alias isWellFounded := RelHomClass.wellFounded'
 
 end RelHomClass
 
 namespace RelHom
 
+@[macro_inline]
 instance : FunLike (r →r s) α β where
   coe o := o.toFun
   coe_injective f g h := by
@@ -139,6 +142,11 @@ protected def id (r : α → α → Prop) : r →r r :=
 @[simps]
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
+
+/-- The identity relation homomorphism from a subrelation to its containing relation. -/
+@[simps]
+protected def ofLE {r' : α → α → Prop} (le : r ≤ r') : r →r r' :=
+  ⟨id, @le⟩
 
 theorem comp_assoc (h : r →r s) (g : s →r t) (f : t →r u) :
   (f.comp g).comp h = f.comp (g.comp h) := rfl
@@ -220,6 +228,7 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
+@[macro_inline]
 instance : FunLike (r ↪r s) α β where
   coe x := x.toFun
   coe_injective f g h := by
@@ -372,11 +381,13 @@ protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
 protected theorem wellFounded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFounded r
   | f, ⟨H⟩ => ⟨fun _ => f.acc _ (H _)⟩
 
-protected theorem isWellFounded (f : r ↪r s) [IsWellFounded β s] : IsWellFounded α r :=
-  ⟨f.wellFounded IsWellFounded.wf⟩
+protected theorem wellFounded' (f : r ↪r s) [i : WellFounded s] : WellFounded r :=
+  f.wellFounded i
+
+@[deprecated (since := "2026-09-07")] alias isWellFounded := RelEmbedding.wellFounded'
 
 protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrder α r
-  | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
+  | f, _ => { f.isStrictTotalOrder with wf := f.wellFounded' }
 
 end RelEmbedding
 
@@ -388,11 +399,11 @@ def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
 
 instance Subtype.wellFoundedLT [LT α] [WellFoundedLT α] (p : α → Prop) :
     WellFoundedLT (Subtype p) :=
-  (Subtype.relEmbedding (· < ·) p).isWellFounded
+  (Subtype.relEmbedding (· < ·) p).wellFounded'
 
 instance Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
     WellFoundedGT (Subtype p) :=
-  (Subtype.relEmbedding (· > ·) p).isWellFounded
+  (Subtype.relEmbedding (· > ·) p).wellFounded'
 
 /-- `Quotient.mk` as a relation homomorphism between the relation and the lift of a relation. -/
 @[simps]
@@ -571,6 +582,7 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
+@[macro_inline]
 instance : FunLike (r ≃r s) α β where
   coe x := x
   coe_injective := Equiv.coe_fn_injective.comp toEquiv_injective
@@ -578,6 +590,7 @@ instance : FunLike (r ≃r s) α β where
 instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
+@[macro_inline]
 instance : EquivLike (r ≃r s) α β where
   coe f := f
   inv f := f.toEquiv.symm
@@ -627,12 +640,12 @@ def Simps.symm_apply (h : r ≃r s) : β → α :=
 initialize_simps_projections RelIso (toFun → apply, invFun → symm_apply)
 
 /-- Identity map is a relation isomorphism. -/
-@[refl, simps! apply]
+@[refl, simps! toEquiv apply]
 protected def refl (r : α → α → Prop) : r ≃r r :=
   ⟨Equiv.refl _, Iff.rfl⟩
 
 /-- Composition of two relation isomorphisms is a relation isomorphism. -/
-@[simps! apply]
+@[simps! toEquiv apply]
 protected def trans (f₁ : r ≃r s) (f₂ : s ≃r t) : r ≃r t :=
   ⟨f₁.toEquiv.trans f₂.toEquiv, f₂.map_rel_iff.trans f₁.map_rel_iff⟩
 
@@ -659,7 +672,7 @@ lemma apply_eq_iff_eq (f : r ≃r s) {x y : α} : f x = f y ↔ x = y := EquivLi
 lemma symm_apply_eq (e : r ≃r s) {x y} : e.symm x = y ↔ x = e y := e.toEquiv.symm_apply_eq
 lemma eq_symm_apply (e : r ≃r s) {x y} : y = e.symm x ↔ e y = x := e.toEquiv.eq_symm_apply
 
-@[deprecated eq_symm_apply (since := "2026-07-26")]
+@[deprecated eq_symm_apply +typeChanged (since := "2026-07-26")]
 lemma apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : r ≃r s) : f x = y ↔ x = f.symm y :=
   f.eq_symm_apply.symm
 
@@ -823,6 +836,16 @@ def relEmbeddingCongr {α₁ β₁ α₂ β₂}
 
 attribute [simps! -isSimp apply_apply symm_apply_apply] relEmbeddingCongr
 
+@[simp] lemma relEmbeddingCongr_refl : relEmbeddingCongr (.refl r) (.refl s) = .refl (r ↪r s) := rfl
+
+@[simp]
+lemma relEmbeddingCongr_trans_relEmbeddingCongr {α₁ β₁ α₂ β₂ α₃ β₃ : Type*}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    {r₃ : α₃ → α₃ → Prop} {s₃ : β₃ → β₃ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) (e₁' : r₂ ≃r r₃) (e₂' : s₂ ≃r s₃) :
+    (relEmbeddingCongr e₁ e₂).trans (relEmbeddingCongr e₁' e₂') =
+      relEmbeddingCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
+
 /-- Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
 
 This is `Equiv.equivCongr` for `RelIso`. -/
@@ -837,6 +860,15 @@ def relIsoCongr {α₁ β₁ α₂ β₂}
   right_inv f₂ := by ext; simp
 
 attribute [simps! -isSimp apply_apply symm_apply_apply] relIsoCongr
+
+@[simp] lemma relIsoCongr_refl : relIsoCongr (.refl r) (.refl s) = .refl (r ≃r s) := rfl
+
+@[simp] lemma relIsoCongr_trans_relIsoCongr {α₁ β₁ α₂ β₂ α₃ β₃ : Type*}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    {r₃ : α₃ → α₃ → Prop} {s₃ : β₃ → β₃ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) (e₁' : r₂ ≃r r₃) (e₂' : s₂ ≃r s₃) :
+    (relIsoCongr e₁ e₂).trans (relIsoCongr e₁' e₂') =
+      relIsoCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.

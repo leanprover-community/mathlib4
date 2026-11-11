@@ -50,12 +50,12 @@ noncomputable instance : Inhabited H.QuotientDiff :=
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =
       ⟨g.unop⁻¹ * (diff (MonoidHom.id H) α β : H) * g.unop,
-        hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩ := by
+        hH.mem_comm (congr($(mul_inv_cancel_left ..) ∈ H).mpr (SetLike.coe_mem _))⟩ := by
   let := H.fintypeQuotientOfFiniteIndex
   let ϕ : H →* H :=
     { toFun := fun h =>
         ⟨g.unop⁻¹ * h * g.unop,
-          hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩
+          hH.mem_comm (congr($(mul_inv_cancel_left ..) ∈ H).mpr (SetLike.coe_mem _))⟩
       map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_cancel]
       map_mul' := fun h₁ h₂ => by
         simp only [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left] }
@@ -75,10 +75,10 @@ noncomputable instance : MulAction G H.QuotientDiff where
             coe_one, ← Subtype.ext_iff])
   mul_smul g₁ g₂ q :=
     Quotient.inductionOn' q fun T =>
-      congr_arg Quotient.mk'' (by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T)
+      congr(Quotient.mk'' $(by rw [mul_inv_rev]; exact mul_smul (op g₁⁻¹) (op g₂⁻¹) T))
   one_smul q :=
     Quotient.inductionOn' q fun T =>
-      congr_arg Quotient.mk'' (by rw [inv_one]; apply one_smul Gᵐᵒᵖ T)
+      congr(Quotient.mk'' $(by rw [inv_one]; apply one_smul Gᵐᵒᵖ T))
 
 theorem smul_diff' (h : H) :
     diff (MonoidHom.id H) α (op (h : G) • β) = diff (MonoidHom.id H) α β * h ^ H.index := by
@@ -241,7 +241,7 @@ include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   have : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
-  refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
+  refine Sylow.nonempty.elim fun P => P.isPGroup.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
   have : (P.1.map N.subtype).Normal :=
     normalizer_eq_top_iff.mp (step1 h1 h2 h3 _ P.normalizer_sup_eq_top)

@@ -27,7 +27,6 @@ between fibrant objects.)
 
 ## References
 * [Brown, Kenneth S., *Abstract homotopy theory and generalized sheaf cohomology*, §I.1][brown-1973]
-
 -/
 
 @[expose] public section
@@ -65,7 +64,6 @@ instance [WeakEquivalence f] : WeakEquivalence h.i :=
 instance : WeakEquivalence h.s :=
   weakEquivalence_of_postcomp_of_fac h.s_p
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The term in `CofibrantBrownFactorization f` that is deduced from
 a factorization of `coprod.desc f (𝟙 Y) : X ⨿ Y ⟶ Y`
 as a cofibration followed by a trivial fibration. -/

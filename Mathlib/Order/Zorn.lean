@@ -75,7 +75,7 @@ local infixl:50 " ≺ " => r
 If every chain has an upper bound, then there exists a maximal element. -/
 theorem exists_maximal_of_chains_bounded (h : ∀ c, IsChain r c → ∃ ub, ∀ a ∈ c, a ≺ ub)
     (trans : ∀ {a b c}, a ≺ b → b ≺ c → a ≺ c) : ∃ m, ∀ a, m ≺ a → a ≺ m :=
-  have : ∃ ub, ∀ a ∈ maxChain r, a ≺ ub := h _ <| maxChain_spec.left
+  have : ∃ ub, ∀ a ∈ maxChain r, a ≺ ub := h _ maxChain_spec.left
   let ⟨ub, (hub : ∀ a ∈ maxChain r, a ≺ ub)⟩ := this
   ⟨ub, fun a ha =>
     have : IsChain r (insert a <| maxChain r) :=

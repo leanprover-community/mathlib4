@@ -19,7 +19,6 @@ We also include some elementary results on the values of `Fintype.card` on speci
 * `Fintype.card α`: Cardinality of a fintype. Equal to `Finset.univ.card`.
 * `Finite.surjective_of_injective`: an injective function from a finite type to
   itself is also surjective.
-
 -/
 
 @[expose] public section
@@ -448,7 +447,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
 -- See note [lower instance priority]
 @[to_dual]
 instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
-  ⟨wellFounded_of_trans_of_irrefl _⟩
+  wellFounded_of_trans_of_irrefl _
 
 end Finite
 

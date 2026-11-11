@@ -5,10 +5,10 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+
+import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Taylor's formula with an integral remainder in higher dimensions
@@ -18,7 +18,6 @@ In this file we prove Taylor's formula with the remainder term in integral form.
 * `map_add_eq_sum_add_integral_iteratedFDeriv`: version for higher dimensions with `iteratedFDeriv`
 
 TODO: add a version that assumes `ContDiffOn f (closedBall x (‖y‖))`
-
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Skeletal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite types.
 
@@ -84,11 +87,11 @@ lemma hom_apply {X Y : FintypeCat} (f : X ⟶ Y) (x : X) :
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  ConcreteCategory.congr_hom f.hom_inv_id x
+  congr($f.hom_inv_id x)
 
 -- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  ConcreteCategory.congr_hom f.inv_hom_id y
+  congr($f.inv_hom_id y)
 
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g :=
@@ -115,7 +118,7 @@ lemma homMk_eq_id_iff {X : FintypeCat} (f : X → X) :
   constructor
   · intro h
     ext x
-    exact ConcreteCategory.congr_hom h x
+    congrm $h x
   · rintro rfl
     rfl
 
@@ -125,7 +128,7 @@ lemma homMk_eq_comp_iff {X Y Z : FintypeCat} (f : X → Y) (g : Y → Z) (h : X 
   constructor
   · intro h
     ext x
-    exact ConcreteCategory.congr_hom h x
+    congrm $h x
   · rintro rfl
     rfl
 
@@ -152,7 +155,7 @@ instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
 
 instance (X : FintypeCat) : Finite (Aut X) :=
-  inferInstanceAs <| Finite (X ≅ X)
+  Finite.of_equiv _ (Aut.isoEquiv (X := X)).symm
 
 universe u
 
@@ -181,7 +184,7 @@ def len : Skeleton → ℕ :=
 
 @[ext]
 theorem ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
-  ULift.ext _ _
+  ULift.ext
 
 instance : SmallCategory Skeleton.{u} where
   Hom X Y := ULift.{u} (Fin X.len) → ULift.{u} (Fin Y.len)
@@ -191,7 +194,7 @@ instance : SmallCategory Skeleton.{u} where
 theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
   ext _ _ <|
     Fin.equiv_iff_eq.mp <|
-      Nonempty.intro <|
+      Nonempty.intro
         { toFun := fun x => (h.hom ⟨x⟩).down
           invFun := fun x => (h.inv ⟨x⟩).down
           left_inv := by
@@ -240,7 +243,7 @@ attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) :
     Fintype.card (incl.obj (mk n)) = n := by
-  convert! Finset.card_fin n
+  convert Finset.card_fin n
   dsimp [incl, mk, len]
   convert! (Fintype.ofEquiv_card Equiv.ulift).symm
 
@@ -290,7 +293,6 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
       Y.uSwitchEquiv)).inv := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] uSwitch_map_uSwitch_map in
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where

@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Module.Defs
 public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
 public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Topology.MetricSpace.Bilipschitz
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+import Mathlib.Topology.MetricSpace.Bilipschitz
 
 /-! # Constructions of Hilbert C⋆-modules
 
@@ -57,7 +58,6 @@ the above cases, it is necessary to temporarily instantiate `C⋆ᵐᵒᵈ(A, E)
 `CStarModule.normedAddCommGroup`, show the resulting type is bilipschitz equivalent to `E` via
 `WithCStarModule.equiv` (in the first and last case, this map is actually trivially an isometry),
 and then replace the uniformity and bornology with the correct ones.
-
 -/
 
 @[expose] public section
@@ -79,13 +79,13 @@ instance : CStarModule A A where
   inner x y := y * star x
   inner_add_right := add_mul ..
   inner_self_nonneg := mul_star_self_nonneg _
-  inner_self := CStarRing.mul_star_self_eq_zero_iff _
+  inner_self := mul_star_self_eq_zero
   inner_op_smul_right := mul_assoc ..
   inner_smul_right_complex := smul_mul_assoc ..
   star_inner x y := by simp
   norm_eq_sqrt_norm_inner_self {x} := by
     rw [← sq_eq_sq₀ (norm_nonneg _) (by positivity)]
-    simpa [sq] using Eq.symm <| CStarRing.norm_self_mul_star
+    simpa [sq] using Eq.symm CStarRing.norm_self_mul_star
 
 open scoped InnerProductSpace in
 lemma inner_def (x y : A) : ⟪x, y⟫_A = y * star x := rfl
@@ -181,7 +181,7 @@ private lemma antilipschitzWith_two_equiv_prod_aux : AntilipschitzWith 2 (equiv 
     · exact norm_snd_le x
 
 private lemma lipschitzWith_one_equiv_prod_aux : LipschitzWith 1 (equiv A (E × F)) :=
-  AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (E × F)) 1 <| by
+  AddMonoidHomClass.lipschitz_of_bound_nnNorm (linearEquiv ℂ A (E × F)) 1 <| by
     simpa using! norm_equiv_le_norm_prod
 
 private lemma uniformity_prod_eq_aux :
@@ -311,7 +311,7 @@ private lemma antilipschitzWith_card_equiv_pi_aux :
       _ ≤ Fintype.card ι * ‖⇑x‖ := by simp
 
 private lemma lipschitzWith_one_equiv_pi_aux : LipschitzWith 1 (equiv A (Π i, E i)) :=
-  AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (Π i, E i)) 1 <| by
+  AddMonoidHomClass.lipschitz_of_bound_nnNorm (linearEquiv ℂ A (Π i, E i)) 1 <| by
     simpa using! norm_equiv_le_norm_pi
 
 private lemma uniformity_pi_eq_aux :

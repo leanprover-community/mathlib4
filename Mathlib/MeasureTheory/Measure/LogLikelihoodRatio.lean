@@ -20,7 +20,6 @@ This file contains a definition of the log-likelihood ratio (llr) and its proper
 
 * `llr μ ν`: Log-Likelihood Ratio between `μ` and `ν`, defined as the function
   `x ↦ log (μ.rnDeriv ν x).toReal`.
-
 -/
 
 @[expose] public section

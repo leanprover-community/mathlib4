@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The quotient category is linear
@@ -18,7 +18,6 @@ is an additive functor. In this file, assuming moreover that `C` is an `R`-linea
 and that the relation `r` is compatible with the scalar multiplication by any `a : R`, we
 show that `Quotient r` is an `R`-linear category and that `functor r : C ⥤ Quotient r`
 is an `R`-linear functor.
-
 -/
 
 @[expose] public section

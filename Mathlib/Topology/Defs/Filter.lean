@@ -5,11 +5,11 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Topology.Defs.Basic
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.Order.Filter.Defs
-public import Mathlib.Tactic.IrreducibleDef
-public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Order.Setoid.Basic
+public import Mathlib.Topology.Defs.Basic
+
+import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Definitions about filters in topological spaces
@@ -127,8 +127,11 @@ open scoped Topology
 /-- A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all
 neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the
 infimum over the principal filters of all open sets containing `x`. -/
-irreducible_def nhds (x : X) : Filter X :=
+@[no_expose, wikidata Q3275652]
+def nhds (x : X) : Filter X :=
   ⨅ s ∈ { s : Set X | x ∈ s ∧ IsOpen s }, 𝓟 s
+
+alias nhds_def := nhds.eq_def
 
 @[inherit_doc]
 scoped[Topology] notation "𝓝" => nhds
@@ -202,8 +205,8 @@ hold:
 * for any open set `s` we have `y ∈ s → x ∈ s`;
 * `y` is a cluster point of the filter `pure x = 𝓟 {x}`.
 
-This relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this preorder is a partial
-order. If `X` is a T₁ space, then this partial order is trivial : `x ⤳ y ↔ x = y`. -/
+This relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this `Preorder` is a
+`PartialOrder`. If `X` is a T₁ space, then this `PartialOrder` is trivial: `x ⤳ y ↔ x = y`. -/
 def Specializes (x y : X) : Prop := 𝓝 x ≤ 𝓝 y
 
 @[inherit_doc]
@@ -223,6 +226,9 @@ def Inseparable (x y : X) : Prop :=
 
 variable (X)
 
+instance : IsPreorder X Specializes :=
+  inferInstanceAs <| IsPreorder X (LE.le.onFun 𝓝)
+
 /-- Specialization forms a preorder on the topological space. -/
 @[instance_reducible]
 def specializationPreorder : Preorder X :=
@@ -230,12 +236,16 @@ def specializationPreorder : Preorder X :=
     le := fun x y => y ⤳ x
     lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
 
+instance : IsEquiv X Inseparable :=
+  inferInstanceAs <| IsEquiv X (Eq.onFun 𝓝)
+
 /-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
 @[instance_reducible]
 def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
 
 /-- The quotient of a topological space by its `inseparableSetoid`. Also called the Kolmogorov
 quotient. This quotient is guaranteed to be a T₀ space. -/
+@[implicit_reducible]
 def SeparationQuotient := Quotient (inseparableSetoid X)
 
 variable {X}

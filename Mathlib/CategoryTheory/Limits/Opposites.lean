@@ -5,14 +5,12 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
 
 We construct limits and colimits in the opposite categories.
-
 -/
 
 @[expose] public section

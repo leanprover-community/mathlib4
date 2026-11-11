@@ -5,8 +5,9 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Integer
 public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+
+import Mathlib.LinearAlgebra.Matrix.Integer
 
 /-!
 # Congruence subgroups
@@ -15,7 +16,6 @@ This defines congruence subgroups of `SL(2, ℤ)` such as `Γ(N)`, `Γ₀(N)` an
 natural number.
 
 It also contains basic results about congruence subgroups.
-
 -/
 
 @[expose] public section
@@ -73,7 +73,6 @@ lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
 
 instance instFiniteIndexGamma [NeZero N] : (Gamma N).FiniteIndex := Subgroup.finiteIndex_ker _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The congruence subgroup of `SL(2, ℤ)` of matrices whose lower left-hand entry reduces to zero
 modulo `N`. -/
 def Gamma0 : Subgroup SL(2, ℤ) where
@@ -84,7 +83,8 @@ def Gamma0 : Subgroup SL(2, ℤ) where
     simp only [coe_mul, Set.mem_ofPred_eq] at *
     simp [h, ha, hb]
   inv_mem' {a} ha := by
-    simpa [SL2_inv_expl a] using ha
+    rw [Set.mem_ofPred, SL2_inv_expl]
+    simpa using ha
 
 @[simp]
 theorem Gamma0_mem {N} {A : SL(2, ℤ)} : A ∈ Gamma0 N ↔ (A 1 0 : ZMod N) = 0 :=
@@ -222,6 +222,8 @@ theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
   rw [← Gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
   exact HN
 
+/- TODO: This proof relies on `rw` seeing through the defeq `SL(2, R) = { A // A.det = 1 }`.
+Probably the right fix is to make `SL` implicit-reducible. -/
 set_option backward.isDefEq.respectTransparency false in
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g x g⁻¹ ∈ Γ(M)` for all
 `x ∈ Γ(N)`. -/
@@ -250,7 +252,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     rw [← Matrix.map_one Int.cast (by simp) (by simp), ← sub_eq_zero,
       ← Matrix.map_sub _ (by simp)] at hy'
     simpa only [Matrix.zero_apply, Matrix.map_apply, ZMod.intCast_zmod_eq_zero_iff_dvd,
-      Nat.cast_mul] using! congr_fun₂ hy' i j
+      Nat.cast_mul] using! congr($hy' i j)
   -- use this `k` to cook up a new integer matrix, which we will show comes from `SL(2, ℤ)`
   let z := 1 + M • (A₁.num * k * A₂.num)
   have hz_coe : z.map Int.cast = A₁ * (y.map Int.cast) * A₂ := by
@@ -264,7 +266,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
       inv_mul_cancel_left₀ (mod_cast A₂.den_ne_zero),
       mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]
   have hz_det : z.det = 1 := by
-    have := congr_arg Matrix.det hz_coe
+    have := congr($(hz_coe).det)
     simp_rw [Matrix.det_mul, ← Int.cast_det] at this
     rwa [mul_right_comm, ← Matrix.det_mul, hA₁₂, Matrix.det_one, one_mul, hy, Int.cast_inj] at this
   refine ⟨⟨z, hz_det⟩, ?_, by simpa only [Subtype.ext_iff, Subgroup.coe_mul, Units.ext_iff,
@@ -287,7 +289,7 @@ theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   obtain ⟨z, hz, hz'⟩ := h x hx
   use z, hz
   simpa only [Subtype.ext_iff, Units.ext_iff, map_mul] using!
-    congr_arg (GeneralLinearGroup.map (Rat.castHom ℝ)) hz'
+    congr(GeneralLinearGroup.map (Rat.castHom ℝ) $hz')
 
 open Subgroup in
 /-- If `Γ` has finite index in `SL(2, ℤ)`, then so does `g⁻¹ Γ g ∩ SL(2, ℤ)` for any
