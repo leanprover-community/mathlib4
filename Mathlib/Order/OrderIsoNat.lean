@@ -30,7 +30,7 @@ defines the limit value of an eventually-constant sequence.
 @[expose] public section
 
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace RelEmbedding
 
@@ -79,13 +79,18 @@ theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬Well
 
 end RelEmbedding
 
-theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
-    ¬ StrictAnti f := fun hf ↦
-  (RelEmbedding.natGT f (fun n ↦ hf (by simp))).not_wellFounded wellFounded_lt
+@[to_dual]
+theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α]
+    [Preorder β] [Nonempty β] [NoMaxOrder β] (f : β → α) : ¬ StrictAnti f := by
+  inhabit β
+  choose m hm using exists_gt (α := β)
+  let g : ℕ → β := Nat.rec default fun _ ↦ m
+  exact fun hf ↦ (RelEmbedding.natGT (f ∘ g) fun n ↦ hf (hm _)).not_wellFounded wellFounded_lt
 
-theorem not_strictMono_of_wellFoundedGT [Preorder α] [WellFoundedGT α] (f : ℕ → α) :
-    ¬ StrictMono f :=
-  not_strictAnti_of_wellFoundedLT (α := αᵒᵈ) f
+@[to_dual]
+theorem not_strictMono_of_wellFoundedLT [Preorder α] [WellFoundedLT α]
+    [Preorder β] [Nonempty β] [NoMinOrder β] (f : β → α) : ¬ StrictMono f := by
+  simpa using not_strictAnti_of_wellFoundedLT (f ∘ OrderDual.ofDual)
 
 namespace Nat
 
@@ -168,7 +173,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         simp only [bad, exists_prop, not_not, Set.mem_ofPred_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         refine ⟨n + n' - n - m, by lia, ?_⟩
-        convert! hn2
+        convert hn2
         lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
@@ -306,7 +311,8 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   have H : ∃ n, IsMax (a n) := by
     by_contra!
     exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg
-  exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ (wellFounded_lt.not_lt_min _ · h)⟩
+  exact ⟨_, wellFounded_lt.min_mem {n | IsMax (a n)} H,
+    fun i h ↦ cov _ (wellFounded_lt.not_lt_min {n | IsMax (a n)} · h)⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]
     [wfl : WellFoundedLT α] [wfg : WellFoundedGT α] {x y : α} (h : x ≤ y) :

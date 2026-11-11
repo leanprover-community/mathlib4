@@ -7,13 +7,14 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Univ
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # UnivLE and cardinals
 -/
 
 public section
-
-noncomputable section
 
 universe u v
 

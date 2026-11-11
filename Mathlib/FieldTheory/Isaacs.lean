@@ -6,6 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.FieldTheory.PrimitiveElement
+
 import Mathlib.GroupTheory.CosetCover
 
 /-!
@@ -25,7 +26,6 @@ in `F[X]` has a root in `E`, then `E` is an algebraic closure of `F`.
 
 [Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
 The American Mathematical Monthly
-
 -/
 
 public section

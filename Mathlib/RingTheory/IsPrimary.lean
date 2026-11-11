@@ -5,8 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Colon
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Primary submodules
@@ -30,7 +31,6 @@ to define the nilpotency of `r : R`.
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
   Chapter 4, Exercise 21.
-
 -/
 
 @[expose] public section

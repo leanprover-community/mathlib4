@@ -78,7 +78,7 @@ The images of `x` by the embeddings of `K` in `A` are exactly the roots in `A` o
 the minimal polynomial of `x` over `ℚ`. -/
 theorem range_eval_eq_rootSet_minpoly :
     (range fun φ : K →+* A => φ x) = (minpoly ℚ x).rootSet A := by
-  convert! (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
+  convert (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
   ext a
   exact ⟨fun ⟨φ, hφ⟩ => ⟨φ.toRatAlgHom, hφ⟩, fun ⟨φ, hφ⟩ => ⟨φ.toRingHom, hφ⟩⟩
 
@@ -238,7 +238,7 @@ lemma IsReal.comp (f : k →+* K) {φ : K →+* ℂ} (hφ : IsReal φ) :
 
 lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
     IsReal (φ.comp (f : k →+* K)) ↔ IsReal φ :=
-  ⟨fun H ↦ by convert! H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
+  ⟨fun H ↦ by convert H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
 
 lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :

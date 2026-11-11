@@ -23,8 +23,6 @@ sin, cos, tan, angle
 
 public section
 
-noncomputable section
-
 open scoped Asymptotics Topology Filter
 open Set
 

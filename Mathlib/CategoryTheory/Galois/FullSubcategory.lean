@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
+
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
@@ -15,7 +16,6 @@ import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 Given a Galois category `C`, we introduce a typeclass `P.IsGaloisSubcategory`
 which allows to show that `P.FullSubcategory` is also a Galois category.
-
 -/
 
 universe w v u
@@ -40,7 +40,7 @@ class IsGaloisSubcategory (P : ObjectProperty C) : Prop where
   /-- `P` is stable under pullbacks. -/
   isClosedUnderLimitsOfShape_walkingCospan :
     P.IsClosedUnderLimitsOfShape WalkingCospan := by infer_instance
-  /-- `P` is stable under finite coproducs. -/
+  /-- `P` is stable under finite coproducts. -/
   isClosedUnderColimitsOfShape_discrete (ι : Type) [Finite ι] :
     P.IsClosedUnderColimitsOfShape (Discrete ι) := by intros; infer_instance
   /-- `P` is stable under quotients by finite groups. -/

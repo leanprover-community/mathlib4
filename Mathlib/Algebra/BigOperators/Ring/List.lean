@@ -5,11 +5,14 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.GroupWithZero.Commute
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.Ring.Commute
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Big operators on a list in rings

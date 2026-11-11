@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
-public import Mathlib.Topology.Bornology.Hom
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
+public import Mathlib.Topology.Bornology.Hom
 
 /-!
 # The category of bornologies

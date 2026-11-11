@@ -6,7 +6,11 @@ Authors: Yudai Yamazaki
 module
 
 public import Mathlib.GroupTheory.GroupExtension.Defs
+
 import Mathlib.Tactic.Group
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basic lemmas about group extensions

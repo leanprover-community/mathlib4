@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.AddAut
 public import Mathlib.Data.ZMod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Automorphism Group of `ZMod`.
 -/

@@ -6,8 +6,8 @@ Authors: Ali Ramsey, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Finsupp.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!
 # Coalgebras

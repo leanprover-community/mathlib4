@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Group.Idempotent
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Ring
+
+import Mathlib.Tactic.Abel
 
 /-!
 # Boolean rings

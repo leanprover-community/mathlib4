@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.Algebra.Homology.ComplexShapeSigns
 public import Mathlib.Algebra.Homology.HomologicalBicomplex
+public import Mathlib.CategoryTheory.Linear.Basic
+
 import Mathlib.Algebra.Module.Basic
 
 /-!
@@ -24,7 +25,6 @@ In particular, if `c := ComplexShape.up ℤ` and `K : HomologicalComplex₂ c c`
 `p + q = n`, and the differential on `(K.total c).X n` is induced by the sum of horizontal
 differentials `(K.X p).X q ⟶ (K.X (p + 1)).X q` and `(-1) ^ p` times the vertical
 differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
-
 -/
 
 @[expose] public section

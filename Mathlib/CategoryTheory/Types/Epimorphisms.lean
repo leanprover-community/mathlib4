@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+
 import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
@@ -13,7 +14,6 @@ import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 In this file, we show that in the category `Type u`, epimorphisms
 are stable under base change.
-
 -/
 
 public section

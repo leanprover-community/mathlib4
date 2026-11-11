@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, Anatole Dedecker
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.SetLike
 
@@ -20,7 +21,6 @@ import Mathlib.Tactic.SetLike
 * `isSaddlePointOn_iff`: if `β` is a complete linear order,
   then `(a, b) ∈ X × Y` is a saddle point on `X × Y` iff
   `⨆ y ∈ Y, f a y = ⨅ x ∈ X, f x b = f a b`.
-
 -/
 
 @[expose] public section

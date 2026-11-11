@@ -5,8 +5,8 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 /-!
 # Formal (multivariate) power series - Inverses
@@ -32,7 +32,6 @@ Instances are defined:
 * The morphism `MvPowerSeries.map σ f : MvPowerSeries σ A →* MvPowerSeries σ B`
   induced by a local morphism `f : A →+* B` (`IsLocalHom f`)
   of commutative rings is a *local* morphism.
-
 -/
 
 @[expose] public section

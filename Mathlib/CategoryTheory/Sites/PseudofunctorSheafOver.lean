@@ -16,7 +16,6 @@ a category `A`, we define the pseudofunctor
 `J.pseudofunctorOver A : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat`
 which sends `X : C` to the category of sheaves on `Over X`
 with values in `A`.
-
 -/
 
 @[expose] public section

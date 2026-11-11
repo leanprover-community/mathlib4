@@ -6,8 +6,8 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Logic.Embedding.Set
 public import Mathlib.Data.Int.Init
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Equivalences for `Fin n`

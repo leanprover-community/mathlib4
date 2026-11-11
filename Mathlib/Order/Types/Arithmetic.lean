@@ -5,11 +5,20 @@ Authors: Yan Yablonovskiy
 -/
 module
 
-import Mathlib.Basic.Real.Basic
 public import Mathlib.Order.Types.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 
+import Mathlib.Basic.Real.Basic
+
 /-!
+# Arithmetic on `OrderType`s
+
+We define addition and multiplication of `OrderType`s, the isomorphism classes of linear orders,
+via the lexicographic sum and the lexicographic product. These make `OrderType` into a monoid.
+We also define the cardinality of an order type.
+
+Note that, as for ordinals, multiplication is "reversed": `type α * type β := type (Lex (β × α))`
+(see `OrderType.type_lex_prod`).
 
 ## Main definitions
 

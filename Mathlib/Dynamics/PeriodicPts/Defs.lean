@@ -6,11 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.List.Cycle
 public import Mathlib.Data.PNat.Notation
 public import Mathlib.Dynamics.FixedPoints.Basic
+
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
 # Periodic points
@@ -40,7 +41,6 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 ## References
 
 * https://en.wikipedia.org/wiki/Periodic_point
-
 -/
 
 @[expose] public section
@@ -219,7 +219,7 @@ theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ peri
   rcases hx with ⟨r, hr, hr'⟩
   suffices n ≤ (n / r + 1) * r by
     unfold IsPeriodicPt IsFixedPt
-    convert! (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
+    convert (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
       rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
   rw [Nat.add_mul, one_mul]
   exact (Nat.lt_div_mul_add hr).le

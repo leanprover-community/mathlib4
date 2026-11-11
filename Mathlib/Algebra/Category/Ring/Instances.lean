@@ -6,8 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Ring.Basic
-public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ring-theoretic results in terms of categorical language
@@ -48,7 +51,7 @@ theorem CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S �
 
 theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom.hom :=
   { map_nonunit := fun a ha => by
-      convert! f.inv.hom.isUnit_map ha
+      convert f.inv.hom.isUnit_map ha
       simp }
 
 -- see Note [lower instance priority]

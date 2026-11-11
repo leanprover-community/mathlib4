@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 In this file we show that the supremum of two subalgebras that are finitely generated as modules,
 is again finitely generated.
-
 -/
 
 public section
@@ -173,7 +172,7 @@ lemma RingHom.Finite.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
     (Algebra.TensorProduct.map f g).toRingHom.Finite := by
-  convert!
+  convert
     RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
       (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
         RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|

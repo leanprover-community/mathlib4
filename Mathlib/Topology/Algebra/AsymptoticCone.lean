@@ -5,8 +5,9 @@ Authors: Attila Gáspár
 -/
 module
 
-import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Convex.Topology
+
+import Mathlib.Analysis.Convex.Between
 
 /-!
 # Asymptotic cone of a set

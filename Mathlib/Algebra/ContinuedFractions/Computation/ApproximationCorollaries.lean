@@ -6,9 +6,10 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
-import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Topology.Order.LeftRightNhds
+
+import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
@@ -65,8 +66,6 @@ section Convergence
 We next show that `(GenContFract.of v).convs n` converges to `v`.
 -/
 
-
-variable [Archimedean K]
 
 open Nat
 

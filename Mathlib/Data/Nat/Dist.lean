@@ -5,8 +5,12 @@ Authors: Floris van Doorn, Jeremy Avigad
 -/
 module
 
-import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Ring.Canonical
+
+import Mathlib.Algebra.Order.Group.Nat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Distance function on ℕ

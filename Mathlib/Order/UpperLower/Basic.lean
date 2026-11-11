@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Sara Rousta
 -/
 module
 
-import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.SetNotation
+
+import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.WellFounded
 
 /-!
@@ -47,7 +48,7 @@ theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb
 @[to_dual (attr := simp)]
 theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
-    convert! h.compl
+    convert h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 
 @[to_dual]
@@ -117,9 +118,6 @@ end LE
 section Preorder
 
 variable [Preorder α] [Preorder β] {s : Set α} {p : α → Prop} (a : α)
-
-@[to_dual] theorem isUpperSet_Ici : IsUpperSet (Ici a) := fun _ _ => ge_trans
-@[to_dual] theorem isUpperSet_Ioi : IsUpperSet (Ioi a) := fun _ _ => flip lt_of_lt_of_le
 
 @[to_dual]
 theorem isUpperSet_iff_Ici_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ici a ⊆ s := by
@@ -215,11 +213,11 @@ theorem IsUpperSet.not_bddAbove (hs : IsUpperSet s) : s.Nonempty → ¬BddAbove 
 
 @[to_dual]
 theorem not_bddAbove_Ici : ¬BddAbove (Ici a) :=
-  (isUpperSet_Ici _).not_bddAbove nonempty_Ici
+  (IsUpperSet.Ici _).not_bddAbove nonempty_Ici
 
 @[to_dual]
 theorem not_bddAbove_Ioi : ¬BddAbove (Ioi a) :=
-  (isUpperSet_Ioi _).not_bddAbove nonempty_Ioi
+  (IsUpperSet.Ioi _).not_bddAbove nonempty_Ioi
 
 end NoMaxOrder
 

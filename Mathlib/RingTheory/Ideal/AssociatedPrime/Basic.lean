@@ -5,13 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime.Colon
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Noetherian.Basic
 
-/-!
+import Mathlib.RingTheory.Finiteness.Ideal
+import Mathlib.RingTheory.Ideal.MinimalPrime.Colon
 
+/-!
 # Associated primes of a module
 
 We provide the definition and related lemmas about associated primes of modules.

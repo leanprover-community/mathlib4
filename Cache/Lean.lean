@@ -68,7 +68,7 @@ This is an exact copy of the first part of `Lean.SearchPath.findWithExt` which, 
 is used by `Lean.findLean sp mod`. In the future, `findWithExt` could be refactored to
 expose this base path.
 -/
-def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : IO (Option FilePath) := do
+def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : BaseIO (Option FilePath) := do
   let pkg := mod.getRoot.toString (escape := false)
   sp.findM? fun p =>
     (p / pkg).isDir <||> ((p / pkg).addExtension ext).pathExists

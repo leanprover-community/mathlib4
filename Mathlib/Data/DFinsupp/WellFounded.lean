@@ -8,7 +8,11 @@ module
 public import Mathlib.Data.DFinsupp.Lex
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.Cardinal.Order
+
 import Mathlib.Tactic.AdaptationNote
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`
@@ -104,10 +108,10 @@ theorem Lex.acc_of_single_erase [DecidableEq ι] {x : Π₀ i, α i} (i : ι)
     (hs : Acc (DFinsupp.Lex r s) <| single i (x i)) (hu : Acc (DFinsupp.Lex r s) <| x.erase i) :
     Acc (DFinsupp.Lex r s) x := by
   classical
-    convert! ←
+    convert ←
       @Acc.of_fibration _ _ _ _ _ (lex_fibration r s) ⟨{ i }, _⟩
         (InvImage.accessible snd <| hs.prod_gameAdd hu)
-    convert! piecewise_single_erase x i
+    convert piecewise_single_erase x i
 
 theorem Lex.acc_zero (hbot : ∀ ⦃i a⦄, ¬s i a 0) : Acc (DFinsupp.Lex r s) 0 :=
   Acc.intro 0 fun _ ⟨_, _, h⟩ => (hbot h).elim
@@ -167,14 +171,14 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃i a⦄, ¬s i a 0) [∀ i, WellFounded (
 end Zero
 
 instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellFoundedGT ι]
-    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
+    [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
   Lex.wellFounded' (fun _ _ ↦ not_lt_zero) hι
 
 set_option backward.isDefEq.respectTransparency false in
 instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFoundedLT ι]
-    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
+    [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Colex (Π₀ i, α i)) :=
   Lex.wellFoundedLT (ι := ιᵒᵈ)
@@ -188,7 +192,7 @@ variable (r : ι → ι → Prop) {s : ∀ i, α i → α i → Prop}
 theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] [hs : ∀ i, WellFounded (s i)] :
     WellFounded (Pi.Lex r (fun {i} ↦ s i)) := by
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
-  · convert! emptyWf.wf
+  · convert emptyWf.wf
   let : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
   have := Fintype.ofFinite ι
   refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) ?_)
@@ -238,7 +242,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
   exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩
 
 instance DFinsupp.wellFoundedLT'
-    [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
+    [∀ i, Zero (α i)] [∀ i, PartialOrder (α i)] [∀ i, IsBotZeroClass (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
   DFinsupp.wellFoundedLT fun _ _ => not_lt_zero
 

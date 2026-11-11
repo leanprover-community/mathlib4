@@ -86,13 +86,14 @@ theorem mk_neg (x : L) : - mk K x = mk K (-x) :=
 instance : InvolutiveNeg (ConjRootClass K L) where
   neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
 
+open scoped Pointwise in
 @[simp]
 theorem carrier_neg (c : ConjRootClass K L) : carrier (-c) = - carrier c := by
   ext
   simp [mem_carrier, ← mk_neg, neg_eq_iff_eq_neg]
 
 theorem exists_mem_carrier_add_eq_zero (x y : ConjRootClass K L) :
-    (∃ᵉ (a ∈ x.carrier) (b ∈ y.carrier), a + b = 0) ↔ x = -y := by
+    (∃ a ∈ x.carrier, ∃ b ∈ y.carrier, a + b = 0) ↔ x = -y := by
   simp_rw [mem_carrier]
   constructor
   · rintro ⟨a, rfl, b, rfl, h⟩
@@ -111,6 +112,10 @@ instance [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (c : ConjRootClass K L)
     .ofFinset
       ((Finset.univ (α := Gal(L/K))).image (· x))
       (fun _ ↦ by simp [← isConjRoot_iff_exists_algEquiv, ← mk_eq_mk])
+
+theorem carrier_nonempty (c : ConjRootClass K L) : c.carrier.Nonempty := by
+  induction c with
+  | h a => exact ⟨a, mem_carrier.mpr rfl⟩
 
 open Polynomial
 

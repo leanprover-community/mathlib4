@@ -5,9 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Int.Cast.Defs
-public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.Data.Int.Cast.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Differential objects in a category.
@@ -253,7 +256,6 @@ variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor on `DifferentialObject S C`. -/
 @[simps]
 def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C where

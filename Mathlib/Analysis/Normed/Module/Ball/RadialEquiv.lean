@@ -6,7 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
+
 import Mathlib.Algebra.Ring.Action.Pointwise.Set
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Homeomorphism between a normed space and sphere times `(0, +∞)`

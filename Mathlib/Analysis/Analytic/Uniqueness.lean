@@ -5,11 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Analytic.ChangeOrigin
+
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Normed.Module.Completion
-public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Uniqueness principle for analytic functions
@@ -180,7 +181,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
   let q := p.changeOrigin (y - x)
   have has_series : HasFPowerSeriesOnBall f q y (r / 2) := by
-    have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_enorm_sub] at hxy
+    have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, eDist_eq_eNorm_sub] at hxy
     have := hp.changeOrigin (A.trans_le ENNReal.half_le_self)
     simp only [add_sub_cancel] at this
     apply this.mono (ENNReal.half_pos hp.r_pos.ne')
@@ -192,7 +193,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
   have A : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) (f z) := has_series.hasSum_sub hz
   have B : HasSum (fun n : ℕ => q n fun _ : Fin n => z - y) 0 := by
     have : HasFPowerSeriesAt 0 q y := has_series.hasFPowerSeriesAt.congr yu
-    convert! hasSum_zero (α := F) using 1
+    convert hasSum_zero (α := F) using 1
     ext n
     exact this.apply_eq_zero n _
   exact HasSum.unique A B

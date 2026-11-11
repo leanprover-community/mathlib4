@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.End
+
 import Mathlib.Data.Set.Function
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra lemmas about permutations

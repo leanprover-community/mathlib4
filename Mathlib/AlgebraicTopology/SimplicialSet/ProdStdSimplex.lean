@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+
 import Mathlib.Order.Fin.InsertNth
 import Mathlib.Order.Fin.Prod
 import Mathlib.Order.Preorder.Finite
@@ -21,7 +22,6 @@ the corresponding monotone map `Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`
 is injective (or a strict mono).
 
 We also show that the dimension of `Δ[p] ⊗ Δ[q]` is `≤ p + q`.
-
 -/
 
 @[expose] public section

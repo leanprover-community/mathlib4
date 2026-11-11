@@ -5,9 +5,10 @@ Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
 module
 
+public import Mathlib.RingTheory.PrincipalIdealDomain
+
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Order.Ring.Abs
-public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Statement of Fermat's Last Theorem
@@ -39,7 +40,6 @@ finally solved by Andrew Wiles, assisted by Richard Taylor, in 1994 (see
 [R. Taylor and A. Wiles, *Ring-theoretic properties of certain Hecke algebras*][Taylor-Wiles-FLT]).
 An ongoing Lean formalisation of the proof, using mathlib as a dependency, is taking place at
 https://github.com/ImperialCollegeLondon/FLT .
-
 -/
 
 @[expose] public section
@@ -131,7 +131,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     refine h (a.num * b.den * c.den) (a.den * b.num * c.den) (a.den * b.den * c.num)
       (by positivity) (by positivity) (by positivity) ?_
     have : (a.den * b.den * c.den : ℚ) ^ n ≠ 0 := by positivity
-    refine Int.cast_injective <| (div_left_inj' this).1 ?_
+    refine Int.cast_injective <| (div_left_inj₀ this).1 ?_
     push_cast
     simp only [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),
@@ -214,7 +214,7 @@ open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
 that the `gcd` of `{a, b, c}` is `1`. -/
 lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
-    [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
+    [DecidableEq R] [NormalizedGCDMonoid R]
     (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset R).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith R n := by

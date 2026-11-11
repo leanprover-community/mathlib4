@@ -6,6 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Bimon_
+
 import Mathlib.CategoryTheory.Monoidal.Conv
 
 /-!

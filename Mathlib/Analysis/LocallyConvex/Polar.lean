@@ -5,9 +5,9 @@ Authors: Moritz Doll, Kalle Kytölä
 -/
 module
 
+public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
-public import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Polar set
@@ -113,7 +113,8 @@ theorem mem_polar_singleton {x : E} (y : F) : y ∈ B.polar {x} ↔ ‖B x y‖ 
   simp only [polar_singleton, Set.mem_ofPred_eq]
 
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
-  simp only [polar_singleton, map_zero, zero_apply, norm_zero, zero_le_one, Set.ofPred_true]
+  simp only [polar_singleton, map_zero, LinearMap.zero_apply, norm_zero, zero_le_one,
+    Set.ofPred_true]
 
 theorem subset_bipolar (s : Set E) : s ⊆ B.flip.polar (B.polar s) := fun x hx y hy => by
   rw [B.flip_apply]
@@ -218,7 +219,7 @@ alias polarSubmodule_eq_setOf := polarSubmodule_eq_setOfPred
 
 lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S)
     (y : StrongDual 𝕜 E) : y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 :=
-  propext_iff.mp congr($(polarSubmodule_eq_setOfPred 𝕜 m) y)
+  Set.ext_iff.mp (polarSubmodule_eq_setOfPred 𝕜 m) y
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : StrongDual 𝕜 E) ∈ polar 𝕜 s :=

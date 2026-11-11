@@ -6,9 +6,10 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Data.Finset.Sort
+public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
-public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
 # The good products span

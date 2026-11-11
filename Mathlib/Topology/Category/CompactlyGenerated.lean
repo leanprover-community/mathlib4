@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-/-!
 
+/-!
 # Compactly generated topological spaces
 
 This file defines the category of compactly generated topological spaces. These are spaces `X` such
