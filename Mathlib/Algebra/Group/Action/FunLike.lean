@@ -43,6 +43,13 @@ protected theorem isCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SM
     IsCentralScalar M F where
   op_smul_eq_smul a b := by apply DFunLike.ext; simp [op_smul_eq_smul]
 
+/-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x` and
+`0 x = 0`, `(f + g) x = f x + g x` is a `DistribSMul` if `β` is a `DistribSMul`. -/
+protected abbrev distribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M β]
+    [SMul M F] [IsZeroApply F] [IsAddApply F] [IsSMulApply M F] :
+    DistribSMul M F :=
+  DFunLike.coe_injective.distribSMul (coeAddMonoidHom F α β) FunLike.coe_smul
+
 /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`
 is a `MulAction` if `β` is a `MulAction`. -/
 @[to_additive /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`
@@ -50,5 +57,12 @@ is an `AddAction` if `β` is an `AddAction`. -/]
 protected abbrev mulAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M F] :
     MulAction M F :=
   DFunLike.coe_injective.mulAction _ FunLike.coe_smul
+
+/-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`, `0 x = 0`,
+`(f + g) x = f x + g x` is a `DistribMulAction` if `β` is a `DistribMulAction`. -/
+protected abbrev distribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β]
+    [SMul M F] [IsZeroApply F] [IsAddApply F] [IsSMulApply M F] :
+    DistribMulAction M F :=
+  DFunLike.coe_injective.distribMulAction (coeAddMonoidHom F α β) FunLike.coe_smul
 
 end FunLike
