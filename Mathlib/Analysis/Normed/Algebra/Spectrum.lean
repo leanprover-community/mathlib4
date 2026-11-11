@@ -41,7 +41,7 @@ Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can 
   This is a key step in establishing that the `ℂ`-spectrum is nonempty.
 * `upperHemicontinuous_spectrum`/`upperHemicontinuous_quasispectrum`: the (quasi)spectrum is
   upper hemicontinuous.
-* `NonUnitalAlgHom.toStrongDual`: multiplicative linear functional are continuous.
+* `NonUnitalAlgHom.toStrongDual`: multiplicative linear functionals are continuous.
 
 ## Implementation notes
 
@@ -762,7 +762,6 @@ alias upperHemicontinuous_quasispectrum_nnreal := upperHemicontinuous_quasispect
 
 end UpperHemicontinuous
 
-
 /-! ### Characters in Banach algebras
 
 In a Banach `𝕜`-algebra, multiplicative linear functionals (i.e., non-unital `𝕜`-algebra
@@ -815,7 +814,6 @@ theorem norm_toStrongDual_le (φ : A →ₙₐ[𝕜] 𝕜) : ‖φ.toStrongDual�
 
 end NontriviallyNormedField
 
-
 end NonUnitalAlgHom
 
 section Unital
@@ -864,7 +862,6 @@ end CharacterSpace
 end WeakDual
 
 end Unital
-
 
 /-! ### Restriction -/
 
