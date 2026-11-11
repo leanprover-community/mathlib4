@@ -7,7 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.CofilteredSystem
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Data.Finite.Set
+
+import Mathlib.Basic.Finite.Set
 
 /-!
 # Ends
@@ -54,7 +55,7 @@ instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
   coe_injective _ _ := ComponentCompl.supp_inj.mp
 
-instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
+instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K)
 
 @[simp]
 theorem ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :

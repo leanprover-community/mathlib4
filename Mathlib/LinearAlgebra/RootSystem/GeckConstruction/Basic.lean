@@ -6,17 +6,17 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.Matrix
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
+
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system
 
 This file contains an implementation of Geck's construction of a semisimple Lie algebra from a
-reduced crystallographic root system. It follows [Geck](Geck2017) quite closely.
+reduced crystallographic root system. It follows [Geck][Geck2017] quite closely.
 
 ## Main definitions:
 * `RootPairing.GeckConstruction.lieAlgebra`: the Geck construction of the Lie algebra associated to
@@ -47,7 +47,6 @@ We comment on these as follows:
 
 There seems to be no known construction of a Lie algebra from a root system without first choosing
 a base: https://mathoverflow.net/questions/495434/
-
 -/
 
 @[expose] public section
@@ -277,7 +276,7 @@ lemma ω_mul_e [Fintype ι] (i : b.support) :
 lemma ω_mul_f [Fintype ι] (i : b.support) :
     ω b * f i = e i * ω b := by
   classical
-  have := congr_arg (· * ω b) (congr_arg (ω b * ·) (ω_mul_e i))
+  have := congr((ω b * $(ω_mul_e i)) * ω b)
   simp only [← mul_assoc, ω_mul_ω] at this
   simpa [mul_assoc, ω_mul_ω] using this.symm
 

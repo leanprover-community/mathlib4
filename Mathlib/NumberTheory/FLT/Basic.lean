@@ -5,11 +5,10 @@ Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # Statement of Fermat's Last Theorem
@@ -41,7 +40,6 @@ finally solved by Andrew Wiles, assisted by Richard Taylor, in 1994 (see
 [R. Taylor and A. Wiles, *Ring-theoretic properties of certain Hecke algebras*][Taylor-Wiles-FLT]).
 An ongoing Lean formalisation of the proof, using mathlib as a dependency, is taking place at
 https://github.com/ImperialCollegeLondon/FLT .
-
 -/
 
 @[expose] public section
@@ -133,7 +131,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     refine h (a.num * b.den * c.den) (a.den * b.num * c.den) (a.den * b.den * c.num)
       (by positivity) (by positivity) (by positivity) ?_
     have : (a.den * b.den * c.den : ℚ) ^ n ≠ 0 := by positivity
-    refine Int.cast_injective <| (div_left_inj' this).1 ?_
+    refine Int.cast_injective <| (div_left_inj₀ this).1 ?_
     push_cast
     simp only [add_div, ← div_pow, mul_div_mul_comm, div_self (by positivity : (a.den : ℚ) ≠ 0),
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),
@@ -146,10 +144,10 @@ lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
   Iff.rfl
 
 lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℤ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 1
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 2
 
 lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 3
 
 /--
 A relaxed variant of Fermat's Last Theorem over a given commutative semiring with a specific
@@ -216,7 +214,7 @@ open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
 that the `gcd` of `{a, b, c}` is `1`. -/
 lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type*} [CommSemiring R]
-    [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
+    [DecidableEq R] [NormalizedGCDMonoid R]
     (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset R).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
     FermatLastTheoremWith R n := by
@@ -245,7 +243,7 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd : Finset.gcd 
     (HF : a ^ n + b ^ n + c ^ n = 0) : IsCoprime a b := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [pow_zero, Int.reduceAdd, OfNat.ofNat_ne_zero] at HF
-  refine isCoprime_of_prime_dvd ?_ <| (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
+  refine isCoprime_of_prime_dvd ?_ (fun p hp hpa hpb ↦ hp.not_dvd_one ?_)
   · rintro ⟨rfl, rfl⟩
     simp only [ne_eq, hn, not_false_eq_true, zero_pow, add_zero, zero_add, pow_eq_zero_iff]
       at HF

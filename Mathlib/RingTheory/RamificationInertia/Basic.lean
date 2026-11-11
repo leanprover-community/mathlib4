@@ -9,7 +9,8 @@ public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+
+import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
 # Ramification index and inertia degree
@@ -29,10 +30,9 @@ flat extension of an integral domain.
   and let `p` be prime ideal of `R`. Assume that `R` is the invariant subring of a finite group `G`
   acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
   index of `q` times the inertia degree of `q` equals the cardinality of `G`.
-
 -/
 
-@[expose] public section
+public section
 
 section
 
@@ -59,7 +59,7 @@ theorem sum_ramification_inertia_eq_finrank_fiber
   let κp := p.ResidueField
   let κr := r.ResidueField
   let A := Sr ⧸ p.map (algebraMap R Sr)
-  suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr_arg ENat.toNat this
+  suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr($(this).toNat)
   calc length Sr A * finrank κp κr = length Sr A * length κp κr := by rw [length_eq_finrank]
     _ = length Rp A := (length_restrictScalars Rp Sr A).symm
     _ = length Rp Sq := (Fiber.localizationAlgEquivQuotient p q.1).toLinearEquiv.length_eq.symm

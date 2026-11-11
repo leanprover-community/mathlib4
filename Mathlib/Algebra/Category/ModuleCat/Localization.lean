@@ -5,19 +5,17 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.RingTheory.Localization.Module
 
-/-!
+import Mathlib.Algebra.Module.LocalizedModule.Exact
 
+/-!
 # Localized Module in ModuleCat
 
 For a ring `R` satisfying `[Small.{v} R]` and a submonoid `S` of `R`,
 this file defines an exact functor `ModuleCat.{v} R ⥤ ModuleCat.{v} (Localization S)`,
 see `ModuleCat.localizedModuleFunctor`.
-
 -/
 
 @[expose] public section
@@ -93,12 +91,12 @@ lemma localizedModuleFunctor_map_exact [Small.{v} R] (S : Submonoid R)
 
 instance [Small.{v} R] (S : Submonoid R) :
     Limits.PreservesFiniteLimits (ModuleCat.localizedModuleFunctor.{v} S) := by
-  have := ((Functor.exact_tfae _).out 1 3).mp (ModuleCat.localizedModuleFunctor_map_exact S)
+  have := ((Functor.exact_tfae _).out 2 4).mp (ModuleCat.localizedModuleFunctor_map_exact S)
   exact this.1
 
 instance [Small.{v} R] (S : Submonoid R) :
     Limits.PreservesFiniteColimits (ModuleCat.localizedModuleFunctor.{v} S) := by
-  have := ((Functor.exact_tfae _).out 1 3).mp (ModuleCat.localizedModuleFunctor_map_exact S)
+  have := ((Functor.exact_tfae _).out 2 4).mp (ModuleCat.localizedModuleFunctor_map_exact S)
   exact this.2
 
 lemma isIso_of_isLocalizedModule_comp {S : Submonoid R} {M₁ M₂ M₃ : ModuleCat R} {f₁ : M₁ ⟶ M₂}

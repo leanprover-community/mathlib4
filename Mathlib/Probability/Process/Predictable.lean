@@ -29,7 +29,6 @@ and adapted. We also give an equivalent characterization of predictability for d
 ## Tags
 
 predictable, previsible
-
 -/
 
 @[expose] public section
@@ -165,8 +164,6 @@ def IsStronglyPredictable [Preorder ι] [OrderBot ι] (𝓕 : Filtration ι m) (
 
 namespace IsStronglyPredictable
 
-open Filtration
-
 variable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι] [TopologicalSpace ι]
     [OpensMeasurableSpace ι] [OrderClosedTopology ι]
 
@@ -258,32 +255,5 @@ lemma iff_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
 end Discrete
 
 end IsStronglyPredictable
-
-@[deprecated IsStronglyPredictable.stronglyAdapted (since := "2026-01-05")]
-theorem Predictable.stronglyAdapted {β : Type*} [TopologicalSpace β] {f : Filtration ℕ m}
-    {u : ℕ → Ω → β} (hu : StronglyAdapted f fun n => u (n + 1))
-    (hu0 : StronglyMeasurable[f 0] (u 0)) :
-    StronglyAdapted f u := fun n =>
-  match n with
-  | 0 => hu0
-  | n + 1 => (hu n).mono (f.mono n.le_succ)
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable := IsStronglyPredictable
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.progMeasurable := IsStronglyPredictable.isStronglyProgressive
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.adapted := IsStronglyPredictable.stronglyAdapted
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.measurable_add_one := IsStronglyPredictable.measurable_add_one
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.of_measurable_add_one := IsStronglyPredictable.of_measurable_add_one
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.iff_measurable_add_one := IsStronglyPredictable.iff_measurable_add_one
 
 end MeasureTheory

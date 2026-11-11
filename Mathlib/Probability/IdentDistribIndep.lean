@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.IdentDistrib
+
 import Mathlib.Probability.Independence.InfinitePi
 
 /-!
@@ -20,7 +21,6 @@ import Mathlib.Probability.Independence.InfinitePi
 * `IdentDistrib.pi`: if `(X i)` and `(Y i)` are families of independent random variables indexed by
   a countable type `ι`, such that for each `i`, `X i` and `Y i` are identically distributed, then
   the products `X` and `Y` are identically distributed.
-
 -/
 
 public section
@@ -58,8 +58,8 @@ lemma IdentDistrib.pi [Countable ι] {E : ι → Type*} {mE : ∀ i, MeasurableS
     {X : (i : ι) → Ω → E i} {Y : (i : ι) → Ω' → E i}
     (h : ∀ i, IdentDistrib (X i) (Y i) μ ν) (hX_ind : iIndepFun X μ) (hY_ind : iIndepFun Y ν) :
     IdentDistrib (fun ω ↦ (X · ω)) (fun ω ↦ (Y · ω)) μ ν where
-  aemeasurable_fst := aemeasurable_pi_lambda _ fun i ↦ (h i).aemeasurable_fst
-  aemeasurable_snd := aemeasurable_pi_lambda _ fun i ↦ (h i).aemeasurable_snd
+  aemeasurable_fst := .of_eval fun i ↦ (h i).aemeasurable_fst
+  aemeasurable_snd := .of_eval fun i ↦ (h i).aemeasurable_snd
   map_eq := by
     have : IsProbabilityMeasure μ := hX_ind.isProbabilityMeasure
     have : IsProbabilityMeasure ν := hY_ind.isProbabilityMeasure

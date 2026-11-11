@@ -20,7 +20,6 @@ group,
 thereby showing that the forgetful functor `forget₂ GrpCat MonCat` preserves filtered colimits.
 In particular, this implies that `forget GrpCat` preserves filtered colimits.
 Similarly for `AddGrpCat`, `CommGrpCat` and `AddCommGrpCat`.
-
 -/
 
 @[expose] public section
@@ -121,7 +120,7 @@ noncomputable instance colimitGroup : Group (G.{v, u} F) :=
 /-- The bundled group giving the filtered colimit of a diagram. -/
 @[to_additive /-- The bundled additive group giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : GrpCat.{max v u} :=
-  GrpCat.of (G.{v, u} F)
+  ↧(G.{v, u} F)
 
 /-- The cocone over the proposed colimit group. -/
 @[to_additive /-- The cocone over the proposed colimit additive group. -/]
@@ -182,7 +181,7 @@ noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
 @[to_additive
 /-- The bundled additive commutative group giving the filtered colimit of a diagram. -/]
 noncomputable def colimit : CommGrpCat :=
-  CommGrpCat.of (G.{v, u} F)
+  ↧(G.{v, u} F)
 
 /-- The cocone over the proposed colimit commutative group. -/
 @[to_additive /-- The cocone over the proposed colimit additive commutative group. -/]

@@ -33,7 +33,6 @@ to the adjunction `(F.map f.op.toLoc).adj`.
 ## TODO (@joelriou, @chrisflav)
 * Compare `DescentDataAsCoalgebra` with `DescentData` when suitable
   pullbacks exist and certain base change morphisms are isomorphisms
-
 -/
 
 @[expose] public section
@@ -133,7 +132,6 @@ def isoMk {D₁ D₂ : F.DescentDataAsCoalgebra f} (e : ∀ (i : ι), D₁.obj i
 end
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- When the index type `ι` contains a unique element, the category
 `DescentDataAsCoalgebra` identifies to the category of coalgebras
@@ -159,7 +157,7 @@ def coalgebraEquivalence (ι : Type*) [Unique ι] {X S : C} (f : X ⟶ S) :
       comm _ _ := φ.h }
   unitIso :=
     NatIso.ofComponents
-      (fun D ↦ isoMk (fun i ↦ eqToIso (congr_arg D.obj (by subsingleton)))
+      (fun D ↦ isoMk (fun i ↦ eqToIso congr(D.obj $(by subsingleton)))
         (fun i₁ i₂ ↦ by
           obtain rfl := Subsingleton.elim i₁ default
           obtain rfl := Subsingleton.elim i₂ default
@@ -171,7 +169,6 @@ def coalgebraEquivalence (ι : Type*) [Unique ι] {X S : C} (f : X ⟶ S) :
 
 end DescentDataAsCoalgebra
 
-set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The functor `(F.obj (.mk (op S))).obj ⥤ F.DescentDataAsCoalgebra f`
 when `f i : X i ⟶ S` is a family of morphisms. -/

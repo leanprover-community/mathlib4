@@ -5,7 +5,6 @@ Authors: Kenny Lau, Wrenna Robson
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.RingTheory.Polynomial.Basic
@@ -81,7 +80,7 @@ theorem eq_of_degree_le_of_eval_finset_eq
   rcases eq_or_ne f 0 with rfl | hf
   · rwa [degree_zero, eq_comm, degree_eq_bot, eq_comm] at h_deg_eq
   · exact eq_of_degree_sub_lt_of_eval_finset_eq s
-      (lt_of_lt_of_le (degree_sub_lt h_deg_eq hf hlc) h_deg_le) h_eval
+      (lt_of_lt_of_le (degree_sub_lt_left h_deg_eq hf hlc) h_deg_le) h_eval
 
 end Finset
 
@@ -122,7 +121,7 @@ theorem eq_of_degree_le_of_eval_index_eq (hvs : Set.InjOn v s)
   rcases eq_or_ne f 0 with rfl | hf
   · rwa [degree_zero, eq_comm, degree_eq_bot, eq_comm] at h_deg_eq
   · exact eq_of_degree_sub_lt_of_eval_index_eq s hvs
-      (lt_of_lt_of_le (degree_sub_lt h_deg_eq hf hlc) h_deg_le)
+      (lt_of_lt_of_le (degree_sub_lt_left h_deg_eq hf hlc) h_deg_le)
       h_eval
 
 end Indexed
@@ -393,12 +392,12 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
     simp only [Subtype.mk_eq_mk, dite_eq_ite]
     rw [mem_degreeLT] at hf
     conv => rhs; rw [eq_interpolate hvs hf]
-    exact interpolate_eq_of_values_eq_on _ _ fun _ hi => if_pos hi
+    exact interpolate_eq_of_values_eq_on _ _ fun _ hi => ite_eq_left hi
   right_inv := by
     intro f
     ext ⟨i, hi⟩
     simp only [eval_interpolate_at_node _ hvs hi]
-    exact dif_pos hi
+    exact dite_eq_left hi
 
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
@@ -467,10 +466,10 @@ theorem iterate_derivative_interpolate (hvs : Set.InjOn v s) {k : ℕ} (hk : k <
   calc
     derivative^[k] (∏ j ∈ s.erase i, (X - C (v j))) =
     derivative^[k] (∏ vj ∈ (s.erase i).image v, (X - C vj)) := by rw [Finset.prod_image hvs']
-    _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powersetCard (#s - (k + 1)),
+    _ = ↑(k.factorial) * ∑ t ∈ ((s.erase i).image v).powersetCard (#s - (k + 1)),
           ∏ va ∈ t, (X - C va) := by
         grind [iterate_derivative_prod_X_sub_C]
-    _ = k.factorial * ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (X - C (v a)) := by
+    _ = ↑(k.factorial) * ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (X - C (v a)) := by
         rw [powersetCard_eq_filter, powerset_image, eq_comm]
         congrm k.factorial * ?_
         refine sum_nbij (·.image v) (fun a ha ↦ ?hi) ?i_inj (fun t ht ↦ ?i_surj) fun a ha ↦ ?h
@@ -486,11 +485,6 @@ theorem eval_iterate_derivative_eq_sum (hvs : Set.InjOn v s) {P : Polynomial F} 
         ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (x - v a) := by
   nth_rewrite 1 [eq_interpolate hvs hP, iterate_derivative_interpolate _ hvs hk]
   simp [eval_finsetSum, eval_prod]
-
-@[deprecated eq_interpolate (since := "2026-01-14")]
-theorem interpolate_poly_eq_self
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < s.card) :
-    interpolate s v (fun i => P.eval (v i)) = P := (eq_interpolate hvs hP).symm
 
 theorem coeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s) :
@@ -696,11 +690,12 @@ theorem sum_nodalWeight_mul_inv_sub_ne_zero (hvs : Set.InjOn v s) (hx : ∀ i �
       (eval_interpolate_not_at_node 1 hx).symm
 
 /-- This is the second barycentric form of the Lagrange interpolant. -/
-theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
-    (hx : ∀ i ∈ s, x ≠ v i) :
+theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hx : ∀ i ∈ s, x ≠ v i) :
     eval x (interpolate s v r) =
       (∑ i ∈ s, nodalWeight s v i * (x - v i)⁻¹ * r i) /
         ∑ i ∈ s, nodalWeight s v i * (x - v i)⁻¹ := by
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp
   rw [← div_one (eval x (interpolate s v r)), ← @eval_one _ _ x, ← interpolate_one hvs hs,
     eval_interpolate_not_at_node r hx, eval_interpolate_not_at_node 1 hx]
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]

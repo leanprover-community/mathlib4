@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Localization.Opposite
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Adjunction.Opposites
+
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Localization of adjunctions
@@ -20,7 +20,6 @@ have localization functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` wit
 to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagrams
 `[CatCommSq G L₁ L₂ G']` and `[CatCommSq F L₂ L₁ F']`, then we have an
 induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
-
 -/
 
 @[expose] public section
@@ -51,7 +50,6 @@ noncomputable def ε : 𝟭 D₁ ⟶ G' ⋙ F' := by
   exact Localization.liftNatTrans L₁ W₁ L₁ ((G ⋙ F) ⋙ L₁) (𝟭 D₁) (G' ⋙ F')
     (whiskerRight adj.unit L₁)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ε_app (X₁ : C₁) :
     (ε adj L₁ W₁ L₂ G' F').app (L₁.obj X₁) =
       L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫

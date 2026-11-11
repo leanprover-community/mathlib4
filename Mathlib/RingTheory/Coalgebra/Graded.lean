@@ -8,6 +8,8 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
 public import Mathlib.RingTheory.Coalgebra.Basic
 
+import Mathlib.Algebra.Module.Submodule.EqLocus
+
 /-!
 # Graded coalgebras
 
@@ -49,14 +51,14 @@ sends every pure tensor of total degree `n` into `S`. -/
 theorem SetLike.map_comul_mem (f : A ⊗[R] A →ₗ[R] M) {S : Submodule R M}
     (h : ∀ i j, i + j = n → ∀ a ∈ 𝒜 i, ∀ b ∈ 𝒜 j, f (a ⊗ₜ[R] b) ∈ S) (hx : x ∈ 𝒜 n) :
     f (Coalgebra.comul x) ∈ S :=
-  (TensorProduct.mapsTo_gradeBy_iff _).2 h (GradedComul.comul_mem hx)
+  (TensorProduct.grade_le (S := S.comap f)).2 h (GradedComul.comul_mem hx)
 
 /-- To show two linear maps agree on `comul x` for `x` of degree `n`, it suffices to check they
 agree on pure tensors of total degree `n`. -/
 theorem SetLike.map_comul_congr {f g : A ⊗[R] A →ₗ[R] M} (hx : x ∈ 𝒜 n)
     (h : ∀ i j, i + j = n → ∀ a ∈ 𝒜 i, ∀ b ∈ 𝒜 j, f (a ⊗ₜ[R] b) = g (a ⊗ₜ[R] b)) :
     f (Coalgebra.comul x) = g (Coalgebra.comul x) :=
-  (TensorProduct.eqOn_gradeBy_iff _).2 h (GradedComul.comul_mem hx)
+  (TensorProduct.grade_le (S := LinearMap.eqLocus f g)).2 h (GradedComul.comul_mem hx)
 
 end RespectsGrading
 
