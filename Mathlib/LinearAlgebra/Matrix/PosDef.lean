@@ -332,9 +332,7 @@ theorem _root_.Matrix.posSemidef_iff_submatrix_finset {M : Matrix n n R} :
   · classical
     ext i j
     exact (h {i, j}).1.apply ⟨i, by simp⟩ ⟨j, by simp⟩
-  · simpa only [Finsupp.sum, dotProduct, mulVec, Pi.star_apply, Finset.mul_sum, mul_assoc,
-      Finset.univ_eq_attach, submatrix_apply, ← Finset.sum_attach x.support] using
-      (h x.support).dotProduct_mulVec_nonneg (x ·)
+  · simpa [Finsupp.sum, ← Finset.sum_attach x.support] using (h x.support).2 (x.subtypeDomain _)
 
 omit [Fintype m] in
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix n m R) :
@@ -504,15 +502,11 @@ positive definite. -/
 theorem _root_.Matrix.posDef_iff_submatrix_finset {M : Matrix n n R} :
     M.PosDef ↔ ∀ s : Finset n, (M.submatrix (↑) (↑) : Matrix s s R).PosDef := by
   refine ⟨fun hM s ↦ hM.submatrix Subtype.coe_injective, fun h ↦ ⟨?_, fun x hx ↦ ?_⟩⟩
+  · exact (posSemidef_iff_submatrix_finset.mpr fun s ↦ (h s).posSemidef).isHermitian
   · classical
-    ext i j
-    exact (h {i, j}).1.apply ⟨i, by simp⟩ ⟨j, by simp⟩
-  · have hx' : (fun i : x.support ↦ x i) ≠ 0 := by
-      obtain ⟨i, hi⟩ := Finsupp.ne_iff.mp hx
-      exact Function.ne_iff.mpr ⟨⟨i, Finsupp.mem_support_iff.mpr hi⟩, hi⟩
-    simpa only [Finsupp.sum, dotProduct, mulVec, Pi.star_apply, Finset.mul_sum, mul_assoc,
-      Finset.univ_eq_attach, submatrix_apply, ← Finset.sum_attach x.support] using
-      (h x.support).dotProduct_mulVec_pos hx'
+    simp_rw [Finsupp.sum, ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
+      ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
+    exact (h x.support).2 <| by simpa [← Finsupp.support_nonempty_iff] using hx
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} {B : Matrix n m R} (hA : A.PosDef)
     (hB : Function.Injective B.mulVec) :
