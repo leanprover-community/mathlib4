@@ -32,14 +32,14 @@ class IsMemInf [Min A] where
   /-- The infimum corresponds to set intersection. -/
   protected mem_inf {S T : A} {x : B} : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T := by rfl
 
-@[simp] alias SetLike.mem_inf := IsMemInf.mem_inf
+@[simp, membership =] alias mem_inf_iff_mem_and_mem := IsMemInf.mem_inf
 
 /-- A class to indicate that the supremum on a type corresponds to set union. -/
 class IsMemSup [Max A] where
   /-- The supremum corresponds to set union. -/
   protected mem_sup {S T : A} {x : B} : x ∈ S ⊔ T ↔ x ∈ S ∨ x ∈ T := by rfl
 
-@[simp] alias SetLike.mem_sup := IsMemSup.mem_sup
+@[simp, membership =] alias mem_sup_iff_mem_or_mem := IsMemSup.mem_sup
 
 end defs
 
