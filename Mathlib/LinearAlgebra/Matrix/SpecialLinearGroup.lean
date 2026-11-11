@@ -228,10 +228,8 @@ variable {S T : Type*} [CommRing S] [CommRing T]
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
 @[simps]
 def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S where
-  toFun g :=
-    ⟨f.mapMatrix ↑ₘg, by
-      rw [← f.map_det]
-      simp [g.prop]⟩
+  toFun g := SpecialLinearGroup.mk (f.mapMatrix ↑ₘg)
+    (by rw [← f.map_det]; simp [g.prop])
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
@@ -425,13 +423,11 @@ instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
 
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
     ↑(g : SpecialLinearGroup n R) = (↑g : Matrix n n ℤ).map (Int.castRingHom R) :=
-  map_apply_coe (Int.castRingHom R) g
+      ext_col (congrFun rfl)
 
 lemma map_intCast_injective [CharZero R] :
     Function.Injective ((↑) : SpecialLinearGroup n ℤ → SpecialLinearGroup n R) := fun g h ↦ by
-  simp_rw [ext_iff, map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-    Matrix.map_apply, Int.cast_inj]
-  tauto
+  simp [ext_iff]
 
 @[simp]
 lemma map_intCast_inj [CharZero R] {x y : SpecialLinearGroup n ℤ} :
