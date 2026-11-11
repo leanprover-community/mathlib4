@@ -6,8 +6,8 @@ Authors: Justus Springer
 module
 
 public import Mathlib.Algebra.MvPolynomial.PDeriv
-public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.MvPowerSeries.Equiv
+public import Mathlib.RingTheory.MvPowerSeries.Inverse
 
 /-!
 # Formal partial derivatives of multivariate power series
