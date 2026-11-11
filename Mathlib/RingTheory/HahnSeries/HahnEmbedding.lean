@@ -43,7 +43,7 @@ instance : Nonempty (HahnEmbedding.Seed ℚ M ℝ) := by
 
 theorem hahnEmbedding_isOrderedModule_rat :
     ∃ f : M →ₗ[ℚ] Lex ℝ⟦FiniteArchimedeanClass M⟧, StrictMono f ∧
-      ∀ a, .mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
+      ∀ a, .mk a = FiniteArchimedeanClass.withTopOrderIso M (f a).ofLex.orderTop := by
   apply hahnEmbedding_isOrderedModule
 
 end Module
@@ -57,7 +57,7 @@ of the Hahn series.
 -/
 theorem hahnEmbedding_isOrderedAddMonoid :
     ∃ f : M →+o Lex ℝ⟦FiniteArchimedeanClass M⟧, Function.Injective f ∧
-      ∀ a, .mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
+      ∀ a, .mk a = FiniteArchimedeanClass.withTopOrderIso M (f a).ofLex.orderTop := by
   /-
   The desired embedding is the composition of three functions:
 
@@ -79,21 +79,21 @@ theorem hahnEmbedding_isOrderedAddMonoid :
   let f₂ := OrderAddMonoidHom.mk f₂'.toAddMonoidHom hf₂'.monotone
   have hf₂ : Function.Injective f₂ := hf₂'.injective
   have hf₂class (a : DivisibleHull M) :
-      mk a = (FiniteArchimedeanClass.withTopOrderIso (DivisibleHull M)) (ofLex (f₂ a)).orderTop :=
+      mk a = (FiniteArchimedeanClass.withTopOrderIso (DivisibleHull M)) (f₂ a).ofLex.orderTop :=
     hf₂class' a
   let f₃ : Lex ℝ⟦FiniteArchimedeanClass (DivisibleHull M)⟧ →+o Lex ℝ⟦FiniteArchimedeanClass M⟧ :=
     HahnSeries.embDomainOrderAddMonoidHom
     (FiniteArchimedeanClass.congrOrderIso (DivisibleHull.archimedeanClassOrderIso M).symm)
   have hf₃ : Function.Injective f₃ := HahnSeries.embDomainOrderAddMonoidHom_injective _
   have hf₃class (a : Lex ℝ⟦FiniteArchimedeanClass (DivisibleHull M)⟧) :
-      (ofLex a).orderTop = OrderIso.withTopCongr
+      a.ofLex.orderTop = OrderIso.withTopCongr
       ((FiniteArchimedeanClass.congrOrderIso (DivisibleHull.archimedeanClassOrderIso M)))
-      (ofLex (f₃ a)).orderTop := by
+      (f₃ a).ofLex.orderTop := by
     rw [← OrderIso.symm_apply_eq]
-    simp [f₃, ← OrderIso.withTopCongr_symm]
+    simp [f₃, ← OrderIso.withTopCongr_symm, HahnSeries.embDomainOrderEmbedding]
   refine ⟨f₃.comp (f₂.comp f₁), hf₃.comp (hf₂.comp hf₁), ?_⟩
   intro a
   simp_rw [hf₁class, hf₂class, hf₃class, OrderAddMonoidHom.comp_apply]
-  cases (ofLex (f₃ (f₂ (f₁ a)))).orderTop with
+  cases (f₃ (f₂ (f₁ a))).ofLex.orderTop with
   | top => simp
   | coe x => simp [-DivisibleHull.archimedeanClassOrderIso_apply]
