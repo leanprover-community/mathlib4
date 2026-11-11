@@ -152,6 +152,8 @@ to_dual_insert_cast WCovBy := by grind
 @[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
 
+recommended_spelling "wcovBy" for "⋖" in [WCovBy, «term_⩿_»]
+
 /-- `CovBy a b` means that `b` covers `a`. This means that `a < b` and there is no element in
 between. This is denoted `a ⋖ b`. -/
 @[to_dual self (reorder := 3 4)]
@@ -162,6 +164,8 @@ to_dual_insert_cast CovBy := by grind
 
 @[inherit_doc]
 infixl:50 " ⋖ " => CovBy
+
+recommended_spelling "covBy" for "⋖" in [CovBy, «term_⋖_»]
 
 end Preorder
 
