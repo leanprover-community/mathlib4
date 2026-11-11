@@ -41,7 +41,6 @@ Semistandard Young tableau
 ## References
 
 <https://en.wikipedia.org/wiki/Young_tableau>
-
 -/
 
 @[expose] public section
@@ -65,6 +64,7 @@ structure SemistandardYoungTableau (μ : YoungDiagram) where
 
 namespace SemistandardYoungTableau
 
+@[macro_inline]
 instance instFunLike {μ : YoungDiagram} : FunLike (SemistandardYoungTableau μ) ℕ (ℕ → ℕ) where
   coe := SemistandardYoungTableau.entry
   coe_injective T T' h := by

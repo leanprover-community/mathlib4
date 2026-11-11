@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Algebra.Ring.GrindInstances
+
+import Mathlib.Algebra.Ring.GrindInstances
+import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Partial sums of geometric series in a ring
@@ -238,7 +239,7 @@ lemma mul_geom_sum (x : R) (n : ℕ) : ((x - 1) * ∑ i ∈ range n, x ^ i) = x 
   op_injective <| by simpa using geom_sum_mul (op x) n
 
 lemma geom_sum_mul_neg (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (1 - x) = 1 - x ^ n := by
-  have := congr_arg Neg.neg (geom_sum_mul x n)
+  have := congr(-$(geom_sum_mul x n))
   rw [neg_sub, ← mul_neg, neg_sub] at this
   exact this
 
@@ -284,7 +285,7 @@ protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     have hp := Commute.pow_pow (Commute.op h.symm) (n - 1 - k) k
     simpa [Commute, SemiconjBy] using hp
   simp only [this]
-  convert! (Commute.op h).mul_geom_sum₂_Ico hmn
+  convert (Commute.op h).mul_geom_sum₂_Ico hmn
 
 lemma geom_sum_Ico_mul (x : R) {m n : ℕ} (hmn : m ≤ n) :
     (∑ i ∈ Finset.Ico m n, x ^ i) * (x - 1) = x ^ n - x ^ m := by
@@ -322,6 +323,17 @@ lemma geom_sum₂_succ_eq (x y : R) {n : ℕ} :
 lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
     ((x - y) * ∑ i ∈ Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) = x ^ n - x ^ m * y ^ (n - m) :=
   (Commute.all x y).mul_geom_sum₂_Ico hmn
+
+/-- Summing `k` against the weights `x ^ k * (1 - x)` for `k < m`, plus `m` against the
+boundary weight `x ^ m`, gives the geometric sum `∑ k ∈ Icc 1 m, x ^ k`. This is the identity
+behind the mean of a censored geometric distribution: `x ^ k * (1 - x)` is the mass at `k` and
+`x ^ m` the mass collected at `m`. -/
+theorem sum_range_mul_geometric_add (x : R) (m : ℕ) :
+    (∑ k ∈ range m, (k : R) * (x ^ k * (1 - x))) + (m : R) * x ^ m =
+      ∑ k ∈ Finset.Icc 1 m, x ^ k := by
+  induction m with
+  | zero => simp
+  | succ m ih => grind [sum_range_succ, sum_Icc_succ_top]
 
 end CommRing
 

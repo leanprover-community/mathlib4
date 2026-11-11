@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.TensorPower.Pairing
 
 We construct the pairing
 `exteriorPower.pairingDual : ⋀[R]^n (Module.Dual R M) →ₗ[R] (Module.Dual R (⋀[R]^n M))`.
-
 -/
 
 @[expose] public section
@@ -131,7 +130,7 @@ lemma pairingDual_apply_apply_eq_one_zero (a b : Fin n ↪o ι) (h : a ≠ b) :
     simp only [lt_self_iff_false] at h
   obtain rfl : σ = 1 := by
     ext i : 1
-    exact DFunLike.congr_fun (Subsingleton.elim (σ.toOrderIso hσ hσ') (OrderIso.refl _)) i
+    congrm $(Subsingleton.elim (σ.toOrderIso hσ hσ') (OrderIso.refl _)) i
   ext
   apply congr_fun this
 

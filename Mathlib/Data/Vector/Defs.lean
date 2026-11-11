@@ -6,10 +6,12 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
+# The type `List.Vector`
+
 The type `List.Vector` represents lists with fixed length.
 
 TODO: The API of `List.Vector` is quite incomplete relative to `Vector`,

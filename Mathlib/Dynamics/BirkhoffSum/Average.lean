@@ -5,8 +5,9 @@ Authors: Yury Kudryashov, Lua Viana Reis, Oliver Butterley
 -/
 module
 
-public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Birkhoff average
@@ -22,7 +23,6 @@ and `R` is used to formalize division by `n` as `(n : R)⁻¹ • _`.
 While we need an auxiliary division semiring `R` to define `birkhoffAverage`,
 the definition does not depend on the choice of `R`,
 see `birkhoffAverage_congr_ring`.
-
 -/
 
 @[expose] public section
@@ -88,6 +88,14 @@ theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
 
 @[deprecated (since := "2026-08-19")] alias birkhoffAverage_congr_ring':= birkhoffAverage_congr_ring
 
+theorem birkhoffAverage_comp_apply (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+    birkhoffAverage R f (g ∘ f) n x = birkhoffAverage R f g n (f x) := by
+  simp only [birkhoffAverage, birkhoffSum_comp_apply]
+
+theorem birkhoffAverage_comp (f : α → α) (g : α → M) (n : ℕ) :
+    birkhoffAverage R f (g ∘ f) n = (birkhoffAverage R f g n) ∘ f :=
+  funext <| birkhoffAverage_comp_apply R f g n
+
 theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFixedPt f x)
     (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
   rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀ hn]
@@ -116,6 +124,11 @@ theorem birkhoffAverage_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f =
     {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n = g :=
   funext <| birkhoffAverage_apply_of_comp_eq R h hn
 
+@[simp]
+theorem birkhoffAverage_const (f : α → α) (a : M) {n : ℕ} (hn : (n : R) ≠ 0 := by positivity) :
+    birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ a :=
+  birkhoffAverage_of_comp_eq _ rfl (mod_cast hn)
+
 end birkhoffAverage
 
 section AddCommGroup
@@ -128,7 +141,7 @@ lemma birkhoffAverage_neg_apply {f : α → α} {g : α → M} (n : ℕ) (x : α
 
 lemma birkhoffAverage_neg {f : α → α} {g : α → M} :
     birkhoffAverage R f (-g) = -birkhoffAverage R f g :=
-  funext₂ <| birkhoffAverage_neg_apply
+  funext₂ birkhoffAverage_neg_apply
 
 lemma birkhoffAverage_sub_apply {f : α → α} {g g' : α → M} (n : ℕ) (x : α) :
     birkhoffAverage R f (g - g') n x = birkhoffAverage R f g n x - birkhoffAverage R f g' n x := by
@@ -136,7 +149,7 @@ lemma birkhoffAverage_sub_apply {f : α → α} {g g' : α → M} (n : ℕ) (x :
 
 lemma birkhoffAverage_sub {f : α → α} {g g' : α → M} :
     birkhoffAverage R f (g - g') = birkhoffAverage R f g - birkhoffAverage R f g' :=
-  funext₂ <| birkhoffAverage_sub_apply
+  funext₂ birkhoffAverage_sub_apply
 
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`

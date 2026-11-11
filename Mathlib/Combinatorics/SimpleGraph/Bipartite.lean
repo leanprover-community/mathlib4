@@ -5,10 +5,8 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
-public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
@@ -250,6 +248,10 @@ theorem isBipartiteWith_sum_degrees_eq [G.LocallyFinite] (h : G.IsBipartiteWith 
     sum_attach t fun v ↦ #(bipartiteBelow G.Adj s v)]
   exact sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow G.Adj
 
+protected theorem IsBipartiteWith.completeBipartiteGraph (V W : Type*) :
+    (completeBipartiteGraph V W).IsBipartiteWith (.range .inl) (.range .inr) := by
+  grind [IsBipartiteWith]
+
 variable [Fintype V] [DecidableRel G.Adj]
 
 lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsBipartiteWith s t) :
@@ -315,6 +317,14 @@ theorem chromaticNumber_eq_two_iff : G.chromaticNumber = 2 ↔ G.IsBipartite ∧
    fun ⟨h₁, h₂⟩ ↦ ENat.eq_of_forall_natCast_le_iff fun _ ↦
       ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
        fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
+
+variable (V) in
+theorem IsBipartite.bot : (⊥ : SimpleGraph V).IsBipartite :=
+  ⟨0, by simp⟩
+
+theorem IsBipartite.completeBipartiteGraph (V W : Type*) :
+    (completeBipartiteGraph V W).IsBipartite :=
+  IsBipartiteWith.completeBipartiteGraph V W |>.isBipartite
 
 end IsBipartite
 

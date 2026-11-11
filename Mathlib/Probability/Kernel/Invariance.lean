@@ -16,7 +16,6 @@ kernel `μ.bind κ` is the same measure.
 ## Main definitions
 
 * `ProbabilityTheory.Kernel.Invariant`: invariance of a given measure with respect to a kernel.
-
 -/
 
 @[expose] public section
@@ -49,9 +48,7 @@ nonrec theorem Invariant.comp_const (hκ : Invariant κ μ) : κ ∘ₖ const α
 
 theorem Invariant.comp (hκ : Invariant κ μ) (hη : Invariant η μ) :
     Invariant (κ ∘ₖ η) μ := by
-  rcases isEmpty_or_nonempty α with _ | hα
-  · exact Subsingleton.elim _ _
-  · rw [Invariant, ← Measure.comp_assoc, hη, hκ]
+  rw [Invariant, ← Measure.comp_assoc, hη, hκ]
 
 /-! ### Reversibility of kernels -/
 

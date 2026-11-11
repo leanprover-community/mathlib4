@@ -5,7 +5,6 @@ Authors: Kenny Lau, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
@@ -26,7 +25,6 @@ The theory of the free ring over a type.
 ## Tags
 
 free ring
-
 -/
 
 @[expose] public noncomputable section
@@ -107,7 +105,7 @@ def lift : (α → R) ≃ (FreeRing α →+* R) :=
 
 @[simp]
 theorem lift_of (x : α) : lift f (of x) = f x :=
-  congr_fun (lift.left_inv f) x
+  congr($(lift.left_inv f) x)
 
 @[simp]
 theorem lift_comp_of (f : FreeRing α →+* R) : lift (f ∘ of) = f :=

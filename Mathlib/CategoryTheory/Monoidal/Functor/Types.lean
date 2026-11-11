@@ -5,17 +5,13 @@ Authors: Vilim Lendvaj
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
-public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Tactic.Simps
 public import Mathlib.Control.Basic
 
 /-!
 # Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`
 
 This allows us to use Lean's `Type`-based applicative functors in category theory.
-
 -/
 
 public section

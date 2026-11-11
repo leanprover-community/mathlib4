@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
-
 # Quasi-affine schemes
 
 ## Main results
@@ -17,7 +16,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
   This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
 - `IsQuasiAffine.of_isImmersion`:
   Any quasi-compact locally closed subscheme of a quasi-affine scheme is quasi-affine.
-
 -/
 
 @[expose] public section
@@ -66,7 +64,7 @@ lemma IsQuasiAffine.isBasis_basicOpen (X : Scheme.{u}) [IsQuasiAffine X] :
   refine ⟨_, ⟨r, ?_, rfl⟩, hxr, (Set.preimage_mono hrU).trans_eq
     (Set.preimage_image_eq _ X.toSpecΓ.isEmbedding.injective)⟩
   rw [← Hom.isAffineOpen_iff_of_isOpenImmersion X.toSpecΓ]
-  convert! IsAffineOpen.Spec_basicOpen r
+  convert IsAffineOpen.Spec_basicOpen r
   exact SetLike.coe_injective (Set.image_preimage_eq_of_subset
     (hrU.trans (Set.image_subset_range _ _)))
 

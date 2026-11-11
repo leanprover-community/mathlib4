@@ -19,7 +19,6 @@ An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
-
 -/
 
 @[expose] public section
@@ -351,7 +350,7 @@ theorem restrictScalars_span (hsur : Function.Surjective (algebraMap R A)) (X : 
 
 theorem coe_span_eq_span_of_surjective (h : Function.Surjective (algebraMap R A)) (s : Set M) :
     (Submodule.span A s : Set M) = Submodule.span R s :=
-  congr_arg ((↑) : Submodule R M → Set M) (Submodule.restrictScalars_span R A h s)
+  congr($(Submodule.restrictScalars_span R A h s))
 
 /--
 Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a scalar tower
@@ -364,7 +363,7 @@ def orderIsoOfAlgebraMapSurjective
     [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
     (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M where
   toFun N := N.restrictScalars R
-  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩
+  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.smul_mem'⟩
   left_inv _ := rfl
   right_inv _ := rfl
   map_rel_iff' := .rfl

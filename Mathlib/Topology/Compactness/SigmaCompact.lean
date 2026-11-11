@@ -16,7 +16,6 @@ public import Mathlib.Topology.Compactness.LocallyFinite
 * `IsSigmaCompact`: a set that is the union of countably many compact sets.
 * `SigmaCompactSpace X`: `X` is a σ-compact topological space; i.e., is the union
   of a countable collection of compact subspaces.
-
 -/
 
 @[expose] public section
@@ -333,6 +332,7 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
+@[macro_inline]
 instance : FunLike (CompactExhaustion X) ℕ (Set X) where
   coe := toFun
   coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
