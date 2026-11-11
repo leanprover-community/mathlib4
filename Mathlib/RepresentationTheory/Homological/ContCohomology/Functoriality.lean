@@ -218,7 +218,9 @@ def homogeneousCochainsResNatTrans (φ : H →ₜ* G) : homogeneousCochainsFunct
   ≫ (associator _ _ _).hom
 
 lemma homogeneousCochainsResNatTrans_app_f (φ : H →ₜ* G) (X : TopRep k G) (n : ℕ) :
-    ((homogeneousCochainsResNatTrans k φ).app X).f n = homogeneousCochainsXRes φ X n := rfl
+    ((homogeneousCochainsResNatTrans k φ).app X).f n = homogeneousCochainsXRes φ X n := by
+  simp [homogeneousCochainsResNatTrans]
+  rfl
 
 variable (k) in
 /-- The restriction natural transformation `Hⁿ(G, -) ⟶ resFunctor φ ⋙ Hⁿ(H, -)` on continuous
@@ -230,7 +232,7 @@ noncomputable abbrev resNatTrans (φ : H →ₜ* G) (n : ℕ) :
 lemma resNatTrans_app (φ : H →ₜ* G) (n : ℕ) (X : TopRep k G) :
     (resNatTrans k φ n).app X =
       HomologicalComplex.homologyMap ((homogeneousCochainsResNatTrans k φ).app X) n := by
-  rfl
+  rw [resNatTrans, hcomp_id, whiskerRight_app, HomologicalComplex.homologyFunctor_map]
 
 set_option allowUnsafeReducibility true in
 attribute [local reducible] CategoryTheory.Functor.mapHomologicalComplex
@@ -399,7 +401,6 @@ lemma resolutionResMap_id_snd (φ : H →ₜ* G) (i : ℕ) :
   | zero => rfl
   | succ i ih =>
     rw [resolutionResMap_succ, resolutionXRes_succ, ih]
-    rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- `resolutionMap` is the special case of `resolutionResMap` along the identity of `G`. -/
@@ -409,7 +410,7 @@ lemma resolutionResMap_id_fst (f : X ⟶ X') (i : ℕ) :
   | zero => rfl
   | succ i ih =>
     rw [resolutionResMap_succ, resolutionMap_succ, ih]
-    ext F x
+    ext
     rfl
 
 /-- `cochainsResMap φ f` is the component of the restriction natural transformation on homogeneous
@@ -419,7 +420,8 @@ lemma cochainsResMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
     cochainsResMap φ f = (homogeneousCochainsResNatTrans k φ).app X ≫
       (homogeneousCochainsFunctor k H).map f := by
   ext i v x
-  exact congr($(resolutionResMap_eq φ f (i + 1)).hom v.1 x)
+  simpa [homogeneousCochainsResNatTrans_app_f]
+    using! congr($(resolutionResMap_eq φ f (i + 1)).hom v.1 x)
 
 /-- The levelwise form of `cochainsResMap_eq`: the restriction part expressed via
 `homogeneousCochainsXRes` and the coefficient part via `resolutionMap`. -/
@@ -427,15 +429,16 @@ lemma cochainsResMap_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) :
 lemma cochainsResMap_f_eq (φ : H →ₜ* G) (f : res φ X ⟶ Y) (n : ℕ) :
     (cochainsResMap φ f).f n = homogeneousCochainsXRes φ X n ≫
       (invariantsFunctor k H).map (resolutionMap f (n + 1)) := by
-  rw [cochainsResMap_eq]
-  rfl
+  rw [cochainsResMap_eq, HomologicalComplex.comp_f, homogeneousCochainsResNatTrans_app_f]
+  simp
 
 /-- The component of the restriction natural transformation on homogeneous cochains is the
 special case of `cochainsResMap` where the coefficient map is the identity. -/
 lemma cochainsResMap_id_right (φ : H →ₜ* G) :
     cochainsResMap φ (𝟙 (res φ.toMonoidHom X)) = (homogeneousCochainsResNatTrans k φ).app X := by
   ext i v x
-  exact congr($(resolutionResMap_id_snd φ (i + 1)).hom v.1 x)
+  rw [cochainsResMap_eq, map_id]
+  simp
 
 /-- The functorial map on homogeneous cochains is the special case of `cochainsResMap` along the
 identity of `G`. -/
