@@ -249,27 +249,44 @@ lemma preimage_subtypeVal_Ioo (a b : {x // p x}) : (↑) ⁻¹' (Ioo a.1 b) = Io
 @[deprecated (since := "2026-11-10")] alias preimage_subtype_val_Ioo := preimage_subtypeVal_Ioo
 
 @[to_dual self]
-theorem image_subtype_val_Icc_subset (a b : {x // p x}) :
+theorem image_subtypeVal_Icc_subset (a b : {x // p x}) :
     Subtype.val '' Icc a b ⊆ Icc a.val b.val :=
   image_subset_iff.mpr fun _ m => m
 
 @[to_dual (reorder := a b) (rename := a ↔ b)]
-theorem image_subtype_val_Ico_subset (a b : {x // p x}) :
+theorem image_subtypeVal_Ico_subset (a b : {x // p x}) :
     Subtype.val '' Ico a b ⊆ Ico a.val b.val :=
   image_subset_iff.mpr fun _ m => m
 
 @[to_dual self]
-theorem image_subtype_val_Ioo_subset (a b : {x // p x}) :
+theorem image_subtypeVal_Ioo_subset (a b : {x // p x}) :
     Subtype.val '' Ioo a b ⊆ Ioo a.val b.val :=
   image_subset_iff.mpr fun _ m => m
 
 @[to_dual]
-theorem image_subtype_val_Iic_subset (a : {x // p x}) : Subtype.val '' Iic a ⊆ Iic a.val :=
+theorem image_subtypeVal_Iic_subset (a : {x // p x}) : Subtype.val '' Iic a ⊆ Iic a.val :=
   image_subset_iff.mpr fun _ m => m
 
 @[to_dual]
-theorem image_subtype_val_Iio_subset (a : {x // p x}) : Subtype.val '' Iio a ⊆ Iio a.val :=
+theorem image_subtypeVal_Iio_subset (a : {x // p x}) : Subtype.val '' Iio a ⊆ Iio a.val :=
   image_subset_iff.mpr fun _ m => m
+
+@[deprecated (since := "2026-11-11")]
+alias image_subtype_val_Icc_subset := image_subtypeVal_Icc_subset
+@[deprecated (since := "2026-11-11")]
+alias image_subtype_val_Ico_subset := image_subtypeVal_Ico_subset
+@[deprecated (since := "2026-11-11")]
+alias image_subtype_val_Ioc_subset := image_subtypeVal_Ioc_subset
+@[deprecated (since := "2026-11-11")]
+alias image_subtype_val_Ioo_subset := image_subtypeVal_Ioo_subset
+@[deprecated (since := "2026-11-11")]
+alias image_subtype_val_Iic_subset := image_subtypeVal_Iic_subset
+@[deprecated (since := "2026-11-11")]
+alias image_subtype_val_Ici_subset := image_subtypeVal_Ici_subset
+@[deprecated (since := "2026-11-11")]
+alias image_subtype_val_Iio_subset := image_subtypeVal_Iio_subset
+@[deprecated (since := "2026-11-11")]
+alias image_subtype_val_Ioi_subset := image_subtypeVal_Ioi_subset
 
 @[to_dual (attr := simp)]
 lemma image_subtype_val_Ici_Iic {a : α} (b : Ici a) : Subtype.val '' Iic b = Icc a b :=
