@@ -14,7 +14,6 @@ public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 In this file, we upgrade the definitions `HomologicalComplex.cylinder` and
 `HomologicalComplex.pathObject` to pre-cylinder objects and pre-path
 objects in the sense of homotopical algebra.
-
 -/
 
 @[expose] public section

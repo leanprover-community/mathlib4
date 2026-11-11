@@ -28,13 +28,14 @@ equivalent:
 The results stating these in the case when the indicators take values in a Fréchet space are:
 * `tendsto_indicator_const_iff_forall_eventually` is the equivalence (a) ↔ (b);
 * `tendsto_indicator_const_iff_tendsto_pi_pure` is the equivalence (a) ↔ (c).
-
 -/
 
 public section
 
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 variable {α : Type*} {A : Set α}
 variable {β : Type*} [Zero β] [TopologicalSpace β]

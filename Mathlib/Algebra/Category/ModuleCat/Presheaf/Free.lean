@@ -5,8 +5,8 @@ Authors: Johan Commelin, Joel Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
 /-!
 # The free presheaf of modules on a presheaf of sets
@@ -22,7 +22,6 @@ adjoint to the forget functor.
 
 This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
-
 -/
 
 @[expose] public section
@@ -114,7 +113,6 @@ variable (F G) in
 lemma freeAdjunction_homEquiv : (freeAdjunction R).homEquiv F G = freeHomEquiv := by
   simp [freeAdjunction, Adjunction.mkOfHomEquiv_homEquiv]
 
-set_option backward.isDefEq.respectTransparency.types false in
 variable (R F) in
 @[simp]
 lemma freeAdjunction_unit_app :

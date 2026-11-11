@@ -7,8 +7,8 @@ module
 
 public import Mathlib.AlgebraicTopology.Quasicategory.InnerFibration
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
-public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
-public import Mathlib.CategoryTheory.SmallObject.Basic
+
+import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 
 /-!
 # Inner anodyne extensions
@@ -22,14 +22,15 @@ transfinite compositions and retracts. Equivalently, using the small
 object argument, inner anodyne extensions can be defined (and are defined here)
 as the class of morphisms that satisfy the left lifting property with respect
 to the class of inner fibrations.
-
 -/
 
 public section
 
 universe u
 
-open CategoryTheory HomotopicalAlgebra Simplicial
+open CategoryTheory HomotopicalAlgebra
+
+open scoped Simplicial
 
 namespace SSet
 

@@ -17,10 +17,9 @@ a minimum number of equalities.
 ## Main Definitions
 
 * `Field.ofMinimalAxioms`: Define a `Field` structure on a Type by proving a minimal set of axioms
-
 -/
 
-@[expose] public section
+public section
 
 universe u
 

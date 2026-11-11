@@ -55,7 +55,7 @@ open Function MulOpposite
 
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {F α β : Type*}
 
 namespace Finset
 
@@ -952,7 +952,7 @@ theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
   | Int.ofNat _ => coe_pow _ _
   | Int.negSucc n => by
     refine (coe_inv _).trans ?_
-    exact congr_arg Inv.inv (coe_pow _ _)
+    congrm $(coe_pow ..)⁻¹
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
@@ -1251,7 +1251,7 @@ end Group
 end Finset
 
 namespace Fintype
-variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
+variable {ι : Type*} {α : ι → Type*} [Fintype ι] [DecidableEq ι]
   [∀ i, DecidableEq (α i)]
 
 @[to_additive]

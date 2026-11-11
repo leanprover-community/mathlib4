@@ -6,8 +6,12 @@ Authors: Patrick Massot, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Connected.PathConnected
+
+import Mathlib.LinearAlgebra.Projection
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Segment between 2 points as a bundled path
@@ -30,12 +34,11 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
 namespace Path
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The path from `a` to `b` going along a straight line segment -/
 @[simps]
 protected def segment (a b : E) : Path a b where
   toFun t := lineMap a b (t : ℝ)
-  continuous_toFun := by dsimp [lineMap]; fun_prop
+  continuous_toFun := by simp only [lineMap_apply_module']; fun_prop
   source' := by simp
   target' := by simp
 
@@ -62,7 +65,6 @@ theorem cast_segment {a b c d : E} (hac : c = a) (hbd : d = b) :
     (Path.segment a b).cast hac hbd = .segment c d := by
   subst_vars; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eqOn_extend_segment (a b : E) :
     EqOn (Path.segment a b).extend (AffineMap.lineMap a b) I := by
   intro t ht

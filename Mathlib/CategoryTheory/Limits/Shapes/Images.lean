@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
-public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
@@ -51,7 +50,6 @@ so that `m` factors through the `m'` in any other such factorisation.
 ## Future work
 * TODO: coimages, and abelian categories.
 * TODO: connect this with existing work in the group theory and ring theory libraries.
-
 -/
 
 @[expose] public section
@@ -473,7 +471,6 @@ theorem imageMonoIsoSource_hom_self [Mono f] : (imageMonoIsoSource f).hom ≫ f 
   simp only [← imageMonoIsoSource_inv_ι f]
   rw [← Category.assoc, Iso.hom_inv_id, Category.id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 -- This is the proof that `factorThruImage f` is an epimorphism
 -- from https://en.wikipedia.org/wiki/Image_%28category_theory%29, which is in turn taken from:
 -- Mitchell, Barry (1965), Theory of categories, MR 0202787, p.12, Proposition 10.1
@@ -492,7 +489,7 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
   have t : v ≫ q = 𝟙 (image f) :=
     (cancel_mono_id (image.ι f)).1
       (by
-        convert! t₀ using 1
+        convert t₀ using 1
         rw [Category.assoc])
   -- The proof from wikipedia next proves `q ≫ v = 𝟙 _`,
   -- and concludes that `equalizer g h ≅ image f`,
@@ -707,7 +704,6 @@ theorem ImageMap.factor_map {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (s
     (m : ImageMap sq) : factorThruImage f.hom ≫ m.map = sq.left ≫ factorThruImage g.hom :=
   (cancel_mono (image.ι g.hom)).1 <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- To give an image map for a commutative square with `f` at the top and `g` at the bottom, it
 suffices to give a map between any mono factorisation of `f` and any image factorisation of `g`. -/
 def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
@@ -772,9 +768,6 @@ theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
     {sq : f ⟶ g} (F G : ImageMap sq) : F.map = G.map := by
   apply ImageMap.map_uniq_aux _ F.map_ι _ G.map_ι
 
-@[deprecated (since := "2026-04-08")]
-alias ImageMap.mk.injEq' := ImageMap.mk.injEq
-
 instance : Subsingleton (ImageMap sq) :=
   Subsingleton.intro fun a b =>
     ImageMap.ext <| ImageMap.map_uniq a b
@@ -806,7 +799,7 @@ variable [HasImageMap sq']
 def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map sq'
 
 @[simp]
-theorem image.map_comp [HasImageMap (sq ≫ sq')] :
+theorem image.map_comp :
     image.map (sq ≫ sq') = image.map sq ≫ image.map sq' :=
   show (HasImageMap.imageMap (sq ≫ sq')).map = (imageMapComp sq sq').map by
     congr; simp only [eq_iff_true_of_subsingleton]
@@ -822,7 +815,7 @@ morphism `𝟙 f` in the arrow category. -/
 def imageMapId : ImageMap (𝟙 f) where map := 𝟙 (image f.hom)
 
 @[simp]
-theorem image.map_id [HasImageMap (𝟙 f)] : image.map (𝟙 f) = 𝟙 (image f.hom) :=
+theorem image.map_id : image.map (𝟙 f) = 𝟙 (image f.hom) :=
   show (HasImageMap.imageMap (𝟙 f)).map = (imageMapId f).map by
     congr; simp only [eq_iff_true_of_subsingleton]
 
@@ -957,7 +950,6 @@ instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages 
                   factorThruImage f.hom ≫ image.ι f.hom ≫ st.right
                 by simp)).lift }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a category has images, equalizers and pullbacks, then images are automatically strong epi
 images. -/
 instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [HasPullbacks C]
@@ -1026,7 +1018,6 @@ open CategoryTheory.Limits
 
 variable {C D : Type*} [Category* C] [Category* D]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=
   ⟨fun {X} {Y} f => by

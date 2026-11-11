@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.GradedObject.Associator
 public import Mathlib.CategoryTheory.GradedObject.Single
+
 /-!
 # The left and right unitors
 
@@ -18,7 +19,6 @@ Under similar assumptions, we also obtain a right unitor isomorphism
 `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`. Finally,
 the lemma `mapBifunctor_triangle` promotes a triangle identity involving functors
 to a triangle identity for the induced functors on graded objects.
-
 -/
 
 @[expose] public section
@@ -66,7 +66,6 @@ noncomputable def mapBifunctorLeftUnitorCofan (hp : ∀ (j : J), p ⟨0, j⟩ = 
       (mapBifunctorObjSingle₀ObjIsInitial F X Y a ha).to _)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma mapBifunctorLeftUnitorCofan_inj (j : J) :
     (mapBifunctorLeftUnitorCofan F X e p hp Y j).inj ⟨⟨0, j⟩, hp j⟩ =
@@ -183,7 +182,6 @@ noncomputable def mapBifunctorRightUnitorCofan (hp : ∀ (j : J), p ⟨j, 0⟩ =
       (mapBifunctorObjObjSingle₀IsInitial F Y X a ha).to _)
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma mapBifunctorRightUnitorCofan_inj (j : J) :
     (mapBifunctorRightUnitorCofan F Y e p hp X j).inj ⟨⟨j, 0⟩, hp j⟩ =
@@ -244,7 +242,6 @@ lemma mapBifunctorRightUnitor_inv_apply (j : J) :
 
 variable {Y}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorRightUnitor_inv_naturality :
     φ ≫ (mapBifunctorRightUnitor F Y e p hp X').inv =
@@ -336,7 +333,6 @@ variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category* C₁] [Category*
   [HasGoodTrifunctor₂₃Obj G F₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃]
   [HasMap (((mapBifunctor G I₁ I₃).obj X₁).obj X₃) π]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mapBifunctor_triangle
     (triangle : ∀ (X₁ : C₁) (X₃ : C₃), ((associator.hom.app X₁).app X₂).app X₃ ≫
     (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃) :

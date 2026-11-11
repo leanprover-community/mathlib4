@@ -5,13 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Pointwise
-public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-public import Mathlib.Analysis.Seminorm
-public import Mathlib.Topology.Bornology.Basic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
+public import Mathlib.GroupTheory.GroupAction.Pointwise
 
 /-!
 # Von Neumann Boundedness
@@ -38,7 +34,6 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 ## References
 
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-
 -/
 
 @[expose] public section
@@ -61,6 +56,7 @@ variable [SeminormedRing 𝕜] [SMul 𝕜 E] [Zero E]
 variable [TopologicalSpace E]
 
 /-- A set `s` is von Neumann bounded if every neighborhood of 0 absorbs `s`. -/
+@[wikidata Q17003677]
 def IsVonNBounded (s : Set E) : Prop :=
   ∀ ⦃V⦄, V ∈ 𝓝 (0 : E) → Absorbs 𝕜 V s
 
@@ -436,8 +432,8 @@ protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
   intro V hV
   refine (h hV).restrict_scalars <| AntilipschitzWith.tendsto_cobounded (K := ‖(1 : 𝕜')‖₊⁻¹) ?_
   refine AntilipschitzWith.of_le_mul_nndist fun x y ↦ ?_
-  rw [nndist_eq_nnnorm, nndist_eq_nnnorm, ← sub_smul, nnnorm_smul, ← div_eq_inv_mul,
-    mul_div_cancel_right₀ _ (nnnorm_ne_zero_iff.2 one_ne_zero)]
+  rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← sub_smul, nnNorm_smul, ← div_eq_inv_mul,
+    mul_div_cancel_right₀ _ (nnNorm_ne_zero_iff.2 one_ne_zero)]
 
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars
@@ -522,7 +518,7 @@ theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
     Bornology.IsBounded s ↔ ∃ a : 𝕜, s ⊆ a • Metric.closedBall (0 : E) 1 := by
   constructor
   · rw [isBounded_iff_subset_smul_ball 𝕜]
-    exact Exists.imp fun a ha => ha.trans <| Set.smul_set_mono <| Metric.ball_subset_closedBall
+    exact Exists.imp fun a ha => ha.trans <| Set.smul_set_mono Metric.ball_subset_closedBall
   · rw [← isVonNBounded_iff 𝕜]
     rintro ⟨a, ha⟩
     exact ((isVonNBounded_closedBall 𝕜 E 1).image (a • (1 : E →L[𝕜] E))).subset ha

@@ -5,8 +5,6 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 /-!
@@ -25,7 +23,6 @@ We also construct the subcategory of subterminal objects.
 * Define exponential ideals, and show this subcategory is an exponential ideal.
 * Use the above to show that in a locally Cartesian closed category, every subobject lattice
   is Cartesian closed (equivalently, a Heyting algebra).
-
 -/
 
 @[expose] public section
@@ -84,7 +81,6 @@ theorem isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal 
 theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ => by
   subsingleton
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is subterminal, its diagonal morphism is an isomorphism.
 The converse of `isSubterminal_of_isIso_diag`.
 -/
@@ -94,7 +90,6 @@ theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] :
         rw [IsSubterminal.def] at hA
         cat_disch⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
 The converse of `isSubterminal.isIso_diag`.
 -/

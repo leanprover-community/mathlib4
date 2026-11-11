@@ -5,9 +5,8 @@ Authors: Yuma Mizuno, Calle Sönne
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
-public import Mathlib.Tactic.CategoryTheory.ToApp
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 
 /-!
 # Pseudofunctors
@@ -30,7 +29,6 @@ We provide several constructors for pseudofunctors:
 * `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`, which we
   denote by `B ⥤ᵖ C`.
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
-
 -/
 
 @[expose] public section
@@ -115,7 +113,7 @@ attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
 variable (F : B ⥤ᵖ C)
 
 /-- The oplax functor associated with a pseudofunctor. -/
-@[simps]
+@[implicit_reducible, simps]
 def toOplax : B ⥤ᵒᵖᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).hom
@@ -125,7 +123,7 @@ instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᵒᵖᴸ C) :=
   ⟨toOplax⟩
 
 /-- The lax functor associated with a pseudofunctor. -/
-@[simps]
+@[implicit_reducible, simps]
 def toLax : B ⥤ᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).inv

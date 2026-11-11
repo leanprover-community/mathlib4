@@ -6,7 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Order.Lattice
-public import Mathlib.Order.PartialSups
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity of `partialSups`

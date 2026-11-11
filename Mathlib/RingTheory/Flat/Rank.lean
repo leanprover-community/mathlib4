@@ -5,12 +5,12 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+
+import Mathlib.LinearAlgebra.Trace
 
 /-!
-
 # Results for the rank of a finite flat algebra
 
 In this file we study a finite, flat `R`-algebra `S` and relate injectivity and
@@ -24,7 +24,6 @@ bijectivity of `R → S` with the rank of `S` over `R`.
   isomorphism iff the rank of `S` is at most `1` at all primes.
 - `Module.algebraMap_bijective_iff_rankAtStalk`: `S` is of constant `R`-rank `1` if and only if
   `S` is isomorphic to `R`.
-
 -/
 
 public section
@@ -113,7 +112,7 @@ lemma Module.Flat.tfae_algebraMap_surjective :
 
 lemma Module.rankAtStalk_le_one_iff_surjective :
     (∀ p, Module.rankAtStalk (R := R) S p ≤ 1) ↔ Function.Surjective (algebraMap R S) :=
-  (Module.Flat.tfae_algebraMap_surjective R S).out 2 0
+  (Module.Flat.tfae_algebraMap_surjective R S).out 3 1
 
 /-- If `S` is a finite, flat `R`-algebra, `S` is of constant rank `1` if and only if
 `S` is isomorphic to `R`. -/

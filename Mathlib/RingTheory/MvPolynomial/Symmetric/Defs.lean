@@ -5,8 +5,7 @@ Authors: Hanting Zhang, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 
 /-!
@@ -52,7 +51,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `φ ψ : MvPolynomial σ R`
-
 -/
 
 @[expose] public section
@@ -70,13 +68,21 @@ variable {R : Type*} [CommSemiring R]
 def esymm (s : Multiset R) (n : ℕ) : R :=
   ((s.powersetCard n).map Multiset.prod).sum
 
+@[simp] lemma esymm_zero (s : Multiset R) :
+    s.esymm 0 = 1 := by
+  simp [esymm]
+
+lemma esymm_of_card_lt {s : Multiset R} {n : ℕ} (h : s.card < n) :
+    s.esymm n = 0 := by
+  simp [esymm, powersetCard_eq_empty _ h]
+
 theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
     (s.val.map f).esymm n = (s.powersetCard n).sum fun t => t.prod f := by
   simp only [esymm, powersetCard_map, ← Finset.map_val_val_powersetCard, map_map]
   simp only [Function.comp_apply, Finset.prod_map_val, Finset.sum_map_val]
 
 lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
-    [SMulCommClass S R R] (s : S) (n : ℕ) (m : Multiset R) :
+    (s : S) (n : ℕ) (m : Multiset R) :
     s ^ n • m.esymm n = (m.map (s • ·)).esymm n := by
   rw [esymm, smul_sum, map_map]
   trans ((powersetCard n m).map (fun x : Multiset R ↦ s ^ card x • x.prod)).sum
@@ -260,7 +266,7 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   rw [Finsupp.support_single _ one_ne_zero]
   simp only [mem_singleton]
   rintro a h rfl
-  have := congr_arg Finsupp.support h
+  have := congr($(h).support)
   rw [Finsupp.support_sum_eq_biUnion _ (by simp), Finsupp.support_sum_eq_biUnion _ (by simp)]
     at this
   simp_all

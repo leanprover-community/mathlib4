@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Category.MonCat.Shrink
 public import Mathlib.Algebra.Category.Grp.Shrink
+public import Mathlib.Algebra.Category.MonCat.Shrink
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 Let `C` be a locally `w`-small category. We define the Yoneda
 embedding `shrinkYonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{w} w` and its `Grp` analogue.
-
 -/
 
 @[expose] public section

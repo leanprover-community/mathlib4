@@ -16,7 +16,6 @@ this is the isomorphism from the cokernel of `S.map' k (k + 1)`
 to the kernel of `S.map' (k + 2) (k + 3)`. This is intended
 to be used for exact sequences in abelian categories, but the
 construction works for preadditive balanced categories.
-
 -/
 
 @[expose] public section
@@ -36,7 +35,6 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] {n : ℕ} {S : Composable
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is a complex, this is the morphism from a cokernel of `S.map' k (k + 1)`
 to a kernel of `S.map' (k + 2) (k + 3)`. -/
 def cokerToKer' (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
@@ -46,7 +44,6 @@ def cokerToKer' (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
     (show S.map' k (k + 1) ≫ IsLimit.lift hkf (KernelFork.ofι _ (hS.zero (k + 1))) = _ from
       Fork.IsLimit.hom_ext hkf (by simpa using hS.zero k)))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cokerToKer'_fac (hk : k ≤ n) (cc : CokernelCofork (S.map' k (k + 1)))
     (kf : KernelFork (S.map' (k + 2) (k + 3))) (hcc : IsColimit cc) (hkf : IsLimit kf) :

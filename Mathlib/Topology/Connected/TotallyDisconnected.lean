@@ -5,7 +5,9 @@ Authors: Kenny Lau, Patrick Massot, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Logic.Function.Const
 public import Mathlib.Topology.Connected.Clopen
+public import Mathlib.Topology.InductiveDimension.Classes
 
 /-!
 # Totally disconnected and totally separated topological spaces
@@ -140,7 +142,7 @@ noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
     C(X, Y) ≃ Y where
   toFun f := f (Classical.arbitrary _)
   invFun y := ⟨fun _ ↦ y, by fun_prop⟩
-  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
+  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ (map_continuous f) _)
   right_inv _ := rfl
 
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
@@ -258,7 +260,7 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
 @[continuity]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
-  h.quotient_liftOn' <| by convert! h.image_eq_of_connectedComponent_eq
+  h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq
 
 @[simp]
 theorem Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :
@@ -331,9 +333,14 @@ theorem IsPreconnected.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTopolo
   (hs.image f hf).subsingleton (mem_image_of_mem f hx) (mem_image_of_mem f hy)
 
 /-- A `PreconnectedSpace` version of `isPreconnected.constant` -/
+theorem Continuous.isConst_of_preconnectedSpace {Y : Type*} [TopologicalSpace Y]
+    [DiscreteTopology Y] [PreconnectedSpace α] {f : α → Y} (hf : Continuous f) : f.IsConst :=
+  fun _ _ ↦ isPreconnected_univ.constant hf.continuousOn trivial trivial
+
+@[deprecated Continuous.isConst_of_preconnectedSpace +typeChanged (since := "2026-11-09")]
 theorem PreconnectedSpace.constant {Y : Type*} [TopologicalSpace Y] [DiscreteTopology Y]
     (hp : PreconnectedSpace α) {f : α → Y} (hf : Continuous f) {x y : α} : f x = f y :=
-  IsPreconnected.constant hp.isPreconnected_univ (Continuous.continuousOn hf) trivial trivial
+  hf.isConst_of_preconnectedSpace x y
 
 /-- Refinement of `IsPreconnected.constant` only assuming the map factors through a
 discrete subset of the target. -/
@@ -341,9 +348,10 @@ theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     {β} [TopologicalSpace β] {T : Set β} (hT : IsDiscrete T) {f : α → β} (hc : ContinuousOn f S)
     (hTm : MapsTo f S T) {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
-  suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
+  suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ from Subtype.coe_inj.mpr this
+  rw [isPreconnected_iff_preconnectedSpace] at hS
   rw [isDiscrete_iff_discreteTopology] at hT
-  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.mapsToRestrict _)
+  exact hc.mapsToRestrict hTm |>.isConst_of_preconnectedSpace _ _
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
@@ -362,3 +370,19 @@ theorem IsPreconnected.isDiscrete_iff_subsingleton {S : Set α} (hS : IsPreconne
     have : Subsingleton S := subsingleton_of_preconnected_totallyDisconnected
     simpa using this
   mpr h := h.isDiscrete
+
+instance [T0Space α] [ZeroDimensionalSpace α] : TotallySeparatedSpace α := by
+  simp_rw [totallySeparatedSpace_iff_exists_isClopen, mem_compl_iff]
+  intro x y hxy
+  contrapose! hxy
+  apply Inseparable.eq
+  rw [isTopologicalBasis_isClopen.inseparable_iff]
+  exact fun V hV ↦ ⟨hxy V hV, (hxy Vᶜ hV.compl).mtr⟩
+
+@[deprecated instTotallySeparatedSpaceOfT0SpaceOfZeroDimensionalSpace +typeChanged
+(since := "2026-10-08")]
+theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space α]
+    (h : TopologicalSpace.IsTopologicalBasis { s : Set α | IsClopen s }) :
+    TotallySeparatedSpace α := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen] at h
+  infer_instance

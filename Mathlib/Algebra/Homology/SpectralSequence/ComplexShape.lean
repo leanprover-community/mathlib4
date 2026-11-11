@@ -6,6 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Complex shapes for pages of spectral sequences
@@ -22,7 +24,6 @@ spectral sequence).
 this is a similar definition as `ComplexShape.spectralSequenceNat`
 but for `ℤ × Fin l` (identified as a subset of `ℤ × ℤ`). (This could
 be used for spectral sequences associated to a *finite* filtration.)
-
 -/
 
 @[expose] public section

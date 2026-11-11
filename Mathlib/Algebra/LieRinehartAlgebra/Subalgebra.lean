@@ -22,7 +22,6 @@ applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ri
 * A Lie-Rinehart subalgebra of a Lie-Rinehart ring is a Lie-Rinehart ring
 
 * A Lie-Rinehart subalgebra of a Lie-Rinehart algebra is a Lie-Rinehart algebra over the same ring.
-
 -/
 
 public section
@@ -53,7 +52,7 @@ instance : SetLike (LieRinehartSubalgebra A L) L where
     congr
     exact SetLike.coe_injective h
 
-instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L) L
+instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L)
 
 instance : AddSubgroupClass (LieRinehartSubalgebra A L) L where
   add_mem := Submodule.add_mem _

@@ -24,7 +24,6 @@ The elements of `s` are called generators.
 ## TODOS
 * Add API describing behaviour w/r/t `MulOpposite`.
 * Add lemma showing this graph is the same as `SimpleGraph.circulantGraph` in appropriate settings.
-
 -/
 
 @[expose] public section
@@ -66,7 +65,7 @@ instance [Fintype M] [DecidableEq M] [DecidablePred (· ∈ s)] :
 
 variable (M) in
 /-- `mulCayley` is a left (order-)adjoint. -/
-@[to_additive]
+@[to_additive /-- `addCayley` is a left (order-)adjoint. -/]
 lemma mulCayley_gc :
     GaloisConnection (mulCayley ·) ({g : M | ∀ a, a * g ≠ a → ·.Adj (a * g) a}) := by
   intro S G

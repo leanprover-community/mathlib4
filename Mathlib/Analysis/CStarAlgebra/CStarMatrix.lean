@@ -5,10 +5,11 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-public import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.Topology.UniformSpace.Matrix
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
+public import Mathlib.Topology.UniformSpace.Matrix
+
+import Mathlib.Analysis.Matrix.Normed
 
 /-!
 # Matrices with entries in a C⋆-algebra
@@ -424,13 +425,11 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       rw [star_apply, star_apply]
       simp [Matrix.submatrix_apply] }
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A]
     [Module R A] {e : m ≃ n} {M : CStarMatrix m m A}
     {i : n} {j : n} : reindexₐ R A e M i j = Matrix.reindex e e M i j := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
     (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
@@ -455,7 +454,7 @@ def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
   map_mul' M N := by
     ext
     -- Un-squeezing this `simp` seems to add about half a second elaboration time.
-    simp only [mapₗ_apply, map, LinearMap.coe_coe, ofMatrix_apply, mul_apply, map_sum, map_mul,
+    simp only [mapₗ_apply, map, LinearMap.coe_ofClass, ofMatrix_apply, mul_apply, map_sum, map_mul,
       ofMatrix_apply]
   map_star' M := by ext; simp [map, star_apply, map_star]
 
@@ -654,15 +653,15 @@ which induces a topology that is not defeq with the matrix one, and the elementw
 matrices, in order to show that the two topologies are in fact equal -/
 open scoped Matrix.Norms.Elementwise
 
-private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
+private lemma nnNorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, CStarMatrix.toCLM M v⟫_A‖₊ ≤ C * ‖v‖₊ * ‖w‖₊) : ‖M‖₊ ≤ C :=
   CStarMatrix.norm_le_of_forall_inner_le fun v w => h v w
 
 open Finset in
 private lemma lipschitzWith_toMatrixAux :
     LipschitzWith 1 (ofMatrixₗ.symm (R := ℂ) : CStarMatrix m n A → Matrix m n A) := by
-  refine AddMonoidHomClass.lipschitz_of_bound_nnnorm _ _ fun M => ?_
-  rw [one_mul, ← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm, Matrix.norm_le_iff (norm_nonneg _)]
+  refine AddMonoidHomClass.lipschitz_of_bound_nnNorm _ _ fun M => ?_
+  rw [one_mul, ← NNReal.coe_le_coe, coe_nnNorm, coe_nnNorm, Matrix.norm_le_iff (norm_nonneg _)]
   exact fun _ _ ↦ CStarMatrix.norm_entry_le_norm
 
 open CStarMatrix WithCStarModule in
@@ -685,7 +684,7 @@ private lemma antilipschitzWith_toMatrixAux :
       exact norm_apply_le_norm v j
     _ ≤ ∑ _ : n, ∑ _ : m, ‖ofMatrixₗ.symm (R := ℂ) M‖ := by
       gcongr with j _ i _
-      exact ofMatrixₗ.symm (R := ℂ) M |>.norm_entry_le_entrywise_sup_norm
+      exact ofMatrixₗ.symm (R := ℂ) M |>.norm_apply_le_norm
     _ = _ := by simp [mul_assoc]
 
 private lemma uniformInducing_toMatrixAux :
