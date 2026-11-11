@@ -1065,7 +1065,9 @@ theorem num_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : num x⁻¹ ∣ denom x := by
   nth_rw 1 [← x.num_div_denom]
   rw [inv_div]
 
-theorem denom_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := by
+theorem denom_inv_dvd (x : K⟮X⟯) : denom x⁻¹ ∣ num x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   rw [denom_dvd (num_ne_zero hx)]
   refine ⟨x.denom, ?_⟩
   nth_rw 1 [← x.num_div_denom]
@@ -1073,7 +1075,7 @@ theorem denom_inv_dvd {x : K⟮X⟯} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := 
 
 theorem associated_num_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
   apply associated_of_dvd_dvd (num_inv_dvd hx)
-  convert denom_inv_dvd (inv_ne_zero hx)
+  convert denom_inv_dvd x⁻¹
   rw [inv_inv]
 
 theorem associated_denom_inv {x : K⟮X⟯} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by

@@ -22,7 +22,6 @@ given by the colimit API. We also show that when an inductive system
 involves only monomorphisms, then the "inclusion" morphism
 into the colimit is also a monomorphism (assuming `J`
 is filtered and `C` satisfies AB5).
-
 -/
 
 @[expose] public section

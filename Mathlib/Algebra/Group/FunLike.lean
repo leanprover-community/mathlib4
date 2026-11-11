@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.Pi.Torsion
+public import Mathlib.Algebra.Group.PowIterate
 
 /-! # Group instances for `FunLike` types
 In this file we define various instances related to groups for `FunLike` types.
@@ -19,7 +19,6 @@ avoid long typeclass searches.
 
 Moreover, we define the homomorphism `FunLike.coeMulHom : F →* α → β` that acts by coercion. This
 definition is mainly needed to define a module instance on `F`.
-
 -/
 
 @[expose] public section

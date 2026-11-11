@@ -26,7 +26,6 @@ of continuous affine linear functions. We follow the proof in
   `φ : E → ℝ` that is convex and lower-semicontinuous on a closed convex subset `s` is the supremum
   of a family of countably many functions that are the restrictions to `s` of continuous affine
   linear functions.
-
 -/
 
 public section

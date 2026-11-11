@@ -389,7 +389,7 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
   rw [toMeasurable_def]
   split_ifs with ht
   · apply measure_congr
-    exact ae_eq_set_inter ht.choose_spec.2.2 (ae_eq_refl _)
+    exact ht.choose_spec.2.2.inter .rfl
   · exact A.choose_spec.2.2 s hs
 
 /-- If a set `t` is covered by a countable family of finite measure sets, then its measurable
@@ -456,7 +456,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
   rw [toMeasurable_def]
   split_ifs with ht
   · apply measure_congr
-    exact ae_eq_set_inter ht.choose_spec.2.2 (ae_eq_refl _)
+    exact ht.choose_spec.2.2.inter .rfl
   · exact A.choose_spec.2.2 s hs
 
 theorem restrict_toMeasurable_of_cover {s : Set α} {v : ℕ → Set α} (hv : s ⊆ ⋃ n, v n)
@@ -645,7 +645,7 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
       finite := by
         intro i
         simp only [smul_apply, nnreal_smul_coe_apply]
-        exact ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_spanningSets_lt_top μ i)
+        finiteness [measure_spanningSets_lt_top μ i]
       spanning := iUnion_spanningSets μ }⟩
 
 instance [SigmaFinite (μ.restrict s)] [SigmaFinite (μ.restrict t)] :

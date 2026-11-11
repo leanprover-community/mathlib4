@@ -14,12 +14,10 @@ public import Mathlib.RingTheory.FinitePresentation
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
 
 /-!
-
 # Finitely presentable objects in `Under R` with `R : CommRingCat`
 
 In this file, we show that finitely presented algebras are finitely presentable in `Under R`,
 i.e. `Hom_R(S, -)` preserves filtered colimits.
-
 -/
 
 public section
