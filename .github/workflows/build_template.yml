@@ -106,7 +106,7 @@ jobs:
           github.repository == 'leanprover-community/mathlib4'
           && !startsWith(github.ref_name, 'bump/')
           && !startsWith(github.base_ref, 'bump/')
-        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@f21fb01e73c89082c16d336e4a99eba5fb6c8098
+        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@4a61cd1f8ef7fc544c089d90ba13ca26bb7c02af
         with:
           ref: ${{ inputs.pr_branch_ref }}
           strict: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
