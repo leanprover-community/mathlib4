@@ -391,8 +391,7 @@ protected theorem isAddFundamentalDomain' [Finite ι] [MeasurableSpace E] [Opens
 theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [BorelSpace E]
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
-  convert (ZSpan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
-  exact inferInstanceAs <| VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ
+  exact (ZSpan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
 
 @[deprecated addHaar_halfOpenParallelepiped_eq +typeChanged (since := "2026-11-11")]
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
