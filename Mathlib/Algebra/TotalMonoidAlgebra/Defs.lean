@@ -401,8 +401,8 @@ lemma single_commute_single [DecidableEq M] (hm : Commute m₁ m₂) (hr : Commu
 lemma single_commute [DecidableEq M] (hm : ∀ m', Commute m m') (hr : ∀ r', Commute r r')
     (x : R⟦M⟧) : Commute (single m r) x := by
   ext m'; simp_rw [commute_iff_eq] at hm hr
-  suffices ∑ x_1 ∈ mulAntidiagonal m' with x_1.1 = m, r * x.coeff x_1.2
-    = ∑ x_1 ∈ mulAntidiagonal m' with x_1.2 = m, x.coeff x_1.1 * r by
+  suffices ∑ p ∈ mulAntidiagonal m' with p.1 = m, r * x.coeff p.2 =
+    ∑ p ∈ mulAntidiagonal m' with p.2 = m, x.coeff p.1 * r by
       simpa [coeff_mul, Pi.single_apply, sum_ite]
   refine sum_bij (fun p _ ↦ p.swap) ?_ ?_ ?_ ?_
   all_goals intros; simp_all
@@ -500,23 +500,23 @@ lemma coeff_single_one_mul [DecidableEq M] (x : R⟦M⟧) (r : R) (m : M) :
     (single 1 r * x).coeff m = r * x.coeff m :=
   x.coeff_single_mul_eq_mul_coeff _ (by simp)
 
-@[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R) coeff_mul_natCast]
 lemma coeff_mul_natCast [DecidableEq M] (x : R⟦M⟧) (n : ℕ) (m : M) :
     (x * n).coeff m = x.coeff m * n := coeff_mul_single_one ..
 
-@[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R) coeff_natCast_mul]
 lemma coeff_natCast_mul [DecidableEq M] (x : R⟦M⟧) (n : ℕ) (m : M) :
     (n * x).coeff m = n * x.coeff m := coeff_single_one_mul ..
 
-@[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R) coeff_mul_ofNat]
 lemma coeff_mul_ofNat [DecidableEq M] (x : R⟦M⟧) (n : ℕ) [n.AtLeastTwo] (m : M) :
     (x * ofNat(n)).coeff m = x.coeff m * ofNat(n) := coeff_mul_single_one ..
 
-@[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R) coeff_ofNat_mul]
 lemma coeff_ofNat_mul [DecidableEq M] (x : R⟦M⟧) (n : ℕ) [n.AtLeastTwo] (m : M) :
     (ofNat(n) * x).coeff m = ofNat(n) * x.coeff m := coeff_single_one_mul ..
 
-/-- The embedding of a unital magma into its magma algebra. -/
+/-- The embedding of a unital magma into its total magma algebra. -/
 @[simps! apply]
 def of (R M : Type*) [Semiring R] [MulOneClass M] [HasMulAntidiagonal M]
     [DecidableEq M] : M →* R⟦M⟧ where
@@ -552,7 +552,7 @@ end MulOneClass
 
 section Monoid
 
-variable [Monoid M] [Monoid N] [HasMulAntidiagonal M] [HasMulAntidiagonal N]
+variable [Monoid M] [HasMulAntidiagonal M]
 
 @[to_additive (dont_translate := R)]
 instance semiring [DecidableEq M] : Semiring R⟦M⟧ where
