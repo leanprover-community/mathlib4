@@ -397,11 +397,6 @@ theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHam
     (fun huv ↦ he <| .trans ?_ huv) he (hp.isHamiltonian_tail.mem_support v)
   apply hp.isTrail.isEdgeReachable_two <;> simp
 
--- #41393
-set_option warn.sorry false in
-theorem Walk.IsHamiltonian.isHamiltonian_of_adj (hp : p.IsHamiltonian) (hadj : G.Adj a b)
-    (hlen : p.length ≠ 1) : G.IsHamiltonian := sorry
-
 theorem isHamiltonian_sup_edge {u v : α} :
     (G ⊔ edge u v).IsHamiltonian ↔
       G.IsHamiltonian ∨ ∃ p : G.Walk u v, p.IsHamiltonian ∧ 2 ≤ p.length := by
