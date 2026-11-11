@@ -19,7 +19,7 @@ variable {A B : Type*} [Membership B A]
 
 section SemilatticeSup
 
-variable [SemilatticeSup A] [IsMemLE A B] {p q : A}
+variable [SemilatticeSup A] [IsConcreteLE A B] {p q : A}
 
 theorem mem_sup_left {x : B} (h : x ∈ p) : x ∈ p ⊔ q :=
   mem_of_le_of_mem le_sup_left h
@@ -31,7 +31,7 @@ end SemilatticeSup
 
 section OrderBot
 
-variable [LE A] [OrderBot A] [IsMemLE A B] {p q : A}
+variable [LE A] [OrderBot A] [IsConcreteLE A B] {p q : A}
 
 theorem mem_of_mem_bot {x : B} (h : x ∈ (⊥ : A)) : x ∈ p :=
   mem_of_le_of_mem bot_le h
@@ -40,7 +40,7 @@ end OrderBot
 
 section SemilatticeInf
 
-variable [SemilatticeInf A] [IsMemLE A B] {p q : A}
+variable [SemilatticeInf A] [IsConcreteLE A B] {p q : A}
 
 theorem mem_of_mem_inf_left {x : B} (h : x ∈ p ⊓ q) : x ∈ p :=
   mem_of_le_of_mem inf_le_left h
@@ -52,7 +52,7 @@ end SemilatticeInf
 
 section OrderTop
 
-variable [LE A] [OrderTop A] [IsMemLE A B] {p q : A}
+variable [LE A] [OrderTop A] [IsConcreteLE A B] {p q : A}
 
 theorem mem_top_of_mem {x : B} (h : x ∈ p) : x ∈ (⊤ : A) :=
   mem_of_le_of_mem le_top h
