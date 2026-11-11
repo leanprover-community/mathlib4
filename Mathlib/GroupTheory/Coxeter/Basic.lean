@@ -343,8 +343,8 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
 /-! ### Homomorphisms from a Coxeter group -/
 
 /-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
-theorem ext_simple {G : Type*} [MulOneClass G] {φ₁ φ₂ : W →* G}
-    (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) : φ₁ = φ₂ :=
+theorem ext_simple {G : Type*} [MulOneClass G] {φ₁ φ₂ : W →* G} (h : ∀ i, φ₁ (s i) = φ₂ (s i)) :
+    φ₁ = φ₂ :=
   MonoidHom.eq_of_eqOn_denseM cs.submonoidClosure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
 
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
