@@ -61,7 +61,7 @@ lemma gram_single [DecidableEq n] (i : n) (x : E) :
   · simp [hik]
   simp
 
-lemma submatrix_gram (v : n → E) {m : Set n} (f : m → n) :
+lemma submatrix_gram (v : n → E) {m : Type*} (f : m → n) :
     (gram 𝕜 v).submatrix f f = gram 𝕜 (v ∘ f) := rfl
 
 variable (𝕜) in
@@ -76,13 +76,12 @@ theorem star_dotProduct_gram_mulVec [Fintype n] (v : n → E) (x y : n → 𝕜)
       gram_apply, Pi.star_apply]
   · simp_rw [sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
 
-variable [Finite n]
-
 variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
 theorem posSemidef_gram (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
-  have := Fintype.ofFinite n
+  refine posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_
+  rw [submatrix_gram]
   refine .of_dotProduct_mulVec_nonneg (isHermitian_gram _ _) fun x ↦ ?_
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp
@@ -90,13 +89,15 @@ theorem posSemidef_gram (v : n → E) :
 /-- In a normed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
-  have := Fintype.ofFinite n
+  rw [linearIndependent_iff_finset_linearIndependent]
+  intro s
   rw [Fintype.linearIndependent_iff]
   intro y hy
-  have := h_gram.dotProduct_mulVec_pos (x := y)
+  have := h_gram.submatrix (Subtype.coe_injective (p := (· ∈ s)))
+  rw [submatrix_gram] at this
+  have := this.dotProduct_mulVec_pos (x := y)
   simp_all [star_dotProduct_gram_mulVec]
 
-omit [Finite n] in
 theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n → E}
     (h : (gram 𝕜 v).det ≠ 0) : LinearIndependent 𝕜 v :=
   linearIndependent_of_posDef_gram <| (posSemidef_gram 𝕜 v).posDef_iff_det_ne_zero.mpr h
@@ -104,17 +105,18 @@ theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n
 end SemiInnerProductSpace
 
 section NormedInnerProductSpace
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Finite n]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
 theorem posDef_gram_of_linearIndependent
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
-  have := Fintype.ofFinite n
-  rw [Fintype.linearIndependent_iff] at h_li
+  refine posDef_iff_submatrix_finset.mpr fun s ↦ ?_
+  rw [submatrix_gram]
+  have hs := Fintype.linearIndependent_iff.mp (h_li.comp _ Subtype.coe_injective)
   refine .of_dotProduct_mulVec_pos (isHermitian_gram _ _) fun x hx ↦
     ((posSemidef_gram ..).dotProduct_mulVec_nonneg _).lt_of_ne' ?_
   rw [star_dotProduct_gram_mulVec, inner_self_eq_zero.ne]
-  exact mt (h_li x) (mt funext hx)
+  exact mt (hs x) (mt funext hx)
 
 /-- In a normed space, linear independence of `v` is equivalent to positive definiteness of
 `gram 𝕜 v`. -/
@@ -122,43 +124,31 @@ theorem posDef_gram_iff_linearIndependent {v : n → E} :
     PosDef (gram 𝕜 v) ↔ LinearIndependent 𝕜 v :=
   ⟨linearIndependent_of_posDef_gram, posDef_gram_of_linearIndependent⟩
 
-omit [Finite n] in
 theorem det_gram_ne_zero_iff_linearIndependent [Fintype n] [DecidableEq n] {v : n → E} :
     (gram 𝕜 v).det ≠ 0 ↔ LinearIndependent 𝕜 v := by
   rw [← posDef_gram_iff_linearIndependent, (posSemidef_gram 𝕜 v).posDef_iff_det_ne_zero]
 
-omit [Finite n] in
 theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) (v : n → E) :
     letI m := of fun i j ↦ b.repr (v j) i
     gram 𝕜 v = mᴴ * m := by
   ext i j
   simp [Matrix.mul_apply, b.repr_apply_apply, b.sum_inner_mul_inner]
 
-omit [Finite n] in
 @[simp]
 lemma gram_eq_one_iff_orthonormal [DecidableEq n] {v : n → E} : gram 𝕜 v = 1 ↔ Orthonormal 𝕜 v := by
   simp [← Matrix.ext_iff, orthonormal_iff_ite, Matrix.one_apply]
 
-omit [Finite n] in
 /-- Inequality `‖f x‖ ≤ ‖f‖ * ‖x‖` lifted to Gram matrices. -/
 theorem posSemidef_opNorm_smul_gram_sub_gram {F} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
     (v : n → E) (f : E →L[𝕜] F) : (‖f‖ ^ 2 • gram 𝕜 v - gram 𝕜 (f ∘ v)).PosSemidef := by
-  refine ⟨(isHermitian_gram 𝕜 v).smul (((Pi.isSelfAdjoint.mpr (congrFun rfl)).apply f).pow 2)
-    |>.sub (isHermitian_gram 𝕜 (f ∘ v)), fun c ↦ ?_⟩
-  simp_rw [Finsupp.sum, Matrix.sub_apply, Matrix.smul_apply, mul_sub, sub_mul,
-    Finset.sum_sub_distrib, sub_nonneg]
-  calc
-    ∑ x ∈ c.support, ∑ y ∈ c.support, star (c x) * gram 𝕜 (f ∘ v) x y * c y
-    _ = (‖f (∑ x ∈ c.support, c x • v x)‖ : 𝕜) ^ 2 := ?h1
-    _ ≤ ‖f‖ ^ 2 • (‖∑ i ∈ c.support, c i • v i‖ : 𝕜) ^ 2 := by
-      norm_cast
-      grw [f.le_opNorm _, smul_eq_mul, ← mul_pow]
-    _ = ∑ x ∈ c.support, ∑ y ∈ c.support, star (c x) * ‖f‖ ^ 2 • gram 𝕜 v x y * c y := ?h2
-  all_goals
-    rw [Finset.sum_comm]
-    simp [← inner_self_eq_norm_sq_to_K, inner_sum, sum_inner, inner_smul_left, inner_smul_right,
-      Finset.mul_sum, Finset.smul_sum, RCLike.real_smul_eq_coe_mul]
-    grind
+  refine posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_
+  rw [submatrix_sub, submatrix_smul, submatrix_gram, submatrix_gram]
+  refine .of_dotProduct_mulVec_nonneg
+    (((isHermitian_gram 𝕜 _).smul (by simp [IsSelfAdjoint])).sub (isHermitian_gram 𝕜 _)) fun x ↦ ?_
+  simp only [sub_mulVec, smul_mulVec, dotProduct_sub, dotProduct_smul,
+    star_dotProduct_gram_mulVec, inner_self_eq_norm_sq_to_K, ← map_sum, sub_nonneg]
+  norm_cast
+  simpa only [smul_eq_mul, ← mul_pow] using pow_le_pow_left₀ (norm_nonneg _) (f.le_opNorm _) 2
 
 end NormedInnerProductSpace
 

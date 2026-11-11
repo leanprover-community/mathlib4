@@ -323,15 +323,30 @@ lemma of_dotProduct_mulVec_nonneg {M : Matrix n n R} (hM1 : M.IsHermitian)
     (hM2 : ∀ x, 0 ≤ star x ⬝ᵥ (M *ᵥ x)) : M.PosSemidef :=
   posSemidef_iff_dotProduct_mulVec.mpr ⟨hM1, hM2⟩
 
-omit [Fintype m] in variable [Finite m] in
+omit [Fintype n] in
+/-- A matrix `M : Matrix n n R` is positive semidefinite iff every finite principal submatrix is
+positive semidefinite. -/
+theorem _root_.Matrix.posSemidef_iff_submatrix_finset {M : Matrix n n R} :
+    M.PosSemidef ↔ ∀ s : Finset n, (M.submatrix (↑) (↑) : Matrix s s R).PosSemidef := by
+  refine ⟨fun hM s ↦ hM.submatrix _, fun h ↦ ⟨?_, fun x ↦ ?_⟩⟩
+  · classical
+    ext i j
+    exact (h {i, j}).1.apply ⟨i, by simp⟩ ⟨j, by simp⟩
+  · simpa only [Finsupp.sum, dotProduct, mulVec, Pi.star_apply, Finset.mul_sum, mul_assoc,
+      Finset.univ_eq_attach, submatrix_apply, ← Finset.sum_attach x.support] using
+      (h x.support).dotProduct_mulVec_nonneg (x ·)
+
+omit [Fintype m] in
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix n m R) :
     PosSemidef (Bᴴ * A * B) := by
-  have := Fintype.ofFinite m
-  refine of_dotProduct_mulVec_nonneg (isHermitian_conjTranspose_mul_mul B hA.1) fun x ↦ ?_
-  simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using
-      hA.dotProduct_mulVec_nonneg (B *ᵥ x)
+  refine posSemidef_iff_submatrix_finset.mpr fun s ↦
+    of_dotProduct_mulVec_nonneg ((isHermitian_conjTranspose_mul_mul B hA.1).submatrix _) fun x ↦ ?_
+  trans star x ⬝ᵥ ((B.submatrix id (↑))ᴴ * A * B.submatrix id (↑)) *ᵥ x
+  · simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using
+      hA.dotProduct_mulVec_nonneg (B.submatrix id (↑) *ᵥ x)
+  · rfl
 
-omit [Fintype m] in variable [Finite m] in
+omit [Fintype m] in
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix m n R) :
     PosSemidef (B * A * Bᴴ) := by
   simpa only [conjTranspose_conjTranspose] using hA.conjTranspose_mul_mul_same Bᴴ
@@ -392,16 +407,14 @@ theorem toLinearMap₂'_zero_iff [StarOrderedRing R'] [IsProperStar R'] [Decidab
 
 end PosSemidef
 
-omit [Fintype n] in variable [Finite n] in
+omit [Fintype n] in
 /-- The conjugate transpose of a matrix multiplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (Aᴴ * A) := by
-  have := Fintype.ofFinite n
-  refine .of_dotProduct_mulVec_nonneg (isHermitian_conjTranspose_mul_self _) fun x => ?_
-  rw [← mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose, star_star]
-  exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
+  classical
+  simpa using PosSemidef.one.conjTranspose_mul_mul_same A
 
-omit [Fintype m] in variable [Finite m] in
+omit [Fintype m] in
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
 theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (A * Aᴴ) := by
@@ -448,13 +461,13 @@ theorem IsUnit.posSemidef_star_right_conjugate_iff (hU : IsUnit U) :
 
 end conjugate
 
-omit [Fintype n] [Fintype m] in variable [Finite n] [Finite m] in
+omit [Fintype n] in
 /-- The matrix `vecMulVec a (star a)` is always positive semi-definite. -/
 theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
     (vecMulVec a (star a)).PosSemidef := by
   simp [vecMulVec_eq Unit, ← conjTranspose_replicateCol, posSemidef_self_mul_conjTranspose]
 
-omit [Fintype n] in variable [Finite n] in
+omit [Fintype n] in
 /-- The matrix `vecMulVec (star a) a` is always positive semi-definite. -/
 theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
     (vecMulVec (star a) a).PosSemidef := by
@@ -482,6 +495,22 @@ lemma dotProduct_mulVec_pos {M : Matrix n n R} (hM : M.PosDef) {x} (hx : x ≠ 0
 lemma of_dotProduct_mulVec_pos {M : Matrix n n R} (hM1 : M.IsHermitian)
     (hM2 : ∀ ⦃x⦄, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x)) : M.PosDef :=
   posDef_iff_dotProduct_mulVec.mpr ⟨hM1, hM2⟩
+
+omit [Fintype n] in
+/-- A matrix `M : Matrix n n R` is positive definite iff every finite principal submatrix is
+positive definite. -/
+theorem _root_.Matrix.posDef_iff_submatrix_finset {M : Matrix n n R} :
+    M.PosDef ↔ ∀ s : Finset n, (M.submatrix (↑) (↑) : Matrix s s R).PosDef := by
+  refine ⟨fun hM s ↦ hM.submatrix Subtype.coe_injective, fun h ↦ ⟨?_, fun x hx ↦ ?_⟩⟩
+  · classical
+    ext i j
+    exact (h {i, j}).1.apply ⟨i, by simp⟩ ⟨j, by simp⟩
+  · have hx' : (fun i : x.support ↦ x i) ≠ 0 := by
+      obtain ⟨i, hi⟩ := Finsupp.ne_iff.mp hx
+      exact Function.ne_iff.mpr ⟨⟨i, Finsupp.mem_support_iff.mpr hi⟩, hi⟩
+    simpa only [Finsupp.sum, dotProduct, mulVec, Pi.star_apply, Finset.mul_sum, mul_assoc,
+      Finset.univ_eq_attach, submatrix_apply, ← Finset.sum_attach x.support] using
+      (h x.support).dotProduct_mulVec_pos hx'
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} {B : Matrix n m R} (hA : A.PosDef)
     (hB : Function.Injective B.mulVec) :
@@ -645,26 +674,37 @@ section SchurComplement
 
 variable [StarOrderedRing R']
 
-omit [Fintype n] in variable [Finite n] in
+omit [Fintype n] in
 theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
     (B : Matrix m n R') (D : Matrix n n R') (hA : A.PosDef) [Invertible A] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
-  have := Fintype.ofFinite n
-  rw [posSemidef_iff_dotProduct_mulVec, IsHermitian.fromBlocks₁₁ _ _ hA.1]
-  constructor
-  · refine fun h => .of_dotProduct_mulVec_nonneg h.1 fun x => ?_
-    have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
-    rwa [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
-      zero_add, ← dotProduct_mulVec] at this
-  · refine fun h => ⟨h.1, fun x => ?_⟩
-    rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
-    apply le_add_of_nonneg_of_le
-    · rw [← dotProduct_mulVec]
-      apply (posSemidef_iff_dotProduct_mulVec.mp hA.posSemidef).2
-    · rw [← dotProduct_mulVec (star (x ∘ Sum.inr))]
-      apply (posSemidef_iff_dotProduct_mulVec.mp h).2
+  have aux {n : Type*} [Fintype n] (B : Matrix m n R') (D : Matrix n n R') :
+      (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
+    rw [posSemidef_iff_dotProduct_mulVec, IsHermitian.fromBlocks₁₁ _ _ hA.1]
+    refine ⟨fun h ↦ .of_dotProduct_mulVec_nonneg h.1 fun x ↦ ?_, fun h ↦ ⟨h.1, fun x ↦ ?_⟩⟩
+    · have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
+      rwa [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
+        zero_add, ← dotProduct_mulVec] at this
+    · rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1,
+        ← dotProduct_mulVec, ← dotProduct_mulVec (star (x ∘ Sum.inr))]
+      exact add_nonneg (hA.posSemidef.dotProduct_mulVec_nonneg _) (h.dotProduct_mulVec_nonneg _)
+  refine ⟨fun h ↦ posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_,
+    fun h ↦ posSemidef_iff_submatrix_finset.mpr fun t ↦ ?_⟩
+  · let B' := B.submatrix id ((↑) : s → n)
+    let D' := D.submatrix ((↑) : s → n) ((↑) : s → n)
+    have hs : (fromBlocks A B' B'ᴴ D').PosSemidef := by
+      convert h.submatrix (Sum.map id ((↑) : s → n))
+      ext (_ | _) (_ | _) <;> rfl
+    exact (aux B' D').mp hs
+  · let B' := B.submatrix id ((↑) : t.toRight → n)
+    let D' := D.submatrix ((↑) : t.toRight → n) ((↑) : t.toRight → n)
+    have hfb := (aux B' D').mpr (h.submatrix ((↑) : t.toRight → n))
+    convert hfb.submatrix fun x : t ↦ match x with
+      | ⟨.inl i, _⟩ => .inl i
+      | ⟨.inr j, hj⟩ => .inr ⟨j, Finset.mem_toRight.mpr hj⟩
+    ext ⟨_ | _, _⟩ ⟨_ | _, _⟩ <;> rfl
 
-omit [Fintype m] in variable [Finite m] in
+omit [Fintype m] in
 theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
     (B : Matrix m n R') {D : Matrix n n R'} (hD : D.PosDef) [Invertible D] :
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
