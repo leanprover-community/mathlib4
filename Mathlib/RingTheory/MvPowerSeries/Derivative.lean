@@ -178,7 +178,7 @@ lemma pderiv_rename {f : σ → τ} (hf : Function.Injective f) [Filter.TendstoC
   ext n
   rw [coeff_pderiv, coeff_rename, coeff_rename, Finset.sum_mul]
   have hle {y : σ →₀ ℕ} (hy : mapDomain f y = n + single (f x) 1) : single x 1 ≤ y := by
-    simp [← mapDomain_apply hf y x, hy]
+    simp [← mapDomain_apply_of_injective hf y x, hy]
   refine Finset.sum_nbij' (· - single x 1) (· + single x 1) ?_ ?_ ?_ ?_ ?_
   · intro y hy
     simp only [Set.Finite.mem_toFinset, Set.mem_preimage, Set.mem_singleton_iff] at hy ⊢
@@ -190,7 +190,7 @@ lemma pderiv_rename {f : σ → τ} (hf : Function.Injective f) [Filter.TendstoC
   · intro y hy
     simp only [Set.Finite.mem_toFinset, Set.mem_preimage, Set.mem_singleton_iff] at hy
     simp [coeff_pderiv, tsub_add_cancel_of_le (hle hy), Finsupp.tsub_apply,
-      ← mapDomain_apply hf y x, hy]
+      ← mapDomain_apply_of_injective hf y x, hy]
 
 end CommSemiring
 
