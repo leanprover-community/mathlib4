@@ -212,7 +212,9 @@ private theorem logTwo_spec (prec : ℕ) :
       add_sub_right_comm (6 * _), ← mul_sub, add_sub_assoc, ← mul_sub, add_sub_assoc, ← mul_sub]
     grw [abs_add_le, abs_add_le, _root_.add_mul, _root_.add_mul]
     iterate 3 rw [abs_mul, Nat.abs_ofNat]
-    gcongr <;> [rw [hartanh17]; rw [hartanh19]; rw [hartanh31]] <;> push_cast
+    rw [hartanh17, hartanh19, hartanh31]
+    push_cast
+    gcongr
     · exact abs_artanh_div_sub_le 17 ((prec + 7) / 8) (prec + 4) 8 4
         (by lia) (by lia) (by norm_num) (by lia)
     · exact abs_artanh_div_sub_le 19 ((prec + 7) / 8) (prec + 4) 8 4
@@ -296,8 +298,7 @@ theorem abs_sub_logSum_le {x : Dyadic} (hx : 1 ≤ |x| ∧ |x| < 2) (prec : ℕ)
       set N : ℕ := prec / 3 + 1
       grw [abs_artanh_sub_le (by grind)]
       calc
-        _ ≤ 2 * (|X| ^ (2 * N + 1) / (1 - (1 / 3) ^ 2)) := by gcongr
-        _ ≤ 2 * ((1 / 3) ^ (2 * N + 1) / (1 - (1 / 3) ^ 2)) := by gcongr
+        _ ≤ 2 * ((1 / 3) ^ (2 * N + 1) / (1 - (1 / 3) ^ 2) : ℝ) := by gcongr
         _ ≤ (step (prec + 1 : ℕ)).toRat := by
           have := div_le_pow 3 N (prec + 2) 3 1 (by lia) (by lia) (by norm_num) (by lia)
           rw [(prec + 1).cast_add_one, toRat_step_add_one, Rat.cast_div, Rat.cast_ofNat] at this
@@ -457,34 +458,33 @@ theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.
   | case1 | case6 => apply Interval.mem_map_univ
   | case2 lb hI' hlb =>
     rw [hI'] at hx
-    refine IntervalDyadicReal.mem_Ici_coe _ _ |>.mpr <|
-      lowerLog_le lb prec |>.trans <| Real.log_le_log ?_ <|
-        IntervalDyadicReal.mem_Ici_coe x lb |>.mp hx
+    refine IntervalDyadicReal.mem_Ici_coe _ _ |>.mpr <| lowerLog_le lb prec |>.trans <|
+      Real.log_le_log ?_ <| IntervalDyadicReal.mem_Ici_coe x lb |>.mp hx
     have := WithBot.coe_nonneg.mp <| hI' ▸ I.abs_lb_nonneg
     simpa using lt_of_le_of_ne this <| Ne.symm hlb
   | case3 hI' =>
     rw [hI'] at hx
-    replace hx : 0 ≤ x ∧ x ≤ 0 := Dyadic.toReal_zero ▸ (IntervalDyadicReal.mem_mk_coe x 0 0).mp hx
-    rw [le_antisymm hx.2 hx.1, Real.log_zero, ← Dyadic.toReal_zero]
-    exact Interval.mem_map_singleton 0 Dyadic.toReal
+    replace hx : 0 ≤ x ∧ x ≤ 0 := toReal_zero ▸ (IntervalDyadicReal.mem_mk_coe x 0 0).mp hx
+    rw [le_antisymm hx.2 hx.1, Real.log_zero, ← toReal_zero]
+    exact Interval.mem_map_singleton 0 toReal
   | case4 ub hub hI' =>
     rw [hI'] at hx
-    replace hx : 0 ≤ x ∧ x ≤ Dyadic.toReal ub :=
-      Dyadic.toReal_zero ▸ (IntervalDyadicReal.mem_mk_coe x 0 ub |>.mp hx)
+    replace hx : 0 ≤ x ∧ x ≤ toReal ub :=
+      toReal_zero ▸ (IntervalDyadicReal.mem_mk_coe x 0 ub |>.mp hx)
     refine IntervalDyadicReal.mem_Iic_coe x.log (max (upperLog ub prec) 0) |>.mpr ?_
-    rw [Monotone.map_max (f := Dyadic.toReal) Dyadic.toRealOrderEmbedding.monotone]
-    simp only [Dyadic.toReal_zero, le_max_iff]
+    rw [Monotone.map_max (f := toReal) toRealOrderEmbedding.monotone]
+    simp only [toReal_zero, le_max_iff]
     by_cases hx₀ : x = 0
-    · simp [hx₀, Dyadic.toReal]
+    · simp [hx₀, toReal]
     · exact Or.inl <| le_upperLog ub prec |>.trans' <| Real.log_le_log (by grind) hx.right
   | case5 lb ub hI' hlb =>
     rw [hI'] at hx
-    replace hx : Dyadic.toReal lb ≤ x ∧ x ≤ Dyadic.toReal ub :=
-      IntervalDyadicReal.mem_mk_coe x _ _ |>.mp hx
+    replace hx : toReal lb ≤ x ∧ x ≤ toReal ub :=
+      IntervalDyadicReal.mem_mk_coe x lb ub |>.mp hx
     simp only [IntervalDyadicReal.mem_mk_coe]
-    have : 0 < Dyadic.toReal lb := by
+    have : 0 < toReal lb := by
       have := WithBot.coe_nonneg.mp <| hI' ▸ I.abs_lb_nonneg
-      simpa [← Dyadic.toReal_zero] using lt_of_le_of_ne this <| Ne.symm hlb
+      simpa [← toReal_zero] using lt_of_le_of_ne this <| Ne.symm hlb
     exact ⟨lowerLog_le lb prec |>.trans <| Real.log_le_log this <| hx.left,
       le_upperLog ub prec |>.trans' <| Real.log_le_log (this.trans_le hx.left) hx.right⟩
 
