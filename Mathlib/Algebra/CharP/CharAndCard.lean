@@ -81,8 +81,8 @@ theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] {p : �
 
 lemma charP_of_card_eq_prime {R : Type*} [NonAssocRing R] [Fintype R] {p : ℕ} [hp : Fact p.Prime]
     (hR : Fintype.card R = p) : CharP R p :=
-  have := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.1.one_lt)
-  (CharP.charP_iff_prime_eq_zero hp.1).2 (hR ▸ Nat.cast_card_eq_zero R)
+  have := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.out.one_lt)
+  (CharP.charP_iff_prime_eq_zero hp.out).2 (hR ▸ Nat.cast_card_eq_zero R)
 
 lemma charP_of_card_eq_prime_pow {R : Type*} [CommRing R] [IsDomain R] [Fintype R] {p f : ℕ}
     [hp : Fact p.Prime] (hR : Fintype.card R = p ^ f) : CharP R p :=

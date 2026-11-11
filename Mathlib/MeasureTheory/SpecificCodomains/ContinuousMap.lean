@@ -46,7 +46,6 @@ to approach integration valued in a functional space `ℱ`. More precisely:
   should always consider the family `fun x ↦ ℱ.mkD (f x) 0`, *even if your `f` always lands in `ℱ`*.
   This allows for a unified setting with the case where `f x` belongs to `ℱ` for *almost every `x`*,
   and also avoids entering dependent-types hell.
-
 -/
 
 public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behavior of the Lebesgue integral under maps
 -/

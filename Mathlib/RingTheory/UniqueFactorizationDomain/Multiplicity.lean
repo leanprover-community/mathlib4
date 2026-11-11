@@ -114,8 +114,10 @@ theorem emultiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) 
 the normalized factor occurs in the `normalizedFactors`.
 
 For a version using `emultiplicity`, see `emultiplicity_eq_count_normalizedFactors`. -/
-theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) (hb : b ≠ 0) :
+theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) :
     multiplicity a b = (normalizedFactors b).count (normalize a) := by
+  rcases eq_or_ne b 0 with rfl | hb
+  · simp
   have := emultiplicity_eq_count_normalizedFactors ha hb
   rwa [(finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity,
     ENat.natCast_inj] at this
@@ -208,10 +210,10 @@ lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n �
 
 @[fun_prop]
 lemma hasFiniteMulSupport_fun_pow_multiplicity {α M : Type*} [CommMonoid M] [Subsingleton Rˣ]
-    (f : α → M) {g : α → R} (hgi : g.Injective) (hg : ∀ s, Irreducible (g s)) {r : R} (hr : r ≠ 0) :
+    (f : α → M) {g : α → R} (hgi : g.Injective) (hg : ∀ s, Irreducible (g s)) {r : R} :
     (fun s : α ↦ f s ^ multiplicity (g s) r).HasFiniteMulSupport := by
   classical
-  simp only [multiplicity_eq_count_normalizedFactors (hg _) hr, normalize_eq]
+  simp only [multiplicity_eq_count_normalizedFactors (hg _), normalize_eq]
   fun_prop
 
 end UniqueFactorizationMonoid

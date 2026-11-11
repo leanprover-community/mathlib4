@@ -49,7 +49,6 @@ Note: `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is mis
 ## Tags
 
 Bochner integral, simple function, function space, Lebesgue dominated convergence theorem
-
 -/
 
 @[expose] public section
@@ -314,7 +313,7 @@ theorem integral_add_measure {ν} (f : α →ₛ E) (hf : Integrable f (μ + ν)
   simp_rw [integral_def]
   refine setToSimpleFunc_add_left'
     (weightedSMul μ) (weightedSMul ν) (weightedSMul (μ + ν)) (fun s _ hμνs => ?_) hf
-  rw [lt_top_iff_ne_top, Measure.coe_add, Pi.add_apply, ENNReal.add_ne_top] at hμνs
+  rw [lt_top_iff_ne_top, add_apply, ENNReal.add_ne_top] at hμνs
   rw [weightedSMul_add_measure _ _ hμνs.1 hμνs.2]
 
 section Order
@@ -593,8 +592,10 @@ theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one
 
-theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖₊ ≤ 1 :=
+theorem nnNorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖₊ ≤ 1 :=
   norm_Integral_le_one
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_Integral_le_one := nnNorm_Integral_le_one
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
@@ -603,8 +604,10 @@ theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
     _ ≤ 1 * ‖f‖ := mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _
     _ = ‖f‖ := one_mul _
 
-theorem nnnorm_integral_le (f : α →₁[μ] E) : ‖integral f‖₊ ≤ ‖f‖₊ :=
+theorem nnNorm_integral_le (f : α →₁[μ] E) : ‖integral f‖₊ ≤ ‖f‖₊ :=
   norm_integral_le f
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_integral_le := nnNorm_integral_le
 
 @[continuity]
 theorem continuous_integral : Continuous fun f : α →₁[μ] E => integral f := by
