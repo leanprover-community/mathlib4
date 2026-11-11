@@ -18,7 +18,6 @@ public import Mathlib.Data.Matrix.Basis
 The scope `Matrix` gives the following notation:
 
 * `ᴴ` for `Matrix.conjTranspose`
-
 -/
 
 @[expose] public section

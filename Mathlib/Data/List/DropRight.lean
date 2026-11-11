@@ -30,7 +30,6 @@ The two predicate-based methods operate by performing the regular "from-left" op
 The other two rely on `List.length l` so they still traverse the list twice. One could construct
 another function that takes a `L : ℕ` and use `L - n`. Under a proof condition that
 `L = l.length`, the function would do the right thing.
-
 -/
 
 @[expose] public section

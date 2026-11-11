@@ -58,7 +58,6 @@ the last section, various properties of matrices are explored.
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
-
 -/
 
 @[expose] public section
@@ -444,8 +443,10 @@ lemma nnNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq_one := nnNorm_eq_one
 
 @[simp]
-lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖ₑ = 1 := b.orthonormal.enorm_eq_one i
+lemma eNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖ₑ = 1 := b.orthonormal.eNorm_eq_one i
+
+@[deprecated (since := "2026-11-06")] alias enorm_eq_one := eNorm_eq_one
 
 @[simp]
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :

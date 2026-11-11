@@ -25,7 +25,6 @@ by `s ↦ s ⊗ₜ 1 - 1 ⊗ₜ s`.
 ## Main results
 
 * `IsEffective.of_faithfullyFlat`: `IsEffective R S` is true for any faithfully flat `R`-algebra `S`
-
 -/
 
 @[expose] public section

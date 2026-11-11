@@ -46,12 +46,12 @@ lemma tendsto_zero_of_innerRegular_addContent (hR : IsSetRing R) (m : AddContent
   choose t ht_mem_C ht_subset ht using fun n ↦ h_reg (s n) (hs n) (δ n) (mod_cast hδ_pos n)
   have ht_mem n : t n ∈ R := hCR (ht_mem_C n)
   -- the sets `t n` have empty intersection, hence finitely many of them already do
-  obtain ⟨N, hN⟩ := hC t ht_mem_C (subset_eq_empty (iInter_mono ht_subset) hs_iInter)
+  obtain ⟨N, hN⟩ := hC t ht_mem_C (by grw [ht_subset, hs_iInter])
   refine eventually_atTop.mpr ⟨N, fun n hn ↦ ?_⟩
   have hs_eq : dissipate s n = s n :=
     Subset.antisymm (dissipate_subset le_rfl) (subset_iInter₂ fun i hi ↦ hs_anti hi)
   calc m (s n) = m (dissipate s n \ dissipate t n) := by
-        rw [subset_eq_empty (antitone_dissipate hn) hN, sdiff_empty, hs_eq]
+        rw [eq_empty_of_subset (antitone_dissipate hn) hN, sdiff_empty, hs_eq]
     _ ≤ m (⋃ i ≤ n, (s i \ t i)) := by
         refine addContent_mono hR.isSetSemiring
           (hR.sdiff_mem (hR.iInter_le_mem hs n) (hR.iInter_le_mem ht_mem n))

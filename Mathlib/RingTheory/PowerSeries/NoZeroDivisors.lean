@@ -19,7 +19,6 @@ We then state various results about `R⟦X⟧` with `R` an integral domain.
 ## Instance
 
 If `R` has `NoZeroDivisors`, then so does `R⟦X⟧`.
-
 -/
 
 public section

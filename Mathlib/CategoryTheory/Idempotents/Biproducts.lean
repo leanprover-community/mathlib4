@@ -17,7 +17,6 @@ We also obtain that for all `P : Karoubi C` where `C` is a preadditive category 
 is a canonical isomorphism `P ⊞ P.complement ≅ (toKaroubi C).obj P.X` in the category
 `Karoubi C` where `P.complement` is the formal direct factor of `P.X` corresponding to
 the idempotent endomorphism `𝟙 P.X - P.p`.
-
 -/
 
 @[expose] public section

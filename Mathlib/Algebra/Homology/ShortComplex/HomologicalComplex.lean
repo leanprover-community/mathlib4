@@ -21,7 +21,6 @@ is the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`.
 The homology `K.homology i` of a homological complex `K` in degree `i` is defined as
 the homology of the short complex `(shortComplexFunctor C c i).obj K`, which can be
 abbreviated as `K.sc i`.
-
 -/
 
 @[expose] public section
@@ -813,21 +812,18 @@ variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
 
 variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homologyMap_neg : homologyMap (-φ) i = -homologyMap φ i := by
   dsimp [homologyMap]
   rw [← ShortComplex.homologyMap_neg]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap ψ i := by
   dsimp [homologyMap]
   rw [← ShortComplex.homologyMap_add]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homologyMap_sub : homologyMap (φ - ψ) i = homologyMap φ i - homologyMap ψ i := by
   dsimp [homologyMap]
@@ -842,7 +838,6 @@ namespace CochainComplex
 
 variable {C : Type*} [Category* C] [Abelian C]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_liftCycles_iff (K : CochainComplex C ℕ) {X : C} (φ : X ⟶ K.X 0)
     (hφ : φ ≫ K.d 0 1 = 0) :
     IsIso (K.liftCycles φ 1 (by simp) hφ) ↔
@@ -864,7 +859,6 @@ namespace ChainComplex
 
 variable {C : Type*} [Category* C] [Abelian C]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_descOpcycles_iff (K : ChainComplex C ℕ) {X : C} (φ : K.X 0 ⟶ X)
     (hφ : K.d 1 0 ≫ φ = 0) :
     IsIso (K.descOpcycles φ 1 (by simp) hφ) ↔
@@ -895,7 +889,6 @@ noncomputable def cyclesIsoSc' : K.cycles j ≅ (K.sc' i j k).cycles :=
   ShortComplex.cyclesMapIso (K.isoSc' i j k hi hk)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_hom_iCycles :
     (K.cyclesIsoSc' i j k hi hk).hom ≫ (K.sc' i j k).iCycles = K.iCycles j := by
@@ -904,7 +897,6 @@ lemma cyclesIsoSc'_hom_iCycles :
     natIsoSc'_hom_app_τ₂, comp_id]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_inv_iCycles :
     (K.cyclesIsoSc' i j k hi hk).inv ≫ K.iCycles j = (K.sc' i j k).iCycles := by
@@ -922,7 +914,6 @@ noncomputable def opcyclesIsoSc' : K.opcycles j ≅ (K.sc' i j k).opcycles :=
   ShortComplex.opcyclesMapIso (K.isoSc' i j k hi hk)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoSc'_inv :
     (K.sc' i j k).pOpcycles ≫ (K.opcyclesIsoSc' i j k hi hk).inv = K.pOpcycles j := by
@@ -931,8 +922,6 @@ lemma pOpcycles_opcyclesIsoSc'_inv :
     natIsoSc'_inv_app_τ₂, id_comp]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_opcyclesIsoSc'_hom :
     K.pOpcycles j ≫ (K.opcyclesIsoSc' i j k hi hk).hom = (K.sc' i j k).pOpcycles := by

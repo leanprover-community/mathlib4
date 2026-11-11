@@ -21,7 +21,6 @@ field of (exponential) characteristic `p`.
 * `AdjoinPthRoots.root`: for `k` a field of (exponential) characteristic `p`, the `p`-th root map
   `k → AdjoinPthRoots k`, mapping an element to its unique `p`-th root in `AdjoinPthRoots`,
   as a `RingEquiv`.
-
 -/
 
 public section

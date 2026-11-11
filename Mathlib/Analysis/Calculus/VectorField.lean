@@ -27,7 +27,6 @@ In addition to comprehensive API on these two notions, the main results are the 
   is the Lie bracket of the pullbacks, when the second derivative is symmetric.
 * `VectorField.leibniz_identity_lieBracket` is the Leibniz
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
-
 -/
 
 @[expose] public section
@@ -214,12 +213,12 @@ lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : Differentia
   rw [fderiv_add hW hW₁, add_apply]
   abel
 
-/-- The differentiation operator along `[W, V]`
-is the commutator of the differentiation operators along `W` and `V`. -/
+/-- The differentiation operator along `[V, W]`
+is the commutator of the differentiation operators along `V` and `W`. -/
 lemma fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt {f : E → F}
     (hf : ContDiffWithinAt 𝕜 2 f s x) (hsymm : IsSymmSndFDerivWithinAt 𝕜 f s x)
     (hs : UniqueDiffOn 𝕜 s) (hxs : x ∈ s)
-    (hW : DifferentiableWithinAt 𝕜 W s x) (hV : DifferentiableWithinAt 𝕜 V s x) :
+    (hV : DifferentiableWithinAt 𝕜 V s x) (hW : DifferentiableWithinAt 𝕜 W s x) :
     fderivWithin 𝕜 f s x (lieBracketWithin 𝕜 V W s x) =
       fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (W x)) s x (V x) -
         fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (V x)) s x (W x) := by
@@ -229,36 +228,35 @@ lemma fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt {f : E → F}
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply] <;> try assumption
   simp [lieBracketWithin, hsymm (V _) (W _)]
 
-/-- The differentiation operator along `[W, V]`
-is the commutator of the differentiation operators along `W` and `V`. -/
+/-- The differentiation operator along `[V, W]`
+is the commutator of the differentiation operators along `V` and `W`. -/
 lemma fderiv_apply_lieBracket_of_isSymmSndFDerivAt {f : E → F}
     (hf : ContDiffAt 𝕜 2 f x) (hsymm : IsSymmSndFDerivAt 𝕜 f x)
-    (hW : DifferentiableAt 𝕜 W x) (hV : DifferentiableAt 𝕜 V x) :
+    (hV : DifferentiableAt 𝕜 V x) (hW : DifferentiableAt 𝕜 W x) :
     fderiv 𝕜 f x (lieBracket 𝕜 V W x) =
       fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (W x)) x (V x) -
         fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (V x)) x (W x) := by
   simp only [← fderivWithin_univ, ← lieBracketWithin_univ, ← contDiffWithinAt_univ,
     ← isSymmSndFDerivWithinAt_univ, ← differentiableWithinAt_univ] at *
-  exact fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt hf hsymm (by simp) (by simp)
-    hW hV
+  exact fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt hf hsymm (by simp) (by simp) hV hW
 
-/-- The differentiation operator along `[W, V]`
-is the commutator of the differentiation operators along `W` and `V`. -/
+/-- The differentiation operator along `[V, W]`
+is the commutator of the differentiation operators along `V` and `W`. -/
 lemma fderivWithin_apply_lieBracket {f : E → F} {n : ℕ∞ω}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hn : minSmoothness 𝕜 2 ≤ n)
     (hs : UniqueDiffOn 𝕜 s) (hxs' : x ∈ closure (interior s)) (hxs : x ∈ s)
-    (hW : DifferentiableWithinAt 𝕜 W s x) (hV : DifferentiableWithinAt 𝕜 V s x) :
+    (hV : DifferentiableWithinAt 𝕜 V s x) (hW : DifferentiableWithinAt 𝕜 W s x) :
     fderivWithin 𝕜 f s x (lieBracketWithin 𝕜 V W s x) =
       fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (W x)) s x (V x) -
         fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (V x)) s x (W x) := by
   apply fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt <;> try assumption
   exacts [hf.of_le <| le_minSmoothness.trans hn, hf.isSymmSndFDerivWithinAt hn hs hxs' hxs]
 
-/-- The differentiation operator along `[W, V]`
-is the commutator of the differentiation operators along `W` and `V`. -/
+/-- The differentiation operator along `[V, W]`
+is the commutator of the differentiation operators along `V` and `W`. -/
 lemma fderiv_apply_lieBracket {f : E → F} {n : ℕ∞ω}
     (hf : ContDiffAt 𝕜 n f x) (hn : minSmoothness 𝕜 2 ≤ n)
-    (hW : DifferentiableAt 𝕜 W x) (hV : DifferentiableAt 𝕜 V x) :
+    (hV : DifferentiableAt 𝕜 V x) (hW : DifferentiableAt 𝕜 W x) :
     fderiv 𝕜 f x (lieBracket 𝕜 V W x) =
       fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (W x)) x (V x) -
         fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (V x)) x (W x) := by

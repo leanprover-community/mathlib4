@@ -414,7 +414,7 @@ lemma differentiableAt_completedHurwitzZetaEven
     simp [hurwitzEvenFEPair, h]
   · change s / 2 ≠ ↑(1 / 2 : ℝ)
     rw [ofReal_div, ofReal_one, ofReal_ofNat]
-    exact hs' ∘ (div_left_inj' two_ne_zero).mp
+    exact hs' ∘ (div_left_inj₀ two_ne_zero).mp
 
 lemma differentiable_completedHurwitzZetaEven₀ (a : UnitAddCircle) :
     Differentiable ℂ (completedHurwitzZetaEven₀ a) :=
@@ -441,7 +441,7 @@ lemma differentiableAt_completedCosZeta
   · exact div_ne_zero_iff.mpr ⟨hs, two_ne_zero⟩
   · change s / 2 ≠ ↑(1 / 2 : ℝ) ∨ (if a = 0 then 1 else 0) = 0
     refine Or.imp (fun h ↦ ?_) (fun ha ↦ ?_) hs'
-    · simpa [push_cast] using h ∘ (div_left_inj' two_ne_zero).mp
+    · simpa [push_cast] using h ∘ (div_left_inj₀ two_ne_zero).mp
     · simpa
 
 lemma differentiable_completedCosZeta₀ (a : UnitAddCircle) :
