@@ -99,7 +99,6 @@ theorem singleton_inj : ({a} : Finset α) = {b} ↔ a = b :=
 theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
   ⟨a, mem_singleton_self a⟩
 
-@[simp]
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 
@@ -290,7 +289,7 @@ theorem cons_empty (a : α) : cons a ∅ (notMem_empty _) = {a} := rfl
 theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
 
-@[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
+theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
@@ -432,7 +431,6 @@ theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a 
 theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
   ⟨a, mem_insert_self a s⟩
 
-@[simp]
 theorem insert_ne_empty (a : α) (s : Finset α) : insert a s ≠ ∅ :=
   (insert_nonempty a s).ne_empty
 

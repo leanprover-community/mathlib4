@@ -48,7 +48,7 @@ theorem exists_mem_kaplanskySet_le {C : Set (Ideal R)} (hS : 0 ∉ S) (hC : C �
     rw [mem_kaplanskySet_iff, eq_empty_iff_forall_notMem]
     intro x hx
     rcases (Submodule.mem_sSup_of_directed ⟨_, hI⟩ hC₂.directedOn).1 hx.1 with ⟨J, hJ₁, hJ₂⟩
-    have hx₂ : (J : Set R) ∩ S ≠ ∅ := ne_empty_iff_nonempty.2 ⟨x, hJ₂, hx.2⟩
+    have hx₂ : (J : Set R) ∩ S ≠ ∅ := Nonempty.ne_empty ⟨x, hJ₂, hx.2⟩
     exact hx₂ (mem_kaplanskySet_iff.mp (hC hJ₁))
 
 /-- If `0 ∉ S`, then there is a maximal element in `kaplanskySet S`. -/

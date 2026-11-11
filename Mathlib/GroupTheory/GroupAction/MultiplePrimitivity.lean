@@ -167,13 +167,10 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
     constructor
     · exact ofStabilizer.isMultiplyPretransitive.mpr H.isMultiplyPretransitive
     · intro s hs
-      have : ∃ b : α, b ∈ s := by
-        rw [← Set.nonempty_def, ← Set.ne_empty_iff_nonempty]
-        intro h
-        apply not_lt.mpr hn
-        rw [h, Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj, Nat.succ_inj] at hs
-        simp only [← hs, zero_lt_one]
-      obtain ⟨b, hb⟩ := this
+      obtain ⟨b, hb⟩ : s.Nonempty := by
+        by_contra! rfl
+        rw [Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj] at hs
+        lia
       obtain ⟨g, hg : g • b = a⟩ := exists_smul_eq M b a
       rw [isPreprimitive_ofFixingSubgroup_conj_iff (g := g)]
       set s' := g • s with hs'

@@ -302,7 +302,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
   rw [s.centroid_eq_centerMass hs]
   apply s.centerMass_id_mem_convexHull
   · simp only [inv_nonneg, imp_true_iff, Nat.cast_nonneg, Finset.centroidWeights_apply]
-  · have hs_card : (#s : R) ≠ 0 := by simp [Finset.ne_empty_iff_nonempty.mpr hs]
+  · have hs_card : (#s : R) ≠ 0 := by simp [hs.ne_empty]
     simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀, Ne, not_false_iff,
       Finset.centroidWeights_apply, zero_lt_one]
 

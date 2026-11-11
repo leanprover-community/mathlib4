@@ -270,8 +270,8 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
   rcases p with ⟨⟩
   simp [support]
 
-@[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 :=
-  Finset.ne_empty_iff_nonempty.symm.trans support_eq_empty.not
+@[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 := by
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 

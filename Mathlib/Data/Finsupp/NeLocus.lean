@@ -59,8 +59,8 @@ theorem neLocus_eq_empty {f g : α →₀ N} : f.neLocus g = ∅ ↔ f = g :=
     fun h => h ▸ by simp only [neLocus, Ne, not_true, Finset.filter_false]⟩
 
 @[simp]
-theorem nonempty_neLocus_iff {f g : α →₀ N} : (f.neLocus g).Nonempty ↔ f ≠ g :=
-  Finset.ne_empty_iff_nonempty.symm.trans neLocus_eq_empty.not
+theorem nonempty_neLocus_iff {f g : α →₀ N} : (f.neLocus g).Nonempty ↔ f ≠ g := by
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem neLocus_comm : f.neLocus g = g.neLocus f := by
   simp_rw [neLocus, Finset.union_comm, ne_comm]

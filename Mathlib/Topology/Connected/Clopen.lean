@@ -184,7 +184,7 @@ theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
 
 theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
     (frontier s).Nonempty ↔ s.Nonempty ∧ s ≠ univ := by
-  simp only [← ne_empty_iff_nonempty, Ne, frontier_eq_empty_iff, not_or]
+  simp [← ne_empty_iff_nonempty, frontier_eq_empty_iff]
 
 /-- In a preconnected space, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact

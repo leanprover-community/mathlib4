@@ -277,7 +277,7 @@ lemma eq_zero_or_eq_zero_of_smul_eq_zero [IsTorsionFree A B]
   -- two elements. So we need to dispose of the cases `#U = 0` and `#U = 1` first.
   by_cases hU' : U = ∅
   · simp [hU']
-  obtain ⟨z, hz⟩ : ∃ z, z ∈ U := ne_empty_iff_nonempty.mp hU'
+  obtain ⟨z, hz⟩ := ne_empty_iff_nonempty.mp hU'
   by_cases hU'' : U = {z}
   · simpa [hU''] using hfg z hz
   apply (nontrivial_iff_ne_singleton hz).mpr at hU''

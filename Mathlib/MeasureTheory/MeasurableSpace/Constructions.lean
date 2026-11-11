@@ -471,7 +471,7 @@ theorem measurableSet_prod {s : Set α} {t : Set β} :
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t ∨ s = ∅ ∨ t = ∅ := by
   rcases (s ×ˢ t).eq_empty_or_nonempty with h | h
   · simp [h, prod_eq_empty_iff.mp h]
-  · simp [← not_nonempty_iff_eq_empty, prod_nonempty_iff.mp h, measurableSet_prod_of_nonempty h]
+  · simp [prod_nonempty_iff.mp h, measurableSet_prod_of_nonempty h]
 
 theorem measurableSet_swap_iff {s : Set (α × β)} :
     MeasurableSet (Prod.swap ⁻¹' s) ↔ MeasurableSet s :=
@@ -740,7 +740,7 @@ theorem measurableSet_pi {s : Set δ} {t : ∀ i, Set (X i)} (hs : s.Countable) 
     MeasurableSet (pi s t) ↔ (∀ i ∈ s, MeasurableSet (t i)) ∨ pi s t = ∅ := by
   rcases (pi s t).eq_empty_or_nonempty with h | h
   · simp [h]
-  · simp [measurableSet_pi_of_nonempty hs, h, ← not_nonempty_iff_eq_empty]
+  · simp [measurableSet_pi_of_nonempty hs, h]
 
 instance Pi.instMeasurableSingletonClass [Countable δ] [∀ a, MeasurableSingletonClass (X a)] :
     MeasurableSingletonClass (∀ a, X a) :=

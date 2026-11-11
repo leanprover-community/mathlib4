@@ -117,6 +117,7 @@ theorem mk_zero : (⟨0, nodup_zero⟩ : Finset α) = ∅ :=
 theorem ne_empty_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ≠ ∅ := fun e =>
   notMem_empty a <| e ▸ h
 
+@[simp]
 theorem Nonempty.ne_empty {s : Finset α} (h : s.Nonempty) : s ≠ ∅ :=
   (Exists.elim h) fun _a => ne_empty_of_mem
 

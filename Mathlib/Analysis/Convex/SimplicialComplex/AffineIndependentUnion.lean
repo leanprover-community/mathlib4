@@ -47,7 +47,7 @@ def ofSimpleGraph {ι : Type*} [DecidableEq ι] (G : SimpleGraph ι) :
     rcases hs with ⟨v, rfl⟩ | ⟨e, he, rfl⟩
     · simp
     · constructor
-      · exact Finset.ne_empty_iff_nonempty.mp (Sym2.toFinset_ne_empty e)
+      · exact e.toFinset_nonempty
       · intro b hb_sub hb_nonempty
         by_cases h : b.card = 1 <;>
           grind [Finset.card_eq_one, Finset.eq_of_subset_of_card_le hb_sub, Sym2.card_toFinset]

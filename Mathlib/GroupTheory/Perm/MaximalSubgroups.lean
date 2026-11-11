@@ -175,7 +175,6 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     convert one_add_one_eq_two <;>
     · apply le_antisymm
       · assumption
-      rw [one_le_encard_iff_nonempty]
       by_contra! h
       aesop
   have _ : Finite α := by

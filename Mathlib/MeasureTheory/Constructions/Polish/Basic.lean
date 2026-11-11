@@ -741,10 +741,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     have C1 : ∀ n, ∃ (s : b) (_ : IsBounded s.1 ∧ diam s.1 ≤ u n), x ∈ E s := fun n => by
       simpa only [F, mem_iUnion] using mem_iInter.1 hx n
     choose s hs hxs using C1
-    have C2 : ∀ n, (s n).1.Nonempty := by
-      intro n
-      rw [← ne_empty_iff_nonempty]
-      grind
+    have C2 : ∀ n, (s n).1.Nonempty := by grind [not_nonempty_iff_eq_empty]
     -- choose a point `y n ∈ s n`.
     choose y hy using C2
     have I : ∀ m n, ((s m).1 ∩ (s n).1).Nonempty := by

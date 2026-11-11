@@ -497,7 +497,7 @@ theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty'.not_right
 
-alias ⟨_, Nonempty.ne_empty⟩ := ne_empty_iff_nonempty
+@[simp] alias ⟨_, Nonempty.ne_empty⟩ := ne_empty_iff_nonempty
 
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx

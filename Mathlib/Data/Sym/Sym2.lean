@@ -804,8 +804,12 @@ theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
   rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
 
 @[simp]
-theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ := by
-  exact Finset.ne_empty_of_mem (Sym2.mem_toFinset.mpr (Sym2.out_fst_mem _))
+theorem toFinset_nonempty (z : Sym2 α) : z.toFinset.Nonempty :=
+  ⟨_, mem_toFinset.mpr (out_fst_mem _)⟩
+
+@[deprecated toFinset_nonempty +typeChanged (since := "2026-11-11")]
+theorem toFinset_ne_empty (z : Sym2 α) : z.toFinset ≠ ∅ :=
+  z.toFinset_nonempty.ne_empty
 
 lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
   ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]

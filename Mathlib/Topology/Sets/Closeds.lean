@@ -143,8 +143,8 @@ theorem coe_bot : (↑(⊥ : Closeds α) : Set α) = ∅ :=
 theorem coe_eq_empty {s : Closeds α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
-theorem coe_nonempty {s : Closeds α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
-  ne_empty_iff_nonempty.symm.trans coe_eq_empty.not
+theorem coe_nonempty {s : Closeds α} : (s : Set α).Nonempty ↔ s ≠ ⊥ := by
+  simp [← ne_empty_iff_nonempty]
 
 @[simp, norm_cast]
 theorem coe_sInf {S : Set (Closeds α)} : (↑(sInf S) : Set α) = ⋂ i ∈ S, ↑i :=

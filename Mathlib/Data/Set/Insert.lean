@@ -200,7 +200,6 @@ theorem insert_eq (x : α) (s : Set α) : insert x s = ({x} : Set α) ∪ s :=
 theorem singleton_nonempty (a : α) : ({a} : Set α).Nonempty :=
   ⟨a, rfl⟩
 
-@[simp]
 theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 
