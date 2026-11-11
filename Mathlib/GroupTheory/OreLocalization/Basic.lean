@@ -153,6 +153,7 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : t * r 
   rcases oreCondition r₁ t with ⟨r₁', t', hr₁⟩
   rw [OreLocalization.expand' _ s t', OreLocalization.expand' _ s t']
   congr 1
+  change (t' : R) * (r₁ * r * r₂) = t' * (r₁ * r' * r₂)
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `assoc_rw`?
   calc (t' : R) * (r₁ * r * r₂)
       = t' * r₁ * r * r₂ := by simp [← mul_assoc]
@@ -163,6 +164,7 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : t * r 
     _ = t' * r₁ * r' * r₂ := by rw [hr₁]
     _ = t' * (r₁ * r' * r₂) := by simp [← mul_assoc]
 
+#exit
 /-- A function or predicate over `X` and `S` can be lifted to `X[S⁻¹]` if it is invariant
 under expansion on the left. -/
 @[to_additive /-- A function or predicate over `X` and `S` can be lifted to the localization if it
