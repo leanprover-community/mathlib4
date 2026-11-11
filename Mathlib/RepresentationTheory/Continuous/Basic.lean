@@ -704,6 +704,9 @@ def coind₁ResMap (φ : H →ₜ* G) (f : π.restrict (φ : H →* G) →ⁱL �
 lemma coind₁ResMap_apply (φ : H →ₜ* G) (f : π.restrict (φ : H →* G) →ⁱL π') (F : C(G, V))
     (x : H) : coind₁ResMap φ f F x = f (F (φ x)) := rfl
 
+lemma coind₁ResMap_id (π π' : ContRepresentation R G V) (f : π →ⁱL π') :
+    coind₁ResMap (ContinuousMonoidHom.id G) f = coind₁Map f := rfl
+
 /-- The naturality of `coind₁ι` with respect to `coind₁ResMap`. -/
 lemma coind₁ResMap_comp_coind₁ι_restrict (φ : H →ₜ* G) (f : π.restrict (φ : H →* G) →ⁱL π') :
     (coind₁ResMap φ f).comp (π.coind₁ι.restrict (φ : H →* G)) = π'.coind₁ι.comp f := rfl
