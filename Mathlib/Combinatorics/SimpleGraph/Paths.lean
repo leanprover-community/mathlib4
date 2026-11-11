@@ -472,7 +472,7 @@ lemma _root_.SimpleGraph.exists_isTrail_forall_isTrail_length_le_length (G : Sim
   grind [G.exists_isTrail_forall_length_le_of_pred (fun u v p hp ↦ True)
     ⟨v₀, v₀, nil, .nil, trivial⟩]
 
-@[deprecated (since := "2026-07-08")]
+@[deprecated (since := "2026-11-11")]
 alias exists_isTrail_forall_isTrail_length_le_length :=
   exists_isTrail_forall_isTrail_length_le_length
 
@@ -485,7 +485,7 @@ lemma _root_.SimpleGraph.exists_isPath_forall_isPath_length_le_length (G : Simpl
   grind [IsPath.isTrail, G.exists_isTrail_forall_length_le_of_pred (fun u v p hp ↦ p.IsPath)
     ⟨v₀, v₀, nil, .nil, .nil⟩]
 
-@[deprecated (since := "2026-07-08")]
+@[deprecated (since := "2026-11-11")]
 alias exists_isPath_forall_isPath_length_le_length := exists_isPath_forall_isPath_length_le_length
 
 variable (G) in
