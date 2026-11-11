@@ -2099,6 +2099,7 @@ public import Mathlib.Analysis.Fourier.LpSpace
 public import Mathlib.Analysis.Fourier.Notation
 public import Mathlib.Analysis.Fourier.PoissonSummation
 public import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
+public import Mathlib.Analysis.Fourier.TrapezoidalRulePeriodic
 public import Mathlib.Analysis.Fourier.ZMod
 public import Mathlib.Analysis.FunctionalSpaces.BesselPotentialSpace
 public import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
