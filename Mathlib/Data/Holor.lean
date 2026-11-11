@@ -88,12 +88,12 @@ def cons (i : Fin d) (is : HolorIndex ds) : HolorIndex (d :: ds) :=
   ⟨i :: is.1, List.Forall₂.cons i.isLt is.2⟩
 
 /-- The finite set of all `HolorIndex`s for a given list of dimensions. -/
-def all_elems : (ds : List ℕ) → Finset (HolorIndex ds)
+def univ' : (ds : List ℕ) → Finset (HolorIndex ds)
   | [] => {⟨[], .nil⟩}
-  | d :: ds => Finset.image₂ cons (.univ : Finset (Fin d)) (all_elems ds)
+  | d :: ds => Finset.image₂ cons (.univ : Finset (Fin d)) (univ' ds)
 
 instance : Fintype (HolorIndex ds) where
-  elems := all_elems ds
+  elems := univ' ds
   complete := by
     induction ds with
     | nil =>
@@ -103,15 +103,13 @@ instance : Fintype (HolorIndex ds) where
       rintro ⟨is, (h)⟩
       cases h with
       | @cons a _ l _ ha hl =>
-        dsimp [all_elems]
+        dsimp [univ']
         rw [Finset.image₂]
         let a' : Fin d := ⟨a, ha⟩
         have ha' : a' ∈ Finset.univ := Finset.mem_univ a'
         let l' : HolorIndex ds := ⟨l, hl⟩
-        have hl' : l' ∈ all_elems ds := Finset.mem_coe.mp (ih l')
+        have hl' : l' ∈ univ' ds := Finset.mem_coe.mp (ih l')
         exact Finset.mem_image.mpr ⟨⟨a', l'⟩, ⟨Finset.mk_mem_product ha' (ih l'), rfl⟩⟩
-
-instance : Finite (HolorIndex ds) := by infer_instance
 
 end HolorIndex
 
