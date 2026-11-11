@@ -87,15 +87,15 @@ def IsForwardInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set 
 equivalent. -/
 @[deprecated "use `isInvariantOn_univ` and `Ici_zero_eq_univ`" (since := "2026-07-16")]
 theorem IsForwardInvariant.isInvariant [Preorder τ] [Zero τ] [IsBotZeroClass τ]
-    {ϕ : τ → α → α} {s : Set α} (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s :=
+    {ϕ : τ → α → α} {s : Set α} (h : IsForwardInvariant ϕ s) : s.IsInvariant ϕ :=
   fun _ => h zero_le
 
 /-- If `τ` has `0` as a bottom element, then the notions `IsForwardInvariant` and `IsInvariant` are
 equivalent. -/
 @[deprecated "use `isInvariantOn_univ` and `Ici_zero_eq_univ`" (since := "2026-07-16")]
 theorem isForwardInvariant_iff_isInvariant [Preorder τ] [Zero τ] [IsBotZeroClass τ]
-    {ϕ : τ → α → α} {s : Set α} : IsForwardInvariant ϕ s ↔ IsInvariant ϕ s :=
-  ⟨IsForwardInvariant.isInvariant, IsInvariant.isForwardInvariant⟩
+    {ϕ : τ → α → α} {s : Set α} : IsForwardInvariant ϕ s ↔ s.IsInvariant ϕ :=
+  ⟨IsForwardInvariant.isInvariant, fun h t _ _ hx ↦ h t hx⟩
 
 end Invariant
 
