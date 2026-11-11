@@ -6,8 +6,9 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Polynomial.Mirror
-public import Mathlib.Data.Int.Order.Units
 public import Mathlib.RingTheory.Coprime.Basic
+
+import Mathlib.Data.Int.Order.Units
 
 /-!
 # Unit Trinomials
@@ -22,7 +23,6 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
 
 - `Polynomial.IsUnitTrinomial.irreducible_of_coprime`: An irreducibility criterion for unit
   trinomials.
-
 -/
 
 @[expose] public section
@@ -153,10 +153,10 @@ theorem coeff_isUnit (hp : p.IsUnitTrinomial) {k : ℕ} (hk : k ∈ p.support) :
   · refine ⟨w, by rw [trinomial_leading_coeff' hkm hmn]⟩
 
 theorem leadingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.leadingCoeff :=
-  hp.coeff_isUnit (natDegree_mem_support_of_nonzero hp.ne_zero)
+  hp.coeff_isUnit (natDegree_mem_support_of_ne_zero hp.ne_zero)
 
 theorem trailingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.trailingCoeff :=
-  hp.coeff_isUnit (natTrailingDegree_mem_support_of_nonzero hp.ne_zero)
+  hp.coeff_isUnit (natTrailingDegree_mem_support_of_ne_zero hp.ne_zero)
 
 end IsUnitTrinomial
 
@@ -205,18 +205,16 @@ namespace IsUnitTrinomial
 theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Units ℤ)
     (hp : p = trinomial k m n (u : ℤ) v w) :
     C (v : ℤ) * (C (u : ℤ) * X ^ (m + n) + C (w : ℤ) * X ^ (n - m + k + n)) =
-      ⟨.ofCoeff <| (p * p.mirror).toFinsupp.coeff.filter (· ∈ Set.Ioo (k + n) (n + n))⟩ := by
+      ⟨(AddMonoidAlgebra.coeff (p * p.mirror)).filter (· ∈ Set.Ioo (k + n) (n + n))⟩ := by
   have key : n - m + k < n := by rwa [← lt_tsub_iff_right, tsub_lt_tsub_iff_left_of_le hmn.le]
   rw [hp, trinomial_mirror hkm hmn u.ne_zero w.ne_zero]
   simp_rw [trinomial_def, C_mul_X_pow_eq_monomial, add_mul, mul_add, monomial_mul_monomial,
-    toFinsupp_add, toFinsupp_monomial, AddMonoidAlgebra.coeff_add, Finsupp.filter_add,
-    AddMonoidAlgebra.coeff_single]
+    AddMonoidAlgebra.coeff_add, coeff_monomial, Finsupp.filter_add]
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
-  · simp only [add_zero, zero_add, AddMonoidAlgebra.ofCoeff_add, ofFinsupp_add,
-      AddMonoidAlgebra.ofCoeff_single, ofFinsupp_single, C_mul_monomial, C_mul_monomial,
-      mul_comm (v : ℤ) w, add_comm (n - m + k) n]
+  · simp only [add_zero, zero_add, AddMonoidAlgebra.ofCoeff_add, AddMonoidAlgebra.ofCoeff_single,
+      single_eq_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
   · simp
   · refine ⟨?_, by gcongr⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
@@ -232,8 +230,8 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
 theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w) (hq : q = trinomial k m' n (u : ℤ) v w)
     (h : p * p.mirror = q * q.mirror) : q = p ∨ q = p.mirror := by
-  let f (p : ℤ[X]) : ℤ[X] := ⟨.ofCoeff <| .filter (· ∈ Set.Ioo (k + n) (n + n)) p.toFinsupp.coeff⟩
-  replace h := congr_arg f h
+  let f (p : ℤ[X]) : ℤ[X] := ⟨p.coeff.filter (· ∈ Set.Ioo (k + n) (n + n))⟩
+  replace h := congr(f $h)
   replace h := (irreducible_aux1 hkm hmn u v w hp).trans h
   replace h := h.trans (irreducible_aux1 hkm' hmn' u v w hq).symm
   rw [(isUnit_C.mpr v.isUnit).mul_right_inj] at h
@@ -250,12 +248,12 @@ theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)
     (hq : q = trinomial k m' n (x : ℤ) v z) (h : p * p.mirror = q * q.mirror) :
     q = p ∨ q = p.mirror := by
-  have hmul := congr_arg leadingCoeff h
+  have hmul := congr(leadingCoeff $h)
   rw [leadingCoeff_mul, leadingCoeff_mul, mirror_leadingCoeff, mirror_leadingCoeff, hp, hq,
     trinomial_leadingCoeff hkm hmn w.ne_zero, trinomial_leadingCoeff hkm' hmn' z.ne_zero,
     trinomial_trailingCoeff hkm hmn u.ne_zero, trinomial_trailingCoeff hkm' hmn' x.ne_zero]
     at hmul
-  have hadd := congr_arg (eval 1) h
+  have hadd := congr(eval 1 $h)
   rw [eval_mul, eval_mul, mirror_eval_one, mirror_eval_one, ← sq, ← sq, hp, hq] at hadd
   simp only [eval_add, eval_C_mul, eval_X_pow, one_pow, mul_one, trinomial_def] at hadd
   rw [add_assoc, add_assoc, add_comm (u : ℤ), add_comm (x : ℤ), add_assoc, add_assoc] at hadd

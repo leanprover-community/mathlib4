@@ -6,13 +6,11 @@ Authors: Anand Rao, Rémi Bottinelli
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
-public import Mathlib.CategoryTheory.CofilteredSystem
 
 /-!
 # Properties of the ends of graphs
 
 This file is meant to contain results about the ends of (locally finite connected) graphs.
-
 -/
 
 public section

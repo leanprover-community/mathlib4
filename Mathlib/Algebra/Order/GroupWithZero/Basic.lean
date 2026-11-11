@@ -6,15 +6,17 @@ Authors: Damiano Testa, Yuyang Zhao
 module
 
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Int.Order.Basic
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
 import Mathlib.Data.Set.Function
-public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Util.CompileInductive
+import Mathlib.Order.MinMax
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas on the monotone multiplication typeclasses
@@ -450,9 +452,11 @@ lemma one_lt_mul_of_lt_of_le [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 < a
 
 alias one_lt_mul := one_lt_mul_of_le_of_lt
 
+@[deprecated "No replacement, use constituent lemmas from proof." (since := "2026-07-28")]
 lemma mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀] (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) :
     a * b < 1 := (mul_le_of_le_one_right ha₀ hb).trans_lt ha
 
+@[deprecated "No replacement, use constituent lemmas from proof." (since := "2026-07-28")]
 lemma mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) :
     a * b < 1 := (mul_le_of_le_one_left hb₀ ha).trans_lt hb
 
@@ -462,13 +466,19 @@ protected lemma Bound.one_lt_mul [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPos
   rintro (⟨ha, hb⟩ | ⟨ha, hb⟩); exacts [one_lt_mul ha hb, one_lt_mul_of_lt_of_le ha hb]
 
 @[bound]
+protected lemma Bound.mul_le_one [PosMulMono M₀] [MulPosMono M₀] (ha : a ≤ 1) (hb : b ≤ 1) :
+    0 ≤ a ∨ 0 ≤ b → a * b ≤ 1 := by
+  rintro (ha₀ | hb₀)
+  exacts [(mul_le_of_le_one_right ha₀ hb).trans ha, (mul_le_of_le_one_left hb₀ ha).trans hb]
+
+@[deprecated "No replacement, use constituent lemmas from proof." (since := "2026-07-28")]
 lemma mul_le_one₀ [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
-  (mul_le_mul_of_nonneg_right ha hb₀).trans <| by rwa [one_mul]
+  (mul_le_of_le_one_left hb₀ ha).trans hb
 
 lemma pow_lt_one₀ [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
   | 0, h => (h rfl).elim
   | n + 1, _ => by
-    rw [pow_succ']; exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
+    rw [pow_succ']; exact (mul_le_of_le_one_right h₀ (pow_le_one₀ h₀ h₁.le)).trans_lt h₁
 
 lemma pow_right_mono₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (h : 1 ≤ a) : Monotone (a ^ ·) :=
   monotone_nat_of_le_succ fun n => by
@@ -551,7 +561,7 @@ lemma strictMonoOn_mul_self [PosMulStrictMono M₀] [MulPosMono M₀] :
     StrictMonoOn (fun x ↦ x * x) {x : M₀ | 0 ≤ x} := fun _ hx _ _ hxy ↦ mul_self_lt_mul_self hx hxy
 
 -- See Note [decidable namespace]
-protected lemma Decidable.mul_lt_mul'' [PosMulMono M₀] [PosMulStrictMono M₀] [MulPosStrictMono M₀]
+protected lemma Decidable.mul_lt_mul'' [PosMulStrictMono M₀] [MulPosStrictMono M₀]
     [DecidableLE M₀] (h1 : a < c) (h2 : b < d) (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
   h4.lt_or_eq_dec.elim (fun b0 ↦ mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 ↦ by
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
@@ -667,6 +677,19 @@ lemma StrictMono.mul [PosMulStrictMono M₀] [MulPosStrictMono M₀] (hf : Stric
     StrictMono (f * g) := fun _ _ h ↦ mul_lt_mul'' (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 end PartialOrder
+
+section LinearOrder
+variable [LinearOrder M₀] [PosMulMono M₀] [MulPosMono M₀] {a b : M₀}
+
+lemma max_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
+    max a b ^ n = max (a ^ n) (b ^ n) :=
+  pow_left_monotoneOn.map_max ha hb
+
+lemma min_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
+    min a b ^ n = min (a ^ n) (b ^ n) :=
+  pow_left_monotoneOn.map_min ha hb
+
+end LinearOrder
 
 section LinearOrder
 variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}
@@ -1263,7 +1286,6 @@ lemma div_lt_div_iff_of_pos_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b 
 lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   gcongr
-  exacts [ha, hc]
 
 @[gcongr, bound]
 lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a / c :=
@@ -1273,12 +1295,12 @@ lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a /
 lemma div_le_div₀ (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hdb : d ≤ b) : a / b ≤ c / d := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   gcongr
-  exacts [inv_nonneg.2 <| hd.le.trans hdb, hc, hd]
+  exact inv_nonneg.2 <| hd.le.trans hdb
 
 @[gcongr]
 lemma div_lt_div₀ (hac : a < c) (hdb : d ≤ b) (hc : 0 ≤ c) (hd : 0 < d) : a / b < c / d := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
-  apply mul_lt_mul hac (by gcongr; assumption) _ hc
+  apply mul_lt_mul hac (by gcongr) _ hc
   exact inv_pos.2 (hd.trans_le hdb)
 
 lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a / b < c / d := by

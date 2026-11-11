@@ -48,7 +48,6 @@ The universe reordering is always inferred automatically, using `guessUnivReorde
 Permutation are stored as their disjoint cycle representation (`Permutation`).
 This allows efficiently permuting an array/list of arguments/universes
 (`Permutation.permute!`/`Permutation.permuteList!`).
-
 -/
 
 public meta section
@@ -153,7 +152,6 @@ decreasing_by
   cases r; grind [→ Array.sizeOf_lt_of_mem]
 
 instance : ToString ArgReorder := ⟨fun x ↦ x.toString⟩
-instance : ToMessageData ArgReorder := ⟨fun x ↦ x.toString⟩
 
 end ArgReorder
 

@@ -89,8 +89,7 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
   isBot_zero _ := le.1 <| zero ▸ zero_le
   bot_le _ := le.1 <| bot ▸ bot_le
 
-instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsMulTorsionFree :
-    IsMulTorsionFree α where
+instance (priority := 100) LinearOrderedCommMonoidWithZero.toHasUniqueRoots : HasUniqueRoots α where
   pow_left_injective n hn := by simpa using (pow_left_strictMonoOn₀ (M₀ := α) hn).injOn
 
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
@@ -231,7 +230,7 @@ instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) :=
 instance : IsBotZeroClass (WithZero α) where
   isBot_zero _ := bot_le
 
-@[deprecated _root_.zero_le (since := "2026-05-06")]
+@[deprecated _root_.zero_le +typeChanged (since := "2026-05-06")]
 protected lemma zero_le (a : WithZero α) : 0 ≤ a := by simp
 
 /-- There is a general version `le_zero_iff`, but this lemma does not require a `PartialOrder`. -/

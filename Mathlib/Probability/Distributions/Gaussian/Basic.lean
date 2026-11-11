@@ -31,7 +31,6 @@ For Gaussian distributions in `ℝ`, see the file
 ## References
 
 * [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
-
 -/
 
 public section
@@ -115,7 +114,7 @@ instance {x : E} : IsGaussian (Measure.dirac x) where
 omit [IsGaussian μ] in
 lemma IsGaussian.of_subsingleton [Subsingleton E] [IsProbabilityMeasure μ] :
     IsGaussian μ := by
-  convert! instIsGaussianDirac (x := (0 : E))
+  convert instIsGaussianDirac (x := (0 : E))
   ext s -
   apply Subsingleton.set_cases (p := fun s ↦ μ s = _)
   all_goals simp
@@ -125,7 +124,7 @@ lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
   rw [← memLp_map_measure_iff (by fun_prop) (by fun_prop), IsGaussian.map_eq_gaussianReal L]
-  convert! memLp_id_gaussianReal p.toNNReal
+  convert memLp_id_gaussianReal p.toNNReal
   simp [hp]
 
 @[fun_prop]

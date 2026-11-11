@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Central.Defs
 public import Mathlib.Data.Matrix.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The matrix algebra is a central algebra
 -/

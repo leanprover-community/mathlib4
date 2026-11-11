@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Blake Farman
 -/
 module
+
 public import Mathlib.CategoryTheory.Abelian.Basic
-public import Mathlib.CategoryTheory.Subobject.MonoOver
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 /-!
 # Preradicals
@@ -73,7 +74,6 @@ instance [Φ.IsIdempotent] (X : C) :
   rw [r_map_ι_app]
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance {D : Type*} [Category* D] (F : D ⥤ C) :
     Mono (Functor.whiskerLeft F Φ.ι) := by
   rw [NatTrans.mono_iff_mono_app]

@@ -6,10 +6,10 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Adjoining elements to form subalgebras
@@ -24,7 +24,6 @@ This file develops the basic theory of finitely-generated subalgebras.
 ## Tags
 
 adjoin, algebra, finitely-generated algebra
-
 -/
 
 @[expose] public section

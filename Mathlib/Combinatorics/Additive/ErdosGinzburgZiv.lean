@@ -5,9 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Data.Multiset.Fintype
 public import Mathlib.FieldTheory.ChevalleyWarning
+
+import Mathlib.Data.Multiset.Fintype
 
 /-!
 # The Erdős–Ginzburg–Ziv theorem

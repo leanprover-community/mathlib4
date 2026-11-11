@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Ab
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
-public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!
@@ -17,7 +16,6 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 Let `C` be a pretriangulated category. In this file, we show that the
 functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrpCat` for `A : Cᵒᵖ` and
 `preadditiveYoneda.obj B : Cᵒᵖ ⥤ AddCommGrpCat` for `B : C` are homological functors.
-
 -/
 
 public section
