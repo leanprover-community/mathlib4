@@ -5,8 +5,9 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Defs
+
+import Mathlib.Algebra.Polynomial.Degree.Support
 
 /-!
 # Evaluating polynomials and scalar multiplication
@@ -14,7 +15,6 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 ## Main results
 * `eval₂_smul`, `eval_smul`, `map_smul`, `comp_smul`: the functions preserve scalar multiplication
 * `Polynomial.leval`: `Polynomial.eval` as linear map
-
 -/
 
 @[expose] public section

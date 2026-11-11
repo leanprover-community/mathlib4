@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -385,16 +384,22 @@ alias isClosed_of_discrete := isClosed_of_discreteTopology
 
 open Filter in
 @[to_additive]
-lemma tendsto_coe_cofinite_of_isDiscrete [T1Space G] (H : Subgroup G)
-    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  (H.isClosed_of_isDiscrete hH).tendsto_coe_cofinite_of_isDiscrete hH
+lemma tendsto_coe_cofinite_of_isDiscrete (H : Subgroup G) (hH : IsDiscrete (H : Set G)) :
+    Tendsto ((↑) : H → G) cofinite (cocompact _) := by
+  obtain ⟨U, hU, -, hUH⟩ := hH.exists_nhds_eq_one_of_image_mulRight_inter_nonempty
+  refine tendsto_cofinite_cocompact_iff.mpr fun K hK ↦ ?_
+  obtain ⟨t, ht⟩ := compact_covered_by_mul_left_translates hK ⟨1, mem_interior_iff_mem_nhds.mpr hU⟩
+  refine (t.finite_toSet.biUnion fun g _ ↦ Set.Subsingleton.finite (s := {h : H | g * h ∈ U})
+    fun ⟨x, hxH⟩ hx ⟨y, hyH⟩ hy ↦ Subtype.ext ?_).subset fun h hh ↦ by simpa using ht hh
+  exact (inv_mul_eq_one.mp <| hUH _ (mul_mem (inv_mem hyH) hxH)
+    ⟨g * x, ⟨g * y, hy, by simp [mul_assoc]⟩, hx⟩).symm
 
 @[to_additive (attr := deprecated (since := "2026-09-01"))]
 alias tendsto_coe_cofinite_of_discrete := tendsto_coe_cofinite_of_isDiscrete
 
 open Filter in
 @[to_additive]
-lemma _root_.MonoidHom.tendsto_coe_cofinite_of_isDiscrete [T1Space G]
+lemma _root_.MonoidHom.tendsto_coe_cofinite_of_isDiscrete
     {H : Type*} [Group H] {f : H →* G} (hf : Function.Injective f)
     (hf' : IsDiscrete (f.range : Set G)) :
     Tendsto f cofinite (cocompact _) := by
@@ -454,7 +459,6 @@ end Ideal
 
 This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
-
 -/
 
 section
@@ -582,7 +586,7 @@ lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝
         (mul_subset_mul_left inter_subset_right |>.trans mem2) ⟩
   intro x memW
   have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp [memW]
-  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
+  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W WClopen.2) x 1 this with
     ⟨U, V, Uopen, Vopen, xmemU, onememV, prodsub⟩
   have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ prodsub (mk_mem_prod hx hy))
   exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,

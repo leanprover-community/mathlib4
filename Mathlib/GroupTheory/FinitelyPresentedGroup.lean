@@ -6,15 +6,8 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.Basic.Finite.Sum
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.GroupTheory.Coprod.Basic
-public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.PresentedGroup
-public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.GroupTheory.Schreier
-public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Finitely Presented Groups
@@ -146,8 +139,8 @@ theorem exists_mulEquiv_presentedGroup [hg : IsFinitelyPresented G] :
 instance [Finite α] : IsFinitelyPresented (FreeGroup α) := by
   have ⟨n, _, f, hf_surj, hf_inj⟩ := Finite.exists_equiv_fin α
   refine ⟨n, FreeGroup.map f, FreeGroup.map_surjective hf_surj.surjective, ?_⟩
-  · rw [(FreeGroup.map f).ker_eq_bot (FreeGroup.map_injective hf_inj.injective)]
-    exact .bot
+  rw [(FreeGroup.map f).ker_eq_bot (FreeGroup.map_injective hf_inj.injective)]
+  exact .bot
 
 instance [Finite α] (s : Set (FreeGroup α)) [Finite s] :
     IsFinitelyPresented (PresentedGroup s) :=

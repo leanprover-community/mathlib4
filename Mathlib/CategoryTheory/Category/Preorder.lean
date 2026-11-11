@@ -7,10 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.Order.Hom.Basic
-public import Mathlib.Data.ULift
+
+import Mathlib.Data.ULift
 
 /-!
-
 # Preorders as categories
 
 We install a category instance on any preorder. This is not to be confused with the category _of_
@@ -24,7 +24,6 @@ categories.
 * `homOfLE` and `leOfHom` provide translations between inequalities in the preorder, and
   morphisms in the associated category.
 * `Monotone.functor` is the functor associated to a monotone function.
-
 -/
 
 @[expose] public section

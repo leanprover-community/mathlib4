@@ -19,7 +19,6 @@ is a scalar-valued bilinear map. We construct this here and prove that it is a p
  * `exteriorPower.wedgePairing`: the bilinear map `∧^k × ∧^l → R` when `k + l` = top degree
  * `exteriorPower.instIsPerfPairWedgePairing`: the proof that `exteriorPower.wedgePairing` is
    perfect.
-
 -/
 
 public noncomputable section

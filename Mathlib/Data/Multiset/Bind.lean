@@ -248,7 +248,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
 @[simp]
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
-  congr_arg join <| attach_map_val' _ _
+  congr(join $(attach_map_val' ..))
 
 variable {f s t}
 

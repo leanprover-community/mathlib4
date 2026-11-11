@@ -5,11 +5,9 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
@@ -130,7 +128,7 @@ lemma generator'_zpowers_eq_top : (zpowers (generator' v)) = ⊤ := by
 lemma generator'_lt_one : generator' v < 1 :=
   (exists_generator_lt_one v).choose_spec.2
 
-instance : IsCyclic <| v.valueGroup := by
+instance : IsCyclic v.valueGroup := by
   rw [← generator_zpowers_eq_valueGroup]
   exact isCyclic_zpowers (generator v)
 
@@ -180,11 +178,6 @@ The generator of a surjective discrete valuation in `ℤᵐ⁰` is equal to `exp
 lemma generator_eq_exp_neg_one_of_surjective (hsurj : Function.Surjective v) :
     hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
   generator_eq_exp_neg_one_of_mem_range (by aesop)
-
-@[deprecated generator_eq_exp_neg_one_of_surjective (since := "2026-04-01")]
-lemma generator_eq_neg_exp_one_of_surjective (hsurj : Function.Surjective v) :
-    hv.generator = Units.mk0 (exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
-  generator_eq_exp_neg_one_of_surjective hsurj
 
 end WithZeroMulInt
 
@@ -451,5 +444,24 @@ instance valuationSubring_isDiscreteValuationRing [IsCyclic v.valueGroup]
   not_a_field' := by rw [ne_eq, ← isField_iff_maximalIdeal_eq]; exact valuationSubring_not_isField v
 
 end Field
+
+section IsEquiv
+
+variable {R Γ' : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ'] {v : Valuation R Γ}
+  {w : Valuation R Γ'}
+
+theorem IsRankOneDiscrete.of_isEquiv (h : v.IsEquiv w) [hv : IsRankOneDiscrete v] :
+    IsRankOneDiscrete w := by
+  have : w.IsNontrivial := h.isNontrivial_iff.mp inferInstance
+  have : IsCyclic w.valueGroup := by
+    rw [← h.orderMonoidIso.isCyclic]
+    infer_instance
+  exact .mk' w
+
+theorem IsEquiv.isRankOneDiscrete_iff (h : v.IsEquiv w) :
+    v.IsRankOneDiscrete ↔ w.IsRankOneDiscrete :=
+  ⟨fun _ ↦ .of_isEquiv h, fun _ ↦ .of_isEquiv h.symm⟩
+
+end IsEquiv
 
 end Valuation

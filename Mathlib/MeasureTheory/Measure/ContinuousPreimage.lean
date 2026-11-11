@@ -5,9 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.CompactOpen
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.CompactOpen
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity of the preimage of a set under a measure-preserving continuous function
