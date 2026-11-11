@@ -819,6 +819,7 @@ public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Lattice
 public import Mathlib.Algebra.Module.Lattice.Basic
+public import Mathlib.Algebra.Module.Lattice.Covolume
 public import Mathlib.Algebra.Module.Lattice.Discrete
 public import Mathlib.Algebra.Module.Lattice.Full
 public import Mathlib.Algebra.Module.Lattice.Summable
