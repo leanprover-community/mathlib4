@@ -184,7 +184,6 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
@@ -210,23 +209,9 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     (lcRow0Extend hcd).toContinuousLinearEquiv.toHomeomorph.isClosedEmbedding
   convert hf₂.tendsto_cocompact.comp (hf₁.comp Subtype.coe_injective.tendsto_cofinite) using 1
   ext ⟨g, rfl⟩ i j : 3
-  fin_cases i <;> [fin_cases j; skip]
-  -- the following are proved by `simp`, but it is replaced by `simp only` to avoid timeouts.
-  · simp only [Fin.isValue, Int.cast_one, map_apply_coe, RingHom.mapMatrix_apply,
-      Int.coe_castRingHom, lcRow0_apply, map_apply, Fin.zero_eta, Function.comp_apply,
-      of_apply, cons_val', cons_val_zero, empty_val', cons_val_fin_one, lcRow0Extend_apply,
-      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
-      val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
-      cons_val_one, mB, f₁]
-  · convert! congr((-$g.det_coe.symm : ℝ)) using 1
-    simp only [Fin.zero_eta, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
-      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
-      mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
-    simp only [Fin.isValue, Fin.mk_one, val_planeConformalMatrix, neg_neg, of_apply, cons_val',
-      empty_val', cons_val_fin_one, cons_val_one, map_apply, Fin.sum_univ_two,
-      cons_val_zero, neg_mul, Int.cast_sub, Int.cast_mul, neg_sub]
-    ring
-  · rfl
+  refine .trans ?_ (lcRow0Extend_apply hcd (f₁ g) i j).symm
+  fin_cases i <;> fin_cases j <;> simp [mB, f₁, mulVec, dotProduct]
+  grind [congr(($((det_fin_two (g : Matrix _ _ ℤ)).symm.trans g.det_coe) : ℝ))]
 
 /-- This replaces `(g•z).re = a/c + *` in the standard theory with the following novel identity:
   `g • z = (a c + b d) / (c^2 + d^2) + (d z - c) / ((c^2 + d^2) (c z + d))`
@@ -653,11 +638,11 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
   rw [← Int.cast_one, ← Int.cast_neg, Int.cast_le] at this
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g • z).im = z.im := by
   wlog hden : z.im ≤ (g • z).im
-  · rw [← this (g := g⁻¹) hg (by simpa using hz) (by simpa using le_of_not_ge hden)]
-    simp
+  · rw [← this (g := g⁻¹) hg (by rwa [inv_smul_smul]), inv_smul_smul]
+    rw [inv_smul_smul]
+    exact Std.le_of_not_ge hden
   wlog hc : 0 ≤ g 1 0
   · -- TODO: `wlog` leaves junk copies of variables in scope
     simpa using @this (-g) z (-g) z hz (by simpa using hg)
@@ -675,19 +660,19 @@ private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g 
     · rcases cases_c_one_d_zero hz hg hden hc hd with
         ⟨rfl, hnm⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
       · simp [normSq_eq_norm_sq, denom, hnm]
-      · rw [show T⁻¹ * S = ⟨!![-1, -1; 1, 0], by simp⟩ by decide]
+      · rw [show T⁻¹ * S = SpecialLinearGroup.mk !![-1, -1; 1, 0] (by simp) by decide]
         norm_num [ρ, denom, ← pow_two, div_pow]
-      · rw [show T * S = ⟨!![1, -1; 1, 0], by simp⟩ by decide]
+      · rw [show T * S = SpecialLinearGroup.mk !![1, -1; 1, 0] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
     · rcases case_c_one_d_one hz hg hden hc hd with ⟨(rfl | rfl), rfl⟩
-      · rw [show S * T = ⟨!![0, -1; 1, 1], by simp⟩ by decide]
+      · rw [show S * T = SpecialLinearGroup.mk !![0, -1; 1, 1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
-      · rw [show T * S * T = ⟨!![1, 0; 1, 1], by simp⟩ by decide]
+      · rw [show T * S * T = SpecialLinearGroup.mk !![1, 0; 1, 1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
     · rcases case_c_one_d_neg_one hz hg hden hc hd with ⟨(rfl | rfl), rfl⟩
-      · rw [show S * T⁻¹ = ⟨!![0, -1; 1, -1], by simp⟩ by decide]
+      · rw [show S * T⁻¹ = SpecialLinearGroup.mk !![0, -1; 1, -1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
-      · rw [show T⁻¹ * S * T⁻¹ = ⟨!![-1, 0; 1, -1], by simp⟩ by decide]
+      · rw [show T⁻¹ * S * T⁻¹ = SpecialLinearGroup.mk !![-1, 0; 1, -1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
 
 /-- Classify the `z` and `g` with `z ∈ 𝒟` and `g • z ∈ 𝒟`. -/
