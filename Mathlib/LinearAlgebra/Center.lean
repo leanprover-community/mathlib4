@@ -43,7 +43,6 @@ when the rank is equal to 1. Indeed, right multiplications
 with noncentral ratio of the `R`-module `R` satisfy the property
 that `f v` and `v` are linearly dependent, for all `v : V`,
 but they are not left multiplication by some element.
-
 -/
 
 public section
@@ -181,7 +180,7 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
   refine ⟨⟨b.coord i (f (b i)), ?_⟩, ?_⟩
   · simpa [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
   apply b.ext
-  simpa only [LinearMap.smul_apply, one_apply_eq_self, Subring.smul_def] using feq i
+  simpa [Subring.smul_def] using feq i
 
 /-- Over a domain `R`, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,

@@ -15,7 +15,6 @@ import Mathlib.Algebra.Ring.GeomSum
 # Cardinality of projective spaces
 
 We compute the cardinality of `ℙ k V` if `k` is a finite field.
-
 -/
 
 @[expose] public section

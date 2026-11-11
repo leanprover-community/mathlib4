@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sums in the completion of a topological group
 -/

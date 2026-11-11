@@ -33,7 +33,6 @@ triangulated if `C` is triangulated.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-
 -/
 
 @[expose] public section

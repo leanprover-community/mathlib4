@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
-
 # Uniqueness of adjoints
 
 This file shows that adjoints are unique up to natural isomorphism.
@@ -20,7 +19,6 @@ This file shows that adjoints are unique up to natural isomorphism.
 
 * `Adjunction.rightAdjointUniq` : If `G` and `G'` are both right adjoint to `F`, then they are
   naturally isomorphic.
-
 -/
 
 @[expose] public section

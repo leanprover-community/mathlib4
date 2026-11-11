@@ -12,6 +12,9 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Order.DenselyOrdered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discreteness of subgroups in archimedean ordered groups
 
@@ -92,9 +95,6 @@ theorem dense_xor_isCyclic [Nontrivial G] [DenselyOrdered G] (H : Subgroup G) :
 
 @[to_additive (attr := deprecated (since := "2026-08-30")) dense_xor_cyclic]
 alias dense_xor_cyclic := dense_xor_isCyclic
-
-@[to_additive (attr := deprecated (since := "2026-04-27"))]
-alias dense_xor'_cyclic := dense_xor_isCyclic
 
 @[to_additive]
 theorem dense_iff_not_isCyclic [Nontrivial G] [DenselyOrdered G] {H : Subgroup G} :

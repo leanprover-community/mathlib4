@@ -39,7 +39,6 @@ argument, essentially following from Arzela-Ascoli.
 
 We prove the most important properties of the Gromov-Hausdorff space: it is a polish space,
 i.e., it is complete and second countable. We also prove the Gromov compactness criterion.
-
 -/
 
 @[expose] public section

@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Flat.Basic
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
-
 # Lemmas about tensor products of central algebras
 
 In this file we prove for algebras `B` and `C` over a field `K` that if `B ⊗[K] C` is a central
@@ -62,7 +61,7 @@ namespace Algebra.IsCentral
 open Algebra.TensorProduct in
 lemma left_of_tensor (inj : Function.Injective (algebraMap K C)) [Module.Flat K B]
     [hbc : Algebra.IsCentral K (B ⊗[K] C)] : IsCentral K B where
-  out := (Subalgebra.map_le.mp ((includeLeft_map_center_le K B C).trans hbc.1)).trans
+  out := (Subalgebra.map_le.mp ((includeLeft_map_center_le K B C).trans hbc.out)).trans
     fun _ ⟨k, hk⟩ ↦ ⟨k, includeLeft_injective (S := K) inj hk⟩
 
 lemma right_of_tensor (inj : Function.Injective (algebraMap K B)) [Module.Flat K C]
