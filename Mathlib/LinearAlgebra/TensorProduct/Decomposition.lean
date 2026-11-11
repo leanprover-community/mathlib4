@@ -8,8 +8,6 @@ module
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
-import Mathlib.Algebra.Module.Submodule.EqLocus
-
 /-! # Decomposition of tensor product
 
 In this file, we describe the properties of decomposition under tensor product. Suppose `ℳ` is a
@@ -162,7 +160,7 @@ variable {ι κ μ R M N : Type*} [CommSemiring R]
 
 /-- The submodule of `M ⊗[R] N` spanned by the pure tensors of degree `m`, where the degree
 function `f` combines the degrees of the two factors. -/
-def gradeBy (f : ι → κ → μ) (ℳ : ι → Submodule R M) (𝒩 : κ → Submodule R N) (m : μ) :
+@[expose] def gradeBy (f : ι → κ → μ) (ℳ : ι → Submodule R M) (𝒩 : κ → Submodule R N) (m : μ) :
     Submodule R (M ⊗[R] N) :=
   ⨆ (p) (q) (_ : f p q = m), Submodule.map₂ (mk R M N) (ℳ p) (𝒩 q)
 
@@ -171,34 +169,17 @@ section GradeBy
 variable (f : ι → κ → μ) {ℳ : ι → Submodule R M} {𝒩 : κ → Submodule R N}
   {p : ι} {q : κ} {x : M} {y : N} {m : μ}
 
-variable (p q) in
 theorem map₂_le_gradeBy (h : f p q = m) :
     Submodule.map₂ (mk R M N) (ℳ p) (𝒩 q) ≤ gradeBy f ℳ 𝒩 m :=
   le_iSup_of_le p <| le_iSup₂_of_le q h le_rfl
 
 theorem tmul_mem_gradeBy (hx : x ∈ ℳ p) (hy : y ∈ 𝒩 q) (h : f p q = m) :
     x ⊗ₜ[R] y ∈ gradeBy f ℳ 𝒩 m :=
-  map₂_le_gradeBy f p q h (Submodule.apply_mem_map₂ _ hx hy)
+  map₂_le_gradeBy f h (Submodule.apply_mem_map₂ _ hx hy)
 
 theorem gradeBy_le {S : Submodule R (M ⊗[R] N)} :
     gradeBy f ℳ 𝒩 m ≤ S ↔ ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, x ⊗ₜ[R] y ∈ S := by
   simp [gradeBy, Submodule.map₂_le]
-
-variable {P : Type*} [AddCommMonoid P] [Module R P] {g g' : M ⊗[R] N →ₗ[R] P}
-
-/-- A linear map sends the degree-`m` component `gradeBy f ℳ 𝒩 m` into a submodule `S` iff it
-sends every pure tensor of degree `m` into `S`. -/
-theorem mapsTo_gradeBy_iff {S : Submodule R P} :
-    Set.MapsTo g (gradeBy f ℳ 𝒩 m) S ↔
-      ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, g (x ⊗ₜ[R] y) ∈ S :=
-  gradeBy_le f (S := S.comap g)
-
-/-- Two linear maps agree on the degree-`m` component `gradeBy f ℳ 𝒩 m` iff they agree on
-every pure tensor of degree `m`. -/
-theorem eqOn_gradeBy_iff :
-    Set.EqOn g g' (gradeBy f ℳ 𝒩 m) ↔
-      ∀ p q, f p q = m → ∀ x ∈ ℳ p, ∀ y ∈ 𝒩 q, g (x ⊗ₜ[R] y) = g' (x ⊗ₜ[R] y) :=
-  LinearMap.le_eqLocus.symm.trans (gradeBy_le f)
 
 end GradeBy
 
