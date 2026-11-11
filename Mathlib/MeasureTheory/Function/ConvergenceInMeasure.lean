@@ -72,25 +72,30 @@ lemma tendstoInMeasure_of_ne_top [EDist E] {f : ι → α → E} {l : Filter ι}
   · exact h ε hε hε_top
 
 /-- `TendstoInMeasure` expressed with an extended norm instead of a distance. -/
-theorem tendstoInMeasure_iff_enorm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
+theorem tendstoInMeasure_iff_eNorm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
     {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ₑ }) l (𝓝 0) := by
-  simp_rw [← edist_eq_enorm_sub]
+  simp_rw [← eDist_eq_eNorm_sub]
   exact ⟨fun h ε hε hε_top ↦ h ε hε, tendstoInMeasure_of_ne_top⟩
+
+@[deprecated (since := "2026-11-06")] alias tendstoInMeasure_iff_enorm := tendstoInMeasure_iff_eNorm
 
 /-- `TendstoInMeasure` expressed with the real-valued measure of a set defined with
 an extended norm.
 
 The `IsFiniteMeasure` hypothesis is necessary, otherwise `μ.real {...}` could be zero because
 the measure of the set is infinite. -/
-theorem tendstoInMeasure_iff_measureReal_enorm [SeminormedAddCommGroup E] [IsFiniteMeasure μ]
+theorem tendstoInMeasure_iff_measureReal_eNorm [SeminormedAddCommGroup E] [IsFiniteMeasure μ]
     {l : Filter ι} {f : ι → α → E} {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i ↦ μ.real { x | ε ≤ ‖f i x - g x‖ₑ }) l (𝓝 0) := by
-  rw [tendstoInMeasure_iff_enorm]
+  rw [tendstoInMeasure_iff_eNorm]
   congr! with ε hε hε_top
   simp_rw [measureReal_def, ENNReal.tendsto_toReal_zero_iff (fun _ ↦ measure_ne_top _ _)]
+
+@[deprecated (since := "2026-11-06")]
+alias tendstoInMeasure_iff_measureReal_enorm := tendstoInMeasure_iff_measureReal_eNorm
 
 /-- `TendstoInMeasure` expressed with a distance `dist` instead of an extended distance `edist`. -/
 lemma tendstoInMeasure_iff_dist [PseudoMetricSpace E] {f : ι → α → E} {l : Filter ι} {g : α → E} :
@@ -176,7 +181,6 @@ protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : 
   filter_upwards [h_left] with i h_ae_eq
   refine measure_congr ?_
   filter_upwards [h_ae_eq, h_right] with x hxf hxg
-  rw [eq_iff_iff]
   rw [hxg, hxf]
 
 protected theorem congr (h_left : ∀ i, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
@@ -285,7 +289,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     fun k => ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
   set s := Filter.atTop.limsup S with hs
   have hμs : μ s = 0 := by
-    refine measure_limsup_atTop_eq_zero (ne_top_of_le_ne_top ?_ (ENNReal.tsum_le_tsum hμS_le))
+    refine measure_limsup_atTop_eq_zero (ne_top_of_le_ne_top ?_ (tsum_le_tsum hμS_le))
     simpa only [ENNReal.tsum_geometric, ENNReal.one_sub_inv_two, inv_inv] using ENNReal.ofNat_ne_top
   have h_tendsto : ∀ x ∈ sᶜ, Tendsto (fun i => f (ns i) x) atTop (𝓝 (g x)) := by
     refine fun x hx => EMetric.tendsto_atTop.mpr fun ε hε => ?_
@@ -302,7 +306,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
         mul_comm (_ ^ n), mul_assoc, ← ENNReal.inv_le_iff_le_mul, inv_inv, ← pow_add]
       · gcongr
         · simp
-        · omega
+        · lia
       all_goals simp
     exact le_trans hNx.le h_inv_n_le_k
   rw [ae_iff]
@@ -413,7 +417,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
   · convert!
       mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ε
       using 6
-    simp [edist_eq_enorm_sub]
+    simp [eDist_eq_eNorm_sub]
   · simp [hε_top]
   · simp [hε.ne']
 
@@ -439,7 +443,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {
     hn.trans_lt (ENNReal.half_lt_self hδ.ne' hδ_top)
   refine ((le_of_eq ?_).trans (ae_lt_of_essSup_lt this).le).trans hε.le
   congr with x
-  simp [edist_eq_enorm_sub]
+  simp [eDist_eq_eNorm_sub]
 
 /-- Convergence in Lp implies convergence in measure. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E] {l : Filter ι}

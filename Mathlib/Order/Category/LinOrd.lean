@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Category.Lat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of linear orders
 

@@ -12,7 +12,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 
 Let `A` be a subcomplex of a simplicial set `X`. If `P` is a pairing of `A`,
 we construct a pairing `P.op` for the subcomplex `A.op` of `X.op`.
-
 -/
 
 @[expose] public section

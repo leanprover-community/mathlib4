@@ -12,7 +12,6 @@ import Mathlib.LinearAlgebra.PiTensorProduct.Generators
 
 /-!
 # A multiple tensor product of finitely generated modules is finitely generated
-
 -/
 
 public section

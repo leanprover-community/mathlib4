@@ -19,7 +19,6 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 - `RingHom.injective`: every ring homomorphism from a simple ring to a nontrivial ring is injective.
 - `IsSimpleRing.iff_injective_ringHom`: a ring is simple iff every ring homomorphism to a nontrivial
   ring is injective.
-
 -/
 
 public section
