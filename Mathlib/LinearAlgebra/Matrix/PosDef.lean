@@ -683,21 +683,17 @@ theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
     · rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1,
         ← dotProduct_mulVec, ← dotProduct_mulVec (star (x ∘ Sum.inr))]
       exact add_nonneg (hA.posSemidef.dotProduct_mulVec_nonneg _) (h.dotProduct_mulVec_nonneg _)
-  refine ⟨fun h ↦ posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_,
-    fun h ↦ posSemidef_iff_submatrix_finset.mpr fun t ↦ ?_⟩
-  · let B' := B.submatrix id ((↑) : s → n)
-    let D' := D.submatrix ((↑) : s → n) ((↑) : s → n)
-    have hs : (fromBlocks A B' B'ᴴ D').PosSemidef := by
-      convert h.submatrix (Sum.map id ((↑) : s → n))
-      ext (_ | _) (_ | _) <;> rfl
-    exact (aux B' D').mp hs
-  · let B' := B.submatrix id ((↑) : t.toRight → n)
-    let D' := D.submatrix ((↑) : t.toRight → n) ((↑) : t.toRight → n)
-    have hfb := (aux B' D').mpr (h.submatrix ((↑) : t.toRight → n))
-    convert hfb.submatrix fun x : t ↦ match x with
+  have lhs_iff {M : Matrix (m ⊕ n) (m ⊕ n) R'} : M.PosSemidef ↔
+      ∀ s : Finset n, (M.submatrix (.map id ((↑) : s → n)) (.map id (↑))).PosSemidef := by
+    refine ⟨fun h s ↦ h.submatrix _, fun h ↦ posSemidef_iff_submatrix_finset.mpr fun t ↦ ?_⟩
+    convert (h t.toRight).submatrix fun x : t ↦ match x with
       | ⟨.inl i, _⟩ => .inl i
       | ⟨.inr j, hj⟩ => .inr ⟨j, Finset.mem_toRight.mpr hj⟩
     ext ⟨_ | _, _⟩ ⟨_ | _, _⟩ <;> rfl
+  rw [lhs_iff, posSemidef_iff_submatrix_finset]
+  refine forall_congr' fun s ↦ ?_
+  simp only [fromBlocks_submatrix_sumMap, submatrix_id_id, ← conjTranspose_submatrix]
+  exact aux _ _
 
 omit [Fintype m] in
 theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
