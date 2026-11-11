@@ -366,6 +366,7 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Equidecomp
 public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.Group.Action.Option
@@ -460,6 +461,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 public import Mathlib.Algebra.Group.Pointwise.Set.Small
+public import Mathlib.Algebra.Group.PowIterate
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Semiconj.Basic
@@ -526,6 +528,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Center
 public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
@@ -2064,6 +2067,7 @@ public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Convex.Strong
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Convex.TotallyBounded
+public import Mathlib.Analysis.Convex.TriangleEquality
 public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Analysis.Convex.Visible
 public import Mathlib.Analysis.Convolution
@@ -4018,6 +4022,7 @@ public import Mathlib.Data.DFinsupp.Submonoid
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.DList.Instances
 public import Mathlib.Data.Dyadic
+public import Mathlib.Data.Dyadic.Basic
 public import Mathlib.Data.ENNReal.Action
 public import Mathlib.Data.ENNReal.Basic
 public import Mathlib.Data.ENNReal.BigOperators
@@ -4794,6 +4799,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 public import Mathlib.Geometry.Convex.Hull
+public import Mathlib.Geometry.Convex.Segment
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Convex.Star
 public import Mathlib.Geometry.Diffeology.Basic
@@ -5153,6 +5159,7 @@ public meta import Mathlib.Lean.Meta.Simp
 public meta import Mathlib.Lean.Meta.Tactic.Rewrite
 public import Mathlib.Lean.Name
 public import Mathlib.Lean.PrettyPrinter.Delaborator
+public import Mathlib.Lean.Quote
 public import Mathlib.Lean.Thunk
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -5531,6 +5538,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Prod
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
@@ -8100,6 +8108,7 @@ public import Mathlib.Topology.Algebra.Order.Floor
 public import Mathlib.Topology.Algebra.Order.Group
 public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 public import Mathlib.Topology.Algebra.Order.Module
+public import Mathlib.Topology.Algebra.Order.Polynomial
 public import Mathlib.Topology.Algebra.Order.Support
 public import Mathlib.Topology.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Polynomial
@@ -8582,6 +8591,7 @@ public import Mathlib.Topology.Sheaves.Flasque
 public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.Functors
 public import Mathlib.Topology.Sheaves.Init
+public import Mathlib.Topology.Sheaves.KSheaf
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.LocalPredicate
 public import Mathlib.Topology.Sheaves.LocallySurjective

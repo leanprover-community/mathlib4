@@ -433,15 +433,20 @@ theorem lt_succ_iff_of_not_isMax' (hb : ¬IsMax b) : b < succ a ↔ b ≤ a := b
   contrapose!
   exact succ_le_iff_of_not_isMax' hb
 
-@[to_dual (reorder := ha hb)]
-theorem succ_lt_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
+@[to_dual]
+theorem succ_lt_succ_iff_of_not_isMax (hb : ¬IsMax b) :
     succ a < succ b ↔ a < b := by
-  rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
+  by_cases ha : IsMax a
+  · rw [ha.succ_eq]
+    exact iff_of_false ha.not_lt ha.not_lt
+  · rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
 
-@[to_dual (reorder := ha hb)]
-theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
-    succ a ≤ succ b ↔ a ≤ b := by
-  rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
+@[to_dual]
+theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ succ b ↔ a ≤ b := by
+  by_cases hb : IsMax b
+  · rw [hb.succ_eq, succ_le_iff_of_not_isMax ha]
+    exact ⟨le_of_lt, fun h => h.lt_of_ne fun h' => ha (h' ▸ hb)⟩
+  · rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
 
 @[to_dual]
 theorem Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iio (succ a) = Iic a :=
@@ -458,8 +463,8 @@ theorem Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioo a (succ b) = Ioc a b 
 @[to_dual]
 theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
     succ a = succ b ↔ a = b := by
-  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha hb,
-    succ_lt_succ_iff_of_not_isMax ha hb]
+  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha,
+    succ_lt_succ_iff_of_not_isMax hb]
 
 @[to_dual pred_le_iff_eq_or_le]
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
@@ -757,6 +762,10 @@ theorem succ_coe_of_not_isMax {a : α} (h : ¬ IsMax a) : succ (↑a : WithTop �
 @[to_dual (attr := simp)]
 theorem succ_coe [NoMaxOrder α] {a : α} : succ (↑a : WithTop α) = ↑(succ a) :=
   succ_coe_of_not_isMax <| not_isMax a
+
+@[to_dual (attr := simp)]
+theorem succ_coe_eq_top_iff {a : α} : succ (a : WithTop α) = ⊤ ↔ IsMax a := by
+  apply (Ne.ite_eq_left_iff _).trans <;> simp
 
 end Succ
 

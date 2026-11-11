@@ -18,7 +18,6 @@ import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 
 In this file, we develop API for inverse limits of schemes with affine transition maps,
 following EGA IV 8 and https://stacks.math.columbia.edu/tag/01YT.
-
 -/
 
 @[expose] public section
@@ -703,7 +702,6 @@ any `s : Γ(lim Dᵢ, ⊤)` comes from `Γ(Dᵢ, ⊤)` for some `i`.
 See `AlgebraicGeometry.exists_appTop_π_eq_of_isLimit`.
 
 These two results imply that `PreservesLimit D Scheme.Γ.rightOp`, which is available as an instance.
-
 -/
 section sections
 

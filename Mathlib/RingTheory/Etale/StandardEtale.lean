@@ -27,7 +27,6 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 - We also provide the instance that `P.Ring` is etale over `R`.
 
 - `Algebra.IsStandardEtale`: The class of standard etale algebras.
-
 -/
 
 @[expose] public section

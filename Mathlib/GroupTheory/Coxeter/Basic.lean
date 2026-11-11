@@ -81,7 +81,6 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 ## Tags
 
 coxeter system, coxeter group
-
 -/
 
 @[expose] public section

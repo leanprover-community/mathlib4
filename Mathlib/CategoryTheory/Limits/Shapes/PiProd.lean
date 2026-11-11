@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 We write a product indexed by `I` as a binary product of the products indexed by a subset of `I`
 and its complement.
-
 -/
 
 @[expose] public section

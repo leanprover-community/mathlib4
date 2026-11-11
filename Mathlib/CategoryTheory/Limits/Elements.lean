@@ -21,7 +21,6 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 ## Further results
 
 - If `A` is (co)representable, then `A.Elements` has an initial object.
-
 -/
 
 @[expose] public section

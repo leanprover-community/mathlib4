@@ -27,7 +27,6 @@ an s-finite kernel.
 
 * `ProbabilityTheory.Kernel.lintegral_withDensity`:
   `∫⁻ b, g b ∂(withDensity κ f a) = ∫⁻ b, f a b * g b ∂(κ a)`
-
 -/
 
 @[expose] public section

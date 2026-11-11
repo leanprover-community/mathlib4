@@ -519,6 +519,7 @@ This is available in bundled forms as:
 * `Matrix.reindexLinearEquiv`
 * `Matrix.reindexRingEquiv`
 * `Matrix.reindexAlgEquiv`
+* `Matrix.reindexStarAlgEquiv`
 -/
 def reindex (eₘ : m ≃ l) (eₙ : n ≃ o) : Matrix m n α ≃ Matrix l o α where
   toFun M := M.submatrix eₘ.symm eₙ.symm
@@ -547,6 +548,10 @@ theorem reindex_trans {l₂ o₂ : Type*} (eₘ : m ≃ l) (eₙ : n ≃ o) (e�
 
 theorem transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     (reindex eₘ eₙ M)ᵀ = reindex eₙ eₘ Mᵀ :=
+  rfl
+
+theorem reindex_map (eₘ : m ≃ l) (eₙ : n ≃ o) (f : α → β) (A : Matrix m n α) :
+    reindex eₘ eₙ (map A f) = map (reindex eₘ eₙ A) f :=
   rfl
 
 /-- The left `n × l` part of an `n × (l+r)` matrix. -/
