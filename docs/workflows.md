@@ -48,6 +48,15 @@ Read the [Batteries contributor guide](https://github.com/leanprover-community/b
 for the adaptation process and the [workflow reference](https://github.com/leanprover-community/batteries/blob/main/docs/ci/mathlib-adaptations.md)
 for fork permissions and recovery procedures.
 
+The Build job checks `lake-manifest.json` through the
+[`validate-lake-manifest` action](https://github.com/leanprover-community/mathlib-ci/tree/e08feb664fe178b59a3fff5de1aa9893535b8a6c/.github/actions/validate-lake-manifest)
+before it downloads dependencies. The action checks dependency repositories, references, and commit pins.
+Malformed pins and an unreadable target manifest fail every run. Other violations and errors in pin checks
+fail Bors runs (`staging` and `trying`) and warn on other runs. The check skips `bump/*` branches,
+PRs into them, and repositories other than `leanprover-community/mathlib4`.
+For an intentional revert, an admin can set `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`
+to make older-pin violations warnings, then delete the variable after the revert merges.
+
 ### The main CI pipelines above all use this reusable workflow for the base logic:
 | File  | Description |
 |---|---|

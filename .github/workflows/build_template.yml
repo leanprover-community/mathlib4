@@ -91,12 +91,10 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Validate lake-manifest.json before "Set up build environment" downloads the dependencies.
-      # The action's README.md lists the rules. On bors runs (`staging` and `trying`), a broken rule
-      # fails the step. On other runs, most rules only warn, so a PR can test an unmerged dependency.
-      # For an intentional revert, an admin sets the repository variable
-      # `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`, and the older-pin rule only warns.
-      # The admin deletes the variable after the revert merges.
+      # Check the manifest before setup downloads dependencies. The action's README lists the rules.
+      # Bors uses strict mode; other runs can test unmerged dependencies with warnings.
+      # For an intentional revert, an admin sets MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS to true
+      # and deletes the variable after the revert merges.
       - name: Validate lake-manifest.json
         # `bump/*` branches and PRs into them track the dependencies' `nightly-testing` branches,
         # so the step skips them. The condition reads a PR's base branch from `github.base_ref`,
@@ -106,7 +104,7 @@ jobs:
           github.repository == 'leanprover-community/mathlib4'
           && !startsWith(github.ref_name, 'bump/')
           && !startsWith(github.base_ref, 'bump/')
-        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@4a61cd1f8ef7fc544c089d90ba13ca26bb7c02af
+        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@e08feb664fe178b59a3fff5de1aa9893535b8a6c
         with:
           ref: ${{ inputs.pr_branch_ref }}
           strict: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
