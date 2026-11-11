@@ -304,7 +304,6 @@ def baseIso : ψ.base ≅ ψ'.base where
   hom_inv_id := by simp [← category_comp_base]
   inv_hom_id := by simp [← category_comp_base]
 
-set_option backward.isDefEq.respectTransparency.types false in
 omit [IsIso f] in
 lemma isIso_iff : IsIso f ↔ IsIso f.left ∧ IsIso f.base ∧ IsIso f.right where
   mp h := ⟨inferInstance, inferInstance, inferInstance⟩

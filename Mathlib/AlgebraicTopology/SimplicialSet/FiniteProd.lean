@@ -14,14 +14,15 @@ If `X₁` and `X₂` are respectively of dimensions `≤ d₁` and `≤ d₂`,
 then `X₁ ⊗ X₂` has dimension `≤ d₁ + d₂`.
 
 We also show that if `X₁` and `X₂` are finite, then `X₁ ⊗ X₂` is also finite.
-
 -/
 
 public section
 
 universe u
 
-open CategoryTheory Limits MonoidalCategory Simplicial Opposite
+open CategoryTheory Limits MonoidalCategory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -34,7 +35,7 @@ lemma iSup_subcomplexOfSimplex_prod_eq_top :
       (Subcomplex.ofSimplex x₁.simplex).prod (Subcomplex.ofSimplex x₂.simplex) = ⊤ := by
   ext m ⟨x₁, x₂⟩
   simp only [Subfunctor.iSup_obj, Subcomplex.prod_obj, Set.mem_iUnion, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.mem_univ, iff_true]
+    Set.mem_univ, iff_true]
   have hx₁ : x₁ ∈ (⊤ : X₁.Subcomplex).obj _ := by simp
   have hx₂ : x₂ ∈ (⊤ : X₂.Subcomplex).obj _ := by simp
   simp only [← N.iSup_subcomplex_eq_top, Subfunctor.iSup_obj, Set.mem_iUnion] at hx₁ hx₂

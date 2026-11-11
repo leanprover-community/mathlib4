@@ -6,8 +6,8 @@ Authors: A. M. Berns
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Tactic.Continuity
+
+import Mathlib.Tactic.Continuity
 
 /-!
 # Polygons
@@ -18,7 +18,6 @@ For the special case `n = 3`, an interconversion is provided with `Affine.Triang
 ## Main definitions
 
 * `Polygon P n`: A polygon with `n` vertices in a type `P`.
-
 -/
 
 @[expose] public section

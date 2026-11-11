@@ -6,9 +6,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Data.List.Perm
-public import Mathlib.Logic.Relation
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Logic.OpClass
+public import Mathlib.Logic.Relation
 
 /-!
 # List Permutations
@@ -37,7 +38,14 @@ lemma perm_rfl : l ~ l := Perm.refl _
 attribute [symm] Perm.symm
 attribute [trans] Perm.trans
 
-instance : Std.Symm (α := List α) Perm := ⟨fun _ _ ↦ .symm⟩
+instance : IsEquiv (List α) Perm where
+  refl := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
+instance : IsPreorder (List α) Subperm where
+  refl := .refl
+  trans _ _ _ := .trans
 
 theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₁ ⊆ l₃ ↔ l₂ ⊆ l₃ :=
   ⟨h.symm.subset.trans, h.subset.trans⟩
@@ -55,6 +63,11 @@ theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
 theorem getElem_cons_eraseIdx_perm {n : ℕ} (h : n < l.length) :
     l[n] :: l.eraseIdx n ~ l := by
   simpa [h] using (set_perm_cons_eraseIdx h l[n]).symm
+
+theorem insertIdx_eraseIdx_getElem_perm {m n : ℕ} (hm : m < l.length)
+    (hn : n ≤ (l.eraseIdx m).length) :
+    (l.eraseIdx m).insertIdx n l[m] ~ l :=
+  (perm_insertIdx _ _ hn).trans (getElem_cons_eraseIdx_perm hm)
 
 theorem perm_insertIdx_iff_of_le {l₁ l₂ : List α} {m n : ℕ} (hm : m ≤ l₁.length)
     (hn : n ≤ l₂.length) (a : α) : l₁.insertIdx m a ~ l₂.insertIdx n a ↔ l₁ ~ l₂ := by
@@ -165,8 +178,7 @@ lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePre
     (l : List α) (a : α) :
     count a l = count a (l.filter P) + count a (l.filter (¬ P ·)) := by
   unfold count
-  convert countP_eq_countP_filter_add l _ P
-  simp only [decide_not]
+  simpa only [decide_not] using countP_eq_countP_filter_add l _ P
 
 theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} [rcomm : RightCommutative f] (p : l₁ ~ l₂) :
     ∀ b, foldl f b l₁ = foldl f b l₂ :=

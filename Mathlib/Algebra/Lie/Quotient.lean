@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Lie.Ideal
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -32,6 +30,7 @@ lie algebra, quotient
 
 @[expose] public section
 
+open Function
 
 universe u v w w₁ w₂
 
@@ -82,7 +81,6 @@ theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
 
 variable [LieAlgebra R L] [LieModule R L M] (I J : LieIdeal R L)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there
 is a natural linear map from `L` to the endomorphisms of `M` leaving `N` invariant. -/
 def lieSubmoduleInvariant : L →ₗ[R] Submodule.compatibleMaps N.toSubmodule N.toSubmodule :=
@@ -98,7 +96,7 @@ def actionAsEndoMap : L →ₗ⁅R⁆ Module.End R (M ⧸ N) :=
   { LinearMap.comp (Submodule.mapQLinear (N : Submodule R M) (N : Submodule R M))
       lieSubmoduleInvariant with
     map_lie' := fun {_ _} =>
-      Submodule.linearMap_qext _ <| LinearMap.ext fun _ => congr_arg mk <| lie_lie _ _ _ }
+      Submodule.linearMap_qext _ <| LinearMap.ext fun _ => congr(mk $(lie_lie ..)) }
 
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there is
 a natural bracket action of `L` on the quotient `M/N`. -/
@@ -212,6 +210,29 @@ lemma toEnd_comp_mk' (x : L) :
 end Quotient
 
 end LieSubmodule
+
+namespace LieIdeal
+
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
+
+/-- The map from a Lie algebra to its quotient by an ideal, as a morphism of Lie algebras. -/
+@[simps!]
+def mkQ : L →ₗ⁅R⁆ L ⧸ I :=
+  { __ := I.toSubmodule.mkQ
+    map_lie' := by simp }
+
+@[simp]
+theorem surjective_mkQ : Surjective I.mkQ := Quot.mk_surjective
+
+@[simp]
+theorem range_mkQ : I.mkQ.range = ⊤ := by simp [LieHom.range_eq_top]
+
+theorem mkQ_eq_zero {x : L} : I.mkQ x = 0 ↔ x ∈ I := Submodule.Quotient.mk_eq_zero I.toSubmodule
+
+@[simp]
+theorem mkQ_ker : I.mkQ.ker = I := by ext; simp
+
+end LieIdeal
 
 namespace LieHom
 

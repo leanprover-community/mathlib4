@@ -34,7 +34,6 @@ in Set Theory, state in imperative programming, and others, see [Dialectica Cate
 [*Dialectica models of type theory*]: https://arxiv.org/abs/2105.00283
 [Poly]: https://github.com/sinhp/Poly
 [Dialectica Categories]: https://github.com/vcvpaiva/DialecticaCategories
-
 -/
 
 @[expose] public section
@@ -79,7 +78,6 @@ local notation "π(" a ", " b ")" => prod.lift a b
     (Subobject.pullback π(π₁, F)).obj X.rel ≤
     (Subobject.pullback (prod.map f (𝟙 _))).obj Y.rel
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comp_le_lemma {X Y Z : Dial C} (F : Dial.Hom X Y) (G : Dial.Hom Y Z) :
     (Subobject.pullback π(π₁, π(π₁, prod.map F.f (𝟙 _) ≫ G.F) ≫ F.F)).obj X.rel ≤
     (Subobject.pullback (prod.map (F.f ≫ G.f) (𝟙 Z.tgt))).obj Z.rel := by
@@ -88,7 +86,6 @@ theorem comp_le_lemma {X Y Z : Dial C} (F : Dial.Hom X Y) (G : Dial.Hom Y Z) :
     le_trans ?_ <| ((Subobject.pullback (prod.map F.f (𝟙 Z.tgt))).monotone G.le).trans ?_
     <;> simp [← Subobject.pullback_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance : Category (Dial C) where
   Hom := Dial.Hom
@@ -110,7 +107,6 @@ instance : Category (Dial C) where
 @[ext] theorem hom_ext {X Y : Dial C} {x y : X ⟶ Y} (hf : x.f = y.f) (hF : x.F = y.F) : x = y :=
   Hom.ext hf hF
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 An isomorphism in `Dial C` can be induced by isomorphisms on the source and target,
 which respect the respective relations on `X` and `Y`.

@@ -5,16 +5,14 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-! # Base change of a free module
 
 * `IsBaseChange.basis` : the natural basis of the base change of a module with a basis
 
 * `IsBaseChange.free` : a base change of a free module is free.
-
 -/
 
 @[expose] public section
@@ -44,7 +42,6 @@ theorem basis_apply (i) : ibc.basis b i = ε (b i) := by
     simp [LinearEquiv.symm_apply_eq, IsBaseChange.equiv_tmul]
   simp [this, IsBaseChange.equiv_tmul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem basis_repr_comp_apply (v i) :
     (ibc.basis b).repr (ε v) i = algebraMap R S (b.repr v i) := by
   conv_lhs => rw [← b.linearCombination_repr v, Finsupp.linearCombination_apply,

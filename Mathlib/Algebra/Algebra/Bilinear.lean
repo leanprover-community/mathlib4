@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about algebras involving bilinear maps and tensor products
 
@@ -152,7 +155,7 @@ theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
   rfl
 
 theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
-  fun a₁ a₂ h ↦ by simpa using DFunLike.congr_fun h 1
+  fun a₁ a₂ h ↦ by simpa using congr($h 1)
 
 theorem _root_.Algebra.lmul_isUnit_iff {x : A} :
     IsUnit (Algebra.lmul R A x) ↔ IsUnit x := by
@@ -166,7 +169,7 @@ variable (R A) in
 /-- The multiplication map on an `R`-algebra, as an `A`-linear map from `A ⊗[R] A` to `A`. -/
 @[simps!] def mul'' : A ⊗[R] A →ₗ[A] A where
   __ := mul' R A
-  map_smul' a x := x.induction_on (by simp) (by simp +contextual [mul', smul_tmul', mul_assoc])
+  map_smul' a x := x.inductionOn (by simp +contextual [mul', smul_tmul', mul_assoc])
     (by simp +contextual [mul_add])
 
 end Semiring

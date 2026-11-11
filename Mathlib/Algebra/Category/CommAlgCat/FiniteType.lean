@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.RingHomProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finitely generated `R`-algebras
 
@@ -20,7 +23,7 @@ We define the category of finitely generated `R`-algebras and show it is essenti
 
 universe w v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable (R : Type u) [CommRing R]
 
@@ -28,7 +31,7 @@ variable (R : Type u) [CommRing R]
 abbrev FGAlgCat := ObjectProperty.FullSubcategory
   fun A : CommAlgCat.{v, u} R ↦ Algebra.FiniteType R A
 
-instance (A : FGAlgCat R) : Algebra.FiniteType R A.1 := A.2
+instance (A : FGAlgCat R) : Algebra.FiniteType R A.obj := A.property
 
 /-- (Implementation detail): A small skeleton of `FGAlgCat`. -/
 structure FGAlgCatSkeleton : Type u where
@@ -39,7 +42,7 @@ structure FGAlgCatSkeleton : Type u where
 
 /-- (Implementation detail): Realisation of a `FGAlgCatSkeleton`. -/
 noncomputable def FGAlgCatSkeleton.eval (A : FGAlgCatSkeleton R) : FGAlgCat.{u} R :=
-  ⟨CommAlgCat.of R (MvPolynomial (Fin A.n) R ⧸ A.I), inferInstanceAs <| Algebra.FiniteType _ _⟩
+  ⟨↧(MvPolynomial (Fin A.n) R ⧸ A.I), inferInstanceAs <| Algebra.FiniteType _ _⟩
 
 lemma Algebra.FiniteType.exists_fgAlgCatSkeleton (A : Type v) [CommRing A] [Algebra R A]
     [h : Algebra.FiniteType R A] :
@@ -56,7 +59,7 @@ lemma RingHom.FiniteType.exists_smallRepr {S : Type v} [CommRing S] {f : R →+*
 
 /-- Universe lift functor for finitely generated algebras. -/
 def FGAlgCat.uliftFunctor : FGAlgCat.{v} R ⥤ FGAlgCat.{max v w} R where
-  obj A := ⟨.of R <| ULift A.1, .equiv inferInstance ULift.algEquiv.symm⟩
+  obj A := ⟨.of R <| ULift A.obj, .equiv inferInstance ULift.algEquiv.symm⟩
   map {A B} f := ConcreteCategory.ofHom <|
     ULift.algEquiv.symm.toAlgHom.comp <| f.hom.hom.comp ULift.algEquiv.toAlgHom
 
@@ -91,7 +94,7 @@ instance : EssentiallySmall.{u} (FGAlgCat.{v} R) := by
     refine small_of_injective (f := f) fun u v h ↦ ?_
     ext a
     obtain ⟨a, rfl⟩ := eA.symm.surjective a
-    exact eB.injective (congr_fun h a)
+    exact eB.injective congr($h a)
 
 section Under
 
@@ -102,12 +105,12 @@ finite type ring homomorphisms from `R`. -/
 def FGAlgCat.equivUnder (R : CommRingCat.{u}) :
     FGAlgCat R ≌ MorphismProperty.Under (toMorphismProperty FiniteType) ⊤ R where
   functor.obj A := ⟨(commAlgCatEquivUnder R).functor.obj A.obj,
-    (RingHom.finiteType_algebraMap (A := R) (B := A.obj)).mpr A.2⟩
+    (RingHom.finiteType_algebraMap (A := R) (B := A.obj)).mpr A.property⟩
   functor.map {A B} f := ⟨(commAlgCatEquivUnder R).functor.map f.hom, trivial, trivial⟩
-  inverse.obj A := ⟨(commAlgCatEquivUnder R).inverse.obj A.1, A.2⟩
+  inverse.obj A := ⟨(commAlgCatEquivUnder R).inverse.obj A.toComma, A.prop⟩
   inverse.map {A B} f := ObjectProperty.homMk ((commAlgCatEquivUnder R).inverse.map f.hom)
   unitIso := NatIso.ofComponents fun A ↦
-    ObjectProperty.isoMk _ (CommAlgCat.isoMk { toRingEquiv := .refl A.1, commutes' _ := rfl })
+    ObjectProperty.isoMk _ (CommAlgCat.isoMk { toRingEquiv := .refl A.obj, commutes' _ := rfl })
   counitIso := .refl _
 
 variable {Q : MorphismProperty CommRingCat.{u}}

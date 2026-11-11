@@ -5,12 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Cycle
 public import Mathlib.GroupTheory.Perm.Cycle.Type
-public import Mathlib.GroupTheory.Perm.List
 
 /-!
-
 # Properties of cyclic permutations constructed from lists/cycles
 
 In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
@@ -41,7 +38,6 @@ The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uni
 result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-
 -/
 
 @[expose] public section
@@ -71,9 +67,9 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
-  · norm_num at hn
+  · simp at hn
   induction l generalizing x with
-  | nil => norm_num at hn
+  | nil => simp at hn
   | cons y l =>
     use x
     constructor
@@ -210,7 +206,7 @@ theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by s
 
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
-  simpa [card_support_ne_one] using congr_arg length H
+  simpa [card_support_ne_one] using congr(length $H)
 
 theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
     2 ≤ length (toList p x) ↔ x ∈ p.support := by simp
@@ -364,7 +360,6 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
       have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
       exact Quotient.sound' hc.toList_isRotated)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ x) :
     toCycle f hf = toList f x := by
   have key : (Finset.univ : Finset α).val = x ::ₘ Finset.univ.val.erase x := by simp

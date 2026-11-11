@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Denumerable
+public import Mathlib.Basic.Denumerable
 
 /-!
 # Equivalences involving `List`-like types
@@ -127,7 +127,7 @@ end Encodable
 
 namespace Denumerable
 
-variable {α : Type*} {β : Type*} [Denumerable α] [Denumerable β]
+variable {α : Type*} [Denumerable α]
 
 open Encodable
 

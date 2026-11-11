@@ -10,10 +10,8 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.Ideal.Maximal
-public import Mathlib.Tactic.FinCases
 
 /-!
-
 # Ideals over a ring
 
 This file contains an assortment of definitions and results for `Ideal R`,
@@ -32,7 +30,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 @[expose] public section
 
 
-variable {ι α β F : Type*}
+variable {ι α β : Type*}
 
 open Set Function
 
@@ -268,9 +266,10 @@ theorem exists_maximal_of_not_isField [Nontrivial R] (h : ¬ IsField R) :
   simp only [← bot_lt_iff_ne_bot] at h
   refine isField_iff_maximal_bot.mpr ⟨⟨bot_ne_top, Ideal.maximal_of_no_maximal h⟩⟩
 
-theorem not_isField_of_ne_of_ne [Nontrivial R] {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
+theorem not_isField_of_ne_of_ne {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
     ¬ IsField R := by
   contrapose h_bot
+  have := h_bot.nontrivial
   exact ((isField_iff_maximal_bot.mp h_bot).eq_of_le h_top bot_le).symm
 
 theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :

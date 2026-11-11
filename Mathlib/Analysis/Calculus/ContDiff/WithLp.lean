@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Normed.Lp.PiLp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives on `WithLp`
 -/
@@ -18,7 +21,7 @@ open scoped ENNReal
 
 section PiLp
 
-open ContinuousLinearMap WithLp
+open WithLp
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {H : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup H] [∀ i, NormedAddCommGroup (E i)]

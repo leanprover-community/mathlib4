@@ -8,11 +8,14 @@ module
 public import Mathlib.Topology.EMetricSpace.Basic
 public import Mathlib.Topology.UniformSpace.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indexed product of extended metric spaces
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 
@@ -22,7 +25,7 @@ variable {α : Type u} {β : Type v} {X : Type*}
 
 open scoped Uniformity Topology NNReal ENNReal Pointwise
 
-variable [PseudoEMetricSpace α]
+variable [TopologicalSpace α] [WeakPseudoEMetricSpace α]
 
 open EMetric
 
@@ -74,11 +77,7 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (X b)] : PseudoEMetricS
 
 end Pi
 
-variable {γ : Type w} [EMetricSpace γ]
-
 section Pi
-
-open Finset
 
 variable {X : β → Type*} [Fintype β]
 

@@ -18,7 +18,6 @@ public import Mathlib.Data.Multiset.Filter
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -27,11 +26,11 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
@@ -42,7 +41,7 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Erase
 
-variable [DecidableEq α] {s t u v : Finset α} {a b : α}
+variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 /-- `erase s a` is the set `s - {a}`, that is, the elements of `s` which are
   not equal to `a`. -/

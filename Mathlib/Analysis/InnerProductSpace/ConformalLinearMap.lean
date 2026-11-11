@@ -5,8 +5,11 @@ Authors: Yourong Zang
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Conformal
 public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Analysis.Normed.Operator.Conformal
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Conformal maps between inner product spaces
@@ -23,7 +26,7 @@ variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
 open LinearIsometry ContinuousLinearMap
 
-open RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 /-- A map between two inner product spaces is a conformal map if and only if it preserves inner
 products up to a scalar factor, i.e., there exists a positive `c : ℝ` such that

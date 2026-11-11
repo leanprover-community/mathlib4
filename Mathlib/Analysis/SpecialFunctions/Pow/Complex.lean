@@ -15,7 +15,9 @@ We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 
 @[expose] public section
 
-open Real Topology Filter ComplexConjugate Finset Set
+open Real Topology Filter Finset Set
+
+open scoped ComplexConjugate
 
 namespace Complex
 
@@ -36,7 +38,7 @@ theorem cpow_def (x y : ℂ) : x ^ y = if x = 0 then if y = 0 then 1 else 0 else
   rfl
 
 theorem cpow_def_of_ne_zero {x : ℂ} (hx : x ≠ 0) (y : ℂ) : x ^ y = exp (log x * y) :=
-  if_neg hx
+  ite_eq_right hx
 
 @[simp]
 theorem cpow_zero (x : ℂ) : x ^ (0 : ℂ) = 1 := by simp [cpow_def]
@@ -59,7 +61,7 @@ theorem zero_cpow {x : ℂ} (h : x ≠ 0) : (0 : ℂ) ^ x = 0 := by simp [cpow_d
 theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧ a = 0 ∨ x = 0 ∧ a = 1 := by
   constructor
   · intro hyp
-    simp only [cpow_def, if_true] at hyp
+    simp only [cpow_def, ite_true] at hyp
     grind
   · rintro (⟨h, rfl⟩ | ⟨rfl, rfl⟩)
     · exact zero_cpow h
@@ -71,7 +73,8 @@ theorem eq_zero_cpow_iff {x : ℂ} {a : ℂ} : a = (0 : ℂ) ^ x ↔ x ≠ 0 ∧
 @[simp]
 theorem cpow_one (x : ℂ) : x ^ (1 : ℂ) = x :=
   if hx : x = 0 then by simp [hx, cpow_def]
-  else by rw [cpow_def, if_neg (one_ne_zero : (1 : ℂ) ≠ 0), if_neg hx, mul_one, exp_log hx]
+  else by
+    rw [cpow_def, ite_eq_right (one_ne_zero : (1 : ℂ) ≠ 0), ite_eq_right hx, mul_one, exp_log hx]
 
 @[simp]
 theorem one_cpow (x : ℂ) : (1 : ℂ) ^ x = 1 := by
@@ -183,18 +186,34 @@ lemma sq_cpow_two_inv {x : ℂ} (hx : 0 < x.re) : (x ^ (2 : ℕ)) ^ (2⁻¹ : �
 
 @[simp] lemma isSquare (x : ℂ) : IsSquare x := ⟨x ^ (2⁻¹ : ℂ), by simp [← sq]⟩
 
+theorem mul_cpow {a b : ℂ} (h : a.arg + b.arg ∈ Set.Ioc (-π) π) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r := by
+  by_cases hr : r = 0
+  · simp [hr]
+  by_cases ha : a = 0
+  · simp [ha, hr]
+  by_cases hb : b = 0
+  · simp [hb, hr]
+  rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul ha hb h, add_mul, exp_add]
+
+theorem mul_cpow_of_pi_lt {a b : ℂ} (h : π < a.arg + b.arg) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r * exp (-2 * π * I * r) := by
+  have ha : a ≠ 0 := by grind [arg_le_pi, arg_zero]
+  have hb : b ≠ 0 := by grind [arg_le_pi, arg_zero]
+  simp_rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul_of_pi_lt h, sub_eq_add_neg, add_mul, exp_add, neg_mul]
+
+theorem mul_cpow_of_le_neg_pi {a b : ℂ} (h : a.arg + b.arg ≤ -π) (r : ℂ) :
+    (a * b) ^ r = a ^ r * b ^ r * exp (2 * π * I * r) := by
+  have ha : a ≠ 0 := by grind [neg_pi_lt_arg, arg_zero]
+  have hb : b ≠ 0 := by grind [neg_pi_lt_arg, arg_zero]
+  simp_rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
+    log_mul_of_le_neg_pi h, add_mul, exp_add]
+
 theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
-    ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r := by
-  rcases eq_or_ne r 0 with (rfl | hr)
-  · simp only [cpow_zero, mul_one]
-  rcases eq_or_lt_of_le ha with (rfl | ha')
-  · rw [ofReal_zero, zero_mul, zero_cpow hr, zero_mul]
-  rcases eq_or_lt_of_le hb with (rfl | hb')
-  · rw [ofReal_zero, mul_zero, zero_cpow hr, mul_zero]
-  have ha'' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha'.ne'
-  have hb'' : (b : ℂ) ≠ 0 := ofReal_ne_zero.mpr hb'.ne'
-  rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,
-    add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
+    ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r :=
+  mul_cpow (by simp [arg_ofReal_of_nonneg ha, arg_ofReal_of_nonneg hb, pi_nonneg, pi_pos]) r
 
 lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
   ofReal_natCast m ▸ ofReal_natCast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
@@ -212,7 +231,7 @@ theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
   split_ifs with hx hn ha ha <;> rfl
 
 theorem inv_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x⁻¹ ^ n = (x ^ n)⁻¹ := by
-  rw [inv_cpow_eq_ite, if_neg hx]
+  rw [inv_cpow_eq_ite, ite_eq_right hx]
 
 lemma inv_cpow_ofReal_nonneg {a : ℝ} (ha : 0 ≤ a) (r : ℂ) :
     ((a : ℂ)⁻¹) ^ r = (a ^ r : ℂ)⁻¹ :=
@@ -238,7 +257,7 @@ theorem conj_cpow_eq_ite (x : ℂ) (n : ℂ) :
   split_ifs with hcx hn hx <;> rfl
 
 theorem conj_cpow (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : conj x ^ n = conj (x ^ conj n) := by
-  rw [conj_cpow_eq_ite, if_neg hx]
+  rw [conj_cpow_eq_ite, ite_eq_right hx]
 
 theorem cpow_conj (x : ℂ) (n : ℂ) (hx : x.arg ≠ π) : x ^ conj n = conj (conj x ^ n) := by
   rw [conj_cpow _ _ hx, conj_conj]

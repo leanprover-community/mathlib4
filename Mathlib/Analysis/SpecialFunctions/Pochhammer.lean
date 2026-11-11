@@ -5,10 +5,11 @@ Authors: Mitchell Horner
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Convex.Deriv
-public import Mathlib.Analysis.Convex.Piecewise
-public import Mathlib.Analysis.Convex.Jensen
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Analysis.Convex.Piecewise
 
 /-!
 # Pochhammer polynomials
@@ -89,7 +90,7 @@ private lemma convexOn_piecewise_Ici_descPochhammer_eval_zero (hn : n ≠ 0) :
   apply convexOn_univ_piecewise_Ici_of_monotoneOn_Ici_antitoneOn_Iic
     (convexOn_descPochhammer_eval n) (convexOn_const 0 (convex_Iic (n - 1 : ℝ)))
     (monotoneOn_descPochhammer_eval n) antitoneOn_const
-  simpa [← Nat.cast_pred hn] using descPochhammer_eval_coe_nat_of_lt (Nat.sub_one_lt_of_lt hn)
+  simpa [← Nat.cast_pred hn] using descPochhammer_eval_natCast_of_lt (Nat.sub_one_lt_of_lt hn)
 
 /-- Special case of **Jensen's inequality** for `Nat.descFactorial`. -/
 theorem descPochhammer_eval_le_sum_descFactorial

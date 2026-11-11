@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Opens
+
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -263,7 +264,7 @@ theorem infty_mem_opensOfCompl {s : Set X} (h₁ : IsClosed s) (h₂ : IsCompact
     ∞ ∈ opensOfCompl s h₁ h₂ :=
   mem_compl infty_notMem_image_coe
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
   continuous_def.mpr fun _s hs => hs.right
 
@@ -509,7 +510,7 @@ instance : CompactSpace (OnePoint X) where
 instance [T0Space X] : T0Space (OnePoint X) := by
   refine ⟨fun x y hxy => ?_⟩
   rcases inseparable_iff.1 hxy with (⟨rfl, rfl⟩ | ⟨x, rfl, y, rfl, h⟩)
-  exacts [rfl, congr_arg some h.eq]
+  exacts [rfl, congr(some $h.eq)]
 
 /-- The one point compactification of a `T1Space` space is a `T1Space`. -/
 instance [T1Space X] : T1Space (OnePoint X) where

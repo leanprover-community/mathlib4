@@ -17,7 +17,6 @@ A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U
 `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified.
 
 We show that these properties are local, and are stable under compositions and base change.
-
 -/
 
 public section
@@ -57,9 +56,6 @@ class FormallyUnramified (f : X ⟶ Y) : Prop where
       (f.appLE U V e).hom.FormallyUnramified
 
 alias Scheme.Hom.formallyUnramified_appLE := FormallyUnramified.formallyUnramified_appLE
-
-@[deprecated (since := "2026-01-20")]
-alias FormallyUnramified.formallyUnramified_of_affine_subset := Scheme.Hom.formallyUnramified_appLE
 
 namespace FormallyUnramified
 
@@ -203,7 +199,7 @@ protected lemma hom_ext {Z' Z : Scheme} (i : Z' ⟶ Z) (hi : IsNilpotent i.ker) 
     Y.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (f (g₁ x))) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU : V ≤ f ⁻¹ᵁ U⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
-  have : g₁.base = g₂.base := by ext x; obtain ⟨x, rfl⟩ := i.surjective x; exact congr($hig x)
+  have : g₁.base = g₂.base := by ext x; obtain ⟨x, rfl⟩ := i.surjective x; congrm $hig x
   obtain ⟨_, ⟨W, hW, rfl⟩, hxW, hWV : W ≤ _⟩ := Z.isBasis_affineOpens.exists_subset_of_mem_open
     (And.intro hxV (by simpa [← this])) (g₁ ⁻¹ᵁ V ⊓ g₂ ⁻¹ᵁ V).isOpen
   refine ⟨W, hxW, ?_⟩
