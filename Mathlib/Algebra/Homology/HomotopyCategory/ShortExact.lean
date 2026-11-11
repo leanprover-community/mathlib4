@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.Refinements
 
 /-!
@@ -19,7 +19,6 @@ we construct a quasi-isomorphism `descShortComplex S : mappingCone S.f ⟶ S.X�
 We obtain this by comparing the homology sequence of `S` and the homology
 sequence of the homology functor on the homotopy category, applied to the
 distinguished triangle attached to the mapping cone of `S.f`.
-
 -/
 
 @[expose] public section
@@ -74,7 +73,7 @@ lemma map_descShortComplex : map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm
     descShortComplex S₁ ≫ f.τ₃ := by
   ext i
   simpa [mappingCone.ext_from_iff _ _ _ rfl, map] using
-    congr_fun (congr_arg HomologicalComplex.Hom.f f.comm₂₃) i
+    congr($(f.comm₂₃).f i)
 
 end
 
@@ -178,7 +177,6 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
 
 variable {D : Type*} [Category* D] [Abelian D]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :

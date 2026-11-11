@@ -5,12 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Cycle
 public import Mathlib.GroupTheory.Perm.Cycle.Type
-public import Mathlib.GroupTheory.Perm.List
 
 /-!
-
 # Properties of cyclic permutations constructed from lists/cycles
 
 In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
@@ -41,7 +38,6 @@ The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uni
 result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-
 -/
 
 @[expose] public section
@@ -210,7 +206,7 @@ theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by s
 
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H
-  simpa [card_support_ne_one] using congr_arg length H
+  simpa [card_support_ne_one] using congr(length $H)
 
 theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
     2 ≤ length (toList p x) ↔ x ∈ p.support := by simp

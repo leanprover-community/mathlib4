@@ -6,8 +6,6 @@ Authors: Luke Kershaw
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Shift.Basic
 
@@ -496,9 +494,9 @@ def functorHomMk (A B : J ⥤ Triangle C) (hom₁ : A ⋙ π₁ ⟶ B ⋙ π₁)
     { hom₁ := hom₁.app j
       hom₂ := hom₂.app j
       hom₃ := hom₃.app j
-      comm₁ := NatTrans.congr_app comm₁ j
-      comm₂ := NatTrans.congr_app comm₂ j
-      comm₃ := NatTrans.congr_app comm₃ j }
+      comm₁ := congr($(comm₁).app j)
+      comm₂ := congr($(comm₂).app j)
+      comm₃ := congr($(comm₃).app j) }
   naturality _ _ φ := by
     ext
     · exact hom₁.naturality φ

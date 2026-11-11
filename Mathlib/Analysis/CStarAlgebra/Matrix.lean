@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Matrix.Normed
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
@@ -32,7 +30,6 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.
-
 -/
 
 @[expose] public section
@@ -232,9 +229,9 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
   simp only [l2_opNorm_def]
   have := (toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) A
     |>.opNorm_comp_le <| (toEuclideanLin (n := l) (m := n) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) B
-  convert! this
+  convert this
   ext1 x
-  exact congr(toLp 2 ($(Matrix.toLin'_mul A B) x))
+  congrm toLp 2 ($(Matrix.toLin'_mul A B) x)
 
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
@@ -286,7 +283,9 @@ lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n
 
 /-- This is the same as `Matrix.l2_opNNNorm_def`, but with a more bundled RHS for square
 matrices. -/
-lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
+lemma cstar_nnNorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
+
+@[deprecated (since := "2026-10-31")] alias cstar_nnnorm_def := cstar_nnNorm_def
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/

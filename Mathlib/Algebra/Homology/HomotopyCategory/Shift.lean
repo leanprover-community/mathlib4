@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Shift.Quotient
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The shift on cochain complexes and on the homotopy category
@@ -20,7 +19,6 @@ equipped with a shift by `ℤ`.
 We also show that if `F : C ⥤ D` is an additive functor, then the functors
 `F.mapHomologicalComplex (ComplexShape.up ℤ)` and
 `F.mapHomotopyCategory (ComplexShape.up ℤ)` commute with the shift by `ℤ`.
-
 -/
 
 @[expose] public section

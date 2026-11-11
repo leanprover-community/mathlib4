@@ -5,7 +5,6 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
@@ -19,7 +18,6 @@ of `X` over `I`.
 
 In particular, if `C` is cartesian closed, then for all objects `I` in `C`, `toOver I : C ⥤ Over I`
 has a right adjoint.
-
 -/
 
 @[expose] public section

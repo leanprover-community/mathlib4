@@ -5,9 +5,10 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # Gauss norm for multivariate power series
@@ -38,7 +39,6 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
 
 * `MvPowerSeries.gaussNorm_neg`: if `v` has the property that `∀ i, v i = v (-i)` then
   `gaussNorm v c (-f) = gaussNorm v c f `.
-
 -/
 
 @[expose] public section

@@ -31,7 +31,6 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 ## References
 
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
 -/
 
 public section
@@ -153,7 +152,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     change g _ (algebraMap K _ r) = _
     rw [AlgHom.commutes]
   · ext x
-    simpa using AlgHom.congr_fun (hg₁ x) (IntermediateField.AdjoinSimple.gen K x)
+    simpa using congr($(hg₁ x) (IntermediateField.AdjoinSimple.gen K x))
 
 theorem iff_isSeparable [EssFiniteType K L] :
     FormallyEtale K L ↔ Algebra.IsSeparable K L :=

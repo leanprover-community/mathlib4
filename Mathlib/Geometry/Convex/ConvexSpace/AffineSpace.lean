@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 
 /-!
 # Affine spaces are convex spaces
@@ -66,8 +65,7 @@ theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
   simp only [Finsupp.sum, convexCombination]
   -- Expand convexCombination d using base point b
   conv_lhs =>
-    congr; · skip
-    ext d
+    enter [2, d]
     rw [d.weights.support.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one
         _ _ d.total b, vadd_vsub, Finset.weightedVSubOfPoint_apply]
     simp only [id]
@@ -206,6 +204,6 @@ lemma AffineMap.isAffineMap (f : P₁ →ᵃ[R] P₂) : IsAffineMap R f  where
   map_sConvexComb s := by
      rw [sConvexComb_eq_affineCombination,
        Finset.map_affineCombination s.weights.support _root_.id s.weights s.total,
-       ←iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
+       ← iConvexComb_eq_affineCombination, Function.comp_id, iConvexComb]
 
 end

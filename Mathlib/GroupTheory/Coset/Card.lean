@@ -13,7 +13,6 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 * `Subgroup.card_subgroup_dvd_card`: Lagrange's theorem (for multiplicative groups);
   there is an analogous version for additive groups
-
 -/
 
 public section
@@ -33,6 +32,10 @@ instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : F
 @[to_additive]
 instance (priority := 100) finite [Finite α] : Finite (α ⧸ s) :=
   Quotient.finite _
+
+@[to_additive]
+instance countable [Countable α] : Countable (α ⧸ s) :=
+  Quotient.countable
 
 @[to_additive]
 instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
@@ -60,7 +63,7 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   rw [← Nat.card_prod, Nat.card_congr]
   apply Equiv.trans _ (QuotientGroup.preimageMkEquivSubgroupProdSet _ _)
   rw [QuotientGroup.preimage_image_mk]
-  convert! Equiv.refl ↑(t * s)
+  convert Equiv.refl ↑(t * s)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/

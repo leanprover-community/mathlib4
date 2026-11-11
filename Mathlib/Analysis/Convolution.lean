@@ -5,12 +5,11 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.MeasureTheory.Function.Holder
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.MeasureTheory.Group.Prod
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+import Mathlib.MeasureTheory.Function.Holder
+import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Convolution of functions
@@ -173,7 +172,7 @@ section Group
 
 variable [AddGroup G]
 
-theorem AEStronglyMeasurable.convolution_integrand' [SFinite ν] [MeasurableAdd₂ G]
+theorem AEStronglyMeasurable.convolution_integrand' [MeasurableAdd₂ G]
     [MeasurableNeg G] (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g <| map (fun p : G × G => p.1 - p.2) (μ.prod ν)) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
@@ -505,7 +504,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   apply h2x
   simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, notMem_support] at hx
   rw [convolution_def]
-  convert! integral_zero G F using 2
+  convert integral_zero G F using 2
   ext t
   rcases hx (x - t) t with (h | h | h)
   · rw [h, (L _).map_zero]
@@ -540,7 +539,7 @@ lemma eLpNorm_convolution_integrand_le {p q r : ENNReal} [hpq : p.HolderTriple q
     eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
   have hmp := μ.measurePreserving_sub_left x₀
   rw [← eLpNorm_comp_measurePreserving hg hmp]
-  exact eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm L hf (hg.comp_measurePreserving hmp)
+  exact eLpNorm_le_eNorm_mul_eLpNorm_mul_eLpNorm L hf (hg.comp_measurePreserving hmp)
 
 omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
@@ -555,12 +554,14 @@ theorem ConvolutionExists.of_memLp_memLp {p q : ENNReal}
 
 /-- If `p` and `q` are Hölder conjugates, then the convolution of `f` and `g` is bounded everywhere
 by `‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ`. -/
-theorem enorm_convolution_le {p q : ENNReal}
+theorem eNorm_convolution_le {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
-  calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := enorm_integral_le_lintegral_enorm _
-    _ ≤ eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := lintegral_enorm_le_eLpNorm_one
+  calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := eNorm_integral_le_lintegral_eNorm _
+    _ ≤ eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := lintegral_eNorm_le_eLpNorm_one
     _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := eLpNorm_convolution_integrand_le L hf hg x₀
+
+@[deprecated (since := "2026-11-06")] alias enorm_convolution_le := eNorm_convolution_le
 
 end IsAddLeftInvariant
 
@@ -818,7 +819,7 @@ theorem dist_convolution_le {f : G → ℝ} {x₀ : G} {R ε : ℝ} {z₀ : E'} 
     (hmg : AEStronglyMeasurable g μ) (hg : ∀ x ∈ ball x₀ R, dist (g x) z₀ ≤ ε) :
     dist ((f ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) z₀ ≤ ε := by
   have hif : Integrable f μ := integrable_of_integral_eq_one hintf
-  convert! (dist_convolution_le' (lsmul ℝ ℝ) hε hif hf hmg hg).trans _
+  convert (dist_convolution_le' (lsmul ℝ ℝ) hε hif hf hmg hg).trans _
   · simp_rw [lsmul_apply, integral_smul_const, hintf, one_smul]
   · simp_rw [Real.norm_of_nonneg (hnf _), hintf, mul_one]
     exact (mul_le_mul_of_nonneg_right opNorm_lsmul_le hε).trans_eq (one_mul ε)
@@ -951,7 +952,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     (measurePreserving_sub_prod μ ν).map_eq
   suffices Integrable (uncurry fun x y => L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))) (μ.prod ν) by
     rw [← h3] at this
-    convert! this.comp_measurable (measurable_sub.prodMk measurable_snd)
+    convert this.comp_measurable (measurable_sub.prodMk measurable_snd)
     ext ⟨x, y⟩
     simp +unfoldPartialApp only [uncurry, Function.comp_apply,
       sub_sub_sub_cancel_right]

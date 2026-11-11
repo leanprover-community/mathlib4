@@ -5,13 +5,11 @@ Authors: Michal Staromiejski
 -/
 module
 
-public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Spectrum.Maximal.Basic
+
+import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
-
 # Non-local rings
 
 This file gathers some results about non-local rings.
@@ -29,7 +27,6 @@ This file gathers some results about non-local rings.
     * `R` has two distinct maximal ideals.
 - `exists_surjective_of_not_isLocalRing`: there exists a surjective ring homomorphism from
   a non-local commutative ring onto a product of two fields.
-
 -/
 
 public section

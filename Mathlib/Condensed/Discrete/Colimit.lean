@@ -10,7 +10,6 @@ public import Mathlib.Condensed.Equivalence
 public import Mathlib.Topology.Category.LightProfinite.Extend
 
 /-!
-
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
 
 This file provides the necessary API to prove that a condensed set `X` is discrete if and only if
@@ -63,7 +62,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     rw [← hx]
     change fi ((c.π.app k ≫ (F ⋙ toProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toProfinite).map _) x)
-    have h := LocallyConstant.congr_fun h x
+    have h := congr($h x)
     dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
@@ -211,7 +210,7 @@ def fintypeCatAsCofanIsColimit (X : Profinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) :=
   Cofan.IsColimit.mk _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
     continuous_of_discreteTopology (α := X)⟩) (by aesop)
-    (fun _ _ h ↦ by ext x; exact CategoryTheory.congr_fun (h x) _)
+    (fun _ _ h ↦ by ext x; congrm $(h x) _)
 
 variable [PreservesFiniteProducts F]
 
@@ -330,7 +329,6 @@ variable {F : ℕᵒᵖ ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toLightProfinite)
 abbrev locallyConstantPresheaf : LightProfiniteᵒᵖ ⥤ Type u :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u}.obj X
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 The functor `locallyConstantPresheaf` takes sequential limits of finite sets with surjective
 projection maps to colimits.
@@ -352,7 +350,7 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     rw [← hx]
     change fi ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x) =
       fj ((c.π.app k ≫ (F ⋙ toLightProfinite).map _) x)
-    have h := LocallyConstant.congr_fun h x
+    have h := congr($h x)
     dsimp [- CompHausLike.coe_comp] -- `coe_comp` prevents rewriting with `c.w`
     rwa [dsimp% c.w, dsimp% c.w]
 
@@ -504,7 +502,7 @@ def fintypeCatAsCofanIsColimit (X : LightProfinite) [Finite X] :
     IsColimit (fintypeCatAsCofan X) :=
   Cofan.IsColimit.mk _ (fun t ↦ ConcreteCategory.ofHom ⟨fun x ↦ t.inj x PUnit.unit,
     continuous_of_discreteTopology (α := X)⟩) (by aesop)
-    (fun _ _ h ↦ by ext x; exact CategoryTheory.congr_fun (h x) _)
+    (fun _ _ h ↦ by ext x; congrm $(h x) _)
 
 variable [PreservesFiniteProducts F]
 

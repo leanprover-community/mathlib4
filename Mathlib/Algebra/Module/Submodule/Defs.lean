@@ -5,12 +5,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
-
 # Submodules of a module
 
 In this file we define

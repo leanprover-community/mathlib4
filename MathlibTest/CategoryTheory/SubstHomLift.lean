@@ -1,4 +1,6 @@
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
+module
+
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 
 universe u₁ v₁ u₂ v₂
 

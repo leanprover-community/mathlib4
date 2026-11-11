@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Condexp
-public import Mathlib.Probability.Moments.MGFAnalytic
 public import Mathlib.Probability.Moments.Tilted
 
 /-!
@@ -117,7 +116,6 @@ a conditional expectation, `(μ.trim hm)`-almost surely:
 
 * [R. Vershynin, *High-dimensional probability: An introduction with applications in data
   science*][vershynin2018high]
-
 -/
 
 @[expose] public section
@@ -177,11 +175,11 @@ lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
   rw [memLp_iff]
   by_cases hp : p = 0
   · simp [hp, eLpNorm_exponent_zero (hi t).1]
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp) (hi t).1,
+  rw [eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top (mod_cast hp) (by simp) (hi t).1,
     ENNReal.coe_toReal]
   have hf := (hi (p * t)).lintegral_lt_top
   convert! hf using 3 with ω
-  rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
+  rw [eNorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
     ← exp_mul, mul_comm, ← mul_assoc]
   positivity
 
@@ -189,13 +187,13 @@ lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
   by_cases hp0 : p = 0
   · simpa [hp0] using (h.integrable_exp_mul t).1
-  rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp0) (by simp)
+  rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top (mod_cast hp0) (by simp)
     (h.integrable_exp_mul t).1]
   simp only [ENNReal.coe_toReal]
   have h' := (h.integrable_exp_mul (p * t)).2
   rw [hasFiniteIntegral_def] at h'
   convert! h' using 3 with ω
-  rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
+  rw [eNorm_eq_ofReal (by positivity), eNorm_eq_ofReal (by positivity),
     ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
   positivity
 
@@ -290,7 +288,7 @@ lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''
     convert! h_mgf t
     ext t
     rw [map_apply _ hY, mgf_map hY.aemeasurable]
-    convert! (h_int t).1
+    convert (h_int t).1
     rw [map_apply _ hY]
 
 lemma id_map_iff (hX : Measurable X) :
@@ -378,12 +376,7 @@ lemma ae_eq_zero_of_hasSubgaussianMGF_zero (h : HasSubgaussianMGF X 0 κ ν) :
   filter_upwards [(h.neg).measure_pos_eq_zero_of_hasSubGaussianMGF_zero,
     h.measure_pos_eq_zero_of_hasSubGaussianMGF_zero]
   intro ω' h1 h2
-  simp_rw [Pi.neg_apply, Left.neg_pos_iff] at h1
-  apply nonpos_iff_eq_zero.1
-  calc (κ ω') {ω | X ω ≠ 0}
-  _ = (κ ω') {ω | X ω < 0 ∨ 0 < X ω} := by simp_rw [ne_iff_lt_or_gt]
-  _ ≤ (κ ω') {ω | X ω < 0} + (κ ω') {ω | 0 < X ω} := measure_union_le _ _
-  _ = 0 := by simp [h1, h2]
+  exact measure_mono_null (by simp [Set.subset_def]) <| measure_union_null h1 h2
 
 /-- Auxiliary lemma for `ae_eq_zero_of_hasSubgaussianMGF_zero'`. -/
 lemma ae_eq_zero_of_hasSubgaussianMGF_zero_of_measurable
@@ -416,7 +409,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
   exact
   { integrable_exp_mul t := by
       simp_rw [mul_add, exp_add]
-      convert! MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+      convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
       norm_cast
       infer_instance
     mgf_le := by
@@ -651,7 +644,7 @@ lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     have h1 := h.integrable_exp_mul t
     rwa [integrable_map_measure h1.aestronglyMeasurable (by fun_prop)] at h1
   mgf_le t := by
-    convert! h.mgf_le t using 1
+    convert h.mgf_le t using 1
     rw [mgf_map hY (h.integrable_exp_mul t).1]
 
 lemma id_map_iff (hX : AEMeasurable X μ) :
@@ -726,7 +719,7 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
     HasSubgaussianMGF (fun ω ↦ X ω + Y ω) (cX + cY) μ where
   integrable_exp_mul t := by
     simp_rw [mul_add, exp_add]
-    convert! MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+    convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
     norm_cast
     infer_instance
   mgf_le t := by
@@ -828,7 +821,7 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
   _ = Var[X; μ.tilted (u * X ·)] := by
     rw [← variance_tilted_mul (hs (Set.mem_Icc_of_Ioo h1))]
   _ ≤ ((b - a) / 2) ^ 2 := by
-    convert! variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
+    convert variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
     · exact isProbabilityMeasure_tilted (hi u)
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
   _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]

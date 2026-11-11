@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Data.Matrix.PEquiv
-public import Mathlib.Data.Set.Card
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Permutation matrices
@@ -24,7 +21,6 @@ This file defines the matrix associated with a permutation
 
 - `Matrix.det_permutation`: the determinant is the sign of the permutation
 - `Matrix.trace_permutation`: the trace is the number of fixed points of the permutation
-
 -/
 
 @[expose] public section

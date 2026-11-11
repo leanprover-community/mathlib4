@@ -19,7 +19,6 @@ related to continuity, which are defined in previous definition files.
 Their basic properties studied in this file include the relationships between
 these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
-
 -/
 
 public section
@@ -55,6 +54,12 @@ theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α}
 
 @[deprecated (since := "2026-07-19")] alias continuousWithinAt_iff_continuousAt_restrict :=
   continuousWithinAt_iff_continuousAt_domRestrict
+
+theorem continuousWithinAt_inter_iff_continuousWithinAt_domRestrict (f : α → β) {x : α}
+    {s t : Set α} (h : x ∈ s) :
+    ContinuousWithinAt f (s ∩ t) x ↔
+      ContinuousWithinAt (s.domRestrict f) ((↑) ⁻¹' t) ⟨x, h⟩ :=
+  tendsto_nhdsWithin_inter_iff_subtype h f _
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : MapsTo f s t) :
@@ -191,7 +196,7 @@ theorem ContinuousOn.isOpen_inter_preimage {t : Set β}
 
 theorem ContinuousOn.isOpen_preimage {t : Set β} (h : ContinuousOn f s)
     (hs : IsOpen s) (hp : f ⁻¹' t ⊆ s) (ht : IsOpen t) : IsOpen (f ⁻¹' t) := by
-  convert! (continuousOn_open_iff hs).mp h t ht
+  convert (continuousOn_open_iff hs).mp h t ht
   rw [inter_comm, inter_eq_self_of_subset_left hp]
 
 theorem ContinuousOn.preimage_isClosed_of_isClosed {t : Set β}

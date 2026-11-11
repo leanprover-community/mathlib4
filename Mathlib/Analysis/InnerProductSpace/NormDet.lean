@@ -5,7 +5,6 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.InnerProductSpace.SingularValues
 public import Mathlib.Geometry.Euclidean.Volume.Measure
@@ -44,7 +43,6 @@ spaces instead of matrices, and allow the codomain to have infinite dimension.
   values.
 * `LinearMap.hausdorffMeasure_image`: `LinearMap.normDet` is the volume factor for Hausdorff
   measure.
-
 -/
 
 public section
@@ -266,10 +264,10 @@ theorem normDet_neg (f : U →ₗ[𝕜] V) : (-f).normDet = f.normDet := by
 The square of `f.normDet` equals the determinant of `f.adjoint ∘L f`.
 -/
 theorem _root_.ContinuousLinearMap.normDet_sq [CompleteSpace V] (f : U →L[𝕜] V) :
-    haveI : CompleteSpace U := FiniteDimensional.complete 𝕜 U
+    haveI : CompleteSpace U := FiniteDimensional.completeSpace 𝕜 U
     ↑(f.normDet ^ 2) = (f.adjoint ∘L f).det := by
-  have : CompleteSpace U := FiniteDimensional.complete 𝕜 U
-  have : CompleteSpace f.range := FiniteDimensional.complete 𝕜 f.range
+  have : CompleteSpace U := FiniteDimensional.completeSpace 𝕜 U
+  have : CompleteSpace f.range := FiniteDimensional.completeSpace 𝕜 f.range
   let bu := stdOrthonormalBasis 𝕜 U
   by_cases h : f.ker = ⊥
   · obtain ⟨b⟩ := (f.normDet_ne_zero_tfae.out 2 4).mp h
@@ -294,7 +292,7 @@ dimensional.
 -/
 theorem normDet_sq [FiniteDimensional 𝕜 V] (f : U →ₗ[𝕜] V) :
     ↑(f.normDet ^ 2) = (f.adjoint ∘ₗ f).det := by
-  have : CompleteSpace V := FiniteDimensional.complete 𝕜 V
+  have : CompleteSpace V := FiniteDimensional.completeSpace 𝕜 V
   exact f.toContinuousLinearMap.normDet_sq
 
 /--
@@ -354,7 +352,7 @@ theorem normDet_comp_of_finrank_eq [FiniteDimensional 𝕜 V] (f : U →ₗ[𝕜
     congrm ?_ * _
     suffices (g.domRestrict f.range).normDet * (id : V →ₗ[𝕜] V).normDet = g.normDet by simpa
     have : f.range = id.range := by simp [htop]
-    convert! (normDet_comp LinearMap.id g).symm
+    convert (normDet_comp LinearMap.id g).symm
   · have hker : f.ker ≠ ⊥ := by
       simpa [ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank h] using htop
     have hker' : (g ∘ₗ f).ker ≠ ⊥ := by
@@ -413,7 +411,7 @@ theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpa
       simpa [(f.normDet_eq_zero_tfae.out 2 1).mp h, Set.image_image]
     rw [(LinearIsometry.isometry _).hausdorffMeasure_image (by simp)]
     have h : (finrank ℝ f.range : ℝ) < finrank ℝ U := by
-      exact_mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
+      exact mod_cast (f.normDet_eq_zero_tfae.out 2 4).mp h
     simp [Real.hausdorffMeasure_of_finrank_lt h]
 
 /--
@@ -423,7 +421,7 @@ Using Euclidean Hausdorff measure with the domain dimension, the volume of the i
 theorem euclideanHausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpace V]
     [BorelSpace V] (f : U →ₗ[ℝ] V) (s : Set U) :
     μHE[finrank ℝ U] (f '' s) = ENNReal.ofReal f.normDet * μHE[finrank ℝ U] s := by
-  simp_rw [euclideanHausdorffMeasure_def, Measure.smul_apply, nnreal_smul_coe_apply,
+  simp_rw [euclideanHausdorffMeasure_def, smul_apply, nnreal_smul_coe_apply,
     hausdorffMeasure_image]
   exact mul_left_comm _ _ _
 

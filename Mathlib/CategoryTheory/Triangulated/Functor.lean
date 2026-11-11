@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Triangulated
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
 
 /-!
 # Triangulated functors
@@ -18,7 +18,6 @@ functor `F.mapTriangle : Triangle C ⥤ Triangle D` on the categories of
 triangles. When `C` and `D` are pretriangulated, a triangulated functor
 is such a functor `F` which also sends distinguished triangles to
 distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
-
 -/
 
 @[expose] public section
@@ -55,9 +54,9 @@ def mapTriangle : Triangle C ⥤ Triangle D where
 instance [Faithful F] : Faithful F.mapTriangle where
   map_injective {X Y} f g h := by
     ext <;> apply F.map_injective
-    · exact congr_arg TriangleMorphism.hom₁ h
-    · exact congr_arg TriangleMorphism.hom₂ h
-    · exact congr_arg TriangleMorphism.hom₃ h
+    · congrm TriangleMorphism.hom₁ $h
+    · congrm TriangleMorphism.hom₂ $h
+    · congrm TriangleMorphism.hom₃ $h
 
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=

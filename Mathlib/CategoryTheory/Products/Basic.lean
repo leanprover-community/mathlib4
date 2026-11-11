@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Functor.Const
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Data.Prod.Basic
 
 /-!
@@ -426,6 +425,7 @@ section Opposite
 
 open Opposite
 
+variable (D) in
 /-- The equivalence between the opposite of a product and the product of the opposites. -/
 @[implicit_reducible, simps!]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where

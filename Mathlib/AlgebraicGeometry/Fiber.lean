@@ -5,11 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
 /-!
 # Scheme-theoretic fiber
@@ -19,7 +18,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 - `AlgebraicGeometry.Scheme.Hom.fiberHomeo`: `f.fiber y` is homeomorphic to `f ⁻¹' {y}`.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage`: Finite morphisms have finite fibers.
 - `AlgebraicGeometry.Scheme.Hom.discrete_fiber`: Finite morphisms have discrete fibers.
-
 -/
 
 @[expose] public section

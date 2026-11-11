@@ -6,13 +6,11 @@ Authors: FLT Project
 module
 
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Subrepresentations
 
 This file defines subrepresentations of a monoid representation.
-
 -/
 
 @[expose] public section

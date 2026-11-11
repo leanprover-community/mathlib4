@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Extremal epimorphisms
@@ -22,7 +21,6 @@ the category has pullbacks.
 ## References
 
 * https://ncatlab.org/nlab/show/extremal+epimorphism
-
 -/
 
 public section

@@ -5,9 +5,10 @@ Authors: Seewoo Lee
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Ring
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Algebra.Order.Floor.Ring
+
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Results about big operators with values in floor rings
@@ -19,7 +20,6 @@ $$ \sum_{i=0}^{n-1} \left\lfloor x + \frac{i}{n} \right\rfloor = \lfloor n x \rf
 ## Main statements
 
 * `Int.sum_floor_add_div`: Hermite's identity, `∑ i ∈ Finset.range n, ⌊x + i / n⌋ = ⌊n * x⌋`.
-
 -/
 
 namespace Int

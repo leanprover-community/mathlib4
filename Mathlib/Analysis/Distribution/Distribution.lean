@@ -5,9 +5,10 @@ Authors: Anatole Dedecker, Luigi Massacci
 -/
 module
 
-public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+
+import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 
 /-!
 # Distributions
@@ -142,7 +143,6 @@ longer true for general filters.
 * [L. Schwartz, *Théorie des distributions*][schwartz1950]
 * [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]
 * [L. Hörmander, *The Analysis of Linear Partial Differential Operators I*][hormander2003]
-
 -/
 
 @[expose] public section
@@ -362,6 +362,10 @@ theorem ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) :
     refine integral_congr_ae (ae_of_all _ fun x ↦ ?_)
     simp [smul_comm c]
   · grind [zero_smul, locallyIntegrableOn_smul_iff, smul_zero]
+
+@[simp] theorem ofFun_dirac_eq_delta (x : E) :
+    ofFun Ω (1 : E → ℝ) (Measure.dirac x) n = delta x := by
+  ext; simp [ofFun_apply_eq_ite, Pi.one_def, locallyIntegrableOn_const]
 
 variable [BorelSpace E] [FiniteDimensional ℝ E] [CompleteSpace F]
 
