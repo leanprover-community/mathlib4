@@ -65,7 +65,7 @@ theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f 
   dsimp [toMatrix, Matrix.mul_apply]
   rcases h : f i with - | fi
   · simp
-  · rw [Finset.sum_eq_single fi] <;> simp +contextual [eq_comm]
+  · rw [Finset.sum_eq_single fi] <;> simp
 
 theorem mul_toMatrix_apply [Fintype m] [NonAssocSemiring α] [DecidableEq n] (M : Matrix l m α)
     (f : m ≃. n) (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by

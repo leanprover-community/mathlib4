@@ -947,7 +947,7 @@ variable [Monoid G] {x : G} {n : ℕ}
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
     ∑ m ∈ divisors n, #{x : G | orderOf x = m} = #{x : G | x ^ n = 1} := by
   refine (Finset.card_biUnion ?_).symm.trans ?_
-  · simp +contextual [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]
+  · simp [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]
   · congr; ext; simp [hn, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive]
