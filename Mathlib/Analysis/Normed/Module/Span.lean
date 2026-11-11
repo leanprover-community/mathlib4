@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
-public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
 /-!
 # The span of a single vector
@@ -21,7 +21,6 @@ isometry.
   `𝕜 • x` for `x ≠ 0`.
 * `LinearIsometryEquiv.toSpanUnitSingleton`: For `‖x‖ = 1` the continuous linear equivalence is a
   linear isometry equivalence.
-
 -/
 
 @[expose] public section
@@ -101,7 +100,6 @@ namespace LinearIsometryEquiv
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a unit element `x` of a normed space `E` over a field `𝕜`, the natural
 linear isometry equivalence from `𝕜` to the span of `x`. -/
 noncomputable def toSpanUnitSingleton (x : E) (hx : ‖x‖ = 1) :

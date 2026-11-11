@@ -13,10 +13,9 @@ public import Mathlib.Topology.Category.LightProfinite.Basic
 
 This file defines the cartesian monoidal structure on `LightProfinite` given by the type-theoretic
 product.
-
 -/
 
-@[expose] public section
+public section
 
 universe u
 

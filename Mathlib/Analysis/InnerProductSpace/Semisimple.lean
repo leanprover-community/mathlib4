@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Semisimple
 
 This file is a place to gather results related to semisimplicity of linear operators on inner
 product spaces.
-
 -/
 
 public section
@@ -31,7 +30,6 @@ lemma orthogonalComplement_mem_invtSubmodule (hp : p ∈ T.invtSubmodule) :
     pᗮ ∈ T.invtSubmodule :=
   fun x hx y hy ↦ hT y x ▸ hx (T y) (hp hy)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Symmetric operators are semisimple on finite-dimensional subspaces. -/
 theorem isFinitelySemisimple :
     T.IsFinitelySemisimple := by

@@ -17,7 +17,6 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 * `Submodule.natAbs_det_basis_change`: let `b` be a `ℤ`-basis for a module `M` over `ℤ` and
   let `bN` be a basis for a submodule `N` of the same dimension. Then the cardinal of `M ⧸ N`
   is given by taking the determinant of `bN` over `b`.
-
 -/
 
 public section
@@ -28,7 +27,6 @@ section Submodule
 
 variable {M : Type*} [AddCommGroup M] [Module.Free ℤ M] [Module.Finite ℤ M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `e : M ≃ N` be an additive isomorphism (therefore a `ℤ`-linear equiv).
 Then an alternative way to compute the cardinality of the quotient `M ⧸ N` is given by taking
 the determinant of `e`.
@@ -80,7 +78,6 @@ theorem Submodule.natAbs_det_equiv (N : Submodule ℤ M) {E : Type*} [EquivLike 
   -- which maps `(M ⧸ N)` to `Π i, ZMod (a i).nat_abs`.
   simp_rw [Nat.card_congr (quotientEquivPiZMod N b h).toEquiv, Nat.card_pi, Nat.card_zmod, a]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `b` be a basis for `M` over `ℤ` and `bN` a basis for `N` over `ℤ` of the same dimension.
 Then an alternative way to compute the cardinality of `M ⧸ N` is given by taking the determinant
 of `bN` over `b`. -/

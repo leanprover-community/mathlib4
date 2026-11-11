@@ -15,6 +15,8 @@ concurrency:
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
+  id-token: write
+  actions: read  # download master artifacts (tools-bin, cache-snapshot)
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 
@@ -26,9 +28,19 @@ jobs:
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}-${{ github.run_id }}
       pr_branch_ref: ${{ github.sha }}
+      # The OIDC environment of the upload jobs. The cache writer credentials are scoped to it.
+      cache_environment: >-
+        ${{
+             (github.repository == 'leanprover-community/mathlib4'
+               && github.ref_name == 'staging')
+               && 'cache-upload-master'
+          || (github.repository == 'leanprover-community/mathlib4')
+               && 'cache-upload-forks'
+          || 'cache-upload-nightly-testing'
+        }}
       # bors runs should build the tools from their commit-under-test: after all, we are trying to
       # test 'what would happen if this was merged', so we need to use the 'would-be-post-merge' tools
       tools_branch_ref: ${{ github.sha }}
-      # We don't wan't 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
+      # We don't want 'bors try' runs to compete with merge-candidates, so we pool trying with PR runs
       runs_on: ${{ github.ref_name == 'trying' && 'pr' || 'bors' }}
     secrets: inherit

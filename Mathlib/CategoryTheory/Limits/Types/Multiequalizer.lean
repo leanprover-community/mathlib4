@@ -15,14 +15,13 @@ Given `J : MulticospanShape` and `I : MulticospanIndex J (Type u)`,
 we define a type `I.sections`. When `c : Multifork I`, we show
 that `c` is a limit iff the canonical map
 `c.toSections : c.pt → I.sections` is a bijection.
-
 -/
 
 @[expose] public section
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 namespace CategoryTheory.Limits
 
@@ -68,7 +67,7 @@ types and `c` a multifork for `I`, this is the canonical map `c.pt → I.section
 @[simps]
 def toSections (x : c.pt) : I.sections where
   val i := c.ι i x
-  property r := congr_fun (c.condition r) x
+  property r := congr($(c.condition r) x)
 
 lemma toSections_fac : I.sectionsEquiv.symm ∘ Types.sectionOfCone c = c.toSections := rfl
 

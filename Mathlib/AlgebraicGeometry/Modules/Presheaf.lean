@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.AlgebraicGeometry.Scheme
-public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # The category of presheaves of modules over a scheme
@@ -17,7 +15,6 @@ of modules over `X`. As categories of presheaves of modules are
 defined for presheaves of rings (and not presheaves of commutative rings),
 we also introduce a definition `X.ringCatSheaf` for the underlying sheaf
 of rings of `X`.
-
 -/
 
 @[expose] public section
@@ -35,13 +32,13 @@ abbrev ringCatSheaf : TopCat.Sheaf RingCat.{u} X :=
   (sheafCompose _ (forget₂ CommRingCat RingCat.{u})).obj X.sheaf
 
 /-- The category of presheaves of modules over a scheme. -/
-nonrec abbrev PresheafOfModules := PresheafOfModules.{u} X.ringCatSheaf.val
+nonrec abbrev PresheafOfModules := PresheafOfModules.{u} X.ringCatSheaf.obj
 
 variable {X Y} in
 /-- The morphism of sheaves of rings corresponding to a morphism of schemes. -/
 def Hom.toRingCatSheafHom (f : X ⟶ Y) :
     Y.ringCatSheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
       _ _ _).obj X.ringCatSheaf where
-  val := Functor.whiskerRight f.c _
+  hom := Functor.whiskerRight f.c _
 
 end AlgebraicGeometry.Scheme

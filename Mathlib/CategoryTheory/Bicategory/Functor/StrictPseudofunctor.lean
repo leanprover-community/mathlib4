@@ -20,7 +20,6 @@ underlying categories, see `StrictPseudofunctor.toFunctor`.
 
 Once the deprecated `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean` is removed we should
 rename this file to `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean`.
-
 -/
 
 @[expose] public section
@@ -92,7 +91,7 @@ namespace StrictPseudofunctor
 
 variable {B C}
 
-/-- An alternate constructor for strictly unitary lax functors that does not
+/-- An alternate constructor for strict pseudofunctors that does not
 require the `mapId` or `mapComp` fields, and that adapts the compatibility conditions
 to the fact that the pseudofunctor is strict -/
 @[simps]

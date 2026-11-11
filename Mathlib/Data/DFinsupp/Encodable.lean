@@ -7,17 +7,17 @@ module
 
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Logic.Encodable.Pi
+
 /-!
 # `Encodable` and `Countable` instances for `Π₀ i, α i`
 
 In this file we provide instances for `Encodable (Π₀ i, α i)` and `Countable (Π₀ i, α i)`.
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Zero (α i)]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Encodable ι] [∀ i, Encodable (α i)] [∀ i (x : α i), Decidable (x ≠ 0)] :
     Encodable (Π₀ i, α i) :=
   letI : DecidableEq ι := Encodable.decidableEqOfEncodable _

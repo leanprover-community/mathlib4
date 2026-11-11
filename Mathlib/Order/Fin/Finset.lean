@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Data.Finset.Insert
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.Hom.Set
-public import Mathlib.Data.Finset.Insert
 
 /-!
 # Order isomorphisms from Fin to finsets
@@ -21,7 +21,6 @@ to the finset `{a, b, c}` when `a < b` and `b < c`.
 * Provide a definition which would take as an input an order
   isomorphism `e : Fin (n + 1) ≃o s` (with `s : Set α` (or `Finset α`)) and
   extend it to an order isomorphism `Fin (n + 2) ≃o Finset.insert i s` when `i < e 0` (TODO).
-
 -/
 
 @[expose] public section
@@ -45,7 +44,6 @@ section
 
 variable (a b : α) (hab : a < b)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is the order isomorphism from `Fin 2` to a finset `{a, b}` when `a < b`. -/
 noncomputable def orderIsoPair :
     Fin 2 ≃o ({a, b} : Finset α) :=
@@ -65,7 +63,6 @@ section
 
 variable (a b c : α) (hab : a < b) (hbc : b < c)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is the order isomorphism from `Fin 3`
 to a finset `{a, b, c}` when `a < b` and `b < c`. -/
 noncomputable def orderIsoTriple :

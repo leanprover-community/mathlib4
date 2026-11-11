@@ -5,16 +5,12 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.Algebra.Ring.Opposite
 
 /-!
-
 # Subsemiring of opposite semirings
 
 For every semiring `R`, we construct an equivalence between subsemirings of `R` and that of `Rᵐᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -27,7 +23,7 @@ variable {ι : Sort*} {R : Type*} [NonAssocSemiring R]
 @[simps! coe toSubmonoid]
 protected def op (S : Subsemiring R) : Subsemiring Rᵐᵒᵖ where
   toSubmonoid := S.toSubmonoid.op
-  add_mem' {x} {y} hx hy := add_mem (show x.unop ∈ S from hx) (show y.unop ∈ S from hy)
+  add_mem' hx hy := by simp_all [add_mem]
   zero_mem' := zero_mem S
 
 attribute [norm_cast] coe_op
@@ -39,8 +35,7 @@ theorem mem_op {x : Rᵐᵒᵖ} {S : Subsemiring R} : x ∈ S.op ↔ x.unop ∈ 
 @[simps! coe toSubmonoid]
 protected def unop (S : Subsemiring Rᵐᵒᵖ) : Subsemiring R where
   toSubmonoid := S.toSubmonoid.unop
-  add_mem' {x} {y} hx hy := add_mem
-    (show MulOpposite.op x ∈ S from hx) (show MulOpposite.op y ∈ S from hy)
+  add_mem' hx hy := by simp_all [add_mem]
   zero_mem' := zero_mem S
 
 attribute [norm_cast] coe_unop
@@ -87,14 +82,12 @@ theorem unop_injective : (@Subsemiring.unop R _).Injective := opEquiv.symm.injec
 @[simp]
 theorem unop_inj {S T : Subsemiring Rᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem op_bot : (⊥ : Subsemiring R).op = ⊥ := opEquiv.map_bot
 
 @[simp]
 theorem op_eq_bot {S : Subsemiring R} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem unop_bot : (⊥ : Subsemiring Rᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 
@@ -146,7 +139,7 @@ theorem unop_iInf (S : ι → Subsemiring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
@@ -160,14 +153,12 @@ def addEquivOp (S : Subsemiring R) : S ≃+ S.op where
   toEquiv := S.toSubmonoid.equivOp
   map_add' _ _ := rfl
 
--- TODO: Add this for `[Add]Submonoid` and `[Add]Subgroup`
 /-- Bijection between a subsemiring `S` and `MulOpposite` of its opposite. -/
 @[simps!]
 def ringEquivOpMop (S : Subsemiring R) : S ≃+* (S.op)ᵐᵒᵖ where
   __ := S.addEquivOp.trans MulOpposite.opAddEquiv
   map_mul' _ _ := rfl
 
--- TODO: Add this for `[Add]Submonoid` and `[Add]Subgroup`
 /-- Bijection between `MulOpposite` of a subsemiring `S` and its opposite. -/
 @[simps!]
 def mopRingEquivOp (S : Subsemiring R) : Sᵐᵒᵖ ≃+* S.op where

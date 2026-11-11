@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov, Heather Macbeth, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Alternating.Topology
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+public import Mathlib.Topology.Algebra.Module.Alternating.Topology
 
 /-!
 # Operator norm on the space of continuous alternating maps
@@ -23,8 +23,8 @@ Most proofs just invoke the corresponding fact about continuous multilinear maps
 
 noncomputable section
 
-open scoped NNReal
-open Finset Metric
+open scoped NNReal Nat
+open Finset
 
 /-!
 ### Type variables
@@ -180,8 +180,14 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[�
   norm f := ‖f.toContinuousMultilinearMap‖
 
 @[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ = ‖f‖ := rfl
-@[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
-@[simp] theorem enorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ₑ = ‖f‖ₑ := rfl
+@[simp] theorem nnNorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
+@[simp] theorem eNorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ₑ = ‖f‖ₑ := rfl
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_toContinuousMultilinearMap := eNorm_toContinuousMultilinearMap
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_toContinuousMultilinearMap := nnNorm_toContinuousMultilinearMap
 
 /-- The inclusion of `E [⋀^ι]→L[𝕜] F` into `ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F`
 as a linear isometry. -/
@@ -246,7 +252,7 @@ theorem opNorm_le_iff {C : ℝ} (hC : 0 ≤ C) : ‖f‖ ≤ C ↔ ∀ m, ‖f m
   f.1.opNorm_le_iff hC
 
 /-- The fundamental property of the operator norm of a continuous alternating map:
-`‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
+`‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnNorm` version. -/
 theorem le_opNNNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
   f.1.le_opNNNorm m
 
@@ -285,9 +291,11 @@ section
     ‖ofSubsingleton 𝕜 E F i f‖ = ‖f‖ :=
   ContinuousMultilinearMap.norm_ofSubsingleton i f
 
-@[simp] theorem nnnorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : E →L[𝕜] F) :
+@[simp] theorem nnNorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : E →L[𝕜] F) :
     ‖ofSubsingleton 𝕜 E F i f‖₊ = ‖f‖₊ :=
   NNReal.eq <| norm_ofSubsingleton i f
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofSubsingleton := nnNorm_ofSubsingleton
 
 /-- `ContinuousAlternatingMap.ofSubsingleton` as a linear isometry. -/
 @[simps +simpRhs]
@@ -301,17 +309,22 @@ theorem norm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
     ‖ofSubsingleton 𝕜 E E i (.id _ _)‖ ≤ 1 :=
   ContinuousMultilinearMap.norm_ofSubsingleton_id_le ..
 
-theorem nnnorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
+theorem nnNorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
     ‖ofSubsingleton 𝕜 E E i (.id _ _)‖₊ ≤ 1 :=
-  ContinuousMultilinearMap.nnnorm_ofSubsingleton_id_le ..
+  ContinuousMultilinearMap.nnNorm_ofSubsingleton_id_le ..
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_ofSubsingleton_id_le := nnNorm_ofSubsingleton_id_le
 
 variable (𝕜 E)
 
 @[simp] theorem norm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖ = ‖x‖ :=
   ContinuousMultilinearMap.norm_constOfIsEmpty _ _ _
 
-@[simp] theorem nnnorm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖₊ = ‖x‖₊ :=
+@[simp] theorem nnNorm_constOfIsEmpty [IsEmpty ι] (x : F) : ‖constOfIsEmpty 𝕜 E ι x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_constOfIsEmpty _ _ _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_constOfIsEmpty := nnNorm_constOfIsEmpty
 
 variable (ι F) in
 /-- `constOfIsEmpty` as a linear isometry equivalence. -/
@@ -396,7 +409,7 @@ theorem AlternatingMap.mkContinuous_norm_le (f : E [⋀^ι]→ₗ[𝕜] F) {C : 
   f.toMultilinearMap.mkContinuous_norm_le hC H
 
 /-- If a continuous alternating map is constructed from an alternating map via the constructor
-`mk_continuous`, then its norm is bounded by the bound given to the constructor if it is
+`mkContinuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
 theorem AlternatingMap.mkContinuous_norm_le' (f : E [⋀^ι]→ₗ[𝕜] F) {C : ℝ}
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ max C 0 :=
@@ -409,30 +422,6 @@ namespace ContinuousLinearMap
 theorem norm_compContinuousAlternatingMap_le (g : F →L[𝕜] G) (f : E [⋀^ι]→L[𝕜] F) :
     ‖g.compContinuousAlternatingMap f‖ ≤ ‖g‖ * ‖f‖ :=
   g.norm_compContinuousMultilinearMap_le f.1
-
-variable (𝕜 E F G) in
-/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous bilinear map. -/
-@[simps! apply_apply]
-def compContinuousAlternatingMapCLM : (F →L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-  LinearMap.mkContinuous₂ (compContinuousAlternatingMapₗ 𝕜 E F G) 1 fun f g ↦ by
-    simpa using f.norm_compContinuousAlternatingMap_le g
-
-/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv. -/
-@[simps +simpRhs apply]
-def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight (g : F ≃L[𝕜] G) :
-    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) where
-  __ := g.continuousAlternatingMapCongrRightEquiv
-  __ := compContinuousAlternatingMapCLM 𝕜 E F G g.toContinuousLinearMap
-  continuous_toFun :=
-    (compContinuousAlternatingMapCLM 𝕜 E F G g.toContinuousLinearMap).continuous
-  continuous_invFun :=
-    (compContinuousAlternatingMapCLM 𝕜 E G F g.symm.toContinuousLinearMap).continuous
-
-@[simp]
-theorem _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight_symm (g : F ≃L[𝕜] G) :
-    (g.continuousAlternatingMapCongrRight (ι := ι) (E := E)).symm =
-      g.symm.continuousAlternatingMapCongrRight :=
-  rfl
 
 /-- Flip arguments in `f : F →L[𝕜] E [⋀^ι]→L[𝕜] G` to get `⋀^ι⟮𝕜; E; F →L[𝕜] G⟯` -/
 @[simps! apply_apply]
@@ -457,18 +446,21 @@ theorem norm_compContinuousLinearMap_le (f : F [⋀^ι]→L[𝕜] G)
     (g : E →L[𝕜] F) : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
   (f.1.norm_compContinuousLinearMap_le _).trans_eq <| by simp
 
-/-- Composition of a continuous alternating map and a continuous linear map
-as a bundled continuous linear map. -/
-def compContinuousLinearMapCLM (f : E →L[𝕜] F) :
-    (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-  LinearMap.mkContinuous
-    (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
-      (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
-
-@[simp]
-lemma compContinuousLinearMapCLM_apply (f : E →L[𝕜] F) (g : F [⋀^ι]→L[𝕜] G) :
-    compContinuousLinearMapCLM f g = g.compContinuousLinearMap f :=
-  rfl
+omit [Fintype ι] in
+theorem continuous_compContinuousLinearMapCLM [Finite ι] :
+    Continuous
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) := by
+  rcases nonempty_fintype ι
+  refine UniformConvergenceCLM.isUniformInducing_postcomp (.id 𝕜)
+    (toContinuousMultilinearMapCLM 𝕜 : (E [⋀^ι]→L[𝕜] G) →L[𝕜] _)
+    isUniformEmbedding_toContinuousMultilinearMap.isUniformInducing _ |>.isInducing
+    |>.continuous_iff |>.mpr ?_
+  change Continuous <|
+    (toContinuousMultilinearMapCLM 𝕜 : (F [⋀^ι]→L[𝕜] G) →L[𝕜] _).precomp _ ∘
+      ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜
+        (fun _ : ι ↦ E) (fun _ ↦ F) G ∘
+      (fun f _ ↦ f)
+  fun_prop
 
 variable [DecidableEq ι]
 
@@ -491,7 +483,7 @@ def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜]
     trans ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j)
     · simp
     · rw [← Finset.sum_add_sum_compl {a, b}, Finset.sum_pair hne, Finset.sum_eq_zero, add_zero]
-      · convert f.map_add_swap _ hne with i
+      · convert! f.map_add_swap _ hne with i
         rcases eq_or_ne i a with rfl | hia
         · simp [heq, hne, hne.symm]
         · rcases eq_or_ne i b with rfl | hib
@@ -554,33 +546,6 @@ lemma fderivCompContinuousLinearMapCLM_apply (f : F [⋀^ι]→L[𝕜] G) (g : E
 
 end ContinuousAlternatingMap
 
-/-- Given a continuous linear isomorphism between the domains,
-generate a continuous linear isomorphism between the spaces of continuous alternating maps.
-
-This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence,
-and is the continuous version of `AlternatingMap.domLCongr`. -/
-@[simps apply]
-def ContinuousLinearEquiv.continuousAlternatingMapCongrLeft (f : E ≃L[𝕜] F) :
-    E [⋀^ι]→L[𝕜] G ≃L[𝕜] (F [⋀^ι]→L[𝕜] G) where
-  __ := f.continuousAlternatingMapCongrLeftEquiv
-  __ := ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : F →L[𝕜] E)
-  toFun g := g.compContinuousLinearMap (f.symm : F →L[𝕜] E)
-  continuous_invFun :=
-    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F)).cont
-  continuous_toFun :=
-    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : F →L[𝕜] E)).cont
-
-variable
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-
-/-- Continuous linear equivalences between the domains and the codomains
-generate a continuous linear equivalence between the spaces of continuous alternating maps. -/
-@[simps! apply]
-def ContinuousLinearEquiv.continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] F') :
-    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E' [⋀^ι]→L[𝕜] F') :=
-  e.continuousAlternatingMapCongrLeft.trans <| e'.continuousAlternatingMapCongrRight
-
 end
 
 open ContinuousAlternatingMap
@@ -616,7 +581,6 @@ theorem mkContinuousLinear_norm_le (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G)
 
 variable {ι' : Type*} [Fintype ι']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a map `f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G)` and an estimate
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `AlternatingMap`s in the type
 to `ContinuousAlternatingMap`s. -/
@@ -664,7 +628,7 @@ section Norm
 (and not just a `SeminormedAddCommGroup`). -/
 
 universe u wE wF v
-variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
+variable {𝕜 : Type u} {E : Type wE} {F : Type wF} {ι : Type v}
   [Fintype ι]
   [NontriviallyNormedField 𝕜]
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -683,9 +647,11 @@ theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :
   ContinuousMultilinearMap.norm_ofSubsingleton_id 𝕜 F i
 
 variable (𝕜 F) in
-theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :
+theorem nnNorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :
     ‖ofSubsingleton 𝕜 F F i (.id _ _)‖₊ = 1 :=
   NNReal.eq <| norm_ofSubsingleton_id ..
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofSubsingleton_id := nnNorm_ofSubsingleton_id
 
 end ContinuousAlternatingMap
 

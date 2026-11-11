@@ -5,10 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Convergence
+
+import Mathlib.Algebra.BigOperators.Field
 
 /-!
 # Dirichlet convolution of sequences and products of L-series
@@ -78,6 +78,7 @@ lemma ArithmeticFunction.coe_mul {R : Type*} [Semiring R] (f g : ArithmeticFunct
 
 namespace LSeries
 
+set_option backward.isDefEq.respectTransparency false in
 lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
     f ⍟ g = fun n ↦ ∑ p ∈ n.divisorsAntidiagonal, f p.1 * g p.2 := by
   ext n
@@ -106,7 +107,6 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   rw [term_of_ne_zero hp₁, term_of_ne_zero hp₂, mul_comm_div, div_div, ← mul_div_assoc,
     ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
-set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of an a priori infinite sum over all pairs `(k, m)` with `k * m = n`
@@ -178,7 +178,6 @@ namespace ArithmeticFunction
 ### Versions for arithmetic functions
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The L-series of the (convolution) product of two `ℂ`-valued arithmetic functions `f` and `g`
 equals the product of their L-series, assuming both L-series converge. -/
 lemma LSeriesHasSum_mul {f g : ArithmeticFunction ℂ} {s a b : ℂ} (hf : LSeriesHasSum ↗f s a)
@@ -186,7 +185,6 @@ lemma LSeriesHasSum_mul {f g : ArithmeticFunction ℂ} {s a b : ℂ} (hf : LSeri
     LSeriesHasSum ↗(f * g) s (a * b) :=
   coe_mul f g ▸ hf.convolution hg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The L-series of the (convolution) product of two `ℂ`-valued arithmetic functions `f` and `g`
 equals the product of their L-series, assuming both L-series converge. -/
 lemma LSeries_mul' {f g : ArithmeticFunction ℂ} {s : ℂ} (hf : LSeriesSummable ↗f s)
@@ -194,7 +192,6 @@ lemma LSeries_mul' {f g : ArithmeticFunction ℂ} {s : ℂ} (hf : LSeriesSummabl
     LSeries ↗(f * g) s = LSeries ↗f s * LSeries ↗g s :=
   coe_mul f g ▸ LSeries_convolution' hf hg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The L-series of the (convolution) product of two `ℂ`-valued arithmetic functions `f` and `g`
 equals the product of their L-series in their common half-plane of absolute convergence. -/
 lemma LSeries_mul {f g : ArithmeticFunction ℂ} {s : ℂ}
@@ -202,7 +199,6 @@ lemma LSeries_mul {f g : ArithmeticFunction ℂ} {s : ℂ}
     LSeries ↗(f * g) s = LSeries ↗f s * LSeries ↗g s :=
   coe_mul f g ▸ LSeries_convolution hf hg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The L-series of the (convolution) product of two `ℂ`-valued arithmetic functions `f` and `g`
 is summable when both L-series are summable. -/
 lemma LSeriesSummable_mul {f g : ArithmeticFunction ℂ} {s : ℂ} (hf : LSeriesSummable ↗f s)

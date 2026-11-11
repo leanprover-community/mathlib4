@@ -3,7 +3,9 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker, Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # IMO 1962 Q4
@@ -14,9 +16,9 @@ Since Lean does not have a concept of "simplest form", we just express what is
 in fact the simplest form of the set of solutions, and then prove it equals the set of solutions.
 -/
 
-open Real
+@[expose] public section
 
-open scoped Real
+open Real
 
 namespace Imo1962Q4
 
@@ -59,8 +61,7 @@ Now we can solve for `x` using basic-ish trigonometry.
 -/
 theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 := by
   rw [cos_sq]
-  simp only [add_eq_left, div_eq_zero_iff]
-  norm_num
+  simp only [add_eq_left, div_eq_zero_iff, OfNat.ofNat_ne_zero, or_false]
   rw [cos_eq_zero_iff]
   constructor <;>
     · rintro ⟨k, h⟩

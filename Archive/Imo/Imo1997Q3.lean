@@ -3,12 +3,14 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Sign.Defs
-import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Basic.Sign.Defs
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.Tactic.Linarith
 
 /-!
 # IMO 1997 Q3
@@ -37,6 +39,8 @@ absolute value, $|S(1) + S(R)| > n + 1$, which yields a contradiction. Therefore
 assumption that all permutations satisfy $\frac{n+1}2 < |S(π)|$ must be false; the result follows.
 -/
 
+@[expose] public section
+
 namespace Imo1997Q3
 
 open Equiv Fin Finset SignType
@@ -49,19 +53,13 @@ def S (x : Fin n → ℝ) (p : Perm (Fin n)) : ℝ :=
 
 lemma sign_eq_of_abs_sub_le {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
     (hs : |a - b| ≤ c) : sign a = sign b := by
-  rcases lt_trichotomy 0 a with ha' | rfl | ha' <;>
-  rcases lt_trichotomy 0 b with hb' | rfl | hb' <;>
-  simp_all [abs_of_pos, abs_of_neg, abs_le] <;> linarith
+  obtain ha' | rfl | ha' := lt_trichotomy 0 a <;> obtain hb' | rfl | hb' := lt_trichotomy 0 b <;>
+  simp_all <;> grind
 
-set_option linter.flexible false in
 lemma lt_abs_add_of_sign_eq {a b c : ℝ} (ha : c / 2 < |a|) (hb : c / 2 < |b|) (hc : 0 < c)
     (hs : sign a = sign b) : c < |a + b| := by
-  rcases lt_trichotomy 0 a with ha' | rfl | ha' <;>
-  rcases lt_trichotomy 0 b with hb' | rfl | hb' <;>
-  simp_all [abs_of_pos, abs_of_neg, lt_abs]
-  · left; linarith
-  · linarith
-  · right; linarith
+  obtain ha' | rfl | ha' := lt_trichotomy 0 a <;> obtain hb' | rfl | hb' := lt_trichotomy 0 b <;>
+  simp_all <;> grind
 
 /-- For fixed nonempty `x`, assuming the opposite of what is to be proven,
 the signs of `S x p` are all the same. -/

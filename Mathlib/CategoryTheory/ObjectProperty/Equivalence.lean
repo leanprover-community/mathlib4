@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.Equivalence
-public import Mathlib.Order.BooleanAlgebra.Defs
 
 /-!
 # Equivalence of full subcategories
@@ -15,7 +13,6 @@ public import Mathlib.Order.BooleanAlgebra.Defs
 The inclusion functor `P.FullSubcategory ⥤ Q.FullSubcategory` induced
 by an inequality `P ≤ Q` in `ObjectProperty C` is an equivalence iff
 `Q ≤ P.isoClosure`.
-
 -/
 
 @[expose] public section
@@ -47,6 +44,11 @@ def topEquivalence : ObjectProperty.FullSubcategory (C := C) ⊤ ≌ C where
   inverse := ObjectProperty.lift _ (𝟭 _) (by simp)
   unitIso := Iso.refl _
   counitIso := Iso.refl _
+  functor_unitIso_comp := by cat_disch
+
+lemma isEquivalence_ι (h : P = ⊤) : P.ι.IsEquivalence := by
+  rw [h]
+  exact (topEquivalence C).isEquivalence_functor
 
 end CategoryTheory.ObjectProperty
 

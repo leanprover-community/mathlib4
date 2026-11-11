@@ -5,9 +5,10 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.SetTheory.Cardinal.Finite
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 
 /-!
 # Big operators on a finset in the natural numbers
@@ -34,7 +35,6 @@ lemma odd_sum_iff_odd_card_odd {s : Finset ι} (f : ι → ℕ) :
     Odd (∑ i ∈ s, f i) ↔ Odd #{x ∈ s | Odd (f x)} := by
   simp only [← Nat.not_even_iff_odd, even_sum_iff_even_card_odd]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_preimage_eq_sum_card_image_eq {M : Type*} {f : ι → M} {s : Finset M}
     (hb : ∀ b ∈ s, Set.Finite {a | f a = b}) :
     Nat.card (f ⁻¹' s) = ∑ b ∈ s, Nat.card {a // f a = b} := by
@@ -50,8 +50,8 @@ theorem card_preimage_eq_sum_card_image_eq {M : Type*} {f : ι → M} {s : Finse
   · simpa [← Finset.coe_inj, t] using Set.image_preimage_eq_inter_range
   · rw [Nat.card_eq_card_finite_toFinset (hb _ (by aesop))]
     suffices {a | f a = m} ⊆ ht.toFinset from
-      congr_arg (Finset.card ·) (Finset.ext_iff.mpr fun a ↦ by simpa using fun h ↦ this h)
+      congr($(Finset.ext_iff.mpr fun a ↦ by simpa using fun h ↦ this h).card)
     intro _ h
-    simpa using by rwa [h]
+    simp_all
 
 end Finset

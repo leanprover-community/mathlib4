@@ -5,7 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Boolean quantifiers

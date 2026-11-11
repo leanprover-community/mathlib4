@@ -37,7 +37,7 @@ fibonacci, zeckendorf, digit
 open List Nat
 
 -- TODO: The `local` attribute makes this not considered as an instance by linters
-@[nolint defLemma docBlame]
+@[nolint docBlame]
 local instance : IsTrans ℕ fun a b ↦ b + 2 ≤ a where
   trans _a _b _c hba hcb := hcb.trans <| le_self_add.trans hba
 
@@ -104,7 +104,6 @@ lemma greatestFib_ne_zero : greatestFib n ≠ 0 ↔ n ≠ 0 := greatestFib_eq_ze
 
 @[simp] lemma greatestFib_pos : 0 < greatestFib n ↔ 0 < n := by simp [pos_iff_ne_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma greatestFib_sub_fib_greatestFib_le_greatestFib (hn : n ≠ 0) :
     greatestFib (n - fib (greatestFib n)) ≤ greatestFib n - 2 := by
   rw [← Nat.lt_succ_iff, greatestFib_lt, tsub_lt_iff_right n.fib_greatestFib_le, Nat.sub_succ,
@@ -125,8 +124,6 @@ def zeckendorf : ℕ → List ℕ
   | m@(_ + 1) =>
     letI a := greatestFib m
     a :: zeckendorf (m - fib a)
-decreasing_by simp_wf; subst_vars; apply zeckendorf_aux (zero_lt_succ _)
-
 
 @[simp] lemma zeckendorf_zero : zeckendorf 0 = [] := zeckendorf.eq_1 ..
 
@@ -152,7 +149,6 @@ lemma isZeckendorfRep_zeckendorf : ∀ n, (zeckendorf n).IsZeckendorfRep
     exact add_le_of_le_tsub_right_of_le (le_greatestFib.2 le_add_self)
       (greatestFib_sub_fib_greatestFib_le_greatestFib n.succ_ne_zero)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zeckendorf_sum_fib : ∀ {l}, IsZeckendorfRep l → zeckendorf (l.map fib).sum = l
   | [], _ => by simp only [map_nil, List.sum_nil, zeckendorf_zero]
   | a :: l, hl => by

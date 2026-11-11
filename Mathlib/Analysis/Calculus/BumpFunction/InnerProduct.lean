@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.BumpFunction.Basic
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth bump functions in inner product spaces
 
@@ -27,7 +30,6 @@ open scoped Topology
 
 variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A base bump function in an inner product space. This construction works in any space with a
 norm smooth away from zero but we do not have a typeclass for this. -/
 noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E where

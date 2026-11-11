@@ -73,7 +73,7 @@ theorem fourierCoeff_toAddCircle (n : ℤ) :
   | add p q hp hq =>
     simp_all [not_le_of_gt, fourierCoeff.add (toAddCircle.integrable p) (toAddCircle.integrable q)]
   | monomial m a =>
-    simp_all [not_le_of_gt, coeff_monomial, toAddCircle_monomial_eq_smul_fourier,
+    simp_all [not_le_of_gt, toAddCircle_monomial_eq_smul_fourier,
       fourierCoeff.const_smul, fourierCoeff_fourier, Pi.single_apply]
     grind
 
@@ -86,7 +86,6 @@ theorem fourierCoeff_toAddCircle_eq_zero_of_lt_zero (n : ℤ) (hn : n < 0) :
     fourierCoeff (T := 2 * π) p.toAddCircle n = 0 := by
   simp [fourierCoeff_toAddCircle, hn]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Parseval's Identity** for polynomials -/
 theorem sum_sq_norm_coeff_eq_circleAverage : ∑ i ∈ p.support, ‖p.coeff i‖ ^ 2 =
     Real.circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1 := by

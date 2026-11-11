@@ -94,8 +94,8 @@ lemma Ico_filter_modEq_cast {v : ℕ} :
   ext x
   simp only [mem_map, mem_filter, mem_Ico, castEmbedding_apply]
   constructor
-  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact mod_cast h
+  · intro h; lift x to ℕ using (by lia); use x; simp_all
 
 lemma Ioc_filter_modEq_cast {v : ℕ} :
     {x ∈ Ioc a b | x ≡ v [MOD r]}.map castEmbedding =
@@ -103,8 +103,8 @@ lemma Ioc_filter_modEq_cast {v : ℕ} :
   ext x
   simp only [mem_map, mem_filter, mem_Ioc, castEmbedding_apply]
   constructor
-  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by lia); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact mod_cast h
+  · intro h; lift x to ℕ using (by lia); use x; simp_all
 
 variable (hr : 0 < r)
 include hr
@@ -138,7 +138,6 @@ theorem count_modEq_card_eq_ceil (v : ℕ) :
     zero_mul, neg_lt_neg_iff, cast_lt]
   exact ⟨mod_lt _ hr, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There are `b / r + [v % r < b % r]` numbers in `[0, b)` congruent to `v` mod `r`,
 where `[·]` is the Iverson bracket. -/
 theorem count_modEq_card (v : ℕ) :

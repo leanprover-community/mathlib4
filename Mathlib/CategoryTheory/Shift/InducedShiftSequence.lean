@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Shift.ShiftSequence
 
 /-! # Induced shift sequences
@@ -25,7 +24,6 @@ category (see the file `Mathlib/CategoryTheory/Shift/Induced.lean`), this file s
 under certain assumptions, there is an induced "shift sequence". The main application
 will be the construction of a shift sequence for the homology functor on the
 homotopy category of cochain complexes (TODO), and also on the derived category (TODO).
-
 -/
 
 @[expose] public section
@@ -70,7 +68,7 @@ lemma shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
     (shiftIso L G M F' e' n a a' ha').hom.app (L.obj X) =
       (F' a).map ((L.commShiftIso n).inv.app X) ≫
         (e' a).hom.app (X⟦n⟧) ≫ (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X :=
-  (NatTrans.congr_app (((whiskeringLeft C D A).obj L).map_preimage _) X).trans (by simp)
+  congr($(((whiskeringLeft C D A).obj L).map_preimage _).app X).trans (by simp)
 
 attribute [irreducible] isoZero shiftIso
 
@@ -78,12 +76,12 @@ end induced
 
 variable [HasShift D M] [L.CommShift M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an isomorphism of functors `e : L ⋙ F ≅ G` relating functors `L : C ⥤ D`,
 `F : D ⥤ A` and `G : C ⥤ A`, an additive monoid `M`, a family of functors `F' : M → D ⥤ A`
 equipped with isomorphisms `e' : ∀ m, L ⋙ F' m ≅ G.shift m`, this is the shift sequence
 induced on `F` induced by a shift sequence for the functor `G`, provided that
 the functor `(whiskeringLeft C D A).obj L` of precomposition by `L` is fully faithful. -/
+@[instance_reducible]
 noncomputable def induced : F.ShiftSequence M where
   sequence := F'
   isoZero := induced.isoZero e M F' e'

@@ -10,10 +10,9 @@ public import Mathlib.CategoryTheory.SingleObj
 
 /-!
 # `SingleObj α` is preadditive when `α` is a ring.
-
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

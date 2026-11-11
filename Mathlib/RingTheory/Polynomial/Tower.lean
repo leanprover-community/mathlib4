@@ -5,8 +5,10 @@ Authors: Kenny Lau, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Polynomial.AlgebraMap
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebra towers for polynomial
@@ -75,7 +77,6 @@ section CommSemiring
 
 variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = aeval x p :=
   aeval_algebraMap_apply A x p

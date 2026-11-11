@@ -7,16 +7,16 @@ module
 
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.SimpleRing.Field
-public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+
+import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
 # A commutative simple ring is a principal ideal domain
 
 Indeed, it is a field.
-
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsSimpleRing R]
 

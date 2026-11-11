@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module
 
-public meta import Batteries.Data.Nat.Basic
 public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extension for `Nat.sqrt`
@@ -15,13 +14,12 @@ This module defines a `norm_num` extension for `Nat.sqrt`.
 
 public meta section
 
-namespace Tactic
+namespace Mathlib.Meta
 
 namespace NormNum
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nat_sqrt_helper {x y r : ℕ} (hr : y * y + r = x) (hle : Nat.ble r (2 * y)) :
     Nat.sqrt x = y := by
   rw [← hr, ← pow_two]
@@ -57,4 +55,4 @@ def evalNatSqrt : NormNumExt where eval {_ _} e := do
 
 end NormNum
 
-end Tactic
+end Mathlib.Meta

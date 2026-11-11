@@ -6,11 +6,9 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Permutation
 
 /-!
-
 # Fintype instance for nodup lists
 
 The subtype of `{l : List α // l.Nodup}` over a `[Fintype α]`
@@ -20,7 +18,6 @@ admits a `Fintype` instance.
 To construct the `Fintype` instance, a function lifting a `Multiset α`
 to the `Multiset (List α)` is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
-
 -/
 
 @[expose] public section
@@ -34,7 +31,6 @@ namespace Multiset
 /-- Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`. -/
 def lists : Multiset α → Multiset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations) fun l l' (h : l ~ l') => by
-    simp only
     refine coe_eq_coe.mpr ?_
     exact Perm.permutations h
 
@@ -57,7 +53,7 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
 end Multiset
 
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := by
-  refine Fintype.ofFinset ?_ ?_
+  refine Fintype.subtype ?_ ?_
   · let univSubsets := ((Finset.univ : Finset α).powerset.1 : (Multiset (Finset α)))
     let allPerms := Multiset.bind univSubsets (fun s => (Multiset.lists s.1))
     refine ⟨allPerms, Multiset.nodup_bind.mpr ?_⟩
@@ -67,18 +63,14 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · simp only [Finset.coe_toList]
       rfl
-    · convert Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
-      ext l
-      unfold Nodup
-      refine Pairwise.iff ?_
-      intro m n
+    · -- Unfold `List.Nodup` in the type of the proof term to make it match with the goal.
+      convert dsimp% [List.Nodup] Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
+        with m n
       simp only [_root_.Disjoint]
       rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe]
       have := Multiset.coe_disjoint m.toList.permutations n.toList.permutations
       rw [_root_.Disjoint] at this
-      rw [this]
-      simp only [ne_eq]
-      rw [List.disjoint_iff_ne]
+      rw [this, List.disjoint_iff_ne]
       constructor
       · intro h
         by_contra hc

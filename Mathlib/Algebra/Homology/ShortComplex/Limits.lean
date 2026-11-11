@@ -6,23 +6,22 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Limits and colimits in the category of short complexes
 
 In this file, it is shown if a category `C` with zero morphisms has limits
 of a certain shape `J`, then it is also the case of the category `ShortComplex C`.
-
 -/
 
 @[expose] public section
 
 namespace CategoryTheory
 
-open Category Limits Functor
+open Category Limits CategoryTheory.Functor
 
 variable {J C : Type*} [Category* J] [Category* C] [HasZeroMorphisms C]
   {F : J ⥤ ShortComplex C}
@@ -64,7 +63,6 @@ section
 variable (F)
 variable [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π₃)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a limit cone for a functor `J ⥤ ShortComplex C` using the limits
 of the three components `J ⥤ C`. -/
 noncomputable def limitCone : Cone F :=
@@ -78,17 +76,17 @@ noncomputable def limitCone : Cone F :=
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitCone F` becomes limit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₁MapConeLimitCone : IsLimit (π₁.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext (Iso.refl _) (by cat_disch)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitCone F` becomes limit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₂MapConeLimitCone : IsLimit (π₂.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext (Iso.refl _) (by cat_disch)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `limitCone F` becomes limit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isLimitπ₃MapConeLimitCone : IsLimit (π₃.mapCone (limitCone F)) :=
-  (IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (by cat_disch)))
+  (IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext (Iso.refl _) (by cat_disch)))
 
 /-- `limitCone F` is limit. -/
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
@@ -198,7 +196,6 @@ section
 variable (F)
 variable [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F ⋙ π₃)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a colimit cocone for a functor `J ⥤ ShortComplex C` using the colimits
 of the three components `J ⥤ C`. -/
 noncomputable def colimitCocone : Cocone F :=
@@ -216,19 +213,19 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `colimitCocone F` becomes colimit after the application of `π₁ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₁MapCoconeColimitCocone :
     IsColimit (π₁.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _) (by cat_disch)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `colimitCocone F` becomes colimit after the application of `π₂ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₂MapCoconeColimitCocone :
     IsColimit (π₂.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _) (by cat_disch)))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `colimitCocone F` becomes colimit after the application of `π₃ : ShortComplex C ⥤ C`. -/
 noncomputable def isColimitπ₃MapCoconeColimitCocone :
     IsColimit (π₃.mapCocone (colimitCocone F)) :=
-  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (by cat_disch)))
+  (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocone.ext (Iso.refl _) (by cat_disch)))
 
 /-- `colimitCocone F` is colimit. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=

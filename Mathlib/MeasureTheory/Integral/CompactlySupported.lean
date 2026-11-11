@@ -5,9 +5,10 @@ Authors: Yongxi Lin, Thomas Zhu
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.LocallyIntegrable
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
+
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
 
 /-!
 # Integrating compactly supported continuous functions
@@ -18,8 +19,9 @@ functions.
 
 @[expose] public section
 
-open scoped ENNReal NNReal
-open CompactlySupported MeasureTheory
+open MeasureTheory
+
+open scoped ENNReal NNReal CompactlySupported
 
 variable {X : Type*}
 
@@ -33,7 +35,6 @@ lemma integrable {E : Type*} [NormedAddCommGroup E] (f : C_c(X, E))
 
 variable [T2Space X] [LocallyCompactSpace X] (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Integral as a positive linear functional on `C_c(X, ℝ)`. -/
 @[simps!]
 noncomputable def integralPositiveLinearMap (μ : Measure X)

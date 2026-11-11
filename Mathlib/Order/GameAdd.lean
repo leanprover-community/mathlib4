@@ -6,7 +6,6 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Data.Sym.Sym2
-public import Mathlib.Logic.Relation
 
 /-!
 # Game addition relation
@@ -26,7 +25,7 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 
 - `Sym2.GameAdd`: the game addition relation on unordered pairs.
 - `WellFounded.sym2_gameAdd`: formalizes induction on unordered pairs, where exactly one entry
-decreases at a time.
+  decreases at a time.
 -/
 
 @[expose] public section
@@ -34,7 +33,6 @@ decreases at a time.
 variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop} {a : α} {b : β}
 
 /-! ### `Prod.GameAdd` -/
-
 
 namespace Prod
 
@@ -109,24 +107,18 @@ namespace Prod
 
 /-- Recursion on the well-founded `Prod.GameAdd` relation.
   Note that it's strictly more general to recurse on the lexicographic order instead. -/
-def GameAdd.fix {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
-    (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
-    C a b :=
-  @WellFounded.fix (α × β) (fun x => C x.1 x.2) _ (hα.prod_gameAdd hβ)
-    (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) ⟨a, b⟩
+@[elab_as_elim]
+def GameAdd.recursion {motive : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
+    (ind : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → motive a₂ b₂) → motive a₁ b₁)
+    (a : α) (b : β) : motive a b :=
+  @WellFounded.fix (α × β) (fun x => motive x.1 x.2) _ (hα.prod_gameAdd hβ)
+    (fun ⟨x₁, x₂⟩ IH' => ind x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) ⟨a, b⟩
 
-theorem GameAdd.fix_eq {C : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
-    (IH : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a : α) (b : β) :
-    GameAdd.fix hα hβ IH a b = IH a b fun a' b' _ => GameAdd.fix hα hβ IH a' b' :=
+theorem GameAdd.recursion_eq {motive : α → β → Sort*} (hα : WellFounded rα) (hβ : WellFounded rβ)
+    (ind : ∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → motive a₂ b₂) → motive a₁ b₁)
+    (a : α) (b : β) :
+    GameAdd.recursion hα hβ ind a b = ind a b fun a' b' _ => GameAdd.recursion hα hβ ind a' b' :=
   WellFounded.fix_eq _ _ _
-
-/-- Induction on the well-founded `Prod.GameAdd` relation.
-  Note that it's strictly more general to induct on the lexicographic order instead. -/
-theorem GameAdd.induction {C : α → β → Prop} :
-    WellFounded rα →
-      WellFounded rβ →
-        (∀ a₁ b₁, (∀ a₂ b₂, GameAdd rα rβ (a₂, b₂) (a₁, b₁) → C a₂ b₂) → C a₁ b₁) → ∀ a b, C a b :=
-  GameAdd.fix
 
 end Prod
 
@@ -158,7 +150,7 @@ theorem gameAdd_mk'_iff {a₁ a₂ b₁ b₂ : α} :
 
 theorem _root_.Prod.GameAdd.to_sym2 {a₁ a₂ b₁ b₂ : α} (h : Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂)) :
     Sym2.GameAdd rα s(a₁, b₁) s(a₂, b₂) :=
-  gameAdd_iff.2 <| Or.inl <| h
+  gameAdd_iff.2 <| Or.inl h
 
 theorem GameAdd.fst {a₁ a₂ b : α} (h : rα a₁ a₂) : GameAdd rα s(a₁, b) s(a₂, b) :=
   (Prod.GameAdd.fst h).to_sym2
@@ -201,24 +193,19 @@ namespace Sym2
 attribute [local instance] Sym2.Rel.setoid
 
 /-- Recursion on the well-founded `Sym2.GameAdd` relation. -/
-def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
-    (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
-    C a b :=
-  @WellFounded.fix (α × α) (fun x => C x.1 x.2)
+@[elab_as_elim]
+def GameAdd.recursion {motive : α → α → Sort*} (hr : WellFounded rα)
+    (ind : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → motive a₂ b₂) → motive a₁ b₁)
+    (a b : α) : motive a b :=
+  @WellFounded.fix (α × α) (fun x => motive x.1 x.2)
     (fun x y ↦ Prod.GameAdd rα rα x y ∨ Prod.GameAdd rα rα x.swap y)
     (by simpa [← Sym2.gameAdd_iff] using hr.sym2_gameAdd.onFun)
-    (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
+    (fun ⟨x₁, x₂⟩ IH' => ind x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 
-theorem GameAdd.fix_eq {C : α → α → Sort*} (hr : WellFounded rα)
-    (IH : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) (a b : α) :
-    GameAdd.fix hr IH a b = IH a b fun a' b' _ => GameAdd.fix hr IH a' b' :=
+theorem GameAdd.recursion_eq {motive : α → α → Sort*} (hr : WellFounded rα)
+    (ind : ∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → motive a₂ b₂) → motive a₁ b₁)
+    (a b : α) :
+    GameAdd.recursion hr ind a b = ind a b fun a' b' _ => GameAdd.recursion hr ind a' b' :=
   WellFounded.fix_eq ..
-
-/-- Induction on the well-founded `Sym2.GameAdd` relation. -/
-theorem GameAdd.induction {C : α → α → Prop} :
-    WellFounded rα →
-      (∀ a₁ b₁, (∀ a₂ b₂, Sym2.GameAdd rα s(a₂, b₂) s(a₁, b₁) → C a₂ b₂) → C a₁ b₁) →
-        ∀ a b, C a b :=
-  GameAdd.fix
 
 end Sym2

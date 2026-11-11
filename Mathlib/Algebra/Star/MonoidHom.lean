@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Star.Basic
+
 /-!
 # Morphisms of star monoids
 
@@ -49,9 +50,10 @@ namespace StarMonoidHom
 
 variable [Monoid A] [Star A] [Monoid B] [Star B]
 
+@[macro_inline]
 instance : FunLike (A →⋆* B) A B where
   coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; simp_all
+  coe_injective f g h := by cases f; cases g; simp_all
 
 instance : MonoidHomClass (A →⋆* B) A B where
   map_mul f := f.map_mul'
@@ -184,6 +186,7 @@ section Basic
 variable [Mul A] [Mul B] [Mul C] [Mul D]
 variable [Star A] [Star B] [Star C] [Star D]
 
+@[macro_inline]
 instance : EquivLike (A ≃⋆* B) A B where
   coe e := e.toFun
   inv e := e.invFun
@@ -220,8 +223,8 @@ theorem coe_refl : ⇑(.refl A : A ≃⋆* A) = id :=
 nonrec def symm (e : A ≃⋆* B) : B ≃⋆* A :=
   { e.symm with
     map_star' := fun b => by
-      simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using
-        congr_arg (EquivLike.inv e) (map_star e (EquivLike.inv e b)).symm }
+      simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using!
+        congr(EquivLike.inv e $((map_star e (EquivLike.inv e b)).symm)) }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : A ≃⋆* B) : A → B := e

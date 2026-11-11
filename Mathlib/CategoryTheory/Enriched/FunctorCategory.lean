@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Limits.Shapes.End
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # Functor categories are enriched
@@ -25,8 +24,9 @@ is defined by sending `j : J` to the previously defined `enrichedHom`
 for the "restriction" of `F₁` and `F₂` to the category `Under j`.
 The definition `isLimitConeFunctorEnrichedHom` shows that
 `enriched V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
-
 -/
+
+set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -34,7 +34,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.Enriched.FunctorCategory
 
-open Category MonoidalCategory Limits Functor
+open Category MonoidalCategory Limits CategoryTheory.Functor
 
 variable (V : Type u₁) [Category.{v₁} V] [MonoidalCategory V]
   {C : Type u₂} [Category.{v₂} C] {J : Type u₃} [Category.{v₃} J]
@@ -133,6 +133,7 @@ section
 
 variable [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₃] [HasEnrichedHom V F₁ F₃]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The composition for the `V`-enrichment of the category `J ⥤ C`. -/
 noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ F₃ ⟶ enrichedHom V F₁ F₃ :=
   end_.lift (fun j ↦ (end_.π _ j ⊗ₘ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
@@ -233,6 +234,7 @@ variable (J C)
 
 /-- If `C` is a `V`-enriched ordinary category, and `C` has suitable limits,
 then `J ⥤ C` is also a `V`-enriched ordinary category. -/
+@[instance_reducible]
 noncomputable def enrichedOrdinaryCategory [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom V F₁ F₂] :
     EnrichedOrdinaryCategory V (J ⥤ C) where
   Hom F₁ F₂ := enrichedHom V F₁ F₂
@@ -249,7 +251,6 @@ section
 
 variable (G : K ⥤ J) [HasEnrichedHom V F₁ F₂]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F₁ F₂} in
 /-- If `F₁` and `F₂` are functors `J ⥤ C`, `G : K ⥤ J`, and
 `F₁'` and `F₂'` are functors `K ⥤ C` that are respectively

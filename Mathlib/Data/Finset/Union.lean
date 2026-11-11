@@ -53,7 +53,6 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 @[simp, grind =] lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
   simp only [mem_def, disjiUnion_val, Multiset.mem_bind]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α), t x := by
   simp [Set.ext_iff, mem_disjiUnion, Set.mem_iUnion]
@@ -147,11 +146,13 @@ theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β →
     (s.disjiUnion f h).filter p
       = s.disjiUnion (fun a ↦ (f a).filter p) (pairwiseDisjoint_filter h p) := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjiUnion_singleton {f : α → β} (hf : f.Injective) :
     s.disjiUnion (fun a ↦ {f a}) (fun _ _ _ _ ↦ disjoint_singleton.mpr ∘ hf.ne) =
       s.map ⟨f, hf⟩ := by
   ext; simp [eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_disjiUnion_left
     (s : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint s f) (t : Finset β) :
     Disjoint (s.disjiUnion f hf) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
@@ -201,7 +202,6 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 @[simp, grind =] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
   simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_biUnion : (s.biUnion t : Set β) = ⋃ x ∈ (s : Set α), t x := by
   simp [Set.ext_iff, mem_biUnion, Set.mem_iUnion]
@@ -261,23 +261,25 @@ lemma biUnion_filter_eq_of_maps_to [DecidableEq α] {s : Finset α} {t : Finset 
 lemma erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
     (s.biUnion f).erase b = s.biUnion fun x ↦ (f x).erase b := by grind
 
-@[simp]
+@[simp, grind =]
 lemma biUnion_nonempty : (s.biUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty := by
   simp only [Finset.Nonempty, mem_biUnion]
-  rw [exists_swap]
+  rw [exists_comm]
   simp [exists_and_left]
 
 lemma Nonempty.biUnion (hs : s.Nonempty) (ht : ∀ x ∈ s, (t x).Nonempty) :
     (s.biUnion t).Nonempty := biUnion_nonempty.2 <| hs.imp fun x hx ↦ ⟨hx, ht x hx⟩
 
+@[grind =]
 lemma disjoint_biUnion_left (s : Finset α) (f : α → Finset β) (t : Finset β) :
     Disjoint (s.biUnion f) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
   classical
   refine s.induction ?_ ?_
-  · simp only [forall_mem_empty_iff, biUnion_empty, disjoint_empty_left]
+  · simp
   · intro i s his ih
     simp only [disjoint_union_left, biUnion_insert, forall_mem_insert, ih]
 
+@[grind =]
 lemma disjoint_biUnion_right (s : Finset β) (t : Finset α) (f : α → Finset β) :
     Disjoint s (t.biUnion f) ↔ ∀ i ∈ t, Disjoint s (f i) := by
   simpa only [_root_.disjoint_comm] using disjoint_biUnion_left t f s
@@ -302,6 +304,17 @@ lemma union_biUnion [DecidableEq α] : (s₁ ∪ s₂).biUnion t = s₁.biUnion 
 lemma biUnion_union : s.biUnion (fun x ↦ t₁ x ∪ t₂ x) = s.biUnion t₁ ∪ s.biUnion t₂ := by grind
 
 theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f := by grind
+
+/-- Rewrite a `biUnion` over `s.attach` as a `biUnion` over `s`, in the case where the indexing
+function on `s.attach` happens to factor through `α`. See `Finset.attach_biUnion'` for the version
+without that hypothesis. -/
+lemma attach_biUnion {f : α → Finset β} : s.attach.biUnion (f ·) = s.biUnion f := by aesop
+
+/-- Rewrite a `biUnion` over `s.attach` as a `biUnion` over `s` by extending the function to all of
+`α` with `∅` outside `s`. See `Finset.attach_biUnion` for the version when the indexing function is
+already defined on all of `α`. -/
+lemma attach_biUnion' [DecidableEq α] {f : s → Finset β} :
+    s.attach.biUnion f = s.biUnion fun a ↦ if h : a ∈ s then f ⟨a, h⟩ else ∅ := by aesop
 
 end BUnion
 end Finset

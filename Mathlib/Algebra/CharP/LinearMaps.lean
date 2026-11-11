@@ -5,8 +5,9 @@ Authors: Wanyi He, Huanyu Zheng
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.Module.Torsion.Basic
+
+import Mathlib.Algebra.CharP.Algebra
 
 /-!
 # Characteristic of the ring of linear Maps
@@ -30,10 +31,9 @@ The characteristic of the ring of linear maps is determined by its base ring.
 One can also deduce similar result via `charP_of_injective_ringHom` and
   `R → (M →ₗ[R] M) : r ↦ (fun (x : M) ↦ r • x)`. But this will require stronger condition
   compared to `Module.charP_end`.
-
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 
@@ -47,20 +47,18 @@ theorem charP_end {p : ℕ} [hchar : CharP R p]
   cast_eq_zero_iff n := by
     have exact : (n : M →ₗ[R] M) = (n : R) • 1 := by
       simp only [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one]
-    rw [exact, LinearMap.ext_iff, ← hchar.1]
+    rw [exact, LinearMap.ext_iff, ← hchar.cast_eq_zero_iff]
     exact ⟨fun h ↦ htorsion.casesOn fun x hx ↦ by simpa [← Ideal.mem_torsionOf_iff, hx] using h x,
       fun h ↦ (congrArg (fun t ↦ ∀ x, t • x = 0) h).mpr fun x ↦ zero_smul R x⟩
 
 end Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a division ring `D` with center `k`, the ring of `k`-linear endomorphisms
   of `D` has the same characteristic as `D` -/
 instance {D : Type*} [DivisionRing D] {p : ℕ} [CharP D p] :
     CharP (D →ₗ[(Subring.center D)] D) p :=
   charP_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p
 
-set_option backward.isDefEq.respectTransparency false in
 instance {D : Type*} [DivisionRing D] {p : ℕ} [ExpChar D p] :
     ExpChar (D →ₗ[Subring.center D] D) p :=
   expChar_of_injective_ringHom (Algebra.lmul (Subring.center D) D).toRingHom.injective p

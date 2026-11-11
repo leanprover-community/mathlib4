@@ -8,15 +8,17 @@ module
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear upper or lower sets topologies are completely normal
 -/
 
-@[expose] public section
+public section
 
 open Set Topology.IsUpperSet
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) {α : Type*}
     [TopologicalSpace α] [LinearOrder α] [Topology.IsUpperSet α] : CompletelyNormalSpace α where
   completely_normal s t hcst hsct := by
@@ -36,4 +38,5 @@ instance (priority := low) {α : Type*}
   inferInstanceAs (CompletelyNormalSpace αᵒᵈ)
 
 instance : CompletelyNormalSpace Prop :=
+  let := Prop.linearOrder
   inferInstance

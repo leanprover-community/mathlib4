@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
 /-!
 # Preservation of well order continuous functors
@@ -17,10 +16,9 @@ we define a type class `PreservesWellOrderContinuousOfShape J G`
 saying that `G` preserves colimits of shape `Set.Iio j`
 for any limit element `j : J`. It follows that if
 `F : J ⥤ C` is well order continuous, then so is `F ⋙ G`.
-
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' v'' u' u u''
 

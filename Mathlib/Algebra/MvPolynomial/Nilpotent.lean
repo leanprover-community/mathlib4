@@ -19,13 +19,12 @@ We prove that
   and its other coefficients are nilpotent.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
 variable {σ R : Type*} [CommRing R] {P : MvPolynomial σ R}
 
-set_option backward.isDefEq.respectTransparency false in
 -- Subsumed by `isNilpotent_iff` below.
 private theorem isNilpotent_iff_of_fintype [Finite σ] :
     IsNilpotent P ↔ ∀ i, IsNilpotent (P.coeff i) := by
@@ -65,15 +64,17 @@ theorem isUnit_iff : IsUnit P ↔ IsUnit (P.coeff 0) ∧ ∀ i ≠ 0, IsNilpoten
     have H := (Polynomial.coeff_isUnit_isNilpotent_of_isUnit (H.map e.symm)).2 (n i) hi
     simp only [ne_eq, isNilpotent_iff] at H
     convert ← H (n.equivMapDomain (Equiv.optionSubtypeNe i).symm).some
-    refine (optionEquivLeft_coeff_some_coeff_none _ _ _ _).trans ?_
-    simp [Finsupp.equivMapDomain_eq_mapDomain,
+    refine (optionEquivLeft_coeff_some_coeff_none R { b // b ≠ i }
+      (Finsupp.equivMapDomain (Equiv.optionSubtypeNe i).symm n)
+      ((renameEquiv R (Equiv.optionSubtypeNe i)).symm P)).trans ?_
+    simp [Finsupp.equivMapDomain_eq_mapDomain, -Equiv.optionSubtypeNe_symm_apply,
       coeff_rename_mapDomain _ (Equiv.optionSubtypeNe i).symm.injective]
   · have : IsNilpotent (P - C (P.coeff 0)) := by
       simp +contextual [isNilpotent_iff, apply_ite, eq_comm, h₂]
     simpa using this.isUnit_add_right_of_commute (h₁.map C) (.all _ _)
 
 instance : IsLocalHom (C : _ →+* MvPolynomial σ R) where
-  map_nonunit := by classical simp +contextual [isUnit_iff, coeff_C, apply_ite]
+  map_nonunit := by simp +contextual [isUnit_iff]
 
 instance : IsLocalHom (algebraMap R (MvPolynomial σ R)) :=
   inferInstanceAs (IsLocalHom C)

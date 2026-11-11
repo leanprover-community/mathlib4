@@ -6,7 +6,11 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Calculus.Deriv.ZPow
+
+import Mathlib.Analysis.Calculus.Deriv.ZPow
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ` within an open set

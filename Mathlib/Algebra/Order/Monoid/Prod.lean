@@ -8,11 +8,11 @@ module
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Data.Prod.Lex
+public import Mathlib.Order.Prod.Lex.Basic
 
 /-! # Products of ordered monoids -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -21,14 +21,14 @@ namespace Prod
 variable {α β : Type*}
 
 @[to_additive]
-instance [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
-    [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] : IsOrderedMonoid (α × β) where
+instance [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
+    [CommMonoid β] [Preorder β] [IsOrderedMonoid β] : IsOrderedMonoid (α × β) where
   mul_le_mul_left _ _ h _ := ⟨mul_le_mul_left h.1 _, mul_le_mul_left h.2 _⟩
 
 @[to_additive]
 instance instIsOrderedCancelMonoid
-    [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
-    [CommMonoid β] [PartialOrder β] [IsOrderedCancelMonoid β] :
+    [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α]
+    [CommMonoid β] [Preorder β] [IsOrderedCancelMonoid β] :
     IsOrderedCancelMonoid (α × β) :=
   { le_of_mul_le_mul_left :=
       fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
@@ -50,8 +50,8 @@ instance [Mul α] [LE α] [CanonicallyOrderedMul α]
 namespace Lex
 
 @[to_additive]
-instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [MulLeftStrictMono α]
-    [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
+instance isOrderedMonoid [CommMonoid α] [Preorder α] [MulLeftStrictMono α]
+    [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left hxy _)

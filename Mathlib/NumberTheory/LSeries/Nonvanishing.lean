@@ -1,15 +1,12 @@
 /-
 Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll, David Loeffler
+Authors: Michael Stoll, David Loeffler, Terence Tao
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
-public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.DirichletContinuation
-public import Mathlib.NumberTheory.LSeries.Positivity
 
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1
@@ -24,6 +21,13 @@ happens to be non-zero).
 
 These results are prerequisites for the **Prime Number Theorem** and
 **Dirichlet's Theorem** on primes in arithmetic progressions.
+
+Using the functional equation, these results are extended to the left half-plane in
+`LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, excluding negative
+integers and negative even integers respectively.
+
+As a byproduct of the above analysis, non-vanishing theorems for the root number or Gauss sum
+associated to a Dirichlet L-function are also provided.
 
 ## Outline of proofs
 
@@ -47,8 +51,10 @@ hypothetical objects which we eventually deduce cannot exist. We have only made 
 whose hypotheses do not turn out to be contradictory.
 -/
 
-open Complex Asymptotics Topology Filter
+open Complex Asymptotics Filter
 open ArithmeticFunction hiding log
+
+open scoped Topology
 
 -- We use the ordering on `ℂ` given by comparing real parts for fixed imaginary part
 open scoped ComplexOrder
@@ -70,7 +76,6 @@ We then show that for a quadratic character `χ`, this arithmetic function is mu
 and takes nonnegative real values.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The complex-valued arithmetic function that is the convolution of the constant
 function `1` with `χ`. -/
 noncomputable def zetaMul (χ : DirichletCharacter ℂ N) : ArithmeticFunction ℂ :=
@@ -87,7 +92,7 @@ lemma LSeriesSummable_zetaMul (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 
   simpa only [toArithmeticFunction, coe_mk, hn, ↓reduceIte]
   using norm_le_one χ _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency.types false in
 lemma zetaMul_prime_pow_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) {p : ℕ}
     (hp : p.Prime) (k : ℕ) :
     0 ≤ zetaMul χ (p ^ k) := by
@@ -108,7 +113,7 @@ lemma zetaMul_nonneg {χ : DirichletCharacter ℂ N} (hχ : χ ^ 2 = 1) (n : ℕ
     0 ≤ zetaMul χ n := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [ArithmeticFunction.map_zero, le_refl]
-  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using
+  · simpa only [χ.isMultiplicative_zetaMul.multiplicative_factorization _ hn] using!
       Finset.prod_nonneg
         fun p hp ↦ zetaMul_prime_pow_nonneg hχ (Nat.prime_of_mem_primeFactors hp) _
 
@@ -196,7 +201,6 @@ private lemma F_neg_two (B : BadChar N) : B.F (-2 : ℝ) = 0 := by
 
 end BadChar
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `χ` is a nontrivial quadratic Dirichlet character, then `L(χ, 1) ≠ 0`. This is private
 since it is later superseded by `LFunction_apply_one_ne_zero`. -/
 private theorem LFunction_apply_one_ne_zero_of_quadratic {χ : DirichletCharacter ℂ N}
@@ -233,7 +237,7 @@ private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z
   simp only [← ofReal_pow, div_natCast_re, ofReal_re, mul_pow, mul_re, ofReal_im, zero_mul,
     sub_zero]
   rcases n.eq_zero_or_pos with rfl | hn
-  · simp only [pow_zero, Nat.cast_zero, div_zero, mul_zero, one_re, mul_one, add_zero, le_refl]
+  · simp
   · simp only [← mul_div_assoc, ← add_div]
     refine div_nonneg ?_ n.cast_nonneg
     rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_norm_sub_sq_re, norm_pow, hz]
@@ -246,8 +250,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
           4 * (-log (1 - χ n * n ^ (-(x + I * y)))).re +
           (-log (1 - (χ n ^ 2) * n ^ (-(x + 2 * I * y)))).re := by
   by_cases hn' : IsUnit (n : ZMod N)
-  · have ha₀ : 0 ≤ (n : ℝ) ^ (-x) := Real.rpow_nonneg n.cast_nonneg _
-    have ha₁ : (n : ℝ) ^ (-x) < 1 := by
+  · have hn : (n : ℝ) ^ (-x) < 1 := by
       rw [Real.rpow_neg (Nat.cast_nonneg n), inv_lt_one_iff₀]
       exact .inr <| Real.one_lt_rpow (mod_cast one_lt_two.trans_le hn) <| zero_lt_one.trans hx
     have hz : ‖χ n * (n : ℂ) ^ (-(I * y))‖ = 1 := by
@@ -256,7 +259,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
       simp only [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
-    convert re_log_comb_nonneg' ha₀ ha₁ hz using 6
+    convert re_log_comb_nonneg' (by positivity) hn hz using 6
     · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
       rw [neg_add, cpow_add _ _ <| mod_cast by lia, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
@@ -416,6 +419,74 @@ lemma _root_.riemannZeta_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hs : 1 ≤ s.re) :
   rcases eq_or_ne s 1 with rfl | hs₀
   · exact riemannZeta_one_ne_zero
   · exact LFunction_modOne_eq (χ := 1) ▸ LFunction_ne_zero_of_one_le_re _ (.inr hs₀) hs
+
+/-- The completed `L`-function of a Dirichlet character does not vanish for `1 ≤ re s`,
+except when `χ` is trivial and `s = 1`. -/
+theorem completedLFunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 ∨ s ≠ 1)
+    (hs : 1 ≤ s.re) : completedLFunction χ s ≠ 0 :=
+  fun _ ↦ LFunction_ne_zero_of_one_le_re χ hχs hs
+    (by grind [zero_re, LFunction_eq_completed_div_gammaFactor])
+
+variable {χ}
+
+/-- The root numbers of a primitive Dirichlet character and of its inverse multiply to `1`.
+-/
+theorem rootNumber_mul_rootNumber_inv (hχ : χ.IsPrimitive) :
+    rootNumber χ * rootNumber χ⁻¹ = 1 := by
+  have : completedLFunction χ 2 ≠ 0 :=
+    completedLFunction_ne_zero_of_one_le_re χ (by grind) (by simp)
+  have : completedLFunction χ 2
+      = (N : ℂ) ^ (-(3 / 2 : ℂ)) * rootNumber χ * completedLFunction χ⁻¹ (-1) := by
+    convert hχ.completedLFunction_one_sub (-1) <;> norm_num
+  have : completedLFunction χ⁻¹ (-1)
+      = (N : ℂ) ^ (3 / 2 : ℂ) * rootNumber χ⁻¹ * completedLFunction χ 2 := by
+    convert hχ.inv.completedLFunction_one_sub 2 <;> norm_num
+  grind [cpow_neg]
+
+theorem rootNumber_ne_zero (hχ : χ.IsPrimitive) : rootNumber χ ≠ 0 := by
+  grind [rootNumber_mul_rootNumber_inv]
+
+theorem norm_gaussSum_inv (ψ : AddChar (ZMod N) ℂ) : ‖gaussSum χ⁻¹ ψ‖ = ‖gaussSum χ ψ‖ := by
+  simp [gaussSum_inv_eq_conj]
+
+/-- **The root number of a primitive Dirichlet character has absolute value one.** -/
+theorem norm_rootNumber (hχ : χ.IsPrimitive) : ‖rootNumber χ‖ = 1 := by
+  have : ‖rootNumber χ‖ = ‖rootNumber χ⁻¹‖ := by simp [rootNumber, -pow_ite, χ.norm_gaussSum_inv]
+  have : ‖rootNumber χ‖ * ‖rootNumber χ⁻¹‖ = 1 := by
+    simp [← norm_mul, rootNumber_mul_rootNumber_inv hχ]
+  nlinarith [norm_nonneg (rootNumber χ)]
+
+/-- **The Gauss sum of a primitive Dirichlet character has absolute value `√N`.** -/
+theorem norm_gaussSum_stdAddChar (hχ : χ.IsPrimitive) :
+    ‖gaussSum χ ZMod.stdAddChar‖ = .sqrt N := by
+  suffices ‖gaussSum χ ZMod.stdAddChar‖ / .sqrt N = ‖rootNumber χ‖ by grind [norm_rootNumber]
+  simp [rootNumber, -pow_ite, norm_natCast_cpow_of_pos, NeZero.pos, Real.sqrt_eq_rpow]
+
+/-- **The zeros of a primitive Dirichlet `L`-function in the closed left half-plane `re s ≤ 0`
+are exactly those of its archimedean Gamma factor**, with the sole exception
+of `s = 0` for the trivial character. -/
+theorem LFunction_eq_zero_iff_of_re_nonpos (hχ : χ.IsPrimitive) {s : ℂ} (hs : s.re ≤ 0) :
+    LFunction χ s = 0 ↔ χ.gammaFactor s = 0 ∧ (N ≠ 1 ∨ s ≠ 0):= by
+  have := NeZero.ne N
+  by_cases hχs : χ = 1 ∧ s = 0
+  · rw [hχs.1, hχs.2, ← changeLevel_one (d := 1), LFunction_changeLevel,
+      gammaFactor_eq_zero_iff_of_even] <;>
+      simp [LFunction_modOne_eq, riemannZeta_zero, this]
+  have : s ≠ 0 ∨ N ≠ 1 := by contrapose! hχs; simp_all [level_one']
+  suffices completedLFunction χ (1 - (1 - s)) ≠ 0 by grind [LFunction_eq_completed_div_gammaFactor]
+  rw [hχ.completedLFunction_one_sub]
+  apply_rules (transparency := .reducible) [mul_ne_zero, rootNumber_ne_zero,
+    completedLFunction_ne_zero_of_one_le_re]
+  <;> grind [cpow_eq_zero_iff, Nat.cast_eq_zero, sub_re, one_re, inv_eq_one, sub_ne_zero]
+
+/-- **The zeros of `ζ` in the closed left half-plane `re s ≤ 0` are exactly the trivial ones**. -/
+theorem _root_.riemannZeta_eq_zero_iff_of_re_nonpos {s : ℂ} (hs : s.re ≤ 0) :
+    riemannZeta s = 0 ↔ ∃ n : ℕ, s = -2 * (n + 1) := by
+  rw [← LFunction_modOne_eq (χ := 1), LFunction_eq_zero_iff_of_re_nonpos
+    isPrimitive_one_level_one hs, gammaFactor_eq_zero_iff_of_even (by simp)]
+  constructor
+  · rintro ⟨⟨n, rfl⟩, _⟩; exact ⟨n - 1, by simp_all; norm_cast; grind⟩
+  · rintro ⟨n, rfl⟩; exact ⟨⟨n + 1, by norm_cast⟩, by grind⟩
 
 end nonvanishing
 

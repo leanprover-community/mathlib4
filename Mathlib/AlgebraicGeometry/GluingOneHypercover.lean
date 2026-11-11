@@ -5,10 +5,7 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Gluing
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
-public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
-public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
 # The 1-hypercover of a glue data
@@ -22,7 +19,6 @@ for sections over `D.glued` of a sheaf of types over the big Zariski site.
 
 This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
-
 -/
 
 @[expose] public section
@@ -63,18 +59,18 @@ noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued w
 section
 
 variable {F : Sheaf Scheme.zariskiTopology (Type v)}
-  (s : ∀ (j : D.J), F.val.obj (op (D.U j)))
-  (h : ∀ (i j : D.J), F.val.map (D.f i j).op (s i) =
-    F.val.map ((D.f j i).op ≫ (D.t i j).op) (s j))
+  (s : ∀ (j : D.J), F.obj.obj (op (D.U j)))
+  (h : ∀ (i j : D.J), F.obj.map (D.f i j).op (s i) =
+    F.obj.map ((D.f j i).op ≫ (D.t i j).op) (s j))
 
 /-- Constructor for sections over `D.glued` of a sheaf of types on the big Zariski site. -/
-noncomputable def sheafValGluedMk : F.val.obj (op D.glued) :=
+noncomputable def sheafValGluedMk : F.obj.obj (op D.glued) :=
   Multifork.IsLimit.sectionsEquiv (D.oneHypercover.isLimitMultifork F)
     { val := s
       property := fun _ ↦ h _ _ }
 
 @[simp]
-lemma sheafValGluedMk_val (j : D.J) : F.val.map (D.ι j).op (D.sheafValGluedMk s h) = s j :=
+lemma sheafValGluedMk_val (j : D.J) : F.obj.map (D.ι j).op (D.sheafValGluedMk s h) = s j :=
   Multifork.IsLimit.sectionsEquiv_apply_val (D.oneHypercover.isLimitMultifork F) _ _
 
 end

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.SModEq.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise lemmas for modular equivalence
 
@@ -18,8 +21,6 @@ of modules or rings.
 public section
 
 open Submodule
-
-open Polynomial
 
 variable {R : Type*} [Ring R] {I : Ideal R}
 variable {M : Type*} [AddCommGroup M] [Module R M] {U : Submodule R M}

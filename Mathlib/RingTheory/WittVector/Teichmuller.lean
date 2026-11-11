@@ -42,7 +42,7 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 The `0`-th coefficient of `teichmullerFun p r` is `r`, and all others are `0`.
 -/
 def teichmullerFun (r : R) : 𝕎 R :=
-  ⟨fun n => if n = 0 then r else 0⟩
+  mk p fun n => if n = 0 then r else 0
 
 /-!
 ## `teichmuller` is a monoid homomorphism
@@ -59,7 +59,6 @@ satisfy the ring axioms.
 -/
 
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
     ghostComponent n (teichmullerFun p r) = r ^ p ^ n := by
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.sum_eq_single 0, pow_zero, one_mul,

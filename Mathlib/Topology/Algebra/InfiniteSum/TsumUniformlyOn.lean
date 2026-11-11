@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Differentiability of sum of functions
@@ -19,12 +20,11 @@ We prove some `HasSumUniformlyOn` versions of theorems from
 Alongside this we prove `derivWithin_tsum` which states that the derivative of a series of functions
 is the sum of the derivatives, under suitable conditions we also prove an `iteratedDerivWithin`
 version.
-
 -/
 
 public section
 
-open Set Metric TopologicalSpace Function Filter
+open Set TopologicalSpace Filter
 
 open scoped Topology NNReal
 
@@ -110,4 +110,4 @@ theorem iteratedDerivWithin_tsum {f : ι → 𝕜 → F} (m : ℕ) (hs : IsOpen 
       · simp [hm2, hsum r hr]
       · exact ((h m (by lia) (by lia)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableLocallyUniformlyOn_congr
-        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by lia) (by lia))
+        (fun _ _ ht ↦ by rw [iteratedDerivWithin_succ]) (h (m + 1) (by lia) (by lia))

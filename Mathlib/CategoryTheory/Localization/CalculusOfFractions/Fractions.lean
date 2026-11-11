@@ -29,7 +29,6 @@ The lemmas in this file are phrased with data that is bundled into structures li
 with "unbundled data". However, this would require introducing 4 or 5 variables instead
 of one. It is also very convenient to use dot notation.
 Many definitions have been made reducible so as to ease rewrites when this API is used.
-
 -/
 
 @[expose] public section
@@ -55,6 +54,9 @@ structure LeftFraction₂ (X Y : C) where
   /-- the condition that the denominator belongs to the given morphism property -/
   hs : W s
 
+instance {X Y : C} (z : W.LeftFraction₂ X Y) : IsIso (L.map z.s) :=
+  Localization.inverts L W _ z.hs
+
 /-- This structure contains the data of three left fractions for
 `W : MorphismProperty C` that have the same "denominator". -/
 structure LeftFraction₃ (X Y : C) where
@@ -71,6 +73,9 @@ structure LeftFraction₃ (X Y : C) where
   /-- the condition that the denominator belongs to the given morphism property -/
   hs : W s
 
+instance {X Y : C} (z : W.LeftFraction₃ X Y) : IsIso (L.map z.s) :=
+  Localization.inverts L W _ z.hs
+
 /-- This structure contains the data of two right fractions for
 `W : MorphismProperty C` that have the same "denominator". -/
 structure RightFraction₂ (X Y : C) where
@@ -84,6 +89,9 @@ structure RightFraction₂ (X Y : C) where
   f : X' ⟶ Y
   /-- the numerator of the second right fraction -/
   f' : X' ⟶ Y
+
+instance {X Y : C} (z : W.RightFraction₂ X Y) : IsIso (L.map z.s) :=
+  Localization.inverts L W _ z.hs
 
 variable {W}
 
@@ -274,8 +282,6 @@ lemma exists_leftFraction₂ {X Y : C} (f f' : L.obj X ⟶ L.obj Y) :
       f' := φ'.f ≫ α.s
       s := φ'.s ≫ α.s
       hs := W.comp_mem _ _ φ'.hs α.hs }
-  have := inverts L W _ φ'.hs
-  have := inverts L W _ α.hs
   have : IsIso (L.map (φ'.s ≫ α.s)) := by
     rw [L.map_comp]
     infer_instance
@@ -303,8 +309,6 @@ lemma exists_leftFraction₃ {X Y : C} (f f' f'' : L.obj X ⟶ L.obj Y) :
       f'' := β.f ≫ γ.s
       s := β.s ≫ γ.s
       hs := W.comp_mem _ _ β.hs γ.hs }
-  have := inverts L W _ β.hs
-  have := inverts L W _ γ.hs
   have : IsIso (L.map (β.s ≫ γ.s)) := by
     rw [L.map_comp]
     infer_instance
@@ -318,5 +322,18 @@ lemma exists_leftFraction₃ {X Y : C} (f f' f'' : L.obj X ⟶ L.obj Y) :
     rw [LeftFraction.map_comp_map_s_assoc, LeftFraction.map_comp_map_s, L.map_comp]
 
 end Localization
+
+lemma Functor.faithful_of_comp_of_hasLeftCalculusOfFractions
+    {E : Type*} [Category* E] (F : D ⥤ E)
+    [W.HasLeftCalculusOfFractions]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (f g : X₁ ⟶ X₂), F.map (L.map f) = F.map (L.map g) → L.map f = L.map g) :
+    F.Faithful := by
+  have := Localization.essSurj L W
+  refine F.faithful_of_comp_essSurj L (fun X₁ X₂ f g hfg ↦ ?_)
+  obtain ⟨φ, rfl, rfl⟩ := Localization.exists_leftFraction₂ L W f g
+  rw [← cancel_mono (L.map φ.s), φ.fst.map_comp_map_s L, φ.snd.map_comp_map_s L]
+  apply h
+  simpa only [← F.map_comp, φ.fst.map_comp_map_s, φ.snd.map_comp_map_s] using
+    hfg =≫ F.map (L.map φ.s)
 
 end CategoryTheory

@@ -7,14 +7,12 @@ module
 
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
-public import Mathlib.Data.Set.Basic
 
 /-!
 # The functor from `Set X` to types
 
 Given `X : Type u`, we define the functor `Set.functorToTypes : Set X ⥤ Type u`
 which sends `A : Set X` to its underlying type.
-
 -/
 
 @[expose] public section
@@ -30,6 +28,6 @@ to its underlying type. -/
 @[simps obj map]
 def functorToTypes {X : Type u} : Set X ⥤ Type u where
   obj S := S
-  map {S T} f := fun ⟨x, hx⟩ ↦ ⟨x, leOfHom f hx⟩
+  map {S T} f := ↾fun ⟨x, hx⟩ ↦ ⟨x, leOfHom f hx⟩
 
 end Set

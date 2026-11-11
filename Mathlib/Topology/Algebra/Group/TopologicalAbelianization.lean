@@ -6,8 +6,9 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.GroupTheory.Commutator.Basic
-public import Mathlib.Tactic.Group
-public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Subgroup
+
+import Mathlib.Tactic.Group
 
 /-!
 # The topological abelianization of a group.
@@ -25,10 +26,11 @@ This file defines the topological abelianization of a topological group.
 
 ## Tags
 group, topological abelianization
-
 -/
 
-@[expose] public section
+public section
+
+open scoped commutatorElement
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered monoids
 
@@ -21,12 +24,12 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type*} [CommMonoid α] [PartialOrder α]
+variable {α : Type u} {β : Type*} [CommMonoid α] [Preorder α]
 
 /-- Pullback an `IsOrderedMonoid` under an injective map. -/
 @[to_additive /-- Pullback an `IsOrderedAddMonoid` under an injective map. -/]
 lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β]
-    [PartialOrder β] (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
+    [Preorder β] (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
     IsOrderedMonoid β where
   mul_le_mul_left a b ab c := le.1 <| by rw [mul, mul]; grw [le.2 ab]
@@ -42,7 +45,7 @@ lemma StrictMono.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β] [LinearOrd
 @[to_additive Function.Injective.isOrderedCancelAddMonoid
     /-- Pullback an `IsOrderedCancelAddMonoid` under an injective map. -/]
 lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β]
-    [PartialOrder β]
+    [Preorder β]
     (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
     IsOrderedCancelMonoid β where

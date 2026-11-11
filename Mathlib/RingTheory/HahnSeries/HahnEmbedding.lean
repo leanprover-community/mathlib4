@@ -6,14 +6,13 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Algebra.Order.Module.HahnEmbedding
-public import Mathlib.Algebra.Module.LinearMap.Rat
-public import Mathlib.Algebra.Field.Rat
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Real.Embedding
-public import Mathlib.GroupTheory.DivisibleHull
+
+import Mathlib.Algebra.Module.LinearMap.Rat
+import Mathlib.Basic.Real.Embedding
+import Mathlib.GroupTheory.DivisibleHull
 
 /-!
-
 # Hahn embedding theorem
 
 In this file, we prove the Hahn embedding theorem: every linearly ordered abelian group
@@ -23,10 +22,9 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 ## References
 
 * [A. H. Clifford, *Note on Hahn’s theorem on ordered Abelian groups.*][clifford1954]
-
 -/
 
-@[expose] public section
+public section
 
 open ArchimedeanClass HahnSeries
 
@@ -35,7 +33,6 @@ variable (M : Type*) [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 section Module
 variable [Module ℚ M] [IsOrderedModule ℚ M]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Nonempty (HahnEmbedding.Seed ℚ M ℝ) := by
   obtain ⟨strata⟩ : Nonempty (HahnEmbedding.ArchimedeanStrata ℚ M) := inferInstance
   choose f hf using fun c ↦ Archimedean.exists_orderAddMonoidHom_real_injective (strata.stratum c)
@@ -51,7 +48,6 @@ theorem hahnEmbedding_isOrderedModule_rat :
 
 end Module
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Hahn embedding theorem**
 

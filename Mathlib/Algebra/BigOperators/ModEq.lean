@@ -5,8 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Data.ZMod.Basic
+
+import Mathlib.Algebra.BigOperators.Ring.Finset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Congruence modulo natural and integer numbers for big operators
@@ -72,7 +76,7 @@ theorem multisetSum_zero {s : Multiset ℕ} (h : ∀ x ∈ s, x ≡ 0 [MOD n]) :
 @[gcongr]
 protected theorem prod {s : Finset α} (h : ∀ x ∈ s, f x ≡ g x [MOD n]) :
     (∏ x ∈ s, f x) ≡ ∏ x ∈ s, g x [MOD n] :=
-  .multisetProd_map (s := s.1) h
+  .multisetProd_map (s := s.val) h
 
 theorem prod_one {s : Finset α} (h : ∀ x ∈ s, f x ≡ 1 [MOD n]) : ∏ x ∈ s, f x ≡ 1 [MOD n] := by
   simpa using ModEq.prod h
@@ -80,7 +84,7 @@ theorem prod_one {s : Finset α} (h : ∀ x ∈ s, f x ≡ 1 [MOD n]) : ∏ x �
 @[gcongr]
 protected theorem sum {s : Finset α} (h : ∀ x ∈ s, f x ≡ g x [MOD n]) :
     (∑ x ∈ s, f x) ≡ ∑ x ∈ s, g x [MOD n] :=
-  .multisetSum_map (s := s.1) h
+  .multisetSum_map (s := s.val) h
 
 theorem sum_zero {s : Finset α} (h : ∀ x ∈ s, f x ≡ 0 [MOD n]) : ∑ x ∈ s, f x ≡ 0 [MOD n] := by
   simpa using ModEq.sum h
@@ -123,7 +127,6 @@ theorem listProd_map (h : ∀ x ∈ l, f x ≡ g x [ZMOD n]) :
     (l.map f).prod ≡ (l.map g).prod [ZMOD n] := by
   induction l <;> aesop (add unsafe ModEq.mul)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem listProd_map_one (h : ∀ x ∈ l, f x ≡ 1 [ZMOD n]) : (l.map f).prod ≡ 1 [ZMOD n] :=
   (listProd_map h).trans <| by simp
 
@@ -144,7 +147,6 @@ theorem multisetProd_map {s : Multiset α} (h : ∀ x ∈ s, f x ≡ g x [ZMOD n
   rcases s with ⟨l⟩
   simpa using listProd_map (l := l) h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem multisetProd_map_one {s : Multiset α} (h : ∀ x ∈ s, f x ≡ 1 [ZMOD n]) :
     (s.map f).prod ≡ 1 [ZMOD n] := by
   simpa using multisetProd_map h
@@ -167,7 +169,7 @@ theorem multisetSum_zero {s : Multiset ℤ} (h : ∀ x ∈ s, x ≡ 0 [ZMOD n]) 
 @[gcongr]
 protected theorem prod {s : Finset α} (h : ∀ x ∈ s, f x ≡ g x [ZMOD n]) :
     (∏ x ∈ s, f x) ≡ ∏ x ∈ s, g x [ZMOD n] :=
-  .multisetProd_map (s := s.1) h
+  .multisetProd_map (s := s.val) h
 
 theorem prod_one {s : Finset α} (h : ∀ x ∈ s, f x ≡ 1 [ZMOD n]) : ∏ x ∈ s, f x ≡ 1 [ZMOD n] := by
   simpa using ModEq.prod h
@@ -175,11 +177,11 @@ theorem prod_one {s : Finset α} (h : ∀ x ∈ s, f x ≡ 1 [ZMOD n]) : ∏ x �
 @[gcongr]
 protected theorem sum {s : Finset α} (h : ∀ x ∈ s, f x ≡ g x [ZMOD n]) :
     (∑ x ∈ s, f x) ≡ ∑ x ∈ s, g x [ZMOD n] :=
-  .multisetSum_map (s := s.1) h
+  .multisetSum_map (s := s.val) h
 
 protected theorem sum_zero {s : Finset α} (h : ∀ x ∈ s, f x ≡ 0 [ZMOD n]) :
     (∑ x ∈ s, f x) ≡ 0 [ZMOD n] :=
-  .multisetSum_map_zero (s := s.1) h
+  .multisetSum_map_zero (s := s.val) h
 
 end ModEq
 

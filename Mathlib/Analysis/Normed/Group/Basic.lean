@@ -6,9 +6,11 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Defs
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.MetricSpace.Basic
+
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: basic theory
@@ -23,10 +25,12 @@ normed group
 @[expose] public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {𝓕 α ι E F G : Type*}
 
 open Filter Function Metric Bornology
-open ENNReal Filter NNReal Uniformity Pointwise Topology
+open ENNReal Filter NNReal Pointwise
+
+open scoped Uniformity Topology
 
 section SeminormedGroup
 
@@ -34,25 +38,22 @@ variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
   {a a₁ a₂ b c d : E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
-theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ :=
+theorem dist_eq_norm_inv_mul (a b : E) : dist a b = ‖a⁻¹ * b‖ :=
   SeminormedGroup.dist_eq _ _
 
 @[to_additive]
-theorem dist_eq_norm_div' (a b : E) : dist a b = ‖b / a‖ := by rw [dist_comm, dist_eq_norm_div]
-
-alias dist_eq_norm := dist_eq_norm_sub
-
-alias dist_eq_norm' := dist_eq_norm_sub'
+theorem dist_eq_norm_inv_mul' (a b : E) : dist a b = ‖b⁻¹ * a‖ := by
+  rw [dist_comm, dist_eq_norm_inv_mul]
 
 @[to_additive of_forall_le_norm]
 lemma DiscreteTopology.of_forall_le_norm' (hpos : 0 < r) (hr : ∀ x : E, x ≠ 1 → r ≤ ‖x‖) :
     DiscreteTopology E :=
   .of_forall_le_dist hpos fun x y hne ↦ by
-    simp only [dist_eq_norm_div]
-    exact hr _ (div_ne_one.2 hne)
+    simp only [dist_eq_norm_inv_mul]
+    exact hr _ (by simpa [inv_mul_eq_one] using hne)
 
 @[to_additive (attr := simp)]
-theorem dist_one_right (a : E) : dist a 1 = ‖a‖ := by rw [dist_eq_norm_div, div_one]
+theorem dist_one_right (a : E) : dist a 1 = ‖a‖ := by rw [dist_eq_norm_inv_mul', inv_one, one_mul]
 
 @[to_additive]
 theorem inseparable_one_iff_norm {a : E} : Inseparable a 1 ↔ ‖a‖ = 0 := by
@@ -66,7 +67,8 @@ lemma dist_one : dist (1 : E) = norm := funext dist_one_left
 
 @[to_additive]
 theorem norm_div_rev (a b : E) : ‖a / b‖ = ‖b / a‖ := by
-  simpa only [dist_eq_norm_div] using dist_comm a b
+  rw [← dist_one, dist_eq_norm_inv_mul, dist_eq_norm_inv_mul']
+  simp
 
 @[to_additive (attr := simp) norm_neg]
 theorem norm_inv' (a : E) : ‖a⁻¹‖ = ‖a‖ := by simpa using norm_div_rev 1 a
@@ -91,12 +93,14 @@ open scoped symmDiff in
 @[to_additive]
 theorem dist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     dist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖ := by
-  rw [dist_eq_norm_div, Set.apply_mulIndicator_symmDiff norm_inv']
+  rw [dist_eq_norm_inv_mul, Set.apply_mulIndicator_symmDiff norm_inv']
+  simp only [Set.mulIndicator, mul_ite, mul_one]
+  split_ifs <;> simp
 
 /-- **Triangle inequality** for the norm. -/
 @[to_additive norm_add_le /-- **Triangle inequality** for the norm. -/]
 theorem norm_mul_le' (a b : E) : ‖a * b‖ ≤ ‖a‖ + ‖b‖ := by
-  simpa [dist_eq_norm_div] using dist_triangle a 1 b⁻¹
+  simpa [dist_eq_norm_inv_mul] using dist_triangle a⁻¹ 1 b
 
 /-- **Triangle inequality** for the norm. -/
 @[to_additive norm_add_le_of_le /-- **Triangle inequality** for the norm. -/]
@@ -114,7 +118,7 @@ lemma norm_mul₄_le' : ‖a * b * c * d‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + �
 
 @[to_additive]
 lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
-  simpa only [dist_eq_norm_div] using dist_triangle a b c
+  simpa using norm_mul_le' (a / b) (b / c)
 
 @[to_additive]
 lemma norm_le_norm_div_add (a b : E) : ‖a‖ ≤ ‖a / b‖ + ‖b‖ := by
@@ -150,7 +154,7 @@ theorem zero_lt_one_add_norm_sq' (x : E) : 0 < 1 + ‖x‖ ^ 2 := by
 
 @[to_additive]
 theorem norm_div_le (a b : E) : ‖a / b‖ ≤ ‖a‖ + ‖b‖ := by
-  simpa [dist_eq_norm_div] using dist_triangle a 1 b
+  simpa [div_eq_mul_inv] using norm_mul_le' a b⁻¹
 
 attribute [bound] norm_sub_le
 
@@ -160,30 +164,35 @@ theorem norm_div_le_of_le {r₁ r₂ : ℝ} (H₁ : ‖a₁‖ ≤ r₁) (H₂ :
 
 @[to_additive dist_le_norm_add_norm]
 theorem dist_le_norm_add_norm' (a b : E) : dist a b ≤ ‖a‖ + ‖b‖ := by
-  rw [dist_eq_norm_div]
-  apply norm_div_le
+  simpa [dist_eq_norm_inv_mul] using norm_mul_le' a⁻¹ b
 
-@[to_additive abs_norm_sub_norm_le]
-theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ := by
-  simpa [dist_eq_norm_div] using abs_dist_sub_le a b 1
+@[to_additive]
+theorem abs_norm_sub_norm_le_norm_inv_mul (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a⁻¹ * b‖ := by
+  simpa [dist_eq_norm_inv_mul] using abs_dist_sub_le a b 1
 
-@[to_additive norm_sub_norm_le]
-theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
-  (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
+@[to_additive]
+theorem norm_sub_norm_le_norm_inv_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a⁻¹ * b‖ :=
+  (le_abs_self _).trans (abs_norm_sub_norm_le_norm_inv_mul a b)
 
 @[to_additive (attr := bound)]
 theorem norm_sub_le_norm_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a * b‖ := by
   simpa using norm_mul_le' (a * b) (b⁻¹)
 
-@[to_additive dist_norm_norm_le]
-theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
-  abs_norm_sub_norm_le' a b
+@[to_additive]
+theorem dist_norm_norm_le_norm_inv_mul (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a⁻¹ * b‖ :=
+  abs_norm_sub_norm_le_norm_inv_mul a b
 
 @[to_additive]
 theorem norm_le_norm_add_norm_div' (u v : E) : ‖u‖ ≤ ‖v‖ + ‖u / v‖ := by
   rw [add_comm]
   refine (norm_mul_le' _ _).trans_eq' ?_
   rw [div_mul_cancel]
+
+@[to_additive]
+theorem norm_le_norm_add_norm_inv_mul (u v : E) : ‖u‖ ≤ ‖v‖ + ‖u⁻¹ * v‖ := by
+  rw [add_comm, ← norm_inv' v, ← norm_inv' u]
+  refine (norm_mul_le' _ _).trans_eq' ?_
+  group
 
 @[to_additive]
 theorem norm_le_norm_add_norm_div (u v : E) : ‖v‖ ≤ ‖u‖ + ‖u / v‖ := by
@@ -221,48 +230,47 @@ lemma norm_mul_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x * y‖ = �
 
 @[to_additive]
 lemma norm_div_eq_norm_right {x : E} (y : E) (h : ‖x‖ = 0) : ‖x / y‖ = ‖y‖ := by
-  apply le_antisymm ?_ ?_
-  · simpa [h] using norm_div_le x y
-  · simpa [h, norm_div_rev x y] using norm_sub_norm_le' y x
+  rw [div_eq_mul_inv, norm_mul_eq_norm_right _ h, norm_inv']
 
 @[to_additive]
 lemma norm_div_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x / y‖ = ‖x‖ := by
-  apply le_antisymm ?_ ?_
-  · simpa [h] using norm_div_le x y
-  · simpa [h] using norm_sub_norm_le' x y
+  rw [div_eq_mul_inv, norm_mul_eq_norm_left]
+  rwa [norm_inv']
 
-@[to_additive ball_eq]
-theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } :=
-  Set.ext fun a => by simp [dist_eq_norm_div]
+@[to_additive]
+theorem ball_eq_norm_inv_mul_lt (y : E) (ε : ℝ) : ball y ε = { x | ‖x⁻¹ * y‖ < ε } :=
+  Set.ext fun a => by simp [dist_eq_norm_inv_mul]
 
 @[to_additive]
 theorem ball_one_eq (r : ℝ) : ball (1 : E) r = { x | ‖x‖ < r } :=
   Set.ext fun a => by simp
 
-@[to_additive mem_ball_iff_norm]
-theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by rw [mem_ball, dist_eq_norm_div]
+@[to_additive]
+theorem mem_ball_iff_norm_inv_mul_lt : b ∈ ball a r ↔ ‖b⁻¹ * a‖ < r := by
+  rw [mem_ball, dist_eq_norm_inv_mul]
 
-@[to_additive mem_ball_iff_norm']
-theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by rw [mem_ball', dist_eq_norm_div]
+@[to_additive]
+theorem mem_ball_iff_norm_inv_mul_lt' : b ∈ ball a r ↔ ‖a⁻¹ * b‖ < r := by
+  rw [mem_ball', dist_eq_norm_inv_mul]
 
 @[to_additive]
 theorem mem_ball_one_iff : a ∈ ball (1 : E) r ↔ ‖a‖ < r := by rw [mem_ball, dist_one_right]
 
-@[to_additive mem_closedBall_iff_norm]
-theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
-  rw [mem_closedBall, dist_eq_norm_div]
+@[to_additive]
+theorem mem_closedBall_iff_norm_inv_mul_le : b ∈ closedBall a r ↔ ‖b⁻¹ * a‖ ≤ r := by
+  rw [mem_closedBall, dist_eq_norm_inv_mul]
 
 @[to_additive]
 theorem mem_closedBall_one_iff : a ∈ closedBall (1 : E) r ↔ ‖a‖ ≤ r := by
   rw [mem_closedBall, dist_one_right]
 
-@[to_additive mem_closedBall_iff_norm']
-theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r := by
-  rw [mem_closedBall', dist_eq_norm_div]
+@[to_additive]
+theorem mem_closedBall_iff_norm_inv_mul_le' : b ∈ closedBall a r ↔ ‖a⁻¹ * b‖ ≤ r := by
+  rw [mem_closedBall', dist_eq_norm_inv_mul]
 
 @[to_additive norm_le_of_mem_closedBall]
 theorem norm_le_of_mem_closedBall' (h : b ∈ closedBall a r) : ‖b‖ ≤ ‖a‖ + r :=
-  (norm_le_norm_add_norm_div' _ _).trans <| add_le_add_right (by rwa [← dist_eq_norm_div]) _
+  (norm_le_norm_add_norm_inv_mul b a).trans (by simp [mem_closedBall_iff_norm_inv_mul_le.1 h])
 
 @[to_additive norm_le_norm_add_const_of_dist_le]
 theorem norm_le_norm_add_const_of_dist_le' : dist a b ≤ r → ‖a‖ ≤ ‖b‖ + r :=
@@ -270,11 +278,11 @@ theorem norm_le_norm_add_const_of_dist_le' : dist a b ≤ r → ‖a‖ ≤ ‖b
 
 @[to_additive norm_lt_of_mem_ball]
 theorem norm_lt_of_mem_ball' (h : b ∈ ball a r) : ‖b‖ < ‖a‖ + r :=
-  (norm_le_norm_add_norm_div' _ _).trans_lt <| add_lt_add_right (by rwa [← dist_eq_norm_div]) _
+  (norm_le_norm_add_norm_inv_mul b a).trans_lt (by simp [mem_ball_iff_norm_inv_mul_lt.1 h])
 
 @[to_additive]
 theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w‖ ≤ ‖u / v‖ := by
-  simpa only [div_div_div_cancel_right] using norm_sub_norm_le' (u / w) (v / w)
+  simpa using norm_mul_le' (u / v) (v / w)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul]
 lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E) :
@@ -282,7 +290,6 @@ lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E)
   simpa [-tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
     using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive norm_add_sub_norm_sub_le_two_mul_min]
 lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * min ‖u‖ ‖v‖ := by
@@ -292,8 +299,9 @@ lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (
   exact norm_mul_sub_norm_div_le_two_mul _ _
 
 -- Higher priority to fire before `mem_sphere`.
-@[to_additive (attr := simp high) mem_sphere_iff_norm]
-theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
+@[to_additive]
+theorem mem_sphere_iff_norm_inv_mul_eq : b ∈ sphere a r ↔ ‖b⁻¹ * a‖ = r := by
+  simp [dist_eq_norm_inv_mul]
 
 @[to_additive] -- `simp` can prove this
 theorem mem_sphere_one_iff_norm : a ∈ sphere (1 : E) r ↔ ‖a‖ = r := by simp
@@ -324,32 +332,32 @@ theorem coe_normGroupSeminorm : ⇑(normGroupSeminorm E) = norm :=
 variable {E}
 
 @[to_additive]
-theorem NormedCommGroup.tendsto_nhds_one {f : α → E} {l : Filter α} :
+theorem NormedGroup.tendsto_nhds_one {f : α → E} {l : Filter α} :
     Tendsto f l (𝓝 1) ↔ ∀ ε > 0, ∀ᶠ x in l, ‖f x‖ < ε :=
   Metric.tendsto_nhds.trans <| by simp only [dist_one_right]
 
 @[to_additive]
-theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
-    Tendsto f (𝓝 x) (𝓝 y) ↔ ∀ ε > 0, ∃ δ > 0, ∀ x', ‖x' / x‖ < δ → ‖f x' / y‖ < ε := by
-  simp_rw [Metric.tendsto_nhds_nhds, dist_eq_norm_div]
+theorem NormedGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
+    Tendsto f (𝓝 x) (𝓝 y) ↔ ∀ ε > 0, ∃ δ > 0, ∀ x', ‖x'⁻¹ * x‖ < δ → ‖(f x')⁻¹ * y‖ < ε := by
+  simp_rw [Metric.tendsto_nhds_nhds, dist_eq_norm_inv_mul]
 
 @[to_additive]
-theorem NormedCommGroup.nhds_basis_norm_lt (x : E) :
-    (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y / x‖ < ε } := by
-  simp_rw [← ball_eq']
+theorem NormedGroup.nhds_basis_norm_lt (x : E) :
+    (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y⁻¹ * x‖ < ε } := by
+  simp_rw [← ball_eq_norm_inv_mul_lt]
   exact Metric.nhds_basis_ball
 
 @[to_additive]
-theorem NormedCommGroup.nhds_one_basis_norm_lt :
+theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
-  convert NormedCommGroup.nhds_basis_norm_lt (1 : E)
+  convert NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
 
 @[to_additive]
-theorem NormedCommGroup.uniformity_basis_dist :
-    (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst / p.snd‖ < ε } := by
-  convert Metric.uniformity_basis_dist (α := E) using 1
-  simp [dist_eq_norm_div]
+theorem NormedGroup.uniformity_basis_dist :
+    (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst⁻¹ * p.snd‖ < ε } := by
+  convert Metric.uniformity_basis_dist (α := E)
+  simp [dist_eq_norm_inv_mul]
 
 open Finset
 
@@ -360,95 +368,141 @@ section NNNorm
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
-  ⟨fun a => ⟨‖a‖, norm_nonneg' a⟩⟩
+  ⟨fun a => .mk ‖a‖ (norm_nonneg' a)⟩
 
-@[to_additive (attr := simp, norm_cast) coe_nnnorm]
-theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
+@[to_additive (attr := simp, norm_cast, basify_op) coe_nnNorm, basify_op]
+theorem coe_nnNorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 
-@[to_additive (attr := simp) coe_comp_nnnorm]
-theorem coe_comp_nnnorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnnorm : E → ℝ≥0) = norm :=
+@[to_additive (attr := deprecated (since := "2026-10-31")) coe_nnnorm]
+alias coe_nnnorm' := coe_nnNorm'
+
+@[to_additive (attr := simp) coe_comp_nnNorm]
+theorem coe_comp_nnNorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnNorm : E → ℝ≥0) = norm :=
   rfl
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) coe_comp_nnnorm]
+alias coe_comp_nnnorm' := coe_comp_nnNorm'
 
 @[to_additive (attr := simp) norm_toNNReal]
 theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
   @Real.toNNReal_coe ‖a‖₊
 
-@[to_additive (attr := simp) toReal_enorm]
-lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
+@[to_additive (attr := simp) toReal_eNorm]
+lemma toReal_eNorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [eNorm]
+
+@[to_additive (attr := deprecated (since := "2026-11-06")) toReal_enorm]
+alias toReal_enorm' := toReal_eNorm'
 
 @[to_additive (attr := simp) ofReal_norm]
-lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
-  simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
+lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
 
-@[to_additive enorm_eq_iff_norm_eq]
-theorem enorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm := ofReal_norm
+
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm' := ofReal_norm'
+
+@[to_additive eNorm_eq_iff_norm_eq]
+theorem eNorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
   simp only [← ofReal_norm']
   refine ⟨fun h ↦ ?_, fun h ↦ by congr⟩
   exact (Real.toNNReal_eq_toNNReal_iff (norm_nonneg' _) (norm_nonneg' _)).mp (ENNReal.coe_inj.mp h)
 
-@[to_additive enorm_le_iff_norm_le]
-theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ ‖x‖ ≤ ‖y‖ := by
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_eq_iff_norm_eq]
+alias enorm'_eq_iff_norm_eq := eNorm'_eq_iff_norm_eq
+
+@[to_additive eNorm_le_iff_norm_le]
+theorem eNorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ ‖x‖ ≤ ‖y‖ := by
   simp only [← ofReal_norm']
   refine ⟨fun h ↦ ?_, fun h ↦ by gcongr⟩
   rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg' _)] at h
   exact h
 
-@[to_additive]
-theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
-  NNReal.eq <| dist_eq_norm_div _ _
-
-alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
-
-@[to_additive (attr := simp)]
-theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
-
-@[to_additive (attr := simp)]
-lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nndist, nndist_one_right, enorm]
-
-@[to_additive (attr := simp) nnnorm_zero]
-theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_le_iff_norm_le]
+alias enorm'_le_iff_norm_le := eNorm'_le_iff_norm_le
 
 @[to_additive]
-theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
+theorem nnDist_eq_nnNorm_inv_mul (a b : E) : nndist a b = ‖a⁻¹ * b‖₊ :=
+  NNReal.eq <| dist_eq_norm_inv_mul _ _
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nndist_eq_nnnorm_inv_mul := nnDist_eq_nnNorm_inv_mul
+
+@[to_additive (attr := simp) nnNorm_neg]
+theorem nnNorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
+  NNReal.eq <| norm_inv' a
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_neg]
+alias nnnorm_inv' := nnNorm_inv'
+
+@[to_additive (attr := simp)]
+theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by
+  simp [nnDist_eq_nnNorm_inv_mul]
+
+@[to_additive (attr := simp)]
+lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nndist, nndist_one_right, eNorm]
+
+@[to_additive (attr := simp) nnNorm_zero]
+theorem nnNorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_zero]
+alias nnnorm_one' := nnNorm_one'
+
+@[to_additive]
+theorem ne_one_of_nnNorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
   mt <| by
     rintro rfl
-    exact nnnorm_one'
+    exact nnNorm_one'
 
-@[to_additive nnnorm_add_le]
-theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias ne_one_of_nnnorm_ne_zero := ne_one_of_nnNorm_ne_zero
+
+@[to_additive nnNorm_add_le]
+theorem nnNorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_add_le]
+alias nnnorm_mul_le' := nnNorm_mul_le'
 
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
   | 0 => by simp
   | n + 1 => by simpa [pow_succ, add_mul] using norm_mul_le_of_le' norm_pow_le_mul_norm le_rfl
 
-@[to_additive nnnorm_nsmul_le]
-lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
-  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using norm_pow_le_mul_norm
+@[to_additive nnNorm_nsmul_le]
+lemma nnNorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
+  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using! norm_pow_le_mul_norm
 
-@[to_additive (attr := simp) nnnorm_neg]
-theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
-  NNReal.eq <| norm_inv' a
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_nsmul_le]
+alias nnnorm_pow_le_mul_norm := nnNorm_pow_le_mul_norm
 
-@[to_additive (attr := simp) nnnorm_abs_zsmul]
-theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
+@[to_additive (attr := simp) nnNorm_abs_zsmul]
+theorem nnNorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_zpow_abs a n
 
-@[to_additive (attr := simp) nnnorm_natAbs_smul]
-theorem nnnorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n‖₊ :=
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_abs_zsmul]
+alias nnnorm_zpow_abs := nnNorm_zpow_abs
+
+@[to_additive (attr := simp) nnNorm_natAbs_smul]
+theorem nnNorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_pow_natAbs a n
 
-@[to_additive nnnorm_isUnit_zsmul]
-theorem nnnorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_natAbs_smul]
+alias nnnorm_pow_natAbs := nnNorm_pow_natAbs
+
+@[to_additive nnNorm_isUnit_zsmul]
+theorem nnNorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_zpow_isUnit a hn
 
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_isUnit_zsmul]
+alias nnnorm_zpow_isUnit := nnNorm_zpow_isUnit
+
 @[simp]
-theorem nnnorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
+theorem nnNorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_isUnit_zsmul a n.isUnit
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_units_zsmul := nnNorm_units_zsmul
+
 @[to_additive (attr := simp)]
-theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
+theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nnDist_eq_nnNorm_inv_mul]
 
 @[to_additive (attr := simp)]
 theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
@@ -461,58 +515,96 @@ theorem nndist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
   NNReal.eq <| dist_mulIndicator s t f x
 
 @[to_additive]
-theorem nnnorm_div_le (a b : E) : ‖a / b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
+theorem nnNorm_div_le (a b : E) : ‖a / b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_div_le _ _
 
-@[to_additive]
-lemma enorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
-  simpa [enorm, ← ENNReal.coe_add] using nnnorm_div_le a b
-
-@[to_additive nndist_nnnorm_nnnorm_le]
-theorem nndist_nnnorm_nnnorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
-  NNReal.coe_le_coe.1 <| dist_norm_norm_le' a b
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_div_le := nnNorm_div_le
 
 @[to_additive]
-theorem nnnorm_le_nnnorm_add_nnnorm_div (a b : E) : ‖b‖₊ ≤ ‖a‖₊ + ‖a / b‖₊ :=
+lemma eNorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
+  simpa [eNorm, ← ENNReal.coe_add] using nnNorm_div_le a b
+
+@[to_additive (attr := deprecated (since := "2026-11-06"))] alias enorm_div_le := eNorm_div_le
+
+@[to_additive]
+theorem nnDist_nnNorm_nnNorm_le_nnNorm_inv_mul (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a⁻¹ * b‖₊ :=
+  NNReal.coe_le_coe.1 <| dist_norm_norm_le_norm_inv_mul a b
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nndist_nnnorm_nnnorm_le_nnnorm_inv_mul := nnDist_nnNorm_nnNorm_le_nnNorm_inv_mul
+
+@[to_additive]
+theorem nnNorm_le_nnNorm_add_nnNorm_div (a b : E) : ‖b‖₊ ≤ ‖a‖₊ + ‖a / b‖₊ :=
   norm_le_norm_add_norm_div _ _
 
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_le_nnnorm_add_nnnorm_div := nnNorm_le_nnNorm_add_nnNorm_div
+
 @[to_additive]
-theorem nnnorm_le_nnnorm_add_nnnorm_div' (a b : E) : ‖a‖₊ ≤ ‖b‖₊ + ‖a / b‖₊ :=
+theorem nnNorm_le_nnNorm_add_nnNorm_div' (a b : E) : ‖a‖₊ ≤ ‖b‖₊ + ‖a / b‖₊ :=
   norm_le_norm_add_norm_div' _ _
 
-alias nnnorm_le_insert' := nnnorm_le_nnnorm_add_nnnorm_sub'
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_le_nnnorm_add_nnnorm_div' := nnNorm_le_nnNorm_add_nnNorm_div'
 
-alias nnnorm_le_insert := nnnorm_le_nnnorm_add_nnnorm_sub
+alias nnNorm_le_insert' := nnNorm_le_nnNorm_add_nnNorm_sub'
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_le_insert' := nnNorm_le_insert'
+
+alias nnNorm_le_insert := nnNorm_le_nnNorm_add_nnNorm_sub
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_le_insert := nnNorm_le_insert
 
 @[to_additive]
-theorem nnnorm_le_mul_nnnorm_add (a b : E) : ‖a‖₊ ≤ ‖a * b‖₊ + ‖b‖₊ :=
+theorem nnNorm_le_mul_nnNorm_add (a b : E) : ‖a‖₊ ≤ ‖a * b‖₊ + ‖b‖₊ :=
   norm_le_mul_norm_add _ _
 
-/-- An analogue of `nnnorm_le_mul_nnnorm_add` for the multiplication from the left. -/
-@[to_additive /-- An analogue of `nnnorm_le_add_nnnorm_add` for the addition from the left. -/]
-theorem nnnorm_le_mul_nnnorm_add' (a b : E) : ‖b‖₊ ≤ ‖a * b‖₊ + ‖a‖₊ :=
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_le_mul_nnnorm_add := nnNorm_le_mul_nnNorm_add
+
+/-- An analogue of `nnNorm_le_mul_nnNorm_add` for the multiplication from the left. -/
+@[to_additive /-- An analogue of `nnNorm_le_add_nnNorm_add` for the addition from the left. -/]
+theorem nnNorm_le_mul_nnNorm_add' (a b : E) : ‖b‖₊ ≤ ‖a * b‖₊ + ‖a‖₊ :=
   norm_le_mul_norm_add' _ _
 
-@[to_additive]
-lemma nnnorm_mul_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x * y‖₊ = ‖y‖₊ :=
-  NNReal.eq <| norm_mul_eq_norm_right _ <| congr_arg NNReal.toReal h
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_le_mul_nnnorm_add' := nnNorm_le_mul_nnNorm_add'
 
 @[to_additive]
-lemma nnnorm_mul_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x * y‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_mul_eq_norm_left _ <| congr_arg NNReal.toReal h
+lemma nnNorm_mul_eq_nnNorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x * y‖₊ = ‖y‖₊ :=
+  NNReal.eq <| norm_mul_eq_norm_right _ congr($(h).toReal)
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_mul_eq_nnnorm_right := nnNorm_mul_eq_nnNorm_right
 
 @[to_additive]
-lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y‖₊ = ‖y‖₊ :=
-  NNReal.eq <| norm_div_eq_norm_right _ <| congr_arg NNReal.toReal h
+lemma nnNorm_mul_eq_nnNorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x * y‖₊ = ‖x‖₊ :=
+  NNReal.eq <| norm_mul_eq_norm_left _ congr($(h).toReal)
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_mul_eq_nnnorm_left := nnNorm_mul_eq_nnNorm_left
 
 @[to_additive]
-lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
+lemma nnNorm_div_eq_nnNorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y‖₊ = ‖y‖₊ :=
+  NNReal.eq <| norm_div_eq_norm_right _ congr($(h).toReal)
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_div_eq_nnnorm_right := nnNorm_div_eq_nnNorm_right
+
+@[to_additive]
+lemma nnNorm_div_eq_nnNorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
+  NNReal.eq <| norm_div_eq_norm_left _ congr($(h).toReal)
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_div_eq_nnnorm_left := nnNorm_div_eq_nnNorm_left
 
 /-- The nonnegative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
-@[to_additive toReal_coe_nnnorm /-- The nonnegative norm seen as an `ENNReal` and
+@[to_additive toReal_coe_nnNorm /-- The nonnegative norm seen as an `ENNReal` and
 then as a `Real` is equal to the norm. -/]
-theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
+theorem toReal_coe_nnNorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) toReal_coe_nnnorm]
+alias toReal_coe_nnnorm' := toReal_coe_nnNorm'
 
 open scoped symmDiff in
 @[to_additive]
@@ -520,45 +612,59 @@ theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [edist_nndist, nndist_mulIndicator]
 
-@[to_additive nontrivialTopology_iff_exists_nnnorm_ne_zero]
-theorem nontrivialTopology_iff_exists_nnnorm_ne_zero' :
+@[to_additive nontrivialTopology_iff_exists_nnNorm_ne_zero]
+theorem nontrivialTopology_iff_exists_nnNorm_ne_zero' :
     NontrivialTopology E ↔ ∃ x : E, ‖x‖₊ ≠ 0 := by
   simp_rw [TopologicalSpace.nontrivial_iff_exists_not_inseparable, Metric.inseparable_iff_nndist,
-    nndist_eq_nnnorm_div]
+    nnDist_eq_nnNorm_inv_mul]
   exact ⟨fun ⟨x, y, hxy⟩ => ⟨_, hxy⟩, fun ⟨x, hx⟩ => ⟨x, 1, by simpa using hx⟩⟩
 
-@[to_additive indiscreteTopology_iff_forall_nnnorm_eq_zero]
-theorem indiscreteTopology_iff_forall_nnnorm_eq_zero' :
+@[to_additive (attr := deprecated (since := "2026-10-31"))
+nontrivialTopology_iff_exists_nnnorm_ne_zero]
+alias nontrivialTopology_iff_exists_nnnorm_ne_zero' := nontrivialTopology_iff_exists_nnNorm_ne_zero'
+
+@[to_additive indiscreteTopology_iff_forall_nnNorm_eq_zero]
+theorem indiscreteTopology_iff_forall_nnNorm_eq_zero' :
     IndiscreteTopology E ↔ ∀ x : E, ‖x‖₊ = 0 := by
-  simpa using nontrivialTopology_iff_exists_nnnorm_ne_zero' (E := E).not
+  simpa using nontrivialTopology_iff_exists_nnNorm_ne_zero' (E := E).not
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))
+indiscreteTopology_iff_forall_nnnorm_eq_zero]
+alias indiscreteTopology_iff_forall_nnnorm_eq_zero' := indiscreteTopology_iff_forall_nnNorm_eq_zero'
 
 variable (E) in
-@[to_additive exists_nnnorm_ne_zero]
-theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ ≠ 0 :=
-  nontrivialTopology_iff_exists_nnnorm_ne_zero'.1 ‹_›
+@[to_additive exists_nnNorm_ne_zero]
+theorem exists_nnNorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ ≠ 0 :=
+  nontrivialTopology_iff_exists_nnNorm_ne_zero'.1 ‹_›
 
-@[to_additive (attr := nontriviality) nnnorm_eq_zero]
-theorem IndiscreteTopology.nnnorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
+@[to_additive (attr := deprecated (since := "2026-10-31")) exists_nnnorm_ne_zero]
+alias exists_nnnorm_ne_zero' := exists_nnNorm_ne_zero'
 
-alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
-  nontrivialTopology_iff_exists_nnnorm_ne_zero'
-alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero⟩ :=
-  nontrivialTopology_iff_exists_nnnorm_ne_zero
-attribute [to_additive existing NontrivialTopology.of_exists_nnnorm_ne_zero]
-  NontrivialTopology.of_exists_nnnorm_ne_zero'
+@[to_additive (attr := nontriviality) nnNorm_eq_zero]
+theorem IndiscreteTopology.nnNorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
+  indiscreteTopology_iff_forall_nnNorm_eq_zero'.1 ‹_›
 
-alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero'⟩ :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_nnnorm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_nnnorm_eq_zero]
-  IndiscreteTopology.of_forall_nnnorm_eq_zero'
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_eq_zero]
+alias IndiscreteTopology.nnnorm_eq_zero' := IndiscreteTopology.nnNorm_eq_zero'
+
+@[to_additive of_exists_nnNorm_ne_zero]
+alias ⟨_, NontrivialTopology.of_exists_nnNorm_ne_zero'⟩ :=
+  nontrivialTopology_iff_exists_nnNorm_ne_zero'
+
+@[to_additive (attr := deprecated (since := "2026-11-01")) of_exists_nnnorm_ne_zero]
+alias NontrivialTopology.of_exists_nnnorm_ne_zero' := NontrivialTopology.of_exists_nnNorm_ne_zero'
+
+@[to_additive of_forall_nnNorm_eq_zero]
+alias ⟨_, IndiscreteTopology.of_forall_nnNorm_eq_zero'⟩ :=
+  indiscreteTopology_iff_forall_nnNorm_eq_zero'
+
+@[to_additive (attr := deprecated (since := "2026-11-01")) of_forall_nnnorm_eq_zero]
+alias IndiscreteTopology.of_forall_nnnorm_eq_zero' := IndiscreteTopology.of_forall_nnNorm_eq_zero'
 
 @[to_additive nontrivialTopology_iff_exists_norm_ne_zero]
 theorem nontrivialTopology_iff_exists_norm_ne_zero' :
     NontrivialTopology E ↔ ∃ x : E, ‖x‖ ≠ 0 := by
-  simp [nontrivialTopology_iff_exists_nnnorm_ne_zero', ← NNReal.ne_iff]
+  simp [nontrivialTopology_iff_exists_nnNorm_ne_zero', ← NNReal.ne_iff]
 
 @[to_additive indiscreteTopology_iff_forall_norm_eq_zero]
 theorem indiscreteTopology_iff_forall_norm_eq_zero' :
@@ -574,62 +680,57 @@ theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :
 theorem IndiscreteTopology.norm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
   indiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
 
+@[to_additive of_exists_norm_ne_zero]
 alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
   nontrivialTopology_iff_exists_norm_ne_zero'
-alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero⟩ :=
-  nontrivialTopology_iff_exists_norm_ne_zero
-attribute [to_additive existing NontrivialTopology.of_exists_norm_ne_zero]
-  NontrivialTopology.of_exists_norm_ne_zero'
 
+@[to_additive of_forall_norm_eq_zero]
 alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero'⟩ :=
   indiscreteTopology_iff_forall_norm_eq_zero'
-alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero⟩ :=
-  indiscreteTopology_iff_forall_norm_eq_zero
-attribute [to_additive existing IndiscreteTopology.of_forall_norm_eq_zero]
-  IndiscreteTopology.of_forall_norm_eq_zero'
 
 end NNNorm
 
 section ENorm
 
-@[to_additive (attr := simp) enorm_zero]
-lemma enorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
-  rw [ESeminormedMonoid.enorm_zero]
+@[to_additive (attr := simp) eNorm_zero]
+lemma eNorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
+  rw [ESeminormedMonoid.eNorm_zero]
 
-@[to_additive exists_enorm_lt]
-lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_zero]
+alias enorm_one' := eNorm_one'
+
+@[to_additive exists_eNorm_lt]
+lemma exists_eNorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
     [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
   frequently_iff_neBot.mpr hbot |>.and_eventually
-    (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
+    (ContinuousENorm.continuous_eNorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
     |>.exists
 
-@[to_additive (attr := simp) enorm_neg]
-lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
+@[to_additive (attr := deprecated (since := "2026-11-06")) exists_enorm_lt]
+alias exists_enorm_lt' := exists_eNorm_lt'
 
-@[to_additive ofReal_norm_eq_enorm]
-lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
+@[to_additive (attr := simp) eNorm_neg]
+lemma eNorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [eNorm]
 
-@[to_additive]
-theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
-  rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_enorm']
-
-@[deprecated (since := "2026-02-11")] alias edist_one_eq_enorm := edist_one_right
-
-@[deprecated (since := "2026-02-11")] alias edist_zero_eq_enorm := edist_zero_right
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_neg]
+alias enorm_inv' := eNorm_inv'
 
 @[to_additive]
-lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
-  rw [← edist_eq_enorm_div, edist_comm, edist_eq_enorm_div]
+theorem eDist_eq_eNorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
+  rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
+
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+alias edist_eq_enorm_inv_mul := eDist_eq_eNorm_inv_mul
+
+@[to_additive]
+lemma eNorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
+  rw [← eNorm_inv', inv_div]
+
+@[to_additive (attr := deprecated (since := "2026-11-06"))] alias enorm_div_rev := eNorm_div_rev
 
 @[to_additive]
 theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
   rw [Metric.mem_eball, edist_one_right]
-
-@[deprecated (since := "2026-01-24")]
-alias mem_emetric_ball_zero_iff := mem_eball_zero_iff
-
-@[to_additive existing, deprecated (since := "2026-01-24")]
-alias mem_emetric_ball_one_iff := mem_eball_one_iff
 
 end ENorm
 
@@ -637,21 +738,33 @@ section ESeminormedMonoid
 
 variable {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E]
 
-@[to_additive enorm_add_le]
-lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.enorm_mul_le a b
+@[to_additive eNorm_add_le]
+lemma eNorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.eNorm_mul_le a b
 
-@[to_additive enorm_add_le_of_le]
-theorem enorm_mul_le_of_le' {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_add_le]
+alias enorm_mul_le' := eNorm_mul_le'
+
+@[to_additive eNorm_add_le_of_le]
+theorem eNorm_mul_le_of_le' {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
     (h₁ : ‖a₁‖ₑ ≤ r₁) (h₂ : ‖a₂‖ₑ ≤ r₂) : ‖a₁ * a₂‖ₑ ≤ r₁ + r₂ :=
-  (enorm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
+  (eNorm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
 
-@[to_additive enorm_add₃_le]
-lemma enorm_mul₃_le' {a b c : E} : ‖a * b * c‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ :=
-  enorm_mul_le_of_le' (enorm_mul_le' _ _) le_rfl
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_add_le_of_le]
+alias enorm_mul_le_of_le' := eNorm_mul_le_of_le'
 
-@[to_additive enorm_add₄_le]
-lemma enorm_mul₄_le' {a b c d : E} : ‖a * b * c * d‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ + ‖d‖ₑ :=
-  enorm_mul_le_of_le' enorm_mul₃_le' le_rfl
+@[to_additive eNorm_add₃_le]
+lemma eNorm_mul₃_le' {a b c : E} : ‖a * b * c‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ :=
+  eNorm_mul_le_of_le' (eNorm_mul_le' _ _) le_rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_add₃_le]
+alias enorm_mul₃_le' := eNorm_mul₃_le'
+
+@[to_additive eNorm_add₄_le]
+lemma eNorm_mul₄_le' {a b c d : E} : ‖a * b * c * d‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ + ‖d‖ₑ :=
+  eNorm_mul_le_of_le' eNorm_mul₃_le' le_rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_add₄_le]
+alias enorm_mul₄_le' := eNorm_mul₄_le'
 
 end ESeminormedMonoid
 
@@ -659,25 +772,34 @@ section ENormedMonoid
 
 variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
 
-@[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
-  simp [ENormedMonoid.enorm_eq_zero]
+@[to_additive (attr := simp) eNorm_eq_zero]
+lemma eNorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
+  simp [ENormedMonoid.eNorm_eq_zero]
 
-@[to_additive enorm_ne_zero]
-lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
-  enorm_eq_zero'.ne
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_eq_zero]
+alias enorm_eq_zero' := eNorm_eq_zero'
 
-@[to_additive (attr := simp) enorm_pos]
-lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
-  pos_iff_ne_zero.trans enorm_ne_zero'
+@[to_additive eNorm_ne_zero]
+lemma eNorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
+  eNorm_eq_zero'.ne
+
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_ne_zero]
+alias enorm_ne_zero' := eNorm_ne_zero'
+
+@[to_additive (attr := simp) eNorm_pos]
+lemma eNorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
+  pos_iff_ne_zero.trans eNorm_ne_zero'
+
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_pos]
+alias enorm_pos' := eNorm_pos'
 
 end ENormedMonoid
 
 open Set in
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
-    Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y / x‖ := by
-  simp [NormedCommGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_setOf, eventually_iff]
+    Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y⁻¹ * x‖ := by
+  simp [NormedGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_ofPred, eventually_iff]
 
 @[to_additive]
 lemma SeminormedGroup.disjoint_nhds_one (f : Filter E) :
@@ -698,9 +820,9 @@ structure on the domain. -/
 `SeminormedAddGroup` induces a `SeminormedAddGroup` structure on the domain. -/]
 abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
-  { PseudoMetricSpace.induced f toPseudoMetricSpace with
+  fast_instance% { PseudoMetricSpace.induced f toPseudoMetricSpace with
     norm := fun x => ‖f x‖
-    dist_eq := fun x y => by simp only [map_div, ← dist_eq_norm_div]; rfl }
+    dist_eq := fun x y => by simp only [map_mul, map_inv, ← dist_eq_norm_inv_mul]; rfl }
 
 -- See note [reducible non-instances]
 /-- A group homomorphism from a `CommGroup` to a `SeminormedGroup` induces a
@@ -710,7 +832,7 @@ abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass �
 abbrev SeminormedCommGroup.induced
     [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
-  { SeminormedGroup.induced E F f with
+  fast_instance% { SeminormedGroup.induced E F f with
     mul_comm := mul_comm }
 
 -- See note [reducible non-instances].
@@ -721,7 +843,7 @@ structure on the domain. -/
 abbrev NormedGroup.induced
     [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
     NormedGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
+  fast_instance% { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
 
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `CommGroup` to a `NormedGroup` induces a
@@ -730,8 +852,7 @@ abbrev NormedGroup.induced
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
 abbrev NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
     (h : Injective f) : NormedCommGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with
-    mul_comm := mul_comm }
+  fast_instance% { SeminormedCommGroup.induced E F f, MetricSpace.induced f h _ with }
 
 end Induced
 
@@ -741,17 +862,73 @@ variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
 
 @[to_additive]
+theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ := by
+  rw [dist_eq_norm_inv_mul', div_eq_inv_mul]
+
+@[to_additive]
+theorem dist_eq_norm_div' (a b : E) : dist a b = ‖b / a‖ := by
+  rw [dist_eq_norm_inv_mul, div_eq_inv_mul]
+
+alias dist_eq_norm := dist_eq_norm_sub
+
+alias dist_eq_norm' := dist_eq_norm_sub'
+
+@[to_additive]
+theorem norm_inv_mul (a b : E) : ‖a⁻¹ * b‖ = ‖a / b‖ := by
+  rw [← dist_eq_norm_inv_mul, dist_eq_norm_div]
+
+@[to_additive abs_norm_sub_norm_le]
+theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
+  (abs_norm_sub_norm_le_norm_inv_mul a b).trans_eq (norm_inv_mul a b)
+
+@[to_additive norm_sub_norm_le]
+theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
+  (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
+
+@[to_additive dist_norm_norm_le]
+theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
+  abs_norm_sub_norm_le' a b
+
+@[to_additive nnDist_nnNorm_nnNorm_le]
+theorem nnDist_nnNorm_nnNorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
+  NNReal.coe_le_coe.1 <| dist_norm_norm_le' a b
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nndist_nnnorm_nnnorm_le]
+alias nndist_nnnorm_nnnorm_le' := nnDist_nnNorm_nnNorm_le'
+
+@[to_additive]
+theorem nnDist_eq_nnNorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
+  NNReal.eq <| dist_eq_norm_div _ _
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nndist_eq_nnnorm_div := nnDist_eq_nnNorm_div
+
+alias nnDist_eq_nnNorm := nnDist_eq_nnNorm_sub
+
+@[deprecated (since := "2026-10-31")]
+alias nndist_eq_nnnorm := nnDist_eq_nnNorm
+
+@[to_additive]
+theorem eDist_eq_eNorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
+  rw [edist_dist, dist_eq_norm_div, ofReal_norm']
+
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+alias edist_eq_enorm_div := eDist_eq_eNorm_div
+
+@[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
-  simp_rw [dist_eq_norm_div, ← norm_inv' (x⁻¹ / y), inv_div, div_inv_eq_mul, mul_comm]
+  simp_rw [dist_eq_norm_inv_mul, ← norm_inv' (x⁻¹ * y⁻¹), mul_inv, inv_inv]
 
 theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
-theorem enorm_multisetSum_le (m : Multiset ε) :
+theorem eNorm_multisetSum_le (m : Multiset ε) :
     ‖m.sum‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
-  m.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le
+  m.le_sum_of_subadditive eNorm eNorm_zero.le eNorm_add_le
+
+@[deprecated (since := "2026-11-06")] alias enorm_multisetSum_le := eNorm_multisetSum_le
 
 @[to_additive existing]
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
@@ -759,15 +936,19 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
 @[to_additive existing]
-theorem enorm_multisetProd_le (m : Multiset ε) :
+theorem eNorm_multisetProd_le (m : Multiset ε) :
     ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
-  m.apply_prod_le_sum_map _ enorm_one'.le enorm_mul_le'
+  m.apply_prod_le_sum_map _ eNorm_one'.le eNorm_mul_le'
+
+@[deprecated (since := "2026-11-06")] alias enorm_multisetProd_le := eNorm_multisetProd_le
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
-theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
+theorem eNorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
-  s.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le f
+  s.le_sum_of_subadditive eNorm eNorm_zero.le eNorm_add_le f
+
+@[deprecated (since := "2026-11-06")] alias enorm_sum_le := eNorm_sum_le
 
 @[bound]
 theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
@@ -775,17 +956,22 @@ theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E
   s.le_sum_of_subadditive norm norm_zero.le norm_add_le f
 
 @[to_additive existing]
-theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
-  s.apply_prod_le_sum_apply _ enorm_one'.le enorm_mul_le'
+theorem eNorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
+  s.apply_prod_le_sum_apply _ eNorm_one'.le eNorm_mul_le'
+
+@[deprecated (since := "2026-11-06")] alias enorm_prod_le := eNorm_prod_le
 
 @[to_additive existing]
 theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.apply_prod_le_sum_apply _ norm_one'.le norm_mul_le'
 
 @[to_additive]
-theorem enorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :
+theorem eNorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :
     ‖∏ b ∈ s, f b‖ₑ ≤ ∑ b ∈ s, n b :=
-  (enorm_prod_le s f).trans <| Finset.sum_le_sum h
+  (eNorm_prod_le s f).trans <| Finset.sum_le_sum h
+
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+alias enorm_prod_le_of_le := eNorm_prod_le_of_le
 
 @[to_additive]
 theorem norm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ} (h : ∀ b ∈ s, ‖f b‖ ≤ n b) :
@@ -796,7 +982,8 @@ theorem norm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ} (h : 
 theorem dist_prod_prod_le_of_le (s : Finset ι) {f a : ι → E} {d : ι → ℝ}
     (h : ∀ b ∈ s, dist (f b) (a b) ≤ d b) :
     dist (∏ b ∈ s, f b) (∏ b ∈ s, a b) ≤ ∑ b ∈ s, d b := by
-  simp only [dist_eq_norm_div, ← Finset.prod_div_distrib] at *
+  simp_rw [dist_eq_norm_inv_mul] at h
+  rw [dist_eq_norm_inv_mul, ← Finset.prod_inv_distrib, ← Finset.prod_mul_distrib]
   exact norm_prod_le_of_le s h
 
 @[to_additive]
@@ -804,43 +991,107 @@ theorem dist_prod_prod_le (s : Finset ι) (f a : ι → E) :
     dist (∏ b ∈ s, f b) (∏ b ∈ s, a b) ≤ ∑ b ∈ s, dist (f b) (a b) :=
   dist_prod_prod_le_of_le s fun _ _ => le_rfl
 
+@[to_additive ball_eq]
+theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } := by
+  simp_rw [ball_eq_norm_inv_mul_lt, norm_inv_mul]
+
+@[to_additive mem_ball_iff_norm]
+theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by
+  rw [mem_ball, dist_eq_norm_div]
+
+@[to_additive mem_ball_iff_norm']
+theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by
+  rw [mem_ball', dist_eq_norm_div]
+
+/-- A scaled ball is a ball. -/
+@[to_additive setOf_sub_mem_ball_eq_ball /-- A translated ball is a ball. -/]
+theorem setOf_div_mem_ball_eq_ball'' :
+    {x | x / a ∈ ball 1 r} = Metric.ball a r := by
+  ext x
+  rw [mem_ball_iff_norm'']
+  simp
+
+@[to_additive mem_closedBall_iff_norm]
+theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
+  rw [mem_closedBall, dist_eq_norm_div]
+
+@[to_additive mem_closedBall_iff_norm']
+theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r := by
+  rw [mem_closedBall', dist_eq_norm_div]
+
+@[to_additive mem_closedBall_iff_nnNorm]
+theorem mem_closedBall_iff_nnNorm'' {r : ℝ≥0} : b ∈ closedBall a r ↔ ‖b / a‖₊ ≤ r :=
+  mem_closedBall_iff_norm''
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) mem_closedBall_iff_nnnorm]
+alias mem_closedBall_iff_nnnorm'' := mem_closedBall_iff_nnNorm''
+
+@[to_additive mem_closedBall_iff_nnNorm']
+theorem mem_closedBall_iff_nnNorm''' {r : ℝ≥0} : b ∈ closedBall a r ↔ ‖a / b‖₊ ≤ r :=
+  mem_closedBall_iff_norm'''
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) mem_closedBall_iff_nnnorm']
+alias mem_closedBall_iff_nnnorm''' := mem_closedBall_iff_nnNorm'''
+
+/-- A scaled closed ball is a closed ball. -/
+@[to_additive setOf_sub_mem_closedBall_eq_closedBall
+  /-- A translated closed ball is a closed ball. -/]
+theorem setOf_div_mem_closedBall_eq_closedBall'' :
+    {x | x / a ∈ closedBall 1 r} = Metric.closedBall a r := by
+  ext x
+  rw [mem_closedBall_iff_norm'']
+  simp
+
+-- Higher priority to fire before `mem_sphere`.
+@[to_additive (attr := simp high) mem_sphere_iff_norm]
+theorem mem_sphere_iff_norm' : b ∈ sphere a r ↔ ‖b / a‖ = r := by simp [dist_eq_norm_div]
+
+/-- A scaled sphere is a sphere. -/
+@[to_additive setOf_sub_mem_sphere_eq_sphere /-- A translated sphere is a sphere. -/]
+theorem setOf_div_mem_sphere_eq_sphere'' :
+    {x | x / a ∈ sphere 1 r} = Metric.sphere a r := by
+  ext x
+  rw [mem_sphere_iff_norm']
+  simp
+
 @[to_additive]
 theorem mul_mem_ball_iff_norm : a * b ∈ ball a r ↔ ‖b‖ < r := by
-  rw [mem_ball_iff_norm'', mul_div_cancel_left]
+  rw [mem_ball_iff_norm'']
+  simp
 
 @[to_additive]
 theorem mul_mem_closedBall_iff_norm : a * b ∈ closedBall a r ↔ ‖b‖ ≤ r := by
-  rw [mem_closedBall_iff_norm'', mul_div_cancel_left]
+  rw [mem_closedBall_iff_norm'']
+  simp
 
 -- Higher priority to apply this before the equivalent lemma `Metric.preimage_mul_left_ball`.
 @[to_additive (attr := simp high)]
 theorem preimage_mul_ball (a b : E) (r : ℝ) : (b * ·) ⁻¹' ball a r = ball (a / b) r := by
   ext c
-  simp only [dist_eq_norm_div, Set.mem_preimage, mem_ball, div_div_eq_mul_div, mul_comm]
+  simp [dist_eq_norm_inv_mul, Set.mem_preimage, mem_ball, div_eq_mul_inv, mul_comm, mul_assoc]
 
 -- Higher priority to apply this before the equivalent lemma `Metric.preimage_mul_left_closedBall`.
 @[to_additive (attr := simp high)]
 theorem preimage_mul_closedBall (a b : E) (r : ℝ) :
     (b * ·) ⁻¹' closedBall a r = closedBall (a / b) r := by
   ext c
-  simp only [dist_eq_norm_div, Set.mem_preimage, mem_closedBall, div_div_eq_mul_div, mul_comm]
+  simp [dist_eq_norm_inv_mul, Set.mem_preimage, mem_closedBall, div_eq_mul_inv, mul_comm, mul_assoc]
 
 @[to_additive (attr := simp)]
 theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = sphere (a / b) r := by
   ext c
   simp only [Set.mem_preimage, mem_sphere_iff_norm', div_div_eq_mul_div, mul_comm]
 
-
 @[to_additive]
 theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
     a ^ n ∈ closedBall (b ^ n) (n • r) := by
-  simp only [mem_closedBall, dist_eq_norm_div, ← div_pow] at h ⊢
+  simp only [mem_closedBall, dist_eq_norm_inv_mul, ← inv_pow, ← mul_pow] at h ⊢
   refine norm_pow_le_mul_norm.trans ?_
   simpa only [nsmul_eq_mul] using mul_le_mul_of_nonneg_left h n.cast_nonneg
 
 @[to_additive]
 theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ ball (b ^ n) (n • r) := by
-  simp only [mem_ball, dist_eq_norm_div, ← div_pow] at h ⊢
+  simp only [mem_ball, dist_eq_norm_inv_mul, ← inv_pow, ← mul_pow] at h ⊢
   refine lt_of_le_of_lt norm_pow_le_mul_norm ?_
   replace hn : 0 < (n : ℝ) := by norm_cast
   rw [nsmul_eq_mul]
@@ -848,41 +1099,64 @@ theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ bal
 
 @[to_additive]
 theorem mul_mem_closedBall_mul_iff {c : E} : a * c ∈ closedBall (b * c) r ↔ a ∈ closedBall b r := by
-  simp only [mem_closedBall, dist_eq_norm_div, mul_div_mul_right_eq_div]
+  simp only [mem_closedBall, dist_eq_norm_inv_mul, mul_comm _ (b * c), mul_comm a⁻¹ b]
+  simp
 
 @[to_additive]
 theorem mul_mem_ball_mul_iff {c : E} : a * c ∈ ball (b * c) r ↔ a ∈ ball b r := by
-  simp only [mem_ball, dist_eq_norm_div, mul_div_mul_right_eq_div]
+  simp only [mem_ball, dist_eq_norm_inv_mul, mul_comm _ (b * c), mul_comm a⁻¹ b]
+  simp
 
 @[to_additive]
 theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by
   ext
-  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, div_eq_inv_mul, ←
-    eq_inv_mul_iff_mul_eq, mul_assoc]
+  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_inv_mul, ← eq_inv_mul_iff_mul_eq, mul_assoc]
 
 @[to_additive]
 theorem smul_ball'' : a • ball b r = ball (a • b) r := by
   ext
-  simp [mem_ball, Set.mem_smul_set, dist_eq_norm_div, _root_.div_eq_inv_mul,
-    ← eq_inv_mul_iff_mul_eq, mul_assoc]
+  simp [mem_ball, Set.mem_smul_set, dist_eq_norm_inv_mul, ← eq_inv_mul_iff_mul_eq, mul_assoc]
 
 @[to_additive]
-theorem nnnorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x => ‖x‖₊).sum :=
+theorem nnNorm_multiset_prod_le (m : Multiset E) : ‖m.prod‖₊ ≤ (m.map fun x => ‖x‖₊).sum :=
   NNReal.coe_le_coe.1 <| by
     push_cast
     rw [Multiset.map_map]
     exact norm_multiset_prod_le _
 
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_multiset_prod_le := nnNorm_multiset_prod_le
+
 @[to_additive]
-theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖₊ ≤ ∑ a ∈ s, ‖f a‖₊ :=
+theorem nnNorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖₊ ≤ ∑ a ∈ s, ‖f a‖₊ :=
   NNReal.coe_le_coe.1 <| by
     push_cast
     exact norm_prod_le _ _
 
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_prod_le := nnNorm_prod_le
+
 @[to_additive]
-theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
+theorem nnNorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
   (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias nnnorm_prod_le_of_le := nnNorm_prod_le_of_le
+
+@[to_additive]
+theorem NormedCommGroup.tendsto_nhds_nhds {f : E → F} {x : E} {y : F} :
+    Tendsto f (𝓝 x) (𝓝 y) ↔ ∀ ε > 0, ∃ δ > 0, ∀ x', ‖x' / x‖ < δ → ‖f x' / y‖ < ε := by
+  simpa [norm_inv_mul] using NormedGroup.tendsto_nhds_nhds (f := f) (x := x) (y := y)
+
+@[to_additive]
+theorem NormedCommGroup.nhds_basis_norm_lt (x : E) :
+    (𝓝 x).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y / x‖ < ε } := by
+  simpa [norm_inv_mul] using NormedGroup.nhds_basis_norm_lt x
+
+@[to_additive]
+theorem NormedCommGroup.uniformity_basis_dist :
+    (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst / p.snd‖ < ε } := by
+  simpa [norm_inv_mul] using NormedGroup.uniformity_basis_dist (E := E)
 
 end SeminormedCommGroup
 
@@ -923,19 +1197,31 @@ theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
   simpa [eq_comm] using (norm_nonneg' a).eq_or_lt
 
 @[to_additive]
-theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
+theorem eq_one_or_nnNorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
   eq_one_or_norm_pos a
 
-@[to_additive (attr := simp) nnnorm_eq_zero]
-theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
-  rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
+@[to_additive (attr := deprecated (since := "2026-10-31"))]
+alias eq_one_or_nnnorm_pos := eq_one_or_nnNorm_pos
 
-@[to_additive nnnorm_ne_zero_iff]
-theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
-  nnnorm_eq_zero'.not
+@[to_additive (attr := simp) nnNorm_eq_zero]
+theorem nnNorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
+  rw [← NNReal.coe_eq_zero, coe_nnNorm', norm_eq_zero']
 
-@[to_additive (attr := simp) nnnorm_pos]
-lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_eq_zero]
+alias nnnorm_eq_zero' := nnNorm_eq_zero'
+
+@[to_additive nnNorm_ne_zero_iff]
+theorem nnNorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
+  nnNorm_eq_zero'.not
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_ne_zero_iff]
+alias nnnorm_ne_zero_iff' := nnNorm_ne_zero_iff'
+
+@[to_additive (attr := simp) nnNorm_pos]
+lemma nnNorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnNorm_ne_zero_iff'
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_pos]
+alias nnnorm_pos' := nnNorm_pos'
 
 variable (E)
 
@@ -972,16 +1258,17 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
 on non-one inputs. -/
 @[positivity ‖_‖]
-meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulNorm : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
-    let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) := ← do
-      let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | return none
-      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | return none
-      return some (normedGroup_E, pa)
+    let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) ← do
+      let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | pure none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | pure none
+      pure <| some (normedGroup_E, pa)
     match o with
     -- If so, return a proof of `0 < ‖a‖`
     | some (_normedGroup_E, pa) =>
@@ -994,16 +1281,17 @@ meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
 on non-zero inputs. -/
 @[positivity ‖_‖]
-meta def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalAddNorm : PositivityExt where eval {u α} _ pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
-    let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) := ← do
-      let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | return none
-      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | return none
-      return some (normedAddGroup_E, pa)
+    let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) ← do
+      let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | pure none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | pure none
+      pure <| some (normedAddGroup_E, pa)
     match o with
     -- If so, return a proof of `0 < ‖a‖`
     | some (_normedAddGroup_E, pa) =>

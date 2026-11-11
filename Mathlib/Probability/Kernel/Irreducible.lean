@@ -33,10 +33,9 @@ that is, there is a positive probability of reaching any
 
 * [Meyn, S.P. and Tweedie, R.L., *Markov Chains and Stochastic Stability*][meyntweedie1993]
 * [C Robert, G Casella, *Monte Carlo Statistical Methods*][robertcasella2004]
-
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 
@@ -44,7 +43,7 @@ open scoped MeasureTheory ENNReal ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 namespace Kernel
 
@@ -66,7 +65,6 @@ instance {φ : Measure α} [Subsingleton α] :
         <| MeasureTheory.nonempty_of_measure_ne_zero (μ := φ) (ne_of_lt hsp).symm
     simp [id_apply, ha]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {c : ℝ≥0∞} {φ : Measure α} {κ : Kernel α α} [hκ : IsIrreducible φ κ] :
     IsIrreducible (c • φ) κ where
   irreducible s hs hsp := by

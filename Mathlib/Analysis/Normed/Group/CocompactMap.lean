@@ -19,14 +19,13 @@ This file gives a characterization of cocompact maps in terms of norm estimates.
 * `CocompactMapClass.norm_le`: Every cocompact map satisfies a norm estimate
 * `ContinuousMapClass.toCocompactMapClass_of_norm`: Conversely, this norm estimate implies that a
   map is cocompact.
-
 -/
 
 public section
 
 open Filter Metric
 
-variable {𝕜 E F 𝓕 : Type*}
+variable {E F 𝓕 : Type*}
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable {f : 𝓕}
 

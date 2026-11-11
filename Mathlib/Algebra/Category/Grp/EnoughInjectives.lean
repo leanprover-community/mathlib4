@@ -6,12 +6,11 @@ Authors: Jujian Zhang, Junyan Xu
 module
 
 public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-public import Mathlib.Algebra.Category.Grp.EpiMono
-public import Mathlib.Algebra.Category.Grp.Injective
+
+import Mathlib.Algebra.Category.Grp.EpiMono
+import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 
 /-!
-
 # Category of abelian groups has enough injectives
 
 Given an abelian group `A`, then `i : A ⟶ ∏_{A⋆} ℚ ⧸ ℤ` defined by `i : a ↦ c ↦ c a` is an
@@ -29,7 +28,7 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 This file is split from `Mathlib/Algebra/Category/Grp/Injective.lean` to prevent import loops.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 
@@ -39,14 +38,13 @@ namespace AddCommGrpCat
 
 open CharacterModule
 
-set_option backward.isDefEq.respectTransparency false in
 instance enoughInjectives : EnoughInjectives AddCommGrpCat.{u} where
   presentation A_ := Nonempty.intro
     { J := of <| (CharacterModule A_) → ULift.{u} (AddCircle (1 : ℚ))
       injective := injective_of_divisible _
       f := ofHom ⟨⟨fun a i ↦ ULift.up (i a), by aesop⟩, by aesop⟩
       mono := (AddCommGrpCat.mono_iff_injective _).mpr <| (injective_iff_map_eq_zero _).mpr
-        fun _ h0 ↦ eq_zero_of_character_apply (congr_arg ULift.down <| congr_fun h0 ·) }
+        fun _ h0 ↦ eq_zero_of_character_apply (congr(ULift.down <| $h0 ·)) }
 
 end AddCommGrpCat
 

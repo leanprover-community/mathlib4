@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
+public meta import Mathlib.Util.Qq
 public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Tactic.NormNum.Basic
 
@@ -12,7 +13,7 @@ public import Mathlib.Tactic.NormNum.Basic
 ## `norm_num` plugin for `^`.
 -/
 
-public meta section
+public section
 
 assert_not_exists RelIso
 
@@ -47,11 +48,9 @@ theorem IsNatPowT.trans {p : Prop} {b' c' : ℕ} (h1 : IsNatPowT p a b c)
     (h2 : IsNatPowT (Nat.pow a b = c) a b' c') : IsNatPowT p a b' c' :=
   ⟨h2.run' ∘ h1.run'⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsNatPowT.bit0 : IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b) (Nat.mul c c) :=
   ⟨fun h1 => by simp [two_mul, pow_add, ← h1]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsNatPowT.bit1 :
     IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b + nat_lit 1) (Nat.mul c (Nat.mul c a)) :=
   ⟨fun h1 => by simp [two_mul, pow_add, mul_assoc, ← h1]⟩
@@ -66,7 +65,7 @@ so we use an additional trick to do binary subdivision on `log2 b`. As a result 
 a proof of depth `log (log b)` which will essentially never overflow before the numbers involved
 themselves exceed memory limits.
 -/
-partial def evalNatPow (a b : Q(ℕ)) : OptionT CoreM ((c : Q(ℕ)) × Q(Nat.pow $a $b = $c)) := do
+meta partial def evalNatPow (a b : Q(ℕ)) : OptionT CoreM ((c : Q(ℕ)) × Q(Nat.pow $a $b = $c)) := do
   if b.natLit! = 0 then
     haveI : $b =Q 0 := ⟨⟩
     return ⟨q(nat_lit 1), q(natPow_zero)⟩
@@ -113,7 +112,6 @@ where
 theorem intPow_ofNat (h1 : Nat.pow a b = c) :
     Int.pow (Int.ofNat a) b = Int.ofNat c := by simp [← h1]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem intPow_negOfNat_bit0 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' = b) (hc : c' * c' = c) :
     Int.pow (Int.negOfNat a) b = Int.ofNat c := by
@@ -121,7 +119,6 @@ theorem intPow_negOfNat_bit0 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     ← h1]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem intPow_negOfNat_bit1 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' + nat_lit 1 = b) (hc : c' * (c' * a) = c) :
     Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
@@ -130,7 +127,7 @@ theorem intPow_negOfNat_bit1 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
   simp [mul_comm, mul_left_comm]
 
 /-- Evaluates `Int.pow a b = c` where `a` and `b` are raw integer literals. -/
-partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) :
+meta partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) :
     OptionT CoreM (ℤ × (c : Q(ℤ)) × Q(Int.pow $a $b = $c)) := do
   have a' : Q(ℕ) := a.appArg!
   if 0 ≤ za then
@@ -141,7 +138,7 @@ partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) :
     have : $a =Q .negOfNat $a' := ⟨⟩
     let b' := b.natLit!
     have b₀ : Q(ℕ) := mkRawNatLit (b' >>> 1)
-    let ⟨c₀, p⟩ := ← evalNatPow a' b₀
+    let ⟨c₀, p⟩ ← evalNatPow a' b₀
     let c' := c₀.natLit!
     if b' &&& 1 == 0 then
       have c : Q(ℕ) := mkRawNatLit (c' * c')
@@ -164,7 +161,6 @@ theorem isInt_pow {α} [Ring α] : ∀ {f : α → ℕ → α} {a : α} {b : ℕ
     f = HPow.hPow → IsInt a a' → IsNat b b' → Int.pow a' b' = c → IsInt (f a b) c
   | _, _, _, _, _, _, rfl, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- see note [norm_num lemma function equality]
 theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsRat a an ad → IsNat b b' →
@@ -175,7 +171,6 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn : ℕ} {ad b b' cd : ℕ} :
     f = HPow.hPow → IsNNRat a an ad → IsNat b b' →
     Nat.pow an b' = cn → Nat.pow ad b' = cd →
@@ -186,8 +181,8 @@ theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn :
   use this; simp [invOf_pow, Commute.mul_pow, Nat.cast_commute]
 
 /-- Main part of `evalPow`. -/
-def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» → ℕ → «$α»)) (a : Q(«$α»))
-    (b nb : Q(ℕ)) (pb : Q(IsNat «$b» «$nb»)) (sα : Q(Semiring «$α»)) (ra : Result a) :
+meta def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» → ℕ → «$α»))
+    (a : Q(«$α»)) (b nb : Q(ℕ)) (pb : Q(IsNat «$b» «$nb»)) (sα : Q(Semiring «$α»)) (ra : Result a) :
     OptionT CoreM (Result e) := do
   haveI' : $e =Q $a ^ $b := ⟨⟩
   haveI' : $f =Q HPow.hPow := ⟨⟩
@@ -218,7 +213,7 @@ def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» �
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num _ ^ (_ : ℕ)]
-def evalPow : NormNumExt where eval {u α} e := do
+meta def evalPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
   let ⟨nb, pb⟩ ← deriveNat b q(Nat.instAddMonoidWithOne)
   let sα ← inferSemiring α
@@ -285,7 +280,7 @@ blocks below were not necessary: we just did it once outside the `match rb with`
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℤ`. -/
 @[norm_num _ ^ (_ : ℤ)]
-def evalZPow : NormNumExt where eval {u α} e := do
+meta def evalZPow : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → ℤ → $α)) (a : Q($α))) (b : Q(ℤ)) ← whnfR e | failure
   let _c ← synthInstanceQ q(DivisionSemiring $α)
   let rb ← derive (α := q(ℤ)) b

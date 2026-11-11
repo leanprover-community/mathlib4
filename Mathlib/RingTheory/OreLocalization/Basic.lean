@@ -7,10 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.GroupTheory.OreLocalization.Basic
-public import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
-
 # Localization over left Ore sets.
 
 This file proves results on the localization of rings (monoids with zeros) over a left Ore set.
@@ -23,7 +21,6 @@ This file proves results on the localization of rings (monoids with zeros) over 
 
 ## Tags
 localization, Ore, non-commutative
-
 -/
 
 @[expose] public section
@@ -68,8 +65,8 @@ section CommMonoidWithZero
 variable {R : Type*} [CommMonoidWithZero R] {S : Submonoid R} [OreSet S]
 
 instance : CommMonoidWithZero R[S⁻¹] where
-  __ := inferInstanceAs (MonoidWithZero R[S⁻¹])
-  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+  __ := (inferInstance : MonoidWithZero R[S⁻¹])
+  __ := (inferInstance : CommMonoid R[S⁻¹])
 
 end CommMonoidWithZero
 
@@ -78,7 +75,7 @@ section DistribMulAction
 variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] {X : Type*} [AddMonoid X]
 variable [DistribMulAction R X]
 
-set_option backward.privateInPublic true in
+/-- Auxiliary definition for addition on the Ore localization. -/
 private def add'' (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) : X[S⁻¹] :=
   (oreDenom (s₁ : R) s₂ • r₁ + oreNum (s₁ : R) s₂ • r₂) /ₒ (oreDenom (s₁ : R) s₂ * s₁)
 
@@ -103,7 +100,7 @@ private theorem add''_char (r₁ : X) (s₁ : S) (r₂ : X) (s₂ : S) (rb : R) 
 
 attribute [local instance] OreLocalization.oreEqv
 
-set_option backward.privateInPublic true in
+/-- Auxiliary definition for addition on the Ore localization, with one argument fixed. -/
 private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
   (--plus tilde
       Quotient.lift
@@ -126,7 +123,6 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
     simp only [mul_smul, smul_add, one_smul, OneMemClass.coe_one, one_mul, true_and]
     rw [this, hc, mul_assoc]
 
-set_option backward.privateInPublic true in
 /-- The addition on the Ore localization. -/
 @[irreducible]
 private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
@@ -148,8 +144,7 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
       simp only [one_smul, one_mul, mul_smul, ← hb, Submonoid.smul_def, ← mul_assoc, and_true]
       simp only [smul_smul, hd])
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
+@[no_expose]
 instance : Add X[S⁻¹] :=
   ⟨add⟩
 
@@ -205,12 +200,10 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
   induction x
   rw [← zero_oreDiv, add_oreDiv]; simp
 
-set_option backward.privateInPublic true in
+/-- Scalar multiplication by natural numbers on the Ore localization. -/
 @[irreducible]
-private def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
+def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : AddMonoid X[S⁻¹] where
     add_assoc := OreLocalization.add_assoc
     zero_add := OreLocalization.zero_add
@@ -273,8 +266,6 @@ variable {X : Type*} [AddGroup X] [DistribMulAction R X]
 @[irreducible]
 protected def neg : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun (r : X) (s : S) => -r /ₒ s) fun r t s ht => by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
-    beta_reduce
     rw [← smul_neg, ← OreLocalization.expand]
 
 instance instNegOreLocalization : Neg X[S⁻¹] :=
@@ -304,8 +295,8 @@ variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommGroup X] [DistribMulAction R X]
 
 instance : AddCommGroup X[S⁻¹] where
-  __ := inferInstanceAs (AddGroup X[S⁻¹])
-  __ := inferInstanceAs (AddCommMonoid X[S⁻¹])
+  __ := (inferInstance : AddGroup X[S⁻¹])
+  __ := (inferInstance : AddCommMonoid X[S⁻¹])
 
 end AddCommGroup
 

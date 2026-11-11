@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.GroupWithZero.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # If a semiring is a field, any isomorphic semiring is also a field.
 
@@ -19,10 +22,10 @@ public section
 
 variable {A B F : Type*} [Semiring A] [Semiring B]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem IsLocalHom.isField [FunLike F A B] [MonoidWithZeroHomClass F A B] {f : F}
     [IsLocalHom f] (inj : Function.Injective f) (hB : IsField B) : IsField A where
-  exists_pair_ne := have : Nontrivial B := ⟨hB.1⟩; (domain_nontrivial f (map_zero f) (map_one f)).1
+  exists_pair_ne := have : Nontrivial B := ⟨hB.exists_pair_ne⟩;
+    (domain_nontrivial f (map_zero f) (map_one f)).exists_pair_ne
   mul_comm x y := inj <| by rw [map_mul, map_mul, hB.mul_comm]
   mul_inv_cancel h :=
     have ⟨a', he⟩ := hB.mul_inv_cancel ((inj.ne h).trans_eq <| map_zero f)
@@ -31,3 +34,6 @@ protected theorem IsLocalHom.isField [FunLike F A B] [MonoidWithZeroHomClass F A
 
 protected theorem MulEquiv.isField (hB : IsField B) (e : A ≃* B) : IsField A :=
   IsLocalHom.isField e.injective hB
+
+protected theorem MulEquiv.isField_congr (e : A ≃* B) : IsField A ↔ IsField B :=
+  ⟨e.symm.isField, e.isField⟩

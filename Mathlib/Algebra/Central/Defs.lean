@@ -53,10 +53,9 @@ need this assumption.
 
 ## Tags
 central algebra, center, simple ring, central simple algebra
-
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

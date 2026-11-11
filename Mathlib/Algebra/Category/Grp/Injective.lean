@@ -21,14 +21,11 @@ in `Mathlib/Algebra/Category/Grp/EnoughInjectives.lean`.
 ## Main results
 
 - `AddCommGrpCat.injective_of_divisible` : a divisible group is also an injective object.
-
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
-
-open Pointwise
 
 universe u
 
@@ -50,11 +47,11 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
 namespace AddCommGrpCat
 
 theorem injective_as_module_iff : Injective (ModuleCat.of ℤ A) ↔
-    Injective (C := AddCommGrpCat) (AddCommGrpCat.of A) :=
-  ((forget₂ (ModuleCat ℤ) AddCommGrpCat).asEquivalence.map_injective_iff (ModuleCat.of ℤ A)).symm
+    Injective (C := AddCommGrpCat) ↧A :=
+  ((forget₂ (ModuleCat ℤ) AddCommGrpCat).asEquivalence.map_injective_iff ↧A).symm
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
-    Injective (C := AddCommGrpCat) (AddCommGrpCat.of A) :=
+    Injective (C := AddCommGrpCat) ↧A :=
   (injective_as_module_iff A).mp <|
     Module.injective_object_of_injective_module (inj := (Module.Baer.of_divisible A).injective)
 

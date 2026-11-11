@@ -5,8 +5,8 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Existence of Kan extensions and Kan lifts in bicategories
@@ -28,7 +28,6 @@ These notations are inspired by
 
 * `ran f g` is the right Kan extension of `g` along `f`, and is denoted by `f⁺⁺ g`.
 * `ranLift f g` is the right Kan lift of `g` along `f`, and is denoted by `f₊₊ g`.
-
 -/
 
 @[expose] public section
@@ -95,7 +94,7 @@ def lanUnit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : g ⟶ f ≫ 
 theorem lanLeftExtension_unit (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] :
     (lanLeftExtension f g).unit = lanUnit f g := rfl
 
-/-- Evidence that the `Lan.extension f g` is a Kan extension. -/
+/-- Evidence that `lanLeftExtension f g` is a Kan extension. -/
 def lanIsKan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : (lanLeftExtension f g).IsKan :=
   initialIsInitial
 
@@ -197,7 +196,7 @@ open LeftLift
 
 variable {f : b ⟶ a} {g : c ⟶ a}
 
-/-- The existence of a left kan lift of `g` along `f`. -/
+/-- The existence of a left Kan lift of `g` along `f`. -/
 class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
   hasInitial : HasInitial <| LeftLift f g
 
@@ -239,7 +238,7 @@ def lanLiftUnit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g 
 theorem lanLiftLeftLift_unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
     (lanLiftLeftLift f g).unit = lanLiftUnit f g := rfl
 
-/-- Evidence that the `LanLift.lift f g` is a Kan lift. -/
+/-- Evidence that `lanLiftLeftLift f g` is a Kan lift. -/
 def lanLiftIsKan (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : (lanLiftLeftLift f g).IsKan :=
   initialIsInitial
 

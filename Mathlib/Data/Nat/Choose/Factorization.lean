@@ -25,7 +25,7 @@ bounds in binomial coefficients. These include:
 * `Nat.factorization_choose_eq_zero_of_lt`: Primes greater than `n` do not
   appear in the factorization of `n` choose `k`.
 
-These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
+These results appear in the [Erdős proof of Bertrand's postulate][aigner1999proofs].
 -/
 
 public section
@@ -169,28 +169,33 @@ theorem factorization_choose_prime_pow_add_factorization (hp : p.Prime) (hkn : k
   · nth_rewrite 1 [← factorization_pow_self (n := n) hp]
     exact factorization_le_factorization_choose_add hkn hk0
 
-theorem factorization_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
+theorem factorization_choose_prime_pow (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
     (choose (p ^ n) k).factorization p = n - k.factorization p := by
   nth_rewrite 2 [← factorization_choose_prime_pow_add_factorization hp hkn hk0]
   rw [Nat.add_sub_cancel_right]
 
-end Nat
-
-
-namespace Nat
-
-variable {p n k : ℕ}
+lemma factorization_add_factorization_choose_le_log (lk : k ≤ n) :
+    k.factorization p + (n.choose k).factorization p ≤ log p n := by
+  by_cases! pp : ¬p.Prime
+  · simp [factorization_eq_zero_of_not_prime _ pp]
+  by_cases! nk : k = 0
+  · simp [nk]
+  have dj : Disjoint {i ∈ Ico 1 (log p n + 1) | p ^ i ∣ k}
+      {i ∈ Ico 1 (log p n + 1) | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
+    simp only [Finset.disjoint_right, Finset.mem_filter, dvd_iff_mod_eq_zero]
+    intro i
+    have := mod_lt (n - k) (pow_pos pp.pos i)
+    lia
+  rw [factorization_choose pp lk (lt_add_one _), factorization_eq_card_pow_dvd_of_lt pp nk.pos
+    (lk.trans_lt (lt_pow_succ_log_self pp.one_lt n)), ← card_union_of_disjoint dj]
+  conv_rhs => rw [← (log p n).add_one_sub_one, ← card_Ico]
+  exact card_le_card (by grind)
 
 /-- A logarithmic upper bound on the multiplicity of a prime in a binomial coefficient. -/
-theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n := by
-  by_cases h : (choose n k).factorization p = 0
-  · simp [h]
-  have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_not_prime h
-  have hkn : k ≤ n := by
-    refine le_of_not_gt fun hnk => h ?_
-    simp [choose_eq_zero_of_lt hnk]
-  rw [factorization_choose hp hkn (Nat.lt_add_one _)]
-  exact (card_filter_le ..).trans_eq (Nat.card_Ico _ _)
+theorem factorization_choose_le_log : (n.choose k).factorization p ≤ log p n := by
+  by_cases! lk : n < k
+  · simp [choose_eq_zero_of_lt lk]
+  exact le_of_add_left_le (factorization_add_factorization_choose_le_log lk)
 
 /-- A `pow` form of `Nat.factorization_choose_le` -/
 theorem pow_factorization_choose_le (hn : 0 < n) : p ^ (choose n k).factorization p ≤ n :=
@@ -203,7 +208,6 @@ theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factori
   rcases eq_or_ne n 0 with (rfl | hn0); · simp
   exact Nat.lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
   rcases em' p.Prime with hp | hp
@@ -232,7 +236,6 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
       add_tsub_cancel_of_le hkn]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Primes greater than about `2 * n / 3` and less than `n` do not appear in the factorization of
 `centralBinom n`. -/
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
@@ -248,7 +251,6 @@ theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factor
     rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
       Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases! hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
   rw [choose_eq_factorial_div_factorial hnk,
@@ -269,7 +271,7 @@ theorem le_two_mul_of_factorization_centralBinom_pos
 /-- A binomial coefficient is the product of its prime factors, which are at most `n`. -/
 theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
     (∏ p ∈ Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
-  conv_rhs => rw [← factorization_prod_pow_eq_self (choose_ne_zero hkn)]
+  conv_rhs => rw [← prod_factorization_pow_eq_self (choose_ne_zero hkn)]
   rw [eq_comm]
   apply Finset.prod_subset
   · intro p hp

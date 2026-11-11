@@ -5,11 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-public import Mathlib.CategoryTheory.Sites.Whiskering
-public import Mathlib.Condensed.Basic
-public import Mathlib.Topology.Category.Stonean.Basic
+public import Mathlib.Condensed.Explicit
+
+import Mathlib.CategoryTheory.Sites.PreservesLimits
 
 /-!
 # Functors from categories of topological spaces to condensed sets
@@ -21,7 +19,6 @@ sets.
 
 * `compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u}` is essentially the yoneda presheaf
   functor. We also define `profiniteToCondensed` and `stoneanToCondensed`.
-
 -/
 
 @[expose] public section
@@ -78,5 +75,8 @@ instance : compHausToCondensed'.Faithful :=
 instance : compHausToCondensed.Full := inferInstanceAs (_ ⋙ _).Full
 
 instance : compHausToCondensed.Faithful := inferInstanceAs (_ ⋙ _).Faithful
+
+instance : PreservesFiniteCoproducts compHausToCondensed.{u} :=
+  inferInstanceAs <| PreservesFiniteCoproducts (coherentTopology _).uliftYoneda
 
 end Topology

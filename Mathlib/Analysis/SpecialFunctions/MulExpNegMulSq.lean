@@ -6,8 +6,9 @@ Authors: Jakob Stiefel
 module
 
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Definition of `mulExpNegMulSq` and properties
@@ -109,16 +110,19 @@ theorem norm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
   refine ⟨le_trans two_mul_le_exp ((le_add_iff_nonneg_left (exp y)).mpr zero_le_one), ?_⟩
   exact le_trans (one_le_exp hynonneg) (le_add_of_nonneg_right (by simp [hynonneg]))
 
-theorem nnnorm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
+theorem nnNorm_deriv_mulExpNegMulSq_le_one (hε : 0 < ε) (x : ℝ) :
     ‖deriv (mulExpNegMulSq ε) x‖₊ ≤ 1 := by
-  rw [← NNReal.coe_le_coe, coe_nnnorm]
+  rw [← NNReal.coe_le_coe, coe_nnNorm]
   exact norm_deriv_mulExpNegMulSq_le_one hε x
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_deriv_mulExpNegMulSq_le_one := nnNorm_deriv_mulExpNegMulSq_le_one
 
 /-- For fixed `ε > 0`, the mapping `mulExpNegMulSq ε` is Lipschitz with constant `1` -/
 theorem lipschitzWith_one_mulExpNegMulSq (hε : 0 < ε) :
     LipschitzWith 1 (mulExpNegMulSq ε) := by
-  apply lipschitzWith_of_nnnorm_deriv_le differentiable_mulExpNegMulSq
-  exact nnnorm_deriv_mulExpNegMulSq_le_one hε
+  apply lipschitzWith_of_nnNorm_deriv_le differentiable_mulExpNegMulSq
+  exact nnNorm_deriv_mulExpNegMulSq_le_one hε
 
 theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one (hε : 0 < ε) (x : ℝ) :
     mulExpNegMulSq ε x = (√ε)⁻¹ * mulExpNegMulSq 1 (sqrt ε * x) := by
@@ -131,7 +135,6 @@ theorem abs_mulExpNegMulSq_le (hε : 0 < ε) {x : ℝ} : |mulExpNegMulSq ε x| �
   · positivity
   · exact abs_mulExpNegMulSq_one_le_one (√ε * x)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dist_mulExpNegMulSq_le_two_mul_sqrt (hε : 0 < ε) (x y : ℝ) :
     dist (mulExpNegMulSq ε x) (mulExpNegMulSq ε y) ≤ 2 * (√ε)⁻¹ := by
   apply le_trans (dist_triangle (mulExpNegMulSq ε x) 0 (mulExpNegMulSq ε y))

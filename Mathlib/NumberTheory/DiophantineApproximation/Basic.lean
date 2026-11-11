@@ -6,9 +6,8 @@ Authors: Michael Geißer, Michael Stoll
 module
 
 public import Mathlib.NumberTheory.Real.Irrational
-public import Mathlib.RingTheory.Coprime.Lemmas
-public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.Tactic.Basic
+
+import Mathlib.RingTheory.Int.Basic
 
 /-!
 # Diophantine Approximation
@@ -27,13 +26,16 @@ then $x/y$ must be a convergent of the continued fraction expansion of $\xi$.
 
 ## Main statements
 
-The main results are three variants of Dirichlet's approximation theorem:
+The main results are four variants of Dirichlet's approximation theorem:
 * `Real.exists_int_int_abs_mul_sub_le`, which states that for all real `ξ` and natural `0 < n`,
   there are integers `j` and `k` with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`,
 * `Real.exists_nat_abs_mul_sub_round_le`, which replaces `j` by `round(k*ξ)` and uses
   a natural number `k`,
 * `Real.exists_rat_abs_sub_le_and_den_le`, which says that there is a rational number `q`
   satisfying `|ξ - q| ≤ 1/((n+1)*q.den)` and `q.den ≤ n`,
+* `Real.exists_pi_nat_abs_mul_sub_lt`, which states that for all `d`-tuples of reals `ξ` and
+  natural `0 < n`, there exist a natural `k` with `0 < k ≤ n ^ d` and a `d`-tuple of integers `j`
+  with `|k * ξ i - j i| < 1 / n` for all `i`.
 
 and
 * `Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational`, which states that
@@ -55,7 +57,7 @@ in this file, whereas the other, `Real.exists_convs_eq_rat` defined in the file
 ## Implementation notes
 
 We use the namespace `Real` for the results on real numbers and `Rat` for the results
-on rational numbers. We introduce a secondary namespace `real.contfrac_legendre`
+on rational numbers. We introduce a secondary namespace `Real.ContfracLegendre`
 to separate off a definition and some technical auxiliary lemmas used in the proof
 of Legendre's Theorem. For remarks on the proof of Legendre's Theorem, see below.
 
@@ -111,7 +113,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     rw [cast_add, ← sub_sub, sub_mul, cast_one, one_mul, abs_le]
     refine
       ⟨le_sub_iff_add_le.mpr ?_, sub_le_iff_le_add.mpr <| le_of_lt <| (hfu m).trans <| lt_one_add _⟩
-    simpa only [neg_add_cancel_comm_assoc] using hf'
+    simpa only [neg_add_cancel_comm_assoc] using! hf'
   · have hD : #(Ico (0 : ℤ) n) < #D := by rw [card_Icc, card_Ico]; exact lt_add_one n
     have hfu' : ∀ m, f m ≤ n := fun m => lt_add_one_iff.mp (floor_lt.mpr (mod_cast hfu m))
     have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
@@ -124,7 +126,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     refine
       ⟨⌊ξ * y⌋ - ⌊ξ * x⌋, y - x, sub_pos_of_lt x_lt_y,
         sub_le_iff_le_add.mpr <| le_add_of_le_of_nonneg (mem_Icc.mp hy).2 (mem_Icc.mp hx).1, ?_⟩
-    convert_to |fract (ξ * y) * (n + 1) - fract (ξ * x) * (n + 1)| ≤ 1
+    convert_to! |fract (ξ * y) * (n + 1) - fract (ξ * x) * (n + 1)| ≤ 1
     · congr; push_cast; simp only [fract]; ring
     exact (abs_sub_lt_one_of_floor_eq_floor hxy.symm).le
 
@@ -157,6 +159,31 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   rwa [← abs_of_pos hk₀', Rat.cast_div, Rat.cast_intCast, Rat.cast_intCast, ← abs_mul, sub_mul,
     div_mul_cancel₀ _ hk₀'.ne', mul_comm]
 
+/-- *Simultaneous Dirichlet's approximation theorem:*
+For any `d`-tuple of real numbers `ξ` and positive natural `n`,
+there exist a natural `k` with `0 < k ≤ n ^ d` and a `d`-tuple of integers `j`
+with `|k * ξ i - j i| < 1 / n` for all `i`. -/
+theorem exists_pi_nat_abs_mul_sub_lt {d n : ℕ} (ξ : Fin d → ℝ) (n_pos : 0 < n) :
+    ∃ j : Fin d → ℤ, ∃ k : ℕ, 0 < k ∧ k ≤ n ^ d ∧ ∀ i, |k * ξ i - j i| < 1 / n := by
+  let f (m : ℕ) (i : Fin d) : ℤ := ⌊fract (ξ i * m) * n⌋
+  have hn : 0 < (n : ℝ) := mod_cast n_pos
+  have hfu m i : fract (ξ i * m) * n < n := mul_lt_of_lt_one_left hn (fract_lt_one _)
+  conv in |_| < _ => rw [mul_comm, lt_div_iff₀ hn, ← abs_of_pos hn, ← abs_mul]
+  let D := range (n ^ d + 1)
+  have hwd (m) (_ : m ∈ D) : f m ∈ Fintype.piFinset fun _ ↦ Ico (0 : ℤ) n := by
+    simp_rw [Fintype.mem_piFinset, mem_Ico]
+    exact fun i ↦ ⟨by positivity, by exact_mod_cast (floor_le _).trans_lt (hfu ..)⟩
+  have hD : #(Fintype.piFinset fun _ : Fin d ↦ Ico (0 : ℤ) n) < #D := by simp [D]
+  obtain ⟨x, hx, y, hy, x_lt_y, hxy⟩ : ∃ x ∈ D, ∃ y ∈ D, x < y ∧ f x = f y := by
+    obtain ⟨x, hx, y, hy, x_ne_y, hxy⟩ := exists_ne_map_eq_of_card_lt_of_maps_to hD hwd
+    obtain h | rfl | h := lt_trichotomy x y
+    exacts [⟨x, hx, y, hy, h, hxy⟩, by contradiction, ⟨y, hy, x, hx, h, hxy.symm⟩]
+  refine ⟨fun i ↦ ⌊ξ i * y⌋ - ⌊ξ i * x⌋, y - x, by lia, by grind, fun i ↦ ?_⟩
+  rw [cast_sub, Nat.cast_sub x_lt_y.le]
+  convert_to |fract (ξ i * y) * n - fract (ξ i * x) * n| < 1
+  · grind [fract]
+  exact abs_sub_lt_one_of_floor_eq_floor congr($hxy i).symm
+
 end Dirichlet
 
 section RatApprox
@@ -171,7 +198,6 @@ i.e., fractions `x/y` in lowest terms such that `|ξ - x/y| < 1/y^2`.
 
 open Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given any rational approximation `q` to the irrational real number `ξ`, there is
 a good rational approximation `q'` such that `|ξ - q'| < |ξ - q|`. -/
 theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational ξ) (q : ℚ) :
@@ -220,7 +246,6 @@ approximations.
 
 open Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ξ` is rational, then the good rational approximations to `ξ` have bounded
 numerator and denominator. -/
 theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
@@ -282,7 +307,7 @@ theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ => ?_,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
   contrapose! h
-  convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
+  convert! Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [h, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
   norm_cast
 
@@ -337,7 +362,6 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
     ξ.convergent (n + 1) = ⌊ξ⌋ + ((fract ξ)⁻¹.convergent n)⁻¹ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- All convergents of `0` are zero. -/
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
@@ -346,7 +370,6 @@ theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   | succ n ih =>
     simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
@@ -404,7 +427,6 @@ private theorem aux₁ : 0 < fract ξ := by
   norm_cast at H
   linarith only [hv, H]
 
-set_option backward.isDefEq.respectTransparency false in
 -- An auxiliary lemma for the inductive step.
 private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
@@ -420,7 +442,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
     exact mod_cast
       h.trans_le
-        ((mul_le_mul_iff_left₀ <| hv₀').mpr <|
+        ((mul_le_mul_iff_left₀ hv₀').mpr <|
           (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_iff_left₀ hv₀).mpr (floor_le ξ)))
   have hu₁ : u - ⌊ξ⌋ * v ≤ v := by
     refine _root_.le_of_mul_le_mul_right (le_of_lt_add_one ?_) hv₁
@@ -439,7 +461,6 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
       simp only [isCoprime_zero_left, isCoprime_self, isUnit_iff] at huv_cop
       rcases huv_cop with huv_cop | huv_cop <;> linarith only [hv, huv_cop]
 
-set_option backward.isDefEq.respectTransparency false in
 -- The key step: the relevant inequality persists in the inductive step.
 private theorem aux₃ :
     |(fract ξ)⁻¹ - v / (u - ⌊ξ⌋ * v)| < (((u : ℝ) - ⌊ξ⌋ * v) * (2 * (u - ⌊ξ⌋ * v) - 1))⁻¹ := by
@@ -497,7 +518,7 @@ end
 /-- The technical version of *Legendre's Theorem*. -/
 theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
-  induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
+  induction v using Nat.strong_induction_on generalizing ξ u with | ind v ih
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2
     simp only [Nat.lt_one_iff.mp ht, Nat.cast_zero, div_zero, tsub_zero, zero_mul,
@@ -507,7 +528,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     obtain ⟨_, h₁, h₂⟩ := h
     rcases le_or_gt (u : ℝ) ξ with ht | ht
     · use 0
-      rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
+      rw [convergent_zero, Rat.intCast_inj, eq_comm, floor_eq_iff]
       convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
     · replace h₁ := lt_sub_iff_add_lt'.mp (h₁ rfl)
       have hξ₁ : ⌊ξ⌋ = u - 1 := by
@@ -537,7 +558,6 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
       (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
       cast_natCast, inv_div, sub_div, mul_div_cancel_right₀ _ Hv, add_sub_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
@@ -547,7 +567,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
   refine q.num_div_den ▸ exists_rat_eq_convergent' ⟨?_, fun hd => ?_, ?_⟩
   · exact isCoprime_iff_nat_coprime.mpr (natAbs_natCast q.den ▸ q.reduced)
   · rw [← q.den_eq_one_iff.mp (Nat.cast_eq_one.mp hd)] at h
-    simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
+    simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using! (abs_lt.mp h).1
   · obtain ⟨hq₀, hq₁⟩ := aux₀ (Nat.cast_pos.mpr q.pos)
     replace hq₁ := mul_pos hq₀ hq₁
     have hq₂ : (0 : ℝ) < 2 * (q.den * q.den) := mul_pos zero_lt_two (mul_pos hq₀ hq₀)

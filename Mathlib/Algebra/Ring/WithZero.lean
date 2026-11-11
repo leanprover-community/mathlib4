@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Defs
 # Adjoining a zero to a semiring
 -/
 
-@[expose] public section
+public section
 
 namespace WithZero
 variable {α : Type*}
@@ -22,14 +22,14 @@ instance instLeftDistribClass [Mul α] [Add α] [LeftDistribClass α] :
   left_distrib a b c := by
     cases a; · rfl
     cases b <;> cases c <;> try rfl
-    exact congr_arg some (left_distrib _ _ _)
+    congrm some $(left_distrib ..)
 
 instance instRightDistribClass [Mul α] [Add α] [RightDistribClass α] :
     RightDistribClass (WithZero α) where
   right_distrib a b c := by
     cases c; · simp
     cases a <;> cases b <;> try rfl
-    exact congr_arg some (right_distrib _ _ _)
+    congrm some $(right_distrib ..)
 
 instance instDistrib [Distrib α] : Distrib (WithZero α) where
   left_distrib := left_distrib

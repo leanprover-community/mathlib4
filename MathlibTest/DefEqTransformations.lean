@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.DefEqTransformations
 
 set_option autoImplicit true
@@ -63,7 +64,7 @@ example : 1 + 2 = 2 + 1 := by
 
 example (m n : Nat) : (m == n) = true := by
   unfold_projs
-  guard_target =ₛ decide (m = n) = true
+  guard_target =ₛ m.beq n = true
   exact test_sorry
 
 example {α : Type u} (f : α → α) (a : α) :
@@ -103,6 +104,27 @@ example (f : Nat → Nat → Nat) : (fun x => f 1 x) 2 = 3 := by
 example : (fun (a : Nat) => 1 + a) 2 = (1 + ·) 2 := by
   eta_expand
   guard_target =ₛ 1 + 2 = 1 + 2
+  rfl
+
+example (f : (Nat → Nat) → Nat) : f = fun _ => 0 := by
+  eta_expand
+  guard_target =ₛ (fun x : Nat → Nat => f (fun y => x y)) = fun _ => 0
+  eta_expand
+  guard_target =ₛ (fun x : Nat → Nat => f (fun y => x y)) = fun _ => 0
+  exact test_sorry
+
+example (f : ((Nat → Nat) → Nat) → Nat) : f = fun _ => 0 := by
+  eta_expand
+  guard_target =ₛ (fun x : (Nat → Nat) → Nat => f (fun y => x fun z => y z)) = fun _ => 0
+  eta_expand
+  guard_target =ₛ (fun x : (Nat → Nat) → Nat => f (fun y => x fun z => y z)) = fun _ => 0
+  exact test_sorry
+
+example : @id (Nat → Nat) = fun x => x := by
+  eta_expand
+  guard_target =ₛ (fun (x : Nat → Nat) y => id (fun z => x z) y) = fun x y => x y
+  eta_expand
+  guard_target =ₛ (fun (x : Nat → Nat) y => id (fun z => x z) y) = fun x y => x y
   rfl
 
 example (p : Nat × Nat) : (p.1, p.2) = (p.2, p.1) := by

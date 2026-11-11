@@ -19,7 +19,6 @@ In the lemma `HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W` we obtain
 that the class of quasiisomorphisms `HomotopyCategory.quasiIso C (ComplexShape.up ℤ)`
 consists of morphisms whose cone belongs to the triangulated subcategory
 `HomotopyCategory.subcategoryAcyclic C` of acyclic complexes.
-
 -/
 
 @[expose] public section
@@ -64,9 +63,16 @@ lemma quotient_obj_mem_subcategoryAcyclic_iff_acyclic (K : CochainComplex C ℤ)
 
 variable (C)
 
-lemma quasiIso_eq_subcategoryAcyclic_W :
+lemma quasiIso_eq_trW_subcategoryAcyclic :
     quasiIso C (ComplexShape.up ℤ) = (subcategoryAcyclic C).trW := by
   ext K L f
   exact ((homologyFunctor C (ComplexShape.up ℤ) 0).mem_homologicalKernel_trW_iff f).symm
+
+@[deprecated (since := "2026-05-06")] alias quasiIso_eq_subcategoryAcyclic_W :=
+  quasiIso_eq_trW_subcategoryAcyclic
+
+instance : (quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
+  rw [quasiIso_eq_trW_subcategoryAcyclic]
+  infer_instance
 
 end HomotopyCategory

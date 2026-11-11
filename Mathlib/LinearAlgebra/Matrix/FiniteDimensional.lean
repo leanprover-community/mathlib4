@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # The finite-dimensional space of matrices
@@ -24,10 +24,9 @@ exists only to provide an entry in the instance list for `FiniteDimensional`.
 ## Tags
 
 matrix, finite dimensional, findim, finrank
-
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -38,7 +37,6 @@ section FiniteDimensional
 
 variable {m n : Type*} {R : Type v} [Field R]
 
-set_option backward.isDefEq.respectTransparency false in
 instance finiteDimensional [Finite m] [Finite n] : FiniteDimensional R (Matrix m n R) :=
   Module.Finite.matrix
 

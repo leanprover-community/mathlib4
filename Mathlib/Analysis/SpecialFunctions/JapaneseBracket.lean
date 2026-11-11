@@ -5,9 +5,12 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.MeasureTheory.Integral.Layercake
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+
+import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Japanese Bracket
@@ -21,17 +24,14 @@ than the dimension.
 
 * `integrable_one_add_norm`: the function $(1 + |x|)^{-r}$ is integrable
 * `integrable_jap` the Japanese bracket is integrable
-
 -/
 
 public section
 
 
-noncomputable section
-
 open scoped NNReal Filter Topology ENNReal
 
-open Asymptotics Filter Set Real MeasureTheory Module
+open Filter Set Real MeasureTheory Module
 
 variable {E : Type*} [NormedAddCommGroup E]
 
@@ -73,7 +73,6 @@ theorem closedBall_rpow_sub_one_eq_empty_aux {r t : ℝ} (hr : 0 < r) (ht : 1 < 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable {E}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ) < r) :
     (∫⁻ x : ℝ in Ioc 0 1, ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n)) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt n.cast_nonneg hnr
@@ -93,7 +92,6 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
 
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [μ.IsAddHaarMeasure]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     (∫⁻ x : E, ENNReal.ofReal ((1 + ‖x‖) ^ (-r)) ∂μ) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
@@ -105,7 +103,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
       μ (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1)) := fun t ht ↦ by
     congr 1
     ext x
-    simp only [mem_setOf_eq, mem_closedBall_zero_iff]
+    simp only [mem_ofPred_eq, mem_closedBall_zero_iff]
     exact le_rpow_one_add_norm_iff_norm_le hr (mem_Ioi.mp ht) x
   rw [setLIntegral_congr_fun measurableSet_Ioi h_int]
   set f := fun t : ℝ ↦ μ (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1))
@@ -139,8 +137,8 @@ theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
   · apply Measurable.aestronglyMeasurable (by fun_prop)
   -- Lower Lebesgue integral
   have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖ₑ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
-    lintegral_enorm_of_nonneg fun _ => rpow_nonneg (by positivity) _
-  rw [hasFiniteIntegral_iff_enorm, this]
+    lintegral_eNorm_of_nonneg fun _ => rpow_nonneg (by positivity) _
+  rw [hasFiniteIntegral_iff_eNorm, this]
   exact finite_integral_one_add_norm hnr
 
 theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :

@@ -6,7 +6,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Topology.Order.Bornology
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The reals are equipped with their order bornology
@@ -15,7 +17,7 @@ This file contains results related to the order bornology on (non-negative) real
 We prove that `ℝ` and `ℝ≥0` are equipped with the order topology and bornology.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsTopologicalRing UniformContinuousConstSMul UniformOnFun
 
@@ -29,7 +31,6 @@ namespace NNReal
 instance : OrderTopology ℝ≥0 :=
   orderTopology_of_ordConnected (t := Ici 0)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsOrderBornology ℝ≥0 := .of_isCompactIcc 0 (by simp) fun r ↦ by
   obtain hr | hr := le_or_gt 0 r <;> simp [closedBall_zero_eq_Icc, *]
 

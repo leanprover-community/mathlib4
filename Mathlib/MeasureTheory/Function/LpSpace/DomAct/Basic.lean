@@ -18,7 +18,7 @@ and `c : M`, then `(.mk c : Mᵈᵐᵃ) • [f]` is represented by the function 
 We also prove basic properties of this action.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter
 open scoped ENNReal
@@ -104,12 +104,14 @@ theorem norm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖ = ‖f‖ 
   Lp.norm_compMeasurePreserving _ _
 
 @[to_additive (attr := simp)]
-theorem nnnorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
+theorem nnNorm_smul_Lp (c : Mᵈᵐᵃ) (f : Lp E p μ) : ‖c • f‖₊ = ‖f‖₊ :=
   NNReal.eq <| Lp.norm_compMeasurePreserving _ _
+
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_smul_Lp := nnNorm_smul_Lp
 
 @[to_additive (attr := simp)]
 theorem dist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : dist (c • f) (c • g) = dist f g := by
-  simp only [dist, ← smul_Lp_sub, norm_smul_Lp]
+  simp only [dist, ← smul_Lp_neg, ← smul_Lp_add, norm_smul_Lp]
 
 @[to_additive (attr := simp)]
 theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c • g) = edist f g := by

@@ -11,15 +11,16 @@ public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Norm in number fields
+
 Given a finite extension of number fields, we define the norm morphism as a function between the
 rings of integers.
 
 ## Main definitions
-* `RingOfIntegers.norm K` : `Algebra.norm` as a morphism `(𝓞 L) →* (𝓞 K)`.
-## Main results
-* `RingOfIntegers.dvd_norm` : if `L/K` is a finite Galois extension of fields, then, for all
-  `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
+* `NumberField.RingOfIntegers.norm K` : `Algebra.norm` as a morphism `(𝓞 L) →* (𝓞 K)`.
 
+## Main results
+* `NumberField.RingOfIntegers.dvd_norm` : if `L/K` is a finite Galois extension of fields, then,
+  for all `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
 -/
 
 @[expose] public section
@@ -33,17 +34,15 @@ section Rat
 
 variable {K : Type*} [Field K] [NumberField K] (x : 𝓞 K)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.coe_norm_int : (Algebra.norm ℤ x : ℚ) = Algebra.norm ℚ (x : K) :=
   (Algebra.norm_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.coe_trace_int : (Algebra.trace ℤ _ x : ℚ) = Algebra.trace ℚ K (x : K) :=
   (Algebra.trace_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
 
 end Rat
 
-namespace RingOfIntegers
+namespace NumberField.RingOfIntegers
 
 variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L]
 
@@ -70,22 +69,7 @@ theorem norm_algebraMap (x : 𝓞 K) : norm K (algebraMap (𝓞 K) (𝓞 L) x) =
     RingOfIntegers.algebraMap_norm_algebraMap, Algebra.norm_algebraMap,
     RingOfIntegers.coe_eq_algebraMap, map_pow]
 
-theorem isUnit_norm_of_isGalois [FiniteDimensional K L] [IsGalois K L] {x : 𝓞 L} :
-    IsUnit (norm K x) ↔ IsUnit x := by
-  classical
-  refine ⟨fun hx => ?_, IsUnit.map _⟩
-  replace hx : IsUnit (algebraMap (𝓞 K) (𝓞 L) <| norm K x) := hx.map (algebraMap (𝓞 K) <| 𝓞 L)
-  refine @isUnit_of_mul_isUnit_right (𝓞 L) _ _
-    ⟨(univ \ {AlgEquiv.refl}).prod fun σ : Gal(L/K) => σ x,
-      prod_mem fun σ _ => x.2.map (σ : L →+* L).toIntAlgHom⟩ _ ?_
-  convert hx using 1
-  ext
-  convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : Gal(L/K) => σ x) *
-    ∏ σ ∈ {(AlgEquiv.refl : Gal(L/K))}, σ x = _
-  · rw [prod_singleton, AlgEquiv.coe_refl, _root_.id, RingOfIntegers.coe_eq_algebraMap, map_mul,
-      RingOfIntegers.map_mk]
-  · rw [prod_sdiff <| subset_univ _, ← norm_eq_prod_automorphisms, coe_algebraMap_norm]
-
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `L/K` is a finite Galois extension of fields, then, for all `(x : 𝓞 L)` we have that
 `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`. -/
 theorem dvd_norm [FiniteDimensional K L] [IsGalois K L] (x : 𝓞 L) :
@@ -100,6 +84,10 @@ theorem dvd_norm [FiniteDimensional K L] [IsGalois K L] (x : 𝓞 L) :
   rw [coe_algebraMap_norm K x, norm_eq_prod_automorphisms]
   simp [← Finset.mul_prod_erase _ _ (mem_univ AlgEquiv.refl)]
 
+theorem isUnit_norm_of_isGalois [FiniteDimensional K L] [IsGalois K L] {x : 𝓞 L} :
+    IsUnit (norm K x) ↔ IsUnit x :=
+  ⟨fun hx ↦ isUnit_of_dvd_unit (dvd_norm K x) (hx.map _), IsUnit.map _⟩
+
 variable (F : Type*) [Field F] [Algebra K F] [FiniteDimensional K F]
 
 theorem norm_norm [Algebra F L] [FiniteDimensional F L] [IsScalarTower K F L] (x : 𝓞 L) :
@@ -108,12 +96,11 @@ theorem norm_norm [Algebra F L] [FiniteDimensional F L] [IsScalarTower K F L] (x
 
 variable {F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x := by
-  letI : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
+  let : Algebra K (AlgebraicClosure K) := AlgebraicClosure.instAlgebra K
   let L := normalClosure K F (AlgebraicClosure F)
-  haveI : FiniteDimensional F L := FiniteDimensional.right K F L
-  haveI : IsGalois F L := IsGalois.tower_top_of_isGalois K F L
+  have : FiniteDimensional F L := FiniteDimensional.right K F L
+  have : IsGalois F L := IsGalois.tower_top_of_isGalois K F L
   calc
     IsUnit (norm K x) ↔ IsUnit ((norm K) x ^ finrank F L) :=
       (isUnit_pow_iff (pos_iff_ne_zero.mp finrank_pos)).symm
@@ -121,7 +108,26 @@ theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x :
       rw [← norm_norm K F (algebraMap (𝓞 F) (𝓞 L) x), norm_algebraMap F _, map_pow]
     _ ↔ IsUnit (algebraMap (𝓞 F) (𝓞 L) x) := isUnit_norm_of_isGalois K
     _ ↔ IsUnit (norm F (algebraMap (𝓞 F) (𝓞 L) x)) := (isUnit_norm_of_isGalois F).symm
-    _ ↔ IsUnit (x ^ finrank F L) := (congr_arg IsUnit (norm_algebraMap F _)).to_iff
+    _ ↔ IsUnit (x ^ finrank F L) := congr(IsUnit $(norm_algebraMap F _)).to_iff
     _ ↔ IsUnit x := isUnit_pow_iff (pos_iff_ne_zero.mp finrank_pos)
 
-end RingOfIntegers
+end NumberField.RingOfIntegers
+
+@[deprecated (since := "2026-11-08")] alias RingOfIntegers.norm := NumberField.RingOfIntegers.norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.coe_norm := NumberField.RingOfIntegers.coe_norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.coe_algebraMap_norm := NumberField.RingOfIntegers.coe_algebraMap_norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.algebraMap_norm_algebraMap :=
+  NumberField.RingOfIntegers.algebraMap_norm_algebraMap
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.norm_algebraMap := NumberField.RingOfIntegers.norm_algebraMap
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.dvd_norm := NumberField.RingOfIntegers.dvd_norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isUnit_norm_of_isGalois := NumberField.RingOfIntegers.isUnit_norm_of_isGalois
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.norm_norm := NumberField.RingOfIntegers.norm_norm
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isUnit_norm := NumberField.RingOfIntegers.isUnit_norm

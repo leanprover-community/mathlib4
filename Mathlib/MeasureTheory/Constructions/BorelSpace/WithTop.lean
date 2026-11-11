@@ -22,7 +22,6 @@ We then prove that the natural inclusion `ι → WithTop ι` is measurable, and 
 * `Measurable.withTop_coe`: the function `fun x : ι ↦ (x : WithTop ι)` is measurable.
 * `Measurable.untopD`: for `d : ι`, the function `WithTop.untopD d : WithTop ι → ι` is measurable.
 * `Measurable.untopA`: the function `WithTop.untopA : WithTop ι → ι` is measurable.
-
 -/
 
 @[expose] public section
@@ -43,7 +42,6 @@ noncomputable
 def MeasurableEquiv.neTopEquiv : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
   (WithTop.neTopHomeomorph ι).toMeasurableEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
     {f : WithTop ι → α} (h : Measurable fun p : ι ↦ f p) :
     Measurable f :=

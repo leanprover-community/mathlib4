@@ -8,13 +8,12 @@ module
 public import Mathlib.Condensed.Module
 
 /-!
-
 # Limits in categories of condensed objects
 
 This file adds some instances for limits in condensed sets and condensed modules.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

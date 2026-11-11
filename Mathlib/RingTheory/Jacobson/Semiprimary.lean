@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semiprimary rings
 
@@ -17,7 +20,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
   `Ring.jacobson R` is nilpotent and `R ⧸ Ring.jacobson R` is semisimple.
 -/
 
-@[expose] public section
+public section
 
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
@@ -26,7 +29,6 @@ variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 theorem IsSimpleModule.jacobson_eq_bot [IsSimpleModule R M] : Module.jacobson R M = ⊥ :=
   le_bot_iff.mp <| sInf_le isCoatom_bot
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsSemisimpleModule.jacobson_eq_bot [IsSemisimpleModule R M] :
     Module.jacobson R M = ⊥ :=
   have ⟨s, e, simple⟩ := isSemisimpleModule_iff_exists_linearEquiv_dfinsupp.mp ‹_›
