@@ -16,7 +16,6 @@ import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
-
 # Weierstrass `℘` functions
 
 ## Main definitions and results
@@ -44,7 +43,6 @@ import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 ## tags
 
 Weierstrass p-functions, Weierstrass p functions
-
 -/
 
 @[expose] public section

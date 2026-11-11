@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.Subcanonical
 
 /-!
-
 # Preservation of (co)limits by the sheaf Yoneda functor
 -/
 

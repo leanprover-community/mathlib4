@@ -16,7 +16,6 @@ We show that the inner product is continuous, `continuous_inner`.
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 public section

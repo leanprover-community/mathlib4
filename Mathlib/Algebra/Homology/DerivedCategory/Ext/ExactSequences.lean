@@ -30,7 +30,6 @@ also restated using `Ext.δ` instead of the pre-composition with the class in `E
 
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
-
 -/
 
 @[expose] public section

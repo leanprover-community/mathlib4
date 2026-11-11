@@ -23,7 +23,6 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 * `IsIntegrallyClosed.Minpoly.unique`: The minimal polynomial of an element `x` is uniquely
   characterized by its defining property: if there is another monic polynomial of minimal degree
   that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
-
 -/
 
 @[expose] public section

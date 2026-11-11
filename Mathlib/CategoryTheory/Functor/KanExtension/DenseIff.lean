@@ -17,7 +17,6 @@ the restricted Yoneda functor `D ⥤ Cᵒᵖ ⥤ Type _` is fully faithful.
 ## References
 
 * https://ncatlab.org/nlab/show/dense+subcategory
-
 -/
 
 @[expose] public section

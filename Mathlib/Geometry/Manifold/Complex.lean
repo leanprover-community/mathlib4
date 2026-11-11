@@ -36,7 +36,6 @@ holomorphic vector/line bundles, including:
 Another direction would be to develop the relationship with sheaf theory, building the sheaves of
 holomorphic and meromorphic functions on a complex manifold and proving algebraic results about the
 stalks, such as the Weierstrass preparation theorem.
-
 -/
 
 public section

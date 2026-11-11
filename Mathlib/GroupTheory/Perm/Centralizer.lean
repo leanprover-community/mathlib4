@@ -95,7 +95,6 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 
 * `Equiv.Perm.card_of_cycleType_mul_eq m` and `Equiv.Perm.card_of_cycleType m`
   compute this cardinality.
-
 -/
 
 @[expose] public section

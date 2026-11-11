@@ -10,7 +10,6 @@ public import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Continuity of the functoriality of `X → M` when `X` is finite
-
 -/
 
 public section
