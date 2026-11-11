@@ -91,7 +91,9 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Check the manifest before setup downloads dependencies. The action's README lists the rules.
+      # Check dependency repositories and references, full commit hashes, branch or tag membership,
+      # and accidental downgrades before setup downloads dependencies. Details:
+      # https://github.com/leanprover-community/mathlib-ci/blob/master/.github/actions/validate-lake-manifest/README.md
       # Bors uses strict mode; other runs can test unmerged dependencies with warnings.
       # For an intentional revert, an admin sets MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS to true
       # and deletes the variable after the revert merges.
