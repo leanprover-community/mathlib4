@@ -212,27 +212,28 @@ lemma Pairwise.sum_mul_star_sum_of_isStarOrtho {ι : Type*} [Fintype ι] {f : ι
     (∑ i, f i) * star (∑ i, f i) = ∑ i, f i * star (f i) :=
   (h.set_pairwise _).sum_mul_star_sum_of_isStarOrtho
 
-protected lemma IsSelfAdjoint.isStarOrtho_iff (hq : IsSelfAdjoint q) :
+protected lemma IsSelfAdjoint.isStarOrtho_iff (hp : IsSelfAdjoint p) :
+    p ⋆⟂ q ↔ p * q = 0 ∧ q * p = 0 := by
+  rw [isStarOrtho_comm, isStarOrtho_iff, hp.star_eq, and_comm]
+
+/-- A version of `IsSelfAdjoint.isStarOrtho_iff` where the right argument is self-adjoint. -/
+protected lemma IsSelfAdjoint.isStarOrtho_iff' (hq : IsSelfAdjoint q) :
     p ⋆⟂ q ↔ p * q = 0 ∧ q * p = 0 := by
   rw [isStarOrtho_iff, hq.star_eq]
-
-protected lemma IsSelfAdjoint.isStarOrtho_iff' (hp : IsSelfAdjoint p) :
-    p ⋆⟂ q ↔ p * q = 0 ∧ q * p = 0 := by
-  rw [isStarOrtho_comm, hp.isStarOrtho_iff, and_comm]
 
 /-- Self-adjoint elements are star-orthogonal if and only if their product is zero. -/
 @[grind =]
 lemma IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero (hp : IsSelfAdjoint p)
     (hq : IsSelfAdjoint q) : p ⋆⟂ q ↔ p * q = 0 := by
-  rw [hq.isStarOrtho_iff, and_iff_left_iff_imp]
+  rw [hq.isStarOrtho_iff', and_iff_left_iff_imp]
   intro h
   simpa [hp.star_eq, hq.star_eq] using congr(star $h)
 
 protected lemma IsStarOrtho.mul_eq_zero (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : p * q = 0 :=
-  hq.isStarOrtho_iff.mp h |>.left
+  hq.isStarOrtho_iff'.mp h |>.left
 
 protected lemma IsStarOrtho.mul_eq_zero' (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : q * p = 0 :=
-  hq.isStarOrtho_iff.mp h |>.right
+  hq.isStarOrtho_iff'.mp h |>.right
 
 /-- The sum of star-orthogonal star projections is a star projection. -/
 lemma IsStarOrtho.isStarProjection_add (h : p ⋆⟂ q) (hp : IsStarProjection p)
