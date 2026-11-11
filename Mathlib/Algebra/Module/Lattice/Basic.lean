@@ -174,13 +174,13 @@ theorem comap [IsLattice A M] {f : W →ₗ[A] V} (hf : Function.Injective f)
   of_map A _ hf.injOn
 
 /-- The image of a lattice under an `A`-linear equivalence is a lattice. -/
-instance [IsLattice A M] (e : V ≃ₗ[A] W) :
-    IsLattice A (M.map (e.toLinearMap.restrictScalars R)) :=
+instance instMapRestrictScalars [IsLattice A M] (e : V ≃ₗ[A] W) :
+    IsLattice A (M.map (e.restrictScalars R).toLinearMap) :=
   map A M e.injective.injOn
 
 /-- The preimage of a lattice under an `A`-linear equivalence is a lattice. -/
-instance [IsLattice A M] (e : W ≃ₗ[A] V) :
-    IsLattice A (M.comap (e.toLinearMap.restrictScalars R)) :=
+instance instComapRestrictScalars [IsLattice A M] (e : W ≃ₗ[A] V) :
+    IsLattice A (M.comap (e.restrictScalars R).toLinearMap) :=
   comap A M e.injective fun x _ ↦ e.surjective x
 
 end map

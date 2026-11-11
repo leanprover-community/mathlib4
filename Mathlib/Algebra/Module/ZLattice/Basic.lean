@@ -795,7 +795,7 @@ theorem ZLattice.comap_comp {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
 
 /-- If `e` is a linear equivalence, it induces a `ℤ`-linear equivalence between
 `L` and `ZLattice.comap K L e`. -/
-@[deprecated LinearEquiv.submoduleMap +typeChanged (since := "2026-10-26")]
+@[deprecated LinearEquiv.ofSubmodule' +typeChanged (since := "2026-10-26")]
 def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
     L ≃ₗ[ℤ] (ZLattice.comap K L e.toLinearMap) :=
   LinearEquiv.ofBijective
@@ -805,7 +805,7 @@ def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
     fun ⟨x, hx⟩ ↦ ⟨⟨e x, by rwa [← SetLike.mem_coe, ZLattice.coe_comap] at hx⟩,
       by simp [Subtype.ext_iff]⟩⟩
 
-@[simp, deprecated LinearEquiv.submoduleMap_apply +typeChanged (since := "2026-10-26")]
+@[simp, deprecated LinearEquiv.ofSubmodule'_symm_apply +typeChanged (since := "2026-10-26")]
 theorem ZLattice.comap_equiv_apply (e : F ≃ₗ[K] E) (x : L) :
     ZLattice.comap_equiv K L e x = e.symm x := rfl
 

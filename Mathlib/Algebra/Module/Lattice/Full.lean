@@ -99,18 +99,19 @@ variable {W : Type*} [AddCommGroup W] [Module R W] [Module A W] [IsScalarTower R
 variable (M : Submodule R V)
 
 /-- The image of a full lattice under an `A`-linear equivalence is a full lattice. -/
-instance [IsFullLattice A M] (e : V ≃ₗ[A] W) :
-    IsFullLattice A (M.map (e.toLinearMap.restrictScalars R)) where
+instance instMapRestrictScalars [IsFullLattice A M] (e : V ≃ₗ[A] W) :
+    IsFullLattice A (M.map (e.restrictScalars R).toLinearMap) where
   span_eq_top := by
-    rw [map_coe, LinearMap.coe_restrictScalars, span_image, span_eq_top, map_top, LinearEquiv.range]
+    rw [map_coe, LinearEquiv.restrictScalars_toLinearMap, LinearMap.coe_restrictScalars, span_image,
+      span_eq_top, map_top, LinearEquiv.range]
 
 /-- The preimage of a full lattice under an `A`-linear equivalence is a full lattice. -/
-instance [IsFullLattice A M] (e : W ≃ₗ[A] V) :
-    IsFullLattice A (M.comap (e.toLinearMap.restrictScalars R)) where
+instance instComapRestrictScalars [IsFullLattice A M] (e : W ≃ₗ[A] V) :
+    IsFullLattice A (M.comap (e.restrictScalars R).toLinearMap) where
   span_eq_top := by
-    rw [comap_coe, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
-      ← e.image_symm_eq_preimage, ← LinearEquiv.coe_coe, span_image, span_eq_top, map_top,
-      LinearEquiv.range]
+    rw [comap_coe, LinearEquiv.restrictScalars_toLinearMap, LinearMap.coe_restrictScalars,
+      LinearEquiv.coe_coe, ← e.image_symm_eq_preimage, ← LinearEquiv.coe_coe, span_image,
+      span_eq_top, map_top, LinearEquiv.range]
 
 /-- A lattice is a full lattice in its own `A`-span. -/
 instance _root_.Submodule.IsLattice.isFullLattice_span_self [IsLattice A M] :

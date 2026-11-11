@@ -854,7 +854,7 @@ theorem volumePreserving_toMixed_symm :
 open scoped Classical in
 /-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
-  (mixedEmbedding.integerLattice K).comap ((toMixed K).toLinearMap.restrictScalars ℤ)
+  (mixedEmbedding.integerLattice K).comap ((toMixed K).toLinearEquiv.restrictScalars ℤ).toLinearMap
 
 instance : (euclidean.integerLattice K).IsFullLattice ℝ:= by
   rw [euclidean.integerLattice]
