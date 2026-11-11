@@ -29,7 +29,6 @@ and adapted. We also give an equivalent characterization of predictability for d
 ## Tags
 
 predictable, previsible
-
 -/
 
 @[expose] public section
@@ -256,23 +255,5 @@ lemma iff_measurable_add_one {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E} :
 end Discrete
 
 end IsStronglyPredictable
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable := IsStronglyPredictable
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.progMeasurable := IsStronglyPredictable.isStronglyProgressive
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.adapted := IsStronglyPredictable.stronglyAdapted
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.measurable_add_one := IsStronglyPredictable.measurable_add_one
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.of_measurable_add_one := IsStronglyPredictable.of_measurable_add_one
-
-@[deprecated (since := "2026-04-24")]
-alias IsPredictable.iff_measurable_add_one := IsStronglyPredictable.iff_measurable_add_one
 
 end MeasureTheory

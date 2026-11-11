@@ -17,7 +17,6 @@ The names are justified by the fact that `ComposableArrow.mk₂ f g`
 can be thought of as a `2`-simplex in the simplicial set `nerve C`,
 and its faces (numbered from `0` to `2`) are respectively `mk₁ g`,
 `mk₁ fg` and `mk₁ f`.
-
 -/
 
 @[expose] public section

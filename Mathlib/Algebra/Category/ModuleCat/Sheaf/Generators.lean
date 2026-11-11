@@ -24,7 +24,6 @@ define sheaves of modules of finite type.
 ## References
 
 * https://stacks.math.columbia.edu/tag/01B4
-
 -/
 
 @[expose] public section

@@ -5,7 +5,7 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
+public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 
 /-!
@@ -17,7 +17,10 @@ This file studies the ramification of completions of number fields.
 
 - `NumberField.InfinitePlace.inertiaDeg` : the inertia degree of a place `w` of `L` over a
   place `v` of `K`, defined as the local degree of the extension of completions at `w` and
-  `v` if `w` lies over `v` and zero otherwise.
+  `v` if `w` lies over `v` and zero otherwise. The `v.Completion`-algebra structure on
+  `w.Completion` used here is `AbsoluteValue.Completion.algebraOfLiesOver`, which is the unique
+  one compatible with `K → L` and having continuous scalar action, see
+  `AbsoluteValue.Completion.algebra_eq_of_liesOver`.
 
 ## Main results
 
@@ -37,12 +40,14 @@ namespace NumberField.InfinitePlace
 
 open NumberField.ComplexEmbedding Finset AbsoluteValue.Completion
 
--- to enable `w.LiesOver v → Algebra v.Completion w.Completion` instance
-open scoped NumberField.LiesOver
-
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K) {w : InfinitePlace L}
 
 open Completion
+
+section Algebra
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion]
 
 /-- If `w` is a ramified place over `v` then `w.Completion` has `v.Completion` dimension two. -/
 theorem IsRamified.finrank_eq_two [w.LiesOver v] (h : w.IsRamified K) :
@@ -91,32 +96,46 @@ theorem mult_mul_finrank [w.LiesOver v] :
   · rw [h.finrank_eq_one v, hv, h.eq, mul_one]
   · rw [h.finrank_eq_two v, hv, h.isReal.mult_eq_one, h.isComplex.mult_eq_two, one_mul]
 
-open Completion
+end Algebra
 
 variable (w)
 
 open scoped Classical in
 /-- The inertia degree of `w` over `v`. -/
 protected noncomputable def inertiaDeg : ℕ :=
-  if _ : w.LiesOver v then (⊥ : Ideal w.Completion).inertiaDeg v.Completion else 0
+  if _ : w.LiesOver v then
+    letI := algebraOfLiesOver v.1 w.1
+    (⊥ : Ideal w.Completion).inertiaDeg v.Completion
+  else 0
+
+section Algebra
+
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul v.Completion w.Completion]
 
 theorem inertiaDeg_of_liesOver [w.LiesOver v] :
     v.inertiaDeg w = (⊥ : Ideal w.Completion).inertiaDeg v.Completion := by
-  simp only [InfinitePlace.inertiaDeg, dite_eq_left]
+  rw [algebra_eq_of_liesOver v.1 w.1, InfinitePlace.inertiaDeg, dite_eq_left]
 
 theorem inertiaDeg_eq_finrank [w.LiesOver v] :
     v.inertiaDeg w = Module.finrank v.Completion w.Completion := by
   rw [inertiaDeg_of_liesOver, Ideal.inertiaDeg_eq_of_isMaximal ⊥]
   exact Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
-    (RingEquiv.quotientBot w.Completion) (by ext; simp [RingHom.algebraMap_toAlgebra])
+    (RingEquiv.quotientBot w.Completion) (by ext; simp [algebraMap_apply_of_liesOver v.1 w.1])
+
+end Algebra
 
 variable {v w} in
 theorem inertiaDeg_eq_one (hw : w ∈ unramifiedPlacesOver L v) : v.inertiaDeg w = 1 :=
-  have := (Set.mem_ofPred.1 hw).1; hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
+  have := (Set.mem_ofPred.1 hw).1
+  let := algebraOfLiesOver v.1 w.1
+  hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
 
 variable {v w} in
 theorem inertiaDeg_eq_two (hw : w ∈ ramifiedPlacesOver L v) : v.inertiaDeg w = 2 :=
-  have := (Set.mem_ofPred.1 hw).1; hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
+  have := (Set.mem_ofPred.1 hw).1
+  let := algebraOfLiesOver v.1 w.1
+  hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
 
 variable (K L) in
 open scoped Classical in

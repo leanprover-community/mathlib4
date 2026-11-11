@@ -32,7 +32,6 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 
 It is possible to configure `simp` to compute determinants. See the file
 `MathlibTest/matrix.lean` for some examples.
-
 -/
 
 @[expose] public section
@@ -355,6 +354,26 @@ end HomMap
 @[simp]
 theorem det_conjTranspose [StarRing R] (M : Matrix m m R) : det Mᴴ = star (det M) :=
   ((starRingEnd R).map_det _).symm.trans congr(star $M.det_transpose)
+
+section Prod
+
+variable {S : Type*} [CommRing S]
+
+@[simp]
+theorem fst_det (M : Matrix n n (R × S)) :
+    M.det.fst = (M.map Prod.fst).det :=
+  RingHom.map_det (RingHom.fst R S) _
+
+@[simp]
+theorem snd_det (M : Matrix n n (R × S)) :
+    M.det.snd = (M.map Prod.snd).det :=
+  RingHom.map_det (RingHom.snd R S) _
+
+theorem det_prodRingEquiv_symm (M : Matrix n n R × Matrix n n S) :
+    ((prodRingEquiv n R S).symm M).det = (M.fst.det, M.snd.det) :=
+  Prod.ext (fst_det _) (snd_det _)
+
+end Prod
 
 section DetZero
 

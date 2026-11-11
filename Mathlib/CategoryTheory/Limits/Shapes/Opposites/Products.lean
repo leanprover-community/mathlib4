@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Limits.Opposites
 # Products and coproducts in `C` and `Cᵒᵖ`
 
 We construct products and coproducts in the opposite categories.
-
 -/
 
 @[expose] public section

@@ -12,7 +12,6 @@ public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Theorems about invertible elements
-
 -/
 
 @[expose] public section

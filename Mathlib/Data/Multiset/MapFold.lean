@@ -21,7 +21,6 @@ public import Mathlib.Data.Set.List
 
 Many lemmas about `Multiset.map` are proven in `Mathlib/Data/Multiset/Filter.lean`:
 should we switch the import direction?
-
 -/
 
 @[expose] public section
