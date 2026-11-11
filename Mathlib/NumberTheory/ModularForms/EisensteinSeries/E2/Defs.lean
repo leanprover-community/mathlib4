@@ -99,7 +99,6 @@ lemma D2_T : D2 ModularGroup.T = 0 := by
   simp [D2, ModularGroup.T]
 
 lemma D2_S (z : ℍ) : D2 ModularGroup.S z = 2 * π * I / z := by
-  rw [D2, ModularGroup.denom_apply]
-  simp
+  simp [D2, ModularGroup.denom_apply]
 
 end EisensteinSeries
