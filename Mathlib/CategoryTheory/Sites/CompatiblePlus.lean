@@ -16,7 +16,6 @@ preserve the correct limits and colimits.
 
 See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
-
 -/
 
 @[expose] public section
@@ -182,7 +181,6 @@ def plusFunctorWhiskerRightIso :
       (whiskeringRight _ _ _).obj F ⋙ J.plusFunctor E :=
   NatIso.ofComponents (fun _ => J.plusCompIso _ _) @fun _ _ _ => plusCompIso_whiskerRight _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerRight_toPlus_comp_plusCompIso_hom :

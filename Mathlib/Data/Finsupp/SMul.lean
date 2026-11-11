@@ -16,7 +16,6 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 ## Implementation notes
 
 This file is a `noncomputable theory` and uses classical logic throughout.
-
 -/
 
 @[expose] public section

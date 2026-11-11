@@ -29,7 +29,6 @@ nondegenerate `d`-simplices of `Y` which do not belong to the range of `i`.
 
 ## TODO
 * show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
-
 -/
 
 @[expose] public section
@@ -199,7 +198,6 @@ of simplicial sets and `d : ℕ`, there is a pushout square:
 
 The index type `Cell i d` identifies to the type of nondegenerate `d`-simplices
 of `Y` not in the range of `i`.
-
 -/
 
 /-- If `i : X ⟶ Y` is a monomorphism of simplicial sets and `d : ℕ`, this is
@@ -255,7 +253,6 @@ lemma mem_skeletonOfMono_obj_iff {d' : ℕ} :
 lemma range_map_le : Subcomplex.range c.map ≤ skeletonOfMono i (d + 1) := by
   simp [map, Subcomplex.range_eq_ofSimplex, mem_skeletonOfMono_obj_iff]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma preimage_map : (skeletonOfMono i d).preimage c.map = ∂Δ[d] := by
   rw [stdSimplex.eq_boundary_iff]
@@ -358,7 +355,6 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
       congrm $(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩
     · congrm $(c.ι_l).app _ ⟨y, _⟩)⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma sup_range_r_range_b :
     Subcomplex.range (r i d) ⊔ Subcomplex.range (b i d) = ⊤ := by
   rw [← top_le_iff]
@@ -391,7 +387,6 @@ lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
   refine ⟨c, stdSimplex.objEquiv s, ?_, by simp⟩
   simpa [SimplexCategory.epi_iff_surjective, boundary] using! hs
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
   w := w i d
   isColimit' := ⟨evaluationJointlyReflectsColimits _ (fun ⟨⟨n⟩⟩ ↦ by
@@ -419,7 +414,6 @@ lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
 
 end relativeCellComplexOfMono
 
-set_option backward.defeqAttrib.useBackward true in
 open relativeCellComplexOfMono in
 /-- If `i : X ⟶ Y` is a monomorphism of simplicial sets, then it is a relative cell
 complex with basic cells given by boundary inclusions `∂Δ[d] ⟶ Δ[d]`, one for each

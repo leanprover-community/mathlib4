@@ -28,7 +28,6 @@ Given the type `V` and a quiver instance on `V`:
 
 The free groupoid is first defined by symmetrifying the quiver, taking the induced path category
 and finally quotienting by the reducibility relation.
-
 -/
 
 @[expose] public section

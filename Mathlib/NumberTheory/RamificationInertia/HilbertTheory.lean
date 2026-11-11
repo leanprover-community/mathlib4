@@ -7,8 +7,9 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 
-/-!
+import Mathlib.LinearAlgebra.Dimension.Domain
 
+/-!
 # Decomposition and inertia rings
 
 We develop Hilbert's theory of the splitting of a prime ideal in a Galois extension, working
@@ -57,7 +58,6 @@ degrees of the fields follow from those of the rings via `IsFractionRing.finrank
 The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
 deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
 `Ideal.IsInertiaRing`.
-
 -/
 
 @[expose] public section
@@ -150,7 +150,7 @@ theorem IsDecompositionRing.finrank_bot [P.IsDecompositionRing G R] :
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
   have : Module.Finite R B := Module.Finite.right A R B
   rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' B, IsDecompositionRing.finrank_top G P R p,
+    Module.IsTorsionFree.finrank_mul_finrank, IsDecompositionRing.finrank_top G P R p,
     ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G,
     IsGaloisGroup.card_eq_finrank' G A B]
 
@@ -162,7 +162,7 @@ theorem IsInertiaRing.finrank_bot [P.IsInertiaRing G R] :
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R B).isDomain
   have : Module.Finite R B := Module.Finite.right A R B
   rw [← mul_left_inj' (c := Module.finrank R B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P R p,
+    Module.IsTorsionFree.finrank_mul_finrank, IsInertiaRing.finrank_top G P R p,
     ← IsGaloisGroup.card_eq_finrank' G A B, mul_assoc, mul_comm (p.inertiaDegIn B),
     ← ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn p B G]
 
@@ -176,7 +176,7 @@ theorem IsInertiaRing.finrank_decompositionRing (R' : Type*) [CommRing R'] [Alge
   have : Module.Finite R B := Module.Finite.right A R B
   have : Module.Finite R' B := Module.Finite.right R R' B
   rw [← mul_left_inj' (c := Module.finrank R' B) Module.finrank_pos.ne',
-    Module.finrank_mul_finrank' B, IsInertiaRing.finrank_top G P R' p,
+    Module.IsTorsionFree.finrank_mul_finrank, IsInertiaRing.finrank_top G P R' p,
     IsDecompositionRing.finrank_top G P R p, mul_comm]
 
 end rank

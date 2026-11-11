@@ -19,7 +19,6 @@ In this file, we start with a ring `R`, a small filtered category `J` and a func
 (in `AddCommGrpCat`) carries the structure of an `R`-module, thereby showing that the forgetful
 functor `forget₂ (ModuleCat R) AddCommGrpCat` preserves filtered colimits. In particular, this
 implies that `forget (ModuleCat R)` preserves filtered colimits.
-
 -/
 
 @[expose] public section
@@ -68,7 +67,6 @@ lemma M.mk_map {j k : J} (f : j ⟶ k) (x : F.obj j) :
 def colimitSMulAux (r : R) (x : Σ j, F.obj j) : M F :=
   M.mk F ⟨x.1, r • x.2⟩
 
-set_option backward.defeqAttrib.useBackward true in
 theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
     (h : Types.FilteredColimit.Rel (F ⋙ forget (ModuleCat R)) x y) :
     colimitSMulAux F r x = colimitSMulAux F r y := by
@@ -174,7 +172,6 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
         obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
         simp [hf] }
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :
     dsimp% (colimitCocone F).ι.app j ≫ colimitDesc F t = t.ι.app j :=
