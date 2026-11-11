@@ -129,6 +129,12 @@ protected def B : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
+/- Start with the Aₙ chain on vertices 0, …, n - 1. Remove the edge between n - 2 and n - 1,
+then join n - 1 to n - 3 instead. For n ≥ 4, this gives a fork at n - 3 with tips n - 2 and n - 1.
+For n = 2, natural-number subtraction gives n - 3 = n - 2 = 0, so the pair 0, 1 satisfies both the
+edge-removal and the edge-addition condition; removal is tested first, leaving two isolated
+vertices: D₂ = A₁ × A₁.
+For n = 3, the resulting path is 1 — 0 — 2, so D₃ is A₃ up to reindexing. -/
 /-- The Coxeter matrix of type Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
