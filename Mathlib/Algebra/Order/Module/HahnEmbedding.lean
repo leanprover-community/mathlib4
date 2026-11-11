@@ -66,6 +66,8 @@ variable [Module K M] [IsOrderedModule K M]
 variable {R : Type*} [AddCommGroup R] [LinearOrder R]
 variable [Module K R]
 
+open Lex
+
 namespace HahnEmbedding
 
 variable (K M) in
@@ -343,7 +345,7 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
   · rw [seed.domain_baseEmbedding, ArchimedeanStrata.baseDomain,
       Submodule.mem_iSup_iff_exists_dfinsupp']
     use f'
-  apply_fun ofLex
+  apply_fun ofLex using ofLexEquiv.injective
   rw [ofLex_toLex, LinearPMap.toFun_eq_coe]
   ext d
   rw [seed.coeff_baseEmbedding rfl]
@@ -404,7 +406,7 @@ theorem apply_of_mem_stratum {x : f.val.domain} {c : FiniteArchimedeanClass M}
   let fx : Π₀ c, seed.stratum c := DFinsupp.single c ⟨x.val, hx⟩
   have hfx : x.val = fx.sum fun c ↦ (seed.stratum c).subtype := by
     simp [fx, DFinsupp.sum_single_index]
-  apply_fun ofLex
+  apply_fun ofLex using ofLexEquiv.injective
   rw [ofLex_toLex]
   ext d
   rw [seed.coeff_baseEmbedding hfx]
@@ -574,7 +576,7 @@ theorem eval_smul [IsOrderedAddMonoid R] [Archimedean R] (k : K) (x : M) :
   by_cases hk : k = 0
   · simp [hk]
   unfold eval
-  rw [← toLex_smul, toLex.injective.eq_iff]
+  rw [← toLex_smul, toLex_inj]
   ext c
   suffices f.evalCoeff (k • x) c = k • f.evalCoeff x c by simpa using this
   by_cases h : ∃ y : f.val.domain, y.val - x ∈ ball K c
@@ -606,7 +608,7 @@ theorem archimedeanClassMk_le_of_eval_eq [IsOrderedAddMonoid R] [Archimedean R] 
   have h1 (c : FiniteArchimedeanClass M) (hc : c.val < .mk (x - z.val)) :
       (ofLex (f.eval x)).coeff c = (ofLex (f.val z)).coeff c := by
     rw [ArchimedeanClass.mk_sub_comm] at hc
-    simp_rw [eval, ofLex_toLex]
+    simp_rw [eval]
     apply evalCoeff_eq
     simpa [c.prop] using! fun _ ↦ hc
   have h2 : ∀ c : FiniteArchimedeanClass M, c.val < .mk (x - z.val) →
@@ -658,7 +660,7 @@ theorem eval_eq_truncLT [IsOrderedAddMonoid R] [Archimedean R] {x : M}
     (hy : ArchimedeanClass.mk (y.val - x) = c.val) (h : ∀ z : f.val.domain, z.val - x ∉ ball K c) :
     f.eval x = toLex (HahnSeries.truncLTLinearMap K c (ofLex (f.val y))) := by
   unfold eval
-  rw [toLex.injective.eq_iff]
+  rw [toLex_inj]
   ext d
   simp only
   obtain hd | hd := lt_or_ge d c
@@ -807,7 +809,7 @@ theorem truncLT_eval_mem_range_extendFun [IsOrderedAddMonoid R] [Archimedean R] 
   · -- if `x` is isolated within c, truncating has no effect because the trailing coefficients
     -- are already 0
     refine ⟨⟨x, by simpa using Submodule.mem_sup_right (Submodule.mem_span_singleton_self x)⟩, ?_⟩
-    apply_fun ofLex
+    apply_fun ofLex using ofLexEquiv.injective
     rw [ofLex_toLex, LinearPMap.toFun_eq_coe, LinearPMap.supSpanSingleton_apply_self]
     ext d
     obtain hdc | hdc := lt_or_ge d c

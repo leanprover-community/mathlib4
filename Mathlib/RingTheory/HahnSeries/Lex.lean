@@ -31,11 +31,13 @@ namespace HahnSeries
 
 variable {Γ R : Type*} [LinearOrder Γ]
 
+open Lex
+
 section PartialOrder
 variable [Zero R] [PartialOrder R]
 
 instance : PartialOrder (Lex R⟦Γ⟧) :=
-  PartialOrder.lift (toLex <| ofLex · |>.coeff) fun x y ↦ by simp
+  PartialOrder.lift (toLex <| ofLex · |>.coeff) fun x y ↦ by simp [ofLex_inj]
 
 theorem lt_iff (a b : Lex R⟦Γ⟧) :
     a < b ↔ ∃ (i : Γ), (∀ (j : Γ), j < i → (ofLex a).coeff j = (ofLex b).coeff j)
@@ -51,7 +53,7 @@ instance : LinearOrder (Lex R⟦Γ⟧) where
   le_total a b := by
     rcases eq_or_ne a b with hab | hab
     · exact Or.inl hab.le
-    · have hab := Function.ne_iff.mp <| HahnSeries.ext_iff.ne.mp hab
+    · have hab := Function.ne_iff.mp <| HahnSeries.ext_iff.ne.mp (Lex.ext_iff.ne.mp hab)
       let u := {i : Γ | (ofLex a).coeff i ≠ 0} ∪ {i : Γ | (ofLex b).coeff i ≠ 0}
       let v := {i : Γ | (ofLex a).coeff i ≠ (ofLex b).coeff i}
       have hvu : v ⊆ u := by
@@ -97,7 +99,7 @@ theorem leadingCoeff_pos_iff {x : Lex R⟦Γ⟧} : 0 < (ofLex x).leadingCoeff �
 theorem leadingCoeff_nonneg_iff {x : Lex R⟦Γ⟧} : 0 ≤ (ofLex x).leadingCoeff ↔ 0 ≤ x := by
   constructor <;> intro h
   · obtain heq | hlt := h.eq_or_lt
-    · exact le_of_eq (leadingCoeff_eq_zero.mp heq.symm).symm
+    · exact le_of_eq (Lex.ext (leadingCoeff_eq_zero.mp heq.symm).symm)
     · exact (leadingCoeff_pos_iff.mp hlt).le
   · obtain rfl | hlt := h.eq_or_lt
     · simp
@@ -147,7 +149,7 @@ theorem orderTop_abs (x : Lex R⟦Γ⟧) : (ofLex |x|).orderTop = (ofLex x).orde
 theorem order_abs [Zero Γ] (x : Lex R⟦Γ⟧) : (ofLex |x|).order = (ofLex x).order := by
   obtain rfl | hne := eq_or_ne x 0
   · simp
-  · have hne' : ofLex x ≠ 0 := hne
+  · have hne' : ofLex x ≠ 0 := Lex.ext_iff.ne.mp hne
     have habs : ofLex |x| ≠ 0 := by simpa using hne
     apply WithTop.coe_injective
     rw [order_eq_orderTop_of_ne_zero habs, order_eq_orderTop_of_ne_zero hne']
@@ -170,7 +172,6 @@ theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex R⟦Γ⟧}
   · simpa [-orderTop_abs, coeff_eq_zero_of_lt_orderTop, coeff_untop_eq_leadingCoeff, h]
       using h.ne_top
 
-set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Lex R⟦Γ⟧}
     (h : (ofLex x).orderTop = (ofLex y).orderTop) :
     ArchimedeanClass.mk x ≤ .mk y ↔
@@ -180,7 +181,9 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
   · -- special case: both `x` and `y` are zero
     simp_all
   -- general case: `x` and `y` are not zero
-  have hx : x ≠ 0 := by simpa using orderTop_ne_top.1 <| h ▸ orderTop_ne_top.2 (by simpa using hy)
+  have hx : x ≠ 0 := by
+    rw [Lex.ext_iff.ne, ofLex_zero, ← orderTop_ne_top] at hy ⊢
+    rwa [h]
   have h' : (ofLex |x|).orderTop = (ofLex |y|).orderTop := by simpa using h
   constructor
   · -- `mk x ≤ mk y → mk x.leadingCoeff ≤ mk y.leadingCoeff`
@@ -219,9 +222,8 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
         at this
       convert this using 3 <;> simp [h]
     refine lt_of_le_of_lt hn <| nsmul_lt_nsmul_left ?_ (by simp)
-    rwa [abs_pos, leadingCoeff_ne_zero]
+    rwa [abs_pos, leadingCoeff_ne_zero, ← Lex.ext_iff.ne]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex R⟦Γ⟧} :
     ArchimedeanClass.mk x ≤ .mk y ↔
       (ofLex x).orderTop < (ofLex y).orderTop ∨
@@ -262,12 +264,12 @@ of `order` and the finite archimedean class of `leadingCoeff`. -/
 noncomputable def finiteArchimedeanClassOrderHomLex :
     FiniteArchimedeanClass (Lex R⟦Γ⟧) →o Γ ×ₗ FiniteArchimedeanClass R :=
   FiniteArchimedeanClass.liftOrderHom
-    (fun ⟨x, hx⟩ ↦ toLex
-      ⟨(ofLex x).orderTop.untop (by simp [orderTop_of_ne_zero (show ofLex x ≠ 0 by exact hx)]),
-      FiniteArchimedeanClass.mk (ofLex x).leadingCoeff (leadingCoeff_ne_zero.mpr hx)⟩)
+    (fun ⟨x, hx⟩ ↦
+      let hx := Lex.ext_iff.ne.mp hx
+      toLex ⟨(ofLex x).orderTop.untop (by simp [orderTop_of_ne_zero hx]),
+        FiniteArchimedeanClass.mk (ofLex x).leadingCoeff (leadingCoeff_ne_zero.mpr hx)⟩)
     fun ⟨a, ha⟩ ⟨b, hb⟩ h ↦ by
       rw [Prod.Lex.le_iff]
-      simp only [ofLex_toLex]
       rw [FiniteArchimedeanClass.mk_le_mk] at ⊢ h
       rw [WithTop.untop_eq_iff]
       simpa using archimedeanClassMk_le_archimedeanClassMk_iff.mp h
@@ -286,7 +288,7 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     obtain h | ⟨rfl, hle⟩ := Prod.Lex.le_iff.mp h
     · induction ac using FiniteArchimedeanClass.ind with | mk a ha
       induction bc using FiniteArchimedeanClass.ind with | mk b hb
-      simp only [ne_eq, ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
+      simp only [ne_eq, FiniteArchimedeanClass.liftOrderHom_mk]
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
       exact .inl (by simpa [ha, hb] using! h)
     · exact OrderHom.monotone _ hle
@@ -300,10 +302,8 @@ noncomputable def finiteArchimedeanClassOrderIsoLex :
     FiniteArchimedeanClass (Lex R⟦Γ⟧) ≃o Γ ×ₗ FiniteArchimedeanClass R := by
   apply OrderIso.ofHomInv (finiteArchimedeanClassOrderHomLex Γ R)
     (finiteArchimedeanClassOrderHomInvLex Γ R)
-  · ext x
-    cases x with | h x
-    obtain ⟨order, coeff⟩ := x
-    induction coeff using FiniteArchimedeanClass.ind with | mk a ha
+  · ext ⟨⟨order, coeff⟩⟩ <;>
+    induction coeff using FiniteArchimedeanClass.ind with | mk a ha <;>
     simp [finiteArchimedeanClassOrderHomLex, finiteArchimedeanClassOrderHomInvLex, ha]
   · ext x
     induction x using FiniteArchimedeanClass.ind with | mk a ha
@@ -384,14 +384,14 @@ section EmbDomain
 variable [PartialOrder R] {Γ' : Type*} [LinearOrder Γ'] (f : Γ ↪o Γ')
 
 /-- `HahnSeries.embDomain` as an `OrderEmbedding`. -/
-@[simps]
-noncomputable
-def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
-  toFun a := toLex (embDomain f (ofLex a))
-  inj' := toLex.injective.comp (embDomain_injective.comp (ofLex.injective))
+@[simps!]
+noncomputable def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
+  toEmbedding := ofLexEquiv.toEmbedding |>.trans
+    ⟨embDomain f, embDomain_injective⟩ |>.trans ofLexEquiv.symm.toEmbedding
   map_rel_iff' {a b} := by
     simp_rw [le_iff_lt_or_eq, lt_iff]
-    simp only [Function.Embedding.coeFn_mk, ofLex_toLex, EmbeddingLike.apply_eq_iff_eq]
+    simp only [Function.Embedding.mk_trans_mk, Function.Embedding.coeFn_mk, Function.comp_apply,
+      ofLexEquiv_apply, ofLexEquiv_symm_apply, toLex.injEq]
     constructor
     · rintro (⟨i, hj, hi⟩ | heq)
       · have himem : i ∈ Set.range f := by
@@ -400,7 +400,7 @@ def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
         obtain ⟨k, rfl⟩ := himem
         refine Or.inl ⟨k, fun j hjk ↦ ?_, by simpa using hi⟩
         simpa using hj (f j) (f.lt_iff_lt.mpr hjk)
-      · exact Or.inr <| embDomain_injective.comp (ofLex.injective) heq
+      · exact Or.inr <| embDomain_injective.comp ofLexEquiv.injective heq
     · rintro (⟨i, hj, hi⟩ | rfl)
       · refine Or.inl ⟨f i, fun k hki ↦ ?_, by simpa using hi⟩
         by_cases hkmem : k ∈ Set.range f
@@ -414,7 +414,7 @@ def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
 noncomputable
 def embDomainOrderAddMonoidHom [AddMonoid R] : Lex R⟦Γ⟧ →+o Lex R⟦Γ'⟧ where
   __ := (embDomainOrderEmbedding f).toOrderHom
-  map_zero' := by simp
+  map_zero' := by simp [embDomainOrderEmbedding]
   map_add' := by simp [embDomainOrderEmbedding, embDomain_add]
 
 theorem embDomainOrderAddMonoidHom_injective [AddMonoid R] :

@@ -107,6 +107,7 @@ theorem of_order_lt (hf : ContDiffPointwiseHolderAt k α f a) (hlt : l < k) :
     ContDiffPointwiseHolderAt l β f a :=
   hf.contDiffAt.contDiffPointwiseHolderAt (mod_cast hlt) _
 
+open Lex in
 theorem of_toLex_le (hf : ContDiffPointwiseHolderAt k α f a) (hle : toLex (l, β) ≤ toLex (k, α)) :
     ContDiffPointwiseHolderAt l β f a :=
   (Prod.Lex.le_iff.mp hle).elim hf.of_order_lt <| by rintro ⟨rfl, hle⟩; exact hf.of_exponent_le hle
