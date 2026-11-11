@@ -76,27 +76,23 @@ theorem star_dotProduct_gram_mulVec [Fintype n] (v : n → E) (x y : n → 𝕜)
       gram_apply, Pi.star_apply]
   · simp_rw [sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
 
+private theorem linearCombination_inner_linearCombination_eq (v : n → E) (x y : n →₀ 𝕜) :
+    ⟪x.linearCombination 𝕜 v, y.linearCombination 𝕜 v⟫_𝕜 =
+      (x.sum fun i xi ↦ y.sum fun j yj ↦ star xi * ⟪v i, v j⟫_𝕜 * yj) := by
+  simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, sum_inner, inner_sum, inner_smul_left,
+    inner_smul_right, ← mul_assoc, mul_right_comm _ (inner _ _ _), star_def]
+
 variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
-theorem posSemidef_gram (v : n → E) :
-    PosSemidef (gram 𝕜 v) := by
-  refine posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_
-  rw [submatrix_gram]
-  refine .of_dotProduct_mulVec_nonneg (isHermitian_gram _ _) fun x ↦ ?_
-  rw [star_dotProduct_gram_mulVec, le_iff_re_im]
-  simp
+theorem posSemidef_gram (v : n → E) : PosSemidef (gram 𝕜 v) :=
+  ⟨isHermitian_gram _ _, by simp [- star_def, ← linearCombination_inner_linearCombination_eq]⟩
 
 /-- In a normed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
-  rw [linearIndependent_iff_finset_linearIndependent]
-  intro s
-  rw [Fintype.linearIndependent_iff]
-  intro y hy
-  have := h_gram.submatrix (Subtype.coe_injective (p := (· ∈ s)))
-  rw [submatrix_gram] at this
-  have := this.dotProduct_mulVec_pos (x := y)
-  simp_all [star_dotProduct_gram_mulVec]
+  refine linearIndependent_iff.mpr fun l hl ↦ ?_
+  by_contra
+  simpa [hl, -star_def, ← linearCombination_inner_linearCombination_eq] using h_gram.2 this
 
 theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n → E}
     (h : (gram 𝕜 v).det ≠ 0) : LinearIndependent 𝕜 v :=
@@ -110,13 +106,9 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
 theorem posDef_gram_of_linearIndependent
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
-  refine posDef_iff_submatrix_finset.mpr fun s ↦ ?_
-  rw [submatrix_gram]
-  have hs := Fintype.linearIndependent_iff.mp (h_li.comp ((↑) : s → n) Subtype.coe_injective)
-  refine .of_dotProduct_mulVec_pos (isHermitian_gram _ _) fun x hx ↦
-    ((posSemidef_gram ..).dotProduct_mulVec_nonneg _).lt_of_ne' ?_
-  rw [star_dotProduct_gram_mulVec, inner_self_eq_zero.ne]
-  exact mt (hs x) (mt funext hx)
+  refine ⟨isHermitian_gram _ _, fun x hx ↦ ((posSemidef_gram 𝕜 v).2 x).lt_of_ne' ?_⟩
+  simp_rw [gram_apply, ← linearCombination_inner_linearCombination_eq (𝕜 := 𝕜)]
+  simp [mt (linearIndependent_iff.mp h_li x) hx]
 
 /-- In a normed space, linear independence of `v` is equivalent to positive definiteness of
 `gram 𝕜 v`. -/
