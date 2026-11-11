@@ -5,11 +5,12 @@ Authors: Aaron Anderson
 -/
 module
 
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Data.Rat.Encodable
-import Mathlib.Data.Finset.Sort
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Fraisse
+
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Rat.Encodable
 import Mathlib.Order.CountableDenseLinearOrder
 
 /-!
@@ -49,7 +50,6 @@ This file defines ordered first-order languages and structures, as well as their
   theory of linear orders is Fraïssé.
 - `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
   `ℵ₀`-categorical, and thus complete.
-
 -/
 
 @[expose] public section

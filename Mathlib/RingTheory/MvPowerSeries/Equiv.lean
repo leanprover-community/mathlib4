@@ -9,9 +9,9 @@ public import Mathlib.RingTheory.AdicCompletion.Algebra
 public import Mathlib.RingTheory.MvPolynomial.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Rename
 public import Mathlib.RingTheory.PowerSeries.Substitution
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 import Mathlib.RingTheory.PowerSeries.Ideal
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Equivalences related to power series rings
@@ -31,7 +31,6 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 * `MvPowerSeries.toAdicCompletionAlgEquiv` : the canonical isomorphism from
   multivariate power series to the adic completion of multivariate polynomials
   with respect to the ideal spanned by all variables when the index is finite.
-
 -/
 
 @[expose] public section

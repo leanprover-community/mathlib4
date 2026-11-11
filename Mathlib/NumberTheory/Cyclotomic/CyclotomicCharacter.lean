@@ -8,11 +8,11 @@ module
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.Topology.Algebra.Group.Units
 
 /-!
-
 # The cyclotomic character
 
 Let `L` be an integral domain and let `n : ℕ+` be a positive integer. If `μₙ` is the
@@ -73,7 +73,6 @@ variable {L : Type u} [CommRing L] [IsDomain L]
 /-
 
 ## The mod n theory
-
 -/
 
 variable (n : ℕ) [NeZero n]
@@ -254,7 +253,6 @@ lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n
 /-
 
 ## The p-adic theory
-
 -/
 
 open modularCyclotomicCharacter in

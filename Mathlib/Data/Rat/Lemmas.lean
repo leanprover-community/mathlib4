@@ -6,13 +6,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.PNat.Defs
 
 /-!
 # Further lemmas for the Rational Numbers
-
 -/
 
 @[expose] public section

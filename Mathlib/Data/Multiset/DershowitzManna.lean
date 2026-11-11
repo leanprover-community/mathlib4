@@ -32,7 +32,6 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 * [CoLoR](https://github.com/fblanqui/color), a Coq library on rewriting theory and termination.
   Our code here is inspired by their formalization and the theorem is called `mOrd_wf` in the file
   [MultisetList.v](https://github.com/fblanqui/color/blob/1.8.5/Util/Multiset/MultisetOrder.v).
-
 -/
 
 @[expose] public section
@@ -83,7 +82,7 @@ private def OneStep (M N : Multiset α) : Prop :=
 private lemma isDershowitzMannaLT_of_oneStep : OneStep M N → IsDershowitzMannaLT M N := by
   rintro ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
   use X, Y, {a}, by simp, M_def, N_def
-  · simpa
+  simpa
 
 private lemma isDershowitzMannaLT_singleton_insert (h : OneStep N (a ::ₘ M)) :
     ∃ M', N = a ::ₘ M' ∧ OneStep M' M ∨ N = M + M' ∧ ∀ x ∈ M', x < a := by

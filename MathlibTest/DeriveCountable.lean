@@ -1,6 +1,8 @@
-import Mathlib.Basic.Countable.Basic
-import Mathlib.Logic.Equiv.List
-import Mathlib.Tactic.DeriveCountable
+module
+
+public import Mathlib.Basic.Countable.Basic
+public import Mathlib.Logic.Equiv.List
+public import Mathlib.Tactic.DeriveCountable
 
 /-!
 # Tests of the `Countable` deriving handler

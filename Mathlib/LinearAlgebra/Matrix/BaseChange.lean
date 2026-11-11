@@ -5,8 +5,8 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # Matrices and base change
@@ -18,7 +18,6 @@ This file is a home for results about base change for matrices.
   values in subfield `K ⊆ L`, then so does its (right) inverse.
 * `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left`: if an invertible matrix over `L` takes
   values in subfield `K ⊆ L`, then so does its (left) inverse.
-
 -/
 
 public section

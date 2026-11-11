@@ -3,7 +3,6 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-
 import Cli.Basic
 import Mathlib.Tactic.Linter.ValidatePRTitle
 
@@ -13,8 +12,9 @@ import Mathlib.Tactic.Linter.ValidatePRTitle
 This script checks if a PR title matches some of
 [mathlib's commit conventions](https://leanprover-community.github.io/contribute/commit.html).
 Currently, we only verify very basic checks: this could be made stricter in the future.
-
 -/
+
+-- TODO: temporary copy. delete in favour of `check-title-labels.lean` after #44306
 
 open Cli in
 /-- Implementation of the `check-title-labels` command line program.

@@ -5,9 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Ring.Nat
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
+
+import Mathlib.Algebra.BigOperators.Ring.Nat
 
 /-!
 # Counting walks of a given length

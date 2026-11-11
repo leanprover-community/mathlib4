@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
-public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
 public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
 
 /-!
 # Building GCD out of unique factorization

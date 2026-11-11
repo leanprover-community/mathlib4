@@ -6,10 +6,11 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Localization
-import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 public import Mathlib.RingTheory.LocalProperties.Projective
+
+import Mathlib.Algebra.Category.ModuleCat.Projective
 
 /-!
 # The Projective Dimension Equal to Supremum over Localizations
@@ -17,7 +18,6 @@ public import Mathlib.RingTheory.LocalProperties.Projective
 In this file, we proved that projective dimension equal to supremum over localizations
 
 ## Main definition and results
-
 -/
 
 public section

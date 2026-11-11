@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Tactic.SuppressCompilation
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Operator norm on the space of continuous linear maps
@@ -29,7 +29,6 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 ## Main Results
 * `ball_subset_range_iff_surjective` (and its variants) shows that a semi-linear map between normed
   spaces is surjective if and only if it contains a ball.
-
 -/
 
 @[expose] public section
@@ -387,8 +386,10 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F)
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
-theorem nnnorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
+theorem nnNorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
   NNReal.eq norm_id
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_id := nnNorm_id
 
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=

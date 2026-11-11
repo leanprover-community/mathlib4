@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
 /-!
@@ -35,7 +35,6 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 - `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
 - `EuclideanDomain.instIsPrincipalIdealRing`: a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
-
 -/
 
 @[expose] public section

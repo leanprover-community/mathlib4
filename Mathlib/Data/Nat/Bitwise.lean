@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Bool.Basic
-import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Bits
+
+import Batteries.Data.Nat.Bitwise
+import Mathlib.Data.List.GetD
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
-import Batteries.Data.Nat.Bitwise
+
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!

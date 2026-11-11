@@ -6,13 +6,13 @@ Authors: Paul Lezeau
 module
 
 public meta import Lean.Meta.Tactic.Simp.Types
+public meta import Qq
+
 import Mathlib.Init
-public import Qq
 
 /-! # Additional simp utilities
 
 This file adds additional tools for metaprogramming with the `simp` tactic
-
 -/
 
 public meta section

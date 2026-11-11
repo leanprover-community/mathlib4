@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.FreeAlgebra
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # A basis for `TensorAlgebra R M`
@@ -22,7 +22,6 @@ public import Mathlib.LinearAlgebra.FreeAlgebra
 
 * `TensorAlgebra.instFreeModule`: the tensor algebra over `M` is free when `M` is
 * `TensorAlgebra.rank_eq`
-
 -/
 
 @[expose] public section

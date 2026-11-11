@@ -16,12 +16,10 @@ We show that the inner product is continuous, `continuous_inner`.
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 public section
 
-noncomputable section
 
 open RCLike Real Filter
 open LinearMap renaming BilinForm → BilinForm

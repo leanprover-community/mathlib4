@@ -5,8 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.Exact.Sequence
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+
+import Mathlib.Algebra.Exact.Sequence
 
 /-!
 # The index of a linear map
@@ -17,7 +18,6 @@ In this file we define the index of a linear map and provide some basic API.
 
 * `LinearMap.index`: the index of a linear map, with sign convention `index = dim ker - dim coker`.
 * `LinearMap.index_comp`: the index is additive under composition.
-
 -/
 
 noncomputable section

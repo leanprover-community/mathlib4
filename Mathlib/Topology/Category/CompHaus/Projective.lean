@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Topology.Category.CompHaus.Basic
-public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.Topology.Category.CompHaus.Basic
 
 /-!
 # CompHaus has enough projectives
@@ -25,7 +25,6 @@ Let `X` be a compact Hausdorff space.
 ## Reference
 
 See [miraglia2006introduction] Chapter 21 for a proof that `CompHaus` has enough projectives.
-
 -/
 
 @[expose] public section

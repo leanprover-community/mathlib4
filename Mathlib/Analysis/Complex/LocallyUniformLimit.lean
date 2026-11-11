@@ -6,6 +6,7 @@ Authors: Vincent Beffara
 module
 
 public import Mathlib.Analysis.Complex.RemovableSingularity
+
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 
 /-!

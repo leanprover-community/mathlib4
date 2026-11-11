@@ -5,10 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.Analysis.SpecialFunctions.PolarCoord
 public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
+import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
 /-!
 # Gaussian integral
@@ -22,8 +23,6 @@ We prove various versions of the formula for the Gaussian integral:
 -/
 
 public section
-
-noncomputable section
 
 open Real Set MeasureTheory Filter Asymptotics
 
@@ -124,7 +123,7 @@ theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
   have : ∫⁻ _ : ℝ in Ioi 0, 1 ≤ ∫⁻ x : ℝ in Ioi 0, ‖exp (-b * x ^ 2)‖₊ := by
     apply lintegral_mono (fun x ↦ _)
     simp only [neg_mul, ENNReal.one_le_coe_iff, ← toNNReal_one, toNNReal_le_iff_le_coe,
-      Real.norm_of_nonneg (exp_pos _).le, coe_nnnorm, one_le_exp_iff, Right.nonneg_neg_iff]
+      Real.norm_of_nonneg (exp_pos _).le, coe_nnNorm, one_le_exp_iff, Right.nonneg_neg_iff]
     exact fun x ↦ mul_nonpos_of_nonpos_of_nonneg hb (sq_nonneg x)
   simpa using this.trans_lt h.2
 
@@ -337,7 +336,7 @@ lemma Real.Gamma_nat_add_one_add_half (k : ℕ) :
     ring
 
 open scoped Nat in
-/-- The special-value formula `Γ(k + 1/2) = (2 * k - 1)‼ * √π / (2 ^ k))` for half-integer
+/-- The special-value formula `Γ(k + 1/2) = (2 * k - 1)‼ * √π / (2 ^ k)` for half-integer
 values of the gamma function in terms of `Nat.doubleFactorial`. -/
 lemma Real.Gamma_nat_add_half (k : ℕ) :
     Gamma (k + 1 / 2) = (2 * k - 1 : ℕ)‼ * √π / (2 ^ k) := by

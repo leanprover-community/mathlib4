@@ -16,7 +16,6 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 * `ofSubmodules`: `LinearEquiv.ofSubmodules` as a continuous linear equivalence.
 * `ofSubmodule'`: `ofSubmodule` but with `comap` on the left instead of `map` on the right.
 * `Submodule.topContEquiv`: `Submodule.topEquiv` as a continuous linear equivalence.
-
 -/
 
 @[expose] public section
@@ -113,3 +112,4 @@ end ContinuousLinearEquiv
 This is the continuous version of `Submodule.topEquiv`. -/
 abbrev _root_.Submodule.topContEquiv : (⊤ : Submodule R M) ≃L[R] M where
   __ := Submodule.topEquiv
+  continuous_invFun := continuous_id.subtype_mk _

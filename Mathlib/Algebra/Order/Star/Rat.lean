@@ -6,9 +6,13 @@ Authors: Jireh Loreaux, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Star.Basic
+
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.NNRat
-public import Mathlib.Algebra.Order.Star.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`

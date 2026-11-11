@@ -5,9 +5,10 @@ Authors: Alexander Bentkamp
 -/
 module
 
-import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.ZPow
+
+import Mathlib.Algebra.Star.Pi
 
 /-! # Hermitian matrices
 
@@ -22,7 +23,6 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 ## Tags
 
 self-adjoint matrix, hermitian matrix
-
 -/
 
 @[expose] public section

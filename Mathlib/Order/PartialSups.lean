@@ -5,12 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
-import Mathlib.Data.Finset.Max
 
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Order
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -35,7 +35,6 @@ One might dispute whether this sequence should start at `f 0` or `⊥`. We choos
 * Starting at `⊥` requires... having a bottom element.
 * `fun f i ↦ (Finset.Iio i).sup f` is already effectively the sequence starting at `⊥`.
 * If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.
-
 -/
 
 @[expose] public section

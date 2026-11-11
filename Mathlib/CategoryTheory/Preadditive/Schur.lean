@@ -5,8 +5,8 @@ Authors: Markus Himmel, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Simple
 public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Simple
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!
@@ -32,46 +32,48 @@ open CategoryTheory.Limits
 variable {C : Type*} [Category* C]
 variable [Preadditive C]
 
--- See also `epi_of_nonzero_to_simple`, which does not require `Preadditive C`.
-theorem mono_of_nonzero_from_simple [HasKernels C] {X Y : C} [Simple X] {f : X ⟶ Y} (w : f ≠ 0) :
+-- See also `epi_of_ne_zero_to_simple`, which does not require `Preadditive C`.
+theorem mono_of_ne_zero_from_simple [HasKernels C] {X Y : C} [Simple X] {f : X ⟶ Y} (w : f ≠ 0) :
     Mono f :=
-  Preadditive.mono_of_kernel_zero (kernel_zero_of_nonzero_from_simple w)
+  Preadditive.mono_of_kernel_zero (kernel_zero_of_ne_zero_from_simple w)
+
+@[deprecated (since := "2026-10-13")]
+alias mono_of_nonzero_from_simple := mono_of_ne_zero_from_simple
 
 /-- The part of **Schur's lemma** that holds in any preadditive category with kernels:
 that a nonzero morphism between simple objects is an isomorphism.
 -/
 theorem isIso_of_hom_simple
     [HasKernels C] {X Y : C} [Simple X] [Simple Y] {f : X ⟶ Y} (w : f ≠ 0) : IsIso f :=
-  haveI := mono_of_nonzero_from_simple w
-  isIso_of_mono_of_nonzero w
+  haveI := mono_of_ne_zero_from_simple w
+  isIso_of_mono_of_ne_zero w
 
 /-- As a corollary of Schur's lemma for preadditive categories,
 any morphism between simple objects is (exclusively) either an isomorphism or zero.
 -/
-theorem isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X ⟶ Y) :
+theorem isIso_iff_ne_zero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X ⟶ Y) :
     IsIso f ↔ f ≠ 0 :=
   ⟨fun I => by
     intro h
-    apply id_nonzero X
+    apply id_ne_zero X
     simp only [← IsIso.hom_inv_id f, h, zero_comp],
    fun w => isIso_of_hom_simple w⟩
+
+@[deprecated (since := "2026-10-13")] alias isIso_iff_nonzero := isIso_iff_ne_zero
 
 open scoped Classical in
 /-- In any preadditive category with kernels,
 the endomorphisms of a simple object form a division ring. -/
 noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) where
-  inv f := if h : f = 0 then 0 else haveI := isIso_of_hom_simple h; inv f
-  exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
-  inv_zero := dite_eq_left rfl
+  inv f := if h : f.asHom = 0 then 0 else haveI := isIso_of_hom_simple h; .of (inv f.asHom)
+  exists_pair_ne := ⟨1, 0, by simp⟩
+  inv_zero := by simp
   mul_inv_cancel f hf := by
-    dsimp
-    rw [dite_eq_right hf]
-    have := isIso_of_hom_simple hf
-    exact IsIso.inv_hom_id f
+    ext
+    rw [dite_eq_right (fun h ↦ hf (by ext; simpa))]
+    simp
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
 
 open Module
 
@@ -86,7 +88,7 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
     [Simple X] [Simple Y] (h : (X ≅ Y) → False) : finrank 𝕜 (X ⟶ Y) = 0 :=
   haveI :=
     subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
-      have p := not_congr (isIso_iff_nonzero f)
+      have p := not_congr (isIso_iff_ne_zero f)
       simp only [Classical.not_not, Ne] at p
       exact p.mp fun _ => h (asIso f)
   finrank_zero_of_subsingleton
@@ -105,17 +107,20 @@ If `X ⟶ X` is finite dimensional, and every nonzero endomorphism is invertible
 then `X ⟶ X` is 1-dimensional.
 -/
 theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X, IsIso f ↔ f ≠ 0)
-    [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
+    [FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
   have id_nonzero := (isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
   refine finrank_eq_one (𝟙 X) id_nonzero ?_
   intro f
-  have : Nontrivial (End X) := nontrivial_of_ne _ _ id_nonzero
-  have : FiniteDimensional 𝕜 (End X) := I
+  have : Nontrivial (X ⟶ X) := nontrivial_of_ne _ _ id_nonzero
+  have : Nontrivial (End X) := (End.homEquiv (X := X)).nontrivial
+  have : FiniteDimensional 𝕜 (End X) :=
+    End.linearEquiv.symm.finiteDimensional
   obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
   use c
   rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne,
-    Classical.not_not, sub_eq_zero, Algebra.algebraMap_eq_smul_one] at nu
-  exact nu.symm
+    Classical.not_not, Algebra.algebraMap_eq_smul_one,
+    End.sub_asHom, End.smul_asHom, End.one_asHom, sub_eq_zero] at nu
+  rw [← nu]
 
 variable [HasKernels C]
 
@@ -123,11 +128,11 @@ variable [HasKernels C]
 -/
 theorem finrank_endomorphism_simple_eq_one (X : C) [Simple X] [FiniteDimensional 𝕜 (X ⟶ X)] :
     finrank 𝕜 (X ⟶ X) = 1 :=
-  finrank_endomorphism_eq_one 𝕜 isIso_iff_nonzero
+  finrank_endomorphism_eq_one 𝕜 isIso_iff_ne_zero
 
 theorem endomorphism_simple_eq_smul_id {X : C} [Simple X] [FiniteDimensional 𝕜 (X ⟶ X)]
     (f : X ⟶ X) : ∃ c : 𝕜, c • 𝟙 X = f :=
-  (finrank_eq_one_iff_of_nonzero' (𝟙 X) (id_nonzero X)).mp (finrank_endomorphism_simple_eq_one 𝕜 X)
+  (finrank_eq_one_iff_of_ne_zero' (𝟙 X) (id_ne_zero X)).mp (finrank_endomorphism_simple_eq_one 𝕜 X)
     f
 
 /-- Endomorphisms of a simple object form a field if they are finite dimensional.
@@ -138,9 +143,10 @@ noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDime
     Field (End X) := by
   exact
     { (inferInstance : DivisionRing (End X)) with
-      mul_comm := fun f g => by
+      mul_comm := fun ⟨f⟩ ⟨g⟩ ↦ by
         obtain ⟨c, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 f
         obtain ⟨d, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 g
+        ext
         simp [← mul_smul, mul_comm c d] }
 
 -- There is a symmetric argument that uses `[FiniteDimensional 𝕜 (Y ⟶ Y)]` instead,
@@ -157,7 +163,7 @@ theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X �
   · rw [finrank_zero_of_subsingleton]
     exact zero_le_one
   · obtain ⟨f, nz⟩ := (nontrivial_iff_exists_ne 0).mp h
-    have fi := (isIso_iff_nonzero f).mpr nz
+    have fi := (isIso_iff_ne_zero f).mpr nz
     refine finrank_le_one f ?_
     intro g
     obtain ⟨c, w⟩ := endomorphism_simple_eq_smul_id 𝕜 (g ≫ inv f)
@@ -170,12 +176,12 @@ theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (
   · intro h
     rw [finrank_eq_one_iff'] at h
     obtain ⟨f, nz, -⟩ := h
-    rw [← isIso_iff_nonzero] at nz
+    rw [← isIso_iff_ne_zero] at nz
     exact ⟨asIso f⟩
   · rintro ⟨f⟩
     have le_one := finrank_hom_simple_simple_le_one 𝕜 X Y
     have zero_lt : 0 < finrank 𝕜 (X ⟶ Y) :=
-      finrank_pos_iff_exists_ne_zero.mpr ⟨f.hom, (isIso_iff_nonzero f.hom).mp inferInstance⟩
+      finrank_pos_iff_exists_ne_zero.mpr ⟨f.hom, (isIso_iff_ne_zero f.hom).mp inferInstance⟩
     lia
 
 theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
