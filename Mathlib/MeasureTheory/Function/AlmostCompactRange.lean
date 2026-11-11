@@ -14,8 +14,8 @@ import Mathlib.Topology.EMetricSpace.Paracompact
 /-!
 # The range of a strongly measurable function is almost compact
 
-Consider a function from a space with a finite measure to a complete space.
-Then most of the values of the function land in a compact subset of the target space.
+Consider a strongly measurable function from a space with a finite measure to a complete space.
+Then most of its values belong to a compact subset of the target space.
 -/
 
 public section
@@ -27,8 +27,8 @@ namespace MeasureTheory
 variable {X Y : Type*} [MeasurableSpace X]
   [TopologicalSpace Y] [TopologicalSpace.IsCompletelyPseudoMetrizableSpace Y]
 
-/-- A function on a finite measure space takes with high probability its values in a compact
-subset. -/
+/-- A strongly measurable function on a finite measure space takes with high probability its values
+in a compact subset. -/
 lemma StronglyMeasurable.exists_isCompact_measure_preimage_compl_le {g : X → Y}
     (ν : Measure X) [IsFiniteMeasure ν] (hg : StronglyMeasurable g) {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ L : Set Y, IsCompact L ∧ ν (g ⁻¹' L)ᶜ < ε := by
@@ -52,8 +52,8 @@ lemma StronglyMeasurable.exists_isCompact_measure_preimage_compl_le {g : X → Y
   rw [← hmap]
   exact (measure_mono (Set.compl_subset_compl.2 subset_closure)).trans_lt hKμ
 
-/-- A function on a finite measure space takes with high probability its values in a compact
-subset. -/
+/-- An ae strongly measurable function on a finite measure space takes with high probability its
+values in a compact subset. -/
 lemma AEStronglyMeasurable.exists_isCompact_measure_preimage_compl_le {g : X → Y}
     (ν : Measure X) [IsFiniteMeasure ν] (hg : AEStronglyMeasurable g ν) {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ L : Set Y, IsCompact L ∧ ν (g ⁻¹' L)ᶜ < ε := by
@@ -67,8 +67,8 @@ lemma AEStronglyMeasurable.exists_isCompact_measure_preimage_compl_le {g : X →
   rw [measure_congr hsets]
   exact hLε
 
-/-- A function on a finite measure space takes with high probability its values in a compact
-subset. -/
+/-- A strongly measurable function on a finite measure space takes with high probability its values
+in a compact subset. Version for `Measure.real`. -/
 lemma StronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le {g : X → Y}
     (ν : Measure X) [IsFiniteMeasure ν] (hg : StronglyMeasurable g) {ε : ℝ} (hε : 0 < ε) :
     ∃ L : Set Y, IsCompact L ∧ ν.real (g ⁻¹' L)ᶜ < ε := by
@@ -76,8 +76,8 @@ lemma StronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le {g : X �
     (ENNReal.ofReal_pos.2 hε)
   exact ⟨L, hL, ENNReal.toReal_lt_of_lt_ofReal hLε⟩
 
-/-- A function on a finite measure space takes with high probability its values in a compact
-subset. -/
+/-- An ae strongly measurable function on a finite measure space takes with high probability its
+values in a compact subset. Version for `Measure.real`. -/
 lemma AEStronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le {g : X → Y}
     (ν : Measure X) [IsFiniteMeasure ν] (hg : AEStronglyMeasurable g ν) {ε : ℝ} (hε : 0 < ε) :
     ∃ L : Set Y, IsCompact L ∧ ν.real (g ⁻¹' L)ᶜ < ε := by
