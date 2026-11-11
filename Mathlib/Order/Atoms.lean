@@ -367,7 +367,7 @@ instance SuccOrder.toIsStronglyAtomic [SuccOrder α] : IsStronglyAtomic α where
 @[to_dual]
 instance [WellFoundedLT α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
-    obtain ⟨m, hab, hm⟩ := wellFounded_lt.has_min (.Ioc a b) ⟨b, hab, le_rfl⟩
+    obtain ⟨m, hab, hm⟩ := wellFounded_lt.has_min (.Ioc a b) (Set.nonempty_Ioc.2 hab)
     obtain ⟨ham, hmb⟩ := Set.mem_Ioc.1 hab
     exact ⟨m, ⟨⟨ham, fun c hac hcm ↦ hm _ ⟨hac, hcm.le.trans hmb⟩ hcm⟩, hmb⟩⟩
 
