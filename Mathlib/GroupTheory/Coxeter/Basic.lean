@@ -82,7 +82,6 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 ## Tags
 
 coxeter system, coxeter group
-
 -/
 
 @[expose] public section
@@ -225,6 +224,11 @@ protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEq
 /-- The simple reflection of `W` at the index `i`. -/
 def simple (i : B) : W := cs.mulEquiv.symm (M.simple i)
 
+@[simp] theorem mulEquiv_symm_simple (i : B) : cs.mulEquiv.symm (M.simple i) = cs.simple i := rfl
+
+@[simp] theorem mulEquiv_simple (i : B) : cs.mulEquiv (cs.simple i) = M.simple i :=
+  cs.mulEquiv.apply_symm_apply _
+
 @[simp]
 theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
     M.toCoxeterSystem.simple = M.simple := rfl
@@ -267,8 +271,7 @@ theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
 
 @[simp]
 theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
-  unfold simple
-  rw [← map_mul, ← map_pow]
+  simp_rw [← mulEquiv_symm_simple, ← map_mul, ← map_pow]
   exact cs.mulEquiv.symm.map_eq_one_iff.mpr (M.simple_mul_simple_pow i i')
 
 @[simp]
@@ -377,10 +380,10 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     rw [comp_apply, comp_apply, ← map_mul, ← map_pow, simple_mul_simple_pow, map_one]⟩
   left_inv f := by
     ext i
-    simp [simple, groupLift, restrictUnit]
+    simp [groupLift, restrictUnit]
   right_inv ι := by
     apply cs.ext_simple
-    simp [simple, groupLift, restrictUnit]
+    simp [groupLift, restrictUnit]
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
@@ -394,7 +397,7 @@ theorem injective_simple : Injective (simple : CoxeterSystem M W → B → W) :=
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
   nth_rw 2 [h]
-  simp [simple]
+  simp
 
 end CoxeterSystem
 

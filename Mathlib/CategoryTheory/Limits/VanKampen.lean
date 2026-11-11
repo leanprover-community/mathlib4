@@ -25,7 +25,6 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 ## References
 - https://ncatlab.org/nlab/show/van+Kampen+colimit
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
-
 -/
 
 @[expose] public section

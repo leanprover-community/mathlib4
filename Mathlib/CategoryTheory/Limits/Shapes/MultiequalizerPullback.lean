@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 In this file, we show that a multicoequalizer for
 `I : MultispanIndex (.ofLinearOrder ι) C` is also
 a pushout when `ι` has exactly two elements.
-
 -/
 
 @[expose] public section

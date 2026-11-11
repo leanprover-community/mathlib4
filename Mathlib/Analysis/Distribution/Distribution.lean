@@ -143,7 +143,6 @@ longer true for general filters.
 * [L. Schwartz, *Théorie des distributions*][schwartz1950]
 * [L. Schwartz, *Théorie des distributions à valeurs vectorielles*][schwartz1957]
 * [L. Hörmander, *The Analysis of Linear Partial Differential Operators I*][hormander2003]
-
 -/
 
 @[expose] public section

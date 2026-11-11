@@ -12,7 +12,6 @@ public import Mathlib.Combinatorics.Quiver.Path
 
 This file defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to allow
 rewriting arrows and paths along equalities of their endpoints.
-
 -/
 
 @[expose] public section

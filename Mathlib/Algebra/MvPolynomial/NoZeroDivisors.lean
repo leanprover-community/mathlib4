@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 This file proves results about multivariate polynomials
 that hold when the coefficient (semi)ring has no zero divisors.
-
 -/
 
 public section

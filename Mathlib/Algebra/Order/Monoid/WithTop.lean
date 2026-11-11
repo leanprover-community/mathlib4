@@ -50,7 +50,7 @@ protected theorem le_self_add [Add α] [LE α] [CanonicallyOrderedAdd α]
   · rw [← WithBot.coe_add, WithBot.coe_le_coe]
     exact le_self_add
 
-protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd α]
+protected theorem le_add_self [Add α] [LE α] [CanonicallyOrderedAdd α]
     {x : WithBot α} (hx : x ≠ ⊥) (y : WithBot α) :
     y ≤ x + y := by
   induction x
@@ -71,9 +71,5 @@ protected theorem add_top_of_ne_bot [PartialOrder α] [OrderTop α] [Add α] [Ca
     {a : WithBot α} (h : a ≠ ⊥) : a + ⊤ = ⊤ := by
   lift a to α using h
   exact WithBot.coe_inj.mpr (by simp [eq_top_iff])
-
-lemma lt_zero_iff_eq_bot {α : Type*} [AddMonoid α] [Preorder α] [CanonicallyOrderedAdd α]
-    (a : WithBot α) : a < 0 ↔ a = ⊥ := by
-  induction a <;> simp
 
 end WithBot
