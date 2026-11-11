@@ -192,9 +192,9 @@ theorem Projective.of_equiv' [Module.Projective R M]
 instance [Projective R M] : Projective R (ι →₀ M) := by
   classical exact .of_equiv' (finsuppLequivDFinsupp R).symm
 
-instance [Finite ι] [∀ i, Projective R (A i)] : Projective R (∀ i, A i) := by
-  let := Fintype.ofFinite ι
-  exact .of_equiv' DFinsupp.linearEquivFunOnFintype
+instance [Finite ι] [∀ i, Projective R (A i)] : Projective R (∀ i, A i) :=
+  have := Fintype.ofFinite ι
+  .of_equiv' DFinsupp.linearEquivFunOnFintype
 
 instance [Projective R M] : Projective R (ULift.{w} M) :=
   Projective.of_equiv' ULift.moduleEquiv.symm
@@ -315,10 +315,10 @@ end DirectSum
 theorem Projective.trans {R : Type*} (S M : Type*) [Semiring R] [Semiring S]
     [Module R S] [IsScalarTower R S S]
     [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-    [Module.Projective R S] [Module.Projective S M] : Module.Projective R M := by
-  obtain ⟨i, hi⟩ := (Module.projective_def' (R := S) (P := M)).mp inferInstance
-  exact Module.Projective.of_split (i.restrictScalars R)
+    [Projective R S] [Projective S M] : Projective R M :=
+  have ⟨i, hi⟩ := (projective_def' (R := S) (P := M)).mp inferInstance
+  .of_split (i.restrictScalars R)
     ((Finsupp.linearCombination S id).restrictScalars R)
-    (congrArg (LinearMap.restrictScalars R) hi)
+    (congrArg (restrictScalars R) hi)
 
 end Module
