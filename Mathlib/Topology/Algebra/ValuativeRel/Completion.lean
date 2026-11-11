@@ -176,6 +176,7 @@ variable [Field K] [ValuativeRel K] [UniformSpace K] [IsValuativeTopology K]
 
 namespace IsValuativeTopology
 
+open scoped Pointwise in
 /-- A valued field is completable. -/
 instance (priority := 100) [IsUniformAddGroup K] : CompletableTopField K where
   nice F hF h0 := by
