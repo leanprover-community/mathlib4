@@ -6,7 +6,7 @@ Authors: Robert Hawkins
 module
 
 public import Mathlib.RingTheory.Coalgebra.Graded
-public import Mathlib.RingTheory.Coalgebra.LocallyNilpotent
+public import Mathlib.RingTheory.Coalgebra.PointwiseNilpotent
 public import Mathlib.RingTheory.GradedAlgebra.Connected
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 
@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.HopfAlgebra.Basic
 # Graded connected bialgebras are Hopf algebras
 
 Every connected graded bialgebra admits an antipode, given by Takeuchi's formula: `uε - id` is
-locally nilpotent for the convolution product, so `id = uε - (uε - id)` is inverted by the
+pointwise nilpotent for the convolution product, so `id = uε - (uε - id)` is inverted by the
 geometric series `∑ k, (uε - id) ^ k`.
 
 ## Main declarations
@@ -78,10 +78,11 @@ lemma convPow_one_sub_id_apply_eq_zero_of_lt (hmk : m < k) (hx : x ∈ 𝒜 m) :
 variable [DirectSum.Decomposition 𝒜]
 
 include 𝒜 in
-/-- In a connected graded bialgebra, `uε - id` is locally nilpotent for the convolution
+/-- In a connected graded bialgebra, `uε - id` is pointwise nilpotent for the convolution
 product. -/
-theorem exists_forall_convPow_one_sub_id_apply_eq_zero (x : A) :
-    ∃ N, ∀ k, N ≤ k → ((1 - toConv LinearMap.id : WithConv (A →ₗ[R] A)) ^ k) x = 0 := by
+theorem isPointwiseConvNilpotent_one_sub_id :
+    IsPointwiseConvNilpotent (1 - toConv LinearMap.id : WithConv (A →ₗ[R] A)) := by
+  refine isPointwiseConvNilpotent_iff.2 fun x ↦ ?_
   induction x using DirectSum.Decomposition.inductionOn 𝒜 with
   | zero => exact ⟨0, fun k _ ↦ map_zero _⟩
   | @homogeneous i x =>
@@ -93,7 +94,7 @@ theorem exists_forall_convPow_one_sub_id_apply_eq_zero (x : A) :
 
 /-- The Takeuchi antipode `∑ k, (uε - id) ^ k` of a connected graded bialgebra. -/
 noncomputable def takeuchiAntipode : A →ₗ[R] A :=
-  (convGeomSeries _ (exists_forall_convPow_one_sub_id_apply_eq_zero 𝒜)).ofConv
+  (isPointwiseConvNilpotent_one_sub_id 𝒜).geomSeries.ofConv
 
 /-- The Hopf algebra structure on a connected graded bialgebra, with antipode given by
 Takeuchi's formula.
@@ -102,8 +103,8 @@ See note [reducible non-instances]. -/
 noncomputable abbrev ofGradedConnected : HopfAlgebra R A :=
   ofConvInverse (takeuchiAntipode 𝒜)
     (by simpa [takeuchiAntipode] using
-      convGeomSeries_mul_one_sub (exists_forall_convPow_one_sub_id_apply_eq_zero 𝒜))
+      (isPointwiseConvNilpotent_one_sub_id 𝒜).geomSeries_mul_one_sub)
     (by simpa [takeuchiAntipode] using
-      one_sub_mul_convGeomSeries (exists_forall_convPow_one_sub_id_apply_eq_zero 𝒜))
+      (isPointwiseConvNilpotent_one_sub_id 𝒜).one_sub_mul_geomSeries)
 
 end HopfAlgebra
