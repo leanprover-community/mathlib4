@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 # Kernels and cokernels in `C` and `Cᵒᵖ`
 
 We construct kernels and cokernels in the opposite categories.
-
 -/
 
 @[expose] public section

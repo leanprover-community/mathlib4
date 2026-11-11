@@ -24,7 +24,6 @@ to define only local instances of `ModelCategory`, or to set these instances on 
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * [Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory][goerss-jardine-2009]
 * https://ncatlab.org/nlab/show/model+category
-
 -/
 
 @[expose] public section

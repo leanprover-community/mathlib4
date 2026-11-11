@@ -72,7 +72,6 @@ See Zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topi
 ## Tags
 
 invertible, inverse element, invOf, a half, one half, a third, one third, ½, ⅓
-
 -/
 
 @[expose] public section

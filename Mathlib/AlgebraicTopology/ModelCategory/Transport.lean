@@ -20,7 +20,6 @@ are the inverse images of the corresponding properties of
 morphisms by the functor `e.functor : C ⥤ D`. Under these
 assumptions, we show that the model category axioms for `C`
 hold if they hold for `D`.
-
 -/
 
 @[expose] public section

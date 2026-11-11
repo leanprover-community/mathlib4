@@ -56,7 +56,6 @@ and coroots. This is necessary when working with infinite root systems, where th
 uniquely determined by the roots, because without it, the reflection permutations on roots and
 coroots may not correspond. For this purpose, we define a map from `ι` to permutations on `ι`, and
 require that it is compatible with reflections and coreflections.
-
 -/
 
 @[expose] public section

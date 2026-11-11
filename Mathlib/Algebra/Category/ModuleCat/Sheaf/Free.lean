@@ -22,7 +22,6 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
   into an adjunction between `freeFunctor` and the evaluation functor at `X`.
   (Alternatively, assuming specific universe parameters, we could show that
   `freeFunctor` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
-
 -/
 
 @[expose] public section
@@ -206,15 +205,11 @@ lemma ιFree_mapFreeIso_hom (η : unit S ≅ F.obj (unit R)) (i : I) :
     ιFree i ≫ (mapFreeIso F I η).hom = η.hom ≫ F.map (ιFree i) :=
   ιFree_mapFree _ _ _ _
 
-@[deprecated (since := "2026-04-21")] alias ιFree_mapFree_inv := ιFree_mapFreeIso_hom
-
 @[reassoc (attr := simp)]
 lemma map_ιFree_mapFreeIso_inv (η : unit S ≅ F.obj (unit R)) (i : I) :
     F.map (ιFree i) ≫ (mapFreeIso F I η).inv = η.inv ≫ ιFree i :=
   IsColimit.ι_map (isColimitOfPreserves F (isColimitFreeCofan I)) (freeCofan I)
     (Discrete.natTrans fun _ ↦ η.inv) (Discrete.mk i)
-
-@[deprecated (since := "2026-04-21")] alias map_ιFree_mapFree_hom := map_ιFree_mapFreeIso_inv
 
 end
 
