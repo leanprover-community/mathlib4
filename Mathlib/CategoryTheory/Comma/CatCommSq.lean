@@ -10,10 +10,9 @@ public import Mathlib.CategoryTheory.Comma.Arrow
 
 /-!
 # 2-commutative squares of categories of arrows
-
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Arrow
 

@@ -28,7 +28,6 @@ For `E : Set α`, ...
 To avoid the tedious process of certifying the matroid axioms for each of these easy examples,
 we bootstrap the definitions starting with `emptyOn α` (which `simp` can prove is a matroid)
 and then construct the other examples using duality and restriction.
-
 -/
 
 @[expose] public section
@@ -266,7 +265,7 @@ instance uniqueBaseOn_finitary : Finitary (uniqueBaseOn I E) := by
   exact fun e heK ↦ singleton_subset_iff.1 <| hK _ (by simpa) (by simp)
 
 lemma uniqueBaseOn_rankPos (hIE : I ⊆ E) (hI : I.Nonempty) : RankPos (uniqueBaseOn I E) where
-  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm <| hI.ne_empty
+  empty_not_isBase := by simpa [uniqueBaseOn_isBase_iff hIE] using Ne.symm hI.ne_empty
 
 end uniqueBaseOn
 

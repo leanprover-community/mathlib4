@@ -5,19 +5,18 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
-public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
-/-!
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+import Mathlib.Topology.Algebra.Module.Compact
 
+/-!
 # Definition of (Non-archimedean) local fields
 
 Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),
 we say that it is a non-archimedean local field if the topology comes from the given valuation,
 and it is locally compact and non-discrete.
-
 -/
 
 @[expose] public section
@@ -81,20 +80,20 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
     · obtain ⟨r, rfl⟩ := ValuativeRel.valuation_surjective r
       simp only [ne_eq, map_eq_zero] at hr
       refine ⟨r ^ 2, by simpa using hr, by simpa [pow_two], fun x hx ↦ hrs ?_⟩
-      simp only [map_pow, Set.mem_setOf_eq] at hx ⊢
+      simp only [map_pow, Set.mem_ofPred_eq] at hx ⊢
       exact hx.trans_lt (by simpa [pow_two, hr])
     · refine ⟨r', hr', hr, .trans ?_ hrs⟩
       intro x hx
       dsimp at hx ⊢
       exact hx.trans_lt (hr.trans_le hr1)
   simp_rw [← (valuation K).restrict_le_iff] at H ⊢
-  convert!
+  convert
     (hs'.of_isClosed_subset (Valued.isClosed_closedBall K _) H).image
       (Homeomorph.mulLeft₀ (γ / r) (by simp [hr, div_eq_zero_iff, hγ])).continuous using 1
   refine .trans ?_ (Equiv.image_eq_preimage_symm _ _).symm
   ext x
-  simp only [Set.mem_setOf_eq, Homeomorph.coe_symm_toEquiv, Homeomorph.mulLeft₀_symm_apply, inv_div,
-    Set.preimage_setOf_eq, map_mul, map_div₀, Valuation.restrict_le_iff]
+  simp only [Set.mem_ofPred_eq, Homeomorph.coe_symm_toEquiv, Homeomorph.mulLeft₀_symm_apply,
+    inv_div, Set.preimage_ofPred_eq, map_mul, map_div₀, Valuation.restrict_le_iff]
   rw [div_mul_eq_mul_div, div_le_iff₀ (by simp [hγ])]
   simp only [IsValuativeTopology.v_eq_valuation, ← map_mul, Valuation.restrict_le_iff]
   simp [hr]
@@ -131,7 +130,8 @@ instance : IsCyclic (ValueGroupWithZero K)ˣ :=
   (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
 
 instance : ValuativeRel.IsDiscrete K :=
-  (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
+  (ValuativeRel.ValueGroupWithZero.nonempty_orderMonoidIso_withZeroMulInt_iff.mp
+    ⟨valueGroupWithZeroIsoInt K⟩).1
 
 instance : ValuativeRel.IsRankLeOne K :=
   ValuativeRel.isRankLeOne_iff_mulArchimedean.mpr

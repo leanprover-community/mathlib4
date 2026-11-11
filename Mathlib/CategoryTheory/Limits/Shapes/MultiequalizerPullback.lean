@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 In this file, we show that a multicoequalizer for
 `I : MultispanIndex (.ofLinearOrder ι) C` is also
 a pushout when `ι` has exactly two elements.
-
 -/
 
 @[expose] public section
@@ -52,12 +51,12 @@ noncomputable def multicofork : Multicofork I :=
 @[simp]
 lemma multicofork_π_eq_inl : (multicofork h h' s).π (J.fst default) = s.inl := by
   dsimp only [multicofork, ofπ, π]
-  rw [dif_pos rfl, eqToHom_refl, Category.id_comp]
+  rw [dite_eq_left rfl, eqToHom_refl, Category.id_comp]
 
 @[simp]
 lemma multicofork_π_eq_inr : (multicofork h h' s).π (J.snd default) = s.inr := by
   dsimp only [multicofork, ofπ, π]
-  rw [dif_neg h'.symm, eqToHom_refl, Category.id_comp]
+  rw [dite_eq_right h'.symm, eqToHom_refl, Category.id_comp]
 
 end isPushout
 

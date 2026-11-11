@@ -5,9 +5,9 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
-public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.VectorMeasure.Relations
 
 /-!
 # Jordan decomposition
@@ -121,29 +121,29 @@ theorem real_smul_def (r : ℝ) (j : JordanDecomposition α) :
 
 @[simp]
 theorem coe_smul (r : ℝ≥0) : (r : ℝ) • j = r • j := by
-  rw [real_smul_def, if_pos (NNReal.coe_nonneg r), Real.toNNReal_coe]
+  rw [real_smul_def, ite_eq_left (NNReal.coe_nonneg r), Real.toNNReal_coe]
 
 theorem real_smul_nonneg (r : ℝ) (hr : 0 ≤ r) : r • j = r.toNNReal • j :=
-  dif_pos hr
+  dite_eq_left hr
 
 theorem real_smul_neg (r : ℝ) (hr : r < 0) : r • j = -((-r).toNNReal • j) :=
-  dif_neg (not_le.2 hr)
+  dite_eq_right (not_le.2 hr)
 
 theorem real_smul_posPart_nonneg (r : ℝ) (hr : 0 ≤ r) :
     (r • j).posPart = r.toNNReal • j.posPart := by
-  rw [real_smul_def, ← smul_posPart, if_pos hr]
+  rw [real_smul_def, ← smul_posPart, ite_eq_left hr]
 
 theorem real_smul_negPart_nonneg (r : ℝ) (hr : 0 ≤ r) :
     (r • j).negPart = r.toNNReal • j.negPart := by
-  rw [real_smul_def, ← smul_negPart, if_pos hr]
+  rw [real_smul_def, ← smul_negPart, ite_eq_left hr]
 
 theorem real_smul_posPart_neg (r : ℝ) (hr : r < 0) :
     (r • j).posPart = (-r).toNNReal • j.negPart := by
-  rw [real_smul_def, ← smul_negPart, if_neg (not_le.2 hr), neg_posPart]
+  rw [real_smul_def, ← smul_negPart, ite_eq_right (not_le.2 hr), neg_posPart]
 
 theorem real_smul_negPart_neg (r : ℝ) (hr : r < 0) :
     (r • j).negPart = (-r).toNNReal • j.posPart := by
-  rw [real_smul_def, ← smul_posPart, if_neg (not_le.2 hr), neg_negPart]
+  rw [real_smul_def, ← smul_posPart, ite_eq_right (not_le.2 hr), neg_negPart]
 
 /-- The signed measure associated with a Jordan decomposition. -/
 def toSignedMeasure : SignedMeasure α :=
@@ -460,15 +460,24 @@ theorem toJordanDecomposition_eq {s : SignedMeasure α} {j : JordanDecomposition
 def totalVariation (s : SignedMeasure α) : Measure α :=
   s.toJordanDecomposition.posPart + s.toJordanDecomposition.negPart
 
+instance (s : SignedMeasure α) : IsFiniteMeasure s.totalVariation := by
+  unfold totalVariation; infer_instance
+
 theorem totalVariation_zero : (0 : SignedMeasure α).totalVariation = 0 := by
   simp [totalVariation, toJordanDecomposition_zero]
 
 theorem totalVariation_neg (s : SignedMeasure α) : (-s).totalVariation = s.totalVariation := by
   simp [totalVariation, toJordanDecomposition_neg, add_comm]
 
+/-- Pointwise form of `toSignedMeasure_toJordanDecomposition`. -/
+theorem apply_eq_posPart_real_sub_negPart_real (s : SignedMeasure α) {i : Set α}
+    (hi : MeasurableSet i) :
+    s i = s.toJordanDecomposition.posPart.real i - s.toJordanDecomposition.negPart.real i := by
+  grind [Measure.toSignedMeasure_sub_apply, toSignedMeasure, toSignedMeasure_toJordanDecomposition]
+
 theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
     (hs : s.totalVariation i = 0) : s i = 0 := by
-  rw [totalVariation, Measure.coe_add, Pi.add_apply, add_eq_zero] at hs
+  rw [totalVariation, FunLike.coe_add, Pi.add_apply, add_eq_zero] at hs
   by_cases hi : MeasurableSet i
   · rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure]
     simp [hi, measureReal_def, hs.1, hs.2]
@@ -479,7 +488,7 @@ theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeas
   constructor <;> intro h
   · refine Measure.AbsolutelyContinuous.mk fun S hS₁ hS₂ => ?_
     obtain ⟨i, hi₁, hi₂, hi₃, hpos, hneg⟩ := s.toJordanDecomposition_spec
-    rw [totalVariation, Measure.add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hS₁,
+    rw [totalVariation, add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hS₁,
       toMeasureOfLEZero_apply _ _ _ hS₁]
     rw [← VectorMeasure.AbsolutelyContinuous.ennrealToMeasure] at h
     simp [h (measure_mono_null (i.inter_subset_right) hS₂),
@@ -496,10 +505,10 @@ theorem totalVariation_absolutelyContinuous_iff (s : SignedMeasure α) (μ : Mea
     all_goals
       refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
       have := h hS₂
-      rw [totalVariation, Measure.add_apply, add_eq_zero] at this
+      rw [totalVariation, add_apply, add_eq_zero] at this
     exacts [this.1, this.2]
   · refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
-    rw [totalVariation, Measure.add_apply, h.1 hS₂, h.2 hS₂, add_zero]
+    rw [totalVariation, add_apply, h.1 hS₂, h.2 hS₂, add_zero]
 
 -- TODO: Generalize to vector measures once total variation on vector measures is defined
 theorem mutuallySingular_iff (s t : SignedMeasure α) :
@@ -509,10 +518,10 @@ theorem mutuallySingular_iff (s t : SignedMeasure α) :
     obtain ⟨i, hi₁, hi₂, hi₃, hipos, hineg⟩ := s.toJordanDecomposition_spec
     obtain ⟨j, hj₁, hj₂, hj₃, hjpos, hjneg⟩ := t.toJordanDecomposition_spec
     refine ⟨u, hmeas, ?_, ?_⟩
-    · rw [totalVariation, Measure.add_apply, hipos, hineg, toMeasureOfZeroLE_apply _ _ _ hmeas,
+    · rw [totalVariation, add_apply, hipos, hineg, toMeasureOfZeroLE_apply _ _ _ hmeas,
         toMeasureOfLEZero_apply _ _ _ hmeas]
       simp [hu₁ _ Set.inter_subset_right]
-    · rw [totalVariation, Measure.add_apply, hjpos, hjneg,
+    · rw [totalVariation, add_apply, hjpos, hjneg,
         toMeasureOfZeroLE_apply _ _ _ hmeas.compl,
         toMeasureOfLEZero_apply _ _ _ hmeas.compl]
       simp [hu₂ _ Set.inter_subset_right]
@@ -527,7 +536,7 @@ theorem mutuallySingular_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure 
   · rintro ⟨u, hmeas, hu₁, hu₂⟩
     obtain ⟨i, hi₁, hi₂, hi₃, hpos, hneg⟩ := s.toJordanDecomposition_spec
     refine ⟨u, hmeas, ?_, ?_⟩
-    · rw [totalVariation, Measure.add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hmeas,
+    · rw [totalVariation, add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hmeas,
         toMeasureOfLEZero_apply _ _ _ hmeas]
       simp [hu₁ _ Set.inter_subset_right]
     · rw [VectorMeasure.ennrealToMeasure_apply hmeas.compl]

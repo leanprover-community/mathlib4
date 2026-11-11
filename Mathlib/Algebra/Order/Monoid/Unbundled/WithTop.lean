@@ -6,10 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Order.WithBot
 
 /-! # Adjoining top/bottom elements to ordered monoids.
@@ -131,6 +129,7 @@ lemma _root_.IsAddRightRegular.withTop (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithTop α) := by
   rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithTop α) := by
   rintro (_ | b) (_ | c)
@@ -453,6 +452,10 @@ theorem one_eq_map_iff {α} {f : α → β} {v : WithBot α} [One β] :
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
+@[to_additive lt_zero_iff_eq_bot]
+lemma lt_one_iff_eq_bot [Preorder α] [IsBotOneClass α] {a : WithBot α} : a < 1 ↔ a = ⊥ := by
+  induction a <;> simp
+
 end One
 
 section Add
@@ -491,6 +494,7 @@ lemma _root_.IsAddRightRegular.withBot (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithBot α) := by
   rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
     AddLECancellable (a : WithBot α) := by
   rintro (_ | b) (_ | c)

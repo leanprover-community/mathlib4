@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis for `PiTensorProduct`
 
@@ -20,7 +23,7 @@ section PiTensorProduct
 
 attribute [local ext] PiTensorProduct.ext
 
-open LinearMap PiTensorProduct Module TensorProduct
+open PiTensorProduct Module TensorProduct
 
 variable {ι R : Type*} {M : ι → Type*} {κ : ι → Type*} [CommSemiring R] [∀ i, AddCommMonoid (M i)]
   [∀ i, Module R (M i)]

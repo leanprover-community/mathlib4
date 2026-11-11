@@ -5,8 +5,8 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
@@ -14,8 +14,6 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 (Using the pointwise monoidal structure on the functor category.)
 -/
-
-set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
 
@@ -30,6 +28,9 @@ namespace CategoryTheory.Functor
 variable {D : Type u} {C : Type*} [Groupoid.{v} D] [Category* C]
   [MonoidalCategory C] [MonoidalClosed C]
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The internal hom functor `F ⟶[C] -` -/
 @[simps!]
@@ -38,7 +39,6 @@ def closedIhom (F : D ⥤ C) : (D ⥤ C) ⥤ D ⥤ C :=
     ((Groupoid.invEquivalence D).functor ⋙ F.op)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The unit for the adjunction `(tensorLeft F) ⊣ (ihom F)`. -/
 @[simps]
@@ -54,7 +54,6 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
       simp }
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The counit for the adjunction `(tensorLeft F) ⊣ (ihom F)`. -/
 @[simps]
@@ -68,7 +67,7 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
       rw [tensorHom_def]
       simp }
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C` is a monoidal closed category and `D` is a groupoid, then every functor `F : D ⥤ C` is
 closed in the functor category `F : D ⥤ C` with the pointwise monoidal structure. -/
 instance closed (F : D ⥤ C) : Closed F where

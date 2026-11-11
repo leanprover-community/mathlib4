@@ -6,7 +6,11 @@ Authors: Lucas Whitfield, Johan Commelin
 module
 
 public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.RingTheory.Finiteness.Nilpotent
+
+import Mathlib.RingTheory.Finiteness.Nilpotent
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lie's theorem for Solvable Lie algebras.
@@ -49,7 +53,7 @@ local notation "π" => LieModule.toEnd R _ V
 
 private abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
-set_option backward.privateInPublic true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- An auxiliary lemma used only in the definition `LieModule.weightSpaceOfIsLieTower` below. -/
 private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpace V χ) :
     ⁅z, v⁆ ∈ weightSpace V χ := by
@@ -70,18 +74,18 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
   have T_apply_succ (w : A) (n : ℕ) :
       Submodule.map (T χ w) (U' (n + 1)) ≤ U' n := by
     simp only [OrderHom.coe_mk, U', Submodule.map_span, Submodule.span_le, Set.image_subset_iff]
-    simp only [Set.subset_def, Set.mem_setOf_eq, Set.mem_preimage, SetLike.mem_coe,
+    simp only [Set.subset_def, Set.mem_ofPred_eq, Set.mem_preimage, SetLike.mem_coe,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     induction n generalizing w
     · simp only [zero_add, Nat.lt_one_iff, LinearMap.sub_apply, LieModule.toEnd_apply_apply,
-        LinearMap.smul_apply, Module.End.one_apply, forall_eq, pow_zero, hv w, sub_self, zero_mem]
+        LinearMap.smul_apply, one_apply_eq_self, forall_eq, pow_zero, hv w, sub_self, zero_mem]
     · next n hn =>
       intro m hm
       obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by lia
       · exact U'.mono (Nat.le_succ n) (hn w m hm)
       have H : ∀ w, ⁅w, (π z ^ n) v⁆ = (T χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
-      rw [T, LinearMap.sub_apply, pow_succ', Module.End.mul_apply, LieModule.toEnd_apply_apply,
-        LieModule.toEnd_apply_apply, LinearMap.smul_apply, Module.End.one_apply, leibniz_lie,
+      rw [T, LinearMap.sub_apply, pow_succ', mul_apply_eq_comp, LieModule.toEnd_apply_apply,
+        LieModule.toEnd_apply_apply, LinearMap.smul_apply, one_apply_eq_self, leibniz_lie,
         lie_swap_lie w z, H, H, lie_add, lie_smul, add_sub_assoc, add_sub_assoc, sub_self, add_zero]
       refine add_mem (neg_mem <| add_mem ?_ ?_) ?_
       · exact U'.mono n.le_succ (hn _ n n.lt_succ_self)
@@ -119,7 +123,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
       intro x
       specialize this x.2
       simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] at this
-      peel this with n hn
+      gconvert this with n hn
       ext
       simp only [ZeroMemClass.coe_zero, ← hn]; clear hn
       induction n <;> simp_all [pow_succ']
@@ -133,7 +137,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     obtain ⟨j, hj, hj'⟩ := key i hi
     obtain ⟨k, hk⟩ := ih j hj (hj' <| Submodule.mem_map_of_mem hx)
     use k + 1
-    rw [pow_succ, Module.End.mul_apply, hk]
+    rw [pow_succ, mul_apply_eq_comp, hk]
   have trace_za : (toEnd R A _ ⁅z, a⁆).trace R U = χ ⁅z, a⁆ • (finrank R U) := by
     simpa [T, sub_eq_zero] using trace_T_U_zero ⁅z, a⁆
   suffices finrank R U ≠ 0 by simp_all
@@ -142,17 +146,15 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     apply Submodule.mem_iSup_of_mem 1
     apply Submodule.subset_span
     use 0, zero_lt_one
-    rw [pow_zero, Module.End.one_apply]
+    rw [pow_zero, one_apply_eq_self]
   exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 variable (R V) in
 /-- The weight space of `V` with respect to `χ : A → R`, a priori a Lie submodule for `A`, is also a
 Lie submodule for `L`. -/
 def weightSpaceOfIsLieTower (χ : A → R) : LieSubmodule R L V :=
   { toSubmodule := weightSpace V χ
-    lie_mem {z v} hv := weightSpaceOfIsLieTower_aux χ z v hv }
+    lie_mem {z v} hv := private weightSpaceOfIsLieTower_aux χ z v hv }
 
 end
 
@@ -170,7 +172,7 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
     (χ₀ : Module.Dual k A) [Nontrivial (weightSpace V χ₀)] :
     ∃ (χ : Module.Dual k L), Nontrivial (weightSpace V χ) := by
-  obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
+  obtain ⟨z, -, hz⟩ := IsConcreteLE.exists_of_lt (hA.lt_top)
   let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
   have he : ∀ x, e x • z = x := by simp [e]
   have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_isCoatom_of_notMem hA hz
@@ -231,7 +233,6 @@ decreasing_by
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
 have a common eigenvector for the action of all elements of the Lie algebra.
 

@@ -15,7 +15,6 @@ the diagonal is an entourage of itself.
 It induces the discrete topology.
 
 It is complete.
-
 -/
 
 public section
@@ -68,7 +67,7 @@ variable {X} in
 instance {Y : Type*} [UniformSpace Y] [DiscreteUniformity Y] :
     DiscreteUniformity (X × Y) := by
   simp [discreteUniformity_iff_eq_principal_setRelId, uniformity_prod_eq_comap_prod,
-    eq_principal_setRelId, SetRel.id, Set.prod_eq, Prod.ext_iff, Set.setOf_and]
+    eq_principal_setRelId, SetRel.id, Set.prod_eq, Prod.ext_iff, Set.ofPred_and]
 
 variable {x} in
 /-- On a space with a discrete uniformity, any function is uniformly continuous. -/

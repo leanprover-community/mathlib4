@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine monoids
 
@@ -18,9 +21,9 @@ public section
 
 /-- An affine monoid is a finitely generated cancellative torsion-free commutative monoid. -/
 class abbrev IsAffineAddMonoid (M : Type*) [AddCommMonoid M] : Prop :=
-  IsCancelAdd M, AddMonoid.FG M, IsAddTorsionFree M
+  IsCancelAdd M, AddMonoid.FG M, HasUniqueDiv M
 
 /-- An affine monoid is a finitely generated cancellative torsion-free commutative monoid. -/
 @[to_additive]
 class abbrev IsAffineMonoid (M : Type*) [CommMonoid M] : Prop :=
-  IsCancelMul M, Monoid.FG M, IsMulTorsionFree M
+  IsCancelMul M, Monoid.FG M, HasUniqueRoots M

@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Separation.Regular
 
 /-!
@@ -21,7 +20,6 @@ The main theorem `continuous_extend` gives a criterion for a function
 `f : X → Z` to a T₃ space Z to extend along a dense embedding
 `i : X → Y` to a continuous function `g : Y → Z`. Actually `i` only
 has to be `IsDenseInducing` (not necessarily injective).
-
 -/
 
 @[expose] public section
@@ -341,7 +339,7 @@ theorem isClosed_property [TopologicalSpace β] {e : α → β} {p : β → Prop
       univ = closure (range e) := he.closure_range.symm
       _ ⊆ closure { b | p b } := closure_mono <| range_subset_iff.mpr h
       _ = _ := hp.closure_eq
-  simpa only [univ_subset_iff, eq_univ_iff_forall, mem_setOf]
+  simpa only [univ_subset_iff, eq_univ_iff_forall, mem_ofPred]
 
 theorem isClosed_property2 [TopologicalSpace β] {e : α → β} {p : β → β → Prop} (he : DenseRange e)
     (hp : IsClosed { q : β × β | p q.1 q.2 }) (h : ∀ a₁ a₂, p (e a₁) (e a₂)) : ∀ b₁ b₂, p b₁ b₂ :=

@@ -24,7 +24,6 @@ given by substitution of the generating variable to an element of strictly posit
 ## TODO
 * `MvPowerSeries.heval`: An `R`-algebra homomorphism from `MvPowerSeries σ R` to `R⟦Γ⟧`
   (for finite σ) taking each `X i` to a positive order Hahn Series.
-
 -/
 
 @[expose] public section
@@ -33,7 +32,7 @@ open Finset Function
 
 noncomputable section
 
-variable {Γ Γ' R V α β σ : Type*}
+variable {Γ R V α β : Type*}
 
 namespace HahnSeries
 
@@ -83,6 +82,7 @@ theorem powerSeriesFamily_smul {x : V⟦Γ⟧} (f : PowerSeries R) (r : R) :
   ext1 n
   simp [mul_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_powerSeriesFamily_subset {x : V⟦Γ⟧} (a b : PowerSeries R) (g : Γ) :
     ((powerSeriesFamily x (a * b)).coeff g).support ⊆
     (((powerSeriesFamily x a).mul (powerSeriesFamily x b)).coeff g).support.image

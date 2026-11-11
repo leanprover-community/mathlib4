@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Comp
+
+import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`
@@ -45,7 +46,7 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
     refine .of_isLittleO <| this.congr' ?_ (Eventually.of_forall fun _ => mul_one _)
     refine Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) ?_
     rintro ⟨y, z⟩ ⟨hy, hz⟩
-    simp only [mem_setOf_eq] at hy hz
+    simp only [mem_ofPred_eq] at hy hz
     simp [field]
     ring
   refine (isBigO_refl (fun p : 𝕜 × 𝕜 => p.1 - p.2) _).mul_isLittleO ((isLittleO_one_iff 𝕜).2 ?_)

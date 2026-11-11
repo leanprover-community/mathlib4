@@ -40,7 +40,7 @@ noncomputable section
 
 section LieGroup
 
-open Bundle Filter Function Set
+open Bundle Function
 open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -142,6 +142,7 @@ lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace
   simp
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     CMDiff (minSmoothness 𝕜 2)

@@ -5,12 +5,11 @@ Authors: Scott Carnahan, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.Span.TensorProduct
 import Mathlib.RingTheory.Flat.TorsionFree
 
@@ -29,7 +28,6 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
   between a root and coroot is always an integer.
 * `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
 * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
-
 -/
 
 @[expose] public section
@@ -201,6 +199,7 @@ def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn 
     (FaithfulSMul.algebraMap_injective S R) (P.root' i)
     (fun m ↦ P.root'_apply_apply_mem_of_mem_span S m.2 i)
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma algebraMap_root'In_apply [Module S N] [IsScalarTower S R N] [FaithfulSMul S R]
     [P.IsValuedIn S] (i : ι) (x : P.corootSpan S) :
@@ -362,7 +361,7 @@ lemma finrank_rootSpanIn_int [Finite ι] [CharZero L] [Q.IsCrystallographic] :
     finrank ℤ (Q.rootSpan ℤ) = finrank L M := by
   let _i : Module ℚ M := .compHom M (algebraMap ℚ L)
   let _i : Module ℚ N := .compHom N (algebraMap ℚ L)
-  have _i : IsAddTorsionFree M := .of_isTorsionFree L M
+  have _i : HasUniqueDiv M := .of_isTorsionFree L M
   rw [← Submodule.finrank_span_eq_finrank_span ℤ ℚ, ← Q.finrank_rootSpanIn ℚ]
 
 @[simp]

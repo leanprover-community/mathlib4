@@ -27,7 +27,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -107,7 +107,6 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
       CostructuredArrow.hom_eq_iff] at this
     exact this.1
 
-set_option backward.defeqAttrib.useBackward true in
 theorem hf : f = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ϕ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
@@ -123,7 +122,6 @@ def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
       CostructuredArrow.hom_eq_iff] at this
     exact this.2
 
-set_option backward.defeqAttrib.useBackward true in
 theorem hg : g = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ψ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
@@ -153,7 +151,6 @@ theorem nonempty_indParallelPairPresentation {A B : Cᵒᵖ ⥤ Type v₁} (hA :
 
 namespace IndParallelPairPresentation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an `IndParallelPairPresentation f g`, we can understand the parallel pair `(f, g)`
 as the colimit of `(P.φ, P.ψ)` in `Cᵒᵖ ⥤ Type v`. -/
 noncomputable def parallelPairIsoParallelPairCompYoneda {A B : Cᵒᵖ ⥤ Type v₁} {f g : A ⟶ B}

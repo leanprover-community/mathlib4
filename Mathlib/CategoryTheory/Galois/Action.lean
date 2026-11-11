@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
 
 /-!
-
 # Induced functor to finite `Aut F`-sets
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
@@ -17,7 +16,6 @@ from finite `Aut F`-sets to finite sets. In this file we collect basic propertie
 of the induced functor `H : C ⥤ Action FintypeCat (Aut F)`.
 
 See `Mathlib/CategoryTheory/Galois/Full.lean` for the proof that `H` is (faithfully) full.
-
 -/
 
 @[expose] public section
@@ -28,7 +26,7 @@ namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-open Limits Functor
+open Limits CategoryTheory.Functor
 
 variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u})
 
@@ -38,7 +36,7 @@ def functorToAction : C ⥤ Action FintypeCat.{u} (Aut F) where
   obj X := Action.FintypeCat.ofMulAction (Aut F) (F.obj X)
   map f := {
     hom := F.map f
-    comm := fun g ↦ symm <| g.hom.naturality f
+    comm g := symm <| g.asIso.hom.naturality f
   }
 
 lemma functorToAction_comp_forget₂_eq : functorToAction F ⋙ forget₂ _ FintypeCat = F := rfl

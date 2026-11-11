@@ -5,12 +5,10 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Analysis.Convex.Jensen
-public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
+public import Mathlib.Analysis.Convex.Extreme
+
+import Mathlib.Combinatorics.Hall.Basic
 
 /-!
 # Birkhoff's theorem
@@ -44,6 +42,7 @@ section LinearOrderedSemifield
 
 variable [Semifield R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
 
+set_option backward.isDefEq.respectTransparency.types false in
 /--
 If M is a positive scalar multiple of a doubly stochastic matrix, then there is a permutation matrix
 whose support is contained in the support of M.
@@ -152,7 +151,7 @@ lemma exists_eq_sum_perm_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R 
   refine ⟨w, hw1, ?_, hw3⟩
   inhabit n
   have : ∑ j, ∑ σ : Equiv.Perm n, w σ • σ.permMatrix R default j = 1 := by
-    simp only [← smul_apply (m := n), ← Finset.sum_apply, hw3]
+    simp only [← Matrix.smul_apply (m := n), ← Finset.sum_apply, hw3]
     rw [sum_row_of_mem_doublyStochastic hM]
   simpa [sum_comm (γ := n), Equiv.toPEquiv_apply] using this
 

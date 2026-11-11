@@ -6,9 +6,10 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
+# Localization away from `r` and adjoining an inverse
+
 The `R`-`AlgEquiv` between the localization of `R` away from `r` and
 `R` with an inverse of `r` adjoined.
 -/

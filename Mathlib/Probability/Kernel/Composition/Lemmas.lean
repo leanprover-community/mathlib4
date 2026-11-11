@@ -12,7 +12,6 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 This file contains lemmas about the composition of measures and kernels that do not fit in any of
 the other files in this directory, because they involve several types of compositions/products.
-
 -/
 
 public section
@@ -80,7 +79,7 @@ namespace MeasureTheory.Measure
 lemma compProd_eq_parallelComp_comp_copy_comp [SFinite μ] :
     μ ⊗ₘ κ = (Kernel.id ∥ₖ κ) ∘ₘ Kernel.copy α ∘ₘ μ := by
   by_cases hκ : IsSFiniteKernel κ
-  swap; · simp [hκ]
+  swap; · simp [FunLike.coe_zero, hκ]
   rw [compProd_eq_comp_prod, ← Kernel.parallelComp_comp_copy, Measure.comp_assoc]
 
 lemma prod_comp_right [SFinite ν] {κ : Kernel β γ} [IsSFiniteKernel κ] :

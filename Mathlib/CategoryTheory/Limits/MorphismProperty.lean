@@ -5,12 +5,12 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 /-!
 # (Co)limits in subcategories of comma categories defined by morphism properties
-
 -/
 
 @[expose] public section
@@ -28,7 +28,7 @@ variable (D : J ⥤ P.Comma L R ⊤ ⊤)
 
 /-- If `P` is closed under limits of shape `J` in `Comma L R`, then when `D` has
 a limit in `Comma L R`, the forgetful functor creates this limit. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def forgetCreatesLimitOfClosed
     [(P.commaObj L R).IsClosedUnderLimitsOfShape J]
     [HasLimit (D ⋙ forget L R P ⊤ ⊤)] :
@@ -40,7 +40,7 @@ noncomputable def forgetCreatesLimitOfClosed
 
 /-- If `Comma L R` has limits of shape `J` and `Comma L R` is closed under limits of shape
 `J`, then `forget L R P ⊤ ⊤` creates limits of shape `J`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def forgetCreatesLimitsOfShapeOfClosed [HasLimitsOfShape J (Comma L R)]
     [ObjectProperty.IsClosedUnderLimitsOfShape (P.commaObj L R) J] :
     CreatesLimitsOfShape J (forget L R P ⊤ ⊤) where
@@ -60,7 +60,7 @@ instance hasLimitsOfShape_of_closedUnderLimitsOfShape [HasLimitsOfShape J (Comma
 
 /-- If `P` is closed under colimits of shape `J` in `Comma L R`, then when `D` has
 a colimit in `Comma L R`, the forgetful functor creates this colimit. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def forgetCreatesColimitOfClosed
     [(P.commaObj L R).IsClosedUnderColimitsOfShape J]
     [HasColimit (D ⋙ forget L R P ⊤ ⊤)] :
@@ -72,7 +72,7 @@ noncomputable def forgetCreatesColimitOfClosed
 variable (J) in
 /-- If `Comma L R` has colimits of shape `J` and `Comma L R` is closed under colimits of shape
 `J`, then `forget L R P ⊤ ⊤` creates colimits of shape `J`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def forgetCreatesColimitsOfShapeOfClosed [HasColimitsOfShape J (Comma L R)]
     [(P.commaObj L R).IsClosedUnderColimitsOfShape J] :
     CreatesColimitsOfShape J (forget L R P ⊤ ⊤) where
@@ -106,8 +106,6 @@ instance CostructuredArrow.closedUnderLimitsOfShape_discrete_empty [L.Faithful] 
     simpa [MorphismProperty.costructuredArrowObj_iff,
       P.costructuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesColimitsOfShape J L] [HasColimitsOfShape J A]
     (c : ∀ (D : J ⥤ T) [HasColimit D], Cocone D)
@@ -127,8 +125,7 @@ lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
       P.cancel_left_of_respectsIso]
     exact H _ _ d.prop_diag_obj
 
-set_option backward.defeqAttrib.useBackward true in
-lemma CostructuredArrow.closedUnderLimitsOfShape_walkingCospan [HasPullbacks A] [HasPullbacks T]
+lemma CostructuredArrow.closedUnderLimitsOfShape_walkingCospan [HasPullbacks A]
     [PreservesLimitsOfShape WalkingCospan L] (X : T)
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
     [P.HasOfPostcompProperty P] :
@@ -188,8 +185,6 @@ instance StructuredArrow.closedUnderColimitsOfShape_discrete_empty [L.Faithful] 
     simpa [MorphismProperty.structuredArrowObj_iff,
       P.structuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma StructuredArrow.isClosedUnderLimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesLimitsOfShape J L] [HasLimitsOfShape J A]
     (c : ∀ (D : J ⥤ T) [HasLimit D], Cone D)
@@ -219,7 +214,6 @@ instance Over.closedUnderLimitsOfShape_discrete_empty [P.ContainsIdentities] [P.
     (P.overObj (X := X)).IsClosedUnderLimitsOfShape (Discrete PEmpty.{1}) :=
   CostructuredArrow.closedUnderLimitsOfShape_discrete_empty P
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Let `P` be stable under composition and base change. If `P` satisfies cancellation on the right,
 the subcategory of `Over X` defined by `P` is closed under pullbacks.
 
@@ -263,6 +257,7 @@ noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
   · exact inferInstanceAs (HasLimitsOfShape _ (Over X))
   · apply Over.closedUnderLimitsOfShape_discrete_empty _
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
@@ -270,9 +265,9 @@ instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
   default := Over.homMk Y.hom
   uniq a := by
     ext
-    · simp only [mk_left, homMk_hom, Over.homMk_left]
-      rw [← Over.w a]
-      simp only [mk_left, Functor.const_obj_obj, mk_hom, Category.comp_id]
+    simp only [mk_left, homMk_hom, Over.homMk_left]
+    rw [← Over.w a]
+    simp only [mk_left, Functor.const_obj_obj, mk_hom, Category.comp_id]
 
 /-- `X ⟶ X` is the terminal object of `P.Over ⊤ X`. -/
 def mkIdTerminal [P.ContainsIdentities] :
@@ -332,7 +327,6 @@ noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
   · exact inferInstanceAs (HasColimitsOfShape _ (Under X))
   · apply Under.closedUnderColimitsOfShape_discrete_empty _
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Under ⊤ X) :

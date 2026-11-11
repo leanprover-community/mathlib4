@@ -28,13 +28,12 @@ two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
   is strongly adapted.
   That is, `predictablePart` is predictable.
 * `MeasureTheory.martingale_martingalePart`: `martingalePart f ℱ μ` is a martingale.
-
 -/
 
 @[expose] public section
 
 
-open TopologicalSpace Filter
+open Filter
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
@@ -185,7 +184,7 @@ theorem martingale_martingalePart [CompleteSpace E]
     refine (EventuallyEq.rfl.add (condExp_finsetSum (fun i _ => by fun_prop) _)).trans ?_
     refine EventuallyEq.add ?_ ?_
     · rw [condExp_of_stronglyMeasurable (ℱ.le _) _ (hf_int 0)]
-      · exact (hf 0).mono (ℱ.mono zero_le)
+      exact (hf 0).mono (ℱ.mono zero_le)
     · exact eventuallyEq_sum fun k _ => condExp_sub (by fun_prop) integrable_condExp _
   refine h_eq_sum.trans ?_
   have h_ge : ∀ k, i ≤ k →

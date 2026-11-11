@@ -61,6 +61,7 @@ instance Submodule.FG.directedSystem :
   map_self := fun _ _ ↦ rfl
   map_map  := fun _ _ _ _ _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in
 /-- Any module is the direct limit of its finitely generated submodules -/
 noncomputable def Submodule.FG.directLimit [DecidableEq {P : Submodule R M // P.FG}] :
@@ -117,6 +118,7 @@ noncomputable def Submodule.FG.rTensor.directLimit [DecidableEq {P : Submodule R
       (fun ⦃P Q⦄ (h : P ≤ Q) ↦ (Submodule.inclusion h).rTensor N) ≃ₗ[R] M ⊗[R] N :=
   (TensorProduct.directLimitLeft _ N).symm.trans ((Submodule.FG.directLimit R M).rTensor N)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Submodule.FG.rTensor.directLimit_apply [DecidableEq {P : Submodule R M // P.FG}]
     {P : {P : Submodule R M // P.FG}} (u : P ⊗[R] N) :
     (Submodule.FG.rTensor.directLimit R M N)
@@ -127,7 +129,7 @@ theorem Submodule.FG.rTensor.directLimit_apply [DecidableEq {P : Submodule R M /
       (Module.DirectLimit.of R {P : Submodule R M // P.FG} (fun P ↦ P.val ⊗[R] N)
         (fun _ _ hPQ ↦ rTensor N (Submodule.inclusion hPQ)) P)
       = rTensor N (Submodule.subtype P.val) by
-    exact DFunLike.congr_fun this u
+    congrm $this u
   ext p n
   simp [Submodule.FG.rTensor.directLimit, Submodule.FG.directLimit]
 
@@ -170,6 +172,7 @@ noncomputable def Submodule.FG.lTensor.directLimit [DecidableEq {Q : Submodule R
       (fun _ _ hPQ ↦ (inclusion hPQ).lTensor M) ≃ₗ[R] M ⊗[R] N :=
   (TensorProduct.directLimitRight _ M).symm.trans ((Submodule.FG.directLimit R N).lTensor M)
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem Submodule.FG.lTensor.directLimit_apply [DecidableEq {P : Submodule R N // P.FG}]
     (Q : {Q : Submodule R N // Q.FG}) (u : M ⊗[R] Q.val) :
     (Submodule.FG.lTensor.directLimit R M N)
@@ -180,7 +183,7 @@ theorem Submodule.FG.lTensor.directLimit_apply [DecidableEq {P : Submodule R N /
       (Module.DirectLimit.of R {Q : Submodule R N // Q.FG} (fun Q ↦ M ⊗[R] Q.val)
         (fun _ _ hPQ ↦ lTensor M (inclusion hPQ)) Q)
       = lTensor M (Submodule.subtype Q.val) by
-    exact DFunLike.congr_fun this u
+    congrm $this u
   ext p n
   simp [Submodule.FG.lTensor.directLimit, Submodule.FG.directLimit]
 

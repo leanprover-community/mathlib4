@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Localization.Opposite
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Adjunction.Opposites
+
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Localization of adjunctions
@@ -20,14 +20,13 @@ have localization functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` wit
 to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagrams
 `[CatCommSq G L₁ L₂ G']` and `[CatCommSq F L₂ L₁ F']`, then we have an
 induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
-
 -/
 
 @[expose] public section
 
 namespace CategoryTheory
 
-open Localization Category Functor
+open Localization Category CategoryTheory.Functor
 
 namespace Adjunction
 
@@ -51,7 +50,6 @@ noncomputable def ε : 𝟭 D₁ ⟶ G' ⋙ F' := by
   exact Localization.liftNatTrans L₁ W₁ L₁ ((G ⋙ F) ⋙ L₁) (𝟭 D₁) (G' ⋙ F')
     (whiskerRight adj.unit L₁)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ε_app (X₁ : C₁) :
     (ε adj L₁ W₁ L₂ G' F').app (L₁.obj X₁) =
       L₁.map (adj.unit.app X₁) ≫ (CatCommSq.iso F L₂ L₁ F').hom.app (G.obj X₁) ≫
@@ -68,7 +66,6 @@ noncomputable def η : F' ⋙ G' ⟶ 𝟭 D₂ := by
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso.symm
   exact liftNatTrans L₂ W₂ ((F ⋙ G) ⋙ L₂) L₂ (F' ⋙ G') (𝟭 D₂) (whiskerRight adj.counit L₂)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma η_app (X₂ : C₂) :
     (η adj L₁ L₂ W₂ G' F').app (L₂.obj X₂) =
       G'.map ((CatCommSq.iso F L₂ L₁ F').inv.app X₂) ≫
@@ -81,7 +78,6 @@ lemma η_app (X₂ : C₂) :
 
 end Localization
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `adj : G ⊣ F` is an adjunction between two categories `C₁` and `C₂` that
 are equipped with localization functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` with
 respect to `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, and that
@@ -133,7 +129,6 @@ lemma localization_counit_app (X₂ : C₂) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 include adj in
 lemma isLocalization [F.Full] [F.Faithful] :
     G.IsLocalization ((MorphismProperty.isomorphisms C₂).inverseImage G) := by

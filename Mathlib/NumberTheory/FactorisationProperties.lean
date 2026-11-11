@@ -5,12 +5,12 @@ Authors: Colin Jones
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.NumberTheory.Divisors
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.NormNum.Prime
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Factorisation properties of natural numbers
@@ -57,20 +57,24 @@ namespace Nat
 variable {n m p : ℕ}
 
 /-- `n : ℕ` is _abundant_ if the sum of the proper divisors of `n` is greater than `n`. -/
+@[oeis A005101]
 def Abundant (n : ℕ) : Prop := n < ∑ i ∈ properDivisors n, i
 deriving Decidable
 
 /-- `n : ℕ` is _deficient_ if the sum of the proper divisors of `n` is less than `n`. -/
+@[oeis A005100]
 def Deficient (n : ℕ) : Prop := ∑ i ∈ properDivisors n, i < n
 deriving Decidable
 
 /-- A positive natural number `n` is _pseudoperfect_ if there exists a subset of the proper
   divisors of `n` such that the sum of that subset is equal to `n`. -/
+@[oeis A005835]
 def Pseudoperfect (n : ℕ) : Prop :=
   0 < n ∧ ∃ s ⊆ properDivisors n, ∑ i ∈ s, i = n
 deriving Decidable
 
 /-- `n : ℕ` is a _weird_ number if and only if it is abundant but not pseudoperfect. -/
+@[oeis A006037]
 def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 deriving Decidable
 
@@ -189,7 +193,7 @@ theorem infinite_odd_deficient : {n : ℕ | Odd n ∧ n.Deficient}.Infinite := b
   rw [Set.infinite_iff_exists_gt]
   intro n
   obtain ⟨p, ⟨_, h2⟩⟩ := exists_infinite_primes (max (n + 1) 3)
-  exact ⟨p, Set.mem_setOf.mpr ⟨Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt (by grind))),
+  exact ⟨p, Set.mem_ofPred.mpr ⟨Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt (by grind))),
     Prime.deficient h2⟩, by grind⟩
 
 theorem abundant_iff_sum_divisors : Abundant n ↔ 2 * n < ∑ i ∈ n.divisors, i := by

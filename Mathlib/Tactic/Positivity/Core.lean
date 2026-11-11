@@ -43,7 +43,7 @@ Example:
   let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
     ← withReducible (whnf e) | throwError "not ite"
   haveI' : $e =Q ite $p $a $b := ⟨⟩
-  guard <| ← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
+  guard <| ← withNewMCtxDepth <| isDefEq f q(ite (α := $α))
   let ra ← core zα pα a; let rb ← core zα pα b
   ...
 ```
@@ -351,6 +351,7 @@ initialize registerTraceClass `Tactic.positivity.failure
 where `a` is a numeral. -/
 def compareHyp (pα : Q(PartialOrder $α)) (e : Q($α)) (ldecl : LocalDecl) :
     MetaM (Strictness zα e pα) := do
+  unless ← isProp ldecl.type do return .none
   have e' : Q(Prop) := ldecl.type
   let p : Q($e') := .fvar ldecl.fvarId
   match e' with
@@ -396,6 +397,7 @@ def compareHyp (pα : Q(PartialOrder $α)) (e : Q($α)) (ldecl : LocalDecl) :
 
 /-- A variation on `assumption` when the hypothesis is `e ≠ 0` or `0 ≠ e`. -/
 def compareHypNonzero {pα?} (e : Q($α)) (ldecl : LocalDecl) : MetaM (Strictness zα e pα?) := do
+  unless ← isProp ldecl.type do return .none
   have e' : Q(Prop) := ldecl.type
   let p : Q($e') := .fvar ldecl.fvarId
   match e' with
@@ -433,7 +435,8 @@ def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : MetaM (Str
     | _ => pure (.nonzero p₁)
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/
-def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e pα?) := do
+def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness zα e pα?) :=
+  withReducible do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
   for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do

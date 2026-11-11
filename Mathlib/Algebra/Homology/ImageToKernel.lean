@@ -15,7 +15,6 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 (assuming the appropriate images and kernels exist).
 
 `imageToKernel f g w` is the corresponding morphism between objects in `C`.
-
 -/
 
 @[expose] public section
@@ -121,8 +120,6 @@ theorem imageToKernel_comp_hom_inv_comp [HasEqualizers V] [HasImages V] {Z : V} 
         imageToKernel f g (by simpa using w) ≫ (kernelSubobjectIsoComp i.inv g).inv := by
   ext
   simp
-
-open ZeroObject
 
 /-- `imageToKernel` for `A --0--> B --g--> C`, where `g` is a mono is itself an epi
 (i.e. the sequence is exact at `B`).

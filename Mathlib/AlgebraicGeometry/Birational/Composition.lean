@@ -24,7 +24,6 @@ This file defines composition for partial maps and rational maps between schemes
 - `Scheme.PartialMap.comp_equiv_of_equiv`: Composition respects equivalence of partial maps.
 - `Scheme.PartialMap.comp_assoc`: Composition of partial maps is associative.
 - `Scheme.RationalMap.comp_assoc`: Composition of rational maps is associative.
-
 -/
 
 @[expose] public section
@@ -54,6 +53,7 @@ noncomputable def comp (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap
       f.hom.denseRange.inter_open_nonempty _ g.domain.2 g.dense_domain.nonempty
   hom := (f.domain.ι.isoImage _).inv ≫ f.hom ∣_ g.domain ≫ g.hom
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma comp_restrict_left (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) (g : Y.PartialMap Z) :
@@ -63,6 +63,7 @@ lemma comp_restrict_left (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
   · simp [ι_image_homOfLE_eq_ι_image_inf]
   · simp [morphismRestrict_comp, isoImage_ι_inv_morphismRestrict_homOfLE_assoc, isoOfEq_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 lemma comp_restrict_right (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z)
     (V : Y.Opens) (hV : Dense (V : Set Y)) (hV' : V ≤ g.domain) :
@@ -112,6 +113,7 @@ instance isDominant_comp_hom (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.Part
   have := IsZariskiLocalAtTarget.restrict ‹IsDominant f.hom› g.domain
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
@@ -129,6 +131,7 @@ lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [Irr
     congr 1
     simp [← cancel_mono (Opens.ι _)]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
@@ -137,9 +140,7 @@ lemma comp_toPartialMap (f : X.PartialMap Y) [IsDominant f.hom] (g : Y ⟶ Z) :
   · simp
   · simp_rw [comp_hom, Hom.toPartialMap_domain, Hom.toPartialMap_hom, compHom_hom, topIso_hom,
       morphismRestrict_ι_assoc, f.domain.isoImage_ι_inv_ι_assoc, isoOfEq_hom]
-    rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma comp_id (f : X.PartialMap Y) [IsDominant f.hom] : f.comp (PartialMap.id Y) = f := by simp
 
 end PartialMap

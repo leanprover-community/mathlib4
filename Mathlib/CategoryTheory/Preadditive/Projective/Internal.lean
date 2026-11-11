@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
-
 # Internal projectivity
 
 This file defines internal projectivity of objects `P` in a category `C` as a class
@@ -54,7 +53,7 @@ instance : (isInternallyProjective (C := C)).IsStableUnderRetracts where
   of_retract {Y X} r h :=
     have : InternallyProjective X := ⟨h⟩
     have : Retract (ihom Y) (ihom X) := r.op.map internalHom
-    preservesEpimorphisms.ofRetract this
+    PreservesEpimorphisms.ofRetract this
 
 namespace InternallyProjective
 

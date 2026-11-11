@@ -5,8 +5,8 @@ Authors: Gaëtan Serré
 -/
 module
 
-public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
+public import Mathlib.CategoryTheory.MarkovCategory.Basic
 
 /-!
 # Positive Categories
@@ -42,7 +42,7 @@ deterministic process.
 * [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

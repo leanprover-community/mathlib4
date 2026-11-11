@@ -6,9 +6,9 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
-public import Mathlib.Analysis.Normed.Module.Convex
+
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 
 /-!
 # Simplices in normed affine spaces
@@ -30,7 +30,6 @@ open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
-variable {s : Set E}
 
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by

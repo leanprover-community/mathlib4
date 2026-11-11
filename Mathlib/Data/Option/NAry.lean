@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Binary map of options

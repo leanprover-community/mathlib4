@@ -5,9 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
 /-! # Closures of convex sets in locally convex spaces
@@ -30,6 +28,7 @@ variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
   [LocallyConvexSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (𝕜) in
 /-- If `E` is a locally convex space over `𝕜` (with `RCLike 𝕜`), and `s : Set E` is `ℝ`-convex, then
 the closure of `s` and the weak closure of `s` coincide. More precisely, the topological closure
@@ -122,4 +121,4 @@ instance {R V : Type*} [CommRing R] [TopologicalSpace R] [T2Space R]
   (WeakBilin.isEmbedding (B := (topDualPairing R V).flip) fun _ _ h => by
     by_contra hne
     obtain ⟨f, hf⟩ := SeparatingDual.exists_separating_of_ne (R := R) hne
-    exact hf (DFunLike.congr_fun h f)).t2Space
+    exact hf congr($h f)).t2Space
