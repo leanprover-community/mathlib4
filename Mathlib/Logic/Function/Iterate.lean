@@ -223,6 +223,11 @@ lemma iterate_cancel (hf : Injective f) (ha : f^[m] a = f^[n] a) : f^[m - n] a =
 theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
   funext_iff.symm
 
+@[simp]
+theorem map_iterate {ι : Type*} {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
+    (Function.map f)^[n] = Function.map fun i => (f i)^[n] := by
+  induction n <;> simp [*, map_comp_map]
+
 end Function
 
 namespace List
@@ -241,13 +246,5 @@ theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ �
 
 end List
 
-namespace Pi
-
-variable {ι : Type*}
-
-@[simp]
-theorem map_iterate {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
-    (Pi.map f)^[n] = Pi.map fun i => (f i)^[n] := by
-  induction n <;> simp [*, map_comp_map]
-
-end Pi
+@[deprecated (since := "2026-05-11")]
+alias Pi.map_iterate := Function.map_iterate
