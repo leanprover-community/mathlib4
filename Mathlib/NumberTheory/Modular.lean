@@ -640,9 +640,8 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
 
 private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g • z).im = z.im := by
   wlog hden : z.im ≤ (g • z).im
-  · rw [← this (g := g⁻¹) hg (by rwa [inv_smul_smul]), inv_smul_smul]
-    rw [inv_smul_smul]
-    exact Std.le_of_not_ge hden
+  · rw [← this (g := g⁻¹) hg (by rwa [inv_smul_smul]) ((by simpa using le_of_not_ge hden)),
+      inv_smul_smul]
   wlog hc : 0 ≤ g 1 0
   · -- TODO: `wlog` leaves junk copies of variables in scope
     simpa using @this (-g) z (-g) z hz (by simpa using hg)
