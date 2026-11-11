@@ -77,6 +77,7 @@ theorem quotientAddGroupMk_eq_mk {p : Submodule R M} (x : M) :
 protected theorem eq' {x y : M} : (mk x : M ⧸ p) = mk y ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 
+@[membership .]
 protected theorem eq {x y : M} : (mk x : M ⧸ p) = mk y ↔ x - y ∈ p :=
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_def)
 

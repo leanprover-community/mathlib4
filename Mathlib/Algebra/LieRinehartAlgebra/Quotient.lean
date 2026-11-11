@@ -61,11 +61,8 @@ instance : LieRing (L ⧸ s) where
   bracket x y :=
     Quotient.liftOn₂' x y (fun x' y' => mk ⁅x', y'⁆) (by
       intro a₁ a₂ b₁ b₂ ha hb
-      rw [Submodule.quotientRel_def, mem_toSubmodule] at ha hb
-      apply (Submodule.Quotient.eq s.toSubmodule).2
-      rw [mem_toSubmodule]
+      rw [Submodule.quotientRel_def] at ha hb
       have h : ⁅a₁, a₂⁆ - ⁅b₁, b₂⁆ = ⁅a₁ - b₁, a₂⁆ + ⁅b₁, a₂ - b₂⁆ := by simp
-      rw [h]
       membership)
   add_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (add_lie x y z)
   lie_add := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (lie_add x y z)

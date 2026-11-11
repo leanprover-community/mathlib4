@@ -95,7 +95,7 @@ theorem ext {s t : StrictLieRinehartIdeal A L} (h : ∀ x : L, x ∈ s ↔ x ∈
 @[simp]
 lemma coe_mk (s : Submodule A L) (h₁) (h₂) : (mk s h₁ h₂ : Set L) = s := rfl
 
-@[simp]
+@[simp, membership .]
 theorem mem_toSubmodule {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toSubmodule ↔ x ∈ s := Iff.rfl
 
 @[simp]
