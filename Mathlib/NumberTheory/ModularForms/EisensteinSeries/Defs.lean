@@ -169,8 +169,7 @@ def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N r a ≃ gammaSet N r (a ᵥ* γ
   invFun v := ⟨v.1 ᵥ* ↑(γ⁻¹), by
       have := vecMul_SL2_mem_gammaSet v.2 γ⁻¹
       rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul] at this
-      simpa only [SpecialLinearGroup.map_apply_coe, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-        map_inv, mul_inv_cancel, SpecialLinearGroup.coe_one, vecMul_one]⟩
+      simpa [map_inv]⟩
   left_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, mul_inv_cancel,
     SpecialLinearGroup.coe_one, vecMul_one]
   right_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, inv_mul_cancel,
@@ -217,7 +216,9 @@ def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A hA := by
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
-    simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
+    rw [SpecialLinearGroup.mapGL, algebraMap_int_eq, MonoidHom.coe_comp, Function.comp_apply,
+    ← SL_slash]
+    simp [eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
 lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl
