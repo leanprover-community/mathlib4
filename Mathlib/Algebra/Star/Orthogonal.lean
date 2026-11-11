@@ -229,16 +229,16 @@ lemma IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero (hp : IsSelfAdjoint p)
   intro h
   simpa [hp.star_eq, hq.star_eq] using congr(star $h)
 
-protected lemma IsStarOrtho.mul_eq_zero (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : p * q = 0 :=
-  hq.isStarOrtho_iff'.mp h |>.left
-
-protected lemma IsStarOrtho.mul_eq_zero' (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : q * p = 0 :=
+protected lemma IsStarOrtho.mul_eq_zero (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : q * p = 0 :=
   hq.isStarOrtho_iff'.mp h |>.right
+
+protected lemma IsStarOrtho.mul_eq_zero' (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : p * q = 0 :=
+  hq.isStarOrtho_iff'.mp h |>.left
 
 /-- The sum of star-orthogonal star projections is a star projection. -/
 lemma IsStarOrtho.isStarProjection_add (h : p ⋆⟂ q) (hp : IsStarProjection p)
     (hq : IsStarProjection q) : IsStarProjection (p + q) :=
-  hp.add hq <| h.mul_eq_zero hq.isSelfAdjoint
+  hp.add hq <| h.mul_eq_zero' hq.isSelfAdjoint
 
 /-- The sum of star projections is a star projection if and only if they are star-orthogonal. -/
 lemma IsStarProjection.add_iff_isStarOrtho [IsCancelAdd R] [HasUniqueDiv R]
