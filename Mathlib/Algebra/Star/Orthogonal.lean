@@ -135,14 +135,14 @@ lemma mul_right {p q₁ q₂ : R} (h₁ : p ⋆⟂ q₁) (h₂ : p ⋆⟂ q₂) 
   .mul_right' h₁.star_mul_eq_zero h₂.mul_star_eq_zero
 
 /-- A version of `IsStarOrtho.mul` with slightly weaker hypotheses. -/
-lemma mul' {p₁ p₂ q₁ q₂ : R} (h₁ : star q₁ * p₁ = 0) (h₂ : p₂ * star q₂ = 0) :
+protected lemma mul' {p₁ p₂ q₁ q₂ : R} (h₁ : star q₁ * p₁ = 0) (h₂ : p₂ * star q₂ = 0) :
     (p₁ * p₂) ⋆⟂ (q₁ * q₂) where
   mul_star_eq_zero := by rw [star_mul, mul_assoc, ← mul_assoc p₂, h₂]; simp
   star_mul_eq_zero := by rw [star_mul, mul_assoc, ← mul_assoc _ p₁, h₁]; simp
 
-lemma mul {p₁ p₂ q₁ q₂ : R} (h₁ : p₁ ⋆⟂ q₁) (h₂ : p₂ ⋆⟂ q₂) :
+protected lemma mul {p₁ p₂ q₁ q₂ : R} (h₁ : p₁ ⋆⟂ q₁) (h₂ : p₂ ⋆⟂ q₂) :
     (p₁ * p₂) ⋆⟂ (q₁ * q₂) :=
-  mul' h₁.star_mul_eq_zero h₂.mul_star_eq_zero
+  .mul' h₁.star_mul_eq_zero h₂.mul_star_eq_zero
 
 lemma mul_mul {p₁ p₂ q₁ q₂ : R} (h₁ : p₁ ⋆⟂ q₁) (h₂ : p₂ ⋆⟂ q₂) (a b : R) :
     (p₁ * a * p₂) ⋆⟂ (q₁ * b * q₂) := by
@@ -166,7 +166,7 @@ lemma mul_star_self (h : p ⋆⟂ q) : (p * star p) ⋆⟂ (q * star q) :=
 lemma star_mul_self (h : p ⋆⟂ q) : (star p * p) ⋆⟂ (star q * q) :=
   h.star.mul h
 
-lemma map {S F : Type*} [NonUnitalSemiring S] [StarRing S] [FunLike F R S]
+protected lemma map {S F : Type*} [NonUnitalSemiring S] [StarRing S] [FunLike F R S]
     [NonUnitalRingHomClass F R S] [StarHomClass F R S] (f : F) (h : p ⋆⟂ q) : f p ⋆⟂ f q where
   mul_star_eq_zero := by rw [← map_star, ← map_mul, h.mul_star_eq_zero, map_zero]
   star_mul_eq_zero := by rw [← map_star, ← map_mul, h.star_mul_eq_zero, map_zero]
@@ -175,7 +175,7 @@ lemma map_iff {S F : Type*} [NonUnitalSemiring S] [StarRing S] [FunLike F R S]
     [NonUnitalRingHomClass F R S] [StarHomClass F R S] {f : F} (hf : Function.Injective f) :
     f p ⋆⟂ f q ↔ p ⋆⟂ q where
   mp h := by constructor <;> apply hf <;> simp [map_star, h.mul_star_eq_zero, h.star_mul_eq_zero]
-  mpr := map f
+  mpr := .map f
 
 lemma star_add_mul_add (h : p ⋆⟂ q) :
     star (p + q) * (p + q) = star p * p + star q * q := by
@@ -228,10 +228,10 @@ lemma IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero (hp : IsSelfAdjoint p)
   intro h
   simpa [hp.star_eq, hq.star_eq] using congr(star $h)
 
-lemma IsStarOrtho.mul_eq_zero (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : p * q = 0 :=
+protected lemma IsStarOrtho.mul_eq_zero (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : p * q = 0 :=
   hq.isStarOrtho_iff.mp h |>.left
 
-lemma IsStarOrtho.mul_eq_zero' (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : q * p = 0 :=
+protected lemma IsStarOrtho.mul_eq_zero' (h : p ⋆⟂ q) (hq : IsSelfAdjoint q) : q * p = 0 :=
   hq.isStarOrtho_iff.mp h |>.right
 
 /-- The sum of star-orthogonal star projections is a star projection. -/

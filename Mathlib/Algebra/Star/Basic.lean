@@ -680,7 +680,7 @@ lemma isStarOrtho_comm : p ⋆⟂ q ↔ q ⋆⟂ p := by
   simp_rw [isStarOrtho_iff, ← star_eq_zero (x := p * star q), ← star_eq_zero (x := star q * p),
     star_mul, star_star]
 
-alias ⟨IsStarOrtho.symm, _⟩ := isStarOrtho_comm
+protected alias ⟨IsStarOrtho.symm, _⟩ := isStarOrtho_comm
 
 instance : Std.Symm (· ⋆⟂ · : R → R → Prop) where
   symm _ _ := .symm
