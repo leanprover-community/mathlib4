@@ -58,12 +58,12 @@ theorem Lex.wellFounded' (hbot : ∀ ⦃n⦄, ¬s n 0) (hs : WellFounded s)
 instance Lex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [hα : WellFoundedGT α]
     [Zero N] [PartialOrder N] [IsBotZeroClass N]
     [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
-  Lex.wellFounded' (fun _ ↦ not_lt_zero) hN hα
+  InvImage.wf Lex.ofLex (Lex.wellFounded' (fun _ ↦ not_lt_zero) hN hα)
 
-instance Colex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [WellFoundedLT α]
+instance Colex.wellFoundedLT {α N} [LT α] [@Std.Trichotomous α (· < ·)] [hα : WellFoundedLT α]
     [Zero N] [PartialOrder N] [IsBotZeroClass N]
-    [WellFoundedLT N] : WellFoundedLT (Colex (α →₀ N)) :=
-  Lex.wellFoundedLT (α := αᵒᵈ)
+    [hN : WellFoundedLT N] : WellFoundedLT (Colex (α →₀ N)) :=
+  InvImage.wf Colex.ofColex (Lex.wellFounded' (fun _ ↦ not_lt_zero) hN hα)
 
 variable (r)
 
@@ -73,11 +73,11 @@ theorem Lex.wellFounded_of_finite [IsStrictTotalOrder α r] [Finite α]
 
 theorem Lex.wellFoundedLT_of_finite [LinearOrder α] [Finite α] [LT N]
     [hwf : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
-  Finsupp.Lex.wellFounded_of_finite (· < ·) hwf
+  InvImage.wf Lex.ofLex (Finsupp.Lex.wellFounded_of_finite (· < ·) hwf)
 
 theorem Colex.wellFoundedLT_of_finite [LinearOrder α] [Finite α] [LT N]
-    [WellFoundedLT N] : WellFoundedLT (Colex (α →₀ N)) :=
-  Lex.wellFoundedLT_of_finite (α := αᵒᵈ)
+    [hwf : WellFoundedLT N] : WellFoundedLT (Colex (α →₀ N)) :=
+  InvImage.wf Colex.ofColex (Finsupp.Lex.wellFounded_of_finite (· > ·) hwf)
 
 protected theorem wellFoundedLT [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N, ¬n < 0) :
     WellFoundedLT (α →₀ N) :=
