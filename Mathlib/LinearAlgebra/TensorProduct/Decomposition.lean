@@ -17,10 +17,9 @@ decomposition of an `R`-module `M` indexed by a type `ι`. Given an `R`-module `
 `M ⊗[R] N` has a decomposition into pieces `fun i ↦ (ℳ i) ⊗[R] N`. Given a commutative `R`-algebra
 `S`, the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChange S`.
 
-Given families of submodules `ℳ` of `M` and `𝒩` of `N` and a degree function `f : ι → κ → μ`,
-`TensorProduct.gradeBy f ℳ 𝒩 m` is the submodule of `M ⊗[R] N` spanned by the pure tensors
-`x ⊗ₜ y` with `x ∈ ℳ p`, `y ∈ 𝒩 q` and `f p q = m`; `TensorProduct.grade` is the total-degree
-case `f = (· + ·)`.
+`TensorProduct.gradeBy f ℳ 𝒩 m` is the span of the pure tensors of degree `m`, where
+`f : ι → κ → μ` combines the degrees of the two factors; `TensorProduct.grade` is the case
+`f = (· + ·)`.
 -/
 
 public section
