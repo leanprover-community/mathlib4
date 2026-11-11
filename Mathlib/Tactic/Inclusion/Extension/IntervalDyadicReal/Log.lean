@@ -326,8 +326,8 @@ def upperLog (x : Dyadic) (prec : ℕ) : Dyadic :=
   if x = 0 ∨ x = 1 ∨ x = -1 then 0 else lowerLog x prec + step prec
 
 private theorem lowerLog_aux (n : ℤ) (hn : n % 2 = 1) :
-    1 ≤ |ofOdd n n.natAbs.log2 hn| ∧ |ofOdd n n.natAbs.log2 hn| < 2 := by
-  rw [← toRat_le_toRat_iff, ← toRat_lt_toRat_iff]
+    |ofOdd n n.natAbs.log2 hn| ∈ Set.Ico 1 2 := by
+  rw [Set.mem_Ico, ← toRat_le_toRat_iff, ← toRat_lt_toRat_iff]
   simp only [toRat_abs, toRat_ofOdd_eq_mul_two_pow, zpow_neg, zpow_natCast, toRat_one, toRat_ofNat,
     Nat.abs_ofNat, abs_pow, abs_div, ← div_eq_mul_inv, ← Int.cast_abs, ← Nat.cast_natAbs]
   rw [le_div_iff₀ (by positivity), Rat.one_mul, div_lt_iff₀ (by positivity), ← pow_succ']
