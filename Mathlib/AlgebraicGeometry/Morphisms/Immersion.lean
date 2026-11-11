@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
-
 # Immersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is an immersion if the underlying map of topological spaces
@@ -24,7 +23,6 @@ if and only if it can be factored into a closed immersion followed by an open im
 - `isImmersion_iff_exists_of_quasiCompact`:
   A quasicompact morphism is a (locally-closed) immersion if and only if it can be factored into
   an open immersion followed by a closed immersion.
-
 -/
 
 @[expose] public section

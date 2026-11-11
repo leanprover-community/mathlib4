@@ -25,7 +25,6 @@ In this file we calculate the Fourier transform of a convolution.
   the pairing of the Fourier transformed Schwartz functions.
 * `SchwartzMap.convolution_apply`: The Schwartz function convolution coincides with the convolution
   for functions.
-
 -/
 
 @[expose] public section

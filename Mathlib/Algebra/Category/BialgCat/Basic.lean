@@ -16,7 +16,6 @@ We introduce the bundled category `BialgCat` of bialgebras over a fixed commutat
 along with the forgetful functors to `CoalgCat` and `AlgCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section
@@ -185,11 +184,11 @@ variable {X Y Z : BialgCat.{v} R}
 def toBialgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => congr($(i.3).toBialgHom x)
-    right_inv := fun x => congr($(i.4).toBialgHom x) }
+    left_inv := fun x => congr($(i.hom_inv_id).toBialgHom x)
+    right_inv := fun x => congr($(i.inv_hom_id).toBialgHom x) }
 
 @[simp] theorem toBialgEquiv_toBialgHom (i : X ≅ Y) :
-    (i.toBialgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl
+    (i.toBialgEquiv : X →ₐc[R] Y) = i.hom.toBialgHom' := rfl
 
 @[simp] theorem toBialgEquiv_refl : toBialgEquiv (.refl X) = .refl _ _ :=
   rfl
@@ -209,4 +208,4 @@ instance BialgCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (BialgCat.{v} R)).map f)
     let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
-    exact ⟨e.toBialgIso.isIso_hom.1⟩
+    exact ⟨e.toBialgIso.isIso_hom.out⟩

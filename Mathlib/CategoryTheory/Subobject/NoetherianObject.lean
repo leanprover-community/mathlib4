@@ -24,7 +24,6 @@ closed under subobjects.
 
 * show that `isNoetherian` is a Serre class when `C` is an abelian category
   (TODO @joelriou)
-
 -/
 
 @[expose] public section
@@ -84,7 +83,6 @@ lemma not_strictMono_of_isNoetherianObject
     ¬ StrictMono f :=
   (isNoetherianObject_iff_not_strictMono X).1 inferInstance f
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isNoetherianObject_iff_isEventuallyConstant :
     IsNoetherianObject X ↔ ∀ (F : ℕ ⥤ MonoOver X),
       IsFiltered.IsEventuallyConstant F := by

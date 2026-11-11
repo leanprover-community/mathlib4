@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Countable
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
 /-!
 # Countable limits and colimits
 
@@ -23,7 +24,6 @@ limits, see `sequentialFunctor_initial`.
   limits.
 
 * Prove the dual result for filtered colimits.
-
 -/
 
 @[expose] public section

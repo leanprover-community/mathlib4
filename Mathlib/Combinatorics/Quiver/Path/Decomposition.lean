@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Combinatorics.Quiver.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Path Decomposition and Boundary Crossing
 

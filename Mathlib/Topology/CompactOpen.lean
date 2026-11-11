@@ -137,7 +137,8 @@ section Functorial
 /-- `C(X, ·)` is a functor. -/
 @[fun_prop]
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
-  continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOfPred_mapsTo hK (hU.preimage g.2)
+  continuous_compactOpen.2 fun _K hK _U hU ↦
+    isOpen_setOfPred_mapsTo hK (hU.preimage (map_continuous g))
 
 /-- If `g : C(Y, Z)` is injective,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is injective too. -/
@@ -163,7 +164,7 @@ theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
 @[continuity, fun_prop]
 theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
-    simpa only [mapsTo_image_iff] using! isOpen_setOfPred_mapsTo (hK.image f.2) hU
+    simpa only [mapsTo_image_iff] using! isOpen_setOfPred_mapsTo (hK.image (by fun_prop)) hU
 
 variable (Z) in
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
@@ -369,7 +370,6 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
   rw [compactOpen_eq_iInf_induced]
   simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A family `F` of functions in `C(X, Y)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `X`. -/
 theorem exists_tendsto_compactOpen_iff_forall [WeaklyLocallyCompactSpace X] [T2Space Y]
@@ -440,7 +440,7 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
 `α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
-  (curry ⟨_, h⟩).2
+  map_continuous (curry ⟨_, h⟩)
 
 theorem continuousOn_of_continuousOn_uncurry {s : Set X} (f : X → C(Y, Z))
     (h : ContinuousOn (Function.uncurry fun x y => f x y) (s ×ˢ univ)) : ContinuousOn f s :=

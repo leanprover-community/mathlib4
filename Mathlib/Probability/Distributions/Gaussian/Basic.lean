@@ -31,7 +31,6 @@ For Gaussian distributions in `ℝ`, see the file
 ## References
 
 * [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
-
 -/
 
 public section

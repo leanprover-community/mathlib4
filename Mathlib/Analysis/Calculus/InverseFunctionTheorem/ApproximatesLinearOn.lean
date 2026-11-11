@@ -143,17 +143,17 @@ of the map. -/
 theorem surjOn_closedBall_of_nonlinearRightInverse
     (hf : ApproximatesLinearOn f f' s c)
     (f'symm : f'.NonlinearRightInverse) {ε : ℝ} {b : E} (ε0 : 0 ≤ ε) (hε : closedBall b ε ⊆ s) :
-    SurjOn f (closedBall b ε) (closedBall (f b) (((f'symm.nnnorm : ℝ)⁻¹ - c) * ε)) := by
+    SurjOn f (closedBall b ε) (closedBall (f b) (((f'symm.nnNorm : ℝ)⁻¹ - c) * ε)) := by
   intro y hy
-  rcases le_or_gt (f'symm.nnnorm : ℝ)⁻¹ c with hc | hc
+  rcases le_or_gt (f'symm.nnNorm : ℝ)⁻¹ c with hc | hc
   · refine ⟨b, by simp [ε0], ?_⟩
     have : dist y (f b) ≤ 0 :=
       (mem_closedBall.1 hy).trans (mul_nonpos_of_nonpos_of_nonneg (by linarith) ε0)
     simp only [dist_le_zero] at this
     rw [this]
-  have If' : (0 : ℝ) < f'symm.nnnorm := by rw [← inv_pos]; exact (NNReal.coe_nonneg _).trans_lt hc
-  have Icf' : (c : ℝ) * f'symm.nnnorm < 1 := by rwa [inv_eq_one_div, lt_div_iff₀ If'] at hc
-  have Jcf' : (1 : ℝ) - c * f'symm.nnnorm ≠ 0 := by apply ne_of_gt; linarith
+  have If' : (0 : ℝ) < f'symm.nnNorm := by rw [← inv_pos]; exact (NNReal.coe_nonneg _).trans_lt hc
+  have Icf' : (c : ℝ) * f'symm.nnNorm < 1 := by rwa [inv_eq_one_div, lt_div_iff₀ If'] at hc
+  have Jcf' : (1 : ℝ) - c * f'symm.nnNorm ≠ 0 := by apply ne_of_gt; linarith
   /- We have to show that `y` can be written as `f x` for some `x ∈ closedBall b ε`.
     The idea of the proof is to apply the Banach contraction principle to the map
     `g : x ↦ x + f'symm (y - f x)`, as a fixed point of this map satisfies `f x = y`.
@@ -171,7 +171,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   set u := fun n : ℕ => g^[n] b with hu
   have usucc : ∀ n, u (n + 1) = g (u n) := by simp [hu, ← iterate_succ_apply' g _ b]
   -- First bound: if `f z` is close to `y`, then `g z` is close to `z` (i.e., almost a fixed point).
-  have A : ∀ z, dist (g z) z ≤ f'symm.nnnorm * dist (f z) y := by
+  have A : ∀ z, dist (g z) z ≤ f'symm.nnNorm * dist (f z) y := by
     intro z
     rw [dist_eq_norm, hg, add_sub_cancel_left, dist_eq_norm']
     exact f'symm.bound _
@@ -180,7 +180,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   -- choice of the formula for `g`).
   have B :
     ∀ z ∈ closedBall b ε,
-      g z ∈ closedBall b ε → dist (f (g z)) y ≤ c * f'symm.nnnorm * dist (f z) y := by
+      g z ∈ closedBall b ε → dist (f (g z)) y ≤ c * f'symm.nnNorm * dist (f z) y := by
     intro z hz hgz
     set v := f'symm (y - f z)
     calc
@@ -190,75 +190,75 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         simp only [v, ContinuousLinearMap.NonlinearRightInverse.right_inv, add_sub_cancel_left,
           sub_add_cancel]
       _ ≤ c * ‖z + v - z‖ := hf _ (hε hgz) _ (hε hz)
-      _ ≤ c * (f'symm.nnnorm * dist (f z) y) := by
+      _ ≤ c * (f'symm.nnNorm * dist (f z) y) := by
         gcongr
         simpa [dist_eq_norm'] using f'symm.bound (y - f z)
-      _ = c * f'symm.nnnorm * dist (f z) y := by ring
+      _ = c * f'symm.nnNorm * dist (f z) y := by ring
   -- Third bound: a complicated bound on `dist w b` (that will show up in the induction) is enough
   -- to check that `w` is in the ball on which one has controls. Will be used to check that `u n`
   -- belongs to this ball for all `n`.
-  have C : ∀ (n : ℕ) (w : E), dist w b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
-      (1 - c * f'symm.nnnorm) * dist (f b) y → w ∈ closedBall b ε := fun n w hw ↦ by
+  have C : ∀ (n : ℕ) (w : E), dist w b ≤ f'symm.nnNorm * (1 - ((c : ℝ) * f'symm.nnNorm) ^ n) /
+      (1 - c * f'symm.nnNorm) * dist (f b) y → w ∈ closedBall b ε := fun n w hw ↦ by
     apply hw.trans
     rw [div_mul_eq_mul_div, div_le_iff₀]; swap; · linarith
     calc
-      (f'symm.nnnorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) * dist (f b) y =
-          f'symm.nnnorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) := by
+      (f'symm.nnNorm : ℝ) * (1 - ((c : ℝ) * f'symm.nnNorm) ^ n) * dist (f b) y =
+          f'symm.nnNorm * dist (f b) y * (1 - ((c : ℝ) * f'symm.nnNorm) ^ n) := by
         ring
-      _ ≤ f'symm.nnnorm * dist (f b) y * 1 := by
+      _ ≤ f'symm.nnNorm * dist (f b) y * 1 := by
         gcongr
         rw [sub_le_self_iff]
         positivity
-      _ ≤ f'symm.nnnorm * (((f'symm.nnnorm : ℝ)⁻¹ - c) * ε) := by
+      _ ≤ f'symm.nnNorm * (((f'symm.nnNorm : ℝ)⁻¹ - c) * ε) := by
         rw [mul_one]
         gcongr
         exact mem_closedBall'.1 hy
-      _ = ε * (1 - c * f'symm.nnnorm) := by field
+      _ = ε * (1 - c * f'symm.nnNorm) := by field
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
     `dist (u (n+1)) (u n)` becomes exponentially small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
     have estimates. -/
-  have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧
-      dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
-        (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
+  have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnNorm) ^ n * dist (f b) y ∧
+      dist (u n) b ≤ f'symm.nnNorm * (1 - ((c : ℝ) * f'symm.nnNorm) ^ n) /
+        (1 - (c : ℝ) * f'symm.nnNorm) * dist (f b) y := fun n ↦ by
     induction n with
     | zero => simp [hu]
     | succ n IH => ?_
     rw [usucc]
-    have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
-        (1 - c * f'symm.nnnorm) * dist (f b) y :=
+    have Ign : dist (g (u n)) b ≤ f'symm.nnNorm * (1 - ((c : ℝ) * f'symm.nnNorm) ^ n.succ) /
+        (1 - c * f'symm.nnNorm) * dist (f b) y :=
       calc
         dist (g (u n)) b ≤ dist (g (u n)) (u n) + dist (u n) b := dist_triangle _ _ _
-        _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := add_le_add (A _) le_rfl
-        _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) +
-              f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) *
+        _ ≤ f'symm.nnNorm * dist (f (u n)) y + dist (u n) b := add_le_add (A _) le_rfl
+        _ ≤ f'symm.nnNorm * (((c : ℝ) * f'symm.nnNorm) ^ n * dist (f b) y) +
+              f'symm.nnNorm * (1 - ((c : ℝ) * f'symm.nnNorm) ^ n) / (1 - c * f'symm.nnNorm) *
                 dist (f b) y := by
                   gcongr
                   · exact IH.1
                   · exact IH.2
-        _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
-              (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          replace Jcf' : (1 : ℝ) - f'symm.nnnorm * c ≠ 0 := by convert Jcf' using 1; ring
+        _ = f'symm.nnNorm * (1 - ((c : ℝ) * f'symm.nnNorm) ^ n.succ) /
+              (1 - (c : ℝ) * f'symm.nnNorm) * dist (f b) y := by
+          replace Jcf' : (1 : ℝ) - f'symm.nnNorm * c ≠ 0 := by convert Jcf' using 1; ring
           simp [field, pow_succ, -mul_eq_mul_left_iff]
           ring
     refine ⟨?_, Ign⟩
     calc
-      dist (f (g (u n))) y ≤ c * f'symm.nnnorm * dist (f (u n)) y :=
+      dist (f (g (u n))) y ≤ c * f'symm.nnNorm * dist (f (u n)) y :=
         B _ (C n _ IH.2) (C n.succ _ Ign)
-      _ ≤ (c : ℝ) * f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) := by
+      _ ≤ (c : ℝ) * f'symm.nnNorm * (((c : ℝ) * f'symm.nnNorm) ^ n * dist (f b) y) := by
         gcongr
         apply IH.1
-      _ = ((c : ℝ) * f'symm.nnnorm) ^ n.succ * dist (f b) y := by simp only [pow_succ']; ring
+      _ = ((c : ℝ) * f'symm.nnNorm) ^ n.succ * dist (f b) y := by simp only [pow_succ']; ring
   -- Deduce from the inductive bound that `uₙ` is a Cauchy sequence, therefore converging.
   have : CauchySeq u := by
-    refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
+    refine cauchySeq_of_le_geometric _ (↑f'symm.nnNorm * dist (f b) y) Icf' fun n ↦ ?_
     calc
       dist (u n) (u (n + 1)) = dist (g (u n)) (u n) := by rw [usucc, dist_comm]
-      _ ≤ f'symm.nnnorm * dist (f (u n)) y := A _
-      _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) := by
+      _ ≤ f'symm.nnNorm * dist (f (u n)) y := A _
+      _ ≤ f'symm.nnNorm * (((c : ℝ) * f'symm.nnNorm) ^ n * dist (f b) y) := by
         gcongr
         exact (D n).1
-      _ = f'symm.nnnorm * dist (f b) y * ((c : ℝ) * f'symm.nnnorm) ^ n := by ring
+      _ = f'symm.nnNorm * dist (f b) y * ((c : ℝ) * f'symm.nnNorm) ^ n := by ring
   obtain ⟨x, hx⟩ : ∃ x, Tendsto u atTop (𝓝 x) := cauchySeq_tendsto_of_complete this
   -- As all the `uₙ` belong to the ball `closedBall b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
@@ -278,23 +278,23 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   exact tendsto_nhds_unique T1 T2
 
 theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
-    (hs : IsOpen s) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : IsOpen (f '' s) := by
+    (hs : IsOpen s) (hc : Subsingleton F ∨ c < f'symm.nnNorm⁻¹) : IsOpen (f '' s) := by
   rcases hc with hE | hc
   · exact isOpen_discrete _
   simp only [isOpen_iff_mem_nhds, nhds_basis_closedBall.mem_iff, forall_mem_image] at hs ⊢
   intro x hx
   rcases hs x hx with ⟨ε, ε0, hε⟩
-  refine ⟨(f'symm.nnnorm⁻¹ - c) * ε, mul_pos (sub_pos.2 hc) ε0, ?_⟩
+  refine ⟨(f'symm.nnNorm⁻¹ - c) * ε, mul_pos (sub_pos.2 hc) ε0, ?_⟩
   exact (hf.surjOn_closedBall_of_nonlinearRightInverse f'symm (le_of_lt ε0) hε).mono hε Subset.rfl
 
 theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
-    {x : E} (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : f '' s ∈ 𝓝 (f x) := by
+    {x : E} (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnNorm⁻¹) : f '' s ∈ 𝓝 (f x) := by
   obtain ⟨t, hts, ht, xt⟩ : ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := _root_.mem_nhds_iff.1 hs
   grw [← hts]
   exact IsOpen.mem_nhds ((hf.mono_set hts).open_image f'symm ht hc) (mem_image_of_mem _ xt)
 
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
-    (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by
+    (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnNorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by
   refine
     le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
