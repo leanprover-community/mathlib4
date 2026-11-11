@@ -6,10 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.Grp.Adjunctions
-public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.CategoryTheory.Adjunction.Additive
+public import Mathlib.CategoryTheory.Sites.Abelian
+
+import Mathlib.Algebra.Category.Grp.Zero
 
 /-!
 # Sheaf cohomology
@@ -30,7 +31,6 @@ of sets `yoneda.obj U` to `F`.
   `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H F n`.
 * if `U : C`, define an isomorphism
   `(F.cohomologyPresheaf n).obj (Opposite.op U) ≃+ Sheaf.H (F.over U) n`.
-
 -/
 
 @[expose] public noncomputable section

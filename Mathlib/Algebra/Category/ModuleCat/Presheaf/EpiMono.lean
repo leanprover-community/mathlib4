@@ -5,15 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 
 /-!
 # Epimorphisms and monomorphisms in the category of presheaves of modules
 
 In this file, we give characterizations of epimorphisms and monomorphisms
 in the category of presheaves of modules.
-
 -/
 
 public section

@@ -5,9 +5,10 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 -/
 module
 
-import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Topology.MetricSpace.Lipschitz
+
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Contracting maps

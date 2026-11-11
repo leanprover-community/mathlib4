@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
+
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # First Baire theorem

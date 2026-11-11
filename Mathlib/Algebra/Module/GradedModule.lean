@@ -5,9 +5,9 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.Algebra.GradedMulAction
 public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Graded Module

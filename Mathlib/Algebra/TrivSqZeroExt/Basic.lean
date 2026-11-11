@@ -5,8 +5,9 @@ Authors: Kenny Lau, Eric Wieser, Antoine Chambert-Loir, María-Inés de Frutos-F
 -/
 module
 
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.Prod
+
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!
@@ -49,7 +50,6 @@ Many of the later results in this file are only stated for the commutative `R'` 
 * `TrivSqZeroExt.lift`: the universal property of the trivial square-zero extension; algebra
   morphisms `TrivSqZeroExt R M →ₐ[R] A` are uniquely defined by linear maps `M →ₗ[R] A` for
   which the product of any two elements in the range is zero.
-
 -/
 
 @[expose] public section

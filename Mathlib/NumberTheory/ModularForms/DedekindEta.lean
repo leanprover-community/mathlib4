@@ -5,8 +5,9 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 module
 
-import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
+
+import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 
 /-!
 # Dedekind eta function
@@ -176,5 +177,9 @@ lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
   simp [eta_q_eq_pow, ← tsum_mul_left, tsum_pnat_eq_tsum_succ (f := fun n ↦
         n * cexp (2 * π * I * z) ^ n / (1 - cexp (2 * π * I * z) ^ n)), ← tsum_neg]
   grind
+
+open EisensteinSeries in
+lemma deriv_eta_eq_E2_mul_eta (z : ℍ) : deriv eta z = (π * I / 12) * E2 z * eta z := by
+  rw [← logDeriv_eta_eq_E2, logDeriv_apply, div_mul_cancel₀ _ (eta_ne_zero z.2)]
 
 end ModularForm

@@ -5,8 +5,9 @@ Authors: Joël Riou, Sophie Morel
 -/
 module
 
-import Mathlib.CategoryTheory.Adjunction.Additive
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+
+import Mathlib.CategoryTheory.Adjunction.Additive
 
 /-!
 # The adjoint functor is triangulated
@@ -27,7 +28,6 @@ is triangulated as soon as one of the adjoint functors is triangulated.
 We finally specialize these structures to equivalences of categories, and prove that,
 if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 `E.functor` is triangulated if and only if `E.inverse` is triangulated.
-
 -/
 
 public section
@@ -48,7 +48,6 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
   [adj.CommShift ℤ]
 
-set_option backward.defeqAttrib.useBackward true in
 include adj in
 /--
 The right adjoint of a triangulated functor is triangulated.

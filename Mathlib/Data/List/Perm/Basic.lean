@@ -6,10 +6,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Data.List.Perm
-public import Mathlib.Logic.Relation
 public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.InsertIdx
 public import Mathlib.Logic.OpClass
+public import Mathlib.Logic.Relation
 
 /-!
 # List Permutations
@@ -63,6 +63,11 @@ theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
 theorem getElem_cons_eraseIdx_perm {n : ℕ} (h : n < l.length) :
     l[n] :: l.eraseIdx n ~ l := by
   simpa [h] using (set_perm_cons_eraseIdx h l[n]).symm
+
+theorem insertIdx_eraseIdx_getElem_perm {m n : ℕ} (hm : m < l.length)
+    (hn : n ≤ (l.eraseIdx m).length) :
+    (l.eraseIdx m).insertIdx n l[m] ~ l :=
+  (perm_insertIdx _ _ hn).trans (getElem_cons_eraseIdx_perm hm)
 
 theorem perm_insertIdx_iff_of_le {l₁ l₂ : List α} {m n : ℕ} (hm : m ≤ l₁.length)
     (hn : n ≤ l₂.length) (a : α) : l₁.insertIdx m a ~ l₂.insertIdx n a ↔ l₁ ~ l₂ := by

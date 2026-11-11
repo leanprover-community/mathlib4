@@ -10,12 +10,12 @@ public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Localization.Free
-public import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.RingTheory.TensorProduct.Free
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.Topology.LocallyConstant.Basic
+
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
-
 # The free locus of a module
 
 ## Main definitions and results
@@ -29,7 +29,6 @@ Let `M` be a finitely presented `R`-module.
 - `Module.rankAtStalk`: The function `Spec R → ℕ` sending `x` to `rank_{Rₓ} Mₓ`.
 - `Module.isLocallyConstant_rankAtStalk`:
   If `M` is flat over `R`, then `rankAtStalk` is locally constant.
-
 -/
 
 @[expose] public section

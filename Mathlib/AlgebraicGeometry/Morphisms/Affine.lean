@@ -5,12 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
-
 # Affine morphisms of schemes
 
 A morphism of schemes `f : X ⟶ Y` is affine if the preimage
@@ -28,7 +28,6 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
   Affine morphisms are stable under base change.
 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
-
 -/
 
 public section

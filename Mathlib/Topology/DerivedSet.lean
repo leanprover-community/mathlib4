@@ -5,15 +5,14 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Topology.Perfect
 public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.Perfect
 
 /-!
 # Derived set
 
 This file defines the derived set of a set, the set of all `AccPt`s of its principal filter,
 and proves some properties of it.
-
 -/
 
 @[expose] public section

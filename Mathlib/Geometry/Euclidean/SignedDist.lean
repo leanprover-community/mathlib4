@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Analysis.Normed.Module.Normalize
+public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Topology.Algebra.ContinuousAffineMap.Topology
 
 /-!
@@ -26,7 +26,6 @@ reference point.
 ## References
 
 * https://en.wikipedia.org/wiki/Trilinear_coordinates
-
 -/
 
 @[expose] public section

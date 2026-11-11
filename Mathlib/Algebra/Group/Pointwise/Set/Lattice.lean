@@ -5,9 +5,9 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Indexed unions and intersections of pointwise operations of sets

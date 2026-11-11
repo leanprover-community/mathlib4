@@ -5,11 +5,11 @@ Authors: Scott Carnahan, Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 public import Mathlib.LinearAlgebra.RootSystem.Defs
 
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.Span.TensorProduct
 import Mathlib.RingTheory.Flat.TorsionFree
 
@@ -28,7 +28,6 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
   between a root and coroot is always an integer.
 * `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
 * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
-
 -/
 
 @[expose] public section

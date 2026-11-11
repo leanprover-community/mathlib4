@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 public import Mathlib.CategoryTheory.Preadditive.Basic
+
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!

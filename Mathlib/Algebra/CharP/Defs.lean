@@ -6,10 +6,11 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 module
 
 public import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Nat.Prime.Defs
+
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Find
 
 /-!
 # Characteristic of semirings

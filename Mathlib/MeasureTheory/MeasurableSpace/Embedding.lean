@@ -360,6 +360,14 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
 def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α :=
   ⟨Equiv.ulift, measurable_down, measurable_up⟩
 
+/-- Measurable equivalence between `α` and `Additive α`. -/
+def additive {α : Type*} [MeasurableSpace α] : α ≃ᵐ Additive α :=
+  ⟨Additive.ofMul, measurable_ofMul, measurable_toMul⟩
+
+/-- Measurable equivalence between `α` and `Multiplicative α`. -/
+def multiplicative {α : Type*} [MeasurableSpace α] : α ≃ᵐ Multiplicative α :=
+  ⟨Multiplicative.ofAdd, measurable_ofAdd, measurable_toAdd⟩
+
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=
   Iff.intro

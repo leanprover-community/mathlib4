@@ -8,13 +8,13 @@ module
 public import Mathlib.Algebra.Category.Ring.Adjunctions
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
-import Mathlib.RingTheory.FreeCommRing
 import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.RingTheory.FreeCommRing
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -27,7 +27,6 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * Cartesian product is the product
 * arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
-
 -/
 
 @[expose] public section
@@ -319,7 +318,7 @@ def piFan : Fan R :=
 The categorical product of rings is the Cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
-  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.1 ⟨i⟩).hom
+  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.app ⟨i⟩).hom
   fac s i := by rfl
   uniq _ _ h := hom_ext <| DFunLike.ext _ _ fun x ↦ funext fun i ↦
     congr($(h ⟨i⟩).hom x)

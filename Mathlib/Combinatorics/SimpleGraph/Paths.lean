@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 
 /-!
-
 # Trail, Path, and Cycle
 
 In a simple graph,
@@ -137,6 +136,13 @@ theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
+theorem IsTrail.length_ne_two {p : G.Walk v v} (hp : p.IsTrail) : p.length ≠ 2 := by
+  grind [cases Walk, length_nil, length_cons, isTrail_cons, edges_cons]
+
+theorem IsTrail.nil_of_length_le_two {p : G.Walk v v} (hp : p.IsTrail) (hlen : p.length ≤ 2) :
+    p.Nil := by
+  grind [length_ne_one, hp.length_ne_two]
+
 @[simp]
 theorem isTrail_concat (hadj : G.Adj v w) :
     (p.concat hadj).IsTrail ↔ p.IsTrail ∧ s(v, w) ∉ p.edges := by
@@ -151,10 +157,10 @@ theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.I
 
 @[simp]
 theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p.IsTrail := by
-  constructor <;>
-    · intro h
-      convert h.reverse _
-      try rw [reverse_reverse]
+  constructor
+    <;> intro h
+    <;> convert h.reverse _
+  rw [reverse_reverse]
 
 @[simp]
 theorem isTrail_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
@@ -338,10 +344,7 @@ lemma IsCircuit.ne_bot : ∀ {p : G.Walk u u}, p.IsCircuit → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
 
 lemma IsCircuit.three_le_length {p : G.Walk v v} (hp : p.IsCircuit) : 3 ≤ p.length := by
-  match p with
-  | .cons hadj .nil => simp at hadj
-  | .cons _ <| .cons _ .nil => simpa using hp.isTrail
-  | .cons _ <| .cons _ <| .cons _ _ => grind [length_cons]
+  grind [hp.nil_of_length_le_two, hp.not_nil]
 
 lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
@@ -416,10 +419,8 @@ theorem IsCycle.isPath_drop {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : 0 < n) 
 
 theorem IsCycle.isPath_take {u n} {p : G.Walk u u} (h : p.IsCycle) (hn : n < p.length) :
     (p.take n).IsPath := by
-  replace h : (p.take (p.length - 1)).IsPath := h.isPath_dropLast
-  suffices ((p.take (p.length - 1)).take n).IsPath by
-    rwa [take_take, isPath_copy, show min (p.length - 1) n = n by omega] at this
-  exact h.take n
+  have : ((p.take (p.length - 1)).take n).IsPath := h.isPath_dropLast.take n
+  rwa [take_take, isPath_copy, Nat.min_eq_right <| by lia] at this
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
@@ -530,14 +531,49 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
 
 theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hmem : s(u, w) ∈ p.edges) :
     w = p.snd := by
-  have hnil := edges_eq_nil.not.mp <| List.ne_nil_of_mem hmem
-  rw [← cons_tail_eq _ hnil, edges_cons, List.mem_cons, Sym2.eq, Sym2.rel_iff'] at hmem
   have : u ∉ p.tail.support := by induction p <;> simp_all
-  grind [fst_mem_support_of_mem_edges]
+  grind [cons_tail_eq, edges_cons, fst_mem_support_of_mem_edges, edges_eq_nil]
+
+theorem IsPath.mk_start_mem_edges_iff {p : G.Walk u v} (hp : p.IsPath) :
+    s(u, w) ∈ p.edges ↔ w = p.snd ∧ ¬p.Nil :=
+  ⟨fun h ↦ ⟨hp.eq_snd_of_mem_edges h, edges_eq_nil.not.mp <| List.ne_nil_of_mem h⟩,
+    fun ⟨heq, hnil⟩ ↦ heq ▸ mk_start_snd_mem_edges hnil⟩
 
 theorem IsPath.eq_penultimate_of_mem_edges {p : G.Walk u v} (hp : p.IsPath)
     (hmem : s(v, w) ∈ p.edges) : w = p.penultimate := by
-  simpa [hmem] using isPath_reverse_iff p |>.mpr hp |>.eq_snd_of_mem_edges (w := w)
+  simpa [hmem] using hp.reverse.eq_snd_of_mem_edges (w := w)
+
+theorem IsPath.mk_end_mem_edges_iff {p : G.Walk u v} (hp : p.IsPath) :
+    s(v, w) ∈ p.edges ↔ w = p.penultimate ∧ ¬p.Nil := by
+  simpa using hp.reverse.mk_start_mem_edges_iff
+
+theorem IsPath.eq_snd_or_eq_penultimate_of_end_mem_edges (hp : p.tail.IsPath)
+    (hmem : s(v, w) ∈ p.edges) : w = p.snd ∨ w = p.penultimate := by
+  match p with
+  | cons _ .nil => simp at hmem; tauto
+  | cons _ (cons ..) =>
+    refine List.mem_cons.mp hmem |>.imp ?_ hp.eq_penultimate_of_mem_edges
+    have := Ne.symm <| hp.nil_iff_eq.not.mp not_nil_cons
+    simp_all
+
+theorem IsPath.eq_snd_or_eq_penultimate_of_start_mem_edges (hp : p.dropLast.IsPath)
+    (hmem : s(u, w) ∈ p.edges) : w = p.snd ∨ w = p.penultimate := by
+  rw [or_comm, ← penultimate_reverse, ← snd_reverse]
+  exact eq_snd_or_eq_penultimate_of_end_mem_edges (by simpa using hp.reverse) (by simpa)
+
+theorem IsPath.penultimate_eq_of_mem_darts {u v : V} {p : G.Walk u v} (hp : p.tail.IsPath)
+    {d : G.Dart} (hd : d ∈ p.darts) (hv : v = d.snd) : p.penultimate = d.fst := by
+  match p with
+  | cons _ .nil => simp at hd ⊢; grind only
+  | cons _ (cons ..) =>
+    cases List.mem_cons.mp hd with
+    | inl hd => simpa [hv, hd] using hp.nil_iff_eq.not.mp not_nil_cons
+    | inr hd => simpa using penultimate_eq_of_mem_darts (IsPath.tail (by simpa using hp)) hd hv
+
+theorem IsPath.snd_eq_of_mem_darts (hp : p.dropLast.IsPath) {d : G.Dart} (hd : d ∈ p.darts)
+    (hu : u = d.fst) : p.snd = d.snd := by
+  rw [← penultimate_reverse, ← Dart.fst_symm]
+  exact penultimate_eq_of_mem_darts (by simpa using hp.reverse) (by simpa) hu
 
 theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
     Set.InjOn f {w | w ∈ p.support} := by
@@ -1264,6 +1300,30 @@ theorem isCycle_transfer {p : G.Walk v v} (h) : (p.transfer H h).IsCycle ↔ p.I
   simp [isCycle_def]
 
 protected alias ⟨_, IsCycle.transfer⟩ := isCycle_transfer
+
+end Walk
+
+/-! ### Inducing -/
+
+namespace Walk
+
+variable {G} {u v : V} {s : Set V} {p : G.Walk u v} {c : G.Walk u u}
+
+@[simp]
+lemma isTrail_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsTrail ↔ p.IsTrail := by
+  simp [isTrail_def, edges_induce, List.nodup_map_iff, Injective.eq_def]
+
+@[simp]
+lemma isPath_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsPath ↔ p.IsPath := by
+  simp [isPath_def]
+
+@[simp]
+lemma isCircuit_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCircuit ↔ c.IsCircuit := by
+  simp [isCircuit_def]
+
+@[simp]
+lemma isCycle_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCycle ↔ c.IsCycle := by
+  simp [isCycle_def]
 
 end Walk
 

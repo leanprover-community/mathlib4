@@ -14,7 +14,6 @@ When `T` is a type with a unique element `t`, we show that
 if `F : C ⥤ Discrete T`, then the categories
 `StructuredArrow (Discrete.mk t) F` and
 `CostructuredArrow (Discrete.mk t) F` are equivalent to `C`.
-
 -/
 
 @[expose] public section
@@ -27,7 +26,6 @@ variable {C : Type u} [Category.{v} C] {T : Type w}
 
 namespace Discrete
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ Discrete T` is a functor with `T` containing
 a unique element `t`, then this is the equivalence
 `StructuredArrow (Discrete.mk t) F ≌ C`. -/
@@ -40,7 +38,6 @@ def structuredArrowEquivalenceOfUnique
   unitIso := NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk (Iso.refl _))
   counitIso := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ Discrete T` is a functor with `T` containing
 a unique element `t`, then this is the equivalence
 `CostructuredArrow F (Discrete.mk t) ≌ C`. -/

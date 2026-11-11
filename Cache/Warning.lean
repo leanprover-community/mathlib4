@@ -15,7 +15,7 @@ Two stderr-only notices around a `cache get` read:
 * before reading: a security warning when the read is taken off the repo's
   default trust boundary (a scope, a widened `--cache-from`, or a `--repo`
   that diverges from the git remote), and
-* after reading: guidance for files no container served, keyed on the actual
+* after reading: guidance for files no location served, keyed on the actual
   misses — a naive fork read is pointed at `cache query` and the SHA-scoped
   workflow, every other read gets the generic divergence warning.
 -/
@@ -25,17 +25,17 @@ public section
 namespace Cache.Requests
 
 /--
-`true` iff the resolved scope (see `getRepoScope`) equals the checked-out HEAD.
+`true` iff the resolved scope (see `getRepoScope`) equals the Mathlib checkout's HEAD.
 
 A HEAD scope only serves artifacts built from the commit already checked out,
 and it is what an unscoped `cache get` reads anyway — the forks round defaults
-to the HEAD namespace (see `expandDownloadRounds`). So an explicit HEAD scope
+to the HEAD namespace (see `readLocationsFrom`). So an explicit HEAD scope
 (e.g. CI's `MATHLIB_CACHE_REPO_SCOPE`, set to the build SHA on every fork
 build) just pins the default behavior and warrants no warning.
 
 `false` when no scope is set or HEAD cannot be determined.
 -/
-def scopeIsHead : IO Bool := do
+def scopeIsHead : IO.CacheM Bool := do
   let some scope ← getRepoScope | return false
   let head ← try getGitCommitHash catch _ => return false
   return head == scope
@@ -59,7 +59,7 @@ Otherwise returns `false` (default lookup chain, no warning needed).
 def shouldWarnNonDefaultScope (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
     (unsafeWindow? : Option Nat := none) :
-    IO Bool := do
+    IO.CacheM Bool := do
   -- Condition 0: `--unsafe` (with its SHA window) — the most permissive read.
   if unsafeWindow?.isSome then return true
 
@@ -120,7 +120,7 @@ Returns a human-readable string describing which condition triggered the warning
 def getNonDefaultScopeReason (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
     (unsafeWindow? : Option Nat := none) :
-    IO String := do
+    IO.CacheM String := do
   -- Check conditions in order; return the first that matches.
 
   -- Condition 0: `--unsafe` walks up to `window` fork commits, trusting each.
@@ -162,7 +162,7 @@ never prompts, so it stays safe to run in CI.
 def warnIfNonDefaultScope (repoExplicit? detectedRepo? : Option String)
     (cliCacheFromOverride? : Option (List Container)) (resolvedRepo : String)
     (unsafeWindow? : Option Nat := none) :
-    IO Unit := do
+    IO.CacheM Unit := do
   if (← shouldWarnNonDefaultScope repoExplicit? detectedRepo? cliCacheFromOverride? resolvedRepo
         unsafeWindow?)
     then
@@ -223,7 +223,7 @@ HEAD has no published fork cache:
   a scope and the non-default-scope warning did the talking)
 - no `--cache-from` override (the user has taken explicit responsibility for
   the lookup chain)
-- the repo is a fork, not a first-party repo: the canonical repos don't build
+- the repo is a fork, not the canonical repo: the canonical repo doesn't build
   into the per-commit `forks` namespace this hint points at
 - HEAD is not an ancestor of `master`: misses there are master-container lag
   (CI still building master), which no fork scope can serve
@@ -235,7 +235,7 @@ runs only when every local check passes.
 
 `repo` is the already-resolved repo (see `resolveRepo`).
 -/
-def forkHintSHA? (repo : String) (unsafeMode : Bool) : IO (Option String) := do
+def forkHintSHA? (repo : String) (unsafeMode : Bool) : IO.CacheM (Option String) := do
   if unsafeMode then return none
   if (← getRepoScope).isSome then return none
   if (← cacheFromOverride.get).isSome then return none
@@ -256,7 +256,7 @@ consequence. When files are missing, reads that `forkHintSHA?` accepts get
 the fork-workflow hint; every other read gets the generic divergence warning.
 -/
 def warnIfMissingFiles (repo : String) (missing : Nat) (unsafeMode : Bool := false) :
-    IO Unit := do
+    IO.CacheM Unit := do
   if missing == 0 then return
   let lines ← match ← forkHintSHA? repo unsafeMode with
     | some sha => pure (missingFilesForkLines repo sha missing)

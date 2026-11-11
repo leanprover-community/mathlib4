@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Abs
+
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
@@ -34,7 +35,6 @@ at `t • x` when `t ≠ 0`.
 ## Tags
 
 differentiability, norm
-
 -/
 
 public section

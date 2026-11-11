@@ -5,12 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Gluing
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 
 /-!
-
 # Basic properties of the scheme `Proj A`
 
 The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
@@ -30,7 +29,6 @@ In this file we provide basic properties of the scheme.
 - `AlgebraicGeometry.Proj.fromOfGlobalSections`:
   Given a map `f : A →+* Γ(X, ⊤)` such that the image of the irrelevant ideal under `f`
   generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`.
-
 -/
 
 @[expose] public section
@@ -373,8 +371,8 @@ def toBasicOpenOfGlobalSections (H : f t = x) (h0d : 0 < d) (hd : t ∈ 𝒜 d) 
   refine (basicOpenIsoSpecAway _).hom ≫
     Spec.map (CommRingCat.ofHom (RingHom.comp ?_ (algebraMap _ (Localization.Away t))))
   refine IsLocalization.map (M := .powers t) (T := .powers x) _ f ?_
-  · rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_powers]
-    simp [H]
+  rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_powers]
+  simp [H]
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]

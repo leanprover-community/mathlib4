@@ -39,7 +39,6 @@ measurable functions, as a basis for the Bochner integral.
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 @[expose] public section
@@ -511,20 +510,24 @@ protected theorem norm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
   continuous_norm.comp_aestronglyMeasurable hf
 
 @[fun_prop]
-protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem nnNorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖₊) μ :=
-  continuous_nnnorm.comp_aestronglyMeasurable hf
+  continuous_nnNorm.comp_aestronglyMeasurable hf
 
-/-- The `enorm` of a strongly a.e. measurable function is a.e. measurable.
+@[deprecated (since := "2026-10-31")] protected alias nnnorm := AEStronglyMeasurable.nnNorm
 
-Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
+/-- The `eNorm` of a strongly a.e. measurable function is a.e. measurable.
+
+Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnNorm`, this lemma proves
 a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
 for functions taking values in `ℝ≥0∞`, a.e. measurability is much more useful than
 a.e. strong measurability. -/
 @[fun_prop]
-protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
+protected theorem eNorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
-  (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
+  (continuous_eNorm.comp_aestronglyMeasurable hf).aemeasurable
+
+@[deprecated (since := "2026-11-06")] protected alias enorm := AEStronglyMeasurable.eNorm
 
 /-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
 
@@ -532,7 +535,7 @@ Note that this lemma proves a.e. measurability, **not** a.e. strong measurabilit
 This is an intentional decision: for functions taking values in ℝ≥0∞,
 a.e. measurability is much more useful than a.e. strong measurability. -/
 @[fun_prop]
-protected theorem edist {β : Type*} [PseudoMetricSpace β] {f g : α → β}
+protected theorem edist {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEMeasurable (fun a => edist (f a) (g a)) μ :=
   (continuous_edist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
@@ -621,7 +624,7 @@ theorem comp_measurable {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpa
 theorem comp_quasiMeasurePreserving {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}
     {f : γ → α} {μ : Measure γ} {ν : Measure α} (hg : AEStronglyMeasurable g ν)
     (hf : QuasiMeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
-  (hg.mono_ac hf.absolutelyContinuous).comp_measurable hf.measurable
+  (hg.mono_ac hf.absolutelyContinuous).comp_aemeasurable hf.aemeasurable
 
 theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
     ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by
@@ -850,28 +853,32 @@ theorem _root_.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul G β] (c
 /-- Multiplying by an a.e. strongly measurable scalar *function* with values in a group preserves
 a.e. strong measurability. This is the varying-scalar analogue of
 `aestronglyMeasurable_const_smul_iff`. -/
+@[to_fun _root_.aestronglyMeasurable_fun_smul_iff]
 theorem _root_.aestronglyMeasurable_smul_iff [TopologicalSpace G] [ContinuousInv G]
     [ContinuousSMul G β] {c : α → G} (hc : AEStronglyMeasurable c μ) :
-    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ :=
+    AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ :=
   ⟨fun h => (hc.fun_inv.fun_smul h).congr (by simp), fun h => hc.fun_smul h⟩
 
+@[to_fun _root_.IsUnit.aestronglyMeasurable_fun_const_smul_iff]
 nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul M β] {c : M}
     (hc : IsUnit c) :
-    AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
+    AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ :=
   let ⟨u, hu⟩ := hc
   hu ▸ aestronglyMeasurable_const_smul_iff u
 
+@[to_fun _root_.aestronglyMeasurable_fun_const_smul_iff₀]
 theorem _root_.aestronglyMeasurable_const_smul_iff₀ [ContinuousConstSMul G₀ β] {c : G₀}
     (hc : c ≠ 0) :
-    AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
+    AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ :=
   (IsUnit.mk0 _ hc).aestronglyMeasurable_const_smul_iff
 
 /-- Multiplying by an almost-everywhere nonzero scalar *function* preserves a.e. strong
 measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`. -/
+@[to_fun _root_.aestronglyMeasurable_fun_smul_iff₀]
 theorem _root_.aestronglyMeasurable_smul_iff₀ [TopologicalSpace G₀] [ContinuousInv₀ G₀]
     [MetrizableSpace G₀] [ContinuousSMul G₀ β] {c : α → G₀}
     (hc : AEStronglyMeasurable c μ) (hc0 : ∀ᵐ x ∂μ, c x ≠ 0) :
-    AEStronglyMeasurable (fun x => c x • f x) μ ↔ AEStronglyMeasurable f μ := by
+    AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ := by
   refine ⟨fun h => (hc.fun_inv₀.fun_smul h).congr ?_, fun h => hc.fun_smul h⟩
   filter_upwards [hc0] with x hx
   simp [hx]

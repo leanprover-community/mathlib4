@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Lipschitz
+
 import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
@@ -23,7 +24,6 @@ properties shared by normed groups and by `R≥0`.
 We deduce a `ContinuousMul` instance from `LipschitzMul`, etc.  In principle there should
 be an intermediate typeclass for uniform spaces, but the algebraic hierarchy there (see
 `IsUniformGroup`) is structured differently.
-
 -/
 
 @[expose] public section

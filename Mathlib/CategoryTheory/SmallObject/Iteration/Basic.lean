@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
-public import Mathlib.CategoryTheory.Limits.Comma
 
 /-! # Transfinite iterations of a successor structure
 
@@ -57,7 +57,6 @@ his code, he found that the approach described above had already
 been used in the pioneering formalization work in Lean 3 by
 Reid Barton in 2018 towards the model category structure on
 topological spaces.
-
 -/
 
 @[expose] public section

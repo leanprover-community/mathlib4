@@ -12,7 +12,6 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
 If `X` and `Y` are convex spaces (over `R`), we introduce the type
 `ConvexSpace.AffineMap R X Y` of bundled affine maps from `X` to `Y`.
-
 -/
 
 @[expose] public section

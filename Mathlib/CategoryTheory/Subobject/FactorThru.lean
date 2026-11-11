@@ -5,15 +5,14 @@ Authors: Bhavik Mehta, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Subobject.Basic
 public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
 # Factoring through subobjects
 
 The predicate `h : P.Factors f`, for `P : Subobject Y` and `f : X ⟶ Y`
 asserts the existence of some `P.factorThru f : X ⟶ (P : C)` making the obvious diagram commute.
-
 -/
 
 @[expose] public section

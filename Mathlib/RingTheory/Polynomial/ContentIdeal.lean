@@ -5,8 +5,9 @@ Authors: Fabrizio Barroero
 -/
 module
 
-import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Content
+
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # The content ideal of a polynomial
@@ -36,7 +37,6 @@ Let `p : R[X]`.
 ## TODO
 
 - Prove the Dedekind-Mertens lemma, see https://www.cse.chalmers.se/~coquand/mertens.pdf
-
 -/
 
 @[expose] public section

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Order
+
 import Mathlib.Topology.NhdsSet
 
 /-!
@@ -42,7 +43,6 @@ This file introduces the following properties of a map `f : X → Y` between top
 ## Tags
 
 open map, closed map, embedding, quotient map, identification map
-
 -/
 
 public section
@@ -343,9 +343,6 @@ protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
 theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinducing f) :
     IsQuotientMap g :=
   ⟨hf.of_comp_iff.mp hgf.1, hgf.2.of_comp⟩
-
-@[deprecated (since := "2026-03-21")]
-alias of_comp_of_eq_coinduced := of_comp_of_isCoinducing
 
 protected theorem of_comp_iff (hf : IsQuotientMap f) :
     IsQuotientMap (g ∘ f) ↔ IsQuotientMap g := by
