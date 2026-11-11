@@ -26,7 +26,6 @@ will always pick the later typeclass in this situation, and does not care whethe
 example {M1 : MeasurableSpace Ω} [M2 : MeasurableSpace Ω] {μ : Measure Ω} : sorry := sorry
 example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : sorry := sorry
 ```
-
 -/
 
 public section
@@ -169,8 +168,8 @@ theorem IndepFun.integrable_op
     gcongr with ω
     simp [← mul_assoc, hB]
   _ = C * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
-    rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.1.enorm hY.1.enorm
-        (hXY.comp measurable_enorm measurable_enorm)]
+    rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.1.eNorm hY.1.eNorm
+        (hXY.comp measurable_eNorm measurable_eNorm)]
   _ < ∞ := mul_lt_top (by finiteness) (mul_lt_top hX.2 hY.2)
 
 /-- A continuous bilinear map applied to two independent and integrable random variables
@@ -202,17 +201,17 @@ theorem IndepFun.integrable_left_of_integrable_op
     Integrable X μ := by
   refine ⟨hX, ?_⟩
   have I : (∫⁻ ω, ‖Y ω‖ₑ ∂μ) ≠ 0 := fun H ↦ by
-    have I : (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[μ] 0 := (lintegral_eq_zero_iff' hY.enorm).1 H
+    have I : (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[μ] 0 := (lintegral_eq_zero_iff' hY.eNorm).1 H
     apply h'Y
     filter_upwards [I] with ω hω
     simpa using hω
-  refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
-  have J : (‖X ·‖ₑ) ⟂ᵢ[μ] (‖Y ·‖ₑ) := hXY.comp measurable_enorm measurable_enorm
+  refine hasFiniteIntegral_iff_eNorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
+  have J : (‖X ·‖ₑ) ⟂ᵢ[μ] (‖Y ·‖ₑ) := hXY.comp measurable_eNorm measurable_eNorm
   have : ∞ < ∞ := calc
     ∞ = c * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
       rw [H, top_mul I, mul_top (by simpa)]
     _ ≤ ∫⁻ ω, ‖B (X ω) (Y ω)‖ₑ ∂μ := by
-      rw [← lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J,
+      rw [← lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.eNorm hY.eNorm J,
         ← lintegral_const_mul'' _ (by fun_prop)]
       gcongr with ω
       simp [hB, ← mul_assoc]
@@ -352,7 +351,7 @@ theorem IndepFun.integrable_smul
     [SMul E F] [ContinuousSMul E F] [ENormSMulClass E F]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ) :
     Integrable (fun ω ↦ (X ω) • (Y ω)) μ :=
-  hXY.integrable_op hX hY (· • ·) (by fun_prop) 1 (by simp [enorm_smul])
+  hXY.integrable_op hX hY (· • ·) (by fun_prop) 1 (by simp [eNorm_smul])
 
 /-- The product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integrable_mul
@@ -360,12 +359,6 @@ theorem IndepFun.integrable_mul
     [MeasurableSpace E] [OpensMeasurableSpace E]
     {X Y : Ω → E} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ) :
     Integrable (X * Y) μ := hXY.integrable_smul hX hY
-
-@[deprecated (since := "2026-04-30")] alias IndepFun.integrable_left_of_integrable_mul :=
-  IndepFun.integrable_left_of_integrable_op
-
-@[deprecated (since := "2026-04-30")] alias IndepFun.integrable_right_of_integrable_mul :=
-  IndepFun.integrable_right_of_integrable_op
 
 lemma IndepFun.integral_fun_comp_smul_comp
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
@@ -375,7 +368,7 @@ lemma IndepFun.integral_fun_comp_smul_comp
     ∫ ω, f (X ω) • g (Y ω) ∂μ = (∫ ω, f (X ω) ∂μ) • (∫ ω, g (Y ω) ∂μ) := by
   by_cases hE : CompleteSpace E
   · exact hXY.integral_bilin_comp_comp' hX hY hf hg (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
 
 lemma IndepFun.integral_fun_comp_mul_comp
     {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → 𝕜} {g : 𝓨 → 𝕜}
@@ -406,7 +399,7 @@ lemma IndepFun.integral_smul_eq_smul_integral
     μ[X • Y] = μ[X] • μ[Y] := by
   by_cases hE : CompleteSpace E
   · exact hXY.integral_bilin' hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
 
 lemma IndepFun.integral_mul_eq_mul_integral
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :

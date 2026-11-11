@@ -38,7 +38,6 @@ where `F` is an exact functor between abelian categories.
 
 * `mapExactFunctor_comp_mk₀_natTransApp`: compatibility with a natural
 transformation between two exact functors
-
 -/
 
 @[expose] public section
@@ -59,7 +58,6 @@ section
 
 open DerivedCategory
 
-set_option backward.defeqAttrib.useBackward true in
 lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     dsimp% F.mapDerivedCategory.map (triangleOfSESδ hS) =

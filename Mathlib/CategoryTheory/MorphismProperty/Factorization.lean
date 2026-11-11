@@ -30,7 +30,6 @@ the existence of which is asserted in the type-class `HasFunctorialFactorization
 We also introduce the class `W₁.comp W₂` of morphisms of the form `i ≫ p` with `W₁ i`
 and `W₂ p` and show that `W₁.comp W₂ = ⊤` iff `HasFactorization W₁ W₂` holds (this
 is `MorphismProperty.comp_eq_top_iff`).
-
 -/
 
 @[expose] public section
@@ -207,7 +206,6 @@ section
 
 variable (J : Type*) [Category* J]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
@@ -271,7 +269,6 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 variable {W₁ W₂} in
 /-- The term in `MapFactorizationData (W₁.inverseImage F) (W₂.inverseImage F) f`
 deduced from `h : MapFactorizationData W₁ W₂ (F.map f)` when `F` is an equivalence

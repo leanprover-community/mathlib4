@@ -37,7 +37,6 @@ has an antitone involution (e.g., if it is an ordered ring, then negation would 
 then any `ConditionallyCompletePartialOrder{Sup,Inf}` is automatically a
 `ConditionallyCompletePartialOrder`. Because of the `to_dual` attribute, the additional overhead
 required to add and maintain the infimum version is minimal.
-
 -/
 
 public section

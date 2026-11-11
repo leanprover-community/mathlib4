@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 public import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
-
 # Universal property of localized monoidal categories
 
 This file proves that, given a monoidal localization functor `L : C ⥤ D`, and a functor
@@ -54,7 +53,6 @@ noncomputable def curriedTensorPreIsoPost : curriedTensorPre F ≅ curriedTensor
   lift₂NatIso L L W W (curriedTensorPre G) (curriedTensorPost G) _ _
     (Functor.curriedTensorPreIsoPost G)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
     letI e := Lifting.iso L W G F
@@ -63,7 +61,6 @@ lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
         F.map (OplaxMonoidal.δ L _ _) := by
   simp [curriedTensorPreIsoPost]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     (e₁ : Y₁ ≅ L.obj X₁) (e₂ : Y₂ ≅ L.obj X₂) :
     letI e := Lifting.iso L W G F

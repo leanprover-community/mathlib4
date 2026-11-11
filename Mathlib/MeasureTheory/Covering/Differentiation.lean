@@ -141,7 +141,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
   have : Countable h.index := h.index_countable
   calc
     ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
-    _ ≤ ∑' x : h.index, ν (h.covering x) := ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1
+    _ ≤ ∑' x : h.index, ν (h.covering x) := tsum_le_tsum fun x => (h.covering_mem x.2).1
     _ = ν (⋃ x : h.index, h.covering x) := by
       rw [measure_iUnion h.covering_disjoint_subtype fun i => h.measurableSet_u i.2]
     _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.2).2))
@@ -180,7 +180,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
       _ ≤ μ (s ∩ o) + μ oᶜ := measure_union_le _ _
       _ = μ (s ∩ o) := by rw [μo, add_zero]
       _ = ε⁻¹ * (ε • μ) (s ∩ o) := by
-        rw [μ.smul_apply, smul_eq_mul, ← mul_assoc, ENNReal.inv_mul_cancel hε.ne' hε'.ne, one_mul]
+        rw [smul_apply, smul_eq_mul, ← mul_assoc, ENNReal.inv_mul_cancel hε.ne' hε'.ne, one_mul]
       _ ≤ ε⁻¹ * ρ (s ∩ o) := by
         gcongr _ * ?_
         refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
@@ -294,8 +294,9 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
   -- `n`.
   refine
     ⟨toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (u n),
-      toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n), by measurability, by measurability,
-      ?_, ?_, ?_⟩
+      toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n), ?_, ?_, ?_, ?_, ?_⟩
+  · simp [MeasurableSet.iUnion]
+  · simp [MeasurableSet.iUnion]
   · intro x hx
     by_cases h : x ∈ s
     · refine Or.inr (mem_iUnion.2 ⟨spanningSetsIndex (ρ + μ) x, ?_⟩)
@@ -330,7 +331,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
       _ = μ (⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
         have : μ sᶜ = 0 := v.ae_tendsto_div hρ; rw [measure_toMeasurable, this, zero_add]
       _ ≤ ∑' (m) (n), μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
-        ((measure_iUnion_le _).trans (ENNReal.tsum_le_tsum fun m => measure_iUnion_le _))
+        ((measure_iUnion_le _).trans (tsum_le_tsum fun m => measure_iUnion_le _))
       _ = 0 := by simp only [H, tsum_zero]
   -- now starts the nontrivial part of the argument. We fix `m` and `n`, and show that the
   -- measurable supersets of `u m` and `w n` have zero measure intersection by using the lemmas
@@ -359,8 +360,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         apply I.frequently.mono fun a ha ↦ ?_
         exact (ENNReal.div_le_iff_le_mul (.inr hpq.lt_top.ne) (.inr ha.bot_lt.ne')).1 ha.le
       _ = p * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
-        simp only [μ.smul_apply, smul_eq_mul,
-          measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) I]
+        simp [measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) I]
   have B :
     q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≤
       ρ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
@@ -370,7 +370,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
         conv_rhs => rw [inter_comm]
         rw [inter_comm, measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) J]
       _ ≤ ρ (toMeasurable (ρ + μ) (u m) ∩ w n) := by
-        rw [← smul_eq_mul, ← μ.smul_apply]
+        rw [← smul_eq_mul, ← smul_apply]
         refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
         intro x hx
         have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
@@ -391,7 +391,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0∞} (hpq : p < q) :
     _ < q * μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
       gcongr
       suffices H : (ρ + μ) (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≠ ∞ by
-        simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at H
+        simp only [Ne, add_apply, ENNReal.add_eq_top, not_or] at H
         exact H.2
       apply (lt_of_le_of_lt (measure_mono inter_subset_left) _).ne
       rw [measure_toMeasurable]
@@ -555,7 +555,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
     _ ≤
         (t ^ 2 • ρ) (s ∩ f ⁻¹' {0}) + (t ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) +
           ∑' n : ℤ, (t ^ 2 • ρ :) (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) :=
-      (add_le_add (add_le_add A B) (ENNReal.tsum_le_tsum C))
+      (add_le_add (add_le_add A B) (tsum_le_tsum C))
     _ = (t ^ 2 • ρ) s :=
       (measure_eq_measure_preimage_add_measure_tsum_Ico_zpow (t ^ 2 • ρ) f_meas hs ht ht').symm
 
@@ -587,7 +587,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
     intro n
     let I := Ico (t ^ n) (t ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [ν.smul_apply, smul_eq_mul, ν, I, M, withDensity_apply]
+    simp only [smul_apply, M, withDensity_apply, smul_eq_mul, ge_iff_le, ν, I]
     calc
       ρ (s ∩ f ⁻¹' I) ≤ t ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
         apply v.measure_le_mul_of_subset_limRatioMeas_lt hρ
@@ -608,7 +608,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
     _ ≤
         (t • ν) (s ∩ f ⁻¹' {0}) + (t • ν) (s ∩ f ⁻¹' {∞}) +
           ∑' n : ℤ, (t • ν) (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) :=
-      (add_le_add (add_le_add A B) (ENNReal.tsum_le_tsum C))
+      (add_le_add (add_le_add A B) (tsum_le_tsum C))
     _ = (t • ν) s :=
       (measure_eq_measure_preimage_add_measure_tsum_Ico_zpow (t • ν) f_meas hs ht ht').symm
 
@@ -669,7 +669,7 @@ theorem ae_tendsto_rnDeriv :
   convert Ax.add Cx using 1
   · ext1 a
     conv_lhs => rw [eq_add]
-    simp only [Pi.add_apply, coe_add, ENNReal.add_div]
+    simp [ENNReal.add_div]
   · simp only [Bx, zero_add]
 
 /-! ### Lebesgue density points -/
@@ -736,7 +736,7 @@ theorem ae_tendsto_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ
   apply lintegral_congr_ae
   exact ae_restrict_of_ae hf.ae_eq_mk
 
-theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : Integrable f μ)
+theorem ae_tendsto_lintegral_eNorm_sub_div'_of_integrable {f : α → E} (hf : Integrable f μ)
     (h'f : StronglyMeasurable f) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   /- For every `c`, then `(∫⁻ y in a, ‖f y - c‖ₑ ∂μ) / μ a` tends almost everywhere to `‖f x - c‖`.
@@ -755,15 +755,15 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
     simp_rw [ae_all_iff, ae_ball_iff t_count]
     intro n c _
     apply ae_tendsto_lintegral_div'
-    · refine (h'f.sub ?_).enorm
+    · refine (h'f.sub ?_).eNorm
       exact stronglyMeasurable_const.indicator (IsOpen.measurableSet (A.set_mem n))
     · apply ne_of_lt
       calc
         ∫⁻ y, ‖f y - (A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ
           ≤ ∫⁻ y, ‖f y‖ₑ + ‖(A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ :=
-          lintegral_mono fun x ↦ enorm_sub_le
+          lintegral_mono fun x ↦ eNorm_sub_le
         _ = ∫⁻ y, ‖f y‖ₑ ∂μ + ∫⁻ y, ‖(A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ :=
-          lintegral_add_left h'f.enorm _
+          lintegral_add_left h'f.eNorm _
         _ < ∞ + ∞ :=
           haveI I : Integrable ((A.set n).indicator fun _ : α => c) μ := by
             simp only [integrable_indicator_iff (IsOpen.measurableSet (A.set_mem n)),
@@ -783,7 +783,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
     simp only [ha hy, indicator_of_mem]
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
   obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, ‖f x - c‖ₑ < ε / 2 := by
-    simp_rw [← edist_eq_enorm_sub]
+    simp_rw [← eDist_eq_eNorm_sub]
     have : f x ∈ closure t := ht (mem_range_self _)
     exact EMetric.mem_closure_iff.1 this (ε / 2) (ENNReal.half_pos (ne_of_gt εpos))
   filter_upwards [(tendsto_order.1 (M c ct)).2 (ε / 2) xc, h'x, v.eventually_measure_lt_top x] with
@@ -792,7 +792,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
   calc
     (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) ≤ ∫⁻ y in a, ‖f y - c‖ₑ + ‖f x - c‖ₑ ∂μ := by
       apply lintegral_mono fun x => ?_
-      simpa only [← edist_eq_enorm_sub] using edist_triangle_right _ _ _
+      simpa only [← eDist_eq_eNorm_sub] using edist_triangle_right _ _ _
     _ = (∫⁻ y in a, ‖f y - c‖ₑ ∂μ) + ∫⁻ _ in a, ‖f x - c‖ₑ ∂μ :=
       (lintegral_add_right _ measurable_const)
     _ ≤ ε / 2 * μ a + ε / 2 * μ a := by
@@ -803,10 +803,14 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
         gcongr
     _ = ε * μ a := by rw [← add_mul, ENNReal.add_halves]
 
-theorem ae_tendsto_lintegral_enorm_sub_div_of_integrable {f : α → E} (hf : Integrable f μ) :
+@[deprecated (since := "2026-11-06")]
+alias ae_tendsto_lintegral_enorm_sub_div'_of_integrable :=
+  ae_tendsto_lintegral_eNorm_sub_div'_of_integrable
+
+theorem ae_tendsto_lintegral_eNorm_sub_div_of_integrable {f : α → E} (hf : Integrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   have I : Integrable (hf.1.mk f) μ := hf.congr hf.1.ae_eq_mk
-  filter_upwards [v.ae_tendsto_lintegral_enorm_sub_div'_of_integrable I hf.1.stronglyMeasurable_mk,
+  filter_upwards [v.ae_tendsto_lintegral_eNorm_sub_div'_of_integrable I hf.1.stronglyMeasurable_mk,
     hf.1.ae_eq_mk] with x hx h'x
   apply hx.congr _
   intro a
@@ -816,13 +820,17 @@ theorem ae_tendsto_lintegral_enorm_sub_div_of_integrable {f : α → E} (hf : In
   filter_upwards [hf.1.ae_eq_mk] with y hy
   rw [hy, h'x]
 
-theorem ae_tendsto_lintegral_enorm_sub_div {f : α → E} (hf : LocallyIntegrable f μ) :
+@[deprecated (since := "2026-11-06")]
+alias ae_tendsto_lintegral_enorm_sub_div_of_integrable :=
+  ae_tendsto_lintegral_eNorm_sub_div_of_integrable
+
+theorem ae_tendsto_lintegral_eNorm_sub_div {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   rcases hf.exists_nat_integrableOn with ⟨u, u_open, u_univ, hu⟩
   have (n : ℕ) : ∀ᵐ x ∂μ,
       Tendsto (fun a => (∫⁻ y in a, ‖(u n).indicator f y - (u n).indicator f x‖ₑ ∂μ) / μ a)
       (v.filterAt x) (𝓝 0) := by
-    apply ae_tendsto_lintegral_enorm_sub_div_of_integrable
+    apply ae_tendsto_lintegral_eNorm_sub_div_of_integrable
     exact (integrable_indicator_iff (u_open n).measurableSet).2 (hu n)
   filter_upwards [ae_all_iff.2 this] with x hx
   obtain ⟨n, hn⟩ : ∃ n, x ∈ u n := by simpa only [← u_univ, mem_iUnion] using mem_univ x
@@ -833,11 +841,14 @@ theorem ae_tendsto_lintegral_enorm_sub_div {f : α → E} (hf : LocallyIntegrabl
   refine setLIntegral_congr_fun h'a (fun y hy ↦ ?_)
   rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]
 
+@[deprecated (since := "2026-11-06")]
+alias ae_tendsto_lintegral_enorm_sub_div := ae_tendsto_lintegral_eNorm_sub_div
+
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `‖f y - f x‖` on `a` tends to `0` as `a` shrinks to `x` along a Vitali family. -/
 theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ⨍ y in a, ‖f y - f x‖ ∂μ) (v.filterAt x) (𝓝 0) := by
-  filter_upwards [v.ae_tendsto_lintegral_enorm_sub_div hf] with x hx
+  filter_upwards [v.ae_tendsto_lintegral_eNorm_sub_div hf] with x hx
   have := (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp hx
   simp only [ENNReal.toReal_zero] at this
   apply Tendsto.congr' _ this
@@ -845,11 +856,11 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
     with a h'a h''a
   simp only [Function.comp_apply, ENNReal.toReal_div, setAverage_eq, div_eq_inv_mul]
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
-    simp_rw [coe_nnnorm]
+    simp_rw [coe_nnNorm]
     exact (h''a.sub (integrableOn_const h'a.ne)).norm
-  dsimp [enorm]
+  dsimp [eNorm]
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]
-  simp only [coe_nnnorm, measureReal_def]
+  simp only [coe_nnNorm, measureReal_def]
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `f` on `a` tends to `f x` as `a` shrinks to `x` along a Vitali family. -/

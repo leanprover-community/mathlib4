@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
@@ -43,7 +44,6 @@ Under suitable assumptions on the target category `A`, we show that
 both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
 and with arbitrary colimits. (The commutation of `Φ.sheafFiber` with colimits
 is obtained in the file `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.)
-
 -/
 
 @[expose] public section
@@ -132,7 +132,6 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The (colimit) cocone which defines the fiber of a presheaf. -/
 @[simps]
 noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
@@ -148,7 +147,7 @@ noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
 /-- The isomorphism `shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber`. -/
 noncomputable def shrinkYonedaCompPresheafFiberIso [LocallySmall.{w} C] :
     shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber :=
-  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso _
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso.{w} _
 
 lemma shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber
     [LocallySmall.{w} C] {X : C} (x : Φ.fiber.obj X) :
@@ -176,7 +175,6 @@ variable {P : Cᵒᵖ ⥤ A} {T : A}
   (hφ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : Φ.fiber.obj X),
     P.map f.op ≫ φ X x = φ Y (Φ.fiber.map f x) := by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 /-- Constructor for morphisms from the fiber of a presheaf. -/
 noncomputable def presheafFiberDesc :

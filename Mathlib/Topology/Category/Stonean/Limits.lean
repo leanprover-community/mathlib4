@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.CompHausLike.Limits
 public import Mathlib.Topology.Category.Stonean.Basic
 
 /-!
-
 # Explicit limits and colimits
 
 This file applies the general API for explicit limits and colimits in `CompHausLike P` (see
@@ -42,7 +41,7 @@ lemma extremallyDisconnected_preimage : ExtremallyDisconnected (i ⁻¹' (Set.ra
 
 lemma extremallyDisconnected_pullback : ExtremallyDisconnected {xy : X × Y | f xy.1 = i xy.2} :=
   have := extremallyDisconnected_preimage i hi
-  let e := (TopCat.pullbackHomeoPreimage i i.hom.hom.2 f hi.isEmbedding).symm
+  let e := (TopCat.pullbackHomeoPreimage i (by fun_prop) f hi.isEmbedding).symm
   let e' : {xy : X × Y | f xy.1 = i xy.2} ≃ₜ {xy : Y × X | i xy.1 = f xy.2} := by
     exact TopCat.homeoOfIso
       ((TopCat.pullbackIsoProdSubtype f.hom i.hom).symm ≪≫ pullbackSymmetry _ _ ≪≫

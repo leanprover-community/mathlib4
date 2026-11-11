@@ -19,7 +19,6 @@ This action is available in the `Pointwise` locale.
 
 This file is similar (but not identical) to `Mathlib/Algebra/Ring/Subsemiring/Pointwise.lean`.
 Where possible, try to keep them in sync.
-
 -/
 
 @[expose] public section

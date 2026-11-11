@@ -20,7 +20,6 @@ More generally, `Localization.of_equivalences` shows that we may replace both th
 source and target categories by equivalent categories. This is obtained using
 `Localization.isEquivalence` which provide a sufficient condition in order to show
 that a functor between localized categories is an equivalence.
-
 -/
 
 @[expose] public section
@@ -111,6 +110,25 @@ lemma of_equivalences (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L�
   have : (E.functor ⋙ L₂).IsLocalization W₁ :=
     of_equivalence_target L₁ W₁ _ E' ((CatCommSq.iso _ _ _ _).symm)
   exact of_equivalence_source (E.functor ⋙ L₂) W₁ L₂ W₂ E hW₁ hW₂ (Iso.refl _)
+
+instance (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+    (L : C₁ᵒᵖ × C₂ᵒᵖ ⥤ D) [L.IsLocalization (W₁.op.prod W₂.op)] :
+    ((prodOpEquiv C₁ C₂).functor ⋙ L).IsLocalization (W₁.prod W₂).op :=
+  Functor.IsLocalization.of_equivalence_source L (W₁.op.prod W₂.op) _ (W₁.prod W₂).op
+    (prodOpEquiv C₁ C₂).symm (fun _ _ _ h ↦ by
+      simp only [Equivalence.symm_functor, MorphismProperty.inverseImage_iff,
+        prodOpEquiv_inverse_map]
+      exact MorphismProperty.le_isoClosure _ _ h)
+        (fun _ _ _ h ↦ Localization.inverts L (W₁.op.prod W₂.op) _ h) (Iso.refl _)
+
+instance (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+    (L : (C₁ × C₂)ᵒᵖ ⥤ D) [L.IsLocalization (W₁.prod W₂).op] :
+    ((prodOpEquiv C₁ C₂).inverse ⋙ L).IsLocalization (W₁.op.prod W₂.op) :=
+  Functor.IsLocalization.of_equivalence_source L  (W₁.prod W₂).op _ (W₁.op.prod W₂.op)
+    (prodOpEquiv C₁ C₂) (fun _ _ _ h ↦ by
+      simp only [MorphismProperty.inverseImage_iff, prodOpEquiv_functor_map]
+      exact MorphismProperty.le_isoClosure _ _ h)
+        (fun _ _ _ h ↦ Localization.inverts L (W₁.prod W₂).op _ h) (Iso.refl _)
 
 end IsLocalization
 

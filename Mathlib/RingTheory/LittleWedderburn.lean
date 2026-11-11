@@ -36,7 +36,6 @@ https://en.wikipedia.org/wiki/Artin%E2%80%93Zorn_theorem
 If interested, generalisations to semifields could be explored. The theory of semi-vector spaces is
 not clear, but assuming that such a theory could be found where every module considered in the
 below proof is free, then the proof works nearly verbatim.
-
 -/
 
 open scoped Polynomial

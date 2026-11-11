@@ -7,7 +7,7 @@ module
 
 public meta import Batteries.Lean.Position
 public meta import Lean.Elab.Command
-public import Mathlib.Tactic.Linter.UnusedInstancesInType
+public meta import Mathlib.Lean.Elab.InfoTree
 
 /-!
 # A linter for declarations with local instances that overlap
@@ -35,7 +35,6 @@ declarations with duplicate type class assumptions, but it is still not desirabl
 ## TODO
 
 Support declarations without bodies (`structure`s/`class`es/`inductive`s etc.)
-
 -/
 
 open Lean Meta Elab Command

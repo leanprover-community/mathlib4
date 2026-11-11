@@ -36,7 +36,6 @@ Chebyshev T polynomials are orthogonal with respect to `√(1 - x ^ 2)⁻¹`.
 
 * Prove that Chebyshev U polynomials are orthogonal with respect to `√(1 - x ^ 2)`
 * Bundle Chebyshev T polynomials into a HilbertBasis for MeasureTheory.Lp ℝ 2 measureT
-
 -/
 public section
 

@@ -15,7 +15,6 @@ import Mathlib.Basic.Finite.Sigma
 
 A simplicial set is finite (`SSet.Finite`) if it has finitely
 many nondegenerate simplices.
-
 -/
 
 public section

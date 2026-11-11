@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
-
 # Polynomial sequences
 
 We define polynomial sequences – sequences of polynomials `a₀, a₁, ...` such that the polynomial
@@ -97,7 +96,7 @@ lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
   nontriviality R using Subsingleton.eq_zero P
   generalize hp : P.natDegree = n
   induction n using Nat.strong_induction_on generalizing P with
-  | h n ih =>
+  | ind n ih =>
     by_cases! p_ne_zero : P = 0
     · simp [p_ne_zero]
     have hn : n < m := by
@@ -148,7 +147,7 @@ lemma span_degreeLT {m : ℕ} (hCoeff : ∀ i < m, IsUnit (S i).leadingCoeff) :
       rw_mod_cast [← head_degree_eq, hp]
       dsimp [head]
       nth_rw 2 [← S.natDegree_eq n]
-      rw [coeff_smul, coeff_smul, coeff_natDegree, smul_eq_mul, smul_eq_mul, rightinv, mul_one]
+      rw [coeff_natDegree, rightinv, mul_one]
     -- which we can now combine to show that `P - head` must have strictly lower degree,
     -- as its leading term has been cancelled, completing our proof.
     have tail_degree_lt := P.degree_sub_lt_left head_degree_eq p_ne_zero hPhead

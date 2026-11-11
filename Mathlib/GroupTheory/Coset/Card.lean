@@ -13,7 +13,6 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 * `Subgroup.card_subgroup_dvd_card`: Lagrange's theorem (for multiplicative groups);
   there is an analogous version for additive groups
-
 -/
 
 public section
@@ -33,6 +32,10 @@ instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : F
 @[to_additive]
 instance (priority := 100) finite [Finite α] : Finite (α ⧸ s) :=
   Quotient.finite _
+
+@[to_additive]
+instance countable [Countable α] : Countable (α ⧸ s) :=
+  Quotient.countable
 
 @[to_additive]
 instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :

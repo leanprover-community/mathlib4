@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Galois.Topology
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
-
 # Essential surjectivity of fiber functors
 
 Let `F : C ⥤ FintypeCat` be a fiber functor of a Galois category `C` and denote by
@@ -34,7 +33,6 @@ We first show that every finite, discrete `Aut F`-set `Y` has a decomposition in
 components and each connected component is of the form `Aut F ⧸ U` for an open subgroup `U`.
 Since `H` preserves finite coproducts, it hence suffices to treat the case `Y = Aut F ⧸ U`.
 For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Project Tag 0BN4.
-
 -/
 
 @[expose] public section
@@ -149,7 +147,6 @@ private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) 
 
 variable {V} (hUinV : U ≤ V)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiag :

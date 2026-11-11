@@ -20,7 +20,6 @@ as the presheaf of modules which sends `X : Cᵒᵖ` to `M₁.obj X ⊗ M₂.obj
 
 This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
-
 -/
 
 @[expose] public section

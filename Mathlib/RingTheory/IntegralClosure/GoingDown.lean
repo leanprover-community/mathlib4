@@ -11,12 +11,10 @@ public import Mathlib.RingTheory.Ideal.GoingDown
 import Mathlib.RingTheory.IntegralClosure.Algebra.Ideal
 
 /-!
-
 # Going down for integrally closed domains
 
 In this file, we provide the instance that any integral extension of `R ⊆ S` satisfies going down
 if `R` is integrally closed.
-
 -/
 
 public section

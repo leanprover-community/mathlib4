@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
 /-!
-
 # (Absolute) Discriminant and Different Ideal
 
 ## Main results
@@ -22,7 +21,6 @@ public import Mathlib.RingTheory.Ideal.Norm.RelNorm
   Assume that `K₁` and `K₂` are two linear disjoint number fields with coprime different ideals.
   Then, the absolute value of the discriminant of their compositum is equal to
   `|discr K₁| ^ [K₂ : ℚ] * |discr K₂| ^ [K₁ : ℚ]`.
-
 -/
 
 public section
@@ -53,7 +51,7 @@ lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).nat
       (by simpa using FractionalIdeal.coeIdeal_le_one)) one_ne_zero one_ne_zero
   have := Nat.card_congr this.toEquiv
   refine this.trans ?_
-  rw [FractionalIdeal.coe_one, coeIdeal_differentIdeal (K := ℚ), inv_inv]
+  rw [FractionalIdeal.coeToSubmodule_one, coeIdeal_differentIdeal (K := ℚ), inv_inv]
   let b := integralBasis K
   let b' := (Algebra.traceForm ℚ K).dualBasis (traceForm_nondegenerate ℚ K) b
   have hb : Submodule.span ℤ (Set.range b) = (1 : Submodule 𝒪 K).restrictScalars ℤ := by
@@ -63,7 +61,7 @@ lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).nat
   qify
   refine (AddSubgroup.relIndex_eq_abs_det (1 : Submodule 𝒪 K).toAddSubgroup (FractionalIdeal.dual
     ℤ ℚ 1 : FractionalIdeal 𝒪⁰ K).coeToSubmodule.toAddSubgroup ?_ b b' ?_ ?_).trans ?_
-  · rw [Submodule.toAddSubgroup_le, ← FractionalIdeal.coe_one]
+  · rw [Submodule.toAddSubgroup_le, ← FractionalIdeal.coeToSubmodule_one]
     exact FractionalIdeal.one_le_dual_one ℤ ℚ (L := K) (B := 𝒪)
   · apply AddSubgroup.toIntSubmodule.injective
     rw [AddSubgroup.toIntSubmodule_closure, hb, Submodule.toIntSubmodule_toAddSubgroup]
@@ -90,7 +88,7 @@ attribute [local instance] FractionRing.liftAlgebra in
 theorem natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow (L 𝒪' : Type*) [Field L]
     [NumberField L] [CommRing 𝒪'] [Algebra 𝒪' L] [IsFractionRing 𝒪' L]
     [IsDedekindDomain 𝒪'] [CharZero 𝒪'] [Algebra K L] [Algebra 𝒪 𝒪'] [Algebra 𝒪 L]
-    [IsScalarTower 𝒪 K L] [IsScalarTower 𝒪 𝒪' L] [IsTorsionFree 𝒪 𝒪'] [Free ℤ 𝒪']
+    [IsScalarTower 𝒪 K L] [IsScalarTower 𝒪 𝒪' L] [IsTorsionFree 𝒪 𝒪']
     [Module.Finite ℤ 𝒪'] [Module.Finite 𝒪 𝒪'] :
     (discr L).natAbs = Ideal.absNorm (differentIdeal 𝒪 𝒪') *
       (discr K).natAbs ^ Module.finrank K L := by
