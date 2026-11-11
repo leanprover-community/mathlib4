@@ -371,36 +371,36 @@ theorem liftIoc_coe_apply {f : 𝕜 → B} {x : 𝕜} (hx : x ∈ Ioc a (a + p))
     liftIoc p a f ↑x = f x := by
   simp [liftIoc, equivIoc_coe_eq hx]
 
-theorem liftIco_coe_apply_of_periodic {f : 𝕜 → B} {x : 𝕜} (hf : f.Periodic p) :
+theorem liftIco_coe_apply_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) (a x : 𝕜) :
     liftIco p a f ↑x = f x := by
   simp [liftIco, equivIco, ← self_sub_toIcoDiv_zsmul, hf.sub_zsmul_eq]
 
-theorem liftIoc_coe_apply_of_periodic {f : 𝕜 → B} {x : 𝕜} (hf : f.Periodic p) :
+theorem liftIoc_coe_apply_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) (a x : 𝕜) :
     liftIoc p a f ↑x = f x := by
   simp [liftIoc, equivIoc, ← self_sub_toIocDiv_zsmul, hf.sub_zsmul_eq]
 
-theorem liftIco_comp_mk_eq_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) :
+theorem liftIco_comp_mk_eq_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) (a : 𝕜) :
     liftIco p a f ∘ QuotientAddGroup.mk = f := by
   ext; apply liftIco_coe_apply_of_periodic hf
 
-theorem liftIoc_comp_mk_eq_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) :
+theorem liftIoc_comp_mk_eq_of_periodic {f : 𝕜 → B} (hf : f.Periodic p) (a : 𝕜) :
     liftIoc p a f ∘ QuotientAddGroup.mk = f := by
   ext; apply liftIoc_coe_apply_of_periodic hf
 
 /-- If `f` has period `p`, then every lift of `f` to `AddCircle p` is the same. -/
-theorem liftIco_eq_liftIco {f : 𝕜 → B} {a' : 𝕜} (hf : f.Periodic p) :
+theorem liftIco_eq_liftIco {f : 𝕜 → B} (hf : f.Periodic p) (a a' : 𝕜) :
     liftIco p a f = liftIco p a' f :=
   funext fun q ↦ QuotientAddGroup.induction_on q fun _ ↦ by
     simp_rw [liftIco_coe_apply_of_periodic hf]
 
 /-- If `f` has period `p`, then every lift of `f` to `AddCircle p` is the same. -/
-theorem liftIoc_eq_liftIoc {f : 𝕜 → B} {a' : 𝕜} (hf : f.Periodic p) :
+theorem liftIoc_eq_liftIoc {f : 𝕜 → B} (hf : f.Periodic p) (a a' : 𝕜) :
     liftIoc p a f = liftIoc p a' f :=
   funext fun q ↦ QuotientAddGroup.induction_on q fun _ ↦ by
     simp_rw [liftIoc_coe_apply_of_periodic hf]
 
 /-- If `f` has period `p`, then every lift of `f` to `AddCircle p` is the same. -/
-theorem liftIco_eq_liftIoc {f : 𝕜 → B} {a' : 𝕜} (hf : f.Periodic p) :
+theorem liftIco_eq_liftIoc {f : 𝕜 → B} (hf : f.Periodic p) (a a' : 𝕜) :
     liftIco p a f = liftIoc p a' f :=
   funext fun q ↦ QuotientAddGroup.induction_on q fun _ ↦ by
     rw [liftIco_coe_apply_of_periodic hf, liftIoc_coe_apply_of_periodic hf]
