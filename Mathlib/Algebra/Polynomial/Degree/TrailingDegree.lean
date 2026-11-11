@@ -16,6 +16,7 @@ public import Mathlib.Data.ENat.Monoid
 * `trailingDegree p`: the multiplicity of `X` in the polynomial `p`
 * `natTrailingDegree`: a variant of `trailingDegree` that takes values in the natural numbers
 * `trailingCoeff`: the coefficient at index `natTrailingDegree p`
+* `nextCoeffUp`: the coefficient at index `natTrailingDegree p + 1`
 
 Converts most results about `degree`, `natDegree` and `leadingCoeff` to results about the bottom
 end of a polynomial
