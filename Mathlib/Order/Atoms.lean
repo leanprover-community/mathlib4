@@ -365,7 +365,7 @@ instance SuccOrder.toIsStronglyAtomic [SuccOrder α] : IsStronglyAtomic α where
     ⟨_, covBy_succ_of_not_isMax fun ha ↦ ha.not_lt hab, hab.succ_le⟩
 
 @[to_dual]
-instance [WellFoundedLT α] : IsStronglyAtomic α where
+instance WellFoundedLT.isStronglyAtomic [WellFoundedLT α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
     obtain ⟨m, hab, hm⟩ := wellFounded_lt.has_min (.Ioc a b) (Set.nonempty_Ioc.2 hab)
     obtain ⟨ham, hmb⟩ := Set.mem_Ioc.1 hab
@@ -373,22 +373,22 @@ instance [WellFoundedLT α] : IsStronglyAtomic α where
 
 end IsStronglyAtomic
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
   inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-08-01")]
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
   inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
   (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-08-01")]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)
