@@ -233,7 +233,7 @@ lemma norm_add (h : a ⋆⟂ b) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
   have hb := IsSelfAdjoint.star_mul_self b
   refine IsStarNormal.norm_add_eq_max_aux (IsSelfAdjoint.star_mul_self a).isStarNormal
     hb.isStarNormal ?_ ?_
-  · simpa [hb.star_eq] using h'.commute
+  · simpa [hb.star_eq] using h'.commute_star
   · simpa [hb.star_eq] using h'.mul_star_eq_zero
 
 lemma nnNorm_add (h : a ⋆⟂ b) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
@@ -255,7 +255,7 @@ lemma nnNorm_sum {ι : Type*} {s : Finset ι} {f : ι → A}
   | insert j s hj ih =>
     simp only [Finset.coe_insert, Set.pairwise_insert_of_symm, SetLike.mem_coe, ne_eq] at h
     suffices f j ⋆⟂ ∑ i ∈ s, f i by
-      simp_all [this.nnnorm_add, ih h.1]
+      simp_all [this.nnNorm_add, ih h.1]
     exact .sum_right fun i hi ↦ h.2 i hi (by grind)
 
 end IsStarOrtho
@@ -272,9 +272,10 @@ lemma norm_add_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
 lemma nnNorm_add_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  (ha.isStarOrtho_iff_mul_eq_zero hcomm |>.mpr hab).nnnorm_add
+  (ha.isStarOrtho_iff_mul_eq_zero hcomm |>.mpr hab).nnNorm_add
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+@[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-31")]
+alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 @[deprecated IsStarOrtho.norm_sub +typeChanged (since := "2026-10-29")]
 lemma norm_sub_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
@@ -286,9 +287,10 @@ lemma norm_sub_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
 lemma nnNorm_sub_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  (ha.isStarOrtho_iff_mul_eq_zero hcomm |>.mpr hab).nnnorm_sub
+  (ha.isStarOrtho_iff_mul_eq_zero hcomm |>.mpr hab).nnNorm_sub
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
+@[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-31")]
+alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 end IsStarNormal
 
@@ -302,9 +304,10 @@ lemma norm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b
 @[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-29")]
 lemma nnNorm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  (isStarOrtho_iff_mul_eq_zero ha hb |>.mpr hab).nnnorm_add
+  (isStarOrtho_iff_mul_eq_zero ha hb |>.mpr hab).nnNorm_add
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+@[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-31")]
+alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 @[deprecated IsStarOrtho.norm_sub +typeChanged (since := "2026-10-29")]
 lemma norm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
@@ -314,19 +317,21 @@ lemma norm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b
 @[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-29")]
 lemma nnNorm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  (isStarOrtho_iff_mul_eq_zero ha hb |>.mpr hab).nnnorm_sub
+  (isStarOrtho_iff_mul_eq_zero ha hb |>.mpr hab).nnNorm_sub
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
+@[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-31")]
+alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 open scoped Function in
 @[deprecated IsStarOrtho.nnNorm_sum +typeChanged (since := "2026-10-29")]
 lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
     (h : ∀ i ∈ s, IsSelfAdjoint (f i)) (h0 : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) :=
-  IsStarOrtho.nnnorm_sum fun i hi j hj hij ↦
+  IsStarOrtho.nnNorm_sum fun i hi j hj hij ↦
     isStarOrtho_iff_mul_eq_zero (h i hi) (h j hj) |>.mpr (h0 hij)
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
+@[deprecated IsStarOrtho.nnNorm_sum +typeChanged (since := "2026-10-31")]
+alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end IsSelfAdjoint
 
@@ -344,9 +349,10 @@ lemma norm_add_eq_max (h : a * b = 0) : ‖a + b‖ = max ‖a‖ ‖b‖ :=
 
 @[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-29")]
 lemma nnNorm_add_eq_max (h : a * b = 0) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).nnnorm_add
+  (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).nnNorm_add
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+@[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-31")]
+alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 @[deprecated IsStarOrtho.norm_sub +typeChanged (since := "2026-10-29")]
 lemma norm_sub_eq_max (h : a * b = 0) : ‖a - b‖ = max ‖a‖ ‖b‖ :=
@@ -354,17 +360,19 @@ lemma norm_sub_eq_max (h : a * b = 0) : ‖a - b‖ = max ‖a‖ ‖b‖ :=
 
 @[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-29")]
 lemma nnNorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).nnnorm_sub
+  (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).nnNorm_sub
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
+@[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-31")]
+alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 open scoped Function in
 @[deprecated IsStarOrtho.nnNorm_sum +typeChanged (since := "2026-10-29")]
 lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) :=
-  IsStarOrtho.nnnorm_sum fun _ _ _ _ hij ↦ isStarOrtho_iff_mul_eq_zero_of_comm.mpr (h0 hij)
+  IsStarOrtho.nnNorm_sum fun _ _ _ _ hij ↦ isStarOrtho_iff_mul_eq_zero_of_comm.mpr (h0 hij)
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
+@[deprecated IsStarOrtho.nnNorm_sum +typeChanged (since := "2026-10-31")]
+alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end CommCStarAlgebra
 
