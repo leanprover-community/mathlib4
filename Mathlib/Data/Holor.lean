@@ -88,10 +88,11 @@ def cons (i : Fin d) (is : HolorIndex ds) : HolorIndex (d :: ds) :=
   ⟨i :: is.1, List.Forall₂.cons i.isLt is.2⟩
 
 /-- The finite set of all `HolorIndex`s for a given list of dimensions. -/
-def univ' : (ds : List ℕ) → Finset (HolorIndex ds)
+private def univ' : (ds : List ℕ) → Finset (HolorIndex ds)
   | [] => {⟨[], .nil⟩}
   | d :: ds => Finset.image₂ cons (.univ : Finset (Fin d)) (univ' ds)
 
+@[no_expose]
 instance : Fintype (HolorIndex ds) where
   elems := univ' ds
   complete := by
