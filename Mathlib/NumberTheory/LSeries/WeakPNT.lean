@@ -27,7 +27,7 @@ Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
 
 * `ArithmeticFunction.vonMangoldt.tendsto_sum_modEq_div_atTop`: the von Mangoldt form of the
   prime number theorem in arithmetic progressions: for `a` coprime to `q`,
-  `∑ n ≤ x, n ≡ a [MOD q], Λ n = x / q.totient + o(x)`.
+  `∑ n ≤ x, n ≡ a [MOD q], Λ n = x / φ q + o(x)`.
 * `Chebyshev.isEquivalent_psi_id`: the `ψ`-form of the prime number theorem, `ψ x ~ x`
   (equivalently `Chebyshev.tendsto_psi_div_atTop`, `ψ x / x → 1`); this is the `q = 1` case of
   the previous result.
@@ -36,12 +36,12 @@ Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
   from the `θ`-form by Abel summation (`Chebyshev.isLittleO_primeCounting_mul_log_sub_theta`).
 * `Nat.isEquivalent_card_prime_modEq`: **the prime number theorem in arithmetic progressions**:
   for `a` coprime to `q`, the number of primes `p ≤ x` with `p ≡ a [MOD q]` is asymptotic to
-  `x / (q.totient * log x)`.
+  `x / (φ q * log x)`.
 * `Nat.eventually_exists_prime_mem_Ioc`: for every `ε > 0` and every sufficiently large `x`, there
   is a prime in `(x, (1 + ε) * x]`; `Nat.eventually_exists_prime_mem_Ioc_sub` gives one in
   `((1 - ε) * x, x]`.
 * `Nat.isEquivalent_nth_prime_succ`: consecutive primes are asymptotically equal, `pₙ₊₁ ~ pₙ`.
-* `isEquivalent_log_primorial_id`: `log (primorial n) ~ n`.
+* `Nat.isEquivalent_log_primorial_id`: `log (primorial n) ~ n`.
 * `Nat.isEquivalent_log_lcmUpto_id`: `log (Nat.lcmUpto n) ~ n`.
 * `Mertens.tendsto_M_div_atTop` / `Mertens.isLittleO_M_id`: the **Möbius form of the prime number
   theorem** `∑ n ≤ x, μ n = o(x)`, obtained by applying Wiener–Ikehara to the nonnegative function
@@ -70,10 +70,10 @@ open ArithmeticFunction.vonMangoldt Filter LSeries Chebyshev Real Finset ZMod As
 open scoped Topology
 
 /-- **The prime number theorem in arithmetic progressions**, von Mangoldt form, stated for a unit
-`a` of `ZMod q`: the average of `residueClass a` over `[0, x]` tends to `(q.totient)⁻¹`. -/
+`a` of `ZMod q`: the average of `residueClass a` over `[0, x]` tends to `(φ q)⁻¹`. -/
 theorem ArithmeticFunction.vonMangoldt.tendsto_sum_residueClass_div_atTop {q : ℕ} [NeZero q]
     {a : ZMod q} (ha : IsUnit a) :
-    Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, residueClass a n) / x) atTop (𝓝 q.totient⁻¹) :=
+    Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, residueClass a n) / x) atTop (𝓝 (φ q)⁻¹) :=
   WienerIkehara.tendsto_sum_div (C := log 4 + 4) (G := LFunctionResidueClassAux a)
     (fun N ↦ (sum_le_sum fun i _ ↦ residueClass_le a i).trans (sum_range_vonMangoldt_le N))
     (continuousOn_LFunctionResidueClassAux a)
@@ -82,11 +82,10 @@ theorem ArithmeticFunction.vonMangoldt.tendsto_sum_residueClass_div_atTop {q : �
 
 /-- **The prime number theorem in arithmetic progressions**, von Mangoldt form.  For `a` coprime
 to `q`, the von Mangoldt function summed over `n ≤ x` with `n ≡ a [MOD q]` grows like
-`x / q.totient`. -/
+`x / φ q`. -/
 theorem ArithmeticFunction.vonMangoldt.tendsto_sum_modEq_div_atTop {q a : ℕ} [NeZero q]
     (ha : a.Coprime q) :
-    Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊ with n ≡ a [MOD q], Λ n) / x) atTop
-      (𝓝 q.totient⁻¹) := by
+    Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊ with n ≡ a [MOD q], Λ n) / x) atTop (𝓝 (φ q)⁻¹) := by
   apply (tendsto_sum_residueClass_div_atTop ((isUnit_iff_coprime a q).mpr ha)).congr
   simp [residueClass, Set.indicator_apply, sum_filter, natCast_eq_natCast_iff]
 
@@ -117,12 +116,12 @@ theorem isEquivalent_theta_id : θ ~[atTop] id := by
   exact tendsto_theta_div_atTop.congr (by simp)
 
 /-- **The prime number theorem in arithmetic progressions**, `θ` form.  For `a` coprime to `q`,
-`∑ p ≤ x, p ≡ a [MOD q], log p` (over primes `p`) is asymptotic to `x / q.totient`. -/
+`∑ p ≤ x, p ≡ a [MOD q], log p` (over primes `p`) is asymptotic to `x / φ q`. -/
 theorem tendsto_sum_log_prime_modEq_div_atTop {q a : ℕ} [NeZero q] (ha : a.Coprime q) :
     Tendsto (fun x : ℝ ↦ (∑ p ∈ Ioc 0 ⌊x⌋₊ with p.Prime ∧ p ≡ a [MOD q], log p) / x) atTop
-      (𝓝 q.totient⁻¹) := by
+      (𝓝 (φ q)⁻¹) := by
   have hψ : Tendsto (fun x : ℝ ↦ (∑ n ∈ Ioc 0 ⌊x⌋₊ with n ≡ a [MOD q], Λ n) / x) atTop
-      (𝓝 q.totient⁻¹) :=
+      (𝓝 (φ q)⁻¹) :=
     (tendsto_sum_modEq_div_atTop ha).congr fun x ↦ by
       rw [sum_filter, sum_filter, ← add_sum_Ioc_eq_sum_Icc] <;> simp
   simpa using (hψ.sub (isLittleO_sum_vonMangoldt_with_sum_prime_log_with
@@ -153,7 +152,8 @@ end Chebyshev
 namespace Nat
 
 /-- **The prime number theorem**: the prime counting function satisfies `π x ~ x / Real.log x`. -/
-theorem isEquivalent_primeCounting : (↑⌊·⌋₊.primeCounting) ~[atTop] fun x ↦ x / Real.log x := by
+theorem isEquivalent_primeCounting :
+    (fun x : ℝ ↦ (primeCounting ⌊x⌋₊ : ℝ)) ~[atTop] fun x ↦ x / Real.log x := by
   have h := tendsto_theta_div_atTop.add
     isLittleO_primeCounting_mul_log_sub_theta.tendsto_div_nhds_zero
   rw [add_zero] at h
@@ -168,7 +168,7 @@ theorem isEquivalent_primeCounting : (↑⌊·⌋₊.primeCounting) ~[atTop] fun
 `π(x; q, a) * log x / x → 1 / φ(q)`. -/
 theorem tendsto_card_prime_modEq_mul_log_div_atTop {q a : ℕ} [NeZero q] (ha : a.Coprime q) :
     Tendsto (fun x : ℝ ↦ #{p ∈ Ioc 0 ⌊x⌋₊ | p.Prime ∧ p ≡ a [MOD q]} * Real.log x / x) atTop
-      (𝓝 q.totient⁻¹) := by
+      (𝓝 (φ q)⁻¹) := by
   simpa using ((tendsto_sum_log_prime_modEq_div_atTop ha).add
     (isLittleO_card_prime_with_mul_log_sum_prime_log_with
       (· ≡ a [MOD q])).tendsto_div_nhds_zero).congr fun x ↦ by grind
@@ -177,12 +177,12 @@ theorem tendsto_card_prime_modEq_mul_log_div_atTop {q a : ℕ} [NeZero q] (ha : 
 `π(x; q, a)` of primes `p ≤ x` with `p ≡ a [MOD q]` satisfies `π(x; q, a) ~ x / (φ(q) log x)`. -/
 theorem isEquivalent_card_prime_modEq {q a : ℕ} [NeZero q] (ha : a.Coprime q) :
     (fun x : ℝ ↦ (#{p ∈ Ioc 0 ⌊x⌋₊ | p.Prime ∧ p ≡ a [MOD q]} : ℝ)) ~[atTop]
-      fun x ↦ x / (q.totient * Real.log x) := by
-  have hφ : (q.totient : ℝ) ≠ 0 := mod_cast (totient_pos.mpr (NeZero.pos q)).ne'
+      fun x ↦ x / (φ q * Real.log x) := by
+  have hφ : (φ q : ℝ) ≠ 0 := mod_cast (totient_pos.mpr (NeZero.pos q)).ne'
   rw [isEquivalent_iff_tendsto_one (by
     filter_upwards [eventually_gt_atTop 1] with x hx
     exact div_ne_zero (by linarith) (mul_ne_zero hφ (Real.log_pos hx).ne'))]
-  convert ((tendsto_card_prime_modEq_mul_log_div_atTop ha).const_mul (q.totient : ℝ)).congr' ?_
+  convert ((tendsto_card_prime_modEq_mul_log_div_atTop ha).const_mul (φ q : ℝ)).congr' ?_
   · field_simp
   · filter_upwards [eventually_gt_atTop 1]
     grind [Pi.div_apply, Real.log_pos]
@@ -245,18 +245,19 @@ theorem isEquivalent_log_lcmUpto_id : (fun n ↦ Real.log (lcmUpto n)) ~[atTop] 
     (by filter_upwards [eventually_gt_atTop 0] with _ _ using by positivity)]
   exact tendsto_log_lcmUpto_div_atTop.congr (by simp)
 
-end Nat
-
-/-- **Primorial asymptotics**: `log (primorial n) / n → 1`. -/
-theorem tendsto_log_primorial_div_atTop : Tendsto (fun n ↦ log (primorial n) / n) atTop (𝓝 1) :=
+/-- **Primorial asymptotics**: `Real.log (primorial n) / n → 1`. -/
+theorem tendsto_log_primorial_div_atTop :
+    Tendsto (fun n ↦ Real.log (primorial n) / n) atTop (𝓝 1) :=
   (tendsto_theta_div_atTop.comp tendsto_natCast_atTop_atTop).congr
   (by simp [theta_eq_log_primorial])
 
-/-- **Primorial asymptotics**: `log (primorial n) ~ n`. -/
-theorem isEquivalent_log_primorial_id : (fun n ↦ log (primorial n)) ~[atTop] (↑·) := by
+/-- **Primorial asymptotics**: `Real.log (primorial n) ~ n`. -/
+theorem isEquivalent_log_primorial_id : (fun n ↦ Real.log (primorial n)) ~[atTop] (↑·) := by
   rw [isEquivalent_iff_tendsto_one
     (by filter_upwards [eventually_gt_atTop 0] with _ _ using by positivity)]
   exact tendsto_log_primorial_div_atTop.congr (by simp)
+
+end Nat
 
 namespace Mertens
 
@@ -298,7 +299,6 @@ theorem tendsto_M_div_atTop : Tendsto (fun x : ℝ ↦ M x / x) atTop (𝓝 0) :
 
 /-- The **Möbius form of the prime number theorem**, asymptotic form: `M x = o(x)`. -/
 theorem isLittleO_M_id : (fun x : ℝ ↦ (M x : ℝ)) =o[atTop] id :=
-  (isLittleO_iff_tendsto' (by filter_upwards [eventually_gt_atTop 0]; grind)).mpr
-  (tendsto_M_div_atTop.congr (by simp))
+  (isLittleO_id_iff_tendsto (by simp [M])).mpr tendsto_M_div_atTop
 
 end Mertens
