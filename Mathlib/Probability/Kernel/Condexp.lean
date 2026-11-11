@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.CondDistrib
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernel associated with a conditional expectation
 
@@ -27,7 +30,6 @@ on `Ω` allows us to do so.
 ## Main statements
 
 * `condExp_ae_eq_integral_condExpKernel`: `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
-
 -/
 
 public section
@@ -280,7 +282,9 @@ theorem condExp_ae_eq_trim_integral_condExpKernel [NormedAddCommGroup F] {f : Ω
 
 section Cond
 
-/-! ### Relation between conditional expectation, conditional kernel and the conditional measure. -/
+/-!
+# Relation between conditional expectation, conditional kernel and the conditional measure.
+-/
 
 open MeasurableSpace
 

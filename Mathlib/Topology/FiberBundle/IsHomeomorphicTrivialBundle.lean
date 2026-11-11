@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Constructions.SumProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps equivariantly-homeomorphic to projection in a product
 

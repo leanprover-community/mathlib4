@@ -11,7 +11,11 @@ public import Mathlib.Geometry.Manifold.SmoothEmbedding
 
 import Mathlib.Analysis.InnerProductSpace.Calculus
 
-/-! # Manifold structure on real intervals
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Manifold structure on real intervals
 
 The manifold structure on real intervals is defined in `Mathlib.Geometry.Manifold.Instances.Real`.
 We relate it to the manifold structure on the real line, by showing that the inclusion
@@ -21,17 +25,18 @@ the interval in `ℝ` (see `contMDiffOn_comp_projIcc_iff` and friends).
 
 We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the real line.
 
-- `isSmoothEmbedding_subtypeVal_Icc`: the inclusion `Icc x y → ℝ` is a smooth embedding,
+* `isSmoothEmbedding_subtypeVal_Icc`: the inclusion `Icc x y → ℝ` is a smooth embedding,
   and in particular smooth (`contMDiff_subtypeVal_Icc`)
-- `contMDiff_iff_comp_subtypeVal_Icc`: a function `f : M → Icc x y` is smooth iff
+* `contMDiff_iff_comp_subtypeVal_Icc`: a function `f : M → Icc x y` is smooth iff
   its composition with the inclusion into `ℝ` is smooth
 
 ## TODO
 
 This file can be thoroughly rewritten once mathlib has a good theory of smooth submersions.
 Once this is done,
-- prove the projection `ℝ → Icc x y` is a smooth submersion, hence smooth
-- use this to simplify the proof that `f : Icc x y → M` is smooth iff the composition `ℝ → M`
+
+* prove the projection `ℝ → Icc x y` is a smooth submersion, hence smooth
+* use this to simplify the proof that `f : Icc x y → M` is smooth iff the composition `ℝ → M`
   with the projection `ℝ → Icc x y` is
 -/
 
@@ -50,13 +55,15 @@ variable
 instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
   one := (1 : ℝ)
 
-/-- Unit vector in the tangent space to a segment, as the image of the unit vector in the real line
+/--
+Unit vector in the tangent space to a segment, as the image of the unit vector in the real line
 under the canonical projection. It is also mapped to the unit vector in the real line through
 the canonical injection, see `mfderiv_subtypeVal_Icc_one`.
 
-Note that one cannot abuse defeqs for this definition: this is *not* the same as the vector
+Note that one cannot abuse defeqs for this definition: this is _not_ the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
-orientation-reversing. -/
+orientation-reversing.
+-/
 @[no_expose] def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
     TangentSpace (𝓡∂ 1) z :=
   mfderiv[Icc x y] (Set.projIcc x y h.out.le) z 1

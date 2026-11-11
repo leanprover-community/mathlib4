@@ -8,11 +8,13 @@ module
 public import Mathlib.Analysis.Asymptotics.Basic
 public import Mathlib.Analysis.Normed.Operator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic statements about the operator norm
 
 This file contains lemmas about how operator norm on continuous linear maps interacts with `IsBigO`.
-
 -/
 
 public section

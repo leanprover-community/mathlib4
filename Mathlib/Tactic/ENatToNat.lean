@@ -8,19 +8,23 @@ module
 public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Data.ENat.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `enat_to_nat`
 
 This file implements the `enat_to_nat` tactic that shifts `ENat`s in the context to `Nat`.
 
 ## Implementation details
+
 The implementation follows these steps:
+
 1. Apply the `cases` tactic to each `ENat` variable, producing two goals: one where the variable
    is `⊤`, and one where it is a finite natural number.
 2. Simplify arithmetic expressions involving infinities, making (in)equalities either trivial
    or free of infinities. This step uses the `enat_to_nat_top` simp set.
 3. Translate the remaining goals from `ENat` to `Nat` using the `enat_to_nat_coe` simp set.
-
 -/
 
 public meta section

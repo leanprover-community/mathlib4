@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteLimits
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of limits, as a property of objects in the functor category
 
@@ -15,7 +18,6 @@ We make the typeclass `PreservesLimitsOfShape K` (resp. `PreservesFiniteLimits`)
 a property of objects in the functor category `J ⥤ C`, and show that
 it is stable under colimits of shape `K'` when they
 commute to limits of shape `K` (resp. to finite limits).
-
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Fold
 public import Mathlib.Data.Multiset.Bind
 public import Mathlib.Order.SetNotation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unions of finite sets
 
@@ -188,9 +191,11 @@ end DisjiUnion
 section BUnion
 variable [DecidableEq β]
 
-/-- `Finset.biUnion s t` is the union of `t a` over `a ∈ s`.
+/--
+`Finset.biUnion s t` is the union of `t a` over `a ∈ s`.
 
-(This was formerly `bind` due to the monad structure on types with `DecidableEq`.) -/
+(This was formerly `bind` due to the monad structure on types with `DecidableEq`.)
+-/
 protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
   (s.1.bind fun a ↦ (t a).1).toFinset
 

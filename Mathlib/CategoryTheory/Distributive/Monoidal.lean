@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Distributive monoidal categories
 
@@ -30,15 +33,12 @@ A distributive monoidal category is a monoidal category that is both left and ri
 
 ## Main results
 
-- A symmetric monoidal category is left distributive if and only if it is right distributive.
-
-- A closed monoidal category is left distributive.
-
-- For a category `C` the category of endofunctors `C ⥤ C` is left distributive (but almost
+* A symmetric monoidal category is left distributive if and only if it is right distributive.
+* A closed monoidal category is left distributive.
+* For a category `C` the category of endofunctors `C ⥤ C` is left distributive (but almost
   never right distributive). The left distributivity is tantamount to the fact that the coproduct
   in the functor categories is computed pointwise.
-
-- We show that any preadditive monoidal category with coproducts is distributive. This includes the
+* We show that any preadditive monoidal category with coproducts is distributive. This includes the
   examples of abelian groups, R-modules, and vector bundles.
 
 ## TODO
@@ -50,10 +50,9 @@ pointed types and the coproduct given by the wedge sum is distributive.
 
 ## References
 
-* [Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
+* ‍\[Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
   monoids in monoidal categories, in: Operads: Proceedings of Renaissance
-  Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
-
+  Conferences, Contemporary Mathematics 202, AMS (1997) 137-166\]\[MR1268290\]
 -/
 
 @[expose] public section

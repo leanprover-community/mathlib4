@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strong transformations of pseudofunctors
 
@@ -30,8 +33,8 @@ strong transformations. To access this instance, run `open scoped Pseudofunctor.
 See `Pseudofunctor.StrongTrans.categoryStruct`.
 
 ## References
-* [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
+* [Niles Johnson, Donald Yau, _2-Dimensional Categories_](https://arxiv.org/abs/2002.06055)
 -/
 
 @[expose] public section
@@ -44,9 +47,11 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-/-- A strong transformation between pseudofunctors `F` and `G` is a natural transformation
+/--
+A strong transformation between pseudofunctors `F` and `G` is a natural transformation
 that is "natural up to 2-isomorphisms".
 More precisely, it consists of the following:
+
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.

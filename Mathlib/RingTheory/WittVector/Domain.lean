@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.WittVector.Identities
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Witt vectors over a domain
 
@@ -16,20 +19,18 @@ It depends on the API around iterated applications
 of `WittVector.verschiebung` and `WittVector.frobenius`
 found in `Identities.lean`.
 
-The [proof sketch](https://math.stackexchange.com/questions/4117247/ring-of-witt-vectors-over-an-integral-domain/4118723#4118723)
-goes as follows:
-any nonzero $x$ is an iterated application of $V$
-to some vector $w_x$ whose 0th component is nonzero (`WittVector.verschiebung_nonzero`).
-Known identities (`WittVector.iterate_verschiebung_mul`) allow us to transform
-the product of two such $x$ and $y$
-to the form $V^{m+n}\left(F^n(w_x) \cdot F^m(w_y)\right)$,
-the 0th component of which must be nonzero.
+The [proof
+sketch](https://math.stackexchange.com/questions/4117247/ring-of-witt-vectors-over-an-integral-domain/4118723#4118723)
+goes as follows: any nonzero $`x` is an iterated application of $`V` to some vector $`w_x` whose 0th
+component is nonzero (`WittVector.verschiebung_nonzero`). Known identities
+(`WittVector.iterate_verschiebung_mul`) allow us to transform the product of two such $`x` and $`y`
+to the form $`V^{m+n}\left(F^n(w_x) \cdot F^m(w_y)\right)`, the 0th component of which must be
+nonzero.
 
 ## Main declarations
 
-* `WittVector.iterate_verschiebung_mul_coeff` : an identity from [Haze09]
+* `WittVector.iterate_verschiebung_mul_coeff` : an identity from \[Haze09\]
 * `WittVector.instIsDomain`
-
 -/
 
 @[expose] public section
@@ -44,7 +45,7 @@ variable {p : ℕ} {R : Type*}
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
 /-!
-## The `shift` operator
+# The `shift` operator
 -/
 
 
@@ -93,11 +94,10 @@ theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
   exact Nat.find_min hex hi
 
 /-!
-## Witt vectors over a domain
+# Witt vectors over a domain
 
-If `R` is an integral domain, then so is `𝕎 R`.
-This argument is adapted from
-<https://math.stackexchange.com/questions/4117247/ring-of-witt-vectors-over-an-integral-domain/4118723#4118723>.
+If `R` is an integral domain, then so is `𝕎 R`. This argument is adapted from [
+https://math.stackexchange.com/questions/4117247/ring-of-witt-vectors-over-an-integral-domain/4118723#4118723](https://math.stackexchange.com/questions/4117247/ring-of-witt-vectors-over-an-integral-domain/4118723#4118723).
 -/
 
 

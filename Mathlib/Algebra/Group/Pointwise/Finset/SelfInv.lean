@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Self-inverse finsets
 
 This file specialises `IsSelfInv` to finsets equipped with the pointwise inversion.
 
 See also `Algebra/Group/Pointwise/Set/SelfInv.lean` for the set version.
-
 -/
 
 @[expose] public section

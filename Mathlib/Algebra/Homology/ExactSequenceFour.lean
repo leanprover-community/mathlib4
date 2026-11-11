@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ExactSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exact sequences with four terms
 
@@ -16,7 +19,6 @@ this is the isomorphism from the cokernel of `S.map' k (k + 1)`
 to the kernel of `S.map' (k + 2) (k + 3)`. This is intended
 to be used for exact sequences in abelian categories, but the
 construction works for preadditive balanced categories.
-
 -/
 
 @[expose] public section

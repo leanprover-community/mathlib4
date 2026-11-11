@@ -9,6 +9,9 @@ public import Mathlib.Computability.NFA
 
 import Mathlib.Data.List.ReduceOption
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Epsilon Nondeterministic Finite Automata
 
@@ -294,7 +297,9 @@ theorem mem_accepts_iff_exists_path {x : List α} :
     have := M.mem_evalFrom_iff_exists.mpr ⟨_, hs₁, M.mem_evalFrom_iff_exists_path.mpr ⟨_, h⟩⟩
     exact ⟨s₂, hs₂, this⟩
 
-/-! ### Conversions between `εNFA` and `NFA` -/
+/-!
+# Conversions between `εNFA` and `NFA`
+-/
 
 
 /-- `M.toNFA` is an `NFA` constructed from an `εNFA` `M`. -/
@@ -353,7 +358,9 @@ theorem toεNFA_correct (M : NFA α σ) : M.toεNFA.accepts = M.accepts := by
 
 end NFA
 
-/-! ### Regex-like operations -/
+/-!
+# Regex-like operations
+-/
 
 
 namespace εNFA

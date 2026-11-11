@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Graph.Subgraph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intersection and union of graphs
 
@@ -14,19 +17,18 @@ This file defines the lattice-like structures on graphs.
 
 ## Main results
 
-- `SemilatticeInf (Graph α β)`
+* `SemilatticeInf (Graph α β)`
 
 ## Implementation notes
 
 Intersections are defined here as the maximal mutual subgraph of the given graphs.
 This has the effect of, when taking the intersection of non-compatible graphs,
-**any non-compatible edges are removed**.
+*any non-compatible edges are removed*.
 
 ## TODO
 
-+ Add `ConditionallyCompleteCompleteLatticeInf (Graph α β)` after splitting
+* Add `ConditionallyCompleteCompleteLatticeInf (Graph α β)` after splitting
   `ConditionallyCompleteCompleteLattice`.
-
 -/
 
 public section

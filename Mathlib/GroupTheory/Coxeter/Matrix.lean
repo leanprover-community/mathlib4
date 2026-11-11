@@ -8,10 +8,13 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coxeter matrices
 
-Let us say that a matrix (possibly an infinite matrix) is a *Coxeter matrix* (`CoxeterMatrix`) if
+Let us say that a matrix (possibly an infinite matrix) is a _Coxeter matrix_ (`CoxeterMatrix`) if
 its entries are natural numbers, it is symmetric, its diagonal entries are equal to 1, and its
 off-diagonal entries are not equal to 1. In this file, we define Coxeter matrices and provide some
 ways of constructing them.
@@ -25,9 +28,9 @@ that in this file.
 
 ## Implementation details
 
-In some texts on Coxeter groups, each entry $M_{i,i'}$ of a Coxeter matrix can be either a
-positive integer or $\infty$. In our treatment of Coxeter matrices, we use the value $0$ instead of
-$\infty$. This will turn out to have some fortunate consequences when defining the Coxeter group of
+In some texts on Coxeter groups, each entry $`M_{i,i'}` of a Coxeter matrix can be either a positive
+integer or $`\infty`. In our treatment of Coxeter matrices, we use the value $`0` instead of
+$`\infty`. This will turn out to have some fortunate consequences when defining the Coxeter group of
 a Coxeter matrix and the standard geometric representation of a Coxeter group.
 
 ## Main definitions
@@ -54,17 +57,17 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] chapter IV
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 4--6_\]\[bourbaki1968\] chapter IV
   pages 4--5, 13--15
-
-* [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
-
+* [J. Baez, _Coxeter and Dynkin Diagrams_](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
 -/
 
 @[expose] public section
 
-/-- A *Coxeter matrix* is a symmetric matrix of natural numbers whose diagonal entries are equal to
-1 and whose off-diagonal entries are not equal to 1. -/
+/--
+A _Coxeter matrix_ is a symmetric matrix of natural numbers whose diagonal entries are equal to
+1 and whose off-diagonal entries are not equal to 1.
+-/
 @[ext]
 structure CoxeterMatrix (B : Type*) where
   /-- The underlying matrix of the Coxeter matrix. -/
@@ -97,9 +100,11 @@ theorem reindex_apply (i i' : B') : M.reindex e i i' = M (e.symm i) (e.symm i') 
 
 variable (n : ℕ)
 
-/-- The Coxeter matrix of type Aₙ.
+/--
+The Coxeter matrix of type Aₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
@@ -112,9 +117,11 @@ protected def A : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-/-- The Coxeter matrix of type Bₙ.
+/--
+The Coxeter matrix of type Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
        4
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
@@ -129,9 +136,11 @@ protected def B : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-/-- The Coxeter matrix of type Dₙ.
+/--
+The Coxeter matrix of type Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
     o
      \
@@ -149,9 +158,11 @@ protected def D : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-/-- The Coxeter matrix of type I₂(m).
+/--
+The Coxeter matrix of type I₂(m).
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
      m + 2
     o --- o
@@ -164,9 +175,11 @@ protected def I (m : ℕ) : CoxeterMatrix (Fin 2) where
   off_diagonal := by simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Coxeter matrix of type E₆.
+/--
+The Coxeter matrix of type E₆.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
                 o
                 |
@@ -182,9 +195,11 @@ def E₆ : CoxeterMatrix (Fin 6) where
           2, 2, 2, 2, 3, 1]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Coxeter matrix of type E₇.
+/--
+The Coxeter matrix of type E₇.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
                 o
                 |
@@ -201,9 +216,11 @@ def E₇ : CoxeterMatrix (Fin 7) where
           2, 2, 2, 2, 2, 3, 1]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Coxeter matrix of type E₈.
+/--
+The Coxeter matrix of type E₈.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
                 o
                 |
@@ -221,9 +238,11 @@ def E₈ : CoxeterMatrix (Fin 8) where
           2, 2, 2, 2, 2, 2, 3, 1]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Coxeter matrix of type F₄.
+/--
+The Coxeter matrix of type F₄.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
              4
     o --- o --- o --- o
@@ -236,9 +255,11 @@ def F₄ : CoxeterMatrix (Fin 4) where
           2, 2, 3, 1]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Coxeter matrix of type G₂.
+/--
+The Coxeter matrix of type G₂.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
        6
     o --- o
@@ -249,9 +270,11 @@ def G₂ : CoxeterMatrix (Fin 2) where
           6, 1]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Coxeter matrix of type H₃.
+/--
+The Coxeter matrix of type H₃.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
        5
     o --- o --- o
@@ -263,9 +286,11 @@ def H₃ : CoxeterMatrix (Fin 3) where
           2, 5, 1]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Coxeter matrix of type H₄.
+/--
+The Coxeter matrix of type H₄.
 
 The corresponding Coxeter-Dynkin diagram is:
+
 ```
        5
     o --- o --- o --- o

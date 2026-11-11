@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.UpperLower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
 
@@ -35,7 +38,7 @@ extension `F i ≃ PiLT X i` to the limit node `i`. (We do have such a bijection
 we consider a directed system of algebraic structures (say fields) `K i`, and `F` is
 the inverse system of homomorphisms `K i ⟶ K` into a specific field `K`.)
 
-Now our task reduces to the recursive construction of a *natural* family of bijections for each `i`.
+Now our task reduces to the recursive construction of a _natural_ family of bijections for each `i`.
 We can prove that a natural family over all `l ≤ i` (`Iic i`) extends to a natural family over
 `Iic i⁺` (where `i⁺ = succ i`), but at a limit node, recursion stops working: we have natural
 families over all `Iic j` for each `j < i`, but we need to know that they glue together to form a
@@ -55,7 +58,6 @@ natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how 
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
 is everything. However, the author chose the `compat` approach in the end because it constructs
 the distinguished bijection that is compatible with the projections to all `X i`.
-
 -/
 
 @[expose] public section

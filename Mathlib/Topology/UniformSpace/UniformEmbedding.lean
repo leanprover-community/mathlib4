@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.UniformSpace.Cauchy
 public import Mathlib.Topology.UniformSpace.Separation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform embeddings of uniform spaces.
 
@@ -27,7 +30,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpa
   {f : α → β}
 
 /-!
-### Uniform inducing maps
+# Uniform inducing maps
 -/
 
 lemma isUniformInducing_iff_uniformSpace {f : α → β} :
@@ -117,7 +120,7 @@ protected theorem IsUniformInducing.injective [T0Space α] {f : α → β} (h : 
   h.isInducing.injective
 
 /-!
-### Uniform embeddings
+# Uniform embeddings
 -/
 
 theorem isUniformEmbedding_iff' {f : α → β} :

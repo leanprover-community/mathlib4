@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of topological commutative rings
 

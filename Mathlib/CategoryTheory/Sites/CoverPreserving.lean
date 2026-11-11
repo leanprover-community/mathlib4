@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.Flat
 public import Mathlib.CategoryTheory.Sites.Closed
 public import Mathlib.CategoryTheory.Sites.Continuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cover-preserving functors between sites.
 
@@ -25,15 +28,14 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 
 ## Main results
 
-- `CategoryTheory.isContinuous_of_coverPreserving`: If `G : C ⥤ D` is
+* `CategoryTheory.isContinuous_of_coverPreserving`: If `G : C ⥤ D` is
   cover-preserving and compatible-preserving, then `G` is a continuous functor,
   i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.3.
+* ‍\[Elephant\]: _Sketches of an Elephant_, P. T. Johnstone: C2.3.
 * https://stacks.math.columbia.edu/tag/00WU
-
 -/
 
 public section
@@ -51,7 +53,8 @@ variable {A : Type u₃} [Category.{v₃} A]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {L : GrothendieckTopology A}
 
-/-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
+/--
+A functor `G : (C, J) ⥤ (D, K)` between sites is _cover-preserving_
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
 structure CoverPreserving (G : C ⥤ D) : Prop where
@@ -167,8 +170,10 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
       simpa using! congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
 
 variable (F J K) in
-/-- Continuous functors send covering sieves to covering sieves.
-The converse is false, see [SGA4, III, Exemple 1.9.3][sga-4-tome-1]. -/
+/--
+Continuous functors send covering sieves to covering sieves.
+The converse is false, see \[SGA4, III, Exemple 1.9.3\]\[sga-4-tome-1\].
+-/
 lemma CoverPreserving.of_isContinuous [F.IsContinuous J K] : CoverPreserving J K F where
   cover_preserve {X S} hS := by
     rw [K.mem_iff_isSheafFor_closedSieves]

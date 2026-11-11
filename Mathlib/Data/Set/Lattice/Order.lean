@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Lattice.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set unions, intersections, and order
 
@@ -21,7 +24,9 @@ open Function
 
 variable {α β : Type*} {ι : Sort*} {κ : ι → Sort*}
 
-/-! ### Intervals -/
+/-!
+# Intervals
+-/
 
 namespace Set
 

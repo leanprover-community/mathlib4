@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.List.Count
 public import Mathlib.Data.Multiset.Count
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sum and difference of multisets
 
@@ -23,7 +26,6 @@ This file defines the following operations on multisets:
   occurrences of `a` in `s` and `t`.
 * `s - t`: The multiset for which the number of occurrences of each `a` is the difference of the
   occurrences of `a` in `s` and `t`.
-
 -/
 
 @[expose] public section
@@ -39,7 +41,9 @@ variable {α : Type*} {β : Type v}
 
 namespace Multiset
 
-/-! ### Additive monoid -/
+/-!
+# Additive monoid
+-/
 
 section add
 variable {s t u : Multiset α}
@@ -134,7 +138,9 @@ theorem card_add (s t : Multiset α) : card (s + t) = card s + card t :=
 
 end add
 
-/-! ### Erasing one copy of an element -/
+/-!
+# Erasing one copy of an element
+-/
 
 section Erase
 
@@ -268,7 +274,9 @@ theorem count_erase_of_ne {a b : α} (ab : a ≠ b) (s : Multiset α) :
 
 end Erase
 
-/-! ### Subtraction -/
+/-!
+# Subtraction
+-/
 
 section sub
 variable [DecidableEq α] {s t u : Multiset α} {a : α}
@@ -362,7 +370,9 @@ theorem mem_sub {a : α} {s t : Multiset α} :
 
 end sub
 
-/-! ### Lift a relation to `Multiset`s -/
+/-!
+# Lift a relation to `Multiset`s
+-/
 
 
 section Rel

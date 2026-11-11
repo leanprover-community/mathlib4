@@ -11,6 +11,9 @@ public import Mathlib.Condensed.Limits  -- shake: keep (compHausToCondensed.Pres
 import Mathlib.CategoryTheory.Sites.RegularEpi
 import Mathlib.Condensed.Epi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The functor from compact Hausdorff spaces to condensed sets preserves effective epimorphisms
 -/

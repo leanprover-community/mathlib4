@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 public import Mathlib.Topology.Maps.Proper.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A map is proper iff preimage of compact sets are compact
 

@@ -9,14 +9,18 @@ public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.IsAdjoinRoot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kummer-Dedekind theorem
 
 This file proves the Kummer-Dedekind theorem on the splitting of prime ideals in an extension of
 the ring of integers. This states the following: assume we are given
-  - A prime ideal `I` of Dedekind domain `R`
-  - An `R`-algebra `S` that is a Dedekind Domain
-  - An `α : S` that is integral over `R` with minimal polynomial `f`
+
+* A prime ideal `I` of Dedekind domain `R`
+* An `R`-algebra `S` that is a Dedekind Domain
+* An `α : S` that is integral over `R` with minimal polynomial `f`
 
 If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
 factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
@@ -37,6 +41,7 @@ with a formula).
 * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
   `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
   of `S` over `R`.
+
   * `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span` : Let `Q` be a lift of
     factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
     `mod I`. Then (the reduction of) `Q` corresponds via
@@ -49,7 +54,7 @@ with a formula).
 
 ## References
 
-* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* ‍\[J. Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 
 ## Tags
 

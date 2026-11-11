@@ -15,6 +15,9 @@ public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.Deriv.Comp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The mean value inequality and equalities
 
@@ -25,27 +28,22 @@ In this file we prove the following facts:
   constant `C`; also a variant in which what is bounded by `C` is the norm of the difference of the
   derivative from a fixed linear map. This lemma and its versions are formulated using `RCLike`,
   so they work both for real and complex derivatives.
-
 * `image_le_of*`, `image_norm_le_of_*` : several similar lemmas deducing `f x ≤ B x` or
   `‖f x‖ ≤ B x` from upper estimates on `f'` or `‖f'‖`, respectively. These lemmas differ by
   their assumptions:
-
-  * `of_liminf_*` lemmas assume that limit inferior of some ratio is less than `B' x`;
-  * `of_deriv_right_*`, `of_norm_deriv_right_*` lemmas assume that the right derivative
-    or its norm is less than `B' x`;
-  * `of_*_lt_*` lemmas assume a strict inequality whenever `f x = B x` or `‖f x‖ = B x`;
-  * `of_*_le_*` lemmas assume a non-strict inequality everywhere on `[a, b)`;
-  * name of a lemma ends with `'` if (1) it assumes that `B` is continuous on `[a, b]`
-    and has a right derivative at every point of `[a, b)`, and (2) the lemma has
-    a counterpart assuming that `B` is differentiable everywhere on `ℝ`
-
+* `of_liminf_*` lemmas assume that limit inferior of some ratio is less than `B' x`;
+* `of_deriv_right_*`, `of_norm_deriv_right_*` lemmas assume that the right derivative
+  or its norm is less than `B' x`;
+* `of_*_lt_*` lemmas assume a strict inequality whenever `f x = B x` or `‖f x‖ = B x`;
+* `of_*_le_*` lemmas assume a non-strict inequality everywhere on `[a, b)`;
+* name of a lemma ends with `'` if (1) it assumes that `B` is continuous on `[a, b]`
+  and has a right derivative at every point of `[a, b)`, and (2) the lemma has
+  a counterpart assuming that `B` is differentiable everywhere on `ℝ`
 * `norm_image_sub_le_*_segment` : if derivative of `f` on `[a, b]` is bounded above
   by a constant `C`, then `‖f x - f a‖ ≤ C * ‖x - a‖`; several versions deal with
   right derivative and derivative within `[a, b]` (`HasDerivWithinAt` or `derivWithin`).
-
 * `Convex.is_const_of_fderivWithin_eq_zero` : if a function has derivative `0` on a convex set `s`,
   then it is a constant on `s`.
-
 * `hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt` : a C^1 function over the reals is
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
@@ -59,10 +57,13 @@ open Metric Set Asymptotics ContinuousLinearMap Filter
 
 open scoped Topology NNReal
 
-/-! ### One-dimensional fencing inequalities -/
+/-!
+# One-dimensional fencing inequalities
+-/
 
 
-/-- General fencing theorem for continuous functions with an estimate on the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `f a ≤ B a`;
@@ -71,7 +72,8 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
   is bounded above by a function `f'`;
 * we have `f' x < B' x` whenever `f x = B x`.
 
-Then `f x ≤ B x` everywhere on `[a, b]`. -/
+Then `f x ≤ B x` everywhere on `[a, b]`.
+-/
 theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b))
     -- `hf'` actually says `liminf (f z - f x) / (z - x) ≤ f' x`
@@ -106,7 +108,8 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     rwa [slope_def_field, slope_def_field, div_le_div_iff_of_pos_right (sub_pos.2 hz.1), hxB,
       sub_le_sub_iff_right] at this
 
-/-- General fencing theorem for continuous functions with an estimate on the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `f a ≤ B a`;
@@ -115,7 +118,8 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
   is bounded above by a function `f'`;
 * we have `f' x < B' x` whenever `f x = B x`.
 
-Then `f x ≤ B x` everywhere on `[a, b]`. -/
+Then `f x ≤ B x` everywhere on `[a, b]`.
+-/
 theorem image_le_of_liminf_slope_right_lt_deriv_boundary {f f' : ℝ → ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b))
     -- `hf'` actually says `liminf (f z - f x) / (z - x) ≤ f' x`
@@ -125,7 +129,8 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary {f f' : ℝ → ℝ} {a
   image_le_of_liminf_slope_right_lt_deriv_boundary' hf hf' ha
     (fun x _ => (hB x).continuousAt.continuousWithinAt) (fun x _ => (hB x).hasDerivWithinAt) bound
 
-/-- General fencing theorem for continuous functions with an estimate on the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `f a ≤ B a`;
@@ -133,7 +138,8 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
 * for each `x ∈ [a, b)` the right-side limit inferior of `(f z - f x) / (z - x)`
   is bounded above by `B'`.
 
-Then `f x ≤ B x` everywhere on `[a, b]`. -/
+Then `f x ≤ B x` everywhere on `[a, b]`.
+-/
 theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b)) {B B' : ℝ → ℝ} (ha : f a ≤ B a) (hB : ContinuousOn B (Icc a b))
     (hB' : ∀ x ∈ Ico a b, HasDerivWithinAt B (B' x) (Ici x) x)
@@ -154,7 +160,8 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
   have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 := by fun_prop
   convert continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
 
-/-- General fencing theorem for continuous functions with an estimate on the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `f a ≤ B a`;
@@ -162,7 +169,8 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
 * `f` has right derivative `f'` at every point of `[a, b)`;
 * we have `f' x < B' x` whenever `f x = B x`.
 
-Then `f x ≤ B x` everywhere on `[a, b]`. -/
+Then `f x ≤ B x` everywhere on `[a, b]`.
+-/
 theorem image_le_of_deriv_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
     {B B' : ℝ → ℝ} (ha : f a ≤ B a) (hB : ContinuousOn B (Icc a b))
@@ -171,7 +179,8 @@ theorem image_le_of_deriv_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {a b : �
   image_le_of_liminf_slope_right_lt_deriv_boundary' hf
     (fun x hx _ hr => (hf' x hx).liminf_right_slope_le hr) ha hB hB' bound
 
-/-- General fencing theorem for continuous functions with an estimate on the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `f a ≤ B a`;
@@ -179,7 +188,8 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
 * `f` has right derivative `f'` at every point of `[a, b)`;
 * we have `f' x < B' x` whenever `f x = B x`.
 
-Then `f x ≤ B x` everywhere on `[a, b]`. -/
+Then `f x ≤ B x` everywhere on `[a, b]`.
+-/
 theorem image_le_of_deriv_right_lt_deriv_boundary {f f' : ℝ → ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
     {B B' : ℝ → ℝ} (ha : f a ≤ B a) (hB : ∀ x, HasDerivAt B (B' x) x)
@@ -187,7 +197,8 @@ theorem image_le_of_deriv_right_lt_deriv_boundary {f f' : ℝ → ℝ} {a b : �
   image_le_of_deriv_right_lt_deriv_boundary' hf hf' ha
     (fun x _ => (hB x).continuousAt.continuousWithinAt) (fun x _ => (hB x).hasDerivWithinAt) bound
 
-/-- General fencing theorem for continuous functions with an estimate on the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `f a ≤ B a`;
@@ -195,7 +206,8 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
 * `f` has right derivative `f'` at every point of `[a, b)`;
 * we have `f' x ≤ B' x` on `[a, b)`.
 
-Then `f x ≤ B x` everywhere on `[a, b]`. -/
+Then `f x ≤ B x` everywhere on `[a, b]`.
+-/
 theorem image_le_of_deriv_right_le_deriv_boundary {f f' : ℝ → ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b)) (hf' : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Ici x) x)
     {B B' : ℝ → ℝ} (ha : f a ≤ B a) (hB : ContinuousOn B (Icc a b))
@@ -204,14 +216,17 @@ theorem image_le_of_deriv_right_le_deriv_boundary {f f' : ℝ → ℝ} {a b : �
   image_le_of_liminf_slope_right_le_deriv_boundary hf ha hB hB' fun x hx _ hr =>
     (hf' x hx).liminf_right_slope_le (lt_of_le_of_lt (bound x hx) hr)
 
-/-! ### Vector-valued functions `f : ℝ → E` -/
+/-!
+# Vector-valued functions `f : ℝ → E`
+-/
 
 
 section
 
 variable {f : ℝ → E} {a b : ℝ}
 
-/-- General fencing theorem for continuous functions with an estimate on the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `‖f a‖ ≤ B a`;
@@ -220,7 +235,8 @@ Let `f` and `B` be continuous functions on `[a, b]` such that
   is bounded above by a function `f'`;
 * we have `f' x < B' x` whenever `‖f x‖ = B x`.
 
-Then `‖f x‖ ≤ B x` everywhere on `[a, b]`. -/
+Then `‖f x‖ ≤ B x` everywhere on `[a, b]`.
+-/
 theorem image_norm_le_of_liminf_right_slope_norm_lt_deriv_boundary {E : Type*}
     [NormedAddCommGroup E] {f : ℝ → E} {f' : ℝ → ℝ} (hf : ContinuousOn f (Icc a b))
     -- `hf'` actually says `liminf (‖f z‖ - ‖f x‖) / (z - x) ≤ f' x`
@@ -231,7 +247,8 @@ theorem image_norm_le_of_liminf_right_slope_norm_lt_deriv_boundary {E : Type*}
   image_le_of_liminf_slope_right_lt_deriv_boundary' (continuous_norm.comp_continuousOn hf) hf' ha hB
     hB' bound
 
-/-- General fencing theorem for continuous functions with an estimate on the norm of the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the norm of the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `‖f a‖ ≤ B a`;
@@ -249,7 +266,8 @@ theorem image_norm_le_of_norm_deriv_right_lt_deriv_boundary' {f' : ℝ → E}
   image_norm_le_of_liminf_right_slope_norm_lt_deriv_boundary hf
     (fun x hx _ hr => (hf' x hx).liminf_right_slope_norm_le hr) ha hB hB' bound
 
-/-- General fencing theorem for continuous functions with an estimate on the norm of the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the norm of the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `‖f a‖ ≤ B a`;
@@ -267,7 +285,8 @@ theorem image_norm_le_of_norm_deriv_right_lt_deriv_boundary {f' : ℝ → E}
   image_norm_le_of_norm_deriv_right_lt_deriv_boundary' hf hf' ha
     (fun x _ => (hB x).continuousAt.continuousWithinAt) (fun x _ => (hB x).hasDerivWithinAt) bound
 
-/-- General fencing theorem for continuous functions with an estimate on the norm of the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the norm of the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `‖f a‖ ≤ B a`;
@@ -285,7 +304,8 @@ theorem image_norm_le_of_norm_deriv_right_le_deriv_boundary' {f' : ℝ → E}
   image_le_of_liminf_slope_right_le_deriv_boundary (continuous_norm.comp_continuousOn hf) ha hB hB'
     fun x hx _ hr => (hf' x hx).liminf_right_slope_norm_le ((bound x hx).trans_lt hr)
 
-/-- General fencing theorem for continuous functions with an estimate on the norm of the derivative.
+/--
+General fencing theorem for continuous functions with an estimate on the norm of the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
 
 * `‖f a‖ ≤ B a`;
@@ -399,12 +419,13 @@ theorem eq_of_derivWithin_eq (fdiff : DifferentiableOn ℝ f (Icc a b))
 end
 
 /-!
-### Vector-valued functions `f : E → G`
+# Vector-valued functions `f : E → G`
 
 Theorems in this section work both for real and complex differentiable functions. We use assumptions
 `[NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]` to
 achieve this result. For the domain `E` we also assume `[NormedSpace ℝ E]` to have a notion
-of a `Convex` set. -/
+of a `Convex` set.
+-/
 
 section
 
@@ -817,7 +838,7 @@ end
 section RCLike
 
 /-!
-### Vector-valued functions `f : E → F`. Strict differentiability.
+# Vector-valued functions `f : E → F`. Strict differentiability.
 
 A `C^1` function is strictly differentiable, when the field is `ℝ` or `ℂ`. This follows from the
 mean value inequality on balls, which is a particular case of the above results after restricting

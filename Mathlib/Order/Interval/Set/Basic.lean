@@ -10,15 +10,18 @@ public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Interval.Set.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals
 
 In any preorder, we define intervals (which on each side can be either infinite, open or closed)
 using the following naming conventions:
 
-- `i`: infinite
-- `o`: open
-- `c`: closed
+* `i`: infinite
+* `o`: open
+* `c`: closed
 
 Each interval has the name `I` + letter for left side + letter for right side.
 For instance, `Ioc a b` denotes the interval `(a, b]`.
@@ -29,12 +32,14 @@ This file contains basic facts on inclusion of and set operations on intervals
 statements requiring `LinearOrder` are in `Mathlib/Order/Interval/Set/LinearOrder.lean`).
 
 A conscious decision was made not to list all possible inclusion relations.
-Monotonicity results and "self" results *are* included.
+Monotonicity results and "self" results _are_ included.
 Most use cases can suffice with a transitive combination of those, for example:
+
 ```
 theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
   (Ico_subset_Ico_left h).trans Ico_subset_Ici_self
 ```
+
 Logical equivalences, such as `Icc_subset_Ici_iff`, are however stated.
 -/
 
@@ -706,7 +711,9 @@ theorem Icc_inter_Icc : Icc a₁ b₁ ∩ Icc a₂ b₂ = Icc (a₁ ⊔ a₂) (b
 
 end Lattice
 
-/-! ### Closed intervals in `α × β` -/
+/-!
+# Closed intervals in `α × β`
+-/
 
 section Prod
 
@@ -730,7 +737,9 @@ theorem Icc_prod_eq (a b : α × β) : Icc a b = Icc a.1 b.1 ×ˢ Icc a.2 b.2 :=
 
 end Prod
 
-/-! ### Lemmas about intervals in dense orders -/
+/-!
+# Lemmas about intervals in dense orders
+-/
 
 section Dense
 
@@ -756,7 +765,9 @@ instance : NoMinOrder (Ioi x) :=
 
 end Dense
 
-/-! ### Intervals in `Prop` -/
+/-!
+# Intervals in `Prop`
+-/
 
 @[simp] lemma Iic_false : Iic False = {False} := by aesop
 @[simp] lemma Iic_true : Iic True = univ := by aesop

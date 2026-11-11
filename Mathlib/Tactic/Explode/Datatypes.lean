@@ -8,6 +8,9 @@ module
 public meta import Lean.Util.Trace
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Explode command: datatypes
 
@@ -26,13 +29,21 @@ initialize registerTraceClass `explode
 inductive Status where
   /-- `├` Start intro (top-level) -/
   | sintro : Status
-  /-- `Entry.depth` * `│` + `┌` Normal intro -/
+  /--
+  `Entry.depth` \* `│` + `┌` Normal intro
+  -/
   | intro  : Status
-  /-- `Entry.depth` * `│` + `├` Continuation intro -/
+  /--
+  `Entry.depth` \* `│` + `├` Continuation intro
+  -/
   | cintro : Status
-  /-- `Entry.depth` * `│` -/
+  /--
+  `Entry.depth` \* `│`
+  -/
   | lam    : Status
-  /-- `Entry.depth` * `│` -/
+  /--
+  `Entry.depth` \* `│`
+  -/
   | reg    : Status
   deriving Inhabited
 

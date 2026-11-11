@@ -12,23 +12,23 @@ public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multinomial
 
 This file defines the multinomial coefficients and several small lemmas for manipulating them.
 
-- `Nat.multinomial`: the multinomial coefficient,
+* `Nat.multinomial`: the multinomial coefficient,
   Given a function `f : α → ℕ` and `s : Finset α`, this is the number of strings
   consisting of symbols from `s`, where `c ∈ s` appears with multiplicity `f c`.
 
   It is defined as `(∑ i ∈ s, f i)! / ∏ i ∈ s, (f i)!`.
-
-- `Multiset.countPerms`: multinomial coefficient associated with the `Multiset.count` function
+* `Multiset.countPerms`: multinomial coefficient associated with the `Multiset.count` function
   of a multiset. This is the number of lists that induce the given multiset.
-
-- `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
-
-- `Multiset.multinomial`.
+* `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
+* `Multiset.multinomial`.
   Given a multiset `m` of natural numbers, `m.multinomial` is the
   multinomial coefficient defined by `(m.sum) ! / ∏ i ∈ m, m i !`.
 
@@ -38,9 +38,9 @@ is defined as `m.toFinsupp.multinomial`.
 As an example, one has `Multiset.multinomial {1, 2, 2} = 30`,
 while `Multiset.countPerms {1, 2, 2} = 3`.
 
-- `Multiset.multinomial_cons` proves that
+* `Multiset.multinomial_cons` proves that
   `(x ::ₘ m).multinomial = Nat.choose (x + m.sum) x * m.multinomial`
-- `Multiset.multinomial_add` proves that
+* `Multiset.multinomial_add` proves that
   `(m + m').multinomial = Nat.choose (m + m').sum m.sum * m.multinomial * m'.multinomial`
 
 ## Implementation note for `Multiset.multinomial`.
@@ -50,7 +50,6 @@ we define it in terms of `Finsupp.multinomial`, via lists:
 If `m : Multiset ℕ` is the multiset associated with a list `l : List ℕ`,
 then `m.multinomial = l.toFinsupp.multinomial`.
 Then we prove its invariance under permutation.
-
 -/
 
 @[expose] public section
@@ -62,7 +61,8 @@ namespace Nat
 
 variable {α : Type*} (s : Finset α) (f : α → ℕ) {a b : α} (n : ℕ)
 
-/-- The multinomial coefficient. Gives the number of strings consisting of symbols
+/--
+The multinomial coefficient. Gives the number of strings consisting of symbols
 from `s`, where `c ∈ s` appears with multiplicity `f c`.
 
 Defined as `(∑ i ∈ s, f i)! / ∏ i ∈ s, (f i)!`.
@@ -136,7 +136,8 @@ theorem multinomial_single [DecidableEq α] :
     intro _ hb
     rw [Pi.single_apply, ite_eq_right (ne_of_mem_of_not_mem hb ha), factorial_zero]
 
-/-! ### Connection to binomial coefficients
+/-!
+# Connection to binomial coefficients
 
 When `Nat.multinomial` is applied to a `Finset` of two elements `{a, b}`, the
 result is a binomial coefficient. We use `binomial` in the names of lemmas that
@@ -176,7 +177,9 @@ theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
     Function.update_of_ne h.symm]
   rw [succ_eq_add_one, add_one_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
 
-/-! ### Simple cases -/
+/-!
+# Simple cases
+-/
 
 
 theorem multinomial_univ_two (a b : ℕ) :
@@ -191,7 +194,9 @@ theorem multinomial_univ_three (a b c : ℕ) :
 
 end Nat
 
-/-! ### Alternative definitions -/
+/-!
+# Alternative definitions
+-/
 
 namespace Finsupp
 
@@ -256,7 +261,9 @@ end Multiset
 namespace Finset
 open _root_.Nat
 
-/-! ### Multinomial theorem -/
+/-!
+# Multinomial theorem
+-/
 
 variable {α R : Type*} [DecidableEq α]
 
@@ -422,9 +429,11 @@ lemma toFinsupp_sum {α : Type*} [AddCommMonoid α] [DecidableEq α] (l : List �
     rw [Finsupp.sum_add_index (by simp) (by simp)]
     simp [Finsupp.sum_embDomain, l.toFinsupp_sum]
 
-/-- The multinomial coefficients given by a list of natural numbers.
+/--
+The multinomial coefficients given by a list of natural numbers.
 
-See also `Multiset.multinomial` -/
+See also `Multiset.multinomial`
+-/
 abbrev multinomial (l : List ℕ) : ℕ := l.toFinsupp.multinomial
 
 theorem multinomial_cons (x : ℕ) (l : List ℕ) :

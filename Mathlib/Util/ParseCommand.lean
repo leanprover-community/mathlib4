@@ -12,6 +12,9 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 meta import Lean.Parser.Term
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `#parse` -- a command to parse text and log outputs
 -/
@@ -21,7 +24,8 @@ public meta section
 namespace Mathlib.GuardExceptions
 
 open Lean Parser Elab Command
-/-- `captureException env s input` uses the given `Environment` `env` to parse the `String` `input`
+/--
+`captureException env s input` uses the given `Environment` `env` to parse the `String` `input`
 using the `ParserFn` `s`.
 
 This is a variation of `Lean.Parser.runParserCategory`.
@@ -36,9 +40,11 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
   else
     .error ((s.mkError "end of input").toErrorMsg ictx)
 
-/-- Parse a string as a tactic sequence.
+/--
+Parse a string as a tactic sequence.
 
-This is a slight modification of `Parser.runParserCategory`. -/
+This is a slight modification of `Parser.runParserCategory`.
+-/
 def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
     Except String (TSyntax ``Lean.Parser.Tactic.tacticSeq) :=
   let p := andthenFn whitespace Tactic.tacticSeq.fn
@@ -51,6 +57,8 @@ def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>"
   else
     .error ((s.mkError "end of input").toErrorMsg ictx)
 
+
+set_option doc.verso false
 /-- `#parse parserFnId => str` allows to capture parsing exceptions.
 `parserFnId` is the identifier of a `ParserFn` and `str` is the string that
 `parserFnId` should parse.
@@ -68,6 +76,8 @@ For instance, `#parse` can be used as follows
 -/
 syntax (name := parseCmd) "#parse " ident " => " str : command
 
+
+set_option doc.verso true
 @[inherit_doc parseCmd]
 elab_rules : command
   | `(command| #parse $parserFnId => $str) => do

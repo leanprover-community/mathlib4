@@ -12,10 +12,14 @@ public import Mathlib.Tactic.Rify
 
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Power function on `ℝ≥0` and `ℝ≥0∞`
 
 We construct the power functions `x ^ y` where
+
 * `x` is a nonnegative real number and `y` is a real number;
 * `x` is a number from `[0, +∞]` (a.k.a. `ℝ≥0∞`) and `y` is a real number.
 
@@ -1147,7 +1151,9 @@ end ENNReal
 
 -- end Tactics
 
-/-! ### Positivity extension -/
+/-!
+# Positivity extension
+-/
 
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq
@@ -1211,7 +1217,7 @@ meta def evalENNRealRpow : PositivityExt where eval {u α} _ pα? e :=
 end Mathlib.Meta.Positivity
 
 /-!
-## NormNum extension for NNReal powers
+# NormNum extension for NNReal powers
 -/
 
 namespace Mathlib.Meta.NormNum
@@ -1250,14 +1256,17 @@ theorem nnreal_rpow_isRat_eq_inv_nnreal_rpow (a : ℝ≥0) (b : ℝ) (n d : ℕ)
 
 open Lean
 
-/-- Given proofs
-- that `a` is a natural number `na`;
-- that `b` is a nonnegative rational number `nb / db`;
+/--
+Given proofs
+
+* that `a` is a natural number `na`;
+* that `b` is a nonnegative rational number `nb / db`;
 
 returns a tuple of
-- a natural number `r` (result);
-- the same number, as an expression;
-- a proof that `a ^ b = r`.
+
+* a natural number `r` (result);
+* the same number, as an expression;
+* a proof that `a ^ b = r`.
 
 Fails if `na` is not a `db`th power of a natural number.
 -/

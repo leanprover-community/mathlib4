@@ -9,6 +9,9 @@ public import Mathlib.Topology.Category.CompHaus.Basic
 
 import Mathlib.Topology.Compactification.OnePoint.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compactly generated topological spaces
 
@@ -36,8 +39,10 @@ as well as a Hausdorff `WeaklyLocallyCompactSpace`.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Compactly_generated_space>
-* <https://ncatlab.org/nlab/files/StricklandCGHWSpaces.pdf>
+* [
+  https://en.wikipedia.org/wiki/Compactly\_generated\_space](https://en.wikipedia.org/wiki/Compactly_generated_space)
+* [
+  https://ncatlab.org/nlab/files/StricklandCGHWSpaces.pdf](https://ncatlab.org/nlab/files/StricklandCGHWSpaces.pdf)
 
 ## Tags
 
@@ -204,10 +209,13 @@ instance {ι : Type v} {X : ι → Type w} [∀ i, TopologicalSpace (X i)]
       h S ⟨Sigma.mk i ∘ f, continuous_sigmaMk.comp hf⟩
 
 open OnePoint in
-/-- A sequential space is compactly generated.
+/--
+A sequential space is compactly generated.
 
-The proof is taken from <https://ncatlab.org/nlab/files/StricklandCGHWSpaces.pdf>,
-Proposition 1.6. -/
+The proof is taken from [
+https://ncatlab.org/nlab/files/StricklandCGHWSpaces.pdf](https://ncatlab.org/nlab/files/StricklandCGHWSpaces.pdf),
+Proposition 1.6.
+-/
 instance (priority := 100) [SequentialSpace X] : UCompactlyGeneratedSpace.{u} X := by
   refine uCompactlyGeneratedSpace_of_isClosed fun s h ↦
     SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦ ?_

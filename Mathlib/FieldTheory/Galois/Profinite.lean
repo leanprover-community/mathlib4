@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.Galois.GaloisClosure
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Galois Group as a profinite group
 
@@ -22,34 +25,24 @@ In a field extension `K/k`
 
 * `finGaloisGroup L` : The (finite) Galois group `Gal(L/k)` associated to a
   `L : FiniteGaloisIntermediateField k K` `L`.
-
 * `finGaloisGroupMap` : For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   giving the restriction of `Gal(L₁/k)` to `Gal(L₂/k)`
-
 * `finGaloisGroupFunctor` : The functor from `FiniteGaloisIntermediateField`
   (ordered by reverse inclusion) to `FiniteGrp`, mapping each `FiniteGaloisIntermediateField L`
   to `Gal (L/k)`.
-
 * `InfiniteGalois.algEquivToLimit` : The homomorphism from `Gal(K/k)` to
   `limit (asProfiniteGaloisGroupFunctor k K)`, induced by the projections from `Gal(K/k)` to
   any `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField`.
-
 * `InfiniteGalois.limitToAlgEquiv` : The inverse of `InfiniteGalois.algEquivToLimit`, in which
   the elements of `Gal(K/k)` are constructed pointwise.
-
 * `InfiniteGalois.mulEquivToLimit` : The mulEquiv obtained from combining the above two.
-
 * `InfiniteGalois.mulEquivToLimit_continuous` : The inverse of `InfiniteGalois.mulEquivToLimit`
   is continuous.
-
 * `InfiniteGalois.continuousMulEquivToLimit` ：The `ContinuousMulEquiv` between `Gal(K/k)` and
   `limit (asProfiniteGaloisGroupFunctor k K)` given by `InfiniteGalois.mulEquivToLimit`
-
 * `InfiniteGalois.ProfiniteGalGrp` : `Gal(K/k)` as a profinite group as there is
   a `ContinuousMulEquiv` to a `ProfiniteGrp` given above.
-
 * `InfiniteGalois.restrictNormalHomContinuous` : Any `restrictNormalHom` is continuous.
-
 -/
 
 @[expose] public section

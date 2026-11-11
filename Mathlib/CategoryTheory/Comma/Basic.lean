@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Products.Unitor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comma categories
 
@@ -36,7 +39,7 @@ respectively.
 
 ## References
 
-* <https://ncatlab.org/nlab/show/comma+category>
+* [https://ncatlab.org/nlab/show/comma+category](https://ncatlab.org/nlab/show/comma+category)
 
 ## Tags
 

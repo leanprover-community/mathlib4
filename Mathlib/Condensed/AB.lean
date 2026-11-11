@@ -12,6 +12,9 @@ public import Mathlib.Condensed.Limits
 
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # AB axioms in condensed modules
 

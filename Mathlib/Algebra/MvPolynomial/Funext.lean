@@ -11,6 +11,9 @@ import Mathlib.Algebra.MvPolynomial.Polynomial
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Function extensionality for multivariate polynomials
 
@@ -21,7 +24,6 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 * `MvPolynomial.funext`: two polynomials `φ ψ : MvPolynomial σ R`
   over an infinite integral domain `R` are equal if `eval x φ = eval x ψ` for all `x : σ → R`.
-
 -/
 
 public section

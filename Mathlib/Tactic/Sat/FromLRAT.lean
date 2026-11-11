@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Tactic.Push
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `lrat_proof` command
 
@@ -26,12 +29,15 @@ as a standard propositional theorem.
 The input to the `lrat_proof` command is the name of the theorem to define,
 and the statement (written in CNF format) and the proof (in LRAT format).
 For example:
+
 ```
 lrat_proof foo
   "p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0"
   "5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0"
 ```
+
 produces a theorem:
+
 ```
 foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1
 ```
@@ -131,7 +137,8 @@ theorem Fmla.proof_of_subsumes {f : Fmla} {c : Clause}
     (H : Fmla.subsumes f (Fmla.one c)) : f.proof c :=
   fun _ h ↦ h.1 _ <| H.1 _ <| List.Mem.head ..
 
-/-- The core unit-propagation step.
+/--
+The core unit-propagation step.
 
 We have a local context of assumptions `¬l'` (sometimes called an assignment)
 and we wish to add `¬l` to the context, that is, we want to prove `l` is also falsified.
@@ -139,7 +146,8 @@ This is because there is a clause `a ∨ b ∨ ¬l` in the global context
 such that all literals in the clause are falsified except for `¬l`;
 so in the context `h₁` where we suppose that `¬l` is falsified,
 the clause itself is falsified so we can prove `False`.
-We continue the proof in `h₂`, with the assumption that `l` is falsified. -/
+We continue the proof in `h₂`, with the assumption that `l` is falsified.
+-/
 theorem Valuation.by_cases {v : Valuation} {l}
     (h₁ : v.neg l.negate → False) (h₂ : v.neg l → False) : False :=
 match l with
@@ -295,35 +303,35 @@ structure LClause where
   reference the variable from multiple binder depths.) -/
   depth : Nat
 
-/-- Construct an individual proof step `⊢ ctx.proof c`.
+/--
+Construct an individual proof step `⊢ ctx.proof c`.
 
-  * `db`: the current global context
-  * `ns`, `clause`: the new clause
-  * `pf`: the LRAT proof trace
-  * `ctx`: the main formula
+* `db`: the current global context
+* `ns`, `clause`: the new clause
+* `pf`: the LRAT proof trace
+* `ctx`: the main formula
 
-  The proof has three steps:
+The proof has three steps:
 
-  1. Introduce local assumptions `have h1 : ctx.proof c1 := p1` for each clause `c1`
-     referenced in the proof. We actually do all the introductions at once,
-     as in `(fun h1 h2 h3 ↦ ...) p1 p2 p3`, because we want `p_i` to not be under any binders
-     to avoid the cost of `instantiate` during typechecking and get the benefits of dag-like
-     sharing in the `pi` (which are themselves previous proof steps which may be large terms).
-     The hypotheses are in `gctx`, keyed on the clause ID.
+1. Introduce local assumptions `have h1 : ctx.proof c1 := p1` for each clause `c1`
+   referenced in the proof. We actually do all the introductions at once,
+   as in `(fun h1 h2 h3 ↦ ...) p1 p2 p3`, because we want `p_i` to not be under any binders
+   to avoid the cost of `instantiate` during typechecking and get the benefits of dag-like
+   sharing in the `pi` (which are themselves previous proof steps which may be large terms).
+   The hypotheses are in `gctx`, keyed on the clause ID.
+2. Unfold `⊢ ctx.proof [a, b, c]` to
+   `∀ v, v.satisfies_fmla ctx → v.neg a → v.neg b → v.neg c → False` and `intro v hv ha hb hc`,
+   storing each `ha : v.neg a` in `lctx`, keyed on the literal `a`.
+3. For each LRAT step `hc : ctx.proof [x, y]`, `hc v hv : v.neg x → v.neg y → False`.
+   We look for a literal that is not falsified in the clause. Since it is a unit propagation
+   step, there can be at most one such literal.
 
-  2. Unfold `⊢ ctx.proof [a, b, c]` to
-     `∀ v, v.satisfies_fmla ctx → v.neg a → v.neg b → v.neg c → False` and `intro v hv ha hb hc`,
-     storing each `ha : v.neg a` in `lctx`, keyed on the literal `a`.
-
-  3. For each LRAT step `hc : ctx.proof [x, y]`, `hc v hv : v.neg x → v.neg y → False`.
-     We look for a literal that is not falsified in the clause. Since it is a unit propagation
-     step, there can be at most one such literal.
-     * If `x` is the non-falsified clause, let `x'` denote the negated literal of `x`.
-       Then `x'.negate` reduces to `x`, so `hnx : v.neg x'.negate |- hc v hv hnx hy : False`,
-       so we construct the term
-         `by_cases (fun hnx : v.neg x'.negate ↦ hc v hv hnx hy) (fun hx : v.neg x ↦ ...)`
-       and `hx` is added to the local context.
-     * If all clauses are falsified, then we are done: `hc v hv hx hy : False`.
+   * If `x` is the non-falsified clause, let `x'` denote the negated literal of `x`.
+     Then `x'.negate` reduces to `x`, so `hnx : v.neg x'.negate |- hc v hv hnx hy : False`,
+     so we construct the term
+     `by_cases (fun hnx : v.neg x'.negate ↦ hc v hv hnx hy) (fun hx : v.neg x ↦ ...)`
+     and `hx` is added to the local context.
+   * If all clauses are falsified, then we are done: `hc v hv hx hy : False`.
 -/
 partial def buildProofStep (db : HashMap Nat Clause)
     (ns pf : Array Int) (ctx clause : Expr) : Except String Expr := Id.run do
@@ -393,12 +401,13 @@ inductive LRATStep
   | /-- A (multiple) deletion step, which deletes all the listed clause IDs from the context -/
     del (ids : Array Nat) : LRATStep
 
-/-- Build the main proof of `⊢ ctx.proof []` using the LRAT proof trace.
+/--
+Build the main proof of `⊢ ctx.proof []` using the LRAT proof trace.
 
-  * `arr`: The input CNF
-  * `ctx`: The abbreviated formula, a constant like `foo.ctx_1`
-  * `ctx'`: The definitional expansion of the formula, a tree of `Fmla.and` nodes
-  * `steps`: The input LRAT proof trace
+* `arr`: The input CNF
+* `ctx`: The abbreviated formula, a constant like `foo.ctx_1`
+* `ctx'`: The definitional expansion of the formula, a tree of `Fmla.and` nodes
+* `steps`: The input LRAT proof trace
 -/
 partial def buildProof (arr : Array (Array Int)) (ctx ctx' : Expr)
     (steps : Array LRATStep) : MetaM Expr := do
@@ -416,7 +425,8 @@ partial def buildProof (arr : Array (Array Int)) (ctx ctx' : Expr)
       | Except.error msg => throwError msg
   throwError "failed to prove empty clause"
 
-/-- Build the type and value of the reified theorem. This rewrites all the SAT definitions
+/--
+Build the type and value of the reified theorem. This rewrites all the SAT definitions
 into standard operators on `Prop`, for example if the formula is `[[1, 2], [-1, 2], [-2]]` then
 this produces a proof of `⊢ ∀ a b : Prop, (a ∧ b) ∨ (¬a ∧ b) ∨ ¬b`. We use the input `nvars` to
 decide how many quantifiers to use.
@@ -425,15 +435,15 @@ Most of the proof is under `2 * nvars + 1` quantifiers
 `a1 .. an : Prop, v : Valuation, h1 : v 0 ↔ a1, ... hn : v (n-1) ↔ an ⊢ ...`, and we do the index
 arithmetic by hand.
 
-  1. First, we call `reifyFormula ctx'` which returns `a` and `pr : reify v ctx' a`
-  2. Then we build `fun (v : Valuation) (h1 : v 0 ↔ a1) ... (hn : v (n-1) ↔ an) ↦ pr`
-  3. We have to lower expression `a` from step 1 out of the quantifiers by lowering all variable
-     indices by `nvars+1`. This is okay because `v` and `h1..hn` do not appear in `a`.
-  4. We construct the expression `ps`, which is `a1 .. an : Prop ⊢ [a1, ..., an] : List Prop`
-  5. `refute ctx (hf : ctx.proof []) (fun v h1 .. hn ↦ pr) : a` forces some definitional unfolding
-     since `fun h1 .. hn ↦ pr` should have type `implies v (reify v ctx a) [a1, ..., an] a`,
-     which involves unfolding `implies` n times as well as `ctx ↦ ctx'`.
-  6. Finally, we `intro a1 ... an` so that we have a proof of `∀ a1 ... an, a`.
+1. First, we call `reifyFormula ctx'` which returns `a` and `pr : reify v ctx' a`
+2. Then we build `fun (v : Valuation) (h1 : v 0 ↔ a1) ... (hn : v (n-1) ↔ an) ↦ pr`
+3. We have to lower expression `a` from step 1 out of the quantifiers by lowering all variable
+   indices by `nvars+1`. This is okay because `v` and `h1..hn` do not appear in `a`.
+4. We construct the expression `ps`, which is `a1 .. an : Prop ⊢ [a1, ..., an] : List Prop`
+5. `refute ctx (hf : ctx.proof []) (fun v h1 .. hn ↦ pr) : a` forces some definitional unfolding
+   since `fun h1 .. hn ↦ pr` should have type `implies v (reify v ctx a) [a1, ..., an] a`,
+   which involves unfolding `implies` n times as well as `ctx ↦ ctx'`.
+6. Finally, we `intro a1 ... an` so that we have a proof of `∀ a1 ... an, a`.
 -/
 partial def buildReify (ctx ctx' proof : Expr) (nvars : Nat) : Expr × Expr := Id.run do
   let (e, pr) := reifyFmla ctx'
@@ -547,13 +557,14 @@ end Parser
 
 open Std.Internal
 
-/-- Core of `fromLRAT`. Constructs the context and main proof definitions,
+/--
+Core of `fromLRAT`. Constructs the context and main proof definitions,
 but not the reification theorem. Returns:
 
-  * `nvars`: the number of variables specified in the CNF file
-  * `ctx`: The abbreviated formula, a constant like `foo.ctx_1`
-  * `ctx'`: The definitional expansion of the formula, a tree of `Fmla.and` nodes
-  * `proof`: A proof of `ctx.proof []`
+* `nvars`: the number of variables specified in the CNF file
+* `ctx`: The abbreviated formula, a constant like `foo.ctx_1`
+* `ctx'`: The definitional expansion of the formula, a tree of `Fmla.and` nodes
+* `proof`: A proof of `ctx.proof []`
 -/
 def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr × Expr) := do
   let Parsec.ParseResult.success _ (nvars, arr) := Parser.parseDimacs ⟨_, cnf.startPos⟩
@@ -582,12 +593,14 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
   }
   return (nvars, ctx, ctx', mkConst declName)
 
-/-- Main entry point. Given strings `cnf` and `lrat` with unparsed file data, and a name `name`,
+/--
+Main entry point. Given strings `cnf` and `lrat` with unparsed file data, and a name `name`,
 adds `theorem name : type := proof` where `type` is a propositional theorem like
 `∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1`.
 
 Also creates auxiliaries named `name.ctx_1` (for the CNF formula)
-and `name.proof_1` (for the LRAT proof), with `name` itself containing the reification proof. -/
+and `name.proof_1` (for the LRAT proof), with `name` itself containing the reification proof.
+-/
 def fromLRAT (cnf lrat : String) (name : Name) : MetaM Unit := do
   let (nvars, ctx, ctx', proof) ← fromLRATAux cnf lrat name
   let (type, value) := buildReify ctx ctx' proof nvars
@@ -603,12 +616,15 @@ These files are commonly used in the SAT community for writing proofs.
 The input to the `lrat_proof` command is the name of the theorem to define,
 and the statement (written in CNF format) and the proof (in LRAT format).
 For example:
+
 ```
 lrat_proof foo
   "p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0"
   "5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0"
 ```
+
 produces a theorem:
+
 ```
 foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1
 ```
@@ -654,12 +670,15 @@ These files are commonly used in the SAT community for writing proofs.
 The input to the `from_lrat` term syntax is two string expressions with
 the statement (written in CNF format) and the proof (in LRAT format).
 For example:
+
 ```
 def foo := from_lrat
   "p cnf 2 4  1 2 0  -1 2 0  1 -2 0  -1 -2 0"
   "5 -2 0 4 3 0  5 d 3 4 0  6 1 0 5 1 0  6 d 1 0  7 0 5 2 6 0"
 ```
+
 produces a theorem:
+
 ```
 foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a ∧ a_1
 ```

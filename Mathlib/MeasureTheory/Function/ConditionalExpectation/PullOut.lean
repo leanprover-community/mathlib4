@@ -10,13 +10,16 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 import Mathlib.MeasureTheory.Function.Holder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pull-out property of the conditional expectation
 
 Let `Ω` be endowed with a measurable space structure `mΩ`, and let `m : MeasurableSpace Ω` such that
 `m ≤ mΩ`. Let `μ` be a measure over `Ω`. Let `B : F →L[ℝ] E →L[ℝ] G` a continuous bilinear map,
 `f : Ω → F` and `g : Ω → E` such that `fun ω ↦ B (f ω) (g ω)` is integrable, `g` is integrable
-and `f` is `AEStronglyMeasurable` with respect to `m`. The **pull-out** property of the conditional
+and `f` is `AEStronglyMeasurable` with respect to `m`. The *pull-out* property of the conditional
 expectation states that almost surely, `μ[B f g|m] = B f μ[g|m]`.
 
 We specialize this statement to the cases where `B` is scalar multiplication and multiplication.

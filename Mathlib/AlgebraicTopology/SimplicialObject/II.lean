@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A construction by Gabriel and Zisman
 
@@ -20,13 +23,12 @@ be a linear order); in particular, it sends `Fin (n + 1)` to a linearly
 ordered type which is isomorphic to `Fin (n + 2)`. As a result, we define
 `SimplexCategory.II` as a functor which sends `⦋n⦌` to `⦋n + 1⦌`: on morphisms,
 it sends faces to degeneracies and vice versa. This construction appeared
-in *Calculus of fractions and homotopy theory*, chapter III, paragraph 1.1,
+in _Calculus of fractions and homotopy theory_, chapter III, paragraph 1.1,
 by Gabriel and Zisman.
 
 ## References
 
-* [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
-
+* ‍\[P. Gabriel, M. Zisman, _Calculus of fractions and homotopy theory_\]\[gabriel-zisman-1967\]
 -/
 
 @[expose] public section

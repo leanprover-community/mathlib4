@@ -10,7 +10,12 @@ public import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Set
 
-/-! # `List.takeWhile` and `List.dropWhile` -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `List.takeWhile` and `List.dropWhile`
+-/
 
 public section
 

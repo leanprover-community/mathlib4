@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.Torsion.Free
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Endomorphisms of a module
 
@@ -38,7 +41,7 @@ variable {R R₂ S M M₁ M₂ M₃ N₁ : Type*}
 open Function LinearMap
 
 /-!
-## Monoid structure of endomorphisms
+# Monoid structure of endomorphisms
 -/
 
 namespace Module.End
@@ -203,12 +206,16 @@ theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjectiv
 
 end
 
-/-! ## Action by a module endomorphism. -/
+/-!
+# Action by a module endomorphism.
+-/
 
 
-/-- The tautological action by `Module.End R M` (aka `M →ₗ[R] M`) on `M`.
+/--
+The tautological action by `Module.End R M` (aka `M →ₗ[R] M`) on `M`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 instance applyModule : Module (Module.End R M) M where
   smul := (· ·)
   smul_zero := map_zero
@@ -242,23 +249,29 @@ end Module.End
 
 section
 
-/-! ## Actions as module endomorphisms -/
+/-!
+# Actions as module endomorphisms
+-/
 
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
 variable [Monoid S]
 
-/-- Each element of the monoid defines a linear map.
+/--
+Each element of the monoid defines a linear map.
 
-This is a stronger version of `DistribSMul.toAddMonoidHom`. -/
+This is a stronger version of `DistribSMul.toAddMonoidHom`.
+-/
 @[simps]
 def DistribSMul.toLinearMap [DistribSMul S M] [SMulCommClass S R M] (s : S) : M →ₗ[R] M where
   toFun := HSMul.hSMul s
   map_add' := smul_add s
   map_smul' _ _ := smul_comm _ _ _
 
-/-- Each element of the monoid defines a module endomorphism.
+/--
+Each element of the monoid defines a module endomorphism.
 
-This is a stronger version of `DistribMulAction.toAddMonoidEnd`. -/
+This is a stronger version of `DistribMulAction.toAddMonoidEnd`.
+-/
 @[simps]
 def DistribMulAction.toModuleEnd [DistribMulAction S M] [SMulCommClass S R M] :
     S →* Module.End R M where
@@ -273,9 +286,11 @@ section Module
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
 variable [Semiring S] [Module S M] [SMulCommClass S R M]
 
-/-- Each element of the semiring defines a module endomorphism.
+/--
+Each element of the semiring defines a module endomorphism.
 
-This is a stronger version of `DistribMulAction.toModuleEnd`. -/
+This is a stronger version of `DistribMulAction.toModuleEnd`.
+-/
 @[simps]
 def Module.toModuleEnd : S →+* Module.End R M :=
   { DistribMulAction.toModuleEnd R M with
@@ -357,9 +372,11 @@ variable [Module R M] [Module R M₁] [Module R M₂] [Module S M₁] [Module S 
 variable [SMulCommClass R S M₁] [SMulCommClass R S M₂]
 variable (S)
 
-/-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
+/--
+Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
 
-See `LinearMap.applyₗ` for a version where `S = R`. -/
+See `LinearMap.applyₗ` for a version where `S = R`.
+-/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
@@ -390,10 +407,12 @@ variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid 
 variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f : M →ₗ[R] M₂)
 
-/-- Applying a linear map at `v : M`, seen as a linear map from `M →ₗ[R] M₂` to `M₂`.
+/--
+Applying a linear map at `v : M`, seen as a linear map from `M →ₗ[R] M₂` to `M₂`.
 See also `LinearMap.applyₗ'` for a version that works with two different semirings.
 
-This is the `LinearMap` version of `toAddMonoidHom.eval`. -/
+This is the `LinearMap` version of `toAddMonoidHom.eval`.
+-/
 @[simps]
 def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
   { applyₗ' R with
@@ -405,7 +424,8 @@ The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x �
 
 This is also known as a rank-one operator.
 See `ContinuousLinearMap.smulRightL` for the continuous version of this, and see
-`InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
+`InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces.
+-/
 def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M where
   toFun f :=
     { toFun := LinearMap.smulRight f

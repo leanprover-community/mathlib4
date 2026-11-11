@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Connected.Clopen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -20,8 +23,8 @@ A function from a topological space `X` is locally injective if every point of `
 has a neighborhood on which `f` is injective.
 A constant function is locally injective if and only if `X` is discrete.
 
-Given `f : X → Y` we can form the pullback $X \times_Y X$; the diagonal map
-$\Delta: X \to X \times_Y X$ is always an embedding. It is a closed embedding
+Given `f : X → Y` we can form the pullback $`X \times_Y X`; the diagonal map
+$`\Delta: X \to X \times_Y X` is always an embedding. It is a closed embedding
 iff `f` is a separated map, iff the equal locus of any two continuous maps
 coequalized by `f` is closed. It is an open embedding iff `f` is locally injective,
 iff any such equal locus is open. Therefore, if `f` is a locally injective separated map,

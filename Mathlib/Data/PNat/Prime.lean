@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Data.PNat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primality and GCD on pnat
 
@@ -94,7 +97,9 @@ theorem eq_one_of_lt_two {n : ℕ+} : n < 2 → n = 1 := by
 
 section Prime
 
-/-! ### Prime numbers -/
+/-!
+# Prime numbers
+-/
 
 
 /-- Primality predicate for `ℕ+`, defined in terms of `Nat.Prime`. -/
@@ -152,7 +157,9 @@ end Prime
 
 section Coprime
 
-/-! ### Coprime numbers and gcd -/
+/-!
+# Coprime numbers and gcd
+-/
 
 
 /-- Two pnats are coprime if their gcd is 1. -/

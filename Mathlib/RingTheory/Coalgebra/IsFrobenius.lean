@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Bialgebra.Basic
 
 import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Frobenius equations
 
@@ -20,6 +23,7 @@ A coalgebra with an algebra structure is said to be Frobenius when the Frobenius
 is satisfied:
 `(id ⊗ mul') ∘ assoc ∘ (comul ⊗ id) = (mul' ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 which in diagrams looks like
+
 ```
 |    |             |    |
 |    μ             μ    |
@@ -28,6 +32,7 @@ which in diagrams looks like
   δ    |         |    δ
   |    |         |    |
 ```
+
 where `μ` stands for multiplication and `δ` for comultiplication.
 We define the left diagram as `Coalgebra.IsFrobenius.left` and the right as
 `Coalgebra.IsFrobenius.right` in order to shorten the names.
@@ -35,6 +40,7 @@ We define the left diagram as `Coalgebra.IsFrobenius.left` and the right as
 When the Frobenius equations are satisfied, we actually get
 `(id ⊗ mul') ∘ assoc ∘ (comul ⊗ id) = comul ∘ mul' = (mul' ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
 which in diagrams looks like
+
 ```
 |    |                           |    |
 |    μ           |   |           μ    |
@@ -43,6 +49,7 @@ which in diagrams looks like
   δ    |          / \          |    δ
   |    |         |   |         |    |
 ```
+
 In texts, this is what the Frobenius equations are usually referred to as.
 
 ## Main definitions and results
@@ -62,7 +69,6 @@ In texts, this is what the Frobenius equations are usually referred to as.
 
 * show `IsFrobenius R (A ⊗ B)`
 * show `IsFrobenius R (A × B)`
-
 -/
 
 public section
@@ -80,7 +86,9 @@ local notation3 "β⁻¹" => (TensorProduct.lid R _).symm.toLinearMap
 local notation "rT" => rTensor
 local notation "lT" => lTensor
 
-/-! ### Definition and basic properties -/
+/-!
+# Definition and basic properties
+-/
 
 section Defs
 variable (R A)
@@ -96,7 +104,8 @@ lemma Coalgebra.IsFrobenius.left_def : left R A = lT A μ[R] ∘ₗ α ∘ₗ rT
 
 lemma Coalgebra.IsFrobenius.right_def : right R A = rT A μ[R] ∘ₗ α⁻¹ ∘ₗ lT A δ := rfl
 
-/-- A coalgebra with an algebra structure is said to be **Frobenius** when
+/--
+A coalgebra with an algebra structure is said to be *Frobenius* when
 the Frobenius equation is satisfied, i.e., `IsFrobenius.left` and `IsFrobenius.right` are equal,
 in other words,
 
@@ -107,7 +116,8 @@ being equal to `comul ∘ mul'`.
 
 When the Frobenius equations are satisfied, the bilinear form `mul.compr₂ counit` is
 nondegenerate and bijective (see `IsFrobenius.nondegenerate_compr₂_mul_counit` and
-`IsFrobenius.bijective_compr₂_mul_counit`). -/
+`IsFrobenius.bijective_compr₂_mul_counit`).
+-/
 class Coalgebra.IsFrobenius : Prop where
   /-- The Frobenius equation. -/
   left_eq_right : IsFrobenius.left R A = IsFrobenius.right R A
@@ -136,10 +146,12 @@ lemma left_eq_comul_comp_mul' : left R A = δ ∘ₗ μ[R] := by
 lemma right_eq_comul_comp_mul' : right R A = δ ∘ₗ μ[R] := by
   rw [← left_eq_right, left_eq_comul_comp_mul']
 
-/-! ### Unital coalgebras
+/-!
+# Unital coalgebras
 
 When our coalgebra is unital and satisfies the Frobenius equations, we get that the counit is
-nondegenerate, and that it is finite and projective. -/
+nondegenerate, and that it is finite and projective.
+-/
 
 section nonAssoc
 variable {A : Type*} [NonAssocSemiring A] [Module R A] [Coalgebra R A]
@@ -197,28 +209,34 @@ lemma compr₂_mul_counit_bijective : (⇑((mul R A).compr₂ ε)).Bijective := 
 
 end nonAssoc
 
-/-! ### The snake equations
+/-!
+# The snake equations
 
 Composing the Frobenius equations with the counit and algebra map gives the so called "snake"
-equations. -/
+equations.
+-/
 
 section Algebra
 variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [IsFrobenius R A]
 
-/-- Composing the left Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
+/--
+Composing the left Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
 See `rTensor_counit_comp_right_comp_lTensor_algebraLinearMap` for the right Frobenius equation
 version.
 
-(This is sometimes known as the left snake equation.) -/
+(This is sometimes known as the left snake equation.)
+-/
 lemma lTensor_counit_comp_left_comp_rTensor_algebraLinearMap :
     lT A ε ∘ₗ left R A ∘ₗ rT A η[R] = (TensorProduct.comm R R A).toLinearMap := by
   ext; simp [left_eq_comul_comp_mul']
 
-/-- Composing the right Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
+/--
+Composing the right Frobenius equation with `Coalgebra.counit` and `Algebra.linearMap`.
 See `lTensor_counit_comp_left_comp_rTensor_algebraLinearMap` for the left Frobenius equation
 version.
 
-(This is sometimes known as the right snake equation.) -/
+(This is sometimes known as the right snake equation.)
+-/
 lemma rTensor_counit_comp_right_comp_lTensor_algebraLinearMap :
     rT A ε ∘ₗ right R A ∘ₗ lT A η[R] = (TensorProduct.comm R A R).toLinearMap := by
   ext; simp [right_eq_comul_comp_mul']
@@ -227,10 +245,12 @@ end Algebra
 
 end Coalgebra.IsFrobenius
 
-/-! ### Bialgebras and the Frobenius equations
+/-!
+# Bialgebras and the Frobenius equations
 
 If a bialgebra `A` over `R` satisfies the Frobenius equations, then `A` is
-isomorphic to the underlying ring `R`. -/
+isomorphic to the underlying ring `R`.
+-/
 
 namespace Bialgebra
 variable {A : Type*} [Semiring A] [Bialgebra R A] [IsFrobenius R A]

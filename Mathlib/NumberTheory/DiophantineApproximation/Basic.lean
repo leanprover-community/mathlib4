@@ -9,24 +9,28 @@ public import Mathlib.NumberTheory.Real.Irrational
 
 import Mathlib.RingTheory.Int.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diophantine Approximation
 
 The first part of this file gives proofs of various versions of
-**Dirichlet's approximation theorem** and its important consequence that when $\xi$ is an
-irrational real number, then there are infinitely many rationals $x/y$ (in lowest terms)
+*Dirichlet's approximation theorem* and its important consequence that when $`\xi` is an
+irrational real number, then there are infinitely many rationals $`x/y` (in lowest terms)
 such that
-$$\left|\xi - \frac{x}{y}\right| < \frac{1}{y^2} \,.$$
+$$`\left|\xi - \frac{x}{y}\right| < \frac{1}{y^2} \,.`
 The proof is based on the pigeonhole principle.
 
-The second part of the file gives a proof of **Legendre's Theorem** on rational approximation,
-which states that if $\xi$ is a real number and $x/y$ is a rational number such that
-$$\left|\xi - \frac{x}{y}\right| < \frac{1}{2y^2} \,,$$
-then $x/y$ must be a convergent of the continued fraction expansion of $\xi$.
+The second part of the file gives a proof of *Legendre's Theorem* on rational approximation,
+which states that if $`\xi` is a real number and $`x/y` is a rational number such that
+$$`\left|\xi - \frac{x}{y}\right| < \frac{1}{2y^2} \,,`
+then $`x/y` must be a convergent of the continued fraction expansion of $`\xi`.
 
 ## Main statements
 
 The main results are three variants of Dirichlet's approximation theorem:
+
 * `Real.exists_int_int_abs_mul_sub_le`, which states that for all real `ξ` and natural `0 < n`,
   there are integers `j` and `k` with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`,
 * `Real.exists_nat_abs_mul_sub_round_le`, which replaces `j` by `round(k*ξ)` and uses
@@ -35,10 +39,12 @@ The main results are three variants of Dirichlet's approximation theorem:
   satisfying `|ξ - q| ≤ 1/((n+1)*q.den)` and `q.den ≤ n`,
 
 and
+
 * `Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational`, which states that
   for irrational `ξ`, the set `{q : ℚ | |ξ - q| < 1/q.den^2}` is infinite.
 
 We also show a converse,
+
 * `Rat.finite_rat_abs_sub_lt_one_div_den_sq`, which states that the set above is finite
   when `ξ` is a rational number.
 
@@ -60,9 +66,10 @@ of Legendre's Theorem. For remarks on the proof of Legendre's Theorem, see below
 
 ## References
 
-<https://en.wikipedia.org/wiki/Dirichlet%27s_approximation_theorem>
-<https://de.wikipedia.org/wiki/Kettenbruch> (The German Wikipedia page on continued
-fractions is much more extensive than the English one.)
+[
+https://en.wikipedia.org/wiki/Dirichlet%27s\_approximation\_theorem](https://en.wikipedia.org/wiki/Dirichlet%27s_approximation_theorem)
+[https://de.wikipedia.org/wiki/Kettenbruch](https://de.wikipedia.org/wiki/Kettenbruch) (The German
+Wikipedia page on continued fractions is much more extensive than the English one.)
 
 ## Tags
 
@@ -77,7 +84,7 @@ namespace Real
 section Dirichlet
 
 /-!
-### Dirichlet's approximation theorem
+# Dirichlet's approximation theorem
 
 We show that for any real number `ξ` and positive natural `n`, there is a fraction `q`
 such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
@@ -86,11 +93,13 @@ such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
 
 open Finset Int
 
-/-- *Dirichlet's approximation theorem:*
+/--
+_Dirichlet's approximation theorem:_
 For any real number `ξ` and positive natural `n`, there are integers `j` and `k`,
 with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`.
 
-See also `Real.exists_nat_abs_mul_sub_round_le`. -/
+See also `Real.exists_nat_abs_mul_sub_round_le`.
+-/
 theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ j k : ℤ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - j| ≤ 1 / (n + 1) := by
   let f : ℤ → ℤ := fun m => ⌊fract (ξ * m) * (n + 1)⌋
@@ -127,7 +136,8 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     · congr; push_cast; simp only [fract]; ring
     exact (abs_sub_lt_one_of_floor_eq_floor hxy.symm).le
 
-/-- *Dirichlet's approximation theorem:*
+/--
+_Dirichlet's approximation theorem:_
 For any real number `ξ` and positive natural `n`, there is a natural number `k`,
 with `0 < k ≤ n` such that `|k*ξ - round(k*ξ)| ≤ 1/(n+1)`.
 -/
@@ -138,11 +148,13 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   rw [← hk] at hk₀ hk₁ h
   exact ⟨k.toNat, natCast_pos.mp hk₀, Nat.cast_le.mp hk₁, (round_le (↑k.toNat * ξ) j).trans h⟩
 
-/-- *Dirichlet's approximation theorem:*
+/--
+_Dirichlet's approximation theorem:_
 For any real number `ξ` and positive natural `n`, there is a fraction `q`
 such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
 
-See also `AddCircle.exists_norm_nsmul_le`. -/
+See also `AddCircle.exists_norm_nsmul_le`.
+-/
 theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ q : ℚ, |ξ - q| ≤ 1 / ((n + 1) * q.den) ∧ q.den ≤ n := by
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
@@ -161,7 +173,7 @@ end Dirichlet
 section RatApprox
 
 /-!
-### Infinitely many good approximations to irrational numbers
+# Infinitely many good approximations to irrational numbers
 
 We show that an irrational real number `ξ` has infinitely many "good rational approximations",
 i.e., fractions `x/y` in lowest terms such that `|ξ - x/y| < 1/y^2`.
@@ -209,7 +221,7 @@ end Real
 namespace Rat
 
 /-!
-### Finitely many good approximations to rational numbers
+# Finitely many good approximations to rational numbers
 
 We now show that a rational number `ξ` has only finitely many good rational
 approximations.
@@ -284,17 +296,17 @@ theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
   norm_cast
 
 /-!
-### Legendre's Theorem on Rational Approximation
+# Legendre's Theorem on Rational Approximation
 
-We prove **Legendre's Theorem** on rational approximation: If $\xi$ is a real number and
-$x/y$ is a rational number such that $|\xi - x/y| < 1/(2y^2)$,
-then $x/y$ is a convergent of the continued fraction expansion of $\xi$.
+We prove *Legendre's Theorem* on rational approximation: If $`\xi` is a real number and
+$`x/y` is a rational number such that $`|\xi - x/y| < 1/(2y^2)`,
+then $`x/y` is a convergent of the continued fraction expansion of $`\xi`.
 
 The proof is by induction. However, the induction proof does not work with the
 statement as given, since the assumption is too weak to imply the corresponding
 statement for the application of the induction hypothesis. This can be remedied
-by making the statement slightly stronger. Namely, we assume that $|\xi - x/y| < 1/(y(2y-1))$
-when $y \ge 2$ and $-\frac{1}{2} < \xi - x < 1$ when $y = 1$.
+by making the statement slightly stronger. Namely, we assume that $`|\xi - x/y| < 1/(y(2y-1))`
+when $`y \ge 2` and $`-\frac{1}{2} < \xi - x < 1` when $`y = 1`.
 -/
 
 
@@ -305,7 +317,7 @@ namespace Real
 open Int
 
 /-!
-### Convergents: definition and API lemmas
+# Convergents: definition and API lemmas
 -/
 
 
@@ -355,7 +367,7 @@ end Real
 end Convergent
 
 /-!
-### The key technical condition for the induction proof
+# The key technical condition for the induction proof
 -/
 
 
@@ -483,11 +495,13 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
 end
 
 /-!
-### The main result
+# The main result
 -/
 
 
-/-- The technical version of *Legendre's Theorem*. -/
+/--
+The technical version of _Legendre's Theorem_.
+-/
 theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
   induction v using Nat.strong_induction_on generalizing ξ u with | ind v ih
@@ -530,10 +544,12 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
       (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
       cast_natCast, inv_div, sub_div, mul_div_cancel_right₀ _ Hv, add_sub_cancel]
 
-/-- The main result, *Legendre's Theorem* on rational approximation:
+/--
+The main result, _Legendre's Theorem_ on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
-This version uses `Real.convergent`. -/
+This version uses `Real.convergent`.
+-/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
     ∃ n, q = ξ.convergent n := by
   refine q.num_div_den ▸ exists_rat_eq_convergent' ⟨?_, fun hd => ?_, ?_⟩

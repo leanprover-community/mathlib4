@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.Logic.Function.Coequalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coequalizers in Type
 
 The coequalizer of a pair of maps `(f, g)` from `X` to `Y`
 is the quotient of `Y` by `∀ x : Y, f x ~ g x`
-
 -/
 
 @[expose] public section

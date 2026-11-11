@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trivial Valuative Relations
 
@@ -17,7 +20,6 @@ by the trivial valuation which sends all non-zero elements to `1`.
 ## TODO
 
 A trivial valuative relation is equivalent to the value group being isomorphic to `WithZero Unit`.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictlyUnitary
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strict pseudofunctors
 
@@ -20,7 +23,6 @@ underlying categories, see `StrictPseudofunctor.toFunctor`.
 
 Once the deprecated `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean` is removed we should
 rename this file to `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean`.
-
 -/
 
 @[expose] public section
@@ -46,13 +48,15 @@ structure StrictPseudofunctor extends StrictlyUnitaryPseudofunctor B C where
   mapComp_eq_eqToIso : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
     mapComp f g = eqToIso (map_comp f g) := by cat_disch
 
-/-- A helper structure that bundles the necessary data to
+/--
+A helper structure that bundles the necessary data to
 construct a `StrictPseudofunctor`.
 
 `StrictPseudofunctorPreCore` does not construct a Pseudofunctor in general,
 since it does not include the compatibility conditions on the associator
 and unitors. However, when the underlying bicategories are strict, a
-`StrictPseudofunctorPreCore` does induce a `StrictPseudofunctor`. -/
+`StrictPseudofunctorPreCore` does induce a `StrictPseudofunctor`.
+-/
 structure StrictPseudofunctorPreCore extends PrelaxFunctor B C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
   map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) = map f ≫ map g := by

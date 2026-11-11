@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Composition.Comp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducibility of kernels
 
@@ -31,9 +34,8 @@ that is, there is a positive probability of reaching any
 
 ## References
 
-* [Meyn, S.P. and Tweedie, R.L., *Markov Chains and Stochastic Stability*][meyntweedie1993]
-* [C Robert, G Casella, *Monte Carlo Statistical Methods*][robertcasella2004]
-
+* ‍\[Meyn, S.P. and Tweedie, R.L., _Markov Chains and Stochastic Stability_\]\[meyntweedie1993\]
+* ‍\[C Robert, G Casella, _Monte Carlo Statistical Methods_\]\[robertcasella2004\]
 -/
 
 public section
@@ -48,10 +50,12 @@ variable {α : Type*} {mα : MeasurableSpace α}
 
 namespace Kernel
 
-/-- A kernel `κ : Kernel α α` is `φ`-irreducible (w.r.t. a given measure `φ` on `α`),
+/--
+A kernel `κ : Kernel α α` is `φ`-irreducible (w.r.t. a given measure `φ` on `α`),
 if for every measurable set `A` with positive measure under `φ`,
 and for every `a : α`, there exists an integer `n` such that `(κ ^ n) a A > 0`.
-Ref. *Meyn-Tweedie* Proposition 4.2.1(ii), page 89 -/
+Ref. _Meyn-Tweedie_ Proposition 4.2.1(ii), page 89
+-/
 @[mk_iff]
 class IsIrreducible (φ : Measure α) (κ : Kernel α α) : Prop where
   irreducible ⦃A⦄ (hA : MeasurableSet A) (hφA : φ A > 0) a :

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Order.CompleteSublattice
 public import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isotypic modules and isotypic components
 
@@ -17,21 +20,16 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 * `IsIsotypicOfType R M S` means that all simple submodules of the `R`-module `M`
   are isomorphic to `S`. Such a module `M` is isomorphic to a finsupp over `S`,
   see `IsIsotypicOfType.linearEquiv_finsupp`.
-
 * `IsIsotypic R M` means that all simple submodules of the `R`-module `M`
   are isomorphic to each other.
-
 * `isotypicComponent R M S` is the sum of all submodules of `M` isomorphic to `S`.
-
 * `isotypicComponents R M` is the set of all nontrivial isotypic components of `M`
   (where `S` is taken to be simple submodules).
-
 * `Submodule.IsFullyInvariant N` means that the submodule `N` of an `R`-module `M` is mapped into
   itself by all endomorphisms of `M`. The `fullyInvariantSubmodule`s of `M` form a complete
   lattice, which is atomic if `M` is semisimple, in which case the atoms are the isotypic
   components of `M`. A fully invariant submodule of a semiring as a module over itself
   is simply a two-sided ideal, see `isFullyInvariant_iff_isTwoSided`.
-
 * `iSupIndep.ringEquiv`, `iSupIndep.algEquiv`: if `M` is the direct sum of fully invariant
   submodules `Nᵢ`, then `End R M` is isomorphic to `Πᵢ End R Nᵢ`. This can be applied to
   the isotypic components of a semisimple module `M`, yielding `IsSemisimpleModule.endAlgEquiv`.
@@ -39,7 +37,6 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 ## Keywords
 
 isotypic component, fully invariant submodule
-
 -/
 
 @[expose] public section
@@ -332,11 +329,13 @@ section IsFullyInvariant
 
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- A submodule `N` an `R`-module `M` is fully invariant if `N` is mapped into itself by all
+/--
+A submodule `N` an `R`-module `M` is fully invariant if `N` is mapped into itself by all
 `R`-linear endomorphisms of `M`.
 
 If `M` is semisimple, this is equivalent to `N` being a sum of isotypic components of `M`:
-see `isFullyInvariant_iff_sSup_isotypicComponents`. -/
+see `isFullyInvariant_iff_sSup_isotypicComponents`.
+-/
 def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
   ∀ f : Module.End R M, N ≤ N.comap f
 

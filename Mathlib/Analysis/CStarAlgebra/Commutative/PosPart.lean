@@ -12,7 +12,12 @@ public import Mathlib.Analysis.RCLike.ContinuousMap
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
 import Mathlib.Analysis.CStarAlgebra.Hom
 
-/-! # monotonicity of `a ↦ a⁺` on commuting elements in a C⋆-algebra -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# monotonicity of `a ↦ a⁺` on commuting elements in a C⋆-algebra
+-/
 
 open scoped CStarAlgebra ComplexOrder
 

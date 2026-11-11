@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
-/-! # Measurability of the line derivative
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Measurability of the line derivative
 
 We prove in `measurable_lineDeriv` that the line derivative of a function (with respect to a
 locally compact scalar field) is measurable, provided the function is continuous.

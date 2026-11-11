@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `LiesOver` instances for completions of number fields
 

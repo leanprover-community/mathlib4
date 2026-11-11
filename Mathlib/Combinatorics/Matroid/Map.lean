@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps between matroids
 
@@ -37,27 +40,20 @@ In the definitions below, `M` and `N` are matroids on `α` and `β` respectively
   in which each `I` is independent if and only if `f` is injective on `I` and
   `f '' I` is independent in `N`.
   (For each nonloop `x` of `N`, the set `f ⁻¹' {x}` is a parallel class of `N.comap f`)
-
 * `Matroid.comapOn N f E` is the restriction of `N.comap f` to `E` for some `E : Set α`.
-
 * For an embedding `f : M.E ↪ β` defined on the subtype `↑M.E`,
   `Matroid.mapSetEmbedding M f` is the matroid on `β` with ground set `range f`
   whose independent sets are the images of those in `M`. This matroid is isomorphic to `M`.
-
 * For a function `f : α → β` and a proof `hf` that `f` is injective on `M.E`,
   `Matroid.map f hf` is the matroid on `β` with ground set `f '' M.E`
   whose independent sets are the images of those in `M`. This matroid is isomorphic to `M`,
   and does not depend on the values `f` takes outside `M.E`.
-
 * `Matroid.mapEmbedding f` is a version of `Matroid.map` where `f : α ↪ β` is a bundled embedding.
   It is defined separately because the global injectivity of `f` gives some nicer `simp` lemmas.
-
 * `Matroid.mapEquiv f` is a version of `Matroid.map` where `f : α ≃ β` is a bundled equivalence.
   It is defined separately because we get even nicer `simp` lemmas.
-
 * `Matroid.mapSetEquiv f` is a version of `Matroid.map` where `f : M.E ≃ E` is an equivalence on
   subtypes. It gives a matroid on `β` with ground set `E`.
-
 * For `X : Set α`, `Matroid.restrictSubtype M X` is the `Matroid ↥X` with ground set
   `univ : Set ↥X`. This matroid is isomorphic to `M ↾ X`.
 
@@ -77,8 +73,8 @@ we define `mapEmbedding` and `mapEquiv` separately from `map`.
 ## Notes
 
 For finite matroids, both maps and comaps are a special case of a construction of
-Perfect [perfect1969matroid] in which a matroid structure can be transported across an arbitrary
-bipartite graph that may not correspond to a function at all (See [oxley2011], Theorem 11.2.12).
+Perfect \[perfect1969matroid\] in which a matroid structure can be transported across an arbitrary
+bipartite graph that may not correspond to a function at all (See \[oxley2011\], Theorem 11.2.12).
 It would have been nice to use this more general construction as a basis for the definition
 of both `Matroid.map` and `Matroid.comap`.
 
@@ -87,7 +83,7 @@ Specifically, if `M₁` and `M₂` are matroids on the same type `α`,
 and `f` is the natural function from `α ⊕ α` to `α`,
 then the images under `f` of the independent sets of the direct sum `M₁ ⊕ M₂` are
 the independent sets of a matroid if and only if the union of `M₁` and `M₂` is a matroid,
-and unions do not exist for some pairs of infinite matroids: see [aignerhorev2012infinite].
+and unions do not exist for some pairs of infinite matroids: see \[aignerhorev2012infinite\].
 For this reason, `Matroid.map` requires injectivity to be well-defined in general.
 
 ## TODO
@@ -97,9 +93,9 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 
 ## References
 
-* [E. Aigner-Horev, J. Carmesin, J. Fröhlich, Infinite Matroid Union][aignerhorev2012infinite]
-* [H. Perfect, Independence Spaces and Combinatorial Problems][perfect1969matroid]
-* [J. Oxley, Matroid Theory][oxley2011]
+* ‍\[E. Aigner-Horev, J. Carmesin, J. Fröhlich, Infinite Matroid Union\]\[aignerhorev2012infinite\]
+* ‍\[H. Perfect, Independence Spaces and Combinatorial Problems\]\[perfect1969matroid\]
+* ‍\[J. Oxley, Matroid Theory\]\[oxley2011\]
 -/
 
 @[expose] public section

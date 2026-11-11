@@ -8,6 +8,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about both conditional expectations
 

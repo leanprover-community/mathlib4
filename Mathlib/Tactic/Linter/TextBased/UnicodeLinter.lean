@@ -8,6 +8,9 @@ module
 import Mathlib.Init
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tools for the unicode Linter
 
@@ -15,8 +18,8 @@ The actual linter is defined in `TextBased.lean`.
 
 This file defines the allowlist and other tools used by the linter.
 
-**When changing, make sure to stay in sync with [style guide](https://github.com/leanprover-community/leanprover-community.github.io/blob/lean4/templates/contribute/style.md#unicode-usage)**
-
+*When changing, make sure to stay in sync with [style
+guide](https://github.com/leanprover-community/leanprover-community.github.io/blob/lean4/templates/contribute/style.md#unicode-usage)*
 -/
 
 namespace Mathlib.Linter.TextBased.UnicodeLinter
@@ -142,13 +145,14 @@ Other unicode characters present in Mathlib but not present in any of the above 
 
 This list may be extended by more characters for which no VSCode-extension abbreviation exists.
 Some guidelines:
-- No invisible characters
-- No characters affecting text directionality (Mathlib uses left-to-right text).
-- No [Private Use Areas](https://en.wikipedia.org/wiki/Private_Use_Areas)
 
-The list `withVSCodeAbbrev` contains characters with abbreviations; if an abbreviation
-already has been defined, you might need to update the list `withVSCodeAbbrev`.
-Further, consider proposing an abbreviation to [the extension](https://github.com/leanprover/vscode-lean4) for new symbols.
+* No invisible characters
+* No characters affecting text directionality (Mathlib uses left-to-right text).
+* No [Private Use Areas](https://en.wikipedia.org/wiki/Private_Use_Areas)
+
+The list `withVSCodeAbbrev` contains characters with abbreviations; if an abbreviation already has
+been defined, you might need to update the list `withVSCodeAbbrev`. Further, consider proposing an
+abbreviation to [the extension](https://github.com/leanprover/vscode-lean4) for new symbols.
 
 Empty lines for improved readability (otherwise some characters overlap in some fonts).
 -/
@@ -193,15 +197,17 @@ public def unrestricted : Array Char := #[
   '⚠' -- ⚠️, ⚠. Lake output uses '⚠' and does not include the text selector.
 ]
 
-/-- If `false`, the character is not allowed in Mathlib.
+/--
+If `false`, the character is not allowed in Mathlib.
 
 Implemented using an allowlist consisting of:
-- certain ASCII characters
-- certain emojis (`emojis`)
-- certain non-emoji variants of emojifiable characters (`nonEmojis`)
-- certain characters with no selector restrictions (`unrestricted`)
-- characters with abbreviations in the VSCode extension (`withVSCodeAbbrev`)
-- "the rest" (`othersInMathlib`)
+
+* certain ASCII characters
+* certain emojis (`emojis`)
+* certain non-emoji variants of emojifiable characters (`nonEmojis`)
+* certain characters with no selector restrictions (`unrestricted`)
+* characters with abbreviations in the VSCode extension (`withVSCodeAbbrev`)
+* "the rest" (`othersInMathlib`)
 
 Note: if `true`, a character might still not be allowed depending on context
 (e.g. misplaced variant selectors).

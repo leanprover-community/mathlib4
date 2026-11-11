@@ -9,6 +9,9 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.PiLex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order properties on tuples
 -/
@@ -166,30 +169,36 @@ def OrderIso.finTwoArrowIso (α : Type*) [Preorder α] : (Fin 2 → α) ≃o α 
 
 namespace Fin
 
-/-- Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
+/--
+Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
 `n` given by separating out the first element of the tuple.
 
-This is `Fin.cons` as an `OrderIso`. -/
+This is `Fin.cons` as an `OrderIso`.
+-/
 @[simps!, simps toEquiv]
 def consOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
     α 0 × (∀ i, α (succ i)) ≃o ∀ i, α i where
   toEquiv := consEquiv α
   map_rel_iff' := forall_iff_succ
 
-/-- Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
+/--
+Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
 `n` given by separating out the last element of the tuple.
 
-This is `Fin.snoc` as an `OrderIso`. -/
+This is `Fin.snoc` as an `OrderIso`.
+-/
 @[simps!, simps toEquiv]
 def snocOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] :
     α (last n) × (∀ i, α (castSucc i)) ≃o ∀ i, α i where
   toEquiv := snocEquiv α
   map_rel_iff' := by simp [Pi.le_def, Prod.le_def, forall_iff_castSucc]
 
-/-- Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
+/--
+Order isomorphism between tuples of length `n + 1` and pairs of an element and a tuple of length
 `n` given by separating out the `p`-th element of the tuple.
 
-This is `Fin.insertNth` as an `OrderIso`. -/
+This is `Fin.insertNth` as an `OrderIso`.
+-/
 @[simps!, simps toEquiv]
 def insertNthOrderIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)] (p : Fin (n + 1)) :
     α p × (∀ i, α (p.succAbove i)) ≃o ∀ i, α i where

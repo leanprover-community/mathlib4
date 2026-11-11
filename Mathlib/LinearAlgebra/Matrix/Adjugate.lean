@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cramer's rule and adjugate matrices
 
@@ -34,7 +37,7 @@ We prove the adjugate behaves like `det A • A⁻¹`.
 
 ## References
 
-  * https://en.wikipedia.org/wiki/Cramer's_rule#Finding_inverse_matrix
+* https://en.wikipedia.org/wiki/Cramer's\_rule#Finding\_inverse\_matrix
 
 ## Tags
 
@@ -56,21 +59,22 @@ open Matrix Polynomial Equiv Equiv.Perm Finset
 section Cramer
 
 /-!
-  ### `cramer` section
+# `cramer` section
 
-  Introduce the linear map `cramer` with values defined by `cramerMap`.
-  After defining `cramerMap` and showing it is linear,
-  we will restrict our proofs to using `cramer`.
+Introduce the linear map `cramer` with values defined by `cramerMap`.
+After defining `cramerMap` and showing it is linear,
+we will restrict our proofs to using `cramer`.
 -/
 
 
 variable (A : Matrix n n α) (b : n → α)
 
-/-- `cramerMap A b i` is the determinant of the matrix `A` with column `i` replaced with `b`,
-  and thus `cramerMap A b` is the vector output by Cramer's rule on `A` and `b`.
+/--
+`cramerMap A b i` is the determinant of the matrix `A` with column `i` replaced with `b`,
+and thus `cramerMap A b` is the vector output by Cramer's rule on `A` and `b`.
 
-  If `A * x = b` has a unique solution in `x`, `cramerMap A` sends the vector `b` to `A.det • x`.
-  Otherwise, the outcome of `cramerMap` is well-defined but not necessarily useful.
+If `A * x = b` has a unique solution in `x`, `cramerMap A` sends the vector `b` to `A.det • x`.
+Otherwise, the outcome of `cramerMap` is well-defined but not necessarily useful.
 -/
 def cramerMap (i : n) : α :=
   (A.updateCol i b).det
@@ -84,11 +88,12 @@ theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
   · apply (cramerMap_is_linear A i).1
   · apply (cramerMap_is_linear A i).2
 
-/-- `cramer A b i` is the determinant of the matrix `A` with column `i` replaced with `b`,
-  and thus `cramer A b` is the vector output by Cramer's rule on `A` and `b`.
+/--
+`cramer A b i` is the determinant of the matrix `A` with column `i` replaced with `b`,
+and thus `cramer A b` is the vector output by Cramer's rule on `A` and `b`.
 
-  If `A * x = b` has a unique solution in `x`, `cramer A` sends the vector `b` to `A.det • x`.
-  Otherwise, the outcome of `cramer` is well-defined but not necessarily useful.
+If `A * x = b` has a unique solution in `x`, `cramer A` sends the vector `b` to `A.det • x`.
+Otherwise, the outcome of `cramer` is well-defined but not necessarily useful.
 -/
 def cramer (A : Matrix n n α) : (n → α) →ₗ[α] (n → α) :=
   IsLinearMap.mk' (cramerMap A) (cramer_is_linear A)
@@ -169,20 +174,21 @@ end Cramer
 section Adjugate
 
 /-!
-### `adjugate` section
+# `adjugate` section
 
 Define the `adjugate` matrix and a few equations.
 These will hold for any matrix over a commutative ring.
 -/
 
 
-/-- The adjugate matrix is the transpose of the cofactor matrix.
+/--
+The adjugate matrix is the transpose of the cofactor matrix.
 
-  Typically, the cofactor matrix is defined by taking minors,
-  i.e. the determinant of the matrix with a row and column removed.
-  However, the proof of `mul_adjugate` becomes a lot easier if we use the
-  matrix replacing a column with a basis vector, since it allows us to use
-  facts about the `cramer` map.
+Typically, the cofactor matrix is defined by taking minors,
+i.e. the determinant of the matrix with a row and column removed.
+However, the proof of `mul_adjugate` becomes a lot easier if we use the
+matrix replacing a column with a basis vector, since it allows us to use
+facts about the `cramer` map.
 -/
 def adjugate (A : Matrix n n α) : Matrix n n α :=
   of fun i => cramer Aᵀ (Pi.single i 1)

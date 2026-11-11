@@ -10,6 +10,9 @@ public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.Field.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence of Recursive and Direct Computations of Convergents of Generalized Continued Fractions
 
@@ -18,28 +21,24 @@ import Mathlib.Algebra.Field.Basic
 We show the equivalence of two computations of convergents (recurrence relation (`convs`) vs.
 direct evaluation (`convs'`)) for generalized continued fractions
 (`GenContFract`s) on linear ordered fields. We follow the proof from
-[hardy2008introduction], Chapter 10. Here's a sketch:
+‍\[hardy2008introduction\], Chapter 10. Here's a sketch:
 
 Let `c` be a continued fraction `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`, visually:
-$$
-  c = h + \dfrac{a_0}
-                {b_0 + \dfrac{a_1}
-                             {b_1 + \dfrac{a_2}
-                                          {b_2 + \dfrac{a_3}
-                                                       {b_3 + \dots}}}}
-$$
+$$`  c = h + \dfrac{a_0} {b_0 + \dfrac{a_1} {b_1 + \dfrac{a_2} {b_2 + \dfrac{a_3} {b_3 + \dots}}}}  `
 One can compute the convergents of `c` in two ways:
+
 1. Directly evaluating the fraction described by `c` up to a given `n` (`convs'`)
 2. Using the recurrence (`convs`):
-  - `A₋₁ = 1,  A₀ = h,  Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, and
-  - `B₋₁ = 0,  B₀ = 1,  Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`.
+
+* `A₋₁ = 1,  A₀ = h,  Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, and
+* `B₋₁ = 0,  B₀ = 1,  Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`.
 
 To show the equivalence of the computations in the main theorem of this file
 `convs_eq_convs'`, we proceed by induction. The case `n = 0` is trivial.
 
 For `n + 1`, we first "squash" the `n + 1`th position of `c` into the `n`th position to obtain
 another continued fraction
-  `c' := [h; (a₀, b₀),..., (aₙ-₁, bₙ-₁), (aₙ, bₙ + aₙ₊₁ / bₙ₊₁), (aₙ₊₁, bₙ₊₁),...]`.
+`c' := [h; (a₀, b₀),..., (aₙ-₁, bₙ-₁), (aₙ, bₙ + aₙ₊₁ / bₙ₊₁), (aₙ₊₁, bₙ₊₁),...]`.
 This squashing process is formalised in section `Squash`. Note that directly evaluating `c` up to
 position `n + 1` is equal to evaluating `c'` up to `n`. This is shown in lemma
 `succ_nth_conv'_eq_squashGCF_nth_conv'`.
@@ -51,14 +50,15 @@ The corresponding lemma in this file is `succ_nth_conv_eq_squashGCF_nth_conv`.
 
 ## Main Theorems
 
-- `GenContFract.convs_eq_convs'` shows the equivalence under a strict positivity restriction
+* `GenContFract.convs_eq_convs'` shows the equivalence under a strict positivity restriction
   on the sequence.
-- `ContFract.convs_eq_convs'` shows the equivalence for regular continued fractions.
+* `ContFract.convs_eq_convs'` shows the equivalence for regular continued fractions.
 
 ## References
 
-- https://en.wikipedia.org/wiki/Generalized_continued_fraction
-- [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
+* https://en.wikipedia.org/wiki/Generalized\_continued\_fraction
+* ‍\[_Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman,
+  Joseph_\]\[hardy2008introduction\]
 
 ## Tags
 
@@ -78,7 +78,7 @@ section Squash
 
 /-!
 We will show the equivalence of the computations by induction. To make the induction work, we need
-to be able to *squash* the nth and (n + 1)th value of a sequence. This squashing itself and the
+to be able to _squash_ the nth and (n + 1)th value of a sequence. This squashing itself and the
 lemmas about it are not very interesting. As a reader, you hence might want to skip this section.
 -/
 
@@ -175,9 +175,11 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
 /-! Let us now lift the squashing operation to gcfs. -/
 
 
-/-- Given a gcf `g = [h; (a₀, b₀), (a₁, b₁), ...]`, we have
-- `squashGCF g 0 = [h + a₀ / b₀; (a₁, b₁), ...]`,
-- `squashGCF g (n + 1) = ⟨g.h, squashSeq g.s n⟩`
+/--
+Given a gcf `g = [h; (a₀, b₀), (a₁, b₁), ...]`, we have
+
+* `squashGCF g 0 = [h + a₀ / b₀; (a₁, b₁), ...]`,
+* `squashGCF g (n + 1) = ⟨g.h, squashSeq g.s n⟩`
 -/
 def squashGCF (g : GenContFract K) : ℕ → GenContFract K
   | 0 =>
@@ -310,7 +312,8 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
 
 end Squash
 
-/-- Shows that the recurrence relation (`convs`) and direct evaluation (`convs'`) of the
+/--
+Shows that the recurrence relation (`convs`) and direct evaluation (`convs'`) of the
 generalized continued fraction coincide at position `n` if the sequence of fractions contains
 strictly positive values only.
 Requiring positivity of all values is just one possible condition to obtain this result.

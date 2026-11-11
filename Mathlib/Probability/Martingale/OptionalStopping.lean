@@ -9,7 +9,11 @@ public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
 
-/-! # Optional stopping theorem (fair game theorem)
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Optional stopping theorem (fair game theorem)
 
 The optional stopping theorem states that a strongly adapted integrable process `f` is a
 submartingale if and only if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
@@ -18,13 +22,12 @@ stopped value of `f` at `τ` has expectation smaller than its stopped value at `
 This file also contains Doob's maximal inequality: given a non-negative submartingale `f`, for all
 `ε : ℝ≥0`, we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f * n ω = max_{k ≤ n}, f k ω`.
 
-### Main results
+## Main results
 
 * `MeasureTheory.submartingale_iff_expected_stoppedValue_mono`: the optional stopping theorem.
 * `MeasureTheory.Submartingale.stoppedProcess`: the stopped process of a submartingale with
   respect to a stopping time is a submartingale.
 * `MeasureTheory.maximal_ineq`: Doob's maximal inequality.
-
 -/
 
 public section
@@ -136,11 +139,13 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
   · exact le_trans (mul_nonneg ε.coe_nonneg ENNReal.toReal_nonneg) h
 
-/-- **Doob's maximal inequality**: Given a non-negative submartingale `f`, for all `ε : ℝ≥0`,
+/--
+*Doob's maximal inequality*: Given a non-negative submartingale `f`, for all `ε : ℝ≥0`,
 we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f* n ω = max_{k ≤ n}, f k ω`.
 
 In some literature, the Doob's maximal inequality refers to what we call Doob's Lp inequality
-(which is a corollary of this lemma and will be proved in an upcoming PR). -/
+(which is a corollary of this lemma and will be proved in an upcoming PR).
+-/
 theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnonneg : 0 ≤ f) {ε : ℝ≥0}
     (n : ℕ) : ε * μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω} ≤
     ENNReal.ofReal

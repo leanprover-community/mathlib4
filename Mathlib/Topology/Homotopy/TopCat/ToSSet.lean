@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.Topology.Homotopy.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The singular simplicial set functor preserves homotopies
 
@@ -22,7 +25,6 @@ and use that this functor commutes with products, we obtain a morphism
 the morphism `SSet.stdSimplex.toSSetObjI : Δ[1] ⟶ toSSet.obj I`,
 which corresponds to the isomorphism `SSet.stdSimplex.toTopObjIsoI|Δ[1]| ≅ TopCat.I`
 by adjunction.
-
 -/
 
 @[expose] public section

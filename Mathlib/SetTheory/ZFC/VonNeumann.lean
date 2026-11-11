@@ -8,6 +8,9 @@ module
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.ZFC.Class
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Von Neumann hierarchy
 
@@ -17,7 +20,7 @@ that `⋃ o, V_ o = univ`.
 
 ## Notation
 
-- `V_ o` is notation for `vonNeumann o`. It is scoped in the `ZFSet` namespace.
+* `V_ o` is notation for `vonNeumann o`. It is scoped in the `ZFSet` namespace.
 -/
 
 @[expose] public section
@@ -28,12 +31,13 @@ open Order
 
 namespace ZFSet
 
-/-- The von Neumann hierarchy is defined so that `V_ o` is the union of the powersets of all
+/--
+The von Neumann hierarchy is defined so that `V_ o` is the union of the powersets of all
 `V_ a` for `a < o`. It satisfies the following properties:
 
-- `vonNeumann_zero`: `V_ 0 = ∅`
-- `vonNeumann_add_one`: `V_ (a + 1) = powerset (V_ a)`
-- `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b`
+* `vonNeumann_zero`: `V_ 0 = ∅`
+* `vonNeumann_add_one`: `V_ (a + 1) = powerset (V_ a)`
+* `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b`
 -/
 noncomputable def vonNeumann (o : Ordinal.{u}) : ZFSet.{u} :=
   ⋃ a : Set.Iio o, powerset (vonNeumann a)

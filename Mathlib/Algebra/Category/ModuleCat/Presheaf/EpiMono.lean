@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Epimorphisms and monomorphisms in the category of presheaves of modules
 
 In this file, we give characterizations of epimorphisms and monomorphisms
 in the category of presheaves of modules.
-
 -/
 
 public section

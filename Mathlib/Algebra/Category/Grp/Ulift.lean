@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Grp.LargeColimits
 public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Module.CharacterModule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the universe lift functor for groups
 
@@ -37,7 +40,7 @@ that `uliftFunctor.mapCocone c` is also a colimit cocone, but we have no direct 
 to do this. The idea is to use that `AddCommGrpCat.{max v u}` has a small cogenerator,
 which is just the additive (rational) circle `ℚ / ℤ`, so any abelian group of
 any size can be recovered from its morphisms into `ℚ / ℤ`. More precisely, the functor
-sending an abelian group `A` to its dual `A →+ ℚ / ℤ` is fully faithful, *if* we consider
+sending an abelian group `A` to its dual `A →+ ℚ / ℤ` is fully faithful, _if_ we consider
 the dual as a (right) module over the endomorphism ring of `ℚ / ℤ`. So an abelian
 group `C` is totally determined by the restriction of the coyoneda
 functor `A ↦ (C →+ A)` to the category of abelian groups at a smaller universe level.
@@ -56,7 +59,7 @@ is contained in that of `lc.pt`, we use the compatibility with postcomposition a
 fact that we can detect elements of the image just by applying morphisms from
 `Π (_ : lc.pt →+ ℚ / ℤ), ℚ / ℤ` to `ℚ / ℤ`.
 
-Note that this does *not* work for noncommutative groups, because the existence of
+Note that this does _not_ work for noncommutative groups, because the existence of
 simple groups of arbitrary size implies that a general object `G` of `GrpCat` is not
 determined by the restriction of `coyoneda.obj G` to the category of groups at
 a smaller universe level. Indeed, the functor `GrpCat.uliftFunctor` does not commute

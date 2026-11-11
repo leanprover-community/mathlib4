@@ -9,6 +9,9 @@ public import Mathlib.Data.Fintype.Defs
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Row echelon forms
 
@@ -16,16 +19,15 @@ This file defines the row echelon form of matrices and the leading entries of th
 
 ## Main definitions
 
-- `Matrix.IsRowEchelon` expresses that `A` is in row echelon form: an entry of a lower row
+* `Matrix.IsRowEchelon` expresses that `A` is in row echelon form: an entry of a lower row
   vanishes whenever a higher row is zero at every column strictly to its left.
-- `Matrix.IsLeadingEntry`: `c : n` is the leading position of row `i` of `A`.
-- `Matrix.IsReducedRowEchelon` additionally requires each leading entry to be `1` and the
+* `Matrix.IsLeadingEntry`: `c : n` is the leading position of row `i` of `A`.
+* `Matrix.IsReducedRowEchelon` additionally requires each leading entry to be `1` and the
   entries above it to vanish.
 
 ## Tags
 
 matrix, echelon form
-
 -/
 
 @[expose] public section
@@ -50,7 +52,9 @@ theorem IsRowEchelon.row_eq_zero_of_lt [LT m] [LT n] {i₁ i₂ : m} (he : A.IsR
   funext j
   exact he hlt fun j₁ _ => congr($h0 j₁)
 
-/-! ### Leading entries -/
+/-!
+# Leading entries
+-/
 
 /-- `c` is the leading position of row `i`. -/
 def IsLeadingEntry [LT n] (A : Matrix m n R) (i : m) (c : n) : Prop :=
@@ -77,7 +81,9 @@ instance [DecidableEq R] [Fintype n] [LT n] [DecidableLT n]
     (A : Matrix m n R) (i : m) (c : n) : Decidable (A.IsLeadingEntry i c) :=
   decidable_of_iff ((∀ j < c, A i j = 0) ∧ A i c ≠ 0) Iff.rfl
 
-/-! ### Reduced row echelon form -/
+/-!
+# Reduced row echelon form
+-/
 
 /-- `A` is in reduced row echelon form: it is in row echelon form, each leading entry is
 `1`, and entries above a leading entry vanish (entries below one vanish by
@@ -98,7 +104,9 @@ theorem IsReducedRowEchelon.eq_zero_of_ne_of_isLeadingEntry [LinearOrder m] [LT 
 
 end Matrix
 
-/-! ### Properties of row echelon forms -/
+/-!
+# Properties of row echelon forms
+-/
 
 namespace Matrix.IsRowEchelon
 

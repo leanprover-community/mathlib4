@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.Positive
 
 import Mathlib.LinearAlgebra.Eigenspace.Zero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Singular values for finite-dimensional linear maps
 
@@ -24,46 +27,48 @@ This means the positive singular values occur at `0 ≤ i < rank(T)` and not `1 
 
 ## Main definition
 
-- `LinearMap.singularValues`: The infinite but finitely supported sequence of the singular values of
+* `LinearMap.singularValues`: The infinite but finitely supported sequence of the singular values of
   a linear map.
 
 ## Main statements
 
-- `LinearMap.support_singularValues`: The first rank(T) many singular values are positive, and the
+* `LinearMap.support_singularValues`: The first rank(T) many singular values are positive, and the
   rest are zero.
 
 ## Implementation notes
 
 Suppose `T : E →ₗ[𝕜] F` where `dim(E) = n`, `dim(F) = m`.
 In mathematical literature, the number of singular values varies, with popular choices including
-- `rank(T)` singular values, all of which are positive.
-- `min(n,m)` singular values, some of which might be zero.
-- `n` singular values, some of which might be zero. This is the approach taken in [axler2024].
-- Countably infinitely many singular values, with all but finitely many of them being zero.
+
+* `rank(T)` singular values, all of which are positive.
+* `min(n,m)` singular values, some of which might be zero.
+* `n` singular values, some of which might be zero. This is the approach taken in \[axler2024\].
+* Countably infinitely many singular values, with all but finitely many of them being zero.
 
 We take the last approach for the following reasons:
-- It avoid unnecessary dependent typing.
-- You can easily convert this definition to the other three by composing with `Fin.val`, but
+
+* It avoid unnecessary dependent typing.
+* You can easily convert this definition to the other three by composing with `Fin.val`, but
   converting between any two of the other definitions is more inconvenient because it involves
   multiple `Fin` types.
-- If you prefer a definition where there are `k` singular values, you can treat the singular values
+* If you prefer a definition where there are `k` singular values, you can treat the singular values
   after `k` as junk values.
   Not having to prove that `i < k` when getting the `i`th singular value has similar advantages to
   not having to prove that `y ≠ 0` when calculating `x / y`.
-- This API coincides with a potential future API for approximation numbers, which are a
+* This API coincides with a potential future API for approximation numbers, which are a
   generalization of singular values to continuous linear maps between possibly-infinite-dimensional
   normed vector spaces.
 
 ## TODO
 
-- Generalize singular values to the approximation numbers for maps between
+* Generalize singular values to the approximation numbers for maps between
   possibly-infinite-dimensional normed vector spaces.
   This will likely have a similar type signature to the current singular values definition, except
   it will take in a `ContinuousLinearMap` and will not be finitely supported.
 
 ## References
 
-* [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
+* ‍\[Sheldon Axler, _Linear Algebra Done Right_\]\[axler2024\]
 
 ## Tags
 
@@ -149,9 +154,9 @@ theorem singularValues_antitone : Antitone T.singularValues := by
   exact le_of_sq_le_sq this (T.singularValues_nonneg i)
 
 /--
-7.68(a) from [axler2024]. Note that we have countably infinitely many singular values whereas there
-are only dim(domain(T)) singular values in [axler2024], so we modify the statement to account for
-this.
+7.68(a) from \[axler2024\]. Note that we have countably infinitely many singular values whereas
+there are only dim(domain(T)) singular values in \[axler2024\], so we modify the statement to
+account for this.
 -/
 theorem injective_iff_forall_lt_finrank_singularValues_pos :
     Function.Injective T ↔ ∀ i < finrank 𝕜 E, 0 < T.singularValues i := by
@@ -169,7 +174,7 @@ theorem injective_iff_forall_lt_finrank_singularValues_pos :
     simp
 
 /--
-7.68(b) from [axler2024]. See also `LinearMap.support_singularValues` for a stronger statement.
+7.68(b) from \[axler2024\]. See also `LinearMap.support_singularValues` for a stronger statement.
 -/
 theorem card_support_singularValues : T.singularValues.support.card = finrank 𝕜 T.range := by
   have hS : ∀ m ∈ T.singularValues.support, m < finrank 𝕜 E := by

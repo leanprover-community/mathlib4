@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphism properties defined in concrete categories
 
@@ -20,7 +23,6 @@ We introduce type-classes `HasSurjectiveInjectiveFactorization` and
 `HasFunctorialSurjectiveInjectiveFactorization` expressing that in a concrete category `C`,
 all morphisms can be factored (resp. factored functorially) as a surjective map
 followed by an injective map.
-
 -/
 
 @[expose] public section

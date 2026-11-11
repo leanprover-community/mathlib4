@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of adjunctions
 
@@ -20,7 +23,6 @@ have localization functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` wit
 to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagrams
 `[CatCommSq G L₁ L₂ G']` and `[CatCommSq F L₂ L₁ F']`, then we have an
 induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
-
 -/
 
 @[expose] public section

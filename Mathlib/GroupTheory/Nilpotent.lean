@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.Nilpotent.LowerCentralSeries
 public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Sylow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nilpotent groups
 
@@ -24,26 +27,27 @@ by the commutators `hkh⁻¹k⁻¹`. Recall also Lean's conventions that `⊤` d
 subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 
 * `Subgroup.upperCentralSeries G : ℕ → Subgroup G` : the upper central series of a group `G`.
-     This is an increasing sequence of characteristic subgroups `H n` of `G` with `H 0 = ⊥` and
-     `H (n + 1) / H n` is the centre of `G / H n`.
+  This is an increasing sequence of characteristic subgroups `H n` of `G` with `H 0 = ⊥` and
+  `H (n + 1) / H n` is the centre of `G / H n`.
 * `IsNilpotent` : A group G is nilpotent if its upper central series reaches `⊤`, or
-    equivalently if its lower central series reaches `⊥`.
+  equivalently if its lower central series reaches `⊥`.
 * `Group.nilpotencyClass` : the length of the upper central series of a nilpotent group.
 * `IsAscendingCentralSeries (H : ℕ → Subgroup G) : Prop` : Note that in the literature
-    a "central series" for a group is usually defined to be a *finite* sequence of normal subgroups
-    `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
-    central in `G / H (n + 1)`. In this formalisation it is convenient to have a weaker predicate
-    on an infinite sequence of subgroups `H n` of `G`: we say a sequence is an
-    *ascending central series* if `H 0 = ⊥` and `⁅H (n + 1), ⊤⁆ ⊆ H n` for all `n`, with no
-    requirement that the series reaches `⊤` or that the `H i` are normal.
+  a "central series" for a group is usually defined to be a _finite_ sequence of normal subgroups
+  `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
+  central in `G / H (n + 1)`. In this formalisation it is convenient to have a weaker predicate
+  on an infinite sequence of subgroups `H n` of `G`: we say a sequence is an
+  _ascending central series_ if `H 0 = ⊥` and `⁅H (n + 1), ⊤⁆ ⊆ H n` for all `n`, with no
+  requirement that the series reaches `⊤` or that the `H i` are normal.
 
 ## Main theorems
 
-`G` is *defined* to be nilpotent if the upper central series reaches `⊤`.
+`G` is _defined_ to be nilpotent if the upper central series reaches `⊤`.
+
 * `nilpotent_iff_finite_ascending_central_series` : `G` is nilpotent iff some ascending central
-    series reaches `⊤`.
+  series reaches `⊤`.
 * `nilpotent_iff_finite_descending_central_series` : `G` is nilpotent iff some descending central
-    series reaches `⊥`.
+  series reaches `⊥`.
 * `nilpotent_iff_lower` : `G` is nilpotent iff the lower central series reaches `⊥`.
 * The `Group.nilpotencyClass` can likewise be obtained from these equivalent
   definitions, see `least_ascending_central_series_length_eq_nilpotencyClass`,
@@ -56,9 +60,8 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * The `Group.nilpotencyClass` of `G ⧸ center G` is given explicitly, and an induction principle
   is derived from that.
 * `IsNilpotent.to_isSolvable`: If `G` is nilpotent, it is solvable.
-*  `IsNilpotent.commute_of_orderOf_coprime` : In a nilpotent group, two elements commute when their
+* `IsNilpotent.commute_of_orderOf_coprime` : In a nilpotent group, two elements commute when their
   orders are coprime.
-
 
 ## Warning
 
@@ -69,7 +72,6 @@ none of what we have called `upperCentralSeries G`, `(⊤ : Subgroup G).lowerCen
 the sequences satisfying `IsAscendingCentralSeries` or `IsDescendingCentralSeries`
 are actually central series. Note that the fact that the upper and lower central series
 are not central series if `G` is not nilpotent is a standard abuse of notation.
-
 -/
 
 @[expose] public section
@@ -147,7 +149,8 @@ def _root_.AddSubgroup.upperCentralSeriesAux (G : Type*) [AddGroup G] :
 
 attribute [to_additive existing] upperCentralSeriesAux
 
-/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
+/--
+`upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
 
 This is the increasing chain of subgroups of `G` that starts with the trivial subgroup `⊥` of `G`
 and then continues defining `upperCentralSeries G (n + 1)` to be all the elements of `G`
@@ -155,13 +158,15 @@ that, modulo `upperCentralSeries G n`, belong to the center of the quotient
 `G ⧸ upperCentralSeries G n`.
 
 In particular, the identities
+
 * `upperCentralSeries G 0 = ⊥` (`upperCentralSeries_zero`);
 * `upperCentralSeries G 1 = center G` (`upperCentralSeries_one`);
 
 hold.
 -/
 @[to_additive
-/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
+/--
+`upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
 
 This is the increasing chain of additive subgroups of `G` that starts with the trivial additive
 subgroup `⊥` of `G` and then continues defining `upperCentralSeries G (n + 1)` to be all the
@@ -169,6 +174,7 @@ elements of `G` that, modulo `upperCentralSeries G n`, belong to the center of t
 `G ⧸ upperCentralSeries G n`.
 
 In particular, the identities
+
 * `upperCentralSeries G 0 = ⊥` (`upperCentralSeries_zero`);
 * `upperCentralSeries G 1 = center G` (`upperCentralSeries_one`);
 

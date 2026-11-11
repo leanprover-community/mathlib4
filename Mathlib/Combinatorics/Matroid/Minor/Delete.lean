@@ -7,15 +7,18 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Loop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matroid Deletion
 
-For `M : Matroid α` and `X : Set α`, the *deletion* of `X` from `M` is the matroid `M ＼ X`
+For `M : Matroid α` and `X : Set α`, the _deletion_ of `X` from `M` is the matroid `M ＼ X`
 with ground set `M.E \ X`, in which a subset of `M.E \ X` is independent if and only if it is
 independent in `M`.
 
 The deletion `M ＼ X` is equal to the restriction `M ↾ (M.E \ X)`, but is of special importance
-in the theory because it is the dual notion of *contraction*, and thus plays a more central
+in the theory because it is the dual notion of _contraction_, and thus plays a more central
 and natural role than restriction in many contexts.
 
 Because of the implementation of the restriction `M ↾ R` allowing `R` to not be a subset of `M.E`,
@@ -42,7 +45,9 @@ variable {α : Type*} {M N : Matroid α} {e : α} {I B D R X : Set α}
 
 namespace Matroid
 
-/-! ## Deletion -/
+/-!
+# Deletion
+-/
 
 section Delete
 
@@ -128,7 +133,9 @@ lemma IsRestriction.restrict_delete_of_disjoint (h : N ≤r M) (hX : Disjoint X 
 lemma IsRestriction.isRestriction_deleteElem (h : N ≤r M) (he : e ∉ N.E) : N ≤r M ＼ {e} :=
   h.restrict_delete_of_disjoint (by simpa)
 
-/-! ### Independence and Bases -/
+/-!
+# Independence and Bases
+-/
 
 @[simp]
 lemma delete_indep_iff : (M ＼ D).Indep I ↔ M.Indep I ∧ Disjoint I D := by
@@ -196,7 +203,9 @@ lemma Coindep.delete_spanning_iff {S : Set α} (hD : M.Coindep D) :
   refine fun hSE hSD ↦ ⟨fun ⟨B, hB, hBD, hBS⟩ ↦ ⟨B, hB, hBS⟩, fun ⟨B, hB, hBS⟩ ↦ ⟨B, hB, ?_, hBS⟩⟩
   exact hSD.mono_left hBS
 
-/-! ### Loops, circuits and closure -/
+/-!
+# Loops, circuits and closure
+-/
 
 @[simp]
 lemma delete_isLoop_iff : (M ＼ D).IsLoop e ↔ M.IsLoop e ∧ e ∉ D := by
@@ -250,7 +259,9 @@ lemma delete_isColoop_iff (M : Matroid α) (D : Set α) :
   rw [delete_eq_restrict, restrict_isColoop_iff sdiff_subset, mem_sdiff, and_congr_left_iff]
   simp
 
-/-! ### Finiteness -/
+/-!
+# Finiteness
+-/
 
 instance delete_finitary (M : Matroid α) [Finitary M] (D : Set α) : Finitary (M ＼ D) :=
   inferInstanceAs <| Finitary (M ↾ (M.E \ D))

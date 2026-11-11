@@ -9,7 +9,11 @@ public meta import Batteries.Lean.Expr
 public import Mathlib.Data.Int.ModEq
 public import Mathlib.Tactic.HaveI
 
-/-! # `mod_cases` tactic
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `mod_cases` tactic
 
 The `mod_cases` tactic does case disjunction on `e % n`, where `e : ℤ` or `e : ℕ`,
 to yield `n` new subgoals corresponding to the possible values of `e` modulo `n`.

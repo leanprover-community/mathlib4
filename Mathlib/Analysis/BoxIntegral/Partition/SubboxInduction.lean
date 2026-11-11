@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
 public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induction on subboxes
 
@@ -69,7 +72,8 @@ namespace Box
 
 open Prepartition TaggedPrepartition
 
-/-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
+/--
+Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
 hold true.
 
 * Consider a smaller box `J ≤ I`. The hyperplanes passing through the center of `J` split it into
@@ -79,7 +83,8 @@ hold true.
   coefficient of the form `1 / 2 ^ m`, then `p` is true on `J`.
 
 Then `p I` is true. See also `BoxIntegral.Box.subbox_induction_on'` for a version using
-`BoxIntegral.Box.splitCenterBox` instead of `BoxIntegral.Prepartition.splitCenter`. -/
+`BoxIntegral.Box.splitCenterBox` instead of `BoxIntegral.Prepartition.splitCenter`.
+-/
 @[elab_as_elim]
 theorem subbox_induction_on {p : Box ι → Prop} (I : Box ι)
     (H_ind : ∀ J ≤ I, (∀ J' ∈ splitCenter J, p J') → p J)
@@ -91,7 +96,8 @@ theorem subbox_induction_on {p : Box ι → Prop} (I : Box ι)
   rcases mem_splitCenter.1 h' with ⟨s, rfl⟩
   exact hs s
 
-/-- Given a box `I` in `ℝⁿ` and a function `r : ℝⁿ → (0, ∞)`, there exists a tagged partition `π` of
+/--
+Given a box `I` in `ℝⁿ` and a function `r : ℝⁿ → (0, ∞)`, there exists a tagged partition `π` of
 `I` such that
 
 * `π` is a Henstock partition;
@@ -99,7 +105,8 @@ theorem subbox_induction_on {p : Box ι → Prop} (I : Box ι)
 * each box in `π` is homothetic to `I` with coefficient of the form `1 / 2 ^ m`.
 
 This lemma implies that the Henstock filter is nontrivial, hence the Henstock integral is
-well-defined. -/
+well-defined.
+-/
 theorem exists_taggedPartition_isHenstock_isSubordinate_homothetic (I : Box ι)
     (r : (ι → ℝ) → Ioi (0 : ℝ)) :
     ∃ π : TaggedPrepartition I, π.IsPartition ∧ π.IsHenstock ∧ π.IsSubordinate r ∧
@@ -136,7 +143,8 @@ namespace Prepartition
 
 open TaggedPrepartition Finset Function
 
-/-- Given a box `I` in `ℝⁿ`, a function `r : ℝⁿ → (0, ∞)`, and a prepartition `π` of `I`, there
+/--
+Given a box `I` in `ℝⁿ`, a function `r : ℝⁿ → (0, ∞)`, and a prepartition `π` of `I`, there
 exists a tagged prepartition `π'` of `I` such that
 
 * each box of `π'` is included in some box of `π`;
@@ -156,7 +164,8 @@ theorem exists_tagged_le_isHenstock_isSubordinate_iUnion_eq {I : Box ι} (r : (�
   rw [distortion_biUnionTagged]
   exact sup_congr rfl fun J _ => πid J
 
-/-- Given a prepartition `π` of a box `I` and a function `r : ℝⁿ → (0, ∞)`, `π.toSubordinate r`
+/--
+Given a prepartition `π` of a box `I` and a function `r : ℝⁿ → (0, ∞)`, `π.toSubordinate r`
 is a tagged partition `π'` such that
 
 * each box of `π'` is included in some box of `π`;
@@ -194,7 +203,8 @@ end Prepartition
 
 namespace TaggedPrepartition
 
-/-- Given a tagged prepartition `π₁`, a prepartition `π₂` that covers exactly `I \ π₁.iUnion`, and
+/--
+Given a tagged prepartition `π₁`, a prepartition `π₂` that covers exactly `I \ π₁.iUnion`, and
 a function `r : ℝⁿ → (0, ∞)`, returns the union of `π₁` and `π₂.toSubordinate r`. This partition
 `π` has the following properties:
 

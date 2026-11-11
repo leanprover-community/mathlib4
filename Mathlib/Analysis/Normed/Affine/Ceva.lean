@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ceva's theorem.
 
@@ -15,8 +18,7 @@ This file proves various versions of Ceva's theorem in a `NormedAddTorsor`.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Ceva%27s_theorem
-
+* https://en.wikipedia.org/wiki/Ceva%27s\_theorem
 -/
 
 public section

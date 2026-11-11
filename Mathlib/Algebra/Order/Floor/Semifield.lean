@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Tactic.Linarith
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semifields
 
@@ -96,7 +99,7 @@ namespace Mathlib.Meta.NormNum
 open Qq
 
 /-!
-### `norm_num` extension for `Nat.floor`
+# `norm_num` extension for `Nat.floor`
 -/
 
 theorem IsNat.natFloor {R : Type*} [Semiring R] [LinearOrder R]

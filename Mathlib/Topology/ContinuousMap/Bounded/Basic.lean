@@ -9,6 +9,9 @@ public import Mathlib.Topology.Algebra.Indicator
 public import Mathlib.Topology.Bornology.BoundedOperation
 public import Mathlib.Topology.ContinuousMap.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded continuous functions
 
@@ -31,13 +34,15 @@ universe u v w
 
 variable {F : Type*} {α : Type u} {β : Type v} {γ : Type w}
 
-/-- `α →ᵇ β` is the type of bounded continuous functions `α → β` from a topological space to a
+/--
+`α →ᵇ β` is the type of bounded continuous functions `α → β` from a topological space to a
 metric space.
 
 When possible, instead of parametrizing results over `(f : α →ᵇ β)`,
 you should parametrize over `(F : Type*) [BoundedContinuousMapClass F α β] (f : F)`.
 
-When you extend this structure, make sure to extend `BoundedContinuousMapClass`. -/
+When you extend this structure, make sure to extend `BoundedContinuousMapClass`.
+-/
 structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpace α]
     [PseudoMetricSpace β] : Type max u v extends ContinuousMap α β where
   map_bounded' : ∃ C, ∀ x y, dist (toFun x) (toFun y) ≤ C
@@ -46,9 +51,11 @@ structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpac
 
 section
 
-/-- `BoundedContinuousMapClass F α β` states that `F` is a type of bounded continuous maps.
+/--
+`BoundedContinuousMapClass F α β` states that `F` is a type of bounded continuous maps.
 
-You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
+You should also extend this typeclass when you extend `BoundedContinuousFunction`.
+-/
 class BoundedContinuousMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
     [PseudoMetricSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_bounded (f : F) : ∃ C, ∀ x y, dist (f x) (f y) ≤ C
@@ -85,8 +92,10 @@ instance instCoeTC [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC
 @[simp]
 theorem coe_toContinuousMap (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (h : α →ᵇ β) : α → β := h
 
 initialize_simps_projections BoundedContinuousFunction (toFun → apply)
@@ -672,13 +681,14 @@ instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
 section IsBoundedSMul
 
 /-!
-### `IsBoundedSMul` (in particular, topological module) structure
+# `IsBoundedSMul` (in particular, topological module) structure
 
 In this section, if `β` is a metric space and a `𝕜`-module whose addition and scalar multiplication
 are compatible with the metric structure, then we show that the space of bounded continuous
 functions from `α` to `β` inherits a so-called `IsBoundedSMul` structure (in particular, a
 `ContinuousMul` structure, which is the mathlib formulation of being a topological module), by
-using pointwise operations and checking that they are compatible with the uniform distance. -/
+using pointwise operations and checking that they are compatible with the uniform distance.
+-/
 
 
 variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [PseudoMetricSpace β]

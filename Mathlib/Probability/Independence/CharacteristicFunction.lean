@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.Independence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Links between independence and characteristic function
 

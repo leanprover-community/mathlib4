@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Shift.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangles
 
@@ -84,10 +87,12 @@ def contractibleTriangle (X : C) : Triangle C :=
 
 end
 
-/-- A morphism of triangles `(X,Y,Z,f,g,h) ⟶ (X',Y',Z',f',g',h')` in `C` is a triple of morphisms
+/--
+A morphism of triangles `(X,Y,Z,f,g,h) ⟶ (X',Y',Z',f',g',h')` in `C` is a triple of morphisms
 `a : X ⟶ X'`, `b : Y ⟶ Y'`, `c : Z ⟶ Z'` such that
 `a ≫ f' = f ≫ b`, `b ≫ g' = g ≫ c`, and `a⟦1⟧' ≫ h = h' ≫ c`.
 In other words, we have a commutative diagram:
+
 ```
      f      g      h
   X  ───> Y  ───> Z  ───> X⟦1⟧

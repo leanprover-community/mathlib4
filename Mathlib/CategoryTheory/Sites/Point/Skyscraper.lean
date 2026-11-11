@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Skyscraper sheaves
 
 Let `Φ` be a point of a site `(C, J)`. In this file, we construct the
 skyscraper sheaf functor `skyscraperSheafFunctor : A ⥤ Sheaf J A` and
 show that it is a right adjoint to `Φ.sheafFiber : Sheaf J A ⥤ A`.
-
 -/
 
 @[expose] public section

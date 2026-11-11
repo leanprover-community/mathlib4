@@ -7,13 +7,15 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The property of being of cardinality less than a cardinal
 
 Given `X : Type u` and `κ : Cardinal.{v}`, we introduce a predicate
 `HasCardinalLT X κ` expressing that
 `Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ`.
-
 -/
 
 @[expose] public section

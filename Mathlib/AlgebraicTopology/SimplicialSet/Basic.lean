@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial sets
 
@@ -16,7 +19,6 @@ i.e. a `Type`-valued presheaf on the simplex category.
 (One might be tempted to call these "simplicial types" when working in type-theoretic foundations,
 but this would be unnecessarily confusing given the existing notion of a simplicial type in
 homotopy type theory.)
-
 -/
 
 @[expose] public section

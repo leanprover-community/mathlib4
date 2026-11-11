@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of the risk of an estimator
 
@@ -24,6 +27,7 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 In several cases, there is no information in the data about the parameter and the Bayes risk takes
 its maximal value.
+
 * `bayesRisk_const`: if the data generating kernel is constant, then the Bayes risk is equal to
   `⨅ y, ∫⁻ θ, ℓ θ y ∂π`.
 * `bayesRisk_of_subsingleton`: if the observation space is a subsingleton, then the Bayes risk is
@@ -33,7 +37,6 @@ its maximal value.
 
 In many cases, the maximal Bayes risk and the minimax risk are equal
 (by a so-called minimax theorem).
-
 -/
 
 public section

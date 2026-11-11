@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Enriched.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functor categories are monoidal closed
 
 Let `C` be a monoidal closed category. Let `J` be a category. In this file,
 we obtain that the category `J ⥤ C` is monoidal closed if `C` has suitable
 limits.
-
 -/
 
 @[expose] public section

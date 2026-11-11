@@ -11,9 +11,11 @@ import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas for ideal in polynomial span by monic polynomial
-
 -/
 
 public section

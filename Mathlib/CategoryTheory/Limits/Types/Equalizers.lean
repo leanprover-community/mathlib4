@@ -8,11 +8,13 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equalizers in Type
 
 The equalizer of a pair of maps `(g, h)` from `X` to `Y` is the subtype `{x : Y // g x = h x}`.
-
 -/
 
 @[expose] public section

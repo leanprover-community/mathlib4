@@ -9,6 +9,9 @@ public import Mathlib.Basic.Sign.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine independence
 
@@ -22,14 +25,12 @@ This file defines affinely independent families of points.
   the results of subtracting a base point in the family from the other
   points in the family, or any equal affine combinations having the
   same weights.
-
 * `AffineIndepOn k p s` states that the points of a family `p : ι → P`
   indexed by the elements of `s : Set ι` are affinely independent.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Affine_space
-
+* https://en.wikipedia.org/wiki/Affine\_space
 -/
 
 @[expose] public section
@@ -296,11 +297,13 @@ theorem LinearIndepOn.affineIndepOn {v : ι → V} {s : Set ι} (hv : LinearInde
 
 variable {k}
 
-/-- If we single out one member of an affine-independent family of points and affinely transport
+/--
+If we single out one member of an affine-independent family of points and affinely transport
 all others along the line joining them to this member, the resulting new family of points is affine-
 independent.
 
-This is the affine version of `LinearIndependent.units_smul`. -/
+This is the affine version of `LinearIndependent.units_smul`.
+-/
 theorem AffineIndependent.units_lineMap {p : ι → P} (hp : AffineIndependent k p) (j : ι)
     (w : ι → Units k) : AffineIndependent k fun i => AffineMap.lineMap (p j) (p i) (w i : k) := by
   rw [affineIndependent_iff_linearIndependent_vsub k _ j] at hp ⊢

@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Powerset
 
 import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness of the powerset of a finite set
 
@@ -34,7 +37,8 @@ variable {α : Type u}
 
 namespace Set
 
-/-! ### Constructors for `Set.Finite`
+/-!
+# Constructors for `Set.Finite`
 
 Every constructor here should have a corresponding `Fintype` instance in the `Fintype` module.
 

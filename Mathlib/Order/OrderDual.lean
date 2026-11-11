@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order dual
 
@@ -22,6 +25,7 @@ with notation `αᵒᵈ`.
 
 One should not abuse definitional equality between `α` and `αᵒᵈ`. Instead, explicit
 coercions should be inserted:
+
 * `OrderDual.toDual : α → αᵒᵈ` and `OrderDual.ofDual : αᵒᵈ → α`
 -/
 
@@ -173,7 +177,9 @@ protected def rec {motive : αᵒᵈ → Sort*} (toDual : ∀ a : α, motive (to
 
 end OrderDual
 
-/-! ### `DenselyOrdered` for `OrderDual` -/
+/-!
+# `DenselyOrdered` for `OrderDual`
+-/
 
 instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
     DenselyOrdered αᵒᵈ :=
@@ -183,7 +189,9 @@ instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
 theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
   ⟨by convert! @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
 
-/-! ### Pushing order definitions through `Equiv` -/
+/-!
+# Pushing order definitions through `Equiv`
+-/
 
 namespace Equiv
 

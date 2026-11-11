@@ -8,6 +8,9 @@ module
 public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 public import Mathlib.ModelTheory.Algebra.Ring.Definability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ax-Grothendieck
 
@@ -32,7 +35,6 @@ The first-order theory of algebraically closed fields, along with the Lefschetz 
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
-
 -/
 
 @[expose] public section
@@ -193,10 +195,12 @@ open FirstOrder Language Field Ring MvPolynomial
 
 variable {K ι : Type*} [Field K] [IsAlgClosed K] [Finite ι]
 
-/-- A slight generalization of the **Ax-Grothendieck** theorem
+/--
+A slight generalization of the *Ax-Grothendieck* theorem
 
 If `K` is an algebraically closed field, `ι` is a finite type, and `S` is a definable subset of
-`ι → K`, then any injective polynomial map `S → S`  is also surjective on `S`. -/
+`ι → K`, then any injective polynomial map `S → S`  is also surjective on `S`.
+-/
 theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     (S : Set (ι → K)) (hS : c.Definable Language.ring S)
     (ps : ι → MvPolynomial ι K) :
@@ -216,11 +220,13 @@ theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     realize_genericPolyMapSurjOnOfInjOn] at this
   exact this Subtype.val ⟨ps, fun i => Set.Subset.refl _⟩
 
-/-- The **Ax-Grothendieck** theorem
+/--
+The *Ax-Grothendieck* theorem
 
 If `K` is an algebraically closed field, and `S : Set (ι → K)` is the `zeroLocus` of an ideal
 of the multivariable polynomial ring, then any injective polynomial map `S → S`  is also
-surjective on `S`. -/
+surjective on `S`.
+-/
 theorem ax_grothendieck_zeroLocus
     (I : Ideal (MvPolynomial ι K))
     (p : ι → MvPolynomial ι K) :
@@ -233,10 +239,12 @@ theorem ax_grothendieck_zeroLocus
   obtain ⟨s, rfl⟩ : I.FG := IsNoetherian.noetherian I
   exact ax_grothendieck_of_definable S (mvPolynomial_zeroLocus_definable s) p
 
-/-- A special case of the **Ax-Grothendieck** theorem
+/--
+A special case of the *Ax-Grothendieck* theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
-algebraically closed field. -/
+algebraically closed field.
+-/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     (fun v i => eval v (p i)).Injective →
     (fun v i => eval v (p i)).Surjective := by

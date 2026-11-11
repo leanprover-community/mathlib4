@@ -8,7 +8,12 @@ module
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Star.Pointwise
 
-/-! # `Set.center`, `Set.centralizer` and the `star` operation -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `Set.center`, `Set.centralizer` and the `star` operation
+-/
 
 public section
 

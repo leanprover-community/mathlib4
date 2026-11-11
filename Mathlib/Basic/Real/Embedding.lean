@@ -11,12 +11,16 @@ public import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Algebra.Order.Module.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Embedding of archimedean groups into reals
 
 This file provides embedding of any archimedean groups into reals.
 
 ## Main declarations
+
 * `Archimedean.embedReal` defines an injective `M →+o ℝ` for archimedean group `M` with a positive
   `1` element. `1` is preserved by the map.
 * `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`

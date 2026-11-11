@@ -9,6 +9,9 @@ public import Mathlib.Data.Fintype.Card
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.Subgroup.Centralizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugation action of a group on itself
 
@@ -21,6 +24,7 @@ A type alias `ConjAct G` is introduced for a group `G`. The group `ConjAct G` ac
 by conjugation. The group `ConjAct G` also acts on any normal subgroup of `G` by conjugation.
 
 As a generalization, this also allows:
+
 * `ConjAct Mˣ` to act on `M`, when `M` is a `Monoid`
 * `ConjAct G₀` to act on `G₀`, when `G₀` is a `GroupWithZero`
 
@@ -30,7 +34,6 @@ The scalar action in defined in this file can also be written using `MulAut.conj
 has the advantage of not using the type alias `ConjAct`, but the downside of this approach
 is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
-
 -/
 
 @[expose] public section

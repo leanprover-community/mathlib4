@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Dual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Lax-Milgram Theorem
 
 We consider a Hilbert space `V` over `ℝ`
 equipped with a bounded bilinear form `B : V →L[ℝ] V →L[ℝ] ℝ`.
 
-Recall that a bilinear form `B : V →L[ℝ] V →L[ℝ] ℝ` is *coercive*
+Recall that a bilinear form `B : V →L[ℝ] V →L[ℝ] ℝ` is _coercive_
 iff `∃ C, (0 < C) ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u`.
 Under the hypothesis that `B` is coercive we prove the Lax-Milgram theorem:
 that is, the map `InnerProductSpace.continuousLinearMapOfBilin` from
@@ -22,8 +25,8 @@ that is, the map `InnerProductSpace.continuousLinearMapOfBilin` from
 
 ## References
 
-* We follow the notes of Peter Howard's Spring 2020 *M612: Partial Differential Equations* lecture,
-  see[howard]
+* We follow the notes of Peter Howard's Spring 2020 _M612: Partial Differential Equations_ lecture,
+  see\[howard\]
 
 ## Tags
 

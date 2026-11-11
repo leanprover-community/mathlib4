@@ -9,6 +9,9 @@ public import Mathlib.Data.List.Sort
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Pivot
 public import Mathlib.Tactic.Matrix.OfLists
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reflection certificates for the echelon decomposition
 
@@ -16,9 +19,9 @@ The list-based certificates for a part of `Echelon.Decomposition` and their brid
 
 ## Main definitions
 
-- `IsLowerTriangularDiagList`: a list of rows is lower triangular with nonzero diagonal.
-- `IsPivotedList`: a list of rows has the given pivot columns.
-- `pivotOfList`: the pivot function corresponding to a given list of pivot columns.
+* `IsLowerTriangularDiagList`: a list of rows is lower triangular with nonzero diagonal.
+* `IsPivotedList`: a list of rows has the given pivot columns.
+* `pivotOfList`: the pivot function corresponding to a given list of pivot columns.
 
 ## Implementation notes
 
@@ -37,7 +40,8 @@ namespace Mathlib.Tactic.Echelon
 
 variable {α : Type*}
 
-/-! ### Lower triangularity and nonzero diagonal of `L`
+/-!
+# Lower triangularity and nonzero diagonal of `L`
 
 Both conditions read the same suffix of each row, so one sweep certifies them together.
 -/
@@ -78,7 +82,9 @@ theorem diag_ofLists_ne_zero [Zero α] {m : ℕ} {rows : List (List α)}
     (h : IsLowerTriangularDiagList 0 m rows) (i : Fin m) : (ofLists m m rows).diag i ≠ 0 := by
   simpa [ofLists_apply, ofList_apply] using (getD_of_isLowerTriangularDiagList h i.isLt).1
 
-/-! ### Pivots of `U` -/
+/-!
+# Pivots of `U`
+-/
 
 variable {n : ℕ}
 

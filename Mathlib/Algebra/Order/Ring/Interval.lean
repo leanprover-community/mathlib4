@@ -10,7 +10,11 @@ public import Mathlib.Data.Int.Interval
 
 import Mathlib.Algebra.Order.Ring.Cast
 
-/-! # Intervals of integers in strict ordered rings
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Intervals of integers in strict ordered rings
 
 These statements could perhaps be generalized, or there could be other variations provided (e.g.,
 for `ℕ` instead of `ℤ`, or a version for locally finite `SuccOrder`s with strictly monotone

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.DirectSum.Basic
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DFinsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Direct sum of modules
 
@@ -22,7 +25,6 @@ the construction is of particular importance when this linear map is an equivale
 the submodules provide an internal decomposition of `M`.  The property is defined more generally
 elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s are established
 in this file.
-
 -/
 
 @[expose] public section
@@ -129,9 +131,11 @@ theorem toModule.unique (f : ⨁ i, M i) : ψ f = toModule R ι N (fun i ↦ ψ.
 
 variable {ψ} {ψ' : (⨁ i, M i) →ₗ[R] N}
 
-/-- Two `LinearMap`s out of a direct sum are equal if they agree on the generators.
+/--
+Two `LinearMap`s out of a direct sum are equal if they agree on the generators.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext]
 theorem linearMap_ext ⦃ψ ψ' : (⨁ i, M i) →ₗ[R] N⦄
     (H : ∀ i, ψ.comp (lof R ι M i) = ψ'.comp (lof R ι M i)) : ψ = ψ' :=

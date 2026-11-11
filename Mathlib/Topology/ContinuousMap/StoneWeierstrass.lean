@@ -15,6 +15,9 @@ public import Mathlib.Topology.ContinuousMap.Weierstrass
 import Mathlib.Algebra.Order.Module.Basic
 import Mathlib.Topology.Algebra.Star.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Stone-Weierstrass theorem
 
@@ -46,7 +49,6 @@ the real and imaginary parts using the real subalgebra of real-valued functions 
 
 Extend to cover the case of subalgebras of the continuous functions vanishing at infinity,
 on non-compact spaces.
-
 -/
 
 @[expose] public section
@@ -79,7 +81,8 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
   simp only [Polynomial.aeval_subalgebra_coe, Polynomial.aeval_continuousMap_apply]
   simp
 
-/-- Given a continuous function `f` in a subalgebra of `C(X, ℝ)`, postcomposing by a polynomial
+/--
+Given a continuous function `f` in a subalgebra of `C(X, ℝ)`, postcomposing by a polynomial
 gives another function in `A`.
 
 This lemma proves something slightly more subtle than this:
@@ -277,7 +280,8 @@ theorem subalgebra_topologicalClosure_eq_top_of_separatesPoints (A : Subalgebra 
         (Subalgebra.separatesPoints_monotone A.le_topologicalClosure w))
   simp [L]
 
-/-- An alternative statement of the Stone-Weierstrass theorem.
+/--
+An alternative statement of the Stone-Weierstrass theorem.
 
 If `A` is a subalgebra of `C(X, ℝ)` which separates points (and `X` is compact),
 every real-valued continuous function on `X` is a uniform limit of elements of `A`.
@@ -287,7 +291,8 @@ theorem continuousMap_mem_subalgebra_closure_of_separatesPoints (A : Subalgebra 
   rw [subalgebra_topologicalClosure_eq_top_of_separatesPoints A w]
   simp
 
-/-- An alternative statement of the Stone-Weierstrass theorem,
+/--
+An alternative statement of the Stone-Weierstrass theorem,
 for those who like their epsilons.
 
 If `A` is a subalgebra of `C(X, ℝ)` which separates points (and `X` is compact),
@@ -303,7 +308,8 @@ theorem exists_mem_subalgebra_near_continuousMap_of_separatesPoints (A : Subalge
   rw [Metric.mem_ball, dist_eq_norm] at H
   exact ⟨⟨g, m⟩, H⟩
 
-/-- An alternative statement of the Stone-Weierstrass theorem,
+/--
+An alternative statement of the Stone-Weierstrass theorem,
 for those who like their epsilons and don't like bundled continuous functions.
 
 If `A` is a subalgebra of `C(X, ℝ)` which separates points (and `X` is compact),
@@ -441,11 +447,13 @@ section PolynomialFunctions
 open StarSubalgebra Polynomial
 open scoped Polynomial
 
-/-- Polynomial functions in are dense in `C(s, ℝ)` when `s` is compact.
+/--
+Polynomial functions in are dense in `C(s, ℝ)` when `s` is compact.
 
 See `polynomialFunctions_closure_eq_top` for the special case `s = Set.Icc a b` which does not use
 the full Stone-Weierstrass theorem. Of course, that version could be used to prove this one as
-well. -/
+well.
+-/
 theorem polynomialFunctions.topologicalClosure (s : Set ℝ)
     [CompactSpace s] : (polynomialFunctions s).topologicalClosure = ⊤ :=
   ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints _
@@ -527,7 +535,9 @@ theorem ContinuousMap.starAlgHom_ext_map_X {𝕜 A : Type*} [RCLike 𝕜] [Ring 
 
 end PolynomialFunctions
 
-/-! ### Continuous maps sending zero to zero -/
+/-!
+# Continuous maps sending zero to zero
+-/
 
 section ContinuousMapZero
 

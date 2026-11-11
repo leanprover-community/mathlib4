@@ -10,7 +10,11 @@ public import Mathlib.Analysis.Complex.Basic
 
 import Mathlib.Analysis.Calculus.Deriv.Linear
 
-/-! # Real differentiability of complex-differentiable functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Real differentiability of complex-differentiable functions
 
 `HasDerivAt.real_of_complex` expresses that, if a function on `ℂ` is differentiable (over `ℂ`),
 then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the real part of the
@@ -23,7 +27,9 @@ assert_not_exists IsConformalMap Conformal
 
 section RealDerivOfComplex
 
-/-! ### Differentiability of the restriction to `ℝ` of complex functions -/
+/-!
+# Differentiability of the restriction to `ℝ` of complex functions
+-/
 
 open Complex
 

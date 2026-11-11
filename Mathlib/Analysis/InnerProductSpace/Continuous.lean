@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of inner product
 
@@ -16,7 +19,6 @@ We show that the inner product is continuous, `continuous_inner`.
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 public section
@@ -37,10 +39,11 @@ variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-!
-### Continuity of the inner product
+# Continuity of the inner product
 -/
 
-/-- When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
+/--
+When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
 product satisfies `IsBoundedBilinearMap`.
 
 In order to state these results, we need a `NormedSpace ℝ E` instance. We will later establish

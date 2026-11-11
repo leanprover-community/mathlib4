@@ -8,26 +8,29 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Topology.MetricSpace.Holder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuously `k` times differentiable functions with pointwise Hölder continuous derivatives
 
-We say that a function is of class $C^{k+(α)}$ at a point `a`,
+We say that a function is of class $`C^{k+(α)}` at a point `a`,
 where `k` is a natural number and `0 ≤ α ≤ 1`, if
 
-- it is of class $C^k$ at `a` in the sense of `ContDiffAt`;
-- its `k`th derivative satisfies $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)$ as `x → a`.
+* it is of class $`C^k` at `a` in the sense of `ContDiffAt`;
+* its `k`th derivative satisfies $`D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)` as `x → a`.
 
 Note that the Hölder condition used in this definition fixes one of the points at `a`.
-In different sources, it is called *pointwise*, *local*, or *weak* Hölder condition,
+In different sources, it is called _pointwise_, _local_, or _weak_ Hölder condition,
 though the term "local" may also mean a stronger condition
 saying that a function is Hölder continuous on a neighborhood of `a`.
 
 The immediate reason for adding this definition to the library
-is its use in [Moreira2001], where Moreira proves a version of the Morse-Sard theorem
+is its use in \[Moreira2001\], where Moreira proves a version of the Morse-Sard theorem
 for functions that satisfy this condition on their critical set.
 
 In this file, we define `ContDiffPointwiseHolderAt` to be the predicate
-saying that a function is $C^{k+(α)}$ in the sense described above
+saying that a function is $`C^{k+(α)}` in the sense described above
 and prove basic properties of this predicate.
 
 ## Implementation notes
@@ -47,18 +50,26 @@ variable {E F G : Type*}
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   {k l m : ℕ} {α β : I} {f : E → F} {a : E}
 
-/-- A map `f` is said to be $C^{k+(α)}$ at `a`, where `k` is a natural number and `0 ≤ α ≤ 1`,
-if it is $C^k$ at this point and $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)$ as `x → a`.
+/--
+A map `f` is said to be $`C^{k+(α)}` at `a`, where `k` is a natural number and `0 ≤ α ≤ 1`,
+if it is $`C^k` at this point and $`D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)` as `x → a`.
 
-When naming lemmas about this predicate, `k` is called "order", and `α` is called "exponent". -/
+When naming lemmas about this predicate, `k` is called "order", and `α` is called "exponent".
+-/
 @[mk_iff]
 structure ContDiffPointwiseHolderAt (k : ℕ) (α : I) (f : E → F) (a : E) : Prop where
-  /-- A $C^{k+(α)}$ map is a $C^k$ map. -/
+  /--
+  A $`C^{k+(α)}` map is a $`C^k` map.
+  -/
   contDiffAt : ContDiffAt ℝ k f a
-  /-- A $C^{k+(α)}$ map satisfies $D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)$ as `x → a`. -/
+  /--
+  A $`C^{k+(α)}` map satisfies $`D^kf(x)-D^kf(a) = O(‖x - a‖ ^ α)` as `x → a`.
+  -/
   isBigO : (iteratedFDeriv ℝ k f · - iteratedFDeriv ℝ k f a) =O[𝓝 a] (‖· - a‖ ^ (α : ℝ))
 
-/-- A $C^n$ map is a $C^{k+(α)}$ map for any `k < n`. -/
+/--
+A $`C^n` map is a $`C^{k+(α)}` map for any `k < n`.
+-/
 theorem ContDiffAt.contDiffPointwiseHolderAt {n : WithTop ℕ∞} (h : ContDiffAt ℝ n f a) (hk : k < n)
     (α : I) : ContDiffPointwiseHolderAt k α f a where
   contDiffAt := h.of_le hk.le
@@ -77,15 +88,19 @@ theorem differentiableAt (h : ContDiffPointwiseHolderAt k α f a) (hk : k ≠ 0)
     DifferentiableAt ℝ f a :=
   h.contDiffAt.differentiableAt <| mod_cast hk
 
-/-- A function is $C^{k+(0)}$ at a point if and only if it is $C^k$ at the point. -/
+/--
+A function is $`C^{k+(0)}` at a point if and only if it is $`C^k` at the point.
+-/
 @[simp]
 theorem zero_exponent_iff : ContDiffPointwiseHolderAt k 0 f a ↔ ContDiffAt ℝ k f a := by
   refine ⟨contDiffAt, fun h ↦ ⟨h, ?_⟩⟩
   simpa using ((h.continuousAt_iteratedFDeriv le_rfl).sub_const _).norm.isBoundedUnder_le
 
-/-- A function is $C^{0+(α)}$ at a point if and only if
-it is $C^0$ at the point (i.e., it is continuous on a neighborhood of the point)
-and $f(x) - f(a) = O(‖x - a‖ ^ α)$. -/
+/--
+A function is $`C^{0+(α)}` at a point if and only if
+it is $`C^0` at the point (i.e., it is continuous on a neighborhood of the point)
+and $`f(x) - f(a) = O(‖x - a‖ ^ α)`.
+-/
 theorem zero_order_iff :
     ContDiffPointwiseHolderAt 0 α f a ↔
       ContDiffAt ℝ 0 f a ∧ (f · - f a) =O[𝓝 a] (‖· - a‖ ^ (α : ℝ)) := by
@@ -115,9 +130,11 @@ theorem of_order_le (hf : ContDiffPointwiseHolderAt k α f a) (hl : l ≤ k) :
     ContDiffPointwiseHolderAt l α f a :=
   hf.of_toLex_le <| Prod.Lex.toLex_mono ⟨hl, le_rfl⟩
 
-/-- If a function is $C^{k+α}$ on a neighborhood of a point `a`,
-i.e., it is $C^k$ on this neighborhood and $D^k f$ is Hölder continuous on it,
-then the function is $C^{k+(α)}$ at `a`. -/
+/--
+If a function is $`C^{k+α}` on a neighborhood of a point `a`,
+i.e., it is $`C^k` on this neighborhood and $`D^k f` is Hölder continuous on it,
+then the function is $`C^{k+(α)}` at `a`.
+-/
 theorem of_contDiffOn_holderOnWith {s : Set E} {C : ℝ≥0} (hf : ContDiffOn ℝ k f s) (hs : s ∈ 𝓝 a)
     (hd : HolderOnWith C ⟨α, α.2.1⟩ (iteratedFDeriv ℝ k f) s) :
     ContDiffPointwiseHolderAt k α f a where
@@ -150,11 +167,13 @@ theorem prodMk {g : E → G} (hf : ContDiffPointwiseHolderAt k α f a)
       exact (hf.isBigO.prod_left hg.isBigO).norm_left
 
 variable (a) in
-/-- Composition of two $C^{k+(α)}$ functions is a $C^{k+(α)}$ function,
+/--
+Composition of two $`C^{k+(α)}` functions is a $`C^{k+(α)}` function,
 provided that one of them is differentiable.
 
-The latter condition follows automatically from the functions being $C^{k+(α)}$,
-if `k ≠ 0`, see `comp` below. -/
+The latter condition follows automatically from the functions being $`C^{k+(α)}`,
+if `k ≠ 0`, see `comp` below.
+-/
 theorem comp_of_differentiableAt {g : F → G} (hg : ContDiffPointwiseHolderAt k α g (f a))
     (hf : ContDiffPointwiseHolderAt k α f a)
     (hd : DifferentiableAt ℝ g (f a) ∨ DifferentiableAt ℝ f a) :
@@ -190,7 +209,9 @@ theorem comp_of_differentiableAt {g : F → G} (hg : ContDiffPointwiseHolderAt k
       · exact (hf.of_order_le hi).isBigO
 
 variable (a) in
-/-- Composition of two $C^{k+(α)}$ functions, `k ≠ 0`, is a $C^{k+(α)}$ function. -/
+/--
+Composition of two $`C^{k+(α)}` functions, `k ≠ 0`, is a $`C^{k+(α)}` function.
+-/
 theorem comp {g : F → G} (hg : ContDiffPointwiseHolderAt k α g (f a))
     (hf : ContDiffPointwiseHolderAt k α f a) (hk : k ≠ 0) :
     ContDiffPointwiseHolderAt k α (g ∘ f) a :=
@@ -235,7 +256,9 @@ protected theorem id : ContDiffPointwiseHolderAt k α id a :=
 protected theorem const {b : F} : ContDiffPointwiseHolderAt k α (Function.const E b) a :=
   contDiffAt_const.contDiffPointwiseHolderAt (WithTop.coe_lt_top _) α
 
-/-- The derivative of a $C^{k + (α)}$ function is a $C^{l + (α)}$ function, if `l < k`. -/
+/--
+The derivative of a $`C^{k + (α)}` function is a $`C^{l + (α)}` function, if `l < k`.
+-/
 protected theorem fderiv (hf : ContDiffPointwiseHolderAt k α f a) (hl : l < k) :
     ContDiffPointwiseHolderAt l α (fderiv ℝ f) a where
   contDiffAt := hf.contDiffAt.fderiv_right (mod_cast hl)
@@ -243,7 +266,9 @@ protected theorem fderiv (hf : ContDiffPointwiseHolderAt k α f a) (hl : l < k) 
     simpa [iteratedFDeriv_succ_eq_comp_right, Function.comp_def, ← dist_eq_norm_sub]
       using hf.of_order_le (Nat.add_one_le_iff.mpr hl) |>.isBigO |>.norm_left
 
-/-- If `f` is a $C^{k+(α)}$ function and `l + m ≤ k`, then $D^mf$ is a $C^{l + (α)}$ function. -/
+/--
+If `f` is a $`C^{k+(α)}` function and `l + m ≤ k`, then $`D^mf` is a $`C^{l + (α)}` function.
+-/
 protected theorem iteratedFDeriv (hf : ContDiffPointwiseHolderAt k α f a) (hl : l + m ≤ k) :
     ContDiffPointwiseHolderAt l α (iteratedFDeriv ℝ m f) a := by
   induction m generalizing l with

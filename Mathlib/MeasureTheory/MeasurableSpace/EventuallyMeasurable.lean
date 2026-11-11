@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Filter.CountableInter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability modulo a filter
 
@@ -29,7 +32,6 @@ TODO: Implement the latter.
   `eventuallyMeasurableSpace`.
 * `EventuallyMeasurable`: A `Prop` for functions which are measurable with respect to some
   `eventuallyMeasurableSpace` on the domain.
-
 -/
 
 @[expose] public section
@@ -89,12 +91,14 @@ open Function
 
 variable (m l) {β γ : Type*} [MeasurableSpace β] [MeasurableSpace γ]
 
-/-- We say a function is `EventuallyMeasurable` with respect to a given
+/--
+We say a function is `EventuallyMeasurable` with respect to a given
 σ-algebra `m` and σ-filter `l` if the preimage of any measurable set is equal to some
 `m`-measurable set modulo `l`.
 Warning: This is not always the same as being equal to some `m`-measurable function modulo `l`.
 In general it is weaker. See `Measurable.eventuallyMeasurable_of_eventuallyEq`.
-*TODO*: Add lemmas about when these are equivalent. -/
+_TODO_: Add lemmas about when these are equivalent.
+-/
 def EventuallyMeasurable (f : α → β) : Prop := @Measurable _ _ (eventuallyMeasurableSpace m l) _ f
 
 variable {m l} {f g : α → β} {h : β → γ}

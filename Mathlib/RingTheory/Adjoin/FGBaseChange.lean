@@ -9,14 +9,17 @@ public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.RingTheory.Adjoin.FG
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely generated subalgebras of a base change obtained from an element
 
 ## Main results
-- `exists_fg_and_mem_baseChange`: given an element `x` of a tensor product `A ⊗[R] B` of two
+
+* `exists_fg_and_mem_baseChange`: given an element `x` of a tensor product `A ⊗[R] B` of two
   `R`-algebras `A` and `B`, there exists a finitely generated subalgebra `C` of `B` such that `x`
   is contained in `C ⊗[R] B`.
-
 -/
 
 public section

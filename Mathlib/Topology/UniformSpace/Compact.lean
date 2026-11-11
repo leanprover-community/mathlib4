@@ -9,12 +9,14 @@ public import Mathlib.Topology.UniformSpace.Basic
 
 import Mathlib.Topology.Compactness.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact sets in uniform spaces
 
 * `compactSpace_uniformity`: On a compact uniform space, the topology determines the
   uniform structure, entourages are exactly the neighborhoods of the diagonal.
-
 -/
 
 public section
@@ -69,11 +71,13 @@ theorem lebesgue_number_lemma_nhdsWithin {U : α → Set α} (hK : IsCompact K)
   (lebesgue_number_lemma_nhds hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
     fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
 
-/-- Let `U : ι → Set α` be an open cover of a compact set `K`.
+/--
+Let `U : ι → Set α` be an open cover of a compact set `K`.
 Then there exists an entourage `V`
 such that for each `x ∈ K` its `V`-neighborhood is included in some `U i`.
 
-Moreover, one can choose an entourage from a given basis. -/
+Moreover, one can choose an entourage from a given basis.
+-/
 protected theorem Filter.HasBasis.lebesgue_number_lemma {ι' ι : Sort*} {p : ι' → Prop}
     {V : ι' → SetRel α α} {U : ι → Set α} (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K)
     (hopen : ∀ j, IsOpen (U j)) (hcover : K ⊆ ⋃ j, U j) :
@@ -115,10 +119,12 @@ theorem lebesgue_number_lemma_sUnion {S : Set (Set α)}
   rw [sUnion_eq_iUnion] at hcover
   simpa using lebesgue_number_lemma hK (by simpa) hcover
 
-/-- If `K` is a compact set in a uniform space and `{V i | p i}` is a basis of entourages,
+/--
+If `K` is a compact set in a uniform space and `{V i | p i}` is a basis of entourages,
 then `{⋃ x ∈ K, (V i).ball x | p i}` is a basis of `𝓝ˢ K`.
 
-Here "`{s i | p i}` is a basis of a filter `l`" means `Filter.HasBasis l p s`. -/
+Here "`{s i | p i}` is a basis of a filter `l`" means `Filter.HasBasis l p s`.
+-/
 theorem IsCompact.nhdsSet_basis_uniformity {p : ι → Prop} {V : ι → SetRel α α}
     (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K) :
     (𝓝ˢ K).HasBasis p fun i => ⋃ x ∈ K, (V i).ball x where

@@ -7,22 +7,24 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties on the underlying functions of morphisms of schemes
 
 This file includes various results on properties of morphisms of schemes that come from properties
 of the underlying map of topological spaces, including
 
-- `Injective`
-- `Surjective`
-- `IsOpenMap`
-- `IsClosedMap`
-- `GeneralizingMap`
-- `IsEmbedding`
-- `IsOpenEmbedding`
-- `IsClosedEmbedding`
-- `DenseRange` (`IsDominant`)
-
+* `Injective`
+* `Surjective`
+* `IsOpenMap`
+* `IsClosedMap`
+* `GeneralizingMap`
+* `IsEmbedding`
+* `IsOpenEmbedding`
+* `IsClosedEmbedding`
+* `DenseRange` (`IsDominant`)
 -/
 
 @[expose] public section

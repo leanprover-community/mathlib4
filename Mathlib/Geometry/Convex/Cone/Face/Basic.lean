@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Faces of pointed cones
 
@@ -28,7 +31,6 @@ in `F` are also in `F`.
 * Most results proven over a division ring hold more generally over an Archimedean ring. In
   particular, `iff_mem_of_add_mem_left` holds whenever for every `x ∈ R` there is a `y ∈ R` with
   `1 ≤ x * y`.
-
 -/
 
 open Submodule

@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between differentiability, smoothness and manifold derivatives
 
@@ -29,7 +32,9 @@ open Set Function Filter ChartedSpace IsManifold Bundle
 
 open scoped Topology Manifold Bundle
 
-/-! ### Definition of `C^n` functions between manifolds -/
+/-!
+# Definition of `C^n` functions between manifolds
+-/
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
@@ -53,7 +58,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
   -- declare functions, sets
   {f : M → M'} {s : Set M}
 
-/-! ### The derivative of a `C^(n+1)` function is `C^n` -/
+/-!
+# The derivative of a `C^(n+1)` function is `C^n`
+-/
 
 section mfderiv
 variable [Is : IsManifold I 1 M] [I's : IsManifold I' 1 M']
@@ -195,7 +202,8 @@ protected theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'
     hf.comp (x₀, x₀) contMDiffWithinAt_snd mapsTo_snd_prod
   exact this.mfderivWithin contMDiffWithinAt_id hx (mapsTo_id _) hmn hs
 
-/-- The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` applied to `g₂(x)` is
+/--
+The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` applied to `g₂(x)` is
 `C^n` at `x₀`, where the derivative is taken as a continuous linear map.
 We have to assume that `f` is `C^(n+1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
 We have to insert a coordinate change from `x₀` to `g₁(x)` to make the derivative sensible.
@@ -244,7 +252,8 @@ theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : CMDiffAt n f x
     ContMDiffAt.comp (x₀, x₀) hf contMDiffAt_snd
   this.mfderiv (fun _ ↦ f) id contMDiffAt_id hmn
 
-/-- The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` applied to `g₂(x)` is
+/--
+The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` applied to `g₂(x)` is
 `C^n` at `x₀`, where the derivative is taken as a continuous linear map.
 We have to assume that `f` is `C^(n+1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
 We have to insert a coordinate change from `x₀` to `g₁(x)` to make the derivative sensible.
@@ -262,7 +271,9 @@ theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M)
 
 end mfderiv
 
-/-! ### The tangent map of a `C^(n+1)` function is `C^n` -/
+/-!
+# The tangent map of a `C^(n+1)` function is `C^n`
+-/
 
 section tangentMap
 
@@ -391,7 +402,8 @@ namespace TangentBundle
 open Bundle
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The derivative of the zero section of the tangent bundle maps `⟨x, v⟩` to `⟨⟨x, 0⟩, ⟨v, 0⟩⟩`.
+/--
+The derivative of the zero section of the tangent bundle maps `⟨x, v⟩` to `⟨⟨x, 0⟩, ⟨v, 0⟩⟩`.
 
 Note that, as currently framed, this is a statement in coordinates, thus reliant on the choice
 of the coordinate system we use on the tangent bundle.
@@ -404,7 +416,8 @@ derivative of the projection), and this canonical splitting is also the one that
 coordinates on the tangent bundle in our definitions. So this statement is not as crazy as it
 may seem.
 
-TODO define splittings of vector bundles; state this result invariantly. -/
+TODO define splittings of vector bundles; state this result invariantly.
+-/
 theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     (p : TangentBundle I M) :
     tangentMap% (zeroSection (B := M) E (TangentSpace I)) p = ⟨⟨p.proj, 0⟩, ⟨p.2, 0⟩⟩ := by

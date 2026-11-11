@@ -10,6 +10,9 @@ public import Mathlib.ModelTheory.Algebra.Ring.Basic
 
 import Mathlib.Data.Nat.Cast.Order.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The First-Order Theory of Fields
 
@@ -17,10 +20,10 @@ This file defines the first-order theory of fields as a theory over the language
 
 ## Main definitions
 
-- `FirstOrder.Language.Theory.field` : the theory of fields
-- `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
+* `FirstOrder.Language.Theory.field` : the theory of fields
+* `FirstOrder.Model.fieldOfModelField` : a model of the theory of fields on a type `K` that
   already has ring operations.
-- `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
+* `FirstOrder.Model.compatibleRingOfModelField` : shows that the ring operations on `K` given
   by `fieldOfModelField` are compatible with the ring operations on `K` given by the
   `Language.ring.Structure` instance.
 -/
@@ -35,9 +38,10 @@ namespace Field
 
 open Language FirstOrder.Ring Structure BoundedFormula
 
-/-- An indexing type to name each of the field axioms. The theory
-of fields is defined as the range of a function `FieldAxiom ->
-Language.ring.Sentence` -/
+/--
+An indexing type to name each of the field axioms. The theory
+of fields is defined as the range of a function `FieldAxiom -> Language.ring.Sentence`
+-/
 inductive FieldAxiom : Type
   | addAssoc : FieldAxiom
   | zeroAdd : FieldAxiom
@@ -96,11 +100,13 @@ theorem FieldAxiom.toProp_of_model {K : Type*}
 
 open FieldAxiom
 
-/-- A model for the theory of fields is a field. To introduced locally on Types that don't
+/--
+A model for the theory of fields is a field. To introduced locally on Types that don't
 already have instances for ring operations.
 
 When this is used, it is almost always useful to also add locally the instance
-`compatibleFieldOfModelField` afterwards. -/
+`compatibleFieldOfModelField` afterwards.
+-/
 noncomputable abbrev fieldOfModelField (K : Type*) [Language.ring.Structure K]
     [Theory.field.Model K] : Field K :=
   letI : DecidableEq K := Classical.decEq K
@@ -130,7 +136,8 @@ section
 
 attribute [local instance] fieldOfModelField
 
-/-- The instances given by `fieldOfModelField` are compatible with the `Language.ring.Structure`
+/--
+The instances given by `fieldOfModelField` are compatible with the `Language.ring.Structure`
 instance on `K`. This instance is to be used on models for the language of fields that do
 not already have the ring operations on the Type.
 

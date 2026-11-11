@@ -8,14 +8,18 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
-/-! # Limits in categories of sheaves of modules
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Limits in categories of sheaves of modules
 
 In this file, it is shown that under suitable assumptions,
 limits exist in the category `SheafOfModules R`.
 
 ## TODO
-* do the same for colimits (which requires constructing the associated sheaf of modules functor)
 
+* do the same for colimits (which requires constructing the associated sheaf of modules functor)
 -/
 
 public section

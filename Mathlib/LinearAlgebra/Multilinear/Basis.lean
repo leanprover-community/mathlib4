@@ -8,12 +8,14 @@ module
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Multilinear.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multilinear maps in relation to bases.
 
 This file proves lemmas about the action of multilinear maps on basis vectors and constructs a
 basis for multilinear maps given bases on the domain and codomain.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Irreducible.Defs
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime elements
 
@@ -38,8 +41,10 @@ section Prime
 
 variable [CommMonoidWithZero M]
 
-/-- An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*,
-if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. -/
+/--
+An element `p` of a commutative monoid with zero (e.g., a ring) is called _prime_,
+if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`.
+-/
 def Prime (p : M) : Prop :=
   p ≠ 0 ∧ ¬IsUnit p ∧ ∀ a b, p ∣ a * b → p ∣ a ∨ p ∣ b
 

@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Init
 
-/-! # The `#trans_imports` command
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `#trans_imports` command
 
 `#trans_imports` reports how many transitive imports the current module has.
 The command takes an optional string input: `#trans_imports str` also shows the transitively

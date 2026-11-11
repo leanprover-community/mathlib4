@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smallness of Ext-groups from the existence of enough injectives
 
@@ -22,7 +25,6 @@ to specify the universe explicitly almost everywhere, which would be an inconven
 Then, we must be very selective regarding `HasExt` instances.
 
 Note: this file dualizes the results in `HasEnoughProjectives.lean`.
-
 -/
 
 public section

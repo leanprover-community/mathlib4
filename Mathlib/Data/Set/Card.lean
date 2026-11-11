@@ -9,6 +9,9 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 import Mathlib.Data.Set.Finite.Powerset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noncomputable Set Cardinality
 
@@ -33,7 +36,7 @@ tactic so that finiteness goals are discharged automatically in `Set.ncard` theo
 ## Main Definitions
 
 * `Set.encard s` is the cardinality of the set `s` as an extended natural number, with value `⊤` if
-    `s` is infinite.
+  `s` is infinite.
 * `Set.ncard s` is the cardinality of the set `s` as a natural number, provided `s` is Finite.
   If `s` is Infinite, then `Set.ncard s = 0`.
 * `toFinite_tac` is a tactic that tries to synthesize a `Set.Finite s` argument with
@@ -608,10 +611,12 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
   rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
     (h.symm.trans hinj.encard_image.symm).le]
 
-/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
+/--
+A version of the pigeonhole principle for `Set`s rather than `Finset`s.
 
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
-`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
+`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`.
+-/
 lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
     ∃ a₁ ∈ s, ∃ a₂ ∈ s, a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
   contrapose! hc
@@ -950,10 +955,12 @@ theorem ncard_range_of_injective (hf : Function.Injective f) :
 
 theorem BijOn.ncard_eq {t : Set β} (h : Set.BijOn f s t) : s.ncard = t.ncard := ncard_congr' h.equiv
 
-/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
+/--
+A version of the pigeonhole principle for `Set`s rather than `Finset`s.
 
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
-`Set.exists_ne_map_eq_of_encard_lt_of_maps_to`. -/
+`Set.exists_ne_map_eq_of_encard_lt_of_maps_to`.
+-/
 theorem exists_ne_map_eq_of_ncard_lt_of_maps_to {t : Set β} (hc : t.ncard < s.ncard) {f : α → β}
     (hf : ∀ a ∈ s, f a ∈ t) (ht : t.Finite := by toFinite_tac) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
@@ -1305,7 +1312,9 @@ lemma _root_.Finset.exists_notMem_of_card_lt_enatCard {s : Finset α} (hs : s.ca
 alias _root_.Finset.exists_not_mem_of_card_lt_enatCard :=
   _root_.Finset.exists_notMem_of_card_lt_enatCard
 
-/-! ### Explicit description of a set from its cardinality -/
+/-!
+# Explicit description of a set from its cardinality
+-/
 
 @[simp] theorem ncard_eq_one : s.ncard = 1 ↔ ∃ a, s = {a} := by
   refine ⟨fun h ↦ ?_, by rintro ⟨a, rfl⟩; rw [ncard_singleton]⟩

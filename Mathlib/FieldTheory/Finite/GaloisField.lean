@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.ZMod
 public import Mathlib.FieldTheory.Finite.Basic
 public import Mathlib.RingTheory.Norm.Transitivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Galois fields
 
@@ -22,13 +25,12 @@ It is a finite field with `p ^ n` elements.
 
 ## Main Results
 
-- `GaloisField.algEquivGaloisField`: Any finite field is isomorphic to some Galois field
-- `FiniteField.algEquivOfCardEq`: Uniqueness of finite fields : algebra isomorphism
-- `FiniteField.ringEquivOfCardEq`: Uniqueness of finite fields : ring isomorphism
-- `card_algHom_of_finrank_dvd`: if `[K:F] ∣ [L:F]` then `#(K →ₐ[F] L) = [K:F]`
-- `nonempty_algHom_iff_finrank_dvd`: `(K →ₐ[F] L)` is nonempty iff `[K:F] ∣ [L:F]`. This and the
+* `GaloisField.algEquivGaloisField`: Any finite field is isomorphic to some Galois field
+* `FiniteField.algEquivOfCardEq`: Uniqueness of finite fields : algebra isomorphism
+* `FiniteField.ringEquivOfCardEq`: Uniqueness of finite fields : ring isomorphism
+* `card_algHom_of_finrank_dvd`: if `[K:F] ∣ [L:F]` then `#(K →ₐ[F] L) = [K:F]`
+* `nonempty_algHom_iff_finrank_dvd`: `(K →ₐ[F] L)` is nonempty iff `[K:F] ∣ [L:F]`. This and the
   above result helps to classify the category of finite fields.
-
 -/
 
 @[expose] public section

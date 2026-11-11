@@ -9,15 +9,18 @@ public import Mathlib.Order.Filter.AtTopBot.Finite
 public import Mathlib.Order.Filter.AtTopBot.Prod
 public import Mathlib.Order.Filter.CountablyGenerated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence to infinity and countably generated filters
 
 In this file we prove that
 
-- `Filter.atTop` and `Filter.atBot` filters on a countable type are countably generated;
-- `Filter.exists_seq_tendsto`: if `f` is a nontrivial countably generated filter,
+* `Filter.atTop` and `Filter.atBot` filters on a countable type are countably generated;
+* `Filter.exists_seq_tendsto`: if `f` is a nontrivial countably generated filter,
   then there exists a sequence that converges. to `f`;
-- `Filter.tendsto_iff_seq_tendsto`: convergence along a countably generated filter
+* `Filter.tendsto_iff_seq_tendsto`: convergence along a countably generated filter
   is equivalent to convergence along all sequences that converge to this filter.
 -/
 

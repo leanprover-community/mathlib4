@@ -10,14 +10,16 @@ public import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on the category of rings requiring linear algebra
 
 ## Results
 
-- `CommRingCat.nontrivial_of_isPushout_of_isField`: the pushout of non-trivial rings over a field
+* `CommRingCat.nontrivial_of_isPushout_of_isField`: the pushout of non-trivial rings over a field
   is non-trivial.
-
 -/
 
 public section

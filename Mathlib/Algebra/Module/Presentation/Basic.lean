@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentations of modules
 
@@ -31,9 +34,9 @@ contains all the data and properties involved in a presentation of `M` by
 generators and relations.
 
 ## TODO
+
 * Relate this to `Module.FinitePresentation`
 * Behaviour of presentations with respect to the extension of scalars and the restriction of scalars
-
 -/
 
 @[expose] public noncomputable section

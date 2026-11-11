@@ -9,6 +9,9 @@ public import Mathlib.Control.ULiftable
 public import Mathlib.Probability.Distributions.Bernoulli
 public import Mathlib.Probability.ProbabilityMassFunction.Monad
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Specific Constructions of Probability Mass Functions
 
@@ -24,7 +27,6 @@ by allowing the "sum equals 1" constraint to be in terms of `Finset.sum` instead
 and `filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
 
 `bernoulliMeasure` represents the Bernoulli distribution on `Bool`.
-
 -/
 
 @[expose] public section
@@ -142,6 +144,8 @@ instance : LawfulMonad PMF := LawfulMonad.mk'
   (pure_bind := pure_bind)
   (bind_assoc := bind_bind)
 
+
+set_option doc.verso false
 /--
 This instance allows `do` notation for `PMF` to be used across universes, for instance as
 ```lean4
@@ -157,6 +161,8 @@ instance : ULiftable PMF.{u} PMF.{v} where
       left_inv := fun a => by simp [map_comp, map_id]
       right_inv := fun a => by simp [map_comp, map_id] }
 
+
+set_option doc.verso true
 section OfFinset
 
 /-- Given a finset `s` and a function `f : α → ℝ≥0∞` with sum `1` on `s`,

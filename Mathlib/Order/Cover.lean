@@ -8,12 +8,15 @@ module
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Interval.Set.WithBotTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The covering relation
 
 This file proves properties of the covering relation in an order.
-We say that `b` *covers* `a` if `a < b` and there is no element in between.
-We say that `b` *weakly covers* `a` if `a ≤ b` and there is no element between `a` and `b`.
+We say that `b` _covers_ `a` if `a < b` and there is no element in between.
+We say that `b` _weakly covers_ `a` if `a ≤ b` and there is no element between `a` and `b`.
 In a partial order this is equivalent to `a ⋖ b ∨ a = b`,
 in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 

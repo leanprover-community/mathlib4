@@ -12,6 +12,9 @@ public import Mathlib.Order.SuccPred.ENat
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicity of a divisor
 

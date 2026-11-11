@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Module.Basic
 
 import Mathlib.Analysis.SpecificLimits.Normed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tangent cone points as limits of sequences
 
@@ -26,15 +29,17 @@ public section
 open Filter
 open scoped Topology
 
-/-- In a vector space with first countable topology, a vector `y` belongs to `tangentConeAt 𝕜 s x`
+/--
+In a vector space with first countable topology, a vector `y` belongs to `tangentConeAt 𝕜 s x`
 if and only if there exist sequences `c n` and `d n` such that
 
-- `d n` tends to zero as `n → ∞`;
-- `x + d n ∈ s` for sufficiently large `n`;
-- `c n • d n` tends to `y` as `n → ∞`.
+* `d n` tends to zero as `n → ∞`;
+* `x + d n ∈ s` for sufficiently large `n`;
+* `c n • d n` tends to `y` as `n → ∞`.
 
 See `mem_tangentConeAt_of_seq` and `exists_fun_of_mem_tangentConeAt`
-for versions of two implications of this theorem that don't assume first countable topology. -/
+for versions of two implications of this theorem that don't assume first countable topology.
+-/
 theorem mem_tangentConeAt_iff_exists_seq {R E : Type*} [AddCommGroup E] [SMul R E]
     [TopologicalSpace E] [FirstCountableTopology E] {s : Set E} {x y : E} :
     y ∈ tangentConeAt R s x ↔ ∃ (c : ℕ → R) (d : ℕ → E), Tendsto d atTop (𝓝 0) ∧
@@ -72,13 +77,14 @@ theorem mem_tangentConeAt_of_pow_smul (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
 
 end
 
-/-- In a normed space over a nontrivially normed field,
+/--
+In a normed space over a nontrivially normed field,
 a point `y` belongs to the tangent cone of a set `s` at `x`
 iff there exists a sequence of scalars `c n` and a sequence of points `d n` such that
 
-- `‖c n‖ → ∞` as `n → ∞`;
-- `x + d n ∈ s` for sufficiently large `n`;
-- `c n • d n` tends to `y`.
+* `‖c n‖ → ∞` as `n → ∞`;
+* `x + d n ∈ s` for sufficiently large `n`;
+* `c n • d n` tends to `y`.
 
 Before https://github.com/leanprover-community/mathlib4/pull/34127,
 the right-hand side of this equivalence was the definition of the tangent cone.

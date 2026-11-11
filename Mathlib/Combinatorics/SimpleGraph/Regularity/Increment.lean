@@ -8,12 +8,15 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Increment partition for Szemerédi Regularity Lemma
 
 In the proof of Szemerédi Regularity Lemma, we need to partition each part of a starting partition
 to increase the energy. This file defines the partition obtained by gluing the parts partitions
-together (the *increment partition*) and shows that the energy globally increases.
+together (the _increment partition_) and shows that the energy globally increases.
 
 This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
@@ -32,7 +35,7 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 ## References
 
-[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
+‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
 -/
 
 @[expose] public section
@@ -49,12 +52,14 @@ local notation3 "m" => (card α / stepBound #P.parts : ℕ)
 
 namespace SzemerediRegularity
 
-/-- The **increment partition** in Szemerédi's Regularity Lemma.
+/--
+The *increment partition* in Szemerédi's Regularity Lemma.
 
-If an equipartition is *not* uniform, then the increment partition is a (much bigger) equipartition
+If an equipartition is _not_ uniform, then the increment partition is a (much bigger) equipartition
 with a slightly higher energy. This is helpful since the energy is bounded by a constant (see
 `Finpartition.energy_le_one`), so this process eventually terminates and yields a
-not-too-big uniform equipartition. -/
+not-too-big uniform equipartition.
+-/
 noncomputable def increment : Finpartition (univ : Finset α) :=
   P.bind fun _ => chunk hP G ε
 

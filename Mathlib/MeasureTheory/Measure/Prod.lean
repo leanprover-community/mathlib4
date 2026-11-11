@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Doubling
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.OpenPos
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The product measure
 
@@ -87,13 +90,15 @@ theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α 
       exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prodMk_left (hfm i)]
     simpa only [this] using Measurable.tsum ihf
 
-/-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
+/--
+If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
 is a measurable function.
 
 Not true without the s-finite assumption: on `ℝ × ℝ` with the product sigma-algebra, let `s` be the
 diagonal and let `ν` be an uncountable sum of Dirac measures (all Dirac measures for points in a
 set `t`). Then `ν (Prod.mk x ⁻¹' s) = ν {x} = if x ∈ t then 1 else 0`. If `t` is chosen
-non-measurable, this will not be measurable. -/
+non-measurable, this will not be measurable.
+-/
 theorem measurable_measure_prodMk_left [SFinite ν] {s : Set (α × β)} (hs : MeasurableSet s) :
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   rw [← sum_sfiniteSeq ν]
@@ -159,7 +164,9 @@ theorem Measurable.lintegral_prod_left [SFinite μ] {f : α → β → ℝ≥0�
     (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂μ :=
   hf.lintegral_prod_left'
 
-/-! ### The product measure -/
+/-!
+# The product measure
+-/
 
 
 namespace MeasureTheory
@@ -383,11 +390,13 @@ theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ
   exact ae_lt_top (measurable_measure_prodMk_left hs) h2s
 
 omit [SFinite ν] in
-/-- If `μ`-a.e. section `{y | (x, y) ∈ s}` of a measurable set have `ν` measure zero,
+/--
+If `μ`-a.e. section `{y | (x, y) ∈ s}` of a measurable set have `ν` measure zero,
 then `s` has `μ.prod ν` measure zero.
 
 This implication requires `s` to be measurable but does not require `ν` to be s-finite.
-See also `measure_prod_null` and `measure_ae_null_of_prod_null` below. -/
+See also `measure_prod_null` and `measure_ae_null_of_prod_null` below.
+-/
 theorem measure_prod_null_of_ae_null {s : Set (α × β)} (hsm : MeasurableSet s)
     (hs : (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0) : μ.prod ν s = 0 := by
   rw [← nonpos_iff_eq_zero]
@@ -395,20 +404,24 @@ theorem measure_prod_null_of_ae_null {s : Set (α × β)} (hsm : MeasurableSet s
     μ.prod ν s ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := prod_apply_le hsm
     _ = 0 := by simp [lintegral_congr_ae hs]
 
-/-- A measurable set `s` has `μ.prod ν` measure zero, where `ν` is an s-finite measure,
+/--
+A measurable set `s` has `μ.prod ν` measure zero, where `ν` is an s-finite measure,
 if and only if `μ`-a.e. section `{y | (x, y) ∈ s}` of `s` have `ν` measure zero.
 
 See `measure_ae_null_of_prod_null` for the forward implication without the measurability assumption
 and `measure_prod_null_of_ae_null` for the reverse implication without the s-finiteness assumption.
 
 Note: the assumption `hs` cannot be dropped. For a counterexample, see
-Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
+Walter Rudin _Real and Complex Analysis_, example (c) in section 8.9.
+-/
 theorem measure_prod_null {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = 0 ↔ (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0 := by
   rw [prod_apply hs, lintegral_eq_zero_iff (measurable_measure_prodMk_left hs)]
 
-/-- Note: the converse is not true without assuming that `s` is measurable. For a counterexample,
-  see Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. -/
+/--
+Note: the converse is not true without assuming that `s` is measurable. For a counterexample,
+see Walter Rudin _Real and Complex Analysis_, example (c) in section 8.9.
+-/
 theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0) :
     (fun x => ν (Prod.mk x ⁻¹' s)) =ᵐ[μ] 0 := by
   obtain ⟨t, hst, mt, ht⟩ := exists_measurable_superset_of_null h
@@ -434,9 +447,11 @@ omit hν in
   _ ≤ ∫⁻ x, ν' (Prod.mk x ⁻¹' s) ∂μ' := by gcongr
   _ = (μ'.prod ν') s := (prod_apply hs).symm
 
-/-- Note: the converse is not true. For a counterexample, see
-  Walter Rudin *Real and Complex Analysis*, example (c) in section 8.9. It is true if the set is
-  measurable, see `ae_prod_mem_iff_ae_ae_mem`. -/
+/--
+Note: the converse is not true. For a counterexample, see
+Walter Rudin _Real and Complex Analysis_, example (c) in section 8.9. It is true if the set is
+measurable, see `ae_prod_mem_iff_ae_ae_mem`.
+-/
 theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p z) :
     ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
   measure_ae_null_of_prod_null h
@@ -794,7 +809,9 @@ theorem prodAssoc_prod [SFinite τ] :
     MeasurableEquiv.prodAssoc, MeasurableEquiv.coe_mk, Equiv.prod_assoc_preimage, prod_prod,
     mul_assoc]
 
-/-! ### The product of specific measures -/
+/-!
+# The product of specific measures
+-/
 
 theorem prod_restrict (s : Set α) (t : Set β) :
     (μ.restrict s).prod (ν.restrict t) = (μ.prod ν).restrict (s ×ˢ t) := by
@@ -892,13 +909,14 @@ namespace MeasurePreserving
 variable {δ : Type*} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β} {μc : Measure γ}
   {μd : Measure δ}
 
-/-- Let `f : α → β` be a measure-preserving map.
+/--
+Let `f : α → β` be a measure-preserving map.
 For a.e. all `a`, let `g a : γ → δ` be a measure-preserving map.
 Also suppose that `g` is measurable as a function of two arguments.
 Then the map `fun (a, c) ↦ (f a, g a c)` is a measure-preserving map
 for the product measures on `α × γ` and `β × δ`.
 
-Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a *skew product* over `f`,
+Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a _skew product_ over `f`,
 thus the choice of a name.
 -/
 theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
@@ -1028,7 +1046,9 @@ end
 
 namespace MeasureTheory
 
-/-! ### The Lebesgue integral on a product -/
+/-!
+# The Lebesgue integral on a product
+-/
 
 theorem lintegral_prod_swap [SFinite μ] [SFinite ν] (f : α × β → ℝ≥0∞) :
     ∫⁻ z, f z.swap ∂ν.prod μ = ∫⁻ z, f z ∂μ.prod ν :=
@@ -1139,7 +1159,9 @@ theorem Measure.bind_comm [SFinite μ] {f : α → β → Measure γ} (hf : Meas
   rw [lintegral_lintegral_swap]
   exact (measurable_measure.1 hf s hs).aemeasurable
 
-/-! ### Marginals of a measure defined on a product -/
+/-!
+# Marginals of a measure defined on a product
+-/
 
 
 namespace Measure

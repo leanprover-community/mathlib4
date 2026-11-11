@@ -12,6 +12,9 @@ public import Mathlib.Order.Part
 public import Mathlib.Order.Preorder.Chain
 public import Mathlib.Order.ScottContinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Omega Complete Partial Orders
 
@@ -38,10 +41,12 @@ supremum helps define the meaning of recursive procedures.
 * product types
 * `OrderHom`
 * `ContinuousHom` (with notation →𝒄)
+
   * an instance of `OmegaCompletePartialOrder (α →𝒄 β)`
 * `ContinuousHom.ofFun`
 * `ContinuousHom.ofMono`
 * continuous functions:
+
   * `id`
   * `ite`
   * `const`
@@ -51,9 +56,9 @@ supremum helps define the meaning of recursive procedures.
 
 ## References
 
-* [Chain-complete posets and directed sets with applications][markowsky1976]
-* [Recursive definitions of partial functions and their computations][cadiou1972]
-* [Semantics of Programming Languages: Structures and Techniques][gunter1992]
+* ‍\[Chain-complete posets and directed sets with applications\]\[markowsky1976\]
+* ‍\[Recursive definitions of partial functions and their computations\]\[cadiou1972\]
+* ‍\[Semantics of Programming Languages: Structures and Techniques\]\[gunter1992\]
 -/
 
 @[expose] public section
@@ -65,12 +70,14 @@ variable {ι : Sort*} {α β γ δ : Type*}
 
 namespace OmegaCompletePartialOrder
 
-/-- A chain is a monotone sequence.
+/--
+A chain is a monotone sequence.
 
 This is made a one-field structure around order homomorphisms `ℕ →o α` because we want to endow
 chains with the domination order rather than the pointwise order. See `Chain.instLE`.
 
-See the definition on page 114 of [gunter1992]. -/
+See the definition on page 114 of \[gunter1992\].
+-/
 structure Chain (α : Type u) [Preorder α] extends ℕ →o α
 
 namespace Chain
@@ -86,7 +93,9 @@ initialize_simps_projections Chain (toFun → apply)
 instance : OrderHomClass (Chain α) ℕ α where
   map_rel c _m _n hmn := c.monotone hmn
 
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 @[ext] lemma ext ⦃f g : Chain α⦄ (h : ⇑f = ⇑g) : f = g := DFunLike.ext' h
 
 @[simp] lemma coe_toOrderHom (c : Chain α) : ⇑c.toOrderHom = c := rfl
@@ -167,12 +176,14 @@ end OmegaCompletePartialOrder
 
 open OmegaCompletePartialOrder Chain
 
-/-- An omega-complete partial order is a partial order with a supremum
+/--
+An omega-complete partial order is a partial order with a supremum
 operation on increasing sequences indexed by natural numbers (which we
 call `ωSup`). In this sense, it is strictly weaker than join complete
 semi-lattices as only ω-sized totally ordered sets have a supremum.
 
-See the definition on page 114 of [gunter1992]. -/
+See the definition on page 114 of \[gunter1992\].
+-/
 class OmegaCompletePartialOrder (α : Type*) extends PartialOrder α where
   /-- The supremum of an increasing sequence -/
   ωSup : Chain α → α
@@ -518,7 +529,8 @@ theorem toOrderHom_eq_coe (f : α →𝒄 β) : f.1 = f := rfl
 
 @[simp] theorem coe_toOrderHom (f : α →𝒄 β) : ⇑f.1 = f := rfl
 
-/-- See Note [custom simps projection]. We specify this explicitly because we don't have a DFunLike
+/--
+See Note \[custom simps projection\]. We specify this explicitly because we don't have a DFunLike
 instance.
 -/
 def Simps.apply (h : α →𝒄 β) : α → β :=
@@ -641,11 +653,13 @@ def toMono : (α →𝒄 β) →o α →o β where
   toFun f := f
   monotone' _ _ h := h
 
-/-- When proving that a chain of applications is below a bound `z`, it suffices to consider the
+/--
+When proving that a chain of applications is below a bound `z`, it suffices to consider the
 functions and values being selected from the same index in the chains.
 
 This lemma is more specific than necessary, i.e. `c₀` only needs to be a
-chain of monotone functions, but it is only used with continuous functions. -/
+chain of monotone functions, but it is only used with continuous functions.
+-/
 @[simp]
 theorem forall_forall_merge (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) (z : β) :
     (∀ i j : ℕ, (c₀ i) (c₁ j) ≤ z) ↔ ∀ i : ℕ, (c₀ i) (c₁ i) ≤ z := by
@@ -776,9 +790,11 @@ theorem ωSup_iterate_mem_fixedPoint (h : x ≤ f x) :
       rw [this]
       apply le_ωSup
 
-/-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point.
+/--
+The supremum of iterating a function on x arbitrary often is smaller than any prefixed point.
 
-A prefixed point is a value `a` with `f a ≤ a`. -/
+A prefixed point is a value `a` with `f a ≤ a`.
+-/
 theorem ωSup_iterate_le_prefixedPoint (h : x ≤ f x) {a : α}
     (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
     ωSup (iterateChain f x h) ≤ a := by

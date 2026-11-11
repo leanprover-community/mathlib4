@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.PartialHomeomorph.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial homeomorphisms: definitions
 
@@ -76,11 +79,15 @@ protected def symm : OpenPartialHomeomorph Y X where
   open_source := e.open_target
   open_target := e.open_source
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (e : OpenPartialHomeomorph X Y) : X → Y := e
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : OpenPartialHomeomorph X Y) : Y → X := e.symm
 
 initialize_simps_projections OpenPartialHomeomorph (toFun → apply, invFun → symm_apply)

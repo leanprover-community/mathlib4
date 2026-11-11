@@ -16,6 +16,9 @@ public import Mathlib.Data.Nat.Cast.Order.Basic
 
 import Mathlib.Algebra.Ring.Hom.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further basic results about `Algebra`.
 
@@ -163,8 +166,10 @@ end CommSemiring
 
 section Ring
 
-/-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
-See note [reducible non-instances]. -/
+/--
+A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
+See note \[reducible non-instances\].
+-/
 abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
@@ -539,12 +544,14 @@ theorem surjective_algebraMap_of_linearMap (hb : Surjective b) :
     ← smul_eq_mul, map_smul, hz, one_mul, ← map_smul, smul_eq_mul, mul_one, smul_smul,
     ← Algebra.algebraMap_eq_smul_one] at hy
 
-/-- If `E` is an `F`-algebra, and there exists a bijective `F`-linear map from `F` to `E`,
+/--
+If `E` is an `F`-algebra, and there exists a bijective `F`-linear map from `F` to `E`,
 then the algebra map from `F` to `E` is also bijective.
 
 NOTE: The same result can also be obtained if there are two `F`-linear maps from `F` to `E`,
 one is injective, the other one is surjective. In this case, use
-`injective_algebraMap_of_linearMap` and `surjective_algebraMap_of_linearMap` separately. -/
+`injective_algebraMap_of_linearMap` and `surjective_algebraMap_of_linearMap` separately.
+-/
 theorem bijective_algebraMap_of_linearMap (hb : Bijective b) :
     Bijective (algebraMap F E) :=
   ⟨injective_algebraMap_of_linearMap b hb.1, surjective_algebraMap_of_linearMap b hb.2⟩

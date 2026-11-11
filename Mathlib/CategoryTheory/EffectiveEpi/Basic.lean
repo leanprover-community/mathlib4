@@ -7,15 +7,18 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Effective epimorphisms
 
 We define the notion of effective epimorphism and effective epimorphic family of morphisms.
 
-A morphism is an *effective epi* if it is a joint coequalizer of all pairs of
+A morphism is an _effective epi_ if it is a joint coequalizer of all pairs of
 morphisms which it coequalizes.
 
-A family of morphisms with fixed target is *effective epimorphic* if it is initial among families
+A family of morphisms with fixed target is _effective epimorphic_ if it is initial among families
 of morphisms with its sources and a general fixed target, coequalizing every pair of morphisms it
 coequalizes (here, the pair of morphisms coequalized can have different targets among the sources
 of the family).
@@ -24,15 +27,15 @@ We have defined the notion of effective epi for morphisms and families of morphi
 way that avoids requiring the existence of pullbacks. However, if the relevant pullbacks exist
 then these definitions are equivalent, see the file
 `Mathlib/CategoryTheory/EffectiveEpi/RegularEpi.lean`
-See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
+See [nlab: _Effective Epimorphism_](https://ncatlab.org/nlab/show/effective+epimorphism) and
 [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions. Note that
 our notion of `EffectiveEpi` is often called "strict epi" in the literature.
 
 ## References
-- [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
-- [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
-- [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
 
+* ‍\[Elephant\]: _Sketches of an Elephant_, P. T. Johnstone: C2.1, Example 2.1.12.
+* [nlab: _Effective Epimorphism_](https://ncatlab.org/nlab/show/effective+epimorphism) and
+* [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
 -/
 
 @[expose] public section

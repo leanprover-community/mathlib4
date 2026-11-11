@@ -9,6 +9,9 @@ public import Mathlib.Basic.Rel
 
 import Mathlib.Data.Set.Pairwise.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform separation
 
@@ -18,6 +21,7 @@ For a relation `R`, an `R`-separated set `s` is a set such that every pair of el
 `R`-unrelated.
 
 The concept of uniformly separated sets is used to define two further notions of separation:
+
 * Metric separation: `Metric.IsSeparated`, defined using the small distance relation.
 * Dynamical nets: `Dynamics.IsDynNetIn`, defined using the dynamical relation.
 

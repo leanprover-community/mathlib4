@@ -10,6 +10,9 @@ public import Mathlib.FieldTheory.IsAlgClosed.Classification
 public import Mathlib.ModelTheory.Algebra.Field.CharP
 public import Mathlib.ModelTheory.Satisfiability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The First-Order Theory of Algebraically Closed Fields
 
@@ -39,7 +42,6 @@ The first-order theory of algebraically closed fields, along with the Lefschetz 
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
-
 -/
 
 @[expose] public section

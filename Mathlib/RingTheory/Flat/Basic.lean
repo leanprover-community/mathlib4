@@ -16,12 +16,15 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 
 import Mathlib.RingTheory.Nilpotent.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flat modules
 
-A module `M` over a commutative semiring `R` is *mono-flat* if for all monomorphisms of modules
+A module `M` over a commutative semiring `R` is _mono-flat_ if for all monomorphisms of modules
 (i.e., injective linear maps) `N →ₗ[R] P`, the canonical map `N ⊗ M → P ⊗ M` is injective
-(cf. [Katsov2004], [KatsovNam2011]).
+(cf. \[Katsov2004\], \[KatsovNam2011\]).
 To show a module is mono-flat, it suffices to check inclusions of finitely generated
 submodules `N` into finitely generated modules `P`, and `P` can be further assumed to lie in
 the same universe as `R`.
@@ -29,7 +32,7 @@ the same universe as `R`.
 `M` is flat if `· ⊗ M` preserves finite limits (equivalently, pullbacks, or equalizers).
 If `R` is a ring, an `R`-module `M` is flat if and only if it is mono-flat, and to show
 a module is flat, it suffices to check inclusions of finitely generated ideals into `R`.
-See <https://stacks.math.columbia.edu/tag/00HD>.
+See [https://stacks.math.columbia.edu/tag/00HD](https://stacks.math.columbia.edu/tag/00HD).
 
 Currently, `Module.Flat` is defined to be equivalent to mono-flatness over a semiring.
 It is left as a TODO item to introduce the genuine flatness over semirings and rename
@@ -60,7 +63,6 @@ the current `Module.Flat` to `Module.MonoFlat`.
 ## TODO
 
 * Generalize flatness to noncommutative semirings.
-
 -/
 
 @[expose] public section
@@ -79,7 +81,9 @@ open LinearMap Submodule DirectSum
 
 section Semiring
 
-/-! ### Flatness over a semiring -/
+/-!
+# Flatness over a semiring
+-/
 
 variable {R : Type u} {M : Type v} {N P Q : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module R Q]
@@ -279,7 +283,9 @@ end Semiring
 
 namespace Flat
 
-/-! ### Flatness over a ring -/
+/-!
+# Flatness over a ring
+-/
 
 variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
 variable {N : Type w} [AddCommGroup N] [Module R N]
@@ -497,11 +503,13 @@ lemma map_injective_of_flat_flat'
 
 variable {ι κ : Type*} {v : ι → M} {w : κ → N} {s : Set ι} {t : Set κ}
 
-/-- Tensor product of linearly independent families is linearly
+/--
+Tensor product of linearly independent families is linearly
 independent under some flatness conditions.
 
 The flatness condition could be removed over domains.
-See `LinearIndependent.tmul_of_isDomain`. -/
+See `LinearIndependent.tmul_of_isDomain`.
+-/
 lemma _root_.LinearIndependent.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndependent R v)
     (hw : LinearIndependent R w) : LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 := by
   rw [LinearIndependent]
@@ -513,31 +521,37 @@ lemma _root_.LinearIndependent.tmul_of_flat_left [Module.Flat R M] (hv : LinearI
   ext i
   simp [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
-/-- Tensor product of linearly independent families is linearly
+/--
+Tensor product of linearly independent families is linearly
 independent under some flatness conditions.
 
 The flatness condition could be removed over domains.
-See `LinearIndepOn.tmul_of_isDomain`. -/
+See `LinearIndepOn.tmul_of_isDomain`.
+-/
 nonrec lemma LinearIndepOn.tmul_of_flat_left [Module.Flat R M] (hv : LinearIndepOn R v s)
     (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
   ((hv.tmul_of_flat_left hw).comp _ (Equiv.Set.prod _ _).injective :)
 
-/-- Tensor product of linearly independent families is linearly
+/--
+Tensor product of linearly independent families is linearly
 independent under some flatness conditions.
 
 The flatness condition could be removed over domains.
-See `LinearIndependent.tmul_of_isDomain`. -/
+See `LinearIndependent.tmul_of_isDomain`.
+-/
 lemma _root_.LinearIndependent.tmul_of_flat_right [Module.Flat R N] (hv : LinearIndependent R v)
     (hw : LinearIndependent R w) : LinearIndependent R fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2 :=
   (((TensorProduct.comm R N M).toLinearMap.linearIndependent_iff_of_injOn
     (TensorProduct.comm R N M).injective.injOn).mpr
       (hw.tmul_of_flat_left hv)).comp Prod.swap Prod.swap_bijective.injective
 
-/-- Tensor product of linearly independent families is linearly
+/--
+Tensor product of linearly independent families is linearly
 independent under some flatness conditions.
 
 The flatness condition could be removed over domains.
-See `LinearIndepOn.tmul_of_isDomain`. -/
+See `LinearIndepOn.tmul_of_isDomain`.
+-/
 nonrec lemma LinearIndepOn.tmul_of_flat_right [Module.Flat R N] (hv : LinearIndepOn R v s)
     (hw : LinearIndepOn R w t) : LinearIndepOn R (fun i : ι × κ ↦ v i.1 ⊗ₜ[R] w i.2) (s ×ˢ t) :=
   ((hv.tmul_of_flat_right hw).comp _ (Equiv.Set.prod _ _).injective :)

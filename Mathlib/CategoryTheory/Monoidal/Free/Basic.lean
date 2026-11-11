@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The free monoidal category over a type
 
@@ -21,7 +24,6 @@ a function `C → D`.
 The free monoidal category has two important properties: it is a groupoid and it is thin. The former
 is obvious from the construction, and the latter is what is commonly known as the monoidal coherence
 theorem. Both of these properties are proved in the file `Coherence.lean`.
-
 -/
 
 @[expose] public section

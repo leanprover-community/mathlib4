@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # With Density
 
@@ -27,7 +30,6 @@ an s-finite kernel.
 
 * `ProbabilityTheory.Kernel.lintegral_withDensity`:
   `∫⁻ b, g b ∂(withDensity κ f a) = ∫⁻ b, f a b * g b ∂(κ a)`
-
 -/
 
 @[expose] public section

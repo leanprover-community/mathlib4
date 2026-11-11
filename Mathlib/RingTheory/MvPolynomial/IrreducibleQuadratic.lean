@@ -9,27 +9,26 @@ public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 
 import Mathlib.Algebra.MvPolynomial.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducibility of linear and quadratic polynomials
 
 * `MvPolynomial.irreducible_of_totalDegree_eq_one`:
   a multivariate polynomial of `totalDegree` one is irreducible
   if its coefficients are relatively prime.
-
 * For `c : n →₀ R`, `MvPolynomial.sumSMulX c` is the linear polynomial
-  $\sum_i c_i X_i$ of $R[X_1\dots,X_n]$.
-
+  $`\sum_i c_i X_i` of $`R[X_1\dots,X_n]`.
 * `MvPolynomial.irreducible_sumSMulX` : if the support of `c` is nontrivial,
   if `R` is a domain,
   and if the only common divisors to all `c i` are units,
   then `MvPolynomial.sumSMulX c` is irreducible.
-
 * For `c : n →₀ R`, `MvPolynomial.sumXSMulY c` is the quadratic polynomial
-  $\sum_i c_i X_i Y_i$ of $R[X_1\dots,X_n,Y_1,\dots,Y_n]$.
+  $`\sum_i c_i X_i Y_i` of $`R[X_1\dots,X_n,Y_1,\dots,Y_n]`.
   It is constructed as an object of `MvPolynomial (n ⊕ n) R`,
   the first component of `n ⊕ n` represents the `X` indeterminates,
   and the second component represents the `Y` indeterminates.
-
 * `MvPolynomial.irreducible_sumSMulXSMulY` :
   if the support of `c` is nontrivial,
   the ring `R` is a domain,
@@ -39,20 +38,16 @@ import Mathlib.Algebra.MvPolynomial.Nilpotent
 ## TODO
 
 * Treat the case of diagonal quadratic polynomials,
-  $ \sum c_i X_i ^ 2$. For irreducibility, one will need that
+  $`  \sum c_i X_i ^ 2`. For irreducibility, one will need that
   there are at least 3 nonzero values of `c`,
   and that the only common divisors to all `c i` are units.
-
 * Addition of quadratic polynomial of both kinds are relevant too.
-
 * Prove, over a field, that a polynomial of degree at most 2 whose quadratic
   part has rank at least 3 is irreducible.
-
 * Cases of ranks 1 and 2 can be treated as well, but the answer depends
   on the terms of degree 0 and 1.
-  Eg, $X^2-Y$ is irreducible, but $X^2$, $X^2-1$, $X^2-Y^2$ are not.
-  And $X^2+Y^2$ is irreducible over the reals but not over the complex numbers.
-
+  Eg, $`X^2-Y` is irreducible, but $`X^2`, $`X^2-1`, $`X^2-Y^2` are not.
+  And $`X^2+Y^2` is irreducible over the reals but not over the complex numbers.
 -/
 
 @[expose] public section
@@ -127,7 +122,9 @@ lemma irreducible_of_disjoint_support [IsDomain R]
 end
 
 section
-/-! ## The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
+/-!
+# The quadratic polynomial $$`\sum_{i=1}^n X_i Y_i`.
+-/
 
 variable {n : Type*} {R : Type*} [CommRing R]
 
@@ -154,7 +151,9 @@ Named to avoid collision with `MvPolynomial.instModule` from `Mathlib.RingTheory
 noncomputable instance instModuleSelf : Module R (MvPolynomial n R) :=
   inferInstanceAs <| Module R (AddMonoidAlgebra R (n →₀ ℕ))
 
-/-- The linear polynomial $$\sum_i c_i X_i$$. -/
+/--
+The linear polynomial $$`\sum_i c_i X_i`.
+-/
 noncomputable def sumSMulX :
     (n →₀ R) →ₗ[R] MvPolynomial n R :=
   Finsupp.linearCombination R X
@@ -193,7 +192,9 @@ theorem irreducible_sumSMulX [IsDomain R]
     intro i
     simpa [coeff_sumSMulX] using hr (Finsupp.single i 1)
 
-/-- The quadratic polynomial $$\sum_i c_i X_i Y_i$$. -/
+/--
+The quadratic polynomial $$`\sum_i c_i X_i Y_i`.
+-/
 noncomputable def sumSMulXSMulY :
     (n →₀ R) →ₗ[R] MvPolynomial (n ⊕ n) R :=
   Finsupp.linearCombination R (fun i ↦ X (.inl i) * X (.inr i))

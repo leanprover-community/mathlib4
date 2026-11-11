@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action of trifunctors on graded objects
 
@@ -22,7 +25,6 @@ for `p ⟨i₁, i₂, i₃⟩ = j`.
 This shall be used in order to construct the associator isomorphism for the monoidal
 category structure on `GradedObject I C` induced by a monoidal structure on `C` and
 an additive monoid structure on `I` (TODO @joelriou).
-
 -/
 
 @[expose] public section

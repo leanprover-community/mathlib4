@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right-derived functors
 
@@ -28,6 +31,7 @@ natural transformations between the original additive functors,
 and show how to compute the components.
 
 ## Main results
+
 * `Functor.isZero_rightDerived_obj_injective_succ`: injective objects have no higher
   right derived functor.
 * `NatTrans.rightDerived`: the natural transformation between right derived functors
@@ -44,7 +48,6 @@ and show how to compute the components.
   Eventually, we shall get a right derived functor
   `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
   and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
-
 -/
 
 @[expose] public section

@@ -10,10 +10,13 @@ public import Mathlib.Dynamics.Minimal
 public import Mathlib.MeasureTheory.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measures invariant under group actions
 
-A measure `μ : Measure α` is said to be *invariant* under an action of a group `G` if scalar
+A measure `μ : Measure α` is said to be _invariant_ under an action of a group `G` if scalar
 multiplication by `c : G` is a measure-preserving map for all `c`. In this file we define a
 typeclass for measures invariant under action of an (additive or multiplicative) group and prove
 some basic properties of such measures.
@@ -236,22 +239,19 @@ end SMulHomClass
 variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure α)
 
 variable [MeasurableConstSMul G α] in
-/-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
+/--
+Equivalent definitions of a measure invariant under a multiplicative action of a group.
 
 0. `SMulInvariantMeasure G α μ`;
-
 1. for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under scalar
-  multiplication by `c` is equal to the measure of `s`;
-
+   multiplication by `c` is equal to the measure of `s`;
 2. for every `c : G` and a measurable set `s`, the measure of the image `c • s` of `s` under
-  scalar multiplication by `c` is equal to the measure of `s`;
-
+   scalar multiplication by `c` is equal to the measure of `s`;
 3. property 1 for any set, including non-measurable ones;
 4. property 2 for any set, including non-measurable ones;
-
 5. for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
-
-6. for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
+6. for any `c : G`, scalar multiplication by `c` is a measure-preserving map.
+-/
 @[to_additive]
 theorem smulInvariantMeasure_tfae :
     List.TFAE
@@ -277,21 +277,18 @@ theorem smulInvariantMeasure_tfae :
     exact H c⁻¹ s hs
   tfae_finish
 
-/-- Equivalent definitions of a measure invariant under an additive action of a group.
+/--
+Equivalent definitions of a measure invariant under an additive action of a group.
 
-- 0: `VAddInvariantMeasure G α μ`;
-
-- 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under
-     vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
-
-- 2: for every `c : G` and a measurable set `s`, the measure of the image `c +ᵥ s` of `s` under
-     vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
-
-- 3, 4: properties 2, 3 for any set, including non-measurable ones;
-
-- 5: for any `c : G`, vector addition of `c` maps `μ` to `μ`;
-
-- 6: for any `c : G`, vector addition of `c` is a measure-preserving map. -/
+* 0: `VAddInvariantMeasure G α μ`;
+* 1: for every `c : G` and a measurable set `s`, the measure of the preimage of `s` under
+  vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
+* 2: for every `c : G` and a measurable set `s`, the measure of the image `c +ᵥ s` of `s` under
+  vector addition `(c +ᵥ ·)` is equal to the measure of `s`;
+* 3, 4: properties 2, 3 for any set, including non-measurable ones;
+* 5: for any `c : G`, vector addition of `c` maps `μ` to `μ`;
+* 6: for any `c : G`, vector addition of `c` is a measure-preserving map.
+-/
 add_decl_doc vaddInvariantMeasure_tfae
 
 variable {G}

@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.SuccPred.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graded orders
 
@@ -33,10 +36,11 @@ Visually, `grade ℕ a` is the height of `a` in the Hasse diagram of `α`.
 ## How to grade your order
 
 Here are the translations between common references and our `GradeOrder`:
-* [Stanley][stanley2012] defines a graded order of rank `n` as an order where all maximal chains
-  have "length" `n` (so the number of elements of a chain is `n + 1`). This corresponds to
+
+* ‍\[Stanley\]\[stanley2012\] defines a graded order of rank `n` as an order where all maximal
+  chains have "length" `n` (so the number of elements of a chain is `n + 1`). This corresponds to
   `GradeBoundedOrder (Fin (n + 1)) α`.
-* [Engel][engel1997]'s ranked orders are somewhere between `GradeOrder ℕ α` and
+* ‍\[Engel\]\[engel1997\]'s ranked orders are somewhere between `GradeOrder ℕ α` and
   `GradeMinOrder ℕ α`, in that he requires `∃ a, IsMin a ∧ grade ℕ a = 0` rather than
   `∀ a, IsMin a → grade ℕ a = 0`. He defines a graded order as an order where all minimal elements
   have grade `0` and all maximal elements have the same grade. This is roughly a less bundled
@@ -52,8 +56,8 @@ Instead, we define graded orders by their grade function, without talking about 
 
 ## References
 
-* [Konrad Engel, *Sperner Theory*][engel1997]
-* [Richard Stanley, *Enumerative Combinatorics*][stanley2012]
+* ‍\[Konrad Engel, _Sperner Theory_\]\[engel1997\]
+* ‍\[Richard Stanley, _Enumerative Combinatorics_\]\[stanley2012\]
 -/
 
 @[expose] public section
@@ -186,7 +190,9 @@ theorem grade_bot [OrderBot 𝕆] [OrderBot α] [GradeMinOrder 𝕆 α] : grade 
 
 end PartialOrder
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 section Preorder
 variable [Preorder 𝕆] [Preorder ℙ] [Preorder α] [Preorder β]
@@ -202,7 +208,9 @@ instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α where
 theorem grade_self (a : α) : grade α a = a :=
   rfl
 
-/-! #### Dual -/
+/-!
+# Dual
+-/
 
 instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ where
   grade := toDual ∘ grade 𝕆 ∘ ofDual
@@ -224,7 +232,9 @@ theorem grade_toDual [GradeOrder 𝕆 α] (a : α) : grade 𝕆ᵒᵈ (toDual a)
 theorem grade_ofDual [GradeOrder 𝕆 α] (a : αᵒᵈ) : grade 𝕆 (ofDual a) = ofDual (grade 𝕆ᵒᵈ a) :=
   rfl
 
-/-! #### Lifting a graded order -/
+/-!
+# Lifting a graded order
+-/
 
 -- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
@@ -282,7 +292,9 @@ abbrev GradeBoundedOrder.liftRight [GradeBoundedOrder 𝕆 β] (f : α → β) (
     (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeBoundedOrder 𝕆 α :=
   { GradeMinOrder.liftRight f hf hcovBy hmin, GradeMaxOrder.liftRight f hf hcovBy hmax with }
 
-/-! #### `Fin n`-graded to `ℕ`-graded to `ℤ`-graded -/
+/-!
+# `Fin n`-graded to `ℕ`-graded to `ℤ`-graded
+-/
 
 -- See note [reducible non-instances]
 /-- A `Fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
@@ -317,7 +329,7 @@ instance [GradeOrder ℕᵒᵈ α] : WellFoundedGT α :=
 end Preorder
 
 /-!
-### Grading a flag
+# Grading a flag
 
 A flag inherits the grading of its ambient order.
 -/

@@ -9,11 +9,14 @@ public import Mathlib.Combinatorics.SetFamily.Shatter
 
 import Mathlib.Data.Fintype.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Assouad's dual VC bound
 
 Given a family of sets `𝒜 : Finset (Finset α)` and a ground set `X : Finset α`,
-the *dual family* of `𝒜` relative to `X` assigns to each `x ∈ X` the subfamily
+the _dual family_ of `𝒜` relative to `X` assigns to each `x ∈ X` the subfamily
 `{A ∈ 𝒜 | x ∈ A}` of elements of `𝒜` containing `x`. This file establishes
 Assouad's 1983 dual VC bound: if `𝒜.vcDim ≤ d`, then
 `(𝒜.dualFamily X).vcDim ≤ 2 ^ (d + 1) - 1`.
@@ -33,10 +36,10 @@ for small `d`.
 
 ## References
 
-* [P. Assouad, *Densité et dimension*, Ann. Inst. Fourier **33** (3) (1983),
-  Theorem 2.13][assouad1983]
-* [J. Matoušek, *Lectures on Discrete Geometry*, Graduate Texts in
-  Mathematics **212**, Springer, 2002, §10.3 Lemma 10.3.3][matousek2002]
+* ‍\[P. Assouad, _Densité et dimension_, Ann. Inst. Fourier *33* (3) (1983),
+  Theorem 2.13\]\[assouad1983\]
+* ‍\[J. Matoušek, _Lectures on Discrete Geometry_, Graduate Texts in
+  Mathematics *212*, Springer, 2002, §10.3 Lemma 10.3.3\]\[matousek2002\]
 
 ## Tags
 
@@ -50,11 +53,13 @@ namespace Finset
 variable {α : Type*} [DecidableEq α] {𝒜 : Finset (Finset α)} {X : Finset α}
   {𝒞 : Finset (Finset α)}
 
-/-- The **dual family** of `𝒜 : Finset (Finset α)` relative to a ground set
+/--
+The *dual family* of `𝒜 : Finset (Finset α)` relative to a ground set
 `X : Finset α`: for each `x ∈ X`, the subfamily `{A ∈ 𝒜 | x ∈ A}`.
 
 Viewing `𝒜` as rows of a binary incidence matrix indexed by `X × 𝒜`, the
-dual family is the collection of its columns. -/
+dual family is the collection of its columns.
+-/
 @[expose]
 def dualFamily (𝒜 : Finset (Finset α)) (X : Finset α) :
     Finset (Finset (Finset α)) :=
@@ -103,14 +108,16 @@ private lemma mem_cubeBitSlice_iff {n : ℕ} {S : Finset (Finset α)}
   refine ⟨fun ⟨b', hb'k, hb'eq⟩ ↦ ?_, fun hk ↦ ⟨b, hk, rfl⟩⟩
   rwa [cube.injective (Subtype.ext hb'eq)] at hb'k
 
-/-- **Bitstring coding (Assouad 1983, Theorem 2.13).** If `𝒜.dualFamily X`
+/--
+*Bitstring coding (Assouad 1983, Theorem 2.13).* If `𝒜.dualFamily X`
 shatters a subfamily `S` of size at least `2 ^ n`, then `𝒜` shatters
 some `n`-element subset of `X`.
 
 This is the combinatorial side of the dual VC bound: embed the `2 ^ n`
 bit-patterns of length `n` into `S`; for each coordinate, shattering
 provides a ground-set element distinguishing the patterns with that bit set;
-these `n` elements are then shattered by `𝒜`. -/
+these `n` elements are then shattered by `𝒜`.
+-/
 theorem exists_shatters_of_dualFamily_shatters
     (𝒜 : Finset (Finset α)) (X : Finset α)
     {S : Finset (Finset α)} (hS : (𝒜.dualFamily X).Shatters S)
@@ -149,13 +156,15 @@ theorem exists_shatters_of_dualFamily_shatters
     · obtain ⟨k, _, rfl⟩ := mem_map.mp (ht hyt)
       exact ⟨ht hyt, (hx_cube _ k).mpr (decide_eq_true hyt)⟩
 
-/-- **Assouad's dual VC bound.** If `𝒜 : Finset (Finset α)` has VC dimension
+/--
+*Assouad's dual VC bound.* If `𝒜 : Finset (Finset α)` has VC dimension
 at most `d`, then for any ground set `X : Finset α` the dual family has VC
 dimension at most `2 ^ (d + 1) - 1`.
 
 This is the Finset-level form of the standard statement
 `vcDim(𝒞*) ≤ 2 ^ (vcDim(𝒞) + 1) - 1` (Assouad 1983, Theorem 2.13;
-Matoušek, *Lectures on Discrete Geometry*, §10.3 Lemma 10.3.3). -/
+Matoušek, _Lectures on Discrete Geometry_, §10.3 Lemma 10.3.3).
+-/
 theorem vcDim_dualFamily_le (𝒜 : Finset (Finset α)) (X : Finset α)
     {d : ℕ} (hvc : 𝒜.vcDim ≤ d) :
     (𝒜.dualFamily X).vcDim ≤ 2 ^ (d + 1) - 1 := by

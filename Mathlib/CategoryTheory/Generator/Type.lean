@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Generator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generator of Type
 
 In this file, we show that `PUnit` is a separator of the category `Type u`.
-
 -/
 
 public section

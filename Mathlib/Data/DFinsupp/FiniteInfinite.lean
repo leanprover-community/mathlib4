@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Data.Fintype.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness and infiniteness of the `DFinsupp` type
 

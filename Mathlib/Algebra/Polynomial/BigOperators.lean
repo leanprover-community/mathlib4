@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.
 
@@ -16,14 +19,14 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 
 ## Main results
 
-- `Polynomial.natDegree_prod_of_monic` : the degree of a product of monic polynomials is the
+* `Polynomial.natDegree_prod_of_monic` : the degree of a product of monic polynomials is the
   product of degrees. We prove this only for `[CommSemiring R]`,
   but it ought to be true for `[Semiring R]` and `List.prod`.
-- `Polynomial.natDegree_prod` : for polynomials over an integral domain,
+* `Polynomial.natDegree_prod` : for polynomials over an integral domain,
   the degree of the product is the sum of degrees.
-- `Polynomial.leadingCoeff_prod` : for polynomials over an integral domain,
+* `Polynomial.leadingCoeff_prod` : for polynomials over an integral domain,
   the leading coefficient is the product of leading coefficients.
-- `Polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
+* `Polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
   the second coefficient of the characteristic polynomial.
 -/
 
@@ -146,7 +149,8 @@ theorem degree_multiset_prod_le : t.prod.degree ≤ (t.map Polynomial.degree).su
 theorem degree_prod_le : (∏ i ∈ s, f i).degree ≤ ∑ i ∈ s, (f i).degree := by
   simpa only [Multiset.map_map] using! degree_multiset_prod_le (s.1.map f)
 
-/-- The leading coefficient of a product of polynomials is equal to
+/--
+The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients, provided that this product is nonzero.
 
 See `Polynomial.leadingCoeff_multiset_prod` (without the `'`) for a version for integral domains,
@@ -165,7 +169,8 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     simp only [ne_eq]
     apply right_ne_zero_of_mul h
 
-/-- The leading coefficient of a product of polynomials is equal to
+/--
+The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients, provided that this product is nonzero.
 
 See `Polynomial.leadingCoeff_prod` (without the `'`) for a version for integral domains,
@@ -175,7 +180,8 @@ theorem leadingCoeff_prod' (h : (∏ i ∈ s, (f i).leadingCoeff) ≠ 0) :
     (∏ i ∈ s, f i).leadingCoeff = ∏ i ∈ s, (f i).leadingCoeff := by
   simpa using leadingCoeff_multiset_prod' (s.1.map f) (by simpa using h)
 
-/-- The degree of a product of polynomials is equal to
+/--
+The degree of a product of polynomials is equal to
 the sum of the degrees, provided that the product of leading coefficients is nonzero.
 
 See `Polynomial.natDegree_multiset_prod` (without the `'`) for a version for integral domains,
@@ -191,7 +197,8 @@ theorem natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0
   · rwa [Polynomial.leadingCoeff_multiset_prod']
     apply right_ne_zero_of_mul ht
 
-/-- The degree of a product of polynomials is equal to
+/--
+The degree of a product of polynomials is equal to
 the sum of the degrees, provided that the product of leading coefficients is nonzero.
 
 See `Polynomial.natDegree_prod` (without the `'`) for a version for integral domains,
@@ -358,7 +365,8 @@ section CommSemiring
 
 variable [CommSemiring R] [NoZeroDivisors R] (f : ι → R[X]) (t : Multiset R[X])
 
-/-- The degree of a product of polynomials is equal to
+/--
+The degree of a product of polynomials is equal to
 the sum of the degrees.
 
 See `Polynomial.natDegree_prod'` (with a `'`) for a version for commutative semirings,
@@ -392,7 +400,8 @@ theorem degree_prod [Nontrivial R] : (∏ i ∈ s, f i).degree = ∑ i ∈ s, (f
   map_prod (@degreeMonoidHom R _ _ _) _ _
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The leading coefficient of a product of polynomials is equal to
+/--
+The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.
 
 See `Polynomial.leadingCoeff_multiset_prod'` (with a `'`) for a version for commutative semirings,
@@ -403,7 +412,8 @@ theorem leadingCoeff_multiset_prod :
   rw [← leadingCoeffHom_apply, MonoidHom.map_multiset_prod]
   simp only [leadingCoeffHom_apply]
 
-/-- The leading coefficient of a product of polynomials is equal to
+/--
+The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.
 
 See `Polynomial.leadingCoeff_prod'` (with a `'`) for a version for commutative semirings,

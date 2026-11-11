@@ -11,6 +11,9 @@ public import Mathlib.Order.Interval.Set.SuccOrder
 
 import Mathlib.Order.Shrink
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -27,7 +30,6 @@ In particular, if `J := ℕ`, we define `W.IsStableUnderInfiniteComposition`,
 Finally, we introduce the class `W.IsStableUnderTransfiniteComposition`
 which says that `W.IsStableUnderTransfiniteCompositionOfShape J`
 holds for any well-ordered type `J` in a certain universe `w`.
-
 -/
 
 @[expose] public section

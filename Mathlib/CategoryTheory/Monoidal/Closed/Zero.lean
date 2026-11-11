@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A Cartesian closed category with zero object is trivial
 
@@ -16,7 +19,6 @@ object and one morphism.
 ## References
 
 * https://mathoverflow.net/a/136480
-
 -/
 
 @[expose] public section

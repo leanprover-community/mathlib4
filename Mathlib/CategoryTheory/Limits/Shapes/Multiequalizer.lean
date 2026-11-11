@@ -9,10 +9,13 @@ public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multi-(co)equalizers
 
-A *multiequalizer* is an equalizer of two morphisms between two products.
+A _multiequalizer_ is an equalizer of two morphisms between two products.
 Since both products and equalizers are limits, such an object is again a limit.
 This file provides the diagram whose limit is indeed such an object.
 In fact, it is well-known that any limit can be obtained as a multiequalizer.
@@ -24,7 +27,6 @@ Prove that a multiequalizer can be identified with
 an equalizer between products (and analogously for multicoequalizers).
 
 Prove that the limit of any diagram is a multiequalizer (and similarly for colimits).
-
 -/
 
 @[expose] public section
@@ -552,17 +554,21 @@ def ofι {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
         | WalkingMulticospan.left _ => ι _
         | WalkingMulticospan.right b => ι (J.fst b) ≫ I.fst b
       naturality := by
-        #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-        The proof used to finish from this point as
-        ```
-        rintro (_ | _) (_ | _) (_ | _ | _) <;>
-          dsimp <;> simp only [Category.id_comp, Category.comp_id]
-        apply w
-        ```
-        The replacement proof is a short-term fix, and we request that the authors/maintainers of
-        this file review the proof, and either approve it by removing this note,
-        revise the proof or the prerequisites appropriately, or minimize a problem in lean4 that
-        still needs addressing. -/
+        #adaptation_note /--
+                         Proof repaired after leanprover/lean4#13363.
+The proof used to finish from this point as
+
+                         ```
+rintro (_ | _) (_ | _) (_ | _ | _) <;>
+  dsimp <;> simp only [Category.id_comp, Category.comp_id]
+apply w
+```
+
+                         The replacement proof is a short-term fix, and we request that the
+authors/maintainers of this file review the proof, and either approve it by
+removing this note, revise the proof or the prerequisites appropriately, or
+minimize a problem in lean4 that still needs addressing.
+                         -/
         rintro (_ | _) (_ | _) (_ | _ | _) <;>
           simp only [WalkingMulticospan.Hom.id_eq_id,
             Functor.map_id, Functor.const_obj_map, Category.comp_id] <;>

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 import Mathlib.RingTheory.Flat.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Going down
 
@@ -19,15 +22,14 @@ of `S` lying above `q`, there exists a prime `P ≤ Q` of `S` lying above `p`.
 
 ## Main results
 
-- `Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap`: going down is equivalent
+* `Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap`: going down is equivalent
   to generalizations lifting along `Spec S → Spec R`.
-- `Algebra.HasGoingDown.of_flat`: flat algebras satisfy going down.
+* `Algebra.HasGoingDown.of_flat`: flat algebras satisfy going down.
 
 ## Note
 
-- For the fact that an integral extension of domains with normal base satisfies going down,
+* For the fact that an integral extension of domains with normal base satisfies going down,
   see `Mathlib/RingTheory/IntegralClosure/GoingDown.lean`.
-
 -/
 
 public section

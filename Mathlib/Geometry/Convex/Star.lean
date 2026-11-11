@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Convex.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Star-convex sets
 
@@ -21,7 +24,7 @@ Note that this has nothing to do with star rings, `Star` and co.
 
 ## Implementation notes
 
-Instead of saying that a set is star-convex, we say a set is star-convex *at a point*. This has the
+Instead of saying that a set is star-convex, we say a set is star-convex _at a point_. This has the
 advantage of allowing us to talk about convexity as being "everywhere star-convexity" and of making
 the union of star-convex sets be star-convex.
 
@@ -41,10 +44,12 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X]
   {f : X → Y} {w : StdSimplex R X} {x : X} {s t : Set X} {y : X}
 
 variable (R x s) in
-/-- A set `s` is star-convex at a point `x` if every segment from `x` to a point in `s` is
+/--
+A set `s` is star-convex at a point `x` if every segment from `x` to a point in `s` is
 contained in `s`.
 
-TODO: Replace `StarConvex` with this predicate. -/
+TODO: Replace `StarConvex` with this predicate.
+-/
 @[expose]
 def IsStarConvexSet : Prop :=
   ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : R⦄ ha hb hab, convexCombPair a b ha hb hab x y ∈ s

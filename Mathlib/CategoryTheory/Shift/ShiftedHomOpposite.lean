@@ -8,7 +8,11 @@ module
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
-/-! # Shifted morphisms in the opposite category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Shifted morphisms in the opposite category
 
 If `C` is a category equipped with a shift by `ℤ`, `X` and `Y` are objects
 of `C`, and `n : ℤ`, we define a bijection
@@ -18,7 +22,6 @@ We also introduce `ShiftedHom.opEquiv'` which produces a bijection
 The compatibilities that are obtained shall be used in order to study
 the homological functor `preadditiveYoneda.obj B : Cᵒᵖ ⥤ Type _` when `B` is an object
 in a pretriangulated category `C`.
-
 -/
 
 @[expose] public section

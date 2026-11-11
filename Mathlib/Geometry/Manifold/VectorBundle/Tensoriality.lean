@@ -14,11 +14,14 @@ public import Mathlib.Topology.VectorBundle.FiniteDimensional
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The tensoriality criterion
 
 Given vector bundles `V` and `W` over a manifold `M`, one can construct a section of the hom-bundle
-`Π x, V x →L[𝕜] W x` from a *tensorial* operation sending sections of `V` to sections of `W`.
+`Π x, V x →L[𝕜] W x` from a _tensorial_ operation sending sections of `V` to sections of `W`.
 This file provides this construction.
 
 In fact, we define tensoriality, and provide the above criterion, in slightly greater generality:
@@ -29,13 +32,10 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
 
 * `TensorialAt`: Propositional structure stating that an operation on sections of a vector bundle
   `V` is tensorial.
-
 * `TensorialAt.mkHom`: An operation on sections of `V` which is tensorial at `x` defines a
   continuous linear map out of `V x`.
-
 * `TensorialAt.mkHom₂`: An operation on sections of `V` and `V'` which is tensorial at `x` in both
   arguments defines a continuous bilinear map out of `V x` and `V' x`.
-
 -/
 
 open Bundle FiberBundle Module
@@ -66,8 +66,10 @@ variable
 
 variable {A : Type*} [AddCommGroup A] [Module 𝕜 A]
 
-/-- An operation `Φ` on sections of a vector bundle `V` over `M` is *tensorial* at `x : M`, if it
-respects addition and scalar multiplication by germs of differentiable functions at `f`. -/
+/--
+An operation `Φ` on sections of a vector bundle `V` over `M` is _tensorial_ at `x : M`, if it
+respects addition and scalar multiplication by germs of differentiable functions at `f`.
+-/
 structure TensorialAt (Φ : (Π x : M, V x) → A) (x : M) : Prop where
   smul : ∀ {f : M → 𝕜} {σ : Π x : M, V x}, MDiffAt f x → MDiffAt (T% σ) x → Φ (f • σ) = f x • Φ σ
   add : ∀ {σ σ'}, MDiffAt (T% σ) x → MDiffAt (T% σ') x → Φ (σ + σ') = Φ σ + Φ σ'
@@ -77,11 +79,13 @@ variable {I F F'}
 
 namespace TensorialAt
 
-/-- If the operation `Φ` on sections of a vector bundle `V` is tensorial at `x`, then it depends
+/--
+If the operation `Φ` on sections of a vector bundle `V` is tensorial at `x`, then it depends
 only on the germ of the section at `x`.
 
 This is later superseded by `TensorialAt.pointwise`, showing that `Φ` depends only on the value at
-`x` itself. -/
+`x` itself.
+-/
 protected theorem «local» (hΦ : TensorialAt I F Φ x) {σ σ' : Π x : M, V x}
     (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hσσ' : ∀ᶠ x' in 𝓝 x, σ x' = σ' x') :
     Φ σ = Φ σ' := by

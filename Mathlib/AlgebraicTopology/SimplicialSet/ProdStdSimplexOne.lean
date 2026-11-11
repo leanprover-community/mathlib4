@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary products `Δ[n] ⊗ Δ[1]`
 
@@ -16,7 +19,6 @@ between `Fin (p + 1)` and the type of nondegenerate `(p + 1)`-simplices
 of `Δ[p] ⊗ Δ[1]`. We use this enumeration of the nondegenerate simplices
 in order to define a filtration `SSet.prodStdSimplex₁.filtration`
 of `Δ[p] ⊗ Δ[1]` by subcomplexes.
-
 -/
 
 @[expose] public section

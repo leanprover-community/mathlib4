@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left exactness of functors between preadditive categories
 
@@ -22,7 +25,6 @@ preserves kernels. The dual result holds for right exact functors and cokernels.
   `preservesBinaryProducts_of_preservesKernels`,
 * then show the preservation of equalizers in `preservesEqualizer_of_preservesKernels`,
 * and then derive the preservation of all finite limits with the usual construction.
-
 -/
 
 @[expose] public section

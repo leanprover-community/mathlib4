@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The continuous functional calculus for non-unital algebras
 
-This file defines a generic API for the *continuous functional calculus* in *non-unital* algebras
+This file defines a generic API for the _continuous functional calculus_ in _non-unital_ algebras
 which is suitable in a wide range of settings. The design is intended to match as closely as
 possible that for unital algebras in
 `Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unital.lean`.  Changes to either file
@@ -29,19 +32,18 @@ encoded in the `ContinuousMapZero.UniqueHom` class.
 
 ## Main declarations
 
-+ `NonUnitalContinuousFunctionalCalculus R A (p : A → Prop)`: a class stating that every `a : A`
+* `NonUnitalContinuousFunctionalCalculus R A (p : A → Prop)`: a class stating that every `a : A`
   satisfying `p a` has a non-unital star algebra homomorphism from the continuous `R`-valued
   functions on the `R`-quasispectrum of `a` vanishing at zero into the algebra `A`. This map is a
-  closed embedding, and satisfies the **spectral mapping theorem**.
-+ `cfcₙHom : p a → C(quasispectrum R a, R)₀ →⋆ₐ[R] A`: the underlying non-unital star algebra
+  closed embedding, and satisfies the *spectral mapping theorem*.
+* `cfcₙHom : p a → C(quasispectrum R a, R)₀ →⋆ₐ[R] A`: the underlying non-unital star algebra
   homomorphism for an element satisfying property `p`.
-+ `cfcₙ : (R → R) → A → A`: an unbundled version of `cfcₙHom` which takes the junk value `0` when
+* `cfcₙ : (R → R) → A → A`: an unbundled version of `cfcₙHom` which takes the junk value `0` when
   `cfcₙHom` is not defined.
 
 ## Main theorems
 
-+ `cfcₙ_comp : cfcₙ (x ↦ g (f x)) a = cfcₙ g (cfcₙ f a)`
-
+* `cfcₙ_comp : cfcₙ (x ↦ g (f x)) a = cfcₙ g (cfcₙ f a)`
 -/
 
 @[expose] public section
@@ -49,25 +51,27 @@ local notation "σₙ" => quasispectrum
 
 open Topology ContinuousMapZero
 
-/-- A non-unital star `R`-algebra `A` has a *continuous functional calculus* for elements
+/--
+A non-unital star `R`-algebra `A` has a _continuous functional calculus_ for elements
 satisfying the property `p : A → Prop` if
 
-+ for every such element `a : A` there is a non-unital star algebra homomorphism
+* for every such element `a : A` there is a non-unital star algebra homomorphism
   `cfcₙHom : C(quasispectrum R a, R)₀ →⋆ₙₐ[R] A` sending the (restriction of) the identity map
   to `a`.
-+ `cfcHom` is continuous and injective and the quasispectrum of the image of function `f` is
+* `cfcHom` is continuous and injective and the quasispectrum of the image of function `f` is
   its range.
-+ `cfcₙHom` preserves the property `p`.
+* `cfcₙHom` preserves the property `p`.
 
 The property `p` is marked as an `outParam` so that the user need not specify it. In practice,
 
-+ for `R := ℂ`, we choose `p := IsStarNormal`,
-+ for `R := ℝ`, we choose `p := IsSelfAdjoint`,
-+ for `R := ℝ≥0`, we choose `p := (0 ≤ ·)`.
+* for `R := ℂ`, we choose `p := IsStarNormal`,
+* for `R := ℝ`, we choose `p := IsSelfAdjoint`,
+* for `R := ℝ≥0`, we choose `p := (0 ≤ ·)`.
 
 Instead of directly providing the data we opt instead for a `Prop` class. In all relevant cases,
 the continuous functional calculus is uniquely determined, and utilizing this approach
-prevents diamonds or problems arising from multiple instances. -/
+prevents diamonds or problems arising from multiple instances.
+-/
 class NonUnitalContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
     [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
@@ -83,13 +87,15 @@ class NonUnitalContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → P
 scoped[NonUnitalContinuousFunctionalCalculus]
 attribute [instance] NonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum
 
-/-- A class guaranteeing that the non-unital continuous functional calculus is uniquely determined
+/--
+A class guaranteeing that the non-unital continuous functional calculus is uniquely determined
 by the properties that it is a continuous non-unital star algebra homomorphism mapping the
 (restriction of) the identity to `a`. This is the necessary tool used to establish `cfcₙHom_comp`
 and the more common variant `cfcₙ_comp`.
 
 This class will have instances in each of the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of
-the Stone-Weierstrass theorem. -/
+the Stone-Weierstrass theorem.
+-/
 class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
@@ -124,7 +130,8 @@ section cfcₙHom
 
 variable {a : A} (ha : p a)
 
-/-- The non-unital star algebra homomorphism underlying an instance of the continuous functional
+/--
+The non-unital star algebra homomorphism underlying an instance of the continuous functional
 calculus for non-unital algebras; a version for continuous functions on the quasispectrum.
 
 In this case, the user must supply the fact that `a` satisfies the predicate `p`.
@@ -201,7 +208,8 @@ end cfcₙL
 section CFCn
 
 open scoped Classical in
-/-- This is the *continuous functional calculus* of an element `a : A` in a non-unital algebra
+/--
+This is the _continuous functional calculus_ of an element `a : A` in a non-unital algebra
 applied to bare functions.  When either `a` does not satisfy the predicate `p` (i.e., `a` is not
 `IsStarNormal`, `IsSelfAdjoint`, or `0 ≤ a` when `R` is `ℂ`, `ℝ`, or `ℝ≥0`, respectively), or when
 `f : R → R` is not continuous on the quasispectrum of `a` or `f 0 ≠ 0`, then `cfcₙ f a` returns the
@@ -209,7 +217,8 @@ junk value `0`.
 
 This is the primary declaration intended for widespread use of the continuous functional calculus
 for non-unital algebras, and all the API applies to this declaration. For more information, see the
-module documentation for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
+module documentation for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`.
+-/
 @[no_expose]
 noncomputable def cfcₙ (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
@@ -716,7 +725,9 @@ end Ring
 
 end Order
 
-/-! ### `cfcₙHom` on a superset of the quasispectrum -/
+/-!
+# `cfcₙHom` on a superset of the quasispectrum
+-/
 
 section Superset
 
@@ -727,13 +738,15 @@ variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRin
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [instCFCₙ : NonUnitalContinuousFunctionalCalculus R A p]
 
-/-- The composition of `cfcₙHom` with the natural embedding `C(s, R)₀ → C(quasispectrum R a, R)₀`
+/--
+The composition of `cfcₙHom` with the natural embedding `C(s, R)₀ → C(quasispectrum R a, R)₀`
 whenever `quasispectrum R a ⊆ s`.
 
 This is sometimes necessary in order to consider the same continuous functions applied to multiple
 distinct elements, with the added constraint that `cfcₙ` does not suffice. This can occur, for
 example, if it is necessary to use uniqueness of this continuous functional calculus. A practical
-example can be found in the proof of `CFC.posPart_negPart_unique`. -/
+example can be found in the proof of `CFC.posPart_negPart_unique`.
+-/
 @[simps!]
 noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
     haveI : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
@@ -779,7 +792,9 @@ lemma cfcₙHom_isClosedEmbedding {R A : Type*} {p : A → Prop} [CommSemiring R
 
 end IsClosedEmbedding
 
-/-! ### Obtain a non-unital continuous functional calculus from a unital one -/
+/-!
+# Obtain a non-unital continuous functional calculus from a unital one
+-/
 
 section UnitalToNonUnital
 

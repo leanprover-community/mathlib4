@@ -9,6 +9,9 @@ public import Mathlib.Logic.Small.List
 public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Exponential
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fixed points of normal functions
 
@@ -38,19 +41,23 @@ open Function Order
 
 namespace Ordinal
 
-/-! ### Fixed points of type-indexed families of ordinals -/
+/-!
+# Fixed points of type-indexed families of ordinals
+-/
 
 section
 
 variable {ι : Type*} {f : ι → Ordinal.{u} → Ordinal.{u}}
 
-/-- The next common fixed point, at least `a`, for a family of normal functions.
+/--
+The next common fixed point, at least `a`, for a family of normal functions.
 
 This is defined for any family of functions, as the supremum of all values reachable by applying
 finitely many functions in the family to `a`.
 
 `Ordinal.nfpFamily_fp` shows this is a fixed point, `Ordinal.le_nfpFamily` shows it's at
-least `a`, and `Ordinal.nfpFamily_le_fp` shows this is the least ordinal with these properties. -/
+least `a`, and `Ordinal.nfpFamily_le_fp` shows this is the least ordinal with these properties.
+-/
 def nfpFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) : Ordinal :=
   ⨆ i, List.foldr f a i
 
@@ -125,10 +132,12 @@ theorem not_bddAbove_fp_family [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
   rintro _ ⟨i, rfl⟩
   exact nfpFamily_fp (H i) _
 
-/-- The derivative of a family of normal functions is the sequence of their common fixed points.
+/--
+The derivative of a family of normal functions is the sequence of their common fixed points.
 
 This is defined for all functions such that `Ordinal.derivFamily_zero`,
-`Ordinal.derivFamily_add_one`, and `Ordinal.derivFamily_limit` are satisfied. -/
+`Ordinal.derivFamily_add_one`, and `Ordinal.derivFamily_limit` are satisfied.
+-/
 def derivFamily (f : ι → Ordinal.{u} → Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
   limitRecOn o (nfpFamily f 0) (fun _ IH => nfpFamily f (succ IH))
     fun a _ g => ⨆ b : Set.Iio a, g _ b.2
@@ -234,15 +243,19 @@ theorem derivFamily_eq_enumOrd [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
 
 end
 
-/-! ### Fixed points of a single function -/
+/-!
+# Fixed points of a single function
+-/
 
 section
 
 variable {f : Ordinal.{u} → Ordinal.{u}}
 
-/-- The next fixed point function, the least fixed point of the normal function `f`, at least `a`.
+/--
+The next fixed point function, the least fixed point of the normal function `f`, at least `a`.
 
-This is defined as `nfpFamily` applied to a family consisting only of `f`. -/
+This is defined as `nfpFamily` applied to a family consisting only of `f`.
+-/
 def nfp (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
   nfpFamily fun _ : Unit => f
 
@@ -319,9 +332,11 @@ theorem not_bddAbove_fp (H : IsNormal f) : ¬ BddAbove (Function.fixedPoints f) 
   convert not_bddAbove_fp_family fun _ : Unit => H
   exact (Set.iInter_const _).symm
 
-/-- The derivative of a normal function `f` is the sequence of fixed points of `f`.
+/--
+The derivative of a normal function `f` is the sequence of fixed points of `f`.
 
-This is defined as `Ordinal.derivFamily` applied to a trivial family consisting only of `f`. -/
+This is defined as `Ordinal.derivFamily` applied to a trivial family consisting only of `f`.
+-/
 def deriv (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
   derivFamily fun _ : Unit => f
 
@@ -395,7 +410,9 @@ theorem deriv_zero_left (a) : deriv 0 a = a := by
 
 end
 
-/-! ### Fixed points of addition -/
+/-!
+# Fixed points of addition
+-/
 
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * ω := by
@@ -430,7 +447,9 @@ theorem deriv_add_eq_mul_omega0_add (a b : Ordinal.{u}) : deriv (a + ·) b = a *
   · rw [succ_eq_add_one, deriv_add_one, h, ← add_assoc]
     exact nfp_eq_self (add_eq_right_iff_mul_omega0_le.2 (le_self_add.trans (le_succ _)))
 
-/-! ### Fixed points of multiplication -/
+/-!
+# Fixed points of multiplication
+-/
 
 @[simp]
 theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = a ^ ω := by

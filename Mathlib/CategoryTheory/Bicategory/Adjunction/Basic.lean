@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions in bicategories
 
@@ -46,7 +49,9 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 
 namespace Bicategory
 
-/-- The 2-morphism defined by the following pasting diagram:
+/--
+The 2-morphism defined by the following pasting diagram:
+
 ```
 a －－－－－－ ▸ a
   ＼    η      ◥   ＼
@@ -58,7 +63,9 @@ a －－－－－－ ▸ a
 abbrev leftZigzag (η : 𝟙 a ⟶ f ≫ g) (ε : g ≫ f ⟶ 𝟙 b) :=
   η ▷ f ⊗≫ f ◁ ε
 
-/-- The 2-morphism defined by the following pasting diagram:
+/--
+The 2-morphism defined by the following pasting diagram:
+
 ```
         a －－－－－－ ▸ a
        ◥  ＼     η      ◥

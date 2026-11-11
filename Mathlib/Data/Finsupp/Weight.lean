@@ -11,7 +11,11 @@ public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.Algebra.Group.TypeTags.Pointwise
 import Mathlib.Data.Finsupp.Antidiagonal
 
-/-! # weights of Finsupp functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# weights of Finsupp functions
 
 The theory of multivariate polynomials and power series is built
 on the type `σ →₀ ℕ` which gives the exponents of the monomials.
@@ -24,46 +28,34 @@ require classifying these exponents according to their total sum
 We fix a type `σ`, a semiring `R`, an `R`-module `M`,
 as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
-- `Finsupp.weight` of a finitely supported function `f : σ →₀ R`
+* `Finsupp.weight` of a finitely supported function `f : σ →₀ R`
   with respect to `w`: it is the sum `∑ (f i) • (w i)`.
   It is an `AddMonoidHom` map defined using `Finsupp.linearCombination`.
-
-- `Finsupp.le_weight` says that `f s ≤ f.weight w` when `M = ℕ`
-
-- `Finsupp.le_weight_of_ne_zero` says that `w s ≤ f.weight w`
+* `Finsupp.le_weight` says that `f s ≤ f.weight w` when `M = ℕ`
+* `Finsupp.le_weight_of_ne_zero` says that `w s ≤ f.weight w`
   for `IsOrderedAddMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
-
-- `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAdd M`.
-
-- `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
-
-- `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
+* `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAdd M`.
+* `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
+* `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
   `f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
-
-- For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
+* For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
   there are finitely many `f : σ →₀ ℕ` of bounded weight.
 
 ## Degree
 
-- `Finsupp.degree f` is the sum of all `f s`, for `s ∈ f.support`.
+* `Finsupp.degree f` is the sum of all `f s`, for `s ∈ f.support`.
   The present choice is to have it defined as a plain function.
-
-- `Finsupp.degree_eq_zero_iff` says that `f.degree = 0` iff `f = 0`.
-
-- `Finsupp.le_degree` says that `f s ≤ f.degree`.
-
-- `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1` when `R` is a semiring.
+* `Finsupp.degree_eq_zero_iff` says that `f.degree = 0` iff `f = 0`.
+* `Finsupp.le_degree` says that `f s ≤ f.degree`.
+* `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1` when `R` is a semiring.
   This is useful to access the additivity properties of `Finsupp.degree`
-
-- For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
+* For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
   there are finitely many `f : σ →₀ ℕ` of bounded degree.
-
 
 ## TODO
 
 * Maybe `Finsupp.weight w` and `Finsupp.degree` should have similar types,
   both `AddMonoidHom` or both functions.
-
 -/
 
 @[expose] public section

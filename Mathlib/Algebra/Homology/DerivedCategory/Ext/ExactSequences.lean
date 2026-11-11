@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.CategoryTheory.Triangulated.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Long exact sequences of `Ext`-groups
 
@@ -21,7 +24,7 @@ We first phrase these exact sequences by using the pre- or post-composition with
 the class in `Ext S.X₃ S.X₁ 1` attached to the short exact sequence.
 Our understanding is that for the covariant exact long exact sequence,
 the morphism `Ext X S.X₃ n₀ → Ext X S.X₁ n₁` we obtain in this way is the connecting
-homomorphism from [conrad2000]. However, for the contravariant
+homomorphism from \[conrad2000\]. However, for the contravariant
 long exact sequence, the precomposition `Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁` with the class
 in `Ext S.X₃ S.X₁ 1` is the standard connecting homomorphism only up to the multiplication
 with the sign `(-1) ^ n₁`. This is the reason why we introduce a definition `Ext.δ`
@@ -29,8 +32,8 @@ which is the "correct" connecting homomorphism, and the exactness properties are
 also restated using `Ext.δ` instead of the pre-composition with the class in `Ext S.X₃ S.X₁ 1`.
 
 ## References
-* [Brian Conrad, Grothendieck duality and base change][conrad2000]
 
+* ‍\[Brian Conrad, Grothendieck duality and base change\]\[conrad2000\]
 -/
 
 @[expose] public section
@@ -320,11 +323,13 @@ lemma mono_precomp_mk₀_of_epi (L : C) {M N : C} (g : M ⟶ N) [hg : Epi g] :
   (AddCommGrpCat.mono_iff_injective _).mpr (precomp_mk₀_injective_of_epi L g)
 
 variable {Y} in
-/-- The standard connecting homomorphism `Ext S.X₁ Y n₀ →+ Ext S.X₃ Y n₁`
+/--
+The standard connecting homomorphism `Ext S.X₁ Y n₀ →+ Ext S.X₃ Y n₁`
 for the contravariant long sequence of `Ext` when `n₀ + 1 = n₁` and `S` is a
-short exact sequence. This definition should be consistent with [conrad2000].
+short exact sequence. This definition should be consistent with \[conrad2000\].
 It is obtained by multiplying by `(-1) ^ n₁` the precomposition
-with `hS.extClass : Ext S.X₃ X₁ 1`. -/
+with `hS.extClass : Ext S.X₃ X₁ 1`.
+-/
 @[simps -isSimp]
 protected noncomputable def δ (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) :
     Ext S.X₁ Y n₀ →+ Ext S.X₃ Y n₁ where

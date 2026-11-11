@@ -9,19 +9,21 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine space
 
 ## Main definitions
 
-- `AlgebraicGeometry.AffineSpace`: `𝔸(n; S)` is the affine `n`-space over `S`.
-- `AlgebraicGeometry.AffineSpace.coord`: The standard coordinate functions on the affine space.
-- `AlgebraicGeometry.AffineSpace.homOfVector`:
+* `AlgebraicGeometry.AffineSpace`: `𝔸(n; S)` is the affine `n`-space over `S`.
+* `AlgebraicGeometry.AffineSpace.coord`: The standard coordinate functions on the affine space.
+* `AlgebraicGeometry.AffineSpace.homOfVector`:
   The morphism `X ⟶ 𝔸(n; S)` given by a `X ⟶ S` and a choice of `n`-coordinate functions.
-- `AlgebraicGeometry.AffineSpace.homOverEquiv`:
+* `AlgebraicGeometry.AffineSpace.homOverEquiv`:
   `S`-morphisms into `Spec 𝔸(n; S)` are equivalent to the choice of `n` global sections.
-- `AlgebraicGeometry.AffineSpace.SpecIso`: `𝔸(n; Spec R) ≅ Spec R[n]`
-
+* `AlgebraicGeometry.AffineSpace.SpecIso`: `𝔸(n; Spec R) ≅ Spec R[n]`
 -/
 
 @[expose] public section

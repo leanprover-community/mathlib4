@@ -10,25 +10,30 @@ public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 import Mathlib.RingTheory.Ideal.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein polynomials
 
 Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]` is
-*Eisenstein at `𝓟`* if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
+_Eisenstein at `𝓟`_ if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
 `f.coeff 0 ∉ 𝓟 ^ 2`. In this file we gather miscellaneous results about Eisenstein polynomials.
 
 ## Main definitions
+
 * `Polynomial.IsEisensteinAt f 𝓟`: the property of being Eisenstein at `𝓟`.
 
 ## Main results
+
 * `Polynomial.IsEisensteinAt.irreducible`: if a primitive `f` satisfies `f.IsEisensteinAt 𝓟`,
   where `𝓟.IsPrime`, then `f` is irreducible.
 
 ## Implementation details
+
 We also define a notion `IsWeaklyEisensteinAt` requiring only that
 `∀ n < f.natDegree → f.coeff n ∈ 𝓟`. This makes certain results slightly more general and it is
 useful since it is sometimes better behaved (for example it is stable under `Polynomial.map`).
-
 -/
 
 public section
@@ -44,15 +49,19 @@ open Polynomial
 
 namespace Polynomial
 
-/-- Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]`
-is *weakly Eisenstein at `𝓟`* if `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟`. -/
+/--
+Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]`
+is _weakly Eisenstein at `𝓟`_ if `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟`.
+-/
 @[mk_iff]
 structure IsWeaklyEisensteinAt [CommSemiring R] (f : R[X]) (𝓟 : Ideal R) : Prop where
   mem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟
 
-/-- Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]`
-is *Eisenstein at `𝓟`* if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
-`f.coeff 0 ∉ 𝓟 ^ 2`. -/
+/--
+Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f : R[X]`
+is _Eisenstein at `𝓟`_ if `f.leadingCoeff ∉ 𝓟`, `∀ n, n < f.natDegree → f.coeff n ∈ 𝓟` and
+`f.coeff 0 ∉ 𝓟 ^ 2`.
+-/
 @[mk_iff]
 structure IsEisensteinAt [CommSemiring R] (f : R[X]) (𝓟 : Ideal R) : Prop where
   leading : f.leadingCoeff ∉ 𝓟

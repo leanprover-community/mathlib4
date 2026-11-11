@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.QuasiFinite.Basic
 
 import Mathlib.RingTheory.Finiteness.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inertia degree
 
@@ -36,12 +39,14 @@ section
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
 open scoped Classical in
-/-- Given a prime ideal `q` of an `R`-algebra `S`, the inertia degree of `q` over `R` is defined
+/--
+Given a prime ideal `q` of an `R`-algebra `S`, the inertia degree of `q` over `R` is defined
 to be the degree of the residue field of `q` over the residue field of its preimage `p` in `R`.
 
 When `q` is not prime, we use a junk value of `0`.
 
-This will eventually replace the existing definition of `Ideal.inertiaDeg'`. -/
+This will eventually replace the existing definition of `Ideal.inertiaDeg'`.
+-/
 noncomputable def inertiaDeg : ℕ :=
   if _ : q.IsPrime then
     letI := Localization.AtPrime.algebraOfLiesOver (q.under R) q

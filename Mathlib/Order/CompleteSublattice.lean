@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Functor
 public import Mathlib.Order.Hom.CompleteLattice
 public import Mathlib.Order.Sublattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complete Sublattices
 
@@ -17,13 +20,13 @@ under arbitrary suprema and infima. As a standard example one could take the com
 invariant submodules of some module with respect to a linear map.
 
 ## Main definitions:
+
 * `CompleteSublattice`: the definition of a complete sublattice
 * `CompleteSublattice.mk'`: an alternate constructor for a complete sublattice, demanding fewer
   hypotheses
 * `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
 * `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
 * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
-
 -/
 
 @[expose] public section
@@ -195,9 +198,11 @@ end CompleteSublattice
 
 namespace CompleteLatticeHom
 
-/-- The range of a `CompleteLatticeHom` is a `CompleteSublattice`.
+/--
+The range of a `CompleteLatticeHom` is a `CompleteSublattice`.
 
-See Note [range copy pattern]. -/
+See Note \[range copy pattern\].
+-/
 protected def range : CompleteSublattice β :=
   (CompleteSublattice.map f ⊤).copy (range f) image_univ.symm
 

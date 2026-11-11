@@ -10,10 +10,14 @@ public import Mathlib.RingTheory.Finiteness.Small
 
 import Mathlib.LinearAlgebra.Basis.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stably free modules
 
 ## Main definition
+
 * `IsStablyFree`: A module `M` over a ring `R` is called stably free if there exists a finite free
   `R`-module `N` such that `M ⊕ N` is free.
 -/
@@ -24,12 +28,14 @@ universe u v w
 
 namespace Module
 
-/-- A module `M` over a ring `R` is called stably free if there exists a finite free `R`-module `N`
+/--
+A module `M` over a ring `R` is called stably free if there exists a finite free `R`-module `N`
 such that `M ⊕ N` is free.
 
 The underlying constructor is marked as private. The intended constructor of `IsStablyFree` is
 `IsStablyFree.of_free_prod`, and use `IsStablyFree.exist_free_prod` to extract the property from
-`IsStablyFree`. -/
+`IsStablyFree`.
+-/
 @[stacks 0BC3 "(2)"]
 class IsStablyFree (R : Type u) [Ring R] (M : Type*) [AddCommGroup M] [Module R M] : Prop where
   private exist_free_prod' : ∃ (N : Type u) (_ : AddCommGroup N) (_ : Module R N)

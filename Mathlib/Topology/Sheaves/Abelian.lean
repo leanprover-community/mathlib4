@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.Topology.Sheaves.Limits
 public import Mathlib.Topology.Sheaves.Skyscraper
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves over Abelian categories
 
@@ -21,7 +24,6 @@ We provide instances for categories of sheaves over Abelian categories.
 
 * `TopCat.Sheaf.exact_iff_stalkFunctor_map_exact`: A complex of sheaves over a concrete abelian
   category is exact if and only if it is exact on stalks.
-
 -/
 
 public section

@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Left Exactness of Hom
-
 
 If `M1 → M2 → M3 → 0` is an exact sequence of `R`-modules and `N` is an `R`-module,
 then `0 → (M3 →ₗ[R] N) → (M2 →ₗ[R] N) → (M1 →ₗ[R] N)` is exact. In this file, we

@@ -12,34 +12,30 @@ public import Mathlib.Algebra.Star.Unitary
 
 import Mathlib.Tactic.FieldSimp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic algebras: involution, norm, trace, change of generator, etc.
 
 Let `R` be a commutative ring. We define:
 
 * `QuadraticAlgebra.star`: the quadratic involution
-
 * `QuadraticAlgebra.norm`: the norm
-
 * `QuadraticAlgebra.trace`: the trace, as an `R`-linear map
-
 * `QuadraticAlgebra.changeGenerator` and `QuadraticAlgebra.changeGeneratorEquiv`: the `R`-algebra
   map, respectively isomorphism (when `u` is a unit), induced by the change of generator
   `ω ↦ u • ω + k`
-
 * `QuadraticAlgebra.mapRingHom`: the ring homomorphism induced by a ring homomorphism `R →+* S`
-
 * `QuadraticAlgebra.baseChange`: the `R`-algebra homomorphism induced by a base change `R → S`
 
 We prove:
 
 * `QuadraticAlgebra.isUnit_iff_norm_isUnit`:
   `w : QuadraticAlgebra R a b` is a unit iff `w.norm` is a unit in `R`.
-
 * `QuadraticAlgebra.norm_mem_nonZeroDivisors_iff`:
   `w : QuadraticAlgebra R a b` isn't a zero divisor iff
   `w.norm` isn't a zero divisor in `R`.
-
 * If `K` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra K a b` is a field.
 -/
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting properties and adjunction
 
@@ -16,7 +19,6 @@ that when we have an adjunction `adj : G ⊣ F` between two functors `G : C ⥤ 
 and `F : D ⥤ C`, then a morphism of the form `G.map i` has the left lifting
 property in `D` with respect to a morphism `p` if and only the morphism `i`
 has the left lifting property in `C` with respect to `F.map p`.
-
 -/
 
 @[expose] public section

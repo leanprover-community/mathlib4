@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Lift
 public import Mathlib.Topology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interior, closure and frontier of a set
 

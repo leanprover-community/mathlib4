@@ -9,16 +9,20 @@ public import Mathlib.MeasureTheory.Integral.PeakFunction
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
-/-! # Euler's infinite product for the sine function
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Euler's infinite product for the sine function
 
 This file proves the infinite product formula
 
-$$ \sin \pi z = \pi z \prod_{n = 1}^\infty \left(1 - \frac{z ^ 2}{n ^ 2}\right) $$
+$$`  \sin \pi z = \pi z \prod_{n = 1}^\infty \left(1 - \frac{z ^ 2}{n ^ 2}\right)  `
 
-for any real or complex `z`. Our proof closely follows the article
-[Salwinski, *Euler's Sine Product Formula: An Elementary Proof*][salwinski2018]: the basic strategy
-is to prove a recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x * cos x ^ (2 * n)`,
-generalising the arguments used to prove Wallis' limit formula for `π`.
+for any real or complex `z`. Our proof closely follows the article ‍\[Salwinski, _Euler's Sine
+Product Formula: An Elementary Proof_\]\[salwinski2018\]: the basic strategy is to prove a
+recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x * cos x ^ (2 * n)`, generalising the
+arguments used to prove Wallis' limit formula for `π`.
 -/
 
 public section
@@ -31,10 +35,12 @@ namespace EulerSine
 
 section IntegralRecursion
 
-/-! ## Recursion formula for the integral of `cos (2 * z * x) * cos x ^ n`
+/-!
+# Recursion formula for the integral of `cos (2 * z * x) * cos x ^ n`
 
 We evaluate the integral of `cos (2 * z * x) * cos x ^ n`, for any complex `z` and even integers
-`n`, via repeated integration by parts. -/
+`n`, via repeated integration by parts.
+-/
 
 
 variable {z : ℂ} {n : ℕ}
@@ -240,13 +246,15 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
 
 end IntegralRecursion
 
-/-! ## Conclusion of the proof
+/-!
+# Conclusion of the proof
 
 The main theorem `Complex.tendsto_euler_sin_prod`, and its real variant
 `Real.tendsto_euler_sin_prod`, now follow by combining `sin_pi_mul_eq` with a lemma
 stating that the sequence of measures on `[0, π/2]` given by integration against `cos x ^ n`
 (suitably normalised) tends to the Dirac measure at 0, as a special case of the general result
-`tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`. -/
+`tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`.
+-/
 
 
 theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :

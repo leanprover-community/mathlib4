@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sieves attached to subpresheaves
 
 Given a subpresheaf `G` of a presheaf of types `F : Cᵒᵖ ⥤ Type w` and
 a section `s : F.obj U`, we define a sieve `G.sieveOfSection s : Sieve (unop U)`
 and the associated compatible family of elements with values in `G.toFunctor`.
-
 -/
 
 @[expose] public section

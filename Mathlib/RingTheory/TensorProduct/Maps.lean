@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.RestrictScalars
 public import Mathlib.RingTheory.TensorProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps between tensor products of R-algebras
 
@@ -15,17 +18,17 @@ This file provides results about maps between tensor products of `R`-algebras.
 
 ## Main declarations
 
-- the structure isomorphisms
+* the structure isomorphisms
+
   * `Algebra.TensorProduct.lid : R ⊗[R] A ≃ₐ[R] A`
   * `Algebra.TensorProduct.rid : A ⊗[R] R ≃ₐ[S] A` (usually used with `S = R` or `S = A`)
   * `Algebra.TensorProduct.comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A`
   * `Algebra.TensorProduct.assoc : ((A ⊗[S] C) ⊗[R] D) ≃ₐ[T] (A ⊗[S] (C ⊗[R] D))`
-- `Algebra.TensorProduct.liftEquiv`: a universal property for the tensor product of algebras.
+* `Algebra.TensorProduct.liftEquiv`: a universal property for the tensor product of algebras.
 
 ## References
 
-* [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
-
+* ‍\[C. Kassel, _Quantum Groups_ (§II.4)\]\[Kassel1995\]
 -/
 
 @[expose] public section
@@ -91,7 +94,8 @@ lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
     dsimp
     exact hf _ _ _ _) x y
 
-/-- Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
+/--
+Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
 tensors, it preserves multiplication and the identity.
 
 Note that we state `h_one` using `1 ⊗ₜ[R] 1` instead of `1` so that lemmas about `f` applied to pure
@@ -107,7 +111,8 @@ theorem algHomOfLinearMapTensorProduct_apply (f h_mul h_one x) :
     (algHomOfLinearMapTensorProduct f h_mul h_one : A ⊗[R] B →ₐ[S] C) x = f x :=
   rfl
 
-/-- Build an algebra equivalence from a linear equivalence out of a tensor product, and evidence
+/--
+Build an algebra equivalence from a linear equivalence out of a tensor product, and evidence
 that on pure tensors, it preserves multiplication and the identity.
 
 Note that we state `h_one` using `1 ⊗ₜ[R] 1` instead of `1` so that lemmas about `f` applied to pure
@@ -145,11 +150,13 @@ theorem algEquivOfLinearEquivTripleTensorProduct_apply (f h_mul h_one x) :
 section lift
 variable [IsScalarTower R S C]
 
-/-- The forward direction of the universal property of tensor products of algebras; any algebra
+/--
+The forward direction of the universal property of tensor products of algebras; any algebra
 morphism from the tensor product can be factored as the product of two algebra morphisms that
 commute.
 
-See `Algebra.TensorProduct.liftEquiv` for the fact that every morphism factors this way. -/
+See `Algebra.TensorProduct.liftEquiv` for the fact that every morphism factors this way.
+-/
 def lift (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (g y)) : (A ⊗[R] B) →ₐ[S] C :=
   algHomOfLinearMapTensorProduct
     (AlgebraTensorModule.lift <|
@@ -191,14 +198,16 @@ theorem lift_comp_includeRight' (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hfg : �
     (lift f g hfg).comp includeRight = g :=
   AlgHom.ext <| by simp
 
-/-- The universal property of the tensor product of algebras.
+/--
+The universal property of the tensor product of algebras.
 
 Pairs of algebra morphisms that commute are equivalent to algebra morphisms from the tensor product.
 
 This is `Algebra.TensorProduct.lift` as an equivalence.
 
 See also `GradedTensorProduct.liftEquiv` for an alternative commutativity requirement for graded
-algebra. -/
+algebra.
+-/
 @[simps]
 def liftEquiv : {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg.1 x) (fg.2 y)}
     ≃ ((A ⊗[R] B) →ₐ[S] C) where
@@ -267,7 +276,8 @@ theorem lid_symm_apply (a : A) : (TensorProduct.lid R A).symm a = 1 ⊗ₜ a := 
 
 variable (S)
 
-/-- The base ring is a right identity for the tensor product of algebra, up to algebra isomorphism.
+/--
+The base ring is a right identity for the tensor product of algebra, up to algebra isomorphism.
 
 Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
@@ -495,9 +505,11 @@ variable {R S T R' S' T' : Type*}
   (HS : fS.comp (algebraMap _ _) = (algebraMap _ _).comp fR)
   (HT : fT.comp (algebraMap _ _) = (algebraMap _ _).comp fR)
 
-/-- Heterobasic version of `Algebra.TensorProduct.map` as a ring homomorphism.
+/--
+Heterobasic version of `Algebra.TensorProduct.map` as a ring homomorphism.
 
-Note that this would generalise `map` if we were to have `SemiAlgHom`. -/
+Note that this would generalise `map` if we were to have `SemiAlgHom`.
+-/
 def mapRingHom : S ⊗[R] T →+* S' ⊗[R'] T' :=
   letI := fR.toAlgebra
   letI := ((algebraMap R' S').comp fR).toAlgebra
@@ -640,9 +652,11 @@ theorem congr_trans
 theorem congr_symm (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) : congr f.symm g.symm = (congr f g).symm := rfl
 
 variable (R A B C) in
-/-- Tensor product of algebras analogue of `mul_left_comm`.
+/--
+Tensor product of algebras analogue of `mul_left_comm`.
 
-This is the algebra version of `TensorProduct.leftComm`. -/
+This is the algebra version of `TensorProduct.leftComm`.
+-/
 def leftComm : A ⊗[R] (B ⊗[R] C) ≃ₐ[R] B ⊗[R] (A ⊗[R] C) :=
   (Algebra.TensorProduct.assoc R R R A B C).symm.trans <|
     (congr (Algebra.TensorProduct.comm R A B) .refl).trans <| TensorProduct.assoc R R R B A C
@@ -667,9 +681,11 @@ variable [CommSemiring T] [Algebra R T] [Algebra T A] [IsScalarTower R T A] [SMu
   [IsScalarTower R' T A] [IsScalarTower R R' B]
 
 variable (R R' S T A B C D) in
-/-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
+/--
+Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
-This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
+This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`.
+-/
 def tensorTensorTensorComm : A ⊗[R'] B ⊗[S] (C ⊗[R] D) ≃ₐ[T] A ⊗[S] C ⊗[R'] (B ⊗[R] D) :=
   AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R' S T A B C D)
     rfl (LinearMap.map_mul_iff _ |>.mpr <| by ext; simp)
@@ -726,11 +742,13 @@ variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable [Semiring B] [Algebra R B]
 variable [CommSemiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
 
-/-- If `A`, `B`, `C` are `R`-algebras, `A` and `C` are also `S`-algebras (forming a tower as
+/--
+If `A`, `B`, `C` are `R`-algebras, `A` and `C` are also `S`-algebras (forming a tower as
 `·/S/R`), then the product map of `f : A →ₐ[S] C` and `g : B →ₐ[R] C` is an `S`-algebra
 homomorphism.
 
-This is just a special case of `Algebra.TensorProduct.lift` for when `C` is commutative. -/
+This is just a special case of `Algebra.TensorProduct.lift` for when `C` is commutative.
+-/
 abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
   lift f g (fun _ _ => Commute.all _ _)
 
@@ -795,7 +813,8 @@ theorem lmulEquiv_eq_lidOfCompatibleSMul [CompatibleSMul R S S S] :
     lmulEquiv R S = lidOfCompatibleSMul R S S :=
   AlgEquiv.coe_toAlgHom_injective <| by ext; rfl
 
-/-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
+/--
+If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
 We obtain a map `A ⊗[R] B →ₐ[R] S` that commutes with `f`, `g` via `a ⊗ b ↦ f(a) * g(b)`.
 
 This is a special case of `Algebra.TensorProduct.productLeftAlgHom` for when the two base rings are
@@ -847,11 +866,13 @@ variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 open Module
 open scoped TensorProduct
 
-/-- The natural linear map $A ⊗ \text{Hom}_R(M, N) → \text{Hom}_A (M_A, N_A)$,
-where $M_A$ and $N_A$ are the respective modules over $A$ obtained by extension of scalars.
+/--
+The natural linear map $`A ⊗ \text{Hom}_R(M, N) → \text{Hom}_A (M_A, N_A)`,
+where $`M_A` and $`N_A` are the respective modules over $`A` obtained by extension of scalars.
 
 See `LinearMap.tensorProductEnd` for this map specialized to endomorphisms,
-and bundled as `A`-algebra homomorphism. -/
+and bundled as `A`-algebra homomorphism.
+-/
 @[simps!]
 def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A ⊗[R] N) :=
   TensorProduct.AlgebraTensorModule.lift
@@ -859,8 +880,10 @@ def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A
     map_add' := by simp only [add_smul, forall_true_iff]
     map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
 
-/-- The natural `A`-algebra homomorphism $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
-where `M` is an `R`-module, and `A` an `R`-algebra. -/
+/--
+The natural `A`-algebra homomorphism $`A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)`,
+where `M` is an `R`-module, and `A` an `R`-algebra.
+-/
 @[simps!]
 def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
@@ -894,11 +917,13 @@ variable [Algebra R S] [Algebra S A] [Algebra R A]
 variable [Module R M] [Module S M] [Module A M] [Module R N]
 variable [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S M]
 
-/-- The algebra homomorphism from `End M ⊗ End N` to `End (M ⊗ N)` sending `f ⊗ₜ g` to
+/--
+The algebra homomorphism from `End M ⊗ End N` to `End (M ⊗ N)` sending `f ⊗ₜ g` to
 the `TensorProduct.map f g`, the tensor product of the two maps.
 
 This is an `AlgHom` version of `TensorProduct.AlgebraTensorModule.homTensorHomMap`. Like that
-definition, this is generalized across many different rings; namely a tower of algebras `A/S/R`. -/
+definition, this is generalized across many different rings; namely a tower of algebras `A/S/R`.
+-/
 def endTensorEndAlgHom : End A M ⊗[R] End R N →ₐ[S] End A (M ⊗[R] N) :=
   Algebra.TensorProduct.algHomOfLinearMapTensorProduct
     (AlgebraTensorModule.homTensorHomMap R A S M N M N)

@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finitely generated modules over a ring is essentially small
 
 This file proves that `FGModuleCat R`, the category of finitely generated modules over a ring `R`,
 is essentially small, by providing an explicit small model. However, for applications, it is
 recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` instead.
-
 -/
 
 @[expose] public section

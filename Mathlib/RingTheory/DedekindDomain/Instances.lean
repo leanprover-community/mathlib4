@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.DedekindDomain.PID
 
 import Mathlib.RingTheory.Localization.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances for Dedekind domains
 
@@ -24,10 +27,10 @@ tower extension `R ⊆ S ⊆ T` and thus we work with `Rₚ ⊆ Sₚ ⊆ Tₚ` w
 `Tₚ` is the localization of `T` at `P`. This file contains a collection of such instances.
 
 ## Implementation details
+
 In general one wants all the results below for any algebra satisfying `IsLocalization`, but those
 cannot be instances (since Lean has no way of guessing the submonoid). Having the instances in the
-special case of *the* localization at a prime ideal is useful in working with Dedekind domains.
-
+special case of _the_ localization at a prime ideal is useful in working with Dedekind domains.
 -/
 
 public section

@@ -8,7 +8,11 @@ module
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
-/-! # Functions a.e. measurable with respect to a sub-σ-algebra
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Functions a.e. measurable with respect to a sub-σ-algebra
 
 A function `f` verifies `AEStronglyMeasurable[m] f μ` if it is `μ`-a.e. equal to
 an `m`-strongly measurable function. This is similar to `AEStronglyMeasurable`, but the
@@ -27,11 +31,11 @@ measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies complet
 `Lp.induction_stronglyMeasurable` (see also `MemLp.induction_stronglyMeasurable`):
 To prove something for an `Lp` function a.e. strongly measurable with respect to a
 sub-σ-algebra `m` in a normed space, it suffices to show that
+
 * the property holds for (multiples of) characteristic functions which are measurable w.r.t. `m`;
 * is closed under addition;
 * the set of functions in `Lp` strongly measurable w.r.t. `m` for which the property holds is
   closed.
-
 -/
 
 @[expose] public section
@@ -65,7 +69,9 @@ variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
 
 section LpMeas
 
-/-! ## The subset `lpMeas` of `Lp` functions a.e. measurable with respect to a sub-sigma-algebra -/
+/-!
+# The subset `lpMeas` of `Lp` functions a.e. measurable with respect to a sub-sigma-algebra
+-/
 
 
 variable (F)
@@ -118,11 +124,13 @@ theorem mem_lpMeas_indicatorConstLp {m m0 : MeasurableSpace α} (hm : m ≤ m0) 
 
 section CompleteSubspace
 
-/-! ## The subspace `lpMeas` is complete.
+/-!
+# The subspace `lpMeas` is complete.
 
 We define an `IsometryEquiv` between `lpMeasSubgroup` and the `Lp` space corresponding to the
 measure `μ.trim hm`. As a consequence, the completeness of `Lp` implies completeness of
-`lpMeasSubgroup` (and `lpMeas`). -/
+`lpMeasSubgroup` (and `lpMeas`).
+-/
 
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α}
@@ -397,8 +405,10 @@ theorem Lp.induction_stronglyMeasurable_aux (hm : m ≤ m0) (hp_ne_top : p ≠ �
   · change IsClosed ((lpMeasToLpTrimLie F ℝ p μ hm).symm ⁻¹' {g : lpMeas F ℝ m p μ | P ↑g})
     exact IsClosed.preimage (LinearIsometryEquiv.continuous _) h_closed
 
-/-- To prove something for an `Lp` function a.e. strongly measurable with respect to a
+/--
+To prove something for an `Lp` function a.e. strongly measurable with respect to a
 sub-σ-algebra `m` in a normed space, it suffices to show that
+
 * the property holds for (multiples of) characteristic functions which are measurable w.r.t. `m`;
 * is closed under addition;
 * the set of functions in `Lp` strongly measurable w.r.t. `m` for which the property holds is
@@ -459,8 +469,10 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   rw [← MemLp.toLp_congr hg'_Lp hg hgg'.symm] at hPg ⊢
   exact h_add hf'_Lp hg'_Lp hf'_meas hg'_meas h_disj hPf hPg
 
-/-- To prove something for an arbitrary `MemLp` function a.e. strongly measurable with respect
+/--
+To prove something for an arbitrary `MemLp` function a.e. strongly measurable with respect
 to a sub-σ-algebra `m` in a normed space, it suffices to show that
+
 * the property holds for (multiples of) characteristic functions which are measurable w.r.t. `m`;
 * is closed under addition;
 * the set of functions in the `Lᵖ` space strongly measurable w.r.t. `m` for which the property

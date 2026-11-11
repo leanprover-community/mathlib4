@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 
 import Mathlib.RingTheory.Localization.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local properties about linear maps
 

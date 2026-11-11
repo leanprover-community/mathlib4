@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.WithTop.Untop0
 public import Mathlib.Analysis.Meromorphic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orders of Meromorphic Functions
 
@@ -35,18 +38,20 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {f f₁ f₂ : 𝕜 → E} {x : 𝕜}
 
 /-!
-## Order at a Point: Definition and Characterization
+# Order at a Point: Definition and Characterization
 -/
 
 open scoped Classical in
-/-- The order of a meromorphic function `f` at `z₀`, as an element of `ℤ ∪ {∞}`.
+/--
+The order of a meromorphic function `f` at `z₀`, as an element of `ℤ ∪ {∞}`.
 
 The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
 unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic
 and does not vanish at `z₀`. See `MeromorphicAt.meromorphicOrderAt_eq_top_iff` and
 `MeromorphicAt.meromorphicOrderAt_eq_int_iff` for these equivalences.
 
-If the function is not meromorphic at `x`, we use the junk value `0`. -/
+If the function is not meromorphic at `x`, we use the junk value `0`.
+-/
 noncomputable def meromorphicOrderAt (f : 𝕜 → E) (x : 𝕜) : WithTop ℤ :=
   if hf : MeromorphicAt f x then
     ((analyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x).map (↑· : ℕ → ℤ)) - hf.choose
@@ -416,7 +421,7 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
   rw [← WithTop.coe_one, ← meromorphicOrderAt_zpow_id_sub_const (𝕜 := 𝕜), zpow_one]
 
 /-!
-## Order at a Point: Behaviour under Ring Operations
+# Order at a Point: Behaviour under Ring Operations
 
 We establish additivity of the order under multiplication and taking powers.
 -/
@@ -709,7 +714,7 @@ lemma MeromorphicAt.isTheta_pow_sub (hf : MeromorphicAt f z₀) (hf' : meromorph
 end IsTheta
 
 /-!
-## Level Sets of the Order Function
+# Level Sets of the Order Function
 -/
 
 namespace MeromorphicOn
@@ -817,11 +822,13 @@ theorem meromorphicOrderAt_eq_top_of_isPreconnected (hf : MeromorphicOn f U) {y 
   contrapose h₂x with h
   exact hf.meromorphicOrderAt_ne_top_of_isPreconnected hU hy h₁x h
 
-/-- On a preconnected set, a meromorphic function that is not constantly zero has a
+/--
+On a preconnected set, a meromorphic function that is not constantly zero has a
 multiplicative inverse.
 
 A version of `meromorphicOrderAt_ne_top_iff_mul_inv_eventuallyEq` where we relax the
-equality to `=ᶠ[codiscreteWithin U]`. -/
+equality to `=ᶠ[codiscreteWithin U]`.
+-/
 theorem mul_inv_eventuallyEq {f : 𝕜 → 𝕜'} (hf : MeromorphicOn f U) (hU : IsPreconnected U)
     (h0 : ¬f =ᶠ[codiscreteWithin U] 0) :
     f * f⁻¹ =ᶠ[codiscreteWithin U] 1 := by
@@ -914,7 +921,7 @@ end MeromorphicOn
 
 section comp
 /-!
-## Order at a Point: Behaviour under Composition
+# Order at a Point: Behaviour under Composition
 -/
 variable {x : 𝕜} {f : 𝕜 → E} {g : 𝕜 → 𝕜}
 
@@ -1007,7 +1014,7 @@ theorem meromorphicOrderAt_const_smul_eq_meromorphicOrderAt {f : 𝕜 → E} {s 
 end smul
 
 /-!
-## Order at a Point of the Derivative
+# Order at a Point of the Derivative
 -/
 
 section deriv

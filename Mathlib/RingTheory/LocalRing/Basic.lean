@@ -10,11 +10,13 @@ public import Mathlib.RingTheory.LocalRing.Defs
 
 import Mathlib.Algebra.Group.Units.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local rings
 
 We prove basic properties of local rings.
-
 -/
 
 public section

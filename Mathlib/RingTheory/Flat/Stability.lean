@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flatness is stable under composition and base change
 
@@ -16,12 +19,12 @@ We show that flatness is stable under composition and base change.
 ## Main theorems
 
 * `Module.Flat.trans`: if `S` is a flat `R`-algebra and `M` is a flat `S`-module,
-                      then `M` is a flat `R`-module
+  then `M` is a flat `R`-module
 * `Module.Flat.baseChange`: if `M` is a flat `R`-module and `S` is any `R`-algebra,
-                            then `S ⊗[R] M` is `S`-flat.
+  then `S ⊗[R] M` is `S`-flat.
 * `Module.Flat.of_isLocalizedModule`: if `M` is a flat `R`-module and `S` is a submonoid of `R`
-                                          then the localization of `M` at `S` is flat as a module
-                                          for the localization of `R` at `S`.
+  then the localization of `M` at `S` is flat as a module
+  for the localization of `R` at `S`.
 -/
 
 public section
@@ -38,7 +41,8 @@ namespace Module.Flat
 
 section Composition
 
-/-! ### Composition
+/-!
+# Composition
 
 Let `R` be a ring, `S` a flat `R`-algebra and `M` a flat `S`-module. To show that `M` is flat
 as an `R`-module, we show that the inclusion of an `R`-submodule `N` into an `R`-module `P`
@@ -82,11 +86,11 @@ end Composition
 
 section BaseChange
 
-/-! ### Base change
+/-!
+# Base change
 
 Let `R` be a ring, `M` a flat `R`-module and `S` an `R`-algebra, then
 `S ⊗[R] M` is a flat `S`-module. This is a special case of `Module.Flat.instTensorProduct`.
-
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)

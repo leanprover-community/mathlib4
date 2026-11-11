@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartesian closure of Type
 

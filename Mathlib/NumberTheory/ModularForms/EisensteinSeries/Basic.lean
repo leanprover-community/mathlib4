@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein series are Modular Forms
 

@@ -20,6 +20,9 @@ public import Mathlib.Tactic.NormNum.Ineq
 
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sign of a permutation
 
@@ -27,7 +30,6 @@ The main definition of this file is `Equiv.Perm.sign`,
 associating a `ℤˣ` sign with a permutation.
 
 Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Finite.lean`
-
 -/
 
 @[expose] public section
@@ -40,7 +42,8 @@ variable {α : Type u} [DecidableEq α] {β : Type v}
 
 namespace Equiv.Perm
 
-/-- `modSwap i j` contains permutations up to swapping `i` and `j`.
+/--
+`modSwap i j` contains permutations up to swapping `i` and `j`.
 
 We use this to partition permutations in `Matrix.det_zero_of_row_eq`, such that each partition
 sums up to `0`.
@@ -140,10 +143,12 @@ theorem mclosure_swap_castSucc_succ (n : ℕ) :
     rw [swap_comm, ← swap_mul_swap_mul_swap (y := Fin.castSucc j) lts.ne lt.ne]
     exact mul_mem (mul_mem mem <| ih lts.ne lts) mem
 
-/-- Like `swap_induction_on`, but with the composition on the right of `f`.
+/--
+Like `swap_induction_on`, but with the composition on the right of `f`.
 
 An induction principle for permutations. If `motive` holds for the identity permutation, and
-is preserved under composition with a non-trivial swap, then `motive` holds for all permutations. -/
+is preserved under composition with a non-trivial swap, then `motive` holds for all permutations.
+-/
 @[elab_as_elim]
 theorem swap_induction_on' [Finite α] {motive : Perm α → Prop} (f : Perm α) (one : motive 1)
     (mul_swap : ∀ f x y, x ≠ y → motive f → motive (f * swap x y)) : motive f :=

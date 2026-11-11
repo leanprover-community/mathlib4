@@ -10,12 +10,16 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subscheme associated to an ideal sheaf
 
 We construct the subscheme associated to an ideal sheaf.
 
 ## Main definition
+
 * `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
 * `AlgebraicGeometry.Scheme.Hom.image`: The scheme-theoretic image of a morphism.
@@ -26,7 +30,6 @@ We construct the subscheme associated to an ideal sheaf.
 
 Some instances are in `Mathlib/AlgebraicGeometry/Morphisms/ClosedImmersion` and
 `Mathlib/AlgebraicGeometry/Morphisms/Separated` because they need more API to prove.
-
 -/
 
 @[expose] public section

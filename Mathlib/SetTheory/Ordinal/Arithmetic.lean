@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Order.SuccPred.Nat
 public import Mathlib.SetTheory.Ordinal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordinal arithmetic
 
@@ -55,7 +58,9 @@ namespace Ordinal
 
 variable {α β γ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
-/-! ### Further properties of addition on ordinals -/
+/-!
+# Further properties of addition on ordinals
+-/
 
 @[simp]
 theorem lift_add (a b : Ordinal.{v}) : lift.{u} (a + b) = lift.{u} a + lift.{u} b :=
@@ -117,7 +122,9 @@ alias right_eq_zero_of_add_eq_zero := eq_zero_of_add_left
 @[deprecated (since := "2026-07-07")]
 alias add_eq_zero_iff := add_eq_zero
 
-/-! ### Limit ordinals -/
+/-!
+# Limit ordinals
+-/
 
 theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o :=
   isSuccLimit_iff_of_orderBot
@@ -145,11 +152,13 @@ theorem one_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) : 1 < o :=
 theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o := by
   simpa using isMin_or_mem_range_succ_or_isSuccLimit o
 
-/-- Limit induction on ordinals: if one can prove a property by induction at successor ordinals and
+/--
+Limit induction on ordinals: if one can prove a property by induction at successor ordinals and
 at limit ordinals, then it holds for all ordinals.
 
 Note that this is just a special (though sometimes convenient) case of the more general
-well-founded recursion `WellFoundedLT.fix`. -/
+well-founded recursion `WellFoundedLT.fix`.
+-/
 @[elab_as_elim]
 def limitRecOn {motive : Ordinal → Sort*} (o : Ordinal)
     (zero : motive 0) (add_one : ∀ o, motive o → motive (o + 1))
@@ -192,7 +201,9 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : IsSu
   rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
 
-/-! ### The predecessor of an ordinal -/
+/-!
+# The predecessor of an ordinal
+-/
 
 /-- The ordinal predecessor of `a` is `b` if `a = succ b`, and `a` otherwise. -/
 def pred (o : Ordinal) : Ordinal :=
@@ -261,7 +272,9 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
   · simp
   · rwa [ho.ordinalPred_eq, eq_comm, pred_eq_iff_isSuccPrelimit, isSuccPrelimit_lift]
 
-/-! ### Subtraction on ordinals -/
+/-!
+# Subtraction on ordinals
+-/
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
 instance sub : Sub Ordinal where
@@ -370,7 +383,9 @@ theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
   rw [succ_eq_add_one, ← add_assoc]
   exact ha.succ_lt hc
 
-/-! ### Multiplication of ordinals -/
+/-!
+# Multiplication of ordinals
+-/
 
 /-- The multiplication of ordinals `a` and `b` is the order type of the lexicographic order on
 `b × a`. -/
@@ -549,7 +564,9 @@ theorem add_mul_of_isSuccLimit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLim
 protected theorem mul_two (o : Ordinal) : o * 2 = o + o := by
   rw [← one_add_one_eq_two, mul_add, mul_one]
 
-/-! ### Division on ordinals -/
+/-!
+# Division on ordinals
+-/
 
 /-- `a / b` is the unique ordinal `q` satisfying `a = b * q + r` with `r < b`. -/
 @[no_expose]
@@ -803,7 +820,9 @@ theorem exists_lt_mul {b c : Ordinal} {P : Ordinal → Prop} :
     (∃ a < b * c, P a) ↔ ∃ q < c, ∃ r < b, P (b * q + r) := by
   grind [lt_mul_iff]
 
-/-! ### Casting naturals into ordinals, compatibility with operations -/
+/-!
+# Casting naturals into ordinals, compatibility with operations
+-/
 
 instance instCharZero : CharZero Ordinal := by
   refine ⟨fun a b h ↦ ?_⟩
@@ -874,7 +893,9 @@ set_option backward.isDefEq.respectTransparency false in
 theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
   simp [← typein_inj LT.lt]
 
-/-! ### Properties of `ω` -/
+/-!
+# Properties of `ω`
+-/
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]

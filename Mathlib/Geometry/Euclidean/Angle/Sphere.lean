@@ -9,11 +9,13 @@ public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Angles in circles and spheres
 
 This file proves results about angles in circles and spheres.
-
 -/
 
 public section

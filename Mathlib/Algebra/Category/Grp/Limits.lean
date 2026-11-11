@@ -12,12 +12,14 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of (commutative) (additive) groups has all limits
 
 Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
-
 -/
 
 @[expose] public section
@@ -73,14 +75,18 @@ noncomputable instance limitGroup :
 instance : Small.{u} (Functor.sections ((F ⋙ forget₂ GrpCat MonCat) ⋙ forget MonCat)) :=
   inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget GrpCat))
 
-/-- We show that the forgetful functor `GrpCat ⥤ MonCat` creates limits.
+/--
+We show that the forgetful functor `GrpCat ⥤ MonCat` creates limits.
 
 All we need to do is notice that the limit point has a `Group` instance available, and then reuse
-the existing limit. -/
-@[to_additive /-- We show that the forgetful functor `AddGrpCat ⥤ AddMonCat` creates limits.
+the existing limit.
+-/
+@[to_additive /--
+              We show that the forgetful functor `AddGrpCat ⥤ AddMonCat` creates limits.
 
-All we need to do is notice that the limit point has an `AddGroup` instance available, and then
-reuse the existing limit. -/]
+              All we need to do is notice that the limit point has an `AddGroup` instance available,
+and then reuse the existing limit.
+              -/]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ GrpCat.{u} MonCat.{u}) :=
   -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
@@ -153,15 +159,18 @@ instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} GrpCat.{u} whe
 instance hasLimits : HasLimits GrpCat.{u} :=
   GrpCat.hasLimitsOfSize.{u, u}
 
-/-- The forgetful functor from groups to monoids preserves all limits.
+/--
+The forgetful functor from groups to monoids preserves all limits.
 
 This means the underlying monoid of a limit can be computed as a limit in the category of monoids.
 -/
 @[to_additive AddGrpCat.forget₂AddMonPreservesLimitsOfSize
-/-- The forgetful functor from additive groups to additive monoids preserves all limits.
+/--
+The forgetful functor from additive groups to additive monoids preserves all limits.
 
 This means the underlying additive monoid of a limit can be computed as a limit in the category of
-additive monoids. -/]
+additive monoids.
+-/]
 instance forget₂Mon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ GrpCat.{u} MonCat.{u}) where
   preservesLimitsOfShape {J _} := { }
@@ -178,13 +187,17 @@ instance forget_preservesLimitsOfShape [Small.{u} J] :
   preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
     (Types.Small.limitConeIsLimit (F ⋙ forget _))
 
-/-- The forgetful functor from groups to types preserves all limits.
+/--
+The forgetful functor from groups to types preserves all limits.
 
-This means the underlying type of a limit can be computed as a limit in the category of types. -/
+This means the underlying type of a limit can be computed as a limit in the category of types.
+-/
 @[to_additive
-/-- The forgetful functor from additive groups to types preserves all limits.
+/--
+The forgetful functor from additive groups to types preserves all limits.
 
-This means the underlying type of a limit can be computed as a limit in the category of types. -/]
+This means the underlying type of a limit can be computed as a limit in the category of types.
+-/]
 instance forget_preservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget GrpCat.{u}) := inferInstance
 
@@ -233,15 +246,18 @@ noncomputable instance limitCommGroup
 instance : (forget₂ CommGrpCat.{u} GrpCat.{u}).ReflectsIsomorphisms :=
     reflectsIsomorphisms_forget₂ _ _
 
-/-- We show that the forgetful functor `CommGrpCat ⥤ GrpCat` creates limits.
+/--
+We show that the forgetful functor `CommGrpCat ⥤ GrpCat` creates limits.
 
 All we need to do is notice that the limit point has a `CommGroup` instance available,
 and then reuse the existing limit.
 -/
-@[to_additive /-- We show that the forgetful functor `AddCommGrpCat ⥤ AddGrpCat` creates limits.
+@[to_additive /--
+              We show that the forgetful functor `AddCommGrpCat ⥤ AddGrpCat` creates limits.
 
-All we need to do is notice that the limit point has an `AddCommGroup` instance available,
-and then reuse the existing limit. -/]
+              All we need to do is notice that the limit point has an `AddCommGroup` instance
+available, and then reuse the existing limit.
+              -/]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGrpCat GrpCat.{u}) :=
   createsLimitOfReflectsIso (fun c hc => by

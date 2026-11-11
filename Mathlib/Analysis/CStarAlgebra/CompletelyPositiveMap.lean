@@ -9,22 +9,26 @@ public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 
 import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
-/-! # Completely positive maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Completely positive maps
 
 A linear map `φ : A₁ →ₗ[ℂ] A₂` (where `A₁` and `A₂` are C⋆-algebras) is called
-*completely positive (CP)* if `CStarMatrix.map (Fin k) (Fin k) φ` (i.e. applying `φ` to all
+_completely positive (CP)_ if `CStarMatrix.map (Fin k) (Fin k) φ` (i.e. applying `φ` to all
 entries of a k × k matrix) is also positive for every `k : ℕ`.
 
 This file defines completely positive maps and develops their basic API.
 
 ## Main results
 
-+ `NonUnitalStarAlgHomClass.instCompletelyPositiveMapClass`: Non-unital star algebra
+* `NonUnitalStarAlgHomClass.instCompletelyPositiveMapClass`: Non-unital star algebra
   homomorphisms are completely positive.
 
 ## Notation
 
-+ `A₁ →CP A₂` denotes the type of CP maps from `A₁` to `A₂`. This notation is scoped to
+* `A₁ →CP A₂` denotes the type of CP maps from `A₁` to `A₂`. This notation is scoped to
   `CStarAlgebra`.
 
 ## Implementation notes
@@ -40,7 +44,7 @@ as much as possible.
 open scoped CStarAlgebra
 
 /--
-A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
+A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called _completely positive (CP)_ if
 `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
 positive for every `k ∈ ℕ`.
 
@@ -55,7 +59,7 @@ structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlg
       0 ≤ M.map toLinearMap
 
 /--
-A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called *completely positive (CP)* if
+A linear map `φ : A₁ →ₗ[ℂ] A₂`  is called _completely positive (CP)_ if
 `CStarMatrix.mapₗ (Fin k) (Fin k) φ` (i.e. applying `φ` to all entries of a k × k matrix) is also
 positive for every `k ∈ ℕ`.
 

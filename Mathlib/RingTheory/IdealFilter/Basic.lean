@@ -8,10 +8,13 @@ module
 public import Mathlib.Order.PFilter
 public import Mathlib.RingTheory.Ideal.Colon
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideal Filters
 
-An **ideal filter** is a filter in the lattice of ideals of a ring `A`.
+An *ideal filter* is a filter in the lattice of ideals of a ring `A`.
 
 ## Main definitions
 
@@ -39,11 +42,11 @@ An **ideal filter** is a filter in the lattice of ideals of a ring `A`.
 
 ## Implementation notes
 
-In the classical literature (e.g. Stenström), *right linear topologies* on a ring are often
-described via filters of open **right** ideals, and the terminology is frequently abused by
+In the classical literature (e.g. Stenström), _right linear topologies_ on a ring are often
+described via filters of open *right* ideals, and the terminology is frequently abused by
 identifying the topology with its filter of ideals.
 
-In this development we work systematically with **left ideals**. Accordingly, Stenström’s
+In this development we work systematically with *left ideals*. Accordingly, Stenström’s
 right-ideal construction `(L : a) = {x ∈ A | a * x ∈ L}` is replaced by the left ideal
 `L.colon {a} = {a | x * a ∈ L}`.
 
@@ -53,8 +56,8 @@ change the induced topology.
 
 ## References
 
-* [Bo Stenström, *Rings and Modules of Quotients*][stenstrom1971]
-* [Bo Stenström, *Rings of Quotients*][stenstrom1975]
+* ‍\[Bo Stenström, _Rings and Modules of Quotients_\]\[stenstrom1971\]
+* ‍\[Bo Stenström, _Rings of Quotients_\]\[stenstrom1975\]
 * [nLab: Uniform filter](https://ncatlab.org/nlab/show/uniform+filter)
 * [nLab: Gabriel filter](https://ncatlab.org/nlab/show/Gabriel+filter)
 * [nLab: Gabriel composition](https://ncatlab.org/nlab/show/Gabriel+composition+of+filters)
@@ -75,9 +78,13 @@ namespace IdealFilter
 
 variable {A : Type*} [Ring A]
 
-/-- A filter of ideals is *uniform* if it is closed under colon by singletons. -/
+/--
+A filter of ideals is _uniform_ if it is closed under colon by singletons.
+-/
 class IsUniform (F : IdealFilter A) : Prop where
-  /-- **Axiom T3.**  See [stenstrom1975]. -/
+  /--
+  *Axiom T3.*  See \[stenstrom1975\].
+  -/
   colon_mem {I : Ideal A} (hI : I ∈ F) (a : A) : I.colon {a} ∈ F
 
 /-- We say that an element `m : M` is `F`-torsion if it is annihilated by some ideal belonging to
@@ -167,7 +174,9 @@ scoped infixl:70 " • " => gabrielComposition
 /-- An ideal filter is Gabriel if it satisfies `IsUniform` and axiom T4.
 See [nLab: Gabriel filter](https://ncatlab.org/nlab/show/Gabriel+filter). -/
 class IsGabriel (F : IdealFilter A) extends F.IsUniform where
-  /-- **Axiom T4.** See [stenstrom1975]. -/
+  /--
+  *Axiom T4.* See \[stenstrom1975\].
+  -/
   gabriel_closed (I : Ideal A) (h : ∃ J ∈ F, ∀ x ∈ J, I.colon {x} ∈ F) : I ∈ F
 
 /-- Characterization of Gabriel filters via `IsUniform` and idempotence of

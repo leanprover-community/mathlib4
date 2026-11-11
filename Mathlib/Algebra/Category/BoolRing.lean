@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Ring.BooleanRing
 public import Mathlib.Order.Category.BoolAlg
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of Boolean rings
 
@@ -95,7 +98,9 @@ def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β where
 
 end BoolRing
 
-/-! ### Equivalence between `BoolAlg` and `BoolRing` -/
+/-!
+# Equivalence between `BoolAlg` and `BoolRing`
+-/
 
 -- We have to add this instance since Lean doesn't see through `X.toBddDistLat`.
 instance {X : BoolAlg} :

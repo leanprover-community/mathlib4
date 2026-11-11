@@ -7,11 +7,15 @@ module
 
 public import Mathlib.Basic.ENNReal.Inv
 
-/-! # Hölder triples
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Hölder triples
 
 This file defines a new class: `ENNReal.HolderTriple` which takes arguments `p q r : ℝ≥0∞`,
 with `r` marked as a `semiOutParam`, and states that `p⁻¹ + q⁻¹ = r⁻¹`. This is exactly the
-condition for which **Hölder's inequality** is valid (see `MeasureTheory.MemLp.smul`).
+condition for which *Hölder's inequality* is valid (see `MeasureTheory.MemLp.smul`).
 This allows us to declare a heterogeneous scalar multiplication (`HSMul`) instance on
 `MeasureTheory.Lp` spaces.
 
@@ -27,17 +31,19 @@ public section
 
 namespace ENNReal
 
-/-- A class stating that `p q r : ℝ≥0∞` satisfy `p⁻¹ + q⁻¹ = r⁻¹`.
-This is exactly the condition for which **Hölder's inequality** is valid
+/--
+A class stating that `p q r : ℝ≥0∞` satisfy `p⁻¹ + q⁻¹ = r⁻¹`.
+This is exactly the condition for which *Hölder's inequality* is valid
 (see `MeasureTheory.MemLp.smul`).
 
-When `r := 1`, one generally says that `p q` are **Hölder conjugate**.
+When `r := 1`, one generally says that `p q` are *Hölder conjugate*.
 
 This class exists so that we can define a heterogeneous scalar multiplication
 on `MeasureTheory.Lp`, and this is why `r` must be marked as a
 `semiOutParam`. We don't mark it as an `outParam` because this would
 prevent Lean from using `HolderTriple p q r` and `HolderTriple p q r'`
-within a single proof, as may be occasionally convenient. -/
+within a single proof, as may be occasionally convenient.
+-/
 @[mk_iff]
 class HolderTriple (p q : ℝ≥0∞) (r : semiOutParam ℝ≥0∞) : Prop where
   inv_add_inv_eq_inv (p q r) : p⁻¹ + q⁻¹ = r⁻¹
@@ -48,7 +54,9 @@ abbrev HolderConjugate (p q : ℝ≥0∞) := HolderTriple p q 1
 lemma holderConjugate_iff {p q : ℝ≥0∞} : HolderConjugate p q ↔ p⁻¹ + q⁻¹ = 1 := by
   simp [holderTriple_iff]
 
-/-! ### Hölder triples -/
+/-!
+# Hölder triples
+-/
 
 namespace HolderTriple
 
@@ -121,7 +129,9 @@ lemma holderConjugate_div_div (hr₀ : r ≠ 0) (hr : r ≠ ∞) : HolderConjuga
 
 end HolderTriple
 
-/-! ### Hölder conjugates -/
+/-!
+# Hölder conjugates
+-/
 
 namespace HolderConjugate
 

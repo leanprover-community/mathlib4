@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.CategoryTheory.Groupoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about epimorphisms and monomorphisms.
 
@@ -42,7 +45,8 @@ lemma unop_epi_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     Epi f.unop ↔ Mono f :=
   ⟨fun _ ↦ op_mono_of_epi f.unop, fun _ ↦ inferInstance⟩
 
-/-- A split monomorphism is a morphism `f : X ⟶ Y` with a given retraction `retraction f : Y ⟶ X`
+/--
+A split monomorphism is a morphism `f : X ⟶ Y` with a given retraction `retraction f : Y ⟶ X`
 such that `f ≫ retraction f = 𝟙 X`.
 
 Every split monomorphism is a monomorphism.
@@ -58,7 +62,8 @@ class IsSplitMono {X Y : C} (f : X ⟶ Y) : Prop where
   /-- There is a splitting -/
   exists_splitMono : Nonempty (SplitMono f)
 
-/-- A split epimorphism is a morphism `f : X ⟶ Y` with a given section `section_ f : Y ⟶ X`
+/--
+A split epimorphism is a morphism `f : X ⟶ Y` with a given section `section_ f : Y ⟶ X`
 such that `section_ f ≫ f = 𝟙 Y`.
 (Note that `section` is a reserved keyword, so we append an underscore.)
 

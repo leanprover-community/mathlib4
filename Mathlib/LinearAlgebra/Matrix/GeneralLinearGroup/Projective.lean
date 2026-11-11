@@ -10,6 +10,9 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective general linear group
 
@@ -21,13 +24,10 @@ If `n` is a number, then `PGL(n, R)` is interpreted as `PGL(Fin n, R)`.
 ## Main definitions
 
 * `Matrix.SpecialLinearGroup.toPGL` is the natural map from `SL(n, R)` to `PGL(n, R)`.
-
 * `Matrix.ProjectiveSpecialLinearGroup.toPGL` is the natural
   inclusion from `PSL(n, R)` to `PGL(n, R)`.
-
 * `Matrix.ProjectiveSpecialLinearGroup.isoPSLOfAlgClosed` is an isomorphism between
   `PGL(n, F)` and `PSL(n, F)` in the case of an algebraically closed field.
-
 -/
 
 open scoped MatrixGroups
@@ -36,8 +36,10 @@ open scoped MatrixGroups
 
 namespace Matrix
 
-/-- Projective general linear group $PGL(n, R)$
-defined as the quotient of the general linear group by its center. -/
+/--
+Projective general linear group $`PGL(n, R)`
+defined as the quotient of the general linear group by its center.
+-/
 def ProjGenLinGroup (n : Type*) [Fintype n] [DecidableEq n] (R : Type*) [CommRing R] : Type _ :=
   GL n R ⧸ Subgroup.center (GL n R)
   deriving Group

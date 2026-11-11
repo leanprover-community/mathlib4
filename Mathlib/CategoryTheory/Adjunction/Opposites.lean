@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opposite adjunctions
 
@@ -14,6 +17,7 @@ This file contains constructions to relate adjunctions of functors to adjunction
 opposites.
 
 ## Tags
+
 adjunction, opposite, uniqueness
 -/
 

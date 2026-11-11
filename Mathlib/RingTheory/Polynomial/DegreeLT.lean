@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Determinant
 
 import Mathlib.LinearAlgebra.Matrix.Block
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials with degree strictly less than `n`
 
@@ -20,18 +23,14 @@ This file contains the properties of the submodule of polynomials of degree less
 
 * `degreeLT.basis R n`: a basis for `R[X]_n` the submodule of polynomials with degree `< n`,
   given by the monomials `X^i` for `i < n`.
-
 * `degreeLT.basisProd R m n`: a basis for `R[X]_m × R[X]_n`, which is the sum of two instances of
   the basis given above.
-
 * `degreeLT.addLinearEquiv R m n`: an isomorphism between `R[X]_(m + n)` and `R[X]_m × R[X]_n`,
   given by the fact that the bases are both indexed by `Fin (m + n)`. This is used for the Sylvester
   matrix, which is the matrix representing the Sylvester map between these two spaces, in a future
   file.
-
 * `taylorLinear r n`: The linear automorphism induced by `taylor r` on `R[X]_n` which sends `X` to
   `X + r` and preserves degrees.
-
 -/
 
 @[expose] public section

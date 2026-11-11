@@ -13,6 +13,9 @@ public import Mathlib.CategoryTheory.Comma.Over.StrictInitial
 import Mathlib.CategoryTheory.Sites.Subcanonical
 import Mathlib.CategoryTheory.Sites.SubcanonicalOver
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pro-étale site
 
@@ -28,8 +31,7 @@ over `S` and equip it with the induced topology.
 
 ## References
 
-- [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
-
+* ‍\[Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes\]\[proetale2015\]
 -/
 
 @[expose] public section
@@ -44,7 +46,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /--
 Big pro-étale site: the pro-étale precoverage on the category of schemes given
 by fpqc covers of weakly étale morphisms.
-[Definition 4.1.1][proetale2015]
+‍\[Definition 4.1.1\]\[proetale2015\]
 -/
 def proetalePrecoverage : Precoverage Scheme.{u} :=
   propQCPrecoverage @WeaklyEtale
@@ -91,7 +93,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 The (small) pro-étale site of a scheme `S`: Its objects are the schemes weakly étale over `S`.
 We prefer to work with weakly étale morphisms instead of pro-étale morphisms, since the property
 of being pro-étale is not well-behaved: it is not local on the target.
-[Definition 4.1.1][proetale2015]
+‍\[Definition 4.1.1\]\[proetale2015\]
 -/
 @[stacks 098K]
 protected def ProEt (S : Scheme.{u}) : Type _ :=

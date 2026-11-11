@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SetFamily.Shadow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # UV-compressions
 
@@ -68,7 +71,9 @@ theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
 -- The namespace is here to distinguish from other compressions.
 namespace UV
 
-/-! ### UV-compression in generalized Boolean algebras -/
+/-!
+# UV-compression in generalized Boolean algebras
+-/
 
 
 section GeneralizedBooleanAlgebra
@@ -258,7 +263,9 @@ theorem mem_of_mem_compression (ha : a ∈ 𝓒 u v s) (hva : v ≤ a) (hvu : v 
 
 end GeneralizedBooleanAlgebra
 
-/-! ### UV-compression on finsets -/
+/-!
+# UV-compression on finsets
+-/
 
 open scoped FinsetFamily
 

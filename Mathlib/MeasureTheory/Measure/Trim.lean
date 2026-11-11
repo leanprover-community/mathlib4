@@ -7,14 +7,15 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of a measure to a sub-σ-algebra
-
 
 ## Main definitions
 
 * `MeasureTheory.Measure.trim`: restriction of a measure to a sub-sigma algebra.
-
 -/
 
 @[expose] public section
@@ -25,13 +26,15 @@ namespace MeasureTheory
 
 variable {α β : Type*}
 
-/-- Restriction of a measure to a sub-σ-algebra.
+/--
+Restriction of a measure to a sub-σ-algebra.
 It is common to see a measure `μ` on a measurable space structure `m0` as being also a measure on
 any `m ≤ m0`. Since measures in mathlib have to be trimmed to the measurable space, `μ` itself
 cannot be a measure on `m`, hence the definition of `μ.trim hm`.
 
 This notion is related to `OuterMeasure.trim`, see the lemma
-`toOuterMeasure_trim_eq_trim_toOuterMeasure`. -/
+`toOuterMeasure_trim_eq_trim_toOuterMeasure`.
+-/
 noncomputable
 def Measure.trim {m m0 : MeasurableSpace α} (μ : @Measure α m0) (hm : m ≤ m0) : @Measure α m :=
   @OuterMeasure.toMeasure α m μ.toOuterMeasure (hm.trans (le_toOuterMeasure_caratheodory μ))

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` plugin for big operators
 
@@ -55,7 +58,8 @@ inductive Nat.UnifyZeroOrSuccResult (n : Q(ℕ))
   /-- `n` unifies with `succ n'` for this specific `n'` -/
   | succ (n' : Q(ℕ)) (pf : $n =Q Nat.succ $n')
 
-/-- Determine whether the expression `n : Q(ℕ)` unifies with `0` or `Nat.succ n'`.
+/--
+Determine whether the expression `n : Q(ℕ)` unifies with `0` or `Nat.succ n'`.
 
 We do not use `norm_num` functionality because we want definitional equality,
 not propositional equality, for use in dependent types.
@@ -80,7 +84,8 @@ inductive List.ProveNilOrConsResult {α : Q(Type u)} (s : Q(List $α))
   /-- The set equals `a` inserted into the strict subset `s'`. -/
   | cons (a : Q($α)) (s' : Q(List $α)) (pf : Q($s = List.cons $a $s'))
 
-/-- If `s` unifies with `t`, convert a result for `s` to a result for `t`.
+/--
+If `s` unifies with `t`, convert a result for `s` to a result for `t`.
 
 If `s` does not unify with `t`, this results in a type-incorrect proof.
 -/
@@ -106,7 +111,8 @@ lemma List.range_succ_eq_map' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : n
   rw [pn.out, Nat.cast_id, pn', List.range_succ_eq_map]
 
 set_option linter.unusedVariables false in
-/-- Either show the expression `s : Q(List α)` is Nil, or remove one element from it.
+/--
+Either show the expression `s : Q(List α)` is Nil, or remove one element from it.
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
@@ -154,7 +160,8 @@ inductive Multiset.ProveZeroOrConsResult {α : Q(Type u)} (s : Q(Multiset $α))
   /-- The set equals `a` inserted into the strict subset `s'`. -/
   | cons (a : Q($α)) (s' : Q(Multiset $α)) (pf : Q($s = Multiset.cons $a $s'))
 
-/-- If `s` unifies with `t`, convert a result for `s` to a result for `t`.
+/--
+If `s` unifies with `t`, convert a result for `s` to a result for `t`.
 
 If `s` does not unify with `t`, this results in a type-incorrect proof.
 -/
@@ -183,7 +190,8 @@ lemma Multiset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn =
     Multiset.range n = n' ::ₘ Multiset.range n' := by
   rw [pn.out, Nat.cast_id, pn', Multiset.range_succ]
 
-/-- Either show the expression `s : Q(Multiset α)` is Zero, or remove one element from it.
+/--
+Either show the expression `s : Q(Multiset α)` is Zero, or remove one element from it.
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
@@ -223,7 +231,8 @@ inductive Finset.ProveEmptyOrConsResult {α : Q(Type u)} (s : Q(Finset $α))
   /-- The set equals `a` inserted into the strict subset `s'`. -/
   | cons (a : Q($α)) (s' : Q(Finset $α)) (h : Q($a ∉ $s')) (pf : Q($s = Finset.cons $a $s' $h))
 
-/-- If `s` unifies with `t`, convert a result for `s` to a result for `t`.
+/--
+If `s` unifies with `t`, convert a result for `s` to a result for `t`.
 
 If `s` does not unify with `t`, this results in a type-incorrect proof.
 -/
@@ -257,7 +266,8 @@ lemma Finset.univ_eq_elems {α : Type*} [Fintype α] (elems : Finset α)
     Finset.univ = elems := by
   ext x; simpa using complete x
 
-/-- Either show the expression `s : Q(Finset α)` is empty, or remove one element from it.
+/--
+Either show the expression `s : Q(Finset α)` is empty, or remove one element from it.
 
 Fails if we cannot determine which of the alternatives apply to the expression.
 -/
@@ -351,7 +361,8 @@ partial def evalFinsetBigop {α : Q(Type u)} {β : Q(Type v)}
       pure (res.eq_trans eq)
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- `norm_num` plugin for evaluating products of finsets.
+/--
+`norm_num` plugin for evaluating products of finsets.
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.
 -/
@@ -380,7 +391,8 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
     s
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- `norm_num` plugin for evaluating sums of finsets.
+/--
+`norm_num` plugin for evaluating sums of finsets.
 
 If your finset is not supported, you can add it to the match in `Finset.proveEmptyOrCons`.
 -/

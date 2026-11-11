@@ -10,12 +10,15 @@ public import Mathlib.Order.PrimeIdeal
 import Mathlib.Data.Set.Lattice.Disjoint
 import Mathlib.Order.Zorn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separating prime filters and ideals
 
-In a distributive lattice, if $F$ is a filter, $I$ is an ideal, and $F$ and $I$ are
-disjoint, then there exists a prime ideal $J$ containing $I$ with $J$ still disjoint from $F$.
-This theorem is a crucial ingredient to [Stone's][Sto1938] duality for bounded distributive
+In a distributive lattice, if $`F` is a filter, $`I` is an ideal, and $`F` and $`I` are
+disjoint, then there exists a prime ideal $`J` containing $`I` with $`J` still disjoint from $`F`.
+This theorem is a crucial ingredient to \[Stone's\]\[Sto1938\] duality for bounded distributive
 lattices. The construction of the separator relies on Zorn's lemma.
 
 ## Tags
@@ -24,8 +27,8 @@ ideal, filter, prime, distributive lattice
 
 ## References
 
-* [M. H. Stone, Topological representations of distributive lattices and Brouwerian logics
-  (1938)][Sto1938]
+* ‍\[M. H. Stone, Topological representations of distributive lattices and Brouwerian logics
+  (1938)\]\[Sto1938\]
 -/
 
 public section

@@ -15,6 +15,9 @@ public import Mathlib.Tactic.Polynomial.Core
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate polynomials
 
@@ -25,7 +28,7 @@ with variables from a general type `σ` (which could be infinite).
 
 Let `R` be a commutative ring (or a semiring) and let `σ` be an arbitrary
 type. This file creates the type `MvPolynomial σ R`, which mathematicians
-might denote $R[X_i : i \in σ]$. It is the type of multivariate
+might denote $`R[X_i : i \in σ]`. It is the type of multivariate
 (a.k.a. multivariable) polynomials, with variables
 corresponding to the terms in `σ`, and coefficients in `R`.
 
@@ -33,13 +36,13 @@ corresponding to the terms in `σ`, and coefficients in `R`.
 
 In the definitions below, we use the following notation:
 
-+ `σ : Type*` (indexing the variables)
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
+* `σ : Type*` (indexing the variables)
+* `R : Type*` `[CommSemiring R]` (the coefficients)
+* `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
-+ `a : R`
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-+ `p : MvPolynomial σ R`
+* `a : R`
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `p : MvPolynomial σ R`
 
 ### Definitions
 
@@ -61,7 +64,6 @@ the polynomial being represented.
 ## Tags
 
 polynomial, multivariate polynomial, multivariable polynomial
-
 -/
 
 @[expose] public section
@@ -120,7 +122,9 @@ theorem algebraMap_apply [Algebra R S₁] (r : R) :
     algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) :=
   rfl
 
-/-- `X n` is the degree `1` monomial $X_n$. -/
+/--
+`X n` is the degree `1` monomial $`X_n`.
+-/
 def X (n : σ) : MvPolynomial σ R :=
   monomial (Finsupp.single n 1) 1
 
@@ -401,9 +405,11 @@ theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     apply MonoidHom.ext_mnat
     exact hX _
 
-/-- See note [partially-applied ext lemmas].
+/--
+See note \[partially-applied ext lemmas\].
 
-We set the priority higher than that of `AddMonoidAlgebra.ringHom_ext'`. -/
+We set the priority higher than that of `AddMonoidAlgebra.ringHom_ext'`.
+-/
 @[ext high + 1]
 theorem ringHom_ext' {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : f.comp C = g.comp C) (hX : ∀ i, f (X i) = g (X i)) : f = g :=
@@ -417,9 +423,11 @@ theorem is_id (f : MvPolynomial σ R →+* MvPolynomial σ R) (hC : f.comp C = C
     (hX : ∀ n : σ, f (X n) = X n) (p : MvPolynomial σ R) : f p = p :=
   hom_eq_hom f (RingHom.id _) hC hX p
 
-/-- See note [partially-applied ext lemmas].
+/--
+See note \[partially-applied ext lemmas\].
 
-We set the priority higher than that of `AddMonoidAlgebra.algHom_ext`. -/
+We set the priority higher than that of `AddMonoidAlgebra.algHom_ext`.
+-/
 @[ext high + 1]
 theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
     {f g : MvPolynomial σ A →ₐ[R] B}
@@ -429,9 +437,11 @@ theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A
     (h₂ : ∀ i, f (X i) = g (X i)) : f = g :=
   AlgHom.toRingHom_injective (MvPolynomial.ringHom_ext' congr($(h₁).toRingHom) h₂)
 
-/-- See note [partially-applied ext lemmas].
+/--
+See note \[partially-applied ext lemmas\].
 
-We set the priority higher than that of `MvPolynomial.algHom_ext'`. -/
+We set the priority higher than that of `MvPolynomial.algHom_ext'`.
+-/
 @[ext high + 2]
 theorem algHom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : MvPolynomial σ R →ₐ[R] A}
     (hf : ∀ i : σ, f (X i) = g (X i)) : f = g :=

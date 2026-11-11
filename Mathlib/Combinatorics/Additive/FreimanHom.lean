@@ -14,6 +14,9 @@ public import Mathlib.Data.ZMod.Defs
 
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Freiman homomorphisms
 
@@ -54,7 +57,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 
 ## References
 
-[Yufei Zhao, *18.225: Graph Theory and Additive Combinatorics*](https://yufeizhao.com/gtac/)
+[Yufei Zhao, _18.225: Graph Theory and Additive Combinatorics_](https://yufeizhao.com/gtac/)
 
 ## TODO
 
@@ -431,10 +434,12 @@ open Fin.CommRing
 private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
   Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
 
-/-- **No wrap-around principle**.
+/--
+*No wrap-around principle*.
 
 The first `k + 1` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k + 1` elements
-of `ℕ` assuming there is no wrap-around. -/
+of `ℕ` assuming there is no wrap-around.
+-/
 lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iic (k : Fin (n + 1))) (Iic k) val where
   bijOn.left := by simp [MapsTo, Fin.le_iff_val_le_val, Nat.mod_eq_of_lt, aux hm hkmn]
@@ -451,10 +456,12 @@ lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
       simpa [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, aux hm hkmn] using huk
     exact ⟨congr_arg _, CharP.natCast_injOn_Iio _ (n + 1) (this hsA hs) (this htA ht)⟩
 
-/-- **No wrap-around principle**.
+/--
+*No wrap-around principle*.
 
 The first `k` elements of `Fin (n + 1)` are `m`-Freiman isomorphic to the first `k` elements of `ℕ`
-assuming there is no wrap-around. -/
+assuming there is no wrap-around.
+-/
 lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iio (k : Fin (n + 1))) (Iio k) val := by
   obtain _ | k := k

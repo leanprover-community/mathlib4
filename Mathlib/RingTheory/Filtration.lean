@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.ReesAlgebra
 
 import Mathlib.RingTheory.Finiteness.Nakayama
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `I`-filtrations of modules
 
@@ -18,24 +21,23 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
 
 ## Main results
 
-- `Ideal.Filtration`:
+* `Ideal.Filtration`:
   An `I`-filtration on the module `M` is a sequence of decreasing submodules `N i` such that
   `∀ i, I • (N i) ≤ N (i + 1)`. Note that we do not require the filtration to start from `⊤`.
-- `Ideal.Filtration.Stable`: An `I`-filtration is stable if `I • (N i) = N (i + 1)` for large
+* `Ideal.Filtration.Stable`: An `I`-filtration is stable if `I • (N i) = N (i + 1)` for large
   enough `i`.
-- `Ideal.Filtration.submodule`: The associated module `⨁ Nᵢ` of a filtration, implemented as a
+* `Ideal.Filtration.submodule`: The associated module `⨁ Nᵢ` of a filtration, implemented as a
   submodule of `M[X]`.
-- `Ideal.Filtration.submodule_fg_iff_stable`: If `F.N i` are all finitely generated, then
+* `Ideal.Filtration.submodule_fg_iff_stable`: If `F.N i` are all finitely generated, then
   `F.Stable` iff `F.submodule.FG`.
-- `Ideal.Filtration.Stable.of_le`: In a finite module over a Noetherian ring,
+* `Ideal.Filtration.Stable.of_le`: In a finite module over a Noetherian ring,
   if `F' ≤ F`, then `F.Stable → F'.Stable`.
-- `Ideal.exists_pow_inf_eq_pow_smul`: **Artin-Rees lemma**.
+* `Ideal.exists_pow_inf_eq_pow_smul`: *Artin-Rees lemma*.
   given `N ≤ M`, there exists a `k` such that `IⁿM ⊓ N = Iⁿ⁻ᵏ(IᵏM ⊓ N)` for all `n ≥ k`.
-- `Ideal.iInf_pow_eq_bot_of_isLocalRing`:
-  **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian local rings.
-- `Ideal.iInf_pow_eq_bot_of_isDomain`:
-  **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
-
+* `Ideal.iInf_pow_eq_bot_of_isLocalRing`:
+  *Krull's intersection theorem* (`⨅ i, I ^ i = ⊥`) for Noetherian local rings.
+* `Ideal.iInf_pow_eq_bot_of_isDomain`:
+  *Krull's intersection theorem* (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
 -/
 
 @[expose] public section

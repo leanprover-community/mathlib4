@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.NatPowAssoc
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar-multiple polynomial evaluation
 
@@ -36,7 +39,6 @@ is a generalization of `Algebra.Polynomial.Eval`.
 
 * `smeval_neg` and `smeval_intCast` for `R` a ring and `S` an `AddCommGroup`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
-
 -/
 
 @[expose] public section

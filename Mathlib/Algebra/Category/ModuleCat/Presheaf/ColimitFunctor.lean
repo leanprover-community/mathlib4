@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The colimit module of a presheaf of modules on a cofiltered category
 
@@ -20,10 +23,10 @@ on a type-synonym `PresheafOfModules.ModuleColimit` for `cM.pt`. This extends to
 a functor `PresheafOfModules.colimitFunctor : PresheafOfModules R ⥤ ModuleCat cR.pt`.
 
 ## TODO (@joelriou)
+
 * Define fiber functors on categories of (pre)sheaves of modules
 * Refactor `Mathlib/Algebra/Category/ModuleCat/Stalk.lean` so that it uses
-this slightly more general construction.
-
+  this slightly more general construction.
 -/
 
 @[expose] public section

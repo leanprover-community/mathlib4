@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Lean.Meta.CongrTheorems
 
-/-! # `congr(...)` congruence quotations
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `congr(...)` congruence quotations
 
 This module defines a term elaborator for generating congruence lemmas
 from patterns written using quotation syntax.
@@ -77,11 +81,13 @@ Please report anything that goes wrong with `congr(...)` lemmas on Zulip.
 
 For debugging, you can set `set_option trace.Elab.congr true`.
 
-[More documentation on `congr()` and `congrm`.](https://leanprover-community.github.io/extras/congr.html)
+[More documentation on `congr()` and
+`congrm`.](https://leanprover-community.github.io/extras/congr.html)
 -/
 syntax (name := termCongr) "congr(" withoutForbidden(ppDedentIfGrouped(term)) ")" : term
 
-/-! ### Congruence holes
+/-!
+# Congruence holes
 
 This section sets up the way congruence holes are elaborated for `congr(...)` quotations.
 The basic problem is that if we have `$h` with `h : x = y`, we need to elaborate it once
@@ -98,7 +104,8 @@ For a `Nat` recording how old this congruence hole is, to prevent reprocessing t
 if they leak into the local context. -/
 private def congrHoleIndex : Name := decl_name%
 
-/-- For holding onto the hole's value along with the value of either the LHS or RHS of the hole.
+/--
+For holding onto the hole's value along with the value of either the LHS or RHS of the hole.
 These occur wrapped in metadata so that they always appear as function application
 with exactly four arguments.
 
@@ -107,7 +114,8 @@ We need to decouple these to support letting the proof's elaboration be deferred
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
-See `CongrResult` below. -/
+See `CongrResult` below.
+-/
 @[reducible, nolint unusedArguments, expose]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 
@@ -117,10 +125,12 @@ We can still see that it is a hole in the info view on mouseover. -/
   | `($_ $val $_) => pure val
   | _ => throw ()
 
-/-- Create the congruence hole. Used by `elabCHole`.
+/--
+Create the congruence hole. Used by `elabCHole`.
 
 Saves the current mvarCounter as a proxy for age. We use this to avoid
-reprocessing old congruence holes that happened to leak into the local context. -/
+reprocessing old congruence holes that happened to leak into the local context.
+-/
 def mkCHole (forLhs : Bool) (val pf : Expr) : MetaM Expr := do
   -- Create a metavariable to bump the mvarCounter.
   discard mkFreshTypeMVar
@@ -203,7 +213,9 @@ def elaboratePattern (t : Term) (expectedType? : Option Expr) (forLhs : Bool) :
     let t' ← processAntiquot t (fun h => if forLhs then `(cHole% lhs $h) else `(cHole% rhs $h))
     Term.elabTermEnsuringType t' expectedType?
 
-/-! ### Congruence generation -/
+/-!
+# Congruence generation
+-/
 
 /-- Ensures the expected type is an equality. Returns the equality.
 The returned expression satisfies `Lean.Expr.eq?`. -/
@@ -262,18 +274,21 @@ This complexity is to support two features:
    and we're able to transform them into whatever is appropriate for a
    given congruence lemma.
 2. If the congruence hole is a metavariable, then we can specialize that
-   hole to an Iff, Eq, or HEq depending on what's necessary at that site. -/
+   hole to an Iff, Eq, or HEq depending on what's necessary at that site.
+-/
 structure CongrResult where
   /-- The left-hand side of the congruence result. -/
   lhs : Expr
   /-- The right-hand side of the congruence result. -/
   rhs : Expr
-  /-- A generator for an `Eq lhs rhs` or `HEq lhs rhs` proof.
-  If such a proof is impossible, the generator can throw an error.
-  The inferred type of the generated proof needs only be defeq to `Eq lhs rhs` or `HEq lhs rhs`.
-  This function can assign metavariables when constructing the proof.
+  /--
+  A generator for an `Eq lhs rhs` or `HEq lhs rhs` proof.
+If such a proof is impossible, the generator can throw an error.
+The inferred type of the generated proof needs only be defeq to `Eq lhs rhs` or `HEq lhs rhs`.
+This function can assign metavariables when constructing the proof.
 
-  If `pf? = none`, then `lhs` and `rhs` are defeq, and the proof is by reflexivity. -/
+  If `pf? = none`, then `lhs` and `rhs` are defeq, and the proof is by reflexivity.
+  -/
   (pf? : Option (CongrType → MetaM Expr))
 
 /-- Returns whether the proof is by reflexivity.
@@ -320,11 +335,13 @@ def CongrResult.trans (res1 res2 : CongrResult) : CongrResult where
         | .eq => do mkEqTrans (← res1.eq) (← res2.eq)
         | .heq => do mkHEqTrans (← res1.heq) (← res2.heq)
 
-/-- Make a `CongrResult` from an LHS, an RHS, and a proof of an Iff, Eq, or HEq.
+/--
+Make a `CongrResult` from an LHS, an RHS, and a proof of an Iff, Eq, or HEq.
 The proof is allowed to have a metavariable for its type.
 Validates the inputs and throws errors in the `pf?` function.
 
-The `pf?` function is responsible for finally unifying the type of `pf` with `lhs` and `rhs`. -/
+The `pf?` function is responsible for finally unifying the type of `pf` with `lhs` and `rhs`.
+-/
 def CongrResult.mk' (lhs rhs : Expr) (pf : Expr) : CongrResult where
   lhs := lhs
   rhs := rhs
@@ -396,15 +413,18 @@ def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
     discard res.eq
     return {res with pf? := none}
 
-/-- Tries to make a congruence between `lhs` and `rhs` automatically.
+/--
+Tries to make a congruence between `lhs` and `rhs` automatically.
+
 1. If they are defeq, returns a trivial congruence.
 2. Tries using `Subsingleton.elim`.
 3. Tries `proof_irrel_heq` as another effort to avoid doing congruence on proofs.
-3. Otherwise throws an error.
+4. Otherwise throws an error.
 
 Note: `mkAppM` uses `withNewMCtxDepth`, which prevents typeclass inference
 from accidentally specializing `Sort _` to `Prop`, which could otherwise happen
-because there is a `Subsingleton Prop` instance. -/
+because there is a `Subsingleton Prop` instance.
+-/
 def CongrResult.mkDefault (lhs rhs : Expr) : MetaM CongrResult := do
   if ← isDefEq lhs rhs then
     return {lhs, rhs, pf? := none}
@@ -567,7 +587,7 @@ partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
 
 /--
 Generate congruence for applications `lhs` and `rhs`.
-Key detail: functions might be *overapplied* due to the values of their arguments.
+Key detail: functions might be _overapplied_ due to the values of their arguments.
 For example, `id id 2` is overapplied.
 To handle these, we need to segment the applications into their natural arities,
 since `mkHCongrWithArity'` does not know how to generate congruence lemmas for the overapplied case.
@@ -597,9 +617,10 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
   let rec
     /--
     Argument processing loop
-    - `i` is index into `lhsArgs`/`rhsArgs`.
-    - `finfo` is the funinfo of `f` applied to the first `finfoIdx` arguments
-    - `f` and `f'` are the current head functions, after the first `i` arguments have been applied.
+
+    * `i` is index into `lhsArgs`/`rhsArgs`.
+* `finfo` is the funinfo of `f` applied to the first `finfoIdx` arguments
+* `f` and `f'` are the current head functions, after the first `i` arguments have been applied.
     -/
     go (i : Nat) (finfo : FunInfo) (finfoIdx : Nat) (f f' : Expr) (pf : Expr) :
         M CongrResult := do
@@ -698,7 +719,9 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
     MetaM CongrResult :=
   mkCongrOfAux depth mvarCounterSaved lhs rhs |>.run
 
-/-! ### Elaborating congruence quotations -/
+/-!
+# Elaborating congruence quotations
+-/
 
 @[term_elab termCongr, inherit_doc termCongr]
 def elabTermCongr : Term.TermElab := fun stx expectedType? => do

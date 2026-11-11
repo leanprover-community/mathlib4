@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intrinsic frontier and interior
 
@@ -29,6 +32,7 @@ same as the topological closure.
 ## Results
 
 The main results are:
+
 * `AffineIsometry.intrinsicInterior_image`/`AffineIsometry.intrinsicFrontier_image`/
   `AffineIsometry.intrinsicClosure_image`: Intrinsic interiors/frontiers/closures commute with
   taking the image under an affine isometry.
@@ -36,8 +40,8 @@ The main results are:
 
 ## References
 
-* Chapter 8 of [Barry Simon, *Convexity*][simon2011]
-* Chapter 1 of [Rolf Schneider, *Convex Bodies: The Brunn-Minkowski theory*][schneider2014].
+* Chapter 8 of \[Barry Simon, _Convexity_\]\[simon2011\]
+* Chapter 1 of \[Rolf Schneider, _Convex Bodies: The Brunn-Minkowski theory_\]\[schneider2014\].
 
 ## TODO
 

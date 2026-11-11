@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.GroupTheory.Congruence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruence relations respecting scalar multiplication
 -/

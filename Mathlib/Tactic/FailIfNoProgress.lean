@@ -9,6 +9,9 @@ public meta import Lean.Elab.Tactic.Basic
 public meta import Lean.Meta.Tactic.Util
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fail if no progress
 
@@ -21,13 +24,13 @@ in the context or the type of the goal is no longer definitionally equal to what
 reducible transparency.
 
 This means that, for example, `1 - 1` changing to `0` does not count as actual progress, since
+
 ```lean
 example : (1 - 1 = 0) := by with_reducible rfl
 ```
 
 This tactic is useful in situations where we want to stop iterating some tactics if they're not
 having any effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
-
 -/
 
 public meta section
@@ -40,12 +43,14 @@ open Lean Meta Elab Tactic
 or the local context at reducible transparency. -/
 syntax (name := failIfNoProgress) "fail_if_no_progress " tacticSeq : tactic
 
-/-- `lctxIsDefEq l₁ l₂` compares two lists of `Option LocalDecl`s (as returned from e.g.
+/--
+`lctxIsDefEq l₁ l₂` compares two lists of `Option LocalDecl`s (as returned from e.g.
 `(← (← getMainGoal).getDecl).lctx.decls.toList`). It returns `true` if they have the same
 local declarations in the same order (up to defeq, without setting mvars), and `false` otherwise.
 
 Assumption: this function is run with one of the local contexts as the current `MetaM` local
-context, and one of the two lists consists of the `LocalDecl`s of that context. -/
+context, and one of the two lists consists of the `LocalDecl`s of that context.
+-/
 def lctxIsDefEq : (l₁ l₂ : List (Option LocalDecl)) → MetaM Bool
   | none :: l₁, l₂ => lctxIsDefEq l₁ l₂
   | l₁, none :: l₂ => lctxIsDefEq l₁ l₂

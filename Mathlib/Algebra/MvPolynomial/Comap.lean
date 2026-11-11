@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Rename
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `comap` operation on `MvPolynomial`
 
@@ -19,10 +22,8 @@ This file defines the `comap` function on `MvPolynomial`.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type*` (indexing the variables)
-
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
-
+* `σ : Type*` (indexing the variables)
+* `R : Type*` `[CommSemiring R]` (the coefficients)
 -/
 
 @[expose] public section

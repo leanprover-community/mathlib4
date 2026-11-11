@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 public import Mathlib.CategoryTheory.Monad.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions related to the over category
 
@@ -22,12 +25,13 @@ In a category with binary products, for any object `X` the functor
 
 ## Main declarations
 
-- `Over.pullback f : Over Y ⥤ Over X` is the functor induced by a morphism `f : X ⟶ Y`.
-- `Over.mapPullbackAdj` is the adjunction `Over.map f ⊣ Over.pullback f`.
-- `star : C ⥤ Over X` is the functor induced by an object `X`.
-- `forgetAdjStar` is the adjunction  `forget X ⊣ star X`.
+* `Over.pullback f : Over Y ⥤ Over X` is the functor induced by a morphism `f : X ⟶ Y`.
+* `Over.mapPullbackAdj` is the adjunction `Over.map f ⊣ Over.pullback f`.
+* `star : C ⥤ Over X` is the functor induced by an object `X`.
+* `forgetAdjStar` is the adjunction  `forget X ⊣ star X`.
 
 ## TODO
+
 Show `star X` itself has a right adjoint provided `C` is Cartesian closed and has pullbacks.
 -/
 
@@ -88,9 +92,11 @@ instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.map f).IsLeftAdjo
 instance {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] : (Over.pullback f).IsRightAdjoint :=
   (Over.mapPullbackAdj f).isRightAdjoint
 
-/-- The pullback along an epi that's preserved under pullbacks is faithful.
+/--
+The pullback along an epi that's preserved under pullbacks is faithful.
 
 This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
+
 ```
 example [Abelian C] [Epi f] : (pullback f).Faithful := inferInstance
 ```
@@ -116,11 +122,13 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
 open pullback in
-/-- If `F` is a left adjoint and its source category has pullbacks, then so is
+/--
+If `F` is a left adjoint and its source category has pullbacks, then so is
 `post F : Over Y ⥤ Over (G Y)`.
 
 If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
-`(Y ⟶ F X) ↦ (G Y ⟶ X ×_{G F X} G Y ⟶ X)`. -/
+`(Y ⟶ F X) ↦ (G Y ⟶ X ×_{G F X} G Y ⟶ X)`.
+-/
 @[simps!]
 def postAdjunctionLeft [HasPullbacks C] {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⊣ post G ⋙ pullback (a.unit.app X) :=
@@ -148,7 +156,8 @@ The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`,
 @[simps! obj_left obj_hom map_left]
 def star : C ⥤ Over X := cofree _ ⋙ coalgebraToOver X
 
-/-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
+/--
+The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
 
 Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
@@ -224,9 +233,11 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
   }
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The pushout along a mono that's preserved under pushouts is faithful.
+/--
+The pushout along a mono that's preserved under pushouts is faithful.
 
 This "preserved under pushouts" condition is automatically satisfied in abelian categories:
+
 ```
 example [Abelian C] [Mono f] : (pushout f).Faithful := inferInstance
 ```
@@ -254,11 +265,13 @@ instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
 open pushout in
-/-- If `G` is a right adjoint and its source category has pushouts, then so is
+/--
+If `G` is a right adjoint and its source category has pushouts, then so is
 `post G : Under Y ⥤ Under (G Y)`.
 
 If the left adjoint of `G` is `F`, then the left adjoint of `post G` is given by
-`(G Y ⟶ X) ↦ (Y ⟶ Y ⨿_{F G Y} F X ⟶ F X)`. -/
+`(G Y ⟶ X) ↦ (Y ⟶ Y ⨿_{F G Y} F X ⟶ F X)`.
+-/
 @[simps!]
 def postAdjunctionRight [HasPushouts D] {Y : D} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⋙ pushout (a.counit.app Y) ⊣ post G :=
@@ -283,10 +296,12 @@ variable [HasBinaryCoproducts C]
 @[simps! obj_left obj_hom]
 def costar : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
 
-/-- The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `costar X`.
+/--
+The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `costar X`.
 
 Note that the binary coproducts assumption is necessary: the existence of a left adjoint to
-`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`. -/
+`Under.forget X` is equivalent to the existence of each binary coproduct `X ⨿ -`.
+-/
 def costarAdjForget : costar X ⊣ forget X := (Monad.adj _).comp (algebraEquivUnder X).toAdjunction
 
 instance : (costar X).IsLeftAdjoint := ⟨_, ⟨costarAdjForget X⟩⟩

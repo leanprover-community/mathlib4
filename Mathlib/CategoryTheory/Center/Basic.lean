@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Endomorphism
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The center of a category
 
@@ -15,8 +18,8 @@ the center of the category `C`, which is `End (𝟭 C)`, the
 type of endomorphisms of the identity functor of `C`.
 
 ## References
-* https://ncatlab.org/nlab/show/center+of+a+category
 
+* https://ncatlab.org/nlab/show/center+of+a+category
 -/
 
 public section

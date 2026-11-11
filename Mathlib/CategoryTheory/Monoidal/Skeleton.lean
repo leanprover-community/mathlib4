@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Transport
 public import Mathlib.CategoryTheory.Skeletal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoid on the skeleton of a monoidal category
 
@@ -19,7 +22,6 @@ The skeleton of a monoidal category is a monoid.
 
 * `Skeleton.instMonoid`, for monoidal categories.
 * `Skeleton.instCommMonoid`, for braided monoidal categories.
-
 -/
 
 @[expose] public section
@@ -33,8 +35,10 @@ universe v u
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
-/-- If `C` is monoidal and skeletal, it is a monoid.
-See note [reducible non-instances]. -/
+/--
+If `C` is monoidal and skeletal, it is a monoid.
+See note \[reducible non-instances\].
+-/
 abbrev monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   mul X Y := X ⊗ Y
   one := 𝟙_ C

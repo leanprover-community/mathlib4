@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuative Relations as Valued
 
@@ -15,7 +18,6 @@ In this temporary file, we provide a helper instance
 for `Valued R Γ` derived from a `ValuativeRel R`,
 so that downstream files can refer to `ValuativeRel R`,
 to facilitate a refactor.
-
 -/
 
 public section
@@ -24,7 +26,9 @@ namespace IsValuativeTopology
 
 section
 
-/-! ### Alternate constructors -/
+/-!
+# Alternate constructors
+-/
 
 variable {R : Type*} [Ring R] [ValuativeRel R] [TopologicalSpace R]
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Tactic.ByContra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subsingleton
 
@@ -15,7 +18,6 @@ Defines the predicate `Subsingleton s : Prop`, saying that `s` has at most one e
 
 Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least two distinct
 elements.
-
 -/
 
 @[expose] public section
@@ -26,7 +28,9 @@ universe u v
 
 namespace Set
 
-/-! ### Subsingleton -/
+/-!
+# Subsingleton
+-/
 
 section Subsingleton
 
@@ -143,7 +147,9 @@ theorem _root_.ExistsUnique.setSubsingleton {α : Type*} {p : α → Prop} (h : 
 
 end Subsingleton
 
-/-! ### Nontrivial -/
+/-!
+# Nontrivial
+-/
 
 section Nontrivial
 
@@ -328,7 +334,9 @@ theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty
 end Nontrivial
 section Monotonicity
 
-/-! ### Monotonicity on singletons -/
+/-!
+# Monotonicity on singletons
+-/
 
 variable {α : Type u} {β : Type v} {a : α} {s : Set α} [Preorder α] [Preorder β] (f : α → β)
 

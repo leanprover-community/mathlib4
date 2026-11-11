@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normal closure of an extension of domains
 

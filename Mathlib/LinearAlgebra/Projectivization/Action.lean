@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Center
 import Mathlib.LinearAlgebra.Transvection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group actions on projectivization
 
@@ -24,7 +27,6 @@ Prove that these actions are 2-transitive.
 ## TODO
 
 Generalize to the special linear group over a division ring.
-
 -/
 
 @[expose] public section

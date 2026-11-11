@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opposite categories
 
@@ -805,9 +808,11 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
 
 end Equivalence
 
-/-- The equivalence between arrows of the form `A ⟶ B` and `B.unop ⟶ A.unop`. Useful for building
+/--
+The equivalence between arrows of the form `A ⟶ B` and `B.unop ⟶ A.unop`. Useful for building
 adjunctions.
 Note that this (definitionally) gives variants
+
 ```
 def opEquiv' (A : C) (B : Cᵒᵖ) : (Opposite.op A ⟶ B) ≃ (B.unop ⟶ A) :=
   opEquiv _ _
@@ -832,9 +837,11 @@ instance subsingleton_of_unop (A B : Cᵒᵖ) [Subsingleton (unop B ⟶ unop A)]
 instance decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : DecidableEq (A ⟶ B) :=
   (opEquiv A B).decidableEq
 
-/-- The equivalence between isomorphisms of the form `A ≅ B` and `B.unop ≅ A.unop`.
+/--
+The equivalence between isomorphisms of the form `A ≅ B` and `B.unop ≅ A.unop`.
 
 Note this is definitionally the same as the other three variants:
+
 * `(Opposite.op A ≅ B) ≃ (B.unop ≅ A)`
 * `(A ≅ Opposite.op B) ≃ (B ≅ A.unop)`
 * `(Opposite.op A ≅ Opposite.op B) ≃ (B ≅ A)`

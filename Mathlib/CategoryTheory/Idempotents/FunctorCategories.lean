@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotent completeness and functor categories
 
@@ -16,7 +19,6 @@ that a functor category `J ⥤ C` is idempotent complete when the target categor
 We also provide a fully faithful functor
 `karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)` for all categories
 `J` and `C`.
-
 -/
 
 @[expose] public section

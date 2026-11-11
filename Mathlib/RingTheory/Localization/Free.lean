@@ -11,12 +11,15 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.Localization.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free modules and localization
 
 ## Main result
 
-- `Module.FinitePresentation.exists_free_localizedModule_powers`:
+* `Module.FinitePresentation.exists_free_localizedModule_powers`:
   If `M` is a finitely presented `R`-module
   such that `Mₛ` is free over `Rₛ` for some `S : Submonoid R`,
   then `Mᵣ` is already free over `Rᵣ` for some `r ∈ S`.

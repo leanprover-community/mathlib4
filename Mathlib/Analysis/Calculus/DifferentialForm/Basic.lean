@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
 
 import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exterior derivative of a differential form on a normed space
 
@@ -25,22 +28,22 @@ There are a few competing definitions of the exterior derivative of a differenti
 that differ from each other by a normalization factor.
 We use the following one:
 
-$$
-dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
-$$
+$$`  dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i  `
 
-where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeriv_apply`.
+where $`\widehat{v_i}` means that we omit this element of the tuple, see `extDeriv_apply`.
 
 ## TODO
 
-- Introduce notation for:
-  - an unbundled `n`-form on a normed space;
-  - a bundled `C^r`-smooth `n`-form on a normed space;
-  - same for manifolds (not defined yet).
-- Introduce bundled `C^r`-smooth `n`-forms on normed spaces and manifolds.
-  - Discuss the future API and the use cases that need to be covered on Zulip.
-  - Introduce new types & notation, copy the API.
-- Add shorter and more readable definitions (or abbreviations?)
+* Introduce notation for:
+
+  * an unbundled `n`-form on a normed space;
+  * a bundled `C^r`-smooth `n`-form on a normed space;
+  * same for manifolds (not defined yet).
+* Introduce bundled `C^r`-smooth `n`-forms on normed spaces and manifolds.
+
+  * Discuss the future API and the use cases that need to be covered on Zulip.
+  * Introduce new types & notation, copy the API.
+* Add shorter and more readable definitions (or abbreviations?)
   for `0`-forms (`constOfIsEmpty`) and `1`-forms (`ofSubsingleton`),
   sync with the API for `ContinuousMultilinearMap`.
 -/
@@ -58,32 +61,30 @@ variable {𝕜 E F G : Type*}
   {n m : ℕ} {r : WithTop ℕ∞}
   {ω ω₁ ω₂ : E → E [⋀^Fin n]→L[𝕜] F} {s t : Set E} {x : E}
 
-/-- Exterior derivative of a differential form.
+/--
+Exterior derivative of a differential form.
 
 There are a few competing definitions of the exterior derivative of a differential form
 that differ from each other by a normalization factor.
 We use the following one:
 
-$$
-dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
-$$
+$$`  dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i  `
 
-where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDeriv_apply`.
+where $`\widehat{v_i}` means that we omit this element of the tuple, see `extDeriv_apply`.
 -/
 noncomputable def extDeriv (ω : E → E [⋀^Fin n]→L[𝕜] F) (x : E) : E [⋀^Fin (n + 1)]→L[𝕜] F :=
   .alternatizeUncurryFin (fderiv 𝕜 ω x)
 
-/-- Exterior derivative of a differential form within a set.
+/--
+Exterior derivative of a differential form within a set.
 
 There are a few competing definitions of the exterior derivative of a differential form
 that differ from each other by a normalization factor.
 We use the following one:
 
-$$
-dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i
-$$
+$$`  dω(x; v_0, \dots, v_n) = \sum_{i=0}^n (-1)^i D_x ω(x; v_0, \dots, \widehat{v_i}, \dots, v_n) · v_i  `
 
-where $\widehat{v_i}$ means that we omit this element of the tuple, see `extDerivWithin_apply`.
+where $`\widehat{v_i}` means that we omit this element of the tuple, see `extDerivWithin_apply`.
 -/
 noncomputable def extDerivWithin (ω : E → E [⋀^Fin n]→L[𝕜] F) (s : Set E) (x : E) :
     E [⋀^Fin (n + 1)]→L[𝕜] F :=

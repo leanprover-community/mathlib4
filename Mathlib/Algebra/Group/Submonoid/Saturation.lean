@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
-/-! # Saturation of a submonoid
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Saturation of a submonoid
 
 We define a submonoid `s` to be saturated if `x * y ∈ s → x ∈ s ∧ y ∈ s`. The type of all
 saturated submonoids forms a complete lattice. For a given submonoid `s` we construct the saturation
@@ -27,24 +31,27 @@ lattice.
   `Submonoid.PowSaturated`.
 * `SaturatedSubmonoid`: the type of `Submonoid` satisfying `MulSaturated`. It is a complete lattice.
 * `Submonoid.saturation`: the smallest saturated submonoid containing a given submonoid.
-
 -/
 
 @[expose] public section
 
 namespace Submonoid
 
-/-- Given a submonoid `s` of `M`, we say that `s` is **saturated** if it satisfies
+/--
+Given a submonoid `s` of `M`, we say that `s` is *saturated* if it satisfies
 `x * y ∈ s → x ∈ s ∧ y ∈ s`.
 
 It is called `MulSaturated` here to be distinguished from `Submonoid.PowSaturated` or
-`AddSubmonoid.NSMulSaturated`, which is also called "saturated" in the literature. -/
+`AddSubmonoid.NSMulSaturated`, which is also called "saturated" in the literature.
+-/
 @[to_additive
-/-- Given an additive submonoid `s` of `M`, we say that `s` is **saturated** if it satisfies
+/--
+Given an additive submonoid `s` of `M`, we say that `s` is *saturated* if it satisfies
 `x + y ∈ s → x ∈ s ∧ y ∈ s`.
 
 It is called `AddSaturated` here to be distinguished from `Submonoid.PowSaturated` or
-`AddSubmonoid.NSMulSaturated`, which is also called "saturated" in the literature. -/]
+`AddSubmonoid.NSMulSaturated`, which is also called "saturated" in the literature.
+-/]
 def MulSaturated {M : Type*} [MulOneClass M] (s : Submonoid M) : Prop :=
   ∀ ⦃x y⦄, x * y ∈ s → x ∈ s ∧ y ∈ s
 
@@ -173,15 +180,19 @@ end SaturatedSubmonoid
 
 namespace Submonoid
 
-/-- The saturation of a submonoid `s` is the intersection of all saturated submonoids that contain
+/--
+The saturation of a submonoid `s` is the intersection of all saturated submonoids that contain
 `s`.
 
-If `M` is a commutative monoid, then this is `{x : M | ∃ y : M, x * y ∈ s}`. -/
+If `M` is a commutative monoid, then this is `{x : M | ∃ y : M, x * y ∈ s}`.
+-/
 @[to_additive
-/-- The saturation of an additive submonoid `s` is the intersection of all saturated submonoids
+/--
+The saturation of an additive submonoid `s` is the intersection of all saturated submonoids
 that contain `s`.
 
-If `M` is a commutative additive monoid, then this is `{x : M | ∃ y : M, x + y ∈ s}`. -/]
+If `M` is a commutative additive monoid, then this is `{x : M | ∃ y : M, x + y ∈ s}`.
+-/]
 def saturation {M : Type*} [MulOneClass M] (s : Submonoid M) : SaturatedSubmonoid M :=
   sInf {t | s ≤ t.toSubmonoid}
 

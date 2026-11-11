@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Euclidean.Sphere.PolePolar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tangency for spheres.
 
@@ -16,34 +19,23 @@ This file defines notions of spheres being tangent to affine subspaces and other
 
 * `EuclideanGeometry.Sphere.IsTangentAt`: the property of an affine subspace being tangent to a
   sphere at a given point.
-
 * `EuclideanGeometry.Sphere.IsTangent`: the property of an affine subspace being tangent to a
   sphere at some point.
-
 * `EuclideanGeometry.Sphere.tangentSet`: the set of all maximal tangent spaces to a given sphere.
-
 * `EuclideanGeometry.Sphere.tangentsFrom`: the set of all maximal tangent spaces to a given
   sphere and containing a given point.
-
 * `EuclideanGeometry.Sphere.commonTangents`: the set of all maximal common tangent spaces to two
   given spheres.
-
 * `EuclideanGeometry.Sphere.commonIntTangents`: the set of all maximal common internal tangent
   spaces to two given spheres.
-
 * `EuclideanGeometry.Sphere.commonExtTangents`: the set of all maximal common external tangent
   spaces to two given spheres.
-
 * `EuclideanGeometry.Sphere.IsExtTangentAt`: the property of two spheres being externally tangent
   at a given point.
-
 * `EuclideanGeometry.Sphere.IsIntTangentAt`: the property of two spheres being internally tangent
   at a given point.
-
 * `EuclideanGeometry.Sphere.IsExtTangent`: the property of two spheres being externally tangent.
-
 * `EuclideanGeometry.Sphere.IsIntTangent`: the property of two spheres being internally tangent.
-
 -/
 
 @[expose] public section

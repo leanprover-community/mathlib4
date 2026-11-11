@@ -15,6 +15,9 @@ public import Mathlib.Basic.Real.Pointwise
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
 public import Mathlib.Order.Lattice.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on nonnegative real numbers
 
@@ -139,7 +142,7 @@ open Real
 section Sub
 
 /-!
-### Lemmas about subtraction
+# Lemmas about subtraction
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
 typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file

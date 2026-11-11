@@ -15,6 +15,9 @@ import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.Logic.Equiv.List
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck Axioms
 
@@ -23,12 +26,12 @@ basic facts about them.
 
 ## Definitions
 
-- `AB4` -- coproducts are exact (this is formulated in terms of `HasExactColimitsOfShape`).
-- `AB5` -- filtered colimits are exact (this is formulated in terms of `HasExactColimitsOfShape`).
+* `AB4` -- coproducts are exact (this is formulated in terms of `HasExactColimitsOfShape`).
+* `AB5` -- filtered colimits are exact (this is formulated in terms of `HasExactColimitsOfShape`).
 
 ## Theorems
 
-- The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
+* The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
 
 ## Remarks
 
@@ -43,8 +46,8 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 `AB5`.
 
 ## References
-* [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
+* [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 -/
 
 public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # General-Valued Constraint Satisfaction Problems
 
@@ -14,6 +17,7 @@ General-Valued CSP is a very broad class of problems in discrete optimization.
 General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finite-Valued CSP.
 
 ## Main definitions
+
 * `ValuedCSP`: A VCSP template; fixes a domain, a codomain, and allowed cost functions.
 * `ValuedCSP.Term`: One summand in a VCSP instance; calls a concrete function from given template.
 * `ValuedCSP.Term.evalSolution`: An evaluation of the VCSP term for given solution.
@@ -26,9 +30,9 @@ General-Valued CSP subsumes Min-Cost-Hom (including 3-SAT for example) and Finit
   symmetric fractional polymorphism for given VCSP template?
 
 ## References
-* [D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
-  *An Algebraic Theory of Complexity for Discrete Optimisation*][cohen2012]
 
+* ‍\[D. A. Cohen, M. C. Cooper, P. Creed, P. G. Jeavons, S. Živný,
+  _An Algebraic Theory of Complexity for Discrete Optimisation_\]\[cohen2012\]
 -/
 
 @[expose] public section

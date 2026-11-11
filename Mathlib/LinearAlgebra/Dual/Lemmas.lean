@@ -15,25 +15,31 @@ public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dual vector spaces
 
-The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to R$.
+The dual space of an $`R`-module $`M` is the $`R`-module of $`R`-linear maps $`M \to R`.
 This file contains basic results on dual vector spaces.
 
 ## Main definitions
 
 * Submodules:
+
   * `Submodule.dualRestrict_comap W'` is the dual annihilator of `W' : Submodule R (Dual R M)`,
     pulled back along `Module.Dual.eval R M`.
   * `Submodule.dualCopairing W` is the canonical pairing between `W.dualAnnihilator` and `M ⧸ W`.
     It is nondegenerate for vector spaces (`subspace.dualCopairing_nondegenerate`).
 * Vector spaces:
+
   * `Subspace.dualLift W` is an arbitrary section (using choice) of `Submodule.dualRestrict W`.
 
 ## Main results
 
 * Annihilators:
+
   * `LinearMap.ker_dual_map_eq_dualAnnihilator_range` says that
     `f.dual_map.ker = f.range.dualAnnihilator`
   * `LinearMap.range_dual_map_eq_dualAnnihilator_ker_of_subtype_range_surjective` says that
@@ -45,6 +51,7 @@ This file contains basic results on dual vector spaces.
     `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
     It is a perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
+
   * `Subspace.dualAnnihilator_dualCoannihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
   * `Subspace.dualAnnihilator_gci` says that `module.dualAnnihilator_gc R M` is an
@@ -56,6 +63,7 @@ This file contains basic results on dual vector spaces.
   * `Subspace.is_compl_dualAnnihilator` says that the dual annihilator carries complementary
     subspaces to complementary subspaces.
 * Finite-dimensional vector spaces:
+
   * `Subspace.orderIsoFiniteCodimDim` is the antitone order isomorphism between
     finite-codimensional subspaces of `V` and finite-dimensional subspaces of `Dual K V`.
   * `Subspace.orderIsoFiniteDimensional` is the antitone order isomorphism between
@@ -394,9 +402,11 @@ theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 
     exact ⟨L i, Submodule.subset_span ⟨i, rfl⟩, (apply_evalEquiv_symm_apply 𝕜 E _ φ).symm⟩
   simp only [apply_evalEquiv_symm_apply, φs, φne] at this
 
-/-- Given some linear forms $L_1, ..., L_n, K$ over a vector space $E$, if
-$\bigcap_{i=1}^n \mathrm{ker}(L_i) \subseteq \mathrm{ker}(K)$, then $K$ is in the space generated
-by $L_1, ..., L_n$. -/
+/--
+Given some linear forms $`L_1, ..., L_n, K` over a vector space $`E`, if
+$`\bigcap_{i=1}^n \mathrm{ker}(L_i) \subseteq \mathrm{ker}(K)`, then $`K` is in the space generated
+by $`L_1, ..., L_n`.
+-/
 theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
     (h : ⨅ i, ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
   have _ := Fintype.ofFinite ι
@@ -595,10 +605,12 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R 
 
 namespace Submodule
 
-/-- Given a submodule, corestrict to the pairing on `M ⧸ W` by
+/--
+Given a submodule, corestrict to the pairing on `M ⧸ W` by
 simultaneously restricting to `W.dualAnnihilator`.
 
-See `Subspace.dualCopairing_nondegenerate`. -/
+See `Subspace.dualCopairing_nondegenerate`.
+-/
 def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →ₗ[R] R :=
   LinearMap.flip <| W.liftQ W.dualAnnihilator.subtype.flip (by
     intro w hw
@@ -618,12 +630,14 @@ theorem dualCopairing_apply {W : Submodule R M} (φ : W.dualAnnihilator) (x : M)
     W.dualCopairing φ (Quotient.mk x) = φ x :=
   rfl
 
-/-- Given a submodule, restrict to the pairing on `W` by
+/--
+Given a submodule, restrict to the pairing on `W` by
 simultaneously corestricting to `Module.Dual R M ⧸ W.dualAnnihilator`.
 This is `Submodule.dualRestrict` factored through the quotient by its kernel (which
 is `W.dualAnnihilator` by definition).
 
-See `Subspace.dualPairing_nondegenerate`. -/
+See `Subspace.dualPairing_nondegenerate`.
+-/
 def dualPairing (W : Submodule R M) : Module.Dual R M ⧸ W.dualAnnihilator →ₗ[R] W →ₗ[R] R :=
   W.dualAnnihilator.liftQ W.dualRestrict le_rfl
 
@@ -632,7 +646,9 @@ theorem dualPairing_apply {W : Submodule R M} (φ : Module.Dual R M) (x : W) :
     W.dualPairing (Quotient.mk φ) x = φ x :=
   rfl
 
-/-- That $\operatorname{im}(q^* : (V/W)^* \to V^*) = \operatorname{ann}(W)$. -/
+/--
+That $`\operatorname{im}(q^* : (V/W)^* \to V^*) = \operatorname{ann}(W)`.
+-/
 theorem range_dualMap_mkQ_eq (W : Submodule R M) :
     LinearMap.range W.mkQ.dualMap = W.dualAnnihilator := by
   ext φ
@@ -644,11 +660,13 @@ theorem range_dualMap_mkQ_eq (W : Submodule R M) :
   · intro hφ
     exists W.dualCopairing ⟨φ, hφ⟩
 
-/-- Equivalence $(M/W)^* \cong \operatorname{ann}(W)$. That is, there is a one-to-one
+/--
+Equivalence $`(M/W)^* \cong \operatorname{ann}(W)`. That is, there is a one-to-one
 correspondence between the dual of `M ⧸ W` and those elements of the dual of `M` that
 vanish on `W`.
 
-The inverse of this is `Submodule.dualCopairing`. -/
+The inverse of this is `Submodule.dualCopairing`.
+-/
 def dualQuotEquivDualAnnihilator (W : Submodule R M) :
     Module.Dual R (M ⧸ W) ≃ₗ[R] W.dualAnnihilator :=
   LinearEquiv.ofLinearMap

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentations on subrings
 
@@ -19,7 +22,6 @@ such that `S` is isomorphic to `R ⊗[R₀] S₀`.
 
 If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In this case,
 this API can be used to remove Noetherian hypothesis in certain cases.
-
 -/
 
 @[expose] public section

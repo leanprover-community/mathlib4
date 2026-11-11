@@ -8,7 +8,12 @@ module
 public import Mathlib.Order.Filter.Ultrafilter.Basic
 public import Mathlib.Topology.Continuous
 
-/-! # Characterization of basic topological properties in terms of ultrafilters -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Characterization of basic topological properties in terms of ultrafilters
+-/
 
 public section
 

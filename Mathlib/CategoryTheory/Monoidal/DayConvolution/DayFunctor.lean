@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.DayConvolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Day functors
 
@@ -18,9 +21,10 @@ the `MonoidalCategory` instance on `C ⥤ V` is the "pointwise" one,
 where the tensor product of `F` and `G` is the functor `x ↦ F.obj x ⊗ G.obj x`.
 
 ## TODOs
-- Given a `LawfulDayConvolutionMonoidalCategoryStruct C V D`, show that
+
+* Given a `LawfulDayConvolutionMonoidalCategoryStruct C V D`, show that
   ι induces a monoidal functor `D ⥤ (C ⊛⥤ V)`.
-- Specialize to the case `V := Type _`, and prove a universal property stating
+* Specialize to the case `V := Type _`, and prove a universal property stating
   that for every monoidal category `W` with suitable colimits,
   colimit-preserving monoidal functors `(Cᵒᵖ ⊛⥤ Type u) ⥤ W` are equivalent to
   monoidal functors `C ⥤ W`. Show that the Yoneda embedding is monoidal.

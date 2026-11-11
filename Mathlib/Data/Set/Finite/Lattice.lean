@@ -11,6 +11,9 @@ public import Mathlib.Data.Set.Lattice.Image
 
 import Mathlib.Data.Fintype.Option
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness of unions and intersections
 
@@ -36,7 +39,8 @@ variable {α : Type u} {β : Type v} {ι : Sort w}
 
 namespace Set
 
-/-! ### Fintype instances
+/-!
+# Fintype instances
 
 Every instance here should have a corresponding `Set.Finite` constructor in the next section.
 -/
@@ -75,7 +79,8 @@ end FintypeInstances
 
 end Set
 
-/-! ### Finite instances
+/-!
+# Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
 in `Data.Set.Finite`. While every `Fintype` instance gives a `Finite` instance, those
@@ -124,7 +129,8 @@ end Finite.Set
 
 namespace Set
 
-/-! ### Constructors for `Set.Finite`
+/-!
+# Constructors for `Set.Finite`
 
 Every constructor here should have a corresponding `Fintype` instance in the previous section
 (or in the `Fintype` module).
@@ -235,7 +241,9 @@ lemma Finite.of_finite_fibers (f : α → β) {s : Set α} (himage : (f '' s).Fi
     (hfibers : ∀ x ∈ f '' s, (s ∩ f ⁻¹' {x}).Finite) : s.Finite :=
   (himage.biUnion hfibers).subset fun x ↦ by aesop
 
-/-! ### Properties -/
+/-!
+# Properties
+-/
 
 theorem finite_subset_iUnion {s : Set α} (hs : s.Finite) {ι} {t : ι → Set α} (h : s ⊆ ⋃ i, t i) :
     ∃ I : Set ι, I.Finite ∧ s ⊆ ⋃ i ∈ I, t i := by
@@ -262,7 +270,9 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
     · rintro ⟨i, -, H⟩
       exact H⟩
 
-/-! ### Infinite sets -/
+/-!
+# Infinite sets
+-/
 
 variable {s t : Set α}
 
@@ -282,7 +292,9 @@ theorem Infinite.sUnion {s : Set (Set α)} (hs : s.Infinite) : (⋃₀ s).Infini
   have _ := hs.to_subtype
   exact infinite_iUnion Subtype.coe_injective
 
-/-! ### Order properties -/
+/-!
+# Order properties
+-/
 
 @[to_dual]
 lemma map_finite_biSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 public import Mathlib.CategoryTheory.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fundamental groupoid of punit
 

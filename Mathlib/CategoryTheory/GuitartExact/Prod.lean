@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.GuitartExact.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # External products of Guitart exact squares
 
 In this file, we show that the external product of two Guitart exact
 squares is a Guitart exact square.
-
 -/
 
 @[expose] public section

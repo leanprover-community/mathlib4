@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of ultrametric (nonarchimedean) uniform spaces
 
@@ -23,7 +26,6 @@ public import Mathlib.Topology.UniformSpace.Ultra.Basic
 This file can be split to separate imports to have the `Prod` and `Pi` instances separately,
 but would be somewhat unnatural since they are closely related.
 The `Prod` instance only requires `Mathlib/Topology/UniformSpace/Basic.lean`.
-
 -/
 
 public section

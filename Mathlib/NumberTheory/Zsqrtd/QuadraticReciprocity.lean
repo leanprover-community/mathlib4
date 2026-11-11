@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
 public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about the Gaussian integers relying on quadratic reciprocity.
 
@@ -15,7 +18,6 @@ public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 
 `prime_iff_mod_four_eq_three_of_nat_prime`
 A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
-
 -/
 
 public section

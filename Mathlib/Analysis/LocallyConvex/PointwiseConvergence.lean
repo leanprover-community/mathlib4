@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 
 import Mathlib.Analysis.LocallyConvex.StrongTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topology of pointwise convergence is locally convex
 
@@ -20,7 +23,6 @@ that it is locally convex in the topological sense
   `x : E`.
 * `PointwiseConvergenceCLM.withSeminorm`: the topology is induced by the seminorms.
 * `PointwiseConvergenceCLM.instLocallyConvexSpace`: `E →SLₚₜ[σ] F` is locally convex.
-
 -/
 
 @[expose] public section
@@ -51,9 +53,11 @@ protected abbrev seminormFamily : SeminormFamily 𝕜₂ (E →SLₚₜ[σ] F) E
   PointwiseConvergenceCLM.seminorm
 
 variable (σ E F) in
-/-- The coercion `E →SLₚₜ[σ] F` to `E → F` as a linear map.
+/--
+The coercion `E →SLₚₜ[σ] F` to `E → F` as a linear map.
 
-The topology on `E →SLₚₜ[σ] F` is induced by this map. -/
+The topology on `E →SLₚₜ[σ] F` is induced by this map.
+-/
 def inducingFn : (E →SLₚₜ[σ] F) →ₗ[𝕜₂] (E → F) where
   toFun f := f
   map_add' _ _ := rfl
@@ -93,9 +97,11 @@ variable [AddCommGroup D] [TopologicalSpace D] [Module 𝕜₃ D]
 open NNReal ContinuousLinearMap
 
 variable (F G) in
-/-- Define a continuous linear map between `E →SLₚₜ[σ] F` and `D →SLₚₜ[τ] G`.
+/--
+Define a continuous linear map between `E →SLₚₜ[σ] F` and `D →SLₚₜ[τ] G`.
 
-Use `PointwiseConvergenceCLM.precomp` for the special case of the adjoint operator. -/
+Use `PointwiseConvergenceCLM.precomp` for the special case of the adjoint operator.
+-/
 def mkCLM (A : (E →SL[σ] F) →ₗ[𝕜₂] D →SL[τ] G) (hbound : ∀ (f : D), ∃ (s : Finset E) (C : ℝ≥0),
   ∀ (B : E →SL[σ] F), ∃ (g : E) (_hb : g ∈ s), ‖(A B) f‖ ≤ C • ‖B g‖) :
     (E →SLₚₜ[σ] F) →L[𝕜₂] D →SLₚₜ[τ] G where

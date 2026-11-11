@@ -15,21 +15,24 @@ public import Mathlib.Topology.LocallyConstant.Basic
 
 import Mathlib.RingTheory.TensorProduct.Free
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The free locus of a module
 
 ## Main definitions and results
 
 Let `M` be a finitely presented `R`-module.
-- `Module.freeLocus`: The set of points `x` in `Spec R` such that `Mₓ` is free over `Rₓ`.
-- `Module.freeLocus_eq_univ_iff`:
-  The free locus is the whole `Spec R` if and only if `M` is projective.
-- `Module.basicOpen_subset_freeLocus_iff`: `D(f)` is contained in the free locus if and only if
-  `M_f` is projective over `R_f`.
-- `Module.rankAtStalk`: The function `Spec R → ℕ` sending `x` to `rank_{Rₓ} Mₓ`.
-- `Module.isLocallyConstant_rankAtStalk`:
-  If `M` is flat over `R`, then `rankAtStalk` is locally constant.
 
+* `Module.freeLocus`: The set of points `x` in `Spec R` such that `Mₓ` is free over `Rₓ`.
+* `Module.freeLocus_eq_univ_iff`:
+  The free locus is the whole `Spec R` if and only if `M` is projective.
+* `Module.basicOpen_subset_freeLocus_iff`: `D(f)` is contained in the free locus if and only if
+  `M_f` is projective over `R_f`.
+* `Module.rankAtStalk`: The function `Spec R → ℕ` sending `x` to `rank_{Rₓ} Mₓ`.
+* `Module.isLocallyConstant_rankAtStalk`:
+  If `M` is flat over `R`, then `rankAtStalk` is locally constant.
 -/
 
 @[expose] public section

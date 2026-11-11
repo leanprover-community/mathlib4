@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Analysis.Complex.Exponential
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trigonometric and hyperbolic trigonometric functions
 
 This file contains the definitions of the sine, cosine, tangent,
 hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
-
 -/
 
 @[expose] public section

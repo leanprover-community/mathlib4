@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms from equations between objects.
 
@@ -17,6 +20,7 @@ you're in for some trouble, and if there is another way to approach the problem 
 rely on this equality, it may be worth pursuing.
 
 You have two options:
+
 1. Use the equality `h` as one normally would in Lean (e.g. using `rw` and `subst`).
    This may immediately cause difficulties, because in category theory everything is dependently
    typed, and equations between objects quickly lead to nasty goals with `eq.rec`.
@@ -35,7 +39,8 @@ namespace CategoryTheory
 
 open Opposite
 
-/-- An equality `X = Y` gives us a morphism `X ⟶ Y`.
+/--
+An equality `X = Y` gives us a morphism `X ⟶ Y`.
 
 It is typically better to use this, rather than rewriting by the equality then using `𝟙 _`
 which usually leads to dependent type theory hell.
@@ -169,7 +174,8 @@ theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
   cases p
   simp
 
-/-- If we (perhaps unintentionally) perform equational rewriting on
+/--
+If we (perhaps unintentionally) perform equational rewriting on
 the source object of a morphism,
 we can replace the resulting `_.mpr f` term by a composition with an `eqToHom`.
 
@@ -189,7 +195,8 @@ theorem congrArg_cast_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
   cases q
   simp
 
-/-- If we (perhaps unintentionally) perform equational rewriting on
+/--
+If we (perhaps unintentionally) perform equational rewriting on
 the target object of a morphism,
 we can replace the resulting `_.mpr f` term by a composition with an `eqToHom`.
 
@@ -202,7 +209,8 @@ theorem congrArg_mpr_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
   cases q
   simp
 
-/-- An equality `X = Y` gives us an isomorphism `X ≅ Y`.
+/--
+An equality `X = Y` gives us an isomorphism `X ≅ Y`.
 
 It is typically better to use this, rather than rewriting by the equality then using `Iso.refl _`
 which usually leads to dependent type theory hell.
@@ -325,7 +333,8 @@ end HEq
 
 end Functor
 
-/-- This is not always a good idea as a `@[simp]` lemma,
+/--
+This is not always a good idea as a `@[simp]` lemma,
 as we lose the ability to use results that interact with `F`,
 e.g. the naturality of a natural transformation.
 

@@ -9,12 +9,16 @@ public import Mathlib.Data.Nat.Choose.Sum
 
 import Mathlib.Algebra.Module.NatInt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonarchimedean functions
 
 A function `f : α → R` is nonarchimedean if it satisfies the strong triangle inequality
 `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. This file proves basic properties of nonarchimedean
-functions. -/
+functions.
+-/
 
 public section
 

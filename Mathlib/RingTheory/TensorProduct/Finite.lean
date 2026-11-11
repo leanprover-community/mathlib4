@@ -11,12 +11,14 @@ public import Mathlib.RingTheory.Finiteness.Bilinear
 public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness of the tensor product of (sub)modules
 
 In this file we show that the supremum of two subalgebras that are finitely generated as modules,
 is again finitely generated.
-
 -/
 
 public section

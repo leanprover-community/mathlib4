@@ -11,6 +11,9 @@ public import Mathlib.Order.Setoid.Basic
 
 import Mathlib.Order.GaloisConnection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruence relations
 
@@ -202,9 +205,11 @@ def toQuotient : M → c.Quotient :=
 
 variable (c)
 
-/-- Coercion from a type with a multiplication to its quotient by a congruence relation.
+/--
+Coercion from a type with a multiplication to its quotient by a congruence relation.
 
-See Note [use has_coe_t]. -/
+See Note \[use has\_coe\_t\].
+-/
 @[to_additive /-- Coercion from a type with an addition to its quotient by an additive congruence
 relation -/]
 instance (priority := 10) : CoeTC M c.Quotient :=

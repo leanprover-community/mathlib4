@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Polynomial.Basic
 
 import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining elements to form subalgebras
 
@@ -24,7 +27,6 @@ This file develops the basic theory of finitely-generated subalgebras.
 ## Tags
 
 adjoin, algebra, finitely-generated algebra
-
 -/
 
 @[expose] public section

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localized Module
 

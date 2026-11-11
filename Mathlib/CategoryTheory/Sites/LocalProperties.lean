@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 public import Mathlib.CategoryTheory.Sites.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local properties of sheaves
 
@@ -15,7 +18,7 @@ In this file we study properties of sheaves that can be checked on a covering fa
 
 ## Main results
 
-- `CategoryTheory.Sheaf.isIso_iff_of_coversTop`: A morphism of sheaves is an isomorphism if it
+* `CategoryTheory.Sheaf.isIso_iff_of_coversTop`: A morphism of sheaves is an isomorphism if it
   is one on a cover.
 -/
 public section

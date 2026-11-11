@@ -13,6 +13,9 @@ public import Mathlib.CategoryTheory.Sites.Adjunction
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Light condensed `R`-modules
 
@@ -21,9 +24,8 @@ This file defines light condensed modules over a ring `R`.
 ## Main results
 
 * Light condensed `R`-modules form an abelian category.
-
 * The forgetful functor from light condensed `R`-modules to light condensed sets has a left
-  adjoint, sending a light condensed set to the corresponding *free* light condensed `R`-module.
+  adjoint, sending a light condensed set to the corresponding _free_ light condensed `R`-module.
 -/
 
 @[expose] public section
@@ -61,7 +63,7 @@ lemma LightCondensed.forget_map_hom_app_hom_apply
   rfl
 
 /--
-The left adjoint to the forgetful functor. The *free light condensed `R`-module* on a light
+The left adjoint to the forgetful functor. The _free light condensed `R`-module_ on a light
 condensed set.
 -/
 noncomputable

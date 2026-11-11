@@ -9,10 +9,13 @@ public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Borel Growth Lemma
 
-This file proves Émile Borel's **Growth Lemma**: if `S : ℝ → ℝ` is monotone on `Set.Ici a` and
+This file proves Émile Borel's *Growth Lemma*: if `S : ℝ → ℝ` is monotone on `Set.Ici a` and
 satisfies `0 ≤ S a`, then
 
 `∀ᶠ r in volume.cofinite ⊓ atTop, S (r + (S r)⁻¹) ≤ 2 * S r`.
@@ -26,9 +29,8 @@ regularity assumption on `S`.
 
 ## References
 
-- Lemma 2.4 in [Hayman, *Meromorphic functions*][MR164038].
-
-- Lemma 3.7 in Section VI.3 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677]
+* Lemma 2.4 in \[Hayman, _Meromorphic functions_\]\[MR164038\].
+* Lemma 3.7 in Section VI.3 of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\]
 -/
 
 public section

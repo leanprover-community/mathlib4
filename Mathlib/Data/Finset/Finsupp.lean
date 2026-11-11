@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 import Mathlib.Data.Fintype.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely supported product of finsets
 

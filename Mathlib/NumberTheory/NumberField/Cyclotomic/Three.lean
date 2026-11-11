@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 import Mathlib.RingTheory.Fintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Third Cyclotomic Field
 
@@ -19,14 +22,14 @@ root of unity in `K`, `η` is the element in the units of the ring of integers c
 and `λ = η - 1`.
 
 ## Main results
+
 * `IsCyclotomicExtension.Rat.Three.Units.mem`: Given a unit `u : (𝓞 K)ˣ`, we have that
   `u ∈ {1, -1, η, -η, η^2, -η^2}`.
-
 * `IsCyclotomicExtension.Rat.Three.eq_one_or_neg_one_of_unit_of_congruent`: Given a unit
   `u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
 
-This is a special case of the so-called *Kummer's lemma* (see for example [washington_cyclotomic],
-Theorem 5.36).
+This is a special case of the so-called _Kummer's lemma_ (see for example
+‍\[washington\_cyclotomic\], Theorem 5.36).
 -/
 
 public section
@@ -94,9 +97,11 @@ lemma eta_sq : (η ^ 2 : 𝓞 K) = -η - 1 := by
   ext; simpa using hζ.isRoot_cyclotomic (by decide)
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- If a unit `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
+/--
+If a unit `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
 
-This is a special case of the so-called *Kummer's lemma*. -/
+This is a special case of the so-called _Kummer's lemma_.
+-/
 theorem eq_one_or_neg_one_of_unit_of_congruent
     [NumberField K] [IsCyclotomicExtension {3} ℚ K] (hcong : ∃ n : ℤ, λ ^ 2 ∣ (u - n : 𝓞 K)) :
     u = 1 ∨ u = -1 := by

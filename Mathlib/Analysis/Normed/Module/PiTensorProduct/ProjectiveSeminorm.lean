@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective seminorm on the tensor of a finite family of normed spaces.
 
@@ -45,12 +48,12 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
 
 ## TODO
+
 * If the base field is `ℝ` or `ℂ` (or more generally if the injection of `Eᵢ` into its bidual is
   an isometry for every `i`), then we have `projectiveSeminorm ⨂ₜ[𝕜] i, mᵢ = Π i, ‖mᵢ‖`.
 * If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
   `⨂[𝕜] i, Eᵢ` is a norm.
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
-
 -/
 
 @[expose] public section

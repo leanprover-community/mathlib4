@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the module `α →₀ M`
 
@@ -74,9 +77,11 @@ end uniqueLinearEquiv
 variable {α : Type*} {M : Type*} {R : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- Forget that a function is finitely supported.
+/--
+Forget that a function is finitely supported.
 
-This is the linear version of `Finsupp.toFun`. -/
+This is the linear version of `Finsupp.toFun`.
+-/
 def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   toFun := (⇑)
   map_add' x y := by

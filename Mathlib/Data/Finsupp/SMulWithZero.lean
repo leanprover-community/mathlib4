@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar multiplication on `Finsupp`
 
@@ -49,7 +52,7 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀
 
 /-!
 Throughout this section, some `Monoid` and `Semiring` arguments are specified with `{}` instead of
-`[]`. See note [implicit instance arguments].
+`[]`. See note \[implicit instance arguments\].
 -/
 
 @[simp, norm_cast]

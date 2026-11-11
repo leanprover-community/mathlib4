@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.Order.Hom.PowersetCard
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exterior Algebras
 
@@ -34,6 +37,7 @@ The canonical linear map `M → ExteriorAlgebra R M` is denoted `ExteriorAlgebra
 
 The main theorems proved ensure that `ExteriorAlgebra R M` satisfies the universal property
 of the exterior algebra.
+
 1. `ι_comp_lift` is the fact that the composition of `ι R` with `lift R f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift R f cond` with respect to 1.
 
@@ -131,7 +135,9 @@ theorem lift_comp_ι (g : ExteriorAlgebra R M →ₐ[R] A) :
     lift R ⟨g.toLinearMap.comp (ι R), comp_ι_sq_zero _⟩ = g :=
   CliffordAlgebra.lift_comp_ι g
 
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 @[ext]
 theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
     (h : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g :=
@@ -196,10 +202,12 @@ theorem toTrivSqZeroExt_ι [Module Rᵐᵒᵖ M] [IsCentralScalar R M] (x : M) :
     toTrivSqZeroExt (ι R x) = TrivSqZeroExt.inr x :=
   lift_ι_apply _ _ _ _
 
-/-- The left-inverse of `ι`.
+/--
+The left-inverse of `ι`.
 
 As an implementation detail, we implement this using `TrivSqZeroExt` which has a suitable
-algebra structure. -/
+algebra structure.
+-/
 def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -264,10 +272,12 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
 end
 
 variable (R) in
-/-- The product of `n` terms of the form `ι R m` is an alternating map.
+/--
+The product of `n` terms of the form `ι R m` is an alternating map.
 
 This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
-`TensorAlgebra.tprod`. -/
+`TensorAlgebra.tprod`.
+-/
 def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with

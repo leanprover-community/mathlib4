@@ -11,14 +11,17 @@ public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.Maps.Proper.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lipschitz continuous functions
 
-A map `f : α → β` between two (extended) metric spaces is called *Lipschitz continuous*
+A map `f : α → β` between two (extended) metric spaces is called _Lipschitz continuous_
 with constant `K ≥ 0` if for all `x, y` we have `edist (f x) (f y) ≤ K * edist x y`.
 For a metric space, the latter inequality is equivalent to `dist (f x) (f y) ≤ K * dist x y`.
 There is also a version asserting this inequality only for `x` and `y` in some set `s`.
-Finally, `f : α → β` is called *locally Lipschitz continuous* if each `x : α` has a neighbourhood
+Finally, `f : α → β` is called _locally Lipschitz continuous_ if each `x : α` has a neighbourhood
 on which `f` is Lipschitz continuous (with some constant).
 
 In this file we specialize various facts about Lipschitz continuous maps

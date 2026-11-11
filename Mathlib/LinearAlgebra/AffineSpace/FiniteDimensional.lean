@@ -15,6 +15,9 @@ import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.Finiteness.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-dimensional subspaces of affine spaces.
 
@@ -25,7 +28,6 @@ subspaces of affine spaces.
 
 * `Collinear` defines collinear sets of points as those that span a
   subspace of dimension at most 1.
-
 -/
 
 @[expose] public section

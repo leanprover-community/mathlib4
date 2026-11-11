@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.CategoryTheory.Abelian.Ext
 public import Mathlib.RepresentationTheory.Rep.Iso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The standard and bar resolutions of `k` as a trivial `k`-linear `G`-representation
 
@@ -59,8 +62,8 @@ computing group (co)homology.
 * `Rep.standardResolution`
 
 TODO: There's bad DefEq abuses in `Action` and the way we do `Rep.standardComplex` should be
-  unified with continuous cohomology, therefore we should remove the use of `Action` in `Rep` which
-  would remove all the unification hints in this file.
+unified with continuous cohomology, therefore we should remove the use of `Action` in `Rep` which
+would remove all the unification hints in this file.
 -/
 
 @[expose] public noncomputable section

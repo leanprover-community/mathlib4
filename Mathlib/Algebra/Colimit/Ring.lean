@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Direct limit of rings, and fields
 
@@ -25,7 +28,6 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 ## Main definition
 
 * `Ring.DirectLimit G f`
-
 -/
 
 @[expose] public section
@@ -333,8 +335,10 @@ protected theorem mul_inv_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : p *
 protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv G f p * p = 1 := by
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
 
-/-- Noncomputable field structure on the direct limit of fields.
-See note [reducible non-instances]. -/
+/--
+Noncomputable field structure on the direct limit of fields.
+See note \[reducible non-instances\].
+-/
 protected noncomputable abbrev field [DirectedSystem G (f' · · ·)] :
     Field (Ring.DirectLimit G (f' · · ·)) where
   -- This used to include the parent CommRing and Nontrivial instances,

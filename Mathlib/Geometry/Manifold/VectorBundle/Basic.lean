@@ -9,7 +9,11 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 public import Mathlib.Topology.VectorBundle.Constructions
 
-/-! # `C^n` vector bundles
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `C^n` vector bundles
 
 This file defines `C^n` vector bundles over a manifold.
 
@@ -32,29 +36,22 @@ fields, etc.
 
 * `FiberBundle.chartedSpace`: A fiber bundle `E` over a base `B` with model fiber `F` is naturally
   a charted space modelled on `B × F`.
-
 * `FiberBundle.chartedSpace'`: Let `B` be a charted space modelled on `HB`.  Then a fiber bundle
   `E` over a base `B` with model fiber `F` is naturally a charted space modelled on `HB.prod F`.
-
 * `ContMDiffVectorBundle`: Mixin class stating that a (topological) `VectorBundle` is `C^n`, in the
   sense of having `C^n` transition functions, where the smoothness index `n`
   belongs to `ℕ∞ω` (notation for `WithTop ℕ∞` in the `ContDiff` scope).
-
 * `ContMDiffFiberwiseLinear.hasGroupoid`: For a `C^n` vector bundle `E` over `B` with fiber
   modelled on `F`, the change-of-co-ordinates between two trivializations `e`, `e'` for `E`,
   considered as charts to `B × F`, is `C^n` and fiberwise linear, in the sense of belonging to the
   structure groupoid `contMDiffFiberwiseLinear`.
-
 * `Bundle.TotalSpace.isManifold`: A `C^n` vector bundle is naturally a `C^n` manifold.
-
 * `VectorBundleCore.instContMDiffVectorBundle`: If a (topological) `VectorBundleCore` is `C^n`,
   in the sense of having `C^n` transition functions (cf. `VectorBundleCore.IsContMDiff`),
   then the vector bundle constructed from it is a `C^n` vector bundle.
-
 * `VectorPrebundle.contMDiffVectorBundle`: If a `VectorPrebundle` is `C^n`,
   in the sense of having `C^n` transition functions (cf. `VectorPrebundle.IsContMDiff`),
   then the vector bundle constructed from it is a `C^n` vector bundle.
-
 * `Bundle.Prod.contMDiffVectorBundle`: The direct sum of two `C^n` vector bundles is a `C^n`
   vector bundle.
 -/
@@ -69,7 +66,9 @@ open scoped Manifold Topology ContDiff
 
 variable {n : ℕ∞ω} {𝕜 B F M : Type*} {E : B → Type*}
 
-/-! ### Charted space structure on a fiber bundle -/
+/-!
+# Charted space structure on a fiber bundle
+-/
 
 
 section
@@ -157,7 +156,8 @@ theorem FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F 
       (trivializationAt F E x.proj).toOpenPartialHomeomorph.symm y = y :=
   writtenInExtChartAt_chartAt_symm_comp _ hy
 
-/-! ### Regularity of maps in/out fiber bundles
+/-!
+# Regularity of maps in/out fiber bundles
 
 Note: For these results we don't need that the bundle is a `C^n` vector bundle, or even a vector
 bundle at all, just that it is a fiber bundle over a charted base space.
@@ -293,7 +293,9 @@ end Bundle
 
 end
 
-/-! ### `C^n` vector bundles -/
+/-!
+# `C^n` vector bundles
+-/
 
 
 variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
@@ -591,7 +593,9 @@ end Bundle.Trivialization
 
 end
 
-/-! ### Core construction for `C^n` vector bundles -/
+/-!
+# Core construction for `C^n` vector bundles
+-/
 
 namespace VectorBundleCore
 
@@ -620,7 +624,9 @@ instance instContMDiffVectorBundle : ContMDiffVectorBundle n F Z.Fiber IB where
 
 end VectorBundleCore
 
-/-! ### The trivial `C^n` vector bundle -/
+/-!
+# The trivial `C^n` vector bundle
+-/
 
 /-- A trivial vector bundle over a manifold is a `C^n` vector bundle. -/
 instance Bundle.Trivial.contMDiffVectorBundle :
@@ -632,7 +638,9 @@ instance Bundle.Trivial.contMDiffVectorBundle :
     simp_rw [Bundle.Trivial.trivialization.coordChangeL]
     exact contMDiff_const.contMDiffOn
 
-/-! ### Direct sums of `C^n` vector bundles -/
+/-!
+# Direct sums of `C^n` vector bundles
+-/
 
 
 section Prod
@@ -666,7 +674,9 @@ end Prod
 
 end WithTopology
 
-/-! ### Prebundle construction for `C^n` vector bundles -/
+/-!
+# Prebundle construction for `C^n` vector bundles
+-/
 
 namespace VectorPrebundle
 

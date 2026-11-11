@@ -7,10 +7,14 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `Group` and `AddGroup`
 
 This file contains two equivalences:
+
 * `groupAddGroupEquivalence` : the equivalence between `GrpCat` and `AddGrpCat` by sending
   `X : GrpCat` to `Additive X` and `Y : AddGrpCat` to `Multiplicative Y`.
 * `commGroupAddCommGroupEquivalence` : the equivalence between `CommGrpCat` and `AddCommGrpCat`

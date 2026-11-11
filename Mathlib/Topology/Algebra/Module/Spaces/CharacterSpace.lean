@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.ContinuousMap.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Character space of a topological algebra
 
@@ -17,7 +20,6 @@ are also algebra homomorphisms. This space is used in the Gelfand transform, whi
 isomorphism between a commutative C⋆-algebra and continuous functions on the character space
 of the algebra. This, in turn, is used to construct the continuous functional calculus on
 C⋆-algebras.
-
 
 ## Implementation notes
 
@@ -30,7 +32,6 @@ which provides the element as a continuous linear map. (Even though `WeakDual �
 ## Tags
 
 character space, Gelfand transform, functional calculus
-
 -/
 
 @[expose] public section

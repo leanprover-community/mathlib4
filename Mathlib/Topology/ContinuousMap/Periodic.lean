@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Topology.ContinuousMap.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums of translates of a continuous function is a period continuous function.
-
 -/
 
 public section
@@ -22,7 +24,9 @@ section Periodicity
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
-/-! ### Summing translates of a function -/
+/-!
+# Summing translates of a function
+-/
 
 /-- Summing the translates of `f` by `ℤ • p` gives a map which is periodic with period `p`.
 (This is true without any convergence conditions, since if the sum doesn't converge it is taken to

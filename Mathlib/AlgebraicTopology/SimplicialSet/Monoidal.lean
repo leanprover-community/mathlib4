@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structure on simplicial sets
 
@@ -21,7 +24,6 @@ the `SSet` if a category of functors to the category
 of types and that the category of types have chosen
 finite products. As a result, we obtain a monoidal
 category structure on `SSet`.
-
 -/
 
 @[expose] public section

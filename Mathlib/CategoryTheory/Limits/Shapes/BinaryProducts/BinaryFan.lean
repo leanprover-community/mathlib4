@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.WalkingPair
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary fans and cofans
 
@@ -16,6 +19,7 @@ A binary (co)fan is a (co)cone over a walking-pair diagram. These will be used (
 file) to define binary products and coproducts.
 
 ## References
+
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
@@ -361,10 +365,12 @@ section assoc
 
 variable {sXY : BinaryFan X Y} {sYZ : BinaryFan Y Z}
 
-/-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
+/--
+Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
 if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
 
-This is an ingredient of building the associator for a Cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category.
+-/
 def BinaryFan.assoc (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) : BinaryFan X sYZ.pt :=
   mk (s.fst ≫ sXY.fst) (Q.lift (mk (s.fst ≫ sXY.snd) s.snd))
 
@@ -376,10 +382,12 @@ lemma BinaryFan.assoc_fst (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
 lemma BinaryFan.assoc_snd (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
     (assoc Q s).snd = Q.lift (mk (s.fst ≫ sXY.snd) s.snd) := rfl
 
-/-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
+/--
+Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
 if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
 
-This is an ingredient of building the associator for a Cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category.
+-/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
   BinaryFan.mk (IsLimit.lift P s.fst (s.snd ≫ sYZ.fst)) (s.snd ≫ sYZ.snd)
 

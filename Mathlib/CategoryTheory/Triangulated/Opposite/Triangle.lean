@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Triangulated.Basic
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangles in the opposite category of a (pre)triangulated category
 
@@ -21,8 +24,8 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 (without introducing signs).
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
 -/
 
 @[expose] public section

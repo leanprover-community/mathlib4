@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves preserve products
 
@@ -23,11 +26,9 @@ More precisely, given a presheaf `F : Cᵒᵖ ⥤ Type*`, we have:
 * If `F` satisfies the sheaf condition with respect to the empty sieve on the initial object of `C`,
   then `F` preserves terminal objects.
   See `preservesTerminalOfIsSheafForEmpty`.
-
 * If `F` furthermore satisfies the sheaf condition with respect to the presieve consisting of the
   inclusion arrows in a coproduct in `C`, then `F` preserves the corresponding product.
   See `preservesProductOfIsSheafFor`.
-
 * If `F` preserves a product, then it satisfies the sheaf condition with respect to the
   corresponding presieve of arrows.
   See `isSheafFor_of_preservesProduct`.

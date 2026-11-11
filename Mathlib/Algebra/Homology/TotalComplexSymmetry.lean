@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Homology.TotalComplex
 
-/-! # The symmetry of the total complex of a bicomplex
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The symmetry of the total complex of a bicomplex
 
 Let `K : HomologicalComplex₂ C c₁ c₂` be a bicomplex. If we assume both
 `[TotalComplexShape c₁ c₂ c]` and `[TotalComplexShape c₂ c₁ c]`, we may form
@@ -19,7 +23,6 @@ then there is an isomorphism `K.totalFlipIso c : K.flip.total c ≅ K.total c`.
 Moreover, if we also have `[TotalComplexShapeSymmetry c₂ c₁ c]` and that the signs
 are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomorphisms
 `K.totalFlipIso c` and `K.flip.totalFlipIso c` are inverse to each other.
-
 -/
 
 @[expose] public section

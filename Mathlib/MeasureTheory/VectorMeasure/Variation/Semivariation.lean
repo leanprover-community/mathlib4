@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 import Mathlib.Analysis.Normed.Module.HahnBanach
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The semivariation of a vector measure
 
@@ -17,6 +20,7 @@ to `ℝ` through all linear forms of norm at most `1`. The interest of this noti
 reals, any set has nonnegative or nonpositive measure, so that the variation is realized by
 a subset (up to a factor of at most `2`). This property is inherited by the semivariation in
 general: one has the inequalities
+
 ```
 ‖μ s‖ₑ ≤ μ.semivariation s ≤ 2 sup_{t ⊆ s} ‖μ t‖ₑ
 ```
@@ -34,8 +38,7 @@ there exists `C < ∞` such that `‖μ s‖ ≤ C` for all `s`.
 
 ## References
 
-* [J. Diestel and J.J. Uhl, Vector Measures][DiestelUhl1977]
-
+* ‍\[J. Diestel and J.J. Uhl, Vector Measures\]\[DiestelUhl1977\]
 -/
 
 public section

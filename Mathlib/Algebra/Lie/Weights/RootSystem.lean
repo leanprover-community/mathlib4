@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Lie.Weights.Killing
 public import Mathlib.LinearAlgebra.RootSystem.Basic
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The root system associated with a Lie algebra
 
@@ -17,20 +20,16 @@ characteristic 0 form a root system. We achieve this by studying root chains.
 
 ## Main results
 
-- `LieAlgebra.IsKilling.apply_coroot_eq_cast`:
+* `LieAlgebra.IsKilling.apply_coroot_eq_cast`:
   If `β - qα ... β ... β + rα` is the `α`-chain through `β`, then
   `β (coroot α) = q - r`. In particular, it is an integer.
-
-- `LieAlgebra.IsKilling.rootSpace_zsmul_add_ne_bot_iff`:
+* `LieAlgebra.IsKilling.rootSpace_zsmul_add_ne_bot_iff`:
   The `α`-chain through `β` (`β - qα ... β ... β + rα`) are the only roots of the form `β + kα`.
-
-- `LieAlgebra.IsKilling.eq_neg_or_eq_of_eq_smul`:
+* `LieAlgebra.IsKilling.eq_neg_or_eq_of_eq_smul`:
   `±α` are the only `K`-multiples of a root `α` that are also (non-zero) roots.
-
-- `LieAlgebra.IsKilling.rootSystem`: The root system of a finite-dimensional Lie algebra with
+* `LieAlgebra.IsKilling.rootSystem`: The root system of a finite-dimensional Lie algebra with
   non-degenerate Killing form over a field of characteristic zero,
   relative to a splitting Cartan subalgebra.
-
 -/
 
 @[expose] public section

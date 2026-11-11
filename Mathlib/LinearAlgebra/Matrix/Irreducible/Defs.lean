@@ -10,6 +10,9 @@ public import Mathlib.Data.Matrix.Mul
 
 import Mathlib.Combinatorics.Quiver.Path.Vertices
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducibility and primitivity of nonnegative matrices
 
@@ -58,7 +61,7 @@ is paths in digraphs.
 
 ## References
 
-* [E. Seneta, *Non-negative Matrices and Markov Chains*][seneta2006]
+* ‍\[E. Seneta, _Non-negative Matrices and Markov Chains_\]\[seneta2006\]
 
 ## Tags
 
@@ -187,7 +190,9 @@ theorem IsPrimitive.isIrreducible
   rw [isIrreducible_iff_exists_pow_pos h_nonneg]
   aesop
 
-/-! ## Transposition -/
+/-!
+# Transposition
+-/
 
 /-- Reverse a path in `toQuiver A` to a path in `toQuiver Aᵀ`, swapping endpoints. -/
 def transposePath {i j : n} (p : @Quiver.Path n A.toQuiver i j) :

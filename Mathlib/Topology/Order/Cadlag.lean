@@ -8,13 +8,16 @@ module
 public import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.Topology.Order.LeftRightLim
 
-/-! # Càdlàg functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-This file defines *càdlàg functions*, i.e. right-continuous functions with left limits. These
+/-!
+# Càdlàg functions
+
+This file defines _càdlàg functions_, i.e. right-continuous functions with left limits. These
 are for instance a common hypothesis made on stochastic processes.
 
-Using the `to_dual` machinery we also define *càglàd functions* (left-continuous with right limits).
-
+Using the `to_dual` machinery we also define _càglàd functions_ (left-continuous with right limits).
 -/
 
 @[expose] public section
@@ -30,9 +33,13 @@ variable [Preorder X] [TopologicalSpace Y]
 
 /- TODO: Cannot tag this with `fun_prop` because it fails when tagging a lemma
 because of `to_dual`. -/
-/-- A function `f` is *right-continuous* if for any `a`, `f x → f a` when `x → a` and `x > a`. -/
-@[to_dual /-- A function `f` is *left-continuous* if for any `a`, `f x → f a` when `x → a`
-and `x < a`. -/]
+/--
+A function `f` is _right-continuous_ if for any `a`, `f x → f a` when `x → a` and `x > a`.
+-/
+@[to_dual /--
+          A function `f` is _left-continuous_ if for any `a`, `f x → f a` when `x → a`
+and `x < a`.
+          -/]
 def IsRightContinuous (f : X → Y) :=
   ∀ a, ContinuousWithinAt f (Set.Ioi a) a
 
@@ -98,10 +105,14 @@ section IsRightContinuousOn
 
 variable {s t : Set X}
 
-/-- A function `f` is *right-continuous on* a set `s` if for any `a ∈ s`, `f x → f a` when
-`x → a` with `x ∈ s` and `x > a`. -/
-@[to_dual /-- A function `f` is *left-continuous on* a set `s` if for any `a ∈ s`, `f x → f a`
-when `x → a` with `x ∈ s` and `x < a`. -/]
+/--
+A function `f` is _right-continuous on_ a set `s` if for any `a ∈ s`, `f x → f a` when
+`x → a` with `x ∈ s` and `x > a`.
+-/
+@[to_dual /--
+          A function `f` is _left-continuous on_ a set `s` if for any `a ∈ s`, `f x → f a`
+when `x → a` with `x ∈ s` and `x < a`.
+          -/]
 def IsRightContinuousOn (f : X → Y) (s : Set X) : Prop :=
   ∀ a ∈ s, ContinuousWithinAt f (s ∩ Ioi a) a
 
@@ -218,12 +229,16 @@ lemma IsRightContinuousOn.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul
 
 end IsRightContinuousOn
 
-/-- A function is *càglàd* if it is left-continuous and has right limits. -/
+/--
+A function is _càglàd_ if it is left-continuous and has right limits.
+-/
 structure IsCaglad (f : X → Y) : Prop where
   isLeftContinuous : IsLeftContinuous f
   tendsto_nhdsGT : ∀ x, ∃ l, Tendsto f (𝓝[>] x) (𝓝 l)
 
-/-- A function is *càdlàg* if it is right-continuous and has left limits. -/
+/--
+A function is _càdlàg_ if it is right-continuous and has left limits.
+-/
 @[to_dual existing]
 structure IsCadlag (f : X → Y) : Prop where
   isRightContinuous : IsRightContinuous f

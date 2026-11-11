@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of symmetric monoidal categories
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.PurelyInseparable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universally injective morphism
 
@@ -21,7 +24,6 @@ compositions and base changes.
 We also prove that universally injective is equivalent to being injective with
 purely inseparable residue field extensions (also known as a radical morphism), see
 `AlgebraicGeometry.tfae_universallyInjective` and Stacks tag 01S4.
-
 -/
 
 public section

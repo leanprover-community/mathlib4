@@ -16,6 +16,9 @@ import Mathlib.Data.Nat.Cast.Order.Basic
 
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the binary representation of integers
 -/
@@ -324,6 +327,8 @@ lemma toNat_injective : Function.Injective (castNum : Num → ℕ) :=
 @[norm_cast]
 theorem to_nat_inj {m n : Num} : (m : ℕ) = n ↔ m = n := toNat_injective.eq_iff
 
+
+set_option doc.verso false
 /-- This tactic tries to turn an (in)equality about `Num`s to one about `Nat`s by rewriting.
 ```lean
 example (n : Num) (m : Num) : n ≤ n + m := by
@@ -335,6 +340,10 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
     (repeat first | rw [← to_nat_inj] | rw [← lt_to_nat] | rw [← le_to_nat]
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
+
+set_option doc.verso true
+
+set_option doc.verso false
 /--
 This tactic tries to prove (in)equalities about `Num`s by transferring them to the `Nat` world and
 then trying to call `grind`.
@@ -345,6 +354,8 @@ example (n : Num) (m : Num) : n ≤ n + m := by transfer
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     ((repeat intro (_ : Num)); transfer_rw; try grind))
 
+
+set_option doc.verso true
 instance addMonoid : AddMonoid Num where
   zero_add := zero_add
   add_zero := add_zero
@@ -501,6 +512,8 @@ theorem natSize_to_nat (n) : natSize n = Nat.size n := by rw [← size_eq_natSiz
 
 theorem natSize_pos (n) : 0 < natSize n := by cases n <;> apply Nat.succ_pos
 
+
+set_option doc.verso false
 /-- This tactic tries to turn an (in)equality about `PosNum`s to one about `Nat`s by rewriting.
 ```lean
 example (n : PosNum) (m : PosNum) : n ≤ n + m := by
@@ -512,6 +525,10 @@ scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
     (repeat first | rw [← to_nat_inj] | rw [← lt_to_nat] | rw [← le_to_nat]
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
+
+set_option doc.verso true
+
+set_option doc.verso false
 /--
 This tactic tries to prove (in)equalities about `PosNum`s by transferring them to the `Nat` world
 and then trying to call `grind`.
@@ -522,6 +539,8 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     ((repeat intro (_ : PosNum)); transfer_rw; try grind))
 
+
+set_option doc.verso true
 instance addCommSemigroup : AddCommSemigroup PosNum where
   add_assoc := by transfer
   add_comm := by transfer

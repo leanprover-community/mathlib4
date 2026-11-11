@@ -9,6 +9,9 @@ public import Mathlib.Order.Category.Preord
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Specialization order
 

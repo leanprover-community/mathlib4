@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Maps.Proper.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral maps
 
@@ -74,9 +77,11 @@ structure SpectralMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β
 
 section
 
-/-- `SpectralMapClass F α β` states that `F` is a type of spectral maps.
+/--
+`SpectralMapClass F α β` states that `F` is a type of spectral maps.
 
-You should extend this class when you extend `SpectralMap`. -/
+You should extend this class when you extend `SpectralMap`.
+-/
 class SpectralMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     [FunLike F α β] : Prop where
   /-- statement that `F` is a type of spectral maps -/
@@ -97,7 +102,9 @@ instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [Spectral
     CoeTC F (SpectralMap α β) :=
   ⟨fun f => ⟨_, map_spectral f⟩⟩
 
-/-! ### Spectral maps -/
+/-!
+# Spectral maps
+-/
 
 
 namespace SpectralMap

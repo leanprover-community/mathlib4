@@ -12,19 +12,22 @@ public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boundedness in (pseudo)-metric spaces
 
 This file contains one definition, and various results on boundedness in pseudo-metric spaces.
+
 * `Metric.diam s` : The `iSup` of the distances of members of `s`.
   Defined in terms of `ediam`, for better handling of the case when it should be infinite.
-
 * `isBounded_iff_subset_closedBall`: a non-empty set is bounded if and only if
   it is included in some closed ball
 * describing the cobounded filter, relating to the cocompact filter
 * `IsCompact.isBounded`: compact sets are bounded
 * `TotallyBounded.isBounded`: totally bounded sets are bounded
-* `isCompact_iff_isClosed_bounded`, the **Heine–Borel theorem**:
+* `isCompact_iff_isClosed_bounded`, the *Heine–Borel theorem*:
   in a proper space, a set is compact if and only if it is closed and bounded.
 * `cobounded_eq_cocompact`: in a proper space, cobounded and compact sets are the same
   diameter of a subset, and its relation to boundedness
@@ -640,12 +643,14 @@ namespace Continuous
 variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
   [PseudoMetricSpace β] [ProperSpace β]
 
-/-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
+/--
+A version of the *Extreme Value Theorem*: if the set where a continuous function `f`
 into a linearly ordered space takes values `≤ f x₀` is bounded for some `x₀`,
 then `f` has a global minimum (under suitable topological assumptions).
 
 This is a convenient combination of `Continuous.exists_forall_le'` and
-`Metric.isCompact_of_isClosed_isBounded`. -/
+`Metric.isCompact_of_isClosed_isBounded`.
+-/
 theorem exists_forall_le_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
     (h : Bornology.IsBounded {x : β | f x ≤ f x₀}) :
     ∃ x, ∀ y, f x ≤ f y := by
@@ -656,12 +661,14 @@ theorem exists_forall_le_of_isBounded {f : β → α} (hf : Continuous f) (x₀ 
     exact Metric.isCompact_of_isClosed_isBounded (isClosed_le (by fun_prop) (by fun_prop)) h
   filter_upwards [hU] with x hx using hx.le
 
-/-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
+/--
+A version of the *Extreme Value Theorem*: if the set where a continuous function `f`
 into a linearly ordered space takes values `≥ f x₀` is bounded for some `x₀`,
 then `f` has a global maximum (under suitable topological assumptions).
 
 This is a convenient combination of `Continuous.exists_forall_ge'` and
-`Metric.isCompact_of_isClosed_isBounded`. -/
+`Metric.isCompact_of_isClosed_isBounded`.
+-/
 theorem exists_forall_ge_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
     (h : Bornology.IsBounded {x : β | f x₀ ≤ f x}) :
     ∃ x, ∀ y, f y ≤ f x :=

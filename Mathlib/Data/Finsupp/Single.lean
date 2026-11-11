@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Data.Finsupp.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely supported functions on exactly one point
 
@@ -37,7 +40,9 @@ variable {α β ι M N P H : Type*}
 
 namespace Finsupp
 
-/-! ### Declarations about `single` -/
+/-!
+# Declarations about `single`
+-/
 
 section Single
 
@@ -268,18 +273,22 @@ theorem equivFunOnFinite_symm_single [DecidableEq α] [Finite α] (x : α) (m : 
 
 end Single
 
-/-! ### Declarations about `update` -/
+/-!
+# Declarations about `update`
+-/
 
 
 section Update
 
 variable [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
 
-/-- Replace the value of a `α →₀ M` at a given point `a : α` by a given value `b : M`.
+/--
+Replace the value of a `α →₀ M` at a given point `a : α` by a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the `Finsupp.support`.
 Otherwise, if `a` was not in the `Finsupp.support`, it is added to it.
 
-This is the finitely-supported version of `Function.update`. -/
+This is the finitely-supported version of `Function.update`.
+-/
 def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
   support := by
     haveI := Classical.decEq α; haveI := Classical.decEq M
@@ -338,7 +347,9 @@ theorem update_comm (f : α →₀ M) {a₁ a₂ : α} (h : a₁ ≠ a₂) (m₁
 
 end Update
 
-/-! ### Declarations about `erase` -/
+/-!
+# Declarations about `erase`
+-/
 
 
 section Erase
@@ -407,7 +418,9 @@ theorem erase_idem (f : α →₀ M) (a : α) :
 
 end Erase
 
-/-! ### Declarations about `mapRange` -/
+/-!
+# Declarations about `mapRange`
+-/
 
 section MapRange
 
@@ -420,7 +433,9 @@ theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
 
 end MapRange
 
-/-! ### Declarations about `embDomain` -/
+/-!
+# Declarations about `embDomain`
+-/
 
 
 section EmbDomain
@@ -450,7 +465,9 @@ theorem embDomain_single (f : α ↪ β) (a : α) (m : M) :
 
 end EmbDomain
 
-/-! ### Declarations about `zipWith` -/
+/-!
+# Declarations about `zipWith`
+-/
 
 
 section ZipWith

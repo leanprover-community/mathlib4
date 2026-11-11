@@ -11,22 +11,26 @@ public import Mathlib.Topology.Maps.Strict.Module
 
 import Mathlib.Topology.LocalAtTarget
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strict linear maps with closed range are closed under finite-rank perturbation
 
 Fix `𝕜` a complete nontrivially normed field, and `E`, `F` two topological vector spaces
 over `𝕜`. This file contains various results expressing that the set of continuous
-linear maps `u : E →L[𝕜] F` which are **strict** and have **closed range** is
+linear maps `u : E →L[𝕜] F` which are *strict* and have *closed range* is
 "stable under finite-rank perturbations".
 
 More precisely, we prove the following statements:
+
 * `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`: given a closed
   subspace `A` of `E` of finite codimension, we have that `u` is strict with closed range
   if and only if `u.domRestrict A` is strict with closed range.
 * `ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid`: if `u, v : E →L[𝕜] F`
   differ by a finite rank continuous linear map, then `u` is strict with closed range if and only
   if `v` is strict with closed range.
-* `ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient`: given a *complemented*
+* `ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient`: given a _complemented_
   finite dimensional subspace `B` of `F`, we have that `u` is strict with closed range
   if and only if `B.mkQL ∘L u` is strict with closed range.
 
@@ -37,8 +41,9 @@ theorem, so there is no significant restriction on the field.
 ## Implementation details
 
 This file covers almost exactly the content of
-[N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]. However,
+‍\[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 3, n° 1\]\[bourbaki2023\]. However,
 there are two notable changes compared to Bourbaki :
+
 * We treat all topological vector spaces over complete nontrivially normed fields,
   where Bourbaki restricts to locally convex spaces over `ℝ` or `ℂ`. To do so, we have to
   tweak one statement by assuming that a finite dimensional subspace is complemented, which
@@ -52,8 +57,7 @@ with Bourbaki's proof.
 
 ## References
 
-* [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]
-
+* ‍\[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 3, n° 1\]\[bourbaki2023\]
 -/
 
 open Topology Set Submodule Function ContinuousLinearMap
@@ -69,7 +73,7 @@ variable {E F : Type*}
 section FiniteCodimSubspace
 
 /-!
-## Proof of `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`
+# Proof of `ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict`
 
 Let `u : E → F` be a continuous linear map, and `A` a finite codimension closed
 subspace of `E`. We want to show that `u` is strict with closed range if and only if
@@ -80,12 +84,13 @@ you can follow the argument by reading the source code.
 -/
 
 /-!
-### Step 1
+# Step 1
 
 We prove the theorem under the assumptions that
-- `u` is surjective
-- `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
-- `u.domRestrict A` has closed range
+
+* `u` is surjective
+* `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
+* `u.domRestrict A` has closed range
 
 The strategy of proof is to decompose both spaces into complementary subspace,
 with one of the spaces being finite dimensional and `u` preserving this decomposition.
@@ -142,11 +147,12 @@ theorem step1 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     uₛ.isStrictMap_of_finiteDimensional, true_and]
 
 /-!
-### Step 2
+# Step 2
 
 We prove the theorem under the assumptions that
-- `u` is surjective
-- `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
+
+* `u` is surjective
+* `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
 -/
 
 theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
@@ -167,11 +173,12 @@ theorem step2 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   exact Submodule.isClosed_mono_of_finiteDimensional_quotient A_closed (le_comap_map _ _)
 
 /-!
-### Step 3
+# Step 3
 
 We prove the theorem under the assumptions that
-- `u` has closed range
-- `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
+
+* `u` has closed range
+* `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
 -/
 
 theorem step3 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
@@ -196,7 +203,7 @@ theorem step3 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   exact step2 u' A A_closed (u.ker_rangeRestrict ▸ h_ker) range_u'
 
 /-!
-### Step 4
+# Step 4
 
 We prove the theorem under the assumption that `u.ker` is disjoint from `A`
 (i.e. `u` is injective on `A`).
@@ -217,16 +224,18 @@ theorem step4 (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (
   -- a closed subspace and a finite dimensional subspace, hence it is closed.
 
 /-!
-### Step 5
+# Step 5
 
 We now deduce from the previous steps the full strength of the theorem.
 -/
 
-/-- Let `u : E → F` be a continuous linear map, and `A` a closed subspace of `E` of finite
+/--
+Let `u : E → F` be a continuous linear map, and `A` a closed subspace of `E` of finite
 codimension. Then `u` is strict with closed range if and only if its restriction
 `u.domRestrict A : A → F` is strict with closed range.
 
-This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Prop. 1][bourbaki2023]. -/
+This is \[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 3, n° 1, Prop. 1\]\[bourbaki2023\].
+-/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict
     (u : E →L[𝕜] F) (A : Submodule 𝕜 E) (A_closed : IsClosed (A : Set E)) [A.CoFG] :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
@@ -284,7 +293,7 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_restrict
 end FiniteCodimSubspace
 
 /-!
-## Consequences
+# Consequences
 -/
 
 section FiniteRank
@@ -303,11 +312,13 @@ public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_eqOn [T2Spa
 
 open LinearMap.FiniteRangeSetoid
 
-/-- If two linear maps `u, v : E → F` differ by a finite rank linear map (recall that this is
+/--
+If two linear maps `u, v : E → F` differ by a finite rank linear map (recall that this is
 denoted `u.toLinearMap ≈ v.toLinearMap` in scope `LinearMap.FiniteRangeSetoid`), then `u` is
 strict with closed range if and only if `v` is strict with closed range.
 
-This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 1][bourbaki2023]. -/
+This is \[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 3, n° 1, Cor. 1\]\[bourbaki2023\].
+-/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_of_finiteRangeSetoid [T2Space F]
     (u v : E →L[𝕜] F) (h_equiv : u.toLinearMap ≈ v.toLinearMap) :
     (IsStrictMap u ∧ IsClosed (u.range : Set F)) ↔
@@ -323,11 +334,13 @@ section FiniteDimQuotient
 
 open LinearMap.FiniteRangeSetoid
 
-/-- Let `u : E → F` be a continuous linear map, and `A` a *complemented* finite dimensional
+/--
+Let `u : E → F` be a continuous linear map, and `A` a _complemented_ finite dimensional
 subspace of `F`. Then `u` is strict with closed range if and only if the induced map `E → F ⧸ A`
 is strict with closed range.
 
-This is [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1, Cor. 2][bourbaki2023]. -/
+This is \[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 3, n° 1, Cor. 2\]\[bourbaki2023\].
+-/
 public theorem ContinuousLinearMap.isStrictMap_isClosed_range_iff_quotient [T2Space F]
     (u : E →L[𝕜] F) (A : Submodule 𝕜 F) [FiniteDimensional 𝕜 A]
     (A_compl : ClosedComplemented A) :

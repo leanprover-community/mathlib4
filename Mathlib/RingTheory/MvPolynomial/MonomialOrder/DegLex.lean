@@ -8,7 +8,12 @@ module
 public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
-/-! # Some lemmas about the degree lexicographic monomial order on multivariate polynomials -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Some lemmas about the degree lexicographic monomial order on multivariate polynomials
+-/
 
 public section
 

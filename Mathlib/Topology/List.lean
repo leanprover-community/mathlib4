@@ -12,9 +12,11 @@ import Mathlib.Order.Filter.ListTraverse
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Topology.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on lists and vectors
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of pullback/pushout squares
 
@@ -20,7 +23,6 @@ application of the functor `coyoneda.obj X` for all `X : Cᵒᵖ`.
 Similarly, a square is a pushout square iff the opposite
 square becomes a pullback square after the application of the
 functor `yoneda.obj X` for all `X : C`.
-
 -/
 
 public section

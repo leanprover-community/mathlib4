@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialObject.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The covariant involution of the category of simplicial sets
 
@@ -16,7 +19,6 @@ of the category of simplicial sets that is induced by the
 covariant involution `SimplexCategory.op : SimplexCategory ⥤ SimplexCategory`.
 We use an abbreviation `X.op` for `opFunctor.obj X`.
 
-
 ## TODO
 
 * Show that this involution sends `Δ[n]` to itself, and that via
@@ -24,7 +26,6 @@ We use an abbreviation `X.op` for `opFunctor.obj X`.
 * Construct an isomorphism `nerve Cᵒᵖ ≅ (nerve C).op` (@robin-carlier)
 * Show that the topological realization of `X.op` identifies to the
   topological realization of `X` (@joelriou)
-
 -/
 
 @[expose] public section

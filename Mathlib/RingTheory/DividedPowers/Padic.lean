@@ -8,7 +8,11 @@ module
 public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.RingTheory.DividedPowers.RatAlgebra
 
-/-! # Divided powers on `ℤ_[p]`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Divided powers on `ℤ_[p]`
 
 Given a divided power algebra `(B, J, δ)` and an injective ring morphism `f : A →+* B`, if `I` is
 an `A`-ideal such that `I.map f = J` and such that for all `n : ℕ`, `x ∈ I`, the preimage of
@@ -21,7 +25,6 @@ structure on the ideal `(p) ⊆ ℤ_[p]`. This divided power structure is given 
 TODO: If `K` is a `p`-adic local field with ring of integers `R` and uniformizer `π` such that
 `p = u * π^e` for some unit `u`, then the ideal `(π) ⊆ R` has divided powers if and only if
 `e ≤ p - 1`.
-
 -/
 
 @[expose] public section

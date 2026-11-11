@@ -9,10 +9,13 @@ public meta import Mathlib.Util.Qq
 public import Mathlib.Data.Fin.Tuple.Reflection
 
 
-/-! # The vecPerm simproc
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The vecPerm simproc
 
 The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
-
 -/
 
 namespace Mathlib.Tactic.FinVec
@@ -75,10 +78,12 @@ public section
 /--
 The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
 This can be used to simplify expressions as follows:
+
 ```
 example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
   simp [vecPerm, Equiv.swap_apply_def]
 ```
+
 Note that for this simproc to work, dsimp needs to be able to simplify the individual applications
 of the permutation.
 -/

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change for the dual of a module
 
@@ -16,12 +19,9 @@ If `f : Module.Dual R V` and `Algebra R A`, then
 
 * `Module.Dual.baseChange A f` is the element
   of `Module.Dual A (A ⊗[R] V)` deduced by base change.
-
 * `Module.Dual.baseChangeHom` is the `R`-linear map
   given by `Module.Dual.baseChange`.
-
 * `IsBaseChange.dual` : for finite free modules, taking dual commutes with base change.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie Ideals
 
@@ -147,18 +150,22 @@ variable (f : L →ₗ⁅R⁆ L') (I I₂ : LieIdeal R L) (J : LieIdeal R L')
 theorem top_toLieSubalgebra : ((⊤ : LieIdeal R L) : LieSubalgebra R L) = ⊤ :=
   rfl
 
-/-- A morphism of Lie algebras `f : L → L'` pushes forward Lie ideals of `L` to Lie ideals of `L'`.
+/--
+A morphism of Lie algebras `f : L → L'` pushes forward Lie ideals of `L` to Lie ideals of `L'`.
 
 Note that unlike `LieSubmodule.map`, we must take the `lieSpan` of the image. Mathematically
 this is because although `f` makes `L'` into a Lie module over `L`, in general the `L` submodules of
-`L'` are not the same as the ideals of `L'`. -/
+`L'` are not the same as the ideals of `L'`.
+-/
 def map : LieIdeal R L' :=
   LieSubmodule.lieSpan R L' <| (I : Submodule R L).map (f : L →ₗ[R] L')
 
-/-- A morphism of Lie algebras `f : L → L'` pulls back Lie ideals of `L'` to Lie ideals of `L`.
+/--
+A morphism of Lie algebras `f : L → L'` pulls back Lie ideals of `L'` to Lie ideals of `L`.
 
 Note that `f` makes `L'` into a Lie module over `L` (turning `f` into a morphism of Lie modules)
-and so this is a special case of `LieSubmodule.comap` but we do not exploit this fact. -/
+and so this is a special case of `LieSubmodule.comap` but we do not exploit this fact.
+-/
 def comap : LieIdeal R L :=
   { (J : Submodule R L').comap (f : L →ₗ[R] L') with
     lie_mem := fun {x y} h ↦ by
@@ -234,12 +241,14 @@ theorem map_of_image (h : f '' I = J) : I.map f = J := by
     erw [h]
   · rw [← SetLike.coe_subset_coe, ← h]; exact LieSubmodule.subset_lieSpan
 
-/-- Note that this is not a special case of `LieSubmodule.subsingleton_of_bot`. Indeed, given
+/--
+Note that this is not a special case of `LieSubmodule.subsingleton_of_bot`. Indeed, given
 `I : LieIdeal R L`, in general the two lattices `LieIdeal R I` and `LieSubmodule R L I` are
 different (though the latter does naturally inject into the former).
 
 In other words, in general, ideals of `I`, regarded as a Lie algebra in its own right, are not the
-same as ideals of `L` contained in `I`. -/
+same as ideals of `L` contained in `I`.
+-/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
   subsingleton

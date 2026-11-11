@@ -8,10 +8,13 @@ module
 public import Mathlib.MeasureTheory.Measure.OpenPos
 public import Mathlib.MeasureTheory.Measure.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of a Measure
 
-This file develops the theory of the **support** of a measure `μ` on a
+This file develops the theory of the *support* of a measure `μ` on a
 topological measurable space. The support is defined as the set of points whose every open
 neighborhood has positive measure. We give equivalent characterizations, prove basic
 measure-theoretic properties, and study interactions with sums, restrictions, and

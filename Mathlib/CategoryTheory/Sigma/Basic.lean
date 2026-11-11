@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Whiskering
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint union of categories
 
@@ -108,7 +111,8 @@ lemma natTrans_app {F G : (Σ i, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ in
 def descMap : ∀ X Y : Σ i, C i, (X ⟶ Y) → ((F X.1).obj X.2 ⟶ (F Y.1).obj Y.2)
   | _, _, SigmaHom.mk g => (F _).map g
 
-/-- Given a collection of functors `F i : C i ⥤ D`, we can produce a functor `(Σ i, C i) ⥤ D`.
+/--
+Given a collection of functors `F i : C i ⥤ D`, we can produce a functor `(Σ i, C i) ⥤ D`.
 
 The produced functor `desc F` satisfies: `incl i ⋙ desc F ≅ F i`, i.e. restricted to just the
 subcategory `C i`, `desc F` agrees with `F i`, and it is unique (up to natural isomorphism) with

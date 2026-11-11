@@ -9,12 +9,14 @@ public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 import Mathlib.Logic.Small.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Small classes of morphisms
 
 A class of morphisms `W : MorphismProperty C` is `w`-small
 if the corresponding set in `Set (Arrow C)` is.
-
 -/
 
 public section

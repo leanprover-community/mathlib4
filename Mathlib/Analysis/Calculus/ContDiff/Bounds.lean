@@ -10,12 +10,15 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 
 import Mathlib.Data.Nat.Choose.Cast
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounds on higher derivatives
 
 `norm_iteratedFDeriv_comp_le` gives the bound `n! * C * D ^ n` for the `n`-th derivative
-  of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
-  derivative of `f` is bounded by `D ^ i`.
+of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
+derivative of `f` is bounded by `D ^ i`.
 -/
 
 public section
@@ -31,7 +34,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {s t u : Set E}
 
-/-!## Quantitative bounds -/
+/-!
+# Quantitative bounds
+-/
 
 /-- Bounding the norm of the iterated derivative of `B (f x) (g x)` within a set in terms of the
 iterated derivatives of `f` and `g` when `B` is bilinear. This lemma is an auxiliary version
@@ -489,11 +494,13 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
   rw [Nfgu]
   exact norm_iteratedFDerivWithin_comp_le_aux hgu hfu htu hs hstu hx hC hD
 
-/-- If the derivatives of `g` at `f x` are bounded by `C`, and the `i`-th derivative
+/--
+If the derivatives of `g` at `f x` are bounded by `C`, and the `i`-th derivative
 of `f` at `x` is bounded by `D^i` for all `1 ≤ i ≤ n`, then the `n`-th derivative
 of `g ∘ f` is bounded by `n! * C * D^n`.
 
-Version with the iterated derivative of `g` only bounded on the range of `f`. -/
+Version with the iterated derivative of `g` only bounded on the range of `f`.
+-/
 theorem norm_iteratedFDeriv_comp_le' {g : F → G} {f : E → F} {n : ℕ} {N : ℕ∞ω}
     {t : Set F} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn 𝕜 t)
     (hg : ContDiffOn 𝕜 N g t) (hf : ContDiff 𝕜 N f) (hn : n ≤ N) (x : E) {C : ℝ} {D : ℝ}

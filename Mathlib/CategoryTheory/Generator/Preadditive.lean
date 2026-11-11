@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separators in preadditive categories
 
 This file contains characterizations of separating sets and objects that are valid in all
 preadditive categories.
-
 -/
 
 public section

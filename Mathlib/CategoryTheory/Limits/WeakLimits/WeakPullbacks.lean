@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakEqualizers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak pullbacks
 
@@ -14,7 +17,6 @@ These are weak limits for diagrams of shape `WalkingCospan`.
 
 If a category has binary products and weak equalizers, then it has weak pullbacks
 (see `hasWeakPullbacks_of_hasBinaryProducts_of_hasWeakEqualizers`).
-
 -/
 
 @[expose] public section
@@ -108,7 +110,8 @@ theorem weakPullback.condition {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasWeakP
     weakPullback.fst f g ≫ f = weakPullback.snd f g ≫ g :=
   PullbackCone.condition _
 
-/-- Given such a diagram, then there is a natural morphism from the weak pullback of
+/--
+Given such a diagram, then there is a natural morphism from the weak pullback of
 `W ⟶ S` and `X ⟶ S` to the weak pullback of `Y ⟶ T` and `Z ⟶ T`.
 
 ```

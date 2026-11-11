@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.CartanSubalgebra
 public import Mathlib.Algebra.Lie.Weights.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weights and roots of Lie modules and Lie algebras with respect to Cartan subalgebras
 
@@ -20,12 +23,11 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## Main definitions
 
-  * `LieAlgebra.rootSpace`
-  * `LieAlgebra.corootSpace`
-  * `LieAlgebra.rootSpaceWeightSpaceProduct`
-  * `LieAlgebra.rootSpaceProduct`
-  * `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
-
+* `LieAlgebra.rootSpace`
+* `LieAlgebra.corootSpace`
+* `LieAlgebra.rootSpaceWeightSpaceProduct`
+* `LieAlgebra.rootSpaceProduct`
+* `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
 -/
 
 @[expose] public section
@@ -225,11 +227,13 @@ theorem zeroRootSubalgebra_normalizer_eq_self :
   rw [Module.End.iterate_succ, LinearMap.coe_comp, Function.comp_apply, toEnd_apply_apply,
     LieSubalgebra.coe_bracket_of_module, Submodule.coe_mk, hk]
 
-/-- If the zero root subalgebra of a nilpotent Lie subalgebra `H` is just `H` then `H` is a Cartan
+/--
+If the zero root subalgebra of a nilpotent Lie subalgebra `H` is just `H` then `H` is a Cartan
 subalgebra.
 
 When `L` is Noetherian, it follows from Engel's theorem that the converse holds. See
-`LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan` -/
+`LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
+-/
 theorem is_cartan_of_zeroRootSubalgebra_eq (h : zeroRootSubalgebra R L H = H) :
     H.IsCartanSubalgebra :=
   { nilpotent := inferInstance
@@ -262,7 +266,8 @@ theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoet
 variable {R L H}
 variable [H.IsCartanSubalgebra] [IsNoetherian R L] (α : H → R)
 
-/-- Given a root `α` relative to a Cartan subalgebra `H`, this is the span of all products of
+/--
+Given a root `α` relative to a Cartan subalgebra `H`, this is the span of all products of
 an element of the `α` root space and an element of the `-α` root space. Informally it is often
 denoted `⁅H(α), H(-α)⁆`.
 
@@ -271,7 +276,8 @@ one-dimensional. See `LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton` an
 `LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton'`.
 
 Note that the name "coroot space" is not standard as this space does not seem to have a name in the
-informal literature. -/
+informal literature.
+-/
 def corootSpace : LieIdeal R H :=
   LieModuleHom.range <| ((rootSpace H 0).incl.comp <|
     rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α)).codRestrict H.toLieSubmodule (by

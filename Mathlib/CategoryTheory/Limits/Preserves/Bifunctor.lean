@@ -8,15 +8,17 @@ module
 public import Mathlib.CategoryTheory.Limits.Fubini
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservations of limits for bifunctors
 
 Let `G : C₁ ⥤ C₂ ⥤ C` a functor. We introduce a class `PreservesLimit₂ K₁ K₂ G` that encodes
 the hypothesis that the curried functor `F : C₁ × C₂ ⥤ C` preserves limits of the diagram
 `K₁ × K₂ : J₁ × J₂ ⥤ C₁ × C₂`. We give a basic API to extract isomorphisms
-$\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$
+$`\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)`
 out of this typeclass.
-
 -/
 
 @[expose] public section
@@ -64,19 +66,21 @@ def Functor.mapCone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ : 
 
 namespace Limits
 
-/-- A functor `PreservesColimit₂ K₁ K₂` if whenever `c₁` is a colimit cocone and `c₂` is a colimit
+/--
+A functor `PreservesColimit₂ K₁ K₂` if whenever `c₁` is a colimit cocone and `c₂` is a colimit
 cocone then `G.mapCocone₂ c₁ c₂` is a colimit cocone. This can be thought of as the data of an
 isomorphism
-$\mathrm{colim}_{(j_1,j_2)} G(K_1(j_1),K_2(j_2)) \simeq G(\mathrm{colim} K_1,\mathrm{colim} K_2)$.
+$`\mathrm{colim}_{(j_1,j_2)} G(K_1(j_1),K_2(j_2)) \simeq G(\mathrm{colim} K_1,\mathrm{colim} K_2)`.
 -/
 class PreservesColimit₂ (K₁ : J₁ ⥤ C₁) (K₂ : J₂ ⥤ C₂) (G : C₁ ⥤ C₂ ⥤ C) : Prop where
   nonempty_isColimit_mapCocone₂ {c₁ : Cocone K₁} (hc₁ : IsColimit c₁)
       {c₂ : Cocone K₂} (hc₂ : IsColimit c₂) :
     Nonempty <| IsColimit <| G.mapCocone₂ c₁ c₂
 
-/-- A functor `PreservesLimit₂ K₁ K₂` if whenever `c₁` is a limit cone and `c₂` is a limit
+/--
+A functor `PreservesLimit₂ K₁ K₂` if whenever `c₁` is a limit cone and `c₂` is a limit
 cone then `G.mapCone₂ c₁ c₂` is a limit cone. This can be thought of as the data of an
-isomorphism $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$.
+isomorphism $`\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)`.
 -/
 class PreservesLimit₂ (K₁ : J₁ ⥤ C₁) (K₂ : J₂ ⥤ C₂) (G : C₁ ⥤ C₂ ⥤ C) : Prop where
   nonempty_isLimit_mapCone₂ {c₁ : Cone K₁} (hc₁ : IsLimit c₁)

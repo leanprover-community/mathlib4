@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chosen pullbacks
 
@@ -15,9 +18,9 @@ a structure `ChosenPullback f₁ f₂` which contains the data of
 pullback of `f₁` and `f₂`.
 
 ## TODO
-* relate this to `ChosenPullbacksAlong` which is defined in
-`LocallyCartesianClosed.ChosenPullbacksAlong`.
 
+* relate this to `ChosenPullbacksAlong` which is defined in
+  `LocallyCartesianClosed.ChosenPullbacksAlong`.
 -/
 
 @[expose] public section

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Module.Basic
 
 import Mathlib.Analysis.Asymptotics.Theta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic equivalence
 
@@ -27,33 +30,32 @@ We use the notation `u ~[l] v := IsEquivalent l u v`, which you can use by openi
 
 If `β` is a `NormedAddCommGroup` :
 
-- `_ ~[l] _` is an equivalence relation
-- Equivalent statements for `u ~[l] const _ c` :
-  - If `c ≠ 0`, this is true iff `Tendsto u l (𝓝 c)` (see `isEquivalent_const_iff_tendsto`)
-  - For `c = 0`, this is true iff `u =ᶠ[l] 0` (see `isEquivalent_zero_iff_eventually_zero`)
+* `_ ~[l] _` is an equivalence relation
+* Equivalent statements for `u ~[l] const _ c` :
+
+  * If `c ≠ 0`, this is true iff `Tendsto u l (𝓝 c)` (see `isEquivalent_const_iff_tendsto`)
+  * For `c = 0`, this is true iff `u =ᶠ[l] 0` (see `isEquivalent_zero_iff_eventually_zero`)
 
 If `β` is a `NormedField` :
 
-- Alternative characterization of the relation (see `isEquivalent_iff_exists_eq_mul`) :
+* Alternative characterization of the relation (see `isEquivalent_iff_exists_eq_mul`) :
 
   `u ~[l] v ↔ ∃ (φ : α → β) (hφ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v`
-
-- Provided some non-vanishing hypothesis, this can be seen as `u ~[l] v ↔ Tendsto (u/v) l (𝓝 1)`
+* Provided some non-vanishing hypothesis, this can be seen as `u ~[l] v ↔ Tendsto (u/v) l (𝓝 1)`
   (see `isEquivalent_iff_tendsto_one`)
-- For any constant `c`, `u ~[l] v` implies `Tendsto u l (𝓝 c) ↔ Tendsto v l (𝓝 c)`
+* For any constant `c`, `u ~[l] v` implies `Tendsto u l (𝓝 c) ↔ Tendsto v l (𝓝 c)`
   (see `IsEquivalent.tendsto_nhds_iff`)
-- `*` and `/` are compatible with `_ ~[l] _` (see `IsEquivalent.mul` and `IsEquivalent.div`)
+* `*` and `/` are compatible with `_ ~[l] _` (see `IsEquivalent.mul` and `IsEquivalent.div`)
 
 If `β` is a `NormedLinearOrderedField` :
 
-- If `u ~[l] v`, we have `Tendsto u l atTop ↔ Tendsto v l atTop`
+* If `u ~[l] v`, we have `Tendsto u l atTop ↔ Tendsto v l atTop`
   (see `IsEquivalent.tendsto_atTop_iff`)
 
 ## Implementation Notes
 
 Note that `IsEquivalent` takes the parameters `(l : Filter α) (u v : α → β)` in that order.
 This is to enable `calc` support, as `calc` requires that the last two explicit arguments are `u v`.
-
 -/
 
 public section

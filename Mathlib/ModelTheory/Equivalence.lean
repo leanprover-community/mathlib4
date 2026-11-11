@@ -7,17 +7,21 @@ module
 
 public import Mathlib.ModelTheory.Satisfiability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence of Formulas
 
 ## Main Definitions
-- `FirstOrder.Language.Theory.Imp`: `φ ⟹[T] ψ` indicates that `φ` implies `ψ` in models of `T`.
-- `FirstOrder.Language.Theory.Iff`: `φ ⇔[T] ψ` indicates that `φ` and `ψ` are equivalent formulas or
+
+* `FirstOrder.Language.Theory.Imp`: `φ ⟹[T] ψ` indicates that `φ` implies `ψ` in models of `T`.
+* `FirstOrder.Language.Theory.Iff`: `φ ⇔[T] ψ` indicates that `φ` and `ψ` are equivalent formulas or
   sentences in models of `T`.
 
 ## TODO
-- Define the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
 
+* Define the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
 -/
 
 @[expose] public section

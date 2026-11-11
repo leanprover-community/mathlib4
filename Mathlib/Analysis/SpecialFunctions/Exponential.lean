@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Topology.MetricSpace.CauSeqFilter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Calculus results on exponential in a Banach algebra
 
@@ -23,14 +26,14 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 
 ### General case
 
-- `hasStrictFDerivAt_exp_zero_of_radius_pos` : `NormedSpace.exp` has strict Fréchet derivative
+* `hasStrictFDerivAt_exp_zero_of_radius_pos` : `NormedSpace.exp` has strict Fréchet derivative
   `1 : 𝔸 →L[𝕂] 𝔸` at zero, as long as it converges on a neighborhood of zero
   (see also `hasStrictDerivAt_exp_zero_of_radius_pos` for the case `𝔸 = 𝕂`)
-- `hasStrictFDerivAt_exp_of_lt_radius` : if `𝕂` has characteristic zero and `𝔸` is commutative,
+* `hasStrictFDerivAt_exp_of_lt_radius` : if `𝕂` has characteristic zero and `𝔸` is commutative,
   then given a point `x` in the disk of convergence, `NormedSpace.exp` has strict Fréchet
   derivative `NormedSpace.exp x • 1 : 𝔸 →L[𝕂] 𝔸` at x
   (see also `hasStrictDerivAt_exp_of_lt_radius` for the case `𝔸 = 𝕂`)
-- `hasStrictFDerivAt_exp_smul_const_of_mem_ball`: even when `𝔸` is non-commutative,
+* `hasStrictFDerivAt_exp_smul_const_of_mem_ball`: even when `𝔸` is non-commutative,
   if we have an intermediate algebra `𝕊` which is commutative, the function
   `(u : 𝕊) ↦ NormedSpace.exp (u • x)`, still has strict Fréchet derivative
   `NormedSpace.exp (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x` at `t` if
@@ -38,21 +41,20 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 
 ### `𝕂 = ℝ` or `𝕂 = ℂ`
 
-- `hasStrictFDerivAt_exp_zero` : `NormedSpace.exp` has strict Fréchet derivative `1 : 𝔸 →L[𝕂] 𝔸`
+* `hasStrictFDerivAt_exp_zero` : `NormedSpace.exp` has strict Fréchet derivative `1 : 𝔸 →L[𝕂] 𝔸`
   at zero (see also `hasStrictDerivAt_exp_zero` for the case `𝔸 = 𝕂`)
-- `hasStrictFDerivAt_exp` : if `𝔸` is commutative, then given any point `x`, `NormedSpace.exp`
+* `hasStrictFDerivAt_exp` : if `𝔸` is commutative, then given any point `x`, `NormedSpace.exp`
   has strict Fréchet derivative `NormedSpace.exp x • 1 : 𝔸 →L[𝕂] 𝔸` at x
   (see also `hasStrictDerivAt_exp` for the case `𝔸 = 𝕂`)
-- `hasStrictFDerivAt_exp_smul_const`: even when `𝔸` is non-commutative, if we have
+* `hasStrictFDerivAt_exp_smul_const`: even when `𝔸` is non-commutative, if we have
   an intermediate algebra `𝕊` which is commutative, the function
   `(u : 𝕊) ↦ NormedSpace.exp (u • x)` still has strict Fréchet derivative
   `NormedSpace.exp (t • x) • (1 : 𝔸 →L[𝕂] 𝔸).smulRight x` at `t`.
 
 ### Compatibility with `Real.exp` and `Complex.exp`
 
-- `Complex.exp_eq_exp_ℂ` : `Complex.exp = NormedSpace.exp ℂ ℂ`
-- `Real.exp_eq_exp_ℝ` : `Real.exp = NormedSpace.exp ℝ ℝ`
-
+* `Complex.exp_eq_exp_ℂ` : `Complex.exp = NormedSpace.exp ℂ ℂ`
+* `Real.exp_eq_exp_ℝ` : `Real.exp = NormedSpace.exp ℝ ℝ`
 -/
 
 public section
@@ -214,14 +216,16 @@ theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp := by
 theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp := by
   ext x; exact mod_cast congr_fun Complex.exp_eq_exp_ℂ x
 
-/-! ### Derivative of $\exp (ux)$ by $u$
+/-!
+# Derivative of $`\exp (ux)` by $`u`
 
 Note that since for `x : 𝔸` we have `NormedRing 𝔸` not `NormedCommRing 𝔸`, we cannot deduce
 these results from `hasFDerivAt_exp_of_mem_ball` applied to the algebra `𝔸`.
 
-One possible solution for that would be to apply `hasFDerivAt_exp_of_mem_ball` to the
-commutative algebra `Algebra.elementalAlgebra 𝕊 x`. Unfortunately we don't have all the required
-API, so we leave that to a future refactor (see https://github.com/leanprover-community/mathlib3/pull/19062 for discussion).
+One possible solution for that would be to apply `hasFDerivAt_exp_of_mem_ball` to the commutative
+algebra `Algebra.elementalAlgebra 𝕊 x`. Unfortunately we don't have all the required API, so we
+leave that to a future refactor (see https://github.com/leanprover-community/mathlib3/pull/19062 for
+discussion).
 
 We could also go the other way around and deduce `hasFDerivAt_exp_of_mem_ball` from
 `hasFDerivAt_exp_smul_const_of_mem_ball` applied to `𝕊 := 𝔸`, `x := (1 : 𝔸)`, and `t := x`.
@@ -229,7 +233,7 @@ However, doing so would make the aforementioned `elementalAlgebra` refactor hard
 just prove these two lemmas independently.
 
 A last strategy would be to deduce everything from the more general non-commutative case,
-$$\frac{d}{dt}e^{x(t)} = \int_0^1 e^{sx(t)} \left(\frac{d}{dt}e^{x(t)}\right) e^{(1-s)x(t)} ds$$
+$$`\frac{d}{dt}e^{x(t)} = \int_0^1 e^{sx(t)} \left(\frac{d}{dt}e^{x(t)}\right) e^{(1-s)x(t)} ds`
 but this is harder to prove, and typically is shown by going via these results first.
 
 TODO: prove this result too!

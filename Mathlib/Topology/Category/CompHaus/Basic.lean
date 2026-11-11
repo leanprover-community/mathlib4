@@ -11,6 +11,9 @@ public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.UrysohnsLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of Compact Hausdorff Spaces
 
@@ -19,7 +22,7 @@ The type of compact Hausdorff spaces is denoted `CompHaus`, and it is endowed wi
 instance making it a full subcategory of `TopCat`.
 The fully faithful functor `CompHaus ⥤ TopCat` is denoted `compHausToTop`.
 
-**Note:** The file `Mathlib/Topology/Category/Compactum.lean` provides the equivalence between
+*Note:* The file `Mathlib/Topology/Category/Compactum.lean` provides the equivalence between
 `Compactum`, which is defined as the category of algebras for the ultrafilter monad, and `CompHaus`.
 `CompactumToCompHaus` is the functor from `Compactum` to `CompHaus` which is proven to be an
 equivalence of categories in `CompactumToCompHaus.isEquivalence`.
@@ -30,7 +33,6 @@ definitions are introduced.
 
 The category `CompHaus` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
 
@@ -17,41 +20,28 @@ power sum, and monomial symmetric `MvPolynomial`s. We also prove some basic fact
 ## Main declarations
 
 * `MvPolynomial.IsSymmetric`
-
 * `MvPolynomial.symmetricSubalgebra`
-
 * `MvPolynomial.esymm`
-
 * `MvPolynomial.hsymm`
-
 * `MvPolynomial.psum`
-
 * `MvPolynomial.msymm`
 
 ## Notation
 
-+ `esymm σ R n` is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
-
-+ `hsymm σ R n` is the `n`th complete homogeneous symmetric polynomial in `MvPolynomial σ R`.
-
-+ `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
+* `esymm σ R n` is the `n`th elementary symmetric polynomial in `MvPolynomial σ R`.
+* `hsymm σ R n` is the `n`th complete homogeneous symmetric polynomial in `MvPolynomial σ R`.
+* `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`, i.e. the sum of monomials
   `(X i)^n` over `i ∈ σ`.
-
-+ `msymm σ R μ` is the monomial symmetric polynomial whose exponents set are the parts
+* `msymm σ R μ` is the monomial symmetric polynomial whose exponents set are the parts
   of `μ ⊢ n` in `MvPolynomial σ R`.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ τ : Type*` (indexing the variables)
-
-+ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
-
-+ `r : R` elements of the coefficient ring
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `φ ψ : MvPolynomial σ R`
-
+* `σ τ : Type*` (indexing the variables)
+* `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
+* `r : R` elements of the coefficient ring
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `φ ψ : MvPolynomial σ R`
 -/
 
 @[expose] public section

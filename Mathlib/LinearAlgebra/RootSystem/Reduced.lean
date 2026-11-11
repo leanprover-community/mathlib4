@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reduced root pairings
 
@@ -29,7 +32,6 @@ provide both `RootPairing.linearIndependent_iff_coxeterWeight_ne_four` and
 Several ways to avoid this duplication exist. We leave explorations of this for future work. One
 possible solution is to drop `RootPairing.pairing` and `RootPairing.coxeterWeight` entirely and rely
 solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.
-
 -/
 
 public section
@@ -41,12 +43,14 @@ variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommG
 
 namespace RootPairing
 
-/-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
+/--
+A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign.
 
 TODO Consider redefining this to make it perfectly symmetric between roots and coroots (i.e., so
 that the same demand is made of coroots) and turning `RootPairing.instFlipIsReduced` into a
-convenience constructor. -/
+convenience constructor.
+-/
 @[mk_iff] class IsReduced : Prop where
   eq_or_eq_neg (i j : ι) (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.root i = P.root j ∨ P.root i = - P.root j

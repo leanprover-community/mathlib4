@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.RingTheory.NonUnitalSubring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subrings
 
@@ -30,26 +33,17 @@ Notation used here:
 `(A : Subring R) (B : Subring S) (s : Set R)`
 
 * `Subring R` : the type of subrings of a ring `R`.
-
 * `instance : CompleteLattice (Subring R)` : the complete lattice structure on the subrings.
-
 * `Subring.center` : the center of a ring `R`.
-
 * `Subring.closure` : subring closure of a set, i.e., the smallest subring that includes the set.
-
 * `Subring.gi` : `closure : Set M → Subring M` and coercion `(↑) : Subring M → et M`
   form a `GaloisInsertion`.
-
 * `comap f B : Subring A` : the preimage of a subring `B` along the ring homomorphism `f`
-
 * `map f A : Subring B` : the image of a subring `A` along the ring homomorphism `f`.
-
 * `prod A B : Subring (R × S)` : the product of subrings
-
 * `f.range : Subring B` : the range of the ring homomorphism `f`.
-
 * `eqLocus f g : Subring R` : given ring homomorphisms `f g : R →+* S`,
-     the subring of `R` where `f x = g x`
+  the subring of `R` where `f x = g x`
 
 ## Implementation notes
 
@@ -60,6 +54,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 `∈` is defined as membership of a subring's underlying set.
 
 ## Tags
+
 subring, subrings
 -/
 
@@ -396,7 +391,9 @@ theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
 @[norm_cast]
 theorem coe_intCast (n : ℤ) : ((n : s) : R) = n := rfl
 
-/-! ## Partial order -/
+/-!
+# Partial order
+-/
 
 @[simp]
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.Multiset.Dedup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preparations for defining operations on `Finset`.
 
@@ -28,7 +31,9 @@ open List
 
 variable {α : Type*} [DecidableEq α] {s : Multiset α}
 
-/-! ### finset insert -/
+/-!
+# finset insert
+-/
 
 
 /-- `ndinsert a s` is the lift of the list `insert` operation. This operation
@@ -115,7 +120,9 @@ theorem disjoint_ndinsert_right {a : α} {s t : Multiset α} :
     Disjoint s (ndinsert a t) ↔ a ∉ s ∧ Disjoint s t := by
   rw [_root_.disjoint_comm, disjoint_ndinsert_left]; tauto
 
-/-! ### finset union -/
+/-!
+# finset union
+-/
 
 
 /-- `ndunion s t` is the lift of the list `union` operation. This operation
@@ -185,7 +192,9 @@ theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t 
   induction s, t using Quot.induction_on₂
   exact congr_arg ((↑) : List α → Multiset α) <| List.Subset.union_eq_right h
 
-/-! ### finset inter -/
+/-!
+# finset inter
+-/
 
 
 /-- `ndinter s t` is the lift of the list `∩` operation. This operation

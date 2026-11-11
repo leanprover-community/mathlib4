@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Families of functors which jointly reflect isomorphisms
 
@@ -17,7 +20,6 @@ Let `Fᵢ : C ⥤ Dᵢ` be a family of functors. The family is said to jointly r
 isomorphisms (resp. monomorphisms, resp. epimorphisms) if every `f : X ⟶ Y`
 in `C` for which `Fᵢ.map f` is an isomorphism (resp. monomorphism, resp. epimorphism)
 for all `i` is an isomorphism.
-
 -/
 
 public section

@@ -10,9 +10,11 @@ public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Open immersions of schemes
-
 -/
 
 @[expose] public section
@@ -855,7 +857,9 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- If
+/--
+If
+
 ```
   P --fst--> X
   |          |
@@ -865,6 +869,7 @@ set_option backward.isDefEq.respectTransparency.types false in
   Y ---g---> Z
 
 ```
+
 is a pullback square and `g` is an open immersion, then the stalk map induced by `snd` at `p`
 is isomorphic to the stalk map of `f` at `fst p`.
 -/

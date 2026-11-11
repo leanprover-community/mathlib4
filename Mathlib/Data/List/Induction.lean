@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Init
 
-/-! # Induction principles for lists -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Induction principles for lists
+-/
 
 @[expose] public section
 

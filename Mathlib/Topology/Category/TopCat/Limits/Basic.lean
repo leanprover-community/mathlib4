@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.Topology.Category.TopCat.Adjunctions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of topological spaces has all limits and colimits
 

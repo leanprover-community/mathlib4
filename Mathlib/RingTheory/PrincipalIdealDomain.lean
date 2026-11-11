@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Principal ideal rings, principal ideal domains, and Bézout rings
 
@@ -26,16 +29,15 @@ Note that for principal ideal domains, one should use
 `[IsDomain R] [IsPrincipalIdealRing R]`. There is no explicit definition of a PID.
 Theorems about PID's are in the `PrincipalIdealRing` namespace.
 
-- `IsBezout`: the predicate saying that every finitely generated left ideal is principal.
-- `generator`: a generator of a principal ideal (or more generally submodule)
-- `to_uniqueFactorizationMonoid`: a PID is a unique factorization domain
+* `IsBezout`: the predicate saying that every finitely generated left ideal is principal.
+* `generator`: a generator of a principal ideal (or more generally submodule)
+* `to_uniqueFactorizationMonoid`: a PID is a unique factorization domain
 
 ## Main results
 
-- `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
-- `EuclideanDomain.instIsPrincipalIdealRing`: a Euclidean domain is a PID.
-- `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
-
+* `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
+* `EuclideanDomain.instIsPrincipalIdealRing`: a Euclidean domain is a PID.
+* `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 -/
 
 @[expose] public section
@@ -176,9 +178,11 @@ instance span_pair_isPrincipal [IsBezout R] (x y : R) : (Ideal.span {x, y}).IsPr
 
 variable (x y : R) [(Ideal.span {x, y}).IsPrincipal]
 
-/-- A choice of gcd of two elements in a Bézout domain.
+/--
+A choice of gcd of two elements in a Bézout domain.
 
-Note that the choice is usually not unique. -/
+Note that the choice is usually not unique.
+-/
 noncomputable def gcd : R := Submodule.IsPrincipal.generator (Ideal.span {x, y})
 
 theorem span_gcd : Ideal.span {gcd x y} = Ideal.span {x, y} :=
@@ -522,11 +526,13 @@ variable {R}
 theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealRing R := by
   simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff]
 
-/-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
+/--
+Any chain in the set of non-principal ideals has an upper bound which is non-principal.
 (Namely, the union of the chain is such an upper bound.)
 
 If you want the existence of a maximal non-principal ideal see
-`Ideal.exists_maximal_not_isPrincipal`. -/
+`Ideal.exists_maximal_not_isPrincipal`.
+-/
 theorem nonPrincipals_zorn (hR : ¬IsPrincipalIdealRing R) (c : Set (Ideal R))
     (hs : c ⊆ nonPrincipals R) (hchain : IsChain (· ≤ ·) c) :
     ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by

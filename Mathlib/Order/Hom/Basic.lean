@@ -9,6 +9,9 @@ public import Mathlib.Order.Disjoint
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Tactic.Monotonicity.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order homomorphisms
 
@@ -18,6 +21,7 @@ homomorphism `f : α →o β` is a function `α → β` along with a proof that 
 ## Main definitions
 
 In this file we define the following bundled monotone maps:
+
 * `OrderHom α β` a.k.a. `α →o β`: Preorder homomorphism.
   An `OrderHom α β` is a function `f : α → β` such that `a₁ ≤ a₂ → f a₁ ≤ f a₂`
 * `OrderEmbedding α β` a.k.a. `α ↪o β`: Relation embedding.
@@ -125,9 +129,11 @@ abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLi
 
 to_dual_insert_cast OrderHomClass := by grind only [RelHomClass]
 
-/-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
+/--
+`OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
-You should extend this class when you extend `OrderIso`. -/
+You should extend this class when you extend `OrderIso`.
+-/
 class OrderIsoClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [EquivLike F α β] :
     Prop where
   /-- An order isomorphism respects `≤`. -/
@@ -240,8 +246,10 @@ protected theorem monotone (f : α →o β) : Monotone f :=
 protected theorem mono (f : α →o β) : Monotone f :=
   f.monotone
 
-/-- See Note [custom simps projection]. We give this manually so that we use `toFun` as the
-projection directly instead. -/
+/--
+See Note \[custom simps projection\]. We give this manually so that we use `toFun` as the
+projection directly instead.
+-/
 def Simps.coe (f : α →o β) : α → β := f
 
 /- TODO: all other DFunLike classes use `apply` instead of `coe`
@@ -978,9 +986,11 @@ lemma conj_symm_apply {α β} [Preorder α] [Preorder β] (e : α ≃o β) (f : 
 lemma conj_trans_conj {α β γ} [Preorder α] [Preorder β] [Preorder γ] (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     e₁.conj.trans e₂.conj = (e₁.trans e₂).conj := rfl
 
-/-- Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
+/--
+Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
 
-This is `Equiv.embeddingCongr`/`RelIso.relEmbeddingCongr` for `OrderEmbedding`. -/
+This is `Equiv.embeddingCongr`/`RelIso.relEmbeddingCongr` for `OrderEmbedding`.
+-/
 abbrev orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
   RelIso.relEmbeddingCongr f g
 
@@ -1008,9 +1018,11 @@ lemma orderEmbeddingCongr_trans {ε ζ : Type*} [LE ε] [LE ζ]
     (orderEmbeddingCongr f g).trans (orderEmbeddingCongr f' g') =
       orderEmbeddingCongr (f.trans f') (g.trans g') := rfl
 
-/-- Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
+/--
+Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
 
-This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
+This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`.
+-/
 abbrev orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
   RelIso.relIsoCongr f g
 

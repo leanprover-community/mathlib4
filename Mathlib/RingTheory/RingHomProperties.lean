@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of ring homomorphisms
 
@@ -19,7 +22,6 @@ The following meta-properties of predicates on ring homomorphisms are defined
 * `RingHom.StableUnderComposition`: `P` is stable under composition if `P f → P g → P (f ≫ g)`.
 * `RingHom.IsStableUnderBaseChange`: `P` is stable under base change if `P (S ⟶ Y)`
   implies `P (X ⟶ X ⊗[S] Y)`.
-
 -/
 
 @[expose] public section

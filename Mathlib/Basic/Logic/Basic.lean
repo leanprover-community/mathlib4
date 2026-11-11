@@ -10,6 +10,9 @@ public meta import Mathlib.Tactic.Attr.Register
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic logic properties
 
@@ -34,7 +37,8 @@ open Lean Meta Simp
 theorem eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
 theorem iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
 
-/-- On a goal of the form of `x = y`, also try to simplify `y = x`.
+/--
+On a goal of the form of `x = y`, also try to simplify `y = x`.
 
 If simplifying `y = x` gives `y' = x'` then this simproc returns `x' = y'` (so that the use of
 commutativity is transparent), otherwise it returns the result of simplifying `y = x` unmodified.
@@ -67,7 +71,8 @@ simproc_decl eqComm (_ = _) := fun e => do
       { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
   | _ => return .done symmR
 
-/-- On a goal of the form of `x ↔ y`, also try to simplify `y ↔ x`.
+/--
+On a goal of the form of `x ↔ y`, also try to simplify `y ↔ x`.
 
 If simplifying `y ↔ x` gives `y' ↔ x'` then this simproc returns `x' ↔ y'` (so that the use of
 commutativity is transparent), otherwise it returns the result of simplifying `y ↔ x` unmodified.
@@ -149,7 +154,8 @@ theorem dcongr_heq.{u, v}
 lemma ne_and_eq_iff_right {a b c : α} (h : b ≠ c) : a ≠ b ∧ a = c ↔ a = c :=
   and_iff_right_of_imp (fun h2 => h2.symm ▸ h.symm)
 
-/-- Wrapper for adding elementary propositions to the type class systems.
+/--
+Wrapper for adding elementary propositions to the type class systems.
 Warning: this can easily be abused. See the rest of this docstring for details.
 
 Certain propositions should not be treated as a class globally,
@@ -165,7 +171,8 @@ and it is questionable whether making `Nat.Prime` a class is desirable at all.
 The compromise is to add the assumption `[Fact p.Prime]` to `ZMod.instField`.
 
 In particular, this class is not intended for turning the type class system
-into an automated theorem prover for first-order logic. -/
+into an automated theorem prover for first-order logic.
+-/
 class Fact (p : Prop) : Prop where
   /-- `Fact.out` contains the unwrapped witness for the fact represented by the instance of
   `Fact p`. -/
@@ -191,19 +198,23 @@ abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ :
 end Miscellany
 
 /-!
-### Declarations about propositional connectives
+# Declarations about propositional connectives
 -/
 
 section Propositional
 
-/-! ### Declarations about `implies` -/
+/-!
+# Declarations about `implies`
+-/
 
 alias Iff.imp := imp_congr
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mt {a b : Prop} : (a → b) → ¬b → ¬a := mt
 
-/-! ### Declarations about `not` -/
+/-!
+# Declarations about `not`
+-/
 
 alias dec_em := Decidable.em
 
@@ -235,27 +246,33 @@ theorem by_cases {p q : Prop} (hpq : p → q) (hnpq : ¬p → q) : q :=
 alias by_contra := by_contradiction
 
 library_note «decidable namespace» /--
-In most of mathlib, we use the law of excluded middle (LEM) and the axiom of choice (AC) freely.
-The `Decidable` namespace contains versions of lemmas from the root namespace that explicitly
-attempt to avoid the axiom of choice, usually by adding decidability assumptions on the inputs.
+                                   In most of mathlib, we use the law of excluded middle (LEM) and
+the axiom of choice (AC) freely. The `Decidable` namespace
+contains versions of lemmas from the root namespace that
+explicitly attempt to avoid the axiom of choice, usually by
+adding decidability assumptions on the inputs.
 
-You can check if a lemma uses the axiom of choice by using `#print axioms foo` and seeing if
-`Classical.choice` appears in the list.
--/
+                                   You can check if a lemma uses the axiom of choice by using
+`#print axioms foo` and seeing if `Classical.choice` appears in
+the list.
+                                   -/
 
 library_note «decidable arguments» /--
-As mathlib is primarily classical,
-if the type signature of a `def` or `lemma` does not require any `Decidable` instances to state,
-it is preferable not to introduce any `Decidable` instances that are needed in the proof
-as arguments, but rather to use the `classical` tactic as needed.
+                                   As mathlib is primarily classical, if the type signature of a
+`def` or `lemma` does not require any `Decidable` instances to
+state, it is preferable not to introduce any `Decidable`
+instances that are needed in the proof as arguments, but rather
+to use the `classical` tactic as needed.
 
-In the other direction, when `Decidable` instances do appear in the type signature,
-it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
-classical ones, as these may cause instance mismatch errors later.
+                                   In the other direction, when `Decidable` instances do appear in
+the type signature, it is better to use explicitly introduced
+ones rather than allowing Lean to automatically infer classical
+ones, as these may cause instance mismatch errors later.
 
-Various types that (almost) never have provable decidability, such as `ℝ`, `Set α` or `Ideal R`,
-are given global `DecidableEq` instances, so that no decidable arguments have to be provided.
--/
+                                   Various types that (almost) never have provable decidability,
+such as `ℝ`, `Set α` or `Ideal R`, are given global `DecidableEq`
+instances, so that no decidable arguments have to be provided.
+                                   -/
 
 export Classical (not_not)
 
@@ -293,7 +310,9 @@ lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) �
 lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
   Iff.not_right
 
-/-! ### Declarations about `Xor` -/
+/-!
+# Declarations about `Xor`
+-/
 
 /-- `Xor a b` is the exclusive-or of propositions. -/
 def Xor (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
@@ -326,7 +345,9 @@ theorem xor_not_not : Xor (¬a) (¬b) ↔ Xor a b := by grind
 
 protected theorem Xor.or (h : Xor a b) : a ∨ b := by grind
 
-/-! ### Declarations about `and` -/
+/-!
+# Declarations about `and`
+-/
 
 alias Iff.and := and_congr
 alias ⟨And.rotate, _⟩ := and_rotate
@@ -337,7 +358,9 @@ instance : Std.Symm And where
 theorem and_symm_right {α : Sort*} (a b : α) (p : Prop) : p ∧ a = b ↔ p ∧ b = a := by simp [eq_comm]
 theorem and_symm_left {α : Sort*} (a b : α) (p : Prop) : a = b ∧ p ↔ b = a ∧ p := by simp [eq_comm]
 
-/-! ### Declarations about `or` -/
+/-!
+# Declarations about `or`
+-/
 
 alias Iff.or := or_congr
 alias ⟨Or.rotate, _⟩ := or_rotate
@@ -378,7 +401,9 @@ theorem or_congr_left' {c a b : Prop} (h : ¬c → (a ↔ b)) : a ∨ c ↔ b �
 theorem or_congr_right' {c : Prop} (h : ¬a → (b ↔ c)) : a ∨ b ↔ a ∨ c :=
   open scoped Classical in Decidable.or_congr_right' h
 
-/-! ### Declarations about `iff` -/
+/-!
+# Declarations about `iff`
+-/
 
 alias Iff.iff := iff_congr
 
@@ -410,7 +435,9 @@ theorem iff_iff_not_or_and_or_not : (a ↔ b) ↔ (¬a ∨ b) ∧ (a ∨ ¬b) :=
 theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b :=
   open scoped Classical in Decidable.not_and_not_right
 
-/-! ### De Morgan's laws -/
+/-!
+# De Morgan's laws
+-/
 
 /-- One of **de Morgan's laws**: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
@@ -437,7 +464,9 @@ theorem xor_iff_or_and_not_and (a b : Prop) : Xor a b ↔ (a ∨ b) ∧ (¬(a �
 
 end Propositional
 
-/-! ### Declarations about equality -/
+/-!
+# Declarations about equality
+-/
 
 section Equality
 
@@ -510,7 +539,9 @@ lemma heq_iff_exists_cast_eq :
 
 end Equality
 
-/-! ### Declarations about quantifiers -/
+/-!
+# Declarations about quantifiers
+-/
 section Quantifiers
 section Dependent
 
@@ -750,7 +781,9 @@ lemma Subsingleton.forall₂_iff {ι : Sort*} [Subsingleton ι] (P : ι → ι �
 
 end Quantifiers
 
-/-! ### Classical lemmas -/
+/-!
+# Classical lemmas
+-/
 
 namespace Classical
 
@@ -809,7 +842,9 @@ noncomputable def Exists.classicalRecOn {α : Sort*} {p : α → Prop} (h : ∃ 
     {C : Sort*} (H : ∀ a, p a → C) : C :=
   H (Classical.choose h) (Classical.choose_spec h)
 
-/-! ### Declarations about bounded quantifiers -/
+/-!
+# Declarations about bounded quantifiers
+-/
 section BoundedQuantifiers
 
 variable {α : Sort*} {r p q : α → Prop} {P Q : ∀ x, p x → Prop}
@@ -1025,7 +1060,9 @@ theorem Function.Injective.ite {α β : Sort*} {p : β → Prop} [DecidablePred 
 
 end ite
 
-/-! ### Membership -/
+/-!
+# Membership
+-/
 
 alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
 alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'

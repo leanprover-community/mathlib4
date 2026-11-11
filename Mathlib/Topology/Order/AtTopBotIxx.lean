@@ -10,6 +10,9 @@ public import Mathlib.Topology.Order.Basic
 
 import Mathlib.Topology.Order.LeftRightNhds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Filter.atTop` and `Filter.atBot` for intervals in a linear order topology
 

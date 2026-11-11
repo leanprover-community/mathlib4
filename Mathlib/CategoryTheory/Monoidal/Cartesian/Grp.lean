@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.CategoryTheory.Monoidal.Grp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Yoneda embedding of `Grp C`
 

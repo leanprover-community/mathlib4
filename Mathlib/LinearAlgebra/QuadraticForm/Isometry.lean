@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isometric linear maps
 
@@ -62,7 +65,9 @@ theorem toLinearMap_injective :
 theorem ext ⦃f g : Q₁ →qᵢ Q₂⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 protected def Simps.apply (f : Q₁ →qᵢ Q₂) : M₁ → M₂ := f
 
 initialize_simps_projections Isometry (toFun → apply)

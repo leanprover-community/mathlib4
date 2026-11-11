@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Data.ENat.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graph metric
 
@@ -18,22 +21,20 @@ ball in the graph extended metric.
 
 ## Main definitions
 
-- `SimpleGraph.edist` is the graph extended metric.
-- `SimpleGraph.dist` is the graph metric.
-- `SimpleGraph.ball` is the open ball of a given radius around a vertex.
+* `SimpleGraph.edist` is the graph extended metric.
+* `SimpleGraph.dist` is the graph metric.
+* `SimpleGraph.ball` is the open ball of a given radius around a vertex.
 
 ## TODO
 
-- Provide an additional computable version of `SimpleGraph.dist`
+* Provide an additional computable version of `SimpleGraph.dist`
   for when `G` is connected.
-
-- When directed graphs exist, a directed notion of distance,
+* When directed graphs exist, a directed notion of distance,
   likely `ENat`-valued.
 
 ## Tags
 
 graph metric, distance, ball
-
 -/
 
 @[expose] public section
@@ -44,7 +45,9 @@ namespace SimpleGraph
 
 variable {V W : Type*} (G : SimpleGraph V)
 
-/-! ## Metric -/
+/-!
+# Metric
+-/
 
 section edist
 
@@ -406,7 +409,9 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
 
 end dist
 
-/-! ## Ball -/
+/-!
+# Ball
+-/
 
 section ball
 

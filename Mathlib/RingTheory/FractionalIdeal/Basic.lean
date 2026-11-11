@@ -8,13 +8,18 @@ module
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Localization.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fractional ideals
 
 This file defines fractional ideals of an integral domain and proves basic facts about them.
 
 ## Main definitions
+
 Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R` at `S`.
+
 * `IsFractional` defines which `R`-submodules of `P` are fractional ideals
 * `FractionalIdeal S P` is the type of fractional ideals in `P`
 * a coercion `coeIdeal : Ideal R → FractionalIdeal S P`
@@ -24,8 +29,8 @@ Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R`
 
 ## Main statements
 
-  * the `MulLeftMono` and `MulRightMono` instances state that ideal multiplication is monotone
-  * `mul_div_self_cancel_iff` states that `1 / I` is the inverse of `I` if one exists
+* the `MulLeftMono` and `MulRightMono` instances state that ideal multiplication is monotone
+* `mul_div_self_cancel_iff` states that `1 / I` is the inverse of `I` if one exists
 
 ## Implementation notes
 
@@ -48,7 +53,7 @@ making the localization a field.
 
 ## References
 
-  * https://en.wikipedia.org/wiki/Fractional_ideal
+* https://en.wikipedia.org/wiki/Fractional\_ideal
 
 ## Tags
 
@@ -73,7 +78,8 @@ def IsFractional (I : Submodule R P) :=
 
 variable (P)
 
-/-- The fractional ideals of a domain `R` are ideals of `R` divided by some `a ∈ R`.
+/--
+The fractional ideals of a domain `R` are ideals of `R` divided by some `a ∈ R`.
 
 More precisely, let `P` be a localization of `R` at some submonoid `S`,
 then a fractional ideal `I ⊆ P` is an `R`-submodule of `P`,
@@ -92,7 +98,8 @@ open Set Submodule
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
 variable [Algebra R P]
 
-/-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
+/--
+Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
 
 This implements the coercion `FractionalIdeal S P → Submodule R P`.
 -/
@@ -100,7 +107,8 @@ This implements the coercion `FractionalIdeal S P → Submodule R P`.
 def coeToSubmodule (I : FractionalIdeal S P) : Submodule R P :=
   I.val
 
-/-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
+/--
+Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
 
 This coercion is typically called `coeToSubmodule` in lemma names
 (or `coe` when the coercion is clear from the context),
@@ -252,16 +260,19 @@ theorem isFractional_of_le {I : Submodule R P} {J : FractionalIdeal S P} (hIJ : 
   intro b b_mem
   exact ha b (hIJ b_mem)
 
-/-- Map an ideal `I` to a fractional ideal by forgetting `I` is integral.
+/--
+Map an ideal `I` to a fractional ideal by forgetting `I` is integral.
 
-This is the function that implements the coercion `Ideal R → FractionalIdeal S P`. -/
+This is the function that implements the coercion `Ideal R → FractionalIdeal S P`.
+-/
 @[coe]
 def coeIdeal (I : Ideal R) : FractionalIdeal S P :=
   ⟨coeSubmodule P I,
    isFractional_of_le_one _ <| by simpa using coeSubmodule_mono P (le_top : I ≤ ⊤)⟩
 
 -- Is a `CoeTC` rather than `Coe` to speed up failing inference, see library note [use has_coe_t]
-/-- Map an ideal `I` to a fractional ideal by forgetting `I` is integral.
+/--
+Map an ideal `I` to a fractional ideal by forgetting `I` is integral.
 
 This is a bundled version of `IsLocalization.coeSubmodule : Ideal R → Submodule R P`,
 which is not to be confused with the `coe : FractionalIdeal S P → Submodule R P`,
@@ -393,10 +404,12 @@ theorem one_mem_one : (1 : P) ∈ (1 : FractionalIdeal S P) :=
 
 variable {S}
 
-/-- `(1 : FractionalIdeal S P)` is defined as the R-submodule `f(R) ≤ P`.
+/--
+`(1 : FractionalIdeal S P)` is defined as the R-submodule `f(R) ≤ P`.
 
 However, this is not definitionally equal to `1 : Submodule R P`,
-which is proved in the actual `simp` lemma `coe_one`. -/
+which is proved in the actual `simp` lemma `coe_one`.
+-/
 theorem coe_one_eq_coeSubmodule_top : ↑(1 : FractionalIdeal S P) = coeSubmodule P (⊤ : Ideal R) :=
   rfl
 
@@ -407,7 +420,7 @@ theorem coe_one : (↑(1 : FractionalIdeal S P) : Submodule R P) = 1 := by
 section Lattice
 
 /-!
-### `Lattice` section
+# `Lattice` section
 
 Defines the order on fractional ideals as inclusion of their underlying sets,
 and ports the lattice structure on submodules to fractional ideals.
@@ -540,7 +553,8 @@ theorem _root_.IsFractional.pow {I : Submodule R P} (h : IsFractional S I) :
   | 0 => isFractional_of_le_one _ (pow_zero _).le
   | n + 1 => (pow_succ I n).symm ▸ (IsFractional.pow h n).mul h
 
-/-- `FractionalIdeal.mul` is the product of two fractional ideals,
+/--
+`FractionalIdeal.mul` is the product of two fractional ideals,
 used to define the `Mul` instance.
 
 This is only an auxiliary definition: the preferred way of writing `I.mul J` is `I * J`.

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Module.Submodule.LinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `map` and `comap` for `Submodule`s
 
@@ -616,8 +619,10 @@ theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] 
     map (c • f) p ≤ map f p := by
   grw [map_le_iff_le_comap, ← comap_le_comap_smul (map f p) f c, ← map_le_iff_le_comap]
 
-/-- Given modules `N`, `N₂` over a commutative semiring, together with submodules `p ⊆ N`, `q ⊆ N₂`,
-the set of maps $\{f ∈ Hom(N, N₂) | f(p) ⊆ q \}$ is a submodule of `Hom(N, N₂)`. -/
+/--
+Given modules `N`, `N₂` over a commutative semiring, together with submodules `p ⊆ N`, `q ⊆ N₂`,
+the set of maps $`\{f ∈ Hom(N, N₂) | f(p) ⊆ q \}` is a submodule of `Hom(N, N₂)`.
+-/
 def compatibleMaps : Submodule S (N →ₗ[S] N₂) where
   carrier := { fₗ | pₗ ≤ comap fₗ qₗ }
   zero_mem' := by simp
@@ -649,10 +654,12 @@ variable [Semiring R] [Semiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 
-/-- The `LinearMap` from the preimage of a submodule to itself.
+/--
+The `LinearMap` from the preimage of a submodule to itself.
 
 This is the linear version of `AddMonoidHom.addSubmonoidComap`
-and `AddMonoidHom.addSubgroupComap`. -/
+and `AddMonoidHom.addSubgroupComap`.
+-/
 @[simps!]
 def submoduleComap (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂) : q.comap f →ₛₗ[σ₁₂] q :=
   f.restrict fun _ ↦ Submodule.mem_comap.1
@@ -664,13 +671,15 @@ theorem submoduleComap_surjective_of_surjective (f : M →ₛₗ[σ₁₂] M₂)
   apply Subtype.val_injective
   simp [hx]
 
-/-- A linear map between two modules restricts to a linear map from any submodule p of the
+/--
+A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.
 
 This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.
 
 TODO: Consider making this an `abbrev`, dropping its API, and renaming to something like
-`restrictSubmodule`. -/
+`restrictSubmodule`.
+-/
 def submoduleMap [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     p →ₛₗ[σ₁₂] p.map f :=
   f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
@@ -726,7 +735,9 @@ theorem comap_restrict {p : Submodule R₂ M₂} {q : Submodule R M} {f : M₂ �
 
 end LinearMap
 
-/-! ### Linear equivalences -/
+/-!
+# Linear equivalences
+-/
 
 namespace LinearEquiv
 
@@ -742,12 +753,14 @@ variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPai
 variable (e : M ≃ₛₗ[σ₁₂] M₂)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
+/--
+A linear equivalence of two modules restricts to a linear equivalence from any submodule
 `p` of the domain onto the image of that submodule.
 
 This is the linear version of `AddEquiv.submonoidMap` and `AddEquiv.subgroupMap`.
 
-This is `LinearEquiv.ofSubmodule'` but with `map` on the right instead of `comap` on the left. -/
+This is `LinearEquiv.ofSubmodule'` but with `map` on the right instead of `comap` on the left.
+-/
 def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) :=
   { ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map (e : M →ₛₗ[σ₁₂] M₂)) fun x =>
       ⟨x, by

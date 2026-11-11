@@ -8,17 +8,19 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.FibrantObjectHomotopy
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The right derivability structure attached to a model category
 
 We show that the inclusion of the full subcategory of fibrant objects
 in a model category is a right derivability structure. This is
-Corollaire 10.10 in [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008].
+Corollaire 10.10 in \[the paper by Kahn and Maltsiniotis\]\[KahnMaltsiniotis2008\].
 
 ## References
 
-* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
+* ‍\[Bruno Kahn and Georges Maltsiniotis, _Structures de dérivabilité_\]\[KahnMaltsiniotis2008\]
 -/
 
 universe v u

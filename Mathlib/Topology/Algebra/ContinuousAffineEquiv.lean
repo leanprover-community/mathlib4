@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous affine equivalences
 
@@ -15,12 +18,12 @@ In this file, we define continuous affine equivalences, affine equivalences
 which are continuous with continuous inverse.
 
 ## Main definitions
+
 * `ContinuousAffineEquiv.refl k P`: the identity map as a `ContinuousAffineEquiv`;
 * `e.symm`: the inverse map of a `ContinuousAffineEquiv` as a `ContinuousAffineEquiv`;
 * `e.trans e'`: composition of two `ContinuousAffineEquiv`s; note that the order
   follows `mathlib`'s `CategoryTheory` convention (apply `e`, then `e'`),
   not the convention used in function composition and compositions of bundled morphisms.
-
 * `e.toHomeomorph`: the continuous affine equivalence `e` as a homeomorphism
 * `e.toContinuousAffineMap`: the continuous affine equivalence `e` as a continuous affine map
 * `ContinuousLinearEquiv.toContinuousAffineEquiv`: a continuous linear equivalence as a continuous
@@ -28,9 +31,9 @@ which are continuous with continuous inverse.
 * `ContinuousAffineEquiv.constVAdd`: `AffineEquiv.constVAdd` as a continuous affine equivalence
 
 ## TODO
-- equip `ContinuousAffineEquiv k P P` with a `Group` structure,
-  with multiplication corresponding to composition in `AffineEquiv.group`.
 
+* equip `ContinuousAffineEquiv k P P` with a `Group` structure,
+  with multiplication corresponding to composition in `AffineEquiv.group`.
 -/
 
 @[expose] public section
@@ -167,13 +170,17 @@ def symm (e : P₁ ≃ᴬ[k] P₂) : P₂ ≃ᴬ[k] P₁ where
   continuous_toFun := e.continuous_invFun
   continuous_invFun := e.continuous_toFun
 
-/-- See Note [custom simps projection].
-  We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\].
+We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (e : P₁ ≃ᴬ[k] P₂) : P₁ → P₂ :=
   e
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.symm_apply (e : P₁ ≃ᴬ[k] P₂) : P₂ → P₁ :=
   e.symm
 

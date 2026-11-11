@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.RingTheory.Kaehler.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The differentials of a morphism in the category of commutative rings
 
@@ -17,7 +20,6 @@ and `M : ModuleCat B`, we define the type `M.Derivation f` of
 derivations with values in `M` relative to `f`.
 We also construct the module of differentials
 `CommRingCat.KaehlerDifferential f : ModuleCat B` and the corresponding derivation.
-
 -/
 
 @[expose] public section

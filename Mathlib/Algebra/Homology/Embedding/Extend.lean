@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.IsSupported
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The extension of a homological complex by an embedding of complex shapes
 
@@ -15,7 +18,6 @@ and `K : HomologicalComplex C c`, we define `K.extend e : HomologicalComplex C c
 leads to a functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`.
 
 This construction first appeared in the Liquid Tensor Experiment.
-
 -/
 
 @[expose] public section

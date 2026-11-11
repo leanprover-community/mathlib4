@@ -16,7 +16,12 @@ meta import Lean.Elab.ConfigEval.DeriveEvalTerm
 meta import Lean.Elab.ConfigEval.MetaInstances
 import Mathlib.Init
 
-/-! ## Dependent rewrite tactic -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Dependent rewrite tactic
+-/
 
 public meta section
 
@@ -57,9 +62,11 @@ initialize
 
 /-- See `Config.castMode`. -/
 inductive CastMode where
-  /-- Only insert casts on proofs.
+  /--
+  Only insert casts on proofs.
 
-  In this mode, it is *not* permitted to cast subterms of proofs that are not themselves proofs. -/
+  In this mode, it is _not_ permitted to cast subterms of proofs that are not themselves proofs.
+  -/
   -- TODO: should we relax this restriction and switch `castMode` when visiting a proof?
   | proofs
   /- TODO: `proofs` plus "good" user-defined casts such as `Fin.cast`.
@@ -91,14 +98,16 @@ structure Config where
   transparency : TransparencyMode := .reducible
   /-- Which occurrences to rewrite. -/
   occs : Occurrences := .all
-  /-- The cast mode specifies when `rewrite!` is permitted to insert casts
-  in order to correct subterms that become type-incorrect
-  as a result of rewriting.
+  /--
+  The cast mode specifies when `rewrite!` is permitted to insert casts
+in order to correct subterms that become type-incorrect
+as a result of rewriting.
 
   For example, given `P : Nat → Prop`, `f : (n : Nat) → P n → Nat` and `h : P n₀`,
-  rewriting `f n₀ h` by `eq : n₀ = n₁` produces `f n₁ h`,
-  where `h` does not typecheck at `P n₁`.
-  The tactic will cast `h` to `eq ▸ h : P n₁` iff `.proofs ≤ castMode`. -/
+rewriting `f n₀ h` by `eq : n₀ = n₁` produces `f n₁ h`,
+where `h` does not typecheck at `P n₁`.
+The tactic will cast `h` to `eq ▸ h : P n₁` iff `.proofs ≤ castMode`.
+  -/
   castMode : CastMode := .proofs
   /-- Which transparency level to use when cleaning up casts to decide if a cast is a refl-cast. -/
   castTransparency : TransparencyMode := .default
@@ -113,18 +122,22 @@ structure Context where
   x : Expr
   /-- A proof of `p = x`. Must be an fvar. -/
   h : Expr
-  /-- The list of *value-less* binders (`cdecl`s and nondependent `ldecl`s)
-  that we have introduced.
-  Together with each binder, we store its type abstracted over `x` and `h`,
-  and with all occurrences of previous entries in `Δ`
-  casted along the abstracting equation.
+  /--
+  The list of _value-less_ binders (`cdecl`s and nondependent `ldecl`s)
+that we have introduced.
+Together with each binder, we store its type abstracted over `x` and `h`,
+and with all occurrences of previous entries in `Δ`
+casted along the abstracting equation.
 
   E.g., if the local context is `a : T, b : U`,
-  we store `(a, Ma)` where `Ma := fun (x' : α) (h' : x = x') => T[x'/x, h'/h]`
-  and `(b, fun (x' : α) (h' : x = x') => U[x'/x, h'/h, (Eq.rec (motive := Ma) a h)/a])`
-  See the docstring on `visitAndCast`. -/
+we store `(a, Ma)` where `Ma := fun (x' : α) (h' : x = x') => T[x'/x, h'/h]`
+and `(b, fun (x' : α) (h' : x = x') => U[x'/x, h'/h, (Eq.rec (motive := Ma) a h)/a])`
+See the docstring on `visitAndCast`.
+  -/
   Δ : Array (FVarId × Expr)
-  /-- The set of all *dependent* `ldecl`s that we have introduced. -/
+  /--
+  The set of all _dependent_ `ldecl`s that we have introduced.
+  -/
   δ : Std.HashSet FVarId
   -- TODO: use `@[computed_field]`s below when `structure` supports that
   /-- Cached `p.toHeadIndex`. -/
@@ -146,19 +159,22 @@ def canUseCache (cacheOcc dCacheOcc currOcc : Nat) : Occurrences → Bool
         currOccs := currOccs.push (p - currOcc)
     return prevOccs == currOccs
 
-/-- Monad for computing `dabstract`.
+/--
+Monad for computing `dabstract`.
 
 The `Nat` state tracks which occurrence of the pattern we are about to see, 1-indexed
 (so the initial value is `1`).
 
 The cache stores results of `visit` together with
-- the `Nat` state before the cached call; and
-- the difference in the state resulting from the call.
+
+* the `Nat` state before the cached call; and
+* the difference in the state resulting from the call.
 
 We store these because even if the cache hits,
 we must update the state as if the call had been made.
 Storing the difference suffices because the state increases monotonically.
-See also `canUseCache`. -/
+See also `canUseCache`.
+-/
 abbrev M := ReaderT Context <| MonadCacheT ExprStructEq (Expr × Nat × Nat) <|
   StateRefT Nat MetaM
 
@@ -251,9 +267,11 @@ def castFwd (e te p x h : Expr) (Δ : Array (FVarId × Expr)) (δ : Std.HashSet 
 
 mutual
 
-/-- Given `e`, return `e'` where `e'` has had
-- the occurrences of `p` in `ctx.cfg.occs` replaced by `x`; and
-- subterms cast as appropriate in order to make `e'` type-correct.
+/--
+Given `e`, return `e'` where `e'` has had
+
+* the occurrences of `p` in `ctx.cfg.occs` replaced by `x`; and
+* subterms cast as appropriate in order to make `e'` type-correct.
 
 If `et?` is not `none`, the output is guaranteed to have type (defeq to) `et?`.
 
@@ -270,7 +288,8 @@ To achieve this, we maintain the invariant
 that all entries in the local context that we have introduced
 can be translated back to their original (pre-`visit`) types
 using the motive computed by `castBack?.motive`.
-(But we have not attempted to prove this.) -/
+(But we have not attempted to prove this.)
+-/
 partial def visitAndCast (e : Expr) (et? : Option Expr) : M Expr := do
   let e' ← visit e et?
   let some et := et? | return e'

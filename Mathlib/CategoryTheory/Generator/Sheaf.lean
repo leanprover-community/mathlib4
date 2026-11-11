@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Generator.Presheaf
 public import Mathlib.CategoryTheory.Sites.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generators in the category of sheaves
 
 In this file, we show that if `J : GrothendieckTopology C` and `A` is a preadditive
 category which has a separator (and suitable coproducts), then `Sheaf J A` has a separator.
-
 -/
 
 @[expose] public section

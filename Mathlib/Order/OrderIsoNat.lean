@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Denumerable
 public import Mathlib.Order.Lattice.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation embeddings from the naturals
 
@@ -65,9 +68,11 @@ theorem not_acc (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) (k : ℕ) : ¬Ac
   rw [acc_iff_isEmpty_subtype_mem_range, not_isEmpty_iff]
   exact ⟨⟨f, k, rfl⟩⟩
 
-/-- A strict order relation is well-founded iff it doesn't have any infinite descending chain.
+/--
+A strict order relation is well-founded iff it doesn't have any infinite descending chain.
 
-See `wellFounded_iff_isEmpty_descending_chain` for a version which works on any relation. -/
+See `wellFounded_iff_isEmpty_descending_chain` for a version which works on any relation.
+-/
 theorem wellFounded_iff_isEmpty :
     WellFounded r ↔ IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) where
   mp := fun ⟨h⟩ ↦ ⟨fun f ↦ f.not_acc 0 (h _)⟩
@@ -227,10 +232,12 @@ theorem IsChain.finite_of_wellFoundedLT_of_wellFoundedGT [Preorder α] [WellFoun
   let := h.linearOrder
   exact Finite.of_wellFoundedLT_of_wellFoundedGT s
 
-/-- The **monotone chain condition**: a preorder is co-well-founded iff every increasing sequence
+/--
+The *monotone chain condition*: a preorder is co-well-founded iff every increasing sequence
 contains two non-increasing indices.
 
-See `wellFoundedGT_iff_monotone_chain_condition` for a stronger version on partial orders. -/
+See `wellFoundedGT_iff_monotone_chain_condition` for a stronger version on partial orders.
+-/
 theorem wellFoundedGT_iff_monotone_chain_condition' [Preorder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
   refine ⟨fun h a => ?_, fun h => ?_⟩
@@ -245,9 +252,11 @@ theorem WellFoundedGT.monotone_chain_condition' [Preorder α] [h : WellFoundedGT
     ∃ n, ∀ m, n ≤ m → ¬a n < a m :=
   wellFoundedGT_iff_monotone_chain_condition'.1 h a
 
-/-- A stronger version of the **monotone chain** condition for partial orders.
+/--
+A stronger version of the *monotone chain* condition for partial orders.
 
-See `wellFoundedGT_iff_monotone_chain_condition'` for a version on preorders. -/
+See `wellFoundedGT_iff_monotone_chain_condition'` for a version on preorders.
+-/
 theorem wellFoundedGT_iff_monotone_chain_condition [PartialOrder α] :
     WellFoundedGT α ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition'.trans <| by
@@ -259,11 +268,13 @@ theorem WellFoundedGT.monotone_chain_condition [PartialOrder α] [h : WellFounde
     ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition.1 h a
 
-/-- The **antitone chain** condition: an antitone sequence in a partially-ordered type with
+/--
+The *antitone chain* condition: an antitone sequence in a partially-ordered type with
 well-founded `<` is eventually constant.
 
 This is the dual of `WellFoundedGT.monotone_chain_condition`. It is provided for convenience,
-since it unbundles the antitone property from the order homomorphism. -/
+since it unbundles the antitone property from the order homomorphism.
+-/
 theorem WellFoundedLT.antitone_chain_condition [PartialOrder α] [WellFoundedLT α]
     {f : ℕ → α} (hf : Antitone f) : ∃ n, ∀ m, n ≤ m → f n = f m :=
   WellFoundedGT.monotone_chain_condition ⟨OrderDual.toDual ∘ f, hf⟩

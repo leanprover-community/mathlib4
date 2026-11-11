@@ -10,7 +10,11 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.TensorProduct.Maps
 
-/-! # Right-exactness properties of tensor product
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Right-exactness properties of tensor product
 
 ## Modules
 
@@ -18,32 +22,27 @@ public import Mathlib.RingTheory.TensorProduct.Maps
   a surjective map on the right, one still gets a surjective linear map.
   More generally, `LinearMap.rTensor_range`  computes the range of
   `LinearMap.rTensor`
-
 * `LinearMap.lTensor_surjective` asserts that when one tensors
   a surjective map on the left, one still gets a surjective linear map.
   More generally, `LinearMap.lTensor_range`  computes the range of
   `LinearMap.lTensor`
-
 * `TensorProduct.rTensor_exact` says that when one tensors a short exact
   sequence on the right, one still gets a short exact sequence
   (right-exactness of `TensorProduct.rTensor`),
   and `rTensor.equiv` gives the LinearEquiv that follows from this
   combined with `LinearMap.rTensor_surjective`.
-
 * `TensorProduct.lTensor_exact` says that when one tensors a short exact
   sequence on the left, one still gets a short exact sequence
   (right-exactness of `TensorProduct.rTensor`)
   and `lTensor.equiv` gives the LinearEquiv that follows from this
   combined with `LinearMap.lTensor_surjective`.
-
 * For `N : Submodule R M`, `LinearMap.exact_subtype_mkQ N` says that
   the inclusion of the submodule and the quotient map form an exact pair,
   and `lTensor_mkQ` compute `ker (lTensor Q (N.mkQ))` and similarly for `rTensor_mkQ`
-
 * `TensorProduct.map_ker` computes the kernel of `TensorProduct.map f g'`
   in the presence of two short exact sequences.
 
-The proofs are those of [bourbaki1989] (chap. 2, §3, n°6)
+The proofs are those of \[bourbaki1989\] (chap. 2, §3, n°6)
 
 ## Algebras
 
@@ -51,7 +50,6 @@ In the case of a tensor product of algebras, these results can be particularized
 to compute some kernels.
 
 * `Algebra.TensorProduct.ker_map` computes the kernel of `Algebra.TensorProduct.map f g`
-
 * `Algebra.TensorProduct.lTensor_ker` and `Algebra.TensorProduct.rTensor_ker`
   compute the kernels of `Algebra.TensorProduct.map f id` and `Algebra.TensorProduct.map id g`
 
@@ -59,14 +57,12 @@ to compute some kernels.
 
 * All kernels are computed by applying the first isomorphism theorem and
   establishing some isomorphisms.
-
 * The proofs are essentially done twice,
   once for `lTensor` and then for `rTensor`.
   It is possible to apply `TensorProduct.flip` to deduce one of them
   from the other.
   However, this approach will lead to different isomorphisms,
   and it is not quicker.
-
 * The proofs of `Ideal.map_includeLeft_eq` and `Ideal.map_includeRight_eq`
   could be easier if `I ⊗[R] B` was naturally an `A ⊗[R] B` module,
   and the map to `A ⊗[R] B` was known to be linear.
@@ -76,13 +72,11 @@ to compute some kernels.
 ## TODO
 
 * Treat the noncommutative case
-
 * Treat the case of modules over semirings
   (For a possible definition of an exact sequence of commutative semigroups, see
-  [Grillet-1969b], Pierre-Antoine Grillet,
-  *The tensor product of commutative semigroups*,
+  ‍\[Grillet-1969b\], Pierre-Antoine Grillet,
+  _The tensor product of commutative semigroups_,
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
-
 -/
 
 @[expose] public section

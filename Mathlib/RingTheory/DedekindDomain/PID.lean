@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Criteria under which a Dedekind domain is a PID
 
@@ -86,7 +89,8 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
 /--
 An invertible fractional ideal of a commutative ring with finitely many maximal ideals is principal.
 
-https://math.stackexchange.com/a/95857 -/
+https://math.stackexchange.com/a/95857
+-/
 theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommRing A]
     [Algebra R A] {S : Submonoid R} [IsLocalization S A] (hS : S ≤ R⁰)
     (hf : {I : Ideal R | I.IsMaximal}.Finite) (I I' : FractionalIdeal S A) (hinv : I * I' = 1) :
@@ -145,9 +149,11 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
     simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu
     exact Submodule.mem_map_of_mem <| M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩
 
-/-- An invertible ideal in a commutative ring with finitely many maximal ideals is principal.
+/--
+An invertible ideal in a commutative ring with finitely many maximal ideals is principal.
 
-https://math.stackexchange.com/a/95857 -/
+https://math.stackexchange.com/a/95857
+-/
 theorem Ideal.IsPrincipal.of_finite_maximals_of_isUnit (hf : {I : Ideal R | I.IsMaximal}.Finite)
     {I : Ideal R} (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) : I.IsPrincipal :=
   (IsLocalization.coeSubmodule_isPrincipal _ le_rfl).mp

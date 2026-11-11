@@ -13,24 +13,29 @@ import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Tactic.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # More operations on fractional ideals
 
 ## Main definitions
+
 * `map` is the pushforward of a fractional ideal along an algebra morphism
 
 Let `K` be the localization of `R` at `R⁰ = R \ {0}` (i.e. the field of fractions).
+
 * `FractionalIdeal R⁰ K` is the type of fractional ideals in the field of fractions
 * `Div (FractionalIdeal R⁰ K)` instance:
-  the ideal quotient `I / J` (typically written $I : J$, but a `:` operator cannot be defined)
+  the ideal quotient `I / J` (typically written $`I : J`, but a `:` operator cannot be defined)
 
 ## Main statement
 
-  * `isNoetherian` states that every fractional ideal of a Noetherian integral domain is Noetherian
+* `isNoetherian` states that every fractional ideal of a Noetherian integral domain is Noetherian
 
 ## References
 
-  * https://en.wikipedia.org/wiki/Fractional_ideal
+* https://en.wikipedia.org/wiki/Fractional\_ideal
 
 ## Tags
 
@@ -276,7 +281,7 @@ end
 section IsFractionRing
 
 /-!
-### `IsFractionRing` section
+# `IsFractionRing` section
 
 This section concerns fractional ideals in the field of fractions,
 i.e. the type `FractionalIdeal R⁰ K` where `IsFractionRing R K`.
@@ -340,7 +345,7 @@ end IsFractionRing
 section Quotient
 
 /-!
-### `quotient` section
+# `quotient` section
 
 This section defines the ideal quotient of fractional ideals.
 
@@ -943,11 +948,13 @@ variable {R S : Type*} (K L : Type*) [CommRing R] [IsDomain R] [CommRing S] [IsD
 local instance (f : R ≃+* S) : RingHomInvPair (f : R →+* S) f.symm :=
   RingHomInvPair.of_ringEquiv f
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Submodule R K` is fractional with respect to
+/--
+If `f : R ≃+* S` is a ring isomorphism and `I : Submodule R K` is fractional with respect to
 `R⁰`, then `I.map (IsFractionRing.semilinearEquivOfRingEquiv K L f).toLinearMap`
 is fractional with respect to `S⁰`.
 
-Do not confuse with `IsFractional.map`. -/
+Do not confuse with `IsFractional.map`.
+-/
 theorem _root_.IsFractional.mapEquiv {I : Submodule R K} (hI : IsFractional R⁰ I) :
     IsFractional S⁰ (I.map (semilinearEquivOfRingEquiv K L f).toLinearMap) := by
   simp only [IsFractional, mem_nonZeroDivisors_iff_ne_zero, ne_eq, Submodule.mem_map,

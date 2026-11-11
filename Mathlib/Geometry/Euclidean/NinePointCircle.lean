@@ -10,6 +10,9 @@ public import Mathlib.Geometry.Euclidean.MongePoint
 import Mathlib.Geometry.Euclidean.Angle.Sphere
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nine-point circle
 
@@ -18,8 +21,9 @@ This file defines the nine-point circle of a triangle, and its higher dimension 
 specific points as desired.
 
 ## Main definitions
+
 * `Affine.Simplex.ninePointCircle`: the 3(n+1)-point sphere of a simplex.
-* `Affine.Simplex.eulerPoint`: the $1/n$th of the way from the Monge point to a vertex.
+* `Affine.Simplex.eulerPoint`: the \$1/n\$th of the way from the Monge point to a vertex.
 * `Affine.Simplex.faceOppositeCentroid_mem_ninePointCircle`: the 3(n+1)-point sphere passes through
   the centroid of each face of the simplex
 * `Affine.Simplex.eulerPoint_mem_ninePointCircle`: the 3(n+1)-point sphere passes through all Euler
@@ -28,6 +32,7 @@ specific points as desired.
   three altitude feet of the triangle.
 
 ## References
+
 * Małgorzata Buba-Brzozowa, [The Monge Point and the 3(n+1) Point Sphere of an
   n-Simplex](https://pdfs.semanticscholar.org/6f8b/0f623459c76dac2e49255737f8f0f4725d16.pdf)
 -/
@@ -45,9 +50,9 @@ namespace Affine.Simplex
 
 /--
 The 3(n+1)-point sphere of a simplex. Due to the lack of a better name and to avoid numbers in the
-identifier, we still use the name "nine-point circle" even for higher dimensions. The center
-$N$ is defined on the Euler line, collinear with circumcenter $O$ and centroid $G$, in the order of
-$O$, $G$, and $N$, with $OG : GN = n : 1$. The radius is $1/n$ of the circumradius.
+identifier, we still use the name "nine-point circle" even for higher dimensions. The center $`N` is
+defined on the Euler line, collinear with circumcenter $`O` and centroid $`G`, in the order of $`O`,
+$`G`, and $`N`, with $`OG : GN = n : 1`. The radius is $`1/n` of the circumradius.
 -/
 def ninePointCircle {n : ℕ} (s : Simplex ℝ P n) : Sphere P where
   center := ((n + 1) / n : ℝ) • (s.centroid -ᵥ s.circumcenter) +ᵥ s.circumcenter
@@ -241,8 +246,10 @@ theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
   refine Set.mem_of_mem_of_subset ?_ (s.vectorSpan_isOrtho_altitude_direction i).ge
   exact vsub_mem_direction (s.mem_altitude i) (s.orthocenter_mem_altitude)
 
-/-- In triangle $ABC$ with side length $a$, $b$, and $c$, nine-point circle center $N$ and
-circumradius $R$, we have $‖AN‖^2 = (R^2 + b^2 + c^2 - a^2) / 4$. -/
+/--
+In triangle $`ABC` with side length $`a`, $`b`, and $`c`, nine-point circle center $`N` and
+circumradius $`R`, we have $`‖AN‖^2 = (R^2 + b^2 + c^2 - a^2) / 4`.
+-/
 theorem dist_ninePointCircle_center_sq (s : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     dist (s.points i₁) s.ninePointCircle.center ^ 2 =

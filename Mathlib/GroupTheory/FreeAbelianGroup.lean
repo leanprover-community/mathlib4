@@ -10,6 +10,9 @@ public import Mathlib.Control.Basic
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free abelian groups
 
@@ -32,15 +35,11 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup 
 * `FreeAbelianGroup α` : the free abelian group on a type `α`. As an abelian
   group it is `α →₀ ℤ`, the functions from `α` to `ℤ` such that all but finitely
   many elements get mapped to zero, however this is not how it is implemented.
-
 * `lift f : FreeAbelianGroup α →+ A` : the group homomorphism induced
   by the map `f : α → A`.
-
 * `map (f : α → β) : FreeAbelianGroup α →+ FreeAbelianGroup β` : functoriality
-    of `FreeAbelianGroup`.
-
+  of `FreeAbelianGroup`.
 * `instance [Monoid α] : Semigroup (FreeAbelianGroup α)`
-
 * `instance [CommMonoid α] : CommRing (FreeAbelianGroup α)`
 
 It has been suggested that we would be better off refactoring this file
@@ -64,7 +63,6 @@ allowed to be in different universes), so `(map f).map_add`
 etc. can be used to prove that `FreeAbelianGroup.map` preserves addition. The
 functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_apply`
 are about `FreeAbelianGroup.map`.
-
 -/
 
 @[expose] public section
@@ -131,7 +129,9 @@ theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f 
     g x = lift f x :=
   congr($(lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _)
 
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 @[ext high]
 theorem lift_ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H

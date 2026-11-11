@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.AdjointAction.Basic
 public import Mathlib.Algebra.Lie.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Engel's theorem
 
@@ -50,8 +53,8 @@ will consist of such elements `m` (see: `LieModule.nontrivial_max_triv_of_isNilp
 that this result has not previously been established at this level of generality.
 
 The second part of the traditional statement of Engel's theorem concerns nilpotency of the Lie
-algebra and a proof of this for general coefficients appeared in the literature as long ago
-[as 1937][zorn1937]. This also follows trivially from `LieModule.isNilpotent_iff_forall` simply by
+algebra and a proof of this for general coefficients appeared in the literature as long ago ‍\[as
+1937\]\[zorn1937\]. This also follows trivially from `LieModule.isNilpotent_iff_forall` simply by
 taking `M = L`.
 
 It is pleasing that the two parts of the traditional statements of Engel's theorem are thus unified
@@ -59,11 +62,10 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
 
 ## Main definitions
 
-  * `LieAlgebra.IsEngelian`
-  * `LieAlgebra.isEngelian_of_isNoetherian`
-  * `LieModule.isNilpotent_iff_forall`
-  * `LieAlgebra.isNilpotent_iff_forall`
-
+* `LieAlgebra.IsEngelian`
+* `LieAlgebra.isEngelian_of_isNoetherian`
+* `LieModule.isNilpotent_iff_forall`
+* `LieAlgebra.isNilpotent_iff_forall`
 -/
 
 @[expose] public section
@@ -151,11 +153,13 @@ open LieModule hiding IsNilpotent
 
 variable (R L)
 
-/-- A Lie algebra `L` is said to be Engelian if a sufficient condition for any `L`-Lie module `M` to
+/--
+A Lie algebra `L` is said to be Engelian if a sufficient condition for any `L`-Lie module `M` to
 be nilpotent is that the image of the map `L → End(M)` consists of nilpotent elements.
 
 Engel's theorem `LieAlgebra.isEngelian_of_isNoetherian` states that any Noetherian Lie algebra is
-Engelian. -/
+Engelian.
+-/
 def LieAlgebra.IsEngelian : Prop :=
   ∀ (M : Type u₄) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M],
     (∀ x : L, IsNilpotent (toEnd R L M x)) → LieModule.IsNilpotent L M
@@ -213,11 +217,13 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
 attribute [local instance] LieSubalgebra.subsingleton_bot
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-/-- *Engel's theorem*.
+/--
+_Engel's theorem_.
 
 Note that this implies all traditional forms of Engel's theorem via
 `LieModule.nontrivial_max_triv_of_isNilpotent`, `LieModule.isNilpotent_iff_forall`,
-`LieAlgebra.isNilpotent_iff_forall`. -/
+`LieAlgebra.isNilpotent_iff_forall`.
+-/
 theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.IsEngelian R L := by
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEnd_iff R]
@@ -257,9 +263,11 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
   obtain rfl : K = ⊤ := by grind
   exact hK₁
 
-/-- Engel's theorem.
+/--
+Engel's theorem.
 
-See also `LieModule.isNilpotent_iff_forall'` which assumes that `M` is Noetherian instead of `L`. -/
+See also `LieModule.isNilpotent_iff_forall'` which assumes that `M` is Noetherian instead of `L`.
+-/
 theorem LieModule.isNilpotent_iff_forall [IsNoetherian R L] :
     LieModule.IsNilpotent L M ↔ ∀ x, _root_.IsNilpotent <| toEnd R L M x :=
   ⟨fun _ ↦ isNilpotent_toEnd_of_isNilpotent R L M,

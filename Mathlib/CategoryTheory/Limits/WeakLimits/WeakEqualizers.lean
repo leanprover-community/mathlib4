@@ -8,11 +8,13 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.WeakLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak equalizers
 
 These are weak limits for diagrams of shape `WalkingParallelPair`.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.Data.Set.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Successors and predecessor operations of `Fin n`
 
@@ -19,7 +22,6 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.succAbove` : embeds `Fin n` into `Fin (n + 1)` skipping `p`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
-
 -/
 
 @[expose] public section
@@ -37,7 +39,7 @@ variable {n m : ℕ}
 section Succ
 
 /-!
-### succ and casts into larger Fin types
+# succ and casts into larger Fin types
 -/
 
 lemma succ_injective (n : ℕ) : Injective (@Fin.succ n) := fun a b ↦ by simp [Fin.ext_iff]
@@ -211,10 +213,12 @@ theorem castSucc_zero' [NeZero n] : castSucc (0 : Fin n) = 0 := rfl
 @[simp]
 theorem castSucc_pos_iff [NeZero n] {i : Fin n} : 0 < castSucc i ↔ 0 < i := by simp [← val_pos_iff]
 
-/-- `castSucc i` is positive when `i` is positive.
+/--
+`castSucc i` is positive when `i` is positive.
 
 The `Fin.castSucc_pos` in `Lean` only applies in `Fin (n+1)`.
-This one instead uses a `NeZero n` typeclass hypothesis. -/
+This one instead uses a `NeZero n` typeclass hypothesis.
+-/
 alias ⟨_, castSucc_pos'⟩ := castSucc_pos_iff
 
 theorem castSucc_ne_zero_of_lt {p i : Fin n} (h : p < i) : castSucc i ≠ 0 := by
@@ -264,7 +268,7 @@ end Succ
 section Pred
 
 /-!
-### pred
+# pred
 -/
 
 theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
@@ -920,7 +924,8 @@ theorem succAbove_succAbove_predAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     rw [succAbove_of_le_castSucc _ _ h,
       succ_succAbove_predAbove (Fin.ne_of_lt <| le_castSucc_iff.mp h)]
 
-/-- Given `i : Fin (n + 2)` and `j : Fin (n + 1)`,
+/--
+Given `i : Fin (n + 2)` and `j : Fin (n + 1)`,
 there are two ways to represent the order embedding `Fin n → Fin (n + 2)`
 leaving holes at `i` and `i.succAbove j`.
 

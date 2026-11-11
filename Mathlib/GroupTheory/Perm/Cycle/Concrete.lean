@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of cyclic permutations constructed from lists/cycles
 
@@ -38,7 +41,6 @@ The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uni
 result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-
 -/
 
 @[expose] public section
@@ -498,7 +500,9 @@ notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) Li
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- Represents a permutation as product of disjoint cycles:
+/--
+Represents a permutation as product of disjoint cycles:
+
 ```
 #eval (c[0, 1, 2, 3] : Perm (Fin 4))
 -- c[0, 1, 2, 3]

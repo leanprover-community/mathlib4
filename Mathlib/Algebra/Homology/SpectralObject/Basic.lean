@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ExactSequence
 public import Mathlib.CategoryTheory.ComposableArrows.One
 public import Mathlib.CategoryTheory.ComposableArrows.Two
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral objects in abelian categories
 
@@ -16,8 +19,8 @@ In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in an abelian category `C` indexed by the category `ι`.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_, II.4\]\[verdier1996\]
 -/
 
 @[expose] public section

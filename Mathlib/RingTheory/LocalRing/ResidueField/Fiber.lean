@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The fiber of a ring homomorphism at a prime ideal
 
@@ -56,10 +59,12 @@ lemma ResidueField.exists_smul_eq_tmul_one
     ← IsLocalRing.ResidueField.algebraMap_eq, ← algebraMap.coe_smul,
     ← IsScalarTower.algebraMap_apply] using congr(t • $e)
 
-/-- The fiber of a prime `p` of `R` in an `R`-algebra `S`, defined to be `κ(p) ⊗ S`.
+/--
+The fiber of a prime `p` of `R` in an `R`-algebra `S`, defined to be `κ(p) ⊗ S`.
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
-and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`. -/
+and the actual set-theoretic fiber of `PrimeSpectrum S → PrimeSpectrum R` at `p`.
+-/
 abbrev Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [AddCommGroup S] [Module R S] : Type _ :=
   p.ResidueField ⊗[R] S
 

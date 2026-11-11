@@ -11,6 +11,9 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotents in rings
 
@@ -21,21 +24,21 @@ In this file we provide various results regarding idempotent elements in rings.
 
 ## Main definitions
 
-- `OrthogonalIdempotents`:
+* `OrthogonalIdempotents`:
   A family `{ eᵢ }` of idempotent elements is orthogonal if `eᵢ * eⱼ = 0` for all `i ≠ j`.
-- `CompleteOrthogonalIdempotents`:
+* `CompleteOrthogonalIdempotents`:
   A family `{ eᵢ }` of orthogonal idempotent elements is complete if `∑ eᵢ = 1`.
 
 ## Main results
 
-- `CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker`:
+* `CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker`:
   If the kernel of `f : R →+* S` consists of nilpotent elements, and `{ eᵢ }` is a family of
   complete orthogonal idempotents in the range of `f`, then `{ eᵢ }` is the image of some
   complete orthogonal idempotents in `R`.
-- `existsUnique_isIdempotentElem_eq_of_ker_isNilpotent`:
+* `existsUnique_isIdempotentElem_eq_of_ker_isNilpotent`:
   If `R` is commutative and the kernel of `f : R →+* S` consists of nilpotent elements,
   then every idempotent in the range of `f` lifts to a unique idempotent in `R`.
-- `CompleteOrthogonalIdempotents.bijective_pi`:
+* `CompleteOrthogonalIdempotents.bijective_pi`:
   If `R` is commutative, then a family `{ eᵢ }` of complete orthogonal idempotent elements induces
   a ring isomorphism `R ≃ ∏ R ⧸ ⟨1 - eᵢ⟩`.
 -/
@@ -122,6 +125,7 @@ variable [Fintype I]
 
 /--
 A family `{ eᵢ }` of idempotent elements is complete orthogonal if
+
 1. (orthogonal) `eᵢ * eⱼ = 0` for all `i ≠ j`.
 2. (complete) `∑ eᵢ = 1`
 -/
@@ -479,10 +483,12 @@ noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem
   AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
     RingHom.prod_bijective_of_isIdempotentElem he hf hef₁ hef₂
 
-/-- One can lift a family of complete orthogonal idempotents of `R/e₀` to get one on `R`.
+/--
+One can lift a family of complete orthogonal idempotents of `R/e₀` to get one on `R`.
 
 Note that the lemma itself is stated in terms of surjections (where `T = S / I`)
-instead for syntactic generality. -/
+instead for syntactic generality.
+-/
 lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
     (f : R →+* S) (e₀ : R) (he₀ : IsIdempotentElem e₀) (hfe₀ : RingHom.ker f = .span {e₀})
     (e : I → S) (he : CompleteOrthogonalIdempotents e) (hef : ∀ i, e i ∈ f.range) :

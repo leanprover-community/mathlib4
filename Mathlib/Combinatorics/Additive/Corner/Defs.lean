@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Additive.FreimanHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Corners
 
@@ -15,8 +18,8 @@ property of being corner-free.
 
 ## References
 
-* [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
-* [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
+* ‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
+* [Wikipedia, _Corners theorem_](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
 
 @[expose] public section
@@ -31,11 +34,13 @@ section AddCommMonoid
 variable [AddCommMonoid G] [AddCommMonoid H] {A B : Set (G × G)} {s : Set G} {t : Set H} {f : G → H}
   {x₁ y₁ x₂ y₂ : G}
 
-/-- A **corner** of a set `A` in an abelian group is a triple of points of the form
-`(x, y), (x + d, y), (x, y + d)`. It is **nontrivial** if `d ≠ 0`.
+/--
+A *corner* of a set `A` in an abelian group is a triple of points of the form
+`(x, y), (x + d, y), (x, y + d)`. It is *nontrivial* if `d ≠ 0`.
 
 Here we define it as triples `(x₁, y₁), (x₂, y₁), (x₁, y₂)` where `x₁ + y₂ = x₂ + y₁` in order for
-the definition to make sense in commutative monoids, the motivating example being `ℕ`. -/
+the definition to make sense in commutative monoids, the motivating example being `ℕ`.
+-/
 @[mk_iff]
 structure IsCorner (A : Set (G × G)) (x₁ y₁ x₂ y₂ : G) : Prop where
   fst_fst_mem : (x₁, y₁) ∈ A

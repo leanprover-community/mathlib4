@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of biproducts
 
@@ -18,7 +21,6 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
   images and show that the biproduct is preserved if one of them is an isomorphism,
 * give the canonical isomorphism between the image of a biproduct and the biproduct of the images
   in case that the biproduct is preserved.
-
 -/
 
 @[expose] public section

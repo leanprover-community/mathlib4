@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Seq.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partially defined possibly infinite lists
 
@@ -22,17 +25,19 @@ open Function
 
 universe u v w
 
-/-- Weak sequences.
+/--
+Weak sequences.
 
-  While the `Seq` structure allows for lists which may not be finite,
-  a weak sequence also allows the computation of each element to
-  involve an indeterminate amount of computation, including possibly
-  an infinite loop. This is represented as a regular `Seq` interspersed
-  with `none` elements to indicate that computation is ongoing.
+While the `Seq` structure allows for lists which may not be finite,
+a weak sequence also allows the computation of each element to
+involve an indeterminate amount of computation, including possibly
+an infinite loop. This is represented as a regular `Seq` interspersed
+with `none` elements to indicate that computation is ongoing.
 
-  This model is appropriate for Haskell style lazy lists, and is closed
-  under most interesting computation patterns on infinite lists,
-  but conversely it is difficult to extract elements from it. -/
+This model is appropriate for Haskell style lazy lists, and is closed
+under most interesting computation patterns on infinite lists,
+but conversely it is difficult to extract elements from it.
+-/
 def WSeq (α) :=
   Seq (Option α)
 

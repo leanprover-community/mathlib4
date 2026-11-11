@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Index
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commensurability for subgroups
 

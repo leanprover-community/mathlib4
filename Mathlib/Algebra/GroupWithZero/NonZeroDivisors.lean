@@ -14,6 +14,9 @@ public import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.GroupWithZero.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-zero divisors and smul-divisors
 
@@ -24,13 +27,13 @@ non-commutative monoids.
 ## Notation
 
 This file declares the notations:
-- `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the scope `nonZeroDivisors`.
-- `M₀⁰[M]` for the submonoid of non-zero smul-divisors of `M₀` with respect to `M`, in the locale
+
+* `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the scope `nonZeroDivisors`.
+* `M₀⁰[M]` for the submonoid of non-zero smul-divisors of `M₀` with respect to `M`, in the locale
   `nonZeroSMulDivisors`
 
 Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access this notation in
 your own code.
-
 -/
 
 @[expose] public section
@@ -104,10 +107,12 @@ def nonZeroDivisors (M₀ : Type*) [MonoidWithZero M₀] : Submonoid M₀ :=
 /-- The notation for the submonoid of non-zero divisors. -/
 scoped[nonZeroDivisors] notation:9000 M₀ "⁰" => nonZeroDivisors M₀
 
-/-- Let `M₀` be a monoid with zero and `M` an additive monoid with an `M₀`-action, then the
+/--
+Let `M₀` be a monoid with zero and `M` an additive monoid with an `M₀`-action, then the
 collection of non-zero smul-divisors forms a submonoid.
 
-These elements are also called `M`-regular. -/
+These elements are also called `M`-regular.
+-/
 def nonZeroSMulDivisors (M₀ : Type*) [MonoidWithZero M₀] (M : Type*) [Zero M] [MulAction M₀ M] :
     Submonoid M₀ where
   carrier := { r | ∀ m : M, r • m = 0 → m = 0}

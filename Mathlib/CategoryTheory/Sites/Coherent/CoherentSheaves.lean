@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves for the coherent topology
 

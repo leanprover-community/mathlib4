@@ -8,25 +8,30 @@ module
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topological abelianization of the absolute Galois group.
 
 We define the absolute Galois group of a field `K` and its topological abelianization.
 
 ## Main definitions
-- `Field.absoluteGaloisGroup` : The Galois group of the field extension `K^al/K`, where `K^al` is an
+
+* `Field.absoluteGaloisGroup` : The Galois group of the field extension `K^al/K`, where `K^al` is an
   algebraic closure of `K`.
-- `Field.absoluteGaloisGroupAbelianization` : The topological abelianization of
+* `Field.absoluteGaloisGroupAbelianization` : The topological abelianization of
   `Field.absoluteGaloisGroup K`, that is, the quotient of `Field.absoluteGaloisGroup K` by the
   topological closure of its commutator subgroup.
 
 ## Main results
-- `Field.absoluteGaloisGroup.commutator_closure_isNormal` : the topological closure of the
+
+* `Field.absoluteGaloisGroup.commutator_closure_isNormal` : the topological closure of the
   commutator of `absoluteGaloisGroup` is a normal subgroup.
 
 ## Tags
-field, algebraic closure, galois group, abelianization
 
+field, algebraic closure, galois group, abelianization
 -/
 
 @[expose] public noncomputable section
@@ -35,7 +40,9 @@ namespace Field
 
 variable (K L : Type*) [Field K] [Field L]
 
-/-! ### The absolute Galois group -/
+/-!
+# The absolute Galois group
+-/
 
 /-- The absolute Galois group of `K`, defined as the Galois group of the field extension `K^al/K`,
   where `K^al` is an algebraic closure of `K`. -/
@@ -90,7 +97,9 @@ noncomputable def absoluteGaloisGroup.map (f : K →+* L) : G_K L →ₜ* G_K K 
   letI : Algebra (AlgebraicClosure K) (AlgebraicClosure L) := g.toAlgebra
   absoluteGaloisGroup.mapOfAlgebra K L
 
-/-! ### The topological abelianization of the absolute Galois group -/
+/-!
+# The topological abelianization of the absolute Galois group
+-/
 
 instance absoluteGaloisGroup.commutator_closure_isNormal :
     (commutator (G_K K)).topologicalClosure.Normal :=

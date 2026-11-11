@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
 import Mathlib.Analysis.Calculus.FDeriv.Const
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of the Cartesian product of functions
 
@@ -42,7 +45,9 @@ variable {L : Filter (E × E)}
 
 section CartesianProduct
 
-/-! ### Derivative of the Cartesian product of two functions -/
+/-!
+# Derivative of the Cartesian product of two functions
+-/
 
 
 section Prod
@@ -331,7 +336,7 @@ end prodMap
 section Pi
 
 /-!
-### Derivatives of functions `f : E → Π i, F' i`
+# Derivatives of functions `f : E → Π i, F' i`
 
 In this section we formulate `has*FDeriv*_pi` theorems as `iff`s, and provide two versions of each
 theorem:
@@ -494,7 +499,7 @@ theorem fderiv_apply (hΦ : DifferentiableAt 𝕜 Φ x) (i : ι) :
 end Pi
 
 /-!
-### Derivatives of tuples `f : E → Π i : Fin n.succ, F' i`
+# Derivatives of tuples `f : E → Π i : Fin n.succ, F' i`
 
 These can be used to prove results about functions of the form `fun x ↦ ![f x, g x, h x]`,
 as `Matrix.vecCons` is defeq to `Fin.cons`.

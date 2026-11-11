@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.LinearAlgebra.Trace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trace for (finite) ring extensions.
 
@@ -38,8 +41,7 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 
 ## References
 
-* https://en.wikipedia.org/wiki/Field_trace
-
+* https://en.wikipedia.org/wiki/Field\_trace
 -/
 
 @[expose] public section
@@ -102,7 +104,8 @@ theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
 
 theorem trace_self_apply (a) : trace R R a = a := by simp
 
-/-- If `x` is in the base field `K`, then the trace is `[L : K] * x`.
+/--
+If `x` is in the base field `K`, then the trace is `[L : K] * x`.
 
 (If `L` is not finite-dimensional over `K`, then `trace` and `finrank` return `0`.)
 -/
@@ -139,8 +142,10 @@ theorem trace_trace [Algebra S T] [IsScalarTower R S T]
     trace R S (trace S T x) = trace R T x :=
   trace_trace_of_basis (Module.Free.chooseBasis R S) (Module.Free.chooseBasis S T) x
 
-/-- Let `T / S / R` be a tower of finite extensions of fields. Then
-$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$. -/
+/--
+Let `T / S / R` be a tower of finite extensions of fields. Then
+$`\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}`.
+-/
 @[simp, stacks 0BIJ "Trace"]
 theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Free R S] [Module.Finite R S] [Module.Free S T] [Module.Finite S T] :

@@ -10,13 +10,15 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 public import Mathlib.LinearAlgebra.BilinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ext-modules in linear categories
 
 In this file, we show that if `C` is an `R`-linear abelian category,
 then there is an `R`-module structure on the groups `Ext X Y n`
 for `X` and `Y` in `C` and `n : ℕ`.
-
 -/
 
 @[expose] public section

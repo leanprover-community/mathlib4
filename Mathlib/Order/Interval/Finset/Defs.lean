@@ -10,6 +10,10 @@ public import Mathlib.Data.Finset.Prod
 public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.Interval.Set.UnorderedInterval
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Locally finite orders
 
@@ -226,9 +230,11 @@ def LocallyFiniteOrderTop.ofIci (α : Type*) [PartialOrder α] [DecidableEq α]
 variable {α β : Type*}
 
 -- See note [reducible non-instances]
-/-- An empty type is locally finite.
+/--
+An empty type is locally finite.
 
-This is not an instance as it would not be defeq to more specific instances. -/
+This is not an instance as it would not be defeq to more specific instances.
+-/
 protected abbrev IsEmpty.toLocallyFiniteOrder [Preorder α] [IsEmpty α] : LocallyFiniteOrder α where
   finsetIcc := isEmptyElim
   finsetIco := isEmptyElim
@@ -240,13 +246,17 @@ protected abbrev IsEmpty.toLocallyFiniteOrder [Preorder α] [IsEmpty α] : Local
   finset_mem_Ioo := isEmptyElim
 
 -- See note [reducible non-instances]
-/-- An empty type is locally finite.
+/--
+An empty type is locally finite.
 
-This is not an instance as it would not be defeq to more specific instances. -/
+This is not an instance as it would not be defeq to more specific instances.
+-/
 @[to_dual
-/-- An empty type is locally finite.
+/--
+An empty type is locally finite.
 
-This is not an instance as it would not be defeq to more specific instances. -/]
+This is not an instance as it would not be defeq to more specific instances.
+-/]
 protected abbrev IsEmpty.toLocallyFiniteOrderTop [Preorder α] [IsEmpty α] :
     LocallyFiniteOrderTop α where
   finsetIci := isEmptyElim
@@ -267,25 +277,33 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α] {a b x : α}
 
-/-- The finset $[a, b]$ of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a
-finset. -/
+/--
+The finset $`[a, b]` of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a
+finset.
+-/
 @[to_dual self (reorder := a b)]
 def Icc (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIcc a b
 
-/-- The finset $[a, b)$ of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a
-finset. -/
+/--
+The finset $`[a, b)` of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a
+finset.
+-/
 def Ico (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIco a b
 
-/-- The finset $(a, b]$ of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a
-finset. -/
+/--
+The finset $`(a, b]` of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a
+finset.
+-/
 @[to_dual existing (reorder := a b)]
 def Ioc (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIoc a b
 
-/-- The finset $(a, b)$ of elements `x` such that `a < x` and `x < b`. Basically `Set.Ioo a b` as a
-finset. -/
+/--
+The finset $`(a, b)` of elements `x` such that `a < x` and `x < b`. Basically `Set.Ioo a b` as a
+finset.
+-/
 @[to_dual self (reorder := a b)]
 def Ioo (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIoo a b
@@ -344,15 +362,23 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α] {a x : α}
 
-/-- The finset $[a, ∞)$ of elements `x` such that `a ≤ x`. Basically `Set.Ici a` as a finset. -/
+/--
+The finset $`[a, ∞)` of elements `x` such that `a ≤ x`. Basically `Set.Ici a` as a finset.
+-/
 @[to_dual
-/-- The finset $(-∞, b]$ of elements `x` such that `x ≤ b`. Basically `Set.Iic b` as a finset. -/]
+/--
+The finset $`(-∞, b]` of elements `x` such that `x ≤ b`. Basically `Set.Iic b` as a finset.
+-/]
 def Ici (a : α) : Finset α :=
   LocallyFiniteOrderTop.finsetIci a
 
-/-- The finset $(a, ∞)$ of elements `x` such that `a < x`. Basically `Set.Ioi a` as a finset. -/
+/--
+The finset $`(a, ∞)` of elements `x` such that `a < x`. Basically `Set.Ioi a` as a finset.
+-/
 @[to_dual
-/-- The finset $(-∞, b)$ of elements `x` such that `x < b`. Basically `Set.Iio b` as a finset. -/]
+/--
+The finset $`(-∞, b)` of elements `x` such that `x < b`. Basically `Set.Iio b` as a finset.
+-/]
 def Ioi (a : α) : Finset α :=
   LocallyFiniteOrderTop.finsetIoi a
 
@@ -444,7 +470,8 @@ end Finset
 namespace Mathlib.Meta
 open Lean Elab Term Meta Batteries.ExtendedBinder
 
-/-- Elaborate set builder notation for `Finset`.
+/--
+Elaborate set builder notation for `Finset`.
 
 * `{x ≤ a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) (Finset.Iic a)` if the expected type
   is `Finset ?α`.
@@ -456,6 +483,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
   is `Finset ?α`.
 
 See also
+
 * `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
@@ -555,7 +583,8 @@ noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b
   @LocallyFiniteOrder.ofIcc' α _ (Classical.decRel _) (fun a b => (h a b).toFinset) fun a b x => by
     rw [Set.Finite.mem_toFinset, Set.mem_Icc]
 
-/-- A fintype is a locally finite order.
+/--
+A fintype is a locally finite order.
 
 This is not an instance as it would not be defeq to better instances such as
 `Fin.locallyFiniteOrder`.
@@ -626,9 +655,11 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α] (a b : α)
 
-/-- Note we define `Icc (toDual a) (toDual b)` as `Icc α _ _ b a` (which has type `Finset α` not
+/--
+Note we define `Icc (toDual a) (toDual b)` as `Icc α _ _ b a` (which has type `Finset α` not
 `Finset αᵒᵈ`!) instead of `(Icc b a).map toDual.toEmbedding` as this means the
 following is defeq:
+
 ```
 lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) :) = (Icc a b :) := rfl
 ```
@@ -685,15 +716,19 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
-/-- Note we define `Iic (toDual a)` as `Ici a` (which has type `Finset α` not `Finset αᵒᵈ`!)
+/--
+Note we define `Iic (toDual a)` as `Ici a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Ici a).map toDual.toEmbedding` as this means the following is defeq:
+
 ```
 lemma this : (Iic (toDual (toDual a)) :) = (Iic a :) := rfl
 ```
 -/
 @[to_dual
-/-- Note we define `Ici (toDual a)` as `Iic a` (which has type `Finset α` not `Finset αᵒᵈ`!)
+/--
+Note we define `Ici (toDual a)` as `Iic a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Iic a).map toDual.toEmbedding` as this means the following is defeq:
+
 ```
 lemma this : (Ici (toDual (toDual a)) :) = (Ici a :) := rfl
 ```

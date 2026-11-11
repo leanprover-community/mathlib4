@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local graph operations
 

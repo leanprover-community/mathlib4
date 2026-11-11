@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Unramified.Basic
 
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth morphisms
 
@@ -27,22 +30,23 @@ We show that smooth is stable under algebra isomorphisms, composition and
 localization at an element.
 
 ## Main results
-- `Algebra.FormallySmooth`: The class of formally smooth algebras.
-- `Algebra.formallySmooth_iff` :
+
+* `Algebra.FormallySmooth`: The class of formally smooth algebras.
+* `Algebra.formallySmooth_iff` :
   Formally smooth iff `Ω[A⁄R]` is `A`-projective and `H¹(L_{A/R}) = 0`.
-- `Algebra.FormallySmooth.lift`: If `A` is formally smooth and `I` is nilpotent,
+* `Algebra.FormallySmooth.lift`: If `A` is formally smooth and `I` is nilpotent,
   any map `A →ₐ[R] B ⧸ I` lifts to `A →ₐ[R] B`.
-- `Algebra.FormallySmooth.iff_comp_surjective`: `A` is formally smooth iff
+* `Algebra.FormallySmooth.iff_comp_surjective`: `A` is formally smooth iff
   any map `A →ₐ[R] B ⧸ I` lifts to `A →ₐ[R] B` for any square zero `I`.
 
 Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel `I`, then
-- `Algebra.FormallySmooth.iff_split_surjection`: `A` is formally smooth iff
-  the algebra map `P ⧸ I² →ₐ[R] A` has an `R`-algebra section.
-- `Algebra.Extension.equivH1CotangentOfFormallySmooth`:
-  `H¹(L_{A/R})` is isomorphic to `ker(I/I² → A ⊗[P] Ω[P⁄R])`.
-- `Algebra.FormallySmooth.iff_split_injection`: `A` is formally smooth iff
-  the `P`-linear map `I/I² → A ⊗[P] Ω[P⁄R]` is split injective.
 
+* `Algebra.FormallySmooth.iff_split_surjection`: `A` is formally smooth iff
+  the algebra map `P ⧸ I² →ₐ[R] A` has an `R`-algebra section.
+* `Algebra.Extension.equivH1CotangentOfFormallySmooth`:
+  `H¹(L_{A/R})` is isomorphic to `ker(I/I² → A ⊗[P] Ω[P⁄R])`.
+* `Algebra.FormallySmooth.iff_split_injection`: `A` is formally smooth iff
+  the `P`-linear map `I/I² → A ⊗[P] Ω[P⁄R]` is split injective.
 -/
 
 @[expose] public section
@@ -321,11 +325,13 @@ theorem _root_.Algebra.Extension.formallySmooth_iff_split_injection
     exact ⟨e.symm.toLinearMap ∘ₗ l.restrictScalars P.Ring,
       LinearMap.ext (DFunLike.congr_fun hl : _)⟩
 
-/-- Let `P →ₐ[R] A` be a surjection with kernel `J`, and `P` a formally smooth `R`-algebra,
+/--
+Let `P →ₐ[R] A` be a surjection with kernel `J`, and `P` a formally smooth `R`-algebra,
 then `A` is formally smooth over `R` iff the surjection `P ⧸ J ^ 2 →ₐ[R] A` has a section.
 
 Geometric intuition: we require that a first-order thickening of `Spec A` inside `Spec P` admits
-a retraction. -/
+a retraction.
+-/
 theorem iff_split_surjection (f : P →ₐ[R] A) (hf : Function.Surjective f) :
     FormallySmooth R A ↔ ∃ g, f.kerSquareLift.comp g = AlgHom.id R A := by
   let := f.toAlgebra

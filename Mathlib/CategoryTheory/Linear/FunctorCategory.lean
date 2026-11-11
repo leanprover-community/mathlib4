@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear structure on functor categories
 
 If `C` and `D` are categories and `D` is `R`-linear,
 then `C ⥤ D` is also `R`-linear.
-
 -/
 
 @[expose] public section

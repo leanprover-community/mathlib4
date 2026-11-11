@@ -12,6 +12,9 @@ public import Mathlib.Logic.Equiv.Fin.Basic
 
 import Mathlib.Data.Fintype.Option
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pi types of modules
 
@@ -21,11 +24,12 @@ It contains theorems relating these to each other, as well as to `LinearMap.ker`
 
 ## Main definitions
 
-- pi types in the codomain:
-  - `LinearMap.single`
-- pi types in the domain:
-  - `LinearMap.diag`
+* pi types in the codomain:
 
+  * `LinearMap.single`
+* pi types in the domain:
+
+  * `LinearMap.diag`
 -/
 
 @[expose] public section
@@ -75,12 +79,14 @@ instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι → N) R S where
   map_smul f r m := by ext i; apply ((LinearMap.proj i).comp f).map_smul_of_tower
 
-/-- Construct a linear map between two (dependent) function spaces
+/--
+Construct a linear map between two (dependent) function spaces
 by applying index-dependent linear maps to the coordinates.
 A bundled version of `Pi.map`.
 
 If the index type is finite, then this map can be seen as a “block diagonal” map
-between indexed products of modules. -/
+between indexed products of modules.
+-/
 def piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
     (f : ∀ i, φ i →ₗ[R] ψ i) : (∀ i, φ i) →ₗ[R] (∀ i, ψ i) :=
   .pi fun i ↦ f i ∘ₗ proj i
@@ -179,8 +185,10 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
       · exact hJ i hiJ
     · exact hI i hiI
 
-/-- The linear equivalence between linear functions on a finite product of modules and
-families of functions on these modules. See note [bundled maps over different rings]. -/
+/--
+The linear equivalence between linear functions on a finite product of modules and
+families of functions on these modules. See note \[bundled maps over different rings\].
+-/
 @[simps symm_apply]
 def lsum (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S] [Module S M]
     [SMulCommClass R S M] : ((i : ι) → φ i →ₗ[R] M) ≃ₗ[S] ((i : ι) → φ i) →ₗ[R] M where
@@ -225,8 +233,10 @@ theorem pi_ext (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) : f = g :=
 theorem pi_ext_iff : f = g ↔ ∀ i x, f (Pi.single i x) = g (Pi.single i x) :=
   ⟨fun h _ _ => h ▸ rfl, pi_ext⟩
 
-/-- This is used as the ext lemma instead of `LinearMap.pi_ext` for reasons explained in
-note [partially-applied ext lemmas]. -/
+/--
+This is used as the ext lemma instead of `LinearMap.pi_ext` for reasons explained in
+note \[partially-applied ext lemmas\].
+-/
 @[ext]
 theorem pi_ext' (h : ∀ i, f.comp (single R φ i) = g.comp (single R φ i)) : f = g := by
   refine pi_ext fun i x => ?_
@@ -403,9 +413,11 @@ variable [(i : ι) → AddCommMonoid (φ i)] [(i : ι) → Module R (φ i)]
 variable [(i : ι) → AddCommMonoid (ψ i)] [(i : ι) → Module R (ψ i)]
 variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 
-/-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
+/--
+Combine a family of linear equivalences into a linear equivalence of `pi`-types.
 
-This is `Equiv.piCongrRight` as a `LinearEquiv` -/
+This is `Equiv.piCongrRight` as a `LinearEquiv`
+-/
 def piCongrRight (e : (i : ι) → φ i ≃ₗ[R] ψ i) : ((i : ι) → φ i) ≃ₗ[R] (i : ι) → ψ i :=
   { AddEquiv.piCongrRight fun j => (e j).toAddEquiv with
     toFun := fun f i => e i (f i)
@@ -432,19 +444,23 @@ theorem piCongrRight_trans (e : (i : ι) → φ i ≃ₗ[R] ψ i) (f : (i : ι) 
 
 variable (R φ)
 
-/-- Transport dependent functions through an equivalence of the base space.
+/--
+Transport dependent functions through an equivalence of the base space.
 
-This is `Equiv.piCongrLeft'` as a `LinearEquiv`. -/
+This is `Equiv.piCongrLeft'` as a `LinearEquiv`.
+-/
 @[simps +simpRhs]
 def piCongrLeft' (e : ι ≃ ι') : ((i' : ι) → φ i') ≃ₗ[R] (i : ι') → φ <| e.symm i :=
   { Equiv.piCongrLeft' φ e with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 
-/-- Transporting dependent functions through an equivalence of the base,
+/--
+Transporting dependent functions through an equivalence of the base,
 expressed as a "simplification".
 
-This is `Equiv.piCongrLeft` as a `LinearEquiv` -/
+This is `Equiv.piCongrLeft` as a `LinearEquiv`
+-/
 def piCongrLeft (e : ι' ≃ ι) : ((i' : ι') → φ (e i')) ≃ₗ[R] (i : ι) → φ i :=
   (piCongrLeft' R φ e.symm).symm
 
@@ -479,13 +495,15 @@ def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) �
 variable (ι M) (S : Type*) [Fintype ι] [DecidableEq ι] [Semiring S] [AddCommMonoid M]
   [Module R M] [Module S M] [SMulCommClass R S M]
 
-/-- Linear equivalence between linear functions `Rⁿ → M` and `Mⁿ`. The spaces `Rⁿ` and `Mⁿ`
+/--
+Linear equivalence between linear functions `Rⁿ → M` and `Mⁿ`. The spaces `Rⁿ` and `Mⁿ`
 are represented as `ι → R` and `ι → M`, respectively, where `ι` is a finite type.
 
 This as an `S`-linear equivalence, under the assumption that `S` acts on `M` commuting with `R`.
 When `R` is commutative, we can take this to be the usual action with `S = R`.
 Otherwise, `S = ℕ` shows that the equivalence is additive.
-See note [bundled maps over different rings]. -/
+See note \[bundled maps over different rings\].
+-/
 def piRing : ((ι → R) →ₗ[R] M) ≃ₗ[S] ι → M :=
   (LinearMap.lsum R (fun _ : ι => R) S).symm.trans
     (piCongrRight fun _ => LinearMap.ringLmapEquivSelf R S M)
@@ -610,7 +628,8 @@ def Fin.consLinearEquiv
   map_smul' c x := funext <| Fin.cases rfl (by simp)
 
 
-/-! ### Bundled versions of `Matrix.vecCons` and `Matrix.vecEmpty`
+/-!
+# Bundled versions of `Matrix.vecCons` and `Matrix.vecEmpty`
 
 The idea of these definitions is to be able to define a map as `x ↦ ![f₁ x, f₂ x, f₃ x]`, where
 `f₁ f₂ f₃` are already linear maps, as `f₁.vecCons <| f₂.vecCons <| f₃.vecCons <| vecEmpty`.
@@ -620,7 +639,6 @@ definitionally equal to the result using `LinearMap.vecCons`, as `Fin.cases` and
 application do not commute definitionally.
 
 Versions for when `f₁ f₂ f₃` are bilinear maps are also provided.
-
 -/
 
 
@@ -655,6 +673,7 @@ variable (R) in
 /--
 To show a property `motive` of modules holds for arbitrary finite products of modules, it suffices
 to show
+
 1. `motive` is stable under isomorphism.
 2. `motive` holds for the zero module.
 3. `motive` holds for `M × N` if it holds for both `M` and `N`.

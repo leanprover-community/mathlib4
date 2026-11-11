@@ -11,6 +11,9 @@ import Mathlib.Order.Fin.InsertNth
 import Mathlib.Order.Fin.Prod
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary product of standard simplices
 
@@ -22,7 +25,6 @@ the corresponding monotone map `Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`
 is injective (or a strict mono).
 
 We also show that the dimension of `Δ[p] ⊗ Δ[q]` is `≤ p + q`.
-
 -/
 
 @[expose] public section

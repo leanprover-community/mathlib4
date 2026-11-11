@@ -9,16 +9,20 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCofiber
 public import Mathlib.Tactic.Linarith
 
-/-! # The mapping cone of a morphism of cochain complexes
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The mapping cone of a morphism of cochain complexes
 
 In this file, we study the homotopy cofiber `HomologicalComplex.homotopyCofiber`
 of a morphism `φ : F ⟶ G` of cochain complexes indexed by `ℤ`. In this case,
 we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
-- `mappingCone.inl φ : Cochain F (mappingCone φ) (-1)`,
-- `mappingCone.inr φ : G ⟶ mappingCone φ`,
-- `mappingCone.fst φ : Cocycle (mappingCone φ) F 1` and
-- `mappingCone.snd φ : Cochain (mappingCone φ) G 0`.
 
+* `mappingCone.inl φ : Cochain F (mappingCone φ) (-1)`,
+* `mappingCone.inr φ : G ⟶ mappingCone φ`,
+* `mappingCone.fst φ : Cocycle (mappingCone φ) F 1` and
+* `mappingCone.snd φ : Cochain (mappingCone φ) G 0`.
 -/
 
 @[expose] public section

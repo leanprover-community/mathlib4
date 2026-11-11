@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
-/-! # Type classes for derivatives and the Laplacian
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Type classes for derivatives and the Laplacian
 
 In this file we define notation type classes for line derivatives, also known as partial
 derivatives, and for the Laplacian.
@@ -16,7 +20,6 @@ Moreover, we provide type-classes that encode the linear structure.
 We also define the iterated line derivative and prove elementary properties.
 We define a Laplacian based on the sum of second derivatives formula and prove that the Laplacian
 thus defined is independent of the choice of basis.
-
 -/
 
 @[expose] public noncomputable section
@@ -25,7 +28,9 @@ universe u' u v w
 
 variable {ι R V E F V₁ V₂ V₃ : Type*}
 
-/-! ## Line derivative -/
+/-!
+# Line derivative
+-/
 
 open Fin
 
@@ -256,7 +261,9 @@ end iteratedLineDerivOp
 
 end LineDeriv
 
-/-! ## Laplacian -/
+/-!
+# Laplacian
+-/
 
 /--
 The notation typeclass for the Laplace operator.
@@ -276,7 +283,9 @@ namespace LineDeriv
 variable [LineDeriv E V₁ V₂] [LineDeriv E V₂ V₃]
   [AddCommGroup V₁] [AddCommGroup V₂] [AddCommGroup V₃]
 
-/-! ## Laplacian of `LineDeriv` -/
+/-!
+# Laplacian of `LineDeriv`
+-/
 
 section TensorProduct
 
@@ -288,18 +297,22 @@ variable [CommRing R] [AddCommGroup E] [Module R E]
 open TensorProduct
 
 variable (R) in
-/-- The second derivative in terms `lineDerivOp` as a bilinear map.
+/--
+The second derivative in terms `lineDerivOp` as a bilinear map.
 
-Mainly used to give an abstract definition of the Laplacian. -/
+Mainly used to give an abstract definition of the Laplacian.
+-/
 def bilinearLineDerivTwo (f : V₁) : E →ₗ[R] E →ₗ[R] V₃ :=
   LinearMap.mk₂ R (∂_{·} <| ∂_{·} f) (by simp [lineDerivOp_left_add])
     (by simp [lineDerivOp_left_smul]) (by simp [lineDerivOp_left_add, lineDerivOp_add])
     (by simp [lineDerivOp_left_smul, lineDerivOp_smul])
 
 variable (R) in
-/-- The second derivative in terms `lineDerivOp` as a linear map from the tensor product.
+/--
+The second derivative in terms `lineDerivOp` as a linear map from the tensor product.
 
-Mainly used to give an abstract definition of the Laplacian. -/
+Mainly used to give an abstract definition of the Laplacian.
+-/
 def tensorLineDerivTwo (f : V₁) : E ⊗[R] E →ₗ[R] V₃ :=
   lift (bilinearLineDerivTwo R f)
 

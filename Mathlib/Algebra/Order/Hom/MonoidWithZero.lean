@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.Hom.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered monoid and group homomorphisms
 
@@ -41,14 +44,16 @@ section MonoidWithZero
 
 variable [Preorder α] [Preorder β] [MulZeroOneClass α] [MulZeroOneClass β]
 
-/-- `OrderMonoidWithZeroHom α β` is the type of functions `α → β` that preserve
+/--
+`OrderMonoidWithZeroHom α β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
 
 `OrderMonoidWithZeroHom` is also used for group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : α →+ β)`,
 you should parameterize over
-`(F : Type*) [FunLike F M N] [MonoidWithZeroHomClass F M N] [OrderHomClass F M N] (f : F)`. -/
+`(F : Type*) [FunLike F M N] [MonoidWithZeroHomClass F M N] [OrderHomClass F M N] (f : F)`.
+-/
 structure OrderMonoidWithZeroHom (α β : Type*) [Preorder α] [Preorder β] [MulZeroOneClass α]
   [MulZeroOneClass β] extends α →*₀ β where
   /-- An `OrderMonoidWithZeroHom` is a monotone function. -/
@@ -61,14 +66,16 @@ section
 
 variable [FunLike F α β]
 
-/-- Turn an element of a type `F`
+/--
+Turn an element of a type `F`
 satisfying `OrderHomClass F α β` and `MonoidWithZeroHomClass F α β`
 into an actual `OrderMonoidWithZeroHom`.
 This is declared as the default coercion from `F` to `α →+*₀o β`.
-TODO: Following [#mathlib4 > Mathlib's morphism hierarchy]
+TODO: Following \[#mathlib4 > Mathlib's morphism hierarchy\]
 (https://leanprover.zulipchat.com/#narrow/channel/287929-
 mathlib4/topic/Mathlib.27s.20morphism.20hierarchy/with/554383157),
-rename this to `OrderMonoidWithZeroHom.ofClass` and remove `@[coe]` tag. -/
+rename this to `OrderMonoidWithZeroHom.ofClass` and remove `@[coe]` tag.
+-/
 @[coe]
 def OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom [OrderHomClass F α β]
     [MonoidWithZeroHomClass F α β] (f : F) : α →*₀o β :=

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.Module.Congruence.Defs
 public import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Direct limit of modules and abelian groups
 
@@ -25,7 +28,6 @@ so as to make the operations (addition etc.) "computable".
 
 * `Module.DirectLimit G f`
 * `AddCommGroup.DirectLimit G f`
-
 -/
 
 @[expose] public section

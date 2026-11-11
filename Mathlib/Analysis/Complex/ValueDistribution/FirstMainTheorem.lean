@@ -8,23 +8,25 @@ module
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 public import Mathlib.Analysis.Meromorphic.RCLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The First Main Theorem of Value Distribution Theory
 
 The First Main Theorem of Value Distribution Theory is a two-part statement, establishing invariance
 of the characteristic function `characteristic f ⊤` under modifications of `f`.
 
-- If `f` is meromorphic on the complex plane, then the characteristic functions for the value `⊤` of
-  the function `f` and `f⁻¹` agree up to a constant, see Proposition 2.1 on p. 168 of [Lang,
-  *Introduction to Complex Hyperbolic Spaces*][MR886677].
+* If `f` is meromorphic on the complex plane, then the characteristic functions for the value `⊤` of
+  the function `f` and `f⁻¹` agree up to a constant, see Proposition 2.1 on p. 168 of \[Lang,
+  _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\].
+* If `f` is meromorphic on the complex plane, then the characteristic functions for the value `⊤` of
+  the function `f` and `f - const` agree up to a constant, see Proposition 2.2 on p. 168 of \[Lang,
+  _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\]
 
-- If `f` is meromorphic on the complex plane, then the characteristic functions for the value `⊤` of
-  the function `f` and `f - const` agree up to a constant, see Proposition 2.2 on p. 168 of [Lang,
-  *Introduction to Complex Hyperbolic Spaces*][MR886677]
-
-See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
-[Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
-Approximation*][MR3156076] for a detailed discussion.
+See Section VI.2 of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\] or Section 1.1
+of ‍\[Noguchi-Winkelmann, _Nevanlinna Theory in Several Complex Variables and Diophantine
+Approximation_\]\[MR3156076\] for a detailed discussion.
 -/
 
 public section
@@ -37,7 +39,7 @@ section FirstPart
 variable {f : ℂ → ℂ} {R : ℝ}
 
 /-!
-## First Part of the First Main Theorem
+# First Part of the First Main Theorem
 -/
 
 /--
@@ -120,7 +122,7 @@ variable
   {a₀ : E} {f : ℂ → E}
 
 /-!
-## Second Part of the First Main Theorem
+# Second Part of the First Main Theorem
 -/
 
 /--
@@ -167,7 +169,7 @@ end SecondPart
 section moebius
 
 /-!
-## Postcomposition with an Automorphism of the Projective Line
+# Postcomposition with an Automorphism of the Projective Line
 -/
 
 /-

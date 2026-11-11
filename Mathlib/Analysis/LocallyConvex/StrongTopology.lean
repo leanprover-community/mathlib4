@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local convexity of the strong topology
 
@@ -16,7 +19,7 @@ locally convex.
 
 ## References
 
-* [N. Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* ‍\[N. Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 
 ## TODO
 

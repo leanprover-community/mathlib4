@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Piecewise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interaction of big operators with piecewise functions
 
@@ -142,14 +145,20 @@ theorem prod_ite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
     (∏ x ∈ s, ite (a = x) (b x) 1) = ite (a ∈ s) (b a) 1 :=
   prod_dite_eq s a fun x _ => b x
 
-/-- A product taken over a conditional whose condition is an equality test on the index and whose
+/--
+A product taken over a conditional whose condition is an equality test on the index and whose
 alternative is `1` has value either the term at that index or `1`.
 
-The difference with `Finset.prod_ite_eq` is that the arguments to `Eq` are swapped. -/
-@[to_additive (attr := simp) /-- A sum taken over a conditional whose condition is an equality
-test on the index and whose alternative is `0` has value either the term at that index or `0`.
+The difference with `Finset.prod_ite_eq` is that the arguments to `Eq` are swapped.
+-/
+@[to_additive (attr := simp) /--
+                             A sum taken over a conditional whose condition is an equality test on
+the index and whose alternative is `0` has value either the term at
+that index or `0`.
 
-The difference with `Finset.sum_ite_eq` is that the arguments to `Eq` are swapped. -/]
+                             The difference with `Finset.sum_ite_eq` is that the arguments to `Eq`
+are swapped.
+                             -/]
 theorem prod_ite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
     (∏ x ∈ s, ite (x = a) (b x) 1) = ite (a ∈ s) (b a) 1 :=
   prod_dite_eq' s a fun x _ => b x

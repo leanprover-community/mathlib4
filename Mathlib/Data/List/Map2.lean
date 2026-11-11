@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Common
 
 import Mathlib.Tactic.Attr.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Map₂ Lemmas
 
@@ -21,7 +24,6 @@ Lists together. In particular, we include lemmas about:
 * `zipWith`
 * `zipLeft'`
 * `zipRight'`
-
 -/
 
 public section
@@ -40,7 +42,9 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-/-! ### map₂Left' -/
+/-!
+# map₂Left'
+-/
 
 section Map₂Left'
 
@@ -52,7 +56,9 @@ theorem map₂Left'_nil_right (f : α → Option β → γ) (as) :
 
 end Map₂Left'
 
-/-! ### map₂Right' -/
+/-!
+# map₂Right'
+-/
 
 section Map₂Right'
 
@@ -78,7 +84,9 @@ theorem map₂Right'_cons_cons :
 
 end Map₂Right'
 
-/-! ### zipWith -/
+/-!
+# zipWith
+-/
 
 theorem nil_zipWith (f : α → β → γ) (l : List β) : zipWith f [] l = [] := by cases l <;> rfl
 
@@ -94,7 +102,9 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
     rfl
 
 
-/-! ### zipLeft' -/
+/-!
+# zipLeft'
+-/
 
 section ZipLeft'
 
@@ -122,7 +132,9 @@ theorem zipLeft'_cons_cons :
 
 end ZipLeft'
 
-/-! ### zipRight' -/
+/-!
+# zipRight'
+-/
 
 section ZipRight'
 
@@ -150,7 +162,9 @@ theorem zipRight'_cons_cons :
 
 end ZipRight'
 
-/-! ### map₂Left -/
+/-!
+# map₂Left
+-/
 
 section Map₂Left
 
@@ -178,7 +192,9 @@ theorem map₂Left_eq_zipWith :
 
 end Map₂Left
 
-/-! ### map₂Right -/
+/-!
+# map₂Right
+-/
 
 section Map₂Right
 
@@ -210,7 +226,9 @@ theorem map₂Right_eq_zipWith (h : length bs ≤ length as) :
 
 end Map₂Right
 
-/-! ### zipLeft -/
+/-!
+# zipLeft
+-/
 
 section ZipLeft
 
@@ -246,7 +264,9 @@ theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zip
 
 end ZipLeft
 
-/-! ### zipRight -/
+/-!
+# zipRight
+-/
 
 section ZipRight
 

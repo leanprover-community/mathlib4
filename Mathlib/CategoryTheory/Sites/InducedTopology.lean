@@ -8,25 +8,28 @@ module
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.CoverPreserving
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced topologies
 
 In this file we study various topologies induced by a functor. Let `F : C ⥤ D` be a functor,
 `J` a Grothendieck topology on `C` and `K` a Grothendieck topology on `D`.
 
-- `CategoryTheory.Functor.inducedTopology F K`: The finest topology on `C` making `F` continuous.
-- `CategoryTheory.Functor.restrictedTopology F K`: The coarsest topology on `C` containing
+* `CategoryTheory.Functor.inducedTopology F K`: The finest topology on `C` making `F` continuous.
+* `CategoryTheory.Functor.restrictedTopology F K`: The coarsest topology on `C` containing
   all sieves whose image generate a covering sieve of `K`. In general, this does not make `F` cover
   preserving.
 
 ## TODOs
 
-- Define the finest topology on the codomain making a functor cocontinuous
+* Define the finest topology on the codomain making a functor cocontinuous
   (@chrisflav).
 
 ## References
 
-- [SGA4, III, 3][sga-4-tome-1]
+* ‍\[SGA4, III, 3\]\[sga-4-tome-1\]
 -/
 
 @[expose] public section
@@ -45,7 +48,7 @@ namespace Functor
 /--
 The induced topology by a topology on `D` along a functor `F : C ⥤ D` is the finest
 topology on `C` making `F` continuous.
-[SGA4, III, 3.1][sga-4-tome-1]
+‍\[SGA4, III, 3.1\]\[sga-4-tome-1\]
 -/
 def inducedTopology (F : C ⥤ D) (K : GrothendieckTopology D) :
     GrothendieckTopology C :=
@@ -66,7 +69,9 @@ lemma le_inducedTopology_iff {J : GrothendieckTopology C} :
     rintro _ ⟨P, rfl⟩
     exact Functor.op_comp_isSheaf_of_types F J K P
 
-/-- [SGA4, III, Proposition 3.2][sga-4-tome-1] -/
+/--
+‍\[SGA4, III, Proposition 3.2\]\[sga-4-tome-1\]
+-/
 lemma mem_inducedTopology_iff [LocallySmall.{max u₁ v₁ u₂ v₂} C] (X : C) (S : Sieve X)
     (G : (Cᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂) ⥤ (Dᵒᵖ ⥤ Type max u₁ v₁ u₂ v₂))
     (adj : G ⊣ (Functor.whiskeringLeft _ _ _).obj F.op) :

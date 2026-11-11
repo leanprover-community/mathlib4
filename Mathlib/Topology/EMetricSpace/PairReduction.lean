@@ -8,11 +8,14 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 public import Mathlib.Order.CompletePartialOrder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pair Reduction
 
 The goal of this file is to prove the theorem `pair_reduction`. This is essentially Lemma 6.1 in
-[kratschmer_urusov2023] which is an extension of Lemma B.2.7. in [talagrand2014].
+‍\[kratschmer\_urusov2023\] which is an extension of Lemma B.2.7. in \[talagrand2014\].
 Given pseudometric spaces `T` and `E`, `c ≥ 0`, and a finite subset `J` of `T` such that
 `|J| ≤ aⁿ` for some `a ≥ 0` and `n : ℕ`, `pair_reduction` states that there exists a set `K ⊆ J²`
 such that for any function `f : T → E`:
@@ -27,13 +30,16 @@ covering numbers of the pseudometric space. As a simple example of how it could 
 `T` has an `ε`-covering number `N` and suppose `J` is an `ε`-covering of `T` with `|J| = N`.
 Let `f : Ω → T → E` be any stochastic process such that `𝔼 d(f(s), f(t)) ≤ d (s, t)` for all
 `s, t ∈ T`. Then naively
+
 ```
   𝔼[sup_{(s, t) ∈ J} : d(s, t) ≤ c} d(f(s), f(t))]
     ≤ ∑_{(s, t) ∈ J² : d(s, t) ≤ c} 𝔼[d(f(s), f(t))]
     ≤ |J|² c
     = c N²
 ```
+
 but applying `pair_reduction` with `n = log |J|` we get
+
 ```
   𝔼[sup_{(s, t) ∈ J : d(s, t) ≤ c} d(f(s), f(t))]
     ≤ 2 𝔼[sup_{(s, t) ∈ K} d(f(s), f(t))]
@@ -41,7 +47,8 @@ but applying `pair_reduction` with `n = log |J|` we get
     ≤ 2 a |J| c log |J|
     ≤ 2 a c N log N
 ```
-`pair_reduction` is used in [kratschmer_urusov2023] to prove a form of the Kolmogorov-Chentsov
+
+`pair_reduction` is used in \[kratschmer\_urusov2023\] to prove a form of the Kolmogorov-Chentsov
 theorem that applies to stochastic processes which satisfy the Kolmogorov condition but works
 on very general metric spaces.
 
@@ -69,6 +76,7 @@ We will show that `K = ⋃_{i=1}^|J| {tᵢ} × {x ∈ Vᵢ | d(tᵢ, x) ≤ cr�
 (see `pairSet` and `pairSetSeq`).
 
 To prove (1) we have that
+
 ```
   |K| ≤ ∑_{i=0}^|J| |{x ∈ Vᵢ : d(t, x) ≤ crᵢ}|
       ≤ ∑_{i=0}^|J| a ^ rᵢ  (by definition of `rᵢ`)
@@ -76,6 +84,7 @@ To prove (1) we have that
       ≤ a ∑_{i=0}^|J| |Bᵢ| (by definition of `rᵢ`)
       ≤ a |J| (since the `Bᵢ` are disjoint (see `disjoint_smallBall_logSizeBallSeq`))
 ```
+
 (see `card_pairSet_le`).
 
 (2) follows easily from the definition of K and the fact that `rᵢ ≤ n` for each `i`
@@ -84,21 +93,24 @@ To prove (1) we have that
 Finally we prove (3). Let `s, t ∈ J` such that `d(s, t) ≤ c`. Let `i` be the largest integer
 such that both `s, t ∈ Vᵢ`. WLOG suppose `s ∉ Vᵢ₊₁` so that in particular `s ∈ Bᵢ` which means
 by definition that `d(tᵢ, s) ≤ (rᵢ - 1)c`. Then we also have
+
 ```
 d(tᵢ, t) ≤ d(tᵢ, s) + d(s, t) ≤ (rᵢ - 1)c + c = rᵢc
 ```
+
 hence `(tᵢ, s), (tᵢ, t) ∈ K`. Furthermore
+
 ```
 d(f(s), f(t)) ≤ d(f(tᵢ), f(s)) + d(f(tᵢ), f(t))
 ```
+
 taking supremums completes the proof (see `iSup_edist_pairSet`).
 
 ## References
 
-* [V. Krätschmer, M. Urusov, *A Kolmogorov–Chentsov Type Theorem on General Metric Spaces with
-  Applications to Limit Theorems for Banach-Valued Processes*][kratschmer_urusov2023]
-* [M. Talagrand, *Upper and Lower Bounds for Stochastic Processes*][talagrand2014]
-
+* ‍\[V. Krätschmer, M. Urusov, _A Kolmogorov–Chentsov Type Theorem on General Metric Spaces with
+  Applications to Limit Theorems for Banach-Valued Processes_\]\[kratschmer\_urusov2023\]
+* ‍\[M. Talagrand, _Upper and Lower Bounds for Stochastic Processes_\]\[talagrand2014\]
 -/
 
 @[expose] public section
@@ -176,10 +188,13 @@ def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
 
 variable [DecidableEq T]
 
-/-- We recursively define a log-size ball sequence `(Vᵢ, tᵢ, rᵢ)` by
-  * `V₀ = J`, `t₀` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
-  * `Vᵢ₊₁ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitrarily in `Vᵢ₊₁`, `rᵢ₊₁` is
-    the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`. -/
+/--
+We recursively define a log-size ball sequence `(Vᵢ, tᵢ, rᵢ)` by
+
+* `V₀ = J`, `t₀` is chosen arbitrarily in `J`, `r₀` is the log-size radius of `t₀` in `V₀`
+* `Vᵢ₊₁ = Vᵢ \ {x ∈ V | d(t, x) ≤ (rᵢ - 1)c}`, `tᵢ₊₁` is chosen arbitrarily in `Vᵢ₊₁`, `rᵢ₊₁` is
+  the log-size radius of `tᵢ₊₁` in `Vᵢ₊₁`.
+-/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T
   | 0 => { finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c }
@@ -468,9 +483,11 @@ lemma iSup_edist_pairSet {E : Type*} [TopologicalSpace E] [WeakPseudoEMetricSpac
 end PairReduction
 
 open PairReduction in
-/-- **Pair Reduction**: Given pseudometric spaces `T` and `E`, `c ≥ 0`, and a finite subset `J` of
+/--
+*Pair Reduction*: Given pseudometric spaces `T` and `E`, `c ≥ 0`, and a finite subset `J` of
 `T` such that `|J| ≤ aⁿ` for some `a ≥ 0` and `n : ℕ`, `pair_reduction` states that there exists a
 set `K ⊆ J²` such that for any function `f : T → E`:
+
 1. `|K| ≤ a|J|`
 2. `∀ (s, t) ∈ K, d(s, t) ≤ cn`
 3. `sup_{s, t ∈ J : d(s, t) ≤ c} d(f(s), f(t)) ≤ 2 sup_{(s, t) ∈ K} d(f(s), f(t))`

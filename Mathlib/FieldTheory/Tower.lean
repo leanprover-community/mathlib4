@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Noetherian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness of `IsScalarTower`
 
@@ -21,7 +24,6 @@ The formulas for the dimensions are given elsewhere by `Module.finrank_mul_finra
 ## Tags
 
 tower law
-
 -/
 
 public section
@@ -38,7 +40,8 @@ namespace Module.Finite
 variable [Ring F] [Ring K] [Module F K]
   [AddCommGroup A] [Module K A] [Module.IsTorsionFree K A]
   [Module F A] [IsNoetherian F A] [IsScalarTower F K A] in
-/-- In a tower of field extensions `A / K / F`, if `A / F` is finite, so is `K / F`.
+/--
+In a tower of field extensions `A / K / F`, if `A / F` is finite, so is `K / F`.
 
 (In fact, it suffices that `A` is a nontrivial ring.)
 

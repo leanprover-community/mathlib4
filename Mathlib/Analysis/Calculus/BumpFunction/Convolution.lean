@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 public import Mathlib.Analysis.Calculus.BumpFunction.Normed
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convolution with a bump function
 
@@ -21,12 +24,12 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
 
 ## Main results
 
-- `ContDiffBump.convolution_tendsto_right_of_continuous`:
+* `ContDiffBump.convolution_tendsto_right_of_continuous`:
   Let `g` be a continuous function; let `φ i` be a family of `ContDiffBump 0` functions with.
   If `(φ i).rOut` tends to zero along a filter `l`,
   then `((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀` tends to `g x₀` along the same filter.
-- `ContDiffBump.convolution_tendsto_right`: generalization of the above lemma.
-- `ContDiffBump.ae_convolution_tendsto_right_of_locallyIntegrable`: let `g` be a locally
+* `ContDiffBump.convolution_tendsto_right`: generalization of the above lemma.
+* `ContDiffBump.ae_convolution_tendsto_right_of_locallyIntegrable`: let `g` be a locally
   integrable function. Then the convolution of `g` with a family of bump functions with
   support tending to `0` converges almost everywhere to `g`.
 
@@ -74,12 +77,15 @@ theorem dist_normed_convolution_le {x₀ : G} {ε : ℝ} (hmg : AEStronglyMeasur
   dist_convolution_le (by simp_rw [← dist_self (g x₀), hg x₀ (mem_ball_self φ.rOut_pos)])
     φ.support_normed_eq.subset φ.nonneg_normed φ.integral_normed hmg hg
 
-/-- `(φ i ⋆ g i) (k i)` tends to `z₀` as `i` tends to some filter `l` if
+/--
+`(φ i ⋆ g i) (k i)` tends to `z₀` as `i` tends to some filter `l` if
+
 * `φ` is a sequence of normed bump functions
   such that `(φ i).rOut` tends to `0` as `i` tends to `l`;
 * `g i` is `μ`-a.e. strongly measurable as `i` tends to `l`;
 * `g i x` tends to `z₀` as `(i, x)` tends to `l ×ˢ 𝓝 x₀`;
-* `k i` tends to `x₀`. -/
+* `k i` tends to `x₀`.
+-/
 nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)} {g : ι → G → E'}
     {k : ι → G} {x₀ : G} {z₀ : E'} {l : Filter ι} (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0))
     (hig : ∀ᶠ i in l, AEStronglyMeasurable (g i) μ) (hcg : Tendsto (uncurry g) (l ×ˢ 𝓝 x₀) (𝓝 z₀))

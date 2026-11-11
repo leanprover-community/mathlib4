@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Field.GeomSum
 public import Mathlib.Algebra.Order.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial sums of geometric series in an ordered field
 
-This file upper- and lower-bounds the values of the geometric series $\sum_{i=0}^{n-1} x^i$ and
-$\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof.
+This file upper- and lower-bounds the values of the geometric series $`\sum_{i=0}^{n-1} x^i` and
+$`\sum_{i=0}^{n-1} x^i y^{n-1-i}` and variants thereof.
 -/
 
 public section

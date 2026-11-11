@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinea
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Change of variables in higher-dimensional integrals
 
@@ -41,11 +44,11 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 * `measurable_image_of_fderivWithin`: the image `f '' s` is measurable.
 * `measurableEmbedding_of_fderivWithin`: the function `s.domRestrict f` is a measurable embedding.
 * `lintegral_abs_det_fderiv_eq_addHaar_image`: the image measure is given by
-    `μ (f '' s) = ∫⁻ x in s, |(f' x).det| ∂μ`.
+  `μ (f '' s) = ∫⁻ x in s, |(f' x).det| ∂μ`.
 * `lintegral_image_eq_lintegral_abs_det_fderiv_mul`: for `g : E → ℝ≥0∞`, one has
-    `∫⁻ x in f '' s, g x ∂μ = ∫⁻ x in s, ENNReal.ofReal |(f' x).det| * g (f x) ∂μ`.
+  `∫⁻ x in f '' s, g x ∂μ = ∫⁻ x in s, ENNReal.ofReal |(f' x).det| * g (f x) ∂μ`.
 * `integral_image_eq_integral_abs_det_fderiv_smul`: for `g : E → F`, one has
-    `∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ`.
+  `∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ`.
 * `integrableOn_image_iff_integrableOn_abs_det_fderiv_smul`: for `g : E → F`, the function `g` is
   integrable on `f '' s` if and only if `|(f' x).det| • g (f x)` is integrable on `s`.
 
@@ -54,7 +57,7 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 Typical versions of these results in the literature have much stronger assumptions: `s` would
 typically be open, and the derivative `f' x` would depend continuously on `x` and be invertible
 everywhere, to have the local inverse theorem at our disposal. The proof strategy under our weaker
-assumptions is more involved. We follow [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2].
+assumptions is more involved. We follow \[Fremlin, _Measure Theory_ (volume 2)\]\[fremlin\_vol2\].
 
 The first remark is that, if `f` is sufficiently well approximated by a linear map `A` on a set
 `s`, then `f` expands the volume of `s` by at least `A.det - ε` and at most `A.det + ε`, where
@@ -84,10 +87,12 @@ is the almost everywhere limit of a sequence of measurable functions (which are 
 pieces of the good discretization), and is therefore almost everywhere measurable.
 
 ## Tags
+
 Change of variables in integrals
 
 ## References
-[Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
+
+‍\[Fremlin, _Measure Theory_ (volume 2)\]\[fremlin\_vol2\]
 -/
 
 public section
@@ -101,7 +106,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensi
   [NormedAddCommGroup F] [NormedSpace ℝ F] {s : Set E} {f : E → E} {f' : E → E →L[ℝ] E}
 
 /-!
-### Decomposition lemmas
+# Decomposition lemmas
 
 We state lemmas ensuring that a differentiable function can be approximated, on countably many
 measurable pieces, by linear maps (with a prescribed precision depending on the linear map).
@@ -272,7 +277,7 @@ theorem exists_partition_approximatesLinearOn_of_hasFDerivWithinAt [SecondCounta
 namespace MeasureTheory
 
 /-!
-### Local lemmas
+# Local lemmas
 
 We check that a function which is well enough approximated by a linear map expands the volume
 essentially like this linear map, and that its derivative (if it exists) is almost everywhere close
@@ -543,7 +548,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       gcongr
 
 /-!
-### Measure zero of the image, over non-measurable sets
+# Measure zero of the image, over non-measurable sets
 
 If a set has measure `0`, then its image under a differentiable map has measure zero. This doesn't
 require the set to be measurable. In the same way, if `f` is differentiable on a set `s` with
@@ -672,7 +677,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
   exact A
 
 /-!
-### Weak measurability statements
+# Weak measurability statements
 
 We show that the derivative of a function on a set is almost everywhere measurable, and that the
 image `f '' s` is measurable if `f` is injective on `s`. The latter statement follows from the
@@ -790,7 +795,7 @@ theorem measurableEmbedding_of_fderivWithin (hs : MeasurableSet s)
   this.continuousOn.measurableEmbedding hs hf
 
 /-!
-### Proving the estimate for the measure of the image
+# Proving the estimate for the measure of the image
 
 We show the formula `∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ = μ (f '' s)`,
 in `lintegral_abs_det_fderiv_eq_addHaar_image`. For this, we show both inequalities in both
@@ -1174,7 +1179,9 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
     exact uf x.2
   rwa [this] at A
 
-/-! ### Change of variable formulas in integrals -/
+/-!
+# Change of variable formulas in integrals
+-/
 
 
 /-- Change of variable formula for differentiable functions: if a function `f` is

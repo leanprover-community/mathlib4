@@ -9,6 +9,10 @@ public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Elaborators for differential geometry
 
@@ -127,12 +131,14 @@ private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : M
     let type ← whnfR <| ← instantiateMVars decl.type
     p decl.toExpr type
 
-/-- Given `V : Expr` representing `E : B → Type*`, try to find a model fiber for `E`
+/--
+Given `V : Expr` representing `E : B → Type*`, try to find a model fiber for `E`
 by searching in local context for either a `FiberBundle F E` or
 `TopologicalSpace (TotalSpace F E)` instance.
 
 We could try a more systematic search of `TotalSpace F E` anywhere in the local context,
-but the current heuristic is faster and sufficient so far. -/
+but the current heuristic is faster and sufficient so far.
+-/
 private def findModelFiber? (V : Expr) : MetaM (Option Expr) := do
   withTraceNode `Elab.DiffGeo.TotalSpaceMk
     (fun _ ↦ do return m!"Searching for a model fiber for {← ppExpr V}") do
@@ -165,10 +171,11 @@ private def findModelFiber? (V : Expr) : MetaM (Option Expr) := do
 Utility for sections in a fibre bundle: if an expression `e` is a section
 `s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
 space. This handles the cases of
-- sections of a trivial bundle
-- vector fields on a manifold (i.e., sections of the tangent bundle)
-- sections of an explicit fibre bundle
-- turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
+
+* sections of a trivial bundle
+* vector fields on a manifold (i.e., sections of the tangent bundle)
+* sections of an explicit fibre bundle
+* turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
 
 This searches the local context for suitable hypotheses for the above cases by matching
 on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
@@ -232,10 +239,11 @@ open Elab in
 /--
 Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
 function to a non-dependent function into the total space. This handles the cases of
-- sections of a trivial bundle
-- vector fields on a manifold (i.e., sections of the tangent bundle)
-- sections of an explicit fibre bundle
-- turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
+
+* sections of a trivial bundle
+* vector fields on a manifold (i.e., sections of the tangent bundle)
+* sections of an explicit fibre bundle
+* turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
 
 This elaborator searches the local context for suitable hypotheses for the above cases by matching
 on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
@@ -308,7 +316,8 @@ deriving Inhabited
 instance : Coe Expr FindModelResult where
   coe model := { model }
 
-/-- Try a strategy `x : TermElabM` which either successfully finds a `ModelWithCorners` or fails.
+/--
+Try a strategy `x : TermElabM` which either successfully finds a `ModelWithCorners` or fails.
 On failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
 successfully returned.
 
@@ -317,7 +326,8 @@ exceptions, and under `withSynthesize` in order to force typeclass synthesis err
 be caught.
 
 Trace messages produced during the execution of `x` are wrapped in a collapsible trace node titled
-with `strategyDescr` and an indicator of success. -/
+with `strategyDescr` and an indicator of success.
+-/
 private def tryStrategy (strategyDescr : MessageData) (x : TermElabM FindModelResult) :
     TermElabM (Option FindModelResult) := do
   let s ← saveState
@@ -368,23 +378,25 @@ where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
       else return none
     | _ => pure none
 
-/-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
+/--
+Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
-- the model with corners on the total space of a vector bundle
-- the model with corners on the tangent space of a manifold
-- a model with corners on a manifold, or on its underlying model space
-- a closed interval of real numbers (including the unit interval)
-- Euclidean space, Euclidean half-space and Euclidean quadrants
-- a metric sphere in a real or complex inner product space
-- the units of a normed algebra
-- the complex upper half plane
-- a space of continuous k-linear maps
-- the trivial model `𝓘(𝕜, E)` on a normed space
-- if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
+
+* the model with corners on the total space of a vector bundle
+* the model with corners on the tangent space of a manifold
+* a model with corners on a manifold, or on its underlying model space
+* a closed interval of real numbers (including the unit interval)
+* Euclidean space, Euclidean half-space and Euclidean quadrants
+* a metric sphere in a real or complex inner product space
+* the units of a normed algebra
+* the complex upper half plane
+* a space of continuous k-linear maps
+* the trivial model `𝓘(𝕜, E)` on a normed space
+* if the above are not found, try to find a `NontriviallyNormedField` instance on the type of `e`,
   and if successful, return `𝓘(𝕜)`.
 
 Further cases can be added as necessary.
-This method intentionally handles **neither** sums (disjoint unions) nor products of spaces,
+This method intentionally handles *neither* sums (disjoint unions) nor products of spaces,
 nor an open subset of an existing manifold. These are handled in `findModel`.
 
 Return an expression describing the found model with corners, together with information about
@@ -743,7 +755,8 @@ where
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := mkAppOptM ``modelWithCornersSelf #[e, none, e, none, none]
 
-/-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
+/--
+Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance.
 This supports all `ModelWithCorners` instances that are currently defined in mathlib.
 Further cases can be added as necessary.
@@ -823,12 +836,14 @@ where
       go E
     | _ => return none
 
-/-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
+/--
+If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.
 
 We pass `e` instead of just its type for better diagnostics.
 
-If `es` is `some`, we verify that `src` and the type of `es` are definitionally equal. -/
+If `es` is `some`, we verify that `src` and the type of `es` are definitionally equal.
+-/
 def findModels (e : Expr) (es : Option Expr) : TermElabM (Expr × Expr) := do
   let etype ← whnf <| ← instantiateMVars <| ← inferType e
   match etype with

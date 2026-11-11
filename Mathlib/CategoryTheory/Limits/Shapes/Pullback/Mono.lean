@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pullbacks and monomorphisms
 
@@ -14,13 +17,12 @@ This file provides some results about interactions between pullbacks and monomor
 the dual statements between pushouts and epimorphisms.
 
 ## Main results
+
 * Monomorphisms are stable under pullback. This is available using the `PullbackCone` API as
   `mono_fst_of_is_pullback_of_mono` and `mono_snd_of_is_pullback_of_mono`, and using the `pullback`
   API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
-
 * A pullback cone is a limit iff its composition with a monomorphism is a limit. This is available
   as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.
-
 * Monomorphisms admit kernel pairs, this is `has_kernel_pair_of_mono`.
 
 The dual notions for pushouts are also available.

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate polynomials over commutative rings
 

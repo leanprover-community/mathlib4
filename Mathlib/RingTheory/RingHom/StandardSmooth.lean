@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.RingHom.Etale
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Standard smooth ring homomorphisms
 
@@ -15,9 +18,9 @@ meta properties.
 
 ## Main definitions
 
-- `RingHom.IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard
+* `RingHom.IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard
   smooth as `R`-algebra.
-- `RingHom.IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard
+* `RingHom.IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard
   smooth of relative dimension `n` if `S` is standard smooth of relative dimension `n` as
   `R`-algebra.
 
@@ -25,7 +28,6 @@ meta properties.
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Grp.Biproducts
 public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Mayer-Vietoris exact sequence in sheaf cohomology
 
@@ -19,7 +22,6 @@ Let `F` be an abelian sheaf on `(C, J)`.
 In this file, we obtain a long exact Mayer-Vietoris sequence:
 
 `... ⟶ H^n(S.X₄, F) ⟶ H^n(S.X₂, F) ⊞ H^n(S.X₃, F) ⟶ H^n(S.X₁, F) ⟶ H^{n + 1}(S.X₄, F) ⟶ ...`
-
 -/
 
 @[expose] public section
@@ -120,6 +122,8 @@ noncomputable abbrev sequence : ComposableArrows AddCommGrpCat.{w} 5 :=
   mk₅ (S.toBiprod F n₀) (S.fromBiprod F n₀) (S.δ F n₀ n₁ h)
     (S.toBiprod F n₁) (S.fromBiprod F n₁)
 
+
+set_option doc.verso false
 set_option backward.isDefEq.respectTransparency false in
 /-- Comparison isomorphism from the Mayer-Vietoris sequence and the
 contravariant sequence of `Ext`-groups. -/
@@ -136,6 +140,8 @@ noncomputable def sequenceIso : S.sequence F n₀ n₁ h ≅
     (by ext; apply biprodAddEquiv_symm_biprodIsoProd_hom_toBiprod_apply)
     (by ext; symm; apply mk₀_f_comp_biprodAddEquiv_symm_biprodIsoProd_hom)
 
+
+set_option doc.verso true
 lemma sequence_exact : (S.sequence F n₀ n₁ h).Exact :=
   exact_of_iso (S.sequenceIso F n₀ n₁ h).symm (Ext.contravariantSequence_exact _ _ _ _ _)
 

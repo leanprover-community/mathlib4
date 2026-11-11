@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theorems about the `Disjoint` relation on `Set`.
 -/
@@ -15,7 +18,9 @@ public section
 
 assert_not_exists HeytingAlgebra RelIso
 
-/-! ### Set coercion to a type -/
+/-!
+# Set coercion to a type
+-/
 
 universe u v
 
@@ -24,7 +29,9 @@ namespace Set
 variable {α : Type u} {s t u s₁ s₂ t₁ t₂ : Set α}
 
 
-/-! ### Disjointness -/
+/-!
+# Disjointness
+-/
 
 protected theorem disjoint_iff : Disjoint s t ↔ s ∩ t ⊆ ∅ :=
   disjoint_iff_inf_le
@@ -80,7 +87,9 @@ theorem disjoint_range_iff {β γ : Sort*} {x : β → α} {y : γ → α} :
 
 end Set
 
-/-! ### Disjoint sets -/
+/-!
+# Disjoint sets
+-/
 
 variable {α : Type*} {s t u : Set α}
 

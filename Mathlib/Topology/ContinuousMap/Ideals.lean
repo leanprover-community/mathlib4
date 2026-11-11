@@ -12,6 +12,9 @@ public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.ContinuousMap.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals of continuous functions
 

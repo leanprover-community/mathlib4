@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homology of the differentials of a spectral object
 
@@ -17,10 +20,10 @@ we compute the homology of the differentials, i.e. the homology of the short com
 `E^{n - 1}(f₅, f₆, f₇) ⟶ E^n(f₃, f₄, f₅) ⟶ E^{n + 1}(f₁, f₂, f₃)`.
 The main definition for this is `dHomologyData` which is a homology data
 for this short complex where:
+
 * the cycles are `E^n(f₂ ≫ f₃, f₄, f₅)`;
 * the opcycles are `E^n(f₃, f₄, f₅ ≫ f₆)`;
 * the homology is `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`.
-
 -/
 
 @[expose] public section
@@ -133,11 +136,14 @@ lemma map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃
   cat_disch
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The homology data of the short complex
+/--
+The homology data of the short complex
 `E^{n-1}(f₅, f₆, f₇) ⟶ E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` for which
+
 * the cycles are `E^n(f₂ ≫ f₃, f₄, f₅)`;
 * the opcycles are `E^n(f₃, f₄, f₅ ≫ f₆)`;
-* the homology is `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`. -/
+* the homology is `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`.
+-/
 @[simps!]
 noncomputable def dHomologyData
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia)

@@ -11,6 +11,9 @@ public import Mathlib.Topology.Sheaves.AddCommGrpCat
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.Topology.Sheaves.LocallySurjective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flasque Sheaves
 
@@ -24,10 +27,8 @@ We define and prove basic properties about flasque sheaves on topological spaces
 
 * `TopCat.Sheaf.IsFlasque.epi_of_shortExact`: Given a short exact sequence of sheaves,
   `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`.
-
-* `TopCat.Sheaf.IsFlasque.of_shortExact_of_isFlasque₁₂ `: Given a short exact sequence of
+* `TopCat.Sheaf.IsFlasque.of_shortExact_of_isFlasque₁₂  `: Given a short exact sequence of
   sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque, then `𝓗` is flasque.
-
 -/
 
 public section

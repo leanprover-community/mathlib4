@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Add
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local extrema of differentiable functions
 
@@ -27,10 +30,8 @@ and `fderiv`/`deriv` instead of `HasFDerivAt`/`HasDerivAt`.
 * `IsLocalMaxOn.hasFDerivWithinAt_nonpos` : `f' y ≤ 0` whenever `a` is a local maximum
   of `f` on `s`, `f` has derivative `f'` at `a` within `s`, and `y` belongs to the positive tangent
   cone of `s` at `a`.
-
 * `IsLocalMaxOn.hasFDerivWithinAt_eq_zero` : In the settings of the previous theorem, if both
   `y` and `-y` belong to the positive tangent cone, then `f' y = 0`.
-
 * `IsLocalMax.hasFDerivAt_eq_zero` :
   [Fermat's Theorem](https://en.wikipedia.org/wiki/Fermat's_theorem_(stationary_points)),
   the derivative of a differentiable function at a local extremum point equals zero.
@@ -70,7 +71,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {f : E → ℝ} {f' : StrongDual ℝ E} {s : Set E} {a x y : E}
 
 /-!
-### Positive tangent cone
+# Positive tangent cone
 -/
 
 theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
@@ -96,7 +97,7 @@ theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
 theorem posTangentConeAt_univ : posTangentConeAt univ a = univ := tangentConeAt_univ
 
 /-!
-### Fermat's Theorem (vector space)
+# Fermat's Theorem (vector space)
 -/
 
 /-- If `f` has a local max on `s` at `a`, `f'` is the derivative of `f` at `a` within `s`, and
@@ -204,7 +205,7 @@ theorem IsLocalExtr.fderiv_eq_zero (h : IsLocalExtr f a) : fderiv ℝ f a = 0 :=
 end Module
 
 /-!
-### Fermat's Theorem
+# Fermat's Theorem
 -/
 
 section Real

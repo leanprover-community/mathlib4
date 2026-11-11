@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Computability.Partrec
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oracle computability
 
@@ -36,9 +39,9 @@ and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
 
-* [Piergiorgio Odifreddi,
-  *Classical Recursion Theory: The Theory of Functions and Sets of Natural
-  Numbers*][odifreddi1989]
+* ‍\[Piergiorgio Odifreddi,
+  _Classical Recursion Theory: The Theory of Functions and Sets of Natural
+  Numbers_\]\[odifreddi1989\]
 
 ## Tags
 

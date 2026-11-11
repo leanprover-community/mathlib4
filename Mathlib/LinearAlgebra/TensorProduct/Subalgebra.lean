@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some results on tensor product of subalgebras
 
@@ -18,19 +21,16 @@ Let `A` and `B` be `R`-subalgebras in `S` (`Subalgebra R S`). We define some lin
 induced by the multiplication in `S`, which are
 mainly used in the definition of linearly disjointness.
 
-- `Subalgebra.mulMap`: the natural `R`-algebra homomorphism `A ⊗[R] B →ₐ[R] S`
+* `Subalgebra.mulMap`: the natural `R`-algebra homomorphism `A ⊗[R] B →ₐ[R] S`
   induced by the multiplication in `S`, whose image is `A ⊔ B` (`Subalgebra.mulMap_range`).
-
-- `Subalgebra.mulMap'`: the natural `R`-algebra homomorphism `A ⊗[R] B →ₗ[R] A ⊔ B`
+* `Subalgebra.mulMap'`: the natural `R`-algebra homomorphism `A ⊗[R] B →ₗ[R] A ⊔ B`
   induced by multiplication in `S`, which is surjective (`Subalgebra.mulMap'_surjective`).
-
-- `Subalgebra.lTensorBot`, `Subalgebra.rTensorBot`: the natural isomorphism of `R`-algebras between
+* `Subalgebra.lTensorBot`, `Subalgebra.rTensorBot`: the natural isomorphism of `R`-algebras between
   `i(R) ⊗[R] A` and `A`, resp. `A ⊗[R] i(R)` and `A`, induced by multiplication in `S`,
   here `i : R → S` is the structure map. They generalize `Algebra.TensorProduct.lid`
   and `Algebra.TensorProduct.rid`, as `i(R)` is not necessarily isomorphic to `R`.
 
   They are `Subalgebra` versions of `Submodule.lTensorOne` and `Submodule.rTensorOne`.
-
 -/
 
 @[expose] public section
@@ -51,11 +51,13 @@ namespace Subalgebra
 
 variable (A : Subalgebra R S)
 
-/-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
+/--
+If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `i(R) ⊗[R] A` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `Algebra.TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`.
 
-This is the `Subalgebra` version of `Submodule.lTensorOne` -/
+This is the `Subalgebra` version of `Submodule.lTensorOne`
+-/
 def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).lTensorOne ?_ ?_
   · rintro x y a b
@@ -82,11 +84,13 @@ theorem lTensorBot_one_tmul (a : A) : A.lTensorBot (1 ⊗ₜ[R] a) = a :=
 theorem lTensorBot_symm_apply (a : A) : A.lTensorBot.symm a = 1 ⊗ₜ[R] a := rfl
 
 variable (A) in
-/-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
+/--
+If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `A ⊗[R] i(R)` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `Algebra.TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`.
 
-This is the `Subalgebra` version of `Submodule.rTensorOne` -/
+This is the `Subalgebra` version of `Submodule.rTensorOne`
+-/
 def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).rTensorOne ?_ ?_
   · rintro a b x y

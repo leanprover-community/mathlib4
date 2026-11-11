@@ -9,6 +9,9 @@ public import Lean.ToExpr
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional operations on Expr and rational numbers
 
@@ -44,6 +47,7 @@ def rat? (e : Expr) : Option Rat := do
 
 /--
 Test if an expression represents an explicit number written in normal form:
+
 * A "natural number in normal form" is an expression `OfNat.ofNat n`, even if it is not of type `ℕ`,
   as long as `n` is a literal.
 * An "integer in normal form" is an expression which is either a natural number in number form,

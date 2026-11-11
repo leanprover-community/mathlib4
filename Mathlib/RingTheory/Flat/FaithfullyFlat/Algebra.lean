@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of faithfully flat algebras
 
@@ -20,21 +23,20 @@ file we give equivalent characterizations of faithful flatness in the algebra ca
 
 Let `B` be a faithfully flat `A`-algebra:
 
-- `Ideal.comap_map_eq_self_of_faithfullyFlat`: the contraction of the extension of any ideal of
+* `Ideal.comap_map_eq_self_of_faithfullyFlat`: the contraction of the extension of any ideal of
   `A` to `B` is the ideal itself.
-- `Module.FaithfullyFlat.tensorProduct_mk_injective`: The natural map `M →ₗ[A] B ⊗[A] M` is
+* `Module.FaithfullyFlat.tensorProduct_mk_injective`: The natural map `M →ₗ[A] B ⊗[A] M` is
   injective for any `A`-module `M`.
-- `PrimeSpectrum.comap_surjective_of_faithfullyFlat`: The map on prime spectra induced by
+* `PrimeSpectrum.comap_surjective_of_faithfullyFlat`: The map on prime spectra induced by
   a faithfully flat ring map is surjective. See also
   `Ideal.exists_isPrime_liesOver_of_faithfullyFlat` for a version stated in terms of
   `Ideal.LiesOver`.
 
 Conversely, let `B` be a flat `A`-algebra:
 
-- `Module.FaithfullyFlat.of_comap_surjective`: `B` is faithfully flat over `A`,
+* `Module.FaithfullyFlat.of_comap_surjective`: `B` is faithfully flat over `A`,
   if the induced map on prime spectra is surjective.
-- `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
-
+* `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
 -/
 
 public section
@@ -85,10 +87,12 @@ instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [IsDomain B] [Module.Fl
 
 variable [Module.FaithfullyFlat A B]
 
-/-- If `B` is a faithfully flat `A`-module and `M` is any `A`-module, the canonical
+/--
+If `B` is a faithfully flat `A`-module and `M` is any `A`-module, the canonical
 map `M →ₗ[A] B ⊗[A] M` is injective.
 
-See also `Module.Flat.tensorProduct_mk_injective`. -/
+See also `Module.Flat.tensorProduct_mk_injective`.
+-/
 lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup M] [Module A M] :
     Function.Injective (TensorProduct.mk A B M 1) := by
   rw [← Module.FaithfullyFlat.lTensor_injective_iff_injective A B]

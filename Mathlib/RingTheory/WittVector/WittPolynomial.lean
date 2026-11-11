@@ -11,6 +11,9 @@ public import Mathlib.Algebra.MvPolynomial.Expand
 
 import Mathlib.Data.ZMod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Witt polynomials
 
@@ -51,9 +54,8 @@ In this file we use the following notation
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section
@@ -70,11 +72,13 @@ open Finsupp (single)
 variable (p : ℕ)
 variable (R : Type*) [CommRing R]
 
-/-- `wittPolynomial p R n` is the `n`-th Witt polynomial
+/--
+`wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.
 It is defined as:
 
-`∑_{i ≤ n} p^i X_i^{p^{n-i}} ∈ R[X_0, X_1, X_2, …]`. -/
+`∑_{i ≤ n} p^i X_i^{p^{n-i}} ∈ R[X_0, X_1, X_2, …]`.
+-/
 noncomputable def wittPolynomial (n : ℕ) : MvPolynomial ℕ R :=
   ∑ i ∈ range (n + 1), monomial (single i (p ^ (n - i))) ((p : R) ^ i)
 
@@ -178,7 +182,7 @@ end PPrime
 end
 
 /-!
-## Witt polynomials as a basis of the polynomial algebra
+# Witt polynomials as a basis of the polynomial algebra
 
 If `p` is invertible in `R`, then the Witt polynomials form a basis
 of the polynomial algebra `MvPolynomial ℕ R`.

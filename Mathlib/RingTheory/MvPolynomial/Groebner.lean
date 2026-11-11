@@ -7,7 +7,11 @@ module
 
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
-/-! # Division algorithm with respect to monomial orders
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Division algorithm with respect to monomial orders
 
 We provide a division algorithm with respect to monomial orders in polynomial rings.
 Let `R` be a commutative ring, `σ` a type of indeterminates and `m : MonomialOrder σ`
@@ -17,9 +21,11 @@ Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible 
 (with respect to `m`): we assume `hb : ∀ i, IsUnit (m.leadingCoeff (b i))`.
 
 * `MonomialOrder.div hb f` furnishes
-  - a finitely supported family `g : ι →₀ MvPolynomial σ R`
-  - and a “remainder” `r : MvPolynomial σ R`
+
+  * a finitely supported family `g : ι →₀ MvPolynomial σ R`
+  * and a “remainder” `r : MvPolynomial σ R`
     such that the three properties hold:
+
     1. One has `f = ∑ (g i) * (b i) + r`
     2. For every `i`, `m.degree ((g i) * (b i)` is less than or equal to that of `f`
     3. For every `i`, every monomial in the support of `r` is strictly smaller
@@ -28,17 +34,12 @@ Consider a family of polynomials `b : ι → MvPolynomial σ R` with invertible 
 The proof is done by induction, using two standard constructions
 
 * `MonomialOrder.subLTerm f` deletes the leading term of a polynomial `f`
-
 * `MonomialOrder.reduce hb f` subtracts from `f` the appropriate multiple of `b : MvPolynomial σ R`,
   provided `IsUnit (m.leadingCoeff b)`.
-
 * `MonomialOrder.div_set` is the variant of `MonomialOrder.div` for a set of polynomials.
-
 * `MonomialOrder.div_single` is the variant of `MonomialOrder.div` for a single polynomial.
 
-
-## Reference : [Becker-Weispfenning1993]
-
+## Reference : \[Becker-Weispfenning1993\]
 -/
 
 @[expose] public section
@@ -221,8 +222,10 @@ after a `decreasing_by` block with focus dots.
 See https://github.com/leanprover/lean4/issues/12573
 -/
 
-/-- Division by a *set* of multivariate polynomials
-whose leading coefficients are invertible with respect to a monomial order -/
+/--
+Division by a _set_ of multivariate polynomials
+whose leading coefficients are invertible with respect to a monomial order
+-/
 theorem div_set {B : Set (MvPolynomial σ R)}
     (hB : ∀ b ∈ B, IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 public import Mathlib.Tactic.Linarith
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behaviour of `P_infty` with respect to degeneracies
 
@@ -23,7 +26,6 @@ if `X : SimplicialObject C` with `C` a preadditive category,
 statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 public section

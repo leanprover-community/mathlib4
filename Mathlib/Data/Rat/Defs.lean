@@ -13,6 +13,9 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Attr.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basics for the Rational Numbers
 
@@ -24,12 +27,11 @@ once the `Field` class has been defined.
 
 ## Main Definitions
 
-- `Rat.divInt n d` constructs a rational number `q = n / d` from `n d : ℤ`.
+* `Rat.divInt n d` constructs a rational number `q = n / d` from `n d : ℤ`.
 
 ## Notation
 
-- `/.` is infix notation for `Rat.divInt`.
-
+* `/.` is infix notation for `Rat.divInt`.
 -/
 
 @[expose] public section
@@ -145,7 +147,9 @@ attribute [simp] mkRat_eq_zero
 -- TODO(Mario): this instance slows down Mathlib.Basic.Real.Basic
 instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide⟩
 
-/-! ### The rational numbers are a group -/
+/-!
+# The rational numbers are a group
+-/
 
 instance addCommGroup : AddCommGroup ℚ where
   zero_add := Rat.zero_add
@@ -273,6 +277,8 @@ instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
 
 end Casts
 
+
+set_option doc.verso false
 /--
 A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as
 ```lean
@@ -285,4 +291,6 @@ def divCasesOn {C : ℚ → Sort*} (a : ℚ)
     (div : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
   a.casesOn fun n d nz red => by rw [Rat.mk_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
 
+
+set_option doc.verso true
 end Rat

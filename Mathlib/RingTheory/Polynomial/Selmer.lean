@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
 
 import Mathlib.RingTheory.Polynomial.GaussLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducibility of Selmer Polynomials
 
@@ -16,7 +19,7 @@ This file proves irreducibility of the Selmer polynomials `X ^ n - X - 1`.
 
 ## Main results
 
-- `X_pow_sub_X_sub_one_irreducible`: The Selmer polynomials `X ^ n - X - 1` are irreducible.
+* `X_pow_sub_X_sub_one_irreducible`: The Selmer polynomials `X ^ n - X - 1` are irreducible.
 
 TODO: Show that the Selmer polynomials have full Galois group.
 -/

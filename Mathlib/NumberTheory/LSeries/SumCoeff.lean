@@ -12,6 +12,9 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial sums of coefficients of L-series
 
@@ -23,16 +26,13 @@ L-series.
 * `LSeriesSummable_of_sum_norm_bigO`: for `f : ℕ → ℂ`, if the partial sums
   `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then the L-series `LSeries f`
   converges at `s : ℂ` for all `s` such that `r < s.re`.
-
 * `LSeries_eq_mul_integral` : for `f : ℕ → ℂ`, if the partial sums `∑ k ∈ Icc 1 n, f k` are
   `O(n ^ r)` for some real `0 ≤ r` and the L-series `LSeries f` converges at `s : ℂ` with
   `r < s.re`, then `LSeries f s = s * ∫ t in Set.Ioi 1, (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1))`.
-
 * `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div` : assume that `f : ℕ → ℂ` satisfies that
   `(∑ k ∈ Icc 1 n, f k) / n` tends to some complex number `l` when `n → ∞` and that the L-series
   `LSeries f` converges for all `s : ℝ` such that `1 < s`. Then `(s - 1) * LSeries f s` tends
   to `l` when `s → 1` with `1 < s`.
-
 -/
 
 public section

@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `nth_rewrite` tactic
 
 The tactic `nth_rewrite` and `nth_rw` are variants of `rewrite` and `rw` that only performs the
 `n`th possible rewrite.
-
 -/
 
 public meta section
@@ -20,6 +22,8 @@ namespace Mathlib.Tactic
 
 open Lean Elab Tactic Meta Parser.Tactic
 
+
+set_option doc.verso false
 /-- `nth_rewrite` is a variant of `rewrite` that only changes the `n₁, ..., nₖ`ᵗʰ _occurrence_ of
 the expression to be rewritten. `nth_rewrite n₁ ... nₖ [eq₁, eq₂,..., eqₘ]` will rewrite the
 `n₁, ..., nₖ`ᵗʰ _occurrence_ of each of the `m` equalities `eqᵢ`in that order. Occurrences are
@@ -74,6 +78,10 @@ the next `nth_rewrite` with `h` rewrites this `a`.
 macro "nth_rewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
   `(tactic| rewrite $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
+
+set_option doc.verso true
+
+set_option doc.verso false
 /--
 `nth_rw` is a variant of `rw` that only changes the `n₁, ..., nₖ`ᵗʰ _occurrence_ of the expression
 to be rewritten. Like `rw`, and unlike `nth_rewrite`, it will try to close the goal by trying `rfl`
@@ -131,4 +139,6 @@ macro "nth_rw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tac
   `(tactic| rw $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 
+
+set_option doc.verso true
 end Mathlib.Tactic

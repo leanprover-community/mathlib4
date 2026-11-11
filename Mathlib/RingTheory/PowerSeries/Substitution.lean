@@ -11,7 +11,11 @@ public import Mathlib.RingTheory.PowerSeries.Evaluation
 
 import Mathlib.Tactic.Ring.NamePowerVars
 
-/-! # Substitutions in power series
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Substitutions in power series
 
 A (possibly multivariate) power series can be substituted into
 a (univariate) power series if and only if its constant coefficient is nilpotent.
@@ -21,7 +25,6 @@ to the case of univariate power series.
 
 Because of the special API for `PowerSeries`, some results for `MvPowerSeries`
 do not immediately apply and a “primed” version is provided here.
-
 -/
 
 @[expose] public section
@@ -72,9 +75,11 @@ protected theorem HasSubst.X (t : τ) :
     HasSubst (MvPowerSeries.X t : MvPowerSeries τ S) := by
   simp [HasSubst]
 
-/-- The univariate `X : R⟦X⟧` can be substituted in power series
+/--
+The univariate `X : R⟦X⟧` can be substituted in power series
 
-This lemma is added because `simp` doesn't find it from `HasSubst.X`. -/
+This lemma is added because `simp` doesn't find it from `HasSubst.X`.
+-/
 protected theorem HasSubst.X' : HasSubst (X : R⟦X⟧) :=
   HasSubst.X _
 
@@ -177,10 +182,12 @@ theorem coe_substAlgHom (ha : HasSubst a) :
   MvPowerSeries.coe_substAlgHom ha.const
 
 attribute [local instance] DiscreteTopology.instContinuousSMul in
-/-- Rewrite `PowerSeries.substAlgHom` as `PowerSeries.aeval`.
+/--
+Rewrite `PowerSeries.substAlgHom` as `PowerSeries.aeval`.
 
 Its use is discouraged because it introduces a topology and might lead
-into awkward comparisons. -/
+into awkward comparisons.
+-/
 theorem substAlgHom_eq_aeval
     [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
     (ha : HasSubst a) :
@@ -449,10 +456,12 @@ def substInvFun : ℕ → R
   | n + 1 => - ⅟(P.coeff 1) *
       (coeff (n + 1) (P.subst (∑ i : Fin (n + 1), C (substInvFun i.1) * X ^ i.1)))
 
-/-- Given a power series `P = u • X + O(X²)` with `u` invertible,
+/--
+Given a power series `P = u • X + O(X²)` with `u` invertible,
 this is the power series `Q` such that `P(Q(X)) = X`. See `PowerSeries.subst_substInv_right`.
 
-See also `PowerSeries.substInvOfIsUnit` for a variant using `IsUnit`. -/
+See also `PowerSeries.substInvOfIsUnit` for a variant using `IsUnit`.
+-/
 noncomputable
 def substInv : PowerSeries R := .mk (substInvFun P)
 
@@ -555,11 +564,13 @@ section IsUnit
 
 variable (P : R⟦X⟧) (hP : P.constantCoeff = 0) (hP' : IsUnit (P.coeff 1))
 
-/-- Given a power series `P = u • X + O(X²)` with `u` is an unit in ring `R`,
+/--
+Given a power series `P = u • X + O(X²)` with `u` is an unit in ring `R`,
 this is the power series `Q` such that `P(Q(X)) = X`.
 See `PowerSeries.subst_substInvOfIsUnit_right`.
 
-See also `PowerSeries.substInv` for a variant using `Invertible`. -/
+See also `PowerSeries.substInv` for a variant using `Invertible`.
+-/
 noncomputable
 def substInvOfIsUnit : PowerSeries R :=
   letI := hP'.invertible

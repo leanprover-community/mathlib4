@@ -14,13 +14,14 @@ public import Mathlib.Util.Superscript
 
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
 
 The `L²` norm on a finite product of inner product spaces is compatible with an inner product
-$$
-\langle x, y\rangle = \sum \langle x_i, y_i \rangle.
-$$
+$$`  \langle x, y\rangle = \sum \langle x_i, y_i \rangle.  `
 This is recorded in this file as an inner product space instance on `PiLp 2`.
 
 This file develops the notion of a finite-dimensional Hilbert space over `𝕜 = ℂ, ℝ`, referred to as
@@ -34,31 +35,24 @@ the last section, various properties of matrices are explored.
 
 ## Main definitions
 
-- `EuclideanSpace 𝕜 n`: defined to be `PiLp 2 (n → 𝕜)` for any `Fintype n`, i.e., the space
+* `EuclideanSpace 𝕜 n`: defined to be `PiLp 2 (n → 𝕜)` for any `Fintype n`, i.e., the space
   from functions to `n` to `𝕜` with the `L²` norm. We register several instances on it (notably
   that it is a finite-dimensional inner product space), and provide a `!ₚ[]` notation (for numeric
   subscripts like `₂`) for the case when the indexing type is `Fin n`.
-
-- `OrthonormalBasis 𝕜 ι`: defined to be an isometry to Euclidean space from a given
+* `OrthonormalBasis 𝕜 ι`: defined to be an isometry to Euclidean space from a given
   finite-dimensional inner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
-
-- `Basis.toOrthonormalBasis`: constructs an `OrthonormalBasis` for a finite-dimensional
+* `Basis.toOrthonormalBasis`: constructs an `OrthonormalBasis` for a finite-dimensional
   Euclidean space from a `Basis` which is `Orthonormal`.
-
-- `Orthonormal.exists_orthonormalBasis_extension`: provides an existential result of an
+* `Orthonormal.exists_orthonormalBasis_extension`: provides an existential result of an
   `OrthonormalBasis` extending a given orthonormal set
-
-- `exists_orthonormalBasis`: provides an orthonormal basis on a finite-dimensional vector space
-
-- `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
+* `exists_orthonormalBasis`: provides an orthonormal basis on a finite-dimensional vector space
+* `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
   finite-dimensional inner product space
-
-- `orthonormalBasisSingleton`: an orthonormal basis formed by a single unit vector in a
+* `orthonormalBasisSingleton`: an orthonormal basis formed by a single unit vector in a
   one-dimensional inner product space.
 
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
-
 -/
 
 @[expose] public section
@@ -105,11 +99,13 @@ theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, No
     [∀ i, InnerProductSpace 𝕜 (f i)] (x y : PiLp 2 f) : ⟪x, y⟫ = ∑ i, ⟪x i, y i⟫ :=
   rfl
 
-/-- The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
+/--
+The standard real/complex Euclidean space, functions on a finite type. For an `n`-dimensional
 space use `EuclideanSpace 𝕜 (Fin n)`.
 
 For the case when `n = Fin _`, there is `!₂[x, y, ...]` notation for building elements of this type,
-analogous to `![x, y, ...]` notation. -/
+analogous to `![x, y, ...]` notation.
+-/
 @[wikidata Q17295]
 abbrev EuclideanSpace (𝕜 : Type*) (n : Type*) : Type _ :=
   PiLp 2 fun _ : n => 𝕜
@@ -129,10 +125,12 @@ section Notation
 open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
 
-/-- Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
+/--
+Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
 `WithLp.toLp 2 ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
 
-This also works for other subscripts. -/
+This also works for other subscripts.
+-/
 syntax (name := PiLp.vecNotation) "!" noWs subscriptTerm noWs "[" term,* "]" : term
 macro_rules | `(!$p:subscript[$e:term,*]) => do
   -- override the `Fin n.succ` to a literal
@@ -345,11 +343,13 @@ end DecEq
 
 section finAddEquivProd
 
-/-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (ι ⊕ κ)` and
+/--
+The canonical linear homeomorphism between `EuclideanSpace 𝕜 (ι ⊕ κ)` and
 `EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`.
 
 See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
-where the RHS is equipped with the Euclidean norm rather than the supremum norm. -/
+where the RHS is equipped with the Euclidean norm rather than the supremum norm.
+-/
 abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
     EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
   (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
@@ -907,7 +907,9 @@ end Complex
 
 open Module
 
-/-! ### Matrix representation of an orthonormal basis with respect to another -/
+/-!
+# Matrix representation of an orthonormal basis with respect to another
+-/
 
 
 section ToMatrix
@@ -984,7 +986,9 @@ end Real
 
 end ToMatrix
 
-/-! ### Existence of orthonormal basis, etc. -/
+/-!
+# Existence of orthonormal basis, etc.
+-/
 
 
 section FiniteDimensional
@@ -1153,10 +1157,12 @@ variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
 
 open Module
 
-/-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
+/--
+Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 
-TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/
+TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`.
+-/
 noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
   -- Build an isometry from Sᗮ to L(S)ᗮ through `EuclideanSpace`
   let d := finrank 𝕜 Sᗮ

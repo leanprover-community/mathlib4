@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category `Discrete PUnit`
 
@@ -37,8 +40,10 @@ variable {C}
 def punitExt (F G : C ⥤ Discrete PUnit.{w + 1}) : F ≅ G :=
   NatIso.ofComponents fun X => eqToIso (by simp only [eq_iff_true_of_subsingleton])
 
-/-- Any two functors to `Discrete PUnit` are *equal*.
-You probably want to use `punitExt` instead of this. -/
+/--
+Any two functors to `Discrete PUnit` are _equal_.
+You probably want to use `punitExt` instead of this.
+-/
 theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
   Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
 

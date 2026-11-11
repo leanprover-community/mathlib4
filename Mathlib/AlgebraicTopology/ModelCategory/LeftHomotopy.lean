@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 public import Mathlib.CategoryTheory.Localization.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left homotopies in model categories
 
@@ -21,8 +24,8 @@ object in a model category, then `LeftHomotopyRel` is an equivalence
 relation on `X ⟶ Y`.
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
+* ‍\[Daniel G. Quillen, Homotopical algebra, section I.1\]\[Quillen1967\]
 -/
 
 @[expose] public section

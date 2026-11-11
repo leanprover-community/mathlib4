@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sinc function
 
@@ -24,7 +27,6 @@ This file contains the definition of the sinc function and some of its propertie
 * `cos_le_sinc`: `cos x ≤ sinc x` for `|x| < π / 2`, which together with `sinc_le_one` gives the
   squeeze behind the limit of `sin x / x` at `0`.
 * `sinc_pos`: `sinc` is positive on `(-π, π)`.
-
 -/
 
 @[expose] public section

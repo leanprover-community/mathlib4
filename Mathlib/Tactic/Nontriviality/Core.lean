@@ -13,7 +13,12 @@ public meta import Qq.Typ
 public import Mathlib.Basic.Nontrivial.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Attr.Register -- shake: keep (tactic dependency)
 
-/-! # The `nontriviality` tactic. -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `nontriviality` tactic.
+-/
 
 public meta section
 
@@ -62,7 +67,8 @@ def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
     _ ← processSyntax {maxDepth := 6}
       false false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] [] #[] [g]
 
-/-- `nontriviality α` generates a proof of `Nontrivial α` and adds this as a hypothesis.
+/--
+`nontriviality α` generates a proof of `Nontrivial α` and adds this as a hypothesis.
 
 The tactic first tries to find a proof of `Nontrivial α` using instance synthesis.
 If this fails, it will derive this proof using `a < b`, `a ≠ b` or `a > b` hypotheses in the
@@ -82,6 +88,7 @@ This tactic is extensible: tag a lemma with `@[nontriviality]` to use it in the 
   `nontriviality using *` adds all local hypotheses to the `simp` set.
 
 Examples:
+
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
   nontriviality -- There is now a `Nontrivial R` hypothesis available.

@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Short complexes in functor categories
 
 In this file, it is shown that if `J` and `C` are two categories (such
 that `C` has zero morphisms), then there is an equivalence of categories
 `ShortComplex.functorEquivalence J C : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`.
-
 -/
 
 @[expose] public section

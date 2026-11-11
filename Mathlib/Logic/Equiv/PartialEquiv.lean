@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Tactic.Attr.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial equivalences
 
@@ -37,12 +40,14 @@ As for equivs, we register a coercion to functions and use it in our simp normal
 ## Implementation notes
 
 There are at least three possible implementations of partial equivalences:
+
 * equivs on subtypes
 * pairs of functions taking values in `Option α` and `Option β`, equal to none where the partial
   equivalence is not defined
 * pairs of functions defined everywhere, keeping the source and target as additional data
 
 Each of these implementations has pros and cons.
+
 * When dealing with subtypes, one still need to define additional API for composition and
   restriction of domains. Checking that one always belongs to the right subtype makes things very
   tedious, and leads quickly to DTT hell (as the subtype `u ∩ v` is not the "same" as `v ∩ u`, for
@@ -64,13 +69,13 @@ Each of these implementations has pros and cons.
 
 If a lemma deals with the intersection of a set with either source or target of a `PartialEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
-
 -/
 
 @[expose] public section
 open Lean Meta Elab Tactic
 
-/-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
+/-!
+Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
 functions (`PartialEquiv`, `OpenPartialHomeomorph`, etc).
 
 This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attributes need a
@@ -155,7 +160,9 @@ protected def symm : PartialEquiv β α where
 instance : CoeFun (PartialEquiv α β) fun _ => α → β :=
   ⟨PartialEquiv.toFun⟩
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : PartialEquiv α β) : β → α :=
   e.symm
 
@@ -314,7 +321,8 @@ theorem forall_mem_target {p : β → Prop} : (∀ y ∈ e.target, p y) ↔ ∀ 
 theorem exists_mem_target {p : β → Prop} : (∃ y ∈ e.target, p y) ↔ ∃ x ∈ e.source, p (e x) := by
   rw [← image_source_eq_target, exists_mem_image]
 
-/-- We say that `t : Set β` is an image of `s : Set α` under a partial equivalence if
+/--
+We say that `t : Set β` is an image of `s : Set α` under a partial equivalence if
 any of the following equivalent conditions hold:
 
 * `e '' (e.source ∩ s) = e.target ∩ t`;

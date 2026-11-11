@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Ring
 
 import all Init.Data.Repr  -- for exposing `toDigitsCore`
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Digits of a natural number
 
@@ -60,10 +63,12 @@ theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
   · cases w
   · rw [digitsAux]
 
-/-- `digits b n` gives the digits, in little-endian order,
+/--
+`digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
 
 In any base, we have `ofDigits b L = L.foldr (fun x y ↦ x + b * y) 0`.
+
 * For any `2 ≤ b`, we have `l < b` for any `l ∈ digits b n`,
   and the last digit is not zero.
   This uniquely specifies the behaviour of `digits b`.
@@ -263,7 +268,7 @@ theorem ofDigits_one (L : List ℕ) : ofDigits 1 L = L.sum := by
   | cons _ _ ih => simp [ofDigits, List.sum_cons, ih]
 
 /-!
-### Properties
+# Properties
 
 This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
@@ -488,7 +493,9 @@ lemma self_mod_pow_eq_ofDigits_take {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
       (fun l hl ↦ digits_lt_base h hl)
   exact (ofDigits_digits p n).symm
 
-/-! ### `Nat.toDigits` length -/
+/-!
+# `Nat.toDigits` length
+-/
 
 lemma toDigitsCore_lens_eq_aux (b f : Nat) :
     ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →

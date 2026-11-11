@@ -10,6 +10,9 @@ public import Mathlib.Data.Multiset.Functor
 
 import Mathlib.Data.Finset.Lattice.Union
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of `Finset`
 
@@ -31,7 +34,9 @@ open Function
 
 namespace Finset
 
-/-! ### Functor -/
+/-!
+# Functor
+-/
 
 section Functor
 
@@ -51,7 +56,9 @@ theorem fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
 
 end Functor
 
-/-! ### Pure -/
+/-!
+# Pure
+-/
 
 
 protected instance pure : Pure Finset :=
@@ -60,7 +67,9 @@ protected instance pure : Pure Finset :=
 @[simp]
 theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl
 
-/-! ### Applicative functor -/
+/-!
+# Applicative functor
+-/
 
 
 section Applicative
@@ -142,7 +151,9 @@ instance commApplicative : CommApplicative Finset :=
 
 end Applicative
 
-/-! ### Monad -/
+/-!
+# Monad
+-/
 
 
 section Monad
@@ -165,7 +176,9 @@ instance : LawfulMonad Finset :=
 
 end Monad
 
-/-! ### Alternative functor -/
+/-!
+# Alternative functor
+-/
 
 
 section Alternative
@@ -186,7 +199,9 @@ instance : LawfulAlternative Finset where
 
 end Alternative
 
-/-! ### Traversable functor -/
+/-!
+# Traversable functor
+-/
 
 
 section Traversable

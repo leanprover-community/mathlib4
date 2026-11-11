@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.CompProd
 public import Mathlib.Probability.Kernel.Composition.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas relating different ways to compose kernels
 
@@ -18,7 +21,6 @@ compositions/products.
 
 * `comp_eq_snd_compProd`: `η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft X η)`
 * `parallelComp_comp_parallelComp`: `(η ∥ₖ η') ∘ₖ (κ ∥ₖ κ') = (η ∘ₖ κ) ∥ₖ (η' ∘ₖ κ')`
-
 -/
 
 public section

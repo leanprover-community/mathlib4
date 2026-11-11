@@ -9,7 +9,11 @@ public import Mathlib.MeasureTheory.Measure.WithDensity
 
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
 
-/-! # From equality of integrals to equality of functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# From equality of integrals to equality of functions
 
 This file provides various statements of the general form "if two functions have the same integral
 on all sets, then they are equal almost everywhere".
@@ -23,10 +27,10 @@ This file is about Lebesgue integrals. See the file `AEEqOfIntegral` for Bochner
 The results listed below apply to two functions `f, g`, under the hypothesis that
 for all measurable sets `s` with finite measure, `∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ`.
 The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
+
 * `ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
 * `AEMeasurable.ae_eq_of_forall_setLIntegral_eq`: for functions which are `AEMeasurable` and
   have finite integral.
-
 -/
 
 public section

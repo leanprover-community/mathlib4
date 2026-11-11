@@ -14,6 +14,9 @@ public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 import Mathlib.Order.Interval.Set.ProjIcc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functions of bounded variation
 
@@ -29,7 +32,6 @@ almost everywhere.
 * `LocallyBoundedVariationOn f s` registers that `f` has finite variation on any compact
   subinterval of `s`.
 * `variationOnFromTo f s a b` is the signed variation of `f` on `s ∩ Icc a b`, converted to `ℝ`.
-
 * `eVariationOn.Icc_add_Icc` states that the variation of `f` on `[a, c]` is the sum of its
   variations on `[a, b]` and `[b, c]`.
 * `LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn` proves that a function
@@ -71,7 +73,9 @@ endpoints in `s`, then the function has finite variation on `s ∩ [a, b]`. -/
 def LocallyBoundedVariationOn (f : α → E) (s : Set α) :=
   ∀ a b, a ∈ s → b ∈ s → BoundedVariationOn f (s ∩ Icc a b)
 
-/-! ### Basic computations of variation -/
+/-!
+# Basic computations of variation
+-/
 
 namespace eVariationOn
 
@@ -239,7 +243,8 @@ theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → M} {p : Filter �
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
   exact (this.eventually_const_lt hlt).mono fun i h => h.trans_le (sum_le um us)
 
-/-- The map `(eVariationOn · s)` is lower semicontinuous for pointwise convergence *on `s`*.
+/--
+The map `(eVariationOn · s)` is lower semicontinuous for pointwise convergence _on `s`_.
 Pointwise convergence on `s` is encoded here as uniform convergence on the family consisting of the
 singletons of elements of `s`.
 -/
@@ -493,7 +498,9 @@ theorem _root_.BoundedVariationOn.of_finite {E} [PseudoMetricSpace E] (f : α �
 [Finite s] : BoundedVariationOn f s := by
   simpa using BoundedVariationOn.of_finset f s.toFinite.toFinset
 
-/-! ### Composition of bounded variation functions with monotone functions -/
+/-!
+# Composition of bounded variation functions with monotone functions
+-/
 
 section Monotone
 
@@ -593,7 +600,9 @@ protected lemma _root_.LocallyBoundedVariationOn.ofDual {f : α → E} {s : Set 
 
 end Monotone
 
-/-! ### Left and right limits of bounded variation functions -/
+/-!
+# Left and right limits of bounded variation functions
+-/
 
 /-- The variation of a function on `Iic a` is the sum of the variation on `Iio a` and the
 contribution of `a`, i.e., the distance between the left limit and the value at `a`.
@@ -1049,7 +1058,9 @@ lemma _root_.BoundedVariationOn.continuousWithinAt_leftLim [TopologicalSpace α]
   rw [leftLim_leftLim (hf.tendsto_leftLim x)] at this
   exact continuousWithinAt_Iio_iff_Iic.1 this
 
-/-! ### Limits of bounded variation functions as `± ∞` -/
+/-!
+# Limits of bounded variation functions as `± ∞`
+-/
 
 /-- If a function has bounded variation, then the variation on closed semi-infinite
 intervals tends to `0` at `+∞`. -/
@@ -1098,7 +1109,9 @@ end eVariationOn
 
 section Monotone
 
-/-! ### Variation of monotone functions -/
+/-!
+# Variation of monotone functions
+-/
 
 open ENNReal Finset
 
@@ -1164,7 +1177,9 @@ lemma BoundedVariationOn.id_Icc (a b : ℝ) : BoundedVariationOn id (Icc a b) :=
 
 end Monotone
 
-/-! ### Lipschitz functions and bounded variation -/
+/-!
+# Lipschitz functions and bounded variation
+-/
 
 section LipschitzOnWith
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Square
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutative squares that are pushout or pullback squares
 
@@ -16,7 +19,6 @@ API for the objects of the category `Square C` of commutative
 squares in a category `C`. We also obtain lemmas which state
 in this language that a pullback of a monomorphism is
 a monomorphism (and similarly for pushouts of epimorphisms).
-
 -/
 
 @[expose] public section

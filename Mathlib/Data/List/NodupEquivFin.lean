@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.List.Duplicate
 public import Mathlib.Data.List.Sort
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `Fin (length l)` and elements of a list
 
@@ -16,15 +19,12 @@ Given a list `l`,
 * if `l` has no duplicates, then `List.Nodup.getEquiv` is the equivalence between
   `Fin (length l)` and `{x // x ∈ l}` sending `i` to `⟨get l i, _⟩` with the inverse
   sending `⟨x, hx⟩` to `⟨indexOf x l, _⟩`;
-
 * if `l` has no duplicates and contains every element of a type `α`, then
   `List.Nodup.getEquivOfForallMemList` defines an equivalence between `Fin (length l)` and `α`;
   if `α` does not have decidable equality, then
   there is a bijection `List.Nodup.getBijectionOfForallMemList`;
-
 * if `l` is sorted w.r.t. `(<)`, then `List.SortedLT.getIso` is the same bijection reinterpreted
   as an `OrderIso`.
-
 -/
 
 @[expose] public section
@@ -58,10 +58,12 @@ def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } w
   left_inv i := by simp only [List.get_idxOf, Fin.eta, H]
   right_inv x := by simp
 
-/-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
+/--
+If `l` lists all the elements of `α` without duplicates, then `List.get` defines
 an equivalence between `Fin l.length` and `α`.
 
-See `List.Nodup.getBijectionOfForallMemList` for a version without decidable equality. -/
+See `List.Nodup.getBijectionOfForallMemList` for a version without decidable equality.
+-/
 @[simps]
 def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     Fin l.length ≃ α where

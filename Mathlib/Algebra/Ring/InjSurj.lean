@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Opposites
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Data.Int.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
 
@@ -64,9 +67,11 @@ protected abbrev hasDistribNeg (f : S → R) (hf : Injective f) [Mul R] [HasDist
     neg_mul := fun x y => hf <| by rw [neg, mul, neg, neg_mul, mul],
     mul_neg := fun x y => hf <| by rw [neg, mul, neg, mul_neg, mul] }
 
-/-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
+/--
+A type endowed with `0`, `1` and `+` is an additive monoid with one,
 if it admits an injective map that preserves `0`, `1` and `+` to an additive monoid with one.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected abbrev addMonoidWithOne [AddMonoidWithOne R]
     (f : S → R) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -76,9 +81,11 @@ protected abbrev addMonoidWithOne [AddMonoidWithOne R]
     natCast_zero := hf (by rw [natCast, Nat.cast_zero, zero]),
     natCast_succ := fun n => hf (by rw [natCast, Nat.cast_succ, add, one, natCast]) }
 
-/-- A type endowed with `0`, `1` and `+` is an additive commutative monoid with one, if it admits an
+/--
+A type endowed with `0`, `1` and `+` is an additive commutative monoid with one, if it admits an
 injective map that preserves `0`, `1` and `+` to an additive commutative monoid with one.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected abbrev addCommMonoidWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [NatCast S]
     [AddCommMonoidWithOne R] (f : S → R) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -86,9 +93,11 @@ protected abbrev addCommMonoidWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] 
   __ := hf.addMonoidWithOne f zero one add nsmul natCast
   __ := hf.addCommMonoid _ zero add (swap nsmul)
 
-/-- A type endowed with `0`, `1` and `+` is an additive group with one, if it admits an injective
+/--
+A type endowed with `0`, `1` and `+` is an additive group with one, if it admits an injective
 map that preserves `0`, `1` and `+` to an additive group with one.  See note
-[reducible non-instances]. -/
+‍\[reducible non-instances\].
+-/
 protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg S] [Sub S]
     [SMul ℤ S] [NatCast S] [IntCast S] [AddGroupWithOne R] (f : S → R) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
@@ -101,9 +110,11 @@ protected abbrev addGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg 
     intCast_ofNat := fun n => hf (by rw [natCast, intCast, Int.cast_natCast]),
     intCast_negSucc := fun n => hf (by rw [intCast, neg, natCast, Int.cast_negSucc]) }
 
-/-- A type endowed with `0`, `1` and `+` is an additive commutative group with one, if it admits an
+/--
+A type endowed with `0`, `1` and `+` is an additive commutative group with one, if it admits an
 injective map that preserves `0`, `1` and `+` to an additive commutative group with one.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected abbrev addCommGroupWithOne {S} [Zero S] [One S] [Add S] [SMul ℕ S] [Neg S] [Sub S]
     [SMul ℤ S] [NatCast S] [IntCast S] [AddCommGroupWithOne R] (f : S → R) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
@@ -314,9 +325,11 @@ protected abbrev hasDistribNeg [Mul R] [HasDistribNeg R]
     mul_neg := hf.forall₂.2 fun x y => by rw [← neg, ← mul, mul_neg, neg, mul] }
 
 
-/-- A type endowed with `0`, `1` and `+` is an additive monoid with one, if it admits a surjective
+/--
+A type endowed with `0`, `1` and `+` is an additive monoid with one, if it admits a surjective
 map that preserves `0`, `1` and `*` from an additive monoid with one. See note
-[reducible non-instances]. -/
+‍\[reducible non-instances\].
+-/
 protected abbrev addMonoidWithOne [AddMonoidWithOne R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : AddMonoidWithOne S :=
@@ -325,18 +338,22 @@ protected abbrev addMonoidWithOne [AddMonoidWithOne R] (zero : f 0 = 0) (one : f
     natCast_zero := by rw [← natCast, Nat.cast_zero, zero]
     natCast_succ := fun n => by rw [← natCast, Nat.cast_succ, add, one, natCast] }
 
-/-- A type endowed with `0`, `1` and `+` is an additive monoid with one,
+/--
+A type endowed with `0`, `1` and `+` is an additive monoid with one,
 if it admits a surjective map that preserves `0`, `1` and `*` from an additive monoid with one.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected abbrev addCommMonoidWithOne [AddCommMonoidWithOne R] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (natCast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne S where
   __ := hf.addMonoidWithOne f zero one add nsmul natCast
   __ := hf.addCommMonoid _ zero add (swap nsmul)
 
-/-- A type endowed with `0`, `1`, `+` is an additive group with one,
+/--
+A type endowed with `0`, `1`, `+` is an additive group with one,
 if it admits a surjective map that preserves `0`, `1`, and `+` to an additive group with one.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected abbrev addGroupWithOne [AddGroupWithOne R]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -349,9 +366,11 @@ protected abbrev addGroupWithOne [AddGroupWithOne R]
     intCast_negSucc := fun n => by
       rw [← intCast, Int.cast_negSucc, neg, natCast] }
 
-/-- A type endowed with `0`, `1`, `+` is an additive commutative group with one, if it admits a
+/--
+A type endowed with `0`, `1`, `+` is an additive commutative group with one, if it admits a
 surjective map that preserves `0`, `1`, and `+` to an additive commutative group with one.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected abbrev addCommGroupWithOne [AddCommGroupWithOne R]
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
@@ -360,8 +379,10 @@ protected abbrev addCommGroupWithOne [AddCommGroupWithOne R]
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast,
     hf.addCommMonoid _ zero add (swap nsmul) with }
 
-/-- Pushforward a `NonUnitalNonAssocSemiring` instance along a surjective function.
-See note [reducible non-instances]. -/
+/--
+Pushforward a `NonUnitalNonAssocSemiring` instance along a surjective function.
+See note \[reducible non-instances\].
+-/
 protected abbrev nonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] (zero : f 0 = 0)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) : NonUnitalNonAssocSemiring S where

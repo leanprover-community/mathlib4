@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of group homology
 
@@ -32,7 +35,6 @@ We also provide extra API for these maps in degrees 0, 1, 2.
 * `groupHomology.H1CoresCoinf A S` is the (exact) short complex
   `H₁(S, A) ⟶ H₁(G, A) ⟶ H₁(G ⧸ S, A_S)` for a normal subgroup `S ≤ G` and a `G`-representation
   `A`, defined using the corestriction and coinflation map in degree 1.
-
 -/
 
 @[expose] public section
@@ -389,7 +391,7 @@ lemma map₁_one (φ : A ⟶ res (1 : G →* H) B) :
 section CoresCoinf
 
 /-!
-### Exactness of the corestriction-coinflation sequence in degree 1
+# Exactness of the corestriction-coinflation sequence in degree 1
 
 Given a group homomorphism `f : G →* H`, the `n`th corestriction map is the map
 `Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)` induced by `f` and the identity map on `Res(f)(A)`. Similarly, given
@@ -402,7 +404,6 @@ complex, where `ι : S →* G` is the natural inclusion. In this section we defi
 for degree 1, `groupHomology.H1CoresCoinf A S`, and prove it is exact.
 
 We do this first when `A` is `S`-trivial, and then extend to the general case.
-
 -/
 
 variable (A) (S : Subgroup G) [S.Normal]

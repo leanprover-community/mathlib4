@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialComplex.Basic
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial complexes
 
@@ -132,7 +135,9 @@ def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset
     isRelLowerSet_faces := K.isRelLowerSet_faces.mono_isLowerSet down_closed subset
     inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull (subset hs) (subset ht) }
 
-/-! ### Vertices -/
+/-!
+# Vertices
+-/
 
 
 /-- The vertices of a simplicial complex are its zero-dimensional faces. -/
@@ -168,7 +173,9 @@ theorem face_subset_face_iff (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
       (h (subset_convexHull 𝕜 (E := E) s hxs)),
     convexHull_mono⟩
 
-/-! ### Facets -/
+/-!
+# Facets
+-/
 
 
 /-- A facet of a simplicial complex is a maximal face. -/
@@ -191,7 +198,7 @@ theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t
     exact ht.2.2 (Subset.refl t)
 
 /-!
-### The semilattice of simplicial complexes
+# The semilattice of simplicial complexes
 
 `K ≤ L` means that `K.faces ⊆ L.faces`.
 -/

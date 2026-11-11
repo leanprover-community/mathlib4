@@ -9,7 +9,11 @@ public import Mathlib.Probability.Notation
 
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
-/-! # Conditional Lebesgue expectation
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Conditional Lebesgue expectation
 
 We define the conditional expectation of a `ℝ≥0∞`-valued function using the Lebesgue integral.
 Given a measure `P : Measure[mΩ₀] Ω` and a sub-σ-algebra `mΩ` of `mΩ₀` (meaning `hm : mΩ ≤ mΩ₀`)
@@ -29,6 +33,7 @@ expectation `P⁻[X|mΩ]` of `X` is the `mΩ`-measurable function such that for 
 ## Notation
 
 For a measure `P : Measure[mΩ₀] Ω`, and another `mΩ : MeasurableSpace Ω`, we define the notation
+
 * `P⁻[X|mΩ] = condLExp mΩ P X`
 
 ## Design decisions
@@ -46,7 +51,6 @@ is just used to show existence. However for (potential) convenience the actual d
 
 * Prove the pullout property
 * Prove a dominated convergence theorem.
-
 -/
 
 public section
@@ -62,7 +66,8 @@ namespace MeasureTheory
 variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞}
 
 open scoped Classical in
-/-- Conditional (Lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
+/--
+Conditional (Lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
 
 It is defined as `0` if either `¬ mΩ ≤ mΩ₀` or `hm : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)`.
 

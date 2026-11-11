@@ -12,6 +12,9 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.InformationTheory.Coding.KraftMcMillan
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kraft's Inequality
 
@@ -30,7 +33,7 @@ codewords follows by bounding every finite partial sum.
 
 ## References
 
-* Cover and Thomas, *Elements of Information Theory*, Chapter 5.
+* Cover and Thomas, _Elements of Information Theory_, Chapter 5.
 -/
 
 public section

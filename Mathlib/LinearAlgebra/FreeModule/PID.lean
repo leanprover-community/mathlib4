@@ -8,7 +8,11 @@ module
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
-/-! # Free modules over PID
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Free modules over PID
 
 A free `R`-module `M` is a module with a basis over `R`,
 equivalently it is an `R`-module linearly equivalent to `ι →₀ R` for some `ι`.
@@ -26,15 +30,13 @@ it would be equal to `finrank R M` if `R` is a field and `M` is a vector space.
 In this section, `M` is a free and finitely generated `R`-module, and
 `N` is a submodule of `M`.
 
-- `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
+* `Submodule.inductionOnRank`: if `P` holds for `⊥ : Submodule R M` and if
   `P N` follows from `P N'` for all `N'` that are of lower rank, then `P` holds
   on all submodules
-
-- `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
+* `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
   free and finitely generated. This is the first part of the structure theorem
   for modules.
-
-- `Submodule.smithNormalForm`: if `R` is a PID, then `M` has a basis
+* `Submodule.smithNormalForm`: if `R` is a PID, then `M` has a basis
   `bM` and `N` has a basis `bN` such that `bN i = a i • bM i`.
   Equivalently, a linear map `f : M →ₗ M` with `range f = N` can be written as
   a matrix in Smith normal form, a diagonal matrix with the coefficients `a i`
@@ -43,7 +45,6 @@ In this section, `M` is a free and finitely generated `R`-module, and
 ## Tags
 
 free module, finitely generated module, rank, structure theorem
-
 -/
 
 @[expose] public section
@@ -137,7 +138,8 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
 
 variable [IsDomain R]
 
-/-- The induction hypothesis of `Submodule.basisOfPid` and `Submodule.smithNormalForm`.
+/--
+The induction hypothesis of `Submodule.basisOfPid` and `Submodule.smithNormalForm`.
 
 Basically, it says: let `N ≤ M` be a pair of submodules, then we can find a pair of
 submodules `N' ≤ M'` of strictly smaller rank, whose basis we can extend to get a basis
@@ -267,7 +269,8 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   · rw [Fin.castLE_succ]
     simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, h i]
 
-/-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
+/--
+A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
 
 This is a `lemma` to make the induction a bit easier. To actually access the basis,
@@ -290,7 +293,8 @@ theorem Submodule.nonempty_basis_of_pid {ι : Type*} [Finite ι] (b : Basis ι R
   obtain ⟨bN, _hbN⟩ := h' n' bN'
   exact ⟨n' + 1, ⟨bN⟩⟩
 
-/-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
+/--
+A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
 
 See also the stronger version `Submodule.smithNormalForm`.
@@ -306,7 +310,8 @@ theorem Submodule.basisOfPid_bot {ι : Type*} [Finite ι] (b : Basis ι R M) :
   obtain rfl : n = 0 := by simpa using Fintype.card_eq.mpr ⟨e⟩
   exact Sigma.eq rfl (Basis.eq_of_apply_eq finZeroElim)
 
-/-- A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
+/--
+A submodule inside a free `R`-submodule of finite rank is also a free `R`-module of finite rank,
 if `R` is a principal ideal domain.
 
 See also the stronger version `Submodule.smithNormalFormOfLE`.
@@ -450,7 +455,8 @@ end Module.Basis.SmithNormalForm
 
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
-/-- If `M` is finite free over a PID `R`, then any submodule `N` is free
+/--
+If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
 in Smith normal form.
 
@@ -477,7 +483,8 @@ theorem Submodule.exists_smith_normal_form_of_le [Finite ι] (b : Basis ι R M) 
   obtain ⟨as, has⟩ := h'' as' has'
   exact ⟨_, _, hmn, bM, bN, as, has⟩
 
-/-- If `M` is finite free over a PID `R`, then any submodule `N` is free
+/--
+If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
 in Smith normal form.
 
@@ -496,7 +503,8 @@ noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
     Submodule.coe_smul_of_tower, Fin.castLEEmb_apply]
 
-/-- If `M` is finite free over a PID `R`, then any submodule `N` is free
+/--
+If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix
 in Smith normal form.
 
@@ -566,6 +574,7 @@ theorem Submodule.exists_smith_normal_form_of_rank_eq (b : Basis ι R M)
 If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
 we can find basis for `M` and `N` with the same indexing such that the inclusion map
 is a square diagonal matrix; this is the basis for `M`. See:
+
 * `Submodule.smithNormalFormBotBasis` for the basis on `N`,
 * `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
 * `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
@@ -579,6 +588,7 @@ noncomputable def Submodule.smithNormalFormTopBasis (b : Basis ι R M)
 If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
 we can find basis for `M` and `N` with the same indexing such that the inclusion map
 is a square diagonal matrix; this is the basis for `N`. See:
+
 * `Submodule.smithNormalFormTopBasis` for the basis on `M`,
 * `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
 * `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
@@ -592,6 +602,7 @@ noncomputable def Submodule.smithNormalFormBotBasis (b : Basis ι R M)
 If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
 we can find basis for `M` and `N` with the same indexing such that the inclusion map
 is a square diagonal matrix; these are the entries of the diagonal matrix. See:
+
 * `Submodule.smithNormalFormTopBasis` for the basis on `M`,
 * `Submodule.smithNormalFormBotBasis` for the basis on `N`,
 * `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
@@ -630,7 +641,8 @@ theorem Ideal.finrank_eq_finrank [Finite ι] (b : Basis ι R S) (I : Ideal S) (h
   rw [Module.finrank_eq_card_basis bS, Module.finrank_eq_card_basis bI]
   exact Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
 
-/-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
+/--
+If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
 matrix.
@@ -646,7 +658,8 @@ noncomputable def Ideal.smithNormalForm [Fintype ι] (b : Basis ι R S) (I : Ide
 
 variable [Finite ι]
 
-/-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
+/--
+If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
 matrix.
@@ -661,10 +674,12 @@ theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I 
     ∃ (b' : Basis ι R S) (a : ι → R) (ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i :=
   Submodule.exists_smith_normal_form_of_rank_eq b (finrank_eq_finrank b I hI)
 
-/-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
+/--
+If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
 matrix; this is the basis for `S`. See
+
 * `Ideal.selfBasis` for the basis on `I`,
 * `Ideal.smithCoeffs` for the entries of the diagonal matrix
 * `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
@@ -672,10 +687,12 @@ matrix; this is the basis for `S`. See
 noncomputable def Ideal.ringBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R S :=
   (Ideal.exists_smith_normal_form b I hI).choose
 
-/-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
+/--
+If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
 matrix; this is the basis for `I`. See:
+
 * `Ideal.ringBasis` for the basis on `S`,
 * `Ideal.smithCoeffs` for the entries of the diagonal matrix
 * `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
@@ -683,10 +700,12 @@ matrix; this is the basis for `I`. See:
 noncomputable def Ideal.selfBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R I :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose
 
-/-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
+/--
+If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
 matrix; these are the entries of the diagonal matrix. See :
+
 * `Ideal.ringBasis` for the basis on `S`,
 * `Ideal.selfBasis` for the basis on `I`,
 * `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.

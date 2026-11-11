@@ -9,6 +9,9 @@ public import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 
 import Mathlib.Probability.Kernel.Composition.WithDensity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Condition for two kernels to be equal almost everywhere
 
@@ -19,7 +22,6 @@ The result requires `α` to be countable or `β` to be a countably generated mea
 ## Main statements
 
 * `compProd_eq_iff`: `μ ⊗ₘ κ = μ ⊗ₘ η ↔ κ =ᵐ[μ] η`
-
 -/
 
 public section

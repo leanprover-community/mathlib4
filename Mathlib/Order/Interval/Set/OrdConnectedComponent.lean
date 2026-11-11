@@ -10,6 +10,9 @@ public import Mathlib.Order.Interval.Set.OrdConnected
 
 import Mathlib.Data.Set.Lattice.Disjoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order connected components of a set
 
@@ -146,10 +149,12 @@ theorem eq_of_mem_ordConnectedSection_of_uIcc_subset (hx : x ∈ ordConnectedSec
         (mem_ordConnectedComponent_trans (ordConnectedProj_mem_ordConnectedComponent _ _) h)
         (mem_ordConnectedComponent_ordConnectedProj _ _))
 
-/-- Given two sets `s t : Set α`, the set `Set.orderSeparatingSet s t` is the set of points that
+/--
+Given two sets `s t : Set α`, the set `Set.orderSeparatingSet s t` is the set of points that
 belong both to some `Set.ordConnectedComponent tᶜ x`, `x ∈ s`, and to some
 `Set.ordConnectedComponent sᶜ x`, `x ∈ t`. In the case of two disjoint closed sets, this is the
-union of all open intervals $(a, b)$ such that their endpoints belong to different sets. -/
+union of all open intervals $`(a, b)` such that their endpoints belong to different sets.
+-/
 def ordSeparatingSet (s t : Set α) : Set α :=
   (⋃ x ∈ s, ordConnectedComponent tᶜ x) ∩ ⋃ x ∈ t, ordConnectedComponent sᶜ x
 

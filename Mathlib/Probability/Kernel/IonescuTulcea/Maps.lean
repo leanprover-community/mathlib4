@@ -8,7 +8,11 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Order.Restriction
 
-/-! # Auxiliary maps for Ionescu-Tulcea theorem
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Auxiliary maps for Ionescu-Tulcea theorem
 
 This file contains auxiliary maps which are used to prove the Ionescu-Tulcea theorem.
 -/

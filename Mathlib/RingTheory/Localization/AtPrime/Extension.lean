@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primes in an extension of localization at prime
 
@@ -23,21 +26,16 @@ bijection and that the residual degree and ramification index are preserved by t
 
 ## Main definitions and results
 
-- `IsLocalization.AtPrime.mem_primesOver_of_isPrime`: The nonzero prime ideals of `Sₚ` are
+* `IsLocalization.AtPrime.mem_primesOver_of_isPrime`: The nonzero prime ideals of `Sₚ` are
   primes over the maximal ideal of `Rₚ`.
-
-- `IsLocalization.AtPrime.equivQuotientMapOfIsMaximal`: `S ⧸ P ≃+* Sₚ ⧸ P·Sₚ` where
+* `IsLocalization.AtPrime.equivQuotientMapOfIsMaximal`: `S ⧸ P ≃+* Sₚ ⧸ P·Sₚ` where
   `P` is a maximal ideal of `S` above `p`.
-
-- `IsDedekindDomain.primesOverEquivPrimesOver`: the bijection between the primes over
+* `IsDedekindDomain.primesOverEquivPrimesOver`: the bijection between the primes over
   `p` in `S` and the primes over the maximal ideal of `Rₚ` in `Sₚ`.
-
-- `IsDedekindDomain.primesOverEquivPrimesOver_inertiaDeg_eq`: the bijection
+* `IsDedekindDomain.primesOverEquivPrimesOver_inertiaDeg_eq`: the bijection
   `primesOverEquivPrimesOver` preserves the inertia degree.
-
-- `IsDedekindDomain.primesOverEquivPrimesOver_ramificationIdx_eq`: the bijection
+* `IsDedekindDomain.primesOverEquivPrimesOver_ramificationIdx_eq`: the bijection
   `primesOverEquivPrimesOver` preserves the ramification index.
-
 -/
 
 @[expose] public section
@@ -142,11 +140,13 @@ variable [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
 The following diagram where the vertical maps are the algebra maps and the horizontal maps are
 `Localization.AtPrime.equivQuotMaximalIdeal.symm` and
 `Localization.AtPrime.equivQuotientMapOfIsMaximal.symm` commutes:
+
 ```
 Rₚ ⧸ 𝓂 ──▶ R ⧸ p
   │         │
 Sₚ ⧸ 𝒫 ──▶ S ⧸ P
 ```
+
 Here, `𝓂` denotes the maximal ideal of `Rₚ` and `𝒫` the image of `P` in `Sₚ`.
 Note that result is stated in that direction since this is the formulation needed for the proof
 of `Localization.AtPrime.inertiaDeg_map_eq_inertiaDeg`.

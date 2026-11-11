@@ -18,6 +18,9 @@ import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.GroupTheory.QuotientGroup.ModEq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The additive circle
 
@@ -51,7 +54,6 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Link with periodicity
 * Lie group structure
 * Exponential equivalence to `Circle`
-
 -/
 
 @[expose] public section
@@ -77,10 +79,12 @@ theorem eventuallyEq_toIcoDiv_nhdsGE : toIcoDiv hp a =ᶠ[𝓝[≥] x] fun _ ↦
   apply Ico_mem_nhdsGE_of_mem
   rw [← sub_mem_Ico_iff_left, ← toIcoDiv_eq_iff]
 
-/-- `toIcoDiv` is continuous on the right at every point.
+/--
+`toIcoDiv` is continuous on the right at every point.
 
 In fact, a stronger statement is true:
-it's eventually constant on the right, see `eventuallyEq_toIcoDiv_nhdsGE`. -/
+it's eventually constant on the right, see `eventuallyEq_toIcoDiv_nhdsGE`.
+-/
 theorem continuousWithinAt_toIcoDiv_Ici : ContinuousWithinAt (toIcoDiv hp a) (Ici x) x :=
   Filter.tendsto_pure.mpr (eventuallyEq_toIcoDiv_nhdsGE hp a x) |>.mono_right <| pure_le_nhds _
 
@@ -90,10 +94,12 @@ theorem eventuallyEq_toIocDiv_nhdsLE : toIocDiv hp a =ᶠ[𝓝[≤] x] fun _ ↦
   apply Ioc_mem_nhdsLE_of_mem
   rw [← sub_mem_Ioc_iff_left, ← toIocDiv_eq_iff]
 
-/-- `toIocDiv` is continuous on the left at every point.
+/--
+`toIocDiv` is continuous on the left at every point.
 
 In fact, a stronger statement is true:
-it's eventually constant on the left, see `eventuallyEq_toIocDiv_nhdsLE`. -/
+it's eventually constant on the left, see `eventuallyEq_toIocDiv_nhdsLE`.
+-/
 theorem continuousWithinAt_toIocDiv_Iic : ContinuousWithinAt (toIocDiv hp a) (Iic x) x :=
   Filter.tendsto_pure.mpr (eventuallyEq_toIocDiv_nhdsLE hp a x) |>.mono_right <| pure_le_nhds _
 
@@ -107,7 +113,8 @@ theorem continuousWithinAt_toIocMod_Iic : ContinuousWithinAt (toIocMod hp a) (Ii
   continuousWithinAt_id.sub <|
     (continuousWithinAt_toIocDiv_Iic hp a x).smul continuousWithinAt_const
 
-/-- At every point `x`, for all `y < x` sufficiently close to `x`,
+/--
+At every point `x`, for all `y < x` sufficiently close to `x`,
 we have `toIcoDiv hp a y = toIocDiv hp a x`.
 
 Note that we use different functions on the LHS and on the RHS.
@@ -117,7 +124,8 @@ theorem eventuallyEq_toIcoDiv_nhdsLT : toIcoDiv hp a =ᶠ[𝓝[<] x] fun _ ↦ t
   apply Ico_mem_nhdsLT_of_mem
   rw [← sub_mem_Ioc_iff_left, ← toIocDiv_eq_iff]
 
-/-- At every point `x`, for all `y > x` sufficiently close to `x`,
+/--
+At every point `x`, for all `y > x` sufficiently close to `x`,
 we have `toIocDiv hp a y = toIcoDiv hp a x`.
 
 Note that we use different functions on the LHS and on the RHS.
@@ -137,9 +145,11 @@ theorem eventuallyEq_toIcoDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
   convert! (eventuallyEq_toIcoDiv_nhdsLT hp a x).eventually using 3
   rwa [← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
-/-- If `x` is not congruent to `a` modulo `p`, then `toIcoDiv` is continuous at `x`.
+/--
+If `x` is not congruent to `a` modulo `p`, then `toIcoDiv` is continuous at `x`.
 
-In fact, it is locally near `x`, see `eventuallyEq_toIcoDiv_nhds`. -/
+In fact, it is locally near `x`, see `eventuallyEq_toIcoDiv_nhds`.
+-/
 theorem continuousAt_toIcoDiv (hx : ¬x ≡ a [PMOD p]) :
     ContinuousAt (toIcoDiv hp a) x :=
   tendsto_nhds_of_eventually_eq <| eventuallyEq_toIcoDiv_nhds hp a hx
@@ -156,9 +166,11 @@ theorem eventuallyEq_toIocDiv_nhds (hx : ¬x ≡ a [PMOD p]) :
   convert! (eventuallyEq_toIocDiv_nhdsGT hp a x).eventually using 3
   rwa [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, AddCommGroup.modEq_comm]
 
-/-- If `x` is not congruent to `a` modulo `p`, then `toIocDiv` is continuous at `x`.
+/--
+If `x` is not congruent to `a` modulo `p`, then `toIocDiv` is continuous at `x`.
 
-In fact, it is locally near `x`, see `eventuallyEq_toIocDiv_nhds`. -/
+In fact, it is locally near `x`, see `eventuallyEq_toIocDiv_nhds`.
+-/
 theorem continuousAt_toIocDiv (hx : ¬x ≡ a [PMOD p]) :
     ContinuousAt (toIocDiv hp a) x :=
   tendsto_nhds_of_eventually_eq <| eventuallyEq_toIocDiv_nhds hp a hx

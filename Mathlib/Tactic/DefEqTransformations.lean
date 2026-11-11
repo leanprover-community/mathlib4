@@ -8,7 +8,11 @@ module
 public meta import Lean.Elab.Tactic.Conv.Basic
 public import Mathlib.Init
 
-/-! # Tactics that transform types into definitionally equal types
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Tactics that transform types into definitionally equal types
 
 This module defines a standard wrapper that can be used to create tactics that
 change hypotheses and the goal to things that are definitionally equal.
@@ -47,13 +51,15 @@ def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typ
     | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
   return mvarId
 
-/-- For the main goal, use `m` to transform the types of locations specified by `loc?`.
+/--
+For the main goal, use `m` to transform the types of locations specified by `loc?`.
 If `loc?` is none, then transforms the type of target. `m` is provided with an expression
 with instantiated metavariables as well as, if the location is a local hypothesis, the fvar.
 
-`m` *must* transform expressions to defeq expressions.
+`m` _must_ transform expressions to defeq expressions.
 If `checkDefEq = true` (the default) then `runDefEqTactic` will throw an error
-if the resulting expression is not definitionally equal to the original expression. -/
+if the resulting expression is not definitionally equal to the original expression.
+-/
 def runDefEqTactic (m : Option FVarId → Expr → MetaM Expr)
     (loc? : Option (TSyntax ``Parser.Tactic.location))
     (tacticName : String)
@@ -77,7 +83,9 @@ def runDefEqConvTactic (m : Expr → MetaM Expr) : TacticM Unit := withMainConte
   Conv.changeLhs <| ← m (← instantiateMVars <| ← Conv.getLhs)
 
 
-/-! ### `whnf` -/
+/-!
+# `whnf`
+-/
 
 /--
 `whnf at loc` puts the given location into weak-head normal form.
@@ -90,7 +98,9 @@ elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefEqTactic (checkDefEq := false) (fun _ => whnf) loc? "whnf"
 
 
-/-! ### `beta_reduce` -/
+/-!
+# `beta_reduce`
+-/
 
 /--
 `beta_reduce at loc` completely beta reduces the given location.
@@ -107,7 +117,9 @@ elab (name := betaReduceStx) "beta_reduce" loc?:(ppSpace Parser.Tactic.location)
 elab "beta_reduce" : conv => runDefEqConvTactic (Core.betaReduce ·)
 
 
-/-! ### `reduce` -/
+/-!
+# `reduce`
+-/
 
 /--
 `reduce at loc` completely reduces the given location.
@@ -119,7 +131,9 @@ elab "reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefEqTactic (fun _ e => reduce e (skipTypes := false) (skipProofs := false)) loc? "reduce"
 
 
-/-! ### `unfold_let` -/
+/-!
+# `unfold_let`
+-/
 
 /-- Unfold all the fvars from `fvars` in `e` that have local definitions (are "let-bound"). -/
 def unfoldFVars (fvars : Array FVarId) (e : Expr) : MetaM Expr := do
@@ -135,7 +149,9 @@ def unfoldFVars (fvars : Array FVarId) (e : Expr) : MetaM Expr := do
         return .continue
     | _ => return .continue
 
-/-! ### `refold_let` -/
+/-!
+# `refold_let`
+-/
 
 /-- For each fvar, looks for its body in `e` and replaces it with the fvar. -/
 def refoldFVars (fvars : Array FVarId) (loc? : Option FVarId) (e : Expr) : MetaM Expr := do
@@ -176,7 +192,9 @@ elab_rules : conv
     runDefEqConvTactic (refoldFVars (← getFVarIds hs) none)
 
 
-/-! ### `unfold_projs` -/
+/-!
+# `unfold_projs`
+-/
 
 /-- Recursively unfold all the projection applications for class instances. -/
 def unfoldProjs (e : Expr) : MetaM Expr := do
@@ -197,7 +215,9 @@ elab (name := unfoldProjsStx) "unfold_projs" loc?:(ppSpace Parser.Tactic.locatio
 elab "unfold_projs" : conv => runDefEqConvTactic unfoldProjs
 
 
-/-! ### `eta_reduce` -/
+/-!
+# `eta_reduce`
+-/
 
 /-- Eta reduce everything -/
 def etaReduceAll (e : Expr) : MetaM Expr := do
@@ -219,11 +239,15 @@ elab (name := etaReduceStx) "eta_reduce" loc?:(ppSpace Parser.Tactic.location)? 
 elab "eta_reduce" : conv => runDefEqConvTactic etaReduceAll
 
 
-/-! ### `eta_expand` -/
+/-!
+# `eta_expand`
+-/
 
-/-- Eta expand every sub-expression in the given expression.
+/--
+Eta expand every sub-expression in the given expression.
 
-As a side-effect, beta reduces any pre-existing instances of eta expanded terms. -/
+As a side-effect, beta reduces any pre-existing instances of eta expanded terms.
+-/
 partial def etaExpandAll (e : Expr) : MetaM Expr := do
   if e.isLambda then
     expandSubterms e
@@ -282,7 +306,9 @@ elab (name := etaExpandStx) "eta_expand" loc?:(ppSpace Parser.Tactic.location)? 
 elab "eta_expand" : conv => runDefEqConvTactic etaExpandAll
 
 
-/-! ### `eta_struct` -/
+/-!
+# `eta_struct`
+-/
 
 /-- Given an expression that's either a native projection or a registered projection
 function, gives (1) the name of the structure type, (2) the index of the projection, and
@@ -297,14 +323,16 @@ def getProjectedExpr (e : Expr) : MetaM (Option (Name × Nat × Expr)) := do
           return (fVal.induct, info.i, e.appArg!)
   return none
 
-/-- Checks if the expression is of the form `S.mk x.1 ... x.n` with `n` nonzero
+/--
+Checks if the expression is of the form `S.mk x.1 ... x.n` with `n` nonzero
 and `S.mk` a structure constructor and returns `x`.
 Each projection `x.i` can be either a native projection or from a projection function.
 
 `tryWhnfR` controls whether to try applying `whnfR` to arguments when none of them
 are obviously projections.
 
-Once an obviously correct projection is found, relies on the structure eta rule in `isDefEq`. -/
+Once an obviously correct projection is found, relies on the structure eta rule in `isDefEq`.
+-/
 def etaStruct? (e : Expr) (tryWhnfR : Bool := true) : MetaM (Option Expr) := do
   let .const f _ := e.getAppFn | return none
   let some (ConstantInfo.ctorInfo fVal) := (← getEnv).find? f | return none

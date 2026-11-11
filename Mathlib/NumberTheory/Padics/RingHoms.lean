@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 import Mathlib.RingTheory.ZMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relating `ℤ_[p]` to `ZMod (p ^ n)`, aka `ℤ/p^nℤ`.
 
@@ -22,6 +25,7 @@ and the integers modulo powers of `p`, `ℤ/p^nℤ`, implemented as `ZMod (p^n)`
 We show that `ℤ_[p]` has a ring homomorphism to `ℤ/p^nℤ` for each `n`.
 The case for `n = 1` is handled separately, since it is used in the general construction
 and we may want to use it without the `^1` getting in the way.
+
 * `PadicInt.toZMod`: ring homomorphism to `ℤ/pℤ`, implemented as `ZMod p`.
 * `PadicInt.toZModPow`: ring homomorphism to `ℤ/p^nℤ`, implemented as `ZMod (p^n)`.
 * `PadicInt.ker_toZMod` / `PadicInt.ker_toZModPow`: the kernels of these maps are the ideals
@@ -31,6 +35,7 @@ and we may want to use it without the `^1` getting in the way.
 We also establish the universal property of `ℤ_[p]` as a projective limit.
 Given a family of compatible ring homomorphisms `f_k : R → ℤ/p^nℤ`,
 there is a unique limit `R → ℤ_[p]`
+
 * `PadicInt.lift`: the limit function
 * `PadicInt.lift_spec` / `PadicInt.lift_unique`: the universal property
 
@@ -38,7 +43,6 @@ there is a unique limit `R → ℤ_[p]`
 
 The constructions of the ring homomorphisms go through an auxiliary constructor
 `PadicInt.toZModHom`, which removes some boilerplate code.
-
 -/
 
 @[expose] public section
@@ -54,19 +58,23 @@ variable {p : ℕ} [hp_prime : Fact p.Prime]
 
 section RingHoms
 
-/-! ### Ring homomorphisms to `ZMod p` and `ZMod (p ^ n)` -/
+/-!
+# Ring homomorphisms to `ZMod p` and `ZMod (p ^ n)`
+-/
 
 
 variable (p) (r : ℚ)
 
-/-- `modPart p r` is an integer that satisfies
+/--
+`modPart p r` is an integer that satisfies
 `‖(r - modPart p r : ℚ_[p])‖ < 1` when `‖(r : ℚ_[p])‖ ≤ 1`,
 see `PadicInt.norm_sub_modPart`.
 It is the unique non-negative integer that is `< p` with this property.
 
 (Note that this definition assumes `r : ℚ`.
 See `PadicInt.zmodRepr` for a version that takes values in `ℕ`
-and works for arbitrary `x : ℤ_[p]`.) -/
+and works for arbitrary `x : ℤ_[p]`.)
+-/
 def modPart : ℤ :=
   r.num * gcdA r.den p % p
 
@@ -306,7 +314,8 @@ def toZMod : ℤ_[p] →+* ZMod p :=
       rw [← maximalIdeal_eq_span_p]
       exact zmod_congr_of_sub_mem_max_ideal)
 
-/-- `z - (toZMod z : ℤ_[p])` is contained in the maximal ideal of `ℤ_[p]`, for every `z : ℤ_[p]`.
+/--
+`z - (toZMod z : ℤ_[p])` is contained in the maximal ideal of `ℤ_[p]`, for every `z : ℤ_[p]`.
 
 The coercion from `ZMod p` to `ℤ_[p]` is `ZMod.cast`,
 which coerces `ZMod p` into arbitrary rings.
@@ -521,7 +530,9 @@ end RingHoms
 
 section lift
 
-/-! ### Universal property as projective limit -/
+/-!
+# Universal property as projective limit
+-/
 
 
 open CauSeq PadicSeq

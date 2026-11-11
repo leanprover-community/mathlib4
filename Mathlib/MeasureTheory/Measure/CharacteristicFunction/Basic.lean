@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Group.IntegralConvolution
 public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic Function of a Finite Measure
 
@@ -46,7 +49,6 @@ and `L`.
   `μ` and `ν` on a complete second-countable inner product space coincide, then `μ = ν`.
 * `Measure.ext_of_charFunDual`: If the characteristic functions `charFunDual` of two finite measures
   `μ` and `ν` on a Banach space coincide, then `μ = ν`.
-
 -/
 
 @[expose] public section

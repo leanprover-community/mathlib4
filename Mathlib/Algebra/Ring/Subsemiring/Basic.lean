@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Ring.Subsemiring.Defs
 public import Mathlib.GroupTheory.Submonoid.Centralizer
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled subsemirings
 
@@ -153,7 +156,9 @@ namespace RingHom
 
 variable (g : S →+* T) (f : R →+* S)
 
-/-- The range of a ring homomorphism is a subsemiring. See Note [range copy pattern]. -/
+/--
+The range of a ring homomorphism is a subsemiring. See Note \[range copy pattern\].
+-/
 @[simps! coe toSubmonoid]
 def rangeS : Subsemiring S :=
   ((⊤ : Subsemiring R).map f).copy (Set.range f) Set.image_univ.symm
@@ -266,10 +271,12 @@ def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
     one_mem' := Set.one_mem_center }
 
-/-- The center is commutative and associative.
+/--
+The center is commutative and associative.
 
 This is not an instance as it forms a non-defeq diamond with
-`NonUnitalSubringClass.toNonUnitalRing` in the `npow` field. -/
+`NonUnitalSubringClass.toNonUnitalRing` in the `npow` field.
+-/
 abbrev center.commSemiring' : CommSemiring (center R) :=
   { Submonoid.center.commMonoid', (center R).toNonAssocSemiring with }
 
@@ -777,9 +784,11 @@ theorem domRestrict_comp_codRestrict (g : S →+* T) (f : R →+* S) (p : Subsem
     (g.domRestrict p).comp (f.codRestrict p h) = g.comp f :=
   rfl
 
-/-- Restriction of a ring homomorphism to its range interpreted as a subsemiring.
+/--
+Restriction of a ring homomorphism to its range interpreted as a subsemiring.
 
-This is the bundled version of `Set.rangeFactorization`. -/
+This is the bundled version of `Set.rangeFactorization`.
+-/
 def rangeSRestrict (f : R →+* S) : R →+* f.rangeS :=
   f.codRestrict (R := R) (S := S) (σS := Subsemiring S) f.rangeS f.mem_rangeS_self
 
@@ -913,7 +922,8 @@ theorem subsemiringMap_symm_apply_coe (e : R ≃+* S) (s : Subsemiring R) (x : s
 
 end RingEquiv
 
-/-! ### Actions by `Subsemiring`s
+/-!
+# Actions by `Subsemiring`s
 
 These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
 The only new result is `Subsemiring.module`.

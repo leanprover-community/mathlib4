@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Topology.UniformSpace.Basic
 
-/-! # Discrete uniformity
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Discrete uniformity
 
 The discrete uniformity is the smallest possible uniformity, the one for which
 the diagonal is an entourage of itself.
@@ -15,7 +19,6 @@ the diagonal is an entourage of itself.
 It induces the discrete topology.
 
 It is complete.
-
 -/
 
 public section

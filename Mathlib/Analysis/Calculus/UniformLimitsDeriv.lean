@@ -9,6 +9,10 @@ public import Mathlib.Analysis.Calculus.MeanValue
 
 import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Swapping limits and derivatives via uniform convergence
 
@@ -166,7 +170,8 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
           by simp,
           fun {n} hn {y} _ => by simpa [norm_sub_rev, dist_eq_norm] using ht' _ hn.1 _ hn.2⟩
 
-/-- A variant of the second fundamental theorem of calculus (FTC-2): If a sequence of functions
+/--
+A variant of the second fundamental theorem of calculus (FTC-2): If a sequence of functions
 between real or complex normed spaces are differentiable on a ball centered at `x`, they
 form a Cauchy sequence _at_ `x`, and their derivatives are Cauchy uniformly on the ball, then the
 functions form a uniform Cauchy sequence on the ball.
@@ -297,15 +302,18 @@ theorem difference_quotients_converge_uniformly
       (fun y hy => ((e hn (hr' hy)).2.1.sub (e hn (hr' hy)).2.2).hasFDerivWithinAt)
       (fun y hy => (e hn (hr' hy)).1.le) (convex_ball x r) (Metric.mem_ball_self hr) hy
 
-/-- `(d/dx) lim_{n → ∞} f n x = lim_{n → ∞} f' n x` when the `f' n` converge
+/--
+`(d/dx) lim_{n → ∞} f n x = lim_{n → ∞} f' n x` when the `f' n` converge
 _uniformly_ to their limit at `x`.
 
 In words the assumptions mean the following:
-  * `hf'`: The `f'` converge "uniformly at" `x` to `g'`. This does not mean that the `f' n` even
-    converge away from `x`!
-  * `hf`: For all `(y, n)` with `y` sufficiently close to `x` and `n` sufficiently large, `f' n` is
-    the derivative of `f n`
-  * `hfg`: The `f n` converge pointwise to `g` on a neighborhood of `x` -/
+
+* `hf'`: The `f'` converge "uniformly at" `x` to `g'`. This does not mean that the `f' n` even
+  converge away from `x`!
+* `hf`: For all `(y, n)` with `y` sufficiently close to `x` and `n` sufficiently large, `f' n` is
+  the derivative of `f n`
+* `hfg`: The `f n` converge pointwise to `g` on a neighborhood of `x`
+-/
 theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)

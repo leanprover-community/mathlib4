@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Retracts
 
 Defines retracts of objects and morphisms.
-
 -/
 
 @[expose] public section
@@ -116,8 +118,10 @@ end Retract
   Y -------> W -------> Y
 
 ```
+
 A morphism `f : X ⟶ Y` is a retract of `g : Z ⟶ W` if there are morphisms `i : f ⟶ g`
-and `r : g ⟶ f` in the arrow category such that `i ≫ r = 𝟙 f`. -/
+and `r : g ⟶ f` in the arrow category such that `i ≫ r = 𝟙 f`.
+-/
 @[to_dual self]
 abbrev RetractArrow {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) := Retract (Arrow.mk f) (Arrow.mk g)
 

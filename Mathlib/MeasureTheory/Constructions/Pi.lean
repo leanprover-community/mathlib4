@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
 import Mathlib.Algebra.BigOperators.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indexed product measures
 
@@ -35,6 +38,7 @@ where `pi univ s` is the product of the sets `{s i | i : ι}`.
 We then show that this induces a product of measures, called `MeasureTheory.Measure.pi`.
 For a collection of σ-finite measures `μ` and a collection of measurable sets `s` we show that
 `Measure.pi μ (pi univ s) = ∏ i, m i (s i)`. To do this, we follow the following steps:
+
 * We know that there is some ordering on `ι`, given by an element of `[Countable ι]`.
 * Using this, we have an equivalence `MeasurableEquiv.piMeasurableEquivTProd` between
   `∀ i, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
@@ -50,7 +54,6 @@ For a collection of σ-finite measures `μ` and a collection of measurable sets 
 ## Tags
 
 finitary product measure
-
 -/
 
 @[expose] public section
@@ -701,7 +704,7 @@ instance Pi.isInvInvariant_volume {α} [Group α] [MeasureSpace α] [SigmaFinite
   pi.isInvInvariant _
 
 /-!
-### Measure-preserving equivalences
+# Measure-preserving equivalences
 
 In this section we prove that some measurable equivalences (e.g., between `Fin 1 → α` and `α` or
 between `Fin 2 → α` and `α × α`) preserve measure or volume. These lemmas can be used to prove that

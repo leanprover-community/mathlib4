@@ -8,7 +8,11 @@ module
 public import Mathlib.Geometry.Manifold.LocalInvariantProperties
 public import Mathlib.Topology.Sheaves.LocalPredicate
 
-/-! # Generic construction of a sheaf from a `LocalInvariantProp` on a manifold
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Generic construction of a sheaf from a `LocalInvariantProp` on a manifold
 
 This file constructs the sheaf-of-types of functions `f : M → M'` (for charted spaces `M`, `M'`)
 which satisfy the lifted property `LiftProp P` associated to some locally invariant (in the sense

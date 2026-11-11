@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.DividedPowers.Basic
 
 import Mathlib.RingTheory.Congruence.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The universal divided power algebra
 
@@ -24,10 +27,8 @@ divided powers (`DividedPowerAlgebra.lift`).
 
 * `DividedPowerAlgebra.Rel`: the type coding the basic relations that will give rise to the
   divided power algebra.
-
 * `DividedPowerAlgebra R M`: the universal divided power algebra of the `R`-module `M`,
   defined as `RingCon.Quotient` of `DividedPowerAlgebra.ringCon R M`.
-
 * `DividedPowerAlgebra.dp R n m`: for `n : ℕ` and `m : M`, this is the equivalence class of
   `MvPolynomial.X (⟨n, m⟩)` in `DividedPowerAlgebra R M`.
 
@@ -36,9 +37,7 @@ divided powers (`DividedPowerAlgebra.lift`).
   the `n`th divided power of the image of `m`.
 
   The API will be setup so that it is never (never say never…) necessary to lift to `MvPolynomial`.
-
 * `DividedPowerAlgebra.lift`: the weak universal property of `DividedPowerAlgebra R M`.
-
 * `DividedPowerAlgebra.map`: the functoriality map between divided power algebras
   associated with a linear map of the underlying modules.
   Given an `R`-algebra `S`, an `S`-module `N` and an `R`-linear map `f : M →ₗ[R] N`,
@@ -47,16 +46,13 @@ divided powers (`DividedPowerAlgebra.lift`).
 
 ## References
 
-* [P. Berthelot (1974), *Cohomologie cristalline des schémas de
-  caractéristique $p$ > 0*][Berthelot-1974]
-
-* [P. Berthelot and A. Ogus (1978), *Notes on crystalline
-  cohomology*][BerthelotOgus-1978]
-
-* [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
-  modules*][Roby-1963]
-
-* [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
+* ‍\[P. Berthelot (1974), _Cohomologie cristalline des schémas de
+  caractéristique $`p` > 0_\]\[Berthelot-1974\]
+* ‍\[P. Berthelot and A. Ogus (1978), _Notes on crystalline
+  cohomology_\]\[BerthelotOgus-1978\]
+* ‍\[N. Roby (1963), _Lois polynomes et lois formelles en théorie des
+  modules_\]\[Roby-1963\]
+* ‍\[N. Roby (1965), _Les algèbres à puissances dividées_\]\[Roby-1965\]
 
 ## TODO
 

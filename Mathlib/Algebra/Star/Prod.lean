@@ -8,12 +8,14 @@ module
 public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Algebra.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic Results about Star on Product Type
 
 This file provides basic results about the star on product types defined in
 `Mathlib/Algebra/Notation/Prod.lean`.
-
 -/
 
 public section

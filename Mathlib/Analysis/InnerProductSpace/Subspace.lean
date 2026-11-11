@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subspaces of inner product spaces
 
@@ -30,7 +33,9 @@ section Submodule
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-/-! ### Inner product space structure on subspaces -/
+/-!
+# Inner product space structure on subspaces
+-/
 
 /-- Induced inner product on a submodule. -/
 instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
@@ -68,7 +73,9 @@ theorem ClosedSubmodule.coe_inner (W : Submodule 𝕜 E) (x y : W) : ⟪x, y⟫_
 
 end ClosedSubmodule
 
-/-! ### Families of mutually-orthogonal subspaces of an inner product space -/
+/-!
+# Families of mutually-orthogonal subspaces of an inner product space
+-/
 
 section OrthogonalFamily_Seminormed
 
@@ -80,7 +87,8 @@ variable {ι : Type*} (𝕜)
 
 open DirectSum
 
-/-- An indexed family of mutually-orthogonal subspaces of an inner product space `E`.
+/--
+An indexed family of mutually-orthogonal subspaces of an inner product space `E`.
 
 The simple way to express this concept would be as a condition on `V : ι → Submodule 𝕜 E`.  We
 instead implement it as a condition on a family of inner product spaces each equipped with an
@@ -91,7 +99,8 @@ This definition is less lightweight, but allows for better definitional properti
 product space structure on each of the submodules is important -- for example, when considering
 their Hilbert sum (`PiLp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
 we have an associated orthogonal family of one-dimensional subspaces of `E`, which it is convenient
-to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
+to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`.
+-/
 def OrthogonalFamily (G : ι → Type*) [∀ i, SeminormedAddCommGroup (G i)]
     [∀ i, InnerProductSpace 𝕜 (G i)] (V : ∀ i, G i →ₗᵢ[𝕜] E) : Prop :=
   Pairwise fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0

@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Rel.Cover
 public import Mathlib.Topology.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform spaces
 
@@ -40,6 +43,7 @@ where `Prod.mk x : X → X × X := (fun y ↦ (x, y))` is the partial evaluation
 constructor.
 
 The dictionary with metric spaces includes:
+
 * an upper bound for `dist x y` translates into `(x, y) ∈ V` for some `V ∈ 𝓤 X`
 * a ball `ball x r` roughly corresponds to `SetRel.ball V x := {y | (y, x) ∈ V}`
   for some `V ∈ 𝓤 X`, but the later is more general (it includes in
@@ -60,6 +64,7 @@ Note that this discussion does not depend on any axiom imposed on the uniformity
 it is simply captured by the definition of composition.
 
 The uniform space axioms ask the filter `𝓤 X` to satisfy the following:
+
 * every `V ∈ 𝓤 X` contains the diagonal `idRel = { p | p.1 = p.2 }`. This abstracts the fact
   that `dist x x ≤ r` for every non-negative radius `r` in the metric space case and also that
   `x - x` belongs to every neighborhood of zero in the topological group case.
@@ -93,15 +98,15 @@ the uniformity filter `𝓤 X : Filter (X × X)`.
 
 The structure `UniformSpace X` bundles a uniform structure on `X`, a topology on `X` and
 an assumption saying those are compatible. This may not seem mathematically reasonable at first,
-but is in fact an instance of the forgetful inheritance pattern. See Note [forgetful inheritance]
+but is in fact an instance of the forgetful inheritance pattern. See Note \[forgetful inheritance\]
 below.
 
 ## References
 
 The formalization uses the books:
 
-* [N. Bourbaki, *General Topology*][bourbaki1966]
-* [I. M. James, *Topologies and Uniformities*][james1999]
+* ‍\[N. Bourbaki, _General Topology_\]\[bourbaki1966\]
+* ‍\[I. M. James, _Topologies and Uniformities_\]\[james1999\]
 
 But it makes a more systematic use of the filter library.
 -/
@@ -115,7 +120,7 @@ open scoped Topology
 universe u v ua ub uc ud
 
 /-!
-### Relations, seen as `SetRel α α`
+# Relations, seen as `SetRel α α`
 -/
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {ι : Sort*}
@@ -184,13 +189,15 @@ theorem UniformSpace.Core.nhds_toTopologicalSpace {α : Type u} (u : Core α) (x
 
 -- the topological structure is embedded in the uniform structure
 -- to avoid instance diamond issues. See Note [forgetful inheritance].
-/-- A uniform space is a generalization of the "uniform" topological aspects of a
-  metric space. It consists of a filter on `α × α` called the "uniformity", which
-  satisfies properties analogous to the reflexivity, symmetry, and triangle properties
-  of a metric.
+/--
+A uniform space is a generalization of the "uniform" topological aspects of a
+metric space. It consists of a filter on `α × α` called the "uniformity", which
+satisfies properties analogous to the reflexivity, symmetry, and triangle properties
+of a metric.
 
-  A metric space has a natural uniformity, and a uniform space has a natural topology.
-  A topological group also has a natural uniformity, even when it is not metrizable. -/
+A metric space has a natural uniformity, and a uniform space has a natural topology.
+A topological group also has a natural uniformity, even when it is not metrizable.
+-/
 @[wikidata Q652446]
 class UniformSpace (α : Type u) extends TopologicalSpace α where
   /-- The uniformity filter. -/
@@ -421,7 +428,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : SetRel α α} (hs : s ∈ 𝓤 �
     _ ⊆ s := w_sub
 
 /-!
-### Balls in uniform spaces
+# Balls in uniform spaces
 -/
 
 namespace UniformSpace
@@ -501,7 +508,7 @@ lemma isCover_iff_subset_iUnion_ball {U : SetRel β β} [U.IsSymm] {s N : Set β
 end UniformSpace
 
 /-!
-### Neighborhoods in uniform spaces
+# Neighborhoods in uniform spaces
 -/
 
 open SetRel
@@ -654,13 +661,17 @@ theorem Filter.HasBasis.biInter_biUnion_ball {p : ι → Prop} {U : ι → SetRe
   ext x
   simp [mem_closure_iff_nhds_basis (nhds_basis_uniformity' h), SetRel.ball]
 
-/-! ### Uniform continuity -/
+/-!
+# Uniform continuity
+-/
 
 variable [UniformSpace β]
 
-/-- A function `f : α → β` is *uniformly continuous* if `(f x, f y)` tends to the diagonal
+/--
+A function `f : α → β` is _uniformly continuous_ if `(f x, f y)` tends to the diagonal
 as `(x, y)` tends to the diagonal. In other words, if `x` is sufficiently close to `y`, then
-`f x` is close to `f y` no matter where `x` and `y` are located in `α`. -/
+`f x` is close to `f y` no matter where `x` and `y` are located in `α`.
+-/
 @[fun_prop]
 def UniformContinuous (f : α → β) :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α) (𝓤 β)
@@ -668,10 +679,12 @@ def UniformContinuous (f : α → β) :=
 /-- Notation for uniform continuity with respect to non-standard `UniformSpace` instances. -/
 scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformContinuous _ _ u₁ u₂
 
-/-- A function `f : α → β` is *uniformly continuous* on `s : Set α` if `(f x, f y)` tends to
+/--
+A function `f : α → β` is _uniformly continuous_ on `s : Set α` if `(f x, f y)` tends to
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
-`f y` no matter where `x` and `y` are located in `s`. -/
+`f y` no matter where `x` and `y` are located in `s`.
+-/
 @[fun_prop]
 def UniformContinuousOn (f : α → β) (s : Set α) : Prop :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
@@ -729,17 +742,21 @@ theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} {p : ι → Prop}
   ((ha.inf_principal (S ×ˢ S)).tendsto_iff hb).trans <| by
     simp_rw [Prod.forall, Set.inter_comm (s _), forall_mem_comm, mem_inter_iff, mem_prod, and_imp]
 
-/-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
+/--
+A map `f : α → β` between uniform spaces is called _uniform inducing_ if the uniformity filter
 on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
-space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`. -/
+space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`.
+-/
 @[mk_iff, fun_prop]
 structure IsUniformInducing (f : α → β) : Prop where
   /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
   under `Prod.map f f`. -/
   comap_uniformity : comap (fun x : α × α ↦ (f x.1, f x.2)) (𝓤 β) = 𝓤 α
 
-/-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
-injective. If `α` is a separated space, then the latter assumption follows from the former. -/
+/--
+A map `f : α → β` between uniform spaces is a _uniform embedding_ if it is uniform inducing and
+injective. If `α` is a separated space, then the latter assumption follows from the former.
+-/
 @[mk_iff, fun_prop]
 structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
   /-- A uniform embedding is injective. -/

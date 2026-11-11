@@ -10,14 +10,19 @@ public import Mathlib.NumberTheory.Real.Irrational
 
 import Mathlib.Topology.Algebra.Order.Floor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Real.pi` is irrational
 
 The main result of this file is `irrational_pi`.
 
-The proof is adapted from https://en.wikipedia.org/wiki/Proof_that_%CF%80_is_irrational#Cartwright's_proof.
+The proof is adapted from
+https://en.wikipedia.org/wiki/Proof\_that\_%CF%80\_is\_irrational#Cartwright's\_proof.
 
 The proof idea is as follows.
+
 * Define a sequence of integrals `I n θ = ∫ x in (-1)..1, (1 - x ^ 2) ^ n * cos (x * θ)`.
 * Give a recursion formula for `I (n + 2) θ * θ ^ 2` in terms of `I n θ` and `I (n + 1) θ`.
   Note we do not find it helpful to define `J` as in the above proof, and instead work directly
@@ -32,7 +37,6 @@ The proof idea is as follows.
   `b ^ (2 * n + 1) * sinPoly n (a / b)` is a positive integer by the degree bound. But it is equal
   to `a ^ (2 * n + 1) / n ! * I n (π / 2) ≤ 2 * a * (2 * n + 1) / n !`, which converges to 0 as
   `n → ∞`.
-
 -/
 
 public section
@@ -264,7 +268,7 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
 /--
 Auxiliary for the proof that `π` is irrational.
 For any real `a`, we have that `a ^ (2n+1) / n!` tends to `0` as `n → ∞`.  This is just a
-reformulation of tendsto_pow_div_factorial_atTop, which asserts the same for `a ^ n / n!`
+reformulation of tendsto\_pow\_div\_factorial\_atTop, which asserts the same for `a ^ n / n!`
 -/
 private lemma tendsto_pow_div_factorial_at_top_aux (a : ℝ) :
     Tendsto (fun n => (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by

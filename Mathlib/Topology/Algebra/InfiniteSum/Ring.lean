@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import Mathlib.Topology.Algebra.Ring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sum in a ring
 
@@ -148,7 +151,7 @@ theorem summable_const_div_iff (h : a ≠ 0) :
 end DivisionSemiring
 
 /-!
-### Multiplying two infinite sums
+# Multiplying two infinite sums
 
 In this section, we prove various results about `(∑' x : ι, f x) * (∑' y : κ, g y)`. Note that we
 always assume that the family `fun x : ι × κ ↦ f x.1 * g x.2` is summable, since there is no way to
@@ -159,7 +162,7 @@ space, you may want to use the analogous lemmas in `Analysis.Normed.Module.Basic
 We first establish results about arbitrary index types, `ι` and `κ`, and then we specialize to
 `ι = κ = ℕ` to prove the Cauchy product formula (see `tsum_mul_tsum_eq_tsum_sum_antidiagonal`).
 
-#### Arbitrary index types
+## Arbitrary index types
 -/
 
 
@@ -191,7 +194,7 @@ protected theorem Summable.tsum_mul_tsum (hf : Summable f) (hg : Summable g)
 end tsum_mul_tsum
 
 /-!
-#### `ℕ`-indexed families (Cauchy product)
+# `ℕ`-indexed families (Cauchy product)
 
 We prove two versions of the Cauchy product formula. The first one is
 `tsum_mul_tsum_eq_tsum_sum_range`, where the `n`-th term is a sum over `Finset.range (n+1)`
@@ -225,11 +228,13 @@ theorem summable_sum_mul_antidiagonal_of_summable_mul
   conv => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype (L := .unconditional _)]
   exact h.sigma' fun n ↦ (hasSum_fintype _).summable
 
-/-- The **Cauchy product formula** for the product of two infinite sums indexed by `ℕ`, expressed
+/--
+The *Cauchy product formula* for the product of two infinite sums indexed by `ℕ`, expressed
 by summing on `Finset.HasAntidiagonal.antidiagonal`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm` if `f` and `g` are absolutely
-summable. -/
+summable.
+-/
 protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f)
     (hg : Summable g) (hfg : Summable fun x : A × A ↦ f x.1 * g x.2) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 := by
@@ -250,7 +255,8 @@ theorem summable_sum_mul_range_of_summable_mul (h : Summable fun x : ℕ × ℕ 
   simp_rw [← Nat.sum_antidiagonal_eq_sum_range_succ fun k l ↦ f k * g l]
   exact summable_sum_mul_antidiagonal_of_summable_mul h
 
-/-- The **Cauchy product formula** for the product of two infinite sums indexed by `ℕ`, expressed
+/--
+The *Cauchy product formula* for the product of two infinite sums indexed by `ℕ`, expressed
 by summing on `Finset.range`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm` if `f` and `g` are absolutely summable.
@@ -268,7 +274,7 @@ end CauchyProduct
 section GeomSeries
 
 /-!
-### Geometric series `∑' n : ℕ, x ^ n`
+# Geometric series `∑' n : ℕ, x ^ n`
 
 This section gives a general result about geometric series without assuming additional structure on
 the topological ring. For normed ring, see also `geom_series_mul_neg` and friends.
@@ -291,7 +297,7 @@ end GeomSeries
 section ProdOneSum
 
 /-!
-### Infinite product of `1 + f i`
+# Infinite product of `1 + f i`
 
 This section extends `Finset.prod_one_add` to the infinite product
 `∏' i : ι, (1 + f i) = ∑' s : Finset ι, ∏ i ∈ s, f i`.
@@ -304,9 +310,11 @@ theorem hasProd_one_add_of_hasSum_prod {a : α} (h : HasSum (∏ i ∈ ·, f i) 
   simp_rw [HasProd, prod_one_add]
   exact h.comp tendsto_finset_powerset_atTop_atTop
 
-/-- `∏' i : ι, (1 + f i)` is convergent if `∑' s : Finset ι, ∏ i ∈ s, f i` is convergent.
+/--
+`∏' i : ι, (1 + f i)` is convergent if `∑' s : Finset ι, ∏ i ∈ s, f i` is convergent.
 
-For complete normed ring, see also `multipliable_one_add_of_summable`. -/
+For complete normed ring, see also `multipliable_one_add_of_summable`.
+-/
 theorem multipliable_one_add_of_summable_prod (h : Summable (∏ i ∈ ·, f i)) :
     Multipliable (1 + f ·) := by
   obtain ⟨a, h⟩ := h

@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparing sums and integrals
 
@@ -45,6 +48,7 @@ These are used to prove a version of the integral test for antitone functions.
   between a sum and its partial sums in terms of an integral.
 * `AntitoneOn.integrableOn_Ioi_zero_of_summable` and `AntitoneOn.integral_le_tsum`, the converse to
   the integral test.
+
 ## Tags
 
 analysis, comparison, asymptotics
@@ -211,7 +215,9 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
     intro _ _ _ _ _
     apply hg <;> grind
 
-/-! ## Comparison of infinite sums and integrals -/
+/-!
+# Comparison of infinite sums and integrals
+-/
 
 /-- The partial sums of a nonnegative antitone function are bounded
 by the integral over `(a, ∞)`. -/

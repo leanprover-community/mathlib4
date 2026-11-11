@@ -15,6 +15,9 @@ import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.RingTheory.Valuation.Archimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite places of number fields
 
@@ -26,6 +29,7 @@ with field of fractions `K` such that `Ring.HasFiniteQuotients R`, as holds for 
 a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
 
 ## Main Definitions and Results
+
 * `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
@@ -36,10 +40,11 @@ a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably
   unfolded.
 * `NumberField.FinitePlace.hasFiniteMulSupport`: the `v`-adic absolute value of a non-zero element
   of `K` is different from 1 for at most finitely many `v`.
-*  The valuation subrings of the field at the `v`-valuation and it's adic completion are
-   discrete valuation rings.
+* The valuation subrings of the field at the `v`-valuation and it's adic completion are
+  discrete valuation rings.
 
 ## Tags
+
 number field, places, finite places
 -/
 

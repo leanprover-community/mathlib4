@@ -16,6 +16,9 @@ public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisor Finsets
 
@@ -23,7 +26,9 @@ This file defines sets of divisors of a natural number. This is particularly use
 for defining Dirichlet convolution.
 
 ## Main Definitions
+
 Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
+
 * `divisors n` is the `Finset` of natural numbers that divide `n`.
 * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
 * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
@@ -36,8 +41,8 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 `Nat.divisorsAntidiagonal 0` and `Int.divisorsAntidiag 0` are all `∅`.
 
 ## Tags
-divisors, perfect numbers
 
+divisors, perfect numbers
 -/
 
 @[expose] public section
@@ -57,17 +62,20 @@ By convention, we set `properDivisors 0 = ∅`. -/
 @[oeis A027751 "starting from the 2nd element"]
 def properDivisors : Finset ℕ := {d ∈ Ico 1 n | d ∣ n}
 
-/-- Pairs of divisors of a natural number as a finset.
+/--
+Pairs of divisors of a natural number as a finset.
 
 `n.divisorsAntidiagonal` is the finset of pairs `(a, b) : ℕ × ℕ` such that `a * b = n`.
 By convention, we set `Nat.divisorsAntidiagonal 0 = ∅`.
 
-O(n). -/
+O(n).
+-/
 def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
   (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
     fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
 
-/-- Pairs of divisors of a natural number, as a list.
+/--
+Pairs of divisors of a natural number, as a list.
 
 `n.divisorsAntidiagonalList` is the list of pairs `(a, b) : ℕ × ℕ` such that `a * b = n`, ordered
 by increasing `a`. By convention, we set `Nat.divisorsAntidiagonalList 0 = []`.
@@ -605,12 +613,14 @@ def divisors (z : ℤ) : Finset ℤ :=
   (s.map natCast).disjUnion (s.map negNatCast) <| by
     simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
 
-/-- Pairs of divisors of an integer as a finset.
+/--
+Pairs of divisors of an integer as a finset.
 
 `z.divisorsAntidiag` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
 By convention, we set `Int.divisorsAntidiag 0 = ∅`.
 
-O(|z|). Computed from `Nat.divisorsAntidiagonal`. -/
+O(|z|). Computed from `Nat.divisorsAntidiagonal`.
+-/
 def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
   | (n : ℕ) =>
     let s : Finset (ℕ × ℕ) := n.divisorsAntidiagonal

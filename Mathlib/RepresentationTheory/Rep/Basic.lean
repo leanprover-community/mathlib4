@@ -10,13 +10,15 @@ public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.RepresentationTheory.Action
 public import Mathlib.RepresentationTheory.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
 
 Given a `G`-representation `ρ` on a module `V`, you can construct the bundled representation as
 `Rep.of ρ`. Conversely, given a bundled representation `A : Rep k G`, you can get the underlying
 module as `A.V` and the representation on it as `A.ρ`.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Tactic.Lift
 public import Mathlib.Topology.Defs.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous bundled maps
 
@@ -23,12 +26,14 @@ which is meant to be satisfied by itself and all stricter types.
 open Function
 open scoped Topology
 
-/-- The type of continuous maps from `X` to `Y`.
+/--
+The type of continuous maps from `X` to `Y`.
 
 When possible, instead of parametrizing results over `(f : C(X, Y))`,
 you should parametrize over `{F : Type*} [ContinuousMapClass F X Y] (f : F)`.
 
-When you extend this structure, make sure to extend `ContinuousMapClass`. -/
+When you extend this structure, make sure to extend `ContinuousMapClass`.
+-/
 structure ContinuousMap (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] where
   /-- The function `X → Y` -/
   protected toFun : X → Y
@@ -40,9 +45,11 @@ notation "C(" X ", " Y ")" => ContinuousMap X Y
 
 section
 
-/-- `ContinuousMapClass F X Y` states that `F` is a type of continuous maps.
+/--
+`ContinuousMapClass F X Y` states that `F` is a type of continuous maps.
 
-You should extend this class when you extend `ContinuousMap`. -/
+You should extend this class when you extend `ContinuousMap`.
+-/
 class ContinuousMapClass (F : Type*) (X Y : outParam Type*)
     [TopologicalSpace X] [TopologicalSpace Y] [FunLike F X Y] : Prop where
   /-- Continuity -/
@@ -68,7 +75,9 @@ instance : CoeTC F C(X, Y) := ⟨ContinuousMap.ofClass⟩
 
 end ContinuousMapClass
 
-/-! ### Continuous maps -/
+/-!
+# Continuous maps
+-/
 
 namespace ContinuousMap
 
@@ -88,7 +97,9 @@ theorem toFun_eq_coe {f : C(X, Y)} : f.toFun = (f : X → Y) :=
 
 instance : CanLift (X → Y) C(X, Y) DFunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
-/-- See note [custom simps projection]. -/
+/--
+See note \[custom simps projection\].
+-/
 def Simps.apply (f : C(X, Y)) : X → Y := f
 
 -- this must come after the coe_to_fun definition
@@ -105,10 +116,12 @@ protected theorem coe_apply {F : Type*} [FunLike F X Y] [ContinuousMapClass F X 
     (f : C(X, Y)) x = f x :=
   rfl
 
-/-- Coercion to a `ContinuousMap` is injective.
+/--
+Coercion to a `ContinuousMap` is injective.
 
 The unprimed version `ContinuousMap.coe_injective`
-is used for the coercion from `C(X, Y)` to `X → Y`. -/
+is used for the coercion from `C(X, Y)` to `X → Y`.
+-/
 protected theorem injective_ofClass
     {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] :
     Injective (ContinuousMap.ofClass : F → C(X, Y)) :=

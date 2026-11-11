@@ -8,7 +8,11 @@ module
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
-/-! # Localization preserves unique factorization
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Localization preserves unique factorization
 
 ## Main results
 

@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.RingTheory.Localization.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fraction ring / fraction field Frac(R) as localization
 
@@ -31,6 +34,7 @@ public import Mathlib.RingTheory.Localization.Basic
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -227,8 +231,10 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
   rw [mk'_spec, ← eq_mk'_iff_mul_eq]
   exact (mk'_sec _ x).symm
 
-/-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
-See note [reducible non-instances]. -/
+/--
+A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
+See note \[reducible non-instances\].
+-/
 @[stacks 09FJ]
 noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
@@ -471,9 +477,11 @@ theorem ringEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C]
 
 variable (A K)
 
-/-- A ring automorphism of a ring induces an ring automorphism of its fraction field.
+/--
+A ring automorphism of a ring induces an ring automorphism of its fraction field.
 
-This is a bundled version of `ringEquivOfRingEquiv`. -/
+This is a bundled version of `ringEquivOfRingEquiv`.
+-/
 noncomputable def ringEquivOfRingEquivHom : (A ≃+* A) →* (K ≃+* K) where
   toFun := ringEquivOfRingEquiv
   map_one' := ringEquivOfRingEquiv_refl
@@ -616,9 +624,11 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
   [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]
 
-/-- An algebra automorphism of a ring induces an algebra automorphism of its fraction field.
+/--
+An algebra automorphism of a ring induces an algebra automorphism of its fraction field.
 
-This is a bundled version of `fieldEquivOfAlgEquiv`. -/
+This is a bundled version of `fieldEquivOfAlgEquiv`.
+-/
 noncomputable def fieldEquivOfAlgEquivHom : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L) where
   toFun := fieldEquivOfAlgEquiv K L L
   map_one' := fieldEquivOfAlgEquiv_refl A B K L
@@ -734,12 +744,13 @@ end algebraMap_injective
 
 variable (A)
 
-/-- The fraction ring of a commutative ring `R` as a quotient type.
+/--
+The fraction ring of a commutative ring `R` as a quotient type.
 
 We instantiate this definition as generally as possible, and assume that the
 commutative ring `R` is an integral domain only when this is needed for proving.
 
-In this generality, this construction is also known as the *total fraction ring* of `R`.
+In this generality, this construction is also known as the _total fraction ring_ of `R`.
 -/
 abbrev FractionRing :=
   Localization (nonZeroDivisors R)
@@ -774,9 +785,11 @@ section liftAlgebra
 
 variable [Field K] [Algebra R K] [FaithfulSMul R K]
 
-/-- This is not an instance because it creates a diamond when `K = FractionRing R`.
+/--
+This is not an instance because it creates a diamond when `K = FractionRing R`.
 Should usually be introduced locally along with `isScalarTower_liftAlgebra`
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 noncomputable abbrev liftAlgebra : Algebra (FractionRing R) K :=
   have := IsDomain.of_faithfulSMul R K
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R K))

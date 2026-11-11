@@ -8,20 +8,26 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opposite bicategories
 
 We construct the 1-cell opposite of a bicategory `B`, called `Bᵒᵖ`. It is defined as follows
+
 * The objects of `Bᵒᵖ` correspond to objects of `B`.
 * The morphisms `X ⟶ Y` in `Bᵒᵖ` are the morphisms `Y ⟶ X` in `B`.
 * The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
   directions of the 2-morphisms are preserved.
 
 ## Remarks
+
 There are multiple notions of opposite categories for bicategories.
-- There is 1-cell dual `Bᵒᵖ` as defined above.
-- There is the 2-cell dual, `Cᶜᵒ` where only the 2-morphisms are reversed
-- There is the bi-dual `Cᶜᵒᵒᵖ` where the directions of both the 1-morphisms and the 2-morphisms
+
+* There is 1-cell dual `Bᵒᵖ` as defined above.
+* There is the 2-cell dual, `Cᶜᵒ` where only the 2-morphisms are reversed
+* There is the bi-dual `Cᶜᵒᵒᵖ` where the directions of both the 1-morphisms and the 2-morphisms
   are reversed.
 
 ## TODO
@@ -30,7 +36,6 @@ There are multiple notions of opposite categories for bicategories.
 * Provide various lemmas for going between `LocallyDiscrete Cᵒᵖ` and `(LocallyDiscrete C)ᵒᵖ`.
 
 Note: `Cᶜᵒᵒᵖ` is WIP by Christian Merten.
-
 -/
 
 @[expose] public section
@@ -143,9 +148,11 @@ open Hom2
 
 variable {B : Type u} [Bicategory.{w, v} B]
 
-/-- The 1-cell dual bicategory `Bᵒᵖ`.
+/--
+The 1-cell dual bicategory `Bᵒᵖ`.
 
 It is defined as follows.
+
 * The objects of `Bᵒᵖ` correspond to objects of `B`.
 * The morphisms `X ⟶ Y` in `Bᵒᵖ` are the morphisms `Y ⟶ X` in `B`.
 * The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the

@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Sym
 
 import Mathlib.Data.Fintype.Sum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stars and bars
 
@@ -36,7 +39,7 @@ Such arrangements of `k` stars and `n-1` bars are in 1-1 correspondence with mul
 over an alphabet of size `n`, and are counted by `choose (n + k - 1) k`.
 
 Note that this problem is one component of Gian-Carlo Rota's "Twelvefold Way"
-https://en.wikipedia.org/wiki/Twelvefold_way
+https://en.wikipedia.org/wiki/Twelvefold\_way
 
 ## Formal statement
 
@@ -45,7 +48,6 @@ multisets of size `k` over `α`. Thus the statement that these are counted by `m
 `Sym.card_sym_eq_multichoose : card (Sym α k) = multichoose (card α) k`
 while the "stars and bars" technique gives
 `Sym.card_sym_eq_choose : card (Sym α k) = choose (card α + k - 1) k`
-
 
 ## Tags
 
@@ -107,8 +109,10 @@ theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sy
   rw [← card_sym_fin_eq_multichoose]
   exact card_congr (equivCongr (equivFin α))
 
-/-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
-`Nat.choose (card α + k - 1) k`. -/
+/--
+The _stars and bars_ lemma: the cardinality of `Sym α k` is equal to
+`Nat.choose (card α + k - 1) k`.
+-/
 theorem card_sym_eq_choose {α : Type*} [Fintype α] (k : ℕ) [Fintype (Sym α k)] :
     card (Sym α k) = (card α + k - 1).choose k := by
   rw [card_sym_eq_multichoose, Nat.multichoose_eq]

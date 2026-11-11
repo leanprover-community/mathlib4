@@ -7,6 +7,10 @@ module
 
 public meta import Mathlib.Tactic.Inclusion.Core.Core
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # The `inclusion` tactic
 
@@ -319,8 +323,9 @@ def collectInclusionArgs (argStxs : Array Syntax) : TacticM InclusionConfig := d
     throwError "At least one inclusion family must be specified"
   return { paramSettings, families }
 
-/-- `inclusion [fam₁, fam₂, ...]` is a low-level tactic for proving the main goal by reasoning
-about the set inclusion operator `∈` using the *inclusion families* `fam₁`, `fam₂`, ...
+/--
+`inclusion [fam₁, fam₂, ...]` is a low-level tactic for proving the main goal by reasoning
+about the set inclusion operator `∈` using the _inclusion families_ `fam₁`, `fam₂`, ...
 The goal `⊢ P` is first transformed into `⊢ P ∈ {True}` and then each family defines forward-
 and backward reasoning rules to replace the goal with a form suitable for checking by computation
 in the kernel, in other words, something that can be solved `by decide`.
@@ -333,11 +338,11 @@ An inclusion family is declared using `registerInclusionFamily` and can be exten
 The `core` family provides reasoning about logical operators `∧`, `∨`, `¬` and `=`. This family
 is recommended to be included by default.
 
-
 * `inclusion [fam₁, x := e]` sets the parameter named `x` to the value of the term `e`.
   All the families in an `inclusion` call can access this parameter.
 * `inclusion (config := cfg) [fam₁, ...]` uses `cfg : InclusionConfig` as configuration options.
   In particular:
+
   * `inclusion +native [fam₁, ...]` only uses evaluation, rather than kernel computation, to perform
     the final proof check. Warning: this adds the Lean compiler to the trusted codebase.
   * `inclusion +kernel [fam₁, ...]` only uses the kernel to perform the final proof check and skips

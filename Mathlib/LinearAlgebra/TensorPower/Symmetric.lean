@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
 
@@ -29,7 +32,6 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 * Universal property: linear maps from `Sym[R]^n M` to `N` correspond to symmetric multilinear
   maps `M ^ n` to `N`.
 * Relate to homogeneous (multivariate) polynomials of degree `n`.
-
 -/
 
 @[expose] public section

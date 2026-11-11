@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Notation
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Positive & negative parts
 
@@ -26,11 +29,11 @@ element in a lattice ordered group.
 
 ## References
 
-* [Birkhoff, Lattice-ordered Groups][birkhoff1942]
-* [Bourbaki, Algebra II][bourbaki1981]
-* [Fuchs, Partially Ordered Algebraic Systems][fuchs1963]
-* [Zaanen, Lectures on "Riesz Spaces"][zaanen1966]
-* [Banasiak, Banach Lattices in Applications][banasiak]
+* ‍\[Birkhoff, Lattice-ordered Groups\]\[birkhoff1942\]
+* ‍\[Bourbaki, Algebra II\]\[bourbaki1981\]
+* ‍\[Fuchs, Partially Ordered Algebraic Systems\]\[fuchs1963\]
+* ‍\[Zaanen, Lectures on "Riesz Spaces"\]\[zaanen1966\]
+* ‍\[Banasiak, Banach Lattices in Applications\]\[banasiak\]
 
 ## Tags
 
@@ -49,16 +52,22 @@ variable [Lattice α]
 section DivInvMonoid
 variable [DivInvMonoid α] {a b : α}
 
-/-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`. -/
+/--
+The _positive part_ of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`.
+-/
 @[to_additive
-/-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 0`, denoted `a⁺`. -/]
+/--
+The _positive part_ of an element `a` in a lattice ordered group is `a ⊔ 0`, denoted `a⁺`.
+-/]
 instance instOneLePart : OneLePart α where
   oneLePart a := a ⊔ 1
 
-/-- The *negative part* of an element `a` in a lattice ordered group is `a⁻¹ ⊔ 1`, denoted `a⁻ᵐ `.
+/--
+The _negative part_ of an element `a` in a lattice ordered group is `a⁻¹ ⊔ 1`, denoted `a⁻ᵐ  `.
 -/
 @[to_additive
-/-- The *negative part* of an element `a` in a lattice ordered group is `(-a) ⊔ 0`, denoted `a⁻`.
+/--
+The _negative part_ of an element `a` in a lattice ordered group is `(-a) ⊔ 0`, denoted `a⁻`.
 -/]
 instance instLeOnePart : LeOnePart α where
   leOnePart a := a⁻¹ ⊔ 1

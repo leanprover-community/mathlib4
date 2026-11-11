@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.Positivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rational approximations to square roots of naturals
 

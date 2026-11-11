@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonarchimedean Topology
 
@@ -19,10 +22,9 @@ group is nonarchimedean.
 
 ## Definitions
 
-- `NonarchimedeanAddGroup`: nonarchimedean additive group.
-- `NonarchimedeanGroup`: nonarchimedean multiplicative group.
-- `NonarchimedeanRing`: nonarchimedean ring.
-
+* `NonarchimedeanAddGroup`: nonarchimedean additive group.
+* `NonarchimedeanGroup`: nonarchimedean multiplicative group.
+* `NonarchimedeanRing`: nonarchimedean ring.
 -/
 
 public section

@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Saturated subgroups
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
 
 @[expose] public section
@@ -22,12 +25,16 @@ namespace Submonoid
 
 variable {G : Type*} [Monoid G]
 
-/-- A submonoid `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `g^n ∈ H` we have
-`n = 0` or `g ∈ H`. We use the name `PowSaturated` to distinguish from `Submonoid.MulSaturated`. -/
+/--
+A submonoid `H` of `G` is _saturated_ if for all `n : ℕ` and `g : G` with `g^n ∈ H` we have
+`n = 0` or `g ∈ H`. We use the name `PowSaturated` to distinguish from `Submonoid.MulSaturated`.
+-/
 @[to_additive
-/-- An additive submonoid `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with
+/--
+An additive submonoid `H` of `G` is _saturated_ if for all `n : ℕ` and `g : G` with
 `n•g ∈ H` we have `n = 0` or `g ∈ H`. We use the name `NSMulSaturated` to distinguish from
-`Submonoid.MulSaturated`. -/]
+`Submonoid.MulSaturated`.
+-/]
 def PowSaturated (H : Submonoid G) : Prop :=
   ∀ ⦃n g⦄, g ^ n ∈ H → n = 0 ∨ g ∈ H
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Category.Locale
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunction between Locales and Topological Spaces
 
@@ -15,9 +18,8 @@ and proves that it is right adjoint to the forgetful functor from topological sp
 
 ## Main declarations
 
-* `Locale.pt`: the *points* functor from the category of locales to the category of topological
+* `Locale.pt`: the _points_ functor from the category of locales to the category of topological
   spaces.
-
 * `Locale.adjunctionTopToLocalePT`: the adjunction between the functors `topToLocale` and `pt`.
 
 ## Motivation
@@ -26,13 +28,13 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 
 ## Implementation notes
 
-* In naming the various functions below, we follow common terminology and reserve the word *point*
-  for an inhabitant of a type `X` which is a topological space, while we use the word *element* for
+* In naming the various functions below, we follow common terminology and reserve the word _point_
+  for an inhabitant of a type `X` which is a topological space, while we use the word _element_ for
   an inhabitant of a type `L` which is a locale.
 
 ## References
 
-* [J. Picado and A. Pultr, Frames and Locales: topology without points][picado2011frames]
+* ‍\[J. Picado and A. Pultr, Frames and Locales: topology without points\]\[picado2011frames\]
 
 ## Tags
 
@@ -45,13 +47,17 @@ open CategoryTheory Order Set TopologicalSpace
 
 namespace Locale
 
-/-! ### Definition of the points functor `pt` -/
+/-!
+# Definition of the points functor `pt`
+-/
 section pt_definition
 
 variable (L : Type*) [CompleteLattice L]
 
-/-- The type of points of a complete lattice `L`, where a *point* of a complete lattice is,
-by definition, a frame homomorphism from `L` to `Prop`. -/
+/--
+The type of points of a complete lattice `L`, where a _point_ of a complete lattice is,
+by definition, a frame homomorphism from `L` to `Prop`.
+-/
 abbrev PT := FrameHom L Prop
 
 /-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Notation.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous lemmas on big operators
 

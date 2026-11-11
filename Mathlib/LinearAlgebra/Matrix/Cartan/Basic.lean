@@ -13,6 +13,9 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
 import Mathlib.Tactic.Simproc.IsIndecomposable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartan matrices
 
@@ -25,11 +28,13 @@ It also defines the predicate that a matrix is a finite-type Cartan matrix `Matr
 ## Main definitions
 
 ### Exceptional types and the E family
+
 * `CartanMatrix.E` : The Cartan matrix of type Eₙ
 * `CartanMatrix.F₄` : The Cartan matrix of type F₄
 * `CartanMatrix.G₂` : The Cartan matrix of type G₂
 
 ### Classical types
+
 * `CartanMatrix.A` : The Cartan matrix of type Aₙ₋₁ (corresponding to sl(n))
 * `CartanMatrix.B` : The Cartan matrix of type Bₙ (corresponding to so(2n+1))
 * `CartanMatrix.C` : The Cartan matrix of type Cₙ (corresponding to sp(2n))
@@ -37,8 +42,8 @@ It also defines the predicate that a matrix is a finite-type Cartan matrix `Matr
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] plates I -- IX
-* [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*][humphreys1972]
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 4--6_\]\[bourbaki1968\] plates I -- IX
+* ‍\[J. Humphreys, _Introduction to Lie Algebras and Representation Theory_\]\[humphreys1972\]
   Chapter 11
 
 ## Tags
@@ -52,7 +57,9 @@ open Matrix
 
 namespace CartanMatrix
 
-/-! ### Exceptional Cartan matrices -/
+/-!
+# Exceptional Cartan matrices
+-/
 
 /-- The generalized Cartan matrix of type Eₙ, extending E₆, E₇, E₈ by the same Dynkin-diagram
 pattern. -/
@@ -64,7 +71,9 @@ def E (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
       (2 ≤ i.val ∧ i.val + 1 = j.val) ∨ (2 ≤ j.val ∧ j.val + 1 = i.val)
     then -1 else 0
 
-/-- `E 6` is the Cartan matrix of type E₆. See [bourbaki1968] plate V, page 277. -/
+/--
+`E 6` is the Cartan matrix of type E₆. See \[bourbaki1968\] plate V, page 277.
+-/
 lemma E_six_eq :
     E 6 = !![ 2,  0, -1,  0,  0,  0;
               0,  2,  0, -1,  0,  0;
@@ -77,7 +86,9 @@ lemma E_six_eq :
 @[deprecated "Use `E 6` instead" (since := "2026-07-29")]
 abbrev E₆ : Matrix (Fin 6) (Fin 6) ℤ := E 6
 
-/-- `E 7` is the Cartan matrix of type E₇. See [bourbaki1968] plate VI, page 281. -/
+/--
+`E 7` is the Cartan matrix of type E₇. See \[bourbaki1968\] plate VI, page 281.
+-/
 lemma E_seven_eq :
     E 7 = !![ 2,  0, -1,  0,  0,  0,  0;
               0,  2,  0, -1,  0,  0,  0;
@@ -91,7 +102,9 @@ lemma E_seven_eq :
 @[deprecated "Use `E 7` instead" (since := "2026-07-29")]
 abbrev E₇ : Matrix (Fin 7) (Fin 7) ℤ := E 7
 
-/-- `E 8` is the Cartan matrix of type E₈. See [bourbaki1968] plate VII, page 285. -/
+/--
+`E 8` is the Cartan matrix of type E₈. See \[bourbaki1968\] plate VII, page 285.
+-/
 lemma E_eight_eq :
     E 8 = !![ 2,  0, -1,  0,  0,  0,  0,  0;
               0,  2,  0, -1,  0,  0,  0,  0;
@@ -106,20 +119,26 @@ lemma E_eight_eq :
 @[deprecated "Use `E 8` instead" (since := "2026-07-29")]
 abbrev E₈ : Matrix (Fin 8) (Fin 8) ℤ := E 8
 
-/-- The Cartan matrix of type F₄. See [bourbaki1968] plate VIII, page 288. -/
+/--
+The Cartan matrix of type F₄. See \[bourbaki1968\] plate VIII, page 288.
+-/
 def F₄ : Matrix (Fin 4) (Fin 4) ℤ :=
   !![ 2, -1,  0,  0;
      -1,  2, -2,  0;
       0, -1,  2, -1;
       0,  0, -1,  2]
 
-/-- The Cartan matrix of type G₂. See [bourbaki1968] plate IX, page 290.
-We use the transpose of Bourbaki's matrix for consistency with F₄. -/
+/--
+The Cartan matrix of type G₂. See \[bourbaki1968\] plate IX, page 290.
+We use the transpose of Bourbaki's matrix for consistency with F₄.
+-/
 def G₂ : Matrix (Fin 2) (Fin 2) ℤ :=
   !![ 2, -3;
      -1,  2]
 
-/-! ### Classical Cartan matrices -/
+/-!
+# Classical Cartan matrices
+-/
 
 /-- The Cartan matrix of type Aₙ₋₁ (rank n-1, corresponding to sl(n)). -/
 def A (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
@@ -157,7 +176,9 @@ def D (n : ℕ) : Matrix (Fin n) (Fin n) ℤ :=
     else if j.val + 3 = n ∧ (i.val + 2 = n ∨ i.val + 1 = n) then -1
     else 0
 
-/-! ### Properties -/
+/-!
+# Properties
+-/
 
 section Properties
 
@@ -180,7 +201,9 @@ theorem C_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : C n i j ≤ 0 := by
 theorem D_off_diag_nonpos (i j : Fin n) (h : i ≠ j) : D n i j ≤ 0 := by
   simp only [D, Matrix.of_apply]; split_ifs <;> lia
 
-/-! ### Transpose properties -/
+/-!
+# Transpose properties
+-/
 
 @[simp] theorem A_transpose : (A n).transpose = A n := by
   ext; simp only [A, transpose_apply, of_apply]; grind
@@ -198,7 +221,9 @@ theorem A_isSymm : (A n).IsSymm := A_transpose n
 
 theorem D_isSymm : (D n).IsSymm := D_transpose n
 
-/-! ### Small cases -/
+/-!
+# Small cases
+-/
 
 theorem A_one : A 1 = !![2] := by decide
 
@@ -237,7 +262,9 @@ theorem D_four : D 4 = !![ 2, -1,  0,  0;
 
 
 
-/-! ### Exceptional matrix diagonal entries -/
+/-!
+# Exceptional matrix diagonal entries
+-/
 
 @[simp] theorem E_diag (n : ℕ) (i : Fin n) : E n i i = 2 := by
   simp [E]
@@ -256,7 +283,9 @@ theorem E₈_diag (i : Fin 8) : E 8 i i = 2 := E_diag 8 i
 @[simp] theorem G₂_diag (i : Fin 2) : G₂ i i = 2 := by fin_cases i <;> decide
 
 
-/-! ### Exceptional matrix off-diagonal entries -/
+/-!
+# Exceptional matrix off-diagonal entries
+-/
 
 theorem E_off_diag_nonpos (n : ℕ) (i j : Fin n) (h : i ≠ j) : E n i j ≤ 0 := by
   simp only [E, of_apply]
@@ -280,7 +309,9 @@ theorem F₄_off_diag_nonpos (i j : Fin 4) (h : i ≠ j) : F₄ i j ≤ 0 := by
 theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
   fin_cases i <;> fin_cases j <;> simp_all [G₂]
 
-/-! ### Exceptional matrix transpose properties -/
+/-!
+# Exceptional matrix transpose properties
+-/
 
 @[simp] theorem E_transpose (n : ℕ) : (E n).transpose = E n := by
   ext i j
@@ -307,7 +338,9 @@ theorem E₇_isSymm : (E 7).IsSymm := E_isSymm 7
 @[deprecated "Use `E_isSymm` instead" (since := "2026-08-11")]
 theorem E₈_isSymm : (E 8).IsSymm := E_isSymm 8
 
-/-! ### Exceptional matrix determinants -/
+/-!
+# Exceptional matrix determinants
+-/
 
 theorem G₂_det : G₂.det = 1 := by decide
 

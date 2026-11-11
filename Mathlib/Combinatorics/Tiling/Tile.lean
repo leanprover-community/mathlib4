@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.GroupTheory.Coset.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tiles for tilings
 
@@ -49,17 +52,15 @@ be used with the theory here.
 
 * `Prototile G X`: A prototile in `X` as acted on by `G`, carrying the information of a subgroup of
   the stabilizer that says when two copies of the prototile are considered the same.
-
 * `Protoset G X ιₚ`: An indexed family of prototiles.
-
 * `PlacedTile ps`: An image of a tile in the protoset `ps`.
 
 ## References
 
-* [Branko Grünbaum and G. C. Shephard, *Tilings and Patterns*][GrunbaumShephard1987]
-* [Chaim Goodman-Strauss, *Open Questions in Tiling*][GoodmanStrauss2000]
-* [Rachel Greenfeld and Terence Tao, *A counterexample to the periodic tiling
-  conjecture*][GreenfeldTao2024]
+* ‍\[Branko Grünbaum and G. C. Shephard, _Tilings and Patterns_\]\[GrunbaumShephard1987\]
+* ‍\[Chaim Goodman-Strauss, _Open Questions in Tiling_\]\[GoodmanStrauss2000\]
+* ‍\[Rachel Greenfeld and Terence Tao, _A counterexample to the periodic tiling
+  conjecture_\]\[GreenfeldTao2024\]
 -/
 
 

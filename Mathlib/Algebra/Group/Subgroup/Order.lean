@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.Order.Atoms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Facts about ordered structures and ordered instances on subgroups
 -/

@@ -9,7 +9,11 @@ public meta import ProofWidgets.Component.Basic
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 
 meta import ProofWidgets.Component.OfRpcMethod
-/-! # GCongr widget
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# GCongr widget
 
 This file defines a `gcongr?` tactic that displays a widget panel allowing to generate
 a `gcongr` call with holes specified by selecting subexpressions in the goal.

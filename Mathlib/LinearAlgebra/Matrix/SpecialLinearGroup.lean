@@ -12,8 +12,11 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.RingTheory.RootsOfUnity.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# The Special Linear group $SL(n, R)$
+# The Special Linear group $`SL(n, R)`
 
 This file defines the elements of the Special Linear group `SpecialLinearGroup n R`, consisting
 of all square `R`-matrices with determinant `1` on the fintype `n` by `n`.  In addition, we define
@@ -32,6 +35,7 @@ For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group 
 `n = Fin m`, in the scope `MatrixGroups`.
 
 ## Implementation notes
+
 The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate
 matrix, so that `SpecialLinearGroup n R` has a group structure for all `CommRing R`.
 
@@ -45,7 +49,7 @@ of a regular `↑` coercion.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Special_linear_group
+* https://en.wikipedia.org/wiki/Special\_linear\_group
 
 ## Tags
 
@@ -378,9 +382,11 @@ def center_equiv_rootsOfUnity' (i : n) :
     simp
 
 open scoped Classical in
-/-- An equivalence of groups, from the center of the special linear group to the roots of unity.
+/--
+An equivalence of groups, from the center of the special linear group to the roots of unity.
 
-See also `center_equiv_rootsOfUnity'`. -/
+See also `center_equiv_rootsOfUnity'`.
+-/
 noncomputable def center_equiv_rootsOfUnity :
     center (SpecialLinearGroup n R) ≃* rootsOfUnity (max (Fintype.card n) 1) R :=
   (isEmpty_or_nonempty n).by_cases
@@ -903,12 +909,14 @@ open scoped MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
-/-- The matrix `S = [[0, -1], [1, 0]]` as an element of `SL(2, ℤ)`.
+/--
+The matrix `S = [[0, -1], [1, 0]]` as an element of `SL(2, ℤ)`.
 
 This element acts naturally on the Euclidean plane as a rotation about the origin by `π / 2`.
 
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
-represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
+represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry.
+-/
 def S : SL(2, ℤ) :=
   ⟨!![0, -1; 1, 0], by simp [Matrix.det_fin_two_of]⟩
 

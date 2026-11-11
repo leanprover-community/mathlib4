@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.MvPolynomial.Localization
 
 import Mathlib.Algebra.MvPolynomial.CommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentations of algebras
 
@@ -18,29 +21,29 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
 
 ## Main definition
 
-- `Algebra.Presentation`: A presentation of an `R`-algebra `S` is a family of
+* `Algebra.Presentation`: A presentation of an `R`-algebra `S` is a family of
   generators with
+
   1. `rels`: The type of relations.
   2. `relation : relations → MvPolynomial vars R`: The assignment of
      each relation to a polynomial in the generators.
-- `Algebra.Presentation.IsFinite`: A presentation is called finite if both variables and relations
+* `Algebra.Presentation.IsFinite`: A presentation is called finite if both variables and relations
   are finite.
-- `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
+* `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
   minus the number of relations.
-- `Algebra.Presentation.mvPolynomial`: The canonical `R`-presentation of the polynomial algebra
+* `Algebra.Presentation.mvPolynomial`: The canonical `R`-presentation of the polynomial algebra
   `MvPolynomial ι R`, with generators the variables `X i` for `i : ι` and no relations.
 
 We also give constructors for localization, base change and composition.
 
 ## TODO
 
-- Define `Hom`s of presentations.
+* Define `Hom`s of presentations.
 
 ## Notes
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
-
 -/
 
 @[expose] public section
@@ -318,7 +321,7 @@ end BaseChange
 section Composition
 
 /-!
-### Composition of presentations
+# Composition of presentations
 
 Let `S` be an `R`-algebra with presentation `P` and `T` be an `S`-algebra with
 presentation `Q`. In this section we construct a presentation of `T` as an `R`-algebra.
@@ -350,7 +353,6 @@ under the canonical map `MvPolynomial ι R →ₐ[R] MvPolynomial (ι' ⊕ ι) R
 assumption this span is the kernel of the evaluation map of `P`. For this, we use the isomorphism
 `MvPolynomial (ι' ⊕ ι) R ≃ₐ[R] MvPolynomial ι' (MvPolynomial ι R)` and
 `MvPolynomial.ker_map`.
-
 -/
 
 variable {ι' σ' T : Type*} [CommRing T] [Algebra S T]

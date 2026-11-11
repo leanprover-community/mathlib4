@@ -8,6 +8,9 @@ module
 public meta import Lean.MetavarContext
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous helper functions for tactics.
 
@@ -26,8 +29,8 @@ variable {m : Type → Type}
 `modifyMetavarDecl mvarId f` updates the `MetavarDecl` for `mvarId` with `f`.
 Conditions on `f`:
 
-- The target of `f mdecl` is defeq to the target of `mdecl`.
-- The local context of `f mdecl` must contain the same fvars as the local
+* The target of `f mdecl` is defeq to the target of `mdecl`.
+* The local context of `f mdecl` must contain the same fvars as the local
   context of `mdecl`. For each fvar in the local context of `f mdecl`, the type
   (and value, if any) of the fvar must be defeq to the corresponding fvar in
   the local context of `mdecl`.

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Solvable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semisimple Lie algebras
 
@@ -29,7 +32,9 @@ public section
 variable (R L M : Type*)
 variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]
 
-/-- A nontrivial Lie module is *irreducible* if its only Lie submodules are `⊥` and `⊤`. -/
+/--
+A nontrivial Lie module is _irreducible_ if its only Lie submodules are `⊥` and `⊤`.
+-/
 abbrev LieModule.IsIrreducible : Prop :=
   IsSimpleOrder (LieSubmodule R L M)
 
@@ -48,7 +53,7 @@ namespace LieAlgebra
 variable [LieAlgebra R L]
 
 /--
-A Lie algebra *has trivial radical* if its radical is trivial.
+A Lie algebra _has trivial radical_ if its radical is trivial.
 This is equivalent to having no non-trivial solvable ideals,
 and further equivalent to having no non-trivial abelian ideals.
 
@@ -58,7 +63,7 @@ Note that the label 'semisimple' is apparently not universally agreed
 [upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
 for general coefficients.
 
-For example [Seligman, page 15][seligman1967] uses the label for `LieAlgebra.HasTrivialRadical`,
+For example \[Seligman, page 15\]\[seligman1967\] uses the label for `LieAlgebra.HasTrivialRadical`,
 whereas we reserve it for Lie algebras that are a direct sum of simple Lie algebras.
 -/
 @[mk_iff] class HasTrivialRadical : Prop where
@@ -67,11 +72,13 @@ whereas we reserve it for Lie algebras that are a direct sum of simple Lie algeb
 export HasTrivialRadical (radical_eq_bot)
 attribute [simp] radical_eq_bot
 
-/-- A Lie algebra *has central radical* if its radical coincides with its center. Such Lie algebras
-are called *reductive*, if the coefficients are a field of characteristic zero.
+/--
+A Lie algebra _has central radical_ if its radical coincides with its center. Such Lie algebras
+are called _reductive_, if the coefficients are a field of characteristic zero.
 
 Note that there is absolutely [no agreement](https://mathoverflow.net/questions/284713/) on what
-the label 'reductive' should mean when the coefficients are not a field of characteristic zero. -/
+the label 'reductive' should mean when the coefficients are not a field of characteristic zero.
+-/
 @[mk_iff] class HasCentralRadical : Prop where
   radical_eq_center : radical R L = center R L
 
@@ -92,14 +99,14 @@ class IsSimple : Prop where
   non_abelian : ¬IsLieAbelian L
 
 /--
-A *semisimple* Lie algebra is one that is a direct sum of non-abelian atomic ideals.
+A _semisimple_ Lie algebra is one that is a direct sum of non-abelian atomic ideals.
 These ideals are simple Lie algebras, by `LieAlgebra.IsSemisimple.isSimple_of_isAtom`.
 
 Note that the label 'semisimple' is apparently not universally agreed
 [upon](https://mathoverflow.net/questions/149391/on-radicals-of-a-lie-algebra#comment383669_149391)
 for general coefficients.
 
-For example [Seligman, page 15][seligman1967] uses the label for `LieAlgebra.HasTrivialRadical`,
+For example \[Seligman, page 15\]\[seligman1967\] uses the label for `LieAlgebra.HasTrivialRadical`,
 the weakest of the various properties which are all equivalent over a field of characteristic zero.
 -/
 class IsSemisimple : Prop where

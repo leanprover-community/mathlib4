@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.Analysis.PSeries
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence of `p`-series on lattices
 
@@ -17,11 +20,11 @@ Let `E` be a finite dimensional normed `ℝ`-space, and `L` a discrete subgroup 
 We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
 
 ## Main results
-- `ZLattice.summable_norm_rpow`: `∑ z ∈ L, ‖z‖ʳ` converges when `r < -d`.
-- `ZLattice.summable_norm_sub_rpow`: `∑ z ∈ L, ‖z - x‖ʳ` converges when `r < -d`.
-- `ZLattice.tsum_norm_rpow_le`:
-  `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
 
+* `ZLattice.summable_norm_rpow`: `∑ z ∈ L, ‖z‖ʳ` converges when `r < -d`.
+* `ZLattice.summable_norm_sub_rpow`: `∑ z ∈ L, ‖z - x‖ʳ` converges when `r < -d`.
+* `ZLattice.tsum_norm_rpow_le`:
+  `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
 -/
 
 @[expose] public section

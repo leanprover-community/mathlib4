@@ -8,13 +8,16 @@ module
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Shift.CommShift
 
-/-! # Shifted morphisms
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Shifted morphisms
 
 Given a category `C` endowed with a shift by an additive monoid `M` and two
 objects `X` and `Y` in `C`, we consider the types `ShiftedHom X Y m`
 defined as `X ⟶ Y⟦m⟧` for all `m : M`, and the composition on these
 shifted hom.
-
 -/
 
 @[expose] public section

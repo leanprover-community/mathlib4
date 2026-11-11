@@ -11,6 +11,9 @@ public meta import Lean.Meta.Tactic.Simp.Main
 import Lean.Elab.Tactic.Location
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rewriting at specified locations
 
@@ -24,15 +27,18 @@ combination of these.
 
 public meta section
 
-/-- Runs the given `atLocal` and `atTarget` methods on each of the locations selected by the given
+/--
+Runs the given `atLocal` and `atTarget` methods on each of the locations selected by the given
 `loc`.
+
 * If `loc` is a list of locations, runs at each specified hypothesis (and finally the goal if `⊢` is
   included), and fails if any of the tactic applications fail. If an earlier location closes the
   goal, later unused locations are an error.
 * If `loc` is `*`, runs at the target and at the nondependent `Prop` hypotheses in reversed order
   (those produced by `Lean.MVarId.getNondepPropHyps`), calling `failed` if no location succeeds.
 
-The implementation adapts `Lean.Elab.Tactic.withLocation` with a restricted wildcard. -/
+The implementation adapts `Lean.Elab.Tactic.withLocation` with a restricted wildcard.
+-/
 def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId → TacticM Unit)
     (atTarget : TacticM Unit) (failed : MVarId → TacticM Unit) : TacticM Unit := do
   match loc with
@@ -56,13 +62,16 @@ def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId �
         atLocal fvarId)
       atTarget failed
 
-/-- Collect the values from running the `atLocal` and `atTarget` methods on each of the locations
+/--
+Collect the values from running the `atLocal` and `atTarget` methods on each of the locations
 selected by the given `loc`.
+
 * If `loc` is a list of locations, collects the results of running at each specified hypothesis (and
   finally the goal if `⊢` is included), and fails if any of the applications fail.
 * If `loc` is `*`, collects the results of running at the target and at the nondependent `Prop`
   hypotheses (those produced by `Lean.MVarId.getNondepPropHyps`). Locations where the application
-  fails are skipped, so the result can be empty. -/
+  fails are skipped, so the result can be empty.
+-/
 def Lean.Elab.Tactic.mapNondepPropLocation {α : Type} (loc : Location)
     (atLocal : FVarId → TacticM α) (atTarget : TacticM α) : TacticM (Array α) := do
   let results ← IO.mkRef (#[] : Array α)
@@ -86,9 +95,11 @@ inductive BehaviorIfUnchanged where
   | error
 deriving BEq, Inhabited, Repr
 
-/-- Use the procedure `m` to rewrite the provided goal.
+/--
+Use the procedure `m` to rewrite the provided goal.
 
-Assumes `proc` is not surrounded by backticks. -/
+Assumes `proc` is not surrounded by backticks.
+-/
 def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (ifUnchanged : BehaviorIfUnchanged) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
@@ -111,13 +122,15 @@ def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (pro
     if unchanged then return goal
     applySimpResultToTarget goal tgt r
 
-/-- Use the procedure `m` to rewrite hypothesis `fvarId`.
+/--
+Use the procedure `m` to rewrite hypothesis `fvarId`.
 
 The `simpTheorems` of the simp-context carried with `m` will be modified to remove `fvarId`;
 this ensures that if the procedure `m` involves rewriting by this `SimpTheoremsArray`, then, e.g.,
 `h : x = y` is not transformed (by rewriting `h`) to `True`.
 
-Assumes `proc` is not surrounded by backticks. -/
+Assumes `proc` is not surrounded by backticks.
+-/
 def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (ifUnchanged : BehaviorIfUnchanged) (mayCloseGoal : Bool) (fvarId : FVarId) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
@@ -137,9 +150,11 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
     | .silent => pure ()
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
-/-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
+/--
+Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
 
-Assumes `proc` is not surrounded by backticks. -/
+Assumes `proc` is not surrounded by backticks.
+-/
 def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
     (loc : Location) (ifUnchanged : BehaviorIfUnchanged := .error)
     (mayCloseGoalFromHyp : Bool := false)
@@ -152,11 +167,13 @@ def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (p
     (liftMetaTactic1 (transformAtTarget m proc ifUnchanged · ctx))
     fun _ ↦ throwError "`{proc}` made no progress anywhere"
 
-/-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
+/--
+Use the procedure `m` to transform at specified locations (hypotheses and/or goal).
 
 In the wildcard case (`*`), filter out all dependent and/or non-`Prop` hypotheses.
 
-Assumes `proc` is not surrounded by backticks. -/
+Assumes `proc` is not surrounded by backticks.
+-/
 def transformAtNondepPropLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result)
     (proc : String) (loc : Location) (ifUnchanged : BehaviorIfUnchanged := .error)
     (mayCloseGoalFromHyp : Bool := false)

@@ -10,6 +10,9 @@ public import Mathlib.Data.Set.Basic
 public import Mathlib.Order.SetNotation
 public import Mathlib.Tactic.ToAdditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pre-sets
 

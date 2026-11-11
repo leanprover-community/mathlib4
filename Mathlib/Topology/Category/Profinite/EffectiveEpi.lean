@@ -10,6 +10,9 @@ public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 public import Mathlib.Topology.Category.Profinite.Limits
 public import Mathlib.Topology.Category.Stonean.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Effective epimorphisms in `Profinite`
 

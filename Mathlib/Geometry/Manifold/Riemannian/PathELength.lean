@@ -12,7 +12,11 @@ public import Mathlib.MeasureTheory.Function.JacobianOneDim
 
 import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 
-/-! # Lengths of paths in manifolds
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Lengths of paths in manifolds
 
 Consider a manifold in which the tangent spaces have an enormed structure. Then one defines
 `pathELength γ a b` as the length of the path `γ : ℝ → M` between `a` and `b`, i.e., the integral
@@ -53,7 +57,8 @@ namespace Manifold
 variable [∀ (x : M), ENorm (TangentSpace% x)] {a b c a' b' : ℝ} {γ γ' : ℝ → M}
 
 variable (I) in
-/-- The length on `Icc a b` of a path into a manifold, where the path is defined on the whole real
+/--
+The length on `Icc a b` of a path into a manifold, where the path is defined on the whole real
 line.
 
 We use the whole real line to avoid subtype hell in API, but this is equivalent to
@@ -62,7 +67,8 @@ considering functions on the manifold with boundary `Icc a b`, see
 
 We use `mfderiv` instead of `mfderivWithin` in the definition as these coincide (apart from the two
 endpoints which have zero measure) and `mfderiv` is easier to manipulate. However, we give
-a lemma `pathELength_eq_integral_mfderivWithin_Icc` to rewrite with the `mfderivWithin` form. -/
+a lemma `pathELength_eq_integral_mfderivWithin_Icc` to rewrite with the `mfderivWithin` form.
+-/
 def pathELength (γ : ℝ → M) (a b : ℝ) : ℝ≥0∞ :=
   ∫⁻ t in Icc a b, ‖mfderiv% γ t 1‖ₑ
 

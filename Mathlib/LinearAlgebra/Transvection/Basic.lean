@@ -11,23 +11,21 @@ public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FixedSubmodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transvections in a module
 
 * When `f : Module.Dual R V` and `v : V`,
   `LinearMap.transvection f v` is the linear map given by `x ↦ x + f x • v`,
-
 * `LinearMap.transvection.det` shows that the determinant of
   `LinearMap.transvection f v` is equal to `1 + f v`.
-
 * If, moreover, `f v = 0`, then `LinearEquiv.transvection` shows that it is
   a linear equivalence.
-
 * `LinearMap.transvections R V`: the set of transvections.
-
 * `LinearEquiv.dilatransvections R V`: the set of linear equivalences
   whose associated linear map is of the form `LinearMap.transvection f v`.
-
 * `LinearEquiv.transvection.det` shows that it has determinant `1`.
 
 ## Note on terminology
@@ -38,7 +36,6 @@ called “dilations” (especially if `f v ≠ -1`).
 
 The definition is almost the same as that of `Module.preReflection f v`,
 up to a sign change, which are interesting when `f v = 2`, because they give “reflections”.
-
 -/
 
 @[expose] public section
@@ -49,10 +46,12 @@ open Module
 
 variable {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
 
-/-- The transvection associated with a linear form `f` and a vector `v`.
+/--
+The transvection associated with a linear form `f` and a vector `v`.
 
 NB. In mathematics, these linear maps are only called “transvections” when `f v = 0`.
-See also `Module.preReflection` for a similar definition, up to a sign. -/
+See also `Module.preReflection` for a similar definition, up to a sign.
+-/
 def transvection (f : Dual R V) (v : V) : V →ₗ[R] V where
   toFun x := x + f x • v
   map_add' x y := by simp [add_add_add_comm, add_smul]
@@ -262,11 +261,13 @@ theorem transvections_pow_mono :
   Set.pow_right_monotone one_mem_transvections
 
 variable (R V) in
-/-- Dilatransvections are linear equivalences `V ≃ₗ[R] V` whose associated linear map are given by
+/--
+Dilatransvections are linear equivalences `V ≃ₗ[R] V` whose associated linear map are given by
 `LinearMap.transvection`, i.e., are of the form `x ↦ x + f x • v` for `f : Dual R V` and `v : V`.
 
 Over a division ring, `LinearEquiv.mem_dilatransvections_iff_rank` shows that they correspond
-to the linear equivalences which differ from the identity map by a linear map of rank at most 1. -/
+to the linear equivalences which differ from the identity map by a linear map of rank at most 1.
+-/
 def dilatransvections : Set (V ≃ₗ[R] V) :=
   { e : V ≃ₗ[R] V | ∃ (f : Dual R V) (v : V), e = LinearMap.transvection f v }
 
@@ -360,10 +361,12 @@ section divisionRing
 
 variable {K : Type*} [DivisionRing K] [Module K V]
 
-/-- Over a division ring, `dilatransvections` correspond to linear
+/--
+Over a division ring, `dilatransvections` correspond to linear
 equivalences `e` such that the linear map `e - id` has rank at most 1.
 
-See also `LinearEquiv.mem_dilatransvections_iff_finrank`. -/
+See also `LinearEquiv.mem_dilatransvections_iff_finrank`.
+-/
 theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
       Module.rank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
@@ -401,10 +404,12 @@ theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     exact codRestrict_apply (range u) u x
 
 open Cardinal in
-/-- Over a division ring, `dilatransvections` correspond to linear
+/--
+Over a division ring, `dilatransvections` correspond to linear
 equivalences `e` such that the linear map `e - id` has rank at most 1.
 
-See also `LinearEquiv.mem_dilatransvections_iff_rank`. -/
+See also `LinearEquiv.mem_dilatransvections_iff_rank`.
+-/
 theorem mem_dilatransvections_iff_finrank [Module.Finite K V] {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
       finrank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
@@ -553,9 +558,11 @@ section Field
 
 variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
-/-- Determinant of transvections, over a field.
+/--
+Determinant of transvections, over a field.
 
-See `LinearMap.Transvection.det` for the general result. -/
+See `LinearMap.Transvection.det` for the general result.
+-/
 private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     (LinearMap.transvection f v).det = 1 + f v := by
   classical
@@ -615,9 +622,11 @@ end Field
 
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
-/-- Determinant of a transvection, over a domain.
+/--
+Determinant of a transvection, over a domain.
 
-See `LinearMap.transvection.det` for the general case. -/
+See `LinearMap.transvection.det` for the general case.
+-/
 private theorem det_ofDomain [Free R V] [Module.Finite R V] [IsDomain R] (f : Dual R V) (v : V) :
     (transvection f v).det = 1 + f v := by
   let K := FractionRing R
@@ -667,10 +676,12 @@ open IsBaseChange
   rw [← hf, ← hv, ← IsBaseChange.transvection, det_endHom, det_ofDomain]
   rw [map_add, map_one, add_right_inj, toDual_comp_apply]
 
-/-- Determinant of a transvection.
+/--
+Determinant of a transvection.
 
 It is not necessary to assume that the module is finite and free
-because `LinearMap.det` is identically 1 otherwise. -/
+because `LinearMap.det` is identically 1 otherwise.
+-/
 @[simp] theorem _root_.LinearEquiv.transvection.det_eq_one
     {f : Dual R V} {v : V} (hfv : f v = 0) :
     (LinearEquiv.transvection hfv).det = 1 := by

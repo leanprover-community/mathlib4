@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
-/-! # Lemmas about coprimality with big products.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Lemmas about coprimality with big products.
 
 These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize imports.
 -/

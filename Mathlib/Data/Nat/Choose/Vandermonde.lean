@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Coeff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vandermonde's identity
 
@@ -14,8 +17,7 @@ In this file we prove Vandermonde's identity (`Nat.add_choose_eq`):
 `(m + n).choose k = ∑ (i, j) ∈ antidiagonal k, m.choose i * n.choose j`
 
 We follow the algebraic proof from
-https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
-
+https://en.wikipedia.org/wiki/Vandermonde%27s\_identity#Algebraic\_proof .
 -/
 
 public section

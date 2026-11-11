@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subcategories of comma categories defined by morphism properties
 
@@ -17,8 +20,8 @@ Given functors `L : A ⥤ T` and `R : B ⥤ T` and morphism properties `P`, `Q` 
 on `T`, `A` and `B` respectively, we define the subcategory `P.Comma L R Q W` of
 `Comma L R` where
 
-- objects are objects of `Comma L R` with the structural morphism satisfying `P`, and
-- morphisms are morphisms of `Comma L R` where the left morphism satisfies `Q` and the
+* objects are objects of `Comma L R` with the structural morphism satisfying `P`, and
+* morphisms are morphisms of `Comma L R` where the left morphism satisfies `Q` and the
   right morphism satisfies `W`.
 
 For an object `X : T`, this specializes to `P.Over Q X` which is the subcategory of `Over X`
@@ -28,12 +31,10 @@ over a base `X`. Here `Q = ⊤`.
 
 ## Implementation details
 
-- We provide the general constructor `P.Comma L R Q W` to obtain `Over X` and `Under X` as
+* We provide the general constructor `P.Comma L R Q W` to obtain `Over X` and `Under X` as
   special cases of the more general setup.
-
-- Most results are developed only in the case where `Q = ⊤` and `W = ⊤`, but the definition
+* Most results are developed only in the case where `Q = ⊤` and `W = ⊤`, but the definition
   is setup in the general case to allow for a later generalization if needed.
-
 -/
 
 set_option backward.defeqAttrib.useBackward true
@@ -174,7 +175,9 @@ lemma Hom.hom_left {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.left = f.
 
 lemma Hom.hom_right {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.right = f.right := rfl
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Hom.Simps.hom {X Y : P.Comma L R Q W} (f : X.Hom Y) :
     X.toComma ⟶ Y.toComma :=
   f.hom

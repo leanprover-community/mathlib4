@@ -14,11 +14,13 @@ public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 import Mathlib.RingTheory.Polynomial.Subring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # # Integral closure as a characteristic predicate
 
 We prove basic properties of `IsIntegralClosure`.
-
 -/
 
 @[expose] public section
@@ -83,10 +85,11 @@ variable {R A B S : Type*}
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 variable [Algebra R A] [Algebra R B] {f : R →+* S}
 
-/-- The [Kurosh problem](https://en.wikipedia.org/wiki/Kurosh_problem) asks to show that
-  this is still true when `A` is not necessarily commutative and `R` is a field, but it has
-  been solved in the negative. See https://arxiv.org/pdf/1706.02383.pdf for criteria for a
-  finitely generated algebraic (= integral) algebra over a field to be finite dimensional.
+/--
+The [Kurosh problem](https://en.wikipedia.org/wiki/Kurosh_problem) asks to show that
+this is still true when `A` is not necessarily commutative and `R` is a field, but it has
+been solved in the negative. See https://arxiv.org/pdf/1706.02383.pdf for criteria for a
+finitely generated algebraic (= integral) algebra over a field to be finite dimensional.
 
 This could be an `instance`, but we tend to go from `Module.Finite` to `IsIntegral`/`IsAlgebraic`,
 and making it an instance will cause the search to be complicated a lot.

@@ -7,6 +7,9 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `bdsimp` tactic
 
@@ -18,6 +21,8 @@ public meta section
 
 open Lean.Parser.Tactic
 
+
+set_option doc.verso false
 /-- `bdsimp` definitionally simplifies the goal. This is a backward compatibility macro for `dsimp`.
 Like `dsimp`, it applies only theorems that hold by reflexivity, and the result is guaranteed to be
 definitionally equal to the input. The difference is that `bdsimp` allows any theorem whose proof is
@@ -41,6 +46,8 @@ This tactic supports all options supported by `dsimp`.
 syntax (name := bdsimp) "bdsimp" optConfig (discharger)? (&" only")?
   (" [" withoutPosition((simpErase <|> simpLemma),*,?) "]")? (location)? : tactic
 
+
+set_option doc.verso true
 macro_rules
 | `(tactic|bdsimp $cfg $[$disch]? $[only%$only]? $[[$lemmas]]? $[$loc]?) =>
     `(tactic|set_option backward.defeqAttrib.useBackward true in

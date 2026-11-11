@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.MorphismProperty.Concrete
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Epi and mono in concrete categories
 
@@ -17,7 +20,6 @@ strong epi mono factorizations and is such that `forget C` preserves
 both epi and mono, then any morphism in `C` can be factored in a
 functorial manner as a composition of a surjective morphism followed
 by an injective morphism.
-
 -/
 
 @[expose] public section

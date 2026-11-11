@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Data.Matrix.PEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Permutation matrices
 
@@ -15,13 +18,12 @@ This file defines the matrix associated with a permutation
 
 ## Main definitions
 
-- `Equiv.Perm.permMatrix`: the permutation matrix associated with an `Equiv.Perm`
+* `Equiv.Perm.permMatrix`: the permutation matrix associated with an `Equiv.Perm`
 
 ## Main results
 
-- `Matrix.det_permutation`: the determinant is the sign of the permutation
-- `Matrix.trace_permutation`: the trace is the number of fixed points of the permutation
-
+* `Matrix.det_permutation`: the determinant is the sign of the permutation
+* `Matrix.trace_permutation`: the trace is the number of fixed points of the permutation
 -/
 
 @[expose] public section
@@ -31,9 +33,11 @@ open Equiv
 variable {n R : Type*} [DecidableEq n] (σ τ : Perm n)
 
 variable (R) in
-/-- the permutation matrix associated with an `Equiv.Perm`.
+/--
+the permutation matrix associated with an `Equiv.Perm`.
 
-This is available in a bundled form as `Matrix.permMatrixHom`. -/
+This is available in a bundled form as `Matrix.permMatrixHom`.
+-/
 abbrev Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
   σ.toPEquiv.toMatrix
 

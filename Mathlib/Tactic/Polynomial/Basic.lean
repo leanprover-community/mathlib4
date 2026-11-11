@@ -10,12 +10,18 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Tactic.Algebra.AlgebraNF
 public import Mathlib.Tactic.Polynomial.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomial
+
 An extensible tactic for proving equality of polynomial expressions implemented using `algebra`.
 To add support for a new polynomial-like type, one needs to do three things:
+
 * Implement a polynomial extension that lets `polynomial` infer the base ring from the algebraic
   type. For example:
+
 ```
 @[polynomial_infer_base]
 def polynomialInferBase : PolynomialExt where
@@ -24,10 +30,11 @@ def polynomialInferBase : PolynomialExt where
   | Polynomial R _ => pure R
   | _ => failure
 ```
-* Tag any preprocessing lemmas with @[polynomial_pre]. This would include a lemma saying that
-`C = algebraMap _ _` so that `algebra` knows how to normalize it.
-* Tag any postprocessing lemmas with @[polynomial_post], so that `polynomial_nf` produces a pretty
-expression.
+
+* Tag any preprocessing lemmas with @\[polynomial\_pre\]. This would include a lemma saying that
+  `C = algebraMap _ _` so that `algebra` knows how to normalize it.
+* Tag any postprocessing lemmas with @\[polynomial\_post\], so that `polynomial_nf` produces a
+  pretty expression.
 -/
 
 open Lean Mathlib.Tactic Mathlib.Tactic.Algebra Parser.Tactic Elab Meta Qq
@@ -80,7 +87,8 @@ def preprocess (e : Expr) : MetaM Simp.Result := do
 
 open Tactic
 
-/-- `polynomial` solves equalities of `Polynomial`s and similar types.
+/--
+`polynomial` solves equalities of `Polynomial`s and similar types.
 
 Given a goal which is an equality in `Polynomial R` with a commutative ring `R`, `polynomial`
 turns both sides of the equation into a normal form by expanding out the brackets. It then closes
@@ -88,6 +96,7 @@ the goal if both sides contain the same terms and fails otherwise. `polynomial_n
 subexpressions at a given location.
 
 Variants of `polynomial` include:
+
 * `polynomial`: normalize both sides of an equation and close the goal if they are equal
 * `polynomial!`: run `polynomial` at default transparency
 * `polynomial_nf`: normalize all subexpression of the goal
@@ -108,7 +117,6 @@ example {P : ℚ[X] → Prop} (h : P (X ^ 2 + X + C 4⁻¹)) : P ((X + C 2⁻¹)
   polynomial_nf at h ⊢
   exact h
 ```
-
 -/
 elab (name := polynomial) "polynomial" tk:"!"? : tactic =>
   withMainContext do

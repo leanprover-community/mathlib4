@@ -12,6 +12,9 @@ public import Mathlib.Logic.Equiv.Basic
 
 import Mathlib.Basic.IsEmpty.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective functions
 -/
@@ -55,6 +58,8 @@ namespace Equiv
 
 variable {α : Sort u} {β : Sort v} (f : α ≃ β)
 
+
+set_option doc.verso false
 /-- Convert an `α ≃ β` to `α ↪ β`.
 
 This is also available as a coercion `Equiv.coeEmbedding`.
@@ -72,6 +77,8 @@ example (s : Finset (Fin 3)) (f : Equiv.Perm (Fin 3)) : s.map f = s.map f.toEmbe
 protected def toEmbedding : α ↪ β :=
   ⟨f, f.injective⟩
 
+
+set_option doc.verso true
 @[simp]
 theorem coe_toEmbedding : (f.toEmbedding : α → β) = f :=
   rfl

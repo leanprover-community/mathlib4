@@ -8,7 +8,12 @@ module
 public import Mathlib.Order.Category.Frm
 public import Mathlib.Topology.Category.CompHaus.Basic
 
-/-! # The forgetful functor from `TopCatᵒᵖ` to `Frm` -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The forgetful functor from `TopCatᵒᵖ` to `Frm`
+-/
 
 @[expose] public section
 

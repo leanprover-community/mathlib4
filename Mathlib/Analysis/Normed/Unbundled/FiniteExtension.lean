@@ -12,28 +12,34 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis.norm
 
-In this file, we prove [BGR, Lemma 3.2.1./3][bosch-guntzer-remmert] : if `K` is a normed field
+In this file, we prove \[BGR, Lemma 3.2.1./3\]\[bosch-guntzer-remmert\] : if `K` is a normed field
 with a nonarchimedean power-multiplicative norm and `L/K` is a finite extension, then there exists
 at least one power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
+
 * `Basis.norm` : the function sending an element `x : L` to the maximum of the norms of its
   coefficients with respect to the `K`-basis `B` of `L`.
 
 ## Main Results
+
 * `norm_mul_le_const_mul_norm` : For any `K`-basis of `L`, `B.norm` is bounded with respect to
   multiplication. That is, `∃ (c : ℝ), c > 0` such that
-  ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`.
+  `  ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`.
 * `exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional` : if `K` is a normed field with a
   nonarchimedean power-multiplicative norm and `L/K` is a finite extension, then there exists at
   least one power-multiplicative `K`-algebra norm on `L` extending the norm on `K`. This is
-  [BGR, Lemma 3.2.1./3].
+  ‍\[BGR, Lemma 3.2.1./3\].
 
 ## References
-* [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
+
+* ‍\[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_\]\[bosch-guntzer-remmert\]
 
 ## Tags
 

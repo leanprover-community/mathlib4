@@ -8,14 +8,16 @@ module
 public import Mathlib.RingTheory.Derivation.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivations into Square-Zero Ideals
 
 ## Main statements
 
-- `derivationToSquareZeroOfLift`: The `R`-derivations from `A` into a square-zero ideal `I`
+* `derivationToSquareZeroOfLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
-
 -/
 
 @[expose] public section

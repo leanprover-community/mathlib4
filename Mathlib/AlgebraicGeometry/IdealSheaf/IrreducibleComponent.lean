@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Noetherian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subscheme structure on an irreducible component
 
@@ -18,6 +21,7 @@ the kernel of the restriction to the complement of the union of the other irredu
 For example, if `X` is irreducible then this will give back the original scheme `X`.
 
 ## Main definition
+
 * `AlgebraicGeometry.Scheme.irreducibleComponentIdeal`: The ideal sheaf data associated to an
   irreducible component of a Noetherian scheme.
 * `AlgebraicGeometry.Scheme.irreducibleComponent`: The subscheme structure on an irreducible
@@ -27,7 +31,6 @@ For example, if `X` is irreducible then this will give back the original scheme 
 
 Prove that for affine schemes this subscheme structure is defined by the kernel of the
 localization away from the union of the other minimal prime ideals.
-
 -/
 
 @[expose] public section

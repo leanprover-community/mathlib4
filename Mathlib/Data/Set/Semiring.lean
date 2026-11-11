@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Ring.Canonical
 public import Mathlib.Data.Set.BooleanAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets as a semiring under union
 

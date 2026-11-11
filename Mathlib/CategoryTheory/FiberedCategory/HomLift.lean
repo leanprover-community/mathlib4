@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.CommSq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # HomLift
 
@@ -24,10 +27,10 @@ goal, this tactic is just short for `obtain ⟨⟩ := (inferInstance : p.IsHomLi
 it is used to make the code more readable.
 
 ## Implementation
+
 The class `IsHomLift` is defined as an inductive with the single constructor
 `.map (φ : a ⟶ b) : IsHomLift p (p.map φ) φ`, similar to how `Eq a b` has the single constructor
 `.rfl (a : α) : Eq a a`.
-
 -/
 
 @[expose] public section
@@ -40,16 +43,19 @@ variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒳] [Category.
 
 namespace CategoryTheory
 
-/-- Given a functor `p : 𝒳 ⥤ 𝒮`, an arrow `φ : a ⟶ b` in `𝒳` and an arrow `f : R ⟶ S` in `𝒮`,
+/--
+Given a functor `p : 𝒳 ⥤ 𝒮`, an arrow `φ : a ⟶ b` in `𝒳` and an arrow `f : R ⟶ S` in `𝒮`,
 `p.IsHomLift f φ` expresses the fact that `φ` lifts `f` through `p`.
 This is often drawn as:
+
 ```
   a --φ--> b
   -        -
   |        |
   v        v
   R --f--> S
-``` -/
+```
+-/
 class inductive Functor.IsHomLift : ∀ {R S : 𝒮} {a b : 𝒳} (_ : R ⟶ S) (_ : a ⟶ b), Prop
   | map {a b : 𝒳} (φ : a ⟶ b) : IsHomLift (p.map φ) φ
 

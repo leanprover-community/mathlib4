@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.SumsOfSquares
 public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The canonical bilinear form on a finite root pairing
 
@@ -22,11 +25,13 @@ Another application is to the faithfulness of the Weyl group action on roots, an
 Weyl group.
 
 ## Main definitions:
+
 * `RootPairing.Polarization`: A distinguished linear map from the weight space to the coweight
   space.
 * `RootPairing.RootForm` : The bilinear form on weight space corresponding to `Polarization`.
 
 ## Main results:
+
 * `RootPairing.rootForm_self_sum_of_squares` : The inner product of any
   weight vector is a sum of squares.
 * `RootPairing.rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
@@ -36,9 +41,9 @@ Weyl group.
 * `RootPairing.exists_ge_zero_eq_rootForm`: `RootForm` is positive semidefinite.
 
 ## References:
-* [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
-* [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
+* ‍\[N. Bourbaki, _Lie groups and Lie algebras. Chapters 4--6_\]\[bourbaki1968\]
+* ‍\[M. Demazure, _SGA III, Exposé XXI, Données Radicielles_\]\[demazure1970\]
 -/
 
 @[expose] public section

@@ -12,6 +12,9 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Beta function, and further properties of the Gamma function
 
@@ -51,7 +54,9 @@ open scoped Nat Topology Real
 
 section BetaIntegral
 
-/-! ## The Beta function -/
+/-!
+# The Beta function
+-/
 
 
 namespace Complex
@@ -220,7 +225,9 @@ end BetaIntegral
 
 section LimitFormula
 
-/-! ## The Euler limit formula -/
+/-!
+# The Euler limit formula
+-/
 
 
 namespace Complex
@@ -366,7 +373,9 @@ end LimitFormula
 
 section GammaReflection
 
-/-! ## The reflection formula -/
+/-!
+# The reflection formula
+-/
 
 
 namespace Complex
@@ -524,11 +533,13 @@ open scoped Real
 
 namespace Complex
 
-/-! ## The reciprocal Gamma function
+/-!
+# The reciprocal Gamma function
 
 We show that the reciprocal Gamma function `1 / Γ(s)` is entire. These lemmas show that (in this
 case at least) mathlib's conventions for division by zero do actually give a mathematically useful
-answer! (These results are useful in the theory of zeta and L-functions.) -/
+answer! (These results are useful in the theory of zeta and L-functions.)
+-/
 
 
 /-- A reformulation of the Gamma recurrence relation which is true for `s = 0` as well. -/
@@ -567,7 +578,7 @@ end InvGamma
 section Doubling
 
 /-!
-## The doubling formula for Gamma
+# The doubling formula for Gamma
 
 We prove the doubling formula for arbitrary real or complex arguments, by analytic continuation from
 the positive real case. (Knowing that `Γ⁻¹` is analytic everywhere makes this much simpler, since we

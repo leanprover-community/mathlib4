@@ -10,16 +10,19 @@ public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultraproducts and Łoś's Theorem
 
 ## Main Definitions
 
-- `FirstOrder.Language.Ultraproduct.Structure` is the ultraproduct structure on `Filter.Product`.
+* `FirstOrder.Language.Ultraproduct.Structure` is the ultraproduct structure on `Filter.Product`.
 
 ## Main Results
 
-- Łoś's Theorem: `FirstOrder.Language.Ultraproduct.sentence_realize`. An ultraproduct models a
+* Łoś's Theorem: `FirstOrder.Language.Ultraproduct.sentence_realize`. An ultraproduct models a
   sentence `φ` if and only if the set of structures in the product that model `φ` is in the
   ultrafilter.
 

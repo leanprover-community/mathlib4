@@ -16,6 +16,9 @@ import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
 import Mathlib.Tactic.Positivity.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The four functions theorem and corollaries
 
@@ -31,10 +34,12 @@ Then it proves this new statement by induction on the size of `α`.
 ## Main declarations
 
 The two versions of the four functions theorem are
+
 * `Finset.four_functions_theorem` for finite powerset algebras.
 * `four_functions_theorem` for any finite distributive lattices.
 
 We deduce a number of corollaries:
+
 * `Finset.le_card_infs_mul_card_sups`: Daykin inequality. `|s| |t| ≤ |s ⊼ t| |s ⊻ t|`
 * `holley`: Holley inequality.
 * `fkg`: Fortuin-Kasteleyn-Ginibre inequality.
@@ -43,7 +48,7 @@ We deduce a number of corollaries:
 ## TODO
 
 Prove that lattices in which `Finset.le_card_infs_mul_card_sups` holds are distributive. See
-Daykin, *A lattice is distributive iff |A| |B| <= |A ∨ B| |A ∧ B|*
+Daykin, _A lattice is distributive iff |A| |B| <= |A ∨ B| |A ∧ B|_
 
 Prove the Fishburn-Shepp inequality.
 
@@ -52,7 +57,7 @@ earlier file and give it a proper API.
 
 ## References
 
-[*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
+‍\[_Applications of the FKG Inequality and Its Relatives_, Graham\]\[Graham1983\]
 -/
 
 public section

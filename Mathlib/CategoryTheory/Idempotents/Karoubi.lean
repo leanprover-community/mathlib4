@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Idempotents.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Karoubi envelope of a category
 
@@ -15,11 +18,10 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 
 ## Main constructions and definitions
 
-- `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
+* `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
   complete category. It is also preadditive when `C` is preadditive.
-- `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
+* `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
   (`toKaroubiIsEquivalence`) when `C` is idempotent complete.
-
 -/
 
 @[expose] public section

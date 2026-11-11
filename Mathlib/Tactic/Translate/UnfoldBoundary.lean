@@ -10,6 +10,9 @@ public meta import Lean.Meta.Tactic.Simp
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modify proof terms so that they don't rely on unfolding certain constants
 
@@ -23,9 +26,10 @@ So, the procedure is to check that an expression is well typed, analogous to `Me
 and at each type mismatch, we try to insert a cast.
 
 There are two kinds of casts:
-- Equality casts. This is for propositions and terms,
+
+* Equality casts. This is for propositions and terms,
   where it is possible to prove that one is equal to the other. For example `Monotone`.
-- Explicit casting functions, both for unfolding and refolding. This is for types, where we
+* Explicit casting functions, both for unfolding and refolding. This is for types, where we
   cannot express their equivalence with an equality. For example `DecidableLE`.
 -/
 
@@ -47,9 +51,10 @@ public structure UnfoldBoundaries where
 
 /--
 Set up the monadic context:
-- Set the transparency to `.all`, just like is done in `Meta.check`.
-- Use `withCanUnfoldPred` to not allow unfolding the constants for which we want to insert casts.
-- Set up the `SimpM` context so that `Simp.simp` will unfold constants from `b.unfolds`.
+
+* Set the transparency to `.all`, just like is done in `Meta.check`.
+* Use `withCanUnfoldPred` to not allow unfolding the constants for which we want to insert casts.
+* Set up the `SimpM` context so that `Simp.simp` will unfold constants from `b.unfolds`.
 -/
 def run {α} (b : UnfoldBoundaries) (x : SimpM α) : MetaM α :=
   withCanUnfoldPred (fun _ i => return !b.unfolds.contains i.name && !b.casts.contains i.name) do
@@ -133,11 +138,13 @@ public def UnfoldBoundaries.cast (b : UnfoldBoundaries) (e expectedType : Expr) 
     throwError "@[{attr}] failed to insert a cast to make `{e}` \
       have type `{expectedType}`\n\n{ex.toMessageData}"
 
-/-- Modify `e` so that it is well typed if the constants in `b` cannot be unfolded.
+/--
+Modify `e` so that it is well typed if the constants in `b` cannot be unfolded.
 
 Note: it may be that `e` contains some constant whose type is not well typed in this setting.
 We don't make an effort to replace such constants.
-It seems that this approximation works well enough. -/
+It seems that this approximation works well enough.
+-/
 public def UnfoldBoundaries.insertBoundaries (b : UnfoldBoundaries) (e : Expr) (attr : Name) :
     MetaM Expr :=
   run b <| Meta.transform e (post := fun e ↦ e.withApp fun f args =>

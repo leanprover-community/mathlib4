@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trigonometric functions as sums of infinite series
 
@@ -27,7 +30,9 @@ open NormedSpace
 
 open scoped Nat
 
-/-! ### `cos` and `sin` for `ℝ` and `ℂ` -/
+/-!
+# `cos` and `sin` for `ℝ` and `ℂ`
+-/
 
 
 section SinCos
@@ -115,7 +120,9 @@ theorem Real.sin_eq_tsum (r : ℝ) :
 
 end SinCos
 
-/-! ### `cosh` and `sinh` for `ℝ` and `ℂ` -/
+/-!
+# `cosh` and `sinh` for `ℝ` and `ℂ`
+-/
 
 section SinhCosh
 namespace Complex

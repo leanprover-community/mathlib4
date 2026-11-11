@@ -10,6 +10,9 @@ public import Mathlib.Probability.Kernel.Composition.Lemmas
 public import Mathlib.Probability.Kernel.Deterministic
 public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Posterior kernel
 
@@ -34,7 +37,6 @@ and data can be recovered from the distribution of the data and the posterior.
 * `posterior_comp_self`: `κ†μ ∘ₘ κ ∘ₘ μ = μ`
 * `posterior_posterior`: `(κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ`
 * `posterior_comp`: `(η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ)`
-
 * `posterior_eq_withDensity`: If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`,
   then for `κ ∘ₘ μ`-almost every `x`,
   `κ†μ x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x)`.
@@ -47,7 +49,6 @@ and data can be recovered from the distribution of the data and the posterior.
 
 This notation emphasizes that the posterior is a kind of inverse of `κ`, which we would want to
 denote `κ†`, but we have to also specify the measure `μ`.
-
 -/
 
 @[expose] public section
@@ -86,12 +87,15 @@ lemma compProd_posterior_eq_swap_comp : (κ ∘ₘ μ) ⊗ₘ κ†μ = Kernel.s
 lemma swap_compProd_posterior : Kernel.swap 𝓧 Ω ∘ₘ (κ ∘ₘ μ) ⊗ₘ κ†μ = μ ⊗ₘ κ := by
   rw [compProd_posterior_eq_swap_comp, Measure.comp_assoc, Kernel.swap_swap, Measure.id_comp]
 
-/-- The main property of the posterior, as equality of the following diagrams:
+/--
+The main property of the posterior, as equality of the following diagrams:
+
 ```
          -- id          -- κ
 μ -- κ -|        =  μ -|
          -- κ†μ         -- id
-``` -/
+```
+-/
 lemma parallelProd_posterior_comp_copy_comp :
     (Kernel.id ∥ₖ κ†μ) ∘ₘ Kernel.copy 𝓧 ∘ₘ κ ∘ₘ μ
       = (κ ∥ₖ Kernel.id) ∘ₘ Kernel.copy Ω ∘ₘ μ := by

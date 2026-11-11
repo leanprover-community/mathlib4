@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.UniformSpace.Completion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative action on the completion of a uniform space
 
@@ -16,6 +19,7 @@ In this file we define typeclasses `UniformContinuousConstVAdd` and
 continuous `(•) c` can be extended to a multiplicative action on `UniformSpace.Completion X`.
 
 In later files once the additive group structure is set up, we provide
+
 * `UniformSpace.Completion.DistribMulAction`
 * `UniformSpace.Completion.MulActionWithZero`
 * `UniformSpace.Completion.Module`

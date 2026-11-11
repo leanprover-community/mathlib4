@@ -10,12 +10,14 @@ public import Mathlib.LinearAlgebra.Trace
 
 import Mathlib.LinearAlgebra.FreeModule.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear maps between direct sums
 
 This file contains results about linear maps which respect direct sum decompositions of their
 domain and codomain.
-
 -/
 
 public section
@@ -64,9 +66,11 @@ lemma diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne
 
 variable [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
 
-/-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
+/--
+The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
-See also `LinearMap.trace_restrict_eq_sum_trace_restrict`. -/
+See also `LinearMap.trace_restrict_eq_sum_trace_restrict`.
+-/
 lemma trace_eq_sum_trace_restrict (h : IsInternal N) [Fintype ι]
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     trace R M f = ∑ i, trace R (N i) (f.restrict (hf i)) := by
@@ -138,10 +142,12 @@ lemma mapsTo_biSup_of_mapsTo {ι : Type*} {N : ι → Submodule R M}
 
 end IsInternal
 
-/-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
+/--
+The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
 Note that it is important the statement gives the user definitional control over `p` since the
-_type_ of the term `trace R p (f.restrict hp')` depends on `p`. -/
+_type_ of the term `trace R p (f.restrict hp')` depends on `p`.
+-/
 lemma trace_eq_sum_trace_restrict_of_eq_biSup
     [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
     (s : Finset ι) (h : iSupIndep <| fun i : s ↦ N i)

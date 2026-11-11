@@ -9,6 +9,10 @@ public meta import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.RingTheory.WittVector.Basic
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # The `IsPoly` predicate
 
@@ -138,7 +142,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolyno
 -- But we don't have a good theory of n-ary compositions in mathlib
 /--
 A function `f : Π R, 𝕎 R → 𝕎 R` that maps Witt vectors to Witt vectors over arbitrary base rings
-is said to be *polynomial* if there is a family of polynomials `φₙ` over `ℤ` such that the `n`th
+is said to be _polynomial_ if there is a family of polynomials `φₙ` over `ℤ` such that the `n`th
 coefficient of `f x` is given by evaluating `φₙ` at the coefficients of `x`.
 
 See also `WittVector.IsPoly₂` for the binary variant.
@@ -203,8 +207,9 @@ instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
 
 end IsPoly
 
-/-- A binary function `f : Π R, 𝕎 R → 𝕎 R → 𝕎 R` on Witt vectors
-is said to be *polynomial* if there is a family of polynomials `φₙ` over `ℤ` such that the `n`th
+/--
+A binary function `f : Π R, 𝕎 R → 𝕎 R → 𝕎 R` on Witt vectors
+is said to be _polynomial_ if there is a family of polynomials `φₙ` over `ℤ` such that the `n`th
 coefficient of `f x y` is given by evaluating `φₙ` at the coefficients of `x` and `y`.
 
 See also `WittVector.IsPoly` for the unary variant.
@@ -387,6 +392,8 @@ macro_rules
     `(tactic| simp only [← sub_eq_add_neg, ghost_simps, $args,*])
 
 
+
+set_option doc.verso false
 /-- `ghost_calc` is a tactic for proving identities between polynomial functions.
 Typically, when faced with a goal like
 ```lean
@@ -413,6 +420,8 @@ so it is easier (and prettier) to put it in a tactic script.
 -/
 syntax (name := ghostCalc) "ghost_calc" (ppSpace colGt term:max)* : tactic
 
+
+set_option doc.verso true
 private meta def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
   let fvarId ← liftMetaTacticAux fun g => do
     let (fv, g') ← g.intro n

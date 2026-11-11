@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Analytic.ConvergenceRadius
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Analytic functions
 
@@ -43,12 +46,12 @@ See `Mathlib/Analysis/Analytic/Within.lean` for basic properties.
 * `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
 
 We develop the basic properties of these notions, notably:
+
 * If a function admits a power series, it is continuous (see
   `HasFPowerSeriesOnBall.continuousOn` and `HasFPowerSeriesAt.continuousAt` and
   `AnalyticAt.continuousAt`).
 * In a complete space, the sum of a formal power series with positive radius is well defined on the
   disk of convergence, see `FormalMultilinearSeries.hasFPowerSeriesOnBall`.
-
 -/
 
 @[expose] public section
@@ -62,7 +65,9 @@ open NNReal Filter ENNReal Set Asymptotics
 
 open scoped Topology Pointwise
 
-/-! ### Expanding a function as a power series -/
+/-!
+# Expanding a function as a power series
+-/
 
 section
 
@@ -126,7 +131,7 @@ def AnalyticOn (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
 
 /-!
-### `HasFPowerSeriesOnBall` and `HasFPowerSeriesWithinOnBall`
+# `HasFPowerSeriesOnBall` and `HasFPowerSeriesWithinOnBall`
 -/
 
 variable {𝕜}
@@ -438,7 +443,7 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
   hrf.coeff_zero v
 
 /-!
-### Analytic functions
+# Analytic functions
 -/
 
 @[simp] theorem analyticOn_empty : AnalyticOn 𝕜 f ∅ := by intro; simp
@@ -540,7 +545,7 @@ lemma AnalyticOn.analyticAt {f : E → F} {z : E} {s : Set E} (hU : s ∈ 𝓝 z
   exact ⟨p, hasFPowerSeriesWithinAt_iff_of_nhds f p hU |>.mp hp⟩
 
 /-!
-### Composition with linear maps
+# Composition with linear maps
 -/
 
 /-- If a function `f` has a power series `p` on a ball within a set and `g` is linear,
@@ -581,7 +586,7 @@ theorem ContinuousLinearMap.comp_analyticOnNhd
   exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesOnBall hp⟩
 
 /-!
-### Relation between analytic function and the partial sums of its power series
+# Relation between analytic function and the partial sums of its power series
 -/
 
 theorem HasFPowerSeriesWithinOnBall.tendsto_partialSum
@@ -677,11 +682,13 @@ theorem HasFPowerSeriesOnBall.tendsto_partialSum_prod {y : E}
     Tendsto (fun (z : ℕ × E) ↦ p.partialSum z.1 z.2) (atTop ×ˢ 𝓝 y) (𝓝 (f (x + y))) :=
   (hf.hasFPowerSeriesWithinOnBall (s := univ)).tendsto_partialSum_prod hy (by simp)
 
-/-- If a function admits a power series expansion, then it is exponentially close to the partial
+/--
+If a function admits a power series expansion, then it is exponentially close to the partial
 sums of this power series on strict subdisks of the disk of convergence.
 
 This version provides an upper estimate that decreases both in `‖y‖` and `n`. See also
-`HasFPowerSeriesWithinOnBall.uniform_geometric_approx` for a weaker version. -/
+`HasFPowerSeriesWithinOnBall.uniform_geometric_approx` for a weaker version.
+-/
 theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
     ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n, x + y ∈ insert x s →
@@ -713,11 +720,13 @@ theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     _ ≤ C * a ^ n * (‖y‖ / r') ^ n := by gcongr ?_ * _; apply hp
     _ ≤ C * (a * (‖y‖ / r')) ^ n := by rw [mul_pow, mul_assoc]
 
-/-- If a function admits a power series expansion, then it is exponentially close to the partial
+/--
+If a function admits a power series expansion, then it is exponentially close to the partial
 sums of this power series on strict subdisks of the disk of convergence.
 
 This version provides an upper estimate that decreases both in `‖y‖` and `n`. See also
-`HasFPowerSeriesOnBall.uniform_geometric_approx` for a weaker version. -/
+`HasFPowerSeriesOnBall.uniform_geometric_approx` for a weaker version.
+-/
 theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     (hf : HasFPowerSeriesOnBall f p x r) (h : (r' : ℝ≥0∞) < r) :
     ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,

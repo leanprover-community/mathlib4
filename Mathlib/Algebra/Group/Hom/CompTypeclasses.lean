@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Logic.Function.CompTypeclasses
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Propositional typeclasses on several monoid homs
 
@@ -17,21 +20,23 @@ However, we do not expect that all maps should be guessed automatically,
 as it happens for linear maps.
 
 If `φ`, `ψ`… are monoid homs and `M`, `N`… are monoids, we add two instances:
+
 * `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
 * `MonoidHom.IsId φ`, which expresses that `φ = id`
 
 Some basic lemmas are proved:
+
 * `MonoidHom.CompTriple.comp` asserts `MonoidHom.CompTriple φ ψ (ψ.comp φ)`
 * `MonoidHom.CompTriple.id_comp` asserts `MonoidHom.CompTriple φ ψ ψ`
   in the presence of `MonoidHom.IsId φ`
 * its variant `MonoidHom.CompTriple.comp_id`
 
 TODO :
+
 * align with RingHomCompTriple
 * probably rename MonoidHom.CompTriple as MonoidHomCompTriple
   (or, on the opposite, rename RingHomCompTriple as RingHom.CompTriple)
 * does one need AddHom.CompTriple ?
-
 -/
 
 public section
@@ -81,9 +86,11 @@ instance instRootCompTriple {φ : M →* N} {ψ : N →* P} {χ : M →* P} [κ 
     _root_.CompTriple φ ψ χ where
   comp_eq := by rw [← MonoidHom.coe_comp, κ.comp_eq]
 
-/-- `φ`, `ψ` and `ψ.comp φ` form a `MonoidHom.CompTriple`
+/--
+`φ`, `ψ` and `ψ.comp φ` form a `MonoidHom.CompTriple`
 
-  (to be used with care, because no simplification is done) -/
+(to be used with care, because no simplification is done)
+-/
 theorem comp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl

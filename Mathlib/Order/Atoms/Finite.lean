@@ -11,15 +11,18 @@ public import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
 
 This module contains some results on atoms and simple lattices in the finite context.
 
 ## Main results
+
 * `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
   are atomic resp. coatomic.
-
 -/
 
 public section
@@ -33,10 +36,12 @@ variable [LE α] [BoundedOrder α] [IsSimpleOrder α]
 
 section DecidableEq
 
-/-- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
+/--
+It is important that `IsSimpleOrder` is the last type-class argument of this instance,
 so that type-class inference fails quickly if it doesn't apply.
 
-Note that as of 2025-08-13, this is false. Could someone investigate? -/
+Note that as of 2025-08-13, this is false. Could someone investigate?
+-/
 scoped instance (priority := 200) [DecidableEq α] : Fintype α :=
   Fintype.ofEquiv Bool equivBool.symm
 

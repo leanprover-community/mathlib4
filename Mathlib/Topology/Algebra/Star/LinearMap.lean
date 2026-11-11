@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Star.LinearMap
 public import Mathlib.Topology.Algebra.Module.Star
 
-/-! # Intrinsic star operation on continuous linear maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Intrinsic star operation on continuous linear maps
 
 This file defines the star operation on continuous linear maps: `(star f) x = star (f (star x))`.
 This corresponds to a map being star-preserving, i.e., a map is self-adjoint iff it
@@ -21,7 +25,8 @@ This is the continuous version of the intrinsic star on linear maps (see
 
 Because there is a global `star` instance on `H →L[𝕜] H` (defined as the linear map adjoint on
 Hilbert spaces), which is mathematically distinct from this `star`, we provide
-this instance on `WithConv (E →L[R] F)`. -/
+this instance on `WithConv (E →L[R] F)`.
+-/
 
 public section
 

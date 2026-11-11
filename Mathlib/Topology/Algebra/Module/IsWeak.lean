@@ -8,6 +8,10 @@ module
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-! # Weak topologies on modules
 
 Given a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, the weak topology on `E` is the coarsest topology

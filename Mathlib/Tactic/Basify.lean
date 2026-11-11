@@ -10,18 +10,22 @@ public import Mathlib.Tactic.Basify.Attr
 public import Mathlib.Tactic.Cases
 public import Mathlib.Util.AtomM
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `basify` tactic
 
 Mathlib has many types built from a well-behaved type by a construction that makes the resulting
 arithmetic partial or truncated. The two most common are
 
-* *extensions* by a point at infinity, such as `ℕ∞ = WithTop ℕ`;
-* *subtypes* cut out by an inequality, such as `ℝ≥0 = {r : ℝ // 0 ≤ r}`.
+* _extensions_ by a point at infinity, such as `ℕ∞ = WithTop ℕ`;
+* _subtypes_ cut out by an inequality, such as `ℝ≥0 = {r : ℝ // 0 ≤ r}`.
 
 Goals about them are painful, because the decision procedures one would like to use (`grind`,
 `linarith`, `norm_num`) only understand the underlying type. `basify` ("base" + "ify")
 peels the construction off, turning the goal into an equivalent one about the base type:
+
 ```
 example (a b : ℝ≥0∞) (h : a + b = 0) : a = 0 := by
   basify
@@ -33,17 +37,17 @@ example (a b : ℝ≥0∞) (h : a + b = 0) : a = 0 := by
 
 We proceed in three phases.
 
-1. We traverse the goal and the hypotheses and collect the *atoms*: the subexpressions of a
-  compound type, the type we are going to shift to its base type. A compound type is one
-  registered with `@[basify_elim]`. During the search we look through operations that can
-  themselves be translated to the base type, so in `a + b` with `a b : ℝ≥0∞` we collect `a` and
-  `b` rather than the sum; such operations are registered with `@[basify_op]`.
+1. We traverse the goal and the hypotheses and collect the _atoms_: the subexpressions of a
+   compound type, the type we are going to shift to its base type. A compound type is one
+   registered with `@[basify_elim]`. During the search we look through operations that can
+   themselves be translated to the base type, so in `a + b` with `a b : ℝ≥0∞` we collect `a` and
+   `b` rather than the sum; such operations are registered with `@[basify_op]`.
 2. We iterate through the atoms, applying `cases` to each with the eliminator tagged
-  `@[basify_elim]`. That sometimes leaves several goals, and often (for `ℕ∞` and `ℝ≥0∞`) the ones
-  mentioning an infinity are typically trivial, so we run the `basify_simp` simp set after every
-  split to discharge them early and keep the branching from blowing up.
+   `@[basify_elim]`. That sometimes leaves several goals, and often (for `ℕ∞` and `ℝ≥0∞`) the ones
+   mentioning an infinity are typically trivial, so we run the `basify_simp` simp set after every
+   split to discharge them early and keep the branching from blowing up.
 3. We finish the descent with a final `simp_all only [basify_simp]`, which uses the hypotheses to
-  discharge the side conditions of the conditional cast lemmas.
+   discharge the side conditions of the conditional cast lemmas.
 
 ## Relation to other tactics
 
@@ -59,7 +63,7 @@ one because the target depends on what is registered: `ℕ` for `ℕ∞`, `ℝ` 
 * `lift` is the per-variable version of the interesting branch of a split: `lift a to ℝ≥0 using ha`
   is what one writes by hand once `a ≠ ⊤` is known. `basify` splits on it instead, and discharges
   the other branch.
-* `norm_cast` removes coercions and therefore lands in the *smallest* type of a cast tower, which
+* `norm_cast` removes coercions and therefore lands in the _smallest_ type of a cast tower, which
   for `ℝ≥0∞` is `ℝ≥0`, not `ℝ`. Reaching `ℝ` means travelling down one coercion and up another,
   which is why `basify_simp` holds `←` lemmas for the extension layer and forward ones for the
   subtype layer.
@@ -89,7 +93,8 @@ open Lean Meta Elab Tactic
 
 namespace Mathlib.Tactic.Basify
 
-/-! ### Propositional cleanup
+/-!
+# Propositional cleanup
 
 The `basify_simp` simp set is run with `simp only`, so it has to carry the handful of
 propositional lemmas needed to actually make a contradictory branch disappear.
@@ -100,7 +105,9 @@ attribute [basify_simp] ne_eq not_true_eq_false not_false_eq_true eq_self_iff_tr
   true_implies implies_true false_implies forall_const
   if_true if_false ite_self
 
-/-! ### Atoms -/
+/-!
+# Atoms
+-/
 
 /-- The eliminator registered for the type `ty`, if any. -/
 def elimEntryFor? (ty : Expr) : MetaM (Option ElimEntry) := do
@@ -116,11 +123,13 @@ def opsFor (ty : Expr) : MetaM NameSet := do
 /-- Does `basify` know anything about the type `ty`? -/
 def isRegisteredType (ty : Expr) : MetaM Bool := return (← elimEntryFor? ty).isSome
 
-/-- Is `e` an atom, i.e. a term of a registered type that `basify` cannot see inside of?
+/--
+Is `e` an atom, i.e. a term of a registered type that `basify` cannot see inside of?
 
-A term of a registered type is *not* an atom when its head is an operation registered with
+A term of a registered type is _not_ an atom when its head is an operation registered with
 `@[basify_op]`, in which case its arguments are visited instead, and when it is a `let`, whose value
-is visited instead. Everything else is opaque and gets generalized and case split as a whole. -/
+is visited instead. Everything else is opaque and gets generalized and case split as a whole.
+-/
 def isAtom (e : Expr) : MetaM Bool := do
   if e.isLet then return false
   let ty ← instantiateMVars (← inferType e)
@@ -155,7 +164,9 @@ def goalAtoms (g : MVarId) : MetaM (Array Expr) := g.withContext do
       collectAtoms (← instantiateMVars decl.type)
     return (← get).atoms
 
-/-! ### The phases -/
+/-!
+# The phases
+-/
 
 /-- Generalize the single atom `e`, naming the new variable `x`-something and its defining equation
 that name with `_eq` appended. Returns the substitution for the hypotheses that were reverted along
@@ -266,7 +277,7 @@ turning the goal into an equivalent goal about that type: `ℕ∞` and `ℕ+` be
 
 Every value of a registered type is destructed with the eliminator registered for it -- `⊤` or
 `↑x` for an extension such as `ℕ∞`, `n.toPNat'` together with `0 < n` for a subtype such as `ℕ+`
--- the degenerate branches are discharged, and the surviving propositions are pushed down along
+‍\-- the degenerate branches are discharged, and the surviving propositions are pushed down along
 the coercions. The result is then can be finished off by a decision procedure for the underlying
 type:
 

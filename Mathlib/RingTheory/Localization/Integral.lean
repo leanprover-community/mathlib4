@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Algebraic.Integral
 public import Mathlib.RingTheory.Localization.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral and algebraic elements of a fraction field
 
@@ -16,6 +19,7 @@ public import Mathlib.RingTheory.Localization.Algebra
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/

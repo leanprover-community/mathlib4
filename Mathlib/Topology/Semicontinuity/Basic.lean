@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 public import Mathlib.Topology.Semicontinuity.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lower and Upper Semicontinuity
 
@@ -17,6 +20,7 @@ This file develops key properties of upper and lower semicontinuous functions.
 
 We have some equivalent definitions of lower- and upper-semicontinuity (under certain
 restrictions on the order on the codomain):
+
 * `lowerSemicontinuous_iff_isOpen_preimage` in a linear order;
 * `lowerSemicontinuous_iff_isClosed_preimage` in a linear order;
 * `lowerSemicontinuousAt_iff_le_liminf` in a complete linear order;
@@ -47,12 +51,12 @@ ones for lower semicontinuous functions using `OrderDual`.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Closed_convex_function>
-* <https://en.wikipedia.org/wiki/Semi-continuity>
+* [
+  https://en.wikipedia.org/wiki/Closed\_convex\_function](https://en.wikipedia.org/wiki/Closed_convex_function)
+* [https://en.wikipedia.org/wiki/Semi-continuity](https://en.wikipedia.org/wiki/Semi-continuity)
 
-
-+ lower and upper semicontinuity correspond to `r := (f · > ·)` and `r := (f · < ·)`;
-+ lower and upper hemicontinuity correspond to `r := (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty)`
+* lower and upper semicontinuity correspond to `r := (f · > ·)` and `r := (f · < ·)`;
+* lower and upper hemicontinuity correspond to `r := (fun x s ↦ IsOpen s ∧ ((f x) ∩ s).Nonempty)`
   and `r := (fun x s ↦ s ∈ 𝓝ˢ (f x))`, respectively.
 -/
 
@@ -67,7 +71,9 @@ open Set Function Filter
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace γ] {f : α → β} {s t : Set α}
   {x : α} {y z : β}
 
-/-! ### lower bounds -/
+/-!
+# lower bounds
+-/
 
 section
 
@@ -115,7 +121,9 @@ theorem LowerSemicontinuousOn.bddBelow_of_isCompact [Nonempty β] {s : Set α} (
 
 end
 
-/-! #### Indicators -/
+/-!
+# Indicators
+-/
 
 
 section
@@ -166,7 +174,9 @@ theorem IsClosed.lowerSemicontinuousWithinAt_indicator (hs : IsClosed s) (hy : y
 
 end
 
-/-! #### Relationship with continuity -/
+/-!
+# Relationship with continuity
+-/
 
 section
 
@@ -260,7 +270,9 @@ theorem Continuous.lowerSemicontinuous {f : α → γ} (h : Continuous f) : Lowe
 
 end
 
-/-! #### Equivalent definitions -/
+/-!
+# Equivalent definitions
+-/
 
 section
 
@@ -358,7 +370,9 @@ alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_
 
 end
 
-/-! ### Composition -/
+/-!
+# Composition
+-/
 
 section
 
@@ -412,7 +426,9 @@ theorem Continuous.comp_lowerSemicontinuous_antitone {g : γ → δ} {f : α →
 
 end
 
-/-! #### Addition -/
+/-!
+# Addition
+-/
 
 
 section
@@ -570,7 +586,9 @@ theorem lowerSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
 
 end
 
-/-! #### Supremum -/
+/-!
+# Supremum
+-/
 
 section
 
@@ -696,7 +714,9 @@ theorem lowerSemicontinuous_biSup {p : ι → Prop} {f : ∀ i, p i → α → �
 
 end
 
-/-! #### Infinite sums -/
+/-!
+# Infinite sums
+-/
 
 
 section
@@ -725,10 +745,12 @@ theorem lowerSemicontinuous_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, Lowe
 end
 
 /-!
-### Upper semicontinuous functions
+# Upper semicontinuous functions
 -/
 
-/-! ### upper bounds -/
+/-!
+# upper bounds
+-/
 
 section
 
@@ -747,7 +769,9 @@ theorem UpperSemicontinuousOn.bddAbove_of_isCompact [Nonempty β] {s : Set α}
 
 end
 
-/-! #### Indicators -/
+/-!
+# Indicators
+-/
 
 
 section
@@ -788,7 +812,9 @@ theorem IsClosed.upperSemicontinuousWithinAt_indicator (hs : IsClosed s) (hy : 0
 
 end
 
-/-! #### Relationship with continuity -/
+/-!
+# Relationship with continuity
+-/
 
 section
 
@@ -833,7 +859,9 @@ theorem Continuous.upperSemicontinuous {f : α → γ} (h : Continuous f) : Uppe
 
 end
 
-/-! #### Equivalent definitions -/
+/-!
+# Equivalent definitions
+-/
 
 section
 
@@ -902,7 +930,9 @@ alias ⟨UpperSemicontinuous.IsClosed_hypograph, _⟩ := upperSemicontinuous_iff
 
 end
 
-/-! ### Composition -/
+/-!
+# Composition
+-/
 
 section
 
@@ -1038,7 +1068,9 @@ variable [Preorder β]
 
 end
 
-/-! #### Addition -/
+/-!
+# Addition
+-/
 
 
 section
@@ -1136,7 +1168,9 @@ theorem upperSemicontinuous_sum {f : ι → α → γ} {a : Finset ι}
 
 end
 
-/-! #### Infimum -/
+/-!
+# Infimum
+-/
 
 section
 

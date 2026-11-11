@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Image
 
 import Mathlib.Data.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of a finite set
 
@@ -41,9 +44,11 @@ namespace Finset
 
 variable {s t : Finset α} {a b c : α}
 
-/-- `s.card` is the number of elements of `s`, aka its cardinality.
+/--
+`s.card` is the number of elements of `s`, aka its cardinality.
 
-The notation `#s` can be accessed in the `Finset` locale. -/
+The notation `#s` can be accessed in the `Finset` locale.
+-/
 def card (s : Finset α) : ℕ :=
   Multiset.card s.1
 
@@ -147,7 +152,9 @@ distinct. -/
 theorem card_triple_eq_three_iff : #{a, b, c} = 3 ↔ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   aesop (add simp card_insert_eq_ite)
 
-/-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
+/--
+$`\#(s \setminus \{a\}) = \#s - 1` if $`a \in s`.
+-/
 @[simp, grind =]
 theorem card_erase_of_mem : a ∈ s → #(s.erase a) = #s - 1 :=
   Multiset.card_erase_of_mem
@@ -345,14 +352,16 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
 
 variable {t : Finset β}
 
-/-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
+/--
+Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
 are equal.
 
 The difference with `Finset.card_bij'` is that the bijection is specified as a surjective injection,
 rather than by an inverse function.
 
 The difference with `Finset.card_nbij` is that the bijection is allowed to use membership of the
-domain, rather than being a non-dependent function. -/
+domain, rather than being a non-dependent function.
+-/
 lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
     (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) : #s = #t := by
@@ -370,14 +379,16 @@ lemma card_bij (i : ∀ a ∈ s, β) (hi : ∀ a ha, i a ha ∈ t)
     · obtain ⟨_, _, rfl⟩ := mem_image.1 h; apply hi
     · obtain ⟨a, ha, rfl⟩ := i_surj b h; exact mem_image.2 ⟨⟨a, ha⟩, by simp⟩
 
-/-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
+/--
+Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
 are equal.
 
 The difference with `Finset.card_bij` is that the bijection is specified with an inverse, rather
 than as a surjective injection.
 
 The difference with `Finset.card_nbij'` is that the bijection and its inverse are allowed to use
-membership of the domains, rather than being non-dependent functions. -/
+membership of the domains, rather than being non-dependent functions.
+-/
 lemma card_bij' (i : ∀ a ∈ s, β) (j : ∀ a ∈ t, α) (hi : ∀ a ha, i a ha ∈ t)
     (hj : ∀ a ha, j a ha ∈ s) (left_inv : ∀ a ha, j (i a ha) (hi a ha) = a)
     (right_inv : ∀ a ha, i (j a ha) (hj a ha) = a) : #s = #t := by
@@ -385,19 +396,22 @@ lemma card_bij' (i : ∀ a ∈ s, β) (j : ∀ a ∈ t, α) (hi : ∀ a ha, i a 
   rw [← left_inv a1 h1, ← left_inv a2 h2]
   simp only [eq]
 
-/-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
+/--
+Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
 are equal.
 
 The difference with `Finset.card_nbij'` is that the bijection is specified as a surjective
 injection, rather than by an inverse function.
 
 The difference with `Finset.card_bij` is that the bijection is a non-dependent function, rather than
-being allowed to use membership of the domain. -/
+being allowed to use membership of the domain.
+-/
 lemma card_nbij (i : α → β) (hi : Set.MapsTo i s t) (i_inj : (s : Set α).InjOn i)
     (i_surj : (s : Set α).SurjOn i t) : #s = #t :=
   card_bij (fun a _ ↦ i a) hi i_inj (by simpa using! i_surj)
 
-/-- Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
+/--
+Given a bijection from a finite set `s` to a finite set `t`, the cardinalities of `s` and `t`
 are equal.
 
 The difference with `Finset.card_nbij` is that the bijection is specified with an inverse, rather
@@ -407,20 +421,25 @@ The difference with `Finset.card_bij'` is that the bijection and its inverse are
 functions, rather than being allowed to use membership of the domains.
 
 The difference with `Finset.card_equiv` is that bijectivity is only required to hold on the domains,
-rather than on the entire types. -/
+rather than on the entire types.
+-/
 lemma card_nbij' (i : α → β) (j : β → α) (hi : Set.MapsTo i s t) (hj : Set.MapsTo j t s)
     (left_inv : Set.LeftInvOn j i s) (right_inv : Set.RightInvOn j i t) : #s = #t :=
   card_bij' (fun a _ ↦ i a) (fun b _ ↦ j b) hi hj left_inv right_inv
 
-/-- Specialization of `Finset.card_nbij'` that automatically fills in most arguments.
+/--
+Specialization of `Finset.card_nbij'` that automatically fills in most arguments.
 
-See `Fintype.card_equiv` for the version where `s` and `t` are `univ`. -/
+See `Fintype.card_equiv` for the version where `s` and `t` are `univ`.
+-/
 lemma card_equiv (e : α ≃ β) (hst : ∀ i, i ∈ s ↔ e i ∈ t) : #s = #t := by
   refine card_nbij' e e.symm ?_ ?_ ?_ ?_ <;> simp [hst, Set.MapsTo, Set.LeftInvOn, Set.RightInvOn]
 
-/-- Specialization of `Finset.card_nbij` that automatically fills in most arguments.
+/--
+Specialization of `Finset.card_nbij` that automatically fills in most arguments.
 
-See `Fintype.card_bijective` for the version where `s` and `t` are `univ`. -/
+See `Fintype.card_bijective` for the version where `s` and `t` are `univ`.
+-/
 lemma card_bijective (e : α → β) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t) :
     #s = #t := card_equiv (.ofBijective e he) hst
 
@@ -463,10 +482,12 @@ lemma card_le_card_of_surjective {f : s → t} (hf : f.Surjective) : #t ≤ #s :
 grind_pattern card_le_card_of_surjective => f.Surjective, #s
 grind_pattern card_le_card_of_surjective => f.Surjective, #t
 
-/-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
+/--
+If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
 
 See also `Set.exists_ne_map_eq_of_encard_lt_of_maps_to` and
-`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
+`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`.
+-/
 theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
     (hf : Set.MapsTo f s t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   by_contra! hz
@@ -559,7 +580,9 @@ end bij
 theorem card_disjUnion (s t : Finset α) (h) : #(s.disjUnion t h) = #s + #t :=
   Multiset.card_add _ _
 
-/-! ### Lattice structure -/
+/-!
+# Lattice structure
+-/
 
 -- This pattern is unreasonable to use generally, but it's convenient in this file.
 -- (Note that we've already turned it on earlier in this file, but need to redo it now.)
@@ -688,7 +711,9 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
     have : #(X ∪ Y) = #X + #(Y \ X)
     finish
 
-/-! ### Explicit description of a finset from its card -/
+/-!
+# Explicit description of a finset from its card
+-/
 
 
 theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
@@ -848,7 +873,9 @@ theorem three_lt_card : 3 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, ∃ d 
     a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
   simp_rw [three_lt_card_iff, exists_and_left]
 
-/-! ### Inductions -/
+/-!
+# Inductions
+-/
 
 
 /-- Suppose that, given objects defined on all strict subsets of any finset `s`, one knows how to
@@ -884,13 +911,15 @@ theorem case_strong_induction_on [DecidableEq α] {p : Finset α → Prop} (s : 
     Finset.induction_on s (fun _ => h₀) fun a s n _ ih =>
       (h₁ a s n) fun t ss => ih _ (lt_of_le_of_lt ss (ssubset_insert n) : t < _)
 
-/-- Suppose that, given objects defined on all nonempty strict subsets of any nontrivial finset `s`,
+/--
+Suppose that, given objects defined on all nonempty strict subsets of any nontrivial finset `s`,
 one knows how to define an object on `s`. Then one can inductively define an object on all finsets,
 starting from singletons and iterating.
 
 TODO: Currently this can only be used to prove properties.
 Replace `Finset.Nonempty.exists_eq_singleton_or_nontrivial` with computational content
-in order to let `p` be `Sort`-valued. -/
+in order to let `p` be `Sort`-valued.
+-/
 @[elab_as_elim]
 protected lemma Nonempty.strong_induction {p : ∀ s, s.Nonempty → Prop}
     (h₀ : ∀ a, p {a} (singleton_nonempty _))

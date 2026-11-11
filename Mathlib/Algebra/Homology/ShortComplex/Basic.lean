@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Short complexes
 
@@ -15,7 +18,6 @@ This file defines the category `ShortComplex C` of diagrams
 
 Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
-
 -/
 
 @[expose] public section

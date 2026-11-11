@@ -14,6 +14,9 @@ public import Mathlib.Data.Rat.Floor
 public import Mathlib.Order.Hom.WithTopBot
 public import Mathlib.Order.UpperLower.Principal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Archimedean classes of a linearly ordered group
 
@@ -41,19 +44,19 @@ elements.
 
 The following theorems state that an ordered commutative group is (mul-)archimedean if and only if
 all non-identity elements belong to the same (`Mul`-)`ArchimedeanClass`:
+
 * `ArchimedeanClass.archimedean_of_mk_eq_mk` / `MulArchimedeanClass.mulArchimedean_of_mk_eq_mk`
 * `ArchimedeanClass.mk_eq_mk_of_archimedean` / `MulArchimedeanClass.mk_eq_mk_of_mulArchimedean`
 
 ## Implementation notes
 
 Archimedean classes are equipped with a linear order, where elements with smaller absolute value
-are placed in a *higher* classes by convention. Ordering backwards this way simplifies
+are placed in a _higher_ classes by convention. Ordering backwards this way simplifies
 formalization of theorems such as the Hahn embedding theorem.
 
 To naturally derive this order, we first define it on the underlying group via the type
 synonym (`Mul`-)`ArchimedeanOrder`, and define (`Mul`-)`ArchimedeanClass` as `Antisymmetrization` of
 the order.
-
 -/
 
 @[expose] public section
@@ -700,23 +703,27 @@ theorem ballSubgroup_antitone : Antitone (ballSubgroup (M := M)) := by
 end MulArchimedeanClass
 
 variable (M) in
-/-- `FiniteMulArchimedeanClass M` is the quotient of the non-one elements of the group `M` by
+/--
+`FiniteMulArchimedeanClass M` is the quotient of the non-one elements of the group `M` by
 multiplicative archimedean equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n : ℕ, |a|ₘ ≤ |b|ₘ ^ n)`.
 
 It is defined as the subtype of non-top elements of `MulArchimedeanClass M`
 (`⊤ : MulArchimedeanClass M` is the archimedean class of `1`).
 
-This is useful since the family of non-top archimedean classes is linearly independent. -/
+This is useful since the family of non-top archimedean classes is linearly independent.
+-/
 @[to_additive FiniteArchimedeanClass
-/-- `FiniteArchimedeanClass M` is the quotient of the non-zero elements of the additive group `M` by
+/--
+`FiniteArchimedeanClass M` is the quotient of the non-zero elements of the additive group `M` by
 additive archimedean equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`.
 
 It is defined as the subtype of non-top elements of `ArchimedeanClass M`
 (`⊤ : ArchimedeanClass M` is the archimedean class of `0`).
 
-This is useful since the family of non-top archimedean classes is linearly independent. -/]
+This is useful since the family of non-top archimedean classes is linearly independent.
+-/]
 abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
 
 namespace FiniteMulArchimedeanClass

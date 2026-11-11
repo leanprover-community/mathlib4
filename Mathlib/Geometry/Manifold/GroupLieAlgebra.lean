@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Lie algebra of a Lie group
 

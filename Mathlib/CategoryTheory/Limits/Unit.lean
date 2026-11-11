@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Discrete PUnit` has limits and colimits
 

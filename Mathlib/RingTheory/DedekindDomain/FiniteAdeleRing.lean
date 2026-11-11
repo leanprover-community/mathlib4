@@ -11,23 +11,30 @@ public import Mathlib.Topology.Algebra.RestrictedProduct.Units
 
 import Mathlib.RingTheory.DedekindDomain.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The finite adèle ring of a Dedekind domain
 
 We define the ring of finite adèles of a Dedekind domain `R`.
 
 ## Main definitions
-- `IsDedekindDomain.FiniteAdeleRing` : The finite adèle ring of `R`, defined as the
+
+* `IsDedekindDomain.FiniteAdeleRing` : The finite adèle ring of `R`, defined as the
   restricted product `Πʳ_v K_v`. We give this ring a `K`-algebra structure.
 
 ## Implementation notes
+
 We are only interested on Dedekind domains of Krull dimension 1 (i.e., not fields). If `R` is a
 field, its finite adèle ring is just defined to be the trivial ring.
 
 ## References
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
+
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
 
 ## Tags
+
 finite adèle ring, dedekind domain
 -/
 
@@ -80,10 +87,13 @@ variable (K)
 
 open scoped RestrictedProduct
 
-/-! ### The finite adèle ring of a Dedekind domain
+/-!
+# The finite adèle ring of a Dedekind domain
+
 We define the finite adèle ring of `R` as the restricted product over all maximal ideals `v` of `R`
 of `adicCompletion` with respect to `adicCompletionIntegers`. We prove that it is a commutative
-ring. -/
+ring.
+-/
 
 /--
 If `K` is the field of fractions of the Dedekind domain `R` then `FiniteAdeleRing R K` is

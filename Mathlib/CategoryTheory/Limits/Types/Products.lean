@@ -9,12 +9,14 @@ public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products in `Type`
 
 We describe arbitrary products in the category of types, as well as binary products,
 and the terminal object.
-
 -/
 
 @[expose] public section

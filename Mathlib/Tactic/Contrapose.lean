@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Tactic.Push
 
-/-! # Contrapose
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Contrapose
 
 The `contrapose` tactic transforms the goal into its contrapositive when that goal is an
 implication or an iff. It also avoids creating a double negation if there already is a negation.
@@ -17,7 +21,6 @@ implication or an iff. It also avoids creating a double negation if there alread
 * `contrapose h` first reverts the local assumption `h`, and then uses `contrapose` and `intro h`
 * `contrapose! h` first reverts the local assumption `h`, and then uses `contrapose!` and `intro h`
 * `contrapose h with new_h` uses the name `new_h` for the introduced hypothesis
-
 -/
 
 public meta section
@@ -43,6 +46,8 @@ lemma contrapose_iff₂ {p q : Prop} : (p ↔ ¬ q) → (¬ p ↔ q) := (iff_not
 lemma contrapose_iff₃ {p q : Prop} : (¬ p ↔ q) → (p ↔ ¬ q) := (not_iff_comm.trans Iff.comm).mp
 lemma contrapose_iff₄ {p q : Prop} : (p ↔ q) → (¬ p ↔ ¬ q) := fun ⟨h₁, h₂⟩ ↦ ⟨mt h₂, mt h₁⟩
 
+
+set_option doc.verso false
 /--
 `contrapose` transforms the main goal into its contrapositive. If the goal has the form `⊢ P → Q`,
 then `contrapose` turns it into `⊢ ¬ Q → ¬ P`. If the goal has the form `⊢ P ↔ Q`, then `contrapose`
@@ -85,6 +90,8 @@ example (H : ¬ R → ¬ P ∨ ¬ Q) : (P ∧ Q) → R := by
 ```
 -/
 syntax (name := contrapose) "contrapose" (ppSpace colGt ident (" with " ident)?)? : tactic
+
+set_option doc.verso true
 macro_rules
   | `(tactic| contrapose $e) => `(tactic| (revert $e:ident; contrapose; intro $e:ident))
   | `(tactic| contrapose $e with $e') => `(tactic| (revert $e:ident; contrapose; intro $e':ident))

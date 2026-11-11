@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Subobject.ArtinianObject
 public import Mathlib.CategoryTheory.Subobject.NoetherianObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian and Noetherian categories
 
@@ -21,6 +24,7 @@ Note: In the file, `Mathlib/CategoryTheory/Subobject/ArtinianObject.lean`,
 it is shown that any nonzero Artinian object has a simple subobject.
 
 ## Future work
+
 The Jordan-Hölder theorem, following https://stacks.math.columbia.edu/tag/0FCK.
 -/
 

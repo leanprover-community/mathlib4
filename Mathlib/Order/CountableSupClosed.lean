@@ -10,6 +10,9 @@ public import Mathlib.Order.SupClosed
 
 import Mathlib.Order.Bounds.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets closed under countable join/meet
 
@@ -29,7 +32,6 @@ infimum.
 
 The list of properties in this file is copied and adapted from the file about `SupClosed`.
 We should keep these files in sync.
-
 -/
 
 public section
@@ -170,7 +172,9 @@ open OrderDual
 
 @[to_dual] alias ⟨_, CountableSupClosed.dual⟩ := countableInfClosed_preimage_ofDual
 
-/-! ### Closure -/
+/-!
+# Closure
+-/
 
 section Preorder
 

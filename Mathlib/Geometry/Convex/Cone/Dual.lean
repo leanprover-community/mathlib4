@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The algebraic dual of a cone
 
@@ -24,7 +27,6 @@ We do not provide a `ConvexCone`-valued version of `PointedCone.dual` since the 
 always contains `0`, i.e. is a pointed cone.
 Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to the name
 `ConvexCone.dual`.
-
 -/
 
 @[expose] public section

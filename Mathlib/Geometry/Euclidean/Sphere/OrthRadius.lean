@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spaces orthogonal to the radius vector in spheres.
 
@@ -18,7 +21,6 @@ This file defines the affine subspace orthogonal to the radius vector at a point
 * `EuclideanGeometry.Sphere.orthRadius`: the affine subspace orthogonal to the radius vector at
   a point (the tangent space, if that point lies in the sphere; more generally, the polar of the
   inversion of that point in the sphere).
-
 -/
 
 @[expose] public section
@@ -299,11 +301,13 @@ lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
     simpa using h.symm
   · simp [h, inter_orthRadius_eq_empty_of_radius_lt_dist]
 
-/-- In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
+/--
+In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
 lies within `s` and not at its center.
 
 This version provides expressions for those points in terms of an arbitrary vector in
-`s.orthRadius p` with norm `1`. -/
+`s.orthRadius p` with norm `1`.
+-/
 lemma inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one [hf2 : Fact (Module.finrank ℝ V = 2)]
     {s : Sphere P} {p : P} (hp : dist p s.center ≤ s.radius) (hpc : p ≠ s.center) {v : V}
     (hv : v ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ) (hv1 : ‖v‖ = 1) :
@@ -340,11 +344,13 @@ lemma inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one [hf2 : Fact (Module.f
       rw [vadd_mem_inter_orthRadius_iff_norm_sq hr (Submodule.smul_mem _ _ hv)] <;>
       simp [norm_smul, hv1, hvp]
 
-/-- In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
+/--
+In 2D, the line defined by `s.orthRadius p` intersects `s` at at most two points so long as `p`
 lies within `s` and not at its center.
 
 This version provides expressions for those points in terms of an arbitrary vector in
-`s.orthRadius p`. -/
+`s.orthRadius p`.
+-/
 lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 2)]
     {s : Sphere P} {p : P} (hp : dist p s.center ≤ s.radius) (hpc : p ≠ s.center) {v : V}
     (hv : v ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ) (hv0 : v ≠ 0) :

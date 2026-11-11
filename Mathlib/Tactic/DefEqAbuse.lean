@@ -8,13 +8,16 @@ module
 public meta import Mathlib.Lean.MessageData.Trace
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `#defeq_abuse` tactic and command combinators
 
-**WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking changes to
+*WARNING:* `#defeq_abuse` is an experimental tool intended to assist with breaking changes to
 transparency handling (associated with `backward.isDefEq.respectTransparency`). Its syntax may
-change at any time, and it may not behave as expected. Please report unexpected behavior
-[on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+change at any time, and it may not behave as expected. Please report unexpected behavior [on
+Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
 
 `#defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
@@ -29,11 +32,13 @@ application that triggered them.
 ## Usage
 
 ### Tactic mode
+
 ```
 #defeq_abuse in rw [Set.disjoint_singleton_right]
 ```
 
 will report something like:
+
 ```
 Tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
@@ -41,6 +46,7 @@ The following isDefEq checks are the root causes of the failure:
 ```
 
 ### Command mode
+
 ```
 #defeq_abuse in
 instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
@@ -72,14 +78,16 @@ this value. -/
 
 variable {m : Type → Type} [Monad m] {α : Type}
 
-/-- Collect and combine values of type `α` produced by visiting all trace nodes in a `MessageData`
+/--
+Collect and combine values of type `α` produced by visiting all trace nodes in a `MessageData`
 tree.
 
 Automatically recurses through structural wrappers, invoking `onTrace` only for
 `.trace` nodes. The `onTrace` callback receives the arguments of `.trace`:
-- the `TraceData` (class name, timing, etc.)
-- the trace node's header message
-- the trace node's child messages
+
+* the `TraceData` (class name, timing, etc.)
+* the trace node's header message
+* the trace node's child messages
 
 Each call to `onTrace` is expected to produce either a `descend`, in which case the children of the
 trace nodes will be visited, or an `ascend`, in which case they will not. Both may take an argument
@@ -94,7 +102,8 @@ Note that the children may be visited manually via a recursive call to `collectW
 
 Note: `.ofLazy` nodes are skipped (return `empty`) because they contain unevaluated
 formatting thunks, not trace tree structure. This is consistent with `hasTag`
-in `Lean.Message` which also skips `.ofLazy`. -/
+in `Lean.Message` which also skips `.ofLazy`.
+-/
 partial def visitTraceNodesM (msg : MessageData)
     (onTrace : TraceData → MessageData → Array MessageData → m (MessageData.VisitStep α))
     (empty : α := by exact {}) (combine : α → α → α := by first | exact (· ++ ·) | exact (· ∪ ·)) :
@@ -357,6 +366,8 @@ def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageConte
         `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
         The following isDefEq checks are the root causes of the failure:\n{failureList}"
 
+
+set_option doc.verso false
 /--
 > **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
 changes to transparency handling. Its syntax may change at any time, and it may not behave as
@@ -425,6 +436,10 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
         withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
           evalTactic tac
 
+
+set_option doc.verso true
+
+set_option doc.verso false
 /--
 > **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
 changes to transparency handling. Its syntax may change at any time, and it may not behave as
@@ -441,6 +456,8 @@ The command is re-executed with the permissive setting so that it actually takes
 -/
 syntax (name := defeqAbuseCmd) "#defeq_abuse " "in" command : command
 
+
+set_option doc.verso true
 elab_rules : command
   | `(command| #defeq_abuse in $cmd) => do
     let saved ← get

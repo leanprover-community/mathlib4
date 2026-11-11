@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Analysis.BoxIntegral.Integrability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unit Partition
 
@@ -26,30 +29,23 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 
 * `BoxIntegral.hasIntegralVertices`: a `Prop` that states that the vertices of the box have
   coordinates in `ℤ`
-
 * `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with vertices
   `ν i / n` and of side length `1 / n`.
-
 * `BoxIntegral.unitPartition.admissibleIndex`: For `B : BoxIntegral.Box`, the set of indices of
   `unitPartition.box` that are subsets of `B`. This is a finite set.
-
 * `BoxIntegral.unitPartition.prepartition_isPartition`: For `B : BoxIntegral.Box`, if `B`
   has integral vertices, then the prepartition of `unitPartition.box` admissible for `B` is a
   partition of `B`.
-
 * `tendsto_tsum_div_pow_atTop_integral`: let `s` be a bounded, measurable set of `ι → ℝ`
   whose frontier has zero volume and let `F` be a continuous function. Then the limit as `n → ∞`
   of `∑ F x / n ^ card ι`, where the sum is over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the
   integral of `F` over `s`.
-
 * `tendsto_card_div_pow_atTop_volume`: let `s` be a bounded, measurable set of `ι → ℝ` whose
   frontier has zero volume. Then the limit as `n → ∞` of `card (s ∩ n⁻¹ • (ι → ℤ)) / n ^ card ι`
   tends to the volume of `s`.
-
 * `tendsto_card_div_pow_atTop_volume'`: a version of `tendsto_card_div_pow_atTop_volume` where we
   assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
   `card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
-
 -/
 
 @[expose] public section

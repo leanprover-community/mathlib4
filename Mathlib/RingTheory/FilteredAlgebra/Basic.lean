@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The filtration on abelian groups and rings
 
@@ -21,16 +24,13 @@ In this file, we define the concept of filtration for abelian groups, rings, and
 * `IsFiltration` : For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a
   filtration if there is another series `F_lt` in `σ` equal to the
   supremum of `F` with smaller index.
-
 * `IsRingFiltration` : For a family of subsets `σ` of semiring `R`, an increasing series `F` in `σ`
   is a ring filtration if `IsFiltration F F_lt` and the pointwise multiplication of `F i` and `F j`
   is in `F (i + j)`.
-
 * `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a
   family of subsets of an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration
   if `IsFiltration F F_lt` and the pointwise scalar multiplication of `F i` and `FM j`
   is in `F (i +ᵥ j)`.
-
 -/
 
 public section
@@ -39,13 +39,15 @@ section GeneralFiltration
 
 variable {ι A σ : Type*} [Preorder ι] [Preorder σ] [SetLike σ A]
 
-/-- For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a filtration if
+/--
+For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a filtration if
 there is another series `F_lt` in `σ` equal to the supremum of `F` with smaller index.
 
 In the intended applications, `σ` is a complete lattice, and `F_lt` is uniquely-determined as
 `F_lt j = ⨆ i < j, F i`. Thus `F_lt` is an implementation detail which allows us defer depending
 on a complete lattice structure on `σ`. It also provides the ancillary benefit of giving us better
-definition control. This is convenient e.g., when the index is `ℤ`. -/
+definition control. This is convenient e.g., when the index is `ℤ`.
+-/
 class IsFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) : Prop where
   mono : Monotone F
   is_le {i j} : i < j → F i ≤ F_lt j
@@ -88,11 +90,13 @@ variable {ι ιM R M σ σM : Type*} [AddMonoid ι] [PartialOrder ι] [PartialOr
 variable [Preorder σ] [Semiring R] [SetLike σ R]
 variable [Preorder σM] [AddCommMonoid M] [Module R M] [SetLike σM M]
 
-/-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a family of subsets of
+/--
+For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a family of subsets of
 an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
 and the pointwise scalar multiplication of `F i` and `FM j` is in `F (i +ᵥ j)`.
 
-The index set `ιM` for the module can be more general, however usually we take `ιM = ι`. -/
+The index set `ιM` for the module can be more general, however usually we take `ιM = ι`.
+-/
 class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingFiltration F F_lt]
     (F' : ιM → σM) (F'_lt : outParam <| ιM → σM) : Prop
     extends IsFiltration F' F'_lt, SetLike.GradedSMul F F'

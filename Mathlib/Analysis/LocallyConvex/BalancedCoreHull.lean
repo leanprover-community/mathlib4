@@ -9,6 +9,9 @@ public import Mathlib.Analysis.LocallyConvex.Basic
 
 import Mathlib.Tactic.Bound
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Balanced Core and Balanced Hull
 
@@ -39,7 +42,7 @@ characterized as an intersection, this is `balancedCore_eq_iInter`.
 
 ## References
 
-* [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* ‍\[Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 
 ## Tags
 
@@ -264,7 +267,9 @@ end NormedField
 
 end balancedHull
 
-/-! ### Topological properties -/
+/-!
+# Topological properties
+-/
 
 section Topology
 

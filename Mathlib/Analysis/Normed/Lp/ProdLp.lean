@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.Normed.Lp.WithLp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `L^p` distance on products of two metric spaces
 
@@ -15,9 +18,7 @@ Given two metric spaces, one can put the max distance on their product, but ther
 a whole family of natural distances, indexed by a parameter `p : ℝ≥0∞`, that also induce
 the product topology. We define them in this file. For `0 < p < ∞`, the distance on `α × β`
 is given by
-$$
-d(x, y) = \left(d(x_1, y_1)^p + d(x_2, y_2)^p\right)^{1/p}.
-$$
+$$`  d(x, y) = \left(d(x_1, y_1)^p + d(x_2, y_2)^p\right)^{1/p}.  `
 For `p = ∞` the distance is the supremum of the distances and `p = 0` the distance is the
 cardinality of the elements that are not equal.
 
@@ -35,7 +36,6 @@ statements for the coordinate functions, for instance.
 If you wish to endow a type synonym of `α × β` with the `L^p` distance, you can use
 `pseudoMetricSpaceToProd` and the declarations below that one.
 
-
 ## Implementation notes
 
 This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.lean`.
@@ -45,7 +45,6 @@ This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.l
 TODO: the results about uniformity and bornology in the `Aux` section should be using the tools in
 `Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
-
 -/
 
 @[expose] public section
@@ -152,7 +151,7 @@ end equiv
 section DistNorm
 
 /-!
-### Definition of `edist`, `dist` and `norm` on `WithLp p (α × β)`
+# Definition of `edist`, `dist` and `norm` on `WithLp p (α × β)`
 
 In this section we define the `edist`, `dist` and `norm` functions on `WithLp p (α × β)` without
 assuming `[Fact (1 ≤ p)]` or metric properties of the spaces `α` and `β`. This allows us to provide
@@ -164,13 +163,15 @@ section EDist
 
 variable [EDist α] [EDist β]
 
-/-- Endowing the space `WithLp p (α × β)` with the `L^p` edistance. We register this instance
+/--
+Endowing the space `WithLp p (α × β)` with the `L^p` edistance. We register this instance
 separate from `WithLp.instProdPseudoEMetric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future emetric-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. The terminology for this varies throughout the
-literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
+literature, but it is sometimes called a _quasi-metric_ or _semi-metric_.
+-/
 instance instProdEDist : EDist (WithLp p (α × β)) where
   edist f g :=
     if _hp : p = 0 then
@@ -203,10 +204,12 @@ section EDistProp
 variable {α β}
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
-/-- The distance from one point to itself is always zero.
+/--
+The distance from one point to itself is always zero.
 
 This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
-from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
+from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`.
+-/
 theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   rcases p.trichotomy with (rfl | rfl | h)
   · classical
@@ -215,10 +218,12 @@ theorem prod_edist_self (f : WithLp p (α × β)) : edist f f = 0 := by
   · simp [prod_edist_eq_add h, ENNReal.zero_rpow_of_pos h,
       ENNReal.zero_rpow_of_pos (inv_pos.2 h)]
 
-/-- The distance is symmetric.
+/--
+The distance is symmetric.
 
 This holds independent of `p` and does not require `[Fact (1 ≤ p)]`. We keep it separate
-from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`. -/
+from `WithLp.instProdPseudoEMetricSpace` so it can be used also for `p < 1`.
+-/
 theorem prod_edist_comm (f g : WithLp p (α × β)) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
   · simp only [prod_edist_eq_card, edist_comm]
@@ -231,13 +236,15 @@ section Dist
 
 variable [Dist α] [Dist β]
 
-/-- Endowing the space `WithLp p (α × β)` with the `L^p` distance. We register this instance
+/--
+Endowing the space `WithLp p (α × β)` with the `L^p` distance. We register this instance
 separate from `WithLp.instProdPseudoMetricSpace` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future metric-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. The terminology for this varies throughout the
-literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
+literature, but it is sometimes called a _quasi-metric_ or _semi-metric_.
+-/
 instance instProdDist : Dist (WithLp p (α × β)) where
   dist f g :=
     if _hp : p = 0 then
@@ -267,12 +274,14 @@ section Norm
 
 variable [Norm α] [Norm β]
 
-/-- Endowing the space `WithLp p (α × β)` with the `L^p` norm. We register this instance
+/--
+Endowing the space `WithLp p (α × β)` with the `L^p` norm. We register this instance
 separate from `WithLp.instProdSeminormedAddCommGroup` since the latter requires the type class
 hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future norm-like structure on `WithLp p (α × β)` for
-`p < 1` satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
+`p < 1` satisfying a relaxed triangle inequality. These are called _quasi-norms_.
+-/
 instance instProdNorm : Norm (WithLp p (α × β)) where
   norm f :=
     if _hp : p = 0 then
@@ -303,7 +312,7 @@ end DistNorm
 section Aux
 
 /-!
-### The uniformity on finite `L^p` products is the product uniformity
+# The uniformity on finite `L^p` products is the product uniformity
 
 In this section, we put the `L^p` edistance on `WithLp p (α × β)`, and we check that the uniformity
 coming from this edistance coincides with the product uniformity, by showing that the canonical
@@ -312,7 +321,7 @@ antiLipschitz.
 
 We only register this emetric space structure as a temporary instance, as the true instance (to be
 registered later) will have as uniformity exactly the product uniformity, instead of the one coming
-from the edistance (which is equal to it, but not defeq). See Note [forgetful inheritance]
+from the edistance (which is equal to it, but not defeq). See Note \[forgetful inheritance\]
 explaining why having definitionally the right uniformity is often important.
 
 TODO: the results about uniformity and bornology should be using the tools in
@@ -368,7 +377,8 @@ theorem prod_sup_edist_ne_top_aux [PseudoMetricSpace α] [PseudoMetricSpace β]
 
 variable (α β)
 
-/-- Endowing the space `WithLp p (α × β)` with the `L^p` pseudometric structure. This definition is
+/--
+Endowing the space `WithLp p (α × β)` with the `L^p` pseudometric structure. This definition is
 not satisfactory, as it does not register the fact that the topology, the uniform structure, and the
 bornology coincide with the product ones. Therefore, we do not register it as an instance. Using
 this as a temporary pseudoemetric space instance, we will show that the uniform structure is equal
@@ -376,7 +386,8 @@ this as a temporary pseudoemetric space instance, we will show that the uniform 
 structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
@@ -466,7 +477,9 @@ private lemma prod_cobounded_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
 
 end Aux
 
-/-! ### Instances on `L^p` products -/
+/-!
+# Instances on `L^p` products
+-/
 
 section TopologicalSpace
 
@@ -1027,7 +1040,7 @@ end NormedSpace
 section toProd
 
 /-!
-### `L^p` distance on a product space
+# `L^p` distance on a product space
 
 In this section we define a pseudometric space structure on `α × β`, as well as a seminormed
 group structure. These are meant to be used to put the desired instances on type synonyms

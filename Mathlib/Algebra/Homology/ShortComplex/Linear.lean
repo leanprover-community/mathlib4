@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of linear categories
 
 In this file, it is shown that if `C` is an `R`-linear category, then
 `ShortComplex C` is an `R`-linear category. Various homological notions
 are also shown to be linear.
-
 -/
 
 @[expose] public section

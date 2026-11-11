@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Map of a kernel by a measurable function
 
@@ -16,6 +19,7 @@ particular cases.
 ## Main definitions
 
 Kernels built from other kernels:
+
 * `map (κ : Kernel α β) (f : β → γ) : Kernel α γ`
   `∫⁻ c, g c ∂(map κ f a) = ∫⁻ b, g (f b) ∂(κ a)`
 * `comap (κ : Kernel α β) (f : γ → α) (hf : Measurable f) : Kernel γ β`
@@ -25,7 +29,6 @@ Kernels built from other kernels:
 
 * `lintegral_map`, `lintegral_comap`: Lebesgue integral of a function against the map or comap of
   a kernel.
-
 -/
 
 @[expose] public section
@@ -43,7 +46,9 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 
 section MapComap
 
-/-! ### map, comap -/
+/-!
+# map, comap
+-/
 
 
 variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The jointly surjective precoverage
 

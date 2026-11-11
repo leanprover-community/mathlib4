@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.MapFold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Attaching a proof of membership to a finite set
 
@@ -19,7 +22,6 @@ public import Mathlib.Data.Multiset.MapFold
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -39,7 +41,9 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### attach -/
+/-!
+# attach
+-/
 
 /-- `attach s` takes the elements of `s` and forms a new set of elements of the subtype
 `{x // x ∈ s}`. -/

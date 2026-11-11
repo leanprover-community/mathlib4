@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Analysis.Asymptotics.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of asymptotic relations
 
 This file establishes conversions, congruence and transitivity properties, behavior under filter
 operations, and norm simplification lemmas for the asymptotic relations defined in
 `Mathlib.Analysis.Asymptotics.Defs`.
-
 -/
 
 @[expose] public section
@@ -34,7 +36,9 @@ variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddC
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {f'' : α → E''} {l l' : Filter α}
 
-/-! ### NNNorm -/
+/-!
+# NNNorm
+-/
 
 /-- `IsBigO` in terms of the non-negative norm. -/
 theorem isBigO_iff_nnNorm :
@@ -56,7 +60,9 @@ theorem isLittleO_iff_nnNorm :
 
 @[deprecated (since := "2026-10-31")] alias isLittleO_iff_nnnorm := isLittleO_iff_nnNorm
 
-/-! ### Conversions -/
+/-!
+# Conversions
+-/
 
 theorem IsBigOWith.isBigO (h : IsBigOWith c l f g) : f =O[l] g := by
   rw [isBigO_iff_isBigOWith]; exact ⟨c, h⟩
@@ -137,7 +143,9 @@ theorem isLittleO_iff_nat_mul_le : f =o[l] g' ↔ ∀ n : ℕ, ∀ᶠ x in l, �
 theorem isLittleO_iff_nat_mul_le' : f' =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f' x‖ ≤ ‖g x‖ :=
   isLittleO_iff_nat_mul_le_aux (Or.inl fun _x => norm_nonneg _)
 
-/-! ### Subsingleton -/
+/-!
+# Subsingleton
+-/
 
 @[nontriviality]
 theorem isLittleO_of_subsingleton [Subsingleton E'] : f' =o[l] g' :=
@@ -151,7 +159,9 @@ section congr
 
 variable {f₁ f₂ : α → E} {g₁ g₂ : α → F}
 
-/-! ### Congruence -/
+/-!
+# Congruence
+-/
 
 theorem isBigOWith_congr (hc : c₁ = c₂) (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     IsBigOWith c₁ l f₁ g₁ ↔ IsBigOWith c₂ l f₂ g₂ := by
@@ -252,7 +262,9 @@ instance transIsLittleOEventuallyEq :
 
 end congr
 
-/-! ### Filter operations and transitivity -/
+/-!
+# Filter operations and transitivity
+-/
 
 theorem IsBigOWith.comp_tendsto (hcfg : IsBigOWith c l f g) {k : β → α} {l' : Filter β}
     (hk : Tendsto k l' l) : IsBigOWith c l' (f ∘ k) (g ∘ k) :=
@@ -498,7 +510,9 @@ protected theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {
     {g' : α → F'} (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
   (isLittleO_insert h2).mpr h1
 
-/-! ### Simplification: norm -/
+/-!
+# Simplification: norm
+-/
 
 section Norm
 

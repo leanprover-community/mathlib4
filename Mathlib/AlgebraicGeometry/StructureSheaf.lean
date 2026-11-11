@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.Topology.Sheaves.LocalPredicate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
 
@@ -41,7 +44,7 @@ boundaries.
 
 ## References
 
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
+* ‍\[Robin Hartshorne, _Algebraic Geometry_\]\[Har77\]
 -/
 
 
@@ -89,19 +92,20 @@ def isFractionPrelocal : PrelocalPredicate (Localizations (R := R) M) where
   res := by rintro V U i f ⟨r, s, w⟩; exact ⟨r, s, fun x => w (i x)⟩
 
 variable (R M) in
-/-- We will define the structure sheaf as
+/--
+We will define the structure sheaf as
 the subsheaf of all dependent functions in `Π x : U, Localizations R x`
 consisting of those functions which can locally be expressed as a ratio of
 (the images in the localization of) elements of `R`.
 
 Quoting Hartshorne:
 
-For an open set $U ⊆ Spec A$, we define $𝒪(U)$ to be the set of functions
-$s : U → ⨆_{𝔭 ∈ U} A_𝔭$, such that $s(𝔭) ∈ A_𝔭$ for each $𝔭$,
-and such that $s$ is locally a quotient of elements of $A$:
-to be precise, we require that for each $𝔭 ∈ U$, there is a neighborhood $V$ of $𝔭$,
-contained in $U$, and elements $a, f ∈ A$, such that for each $𝔮 ∈ V, f ∉ 𝔮$,
-and $s(𝔮) = a/f$ in $A_𝔮$.
+For an open set $`U ⊆ Spec A`, we define $`𝒪(U)` to be the set of functions
+$`s : U → ⨆_{𝔭 ∈ U} A_𝔭`, such that $`s(𝔭) ∈ A_𝔭` for each $`𝔭`,
+and such that $`s` is locally a quotient of elements of $`A`:
+to be precise, we require that for each $`𝔭 ∈ U`, there is a neighborhood $`V` of $`𝔭`,
+contained in $`U`, and elements $`a, f ∈ A`, such that for each $`𝔮 ∈ V, f ∉ 𝔮`,
+and $`s(𝔮) = a/f` in $`A_𝔮`.
 
 Now Hartshorne had the disadvantage of not knowing about dependent functions,
 so we replace his circumlocution about functions into a disjoint union with
@@ -877,9 +881,11 @@ end Stalk
 
 variable (R)
 
-/-- The structure sheaf on $Spec R$, valued in `CommRingCat`.
+/--
+The structure sheaf on $`Spec R`, valued in `CommRingCat`.
 
-This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later. -/
+This is provided as a bundled `SheafedSpace` as `Spec.SheafedSpace R` later.
+-/
 def _root_.AlgebraicGeometry.Spec.structureSheaf : Sheaf CommRingCat (PrimeSpectrum.Top R) :=
   ⟨structurePresheafInCommRingCat R,
     (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr (TopCat.Presheaf.isSheaf_of_iso
@@ -1020,7 +1026,8 @@ theorem isLocallyFraction_comapFun (U : Opens (PrimeSpectrum.Top R))
   simp
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and
+/--
+For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and
 `S` such that `V ⊆ (comap f) ⁻¹ U`, the induced ring homomorphism from the structure sheaf of `R`
 at `U` to the structure sheaf of `S` at `V`.
 
@@ -1067,7 +1074,8 @@ theorem comapₗ_eq_localRingHom (f : R →+* S) (U : Opens (PrimeSpectrum.Top R
   convert_to! Localization.mk _ _ = Localization.localRingHom _ _ _ _ (Localization.mk _ _)
   simp [Localization.mk_eq_mk']
 
-/-- For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and
+/--
+For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and
 `S` such that `V ⊆ (comap f) ⁻¹ U`, the induced ring homomorphism from the structure sheaf of `R`
 at `U` to the structure sheaf of `S` at `V`.
 
@@ -1113,11 +1121,12 @@ theorem comap_const (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
     simp [Localization.mk_eq_mk']
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- For an inclusion `i : V ⟶ U` between open sets of the prime spectrum of `R`, the comap of the
-identity from OO_X(U) to OO_X(V) equals as the restriction map of the structure sheaf.
+/--
+For an inclusion `i : V ⟶ U` between open sets of the prime spectrum of `R`, the comap of the
+identity from OO\_X(U) to OO\_X(V) equals as the restriction map of the structure sheaf.
 
-This is a generalization of the fact that, for fixed `U`, the comap of the identity from OO_X(U)
-to OO_X(U) is the identity.
+This is a generalization of the fact that, for fixed `U`, the comap of the identity from OO\_X(U)
+to OO\_X(U) is the identity.
 -/
 theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
     (comap (RingHom.id R) U V fun _ hpV => leOfHom iVU hpV) =

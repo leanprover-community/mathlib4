@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Order.Interval.Set.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semirings
 
@@ -164,7 +167,9 @@ theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) :
 
 end floor
 
-/-! #### Ceil -/
+/-!
+# Ceil
+-/
 
 section ceil
 
@@ -246,7 +251,9 @@ theorem floor_lt_ceil_of_lt_of_pos {a b : R} (h : a < b) (h' : 0 < b) : ⌊a⌋�
 
 end ceil
 
-/-! #### Intervals -/
+/-!
+# Intervals
+-/
 
 @[simp]
 theorem preimage_Ioo {a b : R} (ha : 0 ≤ a) :

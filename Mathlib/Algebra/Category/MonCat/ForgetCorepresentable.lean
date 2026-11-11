@@ -10,13 +10,15 @@ public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Nat.Hom
 public import Mathlib.CategoryTheory.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The forgetful functor is corepresentable
 
 The forgetful functor `AddCommMonCat.{u} ⥤ Type u` is corepresentable
 by `ULift ℕ`. Similar results are obtained for the variants `CommMonCat`, `AddMonCat`
 and `MonCat`.
-
 -/
 
 @[expose] public section
@@ -28,7 +30,7 @@ universe u
 open CategoryTheory Opposite
 
 /-!
-### `(ULift ℕ →+ G) ≃ G`
+# `(ULift ℕ →+ G) ≃ G`
 
 These universe-monomorphic variants of `multiplesHom`/`powersHom` are put here since they
 shouldn't be useful outside of category theory.

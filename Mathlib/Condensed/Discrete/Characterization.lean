@@ -8,6 +8,9 @@ module
 public import Mathlib.Condensed.Discrete.Colimit
 public import Mathlib.Condensed.Discrete.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterizing discrete condensed sets and `R`-modules.
 
@@ -42,7 +45,7 @@ namespace Condensed
 variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
 
 /--
-A condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant sheaf.
+A condensed object is _discrete_ if it is constant as a sheaf, i.e. isomorphic to a constant sheaf.
 -/
 abbrev IsDiscrete (X : Condensed.{u} C) := X.IsConstant (coherentTopology CompHaus)
 
@@ -166,7 +169,7 @@ namespace LightCondensed
 variable {C : Type*} [Category* C] [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
 
 /--
-A light condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant
+A light condensed object is _discrete_ if it is constant as a sheaf, i.e. isomorphic to a constant
 sheaf.
 -/
 abbrev IsDiscrete (X : LightCondensed.{u} C) := X.IsConstant (coherentTopology LightProfinite)

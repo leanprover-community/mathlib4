@@ -8,6 +8,9 @@ module
 public meta import Aesop
 public import Mathlib.Order.Heyting.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Generalized) Boolean algebras
 
@@ -22,7 +25,7 @@ example in mathlib is `Finset α`, the type of all finite subsets of an arbitrar
 (not-necessarily-finite) type `α`.
 
 `GeneralizedBooleanAlgebra α` is defined to be a distributive lattice with bottom (`⊥`) admitting
-a *relative* complement operator, written using "set difference" notation as `x \ y` (`sdiff x y`).
+a _relative_ complement operator, written using "set difference" notation as `x \ y` (`sdiff x y`).
 For convenience, the `BooleanAlgebra` type class is defined to extend `GeneralizedBooleanAlgebra`
 so that it is also bundled with a `\` operator.
 
@@ -42,16 +45,17 @@ The `sup_inf_sdiff` and `inf_inf_sdiff` axioms for the relative complement opera
 `GeneralizedBooleanAlgebra` are taken from
 [Wikipedia](https://en.wikipedia.org/wiki/Boolean_algebra_(structure)#Generalizations).
 
-[Stone's paper introducing generalized Boolean algebras][Stone1935] does not define a relative
+‍\[Stone's paper introducing generalized Boolean algebras\]\[Stone1935\] does not define a relative
 complement operator `a \ b` for all `a`, `b`. Instead, the postulates there amount to an assumption
 that for all `a, b : α` where `a ≤ b`, the equations `x ⊔ a = b` and `x ⊓ a = ⊥` have a solution
 `x`. `Disjoint.sdiff_unique` proves that this `x` is in fact `b \ a`.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)#Generalizations>
-* [*Postulates for Boolean Algebras and Generalized Boolean Algebras*, M.H. Stone][Stone1935]
-* [*Lattice Theory: Foundation*, George Grätzer][Gratzer2011]
+* [
+  https://en.wikipedia.org/wiki/Boolean\_algebra\_(structure)#Generalizations](https://en.wikipedia.org/wiki/Boolean_algebra_(structure)#Generalizations)
+* ‍\[_Postulates for Boolean Algebras and Generalized Boolean Algebras_, M.H. Stone\]\[Stone1935\]
+* ‍\[_Lattice Theory: Foundation_, George Grätzer\]\[Gratzer2011\]
 
 ## Tags
 
@@ -67,15 +71,17 @@ universe u v
 variable {α : Type u} {x y z : α}
 
 /-!
-### Generalized Boolean algebras
+# Generalized Boolean algebras
 -/
 
-/-- A generalized Boolean algebra is a distributive lattice with `⊥` and a relative complement
+/--
+A generalized Boolean algebra is a distributive lattice with `⊥` and a relative complement
 operation `\` (called `sdiff`, after "set difference") satisfying `(a ⊓ b) ⊔ (a \ b) = a` and
 `(a ⊓ b) ⊓ (a \ b) = ⊥`, i.e. `a \ b` is the complement of `b` in `a`.
 
 This is a generalization of Boolean algebras which applies to `Finset α` for arbitrary
-(not-necessarily-`Fintype`) `α`. -/
+(not-necessarily-`Fintype`) `α`.
+-/
 class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff α, Bot α where
   /-- For any `a`, `b`, `(a ⊓ b) ⊔ (a / b) = a` -/
   sup_inf_sdiff : ∀ a b : α, a ⊓ b ⊔ a \ b = a
@@ -83,11 +89,12 @@ class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff �
   inf_inf_sdiff : ∀ a b : α, a ⊓ b ⊓ a \ b = ⊥
 
 /-!
-### Boolean algebras
+# Boolean algebras
 -/
 
 
-/-- A Boolean algebra is a bounded distributive lattice with a complement operator `ᶜ` such that
+/--
+A Boolean algebra is a bounded distributive lattice with a complement operator `ᶜ` such that
 `x ⊓ xᶜ = ⊥` and `x ⊔ xᶜ = ⊤`. For convenience, it must also provide a set difference operation `\`
 and a Heyting implication `⇨` satisfying `x \ y = x ⊓ yᶜ` and `x ⇨ y = y ⊔ xᶜ`.
 

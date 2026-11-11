@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Ring.Associator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pre-Lie rings and algebras
 
@@ -22,24 +25,30 @@ Everything holds for the algebra versions where `L` is also an `R`-Module over a
 `R`.
 
 ## Main definitions
-  All are a defined as a `NonUnitalNonAssocRing` whose `associator` satisfies an identity.
-  * `LeftPreLieRing`
-  * `RightPreLieRing`
-  * `LeftPreLieAlgebra`
-  * `RightPreLieAlgebra`
+
+All are a defined as a `NonUnitalNonAssocRing` whose `associator` satisfies an identity.
+
+* `LeftPreLieRing`
+* `RightPreLieRing`
+* `LeftPreLieAlgebra`
+* `RightPreLieAlgebra`
 
 ## Main results
-  * Every `LeftPreLieRing` is a `RightPreLieRing` with the opposite multiplication.
+
+* Every `LeftPreLieRing` is a `RightPreLieRing` with the opposite multiplication.
 
 ## Implementation notes
+
 There are left and right versions of the structures, equivalent via `ᵐᵒᵖ`.
 Perhaps one could be favored but there is no real reason to.
 
 ## References
-[F. Chapoton, M. Livernet, *Pre-Lie algebras and the rooted trees operad*][chapoton_livernet_2001]
-[D. Manchon, *A short survey on pre-Lie algebras*][manchon_2011]
-[J.-M. Oudom, D. Guin, *On the Lie enveloping algebra of a pre-Lie algebra*][oudom_guin_2008]
-<https://ncatlab.org/nlab/show/pre-Lie+algebra>
+
+‍\[F. Chapoton, M. Livernet, _Pre-Lie algebras and the rooted trees
+operad_\]\[chapoton\_livernet\_2001\] ‍\[D. Manchon, _A short survey on pre-Lie
+algebras_\]\[manchon\_2011\] ‍\[J.-M. Oudom, D. Guin, _On the Lie enveloping algebra of a pre-Lie
+algebra_\]\[oudom\_guin\_2008\] [
+https://ncatlab.org/nlab/show/pre-Lie+algebra](https://ncatlab.org/nlab/show/pre-Lie+algebra)
 -/
 
 public section

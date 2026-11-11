@@ -14,6 +14,9 @@ import Mathlib.Analysis.Calculus.Deriv.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Taylor's theorem
 
@@ -63,11 +66,13 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 noncomputable def taylorCoeffWithin (f : ℝ → E) (k : ℕ) (s : Set ℝ) (x₀ : ℝ) : E :=
   (k ! : ℝ)⁻¹ • iteratedDerivWithin k f s x₀
 
-/-- The Taylor polynomial with derivatives inside of a set `s`.
+/--
+The Taylor polynomial with derivatives inside of a set `s`.
 
 The Taylor polynomial is given by
-$$∑_{k=0}^n \frac{(x - x₀)^k}{k!} f^{(k)}(x₀),$$
-where $f^{(k)}(x₀)$ denotes the iterated derivative in the set `s`. -/
+$$`∑_{k=0}^n \frac{(x - x₀)^k}{k!} f^{(k)}(x₀),`
+where $`f^{(k)}(x₀)` denotes the iterated derivative in the set `s`.
+-/
 noncomputable def taylorWithin (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ : ℝ) : PolynomialModule ℝ E :=
   (Finset.range (n + 1)).sum fun k =>
     PolynomialModule.comp (Polynomial.X - Polynomial.C x₀)
@@ -167,9 +172,11 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
   field_simp
   module
 
-/-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
+/--
+Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
-Version for arbitrary sets -/
+Version for arbitrary sets
+-/
 theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} {s s' : Set ℝ}
     (hs_unique : UniqueDiffOn ℝ s) (hs' : s' ∈ 𝓝[s] y)
     (hy : y ∈ s') (h : s' ⊆ s) (hf : ContDiffOn ℝ n f s)
@@ -198,9 +205,11 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
           hf') using 1
     exact (add_sub_cancel _ _).symm
 
-/-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
+/--
+Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
-Version for open intervals -/
+Version for open intervals
+-/
 theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) {n : ℕ} (hx : a < b)
     (ht : t ∈ Ioo a b) (hf : ContDiffOn ℝ n f (Icc a b))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Ioo a b)) :
@@ -211,9 +220,11 @@ theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) 
   (hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx) h_nhds' ht
     Ioo_subset_Icc_self hf <| (hf' t ht).mono_of_mem_nhdsWithin h_nhds').hasDerivAt h_nhds
 
-/-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
+/--
+Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
-Version for closed intervals -/
+Version for closed intervals
+-/
 theorem hasDerivWithinAt_taylorWithinEval_at_Icc {f : ℝ → E} {a b t : ℝ} (x : ℝ) {n : ℕ}
     (hx : a < b) (ht : t ∈ Icc a b) (hf : ContDiffOn ℝ n f (Icc a b))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Icc a b)) :
@@ -289,16 +300,20 @@ theorem Real.taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set �
   simp [div_eq_inv_mul]
 
 
-/-! ### Taylor's theorem with mean value type remainder estimate -/
+/-!
+# Taylor's theorem with mean value type remainder estimate
+-/
 
 
-/-- **Taylor's theorem** with the general mean value form of the remainder.
+/--
+*Taylor's theorem* with the general mean value form of the remainder.
 
 We assume that `f` is `n`-times continuously differentiable in the closed set `uIcc x₀ x` and
 `n+1`-times differentiable on the open set `uIoo x₀ x`, and `g` is a differentiable function on
 `uIoo x₀ x` and continuous on `uIcc x₀ x`. Then there exists an `x' ∈ uIoo x₀ x` such that
-$$f(x) - (P_n f)(x₀, x) = \frac{(x - x')^n}{n!} \frac{g(x) - g(x₀)}{g' x'},$$
-where $P_n f$ denotes the Taylor polynomial of degree $n$. -/
+$$`f(x) - (P_n f)(x₀, x) = \frac{(x - x')^n}{n!} \frac{g(x) - g(x₀)}{g' x'},`
+where $`P_n f` denotes the Taylor polynomial of degree $`n`.
+-/
 theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ ≠ x)
     (hf : ContDiffOn ℝ n f (uIcc x₀ x))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (uIcc x₀ x)) (uIoo x₀ x))
@@ -319,14 +334,14 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
 
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
-/-- **Taylor's theorem** with the Lagrange form of the remainder.
+/--
+*Taylor's theorem* with the Lagrange form of the remainder.
 
 We assume that `f` is `n`-times continuously differentiable in the closed set `uIcc x₀ x` and
 `n+1`-times differentiable on the open set `uIoo x₀ x`. Then there exists an `x' ∈ uIoo x₀ x` such
-that
-$$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
-where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
-derivative. -/
+that $$`f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},` where $`P_n f` denotes
+the Taylor polynomial of degree $`n` and $`f^{(n+1)}` is the $`n+1`-th iterated derivative.
+-/
 theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ ≠ x)
     (hf : ContDiffOn ℝ n f (uIcc x₀ x))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (uIcc x₀ x)) (uIoo x₀ x)) :
@@ -360,14 +375,14 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
     iteratedFDerivWithin_eq_iteratedFDeriv hu _ ⟨le_of_lt h1.1, le_of_lt h1.2⟩]
   exact hf.contDiffAt (Icc_mem_nhds_iff.2 h1)
 
-/-- **Taylor's theorem** with the Cauchy form of the remainder.
+/--
+*Taylor's theorem* with the Cauchy form of the remainder.
 
 We assume that `f` is `n`-times continuously differentiable on the closed set `uIcc x₀ x` and
 `n+1`-times differentiable on the open set `uIoo x₀ x`. Then there exists an `x' ∈ uIoo x₀ x` such
-that
-$$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
-where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
-derivative. -/
+that $$`f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},` where $`P_n f` denotes
+the Taylor polynomial of degree $`n` and $`f^{(n+1)}` is the $`n+1`-th iterated derivative.
+-/
 theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ ≠ x)
     (hf : ContDiffOn ℝ n f (uIcc x₀ x))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (uIcc x₀ x)) (uIoo x₀ x)) :
@@ -382,11 +397,13 @@ theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} 
   rw [h]
   simp [field]
 
-/-- **Taylor's theorem** with a polynomial bound on the remainder
+/--
+*Taylor's theorem* with a polynomial bound on the remainder
 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.
 The difference of `f` and its `n`-th Taylor polynomial can be estimated by
-`C * (x - a)^(n+1) / n!` where `C` is a bound for the `n+1`-th iterated derivative of `f`. -/
+`C * (x - a)^(n+1) / n!` where `C` is a bound for the `n+1`-th iterated derivative of `f`.
+-/
 theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (hab : a ≤ b)
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) (hx : x ∈ Icc a b)
     (hC : ∀ y ∈ Icc a b, ‖iteratedDerivWithin (n + 1) f (Icc a b) y‖ ≤ C) :
@@ -422,11 +439,13 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
   rw [abs_of_nonneg (sub_nonneg.mpr hx.1)]
   ring
 
-/-- **Taylor's theorem** with a polynomial bound on the remainder
+/--
+*Taylor's theorem* with a polynomial bound on the remainder
 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.
 There exists a constant `C` such that for all `x ∈ Icc a b` the difference of `f` and its `n`-th
-Taylor polynomial can be estimated by `C * (x - a)^(n+1)`. -/
+Taylor polynomial can be estimated by `C * (x - a)^(n+1)`.
+-/
 theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ} (hab : a ≤ b)
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) :
     ∃ C, ∀ x ∈ Icc a b, ‖f x - taylorWithinEval f n (Icc a b) a x‖ ≤ C * (x - a) ^ (n + 1) := by
@@ -442,17 +461,16 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   refine taylor_mean_remainder_bound hab hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
 
-/-- **Taylor's theorem** with the Integral form of the remainder. This is an auxiliary theorem
+/--
+*Taylor's theorem* with the Integral form of the remainder. This is an auxiliary theorem
 which is used to prove the two useful versions `taylor_integral_remainder_of_absolutelyContinuous`
 and `taylor_integral_remainder`.
 
 We assume that for any `k ≤ n`, the following equation on integration by parts hold:
-$$\int_{x_0}^x \frac{f^{(k+1)}(t) (x - t)^k}{k!} =
-\frac{f^{(k)}(t) (x - t)^k}{k!} |_{x_0}^x -\int_{x_0}^x \frac{f^{(k)}(t) (x - t)^{k-1}}{(k-1)!}.$$
-Then
-$$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
-where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
-derivative. -/
+$$`\int_{x_0}^x \frac{f^{(k+1)}(t) (x - t)^k}{k!} = \frac{f^{(k)}(t) (x - t)^k}{k!} |_{x_0}^x -\int_{x_0}^x \frac{f^{(k)}(t) (x - t)^{k-1}}{(k-1)!}.`
+Then $$`f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,` where $`P_n f`
+denotes the Taylor polynomial of degree $`n` and $`f^{(n+1)}` is the $`n+1`-th iterated derivative.
+-/
 theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
     {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
     (hf : ∀ k ≤ n, let u := fun t ↦ (x - t) ^ k / k !;
@@ -500,13 +518,14 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
       · rw [← derivWithin_of_mem_nhds <| Icc_mem_nhds h1 h2]
         rfl
 
-/-- **Taylor's theorem** with the Integral form of the remainder.
+/--
+*Taylor's theorem* with the Integral form of the remainder.
 
-We assume that `f` is `n`-times continuously differentiable on the closed set `uIcc x₀ x` and
-its `n`-th derivative is absolutely continuous on `uIcc x₀ x`. Then
-$$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
-where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
-derivative. -/
+We assume that `f` is `n`-times continuously differentiable on the closed set `uIcc x₀ x` and its
+`n`-th derivative is absolutely continuous on `uIcc x₀ x`. Then
+$$`f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,` where $`P_n f`
+denotes the Taylor polynomial of degree $`n` and $`f^{(n+1)}` is the $`n+1`-th iterated derivative.
+-/
 theorem taylor_integral_remainder_of_absolutelyContinuous {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ}
     (hf₁ : ContDiffOn ℝ n f (uIcc x₀ x))
     (hf₂ : AbsolutelyContinuousOnInterval (iteratedDerivWithin n f (uIcc x₀ x)) x₀ x) :
@@ -525,12 +544,13 @@ theorem taylor_integral_remainder_of_absolutelyContinuous {f : ℝ → ℝ} {x x
     grind [ContDiffOn.absolutelyContinuousOnInterval, uniqueDiffOn_uIcc,
       contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin]
 
-/-- **Taylor's theorem** with the Integral form of the remainder.
+/--
+*Taylor's theorem* with the Integral form of the remainder.
 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `uIcc x₀ x`. Then
-$$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
-where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
-derivative. -/
+$$`f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,` where $`P_n f`
+denotes the Taylor polynomial of degree $`n` and $`f^{(n+1)}` is the $`n+1`-th iterated derivative.
+-/
 theorem taylor_integral_remainder [NormedAddCommGroup F] [NormedSpace ℝ F]
     [CompleteSpace F] {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ (n + 1 : ℕ) f (uIcc x₀ x)) :

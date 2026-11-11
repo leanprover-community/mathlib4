@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.MetricSpace.Holder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hölder norm
 
@@ -29,7 +32,6 @@ for which `WithHolder C r f` is true.
 ## Tags
 
 Hölder norm, Hoelder norm, Holder norm
-
 -/
 
 @[expose] public section

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topological dual of a cone and Farkas' lemma
 
@@ -30,13 +33,14 @@ As a corollary, we prove that the double dual of a proper cone is itself.
 ## Main statements
 
 We prove the following theorems:
+
 * `ProperCone.hyperplane_separation`, `ProperCone.hyperplane_separation_point`: Farkas lemma.
 * `ProperCone.dual_dual_flip`, `ProperCone.dual_flip_dual`: The double dual of a proper cone.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Hyperplane_separation_theorem
-* https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation
+* https://en.wikipedia.org/wiki/Hyperplane\_separation\_theorem
+* https://en.wikipedia.org/wiki/Farkas%27\_lemma#Geometric\_interpretation
 -/
 
 @[expose] public section

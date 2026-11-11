@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of finite measures and probability measures
 
@@ -25,7 +28,6 @@ the underlying space is metrizable and separable.
 
 `MeasureTheory.ProbabilityMeasure.continuous_pi`: the product probability measure depends
 continuously on the factors.
-
 -/
 
 @[expose] public section

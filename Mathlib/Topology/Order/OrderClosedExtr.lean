@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Order.LocalExtr
 public import Mathlib.Topology.Order.OrderClosed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local maxima from monotonicity and antitonicity
 
@@ -18,9 +21,7 @@ and its dual.
 
 * `isLocalMax_of_mono_anti` : if a function `f` is monotone to the left of `x`
   and antitone to the right of `x` then `f` has a local maximum at `x`.
-
 * `isLocalMin_of_anti_mono` : the dual statement for minima.
-
 -/
 
 public section

@@ -8,13 +8,15 @@ module
 public import Mathlib.NumberTheory.EulerProduct.ExpLog
 public import Mathlib.NumberTheory.LSeries.Dirichlet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Euler Product for the Riemann Zeta Function and Dirichlet L-Series
 
 The first main result of this file is the Euler Product formula for the Riemann ζ function
-$$\prod_p \frac{1}{1 - p^{-s}}
-   = \lim_{n \to \infty} \prod_{p < n} \frac{1}{1 - p^{-s}} = \zeta(s)$$
-for $s$ with real part $> 1$ ($p$ runs through the primes).
+$$`\prod_p \frac{1}{1 - p^{-s}} = \lim_{n \to \infty} \prod_{p < n} \frac{1}{1 - p^{-s}} = \zeta(s)`
+for $`s` with real part $`> 1` ($`p` runs through the primes).
 `riemannZeta_eulerProduct` is the second equality above. There are versions
 `riemannZeta_eulerProduct_hasProd` and `riemannZeta_eulerProduct_tprod` in terms of `HasProd`
 and `tprod`, respectively.
@@ -164,7 +166,7 @@ theorem riemannZeta_eulerProduct_exp_log {s : ℂ} (hs : 1 < s.re) :
   LSeries_one_eq_riemannZeta hs ▸ ArithmeticFunction.LSeries_zeta_eulerProduct_exp_log hs
 
 /-!
-### Changing the level of a Dirichlet `L`-series
+# Changing the level of a Dirichlet `L`-series
 -/
 
 /-- If `χ` is a Dirichlet character and its level `M` divides `N`, then we obtain the L-series

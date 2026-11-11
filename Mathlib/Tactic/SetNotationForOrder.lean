@@ -13,6 +13,9 @@ public import Mathlib.Order.Notation -- shake: keep
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Util.AddRelatedDecl
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set notation for order operations
 
@@ -70,7 +73,9 @@ initialize
 def useSetNotationFor (type : Expr) : MetaM Bool := do
   return (← trySynthInstance (← mkAppM ``UsesSetNotationForOrder #[type])) matches .some _
 
-/-! ## Delaboration -/
+/-!
+# Delaboration
+-/
 
 /-- Delaborate `x ≤ y` into `x ⊆ y` if the type is tagged with `@[use_set_notation_for_order]`. -/
 @[app_delab LE.le]
@@ -136,7 +141,9 @@ public def delabMin : Delab :=
     let stx ← `($x ∩ $y)
     annotateGoToDef stx decl_name%
 
-/-! ## Elaboration -/
+/-!
+# Elaboration
+-/
 
 /-- Linter for ambiguous use of subset notation. -/
 register_option linter.setNotationForOrder : Bool := {
@@ -149,14 +156,16 @@ public opaque SubsetElabAux.{u} {α : Type u} : α → α → Prop
 /-- This operation is an implementation detail of the `∪`/`∩` elaborator. -/
 public opaque UnionInterElabAux.{u} {α : Type u} : α → α → α := fun _ ↦ id
 
-/-- Elaborate a notation like `a ⊆ b` by elaborating `a` and `b`, and then deciding
+/--
+Elaborate a notation like `a ⊆ b` by elaborating `a` and `b`, and then deciding
 based on their type whether to return `a ⊆ b` or `a ≤ b`.
 Use `a ≤ b` whenever `useSetNotationFor` returns true for the type.
 If the type is not known, elaboration of this term is postponed.
 
 We assume that `orderOp` and `setOp` are names for declarations of exactly the form
 `decl.{u} {α : Type u} [Cls.{u} α] (a b : α)`, and that likewise `orderCls` and `setCls` are
-names for declarations of exactly the form  `Cls.{u} (α : Type u) : Type u`. -/
+names for declarations of exactly the form  `Cls.{u} (α : Type u) : Type u`.
+-/
 def elabBinSetNotation (x y : Term) (opaqueAux orderOp orderCls setOp setCls : Name)
     (expectedType? : Option Expr) : TermElabM Expr := do
   let app ← `($(mkCIdent opaqueAux) $x $y)
@@ -282,7 +291,9 @@ binder_predicate (priority := high) x " ⊇ " y:term => `($x ⊇ $y)
 `∃ x, x ⊃ y ∧ ...` -/
 binder_predicate (priority := high) x " ⊃ " y:term => `($x ⊃ $y)
 
-/-! ## Dot-notation namespace linter -/
+/-!
+# Dot-notation namespace linter
+-/
 
 /-- A temporary linter to help adapt to `@[set_notation_for_order]`.
 It gives a warning when a lemma is in the wrong namespace for dot-notation. -/
@@ -307,7 +318,9 @@ public def subsetDotNotationLinter : Batteries.Tactic.Lint.Linter where
           return some m!"`{n}` should be named `{otherStart ++ rest}` in order to use dot-notation."
     return none
 
-/-! ## Lemma translation -/
+/-!
+# Lemma translation
+-/
 
 @[inherit_doc GuessName.GuessNameData.nameDict]
 def nameDict : Std.HashMap String (List String) := .ofList [
@@ -323,7 +336,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("iSup", ["IUnion"]),
 ]
 
-/-- Generate a variant of a theorem by restricting the order on the specified types to those
+/--
+Generate a variant of a theorem by restricting the order on the specified types to those
 that are tagged `@[use_set_notation_for_order]`.
 
 Explicitly, `to_set_notation` inserts a `[UsesSetNotationForOrder α]` type class

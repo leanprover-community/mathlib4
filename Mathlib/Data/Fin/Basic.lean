@@ -12,6 +12,9 @@ public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The finite type with `n` elements
 
@@ -23,7 +26,6 @@ This file expands on the development in the core library.
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
   Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
-
 -/
 
 @[expose] public section
@@ -112,7 +114,7 @@ lemma neZero {n : ℕ} (i : Fin n) : NeZero n := ⟨Nat.ne_zero_of_lt i.isLt⟩
 section coe
 
 /-!
-### coercions and constructions
+# coercions and constructions
 -/
 
 theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
@@ -154,7 +156,7 @@ end coe
 section Order
 
 /-!
-### order
+# order
 -/
 
 /-- `Fin.lt_or_ge` is an alias of `Fin.lt_or_le`.
@@ -181,6 +183,8 @@ theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 
+
+set_option doc.verso false
 /-- Use the ordering on `Fin n` for checking recursive definitions.
 
 For example, the following definition is not accepted by the termination checker,
@@ -194,6 +198,8 @@ def factorial {n : ℕ} : Fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
+
+set_option doc.verso true
 /-- `Fin.mk_zero` in `Lean` only applies in `Fin (n + 1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
@@ -228,7 +234,9 @@ theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
 
 end Order
 
-/-! ### Coercions to `ℤ` and the `fin_omega` tactic. -/
+/-!
+# Coercions to `ℤ` and the `fin_omega` tactic.
+-/
 
 open Int
 
@@ -282,7 +290,7 @@ macro "fin_omega" : tactic => `(tactic|
 section Add
 
 /-!
-### addition, numerals, and coercion from Nat
+# addition, numerals, and coercion from Nat
 -/
 
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
@@ -459,7 +467,7 @@ end DivMod
 section Rec
 
 /-!
-### recursion and induction principles
+# recursion and induction principles
 -/
 
 @[elab_as_elim]

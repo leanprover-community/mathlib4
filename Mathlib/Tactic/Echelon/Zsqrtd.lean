@@ -9,6 +9,9 @@ public meta import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.Tactic.Echelon.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `ℤ√d` model for the Bareiss elimination
 

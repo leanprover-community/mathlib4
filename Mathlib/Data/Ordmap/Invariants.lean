@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Dist
 public import Mathlib.Data.Ordmap.Ordnode
 public import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariants for the verification of `Ordnode`
 
@@ -53,7 +56,9 @@ variable {α : Type*}
 
 namespace Ordnode
 
-/-! ### delta and ratio -/
+/-!
+# delta and ratio
+-/
 
 
 theorem not_le_delta {s} (H : 1 ≤ s) : ¬s ≤ delta * 0 :=
@@ -63,10 +68,14 @@ theorem delta_lt_false {a b : ℕ} (h₁ : delta * a < b) (h₂ : delta * b < a)
   not_le_of_gt (lt_trans (mul_lt_mul_of_pos_left h₁ <| by decide) h₂) <| by
     simpa [mul_assoc] using Nat.mul_le_mul_right a (by decide : 1 ≤ delta * delta)
 
-/-! ### `singleton` -/
+/-!
+# `singleton`
+-/
 
 
-/-! ### `size` and `empty` -/
+/-!
+# `size` and `empty`
+-/
 
 
 /-- O(n). Computes the actual number of elements in the set, ignoring the cached `size` field. -/
@@ -74,7 +83,9 @@ def realSize : Ordnode α → ℕ
   | nil => 0
   | node _ l _ r => realSize l + realSize r + 1
 
-/-! ### `Sized` -/
+/-!
+# `Sized`
+-/
 
 
 /-- The `Sized` property asserts that all the `size` fields in nodes match the actual size of the
@@ -176,7 +187,9 @@ theorem Balanced.dual : ∀ {t : Ordnode α}, Balanced t → Balanced (dual t)
   | nil, _ => ⟨⟩
   | node _ l _ r, ⟨b, bl, br⟩ => ⟨by rw [size_dual, size_dual]; exact b.symm, br.dual, bl.dual⟩
 
-/-! ### `rotate` and `balance` -/
+/-!
+# `rotate` and `balance`
+-/
 
 
 /-- Build a tree from three nodes, left associated (ignores the invariants). -/
@@ -368,7 +381,9 @@ theorem size_balance' {l x r} (hl : @Sized α l) (hr : Sized r) :
   · exact hl.rotateR_size
   · rfl
 
-/-! ## `All`, `Any`, `Emem`, `Amem` -/
+/-!
+# `All`, `Any`, `Emem`, `Amem`
+-/
 
 
 theorem All.imp {P Q : α → Prop} (H : ∀ a, P a → Q a) : ∀ {t}, All P t → All Q t
@@ -431,7 +446,9 @@ theorem all_rotateR {P l x r} : @All α P (rotateR l x r) ↔ All P l ∧ P x �
 theorem all_balance' {P l x r} : @All α P (balance' l x r) ↔ All P l ∧ P x ∧ All P r := by
   rw [balance']; split_ifs <;> simp [all_node', all_rotateL, all_rotateR]
 
-/-! ### `toList` -/
+/-!
+# `toList`
+-/
 
 
 theorem foldr_cons_eq_toList : ∀ (t : Ordnode α) (r : List α), t.foldr List.cons r = toList t ++ r
@@ -464,13 +481,17 @@ theorem equiv_iff {t₁ t₂ : Ordnode α} (h₁ : Sized t₁) (h₂ : Sized t�
     Equiv t₁ t₂ ↔ toList t₁ = toList t₂ :=
   and_iff_right_of_imp fun h => by rw [← length_toList h₁, h, length_toList h₂]
 
-/-! ### `mem` -/
+/-!
+# `mem`
+-/
 
 
 theorem pos_size_of_mem [LE α] [DecidableLE α] {x : α} {t : Ordnode α} (h : Sized t)
     (h_mem : x ∈ t) : 0 < size t := by cases t; · { contradiction }; · { simp [h.1] }
 
-/-! ### `(find/erase/split)(Min/Max)` -/
+/-!
+# `(find/erase/split)(Min/Max)`
+-/
 
 
 theorem findMin'_dual : ∀ (t) (x : α), findMin' (dual t) x = findMax' x t
@@ -516,10 +537,14 @@ theorem findMax'_all {P : α → Prop} : ∀ (x : α) (t), P x → All P t → P
   | _x, nil, hx, _ => hx
   | _, node _ _ lx lr, _, ⟨_, h₂, h₃⟩ => findMax'_all lx lr h₂ h₃
 
-/-! ### `glue` -/
+/-!
+# `glue`
+-/
 
 
-/-! ### `merge` -/
+/-!
+# `merge`
+-/
 
 
 @[simp]
@@ -537,7 +562,9 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
       else glue (node ls ll lx lr) (node rs rl rx rr) :=
   rfl
 
-/-! ### `insert` -/
+/-!
+# `insert`
+-/
 
 
 set_option backward.isDefEq.respectTransparency false in
@@ -550,7 +577,9 @@ theorem dual_insert [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x : α
     cases cmpLE x y <;>
       simp [Ordering.swap, dual_balanceL, dual_balanceR, dual_insert]
 
-/-! ### `balance` properties -/
+/-!
+# `balance` properties
+-/
 
 
 set_option backward.isDefEq.respectTransparency false in

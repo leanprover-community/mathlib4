@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Properties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Function field of integral schemes
 
@@ -14,6 +17,7 @@ We define the function field of an irreducible scheme as the stalk of the generi
 This is a field when the scheme is integral.
 
 ## Main definition
+
 * `AlgebraicGeometry.Scheme.functionField`: The function field of an integral scheme.
 * `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
   function field. This map is injective.

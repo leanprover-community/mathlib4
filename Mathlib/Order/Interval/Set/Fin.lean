@@ -10,21 +10,24 @@ public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 import Mathlib.Logic.Equiv.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Pre)images of set intervals under `Fin` operations
 
 In this file we prove basic lemmas about preimages and images of the intervals
 under the following operations:
 
-- `Fin.val`,
-- `Fin.castLE` (preimages only),
-- `Fin.castAdd`,
-- `Fin.cast`,
-- `Fin.castSucc`,
-- `Fin.natAdd`,
-- `Fin.addNat`,
-- `Fin.succ`,
-- `Fin.rev`.
+* `Fin.val`,
+* `Fin.castLE` (preimages only),
+* `Fin.castAdd`,
+* `Fin.cast`,
+* `Fin.castSucc`,
+* `Fin.natAdd`,
+* `Fin.addNat`,
+* `Fin.succ`,
+* `Fin.rev`.
 -/
 
 public section
@@ -36,7 +39,7 @@ namespace Fin
 variable {m n : ℕ}
 
 /-!
-### (Pre)images under `Fin.val`
+# (Pre)images under `Fin.val`
 -/
 
 @[simp]
@@ -106,7 +109,7 @@ lemma ofNat_injOn_Iio {n m : ℕ} [NeZero n] (hmn : m ≤ n) :
   grind [Fin.val_ofNat, Nat.mod_eq_of_lt hi, Nat.mod_eq_of_lt hj]
 
 /-!
-### Preimages under `Fin.castLE`
+# Preimages under `Fin.castLE`
 -/
 
 @[simp]
@@ -208,7 +211,7 @@ theorem image_castLE_uIoo (i j : Fin m) (h : m ≤ n) :
   val_injective.image_injective <| by simp [image_image]
 
 /-!
-### (Pre)images under `Fin.castAdd`
+# (Pre)images under `Fin.castAdd`
 -/
 
 @[simp]
@@ -320,7 +323,7 @@ theorem image_castAdd_uIoo (m) (i j : Fin n) :
   image_castLE_uIoo ..
 
 /-!
-### (Pre)images under `Fin.cast`
+# (Pre)images under `Fin.cast`
 -/
 
 theorem image_cast (h : m = n) (s : Set (Fin m)) : Fin.cast h '' s = Fin.cast h.symm ⁻¹' s :=
@@ -378,7 +381,7 @@ theorem preimage_cast_uIoo (h : m = n) (i j : Fin n) :
   rfl
 
 /-!
-### `Fin.castSucc`
+# `Fin.castSucc`
 -/
 
 @[simp]
@@ -473,7 +476,7 @@ theorem image_castSucc_uIoo (i j : Fin n) : castSucc '' uIoo i j = uIoo i.castSu
   image_castAdd_uIoo ..
 
 /-!
-### `Fin.natAdd`
+# `Fin.natAdd`
 -/
 
 theorem range_natAdd (m n : ℕ) : range (natAdd m : Fin n → Fin (m + n)) = {i | m ≤ i.1} := by
@@ -596,7 +599,7 @@ theorem image_natAdd_uIoo (m) (i j : Fin n) :
   simp [uIoo, ← (strictMono_natAdd m).monotone.map_max, ← (strictMono_natAdd m).monotone.map_min]
 
 /-!
-### `Fin.addNat`
+# `Fin.addNat`
 -/
 
 @[simp]
@@ -703,7 +706,7 @@ theorem image_addNat_uIoo (m) (i j : Fin n) :
   simp [uIoo, ← (strictMono_addNat m).monotone.map_max, ← (strictMono_addNat m).monotone.map_min]
 
 /-!
-### `Fin.succ`
+# `Fin.succ`
 -/
 
 @[simp]
@@ -792,7 +795,7 @@ theorem image_succ_uIoo (i j : Fin n) : succ '' uIoo i j = uIoo i.succ j.succ :=
   image_addNat_uIoo ..
 
 /-!
-### `Fin.rev`
+# `Fin.rev`
 -/
 
 @[simp]

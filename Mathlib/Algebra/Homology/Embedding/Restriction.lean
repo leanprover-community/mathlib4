@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The restriction functor of an embedding of complex shapes
 
 Given `c` and `c'` complex shapes on two types, and `e : c.Embedding c'`
 (satisfying `[e.IsRelIff]`), we define the restriction functor
 `e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`.
-
 -/
 
 @[expose] public section

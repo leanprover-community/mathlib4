@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
 
 import Mathlib.CategoryTheory.CofilteredSystem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariant Extensions of Rings
 
@@ -19,14 +22,13 @@ groups.
 ## Main statements
 
 Let `G` be a profinite group acting continuously on a
-  commutative ring `B` (with the discrete topology) satisfying `Algebra.IsInvariant A B G`.
+commutative ring `B` (with the discrete topology) satisfying `Algebra.IsInvariant A B G`.
 
 * `Algebra.IsInvariant.isIntegral_of_profinite`: `B/A` is an integral extension.
 * `Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite`:
   `G` acts transitivity on the prime ideals of `B` lying above a given prime ideal of `A`.
 * `Ideal.Quotient.stabilizerHom_surjective_of_profinite`: if `Q` is a prime ideal of `B` lying over
   a prime ideal `P` of `A`, then the stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`.
-
 -/
 
 @[expose] public section

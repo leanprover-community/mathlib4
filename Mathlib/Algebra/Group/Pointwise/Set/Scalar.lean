@@ -11,6 +11,9 @@ public import Mathlib.Data.Set.NAry
 
 import Mathlib.Tactic.Monotonicity.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise scalar operations of sets
 
@@ -31,7 +34,7 @@ For sets `s` and `t` and scalar `a`:
 For `α` a semigroup/monoid, `Set α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between
 pointwise scaling and repeated pointwise addition; the former has `(2 : ℕ) • {1, 2} = {2, 4}`, while
-the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat action].
+the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note \[pointwise nat action\].
 
 Appropriate definitions and results are also transported to the additive theory via `to_additive`.
 
@@ -42,9 +45,9 @@ Appropriate definitions and results are also transported to the additive theory 
   `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
 * We put all instances in the scope `Pointwise`, so that these instances are not available by
-  default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-  since we expect the scope to be open whenever the instances are actually used (and making the
-  instances reducible changes the behavior of `simp`).
+  default. Note that we do not mark them as reducible (as argued by note \[reducible
+  non-instances\]) since we expect the scope to be open whenever the instances are actually used
+  (and making the instances reducible changes the behavior of `simp`).
 
 ## Tags
 
@@ -62,7 +65,9 @@ variable {α β γ : Type*}
 
 namespace Set
 
-/-! ### Translation/scaling of sets -/
+/-!
+# Translation/scaling of sets
+-/
 
 section SMul
 

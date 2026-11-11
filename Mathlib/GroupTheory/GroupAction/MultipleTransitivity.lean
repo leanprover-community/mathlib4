@@ -10,24 +10,23 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 import Mathlib.SetTheory.Cardinal.Embedding
 
-/-! # Multiple transitivity
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Multiple transitivity
 
 * `MulAction.IsMultiplyPretransitive`:
   A multiplicative action of a group `G` on a type `α` is n-transitive
   if the action of `G` on `Fin n ↪ α` is pretransitive.
-
 * `MulAction.is_zero_pretransitive` : any action is 0-pretransitive
-
 * `MulAction.is_one_pretransitive_iff` :
   An action is 1-pretransitive iff it is pretransitive
-
 * `MulAction.is_two_pretransitive_iff` :
   An action is 2-pretransitive if for any `a`, `b`, `c`, `d`, such that
   `a ≠ b` and `c ≠ d`, there exist `g : G` such that `g • a = b` and `g • c = d`.
-
 * `MulAction.isPreprimitive_of_is_two_pretransitive` :
   A 2-transitive action is preprimitive
-
 * `MulAction.isMultiplyPretransitive_of_le` :
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
@@ -37,11 +36,8 @@ import Mathlib.SetTheory.Cardinal.Embedding
 * `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
   that for `a`, `b` and `g` such that `g • a = b`, the actions
   of `stabilizer G a` and of `stabilizer G b` are equivalently `n`-pretransitive for all `n : ℕ`.
-
 * `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff_conj hg` shows the
   same result for `n`-transitivity.
-
-
 * `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : if the action of `G` on `α`
   is pretransitive, then it is `n.succ` pretransitive if and only if
   the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
@@ -50,7 +46,6 @@ import Mathlib.SetTheory.Cardinal.Embedding
 
 * The permutation group is pretransitive, is multiply pretransitive,
   and is preprimitive (for its natural action)
-
 * `Equiv.Perm.eq_top_if_isMultiplyPretransitive`:
   a subgroup of `Equiv.Perm α` which is `Nat.card α - 1` pretransitive is equal to `⊤`.
 
@@ -58,7 +53,6 @@ import Mathlib.SetTheory.Cardinal.Embedding
 
 These results are results about actions on types `n ↪ α` induced by an action
 on `α`, and some results are developed in this context.
-
 -/
 
 @[expose] public section
@@ -127,11 +121,13 @@ theorem isMultiplyPretransitive_iff {n : ℕ} :
 variable {H β : Type*} [Group H] [MulAction H β] {σ : G → H}
   {f : α →ₑ[σ] β} (hf : Function.Injective f)
 
-/-- If there exists a surjective equivariant map `α →ₑ[σ] β`
+/--
+If there exists a surjective equivariant map `α →ₑ[σ] β`
 then pretransitivity descends from `n ↪ α` to `n ↪ β`.
 
 The subtlety is that if it is not injective, this map does not induce
-an equivariant map from `n ↪ α` to `n ↪ β`. -/
+an equivariant map from `n ↪ α` to `n ↪ β`.
+-/
 @[to_additive]
 theorem IsPretransitive.of_embedding {n : Type*}
     (hf : Function.Surjective f) [IsPretransitive G (n ↪ α)] :
@@ -272,17 +268,21 @@ def _root_.MulActionHom.embMap {m n : Type*} (e : m ↪ n) :
   toFun i := e.trans i
   map_smul' _ _ := rfl
 
-/-- If `α` has at least `n` elements, then any `n`-pretransitive action on `α`
+/--
+If `α` has at least `n` elements, then any `n`-pretransitive action on `α`
 is `m`-pretransitive for any `m ≤ n`.
 
 This version allows `α` to be infinite and uses `ENat.card`.
-For `Finite α`, use `MulAction.isMultiplyPretransitive_of_le` -/
+For `Finite α`, use `MulAction.isMultiplyPretransitive_of_le`
+-/
 @[to_additive
-/-- If `α` has at least `n` elements, then any `n`-pretransitive action on `α`
+/--
+If `α` has at least `n` elements, then any `n`-pretransitive action on `α`
 is `n`-pretransitive for any `m ≤ n`.
 
 This version allows `α` to be infinite and uses `ENat.card`.
-For `Finite α`, use `AddAction.isMultiplyPretransitive_of_le`. -/]
+For `Finite α`, use `AddAction.isMultiplyPretransitive_of_le`.
+-/]
 theorem isMultiplyPretransitive_of_le' {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ ENat.card α) :
     IsMultiplyPretransitive G α m := by
@@ -291,15 +291,19 @@ theorem isMultiplyPretransitive_of_le' {m n : ℕ} [IsMultiplyPretransitive G α
     (f := embMap G α (castAddEmb p))
     (Fin.Embedding.restrictSurjective_of_add_le_ENatCard hα) inferInstance
 
-/-- If `α` has at least `n` elements, then an `n`-pretransitive action
+/--
+If `α` has at least `n` elements, then an `n`-pretransitive action
 is `m`-pretransitive for any `m ≤ n`.
 
-For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`. -/
+For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`.
+-/
 @[to_additive
-/-- If `α` has at least `n` elements, then an `n`-pretransitive action
+/--
+If `α` has at least `n` elements, then an `n`-pretransitive action
 is `m`-pretransitive for any `m ≤ n`.
 
-For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`. -/]
+For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`.
+-/]
 theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ Nat.card α) [Finite α] :
     IsMultiplyPretransitive G α m := by
@@ -345,9 +349,11 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
 /-- Multiple transitivity of a pretransitive action
 is equivalent to one less transitivity of stabilizer of a point
 (Wielandt, th. 9.1, 1st part) -/
-@[to_additive /-- Multiple transitivity of a pretransitive action
+@[to_additive /--
+              Multiple transitivity of a pretransitive action
 is equivalent to one less transitivity of stabilizer of a point
-[Wielandt, th. 9.1, 1st part][Wielandt-1964]. -/]
+‍\[Wielandt, th. 9.1, 1st part\]\[Wielandt-1964\].
+              -/]
 theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
@@ -632,10 +638,12 @@ theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
   rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by simp) h)]
 
-/-- The action of the alternating group has trivial blocks.
+/--
+The action of the alternating group has trivial blocks.
 
 This holds for any `α`, even when `Nat.card α ≤ 2` and the action
-is not preprimitive, because it is not pretransitive. -/
+is not preprimitive, because it is not pretransitive.
+-/
 theorem isTrivialBlock_of_isBlock {B : Set α} (hB : IsBlock (alternatingGroup α) B) :
     IsTrivialBlock B := by
   rcases le_or_gt (Nat.card α) 2 with h2 | h2

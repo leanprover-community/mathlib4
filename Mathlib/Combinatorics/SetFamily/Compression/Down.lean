@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Down-compressions
 
@@ -147,8 +150,10 @@ lemma image_insert_memberSubfamily (𝒜 : Finset (Finset α)) (a : α) :
     exact ⟨hs, mem_insert_self _ _⟩
   · rwa [insert_erase ha]
 
-/-- Induction principle for finset families. To prove a statement for every finset family,
+/--
+Induction principle for finset families. To prove a statement for every finset family,
 it suffices to prove it for
+
 * the empty finset family.
 * the finset family which only contains the empty finset.
 * `ℬ ∪ {s ∪ {a} | s ∈ 𝒞}` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the
@@ -158,7 +163,8 @@ it suffices to prove it for
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
-See also `Finset.family_induction_on.` -/
+See also `Finset.family_induction_on.`
+-/
 @[elab_as_elim]
 lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})
@@ -179,8 +185,10 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     · simp only [mem_memberSubfamily, and_imp]
       exact fun s hs ha ↦ (insert_subset_insert_iff ha).1 <| hu _ hs
 
-/-- Induction principle for finset families. To prove a statement for every finset family,
+/--
+Induction principle for finset families. To prove a statement for every finset family,
 it suffices to prove it for
+
 * the empty finset family.
 * the finset family which only contains the empty finset.
 * `{s ∪ {a} | s ∈ 𝒜}` assuming the property for `𝒜` a family of finsets not containing `a`.
@@ -191,7 +199,8 @@ it suffices to prove it for
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
-See also `Finset.memberFamily_induction_on.` -/
+See also `Finset.memberFamily_induction_on.`
+-/
 @[elab_as_elim]
 protected lemma family_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})

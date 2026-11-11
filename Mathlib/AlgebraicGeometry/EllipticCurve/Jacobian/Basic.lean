@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 
 import Mathlib.Tactic.Ring.NamePolyVars
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weierstrass equations and the nonsingular condition in Jacobian coordinates
 
@@ -17,9 +20,9 @@ equivalence class `[x : y : z]` of triples `(x, y, z) ≠ (0, 0, 0)` of elements
 `(x, y, z) ∼ (x', y', z')` if there is some unit `u` in `Rˣ` with `(x, y, z) = (u²x', u³y', uz')`.
 
 Let `W` be a Weierstrass curve over a commutative ring `R` with coefficients `aᵢ`. A
-*Jacobian point* is a point on the projective plane over `R` with weights `(2, 3, 1)` satisfying the
-*`(2, 3, 1)`-homogeneous Weierstrass equation* `W(X, Y, Z) = 0` in *Jacobian coordinates*, where
-`W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)`. It is *nonsingular* if its
+_Jacobian point_ is a point on the projective plane over `R` with weights `(2, 3, 1)` satisfying the
+_`(2, 3, 1)`-homogeneous Weierstrass equation_ `W(X, Y, Z) = 0` in _Jacobian coordinates_, where
+`W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)`. It is _nonsingular_ if its
 partial derivatives `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_Z(x, y, z)` do not vanish simultaneously.
 
 This file gives an explicit implementation of equivalence classes of triples up to scaling by
@@ -61,7 +64,7 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Basic.lean`.
 
 ## References
 
-[J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -103,7 +106,9 @@ name_poly_vars X, Y, Z over R
 
 namespace WeierstrassCurve
 
-/-! ## Jacobian coordinates -/
+/-!
+# Jacobian coordinates
+-/
 
 variable (R) in
 /-- An abbreviation for a Weierstrass curve in Jacobian coordinates. -/
@@ -230,14 +235,18 @@ lemma Y_eq_iff {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z ^ 3 = Q y * P z ^ 3 ↔ P y / P z ^ 3 = Q y / Q z ^ 3 :=
   (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).symm
 
-/-! ## Weierstrass equations in Jacobian coordinates -/
+/-!
+# Weierstrass equations in Jacobian coordinates
+-/
 
 variable (W') in
-/-- The polynomial `W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)` associated to a
+/--
+The polynomial `W(X, Y, Z) := Y² + a₁XYZ + a₃YZ³ - (X³ + a₂X²Z² + a₄XZ⁴ + a₆Z⁶)` associated to a
 Weierstrass curve `W` over a ring `R` in Jacobian coordinates.
 
 This is represented as a term of type `MvPolynomial (Fin 3) R`, where `X`, `Y`, and `Z`
-represent `X`, `Y`, and `Z` respectively. -/
+represent `X`, `Y`, and `Z` respectively.
+-/
 noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   Y ^ 2 + C W'.a₁ * X * Y * Z + C W'.a₃ * Y * Z ^ 3
     - (X ^ 3 + C W'.a₂ * X ^ 2 * Z ^ 2 + C W'.a₄ * X * Z ^ 4 + C W'.a₆ * Z ^ 6)
@@ -256,10 +265,12 @@ lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P 
       - W.a₄ * P x / P z ^ 2 * div_self (pow_ne_zero 4 hPz) - W.a₆ * div_self (pow_ne_zero 6 hPz)
 
 variable (W') in
-/-- The proposition that a Jacobian point representative `(x, y, z)` lies in a Weierstrass curve
+/--
+The proposition that a Jacobian point representative `(x, y, z)` lies in a Weierstrass curve
 `W`.
 
-In other words, it satisfies the `(2, 3, 1)`-homogeneous Weierstrass equation `W(X, Y, Z) = 0`. -/
+In other words, it satisfies the `(2, 3, 1)`-homogeneous Weierstrass equation `W(X, Y, Z) = 0`.
+-/
 def Equation (P : Fin 3 → R) : Prop :=
   eval P W'.polynomial = 0
 
@@ -292,7 +303,9 @@ lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Equation P ↔ W.toAffine.Equation (P x / P z ^ 2) (P y / P z ^ 3) :=
   (equation_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| equation_some ..
 
-/-! ## The nonsingular condition in Jacobian coordinates -/
+/-!
+# The nonsingular condition in Jacobian coordinates
+-/
 
 variable (W') in
 /-- The partial derivative `W_X(X, Y, Z)` with respect to `X` of the polynomial `W(X, Y, Z)`
@@ -366,12 +379,14 @@ theorem polynomial_relation (P : Fin 3 → R) : 6 * eval P W'.polynomial =
   ring1
 
 variable (W') in
-/-- The proposition that a Jacobian point representative `(x, y, z)` on a Weierstrass curve `W` is
+/--
+The proposition that a Jacobian point representative `(x, y, z)` on a Weierstrass curve `W` is
 nonsingular.
 
 In other words, either `W_X(x, y, z) ≠ 0`, `W_Y(x, y, z) ≠ 0`, or `W_Z(x, y, z) ≠ 0`.
 
-Note that this definition is only mathematically accurate for fields. -/
+Note that this definition is only mathematically accurate for fields.
+-/
 -- TODO: generalise this definition to be mathematically accurate for a larger class of rings.
 def Nonsingular (P : Fin 3 → R) : Prop :=
   W'.Equation P ∧
@@ -482,12 +497,14 @@ lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
     exact ⟨Units.map f u, (comp_smul ..).symm⟩
 
 variable (W') in
-/-- The proposition that a Jacobian point class on a Weierstrass curve `W` is nonsingular.
+/--
+The proposition that a Jacobian point class on a Weierstrass curve `W` is nonsingular.
 
 If `P` is a Jacobian point representative on `W`, then `W.NonsingularLift ⟦P⟧` is definitionally
 equivalent to `W.Nonsingular P`.
 
-Note that this definition is only mathematically accurate for fields. -/
+Note that this definition is only mathematically accurate for fields.
+-/
 def NonsingularLift (P : PointClass R) : Prop :=
   P.lift W'.Nonsingular fun _ _ => propext ∘ nonsingular_of_equiv
 
@@ -501,7 +518,9 @@ lemma nonsingularLift_some (a b : R) :
     W'.NonsingularLift ⟦![a, b, 1]⟧ ↔ W'.toAffine.Nonsingular a b :=
   nonsingular_some a b
 
-/-! ## Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable (W') (f : R →+* S)
 

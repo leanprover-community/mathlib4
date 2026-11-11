@@ -9,17 +9,22 @@ public meta import Lean.Elab.Command
 public meta import Lean.Elab.InfoTree.Util
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `have` vs `let` linter
 
 The `have` vs `let` linter flags uses of `have` to introduce a hypothesis whose Type is not `Prop`.
 
 The option for this linter is a natural number, but really there are only 3 settings:
+
 * `0` -- inactive;
 * `1` -- active only on noisy declarations;
 * `2` or more -- always active.
 
 TODO:
+
 * Also lint `let` vs `have`.
 * `haveI` may need to change to `let/letI`?
 * `replace`, `classical!`, `classical`, `tauto` internally use `have`:
@@ -32,9 +37,11 @@ open Lean Elab Command Meta
 
 namespace Mathlib.Linter
 
-/-- The `have` vs `let` linter emits a warning on `have`s introducing a hypothesis whose
+/--
+The `have` vs `let` linter emits a warning on `have`s introducing a hypothesis whose
 Type is not `Prop`.
 There are three settings:
+
 * `0` -- inactive;
 * `1` -- active only on noisy declarations;
 * `2` or more -- always active.
@@ -62,7 +69,8 @@ end Mathlib.Linter
 
 namespace Mathlib.Linter.haveLet
 
-/-- given a `ContextInfo`, a `LocalContext` and an `Array` of `Expr`essions `es` with a `Name`,
+/--
+given a `ContextInfo`, a `LocalContext` and an `Array` of `Expr`essions `es` with a `Name`,
 `toFormat_propTypes` creates a `MetaM` context, and returns an array of
 the pretty-printed `Format` of `e`, together with the (unchanged) name
 for each `Expr`ession `e` in `es` whose type is a `Prop`.
@@ -70,7 +78,8 @@ for each `Expr`ession `e` in `es` whose type is a `Prop`.
 Concretely, `toFormat_propTypes` runs `inferType` in `CommandElabM`.
 This is the kind of monadic lift that `nonPropHaves` uses to decide whether the Type of a `have`
 is in `Prop` or not.
-The output `Format` is just so that the linter displays a better message. -/
+The output `Format` is just so that the linter displays a better message.
+-/
 def toFormat_propTypes (ctx : ContextInfo) (lc : LocalContext) (es : Array (Expr × Name)) :
     CommandElabM (Array (Format × Name)) := do
   ctx.runMetaM lc do

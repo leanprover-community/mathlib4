@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # L2 inner product of finite sequences
 

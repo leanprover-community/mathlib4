@@ -9,10 +9,13 @@ public import Mathlib.Topology.Sequences
 
 import Mathlib.Topology.Perfect
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Countably compact sets
 
-A set `A` in a topological space is **countably compact** if every countably generated proper
+A set `A` in a topological space is *countably compact* if every countably generated proper
 filter contained in `A` has a cluster point in `A`. Equivalently, every sequence in `A` has a
 cluster point in `A`, and every countable open cover of `A` admits a finite subcover.
 
@@ -43,7 +46,7 @@ cluster point in `A`, and every countable open cover of `A` admits a finite subc
 
 ## References
 
-* [Engelking, *General Topology*][engelking1989]
+* ‍\[Engelking, _General Topology_\]\[engelking1989\]
 -/
 
 @[expose] public section
@@ -218,8 +221,10 @@ theorem isCountablyCompact_iff_countablyCompactSpace :
     IsCountablyCompact A ↔ CountablyCompactSpace A :=
   isCountablyCompact_iff_isCountablyCompact_univ.trans isCountablyCompact_univ_iff
 
-/-- If a sequential space is countably compact, then it is sequentially compact. We follow the proof
-in [kremsater1972sequential]. -/
+/--
+If a sequential space is countably compact, then it is sequentially compact. We follow the proof
+in \[kremsater1972sequential\].
+-/
 instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
     SeqCompactSpace E := by
   -- We prove by contradiction. If `E` is not sequentially compact, then there exists a sequence

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Graph.Delete
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Edge cuts and bridges of graphs
 
@@ -17,7 +20,6 @@ This file defines the edge cuts and bridges of a graph.
 * `IsEdgeCut`: a set of edges between a set of vertices and its complement.
 * `IsBridge`: an edge that forms a singleton edge cut (an isthmus / bridge edge).
 * `IsBond`: a bond of a graph is a minimal nonempty edge cut.
-
 -/
 
 public section
@@ -28,7 +30,9 @@ open Set symmDiff
 
 namespace Graph
 
-/-! ### Edge cuts -/
+/-!
+# Edge cuts
+-/
 
 section edgeCut
 
@@ -132,7 +136,9 @@ alias IsClosedSubgraph.isEdgeCut := IsEdgeCut.of_isClosedSubgraph
 
 end IsEdgeCut
 
-/-! ### Bridges: singleton edge cuts -/
+/-!
+# Bridges: singleton edge cuts
+-/
 
 section IsBridge
 
@@ -157,12 +163,16 @@ lemma IsClosedSubgraph.isBridge_iff (he : e ∈ E(H)) (h : H ≤c G) : G.IsBridg
 
 end IsBridge
 
-/-! ### Bonds: minimal nonempty edge cuts -/
+/-!
+# Bonds: minimal nonempty edge cuts
+-/
 
 section IsBond
 
-/-- A bond of a graph is a minimal nonempty edge-cut; see
-[Diestel, *Graph Theory*, Section 1.9][diestel2017]. -/
+/--
+A bond of a graph is a minimal nonempty edge-cut; see
+‍\[Diestel, _Graph Theory_, Section 1.9\]\[diestel2017\].
+-/
 @[expose]
 def IsBond (G : Graph α β) (F : Set β) : Prop := Minimal (fun F ↦ G.IsEdgeCut F ∧ F.Nonempty) F
 

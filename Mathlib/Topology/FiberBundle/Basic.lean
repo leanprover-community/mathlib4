@@ -9,6 +9,9 @@ public import Mathlib.Topology.FiberBundle.Trivialization
 
 import Mathlib.Topology.Order.LeftRightNhds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fiber bundles
 
@@ -60,11 +63,10 @@ Let `Z : FiberBundleCore ι B F`. Then we define
 
 * `Z.Fiber x`     : the fiber above `x`, homeomorphic to `F` (and defeq to `F` as a type).
 * `Z.TotalSpace`  : the total space of `Z`, defined as `Bundle.TotalSpace F Z.Fiber` with a custom
-                    topology.
+  topology.
 * `Z.proj`        : projection from `Z.TotalSpace` to `B`. It is continuous.
 * `Z.localTriv i` : for `i : ι`, bundle trivialization above the set `Z.baseSet i`, which is an
-                    open set in `B`.
-
+  open set in `B`.
 * `FiberPrebundle F E` : structure registering a cover of prebundle trivializations
   and requiring that the relative transition maps are open partial homeomorphisms.
 * `FiberPrebundle.totalSpaceTopology a` : natural topology of the total space, making
@@ -74,7 +76,7 @@ Let `Z : FiberBundleCore ι B F`. Then we define
 
 ### Data vs mixins
 
-For both fiber and vector bundles, one faces a choice: should the definition state the *existence*
+For both fiber and vector bundles, one faces a choice: should the definition state the _existence_
 of local trivializations (a propositional typeclass), or specify a fixed atlas of trivializations (a
 typeclass containing data)?
 
@@ -129,6 +131,7 @@ For the practical implementation, it turns out to be more convenient to avoid co
 gluing and quotienting construction above, and to declare above each `x` that the fiber is `F`,
 but thinking that it corresponds to the `F` coming from the choice of one trivialization around `x`.
 This has several practical advantages:
+
 * without any work, one gets a topological space structure on the fiber. And if `F` has more
   structure it is inherited for free by the fiber.
 * In the case of the tangent bundle of manifolds, this implies that on vector spaces the derivative
@@ -163,6 +166,7 @@ Or for the pullback of a `FiberBundleCore`, the indexing type will be the same a
 for the initial bundle.
 
 ## Tags
+
 Fiber bundle, topological bundle, structure group
 -/
 
@@ -173,7 +177,9 @@ variable {ι B F X : Type*} [TopologicalSpace X]
 
 open TopologicalSpace Filter Set Bundle Topology
 
-/-! ### General definition of fiber bundles -/
+/-!
+# General definition of fiber bundles
+-/
 
 section FiberBundle
 
@@ -406,7 +412,9 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
 
 end FiberBundle
 
-/-! ### Core construction for constructing fiber bundles -/
+/-!
+# Core construction for constructing fiber bundles
+-/
 
 /-- Core data defining a locally trivial bundle with fiber `F` over a topological
 space `B`. Note that "bundle" is used in its mathematical sense. This is the (computer science)
@@ -738,7 +746,9 @@ nonrec theorem isOpenMap_proj : IsOpenMap Z.proj :=
 
 end FiberBundleCore
 
-/-! ### Prebundle construction for constructing fiber bundles -/
+/-!
+# Prebundle construction for constructing fiber bundles
+-/
 
 variable (F)
 variable (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]

@@ -7,14 +7,17 @@ module
 
 public import Mathlib.Tactic.PPWithUniv
 
-/-! # `ToLevel` class
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `ToLevel` class
 
 This module defines `Lean.ToLevel`, which is the `Lean.Level` analogue to `Lean.ToExpr`.
 
-**Warning:** Import `Mathlib/Tactic/ToExpr.lean` instead of this one if you are writing `ToExpr`
+*Warning:* Import `Mathlib/Tactic/ToExpr.lean` instead of this one if you are writing `ToExpr`
 instances. This ensures that you are using the universe polymorphic `ToExpr` instances that
 override the ones from Lean 4 core.
-
 -/
 
 public meta section

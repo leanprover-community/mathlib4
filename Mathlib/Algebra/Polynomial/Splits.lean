@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.Algebra.Polynomial.Taylor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Split polynomials
 
@@ -18,7 +21,6 @@ A polynomial `f : R[X]` splits if it is a product of constant and monic linear p
 
 * `Polynomial.Splits f`: A predicate on a polynomial `f` saying that `f` is a product of
   constant and monic linear polynomials.
-
 -/
 
 @[expose] public section
@@ -330,9 +332,11 @@ theorem Splits.eval_derivative [DecidableEq R] (hf : f.Splits) (x : R) :
   conv_lhs => rw [hf.eq_prod_roots]
   simp [derivative_prod, eval_multisetSum, eval_multiset_prod]
 
-/-- Let `f` be a monic polynomial over that splits. Let `x` be a root of `f`.
-Then $f'(r) = \prod_{a}(x-a)$, where the product in the RHS is taken over all roots of `f`,
-with the multiplicity of `x` reduced by one. -/
+/--
+Let `f` be a monic polynomial over that splits. Let `x` be a root of `f`.
+Then $`f'(r) = \prod_{a}(x-a)`, where the product in the RHS is taken over all roots of `f`,
+with the multiplicity of `x` reduced by one.
+-/
 theorem Splits.eval_root_derivative [DecidableEq R] (hf : f.Splits) (hm : f.Monic) {x : R}
     (hx : x ∈ f.roots) : eval x f.derivative = ((f.roots.erase x).map (x - ·)).prod := by
   rw [← eval_multiset_prod_X_sub_C_derivative hx, ← hf.eq_prod_roots_of_monic hm]

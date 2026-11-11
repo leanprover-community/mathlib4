@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
 public import Mathlib.CategoryTheory.IsoCat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The fundamental groupoid of a simplicial set
 
@@ -27,7 +30,6 @@ If `f : X ⟶ Y` is a morphism of simplicial sets and `x : X _⦋0⦌`,
 this allows to obtain the equality
 `(mapFundamentalGroupoid f).obj (mk x) = mk (f.app _ x)`
 by `with_implicit rfl`.
-
 -/
 
 @[expose] public section

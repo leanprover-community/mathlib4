@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.CatCommSq
 
-/-! # Morphisms of categorical cospans.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Morphisms of categorical cospans.
 
 Given `F : A ⥤ B`, `G : C ⥤ B`, `F' : A' ⥤ B'` and `G' : C' ⥤ B'`,
 this file defines `CatCospanTransform F G F' G'`, the category of
@@ -35,7 +39,9 @@ namespace CategoryTheory.Limits
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ v₁₃ v₁₄ v₁₅
 universe u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂ u₁₃ u₁₄ u₁₅
 
-/-- A `CatCospanTransform F G F' G'` is a diagram
+/--
+A `CatCospanTransform F G F' G'` is a diagram
+
 ```
     F   G
   A ⥤ B ⥢ C
@@ -44,7 +50,9 @@ H₁|   |H₂ |H₃
   A'⥤ B'⥢ C'
     F'  G'
 ```
-with specified `CatCommSq`s expressing 2-commutativity of the squares. -/
+
+with specified `CatCommSq`s expressing 2-commutativity of the squares.
+-/
 structure CatCospanTransform
     {A : Type u₁} {B : Type u₂} {C : Type u₃}
     [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]

@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.Topology.Bornology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absorption of sets
 
 Let `M` act on `α`, let `A` and `B` be sets in `α`.
-We say that `A` *absorbs* `B` if for sufficiently large `a : M`, we have `B ⊆ a • A`.
+We say that `A` _absorbs_ `B` if for sufficiently large `a : M`, we have `B ⊆ a • A`.
 Formally, "for sufficiently large `a : M`" means "for all but a bounded set of `a`".
 
 Traditionally, this definition is formulated
@@ -20,8 +23,8 @@ for the action of a (semi)normed ring on a module over that ring.
 
 We formulate it in a more general settings for two reasons:
 
-- this way we don't have to depend on metric spaces, normed rings etc;
-- some proofs look nicer with this definition than with something like
+* this way we don't have to depend on metric spaces, normed rings etc;
+* some proofs look nicer with this definition than with something like
   `∃ r : ℝ, ∀ a : R, r ≤ ‖a‖ → B ⊆ a • A`.
 
 If `M` is a `GroupWithZero` (e.g., a division ring),
@@ -54,7 +57,9 @@ by all but a bounded set of elements. -/
 def Absorbs (s t : Set α) : Prop :=
   ∀ᶠ a in cobounded M, t ⊆ a • s
 
-/-- A set is *absorbent* if it absorbs every singleton. -/
+/--
+A set is _absorbent_ if it absorbs every singleton.
+-/
 def Absorbent (s : Set α) : Prop :=
   ∀ x, Absorbs M s {x}
 

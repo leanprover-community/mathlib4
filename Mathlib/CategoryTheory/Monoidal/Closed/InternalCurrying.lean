@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The currying-uncurrying isomorphism between internal homs of a closed monoidal category
 
 For a closed monoidal category `C`, we construct the isomorphism of internal hom objects
 `C(x ⊗ y, z) ≅ C(y, C(x, z))` for any triple of objects `x y z : C`.
-
 -/
 
 @[expose] public section

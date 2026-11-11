@@ -9,7 +9,11 @@ module
 public meta import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
-/-! # Power function on `ℝ`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Power function on `ℝ`
 
 We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 -/
@@ -273,7 +277,7 @@ protected theorem _root_.HasCompactSupport.rpow_const {α : Type*} [TopologicalS
 end Real
 
 /-!
-## Comparing real and complex powers
+# Comparing real and complex powers
 -/
 
 
@@ -367,7 +371,9 @@ theorem cpow_mul_ofReal_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (z : ℂ) :
 
 end Complex
 
-/-! ### Positivity extension -/
+/-!
+# Positivity extension
+-/
 
 namespace Mathlib.Meta.Positivity
 open Lean Qq
@@ -403,7 +409,7 @@ meta def evalRpow : PositivityExt where eval {u α} _zα pα? e :=
 end Mathlib.Meta.Positivity
 
 /-!
-## Further algebraic properties of `rpow`
+# Further algebraic properties of `rpow`
 -/
 
 
@@ -530,7 +536,7 @@ lemma rpow_mul_intCast (hx : 0 ≤ x) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y
 in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 /-!
-## Order and monotonicity
+# Order and monotonicity
 -/
 
 
@@ -977,7 +983,7 @@ end Complex
 
 
 /-!
-## Square roots of reals
+# Square roots of reals
 -/
 
 
@@ -1044,7 +1050,7 @@ end Complex
 section Tactics
 
 /-!
-## Tactic extensions for real powers
+# Tactic extensions for real powers
 -/
 namespace Mathlib.Meta.NormNum
 
@@ -1057,10 +1063,12 @@ theorem IsInt.rpow_eq_inv_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
 
-/-- Given proofs
-- that `a` is a natural number `m`
-- that `b` is a nonnegative rational number `n / d`
-- that `r ^ d = m ^ n` (written as `r ^ d = k`, `m ^ n = l`, `k = l`)
+/--
+Given proofs
+
+* that `a` is a natural number `m`
+* that `b` is a nonnegative rational number `n / d`
+* that `r ^ d = m ^ n` (written as `r ^ d = k`, `m ^ n = l`, `k = l`)
 
 prove that `a ^ b = r`.
 -/
@@ -1087,14 +1095,17 @@ theorem rpow_isRat_eq_inv_rpow (a b : ℝ) (n d : ℕ) (hb : IsRat b (Int.negOfN
   rw [← Real.rpow_neg_eq_inv_rpow, hb.neg_to_eq rfl rfl]
 
 open Lean in
-/-- Given proofs
-- that `a` is a natural number `na`;
-- that `b` is a nonnegative rational number `nb / db`;
+/--
+Given proofs
+
+* that `a` is a natural number `na`;
+* that `b` is a nonnegative rational number `nb / db`;
 
 returns a tuple of
-- a natural number `r` (result);
-- the same number, as an expression;
-- a proof that `a ^ b = r`.
+
+* a natural number `r` (result);
+* the same number, as an expression;
+* a proof that `a ^ b = r`.
 
 Fails if `na` is not a `db`th power of a natural number.
 -/
@@ -1111,12 +1122,14 @@ meta def proveIsNatRPowIsNNRat
   have hcd : Q($c = $d) := (q(Eq.refl $c) : Expr)
   return (r, ⟨er, q(IsNat.rpow_isNNRat $pa $pb $c $pc $d $pd $hcd)⟩)
 
-/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.
+/--
+Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.
 Works if `a`, `b`, and `a ^ b` are in fact rational numbers,
 except for the case `a < 0`, `b` isn't integer.
 
 TODO: simplify terms like  `(-a : ℝ) ^ (b / 3 : ℝ)` and `(-a : ℝ) ^ (b / 2 : ℝ)` too,
-possibly after first considering changing the junk value. -/
+possibly after first considering changing the junk value.
+-/
 @[norm_num (_ : ℝ) ^ (_ : ℝ)]
 meta def evalRPow : NormNumExt where eval {u αR} e := do
   match u, αR, e with

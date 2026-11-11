@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bifibrant objects
 
@@ -14,7 +17,6 @@ In this file, we introduce the full subcategories `CofibrantObject C`,
 `FibrantObject C` and `BifibrantObject C` of a model category `C` which
 respectively consist of cofibrant objects, fibrant objects,
 and bifibrant objects, where "bifibrant" means both cofibrant and fibrant.
-
 -/
 
 @[expose] public section

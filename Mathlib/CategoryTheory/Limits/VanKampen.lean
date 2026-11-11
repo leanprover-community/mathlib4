@@ -12,20 +12,24 @@ public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 
 import Mathlib.CategoryTheory.Adjunction.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universal colimits and van Kampen colimits
 
 ## Main definitions
-- `CategoryTheory.IsUniversalColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is universal
+
+* `CategoryTheory.IsUniversalColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is universal
   if it is stable under pullbacks.
-- `CategoryTheory.IsVanKampenColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is van
+* `CategoryTheory.IsVanKampenColimit`: A (colimit) cocone over a diagram `F : J ⥤ C` is van
   Kampen if for every cocone `c'` over the pullback of the diagram `F' : J ⥤ C'`,
   `c'` is colimiting iff `c'` is the pullback of `c`.
 
 ## References
-- https://ncatlab.org/nlab/show/van+Kampen+colimit
-- [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 
+* https://ncatlab.org/nlab/show/van+Kampen+colimit
+* ‍\[Stephen Lack and Paweł Sobociński, Adhesive Categories\]\[adhesive2004\]
 -/
 
 @[expose] public section
@@ -46,7 +50,8 @@ def IsUniversalColimit {F : J ⥤ C} (c : Cocone F) : Prop :=
     (_ : α ≫ c.ι = c'.ι ≫ (Functor.const J).map f) (_ : NatTrans.Equifibered α),
     (∀ j : J, IsPullback (c'.ι.app j) (α.app j) f (c.ι.app j)) → Nonempty (IsColimit c')
 
-/-- A (colimit) cocone over a diagram `F : J ⥤ C` is van Kampen if for every cocone `c'` over the
+/--
+A (colimit) cocone over a diagram `F : J ⥤ C` is van Kampen if for every cocone `c'` over the
 pullback of the diagram `F' : J ⥤ C'`, `c'` is colimiting iff `c'` is the pullback of `c`.
 
 TODO: Show that this is iff the functor `C ⥤ Catᵒᵖ` sending `x` to `C/x` preserves it.

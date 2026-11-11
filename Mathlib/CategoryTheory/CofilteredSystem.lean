@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cofiltered systems
 
@@ -48,7 +51,6 @@ Given a functor `F : J ⥤ Type v`:
 ## Tags
 
 Mittag-Leffler, surjective, eventual range, inverse system,
-
 -/
 
 @[expose] public section
@@ -73,9 +75,11 @@ theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCa
   obtain ⟨⟨u, hu⟩⟩ := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u} F'
   exact ⟨u, hu⟩
 
-/-- The cofiltered limit of nonempty finite types is nonempty.
+/--
+The cofiltered limit of nonempty finite types is nonempty.
 
-See `nonempty_sections_of_finite_inverse_system` for a specialization to inverse limits. -/
+See `nonempty_sections_of_finite_inverse_system` for a specialization to inverse limits.
+-/
 theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w} J]
     [IsCofilteredOrEmpty J] (F : J ⥤ Type v) [∀ j : J, Finite (F.obj j)]
     [∀ j : J, Nonempty (F.obj j)] : F.sections.Nonempty := by
@@ -98,7 +102,8 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   simp_rw [← h]
   rfl
 
-/-- The inverse limit of nonempty finite types is nonempty.
+/--
+The inverse limit of nonempty finite types is nonempty.
 
 See `nonempty_sections_of_finite_cofiltered_system` for a generalization to cofiltered limits.
 That version applies in almost all cases, and the only difference is that this version
@@ -107,7 +112,8 @@ allows `J` to be empty.
 This may be regarded as a generalization of Kőnig's lemma.
 To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ` and
 `F j` to be length-`j` paths that start from an arbitrary fixed vertex.
-Elements of `F.sections` can be read off as infinite rays in the graph. -/
+Elements of `F.sections` can be read off as infinite rays in the graph.
+-/
 theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirectedOrder J]
     (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
     F.sections.Nonempty := nonempty_sections_of_finite_cofiltered_system F

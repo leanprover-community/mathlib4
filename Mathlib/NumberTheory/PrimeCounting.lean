@@ -9,6 +9,9 @@ public import Mathlib.Data.Nat.Prime.Nth
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.Order.Filter.AtTopBot.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Prime Counting Function
 
@@ -19,11 +22,11 @@ the number of primes less than or equal to its input.
 
 The main definitions for this file are
 
-- `Nat.primeCounting`: The prime counting function π
-- `Nat.primeCounting'`: π(n - 1)
-- `Nat.primesBelow`: The finset of primes less than n
+* `Nat.primeCounting`: The prime counting function π
+* `Nat.primeCounting'`: π(n - 1)
+* `Nat.primesBelow`: The finset of primes less than n
   (this was previously in `Mathlib.NumberTheory.SmoothNumbers`)
-- `Nat.primesLE`: The finset of primes less than or equal to n
+* `Nat.primesLE`: The finset of primes less than or equal to n
 
 We then prove that these are monotone in `Nat.monotone_primeCounting` and
 `Nat.monotone_primeCounting'`. The last main theorem `Nat.primeCounting'_add_le` is an upper
@@ -34,7 +37,6 @@ are not prime, and so only at most `φ(k)/k` fraction of the numbers from `k` to
 
 With `open scoped Nat.Prime`, we use the standard notation `π` to represent the prime counting
 function (and `π'` to represent the reindexed version).
-
 -/
 
 @[expose] public section
@@ -44,16 +46,20 @@ namespace Nat
 
 open Finset
 
-/-- A variant of the traditional prime counting function which gives the number of primes
-*strictly* less than the input. More convenient for avoiding off-by-one errors.
+/--
+A variant of the traditional prime counting function which gives the number of primes
+_strictly_ less than the input. More convenient for avoiding off-by-one errors.
 
-With `open scoped Nat.Prime`, this has notation `π'`. -/
+With `open scoped Nat.Prime`, this has notation `π'`.
+-/
 def primeCounting' : ℕ → ℕ :=
   Nat.count Prime
 
-/-- The prime counting function: Returns the number of primes less than or equal to the input.
+/--
+The prime counting function: Returns the number of primes less than or equal to the input.
 
-With `open scoped Nat.Prime`, this has notation `π`. -/
+With `open scoped Nat.Prime`, this has notation `π`.
+-/
 @[oeis A230980]
 def primeCounting (n : ℕ) : ℕ :=
   primeCounting' (n + 1)

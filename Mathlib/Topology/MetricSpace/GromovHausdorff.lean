@@ -12,6 +12,9 @@ public import Mathlib.Topology.MetricSpace.Kuratowski
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.MetricSpace.Completion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gromov-Hausdorff distance
 
@@ -39,7 +42,6 @@ argument, essentially following from Arzela-Ascoli.
 
 We prove the most important properties of the Gromov-Hausdorff space: it is a polish space,
 i.e., it is complete and second countable. We also prove the Gromov compactness criterion.
-
 -/
 
 @[expose] public section

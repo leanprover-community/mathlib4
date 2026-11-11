@@ -8,21 +8,23 @@ module
 public import Mathlib.RingTheory.Invariant.Galois
 public import Mathlib.RingTheory.RamificationInertia.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification theory in Galois extensions of Dedekind domains
 
 In this file, we discuss the ramification theory in Galois extensions of Dedekind domains, which is
-  also called Hilbert's Ramification Theory.
+also called Hilbert's Ramification Theory.
 
 Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ring of `A`,
-  `L` is the fraction ring of `K`, `L / K` is a Galois extension.
+`L` is the fraction ring of `K`, `L / K` is a Galois extension.
 
 ## Main definitions
 
 * `Ideal.ramificationIdxIn`: It can be seen from
   the theorem `Ideal.ramificationIdx_eq_of_isGaloisGroup` that all `Ideal.ramificationIdx` over a
   fixed maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`.
-
 * `Ideal.inertiaDegIn`: It can be seen from
   the theorem `Ideal.inertiaDeg_eq_of_isGaloisGroup` that all `Ideal.inertiaDeg` over a fixed
   maximal ideal `p` of `A` are the same, which we define as `Ideal.inertiaDegIn`.
@@ -33,14 +35,12 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
   `r` be the number of prime ideals lying over `p`, `e` be the ramification index of `p` in `B`,
   and `f` be the inertia degree of `p` in `B`. Then `r * (e * f) = [L : K]`. It is the form of the
   `Ideal.sum_ramification_inertia` in the case of Galois extension.
-
 * `Ideal.card_inertia_eq_ramificationIdxIn`:
   The cardinality of the inertia group is equal to the ramification index.
 
 ## References
 
-* [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
-
+* ‍\[J Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 -/
 
 @[expose] public section

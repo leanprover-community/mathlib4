@@ -14,6 +14,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Instances.RealVectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed space structure on `ℂ`.
 
@@ -27,16 +30,15 @@ namespace `Complex`.
 
 |Name              |Type         |Description                                             |
 |------------------|-------------|--------------------------------------------------------|
-|`equivRealProdCLM`|ℂ ≃L[ℝ] ℝ × ℝ|The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ` |
-|`reCLM`           |ℂ →L[ℝ] ℝ    |Real part function as a `ContinuousLinearMap`           |
-|`imCLM`           |ℂ →L[ℝ] ℝ    |Imaginary part function as a `ContinuousLinearMap`      |
-|`ofRealCLM`       |ℝ →L[ℝ] ℂ    |Embedding of the reals as a `ContinuousLinearMap`       |
-|`ofRealLI`        |ℝ →ₗᵢ[ℝ] ℂ   |Embedding of the reals as a `LinearIsometry`            |
-|`conjCLE`         |ℂ ≃L[ℝ] ℂ    |Complex conjugation as a `ContinuousLinearEquiv`        |
-|`conjLIE`         |ℂ ≃ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
+|`equivRealProdCLM`|ℂ ≃L\[ℝ\] ℝ × ℝ|The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ` |
+|`reCLM`           |ℂ →L\[ℝ\] ℝ    |Real part function as a `ContinuousLinearMap`           |
+|`imCLM`           |ℂ →L\[ℝ\] ℝ    |Imaginary part function as a `ContinuousLinearMap`      |
+|`ofRealCLM`       |ℝ →L\[ℝ\] ℂ    |Embedding of the reals as a `ContinuousLinearMap`       |
+|`ofRealLI`        |ℝ →ₗᵢ\[ℝ\] ℂ   |Embedding of the reals as a `LinearIsometry`            |
+|`conjCLE`         |ℂ ≃L\[ℝ\] ℂ    |Complex conjugation as a `ContinuousLinearEquiv`        |
+|`conjLIE`         |ℂ ≃ₗᵢ\[ℝ\] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
 
 We also register the fact that `ℂ` is an `RCLike` field.
-
 -/
 
 @[expose] public section
@@ -250,9 +252,11 @@ theorem ringHom_eq_id_or_conj_of_continuous {f : ℂ →+* ℂ} (hf : Continuous
 /-- The complex-conjugation function from `ℂ` to itself is a continuous `ℝ`-algebra isomorphism. -/
 def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv with }
 
-/-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`.
+/--
+Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`.
 
-This is an abbreviation for `conjCAE` coerced to a continuous linear map. -/
+This is an abbreviation for `conjCAE` coerced to a continuous linear map.
+-/
 abbrev conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE.toContinuousLinearEquiv
 
 @[simp] lemma conjLIE_toCLE : conjLIE.toContinuousLinearEquiv = conjCLE := rfl
@@ -618,12 +622,14 @@ end tsum
 section slitPlane
 
 /-!
-### Define the "slit plane" `ℂ ∖ ℝ≤0` and provide some API
+# Define the "slit plane" `ℂ ∖ ℝ≤0` and provide some API
 -/
 
 open scoped ComplexOrder
 
-/-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
+/--
+The _slit plane_ is the complex plane with the closed negative real axis removed.
+-/
 def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
 lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_ofPred

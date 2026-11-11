@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Order.Lattice
 public import Mathlib.Topology.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Borel sigma algebras on spaces with orders
 
@@ -35,7 +38,6 @@ public import Mathlib.Topology.Order.Lattice
 * `Measurable.liminf`, `Measurable.limsup`:
   Countable liminfs and limsups of measurable functions to conditionally complete linear orders
   are measurable.
-
 -/
 
 public section

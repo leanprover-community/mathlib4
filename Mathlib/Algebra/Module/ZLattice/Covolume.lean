@@ -10,6 +10,9 @@ public import Mathlib.Analysis.BoxIntegral.UnitPartition
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covolume of ℤ-lattices
 
@@ -21,22 +24,17 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that
 
 * `ZLattice.covolume`: the covolume of `L` defined as the volume of an arbitrary fundamental
   domain of `L`.
-
 * `ZLattice.covolume_eq_measure_fundamentalDomain`: the covolume of `L` does not depend on the
   choice of the fundamental domain of `L`.
-
 * `ZLattice.covolume_eq_det`: if `L` is a lattice in `ℝ^n`, then its covolume is the absolute
   value of the determinant of any `ℤ`-basis of `L`.
-
 * `ZLattice.covolume_div_covolume_eq_relIndex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
   index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
-
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
   the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
   when `n : ℕ` tends to infinity.
   See also `ZLattice.covolume.tendsto_card_div_pow'` for a version for `InnerProductSpace ℝ E` and
   `ZLattice.covolume.tendsto_card_div_pow''` for the general version.
-
 * `ZLattice.covolume.tendsto_card_le_div`: Let `X` be a cone in `ι → ℝ` and let `F : (ι → ℝ) → ℝ`
   be a function such that `F (c • x) = c ^ card ι * F x`. Then the number of points `x ∈ X` such
   that `F x ≤ c` divided by `c` tends to `volume {x ∈ X | F x ≤ 1} / covolume L`
@@ -52,7 +50,6 @@ convention: the plain name is for the pi case, for e.g. `volume_image_eq_volume_
 the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
 `volume_image_eq_volume_div_covolume'`. When the same result exists in the
 general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
-
 -/
 
 @[expose] public section

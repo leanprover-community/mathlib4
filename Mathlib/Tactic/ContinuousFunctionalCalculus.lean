@@ -9,6 +9,9 @@ public meta import Aesop
 
 import Mathlib.Tactic.FunProp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tactics for the continuous functional calculus
 

@@ -9,6 +9,9 @@ public import Mathlib.Order.Concept
 
 import Mathlib.Order.UpperLower.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dedekind-MacNeille completion
 
@@ -22,9 +25,9 @@ lattice factors through it.
 
 ## Todo
 
-- Make the `to_dual` tactic work so that some lemmas are created automatically, eg
+* Make the `to_dual` tactic work so that some lemmas are created automatically, eg
   `DedekindCut.le_principal_iff` from `DedekindCut.principal_le_iff`.
-  See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r3328958630]
+  See \[https://github.com/leanprover-community/mathlib4/pull/37939#discussion\_r3328958630\]
 
 ## Tags
 
@@ -38,7 +41,8 @@ open Concept Set
 variable {α β : Type*}
 
 variable (α) in
-/-- The **Dedekind-MacNeille completion** of a partial order is the smallest complete lattice that
+/--
+The *Dedekind-MacNeille completion* of a partial order is the smallest complete lattice that
 contains it. We define here the type of Dedekind cuts of `α` as the `Concept` lattice of the `≤`
 relation of `α`.
 
@@ -46,7 +50,8 @@ For `A : DedekindCut α`, the sets `A.left` and `A.right` are related by
 `upperBounds A.left = A.right` and `lowerBounds A.right = A.left`.
 
 The theorem `DedekindCut.principalEmbedding_trans_factorEmbedding` proves that if `α` is a partial
-order and `β` is a complete lattice, any embedding `α ↪o β` factors through `DedekindCut α`. -/
+order and `β` is a complete lattice, any embedding `α ↪o β` factors through `DedekindCut α`.
+-/
 abbrev DedekindCut [Preorder α] := Concept α α (· ≤ ·)
 
 to_dual_name_hint Left Right
@@ -191,11 +196,13 @@ theorem principal_sSup_left (A : DedekindCut α) : principal (sSup A.left) = A :
   ext
   rw [right_principal, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
 
-/-- Any order embedding `β ↪o α` into a complete lattice `α` factors through `DedekindCut β`.
+/--
+Any order embedding `β ↪o α` into a complete lattice `α` factors through `DedekindCut β`.
 
 This map is defined so that `factorEmbedding f A = sSup (f '' A.left)`. Although the construction
-`factorEmbedding f A = sInf (f '' A.right)` would also work, these do **not** in general give equal
-embeddings. -/
+`factorEmbedding f A = sInf (f '' A.right)` would also work, these do *not* in general give equal
+embeddings.
+-/
 def factorEmbedding (f : β ↪o α) : DedekindCut β ↪o α :=
   .ofMapLEIff (fun A ↦ sSup (f '' A.left)) <| by
     refine fun A B ↦ ⟨fun h x hx ↦ ?_, fun h ↦ sSup_le_sSup (image_mono h)⟩
@@ -223,12 +230,14 @@ theorem principalEmbedding_trans_factorEmbedding (f : β ↪o α) :
     principalEmbedding.trans (factorEmbedding f) = f := by
   ext; simp
 
-/-- `DedekindCut.principal` as an `OrderIso`.
+/--
+`DedekindCut.principal` as an `OrderIso`.
 
-This provides the second half of the **fundamental theorem of concept lattices**: every complete
+This provides the second half of the *fundamental theorem of concept lattices*: every complete
 lattice is isomorphic to a concept lattice (its own Dedekind completion).
 
-See `Concept.instCompleteLattice` for the first half. -/
+See `Concept.instCompleteLattice` for the first half.
+-/
 @[simps! apply]
 def principalIso : α ≃o DedekindCut α where
   invFun := factorEmbedding (OrderIso.refl α)

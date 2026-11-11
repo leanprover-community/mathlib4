@@ -7,14 +7,16 @@ module
 
 public import Mathlib.RingTheory.Smooth.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal-smoothness of finite products of rings
 
 ## Main result
 
-- `Algebra.FormallySmooth.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-smooth
+* `Algebra.FormallySmooth.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-smooth
   if and only if each `A i` is `R`-formally-smooth.
-
 -/
 
 public section

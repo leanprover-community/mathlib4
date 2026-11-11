@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute values in ordered groups
 
@@ -17,8 +20,8 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 
 ## Notation
 
-- `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
-- `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
+* `|a|`: The _absolute value_ of an element `a` of an additive lattice ordered group
+* `|a|ₘ`: The _absolute value_ of an element `a` of a multiplicative lattice ordered group
 -/
 
 public section

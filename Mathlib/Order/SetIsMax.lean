@@ -8,12 +8,14 @@ module
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Order.Max
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal elements of subsets
 
 Let `S : Set J` and `m : S`. If `m` is not a maximal element of `S`,
 then `↑m : J` is not maximal in `J`.
-
 -/
 
 public section

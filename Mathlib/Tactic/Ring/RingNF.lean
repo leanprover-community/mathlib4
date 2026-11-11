@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Util.AtomM.Recurse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ring_nf` tactic
 
@@ -17,7 +20,6 @@ A tactic which uses `ring` to rewrite expressions. This can be used non-terminal
 ring expressions in the goal such as `⊢ P (x + x + x)` ~> `⊢ P (x * 3)`, as well as being able to
 prove some equations that `ring` cannot because they involve ring reasoning inside a subterm,
 such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
-
 -/
 
 public meta section
@@ -77,6 +79,7 @@ Evaluates an expression `e` into a normalized representation as a polynomial.
 
 This is a variant of `Mathlib.Tactic.Ring.eval`, the main driver of the `ring` tactic.
 It differs in
+
 * operating on `Expr` (input) and `Simp.Result` (output), rather than typed `Qq` versions of these;
 * throwing an error if the expression `e` is an atom for the `ring` tactic.
 -/
@@ -133,6 +136,7 @@ of commutative (semi)rings.
 
 * `ring_nf!` will use a more aggressive reducibility setting to identify atoms.
 * `ring_nf (config := cfg)` allows for additional configuration (see `RingNF.Config`):
+
   * `red`: the reducibility setting (overridden by `!`)
   * `zetaDelta`: if true, local let variables can be unfolded (overridden by `!`)
   * `recursive`: if true, `ring_nf` will also recurse into atoms
@@ -191,13 +195,14 @@ macro "ring1_nf!" cfg:optConfig : tactic =>
   `(conv| ring_nf ! $cfg:optConfig)
 
 /--
-`ring` solves equations in *commutative* (semi)rings, allowing for variables in the
+`ring` solves equations in _commutative_ (semi)rings, allowing for variables in the
 exponent. If the goal is not appropriate for `ring` (e.g. not an equality) `ring_nf` will be
 suggested. See also `ring1`, which fails if the goal is not an equality.
 
 * `ring!` will use a more aggressive reducibility setting to determine equality of atoms.
 
 Examples:
+
 ```
 example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
@@ -219,7 +224,7 @@ macro (name := ring) "ring" : tactic =>
   `noncomm_ring`, `abel` or `module` instead.")
 
 /--
-The tactic `ring` evaluates expressions in *commutative* (semi)rings.
+The tactic `ring` evaluates expressions in _commutative_ (semi)rings.
 This is the conv tactic version, which rewrites a target which is a ring equality to `True`.
 
 See also the `ring` tactic.

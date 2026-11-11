@@ -12,19 +12,20 @@ import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Japanese Bracket
 
-In this file, we show that Japanese bracket $(1 + \|x\|^2)^{1/2}$ can be estimated from above
-and below by $1 + \|x\|$.
-The functions $(1 + \|x\|^2)^{-r/2}$ and $(1 + |x|)^{-r}$ are integrable provided that `r` is larger
-than the dimension.
+In this file, we show that Japanese bracket $`(1 + \|x\|^2)^{1/2}` can be estimated from above and
+below by $`1 + \|x\|`. The functions $`(1 + \|x\|^2)^{-r/2}` and $`(1 + |x|)^{-r}` are integrable
+provided that `r` is larger than the dimension.
 
 ## Main statements
 
-* `integrable_one_add_norm`: the function $(1 + |x|)^{-r}$ is integrable
+* `integrable_one_add_norm`: the function $`(1 + |x|)^{-r}` is integrable
 * `integrable_jap` the Japanese bracket is integrable
-
 -/
 
 public section

@@ -10,10 +10,14 @@ public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
 
 This file proves that:
+
 * `MonotoneOn.intervalIntegrable_deriv`: If `f` is monotone on `a..b`, then `f'` is interval
   integrable on `a..b`.
 * `MonotoneOn.intervalIntegral_deriv_mem_uIcc`: If `f` is monotone on `a..b`, then the integral of
@@ -24,6 +28,7 @@ This file proves that:
   `a..b`, then `f'` is interval integrable on `a..b`.
 
 ## Tags
+
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded order homomorphisms
 
@@ -63,26 +66,32 @@ attribute [to_dual existing] BoundedOrderHom.map_bot'
 
 section
 
-/-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
+/--
+`TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
-You should extend this class when you extend `TopHom`. -/
+You should extend this class when you extend `TopHom`.
+-/
 class TopHomClass (F : Type*) (α β : outParam Type*) [Top α] [Top β] [FunLike F α β] :
     Prop where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 
-/-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
+/--
+`BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
-You should extend this class when you extend `BotHom`. -/
+You should extend this class when you extend `BotHom`.
+-/
 @[to_dual]
 class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLike F α β] :
     Prop where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 
-/-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
+/--
+`BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
-You should extend this class when you extend `BoundedOrderHom`. -/
+You should extend this class when you extend `BoundedOrderHom`.
+-/
 class BoundedOrderHomClass (F α β : Type*) [LE α] [LE β]
     [BoundedOrder α] [BoundedOrder β] [FunLike F α β] : Prop
   extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
@@ -161,7 +170,9 @@ instance [Preorder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] [Bounde
     CoeTC F (BoundedOrderHom α β) :=
   ⟨BoundedOrderHomClass.toBoundedOrderHom⟩
 
-/-! ### Top and bot homomorphisms -/
+/-!
+# Top and bot homomorphisms
+-/
 
 
 namespace TopHom
@@ -354,7 +365,9 @@ instance [DistribLattice β] [OrderTop β] : DistribLattice (TopHom α β) :=
 
 end TopHom
 
-/-! ### Bounded order homomorphisms -/
+/-!
+# Bounded order homomorphisms
+-/
 
 -- TODO: remove this configuration and use the default configuration.
 initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
@@ -466,7 +479,9 @@ theorem cancel_left {g : BoundedOrderHom β γ} {f₁ f₂ : BoundedOrderHom α 
 
 end BoundedOrderHom
 
-/-! ### Dual homs -/
+/-!
+# Dual homs
+-/
 
 
 namespace TopHom

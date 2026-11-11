@@ -9,7 +9,11 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
-/-! # Big-operators lemmas about `star` algebraic operations
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Big-operators lemmas about `star` algebraic operations
 
 These results are kept separate from `Algebra.Star.Basic` to avoid it needing to import `Finset`.
 -/

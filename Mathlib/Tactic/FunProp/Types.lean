@@ -9,8 +9,11 @@ public meta import Lean.Meta.Tactic.Simp
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public meta import Mathlib.Tactic.FunProp.FunctionData
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `funProp`
+# `funProp`
 
 this file defines environment extension for `funProp`
 -/
@@ -73,15 +76,16 @@ def defaultNamesToUnfold : Array Name :=
 
 /-- `fun_prop` configuration -/
 structure Config where
-  /-- Maximum number of transitions between function properties. For example inferring continuity
-  from differentiability and then differentiability from smoothness (`ContDiff ℝ ∞`) requires
-  `maxTransitionDepth = 2`. The default value of one expects that transition theorems are
-  transitively closed e.g. there is a transition theorem that infers continuity directly from
-  smoothness.
+  /--
+  Maximum number of transitions between function properties. For example inferring continuity
+from differentiability and then differentiability from smoothness (`ContDiff ℝ ∞`) requires
+`maxTransitionDepth = 2`. The default value of one expects that transition theorems are
+transitively closed e.g. there is a transition theorem that infers continuity directly from
+smoothness.
 
   Setting `maxTransitionDepth` to zero will disable all transition theorems. This can be very
-  useful when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
-  `simp`.
+useful when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
+`simp`.
   -/
   maxTransitionDepth := 1
   /-- Maximum number of steps `fun_prop` can take. -/
@@ -144,7 +148,9 @@ abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
 set_option linter.style.docString.empty false in
 /-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
-  /-- -/
+  /--
+  
+  -/
   proof : Expr
 
 /-- Predicate for unfolding the constants that are considered reducible by `fun_prop`. -/
@@ -178,14 +184,16 @@ def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Op
   else
     withReader (fun s => {s with transitionDepth := newDepth}) go
 
-/-- Log error message that will displayed to the user at the end.
+/--
+Log error message that will displayed to the user at the end.
 
-Messages are logged only when `transitionDepth = 0` i.e. when `fun_prop` is **not** trying to infer
+Messages are logged only when `transitionDepth = 0` i.e. when `fun_prop` is *not* trying to infer
 function property like continuity from another property like differentiability.
 The main reason is that if the user forgets to add a continuity theorem for function `foo` then
 `fun_prop` should report that there is a continuity theorem for `foo` missing. If we would log
 messages `transitionDepth > 0` then user will see messages saying that there is a missing theorem
-for differentiability, smoothness, ... for `foo`. -/
+for differentiability, smoothness, ... for `foo`.
+-/
 def logError (msg : String) : FunPropM Unit := do
   if (← read).transitionDepth = 0 then
     modify fun s =>

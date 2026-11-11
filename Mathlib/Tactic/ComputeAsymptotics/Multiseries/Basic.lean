@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic constructions for multiseries
 
@@ -23,7 +26,6 @@ For each construction, we provide two definitions: one for `Multiseries` and one
 `MultiseriesExpansion`. We then prove structural `simp`-lemmas describing their relationships with
 `MultiseriesExpansion.seq` and `MultiseriesExpansion.toFun`. Finally, we prove that all
 constructions are `Sorted` and `Approximates` their attached functions.
-
 -/
 
 @[expose] public section

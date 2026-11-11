@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monovariance of functions
 
-Two functions *vary together* if a strict change in the first implies a change in the second.
+Two functions _vary together_ if a strict change in the first implies a change in the second.
 
 This is in some sense a way to say that two functions `f : ι → α`, `g : ι → β` are "monotone
 together", without actually having an order on `ι`.

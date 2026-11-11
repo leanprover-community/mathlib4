@@ -9,6 +9,9 @@ public meta import Batteries.Lean.Position
 public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.Elab.InfoTree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A linter for declarations with local instances that overlap
 
@@ -23,7 +26,7 @@ For classes that aren't structures, this is just the class itself.
 If any of these parent classes is duplicated, we throw a warning.
 
 This linter also warns on redundant proposition classes, i.e. those that can be synthesized from
-the other instances in the local context. (Note: we do *not* warn on proposition classes that
+the other instances in the local context. (Note: we do _not_ warn on proposition classes that
 merely overlap.) Even though redundant proposition classes cause no meaningful issue, they are
 still undesirable.
 
@@ -31,11 +34,9 @@ A common case where this linter may fire is if the same type class assumption is
 `variable` statement and a declaration. This kind of variable shadowing does not actually produce
 declarations with duplicate type class assumptions, but it is still not desirable.
 
-
 ## TODO
 
 Support declarations without bodies (`structure`s/`class`es/`inductive`s etc.)
-
 -/
 
 open Lean Meta Elab Command
@@ -57,14 +58,16 @@ def eraseInstances (e : Expr) : MetaM Expr := do
       args := args.set! i default
   return mkAppN f args
 
-/-- Compute the parent classes of `cls`, excluding parent classes that have a parent themselves.
+/--
+Compute the parent classes of `cls`, excluding parent classes that have a parent themselves.
 The reason to exclude such classes is that if there is a duplication in such a class,
 then there will necessarily also be a duplication in its parent.
 If `cls` carries data, then only consider parents that carry data.
 If `cls` is a non-structure class, this simply returns `#[cls]`.
 
 The resulting expressions contain bound variables that correspond to the parameters of `cls`.
-The universe levels and bound variables need to be instantiated to get concrete data projections. -/
+The universe levels and bound variables need to be instantiated to get concrete data projections.
+-/
 partial def getAbstractProjections (cls : Name) : CoreM (Array Expr) := do
   let cinfo ← getConstInfo cls
   MetaM.run' <| forallTelescope cinfo.type fun xs type ↦ do

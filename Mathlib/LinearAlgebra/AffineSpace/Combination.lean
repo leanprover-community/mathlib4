@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine combinations of points
 
@@ -20,11 +23,9 @@ This file defines affine combinations of points.
 
 * `weightedVSubOfPoint` is a general weighted combination of
   subtractions with an explicit base point, yielding a vector.
-
 * `weightedVSub` uses an arbitrary choice of base point and is intended
   to be used when the sum of weights is 0, in which case the result is
   independent of the choice of base point.
-
 * `affineCombination` adds the weighted combination to the arbitrary
   base point, yielding a point rather than a vector, and is intended
   to be used when the sum of weights is 1, in which case the result is
@@ -36,8 +37,7 @@ These definitions are for sums over a `Finset`; versions for a
 
 ## References
 
-* https://en.wikipedia.org/wiki/Affine_space
-
+* https://en.wikipedia.org/wiki/Affine\_space
 -/
 
 @[expose] public section

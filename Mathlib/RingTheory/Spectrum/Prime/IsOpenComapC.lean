@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Spec R[X] → Spec R` is an open map
 

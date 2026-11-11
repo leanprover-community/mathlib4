@@ -9,6 +9,9 @@ public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.WellFounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimality and Maximality
 
@@ -21,7 +24,7 @@ This file underwent a refactor from a version where minimality and maximality we
 sets rather than predicates, and with an unbundled order relation rather than a `LE` instance.
 
 A side effect is that it has become less straightforward to state that something is minimal
-with respect to a relation that is *not* defeq to the default `LE`.
+with respect to a relation that is _not_ defeq to the default `LE`.
 One possible way would be with a type synonym,
 and another would be with an ad hoc `LE` instance and `@` notation.
 This was not an issue in practice anywhere in mathlib at the time of the refactor,
@@ -31,12 +34,9 @@ but it may be worth re-examining this to make it easier in the future; see the T
 
 * In the linearly ordered case, versions of lemmas like `minimal_mem_image` will hold with
   `MonotoneOn`/`AntitoneOn` assumptions rather than the stronger `x ≤ y ↔ f x ≤ f y` assumptions.
-
 * `Set.maximal_iff_forall_insert` and `Set.minimal_iff_forall_sdiff_singleton` will generalize to
   lemmas about covering in the case of an `IsStronglyAtomic`/`IsStronglyCoatomic` order.
-
 * `Finset` versions of the lemmas about sets.
-
 * API to allow for easily expressing min/maximality with respect to an arbitrary non-`LE` relation.
 * API for `MinimalFor`/`MaximalFor`
 -/

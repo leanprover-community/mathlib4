@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Image-to-kernel comparison maps
 
@@ -15,7 +18,6 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 (assuming the appropriate images and kernels exist).
 
 `imageToKernel f g w` is the corresponding morphism between objects in `C`.
-
 -/
 
 @[expose] public section

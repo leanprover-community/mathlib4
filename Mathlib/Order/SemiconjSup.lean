@@ -11,6 +11,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 import Mathlib.Order.Bounds.OrderIso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semiconjugate by `sSup`
 
@@ -26,9 +29,9 @@ see `Function.sSup_div_semiconj`.  In the case of a conditionally complete latti
 statement holds true under an additional assumption that each set `{(f₁ g)⁻¹ (f₂ g x) | g : G}` is
 bounded above, see `Function.csSup_div_semiconj`.
 
-The lemmas come from [Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie
-bornée][ghys87:groupes], Proposition 2.1 and 5.4 respectively. In the paper they are formulated for
-homeomorphisms of the circle, so in order to apply results from this file one has to lift these
+The lemmas come from \[Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie
+bornée\]\[ghys87:groupes\], Proposition 2.1 and 5.4 respectively. In the paper they are formulated
+for homeomorphisms of the circle, so in order to apply results from this file one has to lift these
 homeomorphisms to the real line first.
 -/
 
@@ -78,12 +81,14 @@ end IsOrderRightAdjoint
 
 namespace Function
 
-/-- If an order automorphism `fa` is semiconjugate to an order embedding `fb` by a function `g`
+/--
+If an order automorphism `fa` is semiconjugate to an order embedding `fb` by a function `g`
 and `g'` is an order right adjoint of `g` (i.e. `g' y = sSup {x | f x ≤ y}`), then `fb` is
 semiconjugate to `fa` by `g'`.
 
-This is a version of Proposition 2.1 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
-cohomologie bornée][ghys87:groupes]. -/
+This is a version of Proposition 2.1 from \[Étienne Ghys, Groupes d'homéomorphismes du cercle et
+cohomologie bornée\]\[ghys87:groupes\].
+-/
 theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} {fb : β ↪o β} {g : α → β}
     (h : Function.Semiconj g fa fb) {g' : β → α} (hg' : IsOrderRightAdjoint g g') :
     Function.Semiconj g' fb fa := by
@@ -101,21 +106,25 @@ theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
   simpa [comp_def] using this
 
-/-- Consider two actions `f₁ f₂ : G → α → α` of a group on a complete lattice by order
+/--
+Consider two actions `f₁ f₂ : G → α → α` of a group on a complete lattice by order
 isomorphisms. Then the map `x ↦ ⨆ g : G, (f₁ g)⁻¹ (f₂ g x)` semiconjugates each `f₁ g'` to `f₂ g'`.
 
-This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
-cohomologie bornée][ghys87:groupes]. -/
+This is a version of Proposition 5.4 from \[Étienne Ghys, Groupes d'homéomorphismes du cercle et
+cohomologie bornée\]\[ghys87:groupes\].
+-/
 theorem sSup_div_semiconj [CompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α) (g : G) :
     Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
   semiconj_of_isLUB f₁ f₂ (fun _ => isLUB_iSup) _
 
-/-- Consider two actions `f₁ f₂ : G → α → α` of a group on a conditionally complete lattice by order
-isomorphisms. Suppose that each set $s(x)=\{f_1(g)^{-1} (f_2(g)(x)) | g \in G\}$ is bounded above.
+/--
+Consider two actions `f₁ f₂ : G → α → α` of a group on a conditionally complete lattice by order
+isomorphisms. Suppose that each set $`s(x)=\{f_1(g)^{-1} (f_2(g)(x)) | g \in G\}` is bounded above.
 Then the map `x ↦ sSup s(x)` semiconjugates each `f₁ g'` to `f₂ g'`.
 
-This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
-cohomologie bornée][ghys87:groupes]. -/
+This is a version of Proposition 5.4 from \[Étienne Ghys, Groupes d'homéomorphismes du cercle et
+cohomologie bornée\]\[ghys87:groupes\].
+-/
 theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α)
     (hbdd : ∀ x, BddAbove (range fun g => (f₁ g)⁻¹ (f₂ g x))) (g : G) :
     Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=

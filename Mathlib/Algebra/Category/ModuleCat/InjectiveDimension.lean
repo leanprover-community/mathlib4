@@ -11,6 +11,9 @@ import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective Dimension in ModuleCat
 
@@ -22,16 +25,12 @@ all universe level where the ring `R` is small.
 
 * `ModuleCat.hasInjectiveDimensionLE_iff_of_linearEquiv`: `HasInjectiveDimensionLE` is preserved
   under arbitrary linear equivalence.
-
 * `ModuleCat.hasInjectiveDimensionLE_iff_of_semiLinearEquiv`: `HasInjectiveDimensionLE` is preserved
   under arbitrary semi-linear equivalence.
-
 * `ModuleCat.injectiveDimension_eq_of_semiLinearEquiv`: `injectiveDimension` is preserved
   under arbitrary semi-linear equivalence.
-
 * `ModuleCat.injectiveDimension_eq_of_linearEquiv`: `injectiveDimension` is preserved
   under arbitrary linear equivalence.
-
 -/
 
 public section

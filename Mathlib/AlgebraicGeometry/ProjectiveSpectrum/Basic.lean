@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Gluing
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of the scheme `Proj A`
 
@@ -17,19 +20,19 @@ The scheme `Proj 𝒜` for a graded ring `𝒜` is constructed in
 In this file we provide basic properties of the scheme.
 
 ## Main results
-- `AlgebraicGeometry.Proj.toSpecZero`: The structure map `Proj A ⟶ Spec (A 0)`.
-- `AlgebraicGeometry.Proj.basicOpenIsoSpec`:
+
+* `AlgebraicGeometry.Proj.toSpecZero`: The structure map `Proj A ⟶ Spec (A 0)`.
+* `AlgebraicGeometry.Proj.basicOpenIsoSpec`:
   The canonical isomorphism `Proj A |_ D₊(f) ≅ Spec (A_f)₀`
   when `f` is homogeneous of positive degree.
-- `AlgebraicGeometry.Proj.awayι`: The open immersion `Spec (A_f)₀ ⟶ Proj A`.
-- `AlgebraicGeometry.Proj.affineOpenCover`: The open cover of `Proj A` by `Spec (A_f)₀` for all
+* `AlgebraicGeometry.Proj.awayι`: The open immersion `Spec (A_f)₀ ⟶ Proj A`.
+* `AlgebraicGeometry.Proj.affineOpenCover`: The open cover of `Proj A` by `Spec (A_f)₀` for all
   homogeneous `f` of positive degree.
-- `AlgebraicGeometry.Proj.stalkIso`:
+* `AlgebraicGeometry.Proj.stalkIso`:
   The stalk of `Proj A` at `x` is the degree `0` part of the localization of `A` at `x`.
-- `AlgebraicGeometry.Proj.fromOfGlobalSections`:
+* `AlgebraicGeometry.Proj.fromOfGlobalSections`:
   Given a map `f : A →+* Γ(X, ⊤)` such that the image of the irrelevant ideal under `f`
   generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`.
-
 -/
 
 @[expose] public section

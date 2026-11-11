@@ -13,6 +13,9 @@ public import Mathlib.Order.CompleteBooleanAlgebra
 
 import Mathlib.Data.Set.Lattice.Disjoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simple graphs
 
@@ -21,13 +24,9 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
 ## Main definitions
 
 * `SimpleGraph` is a structure for symmetric, irreflexive relations.
-
 * `SimpleGraph.neighborSet` is the `Set` of vertices adjacent to a given vertex.
-
 * `SimpleGraph.commonNeighbors` is the intersection of the neighbor sets of two given vertices.
-
 * `SimpleGraph.incidenceSet` is the `Set` of edges containing a given vertex.
-
 * `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
   of the complete graph.
@@ -50,9 +49,9 @@ attribute [aesop norm (rule_sets := [SimpleGraph])] irrefl_def
 A variant of the `aesop` tactic for use in the graph library. Changes relative
 to standard `aesop`:
 
-- We use the `SimpleGraph` rule set in addition to the default rule sets.
-- We instruct Aesop's `intro` rule to unfold with `default` transparency.
-- We instruct Aesop to fail if it can't fully solve the goal. This allows us to
+* We use the `SimpleGraph` rule set in addition to the default rule sets.
+* We instruct Aesop's `intro` rule to unfold with `default` transparency.
+* We instruct Aesop to fail if it can't fully solve the goal. This allows us to
   use `aesop_graph` for auto-params.
 -/
 macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
@@ -458,7 +457,8 @@ section EdgeSet
 
 variable {G₁ G₂ : SimpleGraph V}
 
-/-- The edges of G consist of the unordered pairs of vertices related by
+/--
+The edges of G consist of the unordered pairs of vertices related by
 `G.Adj`. This is the order embedding; for the edge set of a particular graph, see
 `SimpleGraph.edgeSet`.
 
@@ -747,7 +747,9 @@ end FromEdgeSet
 theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x y → ¬H.Adj x y := by
   simp [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall]
 
-/-! ### Incidence set -/
+/-!
+# Incidence set
+-/
 
 
 /-- Set of edges incident to a given vertex, aka incidence set. -/

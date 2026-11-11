@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernels and cokernels in SemiNormedGrp₁ and SemiNormedGrp
 
@@ -22,7 +25,6 @@ So far, I don't see a way to state nicely what we really want:
 The problem is that the limits API doesn't promise you any particular model of the cokernel,
 and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 (and hence making `cokernel.π f` arbitrarily large in norm), obtaining another categorical cokernel.
-
 -/
 
 @[expose] public section

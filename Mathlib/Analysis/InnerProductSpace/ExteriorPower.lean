@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.LinearAlgebra.ExteriorPower.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inner product space structure on exterior powers
 
@@ -17,23 +20,22 @@ via the Gram determinant formula: on decomposable elements,
 
 ## Main results
 
-- `exteriorPower.inner_ιMulti_ιMulti`: The inner product on decomposable elements equals the
+* `exteriorPower.inner_ιMulti_ιMulti`: The inner product on decomposable elements equals the
   Gram determinant.
-- `exteriorPower.inner_ιMulti_self`: `⟪v₁ ∧ ⋯ ∧ vₙ, v₁ ∧ ⋯ ∧ vₙ⟫ = det (gram ℝ v)`.
-- `OrthonormalBasis.exteriorPower`: An orthonormal basis of `E` induces an orthonormal basis
+* `exteriorPower.inner_ιMulti_self`: `⟪v₁ ∧ ⋯ ∧ vₙ, v₁ ∧ ⋯ ∧ vₙ⟫ = det (gram ℝ v)`.
+* `OrthonormalBasis.exteriorPower`: An orthonormal basis of `E` induces an orthonormal basis
   of `⋀[ℝ]^n E`.
 
 ## Future work
 
-- Generalize to `RCLike 𝕜`. To define `innerProductForm` in this case, we would probably
+* Generalize to `RCLike 𝕜`. To define `innerProductForm` in this case, we would probably
   want a semilinear generalization of `exteriorPower.map`, which in turn requires
   generalizing `AlternatingMap` to the semilinear setting.
-- Remove the `FiniteDimensional` hypothesis from the `InnerProductSpace` instance.
+* Remove the `FiniteDimensional` hypothesis from the `InnerProductSpace` instance.
   Currently the proofs of `re_inner_nonneg` and `definite` require finite dimension, because
   we need to choose an orthonormal basis of `E`. But we can reduce the general case to
   the finite-dimensional case by noticing that any `x : ⋀[𝕜]^n E` is contained in some
   `⋀[𝕜]^n F` for a finite-dimensional subspace `F ≤ E`.
-
 -/
 
 @[expose] public noncomputable section

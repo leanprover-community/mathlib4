@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.LSeries.Basic
 public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Odd Hurwitz zeta functions
 
@@ -26,7 +29,7 @@ The term for `n = -a` in the first sum is understood as 0 if `a` is an integer, 
 `n = 0` in the second sum (for all `a`). Note that these functions are differentiable everywhere,
 unlike their even counterparts which have poles.
 
-Of course, we cannot *define* these functions by the above formulae (since existence of the
+Of course, we cannot _define_ these functions by the above formulae (since existence of the
 analytic continuation is not at all obvious); we in fact construct them as Mellin transforms of
 various versions of the Jacobi theta function.
 
@@ -54,7 +57,7 @@ namespace HurwitzZeta
 
 section kernel_defs
 /-!
-## Definitions and elementary properties of kernels
+# Definitions and elementary properties of kernels
 -/
 
 /-- Variant of `jacobiTheta₂'` which we introduce to simplify some formulae. -/
@@ -205,7 +208,7 @@ end kernel_defs
 section sum_formulas
 
 /-!
-## Formulae for the kernels as sums
+# Formulae for the kernels as sums
 -/
 
 lemma hasSum_int_oddKernel (a : ℝ) {x : ℝ} (hx : 0 < x) :
@@ -259,7 +262,7 @@ end sum_formulas
 
 section asymp
 /-!
-## Asymptotics of the kernels as `t → ∞`
+# Asymptotics of the kernels as `t → ∞`
 -/
 
 /-- The function `oddKernel a` has exponential decay at `+∞`, for any `a`. -/
@@ -294,7 +297,7 @@ end asymp
 
 section FEPair
 /-!
-## Construction of an FE-pair
+# Construction of an FE-pair
 -/
 
 /-- A `StrongFEPair` structure with `f = oddKernel a` and `g = sinKernel a`. -/
@@ -329,7 +332,7 @@ lemma isStrong_hurwitzOddFEPair (a : UnitAddCircle) : IsStrongFEPair (hurwitzOdd
 end FEPair
 
 /-!
-## Definition of the completed odd Hurwitz zeta function
+# Definition of the completed odd Hurwitz zeta function
 -/
 
 /-- The entire function of `s` which agrees with
@@ -357,7 +360,7 @@ lemma differentiable_completedSinZeta (a : UnitAddCircle) :
     ((differentiable_id.add_const 1).div_const 2)).div_const 2
 
 /-!
-## Parity and functional equations
+# Parity and functional equations
 -/
 
 lemma completedHurwitzZetaOdd_neg (a : UnitAddCircle) (s : ℂ) :
@@ -384,7 +387,7 @@ lemma completedSinZeta_one_sub (a : UnitAddCircle) (s : ℂ) :
   simp [← completedHurwitzZetaOdd_one_sub]
 
 /-!
-## Relation to the Dirichlet series for `1 < re s`
+# Relation to the Dirichlet series for `1 < re s`
 -/
 
 /-- Formula for `completedSinZeta` as a Dirichlet series in the convergence range
@@ -450,7 +453,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   simp only [r, c, mul_one_div, div_mul_eq_mul_div, div_right_comm]
 
 /-!
-## Non-completed zeta functions
+# Non-completed zeta functions
 -/
 
 /-- The odd part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees

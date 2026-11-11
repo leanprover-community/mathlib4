@@ -14,6 +14,9 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Tactic.NormNum.GCD
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hilbert C⋆-modules
 
@@ -23,14 +26,14 @@ Cauchy-Schwarz inequality, and induces a norm that makes `E` a normed vector spa
 
 ## Main declarations
 
-+ `CStarModule`: The class containing the Hilbert C⋆-module structure
-+ `CStarModule.normedSpaceCore`: The proof that a Hilbert C⋆-module is a normed vector
+* `CStarModule`: The class containing the Hilbert C⋆-module structure
+* `CStarModule.normedSpaceCore`: The proof that a Hilbert C⋆-module is a normed vector
   space. This can be used with `NormedAddCommGroup.ofCore` and `NormedSpace.ofCore` to create
   the relevant instances on a type of interest.
-+ `CStarModule.inner_mul_inner_swap_le`: The statement that
+* `CStarModule.inner_mul_inner_swap_le`: The statement that
   `⟪x, y⟫ * ⟪y, x⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫`, which can be viewed as a version of the Cauchy-Schwarz
   inequality for Hilbert C⋆-modules.
-+ `CStarModule.norm_inner_le`, which states that `‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖`, i.e. the
+* `CStarModule.norm_inner_le`, which states that `‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖`, i.e. the
   Cauchy-Schwarz inequality.
 
 ## Implementation notes
@@ -44,7 +47,7 @@ and which would send the type class search algorithm on a chase for `A`), we pro
 these instances themselves on a particular type.
 
 Although the `Norm` is passed as a parameter, it almost never coincides with the norm on the
-underlying type, unless that it is a purpose built type, as with the *standard Hilbert C⋆-module*.
+underlying type, unless that it is a purpose built type, as with the _standard Hilbert C⋆-module_.
 However, with generic types already equipped with a norm, the norm as a Hilbert C⋆-module almost
 never coincides with the norm on the underlying type. The two notable exceptions to this are when
 we view `A` as a C⋆-module over itself, or when `A := ℂ`.  For this reason we will later use the
@@ -53,13 +56,13 @@ type synonym `WithCStarModule`.
 As an example of just how different the norm can be, consider `CStarModule`s `E` and `F` over `A`.
 One would like to put a `CStarModule` structure on (a type synonym of) `E × F`, where the `A`-valued
 inner product is given, for `x y : E × F`, `⟪x, y⟫_A := ⟪x.1, y.1⟫_A + ⟪x.2, y.2⟫_A`. The norm this
-induces satisfies `‖x‖ ^ 2 = ‖⟪x.1, y.1⟫ + ⟪x.2, y.2⟫‖`, but this doesn't coincide with *any*
+induces satisfies `‖x‖ ^ 2 = ‖⟪x.1, y.1⟫ + ⟪x.2, y.2⟫‖`, but this doesn't coincide with _any_
 natural norm on `E × F` unless `A := ℂ`, in which case it is `WithLp 2 (E × F)` because `E × F` is
 then an `InnerProductSpace` over `ℂ`.
 
 ## References
 
-+ Erin Wittlich. *Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof Assistant*,
+* Erin Wittlich. _Formalizing Hilbert Modules in C⋆-algebras with the Lean Proof Assistant_,
   December 2022. Master's thesis, Southern Illinois University Edwardsville.
 -/
 
@@ -67,9 +70,11 @@ then an `InnerProductSpace` over `ℂ`.
 
 open scoped ComplexOrder RightActions
 
-/-- A *Hilbert C⋆-module* is a complex module `E` endowed with a right `A`-module structure
+/--
+A _Hilbert C⋆-module_ is a complex module `E` endowed with a right `A`-module structure
 (where `A` is typically a C⋆-algebra) and an inner product `⟪x, y⟫_A` which satisfies the
-following properties. -/
+following properties.
+-/
 class CStarModule (A E : Type*) [NonUnitalSemiring A] [StarRing A]
     [Module ℂ A] [AddCommGroup E] [Module ℂ E] [PartialOrder A] [SMul A E] [Norm A] [Norm E]
     extends Inner A E where

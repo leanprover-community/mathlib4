@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
 
 import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations in Geck's construction of a Lie algebra associated to a root system
 
@@ -17,13 +20,13 @@ This file contains proofs that `RootPairing.GeckConstruction.lieAlgebra` contain
 satisfying relations associated to the Cartan matrix of the input root system.
 
 ## Main definitions:
+
 * `RootPairing.GeckConstruction.isSl2Triple`: a distinguished family of `sl₂` triples contained in
   the Geck construction.
 * `RootPairing.GeckConstruction.lie_h_e`: an interaction relation between different `sl₂` triples.
 * `RootPairing.GeckConstruction.lie_h_f`: an interaction relation between different `sl₂` triples.
 * `RootPairing.GeckConstruction.lie_e_f_ne`: an interaction relation between different `sl₂`
   triples.
-
 -/
 
 public section
@@ -40,7 +43,9 @@ variable {ι R M N : Type*} [CommRing R] [IsDomain R] [CharZero R]
 
 attribute [local simp] Ring.lie_def Matrix.mul_apply Matrix.one_apply Matrix.diagonal_apply
 
-/-- Lemma 3.3 (a) from [Geck][Geck2017]. -/
+/--
+Lemma 3.3 (a) from \[Geck\]\[Geck2017\].
+-/
 lemma lie_h_e :
     ⁅h j, e i⁆ = b.cartanMatrix i j • e i := by
   classical
@@ -67,7 +72,9 @@ lemma lie_h_e :
     simp only [pairingIn_eq_add_of_root_eq_add hkil, Int.cast_add]
     ring
 
-/-- Lemma 3.3 (b) from [Geck][Geck2017]. -/
+/--
+Lemma 3.3 (b) from \[Geck\]\[Geck2017\].
+-/
 lemma lie_h_f :
     ⁅h j, f i⁆ = -b.cartanMatrix i j • f i := by
   classical
@@ -135,7 +142,9 @@ private lemma lie_e_f_same_aux (k : ι) (hki : k ≠ i) (hki' : k ≠ P.reflecti
     exact ⟨P.chainBotCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₁ x <| by simp [hx],
            P.chainTopCoeff_eq_zero_iff.mpr <| Or.inr fun ⟨x, hx⟩ ↦ h₂ x <| by simp [hx]⟩
 
-/-- Lemma 3.4 from [Geck][Geck2017]. -/
+/--
+Lemma 3.4 from \[Geck\]\[Geck2017\].
+-/
 lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
   let := P.indexNeg
@@ -260,7 +269,9 @@ private lemma lie_e_f_ne_aux₂ :
       Matrix.transpose_mul, Matrix.mul_apply', lie_e_f_ne_aux₁ hij.symm]
     simp
 
-/-- Lemma 3.5 from [Geck][Geck2017]. -/
+/--
+Lemma 3.5 from \[Geck\]\[Geck2017\].
+-/
 lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
     ⁅e i, f j⁆ = 0 := by
   have hij' : (i : ι) ≠ (j : ι) := hij ∘ SetLike.coe_eq_coe.mp

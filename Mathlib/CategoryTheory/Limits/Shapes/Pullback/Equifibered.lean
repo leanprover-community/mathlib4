@@ -8,20 +8,24 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equifibered natural transformation
 
 ## Main definition
-- `CategoryTheory.NatTrans.Equifibered`:
+
+* `CategoryTheory.NatTrans.Equifibered`:
   A natural transformation `α : F ⟶ G` is equifibered if every commutative square of the following
   form is a pullback.
+
   ```
   F(X) → F(Y)
    ↓      ↓
   G(X) → G(Y)
   ```
-- `CategoryTheory.NatTrans.Coequifibered`: The dual notion.
-
+* `CategoryTheory.NatTrans.Coequifibered`: The dual notion.
 -/
 
 @[expose] public section
@@ -35,8 +39,10 @@ variable {J K C D ι : Type*} [Category* J] [Category* C] [Category* K] [Categor
 
 namespace NatTrans
 
-/-- A natural transformation is equifibered if every commutative square of the following form is
+/--
+A natural transformation is equifibered if every commutative square of the following form is
 a pullback.
+
 ```
 F(X) → F(Y)
  ↓      ↓
@@ -74,8 +80,10 @@ theorem Equifibered.of_discrete {F G : Discrete ι ⥤ C} (α : F ⟶ G) : Equif
   simp only [Discrete.functor_map_id]
   exact IsPullback.of_horiz_isIso ⟨by rw [Category.id_comp, Category.comp_id]⟩
 
-/-- A natural transformation is co-equifibered if every commutative square of the following form is
+/--
+A natural transformation is co-equifibered if every commutative square of the following form is
 a pushout.
+
 ```
 F(X) → F(Y)
  ↓      ↓

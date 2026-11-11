@@ -12,6 +12,9 @@ import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Normed.Module.Completion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniqueness principle for analytic functions
 
@@ -30,7 +33,8 @@ open Set
 open scoped Topology ENNReal NNReal
 
 /-!
-### Uniqueness of power series
+# Uniqueness of power series
+
 If a function `f : E → F` has two representations as power series at a point `x : E`, corresponding
 to formal multilinear series `p₁` and `p₂`, then these representations agree term-by-term. That is,
 for any `n : ℕ` and `y : E`, `p₁ n (fun i ↦ y) = p₂ n (fun i ↦ y)`. In the one-dimensional case,
@@ -198,10 +202,12 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     exact this.apply_eq_zero n _
   exact HasSum.unique A B
 
-/-- The *identity principle* for analytic functions: If an analytic function vanishes in a whole
+/--
+The _identity principle_ for analytic functions: If an analytic function vanishes in a whole
 neighborhood of a point `z₀`, then it is uniformly zero along a connected set. For a one-dimensional
 version assuming only that the function vanishes at some points arbitrarily close to `z₀`, see
-`AnalyticOnNhd.eqOn_zero_of_preconnected_of_frequently_eq_zero`. -/
+`AnalyticOnNhd.eqOn_zero_of_preconnected_of_frequently_eq_zero`.
+-/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
     (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
     {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
@@ -217,10 +223,12 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
   have : e (f z) = e 0 := by simpa only using! A hz
   exact UniformSpace.Completion.coe_injective F this
 
-/-- The *identity principle* for analytic functions: If two analytic functions coincide in a whole
+/--
+The _identity principle_ for analytic functions: If two analytic functions coincide in a whole
 neighborhood of a point `z₀`, then they coincide globally along a connected set.
 For a one-dimensional version assuming only that the functions coincide at some points
-arbitrarily close to `z₀`, see `AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq`. -/
+arbitrarily close to `z₀`, see `AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq`.
+-/
 theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : AnalyticOnNhd 𝕜 f U)
     (hg : AnalyticOnNhd 𝕜 g U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U := by
@@ -228,10 +236,12 @@ theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : A
   simpa [sub_eq_zero] using! fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀ hfg' hz
 
-/-- The *identity principle* for analytic functions: If two analytic functions on a normed space
+/--
+The _identity principle_ for analytic functions: If two analytic functions on a normed space
 coincide in a neighborhood of a point `z₀`, then they coincide everywhere.
 For a one-dimensional version assuming only that the functions coincide at some points
-arbitrarily close to `z₀`, see `AnalyticOnNhd.eq_of_frequently_eq`. -/
+arbitrarily close to `z₀`, see `AnalyticOnNhd.eq_of_frequently_eq`.
+-/
 theorem eq_of_eventuallyEq {f g : E → F} [PreconnectedSpace E] (hf : AnalyticOnNhd 𝕜 f univ)
     (hg : AnalyticOnNhd 𝕜 g univ) {z₀ : E} (hfg : f =ᶠ[𝓝 z₀] g) : f = g :=
   funext fun x =>

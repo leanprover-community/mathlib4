@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordinal arithmetic commutativity
 
@@ -14,7 +17,7 @@ Results on the commutativity of ordinal arithmetic operations.
 
 ## References
 
-* [Wacław Sierpiński, *Cardinal and Ordinal Numbers*][sierpinski1958]
+* ‍\[Wacław Sierpiński, _Cardinal and Ordinal Numbers_\]\[sierpinski1958\]
 -/
 
 public section

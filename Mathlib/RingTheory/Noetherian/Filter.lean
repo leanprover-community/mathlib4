@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.RingTheory.Noetherian.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian modules and finiteness of chains
 
@@ -20,13 +23,12 @@ Let `R` be a ring and let `M` be an `R`-module.
 
 ## References
 
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
+* ‍\[P. Samuel, _Algebraic Theory of Numbers_\]\[samuel1967\]
 
 ## Tags
 
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
-
 -/
 
 public section

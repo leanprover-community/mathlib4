@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 import Mathlib.CategoryTheory.GuitartExact.KanExtension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of pointwise left derived functors via derivability structures
 
@@ -21,7 +24,7 @@ Then, the lemma `hasPointwiseLeftDerivedFunctor_iff_of_isLeftDerivabilityStructu
 says that `F` has a pointwise left derived functor with respect to `W₂`
 if and only if `Φ.functor ⋙ F` has a pointwise left derived functor
 with respect to `W₁`. This is essentially the Proposition 5.5 from the article
-*Structures de dérivabilité* by Bruno Kahn and Georges Maltsiniotis (there,
+_Structures de dérivabilité_ by Bruno Kahn and Georges Maltsiniotis (there,
 it was stated in terms of absolute derived functors).
 
 In particular, if `Φ.functor ⋙ F` inverts `W₁`, it follows that the
@@ -31,8 +34,8 @@ This file contains the dual results to those obtained in the file
 `Mathlib/CategoryTheory/Localization/DerivabilityStructure/PointwiseRightDerived.lean`.
 
 ## References
-* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
+* ‍\[Bruno Kahn and Georges Maltsiniotis, _Structures de dérivabilité_\]\[KahnMaltsiniotis2008\]
 -/
 
 @[expose] public section

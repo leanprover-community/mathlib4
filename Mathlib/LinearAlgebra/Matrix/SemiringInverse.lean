@@ -13,11 +13,13 @@ import Mathlib.GroupTheory.Perm.Option
 import Mathlib.LinearAlgebra.Matrix.RowCol
 import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonsingular inverses over semirings
 
 This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
-
 -/
 
 @[expose] public section
@@ -141,10 +143,12 @@ lemma IsDetpBalanced.smul (h : A.IsDetpBalanced a b) (c : R) :
     ← mul_add, h.mul_add_mul_eq]
 
 variable (A) in
-/-- A square matrix `A` over a commutative semiring `R` is called nonsingular if it is
+/--
+A square matrix `A` over a commutative semiring `R` is called nonsingular if it is
 only determinant balanced with respect to equal elements.
 
-See also See also `Matrix.Nondegenerate`. -/
+See also See also `Matrix.Nondegenerate`.
+-/
 def Nonsingular : Prop := ∀ a b : R, A.IsDetpBalanced a b → a = b
 
 lemma Nonsingular.eq_of_IsDetpBalanced (hA : A.Nonsingular) (hAd : A.IsDetpBalanced a b) :

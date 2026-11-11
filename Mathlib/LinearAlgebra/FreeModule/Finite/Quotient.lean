@@ -11,13 +11,16 @@ public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Quotient.Pi
 
-/-! # Quotient of submodules of full rank in free finite modules over PIDs
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Quotient of submodules of full rank in free finite modules over PIDs
 
 ## Main results
 
 * `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
   is a submodule of full rank, can be written as a product of quotients of `R` by principal ideals.
-
 -/
 
 @[expose] public section

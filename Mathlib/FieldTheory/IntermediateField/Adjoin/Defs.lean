@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.IntermediateField.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining Elements to Fields
 
@@ -16,7 +19,7 @@ For example, `K[x]` might not include `x⁻¹`.
 
 ## Notation
 
-- `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
+* `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
 
 @[expose] public section
@@ -232,9 +235,11 @@ instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F 
       rw [coe_algebraMap_over_bot, (botEquiv F E).apply_symm_apply, botEquiv_symm,
         IsScalarTower.algebraMap_apply F (⊥ : IntermediateField F E) E])
 
-/-- The top `IntermediateField` is isomorphic to the field.
+/--
+The top `IntermediateField` is isomorphic to the field.
 
-This is the intermediate field version of `Subalgebra.topEquiv`. -/
+This is the intermediate field version of `Subalgebra.topEquiv`.
+-/
 @[simps!]
 def topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E :=
   Subalgebra.topEquiv
@@ -643,12 +648,14 @@ section Induction
 
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
-/-- An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
+/--
+An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
 `IntermediateField.adjoin F t = S`.
 
 We use the class `Algebra.EssFiniteType F E` instead of `(⊤ : IntermediateField F E).FG` to say that
 `E` is finitely generated as an `F` extension.
-See `IntermediateField.fg_top_iff`. -/
+See `IntermediateField.fg_top_iff`.
+-/
 @[stacks 09FZ "second part"]
 def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S

@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.RingTheory.LocalProperties.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Purely inseparable ring homomorphisms
 
@@ -16,7 +19,6 @@ In this file we define purely inseparable ring homomorphisms and show their meta
 Since purely inseparable is mainly used for fields, we cannot prove many
 general ring hom properties. E.g. we can't prove `StableUnderComposition IsPurelyInseparable`,
 since `IsPurelyInseparable.trans` requires the involved rings to be fields.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Basic.ENNReal.Action
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced Outer Measure
 
@@ -24,7 +27,6 @@ at the end.
 ## Tags
 
 outer measure
-
 -/
 
 @[expose] public section
@@ -167,11 +169,13 @@ theorem le_inducedOuterMeasure {μ : OuterMeasure α} :
     μ ≤ inducedOuterMeasure m P0 m0 ↔ ∀ (s) (hs : P s), μ s ≤ m s hs :=
   le_ofFunction.trans <| forall_congr' fun _s => le_iInf_iff
 
-/-- If `P u` is `False` for any set `u` that has nonempty intersection both with `s` and `t`, then
+/--
+If `P u` is `False` for any set `u` that has nonempty intersection both with `s` and `t`, then
 `μ (s ∪ t) = μ s + μ t`, where `μ = inducedOuterMeasure m P0 m0`.
 
 E.g., if `α` is an (e)metric space and `P u = diam u < r`, then this lemma implies that
-`μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s` and `y ∈ t`. -/
+`μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s` and `y ∈ t`.
+-/
 theorem inducedOuterMeasure_union_of_false_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → ¬P u) :
     inducedOuterMeasure m P0 m0 (s ∪ t) =

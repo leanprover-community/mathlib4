@@ -9,9 +9,11 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional lemmas about monoid and group homomorphisms
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.Ring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homomorphisms of semirings and rings
 
@@ -30,7 +33,6 @@ groups, we use the same structure `RingHom a β`, a.k.a. `α →+* β`, for both
 
 * There's a coercion from bundled homs to fun, and the canonical notation is to
   use the bundled hom as a function via this coercion.
-
 * There is no `SemiringHom` -- the idea is that `RingHom` is used.
   The constructor for a `RingHom` between semirings needs a proof of `map_zero`,
   `map_one` and `map_add` as well as `map_mul`; a separate constructor
@@ -50,13 +52,15 @@ open Function
 
 variable {F α β γ : Type*}
 
-/-- Bundled non-unital semiring homomorphisms `α →ₙ+* β`; use this for bundled non-unital ring
+/--
+Bundled non-unital semiring homomorphisms `α →ₙ+* β`; use this for bundled non-unital ring
 homomorphisms too.
 
 When possible, instead of parametrizing results over `(f : α →ₙ+* β)`,
 you should parametrize over `(F : Type*) [NonUnitalRingHomClass F α β] (f : F)`.
 
-When you extend this structure, make sure to extend `NonUnitalRingHomClass`. -/
+When you extend this structure, make sure to extend `NonUnitalRingHomClass`.
+-/
 structure NonUnitalRingHom (α β : Type*) [NonUnitalNonAssocSemiring α]
   [NonUnitalNonAssocSemiring β] extends α →ₙ* β, α →+ β
 
@@ -300,10 +304,12 @@ theorem cancel_left {g : β →ₙ+* γ} {f₁ f₂ : α →ₙ+* β} (hg : Inje
 
 end NonUnitalRingHom
 
-/-- Bundled semiring homomorphisms; use this for bundled ring homomorphisms too.
+/--
+Bundled semiring homomorphisms; use this for bundled ring homomorphisms too.
 
 This extends from both `MonoidHom` and `MonoidWithZeroHom` in order to put the fields in a
-sensible order, even though `MonoidWithZeroHom` already extends `MonoidHom`. -/
+sensible order, even though `MonoidWithZeroHom` already extends `MonoidHom`.
+-/
 @[wikidata Q1194212]
 structure RingHom (α : Type*) (β : Type*) [NonAssocSemiring α] [NonAssocSemiring β] extends
   α →* β, α →+ β, α →ₙ+* β, α →*₀ β
@@ -329,12 +335,14 @@ add_decl_doc RingHom.toNonUnitalRingHom
 
 section RingHomClass
 
-/-- `RingHomClass F α β` states that `F` is a type of (semi)ring homomorphisms.
+/--
+`RingHomClass F α β` states that `F` is a type of (semi)ring homomorphisms.
 You should extend this class when you extend `RingHom`.
 
 This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
-`MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
+`MonoidWithZeroHomClass` already extends `MonoidHomClass`.
+-/
 class RingHomClass (F : Type*) (α β : outParam Type*)
     [NonAssocSemiring α] [NonAssocSemiring β] [FunLike F α β] : Prop
   extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β
@@ -365,7 +373,7 @@ section coe
 
 /-!
 Throughout this section, some `Semiring` arguments are specified with `{}` instead of `[]`.
-See note [implicit instance arguments].
+See note \[implicit instance arguments\].
 -/
 
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}

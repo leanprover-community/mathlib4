@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.IsCommutative
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.GroupTheory.Subsemigroup.Center
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centralizers in semigroups, as subsemigroups.
 

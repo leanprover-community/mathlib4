@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Order.Group.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute values in ordered groups
 
@@ -18,8 +21,8 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 
 ## Notation
 
-- `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
-- `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
+* `|a|`: The _absolute value_ of an element `a` of an additive lattice ordered group
+* `|a|ₘ`: The _absolute value_ of an element `a` of a multiplicative lattice ordered group
 -/
 
 @[expose] public section
@@ -284,8 +287,10 @@ end LinearOrder
 namespace LatticeOrderedAddCommGroup
 variable [Lattice α] [AddCommGroup α] {s t : Set α}
 
-/-- A set `s` in a lattice ordered group is *solid* if for all `x ∈ s` and all `y ∈ α` such that
-`|y| ≤ |x|`, then `y ∈ s`. -/
+/--
+A set `s` in a lattice ordered group is _solid_ if for all `x ∈ s` and all `y ∈ α` such that
+`|y| ≤ |x|`, then `y ∈ s`.
+-/
 def IsSolid (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, |y| ≤ |x| → y ∈ s
 
 /-- The solid closure of a subset `s` is the smallest superset of `s` that is solid. -/

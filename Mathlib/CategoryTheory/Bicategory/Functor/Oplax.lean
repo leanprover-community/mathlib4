@@ -8,10 +8,14 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 public import Mathlib.Tactic.CategoryTheory.ToApp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oplax functors
 
 An oplax functor `F` between bicategories `B` and `C` consists of
+
 * a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
@@ -24,7 +28,6 @@ An oplax functor `F` between bicategories `B` and `C` consists of
 * `CategoryTheory.OplaxFunctor B C` : an oplax functor between bicategories `B` and `C`, which we
   denote by `B ⥤ᵒᵖᴸ C`.
 * `CategoryTheory.OplaxFunctor.comp F G` : the composition of oplax functors
-
 -/
 
 @[expose] public section
@@ -42,7 +45,8 @@ section
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
-/-- An oplax functor `F` between bicategories `B` and `C` consists of a function between objects
+/--
+An oplax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
 Unlike functors between categories, `F.map` does not need to strictly commute with composition,
@@ -202,9 +206,11 @@ def comp (F : B ⥤ᵒᵖᴸ C) (G : C ⥤ᵒᵖᴸ D) : B ⥤ᵒᵖᴸ D where
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_right_assoc,
       whiskerLeft_comp, assoc]
 
-/-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
+/--
+A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 
-See `Pseudofunctor.mkOfOplax`. -/
+See `Pseudofunctor.mkOfOplax`.
+-/
 structure PseudoCore (F : B ⥤ᵒᵖᴸ C) where
   /-- The isomorphism giving rise to the oplax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)

@@ -9,6 +9,9 @@ public import Mathlib.Topology.Category.CompHaus.Projective
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.ExtremallyDisconnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extremally disconnected sets
 
@@ -38,7 +41,6 @@ can be lifted along epimorphisms).
 
 The category `Stonean` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section
@@ -227,6 +229,7 @@ abbrev _root_.Stonean.compHaus (X : Stonean) := Stonean.toCompHaus.obj X
                \/
   Z ---(e)---> Y
 ```
+
 If `Z` is a Stonean space, `f : X ⟶ Y` an epi in `CompHaus` and `e : Z ⟶ Y` is arbitrary, then
 `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism `Z ⟶ X`. It exists because
 `Z` is a projective object in `CompHaus`.
@@ -284,6 +287,7 @@ instance presentation.epi_π (X : Profinite) : Epi (π X) := by
                \/
   Z ---(e)---> Y
 ```
+
 If `Z` is a Stonean space, `f : X ⟶ Y` an epi in `Profinite` and `e : Z ⟶ Y` is arbitrary,
 then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism `Z ⟶ X`. It is
 `CompHaus.lift e f` as a morphism in `Profinite`.

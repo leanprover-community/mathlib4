@@ -11,6 +11,9 @@ public import Mathlib.Data.Fintype.Card
 
 import Mathlib.Algebra.Group.Commute.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # support of a permutation
 
@@ -25,10 +28,10 @@ In the following, `f g : Equiv.Perm α`.
 * `Equiv.Perm.support`: the elements `x : α` that are not fixed by `f`.
 
 Assume `α` is a Fintype:
+
 * `Equiv.Perm.fixed_point_card_lt_of_ne_one f` says that `f` has
   strictly less than `Fintype.card α - 1` fixed points, unless `f = 1`.
   (Equivalently, `f.support` has at least 2 elements.)
-
 -/
 
 @[expose] public section
@@ -631,7 +634,7 @@ section FixedPoints
 
 namespace Equiv.Perm
 /-!
-### Fixed points
+# Fixed points
 -/
 
 variable {α : Type*}

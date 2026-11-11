@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derived adjunction
 
@@ -18,7 +21,7 @@ classes of morphisms `W₁` and `W₂`, and that `G` admits
 a left derived functor `G' : D₁ ⥤ D₂` and `F` a right derived
 functor `F' : D₂ ⥤ D₁`. We show that there is an adjunction
 `G' ⊣ F'` under the additional assumption that `F'` and `G'`
-are *absolute* derived functors, i.e. they remain derived
+are _absolute_ derived functors, i.e. they remain derived
 functors after the post-composition with any functor
 (we actually only need to know that `G' ⋙ F'` is the
 left derived functor of `G ⋙ L₂ ⋙ F'` and
@@ -26,9 +29,8 @@ that `F' ⋙ G'` is the right derived functor of `F ⋙ L₁ ⋙ G'`).
 
 ## References
 
-* [Georges Maltsiniotis, *Le théorème de Quillen, d'adjonction des
-  foncteurs dérivés, revisité*][Maltsiniotis2007]
-
+* ‍\[Georges Maltsiniotis, _Le théorème de Quillen, d'adjonction des
+  foncteurs dérivés, revisité_\]\[Maltsiniotis2007\]
 -/
 
 @[expose] public section
@@ -129,14 +131,16 @@ lemma derivedε_fac_app (X₂ : C₂) :
 
 end
 
-/-- An adjunction between functors induces an adjunction between the
+/--
+An adjunction between functors induces an adjunction between the
 corresponding left/right derived functors, when these derived
-functors are *absolute*, i.e. they remain derived functors
+functors are _absolute_, i.e. they remain derived functors
 after the post-composition with any functor.
 
 (One actually only needs that `G' ⋙ F'` is the left derived functor of
 `G ⋙ L₂ ⋙ F'` and that `F' ⋙ G'` is the right derived functor of
-`F ⋙ L₁ ⋙ G'`). -/
+`F ⋙ L₁ ⋙ G'`).
+-/
 @[simps!]
 noncomputable def derived [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
     [(G' ⋙ F').IsLeftDerivedFunctor

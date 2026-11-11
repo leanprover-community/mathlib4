@@ -9,6 +9,9 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Ordinal.Family
 public import Mathlib.SetTheory.Ordinal.Univ
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Enumerating a cofinal set
 
@@ -23,13 +26,13 @@ function of the set. Note that if `α = ℕ`, then this definition matches `Nat.
 
 ## Main results
 
-- `Order.enum_eq_iff`: `Order.enum s _` is the unique strictly monotonic function with range `s`.
-- `Order.isNormal_enum_iff_dirSupClosed`: club sets correspond one to one with normal functions.
+* `Order.enum_eq_iff`: `Order.enum s _` is the unique strictly monotonic function with range `s`.
+* `Order.isNormal_enum_iff_dirSupClosed`: club sets correspond one to one with normal functions.
 
 ## TODO
 
-- Deprecate `Ordinal.enumOrd` in favor of `Order.enum`.
-- Prove that `Order.enum` on the naturals coincides with `Nat.nth`.
+* Deprecate `Ordinal.enumOrd` in favor of `Order.enum`.
+* Prove that `Order.enum` on the naturals coincides with `Nat.nth`.
 -/
 
 public section
@@ -40,12 +43,14 @@ open Cardinal Order Ordinal Set
 
 variable {α : Type*}
 
-/-- A typeclass which expresses that the order type of a well-order equals (the initial ordinal of)
+/--
+A typeclass which expresses that the order type of a well-order equals (the initial ordinal of)
 its cofinality.
 
 If `α` is infinite, this implies that `α` is order isomorphic to `Iio c.ord` for some regular
 cardinal `c`. In the informal literature, one often says that `α` is a regular cardinal, by abuse
-of notation. -/
+of notation.
+-/
 class IsRegularCardinalOrder (α : Type*) [LinearOrder α] [WellFoundedLT α] where
   type_lt_le_ord_cof : typeLT α ≤ (cof α).ord
 
@@ -149,9 +154,11 @@ theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoun
   rw [OrderIso.map_bot]
   rfl
 
-/-- Club sets in regular cardinals correspond one to one with normal enumerator functions.
+/--
+Club sets in regular cardinals correspond one to one with normal enumerator functions.
 
-See also `Order.isNormal_enum_iff_isClub`. -/
+See also `Order.isNormal_enum_iff_isClub`.
+-/
 theorem isNormal_enum_iff_dirSupClosed : IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
   rw [isNormal_iff_dirSupClosed_range ((Subtype.strictMono_coe _).comp (enum s hs).strictMono)]
   simp

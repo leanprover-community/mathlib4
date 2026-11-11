@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.RingTheory.Algebraic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irrational real numbers
 
@@ -49,7 +52,7 @@ theorem Transcendental.irrational {r : ℝ} (tr : Transcendental ℚ r) : Irrati
   exact tr (isAlgebraic_algebraMap a)
 
 /-!
-### Irrationality of roots of integer and rational numbers
+# Irrationality of roots of integer and rational numbers
 -/
 
 
@@ -141,6 +144,7 @@ theorem irrational_sqrt_two : Irrational (√2) := by
 
 /--
 This can be used as
+
 ```lean
 unseal Nat.sqrt.iter in
 example : Irrational √24 := by decide
@@ -159,9 +163,9 @@ instance (q : ℚ) : Decidable (Irrational (√q)) :=
   decidable_of_iff' _ irrational_sqrt_ratCast_iff
 
 /-!
-### Dot-style operations on `Irrational`
+# Dot-style operations on `Irrational`
 
-#### Coercion of a rational/integer/natural number is not irrational
+## Coercion of a rational/integer/natural number is not irrational
 -/
 
 
@@ -170,7 +174,7 @@ namespace Irrational
 variable {x : ℝ}
 
 /-!
-#### Irrational number is not equal to a rational/integer/natural number
+# Irrational number is not equal to a rational/integer/natural number
 -/
 
 
@@ -208,7 +212,7 @@ namespace Irrational
 variable (q : ℚ) {x y : ℝ}
 
 /-!
-#### Addition of rational/integer/natural numbers
+# Addition of rational/integer/natural numbers
 -/
 
 
@@ -246,7 +250,7 @@ theorem natCast_add (h : Irrational x) (m : ℕ) : Irrational (m + x) :=
 theorem add_natCast (h : Irrational x) (m : ℕ) : Irrational (x + m) :=
   h.add_intCast m
 /-!
-#### Negation
+# Negation
 -/
 
 
@@ -256,7 +260,7 @@ protected theorem neg (h : Irrational x) : Irrational (-x) :=
   of_neg <| by rwa [neg_neg]
 
 /-!
-#### Subtraction of rational/integer/natural numbers
+# Subtraction of rational/integer/natural numbers
 -/
 
 
@@ -285,7 +289,7 @@ theorem of_sub_natCast (m : ℕ) (h : Irrational (x - m)) : Irrational x :=
 theorem of_natCast_sub (m : ℕ) (h : Irrational (m - x)) : Irrational x :=
   h.of_intCast_sub m
 /-!
-#### Multiplication by rational numbers
+# Multiplication by rational numbers
 -/
 
 
@@ -322,7 +326,7 @@ theorem mul_natCast (h : Irrational x) {m : ℕ} (hm : m ≠ 0) : Irrational (x 
 theorem natCast_mul (h : Irrational x) {m : ℕ} (hm : m ≠ 0) : Irrational (m * x) :=
   h.intCast_mul <| Int.natCast_ne_zero.2 hm
 /-!
-#### Inverse
+# Inverse
 -/
 
 
@@ -332,7 +336,7 @@ protected theorem inv (h : Irrational x) : Irrational x⁻¹ :=
   of_inv <| by rwa [inv_inv]
 
 /-!
-#### Division
+# Division
 -/
 
 
@@ -370,7 +374,7 @@ theorem of_one_div (h : Irrational (1 / x)) : Irrational x :=
   of_ratCast_div 1 <| by rwa [cast_one]
 
 /-!
-#### Natural and integer power
+# Natural and integer power
 -/
 
 
@@ -425,7 +429,7 @@ variable {q : ℚ} {m : ℤ} {n : ℕ} {x : ℝ}
 open Irrational
 
 /-!
-### Simplification lemmas about operations
+# Simplification lemmas about operations
 -/
 
 

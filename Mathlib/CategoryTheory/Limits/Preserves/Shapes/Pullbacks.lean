@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preserving pullbacks
 
@@ -22,7 +25,6 @@ The dual is also given.
 ## TODO
 
 * Generalise to wide pullbacks
-
 -/
 
 @[expose] public section

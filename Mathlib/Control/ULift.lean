@@ -7,10 +7,14 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monadic instances for `ULift` and `PLift`
 
-In this file we define `Monad` and `IsLawfulMonad` instances on `PLift` and `ULift`. -/
+In this file we define `Monad` and `IsLawfulMonad` instances on `PLift` and `ULift`.
+-/
 
 @[expose] public section
 

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Basic.ENNReal.Action
 public import Mathlib.Topology.MetricSpace.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas for `IsBoundedSMul` over normed additive groups
 
@@ -189,9 +192,11 @@ section NormedDivisionRing
 variable [NormedDivisionRing α] [SeminormedAddGroup β]
 variable [MulActionWithZero α β] [IsBoundedSMul α β]
 
-/-- For a normed division ring, a sub-multiplicative norm is actually strictly multiplicative.
+/--
+For a normed division ring, a sub-multiplicative norm is actually strictly multiplicative.
 
-This is not an instance as it forms a loop with `NormSMulClass.toIsBoundedSMul`. -/
+This is not an instance as it forms a loop with `NormSMulClass.toIsBoundedSMul`.
+-/
 lemma NormedDivisionRing.toNormSMulClass : NormSMulClass α β where
   norm_smul r x := by
     by_cases h : r = 0

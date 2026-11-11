@@ -15,35 +15,37 @@ import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weierstrass `℘` functions
 
 ## Main definitions and results
-- `PeriodPair.weierstrassP`: The Weierstrass `℘`-function associated to a pair of periods.
-- `PeriodPair.hasSumLocallyUniformly_weierstrassP`:
-  The summands of `℘` sums to `℘` locally uniformly.
-- `PeriodPair.differentiableOn_weierstrassP`: `℘` is differentiable away from the lattice points.
-- `PeriodPair.weierstrassP_add_coe`: The Weierstrass `℘`-function is periodic.
-- `PeriodPair.weierstrassP_neg`: The Weierstrass `℘`-function is even.
 
-- `PeriodPair.derivWeierstrassP`:
+* `PeriodPair.weierstrassP`: The Weierstrass `℘`-function associated to a pair of periods.
+* `PeriodPair.hasSumLocallyUniformly_weierstrassP`:
+  The summands of `℘` sums to `℘` locally uniformly.
+* `PeriodPair.differentiableOn_weierstrassP`: `℘` is differentiable away from the lattice points.
+* `PeriodPair.weierstrassP_add_coe`: The Weierstrass `℘`-function is periodic.
+* `PeriodPair.weierstrassP_neg`: The Weierstrass `℘`-function is even.
+* `PeriodPair.derivWeierstrassP`:
   The derivative of the Weierstrass `℘`-function associated to a pair of periods.
-- `PeriodPair.hasSumLocallyUniformly_derivWeierstrassP`:
+* `PeriodPair.hasSumLocallyUniformly_derivWeierstrassP`:
   The summands of `℘'` sums to `℘'` locally uniformly.
-- `PeriodPair.differentiableOn_derivWeierstrassP`:
+* `PeriodPair.differentiableOn_derivWeierstrassP`:
   `℘'` is differentiable away from the lattice points.
-- `PeriodPair.derivWeierstrassP_add_coe`: `℘'` is periodic.
-- `PeriodPair.weierstrassP_neg`: `℘'` is odd.
-- `PeriodPair.deriv_weierstrassP`: `deriv ℘ = ℘'`. This is true globally because of junk values.
-- `PeriodPair.analyticOnNhd_weierstrassP`: `℘` is analytic away from the lattice points.
-- `PeriodPair.meromorphic_weierstrassP`: `℘` is meromorphic on the whole plane.
-- `PeriodPair.order_weierstrassP`: `℘` has a pole of order 2 at each of the lattice points.
-- `PeriodPair.derivWeierstrassP_sq` : `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃`
+* `PeriodPair.derivWeierstrassP_add_coe`: `℘'` is periodic.
+* `PeriodPair.weierstrassP_neg`: `℘'` is odd.
+* `PeriodPair.deriv_weierstrassP`: `deriv ℘ = ℘'`. This is true globally because of junk values.
+* `PeriodPair.analyticOnNhd_weierstrassP`: `℘` is analytic away from the lattice points.
+* `PeriodPair.meromorphic_weierstrassP`: `℘` is meromorphic on the whole plane.
+* `PeriodPair.order_weierstrassP`: `℘` has a pole of order 2 at each of the lattice points.
+* `PeriodPair.derivWeierstrassP_sq` : `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃`
 
 ## tags
 
 Weierstrass p-functions, Weierstrass p functions
-
 -/
 
 @[expose] public section

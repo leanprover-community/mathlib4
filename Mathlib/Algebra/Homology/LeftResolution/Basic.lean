@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left resolutions
 
@@ -18,7 +21,6 @@ This is used in order to construct a resolution functor
 `LeftResolution.chainComplexFunctor : A ⥤ ChainComplex C ℕ`.
 
 This shall be used in order to construct functorial flat resolutions.
-
 -/
 
 @[expose] public section

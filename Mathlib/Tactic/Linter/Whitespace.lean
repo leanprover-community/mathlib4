@@ -9,10 +9,14 @@ module
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `whitespace` linter
 
 The `whitespace` linter emits a warning if
+
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
@@ -23,6 +27,8 @@ open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
+
+set_option doc.verso false
 /--
 The `whitespace` linter emits a warning if
 * either a command does not start at the beginning of a line;
@@ -42,6 +48,8 @@ public register_option linter.style.whitespace : Bool := {
   descr := "enable the whitespace linter"
 }
 
+
+set_option doc.verso true
 /-- If the `linter.style.whitespace.verbose` option is `true`, the `whitespace` linter
 reports some helpful diagnostic information. -/
 public register_option linter.style.whitespace.verbose : Bool := {
@@ -86,8 +94,9 @@ structure FormatError where
   srcEndPos : String.Pos.Raw
   /-- The distance to the end of the formatted string, as number of characters -/
   fmtPos : Nat
-  /-- The kind of formatting error. For example: `extra space`, `remove line break` or
-  `missing space`.
+  /--
+  The kind of formatting error. For example: `extra space`, `remove line break` or
+`missing space`.
 
   Strings starting with `Oh no` indicate an internal error.
   -/
@@ -105,6 +114,7 @@ instance : ToString FormatError where
 
 /--
 Produces a `FormatError` from the input data.  It expects
+
 * `ls` to be a "user-typed" string;
 * `ms` to be a "pretty-printed" string;
 * `msg` to be a custom error message, such as `extra space` or `remove line break`;
@@ -282,7 +292,8 @@ def getUnlintedRanges (a : Array SyntaxNodeKind) :
       curr
   | curr, _ => curr
 
-/-- Given a `HashSet` of `Lean.Syntax.Range`s `rgs` and a further `Lean.Syntax.Range` `rg`,
+/--
+Given a `HashSet` of `Lean.Syntax.Range`s `rgs` and a further `Lean.Syntax.Range` `rg`,
 `isOutside rgs rg` returns `false` if and only if `rgs` contains a range that completely contains
 `rg`.
 
@@ -291,7 +302,8 @@ The linter uses this to figure out which nodes should be ignored.
 def isOutside (rgs : Std.HashSet Lean.Syntax.Range) (rg : Lean.Syntax.Range) : Bool :=
   rgs.all fun {start := a, stop := b} ↦ !(a ≤ rg.start && rg.stop ≤ b)
 
-/-- `mkWindow orig start ctx` extracts from `orig` a string that starts at the first
+/--
+`mkWindow orig start ctx` extracts from `orig` a string that starts at the first
 non-whitespace character before `start`, then expands to cover `ctx` more characters
 and continues still until the first non-whitespace character.
 
@@ -299,7 +311,7 @@ In essence, it extracts the substring of `orig` that begins at `start`, continue
 characters plus expands left and right until it encounters the first whitespace character,
 to avoid cutting into "words".
 
-*Note*. `start` is the number of characters *from the right* where our focus is!
+_Note_. `start` is the number of characters _from the right_ where our focus is!
 -/
 public def mkWindow (orig : String) (start ctx : Nat) : String :=
   let head := orig.dropEnd (start + 1) -- `orig`, up to one character before the discrepancy

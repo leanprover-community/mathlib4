@@ -10,6 +10,9 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 import Mathlib.Topology.UniformSpace.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hausdorff uniformity
 
@@ -118,9 +121,11 @@ end hausdorffEntourage
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
 variable (α) in
-/-- The Hausdorff uniformity on the powerset of a uniform space. Used for defining the uniformities
+/--
+The Hausdorff uniformity on the powerset of a uniform space. Used for defining the uniformities
 on `Closeds`, `Compacts` and `NonemptyCompacts`.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected abbrev UniformSpace.hausdorff : UniformSpace (Set α) := .ofCore
   { uniformity := (𝓤 α).lift' hausdorffEntourage
     refl := by

@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results about relative perfect closure
 
@@ -16,27 +19,24 @@ This file contains basic results about relative perfect closures.
 
 ## Main definitions
 
-- `perfectClosure`: the relative perfect closure of `F` in `E`, it consists of the elements
+* `perfectClosure`: the relative perfect closure of `F` in `E`, it consists of the elements
   `x` of `E` such that there exists a natural number `n` such that `x ^ (ringExpChar F) ^ n`
   is contained in `F`, where `ringExpChar F` is the exponential characteristic of `F`.
   It is also the maximal purely inseparable subextension of `E / F` (`le_perfectClosure_iff`).
 
 ## Main results
 
-- `le_perfectClosure_iff`: an intermediate field of `E / F` is contained in the relative perfect
+* `le_perfectClosure_iff`: an intermediate field of `E / F` is contained in the relative perfect
   closure of `F` in `E` if and only if it is purely inseparable over `F`.
-
-- `perfectClosure.perfectRing`, `perfectClosure.perfectField`: if `E` is a perfect field, then the
+* `perfectClosure.perfectRing`, `perfectClosure.perfectField`: if `E` is a perfect field, then the
   (relative) perfect closure `perfectClosure F E` is perfect.
-
-- `IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem`: if `F` is of exponential
+* `IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem`: if `F` is of exponential
   characteristic `q`, then `F(S) / F` is a purely inseparable extension if and only if for any
   `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`.
 
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
-
 -/
 
 @[expose] public section

@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums of squares
 
@@ -19,11 +22,11 @@ We introduce a predicate for sums of squares in a ring.
 
 ## Main declarations
 
-- `IsSumSq : R → Prop`: for a type `R` with addition, multiplication and a zero,
+* `IsSumSq : R → Prop`: for a type `R` with addition, multiplication and a zero,
   an inductive predicate defining the property of being a sum of squares in `R`.
   `0 : R` is a sum of squares and if `S` is a sum of squares, then, for all `a : R`,
   `a * a + s` is a sum of squares.
-- `AddMonoid.sumSq R` and `Subsemiring.sumSq R`: respectively
+* `AddMonoid.sumSq R` and `Subsemiring.sumSq R`: respectively
   the submonoid or subsemiring of sums of squares in an additive monoid or semiring `R`
   with multiplication.
 -/

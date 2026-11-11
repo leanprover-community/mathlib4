@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.KrullDimension.Zero
 
 import Mathlib.RingTheory.LocalProperties.Reduced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strongly transcendental elements
 
@@ -17,8 +20,7 @@ This is a relatively niche notion, but is useful for proving Zariski's main theo
 
 ## References
 
-- https://stacks.math.columbia.edu/tag/00PZ
-
+* https://stacks.math.columbia.edu/tag/00PZ
 -/
 
 @[expose] public section

@@ -11,6 +11,9 @@ public import Mathlib.Logic.OpClass
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Nat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # zip & unzip
 

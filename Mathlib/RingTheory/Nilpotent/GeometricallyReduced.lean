@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
 import Mathlib.RingTheory.Flat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geometrically reduced algebras
 
@@ -21,22 +24,22 @@ In the case of `R = k` a field, this is equivalent to `AlgebraicClosure k ⊗[k]
 
 ## Main results
 
-- `Algebra.isGeometricallyReduced_field_iff` : for a field `k` and a commutative `k`-algebra `A`,
+* `Algebra.isGeometricallyReduced_field_iff` : for a field `k` and a commutative `k`-algebra `A`,
   `A` is geometrically reduced iff `AlgebraicClosure k ⊗[k] A` is reduced.
-
-- `IsGeometricallyReduced.of_forall_fg`: for a field `k` and a commutative `k`-algebra `A`, if all
+* `IsGeometricallyReduced.of_forall_fg`: for a field `k` and a commutative `k`-algebra `A`, if all
   finitely generated subalgebras `B` of `A` are geometrically reduced, then `A` is geometrically
   reduced.
 
 ## References
-- See [https://stacks.math.columbia.edu/tag/05DS] for some theory of geometrically reduced algebras.
-  Note that their definition differs from the one here, we still need a proof that these are
-  equivalent (see TODO).
+
+* See \[https://stacks.math.columbia.edu/tag/05DS\] for some theory of geometrically reduced
+  algebras. Note that their definition differs from the one here, we still need a proof that these
+  are equivalent (see TODO).
 
 ## TODO
-- Prove that if `A` is a geometrically reduced `R`-algebra, then for every `R`-algebra `K` that is
-  a field, the tensor product `K ⊗[R] A` is reduced. (@Thmoas-Guan)
 
+* Prove that if `A` is a geometrically reduced `R`-algebra, then for every `R`-algebra `K` that is
+  a field, the tensor product `K ⊗[R] A` is reduced. (@Thmoas-Guan)
 -/
 
 public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finset`s are a Boolean algebra
 

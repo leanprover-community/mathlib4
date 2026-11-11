@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Choose.Central
 public import Mathlib.Data.Nat.Digits.Lemmas
 public import Mathlib.Data.Nat.Factorization.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization of Binomial Coefficients
 
@@ -25,7 +28,7 @@ bounds in binomial coefficients. These include:
 * `Nat.factorization_choose_eq_zero_of_lt`: Primes greater than `n` do not
   appear in the factorization of `n` choose `k`.
 
-These results appear in the [Erdős proof of Bertrand's postulate][aigner1999proofs].
+These results appear in the \[Erdős proof of Bertrand's postulate\]\[aigner1999proofs\].
 -/
 
 public section
@@ -35,10 +38,12 @@ open Finset List Finsupp
 namespace Nat
 variable {a b c : ℕ}
 
-/-- **Legendre's Theorem**
+/--
+*Legendre's Theorem*
 
 The multiplicity of a prime in `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
-over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
+over the finset `Ico 1 b` where `b` is any bound greater than `log p n`.
+-/
 theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
     ∀ {n b : ℕ}, log p n < b → (n)!.factorization p = ∑ i ∈ Ico 1 b, n / p ^ i
   | 0, b, _ => by simp

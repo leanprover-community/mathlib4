@@ -12,16 +12,19 @@ public import Mathlib.Tactic.GRewrite.Core
 meta import Mathlib.Tactic.GRewrite.Core
 import Lean.Elab.ConfigEval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The generalized rewriting tactic
 
 This file defines the tactics that use the backend defined in `Mathlib.Tactic.GRewrite.Core`:
-- `grewrite`
-- `grw`
-- `apply_rw`
-- `nth_grewrite`
-- `nth_grw`
 
+* `grewrite`
+* `grw`
+* `apply_rw`
+* `nth_grewrite`
+* `nth_grw`
 -/
 
 meta section
@@ -145,6 +148,7 @@ interprets `· → ·` as a relation instead of adding the hypothesis as a side 
   occurrences of `b` with `a`.
 * `grewrite (config := cfg) [e₁, ..., eₙ]` uses `cfg` as configuration. See `GRewrite.Config` for
   details.
+
   * To let `grewrite` unfold more aggressively, as in `erw`, use
     `grewrite (transparency := default) [e₁, ..., eₙ]`.
   * `grewrite +implicationHyp [e₁, ..., eₙ]` interprets `· → ·` as a relation (see `apply_rewrite`).
@@ -162,6 +166,8 @@ public def evalGRewriteSeq : Tactic := fun stx => do
       (grewriteTarget term symm cfg)
       (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
 
+
+set_option doc.verso false
 /--
 `grw [e₁, ..., eₙ]` uses each expression `eᵢ : Rᵢ aᵢ bᵢ` (where `Rᵢ` is any two-argument
 relation) as a generalized rewrite rule on the main goal, replacing occurrences of `aᵢ` with `bᵢ`,
@@ -221,6 +227,8 @@ macro (name := grwSeq) "grw " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
     `(tactic| (grewrite $c [$rs,*] $(l)?; with_annotate_state $rbrak (try (with_reducible rfl))))
   | _ => Macro.throwUnsupported
 
+
+set_option doc.verso true
 /--
 `apply_rewrite [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules, of
 type `pᵢ → qᵢ`, on the main goal, replacing occurrences of `pᵢ` with `qᵢ`. The difference with
@@ -280,6 +288,7 @@ replacing a goal `_ < _` by `_ ≤ _`. If this is not possible, then `a < b` is 
   replacing the `n₁, ..., nₖ`th occurrences of `b` with `a`.
 * `nth_grewrite (config := cfg) n₁ ... nₖ [e₁, ..., eₙ]` uses `cfg` as configuration. See
   `GRewrite.Config` for details.
+
   * To let `nth_grewrite` unfold more aggressively, as in `erw`, use
     `nth_grewrite (transparency := default) n₁ ... nₖ [e₁, ..., eₙ]`.
   * `nth_grewrite +implicationHyp n₁ ... nₖ [e₁, ..., eₙ]` interprets `· → ·` as a relation.
@@ -309,6 +318,7 @@ replacing a goal `_ < _` by `_ ≤ _`. If this is not possible, then `a < b` is 
   the `n₁, ..., nₖ`th occurrences of `b` with `a`.
 * `nth_grw (config := cfg) n₁ ... nₖ [e₁, ..., eₙ]` uses `cfg` as configuration. See
   `GRewrite.Config` for details.
+
   * To let `nth_grw` unfold more aggressively, as in `erw`, use
     `nth_grw (transparency := default) n₁ ... nₖ [e₁, ..., eₙ]`.
   * `nth_grw +implicationHyp n₁ ... nₖ [e₁, ..., eₙ]` interprets `· → ·` as a relation.

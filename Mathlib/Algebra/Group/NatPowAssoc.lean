@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for power-associative structures
 
@@ -17,23 +20,22 @@ The class is a Prop-valued mixin named `NatPowAssoc`.
 
 ## Results
 
-- `npow_add` a defining property: `x ^ (k + n) = x ^ k * x ^ n`
-- `npow_one` a defining property: `x ^ 1 = x`
-- `npow_assoc` strictly positive powers of an element have associative multiplication.
-- `npow_comm` `x ^ m * x ^ n = x ^ n * x ^ m` for strictly positive `m` and `n`.
-- `npow_mul` `x ^ (m * n) = (x ^ m) ^ n` for strictly positive `m` and `n`.
-- `npow_eq_pow` monoid exponentiation coincides with semigroup exponentiation.
+* `npow_add` a defining property: `x ^ (k + n) = x ^ k * x ^ n`
+* `npow_one` a defining property: `x ^ 1 = x`
+* `npow_assoc` strictly positive powers of an element have associative multiplication.
+* `npow_comm` `x ^ m * x ^ n = x ^ n * x ^ m` for strictly positive `m` and `n`.
+* `npow_mul` `x ^ (m * n) = (x ^ m) ^ n` for strictly positive `m` and `n`.
+* `npow_eq_pow` monoid exponentiation coincides with semigroup exponentiation.
 
 ## Instances
 
 We also produce the following instances:
 
-- `NatPowAssoc` for Monoids, Pi types and products.
+* `NatPowAssoc` for Monoids, Pi types and products.
 
 ## TODO
 
 * `to_additive`?
-
 -/
 
 public section

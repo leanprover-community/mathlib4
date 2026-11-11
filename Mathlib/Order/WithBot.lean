@@ -13,6 +13,9 @@ public import Mathlib.Order.Lattice
 public import Mathlib.Order.TypeTags
 public import Mathlib.Tactic.Lift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `WithBot`, `WithTop`
 
@@ -21,7 +24,6 @@ Adding a `bot` or a `top` to an order.
 ## Main declarations
 
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
-
 -/
 
 @[expose] public section
@@ -164,15 +166,19 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
 theorem map_injective {f : α → β} (Hf : Injective f) : Injective (WithBot.map f) :=
   Option.map_injective Hf
 
-/-- The image of a binary function `f : α → β → γ` as a function
+/--
+The image of a binary function `f : α → β → γ` as a function
 `WithBot α → WithBot β → WithBot γ`.
 
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.
+-/
 @[to_dual
-/-- The image of a binary function `f : α → β → γ` as a function
+/--
+The image of a binary function `f : α → β → γ` as a function
 `WithTop α → WithTop β → WithTop γ`.
 
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/]
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.
+-/]
 def map₂ : (α → β → γ) → WithBot α → WithBot β → WithBot γ := Option.map₂
 
 @[to_dual] lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
@@ -321,17 +327,21 @@ protected inductive WithTop.LE : WithTop α → WithTop α → Prop
 
 attribute [to_dual existing (reorder := motive (1 2), 4 5, coe_le_coe (1 2))] WithBot.LE.casesOn
 
-/-- The order on `WithBot α`, defined by `⊥ ≤ y` and `a ≤ b → ↑a ≤ ↑b`.
+/--
+The order on `WithBot α`, defined by `⊥ ≤ y` and `a ≤ b → ↑a ≤ ↑b`.
 
 Equivalently, `x ≤ y` can be defined as `∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b`,
 see `le_iff_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/
+cannot be accidentally unfolded too far.
+-/
 @[to_dual
-/-- The order on `WithTop α`, defined by `x ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`.
+/--
+The order on `WithTop α`, defined by `x ≤ ⊤` and `a ≤ b → ↑a ≤ ↑b`.
 
 Equivalently, `x ≤ y` can be defined as `∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a ≤ b`,
 see `le_iff_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/]
+cannot be accidentally unfolded too far.
+-/]
 instance (priority := 10) WithBot.instLE : LE (WithBot α) where le := WithBot.LE
 
 @[to_dual none]
@@ -362,17 +372,21 @@ protected inductive WithTop.LT [LT α] : WithTop α → WithTop α → Prop
 
 attribute [to_dual existing (reorder := motive (1 2), 4 5, coe_lt_coe (1 2))] WithBot.LT.casesOn
 
-/-- The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`.
+/--
+The order on `WithBot α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`.
 
 Equivalently, `x < y` can be defined as `∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b`,
 see `lt_iff_exists`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/
+cannot be accidentally unfolded too far.
+-/
 @[to_dual
-/-- The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`.
+/--
+The order on `WithTop α`, defined by `↑a < ⊤` and `a < b → ↑a < ↑b`.
 
 Equivalently, `x < y` can be defined as `∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b`,
 see `le_if_forall`. The definition as an inductive predicate is preferred since it
-cannot be accidentally unfolded too far. -/]
+cannot be accidentally unfolded too far.
+-/]
 instance (priority := 10) WithBot.instLT : LT (WithBot α) where lt := WithBot.LT
 
 @[to_dual none]
@@ -892,7 +906,9 @@ instance noMaxOrder [LT α] [NoMaxOrder α] [Nonempty α] : NoMaxOrder (WithBot 
 
 variable {a b : α}
 
-/-! ### `(WithBot α)ᵒᵈ ≃ WithTop αᵒᵈ`, `(WithTop α)ᵒᵈ ≃ WithBot αᵒᵈ` -/
+/-!
+# `(WithBot α)ᵒᵈ ≃ WithTop αᵒᵈ`, `(WithTop α)ᵒᵈ ≃ WithBot αᵒᵈ`
+-/
 
 open Function
 

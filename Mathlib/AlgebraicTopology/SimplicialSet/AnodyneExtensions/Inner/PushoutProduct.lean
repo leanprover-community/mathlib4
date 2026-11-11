@@ -14,6 +14,9 @@ import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inner anodyne extensions and pushout-products, inner fibrations and pullbacks
 
@@ -33,7 +36,7 @@ For implementation details, see `SSet/AnodyneExtensions/PushoutProduct`.
 
 ## References
 
-- [Jack McKoen, *A Formalization of Functor Quasi-Categories in Lean 4*][mckoen2026]
+* ‍\[Jack McKoen, _A Formalization of Functor Quasi-Categories in Lean 4_\]\[mckoen2026\]
 
 ## Note
 
@@ -41,7 +44,6 @@ The result that the internal hom into a quasi-category is also a quasi-category 
 formalized by Jack McKoen for his master's thesis, following an approach outlined on
 Kerodon (https://kerodon.net/tag/0066). Specifically, this approach hinges on the lemma
 https://kerodon.net/tag/0079 which is avoided in the mathlib implementation.
-
 -/
 
 public section

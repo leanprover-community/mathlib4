@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Tauto
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Boolean algebra of sets
 
@@ -86,7 +89,9 @@ theorem sdiff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩
 
 @[deprecated (since := "2026-06-03")] alias diff_inter_distrib_right := sdiff_inter_distrib_right
 
-/-! ### Lemmas about complement -/
+/-!
+# Lemmas about complement
+-/
 
 theorem compl_def (s : Set α) : sᶜ = { x | x ∉ s } :=
   rfl
@@ -202,7 +207,9 @@ lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl {a}
 @[simp]
 lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff
 
-/-! ### Lemmas about set difference -/
+/-!
+# Lemmas about set difference
+-/
 
 theorem notMem_sdiff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
 
@@ -620,7 +627,9 @@ lemma pair_sdiff_right (hab : a ≠ b) : ({a, b} : Set α) \ {b} = {a} := by
 
 @[deprecated (since := "2026-06-03")] alias pair_diff_right := pair_sdiff_right
 
-/-! ### If-then-else for sets -/
+/-!
+# If-then-else for sets
+-/
 
 /-- `ite` for sets: `Set.ite t s s' ∩ t = s ∩ t`, `Set.ite t s s' ∩ tᶜ = s' ∩ tᶜ`.
 Defined as `s ∩ t ∪ s' \ t`. -/

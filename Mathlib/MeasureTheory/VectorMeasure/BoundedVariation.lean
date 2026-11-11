@@ -12,6 +12,9 @@ public import Mathlib.Topology.EMetricSpace.VariationOnFromTo
 import Mathlib.MeasureTheory.VectorMeasure.AddContent
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vector valued Stieltjes measure associated to a bounded variation function
 
@@ -59,9 +62,11 @@ Using right limits ensures the right continuity, which is used to construct Stie
   right_continuous' x := hf.continuousWithinAt_variationOnFromTo_rightLim_Ici
 
 open scoped Classical in
-/-- Auxiliary measure used to construct the vector measure associated to a bounded variation
-function. This is *not* the total variation of this measure in general, as we need to adjust things
-when there is a bot element by adding a Dirac mass there. -/
+/--
+Auxiliary measure used to construct the vector measure associated to a bounded variation
+function. This is _not_ the total variation of this measure in general, as we need to adjust things
+when there is a bot element by adding a Dirac mass there.
+-/
 private noncomputable def measureAux (hf : BoundedVariationOn f univ) : Measure α :=
   if h : Nonempty α then (hf.stieltjesFunctionRightLim h.some).measure else 0
 
@@ -74,10 +79,12 @@ private instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAu
     (C := (eVariationOn f.rightLim univ).toReal) _ (fun x ↦ ?_)
   exact variationOnFromTo.abs_le_eVariationOn hf.rightLim
 
-/-- Given a bounded variation function `f`, we can construct a vector measure giving
-mass `f.rightLim v - f.rightLim a` to each open-closed interval `(a, b]`. This is *not* the
+/--
+Given a bounded variation function `f`, we can construct a vector measure giving
+mass `f.rightLim v - f.rightLim a` to each open-closed interval `(a, b]`. This is _not_ the
 measure associated to `f` in general, as we may need to adjust things at the bot element if
-there is one. -/
+there is one.
+-/
 private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ) :
     ∃ m : VectorMeasure α E, (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧
       m botSet = 0 ∧ ∀ s, ‖m s‖ₑ ≤ hf.measureAux s := by

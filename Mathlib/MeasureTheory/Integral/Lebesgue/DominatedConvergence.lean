@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dominated convergence theorem
 

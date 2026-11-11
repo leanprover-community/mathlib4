@@ -13,6 +13,9 @@ import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 import Mathlib.Analysis.Calculus.ParametricIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of the Fourier transform
 
@@ -55,7 +58,7 @@ With these definitions, the statements read as follows, first in a general conte
 (arbitrary `L` and `μ`):
 
 * `VectorFourier.hasFDerivAt_fourierIntegral`: the Fourier integral of `f` is differentiable, with
-    derivative the Fourier integral of `fourierSMulRight L f`.
+  derivative the Fourier integral of `fourierSMulRight L f`.
 * `VectorFourier.differentiable_fourierIntegral`: the Fourier integral of `f` is differentiable.
 * `VectorFourier.fderiv_fourierIntegral`: formula for the derivative of the Fourier integral of `f`.
 * `VectorFourier.fourierIntegral_fderiv`: formula for the Fourier integral of the derivative of `f`.
@@ -283,7 +286,8 @@ theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensi
   · exact fun _ _ ↦ (differentiable_fourierChar_neg_bilinear_left _ _).differentiableAt
   · exact fun _ _ ↦ h'f.differentiableAt
 
-/-- The formal multilinear series whose `n`-th term is
+/--
+The formal multilinear series whose `n`-th term is
 `(w₁, ..., wₙ) ↦ (-2πI)^n * L v w₁ * ... * L v wₙ • f v`, as a continuous multilinear map in
 the space `W [×n]→L[ℝ] E`.
 
@@ -831,7 +835,8 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
     fourier_iteratedFDeriv hf A hn]
   simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
 
-/-- If `f` and its first `n` derivatives are integrable, then the Fourier transform of `f` decays
+/--
+If `f` and its first `n` derivatives are integrable, then the Fourier transform of `f` decays
 like `|u| ^ (-n)`, with an explicit bound that is also nontrivial at `u = 0`.
 
 TODO: a higher-dimensional analogue.  This requires a reverse bound for `fourierPowSMulRight`, for

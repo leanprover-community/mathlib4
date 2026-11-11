@@ -9,6 +9,9 @@ public meta import Lean.Elab.Tactic.Location
 public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Util.Tactic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `rename_bvar` tactic
 
@@ -31,6 +34,8 @@ def renameBVarHyp (mvarId : MVarId) (fvarId : FVarId) (old new : Name) :
 def renameBVarTarget (mvarId : MVarId) (old new : Name) : MetaM Unit :=
   modifyTarget mvarId fun e ↦ e.renameBVar old new
 
+
+set_option doc.verso false
 /--
 * `rename_bvar old → new` renames all bound variables named `old` to `new` in the target.
 * `rename_bvar old → new at h` does the same in hypothesis `h`.
@@ -54,4 +59,6 @@ elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
       (renameBVarTarget mvarId old.getId new.getId)
       fun _ ↦ throwError "unexpected location syntax"
 
+
+set_option doc.verso true
 end Mathlib.Tactic

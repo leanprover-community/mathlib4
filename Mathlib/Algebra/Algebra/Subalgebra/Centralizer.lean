@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of centers and centralizers
 
@@ -16,11 +19,12 @@ This file contains theorems about the center and centralizer of a subalgebra.
 ## Main results
 
 Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
-- `Subalgebra.centralizer_sup`: if `S` and `T` are subalgebras of `A`, then the centralizer of
+
+* `Subalgebra.centralizer_sup`: if `S` and `T` are subalgebras of `A`, then the centralizer of
   `S ⊔ T` is the intersection of the centralizer of `S` and the centralizer of `T`.
-- `Subalgebra.centralizer_range_includeLeft_eq_center_tensorProduct`: if `B` is free as a module,
+* `Subalgebra.centralizer_range_includeLeft_eq_center_tensorProduct`: if `B` is free as a module,
   then the centralizer of `A ⊗ 1` in `A ⊗ B` is `C(A) ⊗ B` where `C(A)` is the center of `A`.
-- `Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct`: if `A` is free as a module,
+* `Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct`: if `A` is free as a module,
   then the centralizer of `1 ⊗ B` in `A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
 -/
 

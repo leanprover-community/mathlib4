@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.MvPolynomial.Expand
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Expand multivariate power series
 
@@ -27,9 +30,11 @@ namespace MvPowerSeries
 
 variable {σ τ R S : Type*} [CommRing R] [CommRing S] (p : ℕ) (hp : p ≠ 0)
 
-/-- Expand the power series by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
+/--
+Expand the power series by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 
-See also `PowerSeries.expand`. -/
+See also `PowerSeries.expand`.
+-/
 noncomputable def expand : MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R :=
   substAlgHom (HasSubst.X_pow hp)
 

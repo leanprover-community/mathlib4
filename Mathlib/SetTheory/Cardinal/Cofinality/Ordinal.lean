@@ -8,6 +8,9 @@ module
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cofinality of an ordinal
 
@@ -36,14 +39,18 @@ variable {α γ : Type u} {β : Type v}
 
 theorem Order.cof_int : cof ℤ = ℵ₀ := by simp
 
-/-! ### Cofinality of ordinals -/
+/-!
+# Cofinality of ordinals
+-/
 
 -- TODO: generalize to `OrderType`
 namespace Ordinal
 
-/-- The cofinality on an ordinal is the `Order.cof` of any isomorphic linear order.
+/--
+The cofinality on an ordinal is the `Order.cof` of any isomorphic linear order.
 
-In particular, `cof 0 = 0` and `cof (succ o) = 1`. -/
+In particular, `cof 0 = 0` and `cof (succ o) = 1`.
+-/
 def cof (o : Ordinal.{u}) : Cardinal.{u} :=
   o.liftOnWellOrder (fun α _ _ ↦ Order.cof α) fun _ _ _ _ _ _ h ↦
     let ⟨f⟩ := type_eq.1 h
@@ -171,7 +178,9 @@ theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α
 theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
   simpa using Order.cof_ord_cof o.ToType
 
-/-! ### Cofinalities and suprema -/
+/-!
+# Cofinalities and suprema
+-/
 
 section LinearOrder
 variable [LinearOrder β] [LinearOrder γ]
@@ -316,7 +325,9 @@ theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀
     a < c → nfp f a < c :=
   nfpFamily_lt_ord_lift hc (by simpa using Cardinal.one_lt_aleph0.trans hc) fun _ => hf
 
-/-! ### Cofinality arithmetic -/
+/-!
+# Cofinality arithmetic
+-/
 
 @[simp]
 theorem cof_add (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : cof (a + b) = cof b := by
@@ -350,7 +361,9 @@ end Ordinal
 namespace Cardinal
 open Ordinal
 
-/-! ### Results on sets -/
+/-!
+# Results on sets
+-/
 
 -- TODO: re-state this for a bundled well-order
 theorem mk_bounded_subset {α : Type*} (h : IsStrongPrelimit #α) {r : α → α → Prop}
@@ -405,7 +418,9 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : IsStrongPrelimit #α) :
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
-/-! ### Consequences of König's lemma -/
+/-!
+# Consequences of König's lemma
+-/
 
 theorem lt_power_cof_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : c < c ^ c.ord.cof := by
   induction c using Cardinal.inductionOn with | mk α

@@ -10,17 +10,21 @@ public import Mathlib.FieldTheory.Perfect
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 
-/-! # Rings with finite quotients
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Rings with finite quotients
 
 A commutative ring is said to have finite quotients if, for any nonzero ideal `I` of `R`, the
 quotient `R ⧸ I` is finite.
 
 ## Main results
-- `Ring.HasFiniteQuotients.instDimensionLEOne`: A ring with finite quotients has dimension `≤ 1`.
-- `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
-- `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
-  a domain and a finite `R`-module. Then `S` has finite quotients.
 
+* `Ring.HasFiniteQuotients.instDimensionLEOne`: A ring with finite quotients has dimension `≤ 1`.
+* `Ring.HasFiniteQuotients.instIsNoetherianRing` : A ring with finite quotients is noetherian.
+* `Ring.HasFiniteQuotients.of_module_finite`: Assume that `R` has finite quotients and that `S` is
+  a domain and a finite `R`-module. Then `S` has finite quotients.
 -/
 
 public section

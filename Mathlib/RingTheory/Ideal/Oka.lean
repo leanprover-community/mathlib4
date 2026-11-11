@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.Colon
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oka predicates
 
@@ -14,15 +17,15 @@ This file introduces the notion of Oka predicates and standard results about the
 
 ## Main results
 
-- `Ideal.IsOka.isPrime_of_maximal_not`: if an ideal is maximal for not satisfying an Oka predicate,
+* `Ideal.IsOka.isPrime_of_maximal_not`: if an ideal is maximal for not satisfying an Oka predicate,
   then it is prime.
-- `Ideal.IsOka.forall_of_forall_prime`: if all prime ideals of a ring satisfy an Oka predicate,
+* `Ideal.IsOka.forall_of_forall_prime`: if all prime ideals of a ring satisfy an Oka predicate,
   then all its ideals also satisfy the predicate.
 
 ## References
 
-- [stacks-project]: The Stacks project, [tag 05K7](https://stacks.math.columbia.edu/tag/05K7)
-- [lam_reyes_2009]: *Oka and Ako ideal families in commutative rings*, 2009
+* ‍\[stacks-project\]: The Stacks project, [tag 05K7](https://stacks.math.columbia.edu/tag/05K7)
+* ‍\[lam\_reyes\_2009\]: _Oka and Ako ideal families in commutative rings_, 2009
 -/
 
 public section
@@ -55,11 +58,14 @@ theorem isPrime_of_maximal_not {I : Ideal R} (hI : Maximal (¬P ·) I) : I.IsPri
       (fun H ↦ hb <| H ▸ mem_colon_span_singleton.2 (mul_comm a b ▸ hab))
     exact hI.prop (hP.oka h₁ h₂)
 
-/-- If a ring `R` verify:
+/--
+If a ring `R` verify:
+
 1. All prime ideals of `R` satisfy an Oka predicate `P`.
 2. One ideal not satisfying `P` implies that there is an ideal maximal for not satisfying `P`.
 
-Then all the ideals of `R` satisfy `P`. -/
+Then all the ideals of `R` satisfy `P`.
+-/
 theorem forall_of_forall_prime (hmax : ∀ I, ¬P I → ∃ I, Maximal (¬P ·) I)
     (hprime : ∀ I, I.IsPrime → P I) (I : Ideal R) : P I := by
   by_contra hI

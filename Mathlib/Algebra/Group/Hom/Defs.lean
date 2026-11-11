@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoid and group homomorphisms
 
@@ -57,7 +60,6 @@ deprecated and moved to `Deprecated/Group`.
 ## Tags
 
 MonoidHom, AddMonoidHom
-
 -/
 
 @[expose] public section
@@ -75,7 +77,8 @@ variable {F : Type*}
 -- homs
 section Zero
 
-/-- `ZeroHom M N` is the type of functions `M → N` that preserve zero.
+/--
+`ZeroHom M N` is the type of functions `M → N` that preserve zero.
 
 When possible, instead of parametrizing results over `(f : ZeroHom M N)`,
 you should parametrize over `(F : Type*) [ZeroHomClass F M N] (f : F)`.
@@ -88,7 +91,8 @@ structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
   /-- The proposition that the function preserves 0 -/
   protected map_zero' : toFun 0 = 0
 
-/-- `ZeroHomClass F M N` states that `F` is a type of zero-preserving homomorphisms.
+/--
+`ZeroHomClass F M N` states that `F` is a type of zero-preserving homomorphisms.
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
@@ -102,7 +106,8 @@ end Zero
 
 section Add
 
-/-- `M →ₙ+ N` is the type of functions `M → N` that preserve addition. The `ₙ` in the notation
+/--
+`M →ₙ+ N` is the type of functions `M → N` that preserve addition. The `ₙ` in the notation
 stands for "non-unital" because it is intended to match the notation for `NonUnitalAlgHom` and
 `NonUnitalRingHom`, so a `AddHom` is a non-unital additive monoid hom.
 
@@ -132,7 +137,8 @@ end Add
 
 section add_zero
 
-/-- `M →+ N` is the type of functions `M → N` that preserve the `AddZero` structure.
+/--
+`M →+ N` is the type of functions `M → N` that preserve the `AddZero` structure.
 
 `AddMonoidHom` is also used for group homomorphisms.
 
@@ -150,7 +156,8 @@ attribute [nolint docBlame] AddMonoidHom.toZeroHom
 /-- `M →+ N` denotes the type of additive monoid homomorphisms from `M` to `N`. -/
 infixr:25 " →+ " => AddMonoidHom
 
-/-- `AddMonoidHomClass F M N` states that `F` is a type of `AddZero`-preserving
+/--
+`AddMonoidHomClass F M N` states that `F` is a type of `AddZero`-preserving
 homomorphisms.
 
 You should also extend this typeclass when you extend `AddMonoidHom`.
@@ -166,7 +173,8 @@ section One
 
 variable [One M] [One N]
 
-/-- `OneHom M N` is the type of functions `M → N` that preserve one.
+/--
+`OneHom M N` is the type of functions `M → N` that preserve one.
 
 When possible, instead of parametrizing results over `(f : OneHom M N)`,
 you should parametrize over `(F : Type*) [OneHomClass F M N] (f : F)`.
@@ -197,6 +205,8 @@ instance OneHom.funLike : FunLike (OneHom M N) M N where
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 
+
+set_option doc.verso false
 library_note «hom simp lemma priority»
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
@@ -227,9 +237,13 @@ As `map_mul` is tagged `simp mid`, this means that it still fires before `fooMon
 is the behavior we desire.
 -/
 
+
+set_option doc.verso true
 variable [FunLike F M N]
 
-/-- See note [hom simp lemma priority] -/
+/--
+See note \[hom simp lemma priority\]
+-/
 @[to_additive (attr := simp mid, grind =)]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
@@ -282,7 +296,8 @@ section Mul
 
 variable [Mul M] [Mul N]
 
-/-- `M →ₙ* N` is the type of functions `M → N` that preserve multiplication. The `ₙ` in the notation
+/--
+`M →ₙ* N` is the type of functions `M → N` that preserve multiplication. The `ₙ` in the notation
 stands for "non-unital" because it is intended to match the notation for `NonUnitalAlgHom` and
 `NonUnitalRingHom`, so a `MulHom` is a non-unital monoid hom.
 
@@ -300,7 +315,8 @@ structure MulHom (M : Type*) (N : Type*) [Mul M] [Mul N] where
 /-- `M →ₙ* N` denotes the type of multiplication-preserving maps from `M` to `N`. -/
 infixr:25 " →ₙ* " => MulHom
 
-/-- `MulHomClass F M N` states that `F` is a type of multiplication-preserving homomorphisms.
+/--
+`MulHomClass F M N` states that `F` is a type of multiplication-preserving homomorphisms.
 
 You should declare an instance of this typeclass when you extend `MulHom`.
 -/
@@ -321,7 +337,9 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 
 variable [FunLike F M N]
 
-/-- See note [hom simp lemma priority] -/
+/--
+See note \[hom simp lemma priority\]
+-/
 @[to_additive (attr := simp mid, grind =)]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
@@ -354,7 +372,8 @@ section mul_one
 
 variable [MulOne M] [MulOne N]
 
-/-- `M →* N` is the type of functions `M → N` that preserve the `MulOne` structure.
+/--
+`M →* N` is the type of functions `M → N` that preserve the `MulOne` structure.
 `MonoidHom` is used for both monoid and group homomorphisms.
 
 When possible, instead of parametrizing results over `(f : M →* N)`,
@@ -440,9 +459,11 @@ lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H] (f : F
     (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (g h : ι → G) : f ∘ (g / h) = f ∘ g / f ∘ h := by
   ext; simp [map_div' f hf]
 
-/-- Group homomorphisms preserve inverse.
+/--
+Group homomorphisms preserve inverse.
 
-See note [hom simp lemma priority] -/
+See note \[hom simp lemma priority\]
+-/
 @[to_additive (attr := simp mid, grind =) /-- Additive group homomorphisms preserve negation. -/]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
@@ -461,9 +482,11 @@ theorem map_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) 
 lemma map_comp_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
     f ∘ (g * h⁻¹) = f ∘ g * (f ∘ h)⁻¹ := by simp
 
-/-- Group homomorphisms preserve division.
+/--
+Group homomorphisms preserve division.
 
-See note [hom simp lemma priority] -/
+See note \[hom simp lemma priority\]
+-/
 @[to_additive (attr := simp mid, grind =) /-- Additive group homomorphisms preserve subtraction. -/]
 theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
     ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
@@ -472,7 +495,9 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
     f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
-/-- See note [hom simp lemma priority] -/
+/--
+See note \[hom simp lemma priority\]
+-/
 @[to_additive (attr := simp mid, grind =) (reorder := a n)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
@@ -494,9 +519,11 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
     (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (g : ι → G) (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by
   ext; simp [map_zpow' f hf]
 
-/-- Group homomorphisms preserve integer power.
+/--
+Group homomorphisms preserve integer power.
 
-See note [hom simp lemma priority] -/
+See note \[hom simp lemma priority\]
+-/
 @[to_additive (attr := simp mid, grind =) (reorder := g n)
 /-- Additive group homomorphisms preserve integer scaling. -/]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]

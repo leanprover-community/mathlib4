@@ -8,10 +8,14 @@ module
 public import Mathlib.Analysis.Normed.Module.ContinuousInverse
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 
-/-! # Immersions in the sense of differentials
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Immersions in the sense of differentials
 
 Given a map `f : M → N` between manifolds, we say `f` is an immersion in the sense of differentials
-at `x` if and only if the `mfderiv` of `f` at `x` *splits*, i.e. admits a continuous left inverse.
+at `x` if and only if the `mfderiv` of `f` at `x` _splits_, i.e. admits a continuous left inverse.
 (If `N` is finite-dimensional, this is equivalent to injectivity of the `mfderiv`.)
 Under (relatively mild) conditions, this is equivalent to being an immersion at `x`.
 This is not true in full generality; there are counterexamples involving manifolds with boundary.
@@ -34,7 +38,6 @@ equivalence to prove that immersions compose (in nice situations).
   then `f × g` is an immersion at `(x, y)` (all in the sense of differentials)
 * `IsDiffImmersionAt.of_injective_of_finiteDimensional`: if `f : M → N` has injective `mfderiv` at
   `x` and `N` is finite-dimensional, then `f` is an immersion at `x`
-
 -/
 
 open Function Topology
@@ -57,11 +60,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F F' G : Type*} {E' : 
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
 
 variable (I I' f x) in
-/-- We say a map `f : M → M` is an immersion at `x` in the sense of differentials
+/--
+We say a map `f : M → M` is an immersion at `x` in the sense of differentials
 if `mfderiv I I' f x` splits, i.e. has a continuous left inverse.
 
 In nice situations (but not always), this is equivalent to `IsImmersionAt`.
-Please use `IsImmersionAt` in general. -/
+Please use `IsImmersionAt` in general.
+-/
 def IsDiffImmersionAt (f : M → M') (x : M) : Prop := mfderiv% f x |>.HasLeftInverse
 
 variable {n : WithTop ℕ∞} {f g : M → M'} {x : M}

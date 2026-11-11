@@ -9,12 +9,16 @@ public import Mathlib.Data.Fintype.EquivFin
 
 import Mathlib.Data.Finset.Union
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pigeonhole principles in finite types
 
 ## Main declarations
 
 We provide the following versions of the pigeonholes principle.
+
 * `Fintype.exists_ne_map_eq_of_card_lt` and `isEmpty_of_card_lt`: Finitely many pigeons and
   pigeonholes. Weak formulation.
 * `Finite.exists_ne_map_eq_of_infinite`: Infinitely many pigeons in finitely many pigeonholes.
@@ -53,10 +57,12 @@ end Fintype
 
 namespace Function.Embedding
 
-/-- If `‖β‖ < ‖α‖` there are no embeddings `α ↪ β`.
+/--
+If `‖β‖ < ‖α‖` there are no embeddings `α ↪ β`.
 This is a formulation of the pigeonhole principle.
 
-Note this cannot be an instance as it needs `h`. -/
+Note this cannot be an instance as it needs `h`.
+-/
 @[simp]
 theorem isEmpty_of_card_lt [Fintype α] [Fintype β] (h : Fintype.card β < Fintype.card α) :
     IsEmpty (α ↪ β) :=
@@ -66,7 +72,8 @@ theorem isEmpty_of_card_lt [Fintype α] [Fintype β] (h : Fintype.card β < Fint
 
 end Function.Embedding
 
-/-- The pigeonhole principle for infinitely many pigeons in finitely many pigeonholes. If there are
+/--
+The pigeonhole principle for infinitely many pigeons in finitely many pigeonholes. If there are
 infinitely many pigeons in finitely many pigeonholes, then there are at least two pigeons in the
 same pigeonhole.
 
@@ -77,7 +84,8 @@ theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f
   simpa [Injective, and_comm] using not_injective_infinite_finite f
 
 attribute [local instance] Fintype.ofFinite in
-/-- The strong pigeonhole principle for infinitely many pigeons in
+/--
+The strong pigeonhole principle for infinitely many pigeons in
 finitely many pigeonholes.  If there are infinitely many pigeons in
 finitely many pigeonholes, then there is a pigeonhole with infinitely
 many pigeons.

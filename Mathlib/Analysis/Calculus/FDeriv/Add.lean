@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Const
 public import Mathlib.Analysis.Calculus.FDeriv.Linear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive operations on derivatives
 
@@ -44,7 +47,9 @@ section ConstSMul
 variable {R : Type*} [Monoid R] [DistribMulAction R F] [SMulCommClass 𝕜 R F]
   [ContinuousConstSMul R F]
 
-/-! ### Derivative of a function multiplied by a constant -/
+/-!
+# Derivative of a function multiplied by a constant
+-/
 
 @[to_fun]
 theorem HasFDerivAtFilter.const_smul (h : HasFDerivAtFilter f f' L) (c : R) :
@@ -140,11 +145,13 @@ section ConstSMulDivisionRing
 variable {R : Type*} [DivisionSemiring R] [Module R F] [SMulCommClass 𝕜 R F]
   [ContinuousConstSMul R F]
 
-/-- Special case of `fderivWithin_const_smul_of_invertible` over a division semiring: any constant
+/--
+Special case of `fderivWithin_const_smul_of_invertible` over a division semiring: any constant
 is allowed.
 
 TODO: This would work for scalars in a `GroupWithZero` if we had a `DistribMulActionWithZero`
-typeclass. -/
+typeclass.
+-/
 lemma fderivWithin_const_smul_field (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
   obtain (rfl | ha) := eq_or_ne c 0
@@ -165,11 +172,13 @@ lemma fderivWithin_neg' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} :
     fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x := by
   simpa only [neg_smul, one_smul] using fderivWithin_const_smul_field' (f := f) (-1 : 𝕜)
 
-/-- Special case of `fderiv_const_smul_of_invertible` over a division semiring: any constant is
+/--
+Special case of `fderiv_const_smul_of_invertible` over a division semiring: any constant is
 allowed.
 
 TODO: This would work for scalars in a `GroupWithZero` if we had a `DistribMulActionWithZero`
-typeclass. -/
+typeclass.
+-/
 lemma fderiv_const_smul_field (c : R) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
   simp_rw [← fderivWithin_univ]
   ext x
@@ -179,7 +188,9 @@ end ConstSMulDivisionRing
 
 section Add
 
-/-! ### Derivative of the sum of two functions -/
+/-!
+# Derivative of the sum of two functions
+-/
 
 @[to_fun]
 theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' L)
@@ -390,7 +401,9 @@ end AddConst
 
 section Sum
 
-/-! ### Derivative of a finite sum of functions -/
+/-!
+# Derivative of a finite sum of functions
+-/
 
 
 variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
@@ -459,7 +472,9 @@ end Sum
 
 section Neg
 
-/-! ### Derivative of the negative of a function -/
+/-!
+# Derivative of the negative of a function
+-/
 
 
 @[to_fun]
@@ -561,7 +576,9 @@ end Neg
 
 section Sub
 
-/-! ### Derivative of the difference of two functions -/
+/-!
+# Derivative of the difference of two functions
+-/
 
 
 @[to_fun]
@@ -808,7 +825,9 @@ end SubConst
 
 section CompAdd
 
-/-! ### Derivative of the composition with a translation -/
+/-!
+# Derivative of the composition with a translation
+-/
 
 open scoped Pointwise Topology
 

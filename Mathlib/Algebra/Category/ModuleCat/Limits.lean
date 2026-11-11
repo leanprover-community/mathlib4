@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Colimit.Module
 public import Mathlib.Algebra.Module.Shrink -- shake: keep (Module R (Shrink.{w, max v w} ↥(sectionsSubmodule F))), cf. lean#13417
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of R-modules has all limits
 
@@ -220,10 +223,12 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
     symm
     apply Module.DirectedSystem.map_map f
 
-/-- The `Cocone` on `directLimitDiagram` corresponding to
+/--
+The `Cocone` on `directLimitDiagram` corresponding to
 the unbundled `directLimit` of modules.
 
-In `directLimitIsColimit` we show that it is a colimit cocone. -/
+In `directLimitIsColimit` we show that it is a colimit cocone.
+-/
 @[simps]
 def directLimitCocone : Cocone (directLimitDiagram G f) where
   pt := ModuleCat.of R <| DirectLimit G f

@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Prime.Basic
 
 import Mathlib.Algebra.Group.Int.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime numbers in the naturals and the integers
 

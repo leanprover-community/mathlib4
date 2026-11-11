@@ -8,13 +8,15 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Schemes over algebraically closed fields
 
 We show that if `X` is locally of finite type over an algebraically closed field `k`,
 then the closed points of `X` are in bijection with the `k`-points of `X`.
 See `AlgebraicGeometry.pointEquivClosedPoint`.
-
 -/
 
 @[expose] public noncomputable section

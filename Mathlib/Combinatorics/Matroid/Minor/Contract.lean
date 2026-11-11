@@ -9,11 +9,14 @@ public import Mathlib.Combinatorics.Matroid.Minor.Delete
 
 import Mathlib.Tactic.TautoSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matroid Contraction
 
 Instead of deleting the elements of `X : Set α` from `M : Matroid α`, we can contract them.
-The *contraction* of `X` from `M`, denoted `M ／ X`, is the matroid on ground set `M.E \ X`
+The _contraction_ of `X` from `M`, denoted `M ／ X`, is the matroid on ground set `M.E \ X`
 in which a set `I` is independent if and only if `I ∪ J` is independent in `M`,
 where `J` is an arbitrarily chosen basis for `X`. Contraction corresponds to contracting
 edges in graphic matroids (hence the name) and corresponds to projecting to a quotient
@@ -118,7 +121,9 @@ lemma contract_eq_contract_iff : M ／ C₁ = M ／ C₂ ↔ C₁ ∩ M.E = C₂
 lemma contract_ground_subset_ground (M : Matroid α) (C : Set α) : (M ／ C).E ⊆ M.E :=
   (M.contract_ground C).trans_subset sdiff_subset
 
-/-! ### Independence and Coindependence -/
+/-!
+# Independence and Coindependence
+-/
 
 lemma coindep_contract_iff : (M ／ C).Coindep X ↔ M.Coindep X ∧ Disjoint X C := by
   rw [coindep_def, dual_contract, delete_indep_iff, ← coindep_def]
@@ -167,7 +172,9 @@ lemma Indep.contract_dep_iff (hI : M.Indep I) :
     union_subset_iff, and_iff_left hI.subset_ground]
   tauto
 
-/-! ### Bases -/
+/-!
+# Bases
+-/
 
 /-- Contracting a set is the same as contracting a basis for the set, and deleting the rest. -/
 lemma IsBasis.contract_eq_contract_delete (hI : M.IsBasis I X) : M ／ X = M ／ I ＼ (X \ I) := by
@@ -338,7 +345,9 @@ lemma Dep.of_contract (h : (M ／ C).Dep X) (hC : C ⊆ M.E := by aesop_mat) : M
     and_iff_left hi] at h
   exact h.1 (subset_sdiff.1 h.2).2
 
-/-! ### Finiteness -/
+/-!
+# Finiteness
+-/
 
 instance contract_finite [M.Finite] : (M ／ C).Finite := by
   rw [← dual_delete_dual]
@@ -359,7 +368,9 @@ instance contract_finitary [Finitary M] : Finitary (M ／ C) := by
       (hJ.indep.contract_indep_iff.1 <| hI (K ∩ I)
       inter_subset_right (hKfin.inter_of_left _)).2.subset (by tauto_set)⟩⟩
 
-/-! ### Loops and Coloops -/
+/-!
+# Loops and Coloops
+-/
 
 lemma contract_eq_delete_of_subset_loops (hX : X ⊆ M.loops) : M ／ X = M ＼ X := by
   simp [(empty_isBasis_iff.2 hX).contract_eq_contract_delete]
@@ -408,7 +419,9 @@ lemma IsBasis.sdiff_subset_loops_contract (hIX : M.IsBasis I X) : X \ I ⊆ (M �
 @[deprecated (since := "2026-06-03")]
 alias IsBasis.diff_subset_loops_contract := IsBasis.sdiff_subset_loops_contract
 
-/-! ### Closure -/
+/-!
+# Closure
+-/
 
 /-- Contracting the closure of a set is the same as contracting the set,
 and then deleting the rest of its elements. -/
@@ -457,7 +470,9 @@ lemma Spanning.contract_eq_loopyOn (hX : M.Spanning X) : M ／ X = loopyOn (M.E 
   rw [eq_loopyOn_iff_loops_eq]
   simp [hX.closure_eq]
 
-/-! ### Circuits -/
+/-!
+# Circuits
+-/
 
 lemma IsCircuit.contract_isCircuit (hK : M.IsCircuit K) (hC : C ⊂ K) :
     (M ／ C).IsCircuit (K \ C) := by
@@ -528,7 +543,9 @@ lemma IsCocircuit.delete_sdiff_isCocircuit {X : Set α} (hK : M.IsCocircuit K) (
 @[deprecated (since := "2026-06-03")]
 alias IsCocircuit.delete_diff_isCocircuit := IsCocircuit.delete_sdiff_isCocircuit
 
-/-! ### Commutativity -/
+/-!
+# Commutativity
+-/
 
 lemma contract_delete_sdiff (M : Matroid α) (C D : Set α) : M ／ C ＼ D = M ／ C ＼ (D \ C) := by
   rw [delete_eq_delete_iff, contract_ground, sdiff_eq, sdiff_eq, ← inter_inter_distrib_right,

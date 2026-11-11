@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Coalgebra.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isomorphisms of `R`-coalgebras
 
@@ -182,13 +185,17 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
         LinearEquiv.toLinearMap_ofLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
       rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
     [AddCommMonoid α] [AddCommMonoid β] [Module R α]
     [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α ≃ₗc[R] β) : α → β := f
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
     {A : Type*} {B : Type*} [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B]

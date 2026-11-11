@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplicial categories
 
@@ -27,8 +30,8 @@ category of simplicial sets in such a way that morphisms in
   by morphisms `Δ[1] ⊗ X ⟶ Y`.
 
 ## References
-* [Daniel G. Quillen, *Homotopical algebra*, II §1][quillen-1967]
 
+* ‍\[Daniel G. Quillen, _Homotopical algebra_, II §1\]\[quillen-1967\]
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Fourier.FourierTransformDeriv
 public import Mathlib.Analysis.Fourier.Inversion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fourier transform on Schwartz functions
 
@@ -17,13 +20,13 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 `fourierTransformCLE`.
 
 ## Main statements
+
 * `SchwartzMap.fderivCLM_fourier_eq`: The derivative of the Fourier transform is given by the
   Fourier transform of the multiplication with `-(2 * π * Complex.I) • innerSL ℝ`.
 * `SchwartzMap.lineDerivOp_fourier_eq`: The line derivative of the Fourier transform is given by the
   Fourier transform of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`.
 * `SchwartzMap.integral_bilin_fourier_eq`: The Fourier transform is self-adjoint.
 * `SchwartzMap.integral_inner_fourier_fourier`: Plancherel's theorem for Schwartz functions.
-
 -/
 
 open scoped Finset
@@ -45,7 +48,8 @@ variable
 
 section definition
 
-/-- The Fourier transform on a real inner product space, as a continuous linear map on the
+/--
+The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space.
 
 This definition is only to define the Fourier transform, use `FourierTransform.fourierCLM` instead.
@@ -223,9 +227,11 @@ variable
 
 variable [CompleteSpace E] [CompleteSpace F]
 
-/-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+/--
+The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
 
-Version where the multiplication is replaced by a general bilinear form `M`. -/
+Version where the multiplication is replaced by a general bilinear form `M`.
+-/
 theorem integral_bilin_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
   simpa using! VectorFourier.integral_bilin_fourierIntegral_eq_flip M (L := innerₗ V)
@@ -241,9 +247,11 @@ theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
     ∫ ξ, 𝓕 f ξ * g ξ = ∫ x, f x * 𝓕 g x :=
   integral_bilin_fourier_eq f g (.mul ℂ ℂ)
 
-/-- The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint.
+/--
+The inverse Fourier transform satisfies `∫ 𝓕⁻ f * g = ∫ f * 𝓕⁻ g`, i.e., it is self-adjoint.
 
-Version where the multiplication is replaced by a general bilinear form `M`. -/
+Version where the multiplication is replaced by a general bilinear form `M`.
+-/
 theorem integral_bilin_fourierInv_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕⁻ f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
   convert! (integral_bilin_fourier_eq (𝓕⁻ f) (𝓕⁻ g) M).symm
@@ -265,9 +273,11 @@ theorem integral_sesq_fourier_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L�
   simpa [fourierInv_coe] using! VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
     (L := innerₗ V) continuous_fourierChar continuous_inner f.integrable g.integrable
 
-/-- Plancherel's theorem for Schwartz functions.
+/--
+Plancherel's theorem for Schwartz functions.
 
-Version where the inner product is replaced by a general sesquilinear form `M`. -/
+Version where the inner product is replaced by a general sesquilinear form `M`.
+-/
 theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (𝓕 g ξ) = ∫ x, M (f x) (g x) := by
   simpa using integral_sesq_fourier_eq f (𝓕 g) M

@@ -12,6 +12,9 @@ import Mathlib.Dynamics.FixedPoints.Prufer
 import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ergodic maps of the additive circle
 
@@ -27,7 +30,6 @@ This file contains proofs of ergodicity for maps of the additive circle.
   self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
 * `AddCircle.ergodic_nsmul_add`: given `n : ℕ` such that `1 < n` and `x : AddCircle T`, the
   self map `y ↦ n • y + x` on the additive circle is ergodic (w.r.t. the Haar measure).
-
 -/
 
 public section

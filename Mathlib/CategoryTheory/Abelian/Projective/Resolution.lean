@@ -9,11 +9,16 @@ public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 public import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abelian categories with enough projectives have projective resolutions
 
 ## Main results
+
 When the underlying category is abelian:
+
 * `CategoryTheory.ProjectiveResolution.lift`: Given `P : ProjectiveResolution X` and
   `Q : ProjectiveResolution Y`, any morphism `X ⟶ Y` admits a lifting to a chain map
   `P.complex ⟶ Q.complex`. It is a lifting in the sense that `P.ι` intertwines the lift and
@@ -23,7 +28,6 @@ When the underlying category is abelian:
   object are homotopy equivalent.
 * `CategoryTheory.projectiveResolutions`: If every object admits a projective resolution, we can
   construct a functor `projectiveResolutions C : C ⥤ HomotopyCategory C (ComplexShape.down ℕ)`.
-
 * `CategoryTheory.exact_d_f`: `Projective.d f` and `f` are exact.
 * `CategoryTheory.ProjectiveResolution.of`: Hence, starting from an epimorphism `P ⟶ X`, where `P`
   is projective, we can apply `Projective.d` repeatedly to obtain a projective resolution of `X`.

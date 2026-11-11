@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.Comap
 public import Mathlib.MeasureTheory.Measure.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restricting a measure to a subset or a subtype
 
@@ -36,7 +39,9 @@ variable {μ ν : Measure α} {s s' t : Set α}
 
 namespace Measure
 
-/-! ### Restricting a measure -/
+/-!
+# Restricting a measure
+-/
 
 /-- Restrict a measure `μ` to a set `s` as an `ℝ≥0∞`-linear map. -/
 @[irreducible]
@@ -428,7 +433,9 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
   rw [← μ.restrict_apply_self, ← frequently_ae_mem_iff] at hs
   exact (hs.and_eventually hp).exists
 
-/-! ### Extensionality results -/
+/-!
+# Extensionality results
+-/
 
 /-- Two measures are equal if they have equal restrictions on a spanning collection of sets
   (formulated using `Union`). -/
@@ -783,7 +790,9 @@ namespace Measure
 
 section Subtype
 
-/-! ### Subtype of a measure space -/
+/-!
+# Subtype of a measure space
+-/
 
 section ComapAnyMeasure
 
@@ -944,7 +953,7 @@ theorem ae_restrict_iff_subtype {m0 : MeasurableSpace α} {μ : Measure α} {s :
 variable [MeasureSpace α] {s t : Set α}
 
 /-!
-### Volume on `s : Set α`
+# Volume on `s : Set α`
 
 Note the instance is provided earlier as `Subtype.measureSpace`.
 -/

@@ -7,10 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pasting lemma
 
 This file proves the pasting lemma for pullbacks. That is, given the following diagram:
+
 ```
   X₁ - f₁ -> X₂ - f₂ -> X₃
   |          |          |
@@ -18,17 +22,18 @@ This file proves the pasting lemma for pullbacks. That is, given the following d
   ∨          ∨          ∨
   Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
+
 if the right square is a pullback, then the left square is a pullback iff the big square is a
 pullback.
 
 ## Main results
+
 * `pasteHorizIsPullback` shows that the big square is a pullback if both the small squares are.
 * `leftSquareIsPullback` shows that the left square is a pullback if the other two are.
 * `pullbackRightPullbackFstIso` shows, using the `pullback` API, that
   `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y`.
 * `pullbackLeftPullbackSndIso` shows, using the `pullback` API, that
   `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W`.
-
 -/
 
 @[expose] public section
@@ -76,7 +81,9 @@ local notation "f₁" => t₁.snd
 
 variable {t₁} {t₂}
 
-/-- Given
+/--
+Given
+
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
@@ -84,6 +91,7 @@ i₁         i₂         i₃
 ↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
+
 Then the big square is a pullback if both the small squares are.
 -/
 def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.pasteHoriz t₁ hi₂) := by
@@ -104,7 +112,9 @@ def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.
 
 variable (t₁)
 
-/-- Given
+/--
+Given
+
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
@@ -112,6 +122,7 @@ i₁         i₂         i₃
 ↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
+
 Then the left square is a pullback if the right square and the big square are.
 -/
 def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁ hi₂)) : IsLimit t₁ := by
@@ -184,7 +195,9 @@ def PullbackCone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip
 
 variable {t₁} {t₂}
 
-/-- Given
+/--
+Given
+
 ```
 Y₃ - i₃ -> X₃
 |          |
@@ -196,6 +209,7 @@ g₁         f₁
 ∨          ∨
 Y₁ - i₁ -> X₁
 ```
+
 The big square is a pullback if both the small squares are.
 -/
 def pasteVertIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit t₂) : IsLimit (t₁.pasteVert t₂ hi₂) := by
@@ -204,7 +218,9 @@ def pasteVertIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit t₂) : IsLimit (t
 
 variable (t₂)
 
-/-- Given
+/--
+Given
+
 ```
 Y₃ - i₃ -> X₃
 |          |
@@ -216,6 +232,7 @@ g₁         f₁
 ∨          ∨
 Y₁ - i₁ -> X₁
 ```
+
 The top square is a pullback if the bottom square and the big square are.
 -/
 def topSquareIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit (t₁.pasteVert t₂ hi₂)) : IsLimit t₂ :=
@@ -264,7 +281,9 @@ local notation "i₃" => t₂.inr
 
 variable {t₁} {t₂}
 
-/-- Given
+/--
+Given
+
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
@@ -272,6 +291,7 @@ i₁         i₂         i₃
 ∨          ∨          ∨
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
+
 Then the big square is a pushout if both the small squares are.
 -/
 def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
@@ -293,7 +313,8 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
 
 variable (t₂)
 
-/-- Given
+/--
+Given
 
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
@@ -374,7 +395,9 @@ def PushoutCocone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.fli
 
 variable {t₁} {t₂}
 
-/-- Given
+/--
+Given
+
 ```
 Y₃ - i₃ -> X₃
 |          |
@@ -386,6 +409,7 @@ g₁         f₁
 ∨          ∨
 Y₁ - i₁ -> X₁
 ```
+
 The big square is a pushout if both the small squares are.
 -/
 def pasteVertIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit t₂) :
@@ -395,7 +419,9 @@ def pasteVertIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit t₂) :
 
 variable (t₂)
 
-/-- Given
+/--
+Given
+
 ```
 Y₃ - i₃ -> X₃
 |          |
@@ -407,6 +433,7 @@ g₁         f₁
 ∨          ∨
 Y₁ - i₁ -> X₁
 ```
+
 The bottom square is a pushout if the top square and the big square are.
 -/
 def botSquareIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit (t₁.pasteVert t₂ hi₂)) : IsColimit t₂ :=

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Method of exhaustion
 
@@ -33,7 +36,6 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 * `restrict_compl_sigmaFiniteSetWRT`: if `μ ≪ ν` and `ν` is s-finite, then
   `μ.restrict (μ.sigmaFiniteSetWRT ν)ᶜ = ∞ • ν.restrict (μ.sigmaFiniteSetWRT ν)ᶜ`. As a consequence,
   that restriction is s-finite.
-
 * An instance showing that `μ.restrict μ.sigmaFiniteSet` is sigma-finite.
 * `restrict_compl_sigmaFiniteSet_eq_zero_or_top`: the measure `μ.restrict μ.sigmaFiniteSetᶜ` takes
   only two values: 0 and ∞ .
@@ -42,8 +44,7 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 
 ## References
 
-* [P. R. Halmos, *Measure theory*, 17.3 and 30.11][halmos1950measure]
-
+* ‍\[P. R. Halmos, _Measure theory_, 17.3 and 30.11\]\[halmos1950measure\]
 -/
 
 @[expose] public section

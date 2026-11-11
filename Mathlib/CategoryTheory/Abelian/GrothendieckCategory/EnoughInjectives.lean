@@ -17,6 +17,9 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
 import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 import Mathlib.CategoryTheory.Subobject.HasCardinalLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck abelian categories have enough injectives
 
@@ -53,6 +56,7 @@ the ordered set of subobjects `A'` of `B` containing `A` equipped
 with a lifting `A' ⟶ X` is introduced. The existence of a lifting `B ⟶ X`
 is usually obtained by applying Zorn's lemma in this situation.
 Here, we split the argument into two separate facts:
+
 * any monomorphism `A ⟶ B` is a transfinite composition of pushouts of monomorphisms in
   `generatingMonomorphisms G` (see `generatingMonomorphisms.exists_transfiniteCompositionOfShape`);
 * the class of morphisms that have the left lifting property with respect to `p` is stable under
@@ -60,8 +64,7 @@ Here, we split the argument into two separate facts:
 
 ## References
 
-- [Alexander Grothendieck, *Sur quelques points d'algèbre homologique*][grothendieck-1957]
-
+* ‍\[Alexander Grothendieck, _Sur quelques points d'algèbre homologique_\]\[grothendieck-1957\]
 -/
 
 @[expose] public section

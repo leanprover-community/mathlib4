@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Data.Finset.NoncommProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids: membership criteria for products and sums
 
@@ -21,6 +24,7 @@ In this file we prove various facts about membership in a submonoid:
   to an additive submonoid, then so does their sum;
 
 ## Tags
+
 submonoid, submonoids
 -/
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bochner Integration on Groups
 

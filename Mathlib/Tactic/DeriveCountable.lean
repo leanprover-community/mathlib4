@@ -14,6 +14,10 @@ public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.Nat.Pairing
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # `Countable` deriving handler
 

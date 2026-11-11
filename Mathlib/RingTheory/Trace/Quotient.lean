@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.LocalRing.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The trace map on quotients and localizations
 
@@ -20,7 +23,6 @@ quotients and localizations.
 
 * `Algebra.trace_quotient_eq_of_isDedekindDomain` : The trace map on `B → A` coincides with the
   trace map on `B⧸pB → A⧸p`.
-
 -/
 
 public section

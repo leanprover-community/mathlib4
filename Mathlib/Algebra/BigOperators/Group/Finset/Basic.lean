@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Finset.Sum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators
 
@@ -248,7 +251,9 @@ variable [DecidableEq κ]
 lemma prod_fiberwise_eq_prod_filter (s : Finset ι) (t : Finset κ) (g : ι → κ) (f : ι → M) :
     ∏ j ∈ t, ∏ i ∈ s with g i = j, f i = ∏ i ∈ s with g i ∈ t, f i := by
   rw [← prod_disjiUnion, disjiUnion_filter_eq]
-  #adaptation_note /-- 2025-09-12 (kmill) copied from private lemma pairwiseDisjoint_fibers -/
+  #adaptation_note /--
+                   2025-09-12 (kmill) copied from private lemma pairwiseDisjoint\_fibers
+                   -/
   intro x' hx y' hy hne
   simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
@@ -264,7 +269,9 @@ lemma prod_fiberwise_eq_prod_filter' (s : Finset ι) (t : Finset κ) (g : ι →
 lemma prod_fiberwise_of_maps_to {g : ι → κ} (h : ∀ i ∈ s, g i ∈ t) (f : ι → M) :
     ∏ j ∈ t, ∏ i ∈ s with g i = j, f i = ∏ i ∈ s, f i := by
   rw [← prod_disjiUnion, disjiUnion_filter_eq_of_maps_to h]
-  #adaptation_note /-- 2025-09-12 (kmill) copied from private lemma pairwiseDisjoint_fibers -/
+  #adaptation_note /--
+                   2025-09-12 (kmill) copied from private lemma pairwiseDisjoint\_fibers
+                   -/
   intro x' hx y' hy hne
   simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
@@ -639,15 +646,19 @@ theorem prod_multiset_count_of_subset [DecidableEq M] (m : Multiset M) (s : Fins
   simp only [quot_mk_to_coe'', prod_coe, coe_count]
   apply prod_list_count_of_subset l s
 
-/-- For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
+/--
+For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
 that it's equal to a different function just by checking ratios of adjacent terms up to `n`.
 
-This is a multiplicative discrete analogue of the fundamental theorem of calculus. -/
-@[to_additive /-- For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we
-can verify that it's equal to a different function just by checking differences of adjacent terms
-up to `n`.
+This is a multiplicative discrete analogue of the fundamental theorem of calculus.
+-/
+@[to_additive /--
+              For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can
+verify that it's equal to a different function just by checking differences of
+adjacent terms up to `n`.
 
-This is a discrete analogue of the fundamental theorem of calculus. -/]
+              This is a discrete analogue of the fundamental theorem of calculus.
+              -/]
 theorem prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
     (n : ℕ) (step : ∀ k < n, s (k + 1) = s k * f k) :
     ∏ k ∈ Finset.range n, f k = s n := by
@@ -762,14 +773,18 @@ theorem eq_of_card_le_one_of_prod_eq {s : Finset ι} (hc : #s ≤ 1) {f : ι →
     rw [card_eq_one] at h1
     grind
 
-/-- Taking a product over `s : Finset ι` is the same as multiplying the value on a single element
+/--
+Taking a product over `s : Finset ι` is the same as multiplying the value on a single element
 `f a` by the product of `s.erase a`.
 
-See `Multiset.prod_map_erase` for the `Multiset` version. -/
-@[to_additive /-- Taking a sum over `s : Finset ι` is the same as adding the value on a single
+See `Multiset.prod_map_erase` for the `Multiset` version.
+-/
+@[to_additive /--
+              Taking a sum over `s : Finset ι` is the same as adding the value on a single
 element `f a` to the sum over `s.erase a`.
 
-See `Multiset.sum_map_erase` for the `Multiset` version. -/]
+              See `Multiset.sum_map_erase` for the `Multiset` version.
+              -/]
 theorem mul_prod_erase [DecidableEq ι] (s : Finset ι) (f : ι → M) {a : ι} (h : a ∈ s) :
     (f a * ∏ x ∈ s.erase a, f x) = ∏ x ∈ s, f x := by
   rw [← prod_insert (notMem_erase a s), insert_erase h]

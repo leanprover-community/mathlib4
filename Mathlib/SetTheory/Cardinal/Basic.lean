@@ -14,6 +14,9 @@ public import Mathlib.Data.Set.Countable
 public import Mathlib.Logic.Small.Set
 public import Mathlib.SetTheory.Cardinal.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on cardinal numbers
 
@@ -26,7 +29,7 @@ finite/countable/small types and sets.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Cardinal_number>
+* [https://en.wikipedia.org/wiki/Cardinal\_number](https://en.wikipedia.org/wiki/Cardinal_number)
 
 ## Tags
 
@@ -49,7 +52,9 @@ variable {α β : Type u}
 
 namespace Cardinal
 
-/-! ### Lifting cardinals to a higher universe -/
+/-!
+# Lifting cardinals to a higher universe
+-/
 
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
@@ -90,7 +95,9 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
         Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
     simp only [lift_id]
 
-/-! ### Basic cardinals -/
+/-!
+# Basic cardinals
+-/
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>
@@ -102,7 +109,9 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
 
 alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
 
-/-! ### Order properties -/
+/-!
+# Order properties
+-/
 
 theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
   rw [← not_le, le_one_iff_subsingleton, ← not_nontrivial_iff_subsingleton, Classical.not_not]
@@ -138,7 +147,9 @@ theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lif
 
 end Cardinal
 
-/-! ### Small sets of cardinals -/
+/-!
+# Small sets of cardinals
+-/
 
 namespace Cardinal
 
@@ -187,7 +198,9 @@ theorem _root_.not_small_cardinal : ¬ Small.{u} Cardinal.{max u v} := by
 instance uncountable : Uncountable Cardinal.{u} :=
   Uncountable.of_not_small not_small_cardinal.{u}
 
-/-! ### Bounds on suprema -/
+/-!
+# Bounds on suprema
+-/
 
 theorem sum_le_lift_mk_mul_iSup_lift {ι : Type u} (f : ι → Cardinal.{v}) :
     sum f ≤ lift #ι * ⨆ i, lift (f i) := by
@@ -258,7 +271,9 @@ theorem lift_iSup_le_sum {ι : Type u} [Small.{v} ι] (f : ι → Cardinal.{v}) 
   rw [lift_iSup bddAbove_of_small]
   exact ciSup_le' fun i => lift_le_sum f i
 
-/-! ### Properties about the cast from `ℕ` -/
+/-!
+# Properties about the cast from `ℕ`
+-/
 
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
   simp
@@ -323,7 +338,9 @@ protected theorem lt_one_iff {c : Cardinal} : c < 1 ↔ c = 0 := by
 protected theorem le_one_iff {c : Cardinal} : c ≤ 1 ↔ c = 0 ∨ c = 1 := by
   simpa using le_succ_bot_iff (a := c)
 
-/-! ### Properties about `aleph0` -/
+/-!
+# Properties about `aleph0`
+-/
 
 @[simp] lemma natCast_lt_aleph0 {n : ℕ} : (n : Cardinal.{u}) < ℵ₀ := by
   rw [← natCast_add_one_le_iff, ← Nat.cast_add_one, ← lift_mk_fin, aleph0, lift_mk_le.{u}]
@@ -597,7 +614,9 @@ theorem mk_int : #ℤ = ℵ₀ :=
 theorem mk_pnat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
 
-/-! ### Cardinalities of basic sets and types -/
+/-!
+# Cardinalities of basic sets and types
+-/
 
 @[simp] theorem mk_additive : #(Additive α) = #α := rfl
 
@@ -985,7 +1004,9 @@ theorem exists_ne_ne_of_three_le {α : Type*} (h : 3 ≤ #α) (x y : α) : ∃ z
   have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
 
-/-! ### `powerlt` operation -/
+/-!
+# `powerlt` operation
+-/
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=

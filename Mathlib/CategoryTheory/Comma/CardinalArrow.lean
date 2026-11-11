@@ -9,12 +9,14 @@ public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinal of Arrow
 
 We obtain various results about the cardinality of `Arrow C`. For example,
 if `C` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
-
 -/
 
 @[expose] public section

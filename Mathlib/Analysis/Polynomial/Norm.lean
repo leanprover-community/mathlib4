@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 public import Mathlib.RingTheory.Polynomial.GaussNorm
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sup Norm of Polynomials
 
@@ -21,7 +24,7 @@ The sup norm is related to the Mahler measure of the polynomial. See
 
 ## Main definitions
 
-- `Polynomial.supNorm p`: the sup norm of the coefficients of the polynomial, equal to the
+* `Polynomial.supNorm p`: the sup norm of the coefficients of the polynomial, equal to the
   maximum of the norm of its coefficients (or zero for the zero polynomial)
 
 ## A Note on Naming
@@ -45,10 +48,12 @@ variable {A : Type*} [SeminormedRing A] (p : Polynomial A)
 
 namespace Polynomial
 
-/-- The sup norm of a polynomial on a semi-normed ring, defined as the maximum of its coefficients.
+/--
+The sup norm of a polynomial on a semi-normed ring, defined as the maximum of its coefficients.
 Often called the _(naive) height_ of the polynomial.
 
-This is defined in terms of `Polynomial.gaussNorm`. -/
+This is defined in terms of `Polynomial.gaussNorm`.
+-/
 noncomputable def supNorm : ℝ := p.gaussNorm (SeminormedRing.toRingSeminorm A) 1
 
 /-- The direct definition of the supNorm -/

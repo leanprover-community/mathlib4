@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Newton-Raphson method
 
@@ -26,7 +29,6 @@ as Hensel's lemma and the Jordan-Chevalley decomposition.
   sense that `P(x)` is nilpotent (and `P'(x)` is a unit) then we may write `x` as a sum
   `x = n + r` where `n` is nilpotent and `r` is a root of `P`. This can be used to prove the
   Jordan-Chevalley decomposition of linear endomorphisms.
-
 -/
 
 @[expose] public section
@@ -98,11 +100,13 @@ theorem aeval_pow_two_pow_dvd_aeval_iterate_newtonMap
     · rw [neg_mul, even_two.neg_pow, mul_pow, pow_succ, pow_mul]
       exact dvd_mul_of_dvd_right (pow_dvd_pow_of_dvd ih 2) _
 
-/-- If `x` is almost a root of `P` in the sense that `P(x)` is nilpotent (and `P'(x)` is a
+/--
+If `x` is almost a root of `P` in the sense that `P(x)` is nilpotent (and `P'(x)` is a
 unit) then we may write `x` as a sum `x = n + r` where `n` is nilpotent and `r` is a root of `P`.
 Moreover, `n` and `r` are unique.
 
-This can be used to prove the Jordan-Chevalley decomposition of linear endomorphisms. -/
+This can be used to prove the Jordan-Chevalley decomposition of linear endomorphisms.
+-/
 theorem existsUnique_nilpotent_sub_and_aeval_eq_zero
     (h : IsNilpotent (aeval x P)) (h' : IsUnit (aeval x <| derivative P)) :
     ∃! r, IsNilpotent (x - r) ∧ aeval r P = 0 := by

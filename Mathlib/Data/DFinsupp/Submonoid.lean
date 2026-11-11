@@ -11,6 +11,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `DFinsupp` and submonoids
 

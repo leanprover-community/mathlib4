@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operator norm as an `NNNorm`
 
 Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
-
 -/
 
 public section

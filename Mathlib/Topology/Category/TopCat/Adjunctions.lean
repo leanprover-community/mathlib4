@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions regarding the category of topological spaces
 

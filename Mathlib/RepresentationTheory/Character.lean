@@ -11,6 +11,9 @@ public import Mathlib.RepresentationTheory.Irreducible
 
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characters of representations
 
@@ -27,6 +30,7 @@ Irreducible representations are implemented categorically, using the `CategoryTh
 defined in `Mathlib/CategoryTheory/Simple.lean`
 
 ## TODO
+
 * Once we have the monoidal closed structure on `FDRep k G` and a better API for the rigid
   structure, `char_dual` and `char_linHom` should probably be stated
   in terms of `Vᘁ` and `ihom V W`.

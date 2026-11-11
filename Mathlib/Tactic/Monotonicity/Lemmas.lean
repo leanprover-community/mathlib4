@@ -11,7 +11,11 @@ public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 public import Mathlib.Data.Set.Lattice.Bounded
 
-/-! # Lemmas for the `mono` tactic
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Lemmas for the `mono` tactic
 
 The `mono` tactic works by throwing all lemmas tagged with the attribute `@[mono]` at the goal.  In
 this file we tag a few foundational lemmas with the mono attribute.  Lemmas in more advanced files

@@ -9,15 +9,18 @@ public import Mathlib.Algebra.Lie.EngelSubalgebra
 public import Mathlib.Algebra.Module.LinearMap.Polynomial
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank of a Lie algebra and regular elements
 
 Let `L` be a Lie algebra over a nontrivial commutative ring `R`,
 and assume that `L` is finite free as `R`-module.
 Then the coefficients of the characteristic polynomial of `ad R L x` are polynomial in `x`.
-The *rank* of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
+The _rank_ of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
 
-Continuing to write `n` for the rank of `L`, an element `x` of `L` is *regular*
+Continuing to write `n` for the rank of `L`, an element `x` of `L` is _regular_
 if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero.
 
 ## Main declarations
@@ -27,8 +30,7 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 ## References
 
-* [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
+* ‍\[barnes1967\]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 -/
 
 @[expose] public section
@@ -57,7 +59,7 @@ local notation "φ" => LieHom.toLinearMap (LieModule.toEnd R L M)
 Let `M` be a representation of a Lie algebra `L` over a nontrivial commutative ring `R`,
 and assume that `L` and `M` are finite free as `R`-module.
 Then the coefficients of the characteristic polynomial of `⁅x, ·⁆` are polynomial in `x`.
-The *rank* of `M` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
+The _rank_ of `M` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
 -/
 noncomputable
 def rank : ℕ := nilRank φ
@@ -86,9 +88,11 @@ lemma rank_le_natTrailingDegree_charpoly_ad [Nontrivial R] :
     rank R L M ≤ (toEnd R L M x).charpoly.natTrailingDegree :=
   nilRank_le_natTrailingDegree_charpoly _ _
 
-/-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
-Then `x` is *regular*
-if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
+/--
+Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
+Then `x` is _regular_
+if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero.
+-/
 def IsRegular (x : L) : Prop := LinearMap.IsNilRegular φ x
 
 lemma isRegular_def :
@@ -131,7 +135,7 @@ variable (R L)
 Let `L` be a Lie algebra over a nontrivial commutative ring `R`,
 and assume that `L` is finite free as `R`-module.
 Then the coefficients of the characteristic polynomial of `ad R L x` are polynomial in `x`.
-The *rank* of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
+The _rank_ of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
 -/
 noncomputable
 abbrev rank : ℕ := LieModule.rank R L L
@@ -159,9 +163,11 @@ lemma rank_le_natTrailingDegree_charpoly_ad [Nontrivial R] :
     rank R L ≤ (ad R L x).charpoly.natTrailingDegree :=
   nilRank_le_natTrailingDegree_charpoly _ _
 
-/-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
-Then `x` is *regular*
-if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
+/--
+Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
+Then `x` is _regular_
+if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero.
+-/
 abbrev IsRegular (x : L) : Prop := LieModule.IsRegular R L x
 
 lemma isRegular_def :

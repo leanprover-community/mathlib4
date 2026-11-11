@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtered colimits of types
 
@@ -19,7 +22,6 @@ Given `c : CoconeTypes F`, we deduce a lemma
 a concrete condition under which the map
 `F.descColimitType c : F.ColimitType → c.pt` is injective, which is an
 important step when proving `c.IsColimit`.
-
 -/
 
 public section

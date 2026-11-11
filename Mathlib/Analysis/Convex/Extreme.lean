@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Analysis.Convex.Hull
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extreme sets
 
@@ -35,7 +38,7 @@ In practice, `A` is often assumed to be a convex set.
 
 ## References
 
-See chapter 8 of [Barry Simon, *Convexity*][simon2011]
+See chapter 8 of \[Barry Simon, _Convexity_\]\[simon2011\]
 
 ## TODO
 
@@ -53,12 +56,14 @@ section SMul
 
 variable (𝕜) [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
 
-/-- A set `B` is an extreme subset of `A` if `B ⊆ A` and all points of `B` only belong to open
+/--
+A set `B` is an extreme subset of `A` if `B ⊆ A` and all points of `B` only belong to open
 segments whose ends are in `B`.
 
 Our definition only requires that the left endpoint of the segment lies in `B`,
 but by symmetry of open segments, the right endpoint must also lie in `B`.
-See `IsExtreme.right_mem_of_mem_openSegment`. -/
+See `IsExtreme.right_mem_of_mem_openSegment`.
+-/
 @[mk_iff]
 structure IsExtreme (A B : Set E) : Prop where
   subset : B ⊆ A
@@ -125,13 +130,15 @@ theorem isExtreme_biInter {F : Set (Set E)} (hF : F.Nonempty) (hA : ∀ B ∈ F,
 theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F, IsExtreme 𝕜 A B) :
     IsExtreme 𝕜 A (⋂₀ F) := by simpa [sInter_eq_biInter] using isExtreme_biInter hF hAF
 
-/-- A point `x` is an extreme point of a set `A`
+/--
+A point `x` is an extreme point of a set `A`
 iff `x ∈ A` and for any `x₁`, `x₂` such that `x` belongs to the open segment `(x₁, x₂)`,
 we have `x₁ = x` and `x₂ = x`.
 
 We used to use the RHS as the definition of `extremePoints`.
 However, the conclusion `x₂ = x` is redundant,
-so we changed the definition to the RHS of `mem_extremePoints_iff_left`. -/
+so we changed the definition to the RHS of `mem_extremePoints_iff_left`.
+-/
 theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ x₁ ∈ A, ∀ x₂ ∈ A, x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x := by
   refine ⟨fun h ↦ ⟨h.1, fun x₁ hx₁ x₂ hx₂ hx ↦ ⟨h.2 hx₁ hx₂ hx, ?_⟩⟩,

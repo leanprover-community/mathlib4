@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Presentation
 
 import Mathlib.CategoryTheory.Adjunction.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Objects that are limits of objects satisfying a certain property
 
@@ -27,7 +30,6 @@ is essentially small.
 
 By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 `P.IsClosedUnderLimitsOfShape J`.
-
 -/
 
 @[expose] public section
@@ -42,8 +44,10 @@ variable {C D : Type*} [Category* C] [Category* D] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
-/-- The property of objects that are *equal* to `limit F` for some
-functor `F : J ⥤ C` where all `F.obj j` satisfy `P`. -/
+/--
+The property of objects that are _equal_ to `limit F` for some
+functor `F : J ⥤ C` where all `F.obj j` satisfy `P`.
+-/
 inductive strictLimitsOfShape : ObjectProperty C
   | limit (F : J ⥤ C) [HasLimit F] (hF : ∀ j, P (F.obj j)) :
     strictLimitsOfShape (limit F)

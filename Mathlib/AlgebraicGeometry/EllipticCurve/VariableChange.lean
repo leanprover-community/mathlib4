@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Change of variables of Weierstrass curves
 
@@ -26,7 +29,7 @@ This file defines admissible linear change of variables of Weierstrass curves.
 
 ## References
 
-* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* ‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -46,13 +49,17 @@ variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
 section VariableChange
 
-/-! ## Variable changes -/
+/-!
+# Variable changes
+-/
 
-/-- An admissible linear change of variables of Weierstrass curves defined over a ring `R` given by
+/--
+An admissible linear change of variables of Weierstrass curves defined over a ring `R` given by
 a tuple `(u, r, s, t)` for some `u` in `Rˣ` and some `r, s, t` in `R`. As a matrix, it is
-$$\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}.$$
+$$`\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}.`
 In other words, this is the change of variables `(X, Y) ↦ (u²X + r, u³Y + u²sX + t)`.
-When `R` is a field, any two isomorphic Weierstrass equations are related by this. -/
+When `R` is a field, any two isomorphic Weierstrass equations are related by this.
+-/
 @[ext]
 structure VariableChange (R : Type u) [CommRing R] where
   /-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
@@ -251,7 +258,9 @@ end VariableChange
 
 section BaseChange
 
-/-! ## Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable (C : VariableChange R) {A : Type v} [CommRing A] (φ : R →+* A)
 

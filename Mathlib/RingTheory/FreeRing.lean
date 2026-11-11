@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free rings
 
@@ -25,7 +28,6 @@ The theory of the free ring over a type.
 ## Tags
 
 free ring
-
 -/
 
 @[expose] public noncomputable section

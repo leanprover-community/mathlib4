@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connected components of simplicial sets
 
@@ -23,8 +26,7 @@ of a simplicial sets. We also introduce typeclasses
 
 ## References:
 
-- [Kerodon 00G5: Connected Components of Simplicial Sets](https://kerodon.net/tag/00G5)
-
+* [Kerodon 00G5: Connected Components of Simplicial Sets](https://kerodon.net/tag/00G5)
 -/
 
 @[expose] public section

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.BialgCat.Basic
 public import Mathlib.Algebra.Category.CoalgCat.Monoidal
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal structure on the category of bialgebras
 
@@ -20,7 +23,6 @@ In this file, we declare a `MonoidalCategory` instance on the category of bialge
 fields given by the definitions in `Mathlib/RingTheory/Bialgebra/TensorProduct.lean`, and Prop
 fields proved by pulling back the `MonoidalCategory` instance on the category of algebras,
 using `Monoidal.induced`.
-
 -/
 
 @[expose] public section

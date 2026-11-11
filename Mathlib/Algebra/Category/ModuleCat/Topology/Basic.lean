@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category `TopModuleCat R` of topological modules
 
@@ -18,14 +21,16 @@ We define `TopModuleCat R`, the category of topological modules, and show that
 it has all limits and colimits.
 
 We also provide various adjunctions:
-- `TopModuleCat.withModuleTopologyAdj`:
+
+* `TopModuleCat.withModuleTopologyAdj`:
   equipping the module topology is left adjoint to the forgetful functor into `ModuleCat R`.
-- `TopModuleCat.indiscreteAdj`:
+* `TopModuleCat.indiscreteAdj`:
   equipping the indiscrete topology is right adjoint to the forgetful functor into `ModuleCat R`.
-- `TopModuleCat.freeAdj`:
+* `TopModuleCat.freeAdj`:
   the free-forgetful adjunction between `TopModuleCat R` and `TopCat`.
 
 ## Future projects
+
 Show that the forgetful functor to `TopCat` preserves filtered colimits.
 -/
 

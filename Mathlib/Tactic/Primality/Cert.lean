@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.NormNum.Prime  -- shake: keep (`Nat.Prime` extension for `deriveBool`)
 public import Mathlib.Tactic.Primality.Lucas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primality certificates
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.GradedObject.Associator
 public import Mathlib.CategoryTheory.GradedObject.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The left and right unitors
 
@@ -19,7 +22,6 @@ Under similar assumptions, we also obtain a right unitor isomorphism
 `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`. Finally,
 the lemma `mapBifunctor_triangle` promotes a triangle identity involving functors
 to a triangle identity for the induced functors on graded objects.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Topology.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Neighborhoods in topological spaces
 
@@ -221,7 +224,9 @@ theorem Filter.EventuallyEq.tendsto {l : Filter α} {f : α → X} (hf : f =ᶠ[
     Tendsto f l (𝓝 x) :=
   tendsto_nhds_of_eventually_eq hf
 
-/-! ### Interior, closure and frontier in terms of neighborhoods -/
+/-!
+# Interior, closure and frontier in terms of neighborhoods
+-/
 
 theorem interior_eq_nhds' : interior s = { x | s ∈ 𝓝 x } :=
   Set.ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_ofPred_eq]

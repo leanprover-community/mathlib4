@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.IndepAxioms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matroid Duality
 
@@ -25,7 +28,6 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
 
 * `M.Dual`, written `M✶`, is the matroid on `M.E` which a set `B ⊆ M.E` is a base if and only if
   `M.E \ B` is a base for `M`.
-
 * `M.Coindep X` means `M✶.Indep X`, or equivalently that `X` is contained in `M.E \ B` for some
   base `B` of `M`.
 -/

@@ -11,7 +11,12 @@ public import Mathlib.Algebra.Ring.Pi
 
 import Mathlib.Tactic.Finiteness.Attr
 
-/-! # Ring instances for `FunLike` types
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Ring instances for `FunLike` types
+
 In this file we define various instances related to ring for `FunLike` types.
 There are two different variants: either the multiplication is given by composition or it is
 pointwise multiplication.

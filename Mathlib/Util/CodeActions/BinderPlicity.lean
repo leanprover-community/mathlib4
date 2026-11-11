@@ -10,13 +10,16 @@ public meta import Lean.Server.CodeActions.Basic
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binder plicity code action
 
 A code action that allows one to switch between explicit and implicit binders.
 
- - `(x : Nat)` turns into `{x : Nat}`
- - `{x : nat}` turns into `(x : Nat)`
+* `(x : Nat)` turns into `{x : Nat}`
+* `{x : nat}` turns into `(x : Nat)`
 
 ## Implementation notes
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.RingTheory.Localization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localized Module
 
@@ -50,8 +53,10 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 variable (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalization S T]
 variable (T' : Type*) [CommSemiring T'] [Algebra R T'] [IsLocalization S T']
 
-/-- The equivalence relation on `M × S` where `(m1, s1) ≈ (m2, s2)` if and only if
-for some (u : S), u * (s2 • m1 - s1 • m2) = 0 -/
+/--
+The equivalence relation on `M × S` where `(m1, s1) ≈ (m2, s2)` if and only if
+for some (u : S), u \* (s2 • m1 - s1 • m2) = 0
+-/
 def r (a b : M × S) : Prop :=
   ∃ u : S, u • b.2 • a.1 = u • a.2 • b.1
 
@@ -946,11 +951,13 @@ theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R 
   ext x
   simp
 
-/-- Universal property from localized module:
+/--
+Universal property from localized module:
 If `(M', f : M ⟶ M')` is a localized module then it satisfies the following universal property:
 For every `R`-module `M''` which every `s : S`-scalar multiplication is invertible and for every
 `R`-linear map `g : M ⟶ M''`, there is a unique `R`-linear map `l : M' ⟶ M''` such that
 `l ∘ f = g`.
+
 ```
 M -----f----> M'
 |           /
@@ -1445,7 +1452,7 @@ instance [IsDomain R] (S : Submonoid R) [IsTorsionFree R M] :
 end IsLocalizedModule
 
 /-!
-## Localizations of modules away from an element
+# Localizations of modules away from an element
 -/
 
 /-- Given `x : R` and `f : M →ₗ[R] M'`, `IsLocalizedModule.Away x f` states that `M'`

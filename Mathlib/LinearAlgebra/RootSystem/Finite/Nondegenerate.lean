@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 
 import Mathlib.LinearAlgebra.Dimension.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
 
@@ -40,8 +43,8 @@ Weyl group.
 
 ## References
 
-* [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
-* [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
+* ‍\[N. Bourbaki, _Lie groups and Lie algebras. Chapters 4--6_\]\[bourbaki1968\]
+* ‍\[M. Demazure, _SGA III, Exposé XXI, Données Radicielles_\]\[demazure1970\]
 
 ## TODO
 
@@ -66,12 +69,14 @@ section CommRing
 
 variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
 
-/-- We say a finite root pairing is anisotropic if there are no roots / coroots which have length
+/--
+We say a finite root pairing is anisotropic if there are no roots / coroots which have length
 zero w.r.t. the root / coroot forms.
 
 Examples include crystallographic pairings in characteristic zero
 `RootPairing.instIsAnisotropicOfIsCrystallographic` and pairings over ordered scalars.
-`RootPairing.instIsAnisotropicOfLinearOrderedCommRing`. -/
+`RootPairing.instIsAnisotropicOfLinearOrderedCommRing`.
+-/
 class IsAnisotropic : Prop where
   rootForm_root_ne_zero (i : ι) : P.RootForm (P.root i) (P.root i) ≠ 0
   corootForm_coroot_ne_zero (i : ι) : P.CorootForm (P.coroot i) (P.coroot i) ≠ 0
@@ -326,10 +331,12 @@ instance : P.IsBalanced where
     isCompl_right := by
       simpa only [ker_corootForm_eq_dualAnnihilator] using! P.isCompl_corootSpan_ker_corootForm }
 
-/-- See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
+/--
+See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
 
 Note that this applies to crystallographic root systems in characteristic zero via
-`RootPairing.instIsAnisotropicOfIsCrystallographic`. -/
+`RootPairing.instIsAnisotropicOfIsCrystallographic`.
+-/
 lemma rootForm_restrict_nondegenerate_of_isAnisotropic :
     LinearMap.Nondegenerate (P.RootForm.restrict (P.rootSpan R)) :=
   P.rootForm_symmetric.nondegenerate_restrict_of_isCompl_ker P.isCompl_rootSpan_ker_rootForm

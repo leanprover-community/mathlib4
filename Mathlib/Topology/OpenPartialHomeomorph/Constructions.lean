@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructions of new partial homeomorphisms from old
 
@@ -38,7 +41,7 @@ namespace OpenPartialHomeomorph
 variable (e : OpenPartialHomeomorph X Y)
 
 /-!
-## Constants
+# Constants
 
 `PartialEquiv.const` as an open partial homeomorphism
 -/
@@ -69,7 +72,7 @@ lemma const_target (ha : IsOpen {a}) (hb : IsOpen {b}) : (const ha hb).target = 
 end const
 
 /-!
-## Products
+# Products
 
 Product of two open partial homeomorphisms
 -/
@@ -133,7 +136,7 @@ theorem prod_symm_trans_prod
 end Prod
 
 /-!
-## Pi types
+# Pi types
 
 Finite indexed products of partial homeomorphisms
 -/
@@ -156,7 +159,7 @@ def pi : OpenPartialHomeomorph (∀ i, X i) (∀ i, Y i) where
 end Pi
 
 /-!
-## Disjoint union
+# Disjoint union
 
 Combining two partial homeomorphisms using `Set.piecewise`
 -/
@@ -249,7 +252,7 @@ theorem trans_transHomeomorph (e : OpenPartialHomeomorph X Y) (e' : OpenPartialH
 end transHomeomorph
 
 /-!
-## Restriction to a subtype
+# Restriction to a subtype
 
 `subtypeRestr`: restriction to a subtype
 -/
@@ -340,7 +343,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
 end subtypeRestr
 
 /-!
-## Extending along an open embedding
+# Extending along an open embedding
 -/
 section lift_openEmbedding
 

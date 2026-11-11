@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions with a parameter
 
@@ -31,8 +34,8 @@ bifunctor `G' : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` with `F ⊣₂ G'` (and similarly 
 left adjoints).
 
 ## References
-* https://ncatlab.org/nlab/show/two-variable+adjunction
 
+* https://ncatlab.org/nlab/show/two-variable+adjunction
 -/
 
 @[expose] public section

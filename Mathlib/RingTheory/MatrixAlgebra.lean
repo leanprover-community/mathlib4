@@ -8,14 +8,16 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebra isomorphisms between tensor products and matrices
 
 ## Main definitions
 
 * `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
-* `Matrix.kroneckerTMulAlgEquiv :
-    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
+* `Matrix.kroneckerTMulAlgEquiv : Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
   where the forward map is the (tensor-ified) Kronecker product.
 -/
 
@@ -145,7 +147,8 @@ def toFunAlgHom : A ⊗[R] Matrix n n R →ₐ[R] Matrix n n A :=
 theorem toFunAlgHom_apply (a : A) (m : Matrix n n R) :
     toFunAlgHom n R A (a ⊗ₜ m) = a • m.map (algebraMap R A) := rfl
 
-/-- (Implementation detail.)
+/--
+(Implementation detail.)
 
 The bare function `Matrix n n A → A ⊗[R] Matrix n n R`.
 (We don't need to show that it's an algebra map, thankfully --- just that it's an inverse.)
@@ -187,7 +190,8 @@ theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun n R A (toFunAlgHom n R A M
     rw [map_add]
     conv_rhs => rw [← hx, ← hy, ← invFun_add]
 
-/-- (Implementation detail)
+/--
+(Implementation detail)
 
 The equivalence, ignoring the algebra structure, `(A ⊗[R] Matrix n n R) ≃ Matrix n n A`.
 -/

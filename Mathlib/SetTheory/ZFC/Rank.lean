@@ -8,6 +8,9 @@ module
 public import Mathlib.SetTheory.Ordinal.Rank
 public import Mathlib.SetTheory.ZFC.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordinal ranks of PSet and ZFSet
 
@@ -27,7 +30,9 @@ universe u v
 
 open Ordinal Order
 
-/-! ### PSet rank -/
+/-!
+# PSet rank
+-/
 
 namespace PSet
 
@@ -97,9 +102,11 @@ theorem rank_powerset (x : PSet) : rank (powerset x) = succ (rank x) := by
     apply rank_lt_of_mem
     simp
 
-/-- For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
+/--
+For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
 
-This inequality is split into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
+This inequality is split into `rank_sUnion_le` and `le_succ_rank_sUnion`.
+-/
 theorem rank_sUnion_le (x : PSet) : rank (⋃₀ x) ≤ rank x := by
   simp_rw [rank_le_iff, mem_sUnion]
   intro _ ⟨_, _, _⟩
@@ -128,7 +135,9 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = WellFounded.rank (α := PSet
 
 end PSet
 
-/-! ### ZFSet rank -/
+/-!
+# ZFSet rank
+-/
 
 namespace ZFSet
 
@@ -182,9 +191,11 @@ theorem rank_union (x y : ZFSet) : rank (x ∪ y) = max (rank x) (rank y) := by
 theorem rank_powerset (x : ZFSet) : rank (powerset x) = succ (rank x) :=
   Quotient.inductionOn x PSet.rank_powerset
 
-/-- For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
+/--
+For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
 
-This inequality is split into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
+This inequality is split into `rank_sUnion_le` and `le_succ_rank_sUnion`.
+-/
 theorem rank_sUnion_le (x : ZFSet) : rank (⋃₀ x) ≤ rank x := by
   simp_rw [rank_le_iff, mem_sUnion]
   intro _ ⟨_, _, _⟩

@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie algebras
 
@@ -19,18 +22,19 @@ modules, morphisms and equivalences, as well as various lemmas to make these def
 
 ## Main definitions
 
-  * `LieRing`
-  * `LieAlgebra`
-  * `LieRingModule`
-  * `LieModule`
-  * `LieHom`
-  * `LieEquiv`
-  * `LieModuleHom`
-  * `LieModuleEquiv`
+* `LieRing`
+* `LieAlgebra`
+* `LieRingModule`
+* `LieModule`
+* `LieHom`
+* `LieEquiv`
+* `LieModuleHom`
+* `LieModuleEquiv`
 
 ## Notation
 
 Working over a fixed commutative ring `R`, we introduce the notations:
+
 * `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
 * `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
 * `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
@@ -42,7 +46,8 @@ Lie algebras are defined as modules with a compatible Lie ring structure and thu
 are partially unbundled.
 
 ## References
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975]
+
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 1--3_\]\[bourbaki1975\]
 
 ## Tags
 
@@ -71,15 +76,19 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
 @[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
-  /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
+  /--
+  A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 
   The compatibility in the first argument is not a class property, but follows since every
-  Lie algebra has a natural Lie module action on itself, see `LieModule`. -/
+Lie algebra has a natural Lie module action on itself, see `LieModule`.
+  -/
   protected lie_smul : ∀ (t : R) (x y : L), ⁅x, t • y⁆ = t • ⁅x, y⁆
 
-/-- A Lie ring module is an additive group, together with an additive action of a
+/--
+A Lie ring module is an additive group, together with an additive action of a
 Lie ring on this group, such that the Lie bracket acts as the commutator of endomorphisms.
-(For representations of Lie *algebras* see `LieModule`.) -/
+(For representations of Lie _algebras_ see `LieModule`.)
+-/
 class LieRingModule (L : Type v) (M : Type w) [LieRing L] [AddCommGroup M] extends Bracket L M where
   /-- A Lie ring module bracket is additive in its first component. -/
   protected add_lie : ∀ (x y : L) (m : M), ⁅x + y, m⁆ = ⁅x, m⁆ + ⁅y, m⁆
@@ -97,7 +106,8 @@ class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] 
   /-- A Lie module bracket is compatible with scalar multiplication in its second argument. -/
   protected lie_smul : ∀ (t : R) (x : L) (m : M), ⁅x, t • m⁆ = t • ⁅x, m⁆
 
-/-- A tower of Lie bracket actions encapsulates the Leibniz rule for Lie bracket actions.
+/--
+A tower of Lie bracket actions encapsulates the Leibniz rule for Lie bracket actions.
 
 More precisely, it does so in a relative setting:
 Let `L₁` and `L₂` be two types with Lie bracket actions on a type `M` endowed with an addition,
@@ -106,7 +116,8 @@ Then the Leibniz rule asserts for all `x : L₁`, `y : L₂`, and `m : M` that
 `⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆` holds.
 
 Common examples include the case where `L₁` is a Lie subalgebra of `L₂`
-and the case where `L₂` is a Lie ideal of `L₁`. -/
+and the case where `L₂` is a Lie ideal of `L₁`.
+-/
 class IsLieTower (L₁ L₂ M : Type*) [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [Add M] where
   protected leibniz_lie (x : L₁) (y : L₂) (m : M) : ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 
@@ -231,9 +242,11 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   abel
 
 variable (L M) in
-/-- The Lie bracket as a biadditive map.
+/--
+The Lie bracket as a biadditive map.
 
-Usually one will have coefficients and `LieModule.toEnd` will be more useful. -/
+Usually one will have coefficients and `LieModule.toEnd` will be more useful.
+-/
 @[simps] def LieRingModule.toEnd : L →+ M →+ M where
   toFun x := ⟨⟨fun m ↦ ⁅x, m⁆, lie_zero x⟩, LieRingModule.lie_add x⟩
   map_zero' := by ext n; exact zero_lie n
@@ -468,9 +481,11 @@ variable [CommRing R] [LieRing L₁] [LieAlgebra R L₁] [LieRing L₂] [LieAlge
 variable [AddCommGroup M] [LieRingModule L₂ M]
 variable (f : L₁ →ₗ⁅R⁆ L₂)
 
-/-- A Lie ring module may be pulled back along a morphism of Lie algebras.
+/--
+A Lie ring module may be pulled back along a morphism of Lie algebras.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 @[instance_reducible]
 def LieRingModule.compLieHom : LieRingModule L₁ M where
   bracket x m := ⁅f x, m⁆

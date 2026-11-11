@@ -8,15 +8,19 @@ module
 public import Mathlib.Algebra.Order.Monovary
 public import Mathlib.Analysis.Convex.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of convex functions
 
 This file proves that the product of convex functions is convex, provided they monovary.
 
 As corollaries, we also prove that `x ↦ x ^ n` is convex
+
 * `Even.convexOn_pow`: for even `n : ℕ`.
-* `convexOn_pow`: over $[0, +∞)$ for `n : ℕ`.
-* `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.
+* `convexOn_pow`: over $`[0, +∞)` for `n : ℕ`.
+* `convexOn_zpow`: over $`(0, +∞)` For `n : ℤ`.
 -/
 
 public section

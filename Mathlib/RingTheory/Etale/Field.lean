@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Etale.Pi
 public import Mathlib.RingTheory.Unramified.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Étale algebras over fields
 
@@ -15,23 +18,22 @@ public import Mathlib.RingTheory.Unramified.Field
 
 Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
-- `Algebra.FormallyEtale.of_isSeparable`:
-    If `L` is separable over `K`, then `L` is formally étale over `K`.
-- `Algebra.FormallyEtale.iff_isSeparable`:
-    If `L` is (essentially) of finite type over `K`, then `L/K` is étale iff `L/K` is separable.
-- `Algebra.FormallyEtale.iff_formallyUnramified_of_field`:
-    If `A` is (essentially) of finite type over `K`,
-    then `A/K` is formally étale iff `A/K` is formally unramified.
-- `Algebra.FormallyEtale.iff_exists_algEquiv_prod`:
-    If `A` is (essentially) of finite type over `K`,
-    then `A/K` is étale iff `A` is a finite product of separable field extensions.
-- `Algebra.Etale.iff_exists_algEquiv_prod`:
-    `A/K` is étale iff `A` is a finite product of finite separable field extensions.
+* `Algebra.FormallyEtale.of_isSeparable`:
+  If `L` is separable over `K`, then `L` is formally étale over `K`.
+* `Algebra.FormallyEtale.iff_isSeparable`:
+  If `L` is (essentially) of finite type over `K`, then `L/K` is étale iff `L/K` is separable.
+* `Algebra.FormallyEtale.iff_formallyUnramified_of_field`:
+  If `A` is (essentially) of finite type over `K`,
+  then `A/K` is formally étale iff `A/K` is formally unramified.
+* `Algebra.FormallyEtale.iff_exists_algEquiv_prod`:
+  If `A` is (essentially) of finite type over `K`,
+  then `A/K` is étale iff `A` is a finite product of separable field extensions.
+* `Algebra.Etale.iff_exists_algEquiv_prod`:
+  `A/K` is étale iff `A` is a finite product of finite separable field extensions.
 
 ## References
 
-- [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
+* ‍\[B. Iversen, _Generic Local Structure of the Morphisms in Commutative Algebra_\]\[iversen\]
 -/
 
 public section

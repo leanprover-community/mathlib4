@@ -14,6 +14,9 @@ import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.ZMod.Defs
 import Mathlib.GroupTheory.FreeGroup.Reduce
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinalities of free constructions
 
@@ -115,9 +118,11 @@ end Cardinal
 
 section Nonempty
 
-/-- A commutative ring can be constructed on any non-empty type.
+/--
+A commutative ring can be constructed on any non-empty type.
 
-See also `Infinite.nonempty_field`. -/
+See also `Infinite.nonempty_field`.
+-/
 instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
   obtain hR | hR := finite_or_infinite α
   · obtain ⟨x⟩ := nonempty_fintype α

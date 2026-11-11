@@ -15,6 +15,9 @@ import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Data.Nat.Prime.Int
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chebyshev functions
 
@@ -23,28 +26,28 @@ These give logarithmically weighted sums of primes and prime powers.
 
 ## Main definitions
 
-- `Chebyshev.psi` gives the sum of `ArithmeticFunction.vonMangoldt`
-- `Chebyshev.theta` gives the sum of `log p` over primes
-- `Chebyshev.lcmUpto n` gives the least common multiple of `{1,...,n}`
+* `Chebyshev.psi` gives the sum of `ArithmeticFunction.vonMangoldt`
+* `Chebyshev.theta` gives the sum of `log p` over primes
+* `Chebyshev.lcmUpto n` gives the least common multiple of `{1,...,n}`
 
 ## Main results
 
-- `Chebyshev.theta_eq_log_primorial` shows that `θ x` is the log of the product of primes up to x
-- `Chebyshev.theta_le_log4_mul_x` gives Chebyshev's upper bound on `θ`
-- `Chebyshev.theta_ge` gives Chebyshev's lower bound on `θ`.
-- `Chebyshev.psi_eq_log_lcmUpto` shows that `ψ n` is the log of the lcm of `{1,...,n}`.
-- `Chebyshev.psi_eq_sum_theta` and `Chebyshev.psi_eq_theta_add_sum_theta` relate `ψ` to `θ`.
-- `Chebyshev.psi_sub_theta_le_mul_sqrt` gives an upper bound on `ψ - θ`.
-- `Chebyshev.psi_sub_theta_le_psi_add_psi_add_psi` and
-   `Chebyshev.psi_sub_theta_ge_psi_add_psi_add_psi` establish the Costa-Pereira inequalities
-   for `ψ - θ`.
-- `Chebyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
-- `Chebyshev.psi_ge` gives Chebyshev's lower bound on `ψ`.
-- `Chebyshev.primeCounting_eq_theta_div_log_add_integral` relates the prime counting function to `θ`
-- `Chebyshev.eventually_primeCounting_le` gives an asymptotic upper bound on the
+* `Chebyshev.theta_eq_log_primorial` shows that `θ x` is the log of the product of primes up to x
+* `Chebyshev.theta_le_log4_mul_x` gives Chebyshev's upper bound on `θ`
+* `Chebyshev.theta_ge` gives Chebyshev's lower bound on `θ`.
+* `Chebyshev.psi_eq_log_lcmUpto` shows that `ψ n` is the log of the lcm of `{1,...,n}`.
+* `Chebyshev.psi_eq_sum_theta` and `Chebyshev.psi_eq_theta_add_sum_theta` relate `ψ` to `θ`.
+* `Chebyshev.psi_sub_theta_le_mul_sqrt` gives an upper bound on `ψ - θ`.
+* `Chebyshev.psi_sub_theta_le_psi_add_psi_add_psi` and
+  `Chebyshev.psi_sub_theta_ge_psi_add_psi_add_psi` establish the Costa-Pereira inequalities
+  for `ψ - θ`.
+* `Chebyshev.psi_le_const_mul_self` gives Chebyshev's upper bound on `ψ`.
+* `Chebyshev.psi_ge` gives Chebyshev's lower bound on `ψ`.
+* `Chebyshev.primeCounting_eq_theta_div_log_add_integral` relates the prime counting function to `θ`
+* `Chebyshev.eventually_primeCounting_le` gives an asymptotic upper bound on the
   prime counting function.
-- `Chebyshev.pi_le_log4_mul_div` gives an explicit upper bound on the prime counting function.
-- `Chebyshev.pi_ge` gives an explicit lower bound on the prime counting function.
+* `Chebyshev.pi_le_log4_mul_div` gives an explicit upper bound on the prime counting function.
+* `Chebyshev.pi_ge` gives an explicit lower bound on the prime counting function.
 
 ## Notation
 
@@ -53,8 +56,8 @@ functions.
 
 ## References
 
-Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kontorovich et al, https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
-
+Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kontorovich et al,
+https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
 -/
 
 @[expose] public section
@@ -201,7 +204,7 @@ end Chebyshev
 
 namespace Nat
 /-!
-## Least common multiple of `{1,...,n}`
+# Least common multiple of `{1,...,n}`
 
 Basic facts about the least common multiple of the first `n` natural numbers
 -/
@@ -355,7 +358,7 @@ theorem two_pow_le_lcmUpto {n : ℕ} (hn : 7 ≤ n) : 2 ^ n ≤ lcmUpto n := by
     exact Nat.mul_le_mul_right _ (by lia)
 
 /-!
-## Relating `ψ` and `θ`
+# Relating `ψ` and `θ`
 
 We isolate the contributions of different prime powers to `ψ` and use this to show that `ψ` and `θ`
 are close.
@@ -540,12 +543,14 @@ theorem theta_ge' {x : ℝ} (hx : 1 ≤ x) :
 
 section CostaPereira
 
-/-! ## The Costa-Pereira inequalities
+/-!
+# The Costa-Pereira inequalities
 
 The Costa-Pereira inequalities give explicit upper and lower bounds on the difference
 `ψ x - θ x`, namely that they lie between `ψ x^(1/2) + ψ x^(1/3) + ψ x^(1/7)` and
 `ψ x^(1/2) + ψ x^(1/3) + ψ x^(1/5)`.  These are useful for applications in explicit
-analytic number theory. -/
+analytic number theory.
+-/
 
 variable (x : ℝ) (n : ℕ)
 
@@ -648,9 +653,11 @@ end CostaPereira
 
 section PrimeCounting
 
-/-! ## Relation to prime counting
+/-!
+# Relation to prime counting
 
-We relate `θ` to the prime counting function `π`.-/
+We relate `θ` to the prime counting function `π`.
+-/
 
 open Asymptotics Filter MeasureTheory
 
@@ -887,7 +894,9 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
     simp only [mem_filter, mem_Icc, mem_primesLE] at hp ⊢
     exact ⟨hp.1.2.one_le, le_floor hp.2⟩
 
-/-- A weak but completely explicit upper bound on $\pi(x)$. -/
+/--
+A weak but completely explicit upper bound on $`\pi(x)`.
+-/
 theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x / log √x + √x := by
   have : 0 < log √x := log_pos (lt_sqrt_of_sq_lt (by simp [hx]))
   field_simp

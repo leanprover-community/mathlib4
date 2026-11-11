@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Bialgebra.Convolution
 public import Mathlib.RingTheory.Bialgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bialgebra structure on monoid algebras
 
@@ -99,17 +102,21 @@ lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : R[M
 lemma mapDomainBialgHom_single (f : M →* N) (m : M) (r : R) :
     mapDomainBialgHom R f (single m r) = single (f m) r := mapDomain_single
 
-/-- A `R`-bialgebra homomorphism from `A[M]` is uniquely defined by its
+/--
+A `R`-bialgebra homomorphism from `A[M]` is uniquely defined by its
 values on the functions `single m 1` and `single 1 a`.
 
-See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
-equality of `MonoidHom`s because `of` doesn't additivise. -/
+See note \[partially-applied ext lemmas\]. Note that the first assumption isn't written as an
+equality of `MonoidHom`s because `of` doesn't additivise.
+-/
 @[to_additive (dont_translate := A) (attr := ext high)
-/-- A `R`-bialgebra homomorphism from `A[M]` is uniquely defined by its
+/--
+A `R`-bialgebra homomorphism from `A[M]` is uniquely defined by its
 values on the functions `single m 1` and `single 1 a`.
 
-See note [partially-applied ext lemmas]. Note that the first assumption isn't written as an
-equality of `AddMonoidHom`s because `of` doesn't multiplicativise. -/]
+See note \[partially-applied ext lemmas\]. Note that the first assumption isn't written as an
+equality of `AddMonoidHom`s because `of` doesn't multiplicativise.
+-/]
 lemma bialgHom_ext ⦃φ₁ φ₂ : A[M] →ₐc[R] B⦄
   (single_one_right : ∀ (m : M), φ₁ (single m 1) = φ₂ (single m 1))
   (single_one_left : (φ₁ : A[M] →ₐ[R] B).comp singleOneAlgHom =
@@ -266,15 +273,19 @@ private lemma single_mapDomainOfBialgHomFun_one (f : R[G] →ₐc[R] R[H]) (g : 
     single (mapDomainOfBialgHomFun f g) 1 = f (single g 1) :=
   (isGroupLikeElem_iff_mem_range_single_one.1 <| (isGroupLikeElem_single_one g).map f).choose_spec
 
-/-- A bialgebra homomorphism `R[G] → R[H]` between group algebras over a domain `R` comes from a
+/--
+A bialgebra homomorphism `R[G] → R[H]` between group algebras over a domain `R` comes from a
 group hom `G → H`.
 
-See `MonoidAlgebra.mapDomainBialgHom` for the forward map. -/
+See `MonoidAlgebra.mapDomainBialgHom` for the forward map.
+-/
 @[to_additive (dont_translate := R)
-/-- A bialgebra homomorphism `R[G] → R[H]` between group algebras over a domain `R` comes from a
+/--
+A bialgebra homomorphism `R[G] → R[H]` between group algebras over a domain `R` comes from a
 group hom `G → H`.
 
-See `MonoidAlgebra.mapDomainBialgHom` for the forward map. -/]
+See `MonoidAlgebra.mapDomainBialgHom` for the forward map.
+-/]
 def mapDomainOfBialgHom (f : R[G] →ₐc[R] R[H]) : G →* H where
   toFun := mapDomainOfBialgHomFun f
   map_one' := single_left_injective (R := R) one_ne_zero <| by simp [← one_def]
@@ -349,7 +360,9 @@ variable [CommSemiring R] [CommSemiring S]
 section Semiring
 variable [Semiring A] [Semiring B] [Bialgebra R A] [Bialgebra R B] [AddMonoid M] [AddMonoid N]
 
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 lemma bialgHom_ext' ⦃φ₁ φ₂ : A[M] →ₐc[R] B⦄
     (single_one_right : (φ₁ : A[M] →* B).comp (of A M) = (φ₂ : A[M] →* B).comp (of A M))
     (single_one_left : (φ₁ : A[M] →ₐ[R] B).comp singleZeroAlgHom =

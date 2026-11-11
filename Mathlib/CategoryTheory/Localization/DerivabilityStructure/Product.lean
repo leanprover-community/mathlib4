@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.GuitartExact.Prod
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Localization.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of derivability structures
 
@@ -17,8 +20,8 @@ structures is also a derivability structure (at least when we assume that
 the properties of morphisms that are involved contain identities).
 
 The behavior of derivability structures with respect to products of categories
-was not studied in the paper [KahnMaltsiniotis2008]: it was remarked in 2023 by the
-author of this file (see also §5.3.4 in [*Formalization of derived categories*][riou-2025]).
+was not studied in the paper \[KahnMaltsiniotis2008\]: it was remarked in 2023 by the
+author of this file (see also §5.3.4 in \[_Formalization of derived categories_\]\[riou-2025\]).
 This observation was a significant motivation for the formalization of derivability
 structures (see the files
 `Mathlib/Algebra/Homology/DerivedCategory/DerivabilityStructureInjectives.lean` and
@@ -28,9 +31,9 @@ to derive functors "in one variable" but also to derive functors in several
 variables (e.g. the tensor product as a bifunctor).
 
 ## References
-* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-* [Joël Riou, *Formalization of derived categories in {Lean}/mathlib*][riou-2025]
 
+* ‍\[Bruno Kahn and Georges Maltsiniotis, _Structures de dérivabilité_\]\[KahnMaltsiniotis2008\]
+* ‍\[Joël Riou, _Formalization of derived categories in \{Lean\}/mathlib_\]\[riou-2025\]
 -/
 
 @[expose] public section

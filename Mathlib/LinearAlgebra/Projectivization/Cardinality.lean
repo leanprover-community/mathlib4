@@ -11,11 +11,13 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Fintype
 import Mathlib.Algebra.Ring.GeomSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of projective spaces
 
 We compute the cardinality of `ℙ k V` if `k` is a finite field.
-
 -/
 
 @[expose] public section

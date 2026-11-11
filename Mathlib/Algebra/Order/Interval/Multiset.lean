@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Order.Interval.Multiset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic properties of multiset intervals
 

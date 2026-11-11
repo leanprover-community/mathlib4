@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Pullback
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # functors between categories of sheaves
 
@@ -17,12 +20,12 @@ on X to that of sheaves on Y, given a continuous map between
 topological spaces X and Y.
 
 ## Main definitions
-- `TopCat.Sheaf.pushforward`:
-    The pushforward functor between sheaf categories over topological spaces.
-- `TopCat.Sheaf.pullback`: The pullback functor between sheaf categories over topological spaces.
-- `TopCat.Sheaf.pullbackPushforwardAdjunction`:
-  The adjunction between pullback and pushforward for sheaves on topological spaces.
 
+* `TopCat.Sheaf.pushforward`:
+  The pushforward functor between sheaf categories over topological spaces.
+* `TopCat.Sheaf.pullback`: The pullback functor between sheaf categories over topological spaces.
+* `TopCat.Sheaf.pullbackPushforwardAdjunction`:
+  The adjunction between pullback and pushforward for sheaves on topological spaces.
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Hom.ContinuousEval
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The compact-open topology
 
@@ -27,7 +30,6 @@ topological spaces.
   continuous.
 * `Homeomorph.curry` combines the currying and uncurrying operations into a homeomorphism
   `C(X × Y, Z) ≃ₜ C(X, C(Y, Z))`. This homeomorphism exists if `X` and `Y` are locally compact.
-
 
 ## Tags
 
@@ -198,9 +200,11 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
 
 variable [LocallyCompactPair Y Z]
 
-/-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
+/--
+Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
 provided that `Y` is locally compact.
-This is Prop. 9 of Chap. X, §3, №. 4 of Bourbaki's *Topologie Générale*. -/
+This is Prop. 9 of Chap. X, §3, №. 4 of Bourbaki's _Topologie Générale_.
+-/
 theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1 := by
   simp_rw [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen]
   intro ⟨f, g⟩ K hK U hU (hKU : MapsTo (g ∘ f) K U)

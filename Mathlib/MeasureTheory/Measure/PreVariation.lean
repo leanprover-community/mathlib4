@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.VectorMeasure.Operations
 public import Mathlib.Order.Partition.Finpartition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pre-variation of a subadditive set function
 
@@ -23,8 +26,7 @@ measure.
 
 ## References
 
-* [Walter Rudin, Real and Complex Analysis.][Rud87]
-
+* ‍\[Walter Rudin, Real and Complex Analysis.\]\[Rud87\]
 -/
 
 @[expose] public section
@@ -36,7 +38,7 @@ open NNReal ENNReal Function CompleteLattice
 namespace MeasureTheory
 
 /-!
-## Pre-variation of a subadditive `ℝ≥0∞`-valued function
+# Pre-variation of a subadditive `ℝ≥0∞`-valued function
 
 Given a set function `f : Set X → ℝ≥0∞` we can define another set function by taking the supremum
 over all finite partitions of measurable sets `E i` of the sum of `∑ i, f (E i)`. If `f` is
@@ -238,7 +240,7 @@ lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Se
 end preVariation
 
 /-!
-## Construction of measures from σ-subadditive functions
+# Construction of measures from σ-subadditive functions
 -/
 
 variable (f : Set X → ℝ≥0∞)

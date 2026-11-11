@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The equalizer of two morphisms of functors, as a subfunctor
 
@@ -14,7 +17,6 @@ If `F₁` and `F₂` are type-valued functors, `A : Subfunctor F₁`, and
 `f` and `g` are two morphisms `A.toFunctor ⟶ F₂`, we introduce
 `Subcomplex.equalizer f g`, which is the subfunctor of `F₁` contained in `A`
 where `f` and `g` coincide.
-
 -/
 
 @[expose] public section

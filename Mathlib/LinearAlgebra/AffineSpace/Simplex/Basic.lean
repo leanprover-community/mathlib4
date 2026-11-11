@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Sort
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.LinearAlgebra.AffineSpace.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplex in affine space
 
@@ -18,15 +21,12 @@ This file defines n-dimensional simplices in affine space.
 
 * `Simplex` is a bundled type with collection of `n + 1` points in affine space that are affinely
   independent, where `n` is the dimension of the simplex.
-
 * `Triangle` is a simplex with three points, defined as an abbreviation for simplex with `n = 2`.
-
 * `face` is a simplex with a subset of the points of the original simplex.
 
 ## References
 
 * https://en.wikipedia.org/wiki/Simplex
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Total variation distance of vector measures
 
@@ -24,7 +27,6 @@ We define the total variation distance between two vector measures `μ, ν` as
 
 * `etvDist_self`, `etvDist_eq_zero_iff`, `etvDist_comm`, `etvDist_triangle`: the total
   variation distance between vector measures is a distance.
-
 -/
 
 @[expose] public section

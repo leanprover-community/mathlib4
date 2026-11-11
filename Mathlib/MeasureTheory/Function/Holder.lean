@@ -7,7 +7,11 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
-/-! # Continuous bilinear maps on `MeasureTheory.Lp` spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Continuous bilinear maps on `MeasureTheory.Lp` spaces
 
 Given a continuous bilinear map `B : E →L[𝕜] F →L[𝕜] G`, we define an associated map
 `ContinuousLinearMap.holder : Lp E p μ → Lp F q μ → Lp G r μ` where `p q r` are a Hölder triple.
@@ -31,7 +35,9 @@ open scoped NNReal
 
 noncomputable section
 
-/-! ### Induced bilinear maps -/
+/-!
+# Induced bilinear maps
+-/
 
 section Bilinear
 
@@ -145,14 +151,16 @@ lemma norm_holderL_le : ‖(B.holderL μ p q r)‖ ≤ ‖B‖ :=
 variable [HolderConjugate p q] [NormedSpace ℝ G] [SMulCommClass ℝ 𝕜 G] [CompleteSpace G]
 
 variable (μ p q) in
-/-- The natural pairing between `Lp E p μ` and `Lp F q μ` (for Hölder conjugate `p q : ℝ≥0∞`) with
+/--
+The natural pairing between `Lp E p μ` and `Lp F q μ` (for Hölder conjugate `p q : ℝ≥0∞`) with
 values in a space `G` induced by a bilinear map `B : E →L[𝕜] F →L[𝕜] G`.
 
 This is given by `∫ x, B (f x) (g x) ∂μ`.
 
 In the special case when `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, which is
 definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)`, this is the
-natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`. -/
+natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`.
+-/
 def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
   (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘L (B.holderL μ p q 1)
 
@@ -168,9 +176,10 @@ end Bilinear
 namespace MeasureTheory
 namespace Lp
 
-/-! ### Heterogeneous scalar multiplication
+/-!
+# Heterogeneous scalar multiplication
 
-While the previous section is *nominally* more general than this one, and indeed, we could
+While the previous section is _nominally_ more general than this one, and indeed, we could
 use the constructions of the previous section to define the scalar multiplication herein,
 we would lose some slight generality as we would need to require that `𝕜` is a nontrivially
 normed field everywhere. Moreover, it would only simplify a few proofs.

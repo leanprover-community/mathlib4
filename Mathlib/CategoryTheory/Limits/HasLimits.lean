@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.CategoryTheory.Limits.IsLimit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of limits and colimits
 
@@ -16,6 +19,7 @@ In `CategoryTheory.Limits.IsLimit` we defined `IsLimit c`,
 the data showing that a cone `c` is a limit cone.
 
 The two main structures defined in this file are:
+
 * `LimitCone F`, which consists of a choice of cone for `F` and the fact it is a limit cone, and
 * `HasLimit F`, asserting the mere existence of some limit cone for `F`.
 
@@ -26,6 +30,7 @@ as otherwise we would have non-defeq problems from incompatible instances).
 While `HasLimit` only asserts the existence of a limit cone,
 we happily use the axiom of choice in mathlib,
 so there are convenience functions all depending on `HasLimit F`:
+
 * `limit F : C`, producing some limit object (of course all such are isomorphic)
 * `limit.π F j : limit F ⟶ F.obj j`, the morphisms out of the limit,
 * `limit.lift F c : c.pt ⟶ limit F`, the universal morphism from any other `c : Cone F`, etc.
@@ -46,8 +51,8 @@ At this point, however, this is far from uniformly achieved in mathlib ---
 often statements are only written in terms of `HasLimit`.
 
 ## References
-* [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
+* [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 -/
 
 @[expose] public section
@@ -233,14 +238,16 @@ theorem limit.lift_π {F : J ⥤ C} [HasLimit F] (c : Cone F) (j : J) :
     limit.lift F c ≫ limit.π F j = c.π.app j :=
   IsLimit.fac _ c j
 
-/-- Functoriality of limits.
+/--
+Functoriality of limits.
 
 Usually this morphism should be accessed through `lim.map`,
 but may be needed separately when you have specified limits for the source and target functors,
 but not necessarily for all functors of shape `J`.
 -/
 @[to_dual
-/-- Functoriality of colimits.
+/--
+Functoriality of colimits.
 
 Usually this morphism should be accessed through `colim.map`,
 but may be needed separately when you have specified colimits for the source and target functors,

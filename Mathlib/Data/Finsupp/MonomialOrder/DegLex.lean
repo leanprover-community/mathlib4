@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.Weight
 
-/-! # Homogeneous lexicographic monomial ordering
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Homogeneous lexicographic monomial ordering
 
 * `MonomialOrder.degLex`: a variant of the lexicographic ordering that first compares degrees.
   For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
@@ -20,9 +24,8 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 
 ## References
 
-* [Cox, Little and O'Shea, *Ideals, varieties, and algorithms*][coxlittleoshea1997]
-* [Becker and Weispfenning, *Gröbner bases*][Becker-Weispfenning1993]
-
+* ‍\[Cox, Little and O'Shea, _Ideals, varieties, and algorithms_\]\[coxlittleoshea1997\]
+* ‍\[Becker and Weispfenning, _Gröbner bases_\]\[Becker-Weispfenning1993\]
 -/
 
 @[expose] public section
@@ -236,7 +239,9 @@ example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
   rw [degLex_lt_iff, single_lt_iff]
   exact Nat.one_pos
 
-/-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
+/--
+for the deg-lexicographic ordering, X 0 \* X 1 < X 0  ^ 2
+-/
 example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2 := by
   rw [degLex_lt_iff, lt_iff, ofDegLex_toDegLex]
   simp only [Fin.isValue, map_add, degree_single, Nat.reduceAdd, ofDegLex_toDegLex,

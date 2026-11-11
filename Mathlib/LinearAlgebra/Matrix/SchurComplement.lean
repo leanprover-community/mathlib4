@@ -7,7 +7,11 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
-/-! # 2×2 block matrices and the Schur complement
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# 2×2 block matrices and the Schur complement
 
 This file proves properties of 2×2 block matrices `[A B; C D]` that relate to the Schur complement
 `D - C*A⁻¹*B`.
@@ -25,8 +29,7 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
   block triangular matrix.
 * `Matrix.isUnit_fromBlocks_zero₂₁`, `Matrix.isUnit_fromBlocks_zero₁₂`: invertibility of a
   block triangular matrix.
-* `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
-
+* `Matrix.det_one_add_mul_comm`: the *Weinstein–Aronszajn identity*.
 -/
 
 @[expose] public section
@@ -69,7 +72,9 @@ theorem fromBlocks_eq_of_invertible₂₂ (A : Matrix l m α) (B : Matrix l n α
 
 section Triangular
 
-/-! #### Block triangular matrices -/
+/-!
+# Block triangular matrices
+-/
 
 
 /-- An upper-block-triangular matrix is invertible if its diagonal is. -/
@@ -164,18 +169,22 @@ def fromBlocksZero₁₂InvertibleEquiv (A : Matrix m m α) (C : Matrix n m α) 
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
-/-- An upper block-triangular matrix is invertible iff both elements of its diagonal are.
+/--
+An upper block-triangular matrix is invertible iff both elements of its diagonal are.
 
-This is a propositional form of `Matrix.fromBlocksZero₂₁InvertibleEquiv`. -/
+This is a propositional form of `Matrix.fromBlocksZero₂₁InvertibleEquiv`.
+-/
 @[simp]
 theorem isUnit_fromBlocks_zero₂₁ {A : Matrix m m α} {B : Matrix m n α} {D : Matrix n n α} :
     IsUnit (fromBlocks A B 0 D) ↔ IsUnit A ∧ IsUnit D := by
   simp only [← nonempty_invertible_iff_isUnit, ← nonempty_prod,
     (fromBlocksZero₂₁InvertibleEquiv _ _ _).nonempty_congr]
 
-/-- A lower block-triangular matrix is invertible iff both elements of its diagonal are.
+/--
+A lower block-triangular matrix is invertible iff both elements of its diagonal are.
 
-This is a propositional form of `Matrix.fromBlocksZero₁₂InvertibleEquiv` forms an `iff`. -/
+This is a propositional form of `Matrix.fromBlocksZero₁₂InvertibleEquiv` forms an `iff`.
+-/
 @[simp]
 theorem isUnit_fromBlocks_zero₁₂ {A : Matrix m m α} {C : Matrix n m α} {D : Matrix n n α} :
     IsUnit (fromBlocks A 0 C D) ↔ IsUnit A ∧ IsUnit D := by
@@ -218,12 +227,16 @@ theorem inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix 
 
 end Triangular
 
-/-! ### 2×2 block matrices -/
+/-!
+# 2×2 block matrices
+-/
 
 
 section Block
 
-/-! #### General 2×2 block matrices -/
+/-!
+# General 2×2 block matrices
+-/
 
 
 /-- A block matrix is invertible if the bottom right corner and the corresponding Schur complement
@@ -359,7 +372,9 @@ theorem isUnit_fromBlocks_iff_of_invertible₁₁ {A : Matrix m m α} {B : Matri
 
 end Block
 
-/-! ### Lemmas about `Matrix.det` -/
+/-!
+# Lemmas about `Matrix.det`
+-/
 
 
 section Det
@@ -419,7 +434,8 @@ theorem det_one_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] (u v 
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
     Matrix.replicateRow_mul_replicateCol_apply]
 
-/-- The **Matrix determinant lemma**
+/--
+The *Matrix determinant lemma*
 
 TODO: show the more general version without `hA : IsUnit A.det` as
 `(A + replicateCol u * replicateRow v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.

@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.ValuativeRel.Completion
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valued fields and their completions
 
@@ -20,10 +23,10 @@ valuation.basic).
 We already know from valuation.topology that one can build a topology on `K` which
 makes it a topological ring.
 
-The first goal is to show `K` is a topological *field*, i.e. inversion is continuous
+The first goal is to show `K` is a topological _field_, i.e. inversion is continuous
 at every non-zero element.
 
-The next goal is to prove `K` is a *completable* topological field. This gives us
+The next goal is to prove `K` is a _completable_ topological field. This gives us
 a completion `hat K` which is a topological field. We also prove that `K` is automatically
 separated, so the map from `K` to `hat K` is injective.
 
@@ -49,8 +52,10 @@ section Valued
 
 open Valued
 
-/-- The topology coming from a valuation on a division ring makes it a topological division ring
-[BouAC, VI.5.1 middle of Proposition 1] -/
+/--
+The topology coming from a valuation on a division ring makes it a topological division ring
+‍\[BouAC, VI.5.1 middle of Proposition 1\]
+-/
 instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
     IsTopologicalDivisionRing K :=
   { (by infer_instance : IsTopologicalRing K) with
@@ -326,15 +331,18 @@ lemma exists_coe_eq_v (x : hat K) : ∃ r : K, extensionValuation x = v r := by
   have h (a b : hv.v.ValueGroup₀) : ValueGroup₀.embedding a = ValueGroup₀.embedding b ↔ a = b := by
     rw [embedding_strictMono.injective.eq_iff]
   simp_rw [← hr, ← Valuation.restrict_def, h]
-  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this
-  goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
-  the new canonicalizer; a minimization would help. The original proof was:
-  ```
-  convert! valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
-  simp_rw [eq_comm (a := extension _)]
-  grind
-  ``` -/
+  #adaptation_note /--
+                   Before https://github.com/leanprover/lean4/pull/13166 (replacing grind's
+canonicalizer with a type-directed normalizer), `grind` closed this goal. It is
+not yet clear whether this is due to defeq abuse in Mathlib or a problem in the
+new canonicalizer; a minimization would help. The original proof was:
+
+                   ```
+convert! valuation_isClosedMap.isClosed_range.preimage (continuous_extension (hv := hv))
+simp_rw [eq_comm (a := extension _)]
+grind
+```
+                   -/
   simpa [← hr, ← Valuation.restrict_def, h, eq_comm, Set.preimage]
     using valuation_isClosedMap.isClosed_range.preimage continuous_extension
 
@@ -381,9 +389,12 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
   convert! closure_coe_completion_v_lt (γ := .mk0 _ hrs) using 3
   all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
 
-/-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
-that of the extension to its completion. TODO: Split out the definition of `(restrict₀_surjective
-(hv.v : K →*₀ Γ₀) x).choose` and prove a spec lemma of it. Remove tactic `set` in the proof. -/
+/--
+The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to that of
+the extension to its completion. TODO: Split out the definition of
+`(restrict₀_surjective (hv.v : K →*₀ Γ₀) x).choose` and prove a spec lemma of it. Remove tactic
+`set` in the proof.
+-/
 noncomputable def valueGroup₀_hom_extensionValuation :
     hv.v.ValueGroup₀ →*₀ hv.extensionValuation.ValueGroup₀ where
   toFun x := hv.extensionValuation.restrict (restrict₀_surjective (hv.v : K →*₀ Γ₀) x).choose

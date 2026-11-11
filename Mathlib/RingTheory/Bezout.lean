@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bézout rings
 
@@ -14,9 +17,9 @@ A Bézout ring (Bezout ring) is a ring whose finitely generated ideals are princ
 Notable examples include principal ideal rings, valuation rings, and the ring of algebraic integers.
 
 ## Main results
-- `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
-- `IsBezout.TFAE`: For a Bézout domain, Noetherian ↔ PID ↔ UFD ↔ ACCP
 
+* `IsBezout.iff_span_pair_isPrincipal`: It suffices to verify every `span {x, y}` is principal.
+* `IsBezout.TFAE`: For a Bézout domain, Noetherian ↔ PID ↔ UFD ↔ ACCP
 -/
 
 public section

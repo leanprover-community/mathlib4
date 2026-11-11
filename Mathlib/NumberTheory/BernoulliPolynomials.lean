@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.Bernoulli
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bernoulli polynomials
 
@@ -15,10 +18,10 @@ are an important tool obtained from Bernoulli numbers.
 
 ## Mathematical overview
 
-The $n$-th Bernoulli polynomial is defined as
-$$ B_n(X) = ∑_{k = 0}^n {n \choose k} (-1)^k B_k X^{n - k} $$
-where $B_k$ is the $k$-th Bernoulli number. The Bernoulli polynomials are generating functions,
-$$ \frac{t e^{tX} }{ e^t - 1} = ∑_{n = 0}^{\infty} B_n(X) \frac{t^n}{n!} $$
+The $`n`-th Bernoulli polynomial is defined as
+$$`  B_n(X) = ∑_{k = 0}^n {n \choose k} (-1)^k B_k X^{n - k}  `
+where $`B_k` is the $`k`-th Bernoulli number. The Bernoulli polynomials are generating functions,
+$$`  \frac{t e^{tX} }{ e^t - 1} = ∑_{n = 0}^{\infty} B_n(X) \frac{t^n}{n!}  `
 
 ## Implementation detail
 
@@ -26,11 +29,10 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
 
 ## Main theorems
 
-- `Polynomial.sum_bernoulli`: The sum of the $k^\mathrm{th}$ Bernoulli polynomial with binomial
+* `Polynomial.sum_bernoulli`: The sum of the $`k^\mathrm{th}` Bernoulli polynomial with binomial
   coefficients up to `n` is `(n + 1) * X^n`.
-- `Polynomial.bernoulli_generating_function`: The Bernoulli polynomials act as generating functions
+* `Polynomial.bernoulli_generating_function`: The Bernoulli polynomials act as generating functions
   for the exponential.
-
 -/
 
 @[expose] public section
@@ -253,7 +255,9 @@ variable {A : Type*} [CommRing A] [Algebra ℚ A]
 
 -- TODO: define exponential generating functions, and use them here
 -- This name should probably be updated afterwards
-/-- The theorem that $(e^X - 1) * ∑ Bₙ(t)* X^n/n! = Xe^{tX}$ -/
+/--
+The theorem that $`(e^X - 1) * ∑ Bₙ(t)* X^n/n! = Xe^{tX}`
+-/
 theorem bernoulli_generating_function (t : A) :
     (mk fun n => aeval t ((1 / n ! : ℚ) • bernoulli n)) * (exp A - 1) =
       PowerSeries.X * rescale t (exp A) := by

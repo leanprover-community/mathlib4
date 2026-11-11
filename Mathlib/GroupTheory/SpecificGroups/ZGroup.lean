@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.SemidirectProduct
 import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.SchurZassenhaus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Z-Groups
 
@@ -29,7 +32,6 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
   Hall-subgroup (the commutator subgroup has cardinality coprime to its index).
 * `isZGroup_iff_exists_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic
   to a semidirect product of two cyclic subgroups of coprime order.
-
 -/
 
 public section

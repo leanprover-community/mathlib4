@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Rify
 
 import Mathlib.Tactic.Qify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex roots of unity
 
@@ -24,7 +27,6 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
   complex numbers of the form `exp (2 * π * I * (i / n))` for some `i < n`.
 * `Complex.card_rootsOfUnity`: the number of `n`-th roots of unity is exactly `n`.
 * `Complex.norm_rootOfUnity_eq_one`: A complex root of unity has norm `1`.
-
 -/
 
 public section

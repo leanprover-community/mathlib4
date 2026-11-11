@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 1-hypercovers
 
@@ -23,7 +26,6 @@ The definition `OneHypercover.isLimitMultifork` shows that if `E` is a
 `1`-hypercover of `S`, and `F` is a sheaf, then `F.obj (op S)`
 identifies to the multiequalizer of suitable maps
 `F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`.
-
 -/
 
 @[expose] public section

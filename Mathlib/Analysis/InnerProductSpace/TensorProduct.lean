@@ -12,6 +12,9 @@ import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.InnerProductSpace.Positive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inner product space structure on tensor product spaces
 
@@ -44,7 +47,6 @@ inner product spaces.
 
 * Define the normed space without needing inner products, this should be analogous to
   `Mathlib/Analysis/NormedSpace/PiTensorProduct/InjectiveSeminorm.lean`.
-
 -/
 
 @[expose] public section
@@ -187,16 +189,20 @@ protected theorem ext_iff_inner_left {x y : E ⊗[𝕜] F} :
   simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using
     TensorProduct.ext_iff_inner_right (x := x) (y := y)
 
-/-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪x, a ⊗ₜ b ⊗ₜ c⟫ = ⟪y, a ⊗ₜ b ⊗ₜ c⟫` for all `a, b, c`.
+/--
+Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪x, a ⊗ₜ b ⊗ₜ c⟫ = ⟪y, a ⊗ₜ b ⊗ₜ c⟫` for all `a, b, c`.
 
-See also `ext_iff_inner_right_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
+See also `ext_iff_inner_right_threefold'` for when `x, y : E ⊗ (F ⊗ G)`.
+-/
 theorem ext_iff_inner_right_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) = inner 𝕜 y (a ⊗ₜ[𝕜] b ⊗ₜ[𝕜] c) :=
   ⟨fun h _ _ _ ↦ h ▸ rfl, fun h ↦ innerSL_inj.mp (ContinuousLinearMap.coe_inj.mp (ext_threefold h))⟩
 
-/-- Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪a ⊗ₜ b ⊗ₜ c, x⟫ = ⟪a ⊗ₜ b ⊗ₜ c, y⟫` for all `a, b, c`.
+/--
+Given `x, y : E ⊗ F ⊗ G`, `x = y` iff `⟪a ⊗ₜ b ⊗ₜ c, x⟫ = ⟪a ⊗ₜ b ⊗ₜ c, y⟫` for all `a, b, c`.
 
-See also `ext_iff_inner_left_threefold'` for when `x, y : E ⊗ (F ⊗ G)`. -/
+See also `ext_iff_inner_left_threefold'` for when `x, y : E ⊗ (F ⊗ G)`.
+-/
 theorem ext_iff_inner_left_threefold {x y : E ⊗[𝕜] F ⊗[𝕜] G} :
     x = y ↔ ∀ a b c, inner 𝕜 (a ⊗ₜ b ⊗ₜ c) x = inner 𝕜 (a ⊗ₜ b ⊗ₜ c) y := by
   simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using
@@ -801,20 +807,24 @@ theorem congrL_zpow (f : E ≃L[𝕜] E) (g : G ≃L[𝕜] G) (n : ℤ) :
   apply ContinuousLinearEquiv.toLinearEquiv_injective
   simp [ContinuousLinearEquiv.toLinearEquiv_zpow]
 
-/-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
+/--
+Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪x, a ⊗ₜ (b ⊗ₜ c)⟫ = ⟪y, a ⊗ₜ (b ⊗ₜ c)⟫` for all
 `a, b, c`.
 
-See also `ext_iff_inner_right_threefold` for when `x, y : E ⊗ F ⊗ G`. -/
+See also `ext_iff_inner_right_threefold` for when `x, y : E ⊗ F ⊗ G`.
+-/
 theorem ext_iff_inner_right_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
     x = y ↔ ∀ a b c, inner 𝕜 x (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) = inner 𝕜 y (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) := by
   simp only [← (assocIsometry 𝕜 E F G).symm.injective.eq_iff,
     ext_iff_inner_right_threefold, LinearIsometryEquiv.inner_map_eq_flip]
   simp
 
-/-- Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪a ⊗ₜ (b ⊗ₜ c), x⟫ = ⟪a ⊗ₜ (b ⊗ₜ c), y⟫` for all
+/--
+Given `x, y : E ⊗ (F ⊗ G)`, `x = y` iff `⟪a ⊗ₜ (b ⊗ₜ c), x⟫ = ⟪a ⊗ₜ (b ⊗ₜ c), y⟫` for all
 `a, b, c`.
 
-See also `ext_iff_inner_left_threefold` for when `x, y : E ⊗ F ⊗ G`. -/
+See also `ext_iff_inner_left_threefold` for when `x, y : E ⊗ F ⊗ G`.
+-/
 theorem ext_iff_inner_left_threefold' {x y : E ⊗[𝕜] (F ⊗[𝕜] G)} :
     x = y ↔ ∀ a b c, inner 𝕜 (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) x = inner 𝕜 (a ⊗ₜ[𝕜] (b ⊗ₜ[𝕜] c)) y := by
   simpa only [← inner_conj_symm x, ← inner_conj_symm y, starRingEnd_apply, star_inj] using

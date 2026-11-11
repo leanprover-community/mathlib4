@@ -9,6 +9,9 @@ public import Mathlib.Tactic.Common
 
 import Mathlib.Tactic.Attr.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # insertIdx
 
@@ -41,10 +44,12 @@ theorem sublist_insertIdx (l : List α) (n : ℕ) (a : α) : l <+ (l.insertIdx n
 theorem subset_insertIdx (l : List α) (n : ℕ) (a : α) : l ⊆ l.insertIdx n a :=
   (sublist_insertIdx ..).subset
 
-/-- Erasing `n`th element of a list, then inserting `a` at the same place
+/--
+Erasing `n`th element of a list, then inserting `a` at the same place
 is the same as setting `n`th element to `a`.
 
-We assume that `n ≠ length l`, because otherwise LHS equals `l ++ [a]` while RHS equals `l`. -/
+We assume that `n ≠ length l`, because otherwise LHS equals `l ++ [a]` while RHS equals `l`.
+-/
 @[simp]
 theorem insertIdx_eraseIdx_self {l : List α} {n : ℕ} (hn : n ≠ length l) (a : α) :
     (l.eraseIdx n).insertIdx n a = l.set n a := by

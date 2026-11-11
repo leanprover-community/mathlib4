@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.NumberField.Norm
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 public import Mathlib.Topology.Instances.Complex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite places of a number field
 
@@ -541,8 +544,7 @@ end IsPrimitiveRoot
 end NumberField.InfinitePlace
 
 /-!
-## The infinite place of the rationals.
-
+# The infinite place of the rationals.
 -/
 
 namespace Rat
@@ -614,7 +616,7 @@ theorem isNontrivial : v.1.IsNontrivial := by
 variable {v} (K)
 
 /--
-*Weak approximation for infinite places*
+_Weak approximation for infinite places_
 The number field `K` is dense when embedded diagonally in the product
 `(v : InfinitePlace K) → WithAbs v.1`, in which `WithAbs v.1` represents `K` equipped with the
 topology coming from the infinite place `v`.

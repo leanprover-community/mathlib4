@@ -11,7 +11,11 @@ public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 import Mathlib.Algebra.Homology.HomologySequence
 
-/-! # The homological functor
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The homological functor
 
 In this file, it is shown that if `C` is an abelian category,
 then `homologyFunctor C (ComplexShape.up ℤ) n` is a homological functor
@@ -19,7 +23,6 @@ then `homologyFunctor C (ComplexShape.up ℤ) n` is a homological functor
 in the homotopy category can be characterized in terms of degreewise split
 short exact sequences of cochain complexes, this follows from the homology
 sequence associated to a short exact sequence of homological complexes.
-
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.HomCompletion
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completions of normed groups
 
@@ -17,19 +20,18 @@ objects and morphisms).
 
 ## Main definitions
 
-- `SemiNormedGrp.Completion : SemiNormedGrp ⥤ SemiNormedGrp` : the completion of a
+* `SemiNormedGrp.Completion : SemiNormedGrp ⥤ SemiNormedGrp` : the completion of a
   seminormed group (defined as a functor on `SemiNormedGrp` to itself).
-- `SemiNormedGrp.Completion.lift (f : V ⟶ W) : (Completion.obj V ⟶ W)` : a normed group hom
+* `SemiNormedGrp.Completion.lift (f : V ⟶ W) : (Completion.obj V ⟶ W)` : a normed group hom
   from `V` to complete `W` extends ("lifts") to a seminormed group hom from the completion of
   `V` to `W`.
 
 ## Projects
 
 1. Construct the category of complete seminormed groups, say `CompleteSemiNormedGrp`
-  and promote the `Completion` functor below to a functor landing in this category.
+   and promote the `Completion` functor below to a functor landing in this category.
 2. Prove that the functor `Completion : SemiNormedGrp ⥤ CompleteSemiNormedGrp`
-  is left adjoint to the forgetful functor.
-
+   is left adjoint to the forgetful functor.
 -/
 
 @[expose] public section

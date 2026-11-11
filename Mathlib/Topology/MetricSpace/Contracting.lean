@@ -10,10 +10,13 @@ public import Mathlib.Topology.MetricSpace.Lipschitz
 
 import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Contracting maps
 
-A Lipschitz continuous self-map with Lipschitz constant `K < 1` is called a *contracting map*.
+A Lipschitz continuous self-map with Lipschitz constant `K < 1` is called a _contracting map_.
 In this file we prove the Banach fixed point theorem, some explicit estimates on the rate
 of convergence, and some properties of the map sending a contracting map to its fixed point.
 
@@ -87,12 +90,14 @@ theorem restrict (hf : ContractingWith K f) {s : Set α} (hs : MapsTo f s s) :
 section
 variable [CompleteSpace α]
 
-/-- Banach fixed-point theorem, contraction mapping theorem, `EMetricSpace` version.
+/--
+Banach fixed-point theorem, contraction mapping theorem, `EMetricSpace` version.
 A contracting map on a complete metric space has a fixed point.
 We include more conclusions in this theorem to avoid proving them again later.
 
 The main API for this theorem are the functions `efixedPoint` and `fixedPoint`,
-and lemmas about these functions. -/
+and lemmas about these functions.
+-/
 @[wikidata Q220680]
 theorem exists_fixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) :
     ∃ y, IsFixedPt f y ∧ Tendsto (fun n ↦ f^[n] x) atTop (𝓝 y) ∧
@@ -208,12 +213,14 @@ theorem edist_efixedPoint_lt_top' {s : Set α} (hsc : IsComplete s) (hsf : MapsT
   (hf.edist_efixedPoint_le' hsc hsf hxs hx).trans_lt
     (ENNReal.mul_ne_top hx <| ENNReal.inv_ne_top.2 hf.one_sub_K_ne_zero).lt_top
 
-/-- If a globally contracting map `f` has two complete forward-invariant sets `s`, `t`,
+/--
+If a globally contracting map `f` has two complete forward-invariant sets `s`, `t`,
 and `x ∈ s` is at a finite distance from `y ∈ t`, then the `efixedPoint'` constructed by `x`
 is the same as the `efixedPoint'` constructed by `y`.
 
 This lemma takes additional arguments stating that `f` contracts on `s` and `t` because this way
-it can be used to prove the desired equality with non-trivial proofs of these facts. -/
+it can be used to prove the desired equality with non-trivial proofs of these facts.
+-/
 theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} (hsc : IsComplete s)
     (hsf : MapsTo f s s) (hfs : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s)
     (hx : edist x (f x) ≠ ∞) {t : Set α} (htc : IsComplete t) (htf : MapsTo f t t)

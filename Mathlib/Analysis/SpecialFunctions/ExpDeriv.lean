@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex and real exponential
 
@@ -28,7 +31,9 @@ assert_not_exists IsConformalMap Conformal
 open Filter Asymptotics Set Function
 open scoped Topology
 
-/-! ## `Complex.exp` -/
+/-!
+# `Complex.exp`
+-/
 
 section
 
@@ -209,7 +214,9 @@ theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
     (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
   rw [iteratedDeriv_comp_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
 
-/-! ## `Real.exp` -/
+/-!
+# `Real.exp`
+-/
 
 section
 

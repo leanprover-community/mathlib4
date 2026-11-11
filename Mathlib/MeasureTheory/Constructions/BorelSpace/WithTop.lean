@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.Topology.Order.WithTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Borel measurable space on `WithTop`
 
@@ -22,7 +25,6 @@ We then prove that the natural inclusion `ι → WithTop ι` is measurable, and 
 * `Measurable.withTop_coe`: the function `fun x : ι ↦ (x : WithTop ι)` is measurable.
 * `Measurable.untopD`: for `d : ι`, the function `WithTop.untopD d : WithTop ι → ι` is measurable.
 * `Measurable.untopA`: the function `WithTop.untopA : WithTop ι → ι` is measurable.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.PowerSeries.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluation of power series in Hahn Series
 
@@ -15,6 +18,7 @@ We describe a class of ring homomorphisms from formal power series to Hahn serie
 given by substitution of the generating variable to an element of strictly positive order.
 
 ## Main Definitions
+
 * `HahnSeries.SummableFamily.powerSeriesFamily`: A summable family of Hahn series whose elements
   are non-negative powers of a fixed positive-order Hahn series multiplied by the coefficients of a
   formal power series.
@@ -22,9 +26,9 @@ given by substitution of the generating variable to an element of strictly posit
   takes `X` to a fixed positive-order Hahn Series and extends to formal infinite sums.
 
 ## TODO
+
 * `MvPowerSeries.heval`: An `R`-algebra homomorphism from `MvPowerSeries σ R` to `R⟦Γ⟧`
   (for finite σ) taking each `X i` to a positive order Hahn Series.
-
 -/
 
 @[expose] public section
@@ -45,9 +49,11 @@ variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Comm
 
 variable [CommRing V] [Algebra R V]
 
-/-- A summable family given by scalar multiples of powers of a positive order Hahn series.
+/--
+A summable family given by scalar multiples of powers of a positive order Hahn series.
 
-The scalar multiples are given by the coefficients of a power series. -/
+The scalar multiples are given by the coefficients of a power series.
+-/
 abbrev powerSeriesFamily (x : V⟦Γ⟧) (f : PowerSeries R) : SummableFamily Γ V ℕ :=
   smulFamily (fun n => f.coeff n) (powers x)
 

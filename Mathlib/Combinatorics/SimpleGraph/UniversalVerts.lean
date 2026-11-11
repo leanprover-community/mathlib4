@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 public import Mathlib.Combinatorics.SimpleGraph.Matching
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universal Vertices
 
@@ -60,11 +63,13 @@ lemma disjoint_image_val_universalVerts (s : Set G.deleteUniversalVerts.verts) :
   simpa [← Set.disjoint_compl_right_iff_subset, Set.compl_eq_univ_sdiff] using
     Subtype.coe_image_subset _ s
 
-/-- A component of the graph with universal vertices is even if we remove a set of representatives
+/--
+A component of the graph with universal vertices is even if we remove a set of representatives
 of odd components and a subset of universal vertices.
 
 This is because the number of vertices in the even components is not affected, and from odd
-components exactly one vertex is removed. -/
+components exactly one vertex is removed.
+-/
 lemma even_ncard_image_val_supp_sdiff_image_val_rep_union {t : Set V}
     {s : Set G.deleteUniversalVerts.verts} (K : G.deleteUniversalVerts.coe.ConnectedComponent)
     (h : t ⊆ G.universalVerts)

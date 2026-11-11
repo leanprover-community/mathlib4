@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relative morphisms of simplicial sets
 
@@ -17,7 +20,6 @@ these relative morphisms and introduce the quotient type of homotopy classes.
 This is used in the file `Mathlib/AlgebraicTopology/SimplicialSet/Homotopy.lean`
 in order to define homotopies (`SSet.Homotopy`) between morphisms in the
 category of simplicial sets.
-
 -/
 
 @[expose] public section

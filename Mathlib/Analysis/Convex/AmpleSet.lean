@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 import Mathlib.Algebra.CharP.Invertible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ample subsets of real vector spaces
 
@@ -19,12 +22,13 @@ component have full convex hull. Ample sets are an important ingredient for defi
 differential relations.
 
 ## Main results
-- `ampleSet_empty` and `ampleSet_univ`: the empty set and `univ` are ample
-- `AmpleSet.union`: the union of two ample sets is ample
-- `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences;
+
+* `ampleSet_empty` and `ampleSet_univ`: the empty set and `univ` are ample
+* `AmpleSet.union`: the union of two ample sets is ample
+* `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences;
   `AmpleSet.{pre}image_iff` are "iff" versions of these
-- `AmpleSet.vadd`: in particular, ample-ness is invariant under affine translations
-- `AmpleSet.of_one_lt_codim`: a linear subspace of codimension at least two has an ample complement.
+* `AmpleSet.vadd`: in particular, ample-ness is invariant under affine translations
+* `AmpleSet.of_one_lt_codim`: a linear subspace of codimension at least two has an ample complement.
   This is the crucial geometric ingredient which allows to apply convex integration
   to the theory of immersions in positive codimension.
 
@@ -38,12 +42,15 @@ All vector spaces in the file are real vector spaces. While the definition gener
 connected fields, that is not useful in practice.
 
 ## Tags
+
 ample set
 -/
 
 @[expose] public section
 
-/-! ## Definition and invariance -/
+/-!
+# Definition and invariance
+-/
 
 open Set
 
@@ -118,7 +125,9 @@ theorem vadd_iff [ContinuousAdd E] {s : Set E} {y : E} :
     AmpleSet (y +ᵥ s) ↔ AmpleSet s :=
   AmpleSet.image_iff (ContinuousAffineEquiv.constVAdd ℝ E y)
 
-/-! ## Subspaces of codimension at least two have ample complement -/
+/-!
+# Subspaces of codimension at least two have ample complement
+-/
 section Codimension
 
 /-- Let `E` be a linear subspace in a real vector space.

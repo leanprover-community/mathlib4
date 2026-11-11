@@ -10,7 +10,11 @@ public import Mathlib.RingTheory.MvPowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Order
 public import Mathlib.RingTheory.PowerSeries.Trunc
 
-/-! # Product topology on power series
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Product topology on power series
 
 Let `R` be with `Semiring R` and `TopologicalSpace R`
 In this file we define the topology on `PowerSeries σ R`
@@ -22,30 +26,27 @@ When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 This topology can be included by writing `open scoped PowerSeries.WithPiTopology`.
 
 When the type of coefficients has the discrete topology, it corresponds to the topology defined by
-[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2][bourbaki1981].
+‍\[N. Bourbaki, _Algebra II_, Chapter 4, §4, n°2\]\[bourbaki1981\].
 
 It corresponds with the adic topology but this is not proved here.
 
-- `PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent`,
+* `PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent`,
   `PowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero`: if the constant
   coefficient of `f` is nilpotent, or vanishes, then `f` is topologically nilpotent.
-
-- `PowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent` :
+* `PowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent` :
   assuming the base ring has the discrete topology, `f` is topologically nilpotent iff the constant
   coefficient of `f` is nilpotent.
-
-- `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
+* `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
   series converges to itself.
 
 TODO: add the similar result for the series of homogeneous components.
 
 ## Instances
 
-- If `R` is a topological (semi)ring, then so is `PowerSeries σ R`.
-- If the topology of `R` is T0 or T2, then so is that of `PowerSeries σ R`.
-- If `R` is a `IsUniformAddGroup`, then so is `PowerSeries σ R`.
-- If `R` is complete, then so is `PowerSeries σ R`.
-
+* If `R` is a topological (semi)ring, then so is `PowerSeries σ R`.
+* If the topology of `R` is T0 or T2, then so is that of `PowerSeries σ R`.
+* If `R` is a `IsUniformAddGroup`, then so is `PowerSeries σ R`.
+* If `R` is complete, then so is `PowerSeries σ R`.
 -/
 
 public section
@@ -298,9 +299,11 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
   MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero hf
 
-/-- Assuming the base ring has a discrete topology, the powers of a `PowerSeries` converge to 0
+/--
+Assuming the base ring has a discrete topology, the powers of a `PowerSeries` converge to 0
 iff its constant coefficient is nilpotent.
-[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981] -/
+‍\[N. Bourbaki, _Algebra II_, Chapter 4, §4, n°2, corollary of prop. 3\]\[bourbaki1981\]
+-/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
     [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔

@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 
 import Mathlib.Logic.Small.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free modules
 
@@ -50,11 +53,13 @@ lemma Free.exists_set [Free R M] : ∃ S : Set M, Nonempty (Basis S R M) :=
 theorem free_iff_set : Free R M ↔ ∃ S : Set M, Nonempty (Basis S R M) :=
   ⟨fun _ ↦ Free.exists_set .., fun ⟨S, hS⟩ ↦ ⟨nonempty_sigma.2 ⟨S, hS⟩⟩⟩
 
-/-- If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
+/--
+If `M` fits in universe `w`, then freeness is equivalent to existence of a basis in that
 universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
-`Module.Free.of_basis`. -/
+`Module.Free.of_basis`.
+-/
 theorem free_def [Small.{w, v} M] : Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) where
   mp h :=
     ⟨Shrink (Set.range h.exists_basis.some.2),
@@ -89,14 +94,16 @@ Here `ι = ChooseBasisIndex R M`. -/
 noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
   ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 
-/-- The universal property of free modules: giving a function `(ChooseBasisIndex R M) → N`, for `N`
+/--
+The universal property of free modules: giving a function `(ChooseBasisIndex R M) → N`, for `N`
 an `R`-module, is the same as giving an `R`-linear map `M →ₗ[R] N`.
 
 This definition is parameterized over an extra `Semiring S`,
 such that `SMulCommClass R S M'` holds.
 If `R` is commutative, you can set `S := R`; if `R` is not commutative,
 you can recover an `AddEquiv` by setting `S := ℕ`.
-See library note [bundled maps over different rings]. -/
+See library note \[bundled maps over different rings\].
+-/
 noncomputable def constr {S : Type z} [Semiring S] [Module S N] [SMulCommClass R S N] :
     (ChooseBasisIndex R M → N) ≃ₗ[S] M →ₗ[R] N :=
   Basis.constr (chooseBasis R M) S

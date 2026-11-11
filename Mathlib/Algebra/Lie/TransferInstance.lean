@@ -9,13 +9,16 @@ module
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Lie.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer Lie brackets along AddEquiv, LinearEquiv and Equiv
 
 Main definitions:
+
 * `AddEquiv.lieRing` transferring a LieRing structure along an additive equivalence.
 * `LinearEquiv.lieAlgebra` transferring a Lie algebra structure along a linear equivalence.
-
 -/
 
 @[expose] public section

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gauss norm for multivariate power series
 
@@ -22,24 +25,18 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
 * `MvPowerSeries.gaussNorm` is the supremum of the set of all values of
   `v (coeff t f) * ∏ i : t.support, c i` for all `t : σ →₀ ℕ`, where `f` is a multivariate power
   series, `v : R → ℝ` is a function and `c` is a tuple of real numbers.
-
 * `MvPowerSeries.gaussNorm_nonneg`: if `v` is a non-negative function, then the Gauss norm is
   non-negative.
-
 * `MvPowerSeries.gaussNorm_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0`
   for all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series
   is zero.
-
 * `MvPowerSeries.gaussNorm_add_le_max`: if `v` is a non-negative non-archimedean function and the
   set of values `v (coeff t f) * ∏ i : t.support, c i` is bounded above (similarly for `g`), then
   the Gauss norm has the non-archimedean property.
-
 * `MvPowerSeries.AchievesGaussNorm`: a type `i` is said to achieve gauss norm if
   `v (coeff i f) * i.prod (c · ^ ·) = gaussNorm v c f`.
-
 * `MvPowerSeries.gaussNorm_neg`: if `v` has the property that `∀ i, v i = v (-i)` then
-  `gaussNorm v c (-f) = gaussNorm v c f `.
-
+  `gaussNorm v c (-f) = gaussNorm v c f  `.
 -/
 
 @[expose] public section

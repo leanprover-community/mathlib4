@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.SiegelsLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # House of an algebraic number
 
@@ -15,10 +18,12 @@ This file defines the house of an algebraic number `α`, which is
 the largest of the modulus of its conjugates.
 
 ## References
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [Hua, L.-K., *Introduction to number theory*][hua1982house]
+
+* ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
+* ‍\[Hua, L.-K., _Introduction to number theory_\]\[hua1982house\]
 
 ## Tags
+
 number field, algebraic number, house
 -/
 

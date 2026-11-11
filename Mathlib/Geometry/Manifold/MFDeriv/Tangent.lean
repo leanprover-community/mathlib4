@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of maps in the tangent bundle
 

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Topology.Covering.AddCircle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps on the unit circle
 
@@ -367,7 +370,9 @@ namespace AddCircle
 
 variable {T : ℝ}
 
-/-! ### Map from `AddCircle` to `Circle` -/
+/-!
+# Map from `AddCircle` to `Circle`
+-/
 
 theorem scaled_exp_map_periodic : Function.Periodic (fun x => Circle.exp (2 * π / T * x)) T := by
   -- The case T = 0 is not interesting, but it is true, so we prove it to save hypotheses

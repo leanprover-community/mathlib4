@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Coalgebra.CoassocSimps
 public import Mathlib.RingTheory.Coalgebra.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coalgebra structure on the quotient by a coideal
 
@@ -32,8 +35,10 @@ section CoalgebraStruct
 
 variable [CoalgebraStruct R C]
 
-/-- An `R`-submodule `I` of an `R`-coalgebra `C` is a *coideal* if the counit vanishes on
-`I` and the comultiplication descends through the module quotient `C ⧸ I`. -/
+/--
+An `R`-submodule `I` of an `R`-coalgebra `C` is a _coideal_ if the counit vanishes on
+`I` and the comultiplication descends through the module quotient `C ⧸ I`.
+-/
 @[mk_iff]
 class Submodule.IsCoideal (I : Submodule R C) : Prop where
   counit_eq_zero : ∀ ⦃x : C⦄, x ∈ I → counit (R := R) x = 0

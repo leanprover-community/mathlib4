@@ -14,6 +14,9 @@ public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Number field discriminant
 
@@ -21,13 +24,13 @@ This file defines the discriminant of a number field.
 
 ## Main result
 
-* `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
+* `NumberField.abs_discr_gt_two`: *Hermite-Minkowski Theorem*. A nontrivial number field has
   discriminant greater than `2`.
-
-* `NumberField.finite_of_discr_bdd`: **Hermite Theorem**. Let `N` be an integer. There are only
+* `NumberField.finite_of_discr_bdd`: *Hermite Theorem*. Let `N` be an integer. There are only
   finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
 
 ## Tags
+
 number field, discriminant
 -/
 
@@ -284,7 +287,8 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     _ ≤ |(discr K : ℝ)| := mod_cast abs_discr_ge h
 
 /-!
-### Hermite Theorem
+# Hermite Theorem
+
 This section is devoted to the proof of Hermite theorem.
 
 Let `N` be an integer . We prove that the set `S` of finite extensions `K` of `ℚ`

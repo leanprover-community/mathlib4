@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Helper structure in order to construct pairings
 
@@ -15,9 +18,8 @@ In this file, we introduce a helper structure `Subcomplex.PairingCore`
 in order to construct a pairing for a subcomplex of a simplicial set.
 The main difference with `Subcomplex.Pairing` are that we provide
 an index type `ι` and a function `dim : ι → ℕ` which allow to
-parametrize type (II) and (I) simplices in such a way that, *definitionally*,
+parametrize type (II) and (I) simplices in such a way that, _definitionally_,
 their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
-
 -/
 
 @[expose] public section

@@ -10,13 +10,16 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Links between an integral and its "improper" version
 
 In its current state, mathlib only knows how to talk about definite ("proper") integrals,
 in the sense that it treats integrals over `[x, +∞)` the same as it treats integrals over
-`[y, z]`. For example, the integral over `[1, +∞)` is **not** defined to be the limit of
-the integral over `[1, x]` as `x` tends to `+∞`, which is known as an **improper integral**.
+`[y, z]`. For example, the integral over `[1, +∞)` is *not* defined to be the limit of
+the integral over `[1, x]` as `x` tends to `+∞`, which is known as an *improper integral*.
 
 Indeed, the "proper" definition is stronger than the "improper" one. The usual counterexample
 is `x ↦ sin(x)/x`, which has an improper integral over `[1, +∞)` but no definite integral.
@@ -31,8 +34,8 @@ The main definition of this file is `MeasureTheory.AECover`. It is a rather tech
 whose sole purpose is generalizing and factoring proofs. Given an index type `ι`, a countably
 generated filter `l` over `ι`, and an `ι`-indexed family `φ` of subsets of a measurable space `α`
 equipped with a measure `μ`, one should think of a hypothesis `hφ : MeasureTheory.AECover μ l φ` as
-a sufficient condition for being able to interpret `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x
-in φ i, f x ∂μ` as `i` tends to `l`.
+a sufficient condition for being able to interpret `∫ x, f x ∂μ` (if it exists) as the limit of
+`∫ x in φ i, f x ∂μ` as `i` tends to `l`.
 
 When using this definition with a measure restricted to a set `s`, which happens fairly often, one
 should not try too hard to use a `MeasureTheory.AECover` of subsets of `s`, as it often makes proofs
@@ -42,33 +45,31 @@ more complicated than necessary. See for example the proof of
 
 ## Main statements
 
-- `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated` : if `φ` is a
+* `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated` : if `φ` is a
   `MeasureTheory.AECover μ l`, where `l` is a countably generated filter, and if `f` is a measurable
   `ENNReal`-valued function, then `∫⁻ x in φ n, f x ∂μ` tends to `∫⁻ x, f x ∂μ` as `n` tends to `l`
-
-- `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` : if `φ` is a
+* `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` : if `φ` is a
   `MeasureTheory.AECover μ l`, where `l` is a countably generated filter, if `f` is measurable and
   integrable on each `φ n`, and if `∫ x in φ n, ‖f x‖ ∂μ` tends to some `I : ℝ` as n tends to `l`,
   then `f` is integrable
-
-- `MeasureTheory.AECover.integral_tendsto_of_countably_generated` : if `φ` is a
+* `MeasureTheory.AECover.integral_tendsto_of_countably_generated` : if `φ` is a
   `MeasureTheory.AECover μ l`, where `l` is a countably generated filter, and if `f` is measurable
   and integrable (globally), then `∫ x in φ n, f x ∂μ` tends to `∫ x, f x ∂μ` as `n` tends to `+∞`.
 
 We then specialize these lemmas to various use cases involving intervals, which are frequent
 in analysis. In particular,
 
-- `MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto` is a version of FTC-2 on the interval
+* `MeasureTheory.integral_Ioi_of_hasDerivAt_of_tendsto` is a version of FTC-2 on the interval
   `(a, +∞)`, giving the formula `∫ x in (a, +∞), g' x = l - g a` if `g'` is integrable and
   `g` tends to `l` at `+∞`.
-- `MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg` gives the same result assuming that
+* `MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg` gives the same result assuming that
   `g'` is nonnegative instead of integrable. Its automatic integrability in this context is proved
   in `MeasureTheory.integrableOn_Ioi_deriv_of_nonneg`.
-- `MeasureTheory.integral_deriv_smul_comp_Ioi` is a version of the change of variables formula
+* `MeasureTheory.integral_deriv_smul_comp_Ioi` is a version of the change of variables formula
   on semi-infinite intervals.
-- `MeasureTheory.tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi` shows that a function whose
+* `MeasureTheory.tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi` shows that a function whose
   derivative is integrable on `(a, +∞)` has a limit at `+∞`.
-- `MeasureTheory.tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi` shows that an integrable function
+* `MeasureTheory.tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi` shows that an integrable function
   whose derivative is integrable on `(a, +∞)` tends to `0` at `+∞`.
 
 Versions of these results are also given on the intervals `(-∞, a]` and `(-∞, +∞)`, as well as
@@ -103,7 +104,7 @@ variable {μ} {l}
 namespace AECover
 
 /-!
-## Operations on `AECover`s
+# Operations on `AECover`s
 -/
 
 /-- Elementwise intersection of two `AECover`s is an `AECover`. -/
@@ -790,13 +791,15 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
 
 variable [CompleteSpace E]
 
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(a, +∞)`.
+/--
+*Fundamental theorem of calculus-2*, on semi-infinite intervals `(a, +∞)`.
 When a function has a limit at infinity `m`, and its derivative is integrable, then the
 integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differentiability
 on `(a, +∞)` and continuity at `a⁺`.
 
 Note that such a function always has a limit at infinity,
-see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`. -/
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`.
+-/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Ioi a))
     (hf : Tendsto f atTop (𝓝 m)) : ∫ x in Ioi a, f' x = m - f a := by
@@ -815,13 +818,15 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le h'x]
   exact f'int.mono (fun y hy => hy.1) le_rfl
 
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(a, +∞)`.
+/--
+*Fundamental theorem of calculus-2*, on semi-infinite intervals `(a, +∞)`.
 When a function has a limit at infinity `m`, and its derivative is integrable, then the
 integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differentiability
 on `[a, +∞)`.
 
 Note that such a function always has a limit at infinity,
-see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`. -/
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`.
+-/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Ioi a)) (hf : Tendsto f atTop (𝓝 m)) :
     ∫ x in Ioi a, f' x = m - f a := by
@@ -986,13 +991,15 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
 
 variable [CompleteSpace E]
 
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+/--
+*Fundamental theorem of calculus-2*, on semi-infinite intervals `(-∞, a)`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
 integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
 on `(-∞, a)` and continuity at `a⁻`.
 
 Note that such a function always has a limit at minus infinity,
-see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic`. -/
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic`.
+-/
 theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic a) a)
     (hderiv : ∀ x ∈ Iio a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
     (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
@@ -1009,13 +1016,15 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
   exact f'int.mono (fun y hy => hy.2) le_rfl
 
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+/--
+*Fundamental theorem of calculus-2*, on semi-infinite intervals `(-∞, a)`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
 integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
 on `(-∞, a]`.
 
 Note that such a function always has a limit at minus infinity,
-see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic`. -/
+see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic`.
+-/
 theorem integral_Iic_of_hasDerivAt_of_tendsto'
     (hderiv : ∀ x ∈ Iic a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Iic a))
     (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
@@ -1062,13 +1071,15 @@ section UnivFTC
 variable {E : Type*} {f f' : ℝ → E} {m n : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
-/-- **Fundamental theorem of calculus-2**, on the whole real line
+/--
+*Fundamental theorem of calculus-2*, on the whole real line
 When a function has a limit `m` at `-∞` and `n` at `+∞`, and its derivative is integrable, then the
 integral of the derivative is `n - m`.
 
 Note that such a function always has a limit at `-∞` and `+∞`,
 see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic` and
-`tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`. -/
+`tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi`.
+-/
 theorem integral_of_hasDerivAt_of_tendsto [CompleteSpace E]
     (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f')
     (hbot : Tendsto f atBot (𝓝 m)) (htop : Tendsto f atTop (𝓝 n)) : ∫ x, f' x = n - m := by
@@ -1300,7 +1311,7 @@ theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} 
 end IoiIntegrability
 
 /-!
-## Integration by parts
+# Integration by parts
 -/
 
 section IntegrationByPartsBilinear
@@ -1447,8 +1458,10 @@ theorem integral_Iic_deriv_mul_eq_sub
   simpa using integral_Iic_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
-/-- **Integration by parts on $(∞, a]$.**
-For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
+/--
+*Integration by parts on $`(∞, a]`.*
+For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`.
+-/
 theorem integral_Iic_mul_deriv_eq_deriv_mul
     (hu : ∀ x ∈ Iio a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Iio a, HasDerivAt v (v' x) x)
     (huv' : IntegrableOn (u * v') (Iic a)) (hu'v : IntegrableOn (u' * v) (Iic a))

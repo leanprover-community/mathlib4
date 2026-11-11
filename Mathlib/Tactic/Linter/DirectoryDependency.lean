@@ -14,7 +14,11 @@ meta import Lean.Data.Json.FromToJson.Extra
 
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
-/-! # The `directoryDependency` linter
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `directoryDependency` linter
 
 The `directoryDependency` linter detects imports between directories that are supposed to be
 independent. By specifying that one directory does not import from another, we can improve the
@@ -76,7 +80,8 @@ public register_option linter.directoryDependency : Bool := {
 
 namespace DirectoryDependency
 
-/-- `NamePrefixRel` is a datatype for storing relations between name prefixes.
+/--
+`NamePrefixRel` is a datatype for storing relations between name prefixes.
 
 That is, `R : NamePrefixRel` is supposed to answer given names `(n₁, n₂)` whether there are any
 prefixes `n₁'` of `n₁` and `n₂'` of `n₂` such that `n₁' R n₂'`.
@@ -114,7 +119,8 @@ def find (r : NamePrefixRel) (n₁ n₂ : Name) : Option (Name × Name) :=
       else
         none
 
-/-- Get a prefix of `n₁` that is related to any prefix of the names in `ns`; return the prefixes.
+/--
+Get a prefix of `n₁` that is related to any prefix of the names in `ns`; return the prefixes.
 
 This should be more efficient than iterating over all names in `ns` and calling `find`,
 since it doesn't need to worry about overlapping prefixes.
@@ -157,7 +163,8 @@ end NamePrefixRel
 -- Future: enforce that allowed and forbidden keys are disjoint
 -- Future: move further directories to use this allow-list instead of the blocklist
 
-/-- `allowedImportDirs` relates module prefixes, specifying that modules with the first prefix
+/--
+`allowedImportDirs` relates module prefixes, specifying that modules with the first prefix
 are only allowed to import modules in the second directory.
 For directories which are low in the import hierarchy, this opt-out approach is both more ergonomic
 (fewer updates needed) and needs less configuration.
@@ -282,12 +289,14 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Testing, `Mathlib.Util),
 ]
 
-/-- The path to the configuration file for `forbiddenImportDirs`, relative to `srcDir`. This is
+/--
+The path to the configuration file for `forbiddenImportDirs`, relative to `srcDir`. This is
 `{srcDir}/scripts/forbiddenDirs.json`.
 
 Each key names a module prefix; modules matching that prefix may not import modules matching any
 of the prefixes in the corresponding list. Exceptions to these rules live in
-`overrideAllowedImportDirs` below. -/
+`overrideAllowedImportDirs` below.
+-/
 def forbiddenDirsPath (srcDir : System.FilePath) : System.FilePath :=
   srcDir / "scripts" / "forbiddenDirs.json"
 
@@ -298,14 +307,15 @@ def mathlibRoots : List Name := [`Mathlib, `MathlibTest, `Archive, `Counterexamp
 /-- Cache for `forbiddenImportDirs`: the configuration file is read at most once per process. -/
 initialize forbiddenImportDirsCache : IO.Ref (Option NamePrefixRel) ← IO.mkRef none
 
-/-- `forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
+/--
+`forbiddenImportDirs` relates module prefixes, specifying that modules with the first prefix
 should not import modules with the second prefix (except if specifically allowed in
 `overrideAllowedImportDirs`).
 
 For example, `{srcDir}/scripts/forbiddenDirs.json` contains the entry
-`"Mathlib.Algebra.Notation": ["Mathlib.Algebra"]` and ``(`Mathlib.Algebra.Notation,
-`Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs` because modules in
-`Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
+`"Mathlib.Algebra.Notation": ["Mathlib.Algebra"]` and
+``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs` because
+modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
 
 This relation is read at runtime from `{srcDir}/scripts/forbiddenDirs.json`, so that updating the
@@ -321,13 +331,14 @@ def forbiddenImportDirs (srcDir : System.FilePath) : IO NamePrefixRel := do
   forbiddenImportDirsCache.set (some rel)
   return rel
 
-/-- `overrideAllowedImportDirs` relates module prefixes, specifying that modules with the first
+/--
+`overrideAllowedImportDirs` relates module prefixes, specifying that modules with the first
 prefix are allowed to import modules with the second prefix, even if disallowed in
 `forbiddenImportDirs`.
 
 For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
-``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
-because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
+``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs` because
+modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[

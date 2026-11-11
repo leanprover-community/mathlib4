@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The base change of a clifford algebra
 
@@ -174,10 +177,12 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
     ofBaseChange A Q (toBaseChange A Q x) = x :=
   congr($(ofBaseChange_comp_toBaseChange A Q) x)
 
-/-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
-base-changing the clifford algebra itself; $<|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|$.
+/--
+Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
+base-changing the clifford algebra itself; $`<|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|`.
 
-This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
+This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence.
+-/
 @[simps!]
 def equivBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) ≃ₐ[A] A ⊗[R] CliffordAlgebra Q :=

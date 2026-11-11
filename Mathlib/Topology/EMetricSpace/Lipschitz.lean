@@ -8,14 +8,17 @@ module
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Topology.EMetricSpace.Diam
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lipschitz continuous functions
 
-A map `f : α → β` between two (extended) metric spaces is called *Lipschitz continuous*
+A map `f : α → β` between two (extended) metric spaces is called _Lipschitz continuous_
 with constant `K ≥ 0` if for all `x, y` we have `edist (f x) (f y) ≤ K * edist x y`.
 For a metric space, the latter inequality is equivalent to `dist (f x) (f y) ≤ K * dist x y`.
 There is also a version asserting this inequality only for `x` and `y` in some set `s`.
-Finally, `f : α → β` is called *locally Lipschitz continuous* if each `x : α` has a neighbourhood
+Finally, `f : α → β` is called _locally Lipschitz continuous_ if each `x : α` has a neighbourhood
 on which `f` is Lipschitz continuous (with some constant).
 
 In this file we provide various ways to prove that various combinations of Lipschitz continuous
@@ -32,7 +35,6 @@ uniformly continuous, and that locally Lipschitz functions are continuous.
 * `LocallyLipschitz f`: states that `f` is locally Lipschitz
 * `LocallyLipschitzOn f s`: states that `f` is locally Lipschitz on `s`.
 * `LocallyLipschitz.continuous`: a locally Lipschitz function is continuous.
-
 
 ## Implementation notes
 
@@ -362,8 +364,10 @@ protected lemma id : LocallyLipschitz (@id α) := LipschitzWith.id.locallyLipsch
 protected lemma const (b : β) : LocallyLipschitz (fun _ : α ↦ b) :=
   (LipschitzWith.const b).locallyLipschitz
 
-/-- A locally Lipschitz function is continuous. (The converse is false: for example,
-$x ↦ \sqrt{x}$ is continuous, but not locally Lipschitz at 0.) -/
+/--
+A locally Lipschitz function is continuous. (The converse is false: for example,
+$`x ↦ \sqrt{x}` is continuous, but not locally Lipschitz at 0.)
+-/
 protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continuous f := by
   rw [continuous_iff_continuousAt]
   intro x
@@ -420,13 +424,15 @@ protected lemma continuousOn (hf : LocallyLipschitzOn s f) : ContinuousOn f s :=
 
 end LocallyLipschitzOn
 
-/-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
+/--
+Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
 `{a} × t`, `a ∈ s`, and is Lipschitz continuous on each “horizontal fiber” `s × {b}`, `b ∈ t`
 with the same Lipschitz constant `K`. Then it is continuous on `s × t`. Moreover, it suffices
 to require continuity on vertical fibers for `a` from a subset `s' ⊆ s` that is dense in `s`.
 
 The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fun x ↦ f (x, b)`
-instead of continuity of `f` on subsets of the product space. -/
+instead of continuity of `f` on subsets of the product space.
+-/
 theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [PseudoEMetricSpace α]
     [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s s' : Set α} {t : Set β}
     (hs' : s' ⊆ s) (hss' : s ⊆ closure s') (K : ℝ≥0)
@@ -457,12 +463,14 @@ theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [Pseudo
     _ ≤ ε / 2 + ε / 2 := by gcongr
     _ = ε := ENNReal.add_halves _
 
-/-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
+/--
+Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
 `{a} × t`, `a ∈ s`, and is Lipschitz continuous on each “horizontal fiber” `s × {b}`, `b ∈ t`
 with the same Lipschitz constant `K`. Then it is continuous on `s × t`.
 
 The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fun x ↦ f (x, b)`
-instead of continuity of `f` on subsets of the product space. -/
+instead of continuity of `f` on subsets of the product space.
+-/
 theorem continuousOn_prod_of_continuousOn_lipschitzOnWith [PseudoEMetricSpace α]
     [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t : Set β} (K : ℝ≥0)
     (ha : ∀ a ∈ s, ContinuousOn (fun y => f (a, y)) t)
@@ -470,13 +478,15 @@ theorem continuousOn_prod_of_continuousOn_lipschitzOnWith [PseudoEMetricSpace α
   continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith
     f Subset.rfl subset_closure K ha hb
 
-/-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical section”
+/--
+Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical section”
 `{a} × univ` for `a : α` from a dense set. Suppose that it is Lipschitz continuous on each
 “horizontal section” `univ × {b}`, `b : β` with the same Lipschitz constant `K`. Then it is
 continuous.
 
 The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fun x ↦ f (x, b)`
-instead of continuity of `f` on subsets of the product space. -/
+instead of continuity of `f` on subsets of the product space.
+-/
 theorem continuous_prod_of_dense_continuous_lipschitzWith [PseudoEMetricSpace α]
     [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) {s : Set α}
     (hs : Dense s) (ha : ∀ a ∈ s, Continuous fun y => f (a, y))
@@ -485,12 +495,14 @@ theorem continuous_prod_of_dense_continuous_lipschitzWith [PseudoEMetricSpace α
   exact continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith f (subset_univ _)
     hs.closure_eq.ge K ha fun b _ => hb b
 
-/-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical section”
+/--
+Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical section”
 `{a} × univ`, `a : α`, and is Lipschitz continuous on each “horizontal section”
 `univ × {b}`, `b : β` with the same Lipschitz constant `K`. Then it is continuous.
 
 The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fun x ↦ f (x, b)`
-instead of continuity of `f` on subsets of the product space. -/
+instead of continuity of `f` on subsets of the product space.
+-/
 theorem continuous_prod_of_continuous_lipschitzWith [PseudoEMetricSpace α] [TopologicalSpace β]
     [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, Continuous fun y => f (a, y))
     (hb : ∀ b, LipschitzWith K fun x => f (x, b)) : Continuous f :=

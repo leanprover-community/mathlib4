@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Inverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dedekind domains and invertible ideals
 
@@ -19,13 +22,13 @@ Further results on the structure of ideals in a Dedekind domain are found in
 
 ## Main definitions
 
-- `isDedekindDomain_iff_mul_inv_cancel` shows an integral domain is
+* `isDedekindDomain_iff_mul_inv_cancel` shows an integral domain is
   a Dedekind domain iff every nonzero fractional ideal is invertible.
 
 ## Main results:
 
-- `isDedekindDomain_iff_mul_inv_cancel`
-- `Ideal.uniqueFactorizationMonoid`
+* `isDedekindDomain_iff_mul_inv_cancel`
+* `Ideal.uniqueFactorizationMonoid`
 
 ## Implementation notes
 
@@ -37,9 +40,9 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 ## References
 
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
-* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
+* ‍\[J. Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 
 ## Tags
 
@@ -170,7 +173,8 @@ theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥) (hI : (I * (I : FractionalIde
   · rw [← hJ, hJ1, coeIdeal_top]
   exact (not_inv_le_one_of_ne_bot (K := K) hJ0 hJ1 (hJ ▸ hI)).elim
 
-/-- Nonzero integral ideals in a Dedekind domain are invertible.
+/--
+Nonzero integral ideals in a Dedekind domain are invertible.
 
 We will use this to show that nonzero fractional ideals are invertible,
 and finally conclude that fractional ideals in a Dedekind domain form a group with zero.

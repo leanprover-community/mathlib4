@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic Behavior of the Logarithmic Counting Function
 
 If `f` is meromorphic over a field `𝕜`, we show that the logarithmic counting function for the
 poles of `f` is asymptotically bounded if and only if `f` has only removable singularities.  See
-Page 170f of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
+Page 170f of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\] for a detailed
 discussion.
 
 Analogously, characterize meromorphic functions with finite set of poles, as functions whose
@@ -35,7 +38,7 @@ variable
   {E : Type*} [NormedAddCommGroup E]
 
 /-!
-## Logarithmic Counting Functions for Functions with Locally Finite Support
+# Logarithmic Counting Functions for Functions with Locally Finite Support
 -/
 
 /--
@@ -175,7 +178,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-!
-## Logarithmic Counting Functions for the Poles of a Meromorphic Function
+# Logarithmic Counting Functions for the Poles of a Meromorphic Function
 -/
 
 /--

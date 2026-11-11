@@ -11,7 +11,11 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Localization.Composition
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 
-/-! # The category of homological complexes up to quasi-isomorphisms
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The category of homological complexes up to quasi-isomorphisms
 
 Given a category `C` with homology and any complex shape `c`, we define
 the category `HomologicalComplexUpToQuasiIso C c` which is the localized
@@ -23,7 +27,6 @@ Under suitable assumptions on `c` (e.g. chain complexes, or cochain
 complexes indexed by `ℤ`), we shall show that `HomologicalComplexUpToQuasiIso C c`
 is also the localized category of `HomotopyCategory C c` with respect to
 the class of quasi-isomorphisms.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.PFunctor.Multivariate.W
 public import Mathlib.Data.QPF.Multivariate.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The initial algebra of a multivariate qpf is again a qpf.
 
@@ -22,7 +25,7 @@ and take a fixed point again.
 * `Fix.dest`    - destructor
 * `Fix.rec`    - recursor: basis for defining functions by structural recursion on `Fix F α`
 * `Fix.drec`   - dependent recursor: generalization of `Fix.rec` where
-                  the result type of the function is allowed to depend on the `Fix F α` value
+  the result type of the function is allowed to depend on the `Fix F α` value
 * `Fix.rec_eq` - defining equation for `recursor`
 * `Fix.ind`    - induction principle for `Fix F α`
 
@@ -31,12 +34,12 @@ and take a fixed point again.
 For `F` a `QPF`, we define `Fix F α` in terms of the W-type of the polynomial functor `P` of `F`.
 We define the relation `WEquiv` and take its quotient as the definition of `Fix F α`.
 
-See [avigad-carneiro-hudon2019] for more details.
+See \[avigad-carneiro-hudon2019\] for more details.
 
 ## Reference
 
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+  ‍\[_Data Types as Quotients of Polynomial Functors_\]\[avigad-carneiro-hudon2019\]
 -/
 
 @[expose] public section
@@ -159,6 +162,8 @@ def wSetoid (α : TypeVec n) : Setoid (q.P.W α) :=
 
 attribute [local instance] wSetoid
 
+
+set_option doc.verso false
 /-- Least fixed point of functor F. The result is a functor with one fewer parameters
 than the input. For `F a b c` a ternary functor, `Fix F` is a binary functor such that
 
@@ -169,6 +174,8 @@ Fix F a b = F a b (Fix F a b)
 def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [q : MvQPF F] (α : TypeVec n) :=
   Quotient (wSetoid α : Setoid (q.P.W α))
 
+
+set_option doc.verso true
 /-- `Fix F` is a functor -/
 def Fix.map {α β : TypeVec n} (g : α ⟹ β) : Fix F α → Fix F β :=
   Quotient.lift (fun x : q.P.W α => ⟦q.P.wMap g x⟧) fun _a _b h => Quot.sound (wEquiv_map _ _ _ h)

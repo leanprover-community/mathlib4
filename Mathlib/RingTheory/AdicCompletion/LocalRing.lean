@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.AdicCompletion.Completeness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic Properties of Complete Local Ring
 
@@ -26,18 +29,14 @@ this side condition for convenience.
 
 * `AdicCompletion.isLocalRing_of_fg` : for a local ring `R` with finitely generated maximal ideal,
   its completion with respect to `IsLocalRing.maximalIdeal R` is local ring.
-
 * `AdicCompletion.maximalIdeal_eq_map_of_fg` : for a local ring `R` with finitely generated
   maximal ideal, the maximal ideal of its completion with respect to `IsLocalRing.maximalIdeal R`
   is equal to `IsLocalRing.maximalIdeal R` mapped by algebra map.
-
 * `AdicCompletion.isAdicComplete_of_fg` : for a local ring `R` with finitely generated
   maximal ideal, `AdicCompletion (IsLocalRing.maximalIdeal R) R` itself is complete with respect to
   its maximal ideal.
-
 * `AdicCompletion.spanFinrank_maximalIdeal_eq` : for Noetherian local ring `R`, minimal number of
   generators of maximal ideal of `R` and `AdicCompletion (IsLocalRing.maximalIdeal R) R` are equal.
-
 -/
 
 public section

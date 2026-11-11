@@ -10,10 +10,14 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bi-Cartesian squares
 
 `BicartesianSq f g h i` is the proposition that
+
 ```
   W ---f---> X
   |          |
@@ -23,7 +27,8 @@ import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
   Y ---i---> Z
 
 ```
-is a pullback square *and* a pushout square.
+
+is a pullback square _and_ a pushout square.
 
 We show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 -/
@@ -42,7 +47,9 @@ namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-/-- A *bi-Cartesian* square is a commutative square
+/--
+A _bi-Cartesian_ square is a commutative square
+
 ```
   W ---f---> X
   |          |
@@ -52,6 +59,7 @@ variable {C : Type u₁} [Category.{v₁} C]
   Y ---i---> Z
 
 ```
+
 that is both a pullback square and a pushout square.
 -/
 structure BicartesianSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop
@@ -112,7 +120,9 @@ theorem inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   refine of_right ?_ (by simp) (of_isBilimit h)
   simp
 
-/-- The square
+/--
+The square
+
 ```
   X --inl--> X ⊞ Y
   |            |
@@ -121,6 +131,7 @@ theorem inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   v            v
   0 ---0-----> Y
 ```
+
 is a pullback square.
 -/
 @[simp]
@@ -134,7 +145,9 @@ theorem inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   refine of_bot ?_ (by simp) (of_isBilimit h)
   simp
 
-/-- The square
+/--
+The square
+
 ```
   Y --inr--> X ⊞ Y
   |            |
@@ -143,6 +156,7 @@ theorem inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   v            v
   0 ---0-----> X
 ```
+
 is a pullback square.
 -/
 @[simp]
@@ -225,7 +239,9 @@ theorem inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   refine of_left ?_ (by simp) (of_isBilimit h)
   simp
 
-/-- The square
+/--
+The square
+
 ```
   X --inl--> X ⊞ Y
   |            |
@@ -234,6 +250,7 @@ theorem inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   v            v
   0 ---0-----> Y
 ```
+
 is a pushout square.
 -/
 theorem inl_snd (X Y : C) [HasBinaryBiproduct X Y] :
@@ -245,7 +262,9 @@ theorem inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   refine of_top ?_ (by simp) (of_isBilimit h)
   simp
 
-/-- The square
+/--
+The square
+
 ```
   Y --inr--> X ⊞ Y
   |            |
@@ -254,6 +273,7 @@ theorem inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
   v            v
   0 ---0-----> X
 ```
+
 is a pushout square.
 -/
 theorem inr_fst (X Y : C) [HasBinaryBiproduct X Y] :
@@ -297,7 +317,8 @@ theorem flip (p : BicartesianSq f g h i) : BicartesianSq g f i h :=
 end
 
 
-/-- ```
+/--
+```
  X ⊞ Y --fst--> X
    |            |
   snd           0
@@ -305,13 +326,15 @@ end
    v            v
    Y -----0---> 0
 ```
+
 is a bi-Cartesian square.
 -/
 theorem of_is_biproduct₁ {b : BinaryBicone X Y} (h : b.IsBilimit) :
     BicartesianSq b.fst b.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) :=
   of_isPullback_isPushout (IsPullback.of_isBilimit h) (IsPushout.of_is_bilimit' h)
 
-/-- ```
+/--
+```
    0 -----0---> X
    |            |
    0           inl
@@ -319,13 +342,15 @@ theorem of_is_biproduct₁ {b : BinaryBicone X Y} (h : b.IsBilimit) :
    v            v
    Y --inr--> X ⊞ Y
 ```
+
 is a bi-Cartesian square.
 -/
 theorem of_is_biproduct₂ {b : BinaryBicone X Y} (h : b.IsBilimit) :
     BicartesianSq (0 : 0 ⟶ X) (0 : 0 ⟶ Y) b.inl b.inr :=
   of_isPullback_isPushout (IsPullback.of_is_bilimit' h) (IsPushout.of_isBilimit h)
 
-/-- ```
+/--
+```
  X ⊞ Y --fst--> X
    |            |
   snd           0
@@ -333,6 +358,7 @@ theorem of_is_biproduct₂ {b : BinaryBicone X Y} (h : b.IsBilimit) :
    v            v
    Y -----0---> 0
 ```
+
 is a bi-Cartesian square.
 -/
 @[simp]
@@ -340,7 +366,8 @@ theorem of_has_biproduct₁ [HasBinaryBiproduct X Y] :
     BicartesianSq biprod.fst biprod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
   convert of_is_biproduct₁ (BinaryBiproduct.isBilimit X Y)
 
-/-- ```
+/--
+```
    0 -----0---> X
    |            |
    0           inl
@@ -348,6 +375,7 @@ theorem of_has_biproduct₁ [HasBinaryBiproduct X Y] :
    v            v
    Y --inr--> X ⊞ Y
 ```
+
 is a bi-Cartesian square.
 -/
 @[simp]

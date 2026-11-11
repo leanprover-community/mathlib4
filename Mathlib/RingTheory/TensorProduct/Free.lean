@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on bases of tensor products
 
@@ -17,10 +20,9 @@ and deduce that `Module.Free` is stable under base change.
 
 ## Main declarations
 
-- `Algebra.TensorProduct.basis`: given a basis of a module `M` over a commutative semiring `R`,
+* `Algebra.TensorProduct.basis`: given a basis of a module `M` over a commutative semiring `R`,
   and an `R`-algebra `A`, this provides a basis for `A ⊗[R] M` over `A`.
-- `Algebra.TensorProduct.instFree`: if `M` is free, then so is `A ⊗[R] M`.
-
+* `Algebra.TensorProduct.instFree`: if `M` is free, then so is `A ⊗[R] M`.
 -/
 
 @[expose] public section

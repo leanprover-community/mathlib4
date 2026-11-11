@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic polynomials
 
@@ -19,20 +22,19 @@ We give methods for computing coefficients of the characteristic polynomial.
 
 ## Main definitions
 
-- `Matrix.charpoly_degree_eq_dim` proves that the degree of the characteristic polynomial
+* `Matrix.charpoly_degree_eq_dim` proves that the degree of the characteristic polynomial
   over a nonzero ring is the dimension of the matrix
-- `Matrix.det_eq_sign_charpoly_coeff` proves that the determinant is the constant term of the
+* `Matrix.det_eq_sign_charpoly_coeff` proves that the determinant is the constant term of the
   characteristic polynomial, up to sign.
-- `Matrix.trace_eq_neg_charpoly_coeff` proves that the trace is the negative of the (d-1)th
+* `Matrix.trace_eq_neg_charpoly_coeff` proves that the trace is the negative of the (d-1)th
   coefficient of the characteristic polynomial, where d is the dimension of the matrix.
   For a nonzero ring, this is the second-highest coefficient.
-- `Matrix.coeff_det_one_add_X_smul_eq_sum_minors` proves that the k-th coefficient of
+* `Matrix.coeff_det_one_add_X_smul_eq_sum_minors` proves that the k-th coefficient of
   `det (1 + X • M)` equals the sum of all k×k principal minors of M.
-- `Matrix.charpoly_coeff_eq_sum_minors` expresses the coefficients of the characteristic
+* `Matrix.charpoly_coeff_eq_sum_minors` expresses the coefficients of the characteristic
   polynomial as signed sums of principal minors.
-- `Matrix.charpolyRev` the reverse of the characteristic polynomial.
-- `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
-
+* `Matrix.charpolyRev` the reverse of the characteristic polynomial.
+* `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
 -/
 
 @[expose] public section
@@ -251,9 +253,11 @@ theorem aeval_eq_aeval_mod_charpoly (M : Matrix n n R) (p : R[X]) :
     aeval M p = aeval M (p %ₘ M.charpoly) :=
   (aeval_modByMonic_eq_self_of_root M.aeval_self_charpoly).symm
 
-/-- Any matrix power can be computed as the sum of matrix powers less than `Fintype.card n`.
+/--
+Any matrix power can be computed as the sum of matrix powers less than `Fintype.card n`.
 
-TODO: add the statement for negative powers phrased with `zpow`. -/
+TODO: add the statement for negative powers phrased with `zpow`.
+-/
 theorem pow_eq_aeval_mod_charpoly (M : Matrix n n R) (k : ℕ) :
     M ^ k = aeval M (X ^ k %ₘ M.charpoly) := by rw [← aeval_eq_aeval_mod_charpoly, map_pow, aeval_X]
 
@@ -282,11 +286,13 @@ section reverse
 
 open LaurentPolynomial hiding C
 
-/-- The reverse of the characteristic polynomial of a matrix.
+/--
+The reverse of the characteristic polynomial of a matrix.
 
 It has some advantages over the characteristic polynomial, including the fact that it can be
 extended to infinite dimensions (for appropriate operators). In such settings it is known as the
-"characteristic power series". -/
+"characteristic power series".
+-/
 def charpolyRev (M : Matrix n n R) : R[X] := det (1 - (X : R[X]) • M.map C)
 
 lemma reverse_charpoly (M : Matrix n n R) :

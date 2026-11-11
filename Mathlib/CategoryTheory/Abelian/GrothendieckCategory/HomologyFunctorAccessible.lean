@@ -12,13 +12,15 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.Algebra.Homology.ShortComplex.HomologyCofork
 import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.ExactColimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homology functor on a Grothendieck abelian category is accessible
 
 In this file, we show that if `C` is a Grothendieck abelian category,
 then the homology functors `ShortComplex C ⥤ C` and `HomologicalComplex C c ⥤ C`
 are ℵ₀-accessible (i.e. preserve filtered colimits).
-
 -/
 
 public section

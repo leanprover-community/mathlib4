@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strongly measurable and finitely strongly measurable functions
 
@@ -20,10 +23,10 @@ Almost everywhere strongly measurable functions form the largest class of functi
 integrated using the Bochner integral.
 
 ## Main definitions
+
 * `AEStronglyMeasurable f μ`: `f` is almost everywhere equal to a `StronglyMeasurable` function.
 * `AEFinStronglyMeasurable f μ`: `f` is almost everywhere equal to a `FinStronglyMeasurable`
   function.
-
 * `AEFinStronglyMeasurable.sigmaFiniteSet`: a measurable set `t` such that
   `f =ᵐ[μ.restrict tᶜ] 0` and `μ.restrict t` is sigma-finite.
 
@@ -37,9 +40,8 @@ measurable functions, as a basis for the Bochner integral.
 
 ## References
 
-* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
+* ‍\[Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.\]\[Hytonen\_VanNeerven\_Veraar\_Wies\_2016\]
 -/
 
 @[expose] public section
@@ -58,11 +60,13 @@ section Definitions
 
 variable [TopologicalSpace β]
 
-/-- A function is `AEStronglyMeasurable` with respect to a measure `μ` if it is almost everywhere
+/--
+A function is `AEStronglyMeasurable` with respect to a measure `μ` if it is almost everywhere
 equal to the limit of a sequence of simple functions.
 
 One can specify the sigma-algebra according to which simple functions are taken using the
-`AEStronglyMeasurable[m]` notation in the `MeasureTheory` scope. -/
+`AEStronglyMeasurable[m]` notation in the `MeasureTheory` scope.
+-/
 @[fun_prop]
 def AEStronglyMeasurable [m : MeasurableSpace α] {m₀ : MeasurableSpace α} (f : α → β)
     (μ : Measure[m₀] α := by volume_tac) : Prop :=
@@ -99,7 +103,9 @@ theorem aefinStronglyMeasurable_zero {α β} {_ : MeasurableSpace α} (μ : Meas
     [TopologicalSpace β] : AEFinStronglyMeasurable (0 : α → β) μ :=
   ⟨0, finStronglyMeasurable_zero, EventuallyEq.rfl⟩
 
-/-! ## Almost everywhere strongly measurable functions -/
+/-!
+# Almost everywhere strongly measurable functions
+-/
 
 section AEStronglyMeasurable
 variable [TopologicalSpace β] [TopologicalSpace γ] {m m₀ : MeasurableSpace α} {μ ν : Measure[m₀] α}
@@ -418,7 +424,7 @@ protected theorem leOnePart [Group β] [Lattice β] [ContinuousSup β] [Continuo
 end Order
 
 /-!
-### Big operators: `∏` and `∑`
+# Big operators: `∏` and `∑`
 -/
 
 
@@ -517,12 +523,14 @@ protected theorem nnNorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
 
 @[deprecated (since := "2026-10-31")] protected alias nnnorm := AEStronglyMeasurable.nnNorm
 
-/-- The `eNorm` of a strongly a.e. measurable function is a.e. measurable.
+/--
+The `eNorm` of a strongly a.e. measurable function is a.e. measurable.
 
 Note that unlike `AEStronglyMeasurable.norm` and `AEStronglyMeasurable.nnNorm`, this lemma proves
-a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
+a.e. measurability, *not* a.e. strong measurability. This is an intentional decision:
 for functions taking values in `ℝ≥0∞`, a.e. measurability is much more useful than
-a.e. strong measurability. -/
+a.e. strong measurability.
+-/
 @[fun_prop]
 protected theorem eNorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
@@ -530,11 +538,13 @@ protected theorem eNorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] 
 
 @[deprecated (since := "2026-11-06")] protected alias enorm := AEStronglyMeasurable.eNorm
 
-/-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
+/--
+Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
 
-Note that this lemma proves a.e. measurability, **not** a.e. strong measurability.
+Note that this lemma proves a.e. measurability, *not* a.e. strong measurability.
 This is an intentional decision: for functions taking values in ℝ≥0∞,
-a.e. measurability is much more useful than a.e. strong measurability. -/
+a.e. measurability is much more useful than a.e. strong measurability.
+-/
 @[fun_prop]
 protected theorem edist {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
@@ -851,9 +861,11 @@ theorem _root_.aestronglyMeasurable_const_smul_iff [ContinuousConstSMul G β] (c
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
   ⟨fun h => by simpa only [inv_smul_smul] using h.fun_const_smul c⁻¹, fun h => h.const_smul c⟩
 
-/-- Multiplying by an a.e. strongly measurable scalar *function* with values in a group preserves
+/--
+Multiplying by an a.e. strongly measurable scalar _function_ with values in a group preserves
 a.e. strong measurability. This is the varying-scalar analogue of
-`aestronglyMeasurable_const_smul_iff`. -/
+`aestronglyMeasurable_const_smul_iff`.
+-/
 @[to_fun _root_.aestronglyMeasurable_fun_smul_iff]
 theorem _root_.aestronglyMeasurable_smul_iff [TopologicalSpace G] [ContinuousInv G]
     [ContinuousSMul G β] {c : α → G} (hc : AEStronglyMeasurable c μ) :
@@ -873,8 +885,10 @@ theorem _root_.aestronglyMeasurable_const_smul_iff₀ [ContinuousConstSMul G₀ 
     AEStronglyMeasurable (c • f) μ ↔ AEStronglyMeasurable f μ :=
   (IsUnit.mk0 _ hc).aestronglyMeasurable_const_smul_iff
 
-/-- Multiplying by an almost-everywhere nonzero scalar *function* preserves a.e. strong
-measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`. -/
+/--
+Multiplying by an almost-everywhere nonzero scalar _function_ preserves a.e. strong
+measurability. This is the varying-scalar analogue of `aestronglyMeasurable_const_smul_iff₀`.
+-/
 @[to_fun _root_.aestronglyMeasurable_fun_smul_iff₀]
 theorem _root_.aestronglyMeasurable_smul_iff₀ [TopologicalSpace G₀] [ContinuousInv₀ G₀]
     [MetrizableSpace G₀] [ContinuousSMul G₀ β] {c : α → G₀}
@@ -889,7 +903,9 @@ end MulAction
 end AEStronglyMeasurable
 end AEStronglyMeasurable
 
-/-! ## Almost everywhere finitely strongly measurable functions -/
+/-!
+# Almost everywhere finitely strongly measurable functions
+-/
 
 
 namespace AEFinStronglyMeasurable

@@ -8,6 +8,9 @@ module
 public meta import Qq
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Parameterized computation core for the Bareiss elimination
 
@@ -23,14 +26,14 @@ extension registry.
 
 ## Main definitions
 
-- `RingOps`: the arithmetic of a model's carrier.
-- `Model`: the computation model of a ring, including the encode/decode between the ring element
+* `RingOps`: the arithmetic of a model's carrier.
+* `Model`: the computation model of a ring, including the encode/decode between the ring element
   and the carrier representation, and an optional entry certifier.
-- `EntryCertifier`: the functions that prove the ring arithmetic facts about single entries that a
+* `EntryCertifier`: the functions that prove the ring arithmetic facts about single entries that a
   certificate needs.
-- `bareissDecomp`: runs fraction-free elimination over a model's carrier.
-- `BareissData`: raw data of the computed decomposition.
-- `bareiss_ext`: the attribute registering a computation model.
+* `bareissDecomp`: runs fraction-free elimination over a model's carrier.
+* `BareissData`: raw data of the computed decomposition.
+* `bareiss_ext`: the attribute registering a computation model.
 
 ## Implementation notes
 
@@ -40,14 +43,14 @@ so far and `W` is the working matrix. When the pivot search swaps the rows at po
 `r < p`, the invariant must be restored against the new `A_σ' = S * A_σ`, where `S` is
 the permutation matrix of the transposition `τ = (r, p)`:
 
-  `S * W = S * L * (S⁻¹ * S) * A_σ = (S * L * S⁻¹) * A_σ'`
+`S * W = S * L * (S⁻¹ * S) * A_σ = (S * L * S⁻¹) * A_σ'`
 
 so `L` is conjugated by the matrix of `τ`, as in LU factorisation with partial pivoting.
 
 ## References
 
-* [Bareiss, *Sylvester's identity and multistep integer-preserving Gaussian
-  elimination*][bareiss1968]
+* ‍\[Bareiss, _Sylvester's identity and multistep integer-preserving Gaussian
+  elimination_\]\[bareiss1968\]
 -/
 
 public meta section
@@ -99,12 +102,14 @@ that the swaps move to position `i`, that is, `σ i`. -/
 def BareissData.rowOrder {V : Type} (d : BareissData V) : Array Nat :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
-/-- Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
+/--
+Core algorithm of fraction-free Gaussian elimination, with the arithmetic supplied
 by the model.
 
 A single sweep accumulates the transform `L` alongside the working matrix `W`, maintaining
 `L * (A.submatrix σ id) = W` for the row arrangement `σ` so far. The divisions are exact
-by Sylvester's identity, although the data-only computation does not prove that. -/
+by Sylvester's identity, although the data-only computation does not prove that.
+-/
 def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
     MetaM (BareissData V) := do
   let rows := A.size
@@ -154,7 +159,8 @@ def bareissDecomp {V : Type} (ops : RingOps V) (A : Array (Array V)) :
       r := r + 1
   return { L, U := W, swaps, pivot := pivotCols }
 
-/-- An entry certifier proves arithmetic facts about expressions of the ring `α` that the
+/--
+An entry certifier proves arithmetic facts about expressions of the ring `α` that the
 certificates need. `eq` proves an equation `a = b`, such as an unreduced entry of a matrix
 product equal to its computed value, and `neZero` proves `a ≠ 0`, such as for a pivot entry.
 

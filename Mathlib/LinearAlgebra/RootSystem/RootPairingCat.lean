@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.LinearAlgebra.RootSystem.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of root pairings
 
@@ -15,6 +18,7 @@ This file defines the category of root pairings, following the definition of cat
 given in SGA III Exp. 21 Section 6.
 
 ## Main definitions:
+
 * `RootPairingCat`: Objects are root pairings.
 
 ## TODO
@@ -25,7 +29,6 @@ given in SGA III Exp. 21 Section 6.
 ## Implementation details
 
 This is mostly copied from `ModuleCat`.
-
 -/
 
 public section

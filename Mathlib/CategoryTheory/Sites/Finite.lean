@@ -8,15 +8,19 @@ module
 public import Mathlib.CategoryTheory.Sites.Pretopology
 public import Mathlib.Data.Set.Finite.Lattice
 
-/-! # The Finite Pretopology
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The Finite Pretopology
 
 In this file we define the finite pretopology on a category, which consists of presieves that
 contain only finitely many arrows.
 
 ## Main Definitions
 
-- `CategoryTheory.Precoverage.finite`: The finite precoverage on a category.
-- `CategoryTheory.Pretopology.finite`: The finite pretopology on a category.
+* `CategoryTheory.Precoverage.finite`: The finite precoverage on a category.
+* `CategoryTheory.Pretopology.finite`: The finite pretopology on a category.
 -/
 
 @[expose] public section

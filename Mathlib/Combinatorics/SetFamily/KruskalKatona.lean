@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.Colex
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
 public import Mathlib.Combinatorics.SetFamily.Intersecting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kruskal-Katona theorem
 
@@ -18,6 +21,7 @@ This file proves the Kruskal-Katona theorem. This is a sharp statement about how
 ## Main declarations
 
 The key results proved here are:
+
 * `Finset.kruskal_katona`: The basic Kruskal-Katona theorem. Given a set family `𝒜` consisting of
   `r`-sets, and `𝒞` an initial segment of the colex order of the same size, the shadow of `𝒞` is
   smaller than the shadow of `𝒜`. In particular, this shows that the minimum shadow size is
@@ -195,10 +199,12 @@ lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ 
 
 attribute [-instance] Fintype.decidableForallFintype
 
-/-- This measures roughly how compressed the family is.
+/--
+This measures roughly how compressed the family is.
 
 Note that this does depend on the order of the ground set, unlike the Kruskal-Katona theorem itself
-(although `kruskal_katona` currently is stated in an order-dependent manner). -/
+(although `kruskal_katona` currently is stated in an order-dependent manner).
+-/
 private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A ∈ 𝒜, ∑ a ∈ A, 2 ^ (a : ℕ)
 
 /-- Applying a compression strictly decreases the measure. This helps show that "compress until we
@@ -261,11 +267,13 @@ end UV
 section KK
 variable {r k i : ℕ} {𝒜 𝒞 : Finset <| Finset <| Fin n}
 
-/-- The **Kruskal-Katona theorem**.
+/--
+The *Kruskal-Katona theorem*.
 
 Given a set family `𝒜` consisting of `r`-sets, and `𝒞` an initial segment of the colex order of the
 same size, the shadow of `𝒞` is smaller than the shadow of `𝒜`. In particular, this gives that the
-minimum shadow size is achieved by initial segments of colex. -/
+minimum shadow size is achieved by initial segments of colex.
+-/
 theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞𝒜 : #𝒞 ≤ #𝒜)
     (h𝒞 : IsInitSeg 𝒞 r) : #(∂ 𝒞) ≤ #(∂ 𝒜) := by
   -- WLOG `|𝒜| = |𝒞|`
@@ -291,12 +299,14 @@ theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : #𝒞
     refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
     convert h₃.shadow
 
-/-- The **Lovasz formulation of the Kruskal-Katona theorem**.
+/--
+The *Lovasz formulation of the Kruskal-Katona theorem*.
 
 If `|𝒜| ≥ k choose r`, (and everything in `𝒜` has size `r`) then the initial segment we compare to
 is just all the subsets of `{0, ..., k - 1}` of size `r`. The `i`-th iterated shadow of this is all
 the subsets of `{0, ..., k - 1}` of size `r - i`, so the `i`-th iterated shadow of `𝒜` has at least
-`k.choose (r - i)` elements. -/
+`k.choose (r - i)` elements.
+-/
 theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ n)
     (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : k.choose r ≤ #𝒜) :
     k.choose (r - i) ≤ #(∂^[i] 𝒜) := by
@@ -339,10 +349,12 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
 
 end KK
 
-/-- The **Erdős–Ko–Rado theorem**.
+/--
+The *Erdős–Ko–Rado theorem*.
 
 The maximum size of an intersecting family in `α` where all sets have size `r` is bounded by
-`(card α - 1).choose (r - 1)`. This bound is sharp. -/
+`(card α - 1).choose (r - 1)`. This bound is sharp.
+-/
 theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     (h𝒜 : (𝒜 : Set (Finset (Fin n))).Intersecting) (h₂ : (𝒜 : Set (Finset (Fin n))).Sized r)
     (h₃ : r ≤ n / 2) :

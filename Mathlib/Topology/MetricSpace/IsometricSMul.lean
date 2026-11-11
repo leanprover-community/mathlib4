@@ -10,14 +10,17 @@ public import Mathlib.Topology.EMetricSpace.MulOpposite
 public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Lipschitz
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group actions by isometries
 
 In this file we define two typeclasses:
 
-- `IsIsometricSMul M X` says that `M` multiplicatively acts on a (pseudo extended) metric space
+* `IsIsometricSMul M X` says that `M` multiplicatively acts on a (pseudo extended) metric space
   `X` by isometries;
-- `IsIsometricVAdd` is an additive version of `IsIsometricSMul`.
+* `IsIsometricVAdd` is an additive version of `IsIsometricSMul`.
 
 We also prove basic facts about isometric actions and define bundled isometries
 `IsometryEquiv.constSMul`, `IsometryEquiv.mulLeft`, `IsometryEquiv.mulRight`,

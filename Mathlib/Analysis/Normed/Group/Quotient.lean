@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of seminormed groups
 
@@ -37,34 +40,27 @@ this instance in `Submodule.Quotient.completeSpace` so that it applies to these 
 
 ## Main definitions
 
-
 We use `M` and `N` to denote seminormed groups and `S : AddSubgroup M`.
 All the following definitions are in the `AddSubgroup` namespace. Hence we can access
 `AddSubgroup.normedMk S` as `S.normedMk`.
 
 * `seminormedAddCommGroupQuotient` : The seminormed group structure on the quotient by
-    an additive subgroup. This is an instance so there is no need to explicitly use it.
-
+  an additive subgroup. This is an instance so there is no need to explicitly use it.
 * `normedAddCommGroupQuotient` : The normed group structure on the quotient by
-    a closed additive subgroup. This is an instance so there is no need to explicitly use it.
-
+  a closed additive subgroup. This is an instance so there is no need to explicitly use it.
 * `normedMk S` : the normed group hom from `M` to `M ⧸ S`.
-
 * `lift S f hf`: implements the universal property of `M ⧸ S`. Here
-    `(f : NormedAddGroupHom M N)`, `(hf : ∀ s ∈ S, f s = 0)` and
-    `lift S f hf : NormedAddGroupHom (M ⧸ S) N`.
-
+  `(f : NormedAddGroupHom M N)`, `(hf : ∀ s ∈ S, f s = 0)` and
+  `lift S f hf : NormedAddGroupHom (M ⧸ S) N`.
 * `IsQuotient`: given `f : NormedAddGroupHom M N`, `IsQuotient f` means `N` is isomorphic
-    to a quotient of `M` by a subgroup, with projection `f`. Technically it asserts `f` is
-    surjective and the norm of `f x` is the infimum of the norms of `x + m` for `m` in `f.ker`.
+  to a quotient of `M` by a subgroup, with projection `f`. Technically it asserts `f` is
+  surjective and the norm of `f x` is the infimum of the norms of `x + m` for `m` in `f.ker`.
 
 ## Main results
 
 * `norm_normedMk` : the operator norm of the projection is `1` if the subspace is not dense.
-
 * `IsQuotient.norm_lift`: Provided `f : normed_hom M N` satisfies `IsQuotient f`, for every
-     `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
-
+  `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
 
 ## Implementation details
 
@@ -80,8 +76,8 @@ Mathematically there is something to prove. The main point is proved in the auxi
 admits as basis of neighborhoods in the quotient topology the sets `{x | ‖x‖ < ε}` for positive `ε`.
 
 Once this mathematical point is settled, we have two topologies that are propositionally equal. This
-is not good enough for the type class system. As usual we ensure *definitional* equality
-using forgetful inheritance, see Note [forgetful inheritance]. A (semi)-normed group structure
+is not good enough for the type class system. As usual we ensure _definitional_ equality
+using forgetful inheritance, see Note \[forgetful inheritance\]. A (semi)-normed group structure
 includes a uniform space structure which includes a topological space structure, together
 with propositional fields asserting compatibility conditions.
 The usual way to define a `SeminormedAddCommGroup` is to let Lean build a uniform space structure
@@ -91,7 +87,6 @@ which uses the topological structure and the group structure to build the unifor
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
 the previous paragraph kicks in.
-
 -/
 
 @[expose] public section
@@ -410,7 +405,7 @@ theorem lift_normNoninc {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup 
 end NormedAddGroupHom
 
 /-!
-### Submodules and ideals
+# Submodules and ideals
 
 In what follows, the norm structures created above for quotients of (semi)`NormedAddCommGroup`s
 by `AddSubgroup`s are transferred via definitional equality to quotients of modules by submodules,

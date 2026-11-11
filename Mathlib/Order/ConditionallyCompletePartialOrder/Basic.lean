@@ -9,14 +9,17 @@ public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 
 
-/-! # Basic results on conditionally complete partial orders
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Basic results on conditionally complete partial orders
 
 This file contains some basic results on conditionally complete partial orders, and is intended
 to parallel the API for conditionally complete lattices where possible. For the reason, the
 theorems here are mostly protected within the `DirectedOn` namespace, unless such an assumption is
 unnecessary. Otherwise the names here share the same names as their counterparts in
 `Mathlib/Order/ConditionallyCompleteLattice/Basic.lean`.
-
 -/
 public section
 

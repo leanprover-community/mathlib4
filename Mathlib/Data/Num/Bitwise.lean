@@ -9,6 +9,9 @@ public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Num.Basic
 public import Mathlib.Data.Vector.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bitwise operations using binary representation of integers
 
@@ -55,7 +58,9 @@ instance : HAnd PosNum PosNum Num where hAnd := PosNum.land
 
 @[simp] lemma land_eq_and (p q : PosNum) : p.land q = p &&& q := rfl
 
-/-- Bitwise `fun a b ↦ a && !b` for `PosNum`. For example, `ldiff 5 9 = 4`:
+/--
+Bitwise `fun a b ↦ a && !b` for `PosNum`. For example, `ldiff 5 9 = 4`:
+
 ```
  101
 1001
@@ -155,7 +160,9 @@ instance : AndOp Num where and := Num.land
 
 @[simp] lemma land_eq_and (p q : Num) : p.land q = p &&& q := rfl
 
-/-- Bitwise `fun a b ↦ a && !b` for `Num`. For example, `ldiff 5 9 = 4`:
+/--
+Bitwise `fun a b ↦ a && !b` for `Num`. For example, `ldiff 5 9 = 4`:
+
 ```
  101
 1001
@@ -228,14 +235,15 @@ of this sign. The result is interpreted in two's complement.
 -13 = ..1110011(base 2) = nz (bit1 (bit1 (bit0 (msb false))))
 ```
 
-  As with `Num`, a special case must be added for zero, which has no msb,
+As with `Num`, a special case must be added for zero, which has no msb,
 but by two's complement symmetry there is a second special case for -1.
 Here the `Bool` field indicates the sign of the number.
 
 ```
 0  = ..0000000(base 2) = zero false
 -1 = ..1111111(base 2) = zero true
-``` -/
+```
+-/
 inductive SNum : Type
   | zero : Bool → SNum
   | nz : NzsNum → SNum

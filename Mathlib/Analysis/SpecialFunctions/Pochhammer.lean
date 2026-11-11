@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Convex.Piecewise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pochhammer polynomials
 
@@ -20,14 +23,11 @@ This file proves analysis theorems for Pochhammer polynomials.
 
 * `Differentiable.descPochhammer_eval` is the proof that the descending Pochhammer polynomial
   `descPochhammer ℝ n` is differentiable.
-
 * `ConvexOn.descPochhammer_eval` is the proof that the descending Pochhammer polynomial
   `descPochhammer ℝ n` is convex on `[n-1, ∞)`.
-
-* `descPochhammer_eval_le_sum_descFactorial` is a special case of **Jensen's inequality**
+* `descPochhammer_eval_le_sum_descFactorial` is a special case of *Jensen's inequality*
   for `Nat.descFactorial`.
-
-* `descPochhammer_eval_div_factorial_le_sum_choose` is a special case of **Jensen's inequality**
+* `descPochhammer_eval_div_factorial_le_sum_choose` is a special case of *Jensen's inequality*
   for `Nat.choose`.
 -/
 

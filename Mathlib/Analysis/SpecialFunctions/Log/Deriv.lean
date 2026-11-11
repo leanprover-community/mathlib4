@@ -13,6 +13,9 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative and series expansion of real logarithm
 
@@ -209,7 +212,8 @@ namespace Real
 
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
-/-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
+/--
+A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
@@ -255,7 +259,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   simpa [F, div_mul_eq_mul_div, pow_succ] using C
 
 /--
-Compute the derivative of the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
+Compute the derivative of the difference between $`\frac{1}{2} * \log(\frac{1+x}{1-x})` and its
 Taylor series at `0` up to order `n`. This is an auxiliary lemma for
 `sum_range_sub_log_div_le` and `sum_range_le_log_div`.
 Note that thanks to the geometric series, the derivative has a particularly simple form, and means
@@ -280,7 +284,8 @@ lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
   have hy₄ : 0 < 1 + y := by grind
   field
 
-/-- A lemma estimating the difference between $\frac{1}{2} * \log(\frac{1+x}{1-x})$ and its
+/--
+A lemma estimating the difference between $`\frac{1}{2} * \log(\frac{1+x}{1-x})` and its
 Taylor series at `0`, where the bound tends to `0`. This bound is particularly useful for explicit
 estimates of logarithms.
 
@@ -315,7 +320,7 @@ lemma sum_range_sub_log_div_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
   simpa [F, pow_succ, div_mul_eq_mul_div] using C
 
 /--
-For `0 ≤ x < 1`, the partial sums of the series expansion of $\frac{1}{2} * \log(\frac{1+x}{1-x})$
+For `0 ≤ x < 1`, the partial sums of the series expansion of $`\frac{1}{2} * \log(\frac{1+x}{1-x})`
 at `0` form a lower bound for it. This shows that the absolute value in `sum_range_sub_log_div_le`
 can be dropped, and gives explicit lower bounds for logarithms.
 -/

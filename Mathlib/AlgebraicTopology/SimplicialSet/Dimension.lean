@@ -7,13 +7,15 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dimension of a simplicial set
 
 For a simplicial set `X` and `d : ℕ`, we introduce a typeclass
 `X.HasDimensionLT d` saying that the dimension of `X` is `< d`,
 i.e. all nondegenerate simplices of `X` are of dimension `< d`.
-
 -/
 
 public section

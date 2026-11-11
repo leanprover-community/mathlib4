@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Coprod.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # HNN Extensions of Groups
 
@@ -21,15 +24,14 @@ and Hanna Neumann.
 
 ## Main definitions
 
-- `HNNExtension G A B φ` : The HNN Extension of a group `G`, where `A` and `B` are subgroups and `φ`
+* `HNNExtension G A B φ` : The HNN Extension of a group `G`, where `A` and `B` are subgroups and `φ`
   is an isomorphism between `A` and `B`.
-- `HNNExtension.of` : The canonical embedding of `G` into `HNNExtension G A B φ`.
-- `HNNExtension.t` : The stable letter of the HNN extension.
-- `HNNExtension.lift` : Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t`
-- `HNNExtension.of_injective` : The canonical embedding `G →* HNNExtension G A B φ` is injective.
-- `HNNExtension.ReducedWord.toList_eq_nil_of_mem_of_range` : Britton's Lemma. If an element of
+* `HNNExtension.of` : The canonical embedding of `G` into `HNNExtension G A B φ`.
+* `HNNExtension.t` : The stable letter of the HNN extension.
+* `HNNExtension.lift` : Define a function `HNNExtension G A B φ →* H`, by defining it on `G` and `t`
+* `HNNExtension.of_injective` : The canonical embedding `G →* HNNExtension G A B φ` is injective.
+* `HNNExtension.ReducedWord.toList_eq_nil_of_mem_of_range` : Britton's Lemma. If an element of
   `G` is represented by a reduced word, then this reduced word does not contain `t`.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.CategoryTheory.Sites.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coherence and equivalence of categories
 

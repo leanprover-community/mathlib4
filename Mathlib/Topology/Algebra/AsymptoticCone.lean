@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Topology
 
 import Mathlib.Analysis.Convex.Between
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic cone of a set
 
@@ -16,10 +19,10 @@ This file defines the asymptotic cone of a set in a topological affine space.
 
 ## Implementation details
 
-The asymptotic cone of a set $A$ is usually defined as the set of points $v$ for which there exist
-sequences $t_n > 0$ and $x_n \in A$ such that $t_n \to 0$ and $t_n x_n \to v$. We take a different
-approach here using filters: we define the asymptotic cone of `s` as the set of vectors `v` such
-that `∃ᶠ p in Filter.atTop • 𝓝 v, p ∈ s` holds.
+The asymptotic cone of a set $`A` is usually defined as the set of points $`v` for which there exist
+sequences $`t_n > 0` and $`x_n \in A` such that $`t_n \to 0` and $`t_n x_n \to v`. We take a
+different approach here using filters: we define the asymptotic cone of `s` as the set of vectors
+`v` such that `∃ᶠ p in Filter.atTop • 𝓝 v, p ∈ s` holds.
 
 ## Main definitions
 

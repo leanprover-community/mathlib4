@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Localization.Trifunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting of quadrifunctors
 

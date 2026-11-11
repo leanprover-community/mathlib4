@@ -11,6 +11,9 @@ public import Mathlib.Data.Matrix.Mul
 public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.LinearAlgebra.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices
 
@@ -192,10 +195,12 @@ theorem diagonal_pow [Fintype n] [DecidableEq n] (v : n → α) (k : ℕ) :
     diagonal v ^ k = diagonal (v ^ k) :=
   (map_pow (diagonalRingHom n α) v k).symm
 
-/-- The ring homomorphism `α →+* Matrix n n α`
+/--
+The ring homomorphism `α →+* Matrix n n α`
 sending `a` to the diagonal matrix with `a` on the diagonal.
 
 This is available in bundled forms as:
+
 * `Matrix.scalarAlgHom`
 * `Matrix.GeneralLinearGroup.scalar`
 -/
@@ -285,9 +290,11 @@ section AddHom
 variable [Add α]
 
 variable (R α) in
-/-- Extracting entries from a matrix as an additive homomorphism.
+/--
+Extracting entries from a matrix as an additive homomorphism.
 
-See also `Matrix.entryAddMonoidHom` and `Matrix.entryLinearMap`. -/
+See also `Matrix.entryAddMonoidHom` and `Matrix.entryLinearMap`.
+-/
 @[simps]
 def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   toFun M := M i j
@@ -376,7 +383,7 @@ end LinearMap
 end Matrix
 
 /-!
-### Bundled versions of `Matrix.map`
+# Bundled versions of `Matrix.map`
 -/
 
 
@@ -529,9 +536,11 @@ theorem mapMatrix_smul [Monoid A] [DistribMulAction A β] [SMulCommClass S A β]
     (a • f).mapMatrix = (a • f.mapMatrix : Matrix m n α →ₛₗ[_] _) := rfl
 
 variable (A) in
-/-- `LinearMap.mapMatrix` is itself linear in the map being applied.
+/--
+`LinearMap.mapMatrix` is itself linear in the map being applied.
 
-Alternative, this is `Matrix.map` as a bilinear map. -/
+Alternative, this is `Matrix.map` as a bilinear map.
+-/
 @[simps]
 def mapMatrixLinear [Semiring A] [Module A β] [SMulCommClass S A β] :
     (α →ₛₗ[σᵣₛ] β) →ₗ[A] (Matrix m n α →ₛₗ[σᵣₛ] Matrix m n β) where
@@ -659,10 +668,12 @@ theorem mapMatrix_trans (f : α ≃+* β) (g : β ≃+* γ) :
   rfl
 
 open MulOpposite in
-/-- For any ring `α`, we have ring isomorphism `Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(α))ᵒᵖ` given by transpose.
+/--
+For any ring `α`, we have ring isomorphism `Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(α))ᵒᵖ` given by transpose.
 
 See also `Matrix.transposeRingEquiv` for a version that doesn't take the opposite of `α`,
-given that its multiplication is commutative. -/
+given that its multiplication is commutative.
+-/
 @[simps apply symm_apply]
 def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
@@ -739,11 +750,13 @@ theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m m α ≃ₐ[R] _) :=
   rfl
 
-/-- For any algebra `α` over a ring `R`, we have an `R`-algebra isomorphism
+/--
+For any algebra `α` over a ring `R`, we have an `R`-algebra isomorphism
 `Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose.
 
 See also `Matrix.transposeAlgEquiv` for a version that doesn't take the opposite of `α`,
-given that its multiplication is commutative. -/
+given that its multiplication is commutative.
+-/
 @[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
   commutes' _ := MulOpposite.unop_injective <| by
@@ -833,9 +846,11 @@ section Pi
 
 variable {ι : Type*} {β : ι → Type*}
 
-/-- Matrices over a Pi type are in canonical bijection with tuples of matrices.
+/--
+Matrices over a Pi type are in canonical bijection with tuples of matrices.
 
 This is available in bundled forms as:
+
 * `Matrix.piAddEquiv`
 * `Matrix.piLinearEquiv`
 * `Matrix.piRingEquiv`
@@ -922,10 +937,12 @@ theorem transposeLinearEquiv_symm [Semiring R] [AddCommMonoid α] [Module R α] 
 variable {m n R α}
 variable (m α)
 
-/-- `Matrix.transpose` as a `RingEquiv` to the opposite ring.
+/--
+`Matrix.transpose` as a `RingEquiv` to the opposite ring.
 
 See also `RingEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
-multiplication, by taking its opposite. -/
+multiplication, by taking its opposite.
+-/
 @[simps!]
 def transposeRingEquiv [AddCommMonoid α] [CommMagma α] [Fintype m] :
     Matrix m m α ≃+* (Matrix m m α)ᵐᵒᵖ where
@@ -945,10 +962,12 @@ theorem transpose_list_prod [CommSemiring α] [Fintype m] [DecidableEq m] (l : L
 
 variable (R m α)
 
-/-- `Matrix.transpose` as an `AlgEquiv` to the opposite ring.
+/--
+`Matrix.transpose` as an `AlgEquiv` to the opposite ring.
 
 See also `AlgEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
-multiplication, by taking its opposite. -/
+multiplication, by taking its opposite.
+-/
 @[simps!]
 def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where

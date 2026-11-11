@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Creation of limits and pullbacks
 

@@ -8,11 +8,13 @@ module
 public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subring of opposite rings
 
 For every ring `R`, we construct an equivalence between subrings of `R` and that of `Rᵐᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -49,7 +51,9 @@ theorem unop_op (S : Subring R) : S.op.unop = S := rfl
 @[simp]
 theorem op_unop (S : Subring Rᵐᵒᵖ) : S.unop.op = S := rfl
 
-/-! ### Lattice results -/
+/-!
+# Lattice results
+-/
 
 theorem op_le_iff {S₁ : Subring R} {S₂ : Subring Rᵐᵒᵖ} : S₁.op ≤ S₂ ↔ S₁ ≤ S₂.unop :=
   MulOpposite.op_surjective.forall

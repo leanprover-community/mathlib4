@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Root data and root systems
 
@@ -24,7 +27,6 @@ This file contains basic results for root systems and root data.
 * `RootSystem.mk'`: In characteristic zero over an integral domain, to check that a finite family of
   roots form a root system, we do not need to check that the coroots are stable under reflections
   since this follows from the corresponding property for the roots.
-
 -/
 
 @[expose] public section
@@ -80,10 +82,12 @@ end reflectionPerm
 
 variable (P : RootPairing ι R M N) [Finite ι]
 
-/-- Even though the roots may not span, coroots are distinguished by their pairing with the
+/--
+Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
 
-Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI. -/
+Modulo trivial generalisations, this statement is exactly Lemma 1.1.4 on page 87 of SGA 3 XXI.
+-/
 lemma injOn_dualMap_subtype_span_root_coroot [HasUniqueDiv M] :
     InjOn ((span R (range P.root)).subtype.dualMap ∘ₗ P.toLinearMap.flip) (range P.coroot) := by
   have := injOn_dualMap_subtype_span_range_range (finite_range P.root)
@@ -91,10 +95,12 @@ lemma injOn_dualMap_subtype_span_root_coroot [HasUniqueDiv M] :
   rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
   exact P.flip.toPerfPair.injective <| this (mem_range_self i) (mem_range_self j) hij
 
-/-- In characteristic zero over an integral domain, the correspondence between roots and coroots is
+/--
+In characteristic zero over an integral domain, the correspondence between roots and coroots is
 unique.
 
-Formally, the point is that the hypothesis `hc` depends only on the range of the coroot mappings. -/
+Formally, the point is that the hypothesis `hc` depends only on the range of the coroot mappings.
+-/
 @[ext]
 protected lemma ext [CharZero R] [IsDomain R]
     {P₁ P₂ : RootPairing ι R M N}

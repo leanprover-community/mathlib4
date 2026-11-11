@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Haar.Quotient
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.Topology.Algebra.Order.Floor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals of periodic functions
 
@@ -31,7 +34,7 @@ open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgro
 open scoped MeasureTheory NNReal ENNReal
 
 /-!
-## Measures and integrability on ℝ and on the circle
+# Measures and integrability on ℝ and on the circle
 -/
 
 @[fun_prop]
@@ -84,10 +87,12 @@ instance : AddQuotientMeasureEqMeasurePreimage volume (volume : Measure (AddCirc
   apply MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage
   simp [(isAddFundamentalDomain_Ioc' hT.out 0).covolume_eq_volume, AddCircle.measure_univ]
 
-/-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
+/--
+The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
 on the additive circle, and with respect to the restriction of Lebesgue measure on `ℝ` to an
-interval $(t, t + T]$. -/
+interval $`(t, t + T]`.
+-/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) :=
@@ -161,8 +166,10 @@ lemma measurePreserving_equivIoc {a : ℝ} :
   rw [equivIoc_coe_eq hx]
 
 attribute [local instance] Subtype.measureSpace in
-/-- The lower integral of a function over `AddCircle T` is equal to the lower integral over an
-interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
+/--
+The lower integral of a function over `AddCircle T` is equal to the lower integral over an
+interval $`(t, t + T]` in `ℝ` of its lift to `ℝ`.
+-/
 protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) :
     (∫⁻ a in Ioc t (t + T), f a) = ∫⁻ b : AddCircle T, f b := by
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
@@ -183,8 +190,10 @@ protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 attribute [local instance] Subtype.measureSpace in
-/-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
-to the integral over an interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
+/--
+The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
+to the integral over an interval $`(t, t + T]` in `ℝ` of its lift to `ℝ`.
+-/
 protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
     (∫ a in Ioc t (t + T), f a) = ∫ b : AddCircle T, f b := by
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
@@ -198,8 +207,10 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
   rw [← map_map AddCircle.measurable_mk' measurable_subtype_coe, ← map_comap_subtype_coe m]
   rfl
 
-/-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
-to the integral over an interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
+/--
+The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
+to the integral over an interval $`(t, t + T]` in `ℝ` of its lift to `ℝ`.
+-/
 protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
     ∫ a in t..t + T, f a = ∫ b : AddCircle T, f b := by
   rw [integral_of_le, AddCircle.integral_preimage T t f]
@@ -231,31 +242,39 @@ namespace UnitAddCircle
 
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 
-/-- The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,
+/--
+The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass 1)
 on the additive circle, and with respect to the restriction of Lebesgue measure on `ℝ` to an
-interval $(t, t + 1]$. -/
+interval $`(t, t + 1]`.
+-/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := UnitAddCircle) ((↑) : ℝ → UnitAddCircle)
       (volume.restrict (Ioc t (t + 1))) :=
   AddCircle.measurePreserving_mk 1 t
 
-/-- The integral of a measurable function over `UnitAddCircle` is equal to the integral over an
-interval $(t, t + 1]$ in `ℝ` of its lift to `ℝ`. -/
+/--
+The integral of a measurable function over `UnitAddCircle` is equal to the integral over an
+interval $`(t, t + 1]` in `ℝ` of its lift to `ℝ`.
+-/
 protected theorem lintegral_preimage (t : ℝ) (f : UnitAddCircle → ℝ≥0∞) :
     (∫⁻ a in Ioc t (t + 1), f a) = ∫⁻ b : UnitAddCircle, f b :=
   AddCircle.lintegral_preimage 1 t f
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
-equal to the integral over an interval $(t, t + 1]$ in `ℝ` of its lift to `ℝ`. -/
+/--
+The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
+equal to the integral over an interval $`(t, t + 1]` in `ℝ` of its lift to `ℝ`.
+-/
 protected theorem integral_preimage (t : ℝ) (f : UnitAddCircle → E) :
     (∫ a in Ioc t (t + 1), f a) = ∫ b : UnitAddCircle, f b :=
   AddCircle.integral_preimage 1 t f
 
-/-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
-equal to the integral over an interval $(t, t + 1]$ in `ℝ` of its lift to `ℝ`. -/
+/--
+The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
+equal to the integral over an interval $`(t, t + 1]` in `ℝ` of its lift to `ℝ`.
+-/
 protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) :
     ∫ a in t..t + 1, f a = ∫ b : UnitAddCircle, f b :=
   AddCircle.intervalIntegral_preimage 1 t f
@@ -263,7 +282,7 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) 
 end UnitAddCircle
 
 /-!
-## Interval integrability of periodic functions
+# Interval integrability of periodic functions
 -/
 namespace Function
 
@@ -334,7 +353,7 @@ theorem intervalIntegrable₀ (h₁f : Function.Periodic f T) (hT : T ≠ 0)
   simpa
 
 /-!
-## Interval integrals of periodic functions
+# Interval integrals of periodic functions
 -/
 
 variable [NormedSpace ℝ E]

@@ -8,24 +8,25 @@ module
 public import Mathlib.Algebra.MonoidAlgebra.Degree
 public import Mathlib.Algebra.MvPolynomial.Rename
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Degrees of polynomials
 
 This file establishes many results about the degree of a multivariate polynomial.
 
-The *degree set* of a polynomial $P \in R[X]$ is a `Multiset` containing, for each $x$ in the
-variable set, $n$ copies of $x$, where $n$ is the maximum number of copies of $x$ appearing in a
-monomial of $P$.
+The _degree set_ of a polynomial $`P \in R[X]` is a `Multiset` containing, for each $`x` in the
+variable set, $`n` copies of $`x`, where $`n` is the maximum number of copies of $`x` appearing in a
+monomial of $`P`.
 
 ## Main declarations
 
 * `MvPolynomial.degrees p` : the multiset of variables representing the union of the multisets
   corresponding to each non-zero monomial in `p`.
   For example if `7 ≠ 0` in `R` and `p = x²y+7y³` then `degrees p = {x, x, y, y, y}`
-
 * `MvPolynomial.degreeOf n p : ℕ` : the total degree of `p` with respect to the variable `n`.
   For example if `p = x⁴y+yz` then `degreeOf y p = 1`.
-
 * `MvPolynomial.totalDegree p : ℕ` :
   the max of the sizes of the multisets `s` whose monomials `X^s` occur in `p`.
   For example if `p = x⁴y+yz` then `totalDegree p = 5`.
@@ -34,19 +35,13 @@ monomial of $P$.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ τ : Type*` (indexing the variables)
-
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
-
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
+* `σ τ : Type*` (indexing the variables)
+* `R : Type*` `[CommSemiring R]` (the coefficients)
+* `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
-
-+ `r : R`
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `p : MvPolynomial σ R`
-
+* `r : R`
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `p : MvPolynomial σ R`
 -/
 
 @[expose] public section
@@ -70,10 +65,13 @@ variable [CommSemiring R] {p q : MvPolynomial σ R}
 
 section Degrees
 
-/-! ### `degrees` -/
+/-!
+# `degrees`
+-/
 
 
-/-- The maximal degrees of each variable in a multi-variable polynomial, expressed as a multiset.
+/--
+The maximal degrees of each variable in a multi-variable polynomial, expressed as a multiset.
 
 (For example, `degrees (x^2 * y + y^3)` would be `{x, x, y, y, y}`.)
 -/
@@ -210,10 +208,14 @@ end Degrees
 
 section DegreeOf
 
-/-! ### `degreeOf` -/
+/-!
+# `degreeOf`
+-/
 
 
-/-- `degreeOf n p` gives the highest power of $X_n$ that appears in `p` -/
+/--
+`degreeOf n p` gives the highest power of $`X_n` that appears in `p`
+-/
 def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
   letI := Classical.decEq σ
   p.degrees.count n
@@ -426,7 +428,9 @@ end DegreeOf
 
 section TotalDegree
 
-/-! ### `totalDegree` -/
+/-!
+# `totalDegree`
+-/
 
 
 /-- `totalDegree p` gives the maximum |s| over the monomials X^s in `p` -/

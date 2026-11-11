@@ -9,11 +9,15 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 import Mathlib.CategoryTheory.GuitartExact.HorizontalComposition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivability structures deduced from localized equivalences
 
 Assume that we have a diagram of localizer morphisms, in the
 sense that we have an isomorphism `T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor`.
+
 ```
       T
  W₁  ---> W₂
@@ -23,6 +27,7 @@ L|        |R
  W₁' ---> W₂'
       B
 ```
+
 In this file, we obtain the lemma
 `LocalizerMorphism.isRightDerivabilityStructure_of_isLocalizedEquivalence` which shows
 that if both `L` and `R` are localized equivalences (with `R.functor` essentially surjective),
@@ -37,7 +42,6 @@ The dual results for left derivability structures are also obtained.
 This will be particularly useful when `L.functor` and `R.functor` are functors
 from a category to a quotient category (e.g. functors from categories of homological
 complexes to homotopy categories).
-
 -/
 
 public section

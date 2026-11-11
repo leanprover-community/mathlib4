@@ -7,18 +7,20 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order related properties of Lp spaces
 
 ## Results
 
-- `Lp E p μ` is an ordered group when `E` is a `NormedLatticeAddCommGroup`.
+* `Lp E p μ` is an ordered group when `E` is a `NormedLatticeAddCommGroup`.
 
 ## TODO
 
-- move definitions of `Lp.posPart` and `Lp.negPart` to this file, and define them as
+* move definitions of `Lp.posPart` and `Lp.negPart` to this file, and define them as
   `PosPart.pos` and `NegPart.neg` given by the lattice structure.
-
 -/
 
 public section

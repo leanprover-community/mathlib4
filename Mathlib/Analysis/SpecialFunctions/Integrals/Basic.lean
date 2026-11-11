@@ -13,10 +13,14 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integration of specific interval integrals
 
 This file contains proofs of the integrals of various specific functions. This includes:
+
 * Integrals of simple functions, such as `id`, `pow`, `inv`, `exp`, `log`
 * Integrals of some trigonometric functions, such as `sin`, `cos`, `1 / (1 + x^2)`
 * The integral of `cos x ^ 2 - sin x ^ 2`
@@ -49,7 +53,9 @@ open MeasureTheory
 
 variable {f : ℝ → ℝ} (c d : ℝ)
 
-/-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
+/-!
+# Integrals of the form `c * ∫ x in a..b, f (c * x + d)`
+-/
 section
 
 @[simp]
@@ -110,7 +116,9 @@ end intervalIntegral
 
 open intervalIntegral
 
-/-! ### Integrals of simple functions -/
+/-!
+# Integrals of simple functions
+-/
 
 
 theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
@@ -455,7 +463,9 @@ end RpowCpow
 
 open Nat
 
-/-! ### Integral of `sin x ^ n` -/
+/-!
+# Integral of `sin x ^ n`
+-/
 
 theorem integral_sin_pow_aux :
     (∫ x in a..b, sin x ^ (n + 2)) =
@@ -527,7 +537,9 @@ theorem integral_sin_pow_succ_le : (∫ x in 0..π, sin x ^ (n + 1)) ≤ ∫ x i
 theorem integral_sin_pow_antitone : Antitone fun n : ℕ => ∫ x in 0..π, sin x ^ n :=
   antitone_nat_of_succ_le integral_sin_pow_succ_le
 
-/-! ### Integral of `cos x ^ n` -/
+/-!
+# Integral of `cos x ^ n`
+-/
 
 
 theorem integral_cos_pow_aux :
@@ -566,7 +578,9 @@ theorem integral_cos_pow :
 theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * sin a + b - a) / 2 := by
   simp [field, integral_cos_pow, add_sub_assoc]
 
-/-! ### Integral of `sin x ^ m * cos x ^ n` -/
+/-!
+# Integral of `sin x ^ m * cos x ^ n`
+-/
 
 
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `n` is odd. -/
@@ -652,7 +666,9 @@ theorem integral_sin_sq_mul_cos_sq :
   simp [h1, h2.intervalIntegrable, integral_comp_mul_left fun x => cos x ^ 2, h3, h4]
   ring
 
-/-! ### Integral of miscellaneous functions -/
+/-!
+# Integral of miscellaneous functions
+-/
 
 theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) = π / 2 :=
   calc

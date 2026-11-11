@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construction for the small object argument
 
@@ -14,6 +17,7 @@ Given a family of morphisms `f i : A i ⟶ B i` in a category `C`,
 we define a functor
 `SmallObject.functor f : Arrow S ⥤ Arrow S` which sends
 an object given by arrow `πX : X ⟶ S` to the pushout `functorObj f πX`:
+
 ```
 ∐ functorObjSrcFamily f πX ⟶       X
 
@@ -23,9 +27,11 @@ an object given by arrow `πX : X ⟶ S` to the pushout `functorObj f πX`:
 
 ∐ functorObjTgtFamily f πX ⟶ functorObj f πX
 ```
+
 where the morphism on the left is a coproduct (of copies of maps `f i`)
 indexed by a type `FunctorObjIndex f πX` which parametrizes the
 diagrams of the form
+
 ```
 A i ⟶ X
  |    |
@@ -42,8 +48,8 @@ provides a tautological morphism `B i ⟶ functorObj f πX`
 (see `SmallObject.ιFunctorObj_extension`).
 
 ## References
-- https://ncatlab.org/nlab/show/small+object+argument
 
+* https://ncatlab.org/nlab/show/small+object+argument
 -/
 
 @[expose] public section

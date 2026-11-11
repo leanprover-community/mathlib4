@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homology of single complexes
 
 The main definition in this file is `HomologicalComplex.homologyFunctorSingleIso`
 which is a natural isomorphism `single C c j ⋙ homologyFunctor C c j ≅ 𝟭 C`.
-
 -/
 
 @[expose] public section

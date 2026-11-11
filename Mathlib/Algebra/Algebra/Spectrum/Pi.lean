@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 
 import Mathlib.Algebra.Group.Pi.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectrum and quasispectrum of products
 
@@ -18,15 +21,14 @@ union of the (quasi)spectra.
 
 ## Main declarations
 
-+ `Pi.spectrum_eq`: `spectrum R a = ⋃ i, spectrum R (a i)` for `a : ∀ i, κ i`
-+ `Prod.spectrum_eq`: `spectrum R ⟨a, b⟩ = spectrum R a ∪ spectrum R b`
-+ `Pi.quasispectrum_eq`: `quasispectrum R a = ⋃ i, quasispectrum R (a i)` for `a : ∀ i, κ i`
-+ `Prod.quasispectrum_eq`: `quasispectrum R ⟨a, b⟩ = quasispectrum R a ∪ quasispectrum R b`
+* `Pi.spectrum_eq`: `spectrum R a = ⋃ i, spectrum R (a i)` for `a : ∀ i, κ i`
+* `Prod.spectrum_eq`: `spectrum R ⟨a, b⟩ = spectrum R a ∪ spectrum R b`
+* `Pi.quasispectrum_eq`: `quasispectrum R a = ⋃ i, quasispectrum R (a i)` for `a : ∀ i, κ i`
+* `Prod.quasispectrum_eq`: `quasispectrum R ⟨a, b⟩ = quasispectrum R a ∪ quasispectrum R b`
 
 ## TODO
 
-+ Apply these results to block matrices.
-
+* Apply these results to block matrices.
 -/
 
 @[expose] public section

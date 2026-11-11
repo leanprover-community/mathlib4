@@ -8,10 +8,13 @@ module
 public import Mathlib.Algebra.MvPolynomial.Derivation
 public import Mathlib.Algebra.MvPolynomial.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial derivatives of polynomials
 
-This file defines the notion of the formal *partial derivative* of a polynomial,
+This file defines the notion of the formal _partial derivative_ of a polynomial,
 the derivative with respect to a single variable.
 This derivative is not connected to the notion of derivative from analysis.
 It is based purely on the polynomial exponents and coefficients.
@@ -25,19 +28,13 @@ It is based purely on the polynomial exponents and coefficients.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type*` (indexing the variables)
-
-+ `R : Type*` `[CommRing R]` (the coefficients)
-
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
+* `σ : Type*` (indexing the variables)
+* `R : Type*` `[CommRing R]` (the coefficients)
+* `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
-
-+ `a : R`
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `p : MvPolynomial σ R`
-
+* `a : R`
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `p : MvPolynomial σ R`
 -/
 
 @[expose] public section

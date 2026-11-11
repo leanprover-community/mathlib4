@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Lie.Weights.IsSimple
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geck's construction is complete
 
@@ -25,7 +28,6 @@ this construction yields all finite-dimensional simple Lie algebras up to isomor
   `LieAlgebra.IsKilling.rootSystem` is left inverse to `RootPairing.GeckConstruction.lieAlgebra`.
 * `RootPairing.GeckConstruction.equivLieAlgebra`: up to equivalence,
   `LieAlgebra.IsKilling.rootSystem` is right inverse to `RootPairing.GeckConstruction.lieAlgebra`.
-
 -/
 
 @[expose] public section
@@ -127,9 +129,11 @@ def equivLieAlgebra (H : LieSubalgebra K L) [H.IsCartanSubalgebra] (b : (rootSys
   equivOfRootSystemEquiv <| equivRootSystem b
 
 open scoped Classical in
-/-- Every finite-dimensional simple Lie algebra arises from a root system via Geck's construction.
+/--
+Every finite-dimensional simple Lie algebra arises from a root system via Geck's construction.
 
-(Provided the coefficients are an algebraically-closed field of characteristic zero.) -/
+(Provided the coefficients are an algebraically-closed field of characteristic zero.)
+-/
 example :
     ∃ (H : LieSubalgebra K L) (_ : H.IsCartanSubalgebra) (b : (rootSystem H).Base),
       Nonempty (L ≃ₗ⁅K⁆ lieAlgebra b) := by

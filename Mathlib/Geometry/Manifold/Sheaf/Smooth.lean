@@ -12,23 +12,27 @@ public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 public import Mathlib.Geometry.Manifold.Sheaf.Basic
 public import Mathlib.Topology.Sheaves.Functors
 
-/-! # The sheaf of smooth functions on a manifold
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The sheaf of smooth functions on a manifold
 
 The sheaf of `𝕜`-smooth functions from a manifold `M` to a manifold `N` can be defined as a sheaf of
 types using the construction `StructureGroupoid.LocalInvariantProp.sheaf` from the file
 `Mathlib/Geometry/Manifold/Sheaf/Basic.lean`.  In this file we write that down (a one-liner), then
-do the work of upgrading this to a sheaf of [groups]/[abelian groups]/[rings]/[commutative rings]
-when `N` carries more algebraic structure.  For example, if `N` is `𝕜` then the sheaf of smooth
-functions from `M` to `𝕜` is a sheaf of commutative rings, the *structure sheaf* of `M`.
+do the work of upgrading this to a sheaf of \[groups\]/\[abelian groups\]/\[rings\]/\[commutative
+rings\] when `N` carries more algebraic structure.  For example, if `N` is `𝕜` then the sheaf of
+smooth functions from `M` to `𝕜` is a sheaf of commutative rings, the _structure sheaf_ of `M`.
 
 ## Main definitions
 
 * `smoothSheaf`: The sheaf of smooth functions from `M` to `N`, as a sheaf of types
 * `smoothSheaf.eval`: Canonical map onto `N` from the stalk of `smoothSheaf IM I M N` at `x`,
   given by evaluating sections at `x`
-* `smoothSheafGroup`, `smoothSheafCommGroup`, `smoothSheafRing`, `smoothSheafCommRing`: The
-  sheaf of smooth functions into a [Lie group]/[abelian Lie group]/[smooth ring]/[smooth commutative
-  ring], as a sheaf of [groups]/[abelian groups]/[rings]/[commutative rings]
+* `smoothSheafGroup`, `smoothSheafCommGroup`, `smoothSheafRing`, `smoothSheafCommRing`: The sheaf of
+  smooth functions into a \[Lie group\]/\[abelian Lie group\]/\[smooth ring\]/\[smooth commutative
+  ring\], as a sheaf of \[groups\]/\[abelian groups\]/\[rings\]/\[commutative rings\]
 * `smoothSheafCommRing.forgetStalk`: Identify the stalk at a point of the sheaf-of-commutative-rings
   of functions from `M` to `R` (for `R` a smooth ring) with the stalk at that point of the
   corresponding sheaf of types.

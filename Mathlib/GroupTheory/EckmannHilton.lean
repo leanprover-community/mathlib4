@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eckmann-Hilton argument
 
@@ -20,7 +23,6 @@ The main application lies in proving that higher homotopy groups (`πₙ` for `n
   over a unital binary operation, then the magma is a commutative monoid.
 * `EckmannHilton.commGroup`: If a type carries a group structure that distributes
   over a unital binary operation, then the group is commutative.
-
 -/
 
 public section
@@ -49,18 +51,22 @@ variable (distrib : ∀ a b c d, ((a <m₂> b) <m₁> c <m₂> d) = (a <m₁> c)
 
 include h₁ h₂ distrib
 
-/-- If a type carries two unital binary operations that distribute over each other,
+/--
+If a type carries two unital binary operations that distribute over each other,
 then they have the same unit elements.
 
 In fact, the two operations are the same, and give a commutative monoid structure,
-see `eckmann_hilton.CommMonoid`. -/
+see `eckmann_hilton.CommMonoid`.
+-/
 theorem one : e₁ = e₂ := by
   simpa only [h₁.left_id, h₁.right_id, h₂.left_id, h₂.right_id] using distrib e₂ e₁ e₁ e₂
 
-/-- If a type carries two unital binary operations that distribute over each other,
+/--
+If a type carries two unital binary operations that distribute over each other,
 then these operations are equal.
 
-In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
+In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`.
+-/
 theorem mul : m₁ = m₂ := by
   funext a b
   calc
@@ -68,17 +74,21 @@ theorem mul : m₁ = m₂ := by
       { simp only [one h₁ h₂ distrib, h₂.left_id, h₂.right_id] }
     _ = m₂ a b := by simp only [distrib, h₁.left_id, h₁.right_id]
 
-/-- If a type carries two unital binary operations that distribute over each other,
+/--
+If a type carries two unital binary operations that distribute over each other,
 then these operations are commutative.
 
-In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
+In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`.
+-/
 theorem mul_comm : Std.Commutative m₂ :=
   ⟨fun a b => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib e₂ a b e₂⟩
 
-/-- If a type carries two unital binary operations that distribute over each other,
+/--
+If a type carries two unital binary operations that distribute over each other,
 then these operations are associative.
 
-In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`. -/
+In fact, they give a commutative monoid structure, see `eckmann_hilton.CommMonoid`.
+-/
 theorem mul_assoc : Std.Associative m₂ :=
   ⟨fun a b c => by simpa [mul h₁ h₂ distrib, h₂.left_id, h₂.right_id] using distrib a b e₂ c⟩
 

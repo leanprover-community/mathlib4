@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composition of kernels
 
@@ -30,7 +33,6 @@ a kernel from `α` to `γ`.
 ## Notation
 
 * `η ∘ₖ κ = ProbabilityTheory.Kernel.comp η κ`
-
 -/
 
 @[expose] public section
@@ -88,7 +90,9 @@ theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) (a : α) :
 
 section Ae
 
-/-! ### `ae` filter of the composition -/
+/-!
+# `ae` filter of the composition
+-/
 
 variable {κ : Kernel α β} {η : Kernel β γ} {a : α} {s : Set γ}
 
@@ -242,11 +246,15 @@ noncomputable instance : Monoid (Kernel α α) where
   one_mul := id_comp
   mul_one := comp_id
 
-/-! ### Chapman-Kolmogorov Equations -/
+/-!
+# Chapman-Kolmogorov Equations
+-/
 
-/-- The **Chapman-Kolmogorov equation**, kernel composition version.
+/--
+The *Chapman-Kolmogorov equation*, kernel composition version.
 The `n+m`-step transition kernel is the composition of the `n`-step and `m`-step kernels.
-Ref. *Meyn-Tweedie* Theorem 3.4.2, page 68 -/
+Ref. _Meyn-Tweedie_ Theorem 3.4.2, page 68
+-/
 theorem pow_add (κ : Kernel α α) (m n : ℕ) :
     κ ^ (m + n) = (κ ^ m) ∘ₖ (κ ^ n) := _root_.pow_add κ m n
 

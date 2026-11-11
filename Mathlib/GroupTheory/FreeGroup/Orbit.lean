@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.FreeGroup.Reduce
 public import Mathlib.GroupTheory.GroupAction.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orbits of `FreeGroup.startsWith`
 

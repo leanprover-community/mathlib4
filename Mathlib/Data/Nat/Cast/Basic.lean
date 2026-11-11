@@ -12,10 +12,13 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Nat.Cast.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of natural numbers (additional theorems)
 
-This file proves additional properties about the *canonical* homomorphism from
+This file proves additional properties about the _canonical_ homomorphism from
 the natural numbers into an additive monoid with a one (`Nat.cast`).
 
 ## Main declarations
@@ -139,11 +142,13 @@ theorem eq_natCast [FunLike F ℕ R] [RingHomClass F ℕ R] (f : F) : ∀ n, f n
 theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 
-/-- This lemma is not marked `@[simp]` lemma because its `#discr_tree_key` (for the LHS) would just
+/--
+This lemma is not marked `@[simp]` lemma because its `#discr_tree_key` (for the LHS) would just
 be `DFunLike.coe _ _`, due to the `ofNat` that https://github.com/leanprover/lean4/issues/2867
 forces us to include, and therefore it would negatively impact performance.
 
-If that issue is resolved, this can be marked `@[simp]`. -/
+If that issue is resolved, this can be marked `@[simp]`.
+-/
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f ofNat(n) : S) = OfNat.ofNat n :=
   map_natCast f n

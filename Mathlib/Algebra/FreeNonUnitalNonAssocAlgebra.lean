@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Free
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free algebras
 
@@ -20,9 +23,9 @@ Note that elsewhere we have a construction of the free unital, associative algeb
 
 ## Main definitions
 
-  * `FreeNonUnitalNonAssocAlgebra`
-  * `FreeNonUnitalNonAssocAlgebra.lift`
-  * `FreeNonUnitalNonAssocAlgebra.of`
+* `FreeNonUnitalNonAssocAlgebra`
+* `FreeNonUnitalNonAssocAlgebra.lift`
+* `FreeNonUnitalNonAssocAlgebra.of`
 
 ## Implementation details
 

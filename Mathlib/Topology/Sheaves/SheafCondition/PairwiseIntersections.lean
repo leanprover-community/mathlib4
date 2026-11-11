@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Category.Pairwise
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalent formulations of the sheaf condition
 
@@ -15,6 +18,7 @@ We give an equivalent formulation of the sheaf condition.
 
 Given any indexed type `ι`, we define `overlap ι`,
 a category with objects corresponding to
+
 * individual open sets, `single i`, and
 * intersections of pairs of open sets, `pair i j`,
   with morphisms from `pair i j` to both `single i` and `single j`.
@@ -26,6 +30,7 @@ and in fact this is a limit cone.
 
 A presheaf `F : Presheaf C X` is a sheaf precisely if it preserves this limit.
 We express this in two equivalent ways, as
+
 * `isLimit (F.mapCone (cone U))`, or
 * `preservesLimit (diagram U) F`
 
@@ -49,7 +54,8 @@ namespace TopCat.Presheaf
 
 section
 
-/-- An alternative formulation of the sheaf condition
+/--
+An alternative formulation of the sheaf condition
 (which we prove equivalent to the usual one below as
 `isSheaf_iff_isSheafPairwiseIntersections`).
 
@@ -59,7 +65,8 @@ A presheaf is a sheaf if `F` sends the cone `(Pairwise.cocone U).op` to a limit 
 def IsSheafPairwiseIntersections (F : Presheaf C X) : Prop :=
   ∀ ⦃ι : Type w⦄ (U : ι → Opens X), Nonempty (IsLimit (F.mapCone (Pairwise.cocone U).op))
 
-/-- An alternative formulation of the sheaf condition
+/--
+An alternative formulation of the sheaf condition
 (which we prove equivalent to the usual one below as
 `isSheaf_iff_isSheafPreservesLimitPairwiseIntersections`).
 

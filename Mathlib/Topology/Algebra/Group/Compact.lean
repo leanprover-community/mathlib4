@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Group.Pointwise
 public import Mathlib.Topology.Sets.Compacts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional results on topological groups
 

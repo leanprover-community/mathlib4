@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Convenient.GeneratedBy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `X`-continuous maps
 
@@ -16,9 +19,9 @@ Given a family `X i` of topological spaces, we introduce a predicate
 the composition `g ∘ f` is continuous.
 
 ## References
-* [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
-  categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
+* ‍\[Martín Escardó, Jimmie Lawson and Alex Simpson, _Comparing Cartesian closed
+  categories of (core) compactly generated spaces_\]\[escardo-lawson-simpson-2004\]
 -/
 
 universe v v' t u

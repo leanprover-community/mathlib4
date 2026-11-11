@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Map between Ext groups induced by an exact functor
 
@@ -19,26 +22,17 @@ where `F` is an exact functor between abelian categories.
 
 * `CategoryTheory.Abelian.Ext.mapExactFunctor` : The map between `Ext` induced by
   `CategoryTheory.LocalizerMorphism.smallShiftedHomMap`.
-
 * `CategoryTheory.Functor.mapExtAddHom` : Upgraded of `CategoryTheory.Abelian.Ext.mapExactFunctor`
   into an additive homomorphism.
-
 * `CategoryTheory.Functor.mapExtLinearMap` : Upgrade of `F.mapExtAddHom` assuming `F` is linear.
-
 * `Ext.mapExactFunctor_mk₀` : `Ext.mapExactFunctor` commutes with `Ext.mk₀`
-
 * `Ext.mapExactFunctor_comp` : `Ext.mapExactFunctor` preserves `Ext.comp`
-
 * `mapExactFunctor_extClass` :
   `Ext.mapExactFunctor` commutes with `ShortComplex.ShortExact.extClass`
-
 * `id_mapExactFunctor`: the identity functor acts by the identity on `Ext` groups
-
 * `comp_mapExactFunctor`: compatibility with the composition of two exact functors
-
 * `mapExactFunctor_comp_mk₀_natTransApp`: compatibility with a natural
-transformation between two exact functors
-
+  transformation between two exact functors
 -/
 
 @[expose] public section

@@ -11,6 +11,9 @@ public import Mathlib.AlgebraicGeometry.Sites.SheafQuasiCompact
 import Mathlib.AlgebraicGeometry.EffectiveEpi
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fpqc topology
 
@@ -19,12 +22,11 @@ topology for flat morphisms.
 
 ## Main declarations
 
-- `fppfPrecoverage`: The precoverage given by jointly-surjective families of flat
+* `fppfPrecoverage`: The precoverage given by jointly-surjective families of flat
   morphisms, locally of finite presentation.
-- `fpqcPrecoverage`: The precoverage given by quasi-compact, jointly-surjective families of
+* `fpqcPrecoverage`: The precoverage given by quasi-compact, jointly-surjective families of
   flat morphisms.
-- The fpqc topology is subcanonical. This is available by `inferInstance`.
-
+* The fpqc topology is subcanonical. This is available by `inferInstance`.
 -/
 
 @[expose] public section

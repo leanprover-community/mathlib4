@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of injective objects
 

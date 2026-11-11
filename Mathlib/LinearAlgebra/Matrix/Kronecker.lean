@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.RingTheory.TensorProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kronecker product of matrices
 
@@ -26,7 +29,6 @@ This defines the [Kronecker product](https://en.wikipedia.org/wiki/Kronecker_pro
 
 * `Matrix.kronecker`: An alias of `kroneckerMap (*)`. Prefer using the notation.
 * `Matrix.kroneckerBilinear`: `Matrix.kronecker` is bilinear
-
 * `Matrix.kroneckerTMul`: An alias of `kroneckerMap (⊗ₜ)`. Prefer using the notation.
 * `Matrix.kroneckerTMulBilinear`: `Matrix.kroneckerTMul` is bilinear
 
@@ -37,7 +39,6 @@ These require `open Kronecker`:
 * `A ⊗ₖ B` for `kroneckerMap (*) A B`. Lemmas about this notation use the token `kronecker`.
 * `A ⊗ₖₜ B` and `A ⊗ₖₜ[R] B` for `kroneckerMap (⊗ₜ) A B`.
   Lemmas about this notation use the token `kroneckerTMul`.
-
 -/
 
 @[expose] public section
@@ -208,9 +209,11 @@ def kroneckerMapBilinear [Semiring S] [Semiring R]
     (kroneckerMap_add_right _ fun a => (f a).map_add) fun r =>
     kroneckerMap_smul_right _ _ fun a => (f a).map_smul r
 
-/-- `Matrix.kroneckerMapBilinear` commutes with `*` if `f` does.
+/--
+`Matrix.kroneckerMapBilinear` commutes with `*` if `f` does.
 
-This is primarily used with `R = ℕ` to prove `Matrix.mul_kronecker_mul`. -/
+This is primarily used with `R = ℕ` to prove `Matrix.mul_kronecker_mul`.
+-/
 theorem kroneckerMapBilinear_mul_mul [Semiring S] [Semiring R] [Fintype m] [Fintype m']
     [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalNonAssocSemiring γ]
     [Module R α] [Module R γ] [Module S β] [Module S γ] [SMulCommClass S R γ]
@@ -224,9 +227,11 @@ theorem kroneckerMapBilinear_mul_mul [Semiring S] [Semiring R] [Fintype m] [Fint
     Finset.sum_product, kroneckerMap_apply]
   simp_rw [map_sum f, LinearMap.sum_apply, map_sum, h_comm]
 
-/-- `trace` distributes over `Matrix.kroneckerMapBilinear`.
+/--
+`trace` distributes over `Matrix.kroneckerMapBilinear`.
 
-This is primarily used with `R = ℕ` to prove `Matrix.trace_kronecker`. -/
+This is primarily used with `R = ℕ` to prove `Matrix.trace_kronecker`.
+-/
 theorem trace_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintype n]
     [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
     [Module R α] [Module R γ] [Module S β] [Module S γ] [SMulCommClass S R γ]
@@ -236,9 +241,11 @@ theorem trace_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintyp
   simp_rw [Matrix.trace, Matrix.diag, kroneckerMapBilinear_apply_apply, LinearMap.map_sum₂,
     map_sum, ← Finset.univ_product_univ, Finset.sum_product, kroneckerMap_apply]
 
-/-- `determinant` of `Matrix.kroneckerMapBilinear`.
+/--
+`determinant` of `Matrix.kroneckerMapBilinear`.
 
-This is primarily used with `R = ℕ` to prove `Matrix.det_kronecker`. -/
+This is primarily used with `R = ℕ` to prove `Matrix.det_kronecker`.
+-/
 theorem det_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintype n] [DecidableEq m]
     [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β] [CommRing γ] [Module R α] [Module S β]
     [Module R γ] [Module S γ] [SMulCommClass S R γ]
@@ -261,7 +268,9 @@ theorem det_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintype 
 
 end KroneckerMap
 
-/-! ### Specialization to `Matrix.kroneckerMap (*)` -/
+/-!
+# Specialization to `Matrix.kroneckerMap (*)`
+-/
 
 
 section Kronecker
@@ -415,7 +424,9 @@ theorem conjTranspose_kronecker' [Mul R] [StarMul R] (x : Matrix l m R) (y : Mat
 
 end Kronecker
 
-/-! ### Specialization to `Matrix.kroneckerMap (⊗ₜ)` -/
+/-!
+# Specialization to `Matrix.kroneckerMap (⊗ₜ)`
+-/
 
 
 section KroneckerTmul

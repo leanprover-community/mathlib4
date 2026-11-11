@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Pi.Basic
 public import Mathlib.Data.Set.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete categories
 
@@ -88,10 +91,12 @@ to_dual_for Discrete.Hom.eq := self.eq.symm
 to_dual_for Discrete.Hom.mk := ⟨eq.symm⟩
 to_dual_for Discrete.Hom.casesOn := t.casesOn (mk ·.symm)
 
-/-- The "Discrete" category on a type, whose morphisms are equalities.
+/--
+The "Discrete" category on a type, whose morphisms are equalities.
 
 Because we do not allow morphisms in `Prop` (only in `Type`),
-somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`. -/
+somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`.
+-/
 @[stacks 001A]
 instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
   Hom X Y := Discrete.Hom X.as Y.as
@@ -125,10 +130,12 @@ macro "discrete_cases" : tactic =>
 open Lean Elab Tactic in
 /--
 Use:
+
 ```
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 ```
+
 to locally give `cat_disch` the ability to call `cases` on
 `Discrete` and `(_ : Discrete _) ⟶ (_ : Discrete _)` hypotheses.
 -/

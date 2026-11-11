@@ -15,6 +15,9 @@ public import Mathlib.Order.Filter.Pi
 public import Mathlib.Order.Filter.Prod
 public import Mathlib.Order.Heyting.Boundary
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The cofinite filter
 
@@ -155,7 +158,8 @@ theorem univ_pi_mem_pi {α : ι → Type*} {s : ∀ i, Set (α i)} {l : ∀ i, F
   else
     exact ha i hi
 
-/-- Given a family of maps `f i : α i → β i` and a family of filters `l i : Filter (α i)`,
+/--
+Given a family of maps `f i : α i → β i` and a family of filters `l i : Filter (α i)`,
 if all but finitely many of `f i` are surjective,
 then the indexed product of `f i`s maps the indexed product of the filters `l i`
 to the indexed products of their pushforwards under individual `f i`s.
@@ -177,7 +181,8 @@ theorem map_piMap_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
   · filter_upwards [hf, hI.compl_mem_cofinite] with i hsurj (hiI : i ∉ I)
     simp [hiI, hsurj.range_eq]
 
-/-- Given finite families of maps `f i : α i → β i` and of filters `l i : Filter (α i)`,
+/--
+Given finite families of maps `f i : α i → β i` and of filters `l i : Filter (α i)`,
 the indexed product of `f i`s maps the indexed product of the filters `l i`
 to the indexed products of their pushforwards under individual `f i`s.
 

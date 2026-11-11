@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely generated monoids and groups
 
@@ -39,7 +42,6 @@ the more general `IsMulFG`.
 
 Previously the subobject predicates `Submonoid.FG` and `Subgroup.FG` were used to define the more
 general `Monoid.FG` and `Group.FG`, but the new `IsMulFG` defines the general predicate directly.
-
 -/
 
 open scoped Finset
@@ -52,11 +54,13 @@ section
 
 open Pointwise
 
-/-- A type with addition is finitely generated if there is a finite subset such that every
+/--
+A type with addition is finitely generated if there is a finite subset such that every
 element of the type can be written as a finite sum of elements from this finite subset.
 
 This generalizes and will eventually replace the four existing definitions
-`AddSubmonoid.FG`, `AddMonoid.FG`, `AddSubgroup.FG`, and `AddGroup.FG`. -/
+`AddSubmonoid.FG`, `AddMonoid.FG`, `AddSubgroup.FG`, and `AddGroup.FG`.
+-/
 class IsAddFG (M : Type*) [Add M] : Prop where
   out (M) : ∃ S : Finset M, AddSubsemigroup.closure (S : Set M) = ⊤
 
@@ -64,11 +68,13 @@ section Mul
 
 variable {M M' : Type*} [Mul M] [Mul M']
 
-/-- A type with multiplication is finitely generated if there is a finite subset such that every
+/--
+A type with multiplication is finitely generated if there is a finite subset such that every
 element of the type can be written as a finite product of elements from this finite subset.
 
 This generalizes and will eventually replace the four existing definitions
-`Submonoid.FG`, `Monoid.FG`, `Subgroup.FG`, and `Group.FG`. -/
+`Submonoid.FG`, `Monoid.FG`, `Subgroup.FG`, and `Group.FG`.
+-/
 @[to_additive existing]
 class IsMulFG (M : Type*) [Mul M] : Prop where
   out (M) : ∃ S : Finset M, Subsemigroup.closure (S : Set M) = ⊤
@@ -455,7 +461,9 @@ end Subgroup
 
 end
 
-/-! ### Monoids and submonoids -/
+/-!
+# Monoids and submonoids
+-/
 
 
 open scoped Pointwise
@@ -654,7 +662,9 @@ theorem Monoid.fg_iff_exists_freeGroup_hom_surjective_finite :
 theorem Submonoid.powers_fg (r : M) : (Submonoid.powers r).FG :=
   inferInstance
 
-/-! ### Groups and subgroups -/
+/-!
+# Groups and subgroups
+-/
 
 
 variable {G H : Type*} [Group G] [AddGroup H]

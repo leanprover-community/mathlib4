@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Covering.Differentiation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Besicovitch covering theorems
 
@@ -50,6 +53,7 @@ context to make them more easily usable.
 
 We also restate the following specialized versions of general theorems on differentiation of
 measures:
+
 * `Besicovitch.ae_tendsto_rnDeriv` ensures that `ρ (closedBall x r) / μ (closedBall x r)` tends
   almost surely to the Radon-Nikodym derivative of `ρ` with respect to `μ` at `x`.
 * `Besicovitch.ae_tendsto_measure_inter_div` states that almost every point in an arbitrary set `s`
@@ -59,7 +63,7 @@ measures:
 
 ## Implementation
 
-#### Sketch of proof of the topological Besicovitch theorem:
+### Sketch of proof of the topological Besicovitch theorem:
 
 We choose balls in a greedy way. First choose a ball with maximal radius (or rather, since there
 is no guarantee the maximal radius is realized, a ball with radius within a factor `τ` of the
@@ -78,7 +82,7 @@ controlled: they form a satellite configuration with `N + 1` balls (essentially 
 satellite configurations). Since we assume that there are no such configurations, this is a
 contradiction.
 
-#### Sketch of proof of the measurable Besicovitch theorem:
+### Sketch of proof of the measurable Besicovitch theorem:
 
 From the topological Besicovitch theorem, one can find a disjoint countable family of balls
 covering a proportion `> 1 / (N + 1)` of the space. Taking a large enough finite subset of these
@@ -103,11 +107,12 @@ open Metric Set Filter Fin MeasureTheory TopologicalSpace
 open scoped Topology ENNReal MeasureTheory NNReal
 
 /-!
-### Satellite configurations
+# Satellite configurations
 -/
 
 
-/-- A satellite configuration is a configuration of `N+1` points that shows up in the inductive
+/--
+A satellite configuration is a configuration of `N+1` points that shows up in the inductive
 construction for the Besicovitch covering theorem. It depends on some parameter `τ ≥ 1`.
 
 This is a family of balls (indexed by `i : Fin N.succ`, with center `c i` and radius `r i`) such
@@ -189,7 +194,9 @@ theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := 
 
 end SatelliteConfig
 
-/-! ### Extracting disjoint subfamilies from a ball covering -/
+/-!
+# Extracting disjoint subfamilies from a ball covering
+-/
 
 
 /-- A ball package is a family of balls in a metric space with positive bounded radii. -/
@@ -514,7 +521,7 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
     exact ⟨⟨p.color a, p.color_lt ha.1 hN⟩, a, rfl, ha⟩
 
 /-!
-### The measurable Besicovitch covering theorem
+# The measurable Besicovitch covering theorem
 -/
 
 
@@ -794,7 +801,8 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     rw [← Nat.succ_eq_add_one, u_succ]
     exact (hF (u n) (Pu n)).1
 
-/-- The measurable **Besicovitch covering theorem**.
+/--
+The measurable *Besicovitch covering theorem*.
 
 Assume that, for any `x` in a set `s`, one is given a set of admissible closed balls centered at
 `x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
@@ -820,7 +828,8 @@ theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SFinite μ
     ⟨t, t_count, ts, tr, tν, tdisj⟩
   exact ⟨t, t_count, ts, tr, hμν tν, tdisj⟩
 
-/-- The measurable **Besicovitch covering theorem**.
+/--
+The measurable *Besicovitch covering theorem*.
 
 Assume that, for any `x` in a set `s`, one is given a set of admissible closed balls centered at
 `x`, with arbitrarily small radii. Then there exists a disjoint covering of almost all `s` by
@@ -1013,7 +1022,9 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul, ENNReal.mul_div_le]
       _ = μ s + ε := by rw [add_assoc, ENNReal.add_halves]
 
-/-! ### Consequences on differentiation of measures -/
+/-!
+# Consequences on differentiation of measures
+-/
 
 /-- In a space with the Besicovitch covering property, the set of closed balls with positive radius
 forms a Vitali family. This is essentially a restatement of the measurable Besicovitch theorem. -/
@@ -1095,12 +1106,14 @@ theorem ae_tendsto_measure_inter_div_of_measurableSet (μ : Measure β) [IsLocal
   intro x hx
   exact hx.comp (tendsto_filterAt μ x)
 
-/-- Given an arbitrary set `s`, then `μ (s ∩ closedBall x r) / μ (closedBall x r)` converges
+/--
+Given an arbitrary set `s`, then `μ (s ∩ closedBall x r) / μ (closedBall x r)` converges
 to `1` when `r` tends to `0`, for almost every `x` in `s`.
 This shows that almost every point of `s` is a Lebesgue density point for `s`.
 A stronger version holds for measurable sets, see `ae_tendsto_measure_inter_div_of_measurableSet`.
 
-See also `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`. -/
+See also `IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div`.
+-/
 theorem ae_tendsto_measure_inter_div (μ : Measure β) [IsLocallyFiniteMeasure μ] (s : Set β) :
     ∀ᵐ x ∂μ.restrict s,
       Tendsto (fun r => μ (s ∩ closedBall x r) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 1) := by

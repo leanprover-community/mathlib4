@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Data.ENat.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trailing degree of univariate polynomials
 

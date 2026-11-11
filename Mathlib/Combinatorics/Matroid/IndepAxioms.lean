@@ -10,6 +10,9 @@ public import Mathlib.Data.Set.Finite.Lattice
 
 import Mathlib.Order.Interval.Finset.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matroid Independence and Basis axioms
 
@@ -54,37 +57,26 @@ for the inverse of `e`).
 
 ## Main definitions
 
-
 * `IndepMatroid α` is a matroid structure on `α` described in terms of its independent sets
   in full generality, using infinite versions of the axioms.
-
 * `IndepMatroid.matroid` turns `M' : IndepMatroid α` into `M : Matroid α` with `M'.Indep = M.Indep`.
-
 * `IndepMatroid.ofFinitary` constructs an `IndepMatroid` whose associated `Matroid` is `Finitary`
   in the special case where independence of a set is determined only by that of its
   finite subsets. This construction uses Zorn's lemma.
-
 * `IndepMatroid.ofFinitaryCardAugment` is a variant of `IndepMatroid.ofFinitary` where the
   augmentation axiom resembles the finite augmentation axiom.
-
 * `IndepMatroid.ofBdd` constructs an `IndepMatroid` in the case where there is some known
   absolute upper bound on the size of an independent set. This uses the infinite version of
   the augmentation axiom; the corresponding `Matroid` is `RankFinite`.
-
 * `IndepMatroid.ofBddAugment` is the same as the above, but with a finite augmentation axiom.
-
 * `IndepMatroid.ofFinite` constructs an `IndepMatroid` from a finite ground set in terms of
   its independent sets.
-
 * `IndepMatroid.ofFinset` constructs an `IndepMatroid α` whose corresponding matroid is `Finitary`
   from an independence predicate on `Finset α`.
-
 * `Matroid.ofExistsMatroid` constructs a 'copy' of a matroid that is known only
   existentially, but whose independence predicate is known explicitly.
-
 * `Matroid.ofExistsFiniteIsBase` constructs a matroid from its bases, if it is known that one
   of them is finite. This gives a `RankFinite` matroid.
-
 * `Matroid.ofIsBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
 
@@ -98,7 +90,8 @@ variable {α : Type*}
 
 section IndepMatroid
 
-/-- A matroid as defined by a ground set and an independence predicate.
+/--
+A matroid as defined by a ground set and an independence predicate.
 This definition is an implementation detail whose purpose is to organize the multiple
 different versions of the independence axioms;
 usually, terms of type `IndepMatroid` should either be directly piped into `IndepMatroid.matroid`,
@@ -107,22 +100,26 @@ which is then converted into a matroid via `IndepMatroid.matroid`.
 
 To define a `Matroid α` from a known independence predicate
 `MyIndep : Set α → Prop` and ground set `E : Set α`, one can either write
+
 ```
 def myMatroid (…) : Matroid α :=
   IndepMatroid.matroid <| IndepMatroid.ofFoo E MyIndep _ _ … _
 ```
+
 or, slightly more indirectly,
+
 ```
 private def myIndepMatroid (…) : IndepMatroid α := IndepMatroid.ofFoo E MyIndep _ _ … _
 
 def myMatroid (…) : Matroid α := (myIndepMatroid …).matroid
 ```
+
 In both cases, `IndepMatroid.ofFoo` is either `IndepMatroid.mk`,
 or one of the several other available constructors for `IndepMatroid`,
 and the `_` represent the proofs that this constructor requires.
 
 After such a definition is made, the facts that `myMatroid.Indep = myIndep` and `myMatroid.E = E`
-are true by either `rfl` or `simp [myMatroid]`, and can be made directly into @[simp] lemmas.
+are true by either `rfl` or `simp [myMatroid]`, and can be made directly into @\[simp\] lemmas.
 -/
 structure IndepMatroid (α : Type*) where
   /-- The ground set -/

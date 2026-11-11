@@ -13,9 +13,11 @@ public import Mathlib.RingTheory.LocalProperties.Injective
 import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation of Injective Dimension with Localizations
-
 -/
 
 public section

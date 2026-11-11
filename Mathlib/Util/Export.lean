@@ -9,11 +9,14 @@ public meta import Lean.CoreM
 public meta import Lean.Util.FoldConsts
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A rudimentary export format
 
-Adapted from
-<https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
+Adapted from [
+https://github.com/leanprover-community/lean/blob/master/doc/export\_format.md](https://github.com/leanprover-community/lean/blob/master/doc/export_format.md)
 with support for Lean 4 kernel primitives.
 -/
 

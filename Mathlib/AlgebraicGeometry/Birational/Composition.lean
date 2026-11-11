@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Birational.Dominant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composition of rational maps
 
@@ -14,17 +17,16 @@ This file defines composition for partial maps and rational maps between schemes
 
 ## Main definitions
 
-- `Scheme.PartialMap.comp`: given a dominant partial map `f : X.PartialMap Y` and any partial map
+* `Scheme.PartialMap.comp`: given a dominant partial map `f : X.PartialMap Y` and any partial map
   `g : Y.PartialMap Z`, their composition `f.comp g : X.PartialMap Z` is defined on the preimage
   of `g`'s domain under `f`.
-- `Scheme.RationalMap.comp`: composition of rational maps, defined via a dominant representative.
+* `Scheme.RationalMap.comp`: composition of rational maps, defined via a dominant representative.
 
 ## Main statements
 
-- `Scheme.PartialMap.comp_equiv_of_equiv`: Composition respects equivalence of partial maps.
-- `Scheme.PartialMap.comp_assoc`: Composition of partial maps is associative.
-- `Scheme.RationalMap.comp_assoc`: Composition of rational maps is associative.
-
+* `Scheme.PartialMap.comp_equiv_of_equiv`: Composition respects equivalence of partial maps.
+* `Scheme.PartialMap.comp_assoc`: Composition of partial maps is associative.
+* `Scheme.RationalMap.comp_assoc`: Composition of rational maps is associative.
 -/
 
 @[expose] public section

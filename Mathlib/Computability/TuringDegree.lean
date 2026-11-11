@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Computability.RecursiveIn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Turing degrees
 
@@ -15,21 +18,21 @@ equivalence relation, and defines Turing degrees as the quotient under this rela
 
 ## Main definitions
 
-- `TuringReducible`: A relation defining Turing reducibility between partial functions.
-- `TuringEquivalent`: An equivalence relation defining Turing equivalence between partial functions.
-- `TuringDegree`: The type of Turing degrees, defined as the quotient of partial functions under
+* `TuringReducible`: A relation defining Turing reducibility between partial functions.
+* `TuringEquivalent`: An equivalence relation defining Turing equivalence between partial functions.
+* `TuringDegree`: The type of Turing degrees, defined as the quotient of partial functions under
   `TuringEquivalent`.
 
 ## Notation
 
-- `f ≤ᵀ g` : `f` is Turing reducible to `g`.
-- `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
+* `f ≤ᵀ g` : `f` is Turing reducible to `g`.
+* `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
 
 ## References
 
-* [Odifreddi1989] Odifreddi, Piergiorgio.
-  *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers,
-  Vol. I*. Springer-Verlag, 1989.
+* ‍\[Odifreddi1989\] Odifreddi, Piergiorgio.
+  _Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers,
+  Vol. I_. Springer-Verlag, 1989.
 
 ## Tags
 

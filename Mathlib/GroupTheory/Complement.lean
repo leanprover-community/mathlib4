@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Index
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complements
 
@@ -14,16 +17,16 @@ In this file we define the complement of a subgroup.
 
 ## Main definitions
 
-- `Subgroup.IsComplement S T` where `S` and `T` are subsets of `G` states that every `g : G` can be
+* `Subgroup.IsComplement S T` where `S` and `T` are subsets of `G` states that every `g : G` can be
   written uniquely as a product `s * t` for `s ∈ S`, `t ∈ T`.
-- `H.LeftTransversal` where `H` is a subgroup of `G` is the type of all left-complements of `H`,
+* `H.LeftTransversal` where `H` is a subgroup of `G` is the type of all left-complements of `H`,
   i.e. the set of all `S : Set G` that contain exactly one element of each left coset of `H`.
-- `H.RightTransversal` where `H` is a subgroup of `G` is the set of all right-complements of `H`,
+* `H.RightTransversal` where `H` is a subgroup of `G` is the set of all right-complements of `H`,
   i.e. the set of all `T : Set G` that contain exactly one element of each right coset of `H`.
 
 ## Main results
 
-- `isComplement'_of_coprime` : Subgroups of coprime order are complements.
+* `isComplement'_of_coprime` : Subgroups of coprime order are complements.
 -/
 
 @[expose] public section
@@ -35,16 +38,19 @@ namespace Subgroup
 
 variable {G : Type*} [Group G] (H K : Subgroup G) (S T : Set G)
 
-/-- `S` and `T` are complements if `(*) : S × T → G` is a bijection.
+/--
+`S` and `T` are complements if `(*) : S × T → G` is a bijection.
 This notion generalizes left transversals, right transversals, and complementary subgroups.
 
 If `S` and `T` are `SetLike`s such as `Subgroup`s, see `isComplement_iff_bijective` for a
 more ergonomic way to unfold.
 -/
-@[to_additive /-- `S` and `T` are complements if `(+) : S × T → G` is a bijection
+@[to_additive /--
+              `S` and `T` are complements if `(+) : S × T → G` is a bijection
 
-If `S` and `T` are `SetLike`s such as `AddSubgroup`s, see `isComplement_iff_bijective` for a
-more ergonomic way to unfold. -/]
+              If `S` and `T` are `SetLike`s such as `AddSubgroup`s, see `isComplement_iff_bijective`
+for a more ergonomic way to unfold.
+              -/]
 def IsComplement : Prop :=
   Function.Bijective fun x : S × T => x.1.1 * x.2.1
 

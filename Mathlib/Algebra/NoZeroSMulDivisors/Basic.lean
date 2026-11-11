@@ -9,6 +9,9 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 import Mathlib.Algebra.GroupWithZero.Action.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `NoZeroSMulDivisors`
 

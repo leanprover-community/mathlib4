@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Dold-Kan correspondence
 
@@ -60,12 +63,12 @@ In `FunctorGamma.lean`, assuming that the category `C` is additive,
 we define the functor in the other direction
 `Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C)` as the formal
 extension of a functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C` which is
-defined similarly as in [*Simplicial Homotopy Theory* by Goerss-Jardine][goerss-jardine-2009].
+defined similarly as in \[_Simplicial Homotopy Theory_ by Goerss-Jardine\]\[goerss-jardine-2009\].
 In `Degeneracies.lean`, we show that `PInfty` vanishes on the image of degeneracy
 operators, which is one of the key properties that makes it possible to construct
 the isomorphism `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
-The rest of the proof follows the strategy in the [original paper by Dold][dold1958]. We show
+The rest of the proof follows the strategy in the \[original paper by Dold\]\[dold1958\]. We show
 that the functor `N₂` reflects isomorphisms in `NReflectsIso.lean`: this relies on a
 decomposition of the identity of `X _⦋n⦌` using `PInfty.f n` and degeneracies obtained in
 `Decomposition.lean`. Then, in `NCompGamma.lean`, we construct a natural transformation
@@ -114,9 +117,9 @@ TODO: dualise all of this as `CosimplicialObject A ⥤ CochainComplex A ℕ`. (I
 what is the best way to do this. The exact design may be decided when it is needed.)
 
 ## References
-* [Albrecht Dold, Homology of Symmetric Products and Other Functors of Complexes][dold1958]
-* [Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory][goerss-jardine-2009]
 
+* ‍\[Albrecht Dold, Homology of Symmetric Products and Other Functors of Complexes\]\[dold1958\]
+* ‍\[Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory\]\[goerss-jardine-2009\]
 -/
 
 @[expose] public section

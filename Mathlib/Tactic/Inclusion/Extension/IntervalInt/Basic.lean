@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.BinarySplit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# Basic inclusion extensions for interval_int
+# Basic inclusion extensions for interval\_int
 
 This file defines basic operations for the `interval_int` inclusion family.
 -/

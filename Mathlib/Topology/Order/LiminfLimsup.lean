@@ -11,6 +11,9 @@ public import Mathlib.Topology.Order.Monotone
 import Mathlib.Data.Fintype.Order
 import Mathlib.Topology.Order.MonotoneConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about liminf and limsup in an order topology.
 

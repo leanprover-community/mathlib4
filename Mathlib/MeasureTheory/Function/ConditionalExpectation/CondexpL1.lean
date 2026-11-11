@@ -9,7 +9,11 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 
 import Mathlib.MeasureTheory.Function.LpSpace.CompleteOfCompleteLp
 
-/-! # Conditional expectation in L1
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Conditional expectation in L1
 
 This file contains two more steps of the construction of the conditional expectation, which is
 completed in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
@@ -17,6 +21,7 @@ description of the full process.
 
 The conditional expectation of an `L²` function is defined in
 `MeasureTheory.Function.ConditionalExpectation.CondexpL2`. In this file, we perform two steps.
+
 * Show that the conditional expectation of the indicator of a measurable set with finite measure
   is integrable and define a map `Set α → (E →L[ℝ] (α →₁[μ] E))` which to a set associates a linear
   map. That linear map sends `x ∈ E` to the conditional expectation of the indicator of the set
@@ -27,7 +32,6 @@ The conditional expectation of an `L²` function is defined in
 ## Main definitions
 
 * `condExpL1`: Conditional expectation of a function as a linear map from `L1` to itself.
-
 -/
 
 @[expose] public section
@@ -57,7 +61,8 @@ variable {α F F' G G' 𝕜 : Type*} [RCLike 𝕜]
 
 section CondexpInd
 
-/-! ## Conditional expectation of an indicator as a continuous linear map.
+/-!
+# Conditional expectation of an indicator as a continuous linear map.
 
 The goal of this section is to build
 `condExpInd (hm : m ≤ m0) (μ : Measure α) (s : Set s) : G →L[ℝ] α →₁[μ] G`, which

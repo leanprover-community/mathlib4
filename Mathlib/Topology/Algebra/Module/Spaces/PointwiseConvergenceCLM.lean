@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology of pointwise convergence on continuous linear maps
 
@@ -33,12 +36,13 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 ## Notation
 
 * `E →SLₚₜ[σ] F` is space of continuous linear maps equipped with pointwise convergence topology.
-
 -/
 
 @[expose] public section
 
-/-! ### Topology of pointwise convergence -/
+/-!
+# Topology of pointwise convergence
+-/
 
 variable {α ι : Type*} [TopologicalSpace α]
 variable {𝕜 𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
@@ -52,11 +56,13 @@ variable {E F Fᵤ G : Type*} [AddCommGroup E] [TopologicalSpace E]
 open Set Topology
 
 variable (σ E F) in
-/-- The space of continuous linear maps equipped with the topology of pointwise convergence,
-sometimes also called the *strong operator topology*. We avoid this terminology since so many other
+/--
+The space of continuous linear maps equipped with the topology of pointwise convergence,
+sometimes also called the _strong operator topology_. We avoid this terminology since so many other
 things share similar names, and using "pointwise convergence" in the name is more informative.
 
-This topology is also known as the weak⋆-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜` -/
+This topology is also known as the weak⋆-topology in the case that `σ = RingHom.id 𝕜` and `F = 𝕜`
+-/
 abbrev PointwiseConvergenceCLM := UniformConvergenceCLM σ F {s : Set E | Finite s}
 
 @[inherit_doc]
@@ -132,8 +138,10 @@ theorem continuous_of_continuous_eval {g : α → E →SLₚₜ[σ] F}
   simp [(PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).continuous_iff, continuous_pi_iff, h]
 
 variable (G) in
-/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
-convergence topology. -/
+/--
+Pre-composition by a _fixed_ continuous linear map as a continuous linear map for the pointwise
+convergence topology.
+-/
 @[simps! apply]
 def precomp [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
   toFun f := f.comp L
@@ -141,8 +149,10 @@ def precomp [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) : (F →SLₚₜ
     {(S : Set F) | Finite S} L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
 
 variable (E) in
-/-- Post-composition by a *fixed* continuous linear map as a continuous linear map for the pointwise
-convergence topology. -/
+/--
+Post-composition by a _fixed_ continuous linear map as a continuous linear map for the pointwise
+convergence topology.
+-/
 @[simps! apply]
 def postcomp [ContinuousConstSMul 𝕜₂ F] [ContinuousConstSMul 𝕜₃ G] (L : F →SL[τ] G) :
     (E →SLₚₜ[σ] F) →SL[τ] E →SLₚₜ[ρ] G where

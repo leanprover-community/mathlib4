@@ -7,12 +7,14 @@ module
 
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclotomic units.
 
 We gather miscellaneous results about units given by sums of powers of roots of unit, the so-called
-*cyclotomic units*.
-
+_cyclotomic units_.
 
 ## Main results
 

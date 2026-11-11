@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of small categories has all small limits.
 
@@ -17,6 +20,7 @@ A morphism between two such objects is a family of morphisms between the corresp
 which are carried to one another by the action on morphisms of the functors in the diagram.
 
 ## Future work
+
 Can the indexing category live in a lower universe?
 -/
 

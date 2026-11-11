@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.MvPowerSeries.GaussNorm
 public import Mathlib.RingTheory.PowerSeries.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gauss norm for power series
 
@@ -20,21 +23,18 @@ In case `f` is a polynomial, `v` is a non-negative function with `v 0 = 0` and `
 `Mathlib/RingTheory/Polynomial/GaussNorm.lean`, see `Polynomial.gaussNorm_coe_powerSeries`.
 
 ## Main Definitions and Results
+
 * Using `PowerSeries.gaussNorm_eq`, `PowerSeries.gaussNorm` is the supremum of the set of all values
   of `v (f.coeff i) * c ^ i` for all `i : ℕ`, where `f` is a power series in `R⟦X⟧`, `v : R → ℝ` is
   a function and `c` is a real number.
-
 * `PowerSeries.gaussNorm_nonneg`: if `v` is a non-negative function, then the Gauss norm is
   non-negative.
-
 * `PowerSeries.gaussNorm_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0` for
   all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series is
   zero.
-
 * `PowerSeries.gaussNormC_eq_zero_iff`: if `v` is a non-negative function and `v x = 0 ↔ x = 0`
   for all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series
   is zero.
-
 * `PowerSeries.gaussNorm_add_le_max`: if `v` is a non-negative non-archimedean function and the
   set of values `v (coeff t f) * c ^ t` is bounded above (similarly for `g`), then
   the Gauss norm has the non-archimedean property.

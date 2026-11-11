@@ -8,13 +8,16 @@ module
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.RingTheory.MvPowerSeries.Basic
 
-/-! # LexOrder of multivariate power series
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# LexOrder of multivariate power series
 
 Given an ordering of `σ` such that `WellFoundedGT σ`,
 the lexicographic order on `σ →₀ ℕ` is a well ordering,
 which can be used to define a natural valuation `lexOrder` on the ring `MvPowerSeries σ R`:
 the smallest exponent in the support.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Long exact sequence for sheaf cohomology
 
@@ -24,14 +27,12 @@ so the objects in it are really `AddCommGrpCat.of (H F n)`). To do this, you can
 * `CategoryTheory.Sheaf.H.longSequence`: Given a short exact sequence of sheaves `S`, this
   is the long exact sequence:
   `Hⁿ(S.X₁) ⟶ Hⁿ(S.X₂) ⟶ Hⁿ(S.X₃) ⟶ Hⁿ⁺¹(S.X₁) ⟶ Hⁿ⁺¹(S.X₂) ⟶ Hⁿ⁺¹(S.X₃)`
-
 * `CategoryTheory.Sheaf.H.longSequenceHom`: Given a morphism of short exact sequences of sheaves
   `f : S₁ ⟶ S₂`, this is the induced morphism between their long exact sequences. On each object,
   it is just `CategoryTheory.Sheaf.H.map` applied to the corresponding morphism in `f`. E.g. the
   first morphism is `H.map` applied to `f.τ₁`.
 * `CategoryTheory.Sheaf.H.longSequenceFunctor`: This is the functor that sends a short exact
   sequence to its long exact sequence on cohomology and sends morphisms to `longSequenceHom`.
-
 -/
 
 @[expose] public section

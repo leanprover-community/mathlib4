@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending an `ℝ`-linear functional to a `𝕜`-linear functional
 
@@ -27,7 +30,6 @@ elementary properties, like locally convex spaces.
 
 * `LinearMap.extendRCLike`
 * `ContinuousLinearMap.extendRCLike`
-
 -/
 
 @[expose] public section
@@ -99,10 +101,12 @@ namespace StrongDual
 variable [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F] [ContinuousConstSMul 𝕜 F]
 variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
 
-/-- Extend `fr : StrongDual ℝ F` to `StrongDual 𝕜 F`.
+/--
+Extend `fr : StrongDual ℝ F` to `StrongDual 𝕜 F`.
 
 Norm properties of this extension can be found in
-`Mathlib/Analysis/Normed/Module/RCLike/Extend.lean`. -/
+`Mathlib/Analysis/Normed/Module/RCLike/Extend.lean`.
+-/
 noncomputable def extendRCLike (fr : StrongDual ℝ F) : StrongDual 𝕜 F where
   __ := Module.Dual.extendRCLike fr.toLinearMap
   cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop
@@ -121,10 +125,12 @@ lemma im_extendRCLike_apply (g : StrongDual ℝ F) (x : F) :
   obtain (h | h) := RCLike.I_eq_zero_or_im_I_eq_one (K := 𝕜)
   all_goals simp [h, extendRCLike_apply]
 
-/-- The extension `StrongDual.extendRCLike` as a linear equivalence between the algebraic duals.
+/--
+The extension `StrongDual.extendRCLike` as a linear equivalence between the algebraic duals.
 
-When `F` is a normed space, this can be upgraded to an *isometric* linear equivalence, see
-`StrongDual.extendRCLikeₗᵢ`. -/
+When `F` is a normed space, this can be upgraded to an _isometric_ linear equivalence, see
+`StrongDual.extendRCLikeₗᵢ`.
+-/
 @[simps -isSimp apply symm_apply]
 noncomputable def extendRCLikeₗ : StrongDual ℝ F ≃ₗ[ℝ] StrongDual 𝕜 F where
   toFun := StrongDual.extendRCLike (𝕜 := 𝕜)

@@ -10,6 +10,9 @@ public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Data.Sym.Sym2.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The symmetric square
 
@@ -93,7 +96,8 @@ theorem rel_iff {x y z w : α} : Rel α (x, y) (z, w) ↔ x = z ∧ y = w ∨ x 
 
 end Sym2
 
-/-- `Sym2 α` is the symmetric square of `α`, which, in other words, is the
+/--
+`Sym2 α` is the symmetric square of `α`, which, in other words, is the
 type of unordered pairs.
 
 It is equivalent in a natural way to multisets of cardinality 2 (see
@@ -104,10 +108,12 @@ abbrev Sym2 (α : Type u) := Quot (Sym2.Rel α)
 /-- Constructor for `Sym2`. This is the quotient map `α × α → Sym2 α`. -/
 protected abbrev Sym2.mk {α : Type*} (a b : α) : Sym2 α := Quot.mk (Sym2.Rel α) (a, b)
 
-/-- `s(x, y)` is an unordered pair,
+/--
+`s(x, y)` is an unordered pair,
 which is to say a pair modulo the action of the symmetric group.
 
-It is equal to `Sym2.mk (x, y)`. -/
+It is equal to `Sym2.mk (x, y)`.
+-/
 notation3 "s(" x ", " y ")" => Sym2.mk x y
 
 namespace Sym2
@@ -301,7 +307,9 @@ lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂
 section Membership
 variable {x : α}
 
-/-! ### Membership and set coercion -/
+/-!
+# Membership and set coercion
+-/
 
 
 /-- This is a predicate that determines whether a given term is a member of a term of the
@@ -499,7 +507,9 @@ lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s
     (s.attachWith h).map Subtype.val = s := by
   cases s; rfl
 
-/-! ### Diagonal -/
+/-!
+# Diagonal
+-/
 
 variable {z : Sym2 α} {f : α → β}
 
@@ -591,7 +601,9 @@ theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.ot
 
 section Relations
 
-/-! ### Declarations about symmetric relations -/
+/-!
+# Declarations about symmetric relations
+-/
 
 
 variable {r r₁ r₂ : α → α → Prop}
@@ -833,7 +845,9 @@ end ToFinset
 
 section SymEquiv
 
-/-! ### Equivalence to the second symmetric power -/
+/-!
+# Equivalence to the second symmetric power
+-/
 
 
 attribute [local instance] List.Vector.Perm.isSetoid
@@ -926,7 +940,9 @@ end
 instance [DecidableEq α] : DecidableEq (Sym2 α) :=
   inferInstanceAs <| DecidableEq (Quotient (Sym2.Rel.setoid α))
 
-/-! ### The other element of an element of the symmetric square -/
+/-!
+# The other element of an element of the symmetric square
+-/
 
 /-- Get the other element of the unordered pair using the decidable equality.
 This is the computable version of `Mem.other`. -/

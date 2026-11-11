@@ -7,7 +7,11 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
 
-/-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Normal forms for morphisms in `SimplexCategoryGenRel`.
 
 In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryGenRel`
 each admits a normal form.
@@ -28,11 +32,13 @@ stones towards proving that the canonical functor
 `toSimplexCategory : SimplexCategoryGenRel ⥤ SimplexCategory` is an equivalence.
 
 ## References:
+
 * [Kerodon Tag 04FQ](https://kerodon.net/tag/04FQ)
 * [Kerodon Tag 04FT](https://kerodon.net/tag/04FT)
 
 ## TODOs:
-- Show that every `P_δ` admits a unique normal form.
+
+* Show that every `P_δ` admits a unique normal form.
 -/
 
 @[expose] public section
@@ -144,14 +150,16 @@ end IsAdmissible
 
 end IsAdmissible
 
-/-- The construction `simplicialInsert` describes inserting an element in a list of integer and
+/--
+The construction `simplicialInsert` describes inserting an element in a list of integer and
 moving it to its "right place" according to the simplicial relations. Somewhat miraculously,
 the algorithm is the same for the first or the fifth simplicial relations, making it "valid"
 when we treat the list as a normal form for a morphism satisfying `P_δ`, or for a morphism
 satisfying `P_σ`!
 
 This is similar in nature to `List.orderedInsert`, but note that we increment one of the element
-every time we perform an exchange, making it a different construction. -/
+every time we perform an exchange, making it a different construction.
+-/
 @[local grind]
 def simplicialInsert (a : ℕ) : List ℕ → List ℕ
   | [] => [a]

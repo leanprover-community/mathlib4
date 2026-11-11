@@ -13,9 +13,11 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further basic lemmas about asymptotics
-
 -/
 
 public section
@@ -219,7 +221,9 @@ theorem _root_.ContinuousAt.isTheta {α F : Type*} {E : Type*} [NormedAddCommGro
   rw [isBigO_const_left_iff_pos_le_norm <| ne_of_apply_ne (fun x ↦ ‖x‖) (by simp)]
   exact ⟨_, half_pos (norm_pos_iff.mpr hne), hcont.tendsto.norm.eventually_const_le (by simpa)⟩
 
-/-! ### Multiplication -/
+/-!
+# Multiplication
+-/
 
 theorem IsBigO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (hn : n ≠ 0) (h : (f ^ n) =O[l] (g ^ n)) :
     f =O[l] g := by
@@ -236,7 +240,9 @@ theorem IsBigO.pow_of_le_right {f : α → ℝ}
   rw [isBigOWith_iff]
   exact hf.mono fun x hx ↦ by simp [abs_eq_self.mpr (zero_le_one.trans hx), pow_le_pow_right₀ hx h]
 
-/-! ### Scalar multiplication -/
+/-!
+# Scalar multiplication
+-/
 
 section SMulConst
 
@@ -379,7 +385,9 @@ theorem IsLittleO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedFiel
 
 end Prod
 
-/-! ### Relation between `f = o(g)` and `f / g → 0` -/
+/-!
+# Relation between `f = o(g)` and `f / g → 0`
+-/
 
 theorem IsLittleO.tendsto_div_nhds_zero {f g : α → 𝕜} (h : f =o[l] g) :
     Tendsto (fun x => f x / g x) l (𝓝 0) :=
@@ -446,7 +454,9 @@ theorem isLittleO_const_id_atTop (c : E'') : (fun _x : ℝ => c) =o[atTop] id :=
 theorem isLittleO_const_id_atBot (c : E'') : (fun _x : ℝ => c) =o[atBot] id :=
   isLittleO_const_left.2 <| Or.inr tendsto_abs_atBot_atTop
 
-/-! ### Relation between `f = o(g)` and `g / f → ∞` -/
+/-!
+# Relation between `f = o(g)` and `g / f → ∞`
+-/
 
 section div_tendsto_infty
 
@@ -466,7 +476,9 @@ theorem IsLittleO.of_tendsto_div_atBot (h : Tendsto (fun x ↦ g x / f x) l atBo
 
 end div_tendsto_infty
 
-/-! ### Equivalent definitions of the form `∃ φ, u =ᶠ[l] φ * v` in a `NormedField`. -/
+/-!
+# Equivalent definitions of the form `∃ φ, u =ᶠ[l] φ * v` in a `NormedField`.
+-/
 
 section ExistsMulEq
 
@@ -523,7 +535,9 @@ alias ⟨IsLittleO.exists_eq_mul, _⟩ := isLittleO_iff_exists_eq_mul
 
 end ExistsMulEq
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 theorem div_isBoundedUnder_of_isBigO {α : Type*} {l : Filter α} {f g : α → 𝕜} (h : f =O[l] g) :
     IsBoundedUnder (· ≤ ·) l fun x => ‖f x / g x‖ := by

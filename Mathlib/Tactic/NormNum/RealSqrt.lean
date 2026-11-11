@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Analysis.Real.Sqrt
 
-/-! # `norm_num` extension for `Real.sqrt`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `norm_num` extension for `Real.sqrt`
 
 This module defines a `norm_num` extension for `Real.sqrt` and `NNReal.sqrt`.
 -/

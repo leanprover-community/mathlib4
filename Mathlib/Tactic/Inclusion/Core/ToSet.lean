@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of `ToSet` and basic API
 
@@ -15,8 +18,7 @@ This file defines the `ToSet` class and its API needed for the `inclusion` tacti
 ## Implementation notes
 
 * `Inclusion.IntervalBool` is nearly identical to `Lean.LBool` but with a separate API and
-documentation which is catered to the needs of the inclusion tactic.
-
+  documentation which is catered to the needs of the inclusion tactic.
 -/
 
 @[expose] public section
@@ -74,14 +76,16 @@ class Coarsen (Iα α : Type*) [ToSet Iα α] where
 
 universe u
 
-/-- A `Cover Iα α` specifies a function `coverMap` to compute a "refined" inclusion of `F s`
+/--
+A `Cover Iα α` specifies a function `coverMap` to compute a "refined" inclusion of `F s`
 for `s : Iα` and an inclusion function `F : Iα → Iβ`, by computing `F` on each element of a
 cover of `s` and then using `coarsen` to merge the results. Schematically
 
 `coverMap s F = fold coarsen (map F (cover s))`
 
 where `cover : Iα → Array Iα` would specify the underlying cover, but the `coverMap` formulation
-allows this function to be implemented more efficiently for kernel reduction. -/
+allows this function to be implemented more efficiently for kernel reduction.
+-/
 structure Cover (Iα α : Type*) [ToSet Iα α] where
   /-- Compute an inclusion for `F s` using a cover of `s`. -/
   coverMap {Iβ β : Type u} [ToSet Iβ β] [Coarsen Iβ β] (s : Iα) (F : Iα → Iβ) : Iβ

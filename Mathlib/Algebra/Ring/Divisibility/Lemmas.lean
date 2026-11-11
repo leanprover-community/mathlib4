@@ -9,10 +9,14 @@ public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.GroupTheory.GroupAction.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about divisibility in rings
 
 ## Main results:
+
 * `dvd_smul_of_dvd`: stating that `x ∣ y → x ∣ m • y` for any scalar `m`.
 * `Commute.pow_dvd_add_pow_of_pow_eq_zero_right`: stating that if `y` is nilpotent then
   `x ^ m ∣ (x + y) ^ p` for sufficiently large `p` (together with many variations for convenience).

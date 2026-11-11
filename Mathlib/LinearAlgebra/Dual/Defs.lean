@@ -8,20 +8,25 @@ module
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Span.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dual vector spaces
 
-The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to R$.
+The dual space of an $`R`-module $`M` is the $`R`-module of $`R`-linear maps $`M \to R`.
 
 ## Main definitions
 
 * Duals and transposes:
+
   * `Module.Dual R M` defines the dual space of the `R`-module `M`, as `M →ₗ[R] R`.
   * `Module.Dual.eval R M : M →ₗ[R] Dual R (Dual R)` is the canonical map to the double dual.
   * `Module.Dual.transpose` is the linear map from `M →ₗ[R] M'` to `Dual R M' →ₗ[R] Dual R M`.
   * `LinearMap.dualMap` is `Module.Dual.transpose` of a given linear map, for dot notation.
   * `LinearEquiv.dualMap` is for the dual of an equivalence.
 * Submodules:
+
   * `Submodule.dualRestrict W` is the transpose `Dual R M →ₗ[R] Dual R W` of the inclusion map.
   * `Submodule.dualAnnihilator W` is the kernel of `W.dualRestrict`. That is, it is the submodule
     of `dual R M` whose elements all annihilate `W`.
@@ -31,9 +36,11 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 ## Main results
 
 * Annihilators:
+
   * `Module.dualAnnihilator_gc R M` is the antitone Galois correspondence between
     `Submodule.dualAnnihilator` and `Submodule.dualCoannihilator`.
 * Finite-dimensional vector spaces:
+
   * `Module.evalEquiv` is the equivalence `V ≃ₗ[K] Dual K (Dual K V)`
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
     subspaces of `Dual K (Dual K V)`.
@@ -42,7 +49,6 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 * The identity map `id` on `Module.Dual R M` can be interpreted as a bilinear pairing when read as
   `Module.Dual R V →ₗ[R] M →ₗ[R] R`. It is the flipped pairing to `Module.Dual.eval`.
-
 -/
 
 @[expose] public section
@@ -196,10 +202,12 @@ open Function
 variable (R M N : Type*)
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 
-/-- A reflexive module is one for which the natural map to its double dual is a bijection.
+/--
+A reflexive module is one for which the natural map to its double dual is a bijection.
 
 Any finitely-generated projective module (and thus any finite-dimensional vector space)
-is reflexive. See `Module.instIsReflexiveOfFiniteOfProjective`. -/
+is reflexive. See `Module.instIsReflexiveOfFiniteOfProjective`.
+-/
 class IsReflexive : Prop where
   /-- A reflexive module is one for which the natural map to its double dual is a bijection. -/
   bijective_dual_eval' : Bijective (Dual.eval R M)
@@ -333,8 +341,10 @@ theorem mem_dualAnnihilator (φ : Module.Dual R M) : φ ∈ W.dualAnnihilator �
   simp_rw [dualAnnihilator, LinearMap.mem_ker, LinearMap.ext_iff, dualRestrict_apply,
     Subtype.forall, LinearMap.zero_apply]
 
-/-- That $\operatorname{ker}(\iota^* : V^* \to W^*) = \operatorname{ann}(W)$.
-This is the definition of the dual annihilator of the submodule $W$. -/
+/--
+That $`\operatorname{ker}(\iota^* : V^* \to W^*) = \operatorname{ann}(W)`.
+This is the definition of the dual annihilator of the submodule $`W`.
+-/
 theorem dualRestrict_ker_eq_dualAnnihilator (W : Submodule R M) :
     LinearMap.ker W.dualRestrict = W.dualAnnihilator :=
   rfl

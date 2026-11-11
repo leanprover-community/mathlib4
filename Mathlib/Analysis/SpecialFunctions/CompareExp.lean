@@ -7,23 +7,24 @@ module
 
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Growth estimates on `x ^ y` for complex `x`, `y`
 
 Let `l` be a filter on `ℂ` such that `Complex.re` tends to infinity along `l` and `Complex.im z`
 grows at a subexponential rate compared to `Complex.re z`. Then
 
-- `Complex.isLittleO_log_abs_re`: `Real.log ∘ Complex.abs` is `o`-small of
+* `Complex.isLittleO_log_abs_re`: `Real.log ∘ Complex.abs` is `o`-small of
   `Complex.re` along `l`;
-
-- `Complex.isLittleO_cpow_mul_exp`: $z^{a_1}e^{b_1 * z} = o\left(z^{a_1}e^{b_1 * z}\right)$
+* `Complex.isLittleO_cpow_mul_exp`: $`z^{a_1}e^{b_1 * z} = o\left(z^{a_1}e^{b_1 * z}\right)`
   along `l` for any complex `a₁`, `a₂` and real `b₁ < b₂`.
 
 We use these assumptions on `l` for two reasons. First, these are the assumptions that naturally
 appear in the proof. Second, in some applications (e.g., in Ilyashenko's proof of the individual
 finiteness theorem for limit cycles of polynomial ODEs with hyperbolic singularities only) natural
 stronger assumptions (e.g., `im z` is bounded from below and from above) are not available.
-
 -/
 
 public section
@@ -34,13 +35,15 @@ open scoped Topology
 
 namespace Complex
 
-/-- We say that `l : Filter ℂ` is an *exponential comparison filter* if the real part tends to
+/--
+We say that `l : Filter ℂ` is an _exponential comparison filter_ if the real part tends to
 infinity along `l` and the imaginary part grows subexponentially compared to the real part. These
 properties guarantee that `(fun z ↦ z ^ a₁ * exp (b₁ * z)) =o[l] (fun z ↦ z ^ a₂ * exp (b₂ * z))`
 for any complex `a₁`, `a₂` and real `b₁ < b₂`.
 
 In particular, the second property is automatically satisfied if the imaginary part is bounded along
-`l`. -/
+`l`.
+-/
 structure IsExpCmpFilter (l : Filter ℂ) : Prop where
   tendsto_re : Tendsto re l atTop
   isBigO_im_pow_re : ∀ n : ℕ, (fun z : ℂ => z.im ^ n) =O[l] fun z => Real.exp z.re
@@ -50,7 +53,7 @@ namespace IsExpCmpFilter
 variable {l : Filter ℂ}
 
 /-!
-### Alternative constructors
+# Alternative constructors
 -/
 
 theorem of_isBigO_im_re_rpow (hre : Tendsto re l atTop) (r : ℝ) (hr : im =O[l] fun z => z.re ^ r) :
@@ -78,7 +81,7 @@ theorem of_boundedUnder_im (hre : Tendsto re l atTop) (him_le : IsBoundedUnder (
   of_boundedUnder_abs_im hre <| isBoundedUnder_le_abs.2 ⟨him_le, him_ge⟩
 
 /-!
-### Preliminary lemmas
+# Preliminary lemmas
 -/
 
 theorem eventually_ne (hl : IsExpCmpFilter l) : ∀ᶠ w : ℂ in l, w ≠ 0 :=
@@ -109,7 +112,8 @@ theorem abs_im_pow_eventuallyLE_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => |z.im| ^ n) ≤ᶠ[l] fun z => Real.exp z.re := by
   simpa using! (hl.isLittleO_im_pow_exp_re n).bound zero_lt_one
 
-/-- If `l : Filter ℂ` is an "exponential comparison filter", then $\log |z| =o(ℜ z)$ along `l`.
+/--
+If `l : Filter ℂ` is an "exponential comparison filter", then $`\log |z| =o(ℜ z)` along `l`.
 This is the main lemma in the proof of `Complex.IsExpCmpFilter.isLittleO_cpow_exp` below.
 -/
 theorem isLittleO_log_norm_re (hl : IsExpCmpFilter l) : (fun z => Real.log ‖z‖) =o[l] re :=
@@ -138,7 +142,7 @@ theorem isLittleO_log_norm_re (hl : IsExpCmpFilter l) : (fun z => Real.log ‖z�
               abs_of_pos (one_pos.trans h₁)]
 
 /-!
-### Main results
+# Main results
 -/
 
 lemma isTheta_cpow_exp_re_mul_log (hl : IsExpCmpFilter l) (a : ℂ) :

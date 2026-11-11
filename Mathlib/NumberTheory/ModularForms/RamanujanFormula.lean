@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.ModularForms.Derivative
 
 import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramanujan's formulas for derivatives of Eisenstein series
 
@@ -16,12 +19,12 @@ We prove Ramanujan's formulas for derivatives of the normalised Eisenstein serie
 `E₆`, in terms of the Serre derivative `∂ₖ = D - (k / 12) E₂` and the normalized derivative
 `D = (2πi)⁻¹ d/dz`:
 
-- `Derivative.serreDerivative_E₂` : `∂₁ E₂ = -E₄ / 12`
-- `Derivative.serreDerivative_E₄` : `∂₄ E₄ = -E₆ / 3`
-- `Derivative.serreDerivative_E₆` : `∂₆ E₆ = -E₄² / 2`
-- `Derivative.normalizedDerivOfComplex_E₂` : `D E₂ = (E₂² - E₄) / 12`
-- `Derivative.normalizedDerivOfComplex_E₄` : `D E₄ = (E₂ E₄ - E₆) / 3`
-- `Derivative.normalizedDerivOfComplex_E₆` : `D E₆ = (E₂ E₆ - E₄²) / 2`
+* `Derivative.serreDerivative_E₂` : `∂₁ E₂ = -E₄ / 12`
+* `Derivative.serreDerivative_E₄` : `∂₄ E₄ = -E₆ / 3`
+* `Derivative.serreDerivative_E₆` : `∂₆ E₆ = -E₄² / 2`
+* `Derivative.normalizedDerivOfComplex_E₂` : `D E₂ = (E₂² - E₄) / 12`
+* `Derivative.normalizedDerivOfComplex_E₄` : `D E₄ = (E₂ E₄ - E₆) / 3`
+* `Derivative.normalizedDerivOfComplex_E₆` : `D E₆ = (E₂ E₆ - E₄²) / 2`
 
 ## Proof Strategy
 
@@ -116,7 +119,9 @@ theorem serreDerivative_E₂ : serreDerivative 1 E2 = (-12⁻¹ : ℂ) • E₄ 
   serreDerivative_eq_smul (F := serreDerivativeOneE2) rfl levelOne_weight_four_rank_one
     E2_mdifferentiable tendsto_E2_atImInfty tendsto_E_atImInfty (by norm_num)
 
-/-! ### Ramanujan's formulas in terms of `D` -/
+/-!
+# Ramanujan's formulas in terms of `D`
+-/
 
 /-- **Ramanujan's formula for `E₂`**: `D E₂ = (E₂² - E₄) / 12`. -/
 theorem normalizedDerivOfComplex_E₂ : D E2 = (12⁻¹ : ℂ) • (E2 ^ 2 - E₄) := by

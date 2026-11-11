@@ -11,24 +11,27 @@ public import Mathlib.RingTheory.Valuation.LocalSubring
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 import Mathlib.RingTheory.RingHom.Injective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuative criterion
 
 ## Main results
 
-- `AlgebraicGeometry.UniversallyClosed.eq_valuativeCriterion`:
+* `AlgebraicGeometry.UniversallyClosed.eq_valuativeCriterion`:
   A morphism is universally closed if and only if
   it is quasi-compact and satisfies the existence part of the valuative criterion.
-- `AlgebraicGeometry.IsSeparated.eq_valuativeCriterion`:
+* `AlgebraicGeometry.IsSeparated.eq_valuativeCriterion`:
   A morphism is separated if and only if
   it is quasi-separated and satisfies the uniqueness part of the valuative criterion.
-- `AlgebraicGeometry.IsProper.eq_valuativeCriterion`:
+* `AlgebraicGeometry.IsProper.eq_valuativeCriterion`:
   A morphism is proper if and only if
   it is qcqs and of finite type and satisfies the valuative criterion.
 
 ## Future projects
-Show that it suffices to check discrete valuation rings when the base is Noetherian.
 
+Show that it suffices to check discrete valuation rings when the base is Noetherian.
 -/
 
 @[expose] public section
@@ -41,12 +44,14 @@ universe u
 
 /--
 A valuative commutative square over a morphism `f : X ⟶ Y` is a square
+
 ```
 Spec K ⟶ Y
   |       |
   ↓       ↓
 Spec R ⟶ X
 ```
+
 where `R` is a valuation ring, and `K` is its ring of fractions.
 
 We are interested in finding lifts `Spec R ⟶ Y` of this diagram.

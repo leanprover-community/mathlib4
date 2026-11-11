@@ -8,6 +8,9 @@ module
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 public import Mathlib.RepresentationTheory.Invariants
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The low-degree homology of a `k`-linear `G`-representation
 
@@ -40,7 +43,6 @@ We show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ
   (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) to `H₂(G, A)`.
 * `groupHomology.H1AddEquivOfIsTrivial`: an isomorphism `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` when the
   representation on `A` is trivial.
-
 -/
 
 @[expose] public section
@@ -212,9 +214,11 @@ lemma d₃₂_single_one_thd (g h : G) (a : A) :
 
 variable (A)
 
-/-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
+/--
+Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₁₀` gives a simpler expression for the 0th differential: that is, the following
 square commutes:
+
 ```
   C₁(G, A) --d 1 0--> C₀(G, A)
     |                   |
@@ -223,6 +227,7 @@ square commutes:
     v                   v
   (G →₀ A) ----d₁₀----> A
 ```
+
 where the vertical arrows are `chainsIso₁` and `chainsIso₀` respectively.
 -/
 theorem comp_d₁₀_eq :
@@ -237,9 +242,11 @@ theorem eq_d₁₀_comp_inv :
     (chainsIso₁ A).inv ≫ (inhomogeneousChains A).d 1 0 = d₁₀ A ≫ (chainsIso₀ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₁₀_eq A⟩).w
 
-/-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
+/--
+Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₂₁` gives a simpler expression for the 1st differential: that is, the following
 square commutes:
+
 ```
   C₂(G, A) --d 2 1--> C₁(G, A)
     |                    |
@@ -248,6 +255,7 @@ square commutes:
     v                    v
   (G² →₀ A) --d₂₁--> (G →₀ A)
 ```
+
 where the vertical arrows are `chainsIso₂` and `chainsIso₁` respectively.
 -/
 theorem comp_d₂₁_eq :
@@ -262,9 +270,11 @@ theorem eq_d₂₁_comp_inv :
     (chainsIso₂ A).inv ≫ (inhomogeneousChains A).d 2 1 = d₂₁ A ≫ (chainsIso₁ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₂₁_eq A⟩).w
 
-/-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
+/--
+Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₃₂` gives a simpler expression for the 2nd differential: that is, the following
 square commutes:
+
 ```
    C₃(G, A) --d 3 2--> C₂(G, A)
     |                    |
@@ -273,6 +283,7 @@ square commutes:
     v                    v
   (G³ →₀ A) --d₃₂--> (G² →₀ A)
 ```
+
 where the vertical arrows are `chainsIso₃` and `chainsIso₂` respectively.
 -/
 theorem comp_d₃₂_eq :

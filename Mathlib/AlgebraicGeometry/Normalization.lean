@@ -10,13 +10,17 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
 public import Mathlib.RingTheory.Smooth.IntegralClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relative Normalization
 
 Given a qcqs morphism `f : X ⟶ Y`, we define the relative normalization `f.normalization`,
 along with the maps that `f` factor into:
-- `f.toNormalization : X ⟶ f.normalization`: a dominant morphism
-- `f.fromNormalization : f.normalization ⟶ Y`: an integral morphism
+
+* `f.toNormalization : X ⟶ f.normalization`: a dominant morphism
+* `f.fromNormalization : f.normalization ⟶ Y`: an integral morphism
 
 It satisfies the universal property:
 For any factorization `X ⟶ T ⟶ Y` with `T ⟶ Y` integral,
@@ -25,7 +29,6 @@ The factorization map is `AlgebraicGeometry.Scheme.Hom.normalizationDesc`, and t
 is `AlgebraicGeometry.Scheme.Hom.normalization.hom_ext`.
 
 We also show that normalization commutes with disjoint unions and smooth base change.
-
 -/
 
 @[expose] public noncomputable section

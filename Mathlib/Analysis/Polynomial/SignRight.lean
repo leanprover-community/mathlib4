@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Instances.Sign
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sign of a polynomial immediately to the right of a point
 

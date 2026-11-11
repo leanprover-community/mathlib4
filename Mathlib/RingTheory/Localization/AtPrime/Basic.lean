@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
 
@@ -30,6 +33,7 @@ public import Mathlib.RingTheory.Localization.Ideal
 See `RingTheory.Localization.Basic` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -145,8 +149,10 @@ def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPri
     show Set.ofPred _ = Set.ofPred _
     by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
 
-/-- The prime spectrum of the localization of a commutative ring R at a prime ideal I are in
-order-preserving bijection with the interval $(-∞, I]$ in the prime spectrum of R. -/
+/--
+The prime spectrum of the localization of a commutative ring R at a prime ideal I are in
+order-preserving bijection with the interval $`(-∞, I]` in the prime spectrum of R.
+-/
 @[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
   (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
     ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
@@ -222,7 +228,8 @@ theorem le_comap_primeCompl_iff {J : Ideal P} [J.IsPrime] {f : R →+* P} :
 
 variable (I)
 
-/-- For a ring hom `f : R →+* S` and a prime ideal `J` in `S`, the induced ring hom from the
+/--
+For a ring hom `f : R →+* S` and a prime ideal `J` in `S`, the induced ring hom from the
 localization of `R` at `J.comap f` to the localization of `S` at `J`.
 
 To make this definition more flexible, we allow any ideal `I` of `R` as input, together with a proof
@@ -288,10 +295,12 @@ noncomputable def localRingEquiv (J : Ideal P) [J.IsPrime] (f : R ≃+* P) (hIJ 
   right_inv x := by simp [localRingHom, map_map]
 
 variable {S} in
-/-- For an `R`-algebra homomorphism `f : S →ₐ[R] P` and prime ideals `I = f⁻¹(J)`, the induced
+/--
+For an `R`-algebra homomorphism `f : S →ₐ[R] P` and prime ideals `I = f⁻¹(J)`, the induced
 `R`-algebra homomorphism from the localization of `S` at `I` to the localization of `P` at `J`.
 
-See `localAlgHom'` for a variant where the base ring `R` is also localized. -/
+See `localAlgHom'` for a variant where the base ring `R` is also localized.
+-/
 noncomputable def localAlgHom [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
     (f : S →ₐ[R] P) (hIJ : I = J.comap f) :
     Localization.AtPrime I →ₐ[R] Localization.AtPrime J where
@@ -306,9 +315,11 @@ variable {S} in
     localAlgHom I J f hIJ x = localRingHom I J f.toRingHom hIJ x := rfl
 
 variable {S} in
-/-- Isomorphic algebras have isomorphic localizations.
+/--
+Isomorphic algebras have isomorphic localizations.
 
-See `localAlgEquiv'` for a variant where the base ring is also localized. -/
+See `localAlgEquiv'` for a variant where the base ring is also localized.
+-/
 @[simps]
 noncomputable def localAlgEquiv [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
     (f : S ≃ₐ[R] P) (hIJ : I = J.comap f) :
@@ -433,11 +444,13 @@ variable {S} [Algebra R P] (J : Ideal S) (K : Ideal P) [J.IsPrime] [K.IsPrime]
   [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]
   [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime K)]
 
-/-- For an `R`-algebra homomorphism `f : S →ₐ[R] P` and prime ideals `J = f⁻¹(K)` lying over `I`,
+/--
+For an `R`-algebra homomorphism `f : S →ₐ[R] P` and prime ideals `J = f⁻¹(K)` lying over `I`,
 the induced algebra homomorphism from the localization of `S` at `J` to the localization of `P` at
 `K` over the localization of `R` at `I`.
 
-See `localAlgHom` for a variant where the base ring `R` is not localized. -/
+See `localAlgHom` for a variant where the base ring `R` is not localized.
+-/
 @[simps!]
 noncomputable def localAlgHom' (f : S →ₐ[R] P) (h : J = K.comap f) :
     Localization.AtPrime J →ₐ[Localization.AtPrime I] Localization.AtPrime K :=
@@ -446,9 +459,11 @@ noncomputable def localAlgHom' (f : S →ₐ[R] P) (h : J = K.comap f) :
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Isomorphic algebras have isomorphic localizations.
+/--
+Isomorphic algebras have isomorphic localizations.
 
-See `localAlgEquiv` for a variant where the base ring is not localized. -/
+See `localAlgEquiv` for a variant where the base ring is not localized.
+-/
 @[simps!]
 noncomputable def localAlgEquiv' (f : S ≃ₐ[R] P) (h : J = K.comap f) :
     Localization.AtPrime J ≃ₐ[Localization.AtPrime I] Localization.AtPrime K :=
@@ -580,10 +595,12 @@ theorem equivQuotMaximalIdealPow_symm_apply_mk_mul (n : ℕ) (x : R) (s : p.prim
       Ideal.Quotient.mk (p ^ n) s = Ideal.Quotient.mk (p ^ n) x := by
   simp [equivQuotMaximalIdealPow, lift_mk', IsUnit.liftRight_apply, mul_assoc]
 
-/-- The isomorphism `R ⧸ p ≃ₐ[R] Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
+/--
+The isomorphism `R ⧸ p ≃ₐ[R] Rₚ ⧸ maximalIdeal Rₚ`, where `Rₚ` satisfies
 `IsLocalization.AtPrime Rₚ p`. In particular, localization preserves the residue field.
 
-This is the `n = 1` case of `equivQuotMaximalIdealPow`. -/
+This is the `n = 1` case of `equivQuotMaximalIdealPow`.
+-/
 noncomputable
 def equivQuotMaximalIdeal : (R ⧸ p) ≃ₐ[R] Rₚ ⧸ maximalIdeal Rₚ :=
   (Ideal.quotientEquivAlgOfEq R (pow_one p).symm).trans <|

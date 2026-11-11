@@ -9,17 +9,20 @@ public import Mathlib.Data.List.Chain
 
 import Mathlib.Data.List.Flatten
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Split a list into contiguous runs of elements which pairwise satisfy a relation.
 
 This file provides the basic API for `List.splitBy` which is defined in Core.
 The main results are the following:
 
-- `List.flatten_splitBy`: the lists in `List.splitBy` join to the original list.
-- `List.nil_notMem_splitBy`: the empty list is not contained in `List.splitBy`.
-- `List.isChain_of_mem_splitBy`: any two adjacent elements in a list in
+* `List.flatten_splitBy`: the lists in `List.splitBy` join to the original list.
+* `List.nil_notMem_splitBy`: the empty list is not contained in `List.splitBy`.
+* `List.isChain_of_mem_splitBy`: any two adjacent elements in a list in
   `List.splitBy` are related by the specified relation.
-- `List.isChain_getLast_head_splitBy`: the last element of each list in `List.splitBy` is not
+* `List.isChain_getLast_head_splitBy`: the last element of each list in `List.splitBy` is not
   related to the first element of the next list.
 -/
 
@@ -196,7 +199,8 @@ theorem splitBy_flatten {r : α → α → Bool} {l : List (List α)} (hn : [] �
     obtain ⟨_, _, H⟩ := hc'.1 (l.head (ne_nil_of_mem hx)) (head_mem_head? _)
     rwa [head_flatten_eq_head_head]
 
-/-- A characterization of `splitBy m r` as the unique list `l` such that:
+/--
+A characterization of `splitBy m r` as the unique list `l` such that:
 
 * The lists of `l` join to `m`.
 * It does not contain the empty list.

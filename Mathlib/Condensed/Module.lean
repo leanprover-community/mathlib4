@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.Adjunction
 public import Mathlib.Condensed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Condensed `R`-modules
 
@@ -20,9 +23,8 @@ This file defines condensed modules over a ring `R`.
 ## Main results
 
 * Condensed `R`-modules form an abelian category.
-
 * The forgetful functor from condensed `R`-modules to condensed sets has a left adjoint, sending a
-  condensed set to the corresponding *free* condensed `R`-module.
+  condensed set to the corresponding _free_ condensed `R`-module.
 -/
 
 @[expose] public section
@@ -45,7 +47,7 @@ noncomputable instance : Abelian (CondensedMod.{u} R) := sheafIsAbelian
 def Condensed.forget : CondensedMod R ⥤ CondensedSet := sheafCompose _ (CategoryTheory.forget _)
 
 /--
-The left adjoint to the forgetful functor. The *free condensed `R`-module* on a condensed set.
+The left adjoint to the forgetful functor. The _free condensed `R`-module_ on a condensed set.
 -/
 noncomputable
 def Condensed.free : CondensedSet ⥤ CondensedMod R :=

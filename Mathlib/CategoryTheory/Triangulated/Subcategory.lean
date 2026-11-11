@@ -10,7 +10,11 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
 
-/-! # Triangulated subcategories
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Triangulated subcategories
 
 In this file, given a pretriangulated category `C` and `P : ObjectProperty C`,
 we introduce a typeclass `P.IsTriangulated` to express that `P`
@@ -33,8 +37,8 @@ for example, the subcategory of bounded below complexes in the homotopy category
 of an additive category is not closed under isomorphisms.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
 -/
 
 @[expose] public section

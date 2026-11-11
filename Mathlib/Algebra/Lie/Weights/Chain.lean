@@ -12,6 +12,9 @@ public import Mathlib.Data.Int.Interval
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.RingTheory.Finiteness.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chains of roots and weights
 
@@ -48,11 +51,11 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 It should be possible to unify some of the definitions here such as `LieModule.chainBotCoeff`,
 `LieModule.chainTopCoeff` with corresponding definitions such as `RootPairing.chainBotCoeff`,
 `RootPairing.chainTopCoeff`. This is not quite trivial since:
+
 * The definitions here allow for chains in representations of Lie algebras.
 * The proof that the roots of a Lie algebra are a root system currently depends on these results.
   (This can be resolved by proving the root reflection formula using the approach outlined in
   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
-
 -/
 
 @[expose] public section
@@ -201,13 +204,15 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
   | smul => simp_all
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
+/--
+Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
 `I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
 integral linear combination between `α` and any weight `χ` of a representation.
 
-This is Proposition 4.4 from [carter2005] and is a key step in the proof that the roots of a
+This is Proposition 4.4 from \[carter2005\] and is a key step in the proof that the roots of a
 semisimple Lie algebra form a root system. It shows that the restriction of `α` to `I` vanishes iff
-the restriction of every root to `I` vanishes (which cannot happen in a semisimple Lie algebra). -/
+the restriction of every root to `I` vanishes (which cannot happen in a semisimple Lie algebra).
+-/
 lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [Module.IsTorsionFree R M] [IsNoetherian R M]
     (hα : α ≠ 0) (hχ : genWeightSpace M χ ≠ ⊥) :

@@ -10,7 +10,11 @@ public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 
 import Mathlib.CategoryTheory.Limits.Types.CardinalFiltered
 
-/-! # Presentable objects
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Presentable objects
 
 A functor `F : C ⥤ D` is `κ`-accessible (`Functor.IsCardinalAccessible`)
 if it commutes with colimits of shape `J` where `J` is any `κ`-filtered category
@@ -23,8 +27,9 @@ if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
 Similarly as for accessible functors, we define a type class `IsPresentable`.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 @[expose] public section
@@ -394,8 +399,10 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit'_of_hasCardinalLT
   have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
   exists_eq_of_preservesColimit_coyoneda_self_of_hasCardinalLT _ hc hι f hf
 
-/-- In a category `C`, given a diagram `F : J ⥤ C` where `J` is κ-filtered
+/--
+In a category `C`, given a diagram `F : J ⥤ C` where `J` is κ-filtered
 and a commutative square
+
 ```
  X₀ ------> X₁
  |          |
@@ -403,7 +410,9 @@ and a commutative square
  v          v
 F(j₀) --> colim F
 ```
+
 where X₁ is κ-presentable, there exists an index j₁ and a commutative diagram
+
 ```
   X₀ -------------> X₁
   |                 |  \

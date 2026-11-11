@@ -9,10 +9,13 @@ public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Frullani's integral
 
-This file proves **Frullani's integral**: if `f : ℝ → E` is locally integrable on `(0, ∞)` with
+This file proves *Frullani's integral*: if `f : ℝ → E` is locally integrable on `(0, ∞)` with
 `f x → L` as `x → 0⁺` and `f x → R` as `x → +∞`, and `0 < a` and `0 < b`, then
 `∫ x in Ioi 0, x⁻¹ • (f (a * x) - f (b * x)) = log (b / a) • (L - R)`
 (`Frullani.integral_Ioi_eq`), provided the integrand is integrable on `(0, ∞)`.

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Localization.Bousfield
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local epimorphisms with respect to an object property
 
@@ -21,14 +24,15 @@ an epimorphism after sheafification.
 
 ## Main declarations
 
-- `CategoryTheory.ObjectProperty.localEpi`: The morphism property of local epimorphisms.
-- `CategoryTheory.ObjectProperty.localEpi_mem_range_iff_epi`: If `F ⊣ G` and `G`
+* `CategoryTheory.ObjectProperty.localEpi`: The morphism property of local epimorphisms.
+* `CategoryTheory.ObjectProperty.localEpi_mem_range_iff_epi`: If `F ⊣ G` and `G`
   is fully faithful, then `f : X ⟶ Y` is a local epimorphism if and only if `F.map f` is an
   epimorphism.
 
 ## References
 
-The terminology is from [M. Kashiwara, P. Schapira, *Categories and Sheaves*, 16.1][Kashiwara2006].
+The terminology is from \[M. Kashiwara, P. Schapira, _Categories and Sheaves_,
+16.1\]\[Kashiwara2006\].
 -/
 
 @[expose] public section

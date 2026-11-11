@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 public import Mathlib.Topology.Category.Stonean.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Effective epimorphisms in `Stonean`
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.Factorizations.Basic
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization lemma
 
@@ -18,7 +21,6 @@ can be factored as `i ≫ p` where `i : K ⟶ L'` is a monomorphism (with
 `L'` bounded below) and `p : L' ⟶ L` a quasi-isomorphism that is an epimorphism
 with a degreewise injective kernel. (This is part of the factorization axiom CM5
 for a model category structure on bounded below cochain complexes (TODO @joelriou).)
-
 -/
 
 @[expose] public section

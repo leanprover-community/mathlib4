@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.Local
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthogonal of triangulated subcategories
 
@@ -16,7 +19,6 @@ Let `P` be a triangulated subcategory of a pretriangulated category `C`. We show
 that `P.rightOrthogonal` (which consists of objects `Y` with no nonzero
 map `X ⟶ Y` with `X` satisfying `P`) is a triangulated subcategory. The dual result
 for `P.leftOrthogonal` is also obtained.
-
 -/
 
 public section

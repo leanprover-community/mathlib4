@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 public import Mathlib.RingTheory.RingHom.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral morphisms of schemes
 
@@ -17,7 +20,6 @@ of an arbitrary affine open subset of `Y` is affine and the induced ring map is 
 
 It is equivalent to ask only that `Y` is covered by affine opens whose preimage is affine
 and the induced ring map is integral.
-
 -/
 
 public section

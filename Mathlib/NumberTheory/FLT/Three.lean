@@ -12,19 +12,27 @@ public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fermat Last Theorem in the case `n = 3`
 
 The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
+
 * `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
 ## Implementation details
-We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
+
+We follow the proof in [
+https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf](https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf),
+page 43.
 
 The strategy is the following:
+
 * The so-called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
   congruences modulo `9`.
 * To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
@@ -49,7 +57,6 @@ The strategy is the following:
   elementary on paper, would be quite annoying to formalize: indeed it involves a lot of explicit
   computations in `ℤ[ζ₃] / (λ)`: this ring is isomorphic to `ℤ / 9ℤ`, but of course, even if we
   construct such an isomorphism, tactics like `decide` would not work.
-
 -/
 
 section case1

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.ModelTheory.Bundled
 public import Mathlib.ModelTheory.PartialEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fraïssé Classes and Fraïssé Limits
 
@@ -21,50 +24,49 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 
 ## Main Definitions
 
-- `FirstOrder.Language.age` is the class of finitely-generated structures that embed into a
+* `FirstOrder.Language.age` is the class of finitely-generated structures that embed into a
   particular structure.
-- A class `K` is `FirstOrder.Language.Hereditary` when all finitely-generated
+* A class `K` is `FirstOrder.Language.Hereditary` when all finitely-generated
   structures that embed into structures in `K` are also in `K`.
-- A class `K` has `FirstOrder.Language.JointEmbedding` when for every `M`, `N` in
+* A class `K` has `FirstOrder.Language.JointEmbedding` when for every `M`, `N` in
   `K`, there is another structure in `K` into which both `M` and `N` embed.
-- A class `K` has `FirstOrder.Language.Amalgamation` when for any pair of embeddings
+* A class `K` has `FirstOrder.Language.Amalgamation` when for any pair of embeddings
   of a structure `M` in `K` into other structures in `K`, those two structures can be embedded into
   a fourth structure in `K` such that the resulting square of embeddings commutes.
-- `FirstOrder.Language.IsFraisse` indicates that a class is nonempty, essentially countable,
+* `FirstOrder.Language.IsFraisse` indicates that a class is nonempty, essentially countable,
   and satisfies the hereditary, joint embedding, and amalgamation properties.
-- `FirstOrder.Language.IsFraisseLimit` indicates that a structure is a Fraïssé limit for a given
+* `FirstOrder.Language.IsFraisseLimit` indicates that a structure is a Fraïssé limit for a given
   class.
 
 ## Main Results
 
-- We show that the age of any structure is isomorphism-invariant and satisfies the hereditary and
+* We show that the age of any structure is isomorphism-invariant and satisfies the hereditary and
   joint-embedding properties.
-- `FirstOrder.Language.age.countable_quotient` shows that the age of any countable structure is
+* `FirstOrder.Language.age.countable_quotient` shows that the age of any countable structure is
   essentially countable.
-- `FirstOrder.Language.exists_countable_is_age_of_iff` gives necessary and sufficient conditions
+* `FirstOrder.Language.exists_countable_is_age_of_iff` gives necessary and sufficient conditions
   for a class to be the age of a countable structure in a language with countably many functions.
-- `FirstOrder.Language.IsFraisseLimit.nonempty_equiv` shows that any class which is Fraïssé has
+* `FirstOrder.Language.IsFraisseLimit.nonempty_equiv` shows that any class which is Fraïssé has
   at most one Fraïssé limit up to equivalence.
-- `FirstOrder.Language.empty.isFraisseLimit_of_countable_infinite` shows that any countably infinite
+* `FirstOrder.Language.empty.isFraisseLimit_of_countable_infinite` shows that any countably infinite
   structure in the empty language is a Fraïssé limit of the class of finite structures.
-- `FirstOrder.Language.empty.isFraisse_finite` shows that the class of finite structures in the
+* `FirstOrder.Language.empty.isFraisse_finite` shows that the class of finite structures in the
   empty language is Fraïssé.
 
 ## Implementation Notes
 
-- Classes of structures are formalized with `Set (Bundled L.Structure)`.
-- Some results pertain to countable limit structures, others to countably-generated limit
+* Classes of structures are formalized with `Set (Bundled L.Structure)`.
+* Some results pertain to countable limit structures, others to countably-generated limit
   structures. In the case of a language with countably many function symbols, these are equivalent.
 
 ## References
 
-- [W. Hodges, *A Shorter Model Theory*][Hodges97]
-- [K. Tent, M. Ziegler, *A Course in Model Theory*][Tent_Ziegler]
+* ‍\[W. Hodges, _A Shorter Model Theory_\]\[Hodges97\]
+* ‍\[K. Tent, M. Ziegler, _A Course in Model Theory_\]\[Tent\_Ziegler\]
 
 ## TODO
 
-- Show existence of Fraïssé limits
-
+* Show existence of Fraïssé limits
 -/
 
 @[expose] public section
@@ -84,7 +86,9 @@ open Structure Substructure
 
 variable (L : Language.{u, v})
 
-/-! ### The Age of a Structure and Fraïssé Classes -/
+/-!
+# The Age of a Structure and Fraïssé Classes
+-/
 
 
 /-- The age of a structure `M` is the class of finitely-generated structures that embed into it. -/

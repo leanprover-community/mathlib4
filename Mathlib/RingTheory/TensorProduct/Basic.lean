@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Lift
 public import Mathlib.RingTheory.Adjoin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The tensor product of R-algebras
 
@@ -18,14 +21,13 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 ## Main declarations
 
-- `Algebra.TensorProduct.semiring`: the ring structure on `A ⊗[R] B` for two `R`-algebras `A`, `B`.
-- `Algebra.TensorProduct.leftAlgebra`: the `S`-algebra structure on `A ⊗[R] B`, for when `A` is
+* `Algebra.TensorProduct.semiring`: the ring structure on `A ⊗[R] B` for two `R`-algebras `A`, `B`.
+* `Algebra.TensorProduct.leftAlgebra`: the `S`-algebra structure on `A ⊗[R] B`, for when `A` is
   additionally an `S` algebra.
 
 ## References
 
-* [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
-
+* ‍\[C. Kassel, _Quantum Groups_ (§II.4)\]\[Kassel1995\]
 -/
 
 @[expose] public section
@@ -46,7 +48,7 @@ variable {R : Type uR} {S : Type uS} {T : Type*}
 variable {A : Type uA} {B : Type uB} {C : Type uC} {F : Type uF}
 
 /-!
-### The `R`-algebra structure on `A ⊗[R] B`
+# The `R`-algebra structure on `A ⊗[R] B`
 -/
 
 section AddCommMonoidWithOne
@@ -292,13 +294,15 @@ theorem includeLeftRingHom_comp_algebraMap :
 section ext
 variable [Algebra R S] [Algebra S C] [IsScalarTower R S A] [IsScalarTower R S C]
 
-/-- A version of `TensorProduct.ext` for `AlgHom`.
+/--
+A version of `TensorProduct.ext` for `AlgHom`.
 
 Using this as the `@[ext]` lemma instead of `Algebra.TensorProduct.ext'` allows `ext` to apply
 lemmas specific to `A →ₐ[S] _` and `B →ₐ[R] _`; notably this allows recursion into nested tensor
 products of algebras.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext high]
 theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
     (ha : f.comp includeLeft = g.comp includeLeft)
@@ -547,7 +551,8 @@ theorem moduleAux_apply (a : A) (b : B) (m : M) : moduleAux (a ⊗ₜ[R] b) m = 
 
 variable [SMulCommClass A B M]
 
-/-- If `M` is a representation of two different `R`-algebras `A` and `B` whose actions commute,
+/--
+If `M` is a representation of two different `R`-algebras `A` and `B` whose actions commute,
 then it is a representation the `R`-algebra `A ⊗[R] B`.
 
 An important example arises from a semiring `S`; allowing `S` to act on itself via left and right
@@ -701,11 +706,13 @@ variable (R S A B : Type*)
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B] [Algebra R A] [Algebra S B]
 variable [Algebra R S] [Algebra R B] [IsScalarTower R S B]
 
-/-- Universal property of the base change of algebra.
+/--
+Universal property of the base change of algebra.
 
 An algebra map from the base change is equivalent to an algebra map over the base ring.
 
 In categorical terms, this is an adjunction between:
+
 1. `A ↦ S ⊗[R] A`, a functor `R-Alg ⥤ S-Alg` (the base change).
 2. `B ↦ B`, a functor `S-Alg ⥤ R-Alg` (the restriction).
 -/

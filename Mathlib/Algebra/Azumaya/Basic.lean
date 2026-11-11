@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Central.TensorProduct
 
 import Mathlib.Algebra.Central.End
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of Azumaya algebras
 
@@ -18,14 +21,13 @@ over itself where `R` is a commutative ring.
 
 ## Main Results
 
-- `IsAzumaya.id`: `R` is an Azumaya algebra over itself.
-
-- `IsAzumaya.ofAlgEquiv`: If `A` is an Azumaya algebra over `R` and `A` is isomorphic to `B`
+* `IsAzumaya.id`: `R` is an Azumaya algebra over itself.
+* `IsAzumaya.ofAlgEquiv`: If `A` is an Azumaya algebra over `R` and `A` is isomorphic to `B`
   as an `R`-algebra, then `B` is an Azumaya algebra over `R`.
 
 ## Tags
-Noncommutative algebra, Azumaya algebra, Brauer Group
 
+Noncommutative algebra, Azumaya algebra, Brauer Group
 -/
 
 public section
@@ -54,6 +56,7 @@ instance id : IsAzumaya R R where
 
 /--
 The following diagram commutes:
+
 ```
           e ⊗ eᵒᵖ
 A ⊗ Aᵐᵒᵖ  ------------> B ⊗ Bᵐᵒᵖ

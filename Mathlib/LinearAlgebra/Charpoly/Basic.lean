@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.LinearAlgebra.Determinant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic polynomial
 
@@ -18,7 +21,6 @@ in any basis is in `LinearAlgebra/Charpoly/ToMatrix`.
 ## Main definition
 
 * `LinearMap.charpoly f` : the characteristic polynomial of `f : M →ₗ[R] M`.
-
 -/
 
 @[expose] public section
@@ -80,10 +82,12 @@ end Coeff
 
 section CayleyHamilton
 
-/-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a linear map, applied
+/--
+The *Cayley-Hamilton Theorem*, that the characteristic polynomial of a linear map, applied
 to the linear map itself, is zero.
 
-See `Matrix.aeval_self_charpoly` for the equivalent statement about matrices. -/
+See `Matrix.aeval_self_charpoly` for the equivalent statement about matrices.
+-/
 theorem aeval_self_charpoly : aeval f f.charpoly = 0 := by
   apply (LinearEquiv.map_eq_zero_iff (algEquivMatrix (chooseBasis R M)).toLinearEquiv).1
   rw [AlgEquiv.toLinearEquiv_apply, ← AlgEquiv.coe_toAlgHom, ← Polynomial.aeval_algHom_apply _ _ _,

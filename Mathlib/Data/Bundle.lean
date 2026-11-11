@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundle
 
@@ -27,17 +30,17 @@ general, the constructions of fiber bundles we will make will be of this form.
 
 ## Implementation Notes
 
-- We use a custom structure for the total space of a bundle instead of using a type synonym for the
+* We use a custom structure for the total space of a bundle instead of using a type synonym for the
   canonical disjoint union `Σ x, E x` because the total space usually has a different topology and
   Lean 4 `simp` fails to apply lemmas about `Σ x, E x` to elements of the total space.
-
-- The definition of `Bundle.TotalSpace` has an unused argument `F`. The reason is that in some
+* The definition of `Bundle.TotalSpace` has an unused argument `F`. The reason is that in some
   constructions (e.g., the bundle of continuous linear maps) we need access to the atlas of
   trivializations of original fiber bundles to construct the topology on the total space of the new
   fiber bundle.
 
 ## References
-- https://en.wikipedia.org/wiki/Bundle_(mathematics)
+
+* https://en.wikipedia.org/wiki/Bundle\_(mathematics)
 -/
 
 @[expose] public section

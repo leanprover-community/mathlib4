@@ -12,6 +12,9 @@ public import Mathlib.Tactic.SuppressCompilation
 
 import Mathlib.Algebra.Ring.GeomSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completion of a module with respect to an ideal.
 
@@ -20,14 +23,14 @@ with respect to an ideal `I`:
 
 ## Main definitions
 
-- `IsHausdorff I M`: this says that the intersection of `I^n M` is `0`.
-- `IsPrecomplete I M`: this says that every Cauchy sequence converges.
-- `IsAdicComplete I M`: this says that `M` is Hausdorff and precomplete.
-- `Hausdorffification I M`: this is the universal Hausdorff module with a map from `M`.
-- `AdicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
+* `IsHausdorff I M`: this says that the intersection of `I^n M` is `0`.
+* `IsPrecomplete I M`: this says that every Cauchy sequence converges.
+* `IsAdicComplete I M`: this says that `M` is Hausdorff and precomplete.
+* `Hausdorffification I M`: this is the universal Hausdorff module with a map from `M`.
+* `AdicCompletion I M`: if `I` is finitely generated, then this is the universal complete module
   with a linear map `AdicCompletion.lift` from `M`. This map is injective iff `M` is Hausdorff
   and surjective iff `M` is precomplete.
-- `IsAdicComplete.lift`: if `N` is `I`-adically complete, then a compatible family of
+* `IsAdicComplete.lift`: if `N` is `I`-adically complete, then a compatible family of
   linear maps `M →ₗ[R] N ⧸ (I ^ n • ⊤)` can be lifted to a unique linear map `M →ₗ[R] N`.
   Together with `mk_lift_apply` and `eq_lift`, it gives the universal property of being
   `I`-adically complete.
@@ -165,10 +168,12 @@ abbrev Hausdorffification : Type _ :=
 to define `AdicCompletion`. -/
 abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
-/-- The completion of a module with respect to an ideal.
+/--
+The completion of a module with respect to an ideal.
 
 This is Hausdorff but not necessarily complete: a classical sufficient condition for
-completeness is that `I` be finitely generated [Stacks, 05GG]. -/
+completeness is that `I` be finitely generated \[Stacks, 05GG\].
+-/
 def AdicCompletion : Type _ :=
   { f : ∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M) //
     ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
@@ -768,6 +773,7 @@ theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
 If `F : M →ₗ[R] N` makes the following diagram commute
+
 ```
   N
   | \
@@ -776,6 +782,7 @@ If `F : M →ₗ[R] N` makes the following diagram commute
   v    v
   M --> M ⧸ (I ^ n • ⊤)
 ```
+
 Then it is the map `IsAdicComplete.lift`.
 -/
 theorem eq_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}

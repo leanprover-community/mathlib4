@@ -10,9 +10,11 @@ public import Mathlib.Topology.Instances.NNReal.Lemmas
 
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some lemmas on the spectrum and quasispectrum of elements and positivity
-
 -/
 
 public section

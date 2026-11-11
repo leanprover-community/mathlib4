@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Filter.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # N-ary maps of filter
 
@@ -166,7 +169,7 @@ theorem map_uncurry_prod (m : α → β → γ) (f : Filter α) (g : Filter β) 
   (map₂_curry (uncurry m) f g).symm
 
 /-!
-### Algebraic replacement rules
+# Algebraic replacement rules
 
 A collection of lemmas to transfer associativity, commutativity, distributivity, ... of operations
 to the associativity, commutativity, distributivity, ... of `Filter.map₂` of those operations.

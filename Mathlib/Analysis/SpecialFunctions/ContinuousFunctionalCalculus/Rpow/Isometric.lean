@@ -10,7 +10,11 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 
-/-! # Properties of `rpow` and `sqrt` over an algebra with an isometric CFC
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Properties of `rpow` and `sqrt` over an algebra with an isometric CFC
 
 This file collects results about `CFC.rpow`, `CFC.nnrpow` and `CFC.sqrt` that use facts that
 rely on an isometric continuous functional calculus.

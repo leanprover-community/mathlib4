@@ -9,12 +9,15 @@ public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Tactic.Spread
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The natural numbers form a cancellative `CommMonoidWithZero`
 
 This file contains the `CommMonoidWithZero` and `IsCancelMulZero` instances on the natural numbers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.Order.Grade
 
 import Mathlib.Data.Fintype.Pigeonhole
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kőnig's infinity lemma
 
@@ -36,20 +39,16 @@ We leave the explicitly graph-theoretic version of the statement as TODO.
 ## Main Results
 
 * `exists_seq_covby_of_forall_covby_finite` : Kőnig's lemma for strongly atomic orders.
-
 * `exists_orderEmbedding_covby_of_forall_covby_finite` : Kőnig's lemma, where the sequence
   is given as an `OrderEmbedding` instead of a function.
-
 * `exists_orderEmbedding_covby_of_forall_covby_finite_of_bot` : Kőnig's lemma where the sequence
   starts at the minimum of an infinite type.
-
 * `exist_seq_forall_proj_of_forall_finite` : Kőnig's lemma for inverse systems,
   proved using the above applied to an order on a sigma-type `(i : ℕ) × α i`.
 
 ## TODO
 
 Formulate the lemma as a statement about graphs.
-
 -/
 
 public section
@@ -93,7 +92,8 @@ end Sequence
 
 section Graded
 
-/-- A formulation of Kőnig's infinity lemma, useful in applications.
+/--
+A formulation of Kőnig's infinity lemma, useful in applications.
 Given a sequence `α 0, α 1, ...` of nonempty types with `α 0` finite,
 and a well-behaved family of projections `π : α j → α i` for all `i ≤ j`,
 if each term in each `α i` is the projection of only finitely many terms in `α (i+1)`,
@@ -105,7 +105,8 @@ and `π hij (f : α j)` is the restriction of the domain of `f` to that of `α i
 In this case, the sequence given by the lemma is essentially a function whose domain
 is the limit of the `α i`.
 
-See also `nonempty_sections_of_finite_cofiltered_system`. -/
+See also `nonempty_sections_of_finite_cofiltered_system`.
+-/
 theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α 0)] [∀ i, Nonempty (α i)]
     (π : {i j : ℕ} → (hij : i ≤ j) → α j → α i)
     (π_refl : ∀ ⦃i⦄ (a : α i), π rfl.le a = a)

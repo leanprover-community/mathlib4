@@ -7,12 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equalizers and coequalizers
 
 This file defines (co)equalizers as special cases of (co)limits.
 
-An equalizer is the categorical generalization of the subobject ${a ∈ A | f(a) = g(a)}$ known
+An equalizer is the categorical generalization of the subobject $`{a ∈ A | f(a) = g(a)}` known
 from abelian groups or modules. It is a limit cone over the diagram formed by `f` and `g`.
 
 A coequalizer is the dual concept.
@@ -22,6 +25,7 @@ A coequalizer is the dual concept.
 * `WalkingParallelPair` is the indexing category used for (co)equalizer diagrams
 * `parallelPair` is a functor from `WalkingParallelPair` to our category `C`.
 * a `fork` is a cone over a parallel pair.
+
   * there is really only one interesting morphism in a fork: the arrow from the vertex of the fork
     to the domain of f and g. It is called `fork.ι`.
 * an `equalizer` is now just a `limit (parallelPair f g)`
@@ -35,13 +39,14 @@ Each of these has a dual.
   equalizer of `f` and `f`.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 
 ## References
 
-* [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 1_\]\[borceux-vol1\]
 -/
 
 @[expose] public section
@@ -481,21 +486,25 @@ theorem Fork.IsLimit.homIso_natural {X Y : C} {f g : X ⟶ Y} {t : Fork f g} (ht
     (Fork.IsLimit.homIso ht _ (q ≫ k) : Z' ⟶ X) = q ≫ (Fork.IsLimit.homIso ht _ k : Z ⟶ X) :=
   Category.assoc _ _ _
 
-/-- This is a helper construction that can be useful when verifying that a category has all
+/--
+This is a helper construction that can be useful when verifying that a category has all
 equalizers. Given `F : WalkingParallelPair ⥤ C`, which is really the same as
 `parallelPair (F.map left) (F.map right)`, and a fork on `F.map left` and `F.map right`,
 we get a cone on `F`.
 
 If you're thinking about using this, have a look at `hasEqualizers_of_hasLimit_parallelPair`,
-which you may find to be an easier way of achieving your goal. -/
+which you may find to be an easier way of achieving your goal.
+-/
 @[to_dual
-/-- This is a helper construction that can be useful when verifying that a category has all
+/--
+This is a helper construction that can be useful when verifying that a category has all
 coequalizers. Given `F : WalkingParallelPair ⥤ C`, which is really the same as
 `parallelPair (F.map left) (F.map right)`, and a cofork on `F.map left` and `F.map right`,
 we get a cocone on `F`.
 
 If you're thinking about using this, have a look at `hasCoequalizers_of_hasColimit_parallelPair`,
-which you may find to be an easier way of achieving your goal. -/]
+which you may find to be an easier way of achieving your goal.
+-/]
 def Cone.ofFork {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) : Cone F where
   pt := t.pt
   π :=
@@ -859,6 +868,7 @@ variable {f g : X ⟶ Y} {Z : C} (h : Z ⟶ X)
 /--
 Given a fork `s` on morphisms `f, g : X ⟶ Y` and a pullback cone `c` on `s.ι : s.pt ⟶ X` and a
 morphism `h : Z ⟶ X`, the projection `c.snd : c.pt ⟶ Z` induces a fork on `h ≫ f` and `h ≫ g`.
+
 ```
 c.pt → Z
 |      |

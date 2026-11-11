@@ -11,23 +11,25 @@ public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 import Mathlib.RingTheory.Ideal.IdempotentFG
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Standard etale maps
 
 ## Main definitions
-- `StandardEtalePair`:
+
+* `StandardEtalePair`:
   A pair `f g : R[X]` such that `f` is monic and `f'` is invertible in `R[X][1/g]`.
-- `StandardEtalePair`: The standard etale algebra corresponding to a `StandardEtalePair`.
-- `StandardEtalePair.equivPolynomialQuotient`   : `P.Ring ≃ R[X][Y]/⟨f, Yg-1⟩`
-- `StandardEtalePair.equivAwayAdjoinRoot`       : `P.Ring ≃ (R[X]/f)[1/g]`
-- `StandardEtalePair.equivAwayQuotient`         : `P.Ring ≃ R[X][1/g]/f`
-- `StandardEtalePair.equivMvPolynomialQuotient` : `P.Ring ≃ R[X, Y]/⟨f, Yg-1⟩`
-- `StandardEtalePair.homEquiv`:
+* `StandardEtalePair`: The standard etale algebra corresponding to a `StandardEtalePair`.
+* `StandardEtalePair.equivPolynomialQuotient`   : `P.Ring ≃ R[X][Y]/⟨f, Yg-1⟩`
+* `StandardEtalePair.equivAwayAdjoinRoot`       : `P.Ring ≃ (R[X]/f)[1/g]`
+* `StandardEtalePair.equivAwayQuotient`         : `P.Ring ≃ R[X][1/g]/f`
+* `StandardEtalePair.equivMvPolynomialQuotient` : `P.Ring ≃ R[X, Y]/⟨f, Yg-1⟩`
+* `StandardEtalePair.homEquiv`:
   Maps out of `P.Ring` corresponds to `x` such that `f(x) = 0` and `g(x)` is invertible.
-- We also provide the instance that `P.Ring` is etale over `R`.
-
-- `Algebra.IsStandardEtale`: The class of standard etale algebras.
-
+* We also provide the instance that `P.Ring` is etale over `R`.
+* `Algebra.IsStandardEtale`: The class of standard etale algebras.
 -/
 
 @[expose] public section

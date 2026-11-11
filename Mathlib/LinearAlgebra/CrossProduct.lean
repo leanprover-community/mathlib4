@@ -9,15 +9,18 @@ public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cross products
 
-This module defines the cross product of vectors in $R^3$ for $R$ a commutative ring,
+This module defines the cross product of vectors in $`R^3` for $`R` a commutative ring,
 as a bilinear map.
 
 ## Main definitions
 
-* `crossProduct` is the cross product of pairs of vectors in $R^3$.
+* `crossProduct` is the cross product of pairs of vectors in $`R^3`.
 
 ## Main results
 
@@ -43,7 +46,9 @@ open Matrix
 
 variable {R : Type*} [CommRing R]
 
-/-- The cross product of two vectors in $R^3$ for $R$ a commutative ring. -/
+/--
+The cross product of two vectors in $`R^3` for $`R` a commutative ring.
+-/
 def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R := by
   apply LinearMap.mk₂ R fun a b : Fin 3 → R =>
       ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0]

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Order.SuccPred.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Successors and predecessors of integers
 
@@ -50,7 +53,9 @@ instance : IsPredArchimedean ℤ :=
   ⟨fun {a b} h =>
     ⟨(b - a).toNat, by rw [pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
 
-/-! ### Covering relation -/
+/-!
+# Covering relation
+-/
 
 
 @[simp, norm_cast]

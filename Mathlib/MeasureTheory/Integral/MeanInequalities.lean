@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mean value inequalities for integrals
 
@@ -23,6 +26,7 @@ the Minkowski inequality. The versions for finite sums are in `Analysis.MeanIneq
 Hölder's inequality for the Lebesgue integral of `ℝ≥0∞` and `ℝ≥0` functions: we prove
 `∫ (f * g) ∂μ ≤ (∫ f^p ∂μ) ^ (1/p) * (∫ g^q ∂μ) ^ (1/q)` for `p`, `q` conjugate real exponents
 and `α → (E)NNReal` functions in two cases,
+
 * `ENNReal.lintegral_mul_le_Lp_mul_Lq` : ℝ≥0∞ functions,
 * `NNReal.lintegral_mul_le_Lp_mul_Lq`  : ℝ≥0 functions.
 
@@ -42,15 +46,16 @@ we prove `(∫ (f + g)^p ∂μ) ^ (1/p) ≤ (∫ f^p ∂μ) ^ (1/p) + (∫ g^p �
 section LIntegral
 
 /-!
-### Hölder's inequality for the Lebesgue integral of `ℝ≥0∞` and `ℝ≥0` functions
+# Hölder's inequality for the Lebesgue integral of `ℝ≥0∞` and `ℝ≥0` functions
 
 We prove `∫ (f * g) ∂μ ≤ (∫ f^p ∂μ) ^ (1/p) * (∫ g^q ∂μ) ^ (1/q)` for `p`, `q`
 conjugate real exponents and `α → (E)NNReal` functions in several cases, the first two being useful
 only to prove the more general results:
+
 * `ENNReal.lintegral_mul_le_one_of_lintegral_rpow_eq_one`: `ℝ≥0∞` functions for which the
-    integrals on the right are equal to `1`,
+  integrals on the right are equal to `1`,
 * `ENNReal.lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top`: `ℝ≥0∞` functions for which the
-    integrals on the right are neither `⊤` nor `0`,
+  integrals on the right are neither `⊤` nor `0`,
 * `ENNReal.lintegral_mul_le_Lp_mul_Lq`: `ℝ≥0∞` functions,
 * `NNReal.lintegral_mul_le_Lp_mul_Lq`: `ℝ≥0` functions.
 -/

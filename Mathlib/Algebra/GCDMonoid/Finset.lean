@@ -9,13 +9,16 @@ public import Mathlib.Algebra.GCDMonoid.Multiset
 public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Finset.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # GCD and LCM operations on finsets
 
 ## Main definitions
 
-- `Finset.gcd` - the greatest common denominator of a `Finset` of elements of a `GCDMonoid`
-- `Finset.lcm` - the least common multiple of a `Finset` of elements of a `GCDMonoid`
+* `Finset.gcd` - the greatest common denominator of a `Finset` of elements of a `GCDMonoid`
+* `Finset.lcm` - the least common multiple of a `Finset` of elements of a `GCDMonoid`
 
 ## Implementation notes
 
@@ -39,7 +42,9 @@ open Multiset
 
 variable [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
-/-! ### lcm -/
+/-!
+# lcm
+-/
 
 
 section lcm
@@ -115,7 +120,9 @@ theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠
 
 end lcm
 
-/-! ### gcd -/
+/-!
+# gcd
+-/
 
 
 section gcd

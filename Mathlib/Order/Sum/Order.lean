@@ -10,6 +10,9 @@ public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Lex
 public import Mathlib.Order.WithBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orders on a sum type
 
@@ -36,7 +39,9 @@ variable {α β γ : Type*}
 
 namespace Sum
 
-/-! ### Unbundled relation classes -/
+/-!
+# Unbundled relation classes
+-/
 
 
 section LiftRel
@@ -108,7 +113,9 @@ theorem lex_flip_iff (a b : α ⊕ β) : Lex (flip r) (flip s) a b ↔ Lex s r b
 
 end Lex
 
-/-! ### Disjoint sum of two orders -/
+/-!
+# Disjoint sum of two orders
+-/
 
 
 section Disjoint
@@ -275,7 +282,9 @@ theorem swap_strictMono [Preorder α] [Preorder β] : StrictMono (α := α ⊕ �
 
 end Disjoint
 
-/-! ### Linear sum of two orders -/
+/-!
+# Linear sum of two orders
+-/
 
 
 namespace Lex
@@ -530,7 +539,9 @@ end Lex
 
 end Sum
 
-/-! ### Order isomorphisms -/
+/-!
+# Order isomorphisms
+-/
 
 
 open OrderDual Sum

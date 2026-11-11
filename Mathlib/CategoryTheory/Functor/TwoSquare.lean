@@ -8,11 +8,15 @@ module
 public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.CategoryTheory.Products.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 2-squares of functors
 
 Given four functors `T`, `L`, `R` and `B`, a 2-square `TwoSquare T L R B` consists of
 a natural transformation `w : T ⋙ R ⟶ L ⋙ B`:
+
 ```
      T
   C₁ ⥤ C₂
@@ -28,7 +32,6 @@ law of those two operations.
 ## TODO
 
 Generalize all of this to double categories.
-
 -/
 
 @[expose] public section

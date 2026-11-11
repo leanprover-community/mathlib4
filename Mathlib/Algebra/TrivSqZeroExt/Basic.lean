@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Prod
 
 import Mathlib.Algebra.Order.Group.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trivial Square-Zero Extension
 
@@ -21,15 +24,19 @@ It is a square-zero extension because `M^2 = 0`.
 
 Note that expressing this requires bimodules; we write these in general for a
 not-necessarily-commutative `R` as:
+
 ```lean
 variable {R M : Type*} [Semiring R] [AddCommMonoid M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 ```
+
 If we instead work with a commutative `R'` acting symmetrically on `M`, we write
+
 ```lean
 variable {R' M : Type*} [CommSemiring R'] [AddCommMonoid M]
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 ```
+
 noting that in this context `IsCentralScalar R' M` implies `SMulCommClass R' R'ᵐᵒᵖ M`.
 
 Many of the later results in this file are only stated for the commutative `R'` for simplicity.
@@ -44,20 +51,21 @@ Many of the later results in this file are only stated for the commutative `R'` 
 * `TrivSqZeroExt.lift`: the universal property of the trivial square-zero extension; algebra
   morphisms `TrivSqZeroExt R M →ₐ[S] A` are uniquely defined by an algebra morphism `f : R →ₐ[S] A`
   on `R` and a linear map `g : M →ₗ[S] A` on `M` such that:
+
   * `g x * g y = 0`: the elements of `M` continue to square to zero.
   * `g (r •> x) = f r * g x` and `g (x <• r) = g x * f r`: left and right actions are preserved by
     `g`.
 * `TrivSqZeroExt.lift`: the universal property of the trivial square-zero extension; algebra
   morphisms `TrivSqZeroExt R M →ₐ[R] A` are uniquely defined by linear maps `M →ₗ[R] A` for
   which the product of any two elements in the range is zero.
-
 -/
 
 @[expose] public section
 
 universe u v w
 
-/-- "Trivial Square-Zero Extension".
+/--
+"Trivial Square-Zero Extension".
 
 Given a module `M` over a ring `R`, the trivial square-zero extension of `M` over `R` is defined
 to be the `R`-algebra `R × M` with multiplication given by
@@ -166,9 +174,11 @@ theorem inr_injective [Zero R] : Function.Injective (inr : M → tsze R M) :=
 
 end Basic
 
-/-! ### Structures inherited from `Prod`
+/-!
+# Structures inherited from `Prod`
 
-Additive operators and scalar multiplication operate elementwise. -/
+Additive operators and scalar multiplication operate elementwise.
+-/
 
 
 section Additive
@@ -395,7 +405,9 @@ def sndHom [Semiring R] [AddCommMonoid M] [Module R M] : tsze R M →ₗ[R] M :=
 
 end Additive
 
-/-! ### Multiplicative structure -/
+/-!
+# Multiplicative structure
+-/
 
 
 section Mul
@@ -544,14 +556,12 @@ instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module R�
 instance nonAssocRing [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocRing (tsze R M) where
 
-/-- In the general non-commutative case, the power operator is
+/--
+In the general non-commutative case, the power operator is
 
-$$\begin{align}
-(r + m)^n &= r^n + r^{n-1}m + r^{n-2}mr + \cdots + rmr^{n-2} + mr^{n-1} \\
-          & =r^n + \sum_{i = 0}^{n - 1} r^{(n - 1) - i} m r^{i}
-\end{align}$$
+$$`\begin{align} (r + m)^n &= r^n + r^{n-1}m + r^{n-2}mr + \cdots + rmr^{n-2} + mr^{n-1} \\ & =r^n + \sum_{i = 0}^{n - 1} r^{(n - 1) - i} m r^{i} \end{align}`
 
-In the commutative case this becomes the simpler $(r + m)^n = r^n + nr^{n-1}m$.
+In the commutative case this becomes the simpler $`(r + m)^n = r^n + nr^{n-1}m`.
 -/
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     Pow (tsze R M) ℕ :=
@@ -630,8 +640,10 @@ theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMu
 instance semiring [Semiring R] [AddCommMonoid M]
     [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] : Semiring (tsze R M) where
 
-/-- The second element of a product $\prod_{i=0}^n (r_i + m_i)$ is a sum of terms of the form
-$r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
+/--
+The second element of a product $`\prod_{i=0}^n (r_i + m_i)` is a sum of terms of the form
+$`r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n`.
+-/
 theorem snd_list_prod [Monoid R] [AddCommMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
@@ -681,9 +693,11 @@ section Inv
 variable {R : Type u} {M : Type v}
 variable [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
 
-/-- Inversion of the trivial-square-zero extension, sending $r + m$ to $r^{-1} - r^{-1}mr^{-1}$.
+/--
+Inversion of the trivial-square-zero extension, sending $`r + m` to $`r^{-1} - r^{-1}mr^{-1}`.
 
-Strictly this is only a _two_-sided inverse when the left and right actions associate. -/
+Strictly this is only a _two_-sided inverse when the left and right actions associate.
+-/
 instance instInv : Inv (tsze R M) :=
   ⟨fun b => (b.1⁻¹, -(b.1⁻¹ •> b.2 <• b.1⁻¹))⟩
 
@@ -941,7 +955,8 @@ See `TrivSqZeroExt.liftEquiv` for this as an equiv; namely that any such algebra
 factored in this way.
 
 When `R` is commutative, this can be invoked with `f = Algebra.ofId R A`, which satisfies `hfg` and
-`hgf`. This version is captured as an equiv by `TrivSqZeroExt.liftEquivOfComm`. -/
+`hgf`. This version is captured as an equiv by `TrivSqZeroExt.liftEquivOfComm`.
+-/
 def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (hg : ∀ x y, g x * g y = 0)
     (hfg : ∀ r x, g (r •> x) = f r * g x)
@@ -1024,12 +1039,14 @@ theorem range_liftAux (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     AlgHom.map_adjoin, ← AlgHom.range_comp, lift_comp_inlHom, ← Set.range_comp, Function.comp_def,
     lift_apply_inr, Algebra.map_top]
 
-/-- A universal property of the trivial square-zero extension, providing a unique
+/--
+A universal property of the trivial square-zero extension, providing a unique
 `TrivSqZeroExt R M →ₐ[R] A` for every pair of maps `f : R →ₐ[S] A` and `g : M →ₗ[S] A`,
 where the range of `g` has no non-zero products, and scaling the input to `g` on the left or right
 amounts to a corresponding multiplication by `f` in the output.
 
-This isomorphism is named to match the very similar `Complex.lift`. -/
+This isomorphism is named to match the very similar `Complex.lift`.
+-/
 @[simps! apply symm_apply_coe]
 def liftEquiv :
     {fg : (R →ₐ[S] A) × (M →ₗ[S] A) //
@@ -1062,7 +1079,8 @@ section map
 variable {N P : Type*} [AddCommMonoid N] [Module R' N] [Module R'ᵐᵒᵖ N] [IsCentralScalar R' N]
   [AddCommMonoid P] [Module R' P] [Module R'ᵐᵒᵖ P] [IsCentralScalar R' P]
 
-/-- Functoriality of `TrivSqZeroExt` when the ring is commutative: a linear map
+/--
+Functoriality of `TrivSqZeroExt` when the ring is commutative: a linear map
 `f : M →ₗ[R'] N` induces a morphism of `R'`-algebras from `TrivSqZeroExt R' M` to
 `TrivSqZeroExt R' N`.
 

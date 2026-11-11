@@ -8,11 +8,14 @@ module
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.Probability.HasLaw
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Identically distributed random variables
 
 Two random variables defined on two (possibly different) probability spaces but taking value in
-the same space are *identically distributed* if their distributions (i.e., the image probability
+the same space are _identically distributed_ if their distributions (i.e., the image probability
 measures on the target space) coincide. We define this concept and establish its basic properties
 in this file.
 
@@ -38,7 +41,6 @@ instance:
   are the same.
 * `IdentDistrib.variance_eq`: if `f` and `g` are identically distributed, then their variances
   are the same.
-
 * `IdentDistrib.aestronglyMeasurable_snd`: if `f` and `g` are identically distributed and `f`
   is almost everywhere strongly measurable, then so is `g`.
 * `IdentDistrib.memLp_snd`: if `f` and `g` are identically distributed and `f`

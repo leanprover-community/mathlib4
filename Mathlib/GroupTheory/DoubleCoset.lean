@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.GroupTheory.Coset.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Double cosets
 

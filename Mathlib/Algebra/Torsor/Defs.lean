@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsors of group actions
 
@@ -40,9 +43,8 @@ such examples.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Principal_homogeneous_space
-* https://en.wikipedia.org/wiki/Affine_space
-
+* https://en.wikipedia.org/wiki/Principal\_homogeneous\_space
+* https://en.wikipedia.org/wiki/Affine\_space
 -/
 
 @[expose] public section

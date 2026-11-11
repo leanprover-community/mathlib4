@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 public import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of the iteration of a successor structure
 
 Given `Φ : SuccStruct C`, we show by transfinite induction
 that for any element `j` in a well-ordered set `J`,
 the type `Φ.Iteration j` is nonempty.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations holding pairwise
 
@@ -250,12 +253,14 @@ section PartialOrderBot
 
 variable [PartialOrder α] [OrderBot α] {s t : Set ι} {f g : ι → α}
 
-/-- A set is `PairwiseDisjoint` under `f`, if the images of any distinct two elements under `f`
+/--
+A set is `PairwiseDisjoint` under `f`, if the images of any distinct two elements under `f`
 are disjoint.
 
 `s.Pairwise Disjoint` is (definitionally) the same as `s.PairwiseDisjoint id`. We prefer the latter
 in order to allow dot notation on `Set.PairwiseDisjoint`, even though the former unfolds more
-nicely. -/
+nicely.
+-/
 def PairwiseDisjoint (s : Set ι) (f : ι → α) : Prop :=
   s.Pairwise (Disjoint on f)
 
@@ -362,7 +367,9 @@ theorem PairwiseDisjoint.eq_of_le (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i
 
 end SemilatticeInfBot
 
-/-! ### Pairwise disjoint set of sets -/
+/-!
+# Pairwise disjoint set of sets
+-/
 
 variable {s : Set ι} {t : Set ι'}
 

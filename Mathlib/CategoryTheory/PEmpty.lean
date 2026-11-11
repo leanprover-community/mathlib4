@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Discrete.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The empty category
 
@@ -67,7 +70,8 @@ category.
 def uniqueFromEmpty (F : Discrete.{w} PEmpty ⥤ C) : F ≅ empty C :=
   emptyExt _ _
 
-/-- Any two functors out of the empty category are *equal*. You probably want to use
+/--
+Any two functors out of the empty category are _equal_. You probably want to use
 `emptyExt` instead of this.
 -/
 theorem empty_ext' (F G : Discrete.{w} PEmpty ⥤ C) : F = G :=

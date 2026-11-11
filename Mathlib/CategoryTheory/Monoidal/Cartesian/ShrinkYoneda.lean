@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Category.Grp.Shrink
 public import Mathlib.Algebra.Category.MonCat.Shrink
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda embedding for monoid objects for locally small categories
 
 Let `C` be a locally `w`-small category. We define the Yoneda
 embedding `shrinkYonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{w} w` and its `Grp` analogue.
-
 -/
 
 @[expose] public section

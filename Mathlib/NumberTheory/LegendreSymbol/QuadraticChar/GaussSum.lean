@@ -8,18 +8,20 @@ module
 public import Mathlib.NumberTheory.GaussSum
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic characters of finite fields
 
 Further facts relying on Gauss sums.
-
 -/
 
 public section
 
 
 /-!
-### Basic properties of the quadratic character
+# Basic properties of the quadratic character
 
 We prove some properties of the quadratic character.
 We work with a finite field `F` here.

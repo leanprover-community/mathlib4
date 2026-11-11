@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Final and initial functors
 
@@ -24,6 +27,7 @@ We show that right adjoints are examples of final functors, while
 left adjoints are examples of initial functors.
 
 For final functors, we prove that the following three statements are equivalent:
+
 1. `F : C ⥤ D` is final.
 2. Every functor `G : D ⥤ E` has a colimit if and only if `F ⋙ G` does,
    and these colimits are isomorphic via `colimit.pre G F`.
@@ -46,21 +50,25 @@ In the end of the file, we characterize the finality of some important induced f
 Grothendieck construction (`Grothendieck.pre` and `Grothendieck.map`).
 
 ## Naming
+
 There is some discrepancy in the literature about naming; some say 'cofinal' instead of 'final'.
-The explanation for this is that the 'co' prefix here is *not* the usual category-theoretic one
+The explanation for this is that the 'co' prefix here is _not_ the usual category-theoretic one
 indicating duality, but rather indicating the sense of "along with".
 
 ## See also
+
 In `CategoryTheory.Filtered.Final` we give additional equivalent conditions in the case that
 `C` is filtered.
 
 ## Future work
+
 Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial functors.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/09WN
 * https://ncatlab.org/nlab/show/final+functor
-* [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Section 2.11.
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 1_\]\[borceux-vol1\], Section 2.11.
   (Note he reverses the roles of definition and main result relative to here!)
 -/
 
@@ -187,13 +195,14 @@ def lift (d : D) : C :=
 def homToLift (d : D) : d ⟶ F.obj (lift F d) :=
   (Classical.arbitrary (StructuredArrow d F)).hom
 
-/-- We provide an induction principle for reasoning about `lift` and `homToLift`.
+/--
+We provide an induction principle for reasoning about `lift` and `homToLift`.
 We want to perform some construction (usually just a proof) about
 the particular choices `lift F d` and `homToLift F d`,
 it suffices to perform that construction for some other pair of choices
 (denoted `X₀ : C` and `k₀ : d ⟶ F.obj X₀` below),
 and to show how to transport such a construction
-*both* directions along a morphism between such choices.
+_both_ directions along a morphism between such choices.
 -/
 def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
     (h₁ :
@@ -368,7 +377,8 @@ def colimitCoconeOfComp (t : ColimitCocone (F ⋙ G)) : ColimitCocone G where
   cocone := extendCocone.obj t.cocone
   isColimit := (isColimitExtendCoconeEquiv F _).symm t.isColimit
 
-/-- When `F` is final, and `F ⋙ G` has a colimit, then `G` has a colimit also.
+/--
+When `F` is final, and `F ⋙ G` has a colimit, then `G` has a colimit also.
 
 We can't make this an instance, because `F` is not determined by the goal.
 (Even if this weren't a problem, it would cause a loop with `comp_hasColimit`.)
@@ -532,13 +542,14 @@ def lift (d : D) : C :=
 def homToLift (d : D) : F.obj (lift F d) ⟶ d :=
   (Classical.arbitrary (CostructuredArrow F d)).hom
 
-/-- We provide an induction principle for reasoning about `lift` and `homToLift`.
+/--
+We provide an induction principle for reasoning about `lift` and `homToLift`.
 We want to perform some construction (usually just a proof) about
 the particular choices `lift F d` and `homToLift F d`,
 it suffices to perform that construction for some other pair of choices
 (denoted `X₀ : C` and `k₀ : F.obj X₀ ⟶ d` below),
 and to show how to transport such a construction
-*both* directions along a morphism between such choices.
+_both_ directions along a morphism between such choices.
 -/
 def induction {d : D} (Z : ∀ (X : C) (_ : F.obj X ⟶ d), Sort*)
     (h₁ :
@@ -708,7 +719,8 @@ def limitConeOfComp (t : LimitCone (F ⋙ G)) : LimitCone G where
   cone := extendCone.obj t.cone
   isLimit := (isLimitExtendConeEquiv F _).symm t.isLimit
 
-/-- When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also.
+/--
+When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also.
 
 We can't make this an instance, because `F` is not determined by the goal.
 (Even if this weren't a problem, it would cause a loop with `comp_hasLimit`.)
@@ -966,7 +978,8 @@ open CategoryTheory.Functor
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 
-/-- Final functors preserve filteredness.
+/--
+Final functors preserve filteredness.
 
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
 adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
@@ -993,7 +1006,8 @@ theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C]
     · rintro U V h ⟨Z, q₁, q₂, hq⟩
       exact ⟨Z, h.right ≫ q₁, q₂, by simp only [F.map_comp, StructuredArrow.w_assoc, hq]⟩
 
-/-- Final functors preserve filteredness.
+/--
+Final functors preserve filteredness.
 
 This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
 adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
@@ -1002,7 +1016,8 @@ theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered 
 { IsFilteredOrEmpty.of_final F with
   nonempty := Nonempty.map F.obj IsFiltered.nonempty }
 
-/-- Initial functors preserve cofilteredness.
+/--
+Initial functors preserve cofilteredness.
 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
 adjoints preserve cofilteredness), as right adjoints are always initial,
@@ -1013,7 +1028,8 @@ theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOr
   have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
   isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
 
-/-- Initial functors preserve cofilteredness.
+/--
+Initial functors preserve cofilteredness.
 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
 adjoints preserve cofilteredness), as right adjoints are always initial,

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules over presheaves of commutative rings
 

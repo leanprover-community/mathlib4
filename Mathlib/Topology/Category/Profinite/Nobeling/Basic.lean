@@ -10,6 +10,9 @@ public import Mathlib.SetTheory.Ordinal.Basic
 public import Mathlib.Topology.Category.Profinite.Product
 public import Mathlib.Topology.LocallyConstant.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preliminaries for Nöbeling's theorem
 
@@ -19,7 +22,7 @@ See the section docstrings for more information.
 
 ## Proof idea
 
-We follow the proof of theorem 5.4 in [scholze2019condensed], in which the idea is to embed `S` in
+We follow the proof of theorem 5.4 in \[scholze2019condensed\], in which the idea is to embed `S` in
 a product of `I` copies of `Bool` for some sufficiently large `I`, and then to choose a
 well-ordering on `I` and use ordinal induction over that well-order. Here we can let `I` be
 the set of clopen subsets of `S` since `S` is totally separated.
@@ -40,7 +43,7 @@ independent. The fact that it spans is proved directly in
 
 ## References
 
-- [scholze2019condensed], Theorem 5.4.
+* ‍\[scholze2019condensed\], Theorem 5.4.
 -/
 
 @[expose] public section
@@ -55,7 +58,7 @@ variable {I : Type u} (C : Set (I → Bool))
 
 section Projections
 /-!
-## Projection maps
+# Projection maps
 
 The purpose of this section is twofold.
 
@@ -67,14 +70,12 @@ inductive hypothesis.
 
 In this section we define the relevant projection maps and prove some compatibility results.
 
-### Main definitions
+## Main definitions
 
 * Let `J : I → Prop`. Then `Proj J : (I → Bool) → (I → Bool)` is the projection mapping everything
   that satisfies `J i` to itself, and everything else to `false`.
-
 * The image of `C` under `Proj J` is denoted `π C J` and the corresponding map `C → π C J` is called
   `ProjRestrict`. If `J` implies `K` we have a map `ProjRestricts : π C K → π C J`.
-
 * `spanCone_isLimit` establishes that when `C` is compact, it can be written as a limit of its
   images under the maps `Proj (· ∈ s)` where `s : Finset I`.
 -/
@@ -256,31 +257,27 @@ end Projections
 
 section Products
 /-!
-## Defining the basis
+# Defining the basis
 
 Our proposed basis consists of products `e C iᵣ * ⋯ * e C i₁` with `iᵣ > ⋯ > i₁` which cannot be
 written as linear combinations of lexicographically smaller products. See below for the definition
 of `e`.
 
-### Main definitions
+## Main definitions
 
 * For `i : I`, we let `e C i : LocallyConstant C ℤ` denote the map
   `fun f ↦ (if f.val i then 1 else 0)`.
-
 * `Products I` is the type of lists of decreasing elements of `I`, so a typical element is
   `[i₁, i₂,..., iᵣ]` with `i₁ > i₂ > ... > iᵣ`.
-
 * `Products.eval C` is the `C`-evaluation of a list. It takes a term `[i₁, i₂,..., iᵣ] : Products I`
   and returns the actual product `e C i₁ ··· e C iᵣ : LocallyConstant C ℤ`.
-
 * `GoodProducts C` is the set of `Products I` such that their `C`-evaluation cannot be written as
   a linear combination of evaluations of lexicographically smaller lists.
 
-### Main results
+## Main results
 
 * `Products.evalFacProp` and `Products.evalFacProps` establish the fact that `Products.eval`
   interacts nicely with the projection maps from the previous section.
-
 * `GoodProducts.span_iff_products`: the good products span `LocallyConstant C ℤ` iff all the
   products span `LocallyConstant C ℤ`.
 -/
@@ -458,20 +455,17 @@ variable [LinearOrder I] [WellFoundedLT I]
 
 section Ordinal
 /-!
-## Relating elements of the well-order `I` with ordinals
+# Relating elements of the well-order `I` with ordinals
 
 We choose a well-ordering on `I`. This amounts to regarding `I` as an ordinal, and as such it
 can be regarded as the set of all strictly smaller ordinals, allowing to apply ordinal induction.
 
-### Main definitions
+## Main definitions
 
 * `ord I i` is the term `i` of `I` regarded as an ordinal.
-
 * `term I ho` is a sufficiently small ordinal regarded as a term of `I`.
-
 * `contained C o` is a predicate saying that `C` is "small" enough in relation to the ordinal `o`
   to satisfy the inductive hypothesis.
-
 * `P I` is the predicate on ordinals about linear independence of good products, which the rest of
   this file is spent on proving by induction.
 -/
@@ -532,17 +526,17 @@ end Ordinal
 
 section Maps
 /-!
-## `ℤ`-linear maps induced by projections
+# `ℤ`-linear maps induced by projections
 
 We define injective `ℤ`-linear maps between modules of the form `LocallyConstant C ℤ` induced by
 precomposition with the projections defined in the section `Projections`.
 
-### Main definitions
+## Main definitions
 
 * `πs` and `πs'` are the `ℤ`-linear maps corresponding to `ProjRestrict` and `ProjRestricts`
   respectively.
 
-### Main result
+## Main result
 
 * We prove that `πs` and `πs'` interact well with `Products.eval` and the main application is the
   theorem `isGood_mono` which says that the property `isGood` is "monotone" on ordinals.

@@ -11,13 +11,16 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.Order.SuccPred.IntervalSucc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolutely Continuous Functions
 
 This file defines absolutely continuous functions on a closed interval `uIcc a b` and proves some
 basic properties about absolutely continuous functions.
 
-A function `f` is *absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such
+A function `f` is _absolutely continuous_ on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such
 that for any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`,
 `b i` are all in `uIcc a b` for `i < n`, if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
 `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`.
@@ -28,6 +31,7 @@ and `AbsolutelyContinuousOnInterval.disjWithin` and prove its equivalence with t
 definition in `absolutelyContinuousOnInterval_iff`.
 
 We use the filter version to prove that absolutely continuous functions are closed under
+
 * addition - `AbsolutelyContinuousOnInterval.add`;
 * negation - `AbsolutelyContinuousOnInterval.neg`;
 * subtraction - `AbsolutelyContinuousOnInterval.sub`;
@@ -40,12 +44,14 @@ and that absolutely continuous implies uniformly continuous in
 `AbsolutelyContinuousOnInterval.uniformContinuousOn`.
 
 We use the `ε`-`δ` definition to prove that
+
 * Lipschitz continuous functions are absolutely continuous -
   `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
   `AbsolutelyContinuousOnInterval.boundedVariationOn`.
 
 We conclude that
+
 * absolutely continuous functions are a.e. differentiable -
   `AbsolutelyContinuousOnInterval.ae_differentiableAt`;
 * if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
@@ -53,6 +59,7 @@ We conclude that
   `IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
 
 ## Tags
+
 absolutely continuous
 -/
 
@@ -66,9 +73,11 @@ open scoped Topology NNReal
 
 namespace AbsolutelyContinuousOnInterval
 
-/-- The filter on the collection of all the finite sequences of `uIoc` intervals induced by the
+/--
+The filter on the collection of all the finite sequences of `uIoc` intervals induced by the
 function that maps the finite sequence of the intervals to the total length of the intervals.
 Details:
+
 1. Technically the filter is on `ℕ × (ℕ → X × X)`. A finite sequence `uIoc (a i) (b i)`, `i < n`
    is represented by any `E : ℕ × (ℕ → X × X)` which satisfies `E.1 = n` and `E.2 i = (a i, b i)`
    for `i < n`. Its total length is `∑ i ∈ Finset.range n, dist (a i) (b i)`.
@@ -145,22 +154,26 @@ lemma tendsto_volume_restrict_totalLengthFilter_disjWithin_nhds_zero (a b : ℝ)
     simp only [Finset.mem_range]
     apply Measure.restrict_le_self
 
-/-- `AbsolutelyContinuousOnInterval f a b`: A function `f` is *absolutely continuous* on `uIcc a b`
+/--
+`AbsolutelyContinuousOnInterval f a b`: A function `f` is _absolutely continuous_ on `uIcc a b`
 if the function which (intuitively) maps `uIoc (a i) (b i)`, `i < n` to
 `∑ i ∈ Finset.range n, dist (f (a i)) (f (b i))` tendsto `𝓝 0` wrt `totalLengthFilter` restricted
 to `disjWithin a b`. This is equivalent to the traditional `ε`-`δ` definition: for any `ε > 0`,
 there is `δ > 0` such that for any finite disjoint collection of intervals `uIoc (a i) (b i)` for
 `i < n` where `a i`, `b i` are all in `uIcc a b` for `i < n`, if
-`∑ i ∈ range n, dist (a i) (b i) < δ`, then `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`. -/
+`∑ i ∈ range n, dist (a i) (b i) < δ`, then `∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`.
+-/
 def _root_.AbsolutelyContinuousOnInterval (f : ℝ → X) (a b : ℝ) :=
   Tendsto (fun E ↦ ∑ i ∈ Finset.range E.1, dist (f (E.2 i).1) (f (E.2 i).2))
     (totalLengthFilter ⊓ 𝓟 (disjWithin a b)) (𝓝 0)
 
-/-- The traditional `ε`-`δ` definition of absolutely continuous: A function `f` is
-*absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such that for
+/--
+The traditional `ε`-`δ` definition of absolutely continuous: A function `f` is
+_absolutely continuous_ on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such that for
 any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`, `b i` are
 all in `uIcc a b` for `i < n`, if `∑ i ∈ range n, dist (a i) (b i) < δ`, then
-`∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`. -/
+`∑ i ∈ range n, dist (f (a i)) (f (b i)) < ε`.
+-/
 theorem _root_.absolutelyContinuousOnInterval_iff (f : ℝ → X) (a b : ℝ) :
     AbsolutelyContinuousOnInterval f a b ↔
     ∀ ε > (0 : ℝ), ∃ δ > (0 : ℝ), ∀ E, E ∈ disjWithin a b →

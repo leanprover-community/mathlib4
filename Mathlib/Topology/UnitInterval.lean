@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Topology.Algebra.Ring.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The unit interval, as a topological space
 
@@ -16,7 +19,6 @@ Use `open unitInterval` to turn on the notation `I := Set.Icc (0 : ℝ) (1 : ℝ
 
 We provide basic instances, as well as a custom tactic for discharging
 `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` when `x : I`.
-
 -/
 
 @[expose] public section
@@ -25,7 +27,9 @@ noncomputable section
 
 open Set Int Set.Icc
 
-/-! ### The unit interval -/
+/-!
+# The unit interval
+-/
 
 
 /-- The unit interval `[0,1]` in ℝ. -/

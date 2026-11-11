@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Alternating.Curry
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Orientation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oriented two-dimensional real inner product spaces
 
@@ -23,14 +26,11 @@ product space `E`.
   Morally, when `ω` is evaluated on two vectors, it gives the oriented area of the parallelogram
   they span. (But mathlib does not yet have a construction of oriented area, and in fact the
   construction of oriented area should pass through `ω`.)
-
 * `Orientation.rightAngleRotation`: an isometric automorphism `E ≃ₗᵢ[ℝ] E` (usual notation `J`).
   This automorphism squares to -1. In a later file, rotations (`Orientation.rotation`) are defined,
   in such a way that this automorphism is equal to rotation by 90 degrees.
-
 * `Orientation.basisRightAngleRotation`: for a nonzero vector `x` in `E`, the basis `![x, J x]`
   for `E`.
-
 * `Orientation.kahler`: a complex-valued real-bilinear map `E →ₗ[ℝ] E →ₗ[ℝ] ℂ`. Its real part is the
   inner product and its imaginary part is `Orientation.areaForm`. For vectors `x` and `y` in `E`,
   the complex number `o.kahler x y` has modulus `‖x‖ * ‖y‖`. In a later file, oriented angles
@@ -40,16 +40,12 @@ product space `E`.
 ## Main results
 
 * `Orientation.rightAngleRotation_rightAngleRotation`: the identity `J (J x) = - x`
-
 * `Orientation.nonneg_inner_and_areaForm_eq_zero_iff_sameRay`: `x`, `y` are in the same ray, if
   and only if `0 ≤ ⟪x, y⟫` and `ω x y = 0`
-
 * `Orientation.kahler_mul`: the identity `o.kahler x a * o.kahler a y = ‖a‖ ^ 2 * o.kahler x y`
-
 * `Complex.areaForm`, `Complex.rightAngleRotation`, `Complex.kahler`: the concrete
   interpretations of `areaForm`, `rightAngleRotation`, `kahler` for the oriented real inner
   product space `ℂ`
-
 * `Orientation.areaForm_map_complex`, `Orientation.rightAngleRotation_map_complex`,
   `Orientation.kahler_map_complex`: given an orientation-preserving isometry from `E` to `ℂ`,
   expressions for `areaForm`, `rightAngleRotation`, `kahler` as the pullback of their concrete
@@ -65,7 +61,6 @@ notation which mentions the orientation explicitly (something like `ω[o]`). Wri
 local notation "ω" => o.areaForm
 local notation "J" => o.rightAngleRotation
 ```
-
 -/
 
 @[expose] public section
@@ -397,10 +392,12 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
       smul_eq_mul, mul_zero, and_true]
     positivity
 
-/-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its
+/--
+A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its
 real part is the inner product and its imaginary part is `Orientation.areaForm`.
 
-On `ℂ` with the standard orientation, `kahler w z = conj w * z`; see `Complex.kahler`. -/
+On `ℂ` with the standard orientation, `kahler w z = conj w * z`; see `Complex.kahler`.
+-/
 def kahler : E →ₗ[ℝ] E →ₗ[ℝ] ℂ :=
   LinearMap.llcomp ℝ E ℝ ℂ Complex.ofRealCLM ∘ₗ innerₛₗ ℝ +
     LinearMap.llcomp ℝ E ℝ ℂ ((LinearMap.lsmul ℝ ℂ).flip Complex.I) ∘ₗ ω

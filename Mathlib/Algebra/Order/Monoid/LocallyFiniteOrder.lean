@@ -15,20 +15,23 @@ import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally Finite Linearly Ordered Abelian Groups
 
 ## Main results
-- `LocallyFiniteOrder.orderAddMonoidEquiv`:
+
+* `LocallyFiniteOrder.orderAddMonoidEquiv`:
   Any nontrivial linearly ordered additive abelian group that is locally finite is
   isomorphic to `ℤ`.
-- `LocallyFiniteOrder.orderMonoidEquiv`:
+* `LocallyFiniteOrder.orderMonoidEquiv`:
   Any nontrivial linearly ordered abelian group that is locally finite is isomorphic to
   `Multiplicative ℤ`.
-- `LocallyFiniteOrder.orderMonoidWithZeroEquiv`:
+* `LocallyFiniteOrder.orderMonoidWithZeroEquiv`:
   Any nontrivial linearly ordered abelian group with zero that is locally finite
   is isomorphic to `ℤᵐ⁰`.
-
 -/
 
 @[expose] public section

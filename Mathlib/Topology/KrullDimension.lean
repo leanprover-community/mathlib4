@@ -9,6 +9,9 @@ public import Mathlib.Order.KrullDimension
 public import Mathlib.Topology.NoetherianSpace
 public import Mathlib.Topology.Sober
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Krull dimension of a topological space
 
@@ -18,7 +21,7 @@ the length of longest series of closed irreducible subsets ordered by inclusion.
 
 ## Main results
 
-- `topologicalKrullDim_subspace_le`: For any subspace Y ⊆ X, we have dim(Y) ≤ dim(X)
+* `topologicalKrullDim_subspace_le`: For any subspace Y ⊆ X, we have dim(Y) ≤ dim(X)
 
 ## Implementation notes
 
@@ -40,7 +43,8 @@ noncomputable def topologicalKrullDim (T : Type*) [TopologicalSpace T] : WithBot
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-!
-### Main dimension theorems -/
+# Main dimension theorems
+-/
 
 /-- If `f : Y → X` is inducing, then `dim(Y) ≤ dim(X)`. -/
 theorem Topology.IsInducing.topologicalKrullDim_le {f : Y → X} (hf : IsInducing f) :

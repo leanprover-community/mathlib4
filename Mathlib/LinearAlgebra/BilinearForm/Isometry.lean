@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isometric linear maps
 
@@ -17,7 +20,7 @@ This file should be kept in sync with the corresponding file for quadratic maps,
 
 ## Main definitions
 
-* ` LinearMap.BilinForm.Isometry`: `LinearMap`s which respect a given pair of bilinear forms
+* `  LinearMap.BilinForm.Isometry`: `LinearMap`s which respect a given pair of bilinear forms
 
 ## Notation
 
@@ -68,7 +71,9 @@ theorem toLinearMap_injective :
 theorem ext ⦃f g : B₁ →bᵢ B₂⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 protected def Simps.apply (f : B₁ →bᵢ B₂) : M₁ → M₂ := f
 
 initialize_simps_projections Isometry (toFun → apply)

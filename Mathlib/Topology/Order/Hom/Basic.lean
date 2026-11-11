@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.ContinuousMap.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous order homomorphisms
 
@@ -43,9 +46,11 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
 
 section
 
-/-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
+/--
+`ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
-You should extend this class when you extend `ContinuousOrderHom`. -/
+You should extend this class when you extend `ContinuousOrderHom`.
+-/
 class ContinuousOrderHomClass (F : Type*) (α β : outParam Type*) [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] : Prop
     extends ContinuousMapClass F α β where
@@ -74,7 +79,9 @@ instance : CoeTC F (α →Co β) :=
   ⟨toContinuousOrderHom⟩
 
 end ContinuousOrderHomClass
-/-! ### Top homomorphisms -/
+/-!
+# Top homomorphisms
+-/
 
 
 namespace ContinuousOrderHom

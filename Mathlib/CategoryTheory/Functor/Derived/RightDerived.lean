@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.AdjunctionPreserves
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right derived functors
 
@@ -26,14 +29,13 @@ along the localization functor `L`.
 
 ## TODO
 
-- refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
+* refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
   material enters mathlib: derived categories, injective/projective derivability
   structures, existence of derived functors from derivability structures.
 
 ## References
 
 * https://ncatlab.org/nlab/show/derived+functor
-
 -/
 
 @[expose] public section

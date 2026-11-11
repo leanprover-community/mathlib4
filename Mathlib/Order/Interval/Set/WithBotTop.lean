@@ -10,6 +10,9 @@ public import Mathlib.Order.WithBot
 
 import Mathlib.Data.Set.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals in `WithTop α` and `WithBot α`
 

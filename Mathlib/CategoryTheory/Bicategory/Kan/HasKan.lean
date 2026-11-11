@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of Kan extensions and Kan lifts in bicategories
 
@@ -22,13 +25,12 @@ we define the left Kan extension `lan f g` by using the axiom of choice.
 * `lanLift f g` is the left Kan lift of `g` along `f`, and is denoted by `f₊ g`.
 
 These notations are inspired by
-[M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006].
+‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\].
 
 ## TODO
 
 * `ran f g` is the right Kan extension of `g` along `f`, and is denoted by `f⁺⁺ g`.
 * `ranLift f g` is the right Kan lift of `g` along `f`, and is denoted by `f₊₊ g`.
-
 -/
 
 @[expose] public section
@@ -70,7 +72,9 @@ def lanLeftExtension (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : Lef
 def lan (f : a ⟶ b) (g : a ⟶ c) [HasLeftKanExtension f g] : b ⟶ c :=
   (lanLeftExtension f g).extension
 
-/-- `f⁺ g` is the left Kan extension of `g` along `f`.
+/--
+`f⁺ g` is the left Kan extension of `g` along `f`.
+
 ```
   b
   △ \
@@ -214,7 +218,9 @@ def lanLiftLeftLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : LeftLift 
 def lanLift (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : c ⟶ b :=
   (lanLiftLeftLift f g).lift
 
-/-- `f₊ g` is the left Kan lift of `g` along `f`.
+/--
+`f₊ g` is the left Kan lift of `g` along `f`.
+
 ```
             b
           ◹ |

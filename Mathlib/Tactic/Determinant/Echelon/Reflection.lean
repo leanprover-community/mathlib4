@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Matrix.OfLists
 
 import Mathlib.Algebra.BigOperators.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reflection certificates for determinants of echelon decompositions
 
@@ -20,12 +23,12 @@ decomposition.
 
 ## Main definitions
 
-- `diagProd`: the product of the diagonal entries of a list of rows.
+* `diagProd`: the product of the diagonal entries of a list of rows.
 
 ## Main results
 
-- `prod_diag_ofLists`: the product of the diagonal of `ofLists m m rows` is `diagProd 0 m rows`.
-- `det_eq_of_decomposition`: the determinant of `A` from an echelon decomposition of `A`, the
+* `prod_diag_ofLists`: the product of the diagonal of `ofLists m m rows` is `diagProd 0 m rows`.
+* `det_eq_of_decomposition`: the determinant of `A` from an echelon decomposition of `A`, the
   diagonal products of `L` and of the echelon form, and the sign of the row permutation.
 -/
 
@@ -37,7 +40,9 @@ namespace Mathlib.Tactic.Determinant
 
 variable {α : Type*}
 
-/-! ### Diagonal products -/
+/-!
+# Diagonal products
+-/
 
 section
 
@@ -78,7 +83,9 @@ theorem prod_diag_ofLists (m : ℕ) (rows : List (List α)) :
 
 end CommMonoid
 
-/-! ### Determinants from echelon decompositions -/
+/-!
+# Determinants from echelon decompositions
+-/
 
 theorem det_eq_of_decomposition {m : ℕ} {R : Type*} [CommRing R] [IsDomain R]
     {A : Matrix (Fin m) (Fin m) R} {rowsL rowsU : List (List R)} {σ : Equiv.Perm (Fin m)}

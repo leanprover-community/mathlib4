@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackObjObj
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushout-tensor-products and the braiding
 
 In this file, we introduce a definition `Functor.PushoutObjObj.flipTensor`
 which switches the two morphisms involved in pushout-tensor-products
 in a braided category.
-
 -/
 
 @[expose] public section

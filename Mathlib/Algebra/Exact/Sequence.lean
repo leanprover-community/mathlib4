@@ -7,7 +7,11 @@ module
 
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
-/-! # Exactness of sequences
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Exactness of sequences
 
 In this file we provide some API for handling exact sequences.
 
@@ -21,7 +25,6 @@ In this file we provide some API for handling exact sequences.
 Write a simproc to generate unrolled, universe-polymorphic versions of
 `Module.sum_neg_one_pow_finrank_eq_zero_of_exact` on the fly and so obviate the need for
 `Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six`.
-
 -/
 
 universe u₀ u₁ u₂ u₃ u₄ u₅
@@ -45,22 +48,26 @@ public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2)
   simp_rw [← smul_eq_mul]
   refine Fin.sum_neg_one_pow_eq_zero _ (fun i ↦ finrank k (f i).range) ?_ (fun i ↦ ?_) ?_
   · aesop
-  · #adaptation_note /-- Prior to v4.31.0-rc1, this proof was
-      ```
-      grind [(h_exact i).linearMap_ker_eq, (f i.succ).finrank_range_add_finrank_ker]
-      ```
-      -/
+  · #adaptation_note /--
+                     Prior to v4.31.0-rc1, this proof was
+
+                     ```
+grind [(h_exact i).linearMap_ker_eq, (f i.succ).finrank_range_add_finrank_ker]
+```
+                     -/
     have hrn := (f i.succ).finrank_range_add_finrank_ker
     have hker : finrank k ↥(LinearMap.ker (f i.succ)) =
         finrank k ↥(LinearMap.range (f i.castSucc)) :=
       congrArg (fun S : Submodule k (V i.succ.castSucc) => finrank k ↥S)
         (h_exact i).linearMap_ker_eq
     lia
-  · #adaptation_note /-- Prior to v4.31.0-rc1, this proof was
-      ```
-      grind [finrank_top]
-      ```
-      -/
+  · #adaptation_note /--
+                     Prior to v4.31.0-rc1, this proof was
+
+                     ```
+grind [finrank_top]
+```
+                     -/
     rw [surj, finrank_top, Fin.succ_last]
 
 /- An unrolled version of `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. This is an auxiliary
@@ -93,12 +100,14 @@ private lemma sum_neg_one_pow_finrank_eq_zero_of_exact_six_aux {V₀ V₁ V₂ V
   simpa [Fin.sum_univ_six] using! Module.sum_neg_one_pow_finrank_eq_zero_of_exact Vs fs inj
     (fun i ↦ by fin_cases i; exacts [exact₁, exact₂, exact₃, exact₄]) surj
 
-/-- This is an unrolled, universe-polymorphic version of
+/--
+This is an unrolled, universe-polymorphic version of
 `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`. This special case exists because of the role that
 this lemma plays in the proof of `LinearMap.index_comp`.
 
 In theory one could write a `simproc` which conjured up this lemma for a sequence of any length and
-then one would not need to have this special-case lemma at all. -/
+then one would not need to have this special-case lemma at all.
+-/
 public lemma sum_neg_one_pow_finrank_eq_zero_of_exact_six
     {V₀ : Type u₀} [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
     {V₁ : Type u₁} [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]

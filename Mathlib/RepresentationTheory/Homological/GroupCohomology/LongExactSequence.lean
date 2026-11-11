@@ -10,6 +10,9 @@ public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoria
 
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Long exact sequence in group cohomology
 
@@ -29,7 +32,6 @@ to specialize API about long exact sequences to group cohomology.
 ## Main Statements
 
 * `groupCohomology.δ_naturality`: naturality of the connecting homomorphism.
-
 -/
 
 public section

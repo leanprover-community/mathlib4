@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Category.Grp.EpiMono
 import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of abelian groups has enough injectives
 
@@ -18,9 +21,9 @@ injective presentation for `A`, hence category of abelian groups has enough inje
 
 ## Main results
 
-- `AddCommGrpCat.enoughInjectives` : the category of abelian groups (written additively) has
+* `AddCommGrpCat.enoughInjectives` : the category of abelian groups (written additively) has
   enough injectives.
-- `CommGrpCat.enoughInjectives` : the category of abelian groups (written multiplicatively) has
+* `CommGrpCat.enoughInjectives` : the category of abelian groups (written multiplicatively) has
   enough injectives.
 
 ## Implementation notes

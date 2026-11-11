@@ -15,6 +15,9 @@ import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Module.LocalizedModule.Away
 import Mathlib.Data.Fintype.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construction of M^~
 
@@ -22,9 +25,9 @@ Given any commutative ring `R` and `R`-module `M`, we construct the sheaf `M^~` 
 such that `M^~(U)` is the set of dependent functions that are locally fractions.
 
 ## Main definitions
+
 * `AlgebraicGeometry.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 * `AlgebraicGeometry.tilde.adjunction` : `~` is left adjoint to taking global sections.
-
 -/
 
 @[expose] public noncomputable section
@@ -623,8 +626,10 @@ namespace QuasicoherentTilde
 variable (M : (Spec R).Modules)
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Auxiliary structure used in the proof of `Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`.
-These are conditions d1) and d2) from [Theoreme 1.4.1, grothendieck-1971]. -/
+/--
+Auxiliary structure used in the proof of `Scheme.Modules.isIso_fromTildeΓ_of_isQuasicoherent`.
+These are conditions d1) and d2) from \[Theoreme 1.4.1, grothendieck-1971\].
+-/
 -- TODO: Generalise this to a general scheme, replacing `f : R` by sections over a suitable set.
 private structure Aux (V : (Spec R).Opens) where
   existence (f : R) (hf : basicOpen f ≤ V) (s : Γ(M, basicOpen f)) :
@@ -650,9 +655,11 @@ private lemma Aux.of_le {M : (Spec R).Modules} {V : (Spec R).Opens} (g : R) (hg 
     simp [smul_comm, ← ht', ← M.map_smul_Spec, hm]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- This is the key computation for the proof of
+/--
+This is the key computation for the proof of
 `Scheme.Modules.isQuasicoherent_iff_isIso_fromTildeΓ`.
- [Lemme 1.4.1.1][grothendieck-1971] -/
+‍\[Lemme 1.4.1.1\]\[grothendieck-1971\]
+-/
 private lemma Aux.of_eq_iSup_basicOpen {M : (Spec R).Modules} (V : (Spec R).Opens)
     {ι : Type*} [Finite ι] (g : ι → R) (hg : V = ⨆ i, basicOpen (g i))
     (h₁ : ∀ (i : ι), Aux M (basicOpen (g i))) :

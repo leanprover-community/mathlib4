@@ -11,7 +11,11 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 import Mathlib.Analysis.Normed.Operator.Prod
 import Mathlib.Geometry.Manifold.Notation
 
-/-! # Equivalence of smoothness with the basic definition for functions between vector spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Equivalence of smoothness with the basic definition for functions between vector spaces
 
 * `contMDiff_iff_contDiff`: for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
@@ -20,7 +24,6 @@ import Mathlib.Geometry.Manifold.Notation
 Smoothness of addition and scalar multiplication in normed spaces is proven not here but in
 `Mathlib/Geometry/Manifold/Algebra/LieGroup.lean` and `Mathlib/Geometry/Manifold/Algebra/SMul.lean`
 in the form of `LieAddGroup` and `ContMDiffSMul` instances.
-
 -/
 
 public section
@@ -100,7 +103,9 @@ theorem ContDiff.comp_contMDiff {g : F → F'} {f : M → F} (hg : ContDiff 𝕜
 
 end Module
 
-/-! ### Linear maps between normed spaces are smooth -/
+/-!
+# Linear maps between normed spaces are smooth
+-/
 
 theorem ContinuousLinearMap.contMDiff (L : E →L[𝕜] F) : CMDiff n L :=
   L.contDiff.contMDiff
@@ -248,7 +253,9 @@ theorem ContMDiff.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ �
     (hg : CMDiff n g) (hf : CMDiff n f) : CMDiff n fun x => (g x).prodMap (f x) := fun x =>
   (hg x).clm_prodMap (hf x)
 
-/-! ### Continuous alternating maps between normed spaces are smooth -/
+/-!
+# Continuous alternating maps between normed spaces are smooth
+-/
 
 variable {ι : Type*} [Fintype ι]
 

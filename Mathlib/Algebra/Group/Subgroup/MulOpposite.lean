@@ -9,12 +9,15 @@ public import Mathlib.Algebra.Group.Equiv.Opposite
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mul-opposite subgroups
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
 
 @[expose] public section
@@ -73,7 +76,9 @@ theorem unop_op (S : Subgroup G) : S.op.unop = S := rfl
 @[to_additive (attr := simp)]
 theorem op_unop (S : Subgroup Gᵐᵒᵖ) : S.unop.op = S := rfl
 
-/-! ### Lattice results -/
+/-!
+# Lattice results
+-/
 
 @[to_additive]
 theorem op_le_iff {S₁ : Subgroup G} {S₂ : Subgroup Gᵐᵒᵖ} : S₁.op ≤ S₂ ↔ S₁ ≤ S₂.unop :=

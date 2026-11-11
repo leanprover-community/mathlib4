@@ -19,6 +19,9 @@ import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Tactic.FinCases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Elliptic divisibility sequences
 
@@ -28,29 +31,30 @@ sequence, as well as the canonical example of a normalised elliptic divisibility
 ## Mathematical background
 
 Let `R` be a commutative ring, and let `W` be a sequence of elements in `R` indexed by `ℤ`. The
-*elliptic relator* `ER(p, q, r, s) ∈ R` associated to `W` is given for all `p, q, r, s ∈ ℤ` by
+_elliptic relator_ `ER(p, q, r, s) ∈ R` associated to `W` is given for all `p, q, r, s ∈ ℤ` by
 `ER(p, q, r, s) := W(p+q+s)W(p-q)W(r+s)W(r) - W(p+r+s)W(p-r)W(q+s)W(q) + W(q+r+s)W(q-r)W(p+s)W(p)`.
-Call `W` an *elliptic net* if it satisfies the *elliptic relation* `ER(p, q, r, s) = 0` for all
+Call `W` an _elliptic net_ if it satisfies the _elliptic relation_ `ER(p, q, r, s) = 0` for all
 `p, q, r, s ∈ ℤ`. By a change of variables, `ER` is related to the symmetric relation `ERₐ` (see
 `IsEllipticNet.rel_eq` and `IsEllipticNet.atomRel_eq`), where `ERₐ(a, b, c, d) ∈ R` is given for all
 `a, b, c, d ∈ ℤ` by `ERₐ(a, b, c, d) := Wₐ(a, b)Wₐ(c, d) - Wₐ(a, c)Wₐ(b, d) + Wₐ(a, d)Wₐ(b, c)`
-defined in terms of *elliptic atoms* `Wₐ(a, b) := W((a + b) / 2)W((a - b) / 2)`.
+defined in terms of _elliptic atoms_ `Wₐ(a, b) := W((a + b) / 2)W((a - b) / 2)`.
 
-As a special case, `W` is an *elliptic sequence* if it satisfies `ER(p, q, r, 0) = 0` for all
-`p, q, r ∈ ℤ`. It is a *divisibility sequence* if it satisfies `W(k) ∣ W(n * k)` for all `k, n ∈ ℤ`,
-and an *elliptic divisibility sequence* (EDS) if it is a divisibility sequence that is elliptic. If
+As a special case, `W` is an _elliptic sequence_ if it satisfies `ER(p, q, r, 0) = 0` for all
+`p, q, r ∈ ℤ`. It is a _divisibility sequence_ if it satisfies `W(k) ∣ W(n * k)` for all `k, n ∈ ℤ`,
+and an _elliptic divisibility sequence_ (EDS) if it is a divisibility sequence that is elliptic. If
 `W` is an EDS, then `x • W` is also an EDS for any `x ∈ R`. It turns out that any EDS `W` can be
 normalised such that `W(1) = 1`, in which case it can be characterised completely by
 
-* the *even relations* `ER(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+* the _even relations_ `ER(m + 1, m - 1, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m)W(2) = W(m - 1)²W(m)W(m + 2) - W(m - 2)W(m)W(m + 1)²` for all `m ∈ ℤ`, and
-* the *odd relations* `ER(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
+* the _odd relations_ `ER(m + 1, m, 1, 0) = 0` for all `m ∈ ℤ`, or in other words that
   `W(2m + 1) = W(m + 2)W(m)³ - W(m - 1)W(m + 1)³` for all `m ∈ ℤ`,
 
 with initial values `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b` for some
-`b, c, d ∈ R`. This will be called the *canonical example of a normalised EDS* in this file.
+`b, c, d ∈ R`. This will be called the _canonical example of a normalised EDS_ in this file.
 
 Some examples of EDSs include
+
 * the identity sequence,
 * certain terms of Lucas sequences, and
 * division polynomials of elliptic curves.
@@ -90,16 +94,16 @@ when `n` is even. This coincides with the definition in the references since bot
 
 One reason is to avoid the necessity for ring division by `b` in the inductive definition of
 `normEDS b c d (2 * (m + 3))`. The idea is that it can be shown that `normEDS b c d (2 * (m + 3))`
-always contains a factor of `b`, so it is possible to remove a factor of `b` *a posteriori*, but
+always contains a factor of `b`, so it is possible to remove a factor of `b` _a posteriori_, but
 stating this lemma requires first defining `normEDS b c d (2 * (m + 3))`, which requires having this
-factor of `b` *a priori*. Another reason is to allow the definition of univariate `n`-division
+factor of `b` _a priori_. Another reason is to allow the definition of univariate `n`-division
 polynomials of elliptic curves, omitting a factor of the bivariate `2`-division polynomial.
 
 ## References
 
-* [K Stange, *Elliptic Nets and Elliptic Curves*][stange2011]
-* [M Ward, *Memoir on Elliptic Divisibility Sequences*][ward1948]
-* [J Xu, *On Elliptic Sequences over Commutative Rings*][xu2026]
+* ‍\[K Stange, _Elliptic Nets and Elliptic Curves_\]\[stange2011\]
+* ‍\[M Ward, _Memoir on Elliptic Divisibility Sequences_\]\[ward1948\]
+* ‍\[J Xu, _On Elliptic Sequences over Commutative Rings_\]\[xu2026\]
 
 ## Tags
 
@@ -515,10 +519,12 @@ lemma preNormEDS'_odd (m : ℕ) : preNormEDS' b c d (2 * (m + 2) + 1) =
   rw [show 2 * (m + 2) + 1 = 2 * m + 5 by rfl, preNormEDS', dite_eq_left <| even_two_mul m,
     m.mul_div_cancel_left two_pos]
 
-/-- The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
+/--
+The auxiliary sequence for a normalised EDS `W : ℤ → R`, with initial values
 `W(0) = 0`, `W(1) = 1`, `W(2) = 1`, `W(3) = c`, and `W(4) = d` and extra parameter `b`.
 
-This extends `preNormEDS'` by defining its values at negative integers. -/
+This extends `preNormEDS'` by defining its values at negative integers.
+-/
 def preNormEDS (n : ℤ) : R :=
   n.sign * preNormEDS' b c d n.natAbs
 
@@ -585,10 +591,12 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
       show -(m + 1 : ℤ) + 1 = -m by ring1, preNormEDS_neg, even_neg, Int.even_add_one, ite_not, ih]
     ring1
 
-/-- The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
+/--
+The 2-complement sequence `Wᶜ₂ : ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
 `W(k) ∣ W(2 * k)`. In other words, `W(k) * Wᶜ₂(k) = W(2 * k)` for all `k ∈ ℤ`.
 
-This is defined in terms of `preNormEDS`. -/
+This is defined in terms of `preNormEDS`.
+-/
 def complEDS₂ (k : ℤ) : R :=
   (preNormEDS (b ^ 4) c d (k - 1) ^ 2 * preNormEDS (b ^ 4) c d (k + 2) -
     preNormEDS (b ^ 4) c d (k - 2) * preNormEDS (b ^ 4) c d (k + 1) ^ 2) * if Even k then 1 else b
@@ -628,10 +636,12 @@ end PreNormEDS
 
 section NormEDS
 
-/-- The canonical example of a normalised EDS `W : ℤ → R`, with initial values
+/--
+The canonical example of a normalised EDS `W : ℤ → R`, with initial values
 `W(0) = 0`, `W(1) = 1`, `W(2) = b`, `W(3) = c`, and `W(4) = d * b`.
 
-This is defined in terms of `preNormEDS` whose even terms differ by a factor of `b`. -/
+This is defined in terms of `preNormEDS` whose even terms differ by a factor of `b`.
+-/
 def normEDS (n : ℤ) : R :=
   preNormEDS (b ^ 4) c d n * if Even n then b else 1
 
@@ -708,6 +718,7 @@ lemma normEDS_rel_odd (m : ℤ) : IsEllipticNet.rel (normEDS b c d) (m + 1) m 1 
 
 /--
 Strong recursion principle for a normalised EDS: if we have
+
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
@@ -722,14 +733,17 @@ noncomputable def normEDSRec' {P : ℕ → Sort*}
   n.evenOddStrongRec (by rintro (_ | _ | _ | _) h; exacts [zero, two, four, even _ h])
     (by rintro (_ | _ | _) h; exacts [one, three, odd _ h])
 
-/-- Recursion principle for a normalised EDS: if we have
+/--
+Recursion principle for a normalised EDS: if we have
+
 * `P 0`, `P 1`, `P 2`, `P 3`, and `P 4`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
 
-then we have `P n` for all `n : ℕ`. -/
+then we have `P n` for all `n : ℕ`.
+-/
 @[elab_as_elim]
 noncomputable def normEDSRec {P : ℕ → Sort*}
     (zero : P 0) (one : P 1) (two : P 2) (three : P 3) (four : P 4)
@@ -745,10 +759,12 @@ section ComplEDS
 
 variable (k : ℤ)
 
-/-- The complement sequence `Wᶜ : ℤ × ℕ → R` for a normalised EDS `W : ℤ → R` that witnesses
+/--
+The complement sequence `Wᶜ : ℤ × ℕ → R` for a normalised EDS `W : ℤ → R` that witnesses
 `W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for all `k, n ∈ ℤ`.
 
-This is defined in terms of `normEDS` and agrees with `complEDS₂` when `n = 2`. -/
+This is defined in terms of `normEDS` and agrees with `complEDS₂` when `n = 2`.
+-/
 def complEDS' : ℕ → R
   | 0 => 0
   | 1 => 1
@@ -779,10 +795,12 @@ lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
   rw [show 2 * (m + 1) + 1 = 2 * m + 3 by rfl, complEDS', dite_eq_right m.not_even_two_mul_add_one]
   simp [Nat.mul_add_div two_pos, add_assoc]
 
-/-- The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
+/--
+The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
 `W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for all `k, n ∈ ℤ`.
 
-This extends `complEDS'` by defining its values at negative integers. -/
+This extends `complEDS'` by defining its values at negative integers.
+-/
 def complEDS (n : ℤ) : R :=
   n.sign * complEDS' b c d k n.natAbs
 
@@ -831,12 +849,15 @@ lemma complEDS_odd (m : ℤ) : complEDS b c d k (2 * m + 1) =
       ← neg_add', complEDS_neg, normEDS_neg, ih]
     ring1
 
-/-- Strong recursion principle for the complement sequence for a normalised EDS: if we have
+/--
+Strong recursion principle for the complement sequence for a normalised EDS: if we have
+
 * `P 0`, `P 1`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P k` for all `k < 2 * (m + 3)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P k` for all `k < 2 * (m + 2) + 1`,
 
-then we have `P n` for all `n : ℕ`. -/
+then we have `P n` for all `n : ℕ`.
+-/
 @[elab_as_elim]
 noncomputable def complEDSRec' {P : ℕ → Sort*} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, (∀ k < 2 * (m + 1), P k) → P (2 * (m + 1)))
@@ -844,14 +865,17 @@ noncomputable def complEDSRec' {P : ℕ → Sort*} (zero : P 0) (one : P 1)
   n.evenOddStrongRec (by rintro (_ | _) h; exacts [zero, even _ h])
     (by rintro (_ | _) h; exacts [one, odd _ h])
 
-/-- Recursion principle for the complement sequence for a normalised EDS: if we have
+/--
+Recursion principle for the complement sequence for a normalised EDS: if we have
+
 * `P 0`, `P 1`,
 * for all `m : ℕ` we can prove `P (2 * (m + 3))` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   `P (m + 4)`, and `P (m + 5)`, and
 * for all `m : ℕ` we can prove `P (2 * (m + 2) + 1)` from `P (m + 1)`, `P (m + 2)`, `P (m + 3)`,
   and `P (m + 4)`,
 
-then we have `P n` for all `n : ℕ`. -/
+then we have `P n` for all `n : ℕ`.
+-/
 @[elab_as_elim]
 noncomputable def complEDSRec {P : ℕ → Sort*} (zero : P 0) (one : P 1)
     (even : ∀ m : ℕ, P (m + 1) → P (2 * (m + 1)))

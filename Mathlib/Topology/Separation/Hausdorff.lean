@@ -9,6 +9,9 @@ public import Mathlib.Basic.Rel
 public import Mathlib.Topology.Compactness.SigmaCompact
 public import Mathlib.Topology.Irreducible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # T₂ and T₂.₅ spaces.
 
@@ -62,9 +65,8 @@ If the space is also compact:
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Separation_axiom>
-* [Willard's *General Topology*][zbMATH02107988]
-
+* [https://en.wikipedia.org/wiki/Separation\_axiom](https://en.wikipedia.org/wiki/Separation_axiom)
+* ‍\[Willard's _General Topology_\]\[zbMATH02107988\]
 -/
 
 @[expose] public section
@@ -198,10 +200,12 @@ theorem tendsto_nhds_unique_of_forall [T2Space X] {f g : Y → X} {l : Filter Y}
     [NeBot l] (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) (hfg : ∀ y, f y = g y) : a = b :=
   tendsto_nhds_unique_of_eventuallyEq ha hb (Eventually.of_forall hfg)
 
-/-- If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
+/--
+If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
 is the infimum of set neighborhoods filters for `s` and `t`.
 
-For general sets, only the `≤` inequality holds, see `nhdsSet_inter_le`. -/
+For general sets, only the `≤` inequality holds, see `nhdsSet_inter_le`.
+-/
 theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) (ht : IsCompact t) :
     𝓝ˢ (s ∩ t) = 𝓝ˢ s ⊓ 𝓝ˢ t := by
   refine le_antisymm (nhdsSet_inter_le _ _) ?_
@@ -227,13 +231,15 @@ lemma IsCompact.disjoint_nhdsSet_nhds {X : Type u_1} [TopologicalSpace X] [T2Spa
   simpa using SeparatedNhds.disjoint_nhdsSet <| .of_isCompact_isCompact_isClosed H1
     isCompact_singleton isClosed_singleton <| disjoint_singleton_right.mpr H2
 
-/-- If a function `f` is
+/--
+If a function `f` is
 
-- injective on a compact set `s`;
-- continuous at every point of this set;
-- injective on a neighborhood of each point of this set,
+* injective on a compact set `s`;
+* continuous at every point of this set;
+* injective on a neighborhood of each point of this set,
 
-then it is injective on a neighborhood of this set. -/
+then it is injective on a neighborhood of this set.
+-/
 theorem Set.InjOn.exists_mem_nhdsSet {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [T2Space Y] {f : X → Y} {s : Set X} (inj : InjOn f s) (sc : IsCompact s)
     (fc : ∀ x ∈ s, ContinuousAt f x) (loc : ∀ x ∈ s, ∃ u ∈ 𝓝 x, InjOn f u) :
@@ -248,13 +254,15 @@ theorem Set.InjOn.exists_mem_nhdsSet {X Y : Type*} [TopologicalSpace X] [Topolog
   rw [← eventually_nhdsSet_iff_forall, sc.nhdsSet_prod_eq sc] at this
   exact eventually_prod_self_iff.1 this
 
-/-- If a function `f` is
+/--
+If a function `f` is
 
-- injective on a compact set `s`;
-- continuous at every point of this set;
-- injective on a neighborhood of each point of this set,
+* injective on a compact set `s`;
+* continuous at every point of this set;
+* injective on a neighborhood of each point of this set,
 
-then it is injective on an open neighborhood of this set. -/
+then it is injective on an open neighborhood of this set.
+-/
 theorem Set.InjOn.exists_isOpen_superset {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     [T2Space Y] {f : X → Y} {s : Set X} (inj : InjOn f s) (sc : IsCompact s)
     (fc : ∀ x ∈ s, ContinuousAt f x) (loc : ∀ x ∈ s, ∃ u ∈ 𝓝 x, InjOn f u) :
@@ -268,7 +276,7 @@ section limUnder
 variable [T2Space X] {f : Filter X}
 
 /-!
-### Properties of `lim` and `limUnder`
+# Properties of `lim` and `limUnder`
 
 In this section we use explicit `Nonempty X` instances for `lim` and `limUnder`. This way the lemmas
 are useful without a `Nonempty X` instance.
@@ -326,7 +334,7 @@ theorem limUnder_nhdsWithin_id {x : X} {s : Set X} (h : x ∈ closure s) :
 end limUnder
 
 /-!
-### `T2Space` constructions
+# `T2Space` constructions
 
 We use two lemmas to prove that various standard constructions generate Hausdorff spaces from
 Hausdorff spaces:
@@ -335,7 +343,6 @@ Hausdorff spaces:
   provided that there exists a continuous map `f : X → Y` with a Hausdorff codomain such that
   `f x ≠ f y`. We use this lemma to prove that topological spaces defined using `induced` are
   Hausdorff spaces.
-
 * `separated_by_isOpenEmbedding` says that for an open embedding `f : X → Y` of a Hausdorff space
   `X`, the images of two distinct points `x y : X`, `x ≠ y` can be separated by open neighborhoods.
   We use this lemma to prove that topological spaces defined using `coinduced` are Hausdorff spaces.

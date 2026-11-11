@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fundamental sequences
 
@@ -16,7 +19,7 @@ with cofinal range. We can generalize this notion to arbitrary ordinals by setti
 
 ## Main results
 
-- `Ordinal.exists_isFundamentalSeq`: every ordinal has a fundamental sequence.
+* `Ordinal.exists_isFundamentalSeq`: every ordinal has a fundamental sequence.
 -/
 
 @[expose] public section

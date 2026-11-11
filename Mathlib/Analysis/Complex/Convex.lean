@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Analysis.Convex.Combination
 public import Mathlib.Analysis.Convex.PathConnected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theorems about convexity on the complex plane
 

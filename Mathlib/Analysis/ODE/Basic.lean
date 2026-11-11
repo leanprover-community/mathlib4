@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral curves of vector fields on a normed vector space
 
@@ -17,6 +20,7 @@ An integral curve  of `v` is a function `γ : ℝ → E` such that the derivativ
 ## Main definitions
 
 Let `v : ℝ → E → E` be a time-dependent vector field on `E`, and let `γ : ℝ → E`.
+
 * `IsIntegralCurve γ v`: `γ t` is tangent to `v t (γ t)` for all `t : ℝ`. That is, `γ` is a global
   integral curve of `v`.
 * `IsIntegralCurveOn γ v s`: `γ t` is tangent to `v t (γ t)` for all `t ∈ s`, where `s : Set ℝ`.

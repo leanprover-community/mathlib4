@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # One-dimensional derivatives of compositions of functions
 
@@ -55,7 +58,7 @@ variable {L : Filter (𝕜 × 𝕜)}
 section Composition
 
 /-!
-### Derivative of the composition of a vector function and a scalar function
+# Derivative of the composition of a vector function and a scalar function
 
 We use `scomp` in lemmas on composition of vector-valued and scalar-valued functions, and `comp`
 in lemmas on composition of scalar-valued functions, in analogy for `smul` and `mul` (and also
@@ -149,7 +152,9 @@ theorem deriv.scomp_of_eq
     deriv (g₁ ∘ h) x = deriv h x • deriv g₁ (h x) := by
   rw [hy] at hg; exact deriv.scomp x hg hh
 
-/-! ### Derivative of the composition of a scalar and vector functions -/
+/-!
+# Derivative of the composition of a scalar and vector functions
+-/
 
 theorem HasDerivAtFilter.comp_hasFDerivAtFilter {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'}
     {L'' : Filter (E × E)} (hh₂ : HasDerivAtFilter h₂ h₂' L') (hf : HasFDerivAtFilter f f' L'')
@@ -211,7 +216,9 @@ theorem HasDerivWithinAt.comp_hasFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[�
     (hy : y = f x) : HasFDerivAt (h₂ ∘ f) (h₂' • f') x := by
   subst y; exact hh.comp_hasFDerivAt x hf ht
 
-/-! ### Derivative of the composition of two scalar functions -/
+/-!
+# Derivative of the composition of two scalar functions
+-/
 
 theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' L')
     (hh : HasDerivAtFilter h h' L) (hL : Tendsto (Prod.map h h) L L') :
@@ -237,18 +244,22 @@ theorem HasDerivWithinAt.comp_of_eq (hh₂ : HasDerivWithinAt h₂ h₂' s' y)
     HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
   rw [hy] at hh₂; exact hh₂.comp x hh hst
 
-/-- The chain rule.
+/--
+The chain rule.
 
 Note that the function `h₂` is a function on an algebra. If you are looking for the chain rule
-with `h₂` taking values in a vector space, use `HasDerivAt.scomp`. -/
+with `h₂` taking values in a vector space, use `HasDerivAt.scomp`.
+-/
 theorem HasDerivAt.comp (hh₂ : HasDerivAt h₂ h₂' (h x)) (hh : HasDerivAt h h' x) :
     HasDerivAt (h₂ ∘ h) (h₂' * h') x :=
   HasDerivAtFilter.comp hh₂ hh <| hh.continuousAt.tendsto.prodMap <| tendsto_pure_pure _ _
 
-/-- The chain rule.
+/--
+The chain rule.
 
 Note that the function `h₂` is a function on an algebra. If you are looking for the chain rule
-with `h₂` taking values in a vector space, use `HasDerivAt.scomp_of_eq`. -/
+with `h₂` taking values in a vector space, use `HasDerivAt.scomp_of_eq`.
+-/
 theorem HasDerivAt.comp_of_eq
     (hh₂ : HasDerivAt h₂ h₂' y) (hh : HasDerivAt h h' x) (hy : y = h x) :
     HasDerivAt (h₂ ∘ h) (h₂' * h') x := by
@@ -330,7 +341,9 @@ end Composition
 
 section CompositionVector
 
-/-! ### Derivative of the composition of a function between vector spaces and a function on `𝕜` -/
+/-!
+# Derivative of the composition of a function between vector spaces and a function on `𝕜`
+-/
 
 open ContinuousLinearMap
 

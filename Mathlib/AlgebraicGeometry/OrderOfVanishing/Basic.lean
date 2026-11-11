@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.FunctionField
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.OrderOfVanishing.Noetherian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order of vanishing in a scheme
 

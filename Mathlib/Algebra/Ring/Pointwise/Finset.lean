@@ -9,6 +9,10 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Pointwise.Set
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise operations of sets in a ring
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exact sequences
 
@@ -24,7 +27,6 @@ lemmas expressing the exactness at a particular object.
 
 This implementation is a refactor of `exact_seq` with appeared in the
 Liquid Tensor Experiment as a property of lists in `Arrow C`.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Truncations for a t-structure
 
@@ -27,7 +30,6 @@ Extensions to indices in `EInt` instead of `ℤ` are introduced in the file
 `Mathlib/CategoryTheory/Triangulated/TStucture/ETrunc.lean`.
 The spectral object attached to an object `X : C` is constructed in the file
 `Mathlib/CategoryTheory/Triangulated/TStucture/SpectralObject.lean`.
-
 -/
 
 universe v u

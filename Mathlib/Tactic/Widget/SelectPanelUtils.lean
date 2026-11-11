@@ -11,7 +11,11 @@ public meta import ProofWidgets.Component.MakeEditLink
 public meta import ProofWidgets.Data.Html
 public import Mathlib.Tactic.Widget.SelectInsertParamsClass
 
-/-! # Selection panel utilities
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Selection panel utilities
 
 The main declaration is `mkSelectionPanelRPC` which helps creating rpc methods for widgets
 generating tactic calls based on selected sub-expressions in the main goal.
@@ -60,7 +64,8 @@ structure SelectInsertParams where
   deriving SelectInsertParamsClass, RpcEncodable
 
 open SelectInsertParamsClass Lean.SubExpr in
-/-- Helper function to create a widget allowing to select parts of the main goal
+/--
+Helper function to create a widget allowing to select parts of the main goal
 and then display a link that will insert some tactic call.
 
 The main argument is `mkCmdStr` which is a function creating the link text and the tactic call text.

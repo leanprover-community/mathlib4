@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Between
 
 import Mathlib.Tactic.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polygons
 
@@ -18,7 +21,6 @@ For the special case `n = 3`, an interconversion is provided with `Affine.Triang
 ## Main definitions
 
 * `Polygon P n`: A polygon with `n` vertices in a type `P`.
-
 -/
 
 @[expose] public section
@@ -95,7 +97,9 @@ theorem HasNondegenerateVertices.three_le [NeZero n] [Nontrivial R] {poly : Poly
 
 end Polygon
 
-/-! ### Interconversion with `Affine.Triangle` -/
+/-!
+# Interconversion with `Affine.Triangle`
+-/
 
 namespace Affine.Triangle
 

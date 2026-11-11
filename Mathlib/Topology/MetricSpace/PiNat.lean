@@ -12,6 +12,9 @@ public import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.Order.ProjIcc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
 
@@ -49,13 +52,12 @@ One can also put distances on `Π (i : ι), E i` when the spaces `E i` are metri
 in general), and `ι` is countable.
 
 * `PiCountable.dist` is the distance on `Π i, E i` given by
-    `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
+  `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
 * `PiCountable.metricSpace` is the corresponding metric space structure, adjusted so that
   the uniformity is definitionally the product uniformity. Not registered as an instance.
 * `PiNatEmbed` gives an equivalence between a space and itself in a sequence of spaces
 * `Metric.PiNatEmbed.metricSpace` proves that a topological `X` separated by countably many
   continuous functions to metric spaces, can be embedded inside their product.
-
 -/
 
 open scoped Finset
@@ -72,7 +74,9 @@ variable {E : ℕ → Type*}
 
 namespace PiNat
 
-/-! ### The firstDiff function -/
+/-!
+# The firstDiff function
+-/
 
 open scoped Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
@@ -108,7 +112,9 @@ theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
     x (firstDiff x z) = y (firstDiff x z) := apply_eq_of_lt_firstDiff H.1
     _ = z (firstDiff x z) := apply_eq_of_lt_firstDiff H.2
 
-/-! ### Cylinders -/
+/-!
+# Cylinders
+-/
 
 /-- In a product space `Π n, E n`, the cylinder set of length `n` around `x`, denoted
 `cylinder x n`, is the set of sequences `y` that coincide with `x` on the first `n` symbols, i.e.,
@@ -248,7 +254,7 @@ theorem cylinder_eq_res (x : ℕ → α) (n : ℕ) :
 end Res
 
 /-!
-### A distance function on `Π n, E n`
+# A distance function on `Π n, E n`
 
 We define a distance function on `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is the first
 index at which `x` and `y` differ. When each `E n` has the discrete topology, this distance will
@@ -466,7 +472,7 @@ protected theorem boundedSpace : BoundedSpace (∀ n, E n) := by
   apply PiNat.dist_le_one
 
 /-!
-### Retractions inside product spaces
+# Retractions inside product spaces
 
 We show that, in a space `Π (n : ℕ), E n` where each `E n` is discrete, there is a retraction on
 any closed nonempty subset `s`, i.e., a continuous map `f` from the whole space to `s` restricting
@@ -792,7 +798,7 @@ open Encodable ENNReal
 namespace PiCountable
 
 /-!
-### Products of (possibly non-discrete) metric spaces
+# Products of (possibly non-discrete) metric spaces
 -/
 
 variable {ι : Type*} [Encodable ι] {F : ι → Type*}
@@ -800,11 +806,13 @@ variable {ι : Type*} [Encodable ι] {F : ι → Type*}
 section EDist
 variable [∀ i, EDist (F i)] {x y : ∀ i, F i} {i : ι}
 
-/-- Given a countable family of extended metric spaces,
+/--
+Given a countable family of extended metric spaces,
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`.
+-/
 @[instance_reducible]
 protected def edist : EDist (∀ i, F i) where
   edist x y := ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i))
@@ -835,11 +843,13 @@ attribute [scoped instance] PiCountable.edist
 section PseudoEMetricSpace
 variable [∀ i, PseudoEMetricSpace (F i)]
 
-/-- Given a countable family of extended pseudometric spaces,
+/--
+Given a countable family of extended pseudometric spaces,
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`.
+-/
 @[instance_reducible]
 protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
   edist_self x := by simp [edist_eq_tsum]
@@ -899,11 +909,13 @@ attribute [scoped instance] PiCountable.pseudoEMetricSpace
 section EMetricSpace
 variable [∀ i, EMetricSpace (F i)]
 
-/-- Given a countable family of extended metric spaces,
+/--
+Given a countable family of extended metric spaces,
 one may put an extended distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`.
+-/
 @[instance_reducible]
 protected def emetricSpace : EMetricSpace (∀ i, F i) where
   eq_of_edist_eq_zero := by simp [edist_eq_tsum, funext_iff]
@@ -916,10 +928,12 @@ section PseudoMetricSpace
 variable [∀ i, PseudoMetricSpace (F i)] {x y : ∀ i, F i} {i : ι}
 
 
-/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+/--
+Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
+-/
 @[instance_reducible]
 protected def dist : Dist (∀ i, F i) where
   dist x y := ∑' i, min (2⁻¹ ^ encode i) (dist (x i) (y i))
@@ -942,10 +956,12 @@ lemma min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
 lemma dist_le_dist_pi_of_dist_lt (h : dist x y < 2⁻¹ ^ encode i) : dist (x i) (y i) ≤ dist x y := by
   simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
-/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+/--
+Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`. -/
+The distance we use here is `dist x y = ∑' i, min (1/2)^(encode i) (dist (x i) (y i))`.
+-/
 @[instance_reducible]
 protected def pseudoMetricSpace : PseudoMetricSpace (∀ i, F i) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist (fun x y ↦ by rw [dist_eq_tsum]; positivity)
@@ -961,10 +977,12 @@ attribute [scoped instance] PiCountable.pseudoMetricSpace
 
 section MetricSpace
 variable [∀ i, MetricSpace (F i)]
-/-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
+/--
+Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`.
+-/
 @[instance_reducible]
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
@@ -972,7 +990,9 @@ protected def metricSpace : MetricSpace (∀ i, F i) :=
 end MetricSpace
 end PiCountable
 
-/-! ### Embedding a countably separated space inside a space of sequences -/
+/-!
+# Embedding a countably separated space inside a space of sequences
+-/
 
 namespace Metric
 
@@ -1113,7 +1133,8 @@ open TopologicalSpace Filter unitInterval
 variable [MetricSpace X] [SeparableSpace X]
 
 variable (X) in
-/-- Given a separable metric space `X`, `denseSeq X : ℕ → X` gives a countable
+/--
+Given a separable metric space `X`, `denseSeq X : ℕ → X` gives a countable
 dense sequence. This measures the distance between `denseSeq X n` and `x`, truncated to the unit
 interval `I` so that the distances remain bounded.
 

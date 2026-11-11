@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Group.Extension
 
 import Mathlib.MeasureTheory.Group.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Haar measures on group extensions
 
@@ -26,7 +29,6 @@ we construct a Haar measure on `B` from Haar measures on `A` and `C`.
 * `TopologicalGroup.IsSES.isHaarMeasure_inducedMeasure`: `inducedMeasure` is a Haar measure.
 * `TopologicalGroup.IsSES.inducedMeasure_lt_of_injOn`: If `ψ` is injective on an open set `U`,
   then the induced measure on `U` is bounded by `μC Set.univ * μA {1}` (possibly infinite).
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Neighborhoods relative to a subset
 
@@ -24,7 +27,6 @@ to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continu
 * `𝓟 s`: the principal filter of a set `s`;
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
 * `𝓝ˢ[t] s`: the filter `nhdsSetWithin s t` of neighborhoods of a set `s` within a set `t`.
-
 -/
 
 public section
@@ -34,7 +36,7 @@ open Set Filter Function Topology
 variable {α β : Type*} [TopologicalSpace α]
 
 /-!
-## Properties of the neighborhood-within filter
+# Properties of the neighborhood-within filter
 -/
 
 @[simp]
@@ -498,7 +500,7 @@ lemma Set.MapsTo.preimage_mem_nhdsWithin {f : α → β} {s : Set α} {t : Set �
   Filter.mem_of_superset self_mem_nhdsWithin hst
 
 /-!
-### `nhdsWithin` and subtypes
+# `nhdsWithin` and subtypes
 -/
 
 theorem mem_nhdsWithin_subtype {s : Set α} {a : { x // x ∈ s }} {t u : Set { x // x ∈ s }} :
@@ -552,7 +554,7 @@ theorem clusterPt_principal_subtype_iff_frequently {s t : Set α} (hst : s ⊆ t
   exact ⟨fun ⟨h, hx⟩ => ⟨hst h, h, hx⟩, fun ⟨_, hx⟩ => hx⟩
 
 /-!
-## The `nhdsSetWithin`-filter
+# The `nhdsSetWithin`-filter
 -/
 
 variable [TopologicalSpace β]

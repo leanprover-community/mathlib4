@@ -11,6 +11,9 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The exponential and logarithm based on the continuous functional calculus
 
@@ -22,10 +25,10 @@ It also shows that exponentials defined via the continuous functional calculus a
 
 ## Main declarations
 
-+ `CFC.log`: the real log function based on the CFC, i.e. `cfc Real.log`
-+ `CFC.exp_eq_normedSpace_exp`: exponentials based on the CFC are equal to exponentials based
+* `CFC.log`: the real log function based on the CFC, i.e. `cfc Real.log`
+* `CFC.exp_eq_normedSpace_exp`: exponentials based on the CFC are equal to exponentials based
   on power series.
-+ `CFC.log_exp` and `CFC.exp_log`: `CFC.log` and `NormedSpace.exp ℝ` are inverses of each other.
+* `CFC.log_exp` and `CFC.exp_log`: `CFC.log` and `NormedSpace.exp ℝ` are inverses of each other.
 
 ## Implementation notes
 
@@ -36,9 +39,9 @@ definitions for them.
 
 ## TODO
 
-+ Show that `log (a * b) = log a + log b` whenever `a` and `b` commute (and the same for indexed
+* Show that `log (a * b) = log a + log b` whenever `a` and `b` commute (and the same for indexed
   products).
-+ Relate `CFC.log` to `rpow`, `zpow`, `sqrt`, `inv`.
+* Relate `CFC.log` to `rpow`, `zpow`, `sqrt`, `inv`.
 -/
 
 @[expose] public section

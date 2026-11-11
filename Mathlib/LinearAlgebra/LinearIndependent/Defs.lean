@@ -9,6 +9,9 @@ public meta import Mathlib.Lean.Expr.ExtraRecognizers
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear independence
 
@@ -25,18 +28,16 @@ statements are equivalent to this one, including `ker (Finsupp.linearCombination
 some versions with explicitly written linear combinations.
 
 ## Main definitions
+
 All definitions are given for families of vectors, i.e. `v : ι → M` where `M` is the module or
 vector space and `ι : Type*` is an arbitrary indexing type.
 
 * `LinearIndependent R v` states that the elements of the family `v` are linearly independent.
-
 * `LinearIndepOn R v s` states that the elements of the family `v` indexed by the members
   of the set `s : Set ι` are linearly independent.
-
 * `LinearIndependent.repr hv x` returns the linear combination representing `x : span R (range v)`
   on the linearly independent vectors `v`, given `hv : LinearIndependent R v`
   (using classical choice). `LinearIndependent.repr hv` is provided as a linear map.
-
 * `LinearIndependent.Maximal` states that there exists no linear independent family that strictly
   includes the given one.
 
@@ -70,7 +71,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 @[expose] public section
@@ -98,11 +98,13 @@ def LinearIndependent : Prop :=
   Injective (Finsupp.linearCombination R v)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Delaborator for `LinearIndependent` that suggests pretty printing with type hints
+/--
+Delaborator for `LinearIndependent` that suggests pretty printing with type hints
 in case the family of vectors is over a `Set`.
 
 Type hints look like `LinearIndependent fun (v : ↑s) => ↑v` or `LinearIndependent (ι := ↑s) f`,
-depending on whether the family is a lambda expression or not. -/
+depending on whether the family is a lambda expression or not.
+-/
 @[app_delab LinearIndependent]
 meta def delabLinearIndependent : Delab :=
   whenPPOption getPPNotation <|
@@ -453,11 +455,13 @@ def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
     ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top,
     Finsupp.range_linearCombination]
 
-/-- Linear combination representing a vector in the span of linearly independent vectors.
+/--
+Linear combination representing a vector in the span of linearly independent vectors.
 
 Given a family of linearly independent vectors, we can represent any vector in their span as
 a linear combination of these vectors. These are provided by this linear map.
-It is simply one direction of `LinearIndependent.linearCombinationEquiv`. -/
+It is simply one direction of `LinearIndependent.linearCombinationEquiv`.
+-/
 def LinearIndependent.repr (hv : LinearIndependent R v) : span R (range v) →ₗ[R] ι →₀ R :=
   hv.linearCombinationEquiv.symm
 
@@ -576,7 +580,7 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Semiring R] [N
 end Maximal
 
 /-!
-### Properties which require `LinearOrder R` and `CanonicallyOrderedAdd R`
+# Properties which require `LinearOrder R` and `CanonicallyOrderedAdd R`
 
 If the semiring `R` is linearly and canonically ordered (e.g. `R = ℕ`), `LinearIndependent` can be
 proved from linear combination over two disjoint sets.
@@ -697,7 +701,9 @@ end LinearlyCanonicallyOrdered
 
 end Semiring
 
-/-! ### Properties which require `Ring R` -/
+/-!
+# Properties which require `Ring R`
+-/
 
 section Module
 
@@ -896,7 +902,7 @@ lemma LinearIndepOn.singleton (hi : v i ≠ 0) : LinearIndepOn R v {i} := by sim
 end Module
 
 /-!
-### Properties which require `DivisionRing K`
+# Properties which require `DivisionRing K`
 
 These can be considered generalizations of properties of linear independence in vector spaces.
 -/

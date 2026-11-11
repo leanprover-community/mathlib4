@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
 public import Mathlib.MeasureTheory.Measure.WithDensity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Function with finite integral
 
@@ -25,7 +28,6 @@ predicate `Integrable` in the corresponding file.
 ## Tags
 
 finite integral
-
 -/
 
 @[expose] public section
@@ -44,7 +46,9 @@ variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
 
 namespace MeasureTheory
 
-/-! ### Some results about the Lebesgue integral involving a normed group -/
+/-!
+# Some results about the Lebesgue integral involving a normed group
+-/
 
 lemma lintegral_eNorm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_right]
@@ -84,7 +88,9 @@ theorem lintegral_eNorm_neg {f : α → β} : ∫⁻ a, ‖(-f) a‖ₑ ∂μ = 
 
 @[deprecated (since := "2026-11-06")] alias lintegral_enorm_neg := lintegral_eNorm_neg
 
-/-! ### The predicate `HasFiniteIntegral` -/
+/-!
+# The predicate `HasFiniteIntegral`
+-/
 
 
 /-- `HasFiniteIntegral f μ` means that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.

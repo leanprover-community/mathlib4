@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.PowerSeries.Substitution
 
 import Mathlib.Algebra.Polynomial.Derivation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal derivatives of univariate power series
 
@@ -20,18 +23,18 @@ See also `MvPowerSeries.pderiv` for the multivariate setting.
 
 ## Main definitions
 
-- `PowerSeries.derivative`: the formal derivative, as a derivation.
+* `PowerSeries.derivative`: the formal derivative, as a derivation.
 
 ## Main results
 
-- `PowerSeries.coeff_derivative`: coefficient formula
+* `PowerSeries.coeff_derivative`: coefficient formula
   `coeff n (d⁄dX R f) = coeff (n + 1) f * (n + 1)`.
-- `PowerSeries.derivative_coe`: compatibility with `Polynomial.derivative`.
-- `PowerSeries.trunc_derivative`: truncation commutes with differentiation.
-- `PowerSeries.derivative.ext`: a power series is determined by its constant term and derivative.
-- `PowerSeries.derivative_pow`: power rule.
-- `PowerSeries.derivative_inv`, `PowerSeries.derivative_inv'`: derivative of an inverse.
-- `PowerSeries.derivative_subst`: chain rule for power series substitution.
+* `PowerSeries.derivative_coe`: compatibility with `Polynomial.derivative`.
+* `PowerSeries.trunc_derivative`: truncation commutes with differentiation.
+* `PowerSeries.derivative.ext`: a power series is determined by its constant term and derivative.
+* `PowerSeries.derivative_pow`: power rule.
+* `PowerSeries.derivative_inv`, `PowerSeries.derivative_inv'`: derivative of an inverse.
+* `PowerSeries.derivative_subst`: chain rule for power series substitution.
 -/
 
 @[expose] public section

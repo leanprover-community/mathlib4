@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Final
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditions for `parallelPair` to be initial
 

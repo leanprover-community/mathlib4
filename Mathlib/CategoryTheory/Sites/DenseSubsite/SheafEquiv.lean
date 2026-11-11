@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The equivalence of categories of sheaves of a dense subsite
 
@@ -18,10 +21,9 @@ which is defined in the file `Mathlib/CategoryTheory/Sites/DenseSubsite/Basic.le
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
+* ‍\[Elephant\]: _Sketches of an Elephant_, P. T. Johnstone: C2.2.
 * https://ncatlab.org/nlab/show/dense+sub-site
 * https://ncatlab.org/nlab/show/comparison+lemma
-
 -/
 
 public section

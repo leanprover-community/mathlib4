@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Fin
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences between polynomial rings
 
@@ -19,23 +22,17 @@ based on equivalences between the underlying types.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type*` (indexing the variables)
-
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
-
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
+* `σ : Type*` (indexing the variables)
+* `R : Type*` `[CommSemiring R]` (the coefficients)
+* `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
-
-+ `a : R`
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `p : MvPolynomial σ R`
+* `a : R`
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `p : MvPolynomial σ R`
 
 ## Tags
 
 equivalence, isomorphism, morphism, ring hom, hom
-
 -/
 
 @[expose] public section
@@ -299,7 +296,8 @@ lemma sumRingEquiv_symm_X (s : S₁) : (sumRingEquiv R S₁ S₂).symm (X s) = X
 lemma sumRingEquiv_symm_C_X (s : S₂) : (sumRingEquiv R S₁ S₂).symm (C <| X s) = X (.inr s) := by
   simp [← sumRingEquiv_X_inr]
 
-/-- The function from multivariable polynomials in a sum of two types,
+/--
+The function from multivariable polynomials in a sum of two types,
 to multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
 
@@ -321,7 +319,8 @@ theorem sumToIter_Xl (b : S₁) : sumToIter R S₁ S₂ (X (Sum.inl b)) = X b :=
 theorem sumToIter_Xr (c : S₂) : sumToIter R S₁ S₂ (X (Sum.inr c)) = C (X c) :=
   eval₂_X _ _ (Sum.inr c)
 
-/-- The function from multivariable polynomials in one type,
+/--
+The function from multivariable polynomials in one type,
 with coefficients in multivariable polynomials in another type,
 to multivariable polynomials in the sum of the two types.
 
@@ -797,16 +796,18 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
     (f := fun (g : Fin (Nat.succ n) →₀ ℕ) => g (Fin.succ j))
     (mem_support_coeff_finSuccEquiv.1 hm)
 
-/-- Consider a multivariate polynomial `φ` whose variables are indexed by `Option σ`,
+/--
+Consider a multivariate polynomial `φ` whose variables are indexed by `Option σ`,
 and suppose that `σ ≃ Fin n`.
 Then one may view `φ` as a polynomial over `MvPolynomial (Fin n) R`, by
 
 1. renaming the variables via `Option σ ≃ Fin (n+1)`, and then singling out the `0`-th variable
-    via `MvPolynomial.finSuccEquiv`;
+   via `MvPolynomial.finSuccEquiv`;
 2. first viewing it as polynomial over `MvPolynomial σ R` via `MvPolynomial.optionEquivLeft`,
-    and then renaming the variables.
+   and then renaming the variables.
 
-This lemma shows that both constructions are the same. -/
+This lemma shows that both constructions are the same.
+-/
 lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Option σ) R) :
     ((finSuccEquiv R n) ((rename ((Equiv.optionCongr e).trans (_root_.finSuccEquiv n).symm)) φ)) =
       Polynomial.map (rename e).toRingHom (optionEquivLeft R σ φ) := by

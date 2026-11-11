@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Exact.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The five lemma in terms of modules
 
@@ -16,9 +19,9 @@ and ease of application in the unbundled setting, we reprove them here.
 
 ## Main results
 
-- `LinearMap.surjective_of_surjective_of_surjective_of_injective`: a four lemma
-- `LinearMap.injective_of_surjective_of_injective_of_injective`: another four lemma
-- `LinearMap.bijective_of_surjective_of_bijective_of_bijective_of_injective`: the five lemma
+* `LinearMap.surjective_of_surjective_of_surjective_of_injective`: a four lemma
+* `LinearMap.injective_of_surjective_of_injective_of_injective`: another four lemma
+* `LinearMap.bijective_of_surjective_of_bijective_of_bijective_of_injective`: the five lemma
 
 ## Explanation of the variables
 
@@ -34,7 +37,6 @@ N₁ --g₁--> N₂ --g₂--> N₃ --g₃--> N₄ --g₄--> N₅
 ```
 
 with exact rows.
-
 -/
 
 public section

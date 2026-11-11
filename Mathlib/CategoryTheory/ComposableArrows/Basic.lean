@@ -12,6 +12,9 @@ public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composable arrows
 
@@ -32,12 +35,12 @@ In the namespace `CategoryTheory.ComposableArrows`, we provide constructors
 like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small `n`.
 
 TODO (@joelriou):
+
 * construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
   the precomposition with which shall induce functors
   `ComposableArrows C n ⥤ ComposableArrows C m` which correspond to simplicial operations
   (specifically faces) with good definitional properties (this might be necessary for
   up to `n = 7` in order to formalize spectral sequences following Verdier)
-
 -/
 
 @[expose] public section
@@ -49,7 +52,7 @@ New `simprocs` that run even in `dsimp` have caused breakages in this file.
 
 For now, we just turn off the offending simprocs in this file.
 
-*However*, hopefully it is possible to refactor the material here so that no disabling of
+_However_, hopefully it is possible to refactor the material here so that no disabling of
 simprocs is needed.
 
 See issue https://github.com/leanprover-community/mathlib4/issues/27382.

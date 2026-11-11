@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Field.ZMod
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime fields
 
@@ -27,7 +30,6 @@ contains a unique prime field: it is the smallest field contained in `K`.
   image of) `ℚ`.
 * `Subfield.bot_eq_of_zMod_algebra`: the smallest subfield of a field of characteristic `p` is (the
   image of) `ZMod p`.
-
 -/
 
 public section

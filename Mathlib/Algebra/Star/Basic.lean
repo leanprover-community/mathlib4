@@ -16,6 +16,9 @@ public import Mathlib.Data.Int.Cast.Lemmas
 
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Star monoids, rings, and modules
 
@@ -211,9 +214,10 @@ theorem star_zpow [Group R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star 
 theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / star y :=
   map_div (starMulAut : R ≃* R) _ _
 
-/-- Any commutative monoid admits the trivial \*-structure.
+/--
+Any commutative monoid admits the trivial \*-structure.
 
-See note [reducible non-instances].
+See note \[reducible non-instances\].
 -/
 abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
   star x := x
@@ -333,13 +337,15 @@ def starRingAut : RingAut R :=
   { starAddEquiv, starMulAut (R := R) with toFun := star, invFun := star }
 
 variable (R) in
-/-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
+/--
+`star` as a ring endomorphism, for commutative `R`. This is used to denote complex
 conjugation, and is available under the notation `conj` in the scope `ComplexConjugate`.
 
 Note that this is the preferred form (over `starRingAut`, available under the same hypotheses)
 because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short for
 `E →ₛₗ[starRingEnd R] F`) does not pretty-print if there is a coercion involved, as would be the
-case for `(↑starRingAut : R →* R)`. -/
+case for `(↑starRingAut : R →* R)`.
+-/
 @[implicit_reducible]
 def starRingEnd : R →+* R where
   toFun := star
@@ -394,9 +400,10 @@ theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) =
   apply op_injective
   rw [division_def, op_div, mul_comm, star_mul, star_inv₀, op_mul, op_inv]
 
-/-- Any commutative semiring admits the trivial \*-structure.
+/--
+Any commutative semiring admits the trivial \*-structure.
 
-See note [reducible non-instances].
+See note \[reducible non-instances\].
 -/
 abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
   { starMulOfComm with
@@ -407,7 +414,8 @@ instance Int.instStarRing : StarRing ℤ := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
 instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 
-/-- A star module `A` over a star ring `R` is a module which is a star additive monoid,
+/--
+A star module `A` over a star ring `R` is a module which is a star additive monoid,
 and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
 
@@ -456,7 +464,9 @@ export StarHomClass (map_star)
 
 end
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 
 namespace Units
@@ -547,38 +557,48 @@ namespace Function.Injective
 
 variable {S : Type v} (f : R → S)
 
-/-- Given a type endowed with `star`, that `star` is involutive if it admits an injective map that
-preserves `star` to a type with whose `star` is involutive. See note [reducible non-instances]. -/
+/--
+Given a type endowed with `star`, that `star` is involutive if it admits an injective map that
+preserves `star` to a type with whose `star` is involutive. See note \[reducible non-instances\].
+-/
 protected abbrev involutiveStar [Star R] [InvolutiveStar S] (hf : Injective f)
     (star : ∀ x, f (star x) = star (f x)) : InvolutiveStar R where
   star_involutive r := hf <| by rw [star, star, star_star]
 
-/-- A type endowed with `star` and `*` is a star magma if it admits an injective map that
-preserves `star` and `*` to star magma.  See note [reducible non-instances]. -/
+/--
+A type endowed with `star` and `*` is a star magma if it admits an injective map that
+preserves `star` and `*` to star magma.  See note \[reducible non-instances\].
+-/
 protected abbrev starMul [Star R] [Mul R] [Mul S] [StarMul S] (hf : Injective f)
     (star : ∀ x, f (star x) = star (f x)) (mul : ∀ x y, f (x * y) = f x * f y) :
     StarMul R where
   toInvolutiveStar := hf.involutiveStar _ star
   star_mul x y := hf <| by rw [star, mul, star_mul, mul, star, star]
 
-/-- A additive monoid endowed with `star` is an additive star monoid if it admits an injective map
-that preserves `star` and `+` to an additive star monoid.  See note [reducible non-instances]. -/
+/--
+A additive monoid endowed with `star` is an additive star monoid if it admits an injective map
+that preserves `star` and `+` to an additive star monoid.  See note \[reducible non-instances\].
+-/
 protected abbrev starAddMonoid [Star R] [AddMonoid R] [AddMonoid S] [StarAddMonoid S]
     (hf : Injective f) (star : ∀ x, f (star x) = star (f x)) (add : ∀ x y, f (x + y) = f x + f y) :
     StarAddMonoid R where
   toInvolutiveStar := hf.involutiveStar f star
   star_add x y := hf <| by rw [star, add, star_add, add, star, star]
 
-/-- A non-unital non-associative ring endowed with `star` is a star ring if it admits an injective
-map that preserves `star`, `*` and `+` to a star ring. See note [reducible non-instances]. -/
+/--
+A non-unital non-associative ring endowed with `star` is a star ring if it admits an injective
+map that preserves `star`, `*` and `+` to a star ring. See note \[reducible non-instances\].
+-/
 protected abbrev starRing [Star R] [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
     [StarRing S] (hf : Injective f) (star : ∀ x, f (star x) = star (f x))
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y) :
     StarRing R :=
   { hf.starMul f star mul, hf.starAddMonoid f star add with }
 
-/-- A type endowed with `star` is a star module over some other type with `star` if it admits an
-injective map that preserves `star` and `•` to a star module. See note [reducible non-instances]. -/
+/--
+A type endowed with `star` is a star module over some other type with `star` if it admits an
+injective map that preserves `star` and `•` to a star module. See note \[reducible non-instances\].
+-/
 protected lemma starModule (𝕜 : Type*) [Star 𝕜] [SMul 𝕜 R]
     [Star R] [SMul 𝕜 S] [Star S] [StarModule 𝕜 S] (hf : Injective f)
     (star : ∀ x, f (star x) = star (f x)) (smul : ∀ (r : 𝕜) x, f (r • x) = r • f x) :
@@ -625,7 +645,9 @@ instance StarSemigroup.toOpposite_starModule [CommMonoid R] [StarMul R] :
   ⟨fun r s => star_mul' s r.unop⟩
 
 variable (R) in
-/-- A *proper star* is when `star x * x = 0` implies `x = 0`. -/
+/--
+A _proper star_ is when `star x * x = 0` implies `x = 0`.
+-/
 class IsProperStar [Mul R] [Zero R] [Star R] : Prop where
   eq_zero_of_star_mul_self_eq_zero {x : R} : star x * x = 0 → x = 0
 

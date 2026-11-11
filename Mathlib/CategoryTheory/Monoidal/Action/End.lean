@@ -9,7 +9,11 @@ public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Opposite
 
-/-! # Actions as monoidal functors to endofunctor categories
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Actions as monoidal functors to endofunctor categories
 
 In this file, we show that given a right action of a monoidal category `C`
 on a category `D`, the curried action functor `C ⥤ D ⥤ D` is monoidal.
@@ -22,7 +26,6 @@ action of `C` on `D`, composing
 `CategoryTheory.MonoidalCategory.MonoidalOpposite.mopFunctor (D ⥤ D)` is
 monoidal, and conversely one can define a left action of `C` on `D` from a monoidal
 functor `C ⥤ (D ⥤ D)ᴹᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -211,11 +214,13 @@ def curriedActionActionOfMonoidalFunctorToEndofunctorIso
 end MonoidalRightAction
 
 namespace endofunctorMonoidalCategory
-/-- Functor evaluation gives a right action of `C ⥤ C`.
+/--
+Functor evaluation gives a right action of `C ⥤ C`.
 
 Note that in the literature, this is defined as a left action, but mathlib's
 monoidal structure on `C ⥤ C` is the monoidal opposite of the one usually
-considered in the literature. -/
+considered in the literature.
+-/
 @[simps! actionObj actionHomLeft actionHomRight actionAssocIso actionUnitIso]
 scoped instance evaluationRightAction : MonoidalRightAction (C ⥤ C) C :=
   MonoidalRightAction.actionOfMonoidalFunctorToEndofunctor (𝟭 (C ⥤ C))

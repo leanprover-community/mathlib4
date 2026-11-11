@@ -9,11 +9,13 @@ public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
 import Mathlib.FieldTheory.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion group of `ZMod p` for prime `p`
 
 This file shows that the `ZMod p` has `p - 1` roots-of-unity.
-
 -/
 
 public section

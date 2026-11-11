@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.FiniteType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strong rank condition for commutative rings
 
@@ -28,11 +31,10 @@ is injective.
 
 ## References
 
-* [Orzech, Morris. *Onto endomorphisms are isomorphisms*][orzech1971]
-* [Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*][djokovic1973]
-* [Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement
-  des isomorphismes*][ribenboim1971]
-
+* ‍\[Orzech, Morris. _Onto endomorphisms are isomorphisms_\]\[orzech1971\]
+* ‍\[Djoković, D. Ž. _Epimorphisms of modules which must be isomorphisms_\]\[djokovic1973\]
+* ‍\[Ribenboim, Paulo. _Épimorphismes de modules qui sont nécessairement
+  des isomorphismes_\]\[ribenboim1971\]
 -/
 
 /-- Shortcut instance for the fact that any nontrivial commutative ring satisfies

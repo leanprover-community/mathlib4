@@ -9,6 +9,9 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.RingTheory.Localization.FractionRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristics of algebras
 
@@ -17,16 +20,15 @@ In this file we describe the characteristic of `R`-algebras.
 In particular we are interested in the characteristic of free algebras over `R`
 and the fraction field `FractionRing R`.
 
-
 ## Main results
 
-- `charP_of_injective_algebraMap` If `R →+* A` is an injective algebra map
+* `charP_of_injective_algebraMap` If `R →+* A` is an injective algebra map
   then `A` has the same characteristic as `R`.
 
 Instances constructed from this result:
-- Any `FreeAlgebra R X` has the same characteristic as `R`.
-- The `FractionRing R` of an integral domain `R` has the same characteristic as `R`.
 
+* Any `FreeAlgebra R X` has the same characteristic as `R`.
+* The `FractionRing R` of an integral domain `R` has the same characteristic as `R`.
 -/
 
 public section
@@ -143,7 +145,8 @@ section QAlgebra
 
 variable (R : Type*) [Nontrivial R]
 
-/-- A nontrivial `ℚ`-algebra has `CharP` equal to zero.
+/--
+A nontrivial `ℚ`-algebra has `CharP` equal to zero.
 
 This cannot be a (local) instance because it would immediately form a loop with the
 instance `DivisionRing.toRatAlgebra`. It's probably easier to go the other way: prove `CharZero R`
@@ -152,7 +155,8 @@ and automatically receive an `Algebra ℚ R` instance.
 theorem algebraRat.charP_zero [Semiring R] [Algebra ℚ R] : CharP R 0 :=
   charP_of_injective_algebraMap (algebraMap ℚ R).injective 0
 
-/-- A nontrivial `ℚ`-algebra has characteristic zero.
+/--
+A nontrivial `ℚ`-algebra has characteristic zero.
 
 This cannot be a (local) instance because it would immediately form a loop with the
 instance `DivisionRing.toRatAlgebra`. It's probably easier to go the other way: prove `CharZero R`

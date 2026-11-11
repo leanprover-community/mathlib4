@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of families indexed by a finite type
 
@@ -24,7 +27,6 @@ by a finite type.
   setoid `S i` for each `i` can be lifted to a function on `Π i, Quotient (S i)`.
 * `Quotient.finRecOn`: Recursion principle for quotients indexed by a finite type. It is the
   dependent version of `Quotient.finLiftOn`.
-
 -/
 
 @[expose] public section

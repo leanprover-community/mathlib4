@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Topology.MetricSpace.Cover
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covering numbers
 
@@ -27,12 +30,14 @@ We prove inequalities between these covering and packing numbers.
   an `ε`-separated set in `A`.
 
 We define sets achieving these minimal/maximal cardinalities when they exist:
+
 * `minimalCover`: a finite internal `ε`-cover of a set `A` by closed balls with minimal cardinality.
 * `maximalSeparatedSet`: a finite `ε`-separated subset of a set `A` with maximal cardinality.
 
 ## Main statements
 
 We have the following inequalities between covering and packing numbers:
+
 * `externalCoveringNumber_le_coveringNumber`: external covering number ≤ covering number.
 * `packingNumber_two_mul_le_externalCoveringNumber`: packing number for `2 * ε` ≤ external covering
   number for `ε`.
@@ -42,12 +47,12 @@ We have the following inequalities between covering and packing numbers:
 
 The covering number is not monotone for set inclusion (because the cover must be contained
 in the set), but we have the following inequality:
+
 * `coveringNumber_subset_le`: if `A ⊆ B`, then `coveringNumber ε A ≤ coveringNumber (ε / 2) B`.
 
 ## References
 
-* [R. Vershynin, *High-dimensional probability*][vershynin2018high]
-
+* ‍\[R. Vershynin, _High-dimensional probability_\]\[vershynin2018high\]
 -/
 
 @[expose] public section

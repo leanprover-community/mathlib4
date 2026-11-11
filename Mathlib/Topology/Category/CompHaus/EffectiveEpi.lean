@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Category.CompHaus.Limits
 public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Effective epimorphisms in `CompHaus`
 
@@ -22,9 +25,8 @@ equivalent.
 
 ## Projects
 
-- Define regular categories, and show that `CompHaus` is regular.
-- Define coherent categories, and show that `CompHaus` is actually coherent.
-
+* Define regular categories, and show that `CompHaus` is regular.
+* Define coherent categories, and show that `CompHaus` is actually coherent.
 -/
 
 public section

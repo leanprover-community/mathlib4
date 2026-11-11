@@ -9,10 +9,14 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 public import Mathlib.MeasureTheory.Measure.Count
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lebesgue integral over finite and countable types, sets and measures
 
 The lemmas in this file require at least one of the following of the Lebesgue integral:
+
 * The type of the set of integration is finite or countable
 * The set of integration is finite or countable
 * The measure is finite, s-finite or sigma-finite
@@ -164,13 +168,15 @@ end Countable
 section SFinite
 
 variable (μ) in
-/-- If `μ` is an s-finite measure, then for any function `f`
+/--
+If `μ` is an s-finite measure, then for any function `f`
 there exists a measurable function `g ≤ f`
 that has the same Lebesgue integral over every set.
 
 For the integral over the whole space, the statement is true without extra assumptions,
 see `exists_measurable_le_lintegral_eq`.
-See also `MeasureTheory.Measure.restrict_toMeasurable_of_sfinite` for a similar result. -/
+See also `MeasureTheory.Measure.restrict_toMeasurable_of_sfinite` for a similar result.
+-/
 theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ≥0∞) :
     ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∀ s, ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
   -- We only need to prove the `≤` inequality for the integrals, the other one follows from `g ≤ f`.

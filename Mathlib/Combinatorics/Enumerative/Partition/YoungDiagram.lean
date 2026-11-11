@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Combinatorics.Young.YoungDiagram
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Young diagram of a partition
 
@@ -19,7 +22,6 @@ Using this equivalence, the conjugate of a partition is also defined. Given the 
 diagram `μ` representing a partition `λ`, its conjugate `λ'` is the partition obtained
 by flipping `μ` about the main diagonal, i.e. the columns of `μ` are the parts of `λ'`.
 This is implemented here directly via `YoungDiagram.transpose`.
-
 -/
 
 @[expose] public section

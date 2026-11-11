@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.Data.List.Sublists
 import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The maximal reduction of a word in a free group
 
@@ -19,7 +22,6 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 * `FreeGroup.reduce`: the maximal reduction of a word in a free group
 * `FreeGroup.norm`: the length of the maximal reduction of a word in a free group
-
 -/
 
 @[expose] public section

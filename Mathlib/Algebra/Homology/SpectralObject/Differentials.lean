@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Page
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentials of a spectral object
 
@@ -17,8 +20,8 @@ in `ι`. We show that `d ≫ d = 0`. The homology of these differentials is comp
 file `Mathlib/Algebra/Homology/SpectralObject/Homology.lean`.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_, II.4\]\[verdier1996\]
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Topology.SeparatedMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local homeomorphisms
 
@@ -15,7 +18,8 @@ This file defines local homeomorphisms.
 
 ## Main definitions
 
-For a function `f : X → Y ` between topological spaces, we say
+For a function `f : X → Y  ` between topological spaces, we say
+
 * `IsLocalHomeomorphOn f s` if `f` is a local homeomorphism around each point of `s`: for each
   `x : X`, the restriction of `f` to some open neighborhood `U` of `x` gives a homeomorphism
   between `U` and an open subset of `Y`.
@@ -25,9 +29,9 @@ Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
 `OpenPartialHomeomorph`, which is a homeomorphism between specific open subsets.
 
 ## Main results
+
 * local homeomorphisms are locally injective open maps
 * more!
-
 -/
 
 @[expose] public section

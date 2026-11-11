@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoid of inverses
 

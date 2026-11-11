@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions of Archimedean monoids
 

@@ -11,6 +11,9 @@ public import Mathlib.Basic.Real.Star
 
 import Mathlib.Algebra.CharP.Invertible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.
 
@@ -28,6 +31,7 @@ Since the algebra of observables of any quantum system is an ordered \*-algebra
 Let `R` be a \*-ring.
 
 A CHSH tuple in `R` consists of
+
 * four elements `A₀ A₁ B₀ B₁ : R`, such that
 * each `Aᵢ` and `Bⱼ` is a self-adjoint involution, and
 * the `Aᵢ` commute with the `Bⱼ`.
@@ -38,7 +42,7 @@ that take values ±1 (hence involutions), and that the `Aᵢ` are spacelike sepa
 
 The CHSH inequality says that when `R` is an ordered \*-ring
 (that is, a \*-ring which is ordered, and for every `r : R`, `0 ≤ star r * r`),
-which is moreover *commutative*, we have
+which is moreover _commutative_, we have
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`
 
 On the other hand, Tsirelson's inequality says that for any ordered \*-ring we have
@@ -55,7 +59,7 @@ In the C⋆-algebra case,
 the order structure is completely determined by the \*-algebra structure:
 `0 ≤ A` iff there exists some `B` so `A = star B * B`.
 There's a nice proof of both bounds in this setting at
-https://en.wikipedia.org/wiki/Tsirelson%27s_bound
+https://en.wikipedia.org/wiki/Tsirelson%27s\_bound
 The proof given here is purely algebraic.
 
 ## Future work
@@ -68,11 +72,10 @@ There is a CHSH tuple in 4-by-4 matrices such that
 
 ## References
 
-* [Clauser, Horne, Shimony, Holt,
-  *Proposed experiment to test local hidden-variable theories*][zbMATH06785026]
-* [Bell, *On the Einstein Podolsky Rosen Paradox*][MR3790629]
-* [Tsirelson, *Quantum generalizations of Bell's inequality*][MR577178]
-
+* ‍\[Clauser, Horne, Shimony, Holt,
+  _Proposed experiment to test local hidden-variable theories_\]\[zbMATH06785026\]
+* ‍\[Bell, _On the Einstein Podolsky Rosen Paradox_\]\[MR3790629\]
+* ‍\[Tsirelson, _Quantum generalizations of Bell's inequality_\]\[MR577178\]
 -/
 
 public section
@@ -80,7 +83,8 @@ public section
 
 universe u
 
-/-- A CHSH tuple in a \*-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
+/--
+A CHSH tuple in a \*-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
 the `Aᵢ` commute with the `Bⱼ`.
 
 The physical interpretation is that `A₀` and `A₁` are a pair of Boolean observables which
@@ -108,10 +112,11 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
       4 * (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) := by
   grind
 
-/-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered \*-algebra over ℝ,
+/--
+Given a CHSH tuple (A₀, A₁, B₀, B₁) in a _commutative_ ordered \*-algebra over ℝ,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`.
 
-(We could work over ℤ[⅟2] if we wanted to!)
+(We could work over ℤ\[⅟2\] if we wanted to!)
 -/
 theorem CHSH_inequality_of_comm [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
     [Algebra ℝ R] [IsOrderedModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
@@ -153,7 +158,8 @@ end TsirelsonInequality
 
 open TsirelsonInequality
 
-/-- In a noncommutative ordered \*-algebra over ℝ,
+/--
+In a noncommutative ordered \*-algebra over ℝ,
 Tsirelson's bound for a CHSH tuple (A₀, A₁, B₀, B₁) is
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2^(3/2) • 1`.
 

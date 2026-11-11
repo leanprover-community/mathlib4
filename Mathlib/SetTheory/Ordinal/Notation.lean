@@ -12,6 +12,9 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Ordering.Lemmas
 import Mathlib.Tactic.NormNum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordinal notation
 
@@ -148,10 +151,12 @@ theorem omega0_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
   @lt_of_lt_of_le _ _ _ (ω ^ repr e) _ (opow_pos (repr e) omega0_pos) (omega0_le_oadd e n a)
 
-/-- Comparison of ordinal notations:
+/--
+Comparison of ordinal notations:
 
 `ω ^ e₁ * n₁ + a₁` is less than `ω ^ e₂ * n₂ + a₂` when either `e₁ < e₂`, or `e₁ = e₂` and
-`n₁ < n₂`, or `e₁ = e₂`, `n₁ = n₂`, and `a₁ < a₂`. -/
+`n₁ < n₂`, or `e₁ = e₂`, `n₁ = n₂`, and `a₁ < a₂`.
+-/
 def cmp : ONote → ONote → Ordering
   | 0, 0 => Ordering.eq
   | _, 0 => Ordering.gt
@@ -181,7 +186,8 @@ inductive NFBelow : ONote → Ordinal.{0} → Prop
   | zero {b} : NFBelow 0 b
   | oadd' {e n a eb b} : NFBelow e eb → NFBelow a (repr e) → repr e < b → NFBelow (oadd e n a) b
 
-/-- A normal form ordinal notation has the form
+/--
+A normal form ordinal notation has the form
 
 `ω ^ a₁ * n₁ + ω ^ a₂ * n₂ + ⋯ + ω ^ aₖ * nₖ`
 
@@ -189,7 +195,8 @@ where `a₁ > a₂ > ⋯ > aₖ` and all the `aᵢ` are also in normal form.
 
 We will essentially only be interested in normal form ordinal notations, but to avoid complicating
 the algorithms, we define everything over general ordinal notations and only prove correctness with
-normal form as an invariant. -/
+normal form as an invariant.
+-/
 class NF (o : ONote) : Prop where
   out : Exists (NFBelow o)
 
@@ -571,9 +578,11 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
         mul_omega0_dvd (Nat.cast_pos'.2 n₁.pos) (natCast_lt_omega0 _)]
       simpa using! opow_dvd_opow ω (one_le_iff_ne_zero.2 this)
 
-/-- Calculate division and remainder of `o` mod `ω`:
+/--
+Calculate division and remainder of `o` mod `ω`:
 
-`split' o = (a, n)` means `o = ω * a + n`. -/
+`split' o = (a, n)` means `o = ω * a + n`.
+-/
 def split' : ONote → ONote × ℕ
   | 0 => (0, 0)
   | oadd e n a =>
@@ -582,9 +591,11 @@ def split' : ONote → ONote × ℕ
       let (a', m) := split' a
       (oadd (e - 1) n a', m)
 
-/-- Calculate division and remainder of `o` mod `ω`:
+/--
+Calculate division and remainder of `o` mod `ω`:
 
-`split o = (a, n)` means `o = a + n`, where `ω ∣ a`. -/
+`split o = (a, n)` means `o = a + n`, where `ω ∣ a`.
+-/
 def split : ONote → ONote × ℕ
   | 0 => (0, 0)
   | oadd e n a =>
@@ -917,11 +928,13 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       congr 1
       simpa [opow_natCast, pow_succ] using (repr_opow_aux₂ _ ad a00 al _ _).2
 
-/-- Given an ordinal, returns:
+/--
+Given an ordinal, returns:
 
 * `inl none` for `0`
 * `inl (some a)` for `a + 1`
-* `inr f` for a limit ordinal `a`, where `f i` is a sequence converging to `a` -/
+* `inr f` for a limit ordinal `a`, where `f i` is a sequence converging to `a`
+-/
 def fundamentalSequence : ONote → (Option ONote) ⊕ (ℕ → ONote)
   | zero => Sum.inl none
   | oadd a m b =>
@@ -958,12 +971,14 @@ private theorem exists_lt_omega0_opow' {α} {o b : Ordinal} (hb : 1 < b) (ho : I
   obtain ⟨d, hd, h'⟩ := (lt_opow_of_isSuccLimit (zero_lt_one.trans hb).ne' ho).1 h
   exact (H hd).imp fun i hi => h'.trans <| (opow_lt_opow_iff_right hb).2 hi
 
-/-- The property satisfied by `fundamentalSequence o`:
+/--
+The property satisfied by `fundamentalSequence o`:
 
 * `inl none` means `o = 0`
 * `inl (some a)` means `o = succ a`
 * `inr f` means `o` is a limit ordinal and `f` is a strictly increasing sequence which converges to
-  `o` -/
+  `o`
+-/
 def FundamentalSequenceProp (o : ONote) : (Option ONote) ⊕ (ℕ → ONote) → Prop
   | Sum.inl none => o = 0
   | Sum.inl (some a) => o.repr = succ a.repr ∧ (o.NF → a.NF)
@@ -1047,13 +1062,15 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
           H.fst.oadd _ (NF.below_of_lt' (lt_trans (h2 i).2.1 H.snd'.repr_lt) ((h2 i).2.2 H.snd))⟩,
         exists_lt_add h3⟩
 
-/-- The fast growing hierarchy for ordinal notations `< ε₀`. This is a sequence of functions `ℕ → ℕ`
+/--
+The fast growing hierarchy for ordinal notations `< ε₀`. This is a sequence of functions `ℕ → ℕ`
 indexed by ordinals, with the definition:
 
 * `f_0(n) = n + 1`
 * `f_(α + 1)(n) = f_α^[n](n)`
 * `f_α(n) = f_(α[n])(n)` where `α` is a limit ordinal and `α[i]` is the fundamental sequence
-  converging to `α` -/
+  converging to `α`
+-/
 def fastGrowing : ONote → ℕ → ℕ
   | o =>
     match fundamentalSequence o, fundamentalSequence_has_prop o with
@@ -1122,11 +1139,13 @@ theorem fastGrowingε₀_two : fastGrowingε₀ 2 = 2048 := by
 
 end ONote
 
-/-- The type of normal ordinal notations.
+/--
+The type of normal ordinal notations.
 
 It would have been nicer to define this right in the inductive type, but `NF o` requires `repr`
 which requires `ONote`, so all these things would have to be defined at once, which messes up the VM
-representation. -/
+representation.
+-/
 def NONote :=
   { o : ONote // o.NF }
 deriving DecidableEq
@@ -1142,11 +1161,13 @@ instance NF (o : NONote) : NF o.1 :=
 def mk (o : ONote) [h : ONote.NF o] : NONote :=
   ⟨o, h⟩
 
-/-- The ordinal represented by an ordinal notation.
+/--
+The ordinal represented by an ordinal notation.
 
 This function is noncomputable because ordinal arithmetic is noncomputable. In computational
 applications `NONote` can be used exclusively without reference to `Ordinal`, but this function
-allows for correctness results to be stated. -/
+allows for correctness results to be stated.
+-/
 noncomputable def repr (o : NONote) : Ordinal :=
   o.1.repr
 

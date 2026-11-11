@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Insert
 public import Mathlib.Data.Finset.Lattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Difference of finite sets
 
@@ -19,7 +22,6 @@ public import Mathlib.Data.Finset.Lattice.Basic
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section
@@ -39,7 +41,9 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### sdiff -/
+/-!
+# sdiff
+-/
 
 
 section Sdiff

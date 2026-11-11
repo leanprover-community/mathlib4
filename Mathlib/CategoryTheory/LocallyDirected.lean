@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally directed gluing
 
@@ -30,17 +33,21 @@ variable {J : Type*} [Category* J]
 We say that a functor `F` to `Type*` is locally directed if for every `x ∈ F.obj k`, the
 set of `F.obj` containing `x` is (co)directed.
 That is, for each diagram
+
 ```
       x ∈ Fₖ
     ↗       ↖
 xᵢ ∈ Fᵢ    xⱼ ∈ Fⱼ
 ```
+
 there exists
+
 ```
 xᵢ ∈ Fᵢ    xⱼ ∈ Fⱼ
     ↖       ↗
       xₗ ∈ Fₗ
 ```
+
 that commutes with it.
 -/
 class Functor.IsLocallyDirected (F : J ⥤ Type*) : Prop where

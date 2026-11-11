@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.Order.BourbakiWitt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of types with an omega complete partial order
 
@@ -18,8 +21,8 @@ an `OmegaCompletePartialOrder`.
 ## Main definitions
 
 * `ωCPO`
-  * an instance of `Category` and `ConcreteCategory`
 
+  * an instance of `Category` and `ConcreteCategory`
 -/
 
 @[expose] public section

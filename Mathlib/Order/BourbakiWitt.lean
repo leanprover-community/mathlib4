@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Order.OmegaCompletePartialOrder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bourbaki-Witt Theorem
 
@@ -15,17 +18,17 @@ This file proves the Bourbaki-Witt Theorem.
 
 ## Main definitions
 
-- class `ChainCompletePartialOrder` : A nonempty partial order is a chain complete partial order
+* class `ChainCompletePartialOrder` : A nonempty partial order is a chain complete partial order
   such that every nonempty chain has a supremum
 
 ## Main statements
 
-- `nonempty_fixedPoints_of_inflationary` : The Bourbaki-Witt Theorem : If $X$ is a chain complete
-  partial order and $f : X → X$ is inflationary (i.e. ∀ x, x ≤ f x), then $f$ has a fixed point
+* `nonempty_fixedPoints_of_inflationary` : The Bourbaki-Witt Theorem : If $`X` is a chain complete
+  partial order and $`f : X → X` is inflationary (i.e. ∀ x, x ≤ f x), then $`f` has a fixed point
 
 ## References
 
-The proof used can be found in [serge_lang_algebra]
+The proof used can be found in \[serge\_lang\_algebra\]
 -/
 
 public section
@@ -115,9 +118,11 @@ lemma subset_bot_iff {s : Set α} (h : IsAdmissible x f s) : s ⊆ bot x f ↔ s
 lemma map_mem_bot {y : α} (le_map : ∀ x, x ≤ f x) (h : y ∈ bot x f) : f y ∈ bot x f :=
   (bot_isAdmissible le_map).image_self_subset_self <| mem_image_of_mem f h
 
-/-- `y` is an extreme point for `x : α` and `f : α → α` if it is in the bottom admissible set and
+/--
+`y` is an extreme point for `x : α` and `f : α → α` if it is in the bottom admissible set and
 `y` is larger than `f z` for any `z < y` in the bottom admissible set.
-This definition comes from [serge_lang_algebra] -/
+This definition comes from \[serge\_lang\_algebra\]
+-/
 structure IsExtremePt (x : α) (f : α → α) (y : α) : Prop where
   mem_bot : y ∈ bot x f
   map_le_of_mem_of_lt {z : α} (h : z ∈ bot x f) (h' : z < y) : f z ≤ y

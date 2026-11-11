@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Module.CharacterModule
 public import Mathlib.RingTheory.Flat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flat modules
 
 `M` is flat if `· ⊗ M` preserves finite limits (equivalently, pullbacks, or equalizers).
 If `R` is a ring, an `R`-module `M` is flat if and only if it is mono-flat, and to show
 a module is flat, it suffices to check inclusions of finitely generated ideals into `R`.
-See <https://stacks.math.columbia.edu/tag/00HD>.
+See [https://stacks.math.columbia.edu/tag/00HD](https://stacks.math.columbia.edu/tag/00HD).
 
 ## Main theorems
 
@@ -49,8 +52,10 @@ lemma injective_characterModule_iff_rTensor_preserves_injective_linearMap :
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) := by
   simp_rw [injective_iff, rTensor_injective_iff_lcomp_surjective, Surjective, DFunLike.ext_iff]; rfl
 
-/-- `CharacterModule M` is an injective module iff `M` is flat.
-See [Lambek_1964] for a self-contained proof. -/
+/--
+`CharacterModule M` is an injective module iff `M` is flat.
+See \[Lambek\_1964\] for a self-contained proof.
+-/
 theorem iff_characterModule_injective [Small.{v} R] :
     Flat R M ↔ Module.Injective R (CharacterModule M) := by
   rw [injective_characterModule_iff_rTensor_preserves_injective_linearMap,

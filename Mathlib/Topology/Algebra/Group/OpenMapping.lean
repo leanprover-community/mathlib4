@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Topology.Algebra.Group.Pointwise
 
-/-! # Open mapping theorem for morphisms of topological groups
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Open mapping theorem for morphisms of topological groups
 
 We prove that a continuous surjective group morphism from a sigma-compact group to a locally compact
 group is automatically open, in `MonoidHom.isOpenMap_of_sigmaCompact`.

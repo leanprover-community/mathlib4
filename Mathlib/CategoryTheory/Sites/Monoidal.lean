@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Sites.SheafHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoidal category structure on categories of sheaves
 
@@ -26,7 +29,6 @@ chosen finite products.
   underlying presheaf is the internal hom in the category of presheaves.
   Note that a `MonoidalClosed` instance on sheaves can already be obtained
   abstractly using the material in `CategoryTheory.Monoidal.Braided.Reflection`.
-
 -/
 
 @[expose] public section

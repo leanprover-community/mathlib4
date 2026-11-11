@@ -7,10 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Calculus of fractions
 
-Following the definitions by [Gabriel and Zisman][gabriel-zisman-1967],
+Following the definitions by \[Gabriel and Zisman\]\[gabriel-zisman-1967\],
 given a morphism property `W : MorphismProperty C` on a category `C`,
 we introduce the class `W.HasLeftCalculusOfFractions`. The main
 result `Localization.exists_leftFraction` is that if `L : C ⥤ D`
@@ -24,8 +27,7 @@ Similar results are obtained when `W` has a right calculus of fractions.
 
 ## References
 
-* [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
-
+* ‍\[P. Gabriel, M. Zisman, _Calculus of fractions and homotopy theory_\]\[gabriel-zisman-1967\]
 -/
 
 @[expose] public section

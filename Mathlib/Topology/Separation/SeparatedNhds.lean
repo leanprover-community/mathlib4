@@ -9,6 +9,9 @@ public import Mathlib.Topology.NhdsSet
 
 import Mathlib.Topology.Continuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separated neighbourhoods
 
@@ -24,8 +27,8 @@ formulating separation axioms for topological spaces.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Separation_axiom>
-* [Willard's *General Topology*][zbMATH02107988]
+* [https://en.wikipedia.org/wiki/Separation\_axiom](https://en.wikipedia.org/wiki/Separation_axiom)
+* ‍\[Willard's _General Topology_\]\[zbMATH02107988\]
 -/
 
 @[expose] public section

@@ -9,12 +9,16 @@ public import Mathlib.Analysis.Normed.Group.Hom
 
 import Mathlib.Analysis.SpecificLimits.Normed
 
-/-! # Extending a backward bound on a normed group homomorphism from a dense set
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Extending a backward bound on a normed group homomorphism from a dense set
 
 Possible TODO (from the PR's review, https://github.com/leanprover-community/mathlib/pull/8498):
 "This feels a lot like the second step in the proof of the Banach open mapping theorem
-(`exists_preimage_norm_le`) ... wonder if it would be possible to refactor it using one of [the
-lemmas in this file]."
+(`exists_preimage_norm_le`) ... wonder if it would be possible to refactor it using one of \[the
+lemmas in this file\]."
 -/
 
 public section

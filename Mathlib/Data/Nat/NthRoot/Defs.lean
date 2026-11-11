@@ -7,6 +7,9 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of `Nat.nthRoot`
 
@@ -16,30 +19,33 @@ The function is defined in terms of natural numbers with no dependencies outside
 
 @[expose] public section
 
-/-- `Nat.nthRoot n a = ⌊(a : ℝ) ^ (1 / n : ℝ)⌋₊` defined in terms of natural numbers.
+/--
+`Nat.nthRoot n a = ⌊(a : ℝ) ^ (1 / n : ℝ)⌋₊` defined in terms of natural numbers.
 
-We use Newton's method to find a root of $x^n = a$,
-so it converges superexponentially fast. -/
+We use Newton's method to find a root of $`x^n = a`,
+so it converges superexponentially fast.
+-/
 def Nat.nthRoot : Nat → Nat → Nat
   | 0, _ => 1
   | 1, a => a
   | n + 2, a =>
     go n a a a
     where
-      /-- Auxiliary definition for `Nat.nthRoot`.
+      /--
+      Auxiliary definition for `Nat.nthRoot`.
 
       Given natural numbers `n`, `a`, `fuel`, `guess`
-      such that `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊ ≤ guess ≤ fuel`,
-      returns `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊`.
+such that `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊ ≤ guess ≤ fuel`,
+returns `⌊(a : ℝ) ^ (1 / (n + 2) : ℝ)⌋₊`.
 
       The auxiliary number `guess` is the current approximation in Newton's method,
-      tracked in the arguments so that the definition uses a tail recursion
-      which is unfolded into a loop by the compiler.
+tracked in the arguments so that the definition uses a tail recursion
+which is unfolded into a loop by the compiler.
 
       The auxiliary number `fuel` is an upper estimate on the number of steps in Newton's method.
-      Any number `fuel ≥ guess` is guaranteed to work, but smaller numbers may work as well.
-      If `fuel` is too small, then `Nat.nthRoot.go` returns the result of the `fuel`th step
-      of Newton's method.
+Any number `fuel ≥ guess` is guaranteed to work, but smaller numbers may work as well.
+If `fuel` is too small, then `Nat.nthRoot.go` returns the result of the `fuel`th step
+of Newton's method.
       -/
       go (n a : Nat)
       | 0, guess => guess

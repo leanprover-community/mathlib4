@@ -9,6 +9,9 @@ public meta import Batteries.Data.Char
 public meta import Lean.Elab.Command
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cross-reference attributes
 
@@ -150,12 +153,13 @@ def escapeFormatting (str : String) : String :=
     -- Therefore, let's just escape everything and be sure it won't be misinterpreted.
     if c.isAscii && !c.isAlphanum then acc.push '\\' |>.push c else acc.push c
 
-/-- Append a cross-reference link to the docstring of `decl` and record it in `tagExt`.
+/--
+Append a cross-reference link to the docstring of `decl` and record it in `tagExt`.
 This is the database-agnostic core of every cross-reference attribute's `add` handler.
 
-TODO: due to the docstring extension being `.async .asyncEnv`, this can only add new docstrings
-and not replace them. We do not know a good alternative.
-See Zulip: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Cross-reference.20attributes.20don.27t.20change.20the.20docstring/with/631664323
+TODO: due to the docstring extension being `.async .asyncEnv`, this can only add new docstrings and
+not replace them. We do not know a good alternative. See Zulip:
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Cross-reference.20attributes.20don.27t.20change.20the.20docstring/with/631664323
 -/
 def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : CoreM Unit := do
   let oldDoc := (← findDocString? (← getEnv) decl).getD ""
@@ -175,7 +179,9 @@ def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : Core
 
 open Parser
 
-/-! ### Stacks (and Kerodon) parser -/
+/-!
+# Stacks (and Kerodon) parser
+-/
 
 /-- `stacksTag` is the node kind of Stacks Project Tags: a sequence of digits and
 uppercase letters. -/
@@ -210,7 +216,9 @@ def stacksTagNoAntiquot : Parser := {
 def stacksTagParser : Parser :=
   withAntiquot (mkAntiquot "stacksTag" stacksTagKind) stacksTagNoAntiquot
 
-/-! ### Wikidata parser -/
+/-!
+# Wikidata parser
+-/
 
 /-- `wikidataId` is the node kind of Wikidata identifiers: the letter `Q` followed by digits. -/
 abbrev wikidataIdKind : SyntaxNodeKind := `wikidataId
@@ -246,7 +254,9 @@ def wikidataIdNoAntiquot : Parser := {
 def wikidataIdParser : Parser :=
   withAntiquot (mkAntiquot "wikidataId" wikidataIdKind) wikidataIdNoAntiquot
 
-/-! ### LMFDB parser -/
+/-!
+# LMFDB parser
+-/
 
 /-- `lmfdbId` is the node kind of LMFDB identifiers: lower case words with `.` in between.
 The words can also contain underscores and digits. -/
@@ -279,7 +289,9 @@ def lmfdbIdNoAntiquot : Parser := {
 def lmfdbIdParser : Parser :=
   withAntiquot (mkAntiquot "lmfdbId" lmfdbIdKind) lmfdbIdNoAntiquot
 
-/-! ### π-Base parser -/
+/-!
+# π-Base parser
+-/
 
 /-- `pibaseId` is the node kind of π-Base identifiers: one of the letters `P`, `S`, or `T`,
 followed by exactly six digits. -/
@@ -322,20 +334,26 @@ def pibaseIdNoAntiquot : Parser := {
 def pibaseIdParser : Parser :=
   withAntiquot (mkAntiquot "pibaseId" pibaseIdKind) pibaseIdNoAntiquot
 
-/-! ### DLMF parser -/
+/-!
+# DLMF parser
+-/
 
-/-- `dlmfId` is the node kind of DLMF references:
-generally <chapter_no>.<section_no>.E<equation_no> (e.g. `5.4.E1`).
+/--
+`dlmfId` is the node kind of DLMF references:
+generally <chapter\_no>.<section\_no>.E<equation\_no> (e.g. `5.4.E1`).
 See https://dlmf.nist.gov/help/cite for more details on the permalink format.
 Note that while underscores are not mentioned in the DLMF permalink table, they are
-supported and present in some actual links for equations. -/
+supported and present in some actual links for equations.
+-/
 abbrev dlmfIdKind : SyntaxNodeKind := `dlmfId
 
-/-- The main parser for DLMF references:
-generally <chapter_no>.<section_no>.E<equation_no> (e.g. `5.4.E1`).
+/--
+The main parser for DLMF references:
+generally <chapter\_no>.<section\_no>.E<equation\_no> (e.g. `5.4.E1`).
 See https://dlmf.nist.gov/help/cite for more details on the permalink format.
 Note that while underscores are not mentioned in the DLMF permalink table, they are
-supported and present in some actual links for equations. -/
+supported and present in some actual links for equations.
+-/
 def dlmfIdFn : ParserFn := fun c s =>
   let i := s.pos
   let s := takeWhileFn (fun c => c.isAlphanum || c == '.' || c == '_') c s
@@ -362,7 +380,9 @@ def dlmfIdNoAntiquot : Parser := {
 def dlmfIdParser : Parser :=
   withAntiquot (mkAntiquot "dlmfId" dlmfIdKind) dlmfIdNoAntiquot
 
-/-! ### OEIS parser -/
+/-!
+# OEIS parser
+-/
 
 /-- `oeisId` is the node kind of OEIS identifiers: the letter `A` followed by six digits. -/
 abbrev oeisIdKind : SyntaxNodeKind := `oeisId
@@ -485,7 +505,9 @@ end Lean.PrettyPrinter.Parenthesizer
 
 namespace Mathlib.CrossRef
 
-/-! ### Stacks / Kerodon attribute -/
+/-!
+# Stacks / Kerodon attribute
+-/
 
 /-- The syntax category for the database name. -/
 declare_syntax_cat stacksTagDB
@@ -495,7 +517,8 @@ syntax "kerodon" : stacksTagDB
 /-- The syntax for a "stacks" database identifier in a `@[stacks]` attribute. -/
 syntax "stacks" : stacksTagDB
 
-/-- The `stacksTag` attribute.
+/--
+The `stacksTag` attribute.
 Use it as `@[kerodon TAG "Optional comment"]` or `@[stacks TAG "Optional comment"]`
 depending on the database you are referencing.
 
@@ -519,9 +542,12 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .beforeElaboration
 }
 
-/-! ### Wikidata attribute -/
+/-!
+# Wikidata attribute
+-/
 
-/-- The `wikidata` attribute.
+/--
+The `wikidata` attribute.
 Use it as `@[wikidata Q12345 "Optional comment"]` to associate a Mathlib declaration with
 the corresponding [Wikidata](https://www.wikidata.org) item.
 
@@ -541,7 +567,9 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .beforeElaboration
 }
 
-/-! ### LMFDB attribute -/
+/-!
+# LMFDB attribute
+-/
 
 /-- The `lmfdb` attribute.
 Use it as `@[lmfdb foo.bar "Optional comment"]` to associate a Mathlib declaration with
@@ -561,14 +589,18 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .beforeElaboration
 }
 
-/-! ### π-Base attribute -/
+/-!
+# π-Base attribute
+-/
 
 -- This parser should track the possible values of `PiBaseTopic`.
-/-- The topic identifying a π-Base database. Possible values:
+/--
+The topic identifying a π-Base database. Possible values:
 
-- `topology`
+* `topology`
 
-This list will be expanded in the future. -/
+This list will be expanded in the future.
+-/
 syntax pibaseTopic := &"topology"
 
 /-- Get the `PiBaseTopic` from a syntax key. -/
@@ -576,13 +608,14 @@ def getPiBaseTopic? : TSyntax ``pibaseTopic → Option PiBaseTopic
   | `(pibaseTopic| topology) => some .topology
   | _ => none
 
-/-- The `pibase` attribute.
+/--
+The `pibase` attribute.
 Use it as `@[pibase <topic> P000001 "Optional comment"]` to associate a Mathlib declaration with
 the corresponding [π-Base](https://pi-base.org/) property, space, or theorem.
 
 Each `<topic>` identifies a different π-Base database. The possible values of `<topic>` are:
 
-- `topology`
+* `topology`
 
 This list will be expanded in the future.
 
@@ -604,7 +637,9 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .beforeElaboration
 }
 
-/-! ### DLMF attribute -/
+/-!
+# DLMF attribute
+-/
 
 /-- The `dlmf` attribute.
 Use it as `@[dlmf 5.4.E1 "Optional comment"]` to associate a Mathlib declaration with
@@ -624,9 +659,12 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .beforeElaboration
 }
 
-/-! ### OEIS attribute -/
+/-!
+# OEIS attribute
+-/
 
-/-- The `oeis` attribute.
+/--
+The `oeis` attribute.
 Use it as `@[oeis A123456 "Optional comment"]` to associate a Mathlib declaration with
 the corresponding [OEIS](https://oeis.org/) item.
 
@@ -684,58 +722,72 @@ def traceCrossRefs (db : Database) (verbose : Bool := false) :
 `#stacks_tags` retrieves all declarations that have the `stacks` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#stacks_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := stacksTags) "#stacks_tags" tk:("!")? : command =>
   traceCrossRefs .stacks (tk.isSome)
 
-/-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
+/--
+The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#kerodon_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := kerodonTags) "#kerodon_tags" tk:("!")? : command =>
   traceCrossRefs .kerodon (tk.isSome)
 
-/-- The `#wikidata_tags` command retrieves all declarations that have the `wikidata` attribute.
+/--
+The `#wikidata_tags` command retrieves all declarations that have the `wikidata` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#wikidata_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := wikidataTags) "#wikidata_tags" tk:("!")? : command =>
   traceCrossRefs .wikidata (tk.isSome)
 
-/-- The `#lmfdb_tags` command retrieves all declarations that have the `lmfdb` attribute.
+/--
+The `#lmfdb_tags` command retrieves all declarations that have the `lmfdb` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#lmfdb_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := lmfdbTags) "#lmfdb_tags" tk:("!")? : command =>
   traceCrossRefs .lmfdb (tk.isSome)
 
-/-- The `#pibase_tags topic` command retrieves all declarations that have the `pibase` attribute
+/--
+The `#pibase_tags topic` command retrieves all declarations that have the `pibase` attribute
 with the given topic.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#pibase_tags! topic` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
@@ -743,24 +795,30 @@ elab (name := pibaseTags) "#pibase_tags" tk:("!")? ppSpace topic:pibaseTopic : c
   let some topic := getPiBaseTopic? topic | throwUnsupportedSyntax
   traceCrossRefs (.pibase topic) (tk.isSome)
 
-/-- The `#dlmf_tags` command retrieves all declarations that have the `dlmf` attribute.
+/--
+The `#dlmf_tags` command retrieves all declarations that have the `dlmf` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#dlmf_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/
 elab (name := dlmfTags) "#dlmf_tags" tk:("!")? : command =>
   traceCrossRefs .dlmf (tk.isSome)
 
-/-- The `#oeis_tags` command retrieves all declarations that have the `oeis` attribute.
+/--
+The `#oeis_tags` command retrieves all declarations that have the `oeis` attribute.
 
 For each found declaration, it prints a line
+
 ```
 'declaration_name' corresponds to tag 'declaration_tag'.
 ```
+
 The variant `#oeis_tags!` also adds the theorem statement (for theorems)
 or declaration type (for definitions, structures, instances, etc.) after each summary line.
 -/

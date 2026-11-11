@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.WithTerminal.Cone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monomorphisms over a fixed object
 
@@ -24,6 +27,7 @@ so we can think of it as a preorder. However as it is not skeletal, it is not ye
 `Subobject X` will be defined as the skeletalization of `MonoOver X`.
 
 We provide
+
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X`
 * `def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y`
 * `def «exists» [HasImages C] (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y`
@@ -34,7 +38,6 @@ and prove their basic properties and relationships.
 
 This development originally appeared in Bhavik Mehta's "Topos theory for Lean" repository,
 and was ported to mathlib by Kim Morrison.
-
 -/
 
 @[expose] public section
@@ -55,7 +58,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 abbrev Over.isMono (X : C) : ObjectProperty (Over X) :=
   fun f : Over X => Mono f.hom
 
-/-- The category of monomorphisms into `X` as a full subcategory of the over category.
+/--
+The category of monomorphisms into `X` as a full subcategory of the over category.
 This isn't skeletal, so it's not a partial order.
 
 Later we define `Subobject X` as the quotient of this by isomorphisms.

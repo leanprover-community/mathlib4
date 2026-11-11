@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Closure
 public import Mathlib.Order.Hom.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nucleus
 
@@ -18,6 +21,7 @@ Sublocales of a locale generalize the concept of subspaces in topology to the po
 A nucleus is an endomorphism of a frame which corresponds to a sublocale.
 
 ## References
+
 https://ncatlab.org/nlab/show/sublocale
 https://ncatlab.org/nlab/show/nucleus
 -/
@@ -28,17 +32,23 @@ open Order InfHom Set
 
 variable {X : Type*}
 
-/-- A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
+/--
+A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
 
-In a frame, nuclei correspond to sublocales. See `nucleusIsoSublocale`. -/
+In a frame, nuclei correspond to sublocales. See `nucleusIsoSublocale`.
+-/
 structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
-  /-- A nucleus is idempotent.
+  /--
+  A nucleus is idempotent.
 
-  Do not use this directly. Instead use `NucleusClass.idempotent`. -/
+  Do not use this directly. Instead use `NucleusClass.idempotent`.
+  -/
   idempotent' (x : X) : toFun (toFun x) ≤ toFun x
-  /-- A nucleus is increasing.
+  /--
+  A nucleus is increasing.
 
-  Do not use this directly. Instead use `NucleusClass.le_apply`. -/
+  Do not use this directly. Instead use `NucleusClass.le_apply`.
+  -/
   le_apply' (x : X) : x ≤ toFun x
 
 /-- `NucleusClass F X` states that F is a type of nuclei. -/
@@ -58,7 +68,9 @@ instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (n : Nucleus X) : X → X := n
 
 @[simp] lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl

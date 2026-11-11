@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Module.RingHom
 public import Mathlib.Algebra.Ring.CompTypeclasses
 public import Mathlib.GroupTheory.GroupAction.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Semi)linear maps
 
@@ -20,7 +23,6 @@ In this file we define
   `σ` is a `RingHom` from `R` to `R₂` and an `f : M →ₛₗ[σ] M₂` satisfies
   `f (c • x) = (σ c) • (f x)`. We recover plain linear maps by choosing `σ` to be `RingHom.id R`.
   This is denoted by `M →ₗ[R] M₂`. We also add the notation `M →ₗ⋆[R] M₂` for star-linear maps.
-
 * `IsLinearMap R f` : predicate saying that `f : M → M₂` is a linear map. (Note that this
   was not generalized to semilinear maps.)
 
@@ -97,13 +99,15 @@ notation:25 M " →ₛₗ[" σ:25 "] " M₂:0 => LinearMap σ M M₂
 /-- `M →ₗ[R] N` is the type of `R`-linear maps from `M` to `N`. -/
 notation:25 M " →ₗ[" R:25 "] " M₂:0 => LinearMap (RingHom.id R) M M₂
 
-/-- `SemilinearMapClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear maps `M → M₂`.
+/--
+`SemilinearMapClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear maps `M → M₂`.
 
 See also `LinearMapClass F R M M₂` for the case where `σ` is the identity map on `R`.
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
-`f (c • x) = (σ c) • f x`. -/
+`f (c • x) = (σ c) • f x`.
+-/
 class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
     (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
@@ -114,7 +118,8 @@ end
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to https://github.com/leanprover/lean4/pull/3701.
 -- attribute [simp] map_smulₛₗ
 
-/-- `LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
+/--
+`LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
 
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
@@ -409,11 +414,13 @@ section RestrictScalars
 variable (R)
 variable [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S]
 
-/-- If `M` and `M₂` are both `R`-modules and `S`-modules and `R`-module structures
+/--
+If `M` and `M₂` are both `R`-modules and `S`-modules and `R`-module structures
 are defined by an action of `R` on `S` (formally, we have two scalar towers), then any `S`-linear
 map from `M` to `M₂` is `R`-linear.
 
-See also `LinearMap.map_smul_of_tower`. -/
+See also `LinearMap.map_smul_of_tower`.
+-/
 @[coe] def restrictScalars (fₗ : M →ₗ[S] M₂) : M →ₗ[R] M₂ where
   toFun := fₗ
   map_add' := fₗ.map_add
@@ -761,7 +768,9 @@ instance [DistribSMul Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsC
 
 end SMul
 
-/-! ### Arithmetic on the codomain -/
+/-!
+# Arithmetic on the codomain
+-/
 
 section Arithmetic
 
@@ -1010,11 +1019,13 @@ variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 section left
 variable (R) [SMulCommClass R A A]
 
-/-- The multiplication on the left in an algebra is a linear map.
+/--
+The multiplication on the left in an algebra is a linear map.
 
 Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
 
-When `A` is unital and associative, this is the same as `DistribSMul.toLinearMap R A a` -/
+When `A` is unital and associative, this is the same as `DistribSMul.toLinearMap R A a`
+-/
 def mulLeft (a : A) : A →ₗ[R] A where
   __ := AddMonoidHom.mulLeft a
   map_smul' _ := mul_smul_comm _ _
@@ -1034,12 +1045,14 @@ end left
 section right
 variable (R) [IsScalarTower R A A]
 
-/-- The multiplication on the right in an algebra is a linear map.
+/--
+The multiplication on the right in an algebra is a linear map.
 
 Note that this only assumes `IsScalarTower R A A`, so that it also works for `R := A`.
 
 When `A` is unital and associative, this is the same as
-`DistribSMul.toLinearMap R A (MulOpposite.op b)`. -/
+`DistribSMul.toLinearMap R A (MulOpposite.op b)`.
+-/
 def mulRight (b : A) : A →ₗ[R] A where
   __ := AddMonoidHom.mulRight b
   map_smul' _ _ := smul_mul_assoc _ _ _

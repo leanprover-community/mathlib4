@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Shift.Adjunction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pullback of a shift by a monoid morphism
 

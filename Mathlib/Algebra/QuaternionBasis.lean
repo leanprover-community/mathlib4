@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Quaternion
 
 import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis on a quaternion-like algebra
 
@@ -32,12 +35,14 @@ open Quaternion
 
 namespace QuaternionAlgebra
 
-/-- A quaternion basis contains the information both sufficient and necessary to construct an
+/--
+A quaternion basis contains the information both sufficient and necessary to construct an
 `R`-algebra homomorphism from `ℍ[R,c₁,c₂,c₃]` to `A`; or equivalently, a surjective
 `R`-algebra homomorphism from `ℍ[R,c₁,c₂,c₃]` to an `R`-subalgebra of `A`.
 
 Note that for definitional convenience, `k` is provided as a field even though `i_mul_j` fully
-determines it. -/
+determines it.
+-/
 structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c₁ c₂ c₃ : R) where
   /-- The first imaginary unit -/
   i : A

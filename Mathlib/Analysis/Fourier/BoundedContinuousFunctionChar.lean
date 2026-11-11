@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of BoundedContinuousFunction.char
 
@@ -22,19 +25,18 @@ measure.
 
 ## Main definitions
 
-- `char he hL w : V →ᵇ ℂ`: Bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`, where
+* `char he hL w : V →ᵇ ℂ`: Bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`, where
   `e` is a continuous additive character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a continuous bilinear map.
-- `charPoly he hL : W → ℂ`: The `StarSubalgebra ℂ (V →ᵇ ℂ)` consisting of `ℂ`-linear combinations of
+* `charPoly he hL : W → ℂ`: The `StarSubalgebra ℂ (V →ᵇ ℂ)` consisting of `ℂ`-linear combinations of
   `char he hL w`, where `w : W`.
 
 ## Main statements
 
-- `ext_of_char_eq`: If `e` and `L` are non-trivial, then `char he hL w, w : W` separates
+* `ext_of_char_eq`: If `e` and `L` are non-trivial, then `char he hL w, w : W` separates
   points in `V`.
-- `star_mem_range_charAlgHom`: The family of `ℂ`-linear combinations of `char he hL w, w : W`, is
+* `star_mem_range_charAlgHom`: The family of `ℂ`-linear combinations of `char he hL w, w : W`, is
   closed under `star`.
-- `separatesPoints_charPoly`: The family `charPoly he hL w, w : W` separates points in `V`.
-
+* `separatesPoints_charPoly`: The family `charPoly he hL w, w : W` separates points in `V`.
 -/
 
 @[expose] public section

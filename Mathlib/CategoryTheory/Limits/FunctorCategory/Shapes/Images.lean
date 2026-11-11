@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of type-valued functors has images
 -/

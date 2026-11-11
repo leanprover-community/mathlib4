@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotienting out a free `ℤ`-module
 

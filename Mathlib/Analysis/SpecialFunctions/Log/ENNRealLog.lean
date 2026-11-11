@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended Nonnegative Real Logarithm
 
@@ -15,17 +18,20 @@ to the extended nonnegative reals `ℝ≥0∞`. The function takes values
 in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 
 ## Main Definitions
-- `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
+
+* `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
 
 ## Main Results
-- `ENNReal.log_strictMono`: `log` is increasing;
-- `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
+
+* `ENNReal.log_strictMono`: `log` is increasing;
+* `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
   injective, surjective, and bijective;
-- `ENNReal.log_mul_add`, `ENNReal.log_pow`, `ENNReal.log_rpow`: `log` satisfies
+* `ENNReal.log_mul_add`, `ENNReal.log_pow`, `ENNReal.log_rpow`: `log` satisfies
   the identities `log (x * y) = log x + log y` and `log (x ^ y) = y * log x`
   (with either `y ∈ ℕ` or `y ∈ ℝ`).
 
 ## Tags
+
 ENNReal, EReal, logarithm
 -/
 
@@ -34,7 +40,9 @@ namespace ENNReal
 
 open scoped NNReal
 
-/-! ### Definition -/
+/-!
+# Definition
+-/
 section Definition
 
 /-- The logarithm function defined on the extended nonnegative reals `ℝ≥0∞`
@@ -74,7 +82,9 @@ theorem log_of_nnreal {x : ℝ≥0} (h : x ≠ 0) :
 
 end Definition
 
-/-! ### Monotonicity -/
+/-!
+# Monotonicity
+-/
 section Monotonicity
 
 theorem log_strictMono : StrictMono log := by
@@ -126,7 +136,9 @@ theorem log_eq_iff {x y : ℝ≥0∞} : log x = log y ↔ x = y :=
 
 end Monotonicity
 
-/-! ### Algebraic properties -/
+/-!
+# Algebraic properties
+-/
 
 section Morphism
 

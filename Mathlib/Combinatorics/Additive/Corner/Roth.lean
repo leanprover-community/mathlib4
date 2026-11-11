@@ -11,6 +11,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The corners theorem and Roth's theorem
 
@@ -18,8 +21,8 @@ This file proves the corners theorem and Roth's theorem on arithmetic progressio
 
 ## References
 
-* [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
-* [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
+* ‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
+* [Wikipedia, _Corners theorem_](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
 
 @[expose] public section
@@ -67,15 +70,19 @@ variable [Fintype G]
 
 open Corners
 
-/-- An explicit form for the constant in the corners theorem.
+/--
+An explicit form for the constant in the corners theorem.
 
 Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exponential. This means
-`cornersTheoremBound` is in practice absolutely tiny. -/
+`cornersTheoremBound` is in practice absolutely tiny.
+-/
 noncomputable def cornersTheoremBound (ε : ℝ) : ℕ := ⌊(triangleRemovalBound (ε / 9) * 27)⁻¹⌋₊ + 1
 
-/-- The **corners theorem** for finite abelian groups.
+/--
+The *corners theorem* for finite abelian groups.
 
-The maximum density of a corner-free set in `G × G` goes to zero as `|G|` tends to infinity. -/
+The maximum density of a corner-free set in `G × G` goes to zero as `|G|` tends to infinity.
+-/
 theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε ≤ card G)
     (A : Finset (G × G)) (hAε : ε * card G ^ 2 ≤ #A) : ¬ IsCornerFree (A : Set (G × G)) := by
   rintro hA
@@ -93,10 +100,12 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
   rw [card_triangles, card_triangleIndices] at h₁
   convert h₁.trans (Nat.cast_le.2 <| card_le_univ _) using 1 <;> simp <;> ring
 
-/-- The **corners theorem** for `ℕ`.
+/--
+The *corners theorem* for `ℕ`.
 
 The maximum density of a corner-free set in `{1, ..., n} × {1, ..., n}` goes to zero as `n` tends to
-infinity. -/
+infinity.
+-/
 theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) ≤ n)
     (A : Finset (ℕ × ℕ)) (hAn : A ⊆ range n ×ˢ range n) (hAε : ε * n ^ 2 ≤ #A) :
     ¬ IsCornerFree (A : Set (ℕ × ℕ)) := by
@@ -127,9 +136,11 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
       rw [card_image_of_injOn]
       exact ((Fin.ofNat_injOn_Iio (by lia)).prodMap (Fin.ofNat_injOn_Iio (by lia))).mono hAn
 
-/-- **Roth's theorem** for finite abelian groups.
+/--
+*Roth's theorem* for finite abelian groups.
 
-The maximum density of a 3AP-free set in `G` goes to zero as `|G|` tends to infinity. -/
+The maximum density of a 3AP-free set in `G` goes to zero as `|G|` tends to infinity.
+-/
 theorem roth_3ap_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε ≤ card G)
     (A : Finset G) (hAε : ε * card G ≤ #A) : ¬ ThreeAPFree (A : Set G) := by
   rintro hA
@@ -152,9 +163,11 @@ theorem roth_3ap_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε 
       sub_eq_sub_iff_add_eq_add, add_comm, hxy, add_comm]
   exact hx₁x₂ <| by simpa using this.symm
 
-/-- **Roth's theorem** for `ℕ`.
+/--
+*Roth's theorem* for `ℕ`.
 
-The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/
+The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity.
+-/
 theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound (ε / 3) ≤ n)
     (A : Finset ℕ) (hAn : A ⊆ range n) (hAε : ε * n ≤ #A) : ¬ ThreeAPFree (A : Set ℕ) := by
   rintro hA
@@ -183,9 +196,11 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
 
 open Asymptotics Filter
 
-/-- **Roth's theorem** for `ℕ` as an asymptotic statement.
+/--
+*Roth's theorem* for `ℕ` as an asymptotic statement.
 
-The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/
+The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity.
+-/
 theorem rothNumberNat_isLittleO_id :
     IsLittleO atTop (fun N ↦ (rothNumberNat N : ℝ)) (fun N ↦ (N : ℝ)) := by
   simp only [isLittleO_iff, eventually_atTop, RCLike.norm_natCast]

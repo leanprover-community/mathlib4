@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Finite.Lattice
 
 import Mathlib.Order.Zorn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Teichmuller-Tukey
 
@@ -17,17 +20,18 @@ Teichmuller-Tukey lemma.
 
 ## Main definitions
 
-- `IsOfFiniteCharacter` : A family of sets $F$ is of finite character iff for every set $X$,
-  $X ∈ F$ iff every finite subset of $X$ is in $F$.
+* `IsOfFiniteCharacter` : A family of sets $`F` is of finite character iff for every set $`X`,
+  $`X ∈ F` iff every finite subset of $`X` is in $`F`.
 
 ## Main results
 
-- `IsOfFiniteCharacter.exists_maximal` : Teichmuller-Tukey lemma, saying that every nonempty
+* `IsOfFiniteCharacter.exists_maximal` : Teichmuller-Tukey lemma, saying that every nonempty
   family of finite character has a maximal element.
 
 ## References
 
-- <https://en.wikipedia.org/wiki/Teichm%C3%BCller%E2%80%93Tukey_lemma>
+* [
+  https://en.wikipedia.org/wiki/Teichm%C3%BCller%E2%80%93Tukey\_lemma](https://en.wikipedia.org/wiki/Teichm%C3%BCller%E2%80%93Tukey_lemma)
 -/
 
 @[expose] public section
@@ -38,8 +42,10 @@ variable {α : Type*} (F : Set (Set α))
 
 namespace Order
 
-/-- A family of sets $F$ is of finite character iff for every set $X$, $X ∈ F$ iff every finite
-subset of $X$ is in $F$ -/
+/--
+A family of sets $`F` is of finite character iff for every set $`X`, $`X ∈ F` iff every finite
+subset of $`X` is in $`F`
+-/
 def IsOfFiniteCharacter := ∀ x, x ∈ F ↔ ∀ y ⊆ x, y.Finite → y ∈ F
 
 /-- **Teichmuller-Tukey lemma**. Every nonempty family of finite character has a maximal element. -/

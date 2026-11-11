@@ -8,10 +8,14 @@ module
 public import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.Measurability.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability
 
-We define the `measurability` tactic using `aesop`. -/
+We define the `measurability` tactic using `aesop`.
+-/
 
 public meta section
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Characteristic Function of Value Distribution Theory
 
@@ -20,15 +23,15 @@ measure the "complexity" of objects. For rational functions, the characteristic 
 the degree times the logarithm, much like the logarithmic height in number theory reflects the
 degree of an algebraic number.
 
-See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
-[Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
-Approximation*][MR3156076] for a detailed discussion.
+See Section VI.2 of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\] or Section 1.1
+of ‍\[Noguchi-Winkelmann, _Nevanlinna Theory in Several Complex Variables and Diophantine
+Approximation_\]\[MR3156076\] for a detailed discussion.
 
-### TODO
+## TODO
 
-- Characterize rational functions in terms of the growth rate of their characteristic function, as
-  discussed in Theorem 2.6 on p. 170 of [Lang, *Introduction to Complex Hyperbolic
-  Spaces*][MR886677].
+* Characterize rational functions in terms of the growth rate of their characteristic function, as
+  discussed in Theorem 2.6 on p. 170 of \[Lang, _Introduction to Complex Hyperbolic
+  Spaces_\]\[MR886677\].
 -/
 
 open scoped Finset
@@ -55,7 +58,7 @@ that `f` attains the value `a` inside the disk `∣z∣ ≤ r`, weighted by mult
 noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f a
 
 /-!
-## Elementary Properties
+# Elementary Properties
 -/
 
 /--
@@ -110,7 +113,7 @@ theorem characteristic_eventually_nonneg :
   filter_upwards [Filter.eventually_ge_atTop 1] using fun _ hr ↦ by simp [characteristic_nonneg hr]
 
 /-!
-## Behaviour under Arithmetic Operations
+# Behaviour under Arithmetic Operations
 -/
 
 /--

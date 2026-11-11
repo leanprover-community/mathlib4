@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse function theorem, `C^r` case
 

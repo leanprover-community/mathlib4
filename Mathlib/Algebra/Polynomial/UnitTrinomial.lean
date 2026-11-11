@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Coprime.Basic
 
 import Mathlib.Data.Int.Order.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unit Trinomials
 
@@ -17,13 +20,12 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
 
 ## Main definitions
 
-- `Polynomial.IsUnitTrinomial`
+* `Polynomial.IsUnitTrinomial`
 
 ## Main results
 
-- `Polynomial.IsUnitTrinomial.irreducible_of_coprime`: An irreducibility criterion for unit
+* `Polynomial.IsUnitTrinomial.irreducible_of_coprime`: An irreducibility criterion for unit
   trinomials.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.Finsupp.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the module `α →₀ M`
 
@@ -91,11 +94,13 @@ def lsingle (a : α) : M →ₗ[R] α →₀ M :=
 theorem lhom_ext ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
   LinearMap.toAddMonoidHom_injective <| addHom_ext h
 
-/-- Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere.
+/--
+Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere.
 
 We formulate this fact using equality of linear maps `φ.comp (lsingle a)` and `ψ.comp (lsingle a)`
 so that the `ext` tactic can apply a type-specific extensionality lemma to prove equality of these
-maps. E.g., if `M = R`, then it suffices to verify `φ (single a 1) = ψ (single a 1)`. -/
+maps. E.g., if `M = R`, then it suffices to verify `φ (single a 1) = ψ (single a 1)`.
+-/
 -- The priority should be higher than `LinearMap.ext`.
 @[ext high]
 theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
@@ -190,11 +195,13 @@ section LComapDomain
 
 variable {β : Type*}
 
-/-- Given `f : α → β` and a proof `hf` that `f` is injective, `lcomapDomain f hf` is the linear map
+/--
+Given `f : α → β` and a proof `hf` that `f` is injective, `lcomapDomain f hf` is the linear map
 sending `l : β →₀ M` to the finitely supported function from `α` to `M` given by composing
 `l` with `f`.
 
-This is the linear version of `Finsupp.comapDomain`. -/
+This is the linear version of `Finsupp.comapDomain`.
+-/
 @[simps]
 def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M where
   toFun l := Finsupp.comapDomain f l hf.injOn
@@ -277,9 +284,11 @@ section Prod
 variable {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (R) in
-/-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
+/--
+The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
 
-This is the `LinearEquiv` version of `Finsupp.curryEquiv`. -/
+This is the `LinearEquiv` version of `Finsupp.curryEquiv`.
+-/
 @[simps +simpRhs]
 noncomputable def curryLinearEquiv : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M where
   toAddEquiv := curryAddEquiv
@@ -342,10 +351,12 @@ that commutes with all `R`-endomorphisms of `ι →₀ M`. -/
 
 variable {ι}
 
-/-- If `M` is an `R`-module and `ι` is a nonempty type, then every additive endomorphism
+/--
+If `M` is an `R`-module and `ι` is a nonempty type, then every additive endomorphism
 of `ι →₀ M` that commutes with all `R`-endomorphisms of `ι →₀ M` comes from an additive
 endomorphism of `M` that commutes with all `R`-endomorphisms of `M`.
-See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
+See (15) in F4 of §28 on p.131 of \[Lorenz2008\].
+-/
 @[simps!] noncomputable def ringEquivEndFinsupp (i : ι) :
     End (End R M) M ≃+* End (End R (ι →₀ M)) (ι →₀ M) where
   __ := ringHomEndFinsupp ι

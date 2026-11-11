@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monad.Limits
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of `X`-generated spaces
 
@@ -28,9 +31,9 @@ shall allow a very nice construction of a cartesian monoidal closed
 structure on `GeneratedByTopCat X` under suitable assumptions (TODO @joelriou).
 
 ## References
-* [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
-  categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
+* ‍\[Martín Escardó, Jimmie Lawson and Alex Simpson, _Comparing Cartesian closed
+  categories of (core) compactly generated spaces_\]\[escardo-lawson-simpson-2004\]
 -/
 
 @[expose] public section
@@ -83,10 +86,13 @@ instance (Y : GeneratedByTopCat.{v} X) : IsGeneratedBy X Y := Y.property
 
 end GeneratedByTopCat
 
-/-- Let `X i` be a family of topological spaces. This is the type of objects
-in a category ` ContinuousGeneratedByCat X` where:
+/--
+Let `X i` be a family of topological spaces. This is the type of objects
+in a category `  ContinuousGeneratedByCat X` where:
+
 * objects are topological spaces;
-* morphisms are `X`-continuous maps. -/
+* morphisms are `X`-continuous maps.
+-/
 structure ContinuousGeneratedByCat (X : ι → Type u) [∀ i, TopologicalSpace (X i)] where
   /-- Constructor for objects in `ContinuousGeneratedByCat X`. -/
   of ::

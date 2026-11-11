@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Pi.Lemmas
 
 import Mathlib.Data.Fintype.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products (respectively, sums) over a finset or a multiset.
 
@@ -21,8 +24,8 @@ This allows to still have a well-defined product over `s`.
 
 ## Main definitions
 
-- `Finset.noncommProd`, requiring a proof of commutativity of held terms
-- `Multiset.noncommProd`, requiring a proof of commutativity of held terms
+* `Finset.noncommProd`, requiring a proof of commutativity of held terms
+* `Multiset.noncommProd`, requiring a proof of commutativity of held terms
 
 ## Implementation details
 

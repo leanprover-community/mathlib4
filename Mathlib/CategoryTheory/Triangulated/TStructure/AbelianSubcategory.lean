@@ -8,12 +8,16 @@ module
 public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Triangulated.Triangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abelian subcategories of triangulated categories
 
 Let `ι : A ⥤ C` be a fully faithful additive functor where `A` is
 an additive category and `C` is a triangulated category. We show that `A`
 is an abelian category if the following conditions are satisfied:
+
 * For any object `X` and `Y` in `A`, there is no nonzero morphism
   `ι.obj X ⟶ (ι.obj Y)⟦n⟧` when `n < 0`.
 * Any morphism `f₁ : X₁ ⟶ X₂` in `A` is admissible, i.e. when
@@ -22,8 +26,8 @@ is an abelian category if the following conditions are satisfied:
   and `Q`, and a distinguished triangle `(ι.obj K)⟦1⟧ ⟶ X₃ ⟶ (ι.obj Q) ⟶ ...`.
 
 ## References
-* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*, 1.2][bbd-1982]
 
+* ‍\[Beilinson, Bernstein, Deligne, Gabber, _Faisceaux pervers_, 1.2\]\[bbd-1982\]
 -/
 
 @[expose] public section
@@ -285,15 +289,18 @@ lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (ι) in
-/-- Let `ι : A ⥤ C` be a fully faithful additive functor where `A` is
+/--
+Let `ι : A ⥤ C` be a fully faithful additive functor where `A` is
 an additive category and `C` is a triangulated category. The category `A`
 is abelian if the following conditions are satisfied:
+
 * For any object `X` and `Y` in `A`, there is no nonzero morphism
   `ι.obj X ⟶ (ι.obj Y)⟦n⟧` when `n < 0`.
 * Any morphism `f₁ : X₁ ⟶ X₂` in `A` is admissible, i.e. when
   we complete `ι.obj f₁` in a distinguished triangle
   `ι.obj X₁ ⟶ ι.obj X₂ ⟶ X₃ ⟶ (ι.obj X₁)⟦1⟧`, there exists objects `K`
-  and `Q`, and a distinguished triangle `(ι.obj K)⟦1⟧ ⟶ X₃ ⟶ (ι.obj Q) ⟶ ...`. -/
+  and `Q`, and a distinguished triangle `(ι.obj K)⟦1⟧ ⟶ X₃ ⟶ (ι.obj Q) ⟶ ...`.
+-/
 @[instance_reducible]
 noncomputable def abelian [IsTriangulated C] : Abelian A :=
   Abelian.mk' (fun X₁ X₂ f₁ ↦ by

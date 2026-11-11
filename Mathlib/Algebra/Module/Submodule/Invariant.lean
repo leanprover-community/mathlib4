@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.Sublattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The lattice of invariant submodules
 
@@ -18,7 +21,6 @@ a module. Its utility stems primarily from those occasions on which we wish to t
 lattice structure of invariant submodules.
 
 See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
-
 -/
 
 @[expose] public section

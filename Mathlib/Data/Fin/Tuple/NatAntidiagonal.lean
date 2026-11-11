@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Fin.Tuple
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Order.Fin.Tuple
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Collections of tuples of naturals with the same sum
 
@@ -44,12 +47,15 @@ support finitely-supported functions, as in `Finset.finsuppAntidiag` from
 @[expose] public section
 
 
-/-! ### Lists -/
+/-!
+# Lists
+-/
 
 
 namespace List.Nat
 
-/-- `List.antidiagonalTuple k n` is a list of all `k`-tuples which sum to `n`.
+/--
+`List.antidiagonalTuple k n` is a list of all `k`-tuples which sum to `n`.
 
 This list contains no duplicates (`List.Nat.nodup_antidiagonalTuple`), and is sorted
 lexicographically (`List.Nat.antidiagonalTuple_pairwise_pi_lex`), starting with `![0, ..., n]`
@@ -160,7 +166,9 @@ theorem antidiagonalTuple_pairwise_pi_lex :
 
 end List.Nat
 
-/-! ### Multisets -/
+/-!
+# Multisets
+-/
 
 
 namespace Multiset.Nat
@@ -197,7 +205,9 @@ theorem antidiagonalTuple_two (n : ℕ) :
 
 end Multiset.Nat
 
-/-! ### Finsets -/
+/-!
+# Finsets
+-/
 
 
 namespace Finset.Nat
@@ -231,10 +241,12 @@ theorem antidiagonalTuple_two (n : ℕ) :
 
 section EquivProd
 
-/-- The disjoint union of antidiagonal tuples `Σ n, antidiagonalTuple k n` is equivalent to the
+/--
+The disjoint union of antidiagonal tuples `Σ n, antidiagonalTuple k n` is equivalent to the
 `k`-tuple `Fin k → ℕ`. This is such an equivalence, obtained by mapping `(n, x)` to `x`.
 
-This is the tuple version of `Finset..HasAntidiagonal.sigmaAntidiagonalEquivProd`. -/
+This is the tuple version of `Finset..HasAntidiagonal.sigmaAntidiagonalEquivProd`.
+-/
 @[simps]
 def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) ≃ (Fin k → ℕ) where
   toFun x := x.2

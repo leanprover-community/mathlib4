@@ -8,7 +8,11 @@ module
 public import Mathlib.Geometry.Manifold.Sheaf.Smooth
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
-/-! # Smooth manifolds as locally ringed spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Smooth manifolds as locally ringed spaces
 
 This file equips a smooth manifold with the structure of a locally ringed space.
 
@@ -26,9 +30,8 @@ This file equips a smooth manifold with the structure of a locally ringed space.
 
 ## TODO
 
-- Show that every morphism of locally ringed spaces between two smooth manifolds is induced
+* Show that every morphism of locally ringed spaces between two smooth manifolds is induced
   by a smooth map via `ChartedSpace.locallyRingedSpaceMap`.
-
 -/
 
 @[expose] public section

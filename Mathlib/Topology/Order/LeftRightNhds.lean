@@ -9,12 +9,16 @@ public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`
 
 We've seen some properties of left and right neighborhood of a point in an `OrderClosedTopology`.
 In an `OrderTopology`, such neighborhoods can be characterized as the sets containing suitable
-intervals to the right or to the left of `a`. We give now these characterizations. -/
+intervals to the right or to the left of `a`. We give now these characterizations.
+-/
 
 public section
 
@@ -35,7 +39,8 @@ section OrderTopology
 variable [OrderTopology α]
 
 open List in
-/-- The following statements are equivalent:
+/--
+The following statements are equivalent:
 
 0. `s` is a neighborhood of `a` within `(a, +∞)`;
 1. `s` is a neighborhood of `a` within `(a, b]`;
@@ -43,13 +48,15 @@ open List in
 3. `s` includes `(a, u)` for some `u ∈ (a, b]`;
 4. `s` includes `(a, u)` for some `u > a`.
 -/
-@[to_dual (rename := a ↔ b) /-- The following statements are equivalent:
+@[to_dual (rename := a ↔ b) /--
+                            The following statements are equivalent:
 
-0. `s` is a neighborhood of `b` within `(-∞, b)`
+                            0. `s` is a neighborhood of `b` within `(-∞, b)`
 1. `s` is a neighborhood of `b` within `[a, b)`
 2. `s` is a neighborhood of `b` within `(a, b)`
 3. `s` includes `(u, b)` for some `u ∈ [a, b)`
-4. `s` includes `(u, b)` for some `u < b` -/]
+4. `s` includes `(u, b)` for some `u < b`
+                            -/]
 theorem tfae_mem_nhdsGT {a b : α} (hab : a < b) (s : Set α) :
     TFAE [s ∈ 𝓝[>] a,
       s ∈ 𝓝[Ioc a b] a,
@@ -204,7 +211,8 @@ theorem mem_nhdsGT_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered α] {a 
     exact ⟨u, au, Subset.trans Ioo_subset_Ioc_self as⟩
 
 open List in
-/-- The following statements are equivalent:
+/--
+The following statements are equivalent:
 
 0. `s` is a neighborhood of `a` within `[a, +∞)`;
 1. `s` is a neighborhood of `a` within `[a, b]`;
@@ -212,13 +220,15 @@ open List in
 3. `s` includes `[a, u)` for some `u ∈ (a, b]`;
 4. `s` includes `[a, u)` for some `u > a`.
 -/
-@[to_dual (rename := a ↔ b) /-- The following statements are equivalent:
+@[to_dual (rename := a ↔ b) /--
+                            The following statements are equivalent:
 
-0. `s` is a neighborhood of `b` within `(-∞, b]`
+                            0. `s` is a neighborhood of `b` within `(-∞, b]`
 1. `s` is a neighborhood of `b` within `[a, b]`
 2. `s` is a neighborhood of `b` within `(a, b]`
 3. `s` includes `(u, b]` for some `u ∈ [a, b)`
-4. `s` includes `(, b]` for some `u < b` -/]
+4. `s` includes `(, b]` for some `u < b`
+                            -/]
 theorem tfae_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
     TFAE [s ∈ 𝓝[≥] a,
       s ∈ 𝓝[Icc a b] a,
@@ -382,14 +392,18 @@ theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
     (𝓝 (1 : α)).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b|ₘ < ε } := by
   simpa using nhds_basis_mabs_div_lt (1 : α)
 
-/-- If `a > 1`, then open intervals `(a / ε, aε)`, `1 < ε ≤ a`,
+/--
+If `a > 1`, then open intervals `(a / ε, aε)`, `1 < ε ≤ a`,
 form a basis of neighborhoods of `a`.
 
-This upper bound for `ε` guarantees that all elements of these intervals are greater than one. -/
-@[to_additive /-- If `a` is positive, then the intervals `(a - ε, a + ε)`, `0 < ε ≤ a`,
+This upper bound for `ε` guarantees that all elements of these intervals are greater than one.
+-/
+@[to_additive /--
+              If `a` is positive, then the intervals `(a - ε, a + ε)`, `0 < ε ≤ a`,
 form a basis of neighborhoods of `a`.
 
-This upper bound for `ε` guarantees that all elements of these intervals are positive. -/]
+              This upper bound for `ε` guarantees that all elements of these intervals are positive.
+              -/]
 theorem nhds_basis_Ioo_one_lt_of_one_lt [NoMaxOrder α] {a : α} (ha : 1 < a) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε ∧ ε ≤ a) fun ε => Ioo (a / ε) (a * ε) :=
   (nhds_basis_Ioo_one_lt a).restrict fun ε hε ↦

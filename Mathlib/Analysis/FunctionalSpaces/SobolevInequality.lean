@@ -12,6 +12,9 @@ import Mathlib.Analysis.Calculus.Deriv.Pi
 import Mathlib.Analysis.InnerProductSpace.NormPow
 import Mathlib.Data.Finset.Interval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
 
@@ -46,6 +49,7 @@ We state these constants as separate definitions.
   Note that in this case the constant depends on the support of `u`.
 
 Potentially also useful:
+
 * `MeasureTheory.eLpNorm_le_eLpNorm_fderiv_one`: this is the inequality for `q = 1`.
   In this version, the codomain can be an arbitrary Banach space.
 * `MeasureTheory.eLpNorm_le_eLpNorm_fderiv_of_eq_inner`: in this version,
@@ -63,7 +67,9 @@ variable {ι : Type*}
 
 local prefix:max "#" => Fintype.card
 
-/-! ## The grid-lines lemma -/
+/-!
+# The grid-lines lemma
+-/
 
 variable {A : ι → Type*} [∀ i, MeasurableSpace (A i)]
   (μ : ∀ i, Measure (A i))
@@ -76,7 +82,8 @@ variable [DecidableEq ι]
 
 namespace GridLines
 
-/-- The "grid-lines operation" (not a standard name) which is central in the inductive proof of the
+/--
+The "grid-lines operation" (not a standard name) which is central in the inductive proof of the
 Sobolev inequality.
 
 For a finite dependent product `Π i : ι, A i` of sigma-finite measure spaces, a finite set `s` of
@@ -90,7 +97,8 @@ We are most interested in this operation when the set `s` is the universe in `ι
 "induction on dimension" we define it for a general set `s` of co-ordinates: the `s`-grid-lines
 operation on a function `f` which is constant along the co-ordinates in `sᶜ` is morally (that is, up
 to type-theoretic nonsense) the same thing as the universe-grid-lines operation on the associated
-function on the "lower-dimensional" space `Π i : s, A i`. -/
+function on the "lower-dimensional" space `Π i : s, A i`.
+-/
 def T (p : ℝ) (f : (∀ i, A i) → ℝ≥0∞) (s : Finset ι) : (∀ i, A i) → ℝ≥0∞ :=
   ∫⋯∫⁻_s, f ^ (1 - (s.card - 1 : ℝ) * p) * ∏ i ∈ s, (∫⋯∫⁻_{i}, f ∂μ) ^ p ∂μ
 
@@ -106,11 +114,13 @@ variable {p : ℝ}
     T μ p f ∅ x = f x ^ (1 + p) := by
   simp [T]
 
-/-- The main inductive step in the grid-lines lemma for the Gagliardo-Nirenberg-Sobolev inequality.
+/--
+The main inductive step in the grid-lines lemma for the Gagliardo-Nirenberg-Sobolev inequality.
 
 The grid-lines operation `GridLines.T` on a nonnegative function on a finitary product type is
 less than or equal to the grid-lines operation of its partial integral in one co-ordinate
-(the latter intuitively considered as a function on a space "one dimension down"). -/
+(the latter intuitively considered as a function on a space "one dimension down").
+-/
 theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0 ≤ p) (s : Finset ι)
     (hp : (s.card : ℝ) * p ≤ 1)
     (i : ι) (hi : i ∉ s) {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
@@ -244,7 +254,8 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
 
 end GridLines
 
-/-- The "grid-lines lemma" (not a standard name), stated with a general parameter `p` as the
+/--
+The "grid-lines lemma" (not a standard name), stated with a general parameter `p` as the
 exponent.  Compare with `lintegral_prod_lintegral_pow_le`.
 
 For any finite dependent product `Π i : ι, A i` of sigma-finite measure spaces, for any
@@ -256,7 +267,8 @@ co-ordinate `i`, of a certain power of the integral of `f` along the "grid line"
 direction through `x`.
 
 This lemma bounds the Lebesgue integral of the grid-lines quantity by a power of the Lebesgue
-integral of `f`. -/
+integral of `f`.
+-/
 theorem lintegral_mul_prod_lintegral_pow_le
     [Fintype ι] [∀ i, SigmaFinite (μ i)] {p : ℝ} (hp₀ : 0 ≤ p)
     (hp : (#ι - 1 : ℝ) * p ≤ 1) {f : (∀ i : ι, A i) → ℝ≥0∞} (hf : Measurable f) :
@@ -289,17 +301,21 @@ theorem lintegral_prod_lintegral_pow_le [Fintype ι] [∀ i, SigmaFinite (μ i)]
 
 end DecidableEq
 
-/-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
+/-!
+# The Gagliardo-Nirenberg-Sobolev inequality
+-/
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/--
+The *Gagliardo-Nirenberg-Sobolev inequality*.  Let `u` be a continuously differentiable
 compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
 `ι → ℝ` where `n := #ι` is finite and at least 2.)  Then the Lebesgue integral of the pointwise
 expression `|u x| ^ (n / (n - 1))` is bounded above by the `n / (n - 1)`-th power of the Lebesgue
 integral of the Fréchet derivative of `u`.
 
-For a basis-free version, see `lintegral_pow_le_pow_lintegral_fderiv`. -/
+For a basis-free version, see `lintegral_pow_le_pow_lintegral_fderiv`.
+-/
 theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
     {p : ℝ} (hp : Real.HolderConjugate #ι p)
     {u : (ι → ℝ) → F} (hu : ContDiff ℝ 1 u)
@@ -456,7 +472,8 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
 
 variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/--
+The *Gagliardo-Nirenberg-Sobolev inequality*.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 ≤ p`, `0 < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
@@ -591,7 +608,8 @@ It only depends on `E`, `F`, `μ` and `p`. -/
   let e : F ≃L[ℝ] F' := toEuclidean
   ‖(e.symm : F' →L[ℝ] F)‖₊ * eLpNormLESNormFDerivOfEqInnerConst μ p * ‖(e : F →L[ℝ] F')‖₊
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/--
+The *Gagliardo-Nirenberg-Sobolev inequality*.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 ≤ p`, `0 < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
@@ -650,7 +668,8 @@ It only depends on `F`, `μ`, `s`, `p` and `q`. -/
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
 
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/--
+The *Gagliardo-Nirenberg-Sobolev inequality*.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n` and `0 < q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.
 Then the `L^q` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
@@ -704,7 +723,8 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
 
-/-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
+/--
+The *Gagliardo-Nirenberg-Sobolev inequality*.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n`.
 Then the `Lᵖ` norm of `u` is bounded above by a constant times the `Lᵖ` norm of

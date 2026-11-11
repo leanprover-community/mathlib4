@@ -12,12 +12,16 @@ public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.OreLocalization.Ring
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizations of commutative rings
 
 We characterize the localization of a commutative ring `R` at a submonoid `M` up to
 isomorphism; that is, a commutative ring `S` is the localization of `R` at `M` iff we can find a
 ring homomorphism `f : R →+* S` satisfying 3 properties:
+
 1. For all `y ∈ M`, `f y` is a unit;
 2. For all `z : S`, there exists `(x, y) : R × M` such that `z * f y = f x`;
 3. For all `x, y : R` such that `f x = f y`, there exists `c ∈ M` such that `x * c = y * c`.
@@ -25,6 +29,7 @@ ring homomorphism `f : R →+* S` satisfying 3 properties:
 
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
+
 ```
 variable (R S P Q : Type*) [CommRing R] [CommRing S] [CommRing P] [CommRing Q]
 variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
@@ -78,6 +83,7 @@ is a field" is a `def` rather than an `instance`, so if you want to reason about
 fractions `K`, assume `[Field K]` instead of just `[CommRing K]`.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -531,12 +537,16 @@ variable (M)
 section
 include M
 
-/-- See note [partially-applied ext lemmas] -/
+/--
+See note \[partially-applied ext lemmas\]
+-/
 theorem monoidHom_ext {P : Type*} [Monoid P] ⦃j k : S →* P⦄
     (h : j.comp (algebraMap R S : R →* S) = k.comp (algebraMap R S)) : j = k :=
   (toLocalizationMap M S).epic_of_localizationMap h
 
-/-- See note [partially-applied ext lemmas] -/
+/--
+See note \[partially-applied ext lemmas\]
+-/
 theorem ringHom_ext {P : Type*} [Semiring P] ⦃j k : S →+* P⦄
     (h : j.comp (algebraMap R S) = k.comp (algebraMap R S)) :
     j = k :=
@@ -592,12 +602,14 @@ section
 
 variable (Q)
 
-/-- Map a homomorphism `g : R →+* P` to `S →+* Q`, where `S` and `Q` are
+/--
+Map a homomorphism `g : R →+* P` to `S →+* Q`, where `S` and `Q` are
 localizations of `R` and `P` at `M` and `T` respectively,
 such that `g(M) ⊆ T`.
 
 We send `z : S` to `algebraMap P Q (g x) * (algebraMap P Q (g y))⁻¹`, where
-`(x, y) : R × M` are such that `z = f x * (f y)⁻¹`. -/
+`(x, y) : R × M` are such that `z = f x * (f y)⁻¹`.
+-/
 noncomputable def map (g : R →+* P) (hy : M ≤ T.comap g) : S →+* Q :=
   lift (M := M) (g := (algebraMap P Q).comp g) fun y => map_units _ ⟨g y, hy y.2⟩
 
@@ -788,7 +800,9 @@ namespace Localization
 
 open IsLocalization
 
-/-! ### Constructing a localization at a given submonoid -/
+/-!
+# Constructing a localization at a given submonoid
+-/
 
 section
 

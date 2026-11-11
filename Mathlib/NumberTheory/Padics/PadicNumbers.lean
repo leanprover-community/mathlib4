@@ -13,6 +13,9 @@ public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 import Mathlib.Tactic.Peel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # p-adic numbers
 
@@ -38,7 +41,7 @@ by taking `[Fact p.Prime]` as a type class argument.
 
 We use the same concrete Cauchy sequence construction that is used to construct `ℝ`.
 `ℚ_[p]` inherits a field structure from this construction.
-The extension of the norm on `ℚ` to `ℚ_[p]` is *not* analogous to extending the absolute value to
+The extension of the norm on `ℚ` to `ℚ_[p]` is _not_ analogous to extending the absolute value to
 `ℝ` and hence the proof that `ℚ_[p]` is complete is different from the proof that ℝ is complete.
 
 `padicNormE` is the rational-valued `p`-adic norm on `ℚ_[p]`.
@@ -53,9 +56,9 @@ Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic
 
 ## References
 
-* [F. Q. Gouvêa, *p-adic numbers*][gouvea1997]
-* [R. Y. Lewis, *A formal proof of Hensel's lemma over the p-adic integers*][lewis2019]
-* <https://en.wikipedia.org/wiki/P-adic_number>
+* ‍\[F. Q. Gouvêa, _p-adic numbers_\]\[gouvea1997\]
+* ‍\[R. Y. Lewis, _A formal proof of Hensel's lemma over the p-adic integers_\]\[lewis2019\]
+* [https://en.wikipedia.org/wiki/P-adic\_number](https://en.wikipedia.org/wiki/P-adic_number)
 
 ## Tags
 
@@ -303,7 +306,9 @@ open CauSeq
 
 variable {p : ℕ} [Fact p.Prime]
 
-/-! ### Valuation on `PadicSeq` -/
+/-!
+# Valuation on `PadicSeq`
+-/
 
 open scoped Classical in
 /-- The `p`-adic valuation on `ℚ` lifts to `PadicSeq p`.
@@ -901,9 +906,11 @@ protected theorem padicNormE.is_rat (q : ℚ_[p]) : ∃ q' : ℚ, ‖q‖ = q' :
     let ⟨n, hn⟩ := padicNormE.image h
     ⟨_, hn⟩
 
-/-- `ratNorm q`, for a `p`-adic number `q` is the `p`-adic norm of `q`, as rational number.
+/--
+`ratNorm q`, for a `p`-adic number `q` is the `p`-adic norm of `q`, as rational number.
 
-The lemma `padicNormE.eq_ratNorm` asserts `‖q‖ = ratNorm q`. -/
+The lemma `padicNormE.eq_ratNorm` asserts `‖q‖ = ratNorm q`.
+-/
 def ratNorm (q : ℚ_[p]) : ℚ :=
   Classical.choose (padicNormE.is_rat q)
 
@@ -1045,7 +1052,9 @@ instance : CompleteSpace ℚ_[p] := by
   simp only [mem_map, mem_atTop_sets]
   exact this.imp fun N hN n hn ↦ hε (hN n hn)
 
-/-! ### Valuation on `ℚ_[p]` -/
+/-!
+# Valuation on `ℚ_[p]`
+-/
 
 
 /-- `Padic.valuation` lifts the `p`-adic valuation on rationals to `ℚ_[p]`. -/
@@ -1242,7 +1251,9 @@ theorem addValuation.apply {x : ℚ_[p]} (hx : x ≠ 0) :
 
 section NormLEIff
 
-/-! ### Various characterizations of open unit balls -/
+/-!
+# Various characterizations of open unit balls
+-/
 
 
 theorem norm_le_pow_iff_norm_lt_pow_add_one (x : ℚ_[p]) (n : ℤ) :

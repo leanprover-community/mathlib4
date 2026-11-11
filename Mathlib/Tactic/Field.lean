@@ -9,11 +9,14 @@ public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Ring.Basic
 
 
-/-! # A tactic for proving algebraic goals in a field
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# A tactic for proving algebraic goals in a field
 
 This file contains the `field` tactic, a finishing tactic which roughly consists of running
 `field_simp; ring1`.
-
 -/
 
 public meta section
@@ -25,7 +28,7 @@ namespace Mathlib.Tactic.FieldSimp
 open Lean Elab Tactic Lean.Parser.Tactic
 
 /--
-`field` solves equality goals in (semi-)fields. The goal must be an equality which is *universal*,
+`field` solves equality goals in (semi-)fields. The goal must be an equality which is _universal_,
 in the sense that it is true in any field in which the appropriate denominators don't vanish.
 (That is, it is a consequence purely of the field axioms.)
 
@@ -45,6 +48,7 @@ algorithm.
 * `field [t₁, ..., tₙ]` provides terms `t₁`, ..., `tₙ` to the discharger for nonzeroness proofs.
 
 Examples:
+
 ```
 example {x y : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by field
 example {a b : ℝ} (ha : a ≠ 0) : a / (a * b) - 1 / b = 0 := by field
@@ -61,7 +65,6 @@ example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
   ring_nf at *
   field
 ```
-
 -/
 elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : tactic =>
     withMainContext do

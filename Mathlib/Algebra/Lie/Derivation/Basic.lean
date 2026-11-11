@@ -9,30 +9,33 @@ public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.Nilpotent.Exp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie derivations
 
-This file defines *Lie derivations* and establishes some basic properties.
+This file defines _Lie derivations_ and establishes some basic properties.
 
 ## Main definitions
 
-- `LieDerivation`: A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
+* `LieDerivation`: A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
   `R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
-- `LieDerivation.inner`: The natural map from a Lie module to the derivations taking values in it.
+* `LieDerivation.inner`: The natural map from a Lie module to the derivations taking values in it.
 
 ## Main statements
 
-- `LieDerivation.eqOn_lieSpan`: two Lie derivations equal on a set are equal on its Lie span.
-- `LieDerivation.instLieAlgebra`: the set of Lie derivations from a Lie algebra to itself is a Lie
+* `LieDerivation.eqOn_lieSpan`: two Lie derivations equal on a set are equal on its Lie span.
+* `LieDerivation.instLieAlgebra`: the set of Lie derivations from a Lie algebra to itself is a Lie
   algebra.
 
 ## Implementation notes
 
-- Mathematically, a Lie derivation is just a derivation on a Lie algebra. However, the current
+* Mathematically, a Lie derivation is just a derivation on a Lie algebra. However, the current
   implementation of `RingTheory.Derivation` requires a commutative associative algebra, so is
   incompatible with the setting of Lie algebras. Initially, this file is a copy-pasted adaptation of
   the `RingTheory.Derivation.Basic.lean` file.
-- Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
+* Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
   as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
 -/
 
@@ -68,7 +71,9 @@ instance instLinearMapClass : LinearMapClass (LieDerivation R L M) R L M where
 
 theorem toFun_eq_coe : D.toFun = ⇑D := rfl
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (D : LieDerivation R L M) : L → M := D
 
 initialize_simps_projections LieDerivation (toFun → apply)

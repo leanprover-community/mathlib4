@@ -8,12 +8,15 @@ module
 public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
 
-/-! # Subrings invariant under an action
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Subrings invariant under an action
 
 If a monoid acts on a ring via a `MulSemiringAction`, then `IsInvariantSubring` is
 a predicate on subrings asserting that the subring is fixed elementwise by the
 action.
-
 -/
 
 @[expose] public section

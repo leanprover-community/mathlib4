@@ -14,6 +14,9 @@ import Mathlib.Algebra.Order.Hom.Lattice
 import Mathlib.NumberTheory.Height.MvPolynomial
 import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Heights over number fields
 
@@ -22,7 +25,7 @@ and set up some API.
 
 ## Main results
 
-* Heights on number fields satisfy the **Northcott property**: If `K` is a number field,
+* Heights on number fields satisfy the *Northcott property*: If `K` is a number field,
   then the set of elements of `K` of bounded (multiplicative or logarithmic) height is finite;
   see `NumberField.finite_setOfPred_mulHeight₁_le` and `NumberField.finite_setOfPred_logHeight₁_le`.
   We also provide instances for `Northcott (mulHeight₁ (K := K))` (which automatically leads
@@ -36,7 +39,7 @@ When this file gets long, split the material on heights over `ℚ` off into a fi
 @[expose] public section
 
 /-!
-### Instance for number fields
+# Instance for number fields
 -/
 
 namespace NumberField
@@ -210,9 +213,9 @@ lemma absNorm_mul_finprod_finitePlace_eq_one (hx : x ≠ 0) :
 end NumberField
 
 /-!
-### The Northcott property for heights on number fields
+# The Northcott property for heights on number fields
 
-We show that a number field `K` has the **Northcott property** with respect to the multiplicative
+We show that a number field `K` has the *Northcott property* with respect to the multiplicative
 and with respect to the logarithmic height, i.e., for any `B : ℝ` the set of elements `x : K`
 such that `mulHeight₁ x ≤ B` (resp., `logHeight₁ x ≤ B`) is finite.
 See `NumberField.finite_setOfPred_mulHeight₁_le` and `NumberField.finite_setOfPred_logHeight₁_le`.
@@ -440,7 +443,7 @@ end NumberField
 end Northcott
 
 /-!
-### Positivity extension for totalWeight on number fields
+# Positivity extension for totalWeight on number fields
 -/
 
 namespace Mathlib.Meta.Positivity
@@ -464,7 +467,7 @@ meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ pα? e :=
 end Mathlib.Meta.Positivity
 
 /-!
-### Heights over the rational numbers
+# Heights over the rational numbers
 
 We show that the `Height.mulHeight` of a tuple of coprime integers (considered as rational numbers)
 equals the maximum of their absolute values and that the `Height.mulHeight₁` of a rational

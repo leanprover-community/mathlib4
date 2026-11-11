@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Clifford algebras of a direct sum of two vector spaces
 
@@ -23,7 +26,6 @@ algebras, as `CliffordAlgebra.equivProd`.
 
 Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAlgebra.equivProd`
 to a graded algebra equivalence.
-
 -/
 
 @[expose] public section
@@ -162,10 +164,12 @@ lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.i
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext <;> simp
 
-/-- The Clifford algebra over an orthogonal direct sum of quadratic vector spaces is isomorphic
+/--
+The Clifford algebra over an orthogonal direct sum of quadratic vector spaces is isomorphic
 as an algebra to the graded tensor product of the Clifford algebras of each space.
 
-This is `CliffordAlgebra.toProd` and `CliffordAlgebra.ofProd` as an equivalence. -/
+This is `CliffordAlgebra.toProd` and `CliffordAlgebra.ofProd` as an equivalence.
+-/
 @[simps!]
 def prodEquiv : CliffordAlgebra (Q₁.prod Q₂) ≃ₐ[R] (evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂) :=
   AlgEquiv.ofAlgHom (ofProd Q₁ Q₂) (toProd Q₁ Q₂) (ofProd_comp_toProd _ _) (toProd_comp_ofProd _ _)

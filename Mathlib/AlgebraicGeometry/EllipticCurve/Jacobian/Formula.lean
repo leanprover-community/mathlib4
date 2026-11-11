@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Negation and addition formulae for nonsingular points in Jacobian coordinates
 
@@ -51,7 +54,7 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean`.
 
 ## References
 
-[J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -81,7 +84,9 @@ variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} [CommRing R] [C
 
 namespace Jacobian
 
-/-! ## Negation formulae in Jacobian coordinates -/
+/-!
+# Negation formulae in Jacobian coordinates
+-/
 
 variable (W') in
 /-- The `Y`-coordinate of a representative of `-P` for a Jacobian point representative `P` on a
@@ -161,13 +166,17 @@ lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → F} (hPz : P z ≠ 0) (hy : P y
   have hy' : eval P W.polynomialY = P y - W.negY P := by rw [negY, eval_polynomialY]; ring1
   rw [nonsingular_iff_of_Z_ne_zero hPz, hy', hy, sub_self, ne_self_iff_false, or_false]
 
-/-! ## Doubling formulae in Jacobian coordinates -/
+/-!
+# Doubling formulae in Jacobian coordinates
+-/
 
 variable (W') in
-/-- The unit associated to a representative of `2 • P` for a Jacobian point representative `P` on a
+/--
+The unit associated to a representative of `2 • P` for a Jacobian point representative `P` on a
 Weierstrass curve `W` that is `2`-torsion.
 
-More specifically, the unit `u` such that `W.add P P = u • ![1, 1, 0]` where `P = W.neg P`. -/
+More specifically, the unit `u` such that `W.add P P = u • ![1, 1, 0]` where `P = W.neg P`.
+-/
 noncomputable def dblU (P : Fin 3 → R) : R :=
   eval P W'.polynomialX
 
@@ -388,13 +397,17 @@ lemma dblXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F}
   erw [dblXYZ, smul_fin3, ← dblX_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel,
     ← dblY_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel, mul_one]
 
-/-! ## Addition formulae in Jacobian coordinates -/
+/-!
+# Addition formulae in Jacobian coordinates
+-/
 
-/-- The unit associated to a representative of `P + Q` for two Jacobian point representatives `P`
+/--
+The unit associated to a representative of `P + Q` for two Jacobian point representatives `P`
 and `Q` on a Weierstrass curve `W` that are not `2`-torsion.
 
 More specifically, the unit `u` such that `W.add P Q = u • ![1, 1, 0]` where
-`P x / P z ^ 2 = Q x / Q z ^ 2` but `P ≠ W.neg P`. -/
+`P x / P z ^ 2 = Q x / Q z ^ 2` but `P ≠ W.neg P`.
+-/
 def addU (P Q : Fin 3 → F) : F :=
   -((P y * Q z ^ 3 - Q y * P z ^ 3) / (P z * Q z))
 
@@ -416,10 +429,12 @@ lemma isUnit_addU_of_Y_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0
     (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 3) : IsUnit (addU P Q) :=
   (addU_ne_zero_of_Y_ne hPz hQz hy).isUnit
 
-/-- The `Z`-coordinate of a representative of `P + Q` for two distinct Jacobian point
+/--
+The `Z`-coordinate of a representative of `P + Q` for two distinct Jacobian point
 representatives `P` and `Q` on a Weierstrass curve.
 
-If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
+If the representatives of `P` and `Q` are equal, then this returns the value `0`.
+-/
 def addZ (P Q : Fin 3 → R) : R :=
   P x * Q z ^ 2 - Q x * P z ^ 2
 
@@ -458,10 +473,12 @@ private lemma toAffine_slope_of_ne [DecidableEq F] {P Q : Fin 3 → F} (hPz : P 
   simp [field]
 
 variable (W') in
-/-- The `X`-coordinate of a representative of `P + Q` for two distinct Jacobian point
+/--
+The `X`-coordinate of a representative of `P + Q` for two distinct Jacobian point
 representatives `P` and `Q` on a Weierstrass curve.
 
-If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
+If the representatives of `P` and `Q` are equal, then this returns the value `0`.
+-/
 def addX (P Q : Fin 3 → R) : R :=
   P x * Q x ^ 2 * P z ^ 2 - 2 * P y * Q y * P z * Q z + P x ^ 2 * Q x * Q z ^ 2
     - W'.a₁ * P x * Q y * P z ^ 2 * Q z - W'.a₁ * P y * Q x * P z * Q z ^ 2
@@ -530,10 +547,12 @@ lemma addX_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F}
     toAffine_addX_of_ne hPz hQz <| addZ_ne_zero_of_X_ne hx]
 
 variable (W') in
-/-- The `Y`-coordinate of a representative of `-(P + Q)` for two distinct Jacobian point
+/--
+The `Y`-coordinate of a representative of `-(P + Q)` for two distinct Jacobian point
 representatives `P` and `Q` on a Weierstrass curve.
 
-If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
+If the representatives of `P` and `Q` are equal, then this returns the value `0`.
+-/
 def negAddY (P Q : Fin 3 → R) : R :=
   -P y * Q x ^ 3 * P z ^ 3 + 2 * P y * Q y ^ 2 * P z ^ 3 - 3 * P x ^ 2 * Q x * Q y * P z ^ 2 * Q z
     + 3 * P x * P y * Q x ^ 2 * P z * Q z ^ 2 + P x ^ 3 * Q y * Q z ^ 3
@@ -605,10 +624,12 @@ lemma negAddY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation 
     toAffine_negAddY_of_ne hPz hQz <| addZ_ne_zero_of_X_ne hx]
 
 variable (W') in
-/-- The `Y`-coordinate of a representative of `P + Q` for two distinct Jacobian point
+/--
+The `Y`-coordinate of a representative of `P + Q` for two distinct Jacobian point
 representatives `P` and `Q` on a Weierstrass curve.
 
-If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
+If the representatives of `P` and `Q` are equal, then this returns the value `0`.
+-/
 def addY (P Q : Fin 3 → R) : R :=
   W'.negY ![W'.addX P Q, W'.negAddY P Q, addZ P Q]
 
@@ -652,10 +673,12 @@ lemma addY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) 
     negAddY_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
 variable (W') in
-/-- The coordinates of a representative of `P + Q` for two distinct Jacobian point
+/--
+The coordinates of a representative of `P + Q` for two distinct Jacobian point
 representatives `P` and `Q` on a Weierstrass curve.
 
-If the representatives of `P` and `Q` are equal, then this returns the value `![0, 0, 0]`. -/
+If the representatives of `P` and `Q` are equal, then this returns the value `![0, 0, 0]`.
+-/
 noncomputable def addXYZ (P Q : Fin 3 → R) : Fin 3 → R :=
   ![W'.addX P Q, W'.addY P Q, addZ P Q]
 
@@ -702,7 +725,9 @@ lemma addXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P
   erw [addXYZ, smul_fin3, ← addX_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel,
     ← addY_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel, mul_one]
 
-/-! ## Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable (f : R →+* S) (P Q : Fin 3 → R)
 

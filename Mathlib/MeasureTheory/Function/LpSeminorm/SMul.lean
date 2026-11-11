@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Monotonicity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar multiplication on ℒp space
 -/
@@ -25,7 +28,8 @@ variable {α F : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ 
 section Lp
 
 /-!
-### Bounded actions by normed rings
+# Bounded actions by normed rings
+
 In this section we show inequalities on the norm.
 -/
 
@@ -107,7 +111,8 @@ theorem MemLp.const_mul' {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemL
 end ENormSMulClass
 
 /-!
-### Bounded actions by normed division rings
+# Bounded actions by normed division rings
+
 The inequalities in the previous section are now tight.
 
 TODO: do these results hold for any `NormedRing` assuming `NormSMulClass`?

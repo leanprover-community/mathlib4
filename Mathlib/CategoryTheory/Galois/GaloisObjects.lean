@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
 public import Mathlib.GroupTheory.GroupAction.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Galois objects in Galois categories
 
@@ -22,8 +25,7 @@ way and show equivalent characterisations.
 ## Main results
 
 * `galois_iff_pretransitive` : A connected object `X` is Galois if and only if `Aut X`
-                               acts transitively on `F.obj X` for a fiber functor `F`.
-
+  acts transitively on `F.obj X` for a fiber functor `F`.
 -/
 
 @[expose] public section

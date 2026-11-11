@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Submodule.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear maps involving submodules of a module
 
@@ -149,10 +152,12 @@ theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (
 lemma coe_domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     ⇑(f.domRestrict p) = Set.domRestrict p f := rfl
 
-/-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
+/--
+A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p.
 
-See also `LinearMap.codLift`. -/
+See also `LinearMap.codLift`.
+-/
 def codRestrict (p : Submodule R₂ M₂) (f : M →ₛₗ[σ₁₂] M₂) (h : ∀ c, f c ∈ p) : M →ₛₗ[σ₁₂] p where
   toFun c := ⟨f c, h c⟩
   map_add' _ _ := by simp

@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability of real and complex functions
 

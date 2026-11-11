@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.Order.Filter.EventuallyConst
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measure-preserving maps
 
@@ -19,8 +22,8 @@ We use the term "measure preserving" because in many applications `α = β` and 
 
 ## References
 
-Partially based on
-[this](https://www.isa-afp.org/browser_info/current/AFP/Ergodic_Theory/Measure_Preserving_Transformations.html)
+Partially based on [
+this](https://www.isa-afp.org/browser_info/current/AFP/Ergodic_Theory/Measure_Preserving_Transformations.html)
 Isabelle formalization.
 
 ## Tags

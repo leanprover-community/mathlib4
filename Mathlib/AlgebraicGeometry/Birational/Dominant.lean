@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Birational.RationalMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dominant rational maps
 
@@ -15,9 +18,8 @@ This file defines `RationalMap.IsDominant` and establishes its connection to
 
 ## Main definition
 
-- `Scheme.RationalMap.IsDominant`: a rational map is dominant if some (equivalently, any)
+* `Scheme.RationalMap.IsDominant`: a rational map is dominant if some (equivalently, any)
   representative partial map has dominant underlying morphism.
-
 -/
 
 public section

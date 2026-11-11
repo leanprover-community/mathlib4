@@ -10,11 +10,14 @@ public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## Main results
+# Main results
+
 * `treesOfNumNodesEq_card_eq_catalan`: The number of binary trees with `n` internal nodes
   is `catalan n`
-
 -/
 
 @[expose] public section

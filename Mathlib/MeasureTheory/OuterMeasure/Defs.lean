@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Order.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions of an outer measure and the corresponding `FunLike` class
 
@@ -17,6 +20,7 @@ to be the type of outer measures on `α`.
 An outer measure is a function `μ : Set α → ℝ≥0∞`,
 from the powerset of a type to the extended nonnegative real numbers
 that satisfies the following conditions:
+
 1. `μ ∅ = 0`;
 2. `μ` is monotone;
 3. `μ` is countably subadditive. This means that the outer measure of a countable union
@@ -28,7 +32,7 @@ We also define a typeclass `MeasureTheory.OuterMeasureClass`.
 
 ## References
 
-<https://en.wikipedia.org/wiki/Outer_measure>
+[https://en.wikipedia.org/wiki/Outer\_measure](https://en.wikipedia.org/wiki/Outer_measure)
 
 ## Tags
 
@@ -58,9 +62,11 @@ structure OuterMeasure (α : Type*) where
 
 attribute [gcongr] OuterMeasure.mono
 
-/-- A mixin class saying that elements `μ : F` are outer measures on `α`.
+/--
+A mixin class saying that elements `μ : F` are outer measures on `α`.
 
-This typeclass is used to unify some API for outer measures and measures. -/
+This typeclass is used to unify some API for outer measures and measures.
+-/
 class OuterMeasureClass (F : Type*) (α : outParam Type*) [FunLike F (Set α) ℝ≥0∞] : Prop where
   protected measure_empty (f : F) : f ∅ = 0
   protected measure_mono (f : F) {s t} : s ⊆ t → f s ≤ f t

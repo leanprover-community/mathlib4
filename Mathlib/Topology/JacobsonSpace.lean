@@ -7,20 +7,24 @@ module
 
 public import Mathlib.Topology.LocalAtTarget
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jacobson spaces
 
 ## Main results
-- `JacobsonSpace`: The class of Jacobson spaces, i.e.
+
+* `JacobsonSpace`: The class of Jacobson spaces, i.e.
   spaces such that the set of closed points are dense in every closed subspace.
-- `jacobsonSpace_iff_locallyClosed`:
+* `jacobsonSpace_iff_locallyClosed`:
   `X` is a Jacobson space iff every locally closed subset contains a closed point of `X`.
-- `JacobsonSpace.discreteTopology`:
+* `JacobsonSpace.discreteTopology`:
   If `X` only has finitely many closed points, then the topology on `X` is discrete.
 
 ## References
-- https://stacks.math.columbia.edu/tag/005T
 
+* https://stacks.math.columbia.edu/tag/005T
 -/
 
 @[expose] public section

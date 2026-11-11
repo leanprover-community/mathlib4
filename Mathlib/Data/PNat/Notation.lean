@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Data.Nat.Notation
 
-/-! # Definition and notation for positive natural numbers -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Definition and notation for positive natural numbers
+-/
 
 @[expose] public section
 

@@ -10,14 +10,17 @@ public import Mathlib.Algebra.Module.Prod
 
 import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Addition and subtraction are linear maps from the product space
 
 Note that these results use `IsLinearMap`, which is mostly discouraged.
 
 ## Tags
-linear algebra, vector space, module
 
+linear algebra, vector space, module
 -/
 
 public section

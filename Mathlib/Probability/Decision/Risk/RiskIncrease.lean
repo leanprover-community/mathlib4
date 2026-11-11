@@ -10,15 +10,18 @@ public import Mathlib.Probability.Kernel.Composition.MapComap
 
 import Mathlib.Probability.Decision.Risk.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Risk increase (or statistical information)
 
 A way to quantify the information obtained by an experiment is to look at the increase in risk that
 results from discarding the observation of that experiment.
-We call that quantity the **risk increase**. It was called **information** by DeGroot
-in [degroot1962uncertainty], but we opt for a more descriptive name to avoid confusion with other
+We call that quantity the *risk increase*. It was called *information* by DeGroot
+in \[degroot1962uncertainty\], but we opt for a more descriptive name to avoid confusion with other
 notions of information in statistics and information theory.
-See also [duchi2018multiclass] for properties of the risk increase and relations to statistical
+See also \[duchi2018multiclass\] for properties of the risk increase and relations to statistical
 divergences.
 
 ## Main definitions
@@ -33,7 +36,6 @@ divergences.
   kernel `P` with a Markov kernel): `riskIncrease ℓ (η ∘ₖ P) π ≤ riskIncrease ℓ P π`.
 * `riskIncrease_map_le`: version of the data-processing inequality for a measurable function instead
   of a Markov kernel. `riskIncrease ℓ (P.map f) π ≤ riskIncrease ℓ P π`.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.Probability.Kernel.Composition.CompProd
 public import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Building a Markov kernel from a conditional cumulative distribution function
 
@@ -44,7 +47,6 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
   property `IsRatCondKernelCDF`, then `stieltjesOfMeasurableRat f` is a function
   `α × β → StieltjesFunction ℝ` with the property `IsCondKernelCDF`.
 * `ProbabilityTheory.compProd_toKernel`: for `hf : IsCondKernelCDF f κ ν`, `ν ⊗ₖ hf.toKernel f = κ`.
-
 -/
 
 @[expose] public section

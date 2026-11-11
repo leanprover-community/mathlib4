@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Insert
 public import Mathlib.Data.Finset.Lattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the lattice structure of finite sets
 
@@ -17,7 +20,6 @@ interaction between union, intersection, empty set and inserting elements.
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section
@@ -35,7 +37,9 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### Lattice structure -/
+/-!
+# Lattice structure
+-/
 
 
 section Lattice
@@ -45,7 +49,9 @@ variable [DecidableEq α] {s s₁ s₂ t : Finset α} {a b : α}
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
 
-/-! #### union -/
+/-!
+# union
+-/
 
 theorem union_empty (s : Finset α) : s ∪ ∅ = s := by simp
 
@@ -85,11 +91,13 @@ theorem insert_union_distrib (a : α) (s t : Finset α) :
     insert a (s ∪ t) = insert a s ∪ insert a t := by
   simp only [insert_union, union_insert, insert_idem]
 
-/-- To prove a relation on pairs of `Finset X`, it suffices to show that it is
-  * symmetric,
-  * it holds when one of the `Finset`s is empty,
-  * it holds for pairs of singletons,
-  * if it holds for `[a, c]` and for `[b, c]`, then it holds for `[a ∪ b, c]`.
+/--
+To prove a relation on pairs of `Finset X`, it suffices to show that it is
+
+* symmetric,
+* it holds when one of the `Finset`s is empty,
+* it holds for pairs of singletons,
+* if it holds for `[a, c]` and for `[b, c]`, then it holds for `[a ∪ b, c]`.
 -/
 theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a b}, P a b → P b a)
     (empty_right : ∀ {a}, P a ∅) (singletons : ∀ {a b}, P {a} {b})
@@ -102,7 +110,9 @@ theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a
   rw [Finset.insert_eq]
   exact union_of singletons (symm hi)
 
-/-! #### inter -/
+/-!
+# inter
+-/
 
 theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ := by simp
 

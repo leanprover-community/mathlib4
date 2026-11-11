@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Recursive computation rules for the Clifford algebra
 
@@ -44,10 +47,12 @@ namespace CliffordAlgebra
 
 section Foldr
 
-/-- Fold a bilinear map along the generators of a term of the clifford algebra, with the rule
+/--
+Fold a bilinear map along the generators of a term of the clifford algebra, with the rule
 given by `foldr Q f hf n (ι Q m * x) = f m (foldr Q f hf n x)`.
 
-For example, `foldr f hf n (r • ι R u + ι R v * ι R w) = r • f u n + f v (f w n)`. -/
+For example, `foldr f hf n (r • ι R u + ι R v * ι R w) = r • f u n + f v (f w n)`.
+-/
 def foldr (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x) :
     N →ₗ[R] CliffordAlgebra Q →ₗ[R] N :=
   (CliffordAlgebra.lift Q ⟨f, fun v => LinearMap.ext <| hf v⟩).toLinearMap.flip
@@ -81,10 +86,12 @@ end Foldr
 
 section Foldl
 
-/-- Fold a bilinear map along the generators of a term of the clifford algebra, with the rule
+/--
+Fold a bilinear map along the generators of a term of the clifford algebra, with the rule
 given by `foldl Q f hf n (ι Q m * x) = f m (foldl Q f hf n x)`.
 
-For example, `foldl f hf n (r • ι R u + ι R v * ι R w) = r • f u n + f v (f w n)`. -/
+For example, `foldl f hf n (r • ι R u + ι R v * ι R w) = r • f u n + f v (f w n)`.
+-/
 def foldl (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x) :
     N →ₗ[R] CliffordAlgebra Q →ₗ[R] N :=
   LinearMap.compl₂ (foldr Q f hf) reverse
@@ -154,7 +161,9 @@ theorem left_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R,
   | add _ _ hx hy => simpa only [map_add] using add _ _ hx hy
   | mul_ι _ _ hx => simpa only [reverse.map_mul, reverse_ι] using ι_mul _ _ hx
 
-/-! ### Versions with extra state -/
+/-!
+# Versions with extra state
+-/
 
 
 /-- Auxiliary definition for `CliffordAlgebra.foldr'` -/

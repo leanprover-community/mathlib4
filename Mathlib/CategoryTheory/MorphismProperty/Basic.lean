@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.Order.CompleteBooleanAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of morphisms
 
@@ -19,7 +22,6 @@ The following meta-property is defined
 * `RespectsRight P Q`: `P` respects the property `Q` on the right if `P f → P (f ≫ i)` where
   `i` satisfies `Q`.
 * `Respects`: `P` respects `Q` if `P` respects `Q` both on the left and on the right.
-
 -/
 
 @[expose] public section

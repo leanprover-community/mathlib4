@@ -13,6 +13,9 @@ public import Mathlib.Order.Atoms
 public import Mathlib.Order.Setoid.Basic
 public import Mathlib.Order.SupIndep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite partitions
 
@@ -25,6 +28,7 @@ purely order theoretically in Sperner theory.
 ## Constructions
 
 We provide many ways to build finpartitions:
+
 * `Finpartition.ofErase`: Builds a finpartition by erasing `⊥` for you.
 * `Finpartition.ofSubset`: Builds a finpartition from a subset of the parts of a previous
   finpartition.
@@ -260,7 +264,9 @@ instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
     (Subtype.fintype _) (fun i ↦ ⟨i.1, i.2.1, i.2.2.1, i.2.2.2⟩) fun ⟨_, y, z, w⟩ ↦
     ⟨⟨_, y, z, w⟩, rfl⟩
 
-/-! ### Refinement order -/
+/-!
+# Refinement order
+-/
 
 
 section Order
@@ -643,7 +649,9 @@ end GeneralizedBooleanAlgebra
 
 end Finpartition
 
-/-! ### Finite partitions of finsets -/
+/-!
+# Finite partitions of finsets
+-/
 
 
 namespace Finpartition

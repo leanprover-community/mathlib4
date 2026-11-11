@@ -17,6 +17,9 @@ import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear independence
 
@@ -47,7 +50,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 @[expose] public section
@@ -391,7 +393,9 @@ end Pair
 
 end Module
 
-/-! ### Properties which require `Ring R` -/
+/-!
+# Properties which require `Ring R`
+-/
 
 
 section Module
@@ -578,7 +582,7 @@ lemma LinearIndependent.update [DecidableEq ι] [CommRing R] [AddCommGroup M] [M
   grind [mem_nonZeroDivisors_iff]
 
 /-!
-### Properties which require `DivisionRing K`
+# Properties which require `DivisionRing K`
 
 These can be considered generalizations of properties of linear independence in vector spaces.
 -/
@@ -721,12 +725,14 @@ lemma LinearIndependent.finSnoc {n} {v : Fin n → V} (hv : LinearIndependent K 
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) :=
   linearIndependent_finSnoc.2 ⟨hv, hx⟩
 
-/-- If `v` is `R`-linearly independent and `x` is not in the `K`-span of `range v` (where `K` is a
+/--
+If `v` is `R`-linearly independent and `x` is not in the `K`-span of `range v` (where `K` is a
 division ring extending `R` and acting on the same module), then `Fin.snoc v x` is `R`-linearly
 independent.
 
 This is useful when proving `ℤ`-linear independence using the fact that an element is outside the
-`ℝ`-span, which arises naturally in lattice theory and geometry of numbers. -/
+`ℝ`-span, which arises naturally in lattice theory and geometry of numbers.
+-/
 theorem LinearIndependent.finSnoc_of_notMem_span_over
     {R : Type*} {K : Type*} {M : Type*}
     [CommRing R] [DivisionRing K] [AddCommGroup M]

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Order.OrderClosed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological lattices
 
@@ -16,7 +19,7 @@ class `TopologicalLattice` as a topological space and lattice `L` extending `Con
 
 ## References
 
-* [Gierz et al, A Compendium of Continuous Lattices][GierzEtAl1980]
+* ‍\[Gierz et al, A Compendium of Continuous Lattices\]\[GierzEtAl1980\]
 
 ## Tags
 
@@ -29,16 +32,18 @@ open Filter
 
 open scoped Topology
 
-/-- Let `L` be a topological space and let `L×L` be equipped with the product topology and let
-`⊓:L×L → L` be an infimum. Then `L` is said to have *(jointly) continuous infimum* if the map
+/--
+Let `L` be a topological space and let `L×L` be equipped with the product topology and let
+`⊓:L×L → L` be an infimum. Then `L` is said to have _(jointly) continuous infimum_ if the map
 `⊓:L×L → L` is continuous.
 -/
 class ContinuousInf (L : Type*) [TopologicalSpace L] [Min L] : Prop where
   /-- The infimum is continuous -/
   continuous_inf : Continuous fun p : L × L => p.1 ⊓ p.2
 
-/-- Let `L` be a topological space and let `L×L` be equipped with the product topology and let
-`⊓:L×L → L` be a supremum. Then `L` is said to have *(jointly) continuous supremum* if the map
+/--
+Let `L` be a topological space and let `L×L` be equipped with the product topology and let
+`⊓:L×L → L` be a supremum. Then `L` is said to have _(jointly) continuous supremum_ if the map
 `⊓:L×L → L` is continuous.
 -/
 class ContinuousSup (L : Type*) [TopologicalSpace L] [Max L] : Prop where
@@ -53,8 +58,9 @@ instance OrderDual.continuousInf (L : Type*) [TopologicalSpace L] [Max L]
     [h : ContinuousSup L] : ContinuousInf Lᵒᵈ where
   continuous_inf := h.continuous_sup
 
-/-- Let `L` be a lattice equipped with a topology such that `L` has continuous infimum and supremum.
-Then `L` is said to be a *topological lattice*.
+/--
+Let `L` be a lattice equipped with a topology such that `L` has continuous infimum and supremum.
+Then `L` is said to be a _topological lattice_.
 -/
 class TopologicalLattice (L : Type*) [TopologicalSpace L] [Lattice L] : Prop
   extends ContinuousInf L, ContinuousSup L

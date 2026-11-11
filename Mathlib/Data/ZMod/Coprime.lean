@@ -11,6 +11,9 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coprimality and vanishing
 

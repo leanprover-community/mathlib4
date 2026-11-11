@@ -11,6 +11,9 @@ import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The open mapping theorem for holomorphic functions
 
@@ -111,10 +114,12 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx hz) (not_eventually.mp h)).trans
     (by gcongr; exact inf_le_right)
 
-/-- The *open mapping theorem* for holomorphic functions, local version: is a function `g : E → ℂ`
+/--
+The _open mapping theorem_ for holomorphic functions, local version: is a function `g : E → ℂ`
 is analytic at a point `z₀`, then either it is constant in a neighborhood of `z₀`, or it maps every
 neighborhood of `z₀` to a neighborhood of `z₀`. For the particular case of a holomorphic function on
-`ℂ`, see `AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux`. -/
+`ℂ`, see `AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux`.
+-/
 theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : AnalyticAt ℂ g z₀) :
     (∀ᶠ z in 𝓝 z₀, g z = g z₀) ∨ 𝓝 (g z₀) ≤ map g (𝓝 z₀) := by
   /- The idea of the proof is to use the one-dimensional version applied to the restriction of `g`
@@ -159,9 +164,11 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     have h10 : Continuous fun t : ℂ => z₀ + t • z := by fun_prop
     simpa using! h10.tendsto 0
 
-/-- The *open mapping theorem* for holomorphic functions, global version: if a function `g : E → ℂ`
+/--
+The _open mapping theorem_ for holomorphic functions, global version: if a function `g : E → ℂ`
 is analytic on a connected set `U`, then either it is constant on `U`, or it is open on `U` (in the
-sense that it maps any open set contained in `U` to an open set in `ℂ`). -/
+sense that it maps any open set contained in `U` to an open set in `ℂ`).
+-/
 theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : IsPreconnected U) :
     (∃ w, ∀ z ∈ U, g z = w) ∨ ∀ s ⊆ U, IsOpen s → IsOpen (g '' s) := by
   by_cases h : ∃ z₀ ∈ U, ∀ᶠ z in 𝓝 z₀, g z = g z₀
@@ -179,7 +186,7 @@ theorem AnalyticOnNhd.is_constant_or_isOpenMap (hg : AnalyticOnNhd ℂ g .univ) 
     (fun ⟨w, eq⟩ ↦ ⟨w, fun z ↦ eq z ⟨⟩⟩) (· · <| subset_univ _)
 
 /-!
-## Holomorphic Functions with Constant Real or Imaginary Part
+# Holomorphic Functions with Constant Real or Imaginary Part
 -/
 
 /--
@@ -233,7 +240,7 @@ theorem AnalyticOnNhd.eq_const_add_im_mul_I_of_re_eq_const {U : Set ℂ} {c₀ :
   aesop
 
 /-!
-## Holomorphic Functions as Open Quotient Maps
+# Holomorphic Functions as Open Quotient Maps
 -/
 
 theorem Polynomial.C_eq_or_isOpenQuotientMap_eval (p : Polynomial ℂ) :

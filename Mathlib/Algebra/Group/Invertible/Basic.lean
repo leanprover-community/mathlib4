@@ -10,9 +10,11 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Invertible.Defs
 public import Mathlib.Logic.Equiv.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theorems about invertible elements
-
 -/
 
 @[expose] public section
@@ -49,9 +51,11 @@ theorem IsUnit.nonempty_invertible [Monoid α] {a : α} (h : IsUnit a) : Nonempt
   let ⟨x, hx⟩ := h
   ⟨x.invertible.copy _ hx.symm⟩
 
-/-- Convert `IsUnit` to `Invertible` using `Classical.choice`.
+/--
+Convert `IsUnit` to `Invertible` using `Classical.choice`.
 
-Prefer `casesI h.nonempty_invertible` over `letI := h.invertible` if you want to avoid choice. -/
+Prefer `casesI h.nonempty_invertible` over `letI := h.invertible` if you want to avoid choice.
+-/
 @[instance_reducible]
 noncomputable def IsUnit.invertible [Monoid α] {a : α} (h : IsUnit a) : Invertible a :=
   Classical.choice h.nonempty_invertible
@@ -148,10 +152,12 @@ theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
     f (⅟r) = ⅟(f r) := by
   obtain rfl : ifr = Invertible.map f r := Subsingleton.elim _ _; rfl
 
-/-- If a function `f : R → S` has a left-inverse that is a monoid hom,
-  then `r : R` is invertible if `f r` is.
+/--
+If a function `f : R → S` has a left-inverse that is a monoid hom,
+then `r : R` is invertible if `f r` is.
 
-The inverse is computed as `g (⅟(f r))` -/
+The inverse is computed as `g (⅟(f r))`
+-/
 @[simps! -isSimp, instance_reducible]
 def Invertible.ofLeftInverse {R : Type*} {S : Type*} {G : Type*} [MulOneClass R] [MulOneClass S]
     [FunLike G S R] [MonoidHomClass G S R] (f : R → S) (g : G) (r : R)

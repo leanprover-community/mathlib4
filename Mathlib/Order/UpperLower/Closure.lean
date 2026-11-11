@@ -10,6 +10,9 @@ public import Mathlib.Order.UpperLower.Principal
 
 import Mathlib.Order.Minimal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Upper and lower closures
 
@@ -220,7 +223,9 @@ lemma upperClosure_eq_bot_iff [NoMinOrder α] {s : Set α} : upperClosure s = �
 
 end LinearOrder
 
-/-! ### Set Difference -/
+/-!
+# Set Difference
+-/
 
 namespace UpperSet
 variable [Preorder α] {s : UpperSet α} {t : Set α} {a : α}

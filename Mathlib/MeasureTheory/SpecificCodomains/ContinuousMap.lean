@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.Topology.ContinuousMap.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Specific results about `ContinuousMap`-valued integration
 
@@ -16,7 +19,7 @@ of a `C(Y, E)`-valued function, where `Y` is a compact topological space and `E`
 
 These are all elementary from a mathematical point of view, but they require a bit of care in order
 to be conveniently usable. In particular, to accommodate the need of families `f : X → Y → E` such
-that `f x` is only continuous for *almost every* `x`, we give a variety of results about the
+that `f x` is only continuous for _almost every_ `x`, we give a variety of results about the
 integrability of `fun x ↦ ContinuousMap.mkD (f x) g` whose assumptions only mention `f` (so that
 users don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
 
@@ -40,13 +43,12 @@ users don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g
 We claim that using "constructors with default values" such as `ContinuousMap.mkD` is the right way
 to approach integration valued in a functional space `ℱ`. More precisely:
 
-- if you happen to start from a bundled `f : X → ℱ` function, you should be able to use
+* if you happen to start from a bundled `f : X → ℱ` function, you should be able to use
   the general theory without any issues.
-- if instead you start with a family of bare functions `f : X → Y → E`, to integrate it in `ℱ`, you
-  should always consider the family `fun x ↦ ℱ.mkD (f x) 0`, *even if your `f` always lands in `ℱ`*.
-  This allows for a unified setting with the case where `f x` belongs to `ℱ` for *almost every `x`*,
+* if instead you start with a family of bare functions `f : X → Y → E`, to integrate it in `ℱ`, you
+  should always consider the family `fun x ↦ ℱ.mkD (f x) 0`, _even if your `f` always lands in `ℱ`_.
+  This allows for a unified setting with the case where `f x` belongs to `ℱ` for _almost every `x`_,
   and also avoids entering dependent-types hell.
-
 -/
 
 public section

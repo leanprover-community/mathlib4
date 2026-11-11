@@ -16,6 +16,9 @@ public import Mathlib.Tactic.Matrix.Cert
 public import Mathlib.Tactic.Matrix.MulExpand
 public import Mathlib.Tactic.Matrix.Swaps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Certificate construction for Hessenberg similarity
 
@@ -25,9 +28,9 @@ Hessenberg reduction from a literal matrix over `ℚ` (or more generally a ring 
 
 ## Main definitions
 
-- `mkHessenbergSimilarity`: produce and elaborate the Hessenberg similarity certificate of a matrix
+* `mkHessenbergSimilarity`: produce and elaborate the Hessenberg similarity certificate of a matrix
   literal.
-- `SimilarityResult`: the `Hessenberg.Similarity` certificate together with the reduction data.
+* `SimilarityResult`: the `Hessenberg.Similarity` certificate together with the reduction data.
 
 ## Implementation notes
 

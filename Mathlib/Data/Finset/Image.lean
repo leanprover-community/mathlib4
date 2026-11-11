@@ -14,7 +14,11 @@ public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.SDiff
 public import Mathlib.Data.Fintype.Defs
 
-/-! # Image and map operations on finite sets
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Image and map operations on finite sets
 
 This file provides the finite analog of `Set.image`, along with some other similar functions.
 
@@ -44,7 +48,9 @@ open Function
 
 namespace Finset
 
-/-! ### map -/
+/-!
+# map
+-/
 
 
 section Map
@@ -267,7 +273,9 @@ theorem range_add_one' (n : ℕ) :
     range (n + 1) = insert 0 ((range n).map ⟨fun i => i + 1, fun i j => by simp⟩) := by
   ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.zero_lt_succ n]
 
-/-! ### image -/
+/-!
+# image
+-/
 
 
 section Image
@@ -579,16 +587,20 @@ theorem iterate_image [DecidableEq α] (f : α → α) (n : ℕ) :
 
 end Image
 
-/-! ### filterMap -/
+/-!
+# filterMap
+-/
 
 section FilterMap
 
-/-- `filterMap f s` is a combination filter/map operation on `s`.
-  The function `f : α → Option β` is applied to each element of `s`;
-  if `f a` is `some b` then `b` is included in the result, otherwise
-  `a` is excluded from the resulting finset.
+/--
+`filterMap f s` is a combination filter/map operation on `s`.
+The function `f : α → Option β` is applied to each element of `s`;
+if `f a` is `some b` then `b` is included in the result, otherwise
+`a` is excluded from the resulting finset.
 
-  In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s, f a = some b}`. -/
+In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s, f a = some b}`.
+-/
 -- TODO: should there be `filterImage` too?
 def filterMap (f : α → Option β) (s : Finset α)
     (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
@@ -625,7 +637,9 @@ theorem _root_.List.toFinset_filterMap [DecidableEq α] [DecidableEq β]
 
 end FilterMap
 
-/-! ### Subtype -/
+/-!
+# Subtype
+-/
 
 
 section Subtype
@@ -738,16 +752,20 @@ theorem Multiset.toFinset_map [DecidableEq α] [DecidableEq β] (f : α → β) 
 
 namespace Equiv
 
-/-- A `Finset` is bijective to its image under an equivalence.
+/--
+A `Finset` is bijective to its image under an equivalence.
 
-See `Equiv.image` for the `Set` version. -/
+See `Equiv.image` for the `Set` version.
+-/
 @[simps!] def imageFinset [DecidableEq β] (e : α ≃ β) (s : Finset α) :
     s ≃ s.image e :=
   e.subtypeEquiv <| by simp
 
-/-- If `α` is equivalent to `β`, then `Finset α` is equivalent to `Finset β`.
+/--
+If `α` is equivalent to `β`, then `Finset α` is equivalent to `Finset β`.
 
-See also `Equiv.setCongr`. -/
+See also `Equiv.setCongr`.
+-/
 def finsetCongr (e : α ≃ β) : Finset α ≃ Finset β where
   toFun s := s.map e.toEmbedding
   invFun s := s.map e.symm.toEmbedding
@@ -805,9 +823,11 @@ end Equiv
 namespace Finset
 variable {s t u : Finset α}
 
-/-- The subtypes corresponding to equal finsets are equivalent.
+/--
+The subtypes corresponding to equal finsets are equivalent.
 
-See also `Set.equivOfEq`. -/
+See also `Set.equivOfEq`.
+-/
 @[simps!] def equivOfEq (h : s = t) : s ≃ t := .subtypeEquivProp <| by simp [h]
 
 @[simp] lemma equivOfEq_refl : equivOfEq (s := s) rfl = .refl _ := rfl

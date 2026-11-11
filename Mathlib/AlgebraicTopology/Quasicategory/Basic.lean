@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasicategories
 
@@ -19,10 +22,9 @@ we show that the nerve of a category is a quasicategory.
 
 ## TODO
 
-- Generalize the definition to higher universes.
+* Generalize the definition to higher universes.
   See the corresponding TODO in
   `Mathlib/AlgebraicTopology/SimplicialSet/KanComplex.lean`.
-
 -/
 
 public section
@@ -33,7 +35,8 @@ open CategoryTheory
 
 open scoped Simplicial
 
-/-- A simplicial set `S` is a *quasicategory* if it satisfies the following horn-filling condition:
+/--
+A simplicial set `S` is a _quasicategory_ if it satisfies the following horn-filling condition:
 for every `n : ℕ` and `0 < i < n`,
 every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `σ : Δ[n] → S`.
 -/

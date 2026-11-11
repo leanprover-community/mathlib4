@@ -12,6 +12,9 @@ import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Basic.Real.Embedding
 import Mathlib.GroupTheory.DivisibleHull
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hahn embedding theorem
 
@@ -21,8 +24,7 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 
 ## References
 
-* [A. H. Clifford, *Note on Hahn’s theorem on ordered Abelian groups.*][clifford1954]
-
+* ‍\[A. H. Clifford, _Note on Hahn’s theorem on ordered Abelian groups._\]\[clifford1954\]
 -/
 
 public section
@@ -50,7 +52,7 @@ theorem hahnEmbedding_isOrderedModule_rat :
 end Module
 
 /--
-**Hahn embedding theorem**
+*Hahn embedding theorem*
 
 For a linearly ordered additive group `M`, there exists an injective `OrderAddMonoidHom` from `M` to
 `Lex ℝ⟦FiniteArchimedeanClass M⟧` that sends each `a : M` to an element of the `a`-Archimedean class

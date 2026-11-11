@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The graded ring of level-1 modular forms
 
@@ -40,7 +43,7 @@ where the form of weight `k - 12` is zero.
 
 ## References
 
-* [J.-P. Serre, *A Course in Arithmetic*][serre1973], VII.3.2.
+* ‍\[J.-P. Serre, _A Course in Arithmetic_\]\[serre1973\], VII.3.2.
 -/
 
 public noncomputable section
@@ -111,7 +114,9 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq_graded :
   change ModularForm.discriminant z = (1 / 1728 : ℂ) * (E₄ z ^ 3 - E₆ z ^ 2)
   grind [discriminant_eq_E₄_cube_sub_E₆_sq z]
 
-/-! ### `E₄` and `E₆` generate the graded ring -/
+/-!
+# `E₄` and `E₆` generate the graded ring
+-/
 
 /-- The evaluation homomorphism from `ℂ[X₀, X₁]` to the graded ring `⨁ k, ModularForm 𝒮ℒ k` of
 level-1 modular forms, sending `X₀ = MvPolynomial.X 0` to `E₄` (in weight `4`) and

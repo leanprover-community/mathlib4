@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
-/-! # Facts about `CFC.posPart` and `CFC.negPart` involving norms
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Facts about `CFC.posPart` and `CFC.negPart` involving norms
 
 This file collects various facts about the positive and negative parts of elements of a
 C⋆-algebra that involve the norm.

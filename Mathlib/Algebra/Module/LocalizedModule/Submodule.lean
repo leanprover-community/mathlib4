@@ -9,23 +9,27 @@ public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Localization.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of Submodules
 
 Results about localizations of submodules and quotient modules are provided in this file.
 
 ## Main results
-- `Submodule.localized`:
+
+* `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
   A direct consequence of this is that `Rₚ` is flat over `R`; see `IsLocalization.flat`.
-- `Submodule.toLocalized`:
+* `Submodule.toLocalized`:
   The localization map of a submodule `M' →ₗ[R] M'.localized p`.
-- `Submodule.toLocalizedQuotient`:
+* `Submodule.toLocalizedQuotient`:
   The localization map of a quotient module `M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p`.
 
 ## TODO
-- Statements regarding the exactness of localization.
 
+* Statements regarding the exactness of localization.
 -/
 
 @[expose] public section

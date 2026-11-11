@@ -10,20 +10,24 @@ public import Mathlib.RingTheory.KrullDimension.Zero
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Group.Pi.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localizing a product of commutative rings
 
 ## Main Result
 
 * `bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom`: the canonical map from a
-    localization of a finite product of rings `R i` at a monoid `M` to the direct product of
-    localizations `R i` at the projection of `M` onto each corresponding factor is bijective.
+  localization of a finite product of rings `R i` at a monoid `M` to the direct product of
+  localizations `R i` at the projection of `M` onto each corresponding factor is bijective.
 
 ## Implementation notes
 
 See `Mathlib/RingTheory/Localization/Defs.lean` for a design overview.
 
 ## Tags
+
 localization, commutative ring
 -/
 

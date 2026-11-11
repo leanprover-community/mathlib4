@@ -9,6 +9,9 @@ public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal partial derivatives of multivariate power series
 
@@ -20,19 +23,18 @@ See also `PowerSeries.derivative` for the univariate setting.
 
 ## Main definitions
 
-- `MvPowerSeries.pderiv R i`: the formal partial derivative with respect to `i`, as a derivation.
+* `MvPowerSeries.pderiv R i`: the formal partial derivative with respect to `i`, as a derivation.
 
 ## Main results
 
-- `MvPowerSeries.coeff_pderiv`: coefficient formula
+* `MvPowerSeries.coeff_pderiv`: coefficient formula
   `coeff n (pderiv R i f) = coeff (n + single i 1) f * (n i + 1)`.
-- `MvPowerSeries.pderiv_coe`: compatibility with `MvPolynomial.pderiv`.
-- `MvPowerSeries.trunc_pderiv`: truncation commutes with partial differentiation.
-- `MvPowerSeries.pderiv.ext`: a power series is determined by its constant term and its partial
+* `MvPowerSeries.pderiv_coe`: compatibility with `MvPolynomial.pderiv`.
+* `MvPowerSeries.trunc_pderiv`: truncation commutes with partial differentiation.
+* `MvPowerSeries.pderiv.ext`: a power series is determined by its constant term and its partial
   derivatives.
-- `MvPowerSeries.pderiv_pow`: power rule.
-- `MvPowerSeries.pderiv_inv`, `MvPowerSeries.pderiv_inv'`: derivative of an inverse.
-
+* `MvPowerSeries.pderiv_pow`: power rule.
+* `MvPowerSeries.pderiv_inv`, `MvPowerSeries.pderiv_inv'`: derivative of an inverse.
 -/
 
 @[expose] public section
@@ -163,10 +165,12 @@ theorem pderiv_pow {i : σ} (g : MvPowerSeries σ R) (n : ℕ) :
 
 end CommSemiring
 
-/-- If `f` and `g` have the same constant term and all partial derivatives, then they are equal.
+/--
+If `f` and `g` have the same constant term and all partial derivatives, then they are equal.
 
 The `CommRing` assumption is needed because the proof uses `smul_right_inj`, which requires
-cancellation of addition in `R`; `IsAddTorsionFree` alone does not suffice. -/
+cancellation of addition in `R`; `IsAddTorsionFree` alone does not suffice.
+-/
 theorem pderiv.ext [CommRing R] [HasUniqueDiv R] {f g : MvPowerSeries σ R}
     (hD : ∀ i, pderiv i f = pderiv i g) (hc : constantCoeff f = constantCoeff g) : f = g := by
   ext n

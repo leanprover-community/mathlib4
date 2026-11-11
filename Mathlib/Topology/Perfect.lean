@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Perfect Sets
 
@@ -28,7 +31,7 @@ including a version of the Cantor-Bendixson Theorem.
 * `Perfect.splitting`: A perfect nonempty set contains two disjoint perfect nonempty subsets.
   The main inductive step in the construction of an embedding from the Cantor space to a
   perfect nonempty complete metric space.
-* `exists_countable_union_perfect_of_isClosed`: One version of the **Cantor-Bendixson Theorem**:
+* `exists_countable_union_perfect_of_isClosed`: One version of the *Cantor-Bendixson Theorem*:
   A closed set in a second countable space can be written as the union of a countable set and a
   perfect set.
 
@@ -43,12 +46,11 @@ namely Polish spaces.
 
 ## References
 
-* [kechris1995] (Chapters 6-7)
+* ‍\[kechris1995\] (Chapters 6-7)
 
 ## Tags
 
 accumulation point, perfect set, dense-in-itself, cantor-bendixson.
-
 -/
 
 @[expose] public section

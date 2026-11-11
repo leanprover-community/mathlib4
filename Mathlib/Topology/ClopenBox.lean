@@ -10,16 +10,19 @@ public import Mathlib.Topology.Sets.Closeds
 
 import Mathlib.Topology.Compactness.Bases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Clopen subsets in Cartesian products
 
 In general, a clopen subset in a Cartesian product of topological spaces
 cannot be written as a union of "clopen boxes",
-i.e. products of clopen subsets of the components (see [buzyakovaClopenBox] for counterexamples).
+i.e. products of clopen subsets of the components (see \[buzyakovaClopenBox\] for counterexamples).
 
 However, when one of the factors is compact, a clopen subset can be written as such a union.
 Our argument in `TopologicalSpace.Clopens.exists_prod_subset`
-follows the one given in [buzyakovaClopenBox].
+follows the one given in \[buzyakovaClopenBox\].
 
 We deduce that in a product of compact spaces, a clopen subset is a finite union of clopen boxes,
 and use that to prove that the property of having countably many clopens is preserved by taking
@@ -27,9 +30,8 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 
 ## References
 
-- [buzyakovaClopenBox]: *On clopen sets in Cartesian products*, 2001.
-- [engelking1989]: *General Topology*, 1989.
-
+* ‍\[buzyakovaClopenBox\]: _On clopen sets in Cartesian products_, 2001.
+* ‍\[engelking1989\]: _General Topology_, 1989.
 -/
 
 public section

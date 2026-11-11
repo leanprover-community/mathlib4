@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.GroupTheory.Congruence.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruence relations on rings
 
@@ -198,9 +201,11 @@ variable {c}
 
 variable (c)
 
-/-- Coercion from a type with addition and multiplication to its quotient by a congruence relation.
+/--
+Coercion from a type with addition and multiplication to its quotient by a congruence relation.
 
-See Note [use has_coe_t]. -/
+See Note \[use has\_coe\_t\].
+-/
 instance : CoeTC R c.Quotient :=
   ⟨toQuotient⟩
 
@@ -221,7 +226,8 @@ protected theorem eq {a b : R} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :
 
 end Basic
 
-/-! ### Basic notation
+/-!
+# Basic notation
 
 The basic algebraic notation, `0`, `1`, `+`, `*`, `-`, `^`, descend naturally under the quotient
 -/
@@ -357,7 +363,8 @@ instance [Inhabited R] [Add R] [Mul R] (c : RingCon R) : Inhabited c.Quotient :=
 
 end Data
 
-/-! ### Algebraic structure
+/-!
+# Algebraic structure
 
 The operations above on the quotient by `c : RingCon R` preserve the algebraic structure of `R`.
 -/

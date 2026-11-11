@@ -10,6 +10,9 @@ public import Mathlib.Topology.EMetricSpace.Defs
 
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudo-metric spaces
 
@@ -120,7 +123,8 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- A pseudometric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+/--
+A pseudometric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
 reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.
 
@@ -135,7 +139,8 @@ We make the uniformity/topology part of the data instead of deriving it from the
 ensures that we do not get a diamond when doing
 `[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
-See Note [forgetful inheritance]. -/
+See Note \[forgetful inheritance\].
+-/
 @[wikidata Q1397059]
 class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
@@ -392,10 +397,12 @@ theorem ball_eq_empty : ball x ε = ∅ ↔ ε ≤ 0 := by
 @[simp]
 theorem ball_zero : ball x 0 = ∅ := by rw [ball_eq_empty]
 
-/-- If a point belongs to an open ball, then there is a strictly smaller radius whose ball also
+/--
+If a point belongs to an open ball, then there is a strictly smaller radius whose ball also
 contains it.
 
-See also `exists_lt_subset_ball`. -/
+See also `exists_lt_subset_ball`.
+-/
 theorem exists_lt_mem_ball_of_mem_ball (h : x ∈ ball y ε) : ∃ ε' < ε, x ∈ ball y ε' := by
   simpa [mem_ball] using exists_between' h
 
@@ -663,11 +670,13 @@ theorem uniformity_basis_dist :
   rw [toUniformSpace_eq]
   exact UniformSpace.hasBasis_ofFun (exists_gt _) _ _ _ _ _
 
-/-- Given `f : β → ℝ`, if `f` sends `{i | p i}` to a set of positive numbers
+/--
+Given `f : β → ℝ`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
 
 For specific bases see `uniformity_basis_dist`, `uniformity_basis_dist_inv_nat_succ`,
-and `uniformity_basis_dist_inv_nat_pos`. -/
+and `uniformity_basis_dist_inv_nat_pos`.
+-/
 protected theorem mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ}
     (hf₀ : ∀ i, p i → 0 < f i) (hf : ∀ ⦃ε⦄, 0 < ε → ∃ i, p i ∧ f i ≤ ε) :
     (𝓤 α).HasBasis p fun i => { p : α × α | dist p.1 p.2 < f i } := by
@@ -707,12 +716,14 @@ theorem uniformity_basis_dist_lt {R : ℝ} (hR : 0 < R) :
     ⟨min r (R / 2), ⟨lt_min hr (half_pos hR), min_lt_iff.2 <| Or.inr (half_lt_self hR)⟩,
       min_le_left _ _⟩
 
-/-- Given `f : β → ℝ`, if `f` sends `{i | p i}` to a set of positive numbers
+/--
+Given `f : β → ℝ`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then closed neighborhoods of the diagonal of sizes `{f i | p i}`
 form a basis of `𝓤 α`.
 
 Currently we have only one specific basis `uniformity_basis_dist_le` based on this constructor.
-More can be easily added if needed in the future. -/
+More can be easily added if needed in the future.
+-/
 protected theorem mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | dist p.1 p.2 ≤ f x } := by
@@ -1016,10 +1027,11 @@ theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
 theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
 
-/-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
+/--
+Build a new pseudometric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionally) equal to some given uniform structure.
-See Note [forgetful inheritance].
-See Note [reducible non-instances].
+See Note \[forgetful inheritance\].
+See Note \[reducible non-instances\].
 -/
 abbrev PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
@@ -1038,10 +1050,11 @@ example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
     (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := by
   with_reducible_and_instances rfl
 
-/-- Build a new pseudometric space from an old one where the bundled topological structure is
+/--
+Build a new pseudometric space from an old one where the bundled topological structure is
 provably (but typically non-definitionally) equal to some given topological structure.
-See Note [forgetful inheritance].
-See Note [reducible non-instances].
+See Note \[forgetful inheritance\].
+See Note \[reducible non-instances\].
 -/
 abbrev PseudoMetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : PseudoMetricSpace γ)
     (H : U = m.toUniformSpace.toTopologicalSpace) : PseudoMetricSpace γ :=
@@ -1052,11 +1065,13 @@ theorem PseudoMetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m :
   ext
   rfl
 
-/-- One gets a pseudometric space from an emetric space if the edistance
+/--
+One gets a pseudometric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
 distance is given separately, to be able to prescribe some expression which is not defeq to the
-push-forward of the edistance to reals. See note [reducible non-instances]. -/
+push-forward of the edistance to reals. See note \[reducible non-instances\].
+-/
 abbrev PseudoEMetricSpace.toPseudoMetricSpaceOfDist {X : Type*} [e : PseudoEMetricSpace X]
     (dist : X → X → ℝ) (dist_nonneg : ∀ x y, 0 ≤ dist x y)
     (h : ∀ x y, edist x y = .ofReal (dist x y)) : PseudoMetricSpace X where
@@ -1089,10 +1104,11 @@ abbrev boundedComponent.pseudoMetricSpace {X : Type*} [PseudoEMetricSpace X] (a 
     rw [edist_comm]
     exact p.2.lt_top
 
-/-- Build a new pseudometric space from an old one where the bundled bornology structure is provably
+/--
+Build a new pseudometric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionally) equal to some given bornology structure.
-See Note [forgetful inheritance].
-See Note [reducible non-instances].
+See Note \[forgetful inheritance\].
+See Note \[reducible non-instances\].
 -/
 abbrev PseudoMetricSpace.replaceBornology {α} [B : Bornology α] (m : PseudoMetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :

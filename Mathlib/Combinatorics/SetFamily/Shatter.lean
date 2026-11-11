@@ -10,6 +10,9 @@ public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Interval.Finset.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shattering families
 
@@ -34,9 +37,11 @@ open scoped FinsetFamily
 namespace Finset
 variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
 
-/-- A set family `𝒜` shatters a set `s` if all subsets of `s` can be obtained as the intersection
+/--
+A set family `𝒜` shatters a set `s` if all subsets of `s` can be obtained as the intersection
 of `s` and some element of the set family, and we denote this `𝒜.Shatters s`. We also say that `s`
-is *traced* by `𝒜`. -/
+is _traced_ by `𝒜`.
+-/
 def Shatters (𝒜 : Finset (Finset α)) (s : Finset α) : Prop := ∀ ⦃t⦄, t ⊆ s → ∃ u ∈ 𝒜, s ∩ u = t
 
 instance : DecidablePred 𝒜.Shatters := fun _s ↦ decidableForallOfDecidableSubsets
@@ -180,7 +185,9 @@ lemma shatterer_compress_subset_shatterer (a : α) (𝒜 : Finset (Finset α)) :
     (𝓓 a 𝒜).shatterer ⊆ 𝒜.shatterer := by
   simp only [subset_iff, mem_shatterer]; exact fun s hs ↦ hs.of_compression
 
-/-! ### Vapnik-Chervonenkis dimension -/
+/-!
+# Vapnik-Chervonenkis dimension
+-/
 
 /-- The Vapnik-Chervonenkis dimension of a set family is the maximal size of a set it shatters. -/
 def vcDim (𝒜 : Finset (Finset α)) : ℕ := 𝒜.shatterer.sup card

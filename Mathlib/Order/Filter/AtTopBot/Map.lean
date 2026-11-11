@@ -11,6 +11,9 @@ import Mathlib.Order.Filter.Map
 import Mathlib.Order.Filter.Tendsto
 import Mathlib.Order.Interval.Set.OrderIso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Map and comap of `Filter.atTop` and `Filter.atBot`
 -/

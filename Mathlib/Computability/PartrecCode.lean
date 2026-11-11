@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Computability.Partrec
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gödel Numbering for Partial Recursive Functions.
 
@@ -29,7 +32,7 @@ of some code.
 
 * `Nat.Partrec.Code.primrec_recOn`: Recursion on `Nat.Partrec.Code` is primitive recursive.
 * `Nat.Partrec.Code.computable_recOn`: Recursion on `Nat.Partrec.Code` is computable.
-* `Nat.Partrec.Code.smn`: The $S_n^m$ theorem.
+* `Nat.Partrec.Code.smn`: The $`S_n^m` theorem.
 * `Nat.Partrec.Code.exists_code`: Partial recursiveness is equivalent to being the eval of a code.
 * `Nat.Partrec.Code.primrec_evaln`: `evaln` is primitive recursive.
 * `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem.
@@ -37,8 +40,8 @@ of some code.
 
 ## References
 
-* [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
-
+* ‍\[Mario Carneiro, _Formalizing computability theory via partial recursive
+  functions_\]\[carneiro2019\]
 -/
 
 @[expose] public section
@@ -442,7 +445,9 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
 
 end
 
-/-- The interpretation of a `Nat.Partrec.Code` as a partial function.
+/--
+The interpretation of a `Nat.Partrec.Code` as a partial function.
+
 * `Nat.Partrec.Code.zero`: The constant zero function.
 * `Nat.Partrec.Code.succ`: The successor function.
 * `Nat.Partrec.Code.left`: Left unpairing of a pair of ℕ (encoded by `Nat.pair`)
@@ -450,6 +455,7 @@ end
 * `Nat.Partrec.Code.pair`: Pairs the outputs of argument codes using `Nat.pair`.
 * `Nat.Partrec.Code.comp`: Composition of two argument codes.
 * `Nat.Partrec.Code.prec`: Primitive recursion. Given an argument of the form `Nat.pair a n`:
+
   * If `n = 0`, returns `eval cf a`.
   * If `n = succ k`, returns `eval cg (pair a (pair k (eval (prec cf cg) (pair a k))))`
 * `Nat.Partrec.Code.rfind'`: Minimization starting at a provided value. Given an argument of the
@@ -518,7 +524,7 @@ theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) 
     exact const_inj h₃⟩
 
 /--
-The $S_n^m$ theorem: There is a computable function, namely `Nat.Partrec.Code.curry`, that takes a
+The $`S_n^m` theorem: There is a computable function, namely `Nat.Partrec.Code.curry`, that takes a
 program and a ℕ `n`, and returns a new program using `n` as the first argument.
 -/
 theorem smn :

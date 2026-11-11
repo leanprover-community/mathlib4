@@ -11,6 +11,9 @@ public import Mathlib.Order.Filter.IndicatorFunction
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator of a set as an element of `Lp`
 

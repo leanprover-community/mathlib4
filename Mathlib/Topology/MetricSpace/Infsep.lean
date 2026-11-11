@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Topology.MetricSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infimum separation
 
 This file defines the extended infimum separation of a set. This is approximately dual to the
 diameter of a set, but where the extended diameter of a set is the supremum of the extended distance
 between elements of the set, the extended infimum separation is the infimum of the (extended)
-distance between *distinct* elements in the set.
+distance between _distinct_ elements in the set.
 
 We also define the infimum separation as the cast of the extended infimum separation to the reals.
 This is the infimum of the distance between distinct elements of the set when in a pseudometric
@@ -22,9 +25,9 @@ space.
 All lemmas and definitions are in the `Set` namespace to give access to dot notation.
 
 ## Main definitions
+
 * `Set.einfsep`: Extended infimum separation of a set.
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
-
 -/
 
 @[expose] public section

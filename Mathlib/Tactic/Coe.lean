@@ -7,15 +7,19 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional coercion notation
 
 Defines notation for coercions.
+
 1. `↑ t` is defined in core.
 2. `(↑)` is equivalent to the eta-reduction of `(↑ ·)`
 3. `⇑ t` is a coercion to a function type.
 4. `(⇑)` is equivalent to the eta-reduction of `(⇑ ·)`
-3. `↥ t` is a coercion to a type.
+5. `↥ t` is a coercion to a type.
 6. `(↥)` is equivalent to the eta-reduction of `(↥ ·)`
 -/
 

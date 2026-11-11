@@ -9,6 +9,9 @@ public meta import Lean.Elab.SyntheticMVars
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `without_cdot()` elaborator
 -/
@@ -23,10 +26,12 @@ private def withoutCDotContents : Parser :=
   withoutPosition <|
     withoutForbidden (termParser >> optional (" :" >> optional (ppSpace >> termParser)))
 
-/-- A set of parentheses, supporting type ascriptions, which does not process `·`.
+/--
+A set of parentheses, supporting type ascriptions, which does not process `·`.
 
 Primarily, this is useful when quoting user-provided syntax inside parentheses, as it prevents `·`s
-from the caller being interpreted in the context of `()`s from the macro. -/
+from the caller being interpreted in the context of `()`s from the macro.
+-/
 @[term_parser]
 def withoutCDot := leading_parser
   "without_cdot(" >> withoutCDotContents >> ")"

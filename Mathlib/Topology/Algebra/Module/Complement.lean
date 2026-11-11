@@ -9,26 +9,29 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Quotient
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological complements of submodules
 
 Let `M` be a topological `R`-module. Two submodules `p, q` of `M` are said to be
-*topological complements* (`Submodule.IsTopCompl`) if they are algebraic complements and the
+_topological complements_ (`Submodule.IsTopCompl`) if they are algebraic complements and the
 algebraic isomorphism `M ≃ p × q` is a homeomorphism.
 
 Not all submodules of `M` admit such a topological complements (even if they admit algebraic
-complements). In the literature, such a submodule is called *topologically complemented*
-or *direct*. One may also find the terminology *closed complemented* because,
+complements). In the literature, such a submodule is called _topologically complemented_
+or _direct_. One may also find the terminology _closed complemented_ because,
 in a Banach space, a closed algebraic complement is automatically a topological complement.
 This is the terminology we use for now (`Submodule.ClosedComplemented`), but we should eventually
 change to something less misleading.
 
 ## Main definitions
 
-* `Submodule.IsTopCompl`: we say that two submodules are *topological complements* if they are
+* `Submodule.IsTopCompl`: we say that two submodules are _topological complements_ if they are
   algebraic complements and the projection on `p` along `q` is continuous. This is equivalent
   to the definition given above.
-* `Submodule.ClosedComplemented`: we say that a submodule is (topologically) *complemented* if
+* `Submodule.ClosedComplemented`: we say that a submodule is (topologically) _complemented_ if
   there exists a continuous projection `M →ₗ[R] p`.
 * `Submodule.projectionOntoL`: if `h : IsTopCompl p q`, `p.projectionOntoL q h` is the
   continuous linear projection `M →L[R] p` along `q`. This is the continuous version of
@@ -61,7 +64,6 @@ map `M ≃ p × q`.
 Because the condition is symmetric, a lot of lemmas could have a left and a right variation.
 In general we only include the left version, the right one being accessible through
 `Submodule.IsTopCompl.symm`.
-
 -/
 
 @[expose] public section
@@ -76,14 +78,18 @@ variable {R : Type*} [Ring R] {M N : Type*} [TopologicalSpace M] [TopologicalSpa
 
 open ContinuousLinearMap
 
-/-- Two submodules `p` and `q` are *topological complements* if they are algebraic complements and
-the projection on `p` along `q` is continuous. -/
+/--
+Two submodules `p` and `q` are _topological complements_ if they are algebraic complements and
+the projection on `p` along `q` is continuous.
+-/
 @[pp_nodot]
 structure IsTopCompl (p q : Submodule R M) : Prop where
   isCompl : IsCompl p q
   continuous_projection : Continuous (p.projection q isCompl)
 
-/-- A submodule `p` is called *complemented* if there exists a continuous projection `M →ₗ[R] p`. -/
+/--
+A submodule `p` is called _complemented_ if there exists a continuous projection `M →ₗ[R] p`.
+-/
 def ClosedComplemented (p : Submodule R M) : Prop :=
   ∃ f : M →L[R] p, ∀ x : p, f x = x
 
@@ -154,10 +160,12 @@ theorem _root_.ContinuousLinearMap.isTopCompl_of_proj {f : M →L[R] p} (hf : �
 section projectionOnto
 
 variable (p q) in
-/-- If `h : IsTopCompl p q`, `h.projectionOnto` is the continuous linear projection `M →L[R] p`
+/--
+If `h : IsTopCompl p q`, `h.projectionOnto` is the continuous linear projection `M →L[R] p`
 along `q`. This is the continuous version of `Submodule.linearProjOfIsCompl`.
 
-See also `Submodule.IsTopCompl.projection` for the same projection as an element of `M →L[R] M`. -/
+See also `Submodule.IsTopCompl.projection` for the same projection as an element of `M →L[R] M`.
+-/
 noncomputable def projectionOntoL (h : IsTopCompl p q) : M →L[R] p :=
   ⟨p.projectionOnto q h.isCompl, h.continuous_projectionOnto⟩
 
@@ -211,11 +219,13 @@ end projectionOnto
 section projection
 
 variable (p q) in
-/-- If `h : IsTopCompl p q`, `h.projection` is the continuous linear projection `M →L[R] M` onto
+/--
+If `h : IsTopCompl p q`, `h.projection` is the continuous linear projection `M →L[R] M` onto
 `p` along `q`. This is the continuous version of `Submodule.IsCompl.projection`.
 
 See also `Submodule.IsTopCompl.projectionOnto` for the same projection as an element of
-`M →L[R] p`. -/
+`M →L[R] p`.
+-/
 noncomputable def projectionL (h : IsTopCompl p q) : M →L[R] M :=
   p.subtypeL ∘L p.projectionOntoL q h
 
@@ -390,12 +400,14 @@ theorem _root_.ContinuousLinearMap.closedComplemented_ker_of_rightInverse [Conti
   f₂.isTopCompl_range_ker_of_leftInverse f₁ h.leftInverse |>.symm.closedComplemented
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- If `p` is a closed complemented submodule,
+/--
+If `p` is a closed complemented submodule,
 then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
 `e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.
 
 In fact, the properties of `e` imply the properties of `e.symm` and vice versa,
-but we provide both for convenience. -/
+but we provide both for convenience.
+-/
 lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
     {p : Submodule R M} (hp : p.ClosedComplemented) :
     ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
@@ -513,11 +525,13 @@ variable {R : Type*} [Ring R] {E F : Type*}
   [TopologicalSpace F] [AddCommGroup F] [Module R F] [ContinuousAdd F]
   {p q : Submodule R E}
 
-/-- Given continuous linear maps `φ : p →L[R] F` and `ψ : q →L[R] F` from topological complement
+/--
+Given continuous linear maps `φ : p →L[R] F` and `ψ : q →L[R] F` from topological complement
 submodules `p` and `q` of `E`, `ContinuousLinearMap.ofIsCompl` is the induced continuous linear map
 `E →L[R] F` over the entire module.
 
-This is the continuous version of `LinearMap.ofIsCompl`. -/
+This is the continuous version of `LinearMap.ofIsCompl`.
+-/
 noncomputable def ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) : E →L[R] F :=
   φ.coprod ψ ∘L ↑(prodEquivOfIsTopCompl p q h).symm
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgraphs of a simple graph
 
@@ -17,21 +20,15 @@ sub-relation of the adjacency relation of the simple graph.
 ## Main definitions
 
 * `Subgraph G` is the type of subgraphs of a `G : SimpleGraph V`.
-
 * `Subgraph.neighborSet`, `Subgraph.incidenceSet`, and `Subgraph.degree` are like their
   `SimpleGraph` counterparts, but they refer to vertices from `G` to avoid subtype coercions.
-
 * `Subgraph.coe` is the coercion from a `G' : Subgraph G` to a `SimpleGraph G'.verts`.
   (In Lean 3 this could not be a `Coe` instance since the destination type depends on `G'`.)
-
 * `Subgraph.IsSpanning` for whether a subgraph is a spanning subgraph and
   `Subgraph.IsInduced` for whether a subgraph is an induced subgraph.
-
 * Instances for `DistribLattice G.Subgraph` and `BoundedOrder (Subgraph G)`.
-
 * `SimpleGraph.toSubgraph`: If a `SimpleGraph` is a subgraph of another, then you can turn it
   into a member of the larger graph's `SimpleGraph.Subgraph` type.
-
 * Graph homomorphisms from a subgraph to a graph (`Subgraph.map_top`) and between subgraphs
   (`Subgraph.map`).
 
@@ -43,7 +40,6 @@ sub-relation of the adjacency relation of the simple graph.
 ## TODO
 
 * Images of graph homomorphisms as subgraphs.
-
 -/
 
 @[expose] public section
@@ -53,11 +49,13 @@ universe u v
 
 namespace SimpleGraph
 
-/-- A subgraph of a `SimpleGraph` is a subset of vertices along with a restriction of the adjacency
+/--
+A subgraph of a `SimpleGraph` is a subset of vertices along with a restriction of the adjacency
 relation that is symmetric and is supported by the vertex subset.  They also form a bounded lattice.
 
 Thinking of `V → V → Prop` as `Set (V × V)`, a set of darts (i.e., half-edges), then
-`Subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`. -/
+`Subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`.
+-/
 @[ext]
 structure Subgraph {V : Type u} (G : SimpleGraph V) where
   /-- Vertices of the subgraph -/
@@ -151,7 +149,9 @@ protected theorem Adj.coe {H : G.Subgraph} {u v : V} (h : H.Adj u v) :
 instance (G : SimpleGraph V) (H : Subgraph G) [DecidableRel H.Adj] : DecidableRel H.coe.Adj :=
   fun a b ↦ ‹DecidableRel H.Adj› _ _
 
-/-- A subgraph is called a *spanning subgraph* if it contains all the vertices of `G`. -/
+/--
+A subgraph is called a _spanning subgraph_ if it contains all the vertices of `G`.
+-/
 def IsSpanning (G' : Subgraph G) : Prop :=
   ∀ v : V, v ∈ G'.verts
 
@@ -210,8 +210,10 @@ def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
   invFun v := v
   map_rel_iff' := Iff.rfl
 
-/-- A subgraph is called an *induced subgraph* if vertices of `G'` are adjacent if
-they are adjacent in `G`. -/
+/--
+A subgraph is called an _induced subgraph_ if vertices of `G'` are adjacent if
+they are adjacent in `G`.
+-/
 def IsInduced (G' : Subgraph G) : Prop :=
   ∀ ⦃v⦄, v ∈ G'.verts → ∀ ⦃w⦄, w ∈ G'.verts → G.Adj v w → G'.Adj v w
 
@@ -290,7 +292,7 @@ abbrev vert (G' : Subgraph G) (v : V) (h : v ∈ G'.verts) : G'.verts := ⟨v, h
 
 /--
 Create an equal copy of a subgraph (see `copy_eq`) with possibly different definitional equalities.
-See Note [range copy pattern].
+See Note \[range copy pattern\].
 -/
 def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
     (adj' : V → V → Prop) (hadj : adj' = G'.Adj) : Subgraph G where
@@ -778,9 +780,11 @@ instance finiteAt {G' : Subgraph G} (v : G'.verts) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.neighborSet v) :=
   Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 
-/-- If a subgraph is locally finite at a vertex, then so are subgraphs of that subgraph.
+/--
+If a subgraph is locally finite at a vertex, then so are subgraphs of that subgraph.
 
-This is not an instance because `G''` cannot be inferred. -/
+This is not an instance because `G''` cannot be inferred.
+-/
 @[instance_reducible]
 def finiteAtOfSubgraph {G' G'' : Subgraph G} [DecidableRel G'.Adj] (h : G' ≤ G'') (v : G'.verts)
     [Fintype (G''.neighborSet v)] : Fintype (G'.neighborSet v) :=
@@ -905,7 +909,9 @@ lemma degree_toSubgraph (G H : SimpleGraph V) (h : H ≤ G) {v : V}
 
 section MkProperties
 
-/-! ### Properties of `singletonSubgraph` and `subgraphOfAdj` -/
+/-!
+# Properties of `singletonSubgraph` and `subgraphOfAdj`
+-/
 
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
@@ -1038,7 +1044,9 @@ namespace Subgraph
 
 variable {G : SimpleGraph V}
 
-/-! ### Subgraphs of subgraphs -/
+/-!
+# Subgraphs of subgraphs
+-/
 
 
 /-- Given a subgraph of a subgraph of `G`, construct a subgraph of `G`. -/
@@ -1089,13 +1097,17 @@ lemma coeSubgraph_restrict_eq {H : G.Subgraph} (H' : G.Subgraph) :
     intro h
     simp [H.edge_vert h, H.edge_vert h.symm]
 
-/-! ### Edge deletion -/
+/-!
+# Edge deletion
+-/
 
 
-/-- Given a subgraph `G'` and a set of vertex pairs, remove all of the corresponding edges
+/--
+Given a subgraph `G'` and a set of vertex pairs, remove all of the corresponding edges
 from its edge set, if present.
 
-See also: `SimpleGraph.deleteEdges`. -/
+See also: `SimpleGraph.deleteEdges`.
+-/
 def deleteEdges (G' : G.Subgraph) (s : Set (Sym2 V)) : G.Subgraph where
   verts := G'.verts
   Adj := G'.Adj \ Sym2.ToRel s
@@ -1183,7 +1195,9 @@ theorem spanningCoe_deleteEdges_le (G' : G.Subgraph) (s : Set (Sym2 V)) :
 
 end DeleteEdges
 
-/-! ### Induced subgraphs -/
+/-!
+# Induced subgraphs
+-/
 
 
 /- Given a subgraph, we can change its vertex set while removing any invalid edges, which

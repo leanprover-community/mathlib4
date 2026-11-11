@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Data.Seq.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic Definitions/Theorems for Continued Fractions
 
 ## Summary
 
 We define generalised, simple, and regular continued fractions and functions to evaluate their
-convergents. We follow the naming conventions from Wikipedia and [wall2018analytic], Chapter 1.
+convergents. We follow the naming conventions from Wikipedia and \[wall2018analytic\], Chapter 1.
 
 ## Main definitions
 
@@ -32,8 +35,9 @@ convergents. We follow the naming conventions from Wikipedia and [wall2018analyt
 
 ## References
 
-- <https://en.wikipedia.org/wiki/Generalized_continued_fraction>
-- [Wall, H.S., *Analytic Theory of Continued Fractions*][wall2018analytic]
+* [
+  https://en.wikipedia.org/wiki/Generalized\_continued\_fraction](https://en.wikipedia.org/wiki/Generalized_continued_fraction)
+* ‍\[Wall, H.S., _Analytic Theory of Continued Fractions_\]\[wall2018analytic\]
 
 ## Tags
 
@@ -45,7 +49,9 @@ numerics, number theory, approximations, fractions
 -- Fix a carrier `α`.
 variable (α : Type*)
 
-/-!### Definitions -/
+/-!
+# Definitions
+-/
 
 /-- We collect a partial numerator `aᵢ` and partial denominator `bᵢ` in a pair `⟨aᵢ, bᵢ⟩`. -/
 structure GenContFract.Pair where
@@ -91,16 +97,11 @@ end coe
 
 end GenContFract.Pair
 
-/-- A *generalised continued fraction* (gcf) is a potentially infinite expression of the form
-$$
-  h + \dfrac{a_0}
-            {b_0 + \dfrac{a_1}
-                         {b_1 + \dfrac{a_2}
-                                      {b_2 + \dfrac{a_3}
-                                                   {b_3 + \dots}}}}
-$$
-where `h` is called the *head term* or *integer part*, the `aᵢ` are called the
-*partial numerators* and the `bᵢ` the *partial denominators* of the gcf.
+/--
+A _generalised continued fraction_ (gcf) is a potentially infinite expression of the form
+$$`  h + \dfrac{a_0} {b_0 + \dfrac{a_1} {b_1 + \dfrac{a_2} {b_2 + \dfrac{a_3} {b_3 + \dots}}}}  `
+where `h` is called the _head term_ or _integer part_, the `aᵢ` are called the
+_partial numerators_ and the `bᵢ` the _partial denominators_ of the gcf.
 We store the sequence of partial numerators and denominators in a sequence of `GenContFract.Pair`s
 `s`.
 For convenience, one often writes `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`.
@@ -166,30 +167,20 @@ end coe
 
 end GenContFract
 
-/-- A generalized continued fraction is a *simple continued fraction* if all partial numerators are
+/--
+A generalized continued fraction is a _simple continued fraction_ if all partial numerators are
 equal to one.
-$$
-  h + \dfrac{1}
-            {b_0 + \dfrac{1}
-                         {b_1 + \dfrac{1}
-                                      {b_2 + \dfrac{1}
-                                                   {b_3 + \dots}}}}
-$$
+$$`  h + \dfrac{1} {b_0 + \dfrac{1} {b_1 + \dfrac{1} {b_2 + \dfrac{1} {b_3 + \dots}}}}  `
 -/
 def GenContFract.IsSimpContFract (g : GenContFract α)
     [One α] : Prop :=
   ∀ (n : ℕ) (aₙ : α), g.partNums.get? n = some aₙ → aₙ = 1
 
 variable (α) in
-/-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
+/--
+A _simple continued fraction_ (scf) is a generalized continued fraction (gcf) whose partial
 numerators are equal to one.
-$$
-  h + \dfrac{1}
-            {b_0 + \dfrac{1}
-                         {b_1 + \dfrac{1}
-                                      {b_2 + \dfrac{1}
-                                                   {b_3 + \dots}}}}
-$$
+$$`  h + \dfrac{1} {b_0 + \dfrac{1} {b_1 + \dfrac{1} {b_2 + \dfrac{1} {b_3 + \dots}}}}  `
 For convenience, one often writes `[h; b₀, b₁, b₂,...]`.
 It is encoded as the subtype of gcfs that satisfy `GenContFract.IsSimpContFract`.
 -/
@@ -215,7 +206,7 @@ instance : Coe (SimpContFract α) (GenContFract α) :=
 end SimpContFract
 
 /--
-A simple continued fraction is a *(regular) continued fraction* ((r)cf) if all partial denominators
+A simple continued fraction is a _(regular) continued fraction_ ((r)cf) if all partial denominators
 `bᵢ` are positive, i.e. `0 < bᵢ`.
 -/
 def SimpContFract.IsContFract [One α] [Zero α] [LT α]
@@ -224,7 +215,8 @@ def SimpContFract.IsContFract [One α] [Zero α] [LT α]
     (↑s : GenContFract α).partDens.get? n = some bₙ → 0 < bₙ
 
 variable (α) in
-/-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
+/--
+A _(regular) continued fraction_ ((r)cf) is a simple continued fraction (scf) whose partial
 denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
 -/
 def ContFract [One α] [Zero α] [LT α] :=
@@ -256,7 +248,7 @@ end ContFract
 namespace GenContFract
 
 /-!
-### Computation of Convergents
+# Computation of Convergents
 
 We now define how to compute the convergents of a gcf. There are two standard ways to do this:
 directly evaluating the (infinite) fraction described by the gcf or using a recurrence relation.
@@ -269,11 +261,12 @@ variable {K : Type*} [DivisionRing K]
 
 /-!
 We start with the definition of the recurrence relation. Given a gcf `g`, for all `n ≥ 1`, we define
-- `A₋₁ = 1,  A₀ = h,  Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, and
-- `B₋₁ = 0,  B₀ = 1,  Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`.
 
-`Aₙ, Bₙ` are called the *nth continuants*, `Aₙ` the *nth numerator*, and `Bₙ` the
-*nth denominator* of `g`. The *nth convergent* of `g` is given by `Aₙ / Bₙ`.
+* `A₋₁ = 1,  A₀ = h,  Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, and
+* `B₋₁ = 0,  B₀ = 1,  Bₙ = bₙ₋₁ * Bₙ₋₁ + aₙ₋₁ * Bₙ₋₂`.
+
+`Aₙ, Bₙ` are called the _nth continuants_, `Aₙ` the _nth numerator_, and `Bₙ` the
+_nth denominator_ of `g`. The _nth convergent_ of `g` is given by `Aₙ / Bₙ`.
 -/
 
 /-- Returns the next numerator `Aₙ = bₙ₋₁ * Aₙ₋₁ + aₙ₋₁ * Aₙ₋₂`, where `predA` is `Aₙ₋₁`,

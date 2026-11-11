@@ -10,7 +10,11 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instanc
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
-/-! # Range of the continuous functional calculus
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Range of the continuous functional calculus
 
 This file contains results about the range of the continuous functional calculus, and
 consequences thereof.
@@ -28,7 +32,6 @@ consequences thereof.
   and `range_cfcₙ_nnreal_subset`.
 * `cfc_mem` and `cfcₙ_mem`: the continuous functional calculus of an element is contained in any
   closed star subalgebra containing the element.
-
 -/
 
 public section

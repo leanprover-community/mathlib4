@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.Relation.Rfl
 public import Mathlib.Tactic.TermCongr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `congrm` tactic
 
@@ -24,6 +27,8 @@ open Lean Parser Elab Tactic Meta
 
 initialize registerTraceClass `Tactic.congrm
 
+
+set_option doc.verso false
 /--
 `congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `lhs ≍ rhs`,
 or `R lhs rhs` when `R` is a reflexive relation.
@@ -63,6 +68,8 @@ equality proofs into the congruence, just like for congruence quotations.
 -/
 syntax (name := congrM) "congrm " term : tactic
 
+
+set_option doc.verso true
 elab_rules : tactic
   | `(tactic| congrm $expr:term) => do
     -- Wrap all synthetic holes `?m` as `c(?m)` to form `congr(...)` pattern

@@ -13,6 +13,10 @@ public import Mathlib.Data.DFinsupp.Defs
 
 import Mathlib.Algebra.Group.Equiv.Opposite
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Unique products and related notions
 
@@ -154,13 +158,17 @@ theorem mulHom_preimage (f : G →ₙ* H) (hf : Function.Injective f) (a0 b0 : G
   fun a b ha hb ab ↦ hf ab
     (h (Finset.mem_image_of_mem f ha) (Finset.mem_image_of_mem f hb) <| by simp_rw [← map_mul, ab])
 
-/-- `Unique_Mul` is preserved under multiplicative maps that are injective.
+/--
+`Unique_Mul` is preserved under multiplicative maps that are injective.
 
-See `UniqueMul.mulHom_map_iff` for a version with swapped bundling. -/
+See `UniqueMul.mulHom_map_iff` for a version with swapped bundling.
+-/
 @[to_additive
-      /-- `UniqueAdd` is preserved under additive maps that are injective.
+      /--
+      `UniqueAdd` is preserved under additive maps that are injective.
 
-See `UniqueAdd.addHom_map_iff` for a version with swapped bundling. -/]
+      See `UniqueAdd.addHom_map_iff` for a version with swapped bundling.
+      -/]
 theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Injective f) :
     UniqueMul (A.image f) (B.image f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 :=
   ⟨of_mulHom_image f fun _ _ _ _ _ ↦ .imp (hf ·) (hf ·), fun h _ _ ↦ by
@@ -169,13 +177,17 @@ theorem mulHom_image_iff [DecidableEq H] (f : G →ₙ* H) (hf : Function.Inject
     simp_rw [← map_mul, hf.eq_iff] at ab ⊢
     exact h aA bB ab⟩
 
-/-- `UniqueMul` is preserved under embeddings that are multiplicative.
+/--
+`UniqueMul` is preserved under embeddings that are multiplicative.
 
-See `UniqueMul.mulHom_image_iff` for a version with swapped bundling. -/
+See `UniqueMul.mulHom_image_iff` for a version with swapped bundling.
+-/
 @[to_additive
-      /-- `UniqueAdd` is preserved under embeddings that are additive.
+      /--
+      `UniqueAdd` is preserved under embeddings that are additive.
 
-See `UniqueAdd.addHom_image_iff` for a version with swapped bundling. -/]
+      See `UniqueAdd.addHom_image_iff` for a version with swapped bundling.
+      -/]
 theorem mulHom_map_iff (f : G ↪ H) (mul : ∀ x y, f (x * y) = f x * f y) :
     UniqueMul (A.map f) (B.map f) (f a0) (f b0) ↔ UniqueMul A B a0 b0 := by
   classical simp_rw [← mulHom_image_iff ⟨f, mul⟩ f.2, Finset.map_eq_image]; rfl
@@ -373,10 +385,12 @@ open MulOpposite in
     · rw [mul_assoc b1, ← mul_assoc a, he, mul_assoc a1, ← mul_assoc b1]
     exact ⟨mul_left_cancel hu.1, mul_right_cancel hu.2⟩
 
-/-- If a group has `UniqueProds`, then it actually has `TwoUniqueProds`.
-  For an example of a semigroup `G` embeddable into a group that has `UniqueProds`
-  but not `TwoUniqueProds`, see Example 10.13 in
-  [J. Okniński, *Semigroup Algebras*][Okninski1991]. -/
+/--
+If a group has `UniqueProds`, then it actually has `TwoUniqueProds`.
+For an example of a semigroup `G` embeddable into a group that has `UniqueProds`
+but not `TwoUniqueProds`, see Example 10.13 in
+‍\[J. Okniński, _Semigroup Algebras_\]\[Okninski1991\].
+-/
 @[to_additive] theorem toTwoUniqueProds_of_group {G}
     [Group G] [UniqueProds G] : TwoUniqueProds G where
   uniqueMul_of_one_lt_card {A B} hc := by

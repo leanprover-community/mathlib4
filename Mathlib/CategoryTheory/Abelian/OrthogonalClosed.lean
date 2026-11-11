@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.Subobject
 import Mathlib.Algebra.Homology.ShortComplex.Pullback
 import Mathlib.CategoryTheory.Abelian.Subobject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthogonals are closed under extensions, and Dickson's theorem
 
@@ -21,13 +24,13 @@ are closed under extensions, using the kernel and cokernel supplied by a short e
 In a well-powered abelian category with coproducts, we show in
 `ObjectProperty.leftOrthogonal_rightOrthogonal_eq_self` that a property `P` which is closed under
 quotients, extensions, and coproducts satisfies `P.rightOrthogonal.leftOrthogonal = P`. This is the
-hard direction of [S. E. Dickson][dickson1966]'s characterisation of torsion classes. The easy
+hard direction of \[S. E. Dickson\]\[dickson1966\]'s characterisation of torsion classes. The easy
 direction is assembled from the closure instances in
 `Mathlib/CategoryTheory/ObjectProperty/OrthogonalLimits.lean`.
 
 ## References
 
-* [S. E. Dickson, *A torsion theory for Abelian categories*][dickson1966]
+* ‍\[S. E. Dickson, _A torsion theory for Abelian categories_\]\[dickson1966\]
 -/
 
 @[expose] public section
@@ -124,10 +127,12 @@ lemma leftOrthogonal_rightOrthogonal_le (P : ObjectProperty C)
       Preadditive.epi_of_cokernel_zero (hX (cokernel.π _) (rightOrthogonal_cokernel_sSup P X))
     P.prop_of_epi A.arrow (P.prop_subobjectSSup _ fun _ hA ↦ hA)
 
-/-- In a well-powered abelian category with coproducts, if `P` is closed under quotients,
+/--
+In a well-powered abelian category with coproducts, if `P` is closed under quotients,
 extensions, and coproducts, then `P.rightOrthogonal.leftOrthogonal = P`. This is the hard
-direction of [S. E. Dickson][dickson1966]'s characterisation of torsion classes, see
-`CategoryTheory.Abelian.isTorsionClass_iff`. -/
+direction of \[S. E. Dickson\]\[dickson1966\]'s characterisation of torsion classes, see
+`CategoryTheory.Abelian.isTorsionClass_iff`.
+-/
 theorem leftOrthogonal_rightOrthogonal_eq_self (P : ObjectProperty C)
     [P.IsClosedUnderQuotients] [P.IsClosedUnderExtensions]
     [∀ J : Type w, P.IsClosedUnderColimitsOfShape (Discrete J)]

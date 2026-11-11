@@ -9,11 +9,15 @@ public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Guitart exact squares involving `Over` categories
 
 Let `F : C ⥤ D` be a functor and `X : C`. One may consider the
 commutative square of categories where vertical functors are `Over.forget`:
+
 ```
     Over.post F
 Over X ⥤ Over (F.obj X)
@@ -25,7 +29,6 @@ Over X ⥤ Over (F.obj X)
 
 We show that this square is Guitart exact if for all `Y : C`, the binary product `X ⨯ Y`
 exists and `F` commutes with it.
-
 -/
 
 public section
@@ -39,7 +42,9 @@ open Limits
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   (F : C ⥤ D) (X : C)
 
-/-- Given `F : C ⥤ D` and `X : C`, this is the `2`-square
+/--
+Given `F : C ⥤ D` and `X : C`, this is the `2`-square
+
 ```
     Over.post F
 Over X ⥤ Over (F.obj X)
@@ -48,7 +53,9 @@ Over X ⥤ Over (F.obj X)
  C     ⥤    D
        F
 ```
-with `Over.forget` as vertical functors. -/
+
+with `Over.forget` as vertical functors.
+-/
 abbrev TwoSquare.overPost :
     TwoSquare (Over.post F) (Over.forget X) (Over.forget (F.obj X)) F :=
   TwoSquare.mk _ _ _ _ (𝟙 _)

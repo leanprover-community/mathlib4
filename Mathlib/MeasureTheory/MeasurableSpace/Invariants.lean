@@ -7,13 +7,17 @@ module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # σ-algebra of sets invariant under a self-map
 
 In this file we define `MeasurableSpace.invariants (f : α → α)`
 to be the σ-algebra of sets `s : Set α` such that
-- `s` is measurable w.r.t. the canonical σ-algebra on `α`;
-- and `f ⁻¹' s = s`.
+
+* `s` is measurable w.r.t. the canonical σ-algebra on `α`;
+* and `f ⁻¹' s = s`.
 -/
 
 @[expose] public section
@@ -25,11 +29,13 @@ namespace MeasurableSpace
 
 variable {α : Type*}
 
-/-- Given a self-map `f : α → α`,
+/--
+Given a self-map `f : α → α`,
 `invariants f` is the σ-algebra of measurable sets that are invariant under `f`.
 
 A set `s` is `(invariants f)`-measurable
-iff it is measurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
+iff it is measurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`.
+-/
 @[instance_reducible]
 def invariants [m : MeasurableSpace α] (f : α → α) : MeasurableSpace α :=
   { m ⊓ ⟨fun s ↦ f ⁻¹' s = s, by simp, by simp, fun f hf ↦ by simp [hf]⟩ with

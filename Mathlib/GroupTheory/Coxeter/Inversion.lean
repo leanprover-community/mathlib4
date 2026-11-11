@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.Data.List.GetD
 import Mathlib.Tactic.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reflections, inversions, and inversion sequences
 
@@ -19,18 +22,18 @@ of a group isomorphism `W ≃* M.group`, where `M.group` refers to the quotient 
 `B` by the Coxeter relations given by the matrix `M`. See `Mathlib/GroupTheory/Coxeter/Basic.lean`
 for more details.
 
-We define a *reflection* (`CoxeterSystem.IsReflection`) to be an element of the form
-$t = u s_i u^{-1}$, where $u \in W$ and $s_i$ is a simple reflection. We say that a reflection $t$
-is a *left inversion* (`CoxeterSystem.IsLeftInversion`) of an element $w \in W$ if
-$\ell(t w) < \ell(w)$, and we say it is a *right inversion* (`CoxeterSystem.IsRightInversion`) of
-$w$ if $\ell(w t) > \ell(w)$. Here $\ell$ is the length function
-(see `Mathlib/GroupTheory/Coxeter/Length.lean`).
+We define a _reflection_ (`CoxeterSystem.IsReflection`) to be an element of the form
+$`t = u s_i u^{-1}`, where $`u \in W` and $`s_i` is a simple reflection. We say that a reflection
+$`t` is a _left inversion_ (`CoxeterSystem.IsLeftInversion`) of an element $`w \in W` if
+$`\ell(t w) < \ell(w)`, and we say it is a _right inversion_ (`CoxeterSystem.IsRightInversion`) of
+$`w` if $`\ell(w t) > \ell(w)`. Here $`\ell` is the length function (see
+`Mathlib/GroupTheory/Coxeter/Length.lean`).
 
-Given a word, we define its *left inversion sequence* (`CoxeterSystem.leftInvSeq`) and its
-*right inversion sequence* (`CoxeterSystem.rightInvSeq`). We prove that if a word is reduced, then
+Given a word, we define its _left inversion sequence_ (`CoxeterSystem.leftInvSeq`) and its
+_right inversion sequence_ (`CoxeterSystem.rightInvSeq`). We prove that if a word is reduced, then
 both of its inversion sequences contain no duplicates. In fact, the right (respectively, left)
-inversion sequence of a reduced word for $w$ consists of all of the right (respectively, left)
-inversions of $w$ in some order, but we do not prove that in this file.
+inversion sequence of a reduced word for $`w` consists of all of the right (respectively, left)
+inversions of $`w` in some order, but we do not prove that in this file.
 
 ## Main definitions
 
@@ -42,8 +45,7 @@ inversions of $w$ in some order, but we do not prove that in this file.
 
 ## References
 
-* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*][bjorner2005]
-
+* ‍\[A. Björner and F. Brenti, _Combinatorics of Coxeter Groups_\]\[bjorner2005\]
 -/
 
 @[expose] public section
@@ -62,8 +64,10 @@ local prefix:100 "s " => cs.simple
 local prefix:100 "π " => cs.wordProd
 local prefix:100 "ℓ " => cs.length
 
-/-- `t : W` is a *reflection* of the Coxeter system `cs` if it is of the form
-$w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
+/--
+`t : W` is a _reflection_ of the Coxeter system `cs` if it is of the form
+$`w s_i w^{-1}`, where $`w \in W` and $`s_i` is a simple reflection.
+-/
 def IsReflection (t : W) : Prop := ∃ w i, t = w * s i * w⁻¹
 
 theorem isReflection_simple (i : B) : cs.IsReflection (s i) := by use 1, i; simp
@@ -123,12 +127,16 @@ theorem isReflection_conj_iff (w t : W) :
     simpa [← mul_assoc] using h.conj w⁻¹
   · exact IsReflection.conj (w := w)
 
-/-- The proposition that `t` is a right inversion of `w`; i.e., `t` is a reflection and
-$\ell (w t) < \ell(w)$. -/
+/--
+The proposition that `t` is a right inversion of `w`; i.e., `t` is a reflection and
+$`\ell (w t) < \ell(w)`.
+-/
 def IsRightInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (w * t) < ℓ w
 
-/-- The proposition that `t` is a left inversion of `w`; i.e., `t` is a reflection and
-$\ell (t w) < \ell(w)$. -/
+/--
+The proposition that `t` is a left inversion of `w`; i.e., `t` is a reflection and
+$`\ell (t w) < \ell(w)`.
+-/
 def IsLeftInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (t * w) < ℓ w
 
 theorem isRightInversion_inv_iff {w t : W} :
@@ -181,21 +189,20 @@ theorem isLeftInversion_simple_iff_isLeftDescent (w : W) (i : B) :
     cs.IsLeftInversion w (s i) ↔ cs.IsLeftDescent w i := by
   simp [IsLeftInversion, IsLeftDescent, cs.isReflection_simple i]
 
-/-- The right inversion sequence of `ω`. The right inversion sequence of a word
-$s_{i_1} \cdots s_{i_\ell}$ is the sequence
-$$s_{i_\ell}\cdots s_{i_1}\cdots s_{i_\ell}, \ldots,
-    s_{i_{\ell}}s_{i_{\ell - 1}}s_{i_{\ell - 2}}s_{i_{\ell - 1}}s_{i_\ell}, \ldots,
-    s_{i_{\ell}}s_{i_{\ell - 1}}s_{i_\ell}, s_{i_\ell}.$$
+/--
+The right inversion sequence of `ω`. The right inversion sequence of a word
+$`s_{i_1} \cdots s_{i_\ell}` is the sequence
+$$`s_{i_\ell}\cdots s_{i_1}\cdots s_{i_\ell}, \ldots, s_{i_{\ell}}s_{i_{\ell - 1}}s_{i_{\ell - 2}}s_{i_{\ell - 1}}s_{i_\ell}, \ldots, s_{i_{\ell}}s_{i_{\ell - 1}}s_{i_\ell}, s_{i_\ell}.`
 -/
 def rightInvSeq (ω : List B) : List W :=
   match ω with
   | [] => []
   | i :: ω => (π ω)⁻¹ * (s i) * (π ω) :: rightInvSeq ω
 
-/-- The left inversion sequence of `ω`. The left inversion sequence of a word
-$s_{i_1} \cdots s_{i_\ell}$ is the sequence
-$$s_{i_1}, s_{i_1}s_{i_2}s_{i_1}, s_{i_1}s_{i_2}s_{i_3}s_{i_2}s_{i_1}, \ldots,
-    s_{i_1}\cdots s_{i_\ell}\cdots s_{i_1}.$$
+/--
+The left inversion sequence of `ω`. The left inversion sequence of a word
+$`s_{i_1} \cdots s_{i_\ell}` is the sequence
+$$`s_{i_1}, s_{i_1}s_{i_2}s_{i_1}, s_{i_1}s_{i_2}s_{i_3}s_{i_2}s_{i_1}, \ldots, s_{i_1}\cdots s_{i_\ell}\cdots s_{i_1}.`
 -/
 def leftInvSeq (ω : List B) : List W :=
   match ω with

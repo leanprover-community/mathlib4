@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.PiLex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complete linear order instance on lexicographically ordered pi types
 
@@ -21,7 +24,9 @@ variable {ι : Type*} {α : ι → Type*} [LinearOrder ι] [∀ i, CompleteLinea
 
 namespace Pi
 
-/-! ### Lexicographic ordering -/
+/-!
+# Lexicographic ordering
+-/
 
 namespace Lex
 
@@ -100,7 +105,9 @@ noncomputable instance : CompleteLinearOrder (Πₗ i, α i) where
 
 end Lex
 
-/-! ### Colexicographic ordering -/
+/-!
+# Colexicographic ordering
+-/
 
 namespace Colex
 variable [WellFoundedGT ι]

@@ -9,28 +9,33 @@ public import Mathlib.Analysis.Real.Pi.Wallis
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stirling's formula
 
 This file proves Stirling's formula for the factorial.
-It states that $n!$ grows asymptotically like $\sqrt{2\pi n}(\frac{n}{e})^n$.
+It states that $`n!` grows asymptotically like $`\sqrt{2\pi n}(\frac{n}{e})^n`.
 
 Also some _global_ bounds on the factorial function and the Stirling sequence are proved.
 
 ## Proof outline
 
-The proof follows: <https://proofwiki.org/wiki/Stirling%27s_Formula>.
+The proof follows: [
+https://proofwiki.org/wiki/Stirling%27s\_Formula](https://proofwiki.org/wiki/Stirling%27s_Formula).
 
 We proceed in two parts.
 
-**Part 1**: We consider the sequence $a_n$ of fractions $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$
-and prove that this sequence converges to a real, positive number $a$. For this the two main
+*Part 1*: We consider the sequence $`a_n` of fractions $`\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}`
+and prove that this sequence converges to a real, positive number $`a`. For this the two main
 ingredients are
-- taking the logarithm of the sequence and
-- using the series expansion of $\log(1 + x)$.
 
-**Part 2**: We use the fact that the series defined in part 1 converges against a real number $a$
-and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
+* taking the logarithm of the sequence and
+* using the series expansion of $`\log(1 + x)`.
+
+*Part 2*: We use the fact that the series defined in part 1 converges against a real number $`a`
+and prove that $`a = \sqrt{\pi}`. Here the main ingredient is the convergence of Wallis' product
 formula for `π`.
 -/
 
@@ -45,13 +50,15 @@ open Finset Filter Real
 namespace Stirling
 
 /-!
-### Part 1
-https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
+# Part 1
+
+https://proofwiki.org/wiki/Stirling%27s\_Formula#Part\_1
 -/
 
 
-/-- Define `stirlingSeq n` as $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$.
-Stirling's formula states that this sequence has limit $\sqrt(π)$.
+/--
+Define `stirlingSeq n` as $`\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}`.
+Stirling's formula states that this sequence has limit $`\sqrt(π)`.
 -/
 noncomputable def stirlingSeq (n : ℕ) : ℝ :=
   n ! / (√(2 * n : ℝ) * (n / exp 1) ^ n)
@@ -163,8 +170,9 @@ theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq
   exact tendsto_atTop_ciInf stirlingSeq'_antitone ⟨x, hx'⟩
 
 /-!
-### Part 2
-https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
+# Part 2
+
+https://proofwiki.org/wiki/Stirling%27s\_Formula#Part\_2
 -/
 
 
@@ -224,7 +232,9 @@ lemma factorial_isEquivalent_stirling :
   ext n
   simp [field, stirlingSeq, mul_right_comm]
 
-/-! ### Global bounds -/
+/-!
+# Global bounds
+-/
 
 /--
 The Stirling sequence is bounded below by `√π`, for all positive naturals. Note that this bound

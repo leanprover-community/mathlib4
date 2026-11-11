@@ -10,33 +10,38 @@ public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adhesive categories
 
 ## Main definitions
-- `CategoryTheory.IsPushout.IsVanKampen`: A convenience formulation for a pushout being
+
+* `CategoryTheory.IsPushout.IsVanKampen`: A convenience formulation for a pushout being
   a van Kampen colimit.
-- `CategoryTheory.Adhesive`: A category is adhesive if it has pushouts and pullbacks along
+* `CategoryTheory.Adhesive`: A category is adhesive if it has pushouts and pullbacks along
   monomorphisms, and such pushouts are van Kampen.
 
 ## Main Results
-- `CategoryTheory.Type.adhesive`: The category of `Type` is adhesive.
-- `CategoryTheory.Adhesive.isPullback_of_isPushout_of_mono_left`: In adhesive categories,
+
+* `CategoryTheory.Type.adhesive`: The category of `Type` is adhesive.
+* `CategoryTheory.Adhesive.isPullback_of_isPushout_of_mono_left`: In adhesive categories,
   pushouts along monomorphisms are pullbacks.
-- `CategoryTheory.Adhesive.mono_of_isPushout_of_mono_left`: In adhesive categories,
+* `CategoryTheory.Adhesive.mono_of_isPushout_of_mono_left`: In adhesive categories,
   monomorphisms are stable under pushouts.
-- `CategoryTheory.Adhesive.desc_mono_of_mono`: If `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms
+* `CategoryTheory.Adhesive.desc_mono_of_mono`: If `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms
   in an adhesive category, then the map `pushout (pullback.fst a b) (pullback.snd a b) ⟶ Z` induced
   by their pullback is a monomorphism.
-- `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
+* `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
   regular (this implies that adhesive categories are balanced).
-- `CategoryTheory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
+* `CategoryTheory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
   has all pullbacks and all pushouts and is adhesive
 
 ## References
-- https://ncatlab.org/nlab/show/adhesive+category
-- [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 
+* https://ncatlab.org/nlab/show/adhesive+category
+* ‍\[Stephen Lack and Paweł Sobociński, Adhesive Categories\]\[adhesive2004\]
 -/
 
 @[expose] public section
@@ -323,10 +328,12 @@ lemma Adhesive.isPushout_isPullback_isPullback_hom_ext [Adhesive C] [Mono f] (H 
 
 attribute [local instance] Limits.hasPullback_symmetry in
 open IsPullback IsPushout pullback pushout in
-/-- If `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms in an adhesive category, then the map
+/--
+If `a : A ⟶ Z` and `b : B ⟶ Z` are monomorphisms in an adhesive category, then the map
 `pushout (pullback.fst a b) (pullback.snd a b) ⟶ Z` induced by their pullback is a monomorphism.
-See Theorem 5.1 in [Lack and Sobociński's *Adhesive Categories*][adhesive2004]. See
-also `CategoryTheory.IsPushout.desc_mono_of_isPullback`. -/
+See Theorem 5.1 in \[Lack and Sobociński's _Adhesive Categories_\]\[adhesive2004\]. See
+also `CategoryTheory.IsPushout.desc_mono_of_isPullback`.
+-/
 instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
     {a : A ⟶ Z} {b : B ⟶ Z} [Mono a] [Mono b] :
     Mono (pushout.desc a b pullback.condition) where

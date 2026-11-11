@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Covering.DensityTheorem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Liminf, limsup, and uniformly locally doubling measures.
 
@@ -19,10 +22,9 @@ carrying a uniformly locally doubling measure.
   of a metric space is unchanged almost everywhere for a uniformly locally doubling measure if the
   sequence of distances is multiplied by a positive scale factor. This is a generalisation of a
   result of Cassels, appearing as Lemma 9 on page 217 of
-  [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
+  ‍\[J.W.S. Cassels, _Some metrical theorems in Diophantine approximation. I_\]\[cassels1950\].
 * `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
   rather than closed thickenings.
-
 -/
 
 public section
@@ -36,11 +38,13 @@ variable {α : Type*}
 variable [PseudoMetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
 variable (μ : Measure α) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
 
-/-- This is really an auxiliary result en route to `blimsup_cthickening_ae_le_of_eventually_mul_le`
+/--
+This is really an auxiliary result en route to `blimsup_cthickening_ae_le_of_eventually_mul_le`
 (which is itself an auxiliary result en route to `blimsup_cthickening_mul_ae_eq`).
 
 NB: The `: Set α` type ascription is present because of
-https://github.com/leanprover-community/mathlib/issues/16932. -/
+https://github.com/leanprover-community/mathlib/issues/16932.
+-/
 theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s : ℕ → Set α}
     (hs : ∀ i, IsClosed (s i)) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0)) (hrp : 0 ≤ r₁)
     {M : ℝ} (hM : 0 < M) (hM' : M < 1) (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
@@ -150,10 +154,12 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   replace hj₃ := tsub_le_tsub_right hj₃ (↑C⁻¹ * μ (B j))
   rwa [ENNReal.add_sub_cancel_left hB] at hj₃
 
-/-- This is really an auxiliary result en route to `blimsup_cthickening_mul_ae_eq`.
+/--
+This is really an auxiliary result en route to `blimsup_cthickening_mul_ae_eq`.
 
 NB: The `: Set α` type ascription is present because of
-https://github.com/leanprover-community/mathlib/issues/16932. -/
+https://github.com/leanprover-community/mathlib/issues/16932.
+-/
 theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : ℕ → Set α} {M : ℝ}
     (hM : 0 < M) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0))
     (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
@@ -175,18 +181,20 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : �
     exact blimsup_cthickening_ae_le_of_eventually_mul_le_aux μ p hs
       (tendsto_nhds_max_right hr) hRp hM hM' hMr
 
-/-- Given a sequence of subsets `sᵢ` of a metric space, together with a sequence of radii `rᵢ`
+/--
+Given a sequence of subsets `sᵢ` of a metric space, together with a sequence of radii `rᵢ`
 such that `rᵢ → 0`, the set of points which belong to infinitely many of the closed
 `rᵢ`-thickenings of `sᵢ` is unchanged almost everywhere for a uniformly locally doubling measure if
 the `rᵢ` are all scaled by a positive constant.
 
 This lemma is a generalisation of Lemma 9 appearing on page 217 of
-[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
+‍\[J.W.S. Cassels, _Some metrical theorems in Diophantine approximation. I_\]\[cassels1950\].
 
 See also `blimsup_thickening_mul_ae_eq`.
 
 NB: The `: Set α` type ascription is present because of
-https://github.com/leanprover-community/mathlib/issues/16932. -/
+https://github.com/leanprover-community/mathlib/issues/16932.
+-/
 theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M)
     (r : ℕ → ℝ) (hr : Tendsto r atTop (𝓝 0)) :
     (blimsup (fun i => cthickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]
@@ -247,18 +255,20 @@ theorem blimsup_thickening_mul_ae_eq_aux (p : ℕ → Prop) (s : ℕ → Set α)
   have h₃ := blimsup_cthickening_ae_eq_blimsup_thickening (s := s) μ hr hr'
   exact h₃.symm.trans (h₂.trans h₁)
 
-/-- Given a sequence of subsets `sᵢ` of a metric space, together with a sequence of radii `rᵢ`
+/--
+Given a sequence of subsets `sᵢ` of a metric space, together with a sequence of radii `rᵢ`
 such that `rᵢ → 0`, the set of points which belong to infinitely many of the
 `rᵢ`-thickenings of `sᵢ` is unchanged almost everywhere for a uniformly locally doubling measure if
 the `rᵢ` are all scaled by a positive constant.
 
 This lemma is a generalisation of Lemma 9 appearing on page 217 of
-[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
+‍\[J.W.S. Cassels, _Some metrical theorems in Diophantine approximation. I_\]\[cassels1950\].
 
 See also `blimsup_cthickening_mul_ae_eq`.
 
 NB: The `: Set α` type ascription is present because of
-https://github.com/leanprover-community/mathlib/issues/16932. -/
+https://github.com/leanprover-community/mathlib/issues/16932.
+-/
 theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M : ℝ} (hM : 0 < M) (r : ℕ → ℝ)
     (hr : Tendsto r atTop (𝓝 0)) :
     (blimsup (fun i => thickening (M * r i) (s i)) atTop p : Set α) =ᵐ[μ]

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Algebra.GroupWithZero.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoid with zero and group with zero homomorphisms
 
@@ -15,7 +18,6 @@ This file defines homomorphisms of monoids with zero.
 
 We also define coercion to a function, and usual operations: composition, identity homomorphism,
 pointwise multiplication and pointwise inversion.
-
 
 ## Notation
 
@@ -53,15 +55,18 @@ end NeZero
 variable {F α β γ δ M₀ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] [MulZeroOneClass γ]
   [MulZeroOneClass δ]
 
-/-- `MonoidWithZeroHomClass F α β` states that `F` is a type of
+/--
+`MonoidWithZeroHomClass F α β` states that `F` is a type of
 `MonoidWithZero`-preserving homomorphisms.
 
-You should also extend this typeclass when you extend `MonoidWithZeroHom`. -/
+You should also extend this typeclass when you extend `MonoidWithZeroHom`.
+-/
 class MonoidWithZeroHomClass (F : Type*) (α β : outParam Type*) [MulZeroOneClass α]
     [MulZeroOneClass β] [FunLike F α β] : Prop
   extends MonoidHomClass F α β, ZeroHomClass F α β
 
-/-- `α →*₀ β` is the type of functions `α → β` that preserve
+/--
+`α →*₀ β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
 
 `MonoidWithZeroHom` is also used for group homomorphisms.
@@ -69,7 +74,8 @@ the `MonoidWithZero` structure.
 When possible, instead of parametrizing results over `(f : α →*₀ β)`,
 you should parametrize over `(F : Type*) [MonoidWithZeroHomClass F α β] (f : F)`.
 
-When you extend this structure, make sure to extend `MonoidWithZeroHomClass`. -/
+When you extend this structure, make sure to extend `MonoidWithZeroHomClass`.
+-/
 structure MonoidWithZeroHom (α β : Type*) [MulZeroOneClass α] [MulZeroOneClass β]
   extends ZeroHom α β, MonoidHom α β
 

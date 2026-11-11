@@ -12,6 +12,9 @@ public import Mathlib.Order.Interval.Set.Final
 public import Mathlib.Order.LatticeIntervals
 public import Mathlib.Order.SuccPred.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A structure to describe transfinite compositions
 
@@ -23,7 +26,6 @@ more properties or data for the morphisms `F.obj j ⟶ F.obj (Order.succ j)`
 which appear in the transfinite composition.
 See `MorphismProperty.TransfiniteCompositionOfShape` in the
 file `MorphismProperty.TransfiniteComposition`.
-
 -/
 
 @[expose] public section

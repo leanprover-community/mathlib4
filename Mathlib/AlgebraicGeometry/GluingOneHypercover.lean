@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The 1-hypercover of a glue data
 
@@ -19,7 +22,6 @@ for sections over `D.glued` of a sheaf of types over the big Zariski site.
 
 This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
-
 -/
 
 @[expose] public section

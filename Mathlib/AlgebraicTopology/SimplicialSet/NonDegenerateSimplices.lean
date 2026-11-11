@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set
 
@@ -18,7 +21,6 @@ a non degenerate simplex to the subcomplex of `X` it generates.
 
 Given an arbitrary simplex `x : X.S`, we show that there is a unique
 non degenerate `x.toN : X.N` such that `x.toN.subcomplex = x.subcomplex`.
-
 -/
 
 @[expose] public section

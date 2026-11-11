@@ -11,6 +11,9 @@ public import Mathlib.Probability.Kernel.RadonNikodym
 import Mathlib.Probability.Kernel.Composition.AbsolutelyContinuous
 import Mathlib.Probability.Kernel.Composition.WithDensity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Radon-Nikodym derivative of a composition product
 
@@ -31,7 +34,6 @@ If `α` is countable or `β` is countably generated, the kernels have a Radon-Ni
   product of `∂μ/∂ν` and `∂κ/∂η`.
 * `rnDeriv_measure_compProd_right`: the Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`
   (with the same measure) equals `∂κ/∂η`.
-
 -/
 
 
@@ -106,12 +108,14 @@ lemma rnDeriv_measure_compProd_left (μ ν : Measure α) (κ : Kernel α β)
     Measure.ae_eq_compProd_of_ae_eq_fst _ (by fun_prop) (by fun_prop)
       (Measure.rnDeriv_withDensity ν (by fun_prop))
 
-/-- The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the product of `∂μ/∂ν` and
+/--
+The Radon-Nikodym derivative `∂(μ ⊗ₘ κ)/∂(ν ⊗ₘ η)` equals the product of `∂μ/∂ν` and
 `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)`.
 
 See `rnDeriv_measure_compProd` for a version that replaces `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` by `∂κ/∂η`
 and does not require the absolute continuity hypothesis, assuming that `α` is countable or `β` is
-countably generated. -/
+countably generated.
+-/
 lemma rnDeriv_compProd [IsFiniteMeasure μ] [IsFiniteKernel κ] [IsFiniteKernel η]
     (h_ac : μ ⊗ₘ κ ≪ μ ⊗ₘ η) (ν : Measure α) [IsFiniteMeasure ν] :
     (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) =ᵐ[ν ⊗ₘ η]

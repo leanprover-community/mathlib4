@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.Primality.Lucas
 public import Mathlib.Init
 public import Mathlib.Tactic.Primality.Cert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Producers
 

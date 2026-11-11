@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.Order.Northcott
 public import Mathlib.RingTheory.PowerSeries.Substitution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construction of L-functions
 
@@ -22,6 +25,7 @@ This file constructs L-functions as formal Dirichlet series.
 ## Implementation notes
 
 We take the following route from polynomials to L-functions:
+
 * Starting from a polynomial in `T`, `PowerSeries.invOfUnit` gives the reciporical power series.
 * `ofPowerSeries` gives the local Euler factor as a formal Dirichlet series on powers of `q`.
 * `eulerProduct` gives the L-function as the formal product of these local Euler factors.
@@ -30,6 +34,7 @@ We take the following route from polynomials to L-functions:
 For example, the Riemann zeta function `ζ(s)` corresponds to taking `1 - T` at each prime `p`.
 
 For context, here is a diagram of the possible routes from polynomials to L-functions:
+
 ```
                    T=q⁻ˢ                     s ∈ ℂ
 [polynomials in T] ----> [polynomials in q⁻ˢ] ----> [analytic function in s]
@@ -57,10 +62,12 @@ section CommSemiring
 variable [CommSemiring R]
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
+/--
+The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
 For example, if `f = 1 + X + X² + ...` and `q = p`, then `f(q⁻ˢ) = 1 + p⁻ˢ + p⁻²ˢ + ...`.
 
-If `q ≤ 1` then `k ↦ q ^ k` is not injective, so we use the junk value `f.constantCoeff`. -/
+If `q ≤ 1` then `k ↦ q ^ k` is not injective, so we use the junk value `f.constantCoeff`.
+-/
 noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFunction R where
   toFun f := if hq : 1 < q then
     ⟨Function.extend (q ^ ·) (f.coeff ·) 0, by simp [Nat.ne_zero_of_lt hq]⟩ else
@@ -222,20 +229,24 @@ open Filter
 
 variable {ι R : Type*} [CommSemiring R]
 
-/-- A private uniform space instance on `ArithmeticFunction R` in order to define `eulerProduct` as
+/--
+A private uniform space instance on `ArithmeticFunction R` in order to define `eulerProduct` as
 a `tprod`. If `R` is viewed as having the discrete topology, then the resulting topology on
 `ArithmeticFunction R` is the topology of pointwise convergence (see `tendsto_iff`).
 
-See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
+See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API.
+-/
 local instance uniformSpace : UniformSpace (ArithmeticFunction R) :=
   letI : UniformSpace R := ⊥
   .comap ((↑) : ArithmeticFunction R → (ℕ → R)) inferInstance
 
-/-- A family `f i : ArithmeticFunction R` tends to `g` if and only if for each `n`, the `n`th
+/--
+A family `f i : ArithmeticFunction R` tends to `g` if and only if for each `n`, the `n`th
 coefficient of `f i` is eventually equal to the `n`th coefficient of `g`. If `R` is viewed as
 having the discrete topology, then this is the topology of pointwise convergence.
 
-See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API. -/
+See `tendsTo_eulerProduct_of_tendsTo` for the outward facing `eulerProduct` API.
+-/
 private theorem tendsto_iff
     {f : ι → ArithmeticFunction R} {F : Filter ι} {g : ArithmeticFunction R} :
     Tendsto f F (nhds g) ↔ ∀ n, ∀ᶠ i in F, f i n = g n := by

@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Push
 
 import all Lean.MetavarContext -- for `mkAuxMVarType`
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Without loss of generality tactic
 
@@ -20,7 +23,6 @@ where `P` holds (typically by symmetry). `wlog! h : P` is a variant that will al
 at `h : ¬ P`.
 
 The new goal will be placed at the top of the goal stack.
-
 -/
 
 public meta section
@@ -31,17 +33,19 @@ open Lean Meta Elab Term Tactic MetavarContext.MkBinding Parser.Tactic
 
 /-- The result of running `wlog` on a goal. -/
 structure WLOGResult where
-  /-- The `reductionGoal` requires showing that the case `h : ¬ P` can be reduced to the case where
-  `P` holds. It has two additional assumptions in its context:
+  /--
+  The `reductionGoal` requires showing that the case `h : ¬ P` can be reduced to the case where
+`P` holds. It has two additional assumptions in its context:
 
   * `h : ¬ P`: the assumption that `P` does not hold
-  * `H`: the statement that in the original context `P` suffices to prove the goal.
+* `H`: the statement that in the original context `P` suffices to prove the goal.
   -/
   reductionGoal : MVarId
-  /-- The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
+  /--
+  The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
 
   * `HFVarId`: `H`, the statement that in the original context `P` suffices to prove the goal.
-  * `negHypFVarId`: `h : ¬ P`, the assumption that `P` does not hold
+* `negHypFVarId`: `h : ¬ P`, the assumption that `P` does not hold
   -/
   reductionFVarIds : FVarId × FVarId
   /-- The original goal with the additional assumption `h : P`. -/
@@ -53,20 +57,23 @@ structure WLOGResult where
   `hypothesisGoal`). -/
   revertedFVarIds  : Array FVarId
 
-/-- `wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
+/--
+`wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
 `h : P` to the context of `goal`, and the `reductionGoal`, which requires showing that the case
 `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
 
 In `reductionGoal`, there will be two additional assumptions:
-- `h : ¬ P`: the assumption that `P` does not hold
-- `H`: which is the statement that in the old context `P` suffices to prove the goal.
+
+* `h : ¬ P`: the assumption that `P` does not hold
+* `H`: which is the statement that in the old context `P` suffices to prove the goal.
   If `H` is `none`, the name `this` is used.
 
 If `xs` is `none`, all hypotheses are reverted to produce the reduction goal's hypothesis `H`.
 Otherwise, the `xs` are elaborated to hypotheses in the context of `goal`, and only those
 hypotheses are reverted (and any that depend on them).
 
-If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible. -/
+If `h` is `none`, the hypotheses of types `P` and `¬ P` in both branches will be inaccessible.
+-/
 def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     (xs : Option (TSyntaxArray `ident) := none) (H : Option Name := none) :
     TacticM WLOGResult := goal.withContext do
@@ -135,12 +142,14 @@ def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `
       Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
         (ifUnchanged := .error)
 
-/-- `wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
+/--
+`wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
 requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds
 (typically by symmetry). The side goal will be at the top of the stack. In this side goal,
 there will be two additional assumptions:
-- `h : ¬ P`: the assumption that `P` does not hold
-- `this`: which is the statement that in the old context `P` suffices to prove the goal.
+
+* `h : ¬ P`: the assumption that `P` does not hold
+* `this`: which is the statement that in the old context `P` suffices to prove the goal.
   By default, the entire context is reverted to produce `this`.
 
 * `wlog h : P with H` gives the name `H` to the statement that `P` proves the goal.

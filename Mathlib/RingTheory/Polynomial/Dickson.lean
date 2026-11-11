@@ -14,6 +14,9 @@ import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.Polynomial.Roots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dickson polynomials
 
@@ -39,7 +42,7 @@ When `a=0` they are just the family of monomials `X ^ n`.
 
 ## References
 
-* [R. Lidl, G. L. Mullen and G. Turnwald, _Dickson polynomials_][MR1237403]
+* ‍\[R. Lidl, G. L. Mullen and G. Turnwald, _Dickson polynomials_\]\[MR1237403\]
 
 ## TODO
 
@@ -110,13 +113,12 @@ theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
 section Dickson
 
 /-!
-### A Lambda structure on `ℤ[X]`
+# A Lambda structure on `ℤ[X]`
 
 Mathlib doesn't currently know what a Lambda ring is.
 But once it does, we can endow `ℤ[X]` with a Lambda structure
 in terms of the `dickson 1 1` polynomials defined below.
 There is exactly one other Lambda structure on `ℤ[X]` in terms of binomial polynomials.
-
 -/
 
 theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :

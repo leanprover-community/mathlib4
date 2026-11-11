@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Fin.Tuple.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Take operations on tuples
 

@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.Tactic.IntervalCases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-dimensional vector spaces
 
@@ -39,10 +42,12 @@ section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-/-- The dimension of a strict submodule is strictly bounded by the dimension of the ambient
+/--
+The dimension of a strict submodule is strictly bounded by the dimension of the ambient
 space.
 
-See also `Submodule.length_lt`. -/
+See also `Submodule.length_lt`.
+-/
 theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
     finrank K s < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]

@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universally closed morphism
 
@@ -18,7 +21,6 @@ This implies that `f` is topologically proper (`AlgebraicGeometry.Scheme.Hom.isP
 
 We show that being universally closed is local at the target, and is stable under compositions and
 base changes.
-
 -/
 
 public section

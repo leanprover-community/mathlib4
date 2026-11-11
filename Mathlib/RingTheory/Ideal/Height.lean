@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Height of an Ideal
 
@@ -18,7 +21,6 @@ In this file, we define the height of a prime ideal and the height of an ideal.
 
 * `Ideal.height` : The height of an ideal. We defined it as the infimum of the `primeHeight` of the
   minimal prime ideals of I.
-
 -/
 
 public section

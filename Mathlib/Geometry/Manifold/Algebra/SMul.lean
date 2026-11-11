@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
 public import Mathlib.Geometry.Manifold.Diffeomorph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cⁿ monoid actions
 
@@ -30,6 +33,7 @@ For a group `G` acting smoothly on `M`, we define `Diffeomorph.smul`, scalar mul
 fixed `g : G` as a diffeomorphism of `M` (in analogy to `Homeomorph.smul`).
 
 See also:
+
 * `ContMDiffMul I n G` for continuous differentiability of multiplication `G × G → G` in a single
   type `G`,
 * `ContinuousSMul G M` for continuity of an action `G × M → M`,

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.RingTheory.Artinian.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie subalgebras
 
@@ -16,13 +19,13 @@ results.
 
 ## Main definitions
 
-  * `LieSubalgebra`
-  * `LieSubalgebra.incl`
-  * `LieSubalgebra.map`
-  * `LieHom.range`
-  * `LieEquiv.ofInjective`
-  * `LieEquiv.ofEq`
-  * `LieEquiv.ofSubalgebras`
+* `LieSubalgebra`
+* `LieSubalgebra.incl`
+* `LieSubalgebra.map`
+* `LieHom.range`
+* `LieEquiv.ofInjective`
+* `LieEquiv.ofEq`
+* `LieEquiv.ofSubalgebras`
 
 ## Tags
 
@@ -471,10 +474,12 @@ theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
   simp only [coe_sInf]
   exact isGLB_biInf
 
-/-- The set of Lie subalgebras of a Lie algebra form a complete lattice.
+/--
+The set of Lie subalgebras of a Lie algebra form a complete lattice.
 
 We provide explicit values for the fields `bot`, `top`, `inf` to get more convenient definitions
-than we would otherwise obtain from `completeLatticeOfInf`. -/
+than we would otherwise obtain from `completeLatticeOfInf`.
+-/
 instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
   { completeLatticeOfInf _ sInf_glb with
     bot := ⊥

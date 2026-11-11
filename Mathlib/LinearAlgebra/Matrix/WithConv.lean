@@ -9,10 +9,15 @@ public import Mathlib.Algebra.Star.LinearMap
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
-/-! # The convolutive star ring on matrices
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The convolutive star ring on matrices
 
 In this file, we provide the star algebra instance on `WithConv (Matrix m n R)` given by
-the Hadamard product and intrinsic star (i.e., the star of each element in the matrix). -/
+the Hadamard product and intrinsic star (i.e., the star of each element in the matrix).
+-/
 
 @[expose] public section
 
@@ -111,11 +116,13 @@ variable [CommSemiring α] [StarRing α] [Fintype n] [DecidableEq n]
 namespace WithConv
 
 variable (m n α) in
-/-- `WithConv (Matrix m n α)` is ⋆-algebraically equivalent to `WithConv ((n → α) →ₗ m → α)`.
+/--
+`WithConv (Matrix m n α)` is ⋆-algebraically equivalent to `WithConv ((n → α) →ₗ m → α)`.
 
 In particular, the convolutive product on linear maps corresponds to the Hadamard product
 on matrices and the intrinsic star on linear maps corresponds to taking the star of each element in
-the matrix. -/
+the matrix.
+-/
 def matrixToLin'StarAlgEquiv :
     WithConv (Matrix m n α) ≃⋆ₐ[α] WithConv ((n → α) →ₗ[α] m → α) where
   __ := congrLinearEquiv toLin'

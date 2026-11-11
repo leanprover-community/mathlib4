@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Insert
 public import Mathlib.Data.Set.Lattice.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructions involving sets of sets.
 
@@ -21,7 +24,6 @@ set of subsets of `α` which is closed under finite intersections.
 
 `finiteInterClosure S` is endowed with a term of type `FiniteInter` using
 `finiteInterClosure_finiteInter`.
-
 -/
 
 public section

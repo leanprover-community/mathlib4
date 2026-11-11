@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Clifford Algebras
 
@@ -29,12 +32,14 @@ The canonical linear map `M → CliffordAlgebra Q` is denoted `CliffordAlgebra.�
 
 The main theorems proved ensure that `CliffordAlgebra Q` satisfies the universal property
 of the Clifford algebra.
+
 1. `ι_comp_lift` is the fact that the composition of `ι Q` with `lift Q f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift Q f cond` with respect to 1.
 
 ## Implementation details
 
 The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, as follows.
+
 1. We define a relation `CliffordAlgebra.Rel Q` on `TensorAlgebra R M`.
    This is the smallest relation which identifies squares of elements of `M` with `Q m`.
 2. The Clifford algebra is the quotient of the tensor algebra by this relation.
@@ -53,7 +58,8 @@ namespace CliffordAlgebra
 
 open TensorAlgebra
 
-/-- `Rel` relates each `ι m * ι m`, for `m : M`, with `Q m`.
+/--
+`Rel` relates each `ι m * ι m`, for `m : M`, with `Q m`.
 
 The Clifford algebra of `M` is defined as the quotient modulo this relation.
 -/
@@ -177,7 +183,9 @@ theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
     lift Q ⟨g.toLinearMap.comp (ι Q), comp_ι_sq_scalar _⟩ = g := by
   exact (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).apply_symm_apply g
 
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 @[ext high]
 theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q →ₐ[R] A} :
     f.toLinearMap.comp (ι Q) = g.toLinearMap.comp (ι Q) → f = g := by
@@ -187,7 +195,8 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
   simp only [h]
 
 -- This proof closely follows `TensorAlgebra.induction`
-/-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
+/--
+If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `CliffordAlgebra Q`.
 
 See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.right_induction`.
@@ -244,10 +253,12 @@ theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebr
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← map_sub, ← map_sub]
     _ = algebraMap R _ (QuadraticMap.polar Q a b) := rfl
 
-/-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
+/--
+An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
 
 To show a function squares to the quadratic form, it suffices to show that
-`f x * f y + f y * f x = algebraMap _ _ (polar Q x y)` -/
+`f x * f y + f y * f x = algebraMap _ _ (polar Q x y)`
+-/
 theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (2 : A))
     (f : M →ₗ[R] A) :
     (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
@@ -301,7 +312,9 @@ theorem mul_ι_mul_ι_mul_comm_of_isOrtho
 
 end isOrtho
 
-/-- $aba$ is a vector. -/
+/--
+$`aba` is a vector.
+-/
 theorem ι_mul_ι_mul_ι (a b : M) :
     ι Q a * ι Q b * ι Q a = ι Q (QuadraticMap.polar Q a b • a - Q a • b) := by
   rw [ι_mul_ι_comm, sub_mul, mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← Algebra.commutes, ←
@@ -319,9 +332,11 @@ variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
 variable [Module R M₁] [Module R M₂] [Module R M₃]
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
-/-- Any linear map that preserves the quadratic form lifts to an `AlgHom` between algebras.
+/--
+Any linear map that preserves the quadratic form lifts to an `AlgHom` between algebras.
 
-See `CliffordAlgebra.equivOfIsometry` for the case when `f` is a `QuadraticForm.IsometryEquiv`. -/
+See `CliffordAlgebra.equivOfIsometry` for the case when `f` is a `QuadraticForm.IsometryEquiv`.
+-/
 def map (f : Q₁ →qᵢ Q₂) :
     CliffordAlgebra Q₁ →ₐ[R] CliffordAlgebra Q₂ :=
   CliffordAlgebra.lift Q₁

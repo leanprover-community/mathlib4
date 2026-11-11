@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.Galois.GaloisClosure
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Fundamental Theorem of Infinite Galois Theory
 
@@ -22,7 +25,6 @@ closed subgroups of the Galois group.
 In `K/k`, for any intermediate field `L` :
 
 * `fixingSubgroup_isClosed` : the subgroup fixing `L` (`Gal(K/L)`) is closed.
-
 * `fixedField_fixingSubgroup` : the field fixed by the
   subgroup fixing `L` is equal to `L` itself.
 
@@ -44,10 +46,8 @@ Special cases :
 
 * `isOpen_iff_finite` : The fixing subgroup of an intermediate field `L` is open if and only if
   `L` is finite-dimensional.
-
 * `normal_iff_isGalois` : The fixing subgroup of an intermediate field `L` is normal if and only if
   `L` is Galois.
-
 -/
 
 @[expose] public section

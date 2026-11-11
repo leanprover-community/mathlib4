@@ -10,12 +10,14 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.SurjectiveOnStalks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The residue field of a prime ideal
 
 We define `Ideal.ResidueField I` to be the residue field of the local ring `Localization.Prime I`,
 and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.UniformSpace.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Metrizable Spaces
 
@@ -31,14 +34,16 @@ namespace TopologicalSpace
 variable {ι X Y : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
   [∀ i, TopologicalSpace (A i)]
 
-/-- A topological space is *pseudometrizable* if there exists a pseudometric space structure
+/--
+A topological space is _pseudometrizable_ if there exists a pseudometric space structure
 compatible with the topology. To minimize imports, we implement this class in terms of the
 existence of a countably generated uniformity inducing the topology, which is mathematically
 equivalent.
 To endow such a space with a compatible uniformity, use
 `letI : UniformSpace X := TopologicalSpace.pseudoMetrizableSpaceUniformity X`.
 To endow such a space with a compatible distance, use
-`letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X`. -/
+`letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X`.
+-/
 class PseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   exists_countably_generated :
     ∃ u : UniformSpace X, u.toTopologicalSpace = t ∧ (uniformity X).IsCountablyGenerated

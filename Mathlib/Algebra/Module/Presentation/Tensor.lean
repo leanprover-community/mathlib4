@@ -8,11 +8,13 @@ module
 public import Mathlib.Algebra.Module.Presentation.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentation of the tensor product of two modules
 
 Given presentations of two `A`-modules `M₁` and `M₂`, we obtain a presentation of `M₁ ⊗[A] M₂`.
-
 -/
 
 @[expose] public section

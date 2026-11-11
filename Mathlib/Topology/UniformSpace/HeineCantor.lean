@@ -10,12 +10,15 @@ public import Mathlib.Topology.UniformSpace.Equicontinuity
 
 import Mathlib.Topology.UniformSpace.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact separated uniform spaces
 
 ## Main statement
 
-* **Heine-Cantor** theorem: continuous functions on compact uniform spaces with values in uniform
+* *Heine-Cantor* theorem: continuous functions on compact uniform spaces with values in uniform
   spaces are automatically uniformly continuous. There are several variations, the main one is
   `CompactSpace.uniformContinuous_of_continuous`.
 
@@ -33,7 +36,7 @@ open scoped Uniformity Topology
 variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
 /-!
-### Heine-Cantor theorem
+# Heine-Cantor theorem
 -/
 
 /-- Heine-Cantor: a continuous function on a compact uniform space is uniformly

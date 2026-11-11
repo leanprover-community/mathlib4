@@ -14,6 +14,9 @@ public import Mathlib.RingTheory.HahnSeries.Lex
 
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hahn embedding theorem on ordered modules
 
@@ -41,12 +44,13 @@ to a proof of the classic Hahn embedding theorem. (See `hahnEmbedding_isOrderedA
 
 ## References
 
-* [M. Hausner, J.G. Wendel, *Ordered vector spaces*][hausnerwendel1952]
+* ‍\[M. Hausner, J.G. Wendel, _Ordered vector spaces_\]\[hausnerwendel1952\]
 -/
 
 @[expose] public section
 
-/-! ### Step 1: base embedding
+/-!
+# Step 1: base embedding
 
 We start with `HahnEmbedding.ArchimedeanStrata` that gives a family of Archimedean submodules,
 and a "seed" `HahnEmbedding.Seed` that specifies how to embed each
@@ -144,10 +148,12 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
     symm
     simpa using h0
 
-/-- The minimal submodule that contains all strata.
+/--
+The minimal submodule that contains all strata.
 
 This is the domain of our "base" embedding into Hahn series, which we will extend into a full
-embedding. -/
+embedding.
+-/
 def baseDomain := ⨆ c, u.stratum c
 
 /-- `ArchimedeanStrata.stratum` as a submodule of
@@ -241,7 +247,8 @@ theorem mem_domain_baseEmbedding {x : M} {c : FiniteArchimedeanClass M} (h : x �
 
 end Seed
 
-/-! ### Step 2: characterize partial embedding
+/-!
+# Step 2: characterize partial embedding
 
 We characterize the base embedding as a member of a class of partial linear embeddings
 `HahnEmbedding.Partial`. These embeddings share nice properties, including being strictly monotone,
@@ -256,7 +263,9 @@ structure IsPartial (f : M →ₗ.[K] Lex R⟦FiniteArchimedeanClass M⟧) : Pro
   strictMono : StrictMono f
   /-- A partial Hahn embedding always extends `baseEmbedding`. -/
   baseEmbedding_le : seed.baseEmbedding ≤ f
-  /-- If a Hahn series $f$ is in the range, then any truncation of $f$ is also in the range. -/
+  /--
+  If a Hahn series $`f` is in the range, then any truncation of $`f` is also in the range.
+  -/
   truncLT_mem_range : ∀ x, ∀ c,
     toLex (HahnSeries.truncLTLinearMap K c (ofLex (f x))) ∈ LinearMap.range f.toFun
 
@@ -499,13 +508,15 @@ theorem coeff_eq_of_mem [IsOrderedAddMonoid R] [Archimedean R] (x : M) {y z : f.
   rw [this]
   exact Submodule.sub_mem _ hy hz
 
-/-! ### Step 3: extend the embedding
+/-!
+# Step 3: extend the embedding
 
 We create a larger `HahnEmbedding.Partial` from an existing one by adding a new element to the
 domain and assigning an appropriate output that preserves all `HahnEmbedding.Partial`'s properties.
 -/
 
-/-- Evaluate coefficients of the `HahnSeries` given an arbitrary input that's not necessarily in
+/--
+Evaluate coefficients of the `HahnSeries` given an arbitrary input that's not necessarily in
 `f`'s domain. The coefficient is picked from `y` that is "close enough" to `x` (their difference
 is in a higher `ArchimedeanClass`). If no such `y` exists (in other words, x is "isolated"), set the
 coefficient to 0.
@@ -645,14 +656,16 @@ theorem eval_ne [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
   obtain rfl | ne := eq_or_ne u 0
   exacts [Ne.lt_top (by simpa), (mk_lt_mk ..).mp (hu ne)]
 
-/-- If there is a `y` in `f`'s domain with `c = ArchimedeanClass (y - x)`, but there
+/--
+If there is a `y` in `f`'s domain with `c = ArchimedeanClass (y - x)`, but there
 is no closer `z` to `x` where the difference is of a higher `ArchimedeanClass`, then
 `f.eval x` is simply `f.val y` truncated at `c`.
 
 This doesn't mean every `x` can be evaluated this way: it is possible that one can find
 an infinite chain of `y` that keeps getting closer to `x` in terms of Archimedean classes,
 yet `x` is still isolated within a very high Archimedean class. In fact, in the next theorem,
-we will show that there is always such chain for `x` not in `f`'s domain. -/
+we will show that there is always such chain for `x` not in `f`'s domain.
+-/
 theorem eval_eq_truncLT [IsOrderedAddMonoid R] [Archimedean R] {x : M}
     {c : FiniteArchimedeanClass M} {y : f.val.domain}
     (hy : ArchimedeanClass.mk (y.val - x) = c.val) (h : ∀ z : f.val.domain, z.val - x ∉ ball K c) :
@@ -858,7 +871,8 @@ theorem lt_extend [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.v
   contrapose! hx with h
   simpa using! Submodule.mem_sup_right (by simp)
 
-/-! ### Step 4: use Zorn's lemma
+/-!
+# Step 4: use Zorn's lemma
 
 We show that `sSup` makes sense on `HahnEmbedding.Partial`, which allows us to use Zorn's lemma
 to assert the existence of maximal embedding. Since we already show that we can create greater
@@ -957,12 +971,14 @@ end Partial
 
 end HahnEmbedding
 
-/-- **Hahn embedding theorem for an ordered module**
+/--
+*Hahn embedding theorem for an ordered module*
 
 There exists a strictly monotone `M →ₗ[K] Lex R⟦FiniteArchimedeanClass M⟧` that maps
 `ArchimedeanClass M` to `HahnSeries.orderTop` in the expected way, as long as
 `HahnEmbedding.Seed K M R` is nonempty. The `HahnEmbedding.Partial` with maximal domain is the
-desired embedding. -/
+desired embedding.
+-/
 theorem hahnEmbedding_isOrderedModule [IsOrderedAddMonoid R] [Archimedean R]
     [h : Nonempty (HahnEmbedding.Seed K M R)] :
     ∃ f : M →ₗ[K] Lex R⟦FiniteArchimedeanClass M⟧, StrictMono f ∧

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Projection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis from a split exact sequence
 
@@ -85,12 +88,14 @@ lemma Submodule.top_le_span_of_exact_of_retraction (hg : Function.Surjective g)
   simp only [codisjoint_iff, Set.top_eq_univ] at hab
   rwa [Set.Sum.elim_range, Set.range_comp, Set.range_comp, ← Set.image_union, hab, Set.image_univ]
 
-/-- Let `0 → K → M → P → 0` be a split exact sequence of `R`-modules, let `s : M → K` be a
+/--
+Let `0 → K → M → P → 0` be a split exact sequence of `R`-modules, let `s : M → K` be a
 retraction of `f` and `v` be a basis of `M` indexed by `κ ⊕ σ`. Then
 if `s vᵢ = 0` for `i : κ` and `(s vⱼ)ⱼ` is linear independent for `j : σ`, then
 the images of `vᵢ` for `i : κ` form a basis of `P`.
 
-For convenience this is stated for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`. -/
+For convenience this is stated for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`.
+-/
 noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
     (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
     (hlib : LinearIndependent R (s ∘ v ∘ b))

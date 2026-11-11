@@ -10,17 +10,20 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 import Mathlib.Topology.MetricSpace.Pseudo.Basic
 
-/-! # Proper spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Proper spaces
 
 ## Main definitions and results
-* `ProperSpace α`: a `PseudoMetricSpace` where all closed balls are compact
 
+* `ProperSpace α`: a `PseudoMetricSpace` where all closed balls are compact
 * `isCompact_sphere`: any sphere in a proper space is compact.
 * `proper_of_compact`: compact spaces are proper.
 * `secondCountable_of_proper`: proper spaces are sigma-compact, hence second countable.
 * `locallyCompact_of_proper`: proper spaces are locally compact.
 * `pi_properSpace`: finite products of proper spaces are proper.
-
 -/
 
 public section

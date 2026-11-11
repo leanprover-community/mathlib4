@@ -8,15 +8,19 @@ module
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian rings and modules
 
 The following are equivalent for a module M over a ring R:
+
 1. Every increasing chain of submodules M₁ ⊆ M₂ ⊆ M₃ ⊆ ⋯ eventually stabilises.
 2. Every submodule is finitely generated.
 
-A module satisfying these equivalent conditions is said to be a *Noetherian* R-module.
-A ring is a *Noetherian ring* if it is Noetherian as a module over itself.
+A module satisfying these equivalent conditions is said to be a _Noetherian_ R-module.
+A ring is a _Noetherian ring_ if it is Noetherian as a module over itself.
 
 (Note that we do not assume yet that our rings are commutative,
 so perhaps this should be called "left-Noetherian".
@@ -35,18 +39,17 @@ Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodul
 * `isNoetherian_iff` is the theorem that an R-module M is Noetherian iff `>` is well-founded on
   `Submodule R M`.
 
-Note that the Hilbert basis theorem, that if a commutative ring R is Noetherian then so is R[X],
+Note that the Hilbert basis theorem, that if a commutative ring R is Noetherian then so is R\[X\],
 is proved in `RingTheory.Polynomial`.
 
 ## References
 
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
+* ‍\[P. Samuel, _Algebraic Theory of Numbers_\]\[samuel1967\]
 
 ## Tags
 
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
-
 -/
 
 public section

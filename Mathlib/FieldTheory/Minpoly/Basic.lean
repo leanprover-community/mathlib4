@@ -7,13 +7,15 @@ module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials
 
 This file defines the minimal polynomial of an element `x` of an `A`-algebra `B`,
 under the assumption that x is integral over `A`, and derives some basic properties
 such as irreducibility under the assumption `B` is a domain.
-
 -/
 
 @[expose] public section
@@ -28,7 +30,8 @@ section MinPolyDef
 variable (A) [CommRing A] [Ring B] [Algebra A B]
 
 open scoped Classical in
-/-- Suppose `x : B`, where `B` is an `A`-algebra.
+/--
+Suppose `x : B`, where `B` is an `A`-algebra.
 
 The minimal polynomial `minpoly A x` of `x`
 is a monic polynomial with coefficients in `A` of smallest degree that has `x` as its root,

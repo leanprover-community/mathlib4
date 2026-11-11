@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exactness properties of the difference map on tensor products
 
@@ -25,7 +28,6 @@ by `s ↦ s ⊗ₜ 1 - 1 ⊗ₜ s`.
 ## Main results
 
 * `IsEffective.of_faithfullyFlat`: `IsEffective R S` is true for any faithfully flat `R`-algebra `S`
-
 -/
 
 @[expose] public section

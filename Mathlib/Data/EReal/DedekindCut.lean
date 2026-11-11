@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Order.Completion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Dedekind completion of the rationals
 

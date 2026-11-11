@@ -8,6 +8,9 @@ module
 public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompactlyGenerated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The adjunction between condensed sets and topological spaces
 

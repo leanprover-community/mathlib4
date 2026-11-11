@@ -10,16 +10,19 @@ public import Mathlib.RingTheory.RamificationInertia.Ramification
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unramified and ramification index
 
 We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate of `IsUnramifiedAt`.
 
 ## Main result
-- `Algebra.isUnramifiedAt_iff_of_isDedekindDomain`:
+
+* `Algebra.isUnramifiedAt_iff_of_isDedekindDomain`:
   Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S ⊇ R` be a Dedekind domain
   that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`.
-
 -/
 
 public section
@@ -132,11 +135,13 @@ theorem isUnramifiedIn_bot [IsDomain R] [IsDomain S] [FaithfulSMul R S] [CharZer
   intro P _ hP
   simpa [Ideal.eq_bot_of_liesOver_bot R P] using isUnramifiedAt_bot
 
-/-- Let `S` be a Dedekind domain that is torsion-free over a domain `R`, and let `p ≠ ⊥` be an
+/--
+Let `S` be a Dedekind domain that is torsion-free over a domain `R`, and let `p ≠ ⊥` be an
 ideal of `R`. Then `p` is unramified in `S` if and only if `S` is unramified at every maximal
 ideal `P` of `S` lying over `p`.
 
-See `Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain` if `R` is of characteristic zero. -/
+See `Algebra.isUnramifiedIn_iff_forall_of_isDedekindDomain` if `R` is of characteristic zero.
+-/
 theorem isUnramifiedIn_iff_forall_of_isDedekindDomain' [IsDomain R] [IsDedekindDomain S]
     [Module.IsTorsionFree R S] {p : Ideal R} (hp : p ≠ ⊥) :
     IsUnramifiedIn S p ↔

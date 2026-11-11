@@ -12,13 +12,17 @@ public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geck's construction of a Lie algebra associated to a root system
 
 This file contains an implementation of Geck's construction of a semisimple Lie algebra from a
-reduced crystallographic root system. It follows [Geck][Geck2017] quite closely.
+reduced crystallographic root system. It follows \[Geck\]\[Geck2017\] quite closely.
 
 ## Main definitions:
+
 * `RootPairing.GeckConstruction.lieAlgebra`: the Geck construction of the Lie algebra associated to
   a root system with distinguished base.
 * `RootPairing.GeckConstruction.cartanSubalgebra`: a distinguished subalgebra corresponding to a
@@ -29,11 +33,13 @@ reduced crystallographic root system. It follows [Geck][Geck2017] quite closely.
 ## Alternative approaches
 
 There are at least three ways to construct a Lie algebra from a root system:
+
 1. As a quotient of a free Lie algebra, using the Serre relations
-2. Directly defining the Lie bracket on $H ⊕ K^∣Φ|$
+2. Directly defining the Lie bracket on $`H ⊕ K^∣Φ|`
 3. The Geck construction
 
 We comment on these as follows:
+
 1. This construction takes just a matrix as input. It yields a semisimple Lie algebra iff the
    matrix is a Cartan matrix but it is quite a lot of work to prove this. On the other hand, it also
    allows construction of Kac-Moody Lie algebras. It has been implemented as `Matrix.ToLieAlgebra`
@@ -42,12 +48,11 @@ We comment on these as follows:
    data to determine a collection of extraspecial pairs of roots. The additional data for the
    extraspecial pairs is required to pin down certain signs when defining the Lie bracket. (These
    signs can be interpreted as a set-theoretic splitting of Tits's extension of the Weyl group by
-   an elementary 2-group of order $2^l$ where $l$ is the rank.)
+   an elementary 2-group of order $`2^l` where $`l` is the rank.)
 3. This construction takes a root system with base as input and is implemented here.
 
 There seems to be no known construction of a Lie algebra from a root system without first choosing
 a base: https://mathoverflow.net/questions/495434/
-
 -/
 
 @[expose] public section
@@ -167,18 +172,22 @@ def ω :
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-/-- Geck's construction of the Lie algebra associated to a root system with distinguished base.
+/--
+Geck's construction of the Lie algebra associated to a root system with distinguished base.
 
 Note that it is convenient to include `range h` in the Lie span, to make it elementary that it
 contains `RootPairing.GeckConstruction.cartanSubalgebra`, and not depend on
-`RootPairing.GeckConstruction.lie_e_f_same`. -/
+`RootPairing.GeckConstruction.lie_e_f_same`.
+-/
 def lieAlgebra [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range h ∪ range e ∪ range f)
 
-/-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck construction.
+/--
+A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck construction.
 
-See also `RootPairing.GeckConstruction.cartanSubalgebra'`. -/
+See also `RootPairing.GeckConstruction.cartanSubalgebra'`.
+-/
 def cartanSubalgebra [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) where
   __ := Submodule.span R (range h)

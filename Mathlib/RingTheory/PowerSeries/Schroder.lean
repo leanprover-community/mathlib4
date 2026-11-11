@@ -8,23 +8,27 @@ module
 public import Mathlib.Combinatorics.Enumerative.Schroder
 public import Mathlib.RingTheory.PowerSeries.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Schröder Numbers Power Series
 
 This file defines lemmas and theorems about the power series for large and small Schröder numbers.
 
 ## Main Definitions
+
 * `PowerSeries.largeSchroderSeries`: The power series for large Schröder numbers.
 * `PowerSeries.smallSchroderSeries`: The power series for small Schröder numbers.
 
 ## Main Results
+
 * `largeSchroderSeries_eq_one_add_X_mul_largeSchroderSeries_add_X_mul_largeSchroderSeries_sq`:
   The functional equation for the large Schröder numbers power series.
 
 ## TODO
 
 * Prove the small Schröder numbers power series.
-
 -/
 
 @[expose] public section

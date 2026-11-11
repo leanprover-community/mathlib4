@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Profunctors
 
@@ -21,7 +24,7 @@ of a profunctor with functors, and the profunctors in both directions correspond
 
 ## Future work
 
-- Use profunctor composition to define the bicategory of categories and profunctors.
+* Use profunctor composition to define the bicategory of categories and profunctors.
 -/
 
 @[expose] public section

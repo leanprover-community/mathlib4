@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 import Mathlib.Algebra.Order.Archimedean.Real.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Standard part function
 
@@ -31,7 +34,7 @@ part function on `Hyperreal`.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Standard_part_function
+* https://en.wikipedia.org/wiki/Standard\_part\_function
 -/
 
 @[expose] public noncomputable section
@@ -41,7 +44,9 @@ variable
   {K : Type*} [LinearOrder K] [Field K] [IsOrderedRing K] {x y : K}
   {R : Type*} [LinearOrder R] [CommRing R] [IsStrictOrderedRing R] [Archimedean R]
 
-/-! ### Finite residue field -/
+/-!
+# Finite residue field
+-/
 
 variable (K) in
 /-- The valuation subring of elements in non-negative Archimedean classes, i.e. elements bounded by
@@ -263,12 +268,16 @@ theorem ofArchimedean_inj (f : R →+*o K) {x y : R} :
 
 end FiniteResidueField
 
-/-! ### Standard part -/
+/-!
+# Standard part
+-/
 
-/-- The standard part of a `FiniteElement` is the unique real number with an infinitesimal
+/--
+The standard part of a `FiniteElement` is the unique real number with an infinitesimal
 difference.
 
-For any infinite inputs, this function outputs a junk value of 0. -/
+For any infinite inputs, this function outputs a junk value of 0.
+-/
 @[no_expose]
 def stdPart (x : K) : ℝ :=
   if h : 0 ≤ mk x then

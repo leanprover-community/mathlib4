@@ -14,6 +14,9 @@ public import Mathlib.Topology.Algebra.Monoid.Defs
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Fintype.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on infinite sums and products in topological monoids
 
@@ -21,7 +24,6 @@ This file contains many simple lemmas on `tsum`, `HasSum` etc, which are placed 
 keep the basic file of definitions as short as possible.
 
 Results requiring a group (rather than monoid) structure on the target should go in `Group.lean`.
-
 -/
 
 public section
@@ -581,7 +583,9 @@ theorem tprod_mem {ι S : Type*} {s : S} [SetLike S α] [SubmonoidClass S α]
   · rw [tprod_bot hL]
     exact finprod_induction _ (one_mem _) (fun _ _ => mul_mem) h
 
-/-! ### `tprod` on subsets - part 1 -/
+/-!
+# `tprod` on subsets - part 1
+-/
 
 @[to_additive]
 theorem tprod_subtype_eq_of_mulSupport_subset {f : β → α} {s : Set β} (hs : mulSupport f ⊆ s) :

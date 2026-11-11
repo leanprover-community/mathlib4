@@ -16,6 +16,9 @@ import Lean.Meta.Transform
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional operations on Expr and related types
 
@@ -30,7 +33,9 @@ namespace Lean
 
 namespace BinderInfo
 
-/-! ### Declarations about `BinderInfo` -/
+/-!
+# Declarations about `BinderInfo`
+-/
 
 /-- The brackets corresponding to a given `BinderInfo`. -/
 def brackets : BinderInfo → String × String
@@ -118,7 +123,9 @@ def mkConst' (constName : Name) : MetaM Expr := do
 
 namespace Expr
 
-/-! ### Declarations about `Expr` -/
+/-!
+# Declarations about `Expr`
+-/
 
 def bvarIdx? : Expr → Option Nat
   | bvar idx => some idx
@@ -138,7 +145,8 @@ def getAppApps (e : Expr) : Array Expr :=
   let nargs := e.getAppNumArgs
   getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 
-/-- Erase proofs in an expression by replacing them with `sorry`s.
+/--
+Erase proofs in an expression by replacing them with `sorry`s.
 
 This function replaces all proofs in the expression
 and in the types that appear in the expression
@@ -185,9 +193,10 @@ Runs `cleanupAnnotations` on `type` and `forallE` bodies, and ignores metadata i
 /--
 Gets the indices `i` (in ascending order) of the binders of a nested `.forallE`,
 `(x₀ : A₀) → (x₁ : A₁) → ⋯ → X`, such that
-- the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
--  `p Aᵢ` is `true`
-- The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ`. (It's in this sense that
+
+* the binder `[xᵢ : Aᵢ]` has `instImplicit` `binderInfo`
+* `p Aᵢ` is `true`
+* The rest of the type `(xᵢ₊₁ : Aᵢ₊₁) → ⋯ → X` does not depend on `xᵢ`. (It's in this sense that
   `xᵢ : Aᵢ` is "unused".)
 
 Note that the argument to `p` may have loose bvars. This is a performance optimization.
@@ -256,10 +265,12 @@ section recognizers
 
 /--
 Return `some n` if `e` is one of the following
-- a nat literal (numeral)
-- `Nat.zero`
-- `Nat.succ x` where `isNumeral x`
-- `OfNat.ofNat _ x _` where `isNumeral x` -/
+
+* a nat literal (numeral)
+* `Nat.zero`
+* `Nat.succ x` where `isNumeral x`
+* `OfNat.ofNat _ x _` where `isNumeral x`
+-/
 partial def numeral? (e : Expr) : Option Nat :=
   if let some n := e.rawNatLit? then n
   else
@@ -298,11 +309,13 @@ otherwise, it returns `none`. -/
   let (type, _, lhs, rhs) ← p.app4? ``LT.lt
   return (type, lhs, rhs)
 
-/-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
+/--
+Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
 where `lhs : tyLhs` and `rhs : tyRhs`,
 and where `lhs` is related to `rhs` by the respective relation.
 
-See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`. -/
+See also `Lean.Expr.iff?`, `Lean.Expr.eq?`, and `Lean.Expr.heq?`.
+-/
 def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
   if let some (lhs, rhs) := ty.iff? then
     some (.sort .zero, lhs, .sort .zero, rhs)
@@ -311,11 +324,13 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
   else
     ty.heq?
 
-/-- Returns `true` if the provided `Expr` is exactly of the form `sorryAx _ _`.
+/--
+Returns `true` if the provided `Expr` is exactly of the form `sorryAx _ _`.
 This is the form produced by the `sorry` term/tactic.
 
 Contrast with `Lean.Expr.isSorry`, which additionally returns `true` for any function application of
-`sorry`/`sorryAx` (including e.g. `sorryAx α true x y z`). -/
+`sorry`/`sorryAx` (including e.g. `sorryAx α true x y z`).
+-/
 def isSorryAx : Expr → Bool
   | .app (.app f _ ) _ => f.isConstOf ``sorryAx
   | _ => false
@@ -437,18 +452,22 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
 
-/-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
+/--
+Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
 return a `forall x, Not (p x)` and a proof for it.
 
-This function handles nested existentials. -/
+This function handles nested existentials.
+-/
 partial def forallNot_of_notExists (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
   let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
   go lvl A p hNotEx
 where
-  /-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
-      return a `forall x, Not (p x)` and a proof for it.
+  /--
+  Given `(hNotEx : Not (@Exists.{lvl} A p))`,
+return a `forall x, Not (p x)` and a proof for it.
 
-      This function handles nested existentials. -/
+  This function handles nested existentials.
+  -/
   go (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
     let xn ← mkFreshUserName `x
     withLocalDeclD xn A fun x => do

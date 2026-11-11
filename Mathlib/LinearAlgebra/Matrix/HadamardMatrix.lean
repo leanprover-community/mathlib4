@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.Kronecker
 
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hadamard matrices
 
@@ -21,7 +24,7 @@ closure, the order identity `n = s * star s` from constant row or column sums, t
 
 ## References
 
-* [W. de Launey and D. L. Flannery, *Algebraic Design Theory*][deLauneyFlannery2011]
+* ‍\[W. de Launey and D. L. Flannery, _Algebraic Design Theory_\]\[deLauneyFlannery2011\]
 -/
 
 public section
@@ -38,16 +41,18 @@ variable [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 section Semiring
 variable [Semiring R] [StarRing R]
 
-/-- A square matrix over a `*`-semiring whose entries are unitary and whose rows and columns are
+/--
+A square matrix over a `*`-semiring whose entries are unitary and whose rows and columns are
 orthogonal with respect to the conjugate transpose:
 `A * Aᴴ = n • 1` and `Aᴴ * A = n • 1`.
 
 Over a commutative ring in which the order is regular, the one-sided condition from
-[Definition 2.3.1][deLauneyFlannery2011] implies this predicate by
+‍\[Definition 2.3.1\]\[deLauneyFlannery2011\] implies this predicate by
 `IsHadamard.of_mul_conjTranspose`; over a ring with trivial star (e.g. `ℝ`, `ℤ`), the entry
 condition becomes `A i j = 1 ∨ A i j = -1`. Over `ℂ`, the entry condition becomes `‖A i j‖ = 1`,
 generalizing the fourth-root complex Hadamard matrices of
-[Definition 2.7.1][deLauneyFlannery2011]. -/
+‍\[Definition 2.7.1\]\[deLauneyFlannery2011\].
+-/
 @[mk_iff] structure IsHadamard (A : Matrix n n R) : Prop where
   apply_mem (i j : n) : A i j ∈ unitary R
   mul_conjTranspose : A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R)
@@ -106,13 +111,15 @@ theorem IsHadamard.kronecker {A : Matrix m m R} {B : Matrix n n R}
         simp only [← Matrix.mul_apply, mul_smul_comm, hB.conjTranspose_mul]
         simp [Matrix.one_apply, ← Nat.cast_mul, ← ite_and]
 
-/-- A Hadamard matrix with constant column sum `s` has order `s * star s`, provided the order
+/--
+A Hadamard matrix with constant column sum `s` has order `s * star s`, provided the order
 is regular in `R`.
 
 The row-sum form is `IsHadamard.card_eq_star_mul_of_const_row_sum`; over a ring with trivial
 star the conclusion becomes `(Fintype.card n : R) = s ^ 2`, a slightly stronger form of
-[Theorem 2.3.7][deLauneyFlannery2011]: only a constant sum hypothesis on one side is needed
-under the two-sided orthogonality condition. -/
+‍\[Theorem 2.3.7\]\[deLauneyFlannery2011\]: only a constant sum hypothesis on one side is needed
+under the two-sided orthogonality condition.
+-/
 theorem IsHadamard.card_eq_mul_star_of_const_col_sum {s : R}
     (hA : A.IsHadamard) (hcard : IsRegular (Fintype.card n : R))
     (hcol : ∀ j, ∑ i, A i j = s) : (Fintype.card n : R) = s * star s := by
@@ -132,8 +139,10 @@ theorem IsHadamard.card_eq_mul_star_of_const_col_sum {s : R}
       (Fintype.card n : R) * (s * star s) by
     simpa [pow_two] using hleft.symm.trans hright
 
-/-- A Hadamard matrix with constant row sum `s` has order `star s * s`, provided the order
-is regular in `R`. This generalizes [Theorem 2.3.7][deLauneyFlannery2011]. -/
+/--
+A Hadamard matrix with constant row sum `s` has order `star s * s`, provided the order
+is regular in `R`. This generalizes \[Theorem 2.3.7\]\[deLauneyFlannery2011\].
+-/
 theorem IsHadamard.card_eq_star_mul_of_const_row_sum {s : R}
     (hA : A.IsHadamard) (hcard : IsRegular (Fintype.card n : R))
     (hrow : ∀ i, ∑ j, A i j = s) : (Fintype.card n : R) = star s * s := by
@@ -146,10 +155,12 @@ end Semiring
 section CommSemiring
 variable [CommSemiring R] [StarRing R] {A : Matrix n n R}
 
-/-- The transpose of a Hadamard matrix is Hadamard.
+/--
+The transpose of a Hadamard matrix is Hadamard.
 
 Unlike `IsHadamard.conjTranspose` this requires commutativity: over a noncommutative ring the
-transpose of a Hadamard matrix need not be Hadamard. -/
+transpose of a Hadamard matrix need not be Hadamard.
+-/
 theorem IsHadamard.transpose (hA : A.IsHadamard) : Aᵀ.IsHadamard where
   apply_mem i j := hA.apply_mem j i
   mul_conjTranspose := by
@@ -207,10 +218,12 @@ theorem IsHadamard.isRegular_det (hA : A.IsHadamard)
     exact hcard.pow _
   exact this.of_mul_left
 
-/-- Build a Hadamard matrix from the one-sided row-orthogonality condition, provided the order is
+/--
+Build a Hadamard matrix from the one-sided row-orthogonality condition, provided the order is
 regular in `R`.
 
-This is the matrix form of [Theorem 2.3.6][deLauneyFlannery2011]. -/
+This is the matrix form of \[Theorem 2.3.6\]\[deLauneyFlannery2011\].
+-/
 theorem IsHadamard.of_mul_conjTranspose
     (hentry : ∀ i j, A i j ∈ unitary R)
     (hmul : A * Aᴴ = (Fintype.card n : R) • (1 : Matrix n n R))
@@ -236,9 +249,11 @@ theorem isHadamard_iff_mul_conjTranspose
 
 end CommRing
 
-/-- An integer Hadamard matrix of order greater than two has order divisible by four.
+/--
+An integer Hadamard matrix of order greater than two has order divisible by four.
 
-This is the standard divisibility obstruction in [Section 2.3][deLauneyFlannery2011]. -/
+This is the standard divisibility obstruction in \[Section 2.3\]\[deLauneyFlannery2011\].
+-/
 theorem IsHadamard.four_dvd_card {A : Matrix n n ℤ}
     (hA : A.IsHadamard) (hcard : 2 < Fintype.card n) : 4 ∣ Fintype.card n := by
   have hpm : ∀ i j, A i j = 1 ∨ A i j = -1 := fun i j =>

@@ -13,10 +13,14 @@ import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 import Mathlib.LinearAlgebra.QuadraticForm.Dual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of bases for crystallographic root systems
 
 ## Main results:
+
 * `RootPairing.Base.mk'`: an alternate constructor for `RootPairing.Base` which demands the axioms
   for roots but not for coroots.
 * `RootPairing.nonempty_base`: base existence proof for reduced crystallographic root systems.
@@ -26,14 +30,13 @@ import Mathlib.LinearAlgebra.QuadraticForm.Dual
 The proof needs a set of ordered coefficients, even though the ultimate existence statement does
 not. There are at least two ways to deal with this:
 (a) Using the fact that a crystallographic root system induces a `ℚ`-structure, pass to the root
-    system over `ℚ` defined by `RootPairing.restrictScalarsRat`, and develop a theory of base
-    change for root system bases.
+system over `ℚ` defined by `RootPairing.restrictScalarsRat`, and develop a theory of base
+change for root system bases.
 (b) Introduce a second set of ordered coefficients (ultimately taken to be `ℚ`) and develop a
-    theory with two sets of coefficients simultaneously in play.
+theory with two sets of coefficients simultaneously in play.
 
 It is not really clear which is the better approach but here we opt for approach (b) as it seems
 to yield slightly more general results.
-
 -/
 
 @[expose] public section
@@ -49,7 +52,9 @@ section CommRing
 variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
   {S : Type*} [LinearOrder S] [AddCommGroup S] [IsOrderedAddMonoid S] (f : M →+ S)
 
-/-- This is [serre1965](Ch. V, §9, Lemma 3). -/
+/--
+This is \[serre1965\](Ch. V, §9, Lemma 3).
+-/
 lemma baseOf_pairwise_pairing_le_zero [CharZero R] [IsDomain R] [P.IsCrystallographic]
     (hf : ∀ i, f (P.root i) ≠ 0) :
     (baseOf P.root f).Pairwise fun i j ↦ P.pairingIn ℤ i j ≤ 0 := by
@@ -59,13 +64,15 @@ lemma baseOf_pairwise_pairing_le_zero [CharZero R] [IsDomain R] [P.IsCrystallogr
   contrapose! this
   exact P.root_sub_root_mem_of_pairingIn_pos this hne
 
-/-- This lemma is usually established for root systems with coefficients `R` equal to `ℚ` or `ℝ`, in
+/--
+This lemma is usually established for root systems with coefficients `R` equal to `ℚ` or `ℝ`, in
 which case one may take `S = R`. However our statement allows for more general coefficients such as
 `R = ℂ` and `S = ℚ`.
 
 This lemma is mostly a stepping stone en route to `RootPairing.linearIndepOn_root_baseOf` (where
 linear independence is established over `R` rather than just `S`) except that this version does not
-make the field assumption and so covers the case `S = R = ℤ` which the latter does not. -/
+make the field assumption and so covers the case `S = R = ℤ` which the latter does not.
+-/
 lemma linearIndepOn_root_baseOf' [IsDomain R] {S : Type*}
     [LinearOrder S] [CommRing S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
     [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]

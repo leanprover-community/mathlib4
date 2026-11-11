@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.End
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shift
 
@@ -20,6 +23,7 @@ each `n : ℤ` the functor `C ⥤ C` that re-indexes the terms, so the degree `i
 would be the degree `i+n`-th term of `C`.
 
 ## Main definitions
+
 * `HasShift`: A typeclass asserting the existence of a shift functor.
 * `shiftEquiv`: When the indexing monoid is a group, then the functor indexed by `n` and `-n` forms
   a self-equivalence of `C`.
@@ -35,7 +39,6 @@ shift functors which includes `shiftFunctor C a : C ⥤ C` for `a : A`,
 (and its variant `shiftFunctorAdd'`). These isomorphisms satisfy some coherence properties
 which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero_add` and
 `shiftFunctorAdd'_add_zero`.
-
 -/
 
 @[expose] public section

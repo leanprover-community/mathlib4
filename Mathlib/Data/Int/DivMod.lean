@@ -7,16 +7,20 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic lemmas about division and modulo for integers
-
 -/
 
 public section
 
 namespace Int
 
-/-! ### `ediv` and `fdiv` -/
+/-!
+# `ediv` and `fdiv`
+-/
 
 theorem mul_ediv_le_mul_ediv_assoc {a : Int} (ha : 0 ≤ a) (b : Int) {c : Int} (hc : 0 ≤ c) :
     a * (b / c) ≤ a * b / c := by
@@ -32,7 +36,9 @@ theorem fdiv_fdiv_eq_fdiv_mul (m : Int) {n k : Int} (hn : 0 ≤ n) (hk : 0 ≤ k
     Int.fdiv_eq_ediv_of_nonneg _ (Int.mul_nonneg hn hk),
     ediv_ediv_of_nonneg hn]
 
-/-! ### `emod` -/
+/-!
+# `emod`
+-/
 
 theorem emod_eq_sub_self_emod {a b : Int} : a % b = (a - b) % b :=
   (sub_emod_right a b).symm

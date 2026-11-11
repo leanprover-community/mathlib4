@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.NumberTheory.ArithmeticFunction.Zeta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous arithmetic Functions
 
@@ -33,7 +36,6 @@ access.
 ## Tags
 
 arithmetic functions, dirichlet convolution, divisors
-
 -/
 
 @[expose] public section
@@ -50,7 +52,9 @@ open scoped zeta
 
 section ProdPrimeFactors
 
-/-- The map $n \mapsto \prod_{p \mid n} f(p)$ as an arithmetic function -/
+/--
+The map $`n \mapsto \prod_{p \mid n} f(p)` as an arithmetic function
+-/
 def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction R where
   toFun d := if d = 0 then 0 else ∏ p ∈ d.primeFactors, f p
   map_zero' := ite_eq_left rfl

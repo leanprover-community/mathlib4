@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Logic.Encodable.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Encodable` and `Countable` instances for `Π₀ i, α i`
 

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Group.Units.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids: `CompleteLattice` structure
 
@@ -46,6 +49,7 @@ This file is designed to have very few dependencies. In particular, it should no
 numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_mem'`.
 
 ## Tags
+
 submonoid, submonoids
 -/
 

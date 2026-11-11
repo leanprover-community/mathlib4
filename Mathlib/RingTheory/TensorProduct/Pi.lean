@@ -10,12 +10,14 @@ public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Prod
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product and products of algebras
 
 In this file we examine the behaviour of the tensor product with (finite) products. This
 is a direct application of `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` to the algebra case.
-
 -/
 
 @[expose] public section

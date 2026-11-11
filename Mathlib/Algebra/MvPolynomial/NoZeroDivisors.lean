@@ -8,12 +8,14 @@ module
 public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate polynomials over integral domains
 
 This file proves results about multivariate polynomials
 that hold when the coefficient (semi)ring has no zero divisors.
-
 -/
 
 public section

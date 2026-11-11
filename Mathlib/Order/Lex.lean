@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Type synonyms
 
@@ -40,7 +43,9 @@ assert_not_exists OrderDual
 
 variable {α : Type*}
 
-/-! ### Lexicographic order -/
+/-!
+# Lexicographic order
+-/
 
 
 /-- A type synonym to equip a type with its lexicographic order. -/
@@ -98,7 +103,9 @@ protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a,
 @[simp] lemma Lex.forall {p : Lex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toLex a) := Iff.rfl
 @[simp] lemma Lex.exists {p : Lex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLex a) := Iff.rfl
 
-/-! ### Colexicographic order -/
+/-!
+# Colexicographic order
+-/
 
 
 /-- A type synonym to equip a type with its lexicographic order. -/

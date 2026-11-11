@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits of degreewise eventually constant systems
 
@@ -18,7 +21,6 @@ such that for any degree `q`, the functor `F ⋙ eval C c q : J ⥤ C` is
 eventually constant. Let `cF` be a limit cone for `F`. For a given degree `q`,
 we show that for suitable `j : J`, the map `(cF.π.app j).f q` is an
 isomorphism, and that `cf.π.app j` is a quasi-isomorphism in degree `q`.
-
 -/
 
 public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.Module
 public import Mathlib.Data.Fintype.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `DFinsupp` on `Sigma` types
 
@@ -19,7 +22,6 @@ public import Mathlib.Data.Fintype.Quotient
   `Sigma` type. Inverse of `DFinsupp.sigmaCurry`.
 * `DFinsupp.sigmaCurryEquiv`: `DFinsupp.sigmaCurry` and `DFinsupp.sigmaUncurry` bundled into a
   bijection.
-
 -/
 
 @[expose] public section
@@ -151,9 +153,11 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
       simpa using hj
   · simp [hi]
 
-/-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
+/--
+The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
-This is the dfinsupp version of `Equiv.piCurry`. -/
+This is the dfinsupp version of `Equiv.piCurry`.
+-/
 def sigmaCurryEquiv [∀ i j, Zero (δ i j)] : (Π₀ i : Σ _, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
   toFun := sigmaCurry
   invFun := sigmaUncurry

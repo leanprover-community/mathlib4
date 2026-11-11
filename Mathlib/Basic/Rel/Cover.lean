@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Basic.Rel.Separated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covers in a uniform space
 
@@ -17,12 +20,13 @@ A `U`-cover of a set `s` is a set `N` such that every element of `s` is `U`-clos
 `N`.
 
 The concept of uniform covers is used to define two further notions of covering:
+
 * Metric covers: `Metric.IsCover`, defined using the distance entourage.
 * Dynamical covers: `Dynamics.IsDynCoverOf`, defined using the dynamical entourage.
 
 ## References
 
-[R. Vershynin, *High Dimensional Probability*][vershynin2018high], Section 4.2.
+‍\[R. Vershynin, _High Dimensional Probability_\]\[vershynin2018high\], Section 4.2.
 -/
 
 @[expose] public section
@@ -32,12 +36,14 @@ open Set
 namespace SetRel
 variable {X : Type*} {U V : SetRel X X} {s t N N₁ N₂ : Set X} {x : X}
 
-/-- For an entourage `U`, a set `N` is a *`U`-cover* of a set `s` if every point of `s` is `U`-close
+/--
+For an entourage `U`, a set `N` is a _`U`-cover_ of a set `s` if every point of `s` is `U`-close
 to some point of `N`.
 
-This is also called a *`U`-net* in the literature.
+This is also called a _`U`-net_ in the literature.
 
-[R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.1. -/
+‍\[R. Vershynin, _High Dimensional Probability_\]\[vershynin2018high\], 4.2.1.
+-/
 def IsCover (U : SetRel X X) (s N : Set X) : Prop := ∀ ⦃x⦄, x ∈ s → ∃ y ∈ N, x ~[U] y
 
 @[simp] lemma IsCover.empty : IsCover U ∅ N := by simp [IsCover]
@@ -68,9 +74,11 @@ lemma IsCover.union (hs : IsCover U s N₁) (ht : IsCover U t N₂) : IsCover U 
   | _x, .inl hx => let ⟨y, hy, hxy⟩ := hs hx; ⟨y, .inl hy, hxy⟩
   | _x, .inr hx => let ⟨y, hy, hxy⟩ := ht hx; ⟨y, .inr hy, hxy⟩
 
-/-- A maximal `U`-separated subset of a set `s` is a `U`-cover of `s`.
+/--
+A maximal `U`-separated subset of a set `s` is a `U`-cover of `s`.
 
-[R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.6. -/
+‍\[R. Vershynin, _High Dimensional Probability_\]\[vershynin2018high\], 4.2.6.
+-/
 lemma IsCover.of_maximal_isSeparated [U.IsRefl] [U.IsSymm]
     (hN : Maximal (fun N ↦ N ⊆ s ∧ IsSeparated U N) N) : IsCover U s N := by
   rintro x hx

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Order.Ring.Abs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Statement of Fermat's Last Theorem
 
@@ -24,23 +27,20 @@ specific exponent, along with the usual statement over the naturals.
   Note that this statement can certainly be false for certain values of `R` and `n`.
   For example `FermatLastTheoremWith ℝ 3` is false as `1^3 + 1^3 = (2^{1/3})^3`, and
   `FermatLastTheoremWith ℕ 2` is false, as 3^2 + 4^2 = 5^2.
-
 * `FermatLastTheoremFor n` : The statement that the only solutions to `a^n + b^n = c^n` in `ℕ`
   have `a = 0`, `b = 0` or `c = 0`. Again, this statement is not always true, for
   example `FermatLastTheoremFor 1` is false because `2^1 + 2^1 = 4^1`.
-
 * `FermatLastTheorem` : The statement of Fermat's Last Theorem, namely that the only solutions to
   `a^n + b^n = c^n` in `ℕ` when `n ≥ 3` have `a = 0`, `b = 0` or `c = 0`.
 
 ## History
 
 Fermat's Last Theorem was an open problem in number theory for hundreds of years, until it was
-finally solved by Andrew Wiles, assisted by Richard Taylor, in 1994 (see
-[A. Wiles, *Modular elliptic curves and Fermat's last theorem*][Wiles-FLT] and
-[R. Taylor and A. Wiles, *Ring-theoretic properties of certain Hecke algebras*][Taylor-Wiles-FLT]).
-An ongoing Lean formalisation of the proof, using mathlib as a dependency, is taking place at
+finally solved by Andrew Wiles, assisted by Richard Taylor, in 1994 (see ‍\[A. Wiles, _Modular
+elliptic curves and Fermat's last theorem_\]\[Wiles-FLT\] and ‍\[R. Taylor and A. Wiles,
+_Ring-theoretic properties of certain Hecke algebras_\]\[Taylor-Wiles-FLT\]). An ongoing Lean
+formalisation of the proof, using mathlib as a dependency, is taking place at
 https://github.com/ImperialCollegeLondon/FLT .
-
 -/
 
 @[expose] public section
@@ -54,12 +54,14 @@ def FermatLastTheoremWith (R : Type*) [Semiring R] (n : ℕ) : Prop :=
 /-- Statement of Fermat's Last Theorem over the naturals for a given exponent. -/
 def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
 
-/-- Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial natural solution
+/--
+Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial natural solution
 when `n ≥ 3`.
 
 This is now a theorem of Wiles and Taylor--Wiles; see
 https://github.com/ImperialCollegeLondon/FLT for an ongoing Lean formalisation of
-a proof. -/
+a proof.
+-/
 def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
 
 lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=

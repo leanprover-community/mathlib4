@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases in normed affine spaces.
 
@@ -49,12 +52,14 @@ end Barycentric
 
 open Set
 
-/-- Given a finite-dimensional normed real vector space, the interior of the convex hull of an
+/--
+Given a finite-dimensional normed real vector space, the interior of the convex hull of an
 affine basis is the set of points whose barycentric coordinates are strictly positive with respect
 to this basis.
 
 TODO Restate this result for affine spaces (instead of vector spaces) once the definition of
-convexity is generalised to this setting. -/
+convexity is generalised to this setting.
+-/
 theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : AffineBasis ι ℝ E) :
     interior (convexHull ℝ (range b)) = {x | ∀ i, 0 < b.coord i x} := by

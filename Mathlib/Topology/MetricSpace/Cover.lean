@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.MetricSpace.MetricSeparated
 public import Mathlib.Topology.MetricSpace.Thickening
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covers in a metric space
 
@@ -21,7 +24,7 @@ In a proper metric space, sets admitting a finite cover are precisely the relati
 
 ## References
 
-[R. Vershynin, *High Dimensional Probability*][vershynin2018high], Section 4.2.
+‍\[R. Vershynin, _High Dimensional Probability_\]\[vershynin2018high\], Section 4.2.
 -/
 
 @[expose] public section
@@ -38,12 +41,14 @@ variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] {ε δ : ℝ≥0} {s t N 
 instance : SetRel.IsRefl {(x, y) : X × X | edist x y ≤ ε} where refl := by simp
 instance : SetRel.IsSymm {(x, y) : X × X | edist x y ≤ ε} where symm := by simp [edist_comm]
 
-/-- A set `N` is an *`ε`-cover* of a set `s` if every point of `s` lies at distance at most `ε` of
+/--
+A set `N` is an _`ε`-cover_ of a set `s` if every point of `s` lies at distance at most `ε` of
 some point of `N`.
 
-This is also called an *`ε`-net* in the literature.
+This is also called an _`ε`-net_ in the literature.
 
-[R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.1. -/
+‍\[R. Vershynin, _High Dimensional Probability_\]\[vershynin2018high\], 4.2.1.
+-/
 def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := SetRel.IsCover {(x, y) | edist x y ≤ ε} s N
 
 @[simp] protected nonrec lemma IsCover.empty : IsCover ε ∅ N := .empty
@@ -94,9 +99,11 @@ lemma isCover_iff_subset_iUnion_closedEBall :
 alias isCover_iff_subset_iUnion_emetricClosedBall :=
   isCover_iff_subset_iUnion_closedEBall
 
-/-- A maximal `ε`-separated subset of a set `s` is an `ε`-cover of `s`.
+/--
+A maximal `ε`-separated subset of a set `s` is an `ε`-cover of `s`.
 
-[R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.6. -/
+‍\[R. Vershynin, _High Dimensional Probability_\]\[vershynin2018high\], 4.2.6.
+-/
 nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧ IsSeparated ε N) N) :
     IsCover ε s N :=
   .of_maximal_isSeparated <| by simpa [isSeparated_iff_setRelIsSeparated] using hN
@@ -172,10 +179,12 @@ lemma IsCover.isCompact (hsN : IsCover ε s N) (hs : IsClosed s) (hN : IsCompact
 lemma IsCover.isCompact_closure (hsN : IsCover ε s N) (hN : IsCompact N) :
     IsCompact (closure s) := (hsN.closure hN.isClosed).isCompact isClosed_closure hN
 
-/-- A set in a proper metric space admits a finite cover iff it is relatively compact.
+/--
+A set in a proper metric space admits a finite cover iff it is relatively compact.
 
-[R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.3. Note that the print
-edition incorrectly claims that this holds without the `ProperSpace X` assumption. -/
+‍\[R. Vershynin, _High Dimensional Probability_\]\[vershynin2018high\], 4.2.3. Note that the print
+edition incorrectly claims that this holds without the `ProperSpace X` assumption.
+-/
 lemma isCompact_closure_iff_exists_finite_isCover (hε : ε ≠ 0) :
     IsCompact (closure s) ↔ ∃ N ⊆ s, N.Finite ∧ IsCover ε s N where
   mp := exists_finite_isCover_of_isCompact_closure hε

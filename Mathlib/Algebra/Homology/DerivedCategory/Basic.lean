@@ -10,7 +10,11 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
-/-! # The derived category of an abelian category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The derived category of an abelian category
 
 In this file, we construct the derived category `DerivedCategory C` of an
 abelian category `C`. It is equipped with a triangulated structure.
@@ -48,14 +52,14 @@ instance should be obtained at the beginning of the proof, using the term
 
 ## TODO (@joelriou)
 
-- construct the distinguished triangle associated to a short exact sequence
+* construct the distinguished triangle associated to a short exact sequence
   of cochain complexes (done), and compare the associated connecting homomorphism
   with the one defined in `Algebra.Homology.HomologySequence`.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-* [Mark Hovey, *Model category structures on chain complexes of sheaves*][hovey-2001]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
+* ‍\[Mark Hovey, _Model category structures on chain complexes of sheaves_\]\[hovey-2001\]
 -/
 
 @[expose] public noncomputable section

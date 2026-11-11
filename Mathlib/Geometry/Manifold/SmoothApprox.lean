@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Approximation of continuous functions by smooth functions
 
@@ -15,6 +18,7 @@ from a real σ-compact finite dimensional manifold `M` to a real normed space `F
 approximated uniformly by smooth functions.
 
 More precisely, we strengthen this result in three ways :
+
 * instead of a single number `ε > 0`, one may prescribe the precision of the approximation using
   an arbitrary continuous positive function `ε : M → ℝ`. This allows, for example, a control
   on the asymptotic behaviour of the approximation (e.g, choosing a precision `ε` which vanishes
@@ -25,7 +29,7 @@ More precisely, we strengthen this result in three ways :
   for some additional control in a setting with iterated approximations.
 * finally, one may prescribe the approximation to vanish wherever the original function vanishes.
   For example, this shows that continuous functions supported on some compact set `K` may be
-  approximated uniformly by smooth function supported on the **same** compact `K`.
+  approximated uniformly by smooth function supported on the *same* compact `K`.
   (Compare with arguments based on convolution where one needs to thicken `K` a bit).
 
 ## Main results
@@ -43,22 +47,22 @@ More precisely, we strengthen this result in three ways :
 ## Implementation notes
 
 With minor work, we could strengthen the statements in the following ways:
-- the precision function `ε : M → ℝ` may be assumed `LowerSemicontinuous` instead of `Continuous`,
-- the condition `support g ⊆ support f`, which translates to `∀ x, f x = 0 → g x = 0`,
+
+* the precision function `ε : M → ℝ` may be assumed `LowerSemicontinuous` instead of `Continuous`,
+* the condition `support g ⊆ support f`, which translates to `∀ x, f x = 0 → g x = 0`,
   may be strengthened to `∀ x, f x = h x → g x = h x` for some arbitrary smooth `h : M → F`.
 
 This file depends on the manifold library, which may be annoying if you only need the normed space
-statements. **Please do not let this refrain you from using them** if they apply naturally in your
+statements. *Please do not let this refrain you from using them* if they apply naturally in your
 context: if this is too much of a problem, you should complain on Zulip, so that we get more data
 about the need for a non-manifold version of `SmoothPartitionOfUnity`.
 
 ## TODO
 
-- More generally, all results should apply to approximating continuous sections of a smooth
+* More generally, all results should apply to approximating continuous sections of a smooth
   vector bundle by smooth sections.
-- If needed, specialize to `M = U` an open subset of a normed space `E`
+* If needed, specialize to `M = U` an open subset of a normed space `E`
   (we currently do `M = E` only).
-
 -/
 
 public section

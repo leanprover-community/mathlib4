@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.OfCommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The presheaf of differentials of a presheaf of modules
 
@@ -21,7 +24,7 @@ Geometrically, if `f : X ⟶ S` is a morphism of schemes (or more generally
 a morphism of commutative ringed spaces), we would like to apply
 these definitions in the case where `F` is the pullback functor from
 open subsets of `S` to open subsets of `X` and `φ` is the
-morphism $O_S ⟶ f_* O_X$.
+morphism $`O_S ⟶ f_* O_X`.
 
 In order to prove that there exists a universal derivation, the target
 of which shall be called the presheaf of relative differentials of `φ`,
@@ -34,7 +37,6 @@ derivations for `S ⟶ F.op ⋙ R` identify to derivations
 for `S' ⟶ R` where `S'` is the pullback by `F` of the presheaf of
 commutative rings `S` (the data is the same: it suffices
 to show that the two vanishing conditions `d_app` are equivalent).
-
 -/
 
 @[expose] public section

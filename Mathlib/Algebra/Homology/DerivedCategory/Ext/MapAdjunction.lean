@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions between exact functors and Ext-groups
 
@@ -16,7 +19,6 @@ In this file, we promote the bijection
 `adj.homEquiv X Y : (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y)` into
 additive equivalences
 `adj.extEquiv : Ext (F.obj X) Y n ≃+ Ext X (G.obj Y) n`.
-
 -/
 
 @[expose] public section

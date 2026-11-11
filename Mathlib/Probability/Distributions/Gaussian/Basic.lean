@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Distributions.Gaussian.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian distributions in Banach spaces
 
@@ -30,8 +33,7 @@ For Gaussian distributions in `ℝ`, see the file
 
 ## References
 
-* [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
-
+* ‍\[Martin Hairer, _An introduction to stochastic PDEs_\]\[hairer2009introduction\]
 -/
 
 public section

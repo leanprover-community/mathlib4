@@ -7,14 +7,16 @@ module
 
 public import Mathlib.RingTheory.WittVector.Complete
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Teichmuller Series
 
 Let `R` be a characteristic `p` perfect ring. In this file, we show that
 every element `x` of the Witt vectors `𝕎 R` can be written as the
 (`p`-adic) summation of Teichmuller series, namely
-`∑ i, (teichmuller p
-        (((frobeniusEquiv R p).symm ^ i) (x.coeff i)) * p ^ i)`
+`∑ i, (teichmuller p (((frobeniusEquiv R p).symm ^ i) (x.coeff i)) * p ^ i)`
 
 ## Main theorems
 
@@ -25,6 +27,7 @@ every element `x` of the Witt vectors `𝕎 R` can be written as the
   then they are equal.
 
 ## TODO
+
 Show that the Teichmuller series is unique.
 -/
 

@@ -10,15 +10,17 @@ public import Mathlib.Order.Bounds.Basic
 
 import Mathlib.Data.Nat.Factorial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinitude of the primes
 
 ## Main statements
 
-- `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
+* `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
   This also appears as `Nat.not_bddAbove_setOfPred_prime` and `Nat.infinite_setOfPred_prime`
   (the latter in `Data.Nat.PrimeFin`).
-
 -/
 
 public section

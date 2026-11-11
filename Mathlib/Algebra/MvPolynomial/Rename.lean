@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Eval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Renaming variables of polynomials
 
@@ -22,19 +25,13 @@ which modifies the set of variables.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ τ α : Type*` (indexing the variables)
-
-+ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
-
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
+* `σ τ α : Type*` (indexing the variables)
+* `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
+* `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
-
-+ `r : R` elements of the coefficient ring
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `p : MvPolynomial σ α`
-
+* `r : R` elements of the coefficient ring
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `p : MvPolynomial σ α`
 -/
 
 @[expose] public section
@@ -323,11 +320,13 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
   rw [← rename_rename, rename_rename e]
   simp only [Function.comp_def, Equiv.symm_apply_apply, rename_rename]
 
-/-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
+/--
+Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
 many of the variables from `τ`.
 
 Unlike `exists_finset_rename`, which compacts the whole variable type, the variables from `σ`
-are left untouched. -/
+are left untouched.
+-/
 theorem exists_finset_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
     ∃ (t : Finset τ) (q : MvPolynomial (σ ⊕ t) R), p = q.rename (Sum.map id (↑)) := by
   obtain ⟨s, q, rfl⟩ := p.exists_finset_rename
@@ -340,11 +339,13 @@ theorem exists_finset_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
   congr
   aesop
 
-/-- Every polynomial in `σ ⊕ τ` is a polynomial in finitely many of the variables from `σ` and
+/--
+Every polynomial in `σ ⊕ τ` is a polynomial in finitely many of the variables from `σ` and
 all of the variables from `τ`.
 
 Unlike `exists_finset_rename`, which compacts the whole variable type, the variables from `τ`
-are left untouched. -/
+are left untouched.
+-/
 theorem exists_finset_left_rename (p : MvPolynomial (σ ⊕ τ) R) :
     ∃ (t : Finset σ) (q : MvPolynomial (t ⊕ τ) R), p = q.rename (Sum.map (↑) id) := by
   obtain ⟨t, q, hq⟩ := (p.rename <| Equiv.sumComm σ τ).exists_finset_right_rename
@@ -354,12 +355,14 @@ theorem exists_finset_left_rename (p : MvPolynomial (σ ⊕ τ) R) :
   congr
   aesop
 
-/-- Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
+/--
+Every polynomial in `σ ⊕ τ` is a polynomial in all of the variables from `σ` and finitely
 many of the variables from `τ`.
 
 Unlike `exists_fin_rename`, which reindexes the whole variable type along an injection
 `Fin n → σ ⊕ τ`, the variables from `σ` are left untouched: only the right summand is
-compacted. -/
+compacted.
+-/
 theorem exists_fin_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
     ∃ (n : ℕ) (f : Fin n → τ) (_hf : Injective f) (q : MvPolynomial (σ ⊕ Fin n) R),
       p = q.rename (Sum.map id f) := by
@@ -371,12 +374,14 @@ theorem exists_fin_right_rename (p : MvPolynomial (σ ⊕ τ) R) :
   congr
   aesop
 
-/-- Every polynomial in `σ ⊕ τ` is a polynomial in finitely many of the variables from `σ` and
+/--
+Every polynomial in `σ ⊕ τ` is a polynomial in finitely many of the variables from `σ` and
 all of the variables from `τ`.
 
 Unlike `exists_fin_rename`, which reindexes the whole variable type along an injection
 `Fin n → σ ⊕ τ`, the variables from `τ` are left untouched: only the left summand is
-compacted. -/
+compacted.
+-/
 theorem exists_fin_left_rename (p : MvPolynomial (σ ⊕ τ) R) :
     ∃ (n : ℕ) (f : Fin n → σ) (_hf : Injective f) (q : MvPolynomial (Fin n ⊕ τ) R),
       p = q.rename (Sum.map f id) := by

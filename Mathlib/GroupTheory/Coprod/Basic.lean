@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.GroupTheory.Congruence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coproduct (free product) of two monoids or groups
 
@@ -45,20 +48,14 @@ In other sections, we only list multiplicative definitions.
 ### Monoid homomorphisms
 
 * `Monoid.Coprod.mk`: the projection `FreeMonoid (M ⊕ N) →* M ∗ N`.
-
 * `Monoid.Coprod.inl`, `Monoid.Coprod.inr`: canonical embeddings `M →* M ∗ N` and `N →* M ∗ N`.
-
 * `Monoid.Coprod.lift`: construct a monoid homomorphism `M ∗ N →* P`
   from homomorphisms `M →* P` and `N →* P`; see also `Monoid.Coprod.liftEquiv`.
-
 * `Monoid.Coprod.clift`: a constructor for homomorphisms `M ∗ N →* P`
   that allows the user to control the computational behavior.
-
 * `Monoid.Coprod.map`: combine two homomorphisms `f : M →* N` and `g : M' →* N'`
   into `M ∗ M' →* N ∗ N'`.
-
 * `Monoid.Coprod.swap`: the natural homomorphism `M ∗ N →* N ∗ M`.
-
 * `Monoid.Coprod.fst`, `Monoid.Coprod.snd`, and `Monoid.Coprod.toProd`:
   natural projections `M ∗ N →* M`, `M ∗ N →* N`, and `M ∗ N →* M × N`.
 
@@ -97,21 +94,21 @@ def Monoid.Coprod M N := Monoid.CoprodI (fun b : Bool => cond b M N)
 
 There are several reasons to build an API from scratch.
 
-- API about `Con` makes it easy to define the required type and prove the universal property,
+* API about `Con` makes it easy to define the required type and prove the universal property,
   so there is little overhead compared to transferring API from `Monoid.CoprodI`.
-- If `M` and `N` live in different universes, then the definition has to add `ULift`s;
+* If `M` and `N` live in different universes, then the definition has to add `ULift`s;
   this makes it harder to transfer API and definitions.
-- As of now, we have no way
+* As of now, we have no way
   to automatically build an instance of `(k : Fin 2) → Monoid (![M, N] k)`
   from `[Monoid M]` and `[Monoid N]`,
   not even speaking about more advanced typeclass assumptions that involve both `M` and `N`.
-- Using a list of `M ⊕ N` instead of, e.g., a list of `Σ k : Fin 2, ![M, N] k`
+* Using a list of `M ⊕ N` instead of, e.g., a list of `Σ k : Fin 2, ![M, N] k`
   as the underlying type makes it possible to write computationally effective code
   (though this point is not tested yet).
 
 ## TODO
 
-- Prove `Monoid.CoprodI (f : Fin 2 → Type*) ≃* f 0 ∗ f 1` and
+* Prove `Monoid.CoprodI (f : Fin 2 → Type*) ≃* f 0 ∗ f 1` and
   `Monoid.CoprodI (f : Bool → Type*) ≃* f false ∗ f true`.
 
 ## Tags
@@ -211,20 +208,23 @@ theorem induction_on {motive : M ∗ N → Prop} (m : M ∗ N)
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m :=
   induction_on' m (by simpa using inl 1) (fun _ _ ↦ mul _ _ (inl _)) fun _ _ ↦ mul _ _ (inr _)
 
-/-- Lift a monoid homomorphism `FreeMonoid (M ⊕ N) →* P` satisfying additional properties to
+/--
+Lift a monoid homomorphism `FreeMonoid (M ⊕ N) →* P` satisfying additional properties to
 `M ∗ N →* P`. In many cases, `Coprod.lift` is more convenient.
 
 Compared to `Coprod.lift`,
 this definition allows a user to provide a custom computational behavior.
 Also, it only needs `MulOneClass` assumptions while `Coprod.lift` needs a `Monoid` structure.
 -/
-@[to_additive /-- Lift an additive monoid homomorphism `FreeAddMonoid (M ⊕ N) →+ P` satisfying
+@[to_additive /--
+              Lift an additive monoid homomorphism `FreeAddMonoid (M ⊕ N) →+ P` satisfying
 additional properties to `AddMonoid.Coprod M N →+ P`.
 
-Compared to `AddMonoid.Coprod.lift`,
+              Compared to `AddMonoid.Coprod.lift`,
 this definition allows a user to provide a custom computational behavior.
 Also, it only needs `AddZeroClass` assumptions
-while `AddMonoid.Coprod.lift` needs an `AddMonoid` structure. -/]
+while `AddMonoid.Coprod.lift` needs an `AddMonoid` structure.
+              -/]
 def clift (f : FreeMonoid (M ⊕ N) →* P)
     (hM₁ : f (of (.inl 1)) = 1) (hN₁ : f (of (.inr 1)) = 1)
     (hM : ∀ x y, f (of (.inl (x * y))) = f (of (.inl x) * of (.inl y)))
@@ -334,13 +334,17 @@ theorem map_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'')
 
 variable (M N)
 
-/-- Map `M ∗ N` to `N ∗ M` by applying `Sum.swap` to each element of the underlying list.
+/--
+Map `M ∗ N` to `N ∗ M` by applying `Sum.swap` to each element of the underlying list.
 
-See also `MulEquiv.coprodComm` for a `MulEquiv` version. -/
-@[to_additive /-- Map `AddMonoid.Coprod M N` to `AddMonoid.Coprod N M`
-  by applying `Sum.swap` to each element of the underlying list.
+See also `MulEquiv.coprodComm` for a `MulEquiv` version.
+-/
+@[to_additive /--
+              Map `AddMonoid.Coprod M N` to `AddMonoid.Coprod N M`
+by applying `Sum.swap` to each element of the underlying list.
 
-See also `AddEquiv.coprodComm` for an `AddEquiv` version. -/]
+              See also `AddEquiv.coprodComm` for an `AddEquiv` version.
+              -/]
 def swap : M ∗ N →* N ∗ M :=
   clift (mk.comp <| FreeMonoid.map Sum.swap)
     (by simp only [MonoidHom.comp_apply, map_of, Sum.swap_inl, mk_of_inr, map_one])
@@ -400,17 +404,20 @@ section Lift
 
 variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [Monoid P]
 
-/-- Lift a pair of monoid homomorphisms `f : M →* P`, `g : N →* P`
+/--
+Lift a pair of monoid homomorphisms `f : M →* P`, `g : N →* P`
 to a monoid homomorphism `M ∗ N →* P`.
 
 See also `Coprod.clift` for a version that allows custom computational behavior
 and works for a `MulOneClass` codomain.
 -/
-@[to_additive /-- Lift a pair of additive monoid homomorphisms `f : M →+ P`, `g : N →+ P`
+@[to_additive /--
+              Lift a pair of additive monoid homomorphisms `f : M →+ P`, `g : N →+ P`
 to an additive monoid homomorphism `AddMonoid.Coprod M N →+ P`.
 
-See also `AddMonoid.Coprod.clift` for a version that allows custom computational behavior
-and works for an `AddZeroClass` codomain. -/]
+              See also `AddMonoid.Coprod.clift` for a version that allows custom computational
+behavior and works for an `AddZeroClass` codomain.
+              -/]
 def lift (f : M →* P) (g : N →* P) : (M ∗ N) →* P :=
   clift (FreeMonoid.lift <| Sum.elim f g) (map_one f) (map_one g) (map_mul f) (map_mul g)
 

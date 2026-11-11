@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Building continuous bilinear maps in finite dimensions over complete fields
 
@@ -18,7 +21,6 @@ over `𝕜`, this file builds a continuous bilinear map from any bilinear functi
 Working with topological vector spaces instead of normed spaces is important for applications in the
 differential geometry part of Mathlib where we don’t want to fix a norm on tangent spaces for
 instance.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Util.CompileInductive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between product types
 
@@ -17,8 +20,8 @@ focusing on product types.
 
 ## Main definitions
 
-  - `Equiv.prodCongr ea eb : α₁ × β₁ ≃ α₂ × β₂`: combine two equivalences `ea : α₁ ≃ α₂` and
-    `eb : β₁ ≃ β₂` using `Prod.map`.
+* `Equiv.prodCongr ea eb : α₁ × β₁ ≃ α₂ × β₂`: combine two equivalences `ea : α₁ ≃ α₂` and
+  `eb : β₁ ≃ β₂` using `Prod.map`.
 
 ## Tags
 

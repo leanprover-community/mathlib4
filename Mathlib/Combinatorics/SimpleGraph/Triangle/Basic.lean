@@ -11,10 +11,13 @@ public import Mathlib.Tactic.Positivity
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Data.Nat.Choose.Bounds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangles in graphs
 
-A *triangle* in a simple graph is a `3`-clique, namely a set of three vertices that are
+A _triangle_ in a simple graph is a `3`-clique, namely a set of three vertices that are
 pairwise adjacent.
 
 This module defines and proves properties about triangles in simple graphs.
@@ -179,8 +182,10 @@ end LocallyLinear
 variable (G ε)
 variable [Fintype α] [DecidableRel G.Adj] [DecidableRel H.Adj]
 
-/-- A simple graph is *`ε`-far from triangle-free* if one must remove at least
-`ε * (card α) ^ 2` edges to make it triangle-free. -/
+/--
+A simple graph is _`ε`-far from triangle-free_ if one must remove at least
+`ε * (card α) ^ 2` edges to make it triangle-free.
+-/
 def FarFromTriangleFree : Prop := G.DeleteFar (fun H ↦ H.CliqueFree 3) <| ε * (card α ^ 2 : ℕ)
 
 variable {G ε}

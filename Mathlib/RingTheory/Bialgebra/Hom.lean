@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.RingTheory.Coalgebra.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homomorphisms of `R`-bialgebras
 
@@ -23,7 +26,6 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 ## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
-
 -/
 
 @[expose] public section
@@ -128,7 +130,9 @@ instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
   map_mul := fun f => f.map_mul'
   map_one := fun f => f.map_one'
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply {R α β : Type*} [CommSemiring R]
     [Semiring α] [Algebra R α] [Semiring β]
     [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]

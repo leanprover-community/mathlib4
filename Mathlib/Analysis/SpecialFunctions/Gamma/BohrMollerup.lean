@@ -8,10 +8,14 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
-/-! # Convexity properties of the Gamma function
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Convexity properties of the Gamma function
 
 In this file, we prove that `Gamma` and `log ∘ Gamma` are convex functions on the positive real
-line. We then prove the Bohr-Mollerup theorem, which characterises `Gamma` as the *unique*
+line. We then prove the Bohr-Mollerup theorem, which characterises `Gamma` as the _unique_
 positive-real-valued, log-convex function on the positive reals satisfying `f (x + 1) = x f x` and
 `f 1 = 1`.
 
@@ -302,8 +306,10 @@ theorem tendsto_log_gamma {x : ℝ} (hx : 0 < x) :
 end BohrMollerup
 
 -- (namespace)
-/-- The **Bohr-Mollerup theorem**: the Gamma function is the *unique* log-convex, positive-valued
-function on the positive reals which satisfies `f 1 = 1` and `f (x + 1) = x * f x` for all `x`. -/
+/--
+The *Bohr-Mollerup theorem*: the Gamma function is the _unique_ log-convex, positive-valued
+function on the positive reals which satisfies `f 1 = 1` and `f (x + 1) = x * f x` for all `x`.
+-/
 theorem eq_Gamma_of_log_convex {f : ℝ → ℝ} (hf_conv : ConvexOn ℝ (Ioi 0) (log ∘ f))
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = y * f y) (hf_pos : ∀ {y : ℝ}, 0 < y → 0 < f y)
     (hf_one : f 1 = 1) : EqOn f Gamma (Ioi (0 : ℝ)) := by
@@ -375,12 +381,13 @@ end StrictMono
 section Doubling
 
 /-!
-## The Gamma doubling formula
+# The Gamma doubling formula
 
 As a fun application of the Bohr-Mollerup theorem, we prove the Gamma-function doubling formula
 (for positive real `s`). The idea is that `2 ^ s * Gamma (s / 2) * Gamma (s / 2 + 1 / 2)` is
 log-convex and satisfies the Gamma functional equation, so it must actually be a constant
-multiple of `Gamma`, and we can compute the constant by specialising at `s = 1`. -/
+multiple of `Gamma`, and we can compute the constant by specialising at `s = 1`.
+-/
 
 
 /-- Auxiliary definition for the doubling formula (we'll show this is equal to `Gamma s`) -/

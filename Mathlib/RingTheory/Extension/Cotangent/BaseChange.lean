@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.CotangentBaseChange
 import Mathlib.Algebra.FiveLemma
 import Mathlib.RingTheory.Kaehler.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change for the naive cotangent complex
 
@@ -19,14 +22,13 @@ commute with base change.
 
 ## Main results
 
-- `Algebra.Extension.tensorCotangentSpace`: If `T` is an `R`-algebra, there is a `T`-linear
+* `Algebra.Extension.tensorCotangentSpace`: If `T` is an `R`-algebra, there is a `T`-linear
   isomorphism `T ⊗[R] P.CotangentSpace ≃ₗ[T] (P.baseChange).CotangentSpace`.
-- `Algebra.Extension.tensorCotangentOfFlat`: If `T` is flat over `R`, there is a `T`-linear
+* `Algebra.Extension.tensorCotangentOfFlat`: If `T` is flat over `R`, there is a `T`-linear
   isomorphism `T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange).Cotangent`.
-- `Algebra.Extension.tensorH1CotangentOfFlat`: If `T` is flat over `R`, there is a `T`-linear
+* `Algebra.Extension.tensorH1CotangentOfFlat`: If `T` is flat over `R`, there is a `T`-linear
   isomorphism `T ⊗[R] P.H1Cotangent ≃ₗ[T] (P.baseChange).H1Cotangent`.
-- `Algebra.tensorH1CotangentOfFlat`: Flat base change commutes with `H1Cotangent`.
-
+* `Algebra.tensorH1CotangentOfFlat`: Flat base change commutes with `H1Cotangent`.
 -/
 
 public section

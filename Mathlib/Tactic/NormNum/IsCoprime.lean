@@ -8,7 +8,11 @@ module
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.Tactic.NormNum.GCD
 
-/-! # `norm_num` extension for `IsCoprime`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `norm_num` extension for `IsCoprime`
 
 This module defines a `norm_num` extension for `IsCoprime` over `ℤ`.
 

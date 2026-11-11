@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves of modules over a sheaf of rings
 
 In this file, we define the category `SheafOfModules R` when `R : Sheaf J RingCat`
 is a sheaf of rings on a category `C` equipped with a Grothendieck topology `J`.
-
 -/
 
 @[expose] public section

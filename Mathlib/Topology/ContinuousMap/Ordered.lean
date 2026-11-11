@@ -8,9 +8,11 @@ module
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Topology.Order.ProjIcc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled continuous maps into orders, with order-compatible topology
-
 -/
 
 @[expose] public section

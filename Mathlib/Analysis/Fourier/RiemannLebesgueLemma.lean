@@ -12,6 +12,9 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Riemann-Lebesgue Lemma
 
@@ -31,14 +34,14 @@ equivalence to an inner-product space.
 
 ## Main results
 
-- `tendsto_integral_exp_inner_smul_cocompact` : for `V` a finite-dimensional real inner product
+* `tendsto_integral_exp_inner_smul_cocompact` : for `V` a finite-dimensional real inner product
   space and `f : V → E`, the function `fun w : V ↦ ∫ v : V, exp (2 * π * ⟪w, v⟫ * I) • f v`
   tends to 0 along `cocompact V`.
-- `tendsto_integral_exp_smul_cocompact` : for `V` a finite-dimensional real vector space (endowed
+* `tendsto_integral_exp_smul_cocompact` : for `V` a finite-dimensional real vector space (endowed
   with its unique Hausdorff topological vector space structure), and `W` the dual of `V`, the
   function `fun w : W ↦ ∫ v : V, exp (2 * π * w v * I) • f v` tends to along `cocompact W`.
-- `Real.tendsto_integral_exp_smul_cocompact`: special case of functions on `ℝ`.
-- `Real.zero_at_infty_fourierIntegral` and `Real.zero_at_infty_vector_fourierIntegral`:
+* `Real.tendsto_integral_exp_smul_cocompact`: special case of functions on `ℝ`.
+* `Real.zero_at_infty_fourierIntegral` and `Real.zero_at_infty_vector_fourierIntegral`:
   reformulations explicitly using the Fourier integral.
 -/
 

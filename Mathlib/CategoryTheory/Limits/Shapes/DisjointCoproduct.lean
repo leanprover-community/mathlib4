@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint coproducts
 
@@ -37,11 +40,13 @@ variable {C : Type u} [Category.{v} C]
 /--
 We say the coproduct of the family `Xᵢ` is disjoint, if whenever we have a pullback diagram of the
 form
+
 ```
 Z  ⟶ X₁
 ↓    ↓
 X₂ ⟶ ∐ X
 ```
+
 `Z` is initial.
 -/
 class CoproductDisjoint {ι : Type*} (X : ι → C) : Prop where

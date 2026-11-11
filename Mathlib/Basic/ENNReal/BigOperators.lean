@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Basic.NNReal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of big operators extended non-negative real numbers
 

@@ -7,9 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors to `ComposableArrows C 1`
-
 -/
 
 @[expose] public section

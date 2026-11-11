@@ -17,6 +17,9 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 import Mathlib.RingTheory.Norm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideal norms
 
@@ -103,9 +106,11 @@ theorem cardQuot_mul_of_coprime
     Nat.card_congr (Ideal.quotientMulEquivQuotientProd I J coprime).toEquiv,
     Nat.card_prod]
 
-/-- If the `d` from `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`,
+/--
+If the `d` from `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`,
 then so are the `c`s, up to `P ^ (i + 1)`.
-Inspired by [Neukirch], proposition 6.1 -/
+Inspired by \[Neukirch\], proposition 6.1
+-/
 theorem Ideal.mul_add_mem_pow_succ_inj (P : Ideal S) {i : ℕ} (a d d' e e' : S) (a_mem : a ∈ P ^ i)
     (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1)) (h : d - d' ∈ P) :
     a * d + e - (a * d' + e') ∈ P ^ (i + 1) := by
@@ -119,9 +124,11 @@ section PPrime
 
 variable {P : Ideal S} [P_prime : P.IsPrime]
 
-/-- If `a ∈ P^i \ P^(i+1)` and `c ∈ P^i`, then `a * d + e = c` for `e ∈ P^(i+1)`.
+/--
+If `a ∈ P^i \ P^(i+1)` and `c ∈ P^i`, then `a * d + e = c` for `e ∈ P^(i+1)`.
 `Ideal.mul_add_mem_pow_succ_unique` shows the choice of `d` is unique, up to `P`.
-Inspired by [Neukirch], proposition 6.1 -/
+Inspired by \[Neukirch\], proposition 6.1
+-/
 theorem Ideal.exists_mul_add_mem_pow_succ [IsDedekindDomain S] (hP : P ≠ ⊥)
     {i : ℕ} (a c : S) (a_mem : a ∈ P ^ i)
     (a_notMem : a ∉ P ^ (i + 1)) (c_mem : c ∈ P ^ i) :
@@ -144,8 +151,10 @@ theorem Ideal.mem_prime_of_mul_mem_pow [IsDedekindDomain S] {P : Ideal S} [P_pri
     Ideal.span_singleton_mul_span_singleton] at a_notMem ab_mem ⊢
   exact (prime_pow_succ_dvd_mul (Ideal.prime_of_isPrime hP P_prime) ab_mem).resolve_left a_notMem
 
-/-- The choice of `d` in `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`.
-Inspired by [Neukirch], proposition 6.1 -/
+/--
+The choice of `d` in `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`.
+Inspired by \[Neukirch\], proposition 6.1
+-/
 theorem Ideal.mul_add_mem_pow_succ_unique [IsDedekindDomain S] (hP : P ≠ ⊥)
     {i : ℕ} (a d d' e e' : S)
     (a_notMem : a ∉ P ^ (i + 1)) (e_mem : e ∈ P ^ (i + 1)) (e'_mem : e' ∈ P ^ (i + 1))

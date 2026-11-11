@@ -8,11 +8,13 @@ module
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # More lemmas on localization away
 
 This file contains lemmas on localization away from an element requiring more imports.
-
 -/
 
 @[expose] public section

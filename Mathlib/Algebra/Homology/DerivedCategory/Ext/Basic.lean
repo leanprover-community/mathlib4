@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 public import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ext groups in abelian categories
 
@@ -35,7 +38,6 @@ Then, for `C := Sheaf X.etale AddCommGrpCat.{u}`, we will have
 `Category.{u + 1} C`, but `HasExt.{u} C` will hold
 (as `C` has enough injectives). Then, the `Ext` groups between étale
 sheaves over `X` shall be in `Type u`.
-
 -/
 
 @[expose] public section
@@ -240,10 +242,12 @@ noncomputable instance : AddCommGroup (Ext X Y n) :=
   letI := HasDerivedCategory.standard C
   homEquiv.addCommGroup
 
-/-- The map from `Ext X Y n` to a `ShiftedHom` type in the *constructed* derived
+/--
+The map from `Ext X Y n` to a `ShiftedHom` type in the _constructed_ derived
 category given by `HasDerivedCategory.standard`: this definition is introduced
 only in order to prove properties of the abelian group structure on `Ext`-groups.
-Do not use this definition: use the more general `hom` instead. -/
+Do not use this definition: use the more general `hom` instead.
+-/
 noncomputable abbrev hom' (α : Ext X Y n) :
     letI := HasDerivedCategory.standard C
     ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) (n : ℤ) :=

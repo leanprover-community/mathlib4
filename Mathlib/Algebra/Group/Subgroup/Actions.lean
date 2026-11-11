@@ -8,14 +8,17 @@ module
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.GroupTheory.Subgroup.Center
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Actions by `Subgroup`s
 
 These are just copies of the definitions about `Submonoid` starting from `Submonoid.mulAction`.
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
 
 public section

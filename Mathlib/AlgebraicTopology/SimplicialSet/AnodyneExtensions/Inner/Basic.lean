@@ -10,19 +10,21 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 
 import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inner anodyne extensions
 
 Much of this file is mirrored from
 `Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic`.
 
-*Inner* anodyne extensions form a property of morphisms in the category of simplicial
-sets. It contains *inner* horn inclusions and it is closed under coproducts, pushouts,
+_Inner_ anodyne extensions form a property of morphisms in the category of simplicial
+sets. It contains _inner_ horn inclusions and it is closed under coproducts, pushouts,
 transfinite compositions and retracts. Equivalently, using the small
 object argument, inner anodyne extensions can be defined (and are defined here)
 as the class of morphisms that satisfy the left lifting property with respect
 to the class of inner fibrations.
-
 -/
 
 public section
@@ -37,10 +39,12 @@ namespace SSet
 
 open MorphismProperty
 
-/-- In the category of simplicial sets, an *inner* anodyne extension is a morphism
-that has the left lifting property with respect to *inner* fibrations, where
+/--
+In the category of simplicial sets, an _inner_ anodyne extension is a morphism
+that has the left lifting property with respect to _inner_ fibrations, where
 an inner fibration is a morphism that has the right lifting property with respect
-to inner horn inclusions. -/
+to inner horn inclusions.
+-/
 @[expose, kerodon 01BR]
 def innerAnodyneExtensions : MorphismProperty SSet.{u} := innerFibrations.llp
 deriving IsMultiplicative, RespectsIso, IsStableUnderCobaseChange,
@@ -99,12 +103,14 @@ lemma innerAnodyneExtensions_eq_retracts_transfiniteCompositionsOfShape :
   rw [innerAnodyneExtensions_eq_llp_rlp,
     SmallObject.llp_rlp_of_isCardinalForSmallObjectArgument_aleph0]
 
-/-- In the category of simplicial sets, a strong *inner* anodyne extension is a morphism
-which belongs to the closure of *inner* horn inclusions by pushouts, coproducts,
+/--
+In the category of simplicial sets, a strong _inner_ anodyne extension is a morphism
+which belongs to the closure of _inner_ horn inclusions by pushouts, coproducts,
 transfinite compositions (but not by retracts). We define this class here
 by saying that `f : X ⟶ Y` is a strong inner anodyne extension if `f` is a monomorphism
-and there exists a regular, *inner* pairing (in the sense of Moss) for the subcomplex
-`Subcomplex.range f` of `Y`. -/
+and there exists a regular, _inner_ pairing (in the sense of Moss) for the subcomplex
+`Subcomplex.range f` of `Y`.
+-/
 def strongInnerAnodyneExtensions : MorphismProperty SSet.{u} :=
   fun _ _ f ↦ Mono f ∧ ∃ (P : (Subcomplex.range f).Pairing) (_ : P.IsRegular), P.IsInner
 

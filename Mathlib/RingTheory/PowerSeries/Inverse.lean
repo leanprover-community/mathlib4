@@ -11,7 +11,11 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.MvPowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 
-/-! # Formal power series - Inverses
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Formal power series - Inverses
 
 If the constant coefficient of a formal (univariate) power series is invertible,
 then this formal power series is invertible.
@@ -23,7 +27,6 @@ Formal (univariate) power series over a local ring form a local ring.
 Formal (univariate) power series over a field form a discrete valuation ring, and a normalization
 monoid. The definition `residueFieldOfPowerSeries` provides the isomorphism between the residue
 field of `k⟦X⟧` and `k`, when `k` is a field.
-
 -/
 
 @[expose] public section

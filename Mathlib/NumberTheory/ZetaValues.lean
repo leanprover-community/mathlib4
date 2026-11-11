@@ -12,6 +12,9 @@ import Mathlib.Analysis.Calculus.ContDiff.Polynomial
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.PSeries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Critical values of the Riemann zeta function
 
@@ -21,7 +24,7 @@ zeta functions, in terms of Bernoulli polynomials.
 ## Main results:
 
 * `hasSum_zeta_nat`: the final formula for zeta values,
-  $$\zeta(2k) = \frac{(-1)^{(k + 1)} 2 ^ {2k - 1} \pi^{2k} B_{2 k}}{(2 k)!}.$$
+  $$`\zeta(2k) = \frac{(-1)^{(k + 1)} 2 ^ {2k - 1} \pi^{2k} B_{2 k}}{(2 k)!}.`
 * `hasSum_zeta_two` and `hasSum_zeta_four`: special cases given explicitly.
 * `hasSum_one_div_nat_pow_mul_cos`: a formula for the sum `∑ (n : ℕ), cos (2 π i n x) / n ^ k` as
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 2` even.
@@ -189,7 +192,7 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
     simpa only [i] using fc
 
 /-!
-### Values at 1/2
+# Values at 1/2
 -/
 
 theorem bernoulliFun_eval_half_eq_zero (k : ℕ) : bernoulliFun (2 * k + 1) 2⁻¹ = 0 := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine morphisms with additional ring hom property
 
@@ -21,7 +24,6 @@ at the (algebraic) source.
 
 Typical examples of this are affine morphisms (where `Q` is trivial), finite morphisms
 (where `Q` is module finite) or closed immersions (where `Q` is being surjective).
-
 -/
 
 @[expose] public section

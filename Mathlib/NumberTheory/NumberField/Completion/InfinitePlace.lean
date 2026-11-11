@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The completion of a number field at an infinite place
 
@@ -23,33 +26,36 @@ number field at an infinite place is then derived in this file, as `InfinitePlac
 `AbsoluteValue`.
 
 ## Main definitions
-- `NumberField.InfinitePlace.Completion` : the completion of a number field `K` at an infinite
+
+* `NumberField.InfinitePlace.Completion` : the completion of a number field `K` at an infinite
   place, obtained by completing `K` with respect to the absolute value associated to the infinite
   place.
-- `NumberField.InfinitePlace.Completion.extensionEmbedding` : the embedding `v.embedding : K →+* ℂ`
+* `NumberField.InfinitePlace.Completion.extensionEmbedding` : the embedding `v.embedding : K →+* ℂ`
   extended to `v.Completion →+* ℂ`.
-- `NumberField.InfinitePlace.Completion.extensionEmbeddingOfIsReal` : if the infinite place `v`
+* `NumberField.InfinitePlace.Completion.extensionEmbeddingOfIsReal` : if the infinite place `v`
   is real, then this extends the embedding `v.embedding_of_isReal : K →+* ℝ` to
   `v.Completion →+* ℝ`.
-- `NumberField.InfinitePlace.Completion.ringEquivRealOfIsReal` : the ring isomorphism
+* `NumberField.InfinitePlace.Completion.ringEquivRealOfIsReal` : the ring isomorphism
   `v.Completion ≃+* ℝ` when `v` is a real infinite place; the forward direction of this is
   `extensionEmbeddingOfIsReal`.
-- `NumberField.InfinitePlace.Completion.ringEquivComplexOfIsComplex` : the ring isomorphism
+* `NumberField.InfinitePlace.Completion.ringEquivComplexOfIsComplex` : the ring isomorphism
   `v.Completion ≃+* ℂ` when `v` is a complex infinite place; the forward direction of this is
   `extensionEmbedding`.
 
 ## Main results
-- `NumberField.Completion.locallyCompactSpace` : the completion of a number field at
+
+* `NumberField.Completion.locallyCompactSpace` : the completion of a number field at
   an infinite place is locally compact.
-- `NumberField.Completion.isometry_extensionEmbedding` : the embedding `v.Completion →+* ℂ` is
+* `NumberField.Completion.isometry_extensionEmbedding` : the embedding `v.Completion →+* ℂ` is
   an isometry. See also `isometry_extensionEmbeddingOfIsReal` for the corresponding result on
   `v.Completion →+* ℝ` when `v` is real.
-- `NumberField.Completion.bijective_extensionEmbedding_of_isComplex` : the embedding
+* `NumberField.Completion.bijective_extensionEmbedding_of_isComplex` : the embedding
   `v.Completion →+* ℂ` is bijective when `v` is complex. See also
   `bijective_extensionEmbeddingOfIsReal` for the corresponding result for `v.Completion →+* ℝ`
   when `v` is real.
 
 ## Tags
+
 number field, embeddings, infinite places, completion, absolute value
 -/
 

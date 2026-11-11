@@ -8,10 +8,13 @@ module
 public import Mathlib.RingTheory.Bialgebra.Quotient
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hopf algebra structure on quotients by Hopf ideals
 
-A *Hopf ideal* of an `R`-Hopf algebra `A` is a biideal stable under the antipode. The quotient
+A _Hopf ideal_ of an `R`-Hopf algebra `A` is a biideal stable under the antipode. The quotient
 by a Hopf ideal inherits a Hopf algebra structure.
 
 ## Main definitions
@@ -34,8 +37,10 @@ section HopfAlgebraStruct
 variable [HopfAlgebraStruct R A]
 
 variable (R) in
-/-- An ideal whose underlying `R`-submodule is a coideal and which is stable under the
-antipode (`S(I) ⊆ I`). Together with `I.IsTwoSided`, this makes `I` a *Hopf ideal*. -/
+/--
+An ideal whose underlying `R`-submodule is a coideal and which is stable under the
+antipode (`S(I) ⊆ I`). Together with `I.IsTwoSided`, this makes `I` a _Hopf ideal_.
+-/
 @[mk_iff]
 class Ideal.IsHopfIdeal (I : Ideal A) : Prop extends (I.restrictScalars R).IsCoideal where
   antipode_mem : ∀ ⦃x : A⦄, x ∈ I → antipode R x ∈ I

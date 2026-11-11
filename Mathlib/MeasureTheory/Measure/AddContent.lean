@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.SetSemiring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive Contents
 

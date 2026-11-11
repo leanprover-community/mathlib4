@@ -11,16 +11,19 @@ public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.ContMDiff.Constructions
 import Mathlib.Geometry.Manifold.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of specific functions
 
 In this file, we establish differentiability results for
-- continuous linear maps and continuous linear equivalences
-- the identity
-- constant functions
-- products
-- arithmetic operations (such as addition and scalar multiplication).
 
+* continuous linear maps and continuous linear equivalences
+* the identity
+* constant functions
+* products
+* arithmetic operations (such as addition and scalar multiplication).
 -/
 
 public section
@@ -30,7 +33,9 @@ open Bundle Set Topology
 
 section SpecificFunctions
 
-/-! ### Differentiability of specific functions -/
+/-!
+# Differentiability of specific functions
+-/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
@@ -118,7 +123,9 @@ variable {s : Set M} {x : M}
 
 section id
 
-/-! #### Identity -/
+/-!
+# Identity
+-/
 
 theorem hasMFDerivAt_id (x : M) :
     HasMFDerivAt% (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace% x)) := by
@@ -167,7 +174,9 @@ end id
 
 section Const
 
-/-! #### Constants -/
+/-!
+# Constants
+-/
 
 
 variable {c : M'}
@@ -204,7 +213,9 @@ end Const
 
 section Prod
 
-/-! ### Operations on the product of two manifolds -/
+/-!
+# Operations on the product of two manifolds
+-/
 
 theorem MDifferentiableWithinAt.prodMk {f : M → M'} {g : M → M''}
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
@@ -629,7 +640,7 @@ end Prod
 section Pi
 
 /-!
-### Differentiability of functions with codomain `Π i, M i`
+# Differentiability of functions with codomain `Π i, M i`
 -/
 
 variable {ι : Type*} [Fintype ι] {Mi Hi Ei : ι → Type*}
@@ -828,7 +839,8 @@ end disjointUnion
 
 section Arithmetic
 
-/-! #### Arithmetic
+/-!
+# Arithmetic
 
 Note that in the `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
 `TangentSpace 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not

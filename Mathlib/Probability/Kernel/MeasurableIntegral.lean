@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability of the integral against a kernel
 
@@ -18,7 +21,6 @@ The Bochner integral of a strongly measurable function against a kernel is stron
 * `MeasureTheory.StronglyMeasurable.integral_kernel_prod_right`: the function
   `a ↦ ∫ b, f a b ∂(κ a)` is measurable, for an s-finite kernel `κ : Kernel α β` and a function
   `f : α → β → E` such that `uncurry f` is measurable.
-
 -/
 
 public section

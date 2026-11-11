@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Module.Synonym
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.AffineSpace.Slope
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered modules as affine spaces
 
@@ -36,7 +39,7 @@ open AffineMap
 variable {k E : Type*}
 
 /-!
-### Monotonicity of `lineMap`
+# Monotonicity of `lineMap`
 
 In this section we prove that `lineMap a b r` is monotone (strictly or not) in its arguments if
 other arguments belong to specific domains.
@@ -186,7 +189,7 @@ theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a := right_le_lineMap
 end
 
 /-!
-### Convexity and slope
+# Convexity and slope
 
 Given an interval `[a, b]` and a point `c ∈ (a, b)`, `c = lineMap a b r`, there are a few ways to
 say that the point `(c, f c)` is above/below the segment `[(a, f a), (b, f b)]`:

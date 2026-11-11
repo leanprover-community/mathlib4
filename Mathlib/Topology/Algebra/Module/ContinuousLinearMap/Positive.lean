@@ -8,12 +8,16 @@ module
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
-/-! # Positive continuous linear maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Positive continuous linear maps
 
 This file contains the continuous version of `PositiveLinearMap`. While positive linear maps between
 C⋆-algebras are automatically continuous (see `PositiveLinearMap.exists_norm_apply_le` which leads
 to an instance of `ContinuousLinearMapClass`) there are other situations (e.g., in the theory of
-W⋆-algebras) in which this does not hold and yet we wish to restrict to consider only *continuous*
+W⋆-algebras) in which this does not hold and yet we wish to restrict to consider only _continuous_
 positive linear maps.
 
 ## Implementation notes
@@ -21,7 +25,6 @@ positive linear maps.
 We do not define `PositiveContinuousLinearMapClass` to avoid adding a class that mixes order and
 algebra. One can achieve the same effect by using a combination of `ContinuousLinearMapClass` and
 `OrderHomClass`.
-
 -/
 
 @[expose] public section

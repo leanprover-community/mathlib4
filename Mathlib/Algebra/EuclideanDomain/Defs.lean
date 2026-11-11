@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Order.RelClasses
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euclidean domains
 
@@ -50,11 +53,10 @@ value of `j`.
 
 ## References
 
-* [Th. Motzkin, *The Euclidean algorithm*][MR32592]
-* [J.-J. Hiblot, *Des anneaux euclidiens dont le plus petit algorithme n'est pas à valeurs finies*]
-  [MR399081]
-* [M. Nagata, *On Euclid algorithm*][MR541021]
-
+* ‍\[Th. Motzkin, _The Euclidean algorithm_\]\[MR32592\]
+* ‍\[J.-J. Hiblot, _Des anneaux euclidiens dont le plus petit algorithme n'est pas à valeurs
+  finies_\] ‍\[MR399081\]
+* ‍\[M. Nagata, _On Euclid algorithm_\]\[MR541021\]
 
 ## Tags
 
@@ -189,11 +191,13 @@ theorem gcd_zero_left (a : R) : gcd 0 a = a := by
   rw [gcd]
   exact ite_eq_left rfl
 
-/-- An implementation of the extended GCD algorithm.
+/--
+An implementation of the extended GCD algorithm.
 At each step we are computing a triple `(r, s, t)`, where `r` is the next value of the GCD
 algorithm, to compute the greatest common divisor of the input (say `x` and `y`), and `s` and `t`
 are the coefficients in front of `x` and `y` to obtain `r` (i.e. `r = s * x + t * y`).
 The function `xgcdAux` takes in two triples, and from these recursively computes the next triple:
+
 ```
 xgcdAux (r, s, t) (r', s', t') = xgcdAux (r' % r, s' - (r' / r) * s, t' - (r' / r) * t) (r, s, t)
 ```

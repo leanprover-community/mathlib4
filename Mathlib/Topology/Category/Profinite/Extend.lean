@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.Topology.Category.Profinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.CofilteredLimit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending cones in `Profinite`
 

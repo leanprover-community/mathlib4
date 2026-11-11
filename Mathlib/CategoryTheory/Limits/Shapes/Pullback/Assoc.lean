@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Associativity of pullbacks
 
 This file shows that pullbacks (and pushouts) are associative up to natural isomorphism.
-
 -/
 
 @[expose] public section

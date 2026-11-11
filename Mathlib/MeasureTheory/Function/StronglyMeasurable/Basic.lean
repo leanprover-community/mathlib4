@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strongly measurable and finitely strongly measurable functions
 
@@ -36,9 +39,8 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
 
 ## References
 
-* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
+* ‍\[Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.\]\[Hytonen\_VanNeerven\_Veraar\_Wies\_2016\]
 -/
 
 @[expose] public section
@@ -83,7 +85,9 @@ end Definitions
 
 open MeasureTheory
 
-/-! ## Strongly measurable functions -/
+/-!
+# Strongly measurable functions
+-/
 
 section StronglyMeasurable
 variable {_ : MeasurableSpace α} {f : α → β} {g : ℕ → α} {m : ℕ}
@@ -599,7 +603,7 @@ protected theorem leOnePart [Group β] [Lattice β] [ContinuousSup β] [Continuo
 end Order
 
 /-!
-### Big operators: `∏` and `∑`
+# Big operators: `∏` and `∑`
 -/
 
 
@@ -814,11 +818,13 @@ protected theorem piecewise {m : MeasurableSpace α} [TopologicalSpace β] {s : 
   · simpa [@Set.piecewise_eq_of_notMem _ _ _ _ _ (fun _ => Classical.propDecidable _) _ hx,
       hx] using hg.tendsto_approx x
 
-/-- this is slightly different from `StronglyMeasurable.piecewise`. It can be used to show
+/--
+this is slightly different from `StronglyMeasurable.piecewise`. It can be used to show
 `StronglyMeasurable (ite (x=0) 0 1)` by
-`exact StronglyMeasurable.ite (measurableSet_singleton 0) stronglyMeasurable_const
-stronglyMeasurable_const`, but replacing `StronglyMeasurable.ite` by
-`StronglyMeasurable.piecewise` in that example proof does not work. -/
+`exact StronglyMeasurable.ite (measurableSet_singleton 0) stronglyMeasurable_const stronglyMeasurable_const`,
+but replacing `StronglyMeasurable.ite` by `StronglyMeasurable.piecewise` in that example proof does
+not work.
+-/
 protected theorem ite {_ : MeasurableSpace α} [TopologicalSpace β] {p : α → Prop}
     {_ : DecidablePred p} (hp : MeasurableSet { a : α | p a }) (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable fun x => ite (p x) (f x) (g x) :=
@@ -910,12 +916,14 @@ protected theorem indicator {_ : MeasurableSpace α} [TopologicalSpace β] [Zero
     StronglyMeasurable (s.indicator f) :=
   hf.piecewise hs stronglyMeasurable_const
 
-/-- To prove that a property holds for any strongly measurable function, it is enough to show
+/--
+To prove that a property holds for any strongly measurable function, it is enough to show
 that it holds for constant indicator functions of measurable sets and that it is closed under
 addition and pointwise limit.
 
 To use in an induction proof, the syntax is
-`induction f, hf using StronglyMeasurable.induction with`. -/
+`induction f, hf using StronglyMeasurable.induction with`.
+-/
 theorem induction [MeasurableSpace α] [AddZeroClass β] [TopologicalSpace β]
     {P : (f : α → β) → StronglyMeasurable f → Prop}
     (ind : ∀ c ⦃s : Set α⦄ (hs : MeasurableSet s),
@@ -935,12 +943,14 @@ theorem induction [MeasurableSpace α] [AddZeroClass β] [TopologicalSpace β]
     exact add f.stronglyMeasurable g.stronglyMeasurable (f + g).stronglyMeasurable h_supp hf hg
 
 open scoped Classical in
-/-- To prove that a property holds for any strongly measurable function, it is enough to show
+/--
+To prove that a property holds for any strongly measurable function, it is enough to show
 that it holds for constant functions and that it is closed under piecewise combination of functions
 and pointwise limits.
 
 To use in an induction proof, the syntax is
-`induction f, hf using StronglyMeasurable.induction' with`. -/
+`induction f, hf using StronglyMeasurable.induction' with`.
+-/
 theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
     {P : (f : α → β) → StronglyMeasurable f → Prop}
     (const : ∀ (c), P (fun _ ↦ c) stronglyMeasurable_const)
@@ -982,11 +992,13 @@ protected theorem nnNorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCom
 
 @[deprecated (since := "2026-10-31")] protected alias nnnorm := StronglyMeasurable.nnNorm
 
-/-- The `eNorm` of a strongly measurable function is measurable.
+/--
+The `eNorm` of a strongly measurable function is measurable.
 
 Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnNorm`, this lemma proves measurability,
-**not** strong measurability. This is an intentional decision: for functions taking values in
-ℝ≥0∞, measurability is much more useful than strong measurability. -/
+*not* strong measurability. This is an intentional decision: for functions taking values in
+ℝ≥0∞, measurability is much more useful than strong measurability.
+-/
 @[fun_prop]
 protected theorem eNorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
@@ -1092,7 +1104,9 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
 
 end StronglyMeasurable
 
-/-! ## Finitely strongly measurable functions -/
+/-!
+# Finitely strongly measurable functions
+-/
 
 
 theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measure α} [Zero β]

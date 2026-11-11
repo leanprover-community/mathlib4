@@ -12,6 +12,10 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.TryThis
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Categories
 
@@ -43,11 +47,14 @@ specified explicitly, as `Category.{v} C`.
 
 Typically any concrete example will either be a `SmallCategory`, where `v = u`,
 which can be introduced as
+
 ```
 universe u
 variable {C : Type u} [SmallCategory C]
 ```
+
 or a `LargeCategory`, where `u = v+1`, which can be introduced as
+
 ```
 universe u
 variable {C : Type (u+1)} [LargeCategory C]
@@ -62,13 +69,17 @@ when we write `Category C`, while the universe parameter `v` for the morphisms
 cannot be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
+
 ```
 universe v u
 ```
+
 or
+
 ```
 universe v₁ v₂ u₁ u₂
 ```
+
 when multiple independent universes are needed.
 
 This has the effect that we can simply write `Category.{v} C`
@@ -83,11 +94,12 @@ library_note «universe output parameters and typeclass caching»
 /--
 Many classes in Mathlib have universe parameters that do not appear in their
 input parameter types. For example:
+
 * `Category.{v} (C : Type u)` — the morphism universe `v` is not determined by `C`
 * `HasLimitsOfSize.{v₁, u₁} (C : Type u) [Category.{v} C]` — the shape universes `v₁, u₁`
   are not determined by `C`
 * `Small.{w} (α : Type v)` — the target universe `w` is not determined by `α`
-  (but `v` is determined by `α`, so `v` *is* an output)
+  (but `v` is determined by `α`, so `v` _is_ an output)
 * `Functor.IsContinuous.{t} (F) (J) (K)` — the sheaf type universe `t` is not determined
   by `F`, `J`, `K`
 * `UnivLE.{u, v}` — has no input parameters at all
@@ -98,16 +110,17 @@ resolution cache keys. This means that queries differing only in such a universe
 cache entry — the first result found is reused.
 
 This is correct when the universe truly is determined by the inputs (e.g., `v` in
-`Small.{w} (α : Type v)`), but incorrect when the universe is part of the *question*
+`Small.{w} (α : Type v)`), but incorrect when the universe is part of the _question_
 (e.g., `v` in `Category.{v} C`). Cache collisions cause "stuck at solving universe constraint"
 errors or silent misresolution.
 
 The `@[univ_out_params]` attribute
 (from https://github.com/leanprover/lean4/pull/12423) overrides the default:
+
 * `@[univ_out_params]` — no universe parameters are output (all kept in cache key)
 * `@[univ_out_params v]` — only `v` is output
 
-**Rule of thumb:** if the class is typically used with explicit universe annotations
+*Rule of thumb:* if the class is typically used with explicit universe annotations
 (e.g., `HasLimitsOfSize.{v₁, u₁} C`) or is marked `@[pp_with_univ]`, its "extra" universe
 parameters are likely inputs, not outputs, and the class should be annotated with
 `@[univ_out_params]`.
@@ -156,6 +169,7 @@ This gives a speedup because `simp` (called by `aesop`) can be very slow.
 https://github.com/leanprover-community/mathlib4/pull/25475 contains measurements from June 2025.
 
 Implementation notes:
+
 * `refine id ?_`:
   In some cases it is important that the type of the proof matches the expected type exactly.
   e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.
@@ -165,7 +179,6 @@ Implementation notes:
 * `apply_rfl`:
   `rfl` is a macro that attempts both `eq_refl` and `apply_rfl`. Since `apply_rfl`
   subsumes `eq_refl`, we can use `apply_rfl` instead. This fails twice as fast as `rfl`.
-
 -/
 macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; apply_rfl))
 

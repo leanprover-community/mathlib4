@@ -7,23 +7,28 @@ module
 
 public import Mathlib.Geometry.Manifold.Diffeomorph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local diffeomorphisms between manifolds
 
 In this file, we define `C^n` local diffeomorphisms between manifolds.
 
-A `C^n` map `f : M → N` is a **local diffeomorphism at `x`** iff there are neighbourhoods `s`
+A `C^n` map `f : M → N` is a *local diffeomorphism at `x`* iff there are neighbourhoods `s`
 and `t` of `x` and `f x`, respectively, such that `f` restricts to a diffeomorphism
-between `s` and `t`. `f` is called a **local diffeomorphism on `s`** iff it is a local
-diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorphism on
+between `s` and `t`. `f` is called a *local diffeomorphism on `s`* iff it is a local
+diffeomorphism at every `x ∈ s`, and a *local diffeomorphism* iff it is a local diffeomorphism on
 `univ`.
 
 ## Main definitions
+
 * `IsLocalDiffeomorphAt I J n f x`: `f` is a `C^n` local diffeomorphism at `x`
 * `IsLocalDiffeomorphOn I J n f s`: `f` is a `C^n` local diffeomorphism on `s`
 * `IsLocalDiffeomorph I J n f`: `f` is a `C^n` local diffeomorphism
 
 ## Main results
+
 * Each of `Diffeomorph`, `IsLocalDiffeomorph`, `IsLocalDiffeomorphOn` and `IsLocalDiffeomorphAt`
   implies the next condition.
 * `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphism is a local homeomorphism,
@@ -31,7 +36,6 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
 * `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
 * `IsLocalDiffeomorph.diffeomorphOfBijective`:
   a bijective local diffeomorphism is a diffeomorphism
-
 * `Diffeomorph.mfderivToContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
   (`n ≠ 0`) is a linear equivalence.
 * `LocalDiffeomorphAt.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism
@@ -40,6 +44,7 @@ diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a lo
   each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 ## TODO
+
 * an injective local diffeomorphism is a diffeomorphism to its image
 * if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
   `f` is a local diffeomorphism at `x` (using the inverse function theorem).
@@ -52,8 +57,8 @@ different, i.e. for a structomorphism one has to impose `H = H'` which is often 
 practice.
 
 ## Tags
-local diffeomorphism, manifold
 
+local diffeomorphism, manifold
 -/
 
 public noncomputable section
@@ -293,7 +298,9 @@ lemma IsLocalDiffeomorph.isLocalDiffeomorphOn
     {f : M → N} (hf : IsLocalDiffeomorph I J n f) (s : Set M) : IsLocalDiffeomorphOn I J n f s :=
   fun x ↦ hf x
 
-/-! ### Basic properties of local diffeomorphisms -/
+/-!
+# Basic properties of local diffeomorphisms
+-/
 section Basic
 variable {f : M → N} {s : Set M} {x : M}
 variable {I J n}

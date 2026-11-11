@@ -11,6 +11,9 @@ public import Mathlib.Topology.Order.LeftRightNhds
 
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
 
@@ -26,13 +29,13 @@ Moreover, we show the convergence of the continued fractions computations, that 
 
 ## Main Definitions
 
-- `ContFract.of` returns the (regular) continued fraction of a value.
+* `ContFract.of` returns the (regular) continued fraction of a value.
 
 ## Main Theorems
 
-- `GenContFract.of_convs_eq_convs'` shows that the convergents computations for
+* `GenContFract.of_convs_eq_convs'` shows that the convergents computations for
   `GenContFract.of` are equivalent.
-- `GenContFract.of_convergence` shows that `(GenContFract.of v).convs` converges to `v`.
+* `GenContFract.of_convergence` shows that `(GenContFract.of v).convs` converges to `v`.
 
 ## Tags
 
@@ -61,7 +64,7 @@ theorem convs_succ (n : ℕ) :
 section Convergence
 
 /-!
-### Convergence
+# Convergence
 
 We next show that `(GenContFract.of v).convs n` converges to `v`.
 -/

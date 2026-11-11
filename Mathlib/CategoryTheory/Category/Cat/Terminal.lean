@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Terminal categories
 
@@ -19,7 +22,6 @@ TODO: Show the converse: that terminal categories have a unique object and are d
 
 TODO: Provide an analogous characterization of terminal categories as codiscrete categories
 with a unique object.
-
 -/
 
 @[expose] public section

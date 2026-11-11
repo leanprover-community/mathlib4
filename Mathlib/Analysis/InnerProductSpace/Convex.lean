@@ -8,17 +8,19 @@ module
 public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Analysis.InnerProductSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convexity properties of inner product spaces
 
 ## Main results
 
-- `InnerProductSpace.toUniformConvexSpace`: an inner product space is a uniformly convex space.
+* `InnerProductSpace.toUniformConvexSpace`: an inner product space is a uniformly convex space.
 
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 public section

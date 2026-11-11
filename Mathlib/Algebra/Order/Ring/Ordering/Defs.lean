@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Subsemiring.Support
 public import Mathlib.RingTheory.Ideal.Prime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring orderings
 
@@ -17,14 +20,14 @@ as predicates on `Subsemiring R`.
 ## Definitions
 
 * `IsOrdering`: an ordering is a subsemiring `O` such that `O ∪ -O = R` and
-the support `O ∩ -O` of `O` forms a prime ideal.
+  the support `O ∩ -O` of `O` forms a prime ideal.
 * `IsPreordering`: a preordering is a subsemiring that contains all squares, but not `-1`.
 
 All orderings are preorderings.
 
 ## References
 
-- [*An introduction to real algebra*, T.Y. Lam][lam_1984]
+* ‍\[_An introduction to real algebra_, T.Y. Lam\]\[lam\_1984\]
 -/
 
 @[expose] public section
@@ -205,7 +208,7 @@ theorem copy_eq (P : RingPreordering R) (S : Set R) (hS : S = P) : P.copy S hS =
 end copy
 
 /-!
-#### Support
+# Support
 -/
 
 section supportAddSubgroup
@@ -280,6 +283,7 @@ end support
 
 /--
 An ordering `O` on a ring `R` is a preordering such that
+
 1. `O` contains either `x` or `-x` for each `x` in `R` and
 2. the support of `O` is a prime ideal.
 -/

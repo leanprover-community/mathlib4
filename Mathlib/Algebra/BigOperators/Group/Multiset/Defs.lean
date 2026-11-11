@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Data.Multiset.Filter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums and products over multisets
 

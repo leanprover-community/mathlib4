@@ -9,6 +9,9 @@ public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.Order.GameAdd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Termination of a hydra game
 
@@ -41,20 +44,22 @@ open Multiset Prod
 
 variable {α : Type*}
 
-/-- The relation that specifies valid moves in our hydra game. `CutExpand r s' s`
-  means that `s'` is obtained by removing one head `a ∈ s` and adding back an arbitrary
-  multiset `t` of heads such that all `a' ∈ t` satisfy `r a' a`.
+/--
+The relation that specifies valid moves in our hydra game. `CutExpand r s' s`
+means that `s'` is obtained by removing one head `a ∈ s` and adding back an arbitrary
+multiset `t` of heads such that all `a' ∈ t` satisfy `r a' a`.
 
-  This is most directly translated into `s' = s.erase a + t`, but `Multiset.erase` requires
-  `DecidableEq α`, so we use the equivalent condition `s' + {a} = s + t` instead, which
-  is also easier to verify for explicit multisets `s'`, `s` and `t`.
+This is most directly translated into `s' = s.erase a + t`, but `Multiset.erase` requires
+`DecidableEq α`, so we use the equivalent condition `s' + {a} = s + t` instead, which
+is also easier to verify for explicit multisets `s'`, `s` and `t`.
 
-  We also don't include the condition `a ∈ s` because `s' + {a} = s + t` already
-  guarantees `a ∈ s + t`, and if `r` is irreflexive then `a ∉ t`, which is the
-  case when `r` is well-founded, the case we are primarily interested in.
+We also don't include the condition `a ∈ s` because `s' + {a} = s + t` already
+guarantees `a ∈ s + t`, and if `r` is irreflexive then `a ∉ t`, which is the
+case when `r` is well-founded, the case we are primarily interested in.
 
-  The lemma `Relation.cutExpand_iff` below converts between this convenient definition
-  and the direct translation when `r` is irreflexive. -/
+The lemma `Relation.cutExpand_iff` below converts between this convenient definition
+and the direct translation when `r` is irreflexive.
+-/
 def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
   ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ s' + {a} = s + t
 

@@ -14,6 +14,9 @@ import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Regular.IsSMulRegular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
 
@@ -25,7 +28,6 @@ This is the case if `Depth[I](M) = 0`.
 
 * `IsSMulRegular.subsingleton_linearMap_iff` : for `R` module `N M`, `Hom(N, M) = 0`
   iff there is a `M`-regular in `Module.annihilator R N`.
-
 -/
 
 public section

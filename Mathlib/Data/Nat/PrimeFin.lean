@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Factors
 public import Mathlib.Data.Nat.Prime.Infinite
 public import Mathlib.Data.Set.Finite.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime numbers
 

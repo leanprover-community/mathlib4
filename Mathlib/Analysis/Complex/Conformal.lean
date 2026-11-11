@@ -14,6 +14,9 @@ import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conformal maps between complex vector spaces
 
@@ -24,21 +27,16 @@ to be conformal.
 
 * `isConformalMap_complex_linear`: a nonzero complex linear map into an arbitrary complex normed
   space is conformal.
-
 * `isConformalMap_complex_linear_conj`: the composition of a nonzero complex linear map with `conj`
   is complex linear.
-
 * `isConformalMap_iff_is_complex_or_conj_linear`: a real linear map between the complex plane is
   conformal iff it's complex linear or the composition of some complex linear map and `conj`.
-
 * `DifferentiableAt.conformalAt` states that a real-differentiable function with a nonvanishing
   differential from the complex plane into an arbitrary complex-normed space is conformal at a point
   if it's holomorphic at that point. This is a version of Cauchy-Riemann equations.
-
 * `conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj` proves that a real-differential
   function with a nonvanishing differential between the complex plane is conformal at a point if and
   only if it's holomorphic or antiholomorphic at that point.
-
 * `differentiableWithinAt_complex_iff_differentiableWithinAt_real` and
   `differentiableAt_complex_iff_differentiableAt_real` characterize complex differentiability in
   terms of the classic Cauchy-Riemann equation.
@@ -136,7 +134,9 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
 
 end ConformalIntoComplexPlane
 
-/-! ### Conformality of real-differentiable complex maps -/
+/-!
+# Conformality of real-differentiable complex maps
+-/
 
 section Conformality
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {z : ℂ} {f : ℂ → E}
@@ -171,7 +171,7 @@ theorem conformalAt_iff_differentiableAt_or_differentiableAt_comp_conj {f : ℂ 
 end Conformality
 
 /-!
-### The Cauchy-Riemann Equation for Complex-Differentiable Functions
+# The Cauchy-Riemann Equation for Complex-Differentiable Functions
 -/
 
 section CauchyRiemann

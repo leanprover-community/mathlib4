@@ -8,6 +8,9 @@ module
 public meta import Lean.Elab.Tactic.Conv.Pattern
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
 
@@ -21,6 +24,7 @@ namespace Lean.MVarId
 /--
 Core tactic for `casesm` and `cases_type`. Calls `cases` on all fvars in `g` for which
 `matcher ldecl.type` returns true.
+
 * `recursive`: if true, it calls itself repeatedly on the resulting subgoals
 * `allowSplit`: if false, it will skip any hypotheses where `cases` returns more than one subgoal.
 * `throwOnNoMatch`: if true, then throws an error if no match is found
@@ -105,6 +109,7 @@ matches `p`.
   subgoals.
 
 Example:
+
 ```
 example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
   -- The following tactic destructs all conjunctions and disjunctions in the current context.
@@ -139,6 +144,7 @@ head symbol.
   or more subgoals.
 
 Example:
+
 ```
 example (h : a ∧ b ∨ c ∧ d) (h2 : e ∧ f) : True := by
   -- The following tactic destructs all conjunctions and disjunctions in the current context.
@@ -157,6 +163,7 @@ elab (name := casesType!) "cases_type!" recursive:"*"? heads:(ppSpace colGt iden
 /--
 Core tactic for `constructorm`. Calls `constructor` on all subgoals for which
 `matcher ldecl.type` returns true.
+
 * `recursive`: if true, it calls itself repeatedly on the resulting subgoals
 * `throwOnNoMatch`: if true, throws an error if no match is found
 -/
@@ -194,6 +201,7 @@ of the patterns, `constructorm` fails.
   `· repeat constructorm p_1, ..., p_n`. It is more efficient because the pattern is compiled once.
 
 Examples:
+
 ```
 example : True ∧ (True ∨ True) := by
   constructorm* _ ∨ _, _ ∧ _, True

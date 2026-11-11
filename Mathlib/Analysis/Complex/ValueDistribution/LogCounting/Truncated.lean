@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Truncated Divisors and Truncated Counting Functions
 
@@ -25,7 +28,7 @@ open Filter Function MeromorphicOn Metric Real Set
 namespace Function.locallyFinsuppWithin
 
 /-!
-## The Truncated Counting Function of a Function with Locally Finite Support
+# The Truncated Counting Function of a Function with Locally Finite Support
 -/
 
 variable {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
@@ -44,7 +47,7 @@ theorem logCounting_truncate_nonneg {D : locallyFinsupp E ℤ} (h : 0 ≤ D) {r 
 end Function.locallyFinsuppWithin
 
 /-!
-## The Truncated Logarithmic Counting Function of a Meromorphic Function
+# The Truncated Logarithmic Counting Function of a Meromorphic Function
 -/
 
 namespace ValueDistribution

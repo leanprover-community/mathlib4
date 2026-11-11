@@ -8,12 +8,16 @@ module
 public import Mathlib.Algebra.Lie.LieTheorem
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about semisimple Lie algebras
 
 This file is a home for lemmas about semisimple and reductive Lie algebras.
 
 ## Main definitions / results:
+
 * `LieAlgebra.hasCentralRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
   algebra with an irreducible faithful finite-dimensional representation is reductive.
 * `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
@@ -25,7 +29,6 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
   `(toEnd R L M).range ≤ LieAlgebra.derivedSeries R (Module.End R M) 1`, prove
   `f ∈ LieAlgebra.derivedSeries k (Module.End k V) 1 ↔ LinearMap.trace k _ f = 0`, and restate
   `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful` using `LieModule.IsTracefree`.
-
 -/
 
 public section

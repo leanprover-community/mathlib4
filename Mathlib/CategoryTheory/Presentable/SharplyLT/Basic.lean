@@ -10,19 +10,22 @@ public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 public import Mathlib.CategoryTheory.Presentable.Dense
 public import Mathlib.CategoryTheory.Presentable.Directed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sharply smaller regular cardinals
 
 In this file, we introduce the predicate `Cardinal.SharplyLT`. Given two regular
 cardinals `κ₁ < κ₂`, this condition can be described in different ways:
 (i) the category `CardinalDirectedPoset κ₁` (of `κ₁`-directed partially ordered
-  types, with order embeddings as morphisms), is `κ₂`-accessible;
+types, with order embeddings as morphisms), is `κ₂`-accessible;
 (ii) any `κ₁`-accessible category is `κ₂`-accessible.
 (iii) for any type `X` of cardinality `< κ₂`, there exists a cofinal set of
-  cardinality `< κ₂` in the subtype of subsets of `X` of cardinality `< κ₁`;
+cardinality `< κ₂` in the subtype of subsets of `X` of cardinality `< κ₁`;
 (iv) for any `κ₁`-directed partially ordered type `X` and any subset `A` of `X`
-  of cardinality `< κ₂`, there exists a `κ₁`-directed subset `B` of `X` containing `A`
-  that is of cardinality `< κ₂`.
+of cardinality `< κ₂`, there exists a `κ₁`-directed subset `B` of `X` containing `A`
+that is of cardinality `< κ₂`.
 The equivalence of these conditions (i)-(iv) is Theorem 2.11 in the book by Adámek and Rosický.
 Here, we take (i) as the definition, and the equivalence between the various definitions
 is obtained in the lemma `Cardinal.SharplyLT.tfae`. In particular, using (ii),
@@ -32,8 +35,9 @@ This notion is used in the file `Mathlib/CategoryTheory/Presentable/Uniformizati
 in the proof of the uniformization theorem for accessible categories.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 universe w v u

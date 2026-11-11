@@ -10,6 +10,9 @@ public import Mathlib.Tactic.NormNum.Basic
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Util.AtomM.Recurse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `abel` tactic
 
@@ -18,11 +21,12 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 ## Future work
 
 * In mathlib 3, `abel` accepted additional optional arguments:
-  ```
-  syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
-  ```
-  It is undecided whether these features should be restored eventually.
 
+```
+syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
+```
+
+It is undecided whether these features should be restored eventually.
 -/
 
 public section
@@ -64,15 +68,17 @@ discussion: https://leanprover.zulipchat.com/#narrow/with/629213120.\n\
 To disable this warning, use `set_option warn.abelTransparency false`."
 
 /--
-`abel` solves equations in the language of *additive*, commutative monoids and groups.
+`abel` solves equations in the language of _additive_, commutative monoids and groups.
 
 `abel` and its variants work as both tactics and conv tactics.
 
 * `abel1` fails if the target is not an equality that is provable by the axioms of
   commutative monoids/groups.
 * `abel_nf` rewrites all group expressions into a normal form.
+
   * `abel_nf at h` rewrites in a hypothesis.
   * `abel_nf (config := cfg)` allows for additional configuration:
+
     * `red`: the reducibility setting (overridden by `!`).
     * `zetaDelta`: if true, local `let` variables can be unfolded (overridden by `!`).
     * `contextual`: if true, implication hypotheses are added to the local context of the
@@ -85,6 +91,7 @@ use case for either feature, please write in the
 disabled with `set_option warn.abelTransparency false`.
 
 Examples:
+
 ```
 example [AddCommMonoid α] (a b : α) : a + (b + a) = a + a + b := by abel
 example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by abel
@@ -92,7 +99,8 @@ example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by
 -/
 syntax (name := abel) "abel" "!"? : tactic
 
-/-- The `Context` for a call to `abel`.
+/--
+The `Context` for a call to `abel`.
 
 Stores a few options for this call, and caches some common subexpressions
 such as typeclass instances and `0 : α`.
@@ -131,7 +139,8 @@ implicit parameters in the context, and the given list of arguments. -/
 def Context.app (c : Context) (n : Name) (inst : Expr) : Array Expr → Expr :=
   mkAppN (((@Expr.const n [c.univ]).app c.α).app inst)
 
-/-- Apply the function `n : ∀ {α} [inst α], _` to the implicit parameters in the
+/--
+Apply the function `n : ∀ {α} [inst α], _` to the implicit parameters in the
 context, and the given list of arguments.
 
 Compared to `context.app`, this takes the name of the typeclass, rather than an
@@ -140,7 +149,8 @@ inferred typeclass instance.
 def Context.mkApp (c : Context) (n inst : Name) (l : Array Expr) : MetaM Expr := do
   return c.app n (← synthInstance ((Expr.const inst [c.univ]).app c.α)) l
 
-/-- Add the letter "g" to the end of the name, e.g. turning `term` into `termg`.
+/--
+Add the letter "g" to the end of the name, e.g. turning `term` into `termg`.
 
 This is used to choose between declarations taking `AddCommMonoid` and those
 taking `AddCommGroup` instances.
@@ -149,7 +159,8 @@ def addG : Name → Name
   | .str p s => .str p (s ++ "g")
   | n => n
 
-/-- Apply the function `n : ∀ {α} [AddComm{Monoid,Group} α]` to the given list of arguments.
+/--
+Apply the function `n : ∀ {α} [AddComm{Monoid,Group} α]` to the given list of arguments.
 
 Will use the `AddComm{Monoid,Group}` instance that has been cached in the context.
 -/
@@ -347,15 +358,18 @@ lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
     (pra : a = ta) (prt : -ta = t) : -a = t := by
   simp [pra, prt]
 
-/-- Normalize a term `orig` of the form `smul e₁ e₂` or `smulg e₁ e₂`.
-  Normalized terms use `smul` for monoids and `smulg` for groups,
-  so there are actually four cases to handle:
-  * Using `smul` in a monoid just simplifies the pieces using `subst_into_smul`
-  * Using `smulg` in a group just simplifies the pieces using `subst_into_smulg`
-  * Using `smul a b` in a group requires converting `a` from a nat to an int and
-    then simplifying `smulg ↑a b` using `subst_into_smul_upcast`
-  * Using `smulg` in a monoid is impossible (or at least out of scope),
-    because you need a group argument to write a `smulg` term -/
+/--
+Normalize a term `orig` of the form `smul e₁ e₂` or `smulg e₁ e₂`.
+Normalized terms use `smul` for monoids and `smulg` for groups,
+so there are actually four cases to handle:
+
+* Using `smul` in a monoid just simplifies the pieces using `subst_into_smul`
+* Using `smulg` in a group just simplifies the pieces using `subst_into_smulg`
+* Using `smul a b` in a group requires converting `a` from a nat to an int and
+  then simplifying `smulg ↑a b` using `subst_into_smul_upcast`
+* Using `smulg` in a monoid is impossible (or at least out of scope),
+  because you need a group argument to write a `smulg` term
+-/
 def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
@@ -512,6 +526,7 @@ Evaluate an expression into its `abel` normal form.
 
 This is a variant of `Mathlib.Tactic.Abel.eval`, the main driver of the `abel` tactic.
 It differs in
+
 * outputting a `Simp.Result`, rather than a `NormalExpr × Expr`;
 * throwing an error if the expression `e` is an atom for the `abel` tactic.
 -/

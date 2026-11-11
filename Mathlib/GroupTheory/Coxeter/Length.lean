@@ -9,6 +9,9 @@ public import Mathlib.Data.ZMod.Basic
 public import Mathlib.GroupTheory.Coxeter.Basic
 public import Mathlib.Tactic.Linarith
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The length function, reduced words, and descents
 
@@ -18,22 +21,22 @@ of a group isomorphism `W ≃* M.group`, where `M.group` refers to the quotient 
 `B` by the Coxeter relations given by the matrix `M`. See `Mathlib/GroupTheory/Coxeter/Basic.lean`
 for more details.
 
-Given any element $w \in W$, its *length* (`CoxeterSystem.length`), denoted $\ell(w)$, is the
-minimum number $\ell$ such that $w$ can be written as a product of a sequence of $\ell$ simple
+Given any element $`w \in W`, its _length_ (`CoxeterSystem.length`), denoted $`\ell(w)`, is the
+minimum number $`\ell` such that $`w` can be written as a product of a sequence of $`\ell` simple
 reflections:
-$$w = s_{i_1} \cdots s_{i_\ell}.$$
-We prove for all $w_1, w_2 \in W$ that $\ell (w_1 w_2) \leq \ell (w_1) + \ell (w_2)$
-and that $\ell (w_1 w_2)$ has the same parity as $\ell (w_1) + \ell (w_2)$.
+$$`w = s_{i_1} \cdots s_{i_\ell}.`
+We prove for all $`w_1, w_2 \in W` that $`\ell (w_1 w_2) \leq \ell (w_1) + \ell (w_2)`
+and that $`\ell (w_1 w_2)` has the same parity as $`\ell (w_1) + \ell (w_2)`.
 
-We define a *reduced word* (`CoxeterSystem.IsReduced`) for an element $w \in W$ to be a way of
-writing $w$ as a product of exactly $\ell(w)$ simple reflections. Every element of $W$ has a reduced
-word.
+We define a _reduced word_ (`CoxeterSystem.IsReduced`) for an element $`w \in W` to be a way of
+writing $`w` as a product of exactly $`\ell(w)` simple reflections. Every element of $`W` has a
+reduced word.
 
-We say that $i \in B$ is a *left descent* (`CoxeterSystem.IsLeftDescent`) of $w \in W$ if
-$\ell(s_i w) < \ell(w)$. We show that if $i$ is a left descent of $w$, then
-$\ell(s_i w) + 1 = \ell(w)$. On the other hand, if $i$ is not a left descent of $w$, then
-$\ell(s_i w) = \ell(w) + 1$. We similarly define right descents (`CoxeterSystem.IsRightDescent`) and
-prove analogous results.
+We say that $`i \in B` is a _left descent_ (`CoxeterSystem.IsLeftDescent`) of $`w \in W` if
+$`\ell(s_i w) < \ell(w)`. We show that if $`i` is a left descent of $`w`, then
+$`\ell(s_i w) + 1 = \ell(w)`. On the other hand, if $`i` is not a left descent of $`w`, then
+$`\ell(s_i w) = \ell(w) + 1`. We similarly define right descents (`CoxeterSystem.IsRightDescent`)
+and prove analogous results.
 
 ## Main definitions
 
@@ -44,8 +47,7 @@ prove analogous results.
 
 ## References
 
-* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*][bjorner2005]
-
+* ‍\[A. Björner and F. Brenti, _Combinatorics of Coxeter Groups_\]\[bjorner2005\]
 -/
 
 @[expose] public section
@@ -62,7 +64,9 @@ variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
 local prefix:100 "s " => cs.simple
 local prefix:100 "π " => cs.wordProd
 
-/-! ### Length -/
+/-!
+# Length
+-/
 
 private theorem exists_word_with_prod (w : W) : ∃ n ω, n = ω.length ∧ π ω = w := by
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
@@ -187,7 +191,9 @@ theorem length_simple_mul (w : W) (i : B) : ℓ (s i * w) = ℓ w + 1 ∨ ℓ (s
   have := cs.length_mul_simple w⁻¹ i
   rwa [(by simp : w⁻¹ * (s i) = ((s i) * w)⁻¹), length_inv, length_inv] at this
 
-/-! ### Reduced words -/
+/-!
+# Reduced words
+-/
 
 @[simp]
 theorem isReduced_reverse_iff (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
@@ -243,12 +249,18 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
     apply IsReduced.drop (j := 1) at ih
     simpa using ih
 
-/-! ### Descents -/
+/-!
+# Descents
+-/
 
-/-- The proposition that `i` is a left descent of `w`; that is, $\ell(s_i w) < \ell(w)$. -/
+/--
+The proposition that `i` is a left descent of `w`; that is, $`\ell(s_i w) < \ell(w)`.
+-/
 def IsLeftDescent (w : W) (i : B) : Prop := ℓ (s i * w) < ℓ w
 
-/-- The proposition that `i` is a right descent of `w`; that is, $\ell(w s_i) < \ell(w)$. -/
+/--
+The proposition that `i` is a right descent of `w`; that is, $`\ell(w s_i) < \ell(w)`.
+-/
 def IsRightDescent (w : W) (i : B) : Prop := ℓ (w * s i) < ℓ w
 
 theorem not_isLeftDescent_one (i : B) : ¬cs.IsLeftDescent 1 i := by simp [IsLeftDescent]

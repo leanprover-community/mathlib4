@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered structures on localizations of commutative monoids
-
 -/
 
 @[expose] public section

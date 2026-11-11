@@ -13,7 +13,11 @@ public import Mathlib.Order.Filter.Ring
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 
-/-! # From equality of integrals to equality of functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# From equality of integrals to equality of functions
 
 This file provides various statements of the general form "if two functions have the same integral
 on all sets, then they are equal almost everywhere".
@@ -25,10 +29,12 @@ This file is about Bochner integrals. See the file `AEEqOfLIntegral` for Lebesgu
 ## Main statements
 
 All results listed below apply to two functions `f, g`, together with two main hypotheses,
+
 * `f` and `g` are integrable on all measurable sets with finite measure,
 * for all measurable sets `s` with finite measure, `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ`.
 
 The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
+
 * `ae_eq_of_forall_setIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
 * `AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq`: for functions which are
   `AEFinStronglyMeasurable`.
@@ -39,11 +45,11 @@ For each of these results, we also provide a lemma about the equality of one fun
 example, `Lp.ae_eq_zero_of_forall_setIntegral_eq_zero`.
 
 Generally useful lemmas which are not related to integrals:
+
 * `ae_eq_zero_of_forall_inner`: if for all constants `c`, `(fun x => ⟪c, f x⟫_𝕜) =ᵐ[μ] 0` then
   `f =ᵐ[μ] 0`.
 * `ae_eq_zero_of_forall_dual`: if for all constants `c` in the `StrongDual` space,
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
-
 -/
 
 public section

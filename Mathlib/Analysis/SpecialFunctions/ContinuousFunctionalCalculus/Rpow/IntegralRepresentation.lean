@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.RingInverseOrder
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral representations of `rpow`
 
@@ -33,22 +36,22 @@ relevant in applications, and would needlessly complicate the proof.
 
 ## Main declarations
 
-+ `rpowIntegrand₀₁ p t x := t ^ p * (t⁻¹ - (t + x)⁻¹)`
-+ `rpowIntegrand₁₂ p t x := t ^ (p - 1) * (x * t⁻¹ + t * (t + x)⁻¹ - 1)`
-+ `exists_measure_rpow_eq_integral_rpowIntegrand₀₁` and
+* `rpowIntegrand₀₁ p t x := t ^ p * (t⁻¹ - (t + x)⁻¹)`
+* `rpowIntegrand₁₂ p t x := t ^ (p - 1) * (x * t⁻¹ + t * (t + x)⁻¹ - 1)`
+* `exists_measure_rpow_eq_integral_rpowIntegrand₀₁` and
   `exists_measure_rpow_eq_integral_rpowIntegrand₁₂`: there exists a measure on `ℝ` such that
   `x ^ p = ∫ t, rpowIntegrand₀₁ p t x ∂μ` (resp `x ^ p = ∫ t, rpowIntegrand₁₂ p t x ∂μ`)
-+ `CFC.exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁` and
+* `CFC.exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁` and
   `CFC.exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂`: the corresponding statements where
   `x ^ p` is defined via the CFC.
 
 ## TODO
 
-+ Give analogous representations for the range `Ioo (-1) 0`.
+* Give analogous representations for the range `Ioo (-1) 0`.
 
 ## References
 
-+ [carlen2010] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
+* ‍\[carlen2010\] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
   (see Lemma 2.8)
 -/
 

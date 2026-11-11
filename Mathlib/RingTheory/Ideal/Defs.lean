@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals over a ring
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian and Locally Noetherian Schemes
 
@@ -17,7 +20,6 @@ giving definitions, equivalent conditions, and basic properties.
 
 * `AlgebraicGeometry.IsLocallyNoetherian`: A scheme is locally Noetherian
   if the components of the structure sheaf at each affine open are Noetherian rings.
-
 * `AlgebraicGeometry.IsNoetherian`: A scheme is Noetherian if it is locally Noetherian
   and quasi-compact as a topological space.
 
@@ -25,21 +27,17 @@ giving definitions, equivalent conditions, and basic properties.
 
 * `AlgebraicGeometry.isLocallyNoetherian_iff_of_affine_openCover`: A scheme is locally Noetherian
   if and only if it is covered by affine opens whose sections are Noetherian rings.
-
 * `AlgebraicGeometry.IsLocallyNoetherian.quasiSeparatedSpace`: A locally Noetherian scheme is
   quasi-separated.
-
 * `AlgebraicGeometry.isNoetherian_iff_of_finite_affine_openCover`: A scheme is Noetherian
   if and only if it is covered by finitely many affine opens whose sections are Noetherian rings.
-
 * `AlgebraicGeometry.IsNoetherian.noetherianSpace`: A Noetherian scheme is
   topologically a Noetherian space.
 
 ## References
 
 * [Stacks: Noetherian Schemes](https://stacks.math.columbia.edu/tag/01OU)
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
-
+* ‍\[Robin Hartshorne, _Algebraic Geometry_\]\[Har77\]
 -/
 
 public section
@@ -61,10 +59,12 @@ variable {R : Type u} [CommRing R] (S : Finset R) (hS : Ideal.span (α := R) S =
   (hN : ∀ s : S, IsNoetherianRing (Away (M := R) s))
 
 include hS hN in
-/-- Let `R` be a ring, and `f i` a finite collection of elements of `R` generating the unit ideal.
+/--
+Let `R` be a ring, and `f i` a finite collection of elements of `R` generating the unit ideal.
 If the localization of `R` at each `f i` is Noetherian, so is `R`.
 
-We follow the proof given in [Har77], Proposition II.3.2 -/
+We follow the proof given in \[Har77\], Proposition II.3.2
+-/
 theorem isNoetherianRing_of_away : IsNoetherianRing R := by
   apply monotone_stabilizes_iff_noetherian.mp
   intro I
@@ -114,10 +114,12 @@ theorem isLocallyNoetherian_of_affine_cover {ι} {S : ι → X.affineOpens}
     exact isNoetherianRing_of_ringEquiv Γ(X, X.basicOpen f) hEq.symm.toRingEquiv
   | hU => exact hS' _
 
-/-- A scheme is locally Noetherian if and only if it is covered by affine opens whose sections
+/--
+A scheme is locally Noetherian if and only if it is covered by affine opens whose sections
 are Noetherian rings.
 
-See [Har77], Proposition II.3.2. -/
+See \[Har77\], Proposition II.3.2.
+-/
 theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
     (hS : (⨆ i, S i : X.Opens) = ⊤) :
     IsLocallyNoetherian X ↔ ∀ i, IsNoetherianRing Γ(X, S i) :=

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topological space of `X`-continuous maps
 
@@ -25,9 +28,9 @@ a bijection between the type of `X`-continuous maps `Y × Z → T` and the type 
 topological spaces `Y`, `Z` and `T`.
 
 ## References
-* [Martín Escardó, Jimmie Lawson and Alex Simpson, *Comparing Cartesian closed
-  categories of (core) compactly generated spaces*][escardo-lawson-simpson-2004]
 
+* ‍\[Martín Escardó, Jimmie Lawson and Alex Simpson, _Comparing Cartesian closed
+  categories of (core) compactly generated spaces_\]\[escardo-lawson-simpson-2004\]
 -/
 universe v v' v'' t u
 

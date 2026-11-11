@@ -10,17 +10,21 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Maps.Strict.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strict Group Homomorphisms
 
-In this file, we study homomorphisms of topological groups which are *strict* in the sense
+In this file, we study homomorphisms of topological groups which are _strict_ in the sense
 of `Topology.IsStrictMap`.
 
 We provide specialized variations of general facts about `IsStrictMap` for convenience.
 But we also show that strict group homomorphisms enjoy some extra properties compared to general
 strict maps. Namely, we provide:
+
 * `isStrictMap_iff_isOpenQuotientMap_rangeRestrict`: `f` is a strict group homomorphism if
-  and only if the `rangeRestrict` of `f` is an *open* quotient map. This ultimately relies
+  and only if the `rangeRestrict` of `f` is an _open_ quotient map. This ultimately relies
   on `MonoidHom.isOpenQuotientMap_of_isQuotientMap`.
 * `isStrictMap_prodMap`: The product (in the sense of `MonoidHom.prodMap`) of strict group
   homomorphisms is strict. Note that this result is false for general maps; what makes things work

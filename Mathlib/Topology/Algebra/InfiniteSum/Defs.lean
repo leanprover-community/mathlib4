@@ -11,20 +11,23 @@ public import Mathlib.Topology.Separation.Hausdorff
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sum and product in a topological monoid
 
 This file defines infinite products and sums for (possibly infinite) indexed families of elements
 in a commutative topological monoid (resp. add monoid).
 
-To handle convergence questions we use the formalism of *summation filters* (defined in the
+To handle convergence questions we use the formalism of _summation filters_ (defined in the
 file `Mathlib/Topology/Algebra/InfiniteSum/SummationFilter.lean`). These are filters on the finite
-subsets of a given type, and we define a function to be *summable* for a summation filter `L` if
+subsets of a given type, and we define a function to be _summable_ for a summation filter `L` if
 its partial sums over finite subsets tend to a limit along `L` (and similarly for products).
 
 This simultaneously generalizes several different kinds of summation: for instance,
-*unconditional summation* (which makes sense for any index type) where we take the limit with
-respect to the `atTop` filter; but also *conditional summation* for functions on `ℕ`, where the
+_unconditional summation_ (which makes sense for any index type) where we take the limit with
+respect to the `atTop` filter; but also _conditional summation_ for functions on `ℕ`, where the
 limit is over the partial sums `∑ i ∈ range n, f i` as `n → ∞` (so there exist
 conditionally-summable sequences which are not unconditionally summable).
 
@@ -48,7 +51,6 @@ rather than in `ℝ`.
 ## References
 
 * Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
-
 -/
 
 @[expose] public section
@@ -72,7 +74,8 @@ section HasProd
 
 variable [CommMonoid α] [TopologicalSpace α]
 
-/-- `HasProd f a L` means that the (potentially infinite) product of the `f b` for `b : β` converges
+/--
+`HasProd f a L` means that the (potentially infinite) product of the `f b` for `b : β` converges
 to `a` along the SummationFilter `L`.
 
 By default `L` is the `unconditional` one, corresponding to the limit of all finite sets towards
@@ -86,24 +89,29 @@ assumption later, for the lemmas where it is relevant.
 
 These are defined in an identical way to infinite sums (`HasSum`). For example, we say that
 the function `ℕ → ℝ` sending `n` to `1 / 2` has a product of `0`, rather than saying that it does
-not converge as some authors would. -/
-@[to_additive /-- `HasSum f a L` means that the (potentially infinite) sum of the `f b` for `b : β`
+not converge as some authors would.
+-/
+@[to_additive /--
+              `HasSum f a L` means that the (potentially infinite) sum of the `f b` for `b : β`
 converges to `a` along the SummationFilter `L`.
 
-By default `L` is the `unconditional` one, corresponding to the limit of all finite sets towards
-the entire type. So we take the sum over bigger and bigger finite sets. This sum operation is
-invariant under permuting the terms (while sums for more general summation filters usually are not).
-This is based on Mario Carneiro's
-[infinite sum `df-tsms` in Metamath](http://us.metamath.org/mpeuni/df-tsms.html).
+              By default `L` is the `unconditional` one, corresponding to the limit of all finite
+sets towards the entire type. So we take the sum over bigger and bigger finite sets.
+This sum operation is invariant under permuting the terms (while sums for more general
+summation filters usually are not). This is based on Mario Carneiro's [infinite sum
+`df-tsms` in Metamath](http://us.metamath.org/mpeuni/df-tsms.html).
 
-In particular, the function `ℕ → ℝ` sending `n` to `(-1) ^ n / (n + 1)` does not have a
-sum for this definition, although it is summable for the `conditional` summation filter that
-takes limits of sums over `n ∈ {0, ..., X}` as `X → ∞`. However, a series which is *absolutely*
-convergent with respect to the conditional summation filter is in fact unconditionally summable.
+              In particular, the function `ℕ → ℝ` sending `n` to `(-1) ^ n / (n + 1)` does not have
+a sum for this definition, although it is summable for the `conditional` summation
+filter that takes limits of sums over `n ∈ {0, ..., X}` as `X → ∞`. However, a series
+which is _absolutely_ convergent with respect to the conditional summation filter is
+in fact unconditionally summable.
 
-For the definition and many statements, `α` does not need to be a topological additive monoid,
-only an additive monoid with a topology (i.e. the addition is not assumed to be continuous). We
-only add this assumption later, for the lemmas where it is relevant. -/]
+              For the definition and many statements, `α` does not need to be a topological additive
+monoid, only an additive monoid with a topology (i.e. the addition is not assumed to
+be continuous). We only add this assumption later, for the lemmas where it is
+relevant.
+              -/]
 def HasProd (f : β → α) (a : α) (L := unconditional β) : Prop :=
   Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) L.filter (𝓝 a)
 
@@ -121,7 +129,8 @@ lemma Multipliable.mono_filter {f : β → α} {L₁ L₂ : SummationFilter β}
   match hf with | ⟨a, ha⟩ => ⟨a, ha.mono_left h⟩
 
 open scoped Classical in
-/-- `∏' i, f i` is the unconditional product of `f`, if it exists, or 1 otherwise.
+/--
+`∏' i, f i` is the unconditional product of `f`, if it exists, or 1 otherwise.
 
 More generally, if `L` is a `SummationFilter`, `∏'[L] i, f i` is the product of `f` with respect to
 `L` if it exists, and `1` otherwise.
@@ -129,9 +138,11 @@ More generally, if `L` is a `SummationFilter`, `∏'[L] i, f i` is the product o
 (Note that even if the unconditional product exists, it might not be unique if the topology is not
 separated. When the multiplicative support of `f` is finite, we make the most reasonable choice,
 to use the product over the multiplicative support. Otherwise, we choose arbitrarily an `a`
-satisfying `HasProd f a`. Similar remarks apply to more general summation filters.) -/
+satisfying `HasProd f a`. Similar remarks apply to more general summation filters.)
+-/
 @[no_expose, to_additive
-/-- `∑' i, f i` is the unconditional sum of `f` if it exists, or 0 otherwise.
+/--
+`∑' i, f i` is the unconditional sum of `f` if it exists, or 0 otherwise.
 
 More generally, if `L` is a `SummationFilter`, `∑'[L] i, f i` is the sum of `f` with respect to
 `L` if it exists, and `0` otherwise.
@@ -175,16 +186,20 @@ lemma multipliable_bot (hL : ¬L.NeBot) (f : β → α) :
     Multipliable f L :=
   ⟨1, hasProd_bot hL ..⟩
 
-/-- If the summation filter is the trivial filter `⊥`, then the topological product is equal to the
+/--
+If the summation filter is the trivial filter `⊥`, then the topological product is equal to the
 finite product (which is taken to be 1 if the multiplicative support of `f` is infinite).
 
-Note that in this case `HasProd f a` is satisfied for *every* element `a` of the target, so the
-value assigned to the `tprod` is a question of conventions. -/
-@[to_additive /-- If the summation filter is the trivial filter `⊥`, then the topological sum is
+Note that in this case `HasProd f a` is satisfied for _every_ element `a` of the target, so the
+value assigned to the `tprod` is a question of conventions.
+-/
+@[to_additive /--
+              If the summation filter is the trivial filter `⊥`, then the topological sum is
 equal to the finite sum (which is taken to be 1 if the support of `f` is infinite).
 
-Note that in this case `HasSum f a` is satisfied for *every* element `a` of the target, so the
-value assigned to the `tsum` is a question of conventions. -/]
+              Note that in this case `HasSum f a` is satisfied for _every_ element `a` of the
+target, so the value assigned to the `tsum` is a question of conventions.
+              -/]
 lemma tprod_bot (hL : ¬L.NeBot) (f : β → α) : ∏'[L] b, f b = ∏ᶠ b, f b := by
   simp only [tprod_def, dite_eq_left (multipliable_bot hL f)]
   have : L.LeAtTop := L.leAtTop_of_not_NeBot hL

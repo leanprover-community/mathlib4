@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Basic.Denumerable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The primitive recursive functions
 
@@ -25,21 +28,22 @@ for this.)
 
 In the above, the pairing function is primitive recursive by definition.
 This deviates from the textbook definition of primitive recursive functions,
-which instead work with *`n`-ary* functions. We formalize the textbook
+which instead work with _`n`-ary_ functions. We formalize the textbook
 definition in `Nat.Primrec'`. `Nat.Primrec'.prim_iff` then proves it is
 equivalent to our chosen formulation. For more discussion of this and
-other design choices in this formalization, see [carneiro2019].
+other design choices in this formalization, see \[carneiro2019\].
 
 ## Main definitions
 
-- `Nat.Primrec f`: `f` is primitive recursive, for functions `f : ℕ → ℕ`
-- `Primrec f`: `f` is primitive recursive, for functions between `Primcodable` types
-- `Primcodable α`: well-behaved encoding of `α` into `ℕ`, i.e. one such that roundtripping through
+* `Nat.Primrec f`: `f` is primitive recursive, for functions `f : ℕ → ℕ`
+* `Primrec f`: `f` is primitive recursive, for functions between `Primcodable` types
+* `Primcodable α`: well-behaved encoding of `α` into `ℕ`, i.e. one such that roundtripping through
   the encoding functions adds no computational power
 
 ## References
 
-* [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
+* ‍\[Mario Carneiro, _Formalizing computability theory via partial recursive
+  functions_\]\[carneiro2019\]
 -/
 
 @[expose] public section
@@ -118,7 +122,8 @@ end Primrec
 
 end Nat
 
-/-- A `Primcodable` type is, essentially, an `Encodable` type for which
+/--
+A `Primcodable` type is, essentially, an `Encodable` type for which
 the encode/decode functions are primitive recursive.
 However, such a definition is circular.
 
@@ -127,7 +132,8 @@ Instead, we ask that the composition of `decode : ℕ → Option α` with
 the identity function, restricted to the image of `encode`.
 Thus, in a way, the added requirement ensures that no predicates
 can be smuggled in through a cunning choice of the subset of `ℕ` into
-which the type is encoded. -/
+which the type is encoded.
+-/
 class Primcodable (α : Type*) extends Encodable α where
   prim (α) : Nat.Primrec fun n => Encodable.encode (decode n)
 

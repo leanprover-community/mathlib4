@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # shifted Legendre Polynomials
 
@@ -21,7 +24,8 @@ polynomial in `ℤ[X]`. We prove some basic properties of the Legendre polynomia
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Legendre_polynomials>
+* [
+  https://en.wikipedia.org/wiki/Legendre\_polynomials](https://en.wikipedia.org/wiki/Legendre_polynomials)
 
 ## Tags
 

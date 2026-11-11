@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pointwise monoidal structure on the product of families of monoidal categories
 
 Given a family of monoidal categories `C i`, we define a monoidal structure on
 `Π i, C i` where the tensor product is defined pointwise.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Function.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relator for functions, pairs, sums, and lists.
 -/

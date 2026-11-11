@@ -10,18 +10,22 @@ public import Mathlib.Topology.Order.ExtendFrom
 
 import Mathlib.Topology.Order.T5
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rolle's Theorem (topological part)
 
 In this file we prove the purely topological part of Rolle's Theorem:
-a function that is continuous on an interval $[a, b]$, $a < b$,
-has a local extremum at a point $x ∈ (a, b)$ provided that $f(a)=f(b)$.
+a function that is continuous on an interval $`[a, b]`, $`a < b`,
+has a local extremum at a point $`x ∈ (a, b)` provided that $`f(a)=f(b)`.
 We also prove several variations of this statement.
 
 In `Mathlib/Analysis/Calculus/LocalExtr/Rolle` we use these lemmas
 to prove several versions of Rolle's Theorem from calculus.
 
 ## Keywords
+
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
 

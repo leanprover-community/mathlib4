@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Solvable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characters of Lie algebras
 
@@ -16,8 +19,8 @@ algebra (e.g., a Cartan subalgebra of a semisimple Lie algebra) a character is j
 
 ## Main definitions
 
-  * `LieAlgebra.LieCharacter`
-  * `LieAlgebra.lieCharacterEquivLinearDual`
+* `LieAlgebra.LieCharacter`
+* `LieAlgebra.lieCharacterEquivLinearDual`
 
 ## Tags
 

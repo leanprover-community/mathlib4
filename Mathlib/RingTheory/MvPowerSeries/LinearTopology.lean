@@ -9,12 +9,15 @@ public import Mathlib.RingTheory.MvPowerSeries.PiTopology
 
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 
-/-! # Linear topology on the ring of multivariate power series
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-- `MvPowerSeries.LinearTopology.basis`: the ideals of the ring of multivariate power series
+/-!
+# Linear topology on the ring of multivariate power series
+
+* `MvPowerSeries.LinearTopology.basis`: the ideals of the ring of multivariate power series
   all coefficients the exponent of which is smaller than some bound vanish.
-
-- `MvPowerSeries.LinearTopology.hasBasis_nhds_zero` :
+* `MvPowerSeries.LinearTopology.hasBasis_nhds_zero` :
   the two-sided ideals from `MvPowerSeries.LinearTopology.basis` form a basis
   of neighborhoods of `0` if the topology of `R` is (left and right) linear.
 
@@ -34,7 +37,6 @@ whenever `M` is linearly topologized over `R`.
 To recover the ring case, it would remain to show that the isomorphism between
 `Rᵐᵒᵖ⟦X⟧` and `R⟦X⟧ᵐᵒᵖ` identifies their respective actions on `R⟦X⟧`.
 (And likewise in the multivariate case.)
-
 -/
 
 @[expose] public section
@@ -157,10 +159,12 @@ theorem isTopologicallyNilpotent_of_constantCoeff
   intro n hn
   simpa only [map_pow] using coeff_eq_zero_of_constantCoeff_nilpotent (hN N le_rfl) hn
 
-/-- Assuming the base ring has a linear topology, the powers of a `MvPowerSeries` converge to 0
+/--
+Assuming the base ring has a linear topology, the powers of a `MvPowerSeries` converge to 0
 iff its constant coefficient is topologically nilpotent.
 
-See also `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent`. -/
+See also `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent`.
+-/
 theorem isTopologicallyNilpotent_iff_constantCoeff
     {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R] (f : MvPowerSeries σ R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔

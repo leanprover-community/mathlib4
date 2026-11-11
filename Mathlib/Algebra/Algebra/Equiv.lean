@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Algebra.Ring.Action.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isomorphisms of `R`-algebras
 
@@ -174,10 +177,12 @@ theorem toRingEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂
 @[deprecated toRingEquiv_injective (since := "2026-05-05")]
   alias coe_ringEquiv_injective := toRingEquiv_injective
 
-/-- Interpret an algebra equivalence as an algebra homomorphism.
+/--
+Interpret an algebra equivalence as an algebra homomorphism.
 
 This definition is included for symmetry with the other `to*Hom` projections.
-The `simp` normal form is to use the coercion of the `AlgHomClass.coeTC` instance. -/
+The `simp` normal form is to use the coercion of the `AlgHomClass.coeTC` instance.
+-/
 @[coe]
 def toAlgHom : A₁ →ₐ[R] A₂ :=
   { e with
@@ -356,15 +361,21 @@ end symm
 
 section simps
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
   e
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
   e
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
   e.symm
 
@@ -402,10 +413,12 @@ lemma toRingHom_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) 
 
 end trans
 
-/-- `Equiv.cast (congrArg _ h)` as an algebra equiv.
+/--
+`Equiv.cast (congrArg _ h)` as an algebra equiv.
 
 Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
-to avoid having to deal with an equality of the algebraic structure itself. -/
+to avoid having to deal with an equality of the algebraic structure itself.
+-/
 @[simps!]
 protected def cast
     {ι : Type*} {A : ι → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] {i j : ι} (h : i = j) :
@@ -447,10 +460,12 @@ theorem arrowCongr_symm (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A�
     (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm :=
   rfl
 
-/-- If `A₁` is equivalent to `A₂` and `A₁'` is equivalent to `A₂'`, then the type of maps
+/--
+If `A₁` is equivalent to `A₂` and `A₁'` is equivalent to `A₂'`, then the type of maps
 `A₁ ≃ₐ[R] A₁'` is equivalent to the type of maps `A₂ ≃ₐ[R] A₂'`.
 
-This is the `AlgEquiv` version of `AlgEquiv.arrowCongr`. -/
+This is the `AlgEquiv` version of `AlgEquiv.arrowCongr`.
+-/
 @[simps apply]
 def equivCongr (e : A₁ ≃ₐ[R] A₂) (e' : A₁' ≃ₐ[R] A₂') : (A₁ ≃ₐ[R] A₁') ≃ A₂ ≃ₐ[R] A₂' where
   toFun ψ := e.symm.trans (ψ.trans e')
@@ -668,9 +683,11 @@ lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
 @[simp] theorem coe_pow (e : A₁ ≃ₐ[R] A₁) (n : ℕ) : ⇑(e ^ n) = e^[n] :=
   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
-/-- An algebra isomorphism induces a group isomorphism between automorphism groups.
+/--
+An algebra isomorphism induces a group isomorphism between automorphism groups.
 
-This is a more bundled version of `AlgEquiv.equivCongr`. -/
+This is a more bundled version of `AlgEquiv.equivCongr`.
+-/
 @[simps apply]
 def autCongr (ϕ : A₁ ≃ₐ[R] A₂) : (A₁ ≃ₐ[R] A₁) ≃* A₂ ≃ₐ[R] A₂ where
   __ := equivCongr ϕ ϕ
@@ -692,9 +709,11 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
     (autCongr ϕ).trans (autCongr ψ) = autCongr (ϕ.trans ψ) :=
   rfl
 
-/-- The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
+/--
+The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ where
   smul := (· ·)
   smul_zero := map_zero
@@ -857,10 +876,12 @@ section
 
 variable [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
 
-/-- Each element of the group defines an algebra equivalence.
+/--
+Each element of the group defines an algebra equivalence.
 
 This is a stronger version of `MulSemiringAction.toRingEquiv` and
-`DistribMulAction.toLinearEquiv`. -/
+`DistribMulAction.toLinearEquiv`.
+-/
 @[simps! apply symm_apply toEquiv]
 def toAlgEquiv (g : G) : A ≃ₐ[R] A :=
   { MulSemiringAction.toRingEquiv _ _ g, MulSemiringAction.toAlgHom R A g with }
@@ -871,10 +892,12 @@ theorem toAlgEquiv_injective [FaithfulSMul G A] :
 
 variable (G)
 
-/-- Each element of the group defines an algebra equivalence.
+/--
+Each element of the group defines an algebra equivalence.
 
 This is a stronger version of `MulSemiringAction.toRingAut` and
-`DistribMulAction.toModuleEnd`. -/
+`DistribMulAction.toModuleEnd`.
+-/
 @[simps]
 def toAlgAut : G →* A ≃ₐ[R] A where
   toFun := toAlgEquiv R A
@@ -939,11 +962,13 @@ lemma AlgHom.ulift_apply (f : S →ₐ[R] T) (x : ULift S) :
 
 end
 
-/-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
+/--
+If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
 equivalence of `R`-algebras.
 
 Note that if `e : R ≃ₗ[R] A` is the linear equivalence, then this is not the same as the equivalence
-of algebras provided here unless `e 1 = 1`. -/
+of algebras provided here unless `e 1 = 1`.
+-/
 @[simps] def LinearEquiv.algEquivOfRing
     {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (e : R ≃ₗ[R] A) : R ≃ₐ[R] A where

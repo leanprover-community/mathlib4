@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Representatives of small categories
 
@@ -24,7 +27,6 @@ that of `Ω` (see `SmallCategoryOfSet.exists_equivalence`).
 Given a cardinal `κ : Cardinal.{w}`, we also provide a small family of categories
 `SmallCategoryCardinalLT.categoryFamily κ` which represents (up to isomorphism)
 any category `C` such that `HasCardinalLT C κ` holds.
-
 -/
 
 @[expose] public section

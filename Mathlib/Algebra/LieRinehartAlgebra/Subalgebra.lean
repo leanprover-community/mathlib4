@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Algebra.LieRinehartAlgebra.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie-Rinehart subalgebras
 
@@ -17,12 +20,9 @@ definitions and results.
 ## Main definitions/ statements:
 
 * `LieRinehartSubalgebra` as an `A`-submodule of `L` stable under the Lie bracket. (This is also
-applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ring structure).
-
+  applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ring structure).
 * A Lie-Rinehart subalgebra of a Lie-Rinehart ring is a Lie-Rinehart ring
-
 * A Lie-Rinehart subalgebra of a Lie-Rinehart algebra is a Lie-Rinehart algebra over the same ring.
-
 -/
 
 public section

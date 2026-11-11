@@ -7,12 +7,14 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Iterations of `δ 0` and `σ 0`
 
 This file introduces morphisms `δ₀Iter i` and `σ₀Iter i` in the simplex category:
 they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
-
 -/
 
 @[expose] public section
@@ -168,13 +170,17 @@ lemma σ₀Iter_succ (i : ℕ) {n m : ℕ} (h : n + (i + 1) = m) :
   rw [dsimp% ConcreteCategory.comp_apply (σ₀Iter i) (σ 0)]
   by_cases! hk : k.val ≤ i
   · rw [σ₀Iter_coe_eq_of_lt .., coe_σ]
-    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/14727 (replacing
-    grind's `ToInt` machinery with homomorphism-based translation), the `= Fin.le_def` hints
-    were not needed. `grind` has both instances it needs — `Fin.predAbove_of_le_castSucc` as
-    `∀ h, (σ₀Iter i _) k ≤ Fin.castSucc 0 → predAbove 0 … = ….castPred _`, and
-    `σ₀Iter_coe_eq_of_lt` giving `↑((σ₀Iter i _) k) = 0` — but will not derive the
-    `Fin`-level antecedent `(σ₀Iter i _) k ≤ Fin.castSucc 0` from those `val` facts. Note
-    `= Fin.lt_def` does *not* help here, and neither does `(splitImp := true)`. -/
+    #adaptation_note /--
+                     Before https://github.com/leanprover/lean4/pull/14727 (replacing grind's
+`ToInt` machinery with homomorphism-based translation), the `= Fin.le_def`
+hints were not needed. `grind` has both instances it needs —
+`Fin.predAbove_of_le_castSucc` as
+`∀ h, (σ₀Iter i _) k ≤ Fin.castSucc 0 → predAbove 0 … = ….castPred _`, and
+`σ₀Iter_coe_eq_of_lt` giving `↑((σ₀Iter i _) k) = 0` — but will not derive the
+`Fin`-level antecedent `(σ₀Iter i _) k ≤ Fin.castSucc 0` from those `val`
+facts. Note `= Fin.lt_def` does _not_ help here, and neither does
+`(splitImp := true)`.
+                     -/
     obtain hk | rfl := hk.lt_or_eq
     · grind [Fin.predAbove_of_le_castSucc, Fin.coe_castPred, σ₀Iter_coe_eq_of_lt, = Fin.le_def]
     · grind [Fin.predAbove_of_le_castSucc, Fin.coe_castPred, σ₀Iter_coe_eq_of_ge, tsub_self,

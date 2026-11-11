@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.MeasureTheory.OuterMeasure.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Outer measures from functions
 
@@ -27,13 +30,13 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Outer_measure>
-* <https://en.wikipedia.org/wiki/Carath%C3%A9odory%27s_criterion>
+* [https://en.wikipedia.org/wiki/Outer\_measure](https://en.wikipedia.org/wiki/Outer_measure)
+* [
+  https://en.wikipedia.org/wiki/Carath%C3%A9odory%27s\_criterion](https://en.wikipedia.org/wiki/Carath%C3%A9odory%27s_criterion)
 
 ## Tags
 
 outer measure, Carathéodory-measurable, Carathéodory's criterion
-
 -/
 
 @[expose] public section
@@ -147,12 +150,14 @@ theorem isGreatest_ofFunction :
 theorem ofFunction_eq_sSup : OuterMeasure.ofFunction m m_empty = sSup { μ | ∀ s, μ s ≤ m s } :=
   (@isGreatest_ofFunction α m m_empty).isLUB.sSup_eq.symm
 
-/-- If `m u = ∞` for any set `u` that has nonempty intersection both with `s` and `t`, then
+/--
+If `m u = ∞` for any set `u` that has nonempty intersection both with `s` and `t`, then
 `μ (s ∪ t) = μ s + μ t`, where `μ = MeasureTheory.OuterMeasure.ofFunction m m_empty`.
 
 E.g., if `α` is an (e)metric space and `m u = ∞` on any set of diameter `≥ r`, then this lemma
 implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s`
-and `y ∈ t`. -/
+and `y ∈ t`.
+-/
 theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     OuterMeasure.ofFunction m m_empty (s ∪ t) =
@@ -305,12 +310,14 @@ theorem comap_boundedBy {β} (f : β → α)
     congr with s : 1
     rw [image_nonempty]
 
-/-- If `m u = ∞` for any set `u` that has nonempty intersection both with `s` and `t`, then
+/--
+If `m u = ∞` for any set `u` that has nonempty intersection both with `s` and `t`, then
 `μ (s ∪ t) = μ s + μ t`, where `μ = MeasureTheory.OuterMeasure.boundedBy m`.
 
 E.g., if `α` is an (e)metric space and `m u = ∞` on any set of diameter `≥ r`, then this lemma
 implies that `μ (s ∪ t) = μ s + μ t` on any two sets such that `r ≤ edist x y` for all `x ∈ s`
-and `y ∈ t`. -/
+and `y ∈ t`.
+-/
 theorem boundedBy_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     boundedBy m (s ∪ t) = boundedBy m s + boundedBy m t :=

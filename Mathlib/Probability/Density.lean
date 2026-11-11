@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 public import Mathlib.Probability.Independence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Probability density function
 
@@ -221,11 +224,13 @@ section
 
 variable {F : Type*} [MeasurableSpace F] {ν : Measure F} (X : Ω → E) [HasPDF X ℙ μ] {g : E → F}
 
-/-- A random variable that `HasPDF` transformed under a `QuasiMeasurePreserving`
+/--
+A random variable that `HasPDF` transformed under a `QuasiMeasurePreserving`
 map also `HasPDF` if `(map g (map X ℙ)).HaveLebesgueDecomposition μ`.
 
 `quasiMeasurePreserving_hasPDF` is more useful in the case we are working with a
-probability measure and a real-valued random variable. -/
+probability measure and a real-valued random variable.
+-/
 theorem quasiMeasurePreserving_hasPDF (hg : QuasiMeasurePreserving g μ ν)
     (hmap : (map g (map X ℙ)).HaveLebesgueDecomposition ν) : HasPDF (g ∘ X) ℙ ν := by
   have hgm : AEMeasurable g (map X ℙ) := hg.aemeasurable.mono_ac HasPDF.absolutelyContinuous

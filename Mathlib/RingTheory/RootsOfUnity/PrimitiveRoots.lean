@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 import Mathlib.Algebra.Group.TypeTags.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primitive roots of unity
 
@@ -720,8 +723,10 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
 
-/-- Equivalence of coprime powers of primitive roots. If a * b ≡ 1 (mod n), then x ↦ x ^ a and
-    x ↦ x ^ b restricts to a bijection on the n-th primitive roots. -/
+/--
+Equivalence of coprime powers of primitive roots. If a \* b ≡ 1 (mod n), then x ↦ x ^ a and
+x ↦ x ^ b restricts to a bijection on the n-th primitive roots.
+-/
 @[simps]
 def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
     primitiveRoots n R ≃ primitiveRoots n R where

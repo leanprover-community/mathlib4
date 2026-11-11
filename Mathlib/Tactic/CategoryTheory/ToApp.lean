@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Util.AddRelatedDecl
 public import Mathlib.CategoryTheory.Category.Cat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `to_app` attribute
 
@@ -50,7 +53,8 @@ Given a term of type `∀ ..., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
 `B`, which is bound by the `∀` binder, get the corresponding equation in the bicategory `Cat`.
 
 It is important here that the levels in the term are level metavariables, as otherwise these will
-not be reassignable to the corresponding levels of `Cat`. -/
+not be reassignable to the corresponding levels of `Cat`.
+-/
 def toCatExpr (e : Expr) : MetaM Expr := do
   let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
   -- Find the expression corresponding to the bicategory, by analyzing `η = θ` (i.e. conclusion)

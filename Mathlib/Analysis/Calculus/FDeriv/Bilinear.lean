@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The derivative of bounded bilinear maps
 
@@ -34,7 +37,9 @@ variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 section BilinearMap
 
-/-! ### Derivative of a bounded bilinear map -/
+/-!
+# Derivative of a bounded bilinear map
+-/
 
 variable {b : E × F → G} {u : Set (E × F)}
 

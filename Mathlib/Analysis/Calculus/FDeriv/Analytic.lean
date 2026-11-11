@@ -15,6 +15,9 @@ public import Mathlib.Analysis.Normed.Module.Completion
 
 import Mathlib.Analysis.Analytic.Within
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fréchet derivatives of analytic functions.
 
@@ -61,7 +64,6 @@ same holds if `s` is merely a set with unique differentials.
 (5) However, this does not work for `AnalyticOnNhd 𝕜 f s`, as we don't get for free
 differentiability at points in a neighborhood of `s`. Therefore, the theorem that deduces
 `AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s` from `AnalyticOnNhd 𝕜 f s` requires completeness of the space.
-
 -/
 
 public section
@@ -878,7 +880,7 @@ theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ Metric.eball 0
 end HasFPowerSeriesOnBall
 
 /-!
-### Derivative of a linear map into multilinear maps
+# Derivative of a linear map into multilinear maps
 -/
 
 namespace ContinuousLinearMap

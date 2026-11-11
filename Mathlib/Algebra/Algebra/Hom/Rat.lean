@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.Rat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homomorphisms of `ℚ`-algebras
-
 -/
 
 @[expose] public section

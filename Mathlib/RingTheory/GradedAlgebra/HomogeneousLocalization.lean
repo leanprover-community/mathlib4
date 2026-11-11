@@ -12,15 +12,19 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 
 import Mathlib.Algebra.Group.Submonoid.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homogeneous Localization
 
 ## Notation
-- `ι` is a commutative monoid;
-- `A` is a commutative ring;
-- `σ` is a class of additive subgroups of `A`;
-- `𝒜 : ι → σ` is the grading of `A`;
-- `x : Submonoid A` is a submonoid
+
+* `ι` is a commutative monoid;
+* `A` is a commutative ring;
+* `σ` is a class of additive subgroups of `A`;
+* `𝒜 : ι → σ` is the grading of `A`;
+* `x : Submonoid A` is a submonoid
 
 ## Main definitions and results
 
@@ -55,10 +59,8 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
   `f.den_mem_deg` is a proof that `f.den ∈ 𝒜 f.deg`.
 * `HomogeneousLocalization.eq_num_div_den`: if `f : HomogeneousLocalization 𝒜 x`, then
   `f.val : Aₓ` is equal to `f.num / f.den`.
-
 * `HomogeneousLocalization.isLocalRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
-
 * `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a
   grading-preserving ring map. If `P ≤ A` and `Q ≤ B` are submonoids such that `P ≤ g⁻¹(Q)`, then
   `g` induces a ring map between the homogeneous localization of `A` at `P` and the homogeneous
@@ -66,7 +68,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 ## References
 
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
+* ‍\[Robin Hartshorne, _Algebraic Geometry_\]\[Har77\]
 -/
 
 @[expose] public section

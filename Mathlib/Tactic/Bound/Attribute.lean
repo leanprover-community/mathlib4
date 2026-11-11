@@ -9,6 +9,9 @@ public meta import Aesop
 public meta import Qq
 public import Mathlib.Tactic.Bound.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `bound` attribute
 
@@ -90,11 +93,13 @@ def scoreToConfig (decl : Lean.Name) (score : Nat) : Aesop.Frontend.RuleConfig :
     builderOptions := {}
     ruleSets := ⟨#[`Bound]⟩ }
 
-/-- Register a lemma as an `apply` rule for the `bound` tactic.
+/--
+Register a lemma as an `apply` rule for the `bound` tactic.
 
 A lemma is appropriate for `bound` if it proves an inequality using structurally simpler
 inequalities, "recursing" on the structure of the expressions involved, assuming positivity or
 nonnegativity where useful. Examples include
+
 1. `gcongr`-like inequalities over `<` and `≤` such as `f x ≤ f y` where `f` is monotone (note that
    `gcongr` supports other relations).
 2. `mul_le_mul` which proves `a * b ≤ c * d` from `a ≤ c ∧ b ≤ d ∧ 0 ≤ b ∧ 0 ≤ c`
@@ -105,18 +110,20 @@ nonnegativity where useful. Examples include
 
 Each `@[bound]` lemma is assigned a score based on the number and complexity of its hypotheses,
 and the `aesop` implementation chooses lemmas with lower scores first:
+
 1. Inequality hypotheses involving `0` add 1 to the score.
 2. General inequalities add `10`.
 3. Disjunctions `a ∨ b` add `100` plus the sum of the scores of `a` and `b`.
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
 between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
-  `0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
+`0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
 by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
 uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
 
 See also `@[bound_forward]` which marks a lemma as a forward rule for `bound`: these lemmas are
-applied to hypotheses to extract inequalities (e.g. `HasPowerSeriesOnBall.r_pos`). -/
+applied to hypotheses to extract inequalities (e.g. `HasPowerSeriesOnBall.r_pos`).
+-/
 initialize Lean.registerBuiltinAttribute {
   name := `bound
   descr := "Register a theorem as an apply rule for the `bound` tactic."
@@ -134,11 +141,13 @@ initialize Lean.registerBuiltinAttribute {
     Aesop.Frontend.eraseGlobalRules Aesop.RuleSetNameFilter.all ruleFilter (checkExists := true)
 }
 
-/-- Attribute for `forward` rules for the `bound` tactic.
+/--
+Attribute for `forward` rules for the `bound` tactic.
 
 `@[bound_forward]` lemmas should produce inequalities given other hypotheses that might be in the
 context. A typical example is exposing an inequality field of a structure, such as
-`HasPowerSeriesOnBall.r_pos`. -/
+`HasPowerSeriesOnBall.r_pos`.
+-/
 macro "bound_forward" : attr =>
   `(attr|aesop safe forward (rule_sets := [$(Lean.mkIdent `Bound):ident]))
 

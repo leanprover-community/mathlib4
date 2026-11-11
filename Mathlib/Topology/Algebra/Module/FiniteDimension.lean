@@ -21,6 +21,9 @@ public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-dimensional topological vector spaces over complete fields
 
@@ -51,7 +54,6 @@ then `ξ.equivFun : E →ₗ (ι → 𝕜)` is continuous. However, for technica
 prove this when `ι` and `E` live in the same universe. So we start by doing that as a private
 lemma, then we deduce `LinearMap.continuous_of_finiteDimensional` from it, and then the general
 result follows as `continuous_equivFun_basis`.
-
 -/
 
 @[expose] public section
@@ -81,10 +83,12 @@ instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [M
   .of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
     ContinuousLinearMap.coe_injective
 
-/-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional.
+/--
+The space of continuous linear maps between finite-dimensional spaces is finite-dimensional.
 
 This theorem is here to match searches looking for `FiniteDimensional` instead of `Module.Finite`.
-We use a strictly more general `ContinuousLinearMap.instModuleFinite` as an instance. -/
+We use a strictly more general `ContinuousLinearMap.instModuleFinite` as an instance.
+-/
 protected theorem ContinuousLinearMap.finiteDimensional [Field 𝕜] [Module 𝕜 E]
     [FiniteDimensional 𝕜 E] [Module 𝕜 F] [FiniteDimensional 𝕜 F] [ContinuousConstSMul 𝕜 F] :
     FiniteDimensional 𝕜 (E →L[𝕜] F) :=
@@ -100,8 +104,10 @@ variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [Ad
   [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [IsTopologicalAddGroup F']
   [ContinuousSMul 𝕜 F']
 
-/-- If `𝕜` is a nontrivially normed field, any T2 topology on `𝕜` which makes it a topological
-vector space over itself (with the norm topology) is *equal* to the norm topology. -/
+/--
+If `𝕜` is a nontrivially normed field, any T2 topology on `𝕜` which makes it a topological
+vector space over itself (with the norm topology) is _equal_ to the norm topology.
+-/
 theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @IsTopologicalAddGroup 𝕜 t _)
     (h₂ : @ContinuousSMul 𝕜 𝕜 _ hnorm.toUniformSpace.toTopologicalSpace t) (h₃ : @T2Space 𝕜 t) :
     t = hnorm.toUniformSpace.toTopologicalSpace := by
@@ -268,9 +274,11 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Finite 
     change Continuous (ξ.coord i)
     exact H₂ (ξ.coord i)
 
-/-- A finite-dimensional t2 vector space over a complete field must carry the module topology.
+/--
+A finite-dimensional t2 vector space over a complete field must carry the module topology.
 
-Not declared as a global instance only for performance reasons. -/
+Not declared as a global instance only for performance reasons.
+-/
 @[local instance]
 lemma isModuleTopologyOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
     IsModuleTopology 𝕜 E :=
@@ -644,9 +652,11 @@ private lemma isNormableSpace_of_t2Space_finiteDimensional
     (Basis.ofVectorSpace 𝕜 E).equivFun.toContinuousLinearEquiv
   exact e.isNormableSpace
 
-/-- A finite dimensional topological vector space over a complete normed field is normable.
+/--
+A finite dimensional topological vector space over a complete normed field is normable.
 
-Not registered as a global instance only for performance reasons. -/
+Not registered as a global instance only for performance reasons.
+-/
 theorem isNormableSpace_of_finiteDimensional [FiniteDimensional 𝕜 E] : IsNormableSpace 𝕜 E := by
   let F := SeparationQuotient E
   have : IsNormableSpace 𝕜 F := isNormableSpace_of_t2Space_finiteDimensional _
@@ -654,11 +664,13 @@ theorem isNormableSpace_of_finiteDimensional [FiniteDimensional 𝕜 E] : IsNorm
   have : IsInducing f := SeparationQuotient.isInducing_mk
   exact this.isNormableSpace
 
-/-- If `K` is a complete field and `V` is a finite-dimensional vector space over `K` (equipped with
+/--
+If `K` is a complete field and `V` is a finite-dimensional vector space over `K` (equipped with
 any topology so that `V` is a topological `K`-module, meaning `[IsTopologicalAddGroup V]`
 and `[ContinuousSMul K V]`), and `K` is locally compact, then `V` is locally compact.
 
-This is not an instance because `K` cannot be inferred. -/
+This is not an instance because `K` cannot be inferred.
+-/
 theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
     [NontriviallyNormedField K] [CompleteSpace K] [LocallyCompactSpace K]
     [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
@@ -780,12 +792,14 @@ theorem Submodule.IsCompl.isTopCompl_of_finiteDimensional_quotient {p q : Submod
   have := (φ ∘L p.mkQL).isTopCompl_of_proj fun x ↦ by simp [φ]
   simpa [φ] using this.symm
 
-/-- Assume that `p q : Submodule 𝕜 E` are algebraic complements. If `p` is closed and `q`
+/--
+Assume that `p q : Submodule 𝕜 E` are algebraic complements. If `p` is closed and `q`
 has finite dimension, then they are in fact topological complements.
 
 Note that this theorem does not help you to build a closed complement to a finite dimensional
 subspace. That requires the Hahn-Banach theorem, and you don't get much control over what the
-complement is. See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
+complement is. See `Submodule.ClosedComplemented.of_finiteDimensional`.
+-/
 theorem Submodule.IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
     IsTopCompl p q := by

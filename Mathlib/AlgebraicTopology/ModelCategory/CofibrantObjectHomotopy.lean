@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homotopy category of cofibrant objects
 
@@ -18,8 +21,8 @@ in `C`, and we define a cofibrant resolution functor
 `CofibrantObject.HoCat.resolution : C ⥤ CofibrantObject.HoCat C`.
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 
+* ‍\[Daniel G. Quillen, Homotopical algebra\]\[Quillen1967\]
 -/
 
 @[expose] public section

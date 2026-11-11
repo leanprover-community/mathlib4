@@ -10,6 +10,9 @@ public import Mathlib.Control.Traversable.Basic
 
 import Mathlib.Tactic.Attr.Register
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Traversing collections
 
@@ -18,7 +21,7 @@ This file proves basic properties of traversable and applicative functors and de
 
 ## References
 
-Inspired by [The Essence of the Iterator Pattern][gibbons2009].
+Inspired by \[The Essence of the Iterator Pattern\]\[gibbons2009\].
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Order.SuccPred.Fin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Upper Hessenberg matrices
 
@@ -18,12 +21,12 @@ instance.
 
 ## Main definitions
 
-- `Matrix.IsUpperHessenberg` with `Matrix.isUpperHessenberg_iff` to unfold it
+* `Matrix.IsUpperHessenberg` with `Matrix.isUpperHessenberg_iff` to unfold it
 
 ## Main results
 
-- `Matrix.isUpperHessenberg_fin_iff`: the `IsUpperHessenberg` predicate on `Fin n`
-- `Matrix.IsUpperTriangular.isUpperHessenberg`: upper triangular matrices are upper Hessenberg.
+* `Matrix.isUpperHessenberg_fin_iff`: the `IsUpperHessenberg` predicate on `Fin n`
+* `Matrix.IsUpperTriangular.isUpperHessenberg`: upper triangular matrices are upper Hessenberg.
 -/
 
 public section

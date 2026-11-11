@@ -8,8 +8,12 @@ module
 
 public import Mathlib.LinearAlgebra.Projectivization.Action
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stabilizer of a line in PSL(n, F)
+
 This file contains key constructions to prove that `PSL(n, F)` is simple via
 showing it has an Iwasawa structure.
 
@@ -18,10 +22,8 @@ showing it has an Iwasawa structure.
 * `Matrix.SpecialLinearGroup.lineStab` : the unipotent radical attached to a subspace `L ⊆ ι → F`
   defined as the subgroup of `SL ι F` consisting of matrices `A` such that `A - 1`
   sends every vector into `L`.
-
 * `PSL.iwasawaT` : the candidate family of subgroups for the Iwasawa structure on
   `PSL ι F` acting on the projective space `ℙ F (ι → F)` from `Matrix.SpecialLinearGroup.lineStab`.
-
 -/
 
 @[expose] public section

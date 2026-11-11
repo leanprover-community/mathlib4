@@ -7,19 +7,21 @@ module
 
 import Mathlib.Data.List.Induction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Palindromes
 
-This module defines *palindromes*, lists which are equal to their reverse.
+This module defines _palindromes_, lists which are equal to their reverse.
 
 The main result is the `Palindrome` inductive type, and its associated `Palindrome.rec` induction
 principle. Also provided are conversions to and from other equivalent definitions.
 
 ## References
 
-* [Pierre Castéran, *On palindromes*][casteran]
-
-[casteran]: https://www.labri.fr/perso/casteran/CoqArt/inductive-prop-chap/palindrome.html
+* [Pierre Castéran, _On
+  palindromes_](https://www.labri.fr/perso/casteran/CoqArt/inductive-prop-chap/palindrome.html)
 
 ## Tags
 
@@ -33,7 +35,8 @@ variable {α β : Type*}
 
 namespace List
 
-/-- `Palindrome l` asserts that `l` is a palindrome. This is defined inductively:
+/--
+`Palindrome l` asserts that `l` is a palindrome. This is defined inductively:
 
 * The empty list is a palindrome;
 * A list with one element is a palindrome;

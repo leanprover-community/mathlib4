@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.BooleanAlgebra.Defs
 public import Mathlib.Tactic.GRewrite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of Boolean algebras
 
@@ -16,14 +19,14 @@ classes related to Boolean algebras as defined in `Mathlib/Order/BooleanAlgebra/
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Boolean_algebra_(structure)#Generalizations>
-* [*Postulates for Boolean Algebras and Generalized Boolean Algebras*, M.H. Stone][Stone1935]
-* [*Lattice Theory: Foundation*, George Grätzer][Gratzer2011]
+* [
+  https://en.wikipedia.org/wiki/Boolean\_algebra\_(structure)#Generalizations](https://en.wikipedia.org/wiki/Boolean_algebra_(structure)#Generalizations)
+* ‍\[_Postulates for Boolean Algebras and Generalized Boolean Algebras_, M.H. Stone\]\[Stone1935\]
+* ‍\[_Lattice Theory: Foundation_, George Grätzer\]\[Gratzer2011\]
 
 ## Tags
 
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
-
 -/
 
 public section
@@ -33,14 +36,15 @@ universe u v
 variable {α : Type u} {β : Type*} {x y z : α}
 
 /-!
-### Generalized Boolean algebras
+# Generalized Boolean algebras
 
 Some of the lemmas in this section are from:
 
-* [*Lattice Theory: Foundation*, George Grätzer][Gratzer2011]
-* <https://ncatlab.org/nlab/show/relative+complement>
-* <https://people.math.gatech.edu/~mccuan/courses/4317/symmetricdifference.pdf>
-
+* ‍\[_Lattice Theory: Foundation_, George Grätzer\]\[Gratzer2011\]
+* [
+  https://ncatlab.org/nlab/show/relative+complement](https://ncatlab.org/nlab/show/relative+complement)
+* [
+  https://people.math.gatech.edu/~mccuan/courses/4317/symmetricdifference.pdf](https://people.math.gatech.edu/~mccuan/courses/4317/symmetricdifference.pdf)
 -/
 
 -- We might want an `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
@@ -394,7 +398,7 @@ end GeneralizedBooleanAlgebra
 
 
 /-!
-### Boolean algebras
+# Boolean algebras
 -/
 -- See note [reducible non-instances]
 /-- A bounded generalized Boolean algebra is a Boolean algebra. -/

@@ -11,6 +11,9 @@ public meta import Mathlib.Tactic.Explode.Datatypes
 public import Mathlib.Tactic.Explode.Datatypes
 public import Mathlib.Tactic.Explode.Pretty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Explode command
 
@@ -25,15 +28,16 @@ open Lean
 namespace Mathlib.Explode
 
 variable (select : Expr → MetaM Bool) (includeAllDeps : Bool) in
-/-- Core `explode` algorithm.
+/--
+Core `explode` algorithm.
 
-- `select` is a condition for which expressions to process
-- `includeAllDeps` is whether to include dependencies even if they were filtered out.
+* `select` is a condition for which expressions to process
+* `includeAllDeps` is whether to include dependencies even if they were filtered out.
   If `True`, then `none` is inserted for omitted dependencies
-- `e` is the expression to process
-- `depth` is the current abstraction depth
-- `entries` is the table so far
-- `start` is whether we are at the top-level of the expression, which
+* `e` is the expression to process
+* `depth` is the current abstraction depth
+* `entries` is the table so far
+* `start` is whether we are at the top-level of the expression, which
   causes lambdas to use `Status.sintro` to prevent a layer of nesting.
 -/
 partial def explodeCore (e : Expr) (depth : Nat) (entries : Entries) (start : Bool := false) :
@@ -148,6 +152,8 @@ def explode (e : Expr) (filterProofs : Bool := true) : MetaM Entries := do
   let (_, entries) ← explodeCore (start := true) filter false e 0 default
   return entries
 
+
+set_option doc.verso false
 open Elab in
 /--
 `#explode expr` displays a proof term in a line-by-line format somewhat akin to a Fitch-style
@@ -276,6 +282,8 @@ elab "#explode " stx:term : command => withoutModifyingEnv <| Command.runTermEla
     let fitchTable : MessageData ← entriesToMessageData entries
     logInfo <|← addMessageContext m!"{heading}\n\n{fitchTable}\n"
 
+
+set_option doc.verso true
 end Explode
 
 end Mathlib

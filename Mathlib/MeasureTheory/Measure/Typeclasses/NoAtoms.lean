@@ -1,6 +1,11 @@
 module -- shake: keep-all
 
-/-! # NoAtoms
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# NoAtoms
+
 This file is deprecated. Please use `Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass`
 instead.
 -/

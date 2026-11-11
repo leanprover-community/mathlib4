@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vector fields in vector spaces
 
@@ -23,11 +26,11 @@ We also define the Lie bracket of two vector fields as
 (together with the same notion within a set).
 
 In addition to comprehensive API on these two notions, the main results are the following:
+
 * `VectorField.pullback_lieBracket` states that the pullback of the Lie bracket
   is the Lie bracket of the pullbacks, when the second derivative is symmetric.
 * `VectorField.leibniz_identity_lieBracket` is the Leibniz
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
-
 -/
 
 @[expose] public section
@@ -44,7 +47,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {V W V₁ W₁ : E → E} {s t : Set E} {x : E}
 
 /-!
-### The Lie bracket of vector fields in a vector space
+# The Lie bracket of vector fields in a vector space
 
 We define the Lie bracket of two vector fields, and call it `lieBracket 𝕜 V W x`. We also define
 a version localized to sets, `lieBracketWithin 𝕜 V W s x`. We copy the relevant API
@@ -466,7 +469,7 @@ lemma leibniz_identity_lieBracket (hn : minSmoothness 𝕜 2 ≤ n) {U V W : E �
 
 
 /-!
-### The pullback of vector fields in a vector space
+# The pullback of vector fields in a vector space
 -/
 
 variable (𝕜) in

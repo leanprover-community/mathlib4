@@ -8,13 +8,14 @@ module
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The square zero ideal of the trivial square-zero extension
 
-- `TrivSqZeroExt.kerIdeal`: the ideal in the trivial square-zero extension
-
-- `TrivSqZeroExt.kerIdeal_sq `: this ideal has square zero.
-
+* `TrivSqZeroExt.kerIdeal`: the ideal in the trivial square-zero extension
+* `TrivSqZeroExt.kerIdeal_sq  `: this ideal has square zero.
 -/
 
 @[expose] public section

@@ -12,19 +12,23 @@ public import Mathlib.Geometry.Euclidean.Volume.Measure
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm determinant of a linear map
 
-Given a rectangular matrix $T$, it is common to talk about $\sqrt{det(T^{H}T)}$, where $T^{H}$ is
-the conjugate transpose of $T$, as a generalization to the determinant of a square matrix. It is the
-$m$-dimensional volume factor for linear maps $\mathbb{R}^m \to \mathbb{R}^n$. It is given various
-names in the literature:
-* "Jacobian" (definition 3.4 of [lawrenceronald2025]), in the context of volume factor
+Given a rectangular matrix $`T`, it is common to talk about $`\sqrt{det(T^{H}T)}`, where $`T^{H}` is
+the conjugate transpose of $`T`, as a generalization to the determinant of a square matrix. It is
+the $`m`-dimensional volume factor for linear maps $`\mathbb{R}^m \to \mathbb{R}^n`. It is given
+various names in the literature:
+
+* "Jacobian" (definition 3.4 of \[lawrenceronald2025\]), in the context of volume factor
   for a non-linear map. However, we choose to reserve this name for the matrix consisting of
   derivatives.
 * "Gram determinant", which is already used by `Matrix.gram`, and it is often referring to
-  $det(T^{H}T)$ without the square root.
-* "Nonnegative determinant" (definition 1 of [haruoyoshiohidetoki2006]).
+  $`det(T^{H}T)` without the square root.
+* "Nonnegative determinant" (definition 1 of \[haruoyoshiohidetoki2006\]).
 
 Without a standardized name, we give a descriptive name `LinearMap.normDet` to reflect its
 definition and show that it is a generalization of `‖(f : LinearMap 𝕜 U U).det‖`
@@ -32,9 +36,11 @@ definition and show that it is a generalization of `‖(f : LinearMap 𝕜 U U).
 spaces instead of matrices, and allow the codomain to have infinite dimension.
 
 ## Main definition
+
 * `LinearMap.normDet` : the norm determinant of a linear map.
 
 ## Main result
+
 * `ContinuousLinearMap.normDet_sq` and `LinearMap.normDet_sq`: The square of `f.normDet`
   equals to the determinant of `f.adjoint ∘ₗ f`.
 * `LinearMap.normDet_sq_eq_det_gram`: The square of `LinearMap.normDet` equals to the determinant of
@@ -43,7 +49,6 @@ spaces instead of matrices, and allow the codomain to have infinite dimension.
   values.
 * `LinearMap.hausdorffMeasure_image`: `LinearMap.normDet` is the volume factor for Hausdorff
   measure.
-
 -/
 
 public section

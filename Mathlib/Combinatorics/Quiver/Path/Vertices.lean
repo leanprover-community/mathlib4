@@ -12,6 +12,9 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Set.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Path Vertices
 
@@ -168,7 +171,9 @@ lemma end_mem_vertices {a b : V} (p : Path a b) : b ∈ p.vertices := by
   have h₂ := getLast_mem (l := p.vertices) (vertices_ne_nil p)
   simpa [h₁] using h₂
 
-/-!  ### Path vertices decomposition -/
+/-!
+# Path vertices decomposition
+-/
 section
 
 variable {a b : V} (p : Path a b)
@@ -211,7 +216,9 @@ theorem exists_eq_comp_of_mem_vertices {v : V} (hv : v ∈ p.vertices) :
   obtain ⟨v, p₁, p₂, hp, hv, rfl⟩ := p.exists_eq_comp_and_length_eq_of_lt_length n hn
   exact ⟨p₁, p₂, hp⟩
 
-/-- Split a path at the *last* occurrence of a vertex. -/
+/--
+Split a path at the _last_ occurrence of a vertex.
+-/
 theorem exists_eq_comp_and_notMem_tail_of_mem_vertices {v : V} (hv : v ∈ p.vertices) :
     ∃ (p₁ : Path a v) (p₂ : Path v b),
       p = p₁.comp p₂ ∧ v ∉ p₂.vertices.tail := by

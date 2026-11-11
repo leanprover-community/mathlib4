@@ -9,15 +9,18 @@ public import Mathlib.Probability.Independence.Basic
 
 import Mathlib.MeasureTheory.Constructions.Cylinders
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Independence of stochastic processes
 
-We prove that a stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
-for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$.
+We prove that a stochastic process $`(X_s)_{s \in S}` is independent from a random variable $`Y` if
+for all $`s_1, ..., s_p \in S` the family $`(X_{s_1}, ..., X_{s_p})` is independent from $`Y`.
 
-We prove that two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
-for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
-$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent.
+We prove that two stochastic processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` are independent if
+for all $`s_1, ..., s_p \in S` and $`t_1, ..., t_q \in T` the two families
+$`(X_{s_1}, ..., X_{s_p})` and $`(Y_{t_1}, ..., Y_{t_q})` are independent.
 We prove an analogous condition for a family of stochastic processes.
 
 ## Tags
@@ -86,8 +89,10 @@ lemma IndepFun.process_congr {𝓧 : S → Type*} {𝓨 : T → Type*}
     IndepFun (fun ω i ↦ X' i ω) (fun ω j ↦ Y' j ω) κ P :=
   (hXY.process_congr_right hY).process_congr_left hX
 
-/-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
-for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
+/--
+A stochastic process $`(X_s)_{s \in S}` is independent from a random variable $`Y` if
+for all $`s_1, ..., s_p \in S` the family $`(X_{s_1}, ..., X_{s_p})` is independent from $`Y`.
+-/
 lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (hX : ∀ i, Measurable (X i)) (hY : Measurable Y)
@@ -117,10 +122,12 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
   filter_upwards [(h I).measure_inter_preimage_eq_mul _ _ h1 ht] with ω hω
   rw [this, hω]
 
-/-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
-for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$.
+/--
+A stochastic process $`(X_s)_{s \in S}` is independent from a random variable $`Y` if
+for all $`s_1, ..., s_p \in S` the family $`(X_{s_1}, ..., X_{s_p})` is independent from $`Y`.
 
-This version only requires a.e.-measurability. -/
+This version only requires a.e.-measurability.
+-/
 lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (hX : ∀ i, AEMeasurable (X i) (κ ∘ₘ P)) (hY : AEMeasurable Y (κ ∘ₘ P))
@@ -134,9 +141,11 @@ lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     · exact Measure.ae_ae_of_ae_comp (hX i).ae_eq_mk
   exact fun i ↦ Measure.ae_ae_of_ae_comp (hX i).ae_eq_mk.symm
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
-for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
-$(X_{s_1}, ..., X_{s_p})$. -/
+/--
+A random variable $`X` is independent from a stochastic process $`(Y_s)_{s \in S}`  if
+for all $`s_1, ..., s_p \in S` the variable $`Y` is independent from the family
+$`(X_{s_1}, ..., X_{s_p})`.
+-/
 lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
     {Y : (i : S) → Ω → 𝓨 i} (hX : Measurable X) (hY : ∀ i, Measurable (Y i))
@@ -145,11 +154,13 @@ lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
     IndepFun X (fun ω i ↦ Y i ω) κ P :=
   (IndepFun.process_indepFun hY hX (fun I ↦ (h I).symm)).symm
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
-for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
-$(X_{s_1}, ..., X_{s_p})$.
+/--
+A random variable $`X` is independent from a stochastic process $`(Y_s)_{s \in S}`  if
+for all $`s_1, ..., s_p \in S` the variable $`Y` is independent from the family
+$`(X_{s_1}, ..., X_{s_p})`.
 
-This version only requires a.e.-measurability. -/
+This version only requires a.e.-measurability.
+-/
 lemma IndepFun.indepFun_process₀ {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
     {Y : (i : S) → Ω → 𝓨 i} (hX : AEMeasurable X (κ ∘ₘ P)) (hY : ∀ i, AEMeasurable (Y i) (κ ∘ₘ P))
@@ -158,9 +169,11 @@ lemma IndepFun.indepFun_process₀ {𝓧 : Type*} {𝓨 : S → Type*}
     IndepFun X (fun ω i ↦ Y i ω) κ P :=
   (IndepFun.process_indepFun₀ hY hX (fun I ↦ (h I).symm)).symm
 
-/-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
-for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
-$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent. -/
+/--
+Two stochastic processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` are independent if
+for all $`s_1, ..., s_p \in S` and $`t_1, ..., t_q \in T` the two families
+$`(X_{s_1}, ..., X_{s_p})` and $`(Y_{t_1}, ..., Y_{t_q})` are independent.
+-/
 lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, Measurable (X i)) (hY : ∀ j, Measurable (Y j))
@@ -170,11 +183,13 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
   refine IndepFun.process_indepFun hX (.of_eval hY) fun I ↦ ?_
   exact IndepFun.indepFun_process (.of_eval fun _ ↦ hX _) hY fun J ↦ h I J
 
-/-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
-for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
-$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent.
+/--
+Two stochastic processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` are independent if
+for all $`s_1, ..., s_p \in S` and $`t_1, ..., t_q \in T` the two families
+$`(X_{s_1}, ..., X_{s_p})` and $`(Y_{t_1}, ..., Y_{t_q})` are independent.
 
-This version only requires a.e.-measurability. -/
+This version only requires a.e.-measurability.
+-/
 lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, AEMeasurable (X i) (κ ∘ₘ P))
@@ -232,10 +247,12 @@ lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) �
   refine Finset.prod_congr rfl fun i hi ↦ ?_
   rw [measure_congr ((ha2 i hi).preimage _)]
 
-/-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
-for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
-$(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
-(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
+/--
+Stochastic processes $`((X^s_t)_{t \in T_s})_{s \in S}` are mutually independent if for all
+$`s_1, ..., s_n` and all $`t^{s_i}_1, ..., t^{s_i}_{p_i}` the families
+$`(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ..., (X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})`
+are mutually independent.
+-/
 lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, Measurable (X i j))
@@ -274,12 +291,14 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
   congrm ∏ _, κ ω ?_
   ext; simp
 
-/-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
-for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
-$(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
-(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent.
+/--
+Stochastic processes $`((X^s_t)_{t \in T_s})_{s \in S}` are mutually independent if for all
+$`s_1, ..., s_n` and all $`t^{s_i}_1, ..., t^{s_i}_{p_i}` the families
+$`(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ..., (X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})`
+are mutually independent.
 
-This version only requires a.e.-measurability. -/
+This version only requires a.e.-measurability.
+-/
 lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, AEMeasurable (X i j) (κ ∘ₘ P))
@@ -338,8 +357,10 @@ lemma IndepFun.process_congr {𝓧 : S → Type*} {𝓨 : T → Type*}
     (fun ω i ↦ X' i ω) ⟂ᵢ[P] (fun ω j ↦ Y' j ω) :=
   Kernel.IndepFun.process_congr hXY (by simpa) (by simpa)
 
-/-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
-for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
+/--
+A stochastic process $`(X_s)_{s \in S}` is independent from a random variable $`Y` if
+for all $`s_1, ..., s_p \in S` the family $`(X_{s_1}, ..., X_{s_p})` is independent from $`Y`.
+-/
 lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (hX : ∀ i, Measurable (X i)) (hY : Measurable Y)
@@ -347,10 +368,12 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     IndepFun (fun ω i ↦ X i ω) Y P :=
   Kernel.IndepFun.process_indepFun hX hY h
 
-/-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
-for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$.
+/--
+A stochastic process $`(X_s)_{s \in S}` is independent from a random variable $`Y` if
+for all $`s_1, ..., s_p \in S` the family $`(X_{s_1}, ..., X_{s_p})` is independent from $`Y`.
 
-This version only requires a.e.-measurability. -/
+This version only requires a.e.-measurability.
+-/
 lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (hX : ∀ i, AEMeasurable (X i) P) (hY : AEMeasurable Y P)
@@ -358,9 +381,11 @@ lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     IndepFun (fun ω i ↦ X i ω) Y P :=
   Kernel.IndepFun.process_indepFun₀ (by simpa) (by simpa) h
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
-for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
-$(X_{s_1}, ..., X_{s_p})$. -/
+/--
+A random variable $`X` is independent from a stochastic process $`(Y_s)_{s \in S}`  if
+for all $`s_1, ..., s_p \in S` the variable $`Y` is independent from the family
+$`(X_{s_1}, ..., X_{s_p})`.
+-/
 lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
     {Y : (i : S) → Ω → 𝓨 i} (hX : Measurable X) (hY : ∀ i, Measurable (Y i))
@@ -368,11 +393,13 @@ lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
     IndepFun X (fun ω i ↦ Y i ω) P :=
   Kernel.IndepFun.indepFun_process hX hY h
 
-/-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
-for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
-$(X_{s_1}, ..., X_{s_p})$.
+/--
+A random variable $`X` is independent from a stochastic process $`(Y_s)_{s \in S}`  if
+for all $`s_1, ..., s_p \in S` the variable $`Y` is independent from the family
+$`(X_{s_1}, ..., X_{s_p})`.
 
-This version only requires a.e.-measurability. -/
+This version only requires a.e.-measurability.
+-/
 lemma IndepFun.indepFun_process₀ {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
     {Y : (i : S) → Ω → 𝓨 i} (hX : AEMeasurable X P) (hY : ∀ i, AEMeasurable (Y i) P)
@@ -380,9 +407,11 @@ lemma IndepFun.indepFun_process₀ {𝓧 : Type*} {𝓨 : S → Type*}
     IndepFun X (fun ω i ↦ Y i ω) P :=
   Kernel.IndepFun.indepFun_process₀ (by simpa) (by simpa) h
 
-/-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
-for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
-$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent. -/
+/--
+Two stochastic processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` are independent if
+for all $`s_1, ..., s_p \in S` and $`t_1, ..., t_q \in T` the two families
+$`(X_{s_1}, ..., X_{s_p})` and $`(Y_{t_1}, ..., Y_{t_q})` are independent.
+-/
 lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, Measurable (X i)) (hY : ∀ j, Measurable (Y j))
@@ -391,11 +420,13 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
     IndepFun (fun ω i ↦ X i ω) (fun ω j ↦ Y j ω) P :=
   Kernel.IndepFun.process_indepFun_process hX hY h
 
-/-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
-for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
-$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent.
+/--
+Two stochastic processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` are independent if
+for all $`s_1, ..., s_p \in S` and $`t_1, ..., t_q \in T` the two families
+$`(X_{s_1}, ..., X_{s_p})` and $`(Y_{t_1}, ..., Y_{t_q})` are independent.
 
-This version only requires a.e.-measurability. -/
+This version only requires a.e.-measurability.
+-/
 lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, AEMeasurable (X i) P) (hY : ∀ j, AEMeasurable (Y j) P)
@@ -415,10 +446,12 @@ lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) �
     iIndepFun (fun i ω j ↦ X' i j ω) P :=
   Kernel.iIndepFun.process_congr h1 (by simpa)
 
-/-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
-for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
-$(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
-(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
+/--
+Stochastic processes $`((X^s_t)_{t \in T_s})_{s \in S}` are mutually independent if for all
+$`s_1, ..., s_n` and all $`t^{s_i}_1, ..., t^{s_i}_{p_i}` the families
+$`(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ..., (X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})`
+are mutually independent.
+-/
 lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, Measurable (X i j))
@@ -426,12 +459,14 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
     iIndepFun (fun i ω j ↦ X i j ω) P :=
   Kernel.iIndepFun.iIndepFun_process hX h
 
-/-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
-for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
-$(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
-(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent.
+/--
+Stochastic processes $`((X^s_t)_{t \in T_s})_{s \in S}` are mutually independent if for all
+$`s_1, ..., s_n` and all $`t^{s_i}_1, ..., t^{s_i}_{p_i}` the families
+$`(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ..., (X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})`
+are mutually independent.
 
-This version only requires a.e.-measurability. -/
+This version only requires a.e.-measurability.
+-/
 lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, AEMeasurable (X i j) P)

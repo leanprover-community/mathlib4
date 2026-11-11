@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Process.Filtration
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adapted and progressively measurable processes
 
@@ -22,8 +25,8 @@ basic facts about them.
   to a filtration `f` if at each point in time `i`, `u` restricted to `Set.Iic i × Ω` is strongly
   measurable with respect to the product `MeasurableSpace` structure where the σ-algebra used for
   `Ω` is `f i`.
-We also provide the following variants, which use `MeasureTheory.StronglyMeasurable` instead
-of `Measurable`:
+  We also provide the following variants, which use `MeasureTheory.StronglyMeasurable` instead
+  of `Measurable`:
 * `MeasureTheory.StronglyAdapted`
 * `MeasureTheory.IsStronglyProgressive`
 
@@ -35,7 +38,6 @@ of `Measurable`:
 ## Tags
 
 adapted, progressively measurable
-
 -/
 
 @[expose] public section
@@ -52,10 +54,12 @@ section Adapted
 
 variable {β : ι → Type*} [∀ i, MeasurableSpace (β i)] {u v : (i : ι) → Ω → β i}
 
-/-- A sequence of functions `u` is adapted to a filtration `f` if for all `i`,
+/--
+A sequence of functions `u` is adapted to a filtration `f` if for all `i`,
 `u i` is `f i`-measurable.
 
-The definition known as `Adapted` before 2026-01-13 is now `StronglyAdapted`. -/
+The definition known as `Adapted` before 2026-01-13 is now `StronglyAdapted`.
+-/
 def Adapted (f : Filtration ι m) (u : (i : ι) → Ω → β i) : Prop :=
   ∀ i : ι, Measurable[f i] (u i)
 

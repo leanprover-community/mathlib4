@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Order.Disjoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The order on `Prop`
 
 Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
-
 -/
 
 public section
@@ -46,10 +48,12 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
 instance Prop.le_total : @Std.Total Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 
-/-- The order on `Prop` is a `LinearOrder`.
+/--
+The order on `Prop` is a `LinearOrder`.
 
 This is not an instance since `LinearOrder` includes decidability instances, which we want to avoid
-for `Prop`. -/
+for `Prop`.
+-/
 @[expose, instance_reducible]
 noncomputable def Prop.linearOrder : LinearOrder Prop := by
   classical

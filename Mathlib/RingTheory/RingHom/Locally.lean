@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Localization.Away.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Target local closure of ring homomorphism properties
 
@@ -27,18 +30,17 @@ composition, base change, etc., so is `Locally P`.
 
 ## Main results
 
-- `RingHom.locally_ofLocalizationSpanTarget`: `Locally P` is local on the target.
-- `RingHom.locally_holdsForLocalizationAway`: `Locally P` holds for localization away maps
+* `RingHom.locally_ofLocalizationSpanTarget`: `Locally P` is local on the target.
+* `RingHom.locally_holdsForLocalizationAway`: `Locally P` holds for localization away maps
   if `P` does.
-- `RingHom.locally_isStableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
-- `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
+* `RingHom.locally_isStableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
+* `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
   if `P` is and `P` is preserved under localizations.
-- `RingHom.locally_stableUnderCompositionWithLocalizationAwayTarget` and
+* `RingHom.locally_stableUnderCompositionWithLocalizationAwayTarget` and
   `RingHom.locally_stableUnderCompositionWithLocalizationAwaySource`: `Locally P` is stable under
   composition with localization away maps if `P` is.
-- `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
+* `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
-
 -/
 
 @[expose] public section

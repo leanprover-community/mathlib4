@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Extension.Cotangent.Basis
 public import Mathlib.RingTheory.Extension.Cotangent.Free
 public import Mathlib.RingTheory.Smooth.Locus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Standard smooth of free Kaehler differentials
 
@@ -20,12 +23,12 @@ From this we deduce relations of standard smooth with other local properties.
 
 ## Main results
 
-- `IsStandardSmooth.iff_exists_basis_kaehlerDifferential`: An `R`-algebra `S` of finite
+* `IsStandardSmooth.iff_exists_basis_kaehlerDifferential`: An `R`-algebra `S` of finite
   presentation is standard smooth if and only if `H¹(S/R) = 0` and `Ω[S⁄R]` is free on
   `{d sᵢ}ᵢ` for some `sᵢ : S`.
-- `Etale.iff_isStandardSmoothOfRelativeDimension_zero`: An `R`-algebra `S` is
+* `Etale.iff_isStandardSmoothOfRelativeDimension_zero`: An `R`-algebra `S` is
   étale if and only if it is standard smooth of relative dimension zero.
-- `IsSmoothAt.exists_notMem_isStandardSmooth`: If `S` is `R`-smooth at a prime `p`,
+* `IsSmoothAt.exists_notMem_isStandardSmooth`: If `S` is `R`-smooth at a prime `p`,
   it is standard smooth on a standard open containing `p`.
 
 ## Notes

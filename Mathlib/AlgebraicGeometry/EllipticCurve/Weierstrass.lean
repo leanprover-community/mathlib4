@@ -9,6 +9,9 @@ public import Mathlib.Algebra.CubicDiscriminant
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weierstrass equations of elliptic curves
 
@@ -53,9 +56,9 @@ which are not globally defined by a cubic equation valid over the entire base.
 
 ## References
 
-* [N Katz and B Mazur, *Arithmetic Moduli of Elliptic Curves*][katz_mazur]
-* [P Deligne, *Courbes Elliptiques: Formulaire (d'après J. Tate)*][deligne_formulaire]
-* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* ‍\[N Katz and B Mazur, _Arithmetic Moduli of Elliptic Curves_\]\[katz\_mazur\]
+* ‍\[P Deligne, _Courbes Elliptiques: Formulaire (d'après J. Tate)_\]\[deligne\_formulaire\]
+* ‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -69,7 +72,9 @@ local macro "map_simp" : tactic =>
 
 universe s u v w
 
-/-! ## Weierstrass curves -/
+/-!
+# Weierstrass curves
+-/
 
 /-- A Weierstrass curve `Y² + a₁XY + a₃Y = X³ + a₂X² + a₄X + a₆` with parameters `aᵢ`. -/
 @[ext]
@@ -94,7 +99,9 @@ variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
 
 section Quantity
 
-/-! ### Standard quantities -/
+/-!
+# Standard quantities
+-/
 
 /-- The `b₂` coefficient of a Weierstrass curve. -/
 def b₂ : R :=
@@ -221,7 +228,9 @@ end Quantity
 
 section BaseChange
 
-/-! ### Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable {A : Type v} [CommRing A] (f : R →+* A)
 
@@ -296,7 +305,9 @@ end BaseChange
 
 section TorsionPolynomial
 
-/-! ### 2-torsion polynomials -/
+/-!
+# 2-torsion polynomials
+-/
 
 /-- A cubic polynomial whose discriminant is a multiple of the Weierstrass curve discriminant. If
 `W` is an elliptic curve over a field `R` of characteristic different from 2, then its roots over a
@@ -356,7 +367,9 @@ lemma twoTorsionPolynomial_discr_ne_zero [Nontrivial R] (hu : IsUnit (2 : R)) (h
 
 end TorsionPolynomial
 
-/-! ## Elliptic curves -/
+/-!
+# Elliptic curves
+-/
 
 -- TODO: change to `protected abbrev IsElliptic := IsUnit W.Δ` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 /-- `WeierstrassCurve.IsElliptic` is a typeclass which asserts that a Weierstrass curve is an
@@ -448,7 +461,9 @@ lemma twoTorsionPolynomial_discr_ne_zero_of_isElliptic [Nontrivial R] (hu : IsUn
 
 section BaseChange
 
-/-! ### Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable {A : Type v} [CommRing A] (f : R →+* A)
 

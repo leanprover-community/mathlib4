@@ -9,6 +9,9 @@ public import Mathlib.Data.List.Chain
 
 import Mathlib.Data.List.Dedup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Destuttering of Lists
 
@@ -237,11 +240,13 @@ theorem length_destutter_ne_le_length_destutter_cons [DecidableEq α] :
     (l.destutter (· ≠ ·)).length ≤ ((a :: l).destutter (· ≠ ·)).length :=
   length_destutter_le_length_destutter_cons
 
-/-- `destutter` of relations like `≠`, whose negation is an equivalence relation,
+/--
+`destutter` of relations like `≠`, whose negation is an equivalence relation,
 gives a list of maximal length over any chain.
 
 In other words, `l.destutter R` is an `R`-chain sublist of `l`, and is at least as long as any other
-`R`-chain sublist. -/
+`R`-chain sublist.
+-/
 lemma IsChain.length_le_length_destutter [IsEquiv α Rᶜ] :
     ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → l₁.IsChain R → l₁.length ≤ (l₂.destutter R).length
   -- `l₁ := []`, `l₂ := []`
@@ -261,10 +266,12 @@ lemma IsChain.length_le_length_destutter [IsEquiv α Rᶜ] :
     simpa [destutter_cons_cons, rel_of_isChain_cons_cons hl₁]
       using! hl₁.tail.length_le_length_destutter (hl.cons_cons _)
 
-/-- `destutter` of `≠` gives a list of maximal length over any chain.
+/--
+`destutter` of `≠` gives a list of maximal length over any chain.
 
 In other words, `l.destutter (· ≠ ·)` is a `≠`-chain sublist of `l`, and is at least as long as any
-other `≠`-chain sublist. -/
+other `≠`-chain sublist.
+-/
 lemma IsChain.length_le_length_destutter_ne [DecidableEq α] (hl : l₁ <+ l₂)
     (hl₁ : l₁.IsChain (· ≠ ·)) : l₁.length ≤ (l₂.destutter (· ≠ ·)).length :=
   hl₁.length_le_length_destutter hl

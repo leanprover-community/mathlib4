@@ -8,11 +8,13 @@ module
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Explicit least witnesses to existentials on positive natural numbers
 
 Implemented via calling out to `Nat.find`.
-
 -/
 
 @[expose] public section
@@ -41,7 +43,8 @@ protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
     simpa [hn', Subtype.coe_eta] using! pn'
   · exact n.prop.2 m hm ⟨m, rfl, pm⟩
 
-/-- If `p` is a (decidable) predicate on `ℕ+` and `hp : ∃ (n : ℕ+), p n` is a proof that
+/--
+If `p` is a (decidable) predicate on `ℕ+` and `hp : ∃ (n : ℕ+), p n` is a proof that
 there exists some positive natural number satisfying `p`, then `PNat.find hp` is the
 smallest positive natural number satisfying `p`. Note that `PNat.find` is protected,
 meaning that you can't just write `find`, even if the `PNat` namespace is open.

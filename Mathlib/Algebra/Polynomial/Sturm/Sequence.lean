@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sturm sequences
 
-This file defines the *Sturm sequence* (signed remainder sequence) of two polynomials `p` and `q`
+This file defines the _Sturm sequence_ (signed remainder sequence) of two polynomials `p` and `q`
 over a field: the list `[p, q, -(p % q), …]` in which every entry from the third on is the negated
 remainder of the division of the two previous entries, stopping at the last nonzero remainder.
 It is the sequence produced by the Euclidean algorithm, up to signs.
@@ -50,8 +53,8 @@ Proofs about `sturmSeq` should go through `sturmSeq_cons` and the functional ind
 
 ## References
 
-* [S. Basu, R. Pollack, M.-F. Roy, *Algorithms in Real Algebraic Geometry*][basu2006], §2.2.2
-* [W. Li, *The Sturm–Tarski Theorem*, Archive of Formal Proofs][li2014]
+* ‍\[S. Basu, R. Pollack, M.-F. Roy, _Algorithms in Real Algebraic Geometry_\]\[basu2006\], §2.2.2
+* ‍\[W. Li, _The Sturm–Tarski Theorem_, Archive of Formal Proofs\]\[li2014\]
 -/
 
 @[expose] public section

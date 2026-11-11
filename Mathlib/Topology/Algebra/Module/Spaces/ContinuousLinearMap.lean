@@ -9,6 +9,9 @@ public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology of bounded convergence on the space of continuous linear map
 
@@ -22,6 +25,7 @@ Note that, more generally, we defined the "topology of `𝔖`-convergence" for a
 `𝔖 : Set (Set E)` in `Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM`.
 
 Here is a list of type aliases for `E →L[𝕜] F` endowed with various topologies :
+
 * `ContinuousLinearMap`: topology of bounded convergence
 * `UniformConvergenceCLM`: topology of `𝔖`-convergence, for a general `𝔖 : Set (Set E)`
 * `CompactConvergenceCLM`: topology of compact convergence
@@ -43,7 +47,7 @@ Here is a list of type aliases for `E →L[𝕜] F` endowed with various topolog
 
 ## References
 
-* [N. Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* ‍\[N. Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 
 ## Tags
 
@@ -59,7 +63,9 @@ namespace ContinuousLinearMap
 
 section BoundedConvergence
 
-/-! ### Topology of bounded convergence  -/
+/-!
+# Topology of bounded convergence
+-/
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
   {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*} [AddCommGroup E]
@@ -147,11 +153,13 @@ theorem eventually_nhds_zero_mapsTo [TopologicalSpace F] [IsTopologicalAddGroup 
     ∀ᶠ f : E →SL[σ] F in 𝓝 0, MapsTo f s U :=
   UniformConvergenceCLM.eventually_nhds_zero_mapsTo _ hs hu
 
-/-- If `S` is a von Neumann bounded set of continuous linear maps `f : E →SL[σ] F`
+/--
+If `S` is a von Neumann bounded set of continuous linear maps `f : E →SL[σ] F`
 and `s` is a von Neumann bounded set in the domain,
 then the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
 
-See also `isVonNBounded_iff` for an `Iff` version with stronger typeclass assumptions. -/
+See also `isVonNBounded_iff` for an `Iff` version with stronger typeclass assumptions.
+-/
 theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
@@ -159,11 +167,13 @@ theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) :=
   UniformConvergenceCLM.isVonNBounded_image2_apply hS hs
 
-/-- A set `S` of continuous linear maps is von Neumann bounded
+/--
+A set `S` of continuous linear maps is von Neumann bounded
 iff for any von Neumann bounded set `s`,
 the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
 
-For the forward implication with weaker typeclass assumptions, see `isVonNBounded_image2_apply`. -/
+For the forward implication with weaker typeclass assumptions, see `isVonNBounded_image2_apply`.
+-/
 theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
@@ -209,10 +219,12 @@ theorem isEmbedding_postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
   .mk (isInducing_postcomp f hf.isInducing) fun _ _ ↦ f.cancel_left hf.injective
 
 variable (G) in
-/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map.
+/--
+Pre-composition by a _fixed_ continuous linear map as a continuous linear map.
 
 Note that in non-normed space it is not always true that composition is continuous
-in both variables, so we have to fix one of them. -/
+in both variables, so we have to fix one of them.
+-/
 @[simps! apply]
 def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
     [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G where
@@ -221,10 +233,12 @@ def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSu
     (fun _ hS ↦ hS.image L)
 
 variable (E) in
-/-- Post-composition by a *fixed* continuous linear map as a continuous linear map.
+/--
+Post-composition by a _fixed_ continuous linear map as a continuous linear map.
 
 Note that in non-normed space it is not always true that composition is continuous
-in both variables, so we have to fix one of them. -/
+in both variables, so we have to fix one of them.
+-/
 @[simps! apply]
 def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
     [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
@@ -238,11 +252,13 @@ lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
     Continuous (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖) :=
   continuous_id_of_le <| UniformConvergenceCLM.topologicalSpace_mono _ _ h
 
-/-- A bilinear map `B : E × F → G` which is (jointly) continuous is **hypocontinuous**:
+/--
+A bilinear map `B : E × F → G` which is (jointly) continuous is *hypocontinuous*:
 in curried form, it defines a continuous linear map `E →L[𝕜] F →L[𝕜] G`.
 
 In the normed setting, the converse is true, see `ContinuousLinearMap.continuous₂`.
-In general, however, hypocontinuity is a strictly weaker condition than joint continuity. -/
+In general, however, hypocontinuity is a strictly weaker condition than joint continuity.
+-/
 theorem continuous_of_continuous_uncurry
     {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {σ : 𝕜₁ →+* 𝕜₂} [Module 𝕜₁ E]
     {τ : 𝕜₃ →+* 𝕜₂} [RingHomSurjective τ]
@@ -486,7 +502,9 @@ open ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
 
-/-! ### Continuous linear equivalences -/
+/-!
+# Continuous linear equivalences
+-/
 
 section Semilinear
 

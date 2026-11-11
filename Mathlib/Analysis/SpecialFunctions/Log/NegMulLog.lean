@@ -9,17 +9,20 @@ public import Mathlib.Analysis.Convex.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The functions `x ↦ x * log x` and `x ↦ - x * log x`
 
 The purpose of this file is to record basic analytic properties of
-- `x ↦ x * log x`, called `mul_log` in theorem statements
-- `x ↦ - x * log x`, named `negMulLog`, which is notably used in the theory of Shannon entropy.
+
+* `x ↦ x * log x`, called `mul_log` in theorem statements
+* `x ↦ - x * log x`, named `negMulLog`, which is notably used in the theory of Shannon entropy.
 
 ## Main definitions
 
 * `negMulLog`: the function `x ↦ - x * log x` from `ℝ` to `ℝ`.
-
 -/
 
 @[expose] public section

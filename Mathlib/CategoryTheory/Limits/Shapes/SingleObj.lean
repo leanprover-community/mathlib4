@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.SingleObj
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Order.Setoid.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)limits of functors out of `SingleObj M`
 
@@ -20,10 +23,8 @@ We characterise (co)limits of shape `SingleObj M`. Currently only in the categor
 
 * `SingleObj.Types.limitEquivFixedPoints`: The limit of `J : SingleObj G ⥤ Type u` is the fixed
   points of `J.obj (SingleObj.star G)` under the induced action.
-
 * `SingleObj.Types.colimitEquivQuotient`: The colimit of `J : SingleObj G ⥤ Type u` is the
   quotient of `J.obj (SingleObj.star G)` by the induced action.
-
 -/
 
 @[expose] public section

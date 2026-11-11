@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Generator.Basic
 
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generators for the category of presheaves of modules
 
@@ -40,7 +43,6 @@ This is used in the definition
 `PresheafOfModules.isColimitFreeYonedaCoproductsCokernelCofork`
 in order to obtain that any presheaf of modules is a cokernel
 of a morphism between coproducts of objects in `freeYoneda R`.
-
 -/
 
 @[expose] public section

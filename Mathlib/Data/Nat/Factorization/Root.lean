@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Floor.Div
 public import Mathlib.Data.Nat.Factorization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Roots of natural numbers, rounded up and down
 
@@ -16,7 +19,7 @@ This file defines the flooring and ceiling root of a natural number.
 number whose `p`-adic valuation is the floor/ceil of the `p`-adic valuation of `a`.
 
 For example the `2`-nd flooring and ceiling roots of `2^3 * 3^2 * 5` are `2 * 3` and `2^2 * 3 * 5`
-respectively. Note this is **not** the `n`-th root of `a` as a real number, rounded up or down.
+respectively. Note this is *not* the `n`-th root of `a` as a real number, rounded up or down.
 
 These operations are respectively the right and left adjoints to the map `a ↦ a ^ n` where `ℕ` is
 ordered by divisibility. This is useful because it lets us characterise the numbers `a` whose `n`-th
@@ -37,7 +40,8 @@ open Finsupp
 namespace Nat
 variable {a b n : ℕ}
 
-/-- Flooring root of a natural number. This divides the valuation of every prime number rounding
+/--
+Flooring root of a natural number. This divides the valuation of every prime number rounding
 down.
 
 Eg if `n = 2`, `a = 2^3 * 3^2 * 5`, then `floorRoot n a = 2 * 3`.
@@ -47,6 +51,7 @@ is ordered by divisibility.
 
 To ensure that the adjunction (`Nat.pow_dvd_iff_dvd_floorRoot`) holds in as many cases as possible,
 we special-case the following values:
+
 * `floorRoot 0 a = 0`
 * `floorRoot n 0 = 0`
 -/
@@ -97,7 +102,8 @@ lemma pow_dvd_iff_dvd_floorRoot : a ^ n ∣ b ↔ a ∣ floorRoot n b := by
 
 lemma floorRoot_pow_dvd : floorRoot n a ^ n ∣ a := pow_dvd_iff_dvd_floorRoot.2 dvd_rfl
 
-/-- Ceiling root of a natural number. This divides the valuation of every prime number rounding up.
+/--
+Ceiling root of a natural number. This divides the valuation of every prime number rounding up.
 
 Eg if `n = 3`, `a = 2^4 * 3^2 * 5`, then `ceilRoot n a = 2^2 * 3 * 5`.
 
@@ -106,6 +112,7 @@ is ordered by divisibility.
 
 To ensure that the adjunction (`Nat.dvd_pow_iff_ceilRoot_dvd`) holds in as many cases as possible,
 we special-case the following values:
+
 * `ceilRoot 0 a = 0` (this one is not strictly necessary)
 * `ceilRoot n 0 = 0`
 -/
@@ -144,12 +151,14 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
   have : p.Prime ∧ p ∣ a ∧ ¬a = 0 := by simpa using support_ceilDiv_subset hp
   exact this.1
 
-/-- Galois connection between `ceilRoot n : ℕ → ℕ` and `a ↦ a ^ n : ℕ → ℕ` where `ℕ` is ordered
+/--
+Galois connection between `ceilRoot n : ℕ → ℕ` and `a ↦ a ^ n : ℕ → ℕ` where `ℕ` is ordered
 by divisibility.
 
 Note that this cannot possibly hold for `n = 0`, regardless of the value of `ceilRoot 0 a`, because
 the statement reduces to `a = 1 ↔ ceilRoot 0 a ∣ b`, which is false for e.g. `a = 0`,
-`b = ceilRoot 0 a`. -/
+`b = ceilRoot 0 a`.
+-/
 lemma dvd_pow_iff_ceilRoot_dvd (hn : n ≠ 0) : a ∣ b ^ n ↔ ceilRoot n a ∣ b := by
   obtain rfl | ha := eq_or_ne a 0
   · aesop

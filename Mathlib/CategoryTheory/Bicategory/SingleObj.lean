@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.End
 public import Mathlib.CategoryTheory.Monoidal.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Promoting a monoidal category to a single object bicategory.
 
@@ -22,6 +25,7 @@ We verify that the endomorphisms of that single object recovers the original mon
 One could go much further: the bicategory of monoidal categories
 (equipped with monoidal functors and monoidal natural transformations)
 is equivalent to the bicategory consisting of
+
 * single object bicategories,
 * pseudofunctors, and
 * (oplax) natural transformations `η` such that `η.app Unit.unit = 𝟙 _`.
@@ -65,7 +69,8 @@ namespace MonoidalSingleObj
 protected def star : MonoidalSingleObj C :=
   Unit.unit
 
-/-- The monoidal functor from the endomorphisms of the single object
+/--
+The monoidal functor from the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
 to the original monoidal category.
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vieta's Formula
 

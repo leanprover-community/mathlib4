@@ -8,15 +8,21 @@ module
 public import Mathlib.Analysis.Convolution
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 
-/-! # The Fourier transform of the convolution
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The Fourier transform of the convolution
 
 In this file we calculate the Fourier transform of a convolution.
 
 ## Main definitions
+
 * `SchwartzMap.convolution`: The convolution on Schwartz functions is defined via the Fourier
   transform.
 
 ## Main statements
+
 * `Real.fourier_bilin_convolution_eq`: The Fourier transform of a convolution is the bilinear map
   applied to the Fourier transform of the functions.
 * `Real.fourier_smul_convolution_eq`: Variant for scalar multiplication.
@@ -25,7 +31,6 @@ In this file we calculate the Fourier transform of a convolution.
   the pairing of the Fourier transformed Schwartz functions.
 * `SchwartzMap.convolution_apply`: The Schwartz function convolution coincides with the convolution
   for functions.
-
 -/
 
 @[expose] public section
@@ -102,10 +107,12 @@ theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f
   _ = B (∫ x, 𝐞 (-inner ℝ x ξ) • f₁ x) (∫ y, 𝐞 (-inner ℝ y ξ) • f₂ y) := by
     rw [← integral_comp_comm _ (by simpa using hf₂), ← integral_comp_comm _ (by simpa using hf₁)]
 
-/-- The Fourier transform of the convolution is given by the multiplication of the Fourier transform
+/--
+The Fourier transform of the convolution is given by the multiplication of the Fourier transform
 of the individual functions.
 
-Version for scalar multiplication. -/
+Version for scalar multiplication.
+-/
 theorem fourier_smul_convolution_eq {f₁ : E → ℂ} {f₂ : E → F₁}
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) (ξ : E) :
     𝓕 (f₁ ⋆[lsmul ℂ ℂ] f₂) ξ = (𝓕 f₁ ξ) • (𝓕 f₂ ξ) :=
@@ -114,10 +121,12 @@ theorem fourier_smul_convolution_eq {f₁ : E → ℂ} {f₂ : E → F₁}
 variable [NormedRing R] [NormedSpace ℂ R] [IsScalarTower ℂ R R] [SMulCommClass ℂ R R]
   [CompleteSpace R]
 
-/-- The Fourier transform of the convolution is given by the multiplication of the Fourier transform
+/--
+The Fourier transform of the convolution is given by the multiplication of the Fourier transform
 of the individual functions.
 
-Version for multiplication. -/
+Version for multiplication.
+-/
 theorem fourier_mul_convolution_eq {f₁ : E → R} {f₂ : E → R}
     (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) (ξ : E) :
     𝓕 (f₁ ⋆[mul ℂ R] f₂) ξ = (𝓕 f₁ ξ) * (𝓕 f₂ ξ) :=
@@ -138,9 +147,11 @@ open FourierTransform
 
 open scoped Convolution
 
-/-- The bilinear convolution of Schwartz functions.
+/--
+The bilinear convolution of Schwartz functions.
 
-The continuity in the left argument is provided in `SchwartzMap.convolution_continuous_left`. -/
+The continuity in the left argument is provided in `SchwartzMap.convolution_continuous_left`.
+-/
 noncomputable
 def convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) : 𝓢(E, F₁) →ₗ[𝕜] 𝓢(E, F₂) →L[𝕜] 𝓢(E, F₃) where
   toFun f := fourierInvCLM 𝕜 𝓢(E, F₃) ∘L pairing B (𝓕 f) ∘L fourierCLM 𝕜 𝓢(E, F₂)
@@ -151,10 +162,12 @@ def convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) : 𝓢(E, F₁) →�
 theorem convolution_flip (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
     convolution B.flip g f = convolution B f g := rfl
 
-/-- The convolution is continuous in the left argument.
+/--
+The convolution is continuous in the left argument.
 
 Note that since `𝓢(E, F)` is not a normed space, uncurried and curried continuity do not
-coincide. -/
+coincide.
+-/
 @[fun_prop]
 theorem convolution_continuous_left (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (g : 𝓢(E, F₂)) :
     Continuous (convolution B · g) := (convolution B.flip g).continuous

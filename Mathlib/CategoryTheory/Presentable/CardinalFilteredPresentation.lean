@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Generator.StrongGenerator
 public import Mathlib.CategoryTheory.Presentable.Limits
 public import Mathlib.CategoryTheory.Presentable.Retracts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentable generators
 
@@ -26,8 +29,9 @@ that `C` is locally `w`-small and that there exists an (essentially) small `P`
 such that `P.IsCardinalFilteredGenerator κ` holds.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 public section

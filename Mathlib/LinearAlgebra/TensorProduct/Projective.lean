@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of projective modules
 

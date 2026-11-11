@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.RingHomProperties
 
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local properties of commutative rings
 
@@ -40,7 +43,6 @@ In this file, we define local properties in general.
 
 * The triviality of an ideal or an element:
   `ideal_eq_bot_of_localization`, `eq_zero_of_localization`
-
 -/
 
 @[expose] public section
@@ -97,22 +99,26 @@ def RingHom.LocalizationAwayPreserves :=
     [IsLocalization.Away (f r) S'],
     P f → P (IsLocalization.Away.map R' S' f r : R' →+* S')
 
-/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpan`
+/--
+A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpan`
 if `P` holds for `R →+* S` whenever there exists a finite set `{ r }` that spans `R` such that
 `P` holds for `Rᵣ →+* Sᵣ`.
 
 Note that this is equivalent to `RingHom.OfLocalizationSpan` via
-`RingHom.ofLocalizationSpan_iff_finite`, but this is easier to prove. -/
+`RingHom.ofLocalizationSpan_iff_finite`, but this is easier to prove.
+-/
 def RingHom.OfLocalizationFiniteSpan :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Finset R)
     (_ : Ideal.span (s : Set R) = ⊤) (_ : ∀ r : s, P (Localization.awayMap f r)), P f
 
-/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpan`
+/--
+A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpan`
 if `P` holds for `R →+* S` whenever there exists a set `{ r }` that spans `R` such that
 `P` holds for `Rᵣ →+* Sᵣ`.
 
 Note that this is equivalent to `RingHom.OfLocalizationFiniteSpan` via
-`RingHom.ofLocalizationSpan_iff_finite`, but this has less restrictions when applying. -/
+`RingHom.ofLocalizationSpan_iff_finite`, but this has less restrictions when applying.
+-/
 def RingHom.OfLocalizationSpan :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Set R) (_ : Ideal.span s = ⊤)
     (_ : ∀ r : s, P (Localization.awayMap f r)), P f
@@ -150,23 +156,27 @@ def RingHom.StableUnderCompositionWithLocalizationAway : Prop :=
   StableUnderCompositionWithLocalizationAwaySource P ∧
     StableUnderCompositionWithLocalizationAwayTarget P
 
-/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpanTarget`
+/--
+A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpanTarget`
 if `P` holds for `R →+* S` whenever there exists a finite set `{ r }` that spans `S` such that
 `P` holds for `R →+* Sᵣ`.
 
 Note that this is equivalent to `RingHom.OfLocalizationSpanTarget` via
-`RingHom.ofLocalizationSpanTarget_iff_finite`, but this is easier to prove. -/
+`RingHom.ofLocalizationSpanTarget_iff_finite`, but this is easier to prove.
+-/
 def RingHom.OfLocalizationFiniteSpanTarget : Prop :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Finset S)
     (_ : Ideal.span (s : Set S) = ⊤)
     (_ : ∀ r : s, P ((algebraMap S (Localization.Away (r : S))).comp f)), P f
 
-/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationSpanTarget`
+/--
+A property `P` of ring homs satisfies `RingHom.OfLocalizationSpanTarget`
 if `P` holds for `R →+* S` whenever there exists a set `{ r }` that spans `S` such that
 `P` holds for `R →+* Sᵣ`.
 
 Note that this is equivalent to `RingHom.OfLocalizationFiniteSpanTarget` via
-`RingHom.ofLocalizationSpanTarget_iff_finite`, but this has less restrictions when applying. -/
+`RingHom.ofLocalizationSpanTarget_iff_finite`, but this has less restrictions when applying.
+-/
 def RingHom.OfLocalizationSpanTarget : Prop :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (_ : Ideal.span s = ⊤)
     (_ : ∀ r : s, P ((algebraMap S (Localization.Away (r : S))).comp f)), P f

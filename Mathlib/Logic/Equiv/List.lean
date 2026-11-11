@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Basic.Denumerable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences involving `List`-like types
 

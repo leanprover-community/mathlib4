@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universally open morphism
 
@@ -16,7 +19,6 @@ for all base change `Y' ⟶ Y`.
 
 We show that being universally open is local at the target, and is stable under compositions and
 base changes.
-
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jacobson radical
 
@@ -26,7 +29,6 @@ as the intersection of maximal ideals containing `I`.
 Let `R` be a ring, and `I` be a left ideal of `R`
 
 * `Ideal.jacobson I` is the Jacobson radical, i.e. the infimum of all maximal ideals containing `I`.
-
 * `Ideal.IsLocal I` is the proposition that the Jacobson radical of `I` is itself a maximal ideal
 
 Furthermore when `I` is a two-sided ideal of `R`
@@ -36,14 +38,12 @@ Furthermore when `I` is a two-sided ideal of `R`
 ## Main statements
 
 * `mem_jacobson_iff` gives a characterization of members of the Jacobson of I
-
 * `Ideal.isLocal_of_isMaximal_radical`: if the radical of I is maximal then so is the Jacobson
   radical
 
 ## Tags
 
 Jacobson, Jacobson radical, Local Ideal
-
 -/
 
 @[expose] public section

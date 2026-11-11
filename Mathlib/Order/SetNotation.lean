@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Util.Notation3
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation classes for set supremum and infimum
 
@@ -16,19 +19,18 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 
 ## Main definitions
 
-- `iSup f`, `iInf f`: supremum and infimum of an indexed family of elements,
+* `iSup f`, `iInf f`: supremum and infimum of an indexed family of elements,
   defined as `sSup (Set.range f)` and `sInf (Set.range f)`, respectively;
-- `Set.sUnion s`, `Set.sInter s`: same as `sSup s` and `sInf s`,
+* `Set.sUnion s`, `Set.sInter s`: same as `sSup s` and `sInf s`,
   but works only for sets of sets;
-- `Set.iUnion s`, `Set.iInter s`: same as `iSup s` and `iInf s`,
+* `Set.iUnion s`, `Set.iInter s`: same as `iSup s` and `iInf s`,
   but works only for indexed families of sets.
 
 ## Notation
 
-- `⨆ i, f i`, `⨅ i, f i`: supremum and infimum of an indexed family, respectively;
-- `⋃₀ s`, `⋂₀ s`: union and intersection of a set of sets;
-- `⋃ i, s i`, `⋂ i, s i`: union and intersection of an indexed family of sets.
-
+* `⨆ i, f i`, `⨅ i, f i`: supremum and infimum of an indexed family, respectively;
+* `⋃₀ s`, `⋂₀ s`: union and intersection of a set of sets;
+* `⋃ i, s i`, `⋂ i, s i`: union and intersection of an indexed family of sets.
 -/
 
 @[expose] public section

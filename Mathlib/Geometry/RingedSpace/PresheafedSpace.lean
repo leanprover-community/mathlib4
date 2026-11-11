@@ -9,6 +9,9 @@ public import Mathlib.Topology.Sheaves.Presheaf
 
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presheafed spaces
 

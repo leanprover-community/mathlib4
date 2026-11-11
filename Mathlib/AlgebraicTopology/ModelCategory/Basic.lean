@@ -7,13 +7,16 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Model categories
 
 We introduce a typeclass `ModelCategory C` expressing that `C` is equipped with
 classes of morphisms named "fibrations", "cofibrations" and "weak equivalences"
 which satisfy the axioms of (closed) model categories as they appear for example
-in *Simplicial Homotopy Theory* by Goerss and Jardine. We also provide an
+in _Simplicial Homotopy Theory_ by Goerss and Jardine. We also provide an
 alternate constructor `ModelCategory.mk'` which uses a formulation of the axioms
 using weak factorization systems.
 
@@ -21,10 +24,10 @@ As a given category `C` may have several model category structures, it is advisa
 to define only local instances of `ModelCategory`, or to set these instances on type synonyms.
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
-* [Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory][goerss-jardine-2009]
-* https://ncatlab.org/nlab/show/model+category
 
+* ‍\[Daniel G. Quillen, Homotopical algebra\]\[Quillen1967\]
+* ‍\[Paul G. Goerss, John F. Jardine, Simplicial Homotopy Theory\]\[goerss-jardine-2009\]
+* https://ncatlab.org/nlab/show/model+category
 -/
 
 @[expose] public section

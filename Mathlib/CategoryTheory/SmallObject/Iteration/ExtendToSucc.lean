@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of a functor from `Set.Iic j` to `Set.Iic (Order.succ j)`
 
@@ -14,7 +17,6 @@ Given a linearly ordered type `J` with `SuccOrder J`, `j : J` that is not maxima
 we define the extension of a functor `F : Set.Iic j ⥤ C` as a
 functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 `τ : F.obj ⟨j, _⟩ ⟶ X` is given.
-
 -/
 
 @[expose] public section

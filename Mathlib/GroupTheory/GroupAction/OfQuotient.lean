@@ -9,12 +9,14 @@ public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # MulAction and MulDistribMulAction of quotient group on fixed points
 
 Given a `MulAction`/`MulDistribMulAction` of a group `G` on `A` and a normal subgroup `H` of `G`,
 there is a `MulAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on `fixedPoints H A`.
-
 -/
 
 public section

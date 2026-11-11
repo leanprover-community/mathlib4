@@ -9,11 +9,14 @@ public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Data.Set.Card
 public import Mathlib.Order.Setoid.Partition
 
-/-! # Cardinality of parts of partitions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Cardinality of parts of partitions
 
 * `Setoid.IsPartition.ncard_eq_finsum` on an ambient finite type,
   the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition
-
 -/
 
 public section

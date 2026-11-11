@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Order.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex hull
 

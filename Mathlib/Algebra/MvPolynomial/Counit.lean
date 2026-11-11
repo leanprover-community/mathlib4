@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Eval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Counit morphisms for multivariate polynomials
 
@@ -21,7 +24,6 @@ obtained by `X a ↦ a`.
   `MvPolynomial A R →ₐ[R] A` obtained by `X a ↦ a`
 * `MvPolynomial.counit` is an “absolute” variant with `R = ℤ`
 * `MvPolynomial.counitNat` is an “absolute” variant with `R = ℕ`
-
 -/
 
 @[expose] public section
@@ -33,11 +35,13 @@ open Function
 
 variable (A B R : Type*) [CommSemiring A] [CommSemiring B] [CommRing R] [Algebra A B]
 
-/-- `MvPolynomial.ACounit A B` is the natural surjective algebra homomorphism
+/--
+`MvPolynomial.ACounit A B` is the natural surjective algebra homomorphism
 `MvPolynomial B A →ₐ[A] B` obtained by `X a ↦ a`.
 
 See `MvPolynomial.counit` for the “absolute” variant with `A = ℤ`,
-and `MvPolynomial.counitNat` for the “absolute” variant with `A = ℕ`. -/
+and `MvPolynomial.counitNat` for the “absolute” variant with `A = ℕ`.
+-/
 noncomputable def ACounit : MvPolynomial B A →ₐ[A] B :=
   aeval id
 
@@ -56,19 +60,23 @@ variable (A)
 
 theorem ACounit_surjective : Surjective (ACounit A B) := fun b => ⟨X b, ACounit_X A b⟩
 
-/-- `MvPolynomial.counit R` is the natural surjective ring homomorphism
+/--
+`MvPolynomial.counit R` is the natural surjective ring homomorphism
 `MvPolynomial R ℤ →+* R` obtained by `X r ↦ r`.
 
 See `MvPolynomial.ACounit` for a “relative” variant for algebras over a base ring,
-and `MvPolynomial.counitNat` for the “absolute” variant with `R = ℕ`. -/
+and `MvPolynomial.counitNat` for the “absolute” variant with `R = ℕ`.
+-/
 noncomputable def counit : MvPolynomial R ℤ →+* R :=
   (ACounit ℤ R).toRingHom
 
-/-- `MvPolynomial.counitNat A` is the natural surjective ring homomorphism
+/--
+`MvPolynomial.counitNat A` is the natural surjective ring homomorphism
 `MvPolynomial A ℕ →+* A` obtained by `X a ↦ a`.
 
 See `MvPolynomial.ACounit` for a “relative” variant for algebras over a base ring
-and `MvPolynomial.counit` for the “absolute” variant with `A = ℤ`. -/
+and `MvPolynomial.counit` for the “absolute” variant with `A = ℤ`.
+-/
 noncomputable def counitNat : MvPolynomial A ℕ →+* A :=
   ACounit ℕ A
 

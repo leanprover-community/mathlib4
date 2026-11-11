@@ -9,7 +9,11 @@ public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
 public import Mathlib.RingTheory.GradedAlgebra.AlgHom
 public import Mathlib.RingTheory.TensorProduct.Basic
 
-/-! # Tensor product of graded algebra
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Tensor product of graded algebra
 
 In this file we show that if `𝒜` is a graded `R`-algebra, and `S` is any `R`-algebra, then
 `S ⊗[R] 𝒜` is a graded `S`-algebra with the grading `fun i ↦ (𝒜 i).baseChange S`.
@@ -111,9 +115,11 @@ variable [Algebra R S] [Algebra R B] [IsScalarTower R S B]
 
 open TensorProduct
 
-/-- A map from the base change of a graded algebra is the same as a map to the scalar restriction.
+/--
+A map from the base change of a graded algebra is the same as a map to the scalar restriction.
 
 In category-theoretical terms, this is an adjunction between:
+
 1. `𝒜 ↦ (𝒜 · |>.baseChange S)`, a functor from Graded `R`-Algebra to Graded `S`-Algebra; and:
 2. `ℬ ↦ (ℬ · |>.restrictScalars R)`, a functor from Graded `S`-Algebra to Graded `R`-Algebra.
 -/
@@ -141,11 +147,13 @@ variable {𝒜 ℬ}
 
 variable (S 𝒜)
 
-/-- Graded version of  `Algebra.TensorProduct.includeRight`, i.e. the inclusion from a graded
+/--
+Graded version of  `Algebra.TensorProduct.includeRight`, i.e. the inclusion from a graded
 `R`-algebra `𝒜` to its base change to `S` and then restricted back to `R`. (The restriction does
 not change the actual sets).
 
-In categorical terms, this is the unit of the adjunction `GradedAlgHom.liftEquiv`. -/
+In categorical terms, this is the unit of the adjunction `GradedAlgHom.liftEquiv`.
+-/
 def includeRight : 𝒜 →ₐᵍ[R] (𝒜 · |>.baseChange S |>.restrictScalars R) where
   __ := Algebra.TensorProduct.includeRight
   map_mem hx := tmul_mem_baseChange_of_mem _ hx

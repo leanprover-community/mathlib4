@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 public import Mathlib.LinearAlgebra.Basis.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine bases and barycentric coordinates
 
@@ -43,7 +46,6 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 ## TODO
 
 * Construct the affine equivalence between `P` and `finsuppAffineCoords ι k`.
-
 -/
 
 open scoped Finset
@@ -89,9 +91,11 @@ universe u₁ u₂ u₃ u₄
 /-- An affine basis is a family of affine-independent points whose span is the top subspace. -/
 structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type u₄) [AddCommGroup V]
   [AffineSpace V P] [Ring k] [Module k V] where
-  /-- The underlying family of points.
+  /--
+  The underlying family of points.
 
-  Do NOT use directly. Use the coercion instead. -/
+  Do NOT use directly. Use the coercion instead.
+  -/
   protected toFun : ι → P
   protected ind' : AffineIndependent k toFun
   protected tot' : affineSpan k (range toFun) = ⊤
@@ -146,11 +150,13 @@ theorem reindex_apply (i' : ι') : b.reindex e i' = b (e.symm i') :=
 theorem reindex_refl : b.reindex (Equiv.refl _) = b :=
   ext rfl
 
-/-- Given an affine basis for an affine space `P`, if we single out one member of the family, we
+/--
+Given an affine basis for an affine space `P`, if we single out one member of the family, we
 obtain a linear basis for the model space `V`.
 
 The linear basis corresponding to the singled-out member `i : ι` is indexed by `{j : ι // j ≠ i}`
-and its `j`th element is `b j -ᵥ b i`. (See `basisOf_apply`.) -/
+and its `j`th element is `b j -ᵥ b i`. (See `basisOf_apply`.)
+-/
 noncomputable def basisOf (i : ι) : Basis { j : ι // j ≠ i } k V :=
   Basis.mk ((affineIndependent_iff_linearIndependent_vsub k b i).mp b.ind)
     (by
@@ -323,10 +329,12 @@ variable [Group G] [Group G']
 variable [DistribMulAction G V] [DistribMulAction G' V]
 variable [SMulCommClass G k V] [SMulCommClass G' k V]
 
-/-- In an affine space that is also a vector space, an `AffineBasis` can be scaled.
+/--
+In an affine space that is also a vector space, an `AffineBasis` can be scaled.
 
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a `VAdd`
-version of a `DistribMulAction`. -/
+version of a `DistribMulAction`.
+-/
 instance instSMul : SMul G (AffineBasis ι k V) where
   smul a b :=
     { toFun := a • ⇑b,

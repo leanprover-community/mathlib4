@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Topology
 
 import Mathlib.Algebra.Order.Interval.Set.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral over an interval
 
@@ -40,7 +43,7 @@ three possible intervals with the same endpoints for two reasons:
   `f` is integrable on each interval; in particular, it works even if the measure `μ` has an atom
   at `b`; this rules out `Set.Ioo` and `Set.Icc` intervals;
 * with this definition for a probability measure `μ`, the integral `∫ x in a..b, 1 ∂μ` equals
-  the difference $F_μ(b)-F_μ(a)$, where $F_μ(a)=μ(-∞, a]$ is the
+  the difference $`F_μ(b)-F_μ(a)`, where $`F_μ(a)=μ(-∞, a]` is the
   [cumulative distribution function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
   of `μ`.
 
@@ -62,19 +65,21 @@ variable {ι 𝕜 ε ε' E F A : Type*} [NormedAddCommGroup E]
   [TopologicalSpace ε] [ENormedAddMonoid ε] [TopologicalSpace ε'] [ENormedAddMonoid ε']
 
 /-!
-### Integrability on an interval
+# Integrability on an interval
 -/
 
 
-/-- A function `f` is called *interval integrable* with respect to a measure `μ` on an unordered
+/--
+A function `f` is called _interval integrable_ with respect to a measure `μ` on an unordered
 interval `a..b` if it is integrable on both intervals `(a, b]` and `(b, a]`. One of these
 intervals is always empty, so this property is equivalent to `f` being integrable on
-`(min a b, max a b]`. -/
+`(min a b, max a b]`.
+-/
 def IntervalIntegrable (f : ℝ → ε) (μ : Measure ℝ) (a b : ℝ) : Prop :=
   IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ
 
 /-!
-## Basic iff's for `IntervalIntegrable`
+# Basic iff's for `IntervalIntegrable`
 -/
 section
 
@@ -182,11 +187,12 @@ protected theorem IntervalIntegrable.zero : IntervalIntegrable (0 : ℝ → E) �
 end
 
 /-!
-## Basic properties of interval integrability
-- interval integrability is symmetric, reflexive, transitive
-- monotonicity and strong measurability of the interval integral
-- if `f` is interval integrable, so are its absolute value and norm
-- arithmetic properties
+# Basic properties of interval integrability
+
+* interval integrability is symmetric, reflexive, transitive
+* monotonicity and strong measurability of the interval integral
+* if `f` is interval integrable, so are its absolute value and norm
+* arithmetic properties
 -/
 namespace IntervalIntegrable
 
@@ -503,7 +509,7 @@ theorem comp_sub_left_iff {f : ℝ → E} (c : ℝ) (h : ‖f (min a b)‖ₑ �
 end IntervalIntegrable
 
 /-!
-## Continuous functions are interval integrable
+# Continuous functions are interval integrable
 -/
 section
 
@@ -526,7 +532,7 @@ theorem Continuous.intervalIntegrable {u : ℝ → E} (hu : Continuous u) (a b :
 end
 
 /-!
-## Monotone and antitone functions are integral integrable
+# Monotone and antitone functions are integral integrable
 -/
 section
 
@@ -553,17 +559,19 @@ theorem Antitone.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : Antitone u
 end
 
 /-!
-## Interval integrability of functions with even or odd parity
+# Interval integrability of functions with even or odd parity
 -/
 section
 
 variable {f : ℝ → E}
 
-/-- An even function is interval integrable (with respect to the volume measure) on every interval
+/--
+An even function is interval integrable (with respect to the volume measure) on every interval
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
 
-See `intervalIntegrable_of_even` for a stronger result. -/
+See `intervalIntegrable_of_even` for a stronger result.
+-/
 lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
     (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x)
     {t : ℝ} (ht : ‖f (min 0 t)‖ₑ ≠ ∞ := by finiteness) :
@@ -586,11 +594,13 @@ theorem intervalIntegrable_of_even
   (intervalIntegrable_of_even₀ h₁f h₂f ha).symm.trans (b := 0)
     (intervalIntegrable_of_even₀ h₁f h₂f hb)
 
-/-- An odd function is interval integrable (with respect to the volume measure) on every interval
+/--
+An odd function is interval integrable (with respect to the volume measure) on every interval
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
 
-See `intervalIntegrable_of_odd` for a stronger result. -/
+See `intervalIntegrable_of_odd` for a stronger result.
+-/
 lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
     (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {t : ℝ} :
     IntervalIntegrable f volume 0 t := by
@@ -614,10 +624,11 @@ theorem intervalIntegrable_of_odd
 end
 
 /-!
-## Limits of intervals
+# Limits of intervals
 -/
 
-/-- Let `l'` be a measurably generated filter; let `l` be a of filter such that each `s ∈ l'`
+/--
+Let `l'` be a measurably generated filter; let `l` be a of filter such that each `s ∈ l'`
 eventually includes `Ioc u v` as both `u` and `v` tend to `l`. Let `μ` be a measure finite at `l'`.
 
 Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ ae μ`. Then `f` is interval integrable on
@@ -625,7 +636,8 @@ Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ ae μ`. Then `f` is i
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
 `apply Tendsto.eventually_intervalIntegrable_ae` will generate goals `Filter ℝ` and
-`TendstoIxxClass Ioc ?m_1 l'`. -/
+`TendstoIxxClass Ioc ?m_1 l'`.
+-/
 theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Measure ℝ}
     {l l' : Filter ℝ} (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l']
     [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
@@ -634,7 +646,8 @@ theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Me
   have := (hf.integrableAtFilter_ae hfm hμ).eventually
   ((hu.Ioc hv).eventually this).and <| (hv.Ioc hu).eventually this
 
-/-- Let `l'` be a measurably generated filter; let `l` be a of filter such that each `s ∈ l'`
+/--
+Let `l'` be a measurably generated filter; let `l` be a of filter such that each `s ∈ l'`
 eventually includes `Ioc u v` as both `u` and `v` tend to `l`. Let `μ` be a measure finite at `l'`.
 
 Suppose that `f : ℝ → E` has a finite limit at `l`. Then `f` is interval integrable on `u..v`
@@ -642,7 +655,8 @@ provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
 `apply Tendsto.eventually_intervalIntegrable` will generate goals `Filter ℝ` and
-`TendstoIxxClass Ioc ?m_1 l'`. -/
+`TendstoIxxClass Ioc ?m_1 l'`.
+-/
 theorem Filter.Tendsto.eventually_intervalIntegrable {f : ℝ → E} {μ : Measure ℝ} {l l' : Filter ℝ}
     (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l'] [IsMeasurablyGenerated l']
     (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f l' (𝓝 c)) {u v : ι → ℝ} {lt : Filter ι}
@@ -650,7 +664,7 @@ theorem Filter.Tendsto.eventually_intervalIntegrable {f : ℝ → E} {μ : Measu
   (hf.mono_left inf_le_left).eventually_intervalIntegrable_ae hfm hμ hu hv
 
 /-!
-### Interval integral: definition and basic properties
+# Interval integral: definition and basic properties
 
 In this section we define `∫ x in a..b, f x ∂μ` as `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`
 and prove some basic properties.
@@ -910,7 +924,8 @@ theorem intervalIntegral_conj : ∫ x in a..b, conj (f x) ∂μ = conj (∫ x in
 end RCLike
 
 /-!
-## Basic arithmetic
+# Basic arithmetic
+
 Includes addition, scalar multiplication and affine transformations.
 -/
 section Comp
@@ -1066,12 +1081,11 @@ theorem integral_comp_neg : (∫ x in a..b, f (-x)) = ∫ x in -b..-a, f x := by
 end Comp
 
 /-!
-### Integral is an additive function of the interval
+# Integral is an additive function of the interval
 
 In this section we prove that `∫ x in a..b, f x ∂μ + ∫ x in b..c, f x ∂μ = ∫ x in a..c, f x ∂μ`
 as well as a few other identities trivially equivalent to this one. We also prove that
 `∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ` provided that `support f ⊆ Ioc a b`.
-
 -/
 
 section OrderClosedTopology

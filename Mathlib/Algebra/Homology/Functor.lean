@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complexes in functor categories
 
@@ -19,9 +22,9 @@ complexes in the category `T ⥤ V` is a quasi-isomorphism iff
 it is so after evaluation at any `t : T`.
 
 ## Future work
+
 In fact there is an equivalence of categories
 `HomologicalComplex (T ⥤ V) c ≌ T ⥤ HomologicalComplex V c`.
-
 -/
 
 @[expose] public section

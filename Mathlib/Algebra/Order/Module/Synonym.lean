@@ -9,9 +9,11 @@ public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 public import Mathlib.Algebra.Order.Ring.Synonym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action instances for `OrderDual`
-
 
 This PR transfers group action with zero instances from a type `α` to `αᵒᵈ` and `Lex α`. Note that
 the `SMul` instances are already defined in `Mathlib/Algebra/Order/Group/Synonym.lean`.

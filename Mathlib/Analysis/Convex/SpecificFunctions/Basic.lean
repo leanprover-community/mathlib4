@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.Slope
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Collection of convex functions
 
@@ -15,11 +18,11 @@ In this file we prove that the following functions are convex or strictly convex
 
 * `strictConvexOn_exp` : The exponential function is strictly convex.
 * `strictConcaveOn_log_Ioi`, `strictConcaveOn_log_Iio`: `Real.log` is strictly concave on
-  $(0, +∞)$ and $(-∞, 0)$ respectively.
-* `convexOn_rpow`, `strictConvexOn_rpow` : For `p : ℝ`, `fun x ↦ x ^ p` is convex on $[0, +∞)$ when
+  $`(0, +∞)` and $`(-∞, 0)` respectively.
+* `convexOn_rpow`, `strictConvexOn_rpow` : For `p : ℝ`, `fun x ↦ x ^ p` is convex on $`[0, +∞)` when
   `1 ≤ p` and strictly convex when `1 < p`.
 
-The proofs in this file are deliberately elementary, *not* by appealing to the sign of the second
+The proofs in this file are deliberately elementary, _not_ by appealing to the sign of the second
 derivative. This is in order to keep this file early in the import hierarchy, since it is on the
 path to Hölder's and Minkowski's inequalities and after that to Lp spaces and most of measure
 theory.
@@ -174,7 +177,9 @@ theorem rpow_one_add_le_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   · simp [hs']
   exact (rpow_one_add_lt_one_add_mul_self hs hs' hp1 hp2).le
 
-/-- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$. -/
+/--
+For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $`[0, +∞)`.
+-/
 theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ici (0 : ℝ))
   intro x y z (hx : 0 ≤ x) (hz : 0 ≤ z) hxy hyz

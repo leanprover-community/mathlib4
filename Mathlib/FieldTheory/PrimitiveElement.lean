@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.SplittingField.Construction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primitive Element Theorem
 
@@ -15,10 +18,9 @@ In this file we prove the primitive element theorem.
 
 ## Main results
 
-- `Field.exists_primitive_element`: a finite separable extension `E / F` has a primitive element,
+* `Field.exists_primitive_element`: a finite separable extension `E / F` has a primitive element,
   i.e. there is an `α : E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
-
-- `Field.exists_primitive_element_iff_finite_intermediateField`: a finite extension `E / F` has a
+* `Field.exists_primitive_element_iff_finite_intermediateField`: a finite extension `E / F` has a
   primitive element if and only if there exist only finitely many intermediate fields between `E`
   and `F`.
 
@@ -32,8 +34,7 @@ requires more unfolding without much obvious benefit.
 ## Tags
 
 primitive element, separable field extension, separable extension, intermediate field, adjoin,
-exists_adjoin_simple_eq_top
-
+exists\_adjoin\_simple\_eq\_top
 -/
 
 @[expose] public section
@@ -48,7 +49,9 @@ section PrimitiveElementFinite
 
 variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
-/-! ### Primitive element theorem for finite fields -/
+/-!
+# Primitive element theorem for finite fields
+-/
 
 
 /-- **Primitive element theorem** assuming E is finite. -/
@@ -73,7 +76,9 @@ theorem exists_primitive_element_of_finite_bot [Finite F] [FiniteDimensional F E
 
 end PrimitiveElementFinite
 
-/-! ### Primitive element theorem for infinite fields -/
+/-!
+# Primitive element theorem for infinite fields
+-/
 
 
 section PrimitiveElementInf
@@ -218,10 +223,12 @@ theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
       exact ⟨γ, hγ.symm⟩
   · exact exists_primitive_element_of_finite_bot F E
 
-/-- Alternative phrasing of primitive element theorem:
+/--
+Alternative phrasing of primitive element theorem:
 a finite separable field extension has a basis `1, α, α^2, ..., α^n`.
 
-See also `exists_primitive_element`. -/
+See also `exists_primitive_element`.
+-/
 noncomputable def powerBasisOfFiniteOfSeparable : PowerBasis F E :=
   let α := (exists_primitive_element F E).choose
   let pb := adjoin.powerBasis (Algebra.IsSeparable.isIntegral F α)

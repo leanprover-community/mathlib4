@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Markov Kernels
 
@@ -18,6 +21,7 @@ measurable sets `s` of `β`, `a ↦ κ a s` is measurable.
 ## Main definitions
 
 Classes of kernels:
+
 * `ProbabilityTheory.Kernel α β`: kernels from `α` to `β`.
 * `ProbabilityTheory.IsMarkovKernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
   if for all `a : α`, `k a` is a probability measure.
@@ -35,7 +39,6 @@ Classes of kernels:
 
 * `ProbabilityTheory.Kernel.ext_fun`: if `∫⁻ b, f b ∂(κ a) = ∫⁻ b, f b ∂(η a)` for all measurable
   functions `f` and all `a`, then the two kernels `κ` and `η` are equal.
-
 -/
 
 @[expose] public section
@@ -53,14 +56,18 @@ namespace ProbabilityTheory
 `MeasureTheory.Measure.instMeasurableSpace`. A map `κ : α → MeasureTheory.Measure β` is measurable
 iff `∀ s : Set β, MeasurableSet s → Measurable (fun a ↦ κ a s)`. -/
 structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
-  /-- The underlying function of a kernel.
+  /--
+  The underlying function of a kernel.
 
   Do not use this function directly. Instead use the coercion coming from the `DFunLike`
-  instance. -/
+instance.
+  -/
   toFun : α → Measure β
-  /-- A kernel is a measurable map.
+  /--
+  A kernel is a measurable map.
 
-  Do not use this lemma directly. Use `Kernel.measurable` instead. -/
+  Do not use this lemma directly. Use `Kernel.measurable` instead.
+  -/
   measurable' : Measurable toFun
 
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/

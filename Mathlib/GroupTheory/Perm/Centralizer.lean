@@ -13,6 +13,9 @@ public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
 import Mathlib.GroupTheory.Rank
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
 
@@ -28,14 +31,12 @@ a purely combinatorial approach and compute the number of permutations
 with given cycle type but we resorted to a more algebraic approach
 based on the study of the centralizer of a permutation `g`.
 
-Given `g : Equiv.Perm α`, the conjugacy class of `g` is the orbit
-of `g` under the action `ConjAct (Equiv.Perm α)`, and we use the
-orbit-stabilizer theorem
-(`MulAction.card_orbit_mul_card_stabilizer_eq_card_group`) to reduce
-the computation to the computation of the centralizer of `g`, the
-subgroup of `Equiv.Perm α` consisting of all permutations which
-commute with `g`. It is accessed here as `MulAction.stabilizer
-(ConjAct (Equiv.Perm α)) g` and `Subgroup.centralizer_eq_comap_stabilizer`.
+Given `g : Equiv.Perm α`, the conjugacy class of `g` is the orbit of `g` under the action
+`ConjAct (Equiv.Perm α)`, and we use the orbit-stabilizer theorem
+(`MulAction.card_orbit_mul_card_stabilizer_eq_card_group`) to reduce the computation to the
+computation of the centralizer of `g`, the subgroup of `Equiv.Perm α` consisting of all permutations
+which commute with `g`. It is accessed here as `MulAction.stabilizer (ConjAct (Equiv.Perm α)) g` and
+`Subgroup.centralizer_eq_comap_stabilizer`.
 
 We compute this subgroup as follows.
 
@@ -43,14 +44,11 @@ We compute this subgroup as follows.
   on `Equiv.Perm α` stabilizes `g.cycleFactorsFinset`.
   That induces an action of `Subgroup.centralizer {g}` on
   `g.cycleFactorsFinset` which is defined as an instance.
-
 * This action defines a group morphism `Equiv.Perm.OnCycleFactors.toPermHom g`
   from `Subgroup.centralizer {g}` to `Equiv.Perm g.cycleFactorsFinset`.
-
 * `Equiv.Perm.OnCycleFactors.range_toPermHom'` is the subgroup of
   `Equiv.Perm g.cycleFactorsFinset` consisting of permutations that
   preserve the cardinality of the support.
-
 * `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'` shows that
   the range of `Equiv.Perm.OnCycleFactors.toPermHom g`
   is the subgroup `Equiv.Perm.OnCycleFactors.toPermHom_range' g`
@@ -63,11 +61,11 @@ This is shown by constructing a right inverse
 * `Equiv.Perm.OnCycleFactors.nat_card_range_toPermHom` computes the
   cardinality of `(Equiv.Perm.OnCycleFactors.toPermHom g).range`
   as a product of factorials.
-
 * `Equiv.Perm.OnCycleFactors.mem_ker_toPermHom_iff` proves that
   `k : Subgroup.centralizer {g}` belongs to the kernel of
   `Equiv.Perm.OnCycleFactors.toPermHom g` if and only if it commutes with
   each cycle of `g`.  This is equivalent to the conjunction of two properties:
+
   * `k` preserves the set of fixed points of `g`;
   * on each cycle `c`, `k` acts as a power of that cycle.
 
@@ -81,21 +79,16 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 
 * `Equiv.Perm.OnCycleFactors.sign_kerParam_apply_apply` computes the signature
   of the permutation induced given by `Equiv.Perm.OnCycleFactors.kerParam`.
-
 * `Equiv.Perm.nat_card_centralizer g` computes the cardinality
   of the centralizer of `g`.
-
 * `Equiv.Perm.card_isConj_mul_eq g` computes the cardinality
   of the conjugacy class of `g`.
-
 * We now can compute the cardinality of the set of permutations with given cycle type.
   The condition for this cardinality to be zero is given by
   `Equiv.Perm.card_of_cycleType_eq_zero_iff`
   which is itself derived from `Equiv.Perm.exists_with_cycleType_iff`.
-
 * `Equiv.Perm.card_of_cycleType_mul_eq m` and `Equiv.Perm.card_of_cycleType m`
   compute this cardinality.
-
 -/
 
 @[expose] public section
@@ -170,9 +163,11 @@ theorem toPermHom_apply (k : centralizer {g}) (c : g.cycleFactorsFinset) :
 theorem coe_toPermHom (k : centralizer {g}) (c : g.cycleFactorsFinset) :
     (toPermHom g k c : Perm α) = k * c * (k : Perm α)⁻¹ := rfl
 
-/-- The range of `Equiv.Perm.OnCycleFactors.toPermHom`.
+/--
+The range of `Equiv.Perm.OnCycleFactors.toPermHom`.
 
-The equality is proved by `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'`. -/
+The equality is proved by `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'`.
+-/
 def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
   one_mem' := by simp

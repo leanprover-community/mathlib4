@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.RingTheory.Bialgebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of bialgebras over a commutative ring
 
@@ -16,7 +19,6 @@ We introduce the bundled category `BialgCat` of bialgebras over a fixed commutat
 along with the forgetful functors to `CoalgCat` and `AlgCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section

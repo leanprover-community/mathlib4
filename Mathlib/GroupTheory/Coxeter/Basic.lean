@@ -11,41 +11,45 @@ public import Mathlib.Tactic.Ring
 
 import Mathlib.Tactic.NormNum.DivMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coxeter groups and Coxeter systems
 
 This file defines Coxeter groups and Coxeter systems.
 
-Let `B` be a (possibly infinite) type, and let $M = (M_{i,i'})_{i, i' \in B}$ be a matrix
-of natural numbers. Further assume that $M$ is a *Coxeter matrix* (`CoxeterMatrix`); that is, $M$ is
-symmetric and $M_{i,i'} = 1$ if and only if $i = i'$. The *Coxeter group* associated to $M$
+Let `B` be a (possibly infinite) type, and let $`M = (M_{i,i'})_{i, i' \in B}` be a matrix of
+natural numbers. Further assume that $`M` is a _Coxeter matrix_ (`CoxeterMatrix`); that is, $`M` is
+symmetric and $`M_{i,i'} = 1` if and only if $`i = i'`. The _Coxeter group_ associated to $`M`
 (`CoxeterMatrix.Group`) has the presentation
-$$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$
-The elements $s_i$ are called the *simple reflections* (`CoxeterMatrix.simple`) of the Coxeter
-group. Note that every simple reflection is an involution.
+$$`\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.` The elements
+$`s_i` are called the _simple reflections_ (`CoxeterMatrix.simple`) of the Coxeter group. Note that
+every simple reflection is an involution.
 
-A *Coxeter system* (`CoxeterSystem`) is a group $W$, together with an isomorphism between $W$ and
-the Coxeter group associated to some Coxeter matrix $M$. By abuse of language, we also say that $W$
-is a Coxeter group (`IsCoxeterGroup`), and we may speak of the simple reflections $s_i \in W$
+A _Coxeter system_ (`CoxeterSystem`) is a group $`W`, together with an isomorphism between $`W` and
+the Coxeter group associated to some Coxeter matrix $`M`. By abuse of language, we also say that
+$`W` is a Coxeter group (`IsCoxeterGroup`), and we may speak of the simple reflections $`s_i \in W`
 (`CoxeterSystem.simple`). We state all of our results about Coxeter groups in terms of Coxeter
 systems where possible.
 
-Let $W$ be a group equipped with a Coxeter system. For all monoids $G$ and all functions
-$f \colon B \to G$ whose values satisfy the Coxeter relations, we may lift $f$ to a multiplicative
-homomorphism $W \to G$ (`CoxeterSystem.lift`) in a unique way.
+Let $`W` be a group equipped with a Coxeter system. For all monoids $`G` and all functions
+$`f \colon B \to G` whose values satisfy the Coxeter relations, we may lift $`f` to a multiplicative
+homomorphism $`W \to G` (`CoxeterSystem.lift`) in a unique way.
 
-A *word* is a sequence of elements of $B$. The word $(i_1, \ldots, i_\ell)$ has a corresponding
-product $s_{i_1} \cdots s_{i_\ell} \in W$ (`CoxeterSystem.wordProd`). Every element of $W$ is the
+A _word_ is a sequence of elements of $`B`. The word $`(i_1, \ldots, i_\ell)` has a corresponding
+product $`s_{i_1} \cdots s_{i_\ell} \in W` (`CoxeterSystem.wordProd`). Every element of $`W` is the
 product of some word (`CoxeterSystem.wordProd_surjective`). The words that alternate between two
-elements of $B$ (`CoxeterSystem.alternatingWord`) are particularly important.
+elements of $`B` (`CoxeterSystem.alternatingWord`) are particularly important.
 
 ## Implementation details
 
-Much of the literature on Coxeter groups conflates the set $S = \{s_i : i \in B\} \subseteq W$ of
-simple reflections with the set $B$ that indexes the simple reflections. This is usually permissible
-because the simple reflections $s_i$ of any Coxeter group are all distinct (a nontrivial fact that
-we do not prove in this file). In contrast, we try not to refer to the set $S$ of simple
-reflections unless necessary; instead, we state our results in terms of $B$ wherever possible.
+Much of the literature on Coxeter groups conflates the set $`S = \{s_i : i \in B\} \subseteq W` of
+simple reflections with the set $`B` that indexes the simple reflections. This is usually
+permissible because the simple reflections $`s_i` of any Coxeter group are all distinct (a
+nontrivial fact that we do not prove in this file). In contrast, we try not to refer to the set $`S`
+of simple reflections unless necessary; instead, we state our results in terms of $`B` wherever
+possible.
 
 ## Main definitions
 
@@ -61,51 +65,57 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] chapter IV
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 4--6_\]\[bourbaki1968\] chapter IV
   pages 4--5, 13--15
-
-* [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
+* [J. Baez, _Coxeter and Dynkin Diagrams_](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
 
 ## TODO
 
 * The simple reflections of a Coxeter system are distinct.
 * Introduce some ways to actually construct some Coxeter groups. For example, given a Coxeter matrix
-  $M : B \times B \to \mathbb{N}$, a real vector space $V$, a basis $\{\alpha_i : i \in B\}$
-  and a bilinear form $\langle \cdot, \cdot \rangle \colon V \times V \to \mathbb{R}$ satisfying
-  $$\langle \alpha_i, \alpha_{i'}\rangle = - \cos(\pi / M_{i,i'}),$$ one can form the subgroup of
-  $GL(V)$ generated by the reflections in the $\alpha_i$, and it is a Coxeter group. We can use this
-  to combinatorially describe the Coxeter groups of type $A$, $B$, $D$, and $I$.
+  $`M : B \times B \to \mathbb{N}`, a real vector space $`V`, a basis $`\{\alpha_i : i \in B\}` and
+  a bilinear form $`\langle \cdot, \cdot \rangle \colon V \times V \to \mathbb{R}` satisfying
+  $$`\langle \alpha_i, \alpha_{i'}\rangle = - \cos(\pi / M_{i,i'}),` one can form the subgroup of
+  $`GL(V)` generated by the reflections in the $`\alpha_i`, and it is a Coxeter group. We can use
+  this to combinatorially describe the Coxeter groups of type $`A`, $`B`, $`D`, and $`I`.
 * State and prove Matsumoto's theorem.
 * Classify the finite Coxeter groups.
 
 ## Tags
 
 coxeter system, coxeter group
-
 -/
 
 @[expose] public section
 
 open Function Set List
 
-/-! ### Coxeter groups -/
+/-!
+# Coxeter groups
+-/
 
 namespace CoxeterMatrix
 
 variable {B B' : Type*} (M : CoxeterMatrix B) (e : B ≃ B')
 
-/-- The Coxeter relation associated to a Coxeter matrix $M$ and two indices $i, i' \in B$.
-That is, the relation $(s_i s_{i'})^{M_{i, i'}}$, considered as an element of the free group
-on $\{s_i\}_{i \in B}$.
-If $M_{i, i'} = 0$, then this is the identity, indicating that there is no relation between
-$s_i$ and $s_{i'}$. -/
+/--
+The Coxeter relation associated to a Coxeter matrix $`M` and two indices $`i, i' \in B`.
+That is, the relation $`(s_i s_{i'})^{M_{i, i'}}`, considered as an element of the free group
+on $`\{s_i\}_{i \in B}`.
+If $`M_{i, i'} = 0`, then this is the identity, indicating that there is no relation between
+$`s_i` and $`s_{i'}`.
+-/
 def relation (i i' : B) : FreeGroup B := (FreeGroup.of i * FreeGroup.of i') ^ M i i'
 
-/-- The set of all Coxeter relations associated to the Coxeter matrix $M$. -/
+/--
+The set of all Coxeter relations associated to the Coxeter matrix $`M`.
+-/
 def relationsSet : Set (FreeGroup B) := range <| uncurry M.relation
 
-/-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
-$$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
+/--
+The Coxeter group associated to a Coxeter matrix $`M`; that is, the group
+$$`\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.`
+-/
 protected def Group : Type _ := PresentedGroup M.relationsSet
 deriving Group
 
@@ -143,7 +153,9 @@ theorem reindexGroupEquiv_symm_apply_simple (i : B) :
 
 end CoxeterMatrix
 
-/-! ### Coxeter systems -/
+/-!
+# Coxeter systems
+-/
 
 section
 
@@ -182,7 +194,9 @@ protected def reindex (e : B ≃ B') : CoxeterSystem (M.reindex e) W :=
 @[simps]
 protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEquiv⟩
 
-/-! ### Simple reflections -/
+/-!
+# Simple reflections
+-/
 
 /-- The simple reflection of `W` at the index `i`. -/
 def simple (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
@@ -248,7 +262,9 @@ theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = �
     simp_rw [inv_range, inv_simple, union_self]
   rw [this, ← Subgroup.closure_toSubmonoid, subgroup_closure_range_simple, Subgroup.top_toSubmonoid]
 
-/-! ### Induction principles for Coxeter systems -/
+/-!
+# Induction principles for Coxeter systems
+-/
 
 /-- If `p : W → Prop` holds for all simple reflections, it holds for the identity, and it is
 preserved under multiplication, then it holds for all elements of `W`. -/
@@ -284,7 +300,9 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
     rw [Set.mem_range] at mi
     exact mi.choose_spec ▸ mul_simple_right _ _ ih
 
-/-! ### Homomorphisms from a Coxeter group -/
+/-!
+# Homomorphisms from a Coxeter group
+-/
 
 /-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
 theorem ext_simple {G : Type*} [MulOneClass G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
@@ -362,7 +380,9 @@ theorem simple_determines_coxeterSystem :
   nth_rw 2 [h]
   simp [simple]
 
-/-! ### Words -/
+/-!
+# Words
+-/
 
 /-- The product of the simple reflections of `W` corresponding to the indices in `ω`. -/
 def wordProd (ω : List B) : W := prod (map cs.simple ω)

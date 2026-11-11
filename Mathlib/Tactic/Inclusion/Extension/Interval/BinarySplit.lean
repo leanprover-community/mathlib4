@@ -7,6 +7,9 @@ module
 
 public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary splitting of intervals
 

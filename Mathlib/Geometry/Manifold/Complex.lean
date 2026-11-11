@@ -11,7 +11,11 @@ public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.Notation
 
-/-! # Holomorphic functions on complex manifolds
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Holomorphic functions on complex manifolds
 
 Thanks to the rigidity of complex-differentiability compared to real-differentiability, there are
 many results about complex manifolds with no analogue for manifolds over a general normed field. For
@@ -28,6 +32,7 @@ now, this file contains just two (closely related) such results:
 
 There is a whole theory to develop here.  Maybe a next step would be to develop a theory of
 holomorphic vector/line bundles, including:
+
 * the finite-dimensionality of the space of sections of a holomorphic vector bundle
 * Siegel's theorem: for any `n + 1` formal ratios `g 0 / h 0`, `g 1 / h 1`, .... `g n / h n` of
   sections of a fixed line bundle `L` over a complex `n`-manifold, there exists a polynomial
@@ -36,7 +41,6 @@ holomorphic vector/line bundles, including:
 Another direction would be to develop the relationship with sheaf theory, building the sheaves of
 holomorphic and meromorphic functions on a complex manifold and proving algebraic results about the
 stalks, such as the Weierstrass preparation theorem.
-
 -/
 
 public section
@@ -77,7 +81,7 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
   · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using! hc
 
 /-!
-### Functions holomorphic on a set
+# Functions holomorphic on a set
 -/
 
 namespace MDifferentiableOn
@@ -105,11 +109,13 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
   have hUVW : U ⊆ V ∪ W := fun x hx => (eq_or_ne ‖f x‖ ‖f c‖).imp (.intro hx) (.intro hx)
   exact hc.subset_left_of_subset_union hVo hWo hdVW hUVW hVne
 
-/-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
+/--
+*Maximum modulus principle* on a connected set. Let `U` be a (pre)connected open set in a
 complex normed space.  Let `f : E → F` be a function that is complex differentiable on `U`. Suppose
 that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `f x = f c` for all `x ∈ U`.
 
-TODO: change assumption from `IsMaxOn` to `IsLocalMax`. -/
+TODO: change assumption from `IsMaxOn` to `IsLocalMax`.
+-/
 theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M → F} {U : Set M}
     {c : M} (hd : MDiff[U] f) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const M (f c)) U := fun x hx =>
@@ -138,7 +144,7 @@ theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a
 end MDifferentiableOn
 
 /-!
-### Functions holomorphic on the whole manifold
+# Functions holomorphic on the whole manifold
 
 Lemmas in this section were generalized from `𝓘(ℂ, E)` to an unspecified boundaryless
 model so that it works, e.g., on a product of two manifolds without a boundary. This can break

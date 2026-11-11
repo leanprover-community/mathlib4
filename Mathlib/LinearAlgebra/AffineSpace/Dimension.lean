@@ -8,14 +8,17 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## (Finite) Dimension of an affine subspace
+# (Finite) Dimension of an affine subspace
 
 This file defines the dimension of an affine subspace to be `⊥` for the empty subspace,
 and otherwise equal to the `Module.rank` of the direction of the subspace. The finite dimension
 is similarly defined using `Module.finrank`.
 
-## Main definitions
+# Main definitions
 
 * `AffineSubspace.dim`: Dimension expressed as `WithBot Cardinal`
 * `AffineSubspace.finDim`: Dimension expressed as `WithBot ℕ` with a junk value of 0 for infinite

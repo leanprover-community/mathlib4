@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Serre classes
 
@@ -23,8 +26,7 @@ and is closed under subobjects, quotients and extensions.
 
 ## References
 
-* [Jean-Pierre Serre, *Groupes d'homotopie et classes de groupes abéliens*][serre1958]
-
+* ‍\[Jean-Pierre Serre, _Groupes d'homotopie et classes de groupes abéliens_\]\[serre1958\]
 -/
 
 public section

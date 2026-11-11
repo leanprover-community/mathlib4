@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Norm.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norms on free modules over principal ideal domains
 -/
@@ -55,8 +58,10 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
     FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) :=
   PowerBasis.finite <| AdjoinRoot.powerBasis <| I.smithCoeffs_ne_zero b hI i
 
-/-- For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $S/\langle f \rangle$ as an
-`F`-vector space is the degree of the norm of `f` relative to `F[X]`. -/
+/--
+For a nonzero element `f` in a `F[X]`-module `S`, the dimension of $`S/\langle f \rangle` as an
+`F`-vector space is the degree of the norm of `f` relative to `F[X]`.
+-/
 theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F[X] S]
     (b : Basis ι F[X] S) {f : S} (hf : f ≠ 0) :
     Module.finrank F (S ⧸ span ({f} : Set S)) = (Algebra.norm F[X] f).natDegree := by

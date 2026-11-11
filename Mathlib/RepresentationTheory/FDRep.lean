@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided  -- shake: keep (`ex
 public import Mathlib.CategoryTheory.Preadditive.Schur
 public import Mathlib.RepresentationTheory.Rep.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.
 
@@ -38,11 +41,11 @@ The main case of interest is when `R = k` is a field and `G` is a group,
 and this is reflected in the documentation.
 
 ## TODO
+
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
 * `FdRep k G` has all finite colimits.
 * `FdRep k G` is abelian.
 * `FdRep k G ≌ FGModuleCat k[G]`.
-
 -/
 
 @[expose] public section
@@ -56,10 +59,12 @@ open CategoryTheory
 open CategoryTheory.Limits
 
 
-/-- The category of finitely generated `R`-linear representations of a monoid `G`.
+/--
+The category of finitely generated `R`-linear representations of a monoid `G`.
 
 Note that `R` can be any ring,
-but the main case of interest is when `R = k` is a field and `G` is a group. -/
+but the main case of interest is when `R = k` is a field and `G` is a group.
+-/
 abbrev FDRep (R : Type u) (G : Type v) [Ring R] [Monoid G] :=
   Action (FGModuleCat.{u} R) G
 

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesProduct
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 public import Mathlib.CategoryTheory.Presentable.Dense
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ind and pro-properties
 
@@ -17,17 +20,17 @@ Given an object property `P`, we define an object property `ind P` that is satis
 
 ## Main definitions
 
-- `CategoryTheory.ObjectProperty.ind`: `X` satisfies `ind P` if `X` is a filtered colimit of `Xᵢ`
+* `CategoryTheory.ObjectProperty.ind`: `X` satisfies `ind P` if `X` is a filtered colimit of `Xᵢ`
   for `Xᵢ` in `P`.
 
 ## Main results
 
-- `CategoryTheory.ObjectProperty.ind_ind`: If `P` implies finitely presentable, then
+* `CategoryTheory.ObjectProperty.ind_ind`: If `P` implies finitely presentable, then
   `P.ind.ind = P.ind`.
 
 ## TODOs:
 
-- Dualise to obtain `CategoryTheory.ObjectProperty.pro`.
+* Dualise to obtain `CategoryTheory.ObjectProperty.pro`.
 -/
 
 @[expose] public section

@@ -9,6 +9,10 @@ public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Tactic.Simps
 public import Mathlib.Logic.Equiv.Defs
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Associativity of products
 
@@ -56,7 +60,8 @@ partial def mkProdTree (e : Expr) : MetaM ProdTree :=
       let some u := (← whnfD <| ← inferType X).type? | throwError "Not a type{indentExpr X}"
       return .type X u
 
-/-- Given `P : ProdTree` representing an iterated product and `e : Expr` which
+/--
+Given `P : ProdTree` representing an iterated product and `e : Expr` which
 should correspond to a term of the iterated product, this will return
 a list, whose items correspond to the leaves of `P` (i.e. the types appearing in the product),
 where each item is the appropriate composition of `Prod.fst` and `Prod.snd` applied to `e`
@@ -138,6 +143,8 @@ def elabProdAssoc : TermElab := fun stx expectedType? => do
     mkProdEquiv a b
   | _ => throwUnsupportedSyntax
 
+
+set_option doc.verso false
 /--
 `prod_assoc%` elaborates to the "obvious" equivalence between iterated products of types,
 regardless of how the products are parenthesized.
@@ -153,4 +160,6 @@ example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ :=
 -/
 macro "prod_assoc%" : term => `((prod_assoc_internal% : _ ≃ _))
 
+
+set_option doc.verso true
 end Lean.Expr

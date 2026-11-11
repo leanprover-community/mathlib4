@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.Ring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presheaves of modules over a presheaf of rings.
 
@@ -16,7 +19,6 @@ An object `M : PresheafOfModules R` consists of a family of modules
 `M.obj X : ModuleCat (R.obj X)` for all `X : Cᵒᵖ`, together with the data, for all `f : X ⟶ Y`,
 of a functorial linear map `M.map f` from `M.obj X` to the restriction
 of scalars of `M.obj Y` via `R.map f`.
-
 
 ## Future work
 
@@ -381,10 +383,9 @@ section module_over_initial
 variable (X : Cᵒᵖ) (hX : Limits.IsInitial X)
 
 /-!
-## `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)` when `X` is initial
+# `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)` when `X` is initial
 
 When `X` is initial, we have `Module (R.obj X) (M.obj c)` for any `c : Cᵒᵖ`.
-
 -/
 
 section

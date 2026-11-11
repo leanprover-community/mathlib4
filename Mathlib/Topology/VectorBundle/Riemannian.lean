@@ -9,7 +9,11 @@ public import Mathlib.Analysis.InnerProductSpace.LinearMap
 public import Mathlib.Topology.VectorBundle.Constructions
 public import Mathlib.Topology.VectorBundle.Hom
 
-/-! # Riemannian vector bundles
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Riemannian vector bundles
 
 Given a real vector bundle over a topological space whose fibers are all endowed with an inner
 product, we say that this bundle is Riemannian if the inner product depends continuously on the
@@ -35,6 +39,7 @@ the tangent bundle. As instances related to Riemannian bundles are both costly a
 they are scoped to the `Bundle` namespace.
 
 ## Keywords
+
 Vector bundle, Riemannian metric
 -/
 
@@ -53,10 +58,12 @@ variable
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
 variable (F E) in
-/-- Consider a real vector bundle in which each fiber is endowed with an inner product.
-We say that the bundle is *Riemannian* if the inner product depends continuously on the base point.
+/--
+Consider a real vector bundle in which each fiber is endowed with an inner product.
+We say that the bundle is _Riemannian_ if the inner product depends continuously on the base point.
 This assumption is spelled `IsContinuousRiemannianBundle F E` where `F` is the model fiber,
-and `E : B → Type*` is the bundle. -/
+and `E : B → Type*` is the bundle.
+-/
 class IsContinuousRiemannianBundle : Prop where
   /-- There exists a bilinear form, depending continuously on the basepoint and defining the
   inner product in the fibers. This is expressed as an existence statement so that it is Prop-valued
@@ -360,13 +367,15 @@ variable
 open Bornology
 
 variable (E) in
-/-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
+/--
+A family of inner product space structures on the fibers of a fiber bundle, defining the same
 topology as the already existing one. This family is not assumed to be continuous or smooth: to
 guarantee continuity, resp. smoothness, of the inner product as a function of the base point,
 use `ContinuousRiemannianMetric` or `ContMDiffRiemannianMetric`.
 
 This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
-product space structure on the fibers without creating diamonds. -/
+product space structure on the fibers without creating diamonds.
+-/
 structure RiemannianMetric where
   /-- The inner product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
@@ -377,12 +386,14 @@ structure RiemannianMetric where
   continuousAt (b : B) : ContinuousAt (fun (v : E b) ↦ inner b v v) 0
   isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
 
-/-- `Core` structure associated to a family of inner products on the fibers of a fiber bundle. This
+/--
+`Core` structure associated to a family of inner products on the fibers of a fiber bundle. This
 is an auxiliary construction to endow the fibers with an inner product space structure without
 creating diamonds.
 
 Warning: Do not use this `Core` structure if the space you are interested in already has a norm
-instance defined on it, otherwise this will create a second non-defeq norm instance! -/
+instance defined on it, otherwise this will create a second non-defeq norm instance!
+-/
 @[reducible] noncomputable def RiemannianMetric.toCore (g : RiemannianMetric E) (b : B) :
     InnerProductSpace.Core ℝ (E b) where
   inner v w := g.inner b v w
@@ -396,8 +407,10 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
   definite v h := by contrapose! h; exact (g.pos b v h).ne'
 
 variable (E) in
-/-- Class used to create an inner product structure space on the fibers of a fiber bundle, without
+/--
+Class used to create an inner product structure space on the fibers of a fiber bundle, without
 creating diamonds. Use as follows:
+
 * `instance : RiemannianBundle E := ⟨g⟩` where `g : RiemannianMetric E` registers the inner product
   space on the fibers;
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
@@ -409,8 +422,9 @@ creating diamonds. Use as follows:
   `[IsContinuousRiemannianBundle]` instances.
 
 Note that this is only useful when there is a preexisting topology in the fibers of a vector
-bundle, like for the tangent bundle. This should *not* be used to express theorems for general
+bundle, like for the tangent bundle. This should _not_ be used to express theorems for general
 bundles with a metric. Instead, use
+
 ```
 variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   [∀ x, NormedAddCommGroup (E x)] [∀ x, InnerProductSpace ℝ (E x)]
@@ -421,13 +435,15 @@ class RiemannianBundle where
   /-- The family of inner products on the fibers -/
   g : RiemannianMetric E
 
-/-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
+/--
+A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
 a `NormedAddCommGroup` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
 As this instance is quite specific and very costly because of higher-order unification, we
-also scope it to the `Bundle` namespace. -/
+also scope it to the `Bundle` namespace.
+-/
 noncomputable scoped instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
     [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
@@ -443,13 +459,15 @@ noncomputable scoped instance (priority := 80)
     NormedAddCommGroup (E b) := fast_instance%
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
-/-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
+/--
+A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
 an `InnerProductSpace ℝ` structure.
 
 The normal priority for an instance which always applies like this one should be 100.
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
 As this instance is quite specific and very costly because of higher-order unification, we
-also scope it to the `Bundle` namespace. -/
+also scope it to the `Bundle` namespace.
+-/
 noncomputable scoped instance (priority := 80)
     {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
     [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
@@ -459,12 +477,14 @@ noncomputable scoped instance (priority := 80)
   .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 variable (F E) in
-/-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
+/--
+A family of inner product space structures on the fibers of a fiber bundle, defining the same
 topology as the already existing one, and varying continuously with the base point. See also
 `ContMDiffRiemannianMetric` for a smooth version.
 
 This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
-product space structure on the fibers without creating diamonds. -/
+product space structure on the fibers without creating diamonds.
+-/
 structure ContinuousRiemannianMetric where
   /-- The inner product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ

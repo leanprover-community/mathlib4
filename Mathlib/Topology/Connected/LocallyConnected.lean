@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Topology.Connected.Clopen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally connected topological spaces
 
-A topological space is **locally connected** if each neighborhood filter admits a basis
-of connected *open* sets. Local connectivity is equivalent to each point having a basis
+A topological space is *locally connected* if each neighborhood filter admits a basis
+of connected _open_ sets. Local connectivity is equivalent to each point having a basis
 of connected (not necessarily open) sets --- but in a non-trivial way, so we choose this definition
 and prove the equivalence later in `locallyConnectedSpace_iff_connected_basis`.
 -/
@@ -27,10 +30,12 @@ variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [Topologica
 
 section LocallyConnectedSpace
 
-/-- A topological space is **locally connected** if each neighborhood filter admits a basis
-of connected *open* sets. Note that it is equivalent to each point having a basis of connected
+/--
+A topological space is *locally connected* if each neighborhood filter admits a basis
+of connected _open_ sets. Note that it is equivalent to each point having a basis of connected
 (not necessarily open) sets but in a non-trivial way, so we choose this definition and prove the
-equivalence later in `locallyConnectedSpace_iff_connected_basis`. -/
+equivalence later in `locallyConnectedSpace_iff_connected_basis`.
+-/
 class LocallyConnectedSpace (α : Type*) [TopologicalSpace α] : Prop where
   /-- Open connected neighborhoods form a basis of the neighborhoods filter. -/
   open_connected_basis : ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id

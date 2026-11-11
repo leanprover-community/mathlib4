@@ -9,11 +9,15 @@ public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 
 import Mathlib.Tactic.Linarith
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Five-wheel like graphs
 
 This file defines an `IsFiveWheelLike` structure in a graph, and describes properties of these
 structures as well as graphs which avoid this structure. These have two key uses:
+
 * We use them to prove that a maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is
   complete-multipartite: `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree`.
 * They play a key role in Brandt's proof of the Andrásfai-Erdős-Sós theorem, which is where they
@@ -54,12 +58,12 @@ while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all o
 * `SimpleGraph.IsFiveWheelLike`: predicate for `v w₁ w₂ s t` to form a 5-wheel-like subgraph of
   `G` with `r`-sets `s` and `t`, and vertices `v w₁ w₂` forming an `IsPathGraph3Compl` and
   `#(s ∩ t) = k`.
-
 * `SimpleGraph.FiveWheelLikeFree`: predicate for `G` to have no `IsFiveWheelLike r k` subgraph.
 
 ## Implementation notes
+
 The definitions of `IsFiveWheelLike` and `IsFiveWheelLikeFree` in this file have `r` shifted by two
-compared to the definitions in Brandt **On the structure of graphs with bounded clique number**
+compared to the definitions in Brandt *On the structure of graphs with bounded clique number*
 
 The definition of `IsFiveWheelLike` does not contain the facts that `#s = r` and `#t = r` but we
 deduce these later as `card_left` and `card_right`.
@@ -75,12 +79,11 @@ We will need to refer to this consistently and choose the following formulation:
 
 ## References
 
-* [B. Andrásfai, P Erdős, V. T. Sós
-  **On the connection between chromatic number, maximal clique, and minimal degree of a graph**
-  https://doi.org/10.1016/0012-365X(74)90133-2][andrasfaiErdosSos1974]
-
-* [S. Brandt **On the structure of graphs with bounded clique number**
-  https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
+* ‍\[B. Andrásfai, P Erdős, V. T. Sós
+  *On the connection between chromatic number, maximal clique, and minimal degree of a graph*
+  https://doi.org/10.1016/0012-365X(74)90133-2\]\[andrasfaiErdosSos1974\]
+* ‍\[S. Brandt *On the structure of graphs with bounded clique number*
+  https://doi.org/10.1007/s00493-003-0042-z\]\[brandt2003\]
 -/
 
 @[expose] public section
@@ -411,7 +414,8 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
 
 end IsFiveWheelLike
 
-/-- **Andrásfai-Erdős-Sós** theorem
+/--
+*Andrásfai-Erdős-Sós* theorem
 
 If `G` is a `Kᵣ₊₁`-free graph with `n` vertices and `(3 * r - 4) * n / (3 * r - 1) < G.minDegree`
 then `G` is `r + 1`-colorable, e.g. if `G` is `K₃`-free and `2 * n / 5 < G.minDegree` then `G`

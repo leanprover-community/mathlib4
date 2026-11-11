@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits in the category of types.
 
 We show that the category of types has all limits, by providing the usual concrete models.
-
 -/
 
 @[expose] public section
@@ -80,7 +82,8 @@ end limit_characterization
 
 variable {J : Type v} [Category.{w} J]
 
-/-! We now provide two distinct implementations in the category of types.
+/-!
+We now provide two distinct implementations in the category of types.
 
 The first, in the `CategoryTheory.Limits.Types.Small` namespace,
 assumes `Small.{u} J` and constructs `J`-indexed limits in `Type u`.
@@ -182,7 +185,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J (Type u) where
 /--
 The category of types has all limits.
 
-More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small limits. -/
+More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small limits.
+-/
 @[stacks 002U]
 instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] :
     HasLimitsOfSize.{w, v} (Type u) where

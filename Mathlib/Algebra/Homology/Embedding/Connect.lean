@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connecting a chain complex and a cochain complex
 
@@ -37,7 +40,6 @@ Now say `h : ConnectData K L`.
 ## TODO
 
 * Computation of `h.cochainComplex.homology k` when `k = 0` or `k = -1`.
-
 -/
 
 @[expose] public section

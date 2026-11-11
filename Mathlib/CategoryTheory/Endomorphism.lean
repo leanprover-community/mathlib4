@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.CategoryTheory.Groupoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Endomorphisms
 
@@ -18,7 +21,6 @@ Definition and basic properties of endomorphisms and automorphisms of an object 
 For each `X : C`, we define a monoid `CategoryTheory.End X` which is a `1`-field structure
 that is equipped with a bijection with `X ⟶ X`. Similarly, we define the
 group `CategoryTheory.Aut X`, which is equipped with a bijection with `X ≅ X`.
-
 -/
 
 @[expose] public section
@@ -114,7 +116,8 @@ theorem isUnit_iff_isIso {C : Type u} [Category.{v} C] {X : C} (f : End X) :
 
 variable {C : Type u} [Category.{v} C] (X : C)
 
-/-- Automorphisms of an object in a category.
+/--
+Automorphisms of an object in a category.
 
 The order of arguments in multiplication agrees with
 `Function.comp`, not with `CategoryTheory.CategoryStruct.comp`.

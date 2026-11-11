@@ -13,6 +13,9 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of lists
 -/
@@ -59,7 +62,9 @@ theorem setOfPred_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = inser
 
 @[deprecated (since := "2026-07-13")] alias set_of_mem_cons := setOfPred_mem_cons
 
-/-! ### mem -/
+/-!
+# mem
+-/
 
 theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
     {a b : α} {l : List α} (h : a ∈ b :: l) : a = b ∨ a ≠ b ∧ a ∈ l := by
@@ -83,7 +88,9 @@ theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
     a ∈ map f l ↔ f a ∈ l := by rw [mem_map, hf.exists_mem_and_apply_eq_iff]
 
-/-! ### length -/
+/-!
+# length
+-/
 
 alias ⟨_, length_pos_of_ne_nil⟩ := length_pos_iff
 
@@ -127,7 +134,9 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
 theorem length_eq_four {l : List α} : l.length = 4 ↔ ∃ a b c d, l = [a, b, c, d] :=
   ⟨fun _ => let [a, b, c, d] := l; ⟨a, b, c, d, rfl⟩, fun ⟨_, _, _, _, e⟩ => e ▸ rfl⟩
 
-/-! ### set-theoretic notation of lists -/
+/-!
+# set-theoretic notation of lists
+-/
 
 instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 
@@ -151,7 +160,9 @@ theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List 
   rw [insert_neg, singleton_eq]
   rwa [singleton_eq, mem_singleton]
 
-/-! ### bounded quantifiers over lists -/
+/-!
+# bounded quantifiers over lists
+-/
 
 theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α} (h : ∀ x ∈ a :: l, p x) :
     ∀ x ∈ l, p x := (forall_mem_cons.1 h).2
@@ -169,7 +180,9 @@ theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : 
 theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
     (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x := by grind
 
-/-! ### list subset -/
+/-!
+# list subset
+-/
 
 attribute [refl] List.Subset.refl
 
@@ -193,7 +206,9 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
 
 lemma notMem_of_subset (h : l ⊆ l₁) {a : α} (ha : a ∉ l₁) : a ∉ l := (ha <| h ·)
 
-/-! ### append -/
+/-!
+# append
+-/
 
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
   rfl
@@ -204,7 +219,9 @@ theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
   fun _ _ ↦ append_cancel_right
 
-/-! ### replicate -/
+/-!
+# replicate
+-/
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
@@ -249,19 +266,27 @@ theorem getLast?_flatten_replicate {n : ℕ} (h : n ≠ 0) (l : List α) :
   rw [← List.head?_reverse, ← List.head?_reverse, List.reverse_flatten, List.map_replicate,
   List.reverse_replicate, head?_flatten_replicate h]
 
-/-! ### pure -/
+/-!
+# pure
+-/
 
 theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
 
-/-! ### bind -/
+/-!
+# bind
+-/
 
 @[simp]
 theorem bind_eq_flatMap {α β} (f : α → List β) (l : List α) : l >>= f = l.flatMap f :=
   rfl
 
-/-! ### concat -/
+/-!
+# concat
+-/
 
-/-! ### reverse -/
+/-!
+# reverse
+-/
 
 theorem reverse_cons' (a : α) (l : List α) : reverse (a :: l) = concat (reverse l) a := by
   simp only [reverse_cons, concat_eq_append]
@@ -299,7 +324,9 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
   mp hl := hl.trans l₂.reverse_perm
   mpr hl := hl.trans l₂.reverse_perm.symm
 
-/-! ### getLast -/
+/-!
+# getLast
+-/
 
 attribute [simp] getLast_cons
 
@@ -333,7 +360,9 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
   simp only [replicate_succ']
   exact getLast_append_singleton _
 
-/-! ### getLast? -/
+/-!
+# getLast?
+-/
 
 theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? → ∃ h, x = getLast l h
   | [], x, hx
@@ -390,7 +419,9 @@ theorem mem_dropLast_of_mem_of_ne_getLast? {a : α} (ha : a ∈ l) (ha' : a ≠ 
     a ∈ l.dropLast :=
   mem_dropLast_of_mem_of_ne_getLast ha <| by grind
 
-/-! ### head(!?) and tail -/
+/-!
+# head(!?) and tail
+-/
 
 @[simp]
 theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
@@ -517,7 +548,9 @@ theorem eq_of_tail_eq_of_dropLast_eq (h : 1 < l₁.length) (ht : l₁.tail = l�
   have hnil : l₁.dropLast ≠ [] ∧ l₂.dropLast ≠ [] := by grind [dropLast_eq_nil_iff]
   grind [cons_head_tail, head_dropLast hnil.1, head_dropLast hnil.2]
 
-/-! ### sublists -/
+/-!
+# sublists
+-/
 
 attribute [refl] List.Sublist.refl
 
@@ -542,7 +575,9 @@ theorem Sublist.of_cons_of_ne {a b} (h₁ : a ≠ b) (h₂ : a :: l₁ <+ b :: l
   match h₁, h₂ with
   | _, .cons _ h => h
 
-/-! ### indexOf -/
+/-!
+# indexOf
+-/
 
 section IndexOf
 
@@ -629,7 +664,9 @@ theorem idxOf_tail_of_head_ne {a : α} (hl : l ≠ []) (ha : l.head hl ≠ a) :
 
 end IndexOf
 
-/-! ### nth element -/
+/-!
+# nth element
+-/
 
 section deprecated
 
@@ -696,7 +733,9 @@ theorem getElem_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (l.set i a)[j] = l[j]'(by simpa using hj) := by
   simp [h]
 
-/-! ### map -/
+/-!
+# map
+-/
 
 -- `List.map_const` (the version with `Function.const` instead of a lambda) is already tagged
 -- `simp` in Core
@@ -800,7 +839,9 @@ theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (co
 lemma eq_nil_or_concat' (l : List α) : l = [] ∨ ∃ L b, l = L ++ [b] := by
   simpa using l.eq_nil_or_concat
 
-/-! ### foldl, foldr -/
+/-!
+# foldl, foldr
+-/
 
 theorem foldl_ext (f g : α → β → α) (a : α) {l : List β} (H : ∀ a : α, ∀ b ∈ l, f a b = g a b) :
     foldl f a l = foldl g a l := by
@@ -883,7 +924,9 @@ lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
 
-/-! ### foldlM, foldrM, mapM -/
+/-!
+# foldlM, foldrM, mapM
+-/
 
 section FoldlMFoldrM
 
@@ -905,14 +948,18 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
 
 end FoldlMFoldrM
 
-/-! ### filter -/
+/-!
+# filter
+-/
 
 theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
     l.length = (l.filter f).length + (l.filter (!f ·)).length := by
   simp_rw [← List.countP_eq_length_filter, l.length_eq_countP_add_countP f, Bool.not_eq_true,
     Bool.decide_eq_false]
 
-/-! ### filterMap -/
+/-!
+# filterMap
+-/
 
 theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
     l.filterMap f = l.flatMap fun a ↦ (f a).toList := by
@@ -940,7 +987,9 @@ lemma filterMap_none (l : List α) :
     l.filterMap (fun _ ↦ @Option.none β) = [] := by
   induction l <;> simp [*]
 
-/-! ### filter -/
+/-!
+# filter
+-/
 
 section Filter
 
@@ -1007,7 +1056,9 @@ theorem filter_false (l : List α) :
 
 end Filter
 
-/-! ### eraseP -/
+/-!
+# eraseP
+-/
 
 section eraseP
 
@@ -1019,7 +1070,9 @@ theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
 
 end eraseP
 
-/-! ### erase -/
+/-!
+# erase
+-/
 
 section Erase
 
@@ -1050,7 +1103,9 @@ theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
 
 end Erase
 
-/-! ### diff -/
+/-!
+# diff
+-/
 
 section Diff
 
@@ -1077,7 +1132,9 @@ theorem choose_property (hp : ∃ a, a ∈ l ∧ p a) : p (choose p l hp) :=
 
 end Choose
 
-/-! ### Forall -/
+/-!
+# Forall
+-/
 
 section Forall
 
@@ -1114,7 +1171,9 @@ instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _
 
 end Forall
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 theorem get_attach (l : List α) (i) :
     (l.attach.get i).1 = l.get ⟨i, length_attach (l := l) ▸ i.2⟩ := by simp

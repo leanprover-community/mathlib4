@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Congruence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideal quotients
 
@@ -22,8 +25,7 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 
 ## Main definitions
 
-- `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
-
+* `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
 -/
 
 @[expose] public section
@@ -112,10 +114,12 @@ theorem exists_inv [hI : I.IsMaximal] :
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 
 open scoped Classical in
-/-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
+/--
+The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) := fast_instance%
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
@@ -124,11 +128,13 @@ protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     inv_zero := dite_eq_left rfl
     __ := Quotient.nontrivial_iff.mpr hI.out.1 }
 
-/-- The quotient by a two-sided ideal that is maximal as a left ideal is a division ring.
+/--
+The quotient by a two-sided ideal that is maximal as a left ideal is a division ring.
 This is a `def` rather than `instance`, since users
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected noncomputable abbrev divisionRing [I.IsMaximal] : DivisionRing (R ⧸ I) := fast_instance%
   { __ := ring _
     __ := Quotient.groupWithZero _
@@ -137,11 +143,13 @@ protected noncomputable abbrev divisionRing [I.IsMaximal] : DivisionRing (R ⧸ 
     qsmul := _
     qsmul_def _ _ := rfl }
 
-/-- The quotient of a commutative ring by a maximal ideal is a field.
+/--
+The quotient of a commutative ring by a maximal ideal is a field.
 This is a `def` rather than `instance`, since users
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 protected noncomputable abbrev field {R} [CommRing R] (I : Ideal R) [I.IsMaximal] :
     Field (R ⧸ I) := fast_instance%
   { __ := commRing _

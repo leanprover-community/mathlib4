@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.Trace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral closure of Dedekind domains
 
@@ -26,9 +29,9 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 
 ## References
 
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
-* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
+* ‍\[J. Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 
 ## Tags
 
@@ -44,11 +47,13 @@ variable (A K : Type*) [CommRing A] [Field K]
 
 section IsIntegralClosure
 
-/-! ### `IsIntegralClosure` section
+/-!
+# `IsIntegralClosure` section
 
 We show that an integral closure of a Dedekind domain in a finite separable
 field extension is again a Dedekind domain. This implies the ring of integers
-of a number field is a Dedekind domain. -/
+of a number field is a Dedekind domain.
+-/
 
 
 variable [Algebra A K] [IsFractionRing A K]
@@ -211,12 +216,14 @@ variable (A K) [IsDomain C]
 
 set_option linter.overlappingInstances false
 
-/-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
+/--
+If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
 the integral closure `C` of `A` in `L` is a Dedekind domain.
 
 This cannot be an instance since `A`, `K` or `L` can't be inferred. See also the instance
 `integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`
-and `C := integralClosure A L`. -/
+and `C := integralClosure A L`.
+-/
 theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDomain C :=
   have : IsFractionRing C L := IsIntegralClosure.isFractionRing_of_finite_extension A K L C
   have : Algebra.IsIntegral A C := IsIntegralClosure.isIntegral_algebra A L
@@ -226,11 +233,13 @@ theorem IsIntegralClosure.isDedekindDomain [IsDedekindDomain A] : IsDedekindDoma
       ⟨IsIntegralClosure.mk' C x (isIntegral_trans (R := A) _ hx),
         IsIntegralClosure.algebraMap_mk' _ _ _⟩ with : IsDedekindDomain C }
 
-/-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
+/--
+If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
 the integral closure of `A` in `L` is a Dedekind domain.
 
 This cannot be an instance since `K` can't be inferred. See also the instance
-`integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`. -/
+`integralClosure.isDedekindDomain_fractionRing` where `K := FractionRing A`.
+-/
 theorem integralClosure.isDedekindDomain [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   IsIntegralClosure.isDedekindDomain A K L (integralClosure A L)
@@ -238,11 +247,13 @@ theorem integralClosure.isDedekindDomain [IsDedekindDomain A] :
 variable [Algebra (FractionRing A) L] [IsScalarTower A (FractionRing A) L]
 variable [FiniteDimensional (FractionRing A) L] [Algebra.IsSeparable (FractionRing A) L]
 
-/-- If `L` is a finite separable extension of `Frac(A)`, where `A` is a Dedekind domain,
+/--
+If `L` is a finite separable extension of `Frac(A)`, where `A` is a Dedekind domain,
 the integral closure of `A` in `L` is a Dedekind domain.
 
 See also the lemma `integralClosure.isDedekindDomain` where you can choose
-the field of fractions yourself. -/
+the field of fractions yourself.
+-/
 instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L

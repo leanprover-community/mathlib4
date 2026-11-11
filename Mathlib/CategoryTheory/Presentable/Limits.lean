@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits of presentable objects
 
@@ -15,7 +18,6 @@ are stable under limits indexed by a category `K` such that
 `HasCardinalLT (Arrow K) κ`.
 In particular, `κ`-presentable objects are stable by colimits indexed
 by a category `K` such that `HasCardinalLT (Arrow K) κ`.
-
 -/
 
 @[expose] public section

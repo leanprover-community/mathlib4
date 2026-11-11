@@ -19,8 +19,11 @@ public import Mathlib.Data.PNat.Notation
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Tactic.Bound.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `Plausible`: generators for functions
+# `Plausible`: generators for functions
 
 This file defines `Sampleable` instances for `ℤ → ℤ` injective functions.
 
@@ -143,7 +146,8 @@ end TotalFunction
 
 open _root_.List
 
-/-- Data structure specifying a total function using a list of pairs
+/--
+Data structure specifying a total function using a list of pairs
 and a default value returned when the input is not in the domain of
 the partial function.
 
@@ -305,7 +309,8 @@ def sliceSizes : ℕ → MLList Id ℕ+
       .cons ⟨_, h⟩ (sliceSizes <| n / 2)
     else .nil
 
-/-- Shrink a permutation of a list, slicing a segment in the middle.
+/--
+Shrink a permutation of a list, slicing a segment in the middle.
 
 The sizes of the slice being removed start at `n` (with `n` the length
 of the list) and then `n / 2`, then `n / 4`, etc. down to 1. The slices

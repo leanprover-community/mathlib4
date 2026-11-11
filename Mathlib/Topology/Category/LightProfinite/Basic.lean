@@ -11,6 +11,9 @@ public import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.ClopenBox
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Light profinite spaces
 
@@ -27,7 +30,6 @@ essentially small categories.
 
 The category `LightProfinite` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section

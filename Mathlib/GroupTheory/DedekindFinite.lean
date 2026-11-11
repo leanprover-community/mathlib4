@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Data.Fintype.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite monoids are Dedekind-finite
 -/

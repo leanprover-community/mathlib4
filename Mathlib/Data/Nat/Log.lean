@@ -11,12 +11,16 @@ public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Natural number logarithms
 
 This file defines two `ℕ`-valued analogs of the logarithm of `n` with base `b`:
-* `log b n`: Lower logarithm, or floor **log**. Greatest `k` such that `b^k ≤ n`.
-* `clog b n`: Upper logarithm, or **c**eil **log**. Least `k` such that `n ≤ b^k`.
+
+* `log b n`: Lower logarithm, or floor *log*. Greatest `k` such that `b^k ≤ n`.
+* `clog b n`: Upper logarithm, or *c*eil *log*. Least `k` such that `n ≤ b^k`.
 
 These are interesting because, for `1 < b`, `Nat.log b` and `Nat.clog b` are respectively right and
 left adjoints of `(b ^ ·)`. See `le_log_iff_pow_le` and `clog_le_iff_le_pow`.
@@ -28,9 +32,11 @@ In order to compute, e.g., `Nat.log b n`, we compute `e = Nat.log (b * b) n` fir
 then figure out whether the answer is `2 * e` or `2 * e + 1`.
 The actual implementations use fuel recursion so that `(by decide : Nat.log 2 20 = 4)` works.
 
-Adapted from https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bignum-1.0/GHC-Num-BigNat.html#v:bigNatLogBase-35-
+Adapted from
+https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bignum-1.0/GHC-Num-BigNat.html#v:bigNatLogBase-35-
 
 Note a tail-recursive version of `Nat.log` is also possible:
+
 ```
 def logTR (b n : ℕ) : ℕ :=
   let rec go : ℕ → ℕ → ℕ | n, acc => if h : b ≤ n ∧ 1 < b then go (n / b) (acc + 1) else acc
@@ -39,7 +45,9 @@ def logTR (b n : ℕ) : ℕ :=
     decreasing_trivial
   go n 0
 ```
+
 but performs worse for large numbers than `Nat.log`:
+
 ```
 #eval Nat.logTR 2 (2 ^ 1000000)
 #eval Nat.log 2 (2 ^ 1000000)
@@ -52,7 +60,9 @@ assert_not_exists OrderTop
 
 namespace Nat
 
-/-! ### Floor logarithm -/
+/-!
+# Floor logarithm
+-/
 
 
 /-- `log b n`, is the logarithm of natural number `n` in base `b`. It returns the largest `k : ℕ`
@@ -60,9 +70,11 @@ such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
 @[pp_nodot]
 def log (b n : ℕ) : ℕ :=
   if b ≤ 1 then 0 else (go b n).2 where
-  /-- An auxiliary definition for `Nat.log`.
+  /--
+  An auxiliary definition for `Nat.log`.
 
-  For `b > 1`, `n ≠ 0`, `n < b ^ fuel`, `Nat.log.go n b fuel = (n / b ^ b.log n, b.log n)`. -/
+  For `b > 1`, `n ≠ 0`, `n < b ^ fuel`, `Nat.log.go n b fuel = (n / b ^ b.log n, b.log n)`.
+  -/
   go : ℕ → ℕ → ℕ × ℕ
   | _, 0 => (n, 0)
   | b, fuel + 1 =>
@@ -325,7 +337,9 @@ lemma log_pow_left (b k n : ℕ) : log (b ^ k) n = log b n / k := by
       · rw [log_of_left_le_one hb, Nat.zero_div, log_of_left_le_one]
         rwa [Nat.pow_le_one_iff (Nat.ne_of_gt hk)]
 
-/-! ### Ceil logarithm -/
+/-!
+# Ceil logarithm
+-/
 
 
 /-- `clog b n`, is the upper logarithm of natural number `n` in base `b`. It returns the smallest
@@ -333,7 +347,8 @@ lemma log_pow_left (b k n : ℕ) : log (b ^ k) n = log b n / k := by
 @[pp_nodot]
 def clog (b n : ℕ) : ℕ :=
   if 1 < b ∧ 1 < n then (go b n).2 + 1 else 0 where
-  /-- An auxiliary definition for `Nat.clog`.
+  /--
+  An auxiliary definition for `Nat.clog`.
 
   For `n > 1`, `b > 1`, `n ≤ b ^ fuel`, returns `(b ^ clog b n / n, clog b n - 1)`.
   -/
@@ -380,9 +395,11 @@ theorem clog.go_spec {n b fuel} (hn : 1 < n) (hb : 1 < b) (hfuel : n < b ^ fuel)
         Nat.mul_lt_mul_left, Nat.mul_div_mul_left, Nat.zero_lt_of_lt hb]
       split <;> simp_all [Nat.mul_add_one, Nat.pow_add_one']
 
-/-- For `b > 1`, `clog b` and `(b ^ ·)` form a Galois connection.
+/--
+For `b > 1`, `clog b` and `(b ^ ·)` form a Galois connection.
 
-See also `clog_le_of_le_pow` for the implication that does not require `1 < b`. -/
+See also `clog_le_of_le_pow` for the implication that does not require `1 < b`.
+-/
 theorem clog_le_iff_le_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} : clog b x ≤ y ↔ x ≤ b ^ y := by
   fun_cases clog with
   | case1 h =>
@@ -492,11 +509,13 @@ theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
 
-/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉`, using operations on natural numbers
+/--
+This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉`, using operations on natural numbers
 to express this equality.
 
 Since Lean has no dedicated function for the ceiling division,
-we use `(a + (b - 1)) / b` for `⌈a / b⌉`. -/
+we use `(a + (b - 1)) / b` for `⌈a / b⌉`.
+-/
 theorem clog_pow_left (b k n : ℕ) : clog (b ^ k) n = (clog b n + (k - 1)) / k := by
   rcases k.eq_zero_or_pos with rfl | hk
   · simp

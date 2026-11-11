@@ -10,10 +10,13 @@ public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.Polynomial.Quotient
 public import Mathlib.RingTheory.PowerBasis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining roots of polynomials
 
-This file defines the commutative ring `AdjoinRoot f`, the ring R[X]/(f) obtained from a
+This file defines the commutative ring `AdjoinRoot f`, the ring R\[X\]/(f) obtained from a
 commutative ring `R` and a polynomial `f : R[X]`. If furthermore `R` is a field and `f` is
 irreducible, the field structure on `AdjoinRoot f` is constructed.
 
@@ -25,21 +28,15 @@ including `AdjoinRoot f = R[X]/(f)` itself.
 
 The main definitions are in the `AdjoinRoot` namespace.
 
-*  `mk f : R[X] →+* AdjoinRoot f`, the natural ring homomorphism.
-
-*  `of f : R →+* AdjoinRoot f`, the natural ring homomorphism.
-
-* `root f : AdjoinRoot f`, the image of X in R[X]/(f).
-
+* `mk f : R[X] →+* AdjoinRoot f`, the natural ring homomorphism.
+* `of f : R →+* AdjoinRoot f`, the natural ring homomorphism.
+* `root f : AdjoinRoot f`, the image of X in R\[X\]/(f).
 * `lift (i : R →+* S) (x : S) (h : f.eval₂ i x = 0) : (AdjoinRoot f) →+* S`, the ring
-  homomorphism from R[X]/(f) to S extending `i : R →+* S` and sending `X` to `x`.
-
+  homomorphism from R\[X\]/(f) to S extending `i : R →+* S` and sending `X` to `x`.
 * `lift_hom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S`, the algebra
-  homomorphism from R[X]/(f) to S extending `algebraMap R S` and sending `X` to `x`
-
+  homomorphism from R\[X\]/(f) to S extending `algebraMap R S` and sending `X` to `x`
 * `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ f.aroots E}` a
   bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
-
 -/
 
 @[expose] public section
@@ -670,9 +667,11 @@ lemma isLocalHom_of_monic_of_degree_pos (monic : g.Monic) (deg : 0 < g.degree) :
   have := faithfulSMul_of_monic_of_degree_pos monic deg
   (isIntegral_of_monic monic).isLocalHom
 
-/-- `AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
+/--
+`AdjoinRoot.modByMonicHom` sends the equivalence class of `f` mod `g` to `f %ₘ g`.
 
-This is a well-defined right inverse to `AdjoinRoot.mk`, see `AdjoinRoot.mk_leftInverse`. -/
+This is a well-defined right inverse to `AdjoinRoot.mk`, see `AdjoinRoot.mk_leftInverse`.
+-/
 def modByMonicHom (hg : g.Monic) : AdjoinRoot g →ₗ[R] R[X] :=
   (Submodule.liftQ _ (Polynomial.modByMonicHom g)
         fun f (hf : f ∈ (Ideal.span {g}).restrictScalars R) =>
@@ -879,12 +878,14 @@ variable [CommRing R] [CommRing S] [Algebra R S]
 variable (g : R[X]) (pb : PowerBasis R S)
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- If `S` is an extension of `R` with power basis `pb` and `g` is a monic polynomial over `R`
+/--
+If `S` is an extension of `R` with power basis `pb` and `g` is a monic polynomial over `R`
 such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `AdjoinRoot g`.
 
 Compare `PowerBasis.equivOfRoot`, which would require
 `h₂ : aeval pb.gen (minpoly R (root g)) = 0`; that minimal polynomial is not
-guaranteed to be identical to `g`. -/
+guaranteed to be identical to `g`.
+-/
 @[simps -fullyApplied]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S where
@@ -941,11 +942,13 @@ open Ideal DoubleQuot Polynomial
 variable [CommRing R] (I : Ideal R) (f : R[X])
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- The natural isomorphism `R[α]/(I[α]) ≅ R[α]/((I[x] ⊔ (f)) / (f))` for `α` a root of
+/--
+The natural isomorphism `R[α]/(I[α]) ≅ R[α]/((I[x] ⊔ (f)) / (f))` for `α` a root of
 `f : R[X]` and `I : Ideal R`.
 
 See `AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot`
-for the isomorphism with `(R/I)[X] / (f mod I)`. -/
+for the isomorphism with `(R/I)[X] / (f mod I)`.
+-/
 def quotMapOfEquivQuotMapCMapMk :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
       AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (AdjoinRoot.mk f) :=

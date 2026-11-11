@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Metric properties of convex sets in normed spaces
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The constant functor
 
@@ -84,9 +87,11 @@ section
 
 variable {D : Type u₃} [Category.{v₃} D]
 
-/-- These are actually equal, of course, but not definitionally equal
-  (the equality requires `F.map (𝟙 _) = 𝟙 _`). A natural isomorphism is
-  more convenient than an equality between functors (compare id_to_iso). -/
+/--
+These are actually equal, of course, but not definitionally equal
+(the equality requires `F.map (𝟙 _) = 𝟙 _`). A natural isomorphism is
+more convenient than an equality between functors (compare id\_to\_iso).
+-/
 @[simps]
 def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F.obj X) where
   hom := { app := fun _ => 𝟙 _ }

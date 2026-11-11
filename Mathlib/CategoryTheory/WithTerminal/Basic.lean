@@ -9,10 +9,14 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `WithInitial` and `WithTerminal`
 
 Given a category `C`, this file constructs two objects:
+
 1. `WithTerminal C`, the category built from `C` by formally adjoining a terminal object.
 2. `WithInitial C`, the category built from `C` by formally adjoining an initial object.
 
@@ -24,10 +28,11 @@ The inclusion from `C` into `WithTerminal C` resp. `WithInitial C` is denoted
 `WithTerminal.incl` resp. `WithInitial.incl`.
 
 The relevant constructions needed for the universal properties of these constructions are:
+
 1. `lift`, which lifts `F : C ⥤ D` to a functor from `WithTerminal C` resp. `WithInitial C` in
-  the case where an object `Z : D` is provided satisfying some additional conditions.
+   the case where an object `Z : D` is provided satisfying some additional conditions.
 2. `inclLift` shows that the composition of `lift` with `incl` is isomorphic to the
-  functor which was lifted.
+   functor which was lifted.
 3. `liftUnique` provides the uniqueness property of `lift`.
 
 In addition to this, we provide `WithTerminal.map` and `WithInitial.map` providing the
@@ -35,7 +40,6 @@ functoriality of these constructions with respect to functors on the base catego
 
 We define corresponding pseudofunctors `WithTerminal.pseudofunctor` and `WithInitial.pseudofunctor`
 from `Cat` to `Cat`.
-
 -/
 
 @[expose] public section
@@ -482,9 +486,11 @@ private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- For a discrete category, `WithTerminal` is the same category as `WidePullbackShape`.
+/--
+For a discrete category, `WithTerminal` is the same category as `WidePullbackShape`.
 
-TODO: Should we simply replace `WidePullbackShape J` with `WithTerminal (Discrete J)` everywhere? -/
+TODO: Should we simply replace `WidePullbackShape J` with `WithTerminal (Discrete J)` everywhere?
+-/
 @[to_dual (attr := simps! functor_obj inverse_obj)
 /-- For a discrete category, `WithInitial` is the same category as `WidePushoutShape` -/]
 def widePullbackShapeEquiv {J : Type*} : WidePullbackShape J ≌ WithTerminal (Discrete J) where

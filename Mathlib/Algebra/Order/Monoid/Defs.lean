@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered monoids
 
 This file provides the definitions of ordered monoids.
-
 -/
 
 public section

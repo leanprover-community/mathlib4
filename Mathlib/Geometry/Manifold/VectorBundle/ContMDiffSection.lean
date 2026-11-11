@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Algebra.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `C^n` sections
 
@@ -16,7 +19,6 @@ sections of a vector bundle over a manifold `M` and prove that it's a module ove
 
 In passing, we prove that binary and finite sums, differences and scalar products of `C^n`
 sections are `C^n`.
-
 -/
 
 @[expose] public section
@@ -177,10 +179,12 @@ lemma ContMDiff.sum_section {s : Finset ι} (hs : ∀ i ∈ s, CMDiff n (T% (t i
     CMDiff n (T% (fun x ↦ (∑ i ∈ s, (t i x)))) :=
   fun x₀ ↦ .sum_section fun i hi ↦ (hs i hi) x₀
 
-/-- The scalar product `ψ • s` of a `C^k` function `ψ : M → 𝕜` and a section `s` of a vector
+/--
+The scalar product `ψ • s` of a `C^k` function `ψ : M → 𝕜` and a section `s` of a vector
 bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ`.
 
-This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
+This is a vector bundle analogue of `contMDiff_of_tsupport`.
+-/
 lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜} (hψ : CMDiff[u] n ψ)
     (ht : IsOpen u) (ht' : tsupport ψ ⊆ u) (hs : CMDiff[u] n (T% s)) :
     CMDiff n (T% (ψ • s)) := by

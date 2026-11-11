@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.BialgCat.Monoidal
 public import Mathlib.Algebra.Category.HopfAlgCat.Basic
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal structure on the category of Hopf algebras
 

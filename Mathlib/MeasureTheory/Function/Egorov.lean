@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Egorov theorem
 
@@ -19,7 +22,6 @@ convergence in measure.
 
 * `MeasureTheory.tendstoUniformlyOn_of_ae_tendsto`: Egorov's theorem which shows that a sequence of
   almost everywhere convergent functions converges uniformly except on an arbitrarily small set.
-
 -/
 
 @[expose] public section
@@ -37,11 +39,13 @@ variable {α β ι : Type*} {m : MeasurableSpace α} [PseudoEMetricSpace β] {μ
 
 namespace Egorov
 
-/-- Given a sequence of functions `f` and a function `g`, `notConvergentSeq f g n j` is the
+/--
+Given a sequence of functions `f` and a function `g`, `notConvergentSeq f g n j` is the
 set of elements such that `f k x` and `g x` are separated by at least `1 / (n + 1)` for some
 `k ≥ j`.
 
-This definition is useful for Egorov's theorem. -/
+This definition is useful for Egorov's theorem.
+-/
 def notConvergentSeq [Preorder ι] (f : ι → α → β) (g : α → β) (n : ℕ) (j : ι) : Set α :=
   ⋃ (k) (_ : j ≤ k), { x | (n : ℝ≥0∞)⁻¹ < edist (f k x) (g x) }
 
@@ -104,11 +108,13 @@ theorem exists_notConvergentSeq_lt (hε : 0 < ε)
   rw [zero_add] at hN
   exact ⟨N, (hN N le_rfl).2⟩
 
-/-- Given some `ε > 0`, `notConvergentSeqLTIndex` provides the index such that
+/--
+Given some `ε > 0`, `notConvergentSeqLTIndex` provides the index such that
 `notConvergentSeq` (intersected with a set of finite measure) has measure less than
 `ε * 2⁻¹ ^ n`.
 
-This definition is useful for Egorov's theorem. -/
+This definition is useful for Egorov's theorem.
+-/
 def notConvergentSeqLTIndex (hε : 0 < ε)
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ)
     (hsm : NullMeasurableSet s μ) (hs : μ s ≠ ∞)
@@ -122,10 +128,12 @@ theorem notConvergentSeqLTIndex_spec (hε : 0 < ε)
     μ (s ∩ notConvergentSeq f g n (notConvergentSeqLTIndex hε hf hsm hs hfg n)) ≤ ε * 2⁻¹ ^ n :=
   Classical.choose_spec <| exists_notConvergentSeq_lt hε hf hsm hs hfg n
 
-/-- Given some `ε > 0`, `iUnionNotConvergentSeq` is the union of `notConvergentSeq` with
+/--
+Given some `ε > 0`, `iUnionNotConvergentSeq` is the union of `notConvergentSeq` with
 specific indices such that `iUnionNotConvergentSeq` has measure less equal than `ε`.
 
-This definition is useful for Egorov's theorem. -/
+This definition is useful for Egorov's theorem.
+-/
 def iUnionNotConvergentSeq (hε : 0 < ε)
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ)
     (hsm : NullMeasurableSet s μ) (hs : μ s ≠ ∞)
@@ -191,14 +199,16 @@ end Egorov
 variable [SemilatticeSup ι] [Nonempty ι] [Countable ι]
   {f : ι → α → β} {g : α → β} {s : Set α} {ε : ℝ≥0∞}
 
-/-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of functions that
+/--
+*Egorov's theorem*: If `f : ι → α → β` is a sequence of functions that
 converges to `g : α → β` almost everywhere on a measurable set `s` of finite measure,
 and the distance between `f n a` and `g a` is measurable for all `n`,
 then for all `ε > 0`, there exists a subset `t ⊆ s` such that `μ t ≤ ε` and `f` converges to `g`
 uniformly on `s \ t`. We require the index type `ι` to be countable, and usually `ι = ℕ`.
 
 In other words, a sequence of almost everywhere convergent functions converges uniformly except on
-an arbitrarily small set. -/
+an arbitrarily small set.
+-/
 theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a)))
     (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
@@ -212,14 +222,16 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_measurable_edist
   · exact Egorov.measure_iUnionNotConvergentSeq hε hf' hsm' hs hfg
   · exact Egorov.tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq hε hf' hsm' hs hfg
 
-/-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of functions that
+/--
+*Egorov's theorem*: If `f : ι → α → β` is a sequence of functions that
 converges to `g : α → β` almost everywhere on a null measurable set `s` of finite measure,
 and the distance between `f n a` and `g a` is a.e. measurable for all `n`,
 then for all `ε > 0`, there exists a set `t` such that `μ t ≤ ε` and `f` converges to `g`
 uniformly on `s \ t`. We require the index type `ι` to be countable, and usually `ι = ℕ`.
 
 In other words, a sequence of almost everywhere convergent functions converges uniformly except on
-an arbitrarily small set. -/
+an arbitrarily small set.
+-/
 theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist
     (hf : ∀ n, AEMeasurable (fun a ↦ edist (f n a) (g a)) μ)
     (hsm : NullMeasurableSet s μ) (hs : μ s ≠ ∞)
@@ -231,13 +243,15 @@ theorem tendstoUniformlyOn_of_ae_tendsto_of_aemeasurable_edist
   · exact Egorov.measure_iUnionNotConvergentSeq hε hf hsm hs hfg
   · exact Egorov.tendstoUniformlyOn_sdiff_iUnionNotConvergentSeq hε hf hsm hs hfg
 
-/-- **Egorov's theorem**: If `f : ι → α → β` is a sequence of strongly measurable functions that
+/--
+*Egorov's theorem*: If `f : ι → α → β` is a sequence of strongly measurable functions that
 converges to `g : α → β` almost everywhere on a measurable set `s` of finite measure,
 then for all `ε > 0`, there exists a subset `t ⊆ s` such that `μ t ≤ ε` and `f` converges to `g`
 uniformly on `s \ t`. We require the index type `ι` to be countable, and usually `ι = ℕ`.
 
 In other words, a sequence of almost everywhere convergent functions converges uniformly except on
-an arbitrarily small set. -/
+an arbitrarily small set.
+-/
 theorem tendstoUniformlyOn_of_ae_tendsto (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (hε : 0 < ε) :

@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # N₁ and N₂ reflect isomorphisms
 
@@ -19,7 +22,6 @@ In this file, it is shown that the functors
 reflect isomorphisms for any preadditive category `C`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 public section

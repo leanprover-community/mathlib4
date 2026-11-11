@@ -15,6 +15,9 @@ import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Independence
 import Mathlib.Probability.Independence.Process.HasIndepIncrements.IsGaussianProcess
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Brownian motion
 
@@ -50,7 +53,6 @@ weak Markov property: if `B` is a pre-Brownian motion and `t₀ : ℝ≥0`, then
 ## Tags
 
 pre-Brownian motion, Brownian motion, Markov property
-
 -/
 
 public section
@@ -64,14 +66,18 @@ namespace ProbabilityTheory
 
 section IsPreBrownianReal
 
-/-! ### Pre-Brownian motion -/
+/-!
+# Pre-Brownian motion
+-/
 
-/-- A stochastic process is called **pre-Brownian** if its finite-dimensional laws are those
+/--
+A stochastic process is called *pre-Brownian* if its finite-dimensional laws are those
 of the Brownian motion, see `projectiveFamily`.
 
 Note: we name the constructor `mk'` so as to define later `IsPreBrownianReal.mk`, which to
 pre-Brownian motion will associate a continuous modification,
-in a way similar to `AEMeasurable.mk`. -/
+in a way similar to `AEMeasurable.mk`.
+-/
 structure IsPreBrownianReal (X : ℝ≥0 → Ω → ℝ) (P : Measure Ω := by volume_tac) : Prop where
   mk' ::
   hasLaw : ∀ I : Finset ℝ≥0, HasLaw (fun ω ↦ I.restrict (X · ω)) (projectiveFamily I) P
@@ -293,7 +299,9 @@ end IsPreBrownianReal
 
 section IsBrownianReal
 
-/-! ### Brownian motion -/
+/-!
+# Brownian motion
+-/
 
 variable {B X : ℝ≥0 → Ω → ℝ}
 

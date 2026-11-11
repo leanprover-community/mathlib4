@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categories where inclusions into coproducts are monomorphisms
 
@@ -24,9 +27,8 @@ then the canonical morphism `∐ (X ∘ ι) ⟶ ∐ X` is a monomorphism.
 It also follows that for any `i : I`, `Sigma.ι X i : X i ⟶ ∐ X` is
 a monomorphism.
 
-TODO: define distributive categories, and show that they satisfy `MonoCoprod`, see
-<https://ncatlab.org/toddtrimble/published/distributivity+implies+monicity+of+coproduct+inclusions>
-
+TODO: define distributive categories, and show that they satisfy `MonoCoprod`, see [
+https://ncatlab.org/toddtrimble/published/distributivity+implies+monicity+of+coproduct+inclusions](https://ncatlab.org/toddtrimble/published/distributivity+implies+monicity+of+coproduct+inclusions)
 -/
 
 @[expose] public section

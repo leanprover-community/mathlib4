@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Laurent
 
 import Mathlib.Algebra.Polynomial.Roots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Roots of Laurent polynomials
 

@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Data.Set.Lattice.Bounded
 
-/-! # Semiquotients
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Semiquotients
 
 A data type for semiquotients, which are classically equivalent to
 nonempty sets, but are useful for programming; the idea is that

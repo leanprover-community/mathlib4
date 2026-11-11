@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.Sum.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite intervals in a disjoint union
 
@@ -205,7 +208,9 @@ namespace Sum
 
 variable {α β : Type*}
 
-/-! ### Disjoint sum of orders -/
+/-!
+# Disjoint sum of orders
+-/
 
 
 section Disjoint
@@ -321,7 +326,9 @@ end LocallyFiniteOrderTop
 
 end Disjoint
 
-/-! ### Lexicographical sum of orders -/
+/-!
+# Lexicographical sum of orders
+-/
 
 namespace Lex
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.Smooth.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Étale morphisms
 
@@ -22,7 +25,6 @@ under `R`-algebra homomorphisms and compositions.
 
 We show that étale is stable under algebra isomorphisms, composition and
 localization at an element.
-
 -/
 
 @[expose] public section

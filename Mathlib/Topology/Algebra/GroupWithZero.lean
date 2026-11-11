@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 public import Mathlib.Topology.Algebra.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological group with zero
 
@@ -34,7 +37,7 @@ as homeomorphisms.
 open Topology Filter Function
 
 /-!
-### A `DivInvMonoid` with continuous multiplication
+# A `DivInvMonoid` with continuous multiplication
 
 If `G₀` is a `DivInvMonoid` with continuous `(*)`, then `(/y)` is continuous for any `y`. In this
 section we prove lemmas that immediately follow from this fact providing `*.div_const` dot-style
@@ -88,7 +91,7 @@ variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] 
   {s : Set α} {a : α}
 
 /-!
-### Continuity of `fun x ↦ x⁻¹` at a non-zero point
+# Continuity of `fun x ↦ x⁻¹` at a non-zero point
 
 We define `ContinuousInv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
 is continuous at all nonzero points. In this section we prove dot-style `*.inv₀` lemmas for
@@ -175,7 +178,7 @@ lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
 end NhdsInv
 
 /-!
-### Continuity of division
+# Continuity of division
 
 If `G₀` is a `GroupWithZero` with `x ↦ x⁻¹` continuous at all nonzero points and `(*)`, then
 division `(/)` is continuous at any point where the denominator is continuous.
@@ -272,7 +275,9 @@ theorem Continuous.comp_div_cases {f g : α → G₀} (h : α → G₀ → β) (
 
 end Div
 
-/-! ### Left and right multiplication as homeomorphisms -/
+/-!
+# Left and right multiplication as homeomorphisms
+-/
 
 
 namespace Homeomorph

@@ -11,12 +11,15 @@ public import Mathlib.Tactic.DepRewrite
 
 import Batteries.Logic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic operations on the integers
 
 This file contains some basic lemmas about integers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
 upstreamed to Batteries easily.
@@ -32,7 +35,9 @@ variable {a b c d m n : ℤ}
 
 protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 
-/-! ### succ and pred -/
+/-!
+# succ and pred
+-/
 
 /-- Immediate successor of an integer: `succ n = n + 1` -/
 def succ (a : ℤ) := a + 1
@@ -193,16 +198,22 @@ lemma strongRec_of_lt (hn : n < m) : m.strongRec lt ge n = lt n hn := dite_eq_le
 
 end strongRec
 
-/-! ### mul -/
+/-!
+# mul
+-/
 
-/-! ### natAbs -/
+/-!
+# natAbs
+-/
 
 alias natAbs_sq := natAbs_pow_two
 
 theorem sign_mul_self_eq_natAbs (a : Int) : sign a * a = natAbs a :=
   sign_mul_self a
 
-/-! ### `/` -/
+/-!
+# `/`
+-/
 
 lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := natCast_ediv m n
 
@@ -211,7 +222,9 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     rw [show (- -[m+1] : ℤ) = (m + 1 : ℤ) by rfl]; rw [Int.add_sub_cancel]; rfl
 
-/-! ### mod -/
+/-!
+# mod
+-/
 
 @[simp, norm_cast] lemma natCast_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := rfl
 
@@ -271,12 +284,16 @@ lemma div_lt_div_iff_of_dvd_of_neg_of_neg (hb : b < 0) (hd : d < 0) (hba : b ∣
     a / b < c / d ↔ d * a < c * b :=
   ediv_lt_ediv_iff_of_dvd_of_neg_of_neg hb hd hba hdc
 
-/-! ### properties of `/` and `%` -/
+/-!
+# properties of `/` and `%`
+-/
 
 lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 :=
   emod_two_eq n
 
-/-! ### dvd -/
+/-!
+# dvd
+-/
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c :=
   dvd_mul_of_ediv_dvd h hdiv
@@ -310,7 +327,9 @@ lemma ofNat_add_negSucc_of_ge {m n : ℕ} (h : n.succ ≤ m) :
   rw [negSucc_eq, ofNat_eq_natCast, ofNat_eq_natCast, ← Int.natCast_one, ← Int.natCast_add,
     ← Int.sub_eq_add_neg, ← Int.natCast_sub h]
 
-/-! #### `/` and ordering -/
+/-!
+# `/` and ordering
+-/
 
 lemma le_iff_pos_of_dvd (ha : 0 < a) (hab : a ∣ b) : a ≤ b ↔ 0 < b :=
   ⟨Int.lt_of_lt_of_le ha, (Int.le_of_dvd · hab)⟩
@@ -318,12 +337,16 @@ lemma le_iff_pos_of_dvd (ha : 0 < a) (hab : a ∣ b) : a ≤ b ↔ 0 < b :=
 lemma le_add_iff_lt_of_dvd_sub (ha : 0 < a) (hab : a ∣ c - b) : a + b ≤ c ↔ b < c := by
   rw [Int.add_le_iff_le_sub, ← Int.sub_pos, le_iff_pos_of_dvd ha hab]
 
-/-! ### sign -/
+/-!
+# sign
+-/
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
   lia
 
-/-! ### toNat -/
+/-!
+# toNat
+-/
 
 /-
 The following lemma is non-confluent with

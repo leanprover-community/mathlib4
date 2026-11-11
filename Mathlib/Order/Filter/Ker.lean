@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Order.Filter.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernel of a filter
 
-In this file we define the *kernel* `Filter.ker f` of a filter `f`
+In this file we define the _kernel_ `Filter.ker f` of a filter `f`
 to be the intersection of all its sets.
 
 We also prove that `Filter.principal` and `Filter.ker` form a Galois coinsertion

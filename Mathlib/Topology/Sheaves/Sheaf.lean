@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.Spaces
 public import Mathlib.Topology.Sheaves.Presheaf
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves
 
@@ -23,7 +26,6 @@ of equivalent conditions.
 
 We provide the instance `CategoryTheory.Category (TopCat.Sheaf C X)` as the full subcategory of
 presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
-
 -/
 
 @[expose] public section
@@ -42,44 +44,40 @@ variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 
 namespace Presheaf
 
-/-- The sheaf condition has several different equivalent formulations.
+/--
+The sheaf condition has several different equivalent formulations.
 The official definition chosen here is in terms of Grothendieck topologies so that the results on
 sites could be applied here easily, and this condition does not require additional constraints on
 the value category.
 The equivalent formulations of the sheaf condition on `presheaf C X` are as follows :
 
 1. `TopCat.Presheaf.IsSheaf`: (the official definition)
-  It is a sheaf with respect to the Grothendieck topology on `opens X`, which is to say:
-  For each open cover `{ Uᵢ }` of `U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an
-  `A : X`, there exists a unique gluing `A ⟶ F(U)` compatible with the restriction.
-
+   It is a sheaf with respect to the Grothendieck topology on `opens X`, which is to say:
+   For each open cover `{ Uᵢ }` of `U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an
+   `A : X`, there exists a unique gluing `A ⟶ F(U)` compatible with the restriction.
 2. `TopCat.Presheaf.IsSheafEqualizerProducts`: (requires `C` to have all products)
-  For each open cover `{ Uᵢ }` of `U`, `F(U) ⟶ ∏ᶜ F(Uᵢ)` is the equalizer of the two morphisms
-  `∏ᶜ F(Uᵢ) ⟶ ∏ᶜ F(Uᵢ ∩ Uⱼ)`.
-  See `TopCat.Presheaf.isSheaf_iff_isSheafEqualizerProducts`.
-
+   For each open cover `{ Uᵢ }` of `U`, `F(U) ⟶ ∏ᶜ F(Uᵢ)` is the equalizer of the two morphisms
+   `∏ᶜ F(Uᵢ) ⟶ ∏ᶜ F(Uᵢ ∩ Uⱼ)`.
+   See `TopCat.Presheaf.isSheaf_iff_isSheafEqualizerProducts`.
 3. `TopCat.Presheaf.IsSheafOpensLeCover`:
-  For each open cover `{ Uᵢ }` of `U`, `F(U)` is the limit of the diagram consisting of arrows
-  `F(V₁) ⟶ F(V₂)` for every pair of open sets `V₁ ⊇ V₂` that are contained in some `Uᵢ`.
-  See `TopCat.Presheaf.isSheaf_iff_isSheafOpensLeCover`.
-
+   For each open cover `{ Uᵢ }` of `U`, `F(U)` is the limit of the diagram consisting of arrows
+   `F(V₁) ⟶ F(V₂)` for every pair of open sets `V₁ ⊇ V₂` that are contained in some `Uᵢ`.
+   See `TopCat.Presheaf.isSheaf_iff_isSheafOpensLeCover`.
 4. `TopCat.Presheaf.IsSheafPairwiseIntersections`:
-  For each open cover `{ Uᵢ }` of `U`, `F(U)` is the limit of the diagram consisting of arrows
-  from `F(Uᵢ)` and `F(Uⱼ)` to `F(Uᵢ ∩ Uⱼ)` for each pair `(i, j)`.
-  See `TopCat.Presheaf.isSheaf_iff_isSheafPairwiseIntersections`.
+   For each open cover `{ Uᵢ }` of `U`, `F(U)` is the limit of the diagram consisting of arrows
+   from `F(Uᵢ)` and `F(Uⱼ)` to `F(Uᵢ ∩ Uⱼ)` for each pair `(i, j)`.
+   See `TopCat.Presheaf.isSheaf_iff_isSheafPairwiseIntersections`.
 
 The following requires `C` to be concrete and complete, and `forget C` to reflect isomorphisms and
 preserve limits. This applies to most "algebraic" categories, e.g. groups, abelian groups and rings.
 
-5. `TopCat.Presheaf.IsSheafUniqueGluing`:
-  (requires `C` to be concrete and complete; `forget C` to reflect isomorphisms and preserve limits)
-  For each open cover `{ Uᵢ }` of `U`, and a compatible family of elements `x : F(Uᵢ)`, there exists
-  a unique gluing `x : F(U)` that restricts to the given elements.
-  See `TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing`.
-
+5. `TopCat.Presheaf.IsSheafUniqueGluing`: (requires `C` to be concrete and complete; `forget C` to
+   reflect isomorphisms and preserve limits) For each open cover `{ Uᵢ }` of `U`, and a compatible
+   family of elements `x : F(Uᵢ)`, there exists a unique gluing `x : F(U)` that restricts to the
+   given elements. See `TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing`.
 6. The underlying sheaf of types is a sheaf.
-  See `TopCat.Presheaf.isSheaf_iff_isSheaf_comp` and
-  `CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget`.
+   See `TopCat.Presheaf.isSheaf_iff_isSheaf_comp` and
+   `CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget`.
 -/
 nonrec abbrev IsSheaf (F : Presheaf.{w, v, u} C X) : Prop :=
   Presheaf.IsSheaf (Opens.grothendieckTopology X) F

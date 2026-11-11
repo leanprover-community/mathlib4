@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monad.Comonadicity
 public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors into a complete monoidal closed category form a monoidal closed category.
 

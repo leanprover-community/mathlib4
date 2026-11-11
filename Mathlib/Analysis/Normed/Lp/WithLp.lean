@@ -8,7 +8,11 @@ module
 public import Mathlib.Basic.ENNReal.Basic
 public import Mathlib.RingTheory.Finiteness.Basic
 
-/-! # The `WithLp` type synonym
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `WithLp` type synonym
 
 `WithLp p V` is a copy of `V` with exactly the same vector space structure, but with the Lp norm
 instead of any existing norm on `V`; recall that by default `ι → R` and `R × R` are equipped with

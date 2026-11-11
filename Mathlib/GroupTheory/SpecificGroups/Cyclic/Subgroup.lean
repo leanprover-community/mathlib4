@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.ZMod.QuotientGroup
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgroups of cyclic groups
 

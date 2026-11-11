@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.ZMod.UnitsCyclic
 
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Carmichael function
 

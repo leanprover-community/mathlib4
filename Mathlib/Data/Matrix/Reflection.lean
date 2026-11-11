@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fin.Tuple.Reflection
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`
 
@@ -29,7 +32,6 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `Matrix.mulVecᵣ`
 * `Matrix.vecMulᵣ`
 * `Matrix.etaExpand`
-
 -/
 
 @[expose] public section
@@ -46,6 +48,8 @@ def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Forall fun r => Forall fun A => P (of (Matrix.vecCons r A))
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
@@ -59,6 +63,8 @@ theorem forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall 
     simp only [Forall, FinVec.forall_iff, forall_iff]
     exact Iff.symm Fin.forall_fin_succ_pi
 
+
+set_option doc.verso true
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
     (∀ x, P x) ↔ ∀ a b c d e f, P !![a, b, c; d, e, f] :=
   (forall_iff _).symm
@@ -68,6 +74,8 @@ def Exists : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Exists fun r => Exists fun A => P (of (Matrix.vecCons r A))
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
@@ -81,6 +89,8 @@ theorem exists_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Exists 
     simp only [Exists, FinVec.exists_iff, exists_iff]
     exact Iff.symm Fin.exists_fin_succ_pi
 
+
+set_option doc.verso true
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
     (∃ x, P x) ↔ ∃ a b c d e f, P !![a, b, c; d, e, f] :=
   (exists_iff _).symm
@@ -91,6 +101,8 @@ def transposeᵣ : ∀ {m n}, Matrix (Fin m) (Fin n) α → Matrix (Fin n) (Fin 
   | _, _ + 1, A =>
     of <| vecCons (FinVec.map (fun v : Fin _ → α => v 0) A) (transposeᵣ (A.submatrix id Fin.succ))
 
+
+set_option doc.verso false
 set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
@@ -109,6 +121,8 @@ theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transpose�
       · simp only [of_apply, Matrix.cons_val_succ]
         rfl
 
+
+set_option doc.verso true
 example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] :=
   (transposeᵣ_eq _).symm
 
@@ -116,6 +130,8 @@ example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] :=
 def dotProductᵣ [Mul α] [Add α] [Zero α] {m} (a b : Fin m → α) : α :=
   FinVec.sum <| FinVec.seq (FinVec.map (· * ·) a) b
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example (a b c d : α) [Mul α] [AddCommMonoid α] :
@@ -129,6 +145,8 @@ theorem dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
   simp_rw [dotProductᵣ, dotProduct, FinVec.sum_eq, FinVec.seq_eq, FinVec.map_eq,
       Function.comp_apply]
 
+
+set_option doc.verso true
 example (a b c d : α) [Mul α] [AddCommMonoid α] : ![a, b] ⬝ᵥ ![c, d] = a * c + b * d :=
   (dotProductᵣ_eq _ _).symm
 
@@ -137,6 +155,8 @@ def mulᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (B : Matr
     Matrix (Fin l) (Fin n) α :=
   of <| FinVec.map (fun v₁ => FinVec.map (fun v₂ => dotProductᵣ v₁ v₂) Bᵀ) A
 
+
+set_option doc.verso false
 set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
@@ -155,6 +175,8 @@ theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
   simp [mulᵣ, Matrix.transpose]
   rfl
 
+
+set_option doc.verso true
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
     !![a₁₁, a₁₂; a₂₁, a₂₂] * !![b₁₁, b₁₂; b₂₁, b₂₂] =
       !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
@@ -165,6 +187,8 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 def mulVecᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) : Fin l → α :=
   FinVec.map (fun a => dotProductᵣ a v) A
 
+
+set_option doc.verso false
 set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
@@ -180,6 +204,8 @@ theorem mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) 
   simp [mulVecᵣ]
   rfl
 
+
+set_option doc.verso true
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
     !![a₁₁, a₁₂; a₂₁, a₂₂] *ᵥ ![b₁, b₂] = ![a₁₁ * b₁ + a₁₂ * b₂, a₂₁ * b₁ + a₂₂ * b₂] :=
   (mulVecᵣ_eq _ _).symm
@@ -188,6 +214,8 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 def vecMulᵣ [Mul α] [Add α] [Zero α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) : Fin m → α :=
   FinVec.map (fun a => dotProductᵣ v a) Aᵀ
 
+
+set_option doc.verso false
 set_option backward.isDefEq.respectTransparency false in
 /-- This can be used to prove
 ```lean
@@ -203,6 +231,8 @@ theorem vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matr
   simp [vecMulᵣ]
   rfl
 
+
+set_option doc.verso true
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
     ![b₁, b₂] ᵥ* !![a₁₁, a₁₂; a₂₁, a₂₂] = ![b₁ * a₁₁ + b₂ * a₂₁, b₁ * a₁₂ + b₂ * a₂₂] :=
   (vecMulᵣ_eq _ _).symm
@@ -211,6 +241,8 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 def etaExpand {m n} (A : Matrix (Fin m) (Fin n) α) : Matrix (Fin m) (Fin n) α :=
   Matrix.of (FinVec.etaExpand fun i => FinVec.etaExpand fun j => A i j)
 
+
+set_option doc.verso false
 /-- This can be used to prove
 ```lean
 example (A : Matrix (Fin 2) (Fin 2) α) :
@@ -227,6 +259,8 @@ theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := 
   simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
   rfl
 
+
+set_option doc.verso true
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=
   (etaExpand_eq _).symm
 

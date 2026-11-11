@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Universal ordinal and cardinal
 
@@ -46,7 +49,9 @@ of `Cardinal.{v}` (when `u < v`). -/
 def Cardinal.univ : Cardinal.{max (u + 1) v} :=
   lift.{v, u + 1} #Ordinal
 
-/-! ### Universal ordinal -/
+/-!
+# Universal ordinal
+-/
 
 namespace Ordinal
 
@@ -104,7 +109,9 @@ theorem card_univ : card univ.{u, v} = Cardinal.univ.{u, v} :=
 
 end Ordinal
 
-/-! ### Universal cardinal -/
+/-!
+# Universal cardinal
+-/
 
 namespace Cardinal
 

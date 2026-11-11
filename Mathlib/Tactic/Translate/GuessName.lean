@@ -9,6 +9,9 @@ public meta import Mathlib.Data.String.Defs
 public meta import Std.Data.TreeMap.Basic
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Name generation APIs for `to_additive`-like attributes
 -/
@@ -24,11 +27,11 @@ open GuessName -- currently needed to enable projection notation
 structure GuessNameData where
   /--
   Dictionary used by `guessName` to autogenerate names.
-  This only transforms single name components, unlike `abbreviationDict`.
+This only transforms single name components, unlike `abbreviationDict`.
 
   Note: `guessName` capitalizes the output according to the capitalization of the input.
-  In order for this to work, the input should always start with a lower case letter, and the output
-  should always start with an upper case letter.
+In order for this to work, the input should always start with a lower case letter, and the output
+should always start with an upper case letter.
   -/
   nameDict : Std.HashMap String (List String)
   /--
@@ -42,7 +45,9 @@ structure GuessNameData where
   abbreviationDict : Std.HashMap String String
   deriving Inhabited
 
-/-- A set of strings of names that end in a capital letter.
+/--
+A set of strings of names that end in a capital letter.
+
 * If the string contains a lowercase letter, the string should be split between the first occurrence
   of a lower-case letter followed by an upper-case letter.
 * If multiple strings have the same prefix, they should be grouped by prefix
@@ -50,7 +55,8 @@ structure GuessNameData where
   (no element can be a prefix of a later element)
 
 Todo: automate the translation from `String` to an element in this `TreeMap`
-  (but this would require having something similar to the `rb_lmap` from Lean 3). -/
+(but this would require having something similar to the `rb_lmap` from Lean 3).
+-/
 def endCapitalNames : TreeMap String (List String) compare :=
   -- todo: we want something like
   -- endCapitalNamesOfList ["LE", "LT", "GE", "GT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
@@ -58,11 +64,13 @@ def endCapitalNames : TreeMap String (List String) compare :=
     ("Coe", ["TC", "T", "HTCT"])]
 
 open String in
-/-- This function takes a String and splits it into separate parts based on the following
+/--
+This function takes a String and splits it into separate parts based on the following
 [naming conventions](https://leanprover-community.github.io/contribute/naming.html).
 
 E.g. `#eval "InvHMulLEConjugate₂SMul_ne_top".splitCase` yields
-`["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`. -/
+`["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]`.
+-/
 partial def String.splitCase (s : String) (i₀ : Pos.Raw := 0) (r : List String := []) :
     List String := Id.run do
   -- We test if we need to split between `i₀` and `i₁`.
@@ -114,9 +122,11 @@ def decapitalizeFirstLike (s : String) : List String → List String
 Apply the `nameDict` and decapitalize the output like the input.
 
 E.g.
+
 ```
 #eval applyNameDict ["Inv", "HMul", "LE", "Conjugate₂", "SMul", "_", "ne", "_", "top"]
 ```
+
 yields `["Neg", "HAdd", "LE", "Conjugate₂", "VAdd", "_", "ne", "_", "top"]`.
 -/
 def applyNameDict (g : GuessNameData) : List String → List String
@@ -148,16 +158,21 @@ def fixAbbreviationAux (g : GuessNameData) : List String → List String → Str
   termination_by l s => (l.length + s.length, l.length)
   decreasing_by all_goals grind
 
-/-- Replace substrings according to `abbreviationDict`, matching the case of the first letter.
+/--
+Replace substrings according to `abbreviationDict`, matching the case of the first letter.
 
 Example:
+
 ```
 #eval applyNameDict ["Mul", "Support"]
 ```
+
 gives the preliminary translation `["Add", "Support"]`. Subsequently
+
 ```
 #eval fixAbbreviation ["Add", "Support"]
 ```
+
 "fixes" this translation and returns `Support`.
 -/
 def fixAbbreviation (g : GuessNameData) (l : List String) : String :=
@@ -166,9 +181,10 @@ def fixAbbreviation (g : GuessNameData) (l : List String) : String :=
 /--
 Autogenerate additive name.
 This runs in several steps:
-1) Split according to capitalisation rule and at `_`.
-2) Apply word-by-word translation rules.
-3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
+
+1. Split according to capitalisation rule and at `_`.
+2. Apply word-by-word translation rules.
+3. Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
 -/
 def guessName (g : GuessNameData) : String → String :=
   String.mapTokens '\'' <|

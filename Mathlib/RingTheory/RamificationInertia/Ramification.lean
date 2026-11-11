@@ -14,6 +14,9 @@ public import Mathlib.RingTheory.Unramified.LocalRing
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.QuasiFinite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification index
 
@@ -31,7 +34,6 @@ an `Sq`-module.
 * `ramificationIdx'_eq_ramificationIdx`: The ramification index agrees with the usual definition in
   the case of Dedekind domains.
 * `ramificationIdx_tower`: Ramification index is multiplicative in towers.
-
 -/
 
 @[expose] public section
@@ -43,14 +45,16 @@ section
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
 open scoped Classical in
-/-- Let `S/R` be an extension of rings, and let `q` be a prime ideal of `S` lying over a prime ideal
+/--
+Let `S/R` be an extension of rings, and let `q` be a prime ideal of `S` lying over a prime ideal
 `p` of `R`. Let `Sq` be the localization of `S` and `q`, and let `pSq` be the image of `p` in `Sq`.
 Then the ramification index of `q` over `R` is defined to be the length of the quotient `Sq/pSq` as
 an `Sq`-module.
 
 When `q` is not prime, we use a junk value of `0`.
 
-This will eventually replace the existing definition of `Ideal.ramificationIdx'`. -/
+This will eventually replace the existing definition of `Ideal.ramificationIdx'`.
+-/
 noncomputable def ramificationIdx : ℕ :=
   if _ : q.IsPrime then
     letI Sq := Localization.AtPrime q
@@ -163,11 +167,13 @@ theorem ramificationIdx_pos_of_mem_minimalPrimes [q.LiesOver p] [q.IsPrime]
     rwa [← hmax.eq_of_le IsPrime.ne_top' (h1 (IsLocalRing.le_maximalIdeal_of_isPrime (r.under Sq)))]
 
 variable {p} in
-/-- This theorem proves positivity of `ramificationIdx` when `S` is a Dedekind domain.
+/--
+This theorem proves positivity of `ramificationIdx` when `S` is a Dedekind domain.
 
 In particular, the dimension and Noetherian assumptions hold under `[IsDedekindDomain S]`.
 
-See `Ideal.ramificationIdx_pos` for a version that holds when `S` is finite as an `R`-module. -/
+See `Ideal.ramificationIdx_pos` for a version that holds when `S` is finite as an `R`-module.
+-/
 theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
     (hp : p.map (algebraMap R S) ≠ ⊥) [Ring.DimensionLEOne S]
     [IsNoetherianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q)))] :
@@ -176,11 +182,13 @@ theorem ramificationIdx_pos_of_isDedekindDomain [q.IsPrime] [q.LiesOver p]
     (mem_minimalPrimes_of_ne_bot hp (map_le_of_le_comap (q.over_def p).le))
 
 variable {p} in
-/-- This theorem proves positivity of `ramificationIdx` when `S` is a Dedekind domain.
+/--
+This theorem proves positivity of `ramificationIdx` when `S` is a Dedekind domain.
 
 In particular, the dimension and Noetherian assumptions hold under `[IsDedekindDomain S]`.
 
-See `Ideal.ramificationIdx_pos` for a version that holds when `S` is finite as an `R`-module. -/
+See `Ideal.ramificationIdx_pos` for a version that holds when `S` is finite as an `R`-module.
+-/
 theorem ramificationIdx_pos_of_isDedekindDomain' [q.IsPrime] [q.LiesOver p]
     (hp : p ≠ ⊥) [FaithfulSMul R S] [Ring.DimensionLEOne S]
     [IsNoetherianRing (Localization.AtPrime q ⧸ p.map (algebraMap R (Localization.AtPrime q)))] :
@@ -188,12 +196,14 @@ theorem ramificationIdx_pos_of_isDedekindDomain' [q.IsPrime] [q.LiesOver p]
   ramificationIdx_pos_of_isDedekindDomain q (map_ne_bot_of_ne_bot hp)
 
 variable (R) in
-/-- This theorem proves positivity of `ramificationIdx` when `S` is finite as an `R`-module.
+/--
+This theorem proves positivity of `ramificationIdx` when `S` is finite as an `R`-module.
 
 In particular, the integrality and Noetherian assumptions hold under `[Module.Finite R S]`.
 
 See `Ideal.ramificationIdx_pos_of_isDedekindDomain` for a version that holds when `S` is a Dedekind
-domain. -/
+domain.
+-/
 theorem ramificationIdx_pos [q.IsPrime] [Algebra.IsIntegral R S]
     [IsNoetherianRing (Localization.AtPrime q ⧸
       (q.under R).map (algebraMap R (Localization.AtPrime q)))] :

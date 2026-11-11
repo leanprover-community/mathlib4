@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.ChartedSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Charted spaces with a given structure groupoid
 -/
@@ -339,11 +342,13 @@ theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x :
     ⟨Opens.inclusion hUV x⟩ hUV
 end TopologicalSpace.Opens
 
-/-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
+/--
+Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
 
 NB. We cannot deduce membership in `atlas H s` in general: by definition, this atlas contains
 precisely the restriction of each preferred chart at `x ∈ s` --- whereas `atlas H M`
-can contain more charts than these. -/
+can contain more charts than these.
+-/
 lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : OpenPartialHomeomorph M H}
     (he : e ∈ atlas H M) {s : Opens M} (hs : Nonempty s) {G : StructureGroupoid H} [HasGroupoid M G]
     [ClosedUnderRestriction G] : e.subtypeRestr hs ∈ G.maximalAtlas s := by
@@ -356,7 +361,9 @@ lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : OpenPartialHomeomorph
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
          G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
 
-/-! ### Structomorphisms -/
+/-!
+# Structomorphisms
+-/
 
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of homological complexes is linear
 
@@ -16,9 +19,8 @@ category `C` is `R`-linear.
 
 ## TODO
 
-- show lemmas like `HomologicalComplex.homologyMap_smul` (after doing the same
+* show lemmas like `HomologicalComplex.homologyMap_smul` (after doing the same
   for short complexes in `Mathlib/Algebra/Homology/ShortComplex/Linear.lean`)
-
 -/
 
 public section

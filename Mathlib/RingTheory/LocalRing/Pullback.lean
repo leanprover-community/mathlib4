@@ -14,6 +14,9 @@ public import Mathlib.RingTheory.LocalRing.Defs
 import Mathlib.Algebra.Ring.Subring.Units
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local Ring Properties of Equalizers and Pullbacks
 
@@ -25,7 +28,6 @@ suitable conditions.
 
 * `RingHom.pullback`: The pullback of two ring homomorphisms `f : R →+* T` and `g : S →+* T`,
   defined as the subring of `R × S` consisting of pairs `(r, s)` such that `f r = g s`.
-
 * `RingHom.pullbackFst`, `RingHom.pullbackSnd`: The canonical projection maps from the
   pullback to `R` and `S`.
 
@@ -33,10 +35,8 @@ suitable conditions.
 
 * `RingHom.isLocalRing_eqLocus`: The equalizer of two ring homomorphisms from a local
   ring is again a local ring.
-
 * `RingHom.isLocalRing_pullback`: The pullback of `f : R →+* T` and `g : S →+* T` is a
   local ring, provided that `R` is a local ring and `g` is a local homomorphism.
-
 -/
 
 public section

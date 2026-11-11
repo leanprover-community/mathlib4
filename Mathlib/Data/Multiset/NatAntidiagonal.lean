@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.List.NatAntidiagonal
 public import Mathlib.Data.Multiset.MapFold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonals in ℕ × ℕ as multisets
 

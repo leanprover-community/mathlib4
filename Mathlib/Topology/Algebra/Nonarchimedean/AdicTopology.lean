@@ -13,6 +13,9 @@ public import Mathlib.Topology.UniformSpace.Equiv
 
 import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adic topology
 
@@ -28,7 +31,6 @@ change the associated topology.
 Finally, it defines `WithIdeal`, a class registering an ideal in a ring and providing the
 corresponding adic topology to the type class inference system.
 
-
 ## Main definitions and results
 
 * `Ideal.adic_basis`: the basis of submodules given by powers of an ideal.
@@ -43,7 +45,6 @@ corresponding adic topology to the type class inference system.
 
 The `I`-adic topology on a ring `R` has a contrived definition using `I^n • ⊤` instead of `I`
 to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R`-module.
-
 -/
 
 @[expose] public section
@@ -133,8 +134,10 @@ theorem adic_module_basis :
         replace a_in : a ∈ I ^ i := by simpa [(I ^ i).mul_top] using a_in
         exact smul_mem_smul a_in mem_top⟩ }
 
-/-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
-written `I^n • ⊤` form a basis of neighborhoods of zero. -/
+/--
+The topology on an `R`-module `M` associated to an ideal `M`. Submodules $`I^n M`,
+written `I^n • ⊤` form a basis of neighborhoods of zero.
+-/
 @[instance_reducible]
 def adicModuleTopology : TopologicalSpace M :=
   @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _

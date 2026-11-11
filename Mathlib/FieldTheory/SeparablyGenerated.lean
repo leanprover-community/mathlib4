@@ -13,22 +13,26 @@ public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 import Mathlib.Algebra.CharP.IntermediateField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separably generated extensions
 
 We aim to formalize the following result:
 
 Let `K/k` be a finitely generated field extension with characteristic `p > 0`, then TFAE
+
 1. `K/k` is separably generated
 2. If `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
-  `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent
+   `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent
 3. `K ⊗ₖ k^{1/p}` is reduced
 4. `K` is geometrically reduced over `k`.
 5. `k` and `Kᵖ` are linearly disjoint over `kᵖ` in `K`.
 
 ## Main result
-- `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
 
+* `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
 -/
 
 @[expose] public noncomputable section

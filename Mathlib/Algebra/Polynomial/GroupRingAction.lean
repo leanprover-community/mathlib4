@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.GroupAction.Quotient
 
 import Mathlib.Algebra.Polynomial.AlgebraMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group action on rings applied to polynomials
 

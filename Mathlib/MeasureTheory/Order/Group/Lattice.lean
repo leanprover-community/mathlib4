@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Group.Arithmetic
 public import Mathlib.MeasureTheory.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability results on groups with a lattice structure.
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.LocallyFinsupp
 public import Mathlib.Topology.Spectral.Prespectral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushforward of functions with locally finite support
 
@@ -17,7 +20,7 @@ of algebraic cycles in algebraic geometry.
 
 ## Main declarations
 
-- `Function.locallyFinsupp.map`: If `f : X → Y` is a spectral map between spectral spaces and
+* `Function.locallyFinsupp.map`: If `f : X → Y` is a spectral map between spectral spaces and
   `c : X → R` is locally of finite support, the pushforward of `c` along `f` at `y : Y` is
   `∑ᶠ x ∈ f ⁻¹' {y}, c x * w x`, where `w : X → R` is a weight function.
 

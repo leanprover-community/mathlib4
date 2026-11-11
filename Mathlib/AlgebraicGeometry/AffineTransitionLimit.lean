@@ -13,12 +13,14 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Connected
 import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse limits of schemes with affine transition maps
 
 In this file, we develop API for inverse limits of schemes with affine transition maps,
 following EGA IV 8 and https://stacks.math.columbia.edu/tag/01YT.
-
 -/
 
 @[expose] public section
@@ -365,7 +367,7 @@ lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
   exact QuasiCompact.compactSpace_of_compactSpace (c.π.app i)
 
 /-!
-## Cofiltered Limits and Schemes of Finite Type
+# Cofiltered Limits and Schemes of Finite Type
 
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,
 and another scheme `X` of finite type over `S`.
@@ -689,7 +691,7 @@ lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
 end LocallyOfFiniteType
 
 /-!
-### Sections of the limit
+# Sections of the limit
 
 Let `D` be a cofiltered diagram of schemes with affine transition maps.
 Consider the canonical map `colim Γ(Dᵢ, ⊤) ⟶ Γ(lim Dᵢ, ⊤)`.
@@ -703,7 +705,6 @@ any `s : Γ(lim Dᵢ, ⊤)` comes from `Γ(Dᵢ, ⊤)` for some `i`.
 See `AlgebraicGeometry.exists_appTop_π_eq_of_isLimit`.
 
 These two results imply that `PreservesLimit D Scheme.Γ.rightOp`, which is available as an instance.
-
 -/
 section sections
 
@@ -958,6 +959,8 @@ end sections
 
 section IsAffine
 
+
+set_option doc.verso false
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is quasi-affine, then some `Xᵢ` is quasi-affine. -/
@@ -1010,6 +1013,8 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
   rw [← Scheme.preimage_basicOpen_top, ← Scheme.preimage_basicOpen_top]
   exact ⟨((hf _).preimage _).preimage _, hy⟩
 
+
+set_option doc.verso true
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.

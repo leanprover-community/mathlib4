@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.Sigma
 public import Mathlib.Data.DFinsupp.Submonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Direct sum
 
@@ -20,7 +23,7 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Direct_sum
+* https://en.wikipedia.org/wiki/Direct\_sum
 -/
 
 @[expose] public section
@@ -31,9 +34,11 @@ universe u v w u₁
 
 variable (ι : Type v) (β : ι → Type w)
 
-/-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
+/--
+`DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
-Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
+Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`.
+-/
 @[implicit_reducible]
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
@@ -198,10 +203,12 @@ theorem addHom_ext {γ : Type*} [AddZeroClass γ] ⦃f g : (⨁ i, β i) →+ γ
     (H : ∀ (i : ι) (y : β i), f (of _ i y) = g (of _ i y)) : f = g :=
   DFinsupp.addHom_ext H
 
-/-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
+/--
+If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
 then they are equal.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext high]
 theorem addHom_ext' {γ : Type*} [AddZeroClass γ] ⦃f g : (⨁ i, β i) →+ γ⦄
     (H : ∀ i : ι, f.comp (of _ i) = g.comp (of _ i)) : f = g :=
@@ -243,10 +250,12 @@ end ToAddMonoid
 
 section FromAddMonoid
 
-/-- `fromAddMonoid φ` is the natural homomorphism from `γ` to `⨁ i, β i`
+/--
+`fromAddMonoid φ` is the natural homomorphism from `γ` to `⨁ i, β i`
 induced by a family `φ` of homomorphisms `γ → β i`.
 
-Note that this is not an isomorphism. Not every homomorphism `γ →+ ⨁ i, β i` arises in this way. -/
+Note that this is not an isomorphism. Not every homomorphism `γ →+ ⨁ i, β i` arises in this way.
+-/
 def fromAddMonoid : (⨁ i, γ →+ β i) →+ γ →+ ⨁ i, β i :=
   toAddMonoid fun i => AddMonoidHom.compHom (of β i)
 
@@ -402,10 +411,12 @@ theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
 
 end SigmaFiber
 
-/-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `AddSubmonoid M`
+/--
+The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `AddSubmonoid M`
 indexed by `ι`.
 
-When `S = Submodule _ M`, this is available as a `LinearMap`, `DirectSum.coe_linearMap`. -/
+When `S = Submodule _ M`, this is available as a `LinearMap`, `DirectSum.coe_linearMap`.
+-/
 protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
   toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
@@ -431,12 +442,14 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
   · rw [DirectSum.of_eq_of_ne _ _ _ h, ite_eq_right h.symm, ZeroMemClass.coe_zero,
       ZeroMemClass.coe_zero]
 
-/-- The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
+/--
+The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
 `M` is said to be internal if the canonical map `(⨁ i, A i) →+ M` is bijective.
 
 For the alternate statement in terms of independence and spanning, see
 `DirectSum.subgroup_isInternal_iff_iSupIndep_and_supr_eq_top` and
-`DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top`. -/
+`DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top`.
+-/
 def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : Prop :=
   Function.Bijective (DirectSum.coeAddMonoidHom A)

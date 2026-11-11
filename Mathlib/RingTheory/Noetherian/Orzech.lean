@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Submodule.IterateMapComap
 public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.OrzechProperty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian rings have the Orzech property
 
@@ -31,12 +34,14 @@ universe w
 variable {R M : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
   [Module R N] [IsNoetherian R M]
 
-/-- **Orzech's theorem** for Noetherian modules: if `R` is a ring (not necessarily commutative),
+/--
+*Orzech's theorem* for Noetherian modules: if `R` is a ring (not necessarily commutative),
 `M` and `N` are `R`-modules, `M` is Noetherian, `i : N →ₗ[R] M` is injective,
 `f : N →ₗ[R] M` is surjective, then `f` is also injective. The proof here is adapted from
-Djoković's paper *Epimorphisms of modules which must be isomorphisms* [djokovic1973],
+Djoković's paper _Epimorphisms of modules which must be isomorphisms_ \[djokovic1973\],
 utilizing `LinearMap.iterateMapComap`.
-See also Orzech's original paper: *Onto endomorphisms are isomorphisms* [orzech1971]. -/
+See also Orzech's original paper: _Onto endomorphisms are isomorphisms_ \[orzech1971\].
+-/
 theorem IsNoetherian.injective_of_surjective_of_injective (i f : N →ₗ[R] M)
     (hi : Injective i) (hf : Surjective f) : Injective f := by
   have := isNoetherian_of_injective i hi

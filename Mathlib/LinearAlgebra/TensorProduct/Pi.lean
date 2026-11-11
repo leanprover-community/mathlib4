@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product and products
 
@@ -24,7 +27,6 @@ and it is packaged as `TensorProduct.piRight`. Also a special case for when `Máµ
 ## Notes
 
 See `Mathlib/LinearAlgebra/TensorProduct/Prod.lean` for binary products.
-
 -/
 
 @[expose] public section

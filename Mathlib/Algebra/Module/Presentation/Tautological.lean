@@ -7,13 +7,16 @@ module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The tautological presentation of a module
 
 Given an `A`-module `M`, we provide its tautological presentation:
+
 * there is a generator `[m]` for each `m : M`;
 * the relations are `[m₁] + [m₂] - [m₁ + m₂] = 0` and `a • [m] - [a • m] = 0`.
-
 -/
 
 @[expose] public section
@@ -77,10 +80,13 @@ lemma tautologicalSolution_isPresentation :
     (tautologicalSolution A M).IsPresentation :=
   (tautologicalSolutionIsPresentationCore A M).isPresentation
 
-/-- The tautological presentation of any `A`-module `M` by generators and relations.
+/--
+The tautological presentation of any `A`-module `M` by generators and relations.
 There is a generator `[m]` for any element `m : M`, and there are two types of relations:
+
 * `[m₁] + [m₂] - [m₁ + m₂] = 0`
-* `a • [m] - [a • m] = 0`. -/
+* `a • [m] - [a • m] = 0`.
+-/
 @[simps!]
 noncomputable def tautological : Presentation A M :=
   ofIsPresentation (tautologicalSolution_isPresentation A M)

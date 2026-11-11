@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of a function in an order
 

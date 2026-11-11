@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.Module
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Local) homeomorphism between a normed space and a ball
 
@@ -18,8 +21,8 @@ In this file we show that a real (semi)normed vector space is homeomorphic to th
 
 We formalize it in two ways:
 
-- as a `Homeomorph`, see `Homeomorph.unitBall`;
-- as an `OpenPartialHomeomorph` with `source = Set.univ` and `target = Metric.ball (0 : E) 1`.
+* as a `Homeomorph`, see `Homeomorph.unitBall`;
+* as an `OpenPartialHomeomorph` with `source = Set.univ` and `target = Metric.ball (0 : E) 1`.
 
 While the former approach is more natural, the latter approach provides us
 with a globally defined inverse function which makes it easier to say
@@ -86,14 +89,16 @@ theorem OpenPartialHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0
 theorem OpenPartialHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
   simp [OpenPartialHomeomorph.univUnitBall_symm_apply]
 
-/-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
+/--
+A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
 
 In many cases the actual implementation is not important, so we don't mark the projection lemmas
 `Homeomorph.unitBall_apply_coe` and `Homeomorph.unitBall_symm_apply` as `@[simp]`.
 
 See also `Homeomorph.contDiff_unitBall` and `OpenPartialHomeomorph.contDiffOn_unitBall_symm`
-for smoothness properties that hold when `E` is an inner-product space. -/
+for smoothness properties that hold when `E` is an inner-product space.
+-/
 @[simps! -isSimp]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
   (Homeomorph.Set.univ _).symm.trans OpenPartialHomeomorph.univUnitBall.toHomeomorphSourceTarget

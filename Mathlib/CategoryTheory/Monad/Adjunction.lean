@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Monad.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions and (co)monads
 
@@ -148,7 +151,8 @@ noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ �
 end Adjunction
 
 set_option backward.defeqAttrib.useBackward true in
-/-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
+/--
+Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
 sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
 We later show that this is full when `R` is full, faithful when `R` is faithful,
@@ -245,7 +249,8 @@ instance (G : Comonad C) : (Comonad.comparison G.adj).EssSurj where
         coassoc := by simpa using X.coassoc },
       ⟨Comonad.Coalgebra.isoMk (Iso.refl _)⟩⟩
 
-/-- A right adjoint functor `R : D ⥤ C` is *monadic* if the comparison functor `Monad.comparison R`
+/--
+A right adjoint functor `R : D ⥤ C` is _monadic_ if the comparison functor `Monad.comparison R`
 from `D` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
 -/
 class MonadicRightAdjoint (R : D ⥤ C) where
@@ -277,7 +282,7 @@ noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
   eqv := { }
 
 /--
-A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor `Comonad.comparison L`
+A left adjoint functor `L : C ⥤ D` is _comonadic_ if the comparison functor `Comonad.comparison L`
 from `C` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
 -/
 class ComonadicLeftAdjoint (L : C ⥤ D) where
@@ -396,16 +401,20 @@ end Coreflective
 -- It is possible to do this computably since the construction gives the data of the inverse, not
 -- just the existence of an inverse on each object.
 -- see Note [lower instance priority]
-/-- Any reflective inclusion has a monadic right adjoint.
-cf Prop 5.3.3 of [Riehl][riehl2017] -/
+/--
+Any reflective inclusion has a monadic right adjoint.
+cf Prop 5.3.3 of \[Riehl\]\[riehl2017\]
+-/
 instance (priority := 100) monadicOfReflective [Reflective R] :
     MonadicRightAdjoint R where
   L := reflector R
   adj := reflectorAdjunction R
   eqv := { full := Reflective.comparison_full _ }
 
-/-- Any coreflective inclusion has a comonadic left adjoint.
-cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
+/--
+Any coreflective inclusion has a comonadic left adjoint.
+cf Dual statement of Prop 5.3.3 of \[Riehl\]\[riehl2017\]
+-/
 instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
   R := coreflector R

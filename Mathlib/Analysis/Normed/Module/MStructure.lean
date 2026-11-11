@@ -10,15 +10,18 @@ public import Mathlib.Analysis.Normed.Group.Basic
 
 import Mathlib.Tactic.NoncommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # M-structure
 
 A projection P on a normed space X is said to be an L-projection (`IsLprojection`) if, for all `x`
 in `X`,
-$\|x\| = \|P x\| + \|(1 - P) x\|$.
+$`\|x\| = \|P x\| + \|(1 - P) x\|`.
 
 A projection P on a normed space X is said to be an M-projection if, for all `x` in `X`,
-$\|x\| = max(\|P x\|,\|(1 - P) x\|)$.
+$`\|x\| = max(\|P x\|,\|(1 - P) x\|)`.
 
 The L-projections on `X` form a Boolean algebra (`IsLprojection.Subtype.BooleanAlgebra`).
 
@@ -33,7 +36,7 @@ When `X` is a Banach space, the Boolean algebra of L-projections is complete. Le
 space with dual `X^*`. A closed subspace `M` of `X` is said to be an M-ideal if the topological
 annihilator `M^∘` is an L-summand of `X^*`.
 
-M-ideal, M-summands and L-summands were introduced by Alfsen and Effros in [alfseneffros1972] to
+M-ideal, M-summands and L-summands were introduced by Alfsen and Effros in \[alfseneffros1972\] to
 study the structure of general Banach spaces. When `A` is a JB\*-triple, the M-ideals of `A` are
 exactly the norm-closed ideals of `A`. When `A` is a JBW\*-triple with predual `X`, the M-summands
 of `A` are exactly the weak\*-closed ideals, and their pre-duals can be identified with the
@@ -52,13 +55,13 @@ special case.
 
 ## References
 
-* [Behrends, M-structure and the Banach-Stone Theorem][behrends1979]
-* [Harmand, Werner, Werner, M-ideals in Banach spaces and Banach algebras][harmandwernerwerner1993]
+* ‍\[Behrends, M-structure and the Banach-Stone Theorem\]\[behrends1979\]
+* ‍\[Harmand, Werner, Werner, M-ideals in Banach spaces and Banach
+  algebras\]\[harmandwernerwerner1993\]
 
 ## Tags
 
 M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
-
 -/
 
 public section
@@ -67,8 +70,9 @@ variable (X : Type*) [NormedAddCommGroup X]
 variable {M : Type*} [Ring M] [Module M X]
 
 
-/-- A projection on a normed space `X` is said to be an L-projection if, for all `x` in `X`,
-$\|x\| = \|P x\| + \|(1 - P) x\|$.
+/--
+A projection on a normed space `X` is said to be an L-projection if, for all `x` in `X`,
+$`\|x\| = \|P x\| + \|(1 - P) x\|`.
 
 Note that we write `P • x` instead of `P x` for reasons described in the module docstring.
 -/
@@ -76,8 +80,9 @@ structure IsLprojection (P : M) : Prop where
   proj : IsIdempotentElem P
   Lnorm : ∀ x : X, ‖x‖ = ‖P • x‖ + ‖(1 - P) • x‖
 
-/-- A projection on a normed space `X` is said to be an M-projection if, for all `x` in `X`,
-$\|x\| = max(\|P x\|,\|(1 - P) x\|)$.
+/--
+A projection on a normed space `X` is said to be an M-projection if, for all `x` in `X`,
+$`\|x\| = max(\|P x\|,\|(1 - P) x\|)`.
 
 Note that we write `P • x` instead of `P x` for reasons described in the module docstring.
 -/

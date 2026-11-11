@@ -9,22 +9,25 @@ public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex shapes for pages of spectral sequences
 
 In this file, we define complex shapes which correspond
 to pages of spectral sequences:
-* `ComplexShape.spectralSequenceNat`: for any `u : ℤ × ℤ`, this
-is the complex shape on `ℕ × ℕ` corresponding to differentials
-of `ComplexShape.up' u : ComplexShape (ℤ × ℤ)` with source
-and target in `ℕ × ℕ`. (With `u := (r, 1 - r)`, this will
-apply to the `r`th-page of first quadrant `E₂` cohomological
-spectral sequence).
-* `ComplexShape.spectralSequenceFin`: for any `u : ℤ × ℤ` and `l : ℕ`,
-this is a similar definition as `ComplexShape.spectralSequenceNat`
-but for `ℤ × Fin l` (identified as a subset of `ℤ × ℤ`). (This could
-be used for spectral sequences associated to a *finite* filtration.)
 
+* `ComplexShape.spectralSequenceNat`: for any `u : ℤ × ℤ`, this
+  is the complex shape on `ℕ × ℕ` corresponding to differentials
+  of `ComplexShape.up' u : ComplexShape (ℤ × ℤ)` with source
+  and target in `ℕ × ℕ`. (With `u := (r, 1 - r)`, this will
+  apply to the `r`th-page of first quadrant `E₂` cohomological
+  spectral sequence).
+* `ComplexShape.spectralSequenceFin`: for any `u : ℤ × ℤ` and `l : ℕ`,
+  this is a similar definition as `ComplexShape.spectralSequenceNat`
+  but for `ℤ × Fin l` (identified as a subset of `ℤ × ℤ`). (This could
+  be used for spectral sequences associated to a _finite_ filtration.)
 -/
 
 @[expose] public section

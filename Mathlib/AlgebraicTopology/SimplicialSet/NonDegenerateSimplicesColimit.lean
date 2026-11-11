@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Any simplicial set is the colimit of its monogenous subcomplexes
 
@@ -17,7 +20,6 @@ Let `X` be a simplicial set. The definition `SSet.isColimitCoconeN`
 shows that `X` is the colimit of the monogenous subcomplexes of `X`
 (the index category of this colimit is the partially ordered
 type `X.N` of nondegenerate simplices of `X`).
-
 -/
 
 universe u

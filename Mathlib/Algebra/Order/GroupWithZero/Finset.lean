@@ -10,6 +10,9 @@ public import Mathlib.Data.Finset.Lattice.Fold
 
 import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finset.sup` in a group with zero
 -/

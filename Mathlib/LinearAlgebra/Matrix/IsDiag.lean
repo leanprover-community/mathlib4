@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.LinearAlgebra.Matrix.Orthogonal
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diagonal matrices
 
@@ -16,7 +19,7 @@ This file contains the definition and basic results about diagonal matrices.
 
 ## Main results
 
-- `Matrix.IsDiag`: a proposition that states a given square matrix `A` is diagonal.
+* `Matrix.IsDiag`: a proposition that states a given square matrix `A` is diagonal.
 
 ## Tags
 

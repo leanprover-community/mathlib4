@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Translation and scaling of integral curves
 
@@ -17,7 +20,7 @@ This file mirrors `Mathlib/Analysis/ODE/Transform`.
 
 ## References
 
-* [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
+* ‍\[Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.\]\[lee2012\]
 
 ## Tags
 
@@ -34,7 +37,9 @@ variable
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {γ : ℝ → M} {v : (x : M) → TangentSpace I x} {s : Set ℝ} {t₀ : ℝ}
 
-/-! ### Translation lemmas -/
+/-!
+# Translation lemmas
+-/
 
 section Translation
 
@@ -98,7 +103,9 @@ lemma isMIntegralCurve_comp_sub {dt : ℝ} :
 
 end Translation
 
-/-! ### Scaling lemmas -/
+/-!
+# Scaling lemmas
+-/
 
 section Scaling
 

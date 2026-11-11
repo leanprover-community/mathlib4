@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.Transfer
 
 import Mathlib.GroupTheory.Abelianization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Focal Subgroup Theorem
 
@@ -27,13 +30,13 @@ This file defines the focal subgroup and proves the Focal Subgroup Theorem.
 
 * `transferFocal_eq_pow`:
   The restriction of the transfer map to `H` acts like the power map `x ↦ x ^ [G : H]` mod `H*`.
-* `commutator_inf_eq_focalSubgroup`: The **Focal Subgroup Theorem**.
+* `commutator_inf_eq_focalSubgroup`: The *Focal Subgroup Theorem*.
   For a Sylow `p`-subgroup `P` of a finite group `G`, `G' ⊓ P = P*`,
   where `P*` is the focal subgroup of `P`.
 
 ## References
 
-* [D. Gorenstein, *Finite Groups*][gorenstein1968]
+* ‍\[D. Gorenstein, _Finite Groups_\]\[gorenstein1968\]
 -/
 
 @[expose] public section
@@ -86,8 +89,12 @@ theorem map_focalSubgroupOf : H.focalSubgroupOf.map H.subtype = H.focalSubgroup 
   map_subgroupOf_eq_of_le H.focalSubgroup_le
 
 
-/-- Lemma: H* is a normal subgroup of H. -/
-@[to_additive /-- Lemma: H* is a normal subgroup of H. -/]
+/--
+Lemma: H\* is a normal subgroup of H.
+-/
+@[to_additive /--
+              Lemma: H\* is a normal subgroup of H.
+              -/]
 instance : Normal (focalSubgroupOf H) := by
   rw [focalSubgroupOf_def, normal_subgroupOf_iff (focalSubgroup_le H)]
   intro n g hn hg
@@ -208,7 +215,7 @@ lemma ker_transferFocal_inf_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.foc
 
 open scoped IsMulCommutative in
 /--
-**The Focal Subgroup Theorem**
+*The Focal Subgroup Theorem*
 
 For a Sylow p-subgroup P of a finite group G, `P ∩ G' = P*`,
 where `P*` is the focal subgroup of `P`.

@@ -13,6 +13,9 @@ public import Mathlib.Analysis.Normed.Group.Submodule
 
 import Mathlib.Data.Fintype.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed rings
 
@@ -524,8 +527,10 @@ lemma nnNorm_commutator_units_sub_one_le (a b : αˣ) :
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_commutator_units_sub_one_le := nnNorm_commutator_units_sub_one_le
 
-/-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
-  constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
+/--
+A homomorphism `f` between semi\_normed\_rings is bounded if there exists a positive
+constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`.
+-/
 def RingHom.IsBounded {α : Type*} [SeminormedRing α] {β : Type*} [SeminormedRing β]
     (f : α →+* β) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, norm (f x) ≤ C * norm x
@@ -913,74 +918,92 @@ end NormedRing
 
 end NormMulClass
 
-/-! ### Induced normed structures -/
+/-!
+# Induced normed structures
+-/
 
 section Induced
 
 variable {F : Type*} (R S : Type*) [FunLike F R S]
 
-/-- A non-unital ring homomorphism from a `NonUnitalRing` to a `NonUnitalSeminormedRing`
+/--
+A non-unital ring homomorphism from a `NonUnitalRing` to a `NonUnitalSeminormedRing`
 induces a `NonUnitalSeminormedRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev NonUnitalSeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) : NonUnitalSeminormedRing R := fast_instance%
   { SeminormedAddCommGroup.induced R S f, ‹NonUnitalRing R› with
     norm_mul_le x y := show ‖f _‖ ≤ _ from (map_mul f x y).symm ▸ norm_mul_le (f x) (f y) }
 
-/-- An injective non-unital ring homomorphism from a `NonUnitalRing` to a
+/--
+An injective non-unital ring homomorphism from a `NonUnitalRing` to a
 `NonUnitalNormedRing` induces a `NonUnitalNormedRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev NonUnitalNormedRing.induced [NonUnitalRing R] [NonUnitalNormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) :
     NonUnitalNormedRing R := fast_instance%
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
 
-/-- A non-unital ring homomorphism from a `Ring` to a `SeminormedRing` induces a
+/--
+A non-unital ring homomorphism from a `Ring` to a `SeminormedRing` induces a
 `SeminormedRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev SeminormedRing.induced [Ring R] [SeminormedRing S] [NonUnitalRingHomClass F R S] (f : F) :
     SeminormedRing R := fast_instance%
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹Ring R› with }
 
-/-- An injective non-unital ring homomorphism from a `Ring` to a `NormedRing` induces a
+/--
+An injective non-unital ring homomorphism from a `Ring` to a `NormedRing` induces a
 `NormedRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev NormedRing.induced [Ring R] [NormedRing S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedRing R := fast_instance%
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf, ‹Ring R› with }
 
-/-- A non-unital ring homomorphism from a `NonUnitalCommRing` to a `NonUnitalSeminormedCommRing`
+/--
+A non-unital ring homomorphism from a `NonUnitalCommRing` to a `NonUnitalSeminormedCommRing`
 induces a `NonUnitalSeminormedCommRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev NonUnitalSeminormedCommRing.induced [NonUnitalCommRing R] [NonUnitalSeminormedCommRing S]
     [NonUnitalRingHomClass F R S] (f : F) : NonUnitalSeminormedCommRing R := fast_instance%
   { NonUnitalSeminormedRing.induced R S f, ‹NonUnitalCommRing R› with }
 
-/-- An injective non-unital ring homomorphism from a `NonUnitalCommRing` to a
+/--
+An injective non-unital ring homomorphism from a `NonUnitalCommRing` to a
 `NonUnitalNormedCommRing` induces a `NonUnitalNormedCommRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev NonUnitalNormedCommRing.induced [NonUnitalCommRing R] [NonUnitalNormedCommRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) :
     NonUnitalNormedCommRing R := fast_instance%
   { NonUnitalNormedRing.induced R S f hf, ‹NonUnitalCommRing R› with }
-/-- A non-unital ring homomorphism from a `CommRing` to a `SeminormedRing` induces a
+/--
+A non-unital ring homomorphism from a `CommRing` to a `SeminormedRing` induces a
 `SeminormedCommRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev SeminormedCommRing.induced [CommRing R] [SeminormedRing S] [NonUnitalRingHomClass F R S]
     (f : F) : SeminormedCommRing R := fast_instance%
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹CommRing R› with }
 
-/-- An injective non-unital ring homomorphism from a `CommRing` to a `NormedRing` induces a
+/--
+An injective non-unital ring homomorphism from a `CommRing` to a `NormedRing` induces a
 `NormedCommRing` structure on the domain.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev NormedCommRing.induced [CommRing R] [NormedRing S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedCommRing R := fast_instance%
   { SeminormedCommRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
@@ -1137,38 +1160,46 @@ end Real
 section IsUnital
 
 attribute [local instance] IsUnital.toMulOneClass in
-/-- A unital non-unital seminormed ring is a seminormed ring.
+/--
+A unital non-unital seminormed ring is a seminormed ring.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toSeminormedRing {A : Type*} [NonUnitalSeminormedRing A]
     [IsUnital A] : SeminormedRing A where
   __ := ‹NonUnitalSeminormedRing A›
   __ := toSemiring
 
 attribute [local instance] IsUnital.toSeminormedRing in
-/-- A unital non-unital seminormed commutative ring is a seminormed commutative ring.
+/--
+A unital non-unital seminormed commutative ring is a seminormed commutative ring.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toSeminormedCommRing {A : Type*} [NonUnitalSeminormedCommRing A]
     [IsUnital A] : SeminormedCommRing A where
 
 attribute [local instance] IsUnital.toMulOneClass in
-/-- A unital non-unital normed ring is a normed ring.
+/--
+A unital non-unital normed ring is a normed ring.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toNormedRing {A : Type*} [NonUnitalNormedRing A] [IsUnital A] :
     NormedRing A where
   __ := ‹NonUnitalNormedRing A›
   __ := toSemiring
 
 attribute [local instance] IsUnital.toNormedRing in
-/-- A unital non-unital normed commutative ring is a normed commutative ring.
+/--
+A unital non-unital normed commutative ring is a normed commutative ring.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toNormedCommRing {A : Type*} [NonUnitalNormedCommRing A]
     [IsUnital A] : NormedCommRing A where
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Action.TypeTags
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pretransitive group actions
 
@@ -14,8 +17,8 @@ This file defines a typeclass for pretransitive group actions.
 
 ## Notation
 
-- `a • b` is used as notation for `SMul.smul a b`.
-- `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
+* `a • b` is used as notation for `SMul.smul a b`.
+* `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
 
 ## Implementation details
 
@@ -36,7 +39,7 @@ open Function (Injective Surjective)
 variable {M G α β : Type*}
 
 /-!
-### (Pre)transitive action
+# (Pre)transitive action
 
 `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y` (or `g +ᵥ x = y`
 for an additive action). A transitive action should furthermore have `α` nonempty.
@@ -120,7 +123,9 @@ lemma MulAction.IsPretransitive.of_isScalarTower (M : Type*) {N α : Type*} [Mon
 
 end CompatibleScalar
 
-/-! ### `Additive`, `Multiplicative` -/
+/-!
+# `Additive`, `Multiplicative`
+-/
 
 section
 

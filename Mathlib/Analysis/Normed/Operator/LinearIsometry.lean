@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Semi-)linear isometries
 
@@ -56,21 +59,24 @@ notation:25 E " →ₗᵢ[" R:25 "] " E₂:0 => LinearIsometry (RingHom.id R) E 
 /-- An antilinear isometric embedding of a normed `R`-module into another one. -/
 notation:25 E " →ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometry (starRingEnd R) E E₂
 
-/-- `SemilinearIsometryClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear isometries
+/--
+`SemilinearIsometryClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear isometries
 `E → E₂`.
 
 See also `LinearIsometryClass F R E E₂` for the case where `σ` is the identity map on `R`.
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
-`f (c • x) = (σ c) • f x`. -/
+`f (c • x) = (σ c) • f x`.
+-/
 class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R] [Semiring R₂]
     (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
     [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] : Prop
     extends SemilinearMapClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 
-/-- `LinearIsometryClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
+/--
+`LinearIsometryClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
 `M → M₂`.
 
 This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`.
@@ -169,8 +175,10 @@ theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) 
   rintro ⟨_⟩ ⟨_⟩
   simp
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedAddCommGroup E]
     [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] (h : E →ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
   h
@@ -390,10 +398,12 @@ variable {R M M₁ : Type*}
 variable [Ring R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₁]
 variable [Module R M] [Module R M₁]
 
-/-- A linear isometry between two modules restricts to a linear isometry
+/--
+A linear isometry between two modules restricts to a linear isometry
 from any submodule `p` of the domain onto the image of that submodule.
 
-This is a version of `LinearMap.submoduleMap` extended to linear isometries. -/
+This is a version of `LinearMap.submoduleMap` extended to linear isometries.
+-/
 @[simps!]
 def submoduleMap (p : Submodule R M) (e : M →ₗᵢ[R] M₁) :
     p →ₗᵢ[R] p.map (e : M →ₗ[R] M₁) :=
@@ -448,14 +458,16 @@ notation:25 E " ≃ₗᵢ[" R:25 "] " E₂:0 => LinearIsometryEquiv (RingHom.id 
 /-- An antilinear isometric equivalence between two normed vector spaces. -/
 notation:25 E " ≃ₗᵢ⋆[" R:25 "] " E₂:0 => LinearIsometryEquiv (starRingEnd R) E E₂
 
-/-- `SemilinearIsometryEquivClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear
+/--
+`SemilinearIsometryEquivClass F σ E E₂` asserts `F` is a type of bundled `σ`-semilinear
 isometric equivs `E → E₂`.
 
 See also `LinearIsometryEquivClass F R E E₂` for the case where `σ` is the identity map on `R`.
 
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
-`f (c • x) = (σ c) • f x`. -/
+`f (c • x) = (σ c) • f x`.
+-/
 class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R]
   [Semiring R₂] (σ₁₂ : outParam <| R →+* R₂) {σ₂₁ : outParam <| R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
@@ -463,7 +475,8 @@ class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Sem
   extends SemilinearEquivClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 
-/-- `LinearIsometryEquivClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
+/--
+`LinearIsometryEquivClass F R E E₂` asserts `F` is a type of bundled `R`-linear isometries
 `M → M₂`.
 
 This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`.
@@ -509,7 +522,8 @@ instance instSemilinearIsometryEquivClass :
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
 
-/-- Shortcut instance, saving 8.5% of compilation time in
+/--
+Shortcut instance, saving 8.5% of compilation time in
 `Mathlib/Analysis/InnerProductSpace/Adjoint.lean`.
 
 (This instance was pinpointed by benchmarks; we didn't do an in depth investigation why it is
@@ -715,14 +729,18 @@ theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
 @[simp]
 theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm := rfl
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E]
     [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
   h
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
     [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂]
     [Module R E] [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E₂ → E :=
@@ -850,13 +868,15 @@ theorem inv_def (e : E ≃ₗᵢ[R] E) : (e⁻¹ : E ≃ₗᵢ[R] E) = e.symm :=
 @[simp] lemma toContinuousLinearEquiv_inv (e : E ≃ₗᵢ[R] E) :
     toContinuousLinearEquiv e⁻¹ = e.toContinuousLinearEquiv⁻¹ := rfl
 
-/-! Lemmas about mixing the group structure with definitions. Because we have multiple ways to
+/-!
+Lemmas about mixing the group structure with definitions. Because we have multiple ways to
 express `LinearIsometryEquiv.refl`, `LinearIsometryEquiv.symm`, and
 `LinearIsometryEquiv.trans`, we want simp lemmas for every combination.
 The assumption made here is that if you're using the group structure, you want to preserve it
 after simp.
 
-This copies the approach used by the lemmas near `Equiv.Perm.trans_one`. -/
+This copies the approach used by the lemmas near `Equiv.Perm.trans_one`.
+-/
 
 
 @[simp]
@@ -1102,11 +1122,13 @@ variable [Ring R] [Ring R₂] [SeminormedAddCommGroup M] [SeminormedAddCommGroup
 variable [Module R M] [Module R₂ M₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 
-/-- A linear isometry equivalence between two modules restricts to a
+/--
+A linear isometry equivalence between two modules restricts to a
 linear isometry equivalence from any submodule `p` of the domain onto
 the image of that submodule.
 
-This is a version of `LinearEquiv.submoduleMap` extended to linear isometry equivalences. -/
+This is a version of `LinearEquiv.submoduleMap` extended to linear isometry equivalences.
+-/
 @[simps!]
 def submoduleMap (p : Submodule R M) (e : M ≃ₛₗᵢ[σ₁₂] M₂) :
     p ≃ₛₗᵢ[σ₁₂] p.map (e : M →ₛₗ[σ₁₂] M₂) :=

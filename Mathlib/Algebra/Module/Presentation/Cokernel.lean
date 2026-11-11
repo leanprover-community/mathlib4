@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentation of a cokernel
 
@@ -23,7 +26,6 @@ generators of `M₂`. Then, we obtain a presentation
 
 More generally, if we have an exact sequence `M₁ → M₂ → M₃ → 0`,
 we obtain a presentation of `M₃`, see `Presentation.ofExact`.
-
 -/
 
 @[expose] public section

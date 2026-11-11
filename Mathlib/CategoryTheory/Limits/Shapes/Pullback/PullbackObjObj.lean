@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Leibniz Constructions
 
@@ -39,7 +42,7 @@ a parameterized adjunction `F.leibnizAdjunction G adj₂ : F.leibnizPushout ⊣�
 
 ## References
 
-* [Emily Riehl, Dominic Verity, *Elements of ∞-Category Theory*, Definition C.2.8][RV22]
+* ‍\[Emily Riehl, Dominic Verity, _Elements of ∞-Category Theory_, Definition C.2.8\]\[RV22\]
 * https://ncatlab.org/nlab/show/pushout-product
 * https://ncatlab.org/nlab/show/pullback-power
 
@@ -286,9 +289,11 @@ end PushoutObjObj
 end
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the Leibniz pushout
-  (pushout-product) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₂ : X₂ ⟶ Y₂` in `C₂` is the map
-  `pushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂) ⟶ (F.obj Y₁).obj Y₂` induced by the diagram
+/--
+Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the Leibniz pushout
+(pushout-product) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₂ : X₂ ⟶ Y₂` in `C₂` is the map
+`pushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂) ⟶ (F.obj Y₁).obj Y₂` induced by the diagram
+
 ```
   `(F.obj X₁).obj X₂` ----> `(F.obj Y₁).obj X₂`
           |                            |
@@ -507,10 +512,12 @@ end PullbackObjObj
 end
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, the Leibniz
-  pullback (pullback-power) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃` is the map
-  `(G.obj (op Y₁)).obj X₃ ⟶ pullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)` induced by
-  the diagram
+/--
+Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, the Leibniz
+pullback (pullback-power) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃` is the map
+`(G.obj (op Y₁)).obj X₃ ⟶ pullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)` induced by
+the diagram
+
 ```
   `(G.obj (op Y₁)).obj X₃` ----> `(G.obj (op X₁)).obj X₃`
               |                              |

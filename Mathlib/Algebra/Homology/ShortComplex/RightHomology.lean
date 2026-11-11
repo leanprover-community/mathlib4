@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right Homology of short complexes
 
@@ -25,7 +28,6 @@ Similarly, we define `S.opcycles` to be the `Q` field.
 In `Homology.lean`, when `S` has two compatible left and right homology data
 (i.e. they give the same `H` up to a canonical isomorphism), we shall define
 `[S.HasHomology]` and `S.homology`.
-
 -/
 
 @[expose] public section

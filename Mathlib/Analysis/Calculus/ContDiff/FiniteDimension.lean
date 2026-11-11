@@ -8,9 +8,11 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Higher differentiability in finite dimensions.
-
 -/
 
 public section
@@ -24,7 +26,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {n : WithTop ℕ∞} {f : D → E} {s : Set D}
 
-/-! ### Finite-dimensional results -/
+/-!
+# Finite-dimensional results
+-/
 
 section FiniteDimensional
 
@@ -56,7 +60,8 @@ theorem contDiff_clm_apply_iff {f : D → E →L[𝕜] F} [FiniteDimensional �
     ContDiff 𝕜 n f ↔ ∀ y, ContDiff 𝕜 n fun x => f x y := by
   simp_rw [← contDiffOn_univ, contDiffOn_clm_apply]
 
-/-- This is a useful lemma to prove that a certain operation preserves functions being `C^n`.
+/--
+This is a useful lemma to prove that a certain operation preserves functions being `C^n`.
 When you do induction on `n`, this gives a useful characterization of a function being `C^(n+1)`,
 assuming you have already computed the derivative. The advantage of this version over
 `contDiff_succ_iff_fderiv` is that both occurrences of `ContDiff` are for functions with the same
@@ -64,7 +69,8 @@ domain and codomain (`D` and `E`). This is not the case for `contDiff_succ_iff_f
 often requires an inconvenient need to generalize `F`, which results in universe issues
 (see the discussion in the section of `ContDiff.comp`).
 
-This lemma avoids these universe issues, but only applies for finite-dimensional `D`. -/
+This lemma avoids these universe issues, but only applies for finite-dimensional `D`.
+-/
 theorem contDiff_succ_iff_fderiv_apply [FiniteDimensional 𝕜 D] :
     ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧
       (n = ω → AnalyticOnNhd 𝕜 f Set.univ) ∧ ∀ y, ContDiff 𝕜 n fun x => fderiv 𝕜 f x y := by

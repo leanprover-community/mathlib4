@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Topology.ContinuousOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial homeomorphisms: definitions
 
@@ -76,11 +79,15 @@ protected def symm : PartialHomeomorph Y X where
   continuousOn_toFun := e.continuousOn_invFun
   continuousOn_invFun := e.continuousOn_toFun
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (e : PartialHomeomorph X Y) : X → Y := e
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : PartialHomeomorph X Y) : Y → X := e.symm
 
 initialize_simps_projections PartialHomeomorph (toFun → apply, invFun → symm_apply)

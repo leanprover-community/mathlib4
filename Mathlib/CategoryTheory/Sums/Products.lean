@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Products.Associator
 public import Mathlib.CategoryTheory.Sums.Associator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors out of sums of categories.
 
@@ -15,7 +18,6 @@ This file records the universal property of sums of categories as an equivalence
 categories `Sum.functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B)`, and characterizes its
 precompositions with the left and right inclusion as corresponding to the projections on
 the product side.
-
 -/
 
 @[expose] public section

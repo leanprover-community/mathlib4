@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Monoidal.Opposite
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Braided and symmetric monoidal categories
 
@@ -27,8 +30,7 @@ The rationale is that we are not carrying any additional data, just requiring a 
 
 ## References
 
-* [Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, *Tensor categories*][egno15]
-
+* ‍\[Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, _Tensor categories_\]\[egno15\]
 -/
 
 @[expose] public section
@@ -410,10 +412,12 @@ def ofNatIso {F G : C ⥤ D} (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
     rw [this X Y, this Y X, ← braiding_naturality_assoc, ← Functor.LaxBraided.braided_assoc]
     simp
 
-/-- Copy of a lax braided structure on a functor `F` with new `ε` and `μ` fields equal to the old
+/--
+Copy of a lax braided structure on a functor `F` with new `ε` and `μ` fields equal to the old
 ones.
 
-This is useful to fix definitional equalities. -/
+This is useful to fix definitional equalities.
+-/
 @[implicit_reducible]
 def copy {F : C ⥤ D} (hF : F.LaxBraided) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
     (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y))
@@ -561,10 +565,12 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.Braided] [G.Braided] : (F ⋙ G).Braided
 lemma toMonoidal_injective (F : C ⥤ D) : Function.Injective
     (@Braided.toMonoidal _ _ _ _ _ _ _ _ _ : F.Braided → F.Monoidal) := by rintro ⟨⟩ ⟨⟩ rfl; rfl
 
-/-- Copy of a braided structure on a functor `F` with new `ε`, `μ`, `η` and `δ` fields equal to the
+/--
+Copy of a braided structure on a functor `F` with new `ε`, `μ`, `η` and `δ` fields equal to the
 old ones.
 
-This is useful to fix definitional equalities. -/
+This is useful to fix definitional equalities.
+-/
 @[implicit_reducible]
 def copy {F : C ⥤ D} (hF : F.Braided) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
     (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)) (η' : F.obj (𝟙_ C) ⟶ 𝟙_ D)

@@ -11,9 +11,11 @@ public import Mathlib.Algebra.Category.ModuleCat.Abelian
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `FGModuleCat K` is an abelian category.
-
 -/
 
 public section

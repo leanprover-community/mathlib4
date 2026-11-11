@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The field of rational functions
 
@@ -18,12 +21,14 @@ the basic definition.
 For connections with Laurent Series, see `Mathlib/RingTheory/LaurentSeries.lean`.
 
 ## Main definitions
+
 We provide a set of recursion and induction principles:
-- `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
+
+* `RatFunc.liftOn`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
   if `f` is well-defined in the sense that `p/q = p'/q' → f p q = f p' q'`.
-- `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
+* `RatFunc.liftOn'`: define a function by mapping a fraction of polynomials `p/q` to `f p q`,
   if `f` is well-defined in the sense that `f (a * p) (a * q) = f p' q'`.
-- `RatFunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
+* `RatFunc.induction_on`: if `P` holds on `p / q` for all polynomials `p q`, then `P` holds on all
   rational functions
 
 ## Implementation notes
@@ -42,10 +47,9 @@ the codomain is not a field or even an integral domain.
 
 ## References
 
-* [Kleiman, *Misconceptions about $K_X$*][kleiman1979]
+* ‍\[Kleiman, _Misconceptions about $`K_X`_\]\[kleiman1979\]
 * https://freedommathdance.blogspot.com/2012/11/misconceptions-about-kx.html
 * https://stacks.math.columbia.edu/tag/01X1
-
 -/
 
 @[expose] public section
@@ -58,7 +62,8 @@ universe u v
 
 variable (K : Type u)
 
-/-- `RatFunc K` is `K(X)`, the field of rational functions over `K`.
+/--
+`RatFunc K` is `K(X)`, the field of rational functions over `K`.
 
 The inclusion of polynomials into `RatFunc` is `algebraMap K[X] K⟮X⟯`,
 the maps between `K⟮X⟯` and another field of fractions of `K[X]`,
@@ -79,7 +84,9 @@ variable [CommRing K]
 
 section Rec
 
-/-! ### Constructing `RatFunc`s and their induction principles -/
+/-!
+# Constructing `RatFunc`s and their induction principles
+-/
 
 theorem ofFractionRing_injective : Function.Injective (ofFractionRing : _ → K⟮X⟯) :=
   fun _ _ => ofFractionRing.inj
@@ -91,7 +98,8 @@ theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → Fr
     toFractionRing x = toFractionRing y ↔ x = y :=
   toFractionRing_injective.eq_iff
 
-/-- Non-dependent recursion principle for `K⟮X⟯`:
+/--
+Non-dependent recursion principle for `K⟮X⟯`:
 To construct a term of `P : Sort*` out of `x : K⟮X⟯`,
 it suffices to provide a constructor `f : Π (p q : K[X]), P`
 and a proof that `f p q = f p' q'` for all `p q p' q'` such that `q' * p = q * p'` where
@@ -129,7 +137,8 @@ section IsDomain
 
 variable [IsDomain K]
 
-/-- `RatFunc.mk (p q : K[X])` is `p / q` as a rational function.
+/--
+`RatFunc.mk (p q : K[X])` is `p / q` as a rational function.
 
 If `q = 0`, then `mk` returns 0.
 
@@ -185,7 +194,8 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ 
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
   · simp only [mk_eq_localization_mk _ hq, liftOn_ofFractionRing_mk]
 
-/-- Non-dependent recursion principle for `K⟮X⟯`: if `f p q : P` for all `p q`,
+/--
+Non-dependent recursion principle for `K⟮X⟯`: if `f p q : P` for all `p q`,
 such that `f (a * p) (a * q) = f p q`, then we can find a value of `P`
 for all elements of `K⟮X⟯` by setting `lift_on' (p / q) f _ = f p q`.
 
@@ -212,7 +222,8 @@ theorem liftOn'_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀
   rw [RatFunc.liftOn', RatFunc.liftOn_mk _ _ _ f0]
   apply liftOn_condition_of_liftOn'_condition H
 
-/-- Induction principle for `K⟮X⟯`: if `f p q : P (RatFunc.mk p q)` for all `p q`,
+/--
+Induction principle for `K⟮X⟯`: if `f p q : P (RatFunc.mk p q)` for all `p q`,
 then `P` holds on all elements of `K⟮X⟯`.
 
 See also `induction_on`, which is a recursion principle defined in terms of `algebraMap`.

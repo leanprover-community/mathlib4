@@ -13,61 +13,58 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.GroupTheory.GroupAction.Transitive
 import Mathlib.Order.Setoid.Partition.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primitive actions
 
 ## Definitions
 
-- `MulAction.IsPreprimitive G X`
+* `MulAction.IsPreprimitive G X`
   A structure that says that the action of a type `G` on a type `X`
-  (defined by an instance `SMul G X`) is *preprimitive*,
+  (defined by an instance `SMul G X`) is _preprimitive_,
   namely, it is pretransitive and the only blocks are ⊤ and subsingletons.
   (The pretransitivity assumption is essentially trivial,
   because orbits are blocks, unless the action itself is trivial.)
 
-  The notion which is introduced in classical books on group theory
-  is restricted to group actions.
-  In fact, it may be irrelevant if the action is degenerate,
-  when “trivial blocks” might not be blocks.
-  Moreover, the classical notion is *primitive*,
-  which further assumes that `X` is not empty.
+The notion which is introduced in classical books on group theory
+is restricted to group actions.
+In fact, it may be irrelevant if the action is degenerate,
+when “trivial blocks” might not be blocks.
+Moreover, the classical notion is _primitive_,
+which further assumes that `X` is not empty.
 
-- `MulAction.IsQuasiPreprimitive G X`
-  A structure that says that the action of the group `G` on the type `X` is *quasipreprimitive*,
+* `MulAction.IsQuasiPreprimitive G X`
+  A structure that says that the action of the group `G` on the type `X` is _quasipreprimitive_,
   namely, normal subgroups of `G` which act nontrivially act pretransitively.
-
-- We prove some straightforward theorems that relate preprimitivity
+* We prove some straightforward theorems that relate preprimitivity
   under equivariant maps, for images and preimages.
 
 ## Relation with stabilizers
 
-- `MulAction.isSimpleOrderBlockMem_iff_isPreprimitive`
+* `MulAction.isSimpleOrderBlockMem_iff_isPreprimitive`
   relates primitivity and the fact that the inclusion order on blocks containing is simple.
-
-- `MulAction.isCoatom_stabilizer_iff_preprimitive`
+* `MulAction.isCoatom_stabilizer_iff_preprimitive`
   An action is preprimitive iff the stabilizers of points are maximal subgroups.
-
-- `MulAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive`
+* `MulAction.IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive`
   Stabilizers of points under a preprimitive action are maximal subgroups.
 
 ## Relation with normal subgroups
 
-- `MulAction.IsPreprimitive.isQuasipreprimitive`
+* `MulAction.IsPreprimitive.isQuasipreprimitive`
   Preprimitive actions are quasipreprimitive.
 
 ## Particular results for actions on finite types
 
-- `MulAction.IsPreprimitive.of_prime_card` :
+* `MulAction.IsPreprimitive.of_prime_card` :
   A pretransitive action on a finite type of prime cardinal is preprimitive.
-
-- `MulAction.IsPreprimitive.of_card_lt`
+* `MulAction.IsPreprimitive.of_card_lt`
   Given an equivariant map from a preprimitive action,
   if the image is at least twice the codomain, then the codomain is preprimitive.
-
-- `MulAction.IsPreprimitive.exists_mem_smul_and_notMem_smul` : **Theorem of Rudio**.
+* `MulAction.IsPreprimitive.exists_mem_smul_and_notMem_smul` : *Theorem of Rudio*.
   For a preprimitive action, a subset which is neither empty nor full has a translate
   which contains a given point and avoids another one.
-
 -/
 
 public section
@@ -363,14 +360,18 @@ theorem of_card_lt [Finite Y] [IsPretransitive H Y] [IsPreprimitive G X]
 /- The finiteness assumption is necessary :
   For G = ℤ acting on itself, no translate of ℕ contains 0 but not 1.
   (See comment before `IsBlock.of_subset`.) -/
-/-- Theorem of Rudio (Wielandt, 1964, Th. 8.1)
+/--
+Theorem of Rudio (Wielandt, 1964, Th. 8.1)
 
 For a preprimitive action, a subset which is neither empty nor full has a translate
-which contains a given point and avoids another one. -/
-@[to_additive /-- Theorem of Rudio (Wielandt, 1964, Th. 8.1)
+which contains a given point and avoids another one.
+-/
+@[to_additive /--
+              Theorem of Rudio (Wielandt, 1964, Th. 8.1)
 
-For a preprimitive additive action, a subset which is neither empty nor full has a translate
-which contains a given point and avoids another one. -/]
+              For a preprimitive additive action, a subset which is neither empty nor full has a
+translate which contains a given point and avoids another one.
+              -/]
 theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     {A : Set X} (hfA : A.Finite) (hA : A.Nonempty) (hA' : A ≠ .univ) {a b : X} (h : a ≠ b) :
     ∃ g : G, a ∈ g • A ∧ b ∉ g • A := by

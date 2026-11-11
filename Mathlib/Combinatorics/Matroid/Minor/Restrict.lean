@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Matroid.Dual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matroid Restriction
 
@@ -29,11 +32,8 @@ are hard to prove without `Matroid.restrict` API.
 
 * `M.restrict R`, written `M ↾ R`, is the restriction of `M : Matroid α` to `R : Set α`: i.e.
   the matroid with ground set `R` whose independent sets are the `M`-independent subsets of `R`.
-
 * `Matroid.Restriction N M`, written `N ≤r M`, means that `N = M ↾ R` for some `R ⊆ M.E`.
-
 * `Matroid.IsStrictRestriction N M`, written `N <r M`, means that `N = M ↾ R` for some `R ⊂ M.E`.
-
 * `Matroidᵣ α` is a type synonym for `Matroid α`, equipped with the `PartialOrder` `≤r`.
 
 ## Implementation Notes
@@ -399,7 +399,8 @@ theorem IsRestriction.dep_iff (hMN : N ≤r M) : N.Dep X ↔ M.Dep X ∧ X ⊆ N
 end IsRestriction
 
 /-!
-### `IsBasis` and `Base`
+# `IsBasis` and `Base`
+
 The lemmas below exploit the fact that `(M ↾ X).Base I ↔ M.IsBasis I X` to transfer facts about
 `Matroid.Base` to facts about `Matroid.IsBasis`.
 Their statements thematically belong in `Data.Matroid.Basic`, but they appear here because their

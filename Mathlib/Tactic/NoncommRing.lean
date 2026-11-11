@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Group.Action.Defs  -- shake: keep (metaprogram output dependency)
 public import Mathlib.Tactic.Abel
 
-/-! # The `noncomm_ring` tactic
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `noncomm_ring` tactic
 
 Solve goals in not necessarily commutative rings.
 
@@ -35,6 +39,8 @@ lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * ofNat(n) = OfNat.ofNat n • r :
 end nat_lit_mul
 
 open Lean.Parser.Tactic
+
+set_option doc.verso false
 /-- `noncomm_ring` simplifies expressions in not-necessarily-commutative rings in the main goal
 then tries closing it by "cheap" (reducible) `rfl`.
 This tactic supports the operators `+`, `*`, `-`, `^` and `•` (for scalar multiplication by
@@ -66,6 +72,8 @@ example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2 * a * c := by
 syntax (name := noncomm_ring) "noncomm_ring" optConfig (discharger)?
   (" [" ((simpStar <|> simpErase <|> simpLemma),*,?) "]")? : tactic
 
+
+set_option doc.verso true
 macro_rules
   | `(tactic| noncomm_ring $cfg:optConfig $[$disch]? $[[$rules,*]]?) => do
     let rules' := rules.getD ⟨#[]⟩

@@ -14,12 +14,16 @@ public import Mathlib.Data.Matrix.Diagonal
 
 import Mathlib.Algebra.Regular.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrix multiplication
 
 This file defines vector and matrix multiplication
 
 ## Main definitions
+
 * `dotProduct`: the dot product between two vectors
 * `Matrix.mul`: multiplication of two matrices
 * `Matrix.mulVec`: multiplication of a matrix with a vector
@@ -67,9 +71,11 @@ section DotProduct
 
 variable [Fintype m] [Fintype n]
 
-/-- `dotProduct v w` is the sum of the entrywise products `v i * w i`.
+/--
+`dotProduct v w` is the sum of the entrywise products `v i * w i`.
 
 This is available in bundled forms as:
+
 * `dotProductBilin`
 * `dotProductEquiv`
 -/
@@ -289,11 +295,13 @@ open Matrix
 
 namespace Matrix
 
-/-- `M * N` is the usual product of matrices `M` and `N`, i.e. we have that
+/--
+`M * N` is the usual product of matrices `M` and `N`, i.e. we have that
 `(M * N) i k` is the dot product of the `i`-th row of `M` by the `k`-th column of `N`.
 This is currently only defined when `m` is finite.
 
 This is available in bundled forms as:
+
 * `Matrix.addMonoidHomMulLeft`
 * `Matrix.addMonoidHomMulRight`
 -/
@@ -624,11 +632,13 @@ open Matrix
 
 namespace Matrix
 
-/-- For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`.
+/--
+For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`.
 Put another way, `vecMulVec w v` is exactly `replicateCol ι w * replicateRow ι v` for
 `Unique ι`; see `vecMulVec_eq`.
 
-This is available in a bundled form as `vecMulVecBilin`. -/
+This is available in a bundled form as `vecMulVecBilin`.
+-/
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 
@@ -708,10 +718,11 @@ variable [NonUnitalNonAssocSemiring α]
 `M *ᵥ v` (notation for `mulVec M v`) is the matrix-vector product of matrix `M` and vector `v`,
 where `v` is seen as a column vector.
 
-The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
+The notation has precedence 73, which comes immediately before `⬝ᵥ` for `dotProduct`,
 so that `A *ᵥ v ⬝ᵥ B *ᵥ w` is parsed as `(A *ᵥ v) ⬝ᵥ (B *ᵥ w)`.
 
 This is available in bundled forms as:
+
 * `Matrix.mulVec.addMonoidHomLeft`
 * `Matrix.mulVecLin`
 * `Matrix.mulVecBilin`
@@ -732,10 +743,11 @@ lemma mulVec_apply_eq_sum [Fintype n] (M : Matrix m n α) (v : n → α) (i : m)
 `v ᵥ* M` (notation for `vecMul v M`) is the vector-matrix product of vector `v` and matrix `M`,
 where `v` is seen as a row vector.
 
-The notation has precedence 73, which comes immediately before ` ⬝ᵥ ` for `dotProduct`,
+The notation has precedence 73, which comes immediately before `⬝ᵥ` for `dotProduct`,
 so that `v ᵥ* A ⬝ᵥ w ᵥ* B` is parsed as `(v ᵥ* A) ⬝ᵥ (w ᵥ* B)`.
 
 This is available in bundled forms as:
+
 * `Matrix.vecMulLinear`
 * `Matrix.vecMulBilin`
 -/

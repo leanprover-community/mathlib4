@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Polynomial.Ideal
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of polynomial rings
 -/
@@ -25,8 +28,10 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R]
 
-/-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
-isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
+/--
+For a commutative ring $`R`, evaluating a polynomial at an element $`x \in R` induces an
+isomorphism of $`R`-algebras $`R[X] / \langle X - x \rangle \cong R`.
+-/
 def quotientSpanXSubCAlgEquiv (x : R) :
     (R[X] ⧸ Ideal.span ({X - C x} : Set R[X])) ≃ₐ[R] R :=
   let e := RingHom.quotientKerEquivOfRightInverse (fun x => by
@@ -44,8 +49,10 @@ theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
     (quotientSpanXSubCAlgEquiv x).symm y = algebraMap R _ y :=
   rfl
 
-/-- For a commutative ring $R$, evaluating a polynomial at an element $y \in R$ induces an
-isomorphism of $R$-algebras $R[X] / \langle x, X - y \rangle \cong R / \langle x \rangle$. -/
+/--
+For a commutative ring $`R`, evaluating a polynomial at an element $`y \in R` induces an
+isomorphism of $`R`-algebras $`R[X] / \langle x, X - y \rangle \cong R / \langle x \rangle`.
+-/
 def quotientSpanCXSubCAlgEquiv (x y : R) :
     (R[X] ⧸ (Ideal.span {C x, X - C y} : Ideal R[X])) ≃ₐ[R] R ⧸ (Ideal.span {x} : Ideal R) :=
   (Ideal.quotientEquivAlgOfEq R (J := _ ⊔ Ideal.span {C x}) <| by
@@ -55,8 +62,10 @@ def quotientSpanCXSubCAlgEquiv (x y : R) :
         Ideal.quotientEquivAlgOfEq R <| by
           simp only [Ideal.map_span, Set.image_singleton]; congr 2; exact eval_C
 
-/-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
-induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
+/--
+For a commutative ring $`R`, evaluating a polynomial at elements $`y(X) \in R[X]` and $`x \in R`
+induces an isomorphism of $`R`-algebras $`R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R`.
+-/
 def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
     @AlgEquiv R (R[X][X] ⧸ (Ideal.span {C (X - C x), X - C y} : Ideal <| R[X][X])) R _ _ _
       (Ideal.Quotient.algebra R) _ :=

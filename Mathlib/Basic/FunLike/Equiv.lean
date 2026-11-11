@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Basic.FunLike.Embedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
 
@@ -15,6 +18,7 @@ This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `Line
 ## Basic usage of `EquivLike`
 
 A typical type of isomorphisms should be declared as:
+
 ```
 structure MyIso (A B : Type*) [MyClass A] [MyClass B] extends Equiv A B where
   (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
@@ -116,6 +120,7 @@ end CoolerIso
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
 class you just defined:
+
 ```
 -- Compare with: lemma do_something (f : MyIso A B) : sorry := sorry
 lemma do_something {F : Type*} [EquivLike F A B] [MyIsoClass F A B] (f : F) : sorry := sorry
@@ -124,13 +129,13 @@ lemma do_something {F : Type*} [EquivLike F A B] [MyIsoClass F A B] (f : F) : so
 This means anything set up for `MyIso`s will automatically work for `CoolerIsoClass`es,
 and defining `CoolerIsoClass` only takes a constant amount of effort,
 instead of linearly increasing the work per `MyIso`-related declaration.
-
 -/
 
 public section
 
 
-/-- The class `EquivLike E α β` expresses that terms of type `E` have an
+/--
+The class `EquivLike E α β` expresses that terms of type `E` have an
 injective coercion to bijections between `α` and `β`.
 
 Note that this does not directly extend `FunLike`, nor take `FunLike` as a parameter,
@@ -199,21 +204,25 @@ theorem surjective_comp (e : E) (f : β → γ) : Function.Surjective (f ∘ e) 
 theorem bijective_comp (e : E) (f : β → γ) : Function.Bijective (f ∘ e) ↔ Function.Bijective f :=
   (EquivLike.bijective e).of_comp_iff f
 
-/-- This lemma is only supposed to be used in the generic context, when working with instances
+/--
+This lemma is only supposed to be used in the generic context, when working with instances
 of classes extending `EquivLike`.
 For concrete isomorphism types such as `Equiv`, you should use `Equiv.symm_apply_apply`
 or its equivalent.
 
-TODO: define a generic form of `Equiv.symm`. -/
+TODO: define a generic form of `Equiv.symm`.
+-/
 @[simp]
 theorem inv_apply_apply (e : E) (a : α) : inv e (e a) = a := left_inv _ _
 
-/-- This lemma is only supposed to be used in the generic context, when working with instances
+/--
+This lemma is only supposed to be used in the generic context, when working with instances
 of classes extending `EquivLike`.
 For concrete isomorphism types such as `Equiv`, you should use `Equiv.apply_symm_apply`
 or its equivalent.
 
-TODO: define a generic form of `Equiv.symm`. -/
+TODO: define a generic form of `Equiv.symm`.
+-/
 @[simp]
 theorem apply_inv_apply (e : E) (b : β) : e (inv e b) = b := right_inv _ _
 

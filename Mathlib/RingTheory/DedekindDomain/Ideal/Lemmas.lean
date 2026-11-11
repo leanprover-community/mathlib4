@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.ChainOfDivisors
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dedekind domains and ideals
 
@@ -18,7 +21,7 @@ The unique factorization of ideals and invertibility of fractional ideals can be
 
 ## Main definitions
 
-- `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
+* `IsDedekindDomain.HeightOneSpectrum` defines the type of nonzero prime ideals of `R`.
 
 ## Implementation notes
 
@@ -32,25 +35,28 @@ The deprecations have the effect that downstream files now have to use the fully
 even when the corresponding namespace is `open`ed.
 
 After the deprecations have been removed, the shorter names can be restored:
+
 * In Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind:
-  + `Ideal.span_singleton_dvd_span_singleton_iff_dvd` → `span_singleton_dvd_span_singleton_iff_dvd`
-     in line 75 (as of 2026-04-17)
-  + `Ideal.normalizedFactorsEquivSpanNormalizedFactors` →
+
+  * `Ideal.span_singleton_dvd_span_singleton_iff_dvd` → `span_singleton_dvd_span_singleton_iff_dvd`
+    in line 75 (as of 2026-04-17)
+  * `Ideal.normalizedFactorsEquivSpanNormalizedFactors` →
     `normalizedFactorsEquivSpanNormalizedFactors` in line 115
-  + `Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity` →
+  * `Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity` →
     `emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity` in line 129
-  + `Ideal.normalizedFactorsEquivSpanNormalizedFactors` →
+  * `Ideal.normalizedFactorsEquivSpanNormalizedFactors` →
     `normalizedFactorsEquivSpanNormalizedFactors` in line 221
 * In Mathlib.NumberTheory.NumberField.ClassNumber:
-  + `Ideal.prod_normalizedFactors_eq_self` → `prod_normalizedFactors_eq_self` in line 122
+
+  * `Ideal.prod_normalizedFactors_eq_self` → `prod_normalizedFactors_eq_self` in line 122
 * In Mathlib.NumberTheory.RamificationInertia.Basic, one could add `open IsDedekindDomain`
   around line 498 and then remove many `IsDedekindDomain.` prefixes below.
 
 ## References
 
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
-* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
+* ‍\[J. Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 
 ## Tags
 
@@ -294,7 +300,8 @@ section Gcd
 
 namespace Ideal
 
-/-! ### GCD and LCM of ideals in a Dedekind domain
+/-!
+# GCD and LCM of ideals in a Dedekind domain
 
 We show that the gcd of two ideals in a Dedekind domain is just their supremum,
 and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (Ideal A)`.
@@ -454,7 +461,8 @@ end Ideal
 end IsDedekindDomain
 
 /-!
-### Height one spectrum of a Dedekind domain
+# Height one spectrum of a Dedekind domain
+
 If `R` is a Dedekind domain of Krull dimension 1, the maximal ideals of `R` are exactly its nonzero
 prime ideals.
 We define `HeightOneSpectrum` and provide lemmas to recover the facts that prime ideals of height
@@ -497,7 +505,8 @@ alias asIdeal_inj := HeightOneSpectrum.ext
 The (nonzero) prime elements of the monoid with zero `Ideal R` correspond
 to an element of type `HeightOneSpectrum R`.
 
-See `IsDedekindDomain.HeightOneSpectrum.prime` for the inverse direction. -/
+See `IsDedekindDomain.HeightOneSpectrum.prime` for the inverse direction.
+-/
 @[simps]
 def ofPrime {p : Ideal R} (hp : Prime p) : HeightOneSpectrum R :=
   ⟨p, Ideal.isPrime_of_prime hp, hp.ne_zero⟩
@@ -882,7 +891,8 @@ theorem quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥) (x : R) :
     quotientEquivPiFactors hI (Ideal.Quotient.mk I x) = fun _P =>
       Ideal.Quotient.mk _ x := rfl
 
-/-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
+/--
+*Chinese remainder theorem* for a Dedekind domain: if the ideal `I` factors as
 `∏ i ∈ s, P i ^ e i`, then `R ⧸ I` factors as `Π (i : s), R ⧸ (P i ^ e i)`.
 
 This is a version of `IsDedekindDomain.quotientEquivPiOfProdEq` where we restrict

@@ -9,21 +9,25 @@ public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Henselian rings
 
 In this file we set up the basic theory of Henselian (local) rings.
-A ring `R` is *Henselian* at an ideal `I` if the following conditions hold:
+A ring `R` is _Henselian_ at an ideal `I` if the following conditions hold:
+
 * `I` is contained in the Jacobson radical of `R`
-* for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
+* for every polynomial `f` over `R`, with a _simple_ root `a₀` over the quotient ring `R/I`,
   there exists a lift `a : R` of `a₀` that is a root of `f`.
 
-(Here, saying that a root `b` of a polynomial `g` is *simple* means that `g.derivative.eval b` is a
+(Here, saying that a root `b` of a polynomial `g` is _simple_ means that `g.derivative.eval b` is a
 unit. Warning: if `R/I` is not a field then it is not enough to assume that `g` has a factorization
 into monic linear factors in which `X - b` shows up only once; for example `1` is not a simple root
 of `X^2-1` over `ℤ/4ℤ`.)
 
-A local ring `R` is *Henselian* if it is Henselian at its maximal ideal.
+A local ring `R` is _Henselian_ if it is Henselian at its maximal ideal.
 In this case the first condition is automatic, and in the second condition we may ask for
 `f.derivative.eval a ≠ 0`, since the quotient ring `R/I` is a field in this case.
 
@@ -51,7 +55,6 @@ from the residue field to the Henselian ring.
 
 The following gist contains some code sketches in that direction.
 https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
-
 -/
 
 public section
@@ -70,28 +73,32 @@ theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   rw [Ideal.jacobson_bot] at h
   exact isLocalHom_of_le_jacobson h
 
-/-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
-for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
+/--
+A ring `R` is _Henselian_ at an ideal `I` if the following condition holds:
+for every polynomial `f` over `R`, with a _simple_ root `a₀` over the quotient ring `R/I`,
 there exists a lift `a : R` of `a₀` that is a root of `f`.
 
-(Here, saying that a root `b` of a polynomial `g` is *simple* means that `g.derivative.eval b` is a
+(Here, saying that a root `b` of a polynomial `g` is _simple_ means that `g.derivative.eval b` is a
 unit. Warning: if `R/I` is not a field then it is not enough to assume that `g` has a factorization
 into monic linear factors in which `X - b` shows up only once; for example `1` is not a simple root
-of `X^2-1` over `ℤ/4ℤ`.) -/
+of `X^2-1` over `ℤ/4ℤ`.)
+-/
 class HenselianRing (R : Type*) [CommRing R] (I : Ideal R) : Prop where
   jac : I ≤ Ring.jacobson R
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ I)
       (_ : IsUnit (Ideal.Quotient.mk I (f.derivative.eval a₀))), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ I
 
-/-- A local ring `R` is *Henselian* if the following condition holds:
-for every polynomial `f` over `R`, with a *simple* root `a₀` over the residue field,
+/--
+A local ring `R` is _Henselian_ if the following condition holds:
+for every polynomial `f` over `R`, with a _simple_ root `a₀` over the residue field,
 there exists a lift `a : R` of `a₀` that is a root of `f`.
-(Recall that a root `b` of a polynomial `g` is *simple* if it is not a double root, so if
+(Recall that a root `b` of a polynomial `g` is _simple_ if it is not a double root, so if
 `g.derivative.eval b ≠ 0`.)
 
 In other words, `R` is local Henselian if it is Henselian at the ideal `I`,
-in the sense of `HenselianRing`. -/
+in the sense of `HenselianRing`.
+-/
 class HenselianLocalRing (R : Type*) [CommRing R] : Prop extends IsLocalRing R where
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ maximalIdeal R)

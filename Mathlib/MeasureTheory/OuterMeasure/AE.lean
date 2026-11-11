@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The “almost everywhere” filter of co-null sets.
 
@@ -17,10 +20,10 @@ In this file we define the filter and prove some basic theorems about it.
 
 ## Notation
 
-- `∀ᵐ x ∂μ, p x`: the predicate `p` holds for `μ`-a.e. all `x`;
-- `∃ᶠ x ∂μ, p x`: the predicate `p` holds on a set of nonzero measure;
-- `f =ᵐ[μ] g`: `f x = g x` for `μ`-a.e. all `x`;
-- `f ≤ᵐ[μ] g`: `f x ≤ g x` for `μ`-a.e. all `x`.
+* `∀ᵐ x ∂μ, p x`: the predicate `p` holds for `μ`-a.e. all `x`;
+* `∃ᶠ x ∂μ, p x`: the predicate `p` holds on a set of nonzero measure;
+* `f =ᵐ[μ] g`: `f x = g x` for `μ`-a.e. all `x`;
+* `f ≤ᵐ[μ] g`: `f x ≤ g x` for `μ`-a.e. all `x`.
 
 ## Implementation details
 
@@ -50,29 +53,37 @@ def ae (μ : F) : Filter α :=
     measure_mono_null hs ht
 deriving CountableInterFilter
 
-/-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
+/--
+`∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
-This is notation for `Filter.Eventually p (MeasureTheory.ae μ)`. -/
+This is notation for `Filter.Eventually p (MeasureTheory.ae μ)`.
+-/
 notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| MeasureTheory.ae μ) => r
 
-/-- `∃ᵐ a ∂μ, p a` means that `p` holds `∂μ`-frequently,
+/--
+`∃ᵐ a ∂μ, p a` means that `p` holds `∂μ`-frequently,
 i.e. `p` holds on a set of positive measure.
 
-This is notation for `Filter.Frequently p (MeasureTheory.ae μ)`. -/
+This is notation for `Filter.Frequently p (MeasureTheory.ae μ)`.
+-/
 notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| MeasureTheory.ae μ) => r
 
-/-- `x =ᵐ[μ] y` means that `x` and `y` are eventually equal along the a.e. filter,
+/--
+`x =ᵐ[μ] y` means that `x` and `y` are eventually equal along the a.e. filter,
 i.e. `x = y` away from a null set.
 
 This is `Filter.EventuallyEq (MeasureTheory.ae μ) x y` if `x` is a function and
-`Filter.EventuallyEqSet (MeasureTheory.ae μ) x y` if `x` is a set. -/
+`Filter.EventuallyEqSet (MeasureTheory.ae μ) x y` if `x` is a set.
+-/
 notation:50 f " =ᵐ[" μ:50 "] " g:50 => f =ᶠ[MeasureTheory.ae μ] g
 
-/-- `x ≤ᵐ[μ] y` means that `x` is eventually less than or equal to `y` along the a.e. filter,
+/--
+`x ≤ᵐ[μ] y` means that `x` is eventually less than or equal to `y` along the a.e. filter,
 i.e. `x ≤ y` away from a null set.
 
 This is `Filter.EventuallyLE (MeasureTheory.ae μ) x y` if `x` is a function and
-`Filter.EventuallySubset (MeasureTheory.ae μ) x y` if `x` is a set. -/
+`Filter.EventuallySubset (MeasureTheory.ae μ) x y` if `x` is a set.
+-/
 notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => f ≤ᶠ[MeasureTheory.ae μ] g
 
 section delaborators

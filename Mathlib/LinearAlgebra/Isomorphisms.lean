@@ -8,13 +8,15 @@ module
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Quotient.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isomorphism theorems for modules.
 
 * The Noether's first, second, and third isomorphism theorems for modules are proved as
   `LinearMap.quotKerEquivRange`, `LinearMap.quotientInfEquivSupQuotient` and
   `Submodule.quotientQuotientEquivQuotient`.
-
 -/
 
 @[expose] public section
@@ -78,14 +80,16 @@ theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
   rw [LinearMap.ker_comp, Submodule.inclusion, comap_codRestrict, ker_mkQ, map_comap_subtype]
   exact comap_mono (inf_le_inf_right _ le_sup_left)
 
-/-- Canonical linear map from the quotient `p/(p ∩ p')` to `(p+p')/p'`, mapping `x + (p ∩ p')`
+/--
+Canonical linear map from the quotient `p/(p ∩ p')` to `(p+p')/p'`, mapping `x + (p ∩ p')`
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 
 Note that in the following declaration the type of the domain is expressed using
 `comap p.subtype p ⊓ comap p.subtype p'`
 instead of
 `comap p.subtype (p ⊓ p')`
-because the former is the simp normal form (see also `Submodule.comap_inf`). -/
+because the former is the simp normal form (see also `Submodule.comap_inf`).
+-/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
     (↥p) ⧸ (comap p.subtype p ⊓ comap p.subtype p') →ₗ[R]
       (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
@@ -113,7 +117,8 @@ Note that in the following declaration the type of the domain is expressed using
 `comap p.subtype p ⊓ comap p.subtype p'`
 instead of
 `comap p.subtype (p ⊓ p')`
-because the former is the simp normal form (see also `Submodule.comap_inf`). -/
+because the former is the simp normal form (see also `Submodule.comap_inf`).
+-/
 noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
     (p ⧸ comap p.subtype p ⊓ comap p.subtype p') ≃ₗ[R] _ ⧸ comap (p ⊔ p').subtype p' :=
   LinearEquiv.ofBijective (quotientInfToSupQuotient p p')

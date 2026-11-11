@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugations
 
@@ -14,7 +17,7 @@ This file defines the grade reversal and grade involution functions on multivect
 `involute`.
 Together, these operations compose to form the "Clifford conjugate", hence the name of this file.
 
-https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
+https://en.wikipedia.org/wiki/Clifford\_algebra#Antiautomorphisms
 
 ## Main definitions
 
@@ -28,7 +31,6 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 * `CliffordAlgebra.reverse_involute_commute`
 * `CliffordAlgebra.involute_mem_evenOdd_iff`
 * `CliffordAlgebra.reverse_mem_evenOdd_iff`
-
 -/
 
 @[expose] public section
@@ -92,8 +94,10 @@ def reverseOpEquiv : CliffordAlgebra Q ≃ₐ[R] (CliffordAlgebra Q)ᵐᵒᵖ :=
 theorem reverseOpEquiv_opComm :
     AlgEquiv.opComm (reverseOpEquiv (Q := Q)) = reverseOpEquiv.symm := rfl
 
-/-- Grade reversion, inverting the multiplication order of basis vectors.
-Also called *transpose* in some literature. -/
+/--
+Grade reversion, inverting the multiplication order of basis vectors.
+Also called _transpose_ in some literature.
+-/
 def reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   (opLinearEquiv R).symm.toLinearMap.comp reverseOp.toLinearMap
 
@@ -159,21 +163,25 @@ theorem reverse_involute :
 end Reverse
 
 /-!
-### Statements about conjugations of products of lists
+# Statements about conjugations of products of lists
 -/
 
 
 section List
 
-/-- Taking the reverse of the product a list of $n$ vectors lifted via `ι` is equivalent to
-taking the product of the reverse of that list. -/
+/--
+Taking the reverse of the product a list of $`n` vectors lifted via `ι` is equivalent to
+taking the product of the reverse of that list.
+-/
 theorem reverse_prod_map_ι :
     ∀ l : List M, reverse (l.map <| ι Q).prod = (l.map <| ι Q).reverse.prod
   | [] => by simp
   | x::xs => by simp [reverse_prod_map_ι xs]
 
-/-- Taking the involute of the product a list of $n$ vectors lifted via `ι` is equivalent to
-premultiplying by ${-1}^n$. -/
+/--
+Taking the involute of the product a list of $`n` vectors lifted via `ι` is equivalent to
+premultiplying by $`{-1}^n`.
+-/
 theorem involute_prod_map_ι :
     ∀ l : List M, involute (l.map <| ι Q).prod = (-1 : R) ^ l.length • (l.map <| ι Q).prod
   | [] => by simp
@@ -182,7 +190,7 @@ theorem involute_prod_map_ι :
 end List
 
 /-!
-### Statements about `Submodule.map` and `Submodule.comap`
+# Statements about `Submodule.map` and `Submodule.comap`
 -/
 
 
@@ -294,7 +302,7 @@ theorem reverse_mem_evenOdd_iff {x : CliffordAlgebra Q} {n : ZMod 2} :
 end Submodule
 
 /-!
-### Related properties of the even and odd submodules
+# Related properties of the even and odd submodules
 
 TODO: show that these are `iff`s when `Invertible (2 : R)`.
 -/

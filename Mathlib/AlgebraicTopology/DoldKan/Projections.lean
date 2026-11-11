@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Faces
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construction of projections for the Dold-Kan correspondence
 
@@ -24,7 +27,6 @@ By passing to the limit, these endomorphisms `P q` shall be used in `PInfty.lean
 in order to define `PInfty : K[X] ⟶ K[X]`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

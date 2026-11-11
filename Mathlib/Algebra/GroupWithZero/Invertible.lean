@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Invertible.Basic
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theorems about invertible elements in a `GroupWithZero`
 

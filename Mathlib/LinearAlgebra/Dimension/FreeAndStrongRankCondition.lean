@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some results on free modules over rings satisfying strong rank condition
 
@@ -14,7 +17,6 @@ This file contains some results on free modules over rings satisfying strong ran
 Most of them are generalized from the same result assuming the base ring being a division ring,
 and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
 and `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
-
 -/
 
 @[expose] public section
@@ -27,7 +29,8 @@ section Module
 
 variable {K : Type u} {V : Type v} [Ring K] [StrongRankCondition K] [AddCommGroup V] [Module K V]
 
-/-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
+/--
+The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
 
 See also `Module.finBasis`.
 -/
@@ -168,9 +171,11 @@ theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
   have := Module.Free.of_equiv (topEquiv (R := K) (M := V)).symm
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 
-/-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
+/--
+A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
 
-See also `Module.Basis.nonempty_unique_index_of_finrank_eq_one` -/
+See also `Module.Basis.nonempty_unique_index_of_finrank_eq_one`
+-/
 theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
     finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedCommShift
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerivedComposition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compatibility with shifts of the comparison morphism for the composition of right derived functors
 
@@ -19,6 +22,7 @@ L₁|  L₂|   L₃|
   D₁ ⥤ D₂ ⥤ D₃
    RF₁₂   RF₂₃
 ```
+
 In the situation above, when we have natural transformations
 `α₁₂ : F₁₂ ⋙ L₂ ⟶ L₁ ⋙ RF₁₂`, `α₂₃ : F₂₃ ⋙ L₃ ⟶ L₂ ⋙ RF₂₃`,
 an isomorphism `e : F₁₂ ⋙ F₂₃ ≅ F₁₃` where `F₁₃ : C₁ ⥤ C₃`,
@@ -32,7 +36,6 @@ In this file, we show that if all the categories are equipped with
 shifts by an abelian group `A`, all the involved functors and natural
 transformations commute with these, then this natural transformation
 `RF₁₃ ⟶ RF₁₂ ⋙ RF₂₃` also commutes with shifts.
-
 -/
 
 @[expose] public section

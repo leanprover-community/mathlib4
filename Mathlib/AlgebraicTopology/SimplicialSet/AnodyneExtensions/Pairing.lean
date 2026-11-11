@@ -8,12 +8,15 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pairings
 
 In this file, we introduce the definition of a pairing for a subcomplex `A`
 of a simplicial set `X`, following the ideas by Sean Moss,
-*Another approach to the Kan-Quillen model structure*, who gave a
+_Another approach to the Kan-Quillen model structure_, who gave a
 complete combinatorial characterization of strong (inner) anodyne extensions.
 Strong (inner) anodyne extensions are transfinite compositions of pushouts of coproducts
 of (inner) horn inclusions, i.e. this is similar to (inner) anodyne extensions but
@@ -27,18 +30,19 @@ inclusion, exactly two nondegenerate simplices are added: this simplex,
 and the unique face which is not in the image of the horn. The former shall be
 considered as of type (I) and the latter as type (II).
 
-We say that a pairing is *regular* (typeclass `Pairing.IsRegular`) when
-- it is proper (`Pairing.IsProper`), i.e. any type (II) simplex is uniquely
+We say that a pairing is _regular_ (typeclass `Pairing.IsRegular`) when
+
+* it is proper (`Pairing.IsProper`), i.e. any type (II) simplex is uniquely
   a face of the corresponding type (I) simplex.
-- a certain ancestrality relation is well founded.
+* a certain ancestrality relation is well founded.
 
 When these conditions are satisfied, the inclusion `A.ι : A ⟶ X` is
 a strong anodyne extension (TODO @joelriou), and the converse is also true
 (if `A.ι` is a strong anodyne extension, then there is a regular pairing for `A` (TODO)).
 
 ## References
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* ‍\[Sean Moss, _Another approach to the Kan-Quillen model structure_\]\[moss-2020\]
 -/
 
 @[expose] public section

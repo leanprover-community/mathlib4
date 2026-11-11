@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 public import Mathlib.CategoryTheory.Monad.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Special equalizers associated to a comonad
 
@@ -21,7 +24,6 @@ comonadicity theorem).
 
 This file is adapted from `Mathlib/CategoryTheory/Monad/Coequalizer.lean`.
 Please try to keep them in sync.
-
 -/
 
 @[expose] public section

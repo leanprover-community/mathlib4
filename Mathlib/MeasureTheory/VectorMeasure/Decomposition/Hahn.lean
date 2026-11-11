@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hahn decomposition
 
@@ -54,36 +57,37 @@ variable {s : SignedMeasure α} {i j : Set α}
 
 section ExistsSubsetRestrictNonpos
 
-/-! ### `exists_subset_restrict_nonpos`
+/-!
+# `exists_subset_restrict_nonpos`
 
 In this section we will prove that a set `i` whose measure is negative contains a negative subset
 `j` with respect to the signed measure `s` (i.e. `s ≤[j] 0`), whose measure is negative. This lemma
 is used to prove the Hahn decomposition theorem.
 
-To prove this lemma, we will construct a sequence of measurable sets $(A_n)_{n \in \mathbb{N}}$,
-such that, for all $n$, $s(A_{n + 1})$ is close to maximal among subsets of
-$i \setminus \bigcup_{k \le n} A_k$.
+To prove this lemma, we will construct a sequence of measurable sets $`(A_n)_{n \in \mathbb{N}}`,
+such that, for all $`n`, $`s(A_{n + 1})` is close to maximal among subsets of
+$`i \setminus \bigcup_{k \le n} A_k`.
 
 This sequence of sets does not necessarily exist. However, if this sequence terminates; that is,
-there does not exist any set satisfying the property, the last $A_n$ will be a negative subset
+there does not exist any set satisfying the property, the last $`A_n` will be a negative subset
 of negative measure, hence proving our claim.
 
 In the case that the sequence does not terminate, it is easy to see that
-$i \setminus \bigcup_{k = 0}^\infty A_k$ is the required negative set.
+$`i \setminus \bigcup_{k = 0}^\infty A_k` is the required negative set.
 
 To implement this in Lean, we define several auxiliary definitions.
 
-- given the sets `i` and the natural number `n`, `ExistsOneDivLT s i n` is the property that
+* given the sets `i` and the natural number `n`, `ExistsOneDivLT s i n` is the property that
   there exists a measurable set `k ⊆ i` such that `1 / (n + 1) < s k`.
-- given the sets `i` and that `i` is not negative, `findExistsOneDivLT s i` is the
+* given the sets `i` and that `i` is not negative, `findExistsOneDivLT s i` is the
   least natural number `n` such that `ExistsOneDivLT s i n`.
-- given the sets `i` and that `i` is not negative, `someExistsOneDivLT` chooses the set
+* given the sets `i` and that `i` is not negative, `someExistsOneDivLT` chooses the set
   `k` from `ExistsOneDivLT s i (findExistsOneDivLT s i)`.
-- lastly, given the set `i`, `restrictNonposSeq s i` is the sequence of sets defined inductively
+* lastly, given the set `i`, `restrictNonposSeq s i` is the sequence of sets defined inductively
   where
   `restrictNonposSeq s i 0 = someExistsOneDivLT s (i \ ∅)` and
   `restrictNonposSeq s i (n + 1) = someExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq k)`.
-  This definition represents the sequence $(A_n)$ in the proof as described above.
+  This definition represents the sequence $`(A_n)` in the proof as described above.
 
 With these definitions, we are able to consider the case where the sequence terminates separately,
 allowing us to prove `exists_subset_restrict_nonpos`.
@@ -156,12 +160,14 @@ private theorem someExistsOneDivLT_lt (hi : ¬s ≤[i] 0) :
   let ⟨_, _, h⟩ := someExistsOneDivLT_spec hi
   h
 
-/-- Given the set `i`, `restrictNonposSeq s i` is the sequence of sets defined inductively where
+/--
+Given the set `i`, `restrictNonposSeq s i` is the sequence of sets defined inductively where
 `restrictNonposSeq s i 0 = someExistsOneDivLT s (i \ ∅)` and
 `restrictNonposSeq s i (n + 1) = someExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq k)`.
 
 For each `n : ℕ`,`s (restrictNonposSeq s i n)` is close to maximal among all subsets of
-`i \ ⋃ k ≤ n, restrictNonposSeq s i k`. -/
+`i \ ⋃ k ≤ n, restrictNonposSeq s i k`.
+-/
 private def restrictNonposSeq (s : SignedMeasure α) (i : Set α) : ℕ → Set α
   | 0 => someExistsOneDivLT s (i \ ∅) -- I used `i \ ∅` instead of `i` to simplify some proofs
   | n + 1 =>

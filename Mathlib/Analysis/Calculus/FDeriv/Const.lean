@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fréchet derivative of constant functions
 
@@ -18,7 +21,6 @@ functions, including various special cases such as the functions `0`, `1`, `Nat.
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
-
 -/
 
 public section
@@ -352,7 +354,9 @@ theorem differentiableAt_of_isInvertible_fderiv
     (hf : (fderiv 𝕜 f x).IsInvertible) : DifferentiableAt 𝕜 f x :=
   differentiableAt_of_fderiv_injective hf.injective
 
-/-! ### Support of derivatives -/
+/-!
+# Support of derivatives
+-/
 
 section Support
 variable (𝕜)

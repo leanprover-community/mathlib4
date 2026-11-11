@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Preadditive.FreydCategory.Homotopy
 public import Mathlib.CategoryTheory.Quotient.Preadditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The right Freyd category
 
@@ -25,8 +28,8 @@ This allows us to define a cokernel cofork for `(quotient V).map f` (see
 a cokernel cofork.
 
 ## References
-* [Posur, S., *A constructive approach to Freyd categories*][posur2021Freyd]
 
+* ‍\[Posur, S., _A constructive approach to Freyd categories_\]\[posur2021Freyd\]
 -/
 
 @[expose] public section

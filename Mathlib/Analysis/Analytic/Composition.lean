@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Analytic.CPolynomialDef
 public import Mathlib.Combinatorics.Enumerative.Composition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composition of analytic functions
 
@@ -15,8 +18,7 @@ In this file we prove that the composition of analytic functions is analytic.
 
 The argument is the following. Assume `g z = ∑' qₙ (z, ..., z)` and `f y = ∑' pₖ (y, ..., y)`. Then
 
-`g (f y) = ∑' qₙ (∑' pₖ (y, ..., y), ..., ∑' pₖ (y, ..., y))
-= ∑' qₙ (p_{i₁} (y, ..., y), ..., p_{iₙ} (y, ..., y))`.
+`g (f y) = ∑' qₙ (∑' pₖ (y, ..., y), ..., ∑' pₖ (y, ..., y)) = ∑' qₙ (p_{i₁} (y, ..., y), ..., p_{iₙ} (y, ..., y))`.
 
 For each `n` and `i₁, ..., iₙ`, define a `i₁ + ... + iₙ` multilinear function mapping
 `(y₀, ..., y_{i₁ + ... + iₙ - 1})` to
@@ -82,7 +84,9 @@ variable [CommRing 𝕜] [AddCommGroup E] [AddCommGroup F] [AddCommGroup G]
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
-/-! ### Composing formal multilinear series -/
+/-!
+# Composing formal multilinear series
+-/
 
 
 namespace FormalMultilinearSeries
@@ -224,7 +228,8 @@ theorem compAlongComposition_apply {n : ℕ} (q : FormalMultilinearSeries 𝕜 F
     (q.compAlongComposition p c) v = q c.length (p.applyComposition c v) :=
   rfl
 
-/-- Formal composition of two formal multilinear series. The `n`-th coefficient in the composition
+/--
+Formal composition of two formal multilinear series. The `n`-th coefficient in the composition
 is defined to be the sum of `q.compAlongComposition p c` over all compositions of
 `n`. In other words, this term (as a multilinear function applied to `v_0, ..., v_{n-1}`) is
 `∑'_{k} ∑'_{i₁ + ... + iₖ = n} qₖ (p_{i_1} (...), ..., p_{i_k} (...))`, where one puts all variables
@@ -328,7 +333,7 @@ theorem compAlongComposition_nnNorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 
 alias compAlongComposition_nnnorm := compAlongComposition_nnNorm
 
 /-!
-### The identity formal power series
+# The identity formal power series
 
 We will now define the identity power series, and show that it is a neutral element for left and
 right composition.
@@ -440,7 +445,9 @@ theorem id_comp' (p : FormalMultilinearSeries 𝕜 E F) (x : F) (v0 : Fin 0 → 
     (id 𝕜 F x).comp p = p := by
   simp [h]
 
-/-! ### Summability properties of the composition of formal power series -/
+/-!
+# Summability properties of the composition of formal power series
+-/
 
 
 section
@@ -523,7 +530,7 @@ theorem le_comp_radius_of_summable (q : FormalMultilinearSeries 𝕜 F G)
       NNReal.tsum_comp_le_tsum_of_inj hr sigma_mk_injective
 
 /-!
-### Composing analytic functions
+# Composing analytic functions
 
 Now, we will prove that the composition of the partial sums of `q` and `p` up to order `N` is
 given by a sum over some large subset of `Σ n, Composition n` of `q.compAlongComposition p`, to
@@ -533,7 +540,8 @@ deduce that the series for `q.comp p` indeed converges to `g ∘ f` when `q` is 
 This proof is a big reindexing argument of a sum. Since it is a bit involved, we define first
 the source of the change of variables (`compPartialSumSource`), its target
 (`compPartialSumTarget`) and the change of variables itself (`compChangeOfVariables`) before
-giving the main statement in `comp_partialSum`. -/
+giving the main statement in `comp_partialSum`.
+-/
 
 
 /-- Source set in the change of variables to compute the composition of partial sums of formal
@@ -963,36 +971,44 @@ theorem CPolynomialOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
   comp' (mono hg (Set.mapsTo_iff_image_subset.mp st)) hf
 
 /-!
-### Associativity of the composition of formal multilinear series
+# Associativity of the composition of formal multilinear series
 
 In this paragraph, we prove the associativity of the composition of formal power series.
 By definition,
+
 ```
 (r.comp q).comp p n v
 = ∑_{i₁ + ... + iₖ = n} (r.comp q)ₖ (p_{i₁} (v₀, ..., v_{i₁ -1}), p_{i₂} (...), ..., p_{iₖ}(...))
 = ∑_{a : Composition n} (r.comp q) a.length (applyComposition p a v)
 ```
+
 decomposing `r.comp q` in the same way, we get
+
 ```
 (r.comp q).comp p n v
 = ∑_{a : Composition n} ∑_{b : Composition a.length}
   r b.length (applyComposition q b (applyComposition p a v))
 ```
+
 On the other hand,
+
 ```
 r.comp (q.comp p) n v = ∑_{c : Composition n} r c.length (applyComposition (q.comp p) c v)
 ```
+
 Here, `applyComposition (q.comp p) c v` is a vector of length `c.length`, whose `i`-th term is
 given by `(q.comp p) (c.blocksFun i) (v_l, v_{l+1}, ..., v_{m-1})` where `{l, ..., m-1}` is the
 `i`-th block in the composition `c`, of length `c.blocksFun i` by definition. To compute this term,
 we expand it as `∑_{dᵢ : Composition (c.blocksFun i)} q dᵢ.length (applyComposition p dᵢ v')`,
 where `v' = (v_l, v_{l+1}, ..., v_{m-1})`. Therefore, we get
+
 ```
 r.comp (q.comp p) n v =
 ∑_{c : Composition n} ∑_{d₀ : Composition (c.blocksFun 0),
   ..., d_{c.length - 1} : Composition (c.blocksFun (c.length - 1))}
   r c.length (fun i ↦ q dᵢ.length (applyComposition p dᵢ v'ᵢ))
 ```
+
 To show that these terms coincide, we need to explain how to reindex the sums to put them in
 bijection (and then the terms we are summing will correspond to each other). Suppose we have a
 composition `a` of `n`, and a composition `b` of `a.length`. Then `b` indicates how to group
@@ -1119,14 +1135,16 @@ theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.len
   rw [blocksFun, get_eq_getElem, getElem_of_eq (getElem_splitWrtComposition _ _ _ _),
     getElem_drop, getElem_take]; rfl
 
-/-- Auxiliary lemma to prove that the composition of formal multilinear series is associative.
+/--
+Auxiliary lemma to prove that the composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Grouping together some
 blocks of `a` according to `b` as in `a.gather b`, one can compute the total size of the blocks
 of `a` up to an index `sizeUpTo b i + j` (where the `j` corresponds to a set of blocks of `a`
 that do not fill a whole block of `a.gather b`). The first part corresponds to a sum of blocks
 in `a.gather b`, and the second one to a sum of blocks in the next block of
-`sigmaCompositionAux a b`. This is the content of this lemma. -/
+`sigmaCompositionAux a b`. This is the content of this lemma.
+-/
 theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i j : ℕ}
     (hi : i < b.length) (hj : j < blocksFun b ⟨i, hi⟩) :
     sizeUpTo a (sizeUpTo b i + j) =
@@ -1167,7 +1185,8 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     simp only [sigmaCompositionAux, add_assoc]
     rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop, getElem_take]
 
-/-- Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
+/--
+Natural equivalence between `(Σ (a : Composition n), Composition a.length)` and
 `(Σ (c : Composition n), Π (i : Fin c.length), Composition (c.blocksFun i))`, that shows up as a
 change of variables in the proof that composition of formal multilinear series is associative.
 

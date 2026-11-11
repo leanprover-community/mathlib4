@@ -12,24 +12,27 @@ import Mathlib.Analysis.Convex.Deriv
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Collection of convex functions
 
 In this file we prove that certain specific functions are strictly convex, including the following:
 
 * `Even.strictConvexOn_pow` : For an even `n : ℕ` with `2 ≤ n`, `fun x => x ^ n` is strictly convex.
-* `strictConvexOn_pow` : For `n : ℕ`, with `2 ≤ n`, `fun x => x ^ n` is strictly convex on $[0,+∞)$.
+* `strictConvexOn_pow` : For `n : ℕ`, with `2 ≤ n`, `fun x => x ^ n` is strictly convex on
+  $`[0,+∞)`.
 * `strictConvexOn_zpow` : For `m : ℤ` with `m ≠ 0, 1`, `fun x => x ^ m` is strictly convex on
-  $[0, +∞)$.
-* `strictConcaveOn_sin_Icc` : `sin` is strictly concave on $[0, π]$
-* `strictConcaveOn_cos_Icc` : `cos` is strictly concave on $[-π/2, π/2]$
+  $`[0, +∞)`.
+* `strictConcaveOn_sin_Icc` : `sin` is strictly concave on $`[0, π]`
+* `strictConcaveOn_cos_Icc` : `cos` is strictly concave on $`[-π/2, π/2]`
 
 ## TODO
 
 These convexity lemmas are proved by checking the sign of the second derivative. If desired, most
 of these could also be switched to elementary proofs, like in
 `Analysis.Convex.SpecificFunctions.Basic`.
-
 -/
 
 open scoped Finset

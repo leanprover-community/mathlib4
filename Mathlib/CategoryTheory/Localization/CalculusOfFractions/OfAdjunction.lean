@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The calculus of fractions deduced from an adjunction
 
@@ -23,7 +26,6 @@ holds in particular if `W` is the inverse image of
 the class of isomorphisms by `G`.
 
 (The dual statement is also obtained.)
-
 -/
 
 public section

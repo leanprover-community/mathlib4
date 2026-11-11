@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.BifunctorFlip
 public import Mathlib.Algebra.Homology.Homotopy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action of a bifunctor on homological complexes factors through homotopies
 
@@ -16,7 +19,6 @@ we show in this file that up to homotopy the morphism
 `mapBifunctorMap f₁ f₂ F c` only depends on the homotopy classes of
 the morphism `f₁` in `HomologicalComplex C c₁` and of
 the morphism `f₂` in `HomologicalComplex C c₂`.
-
 -/
 
 @[expose] public section

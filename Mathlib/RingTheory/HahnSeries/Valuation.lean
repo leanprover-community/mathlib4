@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.HahnSeries.Multiplication
 public import Mathlib.RingTheory.Valuation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuations on Hahn Series rings
 
@@ -15,15 +18,18 @@ If `Γ` is a linearly ordered cancellative monoid and `R` is a domain, then the 
 admits an additive valuation given by `orderTop`.
 
 ## Main Definitions
+
 * `HahnSeries.addVal Γ R` defines an `AddValuation` on `R⟦Γ⟧` when `Γ` is linearly
   ordered.
 
 ## TODO
+
 * Multiplicative valuations
 * Add any API for Laurent series valuations that do not depend on `Γ = ℤ`.
 
 ## References
-- [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
+
+* ‍\[J. van der Hoeven, _Operators on Generalized Power Series_\]\[van\_der\_hoeven\]
 -/
 
 @[expose] public section

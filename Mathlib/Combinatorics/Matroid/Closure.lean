@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.Matroid.Map
 public import Mathlib.Order.Closure
 public import Mathlib.Order.CompleteLatticeIntervals
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matroid Closure
 
@@ -16,7 +19,7 @@ A flat (`IsFlat`) of a matroid `M` is a combinatorial analogue of a subspace of 
 and is defined to be a subset `F` of the ground set of `M` such that for each basis
 `I` for `F`, every set having `I` as a basis is contained in `F`.
 
-The *closure* of a set `X` in a matroid `M` is the intersection of all flats of `M` containing `X`.
+The _closure_ of a set `X` in a matroid `M` is the intersection of all flats of `M` containing `X`.
 This is a combinatorial analogue of the linear span of a set of vectors.
 
 For `M : Matroid α`, this file defines a predicate `M.IsFlat : Set α → Prop` and a function

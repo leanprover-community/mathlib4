@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Coalgebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Skew-primitive elements in a coalgebra
 
@@ -26,7 +29,7 @@ This file defines `(g, h)`-skew-primitive elements in a coalgebra, i.e. elements
 
 ## References
 
-* [P. Etingof, S. Gelaki, D. Nikshych, V. Ostrik, *Tensor categories*][egno15]
+* ‍\[P. Etingof, S. Gelaki, D. Nikshych, V. Ostrik, _Tensor categories_\]\[egno15\]
 -/
 
 @[expose] public section

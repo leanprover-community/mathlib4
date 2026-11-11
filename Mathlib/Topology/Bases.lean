@@ -11,6 +11,9 @@ public import Mathlib.Topology.NhdsWithin
 
 import Mathlib.Topology.ContinuousOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases of topologies. Countability axioms.
 
@@ -46,6 +49,7 @@ conditions are equivalent in this case).
   the space.
 
 ## Implementation Notes
+
 For our applications we are interested in the existence of a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 
@@ -331,7 +335,8 @@ lemma IsTopologicalBasis.finite_sUnion (hB : IsTopologicalBasis B) :
 
 variable (α)
 
-/-- A separable space is one with a countable dense subset, available through
+/--
+A separable space is one with a countable dense subset, available through
 `TopologicalSpace.exists_countable_dense`. If `α` is also known to be nonempty, then
 `TopologicalSpace.denseSeq` provides a sequence `ℕ → α` with dense range, see
 `TopologicalSpace.denseRange_denseSeq`.
@@ -356,21 +361,25 @@ theorem exists_countable_dense_subset (s : Set α) [SeparableSpace s] :
   obtain ⟨t, ct, dt⟩ := exists_countable_dense s
   exact ⟨Subtype.val '' t, ct.image _, by simp, fun x hx ↦ closure_subtype.1 (dt ⟨x, hx⟩)⟩
 
-/-- A nonempty separable space admits a sequence with dense range. Instead of running `cases` on the
+/--
+A nonempty separable space admits a sequence with dense range. Instead of running `cases` on the
 conclusion of this lemma, you might want to use `TopologicalSpace.denseSeq` and
 `TopologicalSpace.denseRange_denseSeq`.
 
 If `α` might be empty, then `TopologicalSpace.exists_countable_dense` is the main way to use
-separability of `α`. -/
+separability of `α`.
+-/
 theorem exists_dense_seq [SeparableSpace α] [Nonempty α] : ∃ u : ℕ → α, DenseRange u := by
   obtain ⟨s : Set α, hs, s_dense⟩ := exists_countable_dense α
   obtain ⟨u, hu⟩ := Set.countable_iff_exists_subset_range.mp hs
   exact ⟨u, s_dense.mono hu⟩
 
-/-- A dense sequence in a non-empty separable topological space.
+/--
+A dense sequence in a non-empty separable topological space.
 
 If `α` might be empty, then `TopologicalSpace.exists_countable_dense` is the main way to use
-separability of `α`. -/
+separability of `α`.
+-/
 def denseSeq [SeparableSpace α] [Nonempty α] : ℕ → α :=
   Classical.choose (exists_dense_seq α)
 

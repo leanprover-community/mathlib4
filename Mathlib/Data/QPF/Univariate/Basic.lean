@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.PFunctor.Univariate.M
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of Polynomial Functors
 
@@ -33,9 +36,8 @@ The present theory focuses on the univariate case for qpfs
 
 ## References
 
-* [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial
-  Functors*][avigad-carneiro-hudon2019]
-
+* ‍\[Jeremy Avigad, Mario M. Carneiro and Simon Hudon, _Data Types as Quotients of Polynomial
+  Functors_\]\[avigad-carneiro-hudon2019\]
 -/
 
 @[expose] public section
@@ -43,7 +45,8 @@ The present theory focuses on the univariate case for qpfs
 
 universe u u' v
 
-/-- Quotients of polynomial functors.
+/--
+Quotients of polynomial functors.
 
 Roughly speaking, saying that `F` is a quotient of a polynomial functor means that for each `α`,
 elements of `F α` are represented by pairs `⟨a, f⟩`, where `a` is the shape of the object and
@@ -321,7 +324,9 @@ theorem corecF_eq {α : Type _} (g : α → F α) (x : α) :
   rw [corecF, PFunctor.M.dest_corec]
 
 -- Equivalence
-/-- A pre-congruence on `q.P.M` *viewed as an F-coalgebra*. Not necessarily symmetric. -/
+/--
+A pre-congruence on `q.P.M` _viewed as an F-coalgebra_. Not necessarily symmetric.
+-/
 def IsPrecongr (r : q.P.M → q.P.M → Prop) : Prop :=
   ∀ ⦃x y⦄, r x y →
     abs (q.P.map (Quot.mk r) (PFunctor.M.dest x)) = abs (q.P.map (Quot.mk r) (PFunctor.M.dest y))

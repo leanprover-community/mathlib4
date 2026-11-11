@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors which preserves homology
 
@@ -21,7 +24,6 @@ If `S : ShortComplex C` and `[F.PreservesHomology]`, then there is an
 isomorphism `S.mapHomologyIso F : (S.map F).homology ≅ F.obj S.homology`, which
 is part of the natural isomorphism `homologyFunctorIso F` between the functors
 `F.mapShortComplex ⋙ homologyFunctor D` and `homologyFunctor C ⋙ F`.
-
 -/
 
 @[expose] public section

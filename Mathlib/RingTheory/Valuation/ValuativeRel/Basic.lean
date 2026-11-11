@@ -9,6 +9,9 @@ public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.Tactic.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuative Relations
 
@@ -17,29 +20,28 @@ This bundles a relation `vle : R → R → Prop` on `R` which mimics a
 preorder on `R` arising from a valuation.
 We introduce the notation `x ≤ᵥ y` for this relation.
 
-Recall that the equivalence class of a valuation is *completely* characterized by
+Recall that the equivalence class of a valuation is _completely_ characterized by
 such a preorder. Thus, we can think of `ValuativeRel R` as a way of
 saying that `R` is endowed with an equivalence class of valuations.
 
 ## Main Definitions
 
-- `ValuativeRel R` endows a semiring `R` with a relation "arising from a valuation". When `R` is a
+* `ValuativeRel R` endows a semiring `R` with a relation "arising from a valuation". When `R` is a
   ring, this is equivalent to fixing an equivalence class of valuations on `R`.
   Use the notation `x ≤ᵥ y` for this relation.
-- `ValuativeRel.valuation R` is the "canonical" valuation associated to `ValuativeRel R`,
+* `ValuativeRel.valuation R` is the "canonical" valuation associated to `ValuativeRel R`,
   taking values in `ValuativeRel.ValueGroupWithZero R`.
-- Given a valuation `v` on `R` and an instance `[ValuativeRel R]`, writing `[v.Compatible]`
+* Given a valuation `v` on `R` and an instance `[ValuativeRel R]`, writing `[v.Compatible]`
   ensures that the relation `x ≤ᵥ y` is equivalent to `v x ≤ v y`. Note that
   it is possible to have `[v.Compatible]` and `[w.Compatible]` for two different valuations on `R`.
-- Given `[ValuativeRel A]`, `[ValuativeRel B]` and `[Algebra A B]`, the class
+* Given `[ValuativeRel A]`, `[ValuativeRel B]` and `[Algebra A B]`, the class
   `[ValuativeExtension A B]` ensures that the algebra map `A → B` is compatible with the valuations
   on `A` and `B`. For example, this can be used to talk about extensions of valued fields.
-
 
 ## Remark
 
 The last two axioms in `ValuativeRel`, namely `vle_mul_cancel` and `not_vle_one_zero`, are
-used to ensure that we have a well-behaved valuation taking values in a *value group* (with zero).
+used to ensure that we have a well-behaved valuation taking values in a _value group_ (with zero).
 In principle, it should be possible to drop these two axioms and obtain a value monoid,
 however, such a value monoid would not necessarily embed into an ordered abelian group with zero.
 Similarly, without these axioms, the support of the valuation need not be a prime ideal.
@@ -55,6 +57,7 @@ The `ValuativeRel` class should eventually replace the existing `Valued` typecla
 Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 
 ## TODO
+
 Split this file. For instance, the universal properties of `ValueGroupWithZero` and definition of
 `IsRankLeOne` could be separated out.
 -/
@@ -940,9 +943,11 @@ class IsRankLeOne where
   nonempty : Nonempty (RankLeOneStruct R)
 
 variable (R) in
-/-- We say that a valuative relation on a ring is *nontrivial* if the
-  value group-with-zero is nontrivial, meaning that it has an element
-  which is different from 0 and 1. -/
+/--
+We say that a valuative relation on a ring is _nontrivial_ if the
+value group-with-zero is nontrivial, meaning that it has an element
+which is different from 0 and 1.
+-/
 class IsNontrivial where
   condition : ∃ γ : ValueGroupWithZero R, γ ≠ 0 ∧ γ ≠ 1
 
@@ -1098,6 +1103,7 @@ lemma embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
 
 /--
 The triangle in the following diagram is commutative:
+
 ```
       restrict₀ v                embedding
     R –––––––––––> ValueGroup₀ v –––––––––> Γ
@@ -1107,6 +1113,7 @@ The triangle in the following diagram is commutative:
     ∨             /
 ValueGroupWithZero R
 ```
+
 where the first row is the map `v` factored through its image group (with zero) in `Γ`.
 -/
 @[simp]
@@ -1118,6 +1125,7 @@ lemma embed_valuation_eq_restrict₀ [v.Compatible] (x : R) :
 /--
 When `v` is `valuation R`, in the following commutative diagram where the first row is the map `v`
 factored through its image group (with zero),
+
 ```
                                  embedding
     R –––––––––––> ValueGroup₀ v –––––-–––> ValueGroupWithZero R
@@ -1127,6 +1135,7 @@ factored through its image group (with zero),
     ∨             /
 ValueGroupWithZero R
 ```
+
 the map from `ValueGroupWithZero R` to itself is identity.
 -/
 @[simp]
@@ -1156,6 +1165,7 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
 /--
 When we have `h : w.IsEquiv v`, the image group (with zero) of `v` is
 isomorphic to that of `w` via `h.orderMonoidIso`. Then the following diagram is commutative:
+
 ```
               ValueGroup₀ w
                 ∧      |

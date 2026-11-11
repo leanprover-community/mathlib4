@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Category.TopCat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological subcategories of `Action V G`
 
@@ -23,7 +26,6 @@ where the underlying topological space is discrete.
 
 Finally we define inclusion functors into `Action V G` and `TopCat` in terms
 of `HasForget₂` instances.
-
 -/
 
 @[expose] public section

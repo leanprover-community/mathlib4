@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Process.Adapted
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Predictable σ-algebra
 
@@ -29,7 +32,6 @@ and adapted. We also give an equivalent characterization of predictability for d
 ## Tags
 
 predictable, previsible
-
 -/
 
 @[expose] public section
@@ -133,8 +135,10 @@ lemma measurableSpace_le_predictable_of_measurableSet [Preorder ι] [OrderBot ι
   · exact hm'bot A hA
   · exact hm' i A hA
 
-/-- The inclusion map from [0,i] × Ω with the subtype × 𝓕 i σ-algebra) to ι × Ω with the
-predictable σ-algebra is measurable -/
+/--
+The inclusion map from \[0,i\] × Ω with the subtype × 𝓕 i σ-algebra) to ι × Ω with the
+predictable σ-algebra is measurable
+-/
 lemma measurable_inclusion_predictable [LinearOrder ι] [OrderBot ι] [MeasurableSpace ι]
     [TopologicalSpace ι] [OpensMeasurableSpace ι] [OrderClosedTopology ι] {𝓕 : Filtration ι m} {i} :
     @Measurable (Set.Iic i × Ω) (ι × Ω) (Subtype.instMeasurableSpace.prod (𝓕 i)) 𝓕.predictable

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
 public import Mathlib.CategoryTheory.Sites.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prestacks: descent of morphisms
 
@@ -27,15 +30,15 @@ In this file, we use the language of pseudofunctors to formalize prestacks.
 Similar notions could also be phrased in terms of fibered categories.
 In the mathematical literature, various uses of the words "prestacks" and
 "stacks" exists. Our definitions are consistent with Giraud's definition II 1.2.1
-in *Cohomologie non abélienne*: a prestack is defined by the descent of morphisms
+in _Cohomologie non abélienne_: a prestack is defined by the descent of morphisms
 condition with respect to a Grothendieck topology, and a stack by the effectiveness
-of the descent. However, contrary to Laumon and Moret-Bailly in *Champs algébriques* 3.1,
+of the descent. However, contrary to Laumon and Moret-Bailly in _Champs algébriques_ 3.1,
 we do not require that target categories are groupoids.
 
 ## References
-* [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
-* [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
 
+* ‍\[Jean Giraud, _Cohomologie non abélienne_\]\[giraud1971\]
+* ‍\[Gérard Laumon and Laurent Moret-Bailly, _Champs algébriques_\]\[laumon-morel-bailly-2000\]
 -/
 
 @[expose] public section
@@ -111,10 +114,12 @@ section
 
 variable (F) {S : C} (M N : F.obj (.mk (op S)))
 
-/-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat`, and `M` and `N` are objects in
+/--
+If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat`, and `M` and `N` are objects in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type
-of morphisms $p^* M ⟶ p^* N$. -/
+of morphisms $`p^* M ⟶ p^* N`.
+-/
 @[simps, implicit_reducible]
 def presheafHom : (Over S)ᵒᵖ ⥤ Type v' where
   obj T := (F.map (.toLoc T.unop.hom.op)).toFunctor.obj M ⟶
@@ -160,10 +165,12 @@ class IsPrestack (J : GrothendieckTopology C) : Prop where
   isSheaf (J) {S : C} (M N : F.obj (.mk (op S))) :
     Presheaf.IsSheaf (J.over S) (F.presheafHom M N)
 
-/-- If `F` is a prestack from `Cᵒᵖ` to `Cat` relatively to a Grothendieck topology `J`,
+/--
+If `F` is a prestack from `Cᵒᵖ` to `Cat` relatively to a Grothendieck topology `J`,
 and `M` and `N` are two objects in `F.obj (.mk (op S))`, this is the sheaf of
 morphisms from `M` to `N`: it sends an object `T : Over S` corresponding to
-a morphism `p : X ⟶ S` to the type of morphisms $p^* M ⟶ p^* N$. -/
+a morphism `p : X ⟶ S` to the type of morphisms $`p^* M ⟶ p^* N`.
+-/
 @[simps]
 def sheafHom (J : GrothendieckTopology C) [F.IsPrestack J]
     {S : C} (M N : F.obj (.mk (op S))) :

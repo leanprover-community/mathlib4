@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extremal epimorphisms
 
@@ -21,7 +24,6 @@ the category has pullbacks.
 ## References
 
 * https://ncatlab.org/nlab/show/extremal+epimorphism
-
 -/
 
 public section

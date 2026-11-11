@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Units
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative actions with zero on and by `Mˣ`
 
@@ -22,10 +25,12 @@ admits a `MulDistribMulAction G Mˣ` structure, again with the obvious definitio
 ## Implementation notes
 
 We previously had
+
 ```
 instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
   [IsScalarTower G M M] : MulDistribMulAction G Mˣ
 ```
+
 as a strengthening of `Units.mulAction'`, but in fact this instance (almost) never applies!
 `MulDistribMulAction G M` means `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = g • m₁ * g • m₂`, while
 `SMulCommClass G M M` means `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`.
@@ -99,7 +104,9 @@ end GroupWithZero
 
 namespace Units
 
-/-! ### Action of the units of `M` on a type `α` -/
+/-!
+# Action of the units of `M` on a type `α`
+-/
 
 instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
   smul_zero m := smul_zero (m : M)

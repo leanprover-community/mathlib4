@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Logic.Equiv.Fin.Rotate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear independence
 
@@ -39,7 +42,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 public section
@@ -63,13 +65,15 @@ variable (R) (v)
 
 variable {R v}
 
-/-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
+/--
+A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
 
 See also `LinearIndependent.restrict_scalars'` for a version with more convenient typeclass
 assumptions.
 
-TODO : `LinearIndepOn` version. -/
+TODO : `LinearIndepOn` version.
+-/
 theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Injective fun r : R ↦ r • (1 : K))
     (li : LinearIndependent K v) : LinearIndependent R v := by
@@ -420,7 +424,9 @@ theorem LinearIndependent.finSnoc' {m : ℕ} (v : Fin m → M) (x : M) (hli : Li
 
 end Module
 
-/-! ### Properties which require `Ring R` -/
+/-!
+# Properties which require `Ring R`
+-/
 
 
 section Module

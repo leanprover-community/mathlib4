@@ -8,7 +8,11 @@ module
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 public import Mathlib.LinearAlgebra.Multilinear.Curry
 
-/-! # Multilinear maps over finite-dimensional spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Multilinear maps over finite-dimensional spaces
 
 The main results are that multilinear maps over finitely-generated, free modules are
 finitely-generated and free.

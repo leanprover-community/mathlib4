@@ -9,10 +9,13 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
-/-!
-# Equivalences among $L^p$ spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-In this file we collect a variety of equivalences among various $L^p$ spaces.  In particular,
+/-!
+# Equivalences among $`L^p` spaces
+
+In this file we collect a variety of equivalences among various $`L^p` spaces.  In particular,
 when `α` is a `Fintype`, given `E : α → Type u` and `p : ℝ≥0∞`, if all `E i` for `i : α` are
 normed, additive commutative groups, there is a natural linear isometric
 equivalence `lpPiLpₗᵢ : lp E p ≃ₗᵢ PiLp p E`. In addition, when `α` is a discrete topological
@@ -20,7 +23,7 @@ space, the bounded continuous functions `α →ᵇ β` correspond exactly to `lp
 Here there can be more structure, including ring and algebra structures,
 and we implement these equivalences accordingly as well.
 
-We keep this as a separate file so that the various $L^p$ space files don't import the others.
+We keep this as a separate file so that the various $`L^p` space files don't import the others.
 
 Recall that `PiLp` is just a type synonym for `Π i, E i` but given a different metric and norm
 structure, although the topological, uniform and bornological structures coincide definitionally.
@@ -35,7 +38,6 @@ the subtype of `PreLp` satisfying `Memℓp`.
 
 * Equivalence between `lp` and `MeasureTheory.Lp`, for `f : α → E` (i.e., functions rather than
   pi-types) and the counting measure on `α`
-
 -/
 
 @[expose] public section

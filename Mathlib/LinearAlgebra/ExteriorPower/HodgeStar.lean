@@ -8,27 +8,30 @@ module
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hodge star on exterior powers
 
 This file contains a definition of the Hodge star on exterior powers.
 
 ## Main definitions / results:
- * `exteriorPower.hodgeStar`: the Hodge star on exterior powers associated to a choice of bilinear
-   form and volume element.
+
+* `exteriorPower.hodgeStar`: the Hodge star on exterior powers associated to a choice of bilinear
+  form and volume element.
 
 ## TODO
 
 * Add API to obviate the need to supply the volume element in the presence of `Module.Oriented`.
 * Prove
-  + `Δ * B.exteriorPower l (hodgeStar B hB vol hkl x) (hodgeStar B hB vol hkl y) =
-      B.exteriorPower k x y`
-  + `Δ • hodgeStar B hB vol hlk (hodgeStar B hB vol hkl x) = (-1 : R) ^ (k * l) • x`
-  where `Δ := B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1)`
+
+  * `Δ * B.exteriorPower l (hodgeStar B hB vol hkl x) (hodgeStar B hB vol hkl y) = B.exteriorPower k x y`
+  * `Δ • hodgeStar B hB vol hlk (hodgeStar B hB vol hkl x) = (-1 : R) ^ (k * l) • x`
+    where `Δ := B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1)`
 * Develop further theory in the common case that the determinant identity:
   `B.exteriorPower (finrank R M) (vol.symm 1) (vol.symm 1) = 1`
   holds.
-
 -/
 
 noncomputable section

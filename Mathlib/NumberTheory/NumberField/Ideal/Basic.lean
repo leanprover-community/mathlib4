@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on integral ideals of a number field
 
@@ -16,18 +19,14 @@ We study results about integral ideals of a number field `K`.
 
 * `Ideal.rootsOfUnityMapQuot` : For `I` an integral ideal of `K`, the group morphism from the
   group of roots of unity of `K` of order `n` to `(𝓞 K ⧸ I)ˣ`.
-
 * `Ideal.rootsOfUnityMapQuot_injective`: If the ideal `I` is nontrivial and its norm is coprime
   with `n`, then the map `Ideal.rootsOfUnityMapQuot` is injective.
-
 * `NumberField.torsionOrder_dvd_absNorm_sub_one`: If the norm of the (nonzero) prime ideal `P` is
   coprime with the order of the torsion of `K`, then the norm of `P` is congruent to `1` modulo
   `torsionOrder K`.
-
 * `NumberField.torsionOrder_dvd_absNorm_sub_one'`: If the prime ideal `P` is unramified over `ℤ`
   and the norm of the prime of `ℤ` lying under `P` is different from `2`, then the norm of `P` is
   congruent to `1` modulo `torsionOrder K`.
-
 -/
 
 @[expose] public section

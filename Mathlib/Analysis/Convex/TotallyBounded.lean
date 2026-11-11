@@ -9,16 +9,19 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Totally Bounded sets and Convex Hulls
 
 ## Main statements
 
-- `totallyBounded_convexHull`: The convex hull of a totally bounded set is totally bounded.
+* `totallyBounded_convexHull`: The convex hull of a totally bounded set is totally bounded.
 
 ## References
 
-* [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* ‍\[Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 
 ## Tags
 

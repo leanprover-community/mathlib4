@@ -10,10 +10,13 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
 
 import Mathlib.CategoryTheory.Products.Bifunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A Fubini theorem for categorical (co)limits
 
-We prove that $lim_{J × K} G = lim_J (lim_K G(j, -))$ for a functor `G : J × K ⥤ C`,
+We prove that $`lim_{J × K} G = lim_J (lim_K G(j, -))` for a functor `G : J × K ⥤ C`,
 when all the appropriate limits exist.
 
 We begin working with a functor `F : J ⥤ K ⥤ C`. We'll write `G : J × K ⥤ C` for the associated
@@ -652,8 +655,9 @@ variable [HasLimitsOfShape K C] [HasLimitsOfShape J C]
 
 open CategoryTheory.prod
 
-/-- A variant of the Fubini theorem for a functor `G : J × K ⥤ C`,
-showing that $\lim_k \lim_j G(j,k) ≅ \lim_j \lim_k G(j,k)$.
+/--
+A variant of the Fubini theorem for a functor `G : J × K ⥤ C`,
+showing that $`\lim_k \lim_j G(j,k) ≅ \lim_j \lim_k G(j,k)`.
 -/
 noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
     limit (curry.obj (Prod.swap K J ⋙ G) ⋙ lim) ≅ limit (curry.obj G ⋙ lim) :=
@@ -688,8 +692,9 @@ variable [HasColimitsOfShape K C] [HasColimitsOfShape J C]
 
 open CategoryTheory.prod
 
-/-- A variant of the Fubini theorem for a functor `G : J × K ⥤ C`,
-showing that $\colim_k \colim_j G(j,k) ≅ \colim_j \colim_k G(j,k)$.
+/--
+A variant of the Fubini theorem for a functor `G : J × K ⥤ C`,
+showing that $`\colim_k \colim_j G(j,k) ≅ \colim_j \colim_k G(j,k)`.
 -/
 noncomputable def colimitCurrySwapCompColimIsoColimitCurryCompColim :
     colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim) ≅ colimit (curry.obj G ⋙ colim) :=

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order properties of `CFC.rpow`
 
@@ -19,19 +22,19 @@ C⋆-algebra. The proof makes use of the integral representation of `rpow` in
 
 ## Main declarations
 
-+ `CFC.monotone_nnrpow`, `CFC.monotone_rpow`: `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`
-+ `CFC.monotone_sqrt`: `CFC.sqrt` is operator monotone
-+ `CFC.concaveOn_nnrpow`, `CFC.concaveOn_rpow`: `a ↦ a ^ p` is operator concave for `p ∈ [0,1]`
-+ `CFC.concaveOn_sqrt`: `CFC.sqrt` is operator concave
+* `CFC.monotone_nnrpow`, `CFC.monotone_rpow`: `a ↦ a ^ p` is operator monotone for `p ∈ [0,1]`
+* `CFC.monotone_sqrt`: `CFC.sqrt` is operator monotone
+* `CFC.concaveOn_nnrpow`, `CFC.concaveOn_rpow`: `a ↦ a ^ p` is operator concave for `p ∈ [0,1]`
+* `CFC.concaveOn_sqrt`: `CFC.sqrt` is operator concave
 
 ## TODO
 
-+ Show that `rpow` over `Icc (-1) 0` is operator antitone and operator convex
-+ Show operator convexity of `rpow` over `Icc 1 2`
+* Show that `rpow` over `Icc (-1) 0` is operator antitone and operator convex
+* Show operator convexity of `rpow` over `Icc 1 2`
 
 ## References
 
-+ [carlen2010] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
+* ‍\[carlen2010\] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
   (see Lemma 2.8)
 -/
 

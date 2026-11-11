@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Homotopy.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopy equivalences between topological spaces
 
@@ -16,13 +19,12 @@ to `ContinuousMap.id`.
 
 ## Main definitions
 
-- `ContinuousMap.HomotopyEquiv` is the type of homotopy equivalences between topological spaces.
+* `ContinuousMap.HomotopyEquiv` is the type of homotopy equivalences between topological spaces.
 
 ## Notation
 
 We introduce the notation `X ≃ₕ Y` for `ContinuousMap.HomotopyEquiv X Y` in the `ContinuousMap`
 locale.
-
 -/
 
 @[expose] public section
@@ -40,13 +42,17 @@ are both homotopic to corresponding identity maps.
 -/
 @[ext]
 structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] where
-  /-- The forward map of a homotopy.
+  /--
+  The forward map of a homotopy.
 
-  Do NOT use directly. Use the coercion instead. -/
+  Do NOT use directly. Use the coercion instead.
+  -/
   toFun : C(X, Y)
-  /-- The backward map of a homotopy.
+  /--
+  The backward map of a homotopy.
 
-  Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
+  Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead.
+  -/
   invFun : C(Y, X)
   left_inv : (invFun.comp toFun).Homotopic (ContinuousMap.id X)
   right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
@@ -99,13 +105,17 @@ def symm (h : X ≃ₕ Y) : Y ≃ₕ X where
 theorem coe_invFun (h : HomotopyEquiv X Y) : (⇑h.invFun : Y → X) = ⇑h.symm :=
   rfl
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (h : X ≃ₕ Y) : X → Y :=
   h
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.symm_apply (h : X ≃ₕ Y) : Y → X :=
   h.symm
 

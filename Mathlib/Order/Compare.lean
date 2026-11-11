@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Order.OrderDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparison
 
 This file provides basic results about orderings and comparison in linear orders.
-
 
 ## Definitions
 

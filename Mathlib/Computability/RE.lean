@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Computability.PartrecCode
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computable and Recursively Enumerable Predicates
 

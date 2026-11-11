@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.Fermat
 
 import Mathlib.RingTheory.Fintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Lucas-Lehmer test for Mersenne primes
 
@@ -18,11 +21,10 @@ prove `lucasLehmerResidue p = 0 ↔ Prime (mersenne p)`.
 We construct a `norm_num` extension to calculate this residue to certify primality of Mersenne
 primes using `lucas_lehmer_sufficiency`.
 
-
 ## TODO
 
-- Speed up the calculations using `n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]`.
-- Find some bigger primes!
+* Speed up the calculations using `n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]`.
+* Find some bigger primes!
 
 ## History
 
@@ -432,7 +434,9 @@ lemma two_mul_ω_pow [Fact q.Prime] (odd : Odd q) (leg3 : legendreSym q 3 = -1) 
     exact Odd.add_one odd
   rw [this, one_add_α_pow_q_succ odd leg3]
 
-/-- If 3 is not a square and 2 is square then $\omega^{(q+1)/2}=-1$. -/
+/--
+If 3 is not a square and 2 is square then $`\omega^{(q+1)/2}=-1`.
+-/
 lemma pow_ω [Fact q.Prime] (odd : Odd q)
     (leg3 : legendreSym q 3 = -1)
     (leg2 : legendreSym q 2 = 1) :
@@ -613,7 +617,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime)
 namespace LucasLehmer
 
 /-!
-### `norm_num` extension
+# `norm_num` extension
 
 Next we define a `norm_num` extension that calculates `LucasLehmerTest p` for `1 < p`.
 It makes use of a version of `sMod` that is specifically written to be reducible by the
@@ -736,9 +740,11 @@ be useful, so I'm leaving them here.)
 
 There's still low-hanging fruit available to do faster computations
 based on the formula
+
 ```
 n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]
 ```
+
 and the fact that `% 2^p` and `/ 2^p` can be very efficient on the binary representation.
 Someone should do this, too!
 -/

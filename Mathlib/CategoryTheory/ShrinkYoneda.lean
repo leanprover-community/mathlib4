@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EssentiallySmall
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda functor for locally small categories
 
@@ -14,7 +17,6 @@ Let `C` be a locally `w`-small category. We define the Yoneda
 embedding `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w`. (See the
 file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 `uliftYoneda`.)
-
 -/
 
 @[expose] public section

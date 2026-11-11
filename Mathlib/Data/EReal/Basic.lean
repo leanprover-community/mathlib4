@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.ENNReal.Operations
 public import Mathlib.Order.Hom.WithTopBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The extended real numbers
 
@@ -112,10 +115,12 @@ theorem coe_zero : ((0 : ℝ) : EReal) = 0 := rfl
 @[simp, norm_cast]
 theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
-/-- A recursor for `EReal` in terms of the coercion.
+/--
+A recursor for `EReal` in terms of the coercion.
 
 When working in term mode, note that pattern matching can be used directly,
-although this is prone to leaking the implementation details in terms of `Option`. -/
+although this is prone to leaking the implementation details in terms of `Option`.
+-/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {motive : EReal → Sort*}
     (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : ∀ a : EReal, motive a
@@ -222,7 +227,9 @@ instance : MulZeroOneClass EReal where
   zero_mul := EReal.zero_mul
   mul_zero := fun x => by rw [EReal.mul_comm, EReal.zero_mul]
 
-/-! ### Real coercion -/
+/-!
+# Real coercion
+-/
 
 instance canLift : CanLift EReal ℝ (↑) fun r => r ≠ ⊤ ∧ r ≠ ⊥ where
   prf x hx := by
@@ -450,7 +457,9 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
     intro h
     exact ⟨x.toReal, coe_toReal_le h⟩
 
-/-! ### Intervals and coercion from reals -/
+/-!
+# Intervals and coercion from reals
+-/
 
 lemma exists_between_coe_real {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
   obtain ⟨a, ha₁, ha₂⟩ := exists_between h
@@ -588,7 +597,9 @@ lemma preimage_coe_Ioo_bot_top : Real.toEReal ⁻¹' Ioo ⊥ ⊤ = univ := by
   rw [← Ioi_inter_Iio]
   simp
 
-/-! ### ennreal coercion -/
+/-!
+# ennreal coercion
+-/
 
 @[simp]
 theorem toReal_coe_ennreal : ∀ {x : ℝ≥0∞}, toReal (x : EReal) = ENNReal.toReal x
@@ -713,7 +724,9 @@ theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) =
 theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = n • (x : EReal) :=
   map_nsmul (⟨⟨(↑), coe_ennreal_zero⟩, coe_ennreal_add⟩ : ℝ≥0∞ →+ EReal) _ _
 
-/-! ### toENNReal -/
+/-!
+# toENNReal
+-/
 
 /-- `x.toENNReal` returns `x` if it is nonnegative, `0` otherwise. -/
 noncomputable def toENNReal (x : EReal) : ℝ≥0∞ :=
@@ -801,7 +814,9 @@ lemma toENNReal_lt_toENNReal {x y : EReal} (hx : 0 ≤ x) (hxy : x < y) :
   lt_of_le_of_ne (toENNReal_le_toENNReal hxy.le)
     fun h ↦ hxy.ne <| (toENNReal_eq_toENNReal hx (hx.trans_lt hxy).le).mp h
 
-/-! ### nat coercion -/
+/-!
+# nat coercion
+-/
 
 theorem coe_coe_eq_natCast (n : ℕ) : (n : ℝ) = (n : EReal) := rfl
 
@@ -847,7 +862,9 @@ lemma ennrealToEReal_lt_natCast {r : ℝ≥0∞} {n : ℕ} : (r : EReal) < n ↔
 lemma natCast_lt_ennrealToEReal {r : ℝ≥0∞} {n : ℕ} : n < (r : EReal) ↔ n < r := by
   rw [← EReal.coe_ennreal_lt_coe_ennreal_iff, ENNReal.toEReal_natCast]
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 theorem exists_rat_btwn_of_lt :
     ∀ {a b : EReal}, a < b → ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b
@@ -930,11 +947,13 @@ meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα pα? e :=
     | _ => pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
   | _, _, _ => throwError "not ENNReal.toEReal"
 
-/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ`.
+/--
+Extension for the `positivity` tactic: projection from `EReal` to `ℝ`.
 
 We prove that `EReal.toReal x` is nonnegative whenever `x` is nonnegative.
 Since `EReal.toReal ⊤ = 0`, we cannot prove a stronger statement,
-at least without relying on a tactic like `finiteness`. -/
+at least without relying on a tactic like `finiteness`.
+-/
 @[positivity EReal.toReal _]
 meta def evalERealToReal : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
@@ -946,7 +965,8 @@ meta def evalERealToReal : PositivityExt where eval {u α} _zα pα? e :=
     | _ => pure .none
   | _, _, _ => throwError "not EReal.toReal"
 
-/-- Extension for the `positivity` tactic: projection from `EReal` to `ℝ≥0∞`.
+/--
+Extension for the `positivity` tactic: projection from `EReal` to `ℝ≥0∞`.
 
 We show that `EReal.toENNReal x` is positive whenever `x` is positive,
 and it is nonnegative otherwise.

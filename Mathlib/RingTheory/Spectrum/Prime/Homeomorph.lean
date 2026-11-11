@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 import Mathlib.RingTheory.Flat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Purely inseparable extensions are universal homeomorphisms
 
@@ -18,10 +21,10 @@ homeomorphism, i.e. it stays a homeomorphism after arbitrary base change.
 
 ## Main results
 
-- `PrimeSpectrum.isHomeomorph_comap`: if `f : R →+* S` is a ring map with locally nilpotent kernel
+* `PrimeSpectrum.isHomeomorph_comap`: if `f : R →+* S` is a ring map with locally nilpotent kernel
   such that for every `x : S`, there exists `n > 0` such that `x ^ n` is in the image of `f`,
   `Spec f` is a homeomorphism.
-- `PrimeSpectrum.isHomeomorph_comap_of_isPurelyInseparable`: `Spec K ⟶ Spec k` is a universal
+* `PrimeSpectrum.isHomeomorph_comap_of_isPurelyInseparable`: `Spec K ⟶ Spec k` is a universal
   homeomorphism for a purely inseparable field extension `K` over `k`.
 -/
 

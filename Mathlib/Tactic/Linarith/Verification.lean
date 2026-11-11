@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.Linarith.Datatypes
 public meta import Mathlib.Util.Qq
 public import Mathlib.Tactic.Linarith.Parsing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deriving a proof of false
 
@@ -47,7 +50,9 @@ namespace Mathlib.Tactic.Linarith
 open Ineq
 open Qq
 
-/-! ### Auxiliary functions for assembling proofs -/
+/-!
+# Auxiliary functions for assembling proofs
+-/
 
 /-- A typesafe version of `mulExpr`. -/
 def mulExpr' {u : Level} (n : ℕ) {α : Q(Type $u)} (inst : Q(Semiring $α)) (e : Q($α)) : Q($α) :=
@@ -169,7 +174,9 @@ def proveEqZeroUsing (tac : TacticM Unit) (e : Expr) : MetaM Expr := do
   let _h : Q(Zero $α) ← synthInstanceQ q(Zero $α)
   synthesizeUsing' q($e = 0) tac
 
-/-! #### The main method -/
+/-!
+# The main method
+-/
 
 /--
 `proveFalseByLinarith` is the main workhorse of `linarith`.
@@ -181,11 +188,11 @@ it tries to derive a contradiction from `l` and use this to produce a proof of `
 The returned certificate is a map `m` from hypothesis indices to natural number coefficients.
 If our set of hypotheses has the form `{tᵢ Rᵢ 0}`,
 then the elimination process should have guaranteed that
-1.\ `∑ (m i)*tᵢ = 0`,
+1.\\ `∑ (m i)*tᵢ = 0`,
 with at least one `i` such that `m i > 0` and `Rᵢ` is `<`.
 
 We have also that
-2.\ `∑ (m i)*tᵢ < 0`,
+2.\\ `∑ (m i)*tᵢ < 0`,
 since for each `i`, `(m i)*tᵢ ≤ 0` and at least one is strictly negative.
 So we conclude a contradiction `0 < 0`.
 

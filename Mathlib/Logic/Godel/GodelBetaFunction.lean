@@ -14,6 +14,9 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Order.Fin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gödel's Beta Function Lemma
 
@@ -28,7 +31,7 @@ definability is needed for the proof of the First Incompleteness Theorem.
 
 ## Main result
 
-- `beta_unbeta_coe`: Gödel's Beta Function Lemma.
+* `beta_unbeta_coe`: Gödel's Beta Function Lemma.
 
 ## Implementation note
 
@@ -37,8 +40,9 @@ and other key results from the repository https://github.com/iehality/lean4-logi
 
 ## References
 
-* [R. Kaye, *Models of Peano arithmetic*][kaye1991]
-* <https://en.wikipedia.org/wiki/G%C3%B6del%27s_%CE%B2_function>
+* ‍\[R. Kaye, _Models of Peano arithmetic_\]\[kaye1991\]
+* [
+  https://en.wikipedia.org/wiki/G%C3%B6del%27s\_%CE%B2\_function](https://en.wikipedia.org/wiki/G%C3%B6del%27s_%CE%B2_function)
 
 ## Tags
 

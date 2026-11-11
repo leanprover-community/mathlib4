@@ -7,20 +7,22 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # I-Primary Components of modules
 
 Let `A` be a commutative ring and `I`, an ideal of `A`.
 Given an `A`-Module `M` it's `I`-primary component is defined as
-  $$M(I) := \bigcup_{i : \mathbb{N}} \text{torsionBySet A  M }  I ^ i.$$
+$$`M(I) := \bigcup_{i : \mathbb{N}} \text{torsionBySet A  M }  I ^ i.`
 
 For `P : HeightOneSpectrum A`, the main result of this file is that
-  $$M \cong \bigoplus_{P} M(P).$$
+$$`M \cong \bigoplus_{P} M(P).`
 
 ## Main definitions
 
 * `Ideal.primaryComponent` : The `I`-primary component of an `A`-module `M`.
-
 -/
 
 @[expose] public section

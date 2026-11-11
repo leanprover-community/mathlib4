@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stabilizer of a set under a pointwise action
 
@@ -23,7 +26,9 @@ open scoped Pointwise
 namespace MulAction
 variable {G H α : Type*}
 
-/-! ### Stabilizer of a set -/
+/-!
+# Stabilizer of a set
+-/
 
 section Set
 section Group
@@ -136,7 +141,9 @@ end Set
 
 variable [Group G] [Group H] [MulAction G α] {a : G}
 
-/-! ### Stabilizer of a subgroup -/
+/-!
+# Stabilizer of a subgroup
+-/
 
 section Subgroup
 
@@ -164,7 +171,9 @@ lemma stabilizer_subgroup_op (s : Subgroup Gᵐᵒᵖ) : stabilizer G (s : Set G
 
 end Subgroup
 
-/-! ### Stabilizer of a finset -/
+/-!
+# Stabilizer of a finset
+-/
 
 section Finset
 variable [DecidableEq α]
@@ -207,7 +216,9 @@ lemma mem_stabilizer_finset' {s : Finset α} : a ∈ stabilizer G s ↔ ∀ ⦃b
 
 end Finset
 
-/-! ### Stabilizer of a finite set -/
+/-!
+# Stabilizer of a finite set
+-/
 
 variable {s : Set α}
 
@@ -235,7 +246,9 @@ lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :
 
 end MulAction
 
-/-! ### Stabilizer in a commutative group -/
+/-!
+# Stabilizer in a commutative group
+-/
 
 namespace MulAction
 variable {G : Type*} [CommGroup G] (s : Set G)

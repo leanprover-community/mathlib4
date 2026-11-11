@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.PrimeCounting
 
 import Mathlib.Data.Nat.Squarefree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth numbers
 
@@ -37,7 +40,7 @@ open scoped Finset
 namespace Nat
 
 /-!
-### `s`-factored numbers
+# `s`-factored numbers
 -/
 
 /-- `factoredNumbers s`, for a finite set `s` of natural numbers, is the set of positive natural
@@ -233,11 +236,13 @@ lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp : p.Prim
 
 
 /-!
-### `n`-smooth numbers
+# `n`-smooth numbers
 -/
 
-/-- `smoothNumbers n` is the set of *`n`-smooth positive natural numbers*, i.e., the
-positive natural numbers all of whose prime factors are less than `n`. -/
+/--
+`smoothNumbers n` is the set of _`n`-smooth positive natural numbers_, i.e., the
+positive natural numbers all of whose prime factors are less than `n`.
+-/
 def smoothNumbers (n : ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n}
 
 lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n :=
@@ -381,7 +386,7 @@ lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp : p.Prime) (x : ℕ × p.sm
 
 
 /-!
-### Smooth and rough numbers up to a bound
+# Smooth and rough numbers up to a bound
 
 We consider the sets of smooth and non-smooth ("rough") positive natural numbers `≤ N`
 and prove bounds for their sizes.

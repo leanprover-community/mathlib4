@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.RingTheory.WittVector.DiscreteValuationRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Solving equations about the Frobenius map on the field of fractions of `𝕎 k`
 
@@ -27,10 +30,10 @@ polynomial equation in `k`. We must define these as generic polynomials using Wi
 Preliminary work is done in the dependency `RingTheory.WittVector.MulCoeff`
 to isolate the `n+1`st coefficients of `x` and `y` in the `n+1`st coefficient of `x*y`.
 
-This construction is described in Dupuis, Lewis, and Macbeth,
-[Formalized functional analysis via semilinear maps][dupuis-lewis-macbeth2022].
-We approximately follow an approach sketched on MathOverflow:
-<https://mathoverflow.net/questions/62468/about-frobenius-of-witt-vectors>
+This construction is described in Dupuis, Lewis, and Macbeth, ‍\[Formalized functional analysis via
+semilinear maps\]\[dupuis-lewis-macbeth2022\]. We approximately follow an approach sketched on
+MathOverflow: [
+https://mathoverflow.net/questions/62468/about-frobenius-of-witt-vectors](https://mathoverflow.net/questions/62468/about-frobenius-of-witt-vectors)
 
 The result is a dependency for the proof of `WittVector.isocrystal_classification`,
 the classification of one-dimensional isocrystals over an algebraically closed field.
@@ -50,13 +53,12 @@ local notation "𝕎" => WittVector p
 namespace RecursionMain
 
 /-!
-## The recursive case of the vector coefficients
+# The recursive case of the vector coefficients
 
 The first coefficient of our solution vector is easy to define below.
 In this section we focus on the recursive case.
 The goal is to turn `WittVector.wittPolyProd n` into a univariate polynomial
 whose variable represents the `n`th coefficient of `x` in `x * a`.
-
 -/
 
 

@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hamiltonian Graphs
 
@@ -16,9 +19,9 @@ In this file we introduce Hamiltonian paths, cycles and graphs.
 
 ## Main definitions
 
-- `SimpleGraph.Walk.IsHamiltonian`: Predicate for a walk to be Hamiltonian.
-- `SimpleGraph.Walk.IsHamiltonianCycle`: Predicate for a walk to be a Hamiltonian cycle.
-- `SimpleGraph.IsHamiltonian`: Predicate for a graph to be Hamiltonian.
+* `SimpleGraph.Walk.IsHamiltonian`: Predicate for a walk to be Hamiltonian.
+* `SimpleGraph.Walk.IsHamiltonianCycle`: Predicate for a walk to be a Hamiltonian cycle.
+* `SimpleGraph.IsHamiltonian`: Predicate for a graph to be Hamiltonian.
 -/
 
 @[expose] public section
@@ -309,12 +312,14 @@ end Walk
 
 variable [Fintype α]
 
-/-- A Hamiltonian graph is a graph that contains a Hamiltonian cycle.
+/--
+A Hamiltonian graph is a graph that contains a Hamiltonian cycle.
 
 This is equivalent to there being an Hamiltonian cycle based at each vertex.
 See `IsHamiltonian.exists_isHamiltonianCycle`.
 
-By convention, the singleton graph is considered to be Hamiltonian and the empty graph is not. -/
+By convention, the singleton graph is considered to be Hamiltonian and the empty graph is not.
+-/
 def IsHamiltonian (G : SimpleGraph α) : Prop :=
   Fintype.card α ≠ 1 → ∃ a, ∃ p : G.Walk a a, p.IsHamiltonianCycle
 

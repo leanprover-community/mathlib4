@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Smooth.Flat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weakly étale algebras
 
@@ -15,7 +18,7 @@ In this file we define weakly étale algebras. An `R`-algebra `S` is weakly éta
 
 ## TODOs
 
-- Show that a weakly étale algebra is formally unramified and in particular that
+* Show that a weakly étale algebra is formally unramified and in particular that
   a weakly étale algebra of finite presentation is étale (@chrisflav).
 -/
 

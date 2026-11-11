@@ -12,7 +12,11 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
 
-/-! # The unitary group in a unital C⋆-algebra is locally path connected
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The unitary group in a unital C⋆-algebra is locally path connected
 
 When `A` is a unital C⋆-algebra and `u : unitary A` is a unitary element whose distance to `1` is
 less that `2`, the spectrum of `u` is contained in the slit plane, so the principal branch of the
@@ -35,22 +39,22 @@ products of exponential unitaries.
 
 ## Main results
 
-+ `Unitary.argSelfAdjoint`: the selfadjoint element obtained by taking the argument (using the
+* `Unitary.argSelfAdjoint`: the selfadjoint element obtained by taking the argument (using the
   principal branch and the continuous functional calculus) of a unitary. This returns `0` if
   the principal branch of the logarithm is not continuous on the spectrum of the unitary element.
-+ `selfAdjoint.norm_sq_expUnitary_sub_one`:
+* `selfAdjoint.norm_sq_expUnitary_sub_one`:
   `‖(selfAdjoint.expUnitary x - 1 : A)‖ ^ 2 = 2 * (1 - Real.cos ‖x‖)`
-+ `Unitary.norm_argSelfAdjoint`:
+* `Unitary.norm_argSelfAdjoint`:
   `‖Unitary.argSelfAdjoint u‖ = Real.arccos (1 - ‖(u - 1 : A)‖ ^ 2 / 2)`
-+ `Unitary.openPartialHomeomorph`: the maps `Unitary.argSelfAdjoint` and `selfAdjoint.expUnitary`
+* `Unitary.openPartialHomeomorph`: the maps `Unitary.argSelfAdjoint` and `selfAdjoint.expUnitary`
   form a partial homeomorphism between `ball (1 : unitary A) 2` and `ball (0 : selfAdjoint A) π`.
-+ `selfAdjoint.expUnitaryPathToOne`: the path `t ↦ expUnitary (t • x)` from `1` to
+* `selfAdjoint.expUnitaryPathToOne`: the path `t ↦ expUnitary (t • x)` from `1` to
   `expUnitary x` for a selfadjoint element `x`.
-+ `Unitary.isPathConnected_ball`: any ball of radius `δ < 2` in the unitary group of a unital
+* `Unitary.isPathConnected_ball`: any ball of radius `δ < 2` in the unitary group of a unital
   C⋆-algebra is path connected.
-+ `Unitary.instLocallyPathConnectedSpace`: the unitary group of a C⋆-algebra is
+* `Unitary.instLocallyPathConnectedSpace`: the unitary group of a C⋆-algebra is
   locally path connected.
-+ `Unitary.mem_pathComponentOne_iff`: The path component of the identity in the unitary group of a
+* `Unitary.mem_pathComponentOne_iff`: The path component of the identity in the unitary group of a
   C⋆-algebra is the set of unitaries that can be expressed as a product of exponentials of
   selfadjoint elements.
 -/

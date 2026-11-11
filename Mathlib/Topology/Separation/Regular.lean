@@ -10,6 +10,9 @@ public import Mathlib.Topology.Connected.Clopen
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Separation.Hausdorff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
 
@@ -54,10 +57,9 @@ If the space is also Lindelöf:
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Separation_axiom>
-* <https://en.wikipedia.org/wiki/Normal_space>
-* [Willard's *General Topology*][zbMATH02107988]
-
+* [https://en.wikipedia.org/wiki/Separation\_axiom](https://en.wikipedia.org/wiki/Separation_axiom)
+* [https://en.wikipedia.org/wiki/Normal\_space](https://en.wikipedia.org/wiki/Normal_space)
+* ‍\[Willard's _General Topology_\]\[zbMATH02107988\]
 -/
 
 public section
@@ -72,9 +74,11 @@ variable {X : Type*} {Y : Type*} [TopologicalSpace X]
 
 section RegularSpace
 
-/-- A topological space is called a *regular space* if for any closed set `s` and `a ∉ s`, there
+/--
+A topological space is called a _regular space_ if for any closed set `s` and `a ∉ s`, there
 exist disjoint open sets `U ⊇ s` and `V ∋ a`. We formulate this condition in terms of `Disjoint`ness
-of filters `𝓝ˢ s` and `𝓝 a`. -/
+of filters `𝓝ˢ s` and `𝓝 a`.
+-/
 @[mk_iff]
 class RegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   /-- If `a` is a point that does not belong to a closed set `s`, then `a` and `s` admit disjoint
@@ -507,8 +511,10 @@ end T3
 
 section NormalSpace
 
-/-- A topological space is said to be a *normal space* if any two disjoint closed sets
-have disjoint open neighborhoods. -/
+/--
+A topological space is said to be a _normal space_ if any two disjoint closed sets
+have disjoint open neighborhoods.
+-/
 class NormalSpace (X : Type u) [TopologicalSpace X] : Prop where
   /-- Two disjoint sets in a normal space admit disjoint neighbourhoods. -/
   normal : ∀ s t : Set X, IsClosed s → IsClosed t → Disjoint s t → SeparatedNhds s t
@@ -607,9 +613,11 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
-/-- A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
-Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without the
-assumption of Hausdorff). -/
+/--
+A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
+Corollaries 20.8 and 20.10 of \[Willard's _General Topology_\]\[zbMATH02107988\] (without the
+assumption of Hausdorff).
+-/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [RegularSpace X] [LindelofSpace X] : NormalSpace X where
   normal _ _ hcl kcl hkdis :=
@@ -660,9 +668,11 @@ end Normality
 
 section CompletelyNormal
 
-/-- A topological space `X` is a *completely normal space* provided that for any two sets `s`, `t`
+/--
+A topological space `X` is a _completely normal space_ provided that for any two sets `s`, `t`
 such that if both `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`,
-then there exist disjoint neighbourhoods of `s` and `t`. -/
+then there exist disjoint neighbourhoods of `s` and `t`.
+-/
 class CompletelyNormalSpace (X : Type u) [TopologicalSpace X] : Prop where
   /-- If `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`, then `s` and `t`
   admit disjoint neighbourhoods. -/

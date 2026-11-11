@@ -10,6 +10,9 @@ public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Order.Filter.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `peel` tactic
 
@@ -33,20 +36,21 @@ open Lean Expr Meta Elab Tactic
 /--
 Peels matching quantifiers off of a given term and the goal and introduces the relevant variables.
 
-- `peel e` peels all quantifiers (at reducible transparency),
+* `peel e` peels all quantifiers (at reducible transparency),
   using `this` for the name of the peeled hypothesis.
-- `peel e with h` is `peel e` but names the peeled hypothesis `h`.
+* `peel e with h` is `peel e` but names the peeled hypothesis `h`.
   If `h` is `_` then uses `this` for the name of the peeled hypothesis.
-- `peel n e` peels `n` quantifiers (at default transparency).
-- `peel n e with x y z ... h` peels `n` quantifiers, names the peeled hypothesis `h`,
+* `peel n e` peels `n` quantifiers (at default transparency).
+* `peel n e with x y z ... h` peels `n` quantifiers, names the peeled hypothesis `h`,
   and uses `x`, `y`, `z`, and so on to name the introduced variables; these names may be `_`.
   If `h` is `_` then uses `this` for the name of the peeled hypothesis.
   The length of the list of variables does not need to equal `n`.
-- `peel e with x₁ ... xₙ h` is `peel n e with x₁ ... xₙ h`.
+* `peel e with x₁ ... xₙ h` is `peel n e with x₁ ... xₙ h`.
 
 There are also variants that apply to an iff in the goal:
-- `peel n` peels `n` quantifiers in an iff.
-- `peel with x₁ ... xₙ` peels `n` quantifiers in an iff and names them.
+
+* `peel n` peels `n` quantifiers in an iff.
+* `peel with x₁ ... xₙ` peels `n` quantifiers in an iff and names them.
 
 Given `p q : ℕ → Prop`, `h : ∀ x, p x`, and a goal `⊢ : ∀ x, q x`, the tactic `peel h with x h'`
 will introduce `x : ℕ`, `h' : p x` into the context and the new goal will be `⊢ q x`. This works
@@ -54,11 +58,14 @@ with `∃`, as well as `∀ᶠ` and `∃ᶠ`, and it can even be applied to a se
 that this is a logically weaker setup, so using this tactic is not always feasible.
 
 For a more complex example, given a hypothesis and a goal:
+
 ```
 h : ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) < ε
 ⊢ ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) ≤ ε
 ```
+
 (which differ only in `<`/`≤`), applying `peel h with ε hε N n hn h_peel` will yield a tactic state:
+
 ```
 h : ∀ ε > (0 : ℝ), ∃ N : ℕ, ∀ n ≥ N, 1 / (n + 1 : ℝ) < ε
 ε : ℝ
@@ -68,9 +75,10 @@ hn : N ≤ n
 h_peel : 1 / (n + 1 : ℝ) < ε
 ⊢ 1 / (n + 1 : ℝ) ≤ ε
 ```
+
 and the goal can be closed with `exact h_peel.le`.
 Note that in this example, `h` and the goal are logically equivalent statements, but `peel`
-*cannot* be immediately applied to show that the goal implies `h`.
+_cannot_ be immediately applied to show that the goal implies `h`.
 
 In addition, `peel` supports goals of the form `(∀ x, p x) ↔ ∀ x, q x`, or likewise for any
 other quantifier. In this case, there is no hypothesis or term to supply, but otherwise the syntax
@@ -135,12 +143,14 @@ and otherwise choose a new hygienic name. -/
 def mkFreshBinderName (f : Expr) : MetaM Name :=
   mkFreshUserName (if let .lam n .. := f then n else `a)
 
-/-- Applies a "peel theorem" with two main arguments, where the first is the new goal
+/--
+Applies a "peel theorem" with two main arguments, where the first is the new goal
 and the second can be filled in using `e`. Then it intros two variables with the
 provided names.
 
 If, for example, `goal : ∃ y : α, q y` and `thm := Exists.imp`, the metavariable returned has
-type `q x` where `x : α` has been introduced into the context. -/
+type `q x` where `x : α` has been introduced into the context.
+-/
 def applyPeelThm (thm : Name) (goal : MVarId)
     (e : Expr) (ty target : Expr) (n : Name) (n' : Name) :
     MetaM (FVarId × List MVarId) := do
@@ -150,13 +160,15 @@ def applyPeelThm (thm : Name) (goal : MVarId)
   let (fvars, new_goal) ← new_goal.introN 2 [n, n']
   return (fvars[1]!, [new_goal])
 
-/-- This is the core to the `peel` tactic.
+/--
+This is the core to the `peel` tactic.
 
 It tries to match `e` and `goal` as quantified statements (using `∀` and the quantifiers in
 the `quantifiers` list), then applies "peel theorems" using `applyPeelThm`.
 
 We treat `∧` as a quantifier for sake of dealing with quantified statements
-like `∃ δ > (0 : ℝ), q δ`, which is notation for `∃ δ, δ > (0 : ℝ) ∧ q δ`. -/
+like `∃ δ > (0 : ℝ), q δ`, which is notation for `∃ δ, δ > (0 : ℝ) ∧ q δ`.
+-/
 def peelCore (goal : MVarId) (e : Expr) (n? : Option Name) (n' : Name) (unfold : Bool) :
     MetaM (FVarId × List MVarId) := goal.withContext do
   let ty ← whnfQuantifier (← inferType e) unfold

@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pulling back connected colimits
 
@@ -20,12 +23,11 @@ the pullback of `c.ι.app j` and `f`. This gives a new cocone with cone point `X
 has exact colimits of shape `J`.
 
 From this we deduce a `hom_ext` principle for morphisms factoring through a colimit. Usually, we
-only get `hom_ext` for morphisms *from* a colimit, so this is something a bit special.
+only get `hom_ext` for morphisms _from_ a colimit, so this is something a bit special.
 
 The connectedness assumption on `J` is necessary: take `C` to be the category of abelian groups,
 let `f : ℤ → ℤ ⊕ ℤ` be the diagonal map, and let `g := 𝟙 (ℤ ⊕ ℤ)`. Then the hypotheses of
 `IsColimit.pullback_zero_ext` are satisfied, but `f ≫ g` is not zero.
-
 -/
 
 @[expose] public section

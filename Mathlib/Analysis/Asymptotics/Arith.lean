@@ -9,12 +9,14 @@ public import Mathlib.Analysis.Asymptotics.Basic
 
 import Mathlib.Analysis.Normed.Ring.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic operations on asymptotic relations
 
 This file develops the behavior of `IsBigOWith`, `IsBigO`, and `IsLittleO` under absolute values,
 negation, addition, subtraction, zero, constants, and finite sums.
-
 -/
 
 @[expose] public section
@@ -36,7 +38,9 @@ variable {f' : α → E'} {g' : α → F'}
 variable {f'' : α → E''} {g'' : α → F''}
 variable {l : Filter α}
 
-/-! ### Simplification: absolute value -/
+/-!
+# Simplification: absolute value
+-/
 
 section Abs
 
@@ -98,7 +102,9 @@ alias ⟨IsLittleO.of_abs_abs, IsLittleO.abs_abs⟩ := isLittleO_abs_abs
 
 end Abs
 
-/-! ### Simplification: negate -/
+/-!
+# Simplification: negate
+-/
 
 @[simp]
 theorem isBigOWith_neg_right : (IsBigOWith c l f fun x => -g' x) ↔ IsBigOWith c l f g' := by
@@ -147,7 +153,9 @@ theorem IsBigO.eq_zero_imp (h : f'' =O[l] g'') : ∀ᶠ x in l, g'' x = 0 → f'
   let ⟨_C, hC⟩ := h.isBigOWith
   hC.eq_zero_imp
 
-/-! ### Addition and subtraction -/
+/-!
+# Addition and subtraction
+-/
 
 section add_sub
 
@@ -248,7 +256,7 @@ theorem IsLittleO.sub_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x - f₂ 
 end add_sub
 
 /-!
-### Lemmas about `IsBigO (f₁ - f₂) g l` / `IsLittleO (f₁ - f₂) g l` treated as a binary relation
+# Lemmas about `IsBigO (f₁ - f₂) g l` / `IsLittleO (f₁ - f₂) g l` treated as a binary relation
 -/
 
 section IsBigOOAsRel
@@ -298,7 +306,9 @@ theorem IsLittleO.congr_of_sub (h : (fun x => f₁ x - f₂ x) =o[l] g) : f₁ =
 
 end IsBigOOAsRel
 
-/-! ### Zero and other constants -/
+/-!
+# Zero and other constants
+-/
 
 section ZeroConst
 
@@ -367,7 +377,9 @@ theorem isBigO_pure {x} : f'' =O[pure x] g'' ↔ g'' x = 0 → f'' x = 0 :=
 
 end ZeroConst
 
-/-! ### Sum -/
+/-!
+# Sum
+-/
 
 section Sum
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects in target categories of a pseudofunctor to `Cat`
 
@@ -17,12 +20,12 @@ is preserved by the application of the functors `F.map`: this allows
 to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
 
 ## TODO (@joelriou)
+
 * Given a Grothendieck topology `J` on a category `C`, define
   a type class `Pseudofunctor.ObjectProperty.IsLocal P J` extending
   `IsClosedUnderMapObj` saying that if an object locally satisfies
   the property, then it satisfies the property. Assuming this, show that
   `P.fullsubcategory` is a stack if the original pseudofunctor was.
-
 -/
 
 @[expose] public section

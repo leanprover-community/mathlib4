@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `IsIntegrallyClosed` is a local property
 
@@ -52,9 +55,11 @@ theorem IsIntegrallyClosed.of_localization_submonoid [IsDomain R] {ι : Type*} (
   IsIntegrallyClosed.of_iInf_eq_bot (fun i ↦ Localization.subalgebra (FractionRing R) (S i) (h i))
     (fun i ↦ (hi i).of_equiv (IsLocalization.algEquiv (S i) (Localization (S i)) _).toRingEquiv) hs
 
-/-- An integral domain $R$ is integrally closed if there exists a set of prime ideals $S$ such that
-  $\bigcap_{\mathfrak{p} \in S} R_{\mathfrak{p}} = R$ and for every $\mathfrak{p} \in S$,
-  $R_{\mathfrak{p}}$ is integrally closed. -/
+/--
+An integral domain $`R` is integrally closed if there exists a set of prime ideals $`S` such that
+$`\bigcap_{\mathfrak{p} \in S} R_{\mathfrak{p}} = R` and for every $`\mathfrak{p} \in S`,
+$`R_{\mathfrak{p}}` is integrally closed.
+-/
 theorem IsIntegrallyClosed.of_localization [IsDomain R] (S : Set (PrimeSpectrum R))
     (h : ∀ p ∈ S, IsIntegrallyClosed (Localization.AtPrime p.1))
     (hs : ⨅ p ∈ S, (Localization.subalgebra (FractionRing R) p.1.primeCompl

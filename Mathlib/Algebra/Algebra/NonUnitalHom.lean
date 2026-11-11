@@ -7,10 +7,14 @@ module
 
 public import Mathlib.Algebra.Algebra.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms of non-unital algebras
 
 This file defines morphisms between two types, each of which carries:
+
 * an addition,
 * an additive zero,
 * a multiplication,
@@ -35,8 +39,8 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 
 ## Main definitions
 
-  * `NonUnitalAlgHom`
-  * `AlgHom.toNonUnitalAlgHom`
+* `NonUnitalAlgHom`
+* `AlgHom.toNonUnitalAlgHom`
 
 ## Tags
 
@@ -76,10 +80,12 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Mo
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B] : Prop
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
 
-/-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
+/--
+`NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are `R`-linear.
 
-  This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
+This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B`
+-/
 abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
     [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
@@ -129,9 +135,11 @@ instance {F R S A B : Type*} [Monoid R] [Monoid S] {φ : R →* S}
       CoeTC F (A →ₛₙₐ[φ] B) :=
   ⟨toNonUnitalAlgSemiHom⟩
 
-/-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
-@[coe]
-`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`. -/
+/--
+Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` into an actual
+@\[coe\]
+`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[R] B`.
+-/
 def toNonUnitalAlgHom {F R : Type*} [Monoid R] {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
@@ -166,7 +174,9 @@ instance : FunLike (A →ₛₙₐ[φ] B) A B where
 theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
   rfl
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (f : A →ₛₙₐ[φ] B) : A → B := f
 
 initialize_simps_projections NonUnitalAlgHom
@@ -338,9 +348,11 @@ theorem coe_inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
     (inverse' f g k h₁ h₂ : B → A) = g :=
   rfl
 
-/-! ### Operations on the product type
+/-!
+# Operations on the product type
 
-Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra/Prod). -/
+Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra/Prod).
+-/
 
 
 section Prod
@@ -430,7 +442,9 @@ end Prod
 
 end NonUnitalAlgHom
 
-/-! ### Interaction with `AlgHom` -/
+/-!
+# Interaction with `AlgHom`
+-/
 
 namespace AlgHom
 

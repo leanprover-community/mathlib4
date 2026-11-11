@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuations associated to discrete valuation rings
 

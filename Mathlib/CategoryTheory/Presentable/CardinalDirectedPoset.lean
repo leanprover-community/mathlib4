@@ -11,6 +11,9 @@ public import Mathlib.Order.Category.PartOrdEmb
 
 import Mathlib.Order.Hom.WithTopBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The κ-accessible category of κ-directed posets
 
@@ -29,8 +32,9 @@ the objects `J` such that the underlying type `J.obj` has
 cardinality `< κ'`.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 @[expose] public section

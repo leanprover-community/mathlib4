@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.Basic
 public import Mathlib.CategoryTheory.GradedObject
 public import Mathlib.CategoryTheory.Subobject.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homological complexes.
 
@@ -46,7 +49,8 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 variable {ι : Type*}
 variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V]
 
-/-- A `HomologicalComplex V c` with a "shape" controlled by `c : ComplexShape ι`
+/--
+A `HomologicalComplex V c` with a "shape" controlled by `c : ComplexShape ι`
 has chain groups `X i` (objects in `V`) indexed by `i : ι`,
 and a differential `d i j` whenever `c.Rel i j`.
 
@@ -685,7 +689,8 @@ def mkAux : ℕ → ShortComplex V
   | 0 => ShortComplex.mk _ _ s
   | n + 1 => ShortComplex.mk _ _ (succ (mkAux n)).2.2
 
-/-- An inductive constructor for `ℕ`-indexed chain complexes.
+/--
+An inductive constructor for `ℕ`-indexed chain complexes.
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
@@ -758,7 +763,8 @@ lemma mk_d (n : ℕ) :
   rw [dite_eq_left (by rfl), eqToHom_refl, id_comp]
   rfl
 
-/-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
+/--
+A simpler inductive constructor for `ℕ`-indexed chain complexes.
 
 You provide explicitly the first differential,
 then a function which takes a differential,
@@ -825,7 +831,8 @@ variable (P Q : ChainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.
           f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f),
       Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 2), f'' ≫ Q.d (n + 2) (n + 1) = P.d (n + 2) (n + 1) ≫ p.2.1)
 
-/-- An auxiliary construction for `mkHom`.
+/--
+An auxiliary construction for `mkHom`.
 
 Here we build by induction a family of commutative squares,
 but don't require at the type level that these successive commutative squares actually agree.
@@ -839,7 +846,8 @@ def mkHomAux :
   | 0 => ⟨zero, one, one_zero_comm⟩
   | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
 
-/-- A constructor for chain maps between `ℕ`-indexed chain complexes,
+/--
+A constructor for chain maps between `ℕ`-indexed chain complexes,
 working by induction on commutative squares.
 
 You need to provide the components of the chain map in degrees 0 and 1,
@@ -946,7 +954,8 @@ def mkAux : ℕ → ShortComplex V
   | 0 => ShortComplex.mk _ _ s
   | n + 1 => ShortComplex.mk _ _ (succ (mkAux n)).2.2
 
-/-- An inductive constructor for `ℕ`-indexed cochain complexes.
+/--
+An inductive constructor for `ℕ`-indexed cochain complexes.
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
@@ -981,7 +990,8 @@ theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 2 = d₁ := by
   rw [ite_eq_left rfl, Category.comp_id]
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
-/-- A simpler inductive constructor for `ℕ`-indexed cochain complexes.
+/--
+A simpler inductive constructor for `ℕ`-indexed cochain complexes.
 
 You provide explicitly the first differential,
 then a function which takes a differential,
@@ -1020,7 +1030,8 @@ variable (P Q : CochainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ 
           f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'),
       Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 2), p.2.1 ≫ Q.d (n + 1) (n + 2) = P.d (n + 1) (n + 2) ≫ f'')
 
-/-- An auxiliary construction for `mkHom`.
+/--
+An auxiliary construction for `mkHom`.
 
 Here we build by induction a family of commutative squares,
 but don't require at the type level that these successive commutative squares actually agree.
@@ -1034,7 +1045,8 @@ def mkHomAux :
   | 0 => ⟨zero, one, one_zero_comm⟩
   | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
 
-/-- A constructor for chain maps between `ℕ`-indexed cochain complexes,
+/--
+A constructor for chain maps between `ℕ`-indexed cochain complexes,
 working by induction on commutative squares.
 
 You need to provide the components of the chain map in degrees 0 and 1,

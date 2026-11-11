@@ -9,6 +9,10 @@ public import Mathlib.Topology.Category.TopCat.Basic
 
 import Mathlib.CategoryTheory.Functor.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Categories of Compact Hausdorff Spaces
 

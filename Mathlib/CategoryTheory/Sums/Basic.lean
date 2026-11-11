@@ -7,16 +7,20 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binary disjoint unions of categories
 
 We define the category instance on `C ⊕ D` when `C` and `D` are categories.
 
 We define:
+
 * `inl_`      : the functor `C ⥤ C ⊕ D`
 * `inr_`      : the functor `D ⥤ C ⊕ D`
 * `swap`      : the functor `C ⊕ D ⥤ D ⊕ C`
-    (and the fact this is an equivalence)
+  (and the fact this is an equivalence)
 
 We provide an induction principle `Sum.homInduction` to reason and work with morphisms in this
 category.

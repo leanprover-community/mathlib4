@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Equiv.TypeTags
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free groups structures on arbitrary types
 
@@ -23,7 +26,6 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 
 * `FreeGroupBasis ι G` : a function from `ι` to `G` such that `G` is free over its image.
   Equivalently, an isomorphism between `G` and `FreeGroup ι`.
-
 * `IsFreeGroup G` : a typeclass to indicate that `G` is free over some generators
 * `Generators G` : given a group satisfying `IsFreeGroup G`, some indexing type over
   which `G` is free.
@@ -37,7 +39,6 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 * `IsFreeGroup.unique_lift`: the universal property of a free group.
 * `FreeGroupBasis.ofUniqueLift`: a group satisfying the universal property of a free group admits
   a free group basis.
-
 -/
 
 @[expose] public section
@@ -281,17 +282,21 @@ theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f 
 theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of a)) : f = g :=
   lift.symm.injective (funext h)
 
-/-- The universal property of a free group: A function from the generators of `G` to another
+/--
+The universal property of a free group: A function from the generators of `G` to another
 group extends in a unique way to a homomorphism from `G`.
 
 Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
-expresses the universal property. -/
+expresses the universal property.
+-/
 @[to_additive
-/-- The universal property of an additive free group: A function from the generators of `G` to
+/--
+The universal property of an additive free group: A function from the generators of `G` to
 another additive group extends in a unique way to a homomorphism from `G`.
 
 Note that since `IsFreeAddGroup.lift` is expressed as a bijection, it already
-expresses the universal property. -/]
+expresses the universal property.
+-/]
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
   simpa only [funext_iff] using! lift.symm.bijective.existsUnique f
 

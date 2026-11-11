@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Affine.Isometry
 public import Mathlib.Topology.Instances.RealVectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mazur-Ulam Theorem
 
@@ -21,7 +24,8 @@ affine. We formalize it in three definitions:
 * `IsometryEquiv.toRealAffineIsometryEquiv` : given `f : PE ≃ᵢ PF`, returns an affine isometry
   equivalence `g : PE ≃ᵃⁱ[ℝ] PF` whose underlying `IsometryEquiv` is `f`
 
-The formalization is based on [Jussi Väisälä, *A Proof of the Mazur-Ulam Theorem*][Vaisala_2003].
+The formalization is based on \[Jussi Väisälä, _A Proof of the Mazur-Ulam
+Theorem_\]\[Vaisala\_2003\].
 
 ## Tags
 

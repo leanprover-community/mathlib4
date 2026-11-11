@@ -7,13 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A functor from a small category to a filtered category factors through a small filtered category
 
 A consequence of this is that if `C` is filtered and finally small, then `C` is also
 "finally filtered-small", i.e., there is a final functor from a small filtered category to `C`.
 This is occasionally useful, for example in the proof of the recognition theorem for ind-objects
-(Proposition 6.1.5 in [Kashiwara2006]).
+(Proposition 6.1.5 in \[Kashiwara2006\]).
 -/
 
 @[expose] public section
@@ -49,20 +52,22 @@ instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
       ObjectProperty.hom_ext _ (coeq_condition _ _)⟩
 
 namespace FilteredClosureSmall
-/-! Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
-    family of objects in `C` only depends on the size of `α` and the morphism types of `C`, not on
-    the size of the objects of `C`. More precisely, if `α` lives in `Type w`, the objects of `C`
-    live in `Type u` and the morphisms of `C` live in `Type v`, then we want
-    `Small.{max v w} (FullSubcategory (filteredClosure f))`.
+/-!
+Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
+family of objects in `C` only depends on the size of `α` and the morphism types of `C`, not on
+the size of the objects of `C`. More precisely, if `α` lives in `Type w`, the objects of `C`
+live in `Type u` and the morphisms of `C` live in `Type v`, then we want
+`Small.{max v w} (FullSubcategory (filteredClosure f))`.
 
-    The strategy is to define a type `AbstractFilteredClosure` which should be an inductive type
-    similar to `filteredClosure`, which lives in the correct universe and surjects onto the full
-    subcategory. The difficulty with this is that we need to define it at the same time as the map
-    `AbstractFilteredClosure → C`, as the coequalizer constructor depends on the actual morphisms
-    in `C`. This would require some kind of inductive-recursive definition, which Lean does not
-    allow. Our solution is to define a function `ℕ → Σ t : Type (max v w), t → C` by (strong)
-    induction and then take the union over all natural numbers, mimicking what one would do in a
-    set-theoretic setting. -/
+The strategy is to define a type `AbstractFilteredClosure` which should be an inductive type
+similar to `filteredClosure`, which lives in the correct universe and surjects onto the full
+subcategory. The difficulty with this is that we need to define it at the same time as the map
+`AbstractFilteredClosure → C`, as the coequalizer constructor depends on the actual morphisms
+in `C`. This would require some kind of inductive-recursive definition, which Lean does not
+allow. Our solution is to define a function `ℕ → Σ t : Type (max v w), t → C` by (strong)
+induction and then take the union over all natural numbers, mimicking what one would do in a
+set-theoretic setting.
+-/
 
 /-- One step of the inductive procedure consists of adjoining all maxima and coequalizers of all
 objects and morphisms obtained so far. This is quite redundant, picking up many objects which we

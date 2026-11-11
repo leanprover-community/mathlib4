@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.Deriv.Comp
 
 import Mathlib.Analysis.Calculus.Deriv.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`
 
@@ -37,7 +40,9 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜
 
 section Inverse
 
-/-! ### Derivative of `x ↦ x⁻¹` -/
+/-!
+# Derivative of `x ↦ x⁻¹`
+-/
 
 theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)⁻¹) x := by
   suffices
@@ -138,7 +143,9 @@ end Inverse
 
 section Division
 
-/-! ### Derivative of `x ↦ c x / d x` -/
+/-!
+# Derivative of `x ↦ c x / d x`
+-/
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {c d : 𝕜 → 𝕜'} {c' d' : 𝕜'}
 

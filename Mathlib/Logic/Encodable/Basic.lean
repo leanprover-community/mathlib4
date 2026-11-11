@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Logic.Equiv.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Encodable types
 
@@ -44,9 +47,11 @@ set_option linter.unusedDecidableInType false
 
 open Option Nat Function
 
-/-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
-inverse `decode : ℕ → Option α`. Note that finite types *are* countable. See `Denumerable` if you
-wish to enforce infiniteness. -/
+/--
+Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
+inverse `decode : ℕ → Option α`. Note that finite types _are_ countable. See `Denumerable` if you
+wish to enforce infiniteness.
+-/
 class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ

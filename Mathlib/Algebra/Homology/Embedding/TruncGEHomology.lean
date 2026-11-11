@@ -10,7 +10,11 @@ public import Mathlib.Algebra.Homology.Embedding.TruncGE
 
 import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
-/-! # The homology of a canonical truncation
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The homology of a canonical truncation
 
 Given an embedding of complex shapes `e : Embedding c c'`,
 we relate the homology of `K : HomologicalComplex C c'` and of
@@ -19,7 +23,6 @@ we relate the homology of `K : HomologicalComplex C c'` and of
 The main result is that `K.πTruncGE e : K ⟶ K.truncGE e` induces a
 quasi-isomorphism in degree `e.f i` for all `i`. (Note that the complex
 `K.truncGE e` is exact in degrees that are not in the image of `e.f`.)
-
 -/
 
 @[expose] public section

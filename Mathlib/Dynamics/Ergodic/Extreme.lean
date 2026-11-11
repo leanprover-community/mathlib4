@@ -11,6 +11,9 @@ public import Mathlib.Dynamics.Ergodic.Function
 import Mathlib.Dynamics.Ergodic.RadonNikodym
 import Mathlib.Probability.ConditionalProbability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ergodic measures as extreme points
 

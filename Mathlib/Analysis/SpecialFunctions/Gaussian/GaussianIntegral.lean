@@ -11,10 +11,14 @@ public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian integral
 
 We prove various versions of the formula for the Gaussian integral:
+
 * `integral_gaussian`: for real `b` we have `∫ x:ℝ, exp (-b * x^2) = √(π / b)`.
 * `integral_gaussian_complex`: for complex `b` with `0 < re b` we have
   `∫ x:ℝ, exp (-b * x^2) = (π / b) ^ (1 / 2)`.
@@ -175,7 +179,9 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
   simp only [mul_zero, ofReal_zero, zero_pow, Ne,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add, reduceCtorEq]
 
-/-- The *square* of the Gaussian integral `∫ x:ℝ, exp (-b * x^2)` is equal to `π / b`. -/
+/--
+The _square_ of the Gaussian integral `∫ x:ℝ, exp (-b * x^2)` is equal to `π / b`.
+-/
 theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
     (∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2)) ^ 2 = π / b := by
   /- We compute `(∫ exp (-b x^2))^2` as an integral over `ℝ^2`, and then make a polar change

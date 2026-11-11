@@ -10,7 +10,12 @@ public import Mathlib.SetTheory.Cardinal.Finite
 
 import Mathlib.GroupTheory.Coset.Basic
 
-/-! # Results about the cardinality of a quotient module -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Results about the cardinality of a quotient module
+-/
 
 public section
 

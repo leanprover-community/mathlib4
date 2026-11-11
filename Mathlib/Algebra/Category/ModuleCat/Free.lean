@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.LinearAlgebra.Dimension.Free
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exact sequences with free modules
 
@@ -24,8 +27,8 @@ This file proves results about linear independence and span in exact sequences o
   short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` where `X₁` and `X₃` are free, `X₂` is free as well.
 
 ## Tags
-linear algebra, module, free
 
+linear algebra, module, free
 -/
 
 @[expose] public section
@@ -56,7 +59,9 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
   exact range_ker_disjoint hw
 
 include hv hm in
-/-- In the commutative diagram
+/--
+In the commutative diagram
+
 ```
              f     g
     0 --→ X₁ --→ X₂ --→ X₃
@@ -64,9 +69,11 @@ include hv hm in
          v|     u|     w|
           ι  → ι ⊕ ι' ← ι'
 ```
+
 where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
 `Sum.inr`. If `u` is injective and `v` and `w` are linearly independent, then `u` is linearly
-independent. -/
+independent.
+-/
 theorem linearIndependent_leftExact : LinearIndependent R u := by
   rw [linearIndependent_sum]
   refine ⟨?_, LinearIndependent.of_comp S.g.hom hw, disjoint_span_sum hS hw huv⟩
@@ -93,7 +100,9 @@ end LinearIndependent
 section Span
 
 include hS in
-/-- In the commutative diagram
+/--
+In the commutative diagram
+
 ```
     f     g
  X₁ --→ X₂ --→ X₃
@@ -101,8 +110,10 @@ include hS in
 v|     u|     w|
  ι  → ι ⊕ ι' ← ι'
 ```
+
 where the top row is an exact sequence of modules and the maps on the bottom are `Sum.inl` and
-`Sum.inr`. If `v` spans `X₁` and `w` spans `X₃`, then `u` spans `X₂`. -/
+`Sum.inr`. If `v` spans `X₁` and `w` spans `X₃`, then `u` spans `X₂`.
+-/
 theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl = S.f ∘ v)
     (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range (S.g ∘ u ∘ Sum.inr))) :

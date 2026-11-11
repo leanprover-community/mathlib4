@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded above cochain complexes
 
@@ -17,7 +20,6 @@ of `CochainComplex C ℤ` consisting of bounded above cochain complexes
 in a category `C`.
 
 This file should be kept in sync with `Mathlib/Algebra/Homology/CochainComplexPlus.lean`.
-
 -/
 
 @[expose] public section

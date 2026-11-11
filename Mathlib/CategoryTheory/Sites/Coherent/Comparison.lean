@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connections between the regular, extensive and coherent topologies
 
@@ -16,7 +19,6 @@ This file compares the regular, extensive and coherent topologies.
 ## Main results
 
 * `instance : Precoherent C` given `Preregular C` and `FinitaryPreExtensive C`.
-
 * `extensive_union_regular_generates_coherent`: the union of the regular and extensive coverages
   generates the coherent topology on `C` if `C` is precoherent, preextensive and preregular.
 -/

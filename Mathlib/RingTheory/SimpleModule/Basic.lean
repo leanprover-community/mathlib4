@@ -19,10 +19,14 @@ import Mathlib.LinearAlgebra.Finsupp.Span
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.SetTheory.Cardinal.NatCard
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simple Modules
 
 ## Main Definitions
+
 * `IsSimpleModule` indicates that a module has no proper submodules
   (the only submodules are `⊥` and `⊤`).
 * `IsSemisimpleModule` indicates that every submodule has a complement, or equivalently,
@@ -30,6 +34,7 @@ import Mathlib.SetTheory.Cardinal.NatCard
 * A `DivisionRing` structure on the endomorphism ring of a simple module.
 
 ## Main Results
+
 * Schur's Lemma: `bijective_or_eq_zero` shows that a linear map between simple modules
   is either bijective or 0, leading to a `DivisionRing` structure on the endomorphism ring.
 * `isSimpleModule_iff_quot_maximal`:
@@ -47,9 +52,9 @@ import Mathlib.SetTheory.Cardinal.NatCard
 * `RingHom.isSemisimpleRing_of_surjective`: any quotient of a semisimple ring is semisimple.
 
 ## TODO
+
 * Artin-Wedderburn Theory (uniqueness)
 * Unify with the work on Schur's Lemma in a category theory context
-
 -/
 
 @[expose] public section

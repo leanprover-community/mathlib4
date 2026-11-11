@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integration by parts for line derivatives
 
@@ -39,7 +42,7 @@ A standard set of assumptions for integration by parts in a finite-dimensional r
 space (without boundary term) is that the functions tend to zero at infinity and have integrable
 derivatives. In this file, we instead assume that the functions are integrable and have integrable
 derivatives. These sets of assumptions are not directly comparable (an integrable function with
-integrable derivative does *not* have to tend to zero at infinity). The one we use is geared
+integrable derivative does _not_ have to tend to zero at infinity). The one we use is geared
 towards applications to Fourier transforms.
 
 TODO: prove similar theorems assuming that the functions tend to zero at infinity and have

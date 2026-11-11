@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonsingular simplicial sets
 
@@ -18,14 +21,14 @@ functor (TODO @joelriou).
 
 The condition `SSet.Nonsingular` is a weaker condition compared
 to the notion of "polyhedral complex" which appears in the article
-*Simplicial approximation* by Jardine, and which says that there
+_Simplicial approximation_ by Jardine, and which says that there
 exists a monomorphism `X ⟶ nerve T` where `T` is a partially ordered type.
 
 ## References
-* [Vegard Fjellbo and John Rognes,
-  *Exponentials of non-singular simplicial sets*][fjellbo-rognes-2022]
-* [J. F. Jardine, *Simplicial approximation*][jardine-2004]
 
+* ‍\[Vegard Fjellbo and John Rognes,
+  _Exponentials of non-singular simplicial sets_\]\[fjellbo-rognes-2022\]
+* ‍\[J. F. Jardine, _Simplicial approximation_\]\[jardine-2004\]
 -/
 
 public section

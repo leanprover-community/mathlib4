@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fibered categories
 
@@ -14,10 +17,9 @@ This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be (pre)fib
 
 ## Main definitions
 
-- `IsPreFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
+* `IsPreFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
   This means that any morphism in the base `𝒮` can be lifted to a Cartesian morphism in `𝒳`.
-
-- `IsFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
+* `IsFibered p` expresses `𝒳` is fibered over `𝒮` via a functor `p : 𝒳 ⥤ 𝒮`, as in SGA VI.6.1.
   This means that it is prefibered, and that the composition of any two Cartesian morphisms is
   Cartesian.
 
@@ -34,8 +36,8 @@ when wanting to apply this condition, it is recommended to instead use the lemma
 equalities.
 
 ## References
-* [A. Grothendieck, M. Raynaud, *SGA 1*](https://arxiv.org/abs/math/0206203)
 
+* [A. Grothendieck, M. Raynaud, _SGA 1_](https://arxiv.org/abs/math/0206203)
 -/
 
 @[expose] public section
@@ -48,9 +50,11 @@ open CategoryTheory.Functor Category IsHomLift
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
-/-- Definition of a prefibered category.
+/--
+Definition of a prefibered category.
 
-See SGA 1 VI.6.1. -/
+See SGA 1 VI.6.1.
+-/
 class Functor.IsPreFibered (p : 𝒳 ⥤ 𝒮) : Prop where
   exists_isCartesian' {a : 𝒳} {R : 𝒮} (f : R ⟶ p.obj a) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ
 
@@ -58,9 +62,11 @@ protected lemma IsPreFibered.exists_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsPreFibe
     (ha : p.obj a = S) (f : R ⟶ S) : ∃ (b : 𝒳) (φ : b ⟶ a), IsCartesian p f φ := by
   subst ha; exact IsPreFibered.exists_isCartesian' f
 
-/-- Definition of a fibered category.
+/--
+Definition of a fibered category.
 
-See SGA 1 VI.6.1. -/
+See SGA 1 VI.6.1.
+-/
 class Functor.IsFibered (p : 𝒳 ⥤ 𝒮) : Prop extends IsPreFibered p where
   comp {R S T : 𝒮} (f : R ⟶ S) (g : S ⟶ T) {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c)
     [IsCartesian p f φ] [IsCartesian p g ψ] : IsCartesian p (f ≫ g) (φ ≫ ψ)
@@ -143,8 +149,10 @@ lemma isStronglyCartesian_of_exists_isCartesian (p : 𝒳 ⥤ 𝒮) (h : ∀ (a 
   apply IsStronglyCartesian.map_uniq p (p.map φ) ψ rfl φ'
   simp [hπ_comp, Φ]
 
-/-- Alternate constructor for `IsFibered`, a functor `p : 𝒳 ⥤ 𝒴` is fibered if any diagram of the
+/--
+Alternate constructor for `IsFibered`, a functor `p : 𝒳 ⥤ 𝒴` is fibered if any diagram of the
 form
+
 ```
           a
           -
@@ -152,7 +160,9 @@ form
           v
 R --f--> p(a)
 ```
-admits a strongly Cartesian lift `b ⟶ a` of `f`. -/
+
+admits a strongly Cartesian lift `b ⟶ a` of `f`.
+-/
 lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
     (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
       ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) :
@@ -166,7 +176,9 @@ lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
     have : p.IsStronglyCartesian g ψ := isStronglyCartesian_of_exists_isCartesian p h _ _
     inferInstance
 
-/-- Given a diagram
+/--
+Given a diagram
+
 ```
                   a
                   -
@@ -174,7 +186,9 @@ lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
                   v
 T --g--> R --f--> S
 ```
-we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)` -/
+
+we have an isomorphism `T ×_S a ≅ T ×_R (R ×_S a)`
+-/
 noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
     {R S T : 𝒮} {a : 𝒳} (ha : p.obj a = S) (f : R ⟶ S) (g : T ⟶ R) :
       pullbackObj ha (g ≫ f) ≅ pullbackObj (pullbackObj_proj ha f) g :=

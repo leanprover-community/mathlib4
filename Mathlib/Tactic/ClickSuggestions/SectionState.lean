@@ -9,6 +9,9 @@ public meta import ProofWidgets.Component.FilterDetails
 public meta import ProofWidgets.Util
 public import Mathlib.Tactic.ClickSuggestions.Util
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infrastructure for searching and displaying sets of lemmas
 
@@ -37,7 +40,9 @@ variable {α : Type} [Ord α] [Inhabited α]
 instance : Ord (Result α) := ⟨(compare ·.key ·.key)⟩
 instance : LT (Result α) := ltOfOrd
 
-/-! ### Maintaining the state of the widget -/
+/-!
+# Maintaining the state of the widget
+-/
 
 /-- The state of one section of library search suggestions.
 We use this for 4 kinds of suggestions: `rw`, `grw`, `apply` and `apply at`. -/
@@ -49,10 +54,12 @@ structure SectionState (α : Type) where
   errors : Array ProofWidgets.Html := #[]
   deriving Nonempty
 
-/-- Insert the new result `res` into the array `arr` of already existing results.
+/--
+Insert the new result `res` into the array `arr` of already existing results.
 
 We maintain the invariants that `results` is sorted, and for each set of duplicate results,
-only the first one can have the `filtered` field set to `some`. -/
+only the first one can have the `filtered` field set to `some`.
+-/
 @[specialize]
 def Result.insertInArray (res : Result α) (arr : Array (Result α)) (isDup : α → α → MetaM Bool) :
     MetaM (Array (Result α)) := do

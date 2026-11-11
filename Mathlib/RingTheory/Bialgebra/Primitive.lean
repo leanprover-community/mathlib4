@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.RingTheory.Coalgebra.Primitive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primitive elements in a bialgebra
 
@@ -26,7 +29,7 @@ This file collects facts about primitive elements in a bialgebra.
 
 ## References
 
-* [D. Grinberg, V. Reiner, *Hopf algebras in combinatorics*][GrinbergReiner2020]
+* ‍\[D. Grinberg, V. Reiner, _Hopf algebras in combinatorics_\]\[GrinbergReiner2020\]
 -/
 
 public section
@@ -50,7 +53,9 @@ lemma IsPrimitiveElem.ne_one [Nontrivial R] (ha : IsPrimitiveElem R a) : a ≠ 1
 
 variable [IsCancelAdd A]
 
-/-- See Proposition 1.4.17 in [GrinbergReiner2020]. -/
+/--
+See Proposition 1.4.17 in \[GrinbergReiner2020\].
+-/
 lemma counit_eq_zero_of_comul_eq_tmul_add_tmul (ha : comul a = 1 ⊗ₜ[R] a + a ⊗ₜ[R] 1) :
     counit (R := R) a = 0 :=
   Coalgebra.counit_eq_zero_of_comul_eq_tmul_add_tmul counit_one counit_one ha

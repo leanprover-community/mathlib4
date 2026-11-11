@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian rings and modules
 
-A module satisfying these equivalent conditions is said to be an *Artinian* R-module
+A module satisfying these equivalent conditions is said to be an _Artinian_ R-module
 if every decreasing chain of submodules is eventually constant, or equivalently,
 if the relation `<` on submodules is well founded.
 
@@ -27,13 +30,12 @@ Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodul
 
 ## References
 
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
+* ‍\[P. Samuel, _Algebraic Theory of Numbers_\]\[samuel1967\]
 
 ## Tags
 
 Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian module
-
 -/
 
 public section
@@ -56,7 +58,8 @@ theorem IsArtinian.induction {R M} [Semiring R] [AddCommMonoid M] [Module R M] [
 -- See `Mathlib/RingTheory/Artinian/Ring.lean`
 assert_not_exists IsLocalization IsLocalRing
 
-/-- A ring is Artinian if it is Artinian as a module over itself.
+/--
+A ring is Artinian if it is Artinian as a module over itself.
 
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
 convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`.

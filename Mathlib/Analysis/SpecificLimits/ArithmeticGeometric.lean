@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic-geometric sequences
 
@@ -27,7 +30,6 @@ An arithmetic-geometric sequence is a sequence defined by the recurrence relatio
   `b / (1 - a)` as `n` tends to `+∞`.
 * `arithGeom_strictMono`: if `1 < a` and `b / (1 - a) < u₀`, then `arithGeom a b u₀` is strictly
   monotone.
-
 -/
 
 @[expose] public section

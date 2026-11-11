@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Commute.Hom
 public import Mathlib.Algebra.Group.Subgroup.Ker
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonical homomorphism from a pair of monoids
 

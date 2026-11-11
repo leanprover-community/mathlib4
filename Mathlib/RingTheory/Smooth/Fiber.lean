@@ -12,26 +12,29 @@ public import Mathlib.RingTheory.Smooth.Local
 
 import Mathlib.RingTheory.Flat.Equalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flat and smooth fibers imply smooth
 
 ## Main results
-- `Algebra.FormallySmooth.of_formallySmooth_residueField_tensor`:
+
+* `Algebra.FormallySmooth.of_formallySmooth_residueField_tensor`:
   Let `(R, m, k)` be a local ring, `S` be a local `R`-algebra that is flat,
   essentially of finite presentation, and `k ⊗[R] S` is `k`-formally smooth.
   Then `S` is `R`-formally smooth.
-- `Algebra.mem_smoothLocus_of_formallySmooth_fiber`:
+* `Algebra.mem_smoothLocus_of_formallySmooth_fiber`:
   Let `S` be a flat and finitely presented `R`-algebra, and `q` be a prime of `S` lying over `p`.
   If `κ(p) ⊗[R] S` is `κ(p)`-smooth, then `S` is smooth at `q`.
-- `Algebra.Smooth.of_formallySmooth_fiber`:
+* `Algebra.Smooth.of_formallySmooth_fiber`:
   Flat and finitely presented and smooth fibers imply smooth.
-- `Algebra.Etale.of_formallyUnramified_of_flat`:
+* `Algebra.Etale.of_formallyUnramified_of_flat`:
   Flat and finitely presented and (formally) unramified implies etale.
 
 ## Note
 
 For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
-
 -/
 
 open TensorProduct IsLocalRing

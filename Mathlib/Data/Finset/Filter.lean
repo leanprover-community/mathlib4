@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Multiset.Filter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtering a finite set
 
@@ -19,7 +22,6 @@ public import Mathlib.Data.Multiset.Filter
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -39,16 +41,20 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### filter -/
+/-!
+# filter
+-/
 
 section Filter
 
 variable (p : α → Prop) [DecidablePred p] {s t : Finset α}
 
-/-- `Finset.filter p s` is the set of elements of `s` that satisfy `p`.
+/--
+`Finset.filter p s` is the set of elements of `s` that satisfy `p`.
 
 For example, one can use `s.filter (· ∈ t)` to get the intersection of `s` with `t : Set α`
-as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available). -/
+as a `Finset α` (when a `DecidablePred (· ∈ t)` instance is available).
+-/
 def filter (s : Finset α) : Finset α :=
   ⟨_, s.2.filter p⟩
 
@@ -77,12 +83,14 @@ meta def knownToBeFinsetNotSet (expectedType? : Option Expr) : TermElabM Bool :=
   -- If the expected type is not known, return `false`.
   | none => pure false
 
-/-- Elaborate set builder notation for `Finset`.
+/--
+Elaborate set builder notation for `Finset`.
 
 `{x ∈ s | p x}` is elaborated as `Finset.filter (fun x ↦ p x) s` if either the expected type is
 `Finset ?α` or the expected type is not `Set ?α` and `s` has expected type `Finset ?α`.
 
 See also
+
 * `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
   `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.

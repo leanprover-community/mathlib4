@@ -8,12 +8,14 @@ module
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.TensorPower.Pairing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pairing between the exterior power of the dual and the exterior power
 
 We construct the pairing
 `exteriorPower.pairingDual : ⋀[R]^n (Module.Dual R M) →ₗ[R] (Module.Dual R (⋀[R]^n M))`.
-
 -/
 
 @[expose] public section
@@ -75,7 +77,8 @@ lemma pairingDual_ιMulti_ιMulti {n : ℕ} (f : (_ : Fin n) → Module.Dual R M
 
 section Deprecated
 
-/-! If an `R`-module `M` has a family of vectors `x : ι → M` and linear maps `f : ι → M`
+/-!
+If an `R`-module `M` has a family of vectors `x : ι → M` and linear maps `f : ι → M`
 such that `f i (x j)` is `1` or `0` depending on `i = j` or `i ≠ j`, then if `ι` has
 a linear order, then a similar property regarding `pairingDual R M n`
 applies to the family of vectors indexed
@@ -84,7 +87,8 @@ by taking exterior products of the `x i` and the `f j`.
 
 These results were added with the intention of using them to prove that exterior powers of a free
 modules are free. However this result has since been established by other means (see
-`Module.Basis.exteriorPower`) and so this work is now deprecated. -/
+`Module.Basis.exteriorPower`) and so this work is now deprecated.
+-/
 
 variable {R M} {ι : Type*} [LinearOrder ι]
   (x : ι → M) (f : ι → Module.Dual R M)

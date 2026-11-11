@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Preadditive.Indization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separating set in the category of ind-objects
 
 We construct a separating set in the category of ind-objects and conclude that if `C` is small
 and additive, then `Ind C` has a separator.
-
 -/
 
 public section

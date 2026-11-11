@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Ring.Parity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonically ordered rings and semirings.
 -/

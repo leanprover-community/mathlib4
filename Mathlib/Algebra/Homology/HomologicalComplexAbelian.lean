@@ -9,14 +9,17 @@ public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
-/-! # THe category of homological complexes is abelian
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# THe category of homological complexes is abelian
 
 If `C` is an abelian category, then `HomologicalComplex C c` is an abelian
 category for any complex shape `c : ComplexShape ι`.
 
 We also obtain that a short complex in `HomologicalComplex C c`
 is exact (resp. short exact) iff degreewise it is so.
-
 -/
 
 public section

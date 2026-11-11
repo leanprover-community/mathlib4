@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of monoids in a monoidal category.
 
@@ -64,7 +67,8 @@ class AddMonObj (X : C) where
   -- The heuristic is that unitors and associators "don't have much weight".
   add_assoc (X) : (add ▷ X) ≫ add = (α_ X X X).hom ≫ (X ◁ add) ≫ add := by cat_disch
 
-/-- A monoid object internal to a monoidal category.
+/--
+A monoid object internal to a monoidal category.
 
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
@@ -243,7 +247,8 @@ structure AddMon where
   [addMon : AddMonObj X]
 
 variable (C) in
-/-- A monoid object internal to a monoidal category.
+/--
+A monoid object internal to a monoidal category.
 
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
@@ -330,7 +335,6 @@ but we need to prove that they are monoid morphisms, i.e., compatible with unit 
 These properties translate to the monoidality of the associator and unitors
 (with respect to the monoidal structures on the functors they relate),
 which have also been proved in `Mathlib/CategoryTheory/Monoidal/Braided/Basic.lean`.
-
 -/
 
 -- The proofs that associators and unitors preserve monoid units don't require braiding.
@@ -746,7 +750,7 @@ end Mon
 /-!
 We next show that if `C` is symmetric, then `Mon C` is braided, and indeed symmetric.
 
-Note that `Mon C` is *not* braided in general when `C` is only braided.
+Note that `Mon C` is _not_ braided in general when `C` is only braided.
 
 The more interesting construction is the 2-category of monoids in `C`,
 bimodules between the monoids, and intertwiners between the bimodules.
@@ -850,12 +854,14 @@ open MonObj
 
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 variable (F) in
-/-- A lax monoidal functor takes monoid objects to monoid objects.
+/--
+A lax monoidal functor takes monoid objects to monoid objects.
 
 That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon C ⥤ Mon D`.
 -/
 @[to_additive (attr := simps)
-/-- A lax monoidal functor takes additive monoid objects to additive monoid objects.
+/--
+A lax monoidal functor takes additive monoid objects to additive monoid objects.
 
 That is, a lax monoidal functor `F : C ⥤ D` induces a functor `AddMon C ⥤ AddMon D`.
 -/]

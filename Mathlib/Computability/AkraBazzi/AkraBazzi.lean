@@ -9,6 +9,9 @@ public import Mathlib.Computability.AkraBazzi.SumTransform
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem
 
@@ -56,7 +59,6 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 * Mohamad Akra and Louay Bazzi, On the solution of linear recurrence equations
 * Tom Leighton, Notes on better master theorems for divide-and-conquer recurrences
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
-
 -/
 
 public section
@@ -74,7 +76,7 @@ local notation "ε" => smoothingFn
 
 
 /-!
-### Technical lemmas
+# Technical lemmas
 
 The next several lemmas are technical results leading up to `rpow_p_mul_one_sub_smoothingFn_le` and
 `rpow_p_mul_one_add_smoothingFn_ge`, which are key steps in the main proof.
@@ -435,7 +437,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
   exact hn
 
 /-!
-### Main proof
+# Main proof
 
 This final section proves the Akra-Bazzi theorem.
 -/

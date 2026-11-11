@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unramified morphisms
 
@@ -31,7 +34,6 @@ under `R`-algebra homomorphisms and compositions.
 
 We show that unramified is stable under algebra isomorphisms, composition and
 localization at an element.
-
 -/
 
 public section
@@ -51,7 +53,8 @@ An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.
 
 This is equivalent to "for every `R`-algebra, every square-zero ideal
 `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`".
-See `Algebra.FormallyUnramified.iff_comp_injective`. -/
+See `Algebra.FormallyUnramified.iff_comp_injective`.
+-/
 @[mk_iff, stacks 00UM]
 class FormallyUnramified : Prop where
   subsingleton_kaehlerDifferential : Subsingleton Ω[A⁄R]
@@ -309,11 +312,13 @@ instance [FormallyUnramified R S] (M : Submonoid S) : FormallyUnramified R (Loca
   .comp _ S _
 
 set_option linter.unusedSectionVars false in
-/-- This actually does not need the localization instance, and is stated here again for
+/--
+This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
 The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
-without the need to change anything (including removing redundant arguments). -/
+without the need to change anything (including removing redundant arguments).
+-/
 @[nolint unusedArguments]
 theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
   FormallyUnramified.of_restrictScalars R Rₘ Sₘ

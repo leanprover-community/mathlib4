@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Abs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further lemmas about the integers
 
@@ -21,7 +24,9 @@ open Function Nat
 
 namespace Int
 
-/-! ### nat abs -/
+/-!
+# nat abs
+-/
 
 theorem natAbs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
   rw [← abs_eq_iff_mul_self_eq, abs_eq_natAbs, abs_eq_natAbs]
@@ -35,7 +40,9 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
   rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_le.symm
 
-/-! ### Integer sqrt -/
+/-!
+# Integer sqrt
+-/
 
 theorem abs_le_sqrt {a b : ℤ} (hn : 0 ≤ b) :
     |a| ≤ b.sqrt ↔ a * a ≤ b := by

@@ -8,24 +8,29 @@ module
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.Unramified.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unramified algebras over local rings
 
 ## Main results
-- `Algebra.FormallyUnramified.iff_map_maximalIdeal_eq`:
+
+* `Algebra.FormallyUnramified.iff_map_maximalIdeal_eq`:
   Let `R` be a local ring, `A` be a local `R`-algebra essentially of finite type.
   Then `A/R` is unramified if and only if `κA/κR` is separable, and `m_R S = m_S`.
-- `Algebra.isUnramifiedAt_iff_map_eq`:
+* `Algebra.isUnramifiedAt_iff_map_eq`:
   Let `A` be an essentially of finite type `R`-algebra, `q` be a prime over `p`.
   Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is separable, and `pS_q = qS_q`.
 
 Let `S` be an `R` algebra, `p` be a prime of `R`, and suppose `q` is the unique prime of `S`
 lying over `R`, then
-- `Localization.localRingHom_injective_of_primesOver_eq_singleton`:
+
+* `Localization.localRingHom_injective_of_primesOver_eq_singleton`:
   If `R ⊆ S` is integral, then `R_p → S_q` is injective.
-- `Localization.localRingHom_surjective_of_primesOver_eq_singleton`:
+* `Localization.localRingHom_surjective_of_primesOver_eq_singleton`:
   Suppose `S` is `R`-finite and unramified at `q`. If `κ(p) = κ(q)` then `R_p → S_q` is surjective.
-- `Localization.exists_awayMap_bijective_of_residueField_surjective`:
+* `Localization.exists_awayMap_bijective_of_residueField_surjective`:
   Suppose `R ⊆ S` is finite and unramified at `q`.
   If `κ(p) = κ(q)` then there exists `r ∉ p` such that `R[1/f] = S[1/f]`.
 -/

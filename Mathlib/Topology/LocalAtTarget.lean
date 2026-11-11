@@ -8,22 +8,26 @@ module
 public import Mathlib.Topology.Maps.Proper.Basic
 public import Mathlib.Topology.Sets.OpenCover
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of maps that are local at the target or at the source.
 
 We show that the following properties of continuous maps are local at the target :
-- `Topology.IsInducing`
-- `IsOpenMap`
-- `IsClosedMap`
-- `Topology.IsEmbedding`
-- `Topology.IsOpenEmbedding`
-- `Topology.IsClosedEmbedding`
-- `GeneralizingMap`
+
+* `Topology.IsInducing`
+* `IsOpenMap`
+* `IsClosedMap`
+* `Topology.IsEmbedding`
+* `Topology.IsOpenEmbedding`
+* `Topology.IsClosedEmbedding`
+* `GeneralizingMap`
 
 We show that the following properties of continuous maps are local at the source:
-- `IsOpenMap`
-- `GeneralizingMap`
 
+* `IsOpenMap`
+* `GeneralizingMap`
 -/
 
 public section

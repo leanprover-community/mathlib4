@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.RingHom.Finite
 
 import Mathlib.RingTheory.Finiteness.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite morphisms of schemes
 
@@ -22,7 +25,6 @@ and the induced ring map is finite.
 
 Also see `AlgebraicGeometry.IsFinite.finite_preimage_singleton` in
 `Mathlib/AlgebraicGeometry/Fiber.lean` for the fact that finite morphisms have finite fibers.
-
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.Util.DischargerAsTactic
 
 import all Lean.Meta.Tactic.Simp.Rewrite -- for `Simp.dischargeUsingAssumption?`
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discharger for `field_simp` tactic
 
@@ -18,6 +21,7 @@ expressions. In order to do this, the denominators need to be certified as nonze
 contains the discharger which carries out these checks.
 
 Currently the discharger tries four strategies:
+
 1. `assumption`
 2. `positivity`
 3. `norm_num`
@@ -30,12 +34,10 @@ get (a cheap approximation of) `positivity` on fields without a partial order.
 The refactor of `positivity` to avoid a partial order assumption would be large but not
 fundamentally difficult.
 
-### Main declarations
+## Main declarations
 
 * `Mathlib.Tactic.FieldSimp.discharge`: the discharger, of type `Expr → SimpM (Option Expr)`
-
 * `field_simp_discharge`: tactic syntax for the discharger (most useful for testing/debugging)
-
 -/
 
 public meta section
@@ -50,13 +52,15 @@ private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
 | _ => return m!"discharge {prop}"
 
-/-- Default discharge strategy for `field` and `field_simp`: try to solve the (in)equality `prop`,
+/--
+Default discharge strategy for `field` and `field_simp`: try to solve the (in)equality `prop`,
 of the form `t = 0` or `t > 0`, by one of the following strategies:
 
 * Use an assumption from the context.
 * Use the `norm_num` tactic.
 * Use the `positivity` tactic.
 * Use the `simp` tactic with `discharge` as discharger and lemmas stating:
+
   * `2 ≠ 0`, `3 ≠ 0`, `4 ≠ 0`
   * `x ≠ 0 → y ≠ 0 → x * y ≠ 0`
   * `a ≠ 0 → a ^ n ≠ 0` (for `n : ℕ` and `n : ℤ`)

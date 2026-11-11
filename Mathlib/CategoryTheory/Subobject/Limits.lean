@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Specific subobjects
 
@@ -15,7 +18,6 @@ represented by the equalizer, kernel and image of (a pair of) morphism(s) and pr
 for `P.factors f`, where `P` is one of these special subobjects.
 
 TODO: an iff characterisation of `(imageSubobject f).Factors h`
-
 -/
 
 @[expose] public section

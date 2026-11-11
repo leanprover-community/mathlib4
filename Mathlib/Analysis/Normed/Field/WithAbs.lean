@@ -16,6 +16,9 @@ public import Mathlib.Topology.MetricSpace.Completion
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Algebra.UniformField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # WithAbs for fields
 
@@ -97,7 +100,7 @@ theorem isometry_map : Isometry (WithAbs.map v w (algebraMap K L)) := by
 end WithAbs
 
 /-!
-### The completion of a field at an absolute value.
+# The completion of a field at an absolute value.
 -/
 
 namespace AbsoluteValue

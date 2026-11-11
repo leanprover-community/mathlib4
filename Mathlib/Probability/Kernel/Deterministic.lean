@@ -11,6 +11,9 @@ public import Mathlib.Probability.Kernel.Composition.Prod
 
 import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Class `IsDeterministic` of deterministic kernels
 
@@ -31,20 +34,22 @@ properties about them.
 * `comp_parallelComp_comp_copy`: if the composition of two Markov kernels `η ∘ₖ κ` is
   deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
   and `κ` independently. This corresponds to the equation of a Positive Markov category.
-  See Example 11.25 of [fritz2020].
+  See Example 11.25 of \[fritz2020\].
 
 ## Implementation notes
 
-`comp_parallelComp_comp_copy` is true only when considering Markov kernels. To see why, consider
-the counterexample with $X = Y = \{\varnothing\}$, kernels $\kappa(\cdot | \varnothing) = 2\delta_
-{\varnothing}$ and $\eta(\cdot | \varnothing) = (1/2)\delta_{\varnothing}$: although their
-composition is deterministic, the equation fails.
+`comp_parallelComp_comp_copy` is true only when considering Markov kernels. To see why, consider the
+counterexample with $`X = Y = \{\varnothing\}`, kernels
+$`\kappa(\cdot | \varnothing) = 2\delta_ {\varnothing}` and
+$`\eta(\cdot | \varnothing) = (1/2)\delta_{\varnothing}`: although their composition is
+deterministic, the equation fails.
 
 ## References
 
-* [A synthetic approach to
-  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
-* [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
+* ‍\[A synthetic approach to
+  Markov kernels, conditional independence and theorems on sufficient statistics\]\[fritz2020\]
+* ‍\[Moss and Perrone, _A category-theoretic proof of the ergodic decomposition
+  theorem_\]\[moss2023\]
 -/
 
 public section

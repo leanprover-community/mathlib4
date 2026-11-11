@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear maps and quotient topological modules
 

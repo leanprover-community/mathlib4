@@ -12,6 +12,9 @@ public meta import Lean.Message
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linting against internal constructors
 
@@ -22,16 +25,18 @@ a reason, and lints against using them.
 
 ## Future work
 
-- This linter could be extensible in multiple ways:
-  - Custom predicates (e.g. the ability to register non-internal constructors as forbidden)
-  - Custom lint messages (e.g. saying "please use `fooMk` instead")
-- This linter could be accompanied by an environment linter to ensure that no forbidden constructor
+* This linter could be extensible in multiple ways:
+
+  * Custom predicates (e.g. the ability to register non-internal constructors as forbidden)
+  * Custom lint messages (e.g. saying "please use `fooMk` instead")
+* This linter could be accompanied by an environment linter to ensure that no forbidden constructor
   is used in final expressions. Currently this is an elaboration-time linter.
-- This linter could be generalized to allow forbidding other sorts of API besides constructors.
-- Performance. Currently, this linter has a small but non-negligible performance cost. Depending on
+* This linter could be generalized to allow forbidding other sorts of API besides constructors.
+* Performance. Currently, this linter has a small but non-negligible performance cost. Depending on
   where exactly the performance cost is coming from, it might be useful to either:
-  - merge the `ContextInfo`s lazily (e.g. only when we need its `Environment`)
-  - run this linter in parallel alongside other similar infotree-traversing linters, within a single
+
+  * merge the `ContextInfo`s lazily (e.g. only when we need its `Environment`)
+  * run this linter in parallel alongside other similar infotree-traversing linters, within a single
     infotree traversal
 -/
 

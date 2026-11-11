@@ -14,6 +14,9 @@ public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 public import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Mahler basis of continuous functions
 
@@ -25,16 +28,16 @@ Using this, we prove Mahler's theorem, showing that for any continuous function 
 converges (uniformly) to `f`, and this construction defines a Banach-space isomorphism between
 `C(ℤ_[p], E)` and the space of sequences `ℕ → E` tending to 0.
 
-For this, we follow the argument of Bojanić [bojanic74].
+For this, we follow the argument of Bojanić \[bojanic74\].
 
 The formalisation of Mahler's theorem presented here is based on code written by Giulio Caflisch
 for his bachelor's thesis at ETH Zürich.
 
 ## References
 
-* [R. Bojanić, *A simple proof of Mahler's theorem on approximation of continuous functions of a
-  p-adic variable by polynomials*][bojanic74]
-* [P. Colmez, *Fonctions d'une variable p-adique*][colmez2010]
+* ‍\[R. Bojanić, _A simple proof of Mahler's theorem on approximation of continuous functions of a
+  p-adic variable by polynomials_\]\[bojanic74\]
+* ‍\[P. Colmez, _Fonctions d'une variable p-adique_\]\[colmez2010\]
 
 ## Tags
 
@@ -94,7 +97,7 @@ end PadicInt
 
 /--
 The `k`-th Mahler basis function, i.e. the unique continuous function `ℤ_[p] → ℤ_[p]`
-agreeing with `n ↦ n.choose k` for `n ∈ ℕ`. See [colmez2010], §1.2.1.
+agreeing with `n ↦ n.choose k` for `n ∈ ℕ`. See \[colmez2010\], §1.2.1.
 -/
 noncomputable def mahler (k : ℕ) : C(ℤ_[p], ℤ_[p]) where
   toFun x := Ring.choose x k
@@ -122,8 +125,10 @@ lemma IsUltrametricDist.norm_fwdDiff_iter_apply_le [TopologicalSpace M] [Compact
   refine norm_sum_le_of_forall_le_of_nonneg (norm_nonneg f) fun i _ ↦ ?_
   exact (norm_zsmul_le _ _).trans (f.norm_coe_le_norm _)
 
-/-- First step in Bojanić's proof of Mahler's theorem (equation (10) of [bojanic74]): rewrite
-`Δ^[n + R] f 0` in a shape that makes it easy to bound `p`-adically. -/
+/--
+First step in Bojanić's proof of Mahler's theorem (equation (10) of \[bojanic74\]): rewrite
+`Δ^[n + R] f 0` in a shape that makes it easy to bound `p`-adically.
+-/
 private lemma bojanic_mahler_step1 [AddCommMonoidWithOne M] [AddCommGroup G] (f : M → G)
     (n : ℕ) {R : ℕ} (hR : 1 ≤ R) :
     Δ_[1]^[n + R] f 0 = -∑ j ∈ range (R - 1), R.choose (j + 1) • Δ_[1]^[n + (j + 1)] f 0 +
@@ -150,9 +155,9 @@ variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
   [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E] [IsUltrametricDist E]
 
 /--
-Second step in Bojanić's proof of Mahler's theorem (equation (11) of [bojanic74]): show that values
-`Δ_[1]^[n + p ^ t] f 0` for large enough `n` are bounded by the max of `(‖f‖ / p ^ s)` and `1 / p`
-times a sup over values for smaller `n`.
+Second step in Bojanić's proof of Mahler's theorem (equation (11) of \[bojanic74\]): show that
+values `Δ_[1]^[n + p ^ t] f 0` for large enough `n` are bounded by the max of `(‖f‖ / p ^ s)` and
+`1 / p` times a sup over values for smaller `n`.
 
 We use `nnNorm`s on the RHS since `Finset.sup` requires an order with a bottom element.
 -/
@@ -384,7 +389,7 @@ section DenseSpan
 
 open Submodule
 /-!
-### Continuous linear functionals are determined by their values on the Mahler basis
+# Continuous linear functionals are determined by their values on the Mahler basis
 -/
 variable {R : Type*} [NormedCommRing R] [Algebra ℤ_[p] R] [IsUltrametricDist R] [CompleteSpace R]
   [IsBoundedSMul ℤ_[p] R]

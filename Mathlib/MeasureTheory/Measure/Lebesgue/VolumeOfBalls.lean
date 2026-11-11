@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Integral.Pi
 
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Volume of balls
 
@@ -29,16 +32,12 @@ Using these formulas, we compute the volume of the unit balls in several cases.
   are computed as `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r}` and
   `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) ≤ r}` since the spaces `PiLp` do not have a
   `MeasureSpace` instance.
-
 * `Complex.volume_sum_rpow_lt_one` / `Complex.volume_sum_rpow_lt`: same as above but for complex
   finite-dimensional vector space.
-
 * `EuclideanSpace.volume_ball` / `EuclideanSpace.volume_closedBall` : volume of open and closed
   balls in a finite-dimensional Euclidean space.
-
 * `InnerProductSpace.volume_ball` / `InnerProductSpace.volume_closedBall`: volume of open and closed
   balls in a finite-dimensional real inner product space.
-
 * `Complex.volume_ball` / `Complex.volume_closedBall`: volume of open and closed balls in `ℂ`.
 -/
 

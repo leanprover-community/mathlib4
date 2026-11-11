@@ -9,14 +9,19 @@ module
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear equivalences
 
 ## Notation
+
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 
 ## Main Definitions
+
 * `toHomeomorph` is the homeomorphism induced by a continuous (semi)linear equivalence.
 * `symm` is the inverse of a continuous linear equivalence as a continuous linear equivalence.
 * `equivOfInverse` creates a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
@@ -27,6 +32,7 @@ by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 * `ofIsHomeomorph`: a linear equivalence that is a homeomorphism is a continuous linear equivalence.
 
 ## Main Results
+
 * `LinearEquiv.isHomeomorph_iff`: A linear equivalence between topological modules is a
   homeomorphism if and only if it is continuous in both directions.
 -/
@@ -307,12 +313,16 @@ theorem toHomeomorph_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toHomeomorph 
 theorem coe_symm_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (h : M₁ ≃SL[σ₁₂] M₂) : M₁ → M₂ :=
   h
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (h : M₁ ≃SL[σ₁₂] M₂) : M₂ → M₁ :=
   h.symm
 
@@ -451,9 +461,11 @@ protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [Uni
         continuous_invFun := h₂ } :
       E₁ ≃SL[σ₁₂] E₂)
 
-/-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
+/--
+Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other. See also `equivOfInverse'`.
-*ToDo*: Improve the naming to make it match `LinearEquiv.ofLinearMap`. -/
+_ToDo_: Improve the naming to make it match `LinearEquiv.ofLinearMap`.
+-/
 def equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁) (h₁ : Function.LeftInverse f₂ f₁)
     (h₂ : Function.RightInverse f₂ f₁) : M₁ ≃SL[σ₁₂] M₂ :=
   { f₁ with
@@ -476,9 +488,11 @@ theorem toContinuousLinearMap_equivOfInverse (f₁ : M₁ →SL[σ₁₂] M₂) 
     (equivOfInverse f₁ f₂ h₁ h₂ : M₁ →SL[σ₁₂] M₂) = f₁ :=
   rfl
 
-/-- Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
+/--
+Create a `ContinuousLinearEquiv` from two `ContinuousLinearMap`s that are
 inverse of each other, in the `ContinuousLinearMap.comp` sense. See also `equivOfInverse`.
-*ToDo*: Improve the naming to make it match `LinearEquiv.ofLinearMap` -/
+_ToDo_: Improve the naming to make it match `LinearEquiv.ofLinearMap`
+-/
 def equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
     (h₁ : f₁.comp f₂ = .id R₂ M₂) (h₂ : f₂.comp f₁ = .id R₁ M₁) : M₁ ≃SL[σ₁₂] M₂ :=
   equivOfInverse f₁ f₂
@@ -532,9 +546,11 @@ variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R�
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 
 set_option backward.defeqAttrib.useBackward true in
-/-- The continuous linear equivalence between `ULift M₁` and `M₁`.
+/--
+The continuous linear equivalence between `ULift M₁` and `M₁`.
 
-This is a continuous version of `ULift.moduleEquiv`. -/
+This is a continuous version of `ULift.moduleEquiv`.
+-/
 def ulift : ULift M₁ ≃L[R₁] M₁ where
   __ := ULift.moduleEquiv
 
@@ -582,7 +598,7 @@ end AddCommMonoid
 section Aut
 
 /-!
-### Automorphisms as continuous linear equivalences and as units of the ring of endomorphisms
+# Automorphisms as continuous linear equivalences and as units of the ring of endomorphisms
 
 The next theorems cover the identification between `M ≃L[R] M` and the group of units of the ring
 `M →L[R] M`.
@@ -638,7 +654,7 @@ end Aut
 section AutRing
 
 /-!
-### Units of a ring as linear automorphisms
+# Units of a ring as linear automorphisms
 -/
 
 variable (R : Type*) [Semiring R] [TopologicalSpace R] [ContinuousMul R]

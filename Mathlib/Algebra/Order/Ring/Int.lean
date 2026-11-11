@@ -13,10 +13,14 @@ public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Nat.Cast.Order.Basic
 public import Mathlib.Order.BooleanAlgebra.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The integers form a linear ordered ring
 
 This file contains:
+
 * instances on `ℤ`. The stronger one is `Int.instLinearOrderedCommRing`.
 * basic lemmas about integers that involve order properties.
 
@@ -41,7 +45,9 @@ namespace Int
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.mul_pos
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
   simp [← not_even_iff_odd, ← Set.compl_ofPred, isCompl_compl]
@@ -58,13 +64,15 @@ lemma add_two_le_iff_lt_of_even_sub {m n : ℤ} (even : Even (n - m)) : m + 2 �
 
 end Int
 
-/-- If the gcd of two natural numbers `p` and `q` divides a third natural number `n`,
+/--
+If the gcd of two natural numbers `p` and `q` divides a third natural number `n`,
 and if `n` is at least `(p - 1) * (q - 1)`, then `n` can be represented as an `ℕ`-linear
 combination of `p` and `q`.
 
 TODO: show that if `p.gcd q = 1` and `0 ≤ n ≤ (p - 1) * (q - 1) - 1 = N`, then `n` is
 representable iff `N - n` is not. In particular `N` is not representable, solving the
-coin problem for two coins: https://en.wikipedia.org/wiki/Coin_problem#n_=_2. -/
+coin problem for two coins: https://en.wikipedia.org/wiki/Coin\_problem#n\_=\_2.
+-/
 theorem Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le (p q n : ℕ) (dvd : p.gcd q ∣ n)
     (le : p.pred * q.pred ≤ n) : ∃ a b : ℕ, a * p + b * q = n := by
   obtain _ | p := p

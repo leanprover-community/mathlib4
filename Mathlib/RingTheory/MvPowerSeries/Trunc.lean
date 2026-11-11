@@ -10,46 +10,36 @@ public import Mathlib.Data.Finsupp.Interval
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal (multivariate) power series - Truncation
 
 * `MvPowerSeries.truncFinset s p` restricts the support of a multivariate power series `p`
   to a finite set of monomials and obtains a multivariate polynomial.
-
 * `MvPowerSeries.trunc n φ` truncates a formal multivariate power series
   to the multivariate polynomial that has the same coefficients as `φ`,
   for all `m < n`, and `0` otherwise.
 
   Note that here, `m` and `n` have types `σ →₀ ℕ`,
   so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
-
 * `MvPowerSeries.trunc_one` : truncation of the unit power series
-
 * `MvPowerSeries.trunc_C` : truncation of a constant
-
 * `MvPowerSeries.trunc_C_mul` : truncation of constant multiple.
-
 * `MvPowerSeries.trunc' n φ` truncates a formal multivariate power series
   to the multivariate polynomial that has the same coefficients as `φ`,
   for all `m ≤ n`, and `0` otherwise.
 
   Here, `m` and `n`  have types `σ →₀ ℕ` so that `m ≤ n` means that `m s ≤ n s` for all `s : σ`.
-
-
 * `MvPowerSeries.coeff_mul_eq_coeff_trunc'_mul_trunc'` : compares the coefficients
   of a product with those of the product of truncations.
-
 * `MvPowerSeries.trunc'_one` : truncation of the unit power series.
-
 * `MvPowerSeries.trunc'_C` : truncation of a constant.
-
 * `MvPowerSeries.trunc'_C_mul` : truncation of a constant multiple.
-
 * `MvPowerSeries.trunc'_map` : image of a truncation under a change of rings
-
 * `MvPowerSeries.truncTotal` : the truncation of a multivariate formal power series at
   a total degree `n` when the index `σ` is finite
-
 -/
 
 @[expose] public section
@@ -175,12 +165,14 @@ section TruncLT
 
 variable [DecidableEq σ] [CommSemiring R]
 
-/-- The `n`th truncation of a multivariate formal power series to a multivariate polynomial
+/--
+The `n`th truncation of a multivariate formal power series to a multivariate polynomial
 
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
 to the naturals, then `trunc R n f` is the multivariable polynomial obtained from `f`
-by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
-and `a i < n i` for some `i`. -/
+by keeping only the monomials $`c\prod_i X_i^{a_i}` where `a i ≤ n i` for all `i`
+and `a i < n i` for some `i`.
+-/
 def trunc (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Iio n)
 
@@ -231,7 +223,8 @@ The `n`th truncation of a multivariate formal power series to a multivariate pol
 
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
 to the naturals, then `trunc' R n f` is the multivariable polynomial obtained from `f`
-by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`. -/
+by keeping only the monomials $`c\prod_i X_i^{a_i}` where `a i ≤ n i` for all `i`.
+-/
 def trunc' (R : Type*) [CommSemiring R] (n : σ →₀ ℕ) :
     MvPowerSeries σ R →ₗ[R] MvPolynomial σ R := truncFinset R (Iic n)
 

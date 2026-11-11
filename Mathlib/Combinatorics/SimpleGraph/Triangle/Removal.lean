@@ -12,6 +12,9 @@ import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 import Mathlib.Data.Finset.CastCard
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangle removal lemma
 
@@ -19,7 +22,7 @@ In this file, we prove the triangle removal lemma.
 
 ## References
 
-[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
+‍\[Yaël Dillies, Bhavik Mehta, _Formalising Szemerédi’s Regularity Lemma in Lean_\]\[srl\_itp\]
 -/
 
 @[expose] public section
@@ -31,14 +34,16 @@ variable {α : Type*} [DecidableEq α] [Fintype α] {G : SimpleGraph α} [Decida
 
 namespace SimpleGraph
 
-/-- An explicit form for the constant in the triangle removal lemma.
+/--
+An explicit form for the constant in the triangle removal lemma.
 
 Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exponential. This means
 `triangleRemovalBound` is in practice absolutely tiny.
 
 This definition is meant to be used for small values of `ε`, and in particular is junk for values
 of `ε` greater than or equal to `1`. The junk value is chosen to be positive, so that
-`0 < ε → 0 < triangleRemovalBound ε` regardless of whether `ε < 1` or not. -/
+`0 < ε → 0 < triangleRemovalBound ε` regardless of whether `ε < 1` or not.
+-/
 noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
   min (2 * ⌈4 / ε⌉₊ ^ 3)⁻¹ ((1 - min 1 ε / 4) * (ε / (16 * bound (ε / 8) ⌈4 / ε⌉₊)) ^ 3)
 
@@ -172,10 +177,12 @@ end SimpleGraph
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq SimpleGraph
 
-/-- Extension for the `positivity` tactic: `SimpleGraph.triangleRemovalBound ε` is positive
+/--
+Extension for the `positivity` tactic: `SimpleGraph.triangleRemovalBound ε` is positive
 if `ε` is.
 
-This exploits the positivity of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
+This exploits the positivity of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`.
+-/
 @[positivity triangleRemovalBound _]
 meta def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do

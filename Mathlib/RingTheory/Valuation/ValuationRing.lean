@@ -14,6 +14,9 @@ public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Valuation Rings
 
@@ -27,6 +30,7 @@ there is a natural valuation `Valuation A K` on `K` with values in `value_group 
 the image of `A` under `algebraMap A K` agrees with `(Valuation A K).integer`.
 
 We also provide the equivalence of the following notions for a domain `R` in `ValuationRing.TFAE`.
+
 1. `R` is a valuation ring.
 2. For each `x : FractionRing K`, either `x` or `x⁻¹` is in `R`.
 3. "divides" is a total relation on the elements of `R`.
@@ -42,7 +46,6 @@ The Mathlib definition of a valuation ring requires `IsDomain A` even though the
 does not mention zero divisors. Thus, there is a technical `PreValuationRing A` that
 is defined in further generality that can be used in places where the ring cannot be a domain.
 The `ValuationRing` class is kept to be in sync with the literature.
-
 -/
 
 @[expose] public section

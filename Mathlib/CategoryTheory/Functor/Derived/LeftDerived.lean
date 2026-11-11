@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.KanExtension.AdjunctionPreserves
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left derived functors
 
@@ -30,7 +33,6 @@ along the localization functor `L`.
 ## References
 
 * https://ncatlab.org/nlab/show/derived+functor
-
 -/
 
 @[expose] public section

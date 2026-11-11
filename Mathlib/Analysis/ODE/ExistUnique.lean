@@ -9,6 +9,9 @@ public import Mathlib.Analysis.ODE.PicardLindelof
 
 import Mathlib.Analysis.ODE.Gronwall
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence and uniqueness of solutions to ODEs
 
@@ -42,7 +45,9 @@ integral curve, vector field, existence, uniqueness, Picard-Lindelöf, Gronwall
 open Function Metric Set
 open scoped Nat NNReal Topology
 
-/-! ## Existence of solutions to ODEs -/
+/-!
+# Existence of solutions to ODEs
+-/
 
 namespace IsPicardLindelof
 
@@ -132,7 +137,9 @@ theorem exists_forall_mem_closedBall_eq_forall_mem_Icc_hasDerivWithinAt
 
 end IsPicardLindelof
 
-/-! ## $C^1$ vector field -/
+/-!
+# $`C^1` vector field
+-/
 
 namespace ContDiffAt
 
@@ -181,16 +188,20 @@ theorem exists_eventually_eq_hasDerivAt
 
 end ContDiffAt
 
-/-! ## Uniqueness of solutions to ODEs -/
+/-!
+# Uniqueness of solutions to ODEs
+-/
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g : ℝ → E} {a b t₀ : ℝ}
 
-/-- There exists only one solution of an ODE $\dot x=v(t, x)$ in a set `s ⊆ ℝ × E` with
+/--
+There exists only one solution of an ODE $`\dot x=v(t, x)` in a set `s ⊆ ℝ × E` with
 a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
 and we consider only solutions included in `s`.
 
-This version shows uniqueness in a closed interval `Icc a b`, where `a` is the initial time. -/
+This version shows uniqueness in a closed interval `Icc a b`, where `a` is the initial time.
+-/
 theorem ODE_solution_unique_of_mem_Icc_right
     (hv : ∀ t ∈ Ico a b, LipschitzOnWith K (v t) (s t))
     (hf : ContinuousOn f (Icc a b))
@@ -322,8 +333,10 @@ theorem ODE_solution_unique_of_eventually
     (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
     (fun _ ht ↦ (h _ ht).2.1) (fun _ ht ↦ (h _ ht).2.2) heq
 
-/-- There exists only one solution of an ODE $\dot x=v(t, x)$ with
-a given initial value provided that the RHS is Lipschitz continuous in `x`. -/
+/--
+There exists only one solution of an ODE $`\dot x=v(t, x)` with
+a given initial value provided that the RHS is Lipschitz continuous in `x`.
+-/
 theorem ODE_solution_unique
     (hv : ∀ t, LipschitzWith K (v t))
     (hf : ContinuousOn f (Icc a b))
@@ -336,8 +349,10 @@ theorem ODE_solution_unique
   ODE_solution_unique_of_mem_Icc_right (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha
 
-/-- There exists only one global solution to an ODE $\dot x=v(t, x)$ with a given initial value
-provided that the RHS is Lipschitz continuous. -/
+/--
+There exists only one global solution to an ODE $`\dot x=v(t, x)` with a given initial value
+provided that the RHS is Lipschitz continuous.
+-/
 theorem ODE_solution_unique_univ
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))
     (hf : ∀ t, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)

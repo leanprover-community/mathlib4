@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abelian categories
 
@@ -41,6 +44,7 @@ working with.
 * If `f : X ⟶ Y`, then the map `factorThruImage f : X ⟶ image f` is an epimorphism, and the map
   `factorThruCoimage f : coimage f ⟶ Y` is a monomorphism.
 * Factoring through the image and coimage is a strong epi-mono factorisation. This means that
+
   * every abelian category has images. We provide the isomorphism
     `imageIsoImage : abelian.image f ≅ limits.image f`.
   * the canonical morphism `coimageImageComparison : coimage f ⟶ image f`
@@ -76,9 +80,8 @@ convention:
 
 ## References
 
-* [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
-* [P. Aluffi, *Algebra: Chapter 0*][aluffi2016]
-
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 2_\]\[borceux-vol2\]
+* ‍\[P. Aluffi, _Algebra: Chapter 0_\]\[aluffi2016\]
 -/
 
 @[expose] public section
@@ -99,7 +102,8 @@ namespace CategoryTheory
 variable {C : Type u} [Category.{v} C]
 variable (C)
 
-/-- A (preadditive) category `C` is called abelian if it has all finite products,
+/--
+A (preadditive) category `C` is called abelian if it has all finite products,
 all kernels and cokernels, and if every monomorphism is the kernel of some morphism
 and every epimorphism is the cokernel of some morphism.
 
@@ -642,8 +646,10 @@ section EpiPullback
 
 variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
-/-- In an abelian category, the pullback of an epimorphism is an epimorphism.
-    Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
+/--
+In an abelian category, the pullback of an epimorphism is an epimorphism.
+Proof from \[aluffi2016, IX.2.3\], cf. \[borceux-vol2, 1.7.6\]
+-/
 instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
   -- It will suffice to consider some morphism e : Y ⟶ R such that
     -- pullback.snd f g ≫ e = 0 and show that e = 0.

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.End
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled Hom instances for module and multiplicative actions
 
@@ -35,7 +38,9 @@ instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
 
 end ZeroHom
 
-/-! ### Instances for `AddMonoidHom` -/
+/-!
+# Instances for `AddMonoidHom`
+-/
 
 namespace AddMonoidHom
 
@@ -58,7 +63,7 @@ instance instDomMulActModule
 end AddMonoidHom
 
 /-!
-### Instances for `AddMonoid.End`
+# Instances for `AddMonoid.End`
 
 These are direct copies of the instances above.
 -/
@@ -97,16 +102,20 @@ end
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (AddMonoid.End A) :=
   inferInstanceAs <| Module R (A →+ A)
 
-/-- The tautological action by `AddMonoid.End α` on `α`.
+/--
+The tautological action by `AddMonoid.End α` on `α`.
 
-This generalizes `AddMonoid.End.applyDistribMulAction`. -/
+This generalizes `AddMonoid.End.applyDistribMulAction`.
+-/
 instance applyModule [AddCommMonoid A] : Module (AddMonoid.End A) A where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
 
 end AddMonoid.End
 
-/-! ### Miscellaneous morphisms -/
+/-!
+# Miscellaneous morphisms
+-/
 
 namespace AddMonoidHom
 

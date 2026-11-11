@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Data.Multiset.FinsetOps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice structure on finite sets
 
@@ -22,7 +25,6 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 `Mathlib/Order/Lattice.lean`. For the lattice structure on finsets, `⊥` is called `bot` with
 `⊥ = ∅` and `⊤` is called `top` with `⊤ = univ`.
 
-
 ## Implementation Notes
 
 All the theorems and instances expect `DecidableEq` instance for `α`
@@ -30,7 +32,6 @@ All the theorems and instances expect `DecidableEq` instance for `α`
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section
@@ -50,7 +51,9 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### Lattice structure -/
+/-!
+# Lattice structure
+-/
 
 section Lattice
 
@@ -90,7 +93,9 @@ theorem inf_eq_inter' : (Min.min : Finset α → Finset α → Finset α) = Min.
 theorem inf_eq_inter {s t : Finset α} : s ⊓ t = s ∩ t :=
   rfl
 
-/-! #### union -/
+/-!
+# union
+-/
 
 theorem union_val_nd (s t : Finset α) : (s ∪ t).1 = ndunion s.1 t.1 :=
   rfl

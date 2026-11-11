@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.IntervalAverage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Circle Averages
 
@@ -43,7 +46,7 @@ variable
 namespace Real
 
 /-!
-### Definition
+# Definition
 -/
 
 variable (f c R) in
@@ -59,7 +62,7 @@ lemma circleAverage_def :
     circleAverage f c R = (2 * π)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := rfl
 
 /--
-If 'f' is *not* circle integrable, then the circle average is zero by definition.
+If 'f' is _not_ circle integrable, then the circle average is zero by definition.
 -/
 theorem circleAverage.integral_undef (hf : ¬CircleIntegrable f c R) :
     circleAverage f c R = 0 := by
@@ -111,7 +114,7 @@ theorem circleAverage_eq_circleIntegral {F : Type*} [NormedAddCommGroup F] [Norm
     field_simp [circleMap_ne_center h]
 
 /-!
-## Congruence Lemmata
+# Congruence Lemmata
 -/
 
 /-- Circle averages do not change when shifting the angle. -/
@@ -185,7 +188,7 @@ theorem circleAverage_zero_one_congr_inv {f : ℂ → E} :
     simpa using (t₀.intervalIntegral_add_eq (-(2 * π)) 0)
 
 /-!
-## Continuity
+# Continuity
 -/
 
 /--
@@ -220,8 +223,8 @@ of the radius.
   fun_prop
 
 /--
-Companion lemma to `ContinuousOn.circleAverage`: a function continuous on `Ioc r
-R` and constant on `Ioo r R` is constant.
+Companion lemma to `ContinuousOn.circleAverage`: a function continuous on `Ioc r R` and constant on
+`Ioo r R` is constant.
 -/
 lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
     (h₁f : ContinuousOn f (Ioc r R)) (hR : r < R)
@@ -236,7 +239,7 @@ lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
   exact Filter.eventuallyEq_of_mem (Ioo_mem_nhdsLT hR) h₂f
 
 /-!
-## Constant Functions
+# Constant Functions
 -/
 
 /--
@@ -262,7 +265,7 @@ theorem circleAverage_const_on_circle [CompleteSpace E] {a : E}
   apply circleAverage_const a c R
 
 /-!
-## Inequalities
+# Inequalities
 -/
 
 /--
@@ -317,7 +320,7 @@ theorem circleAverage_nonneg_of_nonneg {c : ℂ} {R : ℝ} {f : ℂ → ℝ}
   · rw [circleAverage.integral_undef hf]
 
 /-!
-## Commutativity with Linear Maps
+# Commutativity with Linear Maps
 -/
 
 /-- Circle averages commute with continuous linear maps. -/
@@ -330,7 +333,7 @@ theorem _root_.ContinuousLinearMap.circleAverage_comp_comm [CompleteSpace E] (L 
   exact L.intervalIntegral_comp_comm hf
 
 /-!
-## Behaviour with Respect to Arithmetic Operations
+# Behaviour with Respect to Arithmetic Operations
 -/
 
 /-- Circle averages commute with scalar multiplication. -/

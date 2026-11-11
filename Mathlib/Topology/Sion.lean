@@ -9,7 +9,11 @@ public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Order.SaddlePoint
 public import Mathlib.Topology.Instances.EReal.Lemmas
 
-/-! # Formalization of Sion's version of the von Neumann minimax theorem
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Formalization of Sion's version of the von Neumann minimax theorem
 
 ## Statements
 
@@ -17,9 +21,10 @@ public import Mathlib.Topology.Instances.EReal.Lemmas
 Let `X` and `Y` be convex subsets of topological vector spaces `E` and `F`,
 `X` being moreover compact,
 and let `f : X × Y → ℝ` be a function such that
-- for all `x ∈ X`, `f(x, ⬝)` is upper semicontinuous and quasiconcave
-- for all `y ∈ Y`, `f(⬝, y)` is lower semicontinuous and quasiconvex
-Then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
+
+* for all `x ∈ X`, `f(x, ⬝)` is upper semicontinuous and quasiconcave
+* for all `y ∈ Y`, `f(⬝, y)` is lower semicontinuous and quasiconvex
+  Then `⊓ x, ⊔ y, f (x, y) = ⊔ y, ⊓ x f (x, y)`.
 
 The classical case of the theorem assumes that `f` is continuous,
 `f(x, ⬝)` is concave, `f(⬝, y)` is convex.
@@ -27,40 +32,34 @@ The classical case of the theorem assumes that `f` is continuous,
 As a particular case, one get the von Neumann theorem where
 `f` is bilinear and `E`, `F` are finite dimensional.
 
-We follow the proof of [Komiya (1988)][Komiya-1988].
+We follow the proof of \[Komiya (1988)\]\[Komiya-1988\].
 
 ## Remark on implementation
 
-  * The essential part of the proof holds for a function
+* The essential part of the proof holds for a function
   `f : X → Y → β`, where `β` is a complete dense linear order.
-  * We have written part of it for just a dense linear order,
-
-  * On the other hand, if the theorem holds for such `β`,
+* We have written part of it for just a dense linear order,
+* On the other hand, if the theorem holds for such `β`,
   it must hold for any linear order, for the reason that
   any linear order embeds into a complete dense linear order.
   Although one can construct such an embedding using the Dedekind-Mac Neille completion,
   this result does not seem to be known to Mathlib.
-
-  * When `β` is `ℝ`, one can use `Real.toEReal` and one gets a proof for `ℝ`.
+* When `β` is `ℝ`, one can use `Real.toEReal` and one gets a proof for `ℝ`.
 
 ## TODO
 
-- Spell out the particular case of von Neumann theorem.
-
-- Use the Dedekind MacNeille completion of a linear order to simplify
+* Spell out the particular case of von Neumann theorem.
+* Use the Dedekind MacNeille completion of a linear order to simplify
   the statement of `DMCompletion.exists_isSaddlePointOn`.
 
 ## References
 
-- [Neumann, John von (1928).
-  ”Zur Theorie der Gesellschaftsspiele”. *Mathematische Annalen* 100 (1): 295‑320][vonNeumann-1928]
-
-- [Sion, Maurice (1958).
-  ”On general minimax theorems”. *Pacific Journal of Mathematics* 8 (1): 171‑76.][Sion-1958]
-
-- [Komiya, Hidetoshi (1988).
-  “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).][Komiya-1988]
-
+* ‍\[Neumann, John von (1928). ”Zur Theorie der Gesellschaftsspiele”. _Mathematische Annalen_ 100
+  (1): 295‑320\]\[vonNeumann-1928\]
+* ‍\[Sion, Maurice (1958).
+  ”On general minimax theorems”. _Pacific Journal of Mathematics_ 8 (1): 171‑76.\]\[Sion-1958\]
+* ‍\[Komiya, Hidetoshi (1988). “Elementary Proof for Sion’s Minimax Theorem”. _Kodai Mathematical
+  Journal_ 11 (1).\]\[Komiya-1988\]
 -/
 
 open Set Filter
@@ -138,11 +137,13 @@ theorem sublevelLeft_subset_union [AddCommGroup F] [Module ℝ F]
     specialize hfx' ⟨y.prop, inf_le_left⟩ ⟨y'.prop, inf_le_right⟩ z.prop
     exact le_trans hfx'.2 hx
 
-/-- `sublevelLeft X f b z` is contained in either
+/--
+`sublevelLeft X f b z` is contained in either
 `sublevelLeft X f b y` or in `sublevelLeft X f b y'`.
 
 The hypotheses imply that `sublevelLeft X f b z` is connected,
-and that the two other are disjoint. -/
+and that the two other are disjoint.
+-/
 theorem sublevelLeft_subset_or [TopologicalSpace E] [AddCommGroup E]
     [IsTopologicalAddGroup E] [Module ℝ E] [ContinuousSMul ℝ E]
     [AddCommGroup F] [Module ℝ F]

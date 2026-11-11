@@ -8,11 +8,15 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Guitart exact squares and quotient categories
 
 Consider a commutative square of categories given by a natural isomorphism
 `e : T ⋙ R ≅ L ⋙ B`:
+
 ```
       T
  C₀ ----> H₀
@@ -33,7 +37,6 @@ between `f₀` and `f₁` for `P.map L`. The dual result is also obtained.
 This result shall be applied in the situation where `C₀` is a suitable
 full subcategory of a category `C` of homological complexes, and `H₀` and `H`
 are the corresponding homotopy categories (TODO @joelriou).
-
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Normed.Module.HahnBanach
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Schwarz lemma
 
@@ -19,22 +22,18 @@ In this file we prove several versions of the Schwarz lemma.
   on an open disk with center `c` and a positive radius `R₁`.
   If `f` sends this ball to a closed ball with center `f c` and radius `R₂`,
   then the norm of the derivative of `f` at `c` is at most the ratio `R₂ / R₁`.
-
 * `Complex.dist_le_div_mul_dist_of_mapsTo_ball`. Let `f : E → F` be a complex analytic function
   on an open ball with center `c` and radius `R₁`.
   If `f` sends this ball to a closed ball with center `f c` and radius `R₂`,
   then for any `z` in the former ball we have `dist (f z) (f c) ≤ (R₂ / R₁) * dist z c`.
-
 * `Complex.norm_deriv_le_one_of_mapsTo_ball`. If `f : ℂ → E` is complex analytic
   on an open disk with center `c` and a positive radius `R₁`,
   and it sends this disk to a closed ball with center `f c` and radius the same radius,
   then the norm of the derivative of `f` at the center of this disk is at most `1`.
-
 * `Complex.dist_le_dist_of_mapsTo_ball`. Let `f : E → F` be a complex analytic function
   on an open ball with center `c`.
   If `f` sends this ball to a closed ball with center `f c` and the same radius,
   then for any `z` in the former ball we have `dist (f z) (f c) ≤ dist z c`.
-
 * `Complex.norm_le_norm_of_mapsTo_ball`:
   Let `f : E → F` be a complex analytic on an open ball with center at the origin.
   If `f` sends this ball to the closed ball with center `0` of the same radius and `f 0 = 0`,
@@ -134,7 +133,8 @@ variable {E F : Type*}
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
 open AffineMap in
-/-- Let `f : E → F` be a complex analytic map
+/--
+Let `f : E → F` be a complex analytic map
 sending an open ball of radius `R₁` to a closed ball of radius `R₂`.
 If `f w - f c = o(‖w - c‖ ^ n)`, then for any `z` in the ball in the domain,
 we have `dist (f z) (f c) ≤ R₂ * (dist z c / R₁) ^ (n + 1)`.
@@ -262,7 +262,8 @@ theorem norm_deriv_le_one_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R)
     (h_maps : MapsTo f (ball c R) (closedBall (f c) R)) (h₀ : 0 < R) : ‖deriv f c‖ ≤ 1 :=
   (norm_deriv_le_div_of_mapsTo_ball hd h_maps h₀).trans_eq (div_self h₀.ne')
 
-/-- Two cases of the **Schwarz Lemma** (derivative and distance), merged together.
+/--
+Two cases of the *Schwarz Lemma* (derivative and distance), merged together.
 
 If `f : ℂ → E` is a complex analytic function on an open ball `ball c R₁`
 hat sends it to a closed ball `closedBall (f c) R₂`, then the norm of `dslope f c z`,
@@ -279,7 +280,8 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
     · exact dist_le_div_mul_dist_of_mapsTo_ball hd h_maps hz
     · simpa
 
-/-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
+/--
+Equality case in the *Schwarz Lemma*: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
 if `‖dslope f c z₀‖ = R₂ / R₁` holds at a point in the ball
 then the map `f` is affine with slope `dslope f c z₀`.
 
@@ -322,7 +324,8 @@ theorem affine_of_mapsTo_ball_of_norm_dslope_eq_div [StrictConvexSpace ℝ E]
     simp only [heq, SameRay.rfl.norm_add, heq_add]
   simp [← this]
 
-/-- Equality case in the **Schwarz Lemma**: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
+/--
+Equality case in the *Schwarz Lemma*: in the setup of `norm_dslope_le_div_of_mapsTo_ball`,
 if there exists a point `z₀` in the ball such that `‖dslope f c z₀‖ = R₂ / R₁`,
 then the map `f` is affine with the absolute value of the slope equal to `R₂ / R₁`.
 

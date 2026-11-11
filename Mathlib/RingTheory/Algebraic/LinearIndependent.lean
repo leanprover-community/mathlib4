@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.RingTheory.Algebraic.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear independence of transcendental elements
 

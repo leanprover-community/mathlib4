@@ -14,11 +14,13 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.Group.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 
-This file starts looking like the ring theory of $R[X]$
-
+This file starts looking like the ring theory of $`R[X]`
 -/
 
 @[expose] public section
@@ -659,7 +661,8 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
   rw [← modByMonic_eq_zero_iff_dvd (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this
   rwa [← C_inj, C_0]
 
-/-- To check a polynomial over a field is irreducible, it suffices to check only for
+/--
+To check a polynomial over a field is irreducible, it suffices to check only for
 divisors that have smaller degree.
 
 See also: `Polynomial.Monic.irreducible_iff_natDegree`.
@@ -672,7 +675,8 @@ theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p)
   · contrapose hpu
     exact .of_mul_eq_one _ hpu
 
-/-- To check a polynomial `p` over a field is irreducible, it suffices to check there are no
+/--
+To check a polynomial `p` over a field is irreducible, it suffices to check there are no
 divisors of degree `0 < d ≤ degree p / 2`.
 
 See also: `Polynomial.Monic.irreducible_iff_natDegree'`.

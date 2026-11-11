@@ -11,6 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogon
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss
 
@@ -20,9 +23,9 @@ over appropriate evaluations of the polynomial.
 
 ## Main statements
 
-* integral_eq_sumZeroes: The integral of a polynomial of degree `< 2 * n` with respect to the weight
-  function `√(1 - x ^ 2)⁻¹` supported on `[-1, 1]` is equal to `π` times the average of its values
-  on the points `cos ((2 * i + 1) / (2 * n) * π)` for `0 ≤ i < n`.
+* integral\_eq\_sumZeroes: The integral of a polynomial of degree `< 2 * n` with respect to the
+  weight function `√(1 - x ^ 2)⁻¹` supported on `[-1, 1]` is equal to `π` times the average of its
+  values on the points `cos ((2 * i + 1) / (2 * n) * π)` for `0 ≤ i < n`.
 
 ## Implementation
 

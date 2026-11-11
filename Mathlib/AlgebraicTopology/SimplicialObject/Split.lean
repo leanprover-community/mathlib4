@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Data.Fintype.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Split simplicial objects
 
@@ -30,8 +33,8 @@ Simplicial objects equipped with a splitting form a category
 `SimplicialObject.Split C`.
 
 ## References
-* [Stacks: Splitting simplicial objects] https://stacks.math.columbia.edu/tag/017O
 
+* ‍\[Stacks: Splitting simplicial objects\] https://stacks.math.columbia.edu/tag/017O
 -/
 
 @[expose] public section

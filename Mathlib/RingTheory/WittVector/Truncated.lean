@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.WittVector.InitTail
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Truncated Witt vectors
 
@@ -18,21 +21,20 @@ The ring of Witt vectors is the projective limit of all the rings of truncated W
 
 ## Main declarations
 
-- `TruncatedWittVector`: the underlying type of the ring of truncated Witt vectors
-- `TruncatedWittVector.instCommRing`: the ring structure on truncated Witt vectors
-- `WittVector.truncate`: the quotient homomorphism that truncates a Witt vector,
+* `TruncatedWittVector`: the underlying type of the ring of truncated Witt vectors
+* `TruncatedWittVector.instCommRing`: the ring structure on truncated Witt vectors
+* `WittVector.truncate`: the quotient homomorphism that truncates a Witt vector,
   to obtain a truncated Witt vector
-- `TruncatedWittVector.truncate`: the homomorphism that truncates
+* `TruncatedWittVector.truncate`: the homomorphism that truncates
   a truncated Witt vector of length `n` to one of length `m` (for some `m ≤ n`)
-- `WittVector.lift`: the unique ring homomorphism into the ring of Witt vectors
+* `WittVector.lift`: the unique ring homomorphism into the ring of Witt vectors
   that is compatible with a family of ring homomorphisms to the truncated Witt vectors:
   this realizes the ring of Witt vectors as projective limit of the rings of truncated Witt vectors
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section
@@ -46,7 +48,8 @@ variable {p : ℕ} (n : ℕ) (R : Type*)
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
-/-- A truncated Witt vector over `R` is a vector of elements of `R`,
+/--
+A truncated Witt vector over `R` is a vector of elements of `R`,
 i.e., the first `n` coefficients of a Witt vector.
 We will define operations on this type that are compatible with the (untruncated) Witt
 vector operations.

@@ -7,13 +7,20 @@ module
 
 public import Mathlib.Data.Nat.Bits
 
-/-! # Lemmas about `Nat.size` and `Nat.shiftLeft` -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Lemmas about `Nat.size` and `Nat.shiftLeft`
+-/
 
 public section
 
 namespace Nat
 
-/-! ### `shiftLeft` -/
+/-!
+# `shiftLeft`
+-/
 
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 
@@ -30,7 +37,9 @@ theorem shiftLeft'_true_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n
   | 0, h => absurd rfl h
   | succ _, _ => by simp [shiftLeft', bit]
 
-/-! ### `size` -/
+/-!
+# `size`
+-/
 
 
 @[simp]

@@ -10,7 +10,11 @@ public import Mathlib.Topology.VectorBundle.Riemannian
 
 import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
-/-! # Riemannian vector bundles
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Riemannian vector bundles
 
 Given a vector bundle over a manifold whose fibers are all endowed with a scalar product, we
 say that this bundle is Riemannian if the scalar product depends smoothly on the base point.
@@ -28,6 +32,7 @@ automatically `[IsContMDiffRiemannianBundle IB n F E]`.
 
 The following code block is the standard way to say "Let `E` be a smooth vector bundle equipped with
 a `C^n` Riemannian structure over a `C^n` manifold `B`":
+
 ```
 variable
   {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
@@ -236,12 +241,14 @@ variable
   [FiberBundle F E] [VectorBundle ℝ F E]
 
 variable (IB n F E) in
-/-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
+/--
+A family of inner product space structures on the fibers of a fiber bundle, defining the same
 topology as the already existing one, and varying continuously with the base point. See also
 `ContinuousRiemannianMetric` for a continuous version.
 
 This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
-product space structure on the fibers without creating diamonds. -/
+product space structure on the fibers without creating diamonds.
+-/
 structure ContMDiffRiemannianMetric where
   /-- The scalar product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.ExtremalEpi
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular categories
 
@@ -21,18 +24,20 @@ semantics for regular logic.
 ## Main results
 
 * We show that every regular category has strong epi-mono factorisations, following Theorem 1.11
-  in [Gran2021].
+  in \[Gran2021\].
 * We show that every regular category satisfies Frobenius reciprocity. That is, that in their
   internal language, we have `∃ x, (P(x) ⊓ Q)` iff `(∃ x, P(x)) ⊓ Q`, for a proposition `Q` not
   depending on `x`.
 
 ## Future work
+
 * Show that every topos is regular
 * Show that regular logic has an interpretation in regular categories
 
 ## References
-* [Marino Gran, An Introduction to Regular Categories][Gran2021]
-* <https://ncatlab.org/nlab/show/regular+category>
+
+* ‍\[Marino Gran, An Introduction to Regular Categories\]\[Gran2021\]
+* [https://ncatlab.org/nlab/show/regular+category](https://ncatlab.org/nlab/show/regular+category)
 -/
 
 @[expose] public section

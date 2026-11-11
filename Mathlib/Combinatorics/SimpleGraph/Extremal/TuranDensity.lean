@@ -13,21 +13,21 @@ import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Tactic.Bound
 import Mathlib.Topology.Instances.Real.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Turán density
 
-This file defines the **Turán density** of a simple graph.
+This file defines the *Turán density* of a simple graph.
 
 ## Main definitions
 
-* `SimpleGraph.turanDensity H` is the **Turán density** of the simple graph `H`, defined as the
+* `SimpleGraph.turanDensity H` is the *Turán density* of the simple graph `H`, defined as the
   limit of `extremalNumber n H / n.choose 2` as `n` approaches `∞`.
-
 * `SimpleGraph.tendsto_turanDensity` is the proof that `SimpleGraph.turanDensity` is well-defined.
-
 * `SimpleGraph.isEquivalent_extremalNumber` is the proof that `extremalNumber n H` is
   asymptotically equivalent to `turanDensity H * n.choose 2` as `n` approaches `∞`.
-
 * `SimpleGraph.isContained_of_card_edgeFinset`: simple graphs on `n` vertices with at least
   `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for all sufficiently large `n`.
 -/
@@ -73,10 +73,12 @@ lemma antitoneOn_extremalNumber_div_choose_two (H : SimpleGraph W) :
     simpa [edgeFinset_deleteIncidenceSet_eq_filter]
       using! card_edgeFinset_deleteIncidenceSet_le_extremalNumber h v
 
-/-- The **Turán density** of a simple graph `H` is the limit of `extremalNumber n H / n.choose 2`
+/--
+The *Turán density* of a simple graph `H` is the limit of `extremalNumber n H / n.choose 2`
 as `n` approaches `∞`.
 
-See `SimpleGraph.tendsto_turanDensity` for proof of existence. -/
+See `SimpleGraph.tendsto_turanDensity` for proof of existence.
+-/
 noncomputable def turanDensity (H : SimpleGraph W) :=
   limUnder atTop fun n ↦ (extremalNumber n H / n.choose 2 : ℝ)
 
@@ -141,14 +143,16 @@ theorem eventually_isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ}
   · exact antitoneOn_extremalNumber_div_choose_two H hm (hm.trans hn) hn
 
 open scoped Classical in
-/-- The edge density of `H`-free simple graphs on `turanDensityConst H ε` vertices
+/--
+The edge density of `H`-free simple graphs on `turanDensityConst H ε` vertices
 is at most `turanDensity H + ε`.
 
 Contrapositively, `turanDensity H + ε` is the density at which `H` is always contained in simple
 graphs on `turanDensityConst H ε` vertices.
 
 Note that this value is only defined for positive `ε` and `turanDensityConst H ε = 0` for non
-positive `ε`. -/
+positive `ε`.
+-/
 noncomputable abbrev turanDensityConst (H : SimpleGraph W) (ε : ℝ) :=
   if h : ε > 0 then
     Nat.find <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H h

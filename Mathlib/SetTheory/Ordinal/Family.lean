@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic on families of ordinals
 
@@ -27,7 +30,9 @@ namespace Ordinal
 
 variable {α β : Type*}
 
-/-! ### Supremum of a family of ordinals -/
+/-!
+# Supremum of a family of ordinals
+-/
 
 theorem bddAbove_of_small {s : Set Ordinal.{u}} [Small.{u} s] : BddAbove s := by
   obtain ⟨a, ha⟩ := Cardinal.bddAbove_of_small (s := (succ ∘ card) '' s)
@@ -199,7 +204,9 @@ theorem iSup_Iio_add_one {a : Ordinal.{u}} {f : Iio a → Ordinal.{u}}
 
 end Ordinal
 
-/-! ### Results about injectivity and surjectivity -/
+/-!
+# Results about injectivity and surjectivity
+-/
 
 
 theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordinal.{u}) :
@@ -231,7 +238,9 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
 
 namespace Ordinal
 
-/-! ### Casting naturals into ordinals, compatibility with operations -/
+/-!
+# Casting naturals into ordinals, compatibility with operations
+-/
 
 @[simp]
 theorem iSup_natCast : iSup Nat.cast = ω :=

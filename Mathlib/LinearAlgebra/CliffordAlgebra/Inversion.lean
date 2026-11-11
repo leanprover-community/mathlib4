@@ -7,10 +7,14 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 
-/-! # Results about inverses in Clifford algebras
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Results about inverses in Clifford algebras
 
 This contains some basic results about the inversion of vectors, related to the fact that
-$ι(m)^{-1} = \frac{ι(m)}{Q(m)}$.
+$`ι(m)^{-1} = \frac{ι(m)}{Q(m)}`.
 -/
 
 @[expose] public section
@@ -31,7 +35,9 @@ def invertibleιOfInvertible (m : M) [Invertible (Q m)] : Invertible (ι Q m) wh
   mul_invOf_self := by
     rw [map_smul, mul_smul_comm, ι_sq_scalar, Algebra.smul_def, ← map_mul, invOf_mul_self, map_one]
 
-/-- For a vector with invertible quadratic form, $v^{-1} = \frac{v}{Q(v)}$ -/
+/--
+For a vector with invertible quadratic form, $`v^{-1} = \frac{v}{Q(v)}`
+-/
 theorem invOf_ι (m : M) [Invertible (Q m)] [Invertible (ι Q m)] :
     ⅟(ι Q m) = ι Q (⅟(Q m) • m) := by
   let := invertibleιOfInvertible Q m
@@ -42,13 +48,17 @@ theorem isUnit_ι_of_isUnit {m : M} (h : IsUnit (Q m)) : IsUnit (ι Q m) := by
   let := invertibleιOfInvertible Q m
   exact isUnit_of_invertible (ι Q m)
 
-/-- $aba^{-1}$ is a vector. -/
+/--
+$`aba^{-1}` is a vector.
+-/
 theorem ι_mul_ι_mul_invOf_ι (a b : M) [Invertible (ι Q a)] [Invertible (Q a)] :
     ι Q a * ι Q b * ⅟(ι Q a) = ι Q ((⅟(Q a) * QuadraticMap.polar Q a b) • a - b) := by
   rw [invOf_ι, map_smul, mul_smul_comm, ι_mul_ι_mul_ι, ← map_smul, smul_sub, smul_smul, smul_smul,
     invOf_mul_self, one_smul]
 
-/-- $a^{-1}ba$ is a vector. -/
+/--
+$`a^{-1}ba` is a vector.
+-/
 theorem invOf_ι_mul_ι_mul_ι (a b : M) [Invertible (ι Q a)] [Invertible (Q a)] :
     ⅟(ι Q a) * ι Q b * ι Q a = ι Q ((⅟(Q a) * QuadraticMap.polar Q a b) • a - b) := by
   rw [invOf_ι, map_smul, smul_mul_assoc, smul_mul_assoc, ι_mul_ι_mul_ι, ← map_smul, smul_sub,

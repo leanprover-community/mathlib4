@@ -9,6 +9,9 @@ public meta import Lean.Meta.Tactic.Apply
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coherence tactic
 
@@ -18,15 +21,16 @@ made up only of associators, unitors, and identities.
 
 The function defined here is a meta reimplementation of the formalized coherence theorems provided
 in the following files:
-- Mathlib.CategoryTheory.Monoidal.Free.Coherence
-- Mathlib.CategoryTheory.Bicategory.Coherence
+
+* Mathlib.CategoryTheory.Monoidal.Free.Coherence
+* Mathlib.CategoryTheory.Bicategory.Coherence
 
 See these files for a mathematical explanation of the proof of the coherence theorem.
 
 The actual tactics that users will use are given in
-- `Mathlib/Tactic/CategoryTheory/Monoidal/PureCoherence.lean`
-- `Mathlib/Tactic/CategoryTheory/Bicategory/PureCoherence.lean`
 
+* `Mathlib/Tactic/CategoryTheory/Monoidal/PureCoherence.lean`
+* `Mathlib/Tactic/CategoryTheory/Bicategory/PureCoherence.lean`
 -/
 
 public meta section

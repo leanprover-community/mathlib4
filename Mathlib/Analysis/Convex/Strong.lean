@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniformly and strongly convex functions
 
@@ -33,18 +36,22 @@ variable {E : Type*} [NormedAddCommGroup E]
 section NormedSpace
 variable [NormedSpace ℝ E] {φ ψ : ℝ → ℝ} {s : Set E} {m : ℝ} {f g : E → ℝ}
 
-/-- A function `f` from a real normed space is uniformly convex with modulus `φ` if
+/--
+A function `f` from a real normed space is uniformly convex with modulus `φ` if
 `f (t • x + (1 - t) • y) ≤ t • f x + (1 - t) • f y - t * (1 - t) * φ ‖x - y‖` for all `t ∈ [0, 1]`.
 
-`φ` is usually taken to be a monotone function such that `φ r = 0 ↔ r = 0`. -/
+`φ` is usually taken to be a monotone function such that `φ r = 0 ↔ r = 0`.
+-/
 def UniformConvexOn (s : Set E) (φ : ℝ → ℝ) (f : E → ℝ) : Prop :=
   Convex ℝ s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : ℝ⦄, 0 ≤ a → 0 ≤ b → a + b = 1 →
     f (a • x + b • y) ≤ a • f x + b • f y - a * b * φ ‖x - y‖
 
-/-- A function `f` from a real normed space is uniformly concave with modulus `φ` if
+/--
+A function `f` from a real normed space is uniformly concave with modulus `φ` if
 `t • f x + (1 - t) • f y + t * (1 - t) * φ ‖x - y‖ ≤ f (t • x + (1 - t) • y)` for all `t ∈ [0, 1]`.
 
-`φ` is usually taken to be a monotone function such that `φ r = 0 ↔ r = 0`. -/
+`φ` is usually taken to be a monotone function such that `φ r = 0 ↔ r = 0`.
+-/
 def UniformConcaveOn (s : Set E) (φ : ℝ → ℝ) (f : E → ℝ) : Prop :=
   Convex ℝ s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : ℝ⦄, 0 ≤ a → 0 ≤ b → a + b = 1 →
     a • f x + b • f y + a * b * φ ‖x - y‖ ≤ f (a • x + b • y)
@@ -110,17 +117,21 @@ lemma UniformConvexOn.sub (hf : UniformConvexOn s φ f) (hg : UniformConcaveOn s
 lemma UniformConcaveOn.sub (hf : UniformConcaveOn s φ f) (hg : UniformConvexOn s ψ g) :
     UniformConcaveOn s (φ + ψ) (f - g) := by simpa using! hf.add hg.neg
 
-/-- A function `f` from a real normed space is `m`-strongly convex if it is uniformly convex with
+/--
+A function `f` from a real normed space is `m`-strongly convex if it is uniformly convex with
 modulus `φ(r) = m / 2 * r ^ 2`.
 
-In an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖x‖ ^ 2` being convex. -/
+In an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖x‖ ^ 2` being convex.
+-/
 def StrongConvexOn (s : Set E) (m : ℝ) : (E → ℝ) → Prop :=
   UniformConvexOn s fun r ↦ m / (2 : ℝ) * r ^ 2
 
-/-- A function `f` from a real normed space is `m`-strongly concave if is strongly concave with
+/--
+A function `f` from a real normed space is `m`-strongly concave if is strongly concave with
 modulus `φ(r) = m / 2 * r ^ 2`.
 
-In an inner product space, this is equivalent to `x ↦ f x + m / 2 * ‖x‖ ^ 2` being concave. -/
+In an inner product space, this is equivalent to `x ↦ f x + m / 2 * ‖x‖ ^ 2` being concave.
+-/
 def StrongConcaveOn (s : Set E) (m : ℝ) : (E → ℝ) → Prop :=
   UniformConcaveOn s fun r ↦ m / (2 : ℝ) * r ^ 2
 

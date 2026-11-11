@@ -9,6 +9,9 @@ public import Mathlib.Order.Filter.Basic
 
 import Mathlib.Data.Set.Piecewise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of `Filter.atTop` and `Filter.atBot` filters
 

@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Over
 
-/-! # Internal hom of sheaves
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Internal hom of sheaves
 
 In this file, given two sheaves `F` and `G` on a site `(C, J)` with values
 in a category `A`, we define a sheaf of types
@@ -18,12 +22,12 @@ We first define `presheafHom F G` when `F` and `G` are
 presheaves `Cᵒᵖ ⥤ A` and show that it is a sheaf when `G` is a sheaf.
 
 TODO:
-- turn both `presheafHom` and `sheafHom` into bifunctors
-- for a sheaf of types `F`, the `sheafHom` functor from `F` is right-adjoint to
+
+* turn both `presheafHom` and `sheafHom` into bifunctors
+* for a sheaf of types `F`, the `sheafHom` functor from `F` is right-adjoint to
   the product functor with `F`, i.e. for all `X` and `Y`, there is a
   natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
-- use these results in order to show that the category of sheaves of types is Cartesian closed
-
+* use these results in order to show that the category of sheaves of types is Cartesian closed
 -/
 
 @[expose] public section

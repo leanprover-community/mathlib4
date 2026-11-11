@@ -11,15 +11,17 @@ public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Defs.Ultrafilter
 public import Mathlib.Topology.Ultrafilter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact sets and compact spaces
 
 ## Main results
 
-* `isCompact_univ_pi`: **Tychonov's theorem** - an arbitrary product of compact sets
+* `isCompact_univ_pi`: *Tychonov's theorem* - an arbitrary product of compact sets
   is compact.
-
-* `isCompact_generateFrom`: **Alexander's subbasis theorem** - suppose `X` is a topological space
+* `isCompact_generateFrom`: *Alexander's subbasis theorem* - suppose `X` is a topological space
   with a subbasis `S` and `s` is a subset of `X`, then `s` is compact if for any open cover of `s`
   with all elements taken from `S`, there is a finite subcover.
 -/
@@ -449,7 +451,8 @@ theorem IsCompact.mem_inf_nhdsSet_of_forall {K : Set X} {l : Filter X} {s : Set 
     (hK : IsCompact K) (hs : ∀ y ∈ K, s ∈ l ⊓ 𝓝 y) : s ∈ l ⊓ 𝓝ˢ K :=
   (hK.inf_nhdsSet_eq_biSup l).symm ▸ by simpa using hs
 
-/-- To show that `∀ y ∈ K, P x y` holds for `x` close enough to `x₀` when `K` is compact,
+/--
+To show that `∀ y ∈ K, P x y` holds for `x` close enough to `x₀` when `K` is compact,
 it is sufficient to show that for all `y₀ ∈ K` there `P x y` holds for `(x, y)` close enough
 to `(x₀, y₀)`.
 
@@ -524,9 +527,11 @@ theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪
 protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 
-/-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
-`⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
-not assumed to be Hausdorff. See `exists_subset_nhds_of_isCompact` for a version assuming this. -/
+/--
+If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
+`⋂ i, V i` contains some `V i`. We assume each `V i` is compact _and_ closed because `X` is
+not assumed to be Hausdorff. See `exists_subset_nhds_of_isCompact` for a version assuming this.
+-/
 theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
     {U : Set X} (hU : U ∈ 𝓝ˢ (⋂ i, V i)) : ∃ i, V i ⊆ U := by
@@ -698,10 +703,12 @@ lemma isBounded_image_of_isLocallyBounded_of_isCompact {Y : Type*}
 
 end Bornology
 
-/-- If `s` and `t` are compact sets, then the set neighborhoods filter of `s ×ˢ t`
+/--
+If `s` and `t` are compact sets, then the set neighborhoods filter of `s ×ˢ t`
 is the product of set neighborhoods filters for `s` and `t`.
 
-For general sets, only the `≤` inequality holds, see `nhdsSet_prod_le`. -/
+For general sets, only the `≤` inequality holds, see `nhdsSet_prod_le`.
+-/
 theorem IsCompact.nhdsSet_prod_eq {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
     𝓝ˢ (s ×ˢ t) = 𝓝ˢ s ×ˢ 𝓝ˢ t := by
   simp_rw [hs.nhdsSet_prod_eq_biSup, ht.prod_nhdsSet_eq_biSup, nhdsSet, sSup_image, biSup_prod,
@@ -739,10 +746,12 @@ theorem prod_nhds_le_of_disjoint_cocompact {f : Filter X} (y : Y)
     f ×ˢ 𝓝 y ≤ 𝓝ˢ (Set.univ ×ˢ {y}) := by
   simpa using prod_nhdsSet_le_of_disjoint_cocompact isCompact_singleton hf
 
-/-- If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
+/--
+If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.
 
-See also `IsCompact.nhdsSet_prod_eq`. -/
+See also `IsCompact.nhdsSet_prod_eq`.
+-/
 theorem generalized_tube_lemma (hs : IsCompact s) {t : Set Y} (ht : IsCompact t)
     {n : Set (X × Y)} (hn : IsOpen n) (hp : s ×ˢ t ⊆ n) :
     ∃ (u : Set X) (v : Set Y), IsOpen u ∧ IsOpen v ∧ s ⊆ u ∧ t ⊆ v ∧ u ×ˢ v ⊆ n := by
@@ -751,11 +760,13 @@ theorem generalized_tube_lemma (hs : IsCompact s) {t : Set Y} (ht : IsCompact t)
   rcases hp with ⟨⟨u, v⟩, ⟨⟨huo, hsu⟩, hvo, htv⟩, hn⟩
   exact ⟨u, v, huo, hvo, hsu, htv, hn⟩
 
-/-- A relative version of `IsCompact.nhdsSet_prod_eq`: if `s` and `t` are compact sets,
+/--
+A relative version of `IsCompact.nhdsSet_prod_eq`: if `s` and `t` are compact sets,
 then the neighborhoods filter of `s ×ˢ t` within `s' ×ˢ t'` is the product of the neighborhoods
 filters of `s` and `t` within `s'` and `t'`.
 
-For general sets, only the `≤` inequality holds, see `nhdsSetWithin_prod_le`. -/
+For general sets, only the `≤` inequality holds, see `nhdsSetWithin_prod_le`.
+-/
 lemma IsCompact.nhdsSetWithin_prod_eq {s s' : Set X} {t t' : Set Y} (hs : IsCompact s)
     (ht : IsCompact t) : 𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) = 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
   simp [nhdsSetWithin, ← prod_inf_prod, hs.nhdsSet_prod_eq ht]

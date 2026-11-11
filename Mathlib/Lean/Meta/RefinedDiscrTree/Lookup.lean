@@ -7,12 +7,16 @@ module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matching with a RefinedDiscrTree
 
 This file defines the matching procedure for the `RefinedDiscrTree`.
 
 The main definitions are
+
 * The structure `MatchResult`, which contains the match results, ordered by matching score.
 * The (private) function `evalNode` which evaluates a node of the `RefinedDiscrTree`
 * The (private) function `getMatchLoop`, which is the main function that computes the matches.
@@ -27,7 +31,6 @@ expression to be assigned.
 We use a simple unification algorithm. For all star/metavariable patterns in the
 `RefinedDiscrTree` (and in the target if `unify == true`), we store the assignment,
 and when it is attempted to be assigned again, we check that it is the same assignment.
-
 -/
 
 public section
@@ -129,7 +132,7 @@ structure MatchResult (α : Type) where
   The elements in the match result.
 
   The `Nat` in the tree map represents the `score` of the results.
-  The elements are arrays of arrays, where each sub-array corresponds to one discr tree pattern.
+The elements are arrays of arrays, where each sub-array corresponds to one discr tree pattern.
   -/
   elts : Std.TreeMap Nat (Array (Array α)) := {}
   deriving Inhabited
@@ -201,18 +204,19 @@ private def matchEverything (root : Std.HashMap Key TrieIndex) : TreeM α (Match
 Types are counted less towards the total matching score.
 The reason is that types are usually implicit arguments. For example
 
-- If the goal is `(1 : ℕ) = 1`, we could find
-  - `rfl (a : α) : a = a`.
+* If the goal is `(1 : ℕ) = 1`, we could find
+
+  * `rfl (a : α) : a = a`.
     This gets extra points for matching `1`
-  - `Nat.succ.inj (n m : ℕ) (h : n.succ = m.succ) : n = m`.
+  * `Nat.succ.inj (n m : ℕ) (h : n.succ = m.succ) : n = m`.
     This gets extra points for matching `ℕ`
 
   Clearly, `rfl` is better.
+* If we rewrite `|(0 : ℝ)|`, we could find
 
-- If we rewrite `|(0 : ℝ)|`, we could find
-  - `abs_zero : |(0 : α)| = 0`
+  * `abs_zero : |(0 : α)| = 0`
     This gets extra points for matching `0`
-  - `Real.norm_eq_abs : ∀ (r : ℝ), ‖r‖ = |r|`
+  * `Real.norm_eq_abs : ∀ (r : ℝ), ‖r‖ = |r|`
     This gets extra points for matching `ℝ`
 
   Clearly, `abs_zero` is better
@@ -332,6 +336,7 @@ private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (Mat
 
 /--
 Find values that match `e` in `d`.
+
 * If `unify == true` then metavariables in `e` can be assigned.
 * If `matchRootStar == true` then we allow metavariables at the root to unify.
   Set this to `false` to avoid getting excessively many results.

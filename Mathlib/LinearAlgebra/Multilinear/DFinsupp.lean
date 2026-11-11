@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between finitely-supported functions and multilinear maps
 
@@ -21,14 +24,12 @@ public import Mathlib.LinearAlgebra.Multilinear.Basic
 
   This is useful because all the intermediate results are bundled:
 
-  - `MultilinearMap.dfinsuppFamily f x` is a `DFinsupp` supported by families of indices `p`.
-  - `MultilinearMap.dfinsuppFamily f` is a `MultilinearMap` operating on finitely-supported
+  * `MultilinearMap.dfinsuppFamily f x` is a `DFinsupp` supported by families of indices `p`.
+  * `MultilinearMap.dfinsuppFamily f` is a `MultilinearMap` operating on finitely-supported
     functions `x`.
-  - `MultilinearMap.dfinsuppFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
-
+  * `MultilinearMap.dfinsuppFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
 * `freeDFinsuppEquiv` is an equivalence of multilinear maps over free modules with finitely
   supported maps.
-
 -/
 
 @[expose] public section
@@ -46,10 +47,12 @@ variable [Finite ι] [Semiring R] [Semiring S] {σ : R →+* S}
 variable [∀ i k, AddCommMonoid (M i k)] [AddCommMonoid N]
 variable [∀ i k, Module R (M i k)] [Module S N]
 
-/-- Two multilinear maps from finitely supported functions are equal if they agree on the
+/--
+Two multilinear maps from finitely supported functions are equal if they agree on the
 generators.
 
-This is a multilinear version of `DFinsupp.lhom_ext'`. -/
+This is a multilinear version of `DFinsupp.lhom_ext'`.
+-/
 @[ext]
 theorem dfinsupp_ext [∀ i, DecidableEq (κ i)] ⦃f g : (Π i, Π₀ j : κ i, M i j) →ₘₛₗ[σ] N⦄
     (h : ∀ p : Π i, κ i,

@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diagonal matrices
 

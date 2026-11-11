@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Klein Four Group
 
@@ -23,8 +26,8 @@ produces the third one.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Klein_four-group
-* https://en.wikipedia.org/wiki/Alternating_group
+* https://en.wikipedia.org/wiki/Klein\_four-group
+* https://en.wikipedia.org/wiki/Alternating\_group
 
 ## TODO
 
@@ -32,18 +35,20 @@ produces the third one.
   with the permutation cycles `V = {(), (1 2)(3 4), (1 3)(2 4), (1 4)(2 3)}`.  This is the kernel
   of the surjection of `alternatingGroup (Fin 4)` onto `alternatingGroup (Fin 3) ≃ (ZMod 3)`.
   In other words, we have the exact sequence `V → A₄ → A₃`.
-
 * The outer automorphism group of `A₆` is the Klein four-group `V = (ZMod 2) × (ZMod 2)`,
   and is related to the outer automorphism of `S₆`. The extra outer automorphism in `A₆`
   swaps the 3-cycles (like `(1 2 3)`) with elements of shape `3²` (like `(1 2 3)(4 5 6)`).
 
 ## Tags
+
 non-cyclic abelian group
 -/
 
 @[expose] public section
 
-/-! ### Klein four-groups as a mixin class -/
+/-!
+# Klein four-groups as a mixin class
+-/
 
 /-- An (additive) Klein four-group is an (additive) group of cardinality four and exponent two. -/
 class IsAddKleinFour (G : Type*) [AddGroup G] : Prop where
@@ -78,10 +83,14 @@ theorem isMulCommutative {G : Type*} [Group G] [IsKleinFour G] :
     IsMulCommutative G where
   is_comm.comm := mul_comm_of_exponent_two exponent_two
 
-/-- This instance is scoped, because it always applies (which makes linting and typeclass inference
-potentially *a lot* slower). -/
-@[to_additive /-- This instance is scoped, because it always applies (which makes linting and
-typeclass inference potentially *a lot* slower). -/]
+/--
+This instance is scoped, because it always applies (which makes linting and typeclass inference
+potentially _a lot_ slower).
+-/
+@[to_additive /--
+              This instance is scoped, because it always applies (which makes linting and
+typeclass inference potentially _a lot_ slower).
+              -/]
 scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by simp [IsKleinFour.card_four]
 

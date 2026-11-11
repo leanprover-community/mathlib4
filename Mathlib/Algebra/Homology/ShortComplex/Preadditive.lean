@@ -8,12 +8,14 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of preadditive categories
 
 In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
-
 -/
 
 @[expose] public section

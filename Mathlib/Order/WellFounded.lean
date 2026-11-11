@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Bounds.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Well-founded relations
 
@@ -45,9 +48,11 @@ theorem acc_iff_isEmpty_descending_chain {α} {r : α → α → Prop} {x : α} 
   rw [nonempty_subtype]
   exact not_acc_iff_exists_descending_chain
 
-/-- A relation is well-founded iff it doesn't have any infinite descending chain.
+/--
+A relation is well-founded iff it doesn't have any infinite descending chain.
 
-See `RelEmbedding.wellFounded_iff_isEmpty` for a version in terms of relation embeddings. -/
+See `RelEmbedding.wellFounded_iff_isEmpty` for a version in terms of relation embeddings.
+-/
 theorem wellFounded_iff_isEmpty_descending_chain {α} {r : α → α → Prop} :
     WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } where
   mp := fun ⟨h⟩ ↦ ⟨fun ⟨f, hf⟩ ↦ (acc_iff_isEmpty_descending_chain.mp (h (f 0))).false ⟨f, rfl, hf⟩⟩
@@ -105,11 +110,13 @@ theorem not_leftTotal (wf : WellFounded (Function.swap r)) [Nonempty α] :
   specialize ha b (Set.mem_univ b)
   contradiction
 
-/-- A minimal element of a nonempty set in a well-founded order.
+/--
+A minimal element of a nonempty set in a well-founded order.
 
 If you're working with a nonempty linear order, consider defining a
 `ConditionallyCompleteLinearOrderBot` instance via
-`WellFoundedLT.conditionallyCompleteLinearOrderBot` and using `Inf` instead. -/
+`WellFoundedLT.conditionallyCompleteLinearOrderBot` and using `Inf` instead.
+-/
 noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) : α :=
   Classical.choose (H.has_min s h)
 
@@ -296,15 +303,19 @@ section LT
 
 variable [LT β] [WellFoundedLT β]
 
-/-- Given a function `f : α → β` where `β` carries a well-founded `<`, this is an element of `α`
+/--
+Given a function `f : α → β` where `β` carries a well-founded `<`, this is an element of `α`
 whose image under `f` is minimal in the sense of `Function.not_lt_argmin`.
 
-See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` is finite. -/
+See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` is finite.
+-/
 @[to_dual
-/-- Given a function `f : α → β` where `β` carries a well-founded `>`, this is an element of `α`
+/--
+Given a function `f : α → β` where `β` carries a well-founded `>`, this is an element of `α`
 whose image under `f` is maximal in the sense of `Function.not_argmax_lt`.
 
-See also `Set.Finite.exists_maximalFor` and related lemmas for the case when `α` is finite. -/]
+See also `Set.Finite.exists_maximalFor` and related lemmas for the case when `α` is finite.
+-/]
 noncomputable def argmin [Nonempty α] : α :=
   WellFounded.min (InvImage.wf f wellFounded_lt) Set.univ Set.univ_nonempty
 
@@ -312,15 +323,18 @@ noncomputable def argmin [Nonempty α] : α :=
 theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
   WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) _ (Set.mem_univ a)
 
-/-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
+/--
+Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
 `Function.not_lt_argminOn`.
 
 See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
 
-TODO Consider removing this definition in favour of `exists_minimalFor_of_wellFoundedLT`. -/
+TODO Consider removing this definition in favour of `exists_minimalFor_of_wellFoundedLT`.
+-/
 @[to_dual
-/-- Given a function `f : α → β` where `β` carries a well-founded `>`, and a non-empty subset `s`
+/--
+Given a function `f : α → β` where `β` carries a well-founded `>`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is maximal in the sense of
 `Function.not_argmaxOn_lt`.
 
@@ -370,11 +384,14 @@ end Function
 
 section Induction
 
-/-- Let `r` be a relation on `α`, let `f : α → β` be a function, let `C : β → Prop`, and
+/--
+Let `r` be a relation on `α`, let `f : α → β` be a function, let `C : β → Prop`, and
 let `bot : α`. This induction principle shows that `C (f bot)` holds, given that
+
 * some `a` that is accessible by `r` satisfies `C (f a)`, and
 * for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
-  satisfying `r c b` and `C (f c)`. -/
+  satisfying `r c b` and `C (f c)`.
+-/
 theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : β → Prop}
     {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) : C (f a) → C (f bot) :=
   (@Acc.recOn _ _ (fun x _ => C (f x) → C (f bot)) _ ha) fun x _ ih' hC =>
@@ -382,32 +399,41 @@ theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : A
       let ⟨y, hy₁, hy₂⟩ := ih x h hC
       ih' y hy₁ hy₂)
 
-/-- Let `r` be a relation on `α`, let `C : α → Prop` and let `bot : α`.
+/--
+Let `r` be a relation on `α`, let `C : α → Prop` and let `bot : α`.
 This induction principle shows that `C bot` holds, given that
+
 * some `a` that is accessible by `r` satisfies `C a`, and
-* for each `b ≠ bot` such that `C b` holds, there is `c` satisfying `r c b` and `C c`. -/
+* for each `b ≠ bot` such that `C b` holds, there is `c` satisfying `r c b` and `C c`.
+-/
 theorem Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : α → Prop}
     (ih : ∀ b, b ≠ bot → C b → ∃ c, r c b ∧ C c) : C a → C bot :=
   ha.induction_bot' ih
 
-/-- Let `r` be a well-founded relation on `α`, let `f : α → β` be a function,
+/--
+Let `r` be a well-founded relation on `α`, let `f : α → β` be a function,
 let `C : β → Prop`, and let `bot : α`.
 This induction principle shows that `C (f bot)` holds, given that
+
 * some `a` satisfies `C (f a)`, and
 * for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`
-  satisfying `r c b` and `C (f c)`. -/
+  satisfying `r c b` and `C (f c)`.
+-/
 theorem WellFounded.induction_bot' {α β} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
     {C : β → Prop} {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) :
     C (f a) → C (f bot) :=
   (hwf.apply a).induction_bot' ih
 
-/-- Let `r` be a well-founded relation on `α`, let `C : α → Prop`, and let `bot : α`.
+/--
+Let `r` be a well-founded relation on `α`, let `C : α → Prop`, and let `bot : α`.
 This induction principle shows that `C bot` holds, given that
+
 * some `a` satisfies `C a`, and
 * for each `b` that satisfies `C b`, there is `c` satisfying `r c b` and `C c`.
 
 The naming is inspired by the fact that when `r` is transitive, it follows that `bot` is
-the smallest element w.r.t. `r` that satisfies `C`. -/
+the smallest element w.r.t. `r` that satisfies `C`.
+-/
 theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFounded r) {a bot : α}
     {C : α → Prop} (ih : ∀ b, b ≠ bot → C b → ∃ c, r c b ∧ C c) : C a → C bot :=
   hwf.induction_bot' ih

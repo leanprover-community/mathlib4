@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Presentable.Comma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pure subobjects
 
@@ -21,8 +24,9 @@ We show that in a locally `κ`-presentable category, `κ`-pure morphisms
 are `κ`-filtered colimits of split monomorphisms.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 public section
@@ -35,8 +39,10 @@ open Limits
 
 variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
-/-- Given a regular cardinal `κ`, we say that a morphism `f : X ⟶ Y`
+/--
+Given a regular cardinal `κ`, we say that a morphism `f : X ⟶ Y`
 is `κ`-pure if for any commutative square:
+
 ```
       t
  X' -----> Y'
@@ -46,8 +52,10 @@ l|         |r
  X  -----> Y
       f
 ```
+
 where `X'` and `Y'` are `κ`-presentable, there exists a morphism
-`ρ : Y' ⟶ X` such that `t ≫ ρ = l`. -/
+`ρ : Y' ⟶ X` such that `t ≫ ρ = l`.
+-/
 class IsCardinalPure (κ : Cardinal.{w}) [Fact κ.IsRegular]
     {X Y : C} (f : X ⟶ Y) : Prop where
   exists_of_commSq {X' Y' : C} {t : X' ⟶ Y'} {l : X' ⟶ X} {r : Y' ⟶ Y}
@@ -96,8 +104,10 @@ lemma IsCardinalAccessibleCategory.mono_iff [IsCardinalAccessibleCategory C κ]
     fun hf ↦ ⟨fun {Z} g₁ g₂ h ↦ ((isCardinalPresentable C κ).ι.denseAt Z).hom_ext
       (by cat_disch)⟩⟩
 
-/-- In a `κ`-accessible category, `κ`-pure morphisms are monomorphisms.
-(This is proposition 2.29 in [Adamek_Rosicky_1994].) -/
+/--
+In a `κ`-accessible category, `κ`-pure morphisms are monomorphisms.
+(This is proposition 2.29 in \[Adamek\_Rosicky\_1994\].)
+-/
 lemma IsCardinalPure.mono [IsCardinalAccessibleCategory C κ]
     {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ f] :
     Mono f := by
@@ -126,8 +136,10 @@ lemma isCardinalPure_le_monomorphisms [IsCardinalAccessibleCategory C κ] :
     isCardinalPure C κ ≤ .monomorphisms C :=
   fun _ _ f _ ↦ IsCardinalPure.mono κ f
 
-/-- `κ`-pure morphisms are stable under `κ`-filtered colimits.
-(This is proposition 2.30 (i) in [Adamek_Rosicky_1994].) -/
+/--
+`κ`-pure morphisms are stable under `κ`-filtered colimits.
+(This is proposition 2.30 (i) in \[Adamek\_Rosicky\_1994\].)
+-/
 instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
     (isCardinalPure C κ).IsStableUnderColimitsOfShape J := by
   have := isFiltered_of_isCardinalFiltered J κ
@@ -141,9 +153,11 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered 
   exact ⟨ρ ≫ c₁.ι.app j', by cat_disch⟩
 
 attribute [local instance] IsFiltered.isConnected in
-/-- In a `κ`-accessible category with pushouts (e.g. a locally `κ`-presentable category),
+/--
+In a `κ`-accessible category with pushouts (e.g. a locally `κ`-presentable category),
 a `κ`-pure morphism is a `κ`-filtered colimit of split monomorphisms.
-(This is proposition 2.30 (ii) in [Adamek_Rosicky_1994].) -/
+(This is proposition 2.30 (ii) in \[Adamek\_Rosicky\_1994\].)
+-/
 lemma exists_colimitsOfShape_splitMonomorphisms_of_isCardinalPure
     [IsCardinalAccessibleCategory C κ] [HasPushouts C] {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ f] :
     ∃ (J : Type w) (_ : SmallCategory J) (_ : IsCardinalFiltered J κ),
@@ -198,10 +212,12 @@ lemma exists_colimitsOfShape_splitMonomorphisms_of_isCardinalPure
   · exact ⟨⟨{ retraction :=
       ((IsPushout.of_hasPushout t u).app j).desc (l j) (𝟙 _) (by cat_disch) }⟩⟩
 
-/-- If `F : C ⥤ D` is a `κ`-accessible functor (with `C` a `κ`-accessible category),
+/--
+If `F : C ⥤ D` is a `κ`-accessible functor (with `C` a `κ`-accessible category),
 then `F` maps `κ`-pure morphisms to `κ`-morphisms.
-(This is proposition 2.38 in [Adamek_Rosicky_1994], without the unnecessary
-assumption that `F` preserves `κ`-presentable objects.) -/
+(This is proposition 2.38 in \[Adamek\_Rosicky\_1994\], without the unnecessary
+assumption that `F` preserves `κ`-presentable objects.)
+-/
 instance IsCardinalPure.map
     [IsCardinalAccessibleCategory C κ] [F.IsCardinalAccessible κ]
     {X Y : C} (f : X ⟶ Y) [IsCardinalPure κ f] :

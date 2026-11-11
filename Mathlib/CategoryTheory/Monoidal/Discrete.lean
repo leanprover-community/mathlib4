@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoids as discrete monoidal categories
 

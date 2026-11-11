@@ -8,6 +8,9 @@ module
 public import Mathlib.ModelTheory.Basic
 public import Mathlib.SetTheory.Cardinal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Language Maps
 
@@ -17,21 +20,21 @@ structures.
 
 ## Main Definitions
 
-- A `FirstOrder.Language.LHom`, denoted `L →ᴸ L'`, is a map between languages, sending the symbols
+* A `FirstOrder.Language.LHom`, denoted `L →ᴸ L'`, is a map between languages, sending the symbols
   of one to symbols of the same kind and arity in the other.
-- A `FirstOrder.Language.LEquiv`, denoted `L ≃ᴸ L'`, is an invertible language homomorphism.
-- `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
+* A `FirstOrder.Language.LEquiv`, denoted `L ≃ᴸ L'`, is an invertible language homomorphism.
+* `FirstOrder.Language.withConstants` is defined so that if `M` is an `L.Structure` and
   `A : Set M`, `L.withConstants A`, denoted `L[[A]]`, is a language which adds constant symbols for
   elements of `A` to `L`.
 
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
-  hypothesis*][flypitch_cpp]
-- [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-  the continuum hypothesis*][flypitch_itp]
 
+* ‍\[J. Han, F. van Doorn, _A formal proof of the independence of the continuum
+  hypothesis_\]\[flypitch\_cpp\]
+* ‍\[J. Han, F. van Doorn, _A formalization of forcing and the unprovability of
+  the continuum hypothesis_\]\[flypitch\_itp\]
 -/
 
 @[expose] public section

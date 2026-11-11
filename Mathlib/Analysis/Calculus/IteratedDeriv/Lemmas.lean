@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # One-dimensional iterated derivatives
 
@@ -445,7 +448,7 @@ lemma Set.EqOn.iteratedDeriv_of_isOpen (hfg : Set.EqOn f g s) (hs : IsOpen s) (n
 end one_dimensional
 
 /-!
-### Invariance of iterated derivatives under translation
+# Invariance of iterated derivatives under translation
 -/
 
 section shift_invariance
@@ -482,7 +485,7 @@ end shift_invariance
 section sums
 
 /-!
-### Iterated derivatives of sums
+# Iterated derivatives of sums
 -/
 open Finset
 variable {ι : Type*} {n : ℕ} {x : 𝕜} {f : ι → 𝕜 → F} {I : Finset ι}

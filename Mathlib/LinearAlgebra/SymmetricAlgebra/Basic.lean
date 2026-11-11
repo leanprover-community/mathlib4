@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric Algebras
 
@@ -28,7 +31,7 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 ## Note
 
 See `SymAlg R` instead if you are looking for the symmetrized algebra, which gives a commutative
-multiplication on `R` by $a \circ b = \frac{1}{2}(ab + ba)$.
+multiplication on `R` by $`a \circ b = \frac{1}{2}(ab + ba)`.
 -/
 
 @[expose] public section

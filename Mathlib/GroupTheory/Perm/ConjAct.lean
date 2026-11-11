@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.GroupTheory.Perm.Cycle.Factors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
 
@@ -16,11 +19,9 @@ We prove some lemmas related to the conjugation action of `Perm α` on `Perm α`
 Let `α` be a decidable fintype.
 
 * `support_conj_eq_smul_support` relates the support of `MulAut.conj k g` with that of `g`.
-
 * `cycleFactorsFinset_conj_eq`, `mem_cycleFactorsFinset_conj'`
   and `cycleFactorsFinset_conj` relate the set of cycles of `g`, `g.cycleFactorsFinset`,
   with that for `MulAut.conj k g`.
-
 -/
 
 public section

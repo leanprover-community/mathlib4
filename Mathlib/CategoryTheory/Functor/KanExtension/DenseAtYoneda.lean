@@ -9,27 +9,30 @@ public import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
 public import Mathlib.CategoryTheory.Limits.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda embedding is dense
 
 Any presheaf of types is a colimit of representable presheaves.
 This is stated in two ways for each of the variants of the
 Yoneda embedding (`yoneda`, `uliftYoneda` and `shrinkYoneda`):
+
 * as the fact that for any `P : Cᵒᵖ ⥤ Type _`, there is a colimit
-cocone involving representable presheaves that is indexed by
-the opposite category of the category of elements of `P`,
-see `Functor.Elements.isColimitShrinkYonedaCocone` for the case
-of `shrinkYoneda`.
+  cocone involving representable presheaves that is indexed by
+  the opposite category of the category of elements of `P`,
+  see `Functor.Elements.isColimitShrinkYonedaCocone` for the case
+  of `shrinkYoneda`.
 * when the opposite of the category of elements is replaced by
-categories of costructured arrows for the Yoneda embedding,
-we get definitions like `denseAtShrinkYoneda`, which expresses
-that the Yoneda embedding is a dense functor, a fact which is
-also stated using `Functor.IsDense` instances.
+  categories of costructured arrows for the Yoneda embedding,
+  we get definitions like `denseAtShrinkYoneda`, which expresses
+  that the Yoneda embedding is a dense functor, a fact which is
+  also stated using `Functor.IsDense` instances.
 
 ## References
 
 * https://ncatlab.org/nlab/show/dense+subcategory
-
 -/
 
 @[expose] public section
@@ -192,12 +195,14 @@ noncomputable def denseAtUliftYoneda (P : Cᵒᵖ ⥤ Type max w v) : uliftYoned
   Functor.denseAt _ _
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
+/--
+Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
 functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
 `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
 final.
 
-Proposition 2.6.3(ii) in [Kashiwara2006] -/
+Proposition 2.6.3(ii) in \[Kashiwara2006\]
+-/
 theorem Presheaf.final_toCostructuredArrow_comp_pre
     {I : Type v} [SmallCategory I] (F : I ⥤ C)
     {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :

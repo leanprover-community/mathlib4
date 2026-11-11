@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Sites.CompatiblePlus
 public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compatibility of sheafification with functors
 
 In this file, we prove that sheafification is compatible with functors which
 preserve the correct limits and colimits.
-
 -/
 
 @[expose] public section
@@ -42,13 +44,15 @@ variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
 variable (P : Cᵒᵖ ⥤ D)
 
-/-- The isomorphism between the sheafification of `P` composed with `F` and
+/--
+The isomorphism between the sheafification of `P` composed with `F` and
 the sheafification of `P ⋙ F`.
 
 Use the lemmas `whisker_right_to_sheafify_sheafify_comp_iso_hom`,
 `to_sheafify_comp_sheafify_comp_iso_inv` and `sheafify_comp_iso_inv_eq_sheafify_lift` to reduce
 the components of this isomorphism to a state that can be handled using the universal property
-of sheafification. -/
+of sheafification.
+-/
 noncomputable def sheafifyCompIso : J.sheafify P ⋙ F ≅ J.sheafify (P ⋙ F) :=
   J.plusCompIso _ _ ≪≫ (J.plusFunctor _).mapIso (J.plusCompIso _ _)
 

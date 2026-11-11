@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.TrivSqZeroExt.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dual numbers
 
@@ -33,7 +36,7 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 
 ## References
 
-* https://en.wikipedia.org/wiki/Dual_number
+* https://en.wikipedia.org/wiki/Dual\_number
 -/
 
 @[expose] public section
@@ -41,12 +44,16 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 
 variable {R A B : Type*}
 
-/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.
-`R[ε]` is notation for `DualNumber R`. -/
+/--
+The type of dual numbers, numbers of the form $`a + bε` where $`ε^2 = 0`.
+`R[ε]` is notation for `DualNumber R`.
+-/
 abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 
-/-- The unit element $ε$ that squares to zero, with notation `ε`. -/
+/--
+The unit element $`ε` that squares to zero, with notation `ε`.
+-/
 def DualNumber.eps [Zero R] [One R] : DualNumber R :=
   TrivSqZeroExt.inr 1
 
@@ -138,13 +145,15 @@ lemma ringHom_ext {R' : Type*} [CommSemiring R'] {f g : R[ε] →+* R'}
       commutes' r := congr($h₀ r).symm }
   congrm $(show f' = g' from algHom_ext hε).toRingHom
 
-/-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
+/--
+A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
 `f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of
 `f`.
 
 This isomorphism is named to match the similar `Complex.lift`.
 Note that when `f : R →ₐ[R] B := Algebra.ofId R B`, the commutativity assumption is automatic, and
-we are free to choose any element `e : B`. -/
+we are free to choose any element `e : B`.
+-/
 def lift :
     {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)} ≃ (A[ε] →ₐ[R] B) := by
   refine Equiv.trans ?_ TrivSqZeroExt.liftEquiv

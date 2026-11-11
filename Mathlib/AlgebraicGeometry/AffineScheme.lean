@@ -12,6 +12,9 @@ public import Mathlib.Topology.Sheaves.CommRingCat
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.Localization.InvSubmonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine schemes
 
@@ -31,7 +34,6 @@ We also define predicates about affine schemes and affine open sets.
 * `AlgebraicGeometry.IsAffineOpen`: An open subset of a scheme is affine if the open subscheme is
   affine.
 * `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
-
 -/
 
 @[expose] public section
@@ -1029,14 +1031,17 @@ lemma iSup_basicOpen_of_span_eq_top {X : Scheme} (U) (s : Set Γ(X, U))
     exact fun i hi ↦ (Set.inter_subset_right.trans
       (Set.subset_iUnion₂ (s := fun x _ ↦ (X.basicOpen x : Set X)) i hi))
 
-/-- Let `P` be a predicate on the affine open sets of `X` satisfying
+/--
+Let `P` be a predicate on the affine open sets of `X` satisfying
+
 1. If `P` holds on `U`, then `P` holds on the basic open set of every section on `U`.
 2. If `P` holds for a family of basic open sets covering `U`, then `P` holds for `U`.
 3. There exists an affine open cover of `X` each satisfying `P`.
 
 Then `P` holds for every affine open of `X`.
 
-This is also known as the **Affine communication lemma** in [*The rising sea*][RisingSea]. -/
+This is also known as the *Affine communication lemma* in \[_The rising sea_\]\[RisingSea\].
+-/
 @[elab_as_elim]
 theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
     {ι} (U : ι → X.affineOpens) (iSup_U : (⨆ i, U i : X.Opens) = ⊤)

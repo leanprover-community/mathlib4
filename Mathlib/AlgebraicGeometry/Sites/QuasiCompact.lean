@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasi-compact precoverage
 

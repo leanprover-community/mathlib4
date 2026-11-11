@@ -12,10 +12,14 @@ public import Mathlib.Order.Basic
 
 import Mathlib.Data.List.TakeDrop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prefixes, suffixes, infixes
 
 This file proves properties about
+
 * `List.isPrefix`: `l₁` is a prefix of `l₂` if `l₂` starts with `l₁`.
 * `List.isSuffix`: `l₁` is a suffix of `l₂` if `l₂` ends with `l₁`.
 * `List.isInfix`: `l₁` is an infix of `l₂` if `l₁` is a prefix of some suffix of `l₂`.
@@ -40,7 +44,9 @@ namespace List
 
 variable {l l₁ l₂ l₃ : List α} {a b : α}
 
-/-! ### prefix, suffix, infix -/
+/-!
+# prefix, suffix, infix
+-/
 
 section Fix
 
@@ -329,7 +335,9 @@ lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
 
 end InitsTails
 
-/-! ### insert -/
+/-!
+# insert
+-/
 
 
 section Insert

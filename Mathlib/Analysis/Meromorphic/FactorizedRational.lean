@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Meromorphic.NormalForm
 public import Mathlib.Analysis.Meromorphic.TrailingCoefficient
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorized Rational Functions
 
@@ -41,7 +44,7 @@ open Filter Function Real Set
 namespace Function.FactorizedRational
 
 /-!
-## Elementary Properties of Factorized Rational Functions
+# Elementary Properties of Factorized Rational Functions
 -/
 
 /--
@@ -144,7 +147,7 @@ theorem meromorphicNFOn (d : 𝕜 → ℤ) (U : Set 𝕜) :
     MeromorphicNFOn (∏ᶠ u, (· - u) ^ d u) U := fun _ _ ↦ meromorphicNFOn_univ d (trivial)
 
 /-!
-## Orders and Divisors of Factorized Rational Functions
+# Orders and Divisors of Factorized Rational Functions
 -/
 
 /--
@@ -273,7 +276,7 @@ end Function.FactorizedRational
 open Function.FactorizedRational
 
 /-!
-## Elimination of Zeros and Poles
+# Elimination of Zeros and Poles
 
 This section shows that every meromorphic function with finitely many zeros and poles is equivalent,
 modulo equality on codiscrete sets, to the product of a factorized rational function and an analytic

@@ -10,15 +10,18 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexColimits
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Horns as colimits
 
 In this file, we express horns as colimits:
+
 * horns in `Δ[2]` are pushouts of two copies of `Δ[1]`;
 * horns in `Δ[n]` are multicoequalizers of copies of the standard
   simplex of dimension `n-1` (a dedicated API is provided for inner
   horns in `Δ[3]`).
-
 -/
 
 @[expose] public section

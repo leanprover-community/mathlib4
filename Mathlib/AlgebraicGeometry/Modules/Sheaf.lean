@@ -13,12 +13,14 @@ public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 public import Mathlib.Topology.Sheaves.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of sheaves of modules over a scheme
 
 In this file, we define the abelian category of sheaves of modules
 `X.Modules` over a scheme `X`, and study its basic functoriality.
-
 -/
 
 @[expose] public section

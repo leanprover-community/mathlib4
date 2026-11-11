@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.Algebra.FiveLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `IsBaseChange` under exact sequences
 
@@ -30,7 +33,6 @@ N₁ --g₁--> N₂ --g₂--> N₃
 
 * `IsBaseChange.of_left_exact` : If `S` is flat over `R`, `f₁` and `g₁` are injective,
   `i₂` and `i₃` is base change by `S`, then `i₁` is base change by `S`.
-
 -/
 
 public section

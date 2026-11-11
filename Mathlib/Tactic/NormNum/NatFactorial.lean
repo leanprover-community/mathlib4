@@ -8,13 +8,16 @@ module
 public meta import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Tactic.NormNum
 
-/-! # `norm_num` extensions for factorials
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `norm_num` extensions for factorials
 
 Extensions for `norm_num` that compute `Nat.factorial`, `Nat.ascFactorial` and `Nat.descFactorial`.
 
 This is done by reducing each of these to `ascFactorial`, which is computed using a divide and
 conquer strategy that improves performance and avoids exceeding the recursion depth.
-
 -/
 
 public meta section

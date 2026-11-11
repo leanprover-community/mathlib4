@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The uniformization theorem
 
@@ -18,8 +21,9 @@ are `κ`-accessible categories, and `F` is a `κ`-accessible functor
 which preserves `κ`-presentable objects.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 @[expose] public section

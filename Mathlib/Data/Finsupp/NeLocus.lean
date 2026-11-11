@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locus of unequal values of finitely supported functions
 

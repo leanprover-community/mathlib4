@@ -9,6 +9,9 @@ public meta import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.RowCol
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrix and vector notation
 
@@ -77,9 +80,11 @@ end toExpr
 section Parser
 open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 
-/-- Notation for m×n matrices, aka `Matrix (Fin m) (Fin n) α`.
+/--
+Notation for m×n matrices, aka `Matrix (Fin m) (Fin n) α`.
 
 For instance:
+
 * `!![a, b, c; d, e, f]` is the matrix with two rows and three columns, of type
   `Matrix (Fin 2) (Fin 3) α`
 * `!![a, b, c]` is a row vector of type `Matrix (Fin 1) (Fin 3) α` (see also `Matrix.row`).
@@ -145,7 +150,8 @@ end Parser
 
 variable (a b : ℕ)
 
-/-- Use `![...]` notation for displaying a `Fin`-indexed matrix, for example:
+/--
+Use `![...]` notation for displaying a `Fin`-indexed matrix, for example:
 
 ```
 #eval !![1, 2; 3, 4] + !![3, 4; 5, 6]  -- !![4, 6; 8, 10]

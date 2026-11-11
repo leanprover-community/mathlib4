@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Field
 
 import Mathlib.Data.Int.NatPrime
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pythagorean Triples
 
@@ -83,10 +86,13 @@ theorem mul_iff (k : ℤ) (hk : k ≠ 0) :
   rw [← mul_left_inj' (mul_ne_zero hk hk)]
   convert h using 1 <;> ring
 
-/-- A Pythagorean triple `x, y, z` is “classified” if there exist integers `k, m, n` such that
+/--
+A Pythagorean triple `x, y, z` is “classified” if there exist integers `k, m, n` such that
 either
+
 * `x = k * (m ^ 2 - n ^ 2)` and `y = k * (2 * m * n)`, or
-* `x = k * (2 * m * n)` and `y = k * (m ^ 2 - n ^ 2)`. -/
+* `x = k * (2 * m * n)` and `y = k * (m ^ 2 - n ^ 2)`.
+-/
 @[nolint unusedArguments]
 def IsClassified (_ : PythagoreanTriple x y z) :=
   ∃ k m n : ℤ,
@@ -94,8 +100,10 @@ def IsClassified (_ : PythagoreanTriple x y z) :=
         x = k * (2 * m * n) ∧ y = k * (m ^ 2 - n ^ 2)) ∧
       Int.gcd m n = 1
 
-/-- A primitive Pythagorean triple `x, y, z` is a Pythagorean triple with `x` and `y` coprime.
+/--
+A primitive Pythagorean triple `x, y, z` is a Pythagorean triple with `x` and `y` coprime.
 Such a triple is “primitively classified” if there exist coprime integers `m, n` such that either
+
 * `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
 * `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.
 -/
@@ -230,7 +238,7 @@ end PythagoreanTriple
 section circleEquivGen
 
 /-!
-### A parametrization of the unit circle
+# A parametrization of the unit circle
 
 For the classification of Pythagorean triples, we will use a parametrization of the unit circle.
 -/

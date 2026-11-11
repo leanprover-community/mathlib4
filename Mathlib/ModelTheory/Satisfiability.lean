@@ -11,6 +11,9 @@ import Mathlib.ModelTheory.Skolem
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.Order.Filter.AtTopBot.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # First-Order Satisfiability
 
@@ -18,29 +21,29 @@ This file deals with the satisfiability of first-order theories, as well as equi
 
 ## Main Definitions
 
-- `FirstOrder.Language.Theory.IsSatisfiable`: `T.IsSatisfiable` indicates that `T` has a nonempty
+* `FirstOrder.Language.Theory.IsSatisfiable`: `T.IsSatisfiable` indicates that `T` has a nonempty
   model.
-- `FirstOrder.Language.Theory.IsFinitelySatisfiable`: `T.IsFinitelySatisfiable` indicates that
+* `FirstOrder.Language.Theory.IsFinitelySatisfiable`: `T.IsFinitelySatisfiable` indicates that
   every finite subset of `T` is satisfiable.
-- `FirstOrder.Language.Theory.IsComplete`: `T.IsComplete` indicates that `T` is satisfiable and
+* `FirstOrder.Language.Theory.IsComplete`: `T.IsComplete` indicates that `T` is satisfiable and
   models each sentence or its negation.
-- `Cardinal.Categorical`: A theory is `κ`-categorical if all models of size `κ` are isomorphic.
+* `Cardinal.Categorical`: A theory is `κ`-categorical if all models of size `κ` are isomorphic.
 
 ## Main Results
 
-- The Compactness Theorem, `FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable`,
+* The Compactness Theorem, `FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable`,
   shows that a theory is satisfiable iff it is finitely satisfiable.
-- `FirstOrder.Language.completeTheory.isComplete`: The complete theory of a structure is
+* `FirstOrder.Language.completeTheory.isComplete`: The complete theory of a structure is
   complete.
-- `FirstOrder.Language.Theory.exists_large_model_of_infinite_model` shows that any theory with an
+* `FirstOrder.Language.Theory.exists_large_model_of_infinite_model` shows that any theory with an
   infinite model has arbitrarily large models.
-- `FirstOrder.Language.Theory.exists_elementaryEmbedding_card_eq`: The Upward Löwenheim–Skolem
+* `FirstOrder.Language.Theory.exists_elementaryEmbedding_card_eq`: The Upward Löwenheim–Skolem
   Theorem: If `κ` is a cardinal greater than the cardinalities of `L` and an infinite `L`-structure
   `M`, then `M` has an elementary extension of cardinality `κ`.
 
 ## Implementation Details
 
-- Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
+* Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
   of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
 -/
 

@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Tactic.Translate.ToAdditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## `@[to_additive]` attributes for basic types
+# `@[to_additive]` attributes for basic types
 -/
 
 public meta section

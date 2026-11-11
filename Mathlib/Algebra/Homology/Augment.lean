@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Augmentation and truncation of `ℕ`-indexed (co)chain complexes.
 -/
@@ -167,7 +170,8 @@ theorem augmentTruncate_inv_f_succ (C : ChainComplex V ℕ) (i : ℕ) :
     (augmentTruncate C).inv.f (i + 1) = 𝟙 (C.X (i + 1)) :=
   rfl
 
-/-- A chain map from a chain complex to a single object chain complex in degree zero
+/--
+A chain map from a chain complex to a single object chain complex in degree zero
 can be reinterpreted as a chain complex.
 
 This is the inverse construction of `truncateTo`.
@@ -317,7 +321,8 @@ theorem augmentTruncate_inv_f_succ (C : CochainComplex V ℕ) (i : ℕ) :
     (augmentTruncate C).inv.f (i + 1) = 𝟙 (C.X (i + 1)) :=
   rfl
 
-/-- A chain map from a single object cochain complex in degree zero to a cochain complex
+/--
+A chain map from a single object cochain complex in degree zero to a cochain complex
 can be reinterpreted as a cochain complex.
 
 This is the inverse construction of `toTruncate`.

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint finite sets
 
@@ -19,7 +22,6 @@ public import Mathlib.Data.Finset.Insert
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -37,7 +39,9 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### disjoint -/
+/-!
+# disjoint
+-/
 
 
 section Disjoint
@@ -121,7 +125,9 @@ instance decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) :=
 
 end Disjoint
 
-/-! ### disjoint union -/
+/-!
+# disjoint union
+-/
 
 
 /-- `disjUnion s t h` is the set such that `a ∈ disjUnion s t h` iff `a ∈ s` or `a ∈ t`.
@@ -172,7 +178,9 @@ theorem disjUnion_singleton (s : Finset α) (a : α) (h : Disjoint s {a}) :
     disjUnion s {a} h = cons a s (disjoint_singleton_right.mp h) := by
   rw [disjUnion_comm, singleton_disjUnion]
 
-/-! ### insert -/
+/-!
+# insert
+-/
 
 section Insert
 

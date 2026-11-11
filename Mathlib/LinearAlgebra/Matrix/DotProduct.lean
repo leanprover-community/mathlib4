@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.RowCol
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dot product of two vectors
 
@@ -25,7 +28,6 @@ vectors `v w : n → R` to the sum of the entrywise products `v i * w i`.
 ## Tags
 
 matrix
-
 -/
 
 public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Type u` is well-powered
 

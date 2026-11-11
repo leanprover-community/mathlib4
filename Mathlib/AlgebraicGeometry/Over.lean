@@ -8,16 +8,19 @@ module
 public import Mathlib.AlgebraicGeometry.Scheme
 public import Mathlib.CategoryTheory.Comma.Over.OverClass
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for `S`-schemes and `S`-morphisms
 
 We define these as thin wrappers around `CategoryTheory/Comma/OverClass`.
 
 ## Main definition
-- `AlgebraicGeometry.Scheme.Over`: `X.Over S` equips `X` with an `S`-scheme structure.
-  `X ↘ S : X ⟶ S` is the structure morphism.
-- `AlgebraicGeometry.Scheme.Hom.IsOver`: `f.IsOver S` asserts that `f` is an `S`-morphism.
 
+* `AlgebraicGeometry.Scheme.Over`: `X.Over S` equips `X` with an `S`-scheme structure.
+  `X ↘ S : X ⟶ S` is the structure morphism.
+* `AlgebraicGeometry.Scheme.Hom.IsOver`: `f.IsOver S` asserts that `f` is an `S`-morphism.
 -/
 
 public section

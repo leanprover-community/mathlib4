@@ -9,6 +9,9 @@ public import Mathlib.Probability.Process.Stopping
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hitting times
 
@@ -30,7 +33,6 @@ we have only proved it for the discrete case so far).
   is a stopping time
 * `MeasureTheory.Adapted.isStoppingTime_hittingAfter`: a discrete hitting time of a adapted process
   is a stopping time
-
 -/
 
 @[expose] public section
@@ -49,11 +51,13 @@ section Basic
 variable [Preorder ι] [InfSet ι] {u : ι → Ω → β}
 
 open scoped Classical in
-/-- Hitting time: given a stochastic process `u` and a set `s`, `hittingBtwn u s n m` is
+/--
+Hitting time: given a stochastic process `u` and a set `s`, `hittingBtwn u s n m` is
 the first time `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s`
 after time `n` and before `m` then the hitting time is simply `m`).
 
-The hitting time is a stopping time if the process is strongly adapted and discrete. -/
+The hitting time is a stopping time if the process is strongly adapted and discrete.
+-/
 noncomputable def hittingBtwn (u : ι → Ω → β)
     (s : Set β) (n m : ι) : Ω → ι :=
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s

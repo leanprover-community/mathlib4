@@ -8,16 +8,19 @@ module
 public import Mathlib.AlgebraicGeometry.Cover.Open
 public import Mathlib.AlgebraicGeometry.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of Schemes and Morphisms
 
 ## Main definition
-- `AlgebraicGeometry.Scheme.restrict`: The restriction of a scheme along an open embedding.
+
+* `AlgebraicGeometry.Scheme.restrict`: The restriction of a scheme along an open embedding.
   The map `X.restrict f ⟶ X` is `AlgebraicGeometry.Scheme.ofRestrict`.
   `U : X.Opens` has a coercion to `Scheme` and `U.ι` is a shorthand
   for `X.restrict U.open_embedding : U ⟶ X`.
-- `AlgebraicGeometry.morphismRestrict`: The restriction of `X ⟶ Y` to `X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U`.
-
+* `AlgebraicGeometry.morphismRestrict`: The restriction of `X ⟶ Y` to `X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U`.
 -/
 
 @[expose] public section

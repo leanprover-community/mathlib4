@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 
 import Mathlib.Algebra.Polynomial.Degree.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Evaluation of polynomials in subrings
 
@@ -17,7 +20,6 @@ import Mathlib.Algebra.Polynomial.Degree.Support
 
 * `mem_map_rangeS`, `mem_map_range`: the range of `mapRingHom f` consists of
   polynomials with coefficients in the range of `f`
-
 -/
 
 public section

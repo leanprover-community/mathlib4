@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classification of elements of `GL (Fin 2) R`
 
@@ -20,8 +23,8 @@ suitable ring, but `ℝ` is the motivating case), into the following classes:
 * elliptic elements (`Matrix.IsElliptic`) - two distinct non-real complex eigenvalues
 
 This classification is used (among other places) in classifying the fixed points of elements of
-`GL(2, ℝ)⁺` acting on the upper half-plane. See [Wikipedia:SL2(R)#Classification_of_elements]
-(https://en.wikipedia.org/wiki/SL2(R)#Classification_of_elements).
+`GL(2, ℝ)⁺` acting on the upper half-plane. See \[Wikipedia:SL2(R)#Classification\_of\_elements\]
+(https://en.wikipedia.org/wiki/SL2(R)#Classification\_of\_elements).
 -/
 
 @[expose] public section
@@ -34,7 +37,9 @@ section CommRing
 
 variable {R : Type*} [CommRing R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
-/-- A `2 × 2` matrix is *parabolic* if it is non-scalar and its discriminant is 0. -/
+/--
+A `2 × 2` matrix is _parabolic_ if it is non-scalar and its discriminant is 0.
+-/
 def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.discr = 0
 
 variable {m}
@@ -131,10 +136,14 @@ section Preorder
 
 variable {R : Type*} [CommRing R] [Preorder R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
-/-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
+/--
+A `2 × 2` matrix is _hyperbolic_ if its discriminant is strictly positive.
+-/
 def IsHyperbolic : Prop := 0 < m.discr
 
-/-- A `2 × 2` matrix is *elliptic* if its discriminant is strictly negative. -/
+/--
+A `2 × 2` matrix is _elliptic_ if its discriminant is strictly negative.
+-/
 def IsElliptic : Prop := m.discr < 0
 
 variable {m}
@@ -237,9 +246,11 @@ abbrev IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
 /-- Synonym of `Matrix.IsHyperbolic`, for dot-notation. -/
 abbrev IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
 
-/-- Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation.
+/--
+Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation.
 
-See `Matrix.GeneralLinearGroup.fixpointPolynomial_aeval_eq_zero_iff`. -/
+See `Matrix.GeneralLinearGroup.fixpointPolynomial_aeval_eq_zero_iff`.
+-/
 noncomputable def fixpointPolynomial (g : GL (Fin 2) R) : R[X] :=
   C (g 1 0) * X ^ 2 + C (g 1 1 - g 0 0) * X - C (g 0 1)
 

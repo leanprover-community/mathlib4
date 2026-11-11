@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trace of a matrix
 
@@ -19,7 +22,6 @@ See also `LinearAlgebra.Trace` for the trace of an endomorphism.
 ## Tags
 
 matrix, trace, diagonal
-
 -/
 
 @[expose] public section
@@ -36,7 +38,9 @@ section AddCommMonoid
 
 variable [AddCommMonoid R]
 
-/-- The trace of a square matrix. For more bundled versions, see:
+/--
+The trace of a square matrix. For more bundled versions, see:
+
 * `Matrix.traceAddMonoidHom`
 * `Matrix.traceLinearMap`
 -/
@@ -164,11 +168,13 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
     (C : Matrix p m R) : trace (A * (B * C)) = trace (C * (A * B)) := by
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
-/-- The trace of a positive power of `A * B` is unchanged when the factors are reversed.
+/--
+The trace of a positive power of `A * B` is unchanged when the factors are reversed.
 The matrices `A` and `B` may be rectangular.
 
 This requires a positive exponent because the identity does not hold at exponent zero when the index
-types have different cardinalities. -/
+types have different cardinalities.
+-/
 theorem trace_mul_pow_comm_of_ne_zero [CommSemiring R] [DecidableEq m] [DecidableEq n]
     (A : Matrix m n R) (B : Matrix n m R) {k : ℕ} (hk : k ≠ 0) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) := by
@@ -177,10 +183,12 @@ theorem trace_mul_pow_comm_of_ne_zero [CommSemiring R] [DecidableEq m] [Decidabl
     rw [pow_succ, ← Matrix.mul_assoc, trace_mul_cycle, ← Matrix.mul_pow_mul, Matrix.mul_assoc,
       ← pow_succ]
 
-/-- For square matrices, the trace of any power of `A * B` is unchanged when the factors
+/--
+For square matrices, the trace of any power of `A * B` is unchanged when the factors
 are reversed.
 
-Unlike the rectangular version `trace_mul_pow_comm_of_ne_zero`, this also holds at exponent zero. -/
+Unlike the rectangular version `trace_mul_pow_comm_of_ne_zero`, this also holds at exponent zero.
+-/
 theorem trace_mul_pow_comm [CommSemiring R] [DecidableEq n] (A B : Matrix n n R) (k : ℕ) :
     trace ((A * B) ^ k) = trace ((B * A) ^ k) :=
   match k with
@@ -229,7 +237,8 @@ section Fin
 
 variable [AddCommMonoid R]
 
-/-! ### Special cases for `Fin n` for low values of `n`
+/-!
+# Special cases for `Fin n` for low values of `n`
 -/
 
 @[simp]

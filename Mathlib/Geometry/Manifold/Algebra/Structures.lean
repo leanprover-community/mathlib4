@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `C^n` structures
 
@@ -63,8 +66,10 @@ variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [Nontriv
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ChartedSpace H R] (I : ModelWithCorners 𝕜 E H)
   (n : ℕ∞ω)
 
-/-- A `C^n` (semi)ring is a topological (semi)ring. This is not an instance for technical reasons,
-see note [Design choices about smooth algebraic structures]. -/
+/--
+A `C^n` (semi)ring is a topological (semi)ring. This is not an instance for technical reasons,
+see note \[Design choices about smooth algebraic structures\].
+-/
 theorem topologicalSemiring_of_contMDiffRing [Semiring R] [ContMDiffRing I n R] :
     IsTopologicalSemiring R :=
   { continuousMul_of_contMDiffMul I n, continuousAdd_of_contMDiffAdd I n with }

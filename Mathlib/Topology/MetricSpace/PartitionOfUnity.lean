@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.PartitionOfUnity
 
 import Mathlib.Topology.EMetricSpace.Paracompact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about (e)metric spaces that need partition of unity
 

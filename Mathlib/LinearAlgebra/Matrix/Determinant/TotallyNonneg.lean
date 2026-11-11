@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Totally nonnegative matrices
 
@@ -17,23 +20,23 @@ This file defines totally nonnegative matrices and provides basic API for them.
 
 ## Main definitions
 
-- `Matrix.IsTotallyNonneg`: a matrix is totally nonnegative if all its finite minors have
+* `Matrix.IsTotallyNonneg`: a matrix is totally nonnegative if all its finite minors have
   nonnegative determinant.
 
 ## Main results
 
-- `Matrix.IsTotallyNonneg.submatrix`: any submatrix (with strictly monotonic row/column indices)
+* `Matrix.IsTotallyNonneg.submatrix`: any submatrix (with strictly monotonic row/column indices)
   of a totally nonnegative matrix is totally nonnegative.
-- `Matrix.IsTotallyNonneg.nonneg`: any entry of a totally nonnegative matrix is nonnegative.
-- `Matrix.IsTotallyNonneg.zero`: the zero matrix is totally nonnegative.
-- `Matrix.IsTotallyNonneg.one`: the identity matrix is totally nonnegative.
-- `Matrix.IsTotallyNonneg.diagonal`: a diagonal matrix with nonnegative diagonal entries is totally
+* `Matrix.IsTotallyNonneg.nonneg`: any entry of a totally nonnegative matrix is nonnegative.
+* `Matrix.IsTotallyNonneg.zero`: the zero matrix is totally nonnegative.
+* `Matrix.IsTotallyNonneg.one`: the identity matrix is totally nonnegative.
+* `Matrix.IsTotallyNonneg.diagonal`: a diagonal matrix with nonnegative diagonal entries is totally
   nonnegative.
-- `Matrix.IsTotallyNonneg.smul`: a nonnegative scalar multiple of a totally nonnegative matrix
+* `Matrix.IsTotallyNonneg.smul`: a nonnegative scalar multiple of a totally nonnegative matrix
   is totally nonnegative.
-- `Matrix.IsTotallyNonneg.transpose`: the transpose of a totally nonnegative matrix is totally
+* `Matrix.IsTotallyNonneg.transpose`: the transpose of a totally nonnegative matrix is totally
   nonnegative.
-- `Matrix.IsTotallyNonneg.conjTranspose`: the conjugate transpose of a totally nonnegative matrix is
+* `Matrix.IsTotallyNonneg.conjTranspose`: the conjugate transpose of a totally nonnegative matrix is
   totally nonnegative.
 -/
 public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Kaehler.JacobiZariski
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of Scalars for Algebra Extensions
 
@@ -20,21 +23,20 @@ coincides with `P.cotangentComplex` via a canonical isomorphism `P.h1CotangentEq
 
 ## Main definitions and results
 
-- `extendScalars`: Views `P : Extension R S` as `Extension P.Ring S`.
-- `toExtendScalars`: The canonical homomorphism from `P` to `P.extendScalars` induced by
+* `extendScalars`: Views `P : Extension R S` as `Extension P.Ring S`.
+* `toExtendScalars`: The canonical homomorphism from `P` to `P.extendScalars` induced by
   the identity map on the underlying extension rings.
-- `cotangentExtendScalarsEquiv` : The linear equivalence between the cotangent spaces of
+* `cotangentExtendScalarsEquiv` : The linear equivalence between the cotangent spaces of
   `P.extensScalars` and `P` induced by the identity map.
-- `h1CotangentExtendScalarsEquiv`: `P.extensScalars` can be used to compute the first homology of
+* `h1CotangentExtendScalarsEquiv`: `P.extensScalars` can be used to compute the first homology of
   the naive cotangent complex of `S` over `P.Ring`.
-- `h1CotangentEquivOfSurjective`: If `R → P.Ring` is surjective, this is the linear isomorphism
+* `h1CotangentEquivOfSurjective`: If `R → P.Ring` is surjective, this is the linear isomorphism
   induced by `P.h1Cotangentι`.
-- `h1CotangentEquivCotangent`: This is the linear equivalence between `H1Cotangent P.Ring S` and
+* `h1CotangentEquivCotangent`: This is the linear equivalence between `H1Cotangent P.Ring S` and
   `P.Cotangent` defined by the composition of `h1CotangentExtendScalarsEquiv.symm`,
   `h1CotangentEquivOfSurjective` and `cotangentExtendScalarsEquiv`.
-- `cotangentComplex_comp_h1CotangentEquivCotangent`,
+* `cotangentComplex_comp_h1CotangentEquivCotangent`,
   `h1CotangentEquivCotangent_comp_map`: commutativity results.
-
 -/
 
 @[expose] public section

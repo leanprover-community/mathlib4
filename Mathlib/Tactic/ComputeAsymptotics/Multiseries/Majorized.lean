@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Majorized` predicate
 

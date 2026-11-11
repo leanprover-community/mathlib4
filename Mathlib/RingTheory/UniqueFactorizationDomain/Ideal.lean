@@ -8,10 +8,14 @@ module
 public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unique factorization and ascending chain condition on ideals
 
 ## Main results
+
 * `Ideal.setOfPred_isPrincipal_wellFoundedOn_gt`,
   `WfDvdMonoid.of_setOfPred_isPrincipal_wellFoundedOn_gt`
   in a domain, well-foundedness of the strict version of ∣ is equivalent to the ascending

@@ -15,6 +15,9 @@ public import Mathlib.Tactic.Widget.SelectPanelUtils
 meta import ProofWidgets.Component.OfRpcMethod
 import Mathlib.Tactic.NthRewrite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Point & click library rewriting
 
@@ -31,11 +34,12 @@ so that it can be pasted into the editor when selected by the user.
 The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
 This is used to display the results in sections. The sections are ordered by this score.
 Within each section, the lemmas are sorted by
-- rewrites with fewer extra goals come first
-- left-to-right rewrites come first
-- shorter lemma names come first
-- shorter replacement expressions come first (when taken as a string)
-- alphabetically ordered by lemma name
+
+* rewrites with fewer extra goals come first
+* left-to-right rewrites come first
+* shorter lemma names come first
+* shorter replacement expressions come first (when taken as a string)
+* alphabetically ordered by lemma name
 
 The lemmas are optionally filtered to avoid duplicate rewrites, or trivial rewrites. This
 is controlled by the filter button on the top right of the results.
@@ -45,27 +49,30 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 ## TODO
 
 Ways to improve `rw??`:
-- Improve the logic around `nth_rw` and occurrences,
+
+* Improve the logic around `nth_rw` and occurrences,
   and about when to pass explicit arguments to the rewrite lemma.
   For example, we could only pass explicit arguments if that avoids using `nth_rw`.
   Performance may be a limiting factor for this.
   Currently, the occurrence is computed by `viewKAbstractSubExpr`.
-- Modify the interface to allow creating a whole `rw [.., ..]` chain, without having to go into
+* Modify the interface to allow creating a whole `rw [.., ..]` chain, without having to go into
   the editor in between. For this to work, we will need a more general syntax,
   something like `rw [..]??`, which would be pasted into the editor.
-- We could look for rewrites of partial applications of the selected expression.
+* We could look for rewrites of partial applications of the selected expression.
   For example, when clicking on `(f + g) x`, there should still be an `add_comm` suggestion.
 
 Ways to extend `rw??`:
-- Support generalized rewriting (`grw`)
-- Integrate rewrite search with the `calc?` widget so that a `calc` block can be created using
-  just point & click.
 
+* Support generalized rewriting (`grw`)
+* Integrate rewrite search with the `calc?` widget so that a `calc` block can be created using
+  just point & click.
 -/
 
 public meta section
 
-/-! ### Caching -/
+/-!
+# Caching
+-/
 
 namespace Mathlib.Tactic.LibraryRewrite
 
@@ -174,7 +181,9 @@ private initialize importedRewriteLemmasExt : EnvExtension ExtState ←
 
 
 
-/-! ### Computing the Rewrites -/
+/-!
+# Computing the Rewrites
+-/
 
 /-- Get all potential rewrite lemmas from the imported environment.
 By setting the `librarySearch.excludedModules` option, all lemmas from certain modules
@@ -271,7 +280,9 @@ def getImportRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
 def getModuleRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
   (← getModuleCandidates e).mapM (checkAndSortRewriteLemmas e)
 
-/-! ### Rewriting by hypotheses -/
+/-!
+# Rewriting by hypotheses
+-/
 
 /-- Construct the `RefinedDiscrTree` of all local hypotheses. -/
 def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × Bool)) :=
@@ -295,7 +306,9 @@ def getHypothesisRewrites (e : Expr) (except : Option FVarId) :
     fun _ =>
       return none
 
-/-! ### Filtering out duplicate lemmas -/
+/-!
+# Filtering out duplicate lemmas
+-/
 
 /-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
 def getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do
@@ -349,7 +362,9 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
   return filtered
 
 
-/-! ### User interface -/
+/-!
+# User interface
+-/
 
 
 /-- Return syntax for the rewrite tactic `rw [e]`. -/

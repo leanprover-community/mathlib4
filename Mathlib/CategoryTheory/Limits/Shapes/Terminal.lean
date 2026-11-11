@@ -8,10 +8,14 @@ module
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Initial and terminal objects in a category.
 
 ## References
+
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
 

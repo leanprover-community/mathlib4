@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakKernels
 public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak kernels in pretriangulated categories
 

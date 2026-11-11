@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Whiskering
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The canonical topology on a category
 
@@ -14,7 +17,7 @@ We define the finest (largest) Grothendieck topology for which a given presheaf 
 This is well defined since if `P` is a sheaf for a topology `J`, then it is a sheaf for any
 coarser (smaller) topology. Nonetheless we define the topology explicitly by specifying its sieves:
 A sieve `S` on `X` is covering for `finestTopologySingle P` iff
-  for any `f : Y ⟶ X`, `P` satisfies the sheaf axiom for `S.pullback f`.
+for any `f : Y ⟶ X`, `P` satisfies the sheaf axiom for `S.pullback f`.
 Showing that this is a genuine Grothendieck topology (namely that it satisfies the transitivity
 axiom) forms the bulk of this file.
 
@@ -27,6 +30,7 @@ A Grothendieck topology is called `Subcanonical` if it is smaller than the canon
 equivalently it is subcanonical iff every representable presheaf is a sheaf.
 
 ## References
+
 * https://ncatlab.org/nlab/show/canonical+topology
 * https://ncatlab.org/nlab/show/subcanonical+coverage
 * https://stacks.math.columbia.edu/tag/00Z9

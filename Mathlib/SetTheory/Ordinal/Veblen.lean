@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Ordinal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Veblen hierarchy
 
@@ -25,16 +28,16 @@ and the gamma function `Γ_ o` enumerating the fixed points of `veblen · 0`.
 
 The following notation is scoped to the `Ordinal` namespace.
 
-- `ε_ o` is notation for `veblen 1 o`. `ε₀` is notation for `ε_ 0`.
-- `Γ_ o` is notation for `gamma o`. `Γ₀` is notation for `Γ_ 0`.
+* `ε_ o` is notation for `veblen 1 o`. `ε₀` is notation for `ε_ 0`.
+* `Γ_ o` is notation for `gamma o`. `Γ₀` is notation for `Γ_ 0`.
 
 ## TODO
 
-- Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
+* Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
 
 ## References
 
-* [Larry W. Miller, Normal functions and constructive ordinal notations][Miller_1976]
+* ‍\[Larry W. Miller, Normal functions and constructive ordinal notations\]\[Miller\_1976\]
 -/
 
 @[expose] public section
@@ -49,15 +52,18 @@ namespace Ordinal
 
 variable {f : Ordinal.{u} → Ordinal.{u}} {o o₁ o₂ a b x : Ordinal.{u}}
 
-/-! ### Veblen function with a given starting function -/
+/-!
+# Veblen function with a given starting function
+-/
 
 section veblenWith
 
-/-- `veblenWith f o` is the `o`-th function in the Veblen hierarchy starting with `f`. This is
+/--
+`veblenWith f o` is the `o`-th function in the Veblen hierarchy starting with `f`. This is
 defined so that
 
-- `veblenWith f 0 = f`.
-- `veblenWith f o` for `o ≠ 0` enumerates the common fixed points of `veblenWith f o'` over all
+* `veblenWith f 0 = f`.
+* `veblenWith f o` for `o ≠ 0` enumerates the common fixed points of `veblenWith f o'` over all
   `o' < o`.
 -/
 @[pp_nodot]
@@ -232,30 +238,39 @@ theorem cmp_veblenWith :
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h]
     simp [h.cmp_eq_lt, h.cmp_eq_gt, (veblenWith_right_strictMono hf _).cmp_map_eq]
 
-/-- `veblenWith f o₁ a < veblenWith f o₂ b` iff one of the following holds:
+/--
+`veblenWith f o₁ a < veblenWith f o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a < b`
 * `o₁ < o₂` and `a < veblenWith f o₂ b`
-* `o₁ > o₂` and `veblenWith f o₁ a < b` -/
+* `o₁ > o₂` and `veblenWith f o₁ a < b`
+-/
 theorem veblenWith_lt_veblenWith_iff :
     veblenWith f o₁ a < veblenWith f o₂ b ↔
       o₁ = o₂ ∧ a < b ∨ o₁ < o₂ ∧ a < veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a < b := by
   rw [← cmp_eq_lt_iff, cmp_veblenWith hf]
   aesop (add simp lt_asymm)
 
-/-- `veblenWith f o₁ a ≤ veblenWith f o₂ b` iff one of the following holds:
+/--
+`veblenWith f o₁ a ≤ veblenWith f o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a ≤ b`
 * `o₁ < o₂` and `a ≤ veblenWith f o₂ b`
-* `o₁ > o₂` and `veblenWith f o₁ a ≤ b` -/
+* `o₁ > o₂` and `veblenWith f o₁ a ≤ b`
+-/
 theorem veblenWith_le_veblenWith_iff :
     veblenWith f o₁ a ≤ veblenWith f o₂ b ↔
       o₁ = o₂ ∧ a ≤ b ∨ o₁ < o₂ ∧ a ≤ veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a ≤ b := by
   rw [← not_lt, ← cmp_eq_gt_iff, cmp_veblenWith hf]
   aesop (add simp [not_lt_of_ge, lt_asymm])
 
-/-- `veblenWith f o₁ a = veblenWith f o₂ b` iff one of the following holds:
+/--
+`veblenWith f o₁ a = veblenWith f o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a = b`
 * `o₁ < o₂` and `a = veblenWith f o₂ b`
-* `o₁ > o₂` and `veblenWith f o₁ a = b` -/
+* `o₁ > o₂` and `veblenWith f o₁ a = b`
+-/
 theorem veblenWith_eq_veblenWith_iff :
     veblenWith f o₁ a = veblenWith f o₂ b ↔
       o₁ = o₂ ∧ a = b ∨ o₁ < o₂ ∧ a = veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a = b := by
@@ -264,14 +279,17 @@ theorem veblenWith_eq_veblenWith_iff :
 
 end veblenWith
 
-/-! ### Veblen function -/
+/-!
+# Veblen function
+-/
 
 section veblen
 
-/-- `veblen o` is the `o`-th function in the Veblen hierarchy starting with `ω ^ ·`. That is:
+/--
+`veblen o` is the `o`-th function in the Veblen hierarchy starting with `ω ^ ·`. That is:
 
-- `veblen 0 a = ω ^ a`.
-- `veblen o` for `o ≠ 0` enumerates the fixed points of `veblen o'` for `o' < o`.
+* `veblen 0 a = ω ^ a`.
+* `veblen o` for `o ≠ 0` enumerates the fixed points of `veblen o'` for `o' < o`.
 -/
 @[pp_nodot]
 def veblen : Ordinal.{u} → Ordinal.{u} → Ordinal.{u} :=
@@ -381,28 +399,37 @@ theorem cmp_veblen : cmp (veblen o₁ a) (veblen o₂ b) =
     | .gt => cmp (veblen o₁ a) b :=
   cmp_veblenWith (isNormal_opow one_lt_omega0)
 
-/-- `veblen o₁ a < veblen o₂ b` iff one of the following holds:
+/--
+`veblen o₁ a < veblen o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a < b`
 * `o₁ < o₂` and `a < veblen o₂ b`
-* `o₁ > o₂` and `veblen o₁ a < b` -/
+* `o₁ > o₂` and `veblen o₁ a < b`
+-/
 theorem veblen_lt_veblen_iff :
     veblen o₁ a < veblen o₂ b ↔
       o₁ = o₂ ∧ a < b ∨ o₁ < o₂ ∧ a < veblen o₂ b ∨ o₂ < o₁ ∧ veblen o₁ a < b :=
   veblenWith_lt_veblenWith_iff (isNormal_opow one_lt_omega0)
 
-/-- `veblen o₁ a ≤ veblen o₂ b` iff one of the following holds:
+/--
+`veblen o₁ a ≤ veblen o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a ≤ b`
 * `o₁ < o₂` and `a ≤ veblen o₂ b`
-* `o₁ > o₂` and `veblen o₁ a ≤ b` -/
+* `o₁ > o₂` and `veblen o₁ a ≤ b`
+-/
 theorem veblen_le_veblen_iff :
     veblen o₁ a ≤ veblen o₂ b ↔
       o₁ = o₂ ∧ a ≤ b ∨ o₁ < o₂ ∧ a ≤ veblen o₂ b ∨ o₂ < o₁ ∧ veblen o₁ a ≤ b :=
   veblenWith_le_veblenWith_iff (isNormal_opow one_lt_omega0)
 
-/-- `veblen o₁ a ≤ veblen o₂ b` iff one of the following holds:
+/--
+`veblen o₁ a ≤ veblen o₂ b` iff one of the following holds:
+
 * `o₁ = o₂` and `a = b`
 * `o₁ < o₂` and `a = veblen o₂ b`
-* `o₁ > o₂` and `veblen o₁ a = b` -/
+* `o₁ > o₂` and `veblen o₁ a = b`
+-/
 theorem veblen_eq_veblen_iff :
     veblen o₁ a = veblen o₂ b ↔
       o₁ = o₂ ∧ a = b ∨ o₁ < o₂ ∧ a = veblen o₂ b ∨ o₂ < o₁ ∧ veblen o₁ a = b :=
@@ -410,13 +437,17 @@ theorem veblen_eq_veblen_iff :
 
 end veblen
 
-/-! ### Inverse Veblen function -/
+/-!
+# Inverse Veblen function
+-/
 
-/-- For any given `x`, there exists a unique pair `(o, a)` such that `ω ^ x = veblen o a` and
+/--
+For any given `x`, there exists a unique pair `(o, a)` such that `ω ^ x = veblen o a` and
 `a < ω ^ x`. `invVeblen₁ x` and `invVeblen₂ x` return the first and second entries of this pair,
 respectively. See `veblen_eq_opow_iff` for a proof.
 
-Composing this function with `Ordinal.CNF` yields a predicative ordinal notation up to `Γ₀`. -/
+Composing this function with `Ordinal.CNF` yields a predicative ordinal notation up to `Γ₀`.
+-/
 def invVeblen₁ (x : Ordinal) : Ordinal :=
   sInf {y | veblen y x ≠ x}
 
@@ -523,7 +554,9 @@ theorem veblen_eq_opow_iff (h : a < veblen o a) :
       simp [invVeblen₁_veblen h, invVeblen₂_veblen ho.ne' h]
   · convert ← veblen_invVeblen₁_invVeblen₂ x
 
-/-! ### Epsilon function -/
+/-!
+# Epsilon function
+-/
 
 /-- The epsilon function enumerates the fixed points of `ω ^ ⬝`.
 This is an abbreviation for `veblen 1`. -/
@@ -606,11 +639,15 @@ theorem invVeblen₁_epsilon (h : o < ε_ o) : invVeblen₁ (ε_ o) = 1 :=
 theorem invVeblen₂_epsilon (h : o < ε_ o) : invVeblen₂ (ε_ o) = o :=
   invVeblen₂_veblen one_ne_zero h
 
-/-! ### Gamma function -/
+/-!
+# Gamma function
+-/
 
-/-- The gamma function enumerates the fixed points of `veblen · 0`.
+/--
+The gamma function enumerates the fixed points of `veblen · 0`.
 
-Of particular importance is `Γ₀ = gamma 0`, the Feferman-Schütte ordinal. -/
+Of particular importance is `Γ₀ = gamma 0`, the Feferman-Schütte ordinal.
+-/
 def gamma : Ordinal → Ordinal :=
   deriv (veblen · 0)
 

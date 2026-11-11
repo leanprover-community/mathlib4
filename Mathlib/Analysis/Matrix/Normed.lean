@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices as a normed space
 
@@ -19,7 +22,6 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.normedSpace`
   * `Matrix.isBoundedSMul`
   * `Matrix.normSMulClass`
-
 * The Frobenius norm (with `open scoped Matrix.Norms.Frobenius`):
 
   * `Matrix.frobeniusSeminormedAddCommGroup`
@@ -29,8 +31,7 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.frobeniusNormedAlgebra`
   * `Matrix.frobeniusIsBoundedSMul`
   * `Matrix.frobeniusNormSMulClass`
-
-* The $L^\infty$ operator norm (with `open scoped Matrix.Norms.Operator`):
+* The $`L^\infty` operator norm (with `open scoped Matrix.Norms.Operator`):
 
   * `Matrix.linftyOpSeminormedAddCommGroup`
   * `Matrix.linftyOpNormedAddCommGroup`
@@ -63,7 +64,9 @@ namespace Matrix
 
 variable {R l m n α β ι : Type*} [Fintype l] [Fintype m] [Fintype n] [Unique ι]
 
-/-! ### The elementwise supremum norm -/
+/-!
+# The elementwise supremum norm
+-/
 
 
 section LinfLinf
@@ -247,12 +250,13 @@ end NormedSpace
 
 end LinfLinf
 
-/-! ### The $L_\infty$ operator norm
+/-!
+# The $`L_\infty` operator norm
 
-This section defines the matrix norm $\|A\|_\infty = \operatorname{sup}_i (\sum_j \|A_{ij}\|)$.
+This section defines the matrix norm $`\|A\|_\infty = \operatorname{sup}_i (\sum_j \|A_{ij}\|)`.
 
-Note that this is equivalent to the operator norm, considering $A$ as a linear map between two
-$L^\infty$ spaces.
+Note that this is equivalent to the operator norm, considering $`A` as a linear map between two
+$`L^\infty` spaces.
 -/
 
 
@@ -535,9 +539,10 @@ end Norms.Operator
 
 end LinftyOp
 
-/-! ### The Frobenius norm
+/-!
+# The Frobenius norm
 
-This is defined as $\|A\| = \sqrt{\sum_{i,j} \|A_{ij}\|^2}$.
+This is defined as $`\|A\| = \sqrt{\sum_{i,j} \|A_{ij}\|^2}`.
 When the matrix is over the real or complex numbers, this norm is submultiplicative.
 -/
 

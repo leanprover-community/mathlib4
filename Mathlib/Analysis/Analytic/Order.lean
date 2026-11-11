@@ -12,6 +12,9 @@ public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vanishing Order of Analytic Functions
 
@@ -31,35 +34,39 @@ open scoped Topology
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-!
-## Vanishing Order at a Point: Definition and Characterization
+# Vanishing Order at a Point: Definition and Characterization
 -/
 
 section NormedSpace
 variable {f g : 𝕜 → E} {n : ℕ} {z₀ : 𝕜}
 
 open scoped Classical in
-/-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
+/--
+The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
 unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic
 and does not vanish at `z₀`. See `AnalyticAt.analyticOrderAt_eq_top` and
 `AnalyticAt.analyticOrderAt_eq_natCast` for these equivalences.
 
-If `f` isn't analytic at `z₀`, then `analyticOrderAt f z₀` returns a junk value of `0`. -/
+If `f` isn't analytic at `z₀`, then `analyticOrderAt f z₀` returns a junk value of `0`.
+-/
 noncomputable def analyticOrderAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ∞ :=
   if hf : AnalyticAt 𝕜 f z₀ then
     if h : ∀ᶠ z in 𝓝 z₀, f z = 0 then ⊤
     else ↑(hf.exists_eventuallyEq_pow_smul_ne_zero_iff.mpr h).choose
   else 0
 
-/-- The order of vanishing of `f` at `z₀`, as an element of `ℕ`.
+/--
+The order of vanishing of `f` at `z₀`, as an element of `ℕ`.
 
 The order is defined to be `0` if `f` is identically zero on a neighbourhood of `z₀`,
 and is otherwise the unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`,
 where `g` is analytic and does not vanish at `z₀`. See `AnalyticAt.analyticOrderAt_eq_top` and
 `AnalyticAt.analyticOrderAt_eq_natCast` for these equivalences.
 
-If `f` isn't analytic at `z₀`, then `analyticOrderNatAt f z₀` returns a junk value of `0`. -/
+If `f` isn't analytic at `z₀`, then `analyticOrderNatAt f z₀` returns a junk value of `0`.
+-/
 noncomputable def analyticOrderNatAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ := (analyticOrderAt f z₀).toNat
 
 @[simp]
@@ -110,8 +117,9 @@ lemma AnalyticAt.analyticOrderNatAt_eq_iff (hf : AnalyticAt 𝕜 f z₀) (hf' : 
       ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   simp [← Nat.cast_inj (R := ℕ∞), Nat.cast_analyticOrderNatAt hf', hf.analyticOrderAt_eq_natCast]
 
-/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as `f z =
-  (z - z₀) ^ analyticOrderNatAt f z₀ • g z`, where `g` is analytic and does not vanish at `z₀`.
+/--
+The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as
+`f z = (z - z₀) ^ analyticOrderNatAt f z₀ • g z`, where `g` is analytic and does not vanish at `z₀`.
 
 See `MeromorphicNFAt.order_eq_zero_iff` for an analogous statement about meromorphic functions in
 normal form.
@@ -408,11 +416,13 @@ lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNor
       (n := n - n'.succ) horder)
 
 attribute [local simp] Nat.factorial_ne_zero in
-/-- A version of **Taylor's theorem** for analytic functions in one variable, with the error
+/--
+A version of *Taylor's theorem* for analytic functions in one variable, with the error
 term of the form `z ^ n` times a function analytic at 0.
 
 (See `AnalyticAt.exists_eq_sum_add_pow_mul` for a version asserting global equality rather than
-just on a neighbourhood of 0.) -/
+just on a neighbourhood of 0.)
+-/
 lemma AnalyticAt.exists_eventuallyEq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
     {f : 𝕜 → E} (hf : AnalyticAt 𝕜 f 0) (n : ℕ) :
     ∃ F : 𝕜 → E, AnalyticAt 𝕜 F 0 ∧ ∀ᶠ z in 𝓝 0,
@@ -432,11 +442,13 @@ lemma AnalyticAt.exists_eventuallyEq_sum_add_pow_mul [CharZero 𝕜] [CompleteSp
     simp [ite_div, Finset.sum_ite_eq_of_mem _ _ _ (Finset.mem_range.mpr hi)]
 
 attribute [local simp] Nat.factorial_ne_zero in
-/-- A version of **Taylor's theorem** for analytic functions in one variable, with the error
+/--
+A version of *Taylor's theorem* for analytic functions in one variable, with the error
 term of the form `z ^ n` times a function analytic at 0.
 
 (See `AnalyticAt.exists_eventuallyEq_sum_add_pow_mul` for a version asserting equality on a
-neighbourhood of `0` rather than globally.) -/
+neighbourhood of `0` rather than globally.)
+-/
 lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
     {f : 𝕜 → E} (hf : AnalyticAt 𝕜 f 0) (n : ℕ) :
     ∃ F : 𝕜 → E, AnalyticAt 𝕜 F 0 ∧ ∀ z,
@@ -512,7 +524,7 @@ lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero {n : ℕ} :
 end NormedSpace
 
 /-!
-## Vanishing Order at a Point: Elementary Computations
+# Vanishing Order at a Point: Elementary Computations
 -/
 
 /-- Simplifier lemma for the order of a centered monomial -/
@@ -595,7 +607,7 @@ end NontriviallyNormedField
 section comp
 
 /-!
-## Vanishing Order at a Point: Composition
+# Vanishing Order at a Point: Composition
 -/
 variable {f : 𝕜 → E} {g : 𝕜 → 𝕜} {z₀ : 𝕜}
 
@@ -644,7 +656,7 @@ lemma analyticOrderAt_comp_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g z₀) (hg' :
 end comp
 
 /-!
-## Level Sets of the Order Function
+# Level Sets of the Order Function
 -/
 
 namespace AnalyticOnNhd

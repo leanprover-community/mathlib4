@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplices that are uniquely codimensional one faces
 
@@ -19,8 +22,8 @@ file `Mathlib/AlgebraicTopology/SimplicialSet/AnodyneExtensions/Pairing.lean` fo
 study of strong (inner) anodyne extensions.
 
 ## References
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* ‍\[Sean Moss, _Another approach to the Kan-Quillen model structure_\]\[moss-2020\]
 -/
 
 @[expose] public section

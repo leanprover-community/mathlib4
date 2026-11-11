@@ -15,6 +15,9 @@ public import Mathlib.Tactic.Matrix.Swaps  -- shake: keep (Qq dependency)
 
 meta import Mathlib.Util.Qq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Certificate construction for the Bareiss decomposition
 
@@ -29,8 +32,8 @@ the pivots of `U`, which are established by the model's certifier (or the kernel
 
 ## Main definitions
 
-- `certifyDecomposition`: builds the `Echelon.Decomposition` certificate from decomposition data.
-- `DecompositionCert`: the internal certificate structure that includes the decomposition data,
+* `certifyDecomposition`: builds the `Echelon.Decomposition` certificate from decomposition data.
+* `DecompositionCert`: the internal certificate structure that includes the decomposition data,
   `U` and the product equation for downstream tactics.
 
 ## Implementation notes

@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Order.Filter.IsBounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A normed field is a completable topological field
 -/

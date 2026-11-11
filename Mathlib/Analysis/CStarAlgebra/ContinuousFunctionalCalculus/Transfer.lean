@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 
-/-! # Transfer instances of the continuous functional calculus
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Transfer instances of the continuous functional calculus
 
 One may transfer instances of the continuous functional calculus across a star algebra equivalence,
 so long as this equivalence is continuous. Crucially, its inverse need not be continuous. This
@@ -16,13 +20,12 @@ of the continuous functional calculus.
 
 ## Main declarations
 
-+ `ContinuousFunctionalCalculus.transfer`: transfer a continuous functional calculus instance
+* `ContinuousFunctionalCalculus.transfer`: transfer a continuous functional calculus instance
   through a continuous (in only one direction) `StarAlgEquiv`.
-+ `NonUnitalContinuousFunctionalCalculus.transfer`: transfer a non-unital continuous functional
+* `NonUnitalContinuousFunctionalCalculus.transfer`: transfer a non-unital continuous functional
   calculus instance through a continuous (in only one direction) `StarAlgEquiv`.
-+ `cfc_eq_cfc_transfer`: the equality between a functional calculus and its transferred instance.
-+ `cfcₙ_eq_cfcₙ_transfer`: the equality between a functional calculus and its transferred instance.
-
+* `cfc_eq_cfc_transfer`: the equality between a functional calculus and its transferred instance.
+* `cfcₙ_eq_cfcₙ_transfer`: the equality between a functional calculus and its transferred instance.
 -/
 
 @[expose] public section

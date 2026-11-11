@@ -9,15 +9,18 @@ public import Mathlib.Algebra.Homology.ShortComplex.Homology
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homology functor as a cokernel and as a kernel
 
 In this file, we show that in the category of functors `ShortComplex C ⥤ C`,
-- the functor `cyclesFunctor C` is the kernel of `π₂ ⟶ π₃`;
-- the functor `opcyclesFunctor C` is the cokernel of `π₁ ⟶ π₂`;
-- the functor `homologyFunctor C` is the cokernel of `π₁ ⟶ cyclesFunctor C`;
-- the functor `homologyFunctor C` is the kernel of `opcyclesFunctor C ⟶ π₃`.
 
+* the functor `cyclesFunctor C` is the kernel of `π₂ ⟶ π₃`;
+* the functor `opcyclesFunctor C` is the cokernel of `π₁ ⟶ π₂`;
+* the functor `homologyFunctor C` is the cokernel of `π₁ ⟶ cyclesFunctor C`;
+* the functor `homologyFunctor C` is the kernel of `opcyclesFunctor C ⟶ π₃`.
 -/
 
 @[expose] public section

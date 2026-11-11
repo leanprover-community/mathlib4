@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Portmanteau
 public import Mathlib.Probability.IdentDistrib
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence in distribution
 
@@ -26,7 +29,7 @@ and convergence in distribution.
 
 ## Main statements
 
-* `TendstoInDistribution.continuous_comp`: **Continuous mapping theorem**.
+* `TendstoInDistribution.continuous_comp`: *Continuous mapping theorem*.
   If `X n` tends to `Z` in distribution and `g` is continuous, then `g ∘ X n` tends to `g ∘ Z`
   in distribution.
 * `tendstoInDistribution_of_tendstoInMeasure_sub`: the main technical tool for the next results.
@@ -35,10 +38,9 @@ and convergence in distribution.
   Then `Y n` converges in distribution to `Z`.
 * `TendstoInMeasure.tendstoInDistribution`: convergence in probability implies convergence in
   distribution.
-* `TendstoInDistribution.prodMk_of_tendstoInMeasure_const`: **Slutsky's theorem**.
+* `TendstoInDistribution.prodMk_of_tendstoInMeasure_const`: *Slutsky's theorem*.
   If `X n` converges in distribution to `Z`, and `Y n` converges in probability to a constant `c`,
   then the pair `(X n, Y n)` converges in distribution to `(Z, c)`.
-
 -/
 
 public section

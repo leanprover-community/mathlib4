@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Limits.FinallySmall
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finally small filtered categories
 
 In this file, we show that if `C` is a filtered finally small category
 that is locally small, there exists a final functor `D ⥤ C` from
 a small filtered category. The dual result is also obtained.
-
 -/
 
 @[expose] public section

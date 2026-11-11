@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 public import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 public import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lp space
 
@@ -25,6 +28,7 @@ For `1 ≤ p`, `eLpNorm` defines a norm and `Lp` is a complete metric space
 
 Lipschitz functions vanishing at zero act by composition on `Lp`. We define this action, and prove
 that it is continuous. In particular,
+
 * `ContinuousLinearMap.compLp` defines the action on `Lp` of a continuous linear map.
 * `Lp.posPart` is the positive part of an `Lp` function.
 * `Lp.negPart` is the negative part of an `Lp` function.
@@ -44,6 +48,7 @@ To prove that two `Lp` elements are equal, it suffices to show that their coerci
 coincide almost everywhere (this is registered as an `ext` rule). This can often be done using
 `filter_upwards`. For instance, a proof from first principles that `f + (g + h) = (f + g) + h`
 could read (in the `Lp` namespace)
+
 ```
 example (f g h : Lp E p μ) : (f + g) + h = f + (g + h) := by
   ext1
@@ -51,6 +56,7 @@ example (f g h : Lp E p μ) : (f + g) + h = f + (g + h) := by
     with _ ha1 ha2 ha3 ha4
   simp only [ha1, ha2, ha3, ha4, add_assoc]
 ```
+
 The lemma `coeFn_add` states that the coercion of `f + g` coincides almost everywhere with the sum
 of the coercions of `f` and `g`. All such lemmas use `coeFn` in their name, to distinguish the
 function coercion from the coercion to almost everywhere defined functions.
@@ -69,7 +75,7 @@ variable {α 𝕜 𝕜' E F : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {
 namespace MeasureTheory
 
 /-!
-### Lp space
+# Lp space
 
 The space of equivalence classes of measurable functions for which `eLpNorm f p μ < ∞`.
 -/
@@ -624,7 +630,9 @@ theorem AEEqFun.compMeasurePreserving_mem_Lp {β : Type*} [MeasurableSpace β]
 
 namespace Lp
 
-/-! ### Composition with a measure-preserving function -/
+/-!
+# Composition with a measure-preserving function
+-/
 
 variable {β : Type*} [MeasurableSpace β] {μb : MeasureTheory.Measure β} {f : α → β}
 
@@ -712,7 +720,7 @@ end MeasureTheory
 open MeasureTheory
 
 /-!
-### Composition on `L^p`
+# Composition on `L^p`
 
 We show that Lipschitz functions vanishing at zero act by composition on `L^p`, and specialize
 this to the composition with continuous linear maps, and to the definition of the positive
@@ -876,8 +884,10 @@ variable (μ p)
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
     simp only [ha1, ha2, ha3, ha4, Pi.smul_apply, map_smulₛₗ]
 
-/-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
+/--
+Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
 `Lp E p μ`. See also the similar
+
 * `LinearMap.compLeft` for functions,
 * `ContinuousLinearMap.compLeftContinuous` for continuous functions,
 * `ContinuousLinearMap.compLeftContinuousBounded` for bounded continuous functions,

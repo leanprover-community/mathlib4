@@ -13,6 +13,9 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.Order.Interval.Finset.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ℕ-indexed products as sequential limits
 
@@ -119,9 +122,11 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The cone over the tower
+
 ```
 ⋯ → ∏_{n < m} M n × ∏_{n ≥ m} N n → ⋯ → ∏ N
 ```
+
 with cone point `∏ M`. This is a limit cone, see `CategoryTheory.Limits.SequentialProduct.isLimit`.
 -/
 noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
@@ -160,9 +165,11 @@ lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app �
 set_option backward.isDefEq.respectTransparency false in
 /--
 The cone over the tower
+
 ```
 ⋯ → ∏_{n < m} M n × ∏_{n ≥ m} N n → ⋯ → ∏ N
 ```
+
 with cone point `∏ M` is indeed a limit cone.
 -/
 noncomputable def isLimit : IsLimit (cone f) where

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Objects that are local with respect to a property of morphisms
 
@@ -18,7 +21,6 @@ part of a Galois connection, with "dual" construction
 `ObjectProperty.isLocal : ObjectProperty C → MorphismProperty C`.)
 
 We also introduce the dual notion `W.isColocal : ObjectProperty C`.
-
 -/
 
 @[expose] public section

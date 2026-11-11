@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Embedding.AreComplementary
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Truncations on cochain complexes indexed by the integers.
 
@@ -17,7 +20,6 @@ In this file, we introduce abbreviations for the canonical truncations
 complexes indexed by `ℤ`, as well as the conditions
 `CochainComplex.IsStrictlyLE`, `CochainComplex.IsStrictlyGE`,
 `CochainComplex.IsLE`, and `CochainComplex.IsGE`.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.Reedy.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 public import Mathlib.Order.SuccPred.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Reedy structure on the simplex category
 
@@ -17,8 +20,8 @@ of epimorphisms and monomorphisms, the length map `SimplexCategory → ℕ`
 is the degree map of a Reedy structure.
 
 ## References
-* [Emily Riehl and Dominic Verity, *Elements of ∞-Category Theory*, C.4][RiehlVerity2022]
 
+* ‍\[Emily Riehl and Dominic Verity, _Elements of ∞-Category Theory_, C.4\]\[RiehlVerity2022\]
 -/
 
 @[expose] public section

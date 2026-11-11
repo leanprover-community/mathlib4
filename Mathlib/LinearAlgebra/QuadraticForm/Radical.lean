@@ -9,12 +9,15 @@ module
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
 public import Mathlib.LinearAlgebra.Quotient.Bilinear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The radical of a quadratic form
 
 We define the radical of a quadratic form. This is a standard construction if 2 is invertible
 in the coefficient ring, but is more fiddly otherwise. We follow the account in
-Chapter II, §7 of [elman-karpenko-merkurjev-2008].
+Chapter II, §7 of \[elman-karpenko-merkurjev-2008\].
 -/
 
 open Finset QuadraticMap
@@ -26,12 +29,14 @@ namespace QuadraticMap
 variable {R M M' P : Type*} [AddCommGroup M] [AddCommGroup M'] [AddCommGroup P]
   [CommRing R] [Module R M] [Module R M'] [Module R P] (Q : QuadraticMap R M P)
 
-/-- The radical of a quadratic form `Q` on `M`.
+/--
+The radical of a quadratic form `Q` on `M`.
 
 This is the largest submodule `N` such that `Q` lifts to a quadratic form on `M ⧸ N`; see
 `Submodule.le_radical_iff` for this characterization.
 
-See also [elman-karpenko-merkurjev-2008], Chapter II, §7. -/
+See also \[elman-karpenko-merkurjev-2008\], Chapter II, §7.
+-/
 def radical : Submodule R M where
   carrier := {x : M | Q x = 0 ∧ QuadraticMap.polarBilin Q x = 0}
   zero_mem' := by simp
@@ -97,20 +102,22 @@ lemma le_radical_iff {N : Submodule R M} :
   · rintro ⟨Q', rfl⟩ m hm
     simp [radical, (Submodule.Quotient.mk_eq_zero _).mpr hm, LinearMap.ext_iff, polar]
 
-/-- The radical of a quadratic map is contained in the kernel of its polar bilinear map.
+/--
+The radical of a quadratic map is contained in the kernel of its polar bilinear map.
 
 See `radical_eq_ker_polarBilin` for the equality when 2 is invertible in the
-coefficient ring. -/
+coefficient ring.
+-/
 lemma radical_le_ker_polarBilin : Q.radical ≤ Q.polarBilin.ker := by
   intro m
   simp +contextual [mem_radical_iff', LinearMap.ext_iff, QuadraticMap.polar]
 
 /--
-A quadratic map is said to be **nondegenerate** if its radical is 0,
+A quadratic map is said to be *nondegenerate* if its radical is 0,
 and the radical of its associated polar form has rank ≤ 1.
 (The second condition is automatic if 2 is invertible in `R`, but not in general.)
 
-See [elman-karpenko-merkurjev-2008], Chapter II, §7.
+See \[elman-karpenko-merkurjev-2008\], Chapter II, §7.
 -/
 structure Nondegenerate : Prop where
   radical_eq_bot : Q.radical = ⊥

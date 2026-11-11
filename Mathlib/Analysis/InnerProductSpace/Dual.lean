@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Fréchet-Riesz representation theorem
 
@@ -17,7 +20,7 @@ We consider an inner product space `E` over `𝕜`, which is either `ℝ` or `�
 of the space to `fun y => ⟪x, y⟫`.
 
 Under the hypothesis of completeness (i.e., for Hilbert spaces), we upgrade this to `toDual`, a
-conjugate-linear isometric *equivalence* of `E` onto its dual; that is, we establish the
+conjugate-linear isometric _equivalence_ of `E` onto its dual; that is, we establish the
 surjectivity of `toDualMap`.  This is the Fréchet-Riesz representation theorem: every element of the
 dual of a Hilbert space `E` has the form `fun u => ⟪x, u⟫` for some `x : E`.
 
@@ -25,11 +28,10 @@ For a bounded sesquilinear form `B : E →L⋆[𝕜] E →L[𝕜] 𝕜`,
 we define a map `InnerProductSpace.continuousLinearMapOfBilin B : E →L[𝕜] E`,
 given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
 
-
 ## References
 
-* [M. Einsiedler and T. Ward, *Functional Analysis, Spectral Theory, and Applications*]
-  [EinsiedlerWard2017]
+* ‍\[M. Einsiedler and T. Ward, _Functional Analysis, Spectral Theory, and Applications_\]
+  ‍\[EinsiedlerWard2017\]
 
 ## Tags
 

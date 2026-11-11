@@ -9,19 +9,24 @@ public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Sub.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The naturals form a linear ordered monoid
 
 This file contains the linear ordered monoid instance on the natural numbers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section
 
 namespace Nat
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℕ where
   add_le_add_left := @Nat.add_le_add_right
@@ -41,7 +46,9 @@ instance instOrderedSub : OrderedSub ℕ := by
   | zero => simp
   | succ n ih => simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 variable {α : Type*} {n : ℕ} {f : α → ℕ}
 

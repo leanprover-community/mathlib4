@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Lie.Cochain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensions of Lie algebras
 
@@ -18,6 +21,7 @@ Because our sign convention for differentials is opposite that of Chevalley-Eile
 change of signs in the "action" part of the Lie bracket.
 
 ## Main definitions
+
 * `LieAlgebra.IsExtension`: A `Prop`-valued class characterizing an extension of Lie algebras.
 * `LieAlgebra.Extension`: A bundled structure giving an extension of Lie algebras.
 * `LieAlgebra.IsExtension.extension`: A function that builds the bundled structure from the class.
@@ -31,14 +35,15 @@ change of signs in the "action" part of the Lie bracket.
   of an extension.
 
 ## TODO
+
 * `IsCentral` - central extensions
 * `Equiv` - equivalence of extensions
 
 ## References
-* [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
-  Algebras*][chevalley_eilenberg_1948]
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975]
 
+* ‍\[Chevalley, Eilenberg, _Cohomology Theory of Lie Groups and Lie
+  Algebras_\]\[chevalley\_eilenberg\_1948\]
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 1--3_\]\[bourbaki1975\]
 -/
 
 @[expose] public section

@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category equivalence between `R`-coalgebras and comonoid objects in `R-Mod`
 
@@ -29,7 +32,6 @@ use this to show the comultiplication and counit on a tensor product of coalgebr
 the coalgebra axioms, but our actual `MonoidalCategory` instance on `CoalgCat` is
 constructed in `Mathlib/Algebra/Category/CoalgCat/Monoidal.lean` to have better
 definitional equalities.
-
 -/
 
 @[expose] public section

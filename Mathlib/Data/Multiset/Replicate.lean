@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Data.Multiset.AddSub
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Repeating elements in multisets
 
 ## Main definitions
 
 * `replicate n a` is the multiset containing only `a` with multiplicity `n`
-
 -/
 
 @[expose] public section
@@ -29,7 +31,9 @@ variable {α : Type*} {β : Type v} {γ : Type*}
 
 namespace Multiset
 
-/-! ### `Multiset.replicate` -/
+/-!
+# `Multiset.replicate`
+-/
 
 /-- `replicate n a` is the multiset containing only `a` with multiplicity `n`. -/
 def replicate (n : ℕ) (a : α) : Multiset α :=
@@ -105,7 +109,9 @@ theorem lt_replicate_succ {m : Multiset α} {x : α} {n : ℕ} :
     rw [replicate_succ]
     exact ⟨x, cons_le_cons _ h⟩
 
-/-! ### Multiplicity of an element -/
+/-!
+# Multiplicity of an element
+-/
 
 section
 
@@ -129,7 +135,9 @@ theorem le_count_iff_replicate_le {a : α} {s : Multiset α} {n : ℕ} :
 
 end
 
-/-! ### Lift a relation to `Multiset`s -/
+/-!
+# Lift a relation to `Multiset`s
+-/
 
 section Rel
 

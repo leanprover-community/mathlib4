@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 
 import Mathlib.RingTheory.Noetherian.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Hopkins–Levitzki theorem
 
@@ -20,17 +23,16 @@ import Mathlib.RingTheory.Noetherian.Nilpotent
 * `IsSemiprimaryRing.isNoetherian_iff_isArtinian`: the Hopkins–Levitzki theorem, which states
   that for a module over a semiprimary ring (in particular, an Artinian ring),
   `IsNoetherian` is equivalent to `IsArtinian` (and therefore also to `IsFiniteLength`).
-
 * In particular, for a module over an Artinian ring, `Module.Finite`, `IsNoetherian`, `IsArtinian`,
   and `IsFiniteLength` are all equivalent (`IsArtinianRing.tfae`),
   and a (left) Artinian ring is also (left) Noetherian.
-
 * `isArtinianRing_iff_isNoetherianRing_krullDimLE_zero`: a commutative ring is Artinian iff
   it is Noetherian with Krull dimension at most 0.
 
 ## References
 
-* [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
+* ‍\[F. Lorenz, _Algebra: Volume II: Fields with Structure, Algebras and Advanced
+  Topics_\]\[Lorenz2008\]
 -/
 
 public section

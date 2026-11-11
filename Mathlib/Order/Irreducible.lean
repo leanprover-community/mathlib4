@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducible and prime elements in an order
 
@@ -37,7 +40,9 @@ open Finset OrderDual
 
 variable {ι α : Type*}
 
-/-! ### Irreducible and prime elements -/
+/-!
+# Irreducible and prime elements
+-/
 
 
 section SemilatticeSup

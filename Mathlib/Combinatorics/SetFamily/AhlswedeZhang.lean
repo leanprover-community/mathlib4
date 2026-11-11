@@ -14,6 +14,9 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.FieldSimp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Ahlswede-Zhang identity
 
@@ -40,8 +43,10 @@ inequality since for an antichain `𝒜` and every `A ∈ 𝒜` we have
 
 ## References
 
-* [R. Ahlswede, Z. Zhang, *An identity in combinatorial extremal theory*](https://doi.org/10.1016/0001-8708(90)90023-G)
-* [D. T. Tru, *An AZ-style identity and Bollobás deficiency*](https://doi.org/10.1016/j.jcta.2007.03.005)
+* [R. Ahlswede, Z. Zhang, _An identity in combinatorial extremal
+  theory_](https://doi.org/10.1016/0001-8708(90)90023-G)
+* [D. T. Tru, _An AZ-style identity and Bollobás
+  deficiency_](https://doi.org/10.1016/j.jcta.2007.03.005)
 -/
 
 @[expose] public section
@@ -104,7 +109,9 @@ open scoped FinsetFamily
 namespace Finset
 variable {α β : Type*}
 
-/-! ### Truncated supremum, truncated infimum -/
+/-!
+# Truncated supremum, truncated infimum
+-/
 
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}

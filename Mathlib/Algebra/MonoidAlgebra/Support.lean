@@ -11,6 +11,9 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 
 import Mathlib.Order.BourbakiWitt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the support of a finitely supported function
 -/

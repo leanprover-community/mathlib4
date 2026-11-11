@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Signed variation
 
@@ -15,7 +18,7 @@ We define `variationOnFromTo f s a b : ℝ` as the signed variation of `f` betwe
 its variation if `a ≤ b`, and its opposite otherwise. We establish basic properties of this notion,
 and use it to show that a bounded variation real function is the difference of two monotone
 functions.
- -/
+-/
 
 @[expose] public section
 

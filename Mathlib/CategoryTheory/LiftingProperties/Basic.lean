@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting properties
 
@@ -14,14 +17,16 @@ This file defines the lifting property of two morphisms in a category and
 shows basic properties of this notion.
 
 ## Main results
-- `HasLiftingProperty`: the definition of the lifting property
+
+* `HasLiftingProperty`: the definition of the lifting property
 
 ## Tags
+
 lifting property
 
 ## TODO
-1) direct/inverse images, adjunctions
 
+1. direct/inverse images, adjunctions
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.PerfectClosure
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `IsPerfectClosure` predicate
 
@@ -16,49 +19,40 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 
 ## Main definitions
 
-- `pNilradical`: given a natural number `p`, the `p`-nilradical of a ring is defined to be the
+* `pNilradical`: given a natural number `p`, the `p`-nilradical of a ring is defined to be the
   nilradical if `p > 1` (`pNilradical_eq_nilradical`), and defined to be the zero ideal if `p ≤ 1`
   (`pNilradical_eq_bot'`). Equivalently, it is the ideal consisting of elements `x` such that
   `x ^ p ^ n = 0` for some `n` (`mem_pNilradical`).
-
-- `IsPRadical`: a ring homomorphism `i : K →+* L` of characteristic `p` rings is called `p`-radical,
+* `IsPRadical`: a ring homomorphism `i : K →+* L` of characteristic `p` rings is called `p`-radical,
   if or any element `x` of `L` there is `n : ℕ` such that `x ^ (p ^ n)` is contained in `K`,
   and the kernel of `i` is contained in the `p`-nilradical of `K`.
   A generalization of purely inseparable extension for fields.
-
-- `IsPerfectClosure`: if `i : K →+* L` is `p`-radical ring homomorphism, then it makes `L` a
+* `IsPerfectClosure`: if `i : K →+* L` is `p`-radical ring homomorphism, then it makes `L` a
   perfect closure of `K`, if `L` is perfect.
 
   Our definition makes it synonymous to `IsPRadical` if `PerfectRing L p` is present. A caveat is
   that you need to write `[PerfectRing L p] [IsPerfectClosure i p]`. This is similar to
   `PerfectRing` which has `ExpChar` as a prerequisite.
-
-- `PerfectRing.lift`: if a `p`-radical ring homomorphism `K →+* L` is given, `M` is a perfect ring,
+* `PerfectRing.lift`: if a `p`-radical ring homomorphism `K →+* L` is given, `M` is a perfect ring,
   then any ring homomorphism `K →+* M` can be lifted to `L →+* M`.
   This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`.
-
-- `PerfectRing.liftEquiv`: `K →+* M` is in one-to-one correspondence with `L →+* M`,
+* `PerfectRing.liftEquiv`: `K →+* M` is in one-to-one correspondence with `L →+* M`,
   given by `PerfectRing.lift`. This generalizes `PerfectClosure.lift`.
-
-- `IsPerfectClosure.equiv`: perfect closures of a ring are isomorphic.
+* `IsPerfectClosure.equiv`: perfect closures of a ring are isomorphic.
 
 ## Main results
 
-- `IsPRadical.trans`: composition of `p`-radical ring homomorphisms is also `p`-radical.
-
-- `PerfectClosure.isPRadical`: the absolute perfect closure `PerfectClosure` is a `p`-radical
+* `IsPRadical.trans`: composition of `p`-radical ring homomorphisms is also `p`-radical.
+* `PerfectClosure.isPRadical`: the absolute perfect closure `PerfectClosure` is a `p`-radical
   extension over the base ring, in particular, it is a perfect closure of the base ring.
-
-- `IsPRadical.isPurelyInseparable`, `IsPurelyInseparable.isPRadical`: `p`-radical and
+* `IsPRadical.isPurelyInseparable`, `IsPurelyInseparable.isPRadical`: `p`-radical and
   purely inseparable are equivalent for fields.
-
-- The (relative) perfect closure `perfectClosure` is a perfect closure
+* The (relative) perfect closure `perfectClosure` is a perfect closure
   (inferred from `IsPurelyInseparable.isPRadical` automatically by Lean).
 
 ## Tags
 
 perfect ring, perfect closure, purely inseparable
-
 -/
 
 @[expose] public section
@@ -135,13 +129,15 @@ section CommSemiring
 variable [CommSemiring K] [CommSemiring L] [CommSemiring M]
   (i : K →+* L) (j : K →+* M) (f : L →+* M) (p : ℕ)
 
-/-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it is called
+/--
+If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it is called
 `p`-radical if the following conditions are satisfied:
 
-- For any element `x` of `L` there is `n : ℕ` such that `x ^ (p ^ n)` is contained in `K`.
-- The kernel of `i` is contained in the `p`-nilradical of `K`.
+* For any element `x` of `L` there is `n : ℕ` such that `x ^ (p ^ n)` is contained in `K`.
+* The kernel of `i` is contained in the `p`-nilradical of `K`.
 
-It is a generalization of purely inseparable extension for fields. -/
+It is a generalization of purely inseparable extension for fields.
+-/
 @[mk_iff]
 class IsPRadical : Prop where
   pow_mem' : ∀ x : L, ∃ (n : ℕ) (y : K), i y = x ^ p ^ n
@@ -179,14 +175,16 @@ theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
     rw [RingHom.mem_ker, RingHom.comp_apply, ← RingHom.mem_ker] at h
     simpa only [← Ideal.mem_comap, comap_pNilradical] using ker_le f p h
 
-/-- If `i : K →+* L` is a `p`-radical ring homomorphism, then it makes `L` a perfect closure
+/--
+If `i : K →+* L` is a `p`-radical ring homomorphism, then it makes `L` a perfect closure
 of `K`, if `L` is perfect.
 In this case the kernel of `i` is equal to the `p`-nilradical of `K`
 (see `IsPerfectClosure.ker_eq`).
 
 Our definition makes it synonymous to `IsPRadical` if `PerfectRing L p` is present. A caveat is
 that you need to write `[PerfectRing L p] [IsPerfectClosure i p]`. This is similar to
-`PerfectRing` which has `ExpChar` as a prerequisite. -/
+`PerfectRing` which has `ExpChar` as a prerequisite.
+-/
 @[nolint unusedArguments]
 abbrev IsPerfectClosure [ExpChar L p] [PerfectRing L p] := IsPRadical i p
 

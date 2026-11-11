@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.PID
 
 import Mathlib.Data.ZMod.QuotientRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structure of finite(ly generated) abelian groups
 

@@ -12,6 +12,9 @@ import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal ergodic theorem.
 
@@ -19,11 +22,11 @@ In this file we prove two closely related versions of maximal ergodic theorem fo
 measure-preserving map `f`.
 
 The first version deals with integrable real-valued functions `g`, and states that the integral of
-`g` over the set $\left\{ x : \sup_{n ≥ 0} \sum_{i = 0}^{n - 1} (g ∘ f ^ i)(x) > 0\right\}$ is
+`g` over the set $`\left\{ x : \sup_{n ≥ 0} \sum_{i = 0}^{n - 1} (g ∘ f ^ i)(x) > 0\right\}` is
 nonnegative.
 
 The second version, a corollary of the first, states that for integrable normed-space valued `g`,
-the operator $g ↦ \sup_{n ≥ 0} \frac{1}{n}\sum_{i=0}^{n-1}g ∘ f^i$ satisfies a weak-type
+the operator $`g ↦ \sup_{n ≥ 0} \frac{1}{n}\sum_{i=0}^{n-1}g ∘ f^i` satisfies a weak-type
 inequality. In other words, its cumulative distribution function
 `a ↦ a * μ.real {x | a < birkhoffAverageSup f g x}` is bounded above by the `L1` norm of `g`.
 
@@ -42,16 +45,16 @@ inequality. In other words, its cumulative distribution function
   `birkhoffAverageSup` at `a` is less than or equal to the integral of `g` on the set where
   `a < birkhoffAverageSup f g x`.
 * `mul_measureReal_lt_birkhoffAverageSup_le_norm`: the operator `birkhoffAverageSup` satisfies a
-   weak-type inequality.
+  weak-type inequality.
 
 ## Implementation
 
-Write $M_n$ for `birkhoffMax f g n`, which is non-negative and monotone in `n`. We have a
-recurrence relation $M_{n+1} = g + M_n ∘ f$ in the set where $M_{n+1} > 0$ (`birkhoffMax_succ'`),
-so by monotonicity of $M_n$, $M_n ≤ 1_{\{M_n > 0\}} g + M_n ∘ f$ pointwise
+Write $`M_n` for `birkhoffMax f g n`, which is non-negative and monotone in `n`. We have a
+recurrence relation $`M_{n+1} = g + M_n ∘ f` in the set where $`M_{n+1} > 0` (`birkhoffMax_succ'`),
+so by monotonicity of $`M_n`, $`M_n ≤ 1_{\{M_n > 0\}} g + M_n ∘ f` pointwise
 (`birkhoffMax_le_indicator_add_comp`). Integrating this inequality and using
-that `f` preserves `μ`, we conclude that $\int_{\{M_n > 0\}} g$ is nonnegative
-(`setIntegral_support_birkhoffMax_nonneg`). The sets $\{M_n > 0\}$ increase to the set where
+that `f` preserves `μ`, we conclude that $`\int_{\{M_n > 0\}} g` is nonnegative
+(`setIntegral_support_birkhoffMax_nonneg`). The sets $`\{M_n > 0\}` increase to the set where
 `birkhoffSumSup f g` is positive (`setOf_birkhoffSumSup_pos_eq_iUnion_birkhoffMax_support`), so
 `setIntegral_birkhoffSumSup_nonneg` follows by passing to the limit
 (`tendsto_setIntegral_support_birkhoffMax`).

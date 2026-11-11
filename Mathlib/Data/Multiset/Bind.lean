@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 public import Mathlib.Data.Multiset.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bind operation for multisets
 
@@ -31,7 +34,9 @@ variable {α : Type*} {β : Type v} {γ δ : Type*}
 
 namespace Multiset
 
-/-! ### Join -/
+/-!
+# Join
+-/
 
 /-- `join S`, where `S` is a multiset of multisets, is the lift of the list join
   operation, that is, the union of all the sets.
@@ -101,7 +106,9 @@ theorem filterMap_join (S : Multiset (Multiset α)) (f : α → Option β) :
   | empty => simp
   | cons _ _ ih => simp [ih]
 
-/-! ### Bind -/
+/-!
+# Bind
+-/
 
 
 section Bind
@@ -283,7 +290,9 @@ theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : �
 
 end Bind
 
-/-! ### Product of two multisets -/
+/-!
+# Product of two multisets
+-/
 
 
 section Product
@@ -355,7 +364,9 @@ lemma prod_map_product_eq_prod_prod {M : Type*} [CommMonoid M]
 
 end Product
 
-/-! ### Disjoint sum of multisets -/
+/-!
+# Disjoint sum of multisets
+-/
 
 
 section Sigma

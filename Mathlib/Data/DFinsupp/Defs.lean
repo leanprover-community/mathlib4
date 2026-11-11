@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dependent functions with finite support
 
@@ -53,11 +56,13 @@ universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 variable {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
 
 variable (β) in
-/-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
+/--
+A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
 
 Note that `DFinsupp.support` is the preferred API for accessing the support of the function,
 `DFinsupp.support'` is an implementation detail that aids computability; see the implementation
-notes in this file for more information. -/
+notes in this file for more information.
+-/
 structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
   /-- The underlying function of a dependent function with finite support (aka `DFinsupp`). -/
   toFun : ∀ i, β i
@@ -103,8 +108,9 @@ instance : Inhabited (Π₀ i, β i) :=
 theorem zero_apply (i : ι) : (0 : Π₀ i, β i) i = 0 :=
   rfl
 
-/-- The composition of `f : β₁ → β₂` and `g : Π₀ i, β₁ i` is
-  `mapRange f hf g : Π₀ i, β₂ i`, well defined when `f 0 = 0`.
+/--
+The composition of `f : β₁ → β₂` and `g : Π₀ i, β₁ i` is
+`mapRange f hf g : Π₀ i, β₂ i`, well defined when `f 0 = 0`.
 
 This preserves the structure on `f`, and exists in various bundled forms for when `f` is itself
 bundled:
@@ -610,11 +616,13 @@ section Update
 
 variable (f : Π₀ i, β i) (i) (b : β i)
 
-/-- Replace the value of a `Π₀ i, β i` at a given point `i : ι` by a given value `b : β i`.
+/--
+Replace the value of a `Π₀ i, β i` at a given point `i : ι` by a given value `b : β i`.
 If `b = 0`, this amounts to removing `i` from the support.
 Otherwise, `i` is added to it.
 
-This is the (dependent) finitely-supported version of `Function.update`. -/
+This is the (dependent) finitely-supported version of `Function.update`.
+-/
 def update : Π₀ i, β i :=
   ⟨Function.update f i b,
     f.support'.map fun s =>
@@ -791,8 +799,10 @@ theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : S
     mk s (x - y) = mk s x - mk s y :=
   ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
 
-/-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
-group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i$. -/
+/--
+If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
+group homomorphism from $`\prod_{i\in s}\beta_i` to $`\prod_{\mathtt{i : \iota}}\beta_i`.
+-/
 def mkAddGroupHom [∀ i, AddGroup (β i)] (s : Finset ι) :
     (∀ i : (s : Set ι), β ↑i) →+ Π₀ i : ι, β i where
   toFun := mk s
@@ -1107,9 +1117,11 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
     comapDomain' h hh' (single (h k) x) = single k x := by
   grind
 
-/-- Reindexing terms of a dfinsupp.
+/--
+Reindexing terms of a dfinsupp.
 
-This is the dfinsupp version of `Equiv.piCongrLeft'`. -/
+This is the dfinsupp version of `Equiv.piCongrLeft'`.
+-/
 @[simps apply]
 def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π₀ k, β (h.symm k) where
   toFun := comapDomain' h.symm h.right_inv
@@ -1128,9 +1140,11 @@ def equivCongrLeft [∀ i, Zero (β i)] (h : ι ≃ κ) : (Π₀ i, β i) ≃ Π
 
 variable {α : Option ι → Type v}
 
-/-- Adds a term to a dfinsupp, making a dfinsupp indexed by an `Option`.
+/--
+Adds a term to a dfinsupp, making a dfinsupp indexed by an `Option`.
 
-This is the dfinsupp version of `Option.rec`. -/
+This is the dfinsupp version of `Option.rec`.
+-/
 def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : Π₀ i, α i where
   toFun := fun i ↦ match i with | none => a | some _ => f _
   support' :=
@@ -1168,9 +1182,11 @@ theorem extendWith_zero [DecidableEq ι] [∀ i, Zero (α i)] (x : α none) :
   · rw [extendWith_none, single_eq_same]
   · rw [extendWith_some, single_eq_of_ne (Option.some_ne_none _), zero_apply]
 
-/-- Bijection obtained by separating the term of index `none` of a dfinsupp over `Option ι`.
+/--
+Bijection obtained by separating the term of index `none` of a dfinsupp over `Option ι`.
 
-This is the dfinsupp version of `Equiv.piOptionEquivProd`. -/
+This is the dfinsupp version of `Equiv.piOptionEquivProd`.
+-/
 @[simps]
 noncomputable def equivProdDFinsupp [∀ i, Zero (α i)] :
     (Π₀ i, α i) ≃ α none × Π₀ i, α (some i) where
@@ -1192,7 +1208,8 @@ theorem equivProdDFinsupp_add [∀ i, AddZeroClass (α i)] (f g : Π₀ i, α i)
 
 end Equiv
 
-/-! ### Bundled versions of `DFinsupp.mapRange`
+/-!
+# Bundled versions of `DFinsupp.mapRange`
 
 The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 -/

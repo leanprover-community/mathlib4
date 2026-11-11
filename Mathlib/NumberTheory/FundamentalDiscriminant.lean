@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Nat.Squarefree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fundamental discriminants
 

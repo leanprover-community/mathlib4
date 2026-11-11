@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separable polynomials
 
@@ -21,7 +24,6 @@ properties about separable polynomials here.
   over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
   over `K`.
-
 -/
 
 @[expose] public section
@@ -167,10 +169,12 @@ theorem emultiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep :
   apply pow_dvd_of_le_emultiplicity
   exact Order.add_one_le_of_lt hq
 
-/-- A separable polynomial is square-free.
+/--
+A separable polynomial is square-free.
 
 See `PerfectField.separable_iff_squarefree` for the converse when the coefficients are a perfect
-field. -/
+field.
+-/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   rw [squarefree_iff_emultiplicity_le_one p]
   exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
@@ -529,20 +533,22 @@ variable (F L K : Type*) [CommRing F] [Ring K] [Algebra F K]
 
 variable {K} in
 /--
-An element `x` of an algebra `K` over a commutative ring `F` is said to be *separable*, if its
+An element `x` of an algebra `K` over a commutative ring `F` is said to be _separable_, if its
 minimal polynomial over `K` is separable. Note that the minimal polynomial of any element not
 integral over `F` is defined to be `0`, which is not a separable polynomial.
 -/
 @[stacks 09H1 "second part"]
 def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
 
-/-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
+/--
+Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
 extension, because the minimal polynomial of a non-integral element is `0`, which is not
 separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
-is needed for a proof. -/
+is needed for a proof.
+-/
 @[mk_iff isSeparable_def, stacks 09H1 "third part"]
 protected class Algebra.IsSeparable : Prop where
   isSeparable' : ∀ x : K, IsSeparable F x

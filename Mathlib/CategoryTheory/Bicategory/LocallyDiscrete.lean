@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 public import Mathlib.CategoryTheory.CommSq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally discrete bicategories
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Stochastic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Doubly stochastic matrices
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.RootSystem.Chain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases for root pairings / systems
 
@@ -15,9 +18,9 @@ This file contains a theory of bases for root pairings / systems.
 ## Implementation details
 
 For reduced root pairings `RootSystem.Base` is equivalent to the usual definition appearing in the
-informal literature (e.g., it follows from [serre1965](Ch. V, §8, Proposition 7) that
-`RootSystem.Base` is equivalent to both [serre1965](Ch. V, §8, Definition 5) and
-[bourbaki1968](Ch. VI, §1.5) for reduced pairings). However for non-reduced root pairings, it is
+informal literature (e.g., it follows from \[serre1965\](Ch. V, §8, Proposition 7) that
+`RootSystem.Base` is equivalent to both \[serre1965\](Ch. V, §8, Definition 5) and
+‍\[bourbaki1968\](Ch. VI, §1.5) for reduced pairings). However for non-reduced root pairings, it is
 more restrictive because it includes axioms on coroots as well as on roots. For example by
 `RootPairing.Base.eq_one_or_neg_one_of_mem_support_of_smul_mem` it is clear that the 1-dimensional
 root system `{-2, -1, 0, 1, 2} ⊆ ℝ` has no base in the sense of `RootSystem.Base`.
@@ -31,6 +34,7 @@ For infinite root systems, `RootSystem.Base` is usually not the right notion: li
 is too strong.
 
 ## Main definitions / results:
+
 * `RootSystem.Base`: a base of a root pairing.
 * `RootSystem.Base.IsPos`: the predicate that a (co)root is positive relative to a base.
 * `RootSystem.Base.induction_add`: an induction principle for predicates on (co)roots which
@@ -42,7 +46,6 @@ is too strong.
 
 * Develop a theory of base / separation / positive roots for infinite systems which specialises to
   the concept here for finite systems.
-
 -/
 
 @[expose] public section
@@ -58,13 +61,15 @@ variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommG
 
 namespace RootPairing
 
-/-- A base of a root pairing.
+/--
+A base of a root pairing.
 
 For reduced root pairings this definition is equivalent to the usual definition appearing in the
 informal literature but not for non-reduced root pairings it is more restrictive. See the module
 doc string for further remarks.
 
-See also `RootPairing.Base.mk'`. -/
+See also `RootPairing.Base.mk'`.
+-/
 structure Base (P : RootPairing ι R M N) where
   /-- The indices of the simple roots / coroots. -/
   support : Finset ι
@@ -138,9 +143,11 @@ private lemma Base.mkOfPairwiseLEZero_aux (i : ι) :
   · exact .inl <| by simpa [← hc] using this h
   · exact .inr <| by simpa [← hc] using this <| neg_nonneg.mpr h
 
-/-- An alternate condition for a subset of linearly independent (co)roots to form a base.
+/--
+An alternate condition for a subset of linearly independent (co)roots to form a base.
 
-This is useful when constructing a root pairing from a realisation of a Cartan matrix. -/
+This is useful when constructing a root pairing from a realisation of a Cartan matrix.
+-/
 @[no_expose] def Base.mkOfPairwiseLEZero : P.Base where
   support := s
   linearIndepOn_root := h₀

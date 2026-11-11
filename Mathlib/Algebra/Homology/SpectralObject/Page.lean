@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.SpectralObject.Cycles
 public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.CategoryTheory.ComposableArrows.Three
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral objects in abelian categories
 
@@ -25,8 +28,8 @@ in terms of this homology `X.E`: the objects in all pages, including
 the page at infinity.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_, II.4\]\[verdier1996\]
 -/
 
 @[expose] public section

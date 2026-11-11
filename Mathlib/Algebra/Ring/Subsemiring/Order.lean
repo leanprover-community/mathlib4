@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.
 -/

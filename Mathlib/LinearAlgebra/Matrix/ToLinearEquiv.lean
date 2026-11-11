@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 public import Mathlib.RingTheory.Localization.Integer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices and linear equivalences
 
@@ -26,7 +29,6 @@ to linear equivs.
 ## Tags
 
 matrix, linear equivalence, linear isomorphism, determinant, inverse
-
 -/
 
 @[expose] public section
@@ -47,7 +49,8 @@ section ToLinearEquiv'
 
 variable [DecidableEq n]
 
-/-- An invertible matrix yields a linear equivalence from the free module to itself.
+/--
+An invertible matrix yields a linear equivalence from the free module to itself.
 
 See `Matrix.toLinearEquiv` for the same map on arbitrary modules.
 -/
@@ -71,7 +74,8 @@ section ToLinearEquiv
 
 variable (b : Basis n R M)
 
-/-- Given `hA : IsUnit A.det` and `b : Basis R b`, `A.toLinearEquiv b hA` is
+/--
+Given `hA : IsUnit A.det` and `b : Basis R b`, `A.toLinearEquiv b hA` is
 the `LinearEquiv` arising from `toLin b b A`.
 
 See `Matrix.toLinearEquiv'` for this result on `n → R`.

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie ideals, invariant root submodules, and simple Lie algebras
 
@@ -19,6 +22,7 @@ and `LieAlgebra.IsKilling.invtSubmoduleToLieIdeal`, which constructs the ideal a
 invariant submodule.
 
 ## Main definitions
+
 * `LieIdeal.rootSet`: the set of roots whose root space is contained in a given Lie ideal.
 * `LieIdeal.rootSpan`: the submodule of `Dual K H` spanned by `LieIdeal.rootSet`.
 * `LieIdeal.toInvtRootSubmodule`: the invariant root submodule associated to an ideal.
@@ -28,6 +32,7 @@ invariant submodule.
   invariant root submodules.
 
 ## Main results
+
 * `LieAlgebra.IsKilling.restr_inf_cartan_eq_iSup_corootSubmodule`: the intersection of a Lie ideal
   and a Cartan subalgebra is the span of the coroots whose roots have root spaces in the ideal.
 * `LieAlgebra.IsKilling.isSimple_iff_isIrreducible`: a Killing Lie algebra is simple if and only
@@ -102,10 +107,12 @@ lemma rootSpan_mem_invtRootSubmodule (I : LieIdeal K L) :
   rw [SetLike.mem_coe, Submodule.mem_comap, LinearEquiv.coe_coe, ← RootPairing.root_reflectionPerm]
   exact Submodule.subset_span ⟨_, (I.reflectionPerm_mem_rootSet_iff α β).mpr hα, rfl⟩
 
-/-- The invariant root submodule corresponding to a Lie ideal.
+/--
+The invariant root submodule corresponding to a Lie ideal.
 
 Given a Lie ideal `I`, this produces an invariant root submodule by taking the span of all
-roots whose root spaces are contained in `I`. -/
+roots whose root spaces are contained in `I`.
+-/
 noncomputable def toInvtRootSubmodule (I : LieIdeal K L) :
     (rootSystem H).invtRootSubmodule :=
   ⟨I.rootSpan, I.rootSpan_mem_invtRootSubmodule⟩
@@ -434,11 +441,13 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
 
 end aux
 
-/-- Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra.
+/--
+Constructs a Lie ideal from an invariant submodule of the dual space of a Cartan subalgebra.
 
 Given a submodule `q` of the dual space `Dual K H` that is invariant under all root reflections,
 this produces a Lie ideal by taking the sum of all `sl₂` subalgebras corresponding to roots
-whose linear forms lie in `q`. -/
+whose linear forms lie in `q`.
+-/
 noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
     (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) : LieIdeal K L where
   __ := ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2

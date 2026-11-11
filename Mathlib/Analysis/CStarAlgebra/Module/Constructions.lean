@@ -12,7 +12,11 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Topology.MetricSpace.Bilipschitz
 
-/-! # Constructions of Hilbert C⋆-modules
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Constructions of Hilbert C⋆-modules
 
 In this file we define the following constructions of `CStarModule`s where `A` denotes a C⋆-algebra.
 For some of the types listed below, the instance is declared on the type synonym `WithCStarModule E`
@@ -21,9 +25,9 @@ decision below.
 
 1. `A` as a `CStarModule` over itself.
 2. `C⋆ᵐᵒᵈ(A, E × F)` as a `CStarModule` over `A`, when `E` and `F` are themselves `CStarModule`s
-  over `A`.
+   over `A`.
 3. `C⋆ᵐᵒᵈ (A, Π i : ι, E i)` as a `CStarModule` over `A`, when each `E i` is a `CStarModule` over
-  `A` and `ι` is a `Fintype`.
+   `A` and `ι` is a `Fintype`.
 4. `E` as a `CStarModule` over `ℂ`, when `E` is an `InnerProductSpace` over `ℂ`.
 
 For `E × F` and `Π i : ι, E i`, we are required to declare the instance on a type synonym rather
@@ -52,13 +56,12 @@ We provide a sanity check ensuring that these two instances are definitionally e
 that the `Inner ℂ ℂ` instance from `InnerProductSpace` is definitionally equal to the one inherited
 from the `CStarModule` instances.
 
-Note that `C⋆ᵐᵒᵈ(A, E)` is *already* equipped with a bornology and uniformity whenever `E` is
+Note that `C⋆ᵐᵒᵈ(A, E)` is _already_ equipped with a bornology and uniformity whenever `E` is
 (namely, the pullback of the respective structures through `WithCStarModule.equiv`), so in each of
 the above cases, it is necessary to temporarily instantiate `C⋆ᵐᵒᵈ(A, E)` with
 `CStarModule.normedAddCommGroup`, show the resulting type is bilipschitz equivalent to `E` via
 `WithCStarModule.equiv` (in the first and last case, this map is actually trivially an isometry),
 and then replace the uniformity and bornology with the correct ones.
-
 -/
 
 @[expose] public section
@@ -69,7 +72,9 @@ namespace WithCStarModule
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A]
 
-/-! ## A C⋆-algebra as a C⋆-module over itself -/
+/-!
+# A C⋆-algebra as a C⋆-module over itself
+-/
 
 section Self
 
@@ -93,7 +98,9 @@ lemma inner_def (x y : A) : ⟪x, y⟫_A = y * star x := rfl
 
 end Self
 
-/-! ## Products of C⋆-modules -/
+/-!
+# Products of C⋆-modules
+-/
 
 section Prod
 
@@ -205,7 +212,9 @@ noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, E × F) := .ofCore (no
 
 end Prod
 
-/-! ## Pi-types of C⋆-modules -/
+/-!
+# Pi-types of C⋆-modules
+-/
 
 section Pi
 
@@ -334,7 +343,9 @@ noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, Π i, E i) := .ofCore 
 
 end Pi
 
-/-! ## Inner product spaces as C⋆-modules -/
+/-!
+# Inner product spaces as C⋆-modules
+-/
 
 section InnerProductSpace
 
@@ -344,12 +355,14 @@ variable {E : Type*}
 variable [NormedAddCommGroup E] [InnerProductSpace ℂ E]
 
 open scoped InnerProductSpace in
-/-- Reinterpret an inner product space `E` over `ℂ` as a `CStarModule` over `ℂ`.
+/--
+Reinterpret an inner product space `E` over `ℂ` as a `CStarModule` over `ℂ`.
 
 Note: this instance requires `SMul ℂᵐᵒᵖ E` and `IsCentralScalar ℂ E` instances to exist on `E`,
 which is unlikely to occur in practice. However, in practice one could either add those instances
 to the type `E` in question, or else supply them to this instance manually, which is reason behind
-the naming of these two instance arguments. -/
+the naming of these two instance arguments.
+-/
 noncomputable instance instCStarModuleComplex : CStarModule ℂ E where
   inner x y := ⟪x, y⟫_ℂ
   inner_add_right := by simp [_root_.inner_add_right]

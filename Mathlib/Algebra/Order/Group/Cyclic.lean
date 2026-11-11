@@ -9,15 +9,18 @@ public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Algebra.Order.Group.Subgroup
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclic linearly ordered groups
 
 This file contains basic results about cyclic linearly ordered groups and cyclic subgroups of
 linearly ordered groups.
 
-The definitions `LinearOrderedCommGroup.Subgroup.genLTOne` (*resp.*
+The definitions `LinearOrderedCommGroup.Subgroup.genLTOne` (_resp._
 `LinearOrderedCommGroup.genLTOne`) yields a generator of a non-trivial subgroup of a linearly
-ordered commutative group with (*resp.* of a non-trivial linearly ordered commutative group) that
+ordered commutative group with (_resp._ of a non-trivial linearly ordered commutative group) that
 is strictly less than `1`. The corresponding additive definitions are also provided.
 -/
 

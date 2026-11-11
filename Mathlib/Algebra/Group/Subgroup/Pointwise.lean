@@ -11,7 +11,11 @@ public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 
-/-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Pointwise instances on `Subgroup` and `AddSubgroup`s
 
 This file provides the actions
 
@@ -419,16 +423,20 @@ theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s 
     (fun y => h • y) '' (g * ·) ⁻¹' s = (g * ·) ⁻¹' (fun y => h • y) '' s :=
   smul_opposite_image_mul_preimage' g h s
 
-/-! ### Pointwise action -/
+/-!
+# Pointwise action
+-/
 
 
 section Monoid
 
 variable [Monoid α] [MulDistribMulAction α G]
 
-/-- The action on a subgroup corresponding to applying the action to every element.
+/--
+The action on a subgroup corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseMulAction : MulAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)

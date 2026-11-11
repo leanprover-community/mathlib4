@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complete Multipartite Graphs
 
@@ -16,23 +19,17 @@ A graph is complete multipartite iff non-adjacency is transitive.
 ## Main declarations
 
 * `SimpleGraph.IsCompleteMultipartite`: predicate for a graph to be complete multipartite.
-
 * `SimpleGraph.IsCompleteMultipartite.setoid`: the `Setoid` given by non-adjacency.
-
 * `SimpleGraph.IsCompleteMultipartite.iso`: the graph isomorphism from a graph that
   `IsCompleteMultipartite` to the corresponding `completeMultipartiteGraph`.
-
 * `SimpleGraph.IsPathGraph3Compl`: predicate for three vertices to witness the
   non-complete-multipartiteness of a graph `G`. (The name refers to the fact that the three
   vertices form the complement of `pathGraph 3`.)
-
 * See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`.
   The lemma `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` states that a maximally
   `r + 1`-cliquefree graph is `r`-colorable iff it is complete multipartite.
-
-* `SimpleGraph.completeEquipartiteGraph`: the **complete equipartite graph** in parts of *equal*
+* `SimpleGraph.completeEquipartiteGraph`: the *complete equipartite graph* in parts of _equal_
   size such that two vertices are adjacent if and only if they are in different parts.
-
 * `SimpleGraph.CompleteEquipartiteSubgraph G r t` is a complete equipartite subgraph, that is,
   `r` subsets of vertices each of size `t` such that the vertices in distinct subsets are
   adjacent.
@@ -41,11 +38,11 @@ A graph is complete multipartite iff non-adjacency is transitive.
 
 The definition of `completeEquipartiteGraph` is similar to `completeMultipartiteGraph`
 except that `Sigma.fst` is replaced by `Prod.fst` in the definition. The difference is that the
-former vertices are a product type whereas the latter vertices are a *dependent* product type.
+former vertices are a product type whereas the latter vertices are a _dependent_ product type.
 
 While `completeEquipartiteGraph r t` could have been defined as the specialisation
 `completeMultipartiteGraph (const (Fin r) (Fin t))` (or `turanGraph (r * t) r`), it is convenient
-to instead have a *non-dependent* *product* type for the vertices.
+to instead have a _non-dependent_ _product_ type for the vertices.
 
 See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGraph.turanGraph`
 for the isomorphisms between a `completeEquipartiteGraph` and a corresponding
@@ -210,13 +207,15 @@ section CompleteEquipartiteGraph
 
 variable {r t : ℕ}
 
-/-- The **complete equipartite graph** in `r` parts each of *equal* size `t` such that two
-vertices are adjacent if and only if they are in different parts, often denoted $K_r(t)$.
+/--
+The *complete equipartite graph* in `r` parts each of _equal_ size `t` such that two
+vertices are adjacent if and only if they are in different parts, often denoted $`K_r(t)`.
 
 This is isomorphic to a corresponding `completeMultipartiteGraph` and `turanGraph`. The difference
 is that the former vertices are a product type.
 
-See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGraph.turanGraph`. -/
+See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGraph.turanGraph`.
+-/
 abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
   SimpleGraph.comap Prod.fst ⊤
 
@@ -224,18 +223,22 @@ lemma completeEquipartiteGraph_adj {v w} :
   (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- A `completeEquipartiteGraph` is isomorphic to a corresponding `completeMultipartiteGraph`.
+/--
+A `completeEquipartiteGraph` is isomorphic to a corresponding `completeMultipartiteGraph`.
 
 The difference is that the former vertices are a product type whereas the latter vertices are a
-*dependent* product type. -/
+_dependent_ product type.
+-/
 def completeEquipartiteGraph.completeMultipartiteGraph :
     completeEquipartiteGraph r t ≃g completeMultipartiteGraph (const (Fin r) (Fin t)) :=
   { (Equiv.sigmaEquivProd (Fin r) (Fin t)).symm with map_rel_iff' := by simp }
 
-/-- A `completeEquipartiteGraph` is isomorphic to a corresponding `turanGraph`.
+/--
+A `completeEquipartiteGraph` is isomorphic to a corresponding `turanGraph`.
 
 The difference is that the former vertices are a product type whereas the latter vertices are
-not. -/
+not.
+-/
 def completeEquipartiteGraph.turanGraph :
     completeEquipartiteGraph r t ≃g turanGraph (r * t) r where
   toFun := by
@@ -344,12 +347,14 @@ section CompleteEquipartiteSubgraph
 
 variable {V : Type*} {G : SimpleGraph V}
 
-/-- A complete equipartite subgraph in `r > 0` parts each of size `t ≠ 0` in `G` is `r` subsets
+/--
+A complete equipartite subgraph in `r > 0` parts each of size `t ≠ 0` in `G` is `r` subsets
 of vertices each of size `t` such that vertices in distinct subsets are adjacent.
 
 If `r > 0` but `t = 0`, then `parts = {{}}`. If `r = 0`, then `parts = {}`. These are the two
-*distinct* "empty" complete equipartite subgraphs, that is, the complete equipartite subgraphs
-having no vertices. -/
+_distinct_ "empty" complete equipartite subgraphs, that is, the complete equipartite subgraphs
+having no vertices.
+-/
 @[ext]
 structure CompleteEquipartiteSubgraph (G : SimpleGraph V) (r t : ℕ) where
   /-- The parts in a complete equipartite subgraph. -/

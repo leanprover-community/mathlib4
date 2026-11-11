@@ -11,6 +11,9 @@ public import Mathlib.Data.Set.Card
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgroup of `Equiv.Perm α` preserving a function
 
@@ -19,17 +22,15 @@ Let `α` and `ι` by types and let `f : α → ι`
 * `DomMulAct.mem_stabilizer_iff` proves that the stabilizer of `f : α → ι`
   in `(Equiv.Perm α)ᵈᵐᵃ` is the set of `g : (Equiv.Perm α)ᵈᵐᵃ` such that `f ∘ (mk.symm g) = f`.
 
-  The natural equivalence from `stabilizer (Perm α)ᵈᵐᵃ f` to `{ g : Perm α // p ∘ g = f }`
-  can be obtained as `subtypeEquiv mk.symm (fun _ => mem_stabilizer_iff)`
+The natural equivalence from `stabilizer (Perm α)ᵈᵐᵃ f` to `{ g : Perm α // p ∘ g = f }`
+can be obtained as `subtypeEquiv mk.symm (fun _ => mem_stabilizer_iff)`
 
 * `DomMulAct.stabilizerMulEquiv` is the `MulEquiv` from
   the MulOpposite of this stabilizer to the product,
   for `i : ι`, of `Equiv.Perm {a // f a = i}`.
-
 * Under `Fintype α` and `Fintype ι`, `DomMulAct.stabilizer_card p` computes
   the cardinality of the type of permutations preserving `p` :
   `Fintype.card {g : Perm α // f ∘ g = f} = ∏ i, (Fintype.card {a // f a = i})!`.
-
 * Without `Fintype ι`, `DomMulAct.stabilizer_card' p` gives an equivalent
   formula, where the product is restricted to `Finset.univ.image f`.
 -/

@@ -13,6 +13,9 @@ public meta import Qq
 public import Batteries.Tactic.Exact
 public import Mathlib.Tactic.FunProp.Theorems
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
 -/
@@ -25,9 +28,12 @@ open Lean Meta Qq
 namespace Meta.FunProp
 
 
-/-- Synthesize instance of type `type` and
-  1. assign it to `x` if `x` is meta variable
-  2. check it is equal to `x` -/
+/--
+Synthesize instance of type `type` and
+
+1. assign it to `x` if `x` is meta variable
+2. check it is equal to `x`
+-/
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
   | .some val =>
@@ -177,7 +183,7 @@ def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Op
 
 
 /--
-Try to prove `e` using the *identity lambda theorem*.
+Try to prove `e` using the _identity lambda theorem_.
 
 For example, `e = q(Continuous fun x ↦ x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
@@ -197,7 +203,7 @@ def applyIdRule (funPropDecl : FunPropDecl) (e : Expr)
   return none
 
 /--
-Try to prove `e` using the *constant lambda theorem*.
+Try to prove `e` using the _constant lambda theorem_.
 
 For example, `e = q(Continuous fun x ↦ y)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
@@ -217,7 +223,7 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
   return none
 
 /--
-Try to prove `e` using the *apply lambda theorem*.
+Try to prove `e` using the _apply lambda theorem_.
 
 For example, `e = q(Continuous fun f ↦ f x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
@@ -231,12 +237,13 @@ def applyApplyRule (funPropDecl : FunPropDecl) (e : Expr)
   return none
 
 /--
-Try to prove `e` using *composition lambda theorem*.
+Try to prove `e` using _composition lambda theorem_.
 
 For example, `e = q(Continuous fun x ↦ f (g x))` and `funPropDecl` is `FunPropDecl` for
 `Continuous`
 
-You also have to provide the functions `f` and `g`. -/
+You also have to provide the functions `f` and `g`.
+-/
 def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
@@ -255,7 +262,7 @@ def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
   return none
 
 /--
-Try to prove `e` using *pi lambda theorem*.
+Try to prove `e` using _pi lambda theorem_.
 
 For example, `e = q(Continuous fun x y ↦ f x y)` and `funPropDecl` is `FunPropDecl` for
 `Continuous`
@@ -281,9 +288,10 @@ def applyPiRule (funPropDecl : FunPropDecl) (e : Expr)
 Try to prove `e = q(P (fun x ↦ let y := φ x; ψ x y)`.
 
 For example,
-  - `funPropDecl` is `FunPropDecl` for `Continuous`
-  - `e = q(Continuous fun x ↦ let y := φ x; ψ x y)`
-  - `f = q(fun x ↦ let y := φ x; ψ x y)`
+
+* `funPropDecl` is `FunPropDecl` for `Continuous`
+* `e = q(Continuous fun x ↦ let y := φ x; ψ x y)`
+* `f = q(fun x ↦ let y := φ x; ψ x y)`
 -/
 def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -326,7 +334,9 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
   | _ => throwError "expected expression of the form `fun x ↦ lam y := ..; ..`"
 
 
-/-- Prove function property of using *morphism theorems*. -/
+/--
+Prove function property of using _morphism theorems_.
+-/
 def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   trace[Debug.Meta.Tactic.fun_prop] "applying morphism theorems to {← ppExpr e}"
@@ -353,7 +363,9 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
     return none
 
-/-- Prove function property of using *transition theorems*. -/
+/--
+Prove function property of using _transition theorems_.
+-/
 def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
@@ -370,12 +382,14 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
   trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
   return none
 
-/-- Try to remove applied argument i.e. prove `P (fun x ↦ f x y)` from `P (fun x ↦ f x)`.
+/--
+Try to remove applied argument i.e. prove `P (fun x ↦ f x y)` from `P (fun x ↦ f x)`.
 
 For example
-- `funPropDecl` is `FunPropDecl` for `Continuous`
-- `e = q(Continuous fun x ↦ foo (bar x) y)`
-- `fData` contains info on `fun x ↦ foo (bar x) y`
+
+* `funPropDecl` is `FunPropDecl` for `Continuous`
+* `e = q(Continuous fun x ↦ foo (bar x) y)`
+* `fData` contains info on `fun x ↦ foo (bar x) y`
 
 This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
 -/
@@ -480,7 +494,9 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
   return thms
 
 
-/-- Try to apply *function theorems* `thms` to `e`. -/
+/--
+Try to apply _function theorems_ `thms` to `e`.
+-/
 def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (thms : Array FunctionTheorem) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do

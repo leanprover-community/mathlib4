@@ -10,6 +10,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Matching
 
 import Mathlib.Combinatorics.Hall.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hall's Marriage Theorem
 

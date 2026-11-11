@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.Graph.Subgraph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps between graphs
 
@@ -20,7 +23,6 @@ defined in this file in the future.
 ## TODO
 
 * Morphisms between graphs
-
 -/
 
 public section

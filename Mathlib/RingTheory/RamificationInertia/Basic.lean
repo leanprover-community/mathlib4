@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.RamificationInertia.Ramification
 
 import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification index and inertia degree
 
@@ -30,7 +33,6 @@ flat extension of an integral domain.
   and let `p` be prime ideal of `R`. Assume that `R` is the invariant subring of a finite group `G`
   acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
   index of `q` times the inertia degree of `q` equals the cardinality of `G`.
-
 -/
 
 public section

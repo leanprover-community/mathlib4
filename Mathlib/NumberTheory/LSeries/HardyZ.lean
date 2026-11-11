@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hardy's Z function
 
@@ -14,12 +17,12 @@ Hardy's `Z` function is the real-valued function on `ℝ` whose zeros are exactl
 the zeros of `ζ` on the critical line. It is defined here by dividing the completed zeta
 function `Λ` on the critical line by the modulus of its archimedean factor:
 
-$$ Z(t) = \frac{\Lambda(1/2 + it)}{|\Gamma_{\mathbb{R}}(1/2 + it)|}. $$
+$$`  Z(t) = \frac{\Lambda(1/2 + it)}{|\Gamma_{\mathbb{R}}(1/2 + it)|}.  `
 
 The numerator is real, by `completedRiemannZeta_conj` together with the functional equation
 `completedRiemannZeta_one_sub`, and the denominator is a positive real, so `Z` is real-valued.
 
-### Main results
+## Main results
 
 * `hardyZ`: the definition, as a function `ℝ → ℝ`.
 * `abs_hardyZ`: `|Z t| = ‖ζ (1/2 + i t)‖`.
@@ -28,14 +31,14 @@ The numerator is real, by `completedRiemannZeta_conj` together with the function
 * `continuous_hardyZ`: `Z` is continuous, so the intermediate value theorem applies to it and
   sign changes of `Z` locate zeros of `ζ` on the critical line.
 
-### TODO
+## TODO
 
-* Add the relation to the Riemann–Siegel theta function, see
-  <https://en.wikipedia.org/wiki/Riemann%E2%80%93Siegel_theta_function>.
+* Add the relation to the Riemann–Siegel theta function, see [
+  https://en.wikipedia.org/wiki/Riemann%E2%80%93Siegel\_theta\_function](https://en.wikipedia.org/wiki/Riemann%E2%80%93Siegel_theta_function).
 
-### References
+## References
 
-* [E. C. Titchmarsh, *The theory of the Riemann zeta-function*, §4.17][Titchmarsh1986]
+* ‍\[E. C. Titchmarsh, _The theory of the Riemann zeta-function_, §4.17\]\[Titchmarsh1986\]
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform approximation
 
@@ -93,7 +96,7 @@ theorem continuous_of_uniform_approx_of_continuous
       simpa [continuousOn_univ] using L
 
 /-!
-### Uniform limits
+# Uniform limits
 
 From the previous statements on uniform approximation, we deduce continuity results for uniform
 limits.
@@ -127,7 +130,7 @@ protected theorem TendstoUniformly.continuous (h : TendstoUniformly F f p)
   h.tendstoLocallyUniformly.continuous hc
 
 /-!
-### Composing limits under uniform convergence
+# Composing limits under uniform convergence
 
 In general, if `Fₙ` converges pointwise to a function `f`, and `gₙ` tends to `x`, it is not true
 that `Fₙ gₙ` tends to `f x`. It is true however if the convergence of `Fₙ` to `f` is uniform. In
@@ -183,7 +186,7 @@ theorem TendstoUniformly.tendsto_comp (h : TendstoUniformly F f p) (hf : Continu
   h.tendstoLocallyUniformly.tendsto_comp hf hg
 
 /-!
-### Uniform approximation and limit of uniformly continuous functions.
+# Uniform approximation and limit of uniformly continuous functions.
 -/
 section UniformContinuous
 variable {α β ι : Type*} [UniformSpace α] [UniformSpace β]

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
 public import Mathlib.Probability.Kernel.Composition.KernelLemmas
 public import Mathlib.Probability.Kernel.Deterministic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # SFinKer
 
@@ -23,8 +26,8 @@ The category of measurable spaces with s-finite kernels is a copy-discard catego
 
 ## References
 
-* [A synthetic approach to
-  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+* ‍\[A synthetic approach to
+  Markov kernels, conditional independence and theorems on sufficient statistics\]\[fritz2020\]
 -/
 
 public section

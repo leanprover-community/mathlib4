@@ -8,17 +8,21 @@ module
 public import Mathlib.RingTheory.Finiteness.Quotient
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification index and inertia degree
 
 Given `P : Ideal S` lying over `p : Ideal R` for the ring extension `f : R →+* S`
 (assuming `P` and `p` are prime or maximal where needed),
-the **inertia degree** `Ideal.inertiaDeg' p P` is the degree of the field extension
+the *inertia degree* `Ideal.inertiaDeg' p P` is the degree of the field extension
 `(S / P) : (R / p)`.
 
 ## Implementation notes
 
 Often the above theory is set up in the case where:
+
 * `R` is the ring of integers of a number field `K`,
 * `L` is a finite separable extension of `K`,
 * `S` is the integral closure of `R` in `L`,
@@ -30,7 +34,6 @@ We will try to relax the above hypotheses as much as possible.
 ## Notation
 
 In this file, `f` stands for the inertia degree of `P` over `p`, leaving `p` and `P` implicit.
-
 -/
 
 @[expose] public section
@@ -54,7 +57,8 @@ section DecEq
 
 variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
 
-/-- The inertia degree of `P : Ideal S` lying over `p : Ideal R` is the degree of the
+/--
+The inertia degree of `P : Ideal S` lying over `p : Ideal R` is the degree of the
 extension `(S / P) : (R / p)`.
 
 We do not assume `P` lies over `p` in the definition; we return `0` instead.

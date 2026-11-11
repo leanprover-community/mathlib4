@@ -8,7 +8,11 @@ module
 public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Connected.LocallyPathConnected
 
-/-! # The path component of the identity in a locally path connected topological group
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The path component of the identity in a locally path connected topological group
 
 This file defines the path component of the identity is an `OpenNormalSubgroup` when the ambient
 topological group is locally path connected. We place this in a separate file to avoid importing

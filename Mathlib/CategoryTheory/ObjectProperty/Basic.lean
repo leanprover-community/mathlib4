@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of objects in a category
 
@@ -20,7 +23,6 @@ for predicates `C → Prop`.
   as `ObjectProperty.IsClosedUnderLimitsOfShape` (and make it a type class)
 * refactor the file `Triangulated.Subcategory` in order to make it a type class
   regarding terms in `ObjectProperty C` when `C` is pretriangulated
-
 -/
 
 @[expose] public section

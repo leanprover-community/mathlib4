@@ -13,7 +13,11 @@ import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Topology.Algebra.Module.TransferInstance
 
-/-! # Smooth submersions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Smooth submersions
 
 In this file, we define `C^n` submersions between `C^n` manifolds.
 As in the case of immersions, the correct definition in the infinite-dimensional setting differs
@@ -57,11 +61,13 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
 
 The implementation strategy is identical to the one for immersions. See the implementation notes in
 `Mathlib/Geometry/Manifold/Immersion` for details on:
+
 * `IsSubmersionAt(OfComplement)`,
 * universe level issues for complements,
 * `small` and `smallEquiv` constructions.
 
 ## TODO
+
 * The converse to `IsSubmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the kernel of the differential `mfderiv I J f x`.
 * If `f` is a submersion at `x`, its differential `mfderiv I J f x` admits a continuous right
@@ -80,13 +86,12 @@ The implementation strategy is identical to the one for immersions. See the impl
 
 ## References
 
-* [Alexander Schmeding, *An introduction to infinite-dimensional differential geometry*]
-  [schmeding2023]
+* ‍\[Alexander Schmeding, _An introduction to infinite-dimensional differential geometry_\]
+  ‍\[schmeding2023\]
 * Note that Margelef-Roig and Dominguez have a slightly different definition of submersions.
 
-**Please talk** to Michael Rothgang before working on this file, to avoid duplicate work.
+*Please talk* to Michael Rothgang before working on this file, to avoid duplicate work.
 The above TODOs are the topic of Samantha Naranjo's master's thesis; it's nicer to coordinate.
-
 -/
 
 public noncomputable section
@@ -137,7 +142,8 @@ lemma isLocalSourceTargetProperty_submmersionAtProp :
     grind
 
 variable (F I J n) in
-/-- `f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+/--
+`f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `(u, v) ↦ u`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
@@ -157,7 +163,8 @@ def IsSubmersionAtOfComplement (f : M → N) (x : M) : Prop :=
 -- Lift the universe from `E`, to avoid a free universe parameter.
 
 variable (I J n) in
-/-- `f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+/--
+`f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `(u, v) ↦ u`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
@@ -257,7 +264,8 @@ lemma writtenInCharts (h : IsSubmersionAtOfComplement F I J n f x) :
 lemma property (h : IsSubmersionAtOfComplement F I J n f x) :
     LiftSourceTargetPropertyAt I J n f x (SubmersionAtProp F I J M N) := h
 
-/-- If `f` is a submersion at `x`, it maps its domain chart's target to its codomain chart's target:
+/--
+If `f` is a submersion at `x`, it maps its domain chart's target to its codomain chart's target:
 `(h.domChart.extend I).target` to `(h.domChart.extend J).target`.
 
 See `target_subset_preimage_target` for a version stated using preimages instead of images.
@@ -349,20 +357,24 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target, eqOn_prod_iff]
   exact ⟨fun x ⟨hx, hx'⟩ ↦ by simpa using hfprop hx, fun x ⟨hx, hx'⟩ ↦ by simpa using hgprop hx'⟩
 
-/-- If `f` is a submersion at `x` w.r.t. some complement `F`, it is a submersion at `x`.
+/--
+If `f` is a submersion at `x` w.r.t. some complement `F`, it is a submersion at `x`.
 
 Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
 while being a submersion at `x` requires the existence of a complement in the same universe as
-the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`. -/
+the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`.
+-/
 lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
     IsSubmersionAt I J n f x := by
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
-/-- If `f` is a `C^n` submersion at `x`, then `f` is `C^n` on its domain chart's source,
+/--
+If `f` is a `C^n` submersion at `x`, then `f` is `C^n` on its domain chart's source,
 in particular on an open neighbourhood of `x`.
 
-Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead. -/
+Prefer using `IsSubmersionAtOfComplement.contMDiffAt` instead.
+-/
 theorem contMDiffOn (h : IsSubmersionAtOfComplement F I J n f x) :
     ContMDiffOn I J n f h.domChart.source := by
   rw [← contMDiffOn_writtenInExtend_iff h.domChart_mem_maximalAtlas
@@ -514,10 +526,12 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   hf.isSubmersionAtOfComplement_complement.prodMap hg.isSubmersionAtOfComplement_complement
     |>.isSubmersionAt
 
-/-- If `f` is a submersion at `x`, then `f` is `C^n` on its domain chart's source,
+/--
+If `f` is a submersion at `x`, then `f` is `C^n` on its domain chart's source,
 in particular on an open neighbourhood of `x`.
 
-Prefer using `IsSubmersionAt.contMDiffAt` instead -/
+Prefer using `IsSubmersionAt.contMDiffAt` instead
+-/
 theorem contMDiffOn (h : IsSubmersionAt I J n f x) : CMDiff[h.domChart.source] n f :=
   h.isSubmersionAtOfComplement_complement.contMDiffOn
 
@@ -528,18 +542,21 @@ theorem contMDiffAt (h : IsSubmersionAt I J n f x) : CMDiffAt n f x :=
 end IsSubmersionAt
 
 variable (F I J n) in
-/-- `f : M → N` is a `C^n` submersion if around each point `x ∈ M`,
+/--
+`f : M → N` is a `C^n` submersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `(u, v) ↦ u`.
 
 In other words, `f` is a submersion at each `x ∈ M`.
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
-being a submersion at `x` includes a choice of linear isomorphism between `E` and `E'' × F`. -/
+being a submersion at `x` includes a choice of linear isomorphism between `E` and `E'' × F`.
+-/
 def IsSubmersionOfComplement (f : M → N) : Prop := ∀ x, IsSubmersionAtOfComplement F I J n f x
 
 variable (I J n) in
-/-- `f : M → N` is a `C^n` submersion if around each point `x ∈ M`,
+/--
+`f : M → N` is a `C^n` submersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `(u, v) ↦ u`.
 
@@ -580,7 +597,8 @@ theorem prodMap {f : M → N} {g : M' → N'}
     IsSubmersionOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) :=
   fun ⟨x, x'⟩ ↦ (h x).prodMap (h' x')
 
-/-- If `f` is a submersion w.r.t. some complement `F`, it is a submersion.
+/--
+If `f` is a submersion w.r.t. some complement `F`, it is a submersion.
 
 Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
 while being a submersion requires the existence of a complement in the same universe as

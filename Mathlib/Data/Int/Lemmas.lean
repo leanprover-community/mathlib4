@@ -9,12 +9,14 @@ public import Mathlib.Data.Int.Bitwise
 public import Mathlib.Data.Int.Order.Lemmas
 public import Mathlib.Order.Interval.Set.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous lemmas about the integers
 
 This file contains lemmas about integers, which require further imports than
 `Data.Int.Basic` or `Data.Int.Order`.
-
 -/
 
 public section
@@ -27,13 +29,17 @@ namespace Int
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
   lia
 
-/-! ### `succ` and `pred` -/
+/-!
+# `succ` and `pred`
+-/
 
 
 theorem succ_natCast_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
 
-/-! ### `natAbs` -/
+/-!
+# `natAbs`
+-/
 
 
 theorem natAbs_eq_iff_sq_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a ^ 2 = b ^ 2 := by
@@ -99,7 +105,8 @@ theorem injOn_natAbs_Iic : InjOn natAbs (Iic 0) :=
 
 end Intervals
 
-/-! ### bitwise ops
+/-!
+# bitwise ops
 
 This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from `Data.Int.Order`.
 -/

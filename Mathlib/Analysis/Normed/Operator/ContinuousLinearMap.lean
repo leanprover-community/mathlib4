@@ -10,7 +10,11 @@ public import Mathlib.Analysis.Normed.MulAction
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
-/-! # Constructions of continuous linear maps between (semi-)normed spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Constructions of continuous linear maps between (semi-)normed spaces
 
 A fundamental fact about (semi-)linear maps between normed spaces over sensible fields is that
 continuity and boundedness are equivalent conditions.  That is, for normed spaces `E`, `F`, a
@@ -40,7 +44,9 @@ open NNReal
 
 variable {𝕜 𝕜₂ E F G : Type*}
 
-/-! ## General constructions -/
+/-!
+# General constructions
+-/
 
 section SeminormedAddCommGroup
 
@@ -160,7 +166,9 @@ theorem ContinuousLinearMap.isUniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ 
 
 end Normed
 
-/-! ## Homotheties -/
+/-!
+# Homotheties
+-/
 
 section Seminormed
 variable [Ring 𝕜] [Ring 𝕜₂]

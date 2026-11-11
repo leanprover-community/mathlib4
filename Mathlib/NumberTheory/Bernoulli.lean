@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.PowerSeries.Exp
 
 import Mathlib.Algebra.GCDMonoid.FinsetLemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bernoulli numbers
 
@@ -21,32 +24,32 @@ number theory.
 
 ## Mathematical overview
 
-The Bernoulli numbers $(B_0, B_1, B_2, \ldots)=(1, -1/2, 1/6, 0, -1/30, \ldots)$ are
-a sequence of rational numbers. They show up in the formula for the sums of $k$th
-powers. They are related to the Taylor series expansions of $x/\tan(x)$ and
-of $\coth(x)$, and also show up in the values that the Riemann Zeta function
+The Bernoulli numbers $`(B_0, B_1, B_2, \ldots)=(1, -1/2, 1/6, 0, -1/30, \ldots)` are
+a sequence of rational numbers. They show up in the formula for the sums of \$k\$th
+powers. They are related to the Taylor series expansions of $`x/\tan(x)` and
+of $`\coth(x)`, and also show up in the values that the Riemann Zeta function
 takes both at both negative and positive integers (and hence in the
-theory of modular forms). For example, if $1 \leq n$ then
+theory of modular forms). For example, if $`1 \leq n` then
 
-$$\zeta(2n)=\sum_{t\geq1}t^{-2n}=(-1)^{n+1}\frac{(2\pi)^{2n}B_{2n}}{2(2n)!}.$$
+$$`\zeta(2n)=\sum_{t\geq1}t^{-2n}=(-1)^{n+1}\frac{(2\pi)^{2n}B_{2n}}{2(2n)!}.`
 
 This result is formalised in Lean: `riemannZeta_two_mul_nat`.
 
 The Bernoulli numbers can be formally defined using the power series
 
-$$\sum B_n\frac{t^n}{n!}=\frac{t}{1-e^{-t}}$$
+$$`\sum B_n\frac{t^n}{n!}=\frac{t}{1-e^{-t}}`
 
-although that happens to not be the definition in mathlib (this is an *implementation
-detail* and need not concern the mathematician).
+although that happens to not be the definition in mathlib (this is an _implementation
+detail_ and need not concern the mathematician).
 
-Note that $B_1=-1/2$, meaning that we are using the $B_n^-$ of
+Note that $`B_1=-1/2`, meaning that we are using the $`B_n^-` of
 [from Wikipedia](https://en.wikipedia.org/wiki/Bernoulli_number).
 
 ## Implementation detail
 
 The Bernoulli numbers are defined using well-founded induction, by the formula
-$$B_n=1-\sum_{k\lt n}\frac{\binom{n}{k}}{n-k+1}B_k.$$
-This formula is true for all $n$ and in particular $B_0=1$. Note that this is the definition
+$$`B_n=1-\sum_{k\lt n}\frac{\binom{n}{k}}{n-k+1}B_k.`
+This formula is true for all $`n` and in particular $`B_0=1`. Note that this is the definition
 for positive Bernoulli numbers, which we call `bernoulli'`. The negative Bernoulli numbers are
 then defined as `bernoulli := (-1)^n * bernoulli'`.
 
@@ -55,15 +58,13 @@ The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
 
 ## Main theorems
 
-* `sum_bernoulli : ∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k =
-  if n = 1 then 1 else 0`
-* `Bernoulli.vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2)
-  with p.Prime ∧ (p - 1) ∣ 2 * k, (1 : ℚ) / p ∈ Set.range Int.cast`
+* `sum_bernoulli : ∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k = if n = 1 then 1 else 0`
+* `Bernoulli.vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2) with p.Prime ∧ (p - 1) ∣ 2 * k, (1 : ℚ) / p ∈ Set.range Int.cast`
 
 ## References
 
-* https://en.wikipedia.org/wiki/Bernoulli_number
-* [R. Rado, *A New Proof of a Theorem of v. Staudt*][Rado1934]
+* https://en.wikipedia.org/wiki/Bernoulli\_number
+* ‍\[R. Rado, _A New Proof of a Theorem of v. Staudt_\]\[Rado1934\]
 -/
 
 
@@ -74,12 +75,16 @@ open Nat Finset Finset.Nat PowerSeries
 
 variable (A : Type*) [CommRing A] [Algebra ℚ A]
 
-/-! ### Definitions -/
+/-!
+# Definitions
+-/
 
 
-/-- The Bernoulli numbers:
-the $n$-th Bernoulli number $B_n$ is defined recursively via
-$$B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}$$ -/
+/--
+The Bernoulli numbers:
+the $`n`-th Bernoulli number $`B_n` is defined recursively via
+$$`B_n = 1 - \sum_{k < n} \binom{n}{k}\frac{B_k}{n+1-k}`
+-/
 @[oeis A164555 "numerators", oeis A027642 "denominators"]
 def bernoulli' (n : ℕ) : ℚ :=
   1 - ∑ k : Fin n, n.choose k / (n - k + 1) * bernoulli' k
@@ -105,7 +110,9 @@ theorem bernoulli'_spec' (n : ℕ) :
   refine sum_congr rfl fun x hx => ?_
   simp only [add_tsub_cancel_of_le, mem_range_succ_iff.mp hx, cast_sub]
 
-/-! ### Examples -/
+/-!
+# Examples
+-/
 
 
 section Examples
@@ -288,10 +295,12 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
 
 section Faulhaber
 
-/-- **Faulhaber's theorem** relating the **sum of p-th powers** to the Bernoulli numbers:
-$$\sum_{k=0}^{n-1} k^p = \sum_{i=0}^p B_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$
-See https://proofwiki.org/wiki/Faulhaber%27s_Formula and [orosi2018faulhaber] for
-the proof provided here. -/
+/--
+*Faulhaber's theorem* relating the *sum of p-th powers* to the Bernoulli numbers:
+$$`\sum_{k=0}^{n-1} k^p = \sum_{i=0}^p B_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.`
+See https://proofwiki.org/wiki/Faulhaber%27s\_Formula and \[orosi2018faulhaber\] for
+the proof provided here.
+-/
 theorem sum_range_pow (n p : ℕ) :
     (∑ k ∈ range n, (k : ℚ) ^ p) =
       ∑ i ∈ range (p + 1), bernoulli i * ((p + 1).choose i) * (n : ℚ) ^ (p + 1 - i) / (p + 1) := by
@@ -353,10 +362,12 @@ theorem sum_range_pow (n p : ℕ) :
   refine sum_congr rfl fun x _ => ?_
   simp [field, factorial]
 
-/-- Alternate form of **Faulhaber's theorem**, relating the sum of p-th powers to the Bernoulli
+/--
+Alternate form of *Faulhaber's theorem*, relating the sum of p-th powers to the Bernoulli
 numbers:
-$$\sum_{k=1}^{n} k^p = \sum_{i=0}^p (-1)^iB_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$
-Deduced from `sum_range_pow`. -/
+$$`\sum_{k=1}^{n} k^p = \sum_{i=0}^p (-1)^iB_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.`
+Deduced from `sum_range_pow`.
+-/
 theorem sum_Ico_pow (n p : ℕ) :
     (∑ k ∈ Ico 1 (n + 1), (k : ℚ) ^ p) =
       ∑ i ∈ range (p + 1), bernoulli' i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1) := by
@@ -403,11 +414,11 @@ end Faulhaber
 section vonStaudtClausen
 
 /-!
-### The von Staudt-Clausen Theorem
+# The von Staudt-Clausen Theorem
 
-Here we formalize Rado's proof of von Staudt-Clausen's theorem, which states that for any $k \ge 0$,
-$$B_{2k} + \sum_{p \text{ prime}, (p - 1) \mid 2k} \frac{1}{p} \in \mathbb{Z}.$$
-Rado's proof is based on Faulhaber's theorem and induction on $k$.
+Here we formalize Rado's proof of von Staudt-Clausen's theorem, which states that for any
+$`k \ge 0`, $$`B_{2k} + \sum_{p \text{ prime}, (p - 1) \mid 2k} \frac{1}{p} \in \mathbb{Z}.` Rado's
+proof is based on Faulhaber's theorem and induction on $`k`.
 -/
 
 namespace Bernoulli
@@ -663,8 +674,9 @@ private lemma not_dvd_den_vonStaudt_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime] 
   have hcop := (Nat.Coprime.of_dvd_left (Rat.add_den_dvd _ _) (hcop_ind.mul_left hcop_rest)).symm
   exact (Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop
 
-/-- **von Staudt-Clausen theorem:** For any natural number $k$, the sum
-$$B_{2k} + \sum_{p - 1 \mid 2k} \frac{1}{p}$$ is an integer.
+/--
+*von Staudt-Clausen theorem:* For any natural number $`k`, the sum
+$$`B_{2k} + \sum_{p - 1 \mid 2k} \frac{1}{p}` is an integer.
 -/
 theorem vonStaudt_clausen (k : ℕ) :
     bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2) with p.Prime ∧ (p - 1) ∣ 2 * k,

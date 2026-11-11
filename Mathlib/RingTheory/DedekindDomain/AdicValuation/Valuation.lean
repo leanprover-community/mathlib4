@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adic valuations on Dedekind domains
 
@@ -21,37 +24,42 @@ Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`,
 We prove several properties of this valuation, including the existence of uniformizers.
 
 ## Main definitions
-- `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
-- `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
-- `IsDedekindDomain.HeightOneSpectrum.adicAbv v` is the `v`-adic absolute value on `K` defined as
+
+* `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
+* `IsDedekindDomain.HeightOneSpectrum.valuation v` is the `v`-adic valuation on `K`.
+* `IsDedekindDomain.HeightOneSpectrum.adicAbv v` is the `v`-adic absolute value on `K` defined as
   `b` raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
-- `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
+
+* `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
   bounded above by 1.
-- `IsDedekindDomain.HeightOneSpectrum.intValuation_lt_one_iff_dvd` : The `v`-adic valuation of
+* `IsDedekindDomain.HeightOneSpectrum.intValuation_lt_one_iff_dvd` : The `v`-adic valuation of
   `r : R` is less than 1 if and only if `v` divides the ideal `(r)`.
-- `IsDedekindDomain.HeightOneSpectrum.intValuation_le_pow_iff_dvd` : The `v`-adic valuation of
+* `IsDedekindDomain.HeightOneSpectrum.intValuation_le_pow_iff_dvd` : The `v`-adic valuation of
   `r : R` is less than or equal to `WithZero.exp (-n)` if and only if `vⁿ` divides the
   ideal `(r)`.
-- `IsDedekindDomain.HeightOneSpectrum.intValuation_exists_uniformizer` : There exists `π : R`
+* `IsDedekindDomain.HeightOneSpectrum.intValuation_exists_uniformizer` : There exists `π : R`
   with `v`-adic valuation `WithZero.exp (-1)`.
-- `IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r / s : K`
+* `IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r / s : K`
   is the valuation of `r` divided by the valuation of `s`.
-- `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
+* `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
-- `IsDedekindDomain.HeightOneSpectrum.valuation_exists_uniformizer` : There exists `π : K` with
+* `IsDedekindDomain.HeightOneSpectrum.valuation_exists_uniformizer` : There exists `π : K` with
   `v`-adic valuation `WithZero.exp (-1)`.
 
 ## Implementation notes
+
 We are only interested in Dedekind domains with Krull dimension 1.
 
 ## References
-* [G. J. Janusz, *Algebraic Number Fields*][janusz1996]
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
-* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+
+* ‍\[G. J. Janusz, _Algebraic Number Fields_\]\[janusz1996\]
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
+* ‍\[J. Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 
 ## Tags
+
 dedekind domain, dedekind ring, adic valuation
 -/
 
@@ -66,7 +74,9 @@ variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K S : Type*} [Field K] [
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
-/-! ### Adic valuations on the Dedekind domain R -/
+/-!
+# Adic valuations on the Dedekind domain R
+-/
 
 open scoped Classical in
 /-- The additive `v`-adic valuation of `r : R` is the exponent of `v` in the factorization of the
@@ -305,7 +315,9 @@ theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
   exact le_antisymm (v.intValuation_le_one x) <| by
     simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
 
-/-! ### Adic valuations on the field of fractions `K` -/
+/-!
+# Adic valuations on the field of fractions `K`
+-/
 
 variable (K) in
 /-- The `v`-adic valuation of `x : K` is the valuation of `r` divided by the valuation of `s`,

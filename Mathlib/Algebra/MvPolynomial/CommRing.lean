@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Variables
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate polynomials over a ring
 
@@ -19,19 +22,13 @@ This file does not define any new operations, but proves some of these stronger 
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type*` (indexing the variables)
-
-+ `R : Type*` `[CommRing R]` (the coefficients)
-
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
+* `σ : Type*` (indexing the variables)
+* `R : Type*` `[CommRing R]` (the coefficients)
+* `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
-
-+ `a : R`
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `p : MvPolynomial σ R`
-
+* `a : R`
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `p : MvPolynomial σ R`
 -/
 
 @[expose] public section

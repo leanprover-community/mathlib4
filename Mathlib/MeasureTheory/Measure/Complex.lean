@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.MeasureTheory.VectorMeasure.Relations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex measure
 

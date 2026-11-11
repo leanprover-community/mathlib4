@@ -11,17 +11,22 @@ public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Tactic.Tauto
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered rings and semirings
 
 This file develops the basics of ordered (semi)rings.
 
 Each typeclass here comprises
+
 * an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)
 * an order class (`PartialOrder`, `LinearOrder`)
 * assumptions on how both interact ((strict) monotonicity, canonicity)
 
 For short,
+
 * "`+` respects `≤`" means "monotonicity of addition"
 * "`+` respects `<`" means "strict monotonicity of addition"
 * "`*` respects `≤`" means "monotonicity of multiplication by a nonnegative number".
@@ -41,12 +46,15 @@ corresponding typeclass. Here's an attempt at demystifying it. For each typeclas
 immediate predecessors and what conditions are added to each of them.
 
 * `PartialOrder` + `Semiring` + `IsOrderedRing`
-  - `IsOrderedAddMonoid` & multiplication & `*` respects `≤`
+
+  * `IsOrderedAddMonoid` & multiplication & `*` respects `≤`
 * `PartialOrder` + `Semiring` + `IsStrictOrderedRing`
-  - `IsOrderedCancelAddMonoid` & multiplication & `*` respects `<` & nontriviality
+
+  * `IsOrderedCancelAddMonoid` & multiplication & `*` respects `<` & nontriviality
 * `LinearOrder` + `Ring` + `IsOrderedRing`
-  - `IsStrictOrderedRing` & totality of the order
-  - `IsDomain` & linear order structure
+
+  * `IsStrictOrderedRing` & totality of the order
+  * `IsDomain` & linear order structure
 -/
 
 public section

@@ -11,14 +11,17 @@ public import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properness of `Proj A`
 
 We show that `Proj 𝒜` is proper over `Spec 𝒜₀`.
 
 ## Notes
-This contribution was created as part of the Durham Computational Algebraic Geometry Workshop
 
+This contribution was created as part of the Durham Computational Algebraic Geometry Workshop
 -/
 
 public section
@@ -175,6 +178,7 @@ open ValuationRing in
 Let `𝒜` be a graded ring generated over `𝒜₀` by finitely many homogeneous elements.
 Suppose we have the following diagram for some homogeneous `x`
 with `O` a valuation ring and `K = Frac(O)`.
+
 ```
     φ
 K ←--- 𝒜_{(x)}
@@ -184,8 +188,10 @@ K ←--- 𝒜_{(x)}
 O ←---- 𝒜₀
     φ₀
 ```
+
 Then there exists a lift `φₗ : 𝒜_{(x₀)} →+* O` for some `x₀`
 such that these two diagrams exist and commute.
+
 ```
     φ'                      φ'
 K ←--- 𝒜_{(x x₀)}       K ←--- 𝒜_{(x x₀)}
@@ -195,6 +201,7 @@ K ←--- 𝒜_{(x x₀)}       K ←--- 𝒜_{(x x₀)}
 O ←---- 𝒜_{(x₀)}                𝒜_{(x)}
     φₗ
 ```
+
 This is the underlying algebraic statement of the valuative criterion for `Proj 𝒜`.
 -/
 @[stacks 01MF "algebraic part"]

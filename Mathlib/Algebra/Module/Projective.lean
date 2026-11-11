@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 import Mathlib.Basic.UnivLE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective modules
 
@@ -27,10 +30,8 @@ Let `R` be a ring (or a semiring) and let `M` be an `R`-module.
 
 * `Module.projective_lifting_property` : a map from a projective module can be lifted along
   a surjection.
-
 * `Module.Projective.of_lifting_property` : If for all R-module surjections `A →ₗ B`, all
   maps `M →ₗ B` lift to `M →ₗ A`, then `M` is projective.
-
 * `Module.Projective.of_free` : Free modules are projective
 
 ## Implementation notes
@@ -46,12 +47,11 @@ and it's unclear if projective modules are even a useful notion.
 
 ## References
 
-https://en.wikipedia.org/wiki/Projective_module
+https://en.wikipedia.org/wiki/Projective\_module
 
 ## Tags
 
 projective module
-
 -/
 
 public section

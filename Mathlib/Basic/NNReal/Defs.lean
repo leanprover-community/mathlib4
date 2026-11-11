@@ -12,6 +12,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonnegative real numbers
 
@@ -20,23 +23,21 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
 
 * the order on `ℝ≥0` is the restriction of the order on `ℝ`; these relations define a conditionally
   complete linear order with a bottom element, `ConditionallyCompleteLinearOrderBot`;
-
 * `a + b` and `a * b` are the restrictions of addition and multiplication of real numbers to `ℝ≥0`;
   these operations together with `0 = ⟨0, _⟩` and `1 = ⟨1, _⟩` turn `ℝ≥0` into a conditionally
   complete linear ordered archimedean commutative semifield; we have no typeclass for this in
   `mathlib` yet, so we define the following instances instead:
 
-  - `IsOrderedRing ℝ≥0`;
-  - `OrderedCommSemiring ℝ≥0`;
-  - `CanonicallyOrderedAdd ℝ≥0`;
-  - `LinearOrderedCommGroupWithZero ℝ≥0`;
-  - `CanonicallyLinearOrderedAddCommMonoid ℝ≥0`;
-  - `Archimedean ℝ≥0`;
-  - `ConditionallyCompleteLinearOrderBot ℝ≥0`.
+  * `IsOrderedRing ℝ≥0`;
+  * `OrderedCommSemiring ℝ≥0`;
+  * `CanonicallyOrderedAdd ℝ≥0`;
+  * `LinearOrderedCommGroupWithZero ℝ≥0`;
+  * `CanonicallyLinearOrderedAddCommMonoid ℝ≥0`;
+  * `Archimedean ℝ≥0`;
+  * `ConditionallyCompleteLinearOrderBot ℝ≥0`.
 
   These instances are derived from corresponding instances about the type `{x : α // 0 ≤ x}` in an
   appropriate ordered field/ring/group/monoid `α`, see `Mathlib/Algebra/Order/Nonneg/Ring.lean`.
-
 * `Real.toNNReal x` is defined as `⟨max x 0, _⟩`, i.e. `↑(Real.toNNReal x) = x` when `0 ≤ x` and
   `↑(Real.toNNReal x) = 0` otherwise.
 
@@ -68,10 +69,12 @@ namespace NNReal
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-/-- Constructor of ℝ≥0 from a nonnegative real number.
+/--
+Constructor of ℝ≥0 from a nonnegative real number.
 
 Important: You should use `NNReal.mk` instead of the anonymous constructor `⟨_, _⟩` to avoid abuse
-of the definitional equality between `ℝ≥0` and `{ r : ℝ // 0 ≤ r }`. -/
+of the definitional equality between `ℝ≥0` and `{ r : ℝ // 0 ≤ r }`.
+-/
 protected def mk (x : ℝ) (hx : 0 ≤ x) : ℝ≥0 := ⟨x, hx⟩
 
 instance : Zero ℝ≥0 := ⟨.mk 0 le_rfl⟩
@@ -241,9 +244,11 @@ variable {r r₁ r₂ : ℝ≥0} {x y : ℝ}
 
 example : CommSemiring ℝ≥0 := by infer_instance
 
-/-- Coercion `ℝ≥0 → ℝ` as a `RingHom`.
+/--
+Coercion `ℝ≥0 → ℝ` as a `RingHom`.
 
-TODO: what if we define `Coe ℝ≥0 ℝ` using this function? -/
+TODO: what if we define `Coe ℝ≥0 ℝ` using this function?
+-/
 def toRealHom : ℝ≥0 →+* ℝ where
   toFun := (↑)
   map_one' := NNReal.coe_one
@@ -732,7 +737,7 @@ end Pow
 section Sub
 
 /-!
-### Lemmas about subtraction
+# Lemmas about subtraction
 
 In this section we provide a few lemmas about subtraction that do not fit well into any other
 typeclass. For lemmas about subtraction and addition see lemmas about `OrderedSub` in the file

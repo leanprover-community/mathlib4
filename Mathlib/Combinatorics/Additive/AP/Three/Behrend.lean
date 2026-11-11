@@ -12,6 +12,9 @@ public import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Combinatorics.Pigeonhole
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behrend's bound on Roth numbers
 
@@ -36,10 +39,10 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 
 ## References
 
-* [Bryan Gillespie, *Behrend’s Construction*]
+* ‍\[Bryan Gillespie, _Behrend’s Construction_\]
   (http://www.epsilonsmall.com/resources/behrends-construction/behrend.pdf)
 * Behrend, F. A., "On sets of integers which contain no three terms in arithmetical progression"
-* [Wikipedia, *Salem-Spencer set*](https://en.wikipedia.org/wiki/Salem–Spencer_set)
+* [Wikipedia, _Salem-Spencer set_](https://en.wikipedia.org/wiki/Salem–Spencer_set)
 
 ## Tags
 
@@ -84,10 +87,10 @@ namespace Behrend
 variable {n d k N : ℕ} {x : Fin n → ℕ}
 
 /-!
-### Turning the sphere into 3AP-free set
+# Turning the sphere into 3AP-free set
 
-We define `Behrend.sphere`, the intersection of the $L^2$ sphere with the positive quadrant of
-integer points. Because the $L^2$ closed ball is strictly convex, the $L^2$ sphere and
+We define `Behrend.sphere`, the intersection of the $`L^2` sphere with the positive quadrant of
+integer points. Because the $`L^2` closed ball is strictly convex, the $`L^2` sphere and
 `Behrend.sphere` are 3AP-free (`threeAPFree_sphere`). Then we can turn this set in
 `Fin n → ℕ` into a set in `ℕ` using `Behrend.map`, which preserves `ThreeAPFree` because it is
 an additive monoid homomorphism.
@@ -226,7 +229,7 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   exact fun h _ i => (h i).trans_le le_self_add
 
 /-!
-### Optimization
+# Optimization
 
 Now that we know how to turn the integer points of any sphere into a 3AP-free set, we find a
 sphere containing many integer points by the pigeonhole principle. This gives us an implicit bound

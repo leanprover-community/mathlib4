@@ -14,6 +14,9 @@ import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Tactic.Positivity.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Laplacian Matrix
 
@@ -28,7 +31,6 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
 * `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`:
   The number of connected components in a graph
   is the dimension of the nullspace of its Laplacian matrix.
-
 -/
 
 @[expose] public section
@@ -75,8 +77,10 @@ variable [DecidableEq V]
 /-- The diagonal matrix consisting of the degrees of the vertices in the graph. -/
 def degMatrix [AddMonoidWithOne R] : Matrix V V R := Matrix.diagonal (G.degree ·)
 
-/-- The *Laplacian matrix* `lapMatrix G R` of a graph `G`
-is the matrix `L = D - A` where `D` is the degree and `A` the adjacency matrix of `G`. -/
+/--
+The _Laplacian matrix_ `lapMatrix G R` of a graph `G`
+is the matrix `L = D - A` where `D` is the degree and `A` the adjacency matrix of `G`.
+-/
 def lapMatrix [AddGroupWithOne R] : Matrix V V R := G.degMatrix R - G.adjMatrix R
 
 theorem isSymm_degMatrix [AddMonoidWithOne R] : (G.degMatrix R).IsSymm :=
@@ -170,9 +174,11 @@ theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
 
 variable (R)
 
-/-- Let $L$ be the graph Laplacian and let $x \in \mathbb{R}$, then
-$$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
-where $\sim$ denotes the adjacency relation -/
+/--
+Let $`L` be the graph Laplacian and let $`x \in \mathbb{R}`, then
+$$`x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}`,
+where $`\sim` denotes the adjacency relation
+-/
 theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
     toLinearMap₂' R (G.lapMatrix R) x x =
     (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j) ^ 2 else 0) / 2 := by

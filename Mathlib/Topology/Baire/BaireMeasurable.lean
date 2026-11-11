@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Baire category and Baire measurable sets
 
@@ -18,11 +21,10 @@ First, we define the notation `=ᵇ`. This denotes eventual equality with respec
 `residual` sets in a topological space.
 
 A set `s` in a topological space `α` is called a `BaireMeasurableSet` or said to have the
-*property of Baire* if it satisfies either of the following equivalent conditions:
+_property of Baire_ if it satisfies either of the following equivalent conditions:
 
-* There is a *Borel* set `u` such that `s =ᵇ u`. (This is our definition)
-* There is an *open* set `u` such that `s =ᵇ u`. (See `BaireMeasurableSet.residual_eq_open`)
-
+* There is a _Borel_ set `u` such that `s =ᵇ u`. (This is our definition)
+* There is an _open_ set `u` such that `s =ᵇ u`. (See `BaireMeasurableSet.residual_eq_open`)
 -/
 
 @[expose] public section
@@ -81,11 +83,13 @@ theorem closure_residualEq {s : Set α} (hs : IsLocallyClosed s) : closure s =�
   nth_rewrite 2 [← closure_inter_coborder (s := s)]
   simp [hx]
 
-/-- We say a set is a `BaireMeasurableSet` if it differs from some Borel set by
+/--
+We say a set is a `BaireMeasurableSet` if it differs from some Borel set by
 a meager set. This forms a σ-algebra.
 
 It is equivalent, and a more standard definition, to say that the set differs from
-some *open* set by a meager set. See `BaireMeasurableSet.iff_residualEq_isOpen` -/
+some _open_ set by a meager set. See `BaireMeasurableSet.iff_residualEq_isOpen`
+-/
 def BaireMeasurableSet (s : Set α) : Prop :=
   @MeasurableSet _ (eventuallyMeasurableSpace (borel _) (residual _)) s
 

@@ -11,6 +11,9 @@ public import Mathlib.Topology.Category.TopCat.Limits.Konig
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 import Mathlib.Topology.DiscreteQuotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cofiltered limits of profinite sets.
 
@@ -18,9 +21,9 @@ This file contains some theorems about cofiltered limits of profinite sets.
 
 ## Main Results
 
-- `exists_isClopen_of_cofiltered` shows that any clopen set in a cofiltered limit of profinite
+* `exists_isClopen_of_cofiltered` shows that any clopen set in a cofiltered limit of profinite
   sets is the pullback of a clopen set from one of the factors in the limit.
-- `exists_locally_constant` shows that any locally constant function from a cofiltered limit
+* `exists_locally_constant` shows that any locally constant function from a cofiltered limit
   of profinite sets factors through one of the components.
 -/
 
