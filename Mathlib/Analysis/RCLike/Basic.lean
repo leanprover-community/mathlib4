@@ -45,6 +45,7 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 
 A few lemmas requiring heavier imports are in `Mathlib/Analysis/RCLike/Lemmas.lean`.
 -/
+set_option linter.style.longFile 1700
 
 @[expose] public section
 
@@ -1125,11 +1126,7 @@ theorem _root_.ContinuousOn.re [TopologicalSpace α] (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ re (f x)) s := fun x hx ↦ (hf x hx).re
 
 lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
-  intro x y
-  simp only [ENNReal.coe_one, one_mul, eDist_eq_eNorm_sub]
-  calc ‖re x - re y‖ₑ
-  _ = ‖re (x - y)‖ₑ := by rw [map_sub re x y]
-  _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+  simpa using AddMonoidHomClass.lipschitz_of_bound reCLM 1 (by simpa using norm_re_le_norm)
 
 theorem _root_.LipschitzWith.re [PseudoEMetricSpace α] {Kf : NNReal} (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ re (f x)) := by
@@ -1182,11 +1179,7 @@ theorem _root_.ContinuousOn.im [TopologicalSpace α] (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ im (f x)) s := fun x hx ↦ (hf x hx).im
 
 lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
-  intro x y
-  simp only [ENNReal.coe_one, one_mul, eDist_eq_eNorm_sub]
-  calc ‖im x - im y‖ₑ
-  _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
-  _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
+  simpa using AddMonoidHomClass.lipschitz_of_bound imCLM 1 (by simpa using norm_im_le_norm)
 
 theorem _root_.LipschitzWith.im [PseudoEMetricSpace α] {Kf : NNReal} (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ im (f x)) := by
@@ -1252,11 +1245,7 @@ theorem _root_.ContinuousOn.conj [TopologicalSpace α] (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ conj (f x)) s := fun x hx ↦ (hf x hx).conj
 
 theorem lipschitzWith_conj : LipschitzWith 1 (conj : K → K) := by
-  intro x y
-  simp only [ENNReal.coe_one, one_mul, eDist_eq_eNorm_sub]
-  calc ‖conj x - conj y‖ₑ
-  _ = ‖conj (x - y)‖ₑ := by rw [map_sub conj x y]
-  _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le, norm_conj]
+  simpa using AddMonoidHomClass.lipschitz_of_bound conj 1 (by simp)
 
 theorem _root_.LipschitzWith.conj [PseudoEMetricSpace α] {Kf : NNReal} (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ conj (f x)) := by
@@ -1336,9 +1325,9 @@ end ofReal
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 
-@[continuity, fun_prop]
+@[to_fun (attr := continuity, fun_prop)]
 theorem _root_.Continuous.normSq [TopologicalSpace α] (hf : Continuous f) :
-    Continuous (fun x ↦ normSq (f x)) := continuous_normSq.comp hf
+    Continuous (normSq ∘ f) := continuous_normSq.comp hf
 
 /-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
 @[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where
