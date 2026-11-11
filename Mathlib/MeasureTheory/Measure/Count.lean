@@ -107,8 +107,8 @@ theorem count_eq_zero_iff : count s = 0 ↔ s = ∅ where
     simpa [hx] using ((le_tsum _ x).trans <| le_sum_apply _ _).trans_eq h
   mpr := by rintro rfl; exact measure_empty
 
-lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty :=
-  count_eq_zero_iff.not.trans ne_empty_iff_nonempty
+lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty := by
+  simp
 
 alias ⟨_, count_ne_zero⟩ := count_ne_zero_iff
 

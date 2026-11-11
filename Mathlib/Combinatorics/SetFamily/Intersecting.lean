@@ -177,7 +177,7 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
     have := h {⊤} (by rw [coe_singleton]; exact intersecting_singleton.2 top_ne_bot)
     rw [compl_bot] at ha
     rw [coe_eq_empty.1 ((hs.isUpperSet' h).top_notMem.1 ha.2)] at this
-    exact Finset.singleton_ne_empty _ (this <| Finset.empty_subset _).symm
+    exact (Finset.singleton_nonempty _).ne_empty (this <| Finset.empty_subset _).symm
 
 theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
     ∃ t, s ⊆ t ∧ 2 * #t = Fintype.card α ∧ (t : Set α).Intersecting := by

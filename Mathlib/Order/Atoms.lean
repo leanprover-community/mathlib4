@@ -1113,7 +1113,7 @@ end BooleanAlgebra
 namespace Set
 
 theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
-  ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
+  ⟨(singleton_nonempty _).ne_empty, fun _ hs => ssubset_singleton_iff.mp hs⟩
 
 theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
   refine
@@ -1124,7 +1124,8 @@ theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
   rintro ⟨⟨x, hx⟩, hs⟩
   exact
     ⟨x, eq_singleton_iff_unique_mem.2
-        ⟨hx, fun y hy => (hs {y} (singleton_ne_empty _) (singleton_subset_iff.2 hy) hx).symm⟩⟩
+        ⟨hx, fun y hy =>
+          (hs {y} (singleton_nonempty _).ne_empty (singleton_subset_iff.2 hy) hx).symm⟩⟩
 
 theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
   rw [isCompl_compl.isCoatom_iff_isAtom, isAtom_iff]

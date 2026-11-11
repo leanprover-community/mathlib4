@@ -74,7 +74,7 @@ local grind_pattern card_le_card => #s, #t
 theorem card_mono : Monotone (@card α) := by apply card_le_card
 
 @[simp] lemma card_eq_zero : #s = 0 ↔ s = ∅ := Multiset.card_eq_zero.trans val_eq_zero
-lemma card_ne_zero : #s ≠ 0 ↔ s.Nonempty := card_eq_zero.ne.trans ne_empty_iff_nonempty
+lemma card_ne_zero : #s ≠ 0 ↔ s.Nonempty := by simp
 @[simp, grind =] lemma card_pos : 0 < #s ↔ s.Nonempty := Nat.pos_iff_ne_zero.trans card_ne_zero
 @[simp] lemma one_le_card : 1 ≤ #s ↔ s.Nonempty := card_pos
 

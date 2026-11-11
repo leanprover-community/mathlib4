@@ -291,8 +291,8 @@ lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
         rw [sub_nonneg, sq_le_sq, abs_of_nonneg dist_nonneg]
         exact h.le.trans (le_abs_self _)
   · rw [inter_orthRadius_eq_singleton_of_dist_eq_radius h]
-    simp only [Set.singleton_ne_empty, h, lt_self_iff_false, ne_eq, false_and, and_false, false_or,
-      false_iff, not_and, not_not]
+    simp only [(Set.singleton_nonempty _).ne_empty, h, lt_self_iff_false, ne_eq, false_and,
+      and_false, false_or, false_iff, not_and, not_not]
     intro hs
     rw [AddTorsor.subsingleton_iff V P] at hs
     rw [Subsingleton.elim p s.center] at h
