@@ -316,7 +316,6 @@ theorem Projective.trans {R : Type*} (S M : Type*) [Semiring R] [Semiring S]
     [Module R S] [IsScalarTower R S S]
     [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
     [Module.Projective R S] [Module.Projective S M] : Module.Projective R M := by
-  classical
   obtain ⟨i, hi⟩ := (Module.projective_def' (R := S) (P := M)).mp inferInstance
   exact Module.Projective.of_split (i.restrictScalars R)
     ((Finsupp.linearCombination S id).restrictScalars R)
