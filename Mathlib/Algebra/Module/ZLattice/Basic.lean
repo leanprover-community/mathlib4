@@ -335,6 +335,11 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
+-- Needed by downstream users of `IsAddFundamentalDomain` for the `AddSubgroup` coercion; remove
+-- once they are migrated.
+instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
+  inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
+
 @[deprecated halfOpenParallelepiped_subset_parallelepiped +typeChanged (since := "2026-11-02")]
 theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
     fundamentalDomain b ⊆ parallelepiped ℝ b := by
