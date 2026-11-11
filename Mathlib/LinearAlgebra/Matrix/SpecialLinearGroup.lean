@@ -940,7 +940,7 @@ theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
 
 theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [adjugate_fin_two]
 
-theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
+theorem coe_T_zpow (n : ℤ) : (T ^ n : SL(2, ℤ)) = !![1, n; 0, 1] := by
   induction n with
   | zero => rw [zpow_zero, coe_one, Matrix.one_fin_two]
   | succ n h =>
