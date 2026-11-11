@@ -167,7 +167,7 @@ protected theorem nonempty (a : A) : (spectrum ℂ a).Nonempty := by
   /- Since `resolvent a` tends to zero at infinity, by Liouville's theorem `resolvent a = 0`,
   which contradicts that `resolvent a z` is invertible. -/
   have H₃ := H₁.apply_eq_of_tendsto_cocompact 0 <| by
-    simpa [Metric.cobounded_eq_cocompact] using resolvent_tendsto_cobounded a (𝕜 := ℂ)
+    simpa [Metric.cobounded_eq_cocompact] using _root_.resolvent_tendsto_cobounded a (𝕜 := ℂ)
   exact not_isUnit_zero <| H₃ ▸ (isUnit_resolvent.mp <| H₀.symm ▸ Set.mem_univ 0)
 
 /-- In a complex Banach algebra, the spectral radius is always attained by some element of the

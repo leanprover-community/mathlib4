@@ -116,7 +116,7 @@ theorem Unitization.spectralRadius_inr [IsScalarTower 𝕜 A A] [SMulCommClass �
 theorem spectralRadius_smul (k : 𝕜) (a : A) :
     spectralRadius 𝕜 (k • a) = ‖k‖ₑ * spectralRadius 𝕜 a := by
   simp only [spectralRadius, quasispectrum_smul, ← Set.image_smul, iSup_image, ← smul_eq_mul]
-  simp [↓ENNReal.smul_iSup, enorm_eq_nnnorm]
+  simp [↓ENNReal.smul_iSup, eNorm_eq_nnNorm]
 
 end NotNormed
 
@@ -145,12 +145,14 @@ theorem quasispectrum.norm_le_norm_of_mem {a : A} {k : 𝕜} (hk : k ∈ σₙ �
 
 variable (𝕜) in
 theorem spectralRadius_le_eNorm (a : A) : spectralRadius 𝕜 a ≤ ‖a‖ₑ :=
-  iSup₂_le fun _ ↦ by simpa [enorm_eq_nnnorm] using mod_cast norm_le_norm_of_mem
+  iSup₂_le fun _ ↦ by simpa [eNorm_eq_nnNorm] using mod_cast norm_le_norm_of_mem
 
 @[deprecated (since := "2026-08-13")]
 alias spectrum.spectralRadius_le_nnnorm := spectralRadius_le_eNorm
 @[deprecated (since := "2026-10-30")]
 alias spectralRadius_le_nnnorm := spectralRadius_le_eNorm
+@[deprecated (since := "2026-10-30")]
+alias spectralRadius_le_nnNorm := spectralRadius_le_eNorm
 
 variable (𝕜) in
 theorem quasispectrum.subset_closedBall_norm (a : A) :
@@ -184,17 +186,19 @@ instance quasispectrum.instCompactSpace (a : A) :
 variable (𝕜) in
 theorem exists_eNorm_quasispectrum_eq_spectralRadius (a : A) :
     ∃ k ∈ σₙ 𝕜 a, ‖k‖ₑ = spectralRadius 𝕜 a := by
-  obtain ⟨k, hk, h⟩ := (isCompact 𝕜 a).exists_isMaxOn (nonempty 𝕜 a) continuous_enorm.continuousOn
+  obtain ⟨k, hk, h⟩ := (isCompact 𝕜 a).exists_isMaxOn (nonempty 𝕜 a) continuous_eNorm.continuousOn
   unfold spectralRadius
   exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le h)⟩
 
 @[deprecated (since := "2026-10-30")]
 alias exists_nnnorm_quasispectrum_eq_spectralRadius := exists_eNorm_quasispectrum_eq_spectralRadius
+@[deprecated (since := "2026-10-30")]
+alias exists_nnNorm_quasispectrum_eq_spectralRadius := exists_eNorm_quasispectrum_eq_spectralRadius
 
 theorem spectralRadius_lt_of_forall_lt {a : A} {r : ℝ≥0∞}
     (hr : ∀ k ∈ σₙ 𝕜 a, ‖k‖ₑ < r) : spectralRadius 𝕜 a < r :=
   sSup_image.symm.trans_lt <| ((isCompact 𝕜 a).sSup_lt_iff_of_continuous
-    (nonempty 𝕜 a) continuous_enorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
+    (nonempty 𝕜 a) continuous_eNorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
 
 @[deprecated (since := "2026-10-30")]
 alias spectralRadius_lt_of_forall_quasispectrum_lt := spectralRadius_lt_of_forall_lt
@@ -212,12 +216,14 @@ instance quasispectrum.instCompactSpaceNNReal (a : A) [CompactSpace (σₙ ℝ a
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage ‹_›
 
 @[simp]
-theorem quasispectrum.isCompact_nnreal (a : A) [CompactSpace (σₙ ℝ a)] :
+theorem quasispectrum.isCompact_nnReal (a : A) [CompactSpace (σₙ ℝ a)] :
     IsCompact (σₙ ℝ≥0 a) := by
   rw [isCompact_iff_compactSpace]
   infer_instance
 
-grind_pattern isCompact_nnreal => IsCompact (σₙ ℝ≥0 a)
+grind_pattern isCompact_nnReal => IsCompact (σₙ ℝ≥0 a)
+
+@[deprecated (since := "2026-11-10")] alias quasispectrum.isCompact_nnreal := isCompact_nnReal
 
 variable [HasSummableGeomSeries A]
 
@@ -350,12 +356,15 @@ instance spectrum.instCompactSpace (a : A) : CompactSpace (σ 𝕜 a) :=
 theorem exists_eNorm_spectrum_eq_spectralRadius_of_nonempty {a : A}
     (ha : (σ 𝕜 a).Nonempty) :
     ∃ k ∈ σ 𝕜 a, ‖k‖ₑ = spectralRadius 𝕜 a := by
-  obtain ⟨k, hk, h⟩ := (spectrum.isCompact 𝕜 a).exists_isMaxOn ha continuous_enorm.continuousOn
+  obtain ⟨k, hk, h⟩ := (spectrum.isCompact 𝕜 a).exists_isMaxOn ha continuous_eNorm.continuousOn
   rw [spectralRadius_eq_of_unital]
   exact ⟨k, hk, le_antisymm (by grw [← le_iSup₂ k hk]) (iSup₂_le h)⟩
 
 @[deprecated (since := "2026-10-30")]
 alias spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty :=
+  exists_eNorm_spectrum_eq_spectralRadius_of_nonempty
+@[deprecated (since := "2026-10-30")]
+alias spectrum.exists_nnNorm_eq_spectralRadius_of_nonempty :=
   exists_eNorm_spectrum_eq_spectralRadius_of_nonempty
 
 theorem spectralRadius_lt_of_forall_lt_of_nonempty {a : A} {r : ℝ≥0∞}
@@ -363,7 +372,7 @@ theorem spectralRadius_lt_of_forall_lt_of_nonempty {a : A} {r : ℝ≥0∞}
     spectralRadius 𝕜 a < r := by
   rw [spectralRadius_eq_of_unital]
   exact sSup_image.symm.trans_lt <|
-    ((spectrum.isCompact 𝕜 a).sSup_lt_iff_of_continuous ha continuous_enorm.continuousOn r).mpr hr
+    ((spectrum.isCompact 𝕜 a).sSup_lt_iff_of_continuous ha continuous_eNorm.continuousOn r).mpr hr
 
 @[deprecated (since := "2026-10-30")]
 protected alias spectrum.spectralRadius_lt_of_forall_lt_of_nonempty :=
@@ -384,6 +393,8 @@ theorem spectralRadius_le_pow_eNorm_rPow_one_div (a : A) (n : ℕ) :
 
 @[deprecated (since := "2026-10-30")]
 alias spectrum.spectralRadius_le_pow_nnnorm_pow_one_div := spectralRadius_le_pow_eNorm_rPow_one_div
+@[deprecated (since := "2026-10-30")]
+alias spectrum.spectralRadius_le_pow_nnNorm_pow_one_div := spectralRadius_le_pow_eNorm_rPow_one_div
 
 theorem spectralRadius_le_iInf_pow_eNorm_rPow_one_div (a : A) :
     spectralRadius 𝕜 a ≤ ⨅ n : ℕ, ‖a ^ (n + 1)‖ₑ ^ (1 / (n + 1) : ℝ) :=
@@ -391,6 +402,9 @@ theorem spectralRadius_le_iInf_pow_eNorm_rPow_one_div (a : A) :
 
 @[deprecated (since := "2026-10-30")]
 alias spectrum.spectralRadius_le_iInf_pow_nnnorm_pow_one_div :=
+  spectralRadius_le_iInf_pow_eNorm_rPow_one_div
+@[deprecated (since := "2026-10-30")]
+alias spectrum.spectralRadius_le_iInf_pow_nnNorm_pow_one_div :=
   spectralRadius_le_iInf_pow_eNorm_rPow_one_div
 
 theorem spectralRadius_le_liminf_pow_eNorm_rPow_one_div (a : A) :
@@ -402,6 +416,9 @@ theorem spectralRadius_le_liminf_pow_eNorm_rPow_one_div (a : A) :
 
 @[deprecated (since := "2026-10-30")]
 alias spectrum.spectralRadius_le_liminf_pow_nnnorm_pow_one_div :=
+  spectralRadius_le_liminf_pow_eNorm_rPow_one_div
+@[deprecated (since := "2026-10-30")]
+alias spectrum.spectralRadius_le_liminf_pow_nnNorm_pow_one_div :=
   spectralRadius_le_liminf_pow_eNorm_rPow_one_div
 
 end LiminfPow
@@ -427,6 +444,8 @@ theorem spectrum.isCompact_nnReal (a : A) [CompactSpace (σ ℝ a)] :
   infer_instance
 
 grind_pattern spectrum.isCompact_nnReal => IsCompact (σ ℝ≥0 a)
+
+@[deprecated (since := "2026-10-30")] alias spectrum.isCompact_nnreal := isCompact_nnReal
 
 variable [HasSummableGeomSeries A]
 
@@ -462,12 +481,15 @@ open scoped Topology
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A]
 
-theorem spectrum.eventually_isUnit_resolvent (a : A) :
+theorem eventually_cobounded_isUnit_resolvent (a : A) :
     ∀ᶠ z in cobounded 𝕜, IsUnit (resolvent a z) := by
   rw [atTop_basis_Ioi.cobounded_of_norm.eventually_iff]
   exact ⟨‖a‖, trivial, fun _ ↦ isUnit_resolvent.mp ∘ mem_resolventSet_of_norm_lt⟩
 
-theorem spectrum.resolvent_isBigO_inv (a : A) :
+@[deprecated (since := "2026-10-30")]
+alias spectrum.eventually_isUnit_resolvent := eventually_cobounded_isUnit_resolvent
+
+theorem resolvent_isBigO_cobounded_inv (a : A) :
     resolvent a =O[cobounded 𝕜] (·⁻¹) :=
   have h : (fun z ↦ resolvent (z⁻¹ • a) (1 : 𝕜)) =O[cobounded 𝕜] (fun _ ↦ (1 : ℝ)) := by
     simpa [Function.comp_def, resolvent] using
@@ -481,8 +503,14 @@ theorem spectrum.resolvent_isBigO_inv (a : A) :
     _ =O[cobounded 𝕜] (· ⁻¹) := .of_norm_right <| by
       simpa using (isBigO_refl (· ⁻¹) (cobounded 𝕜)).norm_right.smul h
 
-theorem spectrum.resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
-  resolvent_isBigO_inv a |>.trans_tendsto tendsto_inv₀_cobounded
+@[deprecated (since := "2026-10-30")]
+alias spectrum.resolvent_isBigO_inv := resolvent_isBigO_cobounded_inv
+
+theorem resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
+  resolvent_isBigO_cobounded_inv a |>.trans_tendsto tendsto_inv₀_cobounded
+
+@[deprecated (since := "2026-10-30")]
+alias spectrum.resolvent_tendsto_cobounded := resolvent_tendsto_cobounded
 
 end resolvent
 
@@ -507,7 +535,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
   rw [this]
   let h := map_zero <| (ContinuousLinearMap.id 𝕜 𝕜).smulRightL 𝕜 𝕜 A a
   convert (h ▸ hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A).compContinuousLinearMap
-  all_goals simp [enorm_eq_nnnorm]
+  all_goals simp [eNorm_eq_nnNorm]
 
 @[deprecated (since := "2026-10-30")]
 alias spectrum.hasFPowerSeriesOnBall_inverse_one_sub_smul :=
@@ -701,11 +729,14 @@ lemma upperHemicontinuous_spectrum [NormedRing A] [NormedAlgebra 𝕜 A] [HasSum
       (continuous_algebraMap 𝕜 A |>.tendsto x₀ |>.comp hx |>.sub ha) <| .of_forall hx_mem
 
 /-- The map `a ↦ spectrum ℝ≥0 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A]
+theorem upperHemicontinuous_spectrum_nnReal [NormedRing A] [NormedAlgebra ℝ A]
     [HasSummableGeomSeries A] :
     UpperHemicontinuous (σ ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
+
+@[deprecated (since := "2026-10-30")]
+alias upperHemicontinuous_spectrum_nnreal := upperHemicontinuous_spectrum_nnReal
 
 /-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum [NonUnitalNormedRing A] [NormedSpace 𝕜 A]
@@ -719,12 +750,15 @@ theorem upperHemicontinuous_quasispectrum [NonUnitalNormedRing A] [NormedSpace �
   congr
 
 /-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
-theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A] [NormedSpace ℝ A]
+theorem upperHemicontinuous_quasispectrum_nnReal [NonUnitalNormedRing A] [NormedSpace ℝ A]
     [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [HasSummableGeomSeries A] :
     UpperHemicontinuous (σₙ ℝ≥0 : A → Set ℝ≥0) := by
   obtain ⟨⟨h₁, -⟩, h₂⟩ := NNReal.isClosedEmbedding_coe
   simpa [← NNReal.algebraMap_eq_coe] using
     upperHemicontinuous_quasispectrum ℝ A |>.isInducing_comp h₁ h₂
+
+@[deprecated (since := "2026-10-30")]
+alias upperHemicontinuous_quasispectrum_nnreal := upperHemicontinuous_quasispectrum_nnReal
 
 end UpperHemicontinuous
 
@@ -845,7 +879,7 @@ lemma QuasispectrumRestricts.spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [Norm
     spectralRadius 𝕜₁ a = spectralRadius 𝕜₂ a := by
   rw [spectralRadius, spectralRadius]
   have (x : 𝕜₁) : ‖(algebraMap 𝕜₁ 𝕜₂) x‖ₑ = ‖x‖ₑ :=
-    congr(($(algebraMap_isometry 𝕜₁ 𝕜₂ |>.nnnorm_map_of_map_zero (map_zero _) x) : ℝ≥0∞))
+    congr(($(algebraMap_isometry 𝕜₁ 𝕜₂ |>.nnNorm_map_of_map_zero (map_zero _) x) : ℝ≥0∞))
   simp_rw [h.algebraMap_image.symm, iSup_image, this]
 
 /-- If `𝕜₁` is a normed field contained as subfield of a larger normed field `𝕜₂`, and if `a : A`
@@ -865,7 +899,7 @@ lemma QuasispectrumRestricts.compactSpace {R S A : Type*} [Semifield R] [Field S
   rw [← isCompact_iff_compactSpace] at h_cpct ⊢
   exact h.image ▸ h_cpct.image (map_continuous f)
 
-lemma SpectrumRestricts.nnreal_iff_spectralRadius_le {A : Type*} [Ring A] [Algebra ℝ A]
+lemma SpectrumRestricts.nnReal_iff_spectralRadius_le {A : Type*} [Ring A] [Algebra ℝ A]
     {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔
       spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
@@ -889,6 +923,9 @@ lemma SpectrumRestricts.nnreal_iff_spectralRadius_le {A : Type*} [Ring A] [Algeb
     rw [← NNReal.coe_le_coe, coe_nnNorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
+@[deprecated (since := "2026-10-30")]
+alias SpectrumRestricts.nnreal_iff_spectralRadius_le := nnReal_iff_spectralRadius_le
+
 section RealNonUnital
 
 variable [NonUnitalNormedRing A] [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
@@ -898,7 +935,7 @@ lemma NNReal.spectralRadius_mem_quasispectrum
     (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toNNReal ∈ σₙ ℝ≥0 a := by
   obtain ⟨x, hx₁, hx₂⟩ := exists_eNorm_quasispectrum_eq_spectralRadius ℝ a
-  rwa [← hx₂, toNNReal_enorm, ← quasispectrum.algebraMap_mem_iff ℝ, algebraMap_eq_coe, coe_nnnorm,
+  rwa [← hx₂, toNNReal_eNorm, ← quasispectrum.algebraMap_mem_iff ℝ, algebraMap_eq_coe, coe_nnNorm,
     Real.norm_eq_abs, abs_of_nonneg (ha.rightInvOn hx₁ ▸ NNReal.zero_le_coe)]
 
 lemma Real.spectralRadius_mem_quasispectrum
@@ -911,7 +948,7 @@ lemma Real.spectralRadius_mem_quasispectrum
 lemma Real.spectralRadius_mem_quasispectrum_or :
     (spectralRadius ℝ a).toReal ∈ σₙ ℝ a ∨ -(spectralRadius ℝ a).toReal ∈ σₙ ℝ a := by
   obtain ⟨x, hx₁, hx₂⟩ := exists_eNorm_quasispectrum_eq_spectralRadius ℝ a
-  grind [toReal_enorm, Real.norm_eq_abs]
+  grind [toReal_eNorm, Real.norm_eq_abs]
 
 end RealNonUnital
 
@@ -923,7 +960,7 @@ lemma NNReal.spectralRadius_mem_spectrum (ha : (σ ℝ a).Nonempty)
     (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
     (spectralRadius ℝ a).toNNReal ∈ σ ℝ≥0 a := by
   obtain ⟨x, hx₁, hx₂⟩ := exists_eNorm_spectrum_eq_spectralRadius_of_nonempty ha
-  rwa [← hx₂, toNNReal_enorm, ← spectrum.algebraMap_mem_iff ℝ, algebraMap_eq_coe, coe_nnnorm,
+  rwa [← hx₂, toNNReal_eNorm, ← spectrum.algebraMap_mem_iff ℝ, algebraMap_eq_coe, coe_nnNorm,
     Real.norm_eq_abs, abs_of_nonneg (ha'.rightInvOn hx₁ ▸ NNReal.zero_le_coe)]
 
 lemma Real.spectralRadius_mem_spectrum (ha : (σ ℝ a).Nonempty)
@@ -934,7 +971,7 @@ lemma Real.spectralRadius_mem_spectrum (ha : (σ ℝ a).Nonempty)
 lemma Real.spectralRadius_mem_spectrum_or (ha : (σ ℝ a).Nonempty) :
     (spectralRadius ℝ a).toReal ∈ σ ℝ a ∨ -(spectralRadius ℝ a).toReal ∈ σ ℝ a := by
   obtain ⟨x, hx₁, hx₂⟩ := exists_eNorm_spectrum_eq_spectralRadius_of_nonempty ha
-  grind [toReal_enorm, Real.norm_eq_abs]
+  grind [toReal_eNorm, Real.norm_eq_abs]
 
 end RealUnital
 
