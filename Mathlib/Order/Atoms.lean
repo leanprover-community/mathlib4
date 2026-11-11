@@ -356,7 +356,7 @@ theorem Set.OrdConnected.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
         using! hcx.lt, fun y hy hy' ↦ hcx.2 (by simpa using! hy) (by simpa using! hy')⟩, hxd⟩
 
 @[to_dual]
-instance [IsStronglyAtomic α] {s : Set α} [Set.OrdConnected s] : IsStronglyAtomic s :=
+instance [IsStronglyAtomic α] {s : Set α} [s.OrdConnected] : IsStronglyAtomic s :=
   Set.OrdConnected.isStronglyAtomic <| by assumption
 
 @[to_dual]
