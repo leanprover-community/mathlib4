@@ -340,18 +340,20 @@ section Lex
 
 variable [LinearOrder σ]
 
+open Lex
+
 lemma leadingCoeff_toLex : p.leadingCoeff toLex = p.coeff (ofLex <| p.supDegree toLex) := by
   rw [leadingCoeff]
   apply congr_arg p.coeff
-  apply toLex.injective
-  rw [Function.rightInverse_invFun toLex.surjective, toLex_ofLex]
+  apply_fun toLex using ofLexEquiv.symm.injective
+  rw [Function.rightInverse_invFun (f := toLex) ofLexEquiv.symm.surjective, toLex_ofLex]
 
 lemma supDegree_toLex_C (r : R) : supDegree toLex (C (σ := σ) r) = 0 := by
   classical
     exact (supDegree_single _ r).trans (ite_eq_iff'.mpr ⟨fun _ => rfl, fun _ => rfl⟩)
 
 lemma leadingCoeff_toLex_C (r : R) : leadingCoeff toLex (C (σ := σ) r) = r :=
-  leadingCoeff_single toLex.injective _ r
+  leadingCoeff_single ofLexEquiv.symm.injective _ r
 
 end Lex
 

@@ -128,14 +128,14 @@ variable (e) in
 /-- The measure that will decrease during the induction in the `C : R → R[X]` case of
 Chevalley's theorem with complexity bound. -/
 private def degree : DegreeType n :=
-  toLex (Polynomial.degree ∘ e, ¬ ∃ i, (e i).Monic ∧ ∀ j, e j ≠ 0 → (e i).degree ≤ (e j).degree)
+  Lex.toLex (Polynomial.degree ∘ e, ¬ ∃ i, (e i).Monic ∧ ∀ j, e j ≠ 0 → (e i).degree ≤ (e j).degree)
 
 set_option backward.privateInPublic true in
-@[simp] private lemma ofLex_degree_fst (i) : (ofLex e.degree).fst i = (e i).degree := rfl
+@[simp] private lemma ofLex_degree_fst (i) : e.degree.ofLex.fst i = (e i).degree := rfl
 
 set_option backward.privateInPublic true in
 private lemma ofLex_degree_snd :
-    (ofLex e.degree).snd ↔
+    e.degree.ofLex.snd ↔
      ¬ ∃ i, (e i).Monic ∧ ∀ j, e j ≠ 0 → (e i).degree ≤ (e j).degree := .rfl
 
 set_option backward.privateInPublic true in
@@ -217,7 +217,7 @@ private lemma induction_structure (n : ℕ)
         -- then we can replace `e j` with `e j %ₘ (C h.unit⁻¹ * e i) `
         -- with `h : IsUnit (e i).leadingCoeff`.
         apply hP₃ R e i j hi i_min (hj.symm) (H_IH _ ?_ _ rfl)
-        refine .left _ _ (lt_of_le_of_ne (b := (ofLex v).1) ?_ ?_)
+        refine .left _ _ (lt_of_le_of_ne (b := v.ofLex.1) ?_ ?_)
         · intro k
           simp only [comp_apply, update_apply, hv]
           split_ifs with hjk
@@ -251,7 +251,7 @@ private lemma induction_structure (n : ℕ)
         simp
       rw [lt_iff_le_not_ge]
       simp only [coe_mapRingHom, funext_iff, InductionObj.ofLex_degree_fst, Pi.smul_apply,
-        comp_apply, smul_eq_mul, show (ofLex e.degree).2 from H,
+        comp_apply, smul_eq_mul, show e.degree.ofLex.2 from H,
         le_Prop_eq, implies_true, true_implies, true_and]
       simp only [InductionObj.ofLex_degree_snd, Pi.smul_apply, comp_apply, smul_eq_mul,
         ne_eq, not_exists, not_and, not_forall, not_le, not_lt]
