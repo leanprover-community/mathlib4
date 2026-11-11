@@ -60,7 +60,6 @@ lemma petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL (Fin 2) ℝ) (τ : 
 
 lemma petersson_slash_SL (k : ℤ) (f f' : ℍ → ℂ) (g : SL(2, ℤ)) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ = petersson k f f' (g • τ) := by
-  -- need to disable a simp lemma as it works against `Matrix.SpecialLinearGroup.det_coe`
   simp [σ, ModularForm.SL_slash, petersson_slash]
 
 lemma petersson_symm (k : ℤ) (f f' : ℍ → ℂ) (τ : ℍ) :
