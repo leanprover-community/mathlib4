@@ -697,6 +697,7 @@ theorem ofZLatticeBasis_span : span ℤ (Set.range (b.ofZLatticeBasis K)) = L :=
 end Module.Basis
 
 open MeasureTheory in
+@[deprecated Submodule.IsFullLattice.isAddFundamentalDomain +typeChanged (since := "2026-11-11")]
 theorem ZLattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L] [Finite ι]
     (b : Basis ι ℤ L) [MeasurableSpace E] [OpensMeasurableSpace E] (μ : Measure E) :
