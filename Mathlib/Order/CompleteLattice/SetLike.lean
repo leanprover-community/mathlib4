@@ -5,7 +5,7 @@ Authors: Artie Khovanov
 -/
 module
 
-public import Mathlib.Order.Lattice.SetLike
+public import Mathlib.Basic.SetLike.Basic
 
 /-!
 # Lattice operations agreeing with set operations
