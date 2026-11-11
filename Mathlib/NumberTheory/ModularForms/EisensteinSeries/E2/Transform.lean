@@ -196,8 +196,9 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
 
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
-  simp [SL_slash_def, modular_T_smul z, G2_eq_tsum_cexp, denom_apply, coe_T,
+  simp_rw [SL_slash_def, modular_T_smul z, G2_eq_tsum_cexp, denom_apply,
     ← exp_periodic.nat_mul 1 (2 * π * I * z)]
+  simp
   grind
 
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by
@@ -231,7 +232,9 @@ lemma E2_T_transform : E2 ∣[(2 : ℤ)] T = E2 := by
 
 /-- `E2` is invariant under `z ↦ z + 1` (the action of `T`). -/
 lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
-  simpa [denom_apply, SL_slash_apply] using congr($E2_T_transform z)
+  conv_rhs => rw [← E2_T_transform]
+  simp_rw [SL_slash_apply, denom_apply]
+  simp
 
 /-- `E2 ∘ ofComplex` has period `1`. -/
 lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 :=
