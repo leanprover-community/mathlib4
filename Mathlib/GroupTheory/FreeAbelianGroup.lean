@@ -53,7 +53,7 @@ The definition is
 
 Chris Hughes has suggested that this all be rewritten in terms of `Finsupp`.
 Johan Commelin has written all the API relating the definition to `Finsupp`
-in the lean-liquid repo.
+in `Mathlib/Algebra/FreeAbelianGroup/Finsupp.lean`.
 
 The lemmas `map_pure`, `map_of`, `map_zero`, `map_add`, `map_neg` and `map_sub`
 are proved about the `Functor.map` `<$>` construction, and need `α` and `β` to
@@ -94,64 +94,71 @@ and addition given pointwise.
 
 TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
 -/
-def FreeAbelianGroup : Type u :=
-  Additive <| Group.Abelianization <| FreeGroup α
-deriving Inhabited, AddCommGroup
+@[to_additive]
+def FreeCommGroup : Type u :=
+  Group.Abelianization (FreeGroup α)
 
-instance [IsEmpty α] : Unique (FreeAbelianGroup α) :=
-  inferInstanceAs <| Unique (delta% FreeAbelianGroup α)
+@[to_additive]
+instance : CommGroup (FreeCommGroup α) :=
+  inferInstanceAs (CommGroup (Group.Abelianization (FreeGroup α)))
+
+@[to_additive]
+instance : Inhabited (FreeCommGroup α) :=
+  ⟨1⟩
+
 
 variable {α}
 
-namespace FreeAbelianGroup
+namespace FreeCommGroup
 
-/-- The canonical map from `α` to `FreeAbelianGroup α`. -/
-def of (x : α) : FreeAbelianGroup α :=
-  Additive.ofMul <| Group.Abelianization.of <| FreeGroup.of x
+/-- The canonical map from `α` to `FreeCommGroup α`. -/
+@[to_additive /-- The canonical map from `α` to `FreeAddCommGroup α`. -/]
+def of (x : α) : FreeCommGroup α :=
+  Group.Abelianization.of <| FreeGroup.of x
 
-/-- The map `FreeAbelianGroup α →+ A` induced by a map of types `α → A`. -/
-def lift {β : Type v} [AddCommGroup β] : (α → β) ≃ (FreeAbelianGroup α →+ β) :=
-  (@FreeGroup.lift _ (Multiplicative β) _).trans <|
-    (@Group.Abelianization.lift _ _ (Multiplicative β) _).trans MonoidHom.toAdditive
+/-- The map `FreeCommGroup α →* A` induced by a map of types `α → A`. -/
+@[to_additive /-- The map `FreeAdCommGroup α →+ A` induced by a map of types `α → A`. -/]
+def lift {β : Type v} [CommGroup β] : (α → β) ≃ (FreeCommGroup α →* β) :=
+  FreeGroup.lift.trans Group.Abelianization.lift
 
 section lift
 
-variable {β : Type v} [AddCommGroup β] (f : α → β)
+variable {β : Type v} [CommGroup β] (f : α → β)
 
-open FreeAbelianGroup
+open FreeCommGroup
 
--- Porting note: needed to add `(β := Multiplicative β)`
-@[simp]
-theorem lift_apply_of (x : α) : lift f (of x) = f x := by
-  convert! Group.Abelianization.lift_apply_of
-    (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
-  exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
+@[to_additive (attr := simp)]
+theorem lift_apply_of (x : α) : lift f (of x) = f x :=
+  (Group.Abelianization.lift_apply_of _ _).trans FreeGroup.lift_apply_of
 
-theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
+@[to_additive]
+theorem lift_unique (g : FreeCommGroup α →* β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
   congr($(lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _)
 
 /-- See note [partially-applied ext lemmas]. -/
-@[ext high]
-theorem lift_ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
+@[to_additive (attr := ext high)]
+theorem lift_ext (g h : FreeCommGroup α →* β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H
 
-theorem lift_comp_apply {α β γ} [AddCommGroup β] [AddCommGroup γ]
-    (a : FreeAbelianGroup α) (f : α → β) (g : β →+ γ) : lift (g ∘ f) a = g (lift f a) := by
-  rw [← AddMonoidHom.comp_apply g (lift f)]
-  refine (lift_unique _ _ ?_).symm
-  intro a
-  change g ((lift f) (of a)) = g (f a)
-  simp only [lift_apply_of]
+@[to_additive]
+theorem lift_comp_apply {α β γ} [CommGroup β] [CommGroup γ]
+    (a : FreeCommGroup α) (f : α → β) (g : β →* γ) : lift (g ∘ f) a = g (lift f a) := by
+  rw [← MonoidHom.comp_apply g (lift f)]
+  exact (lift_unique _ _ (by simp)).symm
 
 end lift
 
+end FreeCommGroup
+
 section
 
-theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) := by
+namespace FreeAddCommGroup
+
+theorem of_injective : Function.Injective (of : α → FreeAddCommGroup α) := by
   classical
   exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
-    let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
+    let f : FreeAddCommGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
     have hfx1 : f (of x) = 1 := (lift_apply_of _ _).trans <| ite_eq_left rfl
     have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
     have hfy0 : f (of y) = 0 := (lift_apply_of _ _).trans <| ite_eq_right hxy
@@ -160,26 +167,59 @@ theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) := b
 @[simp]
 theorem of_ne_zero (x : α) : of x ≠ 0 := by
   intro h
-  let f : FreeAbelianGroup α →+ ℤ := lift 1
+  let f : FreeAddCommGroup α →+ ℤ := lift 1
   have hfx : f (of x) = 1 := lift_apply_of _ _
   have hf0 : f (of x) = 0 := by rw [h, map_zero]
   exact one_ne_zero <| hfx.symm.trans hf0
 
-@[simp]
-theorem zero_ne_of (x : α) : 0 ≠ of x := of_ne_zero _ |>.symm
+end FreeAddCommGroup
 
-instance [Nonempty α] : Nontrivial (FreeAbelianGroup α) where
-  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨0, of x, zero_ne_of _⟩
+namespace FreeCommGroup
+
+/-
+TODO:Once an equivalence `FreeCommGroup α ≃* Multiplicative (FreeAddCommGroup α)` is available,
+derive`of_injective` and `of_ne_one` from the additive versions instead of repeating the arguments.
+-/
+
+@[to_additive existing]
+theorem of_injective : Function.Injective (FreeCommGroup.of : α → FreeCommGroup α) := by
+  classical
+  exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
+    let f : FreeCommGroup α →* Multiplicative ℤ :=
+      lift fun z ↦ if x = z then Multiplicative.ofAdd 1 else 1
+    have hfx1 : f (of x) = Multiplicative.ofAdd 1 := (lift_apply_of _ _).trans <| ite_eq_left rfl
+    have hfy1 : f (of y) = Multiplicative.ofAdd 1 := hoxy ▸ hfx1
+    have hfy0 : f (of y) = 1 := (lift_apply_of _ _).trans <| ite_eq_right hxy
+    one_ne_zero <| ofAdd_eq_one.mp <| hfy1.symm.trans hfy0
+
+@[simp, to_additive existing]
+theorem of_ne_one (x : α) : of x ≠ 1 := by
+  intro h
+  let f : FreeCommGroup α →* Multiplicative ℤ := lift (fun _ ↦ Multiplicative.ofAdd 1)
+  have hfx : f (of x) = Multiplicative.ofAdd 1 := lift_apply_of _ _
+  have hf0 : f (of x) = 1 := by rw [h, map_one]
+  exact one_ne_zero <| ofAdd_eq_one.mp <| hfx.symm.trans hf0
+
+@[to_additive (attr := simp)]
+theorem one_ne_of (x : α) : 1 ≠ of x := of_ne_one _ |>.symm
+
+@[to_additive]
+instance [Nonempty α] : Nontrivial (FreeCommGroup α) where
+  exists_pair_ne := let ⟨x⟩ := ‹Nonempty α›; ⟨1, of x, one_ne_of _⟩
+
+end FreeCommGroup
 
 end
 
-@[elab_as_elim]
+namespace FreeCommGroup
+
+@[to_additive (attr := elab_as_elim)]
 protected theorem induction_on
-    {motive : FreeAbelianGroup α → Prop} (z : FreeAbelianGroup α) (zero : motive 0)
-    (of : ∀ x, motive (of x)) (neg : ∀ x, motive (.of x) → motive (-.of x))
-    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive z :=
+    {motive : FreeCommGroup α → Prop} (z : FreeCommGroup α) (one : motive 1)
+    (of : ∀ x, motive (of x)) (inv : ∀ x, motive (.of x) → motive (.of x)⁻¹)
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive z :=
   Quotient.inductionOn' z fun x ↦ Quot.inductionOn x fun L ↦
-    List.recOn L zero fun ⟨x, b⟩ _ ih ↦ Bool.recOn b (add _ _ (neg _ (of x)) ih) (add _ _ (of x) ih)
+    List.recOn L one fun ⟨x, b⟩ _ ih ↦ Bool.recOn b (mul _ _ (inv _ (of x)) ih) (mul _ _ (of x) ih)
 
 theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup α) :
     lift (f + g) a = lift f a + lift g a := by
@@ -407,7 +447,11 @@ def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ Free
   right_inv x := by rw [← map_comp_apply, Equiv.self_comp_symm, map_id, AddMonoidHom.id_apply]
   map_add' := map_add _
 
+end FreeCommGroup
+
 section deprecated
+
+namespace FreeAbelianGroup
 
 /-!
 This section defines a ring structure on `FreeAbelianGroup α` when `α` is a monoid.
@@ -595,6 +639,6 @@ local instance [CommMonoid α] : CommRing (FreeAbelianGroup α) where
     | neg s ih => rw [neg_mul, ih, neg_mul_eq_mul_neg]
     | add x1 x2 ih1 ih2 => rw [add_mul, mul_add, ih1, ih2]
 
-end deprecated
-
 end FreeAbelianGroup
+
+end deprecated
