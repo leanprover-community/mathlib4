@@ -330,10 +330,10 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     rw [comp_apply, comp_apply, ← map_mul, ← map_pow, simple_mul_simple_pow, map_one]⟩
   left_inv f := by
     ext i
-    simp [← mulEquiv_symm_simple, groupLift, restrictUnit]
+    simp [groupLift, restrictUnit]
   right_inv ι := by
     apply cs.ext_simple
-    simp [← mulEquiv_symm_simple, groupLift, restrictUnit]
+    simp [groupLift, restrictUnit]
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
