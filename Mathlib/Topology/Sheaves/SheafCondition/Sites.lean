@@ -252,9 +252,11 @@ theorem hom_ext (h : Opens.IsBasis (Set.range B))
   ext i
   exact he i.unop
 
+/-- A morphism of sheaves is an isomorphism iff its components at the open sets of a basis are
+isomorphisms. -/
 theorem isIso_iff_isIso_basis {F G : Sheaf C X} (h : Opens.IsBasis (Set.range B))
-    {φ : F ⟶ G} (hi : ∀ i, IsIso (φ.hom.app (op (B i)))) :
-    IsIso φ := by
+    {φ : F ⟶ G} : IsIso φ ↔ ∀ i, IsIso (φ.hom.app (op (B i))) := by
+  refine ⟨fun _ _ ↦ inferInstance, fun hi ↦ ?_⟩
   have : (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X) :=
     Opens.coverDense_inducedFunctor h
   refine Functor.IsCoverDense.iso_of_restrict_iso (G := inducedFunctor B) _ ?_

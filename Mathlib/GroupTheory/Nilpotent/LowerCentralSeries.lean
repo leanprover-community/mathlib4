@@ -73,10 +73,14 @@ theorem lowerCentralSeries_succ (n : ℕ) :
 theorem top_lowerCentralSeries_one : (⊤ : Subgroup G).lowerCentralSeries 1 = _root_.commutator G :=
   rfl
 
-@[to_additive]
+@[to_additive lowerCentralSeries_one_eq_bot_iff]
 theorem lowerCentralSeries_one_eq_bot_iff :
     lowerCentralSeries (G := G) ⊤ 1 = ⊥ ↔ IsMulCommutative G := by
   rw [top_lowerCentralSeries_one, commutator_eq_bot_iff]
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddSubgroup.lowerCentralSeries_zero_eq_bot_iff :=
+  AddSubgroup.lowerCentralSeries_one_eq_bot_iff
 
 @[deprecated (since := "2026-05-25")]
 alias _root_.AddSubgroup.lowerCentralSeries_one := AddSubgroup.top_lowerCentralSeries_one

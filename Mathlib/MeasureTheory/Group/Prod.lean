@@ -289,7 +289,7 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s
   `0 < ν(sx⁻¹) < ∞`. The first inequality follows from §59, Th. D, but the second inequality is
   not justified. We prove this inequality for almost all `x` in
   `MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero`. -/
-@[to_additive
+@[to_additive addMeasure_lintegral_div_measure
 /-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A]. Note
 that if `f` is the characteristic function of a measurable set `t` this states that `μ t = c * μ s`
 for a constant `c` that does not depend on `μ`.
@@ -309,6 +309,9 @@ theorem measure_lintegral_div_measure (sm : MeasurableSet s) (h2s : ν' s ≠ 0)
   refine (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ' ν' h2s h3s).mono fun x hx => ?_
   simp_rw [ENNReal.mul_div_cancel (measure_mul_right_ne_zero ν' h2s _) hx.ne]
 
+@[deprecated (since := "2026-11-11")]
+alias measure_lintegral_sub_measure := addMeasure_lintegral_div_measure
+
 @[to_additive]
 theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' s * ν' t = ν' s * μ' t := by
@@ -326,13 +329,15 @@ theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s �
   rw [← h1, mul_left_comm, h2]
 
 /-- Left invariant Borel measures on a measurable group are unique (up to a scalar). -/
-@[to_additive
+@[to_additive addMeasure_eq_div_smul
 /-- Left invariant Borel measures on an additive measurable group are unique (up to a scalar). -/]
 theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' = (μ' s / ν' s) • ν' := by
   ext1 t -
   rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
     measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
+
+@[deprecated (since := "2026-11-11")] alias measure_eq_sub_vadd := addMeasure_eq_div_smul
 
 end SigmaFinite
 

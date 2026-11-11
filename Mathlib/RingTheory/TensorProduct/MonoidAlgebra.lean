@@ -146,15 +146,23 @@ noncomputable def tensorEquiv : R[M] ⊗[R] R[N] ≃ₗ[R] R[M × N] :=
 lemma tensorEquiv_single_tmul_single (m : M) (r₁ : R) (n : N) (r₂ : R) :
     tensorEquiv R (single m r₁ ⊗ₜ single n r₂) = single (m, n) (r₁ * r₂) := by ext; simp
 
-@[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R) tensorEquiv_symm_single_eq_single_one_tmul]
 lemma tensorEquiv_symm_single_eq_single_one_tmul (mn : M × N) (r : R) :
     (tensorEquiv R).symm (single mn r) = single mn.1 1 ⊗ₜ single mn.2 r := by
   simp [tensorEquiv, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
-@[to_additive (dont_translate := R)]
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddMonoidAlgebra.tensorEquiv_symm_single_eq_single_zero_tmul :=
+  AddMonoidAlgebra.tensorEquiv_symm_single_eq_single_one_tmul
+
+@[to_additive (dont_translate := R) tensorEquiv_symm_single_eq_tmul_single_one]
 lemma tensorEquiv_symm_single_eq_tmul_single_one (mn : M × N) (r : R) :
     (tensorEquiv R).symm (single mn r) = single mn.1 r ⊗ₜ single mn.2 1 := by
   simp [tensorEquiv, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one]
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddMonoidAlgebra.tensorEquiv_symm_single_eq_tmul_single_zero :=
+  AddMonoidAlgebra.tensorEquiv_symm_single_eq_tmul_single_one
 
 end MonoidAlgebra
 

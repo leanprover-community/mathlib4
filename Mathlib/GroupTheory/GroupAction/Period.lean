@@ -46,12 +46,15 @@ theorem period_pos_of_fixed {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (fixed : 
     0 < period m a :=
   (isPeriodicPt_smul_iff.mpr fixed).minimalPeriod_pos n_pos
 
-@[to_additive]
+@[to_additive period_eq_one_iff]
 theorem period_eq_one_iff {m : M} {a : α} : period m a = 1 ↔ m • a = a :=
   ⟨fun eq_one => pow_one m ▸ eq_one ▸ pow_period_smul m a,
    fun fixed => le_antisymm
     (period_le_of_fixed one_pos (by simpa))
     (period_pos_of_fixed one_pos (by simpa))⟩
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddAction.period_eq_zero_iff := AddAction.period_eq_one_iff
 
 /-- For any non-zero `n` less than the period of `m` on `a`, `a` is moved by `m ^ n`. -/
 @[to_additive

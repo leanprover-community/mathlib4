@@ -330,7 +330,8 @@ theorem one_le_sum_inv_index_of_leftCoset_cover :
 /-- Let the group `G` be the union of finitely many left cosets `g i • H i`.
 If the sum of the inverses of the indexes of the subgroups `H i` is equal to 1,
 then the cosets of the subgroups of finite index are pairwise disjoint. -/
-@[to_additive /-- Let the additive group `G` be the union of finitely many left cosets `g i +ᵥ H i`.
+@[to_additive pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
+/-- Let the additive group `G` be the union of finitely many left cosets `g i +ᵥ H i`.
 If the sum of the inverses of the indexes of the additive subgroups `H i` is equal to 1,
 then the cosets of the additive subgroups of finite index are pairwise disjoint. -/]
 theorem pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
@@ -339,6 +340,10 @@ theorem pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
       Set.PairwiseDisjoint (s.filter (fun i => (H i).FiniteIndex))
         (fun i ↦ g i • (H i : Set G)) :=
   (leftCoset_cover_filter_FiniteIndex_aux hcovers).2.2
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddSubgroup.pairwiseDisjoint_leftCoset_cover_of_sum_neg_index_eq_zero :=
+  AddSubgroup.pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one
 
 /-- B. H. Neumann Lemma :
 If a finite family of cosets of subgroups covers the group, then at least one

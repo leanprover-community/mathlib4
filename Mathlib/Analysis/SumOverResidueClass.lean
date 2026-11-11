@@ -76,7 +76,7 @@ lemma not_summable_indicator_mod_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f
 
 /-- If a decreasing sequence of real numbers is summable on one residue class
 modulo `m`, then it is also summable on every other residue class mod `m`. -/
-lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f : ℕ → ℝ}
+lemma summable_indicator_mod_of_summable_indicator_mod {m : ℕ} [NeZero m] {f : ℕ → ℝ}
     (hf : Antitone f) {k : ZMod m} (l : ZMod m)
     (hs : Summable ({n : ℕ | (n : ZMod m) = k}.indicator f)) :
     Summable ({n : ℕ | (n : ZMod m) = l}.indicator f) := by
@@ -90,6 +90,10 @@ lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f 
   · obtain ⟨n, hn⟩ := hf₀
     exact (not_summable_indicator_mod_of_antitone_of_neg hf hn k hs).elim
 
+@[deprecated (since := "2026-11-11")]
+alias summable_indicator_mod_iff_summable_indicator_mod :=
+  summable_indicator_mod_of_summable_indicator_mod
+
 /-- A decreasing sequence of real numbers is summable on a residue class
 if and only if it is summable. -/
 lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : Antitone f) (k : ZMod m) :
@@ -98,7 +102,7 @@ lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : An
   rw [Finset.sum_indicator_mod m f]
   convert!
     summable_sum (s := Finset.univ) fun a _ ↦
-      summable_indicator_mod_iff_summable_indicator_mod hf a H
+      summable_indicator_mod_of_summable_indicator_mod hf a H
   simp only [Finset.sum_apply]
 
 open ZMod

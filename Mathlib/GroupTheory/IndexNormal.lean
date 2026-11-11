@@ -42,11 +42,14 @@ theorem isCoatom_of_index_prime (hH : H.index.Prime) : IsCoatom H := by
   exact (eq_of_index_dvd_index hHK h.symm.dvd).ge
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
-@[to_additive]
+@[to_additive normal_of_index_eq_one]
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
   rw [index_eq_one] at hH
   rw [hH]
   infer_instance
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddSubgroup.normal_of_index_eq_zero := AddSubgroup.normal_of_index_eq_one
 
 /-- A subgroup of index 2 is normal (does not require finiteness of G) -/
 @[to_additive]

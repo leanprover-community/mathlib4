@@ -41,7 +41,7 @@ local notation "Ω" => Quotient <| orbitRel α β
 /-- **Class formula** for a finite group acting on a finite type. See
 `MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
 `Quotient.out`. -/
-@[to_additive
+@[to_additive card_eq_sum_card_addGroup_div_card_stabilizer'
       /-- **Class formula** for a finite group acting on a finite type. See
       `AddAction.card_eq_sum_card_addGroup_div_card_stabilizer` for a specialized version using
       `Quotient.out`. -/]
@@ -58,12 +58,21 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
     simp_rw [this, ← Fintype.card_sigma,
       Fintype.card_congr (selfEquivSigmaOrbitsQuotientStabilizer' α β hφ)]
 
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddAction.card_eq_sum_card_addGroup_sub_card_stabilizer' :=
+  AddAction.card_eq_sum_card_addGroup_div_card_stabilizer'
+
 /-- **Class formula** for a finite group acting on a finite type. -/
-@[to_additive /-- **Class formula** for a finite group acting on a finite type. -/]
+@[to_additive card_eq_sum_card_addGroup_div_card_stabilizer
+/-- **Class formula** for a finite group acting on a finite type. -/]
 theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fintype Ω]
     [∀ b : β, Fintype <| stabilizer α b] :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out) :=
   card_eq_sum_card_group_div_card_stabilizer' α β Quotient.out_eq'
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddAction.card_eq_sum_card_addGroup_sub_card_stabilizer :=
+  AddAction.card_eq_sum_card_addGroup_div_card_stabilizer
 
 end MulAction
 

@@ -79,7 +79,7 @@ theorem notMem_val_image {a : α} (t : Set (ofStabilizer G a)) :
 theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
 
-@[to_additive]
+@[to_additive ENat_card_ofStabilizer_add_one_eq]
 lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
     ENat.card (ofStabilizer G a) + 1 = ENat.card α := by
   dsimp only [ENat.card]
@@ -87,7 +87,11 @@ lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
   congr
   simp
 
-@[to_additive]
+@[deprecated (since := "2026-11-11")]
+alias _root_.SubAddAction.ENat_card_ofStabilizer_add_zero_eq :=
+  SubAddAction.ENat_card_ofStabilizer_add_one_eq
+
+@[to_additive nat_card_ofStabilizer_add_one_eq]
 lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) + 1 = Nat.card α := by
   classical
@@ -95,6 +99,10 @@ lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
   rw [Nat.subtype_card {a}ᶜ, ← Finset.card_singleton a, Finset.card_compl_add_card,
     Nat.card_eq_fintype_card]
   simp [mem_ofStabilizer_iff]
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.SubAddAction.nat_card_ofStabilizer_add_zero_eq :=
+  SubAddAction.nat_card_ofStabilizer_add_one_eq
 
 @[to_additive]
 lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :

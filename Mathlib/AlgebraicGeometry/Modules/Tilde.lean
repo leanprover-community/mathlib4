@@ -497,7 +497,7 @@ theorem isLocalizing_iff_of_iso {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ 
 theorem isLocalizing_of_isIso_app_top {M N : TopCat.Sheaf (ModuleCat.{u} R) (Spec R)} {φ : M ⟶ N}
     (h : IsIso (φ.hom.app (op ⊤))) (hM : IsLocalizing M) (hN : IsLocalizing N) :
     IsIso φ := by
-  refine TopCat.Sheaf.isIso_iff_isIso_basis (φ := φ) isBasis_basic_opens (fun f => ?_)
+  refine (TopCat.Sheaf.isIso_iff_isIso_basis isBasis_basic_opens).mpr fun f ↦ ?_
   refine ModuleCat.isIso_of_isLocalizedModule_comp (hM f) ?_
   rw [φ.hom.naturality]
   exact IsLocalizedModule.of_linearEquiv_right _ _ (asIso (φ.hom.app (op ⊤))).toLinearEquiv

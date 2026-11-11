@@ -374,10 +374,12 @@ theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf 
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
   orderOf_injective (Units.coeHom G) Units.val_injective y
 
-@[to_additive]
-lemma IsUnit.orderOf_eq_one [Subsingleton Gˣ] {x : G} (h : IsUnit x) :
-    orderOf x = 1 := by
+@[to_additive IsAddUnit.addOrderOf_eq_one]
+lemma IsUnit.orderOf_eq_one [Subsingleton Gˣ] {x : G} (h : IsUnit x) : orderOf x = 1 := by
   simp [isUnit_iff_eq_one.mp h]
+
+@[deprecated (since := "2026-11-11")]
+alias IsAddUnit.addOrderOf_eq_zero := IsAddUnit.addOrderOf_eq_one
 
 @[to_additive (attr := norm_cast)]
 theorem Units.isOfFinOrder_val {u : Gˣ} : IsOfFinOrder (u : G) ↔ IsOfFinOrder u :=
@@ -405,11 +407,14 @@ theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / Nat.gcd (orde
 lemma orderOf_pow_of_dvd {x : G} {n : ℕ} (hn : n ≠ 0) (dvd : n ∣ orderOf x) :
     orderOf (x ^ n) = orderOf x / n := by rw [orderOf_pow' _ hn, Nat.gcd_eq_right dvd]
 
-@[to_additive]
+@[to_additive addOrderOf_nsmul_addOrderOf_div]
 lemma orderOf_pow_orderOf_div {x : G} {n : ℕ} (hx : orderOf x ≠ 0) (hn : n ∣ orderOf x) :
     orderOf (x ^ (orderOf x / n)) = n := by
   rw [orderOf_pow_of_dvd _ (Nat.div_dvd_of_dvd hn), Nat.div_div_self hn hx]
   rw [← Nat.div_mul_cancel hn] at hx; exact left_ne_zero_of_mul hx
+
+@[deprecated (since := "2026-11-11")]
+alias addOrderOf_nsmul_addOrderOf_sub := addOrderOf_nsmul_addOrderOf_div
 
 variable (n)
 

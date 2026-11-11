@@ -438,10 +438,15 @@ lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
   _ = ∏ i ∈ t, g i := by
     rw [← prod_union disjoint_sdiff, union_sdiff_of_subset ht]
 
-protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
+/-- If `f` is multipliable, nonzero on a finset `s` and equal to `g` outside `s`, then the product
+of `g` is the product of `f` times `(∏ i ∈ s, g i) / ∏ i ∈ s, f i`. -/
+protected lemma Multipliable.tprod_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
     (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
   (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
+
+@[deprecated (since := "2026-11-11")]
+protected alias Multipliable.tsum_congr_cofinite₀ := Multipliable.tprod_congr_cofinite₀
 
 set_option backward.isDefEq.respectTransparency false in
 /--
