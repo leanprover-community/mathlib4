@@ -5,10 +5,10 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Option.Defs
-public import Mathlib.Control.Functor
 public import Batteries.Data.List.Basic
 public import Mathlib.Control.Basic
+public import Mathlib.Control.Functor
+public import Mathlib.Data.Option.Defs
 
 import Mathlib.Tactic.Attr.Register
 

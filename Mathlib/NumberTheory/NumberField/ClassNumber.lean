@@ -8,8 +8,9 @@ module
 public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 public import Mathlib.NumberTheory.ClassNumber.Finite
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.NumberTheory.RamificationInertia.Galois
+
+import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Class numbers of number fields
@@ -91,19 +92,13 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     exact ClassGroup.mk0_eq_mk0_inv_iff.mpr ⟨a, Subtype.coe_ne_coe.1 h_nz, by rw [mul_comm, hI]⟩
   · rw [← FractionalIdeal.absNorm_span_singleton (𝓞 K), Algebra.linearMap_apply,
       ← FractionalIdeal.coeIdeal_span_singleton, FractionalIdeal.coeIdeal_absNorm, hI, map_mul,
-      cast_mul, Rat.cast_mul, absNorm_apply, Rat.cast_natCast, Rat.cast_natCast,
-      FractionalIdeal.coe_mk0, FractionalIdeal.coeIdeal_absNorm, Rat.cast_natCast, mul_div_assoc,
-      mul_assoc, mul_assoc] at h_nm
+      cast_mul, Rat.cast_mul, Rat.cast_natCast, Rat.cast_natCast, FractionalIdeal.coe_mk0,
+      FractionalIdeal.coeIdeal_absNorm, Rat.cast_natCast, mul_div_assoc, mul_assoc,
+      mul_assoc] at h_nm
     refine le_of_mul_le_mul_of_pos_left h_nm ?_
     exact cast_pos.mpr <| pos_of_ne_zero <| absNorm_ne_zero_of_nonZeroDivisors J
 
-end NumberField
-
 namespace RingOfIntegers
-
-variable {K}
-
-open scoped NumberField
 
 theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le
     (h : ∀ ⦃I : (Ideal (𝓞 K))⁰⦄, absNorm (I : Ideal (𝓞 K)) ≤ M K →
@@ -129,15 +124,13 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
     absNorm_dvd_absNorm_of_le <| le_of_dvd <|
       UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
-set_option linter.style.longLine false in
 /-- Let `K` be a number field and let `M K` be the Minkowski bound of `K`.
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
 `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p` such that
 `p ^ (span ({p}).inertiaDeg P) ≤ ⌊(M K)⌋₊` are principal. This is the standard technique to prove
 that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 If `K/ℚ` is Galois, one can use the more convenient
-`RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc`
-below.
+`isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc`.
 
 The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
 to deal with the finite number of primes `p` in the interval. -/
@@ -211,6 +204,8 @@ theorem isPrincipalIdealRing_of_abs_discr_lt
 
 end RingOfIntegers
 
+end NumberField
+
 namespace Rat
 
 open NumberField
@@ -220,3 +215,21 @@ theorem classNumber_eq : NumberField.classNumber ℚ = 1 :=
     Rat.ringOfIntegersEquiv.symm Rat.ringOfIntegersEquiv.symm.surjective
 
 end Rat
+
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le :=
+  NumberField.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime :=
+  NumberField.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
+set_option linter.style.longLine false in
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc :=
+  NumberField.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc
+set_option linter.style.longLine false in
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc :=
+  NumberField.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc
+@[deprecated (since := "2026-11-08")]
+alias RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt :=
+  NumberField.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt

@@ -9,13 +9,13 @@ module
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.Tactic.NormNum
+
+import Mathlib.Tactic.NormNum
 
 /-!
 # The fixed submodule of a linear map
 
 - `LinearMap.fixedSubmodule`: the submodule of a linear map consisting of its fixed points.
-
 -/
 
 @[expose] public section

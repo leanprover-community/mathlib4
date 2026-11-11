@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
-
 # Covers of schemes over a base
 
 In this file we define the typeclass `Cover.Over`. For a cover `𝒰` of an `S`-scheme `X`,
@@ -17,7 +16,6 @@ the datum `𝒰.Over S` contains `S`-scheme structures on the components of `�
 that the component maps are morphisms of `S`-schemes.
 
 We provide instances of `𝒰.Over S` for standard constructions on covers.
-
 -/
 
 @[expose] public section

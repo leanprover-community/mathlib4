@@ -9,7 +9,6 @@ public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Conditions for `Fin.insertNth` to be monotone or strictly monotone
-
 -/
 
 public section

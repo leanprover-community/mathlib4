@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Attr.Core
+
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Map₂ Lemmas
@@ -20,7 +21,6 @@ Lists together. In particular, we include lemmas about:
 * `zipWith`
 * `zipLeft'`
 * `zipRight'`
-
 -/
 
 public section
