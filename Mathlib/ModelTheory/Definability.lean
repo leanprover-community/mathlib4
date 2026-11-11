@@ -36,7 +36,6 @@ This file defines what it means for a set over a first-order structure to be def
 - `FirstOrder.Language.Formula.definable_withConstants` and
   `FirstOrder.Language.BoundedFormula.definable` show that the set of realizations of a formula is
   definable, giving a syntax-to-definability bridge for concrete sets.
-
 -/
 
 @[expose] public section

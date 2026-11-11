@@ -48,7 +48,6 @@ appropriate models with corners. This is not a definition, so technically deviat
 convention.
 
 TODO: this file uses more made-up names; document these as well
-
 -/
 
 @[expose] public section

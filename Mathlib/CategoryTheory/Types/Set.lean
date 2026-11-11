@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Types.Basic
 
 Given `X : Type u`, we define the functor `Set.functorToTypes : Set X ⥤ Type u`
 which sends `A : Set X` to its underlying type.
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 We give conditions under which the logarithms of a summable sequence are summable. We also use this
 to relate summability of `f` to multipliability of `1 + f`.
-
 -/
 
 public section

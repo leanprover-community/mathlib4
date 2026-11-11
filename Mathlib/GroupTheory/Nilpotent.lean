@@ -12,7 +12,6 @@ public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Sylow
 
 /-!
-
 # Nilpotent groups
 
 An API for nilpotent groups, that is, groups for which the upper central series
@@ -70,7 +69,6 @@ none of what we have called `upperCentralSeries G`, `(⊤ : Subgroup G).lowerCen
 the sequences satisfying `IsAscendingCentralSeries` or `IsDescendingCentralSeries`
 are actually central series. Note that the fact that the upper and lower central series
 are not central series if `G` is not nilpotent is a standard abuse of notation.
-
 -/
 
 @[expose] public section
@@ -960,12 +958,17 @@ theorem Group.nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
 
 end FinitePi
 
-/-- A nilpotent subgroup is solvable -/
-instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : Group.IsSolvable G := by
+/-- A nilpotent subgroup is solvable. -/
+@[to_additive /-- A nilpotent subgroup is solvable. -/]
+instance (priority := 100) Group.IsNilpotent.to_isSolvable [h : IsNilpotent G] :
+   Group.IsSolvable G := by
   obtain ⟨n, hn⟩ := nilpotent_iff_lowerCentralSeries.1 h
   use n
   rw [eq_bot_iff, ← hn]
   exact derivedSeries_le_lowerCentralSeries_top n
+
+@[deprecated (since := "2026-11-05")]
+alias IsNilpotent.to_isSolvable := Group.IsNilpotent.to_isSolvable
 
 /-- A simple nilpotent group is commutative. -/
 @[to_additive /-- A simple nilpotent additive group is commutative. -/]
@@ -1042,6 +1045,7 @@ namespace IsPGroup
 variable {p : ℕ} [hp : Fact p.Prime]
 
 /-- In a nilpotent p-group, the maximal subgroups are exactly the subgroups of index `p`. -/
+@[to_additive]
 theorem isCoatom_iff_index_eq_prime [Group.IsNilpotent G] (hG : IsPGroup p G) {H : Subgroup G} :
     IsCoatom H ↔ H.index = p := by
   refine ⟨fun h ↦ ?_, fun h ↦ Subgroup.isCoatom_of_index_prime (h ▸ hp.out)⟩
@@ -1051,6 +1055,7 @@ theorem isCoatom_iff_index_eq_prime [Group.IsNilpotent G] (hG : IsPGroup p G) {H
   exact Nat.prime_eq_prime_of_dvd_pow hHp hp.out hk.dvd
 
 /-- A nilpotent p-group is non-cyclic iff it has two distinct subgroups of index `p`. -/
+@[to_additive]
 theorem not_isCyclic_iff_exists_ne_index_eq_prime [Group.IsNilpotent G]
     [IsCoatomic (Subgroup G)] (hG : IsPGroup p G) :
     ¬ IsCyclic G ↔ ∃ H₁ H₂ : Subgroup G, H₁ ≠ H₂ ∧ H₁.index = p ∧ H₂.index = p := by

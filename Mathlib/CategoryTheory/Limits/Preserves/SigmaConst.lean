@@ -15,7 +15,6 @@ Given an object `R` in a category `C` with coproducts of size `w`,
 the functor `sigmaConst.obj R : Type w ⥤ C` which sends
 a type `T` to the coproduct of copies of `R` indexed by `T`
 preserves all colimits.
-
 -/
 
 @[expose] public section

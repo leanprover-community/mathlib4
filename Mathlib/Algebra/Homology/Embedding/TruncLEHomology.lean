@@ -24,7 +24,6 @@ All the results are obtained by dualising the results in the file `Embedding.Tru
 
 Moreover, if `C` is an abelian category, we introduce the cokernel
 sequence `K.shortComplexTruncLE e` of the monomorphism `K.ιTruncLE e`.
-
 -/
 
 @[expose] public section

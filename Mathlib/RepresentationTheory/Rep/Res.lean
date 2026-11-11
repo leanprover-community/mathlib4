@@ -14,7 +14,6 @@ public import Mathlib.RepresentationTheory.Rep.Basic
 Given a group homomorphism `f : H →* G`, we have the restriction functor
 `resFunctor f : Rep k G ⥤ Rep k H` which sends a `G`-representation `ρ` to the
 `H`-representation `ρ.comp f`.
-
 -/
 
 public section
@@ -45,6 +44,8 @@ abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 variable (f : H →* G) (M : Rep k G)
 
 lemma res_id : res (MonoidHom.id G) M = M := rfl
+
+lemma resMap_id {X Y : Rep k G} (p : X ⟶ Y) : resMap (MonoidHom.id G) p = p := rfl
 
 @[simp] lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
 

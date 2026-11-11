@@ -25,7 +25,6 @@ We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `�
 
 * `Finset.finsuppAntidiag s n`: Finset of all finitely supported functions `f : ι →₀ μ` with support
   contained in `s` and such that the sum of its values equals `n : μ`.
-
 -/
 
 @[expose] public section

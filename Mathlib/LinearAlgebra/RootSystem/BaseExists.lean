@@ -33,7 +33,6 @@ not. There are at least two ways to deal with this:
 
 It is not really clear which is the better approach but here we opt for approach (b) as it seems
 to yield slightly more general results.
-
 -/
 
 @[expose] public section
