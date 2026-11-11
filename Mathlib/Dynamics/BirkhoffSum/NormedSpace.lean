@@ -74,33 +74,35 @@ theorem dist_birkhoffAverage_apply_birkhoffAverage (f : α → α) (g : α → E
       dist (g (f^[n] x)) (g x) / n := by
   simp [dist_birkhoffAverage_birkhoffAverage, dist_birkhoffSum_apply_birkhoffSum]
 
-/-- If a function `g` is bounded along the positive orbit of `x` under `f`,
-then the difference between Birkhoff averages of `g`
-along the orbit of `f x` and along the orbit of `x`
-tends to zero.
+/-- If a function `g` is bounded, then the difference between Birkhoff averages of `g`
+along the orbit of `f x` and along the orbit of `x` tends to zero. Version where the point and the
+time may depend on a parameter.
 
-See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage'`. -/
-theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage {f : α → α} {g : α → E} {x : α}
-    (h : Bornology.IsBounded (range (g <| f^[·] x))) :
-    Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) := by
+For the version where the time is `n` and the point is fixed, see also
+`tendsto_birkhoffAverage_apply_sub_birkhoffAverage`. -/
+theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage'
+    {ι : Type*} {u : ι → ℕ} {F : Filter ι}
+    (f : α → α) (x : ι → α) {g : α → E}
+    (h : Bornology.IsBounded (range g)) (hu : Tendsto u F atTop) :
+    Tendsto (fun n ↦ birkhoffAverage 𝕜 f g (u n) (f (x n)) - birkhoffAverage 𝕜 f g (u n) (x n))
+      F (𝓝 0) := by
   rcases Metric.isBounded_range_iff.1 h with ⟨C, hC⟩
   have : Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) :=
     tendsto_const_nhds.div_atTop tendsto_natCast_atTop_atTop
-  refine squeeze_zero_norm (fun n ↦ ?_) this
+  refine squeeze_zero_norm (fun n ↦ ?_) (this.comp hu)
   rw [← dist_eq_norm, dist_birkhoffAverage_apply_birkhoffAverage]
+  simp only [comp_apply]
   gcongr
-  exact hC n 0
+  apply hC
 
-/-- If a function `g` is bounded,
-then the difference between Birkhoff averages of `g`
-along the orbit of `f x` and along the orbit of `x`
-tends to zero.
+/-- If a function `g` is bounded, then the difference between Birkhoff averages of `g`
+along the orbit of `f x` and along the orbit of `x` tends to zero.
 
-See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage`. -/
-theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
+See also `tendsto_birkhoffAverage_apply_sub_birkhoffAverage'`. -/
+theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage {g : α → E}
     (h : Bornology.IsBounded (range g)) (f : α → α) (x : α) :
     Tendsto (fun n ↦ birkhoffAverage 𝕜 f g n (f x) - birkhoffAverage 𝕜 f g n x) atTop (𝓝 0) :=
-  tendsto_birkhoffAverage_apply_sub_birkhoffAverage _ <| h.subset <| range_comp_subset_range _ _
+  tendsto_birkhoffAverage_apply_sub_birkhoffAverage' _ _ _ h tendsto_id
 
 section
 variable [MeasurableSpace α] [NormedSpace ℝ E]

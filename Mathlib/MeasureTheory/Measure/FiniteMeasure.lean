@@ -10,6 +10,8 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.MeasureTheory.Function.AlmostCompactRange
+import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Topology.TietzeExtension
 
 /-!
@@ -842,6 +844,219 @@ lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F 
   continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
 
 end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
+
+variable {X E : Type*} [TopologicalSpace X] [MeasurableSpace X]
+  [OpensMeasurableSpace X] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [MeasurableSpace E] [BorelSpace E]
+
+variable {ι : Type*} {F : Filter ι} {μs : ι → FiniteMeasure X} {ν : FiniteMeasure X}
+
+/-- Real-valued test functions transfer: this is the definition of the weak topology. -/
+lemma tendsto_integral_of_boundedContinuous (f : X →ᵇ ℝ) (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, f x ∂(μs i : Measure X)) F (𝓝 (∫ x, f x ∂ν)) :=
+  (FiniteMeasure.tendsto_iff_forall_integral_tendsto.1 hμ) f
+
+lemma tendsto_integral_of_continuous_of_norm_le (C : ℝ) (f : X → ℝ)
+    (hf : Continuous f) (h'f : ∀ x, ‖f x‖ ≤ C) (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, f x ∂(μs i : Measure X)) F (𝓝 (∫ x, f x ∂ν)) :=
+  tendsto_integral_of_boundedContinuous (.ofNormedAddCommGroup f hf C h'f) hμ
+
+
+section test
+
+
+omit [MeasurableSpace X] [OpensMeasurableSpace X] [MeasurableSpace E] [BorelSpace E] in
+/-- Given a bounded continuous function to a normed space, one can approximate it by a finite sum
+of continuous scalar functions multiplied by vectors, where the approximation is good for points
+landing in a given compact set, and deteriorates as a continuous function away from the
+compact set. -/
+private lemma exists_sum_eq_of_isCompact (g : X →ᵇ E) {L : Set E}
+    {ε : ℝ} (hε : 0 < ε) (hL : IsCompact L) :
+    ∃ (t : Finset E) (ψ : t → X → ℝ),
+      (∀ v, Continuous (ψ v)) ∧ (∀ v x, 0 ≤ ψ v x) ∧ (∀ x, ∑ v, ψ v x ≤ 1) ∧
+      (∀ x, g x ∈ L → ∑ v, ψ v x = 1) ∧
+      (∀ x, ‖g x - ∑ v, ψ v x • (v : E)‖ ≤ ε + ‖g‖ * (1 - ∑ v, ψ v x)) := by
+  /- This is proved by taking a finite partition of unity on the target compact set `L` and
+  composing it with `g`. If the elements of the partition of unity are supported on balls of
+  radius at most `ε`, the estimate follows readily. -/
+  obtain ⟨t, ht⟩ : ∃ (t : Finset E), L ⊆ ⋃ v : t, Metric.ball (v : E) ε := by
+    obtain ⟨t, -, ht_fin, ht_cover⟩ :=
+      Metric.finite_approx_of_totallyBounded hL.totallyBounded ε hε
+    exact ⟨ht_fin.toFinset, fun x hx ↦ by simpa using mem_iUnion₂.1 (ht_cover hx)⟩
+  obtain ⟨ρ, hρ⟩ := PartitionOfUnity.exists_isSubordinate hL.isClosed
+    (fun i : t ↦ Metric.ball (i : E) ε) (fun i ↦ Metric.isOpen_ball) ht
+  set ψ : t → X → ℝ := fun v x ↦ ρ v (g x) with hψ
+  have hsum_eq (x) : ∑ v, ψ v x = ∑ᶠ i : ↥t, ρ i (g x) := by
+    simp [ψ, finsum_eq_sum_of_fintype]
+  have hsum_le_one (x) : ∑ v, ψ v x ≤ 1 := by
+    rw [hsum_eq x]; exact ρ.sum_le_one _
+  refine ⟨t, ψ, fun v ↦ (ρ v).continuous.comp g.continuous,
+    fun v x ↦ by simp [ψ, ρ.nonneg], hsum_le_one, fun x ↦ ?_, fun x ↦ ?_⟩
+  · rw [hsum_eq x]; exact ρ.sum_eq_one
+  calc
+    ‖g x - ∑ v, ψ v x • (v : E)‖
+    _ = ‖∑ v, ψ v x • (g x - v) + (1 - ∑ v, ψ v x) • g x‖ := by
+      simp [sub_smul, smul_sub, Finset.sum_smul]
+    _ ≤ ∑ v, ‖ψ v x • (g x - v)‖ + (1 - ∑ v, ψ v x) * ‖g‖ := by
+      apply (norm_add_le _ _).trans
+      gcongr
+      · exact norm_sum_le Finset.univ _
+      · rw [norm_smul]
+        have : 0 ≤ 1 - ∑ v, ψ v x := by linarith [hsum_le_one x]
+        gcongr
+        · simp only [Real.norm_eq_abs, abs_of_nonneg this, le_of_eq]
+        · exact g.norm_coe_le_norm x
+    _ ≤ ∑ v, ψ v x * ε + (1 - ∑ v, ψ v x) * ‖g‖ := by
+      gcongr with v
+      have hnn : 0 ≤ ψ v x := by simp [ψ, ρ.nonneg]
+      rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg hnn]
+      rcases eq_or_ne (ψ v x) 0 with hvx | hvx
+      · simp [hvx]
+      · gcongr
+        have : g x ∈ tsupport (ρ v) := subset_tsupport _ (by simpa using hvx)
+        exact (mem_ball_iff_norm.mp (hρ v this)).le
+    _ ≤ 1 * ε + (1 - ∑ v, ψ v x) * ‖g‖ := by
+      rw [← Finset.sum_mul]
+      gcongr
+      exact hsum_le_one x
+    _ = ε + ‖g‖ * (1 - ∑ v, ψ v x) := by ring
+
+/-- The integral of a bounded continuous function along a converging family of finite measures
+converges. This general version assumes that the function is ae strongly measurable for all the
+finite measures we consider. -/
+theorem tendsto_integral_of_aestronglyMeasurable (g : X →ᵇ E)
+    (hμ : Tendsto μs F (𝓝 ν)) (hmeas : ∀ i, AEStronglyMeasurable g (μs i))
+    (hmeasν : AEStronglyMeasurable g ν) :
+    Tendsto (fun i ↦ ∫ x, g x ∂(μs i : Measure X)) F (𝓝 (∫ x, g x ∂ν)) := by
+  by_cases hE : CompleteSpace E; swap
+  · simpa [integral_of_not_completeSpace hE] using tendsto_const_nhds
+  /- we approximate `g` by a sum of one-dimensional functions, of the form `∑ v, ψ v x • v`.
+  For each function `ψ v`, the integrals converge as they are scalar functions. The issue is to
+  make sure that the error term is uniformly small.
+  With high probability for `ν`, the function `g` takes its values in a compact set `L`. Using
+  a partition of unity on `L` gives an approximation as above which is uniformly small on `L`,
+  see the lemma `exists_sum_eq_of_isCompact`.
+  The error is controlled by the function `1 - ∑ v, ψ v x`, which has a small integral for `ν`.
+  By the convergence for scalar functions, it also has a small integral for `μs i` for large `i`,
+  which gives the required control. -/
+  apply Metric.tendsto_nhds.2 (fun η ηpos ↦ ?_)
+  let m : ℝ := (ν : Measure X).real univ
+  obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, (2 * m + 4 * ‖g‖ + 3) * ε < η := by
+    refine ⟨η / 2 / (2 * m + 4 * ‖g‖ + 3), by positivity, ?_⟩
+    apply lt_of_le_of_lt ?_ (half_lt_self ηpos)
+    rw [mul_div, mul_div_cancel_left₀ _ (by positivity)]
+  obtain ⟨L, hL, hLν⟩ := AEStronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le
+    (ν : Measure X) hmeasν εpos
+  obtain ⟨t, ψ, ψ_cont, ψ_nonneg, hsum_le_one, hsum_eq_one, happrox⟩ :=
+    exists_sum_eq_of_isCompact g εpos hL
+  have ψ_le_one (v x) : ψ v x ≤ 1 :=
+    (Finset.single_le_sum (fun i hi ↦ ψ_nonneg i x) (Finset.mem_univ _)).trans (hsum_le_one x)
+  have abs_ψ_le_one (v x) : |ψ v x| ≤ 1 :=
+    abs_le.2 ⟨by linarith [ψ_nonneg v x], by linarith [ψ_le_one v x]⟩
+  let θ : X → ℝ := fun x ↦ ∑ v, ψ v x
+  have θ_nonneg (x) : 0 ≤ θ x := Finset.sum_nonneg fun v hv ↦ ψ_nonneg v x
+  have θ_le_one (x) : θ x ≤ 1 := hsum_le_one x
+  -- asymptotically, the error for the contribution of the finite dimensional approximations
+  -- is controlled
+  have h_sum_control : ∀ᶠ i in F,
+      dist (∑ v, (∫ x, ψ v x ∂(μs i)) • (v : E)) (∑ v, (∫ x, ψ v x ∂ν) • (v : E)) < ε := by
+    apply Metric.tendsto_nhds.1 ?_ ε εpos
+    apply tendsto_finsetSum _ (fun v hv ↦ ?_)
+    apply Tendsto.smul_const
+    apply tendsto_integral_of_continuous_of_norm_le 1 _ (ψ_cont v) ?_ hμ
+    grind [Real.norm_eq_abs]
+  -- asymptotically, the error coming from `θ` is controlled
+  have hεν : ∫ x, 1 - θ x ∂ν ≤ ε := calc
+    ∫ x, 1 - θ x ∂ν
+    _ = ∫ x in (g ⁻¹' L)ᶜ, 1 - θ x ∂ν := by
+      apply (setIntegral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+      rw [sub_eq_zero, eq_comm]
+      exact hsum_eq_one _ (by grind)
+    _ ≤ ∫ x in (g ⁻¹' L)ᶜ, 1 ∂ν := by
+      apply integral_mono_of_nonneg
+      · filter_upwards with x using by simp [θ_le_one x]
+      · simp
+      · filter_upwards with x using by simp [θ_nonneg x]
+    _ ≤ ε := by simpa using hLν.le
+  have h_θ_control : ∀ᶠ i in F, ∫ x, (1 - θ x) ∂(μs i) ≤ 2 * ε := by
+    have : Tendsto (fun i ↦ ∫ x, (1 - θ x) ∂(μs i)) F (𝓝 (∫ x, (1 - θ x) ∂ν)) := by
+      apply tendsto_integral_of_continuous_of_norm_le 1 _ (by fun_prop) (fun x ↦ ?_) hμ
+      grind [θ_nonneg x, θ_le_one x, Real.norm_eq_abs]
+    filter_upwards [Metric.tendsto_nhds.1 this ε εpos] with i hi
+    rw [Real.dist_eq] at hi
+    have hi' := (abs_lt.1 hi).2
+    linarith
+  -- asymptotically, the total mass is controlled
+  have h_mass_control : ∀ᶠ i in F, (μs i : Measure X).real univ ≤ m + 1 := by
+    have hmass : Tendsto (fun i ↦ (μs i : Measure X).real univ) F
+        (𝓝 ((ν : Measure X).real univ)) := by
+      have h := (FiniteMeasure.tendsto_iff_forall_integral_tendsto.1 hμ) (1 : X →ᵇ ℝ)
+      simpa only [FunLike.coe_one, Pi.one_apply, integral_const, smul_eq_mul,
+        mul_one] using h
+    have hevent := (Metric.tendsto_nhds.1 hmass) 1 one_pos
+    filter_upwards [hevent] with i hi
+    rw [Real.dist_eq] at hi
+    linarith [(abs_lt.1 hi).2]
+  filter_upwards [h_sum_control, h_θ_control, h_mass_control] with i hi_sum hi_θ hi_mass
+  simp only [dist_eq_norm] at hi_sum ⊢
+  -- rewriting the integral of `g` as the sum of scalar functions plus the error term
+  have M {ρ : FiniteMeasure X} (hρ : AEStronglyMeasurable g ρ) : ∫ x, g x ∂ρ
+      = ∑ v, (∫ (x : X), ψ v x ∂ρ) • (v : E) + ∫ x, (g x - ∑ v, ψ v x • (v : E)) ∂ρ := by
+    have I (v) : Integrable (fun x ↦ ψ v x • (v : E)) ρ := by
+      apply Integrable.of_bound (by fun_prop) ‖(v : E)‖
+      filter_upwards with x
+      simp only [norm_smul, Real.norm_eq_abs]
+      exact mul_le_of_le_one_left (by positivity) (abs_ψ_le_one _ _)
+    rw [integral_sub, integral_finsetSum]
+    · simp_rw [integral_smul_const]
+      abel
+    · exact fun v hv ↦ I v
+    · exact Integrable.of_bound hρ ‖g‖ (by filter_upwards with x using norm_coe_le_norm g x)
+    · exact integrable_finsetSum _ (fun v hv ↦ I v)
+  -- control of the integral of the error term
+  have M' {ρ : FiniteMeasure X} (h : ρ.mass ≤ m + 1) (h' : ∫ x, 1 - θ x ∂ρ ≤ 2 * ε):
+      ‖∫ x, (g x - ∑ v, ψ v x • (v : E)) ∂ρ‖ ≤ (m + 1) * ε + ‖g‖ * (2 * ε) := by
+    have I :  Integrable (fun x ↦ 1 - θ x) ρ := by
+      apply Integrable.of_bound (by fun_prop) 1
+      filter_upwards with x
+      grind [θ_nonneg x, θ_le_one x, Real.norm_eq_abs]
+    calc ‖∫ x, (g x - ∑ v, ψ v x • (v : E)) ∂ρ‖
+    _ ≤ ∫ x, ε + ‖g‖ * (1 - θ x) ∂ρ := by
+      apply norm_integral_le_of_norm_le (by fun_prop)
+      filter_upwards with x using happrox x
+    _ = ∫ x, ε ∂(ρ : Measure X) + ‖g‖ * ∫ x, (1 - θ x) ∂ρ := by
+      rw [integral_add, integral_const_mul]
+      · simp
+      · apply I.const_mul
+    _ ≤ (m + 1) * ε + ‖g‖ * (2 * ε) := by
+      gcongr
+      simp only [integral_const, measureReal_eq_coe_coeFn, smul_eq_mul]
+      gcongr
+      exact h
+  -- piece everything together
+  calc
+    ‖∫ (x : X), g x ∂(μs i) - ∫ (x : X), g x ∂ν‖
+    _ = ‖∫ (x : X), (g x - ∑ v, ψ v x • (v : E)) ∂(μs i)
+          + -∫ (x : X), (g x - ∑ v, ψ v x • (v : E)) ∂ν
+        + (∑ v, (∫ (x : X), ψ v x ∂(μs i)) • (v : E) - ∑ v, (∫ (x : X), ψ v x ∂ν) • (v : E))‖ := by
+      simp_rw [M (hmeas i), M (hmeasν)]
+      abel_nf
+    _ ≤ ‖∫ (x : X), (g x - ∑ v, ψ v x • (v : E)) ∂(μs i)‖
+        + ‖∫ (x : X), (g x - ∑ v, ψ v x • (v : E)) ∂ν‖
+        + ‖∑ v, (∫ (x : X), ψ v x ∂(μs i)) • (v : E) - ∑ v, (∫ (x : X), ψ v x ∂ν) • (v : E)‖ :=
+      norm_add₃_le.trans (by simp)
+    _ ≤ ((m + 1) * ε + ‖g‖ * (2 * ε)) + ((m + 1) * ε + ‖g‖ * (2 * ε)) + ε := by
+      gcongr
+      · exact M' hi_mass hi_θ
+      · apply M'
+        · change m ≤ m + 1
+          linarith
+        · exact hεν.trans (by linarith)
+    _ = (2 * m + 4 * ‖g‖ + 3) * ε := by ring
+    _ < η := hε
+
+
+end test
 
 
 section comap

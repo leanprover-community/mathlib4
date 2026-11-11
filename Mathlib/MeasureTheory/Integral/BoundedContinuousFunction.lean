@@ -95,12 +95,12 @@ lemma lintegral_nnNorm_le (f : X →ᵇ E) :
 
 @[deprecated (since := "2026-10-31")] alias lintegral_nnnorm_le := lintegral_nnNorm_le
 
-variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
+variable [OpensMeasurableSpace X] [SecondCountableTopologyEither X E]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
-  refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
+  refine ⟨f.continuous.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
     _ ≤ ‖f‖₊ * (μ Set.univ) := f.lintegral_nnNorm_le μ
     _ < ∞                   := ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top μ Set.univ)
@@ -115,7 +115,7 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
     _ ≤ ∫ _, ‖f‖ ∂μ := ?_
     _ = μ.real Set.univ • ‖f‖ := by rw [integral_const]
   apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
-  exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
+  exact (integrable_norm_iff f.continuous.aestronglyMeasurable).mpr (f.integrable μ)
 
 lemma norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ ‖f‖ := by
