@@ -20,7 +20,6 @@ between spaces of multilinear functions in `n+1` variables and spaces of linear 
 multilinear functions in `n` variables (resp. multilinear functions in `n` variables taking values
 in linear functions), called respectively `multilinearCurryLeftEquiv` and
 `multilinearCurryRightEquiv`.
-
 -/
 
 @[expose] public section

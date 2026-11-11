@@ -48,7 +48,6 @@ numbers but instead Davis' variant of using solutions to Pell's equation.
 ## Tags
 
 Pell's equation, Matiyasevic's theorem, Hilbert's tenth problem
-
 -/
 
 @[expose] public section

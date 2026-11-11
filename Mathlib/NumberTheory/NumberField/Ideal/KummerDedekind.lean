@@ -47,7 +47,6 @@ Let `K` be a number field and `θ` an algebraic integer of `K`.
   ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
   `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the multiplicity of `Q mod p`
   in `minpoly ℤ θ`.
-
 -/
 
 @[expose] public section

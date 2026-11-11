@@ -65,7 +65,6 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 ## References
 
 [Rudin, *Real and Complex Analysis* (Theorem 2.24)][rudin1987]
-
 -/
 
 public section

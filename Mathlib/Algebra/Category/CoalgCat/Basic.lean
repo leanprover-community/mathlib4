@@ -15,7 +15,6 @@ We introduce the bundled category `CoalgCat` of coalgebras over a fixed commutat
 along with the forgetful functor to `ModuleCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section

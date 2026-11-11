@@ -32,7 +32,6 @@ In this file, we show that if all the categories are equipped with
 shifts by an abelian group `A`, all the involved functors and natural
 transformations commute with these, then this natural transformation
 `RF₁₃ ⟶ RF₁₂ ⋙ RF₂₃` also commutes with shifts.
-
 -/
 
 @[expose] public section

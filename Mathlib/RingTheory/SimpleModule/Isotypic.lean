@@ -39,7 +39,6 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 ## Keywords
 
 isotypic component, fully invariant submodule
-
 -/
 
 @[expose] public section

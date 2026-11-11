@@ -12,7 +12,6 @@ public import Mathlib.Geometry.Euclidean.Angle.Oriented.RightAngle
 # Angle bisectors.
 
 This file proves lemmas relating to bisecting angles.
-
 -/
 
 public section

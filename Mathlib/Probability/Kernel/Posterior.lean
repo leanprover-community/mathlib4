@@ -47,7 +47,6 @@ and data can be recovered from the distribution of the data and the posterior.
 
 This notation emphasizes that the posterior is a kind of inverse of `κ`, which we would want to
 denote `κ†`, but we have to also specify the measure `μ`.
-
 -/
 
 @[expose] public section

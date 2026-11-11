@@ -29,7 +29,6 @@ are quite tedious, and we usually don't want to see them.
 The monoidal composition `⊗≫` is designed to solve such a problem. In this case, we can define the
 desired morphism as `𝟙 _ ⊗≫ V₁ ◁ R V₂ V₃ ▷ V₄ ▷ V₅ ⊗≫ 𝟙 _`, where the first and the second `𝟙 _`
 are completed as `𝟙 (V₁ ⊗ V₂ ⊗ V₃ ⊗ V₄ ⊗ V₅)` and `𝟙 (V₁ ⊗ V₃ ⊗ V₂ ⊗ V₄ ⊗ V₅)`, respectively.
-
 -/
 
 @[expose] public section

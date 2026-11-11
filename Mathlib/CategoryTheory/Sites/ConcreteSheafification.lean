@@ -16,7 +16,6 @@ We construct the sheafification of a presheaf over a site `C` with values in `D`
 and reflects isomorphisms.
 
 We generally follow the approach of https://stacks.math.columbia.edu/tag/00W1
-
 -/
 
 @[expose] public section

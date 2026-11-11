@@ -28,7 +28,6 @@ the Liquid Tensor Experiment.
 ## References
 
 * https://stacks.math.columbia.edu/tag/0111
-
 -/
 
 @[expose] public section

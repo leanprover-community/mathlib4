@@ -28,7 +28,6 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 ## Main result
 - `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
-
 -/
 
 @[expose] public noncomputable section

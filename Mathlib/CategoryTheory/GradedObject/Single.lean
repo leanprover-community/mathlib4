@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.GradedObject
 In this file, we define the functor `GradedObject.single j : C ⥤ GradedObject J C`
 which sends an object `X : C` to the graded object which is `X` in degree `j` and
 the initial object of `C` in other degrees.
-
 -/
 
 @[expose] public section

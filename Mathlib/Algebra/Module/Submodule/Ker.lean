@@ -25,7 +25,6 @@ This file defines the kernel of a linear map.
 
 ## Tags
 linear algebra, vector space, module
-
 -/
 
 @[expose] public section
