@@ -36,9 +36,16 @@ example : x + ofNat(nat_lit 0) = x := by
 example : no_index (x + y) + z = z + (y + x) := by
   abel1
 
+/-! ### `basify` -/
+
+example : ∀ (a : ENNReal := 0), a ≤ a + 1 := by
+  intro a
+  basify
+  linarith
+
 /-! ### `linarith`: preprocessing of `ℕ` and `ℝ≥0`
 
-Here the metadata is on the *type*, which is the situation that `basify` ran into. -/
+Here the annotation is on the *type*. -/
 
 example (n m : ℕ := 3) (h : n < m) : n ≤ m := by
   linarith
