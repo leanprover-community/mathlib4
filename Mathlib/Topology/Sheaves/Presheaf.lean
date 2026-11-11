@@ -104,61 +104,50 @@ variable {X : TopCat.{w}} {C : Type u} [Category.{v} C] {FC : C → C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 /-- The restriction of a section along an inclusion of open sets.
-For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`. -/
-scoped syntax:80 term:80 " |_ₕ " term:81 : term
-/-- restriction of a section along a subset relation -/
-scoped syntax:80 term:80 " |_ₗ " term:81 " ⟪" term "⟫" : term
+For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
+and the notation `x |_ₗ U ⟪i⟫` (`l` stands for `le`) for `i : U ≤ V`.
+-/
+def restrict {F : X.Presheaf C}
+    {V : Opens X} (x : ToType (F.obj (op V))) {U : Opens X} (h : U ⟶ V) : ToType (F.obj (op U)) :=
+  F.map h.op x
 
-/-- Elaborator for `|_ₕ` and `|_ₗ`. -/
-elab_rules : term
-  | `($x |_ₕ $i) => do
-    let x ← Lean.Elab.Term.elabTerm x none
-    let i ← Lean.Elab.Term.elabTerm i none
-    let i_op ← Lean.Meta.mkAppM ``Quiver.Hom.op #[i]
-    Lean.Meta.mkAppM ``CategoryTheory.Functor.map #[i_op, x]
-  | `($x |_ₗ $U ⟪$e⟫) => do
-    let x ← Lean.Elab.Term.elabTerm x none
-    let U ← Lean.Elab.Term.elabTerm U none
-    let e ← Lean.Elab.Term.elabTerm e none
-    let hom ← Lean.Meta.mkAppM ``CategoryTheory.homOfLE #[e]
-    let hom_op ← Lean.Meta.mkAppM ``Quiver.Hom.op #[hom]
-    Lean.Meta.mkAppM ``CategoryTheory.Functor.map #[hom_op, x]
+/-- restriction of a section along an inclusion -/
+scoped[AlgebraicGeometry] infixl:80 " |_ₕ " => TopCat.Presheaf.restrict
+/-- restriction of a section along a subset relation -/
+scoped[AlgebraicGeometry] notation:80 x " |_ₗ " U " ⟪" e "⟫ " =>
+  @TopCat.Presheaf.restrict _ _ _ _ _ _ _ _ _ x U (@homOfLE (Opens _) _ U _ e)
+
+open AlgebraicGeometry
 
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ U`, where the proof `U ≤ V` is inferred by
-the tactic `restrict_tac` -/
-scoped macro:80 x:80 " |_ " U:81 : term => `($x |_ₗ $U ⟪by restrict_tac⟫)
+the tactic `Top.presheaf.restrict_tac'` -/
+abbrev restrictOpen {F : X.Presheaf C}
+    {V : Opens X} (x : ToType (F.obj (op V))) (U : Opens X)
+    (e : U ≤ V := by restrict_tac) :
+    ToType (F.obj (op U)) :=
+  x |_ₗ U ⟪e⟫
 
-/-- Unexpander for `CategoryTheory.Functor.map`. -/
-@[scoped app_unexpander CategoryTheory.Functor.map]
-def functorMapUnexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $_ $f $x) =>
-    match f with
-    | `(Quiver.Hom.op $i) =>
-      match i with
-      | `(CategoryTheory.homOfLE $e) =>
-        match e with
-        | `(by restrict_tac) => `($x |_ _)
-        | _ => `($x |_ₗ _ ⟪$e⟫)
-      | _ => `($x |_ₕ $i)
-    | _ => throw ()
-  | _ => throw ()
+/-- restriction of a section to open subset -/
+scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
 theorem restrict_restrict
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : ToType (F.obj (op W))) :
     x |_ V |_ U = x |_ U := by
+  delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, ← Functor.map_comp]
   rfl
 
 theorem map_restrict
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : ToType (F.obj (op V))) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
+  delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
 
 @[simp]
 lemma restrict_self {F : X.Presheaf C} {U : Opens X} (x : ToType (F.obj (op U))) :
     x |_ U = x := by
-  simp
+  simp [restrictOpen, restrict]
 
 open CategoryTheory.Limits
 
