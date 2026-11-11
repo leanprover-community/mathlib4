@@ -21,7 +21,7 @@ relevant continuous functional calculus). This file provides these results for t
 
 + `IsStarOrtho.cfcₙ_complex_left`: if `a` is normal and `a ⋆⟂ b`, then `cfcₙ f a ⋆⟂ b`.
 + `IsStarOrtho.cfcₙ_real_left`: if `a` is selfadjoint and `a ⋆⟂ b`, then `cfcₙ f a ⋆⟂ b`.
-+ `IsStarOrtho.cfcₙ_nnreal_left`: if `a` is nonnegative and `a ⋆⟂ b`, then `cfcₙ f a ⋆⟂ b`.
++ `IsStarOrtho.cfcₙ_nnReal_left`: if `a` is nonnegative and `a ⋆⟂ b`, then `cfcₙ f a ⋆⟂ b`.
 + `isStarOrtho_sqrt_left_iff`: if `0 ≤ a`, then `CFC.sqrt a ⋆⟂ b ↔ a ⋆⟂ b`.
 -/
 
