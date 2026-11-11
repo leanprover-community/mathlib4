@@ -190,6 +190,9 @@ def simple (i : B) : W := cs.mulEquiv.symm (M.simple i)
 
 @[simp] theorem mulEquiv_symm_simple (i : B) : cs.mulEquiv.symm (M.simple i) = cs.simple i := rfl
 
+@[simp] theorem mulEquiv_simple (i : B) : cs.mulEquiv (cs.simple i) = M.simple i :=
+  cs.mulEquiv.apply_symm_apply _
+
 @[simp]
 theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
     M.toCoxeterSystem.simple = M.simple := rfl
@@ -327,10 +330,10 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     rw [comp_apply, comp_apply, ← map_mul, ← map_pow, simple_mul_simple_pow, map_one]⟩
   left_inv f := by
     ext i
-    simp [simple, groupLift, restrictUnit]
+    simp [← mulEquiv_symm_simple, groupLift, restrictUnit]
   right_inv ι := by
     apply cs.ext_simple
-    simp [simple, groupLift, restrictUnit]
+    simp [← mulEquiv_symm_simple, groupLift, restrictUnit]
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
@@ -344,7 +347,7 @@ theorem injective_simple : Injective (simple : CoxeterSystem M W → B → W) :=
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
   nth_rw 2 [h]
-  simp [simple]
+  simp
 
 @[deprecated (since := "2026-11-08")] alias simple_determines_coxeterSystem := injective_simple
 
