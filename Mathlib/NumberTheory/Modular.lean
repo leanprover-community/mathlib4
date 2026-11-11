@@ -660,19 +660,19 @@ private lemma serreTheorem_im_eq (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : (g 
     · rcases cases_c_one_d_zero hz hg hden hc hd with
         ⟨rfl, hnm⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
       · simp [normSq_eq_norm_sq, denom, hnm]
-      · rw [show T⁻¹ * S = SpecialLinearGroup.mk !![-1, -1; 1, 0] (by simp) by decide]
+      · rw [show T⁻¹ * S = .mk !![-1, -1; 1, 0] (by simp) by decide]
         norm_num [ρ, denom, ← pow_two, div_pow]
-      · rw [show T * S = SpecialLinearGroup.mk !![1, -1; 1, 0] (by simp) by decide]
+      · rw [show T * S = .mk !![1, -1; 1, 0] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
     · rcases case_c_one_d_one hz hg hden hc hd with ⟨(rfl | rfl), rfl⟩
-      · rw [show S * T = SpecialLinearGroup.mk !![0, -1; 1, 1] (by simp) by decide]
+      · rw [show S * T = .mk !![0, -1; 1, 1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
-      · rw [show T * S * T = SpecialLinearGroup.mk !![1, 0; 1, 1] (by simp) by decide]
+      · rw [show T * S * T = .mk !![1, 0; 1, 1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
     · rcases case_c_one_d_neg_one hz hg hden hc hd with ⟨(rfl | rfl), rfl⟩
-      · rw [show S * T⁻¹ = SpecialLinearGroup.mk !![0, -1; 1, -1] (by simp) by decide]
+      · rw [show S * T⁻¹ = .mk !![0, -1; 1, -1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
-      · rw [show T⁻¹ * S * T⁻¹ = SpecialLinearGroup.mk !![-1, 0; 1, -1] (by simp) by decide]
+      · rw [show T⁻¹ * S * T⁻¹ = .mk !![-1, 0; 1, -1] (by simp) by decide]
         norm_num [ρ, denom, normSq, ← pow_two, div_pow]
 
 /-- Classify the `z` and `g` with `z ∈ 𝒟` and `g • z ∈ 𝒟`. -/

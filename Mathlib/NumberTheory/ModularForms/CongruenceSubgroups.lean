@@ -269,7 +269,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     have := congr($(hz_coe).det)
     simp_rw [Matrix.det_mul, ← Int.cast_det, y', y.2] at this
     simpa [←Matrix.det_mul, hA₁₂]
-  refine ⟨SpecialLinearGroup.mk z hz_det, ?_, by
+  refine ⟨.mk z hz_det, ?_, by
     simpa only [Subtype.ext_iff, Subgroup.coe_mul, Units.ext_iff, Units.val_mul] using! hz_coe⟩
   simp only [SetLike.mem_coe, Gamma_mem, Fin.isValue, coe_mk, Matrix.add_apply, one_apply_eq,
     z, Matrix.smul_apply]
