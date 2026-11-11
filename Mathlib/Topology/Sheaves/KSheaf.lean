@@ -206,9 +206,11 @@ def pushforward : KSheaf A X ⥤ KSheaf A Y :=
   (ObjectProperty.ι KPresheaf.IsKSheaf ⋙ (KPresheaf.pushforward f pf))
   (fun F ↦ F.pushforwardObj_isKSheaf pf)
 
+/-- The isomorphism between the pushforwad of identity and the identity functor -/
 def pushforwardId [LocallyCompactSpace X] :
     pushforward (𝟙 X) (isProperMap_id) ≅ Functor.id (KSheaf A X) := eqToIso rfl
 
+/-- The isomorphism between the pushforwad of a composition and the composition of pushforwards -/
 def pushforwardComp {Z : TopCat.{w}} [T2Space Z] [LocallyCompactSpace Z] {g : Y ⟶ Z}
     (pg : IsProperMap g.hom') :
     pushforward (A := A) f  pf ⋙ pushforward g pg ≅
