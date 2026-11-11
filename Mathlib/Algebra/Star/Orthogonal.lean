@@ -19,7 +19,7 @@ of a ⋆-ring are *star-orthogonal*, i.e., `p * star q = 0` and `star q * p = 0`
 
 ## Main declarations
 
-+ `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`: selfadjoint elements are star-orthogonal if and
++ `IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero`: self-adjoint elements are star-orthogonal if and
   only if their product is zero.
 + `IsStarOrtho.star_add_mul_add`: if `p ⋆⟂ q`, then
   `star (p + q) * (p + q) = star p * p + star q * q`.
@@ -218,7 +218,7 @@ protected lemma IsSelfAdjoint.isStarOrtho_iff' (hp : IsSelfAdjoint p) :
     p ⋆⟂ q ↔ p * q = 0 ∧ q * p = 0 := by
   rw [isStarOrtho_comm, hp.isStarOrtho_iff, and_comm]
 
-/-- Selfadjoint elements are star-orthogonal if and only if their product is zero. -/
+/-- Self-adjoint elements are star-orthogonal if and only if their product is zero. -/
 @[grind =]
 lemma IsSelfAdjoint.isStarOrtho_iff_mul_eq_zero (hp : IsSelfAdjoint p)
     (hq : IsSelfAdjoint q) : p ⋆⟂ q ↔ p * q = 0 := by
