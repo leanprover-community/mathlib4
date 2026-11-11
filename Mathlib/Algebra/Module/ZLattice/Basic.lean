@@ -471,26 +471,12 @@ instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
 
-section IsFullLattice
-
-/-! ### Comparison with `Submodule.IsFullLattice` -/
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (L : Submodule ℤ E)
-
+-- Needed as long as downstream code uses `ZLattice.covolume` with full lattices; remove once
+-- `ZLattice/Covolume.lean` is migrated.
 /-- A full lattice in a real normed space is a `ℤ`-lattice. -/
-instance Submodule.IsFullLattice.isZLattice [IsFullLattice ℝ L] : IsZLattice ℝ L where
+instance Submodule.IsFullLattice.isZLattice {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (L : Submodule ℤ E) [IsFullLattice ℝ L] : IsZLattice ℝ L where
   span_top := IsFullLattice.span_eq_top
-
-/-- A `ℤ`-lattice in a finite-dimensional real normed space is a full lattice. -/
-theorem IsZLattice.isFullLattice [FiniteDimensional ℝ E] [DiscreteTopology L] [IsZLattice ℝ L] :
-    IsFullLattice ℝ L :=
-  (IsFullLattice.iff_discreteTopology_int L).mpr ⟨‹_›, IsZLattice.span_top⟩
-
-theorem IsZLattice.iff_isFullLattice [FiniteDimensional ℝ E] [DiscreteTopology L] :
-    IsZLattice ℝ L ↔ IsFullLattice ℝ L :=
-  ⟨fun _ ↦ isFullLattice L, fun _ ↦ inferInstance⟩
-
-end IsFullLattice
 
 section NormedLinearOrderedField
 
