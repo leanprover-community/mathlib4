@@ -227,7 +227,7 @@ theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
   hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
 
 lemma StarOrderedRing.induction_on {motive : {r : R} → 0 ≤ r → Prop}
-    (star_mul : ∀ x, motive (star_mul_self_nonneg x)) (zero : motive le_rfl)
+    (star_mul_self : ∀ x, motive (star_mul_self_nonneg x)) (zero : motive le_rfl)
     (add : ∀ x y hx hy, motive hx → motive hy → motive (r := x + y) (add_nonneg hx hy))
     {r : R} (hr : 0 ≤ r) :
     motive hr := by

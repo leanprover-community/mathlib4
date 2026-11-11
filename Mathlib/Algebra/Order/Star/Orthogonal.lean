@@ -51,14 +51,14 @@ lemma mul_star_eq_zero_of_mul_mul_star_eq_zero {a c : A} (ha : 0 ≤ a)
       (star_right_conjugate_nonneg hy c)] at h
     rw [add_mul, ihx h.1, ihy h.2, add_zero]
 
-lemma isStarOrtho_of_nonneg_iff {a b : A} (ha : 0 ≤ a) :
+lemma isStarOrtho_iff_of_nonneg {a b : A} (ha : 0 ≤ a) :
     a ⋆⟂ b ↔ star b * a * b = 0 ∧ b * a * star b = 0 := by
   rw [isStarOrtho_iff', (IsSelfAdjoint.of_nonneg ha).star_eq]
   refine ⟨fun h ↦ ⟨by simp [mul_assoc, h.2], by simp [mul_assoc, h.1]⟩, fun h ↦ ⟨?_, ?_⟩⟩
   · exact mul_star_eq_zero_of_mul_mul_star_eq_zero ha h.2
   · simpa using mul_star_eq_zero_of_mul_mul_star_eq_zero ha (c := star b) (by simpa using h.1)
 
-lemma isStarOrtho_of_nonneg_of_isSelfAdjoint_iff {a b : A} (ha : 0 ≤ a) (hb : IsSelfAdjoint b) :
+lemma isStarOrtho_iff_of_nonneg_of_isSelfAdjoint {a b : A} (ha : 0 ≤ a) (hb : IsSelfAdjoint b) :
     a ⋆⟂ b ↔ b * a * b = 0 := by
   simp [isStarOrtho_of_nonneg_iff ha, hb.star_eq]
 
@@ -104,7 +104,7 @@ variable [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A] [Is
 
 /-- If `p` and `p + q` are star projections and `0 ≤ q`, then `q ⋆⟂ p`. -/
 lemma IsStarProjection.isStarOrtho_of_add {p q : A} (hp : IsStarProjection p)
-    (hq : 0 ≤ q) (hr : IsStarProjection (p + q)) : q ⋆⟂ p := by
+    (hq : 0 ≤ q) (hr : IsStarProjection (p + q)) : p ⋆⟂ q := by
   set r := p + q
   have hpp : p * p = p := hp.isIdempotentElem.eq
   /- `p * q * p = p * r * p - p`, and `p - p * r * p = (p - p * r) * star (p - p * r) ≥ 0`. -/
