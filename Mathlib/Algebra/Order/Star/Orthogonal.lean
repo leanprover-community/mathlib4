@@ -17,15 +17,15 @@ This file develops the API for `IsStarOrtho` in a `StarOrderedRing` with `IsProp
 
 ## Main declarations
 
-+ `isStarOrtho_of_nonneg_iff`: if `0 ≤ a`, then `a ⋆⟂ b` if and only if
++ `isStarOrtho_iff_of_nonneg`: if `0 ≤ a`, then `a ⋆⟂ b` if and only if
   `star b * a * b = 0` and `b * a * star b = 0`.
 + `IsStarOrtho.mono`: if `0 ≤ a ≤ b` and `b ⋆⟂ c`, then `a ⋆⟂ c`.
 + `IsStarOrtho.sum_iff`: a finite sum of nonnegative elements is star-orthogonal to `c` if and only
   if each summand is.
 + `isStarProjection_sum_iff`: a finite sum of star projections is a star projection if and only if
   they are pairwise star-orthogonal.
-+ `IsStarProjection.isStarOrtho_of_add`: The sum of a star projection and a nonnegative element is
-  a star projection if and only if they are star-orthogonal.
++ `IsStarProjection.isStarOrtho_of_add`: If the sum of a star projection and a nonnegative element
+  is a star projection, then they are star-orthogonal.
 -/
 
 public section
