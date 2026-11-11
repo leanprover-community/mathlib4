@@ -182,17 +182,13 @@ theorem isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ} (hε_pos :
   apply Nat.find_spec <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H hε_pos
   simpa only [turanDensityConst, hε_pos, ↓reduceDIte] using h_verts
 
-/-- There are at least `card W` many vertices at `turanDensityConst`, since simple graphs on
-fewer vertices cannot contain `H`. -/
+/-- `turanDensityConst H ε` is at least `card W`, since the complete graph on fewer vertices has
+enough edges but not enough vertices to contain `H : SimpleGraph W`. -/
 theorem card_le_turanDensityConst [Fintype W] (H : SimpleGraph W) {ε : ℝ} (hε_pos : 0 < ε)
     (h : H.turanDensity + ε ≤ 1) : card W ≤ turanDensityConst H ε := by
-  classical
-  rw [turanDensityConst, dite_eq_left hε_pos, Nat.le_find_iff]
-  refine fun m (hm : m < card W) h_find ↦ absurd hm ?_
-  obtain ⟨f : Copy H ⊤⟩ := by
-    apply h_find m le_rfl (G := ⊤)
-    rw [card_edgeFinset_top_eq_card_choose_two, Fintype.card_fin]
-    exact mul_le_of_le_one_left (Nat.cast_nonneg (m.choose 2)) h
-  simpa using Fintype.card_le_of_embedding f.toEmbedding
+  obtain ⟨f⟩ := isContained_of_card_edgeFinset H hε_pos (Fintype.card_fin _).ge ⊤ <| by
+    rw [card_edgeFinset_top_eq_card_choose_two]
+    exact mul_le_of_le_one_left (Nat.cast_nonneg _) h
+  simpa using card_le_of_embedding f.toEmbedding
 
 end SimpleGraph
