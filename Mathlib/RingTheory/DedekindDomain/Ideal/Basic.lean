@@ -62,17 +62,20 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit (x : K)
   set I := adjoinIntegral A⁰ x hx
   have mul_self : IsIdempotentElem I := by
     apply coeToSubmodule_injective
-    simp only [coe_mul, adjoinIntegral_coe, I]
+    simp only [coeToSubmodule_mul, coeToSubmodule_adjoinIntegral, I]
     rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
   convert! congr($mul_self * I⁻¹) <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
 
-theorem FractionalIdeal.one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I ≠ ⊥) :
+theorem FractionalIdeal.one_mem_inv_coeIdeal [IsDomain A] {I : Ideal A} (hI : I ≠ ⊥) :
     (1 : K) ∈ (I : FractionalIdeal A⁰ K)⁻¹ := by
   rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI)]
   intro y hy
   rw [one_mul]
   exact coeIdeal_le_one hy
+
+@[deprecated (since := "2026-11-10")]
+alias FractionalIdeal.one_mem_inv_coe_ideal := FractionalIdeal.one_mem_inv_coeIdeal
 
 /-- Specialization of `exists_primeSpectrum_prod_le_and_ne_bot_of_domain` to Dedekind domains:
 Let `I : Ideal A` be a nonzero ideal, where `A` is a Dedekind domain that is not a field.
@@ -120,7 +123,7 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
   wlog hM : I.IsMaximal generalizing I
   · rcases I.exists_le_maximal hI1 with ⟨M, hmax, hIM⟩
     have hMbot : M ≠ ⊥ := (M.bot_lt_of_maximal hNF).ne'
-    refine mt (le_trans <| inv_anti_mono ?_ ?_ ?_) (this hMbot hmax.ne_top hmax) <;>
+    refine mt (le_trans <| inv_anti_mono ?_ ?_) (this hMbot hmax.ne_top hmax) <;>
       simpa only [coeIdeal_ne_zero, coeIdeal_le_coeIdeal]
   have hI0 : ⊥ < I := I.bot_lt_of_maximal hNF
   obtain ⟨⟨a, haI⟩, ha0⟩ := Submodule.nonzero_mem_of_bot_lt hI0
@@ -155,8 +158,8 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥) (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) :
-    I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
+private theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥)
+    (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show a contradiction with `exists_notMem_one_of_ne_bot`:
   -- `J⁻¹ = (I * I⁻¹)⁻¹` cannot have an element `x ∉ 1`, so it must equal `1`.
   obtain ⟨J, hJ⟩ : ∃ J : Ideal A, (J : FractionalIdeal A⁰ K) = I * (I : FractionalIdeal A⁰ K)⁻¹ :=
@@ -165,7 +168,7 @@ theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥) (hI : (I * (I : FractionalIde
   · subst hJ0
     refine absurd ?_ hI0
     rw [eq_bot_iff, ← coeIdeal_le_coeIdeal K, hJ]
-    exact coe_ideal_le_self_mul_inv K I
+    exact coeIdeal_le_self_mul_inv K I
   by_cases hJ1 : J = ⊤
   · rw [← hJ, hJ1, coeIdeal_top]
   exact (not_inv_le_one_of_ne_bot (K := K) hJ0 hJ1 (hJ ▸ hI)).elim
@@ -175,7 +178,7 @@ theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥) (hI : (I * (I : FractionalIde
 We will use this to show that nonzero fractional ideals are invertible,
 and finally conclude that fractional ideals in a Dedekind domain form a group with zero.
 -/
-theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
+theorem coeIdeal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show `1 ≤ J⁻¹ = (I * I⁻¹)⁻¹ ≤ 1`.
   apply mul_inv_cancel_of_le_one hI0
   by_cases hJ0 : I * (I : FractionalIdeal A⁰ K)⁻¹ = 0
@@ -203,8 +206,10 @@ theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalI
   refine Submodule.sum_mem _ fun i hi => Submodule.smul_mem _ _ ?_
   clear hi
   induction i with
-  | zero => rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
+  | zero => rw [pow_zero]; exact one_mem_inv_coeIdeal hI0
   | succ i ih => rw [pow_succ']; exact x_mul_mem _ ih
+
+@[deprecated (since := "2026-11-10")] alias coe_ideal_mul_inv := coeIdeal_mul_inv
 
 end FractionalIdeal
 
@@ -264,7 +269,7 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine (isIntegrallyClosed_iff (FractionRing A)).mpr (fun {x hx} => ?_)
   rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
-    Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), map_one, ←
+    Submodule.one_eq_span, ← coeToSubmodule_spanSingleton A⁰ (1 : FractionRing A), map_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (Ne.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
@@ -317,7 +322,7 @@ theorem isDedekindDomain_iff_isDedekindDomainInv [IsDomain A] :
     rw [mul_inv_cancel_iff]
     exact ⟨spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ _)⁻¹, h₂⟩
   subst hJ
-  rw [mul_assoc, mul_left_comm (J : FractionalIdeal A⁰ _), coe_ideal_mul_inv, mul_one,
+  rw [mul_assoc, mul_left_comm (J : FractionalIdeal A⁰ _), coeIdeal_mul_inv, mul_one,
     ← map_mul, inv_mul_cancel₀, map_one]
   · exact mt ((injective_iff_map_eq_zero (algebraMap A _)).mp (IsFractionRing.injective A _) _) ha
   · exact coeIdeal_ne_zero.mp (right_ne_zero_of_mul hI)

@@ -24,7 +24,6 @@ In this file we define several notions of finiteness that are common in commutat
   all of these express that some object is finitely generated *as algebra* over some base ring.
 - `Algebra.FinitePresentation`, `RingHom.FinitePresentation`, `AlgHom.FinitePresentation`
   all of these express that some object is finitely presented *as algebra* over some base ring.
-
 -/
 
 @[expose] public section

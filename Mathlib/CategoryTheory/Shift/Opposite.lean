@@ -45,7 +45,6 @@ Given a `CommShift` structure on a functor `F`, we define a `CommShift` structur
 We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures on
 `F` and `G`, then the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite
 `CommShift` structures.
-
 -/
 
 @[expose] public section

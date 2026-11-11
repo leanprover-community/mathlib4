@@ -30,7 +30,6 @@ No concrete (semi)ring is used here, only ones with inferable order/lattice stru
 
 Minima over `List α` are defined as producing a value in `WithTop α` so proofs about lists do not
 directly transfer to minima over multisets or finsets.
-
 -/
 
 public section

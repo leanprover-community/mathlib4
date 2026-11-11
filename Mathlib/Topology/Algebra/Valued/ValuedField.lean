@@ -209,9 +209,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → _) := by
       have : Tendsto (fun p : hat K × hat K => p.1 * p.2⁻¹) ((𝓝 1) ×ˢ (𝓝 1)) (𝓝 1) := by
         rw [← nhds_prod_eq]
         conv =>
-          congr
-          rfl
-          rfl
+          enter [3]
           rw [← one_mul (1 : hat K)]
         refine
           Tendsto.mul continuous_fst.continuousAt (Tendsto.comp ?_ continuous_snd.continuousAt)

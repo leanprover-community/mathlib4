@@ -27,7 +27,6 @@ not less than this function. It turns out that this function is a measure.
 ## References
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
-
 -/
 
 @[expose] public section

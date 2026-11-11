@@ -452,6 +452,10 @@ theorem one_eq_map_iff {α} {f : α → β} {v : WithBot α} [One β] :
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
+@[to_additive lt_zero_iff_eq_bot]
+lemma lt_one_iff_eq_bot [Preorder α] [IsBotOneClass α] {a : WithBot α} : a < 1 ↔ a = ⊥ := by
+  induction a <;> simp
+
 end One
 
 section Add

@@ -19,7 +19,6 @@ public import Mathlib.Data.Finset.Lattice.Basic
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section

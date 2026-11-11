@@ -19,7 +19,6 @@ In this file we show some results connecting multivariate polynomial rings and l
 - `MvPolynomial.isLocalization`: If `S` is the localization of `R` at a submonoid `M`, then
   `MvPolynomial σ S` is the localization of `MvPolynomial σ R` at the image of `M` in
   `MvPolynomial σ R`.
-
 -/
 
 @[expose] public section

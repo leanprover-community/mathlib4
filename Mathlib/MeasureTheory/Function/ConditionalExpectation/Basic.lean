@@ -69,7 +69,6 @@ expectation. This would generalise `MeasureTheory.condExp_mul_of_stronglyMeasura
 ## Tags
 
 conditional expectation, conditional expected value
-
 -/
 
 public section

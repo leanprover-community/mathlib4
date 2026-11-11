@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 Note that `Over.forget X : Over X ⥤ C` already preserves all colimits because it is a left adjoint.
 See `Mathlib/CategoryTheory/Comma/Over/Pullback.lean`
-
 -/
 
 public section

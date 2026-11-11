@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Join.Basic
 
 This file constructs the canonical equivalence of categories `(C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ`.
 This equivalence is characterized in both directions.
-
 -/
 
 @[expose] public section
