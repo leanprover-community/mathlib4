@@ -343,7 +343,7 @@ lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A) (B : Mat
   trans star x ⬝ᵥ ((B.submatrix id (↑))ᴴ * A * B.submatrix id (↑)) *ᵥ x
   · simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using
       hA.dotProduct_mulVec_nonneg (B.submatrix id (↑) *ᵥ x)
-  · rfl
+  · rfl -- TODO: add better lemmas for pushing `submatrix` through `*`.
 
 omit [Fintype m] in
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix m n R) :
