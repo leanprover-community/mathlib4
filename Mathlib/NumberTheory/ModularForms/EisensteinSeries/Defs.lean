@@ -216,9 +216,7 @@ def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A hA := by
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
-    rw [SpecialLinearGroup.mapGL, algebraMap_int_eq, MonoidHom.coe_comp, Function.comp_apply,
-      ← SL_slash]
-    simp [eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
+    simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
 lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl
