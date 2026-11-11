@@ -307,18 +307,27 @@ end IsBoundedSMul
 section RCLike
 
 open RCLike
+open scoped ComplexConjugate
 
 variable [RCLike 𝕜]
 
 theorem re {f : α → 𝕜} (hf : Memℓp f p) : Memℓp (fun x ↦ re (f x)) p :=
-  hf.norm.mono <| fun x ↦ norm_re_le_norm (f x)
+  hf.mono' <| fun x ↦ norm_re_le_norm (f x)
 
 theorem im {f : α → 𝕜} (hf : Memℓp f p) : Memℓp (fun x ↦ im (f x)) p :=
-  hf.norm.mono <| fun x ↦ norm_im_le_norm (f x)
+  hf.mono' <| fun x ↦ norm_im_le_norm (f x)
 
-theorem ofReal {f : α → ℝ} (hf : Memℓp f p) :
-    Memℓp (fun x ↦ (f x : 𝕜)) p :=
-  hf.norm.mono <| fun x ↦ by rw [norm_ofReal, Real.norm_eq_abs]
+@[simp]
+theorem conj_iff {f : α → 𝕜} : Memℓp (conj f) p ↔ Memℓp f p := by
+  simp [← memℓp_norm_iff]
+
+alias ⟨of_conj, _root_.Memℓp.conj⟩ := conj_iff
+
+@[simp]
+theorem ofReal_iff {f : α → ℝ} : Memℓp (fun x ↦ (f x : 𝕜)) p ↔ Memℓp f p := by
+  simp [← memℓp_norm_iff]
+
+alias ⟨_, ofReal⟩ := ofReal_iff
 
 end RCLike
 

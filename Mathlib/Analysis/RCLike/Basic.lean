@@ -1113,24 +1113,33 @@ open Filter in
 theorem _root_.Filter.Tendsto.re (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ re (f x)) l (𝓝 (re a)) := (continuous_re.tendsto _).comp hf
 
-theorem _root_.Continuous.re [TopologicalSpace α] (hf : Continuous f) :
+variable [TopologicalSpace α]
+
+theorem _root_.Continuous.re (hf : Continuous f) :
     Continuous (fun x ↦ re (f x)) := continuous_re.comp hf
 
-theorem _root_.ContinuousWithinAt.re [TopologicalSpace α] (hf : ContinuousWithinAt f s x) :
+theorem _root_.ContinuousWithinAt.re (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x ↦ re (f x)) s x := Filter.Tendsto.re hf
 
-theorem _root_.ContinuousAt.re [TopologicalSpace α] (hf : ContinuousAt f x) :
+theorem _root_.ContinuousAt.re (hf : ContinuousAt f x) :
     ContinuousAt (fun x ↦ re (f x)) x := Filter.Tendsto.re hf
 
-theorem _root_.ContinuousOn.re [TopologicalSpace α] (hf : ContinuousOn f s) :
+theorem _root_.ContinuousOn.re (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ re (f x)) s := fun x hx ↦ (hf x hx).re
+
+omit [TopologicalSpace α]
+variable [PseudoEMetricSpace α] {s : Set α} {Kf : NNReal}
 
 lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
   simpa using AddMonoidHomClass.lipschitz_of_bound reCLM 1 (by simpa using norm_re_le_norm)
 
-theorem _root_.LipschitzWith.re [PseudoEMetricSpace α] {Kf : NNReal} (hf : LipschitzWith Kf f) :
+theorem _root_.LipschitzWith.re (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ re (f x)) := by
   simpa using! lipschitzWith_re.comp hf
+
+theorem _root_.LipschitzOnWith.re (hf : LipschitzOnWith Kf f s) :
+    LipschitzOnWith Kf (fun x ↦ re (f x)) s := by
+  simpa using! lipschitzWith_re.comp_lipschitzOnWith hf
 
 end re
 
@@ -1166,24 +1175,33 @@ open Filter in
 theorem _root_.Filter.Tendsto.im (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ im (f x)) l (𝓝 (im a)) := (continuous_im.tendsto _).comp hf
 
-theorem _root_.Continuous.im [TopologicalSpace α] (hf : Continuous f) :
+variable [TopologicalSpace α]
+
+theorem _root_.Continuous.im (hf : Continuous f) :
     Continuous (fun x ↦ im (f x)) := continuous_im.comp hf
 
-theorem _root_.ContinuousWithinAt.im [TopologicalSpace α] (hf : ContinuousWithinAt f s x) :
+theorem _root_.ContinuousWithinAt.im (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x ↦ im (f x)) s x := Filter.Tendsto.im hf
 
-theorem _root_.ContinuousAt.im [TopologicalSpace α] (hf : ContinuousAt f x) :
+theorem _root_.ContinuousAt.im (hf : ContinuousAt f x) :
     ContinuousAt (fun x ↦ im (f x)) x := Filter.Tendsto.im hf
 
-theorem _root_.ContinuousOn.im [TopologicalSpace α] (hf : ContinuousOn f s) :
+theorem _root_.ContinuousOn.im (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ im (f x)) s := fun x hx ↦ (hf x hx).im
+
+omit [TopologicalSpace α]
+variable [PseudoEMetricSpace α] {s : Set α} {Kf : NNReal}
 
 lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   simpa using AddMonoidHomClass.lipschitz_of_bound imCLM 1 (by simpa using norm_im_le_norm)
 
-theorem _root_.LipschitzWith.im [PseudoEMetricSpace α] {Kf : NNReal} (hf : LipschitzWith Kf f) :
+theorem _root_.LipschitzWith.im (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ im (f x)) := by
   simpa using! lipschitzWith_im.comp hf
+
+theorem _root_.LipschitzOnWith.im (hf : LipschitzOnWith Kf f s) :
+    LipschitzOnWith Kf (fun x ↦ im (f x)) s := by
+  simpa using! lipschitzWith_im.comp_lipschitzOnWith hf
 
 end im
 
@@ -1232,24 +1250,33 @@ open Filter in
 theorem _root_.Filter.Tendsto.conj (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ conj (f x)) l (𝓝 (conj a)) := (continuous_conj.tendsto _).comp hf
 
-theorem _root_.Continuous.conj [TopologicalSpace α] (hf : Continuous f) :
+variable [TopologicalSpace α]
+
+theorem _root_.Continuous.conj (hf : Continuous f) :
     Continuous (fun x ↦ conj (f x)) := continuous_conj.comp hf
 
-theorem _root_.ContinuousWithinAt.conj [TopologicalSpace α] (hf : ContinuousWithinAt f s x) :
+theorem _root_.ContinuousWithinAt.conj (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x ↦ conj (f x)) s x := Filter.Tendsto.conj hf
 
-theorem _root_.ContinuousAt.conj [TopologicalSpace α] (hf : ContinuousAt f x) :
+theorem _root_.ContinuousAt.conj (hf : ContinuousAt f x) :
     ContinuousAt (fun x ↦ conj (f x)) x := Filter.Tendsto.conj hf
 
-theorem _root_.ContinuousOn.conj [TopologicalSpace α] (hf : ContinuousOn f s) :
+theorem _root_.ContinuousOn.conj (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ conj (f x)) s := fun x hx ↦ (hf x hx).conj
+
+omit [TopologicalSpace α]
+variable [PseudoEMetricSpace α] {s : Set α} {Kf : NNReal}
 
 theorem lipschitzWith_conj : LipschitzWith 1 (conj : K → K) := by
   simpa using AddMonoidHomClass.lipschitz_of_bound conj 1 (by simp)
 
-theorem _root_.LipschitzWith.conj [PseudoEMetricSpace α] {Kf : NNReal} (hf : LipschitzWith Kf f) :
+theorem _root_.LipschitzWith.conj (hf : LipschitzWith Kf f) :
     LipschitzWith Kf (fun x ↦ conj (f x)) := by
   simpa using! lipschitzWith_conj.comp hf
+
+theorem _root_.LipschitzOnWith.conj (hf : LipschitzOnWith Kf f s) :
+    LipschitzOnWith Kf (conj f) s := by
+  simpa using! lipschitzWith_conj.comp_lipschitzOnWith hf
 
 end star
 
@@ -1299,35 +1326,66 @@ open Filter in
 theorem _root_.Filter.Tendsto.ofReal' {a : ℝ} {f : α → ℝ} (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ ((f x) : K)) l (𝓝 ((a : K))) := (continuous_ofReal.tendsto _).comp hf
 
-theorem _root_.Continuous.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : Continuous f) :
+variable [TopologicalSpace α] {f : α → ℝ}
+
+theorem _root_.Continuous.ofReal (hf : Continuous f) :
     Continuous (fun x ↦ (f x : K)) := continuous_ofReal.comp hf
 
-theorem _root_.ContinuousWithinAt.ofReal [TopologicalSpace α]
-    {f : α → ℝ} (hf : ContinuousWithinAt f s x) :
+theorem _root_.ContinuousWithinAt.ofReal (hf : ContinuousWithinAt f s x) :
   ContinuousWithinAt (fun x ↦ (f x : K)) s x := Filter.Tendsto.ofReal' hf
 
-theorem _root_.ContinuousAt.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : ContinuousAt f x) :
+theorem _root_.ContinuousAt.ofReal (hf : ContinuousAt f x) :
     ContinuousAt (fun x ↦ (f x : K)) x := Filter.Tendsto.ofReal' hf
 
-theorem _root_.ContinuousOn.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : ContinuousOn f s) :
+theorem _root_.ContinuousOn.ofReal (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ (f x : K)) s := fun x hx ↦ (hf x hx).ofReal
+
+omit [TopologicalSpace α]
+variable [PseudoEMetricSpace α] {s : Set α} {Kf : NNReal}
 
 theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
   ofRealLI.lipschitzWith
 
-theorem _root_.LipschitzWith.ofReal [PseudoEMetricSpace α] {Kf : NNReal} {f : α → ℝ}
-    (hf : LipschitzWith Kf f) : LipschitzWith Kf (fun x ↦ (f x : K)) := by
+theorem _root_.LipschitzWith.ofReal (hf : LipschitzWith Kf f) :
+    LipschitzWith Kf (fun x ↦ (f x : K)) := by
   simpa using! lipschitzWith_ofReal.comp hf
 
+theorem _root_.LipschitzOnWith.ofReal (hf : LipschitzOnWith Kf f s) :
+    LipschitzOnWith Kf (fun x ↦ (f x : K)) s := by
+  simpa using! lipschitzWith_ofReal.comp_lipschitzOnWith hf
+
 end ofReal
+
+section normSq
 
 @[continuity]
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 
+open Filter in
+theorem _root_.Filter.Tendsto.normSq (hf : Tendsto f l (𝓝 a)) :
+    Tendsto (fun x ↦ normSq (f x)) l (𝓝 (normSq a)) :=
+  (continuous_normSq.tendsto _).comp hf
+
+variable [TopologicalSpace α]
+
 @[to_fun (attr := continuity, fun_prop)]
-theorem _root_.Continuous.normSq [TopologicalSpace α] (hf : Continuous f) :
+theorem _root_.Continuous.normSq (hf : Continuous f) :
     Continuous (normSq ∘ f) := continuous_normSq.comp hf
+
+@[to_fun (attr := fun_prop)]
+theorem _root_.ContinuousWithinAt.normSq (hf : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (normSq ∘ f) s x := Filter.Tendsto.normSq hf
+
+@[to_fun (attr := fun_prop)]
+theorem _root_.ContinuousAt.normSq (hf : ContinuousAt f x) :
+    ContinuousAt (normSq ∘ f) x := Filter.Tendsto.normSq hf
+
+@[to_fun (attr := fun_prop)]
+theorem _root_.ContinuousOn.normSq (hf : ContinuousOn f s) :
+    ContinuousOn (normSq ∘ f) s := fun x hx ↦ (hf x hx).normSq
+
+end normSq
 
 /-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
 @[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where
