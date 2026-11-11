@@ -73,7 +73,7 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ s), (mk y : L �
 
 instance : Bracket (L ⧸ s) A where
   bracket x a := Quotient.liftOn' x (fun x' => ⁅x', a⁆) fun l l' h => by
-    rw [Submodule.quotientRel_def, mem_toSubmodule] at h
+    rw [Submodule.quotientRel_def] at h
     rw [← sub_eq_zero, ← sub_lie]
     exact isotropic h a
 

@@ -119,6 +119,10 @@ instance : Zero (StrictLieRinehartIdeal A L) where
 
 instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
 
+/- TODO: This might in future be modified to use a typeclass `[StrictLieRinehartIdealClass S A L]
+{s : S}` rather than the current {s : StrictLieRinehartIdeal A L}. This would be useful if
+restrictions of the notion of Lie-Rinehart ideal are needed.
+-/
 /-- A Lie-Rinehart ideal forms a Lie ring. -/
 instance lieRing {s : StrictLieRinehartIdeal A L} : LieRing s where
   bracket x y := ⟨⁅x.val, y.val⁆, lie_mem_of_left x.property _⟩
