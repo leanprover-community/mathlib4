@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 # Operator norm as an `NNNorm`
 
 Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
-
 -/
 
 public section

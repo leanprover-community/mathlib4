@@ -17,7 +17,6 @@ In this file we show that being a finitely presented algebra is local.
 
 - `Algebra.FinitePresentation.of_span_eq_top_target`: finite presentation is local on the
   (algebraic) target
-
 -/
 
 public section

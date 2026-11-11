@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
-
 -/
 
 public section

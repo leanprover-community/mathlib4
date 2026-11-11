@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Star.Basic
 
 This file provides basic results about the star on product types defined in
 `Mathlib/Algebra/Notation/Prod.lean`.
-
 -/
 
 public section
@@ -48,6 +47,20 @@ instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
   star_smul _ _ := Prod.ext (star_smul _ _) (star_smul _ _)
 
 end Prod
+
+namespace IsStarOrtho
+
+open scoped StarRing
+
+variable [NonUnitalSemiring R] [StarRing R] [NonUnitalSemiring S] [StarRing S]
+
+lemma prod_iff {x y : R × S} : x ⋆⟂ y ↔ x.1 ⋆⟂ y.1 ∧ x.2 ⋆⟂ y.2 := by
+  aesop (add simp [isStarOrtho_iff, Prod.ext_iff])
+
+protected lemma prod {a b : R} {x y : S} (hab : a ⋆⟂ b) (hxy : x ⋆⟂ y) : (a, x) ⋆⟂ (b, y) :=
+  prod_iff.mpr ⟨hab, hxy⟩
+
+end IsStarOrtho
 
 theorem Units.embed_product_star [Monoid R] [StarMul R] (u : Rˣ) :
     Units.embedProduct R (star u) = star (Units.embedProduct R u) :=

@@ -38,7 +38,6 @@ $J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 * Differential equations
 * Generating functions
 * Bessel's integrals
-
 -/
 
 @[expose] public noncomputable section

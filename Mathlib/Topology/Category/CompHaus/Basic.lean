@@ -30,7 +30,6 @@ definitions are introduced.
 
 The category `CompHaus` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section

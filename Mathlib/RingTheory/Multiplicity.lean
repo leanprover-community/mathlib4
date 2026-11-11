@@ -817,8 +817,10 @@ end CancelCommMonoidWithZero
 
 section Nat
 
-theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
+theorem multiplicity_eq_zero_of_coprime {p a b : ℕ}
     (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.Coprime a b) : multiplicity p a = 0 := by
+  rcases eq_or_ne p 1 with rfl | hp
+  · simp
   apply Nat.eq_zero_of_not_pos
   intro nh
   have ha : FiniteMultiplicity p a := by grind [multiplicity_eq_zero_of_not_finiteMultiplicity]

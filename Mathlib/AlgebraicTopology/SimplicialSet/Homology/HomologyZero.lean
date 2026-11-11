@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 The main definition in this file is `SSet.homology₀Iso` which is
 an isomorphism `X.homology R 0 ≅ ∐ (fun (_ : π₀ X) ↦ R)` for any simplicial
 set `X`.
-
 -/
 
 @[expose] public section

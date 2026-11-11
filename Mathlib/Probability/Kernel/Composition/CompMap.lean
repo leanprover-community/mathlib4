@@ -16,7 +16,6 @@ function.
 
 Map and comap are particular cases of composition: they correspond to composition with
 a deterministic kernel. See `deterministic_comp_eq_map` and `comp_deterministic_eq_comap`.
-
 -/
 
 public section

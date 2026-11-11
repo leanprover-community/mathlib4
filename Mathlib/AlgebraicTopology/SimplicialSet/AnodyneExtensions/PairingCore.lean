@@ -17,7 +17,6 @@ The main difference with `Subcomplex.Pairing` are that we provide
 an index type `ι` and a function `dim : ι → ℕ` which allow to
 parametrize type (II) and (I) simplices in such a way that, *definitionally*,
 their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
-
 -/
 
 @[expose] public section

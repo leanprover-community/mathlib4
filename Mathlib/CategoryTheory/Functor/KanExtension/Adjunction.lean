@@ -21,7 +21,6 @@ with `L` (see `Functor.lanAdjunction`).
 Similarly, we define the right Kan extension functor
 `L.ran : (C ⥤ H) ⥤ (D ⥤ H)` which sends a functor `F : C ⥤ H` to its
 right Kan extension along `L`.
-
 -/
 
 @[expose] public section

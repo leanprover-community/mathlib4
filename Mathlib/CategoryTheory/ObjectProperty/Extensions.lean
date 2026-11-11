@@ -15,7 +15,6 @@ Given a category `C` and `P : ObjectProperty C`, we define a type
 class `P.IsClosedUnderExtensions` expressing that the property
 is closed under extensions. We also show that this condition is self-dual:
 `P.op` is closed under extensions iff `P` is.
-
 -/
 
 public section
