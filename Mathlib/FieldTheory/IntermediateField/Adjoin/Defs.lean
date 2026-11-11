@@ -733,15 +733,9 @@ theorem map_comap_eq_self_of_surjective {f : L →ₐ[K] L'} (hf : Function.Surj
     (S : IntermediateField K L') : (S.comap f).map f = S :=
   SetLike.coe_injective (Set.image_preimage_eq _ hf)
 
-theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
-  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
-
 section GaloisCoinsertion
 
 variable {ι : Sort*} (f : L →ₐ[K] L')
-
-theorem comap_surjective : Function.Surjective (comap f) :=
-  (gciMapComap f).u_surjective
 
 theorem comap_inf_map (S T : IntermediateField K L) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
   (gciMapComap f).u_inf_l _ _
@@ -754,9 +748,6 @@ theorem comap_sup_map (S T : IntermediateField K L) : (S.map f ⊔ T.map f).coma
 
 theorem comap_iSup_map (S : ι → IntermediateField K L) : (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
   (gciMapComap f).u_iSup_l _
-
-theorem map_le_map_iff {S T : IntermediateField K L} : S.map f ≤ T.map f ↔ S ≤ T :=
-  (gciMapComap f).l_le_l_iff
 
 /-- `comap f` preserves the supremum of two intermediate fields lying in the range of `f`. -/
 theorem comap_sup {S T : IntermediateField K L'} (hS : S ≤ f.fieldRange) (hT : T ≤ f.fieldRange) :
@@ -777,16 +768,21 @@ section val
 
 variable {S T : IntermediateField K L}
 
+theorem _root_.AlgHom.fieldRange_le_iff_comap {f : L →ₐ[K] L'} {T : IntermediateField K L'} :
+    f.fieldRange ≤ T ↔ T.comap f = ⊤ := by
+  refine ⟨fun h ↦ eq_top_iff.mpr fun x _ ↦ mem_comap.mpr (h (f.mem_fieldRange_self x)), ?_⟩
+  rintro h _ ⟨x, rfl⟩
+  exact mem_comap.mp (h ▸ mem_top (x := x))
+
 @[simp]
 theorem comap_val_eq_top : T.comap S.val = ⊤ ↔ S ≤ T := by
-  refine ⟨fun h x hx ↦ ?_, fun h ↦ eq_top_iff.mpr fun z _ ↦ mem_comap.mpr (h z.2)⟩
-  exact mem_comap.mp (h ▸ mem_top (x := (⟨x, hx⟩ : S)))
+  rw [← AlgHom.fieldRange_le_iff_comap, fieldRange_val]
 
 @[simp]
 theorem comap_val_self (S : IntermediateField K L) : S.comap S.val = ⊤ :=
   comap_val_eq_top.mpr le_rfl
 
-theorem map_comap_val : (T.comap S.val).map S.val = S ⊓ T := by
+theorem map_comap_val (S T : IntermediateField K L) : (T.comap S.val).map S.val = S ⊓ T := by
   rw [map_comap_eq, fieldRange_val, inf_comm]
 
 end val

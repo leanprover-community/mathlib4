@@ -525,14 +525,23 @@ theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
 
+theorem comap_map (f : L →ₐ[K] L') (S : IntermediateField K L) : (S.map f).comap f = S :=
+  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+
 /-- `map f` and `comap f` form a `GaloisCoinsertion`, since an algebra homomorphism out of a field
 is injective. -/
 def gciMapComap (f : L →ₐ[K] L') : GaloisCoinsertion (map f) (comap f) :=
-  GaloisConnection.toGaloisCoinsertion (fun _ _ ↦ map_le_iff_le_comap) fun S ↦
-    (SetLike.coe_injective (Set.preimage_image_eq _ f.injective) : (S.map f).comap f = S).le
+  GaloisConnection.toGaloisCoinsertion (fun _ _ ↦ map_le_iff_le_comap) fun S ↦ (comap_map f S).le
 
 @[deprecated "Use `gciMapComap`." (since := "2026-10-28")]
 theorem gc_map_comap (f : L →ₐ[K] L') : GaloisConnection (map f) (comap f) := (gciMapComap f).gc
+
+theorem comap_surjective (f : L →ₐ[K] L') : Function.Surjective (comap f) :=
+  (gciMapComap f).u_surjective
+
+theorem map_le_map_iff (f : L →ₐ[K] L') {S T : IntermediateField K L} :
+    S.map f ≤ T.map f ↔ S ≤ T :=
+  (gciMapComap f).l_le_l_iff
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
 field `E` of `L/K`, `intermediateFieldMap e E` is the induced equivalence
