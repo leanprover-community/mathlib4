@@ -310,14 +310,28 @@ end OrderDual
 
 namespace Lex
 
-instance [RatCast K] : RatCast (Lex K) := inferInstanceAs <| RatCast K
-instance [DivisionSemiring K] : DivisionSemiring (Lex K) := inferInstanceAs <| DivisionSemiring K
-instance [DivisionRing K] : DivisionRing (Lex K) := inferInstanceAs <| DivisionRing K
-instance [Semifield K] : Semifield (Lex K) := inferInstanceAs <| Semifield K
-instance [Field K] : Field (Lex K) := inferInstanceAs <| Field K
+instance [RatCast K] : RatCast (Lex K) where ratCast q := ⟨q⟩
+instance [NNRatCast K] : NNRatCast (Lex K) where nnratCast q := ⟨q⟩
+
+instance [DivisionSemiring K] : DivisionSemiring (Lex K) where
+  inv_zero := Lex.ext inv_zero
+  mul_inv_cancel _ h := Lex.ext (mul_inv_cancel₀ (Lex.ext_iff.ne.mp h))
+  nnqsmul q k := ⟨q * k.ofLex⟩
+  nnratCast_def _ := Lex.ext (DivisionSemiring.nnratCast_def _)
+
+instance [DivisionRing K] : DivisionRing (Lex K) where
+  inv_zero := Lex.ext inv_zero
+  mul_inv_cancel _ h := Lex.ext (mul_inv_cancel₀ (Lex.ext_iff.ne.mp h))
+  nnqsmul q k := ⟨q * k.ofLex⟩
+  qsmul q k := ⟨q * k.ofLex⟩
+  nnratCast_def _ := Lex.ext (DivisionRing.nnratCast_def _)
+  ratCast_def _ := Lex.ext (DivisionRing.ratCast_def _)
+
+instance [Semifield K] : Semifield (Lex K) where
+instance [Field K] : Field (Lex K) where
 
 end Lex
 
-@[simp] lemma toLex_ratCast [RatCast K] (n : ℚ) : toLex (n : K) = n := rfl
+@[simp] lemma toLex_ratCast [RatCast K] (n : ℚ) : Lex.toLex (n : K) = n := rfl
 
-@[simp] lemma ofLex_ratCast [RatCast K] (n : ℚ) : (ofLex n : K) = n := rfl
+@[simp] lemma ofLex_ratCast [RatCast K] (n : ℚ) : (Lex.ofLex n : K) = n := rfl

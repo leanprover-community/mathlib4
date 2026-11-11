@@ -41,12 +41,17 @@ end OrderDual
 
 namespace Lex
 
-instance [AddMonoidWithOne R] [CharZero R] : CharZero (Lex R) := inferInstanceAs <| CharZero R
+instance [AddMonoidWithOne R] [CharZero R] : CharZero (Lex R) where
+  cast_injective _ _ e := CharZero.cast_injective (Lex.ext_iff.mp e)
 
-instance {p : ℕ} [AddMonoidWithOne R] [CharP R p] : CharP (Lex R) p := inferInstanceAs <| CharP R p
+instance {p : ℕ} [AddMonoidWithOne R] [CharP R p] : CharP (Lex R) p where
+  cast_eq_zero_iff _ := by rw [Lex.ext_iff]; exact CharP.cast_eq_zero_iff ..
 
-instance {p : ℕ} [AddMonoidWithOne R] [ExpChar R p] : ExpChar (Lex R) p :=
-  inferInstanceAs <| ExpChar R p
+instance {p : ℕ} [AddMonoidWithOne R] [ExpChar R p] : ExpChar (Lex R) p := by
+  rw [expChar_iff]
+  cases ‹ExpChar R p› with
+  | zero => exact .inl ⟨inferInstance, rfl⟩
+  | prime pp => exact .inr ⟨pp, inferInstance⟩
 
 @[simp]
 theorem ringChar_eq [NonAssocSemiring R] : ringChar (Lex R) = ringChar R :=

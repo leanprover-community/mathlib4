@@ -22,20 +22,20 @@ variable (α : Type*) [Mul α]
 /-- `toLex` as a `MulEquiv`. -/
 @[to_additive /-- `toLex` as an `AddEquiv`. -/]
 def toLexMulEquiv : α ≃* Lex α where
-  toEquiv := toLex
+  toEquiv := ofLexEquiv.symm
   map_mul' _ _ := by simp
 
 /-- `ofLex` as a `MulEquiv`. -/
 @[to_additive /-- `ofLex` as an `AddEquiv`. -/]
 def ofLexMulEquiv : Lex α ≃* α where
-  toEquiv := ofLex
+  toEquiv := ofLexEquiv
   map_mul' _ _ := by simp
 
 @[to_additive (attr := simp)]
-theorem coe_toLexMulEquiv : ⇑(toLexMulEquiv α) = toLex := rfl
+theorem coe_toLexMulEquiv : ⇑(toLexMulEquiv α) = Lex.toLex := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_ofLexMulEquiv : ⇑(ofLexMulEquiv α) = ofLex := rfl
+theorem coe_ofLexMulEquiv : ⇑(ofLexMulEquiv α) = Lex.ofLex := rfl
 
 @[to_additive (attr := simp)]
 lemma symm_toLexMulEquiv : (toLexMulEquiv α).symm = ofLexMulEquiv α := rfl
@@ -44,7 +44,7 @@ lemma symm_toLexMulEquiv : (toLexMulEquiv α).symm = ofLexMulEquiv α := rfl
 lemma symm_ofLexMulEquiv : (ofLexMulEquiv α).symm = toLexMulEquiv α := rfl
 
 @[to_additive (attr := simp)]
-lemma toEquiv_toLexMulEquiv : (toLexMulEquiv α : α ≃ Lex α) = toLex := rfl
+lemma toEquiv_toLexMulEquiv : (toLexMulEquiv α : α ≃ Lex α) = ofLexEquiv.symm := rfl
 
 @[to_additive (attr := simp)]
-lemma toEquiv_ofLexMulEquiv : (ofLexMulEquiv α : Lex α ≃ α) = ofLex := rfl
+lemma toEquiv_ofLexMulEquiv : (ofLexMulEquiv α : Lex α ≃ α) = ofLexEquiv := rfl

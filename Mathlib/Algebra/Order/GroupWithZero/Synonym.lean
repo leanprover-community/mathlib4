@@ -56,31 +56,38 @@ end OrderDual
 
 namespace Lex
 
-instance [MulZeroClass α] : MulZeroClass (Lex α) := inferInstanceAs <| MulZeroClass α
+instance [MulZeroClass α] : MulZeroClass (Lex α) where
+  zero_mul _ := Lex.ext (zero_mul _)
+  mul_zero _ := Lex.ext (mul_zero _)
 
-instance [MulZeroOneClass α] : MulZeroOneClass (Lex α) := inferInstanceAs <| MulZeroOneClass α
+instance [MulZeroOneClass α] : MulZeroOneClass (Lex α) where
 
-instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors (Lex α) :=
-  inferInstanceAs <| NoZeroDivisors α
+instance [Mul α] [Zero α] [NoZeroDivisors α] : NoZeroDivisors (Lex α) where
+  eq_zero_or_eq_zero_of_mul_eq_zero h := by
+    rw [toLex_inj, ofLex_mul] at h
+    rw [toLex_inj, toLex_inj]
+    exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
-instance [SemigroupWithZero α] : SemigroupWithZero (Lex α) := inferInstanceAs <| SemigroupWithZero α
+instance [SemigroupWithZero α] : SemigroupWithZero (Lex α) where
 
-instance [MonoidWithZero α] : MonoidWithZero (Lex α) := inferInstanceAs <| MonoidWithZero α
+instance [MonoidWithZero α] : MonoidWithZero (Lex α) where
 
-instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero (Lex α) :=
-  inferInstanceAs <| IsLeftCancelMulZero α
+instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsLeftCancelMulZero (Lex α) where
+  mul_left_cancel_of_ne_zero ha _ _ e :=
+    Lex.ext (mul_left_cancel₀ (Lex.ext_iff.ne.mp ha) (Lex.ext_iff.mp e))
 
-instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero (Lex α) :=
-  inferInstanceAs <| IsRightCancelMulZero α
+instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsRightCancelMulZero (Lex α) where
+  mul_right_cancel_of_ne_zero ha _ _ e :=
+    Lex.ext (mul_right_cancel₀ (Lex.ext_iff.ne.mp ha) (Lex.ext_iff.mp e))
 
-instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero (Lex α) :=
-  inferInstanceAs <| IsCancelMulZero α
+instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero (Lex α) where
 
-instance [CommMonoidWithZero α] : CommMonoidWithZero (Lex α) :=
-  inferInstanceAs <| CommMonoidWithZero α
+instance [CommMonoidWithZero α] : CommMonoidWithZero (Lex α) where
 
-instance [GroupWithZero α] : GroupWithZero (Lex α) := inferInstanceAs <| GroupWithZero α
+instance [GroupWithZero α] : GroupWithZero (Lex α) where
+  inv_zero := Lex.ext inv_zero
+  mul_inv_cancel _ h := Lex.ext (mul_inv_cancel₀ (Lex.ext_iff.ne.mp h))
 
-instance [CommGroupWithZero α] : CommGroupWithZero (Lex α) := inferInstanceAs <| CommGroupWithZero α
+instance [CommGroupWithZero α] : CommGroupWithZero (Lex α) where
 
 end Lex

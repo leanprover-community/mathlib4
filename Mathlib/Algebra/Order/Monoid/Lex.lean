@@ -94,7 +94,7 @@ ordered homomorphism from M to the lexicographic M ×ₗ N. -/]
 def inlₗ : α →*o α ×ₗ β where
   __ := (Prod.Lex.toLexOrderHom).comp (inl α β)
   map_one' := rfl
-  map_mul' := by simp [← toLex_mul]
+  map_mul' := by simp [Prod.Lex.toLexOrderHom, ← toLex_mul]
 
 /-- Given ordered monoids M, N, the natural inclusion ordered homomorphism from N to the
 lexicographic M ×ₗ N. -/
@@ -103,14 +103,14 @@ ordered homomorphism from N to the lexicographic M ×ₗ N. -/]
 def inrₗ : β →*o (α ×ₗ β) where
   __ := Prod.Lex.toLexOrderHom.comp (inr α β)
   map_one' := rfl
-  map_mul' := by simp [← toLex_mul]
+  map_mul' := by simp [Prod.Lex.toLexOrderHom, ← toLex_mul]
 
 /-- Given ordered monoids M, N, the natural projection ordered homomorphism from the
 lexicographic M ×ₗ N to M. -/
 @[to_additive (attr := simps!) /-- Given ordered additive monoids M, N, the natural projection
 ordered homomorphism from the lexicographic M ×ₗ N to M. -/]
 def fstₗ : (α ×ₗ β) →*o α where
-  toFun p := (ofLex p).fst
+  toFun p := p.ofLex.fst
   map_one' := rfl
   map_mul' := by simp
   monotone' := Prod.Lex.monotone_fst_ofLex
@@ -140,8 +140,8 @@ theorem inl_mul_inr_eq_mk (m : α) (n : β) : inl α β m * inr α β n = (m, n)
   simp
 
 @[to_additive]
-theorem inlₗ_mul_inrₗ_eq_toLex (m : α) (n : β) : inlₗ α β m * inrₗ α β n = toLex (m, n) := by
-  simp [← toLex_mul]
+theorem inlₗ_mul_inrₗ_eq_toLex (m : α) (n : β) : inlₗ α β m * inrₗ α β n = Lex.toLex (m, n) := by
+  ext <;> simp
 
 variable {α β}
 
@@ -150,7 +150,6 @@ theorem commute_inl_inr (m : α) (n : β) : Commute (inl α β m) (inr α β n) 
   Commute.prod (.one_right m) (.one_left n)
 
 @[to_additive]
-theorem commute_inlₗ_inrₗ (m : α) (n : β) : Commute (inlₗ α β m) (inrₗ α β n) :=
-  Commute.prod (.one_right m) (.one_left n)
+theorem commute_inlₗ_inrₗ (m : α) (n : β) : Commute (inlₗ α β m) (inrₗ α β n) := by ext <;> simp
 
 end OrderMonoidHom
