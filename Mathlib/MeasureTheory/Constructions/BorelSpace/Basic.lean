@@ -454,7 +454,7 @@ variable {α' : Type*} [TopologicalSpace α'] [MeasurableSpace α']
 
 theorem interior_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     interior s =ᵐ[μ] s :=
-  interior_subset.eventuallySubset.antisymm <| subset_closure.eventuallySubset.trans (ae_le_set.2 h)
+  interior_subset.eventuallySubset.antisymm <| subset_closure.eventuallySubset.trans (ae_subset.2 h)
 
 theorem measure_interior_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     μ (interior s) = μ s :=
@@ -466,7 +466,7 @@ theorem nullMeasurableSet_of_null_frontier {s : Set α} {μ : Measure α} (h : �
 
 theorem closure_ae_eq_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
     closure s =ᵐ[μ] s :=
-  ((ae_le_set.2 h).trans interior_subset.eventuallySubset).antisymm
+  ((ae_subset.2 h).trans interior_subset.eventuallySubset).antisymm
     subset_closure.eventuallySubset
 
 theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : μ (frontier s) = 0) :
@@ -669,6 +669,17 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
 
 instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.isInducing
+
+instance [OpensMeasurableSpace α] : OpensMeasurableSpace (Additive α) :=
+  ⟨MeasurableSpace.generateFrom_le fun _ hs ↦ (IsOpen.measurableSet (α := α) hs)⟩
+instance [OpensMeasurableSpace α] : OpensMeasurableSpace (Multiplicative α) :=
+  ⟨MeasurableSpace.generateFrom_le fun _ hs ↦ (IsOpen.measurableSet (α := α) hs)⟩
+
+instance : BorelSpace (Additive α) :=
+  (MeasurableEquiv.additive (α := α)).symm.measurableEmbedding.borelSpace Topology.IsInducing.id
+instance : BorelSpace (Multiplicative α) :=
+  (MeasurableEquiv.multiplicative (α := α)).symm.measurableEmbedding.borelSpace
+    Topology.IsInducing.id
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by

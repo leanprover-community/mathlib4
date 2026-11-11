@@ -290,7 +290,7 @@ theorem monic_multiset_prod_of_monic (t : Multiset ι) (f : ι → R[X]) (ht : �
 
 theorem monic_prod_of_monic (s : Finset ι) (f : ι → R[X]) (hs : ∀ i ∈ s, Monic (f i)) :
     Monic (∏ i ∈ s, f i) :=
-  monic_multiset_prod_of_monic s.1 f hs
+  monic_multiset_prod_of_monic s.val f hs
 
 theorem monic_finprod_of_monic (α : Type*) (f : α → R[X])
     (hf : ∀ i ∈ Function.mulSupport f, Monic (f i)) :
@@ -316,14 +316,15 @@ theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : �
 
 theorem Monic.nextCoeff_prod (s : Finset ι) (f : ι → R[X]) (h : ∀ i ∈ s, Monic (f i)) :
     nextCoeff (∏ i ∈ s, f i) = ∑ i ∈ s, nextCoeff (f i) :=
-  Monic.nextCoeff_multiset_prod s.1 f h
+  Monic.nextCoeff_multiset_prod s.val f h
 
 variable [NoZeroDivisors R] {p q : R[X]}
 
 lemma irreducible_of_monic (hp : p.Monic) (hp1 : p ≠ 1) :
     Irreducible p ↔ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f = 1 ∨ g = 1 := by
   refine
-    ⟨fun h f g hf hg hp => (h.2 hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
+    ⟨fun h f g hf hg hp =>
+      (h.isUnit_or_isUnit hp.symm).imp hf.eq_one_of_isUnit hg.eq_one_of_isUnit, fun h =>
       ⟨hp1 ∘ hp.eq_one_of_isUnit, fun f g hfg =>
         (h (g * C f.leadingCoeff) (f * C g.leadingCoeff) ?_ ?_ ?_).symm.imp
           (.of_mul_eq_one _)
@@ -454,7 +455,7 @@ theorem not_isUnit_X_pow_sub_one (R : Type*) [Ring R] [Nontrivial R] (n : ℕ) :
   rw [← @natDegree_one R, ← (monic_X_pow_sub_C _ hn).eq_one_of_isUnit h, natDegree_X_pow_sub_C]
 
 lemma Monic.comp_X_sub_C {p : R[X]} (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
-  simpa using! hp.comp_X_add_C (-r)
+  simpa [sub_eq_add_neg] using hp.comp_X_add_C (-r)
 
 theorem Monic.sub_of_left {p q : R[X]} (hp : Monic p) (hpq : degree q < degree p) :
     Monic (p - q) := by
@@ -553,7 +554,7 @@ theorem natDegree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
 
 theorem leadingCoeff_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
     (p : R[X]) (h : IsSMulRegular R k) : (k • p).leadingCoeff = k • p.leadingCoeff := by
-  rw [Polynomial.leadingCoeff, Polynomial.leadingCoeff, coeff_smul,
+  rw [Polynomial.leadingCoeff, Polynomial.leadingCoeff, AddMonoidAlgebra.coeff_smul_apply,
     natDegree_smul_of_smul_regular p h]
 
 theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
@@ -568,7 +569,7 @@ theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q
     rw [← smul_eq_zero_iff_eq h.unit⁻¹] at hp
     have : h.unit⁻¹ • (p * q) = h.unit⁻¹ • p * q := by
       ext
-      simp only [Units.smul_def, coeff_smul, coeff_mul, smul_eq_mul, mul_sum]
+      simp only [Units.smul_def, AddMonoidAlgebra.coeff_smul_apply, coeff_mul, smul_eq_mul, mul_sum]
       refine sum_congr rfl fun x _ => ?_
       rw [← mul_assoc]
     rwa [this, Monic.mul_right_eq_zero_iff] at hp

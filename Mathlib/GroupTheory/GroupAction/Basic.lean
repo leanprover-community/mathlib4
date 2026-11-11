@@ -30,7 +30,6 @@ of `•` belong elsewhere.
 * `MulAction.fixedPoints`
 * `MulAction.fixedBy`
 * `MulAction.stabilizer`
-
 -/
 
 @[expose] public section

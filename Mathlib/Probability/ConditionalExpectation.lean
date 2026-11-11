@@ -9,7 +9,6 @@ public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.Notation
 
 /-!
-
 # Probabilistic properties of the conditional expectation
 
 This file contains some properties about the conditional expectation which does not belong in
@@ -19,7 +18,6 @@ the main conditional expectation file.
 
 * `MeasureTheory.condExp_indep_eq`: If `m₁, m₂` are independent σ-algebras and `f` is an
   `m₁`-measurable function, then `𝔼[f | m₂] = 𝔼[f]` almost everywhere.
-
 -/
 
 public section

@@ -148,9 +148,9 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     roots shows that the norm is preserved. -/
   have : spectralRadius ℂ (gelfandTransform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
     simp only [spectralRadius_eq_of_unital, spectrum.gelfandTransform_eq]
-  rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
-    (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
-  simp only [ENNReal.coe_inj, CStarRing.nnnorm_star_mul_self, ← sq] at this
+  rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnNorm, gelfandTransform_map_star,
+    (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnNorm] at this
+  simp only [ENNReal.coe_inj, CStarRing.nnNorm_star_mul_self, ← sq] at this
   simpa only [NNReal.sqrt_sq] using! congr((NNReal.sqrt $this : ℝ))
 
 set_option backward.defeqAttrib.useBackward true in
@@ -203,6 +203,7 @@ private lemma norm_add_eq_max_aux {A : Type*} [NonUnitalCommCStarAlgebra A] {a b
   have hf : Isometry f := gelfandTransform_isometry _ |>.comp isometry_inr
   simp_rw [← hf.norm_map_of_map_zero (by simp [f]), show f (a + b) = f a + f b by simp [f]]
   exact ContinuousMap.norm_add_eq_max <| by simpa [f] using congr(f $h)
+
 section NonUnital
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] {a b : A}
@@ -235,17 +236,17 @@ lemma norm_add (h : a ⋆⟂ b) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
   · simpa [hb.star_eq] using h'.commute
   · simpa [hb.star_eq] using h'.mul_star_eq_zero
 
-lemma nnnorm_add (h : a ⋆⟂ b) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+lemma nnNorm_add (h : a ⋆⟂ b) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   Subtype.ext <| h.norm_add
 
 lemma norm_sub (h : a ⋆⟂ b) : ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using h.neg_right.norm_add
 
-lemma nnnorm_sub (h : a ⋆⟂ b) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+lemma nnNorm_sub (h : a ⋆⟂ b) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   Subtype.ext <| h.norm_sub
 
 open scoped Function in
-lemma nnnorm_sum {ι : Type*} {s : Finset ι} {f : ι → A}
+lemma nnNorm_sum {ι : Type*} {s : Finset ι} {f : ι → A}
     (h : (s : Set ι).Pairwise ((· ⋆⟂ ·) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
   classical
@@ -267,11 +268,13 @@ lemma norm_add_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
     ‖a + b‖ = max ‖a‖ ‖b‖ :=
   (ha.isStarOrtho_iff_mul_eq_zero hcomm |>.mpr hab).norm_add
 
-@[deprecated IsStarOrtho.nnnorm_add +typeChanged (since := "2026-10-29")]
-lemma nnnorm_add_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
+@[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-29")]
+lemma nnNorm_add_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   (ha.isStarOrtho_iff_mul_eq_zero hcomm |>.mpr hab).nnnorm_add
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 @[deprecated IsStarOrtho.norm_sub +typeChanged (since := "2026-10-29")]
 lemma norm_sub_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
@@ -279,11 +282,13 @@ lemma norm_sub_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
     ‖a - b‖ = max ‖a‖ ‖b‖ :=
   (ha.isStarOrtho_iff_mul_eq_zero hcomm |>.mpr hab).norm_sub
 
-@[deprecated IsStarOrtho.nnnorm_sub +typeChanged (since := "2026-10-29")]
-lemma nnnorm_sub_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
+@[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-29")]
+lemma nnNorm_sub_eq_max (ha : IsStarNormal a) (_hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   (ha.isStarOrtho_iff_mul_eq_zero hcomm |>.mpr hab).nnnorm_sub
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 end IsStarNormal
 
@@ -294,28 +299,34 @@ lemma norm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b
     ‖a + b‖ = max ‖a‖ ‖b‖ :=
   (isStarOrtho_iff_mul_eq_zero ha hb |>.mpr hab).norm_add
 
-@[deprecated IsStarOrtho.nnnorm_add +typeChanged (since := "2026-10-29")]
-lemma nnnorm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
+@[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-29")]
+lemma nnNorm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   (isStarOrtho_iff_mul_eq_zero ha hb |>.mpr hab).nnnorm_add
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 @[deprecated IsStarOrtho.norm_sub +typeChanged (since := "2026-10-29")]
 lemma norm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a - b‖ = max ‖a‖ ‖b‖ :=
   (isStarOrtho_iff_mul_eq_zero ha hb |>.mpr hab).norm_sub
 
-@[deprecated IsStarOrtho.nnnorm_sub +typeChanged (since := "2026-10-29")]
-lemma nnnorm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
+@[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-29")]
+lemma nnNorm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   (isStarOrtho_iff_mul_eq_zero ha hb |>.mpr hab).nnnorm_sub
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
+
 open scoped Function in
-@[deprecated IsStarOrtho.nnnorm_sum +typeChanged (since := "2026-10-29")]
-lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
+@[deprecated IsStarOrtho.nnNorm_sum +typeChanged (since := "2026-10-29")]
+lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
     (h : ∀ i ∈ s, IsSelfAdjoint (f i)) (h0 : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) :=
   IsStarOrtho.nnnorm_sum fun i hi j hj hij ↦
     isStarOrtho_iff_mul_eq_zero (h i hi) (h j hj) |>.mpr (h0 hij)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end IsSelfAdjoint
 
@@ -331,23 +342,29 @@ variable {A : Type*} [NonUnitalCommCStarAlgebra A] {a b : A}
 lemma norm_add_eq_max (h : a * b = 0) : ‖a + b‖ = max ‖a‖ ‖b‖ :=
   (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).norm_add
 
-@[deprecated IsStarOrtho.nnnorm_add +typeChanged (since := "2026-10-29")]
-lemma nnnorm_add_eq_max (h : a * b = 0) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+@[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-29")]
+lemma nnNorm_add_eq_max (h : a * b = 0) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).nnnorm_add
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 @[deprecated IsStarOrtho.norm_sub +typeChanged (since := "2026-10-29")]
 lemma norm_sub_eq_max (h : a * b = 0) : ‖a - b‖ = max ‖a‖ ‖b‖ :=
   (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).norm_sub
 
-@[deprecated IsStarOrtho.nnnorm_sub +typeChanged (since := "2026-10-29")]
-lemma nnnorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+@[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-29")]
+lemma nnNorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).nnnorm_sub
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
+
 open scoped Function in
-@[deprecated IsStarOrtho.nnnorm_sum +typeChanged (since := "2026-10-29")]
-lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
+@[deprecated IsStarOrtho.nnNorm_sum +typeChanged (since := "2026-10-29")]
+lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) :=
   IsStarOrtho.nnnorm_sum fun _ _ _ _ hij ↦ isStarOrtho_iff_mul_eq_zero_of_comm.mpr (h0 hij)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end CommCStarAlgebra
 

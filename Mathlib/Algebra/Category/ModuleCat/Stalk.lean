@@ -19,7 +19,6 @@ an `R.stalk x`-module structure.
 
 The key characterizing lemma is `PresheafOfModules.germ_smul`, which describes the compatibility
 of the scalar action and `TopCat.Presheaf.germ`.
-
 -/
 
 @[expose] public section

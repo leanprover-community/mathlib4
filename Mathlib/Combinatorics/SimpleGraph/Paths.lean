@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 
 /-!
-
 # Trail, Path, and Cycle
 
 In a simple graph,
@@ -137,6 +136,13 @@ theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
+theorem IsTrail.length_ne_two {p : G.Walk v v} (hp : p.IsTrail) : p.length ≠ 2 := by
+  grind [cases Walk, length_nil, length_cons, isTrail_cons, edges_cons]
+
+theorem IsTrail.nil_of_length_le_two {p : G.Walk v v} (hp : p.IsTrail) (hlen : p.length ≤ 2) :
+    p.Nil := by
+  grind [length_ne_one, hp.length_ne_two]
+
 @[simp]
 theorem isTrail_concat (hadj : G.Adj v w) :
     (p.concat hadj).IsTrail ↔ p.IsTrail ∧ s(v, w) ∉ p.edges := by
@@ -202,6 +208,18 @@ theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
     apply w.edges_subset_edgeSet
     simpa [edges] using h
   exact Finset.card_le_card this
+
+theorem isTrail_iff_ncard_edgeSet_eq_length : p.IsTrail ↔ p.edgeSet.ncard = p.length := by
+  classical
+  rw [isTrail_def, ← length_edges, edgeSet, ← List.coe_toFinset, Set.ncard_coe_finset,
+    List.card_toFinset, ← List.dedup_eq_self, p.edges.dedup_sublist.length_eq]
+
+alias ⟨IsTrail.ncard_edgeSet, _⟩ := isTrail_iff_ncard_edgeSet_eq_length
+
+theorem isTrail_iff_encard_edgeSet_eq_length : p.IsTrail ↔ p.edgeSet.encard = p.length := by
+  simp [isTrail_iff_ncard_edgeSet_eq_length, edgeSet, ← p.edges.finite_toSet.cast_ncard_eq]
+
+alias ⟨IsTrail.encard_edgeSet, _⟩ := isTrail_iff_encard_edgeSet_eq_length
 
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
@@ -338,10 +356,7 @@ lemma IsCircuit.ne_bot : ∀ {p : G.Walk u u}, p.IsCircuit → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
 
 lemma IsCircuit.three_le_length {p : G.Walk v v} (hp : p.IsCircuit) : 3 ≤ p.length := by
-  match p with
-  | .cons hadj .nil => simp at hadj
-  | .cons _ <| .cons _ .nil => simpa using hp.isTrail
-  | .cons _ <| .cons _ <| .cons _ _ => grind [length_cons]
+  grind [hp.nil_of_length_le_two, hp.not_nil]
 
 lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
@@ -1290,6 +1305,30 @@ theorem isCycle_transfer {p : G.Walk v v} (h) : (p.transfer H h).IsCycle ↔ p.I
   simp [isCycle_def]
 
 protected alias ⟨_, IsCycle.transfer⟩ := isCycle_transfer
+
+end Walk
+
+/-! ### Inducing -/
+
+namespace Walk
+
+variable {G} {u v : V} {s : Set V} {p : G.Walk u v} {c : G.Walk u u}
+
+@[simp]
+lemma isTrail_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsTrail ↔ p.IsTrail := by
+  simp [isTrail_def, edges_induce, List.nodup_map_iff, Injective.eq_def]
+
+@[simp]
+lemma isPath_induce {hp : ∀ x ∈ p.support, x ∈ s} : (p.induce s hp).IsPath ↔ p.IsPath := by
+  simp [isPath_def]
+
+@[simp]
+lemma isCircuit_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCircuit ↔ c.IsCircuit := by
+  simp [isCircuit_def]
+
+@[simp]
+lemma isCycle_induce {hc : ∀ x ∈ c.support, x ∈ s} : (c.induce s hc).IsCycle ↔ c.IsCycle := by
+  simp [isCycle_def]
 
 end Walk
 
