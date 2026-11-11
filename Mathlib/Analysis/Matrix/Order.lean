@@ -191,8 +191,10 @@ theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
   rw [posSemidef_iff_submatrix_of_forall_finset
     (fun p : Finset n × Finset m ↦ Prod.map ((↑) : p.1 → n) ((↑) : p.2 → m))]
   · rintro ⟨s, t⟩
-    obtain ⟨a, ha⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp (hx.submatrix ((↑) : s → n)).nonneg
-    obtain ⟨b, hb⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp (hy.submatrix ((↑) : t → m)).nonneg
+    obtain ⟨a, ha⟩ :=
+      CStarAlgebra.nonneg_iff_eq_star_mul_self.mp (hx.submatrix ((↑) : s → n)).nonneg
+    obtain ⟨b, hb⟩ :=
+      CStarAlgebra.nonneg_iff_eq_star_mul_self.mp (hy.submatrix ((↑) : t → m)).nonneg
     simpa [← kroneckerMap_submatrix_submatrix, ha, hb, mul_kronecker_mul, ← conjTranspose_kronecker,
       star_eq_conjTranspose] using posSemidef_conjTranspose_mul_self _
   · intro s
