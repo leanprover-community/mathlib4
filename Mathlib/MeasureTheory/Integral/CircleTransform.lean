@@ -16,7 +16,6 @@ facts about these functions.
 
 These results are useful for proving that the uniform limit of a sequence of holomorphic functions
 is holomorphic.
-
 -/
 
 @[expose] public section

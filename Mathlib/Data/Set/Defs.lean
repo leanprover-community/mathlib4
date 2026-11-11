@@ -29,7 +29,6 @@ Given a type `X` and a predicate `p : X → Prop`:
 
 `Set X` is a one-field structure wrapping a predicate `X → Prop`.
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
-
 -/
 
 @[expose] public section

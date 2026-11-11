@@ -43,7 +43,6 @@ However, it means that formal power series are indexed by `Unit →₀ ℕ`,
 which is of course canonically isomorphic to `ℕ`.
 We then build some glue to treat formal power series as if they were indexed by `ℕ`.
 Occasionally this leads to proofs that are uglier than expected.
-
 -/
 
 @[expose] public section

@@ -55,7 +55,6 @@ The case of prime numbers is also an instance:
 The proofs mostly follow [Ireland and Rosen,
   *A classical introduction to modern number theory*, chapter 4]
   [IrelandRosen1990].
-
 -/
 
 public section
@@ -166,9 +165,12 @@ end Divisibility
 
 section PrimePow
 
-theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : m ≠ 0)
+theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ)
     (hpm : m + 2 ≤ p * m) (a : ℤ) (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
     orderOf (1 + p ^ m * a : ZMod (p ^ (n + m))) = p ^ n := by
+  have hm0 : m ≠ 0 := by
+    rintro rfl
+    simp at hpm
   match n with
   | 0 => rw [← Nat.cast_pow, zero_add m, ZMod.natCast_self]; simp
   | n + 1 =>
@@ -190,7 +192,7 @@ theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : 
 theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : ℤ)
     (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
     orderOf (1 + p * a : ZMod (p ^ (n + 1))) = p ^ n := by
-  convert orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
+  convert orderOf_one_add_mul_prime_pow hp 1 _ a ha n using 1
   · rw [pow_one]
   · have := hp.two_le; lia
 
@@ -250,7 +252,7 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
 
 lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
     orderOf (1 + 4 * a : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero le_rfl a ?_ n using 1
+  convert orderOf_one_add_mul_prime_pow Nat.prime_two 2 le_rfl a ?_ n using 1
   · norm_num
   · rwa [← Int.not_even_iff_odd, even_iff_two_dvd] at ha
 

@@ -10,7 +10,6 @@ public import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
-
 # Basic results about relative perfect closure
 
 This file contains basic results about relative perfect closures.
@@ -37,7 +36,6 @@ This file contains basic results about relative perfect closures.
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
-
 -/
 
 @[expose] public section

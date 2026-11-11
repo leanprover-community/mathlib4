@@ -17,7 +17,6 @@ In this file, we introduce abbreviations for the canonical truncations
 complexes indexed by `ℤ`, as well as the conditions
 `CochainComplex.IsStrictlyLE`, `CochainComplex.IsStrictlyGE`,
 `CochainComplex.IsLE`, and `CochainComplex.IsGE`.
-
 -/
 
 @[expose] public section

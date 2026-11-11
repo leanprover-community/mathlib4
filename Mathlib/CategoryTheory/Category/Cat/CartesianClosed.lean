@@ -20,7 +20,6 @@ TODO: It would be useful to investigate and formalize further compatibilities al
 lines of `Cat.ihom_obj` and `Cat.ihom_map`, relating currying of functors with currying in
 monoidal closed categories and precomposition with left whiskering. These may not be
 definitional equalities but may have to be phrased using `eqToIso`.
-
 -/
 
 @[expose] public section

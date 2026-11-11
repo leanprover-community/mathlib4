@@ -28,7 +28,6 @@ There are good reasons to consider the empty space to be “too simple to be sim
 See also https://ncatlab.org/nlab/show/too+simple+to+be+simple,
 and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
-
 -/
 
 @[expose] public section

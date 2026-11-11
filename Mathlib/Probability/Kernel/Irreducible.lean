@@ -33,7 +33,6 @@ that is, there is a positive probability of reaching any
 
 * [Meyn, S.P. and Tweedie, R.L., *Markov Chains and Stochastic Stability*][meyntweedie1993]
 * [C Robert, G Casella, *Monte Carlo Statistical Methods*][robertcasella2004]
-
 -/
 
 public section

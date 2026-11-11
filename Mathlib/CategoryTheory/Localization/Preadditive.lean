@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # Localization of natural transformations to preadditive categories
-
 -/
 
 public section
