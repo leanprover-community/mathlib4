@@ -76,23 +76,24 @@ theorem star_dotProduct_gram_mulVec [Fintype n] (v : n → E) (x y : n → 𝕜)
       gram_apply, Pi.star_apply]
   · simp_rw [sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
 
+open scoped ComplexConjugate in
 private theorem linearCombination_inner_linearCombination_eq (v : n → E) (x y : n →₀ 𝕜) :
     ⟪x.linearCombination 𝕜 v, y.linearCombination 𝕜 v⟫_𝕜 =
-      (x.sum fun i xi ↦ y.sum fun j yj ↦ star xi * ⟪v i, v j⟫_𝕜 * yj) := by
+      (x.sum fun i xi ↦ y.sum fun j yj ↦ conj xi * ⟪v i, v j⟫_𝕜 * yj) := by
   simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, sum_inner, inner_sum, inner_smul_left,
-    inner_smul_right, ← mul_assoc, mul_right_comm _ (inner _ _ _), star_def]
+    inner_smul_right, ← mul_assoc, mul_right_comm _ (inner _ _ _)]
 
 variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
 theorem posSemidef_gram (v : n → E) : PosSemidef (gram 𝕜 v) :=
-  ⟨isHermitian_gram _ _, by simp [- star_def, ← linearCombination_inner_linearCombination_eq]⟩
+  ⟨isHermitian_gram _ _, by simp [← linearCombination_inner_linearCombination_eq]⟩
 
 /-- In a normed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
   refine linearIndependent_iff.mpr fun l hl ↦ ?_
   by_contra
-  simpa [hl, -star_def, ← linearCombination_inner_linearCombination_eq] using h_gram.2 this
+  simpa [hl, ← linearCombination_inner_linearCombination_eq] using h_gram.2 this
 
 theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n → E}
     (h : (gram 𝕜 v).det ≠ 0) : LinearIndependent 𝕜 v :=
@@ -107,7 +108,7 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 theorem posDef_gram_of_linearIndependent
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
   refine ⟨isHermitian_gram _ _, fun x hx ↦ ((posSemidef_gram 𝕜 v).2 x).lt_of_ne' ?_⟩
-  simp_rw [gram_apply, ← linearCombination_inner_linearCombination_eq (𝕜 := 𝕜)]
+  simp_rw [star_def, gram_apply, ← linearCombination_inner_linearCombination_eq (𝕜 := 𝕜)]
   simp [mt (linearIndependent_iff.mp h_li x) hx]
 
 /-- In a normed space, linear independence of `v` is equivalent to positive definiteness of
