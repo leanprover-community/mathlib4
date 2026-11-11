@@ -381,6 +381,7 @@ def evalSMul' (eval : Expr → M (NormalExpr × Expr))
 partial def eval (e : Expr) : M (NormalExpr × Expr) := do
   trace[abel.detail] "running eval on {e}"
   trace[abel.detail] "getAppFnArgs: {e.getAppFnArgs}"
+  let e := e.consumeMData
   match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, e₁, e₂]) => do
     let (e₁', p₁) ← eval e₁

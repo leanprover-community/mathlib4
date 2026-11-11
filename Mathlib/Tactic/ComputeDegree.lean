@@ -252,6 +252,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
           (``AddMonoidAlgebra.coeff, pol, [rhs.isMVar, c.isMVar])
         | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
     | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
+  let pol := pol.consumeMData
   let head := match pol.numeral? with
     -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
     | some 0 => .inl `zero

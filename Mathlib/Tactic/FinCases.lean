@@ -33,7 +33,7 @@ return `some α`, otherwise `none`. -/
 def getMemType {m : Type → Type} [Monad m] [MonadError m] (e : Expr) : m (Option Expr) := do
   match e.getAppFnArgs with
   | (``Membership.mem, #[_, type, _, _, _]) =>
-    match type.getAppFnArgs with
+    match type.cleanupAnnotations.getAppFnArgs with
     | (``List, #[α])     => return α
     | (``Multiset, #[α]) => return α
     | (``Finset, #[α])   => return α

@@ -249,6 +249,7 @@ variable (R : Expr) in
 /-- If `sum` is an expression consisting of repeated applications of `op`, then `getAddends`
 returns the Array of those recursively determined arguments whose type is DefEq to `R`. -/
 partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
+  let sum := sum.consumeMData
   if sum.isAppOf op then
     let inR ← sum.getAppArgs.filterM fun r => do isDefEq R (← inferType r <|> pure R)
     let new ← inR.mapM (getAddends ·)
