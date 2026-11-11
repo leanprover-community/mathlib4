@@ -223,7 +223,7 @@ lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α 
     ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
   have : Fact p.Prime := ⟨hp⟩
   let P : ℚ[X] := ∑ i, C (α i) * X ^ i.1
-  have hP (i : Fin p) : α i = P.coeff i := by simp [Finsupp.single_apply, P, ← Fin.ext_iff]
+  have hP (i : Fin p) : α i = P.coeff i := by simp [P, ← Fin.ext_iff]
   have hP' : P.degree ≤ ↑(p - 1) :=
     (degree_sum_le ..).trans (Finset.sup_le fun _ _ ↦ by grw [degree_C_mul_X_pow_le]; simp; grind)
   trans aeval ζ P = 0; · simp [P]

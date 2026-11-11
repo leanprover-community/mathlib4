@@ -157,11 +157,11 @@ theorem exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt
   use C 1 * X ^ f.natDegree + ∑ i < f.natDegree, C (c i) * X ^ i
   refine ⟨?_, hdeg.symm, fun n ↦ ?_⟩
   · rw [Monic, leadingCoeff, hdeg]
-    simp [Finsupp.single_apply]
+    simp
   · rcases lt_trichotomy n f.natDegree with h | h | h
     · simpa [Finsupp.single_apply, h, ne_of_lt h, ← dist_eq_norm_sub'] using hc n
-    · simp [Finsupp.single_apply, h, hf, hε]
-    · simp [Finsupp.single_apply, not_lt_of_gt h, ne_of_gt h, coeff_eq_zero_of_natDegree_lt h, hε]
+    · simp [h, hf, hε]
+    · simp [not_lt_of_gt h, ne_of_gt h, coeff_eq_zero_of_natDegree_lt h, hε]
 
 end Approximation
 
