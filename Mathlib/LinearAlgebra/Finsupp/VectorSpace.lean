@@ -212,12 +212,12 @@ theorem Module.Basis.repr_smul' (i : ι) (r : R) (s : S) :
 
 end Algebra
 
-namespace FreeAbelianGroup
+namespace FreeAddCommGroup
 
-instance {σ : Type*} : Module.Free ℤ (FreeAbelianGroup σ) where
-  exists_basis := ⟨σ, ⟨(FreeAbelianGroup.equivFinsupp _).toIntLinearEquiv⟩⟩
+instance {σ : Type*} : Module.Free ℤ (FreeAddCommGroup σ) where
+  exists_basis := ⟨σ, ⟨(FreeAddCommGroup.equivFinsupp _).toIntLinearEquiv⟩⟩
 
-end FreeAbelianGroup
+end FreeAddCommGroup
 
 namespace AddMonoidAlgebra
 variable {M R S : Type*} [Semiring R] [Semiring S] [Module R S] [Module.Free R S]

@@ -41,8 +41,8 @@ instance [Nonempty α] : Infinite (FreeGroup α) := by
   classical
   exact Infinite.of_surjective FreeGroup.norm FreeGroup.norm_surjective
 
-instance [Nonempty α] : Infinite (FreeAbelianGroup α) :=
-  (FreeAbelianGroup.equivFinsupp α).toEquiv.infinite_iff.2 inferInstance
+instance [Nonempty α] : Infinite (FreeAddCommGroup α) :=
+  (FreeAddCommGroup.equivFinsupp α).toEquiv.infinite_iff.2 inferInstance
 
 deriving instance Infinite for FreeRing, FreeCommRing
 
@@ -58,7 +58,7 @@ instance : Countable (FreeMonoid α) := .of_equiv _ FreeMonoid.toListEquiv.symm
 @[to_additive]
 instance : Countable (FreeGroup α) := inferInstanceAs <| Countable (Quot _)
 
-instance : Countable (FreeAbelianGroup α) := inferInstanceAs <| Countable (Quot _)
+instance : Countable (FreeAddCommGroup α) := inferInstanceAs <| Countable (Quot _)
 
 instance : Countable (FreeRing α) := inferInstanceAs <| Countable (MonoidAlgebra ℤ _)
 
@@ -99,9 +99,11 @@ theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by
     · simp
 
 @[simp]
-theorem mk_freeAbelianGroup [Nonempty α] : #(FreeAbelianGroup α) = max #α ℵ₀ := by
-  rw [Cardinal.mk_congr (FreeAbelianGroup.equivFinsupp α).toEquiv]
+theorem mk_freeAddCommGroup [Nonempty α] : #(FreeAddCommGroup α) = max #α ℵ₀ := by
+  rw [Cardinal.mk_congr (FreeAddCommGroup.equivFinsupp α).toEquiv]
   simp
+
+@[deprecated (since := "2026-11-11")] alias mk_freeAbelianGroup := mk_freeAddCommGroup
 
 @[simp]
 theorem mk_freeRing : #(FreeRing α) = max #α ℵ₀ := by
