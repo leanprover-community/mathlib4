@@ -23,7 +23,6 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
   integral over `R`, if `p ^ n • z ∈ R[B.gen]`, then `z ∈ R[B.gen]`.
   Together with `Algebra.discr_mul_isIntegral_mem_adjoin` this result often allows to compute the
   ring of integers of `L`.
-
 -/
 
 public section

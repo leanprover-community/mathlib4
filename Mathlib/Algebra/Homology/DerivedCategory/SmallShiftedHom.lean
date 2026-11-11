@@ -18,7 +18,6 @@ element in the type
 `SmallShiftedHom (HomologicalComplex.quasiIso C (.up ℤ)) K L n`, and
 compute its image as a morphism `Q.obj K ⟶ (Q.obj L)⟦n⟧` in the
 derived category when `x` is given as the class of a cocycle.
-
 -/
 
 @[expose] public section

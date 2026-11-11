@@ -19,7 +19,6 @@ real constant which we call `mulEquivHaarChar φ`.
 * `mulEquivHaarChar φ`: the positive real such that `(mulEquivHaarChar φ) • map φ μ = μ`
   for `μ` a regular Haar measure.
 * `addEquivAddHaarChar φ`: the additive version.
-
 -/
 
 @[expose] public section

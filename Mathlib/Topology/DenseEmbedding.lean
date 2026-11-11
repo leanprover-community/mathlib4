@@ -20,7 +20,6 @@ The main theorem `continuous_extend` gives a criterion for a function
 `f : X → Z` to a T₃ space Z to extend along a dense embedding
 `i : X → Y` to a continuous function `g : Y → Z`. Actually `i` only
 has to be `IsDenseInducing` (not necessarily injective).
-
 -/
 
 @[expose] public section

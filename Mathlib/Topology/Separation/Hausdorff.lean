@@ -64,7 +64,6 @@ If the space is also compact:
 
 * <https://en.wikipedia.org/wiki/Separation_axiom>
 * [Willard's *General Topology*][zbMATH02107988]
-
 -/
 
 @[expose] public section

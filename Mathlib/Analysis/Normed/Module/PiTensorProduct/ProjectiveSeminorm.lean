@@ -50,7 +50,6 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 * If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
   `⨂[𝕜] i, Eᵢ` is a norm.
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
-
 -/
 
 @[expose] public section

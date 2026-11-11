@@ -24,7 +24,6 @@ We prove that the Fourier transform of the Gaussian function is another Gaussian
 
 We also give versions of these formulas in finite-dimensional inner product spaces, see
 `integral_cexp_neg_mul_sq_norm_add` and `fourierIntegral_gaussian_innerProductSpace`.
-
 -/
 
 @[expose] public section

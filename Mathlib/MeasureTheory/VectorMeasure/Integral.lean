@@ -59,7 +59,6 @@ is not integrable in this sense: Let `μ` be the `L∞(ℕ)`-valued measure on `
 `{n} ↦ (0,0,..., 1/(n+1),0,0,...)` and `B` be the trivial coupling (the scalar multiplication by
 `ℝ`). The total variation is `∑ n, 1/(n+1) = ∞`, but the sum of `(0,...,0,1/n,0,...)` in `L∞(ℕ)` is
 unconditionally convergent.
-
 -/
 
 public section
@@ -169,11 +168,11 @@ lemma transpose_dirac (x : X) (v : F) :
 set_option backward.isDefEq.respectTransparency.types false in
 lemma variation_transpose_le :
     (μ.transpose B).variation ≤ ‖B‖₊ • μ.variation := by
-  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
   apply opENorm_le_bound _ (fun x ↦ ?_)
   simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, flip_apply,
     smul_apply, Measure.nnreal_smul_coe_apply]
-  grw [le_opENorm, le_opENorm, enorm_measure_le_variation, ← eNorm_eq_nnNorm]
+  grw [le_opENorm, le_opENorm, eNorm_measure_le_variation, ← eNorm_eq_nnNorm]
   exact le_of_eq (by ring)
 
 lemma absolutelyContinuous_variation_transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
@@ -195,7 +194,7 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
     · simp [Measure.zero_le]
     suffices μ.variation ≤ C⁻¹ • (μ.transpose B).variation by
       grw [this, smul_smul, mul_inv_cancel₀ hC, one_smul]
-    apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+    apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
     have : ‖μ s‖ₑ ≤ C⁻¹ • ‖(μ.transpose B) s‖ₑ := by
       obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
       have : ‖B.flip (μ s) x‖₊ ≤ ‖B.flip (μ s)‖₊ * ‖x‖₊ := le_opNNNorm _ _
@@ -203,7 +202,7 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
       rw [mul_right_comm, mul_le_mul_iff_left₀ (by simpa), ← le_div_iff₀' (by positivity),
         div_eq_inv_mul, ← ENNReal.coe_le_coe] at this
       exact this
-    grw [this, enorm_measure_le_variation, smul_apply]
+    grw [this, eNorm_measure_le_variation, smul_apply]
 
 lemma variation_transpose_eq [Nontrivial E] (hB : ∀ x y, ‖B x y‖₊ = ‖x‖₊ * ‖y‖₊) :
     (μ.transpose B).variation = μ.variation := by
@@ -634,31 +633,37 @@ theorem norm_integral_le_integral_norm :
   · rw [integral_non_aestronglyMeasurable h, norm_zero]
     positivity
 
-theorem enorm_integral_le_lintegral_enorm :
+theorem eNorm_integral_le_lintegral_eNorm :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ‖B‖ₑ * ∫⁻ a, ‖f a‖ₑ ∂μ.variation := by
-  apply (enorm_setToFun_le _ (by simp)).trans
+  apply (eNorm_setToFun_le _ (by simp)).trans
   gcongr
   simp [← coe_nnNorm]
 
-theorem enorm_integral_le_lintegral_enorm_transpose :
+@[deprecated (since := "2026-11-06")]
+alias enorm_integral_le_lintegral_enorm := eNorm_integral_le_lintegral_eNorm
+
+theorem eNorm_integral_le_lintegral_eNorm_transpose :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂(μ.transpose B).variation := by
   by_cases hf : μ.Integrable f
   · rw [integral_eq_setToFun_transpose hf]
-    apply (enorm_setToFun_le _ (by simp)).trans (by simp)
+    apply (eNorm_setToFun_le _ (by simp)).trans (by simp)
   · simp [integral_undef hf]
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_integral_le_lintegral_enorm_transpose := eNorm_integral_le_lintegral_eNorm_transpose
 
 theorem dist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integrable g) :
     dist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
       ‖B‖ * (∫⁻ a, edist (f a) (g a) ∂μ.variation).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
-  simp [edist_eq_enorm_sub]
+  simp [eDist_eq_eNorm_sub]
 
 theorem edist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integrable g) :
     edist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
       ‖B‖ₑ * ∫⁻ a, edist (f a) (g a) ∂μ.variation := by
   rw [edist_dist]
   apply ENNReal.ofReal_le_of_le_toReal
-  grw [dist_integral_le_lintegral_edist hf hg, ENNReal.toReal_mul, toReal_enorm]
+  grw [dist_integral_le_lintegral_edist hf hg, ENNReal.toReal_mul, toReal_eNorm]
 
 theorem frequently_ae_ne_zero_of_integral_ne_zero
     (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : ∃ᶠ a in ae μ.variation, f a ≠ 0 :=
@@ -734,7 +739,7 @@ lemma tendsto_integral_of_L1' {ι} (f : X → E)
   refine tendsto_integral_of_L1 f hfi hFi ?_
   apply hF.congr'
   filter_upwards [hFi] with i hi
-  rw [eLpNorm_one_eq_lintegral_enorm (hi.aestronglyMeasurable.sub hfi)]
+  rw [eLpNorm_one_eq_lintegral_eNorm (hi.aestronglyMeasurable.sub hfi)]
   rfl
 
 variable {Y : Type*} [TopologicalSpace Y] [FirstCountableTopology Y]
@@ -794,20 +799,23 @@ theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ.variation]
     simp [ENNReal.toReal_ofReal hC, Measure.real]
   _ = C * ‖B‖ * μ.variation.real univ := by ring
 
-theorem enorm_integral_le_of_enorm_le_const
+theorem eNorm_integral_le_of_eNorm_le_const
     {C : ℝ≥0∞} (h : ∀ᵐ x ∂μ.variation, ‖f x‖ₑ ≤ C) :
     ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ C * ‖B‖ₑ * μ.variation univ := by
-  apply enorm_integral_le_lintegral_enorm.trans
+  apply eNorm_integral_le_lintegral_eNorm.trans
   rw [mul_comm C, mul_assoc]
   gcongr
   exact (lintegral_mono_ae h).trans (by simp)
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_integral_le_of_enorm_le_const := eNorm_integral_le_of_eNorm_le_const
 
 theorem nndist_integral_add_vectorMeasure_le_lintegral
     (h₁ : μ.Integrable f) (h₂ : ν.Integrable f) :
     (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
       ‖B‖ₑ * ∫⁻ x, ‖f x‖ₑ ∂ν.variation := by
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
-  exact enorm_integral_le_lintegral_enorm
+  exact eNorm_integral_le_lintegral_eNorm
 
 variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}
 

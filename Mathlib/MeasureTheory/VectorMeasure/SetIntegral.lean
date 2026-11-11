@@ -413,24 +413,30 @@ theorem integral_continuousLinearMap_comp
       filter_upwards [hfg] with x hx using by simp [hx]
     rw [← integral_congr_ae hfg, ← integral_congr_ae this, hf]
 
-theorem enorm_setIntegral_le_of_enorm_le_const_ae {C : ℝ≥0∞}
+theorem eNorm_setIntegral_le_of_eNorm_le_const_ae {C : ℝ≥0∞}
     (hC : ∀ᵐ x ∂μ.variation.restrict s, ‖f x‖ₑ ≤ C) :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ C * ‖B‖ₑ * μ.variation s := by
   by_cases hs : MeasurableSet s; swap
   · simp [setIntegral_eq_zero_of_not_measurableSet hs]
   rw [← variation_restrict hs] at hC
-  apply (enorm_integral_le_of_enorm_le_const hC).trans
+  apply (eNorm_integral_le_of_eNorm_le_const hC).trans
   rw [variation_restrict hs, Measure.restrict_apply MeasurableSet.univ]
   simp
 
-theorem enorm_setIntegral_le_of_enorm_le_const {C : ℝ≥0∞}
+@[deprecated (since := "2026-11-06")]
+alias enorm_setIntegral_le_of_enorm_le_const_ae := eNorm_setIntegral_le_of_eNorm_le_const_ae
+
+theorem eNorm_setIntegral_le_of_eNorm_le_const {C : ℝ≥0∞}
     (hC : ∀ x ∈ s, ‖f x‖ₑ ≤ C) :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ C * ‖B‖ₑ * μ.variation s := by
   by_cases hs : MeasurableSet s; swap
   · simp [setIntegral_eq_zero_of_not_measurableSet hs]
-  apply enorm_setIntegral_le_of_enorm_le_const_ae
+  apply eNorm_setIntegral_le_of_eNorm_le_const_ae
   apply (ae_restrict_iff' hs).2
   filter_upwards with x using hC x
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_setIntegral_le_of_enorm_le_const := eNorm_setIntegral_le_of_eNorm_le_const
 
 theorem norm_setIntegral_le_of_norm_le_const_ae {C : ℝ}
     [h : IsFiniteMeasure (μ.variation.restrict s)]
@@ -461,13 +467,20 @@ theorem norm_setIntegral_le_of_norm_le_const {C : ℝ}
   apply norm_setIntegral_le_of_norm_le_const_ae
   filter_upwards [ae_restrict_mem hs] with x hx using hC x hx
 
-theorem enorm_setIntegral_le_lintegral_enorm :
+theorem eNorm_setIntegral_le_lintegral_eNorm :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ ‖B‖ₑ * ∫⁻ x in s, ‖f x‖ₑ ∂μ.variation := by
-  grw [enorm_integral_le_lintegral_enorm, variation_restrict_le]
+  grw [eNorm_integral_le_lintegral_eNorm, variation_restrict_le]
 
-theorem enorm_setIntegral_le_lintegral_enorm_transpose :
+@[deprecated (since := "2026-11-06")]
+alias enorm_setIntegral_le_lintegral_enorm := eNorm_setIntegral_le_lintegral_eNorm
+
+theorem eNorm_setIntegral_le_lintegral_eNorm_transpose :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂(μ.transpose B).variation := by
-  grw [enorm_integral_le_lintegral_enorm_transpose, transpose_restrict,variation_restrict_le]
+  grw [eNorm_integral_le_lintegral_eNorm_transpose, transpose_restrict,variation_restrict_le]
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_setIntegral_le_lintegral_enorm_transpose :=
+  eNorm_setIntegral_le_lintegral_eNorm_transpose
 
 private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
@@ -484,11 +497,11 @@ private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
         variation_restrict (MeasurableSet.iUnion hm)] at hfi
       exact ENNReal.mul_lt_top (by simp) hfi.2
   have : Summable (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) := by
-    apply Summable.of_enorm (lt_of_le_of_lt _ I).ne
+    apply Summable.of_eNorm (lt_of_le_of_lt _ I).ne
     gcongr
-    exact enorm_setIntegral_le_lintegral_enorm
+    exact eNorm_setIntegral_le_lintegral_eNorm
   apply (Summable.hasSum_iff_tendsto_nat this).2
-  simp_rw [tendsto_iff_edist_tendsto_0, edist_eq_enorm_sub, enorm_sub_rev]
+  simp_rw [tendsto_iff_edist_tendsto_0, eDist_eq_eNorm_sub, eNorm_sub_rev]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (ENNReal.tendsto_sum_nat_add _ I.ne) (by positivity) (fun N ↦ ?_)
   have : ⋃ n, s n = (⋃ n ∈ Finset.range N, s n) ∪ (⋃ n, s (n + N)) := by
@@ -510,7 +523,7 @@ private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
   · exact fun i hi j hj hij ↦ hd hij
   · exact fun i hi ↦ hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
   simp only [add_sub_cancel_left]
-  apply enorm_setIntegral_le_lintegral_enorm.trans_eq
+  apply eNorm_setIntegral_le_lintegral_eNorm.trans_eq
   rw [lintegral_iUnion (fun i ↦ hm _), ENNReal.tsum_mul_left]
   exact fun i j hij ↦ hd (by grind)
 
@@ -554,7 +567,7 @@ theorem Integrable.tendsto_setIntegral_nhds_zero {ι : Type*}
   rw [mul_zero] at this
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds this (fun i ↦ zero_le)
   intro i
-  apply enorm_integral_le_lintegral_enorm.trans
+  apply eNorm_integral_le_lintegral_eNorm.trans
   dsimp
   gcongr
   exact variation_restrict_le
@@ -586,7 +599,7 @@ lemma tendsto_setIntegral_of_L1' {ι} (f : X → E)
   refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
   apply hF.congr'
   filter_upwards [hFi] with i hi
-  rw [eLpNorm_one_eq_lintegral_enorm (hi.aestronglyMeasurable.sub hfi)]
+  rw [eLpNorm_one_eq_lintegral_eNorm (hi.aestronglyMeasurable.sub hfi)]
   rfl
 
 end MeasureTheory.VectorMeasure
