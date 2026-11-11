@@ -57,7 +57,6 @@ that involve other properties, e.g. `IsCompact.inter_left`
 ## To do
 
 * Implement other grind sets, e.g. `boundedness`, `countability`, `connectedness`, ...
-
 -/
 
 open Lean Parser Tactic

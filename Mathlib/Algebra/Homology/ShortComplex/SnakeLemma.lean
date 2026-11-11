@@ -44,7 +44,6 @@ here are slightly easier because of the use of the category `ShortComplex C`,
 the use of duality (which allows to construct only half of the sequence, and deducing
 the other half by arguing in the opposite category), and the use of "refinements"
 (see `CategoryTheory.Abelian.Refinements`) instead of a weak form of pseudo-elements.
-
 -/
 
 @[expose] public section

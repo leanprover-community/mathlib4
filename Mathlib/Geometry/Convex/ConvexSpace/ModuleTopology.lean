@@ -10,7 +10,6 @@ public import Mathlib.Geometry.Convex.ConvexSpace.Topology
 
 /-!
 # Continuity of affine maps from the standard simplex to modules
-
 -/
 
 open Topology

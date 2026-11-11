@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
 This file is the bundled counterpart of `Mathlib/Algebra/Homology/CommSq.lean`.
 The same results are obtained here for squares `sq : Square C` where
 `C` is an additive category.
-
 -/
 
 @[expose] public section

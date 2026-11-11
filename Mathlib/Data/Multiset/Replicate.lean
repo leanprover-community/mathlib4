@@ -13,7 +13,6 @@ public import Mathlib.Data.Multiset.AddSub
 ## Main definitions
 
 * `replicate n a` is the multiset containing only `a` with multiplicity `n`
-
 -/
 
 @[expose] public section

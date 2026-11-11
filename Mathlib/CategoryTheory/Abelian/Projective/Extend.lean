@@ -15,7 +15,6 @@ Given a projective resolution `R` of an object `X` in an abelian category `C`,
 we define `R.cochainComplex : CochainComplex C ℤ`, which is the extension
 of `R.complex : ChainComplex C ℕ`, and the quasi-isomorphism
 `R.π' : R.cochainComplex ⟶ (CochainComplex.singleFunctor C 0).obj X`.
-
 -/
 
 @[expose] public section

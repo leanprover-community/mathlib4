@@ -29,7 +29,6 @@ Given a fully faithful cover-dense functor `G : C ⥤ (D, K)` between small site
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
 * https://ncatlab.org/nlab/show/dense+sub-site
 * https://ncatlab.org/nlab/show/comparison+lemma
-
 -/
 
 @[expose] public section
@@ -134,6 +133,7 @@ instance (priority := 900) [G.IsCoverDense K] : G.IsDenseSubsite (G.inducedTopol
   rw [← restrictedTopology_eq_inducedTopology]
   infer_instance
 
+omit [G.LocallyCoverDense K] in
 @[simp]
 lemma mem_inducedTopology_iff_of_isCoverDense [G.IsCoverDense K] {X : C} (S : Sieve X) :
     S ∈ G.inducedTopology K X ↔ S.functorPushforward G ∈ K (G.obj X) := by

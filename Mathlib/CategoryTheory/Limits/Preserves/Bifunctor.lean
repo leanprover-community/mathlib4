@@ -16,7 +16,6 @@ the hypothesis that the curried functor `F : C₁ × C₂ ⥤ C` preserves limit
 `K₁ × K₂ : J₁ × J₂ ⥤ C₁ × C₂`. We give a basic API to extract isomorphisms
 $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$
 out of this typeclass.
-
 -/
 
 @[expose] public section

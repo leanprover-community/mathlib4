@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 In this file, given a short exact short complex `S : ShortComplex C`
 in an abelian category, we construct the associated class in
 `Ext S.X₃ S.X₁ 1`.
-
 -/
 
 @[expose] public section

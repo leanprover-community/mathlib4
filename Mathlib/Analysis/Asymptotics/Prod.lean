@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Normed.Group.Constructions
 
 This file contains lemmas about asymptotic relations for product-valued functions and product
 filters.
-
 -/
 
 @[expose] public section

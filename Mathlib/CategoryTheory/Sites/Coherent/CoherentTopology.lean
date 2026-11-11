@@ -16,7 +16,6 @@ This file characterises the covering sieves of the coherent topology.
 
 * `coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily`: a sieve is a covering sieve for the
   coherent topology if and only if it contains a finite effective epimorphic family.
-
 -/
 
 public section
