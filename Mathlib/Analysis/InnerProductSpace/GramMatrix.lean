@@ -112,7 +112,7 @@ theorem posDef_gram_of_linearIndependent
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
   refine posDef_iff_submatrix_finset.mpr fun s ↦ ?_
   rw [submatrix_gram]
-  have hs := Fintype.linearIndependent_iff.mp (h_li.comp _ Subtype.coe_injective)
+  have hs := Fintype.linearIndependent_iff.mp (h_li.comp ((↑) : s → n) Subtype.coe_injective)
   refine .of_dotProduct_mulVec_pos (isHermitian_gram _ _) fun x hx ↦
     ((posSemidef_gram ..).dotProduct_mulVec_nonneg _).lt_of_ne' ?_
   rw [star_dotProduct_gram_mulVec, inner_self_eq_zero.ne]
@@ -142,11 +142,12 @@ lemma gram_eq_one_iff_orthonormal [DecidableEq n] {v : n → E} : gram 𝕜 v = 
 theorem posSemidef_opNorm_smul_gram_sub_gram {F} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
     (v : n → E) (f : E →L[𝕜] F) : (‖f‖ ^ 2 • gram 𝕜 v - gram 𝕜 (f ∘ v)).PosSemidef := by
   refine posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_
-  rw [submatrix_sub, submatrix_smul, submatrix_gram, submatrix_gram]
+  simp only [submatrix_sub, submatrix_smul, Pi.sub_apply, Pi.smul_apply, submatrix_gram]
   refine .of_dotProduct_mulVec_nonneg
     (((isHermitian_gram 𝕜 _).smul (by simp [IsSelfAdjoint])).sub (isHermitian_gram 𝕜 _)) fun x ↦ ?_
   simp only [sub_mulVec, smul_mulVec, dotProduct_sub, dotProduct_smul,
-    star_dotProduct_gram_mulVec, inner_self_eq_norm_sq_to_K, ← map_sum, sub_nonneg]
+    star_dotProduct_gram_mulVec, Function.comp_apply, ← map_smul, ← map_sum,
+    inner_self_eq_norm_sq_to_K, sub_nonneg]
   norm_cast
   simpa only [smul_eq_mul, ← mul_pow] using pow_le_pow_left₀ (norm_nonneg _) (f.le_opNorm _) 2
 

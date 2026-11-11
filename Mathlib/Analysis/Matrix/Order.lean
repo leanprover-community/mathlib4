@@ -197,7 +197,7 @@ theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
       y.submatrix ((↑) : s.image Prod.snd → m) (↑)).PosSemidef := by
     simpa [ha, hb, mul_kronecker_mul, ← conjTranspose_kronecker, star_eq_conjTranspose] using
       posSemidef_conjTranspose_mul_self _
-  exact h.submatrix fun p ↦
+  exact h.submatrix fun p : s ↦
     (⟨p.1.1, Finset.mem_image_of_mem _ p.2⟩, ⟨p.1.2, Finset.mem_image_of_mem _ p.2⟩)
 
 open Matrix in
@@ -209,7 +209,7 @@ theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
   have hx' := hx.submatrix (Subtype.coe_injective (p := (· ∈ s.image Prod.fst)))
   have hy' := hy.submatrix (Subtype.coe_injective (p := (· ∈ s.image Prod.snd)))
   refine ((hx'.posSemidef.kronecker hy'.posSemidef).posDef_iff_isUnit.mpr
-    (hx'.isUnit.kronecker hy'.isUnit)).submatrix (e := fun p ↦
+    (hx'.isUnit.kronecker hy'.isUnit)).submatrix (e := fun p : s ↦
       (⟨p.1.1, Finset.mem_image_of_mem _ p.2⟩, ⟨p.1.2, Finset.mem_image_of_mem _ p.2⟩)) ?_
   exact fun p q h ↦ Subtype.ext <| Prod.ext (congrArg (·.1.1) h) (congrArg (·.2.1) h)
 

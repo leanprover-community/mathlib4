@@ -339,8 +339,10 @@ theorem _root_.Matrix.posSemidef_iff_submatrix_finset {M : Matrix n n R} :
 omit [Fintype m] in
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix n m R) :
     PosSemidef (Bᴴ * A * B) := by
-  refine posSemidef_iff_submatrix_finset.mpr fun s ↦
-    of_dotProduct_mulVec_nonneg ((isHermitian_conjTranspose_mul_mul B hA.1).submatrix _) fun x ↦ ?_
+  rw [posSemidef_iff_submatrix_finset]
+  intro s
+  refine of_dotProduct_mulVec_nonneg ((isHermitian_conjTranspose_mul_mul B hA.1).submatrix _)
+    fun x ↦ ?_
   trans star x ⬝ᵥ ((B.submatrix id (↑))ᴴ * A * B.submatrix id (↑)) *ᵥ x
   · simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using
       hA.dotProduct_mulVec_nonneg (B.submatrix id (↑) *ᵥ x)
