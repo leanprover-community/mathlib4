@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.Module.Lattice.Covolume
 public import Mathlib.Algebra.Module.Lattice.Discrete
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
@@ -348,7 +349,8 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
   rw [← coe_toAddSubgroup]
   exact AddSubgroup.isClosed_of_discreteTopology
 
-@[measurability]
+@[measurability,
+  deprecated measurableSet_halfOpenParallelepiped +typeChanged (since := "2026-11-11")]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
     MeasurableSet (fundamentalDomain b) := by
   cases nonempty_fintype ι
@@ -363,6 +365,8 @@ theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpac
 
 /-- For a ℤ-lattice `Submodule.span ℤ (Set.range b)`, proves that the set defined
 by `ZSpan.fundamentalDomain` is a fundamental domain. -/
+@[deprecated Module.Basis.isAddFundamentalDomain_halfOpenParallelepiped +typeChanged
+  (since := "2026-11-11")]
 protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
     (μ : Measure E) :
     IsAddFundamentalDomain (span ℤ (Set.range b)) (fundamentalDomain b) μ := by
@@ -371,17 +375,21 @@ protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensM
     fun x => exist_unique_vadd_mem_fundamentalDomain b x
 
 /-- A version of `ZSpan.isAddFundamentalDomain` for `AddSubgroup`. -/
+@[deprecated Module.Basis.isAddFundamentalDomain_halfOpenParallelepiped +typeChanged
+  (since := "2026-11-11")]
 protected theorem isAddFundamentalDomain' [Finite ι] [MeasurableSpace E] [OpensMeasurableSpace E]
     (μ : Measure E) :
     IsAddFundamentalDomain (span ℤ (Set.range b)).toAddSubgroup (fundamentalDomain b) μ :=
   ZSpan.isAddFundamentalDomain b μ
 
+@[deprecated addHaar_halfOpenParallelepiped_ne_zero +typeChanged (since := "2026-11-11")]
 theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [BorelSpace E]
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
   convert (ZSpan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
   exact inferInstanceAs <| VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ
 
+@[deprecated addHaar_halfOpenParallelepiped_eq +typeChanged (since := "2026-11-11")]
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
     μ (fundamentalDomain b) = ENNReal.ofReal |b₀.det b| * μ (fundamentalDomain b₀) := by
@@ -391,13 +399,14 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
   · simp
 
+@[deprecated addHaar_real_halfOpenParallelepiped_eq +typeChanged (since := "2026-11-11")]
 theorem measureReal_fundamentalDomain
     [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
     μ.real (fundamentalDomain b) = |b₀.det b| * μ.real (fundamentalDomain b₀) := by
   simp [measureReal_def, measure_fundamentalDomain b μ b₀]
 
-@[simp]
+@[simp, deprecated volume_halfOpenParallelepiped +typeChanged (since := "2026-11-11")]
 theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
     volume (fundamentalDomain b) = ENNReal.ofReal |(Matrix.of b).det| := by
   rw [measure_fundamentalDomain b volume (b₀ := Pi.basisFun ℝ ι), fundamentalDomain_pi_basisFun,
@@ -405,11 +414,12 @@ theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ
     mul_one, ← Matrix.det_transpose]
   rfl
 
-@[simp]
+@[simp, deprecated volume_real_halfOpenParallelepiped +typeChanged (since := "2026-11-11")]
 theorem volume_real_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
     volume.real (fundamentalDomain b) = |(Matrix.of b).det| := by
   simp [measureReal_def]
 
+@[deprecated halfOpenParallelepiped_ae_eq_parallelepiped +typeChanged (since := "2026-11-11")]
 theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] :
     fundamentalDomain b =ᵐ[μ] parallelepiped ℝ b := by
