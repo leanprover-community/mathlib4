@@ -365,10 +365,6 @@ instance SuccOrder.toIsStronglyAtomic [SuccOrder α] : IsStronglyAtomic α where
     ⟨SuccOrder.succ a, Order.covBy_succ_of_not_isMax fun ha ↦ ha.not_lt hab,
       SuccOrder.succ_le_of_lt hab⟩
 
-end IsStronglyAtomic
-
-section WellFounded
-
 @[to_dual]
 instance [WellFoundedLT α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
@@ -376,7 +372,9 @@ instance [WellFoundedLT α] : IsStronglyAtomic α where
     obtain ⟨ham, hmb⟩ := Set.mem_Ioc.1 hab
     exact ⟨m, ⟨⟨ham, fun c hac hcm ↦ hm _ ⟨hac, hcm.le.trans hmb⟩ hcm⟩, hmb⟩⟩
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+end IsStronglyAtomic
+
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
   inferInstance
@@ -395,8 +393,6 @@ theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)
-
-end WellFounded
 
 namespace BooleanAlgebra
 
