@@ -83,6 +83,14 @@ def Sized : Ordnode α → Prop
   | nil => True
   | node s l _ r => s = size l + size r + 1 ∧ Sized l ∧ Sized r
 
+/-- Whether all the cached sizes of a tree are right (`Sized`) is decidable. -/
+instance Sized.dec : DecidablePred (@Sized α)
+  | nil => inferInstanceAs <| Decidable True
+  | node s l _ r =>
+    have := Sized.dec l
+    have := Sized.dec r
+    inferInstanceAs <| Decidable (s = l.size + r.size + 1 ∧ l.Sized ∧ r.Sized)
+
 theorem Sized.node' {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (node' l x r) :=
   ⟨rfl, hl, hr⟩
 
@@ -536,6 +544,19 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
       else if delta * rs < ls then balanceR ll lx (merge lr (node rs rl rx rr))
       else glue (node ls ll lx lr) (node rs rl rx rr) :=
   rfl
+
+/-! ### `splitAt` -/
+
+
+/-- The two parts of `splitAtAux t i` are `takeAux t i` and `dropAux t i`. -/
+@[simp]
+theorem splitAtAux_eq (t : Ordnode α) (i : ℕ) : splitAtAux t i = (takeAux t i, dropAux t i) := by
+  fun_induction splitAtAux t i <;> simp_all [takeAux, dropAux]
+
+/-- The two parts of `splitAt i t` are `take i t` and `drop i t`. -/
+@[simp]
+theorem splitAt_eq (i : ℕ) (t : Ordnode α) : splitAt i t = (take i t, drop i t) := by
+  grind [splitAt, take, drop, splitAtAux_eq]
 
 /-! ### `insert` -/
 

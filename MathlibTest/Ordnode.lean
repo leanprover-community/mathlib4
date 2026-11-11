@@ -18,25 +18,17 @@ open Ordnode
 
 /-- The cached sizes of a tree are right and the tree is balanced: `Ordnode.Sized` and
 `Ordnode.Balanced`, as a `Bool`. -/
-meta def wellFormed {α : Type} : Ordnode α → Bool
-  | nil => true
-  | node s l _ r =>
-    s == l.size + r.size + 1 && decide (BalancedSz l.size r.size) && wellFormed l && wellFormed r
+meta def wellFormed {α : Type} (t : Ordnode α) : Bool :=
+  decide (t.Sized ∧ t.Balanced)
 
 /-- The tree `t` is well formed and its elements are those of `l`, in order. -/
 meta def agrees {α : Type} [BEq α] (t : Ordnode α) (l : List α) : Bool :=
   wellFormed t && t.toList == l
 
-/-- Equality of trees, cached sizes included, as a `Bool`. -/
-meta def same : Ordnode ℕ → Ordnode ℕ → Bool
-  | nil, nil => true
-  | node m l x r, node n l' y r' => m == n && x == y && same l l' && same r r'
-  | _, _ => false
-
 /-- The trees `ofList a`, `ofList a.reverse` and `ofAscList a`, without repeats, for a strictly
 increasing list `a`. -/
 meta def trees (a : List ℕ) : List (Ordnode ℕ) :=
-  [ofList a, ofList a.reverse, ofAscList a].pwFilter (!same · ·)
+  [ofList a, ofList a.reverse, ofAscList a].pwFilter (· ≠ ·)
 
 -- `ofList`, `ofAscList` and `ofList'`
 #guard (List.range 8).sublists.all fun a ↦ (trees a).all (agrees · a)
@@ -66,16 +58,6 @@ meta def trees (a : List ℕ) : List (Ordnode ℕ) :=
 #guard ((List.range 9).map List.range).all fun a ↦ (trees a).all fun t ↦ (List.range 9).all fun i ↦
   agrees (take i t) (a.take i) && agrees (drop i t) (a.drop i) &&
     agrees (splitAt i t).1 (a.take i) && agrees (splitAt i t).2 (a.drop i)
-
--- `splitAtAux` is `takeAux` and `dropAux` in one pass, on every tree and every index
-example {α : Type*} (t : Ordnode α) (i : ℕ) : splitAtAux t i = (takeAux t i, dropAux t i) := by
-  induction t generalizing i with
-  | nil => rfl
-  | node _ l _ r ihl ihr =>
-    rw [splitAtAux, takeAux, dropAux]
-    by_cases h : i = 0
-    · simp [h]
-    · rcases Nat.psub' i l.size with _ | _ | j <;> simp [h, ihl, ihr]
 
 -- `filter`, `partition` and `split`
 #guard ((List.range 10).map List.range).all fun a ↦ (trees a).all fun t ↦ a.sublists.all fun b ↦

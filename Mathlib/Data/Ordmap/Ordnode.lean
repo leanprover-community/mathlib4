@@ -74,6 +74,7 @@ This is a copy of `BinaryTree` with a cached `size` field for `BinaryTree.numNod
 inductive Ordnode (α : Type u) : Type u
   | nil : Ordnode α
   | node (size : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α
+  deriving DecidableEq
 compile_inductive% Ordnode
 
 namespace Ordnode
@@ -103,8 +104,8 @@ def delta :=
 The ratio between an outer and inner sibling of the
 heavier subtree in an unbalanced setting. It determines
 whether a double or single rotation should be performed
-to restore balance. It is corresponds with the inverse
-of `α` in Adam's article. -/
+to restore balance. It corresponds to the inverse
+of `α` in Adams' article. -/
 @[inline]
 def ratio :=
   2
@@ -142,8 +143,8 @@ def size : Ordnode α → ℕ
 /-- O(1). Is the set empty?
 
 ```
-empty ∅ = tt
-empty {1, 2, 3} = ff
+empty ∅ = true
+empty {1, 2, 3} = false
 ```
 -/
 @[inline]
@@ -168,7 +169,7 @@ O(1). Construct a node with the correct size information, without rebalancing. -
 def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   node (size l + size r + 1) l x r
 
-/-- Convert to an `OrdNode` by pre-computing the sizes. -/
+/-- Convert to an `Ordnode` by pre-computing the sizes. -/
 @[simp]
 def _root_.BinaryTree.toOrdNode : BinaryTree α → Ordnode α
   | .nil => .nil
@@ -179,7 +180,7 @@ theorem size_toOrdNode (b : BinaryTree α) :
     b.toOrdNode.size = b.numNodes := by
   induction b with simp [BinaryTree.toOrdNode, *]
 
-/-- Convert to an `BinaryTree`, discarding the cached size information. -/
+/-- Convert to a `BinaryTree`, discarding the cached size information. -/
 @[simp]
 def toBinaryTree : Ordnode α → BinaryTree α
   | .nil => .nil
@@ -332,7 +333,7 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
             node (ls + rs + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
               (node (size lrr + rs + 1) lrr x r)
 
-/-- O(n). Does every element of the map satisfy property `P`?
+/-- O(n). Does every element of the set satisfy property `P`?
 
 ```
 All (fun x ↦ x < 5) {1, 2, 3} = True
@@ -349,7 +350,7 @@ instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
     have : Decidable (All P r) := All.decidable r
     inferInstanceAs <| Decidable (All P l ∧ P m ∧ All P r)
 
-/-- O(n). Does any element of the map satisfy property `P`?
+/-- O(n). Does any element of the set satisfy property `P`?
 
 ```
 Any (fun x ↦ x < 2) {1, 2, 3} = True
@@ -393,7 +394,6 @@ Amem 4 {1, 2, 3} = false
 
 To see the difference with `Emem`, we need a preorder that is not a partial order.
 For example, suppose we compare pairs of numbers using only their first coordinate. Then:
--- TODO: Verify below example
 ```
 Emem (0, 1) {(0, 0), (1, 2)} = false
 Amem (0, 1) {(0, 0), (1, 2)} = true
@@ -411,8 +411,8 @@ instance Amem.decidable [LE α] [DecidableLE α] (x : α) (t : Ordnode α) : Dec
 /-- O(log n). Return the minimum element of the tree, or the provided default value.
 
 ```
-findMin' 37 {1, 2, 3} = 1
-findMin' 37 ∅ = 37
+findMin' {1, 2, 3} 37 = 1
+findMin' ∅ 37 = 37
 ``` -/
 def findMin' : Ordnode α → α → α
   | nil, x => x
@@ -482,8 +482,8 @@ def splitMin' : Ordnode α → α → Ordnode α → α × Ordnode α
 /-- O(log n). Extract and remove the minimum element from the tree, if it exists.
 
 ```
-split_min {1, 2, 3} = some (1, {2, 3})
-split_min ∅ = none
+splitMin {1, 2, 3} = some (1, {2, 3})
+splitMin ∅ = none
 ``` -/
 def splitMin : Ordnode α → Option (α × Ordnode α)
   | nil => none
@@ -501,12 +501,12 @@ def splitMax' : Ordnode α → α → Ordnode α → Ordnode α × α
 /-- O(log n). Extract and remove the maximum element from the tree, if it exists.
 
 ```
-split_max {1, 2, 3} = some ({1, 2}, 3)
-split_max ∅ = none
+splitMax {1, 2, 3} = some ({1, 2}, 3)
+splitMax ∅ = none
 ``` -/
 def splitMax : Ordnode α → Option (Ordnode α × α)
   | nil => none
-  | node _ x l r => splitMax' x l r
+  | node _ l x r => splitMax' l x r
 
 /-- **Internal use only**
 
@@ -529,14 +529,23 @@ merge {1, 2} {3, 4} = {1, 2, 3, 4}
 merge {3, 4} {1, 2} = precondition violation
 ``` -/
 def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
-  (Ordnode.recOn (motive := fun _ => Ordnode α → Ordnode α) l fun r => r)
-    fun ls ll lx lr _ IHlr r =>
-      (Ordnode.recOn (motive := fun _ => Ordnode α) r (node ls ll lx lr))
-        fun rs rl rx rr IHrl _ =>
-          if delta * ls < rs then balanceL IHrl rx rr
-          else
-            if delta * rs < ls then balanceR ll lx (IHlr <| node rs rl rx rr)
-            else glue (node ls ll lx lr) (node rs rl rx rr)
+  match l with
+  | nil => id
+  | node ls ll lx lr => go ls ll lx lr (merge lr)
+where
+  /-- **Internal use only**
+
+  The recursion of `merge` on its right argument, for the left argument `node ls ll lx lr`:
+  `merge (node ls ll lx lr) r = merge.go ls ll lx lr (merge lr) r`. As for `link.go`, this is a
+  structural recursion and not an `Ordnode.recOn`, whose compiled code evaluates both induction
+  hypotheses at every node. -/
+  go (ls : ℕ) (ll : Ordnode α) (lx : α) (lr : Ordnode α) (f : Ordnode α → Ordnode α) :
+      Ordnode α → Ordnode α
+    | nil => node ls ll lx lr
+    | node rs rl rx rr =>
+      if delta * ls < rs then balanceL (go ls ll lx lr f rl) rx rr
+      else if delta * rs < ls then balanceR ll lx (f (node rs rl rx rr))
+      else glue (node ls ll lx lr) (node rs rl rx rr)
 
 /-- O(log n). Insert an element above all the others, without any comparisons.
 (Assumes that the element is in fact above all the others).
@@ -718,7 +727,7 @@ protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α 
 that the function is defined on all members of the set.
 
 ```
-pmap (fin.mk : ∀ n, n < 4 → fin 4) {1, 2} H = {(1 : fin 4), (2 : fin 4)}
+pmap (Fin.mk : ∀ n, n < 4 → Fin 4) {1, 2} H = {(1 : Fin 4), (2 : Fin 4)}
 ``` -/
 def pmap {P : α → Prop} {β} (f : ∀ a, P a → β) : ∀ t : Ordnode α, All P t → Ordnode β
   | nil, _ => nil
@@ -728,7 +737,7 @@ def pmap {P : α → Prop} {β} (f : ∀ a, P a → β) : ∀ t : Ordnode α, Al
 P to these elements inside the set, producing a set in the subtype.
 
 ```
-attach' (fun x ↦ x < 4) {1, 2} H = ({1, 2} : Ordnode {x // x<4})
+attach' (P := fun x ↦ x < 4) {1, 2} H = ({1, 2} : Ordnode {x // x < 4})
 ``` -/
 def attach' {P : α → Prop} : ∀ t, All P t → Ordnode { a // P a } :=
   pmap Subtype.mk
@@ -750,8 +759,8 @@ def nth : Ordnode α → ℕ → Option α
 /-- O(log n). Remove the `i`th element of the set, by its index from left to right.
 
 ```
-remove_nth {a, b, c, d} 2 = {a, b, d}
-remove_nth {a, b, c, d} 5 = {a, b, c, d}
+removeNth {a, b, c, d} 2 = {a, b, d}
+removeNth {a, b, c, d} 5 = {a, b, c, d}
 ``` -/
 def removeNth : Ordnode α → ℕ → Ordnode α
   | nil, _ => nil
@@ -791,8 +800,8 @@ def take (i : ℕ) (t : Ordnode α) : Ordnode α :=
 index is within the range of the data structure.)
 
 ```
-drop_aux {a, b, c, d} 2 = {c, d}
-drop_aux {a, b, c, d} 5 = ∅
+dropAux {a, b, c, d} 2 = {c, d}
+dropAux {a, b, c, d} 5 = ∅
 ``` -/
 def dropAux : Ordnode α → ℕ → Ordnode α
   | nil, _ => nil
@@ -902,7 +911,11 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
         (link l y r, ⟨zs, h'.trans ((Nat.le_succ _).trans h)⟩)
   termination_by _ s => s
 
-/-- Auxiliary definition for `ofAscList`. -/
+/-- Auxiliary definition for `ofAscList`: for `s` a power of two and `t` a tree of `2 * s - 1`
+elements, `ofAscListAux₂ l t s` builds a tree from the elements of `t` followed by those of `l`.
+With `link`, it joins `t`, the first element of `l` and the tree that `ofAscListAux₁` builds from
+the next `2 * s - 1` elements, and continues with `2 * s`. This is `go` in `fromDistinctAscList`
+of Haskell's `containers` (versions 0.5.1 to 0.6.7). -/
 def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
   | [] => fun t _ => t
   | x :: xs => fun l s =>
@@ -1049,8 +1062,8 @@ Note that the element returned by `f` must be equivalent to `x`.
 ```
 alter f 0 {1, 2, 3} = {1, 2, 3}     if f none = none
                     = {a, 1, 2, 3}  if f none = some a
-alter f 1 {1, 2, 3} = {2, 3}     if f 1 = none
-                    = {a, 2, 3}  if f 1 = some a
+alter f 1 {1, 2, 3} = {2, 3}     if f (some 1) = none
+                    = {a, 2, 3}  if f (some 1) = some a
 ``` -/
 def alter (f : Option α → Option α) (x : α) : Ordnode α → Ordnode α
   | nil => Option.recOn (f none) nil Ordnode.singleton
@@ -1297,8 +1310,8 @@ def isSubsetAux : Ordnode α → Ordnode α → Bool
 /-- O(m + n). Is every element of `t₁` equivalent to some element of `t₂`?
 
 ```
-is_subset {1, 4} {1, 2, 4} = tt
-is_subset {1, 3} {1, 2, 4} = ff
+isSubset {1, 4} {1, 2, 4} = true
+isSubset {1, 3} {1, 2, 4} = false
 ``` -/
 def isSubset (t₁ t₂ : Ordnode α) : Bool :=
   decide (size t₁ ≤ size t₂) && isSubsetAux t₁ t₂
@@ -1306,8 +1319,8 @@ def isSubset (t₁ t₂ : Ordnode α) : Bool :=
 /-- O(m + n). Is every element of `t₁` not equivalent to any element of `t₂`?
 
 ```
-disjoint {1, 3} {2, 4} = tt
-disjoint {1, 2} {2, 4} = ff
+disjoint {1, 3} {2, 4} = true
+disjoint {1, 2} {2, 4} = false
 ``` -/
 def disjoint : Ordnode α → Ordnode α → Bool
   | nil, _ => true
