@@ -117,16 +117,25 @@ lemma strictLimitsClosureStep_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
 
 section
 
-variable {β : Type w'} [LinearOrder β] [OrderBot β] [WellFoundedLT β]
+variable {β : Type w'} [LinearOrder β] [WellFoundedLT β]
 
 /-- Given `P : ObjectProperty C`, a family of categories `J a`, this
 is the transfinite iteration of `Q ↦ Q.strictLimitsClosureStep J`. -/
 abbrev strictLimitsClosureIter (b : β) : ObjectProperty C :=
   supTransfiniteIterate (φ := fun Q ↦ Q.strictLimitsClosureStep J) b P
 
-lemma le_strictLimitsClosureIter (b : β) :
-    P ≤ P.strictLimitsClosureIter J b :=
-  le_of_eq_of_le (supTransfiniteIterate_bot _ _).symm
+theorem strictLimitsClosureIter_of_isMin {b : β} (hb : IsMin b) :
+    strictLimitsClosureIter P J b = P :=
+  supTransfiniteIterate_of_isMin _ _ hb
+
+theorem strictLimitsClosureIter_bot [OrderBot β] :
+    strictLimitsClosureIter P J (⊥ : β) = P := by
+  simp
+
+lemma le_strictLimitsClosureIter (b : β) : P ≤ P.strictLimitsClosureIter J b := by
+  have : Nonempty β := ⟨b⟩
+  have := WellFoundedLT.toOrderBot
+  exact le_of_eq_of_le (supTransfiniteIterate_bot _ _).symm
     (supTransfiniteIterate_mono _ (fun _ ↦ le_strictLimitsClosureStep _ _) bot_le)
 
 instance (b : β) [P.Nonempty] : (P.strictLimitsClosureIter J b).Nonempty :=
@@ -136,9 +145,7 @@ lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     P.strictLimitsClosureIter J b ≤ P.limitsClosure J := by
   have := SuccOrder.ofLinearWellFoundedLT β
   induction b using SuccOrder.limitRecOn with
-  | isMin b hb =>
-    obtain rfl := hb.eq_bot
-    simp
+  | isMin b hb => simp [strictLimitsClosureIter_of_isMin _ _ hb]
   | succ b hb hb' =>
     rw [strictLimitsClosureIter, supTransfiniteIterate_succ_of_not_isMax _ _ hb,
       strictLimitsClosureStep, sup_le_iff, iSup_le_iff]
@@ -156,8 +163,7 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
       (fun _ _ _ ↦ by grind)
   induction b using SuccOrder.limitRecOn generalizing hb₀ with
   | isMin b hb =>
-    obtain rfl := hb.eq_bot
-    simp only [supTransfiniteIterate_bot]
+    simp only [supTransfiniteIterate_of_isMin _ _ hb]
     infer_instance
   | succ b hb hb' =>
     have := H (Order.le_succ b)
