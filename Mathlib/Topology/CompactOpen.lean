@@ -27,6 +27,9 @@ topological spaces.
   continuous.
 * `Homeomorph.curry` combines the currying and uncurrying operations into a homeomorphism
   `C(X × Y, Z) ≃ₜ C(X, C(Y, Z))`. This homeomorphism exists if `X` and `Y` are locally compact.
+* `ContinuousMap.prodHomeomorph` and `ContinuousMap.prodHomeomorph'` are the homeomorphism
+  `C(X, Y × Z) ≃ₜ C(X, Y) × C(X, Z)`, `f ↦ (fst ∘ f, snd ∘ f)`. It exists if `Y` and `Z` are
+  R₁ spaces, or if `X` is an R₁ space.
 
 
 ## Tags
@@ -38,33 +41,6 @@ compact-open, curry, function space
 
 
 open Set Filter TopologicalSpace Topology
-
-section CompactNhdsWithin
-
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-
-/-- If `(K, Y)` is a locally compact pair, where `K ⊆ X` carries the subspace topology, then for
-every continuous `f : X → Y`, every `x ∈ K` and every neighbourhood `V` of `f x` there is a compact
-set `L ⊆ X`, which is a neighbourhood of `x` within `K`, such that `f` maps `L` into `V`. -/
-theorem exists_mem_nhdsWithin_isCompact_mapsTo {K : Set X} [LocallyCompactPair K Y] {f : X → Y}
-    (hf : Continuous f) {x : X} (hx : x ∈ K) {V : Set Y} (hV : V ∈ 𝓝 (f x)) :
-    ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V := by
-  obtain ⟨L, hL, hLc, hLV⟩ :=
-    exists_mem_nhds_isCompact_mapsTo (x := ⟨x, hx⟩) (hf.comp continuous_subtype_val) hV
-  exact ⟨(↑) '' L, mem_nhds_subtype_iff_nhdsWithin.1 hL, hLc.image continuous_subtype_val,
-    mapsTo_image_iff.2 hLV⟩
-
-/-- If `Y` is an R₁ space, `f : X → Y` is continuous, `K ⊆ X` is compact and `x ∈ K`, then every
-neighbourhood `V` of `f x` contains the image of a compact set `L` which is a neighbourhood of `x`
-within `K`. This generalises `exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds`, which is the
-special case `K ∈ 𝓝 x`. -/
-theorem IsCompact.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space [R1Space Y] {K : Set X}
-    (hK : IsCompact K) {f : X → Y} (hf : Continuous f) {x : X} (hx : x ∈ K) {V : Set Y}
-    (hV : V ∈ 𝓝 (f x)) : ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V :=
-  have := isCompact_iff_compactSpace.1 hK
-  exists_mem_nhdsWithin_isCompact_mapsTo hf hx hV
-
-end CompactNhdsWithin
 
 namespace ContinuousMap
 
@@ -223,20 +199,62 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
   rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
   exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
 
-/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is continuous for the compact-open
-topologies, provided that `Y` and `Z` are R₁ spaces (e.g., regular or Hausdorff spaces).
-In particular no local compactness of `X` is required. -/
-theorem continuous_prodMk [R1Space Y] [R1Space Z] :
+/-- Auxiliary statement for `ContinuousMap.continuous_prodMk` and
+`ContinuousMap.continuous_prodMk'`: the pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is
+continuous for the compact-open topologies, provided that for every `f : C(X, Y × Z)`, every
+compact set `K ⊆ X`, every `x ∈ K` and every neighbourhood `V` of `f x` there is a compact set `L`,
+which is a neighbourhood of `x` within `K`, such that `f` maps `L` into `V`. -/
+theorem continuous_prodMk_of_exists_mem_nhdsWithin_isCompact_mapsTo
+    (h : ∀ (f : C(X, Y × Z)) (K : Set X), IsCompact K → ∀ x ∈ K, ∀ V ∈ 𝓝 (f x),
+      ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V) :
     Continuous fun p : C(X, Y) × C(X, Z) ↦ p.1.prodMk p.2 := by
   refine continuous_iff_continuousAt.2 fun ⟨f, F⟩ ↦ tendsto_nhds_compactOpen.2 fun K hK U hU H ↦ ?_
-  refine hK.induction_on (by simp [MapsTo]) (fun _ _ hst h ↦ h.mono fun _ hp ↦ hp.mono_left hst)
+  refine hK.induction_on (by simp [MapsTo]) (fun _ _ hst he ↦ he.mono fun _ hp ↦ hp.mono_left hst)
     (fun _ _ hs ht ↦ (hs.and ht).mono fun _ ↦ mapsTo_union.2) fun x hx ↦ ?_
   obtain ⟨V, W, hVo, hWo, hfV, hFW, hVWU⟩ := isOpen_prod_iff.mp hU (f x) (F x) (H hx)
-  obtain ⟨L, hL, hLc, hLVW⟩ := hK.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space
-    (f.prodMk F).continuous hx (prod_mem_nhds (hVo.mem_nhds hfV) (hWo.mem_nhds hFW))
+  obtain ⟨L, hL, hLc, hLVW⟩ :=
+    h (f.prodMk F) K hK x hx _ (prod_mem_nhds (hVo.mem_nhds hfV) (hWo.mem_nhds hFW))
   exact ⟨L, hL, ((eventually_mapsTo hLc hVo fun _ hy ↦ (hLVW hy).1).prod_nhds
     (eventually_mapsTo hLc hWo fun _ hy ↦ (hLVW hy).2)).mono
     fun p hp y hy ↦ hVWU ⟨hp.1 hy, hp.2 hy⟩⟩
+
+/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is continuous for the compact-open
+topologies, provided that `Y` and `Z` are R₁ spaces (e.g., regular or Hausdorff spaces).
+In particular no local compactness of `X` is required. See `ContinuousMap.continuous_prodMk'`
+for the version with a hypothesis on `X` instead. -/
+protected theorem continuous_prodMk [R1Space Y] [R1Space Z] :
+    Continuous fun p : C(X, Y) × C(X, Z) ↦ p.1.prodMk p.2 :=
+  continuous_prodMk_of_exists_mem_nhdsWithin_isCompact_mapsTo fun f _ hK _ hx _ hV ↦
+    hK.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space f.continuous hx hV
+
+/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is continuous for the compact-open
+topologies, provided that `X` is an R₁ space (e.g., a Hausdorff space); no hypothesis on `Y` and
+`Z` is needed. See `ContinuousMap.continuous_prodMk` for the version with hypotheses on `Y` and `Z`
+instead. -/
+protected theorem continuous_prodMk' [R1Space X] :
+    Continuous fun p : C(X, Y) × C(X, Z) ↦ p.1.prodMk p.2 :=
+  continuous_prodMk_of_exists_mem_nhdsWithin_isCompact_mapsTo fun f _ hK _ hx _ hV ↦
+    hK.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space' f.continuous hx hV
+
+variable (X Y Z) in
+/-- The homeomorphism `C(X, Y × Z) ≃ₜ C(X, Y) × C(X, Z)`, `f ↦ (fst ∘ f, snd ∘ f)`, with inverse
+`(f, g) ↦ f.prodMk g`, for the compact-open topologies, when `Y` and `Z` are R₁ spaces.
+See `ContinuousMap.prodHomeomorph'` for the version with a hypothesis on `X` instead. -/
+@[simps! apply symm_apply]
+def prodHomeomorph [R1Space Y] [R1Space Z] : C(X, Y × Z) ≃ₜ C(X, Y) × C(X, Z) where
+  toEquiv := prodEquiv X Y Z
+  continuous_toFun := (continuous_postcomp _).prodMk (continuous_postcomp _)
+  continuous_invFun := ContinuousMap.continuous_prodMk
+
+variable (X Y Z) in
+/-- The homeomorphism `C(X, Y × Z) ≃ₜ C(X, Y) × C(X, Z)`, `f ↦ (fst ∘ f, snd ∘ f)`, with inverse
+`(f, g) ↦ f.prodMk g`, for the compact-open topologies, when `X` is an R₁ space.
+See `ContinuousMap.prodHomeomorph` for the version with hypotheses on `Y` and `Z` instead. -/
+@[simps! apply symm_apply]
+def prodHomeomorph' [R1Space X] : C(X, Y × Z) ≃ₜ C(X, Y) × C(X, Z) where
+  toEquiv := prodEquiv X Y Z
+  continuous_toFun := (continuous_postcomp _).prodMk (continuous_postcomp _)
+  continuous_invFun := ContinuousMap.continuous_prodMk'
 
 variable [LocallyCompactPair Y Z]
 

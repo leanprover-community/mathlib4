@@ -108,7 +108,7 @@ lemma not_isMulCommutative [Nontrivial G] [IsPerfect G] : ¬ IsMulCommutative G 
   fun _ ↦ not_isSolvable G inferInstance
 
 @[to_additive]
-instance subsingleton_of_isMulCommutative
+theorem subsingleton_of_isMulCommutative
     [hG : IsPerfect G] [h_comm : IsMulCommutative G] : Subsingleton G := by
   by_contra! h_not_subsingleton
   exact not_isMulCommutative G h_comm
