@@ -8,6 +8,7 @@ module
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.PosDef
+public import Mathlib.LinearAlgebra.Matrix.Symmetrizable
 
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
@@ -474,21 +475,146 @@ end Properties
 
 end CartanMatrix
 
-/-- The proposition that a matrix is a finite-type Cartan matrix. -/
-structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
+/-- The proposition that a matrix is a finite-type generalized Cartan matrix. -/
+structure Matrix.IsFiniteGeneralizedCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
     (M : Matrix ι ι ℤ) : Prop where
   diag : ∀ i, M i i = 2
   offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
-  exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
+  zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
+
+/-- The proposition that a matrix is a finite-type Cartan matrix. -/
+structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
+    extends IsFiniteGeneralizedCartan M where
+  exists_posDef' : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ x ≠ 0, 0 < x ⬝ᵥ ((diagonal d * M) *ᵥ x)
 
 namespace Matrix.IsFiniteCartan
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
 include hM
 
-lemma zero_comm (i j : ι) : M i j = 0 ↔ M j i = 0 := by
-  obtain ⟨_, _, h⟩ := hM.exists_posDef
-  grind [h.isHermitian.apply i j, diagonal_mul, star_trivial, mul_eq_zero]
+theorem exists_mul_mulVec_pos {x : ι → ℤ} (hx : x ≠ 0) :
+    ∃ i, 0 < x i * (M *ᵥ x) i := by
+  obtain ⟨d, hd, h⟩ := hM.exists_posDef'
+  by_contra! hc
+  exact (h x hx).not_ge <| dotProduct_diagonal_mul_mulVec _ _ M ▸ Finset.sum_nonpos fun i _ ↦
+    mul_assoc (d i) _ _ ▸ mul_nonpos_of_nonneg_of_nonpos (hd i).le (hc i)
+
+lemma det_ne_zero : M.det ≠ 0 := by
+  by_contra h
+  obtain ⟨v, hv, hMv⟩ := exists_mulVec_eq_zero_iff.mpr h
+  simpa [hMv] using hM.exists_mul_mulVec_pos hv
+
+theorem exists_row_with_single_offDiag [Nonempty ι] :
+    ∃ v w : ι, M v w ≠ 0 ∧ ∀ j, j ≠ v → M v j ≠ 0 → j = w := by
+  by_contra! h
+  obtain ⟨i, hi⟩ := hM.exists_mul_mulVec_pos zero_ne_one.symm
+  obtain ⟨j, hji, hij, -⟩ := h i i (by simp [hM.diag])
+  obtain ⟨k, hki, _, hkj⟩ := h i j hij
+  have hsum := Finset.sum_le_sum_of_subset_of_nonpos (s := {i, j, k}) (t := Finset.univ) (by simp)
+    <| fun l _ _ ↦ hM.offDiag_nonpos i l (by grind)
+  rw [Finset.sum_insert (by simp [hji.symm, hki.symm]), Finset.sum_pair hkj.symm] at hsum
+  have : 0 < ∑ l ∈ Finset.univ, M i l := by simpa [mulVec, dotProduct] using hi
+  grind [hM.offDiag_nonpos i j hji.symm, hM.offDiag_nonpos i k hki.symm, hM.diag i]
+
+theorem submatrix {κ : Type*} [Fintype κ] [DecidableEq κ] {f : κ → ι} (hf : Function.Injective f) :
+    (M.submatrix f f).IsFiniteCartan where
+  diag i := submatrix_apply M f f i i ▸ hM.diag (f i)
+  offDiag_nonpos i j h := submatrix_apply M f f i j ▸ hM.offDiag_nonpos (f i) (f j) (hf.ne h)
+  zero_comm i j := by rw [submatrix_apply, submatrix_apply, hM.zero_comm]
+  exists_posDef' := by
+    obtain ⟨d, hd, h⟩ := hM.exists_posDef'
+    use d ∘ f
+    refine ⟨fun i ↦ hd (f i), fun x hx ↦ ?_⟩
+    let A := diagonal d * M
+    let B := A + Aᵀ
+    have hB : B.PosDef := by
+      refine posDef_iff_dotProduct_mulVec.mpr ⟨?_, fun x hx ↦ ?_⟩
+      · ext; simp [B, add_comm]
+      · simpa [B, add_mulVec, dotProduct_add, dotProduct_transpose_mulVec] using h x hx
+    have hAsub : A.submatrix f f = diagonal (d ∘ f) * M.submatrix f f := by
+      ext; simp [A, submatrix_apply, diagonal_mul]
+    have hBsub : B.submatrix f f = A.submatrix f f + (A.submatrix f f)ᵀ := by
+      ext; simp [B, submatrix_apply, transpose_apply]
+    rw [← hAsub]
+    have : 0 < x ⬝ᵥ ((B.submatrix f f) *ᵥ x) := by
+      simpa only [star_trivial] using (hB.submatrix hf).dotProduct_mulVec_pos hx
+    have : x ⬝ᵥ ((B.submatrix f f) *ᵥ x) = 2 * (x ⬝ᵥ ((A.submatrix f f) *ᵥ x)) := by
+      rw [hBsub, add_mulVec, dotProduct_add, dotProduct_transpose_mulVec]; ring
+    nlinarith
+
+theorem isPosSymmetrizable : M.IsPosSymmetrizable := by
+  induction hcard : Fintype.card ι using Nat.strong_induction_on generalizing ι with | h n ih =>
+    by_cases hne : Nonempty ι
+    · obtain ⟨v, w, hvw, _⟩ := hM.exists_row_with_single_offDiag
+      let κ := {i : ι // i ≠ v}
+      have h : Fintype.card κ < n := hcard ▸ Fintype.card_lt_of_injective_not_surjective
+        (Subtype.val : κ → ι) Subtype.val_injective (fun h ↦ by grind [h v])
+      obtain ⟨e, he, hsub⟩ := ih (Fintype.card κ) h (hM.submatrix Subtype.val_injective) rfl
+      have hE (i j) : e i * M i.1 j.1 = e j * M j.1 i.1 := by
+        simpa only [submatrix_apply] using hsub i j
+      by_cases! hw : w = v
+      · exact .extend_index e he 1 1 (by norm_num) (by norm_num) hE (by grind [hM.zero_comm])
+      · have hvw_neg : M v w < 0 := lt_of_le_of_ne (hM.offDiag_nonpos v w hw.symm) hvw
+        have hwv_neg := lt_of_le_of_ne (hM.offDiag_nonpos w v hw) (by grind [hM.zero_comm])
+        exact .extend_index e he (-M v w) ((-M w v) * e ⟨w, hw⟩) (neg_pos.mpr hvw_neg)
+          (mul_pos (neg_pos.mpr hwv_neg) (he ⟨w, hw⟩)) hE (by grind [hM.zero_comm])
+    · have : IsEmpty ι := ⟨fun i ↦ hne ⟨i⟩⟩
+      exact ⟨1, isEmptyElim, isEmptyElim⟩
+
+theorem exists_pos_mulVec_pos : ∃ u : ι → ℤ, (∀ i, 0 < u i) ∧ (∀ i, 0 < (M *ᵥ u) i) := by
+  obtain ⟨u, hMu⟩ : ∃ u, ∀ i, 0 < (M *ᵥ u) i :=
+    ⟨M.adjugate *ᵥ M.det, by simp [mul_adjugate, mul_self_pos.mpr hM.det_ne_zero]⟩
+  suffices ∀ i, 0 ≤ u i by
+    refine ⟨u, fun i ↦ ?_, hMu⟩
+    specialize hMu i
+    rw [mulVec, dotProduct, ← Finset.add_sum_erase _ _ (Finset.mem_univ i), hM.diag] at hMu
+    grind [Finset.sum_nonpos fun j (hj : j ∈ Finset.univ.erase i) ↦ mul_nonpos_of_nonpos_of_nonneg
+      (hM.offDiag_nonpos i j (Finset.ne_of_mem_erase hj).symm) (this j)]
+  suffices (fun j ↦ min (u j) 0) = 0 by simpa using congr_fun this
+  by_contra hy
+  obtain ⟨i, hi⟩ := hM.exists_mul_mulVec_pos hy
+  apply hi.not_ge (le_trans ?_ (mul_nonpos_of_nonpos_of_nonneg (min_le_right (u i) 0) (hMu i).le))
+  simp_rw [mulVec, dotProduct, Finset.mul_sum]
+  apply Finset.sum_le_sum fun j _ ↦ ?_
+  by_cases hij : i = j
+  · grind [le_total (u i) 0]
+  · simpa only [mul_assoc] using mul_le_mul_of_nonneg_left (min_le_left (u j) 0)
+      (mul_nonneg_of_nonpos_of_nonpos (min_le_right (u i) 0) (hM.offDiag_nonpos i j hij))
+
+open Finset in
+theorem exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef := by
+  obtain ⟨u, hu, hMu⟩ := hM.exists_pos_mulVec_pos
+  obtain ⟨e, he, he'⟩ := hM.isPosSymmetrizable
+  use e, he
+  apply posDef_iff_dotProduct_mulVec.mpr ⟨by ext; simp [diagonal_mul, he'], fun x hx ↦ ?_⟩
+  let y : ι → ℤ := fun i ↦ (∏ k ∈ univ.erase i, u k) * x i
+  have hy : u * y = (∏ k, u k) • x := funext fun _ ↦ by simp [y, ← mul_assoc, mul_prod_erase]
+  suffices 0 < (u * y) ⬝ᵥ (diagonal e * M) *ᵥ (u * y) by simpa only [hy, smul_dotProduct,
+    dotProduct_smul, mulVec_smul, smul_eq_mul, mul_pos_iff_of_pos_left (prod_pos fun k _ ↦ hu k)]
+  have : ∑ i, ∑ j, e i * M i j * u i * u j * y j ^ 2 =
+      ∑ i, ∑ j, e i * M i j * u i * u j * y i ^ 2 := by
+    rw [sum_comm]
+    exact sum_congr rfl fun i _ ↦ sum_congr rfl fun j _ ↦ by rw [he' j i]; ring
+  have : ∑ i, ∑ j, e i * M i j * u i * u j * y i ^ 2 = ∑ i, e i * (M *ᵥ u) i * u i * y i ^ 2 := by
+    grind [mulVec, dotProduct, mul_sum, sum_mul, sum_congr]
+  have : 2 * (u * y) ⬝ᵥ (diagonal e * M) *ᵥ (u * y) = ∑ i, ∑ j, e i * M i j * u i * u j * y i ^ 2 +
+      ∑ i, ∑ j, e i * M i j * u i * u j * y j ^ 2 -
+        ∑ i, ∑ j, e i * M i j * u i * u j * (y i - y j) ^ 2 := by
+    simpa [dotProduct, mulVec, diagonal_mul, mul_sum, ← sum_sub_distrib,
+      ← sum_add_distrib] using sum_congr rfl fun i _ ↦ by grind
+  have : ∑ i, ∑ j, e i * M i j * u i * u j * (y i - y j) ^ 2 ≤ 0 := by
+    refine sum_nonpos fun i _ ↦ sum_nonpos fun j _ ↦ ?_
+    rcases eq_or_ne i j with rfl | hij
+    · simp
+    · have hc : 0 ≤ e i * u i * u j * (y i - y j) ^ 2 :=
+        mul_nonneg (mul_nonneg (mul_nonneg (he i).le (hu i).le) (hu j).le) (sq_nonneg _)
+      grind [mul_nonpos_of_nonpos_of_nonneg (hM.offDiag_nonpos i j hij) hc]
+  have hr (j : ι) : 0 < e j * (M *ᵥ u) j * u j := mul_pos (mul_pos (he j) (hMu j)) (hu j)
+  obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx
+  have : y i ≠ 0 := mul_ne_zero (prod_pos fun k _ ↦ hu k).ne' hi
+  have : 0 < ∑ i, e i * (M *ᵥ u) i * u i * y i ^ 2 := sum_pos' (fun j _ ↦ mul_nonneg
+    (hr j).le (sq_nonneg _)) ⟨i, mem_univ i, mul_pos (hr i) (by positivity)⟩
+  linarith
 
 lemma det_pos :
     0 < M.det := by
@@ -508,18 +634,17 @@ protected lemma transpose :
   obtain ⟨d, hd_pos, hdM⟩ := hM.exists_posDef
   set d' : ι → ℤ := fun i ↦ ∏ j ∈ Finset.univ.erase i, d j with hd'
   have hd'_pos (i : ι) : 0 < d' i := Finset.prod_pos fun j _ ↦ hd_pos j
-  suffices (diagonal d' * Mᵀ).PosDef from
+  suffices ∀ x ≠ 0, 0 < x ⬝ᵥ ((diagonal d' * Mᵀ) *ᵥ x) from
     { diag i := by simpa using hM.diag i
       offDiag_nonpos i j hij := by simpa using hM.offDiag_nonpos j i hij.symm
-      exists_posDef := ⟨d', hd'_pos, this⟩ }
+      zero_comm i j := by simpa using hM.zero_comm j i
+      exists_posDef' := ⟨d', hd'_pos, this⟩ }
   set C : ℤ := ∏ j, d j with hC
   have hCd (i : ι) : d i * d' i = C := Finset.mul_prod_erase _ _ (Finset.mem_univ i)
   have hsymm (i j : ι) : d' i * M j i = d' j * M i j := by
     apply mul_left_cancel₀ (a := d i * d j) (by simp [(hd_pos _).ne'])
     have aux : d i * M i j = d j * M j i := by simpa using hdM.isHermitian.apply j i
     linear_combination (d j * M j i) * hCd i - (d i * M i j) * hCd j - C * aux
-  suffices ∀ v : ι → ℤ, v ≠ 0 → 0 < star v ⬝ᵥ (diagonal d' * Mᵀ) *ᵥ v from
-    posDef_iff_dotProduct_mulVec.mpr ⟨by ext i j; simpa using (hsymm i j).symm, this⟩
   intro v hv
   have key : (d' * v) ⬝ᵥ (diagonal d * M) *ᵥ (d' * v) = C * (v ⬝ᵥ (diagonal d' * Mᵀ) *ᵥ v) := by
     simp only [dotProduct, mulVec, diagonal_mul, transpose_apply, Finset.mul_sum, Pi.mul_apply]
@@ -529,7 +654,7 @@ protected lemma transpose :
     fun h ↦ hv (funext fun i ↦ by simpa [(hd'_pos i).ne'] using congr_fun h i)
   rw [star_trivial, key] at hpos
   have hCpos : 0 < C := Finset.prod_pos fun j _ ↦ hd_pos j
-  rwa [star_trivial, ← mul_pos_iff_of_pos_left hCpos]
+  rwa [← mul_pos_iff_of_pos_left hCpos]
 
 omit hM in
 @[simp] protected lemma transpose_iff :
