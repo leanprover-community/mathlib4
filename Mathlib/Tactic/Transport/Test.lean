@@ -25,13 +25,12 @@ How to transfer from `Set` to `Finset`?
 -/
 
 attribute [transport] mt Or.imp -- exists_imp forall_imp
-  Mathlib.Tactic.GCongr.imp_mono Mathlib.Tactic.GCongr.and_mono
+  Mathlib.Tactic.GCongr.imp_mono
+  Mathlib.Tactic.GCongr.and_mono
 
 namespace TransportTest
 
 section MapClass
-
-variable {α β : Type*}
 
 /-
 -- Injecion: `Finset` to `Set`, `Nat` to `Int`
@@ -41,7 +40,7 @@ variable {α β : Type*}
 
 class Transport {α β : Type*} (r : outParam <| α → β → Prop)
 
--- instance (α β : Type*) {r : α → β → Prop} [Transport (fun x y ↦ r y x)] : Transport r where
+instance {α : Type*} : Transport (@Eq α) where
 
 section
 
@@ -57,6 +56,9 @@ variable (β) in
 lemma surj [SurjClass α β] (a : α) : ∃ b : β, r a b := SurjClass.surj β a
 variable (α) in
 lemma surj' [SurjClass' α β] (b : β) : ∃ a : α, r a b := SurjClass'.surj α b
+
+instance : SurjClass α α where surj a := ⟨a, rfl⟩
+instance : SurjClass' α α where surj a := ⟨a, rfl⟩
 
 variable {p : α → Prop} {q : β → Prop}
 
@@ -114,7 +116,10 @@ lemma inj [InjClass α β] {a : α} {b b' : β} (h : r a b) (h' : r a b') : b = 
 lemma inj' [InjClass' α β] {a a' : α} {b : β} (h : r a b) (h' : r a' b) : a = a' :=
   InjClass'.inj h h'
 
-variable {p : α → Sort*} {q : β → Sort*}
+instance : InjClass α α where inj h h' := h.symm.trans h'
+instance : InjClass' α α where inj h h' := h.trans h'.symm
+
+variable {p : α → Type*} {q : β → Type*}
 
 variable {α β : Type*} {r : α → β → Prop} [Transport r]
 
@@ -500,14 +505,17 @@ theorem Set.transport_ssubset [Transport r] [SurjClass α β] [SurjClass' α β]
   transport [hs, ht] β to α
   rfl
 
-variable {ι ι' : Type*} {r' : ι → ι' → Prop} [Transport r'] (s : ι → Set α) (t : ι' → Set β)
+section
+variable {ι ι' : Type*} {r' : ι → ι' → Prop} {α β : Type*} {r : α → β → Prop}
+  [Transport r'] (s : ι → Set α) (t : ι' → Set β)
 
-@[transport]
-theorem Set.transport_iUnion [Transport r] [SurjClass ι ι'] [SurjClass' ι ι']
+@[transport intro]
+theorem Set.transport_iUnion [SurjClass ι ι'] [SurjClass' ι ι']
     (h : ∀ i i', r' i i' → SetRel r (t i') (s i)) :
     SetRel r (Set.iUnion t) (Set.iUnion s) := by
   intro a b hr
   push _ ∈ _
+  have : Transport r := ⟨⟩
   transport [h, hr] α to β, ι to ι'
   rfl
 
@@ -520,6 +528,30 @@ theorem Set.transport_iInter [SurjClass ι ι'] [SurjClass' ι ι']
   apply forall_transport_eq
   intro i i' hi
   exact h i i' hi hr
+
+end
+
+variable {ι : Sort*} (s : ι → Set α) (t : ι → Set β)
+
+@[transport low]
+theorem Set.transport_iUnion'
+    (h : ∀ i, SetRel r (t i) (s i)) :
+    SetRel r (Set.iUnion t) (Set.iUnion s) := by
+  intro a b hr
+  push _ ∈ _
+  have : Transport r := ⟨⟩
+  transport [h, hr] α to β
+  rfl
+
+@[transport low]
+theorem Set.transport_iInter'
+    (h : ∀ i, SetRel r (t i) (s i)) :
+    SetRel r (Set.iInter t) (Set.iInter s) := by
+  intro a b hr
+  push _ ∈ _
+  have : Transport r := ⟨⟩
+  transport [h, hr] α to β
+  rfl
 
 end Set
 
@@ -612,14 +644,7 @@ example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (·.eras
   sorry
 
 -- In this example, transport cannot eliminate all occurrences of `s`, so it should fail.
-/--
-error: unsolved goals
-α : Type u_1
-s t : Finset α
-s' t' : Set α
-p : Finset α → Prop
-⊢ ∀ (s : Set α), p _fvar.21683 ∧ s = s
--/
+/-- error: transport made no progress on `p s✝` -/
 #guard_msgs in
 example (p : Finset α → Prop) : ∀ s, p s ∧ s = s := by
   transport Finset α to Set α
@@ -640,8 +665,6 @@ theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [MapTransport r 
   exact (h (rel_map x)).to_iff
 
 -- Yay, this now works!!!
-set_option trace.Meta.synthInstance true in
-set_option trace.Meta.grewrite true in
 example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f)
     (hX : MyCompact X) : MyCompact Y := by
   unfold MyCompact
