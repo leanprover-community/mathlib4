@@ -32,8 +32,9 @@ These tests cover the pure logic of the cache system, including:
 - The two retry-flag tiers (`curlRetryArgs`)
 - Failure-line diagnostics (`splitWriteOut`, `transferDiagnostics`)
 - Utility functions (URL extraction, filename hashing, etc.)
-- Module selection for `get` with module names (`getHashMemo`,
-  `filterByRootModules`), also for modules outside the Mathlib cache
+- Module selection for `get` with a module of a downstream project
+  (`getHashMemo`, `filterByRootModules`); `Cache/test/downstream.sh` tests
+  this end to end
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
@@ -508,16 +509,14 @@ private def hashMemoFor (dir : System.FilePath) (extraRoots : List Lean.Name) :
 private def sortedKeys (hashMap : Cache.IO.ModuleHashMap) : List String :=
   hashMap.keys.map toString |>.toArray.qsort (· < ·) |>.toList
 
-/-- `get` with module names selects the named modules and the modules they import.
+/-- `get` with a module of a downstream project (here the package `Down`) selects the Mathlib
+cache modules that it imports, also through other downstream modules, and nothing else.
 
-A module outside the Mathlib cache (here the downstream package `Down`) has no hash and
-gets no cache files. `get Down.Top` selects the Mathlib cache modules that `Down.Top`
-imports, also through other downstream modules. The selection follows
-`Down.Top → Down.Mid → Batteries.X` and `Down.Top → Mathlib.B → Mathlib.A`, but leaves
-out `Mathlib.C`, which only `Mathlib` imports. `Batteries.X` is not part of the
-`Mathlib` closure, so it gets a hash only because `Down.Mid` imports it.
-`Down.Mid` also imports `Lean.Elab`: Lean core is not on this search path, so the test
-fails if the walk tries to resolve a Lean core module. -/
+`Cache/test/downstream.sh` checks this against the real cache. This test covers what that
+check cannot: a cache module that only a downstream module imports (`Batteries.X`, outside
+the `Mathlib` closure), a cache module that only `Mathlib` imports (`Mathlib.C`), and an
+import from Lean core. Lean core is not on the search path of this test, so the test fails
+if `cache` tries to find a Lean core module. -/
 def test_filterByRootModules_downstream : IO Unit := do
   let dir ← IO.FS.createTempDir
   try
@@ -534,37 +533,15 @@ def test_filterByRootModules_downstream : IO Unit := do
     write "Down/Side.lean" "import Down.Mid\n"
     write "Down/Mid.lean" "import Batteries.X\nimport Lean.Elab\n"
 
-    let base ← hashMemoFor dir []
-    assertEq "without arguments, the hash map covers Mathlib only"
-      (toString ["Mathlib", "Mathlib.A", "Mathlib.B", "Mathlib.C"])
-      (toString (sortedKeys base.hashMap))
-
     let memo ← hashMemoFor dir [`Down.Top]
-    assertTrue "a downstream module gets no hash"
-      (!memo.hashMap.contains `Down.Top && !memo.hashMap.contains `Down.Mid
-        && !memo.hashMap.contains `Down.Side)
-    assertTrue "a cache module that only a downstream module imports gets a hash"
-      (memo.hashMap.contains `Batteries.X)
-    assertTrue "the walk does not change the hashes of Mathlib modules"
-      (base.hashMap.toList.all fun (mod, hash) => memo.hashMap[mod]? == some hash)
-
     let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top]
     assertEq "get Down.Top selects the cache modules that it imports"
       (toString ["Batteries.X", "Mathlib.A", "Mathlib.B"])
       (toString (sortedKeys selected))
 
-    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Mid]
-    assertEq "get Down.Mid selects only its own imports"
-      (toString ["Batteries.X"]) (toString (sortedKeys selected))
-
-    let memo ← hashMemoFor dir [`Mathlib.B]
-    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Mathlib.B]
-    assertEq "get Mathlib.B selects Mathlib.B and its imports"
-      (toString ["Mathlib.A", "Mathlib.B"]) (toString (sortedKeys selected))
-
     let memo ← hashMemoFor dir [`Down.Top, `Mathlib.C]
     let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top, `Mathlib.C]
-    assertEq "get with a downstream module and a Mathlib module selects both closures"
+    assertEq "get Down.Top Mathlib.C selects the cache modules that either one imports"
       (toString ["Batteries.X", "Mathlib.A", "Mathlib.B", "Mathlib.C"])
       (toString (sortedKeys selected))
   finally

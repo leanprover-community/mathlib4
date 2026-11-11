@@ -82,6 +82,8 @@ A module outside the Mathlib cache, such as a module of a downstream project,
 has no cache files of its own. For such a module, 'get' gets the cache for the
 modules that it imports, also through other modules outside the cache.
 Without arguments, 'get' gets the cache for 'Mathlib' only.
+In a downstream project, set MATHLIB_NO_CACHE_ON_UPDATE=1 when Lake updates
+the dependencies: otherwise Mathlib's update hook gets the whole cache.
 
 Valid arguments are:
 
