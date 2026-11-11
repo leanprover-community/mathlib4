@@ -5,8 +5,8 @@ Authors: Joël Riou, Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.Comma
 public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
+public import Mathlib.CategoryTheory.Presentable.Comma
 
 /-!
 # Accessible functors satisfy the solution set condition
@@ -17,7 +17,6 @@ the book by Adámek and Rosický).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 @[expose] public section

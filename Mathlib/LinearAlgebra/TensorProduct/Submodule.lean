@@ -5,12 +5,10 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
-
 # Some results on tensor product of submodules
 
 ## Linear maps induced by multiplication for submodules
@@ -35,7 +33,6 @@ mainly used in the definition of linearly disjointness (`Submodule.LinearDisjoin
   `R →ₗ[R] (1 : Submodule R S)` is not defined directly in mathlib yet.
 
 There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in earlier files.
-
 -/
 
 @[expose] public section

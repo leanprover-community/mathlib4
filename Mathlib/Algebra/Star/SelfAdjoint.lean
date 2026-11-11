@@ -37,7 +37,6 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
 * Define `fun z x => z * x * star z` (i.e. conjugation by `z`) as a monoid action of `R` on `R`
   (similar to the existing `ConjAct` for groups), and then state the fact that `selfAdjoint R` is
   invariant under it.
-
 -/
 
 @[expose] public section
@@ -122,7 +121,7 @@ lemma commute_of_mul_eq_isSelfAdjoint {R : Type*} [Mul R] [StarMul R] (x y z : R
 @[aesop 10% apply]
 theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
     {x : R} (f : F) (hx : IsSelfAdjoint x) : IsSelfAdjoint (f x) :=
-  show star (f x) = f x from map_star f x ▸ congr_arg f hx
+  show star (f x) = f x from map_star f x ▸ congr(f $hx)
 
 lemma of_map {F R S : Type*} [Star R] [Star S]
     [FunLike F R S] [StarHomClass F R S] (f : F)
@@ -377,12 +376,21 @@ end IsSelfAdjoint
 
 variable (R)
 
-/-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
-def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
+/-- The self-adjoint elements of a star additive monoid, as an additive submonoid.
+
+When coercing to a type, prefer `selfAdjoint` over this definition, as it has more API. -/
+def selfAdjoint.addSubmonoid [AddMonoid R] [StarAddMonoid R] : AddSubmonoid R where
   carrier := { x | IsSelfAdjoint x }
   zero_mem' := star_zero R
   add_mem' hx := hx.add
+
+/-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
+def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
+  __ := selfAdjoint.addSubmonoid R
   neg_mem' hx := hx.neg
+
+@[simp] theorem toAddSubmonoid_selfAdjoint [AddGroup R] [StarAddMonoid R] :
+  (selfAdjoint R).toAddSubmonoid = selfAdjoint.addSubmonoid R := rfl
 
 /-- The skew-adjoint elements of a star additive group, as an additive subgroup. -/
 def skewAdjoint [AddCommGroup R] [StarAddMonoid R] : AddSubgroup R where
@@ -598,7 +606,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), membership .]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]
@@ -675,7 +683,7 @@ protected instance zpow [Group R] [StarMul R] {x : R} [IsStarNormal x] (n : ℤ)
 protected instance map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
-  star_comm_self := by simpa [map_star] using! congr(f $(hr.star_comm_self))
+  star_comm_self := by simpa [map_star] using! congr(f $hr.star_comm_self)
 
 protected instance smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
     [StarModule R A] [SMulCommClass R A A] [IsScalarTower R A A]

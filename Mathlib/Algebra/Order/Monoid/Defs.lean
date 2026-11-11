@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 # Ordered monoids
 
 This file provides the definitions of ordered monoids.
-
 -/
 
 public section

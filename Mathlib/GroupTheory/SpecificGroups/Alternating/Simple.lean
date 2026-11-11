@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 public import Mathlib.GroupTheory.Solvable
@@ -55,7 +54,6 @@ for `n = 3` or `n = 4`, this gives an Iwasawa structure of `alternatingGroup α`
 
 This file contains one uncomfortable use of `convert`: on line 78, to identify `MulAut.conj`
 and `ConjAct.toConjAct`.
-
 -/
 
 @[expose] public section
@@ -95,7 +93,7 @@ theorem alternatingGroup_le_of_normal
     apply Set.powersetCard.isPreprimitive_perm <;> grind
   classical
   apply iwasawaStructure_two.commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 end Equiv.Perm
 
@@ -126,12 +124,12 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
   rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 3) := by
-    refine Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) ?_ ?_
-    · exact lt_of_lt_of_le (by norm_num) hα
+    refine Set.powersetCard.isPreprimitive_alternatingGroup (by simp) ?_ ?_
+    · exact lt_of_lt_of_le (by simp) hα
     · simpa using hα'
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top (by simpa using hα)]
   apply iwasawaStructure_three.commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
@@ -143,7 +141,7 @@ theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alter
       ← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs]
     simp [cycleType_ofSubtype, coe_ofSubtype, map_eq_one_iff _ Perm.ofSubtype_injective]
   · simp_rw [hk, false_and, iff_false]
-    contrapose! hk
+    contrapose hk
     exact (mem_range_ofSubtype_iff s k).mp (Subgroup.map_le_range _ _ hk)
 
 theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGroup α) :
@@ -151,10 +149,9 @@ theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGro
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
   simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype hs,
-    Subgroup.mk_smul, MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul,
-    Subgroup.coe_inv, ← ConjAct.toConjAct_inv_smul, Equiv.Perm.support_toConjAct_eq_smul_support,
+    mk_smul, MulAut.smul_def, ← map_inv, MulAut.coe_conj_apply, support_conj_eq_smul_support,
     mem_map_kleinFour_ofSubtype (s := g • s) (by simpa), Finset.subset_smul_finset_iff,
-    ConjAct.toConjAct_smul, cycleType_conj, mul_inv_eq_one, mul_eq_left]
+    MulEquiv.map_eq_one_iff, Subgroup.coe_inv, MulAut.conj_apply, cycleType_conj]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Set.powersetCard α 4`,
 provided `α` has at least 5 elements. -/
@@ -183,10 +180,10 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
   rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
   have : IsPreprimitive (alternatingGroup α) (Set.powersetCard α 4) := by
-    apply Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) <;> grind
+    apply Set.powersetCard.isPreprimitive_alternatingGroup (by simp) <;> grind
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top hα]
   apply (iwasawaStructure_four hα).commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by simp) (by grind)
 
 /- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
@@ -205,7 +202,7 @@ theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
   exists_pair_ne := by
     rw [← _root_.nontrivial_iff]
     refine nontrivial_of_three_le_card ?_
-    simpa using le_trans (by norm_num) hα
+    simpa using le_trans (by simp) hα
   eq_bot_or_eq_top_of_normal H _ := normal_subgroup_eq_bot_or_eq_top hα
 
 theorem isSolvable (hα : Nat.card α ≤ 4) : Group.IsSolvable (alternatingGroup α) := by
@@ -215,32 +212,6 @@ theorem isSolvable (hα : Nat.card α ≤ 4) : Group.IsSolvable (alternatingGrou
   · rw [← Group.isSolvable_commutator_iff, ← kleinFour_eq_commutator hα]
     have := (kleinFour_isKleinFour hα).isMulCommutative
     infer_instance
-
-@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-theorem _root_.Equiv.Perm.IsThreeCycle.alternating_normalClosure
-    (h5 : 5 ≤ Nat.card α) {f : Perm α} (hf : IsThreeCycle f) :
-    normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ := by
-  have : IsSimpleGroup (alternatingGroup α) := isSimpleGroup h5
-  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
-  simp [hf.ne_one]
-
-@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
-    finRotate_bit1_mem_alternatingGroup (n := 2)⟩} : Set (alternatingGroup (Fin 5))) = ⊤ := by
-  have : IsSimpleGroup (alternatingGroup (Fin 5)) := isSimpleGroup (by simp)
-  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
-  simp +decide
-
-@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-theorem normalClosure_swap_mul_swap_five : normalClosure ({⟨swap 0 4 * swap 1 3,
-    mem_alternatingGroup.2 (by decide)⟩} : Set (alternatingGroup (Fin 5))) = ⊤ := by
-  have : IsSimpleGroup (alternatingGroup (Fin 5)) := isSimpleGroup (by simp)
-  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
-  simp +decide
-
-@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
-  isSimpleGroup (by simp)
 
 end alternatingGroup
 

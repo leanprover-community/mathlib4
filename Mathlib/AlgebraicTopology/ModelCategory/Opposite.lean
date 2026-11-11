@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 /-!
 # The opposite of a model category structure
-
 -/
 
 public section

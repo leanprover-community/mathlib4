@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Basic
 # Presentation of the tensor product of two modules
 
 Given presentations of two `A`-modules `M₁` and `M₂`, we obtain a presentation of `M₁ ⊗[A] M₂`.
-
 -/
 
 @[expose] public section
@@ -84,7 +83,7 @@ noncomputable def isPresentationCoreTensor :
         erw [Finsupp.apply_linearCombination A (LinearMap.applyₗ (solution₂.var g₂))]
         have := s.linearCombination_var_relation (.inl ⟨r₁, g₂⟩)
         erw [Finsupp.linearCombination_embDomain] at this
-        convert! this
+        convert this
         ext g₁
         simp) })
   postcomp_desc _ := by aesop
