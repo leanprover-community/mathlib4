@@ -192,7 +192,7 @@ theorem Projective.of_equiv' [Module.Projective R M]
 instance [Projective R M] : Projective R (ι →₀ M) := by
   classical exact .of_equiv' (finsuppLequivDFinsupp R).symm
 
-instance [Finite ι] [∀ i, Projective R (A i)] : Projective R (∀ i, A i) :=
+instance [Finite ι] [Π i, Projective R (A i)] : Projective R (Π i, A i) :=
   have := Fintype.ofFinite ι
   .of_equiv' DFinsupp.linearEquivFunOnFintype
 
