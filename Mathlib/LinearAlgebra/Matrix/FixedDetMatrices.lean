@@ -165,10 +165,9 @@ noncomputable instance repsFintype (k : ℤ) : Fintype (reps k) := by
   ext i j
   simpa only [Subtype.mk.injEq] using congrFun₂ h i j
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
-  simp only [smul_def, ← mul_assoc, S_mul_S_eq, neg_mul, one_mul, mul_neg, neg_neg, Subtype.coe_eta]
+  simp [← mul_smul, show S * (S * (S * S)) = 1 by decide]
 
 @[simp]
 lemma T_S_rel_smul (A : Δ m) : S • S • S • T • S • T • S • A = T⁻¹ • A := by
