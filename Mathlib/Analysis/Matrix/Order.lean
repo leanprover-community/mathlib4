@@ -188,30 +188,31 @@ open scoped Kronecker
 theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
   classical
-  refine posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_
-  obtain ⟨a, ha⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp
-    (hx.submatrix ((↑) : s.image Prod.fst → n)).nonneg
-  obtain ⟨b, hb⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp
-    (hy.submatrix ((↑) : s.image Prod.snd → m)).nonneg
-  have h : (x.submatrix ((↑) : s.image Prod.fst → n) (↑) ⊗ₖ
-      y.submatrix ((↑) : s.image Prod.snd → m) (↑)).PosSemidef := by
-    simpa [ha, hb, mul_kronecker_mul, ← conjTranspose_kronecker, star_eq_conjTranspose] using
-      posSemidef_conjTranspose_mul_self _
-  exact h.submatrix fun p : s ↦
-    (⟨p.1.1, Finset.mem_image_of_mem _ p.2⟩, ⟨p.1.2, Finset.mem_image_of_mem _ p.2⟩)
+  rw [posSemidef_iff_submatrix_of_forall_finset
+    (fun p : Finset n × Finset m ↦ Prod.map ((↑) : p.1 → n) ((↑) : p.2 → m))]
+  · rintro ⟨s, t⟩
+    obtain ⟨a, ha⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp (hx.submatrix ((↑) : s → n)).nonneg
+    obtain ⟨b, hb⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp (hy.submatrix ((↑) : t → m)).nonneg
+    simpa [← kroneckerMap_submatrix_submatrix, ha, hb, mul_kronecker_mul, ← conjTranspose_kronecker,
+      star_eq_conjTranspose] using posSemidef_conjTranspose_mul_self _
+  · intro s
+    exact ⟨(s.image Prod.fst, s.image Prod.snd), fun _ ↦ by simp [Set.range_prodMap]; grind⟩
 
 open Matrix in
 /-- The kronecker of two positive definite matrices is positive definite. -/
 theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
   classical
-  refine posDef_iff_submatrix_finset.mpr fun s ↦ ?_
-  have hx' := hx.submatrix (Subtype.coe_injective (p := (· ∈ s.image Prod.fst)))
-  have hy' := hy.submatrix (Subtype.coe_injective (p := (· ∈ s.image Prod.snd)))
-  refine ((hx'.posSemidef.kronecker hy'.posSemidef).posDef_iff_isUnit.mpr
-    (hx'.isUnit.kronecker hy'.isUnit)).submatrix (e := fun p : s ↦
-      (⟨p.1.1, Finset.mem_image_of_mem _ p.2⟩, ⟨p.1.2, Finset.mem_image_of_mem _ p.2⟩)) ?_
-  exact fun p q h ↦ Subtype.ext <| Prod.ext (congrArg (·.1.1) h) (congrArg (·.2.1) h)
+  rw [posDef_iff_submatrix_of_forall_finset
+    (fun p : Finset n × Finset m ↦ Prod.map ((↑) : p.1 → n) ((↑) : p.2 → m))
+    (fun _ ↦ Subtype.coe_injective.prodMap Subtype.coe_injective)]
+  · rintro ⟨s, t⟩
+    have hx' := hx.submatrix (Subtype.coe_injective (p := (· ∈ s)))
+    have hy' := hy.submatrix (Subtype.coe_injective (p := (· ∈ t)))
+    exact (hx'.posSemidef.kronecker hy'.posSemidef).posDef_iff_isUnit.mpr
+      (hx'.isUnit.kronecker hy'.isUnit)
+  · intro s
+    exact ⟨(s.image Prod.fst, s.image Prod.snd), fun _ ↦ by simp [Set.range_prodMap]; grind⟩
 
 end kronecker
 

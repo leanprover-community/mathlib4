@@ -333,6 +333,18 @@ theorem _root_.Matrix.posSemidef_iff_submatrix_finset {M : Matrix n n R} :
   · classical
     simpa [Finsupp.sum, ← Finset.sum_attach x.support] using (h x.support).2 (x.subtypeDomain _)
 
+omit [Fintype n] in
+/-- A matrix `M : Matrix n n R` is positive semidefinite iff `M.submatrix (f i) (f i)` is positive
+semidefinite for a family of maps `f` whose ranges cover every finite subset of `n`. -/
+theorem _root_.Matrix.posSemidef_iff_submatrix_of_forall_finset {ι : Type*} {κ : ι → Type*}
+    (f : ∀ i, κ i → n) (hf : ∀ s : Finset n, ∃ i, (s : Set n) ⊆ Set.range (f i))
+    {M : Matrix n n R} :
+    M.PosSemidef ↔ ∀ i, (M.submatrix (f i) (f i)).PosSemidef := by
+  refine ⟨fun h i ↦ h.submatrix _, fun h ↦ posSemidef_iff_submatrix_finset.mpr fun s ↦ ?_⟩
+  obtain ⟨i, hi⟩ := hf s
+  choose g hg using fun x : s ↦ hi x.2
+  exact funext hg ▸ (h i).submatrix g
+
 omit [Fintype m] in
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A) (B : Matrix n m R) :
     PosSemidef (Bᴴ * A * B) := by
@@ -506,6 +518,19 @@ theorem _root_.Matrix.posDef_iff_submatrix_finset {M : Matrix n n R} :
     simp_rw [Finsupp.sum, ← Finset.sum_attach x.support, ← Finset.subtype_mem_eq_attach,
       ← Finsupp.subtypeDomain_apply, ← Finsupp.support_subtypeDomain]
     exact (h x.support).2 <| by simpa [← Finsupp.support_nonempty_iff] using hx
+
+omit [Fintype n] in
+/-- A matrix `M : Matrix n n R` is positive definite iff `M.submatrix (f i) (f i)` is positive
+definite for a family of injective maps `f` whose ranges cover every finite subset of `n`. -/
+theorem _root_.Matrix.posDef_iff_submatrix_of_forall_finset {ι : Type*} {κ : ι → Type*}
+    (f : ∀ i, κ i → n) (hf_inj : ∀ i, Injective (f i))
+    (hf : ∀ s : Finset n, ∃ i, (s : Set n) ⊆ Set.range (f i)) {M : Matrix n n R} :
+    M.PosDef ↔ ∀ i, (M.submatrix (f i) (f i)).PosDef := by
+  refine ⟨fun h i ↦ h.submatrix (hf_inj i), fun h ↦ posDef_iff_submatrix_finset.mpr fun s ↦ ?_⟩
+  obtain ⟨i, hi⟩ := hf s
+  choose g hg using fun x : s ↦ hi x.2
+  have hfg : f i ∘ g = (↑) := funext hg
+  exact hfg ▸ (h i).submatrix (.of_comp (hfg ▸ Subtype.coe_injective))
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} {B : Matrix n m R} (hA : A.PosDef)
     (hB : Function.Injective B.mulVec) :
@@ -683,17 +708,13 @@ theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
     · rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1,
         ← dotProduct_mulVec, ← dotProduct_mulVec (star (x ∘ Sum.inr))]
       exact add_nonneg (hA.posSemidef.dotProduct_mulVec_nonneg _) (h.dotProduct_mulVec_nonneg _)
-  have lhs_iff {M : Matrix (m ⊕ n) (m ⊕ n) R'} : M.PosSemidef ↔
-      ∀ s : Finset n, (M.submatrix (.map id ((↑) : s → n)) (.map id (↑))).PosSemidef := by
-    refine ⟨fun h s ↦ h.submatrix _, fun h ↦ posSemidef_iff_submatrix_finset.mpr fun t ↦ ?_⟩
-    convert (h t.toRight).submatrix fun x : t ↦ match x with
-      | ⟨.inl i, _⟩ => .inl i
-      | ⟨.inr j, hj⟩ => .inr ⟨j, Finset.mem_toRight.mpr hj⟩
-    ext ⟨_ | _, _⟩ ⟨_ | _, _⟩ <;> rfl
-  rw [lhs_iff, posSemidef_iff_submatrix_finset]
-  refine forall_congr' fun s ↦ ?_
-  simp only [fromBlocks_submatrix_sumMap, submatrix_id_id, ← conjTranspose_submatrix]
-  exact aux _ _
+  rw [posSemidef_iff_submatrix_of_forall_finset (fun s : Finset n ↦ Sum.map id ((↑) : s → n)),
+    posSemidef_iff_submatrix_finset]
+  · refine forall_congr' fun s ↦ ?_
+    simp only [fromBlocks_submatrix_sumMap, submatrix_id_id, ← conjTranspose_submatrix]
+    exact aux _ _
+  · intro t
+    exact ⟨t.toRight, by rintro (_ | _) h <;> simp_all⟩
 
 omit [Fintype m] in
 theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
