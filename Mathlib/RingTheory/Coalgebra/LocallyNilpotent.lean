@@ -29,25 +29,16 @@ variable {R C A : Type*} [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalge
   [Ring A] [Algebra R A] {f : WithConv (C →ₗ[R] A)}
   (hf : ∀ x, ∃ N, ∀ k, N ≤ k → (f ^ k) x = 0)
 
-include hf in
-private lemma hasFiniteSupport_convPow_apply (x : C) :
-    Function.HasFiniteSupport fun k ↦ (f ^ k) x := by
-  obtain ⟨N, hN⟩ := hf x
-  exact (finite_toSet (Finset.range N)).subset fun k hk ↦ by
-    simpa using fun h ↦ hk (hN k h)
-
 /-- The geometric series `∑ k, f ^ k` in the convolution algebra, for `f` locally nilpotent. -/
 noncomputable def convGeomSeries (f : WithConv (C →ₗ[R] A))
     (hf : ∀ x, ∃ N, ∀ k, N ≤ k → (f ^ k) x = 0) : WithConv (C →ₗ[R] A) :=
+  have fin (x : C) : Function.HasFiniteSupport fun k ↦ (f ^ k) x :=
+    let ⟨N, hN⟩ := hf x
+    (Set.finite_lt_nat N).subset fun k hk ↦ not_le.1 fun h ↦ hk (hN k h)
   toConv
     { toFun x := ∑ᶠ k, (f ^ k) x
-      map_add' x y := by
-        simp only [map_add]
-        exact finsum_add_distrib (hasFiniteSupport_convPow_apply hf x)
-          (hasFiniteSupport_convPow_apply hf y)
-      map_smul' r x := by
-        simp only [map_smul, RingHom.id_apply]
-        exact (smul_finsum' r (hasFiniteSupport_convPow_apply hf x)).symm }
+      map_add' x y := by simp only [map_add, finsum_add_distrib (fin x) (fin y)]
+      map_smul' r x := by simp only [map_smul, RingHom.id_apply, smul_finsum' r (fin x)] }
 
 variable {hf}
 

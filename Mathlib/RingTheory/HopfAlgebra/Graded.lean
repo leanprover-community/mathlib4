@@ -57,10 +57,9 @@ lemma convPow_apply_eq_zero_of_lt {f : WithConv (A →ₗ[R] A)} (hf : ∀ a ∈
   | zero => omega
   | succ k' ih =>
     rw [pow_succ', convMul_apply]
-    refine (Submodule.mem_bot R).mp <| SetLike.map_comul_mem
-        (mul' R A ∘ₗ TensorProduct.map f.ofConv ((f ^ k').ofConv)) hx
-        (fun p q hpq a ha b hb ↦ ?_)
-    rw [Submodule.mem_bot, comp_apply, TensorProduct.map_tmul, mul'_apply]
+    refine (TensorProduct.grade_le (S := ker (mul' R A ∘ₗ map f.ofConv (f ^ k').ofConv))).2
+      (fun p q hpq a ha b hb ↦ ?_) (SetLike.GradedComul.comul_mem hx)
+    rw [mem_ker, comp_apply, TensorProduct.map_tmul, mul'_apply]
     obtain rfl | hp := Nat.eq_zero_or_pos p
     · rw [hf a ha, zero_mul]
     · rw [ih (show q < k' by omega) hb, mul_zero]
