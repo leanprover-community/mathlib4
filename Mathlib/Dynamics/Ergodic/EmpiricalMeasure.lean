@@ -110,8 +110,8 @@ public theorem glouk {ι : Type*} {F : Filter ι} [F.NeBot]
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     [CompactSpace X] [Nonempty ι] {f : X → X} (hf : Continuous f) {u : ι → ℕ} (x : ι → X)
     (hu : Tendsto u F atTop)
-    {Y : Type*} [NormedAddCommGroup Y] [NormedSpace ℝ Y] [CompleteSpace Y]
-    {g : X → Y} (hg : Continuous g) :
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    {g : X → E} (hg : Continuous g) :
     ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ ∧
       MapClusterPt (∫ x, g x ∂μ) F (fun n ↦ birkhoffAverage ℝ f g (u n) (x n)) := by
   -- starting from any point, the empirical measures must accumulate at some measure μ
@@ -140,9 +140,12 @@ public theorem glouk {ι : Type*} {F : Filter ι} [F.NeBot]
     · exact g.continuous.aestronglyMeasurable
   use ν
   refine ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩, ?_⟩
-  have : Continuous (fun (ρ : ProbabilityMeasure X) ↦ ∫ x, g x ∂ρ) := by
-    let g' := BoundedContinuousFunction.mkOfCompact ⟨g, hg⟩
-    apply ProbabilityMeasure.continuous_integral_continuousMap g'
+  have : Continuous (fun (ρ : ProbabilityMeasure X) ↦ ∫ x, g x ∂ρ) :=
+    ProbabilityMeasure.continuous_integral_of_continuous_of_compactSpace hg
+  convert hμ.continuousAt_comp (this.continuousAt) using 1
+  · let g' := ContinuousMap.equivBoundedOfCompact X E ⟨g, hg⟩
+    apply (hμν g').symm
+
 
 
 
