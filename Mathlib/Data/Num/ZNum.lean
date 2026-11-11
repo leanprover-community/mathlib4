@@ -212,32 +212,47 @@ theorem toZNumNeg_succ : ∀ n : Num, n.succ.toZNumNeg = n.toZNumNeg.pred
   | 0 => rfl
   | pos _n => rfl
 
+end Num
+
+namespace ZNum
+
+/-- `ZNum.succ` is a left inverse of `ZNum.pred`. -/
 @[simp]
 theorem pred_succ : ∀ n : ZNum, n.pred.succ = n
   | 0 => rfl
-  | ZNum.neg p => show toZNumNeg (pos p).succ'.pred' = _ by rw [PosNum.pred'_succ']; rfl
-  | ZNum.pos p => by rw [ZNum.pred, ← toZNum_succ, Num.succ, PosNum.succ'_pred', toZNum]
+  | ZNum.neg p => show Num.toZNumNeg (Num.pos p).succ'.pred' = _ by rw [PosNum.pred'_succ']; rfl
+  | ZNum.pos p => by rw [ZNum.pred, ← Num.toZNum_succ, Num.succ, PosNum.succ'_pred', Num.toZNum]
 
+/-- `ZNum.ofInt'` commutes with adding one. -/
 theorem succ_ofInt' : ∀ n, ZNum.ofInt' (n + 1) = ZNum.ofInt' n + 1
   | (n : ℕ) => by
     change ZNum.ofInt' (n + 1 : ℕ) = ZNum.ofInt' (n : ℕ) + 1
     dsimp only [ZNum.ofInt', ZNum.ofInt']
-    rw [Num.ofNat'_succ, Num.add_one, toZNum_succ, ZNum.add_one]
+    rw [Num.ofNat'_succ, Num.add_one, Num.toZNum_succ, ZNum.add_one]
   | -[0+1] => by
     change ZNum.ofInt' 0 = ZNum.ofInt' (-[0+1]) + 1
     dsimp only [ZNum.ofInt', ZNum.ofInt']
-    rw [ofNat'_succ, ofNat'_zero]; rfl
+    rw [Num.ofNat'_succ, Num.ofNat'_zero]; rfl
   | -[(n + 1)+1] => by
     change ZNum.ofInt' -[n+1] = ZNum.ofInt' -[(n + 1)+1] + 1
     dsimp only [ZNum.ofInt', ZNum.ofInt']
-    rw [@Num.ofNat'_succ (n + 1), Num.add_one, toZNumNeg_succ,
-      @ofNat'_succ n, Num.add_one, ZNum.add_one, pred_succ]
+    rw [@Num.ofNat'_succ (n + 1), Num.add_one, Num.toZNumNeg_succ,
+      @Num.ofNat'_succ n, Num.add_one, ZNum.add_one, pred_succ]
+
+end ZNum
+
+namespace Num
+
+variable {α : Type*}
+
+@[deprecated (since := "2026-11-11")] alias pred_succ := ZNum.pred_succ
+@[deprecated (since := "2026-11-11")] alias succ_ofInt' := ZNum.succ_ofInt'
 
 theorem ofInt'_toZNum : ∀ n : ℕ, toZNum n = ZNum.ofInt' n
   | 0 => rfl
   | n + 1 => by
-    rw [Nat.cast_succ, Num.add_one, toZNum_succ, ofInt'_toZNum n, Nat.cast_succ, succ_ofInt',
-      ZNum.add_one]
+    rw [Nat.cast_succ, Num.add_one, toZNum_succ, ofInt'_toZNum n, Nat.cast_succ,
+      ZNum.succ_ofInt', ZNum.add_one]
 
 theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
   | 0, 0 => ⟨fun _ => rfl, fun _ => rfl⟩

@@ -323,11 +323,11 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have h_eqOn := eqOn_of_cfc_eq_cfc (ha := ha) h_eq_negPart_a
   exact fun x hx ↦ negPart_eq_zero.mp <| eq_zero_of_pow_eq_zero (h_eqOn hx).symm
 
-lemma IsSelfAdjoint.coe_mem_spectrum_complex {A : Type*} [TopologicalSpace A] [Ring A]
-    [StarRing A] [Algebra ℂ A] [ContinuousFunctionalCalculus ℂ A IsStarNormal]
-    {a : A} {x : ℝ} (ha : IsSelfAdjoint a := by cfc_tac) :
-    (x : ℂ) ∈ spectrum ℂ a ↔ x ∈ spectrum ℝ a := by
-  simp [← ha.spectrumRestricts.algebraMap_image]
+@[deprecated spectrum.algebraMap_mem_iff +typeChanged (since := "2026-11-11")]
+lemma IsSelfAdjoint.coe_mem_spectrum_complex {A : Type*} [Ring A] [StarRing A] [Algebra ℂ A]
+    {a : A} {x : ℝ} (_ha : IsSelfAdjoint a := by cfc_tac) :
+    (x : ℂ) ∈ spectrum ℂ a ↔ x ∈ spectrum ℝ a :=
+  spectrum.algebraMap_mem_iff ℂ (R := ℝ)
 
 end SpectrumRestricts
 

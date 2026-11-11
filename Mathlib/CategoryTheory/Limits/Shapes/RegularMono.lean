@@ -670,7 +670,7 @@ variable (C)
 
 /-- A regular epi category is a category in which every epimorphism is regular. -/
 class IsRegularEpiCategory : Prop where
-  /-- Everyone epimorphism is a regular epimorphism -/
+  /-- Every epimorphism is a regular epimorphism -/
   regularEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], IsRegularEpi f
 
 end

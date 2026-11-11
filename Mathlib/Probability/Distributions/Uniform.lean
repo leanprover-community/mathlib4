@@ -229,11 +229,15 @@ theorem uniformOfFinset_apply_singleton_of_notMem (ha : a ∉ s) : uniformOfFins
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.uniformOfFinset_apply_of_notMem :=
   uniformOfFinset_apply_singleton_of_notMem
 
+/-- A point has nonzero mass under `uniformOfFinset s` if and only if it belongs to `s`. -/
+theorem uniformOfFinset_apply_singleton_ne_zero_iff : uniformOfFinset s {a} ≠ 0 ↔ a ∈ s := by
+  simp
+
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.support_uniformOfFinset :=
-  uniformOfFinset_apply_singleton_of_mem
+  uniformOfFinset_apply_singleton_ne_zero_iff
 
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.mem_support_uniformOfFinset_iff :=
-  uniformOfFinset_apply_singleton_of_mem
+  uniformOfFinset_apply_singleton_ne_zero_iff
 
 section Measure
 
@@ -268,10 +272,10 @@ section UniformOfFintype
   uniformOfFinset_apply_singleton
 
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.support_uniformOfFintype :=
-  uniformOfFinset_apply_singleton_of_mem
+  uniformOfFinset_apply_singleton_ne_zero_iff
 
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.mem_support_uniformOfFintype :=
-  uniformOfFinset_apply_singleton_of_mem
+  uniformOfFinset_apply_singleton_ne_zero_iff
 
 section Measure
 
@@ -310,11 +314,15 @@ theorem ofMultiset_apply_singleton (a : α) : ofMultiset s {a} = s.count a / (Mu
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.ofMultiset_apply :=
   ofMultiset_apply_singleton
 
+/-- A point has nonzero mass under `ofMultiset s` if and only if it belongs to `s`. -/
+theorem ofMultiset_apply_singleton_ne_zero_iff {a : α} : ofMultiset s {a} ≠ 0 ↔ a ∈ s := by
+  simp
+
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.support_ofMultiset :=
-  ofMultiset_apply_singleton
+  ofMultiset_apply_singleton_ne_zero_iff
 
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.mem_support_ofMultiset_iff :=
-  ofMultiset_apply_singleton
+  ofMultiset_apply_singleton_ne_zero_iff
 
 theorem ofMultiset_apply_singleton_of_notMem {a : α} (ha : a ∉ s) : ofMultiset s {a} = 0 := by simpa
 
@@ -323,11 +331,23 @@ theorem ofMultiset_apply_singleton_of_notMem {a : α} (ha : a ∉ s) : ofMultise
 
 section Measure
 
+variable (t : Set α)
+
+open scoped Classical in
+/-- `ofMultiset s` gives a set `t` the proportion of the elements of `s`, counted with
+multiplicity, that lie in `t`. -/
+theorem ofMultiset_apply :
+    ofMultiset s t = Multiset.card (s.filter (· ∈ t)) / Multiset.card s := by
+  rw [← Multiset.sum_count_eq_card (s := s.toFinset) (m := s.filter (· ∈ t)) fun a ha ↦ by
+      simp_all, Nat.cast_sum, div_eq_mul_inv, Finset.sum_mul, ofMultiset, sum_apply]
+  refine Finset.sum_congr rfl fun a _ ↦ ?_
+  by_cases ha : a ∈ t <;> simp [ha, div_eq_mul_inv]
+
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.toOuterMeasure_ofMultiset_apply :=
-  ofMultiset_apply_singleton
+  ofMultiset_apply
 
 @[deprecated (since := "2026-10-04")] alias _root_.PMF.toMeasure_ofMultiset_apply :=
-  ofMultiset_apply_singleton
+  ofMultiset_apply
 
 end Measure
 
