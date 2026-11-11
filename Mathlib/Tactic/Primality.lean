@@ -22,11 +22,9 @@ open Lean Meta Elab Tactic Qq Mathlib.Meta.NormNum
 namespace Mathlib.Tactic.Primality
 
 /-- Proves `Nat.Prime p` by constructing a certificate with `mkCert` and turning it into a proof
-with `certifyPrime`. By default `mkCert` searches for the witnesses, so the caller supplies no
-hints. A caller with witnesses passes `Cert.ofWitnesses …` as `mkCert`, and one with candidate
-prime factors passes `Cert.search { factors := … }`. A caller with a complete certificate calls
-`certifyPrime` directly. `mkCert` may use the primes proved in the state. The proofs constructed
-on the way are added to the state, so calls that thread it share them. -/
+with `certifyPrime`. A caller with a complete certificate should call `certifyPrime` directly
+instead. `mkCert` may use the primes proved in the state. The proofs constructed on the way are
+added to the state to be shared. -/
 def provePrime (p : ℕ) (mkCert : CertBuilder := Cert.search {}) :
     StateT (Std.HashMap ℕ Expr) MetaM Q(Nat.Prime $p) := do
   certifyPrime p (← mkCert (← get).keysArray p)

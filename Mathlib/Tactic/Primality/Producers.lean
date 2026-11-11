@@ -13,12 +13,8 @@ public import Mathlib.Tactic.Primality.Cert
 /-!
 # Producers
 
-This file defines the producers of the witnesses of primality certificates.
-
-- Factorizers: find prime factors of `p - 1`.
-- Primitive root search: finds a primitive root mod `p`.
-
-It also builds certificates from the witnesses, which the producers find or the user provides.
+This file defines producers of primality witnesses, and certificate builders taking witnesses
+found by the producers or provided by the user.
 -/
 
 public meta section
