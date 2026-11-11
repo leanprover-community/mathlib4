@@ -92,15 +92,16 @@ jobs:
           persist-credentials: false # no later step needs git credentials
 
       # Validate lake-manifest.json before "Set up build environment" downloads the dependencies.
-      # The action's README.md lists the rules. On bors runs (`staging` and `trying`) every rule
-      # fails the step; on other runs most rules only warn, so a PR can test an unmerged dependency.
-      # For an intentional revert, a repository admin sets the variable
-      # `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true` and deletes it after the revert merges.
+      # The action's README.md lists the rules. On bors runs (`staging` and `trying`), a broken rule
+      # fails the step. On other runs, most rules only warn, so a PR can test an unmerged dependency.
+      # For an intentional revert, an admin sets the repository variable
+      # `MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS` to `true`, and the older-pin rule only warns.
+      # The admin deletes the variable after the revert merges.
       - name: Validate lake-manifest.json
-        # The step runs only in leanprover-community/mathlib4. `bump/*` branches and PRs into them
-        # track the dependencies' `nightly-testing` branches, so the step skips them. A PR's base
-        # branch is `github.base_ref`: `pull_request_target` sets `github.ref_name` to the default
-        # branch. Bors builds a batch for a PR into `bump/*` on `staging`, and the step checks it.
+        # `bump/*` branches and PRs into them track the dependencies' `nightly-testing` branches,
+        # so the step skips them. The condition reads a PR's base branch from `github.base_ref`,
+        # because `pull_request_target` sets `github.ref_name` to the default branch.
+        # A bors batch for a PR into `bump/*` builds on `staging`, so the step checks it.
         if: >-
           github.repository == 'leanprover-community/mathlib4'
           && !startsWith(github.ref_name, 'bump/')
