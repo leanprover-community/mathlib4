@@ -487,12 +487,28 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι] (M : 
     extends IsFiniteGeneralizedCartan M where
   exists_posDef' : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ x ≠ 0, 0 < x ⬝ᵥ ((diagonal d * M) *ᵥ x)
 
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ}
+
+lemma Matrix.IsFiniteGeneralizedCartan.isFiniteCartan_of_exists_posDef
+    (hM : M.IsFiniteGeneralizedCartan) (h : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef) :
+    M.IsFiniteCartan where
+  diag := hM.diag
+  offDiag_nonpos := hM.offDiag_nonpos
+  zero_comm := hM.zero_comm
+  exists_posDef' := by
+    obtain ⟨d, hd, h₁, h₂⟩ := h
+    refine ⟨d, hd, fun x hx ↦ ?_⟩
+    have h : Finsupp.equivFunOnFinite.symm x ≠ 0 := fun h ↦ hx <| funext fun i ↦ by
+      simpa using congrArg (fun f : ι →₀ ℤ ↦ f i) h
+    simpa [Finsupp.sum_fintype, dotProduct, Matrix.mulVec, mul_assoc, mul_comm, mul_left_comm,
+      Finset.sum_congr, Finset.mul_sum] using h₂ h
+
 namespace Matrix.IsFiniteCartan
 
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
+variable (hM : M.IsFiniteCartan)
 include hM
 
-theorem exists_mul_mulVec_pos {x : ι → ℤ} (hx : x ≠ 0) :
+lemma exists_mul_mulVec_pos {x : ι → ℤ} (hx : x ≠ 0) :
     ∃ i, 0 < x i * (M *ᵥ x) i := by
   obtain ⟨d, hd, h⟩ := hM.exists_posDef'
   by_contra! hc
@@ -504,7 +520,7 @@ lemma det_ne_zero : M.det ≠ 0 := by
   obtain ⟨v, hv, hMv⟩ := exists_mulVec_eq_zero_iff.mpr h
   simpa [hMv] using hM.exists_mul_mulVec_pos hv
 
-theorem exists_row_with_single_offDiag [Nonempty ι] :
+lemma exists_row_with_single_offDiag [Nonempty ι] :
     ∃ v w : ι, M v w ≠ 0 ∧ ∀ j, j ≠ v → M v j ≠ 0 → j = w := by
   by_contra! h
   obtain ⟨i, hi⟩ := hM.exists_mul_mulVec_pos zero_ne_one.symm
@@ -561,7 +577,7 @@ theorem isPosSymmetrizable : M.IsPosSymmetrizable := by
     · have : IsEmpty ι := ⟨fun i ↦ hne ⟨i⟩⟩
       exact ⟨1, isEmptyElim, isEmptyElim⟩
 
-theorem exists_pos_mulVec_pos : ∃ u : ι → ℤ, (∀ i, 0 < u i) ∧ (∀ i, 0 < (M *ᵥ u) i) := by
+lemma exists_pos_mulVec_pos : ∃ u : ι → ℤ, (∀ i, 0 < u i) ∧ (∀ i, 0 < (M *ᵥ u) i) := by
   obtain ⟨u, hMu⟩ : ∃ u, ∀ i, 0 < (M *ᵥ u) i :=
     ⟨M.adjugate *ᵥ M.det, by simp [mul_adjugate, mul_self_pos.mpr hM.det_ne_zero]⟩
   suffices ∀ i, 0 ≤ u i by
