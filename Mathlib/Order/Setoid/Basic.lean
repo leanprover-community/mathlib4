@@ -216,7 +216,7 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x
 theorem ker_eq_bot_iff {f : α → β} : ker f = ⊥ ↔ f.Injective := le_bot_iff.symm
 
 @[simp]
-theorem ker_eq_top_iff {f : α → β} : Setoid.ker f = ⊤ ↔ f.IsConst := eq_top_iff
+theorem ker_eq_top_iff {f : α → β} : ker f = ⊤ ↔ f.IsConst := eq_top_iff
 
 @[deprecated (since := "2026-11-10")] alias ker_eq_top := ker_eq_top_iff
 
