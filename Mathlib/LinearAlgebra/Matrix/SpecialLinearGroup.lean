@@ -225,7 +225,7 @@ variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
-@[simps]
+@[simps!]
 def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S where
   toFun g := .mk (f.mapMatrix ↑ₘg)
     (by rw [← f.map_det]; simp [g.prop])
