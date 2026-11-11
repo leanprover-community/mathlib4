@@ -221,6 +221,7 @@ theorem Measurable.subtypeVal {p : β → Prop} {f : α → Subtype p} (hf : Mea
 
 @[deprecated (since := "2026-11-10")] alias Measurable.subtype_coe := Measurable.subtypeVal
 
+@[deprecated (since := "2026-11-12")]
 alias Measurable.subtype_val := Measurable.subtypeVal
 
 @[fun_prop]
