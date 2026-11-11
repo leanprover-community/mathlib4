@@ -38,15 +38,14 @@ noncomputable instance smulEndRight : SMul (End G) (Ext A G n) where
 
 lemma smul_end_def (r : End G) (x : Ext A G n) : r • x = x.comp (mk₀ r) (add_zero n) := rfl
 
+attribute [local simp] smul_end_def in
 noncomputable instance moduleEndRight : Module (End G) (Ext A G n) where
-  one_smul x := by simp [smul_end_def, End.one_def]
-  mul_smul r s x := by
-    simp only [smul_end_def]
-    rw [End.mul_def, ← mk₀_comp_mk₀, comp_assoc_of_third_deg_zero]
-  smul_zero r := by simp [smul_end_def]
-  zero_smul x := (congrArg (x.comp · _) (mk₀_zero G G)).trans (comp_zero ..)
-  smul_add r x y := by simp [smul_end_def]
-  add_smul r s x := (congrArg (x.comp · _) (mk₀_add r s)).trans (comp_add ..)
+  one_smul x := by simp
+  mul_smul r s x := by simp
+  smul_zero r := by simp
+  zero_smul x := by simp
+  smul_add r x y := by simp
+  add_smul r s x := by simp [mk₀_add r s]
 
 end End
 
