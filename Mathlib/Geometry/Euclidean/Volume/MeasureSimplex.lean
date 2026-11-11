@@ -5,8 +5,8 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Volume.Measure
 public import Mathlib.Geometry.Euclidean.Volume.Def
+public import Mathlib.Geometry.Euclidean.Volume.Measure
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 

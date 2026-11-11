@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Logic.Function.Basic
 public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Relations holding pairwise
@@ -109,8 +109,6 @@ theorem Pairwise.of_forall₂ (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s
 
 @[deprecated (since := "2026-08-14")]
 alias _root_.Std.Refl.set_pairwise_iff := pairwise_iff_of_refl
-@[deprecated (since := "2026-03-27")]
-alias _root_.Reflexive.set_pairwise_iff := pairwise_iff_of_refl
 
 theorem Pairwise.on_injective (hs : s.Pairwise r) (hf : Function.Injective f) (hfs : ∀ x, f x ∈ s) :
     Pairwise (r on f) := fun i j hij => hs (hfs i) (hfs j) (hf.ne hij)

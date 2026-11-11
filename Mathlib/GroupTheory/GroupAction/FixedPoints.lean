@@ -6,10 +6,11 @@ Authors: Emilie Burgun
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
+
+import Mathlib.Algebra.Group.Commute.Basic
 
 /-!
 # Properties of `fixedPoints` and `fixedBy`

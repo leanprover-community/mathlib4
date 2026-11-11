@@ -5,12 +5,13 @@ Authors: Anatole Dedecker, Eric Wieser, Yuyang Zhao
 -/
 module
 
-import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Analysis.Analytic.ChangeOrigin
-public import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.Complex.Basic
+
+import Mathlib.Algebra.Algebra.TransferInstance
+import Mathlib.Data.Nat.Choose.Cast
 
 /-!
 # Exponential in a Banach algebra
@@ -124,7 +125,7 @@ this approach is taken, see the module documentation for
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
 `Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean` for lemmas
 specific to that case. -/
-noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
+@[no_expose] noncomputable def exp (x : 𝔸) : 𝔸 :=
   if h : Nonempty (Algebra ℚ 𝔸) then
     letI _ := h.some
     (NormedSpace.expSeries ℚ 𝔸).sum x
@@ -343,8 +344,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
       (norm_expSeries_summable_of_mem_ball' x hx) (norm_expSeries_summable_of_mem_ball' y hy)]
   dsimp only
   conv_lhs =>
-    congr
-    ext
+    enter [1, _]
     rw [hxy.add_pow' _, Finset.smul_sum]
   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
@@ -377,7 +377,7 @@ theorem isUnit_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
 theorem invOf_exp_of_mem_ball [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp x)] :
     ⅟(exp x) = exp (-x) := by
-  let := invertibleExpOfMemBall hx; convert! (rfl : ⅟(exp x) = _)
+  let := invertibleExpOfMemBall hx; convert (rfl : ⅟(exp x) = _)
 
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp_of_mem_ball [Algebra 𝕂 𝔹] [CharZero 𝕂] {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹]

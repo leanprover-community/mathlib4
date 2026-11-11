@@ -5,12 +5,13 @@ Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carnei
 -/
 module
 
-public meta import Qq
 public meta import Mathlib.Util.AtomM
+public meta import Qq
 public import Mathlib.Data.List.Pairwise  -- shake: keep (dependency of Qq output)
+public import Mathlib.Util.AtomM
+
 import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Util.AtomM
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -339,12 +340,10 @@ elab_rules : tactic
 end Mathlib.Tactic.TFAE
 
 /-!
-
 ### Deprecated "Goal-style" `tfae_have`
 
 This syntax and its implementation, which behaves like "Mathlib `have`" is deprecated; we preserve
 it here to provide graceful deprecation behavior.
-
 -/
 
 /-- Re-enables "goal-style" syntax for `tfae_have` when `true`. -/

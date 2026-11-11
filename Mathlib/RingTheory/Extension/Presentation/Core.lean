@@ -19,7 +19,6 @@ such that `S` is isomorphic to `R ⊗[R₀] S₀`.
 
 If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In this case,
 this API can be used to remove Noetherian hypothesis in certain cases.
-
 -/
 
 @[expose] public section
@@ -266,7 +265,7 @@ lemma jacobianRelations_spec [DecidableEq σ] [Fintype σ] :
     ∑ i, P.jacobianRelations i * P.relation i =
       P.jacobiMatrix.det * P.σ ↑(P.jacobian_isUnit.unit⁻¹) - 1 := by
   delta jacobianRelations
-  convert! P.exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one.choose_spec
+  convert P.exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one.choose_spec
 
 /-- The set of coefficients that is enough to descend a submersive presentation `P`. -/
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
@@ -374,7 +373,7 @@ def ofHasCoeffs [FaithfulSMul R₀ R] :
       $(P.sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs R₀))
     simp only [map_sum, map_mul, Ideal.Quotient.mk_span_range, mul_zero, Finset.sum_const_zero,
       map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
-    convert! IsUnit.of_mul_eq_one _ this
+    convert IsUnit.of_mul_eq_one _ this
     rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
     simp [jacobianOfHasCoeffs]
 

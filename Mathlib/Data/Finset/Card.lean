@@ -5,8 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 module
 
-import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
+
+import Mathlib.Data.Finset.Basic
 
 /-!
 # Cardinality of a finite set

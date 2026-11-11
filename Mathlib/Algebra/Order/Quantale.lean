@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Order.CompleteLattice.Basic
+
 import Mathlib.Tactic.Variable
 
 /-!
@@ -55,7 +56,6 @@ integral, and involutive quantales easier to add on later.
 <https://en.wikipedia.org/wiki/Quantale>
 <https://encyclopediaofmath.org/wiki/Quantale>
 <https://ncatlab.org/nlab/show/quantale>
-
 -/
 
 @[expose] public section

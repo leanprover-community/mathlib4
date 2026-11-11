@@ -5,8 +5,11 @@ Authors: Yunzhou Xie, Jujian Zhang, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Idempotents
 public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.RingTheory.Idempotents
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Decomposition of the identity of a semiring into orthogonal idempotents

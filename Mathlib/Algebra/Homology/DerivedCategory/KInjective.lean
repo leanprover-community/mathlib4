@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
 public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
+
 import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 
 /-!
@@ -14,14 +15,13 @@ import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 
 In this file, we show that if `L : CochainComplex C ℤ` is K-injective,
 then for any `K : HomotopyCategory C (.up ℤ)`, the functor `DerivedCategory.Qh`
-induces a bijection from the type of morphisms `K ⟶ (HomotopyCategory.quotient _ _).obj L)`
+induces a bijection from the type of morphisms `K ⟶ (HomotopyCategory.quotient _ _).obj L`
 (i.e. homotopy classes of morphisms of cochain complexes) to the type of
 morphisms in the derived category.
 We obtain that a morphism between `K`-injective cochain complexes is a quasi-isomorphism
 iff it is a homotopy equivalence. In particular, a morphism between cochain complexes
 indexed by `ℕ` which consist of injective objects is a quasi-isomorphism iff
 it is a homotopy equivalence.
-
 -/
 
 @[expose] public section

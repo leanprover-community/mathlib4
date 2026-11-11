@@ -6,8 +6,12 @@ Authors: Mario Carneiro, Kenny Lau
 module
 
 public import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.ZeroCons
 public import Mathlib.Order.Directed
+
+import Mathlib.Data.Multiset.ZeroCons
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finsets of ordered types

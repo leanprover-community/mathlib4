@@ -290,7 +290,7 @@ theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
   · obtain - | ⟨ls, ll, lx, lr⟩ := l; · rfl
     obtain - | ⟨lls, lll, llx, llr⟩ := ll <;> obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr <;>
       dsimp only [dual, id] <;> try rfl
-    split_ifs with h <;> repeat simp [add_comm]
+    split_ifs with h <;> simp [add_comm]
   · obtain - | ⟨ls, ll, lx, lr⟩ := l; · rfl
     dsimp only [dual, id]
     split_ifs; swap; · simp [add_comm]

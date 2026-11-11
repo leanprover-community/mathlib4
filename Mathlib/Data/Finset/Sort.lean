@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Order.RelIso.Set
+
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Construct a sorted list from a finset.

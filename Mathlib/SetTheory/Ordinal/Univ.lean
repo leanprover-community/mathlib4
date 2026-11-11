@@ -54,10 +54,6 @@ namespace Ordinal
 theorem type_lt_ordinal : typeLT Ordinal = univ.{u, u + 1} :=
   (lift_id _).symm
 
-@[deprecated type_lt_ordinal +typeChanged (since := "2026-03-20")]
-theorem univ_id : univ.{u, u + 1} = typeLT Ordinal :=
-  lift_id _
-
 @[simp]
 theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
   lift_lift _
@@ -102,10 +98,6 @@ theorem liftPrincipalSeg_coe :
 theorem liftPrincipalSeg_top : (liftPrincipalSeg.{u, v}).top = univ.{u, v} :=
   rfl
 
-@[deprecated liftPrincipalSeg_top +typeChanged (since := "2026-03-20")]
-theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = typeLT Ordinal := by
-  simp
-
 @[simp]
 theorem card_univ : card univ.{u, v} = Cardinal.univ.{u, v} :=
   rfl
@@ -119,10 +111,6 @@ namespace Cardinal
 @[simp]
 theorem mk_ordinal : #Ordinal = univ.{u, u + 1} :=
   (lift_id _).symm
-
-@[deprecated mk_ordinal +typeChanged (since := "2026-04-22")]
-theorem univ_id : univ.{u, u + 1} = #Ordinal :=
-  lift_id _
 
 @[simp]
 theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=

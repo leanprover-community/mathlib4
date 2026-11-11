@@ -5,9 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-import Mathlib.AlgebraicGeometry.EffectiveEpi
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.AlgebraicGeometry.Sites.SheafQuasiCompact
+
+import Mathlib.AlgebraicGeometry.EffectiveEpi
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 
 /-!
@@ -23,7 +24,6 @@ topology for flat morphisms.
 - `fpqcPrecoverage`: The precoverage given by quasi-compact, jointly-surjective families of
   flat morphisms.
 - The fpqc topology is subcanonical. This is available by `inferInstance`.
-
 -/
 
 @[expose] public section

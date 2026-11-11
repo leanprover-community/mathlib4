@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 public import Mathlib.Analysis.BoxIntegral.Partition.Split
+public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 
 /-!
 # Filters used in box-based integrals

@@ -332,11 +332,11 @@ export MeasurableNeg (measurable_neg)
 instance (priority := 100) measurableDiv_of_mul_inv (G : Type*) [MeasurableSpace G]
     [DivInvMonoid G] [MeasurableMul G] [MeasurableInv G] : MeasurableDiv G where
   measurable_const_div c := by
-    convert! measurable_inv.const_mul c using 1
+    convert measurable_inv.const_mul c using 1
     ext1
     apply div_eq_mul_inv
   measurable_div_const c := by
-    convert! measurable_id.mul_const c⁻¹ using 1
+    convert measurable_id.mul_const c⁻¹ using 1
     ext1
     apply div_eq_mul_inv
 
@@ -839,7 +839,7 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
 lemma Finset.measurable_prod_apply {f : ι → α → β → M} {g : α → β} {s : Finset ι}
     (hf : ∀ i ∈ s, Measurable ↿(f i)) (hg : Measurable g) :
     Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp only [prod_apply]; fun_prop
+  simp only [Finset.prod_apply]; fun_prop
 
 @[to_additive (attr := fun_prop)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :

@@ -9,9 +9,7 @@ public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
-
 # Pullbacks commute with connected limits
-
 -/
 
 @[expose] public section

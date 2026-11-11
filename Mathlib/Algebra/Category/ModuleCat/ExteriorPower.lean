@@ -5,15 +5,14 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
 # The exterior powers as functors on the category of modules
 
 In this file, given `M : ModuleCat R` and `n : ℕ`, we define `M.exteriorPower n : ModuleCat R`,
 and this extends to a functor `ModuleCat.exteriorPower.functor : ModuleCat R ⥤ ModuleCat R`.
-
 -/
 
 @[expose] public section

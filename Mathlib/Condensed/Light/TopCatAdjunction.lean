@@ -6,10 +6,10 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Condensed.Light.TopComparison
-public import Mathlib.Topology.Category.Sequential
 public import Mathlib.Topology.Category.LightProfinite.Sequence
-/-!
+public import Mathlib.Topology.Category.Sequential
 
+/-!
 # The adjunction between light condensed sets and topological spaces
 
 This file defines the functor `lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u}` which is
@@ -24,7 +24,7 @@ The counit is an isomorphism for sequential spaces, and we conclude that the fun
 
 universe u
 
-open LightCondensed LightCondSet CategoryTheory LightProfinite
+open LightCondensed CategoryTheory LightProfinite
 
 namespace LightCondSet
 
@@ -167,6 +167,7 @@ noncomputable def sequentialAdjunction :
     (Functor.FullyFaithful.id _) fullyFaithfulSequentialToTop
     (Iso.refl _) (Iso.refl _)
 
+set_option fun_prop.projDefaultTransparency true in
 /--
 The counit of the adjunction `lightCondSetToSequential ⊣ sequentialToLightCondSet`
 is a homeomorphism.

@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Data.Set.Sigma
-public import Mathlib.Order.Filter.Map
 public import Mathlib.Order.Closure
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Basic results on filter bases
@@ -504,7 +504,7 @@ theorem HasBasis.inf_principal_neBot_iff (hl : l.HasBasis p s) {t : Set α} :
 
 theorem HasBasis.disjoint_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     Disjoint l l' ↔ ∃ i, p i ∧ ∃ i', p' i' ∧ Disjoint (s i) (s' i') :=
-  not_iff_not.mp <| by simp only [_root_.disjoint_iff, ← Ne.eq_def, ← neBot_iff, inf_eq_inter,
+  not_iff_not.mp <| by simp only [_root_.disjoint_iff, ← Ne.eq_def, ← neBot_iff,
     hl.inf_basis_neBot_iff hl', not_exists, not_and, bot_eq_empty, ← nonempty_iff_ne_empty]
 
 theorem _root_.Disjoint.exists_mem_filter_basis (h : Disjoint l l') (hl : l.HasBasis p s)
@@ -559,7 +559,8 @@ theorem le_iff_forall_inf_principal_compl {f g : Filter α} : f ≤ g ↔ ∀ V 
 
 theorem inf_neBot_iff_frequently_left {f g : Filter α} :
     NeBot (f ⊓ g) ↔ ∀ {p : α → Prop}, (∀ᶠ x in f, p x) → ∃ᶠ x in g, p x := by
-  simp only [inf_neBot_iff, frequently_iff, and_comm]; rfl
+  simp only [inf_neBot_iff, frequently_iff, and_comm]
+  exact ⟨fun h _p hp _U hU => h hp hU, fun h s hs s' hs' => h (p := (· ∈ s)) hs hs'⟩
 
 theorem inf_neBot_iff_frequently_right {f g : Filter α} :
     NeBot (f ⊓ g) ↔ ∀ {p : α → Prop}, (∀ᶠ x in g, p x) → ∃ᶠ x in f, p x := by

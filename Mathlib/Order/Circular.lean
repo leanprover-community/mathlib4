@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-import Mathlib.Order.Lattice
 public import Mathlib.Tactic.Order
+
+import Mathlib.Order.Lattice
 
 /-!
 # Circular order hierarchy

@@ -40,7 +40,6 @@ the following lemmas furnish the properties of evaluation:
 * `PowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
 
 We refer to the documentation of `MvPowerSeries.eval₂` for more details.
-
 -/
 
 @[expose] public section

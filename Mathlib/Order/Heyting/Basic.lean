@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.PropInstances
 public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.PropInstances
 
 /-!
 # Heyting algebras

@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
+
 import Mathlib.Tactic.Push
 
 /-! # Embeddings of complex shapes
@@ -49,7 +50,6 @@ category of an abelian category (TODO).
   `e.truncLEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`, and a natural
   transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a quasi-isomorphism
   in degrees in the image of `e.f` (TODO);
-
 -/
 
 @[expose] public section

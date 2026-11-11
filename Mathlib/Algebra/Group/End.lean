@@ -468,7 +468,6 @@ theorem ofSubtype_apply_mem_iff_mem (f : Perm (Subtype p)) (x : α) :
     simpa only [h, iff_true, MonoidHom.coe_mk, ofSubtype_apply_of_mem f h] using (f ⟨x, h⟩).2
   else by simp [h, ofSubtype_apply_of_not_mem f h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofSubtype_injective : Function.Injective (ofSubtype : Perm (Subtype p) → Perm α) := by
   intro x y h
   rw [Perm.ext_iff] at h ⊢

@@ -28,7 +28,6 @@ which is the original bound given by Karl Weierstrass. There is a better bound $
 * [Weierstrass, Karl, *Über continuirliche Functionen eines reellen Arguments, die für keinen Werth
   des letzeren einen bestimmten Differentialquotienten besitzen*][weierstrass1895]
 * [G. H. Hardy, *Weierstrass's Non-Differentiable Function*][hardyweierstrass]
-
 -/
 
 @[expose] public section
@@ -146,7 +145,6 @@ theorem weierstrass_partial {a : ℝ} (ha : 0 < a) {b : ℕ} (hab : 1 < a * b) (
     ring
   simp_rw [this, ← Finset.sum_mul, geom_sum_eq hab.ne.symm]
   field_simp
-  refine div_le_div_of_nonneg_right ?_ (sub_nonneg.mpr hab.le)
   simp [sub_one_mul]
 
 /-- The remainder has lower bound in absolute value $|B| \ge |x_m - x| 2 (ab)^m / 3$ -/

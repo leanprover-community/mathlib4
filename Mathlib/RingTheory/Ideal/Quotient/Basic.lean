@@ -6,10 +6,11 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 module
 
 public import Mathlib.GroupTheory.QuotientGroup.Finite
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+
+import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Ideal quotients
@@ -22,7 +23,6 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 ## Main definitions
 
 - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
-
 -/
 
 @[expose] public section

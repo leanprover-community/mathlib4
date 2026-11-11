@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
@@ -36,7 +36,6 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 ## Tags
 
 uniform convergence, strong dual
-
 -/
 
 public section

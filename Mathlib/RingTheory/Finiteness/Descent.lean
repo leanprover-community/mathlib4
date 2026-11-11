@@ -5,8 +5,9 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+public import Mathlib.RingTheory.RingHom.FinitePresentation
+
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FiniteType
 

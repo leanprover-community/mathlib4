@@ -5,9 +5,9 @@ Authors: Jake Levinson
 -/
 module
 
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring
 
 /-!
 # Double factorials
@@ -28,7 +28,7 @@ open Nat
 namespace Nat
 
 /-- `Nat.doubleFactorial n` is the double factorial of `n`. -/
-@[simp]
+@[simp, oeis A006882]
 def doubleFactorial : ℕ → ℕ
   | 0 => 1
   | 1 => 1

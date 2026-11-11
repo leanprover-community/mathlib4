@@ -6,8 +6,9 @@ Authors: Dion Leijnse
 module
 
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Geometrically reduced algebras
@@ -35,7 +36,6 @@ In the case of `R = k` a field, this is equivalent to `AlgebraicClosure k ⊗[k]
 ## TODO
 - Prove that if `A` is a geometrically reduced `R`-algebra, then for every `R`-algebra `K` that is
   a field, the tensor product `K ⊗[R] A` is reduced. (@Thmoas-Guan)
-
 -/
 
 public section
@@ -48,7 +48,7 @@ namespace Algebra
 
 variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
 
-/-- An `R`-algebra `A` is geometrically reduced iff for every prime ideal `p` of R`
+/-- An `R`-algebra `A` is geometrically reduced iff for every prime ideal `p` of `R`
   the base change to `AlgebraicClosure p.ResidueField` is reduced. -/
 @[mk_iff]
 class IsGeometricallyReduced (R A : Type*) [CommRing R] [Ring A] [Algebra R A] : Prop where

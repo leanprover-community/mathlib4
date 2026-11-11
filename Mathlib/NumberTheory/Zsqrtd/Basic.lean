@@ -5,9 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
 
@@ -18,7 +18,6 @@ as well as an integral domain.
 
 We provide the universal property, that ring homomorphisms `ℤ√d →+* R` correspond
 to choices of square roots of `d` in `R`.
-
 -/
 
 @[expose] public section
@@ -379,7 +378,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
       refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
-      convert! this using 1
+      convert this using 1
       simp only [one_mul, Int.natCast_add, Int.natCast_mul]
       ring
 

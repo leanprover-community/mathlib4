@@ -21,7 +21,6 @@ values in a group with zero. Other instances are then deduced from this.
 The `Valued` class defined in this file will eventually get replaced with `ValuativeRel`
 from `Mathlib.RingTheory.Valuation.ValuativeRel.Basic`. New developments on valued rings/fields
 should take this into consideration.
-
 -/
 
 @[expose] public section
@@ -211,7 +210,7 @@ end Discrete
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : _i.v.ValueGroup₀ˣ,
-      ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), _i.v.restrict (y - x) < γ.1 := by
+      ∃ M ∈ F, ∀ x ∈ M, ∀ y ∈ M, _i.v.restrict (y - x) < γ.1 := by
   rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
   simp_rw [Valued.v.subgroups_basis.mem_addGroupFilterBasis_iff]

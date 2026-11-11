@@ -6,10 +6,11 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Tensor
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
+
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Idempotents
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
-public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # Pure ideals

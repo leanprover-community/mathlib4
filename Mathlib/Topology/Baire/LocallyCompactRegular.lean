@@ -20,6 +20,7 @@ open TopologicalSpace Set
 variable {X : Type*} [TopologicalSpace X] {s : Set X} [R1Space X] [LocallyCompactSpace X]
 
 /-- **Second Baire theorem**: locally compact R₁ spaces are Baire. -/
+@[wikidata Q1052678]
 instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpace X := by
   constructor
   intro f ho hd

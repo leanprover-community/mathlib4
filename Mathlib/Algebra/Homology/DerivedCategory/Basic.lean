@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
-public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 
 /-! # The derived category of an abelian category
@@ -55,7 +55,6 @@ instance should be obtained at the beginning of the proof, using the term
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 * [Mark Hovey, *Model category structures on chain complexes of sheaves*][hovey-2001]
-
 -/
 
 @[expose] public noncomputable section
@@ -242,7 +241,6 @@ def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
 single cochain complex with `X` sitting in degree `n : ℤ`. -/
 abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance

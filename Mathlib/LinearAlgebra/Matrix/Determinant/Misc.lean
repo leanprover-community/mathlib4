@@ -5,8 +5,8 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Miscellaneous results about determinant

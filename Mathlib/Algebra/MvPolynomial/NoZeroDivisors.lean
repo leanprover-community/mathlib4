@@ -5,15 +5,14 @@ Authors: Antoine Chambert-Loir, Bolton Bailey
 -/
 module
 
-public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 public import Mathlib.Algebra.MvPolynomial.Division
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 /-!
 # Multivariate polynomials over integral domains
 
 This file proves results about multivariate polynomials
 that hold when the coefficient (semi)ring has no zero divisors.
-
 -/
 
 public section

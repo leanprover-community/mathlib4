@@ -6,8 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace
-import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Sheaves.Limits
+
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # `PresheafedSpace C` has colimits.
@@ -55,7 +56,6 @@ attribute [local simp] eqToHom_map
 -- although it doesn't appear to help in this file, in any case.
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
     (F.map (𝟙 j)).c.app U =
@@ -64,7 +64,6 @@ theorem map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
   simp [PresheafedSpace.congr_app (F.map_id j)]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
     (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃) (U) :
@@ -74,7 +73,6 @@ theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
           (pushforwardEq congr($((F.map_comp f g).symm).base) _).hom.app U := by
   simp [PresheafedSpace.congr_app (F.map_comp f g)]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram of `PresheafedSpace C`s, its colimit is computed by pushing the sheaves onto
 the colimit of the underlying spaces, and taking componentwise limit.
@@ -227,7 +225,6 @@ def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ 
     { app := fun U => descCApp F s U
       naturality := fun _ _ i => desc_c_naturality F s i }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by

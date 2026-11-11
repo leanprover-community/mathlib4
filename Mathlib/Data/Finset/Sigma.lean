@@ -28,6 +28,8 @@ worth it, we must first refactor the functor library so that the `alternative` i
 is computable and universe-polymorphic.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 
@@ -217,7 +219,7 @@ theorem sigmaLift_mono
 variable (f a b)
 
 theorem card_sigmaLift :
-    (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
+    #(sigmaLift f a b) = dite (a.1 = b.1) (fun h => #(f (h ▸ a.2) b.2)) fun _ => 0 := by
   simp_rw [sigmaLift]
   split_ifs with h <;> simp
 

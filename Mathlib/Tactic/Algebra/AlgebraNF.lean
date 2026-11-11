@@ -5,8 +5,8 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Mathlib.Tactic.Algebra.Basic
 public meta import Mathlib.Tactic.Algebra.Basic
+public import Mathlib.Tactic.Algebra.Basic
 
 /-! # The `algebra_nf` tactic
 
@@ -22,7 +22,7 @@ open Lean Meta Qq Mathlib.Tactic.Ring
 namespace Mathlib.Tactic.Algebra
 
 /-- Clean up the normal form into a more human-friendly format. This does everything
-  `RingNF.cleanup` does and also pulls the scalar multiplication from the end of of each term to
+  `RingNF.cleanup` does and also pulls the scalar multiplication from the end of each term to
   the start. i.e. x * y * (r • 1) → r • (x * y)
   Used by `cleanup`. -/
 def cleanupSMul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Common
+
 import Mathlib.Tactic.Attr.Core
 
 /-!
@@ -20,7 +21,6 @@ Lists together. In particular, we include lemmas about:
 * `zipWith`
 * `zipLeft'`
 * `zipRight'`
-
 -/
 
 public section

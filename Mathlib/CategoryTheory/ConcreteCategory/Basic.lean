@@ -100,19 +100,6 @@ to the base functions.
 instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
   coe f := hom f
 
-/-- A non-instance `FunLike` instance on `X ⟶ Y`. -/
-@[deprecated "No replacement" (since := "2026-04-23")]
-abbrev instFunLike {X Y : C} :
-    FunLike (X ⟶ Y) (ToType X) (ToType Y) where
-  coe f := f
-  coe_injective f g h := by
-    rw [← ofHom_hom f, ← ofHom_hom g]
-    simp_all
-
-set_option linter.deprecated.deprecatedTarget false in
-@[deprecated (since := "2026-04-03")] alias _root_.CategoryTheory.HasForget.instFunLike :=
-  instFunLike
-
 /--
 `ConcreteCategory.hom` bundled as an `Equiv`.
 -/
@@ -204,9 +191,6 @@ instance ObjectProperty.FullSubcategory.concreteCategory {C : Type u} [Category.
   ofHom_hom _ := by ext; simp [ofHom_hom]
   comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
   id_apply _ := ConcreteCategory.id_apply _
-
-@[deprecated (since := "2026-04-18")] alias FullSubcategory.concreteCategory :=
-  ObjectProperty.FullSubcategory.concreteCategory
 
 end ConcreteCategory
 

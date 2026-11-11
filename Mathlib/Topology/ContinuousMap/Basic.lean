@@ -50,7 +50,7 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   map_continuousAt f x
 
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
-  h.map f.2
+  h.map (by fun_prop)
 
 section DiscreteTopology
 variable [DiscreteTopology α]
@@ -341,6 +341,9 @@ lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
   rw [continuousOn_iff_continuous_domRestrict] at hf
   exact mkD_of_not_continuous hf
 
+grind_pattern mkD_of_not_continuousOn => mkD (s.domRestrict f) g where
+  guard ¬ ContinuousOn f s
+
 lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
     (hf : ContinuousOn f s) :
     mkD (s.domRestrict f) g x = f x := by rw [mkD_of_continuousOn hf, coe_mk, Set.domRestrict_apply]
@@ -456,7 +459,7 @@ noncomputable def homeomorph (hf : IsQuotientMap f) : Quotient (Setoid.ker f) �
   continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr hf.continuous
   continuous_invFun := by
     rw [hf.continuous_iff]
-    convert! continuous_quotient_mk'
+    convert continuous_quotient_mk'
     ext
     simp only [Equiv.invFun_as_coe, Function.comp_apply,
       (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]
@@ -469,7 +472,8 @@ variable (hf : IsQuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 noncomputable def lift : C(Y, Z) where
   toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
     Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
-  continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
+  continuous_toFun :=
+    Continuous.comp (continuous_quot_lift _ (by fun_prop)) (Homeomorph.continuous _)
 
 /--
 The obvious triangle induced by `IsQuotientMap.lift` commutes:

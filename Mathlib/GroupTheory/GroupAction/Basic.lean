@@ -13,9 +13,9 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Basic.Finite.Sigma
 public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.Subgroup.Centralizer
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Basic properties of group actions
@@ -30,7 +30,6 @@ of `•` belong elsewhere.
 * `MulAction.fixedPoints`
 * `MulAction.fixedBy`
 * `MulAction.stabilizer`
-
 -/
 
 @[expose] public section

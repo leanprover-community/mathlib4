@@ -5,15 +5,15 @@ Authors: Jack McKoen
 -/
 module
 
-import Mathlib.CategoryTheory.Adjunction.ParametrizedLimits
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+
+import Mathlib.CategoryTheory.Adjunction.ParametrizedLimits
 
 /-!
 # Closed braided monoidal categories
 
 Interactions between monoidal closed and braided category structures.
-
 -/
 
 public section

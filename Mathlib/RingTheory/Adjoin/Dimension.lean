@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.LinearAlgebra.Dimension.Constructions
+
 import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
