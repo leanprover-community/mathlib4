@@ -1,5 +1,5 @@
 module
-import Mathlib
+import Mathlib.Tactic
 
 /-!
 # Tactics should not be confused by `Expr.mdata` or `autoParam`
@@ -18,8 +18,6 @@ These annotations get into goals in three ways in this file:
 
 open Polynomial
 open scoped NNReal ENNReal
-
-set_option linter.unusedVariables false
 
 variable (a b c : ℕ) (x y z : ℝ)
 
