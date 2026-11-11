@@ -750,7 +750,7 @@ end Integral
 
 section Multiplication
 
-variable {F₁ F₂ F₃ G : Type*} [NormedAlgebra ℝ 𝕜]
+variable {F₁ F₂ F₃ : Type*} [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
   [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] [NormedSpace ℝ F₂]
   [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] [NormedSpace ℝ F₃]
@@ -784,7 +784,7 @@ variable (F₁ Ω) in
 open scoped Classical in
 /-- The map `f ↦ (x ↦ g x • f x)` as a continuous `𝕜`-linear map on test functions,
 where `g` is a C^n function. -/
-noncomputable def smulLeftCLM (n := ⊤) (g : E → 𝕜) : 𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₁) :=
+noncomputable def smulLeftCLM (n : ℕ∞) (g : E → 𝕜) : 𝓓^{n}(Ω, F₁) →L[𝕜] 𝓓^{n}(Ω, F₁) :=
   if hg : ContDiff ℝ n g then
     bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
   else 0
