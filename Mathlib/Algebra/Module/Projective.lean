@@ -312,7 +312,7 @@ instance Projective.directSum [∀ (i : ι), Projective R (M i)] : Projective R 
 end DirectSum
 
 /-- Projectivity is transitive along a scalar tower. -/
-theorem Projective.trans {R : Type*} (S M : Type*) [Semiring R] [Semiring S]
+theorem Projective.trans (R S M : Type*) [Semiring R] [Semiring S]
     [Module R S] [IsScalarTower R S S]
     [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
     [Projective R S] [Projective S M] : Projective R M :=
