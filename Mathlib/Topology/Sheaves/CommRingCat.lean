@@ -52,11 +52,8 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
 open AlgebraicGeometry in
-/-- Unfold `restrictOpen` in the category of commutative rings (with the correct carrier type).
-
-Although unification hints help with applying `TopCat.Presheaf.restrictOpenCommRingCat`,
-so it can be safely de-specialized, this lemma needs to be kept to ensure rewrites go right.
--/
+/-- This lemma is no longer needed: `f |_ U` is now notation for `F.map (homOfLE e).op f`. -/
+@[deprecated "`f |_ U` is now notation for `F.map (homOfLE e).op f`" (since := "2026-11-10")]
 lemma restrictOpenCommRingCat_apply {X : TopCat.{w}}
     {F : Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
     (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :

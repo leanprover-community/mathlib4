@@ -103,51 +103,142 @@ example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_
 variable {X : TopCat.{w}} {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
-/-- The restriction of a section along an inclusion of open sets.
-For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
-and the notation `x |_ₗ U ⟪i⟫` (`l` stands for `le`) for `i : U ≤ V`.
--/
-def restrict {F : X.Presheaf C}
-    {V : Opens X} (x : ToType (F.obj (op V))) {U : Opens X} (h : U ⟶ V) : ToType (F.obj (op U)) :=
-  F.map h.op x
+section RestrictNotation
 
-/-- restriction of a section along an inclusion -/
-scoped[AlgebraicGeometry] infixl:80 " |_ₕ " => TopCat.Presheaf.restrict
-/-- restriction of a section along a subset relation -/
-scoped[AlgebraicGeometry] notation:80 x " |_ₗ " U " ⟪" e "⟫ " =>
-  @TopCat.Presheaf.restrict _ _ _ _ _ _ _ _ _ x U (@homOfLE (Opens _) _ U _ e)
+open Lean Elab Term Meta PrettyPrinter.Delaborator SubExpr
+
+/-- Given `x : F.obj (op V)` for some presheaf `F` on a topological space,
+and a morphism `i : U ⟶ V`, `presheaf_restrict% x i` elaborates to `F.map i.op x`.
+
+This is the elaborator behind the notations `x |_ₕ i`, `x |_ₗ U ⟪e⟫`, and `x |_ U`.
+The presheaf `F` is read off from the type of `x`. -/
+syntax (name := presheafRestrict) "presheaf_restrict% " term:max ppSpace term:max : term
+
+/-- Find `F` such that `e` contains a subterm `F.obj _` where `F` is a functor out of
+`(Opens X)ᵒᵖ`. If `F = G ⋙ forget _`, then we return `G` instead. -/
+meta def findPresheaf? (e : Expr) : Option Expr :=
+  (e.find? fun e ↦ e.isAppOfArity ``CategoryTheory.Functor.obj 6 &&
+    (e.getArg! 0).isAppOfArity ``Opposite 1 &&
+    ((e.getArg! 0).getArg! 0).isAppOfArity ``TopologicalSpace.Opens 2).map fun e ↦
+    let F := e.getArg! 4
+    if F.isAppOfArity ``CategoryTheory.Functor.comp 8 &&
+        (F.getArg! 7).isAppOf ``CategoryTheory.forget then
+      F.getArg! 6
+    else F
+
+@[term_elab presheafRestrict, inherit_doc presheafRestrict]
+meta def elabPresheafRestrict : TermElab := fun stx expectedType? => do
+  let `(presheaf_restrict% $x $i) := stx | throwUnsupportedSyntax
+  let x ← elabTerm x none
+  let ty ← instantiateMVars (← inferType x)
+  let F? ← match findPresheaf? ty with
+    | some F => pure (some F)
+    | none => do pure (findPresheaf? (← whnfR ty))
+  let xs ← exprToSyntax x
+  if let some F := F? then
+    unless F.getAppFn.isMVar do
+      -- The usual case: we know `F`, so we elaborate `F.map i.op x`.
+      return ← elabTerm (← `(CategoryTheory.Functor.map $(← exprToSyntax F) (Quiver.Hom.op $i)
+        $xs)) expectedType?
+  -- The type of `x` is not known yet. Try to postpone, then fall back to elaborating
+  -- the coercion `F.map i.op x` explicitly with a metavariable `F`,
+  -- which is assigned later by unification.
+  tryPostpone
+  let i ← elabTerm i none
+  let iTy ← whnfR (← instantiateMVars (← inferType i))
+  let (U, V) ← if iTy.isAppOfArity ``Quiver.Hom 4 then
+      pure (← exprToSyntax (iTy.getArg! 2), ← exprToSyntax (iTy.getArg! 3))
+    else
+      pure (← `(_), ← `(_))
+  let F ← exprToSyntax (← mkFreshExprMVar none)
+  elabTerm (← `(DFunLike.coe
+      (α := CategoryTheory.ToType (CategoryTheory.Functor.obj $F (Opposite.op $V)))
+      (β := fun _ ↦ CategoryTheory.ToType (CategoryTheory.Functor.obj $F (Opposite.op $U)))
+      (CategoryTheory.ConcreteCategory.hom
+        (CategoryTheory.Functor.map $F (Quiver.Hom.op $(← exprToSyntax i)))) $xs)) expectedType?
+
+/-- Restriction of a section along an inclusion of open sets:
+for `x : F.obj (op V)` and `i : U ⟶ V`, `x |_ₕ i` (`h` stands for `hom`) is `F.map i.op x`. -/
+scoped[AlgebraicGeometry] notation:80 (name := restrict) x:80 " |_ₕ " i:81 => presheaf_restrict% x i
+
+set_option quotPrecheck false in
+/-- Restriction of a section along a subset relation:
+for `x : F.obj (op V)` and `e : U ≤ V`, `x |_ₗ U ⟪e⟫` (`l` stands for `le`)
+is `F.map (homOfLE e).op x`. -/
+scoped[AlgebraicGeometry] notation:80 (name := restrictLE) x:80 " |_ₗ " U:81 " ⟪" e "⟫" =>
+  presheaf_restrict% x (@homOfLE (Opens _) _ U _ e)
+
+/-- `restrict_tac%` elaborates to a proof of the expected type found by `restrict_tac`.
+
+Unlike `by restrict_tac`, the tactic is run as soon as possible, like an `autoParam`,
+even if the goal still contains metavariables (in a public declaration of a module, a `by` block
+waits until its goal has no metavariables). This lets `restrict_tac` assign the metavariables
+using the hypotheses, e.g., in `∀ U t, ∃ V, V ≤ U ∧ t |_ V = ...`. -/
+syntax (name := restrictTacTerm) "restrict_tac%" : term
+
+@[term_elab restrictTacTerm, inherit_doc restrictTacTerm]
+meta def elabRestrictTacTerm : TermElab := fun stx expectedType? => do
+  let some expectedType := expectedType? | tryPostpone; throwError "Expected type is not known"
+  mkTacticMVar expectedType (← withRef stx `(by restrict_tac)) .term
+
+set_option quotPrecheck false in
+/-- Restriction of a section to an open subset:
+for `x : F.obj (op V)`, `x |_ U` is `F.map (homOfLE e).op x`,
+where the proof `e : U ≤ V` is found by `restrict_tac`. -/
+scoped[AlgebraicGeometry] notation:80 (name := restrictOpen) x:80 " |_ " U:81 =>
+  presheaf_restrict% x (@homOfLE (Opens _) _ U _ restrict_tac%)
+
+open AlgebraicGeometry in
+/-- Delaborator for `F.map i.op x`, where `F` is a presheaf on a topological space.
+It shows `x |_ₕ i`, or `x |_ U` if `i = homOfLE e` with `e : U ≤ V`
+(`x |_ₗ U ⟪e⟫` if `pp.proofs` is set). -/
+meta def delabPresheafRestrict : Delab := whenPPOption getPPNotation do
+  let e ← getExpr
+  guard <| e.getAppNumArgs = 6
+  let f := e.getArg! 4
+  guard <| f.isAppOfArity ``CategoryTheory.ConcreteCategory.hom 9
+  let m := f.getArg! 8
+  guard <| m.isAppOfArity ``CategoryTheory.Functor.map 8
+  guard <| (m.getArg! 0).isAppOfArity ``Opposite 1 &&
+    ((m.getArg! 0).getArg! 0).isAppOfArity ``TopologicalSpace.Opens 2
+  let iop := m.getArg! 7
+  guard <| iop.isAppOfArity ``Quiver.Hom.op 5
+  let x ← withAppArg delab
+  let withHom {α} (d : DelabM α) : DelabM α :=
+    withAppFn <| withAppArg <| withNaryArg 8 <| withNaryArg 7 <| withNaryArg 4 d
+  if (iop.getArg! 4).isAppOfArity ``CategoryTheory.homOfLE 5 then
+    let U ← withHom <| withNaryArg 2 delab
+    if ← getPPOption getPPProofs then
+      let e ← withHom <| withNaryArg 4 delab
+      `($x |_ₗ $U ⟪$e⟫)
+    else
+      `($x |_ $U)
+  else
+    let i ← withHom delab
+    `($x |_ₕ $i)
+
+scoped[AlgebraicGeometry] attribute [delab app.DFunLike.coe]
+  TopCat.Presheaf.delabPresheafRestrict
+
+end RestrictNotation
 
 open AlgebraicGeometry
-
-/-- The restriction of a section along an inclusion of open sets.
-For `x : F.obj (op V)`, we provide the notation `x |_ U`, where the proof `U ≤ V` is inferred by
-the tactic `Top.presheaf.restrict_tac'` -/
-abbrev restrictOpen {F : X.Presheaf C}
-    {V : Opens X} (x : ToType (F.obj (op V))) (U : Opens X)
-    (e : U ≤ V := by restrict_tac) :
-    ToType (F.obj (op U)) :=
-  x |_ₗ U ⟪e⟫
-
-/-- restriction of a section to open subset -/
-scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
 theorem restrict_restrict
     {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : ToType (F.obj (op W))) :
     x |_ V |_ U = x |_ U := by
-  delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, ← Functor.map_comp]
   rfl
 
 theorem map_restrict
     {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : ToType (F.obj (op V))) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
-  delta restrictOpen restrict
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
 
 @[simp]
 lemma restrict_self {F : X.Presheaf C} {U : Opens X} (x : ToType (F.obj (op U))) :
     x |_ U = x := by
-  simp [restrictOpen, restrict]
+  simp
 
 open CategoryTheory.Limits
 

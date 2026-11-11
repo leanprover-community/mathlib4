@@ -276,7 +276,6 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : To
     (((f |_ U₁) ^ n₂ * y₁) |_ U₄) |_ U₇ = (((f |_ U₂) ^ n₁ * y₂) |_ U₄) |_ U₇ := by
   apply_fun (fun x : F.obj (op U₅) ↦ x |_ U₇) at e₁
   apply_fun (fun x : F.obj (op U₆) ↦ x |_ U₇) at e₂
-  dsimp only [TopCat.Presheaf.restrictOpenCommRingCat_apply] at e₁ e₂ ⊢
   simp only [map_mul, map_pow, ← op_comp, ← F.map_comp, homOfLE_comp, ← CommRingCat.comp_apply]
     at e₁ e₂ ⊢
   rw [e₁, e₂, mul_left_comm]
@@ -298,16 +297,15 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
         (((f |_ U₂) ^ n₁ * y₂) |_ S.1)).mp <| by
     apply exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux (e₁ := e₁) (e₂ := e₂)
     · change X.basicOpen _ ≤ _
-      simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
+      simp only [Scheme.basicOpen_res]
       exact inf_le_inf h₁ le_rfl
     · change X.basicOpen _ ≤ _
-      simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
+      simp only [Scheme.basicOpen_res]
       exact inf_le_inf h₂ le_rfl
   use n
   intro m hm
   rw [← tsub_add_cancel_of_le hm]
-  simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply,
-    pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
+  simp only [pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
     ← CommRingCat.comp_apply] at e ⊢
   rw [e]
 
@@ -315,7 +313,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : X.Opens)
     (hU : IsCompact U.1) (hU' : IsQuasiSeparated U.1) (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
-  dsimp only [TopCat.Presheaf.restrictOpenCommRingCat_apply]
   revert hU' f x
   refine compact_open_induction_on U hU ?_ ?_
   · intro _ f x
@@ -336,7 +333,6 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     obtain ⟨n₂, y₂, hy₂⟩ :=
       exists_eq_pow_mul_of_isAffineOpen X _ U.2 (X.presheaf.map (homOfLE le_sup_right).op f)
         (X.presheaf.map (homOfLE _).op x)
-    dsimp only [TopCat.Presheaf.restrictOpenCommRingCat_apply] at hy₂
     -- swap; · rw [X.basicOpen_res]; exact inf_le_right
     -- Since `S ∪ U` is quasi-separated, `S ∩ U` can be covered by finite affine opens.
     obtain ⟨s, hs', hs⟩ :=

@@ -302,7 +302,7 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
   have h : (1 : Γ(X, U)) |_ (X.basicOpen f) = 0 := by
     have e : X.basicOpen f ≤ ⊥ := by rw [hf]
     rw [← TopCat.Presheaf.restrict_restrict e bot_le]
-    rw [Subsingleton.eq_zero (1 |_ ⊥)]
+    rw [Subsingleton.eq_zero ((1 : Γ(X, U)) |_ ⊥)]
     change X.presheaf.map _ 0 = 0
     rw [map_zero]
   obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU 1 f h
