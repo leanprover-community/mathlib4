@@ -23,7 +23,6 @@ of these elements generate `⨂[R] i, M i`.
 
 In `LinearAlgebra.PiTensorProduct.Finite`, we deduce that if the modules `M i`
 are finitely generated, then so is `⨂[R] i, M i`.
-
 -/
 
 @[expose] public section

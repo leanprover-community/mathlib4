@@ -18,7 +18,6 @@ additive monoid (and suitable coproducts exist in a braided category `C`).
 
 When `C` is a braided category and suitable assumptions are made, we obtain the braided category
 structure on `GradedObject I C` and show that it is symmetric if `C` is symmetric.
-
 -/
 
 @[expose] public section

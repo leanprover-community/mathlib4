@@ -27,7 +27,6 @@ We study results about integral ideals of a number field `K`.
 * `NumberField.torsionOrder_dvd_absNorm_sub_one'`: If the prime ideal `P` is unramified over `ℤ`
   and the norm of the prime of `ℤ` lying under `P` is different from `2`, then the norm of `P` is
   congruent to `1` modulo `torsionOrder K`.
-
 -/
 
 @[expose] public section

@@ -35,7 +35,6 @@ Of course, although we can inductively generate solutions (cf `mkSol`), the
 interesting part would be to determine closed-forms for the solutions.
 This is currently *not implemented*, as we are waiting for definition and
 properties of eigenvalues and eigenvectors.
-
 -/
 
 @[expose] public section
@@ -165,8 +164,6 @@ theorem eq_iff_eqOn_range_order (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.
   constructor
   · exact fun h n hn ↦ congr($h ⟨n, Finset.mem_range.mp hn⟩)
   · exact fun h ↦ Finsupp.ext fun n ↦ h <| Finset.mem_range.mpr n.prop
-
-@[deprecated (since := "2026-04-16")] alias sol_eq_of_eq_init := eq_iff_eqOn_range_order
 
 /-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
 where `n := E.order`. This operation is quite useful for determining closed-form

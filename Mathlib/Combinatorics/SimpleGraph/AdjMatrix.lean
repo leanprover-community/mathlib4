@@ -36,7 +36,6 @@ properties to computational properties of the matrix.
 * `SimpleGraph.adjMatrix_pow_apply_eq_card_walk`: each entry of the `n`th power of
   a graph's adjacency matrix counts the number of length-`n` walks between the corresponding
   pair of vertices.
-
 -/
 
 @[expose] public section

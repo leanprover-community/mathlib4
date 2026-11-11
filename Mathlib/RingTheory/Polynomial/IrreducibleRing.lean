@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Polynomial.Nilpotent
 import Mathlib.Algebra.Polynomial.Eval.Irreducible
 
 /-!
-
 # Polynomials over an irreducible ring
 
 This file contains results about the polynomials over an irreducible ring (i.e. a ring with only
@@ -25,7 +24,6 @@ one minimal prime ideal, equivalently, whose spectrum is an irreducible topologi
 ## Tags
 
 polynomial, irreducible ring, nilradical, prime ideal
-
 -/
 
 public section

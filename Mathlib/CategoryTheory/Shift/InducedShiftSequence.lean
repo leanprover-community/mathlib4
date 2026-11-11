@@ -24,7 +24,6 @@ category (see the file `Mathlib/CategoryTheory/Shift/Induced.lean`), this file s
 under certain assumptions, there is an induced "shift sequence". The main application
 will be the construction of a shift sequence for the homology functor on the
 homotopy category of cochain complexes (TODO), and also on the derived category (TODO).
-
 -/
 
 @[expose] public section

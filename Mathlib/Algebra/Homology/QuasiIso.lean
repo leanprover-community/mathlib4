@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.Retract
 # Quasi-isomorphisms
 
 A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
-
 -/
 
 @[expose] public section
