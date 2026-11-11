@@ -582,10 +582,10 @@ lemma differentiable_riemannZeta₀ : Differentiable ℂ riemannZeta₀ := by
   rw [← differentiableOn_univ, ← differentiableOn_compl_singleton_and_continuousAt_iff
     (univ_mem : _ ∈ 𝓝 (1 : ℂ)), continuousAt_iff_punctured_nhds, ← compl_eq_univ_sdiff]
   constructor
-  · refine .congr (f := fun s ↦ riemannZeta s - (s - 1)⁻¹) ?_ (by simp +contextual [riemannZeta₀])
+  · refine .congr (f := fun s ↦ riemannZeta s - (s - 1)⁻¹) ?_ (by simp [riemannZeta₀])
     exact differentiableOn_riemannZeta.fun_sub (by fun_prop (disch := grind))
   · convert tendsto_nhdsWithin_congr ?_ tendsto_riemannZeta_sub_one_div <;>
-    simp +contextual [riemannZeta₀]
+    simp [riemannZeta₀]
 
 @[fun_prop]
 lemma differentiable_riemannZeta₁ : Differentiable ℂ riemannZeta₁ := by

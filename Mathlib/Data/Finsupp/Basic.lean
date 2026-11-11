@@ -973,7 +973,7 @@ finitely supported functions from `β` to `γ`. -/
 protected def curry (f : α × β →₀ M) : α →₀ β →₀ M where
   toFun a :=
     { toFun b := f (a, b)
-      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp +contextual
+      support := f.support.filterMap (fun x ↦ if x.1 = a then x.2 else none) <| by simp
       mem_support_toFun := by simp }
   support := f.support.image Prod.fst
   mem_support_toFun := by simp [DFunLike.ext_iff]

@@ -246,7 +246,7 @@ whose union with any set in `g` lies in `f`. -/
 instance instSDiff : SDiff (Filter α) where
   sdiff f g := {
     sets := {s | ∀ ⦃t⦄, t ∈ g → s ⊆ t → t ∈ f}
-    univ_sets := by simp +contextual
+    univ_sets := by simp
     sets_of_superset hx hxy t ht hyt := hx ht (hxy.trans hyt)
     inter_sets hx hy t htg ht := by
       rw [← union_eq_right.2 ht, inter_union_distrib_right]

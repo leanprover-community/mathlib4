@@ -172,8 +172,7 @@ theorem rel_associated_iff_map_eq_map {p q : Multiset M} :
 
 theorem prod_eq_one_iff {p : Multiset (Associates M)} :
     p.prod = 1 ↔ ∀ a ∈ p, (a : Associates M) = 1 :=
-  Multiset.induction_on p (by simp)
-    (by simp +contextual [mul_eq_one, or_imp, forall_and])
+  Multiset.induction_on p (by simp) (by simp [or_imp, forall_and])
 
 theorem prod_le_prod {p q : Multiset (Associates M)} (h : p ≤ q) : p.prod ≤ q.prod := by
   have := Classical.decEq (Associates M)

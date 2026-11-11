@@ -38,9 +38,9 @@ lemma card_smul_inter_smul (A B : Finset G) (x y : G) :
   card_nbij' (fun z ↦ (x⁻¹ * z, z⁻¹ * y)) (fun ab' ↦ x • ab'.1)
     (by simp +contextual [Set.MapsTo, Set.mem_smul_set_iff_inv_smul_mem, mul_assoc])
     (by simp +contextual [Set.MapsTo, Set.mem_smul_set_iff_inv_smul_mem]
-        simp +contextual [← eq_mul_inv_iff_mul_eq, mul_assoc])
+        simp [← eq_mul_inv_iff_mul_eq, mul_assoc])
     (by simp [Set.LeftInvOn])
-    (by simp +contextual [Set.LeftInvOn, ← eq_mul_inv_iff_mul_eq, mul_assoc])
+    (by simp [Set.LeftInvOn, ← eq_mul_inv_iff_mul_eq, mul_assoc])
 
 @[to_additive]
 lemma card_inter_smul (A B : Finset G) (x : G) : #(A ∩ (x • B)) = A.convolution B⁻¹ x := by

@@ -126,7 +126,7 @@ lemma coe_sUnion (x : ZFSet.{u}) : ↑(⋃₀ x : ZFSet) = ⋃₀ (x : ZFClass.{
   simp [sUnion, ZFClass.CMem, classToCong]; grind
 
 lemma mem_sInter : y ∈ ⋂₀ A ↔ ∀ z ∈ A, y ∈ z := by
-  simp +contextual [sInter, ZFClass.CMem, classToCong, eq_comm]; grind
+  simp [sInter, ZFClass.CMem, classToCong]
 
 open scoped ZFSet in
 lemma coe_sInter (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : ZFClass.{u}) := by

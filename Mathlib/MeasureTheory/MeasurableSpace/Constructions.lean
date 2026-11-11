@@ -527,13 +527,13 @@ see `measurable_from_prod_countable_right`. -/
 theorem measurable_from_prod_countable_left [Countable β] [MeasurableSingletonClass β]
     {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
-  measurable_from_prod_countable_left' hf (by simp +contextual)
+  measurable_from_prod_countable_left' hf (by simp)
 
 /-- For the version where the second space in the product is countable,
 see `measurable_from_prod_countable_left`. -/
 lemma measurable_from_prod_countable_right [Countable α] [MeasurableSingletonClass α]
     {f : α × β → γ} (hf : ∀ x, Measurable fun y => f (x, y)) : Measurable f :=
-  measurable_from_prod_countable_right' hf (by simp +contextual)
+  measurable_from_prod_countable_right' hf (by simp)
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}

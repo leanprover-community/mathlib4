@@ -11,7 +11,7 @@ public import Mathlib.Init
 meta import Qq.Typ
 
 /-!
-# Simproc for `∃ a', ... ∧ a' = a ∧ ...`
+# Simprocs for `∃ a', ... ∧ a' = a ∧ ...` and `∀ a', ... → a' = a → ...`
 
 This module implements the `existsAndEq` simproc, which triggers on goals of the form `∃ a, P`.
 It checks whether `P` allows only one possible value for `a`, and if so, substitutes it, eliminating
@@ -23,6 +23,14 @@ If such an expression is found, all occurrences of `a` are replaced with `a'`. I
 variables bound by existential quantifiers, those quantifiers are moved outside.
 
 For example, `∃ a, p a ∧ ∃ b, a = f b ∧ q b` will be rewritten as `∃ b, p (f b) ∧ q b`.
+
+It also implements the dual `forallImpEq` simproc, which triggers on goals of the form `∀ a, P`.
+It traverses the binders of `P` (universal quantifiers and implications), searching for a hypothesis
+of the form `a = a'` or `a' = a` for `a'` that is independent of `a` and of the binders that stay in
+place. If such an hypothesis is found, all occurrences of `a` are replaced with `a'`. Universal
+quantifiers on the way that do not depend on `a` are moved outside.
+
+For example, `∀ a, p a → ∀ b, a = f b → q b` will be rewritten as `∀ b, p (f b) → f b = f b → q b`.
 -/
 
 public meta section
@@ -435,4 +443,90 @@ simproc ↓ existsAndEq (Exists _) := fun e => withAbstractMVars e existsAndEqCo
 
 end ExistsAndEq
 
+namespace ForallImpEq
+
+/-- Checks whether the binders of `e`, read as a function of the bound variable `.bvar d`, contain a
+hypothesis of the form `.bvar d = _` or `_ = .bvar d`. This is a fast check that quickly rules out
+most expressions on which `forallImpEq` is not applicable. -/
+def hasEqBinder (e : Expr) (d : Nat) : Bool :=
+  match e with
+  | .forallE _ t b _ =>
+    (match t.eq? with
+      | some (_, x, y) => x == .bvar d || y == .bvar d
+      | none => false) ||
+    hasEqBinder b (d + 1)
+  | _ => false
+
+/-- Walks the binders of `e`, introducing them as local variables, until it finds a hypothesis of
+the form `a = a'` or `a' = a` where `a'` doesn't contain any of the free variables in `forbidden`.
+
+At each binder `x : T` on the way, `x` is marked as *hoisted* (to be moved in front of the
+quantifier over `a`) if the rest of `e` depends on `x` and `T` doesn't contain any of the free
+variables in `forbidden`. Otherwise `x` stays in place, and is added to `forbidden`.
+
+Once the equation is found, calls `k xs hoisted h rest a' symm`, where:
+* `xs` are the binders on the way, and `hoisted` says which of them are hoisted.
+* `h` is the hypothesis `a = a'` or `a' = a`.
+* `rest` is the remainder of `e` after `h`.
+* `symm` is `true` if `h : a' = a` and `false` if `h : a = a'`. -/
+partial def walk {β : Type} (a e : Expr) (forbidden : Array FVarId) (xs : Array Expr)
+    (hoisted : Array Bool) (k : Array Expr → Array Bool → Expr → Expr → Expr → Bool → MetaM β) :
+    MetaM (Option β) := do
+  let .forallE n t b bi := e | return none
+  let determines (x y : Expr) : Bool := x == a && !forbidden.any y.containsFVar
+  withLocalDecl n bi t fun x => do
+    let rest := b.instantiate1 x
+    if let some (_, l, r) := t.eq? then
+      if determines l r then return some (← k xs hoisted x rest r false)
+      if determines r l then return some (← k xs hoisted x rest l true)
+    let hoist := b.hasLooseBVars && !forbidden.any t.containsFVar
+    walk a rest (if hoist then forbidden else forbidden.push x.fvarId!) (xs.push x)
+      (hoisted.push hoist) k
+
+/-- The implementation of `forallImpEq`, for an expression without metavariables.
+
+Given `e = ∀ a, ∀ x₁ ... xₙ, ∀ h : a = a', R`, where the `xᵢ` are partitioned into hoisted binders
+`ys` and kept binders `zs`, it produces `e' = ∀ ys, ∀ zs[a'/a], ∀ h : a' = a', R[a'/a]`, along with
+the proof of `e = e'`:
+* `e → e'` is `fun H ys zs h ↦ H a' x₁ ... xₙ h`.
+* `e' → e` is `fun H' a x₁ ... xₙ h ↦ ?_`, where the goal is closed by substituting `a` with `a'`
+  (`substCore`) and applying `H'`. -/
+def forallImpEqCore (e : Expr) : MetaM Simp.Step := do
+  let .forallE n α body bi := e | return .continue
+  unless hasEqBinder body 0 do return .continue
+  withLocalDecl n bi α fun a => do
+  let res? ← walk a (body.instantiate1 a) #[a.fvarId!] #[] #[] fun xs hoisted h rest a' symm => do
+    let ys := (xs.zip hoisted).filterMap fun (x, b) => if b then some x else none
+    let zs := (xs.zip hoisted).filterMap fun (x, b) => if b then none else some x
+    let e' ← mkForallFVars ys <| (← mkForallFVars (zs.push h) rest).replaceFVar a a'
+    let fwd ← withLocalDeclD `h e fun H => do
+      let inner := (← mkLambdaFVars (zs.push h) (mkAppN H (#[a] ++ xs ++ #[h]))).replaceFVar a a'
+      mkLambdaFVars #[H] (← mkLambdaFVars ys inner)
+    let bwd ← withLocalDeclD `h e' fun H' => do
+      let goal ← mkFreshExprSyntheticOpaqueMVar rest
+      let (fvarSubst, goal') ← substCore goal.mvarId! h.fvarId! (symm := symm)
+      goal'.withContext do
+        -- `substCore` replaces `h` with `Eq.refl a'` in the goal
+        let args := (ys ++ zs).map fvarSubst.apply |>.push (← mkEqRefl (fvarSubst.apply a'))
+        goal'.assign (mkAppN H' args)
+      mkLambdaFVars (#[H', a] ++ xs ++ #[h]) (← instantiateMVars goal)
+    return (e', fwd, bwd)
+  let some (e', fwd, bwd) := res? | return .continue
+  have e : Q(Prop) := e; have e' : Q(Prop) := e'
+  have fwd : Q($e → $e') := fwd; have bwd : Q($e' → $e) := bwd
+  return .visit { expr := e', proof? := some q(propext ⟨$fwd, $bwd⟩) }
+
+/-- Triggers at goals of the form `∀ a, body` and checks if `body` has a hypothesis `a = a'` or
+`a' = a`. If so, replaces `a` with `a'` and removes the quantifier.
+
+It looks through nested universal quantifiers and implications searching for the hypothesis.
+Quantifiers on the way that do not depend on `a` are moved outside.
+
+This is the dual of `existsAndEq`. -/
+simproc ↓ forallImpEq (∀ _, _) := fun e =>
+  ExistsAndEq.withAbstractMVars e ForallImpEq.forallImpEqCore
+
+end ForallImpEq
+
 export ExistsAndEq (existsAndEq)
+export ForallImpEq (forallImpEq)

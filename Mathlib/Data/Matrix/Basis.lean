@@ -152,7 +152,7 @@ lemma single_mulVec_eq [Fintype n] [NonAssocSemiring α] (i j : n) (b : α) (w :
 lemma sum_single_eq_diagonal [AddCommMonoid α] [Fintype m] (f : m → α) :
     ∑ i : m, single i i (f i) = Matrix.diagonal f := by
   ext j k
-  rw [Matrix.sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
+  rw [Matrix.sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp [single]
 
 lemma sum_single_one [AddCommMonoid α] [One α] [Fintype m] :
     ∑ i : m, single i i (1 : α) = 1 :=

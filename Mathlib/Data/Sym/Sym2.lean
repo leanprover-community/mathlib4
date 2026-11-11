@@ -949,7 +949,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
     have {f g h} : @Eq.ndrec (Sym2 α) s(b, c)
       (fun x => a ∈ x → α) (fun _ => if a = b then c else b) f g h =
         if a = b then c else b := by subst g; rfl
-    aesop)
+    rw [this]; aesop)
     z h
 
 @[simp]

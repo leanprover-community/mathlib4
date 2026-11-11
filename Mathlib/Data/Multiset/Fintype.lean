@@ -130,8 +130,7 @@ theorem prod_map_eq_prod_toEnumFinset {M : Type*} [CommMonoid M] (m : Multiset �
   obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
     by_contra! h
     replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
-      simpa +contextual [forall_comm (β := _ = a), Finset.subset_iff,
-        imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
+      simpa [Finset.subset_iff, imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
     lia
