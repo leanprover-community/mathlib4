@@ -86,7 +86,7 @@ theorem isEulerian_iff (p : G.Walk u v) :
 theorem isEulerian_iff_isTrail_and_edgeSet_eq :
     p.IsEulerian ↔ p.IsTrail ∧ p.edgeSet = G.edgeSet := by
   rw [isEulerian_iff, and_congr_right_iff]
-  exact fun _ ↦ ⟨Set.Subset.antisymm p.edges_subset_edgeSet, fun h ↦ by simp [← h]⟩
+  exact fun _ ↦ ⟨(Set.Subset.antisymm p.edges_subset_edgeSet ·), fun h ↦ by simp [← h]⟩
 
 theorem isEulerian_iff_isTrail_and_length_eq_encard_edgeSet :
     p.IsEulerian ↔ p.IsTrail ∧ p.length = G.edgeSet.encard := by
