@@ -33,7 +33,7 @@ protected def mul : Mul (AddSubgroup R) where
   { __ := M.toAddSubmonoid * N.toAddSubmonoid
     neg_mem' := fun h ↦ AddSubmonoid.mul_induction_on h
       (fun m hm n hn ↦ by rw [← neg_mul]; exact AddSubmonoid.mul_mem_mul (M.neg_mem hm) hn)
-      fun r₁ r₂ h₁ h₂ ↦ by rw [neg_add]; exact (M.1 * N.1).add_mem h₁ h₂ }
+      fun r₁ r₂ h₁ h₂ ↦ by rw [neg_add]; exact (M.toAddSubmonoid * N.toAddSubmonoid).add_mem h₁ h₂ }
 
 scoped[Pointwise] attribute [instance] AddSubgroup.mul
 

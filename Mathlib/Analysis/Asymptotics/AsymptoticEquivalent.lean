@@ -53,7 +53,6 @@ If `β` is a `NormedLinearOrderedField` :
 
 Note that `IsEquivalent` takes the parameters `(l : Filter α) (u v : α → β)` in that order.
 This is to enable `calc` support, as `calc` requires that the last two explicit arguments are `u v`.
-
 -/
 
 public section

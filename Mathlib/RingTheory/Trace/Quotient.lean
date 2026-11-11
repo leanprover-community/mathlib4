@@ -20,7 +20,6 @@ quotients and localizations.
 
 * `Algebra.trace_quotient_eq_of_isDedekindDomain` : The trace map on `B → A` coincides with the
   trace map on `B⧸pB → A⧸p`.
-
 -/
 
 public section

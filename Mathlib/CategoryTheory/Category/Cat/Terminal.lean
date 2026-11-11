@@ -19,7 +19,6 @@ TODO: Show the converse: that terminal categories have a unique object and are d
 
 TODO: Provide an analogous characterization of terminal categories as codiscrete categories
 with a unique object.
-
 -/
 
 @[expose] public section

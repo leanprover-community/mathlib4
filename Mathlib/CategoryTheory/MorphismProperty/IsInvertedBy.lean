@@ -16,7 +16,6 @@ that the morphisms satisfying `P : MorphismProperty C` are mapped to
 isomorphisms by a functor `F : C ⥤ D`.
 
 This is used in the localization of categories API (folder `CategoryTheory.Localization`).
-
 -/
 
 @[expose] public section

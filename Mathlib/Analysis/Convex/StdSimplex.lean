@@ -23,7 +23,6 @@ coordinates with total sum `1`.
 
 When `f : X → Y` is a map between finite types, we define the map
 `stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
-
 -/
 
 @[expose] public section
