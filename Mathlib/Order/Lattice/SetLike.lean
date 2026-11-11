@@ -49,19 +49,19 @@ variable (A : Type*) {B : Type*}
 
 @[reducible] def SemilatticeInf.ofSetLike [SetLike A B] [Min A] [IsMemInf A] :
     SemilatticeInf A where
-  __ := PartialOrder.ofSetLike A B
+  __ := PartialOrder.ofSetLike A
   inf := (· ⊓ ·)
-  inf_le_left := by simp [LE.le]; grind
-  inf_le_right := by simp [LE.le]
-  le_inf := by simp [LE.le]; grind
+  inf_le_left := by membership
+  inf_le_right := by membership
+  le_inf := by membership
 
 @[reducible] def SemilatticeSup.ofSetLike [SetLike A B] [Max A] [IsMemSup A] :
     SemilatticeSup A where
-  __ := PartialOrder.ofSetLike A B
+  __ := PartialOrder.ofSetLike A
   sup := (· ⊔ ·)
-  le_sup_left := by simp [LE.le]; grind
-  le_sup_right := by simp [LE.le]; grind
-  sup_le := by simp [LE.le]; grind
+  le_sup_left := by membership
+  le_sup_right := by membership
+  sup_le := by membership
 
 end default
 

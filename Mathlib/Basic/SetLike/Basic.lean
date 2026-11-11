@@ -272,6 +272,7 @@ variable [LE A] [IsConcreteLE A B] {p q : A}
 
 grind_pattern [membership] mem_of_le_of_mem => S ≤ T, x ∈ T
 
+@[membership =]
 theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
   simp [le_iff]
 
