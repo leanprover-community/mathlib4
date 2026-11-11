@@ -227,14 +227,14 @@ variable {S T : Type*} [CommRing S] [CommRing T]
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
 @[simps]
 def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S where
-  toFun g := SpecialLinearGroup.mk (f.mapMatrix ↑ₘg)
+  toFun g := .mk (f.mapMatrix ↑ₘg)
     (by rw [← f.map_det]; simp [g.prop])
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
 @[simp]
 theorem coe_map_mk (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
-    SpecialLinearGroup.map f (SpecialLinearGroup.mk A h) = A.map f := rfl
+    SpecialLinearGroup.map f (.mk A h) = A.map f := rfl
 
 @[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
@@ -468,23 +468,23 @@ theorem SL2_inv_expl_det (A : SL(2, R)) :
   (det_fin_two _).trans (by simpa [-det_coe, det_fin_two, mul_comm] using A.2)
 
 theorem SL2_inv_expl (A : SL(2, R)) :
-    A⁻¹ = SpecialLinearGroup.mk !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] (SL2_inv_expl_det A) := by
+    A⁻¹ = .mk !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] (SL2_inv_expl_det A) := by
   ext
   simp [adjugate_fin_two]
 
 theorem eta_fin_two (g : SL(2, R)) :
-    g = SpecialLinearGroup.mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← eta_fin_two]) :=
+    g = .mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← eta_fin_two]) :=
   Subtype.ext (Matrix.eta_fin_two g.1)
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1),
-    P (SpecialLinearGroup.mk !![a, b; c, d] (by rwa [det_fin_two_of]))) (g : SL(2, R)) : P g := by
+    P (.mk !![a, b; c, d] (by rwa [det_fin_two_of]))) (g : SL(2, R)) : P g := by
   rw [eta_fin_two g]
   exact h _ _ _ _ ((det_fin_two _).symm.trans g.2)
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : g 1 0 = 0) :
-    ∃ (a b : R) (h : a ≠ 0), g = SpecialLinearGroup.mk !![a, b; 0, a⁻¹] (by simp [h]) := by
+    ∃ (a b : R) (h : a ≠ 0), g = .mk !![a, b; 0, a⁻¹] (by simp [h]) := by
   induction g using Matrix.SpecialLinearGroup.fin_two_induction with | h a b c d h_det =>
   replace hg : c = 0 := by simpa using hg
   have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
@@ -683,7 +683,7 @@ namespace SpecialLinearGroup
   positions `i` and `j` respectively where `i ≠ j`. -/
 noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
     (ha : a ≠ 0) : SpecialLinearGroup ι F :=
-  SpecialLinearGroup.mk (diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1)) (by
+  .mk (diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1)) (by
     simp [Finset.prod_ite, hij.symm, Finset.card_eq_one (s := {x : ι | x = i}).2 ⟨i, by grind⟩,
       mul_inv_cancel₀ ha])
 
@@ -766,8 +766,7 @@ lemma diag_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
     mul_comm]
 
 lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
-    SpecialLinearGroup.mk (diagonal D) hD =
-      Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
+    .mk (diagonal D) hD = Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
       diag2n hi (D i) (diagonal_neZero D hD i) else 1) (diag_commute i₀ D hD) := by
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
   apply coeMonoidHom_injective
@@ -787,8 +786,7 @@ lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1)
 theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : SpecialLinearGroup ι F) :
     ∃ (L L' : List (TransvectionStruct ι F)) (D : ι → F) (hD : det (diagonal D) = 1),
       M = (L.map TransvectionStruct.toSpecialLinearGroup).prod *
-        SpecialLinearGroup.mk (diagonal D) hD *
-        (L'.map TransvectionStruct.toSpecialLinearGroup).prod := by
+        .mk (diagonal D) hD * (L'.map TransvectionStruct.toSpecialLinearGroup).prod := by
   obtain ⟨L, L', D, hM⟩ := Pivot.exists_list_transvec_mul_diagonal_mul_list_transvec M.1
   refine ⟨L, L', D, by simpa [hM] using M.2, Subtype.ext <| ?_⟩
   simp_rw [coe_mul, ← coeMonoidHom_apply, map_list_prod]
@@ -801,8 +799,7 @@ theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup
     (hmul : ∀ A B, P A → P B → P (A * B)) : P M := by
   obtain ⟨i₀, j₀, hij₀⟩ := exists_pair_ne ι
   have hP1 : P 1 := transvection_coeff_zero (F := F) hij₀ ▸ htransvec i₀ j₀ hij₀ 0
-  have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) :
-      P (SpecialLinearGroup.mk (diagonal D) hD) := by
+  have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) : P (.mk (diagonal D) hD) := by
     rw [diag_eq_diag2n_prod i₀ D hD]
     refine Finset.noncommProd_induction _ _ _ P hmul hP1 fun i hi => ?_
     simp [(Finset.mem_filter.1 hi).2, hdiag]
@@ -912,12 +909,10 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Möbius transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
-def S : SL(2, ℤ) :=
-  .mk !![0, -1; 1, 0] (by simp [det_fin_two_of])
+def S : SL(2, ℤ) := .mk !![0, -1; 1, 0] (by simp [det_fin_two_of])
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
-def T : SL(2, ℤ) :=
-  SpecialLinearGroup.mk !![1, 1; 0, 1] (by simp [det_fin_two_of])
+def T : SL(2, ℤ) := .mk !![1, 1; 0, 1] (by simp [det_fin_two_of])
 
 @[simp]
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
