@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Order.Lattice.SetLike
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Lattice operations agreeing with set operations
 
@@ -22,7 +19,7 @@ variable {A B : Type*} [Membership B A]
 
 section CompleteLattice
 
-variable [CompleteLattice A] [IsMemLE A B] {s : Set A}
+variable [CompleteLattice A] [IsConcreteLE A B] {s : Set A}
 
 theorem mem_sSup_of_mem {x : B} {p : A} (hp : p ∈ s) (hx : x ∈ p) : x ∈ sSup s :=
   mem_of_le_of_mem (le_sSup hp) hx
