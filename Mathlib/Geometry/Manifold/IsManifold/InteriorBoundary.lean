@@ -216,27 +216,28 @@ end BoundarylessManifold
 section ChartIndependence
 
 /-- If a function `f : E → H` is differentiable at `x`, sends a neighbourhood `u` of `x` to a
-closed convex set `s` with nonempty interior and has surjective differential at `x`, it must send
-`x` to the interior of `s`. -/
+convex set `s` with nonempty interior and has surjective differential at `x`, it must send `x` to
+the interior of `s`. -/
 lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
     {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H] [NormedSpace ℝ H]
     {f : E → H} {x : E} (hf : DifferentiableAt ℝ f x) {u : Set E} (hu : u ∈ 𝓝 x) {s : Set H}
-    (hs : Convex ℝ s) (hs' : IsClosed s) (hs'' : (interior s).Nonempty) (hfus : Set.MapsTo f u s)
+    (hs : Convex ℝ s) (hs' : (interior s).Nonempty) (hfus : Set.MapsTo f u s)
     (hfx : Function.Surjective (fderiv ℝ f x)) : f x ∈ interior s := by
   contrapose hfx
-  have ⟨F, hF⟩ := geometric_hahn_banach_open_point hs.interior isOpen_interior hfx
+  obtain ⟨F, c, hFint, hFs, hFx⟩ := geometric_hahn_banach_of_nonempty_interior' hs
+    (convex_singleton (f x)) (disjoint_singleton_right.2 hfx) hs'
+  have hc : c ≤ F (f x) := hFx _ (mem_singleton _)
   -- It suffices to show that `fderiv ℝ f x` sends everything to the kernel of `F`.
   suffices h : ∀ y, F (fderiv ℝ f x y) = 0 by
-    have ⟨y, hy⟩ := hs''
-    unfold Function.Surjective; push Not
+    obtain ⟨y, hy⟩ := hs'
+    unfold Function.Surjective
+    push Not
     refine ⟨f x - y, fun z ↦ ne_of_apply_ne F ?_⟩
     rw [h z, F.map_sub]
-    exact (sub_pos.2 <| hF _ hy).ne
-  -- This follows from `F ∘ f` taking on a local maximum at `e.extend I x`.
-  have hF' : MapsTo F s (Iic (F (f x))) := by
-    rw [← hs'.closure_eq, ← closure_Iio, ← hs.closure_interior_eq_closure_of_nonempty_interior hs'']
-    exact .closure hF F.continuous
-  have hFφ : IsLocalMax (F ∘ f) x := Filter.eventually_of_mem hu fun y hy ↦ hF' <| hfus hy
+    exact (sub_pos.2 <| (hFint _ hy).trans_le hc).ne
+  -- This follows from `F ∘ f` taking on a local maximum at `x`.
+  have hFφ : IsLocalMax (F ∘ f) x :=
+    Filter.eventually_of_mem hu fun y hy ↦ (hFs _ <| hfus hy).trans hc
   have h := hFφ.fderiv_eq_zero
   rw [fderiv_comp _ (by fun_prop) hf, ContinuousLinearMap.fderiv] at h
   exact DFunLike.congr_fun h
@@ -282,8 +283,8 @@ lemma mem_interior_range_of_mem_interior_range_of_mem_atlas (hn : n ≠ 0)
       (uniqueDiffWithinAt_of_mem_nhds hφx), fderivWithin_of_mem_nhds hφx] at hφx'
   rw [show e'.extend I x = φ (e.extend I x) by simp [φ, hex]]
   replace hφ := ((hφ.restrict_scalars ℝ).differentiableOn hn).differentiableAt hφx
-  exact hφ.mem_interior_convex_of_surjective_fderiv hφx I.convex_range I.isClosed_range
-    I.nonempty_interior (φ.mapsTo.mono_right <| by simp [φ, inter_assoc]) hφx'
+  exact hφ.mem_interior_convex_of_surjective_fderiv hφx I.convex_range I.nonempty_interior
+    (φ.mapsTo.mono_right <| by simp [φ, inter_assoc]) hφx'
 
 /-- For any two charts `e`, `e'` around a point `x` in a C¹ manifold, `e` maps `x` to the interior
 of the model space iff `e'` does. - in other words, the notion of interior points does not
@@ -369,9 +370,9 @@ lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x :
   /- The lemma is now essentially just `mem_interior_convex_of_surjective_fderiv`: because
   `writtenInExtChartAt I I' x f` is differentiable with surjective differential at `x` over `ℝ` and
   sends a neighbourhood of `x` (the region in which it could be written in the extended charts) to
-  a closed convex set with nonempty interior (`I'.range`), it must send `x` to that interior. -/
+  a convex set with nonempty interior (`I'.range`), it must send `x` to that interior. -/
   have := hf''.mem_interior_convex_of_surjective_fderiv (Filter.inter_mem ?_ ?_) I'.convex_range
-    I'.isClosed_range I'.nonempty_interior (writtenInExtChartAt_mapsTo.mono_right ?_) hf'
+    I'.nonempty_interior (writtenInExtChartAt_mapsTo.mono_right ?_) hf'
   · simpa using! this
   · rw [← nhdsWithin_eq_nhds.2 (mem_interior_iff_mem_nhds.1 hx)]
     exact extChartAt_target_mem_nhdsWithin x
