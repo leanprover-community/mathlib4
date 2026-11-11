@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.EMetricSpace.Paracompact
 
 /-!
 # The range of a strongly measurable function is almost compact

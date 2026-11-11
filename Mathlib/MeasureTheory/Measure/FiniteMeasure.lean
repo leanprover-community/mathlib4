@@ -9,8 +9,9 @@ public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 
 import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.AlmostCompactRange
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.PartitionOfUnity
 import Mathlib.Topology.TietzeExtension
 
@@ -812,11 +813,6 @@ lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensM
     (f : X →ᵇ ℝ≥0) : Continuous fun μ : FiniteMeasure X ↦ ∫⁻ x, f x ∂μ :=
   continuous_iff_forall_continuous_lintegral.1 continuous_id _
 
-@[fun_prop]
-lemma continuous_integral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
-    (f : X →ᵇ ℝ) : Continuous fun μ : FiniteMeasure X ↦ ∫ x, f x ∂μ :=
-  continuous_iff_forall_continuous_integral.1 continuous_id _
-
 variable [CompactSpace Ω]
 
 /-- The characterization of weak convergence of finite measures by the condition that the
@@ -839,43 +835,33 @@ lemma continuous_lintegral_continuousMap [FunLike F X ℝ≥0] [ContinuousMapCla
     Continuous fun μ : FiniteMeasure X ↦ ∫⁻ x, f x ∂μ :=
   continuous_iff_forall_continuousMap_continuous_lintegral.1 continuous_id ⟨f, map_continuous f⟩
 
-lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F X ℝ] (f : F) :
-    Continuous fun μ : FiniteMeasure X ↦ ∫ x, f x ∂μ :=
-  continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
-
 end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 
-variable {X E : Type*} [TopologicalSpace X] [MeasurableSpace X]
-  [OpensMeasurableSpace X] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [MeasurableSpace E] [BorelSpace E]
+section IntegralConvergence
 
-variable {ι : Type*} {F : Filter ι} {μs : ι → FiniteMeasure X} {ν : FiniteMeasure X}
+variable {X E : Type*} [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {ι : Type*} {F : Filter ι} {μs : ι → FiniteMeasure X} {ν : FiniteMeasure X}
+  {T : Type*} [FunLike T X E] [BoundedContinuousMapClass T X E]
+  {T' : Type*} [FunLike T' X E] [ContinuousMapClass T' X E]
 
-/-- Real-valued test functions transfer: this is the definition of the weak topology. -/
-lemma tendsto_integral_of_boundedContinuous (f : X →ᵇ ℝ) (hμ : Tendsto μs F (𝓝 ν)) :
-    Tendsto (fun i ↦ ∫ x, f x ∂(μs i : Measure X)) F (𝓝 (∫ x, f x ∂ν)) :=
-  (FiniteMeasure.tendsto_iff_forall_integral_tendsto.1 hμ) f
-
-lemma tendsto_integral_of_continuous_of_norm_le (C : ℝ) (f : X → ℝ)
+/-- This lemma is superseded by `tendsto_integral_of_continuous_of_norm_le`. -/
+private lemma tendsto_integral_of_continuous_of_norm_le_of_real (C : ℝ) (f : X → ℝ)
     (hf : Continuous f) (h'f : ∀ x, ‖f x‖ ≤ C) (hμ : Tendsto μs F (𝓝 ν)) :
-    Tendsto (fun i ↦ ∫ x, f x ∂(μs i : Measure X)) F (𝓝 (∫ x, f x ∂ν)) :=
-  tendsto_integral_of_boundedContinuous (.ofNormedAddCommGroup f hf C h'f) hμ
+    Tendsto (fun i ↦ ∫ x, f x ∂(μs i)) F (𝓝 (∫ x, f x ∂ν)) :=
+  FiniteMeasure.tendsto_iff_forall_integral_tendsto.1 hμ (.ofNormedAddCommGroup f hf C h'f)
 
-
-section test
-
-
-omit [MeasurableSpace X] [OpensMeasurableSpace X] [MeasurableSpace E] [BorelSpace E] in
+omit [MeasurableSpace X] [OpensMeasurableSpace X] in
 /-- Given a bounded continuous function to a normed space, one can approximate it by a finite sum
 of continuous scalar functions multiplied by vectors, where the approximation is good for points
 landing in a given compact set, and deteriorates as a continuous function away from the
 compact set. -/
-private lemma exists_sum_eq_of_isCompact (g : X →ᵇ E) {L : Set E}
+private lemma exists_sum_eq_of_isCompact (g : T) {L : Set E}
     {ε : ℝ} (hε : 0 < ε) (hL : IsCompact L) :
     ∃ (t : Finset E) (ψ : t → X → ℝ),
       (∀ v, Continuous (ψ v)) ∧ (∀ v x, 0 ≤ ψ v x) ∧ (∀ x, ∑ v, ψ v x ≤ 1) ∧
       (∀ x, g x ∈ L → ∑ v, ψ v x = 1) ∧
-      (∀ x, ‖g x - ∑ v, ψ v x • (v : E)‖ ≤ ε + ‖g‖ * (1 - ∑ v, ψ v x)) := by
+      (∀ x, ‖g x - ∑ v, ψ v x • (v : E)‖ ≤ ε + ‖(g : X →ᵇ E)‖ * (1 - ∑ v, ψ v x)) := by
   /- This is proved by taking a finite partition of unity on the target compact set `L` and
   composing it with `g`. If the elements of the partition of unity are supported on balls of
   radius at most `ε`, the estimate follows readily. -/
@@ -890,14 +876,14 @@ private lemma exists_sum_eq_of_isCompact (g : X →ᵇ E) {L : Set E}
     simp [ψ, finsum_eq_sum_of_fintype]
   have hsum_le_one (x) : ∑ v, ψ v x ≤ 1 := by
     rw [hsum_eq x]; exact ρ.sum_le_one _
-  refine ⟨t, ψ, fun v ↦ (ρ v).continuous.comp g.continuous,
+  refine ⟨t, ψ, fun v ↦ (ρ v).continuous.comp (by fun_prop),
     fun v x ↦ by simp [ψ, ρ.nonneg], hsum_le_one, fun x ↦ ?_, fun x ↦ ?_⟩
   · rw [hsum_eq x]; exact ρ.sum_eq_one
   calc
     ‖g x - ∑ v, ψ v x • (v : E)‖
     _ = ‖∑ v, ψ v x • (g x - v) + (1 - ∑ v, ψ v x) • g x‖ := by
       simp [sub_smul, smul_sub, Finset.sum_smul]
-    _ ≤ ∑ v, ‖ψ v x • (g x - v)‖ + (1 - ∑ v, ψ v x) * ‖g‖ := by
+    _ ≤ ∑ v, ‖ψ v x • (g x - v)‖ + (1 - ∑ v, ψ v x) * ‖(g : X →ᵇ E)‖ := by
       apply (norm_add_le _ _).trans
       gcongr
       · exact norm_sum_le Finset.univ _
@@ -905,8 +891,8 @@ private lemma exists_sum_eq_of_isCompact (g : X →ᵇ E) {L : Set E}
         have : 0 ≤ 1 - ∑ v, ψ v x := by linarith [hsum_le_one x]
         gcongr
         · simp only [Real.norm_eq_abs, abs_of_nonneg this, le_of_eq]
-        · exact g.norm_coe_le_norm x
-    _ ≤ ∑ v, ψ v x * ε + (1 - ∑ v, ψ v x) * ‖g‖ := by
+        · exact (g : X →ᵇ E).norm_coe_le_norm x
+    _ ≤ ∑ v, ψ v x * ε + (1 - ∑ v, ψ v x) * ‖(g : X →ᵇ E)‖ := by
       gcongr with v
       have hnn : 0 ≤ ψ v x := by simp [ψ, ρ.nonneg]
       rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg hnn]
@@ -915,19 +901,21 @@ private lemma exists_sum_eq_of_isCompact (g : X →ᵇ E) {L : Set E}
       · gcongr
         have : g x ∈ tsupport (ρ v) := subset_tsupport _ (by simpa using hvx)
         exact (mem_ball_iff_norm.mp (hρ v this)).le
-    _ ≤ 1 * ε + (1 - ∑ v, ψ v x) * ‖g‖ := by
+    _ ≤ 1 * ε + (1 - ∑ v, ψ v x) * ‖(g : X →ᵇ E)‖ := by
       rw [← Finset.sum_mul]
       gcongr
       exact hsum_le_one x
-    _ = ε + ‖g‖ * (1 - ∑ v, ψ v x) := by ring
+    _ = ε + ‖(g : X →ᵇ E)‖ * (1 - ∑ v, ψ v x) := by ring
 
-/-- The integral of a bounded continuous function along a converging family of finite measures
-converges. This general version assumes that the function is ae strongly measurable for all the
-finite measures we consider. -/
-theorem tendsto_integral_of_aestronglyMeasurable (g : X →ᵇ E)
+/-- The integral of a bounded continuous function with values in a normed space converges along a
+converging family of finite measures.
+This general version assumes that the function is ae strongly measurable for all the
+finite measures we consider. See `tendsto_integral` and its neighbors for more specialized versions
+where ae strong measurability is deduced from typeclass assumptions on the spaces. -/
+theorem tendsto_integral_of_aestronglyMeasurable (g : T)
     (hμ : Tendsto μs F (𝓝 ν)) (hmeas : ∀ i, AEStronglyMeasurable g (μs i))
     (hmeasν : AEStronglyMeasurable g ν) :
-    Tendsto (fun i ↦ ∫ x, g x ∂(μs i : Measure X)) F (𝓝 (∫ x, g x ∂ν)) := by
+    Tendsto (fun i ↦ ∫ x, g x ∂(μs i)) F (𝓝 (∫ x, g x ∂ν)) := by
   by_cases hE : CompleteSpace E; swap
   · simpa [integral_of_not_completeSpace hE] using tendsto_const_nhds
   /- we approximate `g` by a sum of one-dimensional functions, of the form `∑ v, ψ v x • v`.
@@ -941,8 +929,8 @@ theorem tendsto_integral_of_aestronglyMeasurable (g : X →ᵇ E)
   which gives the required control. -/
   apply Metric.tendsto_nhds.2 (fun η ηpos ↦ ?_)
   let m : ℝ := (ν : Measure X).real univ
-  obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, (2 * m + 4 * ‖g‖ + 3) * ε < η := by
-    refine ⟨η / 2 / (2 * m + 4 * ‖g‖ + 3), by positivity, ?_⟩
+  obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, (2 * m + 4 * ‖(g : X →ᵇ E)‖ + 3) * ε < η := by
+    refine ⟨η / 2 / (2 * m + 4 * ‖(g : X →ᵇ E)‖ + 3), by positivity, ?_⟩
     apply lt_of_le_of_lt ?_ (half_lt_self ηpos)
     rw [mul_div, mul_div_cancel_left₀ _ (by positivity)]
   obtain ⟨L, hL, hLν⟩ := AEStronglyMeasurable.exists_isCompact_measureReal_preimage_compl_le
@@ -963,7 +951,7 @@ theorem tendsto_integral_of_aestronglyMeasurable (g : X →ᵇ E)
     apply Metric.tendsto_nhds.1 ?_ ε εpos
     apply tendsto_finsetSum _ (fun v hv ↦ ?_)
     apply Tendsto.smul_const
-    apply tendsto_integral_of_continuous_of_norm_le 1 _ (ψ_cont v) ?_ hμ
+    apply tendsto_integral_of_continuous_of_norm_le_of_real 1 _ (ψ_cont v) ?_ hμ
     grind [Real.norm_eq_abs]
   -- asymptotically, the error coming from `θ` is controlled
   have hεν : ∫ x, 1 - θ x ∂ν ≤ ε := calc
@@ -978,9 +966,9 @@ theorem tendsto_integral_of_aestronglyMeasurable (g : X →ᵇ E)
       · simp
       · filter_upwards with x using by simp [θ_nonneg x]
     _ ≤ ε := by simpa using hLν.le
-  have h_θ_control : ∀ᶠ i in F, ∫ x, (1 - θ x) ∂(μs i) ≤ 2 * ε := by
-    have : Tendsto (fun i ↦ ∫ x, (1 - θ x) ∂(μs i)) F (𝓝 (∫ x, (1 - θ x) ∂ν)) := by
-      apply tendsto_integral_of_continuous_of_norm_le 1 _ (by fun_prop) (fun x ↦ ?_) hμ
+  have h_θ_control : ∀ᶠ i in F, ∫ x, 1 - θ x ∂(μs i) ≤ 2 * ε := by
+    have : Tendsto (fun i ↦ ∫ x, 1 - θ x ∂(μs i)) F (𝓝 (∫ x, 1 - θ x ∂ν)) := by
+      apply tendsto_integral_of_continuous_of_norm_le_of_real 1 _ (by fun_prop) (fun x ↦ ?_) hμ
       grind [θ_nonneg x, θ_le_one x, Real.norm_eq_abs]
     filter_upwards [Metric.tendsto_nhds.1 this ε εpos] with i hi
     rw [Real.dist_eq] at hi
@@ -1011,24 +999,25 @@ theorem tendsto_integral_of_aestronglyMeasurable (g : X →ᵇ E)
     · simp_rw [integral_smul_const]
       abel
     · exact fun v hv ↦ I v
-    · exact Integrable.of_bound hρ ‖g‖ (by filter_upwards with x using norm_coe_le_norm g x)
+    · exact Integrable.of_bound hρ ‖(g : X →ᵇ E)‖
+        (by filter_upwards with x using norm_coe_le_norm (g : X →ᵇ E) x)
     · exact integrable_finsetSum _ (fun v hv ↦ I v)
   -- control of the integral of the error term
   have M' {ρ : FiniteMeasure X} (h : ρ.mass ≤ m + 1) (h' : ∫ x, 1 - θ x ∂ρ ≤ 2 * ε):
-      ‖∫ x, (g x - ∑ v, ψ v x • (v : E)) ∂ρ‖ ≤ (m + 1) * ε + ‖g‖ * (2 * ε) := by
+      ‖∫ x, (g x - ∑ v, ψ v x • (v : E)) ∂ρ‖ ≤ (m + 1) * ε + ‖(g : X →ᵇ E)‖ * (2 * ε) := by
     have I :  Integrable (fun x ↦ 1 - θ x) ρ := by
       apply Integrable.of_bound (by fun_prop) 1
       filter_upwards with x
       grind [θ_nonneg x, θ_le_one x, Real.norm_eq_abs]
     calc ‖∫ x, (g x - ∑ v, ψ v x • (v : E)) ∂ρ‖
-    _ ≤ ∫ x, ε + ‖g‖ * (1 - θ x) ∂ρ := by
+    _ ≤ ∫ x, ε + ‖(g : X →ᵇ E)‖ * (1 - θ x) ∂ρ := by
       apply norm_integral_le_of_norm_le (by fun_prop)
       filter_upwards with x using happrox x
-    _ = ∫ x, ε ∂(ρ : Measure X) + ‖g‖ * ∫ x, (1 - θ x) ∂ρ := by
+    _ = ∫ x, ε ∂(ρ : Measure X) + ‖(g : X →ᵇ E)‖ * ∫ x, (1 - θ x) ∂ρ := by
       rw [integral_add, integral_const_mul]
       · simp
       · apply I.const_mul
-    _ ≤ (m + 1) * ε + ‖g‖ * (2 * ε) := by
+    _ ≤ (m + 1) * ε + ‖(g : X →ᵇ E)‖ * (2 * ε) := by
       gcongr
       simp only [integral_const, measureReal_eq_coe_coeFn, smul_eq_mul]
       gcongr
@@ -1045,19 +1034,69 @@ theorem tendsto_integral_of_aestronglyMeasurable (g : X →ᵇ E)
         + ‖∫ (x : X), (g x - ∑ v, ψ v x • (v : E)) ∂ν‖
         + ‖∑ v, (∫ (x : X), ψ v x ∂(μs i)) • (v : E) - ∑ v, (∫ (x : X), ψ v x ∂ν) • (v : E)‖ :=
       norm_add₃_le.trans (by simp)
-    _ ≤ ((m + 1) * ε + ‖g‖ * (2 * ε)) + ((m + 1) * ε + ‖g‖ * (2 * ε)) + ε := by
+    _ ≤ ((m + 1) * ε + ‖(g : X →ᵇ E)‖ * (2 * ε)) + ((m + 1) * ε + ‖(g : X →ᵇ E)‖ * (2 * ε))
+        + ε := by
       gcongr
       · exact M' hi_mass hi_θ
       · apply M'
         · change m ≤ m + 1
           linarith
         · exact hεν.trans (by linarith)
-    _ = (2 * m + 4 * ‖g‖ + 3) * ε := by ring
+    _ = (2 * m + 4 * ‖(g : X →ᵇ E)‖ + 3) * ε := by ring
     _ < η := hε
 
+theorem tendsto_integral [SecondCountableTopologyEither X E] (g : T) (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, g x ∂(μs i)) F (𝓝 (∫ x, g x ∂ν)) :=
+  tendsto_integral_of_aestronglyMeasurable g hμ
+    (fun _ ↦ (g : X →ᵇ E).continuous.aestronglyMeasurable)
+    (g : X →ᵇ E).continuous.aestronglyMeasurable
 
-end test
+theorem tendsto_integral_of_compactSpace [CompactSpace X] (g : T') (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, g x ∂(μs i)) F (𝓝 (∫ x, g x ∂ν)) :=
+  tendsto_integral_of_aestronglyMeasurable
+    (ContinuousMap.equivBoundedOfCompact X E (g : C(X, E))) hμ
+    (fun _ ↦ (g : C(X, E)).continuous.aestronglyMeasurable_of_compactSpace)
+    (g : C(X, E)).continuous.aestronglyMeasurable_of_compactSpace
 
+theorem tendsto_integral_of_continuous_of_norm_le [SecondCountableTopologyEither X E]
+    (C : ℝ) {f : X → E} (hf : Continuous f) (h'f : ∀ x, ‖f x‖ ≤ C) (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, f x ∂(μs i)) F (𝓝 (∫ x, f x ∂ν)) :=
+  tendsto_integral (BoundedContinuousFunction.ofNormedAddCommGroup f hf C h'f) hμ
+
+theorem tendsto_integral_of_continuous_of_compactSpace [CompactSpace X]
+    {f : X → E} (hf : Continuous f) (hμ : Tendsto μs F (𝓝 ν)) :
+    Tendsto (fun i ↦ ∫ x, f x ∂(μs i)) F (𝓝 (∫ x, f x ∂ν)) :=
+  tendsto_integral_of_compactSpace (⟨f, hf⟩ : C(X, E)) hμ
+
+@[fun_prop]
+theorem continuous_integral [SecondCountableTopologyEither X E] (g : T) :
+    Continuous (fun (μ : FiniteMeasure X) ↦ ∫ x, g x ∂μ) :=
+  continuous_iff_continuousAt.2 (fun _ ↦ tendsto_integral _ tendsto_id)
+
+@[deprecated (since := "2026-11-11")]
+alias continuous_integral_boundedContinuousFunction := continuous_integral
+
+@[fun_prop]
+theorem continuous_integral_of_compactSpace [CompactSpace X] (g : T') :
+    Continuous (fun (μ : FiniteMeasure X) ↦ ∫ x, g x ∂μ) :=
+  continuous_iff_continuousAt.2 (fun _ ↦ tendsto_integral_of_compactSpace _ tendsto_id)
+
+@[deprecated (since := "2026-11-11")]
+alias continuous_integral_continuousMap := continuous_integral_of_compactSpace
+
+theorem continuous_integral_of_continuous_of_norm_le [SecondCountableTopologyEither X E]
+    (C : ℝ) {f : X → E} (hf : Continuous f) (h'f : ∀ x, ‖f x‖ ≤ C) :
+    Continuous (fun (μ : FiniteMeasure X) ↦ ∫ x, f x ∂μ) :=
+  continuous_iff_continuousAt.2
+    (fun _ ↦ tendsto_integral_of_continuous_of_norm_le C hf h'f tendsto_id)
+
+theorem continuous_integral_of_continuous_of_compactSpace [CompactSpace X]
+    {f : X → E} (hf : Continuous f) :
+    Continuous (fun (μ : FiniteMeasure X) ↦ ∫ x, f x ∂μ) :=
+  continuous_iff_continuousAt.2
+    (fun _ ↦ tendsto_integral_of_continuous_of_compactSpace hf tendsto_id)
+
+end IntegralConvergence
 
 section comap
 
