@@ -155,8 +155,10 @@ section RankIdentity
 variable {k : ℤ}
 
 /-- A `𝒮ℒ` modular form of odd weight is zero (evaluate at `-1 ∈ SL(2, ℤ)`). -/
-lemma ModularForm.levelOne_odd_weight_eq_zero (hk : Odd k) (f : ModularForm 𝒮ℒ k) : f = 0 :=
-  ModularForm.eq_zero_of_neg_one_mem (show (-1 : GL (Fin 2) ℝ) ∈ 𝒮ℒ from ⟨-1, by ext; simp⟩) hk f
+lemma ModularForm.levelOne_odd_weight_eq_zero (hk : Odd k) (f : ModularForm 𝒮ℒ k) : f = 0 := by
+ refine ModularForm.eq_zero_of_neg_one_mem (show (-1 : GL (Fin 2) ℝ) ∈ 𝒮ℒ from ⟨-1, ?_⟩) hk f
+ ext i j
+ fin_cases i <;> fin_cases j <;> simp
 
 /-- Modular forms of odd weight for `𝒮ℒ` are zero-dimensional. -/
 lemma ModularForm.levelOne_odd_weight_rank_zero (hk : Odd k) :
