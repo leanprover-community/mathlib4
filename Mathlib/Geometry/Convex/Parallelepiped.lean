@@ -221,6 +221,12 @@ theorem halfOpenParallelepiped_subset_hull (v : ι → E) :
     halfOpenParallelepiped K v ⊆ (PointedCone.hull K (range v) : Set E) :=
   (halfOpenParallelepiped_subset_parallelepiped v).trans (parallelepiped_subset_hull v)
 
+theorem smul_parallelepiped_subset_halfOpenParallelepiped {c : K} (hc₀ : 0 ≤ c) (hc₁ : c < 1)
+    (v : ι → E) : c • parallelepiped K v ⊆ halfOpenParallelepiped K v := by
+  rintro _ ⟨_, ⟨t, ht, rfl⟩, rfl⟩
+  refine ⟨c • t, fun i _ ↦ ⟨mul_nonneg hc₀ (ht.1 i), ?_⟩, by simp [Finset.smul_sum, smul_smul]⟩
+  exact (mul_le_of_le_one_right hc₀ (ht.2 i)).trans_lt hc₁
+
 theorem convex_halfOpenParallelepiped (v : ι → E) : Convex K (halfOpenParallelepiped K v) :=
   (convex_pi fun _ _ ↦ convex_Ico 0 1).linear_image (Fintype.linearCombination K v)
 

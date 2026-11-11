@@ -24,6 +24,7 @@ See `Mathlib.Geometry.Convex.Parallelepiped` for the purely algebraic theory of 
 @[expose] public section
 
 open Set
+open scoped Pointwise Topology
 
 variable {ι E : Type*} [Fintype ι]
 
@@ -53,3 +54,18 @@ end Normed
 theorem isCompact_parallelepiped [NormedAddCommGroup E] [NormedSpace ℝ E] (v : ι → E) :
     IsCompact (parallelepiped ℝ v) :=
   isCompact_Icc.image (by fun_prop)
+
+theorem isClosed_parallelepiped [NormedAddCommGroup E] [NormedSpace ℝ E] (v : ι → E) :
+    IsClosed (parallelepiped ℝ v) :=
+  (isCompact_parallelepiped v).isClosed
+
+theorem interior_parallelepiped_subset_halfOpenParallelepiped [NormedAddCommGroup E]
+    [NormedSpace ℝ E] (v : ι → E) : interior (parallelepiped ℝ v) ⊆ halfOpenParallelepiped ℝ v := by
+  intro x hx
+  have hcont : Continuous fun c : ℝ ↦ c • x := by fun_prop
+  have h := (hcont.tendsto' 1 x (one_smul ℝ x)).mono_left (nhdsWithin_le_nhds (s := Ioi 1))
+  obtain ⟨c, hcx, hc⟩ :=
+    ((h.eventually (mem_interior_iff_mem_nhds.mp hx)).and self_mem_nhdsWithin).exists
+  have hc₀ : c ≠ 0 := (zero_lt_one.trans hc).ne'
+  simpa [inv_smul_smul₀ hc₀] using smul_parallelepiped_subset_halfOpenParallelepiped
+    (inv_nonneg.2 (zero_le_one.trans hc.le)) (inv_lt_one_of_one_lt₀ hc) v (smul_mem_smul_set hcx)
