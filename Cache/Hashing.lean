@@ -81,19 +81,26 @@ def visitsImport (mod imp : Name) : Bool :=
 /--
 Read the imports from the raw file `content` and return an array of tuples
 `(module name, source file)`, one per import for which `keep` is `true`.
+With `skipUnknown`, an import that no package in the search path has is left out with a
+warning. Otherwise, such an import is an error.
 
 Note: `fileName` is a string which is purely used for displaying an error message if
 parsing imports from `content` should fail. It is intended to be the file's name.
 -/
-def getFileImports (content : String) (keep : Name → Bool) (fileName : String := "") :
-    CacheM <| Array (Name × FilePath) := do
+def getFileImports (content : String) (keep : Name → Bool) (fileName : String := "")
+    (skipUnknown := false) : CacheM <| Array (Name × FilePath) := do
   let sp := (← read).srcSearchPath
   let res ← Lean.parseImports' content fileName
   res.imports
     |>.filter (keep ·.module)
-    |>.mapM fun imp => do
-      let impSourceFile ← Lean.findLean sp imp.module
-      pure (imp.module, impSourceFile)
+    |>.filterMapM fun imp => do
+      if !skipUnknown then
+        return some (imp.module, ← sp.findLeanSource imp.module)
+      let some impSourceFile ← sp.findLeanSource? imp.module | do
+        IO.println s!"Warning: no package in the search path has {imp.module}, \
+          which {fileName} imports. Skipping it."
+        return none
+      return some (imp.module, impSourceFile)
 
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
@@ -142,7 +149,10 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visiting : Std.HashSet
     modify fun stt => { stt with depsMap := stt.depsMap.insert mod #[] }
     return none
   let content ← IO.FS.readFile sourceFile
+  -- An unknown import of a downstream module is not an error: `cache` cannot get files for
+  -- a module outside the Mathlib cache anyway.
   let fileImports ← getFileImports content (visitsImport mod) mod.toString
+    (skipUnknown := !isPartOfMathlibCache mod)
   let importHashes ← fileImports.mapM fun (modₙ, sourceFileₙ) =>
     getHash modₙ sourceFileₙ (visiting.insert mod)
   modify fun stt => { stt with depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) }

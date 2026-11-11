@@ -191,7 +191,7 @@ section
 
 /-- Find path to `Mathlib` source directory -/
 private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
-  let mathlibSourceFile ← Lean.findLean sp `Mathlib
+  let mathlibSourceFile ← sp.findLeanSource `Mathlib
   let some mathlibSource ← pure mathlibSourceFile.parent
     | throw <| IO.userError s!"Mathlib not found in dependencies"
   return mathlibSource
@@ -408,7 +408,7 @@ def packCache (hashMap : ModuleHashMap) (overwrite verbose unpackedOnly : Bool)
   let sp := (← read).srcSearchPath
   let mut acc : Array PackTask := #[]
   for (mod, hash) in hashMap.toList do
-    let sourceFile ← Lean.findLean sp mod
+    let sourceFile ← sp.findLeanSource mod
     let zip := hash.asLTar
     let zipPath := CACHEDIR / zip
     let buildPaths ← mkBuildPaths mod
@@ -633,10 +633,10 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     | some glob =>
       let modules ← match glob with
       | .one mod =>
-        let sourceFile ← Lean.findLean sp mod
+        let sourceFile ← sp.findLeanSource mod
         pure #[(mod, sourceFile)]
       | .submodules mod =>
-        let sourceFile ← Lean.findLean sp mod
+        let sourceFile ← sp.findLeanSource mod
         let folder := sourceFile.withExtension ""
         if ← folder.pathExists then
           IO.println s!"Searching directory {folder} for .lean files"
@@ -645,7 +645,7 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
         else
           pure #[]
       | .andSubmodules mod =>
-        let sourceFile ← Lean.findLean sp mod
+        let sourceFile ← sp.findLeanSource mod
         let folder := sourceFile.withExtension ""
         if ← folder.pathExists then
           IO.println s!"Searching directory {folder} for .lean files"

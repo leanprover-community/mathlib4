@@ -33,8 +33,9 @@ These tests cover the pure logic of the cache system, including:
 - Failure-line diagnostics (`splitWriteOut`, `transferDiagnostics`)
 - Utility functions (URL extraction, filename hashing, etc.)
 - Module selection for `get` with a module of a downstream project
-  (`getHashMemo`, `filterByRootModules`); `Cache/test/downstream.sh` tests
-  this end to end
+  (`getHashMemo`, `filterByRootModules`), and module arguments whose root
+  name is also a directory of a dependency (`leanModulesFromSpec`);
+  `Cache/test/downstream.sh` tests the downstream case end to end
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
@@ -516,7 +517,8 @@ cache modules that it imports, also through other downstream modules, and nothin
 check cannot: a cache module that only a downstream module imports (`Batteries.X`, outside
 the `Mathlib` closure), a cache module that only `Mathlib` imports (`Mathlib.C`), and an
 import from Lean core. Lean core is not on the search path of this test, so the test fails
-if `cache` tries to find a Lean core module. -/
+if `cache` tries to find a Lean core module. `Nowhere.Y` is in no package: the test fails if
+an unknown import of a downstream module stops `cache`. -/
 def test_filterByRootModules_downstream : IO Unit := do
   let dir ← IO.FS.createTempDir
   try
@@ -531,7 +533,7 @@ def test_filterByRootModules_downstream : IO Unit := do
     write "Batteries/X.lean" ""
     write "Down/Top.lean" "import Down.Mid\nimport Down.Side\nimport Mathlib.B\n"
     write "Down/Side.lean" "import Down.Mid\n"
-    write "Down/Mid.lean" "import Batteries.X\nimport Lean.Elab\n"
+    write "Down/Mid.lean" "import Batteries.X\nimport Lean.Elab\nimport Nowhere.Y\n"
 
     let memo ← hashMemoFor dir [`Down.Top]
     let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top]
@@ -544,6 +546,35 @@ def test_filterByRootModules_downstream : IO Unit := do
     assertEq "get Down.Top Mathlib.C selects the cache modules that either one imports"
       (toString ["Batteries.X", "Mathlib.A", "Mathlib.B", "Mathlib.C"])
       (toString (sortedKeys selected))
+  finally
+    IO.FS.removeDirAll dir
+
+/-- A module argument resolves to the package that has its source, even when a package
+earlier in the search path has a directory with the same name as the module's root.
+
+Dependencies come first in the search path. Mathlib's repository has a directory
+`DownstreamTest/`, so in a downstream project named `DownstreamTest`, the arguments
+`DownstreamTest`, `DownstreamTest.Partial` and `DownstreamTest.+` must still resolve to the
+downstream package. Here `dep` plays Mathlib and `root` plays the downstream package `Down`. -/
+def test_leanModulesFromSpec_shadowedRoot : IO Unit := do
+  let dir ← IO.FS.createTempDir
+  try
+    let dep := dir / "dep"
+    let root := dir / "root"
+    for (path, content) in [(dep / "Down" / "Down" / "Top.lean", ""),
+        (root / "Down.lean", "import Down.Top\n"), (root / "Down" / "Top.lean", "")] do
+      if let some parent := path.parent then IO.FS.createDirAll parent
+      IO.FS.writeFile path content
+    let resolve (arg : String) : IO String := do
+      match ← withSuppressedOutput <| Cache.IO.leanModulesFromSpec [dep, root] arg with
+      | .ok mods => return toString (mods.toList.map fun (mod, file) => (mod, file.toString))
+      | .error msg => return s!"error: {msg}"
+    assertEq "the package root module resolves to the downstream package"
+      (toString [(`Down, (root / "Down.lean").toString)]) (← resolve "Down")
+    assertEq "a nested module resolves to the downstream package"
+      (toString [(`Down.Top, (root / "Down" / "Top.lean").toString)]) (← resolve "Down.Top")
+    assertEq "a glob walks the folder of the downstream package"
+      (toString [(`Down.Top, (root / "Down" / "Top.lean").toString)]) (← resolve "Down.+")
   finally
     IO.FS.removeDirAll dir
 
@@ -1982,6 +2013,7 @@ def runAll : IO Unit := do
   test_UInt64_asLTar
   test_hash_roundtrip
   test_filterByRootModules_downstream
+  test_leanModulesFromSpec_shadowedRoot
   test_markerURL
   test_markerProbeURL
   test_getRepoScope

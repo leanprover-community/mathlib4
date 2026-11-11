@@ -247,7 +247,7 @@ def main (args : List String) : IO Unit := do
     -- A downstream module only takes part when its name is an argument.
     let mod := `Mathlib
     let sp := (← read).srcSearchPath
-    let sourceFile ← Lean.findLean sp mod
+    let sourceFile ← sp.findLeanSource mod
     roots := roots.insert mod sourceFile
 
   let hashMemo ← getHashMemo roots
