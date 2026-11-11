@@ -51,7 +51,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     refine (IntegrableOn.congr_fun (this.const_mul (1 / p i ^ (s - 1)))
       (fun t (ht : 0 < t) ↦ ?_) measurableSet_Ioi).const_mul _
     simp_rw [mul_comm (↑(rexp _) : ℂ), ← mul_assoc, neg_mul, ofReal_mul]
-    rw [mul_cpow_ofReal_nonneg hpi.le ht.le, ← mul_assoc, one_div, inv_mul_cancel₀, one_mul]
+    rw [ofReal_mul_cpow hpi.le, ← mul_assoc, one_div, inv_mul_cancel₀, one_mul]
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl (ofReal_ne_zero.mpr hpi.ne')
   · -- summability of integrals of norms
@@ -81,7 +81,7 @@ lemma hasSum_mellin_pi_mul {a : ι → ℂ} {q : ι → ℝ} {F : ℝ → ℂ} {
   · have : a i / ↑(π * q i) ^ s = π ^ (-s) * a i / q i ^ s := by
       rcases hq i with h | h
       · simp [h]
-      · rw [ofReal_mul, mul_cpow_ofReal_nonneg pi_pos.le h.le, ← div_div, cpow_neg,
+      · rw [ofReal_mul, ofReal_mul_cpow pi_pos.le, ← div_div, cpow_neg,
           ← div_eq_inv_mul]
     simp_rw [mul_div_assoc, this]
     ring_nf

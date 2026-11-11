@@ -211,12 +211,26 @@ theorem mul_cpow_of_le_neg_pi {a b : ℂ} (h : a.arg + b.arg ≤ -π) (r : ℂ) 
   simp_rw [cpow_def_of_ne_zero (mul_ne_zero ha hb), cpow_def_of_ne_zero ha, cpow_def_of_ne_zero hb,
     log_mul_of_le_neg_pi h, add_mul, exp_add]
 
-theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
-    ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r :=
-  mul_cpow (by simp [arg_ofReal_of_nonneg ha, arg_ofReal_of_nonneg hb, pi_nonneg, pi_pos]) r
+theorem ofReal_mul_cpow {a : ℝ} (ha : 0 ≤ a) (b r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
+  mul_cpow (by simp [arg_ofReal_of_nonneg ha, neg_pi_lt_arg, arg_le_pi]) r
 
+theorem mul_ofReal_cpow (a : ℂ) {b : ℝ} (hb : 0 ≤ b) (r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
+  mul_cpow (by simp [arg_ofReal_of_nonneg hb, neg_pi_lt_arg, arg_le_pi]) r
+
+@[deprecated ofReal_mul_cpow +typeChanged (since := "2026-11-11")]
+theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (_hb : 0 ≤ b) (r : ℂ) :
+    ((a : ℂ) * (b : ℂ)) ^ r = (a : ℂ) ^ r * (b : ℂ) ^ r :=
+  ofReal_mul_cpow ha b r
+
+theorem natCast_mul_cpow (a : ℕ) (b r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
+  mul_cpow (by simp [neg_pi_lt_arg, arg_le_pi]) r
+
+theorem mul_natCast_cpow (a : ℂ) (b : ℕ) (r : ℂ) : (a * b) ^ r = a ^ r * b ^ r :=
+  mul_cpow (by simp [neg_pi_lt_arg, arg_le_pi]) r
+
+@[deprecated natCast_mul_cpow +typeChanged (since := "2026-11-11")]
 lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
-  ofReal_natCast m ▸ ofReal_natCast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
+  natCast_mul_cpow m n s
 
 lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n : ℂ) ^ m) ^ z := by
   refine cpow_nat_mul' (x := n) (n := m) ?_ ?_ z
@@ -239,7 +253,7 @@ lemma inv_cpow_ofReal_nonneg {a : ℝ} (ha : 0 ≤ a) (r : ℂ) :
 
 lemma div_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : ℂ) :
     ((a : ℂ) / (b : ℂ)) ^ r = (a : ℂ) ^ r / (b : ℂ) ^ r := by
-  rw [div_eq_mul_inv, ← ofReal_inv, mul_cpow_ofReal_nonneg ha (inv_nonneg_of_nonneg hb),
+  rw [div_eq_mul_inv, ← ofReal_inv, ofReal_mul_cpow ha,
     ofReal_inv, inv_cpow_ofReal_nonneg hb, div_eq_mul_inv]
 
 /-- `Complex.inv_cpow_eq_ite` with the `ite` on the other side. -/

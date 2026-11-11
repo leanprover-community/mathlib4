@@ -114,9 +114,9 @@ theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
   refine setIntegral_congr_fun measurableSet_Ioc fun x hx => ?_
   rw [mul_mul_mul_comm]
   congr 1
-  · rw [← mul_cpow_ofReal_nonneg ha.le (div_pos hx.1 ha).le, ofReal_div, mul_div_cancel₀ _ ha']
+  · rw [← ofReal_mul_cpow ha.le, ofReal_div, mul_div_cancel₀ _ ha']
   · rw [(by norm_cast : (1 : ℂ) - ↑(x / a) = ↑(1 - x / a)), ←
-      mul_cpow_ofReal_nonneg ha.le (sub_nonneg.mpr <| (div_le_one ha).mpr hx.2)]
+      ofReal_mul_cpow ha.le]
     push_cast
     rw [mul_sub, mul_one, mul_div_cancel₀ _ ha']
 
@@ -263,10 +263,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
   have A : (n : ℂ) ^ s = (n : ℂ) ^ (s - 1) * n := by
     conv_lhs => rw [(by ring : s = s - 1 + 1), cpow_add _ _ hn']
     simp
-  have B : ((x : ℂ) * ↑n) ^ (s - 1) = (x : ℂ) ^ (s - 1) * (n : ℂ) ^ (s - 1) := by
-    rw [← ofReal_natCast,
-      mul_cpow_ofReal_nonneg hx.1.le (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)).le]
-  rw [A, B, cpow_natCast]; ring
+  rw [A, mul_natCast_cpow, cpow_natCast]; ring
 
 /-- The main technical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
