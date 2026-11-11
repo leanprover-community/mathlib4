@@ -14,7 +14,6 @@ import Mathlib.Algebra.CharP.Defs
 # Sums/products over integer intervals
 
 This file contains some lemmas about sums and products over integer intervals `Ixx`.
-
 -/
 
 public section

@@ -10,12 +10,10 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
 /-!
-
 # Module and Ring instances of Ore Localizations
 
 The `Monoid` and `DistribMulAction` instances and additive versions are provided in
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
-
 -/
 
 @[expose] public section

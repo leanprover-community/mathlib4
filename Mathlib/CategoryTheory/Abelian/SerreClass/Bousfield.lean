@@ -19,7 +19,6 @@ is the localization of `C` with respect to the Serre class
 `G.kernel` consisting of the objects in `D`
 that are sent to a zero object by `G`.
 (We also translate this in terms of a left Bousfield localization.)
-
 -/
 
 public section

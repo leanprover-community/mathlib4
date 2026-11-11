@@ -37,7 +37,6 @@ Related files are:
 
 Some lemmas could be automatically generated with `to_dual`.
 See [https://github.com/leanprover-community/mathlib4/pull/37939#discussion_r3367855484]
-
 -/
 
 public section

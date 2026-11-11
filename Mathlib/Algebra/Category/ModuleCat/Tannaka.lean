@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Span.Basic
 
 A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
-
 -/
 
 @[expose] public section

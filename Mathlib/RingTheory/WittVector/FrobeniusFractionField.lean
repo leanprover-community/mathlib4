@@ -50,14 +50,12 @@ local notation "𝕎" => WittVector p
 namespace RecursionMain
 
 /-!
-
 ## The recursive case of the vector coefficients
 
 The first coefficient of our solution vector is easy to define below.
 In this section we focus on the recursive case.
 The goal is to turn `WittVector.wittPolyProd n` into a univariate polynomial
 whose variable represents the `n`th coefficient of `x` in `x * a`.
-
 -/
 
 

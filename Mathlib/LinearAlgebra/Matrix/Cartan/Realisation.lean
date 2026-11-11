@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.Matrix.Dual
 
 /-!
-
 # Realisations of Cartan Matrices
 
 Let `R` be an integral domain of characteristic zero, and let `M` and `N` be `R`-modules in perfect
@@ -34,7 +33,6 @@ to formalise item 2.
  * `Matrix.IsFiniteCartan.toRealisation`: a realisation associated to an invertible Cartan matrix.
  * `Matrix.IsFiniteCartan.toRootPairing`: a reduced, irreducible, crystallographic root system
    associated to a Cartan matrix, with coefficients in any field of characteristic zero.
-
 -/
 
 public noncomputable section
