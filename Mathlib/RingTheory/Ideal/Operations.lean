@@ -1089,7 +1089,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
   have : ¬I ⊓ t.inf f ≤ f i := by
     rw [hpi.inf_le, hpi.inf_le']
     exact not_or.mpr ⟨hIi, fun ⟨j, hj, hji⟩ ↦ (Finset.mem_filter.mp hj).right hji⟩
-  obtain ⟨r, ⟨hrI, hrt⟩, hri⟩ := IsConcreteLE.not_le_iff_exists.mp this
+  obtain ⟨r, ⟨hrI, hrt⟩, hri⟩ := not_le_iff_exists_mem_notMem.mp this
   exfalso
   obtain hrxi | hrxt := h (I.add_mem hrI hxI)
   · exact hri (((f i).add_mem_iff_left hxi).mp hrxi)
