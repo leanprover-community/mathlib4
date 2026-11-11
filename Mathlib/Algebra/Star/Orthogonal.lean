@@ -59,6 +59,20 @@ protected lemma star (h : p ⋆⟂ q) : star p ⋆⟂ star q :=
 lemma star_iff : star p ⋆⟂ star q ↔ p ⋆⟂ q :=
   ⟨fun h ↦ by simpa using h.star, .star⟩
 
+protected lemma op (h : p ⋆⟂ q) : MulOpposite.op p ⋆⟂ .op q := by
+  simp [isStarOrtho_iff, ← MulOpposite.op_star, ← MulOpposite.op_mul, h.star_mul_eq_zero,
+    h.mul_star_eq_zero]
+
+protected lemma unop {p q : Rᵐᵒᵖ} (h : p ⋆⟂ q) : p.unop ⋆⟂ q.unop := by
+  simp [isStarOrtho_iff, ← MulOpposite.unop_star, ← MulOpposite.unop_mul, h.star_mul_eq_zero,
+    h.mul_star_eq_zero]
+
+@[simp]
+lemma op_iff : MulOpposite.op p ⋆⟂ .op q ↔ p ⋆⟂ q := ⟨.unop, .op⟩
+
+@[simp]
+lemma unop_iff {p q : Rᵐᵒᵖ} : p.unop ⋆⟂ q.unop ↔ p ⋆⟂ q := ⟨.op, .unop⟩
+
 lemma add_left {p₁ p₂ : R} (h₁ : p₁ ⋆⟂ q) (h₂ : p₂ ⋆⟂ q) : (p₁ + p₂) ⋆⟂ q :=
   ⟨by rw [add_mul, h₁.mul_star_eq_zero, h₂.mul_star_eq_zero, add_zero],
     by rw [mul_add, h₁.star_mul_eq_zero, h₂.star_mul_eq_zero, add_zero]⟩
