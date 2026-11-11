@@ -29,7 +29,6 @@ References:
 - https://github.com/leanprover-community/mathlib4/pull/7788#issuecomment-1788132019
 - [P. M. Cohn, *Basic Algebra: Groups, Rings and Fields*][cohn_2003], Theorem 11.3.4
 - [N. Jacobson, *Basic Algebra II: Second Edition*][jacobson1989], Theorem 8.38
-
 -/
 
 variable {K : Type*} [Field K]

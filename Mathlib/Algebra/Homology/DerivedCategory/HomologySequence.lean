@@ -14,7 +14,6 @@ In this file, we construct `homologyFunctor C n : DerivedCategory C ⥤ C` for a
 show that they are homological functors which form a shift sequence, and construct
 the long exact homology sequences associated to distinguished triangles in the
 derived category.
-
 -/
 
 @[expose] public section

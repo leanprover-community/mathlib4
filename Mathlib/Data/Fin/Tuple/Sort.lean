@@ -28,7 +28,6 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
   order
 * `Tuple.antitone_sortDesc`: `f ∘ Tuple.sortDesc f` is `Antitone`
 * `Tuple.comp_sort_comp_rev_eq_comp_sortDesc`: sorting descending equals sorting ascending, reversed
-
 -/
 
 @[expose] public section

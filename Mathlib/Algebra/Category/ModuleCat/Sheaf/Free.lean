@@ -22,7 +22,6 @@ a type `I` to the coproduct of copies indexed by `I` of `unit R`.
   into an adjunction between `freeFunctor` and the evaluation functor at `X`.
   (Alternatively, assuming specific universe parameters, we could show that
   `freeFunctor` is a left adjoint to `SheafOfModules.sectionsFunctor`.)
-
 -/
 
 @[expose] public section

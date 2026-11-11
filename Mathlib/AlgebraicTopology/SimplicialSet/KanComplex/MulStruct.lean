@@ -15,7 +15,6 @@ Given a simplicial set `X`, `n : ℕ` and `x : X _⦋0⦌`, we introduce the
 type `X.PtSimplex n x` of morphisms `Δ[n] ⟶ X` which send `∂Δ[n]` to `x`.
 We introduce structures `PtSimplex.RelStruct` and `PtSimplex.MulStruct`
 which will be used in the definition of homotopy groups of Kan complexes.
-
 -/
 
 @[expose] public section

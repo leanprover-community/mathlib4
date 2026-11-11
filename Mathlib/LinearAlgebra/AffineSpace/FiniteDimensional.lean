@@ -25,7 +25,6 @@ subspaces of affine spaces.
 
 * `Collinear` defines collinear sets of points as those that span a
   subspace of dimension at most 1.
-
 -/
 
 @[expose] public section
@@ -249,8 +248,9 @@ theorem finrank_vectorSpan_image_finset_le [DecidableEq P] (p : ι → P) (s : F
     tsub_le_iff_right, ← hc]
   apply Finset.card_image_le
 
-lemma affineSpan_image_ne_top_of_encard_le_finrank {s : Set ι} (hsfin : s.Finite)
+lemma affineSpan_image_ne_top_of_encard_le_finrank {s : Set ι}
     (hs : s.encard ≤ finrank k V) (p : ι → P) : affineSpan k (p '' s) ≠ ⊤ := by
+  have hsfin : s.Finite := Set.finite_of_encard_le_coe hs
   obtain rfl | ⟨i, hi⟩ := s.eq_empty_or_nonempty
   · simp
   set t := (· -ᵥ p i) '' p '' (s \ {i})
@@ -267,9 +267,7 @@ lemma affineSpan_image_ne_top_of_encard_le_finrank {s : Set ι} (hsfin : s.Finit
 
 lemma affineSpan_range_ne_top_of_card_le_finrank (hι : ENat.card ι ≤ finrank k V) (p : ι → P) :
     affineSpan k (Set.range p) ≠ ⊤ := by
-  have : Finite ι := ENat.card_lt_top.mp <| hι.trans_lt <| ENat.natCast_lt_top _
-  simpa using
-    affineSpan_image_ne_top_of_encard_le_finrank k Set.finite_univ (by simpa) p
+  simpa using affineSpan_image_ne_top_of_encard_le_finrank k (s := .univ) (by simpa) p
 
 /-- The `vectorSpan` of an indexed family of `n + 1` points has
 dimension at most `n`. -/

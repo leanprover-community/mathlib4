@@ -31,7 +31,6 @@ to compatible tuples of elements in `X₁ × X₂`.
 
 Some results are also obtained for the terminal object, binary products,
 wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
-
 -/
 
 @[expose] public section

@@ -31,7 +31,6 @@ in this file, and ωScott Continuity on chains later in
 
 * [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
-
 -/
 
 @[expose] public section

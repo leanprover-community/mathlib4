@@ -33,7 +33,6 @@ all universe level where the ring `R` is small.
 
 * `ModuleCat.projectiveDimension_eq_of_linearEquiv`: `projectiveDimension` is preserved
   under arbitrary linear equivalence.
-
 -/
 
 public section
