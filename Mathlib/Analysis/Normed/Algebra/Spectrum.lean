@@ -836,8 +836,7 @@ theorem AlgHom.coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toCo
 theorem AlgHom.norm_toStrongDual_toNonUnitalAlgHom [NormOneClass A] (φ : A →ₐ[𝕜] 𝕜) :
     ‖(φ : A →ₙₐ[𝕜] 𝕜).toStrongDual‖ = 1 :=
   le_antisymm (φ : A →ₙₐ[𝕜] 𝕜).norm_toStrongDual_le <| by
-    have hφ (x : A) : (φ : A →ₙₐ[𝕜] 𝕜) x = φ x := rfl -- missing lemma
-    simpa [hφ] using
+    simpa using
       (φ : A →ₙₐ[𝕜] 𝕜).toStrongDual.le_opNorm_of_le (x := 1) (c := 1) (by simp)
 
 @[deprecated (since := "2026-11-10")]
