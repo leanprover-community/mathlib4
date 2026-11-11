@@ -94,12 +94,8 @@ lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x
     ord_eq_iff hx, ordHom_of_isUnit hf hx hx']
 
 @[simp]
-lemma ord_of_isUnit_top {g : Γ(X, ⊤)} (hg : IsUnit g) (z : X) :
-    ord (X.germToFunctionField ⊤ g) z = 0 := ord_of_isUnit hg trivial
-
-@[simp]
 lemma ord_one (z : X) : ord (1 : X.functionField) z = 0 := by
-  simpa using ord_of_isUnit_top (g := (1 : Γ(X, ⊤))) isUnit_one z
+  simpa using ord_of_isUnit (f := (1 : Γ(X, ⊤))) isUnit_one
 
 @[simp]
 lemma ord_inv (z : X) (f : X.functionField) : ord f⁻¹ z = -ord f z := by
