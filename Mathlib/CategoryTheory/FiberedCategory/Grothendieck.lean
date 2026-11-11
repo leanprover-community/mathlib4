@@ -20,7 +20,6 @@ category `F(S)`.
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
-
 -/
 
 @[expose] public section

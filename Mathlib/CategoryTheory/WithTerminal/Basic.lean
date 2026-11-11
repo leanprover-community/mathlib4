@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
-
 # `WithInitial` and `WithTerminal`
 
 Given a category `C`, this file constructs two objects:
@@ -36,7 +35,6 @@ functoriality of these constructions with respect to functors on the base catego
 
 We define corresponding pseudofunctors `WithTerminal.pseudofunctor` and `WithInitial.pseudofunctor`
 from `Cat` to `Cat`.
-
 -/
 
 @[expose] public section
@@ -188,7 +186,6 @@ def prelaxfunctor : PrelaxFunctor Cat Cat where
     ext X
     cases X <;> rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[to_dual (attr := simps)

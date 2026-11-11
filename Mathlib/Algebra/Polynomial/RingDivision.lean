@@ -15,7 +15,6 @@ import Mathlib.Tactic.ComputeDegree
 # Theory of univariate polynomials
 
 We prove basic results about univariate polynomials.
-
 -/
 
 @[expose] public section

@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 In this file, we show that if `P : ObjectProperty C` is a triangulated
 subcategory of a pretriangulated category `C`, then `P.op` is a
 triangulated subcategory of `Cᵒᵖ`.
-
 -/
 
 public section
