@@ -78,6 +78,10 @@ Options:
 'get', 'get!', 'get-' and 'lookup' can process a list of module names or file names.
 
 'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
+A module outside the Mathlib cache, such as a module of a downstream project,
+has no cache files of its own. For such a module, 'get' gets the cache for the
+modules that it imports, also through other modules outside the cache.
+Without arguments, 'get' gets the cache for 'Mathlib' only.
 
 Valid arguments are:
 
@@ -237,8 +241,8 @@ def main (args : List String) : IO Unit := do
 
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
-    -- No arguments means to start from `Mathlib.lean`
-    -- TODO: could change this to the default-target of a downstream project
+    -- No arguments means to start from `Mathlib.lean`, also in a downstream project.
+    -- A downstream module only takes part when its name is an argument.
     let mod := `Mathlib
     let sp := (← read).srcSearchPath
     let sourceFile ← Lean.findLean sp mod

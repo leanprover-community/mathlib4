@@ -6,6 +6,7 @@ Authors: Marcelo Lynch
 module
 
 public import Cache.Cli
+public import Cache.Hashing
 public import Cache.Lean
 public import Cache.Location
 public import Cache.Marker
@@ -31,6 +32,8 @@ These tests cover the pure logic of the cache system, including:
 - The two retry-flag tiers (`curlRetryArgs`)
 - Failure-line diagnostics (`splitWriteOut`, `transferDiagnostics`)
 - Utility functions (URL extraction, filename hashing, etc.)
+- Module selection for `get` with module names (`getHashMemo`,
+  `filterByRootModules`), also for modules outside the Mathlib cache
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
@@ -488,6 +491,86 @@ def test_hash_roundtrip : IO Unit := do
     (hashFromFileName h2.asLTar == some h2)
 
 end RoundTrip
+
+section ModuleSelection
+
+open Cache.Hashing in
+/-- Build a hash memo for a fake source tree with `extraRoots` as roots. -/
+private def hashMemoFor (dir : System.FilePath) (extraRoots : List Lean.Name) :
+    IO HashMemo := do
+  let roots : Std.HashMap Lean.Name System.FilePath := extraRoots.foldl (init := ∅)
+    fun acc mod => acc.insert mod
+      (dir / System.mkFilePath (mod.components.map toString) |>.addExtension "lean")
+  withSuppressedOutput <|
+    ReaderT.run (getHashMemo roots) { mathlibDepPath := dir, srcSearchPath := [dir] }
+
+/-- The sorted module names of a hash map, for comparison. -/
+private def sortedKeys (hashMap : Cache.IO.ModuleHashMap) : List String :=
+  hashMap.keys.map toString |>.toArray.qsort (· < ·) |>.toList
+
+/-- `get` with module names selects the named modules and the modules they import.
+
+A module outside the Mathlib cache (here the downstream package `Down`) has no hash and
+gets no cache files. `get Down.Top` selects the Mathlib cache modules that `Down.Top`
+imports, also through other downstream modules. The selection follows
+`Down.Top → Down.Mid → Batteries.X` and `Down.Top → Mathlib.B → Mathlib.A`, but leaves
+out `Mathlib.C`, which only `Mathlib` imports. `Batteries.X` is not part of the
+`Mathlib` closure, so it gets a hash only because `Down.Mid` imports it.
+`Down.Mid` also imports `Lean.Elab`: Lean core is not on this search path, so the test
+fails if the walk tries to resolve a Lean core module. -/
+def test_filterByRootModules_downstream : IO Unit := do
+  let dir ← IO.FS.createTempDir
+  try
+    let write (path : System.FilePath) (content : String) : IO Unit := do
+      if let some parent := (dir / path).parent then IO.FS.createDirAll parent
+      IO.FS.writeFile (dir / path) content
+    for f in ["lakefile.lean", "lean-toolchain", "lake-manifest.json"] do write f ""
+    write "Mathlib.lean" "import Mathlib.B\nimport Mathlib.C\n"
+    write "Mathlib/A.lean" ""
+    write "Mathlib/B.lean" "import Mathlib.A\n"
+    write "Mathlib/C.lean" "import Mathlib.A\n"
+    write "Batteries/X.lean" ""
+    write "Down/Top.lean" "import Down.Mid\nimport Down.Side\nimport Mathlib.B\n"
+    write "Down/Side.lean" "import Down.Mid\n"
+    write "Down/Mid.lean" "import Batteries.X\nimport Lean.Elab\n"
+
+    let base ← hashMemoFor dir []
+    assertEq "without arguments, the hash map covers Mathlib only"
+      (toString ["Mathlib", "Mathlib.A", "Mathlib.B", "Mathlib.C"])
+      (toString (sortedKeys base.hashMap))
+
+    let memo ← hashMemoFor dir [`Down.Top]
+    assertTrue "a downstream module gets no hash"
+      (!memo.hashMap.contains `Down.Top && !memo.hashMap.contains `Down.Mid
+        && !memo.hashMap.contains `Down.Side)
+    assertTrue "a cache module that only a downstream module imports gets a hash"
+      (memo.hashMap.contains `Batteries.X)
+    assertTrue "the walk does not change the hashes of Mathlib modules"
+      (base.hashMap.toList.all fun (mod, hash) => memo.hashMap[mod]? == some hash)
+
+    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top]
+    assertEq "get Down.Top selects the cache modules that it imports"
+      (toString ["Batteries.X", "Mathlib.A", "Mathlib.B"])
+      (toString (sortedKeys selected))
+
+    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Mid]
+    assertEq "get Down.Mid selects only its own imports"
+      (toString ["Batteries.X"]) (toString (sortedKeys selected))
+
+    let memo ← hashMemoFor dir [`Mathlib.B]
+    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Mathlib.B]
+    assertEq "get Mathlib.B selects Mathlib.B and its imports"
+      (toString ["Mathlib.A", "Mathlib.B"]) (toString (sortedKeys selected))
+
+    let memo ← hashMemoFor dir [`Down.Top, `Mathlib.C]
+    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top, `Mathlib.C]
+    assertEq "get with a downstream module and a Mathlib module selects both closures"
+      (toString ["Batteries.X", "Mathlib.A", "Mathlib.B", "Mathlib.C"])
+      (toString (sortedKeys selected))
+  finally
+    IO.FS.removeDirAll dir
+
+end ModuleSelection
 
 section Marker
 
@@ -1921,6 +2004,7 @@ def runAll : IO Unit := do
   test_isRemoteURL
   test_UInt64_asLTar
   test_hash_roundtrip
+  test_filterByRootModules_downstream
   test_markerURL
   test_markerProbeURL
   test_getRepoScope

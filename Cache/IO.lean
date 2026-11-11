@@ -27,6 +27,13 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
+/--
+Determine if `mod` is part of Lean core: `Init`, `Lean`, `Std` or `Lake`.
+These modules come with the toolchain, so the cache never needs to follow their imports.
+-/
+def isInLeanCore (mod : Name) : Bool :=
+  #[`Init, `Lean, `Std, `Lake].contains mod.getRoot
+
 /-- Determine if the package `mod` is part of the mathlib cache.
 
 TODO: write a better predicate. -/

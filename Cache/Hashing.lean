@@ -25,7 +25,12 @@ Lake project settings.
 public structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
-  /-- Maps the `.lean` file of a module to the `.lean` files of its imports. -/
+  /--
+  Maps a module to the modules it imports.
+  For a module in the Mathlib cache, these are its imports in the Mathlib cache.
+  For a module outside the Mathlib cache, these are its imports outside Lean core
+  (see `addOutsideCache`).
+  -/
   depsMap  : Std.HashMap Name (Array Name) := ∅
   /--
   For files with a valid hash (usually Mathlib and upstream),
@@ -38,27 +43,44 @@ public structure HashMemo where
   hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
-partial def insertDeps (hashMap : ModuleHashMap) (mod : Name) (hashMemo : HashMemo) :
-    ModuleHashMap :=
-  if hashMap.contains mod then hashMap else
-  match (hashMemo.depsMap[mod]?, hashMemo.hashMap[mod]?) with
-  | (some deps, some hash) => deps.foldl (insertDeps · · hashMemo) (hashMap.insert mod hash)
-  | _ => hashMap
+/--
+Adds `mod` and the modules it imports, transitively, to the hash map in the state.
+The state also holds the set of visited modules.
+
+A module without a hash does not go into the hash map. If `depsMap` has its imports
+(a module outside the Mathlib cache), the traversal continues through them.
+-/
+partial def insertDeps (hashMemo : HashMemo) (mod : Name) :
+    StateM (ModuleHashMap × Std.HashSet Name) Unit := do
+  if (← get).2.contains mod then return
+  modify fun (hashMap, visited) => (hashMap, visited.insert mod)
+  let some deps := hashMemo.depsMap[mod]? | return
+  if let some hash := hashMemo.hashMap[mod]? then
+    modify fun (hashMap, visited) => (hashMap.insert mod hash, visited)
+  for dep in deps do
+    insertDeps hashMemo dep
 
 /--
 Filters the `hashMap` of a `HashMemo` so that it only contains key/value pairs such that every key:
 * Belongs to the given list of module names or
 * Corresponds to a module that's imported (transitively or not) by
   some module in the list module names
+
+A module outside the Mathlib cache has no hash. For such a module, the result contains the
+modules in the Mathlib cache that it imports, also through other modules outside the cache.
 -/
 public def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Name) :
     IO ModuleHashMap := do
-  let mut hashMap := ∅
+  let mut state := (∅, ∅)
   for mod in modules do
-    if hashMemo.hashMap.contains mod then
-      hashMap := insertDeps hashMap mod hashMemo
-    else IO.println s!"{mod} is not covered by the olean cache."
-  return hashMap
+    if !hashMemo.hashMap.contains mod then
+      if hashMemo.depsMap.contains mod then
+        IO.println s!"{mod} is not covered by the olean cache. \
+          Getting the olean cache for its imports."
+      else
+        IO.println s!"{mod} is not covered by the olean cache."
+    state := (insertDeps hashMemo mod).run state |>.2
+  return state.1
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
 abbrev HashM := StateT HashMemo CacheM
@@ -67,15 +89,18 @@ abbrev HashM := StateT HashMemo CacheM
 Read the imports from the raw file `content` and return an array of tuples
 `(module name, source file)`, one per import.
 
+The result contains only the imports for which `keep` is `true`.
+
 Note: `fileName` is a string which is purely used for displaying an error message if
 parsing imports from `content` should fail. It is intended to be the file's name.
 -/
-def getFileImports (content : String) (fileName : String := "") :
+def getFileImports (content : String) (fileName : String := "")
+    (keep : Name → Bool := isPartOfMathlibCache) :
     CacheM <| Array (Name × FilePath) := do
   let sp := (← read).srcSearchPath
   let res ← Lean.parseImports' content fileName
   res.imports
-    |>.filter (isPartOfMathlibCache ·.module)
+    |>.filter (keep ·.module)
     |>.mapM fun imp => do
       let impSourceFile ← Lean.findLean sp imp.module
       pure (imp.module, impSourceFile)
@@ -154,15 +179,44 @@ partial def getHash (mod : Name) (sourceFile : FilePath) (visited : Std.HashSet 
         cache   := stt.cache.insert   mod (some fileHash)
         depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) })
 
+/--
+Records the imports of `mod`, a module outside the Mathlib cache, in `depsMap`, and hashes
+the modules in the Mathlib cache that it imports.
+
+The cache has no files for `mod`, so `mod` gets no hash. Imports outside the Mathlib cache
+get the same treatment, so that a downstream module reaches the Mathlib cache modules it
+imports through other downstream modules. Imports from Lean core are not followed.
+-/
+partial def addOutsideCache (mod : Name) (sourceFile : FilePath) : HashM Unit := do
+  if (← get).depsMap.contains mod then return
+  if !(← sourceFile.pathExists) then
+    IO.println s!"Warning: {sourceFile} not found. Skipping it and its imports."
+    return
+  let content ← IO.FS.readFile sourceFile
+  let fileImports ← getFileImports content mod.toString (keep := (!isInLeanCore ·))
+  modify fun stt => { stt with depsMap := stt.depsMap.insert mod (fileImports.map (·.1)) }
+  for (modₙ, sourceFileₙ) in fileImports do
+    if isPartOfMathlibCache modₙ then
+      discard <| getHash modₙ sourceFileₙ
+    else
+      addOutsideCache modₙ sourceFileₙ
+
 /-- Files to start hashing from. -/
 def roots : CacheM <| Array <| Name × FilePath := do
   let mathlibDepPath := (← read).mathlibDepPath
   return #[(`Mathlib, (mathlibDepPath / "Mathlib.lean"))]
 
-/-- Main API to retrieve the hashes of the Lean files -/
-public def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo :=
-  -- TODO: `Std.HashMap.mapM` seems not to exist yet, so we go via `.toArray`.
-  return (← StateT.run ((extraRoots.insertMany (← roots)).toArray.mapM fun
-    ⟨key, val⟩ => getHash key val) { rootHash := ← getRootHash }).2
+/--
+Main API to retrieve the hashes of the Lean files.
+
+The hashes always cover `Mathlib` and its imports. A module in `extraRoots` that is outside
+the Mathlib cache gets no hash; `addOutsideCache` follows its imports instead.
+-/
+public def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo := do
+  let roots := extraRoots.insertMany (← roots)
+  let act : HashM Unit := roots.forM fun mod sourceFile =>
+    if isPartOfMathlibCache mod then discard <| getHash mod sourceFile
+    else addOutsideCache mod sourceFile
+  return (← act.run { rootHash := ← getRootHash }).2
 
 end Cache.Hashing
