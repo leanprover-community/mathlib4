@@ -553,15 +553,16 @@ def insertMax : Ordnode α → α → Ordnode α
 (Assumes that the element is in fact below all the others).
 
 ```
-insertMin {1, 2} 0 = {0, 1, 2}
-insertMin {1, 2} 4 = precondition violation
+insertMin 0 {1, 2} = {0, 1, 2}
+insertMin 4 {1, 2} = precondition violation
 ``` -/
 def insertMin (x : α) : Ordnode α → Ordnode α
   | nil => ι x
-  | node _ l y r => balanceR (insertMin x l) y r
+  | node _ l y r => balanceL (insertMin x l) y r
 
-/-- O(log(m+n)). Build a tree from an element between two trees, without any
-assumption on the relative sizes.
+/-- O(log(m + n)). Build a tree from an element between two trees, without any
+assumption on the relative sizes. No elements are compared: `link l x r` assumes that `l` and `r`
+are balanced and that `x` is above every element of `l` and below every element of `r`.
 
 ```
 link {1, 2} 4 {5, 6} = {1, 2, 4, 5, 6}
@@ -570,13 +571,22 @@ link {1, 3} 2 {5} = precondition violation
 def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
   match l with
   | nil => insertMin x
-  | node ls ll lx lr => fun r ↦
-    match r with
-    | nil => insertMax l x
+  | node ls ll lx lr => go ls ll lx lr (link lr x)
+where
+  /-- **Internal use only**
+
+  The recursion of `link` on its right argument, for the left argument `node ls ll lx lr`:
+  `link (node ls ll lx lr) x r = link.go x ls ll lx lr (link lr x) r`. Both `link` and `link.go`
+  are structural recursions, so that the kernel can evaluate `link`, and neither uses
+  `Ordnode.recOn`: the code that `compile_inductive%` generates for it evaluates both induction
+  hypotheses at every node. -/
+  go (ls : ℕ) (ll : Ordnode α) (lx : α) (lr : Ordnode α) (f : Ordnode α → Ordnode α) :
+      Ordnode α → Ordnode α
+    | nil => insertMax (node ls ll lx lr) x
     | node rs rl rx rr =>
-      if delta * ls < rs then balanceL (link ll x rl) rx rr
-      else if delta * rs < ls then balanceR ll lx (link lr x rr)
-      else node' l x r
+      if delta * ls < rs then balanceL (go ls ll lx lr f rl) rx rr
+      else if delta * rs < ls then balanceR ll lx (f (node rs rl rx rr))
+      else node' (node ls ll lx lr) x (node rs rl rx rr)
 
 /-- O(n). Filter the elements of a tree satisfying a predicate.
 
@@ -593,7 +603,7 @@ def filter (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 /-- O(n). Split the elements of a tree into those satisfying, and not satisfying, a predicate.
 
 ```
-partition (fun x ↦ x < 3) {1, 2, 4} = ({1, 2}, {3})
+partition (fun x ↦ x < 3) {1, 2, 4} = ({1, 2}, {4})
 ``` -/
 def partition (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordnode α
   | nil => (nil, nil)
@@ -606,8 +616,8 @@ def partition (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α ×
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
 ```
-partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
-partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation
+map (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
+map (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation
 ``` -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
@@ -819,7 +829,7 @@ def splitAtAux : Ordnode α → ℕ → Ordnode α × Ordnode α
       | none =>
         let (l₁, l₂) := splitAtAux l i
         (l₁, link l₂ x r)
-      | some 0 => (glue l r, insertMin x r)
+      | some 0 => (l, insertMin x r)
       | some (j + 1) =>
         let (r₁, r₂) := splitAtAux r j
         (link l x r₁, r₂)
@@ -872,24 +882,25 @@ def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordn
       let (l₁, l₂) := span p l
       (l₁, link l₂ x r)
 
-/-- Auxiliary definition for `ofAscList`.
+/-- Auxiliary definition for `ofAscList`: for `s` a power of two, `ofAscListAux₁ l s` builds a
+tree from the first `2 * s - 1` elements of `l` (all of `l` if it is shorter) and returns it with
+the remaining elements. This is `create` in `fromDistinctAscList` of Haskell's `containers`
+(versions 0.5.1 to 0.6.7).
 
-**Note:** This function is defined by well-founded recursion, so it will probably not compute
-in the kernel, meaning that you probably can't prove things like
-`ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`.
-This implementation is optimized for VM evaluation. -/
+**Note:** This function is defined by well-founded recursion, so it is irreducible: you can't
+prove things like `ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`, except after
+`unseal Ordnode.ofAscListAux₁ Ordnode.ofAscListAux₂ in`. -/
 def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l'.length ≤ l.length }
-  | [] => fun _ => (nil, ⟨[], le_rfl⟩)
-  | x :: xs => fun s =>
-    if s = 1 then (ι x, ⟨xs, Nat.le_succ _⟩)
+  | [], _ => (nil, ⟨[], le_rfl⟩)
+  | x :: xs, s =>
+    if s ≤ 1 then (ι x, ⟨xs, Nat.le_succ _⟩)
     else
-      match ofAscListAux₁ xs (s <<< 1) with
-      | (t, ⟨[], _⟩) => (t, ⟨[], Nat.zero_le _⟩)
+      match ofAscListAux₁ (x :: xs) (s >>> 1) with
+      | res@(_, ⟨[], _⟩) => res
       | (l, ⟨y :: ys, h⟩) =>
-        have := Nat.le_succ_of_le h
-        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s <<< 1)
-        (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
-        termination_by l => l.length
+        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s >>> 1)
+        (link l y r, ⟨zs, h'.trans ((Nat.le_succ _).trans h)⟩)
+  termination_by _ s => s
 
 /-- Auxiliary definition for `ofAscList`. -/
 def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
@@ -901,7 +912,7 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
       ofAscListAux₂ ys (link l x r) (s <<< 1)
       termination_by l => l.length
 
-/-- O(n). Build a set from a list which is already sorted. Performs no comparisons.
+/-- O(n). Build a set from a strictly increasing list. Performs no comparisons.
 
 ```
 ofAscList [1, 2, 3] = {1, 2, 3}
@@ -1305,7 +1316,7 @@ def disjoint : Ordnode α → Ordnode α → Bool
     let (lt, found, gt) := split3 x t
     found.isNone && disjoint l lt && disjoint r gt
 
-/-- O(m * log(|m ∪ n| + 1)), m ≤ n. The union of two sets, preferring members of
+/-- O(m * log(n / m + 1)), m ≤ n. The union of two sets, preferring members of
   `t₁` over those of `t₂` when equivalent elements are encountered.
 
 ```
@@ -1329,32 +1340,46 @@ def union : Ordnode α → Ordnode α → Ordnode α
         let (l₂', r₂') := split x₁ t₂
         link (union l₁ l₂') x₁ (union r₁ r₂')
 
-/-- O(m * log(|m ∪ n| + 1)), m ≤ n. Difference of two sets.
+/-- O(m * log(n / m + 1)), m ≤ n. Difference of two sets: the elements of `t₁` that are not
+equivalent to any element of `t₂`.
 
 ```
 diff {1, 2} {2, 3} = {1}
 diff {1, 2, 3} {2} = {1, 3}
+```
+
+Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
+
+```
+diff {(1, 1)} {(0, 1), (1, 2)} = ∅
+diff {(0, 1), (1, 2)} {(1, 1)} = {(0, 1)}
 ``` -/
 def diff : Ordnode α → Ordnode α → Ordnode α
   | t₁, nil => t₁
-  | t₁, t₂@(node _ l₂ x r₂) =>
-    cond t₁.empty t₂ <|
+  | t₁, node _ l₂ x r₂ =>
+    cond t₁.empty nil <|
       let (l₁, r₁) := split x t₁
       let l₁₂ := diff l₁ l₂
       let r₁₂ := diff r₁ r₂
       if size l₁₂ + size r₁₂ = size t₁ then t₁ else merge l₁₂ r₁₂
 
-/-- O(m * log(|m ∪ n| + 1)), m ≤ n. Intersection of two sets, preferring members of
+/-- O(m * log(n / m + 1)), m ≤ n. Intersection of two sets, preferring members of
 `t₁` over those of `t₂` when equivalent elements are encountered.
 
 ```
 inter {1, 2} {2, 3} = {2}
 inter {1, 3} {2} = ∅
+```
+
+Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
+
+```
+inter {(1, 1)} {(0, 1), (1, 2)} = {(1, 1)}
 ``` -/
 def inter : Ordnode α → Ordnode α → Ordnode α
   | nil, _ => nil
-  | t₁@(node _ l₁ x r₁), t₂ =>
-    cond t₂.empty t₁ <|
+  | node _ l₁ x r₁, t₂ =>
+    cond t₂.empty nil <|
       let (l₂, y, r₂) := split3 x t₂
       let l₁₂ := inter l₁ l₂
       let r₁₂ := inter r₁ r₂
