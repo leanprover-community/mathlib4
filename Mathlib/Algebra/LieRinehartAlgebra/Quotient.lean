@@ -66,7 +66,7 @@ instance : LieRing (L ⧸ s) where
       rw [mem_toSubmodule]
       have h : ⁅a₁, a₂⁆ - ⁅b₁, b₂⁆ = ⁅a₁ - b₁, a₂⁆ + ⁅b₁, a₂ - b₂⁆ := by simp
       rw [h]
-      exact add_mem (lie_mem_of_left ha _) (lie_mem_of_right _ hb))
+      membership)
   add_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (add_lie x y z)
   lie_add := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (lie_add x y z)
   lie_self := by rintro ⟨x⟩; exact congrArg mk (lie_self x)
