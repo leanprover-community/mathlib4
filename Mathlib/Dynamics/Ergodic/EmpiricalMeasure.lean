@@ -103,10 +103,13 @@ lemma ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt
       (ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mp hUμ g)
   exact tendsto_nhds_unique hgf hgf'
 
-
-/-- **Krylov-Bogolyubov theorem**: there exists a regular, invariant, Borel probability measure,
-for a continuous function on a nonempty, compact, Hausdorff space. -/
-public theorem glouk {ι : Type*} {F : Filter ι} [F.NeBot]
+/-- There exists a regular, invariant, Borel probability measure, for a continuous function on a
+nonempty, compact, Hausdorff space. We give a more precise version specifying how the integral
+of a function with respect to this measure can be obtained as a cluster point of specified
+Birkhoff sums. This version will imply both the existence theorem of Krylov-Bogolyubov, and
+the uniform convergence of Birkhoff averages in uniquely ergodic systems. -/
+theorem exists_measurePreserving_isProbabilityMeasure_mapClusterPt
+    {ι : Type*} {F : Filter ι} [F.NeBot]
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     [CompactSpace X] [Nonempty ι] {f : X → X} (hf : Continuous f) {u : ι → ℕ} (x : ι → X)
     (hu : Tendsto u F atTop)
@@ -114,7 +117,8 @@ public theorem glouk {ι : Type*} {F : Filter ι} [F.NeBot]
     {g : X → E} (hg : Continuous g) :
     ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ ∧
       MapClusterPt (∫ x, g x ∂μ) F (fun n ↦ birkhoffAverage ℝ f g (u n) (x n)) := by
-  -- starting from any point, the empirical measures must accumulate at some measure μ
+  -- starting from the point `x n`, the empirical measures for time `u n` must accumulate at some
+  -- measure μ
   obtain ⟨μ, _, hμ⟩ := isCompact_univ.exists_mapClusterPt
     (u := fun n ↦ (empiricalMeasure f (x n) (u n - 1)).toProbabilityMeasure) (f := F) (by simp)
   -- μ gives us a regular measure ν, and the rest is showing ν satisfies the other properties
@@ -138,53 +142,33 @@ public theorem glouk {ι : Type*} {F : Filter ι} [F.NeBot]
       · exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
       · exact (tendsto_sub_atTop_nat 1).comp hu
     · exact g.continuous.aestronglyMeasurable
-  use ν
-  refine ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩, ?_⟩
-  have : Continuous (fun (ρ : ProbabilityMeasure X) ↦ ∫ x, g x ∂ρ) :=
-    ProbabilityMeasure.continuous_integral_of_continuous_of_compactSpace hg
-  convert hμ.continuousAt_comp (this.continuousAt) using 1
-  · let g' := ContinuousMap.equivBoundedOfCompact X E ⟨g, hg⟩
-    apply (hμν g').symm
-
-
-
-
-
-
-#exit
+  refine ⟨ν, ⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩, ?_⟩
+  have M : MapClusterPt (∫ x, g x ∂μ) F
+      (fun n ↦ ∫ x, g x ∂(empiricalMeasure f (x n) (u n - 1))) := by
+    have : Continuous (fun (ρ : ProbabilityMeasure X) ↦ ∫ x, g x ∂ρ) :=
+      ProbabilityMeasure.continuous_integral_of_continuous_of_compactSpace hg
+    exact hμ.continuousAt_comp (this.continuousAt)
+  have : ∫ x, g x ∂μ = ∫ x, g x ∂ν := by
+    let g' := ContinuousMap.equivBoundedOfCompact X E ⟨g, hg⟩
+    exact Measure.integral_eq_of_forall_integral_real_eq hμν g'
+      hg.aestronglyMeasurable_of_compactSpace hg.aestronglyMeasurable_of_compactSpace
+  rw [this] at M
+  apply MapClusterPt.congrFun _ M
+  filter_upwards [hu (Ioi_mem_atTop 0)] with n (hn : 0 < u n)
+  simp only [integral_empiricalMeasure_eq_birkhoffaverage]
+  rw [show u n - 1 + 1 = u n by grind]
+  exact birkhoffAverage_apply_congr_ring NNReal ℝ f g (u n) (x n)
 
 /-- **Krylov-Bogolyubov theorem**: there exists a regular, invariant, Borel probability measure,
 for a continuous function on a nonempty, compact, Hausdorff space. -/
-public theorem exists_measurePreserving_probabilityMeasure
+theorem exists_measurePreserving_probabilityMeasure
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     [CompactSpace X] [Nonempty X] {f : X → X} (hf : Continuous f) :
     ∃ μ : Measure X, MeasurePreserving f μ μ ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ := by
   obtain ⟨x⟩ := ‹Nonempty X›
-  -- starting from any point, the empirical measures must accumulate at some measure μ
-  obtain ⟨μ, _, hμ⟩ := isCompact_univ.exists_mapClusterPt
-    (u := fun n ↦ (empiricalMeasure f x n).toProbabilityMeasure) (f := atTop) (by simp)
-  -- μ gives us a regular measure ν, and the rest is showing ν satisfies the other properties
-  obtain ⟨ν, hνreg, hνfin, hμν⟩ := (μ : Measure X).exists_regular_eq_of_compactSpace
-  have hprob : ν Set.univ = 1 := by
-    rw [← ENNReal.toReal_eq_one_iff]
-    change ν.real Set.univ = 1
-    simpa using (hμν (BoundedContinuousFunction.const X 1)).symm
-  have : (ν.map f).Regular := by
-    have := Measure.InnerRegularCompactLTTop.map_of_continuous hf (μ := ν)
-    infer_instance
-  have hmap : ν.map f = ν := by
-    apply Measure.ext_of_integral_eq_on_compactlySupported
-    intro g
-    rw [integral_map hf.aemeasurable]
-    · simp_rw [← g.toBoundedContinuousFunction_apply]
-      rw [← ContinuousMap.coe_mk f hf]
-      simp_rw [← g.toBoundedContinuousFunction.compContinuous_apply ⟨f,hf⟩, ← hμν]
-      refine ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hμ (g := g) ?_
-      apply tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBounded f g _ _ tendsto_id
-      exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
-    · exact g.continuous.aestronglyMeasurable
-  use ν
-  exact ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩⟩
+  rcases exists_measurePreserving_isProbabilityMeasure_mapClusterPt (x := fun (n : ℕ) ↦ x) hf
+    tendsto_id (g := fun (x : X) ↦ (0 : ℝ)) (by fun_prop) with ⟨μ, h1, h2, h3, h4⟩
+  exact ⟨μ, h1, h2, h3⟩
 
 /-- **Krylov-Bogolyubov theorem** for forward invariant compact sets. -/
 theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
@@ -219,47 +203,38 @@ theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
 
 end KrylovBogolyubov
 
-/-- If a continuous map is uniquely ergodic on a compact set, then the Birkhoff averages of a
+/-- If a continuous map is uniquely ergodic on a compact space, then the Birkhoff averages of a
 continuous function converge uniformly to the average against the invariant measure. -/
-theorem tendstoUniformlyOn_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [T2Space X]
+theorem tendstoUniformly_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [T2Space X]
     [CompactSpace X] {f : X → X} (hf : Continuous f) (μ : Measure X)
     (h : ∀ (ν : Measure X), MeasurePreserving f ν ν → Measure.Regular ν →
       IsProbabilityMeasure ν → ν = μ)
-    {Y : Type*} [NormedAddCommGroup Y] [NormedSpace ℝ Y] [CompleteSpace Y]
-    {g : X → Y} (hg : Continuous g) :
-    TendstoUniformly (birkhoffAverage NNReal f g) (fun x ↦ ∫ y, g y ∂μ) atTop := by
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    {g : X → E} (hg : Continuous g) :
+    TendstoUniformly (birkhoffAverage ℝ f g) (fun _ ↦ ∫ y, g y ∂μ) atTop := by
+  /- If the convergence were not uniform, then taking a suitable sequence `y n` in `X` and suitable
+  times `u n`, one could find a sequence of Birkhoff sums converging to another limit. But
+  a subsequence of empirical measures based at `y n` with length `u n` converges to an invariant
+  measure, which has to be `μ` by uniqueness. This is a contradiction.
+  The machinery to extract a converging subsequence is already done in the lemma
+  `exists_measurePreserving_isProbabilityMeasure_mapClusterPt`, which is also used in the proof
+  of Krylov-Bogolyubov theorem. -/
   contrapose! h
   simp only [Metric.tendstoUniformly_iff, gt_iff_lt, eventually_atTop, not_forall,
     not_exists, not_lt, exists_prop] at h
   rcases h with ⟨ε, εpos, hε⟩
   choose u le_u y hy using hε
-  obtain ⟨ρ, _, hρ⟩ := isCompact_univ.exists_mapClusterPt
-    (u := fun n ↦ (empiricalMeasure f (y n) (u n - 1)).toProbabilityMeasure) (f := atTop) (by simp)
-  -- μ gives us a regular measure ν, and the rest is showing ν satisfies the other properties
-  obtain ⟨ν, hνreg, hνfin, hμν⟩ := (ρ : Measure X).exists_regular_eq_of_compactSpace
-  have hprob : ν Set.univ = 1 := by
-    rw [← ENNReal.toReal_eq_one_iff]
-    change ν.real Set.univ = 1
-    simpa using (hμν (BoundedContinuousFunction.const X 1)).symm
-  have : (ν.map f).Regular := by
-    have := Measure.InnerRegularCompactLTTop.map_of_continuous hf (μ := ν)
-    infer_instance
-  have hmap : ν.map f = ν := by
-    apply Measure.ext_of_integral_eq_on_compactlySupported
-    intro g
-    rw [integral_map hf.aemeasurable]
-    · simp_rw [← g.toBoundedContinuousFunction_apply]
-      rw [← ContinuousMap.coe_mk f hf]
-      simp_rw [← g.toBoundedContinuousFunction.compContinuous_apply ⟨f,hf⟩, ← hμν]
-      refine ProbabilityMeasure.integral_comp_eq_integral_of_mapClusterPt hf hρ (g := g) ?_
-      refine tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBoundedUnder f ?_ g ?_
-      exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
-    · exact g.continuous.aestronglyMeasurable
-
-  use ν
-  exact ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩⟩
-
-
+  have : Tendsto u atTop atTop := tendsto_atTop_mono le_u tendsto_id
+  rcases exists_measurePreserving_isProbabilityMeasure_mapClusterPt hf (u := u) y this hg
+    with ⟨ν, hν₁, hν₂, hν₃, hgν⟩
+  refine ⟨ν, hν₁, hν₂, hν₃, ?_⟩
+  rintro rfl
+  rcases (mapClusterPt_iff_ultrafilter.mp hgν) with ⟨U, hUl, hUμ⟩
+  have : ε ≤ dist (∫ (y : X), g y ∂ν) (∫ (y : X), g y ∂ν) := by
+    apply le_of_tendsto_of_tendsto' (b := (U : Filter ℕ)) tendsto_const_nhds ?_ hy
+    exact Tendsto.dist tendsto_const_nhds hUμ
+  simp at this
+  linarith
 
 /-- If a continuous map is uniquely ergodic on a compact set, then the Birkhoff averages of a
 continuous function converge uniformly to the average against the invariant measure. -/
@@ -269,9 +244,9 @@ theorem tendstoUniformlyOn_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [
     (μ : Measure X) (hfmeas : Measurable f) -- TODO: relax hfmeas
     (h : ∀ (ν : Measure X), MeasurePreserving f ν ν
       → Measure.Regular ν ∧ IsProbabilityMeasure ν ∧ Measure.support ν ⊆ K → ν = μ)
-    {Y : Type*} [NormedAddCommGroup Y] [NormedSpace ℝ Y] [CompleteSpace Y]
-    {g : X → Y} (hg : ContinuousOn g K) :
-    TendstoUniformlyOn (birkhoffAverage NNReal f g) (fun x ↦ ∫ y, g y ∂μ) atTop K := by
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    {g : X → E} (hg : ContinuousOn g K) :
+    TendstoUniformlyOn (birkhoffAverage ℝ f g) (fun _ ↦ ∫ y, g y ∂μ) atTop K := by
   contrapose! h
   simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, not_forall,
     not_exists, not_lt, exists_prop] at h
