@@ -706,11 +706,6 @@ instance (priority := 100) IsStarNormal.all [CommMagma R] [StarMul R] (x : R) :
 
 @[deprecated (since := "2026-10-30")] alias CommMonoid.isStarNormal := IsStarNormal.all
 
--- named to match `Commute.all`
-/-- All elements of a commutative star magma are normal. -/
-lemma IsStarNormal.all [CommMagma R] [StarMul R] (a : R) : IsStarNormal a where
-  star_comm_self := .all _ _
-
 theorem Commute.isStarNormal_add [NonUnitalNonAssocSemiring R] [StarRing R] {a b : R}
     (hab : Commute a (star b)) [ha : IsStarNormal a] [hb : IsStarNormal b] :
     IsStarNormal (a + b) := by
