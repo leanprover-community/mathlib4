@@ -115,10 +115,6 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] (h : p.IsEulerian) :
   ext e
   simp [h.mem_edges_iff]
 
-theorem IsEulerian.length_eq_card_edgeFinset [Fintype G.edgeSet] (h : p.IsEulerian) :
-    p.length = G.edgeFinset.card := by
-  simp [← h.edgesFinset_eq]
-
 theorem IsEulerian.mem_support_of_not_isIsolated (hp : p.IsEulerian) (hw : ¬G.IsIsolated w) :
     w ∈ p.support :=
   have ⟨_, hadj⟩ := exists_adj_iff_not_isIsolated.mpr hw
