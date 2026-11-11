@@ -638,8 +638,8 @@ lemma IsOpen.contMDiffAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
       {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
       {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*}
       [TopologicalSpace M'] [ChartedSpace H' M'] {n : WithTop ℕ∞} {f : M → M'} {s : Set M} (hs :
-      IsOpen s) {x} : ContMDiffWithinAt I I' n f s x ↔ CMDiffAt n f x := by
-    sorry
+      IsOpen s) {x} (hx : x ∈ s) : ContMDiffWithinAt I I' n f s x ↔ CMDiffAt n f x :=
+  ⟨fun h ↦ h.contMDiffAt (hs.mem_nhds hx), fun h ↦ h.contMDiffWithinAt⟩
 
 lemma ContMDiffCovariantDerivativeOn.contMDiffCovariantDerivativeOn'
     (k : ℕ∞)
@@ -655,9 +655,9 @@ contMDiffWithinAt  := by
   intro σ x hx hσ
   replace hσ : ∀ᶠ (y : B) in 𝓝 x, ContMDiffAt IB (IB.prod 𝓘(ℝ, F₁)) (k + 1 : ℕ∞) (T% σ) y := by
     rw [hu.nhdsWithin_eq hx] at hσ
-    filter_upwards [hσ] with x hx
-    exact hu.contMDiffAt.1 hx
-  rw [hu.contMDiffAt]
+    filter_upwards [hσ, hu.eventually_mem hx] with y hy hyu
+    apply hy.contMDiffAt (hu.mem_nhds hyu)
+  rw [hu.contMDiffAt hx]
   rcases exists_contMDiff_extension (n := (k + 1 : ℕ∞)) IB hσ (by simp) with ⟨σ', hσ', hσσ'⟩
   let V := fun b : B ↦ TangentSpace IB b →L[ℝ] E₁ b
   replace hσσ' : ∀ᶠ x' in 𝓝 x,
@@ -673,7 +673,7 @@ contMDiffWithinAt  := by
     · exact hu.mem_nhds_iff.mpr H'x'
     · exact Hx'.mono fun x a ↦ id (Eq.symm a)
   apply ContMDiffAt.congr_of_eventuallyEq _ hσσ'
-  exact hu.contMDiffAt.1 <| h.contMDiff hσ'.contMDiffOn x hx
+  exact (hu.contMDiffAt hx).1 <| h.contMDiff hσ'.contMDiffOn x hx
 
 --  Version where no filling _ in
 --   rcases exists_contMDiff_extension (n := (k+1 : ℕ∞)) (B := B) IB Hσ _ with ⟨σ', hσ', hσσ'⟩
