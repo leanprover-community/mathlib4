@@ -45,16 +45,16 @@ integral, and involutive quantales easier to add on later.
 * We provide basic distributivity laws for sSup into iSup and sup, monotonicity of
   the semigroup operator, and basic equivalences for left- and right-residuation.
 
-* `isMulLeftsidedElem`, `isAddLeftsidedElem`, `isMulRightsidedElem`, `isAddRightsidedElem` :
+* `isMulLeftsided`, `isAddLeftsided`, `isMulRightsided`, `isAddRightsided` :
   Defining left- and right-sided elements of a (additive) quantale.
 
-* `isStrictMulLeftsidedElem`, `isStrictAddLeftsidedElem`, `isStrictMulRightsidedElem`,
-  `isStrictAddRightsidedElem` :
+* `isStrictMulLeftsided`, `isStrictAddLeftsided`, `isStrictMulRightsided`,
+  `isStrictAddRightsided` :
   Defining strict left- and right-sided elements of a (additive) quantale.
 
-* `isMulTwosidedElem`, `isAddTwosidedElem` : Defining two-sided elements of a (additive) quantale.
+* `isMulTwosided`, `isAddTwosided` : Defining two-sided elements of a (additive) quantale.
 
-* `isStrictMulTwosidedElem`, `isStrictAddTwosidedElem` : Defining strict two-sided elements of a
+* `isStrictMulTwosided`, `isStrictAddTwosided` : Defining strict two-sided elements of a
   (additive) quantale.
 
 ## Notation
@@ -145,7 +145,7 @@ variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
 /-- Left- and right-residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z * x ≤ y }`. -/
-@[to_additive
+@[to_additive existing
 /-- Left- and right- residuation operators on an additive quantale are similar
 to the Heyting operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`. -/]
@@ -154,7 +154,7 @@ def leftMulResiduation (x y : α) := sSup {z | z * x ≤ y}
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ᵣ z ↔ y * x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x * z ≤ y }`. -/
-@[to_additive
+@[to_additive existing
 /-- Left- and right- residuation operators on an additive quantale are similar
 to the Heyting operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`." -/]
