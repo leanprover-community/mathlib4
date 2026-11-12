@@ -10,12 +10,15 @@ public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Interval.Set.OrderIso
+public import Mathlib.Order.ScottContinuity
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
 public import Mathlib.Tactic.TFAE
 
+import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.RelIso.Set
 
 /-!
 # Compactness properties for complete lattices
@@ -58,7 +61,7 @@ open scoped Finset
 
 @[expose] public section
 
-variable {ι : Sort*} {α : Type*} {f : ι → α}
+variable {ι : Sort*} {α β : Type*} {f : ι → α}
 
 open Set
 /-- An element `k` is compact if any directed set with `LUB` (least upper bound) above
@@ -74,11 +77,21 @@ def IsCompactElement [Preorder α] (k : α) :=
 
 section Preorder
 
-variable [Preorder α] {a b : α}
+variable [Preorder α] [Preorder β] {a b : α}
 
 theorem isCompactElement_congr (hab : a ≤ b) (hba : b ≤ a) :
     IsCompactElement a ↔ IsCompactElement b := by
   grind [IsCompactElement]
+
+theorem IsCompactElement.of_apply {f : α ↪o β} (hf : ScottContinuous f) {a : α}
+    (h : IsCompactElement (f a)) : IsCompactElement a := by
+  intro s u hne hdir hlub hle
+  simpa using h _ _ (hne.image f) (f.directedOn_image.mpr hdir) (hf hne hdir hlub) (hf.monotone hle)
+
+theorem OrderIso.isCompactElement_iff {f : α ≃o β} {a : α} :
+    IsCompactElement (f a) ↔ IsCompactElement a where
+  mp := .of_apply f.scottContinuous
+  mpr _ := .of_apply f.symm.scottContinuous <| by simpa
 
 theorem IsBot.isCompactElement (h : IsBot a) : IsCompactElement a :=
   fun _ _ ⟨x, hx⟩ _ _ _ ↦ ⟨x, hx, h x⟩
