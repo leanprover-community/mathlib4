@@ -24,7 +24,8 @@ This file contains results about quotients of manifolds by group actions.
 * if `G` acts smoothly, the quotient is an `IsManifold I n` for a suitable `ModelWithCorners I`.
 * if `G` acts smoothly, the projection map is smooth
 
-## tags
+## Tags
+
 smooth manifold, smooth action, quotient manifold
 -/
 

@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # The space of continuous maps is a locally convex space

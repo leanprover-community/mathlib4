@@ -126,22 +126,12 @@ theorem orbitZPowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ (cast k : ℤ) • ⟨b, mem_orbit_self b⟩ :=
   rfl
 
+@[to_additive]
 theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :
     (orbitZPowersEquiv a b).symm k =
       (⟨a, mem_zpowers a⟩ : zpowers a) ^ k • ⟨b, mem_orbit_self b⟩ := by
   rw [orbitZPowersEquiv_symm_apply, ZMod.coe_intCast]
   exact Subtype.ext (zpow_smul_mod_minimalPeriod _ _ k)
-
-theorem _root_.AddAction.orbitZMultiplesEquiv_symm_apply' {α β : Type*} [AddGroup α] (a : α)
-    [AddAction α β] (b : β) (k : ℤ) :
-    (AddAction.orbitZMultiplesEquiv a b).symm k =
-      k • (⟨a, mem_zmultiples a⟩ : zmultiples a) +ᵥ ⟨b, AddAction.mem_orbit_self b⟩ := by
-  rw [AddAction.orbitZMultiplesEquiv_symm_apply, ZMod.coe_intCast]
-  -- Making `a` explicit turns this from ~190000 heartbeats to ~700.
-  exact Subtype.ext (zsmul_vadd_mod_minimalPeriod a _ k)
-
-attribute [to_additive existing]
-  orbitZPowersEquiv_symm_apply'
 
 @[to_additive]
 theorem minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :

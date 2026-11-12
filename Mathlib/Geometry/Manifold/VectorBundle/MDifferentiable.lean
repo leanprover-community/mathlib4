@@ -5,13 +5,10 @@ Authors: Sébastien Gouëzel, Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
-public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-!
 # Differentiability of functions in vector bundles
-
 -/
 
 public section
@@ -109,7 +106,7 @@ theorem mdifferentiable_zeroSection : MDiff (zeroSection F E) := by
   apply (mdifferentiableAt_const (c := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
-    using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
+    using congr($((trivializationAt F E x).zeroSection 𝕜 hy).snd)
 
 theorem mdifferentiableOn_zeroSection {t : Set B} : MDiff[t] (zeroSection F E) :=
   (mdifferentiable_zeroSection _ _).mdifferentiableOn
@@ -245,16 +242,13 @@ theorem mdifferentiableWithinAt_snd_comp_iff₂
   ⟨(hf.change_section_trivialization IB · hex₀ he'x₀),
    (hf.change_section_trivialization IB · he'x₀ hex₀)⟩
 
-variable (e e')
-
 theorem mdifferentiableAt_snd_comp_iff₂
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {x₀ : M}
     (he : f x₀ ∈ e.source) (he' : f x₀ ∈ e'.source)
     (hf : MDiffAt (fun x ↦ (f x).proj) x₀) :
     MDiffAt (fun x ↦ (e (f x)).2) x₀ ↔ MDiffAt (fun x ↦ (e' (f x)).2) x₀ := by
-  simpa [← mdifferentiableWithinAt_univ] using
-    e.mdifferentiableWithinAt_snd_comp_iff₂ IB he he' hf
+  simpa [← mdifferentiableWithinAt_univ] using e.mdifferentiableWithinAt_snd_comp_iff₂ IB he he' hf
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within a set. -/
@@ -373,7 +367,7 @@ lemma mdifferentiableWithinAt_add_section
   set e := trivializationAt F E x₀
   refine (hs.add ht).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
@@ -399,7 +393,7 @@ lemma mdifferentiableWithinAt_neg_section
   set e := trivializationAt F E x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).map_neg ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).map_neg ..
@@ -442,7 +436,7 @@ lemma MDifferentiableWithinAt.smul_section
   set e := trivializationAt F E x₀
   refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
-    · exact mem_nhdsWithin_of_mem_nhds <|
+    · exact mem_nhdsWithin_of_mem_nhds
         (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F E x₀)
     · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
@@ -643,6 +637,9 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableWithinAt`. We also give a version for `MDifferentiableAt`, but no
 version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written in coordinates,
 only makes sense around a point.
+
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
+`inCoordinates`, see `MDifferentiableWithinAt.clm_bundle_apply`.
 -/
 lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     (hϕ : MDiffAt[s] (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
@@ -676,6 +673,9 @@ Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
 Version for `MDifferentiableAt`. We also give a version for `MDifferentiableWithinAt`,
 but no version for `MDifferentiableOn` or `MDifferentiable` as our assumption, written
 in coordinates, only makes sense around a point.
+
+For a version with `B₁ = B₂` and `b₁ = b₂`, in which smoothness can be expressed without
+`inCoordinates`, see `MDifferentiableAt.clm_bundle_apply`.
 -/
 lemma MDifferentiableAt.clm_apply_of_inCoordinates
     (hϕ : MDiffAt (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) m₀)
@@ -707,14 +707,14 @@ lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle �
     exact FiberBundle.mem_baseSet_trivializationAt' x₀
   suffices CMDiff[t.baseSet] k (fun x ↦ (t ⟨x, extend F σ₀ x⟩).2) by
     intro x hx
-    rw [t.contMDiffWithinAt_section _ hx]
+    rw [t.contMDiffWithinAt_section_iff _ hx]
     exact this x hx
   let w : F := (t ⟨x₀, σ₀⟩).2
   have : CMDiff[t.baseSet] k (fun (_x : M) ↦ w) := contMDiffOn_const
   exact this.congr (fun x hx ↦ by simp [extend, t, w, hx])
 
 lemma contMDiffAt_extend {x : M} (σ₀ : V x) : CMDiffAt k (T% (extend F σ₀)) x := by
-  rw [contMDiffAt_section]
+  rw [contMDiffAt_section_iff]
   set t := trivializationAt F V x
   let w : F := (t ⟨x, σ₀⟩).2
   have : CMDiffAt k (fun (_x : M) ↦ w) x := contMDiffAt_const

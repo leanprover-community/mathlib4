@@ -5,9 +5,9 @@ Authors: Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
-public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # The category of `1`-hypercovers up to homotopy

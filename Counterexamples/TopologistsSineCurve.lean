@@ -186,7 +186,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
       exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
     simpa only [a, ← hx_eq] using! hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=
-    (isPreconnected_Icc.image _ <| xcoord_pathContinuous.continuousOn).Icc_subset
+    (isPreconnected_Icc.image _ xcoord_pathContinuous.continuousOn).Icc_subset
       (show 0 ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₀, ⟨le_rfl, ht₁.1.le⟩, ‹_›⟩)
       (show a ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₁, ⟨ht₁.1.le, le_rfl⟩, rfl⟩)
   -- **Step 3**: For every `y ∈ [-1, 1]`, there exists a `t` with `p t = y` and `dist t₀ t < δ`.

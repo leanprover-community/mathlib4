@@ -93,7 +93,7 @@ theorem toInvSubmonoid_eq_mk' (x : M) : (toInvSubmonoid M S x : S) = mk' S 1 x :
 theorem mem_invSubmonoid_iff_exists_mk' (x : S) :
     x ∈ invSubmonoid M S ↔ ∃ m : M, mk' S 1 m = x := by
   simp_rw [← toInvSubmonoid_eq_mk']
-  exact ⟨fun h => ⟨_, congr_arg Subtype.val (toInvSubmonoid_surjective M S ⟨x, h⟩).choose_spec⟩,
+  exact ⟨fun h => ⟨_, congr($((toInvSubmonoid_surjective M S ⟨x, h⟩).choose_spec).val)⟩,
     fun h => h.choose_spec ▸ (toInvSubmonoid M S h.choose).prop⟩
 
 variable (S)
@@ -106,7 +106,7 @@ theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ :=
 
 theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   have := Monoid.fg_of_surjective _ (toInvSubmonoid_surjective M S)
-  rw [Monoid.fg_iff_submonoid_fg] at this
+  rw [Monoid.FG, Submonoid.isMulFG_iff] at this
   rcases this with ⟨s, hs⟩
   refine ⟨⟨s, ?_⟩⟩
   rw [eq_top_iff]

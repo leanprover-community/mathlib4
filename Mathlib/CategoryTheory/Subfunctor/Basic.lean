@@ -5,12 +5,10 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
 /-!
-
 # Subfunctor of types
 
 We define subfunctors of a type-valued functors.
@@ -18,7 +16,6 @@ We define subfunctors of a type-valued functors.
 ## Main definition
 
 `CategoryTheory.Subfunctor` : A subfunctor of a type-valued functor.
-
 -/
 
 @[expose] public section
@@ -160,7 +157,7 @@ def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toFunctor ⟶ G'.toFunctor 
 
 instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
   ⟨fun _ _ e => NatTrans.ext <| funext fun U => hom_ext _ _ fun x => by
-    exact Subtype.ext (congr_arg Subtype.val <| (congr_hom (congr_app e U) x) :)⟩
+    exact Subtype.ext (congr_arg Subtype.val (congr_hom (congr_app e U) x) :)⟩
 
 @[reassoc (attr := simp)]
 theorem homOfLe_ι {G G' : Subfunctor F} (h : G ≤ G') :

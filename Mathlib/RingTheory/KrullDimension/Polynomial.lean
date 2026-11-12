@@ -5,11 +5,11 @@ Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.FieldDivision
 public import Mathlib.RingTheory.KrullDimension.PID
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+
+import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
 /-!
 # Krull dimension of polynomial ring
@@ -72,7 +72,8 @@ private lemma height_eq_height_add_one_of_isMaximal (p : Ideal R) [p.IsMaximal] 
 /-- Let `p` be a maximal ideal of `R`. Then the height of `p[X]` equals the height of `p`. -/
 lemma height_map_C (p : Ideal R) [p.IsMaximal] : (p.map C).height = p.height := by
   have : (p.map C).LiesOver p := ⟨IsMaximal.eq_of_le inferInstance IsPrime.ne_top' le_comap_map⟩
-  simp [height_eq_height_add_of_liesOver_of_hasGoingDown p]
+  rw [height_eq_height_add_of_liesOver_of_hasGoingDown p (p.map C), Polynomial.algebraMap_eq,
+    Ideal.map_quotient_self, Ideal.height_bot, add_zero]
 
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 /-- Let `p` be a prime ideal of `R`. If `P` is a maximal ideal of `R[X]` lying over `p`,
@@ -98,7 +99,7 @@ lemma height_eq_height_add_one (p : Ideal R)
     rw [height_map_of_disjoint p.primeCompl]
     exact Disjoint.symm <| Set.disjoint_left.mpr fun _ a b ↦ b a
   have eq2 : P.height = P'.height := by
-    rw [height_map_of_disjoint (Submonoid.map C <| p.primeCompl) _ disj]
+    rw [height_map_of_disjoint (Submonoid.map C p.primeCompl) _ disj]
   rw [eq1, eq2]
   apply height_eq_height_add_one_of_isMaximal p' P'
 
@@ -121,7 +122,7 @@ lemma MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite {ι : Type*} [Fini
     ringKrullDim (MvPolynomial ι R) = ringKrullDim R + Nat.card ι := by
   induction ι using Finite.induction_empty_option with
   | of_equiv e H =>
-    convert! ← H using 1
+    convert ← H using 1
     · exact ringKrullDim_eq_of_ringEquiv (renameEquiv _ e).toRingEquiv
     · rw [Nat.card_congr e]
   | h_empty => simp

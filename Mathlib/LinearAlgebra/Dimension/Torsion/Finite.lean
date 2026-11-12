@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # Results relating rank and torsion.
-
 -/
 
 public section

@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.CatCommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 
 /-! # Categorical pullbacks
@@ -263,7 +262,7 @@ lemma iso_hom_naturality (S : CatCommSqOver F G X) {x x' : X} (f : x ⟶ x') :
 lemma w_app {S S' : CatCommSqOver F G X} (φ : S ⟶ S') (x : X) :
     F.map (φ.fst.app x) ≫ S'.iso.hom.app x =
     S.iso.hom.app x ≫ G.map (φ.snd.app x) :=
-  NatTrans.congr_app φ.w x
+  congr($(φ.w).app x)
 
 variable (F G)
 
@@ -287,7 +286,6 @@ def e :
     sndFunctor F G X ⋙ (whiskeringRight X C B).obj G :=
   NatIso.ofComponents (fun S ↦ S.iso)
 
-set_option backward.defeqAttrib.useBackward true in
 variable {F G X} in
 /-- A constructor for isomorphisms in CatCommSqOver -/
 @[simps!]
@@ -388,7 +386,7 @@ def mkNatIso {J K : X ⥤ F ⊡ G}
     J ≅ K :=
   NatIso.ofComponents
     (fun x ↦ CategoricalPullback.mkIso (e₁.app x) (e₂.app x)
-      (by simpa using NatTrans.congr_app coh x))
+      (by simpa using congr($(coh).app x)))
     (fun {_ _} f ↦ by
       ext
       · exact e₁.hom.naturality f
@@ -465,7 +463,6 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
   [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
   {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Functorially transform a `CatCommSqOver F G X` by whiskering it with a
 `CatCospanTransform`. -/
 @[simps!]
@@ -607,7 +604,6 @@ variable
     {X : Type u₄} {Y : Type u₅} {Z : Type u₆}
     [Category.{v₄} X] [Category.{v₅} Y] [Category.{v₆} Z]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A functor `U : X ⥤ Y` (functorially) induces a functor
 `CatCommSqOver F G Y ⥤ CatCommSqOver F G X` by whiskering left the underlying
 categorical commutative square by U. -/

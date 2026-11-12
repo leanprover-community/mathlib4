@@ -72,6 +72,11 @@ theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
   replace hb : c % b < b := mod_lt c hb
   rw [gcd_rec, pow_sub_one_mod_pow_sub_one, pow_sub_one_gcd_pow_sub_one, ← gcd_rec]
 
+/-- For `1 < a`, the number `a ^ b - 1` divides `a ^ c - 1` if and only if `b` divides `c`. -/
+theorem pow_sub_one_dvd_pow_sub_one_iff (ha : 1 < a) : a ^ b - 1 ∣ a ^ c - 1 ↔ b ∣ c := by
+  rw [dvd_iff_mod_eq_zero, pow_sub_one_mod_pow_sub_one, Nat.sub_eq_zero_iff_le, ← pow_zero a,
+    Nat.pow_le_pow_iff_right ha, Nat.le_zero, dvd_iff_mod_eq_zero]
+
 /-! ### `lcm` and divisibility -/
 
 theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : ℕ) : a ∣ lcm b c :=
@@ -218,14 +223,14 @@ theorem gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : Coprime a c) (b_dvd_c : b
     gcd (a * b) c = b := by
   rcases exists_eq_mul_left_of_dvd b_dvd_c with ⟨d, rfl⟩
   rw [gcd_mul_right]
-  convert! one_mul b
+  convert one_mul b
   exact Coprime.coprime_mul_right_right hac
 
 theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0) :
     m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 :=
   (Nat.mul_eq_zero.mp hmn).imp (fun hm => ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn =>
     let eq := hn ▸ h.symm
-    ⟨m.coprime_zero_left.mp <| eq, hn⟩
+    ⟨m.coprime_zero_left.mp eq, hn⟩
 
 theorem coprime_iff_isRelPrime {m n : ℕ} : m.Coprime n ↔ IsRelPrime m n := by
   simp_rw [coprime_iff_gcd_eq_one, IsRelPrime, ← and_imp, ← dvd_gcd_iff, isUnit_iff_dvd_one]
@@ -256,8 +261,8 @@ variable {x n m k : ℕ}
 theorem gcd_mul_gcd_eq_iff_dvd_mul_of_coprime (hcop : Coprime n m) :
     gcd x n * gcd x m = x ↔ x ∣ n * m := by
   refine ⟨fun h ↦ ?_, (dvd_antisymm ?_ <| dvd_gcd_mul_gcd_iff_dvd_mul.mpr ·)⟩
-  refine h ▸ Nat.mul_dvd_mul ?_ ?_ <;> exact x.gcd_dvd_right _
-  refine (hcop.gcd_both x x).mul_dvd_of_dvd_of_dvd ?_ ?_ <;> exact x.gcd_dvd_left _
+  · refine h ▸ Nat.mul_dvd_mul ?_ ?_ <;> exact x.gcd_dvd_right _
+  · refine (hcop.gcd_both x x).mul_dvd_of_dvd_of_dvd ?_ ?_ <;> exact x.gcd_dvd_left _
 
 lemma div_mul_div (hkm : m ∣ k) (hkn : n ∣ m) : (k / m) * (m / n) = k / n := by
   rcases n.eq_zero_or_pos with hn | hn

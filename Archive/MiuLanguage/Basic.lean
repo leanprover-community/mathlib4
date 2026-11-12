@@ -59,7 +59,6 @@ natural number' into the nonrecursive constructor `zero` of the inductive type `
 ## Tags
 
 miu, derivable strings
-
 -/
 
 @[expose] public section
@@ -181,7 +180,7 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
 private theorem MIU_der : Derivable "MIU" := by
   change Derivable ([M] ++ [I, U])
   apply Derivable.r1 -- reduce to deriving `"MI"`,
-  constructor -- which is the base of the inductive construction.
+  constructor! -- which is the base of the inductive construction.
 
 example : Derivable "MIUIU" := by
   change Derivable (M :: [I, U] ++ [I, U])

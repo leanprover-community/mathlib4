@@ -5,17 +5,16 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Units.Fintype
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Basic.Finite.Sum
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.LinearAlgebra.Projectivization.Basic
+
+import Mathlib.Algebra.GroupWithZero.Units.Fintype
+import Mathlib.Algebra.Ring.GeomSum
 
 /-!
 # Cardinality of projective spaces
 
 We compute the cardinality of `ℙ k V` if `k` is a finite field.
-
 -/
 
 @[expose] public section

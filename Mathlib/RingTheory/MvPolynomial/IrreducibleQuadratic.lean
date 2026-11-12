@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir, Johan Commelin, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
+
 import Mathlib.Algebra.MvPolynomial.Nilpotent
 
 /-!
@@ -52,7 +52,6 @@ import Mathlib.Algebra.MvPolynomial.Nilpotent
   on the terms of degree 0 and 1.
   Eg, $X^2-Y$ is irreducible, but $X^2$, $X^2-1$, $X^2-Y^2$ are not.
   And $X^2+Y^2$ is irreducible over the reals but not over the complex numbers.
-
 -/
 
 @[expose] public section

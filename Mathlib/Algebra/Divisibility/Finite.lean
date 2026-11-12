@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Data.Fintype.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility in finite types
 -/

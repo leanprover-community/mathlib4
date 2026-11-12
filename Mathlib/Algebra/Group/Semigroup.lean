@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Regular.Defs
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.Simps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semigroups and algebraic structures without identities
 
@@ -18,6 +21,8 @@ supporting lemmas and instances.
 -/
 
 public section
+
+universe u
 
 open Function
 
@@ -161,6 +166,11 @@ variable [Semigroup G]
 theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
   Semigroup.mul_assoc
 
+@[to_additive]
+instance : Semigroup PEmpty.{u + 1} where
+  mul x _ := by cases x
+  mul_assoc x y z := by cases x
+
 end Semigroup
 
 section IsCommutative
@@ -193,6 +203,36 @@ commutative algebraic structures. In general, you should prefer `add_comm` unles
 with commutative subobjects in a noncommutative algebraic structure. -/ ]
 lemma mul_comm' {M : Type*} [Mul M] [IsMulCommutative M] (a b : M) : a * b = b * a :=
   IsMulCommutative.is_comm.comm ..
+
+section commute
+
+variable {M : Type*} [Mul M]
+
+/-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
+@[to_additive /-- `x` is additive semiconjugate to `y` by `a` if `a + x = y + a` -/, expose]
+def SemiconjBy (a x y : M) : Prop :=
+  a * x = y * a
+
+/-- Equality behind `SemiconjBy a x y`; useful for rewriting. -/
+@[to_additive /-- Equality behind `AddSemiconjBy a x y`; useful for rewriting. -/]
+protected theorem SemiconjBy.eq {a x y : M} (h : SemiconjBy a x y) : a * x = y * a :=
+  h
+
+/-- Two elements commute if `a * b = b * a`. -/
+@[to_additive /-- Two elements additively commute if `a + b = b + a` -/, expose]
+def Commute (a b : M) : Prop :=
+  SemiconjBy a b b
+
+/-- Two elements `a` and `b` commute if `a * b = b * a`. -/
+@[to_additive /-- Two elements `a` and `b` additively commute if `a + b = b + a`. -/]
+theorem commute_iff_eq (a b : M) : Commute a b ↔ a * b = b * a := Iff.rfl
+
+/-- Equality behind `Commute a b`; useful for rewriting. -/
+@[to_additive (attr := grind →) /-- Equality behind `AddCommute a b`; useful for rewriting. -/]
+protected theorem Commute.eq {a b : M} (h : Commute a b) : a * b = b * a :=
+  h
+
+end commute
 
 end IsCommutative
 
@@ -313,7 +353,6 @@ add_decl_doc RightCancelSemigroup.toIsRightCancelMul
 
 /-- Any `AddRightCancelSemigroup` satisfies `IsRightCancelAdd`. -/
 add_decl_doc AddRightCancelSemigroup.toIsRightCancelAdd
-
 
 /-! We initialize the projections for the semigroup structures for `@[simps]` here. -/
 initialize_simps_projections Semigroup

@@ -33,7 +33,6 @@ to the adjunction `(F.map f.op.toLoc).adj`.
 ## TODO (@joelriou, @chrisflav)
 * Compare `DescentDataAsCoalgebra` with `DescentData` when suitable
   pullbacks exist and certain base change morphisms are isomorphisms
-
 -/
 
 @[expose] public section
@@ -158,7 +157,7 @@ def coalgebraEquivalence (ι : Type*) [Unique ι] {X S : C} (f : X ⟶ S) :
       comm _ _ := φ.h }
   unitIso :=
     NatIso.ofComponents
-      (fun D ↦ isoMk (fun i ↦ eqToIso (congr_arg D.obj (by subsingleton)))
+      (fun D ↦ isoMk (fun i ↦ eqToIso congr(D.obj $(by subsingleton)))
         (fun i₁ i₂ ↦ by
           obtain rfl := Subsingleton.elim i₁ default
           obtain rfl := Subsingleton.elim i₂ default

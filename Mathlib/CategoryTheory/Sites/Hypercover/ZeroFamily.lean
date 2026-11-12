@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Defining precoverages via pre-`0`-hypercovers
 

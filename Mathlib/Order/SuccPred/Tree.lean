@@ -5,10 +5,12 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Atoms
-public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.SuccPred.Archimedean
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Rooted trees

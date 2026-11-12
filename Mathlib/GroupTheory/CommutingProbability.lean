@@ -5,11 +5,12 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.Qify
+
+import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.GroupTheory.Abelianization.Finite
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Qify
 
 /-!
 # Commuting Probability
@@ -158,14 +159,14 @@ lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
     reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by
   have h1 : n ≠ 1 := by
     rintro rfl
-    norm_num at h2
+    simp at h2
   rw [reciprocalFactors, dite_eq_right h0, dite_eq_right h1, ite_eq_left h2]
 
 lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
     reciprocalFactors n = n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
   have h0 : n ≠ 0 := by
     rintro rfl
-    norm_num [← Nat.not_even_iff_odd] at h2
+    simp [← Nat.not_even_iff_odd] at h2
   rw [reciprocalFactors, dite_eq_right h0, dite_eq_right h1,
     ite_eq_right (Nat.not_even_iff_odd.2 h2)]
 

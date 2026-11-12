@@ -16,7 +16,6 @@ In this file, we promote the bijection
 `adj.homEquiv X Y : (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y)` into
 additive equivalences
 `adj.extEquiv : Ext (F.obj X) Y n ≃+ Ext X (G.obj Y) n`.
-
 -/
 
 @[expose] public section

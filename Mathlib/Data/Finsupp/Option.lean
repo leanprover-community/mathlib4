@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.Finsupp.Basic
 
 /-!
 # Operations on `Finsupp`s with an `Option` domain
@@ -30,7 +30,6 @@ We prove a variety of API lemmas, see `Mathlib/Data/Finsupp/Fin.lean` for compar
 ## Implementation notes
 
 This file is a `noncomputable theory` and uses classical logic throughout.
-
 -/
 
 @[expose] public section

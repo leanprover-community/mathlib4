@@ -7,9 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Order.Preorder.Finite
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Tactic.Positivity.Finset
+
+import Mathlib.Tactic.Positivity.Finset
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ruzsa's covering lemma

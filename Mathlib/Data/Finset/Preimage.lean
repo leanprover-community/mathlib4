@@ -9,9 +9,14 @@ public import Mathlib.Data.Finset.Pi
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preimage of a `Finset` under an injective map.
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -101,7 +106,7 @@ theorem map_subset_iff_subset_preimage {f : α ↪ β} {s : Finset α} {t : Fins
   classical rw [map_eq_image, image_subset_iff_subset_preimage]
 
 lemma card_preimage (s : Finset β) (f : α → β) (hf) [DecidablePred (· ∈ Set.range f)] :
-    (s.preimage f hf).card = {x ∈ s | x ∈ Set.range f}.card :=
+    #(s.preimage f hf) = #{x ∈ s | x ∈ Set.range f} :=
   card_nbij f (by simp [Set.MapsTo]) (by simpa) (fun b hb ↦ by aesop)
 
 theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, Decidable (x ∈ Set.range f)]
