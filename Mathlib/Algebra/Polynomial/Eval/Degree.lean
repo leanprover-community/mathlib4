@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Polynomial.Eval.Coeff
 # Evaluation of polynomials and degrees
 
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.degree`.
-
 -/
 
 @[expose] public section

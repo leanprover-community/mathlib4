@@ -53,7 +53,6 @@ with Bourbaki's proof.
 ## References
 
 * [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 3, n° 1][bourbaki2023]
-
 -/
 
 open Topology Set Submodule Function ContinuousLinearMap

@@ -571,7 +571,9 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_conj := nnNorm_conj
 
-@[simp 1100, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
+@[simp 1100, rclike_simps] lemma eNorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [eNorm]
+
+@[deprecated (since := "2026-11-06")] alias enorm_conj := eNorm_conj
 
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq ((norm_mul _ _).trans congr($(norm_conj _) * ‖x‖)).symm
@@ -1215,17 +1217,17 @@ theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
 
 lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
   intro x y
-  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  simp only [ENNReal.coe_one, one_mul, eDist_eq_eNorm_sub]
   calc ‖re x - re y‖ₑ
   _ = ‖re (x - y)‖ₑ := by rw [map_sub re x y]
-  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+  _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
 
 lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   intro x y
-  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  simp only [ENNReal.coe_one, one_mul, eDist_eq_eNorm_sub]
   calc ‖im x - im y‖ₑ
   _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
-  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
+  _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
 /-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
 @[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where

@@ -26,7 +26,6 @@ In other words, for each `X : C`, we define a spectral
 object `t.spectralObject X : SpectralObject C EInt` in the
 triangulated category `C`, and this extends to a functor
 `t.spectralObjectFunctor : C ⥤ SpectralObject C EInt`.
-
 -/
 
 @[expose] public section

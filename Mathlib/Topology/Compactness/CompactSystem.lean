@@ -245,9 +245,8 @@ protected theorem countableInfClosure (hS : IsCompactSystem S) :
   simp only [mem_countableInfClosure_iff_iInf, iInf_eq_iInter] at hD
   choose t ht hDt using hD
   obtain rfl : D = fun i ↦ ⋂ n, t i n := funext fun i ↦ (hDt i).symm
-  obtain ⟨n, hn⟩ := hS (fun k ↦ t k.unpair.1 k.unpair.2) (fun k ↦ ht _ _)
-    (by rwa [iInter_unpair])
-  refine ⟨n, subset_eq_empty (fun x hx ↦ ?_) hn⟩
+  gconvert hS (fun k ↦ t k.unpair.1 k.unpair.2) (fun k ↦ ht _ _) (by rwa [iInter_unpair])
+  intro x hx
   simp only [mem_dissipate, mem_iInter] at hx ⊢
   exact fun k hk ↦ hx _ ((unpair_left_le k).trans hk) _
 
