@@ -503,7 +503,7 @@ theorem comap_map_eq (h : ↑(map f I) = f '' I) : comap f (map f I) = I ⊔ f.k
 lemma surjective_map_of_surjective (hf : Function.Surjective f) :
     Function.Surjective (map f) := by
   intro I
-  existsi comap f I
+  use comap f I
   simp [f.isIdealMorphism_of_surjective, hf]
 
 variable (f I J)
