@@ -854,16 +854,14 @@ lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty 
 
 /-- This is not an instance because it loops with `Submodule`s
 `IsArtinian → IsNoetherian → FiniteDimensionalOrder` instance. -/
-theorem _root_.FiniteDimensionalOrder.wellFoundedLT [FiniteDimensionalOrder α] :
-    WellFoundedLT α where
-  wf := SetRel.IsWellFounded.of_finiteDimensional {(a, b) : α × α | a < b}
+theorem _root_.FiniteDimensionalOrder.wellFoundedLT [FiniteDimensionalOrder α] : WellFoundedLT α :=
+  SetRel.IsWellFounded.of_finiteDimensional {(a, b) : α × α | a < b}
 
 /-- This is not an instance because it loops with `Submodule`s
 `IsArtinian → IsNoetherian → FiniteDimensionalOrder` instance. -/
 @[to_dual existing]
-theorem _root_.FiniteDimensionalOrder.wellFoundedGT [FiniteDimensionalOrder α] :
-    WellFoundedGT α where
-  wf := SetRel.IsWellFounded.inv_of_finiteDimensional {(a, b) : α × α | a < b}
+theorem _root_.FiniteDimensionalOrder.wellFoundedGT [FiniteDimensionalOrder α] : WellFoundedGT α :=
+  SetRel.IsWellFounded.inv_of_finiteDimensional {(a, b) : α × α | a < b}
 
 variable {α}
 
