@@ -477,7 +477,7 @@ protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : Ort
   ⟨b.repr.trans (lpPiLpₗᵢ _ 𝕜)⟩
 
 @[simp]
-theorem toOrthonormalBasis_repr [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
+theorem repr_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
     b.toOrthonormalBasis.repr = b.repr.trans (lpPiLpₗᵢ _ 𝕜) :=
   rfl
 
