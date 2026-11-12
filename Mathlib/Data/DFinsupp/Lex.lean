@@ -134,13 +134,10 @@ private def colexTrichotomyRec {P : Colex (Π₀ i, α i) → Colex (Π₀ i, α
     (h_lt : ∀ {f g}, toColex f < toColex g → P (toColex f) (toColex g))
     (h_eq : ∀ {f g}, toColex f = toColex g → P (toColex f) (toColex g))
     (h_gt : ∀ {f g}, toColex g < toColex f → P (toColex f) (toColex g)) : ∀ f g, P f g :=
-  fun ⟨f⟩ ⟨g⟩ ↦ match (motive := ∀ y, (f.neLocus g).max = y → _) _, rfl with
-  | ⊥, h => h_eq (congrArg toColex (neLocus_eq_empty.mp <| Finset.max_eq_bot.mp h))
-  | (wit : ι), h => by
-    apply (mem_neLocus.mp <| Finset.mem_of_max h).lt_or_gt.by_cases <;> intro hwit
-    · exact h_lt ⟨wit, fun j hj ↦ notMem_neLocus.mp (Finset.notMem_of_max_lt hj h), hwit⟩
-    · exact h_gt ⟨wit, fun j hj ↦
-        notMem_neLocus.mp (Finset.notMem_of_max_lt hj <| by rwa [neLocus_comm]), hwit⟩
+  let (i : ιᵒᵈ) : Zero (α i) := inferInstanceAs (Zero (α i.ofDual))
+  let (i : ιᵒᵈ) : LinearOrder (α i) := inferInstanceAs (LinearOrder (α i.ofDual))
+  fun ⟨f⟩ ⟨g⟩ ↦ lexTrichotomyRec (ι := ιᵒᵈ) (P := fun f g ↦ P (toColex f.ofLex) (toColex g.ofLex))
+    h_lt (fun h ↦ h_eq congr(toColex $(h).ofLex)) h_gt (toLex f) (toLex g)
 
 instance Lex.total_le : @Std.Total (Lex (Π₀ i, α i)) (· ≤ ·) where
   total := lexTrichotomyRec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
