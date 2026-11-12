@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 This file provides the additive action `AffineSubspace.pointwiseAddAction` in the
 `Pointwise` locale.
-
 -/
 
 @[expose] public section

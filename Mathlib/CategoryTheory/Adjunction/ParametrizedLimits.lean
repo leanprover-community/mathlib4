@@ -17,7 +17,6 @@ a parametrized adjunction `adj₂ : F ⊣₂ G`, we show that for any `X₃ : C�
 the functor `G.flip.obj X₃ : C₁ᵒᵖ ⥤ C₃` preserves limits of shape `J`
 if for any `X₂ : C₂`, the functor `F.flip.obj X₂ : C₁ ⥤ C₃`
 preserves colimits of shape `Jᵒᵖ`.
-
 -/
 
 public section

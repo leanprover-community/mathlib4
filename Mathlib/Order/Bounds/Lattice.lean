@@ -15,7 +15,6 @@ Some results about upper and lower bounds over collections of sets.
 ## Implementation notes
 
 In a separate file as we need to import `Mathlib/Data/Set/Lattice.lean`.
-
 -/
 
 public section

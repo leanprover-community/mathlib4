@@ -22,7 +22,6 @@ carrying a uniformly locally doubling measure.
   [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
 * `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
   rather than closed thickenings.
-
 -/
 
 public section

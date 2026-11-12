@@ -18,7 +18,6 @@ functions, including various special cases such as the functions `0`, `1`, `Nat.
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
-
 -/
 
 public section

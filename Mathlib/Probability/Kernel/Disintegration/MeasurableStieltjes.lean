@@ -41,7 +41,6 @@ Finally, we define `stieltjesOfMeasurableRat`, composition of `toRatCDF` and
 
 * `stieltjesOfMeasurableRat`: turn a measurable function `f : α → ℚ → ℝ` into a measurable
   function `α → StieltjesFunction ℝ`.
-
 -/
 
 @[expose] public section

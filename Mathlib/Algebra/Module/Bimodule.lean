@@ -52,7 +52,6 @@ advantage of the fact that `(Sᵐᵒᵖ)ᵐᵒᵖ` is defeq to `S`.
 ## TODO
 
 Develop the theory of two-sided ideals, which have type `Submodule (R ⊗[ℕ] Rᵐᵒᵖ) R`.
-
 -/
 
 @[expose] public section

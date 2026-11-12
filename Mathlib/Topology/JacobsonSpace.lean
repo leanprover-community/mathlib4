@@ -20,7 +20,6 @@ public import Mathlib.Topology.LocalAtTarget
 
 ## References
 - https://stacks.math.columbia.edu/tag/005T
-
 -/
 
 @[expose] public section

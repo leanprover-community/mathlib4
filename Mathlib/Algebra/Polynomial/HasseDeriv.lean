@@ -39,7 +39,6 @@ in `Mathlib/Algebra/Polynomial/Taylor.lean`.
 ## Reference
 
 https://math.fontein.de/2009/08/12/the-hasse-derivative/
-
 -/
 
 @[expose] public section

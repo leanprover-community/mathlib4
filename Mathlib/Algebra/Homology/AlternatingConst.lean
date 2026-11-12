@@ -20,7 +20,6 @@ different parity). We calculate the homology of these periodic complexes.
 
 In particular, we show `... ⟶ X --𝟙--> X --0--> X --𝟙--> X --0--> X ⟶ 0` is homotopy equivalent
 to the single complex where `X` is in degree `0`.
-
 -/
 
 @[expose] public section
