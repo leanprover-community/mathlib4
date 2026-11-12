@@ -386,6 +386,30 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
     Eq.symm (Seminorm.vadd_ball (sr.fst.sup p))
   rwa [vadd_eq_add, add_zero] at this
 
+theorem WithSeminorms.hasBasis_zero_ball_of_directed [Nonempty ι] (hp : WithSeminorms p)
+    (hp_dir : Directed (· ≤ ·) p) :
+    (𝓝 (0 : E)).HasBasis (fun ir : ι × ℝ ↦ 0 < ir.2) fun ir ↦ (p ir.1).ball 0 ir.2 := by
+  refine hp.hasBasis_zero_ball.to_hasBasis ?_ ?_
+  · rintro ⟨s, r⟩ (hr : 0 < r)
+    obtain ⟨i, hi⟩ := hp_dir.finset_le s
+    exact ⟨(i, r), hr, ball_antitone (Finset.sup_le hi)⟩
+  · rintro ⟨i, r⟩ (hr : 0 < r)
+    exact ⟨({i}, r), hr, by simp⟩
+
+theorem WithSeminorms.hasBasis_zero_closedBall (hp : WithSeminorms p) :
+    (𝓝 (0 : E)).HasBasis
+    (fun sr : Finset ι × ℝ ↦ 0 < sr.2) fun sr ↦ (sr.1.sup p).closedBall 0 sr.2 :=
+  hp.hasBasis_zero_ball.to_hasBasis
+    (fun i hi ↦ ⟨(i.1, i.2 / 2), half_pos hi, fun _ (hx : _ ≤ _) ↦ hx.trans_lt (half_lt_self hi)⟩)
+    fun i hi ↦ ⟨i, hi, ball_subset_closedBall _ 0 i.2⟩
+
+theorem WithSeminorms.hasBasis_zero_closedBall_of_directed [Nonempty ι] (hp : WithSeminorms p)
+    (hp_dir : Directed (· ≤ ·) p) :
+    (𝓝 (0 : E)).HasBasis (fun ir : ι × ℝ ↦ 0 < ir.2) fun ir ↦ (p ir.1).closedBall 0 ir.2 :=
+  (hp.hasBasis_zero_ball_of_directed hp_dir).to_hasBasis
+    (fun i hi ↦ ⟨(i.1, i.2 / 2), half_pos hi, fun _ (hx : _ ≤ _) ↦ hx.trans_lt (half_lt_self hi)⟩)
+    fun i hi ↦ ⟨i, hi, ball_subset_closedBall _ 0 i.2⟩
+
 /-- The `x`-neighbourhoods of a space whose topology is induced by a family of seminorms
 are exactly the sets which contain seminorm balls around `x`. -/
 theorem WithSeminorms.mem_nhds_iff (hp : WithSeminorms p) (x : E) (U : Set E) :
