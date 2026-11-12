@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Tactic.Linarith
 
 /-! # Shifting cochains
@@ -29,7 +29,6 @@ appearing in the introduction of
 
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
-
 -/
 
 @[expose] public section

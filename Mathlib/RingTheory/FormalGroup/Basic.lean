@@ -36,7 +36,6 @@ when `F` is a commutative formal group law
 
 ## References
 * [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
-
 -/
 
 @[expose] public section

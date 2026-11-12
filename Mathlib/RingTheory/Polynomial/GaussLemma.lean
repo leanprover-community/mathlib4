@@ -32,7 +32,6 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
   Two primitive polynomials over a GCD domain divide each other iff they do in a fraction field.
 - `Polynomial.IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast`:
   Two primitive polynomials over `ℤ` divide each other if they do in `ℚ`.
-
 -/
 
 public section

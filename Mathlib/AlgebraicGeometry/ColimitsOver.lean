@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 /-!
-
 # Colimits in `P.Over ⊤ S`
 
 Let `P` be a morphism property in the category of schemes and `S` be a scheme. Let
@@ -25,7 +24,6 @@ then we show that also `D` has a colimit under the following assumptions:
 
 This can be used to reduce existence of certain colimits in `P.Over ⊤ S` to the case where
 `S` is affine.
-
 -/
 
 @[expose] public section

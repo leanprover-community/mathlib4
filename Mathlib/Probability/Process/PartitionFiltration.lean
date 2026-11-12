@@ -33,7 +33,6 @@ function on `α`.
 
 * `ProbabilityTheory.iSup_partitionFiltration`: `⨆ n, partitionFiltration α n` is the measurable
   space on `α`.
-
 -/
 
 @[expose] public section

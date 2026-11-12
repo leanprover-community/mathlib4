@@ -12,10 +12,6 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.CrossRefAttribute
 
-import Aesop.BuiltinRules
-import Aesop.Frontend.Tactic
-import Aesop.Main
-
 /-!
 # Basic definitions about sets
 
@@ -241,13 +237,15 @@ theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 
+attribute [local grind norm] Prod.forall in
 theorem prod_image_left (f : α → γ) (s : Set α) (t : Set β) :
     (f '' s) ×ˢ t = (fun x ↦ (f x.1, x.2)) '' s ×ˢ t := by
-  aesop
+  grind
 
+attribute [local grind norm] Prod.forall in
 theorem prod_image_right (f : α → γ) (s : Set α) (t : Set β) :
     t ×ˢ (f '' s) = (fun x ↦ (x.1, f x.2)) '' t ×ˢ s := by
-  aesop
+  grind
 
 end Prod
 

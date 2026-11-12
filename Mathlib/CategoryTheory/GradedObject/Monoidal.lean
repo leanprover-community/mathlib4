@@ -22,7 +22,6 @@ preservation of certain coproducts by the tensor products in `C`, we
 obtain a monoidal category structure on `GradedObject I C`.
 In particular, if `C` has finite coproducts to which the tensor
 product commutes, we obtain a monoidal category structure on `GradedObject ℕ C`.
-
 -/
 
 @[expose] public section
@@ -555,7 +554,6 @@ variable [DecidableEq I] [HasInitial C]
   [HasTensor (tensorObj X₁ tensorUnit) X₃] [HasTensor X₁ (tensorObj tensorUnit X₃)]
   [HasGoodTensor₁₂Tensor X₁ tensorUnit X₃] [HasGoodTensorTensor₂₃ X₁ tensorUnit X₃]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma triangle :
     (associator X₁ tensorUnit X₃).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₃).hom =
       tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by

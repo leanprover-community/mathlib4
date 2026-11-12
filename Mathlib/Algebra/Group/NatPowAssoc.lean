@@ -33,7 +33,6 @@ We also produce the following instances:
 ## TODO
 
 * `to_additive`?
-
 -/
 
 public section

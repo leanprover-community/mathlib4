@@ -10,7 +10,6 @@ public import Mathlib.Tactic.ClickSuggestions.Util
 import ProofWidgets.Component.Basic
 
 /-!
-
 # Interactive unfolding
 
 This file defines the interactive tactic `unfold?`.
@@ -49,7 +48,6 @@ This is implemented with `unfoldProjDefaultInst?`.
 Additionally, we don't want to unfold into expressions involving `match` terms or other
 constants marked as `Name.isInternalDetail`, and we don't want raw projections.
 So, all such results are filtered out. This is implemented with `isUserFriendly`.
-
 -/
 
 meta section
@@ -134,7 +132,7 @@ def tacticSyntax (e eNew : Expr) (rwKind : RwKind) :
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
 for pasting the rewrite tactic. Return `none` when there are no unfolds. -/
 public def suggestUnfold (e : Expr) (rwKind : RwKind) :
-    ClickSuggestionsM (Option Html) := do
+    ClickSuggestionsM (Option ProofWidgets.Html) := do
   let results ← filteredUnfolds e
   if results.isEmpty then
     return none

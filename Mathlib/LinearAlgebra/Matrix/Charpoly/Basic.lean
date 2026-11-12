@@ -55,13 +55,13 @@ theorem charmatrix_apply :
 
 @[simp]
 theorem charmatrix_apply_eq : charmatrix M i i = (X : R[X]) - C (M i i) := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, map_apply,
+  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_apply, scalar_apply, map_apply,
     diagonal_apply_eq]
 
 @[simp]
 theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
-  simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
-    map_apply, sub_eq_neg_self]
+  simp only [charmatrix, RingHom.mapMatrix_apply, Matrix.sub_apply, scalar_apply,
+    diagonal_apply_ne _ h, map_apply, sub_eq_neg_self]
 
 @[simp]
 theorem charmatrix_zero : charmatrix (0 : Matrix n n R) = Matrix.scalar n (X : R[X]) := by

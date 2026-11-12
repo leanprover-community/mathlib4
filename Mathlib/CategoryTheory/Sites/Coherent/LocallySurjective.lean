@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 
 /-!
-
 # Locally surjective morphisms of coherent sheaves
 
 This file characterises locally surjective morphisms of presheaves for the coherent, regular
@@ -104,7 +103,6 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
         ∀ (X : C), Function.Surjective (f.hom.app (op X)) :=
   extensiveTopology.presheafIsLocallySurjective_iff _ f.hom
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]

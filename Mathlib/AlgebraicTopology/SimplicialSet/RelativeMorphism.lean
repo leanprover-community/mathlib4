@@ -17,7 +17,6 @@ these relative morphisms and introduce the quotient type of homotopy classes.
 This is used in the file `Mathlib/AlgebraicTopology/SimplicialSet/Homotopy.lean`
 in order to define homotopies (`SSet.Homotopy`) between morphisms in the
 category of simplicial sets.
-
 -/
 
 @[expose] public section
