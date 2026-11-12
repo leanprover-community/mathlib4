@@ -327,21 +327,19 @@ namespace Lex
 
 open _root_.Lex
 
-local notation "toLexEmb" => toLexEquiv.toEmbedding
-
 section LocallyFiniteOrder
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot β]
 
 instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
-  finsetIcc a b :=
-    (sumLexLift Icc Icc (fun a _ => Ici a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLexEmb
-  finsetIco a b :=
-    (sumLexLift Ico Ico (fun a _ => Ici a) (fun _ => Iio) (ofLex a) (ofLex b)).map toLexEmb
-  finsetIoc a b :=
-    (sumLexLift Ioc Ioc (fun a _ => Ioi a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLexEmb
-  finsetIoo a b :=
-    (sumLexLift Ioo Ioo (fun a _ => Ioi a) (fun _ => Iio) (ofLex a) (ofLex b)).map toLexEmb
+  finsetIcc a b := (sumLexLift Icc Icc (fun a _ => Ici a) (fun _ => Iic) (ofLex a) (ofLex b)).map
+    toLexEquiv.toEmbedding
+  finsetIco a b := (sumLexLift Ico Ico (fun a _ => Ici a) (fun _ => Iio) (ofLex a) (ofLex b)).map
+    toLexEquiv.toEmbedding
+  finsetIoc a b := (sumLexLift Ioc Ioc (fun a _ => Ioi a) (fun _ => Iic) (ofLex a) (ofLex b)).map
+    toLexEquiv.toEmbedding
+  finsetIoo a b := (sumLexLift Ioo Ioo (fun a _ => Ioi a) (fun _ => Iio) (ofLex a) (ofLex b)).map
+    toLexEquiv.toEmbedding
   finset_mem_Icc := by simp
   finset_mem_Ico := by simp
   finset_mem_Ioc := by simp
@@ -350,32 +348,40 @@ instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
 variable (a a₁ a₂ : α) (b b₁ b₂ : β)
 
 lemma Icc_inl_inl :
-    Icc (inlₗ a₁ : α ⊕ₗ β) (inlₗ a₂) = (Icc a₁ a₂).map (Embedding.inl.trans toLexEmb) := by
+    Icc (inlₗ a₁ : α ⊕ₗ β) (inlₗ a₂) =
+    (Icc a₁ a₂).map (Embedding.inl.trans toLexEquiv.toEmbedding) := by
   rw [← Finset.map_map]; rfl
 
 lemma Ico_inl_inl :
-    Ico (inlₗ a₁ : α ⊕ₗ β) (inlₗ a₂) = (Ico a₁ a₂).map (Embedding.inl.trans toLexEmb) := by
+    Ico (inlₗ a₁ : α ⊕ₗ β) (inlₗ a₂) =
+    (Ico a₁ a₂).map (Embedding.inl.trans toLexEquiv.toEmbedding) := by
   rw [← Finset.map_map]; rfl
 
 lemma Ioc_inl_inl :
-    Ioc (inlₗ a₁ : α ⊕ₗ β) (inlₗ a₂) = (Ioc a₁ a₂).map (Embedding.inl.trans toLexEmb) := by
+    Ioc (inlₗ a₁ : α ⊕ₗ β) (inlₗ a₂) =
+    (Ioc a₁ a₂).map (Embedding.inl.trans toLexEquiv.toEmbedding) := by
   rw [← Finset.map_map]; rfl
 
 lemma Ioo_inl_inl :
-    Ioo (inlₗ a₁ : α ⊕ₗ β) (inlₗ a₂) = (Ioo a₁ a₂).map (Embedding.inl.trans toLexEmb) := by
+    Ioo (inlₗ a₁ : α ⊕ₗ β) (inlₗ a₂) =
+    (Ioo a₁ a₂).map (Embedding.inl.trans toLexEquiv.toEmbedding) := by
   rw [← Finset.map_map]; rfl
 
 @[simp]
-lemma Icc_inl_inr : Icc (inlₗ a) (inrₗ b) = ((Ici a).disjSum (Iic b)).map toLexEmb := rfl
+lemma Icc_inl_inr : Icc (inlₗ a) (inrₗ b) = ((Ici a).disjSum (Iic b)).map toLexEquiv.toEmbedding :=
+  rfl
 
 @[simp]
-lemma Ico_inl_inr : Ico (inlₗ a) (inrₗ b) = ((Ici a).disjSum (Iio b)).map toLexEmb := rfl
+lemma Ico_inl_inr : Ico (inlₗ a) (inrₗ b) = ((Ici a).disjSum (Iio b)).map toLexEquiv.toEmbedding :=
+  rfl
 
 @[simp]
-lemma Ioc_inl_inr : Ioc (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iic b)).map toLexEmb := rfl
+lemma Ioc_inl_inr : Ioc (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iic b)).map toLexEquiv.toEmbedding :=
+  rfl
 
 @[simp]
-lemma Ioo_inl_inr : Ioo (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iio b)).map toLexEmb := rfl
+lemma Ioo_inl_inr : Ioo (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iio b)).map toLexEquiv.toEmbedding :=
+  rfl
 
 @[simp]
 lemma Icc_inr_inl : Icc (inrₗ b) (inlₗ a) = ∅ := rfl
@@ -390,19 +396,23 @@ lemma Ioc_inr_inl : Ioc (inrₗ b) (inlₗ a) = ∅ := rfl
 lemma Ioo_inr_inl : Ioo (inrₗ b) (inlₗ a) = ∅ := rfl
 
 lemma Icc_inr_inr :
-    Icc (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) = (Icc b₁ b₂).map (Embedding.inr.trans toLexEmb) := by
+    Icc (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) =
+    (Icc b₁ b₂).map (Embedding.inr.trans toLexEquiv.toEmbedding) := by
   rw [← Finset.map_map]; rfl
 
 lemma Ico_inr_inr :
-    Ico (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) = (Ico b₁ b₂).map (Embedding.inr.trans toLexEmb) := by
+    Ico (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) =
+    (Ico b₁ b₂).map (Embedding.inr.trans toLexEquiv.toEmbedding) := by
   rw [← Finset.map_map]; rfl
 
 lemma Ioc_inr_inr :
-    Ioc (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) = (Ioc b₁ b₂).map (Embedding.inr.trans toLexEmb) := by
+    Ioc (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) =
+    (Ioc b₁ b₂).map (Embedding.inr.trans toLexEquiv.toEmbedding) := by
   rw [← Finset.map_map]; rfl
 
 lemma Ioo_inr_inr :
-    Ioo (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) = (Ioo b₁ b₂).map (Embedding.inr.trans toLexEmb) := by
+    Ioo (inrₗ b₁ : α ⊕ₗ β) (inrₗ b₂) =
+    (Ioo b₁ b₂).map (Embedding.inr.trans toLexEquiv.toEmbedding) := by
   rw [← Finset.map_map]; rfl
 
 end LocallyFiniteOrder
@@ -412,21 +422,25 @@ variable [Preorder α] [Preorder β] [Fintype α] [LocallyFiniteOrderBot α] [Lo
 
 instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (α ⊕ₗ β) where
   finsetIic := Sum.elim
-    (Iic · |>.map (.trans .inl toLexEmb))
-    (fun x => Finset.univ.disjSum (Iic x) |>.map toLexEmb) ∘ ofLex
+    (Iic · |>.map (.trans .inl toLexEquiv.toEmbedding))
+    (fun x => Finset.univ.disjSum (Iic x) |>.map toLexEquiv.toEmbedding) ∘ ofLex
   finsetIio := Sum.elim
-    (Iio · |>.map (.trans .inl toLexEmb))
-    (fun x => Finset.univ.disjSum (Iio x) |>.map toLexEmb) ∘ ofLex
+    (Iio · |>.map (.trans .inl toLexEquiv.toEmbedding))
+    (fun x => Finset.univ.disjSum (Iio x) |>.map toLexEquiv.toEmbedding) ∘ ofLex
   finset_mem_Iic := by simp
   finset_mem_Iio := by simp
 
 variable (a : α) (b : β)
 
-lemma Iic_inl : Iic (inlₗ a : α ⊕ₗ β) = (Iic a).map (Embedding.inl.trans toLexEmb) := rfl
-lemma Iic_inr : Iic (inrₗ b : α ⊕ₗ β) = (Finset.univ.disjSum (Iic b)).map toLexEmb := rfl
+lemma Iic_inl : Iic (inlₗ a : α ⊕ₗ β) = (Iic a).map (Embedding.inl.trans toLexEquiv.toEmbedding) :=
+  rfl
+lemma Iic_inr : Iic (inrₗ b : α ⊕ₗ β) = (Finset.univ.disjSum (Iic b)).map toLexEquiv.toEmbedding :=
+  rfl
 
-lemma Iio_inl : Iio (inlₗ a : α ⊕ₗ β) = (Iio a).map (Embedding.inl.trans toLexEmb) := rfl
-lemma Iio_inr : Iio (inrₗ b : α ⊕ₗ β) = (Finset.univ.disjSum (Iio b)).map toLexEmb := rfl
+lemma Iio_inl : Iio (inlₗ a : α ⊕ₗ β) = (Iio a).map (Embedding.inl.trans toLexEquiv.toEmbedding) :=
+  rfl
+lemma Iio_inr : Iio (inrₗ b : α ⊕ₗ β) = (Finset.univ.disjSum (Iio b)).map toLexEquiv.toEmbedding :=
+  rfl
 
 end LocallyFiniteOrderBot
 
@@ -444,21 +458,25 @@ variable [Preorder α] [Preorder β] [LocallyFiniteOrderTop α] [Fintype β] [Lo
 
 instance instLocallyFiniteOrderTop : LocallyFiniteOrderTop (α ⊕ₗ β) where
   finsetIci := Sum.elim
-    (fun x => (Ici x).disjSum Finset.univ |>.map toLexEmb)
-    (Ici · |>.map (.trans .inr toLexEmb)) ∘ ofLex
+    (fun x => (Ici x).disjSum Finset.univ |>.map toLexEquiv.toEmbedding)
+    (Ici · |>.map (.trans .inr toLexEquiv.toEmbedding)) ∘ ofLex
   finsetIoi := Sum.elim
-    (fun x => (Ioi x).disjSum Finset.univ |>.map toLexEmb)
-    (Ioi · |>.map (.trans .inr toLexEmb)) ∘ ofLex
+    (fun x => (Ioi x).disjSum Finset.univ |>.map toLexEquiv.toEmbedding)
+    (Ioi · |>.map (.trans .inr toLexEquiv.toEmbedding)) ∘ ofLex
   finset_mem_Ici := by simp
   finset_mem_Ioi := by simp
 
 variable (a : α) (b : β)
 
-lemma Ici_inl : Ici (inlₗ a : α ⊕ₗ β) = ((Ici a).disjSum Finset.univ).map toLexEmb := rfl
-lemma Ici_inr : Ici (inrₗ b : α ⊕ₗ β) = (Ici b).map (Embedding.inr.trans toLexEmb) := rfl
+lemma Ici_inl : Ici (inlₗ a : α ⊕ₗ β) = ((Ici a).disjSum Finset.univ).map toLexEquiv.toEmbedding :=
+  rfl
+lemma Ici_inr : Ici (inrₗ b : α ⊕ₗ β) = (Ici b).map (Embedding.inr.trans toLexEquiv.toEmbedding) :=
+  rfl
 
-lemma Ioi_inl : Ioi (inlₗ a : α ⊕ₗ β) = ((Ioi a).disjSum Finset.univ).map toLexEmb := rfl
-lemma Ioi_inr : Ioi (inrₗ b : α ⊕ₗ β) = (Ioi b).map (Embedding.inr.trans toLexEmb) := rfl
+lemma Ioi_inl : Ioi (inlₗ a : α ⊕ₗ β) = ((Ioi a).disjSum Finset.univ).map toLexEquiv.toEmbedding :=
+  rfl
+lemma Ioi_inr : Ioi (inrₗ b : α ⊕ₗ β) = (Ioi b).map (Embedding.inr.trans toLexEquiv.toEmbedding) :=
+  rfl
 
 end LocallyFiniteOrderTop
 
