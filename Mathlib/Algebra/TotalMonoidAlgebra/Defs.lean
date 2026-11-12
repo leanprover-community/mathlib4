@@ -602,7 +602,7 @@ lemma coeff_uniqueRingEquiv_symm [Subsingleton M] (r : R) (m : M) :
 
 /-- A product total monoid algebra is a nested total monoid algebra. -/
 @[to_additive (dont_translate := R)
-/-- An product total additive monoid algebra is a nested additive monoid algebra. -/]
+/-- An product total additive monoid algebra is a nested total additive monoid algebra. -/]
 def curryAddEquiv [DecidableEq M] [DecidableEq N] : R⟦M × N⟧ ≃+ R⟦N⟧⟦M⟧ :=
   coeffAddEquiv.trans <| .trans (AddEquiv.curry ..) <| .trans
     (AddEquiv.arrowCongr (Equiv.refl _) coeffAddEquiv.symm) coeffAddEquiv.symm
