@@ -162,17 +162,6 @@ lemma IsPosSymmetrizable.submatrix [Semiring R] [Preorder R] (f : κ → ι)
   use d ∘ f
   simp [hd, h]
 
-lemma IsPosSymmetrizable.eq_zero_iff [Semiring R] [IsDomain R] [Preorder R]
-    (h : M.IsPosSymmetrizable) (i j : ι) : M i j = 0 ↔ M j i = 0 := by
-  obtain ⟨d, hd, h⟩ := h
-  refine ⟨fun hij ↦ ?_, fun hij ↦ ?_⟩
-  · specialize h i j
-    rw [hij, mul_zero, zero_eq_mul] at h
-    exact h.resolve_left (hd j).ne.symm
-  · specialize h j i
-    rw [hij, mul_zero, zero_eq_mul] at h
-    exact h.resolve_left (hd i).ne.symm
-
 lemma isPosSymmetrizable_iff_of_pairwise_eq [Semiring R] [LT R]
     (h : Pairwise fun i j ↦ M i j = N i j) : M.IsPosSymmetrizable ↔ N.IsPosSymmetrizable := by
   refine ⟨fun ⟨d, hd, hM⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩, fun ⟨d, hd, hM⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩⟩
