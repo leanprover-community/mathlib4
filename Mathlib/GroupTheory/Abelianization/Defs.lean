@@ -153,8 +153,7 @@ theorem map_comp_of : (map f).comp of = of.comp f :=
   rfl
 
 @[to_additive]
-lemma ker_map (f : G →* H) :
-    (map f).ker = ((commutator H).comap f).map of := by
+lemma ker_map (f : G →* H) : (map f).ker = ((commutator H).comap f).map of := by
   rw [← ker_of, MonoidHom.comap_ker, ← map_comp_of, ← MonoidHom.comap_ker,
     Subgroup.map_comap_eq_self_of_surjective (surjective_of G)]
 
@@ -165,8 +164,8 @@ lemma map_ker_le_ker_map (f : G →* H) : f.ker.map of ≤ (Abelianization.map f
 @[to_additive]
 lemma map_ker_eq_ker_map (f : G →* H) (hf : Function.Surjective f) :
     f.ker.map of = (map f).ker := by
-  rw [ker_map, ← map_commutator_of_surjective hf, Subgroup.comap_map_eq, Subgroup.map_eq_map_iff]
-  simp [sup_comm]
+  rw [ker_map, ← map_commutator_of_surjective hf, Subgroup.comap_map_eq, Subgroup.map_sup,
+    ← ker_of, Subgroup.map_ker_self, bot_sup_eq]
 
 @[to_additive (attr := simp)]
 theorem map_id : map (MonoidHom.id G) = MonoidHom.id (Abelianization G) :=
