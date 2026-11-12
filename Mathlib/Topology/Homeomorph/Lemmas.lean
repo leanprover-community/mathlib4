@@ -364,39 +364,6 @@ def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   continuous_invFun :=
     (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
 
-/-- The homeomorphism between a disjoint union of sets and a disjoint union of the corresponding
-subtypes when each set has a neighbourhood that is disjoint from all other sets.
-
-This condition is the precise condition needed for the bijection to be a homeomorphism:
-see `inducing_sigma`. A weaker condition like any two sets in the family having disjoint
-neighbourhoods is not enough, as the example of infinite collections of singletons in
-Hausdorff spaces shows. -/
-@[simps! symm_apply_coe]
-noncomputable def Set.iUnion {ι : Type*} {s : ι → Set X}
-    (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) :
-    ⋃ i, s i ≃ₜ Σ i, s i := by
-  have hs' : Pairwise (Disjoint on s) := fun i j h ↦
-    let ⟨u, hu, hu'⟩ := hs i
-    (hu' j h.symm).mono_left (subset_of_mem_nhdsSet hu)
-  refine ((unionEqSigmaOfDisjoint hs').symm.toHomeomorphOfIsInducing ?_).symm
-  refine inducing_sigma.2 ⟨fun i ↦ ?_, fun i ↦ ?_⟩
-  · simp [Function.comp_def, ← IsInducing.subtypeVal.of_comp_iff, IsInducing.subtypeVal]
-  · obtain ⟨u, hu, hu'⟩ := hs i
-    obtain ⟨v, hvu, hv, hv'⟩ := mem_nhdsSet.1 hu
-    refine ⟨(↑) ⁻¹' v, hv.preimage_val, fun x ↦ ⟨fun h ↦ ?_, ?_⟩⟩
-    · simp only [mem_preimage, coe_unionEqSigmaOfDisjoint_symm_apply] at h
-      contrapose! h
-      exact notMem_subset hvu <| (hu' _ h).notMem_of_mem_right x.snd.2
-    · intro rfl
-      simp [hv' x.snd.2]
-
-@[simp]
-lemma Set.iUnion_apply_snd_coe {ι : Type*} {s : ι → Set X}
-    (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) {x : ⋃ i, s i} :
-    ((Homeomorph.Set.iUnion hs x).snd : X) = x := by
-  rw [iUnion, Equiv.toHomeomorphOfIsInducing_symm_apply, Equiv.symm_symm]
-  exact coe_snd_unionEqSigmaOfDisjoint _ _
-
 section
 
 variable {ι : Type*}
@@ -578,6 +545,16 @@ lemma isHomeomorph_iff_continuous_bijective [CompactSpace X] [T2Space Y] :
   refine and_congr_right fun hf ↦ ?_
   rw [eq_true hf.isClosedMap, true_and]
 
+@[simp]
+lemma Equiv.isHomeomorph_symm_iff (e : X ≃ Y) : IsHomeomorph e.symm ↔ IsHomeomorph e := by
+  simp [Equiv.isHomeomorph_iff, and_comm]
+
+lemma Equiv.isHomeomorph_iff_isInducing (e : X ≃ Y) : IsHomeomorph e ↔ IsInducing e := by
+  simp [isHomeomorph_iff_isEmbedding_surjective, isEmbedding_iff, e.injective, e.surjective]
+
+lemma Equiv.isHomeomorph_iff_isCoinducing (e : X ≃ Y) : IsHomeomorph e ↔ IsCoinducing e := by
+  simp [isHomeomorph_iff_isQuotientMap_injective, isQuotientMap_iff, e.injective, e.surjective]
+
 lemma IsHomeomorph.sumMap {g : Z → W} (hf : IsHomeomorph f) (hg : IsHomeomorph g) :
     IsHomeomorph (Sum.map f g) := ⟨hf.1.sumMap hg.1, hf.2.sumMap hg.2, hf.3.sumMap hg.3⟩
 
@@ -603,6 +580,47 @@ def Homeomorph.ofDiscrete [DiscreteTopology X] [DiscreteTopology Y] (f : X ≃ Y
 theorem Equiv.isHomeomorph_of_discrete [DiscreteTopology X] [DiscreteTopology Y]
     (f : X ≃ Y) : IsHomeomorph f :=
   (Homeomorph.ofDiscrete f).isHomeomorph
+
+/- The equivalence between a disjoint union of sets and a disjoint union of the corresponding
+subtypes is a homeomorphism if and only if each set has a neighbourhood that is disjoint from all
+other sets. -/
+lemma Set.isHomeomorph_unionEqSigmaOfDisjoint_iff {ι : Type*} {s : ι → Set X}
+    (hs : Pairwise (Disjoint on s)) :
+    IsHomeomorph (unionEqSigmaOfDisjoint hs) ↔
+      ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j) := by
+  rw [← Equiv.isHomeomorph_symm_iff, Equiv.isHomeomorph_iff_isInducing, inducing_sigma]
+  refine ⟨fun h i ↦ ?_, fun h ↦ ⟨?_, fun i ↦ ?_⟩⟩
+  · obtain ⟨u, hu, h⟩ := h.2 i
+    obtain ⟨v, hv, rfl⟩ := IsInducing.subtypeVal.isOpen_iff.1 hu
+    exact ⟨v, hv.mem_nhdsSet.2 fun x hx ↦ by simpa using h ⟨i, x, hx⟩,
+      fun j hj ↦ Set.disjoint_iff.2 fun x hx ↦ by simpa [hx.1, hj] using h ⟨j, x, hx.2⟩⟩
+  · simp [Function.comp_def, ← IsInducing.subtypeVal.of_comp_iff, IsInducing.subtypeVal]
+  · obtain ⟨u, hu, hu'⟩ := h i
+    obtain ⟨v, hvu, hv, hv'⟩ := mem_nhdsSet.1 hu
+    refine ⟨(↑) ⁻¹' v, hv.preimage_val, fun x ↦ ⟨fun h ↦ ?_, ?_⟩⟩
+    · simp only [mem_preimage, coe_unionEqSigmaOfDisjoint_symm_apply] at h
+      contrapose! h
+      exact notMem_subset hvu <| (hu' _ h).notMem_of_mem_right x.snd.2
+    · intro rfl
+      simp [hv' x.snd.2]
+
+/-- The homeomorphism between a disjoint union of sets and a disjoint union of the corresponding
+subtypes when each set has a neighbourhood that is disjoint from all other sets. -/
+@[simps! symm_apply_coe]
+noncomputable def Homeomorph.Set.iUnion {ι : Type*} {s : ι → Set X}
+    (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) :
+    ⋃ i, s i ≃ₜ Σ i, s i := by
+  refine (unionEqSigmaOfDisjoint fun i j h ↦ ?_).toHomeomorphOfIsInducing <|
+    ((Set.isHomeomorph_unionEqSigmaOfDisjoint_iff _).2 hs).isInducing
+  obtain ⟨u, hu, hu'⟩ := hs i
+  exact (hu' j h.symm).mono_left (subset_of_mem_nhdsSet hu)
+
+@[simp]
+lemma Homeomorph.Set.iUnion_apply_snd_coe {ι : Type*} {s : ι → Set X}
+    (hs : ∀ i, ∃ u ∈ 𝓝ˢ (s i), ∀ j ≠ i, Disjoint u (s j)) {x : ⋃ i, s i} :
+    ((Homeomorph.Set.iUnion hs x).snd : X) = x := by
+  rw [iUnion, Equiv.toHomeomorphOfIsInducing_apply]
+  exact coe_snd_unionEqSigmaOfDisjoint _ _
 
 section
 
