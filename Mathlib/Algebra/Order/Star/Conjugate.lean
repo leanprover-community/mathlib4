@@ -25,11 +25,11 @@ When `R` is additionally an `S`-module, then `x ↦ r * x * star r` is a positiv
 All of the main declarations are various bundlings of the stated map
 `fun r x ↦ r * x * star r : R → R → R`.
 
-+ `conjOrderHom` : `R → (R →o R)`
-+ `conjOrderHomMulHom` : `R →ₙ* (R →o R)`
-+ `conjOrderHomMonoidHom` : `R →* (R →o R)`
-+ `conjUnitsOrderIso` : `Rˣ →* (R ≃o R)`
-+ `conjPositiveLinearMap` : `R → (R →ₚ[S] R)`
++ `StarOrderedRing.conjOrderHom` : `R → (R →o R)`
++ `StarOrderedRing.conjOrderHomMulHom` : `R →ₙ* (R →o R)`
++ `StarOrderedRing.conjOrderHomMonoidHom` : `R →* (R →o R)`
++ `StarOrderedRing.conjUnitsOrderIso` : `Rˣ →* (R ≃o R)`
++ `StarOrderedRing.conjPositiveLinearMap` : `R → (R →ₚ[S] R)`
 -/
 
 @[expose] public section
@@ -88,7 +88,7 @@ def conjUnitsOrderIso : Rˣ →* (R ≃o R) where
 
 lemma _root_.IsLUB.conjugate_star_right_of_isUnit {s : Set R} {x : R}
       (h : IsLUB s x) (r : R) (hr : IsUnit r) :
-    IsLUB (conjOrderHom r '' s) (r * x * star r) := by
+    IsLUB ((r * · * star r) '' s) (r * x * star r) := by
   lift r to Rˣ using hr
   exact (conjUnitsOrderIso r).isLUB_image'.mpr h
 
