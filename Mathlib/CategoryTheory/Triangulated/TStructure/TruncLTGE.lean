@@ -27,7 +27,6 @@ Extensions to indices in `EInt` instead of `ℤ` are introduced in the file
 `Mathlib/CategoryTheory/Triangulated/TStucture/ETrunc.lean`.
 The spectral object attached to an object `X : C` is constructed in the file
 `Mathlib/CategoryTheory/Triangulated/TStucture/SpectralObject.lean`.
-
 -/
 
 universe v u

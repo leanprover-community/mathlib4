@@ -20,7 +20,6 @@ attached to `X`.
 
 * Redefine the stalks functors in `Mathlib/Topology/Sheaves/Stalks.lean`
   using `GrothendieckTopology.Point.presheafFiber`.
-
 -/
 
 @[expose] public section

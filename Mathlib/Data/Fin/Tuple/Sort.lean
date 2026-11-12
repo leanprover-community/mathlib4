@@ -13,7 +13,6 @@ import Mathlib.Data.Fintype.Fin
 import Mathlib.Order.Interval.Finset.Fin
 
 /-!
-
 # Sorting tuples by their values
 
 Given an `n`-tuple `f : Fin n → α` where `α` is ordered,
@@ -29,7 +28,6 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
   order
 * `Tuple.antitone_sortDesc`: `f ∘ Tuple.sortDesc f` is `Antitone`
 * `Tuple.comp_sort_comp_rev_eq_comp_sortDesc`: sorting descending equals sorting ascending, reversed
-
 -/
 
 @[expose] public section

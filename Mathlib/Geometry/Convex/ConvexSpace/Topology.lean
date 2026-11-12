@@ -17,7 +17,6 @@ When `M` is finite, this is the topology that is induced by the
 embedding `StdSimplex R M → (M → R)`. In general, we use the supremum of
 the coinduced topologies for the maps `StdSimplex.map f : StdSimplex R ι → StdSimplex R M`
 where `f : ι → M` is a map from a finite set `ι`.
-
 -/
 
 universe u v

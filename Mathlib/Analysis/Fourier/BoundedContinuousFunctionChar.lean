@@ -34,7 +34,6 @@ measure.
 - `star_mem_range_charAlgHom`: The family of `ℂ`-linear combinations of `char he hL w, w : W`, is
   closed under `star`.
 - `separatesPoints_charPoly`: The family `charPoly he hL w, w : W` separates points in `V`.
-
 -/
 
 @[expose] public section

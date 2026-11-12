@@ -72,7 +72,7 @@ jobs:
           ref: ${{ env.BUILT_SHA }}
 
       - name: Configure Lean and fetch the Mathlib cache
-        uses: leanprover/lean-action@24581d74d674803a25a81b10b059c5c0cdd344c6 # v1.6.2
+        uses: leanprover/lean-action@fe408643ea7367d8c0404a8be3975bb145f5fb64 # v1.7.0
         with:
           auto-config: false
           use-github-cache: false

@@ -23,7 +23,6 @@ This file expands on the development in the core library.
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
   Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 * `Fin.equivSubtype` : Equivalence between `Fin n` and `{ i // i < n }`.
-
 -/
 
 @[expose] public section
@@ -549,13 +548,5 @@ instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) :
   suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using! NeZero.ne m
   apply Nat.mod_eq_of_lt
   simpa using! zero_lt_of_ne_zero (NeZero.ne n)
-
-section Mul
-
-/-!
-### mul
--/
-
-end Mul
 
 end Fin

@@ -163,8 +163,8 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
       _ = δ n := by simp [field]
   choose r rpos hr using this
   have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
-    refine .of_nnnorm_bounded δc.summable fun n => ?_
-    rw [← NNReal.coe_le_coe, coe_nnnorm]
+    refine .of_nnNorm_bounded δc.summable fun n => ?_
+    rw [← NNReal.coe_le_coe, coe_nnNorm]
     simpa only [norm_iteratedFDeriv_zero] using! hr n 0 zero_le x
   refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm

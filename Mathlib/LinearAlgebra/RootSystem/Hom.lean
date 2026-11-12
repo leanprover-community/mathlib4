@@ -44,7 +44,6 @@ given in SGA III Exp. 21 Section 6.
 ## TODO
 * Special types of morphisms: Isogenies, weight/coweight space embeddings
 * Weyl group reimplementation?
-
 -/
 
 @[expose] public section

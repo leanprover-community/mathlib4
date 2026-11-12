@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 public import Mathlib.Topology.Category.LightProfinite.Limits
 
 /-!
-
 # Effective epimorphisms in `LightProfinite`
 
 This file proves that `EffectiveEpi` and `Surjective` are equivalent in `LightProfinite`.

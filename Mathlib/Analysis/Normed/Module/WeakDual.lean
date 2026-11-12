@@ -102,7 +102,6 @@ the weak-\* topology on (its type synonym) `WeakDual 𝕜 E`:
 ## Tags
 
 weak-star, weak dual
-
 -/
 
 @[expose] public section

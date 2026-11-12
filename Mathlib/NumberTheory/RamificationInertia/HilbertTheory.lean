@@ -10,7 +10,6 @@ public import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.LinearAlgebra.Dimension.Domain
 
 /-!
-
 # Decomposition and inertia rings
 
 We develop Hilbert's theory of the splitting of a prime ideal in a Galois extension, working
@@ -58,7 +57,6 @@ degrees of the fields follow from those of the rings via `IsFractionRing.finrank
 The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
 deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
 `Ideal.IsInertiaRing`.
-
 -/
 
 @[expose] public section
