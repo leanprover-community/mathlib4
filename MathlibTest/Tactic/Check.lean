@@ -167,7 +167,6 @@ variable (x : {i : Nat} → (y : Nat) → String → String → {j : Nat} → F 
 #check' x
 
 end arrow
-
 -/
 
 /-!

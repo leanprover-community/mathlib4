@@ -20,7 +20,6 @@ defined in this file in the future.
 ## TODO
 
 * Morphisms between graphs
-
 -/
 
 public section

@@ -106,7 +106,6 @@ the module topology.
 
 * The module topology is a functor from the category of `R`-modules
   to the category of topological `R`-modules, and it's an adjoint to the forgetful functor.
-
 -/
 
 public section

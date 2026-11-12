@@ -16,7 +16,6 @@ public import Mathlib.Tactic.Positivity
 # Semisimple representations
 
 This file defines the typeclass `IsSemisimpleRepresentation` for semisimple monoid representations.
-
 -/
 
 namespace Representation

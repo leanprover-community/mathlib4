@@ -13,7 +13,6 @@ public import Mathlib.Topology.Perfect
 
 This file defines the derived set of a set, the set of all `AccPt`s of its principal filter,
 and proves some properties of it.
-
 -/
 
 @[expose] public section

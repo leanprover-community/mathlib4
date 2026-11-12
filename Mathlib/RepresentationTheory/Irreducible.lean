@@ -12,7 +12,6 @@ public import Mathlib.RepresentationTheory.Intertwining
 # Irreducible representations
 
 This file defines irreducible monoid representations.
-
 -/
 
 public section

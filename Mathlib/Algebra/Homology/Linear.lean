@@ -18,7 +18,6 @@ category `C` is `R`-linear.
 
 - show lemmas like `HomologicalComplex.homologyMap_smul` (after doing the same
   for short complexes in `Mathlib/Algebra/Homology/ShortComplex/Linear.lean`)
-
 -/
 
 public section

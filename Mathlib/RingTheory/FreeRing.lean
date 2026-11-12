@@ -25,7 +25,6 @@ The theory of the free ring over a type.
 ## Tags
 
 free ring
-
 -/
 
 @[expose] public noncomputable section
