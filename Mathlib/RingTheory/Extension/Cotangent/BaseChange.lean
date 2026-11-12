@@ -26,7 +26,6 @@ commute with base change.
 - `Algebra.Extension.tensorH1CotangentOfFlat`: If `T` is flat over `R`, there is a `T`-linear
   isomorphism `T ⊗[R] P.H1Cotangent ≃ₗ[T] (P.baseChange).H1Cotangent`.
 - `Algebra.tensorH1CotangentOfFlat`: Flat base change commutes with `H1Cotangent`.
-
 -/
 
 public section

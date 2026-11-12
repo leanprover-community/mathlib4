@@ -17,7 +17,6 @@ Let `Fᵢ : C ⥤ Dᵢ` be a family of functors. The family is said to jointly r
 isomorphisms (resp. monomorphisms, resp. epimorphisms) if every `f : X ⟶ Y`
 in `C` for which `Fᵢ.map f` is an isomorphism (resp. monomorphism, resp. epimorphism)
 for all `i` is an isomorphism.
-
 -/
 
 public section

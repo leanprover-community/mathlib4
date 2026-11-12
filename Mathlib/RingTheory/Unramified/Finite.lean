@@ -41,7 +41,6 @@ Let `S/R` be formally unramified and essentially of finite type.
 ## References
 
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
 -/
 
 @[expose] public section

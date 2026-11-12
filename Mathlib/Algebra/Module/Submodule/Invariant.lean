@@ -18,7 +18,6 @@ a module. Its utility stems primarily from those occasions on which we wish to t
 lattice structure of invariant submodules.
 
 See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
-
 -/
 
 @[expose] public section

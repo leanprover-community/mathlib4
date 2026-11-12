@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 Given a functor `F : Set.Iio j ⥤ C` and `c : Cocone F`, we define
 an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
-
 -/
 
 @[expose] public section

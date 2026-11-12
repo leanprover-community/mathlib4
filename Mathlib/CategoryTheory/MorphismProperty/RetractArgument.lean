@@ -20,7 +20,6 @@ and `W₁.rlp = W₂` if `W₂` is.
 
 ## Reference
 - https://ncatlab.org/nlab/show/weak+factorization+system#retract_argument
-
 -/
 
 @[expose] public section

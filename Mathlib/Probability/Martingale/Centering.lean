@@ -28,7 +28,6 @@ two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
   is strongly adapted.
   That is, `predictablePart` is predictable.
 * `MeasureTheory.martingale_martingalePart`: `martingalePart f ℱ μ` is a martingale.
-
 -/
 
 @[expose] public section

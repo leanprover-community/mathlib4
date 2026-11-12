@@ -19,7 +19,6 @@ The result requires `α` to be countable or `β` to be a countably generated mea
 ## Main statements
 
 * `compProd_eq_iff`: `μ ⊗ₘ κ = μ ⊗ₘ η ↔ κ =ᵐ[μ] η`
-
 -/
 
 public section

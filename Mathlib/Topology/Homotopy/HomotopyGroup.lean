@@ -38,7 +38,6 @@ We provide a group instance using path composition and show commutativity when `
 * Examples with `𝕊^n`: `π_n (𝕊^n) = ℤ`, `π_m (𝕊^n)` trivial for `m < n`.
 * Actions of π_1 on π_n.
 * Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
-
 -/
 
 @[expose] public section

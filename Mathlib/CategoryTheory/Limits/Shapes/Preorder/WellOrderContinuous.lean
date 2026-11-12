@@ -22,7 +22,6 @@ Let `F : J ⥤ C` be a functor from a well-ordered type `J`.
 We introduce the typeclass `F.IsWellOrderContinuous`
 to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
-
 -/
 
 @[expose] public section

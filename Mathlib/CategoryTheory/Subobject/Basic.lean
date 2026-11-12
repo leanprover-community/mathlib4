@@ -68,7 +68,6 @@ When a morphism `f` has an image, the image represents the same pseudoelement.
 In a category with images `Pseudoelements X` could be constructed as a quotient of `MonoOver X`.
 In fact, in an abelian category (I'm not sure in what generality beyond that),
 `Pseudoelements X` agrees with `Subobject X`, but we haven't developed this in mathlib yet.
-
 -/
 
 @[expose] public section

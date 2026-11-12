@@ -52,7 +52,6 @@ but the proof is independent of the Fuglede–Putnam–Rosenblum theorem.
 + [putnam1951] C. R. Putnam, "On normal operators in Hilbert space"
 + [rosenblum1958] M. Rosenblum, "On a theorem of Fuglede and Putnam"
 + [cater1961] S. Cater, "Observations on a paper by Rosenblum"
-
 -/
 
 

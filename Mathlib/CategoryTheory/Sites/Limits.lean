@@ -24,7 +24,6 @@ Given a diagram `F : K ⥤ Sheaf J D` of sheaves, and a colimit cocone on the le
 we show that the cocone obtained by sheafifying the cocone point is a colimit cocone of sheaves.
 
 This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soon as `D` does.
-
 -/
 
 @[expose] public section

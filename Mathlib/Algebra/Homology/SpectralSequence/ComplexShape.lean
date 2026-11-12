@@ -24,7 +24,6 @@ spectral sequence).
 this is a similar definition as `ComplexShape.spectralSequenceNat`
 but for `ℤ × Fin l` (identified as a subset of `ℤ × ℤ`). (This could
 be used for spectral sequences associated to a *finite* filtration.)
-
 -/
 
 @[expose] public section

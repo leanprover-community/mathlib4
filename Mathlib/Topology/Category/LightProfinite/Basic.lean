@@ -27,7 +27,6 @@ essentially small categories.
 
 The category `LightProfinite` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section

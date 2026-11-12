@@ -61,7 +61,6 @@ same holds if `s` is merely a set with unique differentials.
 (5) However, this does not work for `AnalyticOnNhd 𝕜 f s`, as we don't get for free
 differentiability at points in a neighborhood of `s`. Therefore, the theorem that deduces
 `AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s` from `AnalyticOnNhd 𝕜 f s` requires completeness of the space.
-
 -/
 
 public section

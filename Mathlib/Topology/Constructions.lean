@@ -35,7 +35,6 @@ neighborhood filters and so on.
 ## Tags
 
 product, subspace, quotient space
-
 -/
 
 @[expose] public section

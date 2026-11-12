@@ -104,7 +104,6 @@ less than or equal to the sum of the maximum values of the summands.
   is to define `StrictConvexOn` functions.
 - generalized mean inequality with any `p ≤ q`, including negative numbers;
 - prove that the power mean tends to the geometric mean as the exponent tends to zero.
-
 -/
 
 public section

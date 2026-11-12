@@ -21,7 +21,6 @@ We construct etale neighborhoods that split fibers of finite algebras.
   We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
   such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.
   This prime will also lie over `q`.
-
 -/
 
 @[expose] public section

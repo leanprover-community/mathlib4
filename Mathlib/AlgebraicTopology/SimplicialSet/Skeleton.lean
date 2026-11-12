@@ -29,7 +29,6 @@ nondegenerate `d`-simplices of `Y` which do not belong to the range of `i`.
 
 ## TODO
 * show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
-
 -/
 
 @[expose] public section
@@ -199,7 +198,6 @@ of simplicial sets and `d : ℕ`, there is a pushout square:
 
 The index type `Cell i d` identifies to the type of nondegenerate `d`-simplices
 of `Y` not in the range of `i`.
-
 -/
 
 /-- If `i : X ⟶ Y` is a monomorphism of simplicial sets and `d : ℕ`, this is

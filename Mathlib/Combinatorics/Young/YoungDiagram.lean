@@ -49,7 +49,6 @@ Young diagram
 ## References
 
 <https://en.wikipedia.org/wiki/Young_tableau>
-
 -/
 
 @[expose] public section
@@ -361,7 +360,6 @@ section RowLens
 This section defines `μ.rowLens : List ℕ`, the list of row lengths of a Young diagram `μ`.
   1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`List.SortedGE`).
   2. `YoungDiagram.rowLens_pos` : It is strictly positive.
-
 -/
 
 
@@ -410,7 +408,6 @@ of positive natural numbers, corresponding to row lengths of the diagram:
   `YoungDiagram ≃ {w : List ℕ // w.SortedGE ∧ ∀ x ∈ w, 0 < x}`
 
 The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.ofRowLens`.
-
 -/
 
 

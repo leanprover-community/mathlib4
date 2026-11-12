@@ -356,12 +356,12 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
   simp only [equiv_mk, canonicalEquiv_self, RingEquiv.coe_mulEquiv_refl, QuotientGroup.mk'_apply,
     map_one, QuotientGroup.eq_one_iff, MonoidHom.mem_range, Units.ext_iff,
     coe_toPrincipalIdeal, coe_mapEquiv, MulEquiv.refl_apply]
-  refine ⟨fun ⟨x, hx⟩ => ⟨⟨x, by rw [← hx, coe_spanSingleton]⟩⟩, ?_⟩
+  refine ⟨fun ⟨x, hx⟩ => ⟨⟨x, by rw [← hx, coeToSubmodule_spanSingleton]⟩⟩, ?_⟩
   intro hI
   obtain ⟨x, hx⟩ := @Submodule.IsPrincipal.principal _ _ _ _ _ _ hI
   have hx' : (I : FractionalIdeal R⁰ K) = spanSingleton R⁰ x := by
     apply Subtype.coe_injective
-    simp only [val_eq_coe, hx, coe_spanSingleton]
+    simp only [val_eq_coe, hx, coeToSubmodule_spanSingleton]
   refine ⟨Units.mk0 x ?_, ?_⟩
   · intro x_eq; apply Units.ne_zero I; simp [hx', x_eq]
   · simp [hx']

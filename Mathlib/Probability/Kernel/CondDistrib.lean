@@ -39,7 +39,6 @@ respect to `m`.
 * `condExp_prod_ae_eq_integral_condDistrib`: the conditional expectation
   `μ[(fun a => f (X a, Y a)) | X; mβ]` is almost everywhere equal to the integral
   `∫ y, f (X a, y) ∂(condDistrib Y X μ (X a))`.
-
 -/
 
 @[expose] public section

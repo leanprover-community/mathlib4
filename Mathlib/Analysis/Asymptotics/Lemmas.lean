@@ -15,7 +15,6 @@ import Mathlib.Order.Filter.AtTopBot.Archimedean
 
 /-!
 # Further basic lemmas about asymptotics
-
 -/
 
 public section

@@ -29,7 +29,6 @@ to specialize API about long exact sequences to group cohomology.
 ## Main Statements
 
 * `groupCohomology.δ_naturality`: naturality of the connecting homomorphism.
-
 -/
 
 public section
