@@ -580,6 +580,13 @@ public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.Algebra.HierarchyDesign
+public import Mathlib.Algebra.Homology.AInfinity.AInfinityCategory
+public import Mathlib.Algebra.Homology.AInfinity.AInfinityCategoryStruct
+public import Mathlib.Algebra.Homology.AInfinity.GradedLinearQuiver
+public import Mathlib.Algebra.Homology.AInfinity.GradedMultilinearMap
+public import Mathlib.Algebra.Homology.AInfinity.Grading
+public import Mathlib.Algebra.Homology.AInfinity.Stasheff
+public import Mathlib.Algebra.Homology.AInfinity.StasheffIndex
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.AlternatingConst
 public import Mathlib.Algebra.Homology.Augment
