@@ -27,6 +27,9 @@ The absolute value `ContinuousLinearMap.abs T` is also known in the literature u
 modulus. The name `ContinuousLinearMap.abs` has been chosen to be consistent with `CFC.abs` and
 `Complex.abs`.
 
+## TODO:
+   - generalize from `T : E →L[ℂ] F` to `T : E →L[𝕜] F` once CFC becomes available for the latter.
+
 -/
 
 public section
