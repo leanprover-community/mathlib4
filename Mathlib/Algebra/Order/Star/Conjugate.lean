@@ -38,13 +38,13 @@ namespace StarOrderedRing
 
 section NonUnital
 
-variable {R : Type*} [NonUnitalRing R] [StarRing R] [PartialOrder R] [StarOrderedRing R]
+variable {R : Type*} [NonUnitalSemiring R] [StarRing R] [PartialOrder R] [StarOrderedRing R]
 
 /-- The map `x ↦ r * x * star r` as an order homomorphism in a star-ordered ring. -/
 @[simps]
 def conjOrderHom (r : R) : R →o R where
   toFun x := r * x * star r
-  monotone' _ _ h := star_right_conjugate_le_conjugate h r
+  monotone' := monotone_conjugate_star_right r
 
 lemma conjOrderHom_mul (r s : R) :
     conjOrderHom (r * s) = (conjOrderHom r).comp (conjOrderHom s) := by
@@ -60,7 +60,7 @@ end NonUnital
 
 section Unital
 
-variable {R : Type*} [Ring R] [StarRing R] [PartialOrder R] [StarOrderedRing R]
+variable {R : Type*} [Semiring R] [StarRing R] [PartialOrder R] [StarOrderedRing R]
 
 @[simp]
 lemma conjOrderHom_one : conjOrderHom (1 : R) = .id := by ext; simp
@@ -87,30 +87,39 @@ def conjUnitsOrderIso : Rˣ →* (R ≃o R) where
   map_one' := by ext; simp
 
 lemma _root_.IsLUB.conjugate_star_right_of_isUnit {s : Set R} {x : R}
-      (h : IsLUB s x) (r : R) (hr : IsUnit r) :
+      (h : IsLUB s x) {r : R} (hr : IsUnit r) :
     IsLUB ((r * · * star r) '' s) (r * x * star r) := by
   lift r to Rˣ using hr
   exact (conjUnitsOrderIso r).isLUB_image'.mpr h
 
-lemma leftOrdContinuous_conjUnitsOrderIso (r : R) (hr : IsUnit r) :
-    LeftOrdContinuous (fun x : R ↦ r * x * star r) :=
-  fun _ _ _ h ↦ h.conjugate_star_right_of_isUnit r hr
+lemma _root_.IsLUB.conjugate_star_left_of_isUnit {s : Set R} {x : R}
+      (h : IsLUB s x) {r : R} (hr : IsUnit r) :
+    IsLUB ((star r * · * r) '' s) (star r * x * r) := by
+  simpa using h.conjugate_star_right_of_isUnit hr.star
+
+lemma _root_.IsGLB.conjugate_star_right_of_isUnit {s : Set R} {x : R}
+      (h : IsGLB s x) {r : R} (hr : IsUnit r) :
+    IsGLB ((r * · * star r) '' s) (r * x * star r) := by
+  lift r to Rˣ using hr
+  exact (conjUnitsOrderIso r).isGLB_image'.mpr h
+
+lemma _root_.IsGLB.conjugate_star_left_of_isUnit {s : Set R} {x : R}
+      (h : IsGLB s x) {r : R} (hr : IsUnit r) :
+    IsGLB ((star r * · * r) '' s) (star r * x * r) := by
+  simpa using h.conjugate_star_right_of_isUnit hr.star
 
 end Unital
 
 section PositiveLinearMap
 
-variable (S : Type*) {R : Type*} [Semiring S] [NonUnitalRing R] [StarRing R] [PartialOrder R]
+variable (S : Type*) {R : Type*} [Semiring S] [NonUnitalSemiring R] [StarRing R] [PartialOrder R]
   [StarOrderedRing R] [Module S R] [SMulCommClass S R R] [IsScalarTower S R R]
 
 /-- The map `x ↦ r * x * star r` as a positive linear map in a star-ordered ring. -/
+@[simps! toLinearMap apply]
 def conjPositiveLinearMap (r : R) : R →ₚ[S] R where
   toLinearMap := LinearMap.mulLeftRight S (r, star r)
   monotone' := (conjOrderHom r).monotone
-
-@[simp]
-lemma conjPositiveLinearMap_apply (r x : R) : conjPositiveLinearMap S r x = r * x * star r :=
-  rfl
 
 @[simp]
 lemma toOrderHom_conjPositiveLinearMap (r : R) :
