@@ -181,18 +181,19 @@ lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [LT R] (
 
 /-- Extends positive symmetry from the complement of an index `v` to the full matrix,
 given a positive symmetry condition on the entries with `v`. -/
-lemma IsPosSymmetrizable.extend_index {v : ι} [Semiring R] [PartialOrder R] [PosMulStrictMono R]
-    (e : {i : ι // i ≠ v} → R) (he : ∀ i, 0 < e i) (a b : R) (ha : 0 < a) (hb : 0 < b)
-    (hE : ∀ i j, e i * M i.1 j.1 = e j * M j.1 i.1) (h : ∀ j (h : j ≠ v),
-    b * M v j = a * e ⟨j, h⟩ * M j v) : M.IsPosSymmetrizable := by
+lemma IsPosSymmetrizable.extend_index {v : ι} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    (e : ι → R) (he : ∀ i, 0 < e i)
+    (hE : ∀ i ≠ v, ∀ j ≠ v, e i * M i j = e j * M j i)
+    (h : ∃ a > 0, ∃ b > 0, ∀ j ≠ v, b * M v j = a * e j * M j v) :
+    M.IsPosSymmetrizable := by
   classical
-  use fun i ↦ if hi : i = v then b else a * e ⟨i, hi⟩
+  obtain ⟨a, ha, b, hb, h⟩ := h
+  use fun i ↦ if i = v then b else a * e i
   refine ⟨fun i ↦ ?_, fun i j ↦ ?_⟩
   · by_cases hi : i = v
     · simp [hi, hb]
-    · simp [hi, mul_pos ha (he ⟨i, hi⟩)]
-  · by_cases hi : i = v <;> by_cases hj : j = v <;> try grind
-    grind [hE ⟨i, hi⟩ ⟨j, hj⟩]
+    · simp [hi, mul_pos ha (he i)]
+  · by_cases hi : i = v <;> by_cases hj : j = v <;> grind
 
 end IsPosSymmetrizable
 
