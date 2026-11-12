@@ -62,37 +62,37 @@ instance : SurjClass' α α where surj a := ⟨a, rfl⟩
 
 variable {p : α → Prop} {q : β → Prop}
 
-@[transport intro]
+@[transport]
 theorem forall_transport [SurjClass α β]
     (h : ∀ a b, r a b → q b → p a) :
     (∀ b, q b) → (∀ a, p a) :=
   fun h' a ↦ (surj β a).rec fun b hb ↦ h a b hb (h' b)
 
--- @[transport intro]
+@[transport]
 theorem forall_transport' [SurjClass' α β]
     (h : ∀ a b, r a b → p a → q b) :
     (∀ a, p a) → (∀ b, q b) :=
   fun h' b ↦ (surj' α b).rec fun a ha ↦ h a b ha (h' a)
 
-@[transport intro]
+@[transport]
 theorem forall_transport_eq [SurjClass α β] [SurjClass' α β]
     (h : ∀ a b, r a b → p a = q b) :
     (∀ a, p a) = (∀ b, q b) :=
   propext ⟨forall_transport' (h · · · |>.mp), forall_transport (h · · · |>.mpr)⟩
 
-@[transport intro]
+@[transport]
 theorem exists_transport [SurjClass α β]
     (h : ∀ a b, r a b → p a → q b) :
     (∃ a, p a) → (∃ b, q b) :=
   fun ⟨a, ha⟩ ↦ (surj β a).rec fun b hb ↦ ⟨b, h a b hb ha⟩
 
--- @[transport intro]
+@[transport]
 theorem exists_transport' [SurjClass' α β]
     (h : ∀ a b, r a b → q b → p a) :
     (∃ b, q b) → (∃ a, p a) :=
   fun ⟨b, hb⟩ ↦ (surj' α b).rec fun a ha ↦ ⟨a, h a b ha hb⟩
 
-@[transport intro]
+@[transport]
 theorem exists_transport_eq [SurjClass α β] [SurjClass' α β]
     (h : ∀ a b, r a b → p a = q b) :
     (∃ a, p a) = (∃ b, q b) :=
@@ -123,41 +123,41 @@ variable {p : α → Type*} {q : β → Type*}
 
 variable {α β : Type*} {r : α → β → Prop} [Transport r]
 
-@[transport intro]
+@[transport]
 theorem eq_transport [InjClass α β]
     {a a' : α} {b b' : β}
     (h : r a b) (h' : r a' b') : a = a' → b = b' := by
   rintro rfl
   exact inj h h'
 
-@[transport intro]
+@[transport]
 theorem eq_transport' [InjClass' α β]
     {a a' : α} {b b' : β}
     (h : r a b) (h' : r a' b') : b = b' → a = a' := by
   rintro rfl
   exact inj' h h'
 
-@[transport intro]
+@[transport]
 theorem eq_transport_eq [InjClass α β] [InjClass' α β]
     {a a' : α} {b b' : β}
     (h : r a b) (h' : r a' b') : (a = a') = (b = b') :=
   propext ⟨eq_transport h h', eq_transport' h h'⟩
 
-@[transport intro]
+@[transport]
 theorem ne_transport [InjClass α β]
     {a a' : α} {b b' : β}
     (h : r a b) (h' : r a' b') : b ≠ b' → a ≠ a' := by
   contrapose
   exact eq_transport h h'
 
-@[transport intro]
+@[transport]
 theorem ne_transport' [InjClass' α β]
     {a a' : α} {b b' : β}
     (h : r a b) (h' : r a' b') : a ≠ a' → b ≠ b' := by
   contrapose
   exact eq_transport' h h'
 
-@[transport intro]
+@[transport]
 theorem ne_transport_eq [InjClass α β] [InjClass' α β]
     {a a' : α} {b b' : β}
     (h : r a b) (h' : r a' b') : (a ≠ a') = (b ≠ b') :=
@@ -295,11 +295,11 @@ instance [Transport r] [InjClass' α β] : InjClass' (Option α) (Option β) whe
 --     | .none => congr(none)
 --     | .some h => congr(some $(map_eq_of_rel h))
 
-@[transport] -- TODO: variable name of `x`/`y` is not preserved
+@[transport]
 theorem Option.elim_transport {r : α → β → Prop} {r' : α' → β' → Prop}
     {o : Option α} {o' : Option β} (ho : OptionRel r o o')
     {x : α'} {x' : β'} (hx : r' x x')
-    {f : α → α'} {f' : β → β'} (hf : ∀ (x y), r x y → r' (f x) (f' y)) :
+    {f : α → α'} {f' : β → β'} (hf : ∀ x y, r x y → r' (f x) (f' y)) :
     r' (o.elim x f) (o'.elim x' f') :=
   ho.casesOn hx (hf _ _)
 
@@ -380,14 +380,16 @@ instance [Transport r] [∀ a b, Transport (@r' a b)]
     rw [inj' (hx b) h]
     exact hy (g a)
 
-instance [Transport r] [∀ a b, Transport (@r' a b)] [SurjClass α β] [∀ a b, InjClass (γ b) (δ a)] :
+instance [Transport r] [∀ a b, Transport (@r' a b)]
+    [SurjClass α β] [∀ a b, InjClass (γ b) (δ a)] :
     InjClass (Π b, γ b) (Π a, δ a) where
   inj h h' := by
     ext a
     rcases surj β a with ⟨b, hb⟩
     apply inj (h hb) (h' hb)
 
-instance [Transport r] [∀ a b, Transport (@r' a b)] [SurjClass' α β] [∀ a b, InjClass' (γ b) (δ a)] :
+instance [Transport r] [∀ a b, Transport (@r' a b)]
+    [SurjClass' α β] [∀ a b, InjClass' (γ b) (δ a)] :
     InjClass' (Π b, γ b) (Π a, δ a) where
   inj h h' := by
     ext b
@@ -475,22 +477,21 @@ instance [Transport r] [SurjClass α β] : InjClass (Set β) (Set α) where
 
 variable {r} {s t : Set α} {s' t' : Set β}
 
--- TODO: should be able to remove `[Transport r]`?
-@[transport intro]
-theorem Set.transport_mem [Transport r] (hs : SetRel r s' s) {a a'} (ha : r a a') :
+@[transport]
+theorem Set.transport_mem (hs : SetRel r s' s) {a a'} (ha : r a a') :
     (a ∈ s) = (a' ∈ s') :=
   hs ha
 
 -- TODO: remove this lemma
-@[transport intro]
-theorem Set.transport_mem' [Transport r] (hs : SetRel r s' s) {a a'} (ha : r a a') :
+@[transport]
+theorem Set.transport_mem' (hs : SetRel r s' s) {a a'} (ha : r a a') :
     (a' ∈ s') = (a ∈ s) :=
   hs ha |>.symm
 
 @[transport] theorem Set.transport_univ : SetRel r .univ .univ := by simp [SetRel]
 @[transport] theorem Set.transport_empty : SetRel r ∅ ∅ := by simp [SetRel]
 
-@[transport intro]
+@[transport]
 theorem Set.transport_subset [Transport r] [SurjClass α β] [SurjClass' α β]
     (hs : SetRel r s' s) (ht : SetRel r t' t) :
     (s ⊆ t) = (s' ⊆ t') := by
@@ -498,7 +499,7 @@ theorem Set.transport_subset [Transport r] [SurjClass α β] [SurjClass' α β]
   transport [hs, ht] α to β
   rfl
 
-@[transport intro]
+@[transport]
 theorem Set.transport_ssubset [Transport r] [SurjClass α β] [SurjClass' α β]
     (hs : SetRel r s' s) (ht : SetRel r t' t) :
     (s ⊂ t) = (s' ⊂ t') := by
@@ -510,7 +511,7 @@ section
 variable {ι ι' : Type*} {r' : ι → ι' → Prop} {α β : Type*} {r : α → β → Prop}
   [Transport r'] (s : ι → Set α) (t : ι' → Set β)
 
-@[transport intro]
+@[transport]
 theorem Set.transport_iUnion [SurjClass ι ι'] [SurjClass' ι ι']
     (h : ∀ i i', r' i i' → SetRel r (t i') (s i)) :
     SetRel r (Set.iUnion t) (Set.iUnion s) := by
@@ -632,16 +633,38 @@ example [DecidableEq α] (a : α) : ∀ s : Finset α, s ∪ {a} = insert a s :=
   intro s
   exact Set.union_singleton
 
+/--
+trace: α : Type u_1
+s t : Finset α
+s' t' : Set α
+inst✝ : DecidableEq α
+a : α
+⊢ ¬∀ (s : Finset α), insert a ∅ = s
+---
+warning: declaration uses `sorry`
+-/
+#guard_msgs in
 example [DecidableEq α] (a : α) : ¬ ∀ s : Set α, insert a ∅ = s := by
   transport Set α to Finset α
-  guard_target = ¬ ∀ s : Finset α, insert a ∅ = s
+  trace_state
   sorry
 
 -- Yay, this now works
-example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (·.erase a) = ∅ := by
+/--
+trace: α : Type u_1
+s✝ t : Finset α
+s' t' : Set α
+inst✝ : DecidableEq α
+a : α
+s : Option (Set α)
+⊢ (s.elim {a} fun s ↦ s \ {a}) = ∅
+---
+warning: declaration uses `sorry`
+-/
+#guard_msgs in
+example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (fun s ↦ s.erase a) = ∅ := by
   transport Finset α to Set α generalizing s
-  guard_hyp s : Option (Set α)
-  guard_target = s.elim {a} (· \ {a}) = ∅
+  trace_state
   sorry
 
 -- In this example, transport cannot eliminate all occurrences of `s`, so it should fail.
@@ -658,7 +681,7 @@ def MyCompact (X : Type) [TopologicalSpace X] :=
 
 variable {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
 
-@[transport intro]
+@[transport]
 theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [MapTransport r map] [SemiMapClass X Y]
     (hf : Continuous map) {s : Set X} {t : Set Y} (h : SetRel r t s) : IsOpen t → IsOpen s := by
   convert IsOpen.preimage hf

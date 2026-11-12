@@ -84,7 +84,10 @@ structure TransportLemma where
   proof       : Expr
   /-- The number of arguments that `declName` takes when applying it. -/
   numHyps : Nat
-  /-- All pairs of types `α`, `β` such that `α` translates to/from `β`. -/
+  /--
+  All pairs of types `α`, `β` such that `α` translates to/from `β`.
+  TODO: make this an `Array` instead of `Option`.
+  -/
   relatedTypes : Option (Nat × Nat)
   /-- The variables that appear on both sides of the conclusion. -/
   sharedVars : List Nat
@@ -288,7 +291,7 @@ def getRel' (e : Expr) : Option (RelKind × Option Expr × Expr × Expr) :=
 /-- Try to construct the `TransportLemma` for a lemma with hypotheses `hyps` and
 conclusion `target`. -/
 def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
-    (levelParams : Array Name) (prio : Nat) (intro? : Bool) : MetaM TransportLemma := do
+    (levelParams : Array Name) (prio : Nat) : MetaM TransportLemma := do
   let some (relKind, sharedVars, lhs, rhs) ← getRel target | throwError "No relation found"
   let hyps := hyps.map (·.fvarId!)
   if let .fvar fvarId := lhs.getAppFn then
@@ -315,10 +318,8 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
   let rVarsRef ← IO.mkRef rhsVars
   -- iterate over antecedents `hyp` to the lemma
   for hyp in hyps, i in 0...* do
-    -- TODO: find a way around this hard encoding
-    if let .str _ s ← hyp.getUserName then
-      if s.startsWith "map" then
-        continue
+    unless ← isProp (← hyp.getType) do
+      continue
     -- Checks if `∀ xs, lhs ~ rhs` is a valid "main goal".
     let isMainGoal? (lhs rhs : Expr) (xs : Array Expr) : MetaM (Option TransportHyp) :=
       lhs.withApp fun lhs lhsArgs => rhs.withApp fun rhs rhsArgs => do
@@ -401,7 +402,13 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
       mainSubgoals := mainSubgoals.push mainSubgoal
   let lVars ← lVarsRef.get
   let rVars ← rVarsRef.get
-  unless lVars.isEmpty && rVars.isEmpty do
+  let mut relatedTypes := none
+  if let [α] := lVars.toList then
+    if let [β] := rVars.toList then
+      if (← inferType (← α.getType)) matches .sort (.succ _) then
+        if (← inferType (← β.getType)) matches .sort (.succ _) then
+          relatedTypes := some (hyps.idxOf α, hyps.idxOf β)
+  if relatedTypes.isNone && (!lVars.isEmpty || !rVars.isEmpty) then
     logWarning m!"Could not find a subgoal relating \
       `{lVars.toList.map Expr.fvar}` and `{rVars.toList.map Expr.fvar}`"
   let mut keys := [{ relKind, head := rhs.toHeadIndex, arity := rhs.headNumArgs }]
@@ -411,43 +418,42 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
     keys, prio
     levelParams, proof
     numHyps := hyps.size
-    relatedTypes := if intro? then some (0, 1) else none
+    relatedTypes
     sharedVars := sharedVars.toList.map hyps.idxOf
     mainSubgoals
   }
 
-def mkTransportLemma (type proof : Expr) (levelParams : Array Name) (prio : Nat) (intro? : Bool) :
+def mkTransportLemma (type proof : Expr) (levelParams : Array Name) (prio : Nat) :
     MetaM TransportLemma := do
   forallTelescope type fun xs type => do
   -- If the conclusion is a free variable, it is a lemma like `imp_imp_imp` or `forall_imp`,
   -- so we revert the last two variables.
   if type matches .fvar _ | .app (.fvar _) _ then
     let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
-    return ← mkTransportLemmaCore xs.pop.pop type proof levelParams prio intro?
+    return ← mkTransportLemmaCore xs.pop.pop type proof levelParams prio
   try
     -- Add a `transport` lemma in the "normal" way.
-    mkTransportLemmaCore xs type proof levelParams prio intro?
+    mkTransportLemmaCore xs type proof levelParams prio
   catch e => try
     let some x := xs.back? | failure
     let type ← mkForallFVars #[x] type
-    mkTransportLemmaCore xs.pop type proof levelParams prio intro?
+    mkTransportLemmaCore xs.pop type proof levelParams prio
   catch _ =>
     -- If none of the methods work, we throw the error thrown by the "normal" attempt.
     throw e
 
-def mkTransportLemmaFromConst (declName : Name) (prio : Nat) (intro? : Bool) :
-    MetaM TransportLemma := do
+def mkTransportLemmaFromConst (declName : Name) (prio : Nat) : MetaM TransportLemma := do
   let cinfo ← getConstInfo declName
   let us := cinfo.levelParams.map mkLevelParam
   let val := mkConst declName us
-  mkTransportLemma cinfo.type val #[] prio intro?
+  mkTransportLemma cinfo.type val #[] prio
 
 def mkTransportLemmaFromExpr (proof : Expr) (levelParams : Array Name)
-    (prio : Nat := eval_prio high) (intro? : Bool := false) : MetaM TransportLemma := do
+    (prio : Nat := eval_prio high) : MetaM TransportLemma := do
   if proof.isConst then
-    mkTransportLemmaFromConst proof.constName! prio intro?
+    mkTransportLemmaFromConst proof.constName! prio
   else
-    mkTransportLemma (← inferType proof) proof levelParams prio intro?
+    mkTransportLemma (← inferType proof) proof levelParams prio
 
 def elabTransportTheorem (stx : Syntax) : Elab.TermElabM TransportLemma :=
   withReducible <| withRef stx do
@@ -463,16 +469,15 @@ def elabTransportTheorem (stx : Syntax) : Elab.TermElabM TransportLemma :=
       return (#[], e)
   mkTransportLemmaFromExpr proof levelParams
 
+/-- Attribute marking transport lemmas. -/
+syntax (name := transportAttr) "transport" (ppSpace prio)? : attr
+
 /-- Mark `declName` with the `transport` attribute. -/
 def addTransportLemma (declName : Name) (stx : Syntax) (kind : AttributeKind) : MetaM Unit :=
   withReducible do
-  let intro? := !stx[1].isNone
-  let prio ← getAttrParamOptPrio stx[2]
-  let lem ← mkTransportLemmaFromConst declName prio intro?
+  let prio ← getAttrParamOptPrio stx[1]
+  let lem ← mkTransportLemmaFromConst declName prio
   transportExt.add lem kind
-
-/-- Attribute marking transport lemmas. -/
-syntax (name := transportAttr) "transport" (&"intro")? (ppSpace prio)? : attr
 
 @[inherit_doc transportAttr]
 initialize registerBuiltinAttribute {
