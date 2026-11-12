@@ -5,8 +5,8 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 # Whiskering sheaves by a functor
@@ -21,7 +21,6 @@ sheaf condition.
 The functor between sheaf categories is called `sheafCompose J F`.
 Given a natural transformation `η : F ⟶ G`, we obtain a natural transformation
 `sheafCompose J F ⟶ sheafCompose J G`, which we call `sheafCompose_map J η`.
-
 -/
 
 @[expose] public section

@@ -5,9 +5,9 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.HomCompletion
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.Analysis.Normed.Group.HomCompletion
 
 /-!
 # Completions of normed groups
@@ -29,7 +29,6 @@ objects and morphisms).
   and promote the `Completion` functor below to a functor landing in this category.
 2. Prove that the functor `Completion : SemiNormedGrp ⥤ CompleteSemiNormedGrp`
   is left adjoint to the forgetful functor.
-
 -/
 
 @[expose] public section
@@ -46,7 +45,7 @@ namespace SemiNormedGrp
 /-- The completion of a seminormed group, as an endofunctor on `SemiNormedGrp`. -/
 @[simps]
 def completion : SemiNormedGrp.{u} ⥤ SemiNormedGrp.{u} where
-  obj V := SemiNormedGrp.of (Completion V)
+  obj V := ↧(Completion V)
   map f := SemiNormedGrp.ofHom f.hom.completion
   map_id _ := SemiNormedGrp.hom_ext completion_id
   map_comp f g := SemiNormedGrp.hom_ext (completion_comp f.hom g.hom).symm

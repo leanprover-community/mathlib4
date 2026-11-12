@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Tower
+
 /-!
 # Adjoin one single element
 
@@ -15,7 +16,6 @@ This file contains basic results on `Algebra.adjoin`, specifically on adjoining 
 ## Tags
 
 adjoin, algebra, ringhom
-
 -/
 
 @[expose] public section
@@ -39,17 +39,11 @@ def RingHom.adjoinAlgebraMap :
 theorem RingHom.adjoinAlgebraMap_apply (x : A[b]) :
     (RingHom.adjoinAlgebraMap b x (C := C) : C) = algebraMap B C x := rfl
 
-@[deprecated (since := "2026-02-27")]
-alias RingHom.adjoin_algebraMap_apply := RingHom.adjoinAlgebraMap_apply
-
 theorem RingHom.adjoinAlgebraMap_surjective :
     Function.Surjective (RingHom.adjoinAlgebraMap (A := A) b (C := C)) := by
   intro c
   obtain ⟨p, hp⟩ := adjoin_eq_exists_aeval A (algebraMap B C b) c
   aesop (add safe ((aeval_algebraMap_apply C b p).symm))
-
-@[deprecated (since := "2026-02-27")]
-alias RingHom.adjoin_algebraMap_surjective := RingHom.adjoinAlgebraMap_surjective
 
 instance : Algebra A[b] A[(algebraMap B C) b] :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMap b)

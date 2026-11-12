@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.Bracket
+public import Mathlib.Algebra.Notation.Bracket
 
 /-!
 # The bracket on a group given by commutator.
@@ -14,7 +14,6 @@ public import Mathlib.Data.Bracket
 ## Notation
 
 After `open scoped commutatorElement`, `⁅g₁, g₂⁆` is syntax for `g₁ * g₂ * g₁⁻¹ * g₂⁻¹`.
-
 -/
 
 @[expose] public section

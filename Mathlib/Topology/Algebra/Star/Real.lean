@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.NNReal.Star
+public import Mathlib.Basic.NNReal.Star
 public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 

@@ -17,7 +17,6 @@ we have `max {deg(a), deg(b), deg(c)} + 1 ≤ deg(rad(abc))` or `a' = b' = c' = 
 Proof is based on this online note by Franz Lemmermeyer http://www.fen.bilkent.edu.tr/~franz/ag05/ag-02.pdf,
 which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason's Theorem",
 but slightly different.
-
 -/
 
 public section
@@ -63,13 +62,13 @@ protected theorem Polynomial.abc
   have hbc : IsCoprime b c := by
     rw [add_eq_zero_iff_neg_eq] at hsum
     rw [← hsum, IsCoprime.neg_right_iff]
-    convert! IsCoprime.add_mul_left_right hab.symm 1
+    convert IsCoprime.add_mul_left_right hab.symm 1
     rw [mul_one]
   have hsum' : b + c + a = 0 := by rwa [add_rotate] at hsum
   have hca : IsCoprime c a := by
     rw [add_eq_zero_iff_neg_eq] at hsum'
     rw [← hsum', IsCoprime.neg_right_iff]
-    convert! IsCoprime.add_mul_left_right hbc.symm 1
+    convert IsCoprime.add_mul_left_right hbc.symm 1
     rw [mul_one]
   have wbc : w = wronskian b c := wronskian_eq_of_sum_zero hsum
   have wca : w = wronskian c a := by

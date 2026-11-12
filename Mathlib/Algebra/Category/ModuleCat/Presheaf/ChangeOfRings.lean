@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
 /-!
@@ -14,7 +13,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 In this file, we define the restriction of scalars functor
 `restrictScalars α : PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R`
 attached to a morphism of presheaves of rings `α : R ⟶ R'`.
-
 -/
 
 @[expose] public section
@@ -41,7 +39,7 @@ noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶
     { toFun := M'.map f
       map_add' := map_add _
       map_smul' := fun r x ↦ (M'.map_smul f (α.app _ r) x).trans (by
-        have eq := RingHom.congr_fun (congrArg RingCat.Hom.hom <| α.naturality f) r
+        have eq := congr($(α.naturality f).hom r)
         dsimp at eq
         rw [← eq]
         rfl) }

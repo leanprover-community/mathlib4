@@ -20,7 +20,6 @@ accessible category, any object is presentable.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 public section
@@ -90,6 +89,10 @@ class IsAccessibleCategory (C : Type u) [hC : Category.{v} C] : Prop where
 
 variable (C : Type u) [hC : Category.{v} C]
 
+instance [IsAccessibleCategory.{w} C] : LocallySmall.{w} C := by
+  obtain ⟨κ, hκ, h'⟩ := IsAccessibleCategory.exists_cardinal C
+  infer_instance
+
 instance [IsLocallyPresentable.{w} C] : IsAccessibleCategory.{w} C where
   exists_cardinal := by
     obtain ⟨κ, hκ, h'⟩ := IsLocallyPresentable.exists_cardinal C
@@ -101,6 +104,13 @@ instance [IsAccessibleCategory.{w} C] (X : C) : IsPresentable.{w} X := by
   apply h.presentable
 
 example [IsLocallyPresentable.{w} C] (X : C) : IsPresentable.{w} X := inferInstance
+
+instance [IsLocallyPresentable.{w} C] : HasColimitsOfSize.{w, w} C := by
+  obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} C
+  infer_instance
+
+instance [IsLocallyPresentable.{w} C] : HasFiniteColimits C :=
+  hasFiniteColimits_of_hasColimitsOfSize.{w, w} _
 
 end
 

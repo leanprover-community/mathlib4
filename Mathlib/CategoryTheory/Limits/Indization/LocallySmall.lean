@@ -5,7 +5,6 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.IndYoneda
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
@@ -53,7 +52,6 @@ noncomputable def colimitYonedaHomEquiv :
 
 attribute [elementwise] HasLimit.isoOfNatIso_hom_π
 
-set_option backward.defeqAttrib.useBackward true in
 unif_hint {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (G : D ⥤ Type*) (X X' : C)
   where X ≟ X'⊢ (F ⋙ G).obj X ≟ (G.obj (F.obj X)) in
 @[simp]
@@ -65,7 +63,7 @@ theorem colimitYonedaHomEquiv_π_apply (η : colimit (F ⋙ yoneda) ⟶ G) (i : 
     Category.assoc, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_mk, comp_apply,
     Equiv.ulift_apply]
   have (a : limit ((F.op ⋙ G) ⋙ uliftFunctor.{u, v})) := congrArg ULift.down
-    (ConcreteCategory.congr_hom (preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
+    congr($(preservesLimitIso_inv_π uliftFunctor.{u, v} (F.op ⋙ G) i) a)
   refine Eq.trans (dsimp% this _) ?_
   rw [HasLimit.isoOfNatIso_hom_π_apply]
   dsimp

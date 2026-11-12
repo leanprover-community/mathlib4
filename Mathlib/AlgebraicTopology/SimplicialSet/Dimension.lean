@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 For a simplicial set `X` and `d : ℕ`, we introduce a typeclass
 `X.HasDimensionLT d` saying that the dimension of `X` is `< d`,
 i.e. all nondegenerate simplices of `X` are of dimension `< d`.
-
 -/
 
 public section
@@ -45,11 +44,6 @@ lemma degenerate_eq_univ_of_hasDimensionLT (hn : d ≤ n := by lia) : X.degenera
 lemma nonDegenerate_eq_empty_of_hasDimensionLT (hn : d ≤ n := by lia) : X.nonDegenerate n = ∅ := by
   simp [nonDegenerate, X.degenerate_eq_univ_of_hasDimensionLT d n hn]
 
-@[deprecated (since := "2026-04-06")]
-alias degenerate_eq_top_of_hasDimensionLT := degenerate_eq_univ_of_hasDimensionLT
-@[deprecated (since := "2026-04-06")]
-alias nonDegenerate_eq_bot_of_hasDimensionLT := nonDegenerate_eq_empty_of_hasDimensionLT
-
 lemma dim_lt_of_nonDegenerate {n : ℕ} (x : X.nonDegenerate n) (d : ℕ)
     [X.HasDimensionLT d] : n < d := by
   by_contra!
@@ -73,7 +67,6 @@ namespace Subcomplex
 
 variable {X : SSet.{u}}
 
-set_option backward.isDefEq.respectTransparency false in
 instance (d : ℕ) [X.HasDimensionLT d] (A : X.Subcomplex) : HasDimensionLT A d where
   degenerate_eq_top (n : ℕ) (hd : d ≤ n) := by
     ext x
@@ -92,7 +85,6 @@ lemma eq_top_iff_of_hasDimensionLT (A : X.Subcomplex) (d : ℕ) [X.HasDimensionL
 
 end Subcomplex
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_mono {X Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (d : ℕ)
     [Y.HasDimensionLT d] : X.HasDimensionLT d where
   degenerate_eq_top n hn := by

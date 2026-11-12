@@ -31,6 +31,8 @@ about simple and semisimple Lie algebras.
 lie algebra, radical, simple, semisimple
 -/
 
+open scoped Finset
+
 public section
 
 section Irreducible
@@ -267,7 +269,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
     rw [← hJI]
     exact inf_le_right
   exact inf_le_left
-termination_by s => s.card
+termination_by s => #s
 decreasing_by exact Finset.card_lt_card hs'
 
 variable (R L) in

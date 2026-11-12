@@ -6,8 +6,9 @@ Authors: Matteo Cipollina, Stefan Kebekus
 
 module
 
-public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
+
+import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 
 /-!
 # Cartan's Formula
@@ -173,8 +174,8 @@ theorem characteristic_top_eq_circleAverage_add_circleAverage (h : Meromorphic f
       + circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1 := calc
   characteristic f ⊤ R
       = circleAverage (fun a ↦ circleAverage (log ‖f · - a‖) 0 R + logCounting f ⊤ R) 0 1 := by
-      simp only [characteristic, proximity, ↓reduceDIte, Pi.add_apply]
-      rw [← proximity_top, ← circleAverage_circleAverage_eq_proximity_top h,
+      simp only [characteristic, Pi.add_apply]
+      rw [← circleAverage_circleAverage_eq_proximity_top h,
         circleAverage_fun_add (circleIntegrable_circleAverage_log_norm_sub h)
           (circleIntegrable_const (logCounting f ⊤ R) 0 1), circleAverage_const]
     _ = circleAverage (logCounting f · R) 0 1

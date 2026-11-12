@@ -6,8 +6,9 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.MeasureTheory.Covering.OneDim
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+import Mathlib.MeasureTheory.Covering.OneDim
 
 /-!
 # Lebesgue Differentiation Theorem (Interval Version)

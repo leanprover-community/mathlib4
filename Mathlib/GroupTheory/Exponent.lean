@@ -5,8 +5,6 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Factorization.LCM
 public import Mathlib.GroupTheory.OrderOfElement
@@ -94,7 +92,9 @@ theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := b
 
 @[to_additive]
 theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrder g :=
-  isOfFinOrder_iff_pow_eq_one.mpr <| by peel 2 h; exact this g
+  isOfFinOrder_iff_pow_eq_one.mpr <| by
+    unfold ExponentExists at h
+    gconvert h; exact this g
 
 @[to_additive]
 theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf g :=
@@ -279,9 +279,10 @@ lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : or
       y ^ (orderOf y / factorizationLCMRight (orderOf x) (orderOf y))) =
       Nat.lcm (orderOf x) (orderOf y) := by
   rw [(h.pow_pow _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
-  all_goals iterate 2 rw [orderOf_pow_orderOf_div]; try rw [Coprime]
-  all_goals simp [factorizationLCMLeft_mul_factorizationLCMRight, factorizationLCMLeft_dvd_left,
-    factorizationLCMRight_dvd_right, coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
+  all_goals iterate 2 rw [orderOf_pow_orderOf_div]
+  all_goals simp [Coprime, factorizationLCMLeft_mul_factorizationLCMRight,
+    factorizationLCMLeft_dvd_left, factorizationLCMRight_dvd_right,
+    coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
 
 open Submonoid in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, then there is an
@@ -567,10 +568,9 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push Not at hj ⊢
-  peel hj with n hn _
-  obtain ⟨m, hm⟩ := this
+  gconvert hj with n hn ⟨m, hm⟩
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
-  simpa using congr_fun h j
+  simpa using congr($h j)
 
 /-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
 @[to_additive /-- If `f : M₁ →+ M₂` is surjective, then the exponent of `M₂` divides the exponent of
@@ -626,7 +626,7 @@ variable [Monoid G]
 @[to_additive]
 lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
     orderOf x = 2 ↔ x ≠ 1 :=
-  ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
+  ⟨by rintro hx rfl; simp at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
 
 @[to_additive]
 theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣ 2) (a b : G) :
@@ -696,3 +696,12 @@ lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
 end Group
 
 end ExponentTwo
+
+theorem ringChar_eq_addMonoidExponent (R : Type*) [NonAssocSemiring R] :
+    ringChar R = AddMonoid.exponent R := by
+  apply dvd_antisymm
+  · apply ringChar.dvd
+    rw [← nsmul_one, AddMonoid.exponent_nsmul_eq_zero]
+  · rw [AddMonoid.exponent_dvd_iff_forall_nsmul_eq_zero]
+    intro g
+    rw [nsmul_eq_mul, ringChar.Nat.cast_ringChar, zero_mul]

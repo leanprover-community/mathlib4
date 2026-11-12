@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Square
-public import Mathlib.CategoryTheory.Limits.Yoneda
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Preservation of pullback/pushout squares
@@ -22,7 +20,6 @@ application of the functor `coyoneda.obj X` for all `X : Cᵒᵖ`.
 Similarly, a square is a pushout square iff the opposite
 square becomes a pullback square after the application of the
 functor `yoneda.obj X` for all `X : C`.
-
 -/
 
 public section
@@ -104,10 +101,10 @@ lemma IsPullback.iff_of_equiv : sq₁.IsPullback ↔ sq₂.IsPullback := by
     (((Equiv.trans Equiv.ulift e₄).trans Equiv.ulift.symm).toIso)
     ?_ ?_ ?_ ?_)
   all_goals ext; apply ULift.down_injective
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₁₂ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₁₃ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₂₄ _
-  · simpa [types_comp, uliftFunctor_map] using congrFun comm₃₄ _
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₁₂ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₁₃ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₂₄ _)
+  · simpa [types_comp, uliftFunctor_map] using congr($comm₃₄ _)
 
 lemma IsPullback.of_equiv (h₁ : sq₁.IsPullback) : sq₂.IsPullback :=
   (iff_of_equiv sq₁ sq₂ e₁ e₂ e₃ e₄ comm₁₂ comm₁₃ comm₂₄ comm₃₄).1 h₁
