@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.UpperLower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Upper/lower sets and fibrations
 -/

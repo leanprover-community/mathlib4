@@ -10,6 +10,9 @@ public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 
 import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise operations of finsets in a group with zero
 

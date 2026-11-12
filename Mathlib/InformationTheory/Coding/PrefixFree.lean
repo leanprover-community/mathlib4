@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prefix-Free Codes
 

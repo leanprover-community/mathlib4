@@ -74,8 +74,7 @@ lemma apply_self_mul_coroot_apply {y : M} : B x x * coroot B hx y = 2 * B x y :=
 @[simp]
 lemma smul_coroot : B x x • coroot B hx = 2 • B x := by
   ext y
-  simp [LinearMap.smul_apply, smul_eq_mul, nsmul_eq_mul, Nat.cast_ofNat,
-    apply_self_mul_coroot_apply]
+  simp [smul_eq_mul, nsmul_eq_mul, Nat.cast_ofNat, apply_self_mul_coroot_apply]
 
 @[simp]
 lemma coroot_apply_self : coroot B hx x = 2 :=

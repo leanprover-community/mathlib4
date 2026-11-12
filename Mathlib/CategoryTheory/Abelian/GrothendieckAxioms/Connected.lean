@@ -6,6 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
@@ -23,7 +25,6 @@ only get `hom_ext` for morphisms *from* a colimit, so this is something a bit sp
 The connectedness assumption on `J` is necessary: take `C` to be the category of abelian groups,
 let `f : ℤ → ℤ ⊕ ℤ` be the diagonal map, and let `g := 𝟙 (ℤ ⊕ ℤ)`. Then the hypotheses of
 `IsColimit.pullback_zero_ext` are satisfied, but `f ≫ g` is not zero.
-
 -/
 
 @[expose] public section

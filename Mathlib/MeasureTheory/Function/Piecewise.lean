@@ -13,7 +13,6 @@ public import Mathlib.Order.Setoid.Partition
 
 In this file, we prove some results about measurability of functions defined by using
 `IndexedPartition.piecewise`.
-
 -/
 
 @[expose] public section

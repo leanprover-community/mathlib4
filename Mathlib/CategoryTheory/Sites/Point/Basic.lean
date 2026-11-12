@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Filtered.FinallySmall
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
@@ -43,7 +44,6 @@ Under suitable assumptions on the target category `A`, we show that
 both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
 and with arbitrary colimits. (The commutation of `Φ.sheafFiber` with colimits
 is obtained in the file `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.)
-
 -/
 
 @[expose] public section
@@ -147,7 +147,7 @@ noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
 /-- The isomorphism `shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber`. -/
 noncomputable def shrinkYonedaCompPresheafFiberIso [LocallySmall.{w} C] :
     shrinkYoneda.{w} ⋙ Φ.presheafFiber ≅ Φ.fiber :=
-  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso _
+  Functor.Elements.shrinkYonedaCompWhiskeringLeftObjπCompColimIso.{w} _
 
 lemma shrinkYonedaCompPresheafFiberIso_inv_app_toPresheafFiber
     [LocallySmall.{w} C] {X : C} (x : Φ.fiber.obj X) :

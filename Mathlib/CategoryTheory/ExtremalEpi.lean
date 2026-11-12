@@ -21,7 +21,6 @@ the category has pullbacks.
 ## References
 
 * https://ncatlab.org/nlab/show/extremal+epimorphism
-
 -/
 
 public section

@@ -22,7 +22,6 @@ of the underlying map of topological spaces, including
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
 - `DenseRange` (`IsDominant`)
-
 -/
 
 @[expose] public section
