@@ -44,6 +44,7 @@ def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
   | [], _ => pure PUnit.unit
   | _, [] => pure PUnit.unit
 
+/-- Lifts a binary function to operate on `Applicative`s. -/
 def liftA2 (f : α → β → γ) (x : F α) (y : F β) : F γ :=
   f <$> x <*> y
 
