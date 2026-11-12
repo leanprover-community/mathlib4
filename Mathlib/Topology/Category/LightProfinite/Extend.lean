@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.LightProfinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.Extend
 
 /-!
-
 # Extending cones in `LightProfinite`
 
 Let `(Sₙ)_{n : ℕᵒᵖ}` be a sequential inverse system of finite sets and let `S` be

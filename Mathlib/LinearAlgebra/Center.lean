@@ -43,7 +43,6 @@ when the rank is equal to 1. Indeed, right multiplications
 with noncentral ratio of the `R`-module `R` satisfy the property
 that `f v` and `v` are linearly dependent, for all `v : V`,
 but they are not left multiplication by some element.
-
 -/
 
 public section

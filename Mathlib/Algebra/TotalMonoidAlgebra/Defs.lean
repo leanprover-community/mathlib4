@@ -19,7 +19,6 @@ this construction is called the "large algebra of a monoid" or "total algebra"
 finitely supported functions valued in `ℕ`, this construction corresponds to
 the multivariate formal power series in the large sense, where arbitrary infinite sums of
 monomials are permitted.
-
 -/
 
 @[expose] public noncomputable section
@@ -358,29 +357,15 @@ for any element `z : M`, there are only finitely many pairs `(x, y)` such that `
 
 -/
 
-/-- The multiplication in a total additive monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.TotalAddMonoidAlgebra.mul' [Add M] [HasAntidiagonal M]
-    (x y : TotalAddMonoidAlgebra R M) : TotalAddMonoidAlgebra R M :=
-  .ofCoeff fun z ↦ ∑ i ∈ antidiagonal z, x.coeff i.1 * y.coeff i.2
-/-- The multiplication in a total monoid algebra.
-
-We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-@[no_expose]
-def _root_.TotalMonoidAlgebra.mul' [Mul M] [HasMulAntidiagonal M]
-    (x y : R⟦M⟧) : R⟦M⟧ :=
-  .ofCoeff fun z ↦ ∑ i ∈ mulAntidiagonal z, x.coeff i.1 * y.coeff i.2
-
 variable [Mul M] [HasMulAntidiagonal M]
 
 /-- The product of `x y : R⟦M⟧` is the function whose value at `m` is the sum of `x m₁ * y m₂`
 over all pairs `m₁, m₂` such that `m₁ * m₂ = m`. -/
-@[to_additive instMul
+@[to_additive (dont_translate := R) instMul
 /-- The product of `x y : R⟦M⟧` is the function whose value at `m` is the sum of `x m₁ * y m₂`
 over all pairs `m₁, m₂` such that `m₁ + m₂ = m`. -/]
-instance instMul : Mul R⟦M⟧ where mul := mul'
+instance instMul : Mul R⟦M⟧ where
+  mul x y := private .ofCoeff fun z ↦ ∑ i ∈ mulAntidiagonal z, x.coeff i.1 * y.coeff i.2
 
 @[to_additive (dont_translate := R) mul_def]
 lemma mul_def (x y : R⟦M⟧) : x * y =
@@ -415,8 +400,8 @@ lemma single_commute_single [DecidableEq M] (hm : Commute m₁ m₂) (hr : Commu
 lemma single_commute [DecidableEq M] (hm : ∀ m', Commute m m') (hr : ∀ r', Commute r r')
     (x : R⟦M⟧) : Commute (single m r) x := by
   ext m'; simp_rw [commute_iff_eq] at hm hr
-  suffices ∑ x_1 ∈ mulAntidiagonal m' with x_1.1 = m, r * x.coeff x_1.2
-    = ∑ x_1 ∈ mulAntidiagonal m' with x_1.2 = m, x.coeff x_1.1 * r by
+  suffices ∑ p ∈ mulAntidiagonal m' with p.1 = m, r * x.coeff p.2 =
+    ∑ p ∈ mulAntidiagonal m' with p.2 = m, x.coeff p.1 * r by
       simpa [coeff_mul, Pi.single_apply, sum_ite]
   refine sum_bij (fun p _ ↦ p.swap) ?_ ?_ ?_ ?_
   all_goals intros; simp_all
@@ -514,7 +499,23 @@ lemma coeff_single_one_mul [DecidableEq M] (x : R⟦M⟧) (r : R) (m : M) :
     (single 1 r * x).coeff m = r * x.coeff m :=
   x.coeff_single_mul_eq_mul_coeff _ (by simp)
 
-/-- The embedding of a unital magma into its magma algebra. -/
+@[to_additive (dont_translate := R) coeff_mul_natCast]
+lemma coeff_mul_natCast [DecidableEq M] (x : R⟦M⟧) (n : ℕ) (m : M) :
+    (x * n).coeff m = x.coeff m * n := coeff_mul_single_one ..
+
+@[to_additive (dont_translate := R) coeff_natCast_mul]
+lemma coeff_natCast_mul [DecidableEq M] (x : R⟦M⟧) (n : ℕ) (m : M) :
+    (n * x).coeff m = n * x.coeff m := coeff_single_one_mul ..
+
+@[to_additive (dont_translate := R) coeff_mul_ofNat]
+lemma coeff_mul_ofNat [DecidableEq M] (x : R⟦M⟧) (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (x * ofNat(n)).coeff m = x.coeff m * ofNat(n) := coeff_mul_single_one ..
+
+@[to_additive (dont_translate := R) coeff_ofNat_mul]
+lemma coeff_ofNat_mul [DecidableEq M] (x : R⟦M⟧) (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (ofNat(n) * x).coeff m = ofNat(n) * x.coeff m := coeff_single_one_mul ..
+
+/-- The embedding of a unital magma into its total magma algebra. -/
 @[simps! apply]
 def of (R M : Type*) [Semiring R] [MulOneClass M] [HasMulAntidiagonal M]
     [DecidableEq M] : M →* R⟦M⟧ where
@@ -544,7 +545,7 @@ def singleHom [DecidableEq M] : R × M →* R⟦M⟧ where
 def singleOneRingHom [DecidableEq M] : R →+* R⟦M⟧ where
   __ := singleAddMonoidHom 1
   map_one' := rfl
-  map_mul' := by simp
+  map_mul' _ _ := by simp
 
 end MulOneClass
 

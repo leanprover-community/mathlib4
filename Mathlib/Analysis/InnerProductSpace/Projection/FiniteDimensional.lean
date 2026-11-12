@@ -53,7 +53,7 @@ variable [FiniteDimensional 𝕜 K]
 
 @[simp]
 theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
-  K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
+  K.isClosed_of_finiteDimensional.submodule_topologicalClosure_eq
 
 @[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by

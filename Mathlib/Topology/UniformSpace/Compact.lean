@@ -14,7 +14,6 @@ import Mathlib.Topology.Compactness.Compact
 
 * `compactSpace_uniformity`: On a compact uniform space, the topology determines the
   uniform structure, entourages are exactly the neighborhoods of the diagonal.
-
 -/
 
 public section

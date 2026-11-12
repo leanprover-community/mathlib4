@@ -13,7 +13,6 @@ import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
-
 # Filtered colimits in the category of `R`-algebras
 
 In this file we show that the forgetful functor from `R`-algebras to rings

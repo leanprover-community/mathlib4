@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
-
 # Decomposition of the Q endomorphisms
 
 In this file, we obtain a lemma `decomposition_Q` which expresses
@@ -28,7 +27,6 @@ role in the proof that the functor
 reflects isomorphisms.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

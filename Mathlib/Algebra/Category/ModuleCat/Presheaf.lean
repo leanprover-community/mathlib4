@@ -384,7 +384,6 @@ variable (X : Cᵒᵖ) (hX : Limits.IsInitial X)
 ## `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)` when `X` is initial
 
 When `X` is initial, we have `Module (R.obj X) (M.obj c)` for any `c : Cᵒᵖ`.
-
 -/
 
 section

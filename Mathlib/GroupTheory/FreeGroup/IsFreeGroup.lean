@@ -37,7 +37,6 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 * `IsFreeGroup.unique_lift`: the universal property of a free group.
 * `FreeGroupBasis.ofUniqueLift`: a group satisfying the universal property of a free group admits
   a free group basis.
-
 -/
 
 @[expose] public section

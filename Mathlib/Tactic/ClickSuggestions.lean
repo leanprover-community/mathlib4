@@ -116,6 +116,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
 @[server_rpc_method]
 public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.Html) :=
   RequestM.asTask do
+  if props.goals.isEmpty then return .text ""
   let some loc := props.selectedLocations.back? |
     return .text "Shift-click an expression in the tactic state to get suggestions."
   let doc ← RequestM.readDoc

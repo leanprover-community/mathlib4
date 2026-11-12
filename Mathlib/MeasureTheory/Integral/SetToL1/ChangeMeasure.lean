@@ -45,7 +45,7 @@ theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive �
       (𝓝 <| setToFun μ T hT f) :=
   tendsto_setToFun_of_L1 hT _ hfi.aestronglyMeasurable
     (Eventually.of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
-    (SimpleFunc.tendsto_approxOn_L1_enorm hfm _ hs (hfi.sub h₀i).2)
+    (SimpleFunc.tendsto_approxOn_L1_eNorm hfm _ hs (hfi.sub h₀i).2)
 
 theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
     (hT : DominatedFinMeasAdditive μ T C) [MeasurableSpace E] [BorelSpace E] {f : α → E}
@@ -154,7 +154,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
     have hμ's : μ' s ≠ ∞ := by
       refine ((hμ'_le s).trans_lt ?_).ne
       rw [smul_apply, smul_eq_mul]
-      exact ENNReal.mul_lt_top hc'.lt_top hμs
+      finiteness
     rw [setToFun_indicator_const hT hs hμs.ne, setToFun_indicator_const hT' hs hμ's]
   · intro f₂ g₂ _ hf₂ hg₂ h_eq_f h_eq_g
     rw [setToFun_add hT hf₂ hg₂, setToFun_add hT' (h_int f₂ hf₂) (h_int g₂ hg₂), h_eq_f, h_eq_g]

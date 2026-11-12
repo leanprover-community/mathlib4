@@ -280,7 +280,7 @@ def tprod : (Π i, s i) →ₘₗ[R] ⨂[R] i, s i where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
   map_update_smul' {_ f} i r x := by
-    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
+    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self, RingHom.id_apply]
 
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
@@ -554,7 +554,7 @@ protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
-    MultilinearMap.map_update_smul]
+    MultilinearMap.map_update_smul, RingHom.id_apply]
 
 variable (R s t)
 
@@ -675,8 +675,8 @@ variable (R M)
 variable (s) in
 /-- Re-index the components of the tensor power by `e`. -/
 def reindex (e : ι ≃ ι₂) : (⨂[R] i : ι, s i) ≃ₗ[R] ⨂[R] i : ι₂, s (e.symm i) :=
-  let f := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι₂), s (e.symm i)) e
-  let g := domDomCongrLinearEquiv' R R s (⨂[R] (i : ι), s i) e
+  let f := domDomCongrLinearEquiv' R _ s (⨂[R] (i : ι₂), s (e.symm i)) e
+  let g := domDomCongrLinearEquiv' R _ s (⨂[R] (i : ι), s i) e
   LinearEquiv.ofLinearMap (lift <| f.symm <| tprod R) (lift <| g <| tprod R) (by aesop) (by aesop)
 
 end
@@ -690,25 +690,25 @@ theorem reindex_tprod (e : ι ≃ ι₂) (f : Π i, s i) :
 @[simp]
 theorem reindex_comp_tprod (e : ι ≃ ι₂) :
     (reindex R s e).compMultilinearMap (tprod R) =
-    (domDomCongrLinearEquiv' R R s _ e).symm (tprod R) :=
+    (domDomCongrLinearEquiv' R _ s _ e).symm (tprod R) :=
   MultilinearMap.ext <| reindex_tprod e
 
 theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : (Π i, s (e.symm i)) →ₘₗ[R] E) :
-    lift φ ∘ₗ (reindex R s e) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) := by
+    lift φ ∘ₗ (reindex R s e) = lift ((domDomCongrLinearEquiv' R _ s _ e).symm φ) := by
   ext; simp [reindex]
 
 @[simp]
 theorem lift_comp_reindex_symm (e : ι ≃ ι₂) (φ : (Π i, s i) →ₘₗ[R] E) :
-    lift φ ∘ₗ (reindex R s e).symm = lift (domDomCongrLinearEquiv' R R s _ e φ) := by
+    lift φ ∘ₗ (reindex R s e).symm = lift (domDomCongrLinearEquiv' R _ s _ e φ) := by
   ext; simp [reindex]
 
 theorem lift_reindex (e : ι ≃ ι₂) (φ : (Π i, s (e.symm i)) →ₘₗ[R] E) (x : ⨂[R] i, s i) :
-    lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R R s _ e).symm φ) x :=
+    lift φ (reindex R s e x) = lift ((domDomCongrLinearEquiv' R _ s _ e).symm φ) x :=
   congr($(lift_comp_reindex e φ) x)
 
 @[simp]
 theorem lift_reindex_symm (e : ι ≃ ι₂) (φ : (Π i, s i) →ₘₗ[R] E) (x : ⨂[R] i, s (e.symm i)) :
-    lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R R s _ e φ) x :=
+    lift φ (reindex R s e |>.symm x) = lift (domDomCongrLinearEquiv' R _ s _ e φ) x :=
   congr($(lift_comp_reindex_symm e φ) x)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -783,7 +783,7 @@ attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
 def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
-  toFun := lift (constOfIsEmpty R _ 1)
+  toFun := lift (constOfIsEmpty _ _ 1)
   invFun r := r • tprod R (@isEmptyElim _ _ _)
   left_inv x := by
     refine x.induction_on ?_ ?_

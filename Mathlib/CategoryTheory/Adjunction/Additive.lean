@@ -17,7 +17,6 @@ preadditive categories:
   an additive equivalence `Adjunction.homAddEquiv`.
 * We also give a version of this additive equivalence as an isomorphism of `preadditiveYoneda`
   functors (analogous to `Adjunction.compYonedaIso`), in `Adjunction.compPreadditiveYonedaIso`.
-
 -/
 
 @[expose] public section

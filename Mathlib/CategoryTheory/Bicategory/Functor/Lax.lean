@@ -32,7 +32,6 @@ A lax functor `F` between bicategories `B` and `C` consists of
 Some constructions in the bicategory library have only been done in terms of oplax functors,
 since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A possible project would
 be to mirror these constructions for lax functors.
-
 -/
 
 @[expose] public section
