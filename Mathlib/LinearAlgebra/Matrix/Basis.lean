@@ -217,10 +217,7 @@ theorem basis_toMatrix_basisFun_mul (b : Basis ι' R (ι → R)) (A : Matrix ι 
   classical
   ext i j
   rw [Matrix.mul_apply, of_apply]
-  have hcol : A.col j = ∑ k : ι, A k j • Pi.basisFun R ι k := by
-    ext k
-    simp [Matrix.col_apply, Pi.basisFun_apply, Pi.single_apply]
-  conv_rhs => rw [hcol, map_sum]
+  conv_rhs => rw [← (Pi.basisFun R ι).sum_repr (A.col j)]
   simp [Basis.toMatrix_apply, mul_comm]
 
 namespace Module.Basis
