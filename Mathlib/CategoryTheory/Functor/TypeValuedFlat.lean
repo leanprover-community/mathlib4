@@ -23,7 +23,6 @@ for a clarification about the differences between these notions.)
 
 In this file, we show that if finite limits exist in `C` and are preserved by `F`,
 then `F.Elements` is cofiltered.
-
 -/
 
 public section

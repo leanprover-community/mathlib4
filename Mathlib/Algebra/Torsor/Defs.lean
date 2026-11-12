@@ -42,7 +42,6 @@ such examples.
 
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 * https://en.wikipedia.org/wiki/Affine_space
-
 -/
 
 @[expose] public section

@@ -15,7 +15,6 @@ This file concerns the symmetric difference operator `s Δ t` on finite sets.
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section

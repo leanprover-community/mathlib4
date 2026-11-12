@@ -17,7 +17,6 @@ Next we define a predicate `IntegrableAtFilter (f : α → E) (l : Filter α) (�
 saying that `f` is integrable at some set `s ∈ l` and prove that a measurable function is integrable
 at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ ae μ` and `μ` is finite
 at `l`.
-
 -/
 
 @[expose] public section

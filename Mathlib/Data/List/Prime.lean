@@ -12,7 +12,6 @@ public import Mathlib.Algebra.GroupWithZero.Associated
 # Products of lists of prime elements.
 
 This file contains some theorems relating `Prime` and products of `List`s.
-
 -/
 
 public section

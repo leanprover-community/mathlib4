@@ -36,7 +36,6 @@ suitable limits and colimits.
 
 ## TODO
 * construct an isomorphism `Sheaf.composeAndSheafify J F ≅ sheafCompose J F`
-
 -/
 
 @[expose] public section
