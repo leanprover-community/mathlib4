@@ -86,6 +86,7 @@ theorem mk_neg (x : L) : - mk K x = mk K (-x) :=
 instance : InvolutiveNeg (ConjRootClass K L) where
   neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
 
+open scoped Pointwise in
 @[simp]
 theorem carrier_neg (c : ConjRootClass K L) : carrier (-c) = - carrier c := by
   ext
