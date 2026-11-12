@@ -31,11 +31,11 @@ This file uses the Gelfand radius to define an algebra norm on a finite extensio
 variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Algebra K M]
   [Algebra L M] [IsScalarTower K L M]
 
+open scoped Matrix.Norms.Operator
+
 section
 
 section matrices
-
-open scoped Matrix.Norms.Operator
 
 -- PRed
 theorem Matrix.linfty_opNNNorm_sum_le_card_mul_of_forall_le
@@ -57,8 +57,6 @@ variable [FiniteDimensional K L] [FiniteDimensional K M]
 
 private local instance [FiniteDimensional L M] : NeZero (Module.finrank L M) :=
   ⟨Module.finrank_pos.ne'⟩
-
-open scoped Matrix.Norms.Operator
 
 /-- The Gelfand radius algebra norm on a finite extension `L` of a normed field `K`.
 The norm of `x : L` is defined as the Gelfand radius of multiplication by `x` on `L`. -/
@@ -153,7 +151,11 @@ section gelfandRadiusNorm
 open IntermediateField
 
 open Classical in
-/-- This will eventually replace `gelfandRadiusNorm`. -/
+/-- The Gelfand radius algebra norm on an extension `L` of a normed field `K`.
+
+It is defined to be zero for non-algebraic elements.
+
+The norm of `x : L` is defined as the Gelfand radius of multiplication by `x` on `K⟮x⟯`. -/
 noncomputable def gelfandRadiusNorm (x : L) : ℝ :=
   if hx : IsAlgebraic K x then
     haveI := adjoin.finiteDimensional hx.isIntegral
@@ -174,6 +176,14 @@ private theorem FiniteDimensional.gelfandRadiusNorm_eq [FiniteDimensional K L] (
   (Algebra.IsAlgebraic.isAlgebraic x).gelfandRadiusNorm_eq.trans
     (gelfandRadiusNormAux_algebraMap K L (AdjoinSimple.gen K x)).symm
 
+variable {K L} in
+theorem Module.Basis.gelfandRadiusNorm_apply
+    {ι : Type*} [DecidableEq ι] [Fintype ι] (b : Module.Basis ι K L) (x : L) :
+    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix b x) := by
+  have : FiniteDimensional K L := b.finiteDimensional_of_finite
+  rw [FiniteDimensional.gelfandRadiusNorm_eq K L x, b.gelfandRadiusNormAux_apply]
+
+/-- The Gelfand radius norm is invariant under algebra maps. -/
 @[simp]
 theorem gelfandRadiusNorm_algebraMap (x : L) :
     gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
@@ -191,6 +201,14 @@ theorem gelfandRadiusNorm_algebraMap (x : L) :
     exact gelfandRadiusNormAux_algebraMap K (K⟮algebraMap L M x⟯) (AdjoinSimple.gen K x)
   · rw [gelfandRadiusNorm_eq_zero hx, gelfandRadiusNorm_eq_zero]
     exact mt (isAlgebraic_algebraMap_iff (algebraMap L M).injective).mp hx
+
+omit [Algebra L M] [IsScalarTower K L M] in
+/-- The Gelfand radius norm is invariant under algebra homomorphisms. -/
+@[simp]
+theorem gelfandRadiusNorm_map {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
+    gelfandRadiusNorm K M (f x) = gelfandRadiusNorm K L x :=
+  let := (AlgHom.ofClass f).toAlgebra
+  gelfandRadiusNorm_algebraMap K L M x
 
 variable {K L} in
 private theorem IntermediateField.gelfandRadiusNorm_eq
@@ -260,6 +278,7 @@ theorem eq_zero_of_gelfandRadiusNorm_eq_zero {x : L} (hx : IsAlgebraic K x)
   rw [hx.gelfandRadiusNorm_eq] at hx0
   exact Subtype.ext_iff.mp (eq_zero_of_map_eq_zero _ hx0)
 
+/-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
   intro x k hk
   by_cases hx : IsAlgebraic K x
@@ -286,7 +305,7 @@ end gelfandRadiusNorm
 
 section gelfandRadiusAlgNorm
 
-variable [Algebra.IsAlgebraic K L]
+variable [Algebra.IsAlgebraic K L] [Algebra.IsAlgebraic K M]
 
 open Algebra.IsAlgebraic in
 /-- The spectral norm is a `K`-algebra norm on `L`. -/
@@ -299,16 +318,24 @@ noncomputable def gelfandRadiusAlgNorm : AlgebraNorm K L where
   eq_zero_of_map_eq_zero' x := eq_zero_of_gelfandRadiusNorm_eq_zero (isAlgebraic x)
   smul' := gelfandRadiusNorm_smul
 
-theorem gelfandRadiusAlgNorm_def (x : L) : gelfandRadiusAlgNorm K L x = gelfandRadiusNorm K L x := by
+theorem gelfandRadiusAlgNorm_def (x : L) :
+    gelfandRadiusAlgNorm K L x = gelfandRadiusNorm K L x := by
   rfl
 
 omit [Algebra.IsAlgebraic K L] in
-variable [Algebra.IsAlgebraic K M] in
 @[simp]
 theorem gelfandRadiusAlgNorm_algebraMap (x : L) :
     haveI : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.tower_bot K L M
     gelfandRadiusAlgNorm K M (algebraMap L M x) = gelfandRadiusAlgNorm K L x :=
   gelfandRadiusNorm_algebraMap K L M x
+
+omit [Algebra L M] [IsScalarTower K L M] in
+/-- The Gelfand radius norm is invariant under algebra homomorphisms. -/
+@[simp]
+theorem gelfandRadiusAlgNorm_map
+    {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
+    gelfandRadiusAlgNorm K M (f x) = gelfandRadiusAlgNorm K L x :=
+  gelfandRadiusNorm_map K L M f x
 
 @[simp]
 theorem gelfandRadiusAlgNorm_one : gelfandRadiusAlgNorm K L (1 : L) = 1 :=
@@ -320,13 +347,6 @@ theorem gelfandRadiusAlgNorm_eq_norm (x : K) : gelfandRadiusAlgNorm K K x = ‖x
 
 theorem isPowMul_gelfandRadiusAlgNorm : IsPowMul (gelfandRadiusAlgNorm K L) :=
   isPowMul_gelfandRadiusNorm K L
-
-omit [Algebra L M] [IsScalarTower K L M] [Algebra.IsAlgebraic K L] in
-@[simp]
-theorem gelfandRadiusNorm_algHom {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (σ : F) (x : L) :
-    gelfandRadiusNorm K M (σ x) = gelfandRadiusNorm K L x :=
-  let := (AlgHom.ofClass σ).toAlgebra
-  gelfandRadiusNorm_algebraMap K L M x
 
 end gelfandRadiusAlgNorm
 
