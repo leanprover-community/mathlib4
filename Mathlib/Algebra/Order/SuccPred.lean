@@ -204,14 +204,23 @@ theorem not_isSuccLimit_natCast [AddMonoidWithOne α] [SuccAddOrder α] [IsBotZe
   fun h ↦ (h.natCast_lt n).false
 
 @[simp]
-theorem not_isSuccPrelimit_add_one (a : α) [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] :
+theorem not_isSuccPrelimit_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] (a : α) :
     ¬ IsSuccPrelimit (a + 1) :=
   succ_eq_add_one a ▸ not_isSuccPrelimit_succ a
 
 @[simp]
-theorem not_isSuccLimit_add_one (a : α) [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] :
+theorem not_isSuccLimit_add_one [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] (a : α) :
     ¬ IsSuccLimit (a + 1) :=
   succ_eq_add_one a ▸ not_isSuccLimit_succ a
+
+theorem add_one_or_isSuccPrelimit [Add α] [One α] [SuccAddOrder α] (a : α) :
+    a ∈ Set.range (· + 1) ∨ IsSuccPrelimit a := by
+  simpa using mem_range_succ_or_isSuccPrelimit a
+
+theorem zero_or_add_one_or_isSuccLimit [Add α] [Zero α] [One α] [SuccAddOrder α] [IsBotZeroClass α]
+    (a : α) : a = 0 ∨ a ∈ Set.range (· + 1) ∨ IsSuccLimit a := by
+  let := IsBotZeroClass.toOrderBot α
+  simpa [bot_eq_zero] using isMin_or_mem_range_succ_or_isSuccLimit a
 
 @[simp]
 theorem succ_eq_zero [AddZeroClass α] [OrderBot α] [IsBotZeroClass α] [One α] [NoMaxOrder α]

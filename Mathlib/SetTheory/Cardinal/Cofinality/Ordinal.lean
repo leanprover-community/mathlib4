@@ -320,9 +320,9 @@ theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀
 
 @[simp]
 theorem cof_add (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : cof (a + b) = cof b := by
-  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
+  rcases zero_or_add_one_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
-  · rw [succ_eq_add_one, ← add_assoc, cof_add_one, cof_add_one]
+  · rw [← add_assoc, cof_add_one, cof_add_one]
   · exact cof_map_of_isNormal (isNormal_add_right a) hb
 
 @[simp]

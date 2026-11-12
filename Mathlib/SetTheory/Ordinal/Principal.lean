@@ -327,12 +327,12 @@ theorem natCast_mul_omega0 {n : ℕ} (hn : 0 < n) : n * ω = ω :=
   mul_omega0 (mod_cast hn) (natCast_lt_omega0 n)
 
 theorem mul_lt_omega0_opow (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) : a * b < ω ^ c := by
-  rcases zero_or_succ_or_isSuccLimit c with (rfl | ⟨c, rfl⟩ | l)
+  rcases zero_or_add_one_or_isSuccLimit c with (rfl | ⟨c, rfl⟩ | l)
   · exact (lt_irrefl _).elim c0
-  · rw [succ_eq_add_one, opow_add_one] at ha
+  · rw [opow_add_one] at ha
     obtain ⟨n, hn, an⟩ :=
       ((isNormal_mul_right <| opow_pos _ omega0_pos).lt_iff_exists_lt isSuccLimit_omega0).1 ha
-    grw [an, succ_eq_add_one, opow_add_one, mul_assoc]
+    grw [an, opow_add_one, mul_assoc]
     gcongr
     exacts [opow_pos _ omega0_pos, isPrincipal_mul_omega0 hn hb]
   · rcases ((isNormal_opow one_lt_omega0).lt_iff_exists_lt l).1 ha with ⟨x, hx, ax⟩

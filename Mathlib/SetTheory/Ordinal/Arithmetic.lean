@@ -145,8 +145,9 @@ theorem natCast_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) (n : ℕ) : 
 theorem one_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) : 1 < o :=
   h.one_lt
 
-theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o := by
-  simpa using isMin_or_mem_range_succ_or_isSuccLimit o
+@[deprecated zero_or_add_one_or_isSuccLimit +typeChanged (since := "2026-11-12")]
+theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o :=
+  zero_or_add_one_or_isSuccLimit o
 
 /-- Limit induction on ordinals: if one can prove a property by induction at successor ordinals and
 at limit ordinals, then it holds for all ordinals.
@@ -511,9 +512,9 @@ theorem isSuccPrelimit_mul_right {a b : Ordinal} (hb : IsSuccLimit b) : IsSuccPr
 
 theorem isSuccLimit_mul_left {a b : Ordinal} (l : IsSuccLimit a) (b0 : 0 < b) :
     IsSuccLimit (a * b) := by
-  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨b, rfl⟩ | lb)
+  rcases zero_or_add_one_or_isSuccLimit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
-  · rw [mul_succ]
+  · rw [mul_add_one]
     exact isSuccLimit_add _ l
   · exact isSuccLimit_mul_right l.bot_lt lb
 
