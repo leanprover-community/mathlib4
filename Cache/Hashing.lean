@@ -15,25 +15,16 @@ open System hiding SearchPath
 
 /--
 The import graph of the modules that `cache` visits, and the hashes of the modules in the
-Mathlib cache.
-
-`cache` starts at the root modules and visits their imports, transitively:
-* From a module in the Mathlib cache, it visits only the imports in the Mathlib cache.
-  These are the imports that go into the module's hash.
-* From a module outside the Mathlib cache (for example, a module of a downstream project
-  given as an argument), it visits all imports outside Lean core. Such a module has no hash.
-  Its imports lead `cache` to the cache modules that it imports through other modules
-  outside the cache.
+Mathlib cache. From a module in the Mathlib cache, `cache` visits the imports in the cache.
+From a module outside the cache, such as a downstream module given as an argument, it visits
+all imports outside Lean core.
 -/
 public structure HashMemo where
   /-- Hash of mathlib's lake project settings. -/
   rootHash : UInt64
   /-- Maps each visited module to the modules it imports and that `cache` visits. -/
   depsMap  : Std.HashMap Name (Array Name) := ∅
-  /--
-  The hash of each visited module in the Mathlib cache whose source file exists and whose
-  imports all have a hash. Other visited modules are not in `hashMap`.
-  -/
+  /-- The hash of each visited module that has a hash (see `getHash`). -/
   hashMap  : ModuleHashMap := ∅
   deriving Inhabited
 
@@ -49,11 +40,9 @@ def HashMemo.closure (hashMemo : HashMemo) (mods : Array Name) : Std.HashSet Nam
   return visited
 
 /--
-The entries of `hashMap` that `cache get` selects for the root modules `modules`:
-* For a root in the Mathlib cache: the root and the modules that it imports, transitively.
-* For a root outside the Mathlib cache: the modules that it imports, transitively, and that
-  `Mathlib` also imports. CI uploads the cache for the closure of `Mathlib`, so the server
-  has no files for the other modules of the dependencies. `lake build` builds them.
+The entries of `hashMap` that `get` selects for the roots `modules`: the closure of each root in
+the Mathlib cache, and the modules that the other roots import and that `Mathlib` also imports.
+CI uploads the cache only for the closure of `Mathlib`.
 -/
 public def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Name) :
     IO ModuleHashMap := do
@@ -61,27 +50,14 @@ public def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Na
   for mod in cacheRoots do
     unless hashMemo.hashMap.contains mod do
       IO.println s!"{mod} is not covered by the olean cache."
-  let mut selected := hashMemo.closure cacheRoots
-  unless otherRoots.isEmpty do
-    IO.println s!"{otherRoots.size} module(s) are outside the Mathlib cache. `cache` selects \
-      the cache modules that both they and `Mathlib` import."
-    let mathlib := hashMemo.closure #[`Mathlib]
-    for mod in hashMemo.closure otherRoots do
-      if mathlib.contains mod then selected := selected.insert mod
-  return hashMemo.hashMap.filter fun mod _ => selected.contains mod
+  let selected := hashMemo.closure cacheRoots
+  let downstream := hashMemo.closure otherRoots
+  let mathlib := hashMemo.closure #[`Mathlib]
+  return hashMemo.hashMap.filter fun mod _ =>
+    selected.contains mod || downstream.contains mod && mathlib.contains mod
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
 abbrev HashM := StateT HashMemo CacheM
-
-/--
-Whether `cache` visits the import `imp` of the module `mod`. See `HashMemo`.
--/
-def visitsImport (mod imp : Name) : Bool :=
-  if isPartOfMathlibCache mod then isPartOfMathlibCache imp else !isInLeanCore imp
-
-/-- The modules that the raw file `content` imports. `fileName` names the file in a parse error. -/
-def getFileImports (content : String) (fileName : String := "") : IO (Array Name) := do
-  return (← Lean.parseImports' content fileName).imports.map (·.module)
 
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
@@ -116,8 +92,6 @@ The hash of a module in the Mathlib cache mixes:
 
 A module outside the Mathlib cache has no hash. A module with an import without a hash
 has no hash either.
-
-`sourceFile?` is the source file of `mod` in the search path, if a package has it.
 -/
 partial def getHash (mod : Name) (sourceFile? : Option FilePath)
     (visiting : Std.HashSet Name := ∅) : HashM <| Option UInt64 := do
@@ -131,7 +105,9 @@ partial def getHash (mod : Name) (sourceFile? : Option FilePath)
     modify fun stt => { stt with depsMap := stt.depsMap.insert mod #[] }
     return none
   let content ← IO.FS.readFile sourceFile
-  let imports := (← getFileImports content mod.toString).filter (visitsImport mod)
+  let imports := (← Lean.parseImports' content mod.toString).imports.map (·.module)
+    |>.filter fun imp =>
+      if isPartOfMathlibCache mod then isPartOfMathlibCache imp else !isInLeanCore imp
   let sp := (← read).srcSearchPath
   let importHashes ← imports.mapM fun imp => do
     getHash imp (← sp.findLeanSource? imp) (visiting.insert mod)
@@ -158,13 +134,10 @@ def roots : CacheM <| Array <| Name × FilePath := do
   let mathlibDepPath := (← read).mathlibDepPath
   return #[(`Mathlib, (mathlibDepPath / "Mathlib.lean"))]
 
-/--
-Main API to retrieve the hashes of the Lean files. It visits `Mathlib`, the modules in
-`extraRoots`, and their imports (see `HashMemo`).
--/
-public def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo := do
-  let visitAll : HashM Unit := (extraRoots.insertMany (← roots)).forM fun mod sourceFile =>
-    discard <| getHash mod (some sourceFile)
-  return (← visitAll.run { rootHash := ← getRootHash }).2
+/-- Main API to retrieve the hashes of the Lean files -/
+public def getHashMemo (extraRoots : Std.HashMap Name FilePath) : CacheM HashMemo :=
+  -- TODO: `Std.HashMap.mapM` seems not to exist yet, so we go via `.toArray`.
+  return (← StateT.run ((extraRoots.insertMany (← roots)).toArray.mapM fun
+    ⟨key, val⟩ => getHash key (some val)) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing

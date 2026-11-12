@@ -27,10 +27,7 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
-/--
-Determine if `mod` is part of Lean core: `Init`, `Lean`, `Std` or `Lake`.
-The toolchain has these packages, and their imports are only other toolchain modules.
--/
+/-- Determine if `mod` is part of Lean core, whose modules import only other core modules. -/
 def isInLeanCore (mod : Name) : Bool :=
   #[`Init, `Lean, `Std, `Lake].contains mod.getRoot
 

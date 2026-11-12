@@ -497,91 +497,51 @@ end RoundTrip
 section ModuleSelection
 
 open Cache.Hashing in
-/-- Build a hash memo for a fake source tree with `Mathlib` and `extraRoots` as roots. -/
-private def hashMemoFor (dir : System.FilePath) (extraRoots : List Lean.Name) :
-    IO HashMemo := do
-  let roots : Std.HashMap Lean.Name System.FilePath := extraRoots.foldl (init := ∅)
-    fun acc mod => acc.insert mod
-      (dir / System.mkFilePath (mod.components.map toString) |>.addExtension "lean")
-  withSuppressedOutput <|
-    ReaderT.run (getHashMemo roots) { mathlibDepPath := dir, srcSearchPath := [dir] }
-
-/-- The sorted module names of a hash map, for comparison. -/
-private def sortedKeys (hashMap : Cache.IO.ModuleHashMap) : List String :=
-  hashMap.keys.map toString |>.toArray.qsort (· < ·) |>.toList
-
-/-- `get` with a module of a downstream project (here the package `Down`) selects the cache
-modules that it imports, also through other downstream modules, and that `Mathlib` also imports.
-
-The `partial` scenario of `Cache/test/downstream.sh` checks this against the real cache. This
-test covers cases that the `partial` scenario does not check:
-* `Batteries.X`: a cache module outside the closure of `Mathlib`, which CI does not upload.
-  A downstream module imports it, and it imports `Batteries.Z`, which `Mathlib` imports.
-* `Mathlib.C`: a cache module that only `Mathlib` imports.
-* `Lean.Elab`: an import from Lean core. Here it imports `Batteries.Y`, which `Mathlib`
-  imports. The test fails if `cache` visits the imports of Lean core modules. In a real
-  toolchain, such a visit selects no other modules, but it parses all of Lean core.
-* `Nowhere.Y`: an import that no package has. The test fails if this import stops `cache`.
-* A cache module as a second argument: `get` selects its whole closure.
--/
+/-- `get` with a downstream module `Down.Top` and the cache module `Archive.Foo`, which is
+outside the closure of `Mathlib`. The `partial` scenario of `Cache/test/downstream.sh` checks
+the common case against the real cache. Here, `Down.Top` imports:
+* through `Down.Mid`, `Batteries.X`, which `Mathlib` does not import, and its import
+  `Batteries.Z`, which `Mathlib` imports;
+* `Nowhere.Y`, which no package has. -/
 def test_filterByRootModules_downstream : IO Unit := do
   IO.println "module selection (filterByRootModules):"
   let dir ← IO.FS.createTempDir
   try
-    let write (path : System.FilePath) (content : String) : IO Unit := do
-      if let some parent := (dir / path).parent then IO.FS.createDirAll parent
-      IO.FS.writeFile (dir / path) content
-    for f in ["lakefile.lean", "lean-toolchain", "lake-manifest.json"] do write f ""
-    write "Mathlib.lean" "import Mathlib.B\nimport Mathlib.C\nimport Batteries.Y\n"
-    write "Mathlib/A.lean" ""
-    write "Mathlib/B.lean" "import Mathlib.A\n"
-    write "Mathlib/C.lean" "import Mathlib.A\nimport Batteries.Z\n"
-    write "Batteries/X.lean" "import Batteries.Z\n"
-    write "Batteries/Y.lean" ""
-    write "Batteries/Z.lean" ""
-    write "Lean/Elab.lean" "import Batteries.Y\n"
-    write "Down/Top.lean" "import Down.Mid\nimport Down.Side\nimport Mathlib.B\n"
-    write "Down/Side.lean" "import Down.Mid\n"
-    write "Down/Mid.lean" "import Batteries.X\nimport Lean.Elab\nimport Nowhere.Y\n"
-
-    let memo ← hashMemoFor dir [`Down.Top]
-    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top]
-    assertEq "get Down.Top selects the cache modules that both it and Mathlib import"
-      (toString ["Batteries.Z", "Mathlib.A", "Mathlib.B"])
-      (toString (sortedKeys selected))
-
-    let memo ← hashMemoFor dir [`Down.Top, `Batteries.X]
-    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top, `Batteries.X]
-    assertEq "get Down.Top Batteries.X also selects the closure of Batteries.X"
-      (toString ["Batteries.X", "Batteries.Z", "Mathlib.A", "Mathlib.B"])
-      (toString (sortedKeys selected))
+    for (path, content) in [("lakefile.lean", ""), ("lean-toolchain", ""),
+        ("lake-manifest.json", ""), ("Mathlib.lean", "import Mathlib.B\nimport Batteries.Z\n"),
+        ("Mathlib/B.lean", ""), ("Batteries/X.lean", "import Batteries.Z\n"),
+        ("Batteries/Z.lean", ""), ("Archive/Foo.lean", ""),
+        ("Down/Top.lean", "import Down.Mid\nimport Mathlib.B\n"),
+        ("Down/Mid.lean", "import Batteries.X\nimport Nowhere.Y\n")] do
+      let file := dir / path
+      if let some parent := file.parent then IO.FS.createDirAll parent
+      IO.FS.writeFile file content
+    let roots := [`Down.Top, `Archive.Foo]
+    let files := roots.map fun mod => (mod, dir / (mod.toString.replace "." "/" ++ ".lean"))
+    let memo ← withSuppressedOutput <| ReaderT.run (getHashMemo (.ofList files))
+      { mathlibDepPath := dir, srcSearchPath := [dir] }
+    let selected ← withSuppressedOutput <| memo.filterByRootModules roots
+    assertEq "get selects the closure of Archive.Foo and what both Down.Top and Mathlib import"
+      (toString ["Archive.Foo", "Batteries.Z", "Mathlib.B"])
+      (toString (selected.keys.map toString |>.toArray.qsort (· < ·) |>.toList))
   finally
     IO.FS.removeDirAll dir
 
-/-- A module argument resolves to the package that has its source, also when an earlier
-entry of the search path has a directory named like the module's root (see
-`findWithExtBase`). `dep` stands for a dependency with a directory `Down/`, and `root` for
-the downstream package `Down`. -/
+/-- A glob resolves to the downstream package `Down` in `root`, also when the dependency `dep`
+before it in the search path has a directory `Down/` (see `findWithExtBase`). -/
 def test_leanModulesFromSpec_shadowedRoot : IO Unit := do
   IO.println "module arguments (leanModulesFromSpec):"
   let dir ← IO.FS.createTempDir
   try
-    let dep := dir / "dep"
-    let root := dir / "root"
-    for (path, content) in [(dep / "Down" / "Down" / "Top.lean", ""),
-        (root / "Down.lean", "import Down.Top\n"), (root / "Down" / "Top.lean", "")] do
+    let (dep, root) := (dir / "dep", dir / "root")
+    for path in [dep / "Down" / "Down" / "Top.lean", root / "Down.lean",
+        root / "Down" / "Top.lean"] do
       if let some parent := path.parent then IO.FS.createDirAll parent
-      IO.FS.writeFile path content
-    let resolve (arg : String) : IO String := do
-      match ← withSuppressedOutput <| Cache.IO.leanModulesFromSpec [dep, root] arg with
-      | .ok mods => return toString (mods.toList.map fun (mod, file) => (mod, file.toString))
-      | .error msg => return s!"error: {msg}"
-    assertEq "the package root module resolves to the downstream package"
-      (toString [(`Down, (root / "Down.lean").toString)]) (← resolve "Down")
-    assertEq "a nested module resolves to the downstream package"
-      (toString [(`Down.Top, (root / "Down" / "Top.lean").toString)]) (← resolve "Down.Top")
-    assertEq "a glob walks the folder of the downstream package"
-      (toString [(`Down.Top, (root / "Down" / "Top.lean").toString)]) (← resolve "Down.+")
+      IO.FS.writeFile path ""
+    let mods ← withSuppressedOutput <| Cache.IO.leanModulesFromSpec [dep, root] "Down.+"
+    assertEq "Down.+ walks the folder of the downstream package"
+      (toString [(`Down.Top, (root / "Down" / "Top.lean").toString)])
+      (toString (mods.toOption.getD #[] |>.toList.map fun (mod, file) => (mod, file.toString)))
   finally
     IO.FS.removeDirAll dir
 

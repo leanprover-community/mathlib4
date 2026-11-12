@@ -1180,8 +1180,7 @@ jobs:
         # the cached oleans in a dependency context. The path dependency shares mathlib's
         # `.lake/build`, so Mathlib's oleans are already in place from the steps above;
         # the dependencies' oleans are fetched into `DownstreamTest/.lake/packages/`.
-        # The step runs the script from `workflow-actions/`, the revision of this workflow.
-        # Thus the step also works on a fork PR branch without the script.
+        # The script comes from `workflow-actions/`, so a fork PR branch needs no copy.
         if: steps.verify_cache.outputs.key_space_changed != 'true'
         env:
           REPO: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
