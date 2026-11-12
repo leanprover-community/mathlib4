@@ -54,7 +54,6 @@ functions.
 ## References
 
 Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kontorovich et al, https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
-
 -/
 
 @[expose] public section
@@ -86,7 +85,7 @@ theorem theta_nonneg (x : ℝ) : 0 ≤ θ x := sum_nonneg fun _ _ ↦ log_nonneg
 
 theorem theta_pos {x : ℝ} (hy : 2 ≤ x) : 0 < θ x := by
   refine sum_pos (fun n hn ↦ log_pos ?_) ⟨2, ?_⟩
-  · simp only [mem_filter] at hn; exact_mod_cast hn.2.one_lt
+  · simp only [mem_filter] at hn; exact mod_cast hn.2.one_lt
   · have : 0 ≤ x := by grind
     simpa using ⟨(le_floor_iff this).2 hy, prime_two⟩
 
@@ -214,6 +213,9 @@ theorem lcmUpto_ne_zero (n : ℕ) : lcmUpto n ≠ 0 := by simp [lcmUpto]
 
 theorem lcmUpto_pos (n : ℕ) : 0 < lcmUpto n := pos_of_ne_zero <| lcmUpto_ne_zero n
 
+lemma lcmUpto_dvd_lcmUpto {m n : ℕ} (h : m ≤ n) : lcmUpto m ∣ lcmUpto n :=
+  Finset.lcm_dvd fun _ _ ↦ dvd_lcm (by grind)
+
 theorem factorization_lcmUpto (n : ℕ) {p : ℕ} (hp : p.Prime) :
     (lcmUpto n).factorization p = p.log n := by
   rw [lcmUpto, Finset.factorization_lcm (fun _ _ ↦ by grind)]
@@ -294,14 +296,14 @@ theorem psi_le_primeCounting_mul_log (n : ℕ) : ψ n ≤ (π n) * log n := by
   · simp
   gcongr with p hp
   refine le_log_of_pow_le (mod_cast (prime_of_mem_primesLE hp).pos) ?_
-  exact_mod_cast pow_log_le_self p hn
+  exact mod_cast pow_log_le_self p hn
 
 theorem psi_le_primeCounting_mul_log' (x : ℝ) : ψ x ≤ (π ⌊x⌋₊) * log x := by
   grw [psi_eq_psi_coe_floor, psi_le_primeCounting_mul_log]
   rcases lt_or_ge x 1 with h | h
   · simp [floor_eq_zero.mpr h]
   gcongr
-  · exact_mod_cast lt_of_add_one_le <| (one_le_floor_iff x).mpr h
+  · exact mod_cast lt_of_add_one_le <| (one_le_floor_iff x).mpr h
   · exact floor_le (by positivity)
 
 /-- `ψ n` is the logarithm of `lcmUpto n`. -/
@@ -322,6 +324,34 @@ theorem two_pow_le_mul_lcmUpto (n : ℕ) : 2 ^ n ≤ (n + 1) * lcmUpto n := calc
     gcongr with k hk
     exact le_of_dvd (lcmUpto_pos n) (choose_dvd_lcmUpto <| by grind)
   _ = _ := by simp
+
+lemma mul_choose_dvd_lcmUpto {n k : ℕ} (nk : k ≠ 0) (lk : k ≤ n) : k * n.choose k ∣ lcmUpto n := by
+  rw [← factorization_prime_le_iff_dvd (mul_ne_zero nk (choose_ne_zero lk)) (lcmUpto_ne_zero n)]
+  intro p pp
+  rw [factorization_lcmUpto n pp, factorization_mul nk (choose_ne_zero lk), Finsupp.add_apply]
+  exact factorization_add_factorization_choose_le_log lk
+
+lemma mul_mul_choose_dvd_lcmUpto {n : ℕ} (hn : n ≠ 0) :
+    n * (n + 1) * (2 * n + 1).choose n ∣ lcmUpto (2 * n + 1) := by
+  have co : n.Coprime (n + 1) := by simp [Coprime]
+  rw [← co.lcm_eq_mul, ← lcm_mul_right]
+  apply Nat.lcm_dvd (mul_choose_dvd_lcmUpto hn (by lia))
+  rw [← choose_symm_half]
+  apply mul_choose_dvd_lcmUpto <;> lia
+
+lemma mul_four_pow_le_lcmUpto {n : ℕ} (hn : n ≠ 0) : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := by
+  grw [four_pow_le_add_one_mul_choose, ← mul_assoc]
+  exact le_of_dvd (lcmUpto_pos _) (mul_mul_choose_dvd_lcmUpto hn)
+
+theorem two_pow_le_lcmUpto {n : ℕ} (hn : 7 ≤ n) : 2 ^ n ≤ lcmUpto n := by
+  have p2 (k) : 2 ^ (2 * k) = 4 ^ k := by simp [pow_mul]
+  obtain ⟨k, rfl | rfl⟩ := n.even_or_odd'
+  · obtain rfl | gk : k = 4 ∨ 4 ≤ k - 1 := by lia
+    · decide
+    · nth_grw 1 [p2, ← k.sub_one_add_one (by lia), pow_succ', gk, mul_four_pow_le_lcmUpto (by lia)]
+      exact le_of_dvd (lcmUpto_pos _) (lcmUpto_dvd_lcmUpto (by lia))
+  · grw [pow_succ', p2, ← mul_four_pow_le_lcmUpto (by lia)]
+    exact Nat.mul_le_mul_right _ (by lia)
 
 /-!
 ## Relating `ψ` and `θ`
@@ -466,6 +496,14 @@ theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
   norm_num
   linarith
 
+/-- Chebyshev's bound `∑ i < N, Λ i ≤ c N` with an explicit constant. -/
+theorem sum_range_vonMangoldt_le (N : ℕ) : ∑ i ∈ range N, Λ i ≤ (log 4 + 4) * N := by
+  rcases eq_or_ne N 0 with rfl | h
+  · simp
+  grw [range_eq_Icc_zero_sub_one _ h, (by simp : N - 1 = ⌊(N : ℝ) - 1⌋₊), ← psi_eq_sum_Icc,
+    psi_le_const_mul_self <| sub_nonneg_of_le <| one_le_cast_iff_ne_zero.mpr h,
+    (by linarith : (N : ℝ) - 1 ≤ N)]
+
 /-- `ψ - θ` is the sum of `Λ` over non-primes. -/
 theorem psi_sub_theta_eq_sum_not_prime (x : ℝ) :
     ψ x - θ x = ∑ n ∈ Ioc 0 ⌊x⌋₊ with ¬n.Prime, vonMangoldt n := by
@@ -487,6 +525,10 @@ theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ ψ 
   · exact (Nat.sub_one_lt_floor x).le
   · exact floor_le hx
   · exact one_le_two
+
+lemma psi_ge_of_seven_le {n : ℕ} (hn : 7 ≤ n) : n * log 2 ≤ ψ n := by
+  rw [psi_eq_log_lcmUpto, ← log_pow 2]
+  exact log_le_log (by positivity) <| mod_cast two_pow_le_lcmUpto hn
 
 theorem psi_sub_theta_le {x : ℝ} (hx : 1 ≤ x) : ψ x - θ x ≤ 2 * √x * log x := by
   grw [← abs_psi_sub_theta_le_sqrt_mul_log hx]
@@ -608,6 +650,26 @@ theorem isBigO_psi_sub_theta_sqrt : IsBigO atTop (ψ - θ) sqrt := by
   have := theta_le_psi x
   rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
   exact hC x
+
+open Asymptotics Filter in
+/-- Prime powers contribute a sublinear error to the Chebyshev functions. -/
+theorem isLittleO_psi_sub_theta_id : (ψ - θ) =o[atTop] id := by
+  refine isBigO_psi_sub_theta_sqrt.trans_isLittleO ?_
+  rw [isLittleO_id_iff_tendsto (by simp)]
+  apply ((tendsto_const_nhds (x := (1 : ℝ))).div_atTop tendsto_sqrt_atTop).congr
+  grind
+
+open Asymptotics Filter in
+/-- Restricting to any predicate preserves the sublinear error from prime powers. -/
+theorem isLittleO_sum_vonMangoldt_with_sum_prime_log_with (P : ℕ → Prop) [DecidablePred P] :
+    (fun x : ℝ ↦ (∑ n ∈ Ioc 0 ⌊x⌋₊ with P n, Λ n) -
+      ∑ p ∈ Ioc 0 ⌊x⌋₊ with p.Prime ∧ P p, log p) =o[atTop] id := by
+  refine (IsBigO.of_bound' (.of_forall fun x ↦ ?_)).trans_isLittleO isLittleO_psi_sub_theta_id
+  rw [Pi.sub_apply, norm_of_nonneg (sub_nonneg.mpr (theta_le_psi x)),
+    psi_sub_theta_eq_sum_not_prime]
+  simp_rw [sum_filter, ← sum_sub_distrib, ite_and]
+  refine (norm_sum_le _ _).trans (sum_le_sum fun n _ ↦ ?_)
+  split_ifs <;> simp [*, vonMangoldt_apply_prime, abs_of_nonneg]
 
 end CostaPereira
 
@@ -815,6 +877,15 @@ theorem pi_ge' {x : ℝ} (hx : 1 < x) :
   grw [div_le_iff₀ (log_pos hx), ← psi_le_primeCounting_mul_log', psi_ge']
   positivity
 
+lemma pi_ge_of_four_le {n : ℕ} (hn : 4 ≤ n) : n * log 2 / log n ≤ π n := by
+  rw [div_le_iff₀ (log_pos (mod_cast (by lia)))]
+  by_cases! hn' : 7 ≤ n
+  · grw [psi_ge_of_seven_le hn', ← psi_le_primeCounting_mul_log]
+  rw [← exp_le_exp]
+  iterate 2 rw [mul_comm, exp_mul, exp_log (by positivity)]
+  norm_cast
+  decide +revert
+
 theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
   (theta_le_psi n).trans (psi_le_primeCounting_mul_log n)
 
@@ -848,6 +919,34 @@ theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x 
   have : 0 < log √x := log_pos (lt_sqrt_of_sq_lt (by simp [hx]))
   field_simp
   grind [pi_mul_log_sqrt_le hx.le]
+
+/-- Replacing the logarithm of each prime by `log x` gives a sublinear error. -/
+theorem isLittleO_primeCounting_mul_log_sub_theta :
+    (fun x ↦ π ⌊x⌋₊ * log x - θ x) =o[atTop] id := by
+  refine (integral_theta_div_log_sq_isLittleO.mul_isBigO (isBigO_refl log atTop)).congr' ?_ ?_
+  · filter_upwards [eventually_ge_atTop 2]
+    grind [primeCounting_eq_theta_div_log_add_integral, Real.log_pos]
+  · filter_upwards [eventually_gt_atTop 1] with x hx
+    grind [log_pos hx]
+
+/-- Restricting to any predicate preserves the sublinear error from replacing `log p`
+by `log x`. -/
+theorem isLittleO_card_prime_with_mul_log_sum_prime_log_with (P : ℕ → Prop) [DecidablePred P] :
+    (fun x : ℝ ↦ (#{p ∈ Ioc 0 ⌊x⌋₊ | p.Prime ∧ P p} : ℝ) * log x -
+      ∑ p ∈ Ioc 0 ⌊x⌋₊ with p.Prime ∧ P p, log p) =o[atTop] id := by
+  refine (IsBigO.of_bound' ?_).trans_isLittleO isLittleO_primeCounting_mul_log_sub_theta
+  filter_upwards [eventually_gt_atTop 0] with x hx
+  have hnonneg (n : ℕ) (hn : n ∈ Ioc 0 ⌊x⌋₊) : 0 ≤ log x - log n :=
+    sub_nonneg.mpr (log_le_log (mod_cast (mem_Ioc.mp hn).1)
+      ((Nat.le_floor_iff hx.le).mp (mem_Ioc.mp hn).2))
+  rw [← nsmul_eq_mul, ← sum_const, ← sum_sub_distrib, Real.norm_of_nonneg <| sum_nonneg <| by grind]
+  calc
+    _ ≤ ∑ p ∈ Ioc 0 ⌊x⌋₊ with p.Prime, _ :=
+      sum_le_sum_of_subset_of_nonneg (by grind) (by grind)
+    _ = π ⌊x⌋₊ * log x - θ x := by
+      rw [sum_sub_distrib, sum_const, nsmul_eq_mul, ← primesLE_eq_filter_Ioc_zero,
+        primesLE_card_eq_primeCounting, theta_eq_sum_primesLE]
+    _ ≤ _ := le_norm_self _
 
 end PrimeCounting
 end Chebyshev

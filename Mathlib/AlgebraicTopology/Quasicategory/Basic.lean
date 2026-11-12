@@ -22,7 +22,6 @@ we show that the nerve of a category is a quasicategory.
 - Generalize the definition to higher universes.
   See the corresponding TODO in
   `Mathlib/AlgebraicTopology/SimplicialSet/KanComplex.lean`.
-
 -/
 
 public section

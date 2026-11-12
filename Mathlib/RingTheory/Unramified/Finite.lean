@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Unramified.Basic
 
@@ -15,6 +16,16 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 
 We prove various theorems about unramified algebras. In fact we work in the more general setting
 of formally unramified algebras which are essentially of finite type.
+
+## Main definitions
+
+Let `S/R` be formally unramified and essentially of finite type.
+
+- `Algebra.FormallyUnramified.elem R S`: the idempotent of the diagonal.
+- `Algebra.FormallyUnramified.sec R S M`: For an `S`-module `M`, this is an `S`-linear section of
+  the map `S ⊗[R] M →ₗ[S] M` defined by `s ⊗ m ↦ s • m`
+- `Algebra.FormallyUnramified.equalizerIdempotent f g`: For algebra homomorphisms `f g : S →ₐ[R] A`,
+  this is the idempotent defining the subset of `Spec A` where `f` and `g` agree.
 
 ## Main results
 
@@ -30,7 +41,6 @@ of formally unramified algebras which are essentially of finite type.
 ## References
 
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
 -/
 
 @[expose] public section
@@ -39,7 +49,9 @@ open Algebra Module
 open scoped TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable (L : Type*) [AddCommGroup L] [Module R L] [Module S L] [IsScalarTower R S L]
 variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
 
 namespace Algebra.FormallyUnramified
 
@@ -146,6 +158,7 @@ lemma one_tmul_sub_tmul_one_mul_elem (s : S) : (1 ⊗ₜ s - s ⊗ₜ 1) * elem 
 lemma one_tmul_mul_elem (s : S) : (1 ⊗ₜ s) * elem R S = (s ⊗ₜ 1) * elem R S := by
   rw [← sub_eq_zero, ← sub_mul, one_tmul_sub_tmul_one_mul_elem]
 
+@[simp]
 lemma lmul_elem : TensorProduct.lmul' R (elem R S) = 1 :=
   (iff_exists_tensorProduct.mp inferInstance).choose_spec.2
 
@@ -261,13 +274,34 @@ def sec :
       · simp [TensorProduct.smul_tmul']
       · simp only [map_add, smul_add, mul_add, *]
 
+variable {M} in
+lemma sec_apply (x : M) :
+    sec R S M x = ((LinearMap.toSpanSingleton S M x).restrictScalars R).baseChange S (elem R S) :=
+  rfl
+
+variable {M N} in
+lemma sec_comp (f : M →ₗ[S] N) :
+    (sec R S N).comp f = ((f.restrictScalars R).baseChange S).comp (sec R S M) := by
+  ext x
+  simp [sec_apply, ← f.comp_toSpanSingleton, LinearMap.baseChange_comp]
+
+variable {M N} in
+@[simp]
+lemma baseChange_sec (f : M →ₗ[S] N) (x : M) :
+    (f.restrictScalars R).baseChange S (sec R S M x) = sec R S N (f x) :=
+  (congr($(sec_comp R S f) x)).symm
+
+variable {M} in
+lemma sec_mem_baseChange (P : Submodule S M) {x : M} (hx : x ∈ P) :
+    sec R S M x ∈ (P.restrictScalars R).baseChange S :=
+  ⟨sec R S P ⟨x, hx⟩, baseChange_sec R S P.subtype ⟨x, hx⟩⟩
+
 lemma comp_sec :
     (TensorProduct.AlgebraTensorModule.lift
       ((lsmul S S M).toLinearMap.flip.restrictScalars R).flip).comp (sec R S M) =
       LinearMap.id := by
   ext x
-  simp only [sec, LinearMap.coe_comp, LinearMap.coe_mk, LinearMap.coe_toAddHom,
-    Function.comp_apply, LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply,
+  simp only [sec_apply, LinearMap.coe_comp, Function.comp_apply,
     TensorProduct.AlgebraTensorModule.lift_apply, LinearMap.id_coe, id_eq]
   trans (TensorProduct.lmul' R (elem R S)) • x
   · induction elem R S using TensorProduct.inductionOn with
@@ -282,5 +316,163 @@ lemma flat_of_restrictScalars [Module.Flat R M] : Module.Flat S M :=
 /-- If `S` is an unramified `R`-algebra, then `R`-projective implies `S`-projective. -/
 lemma projective_of_restrictScalars [Module.Projective R M] : Module.Projective S M :=
   Module.Projective.of_split _ _ (comp_sec R S M)
+
+section extendScalars
+
+variable {R S L M N}
+
+variable (S) in
+/-- A left inverse of `LinearMap.restrictScalars`. -/
+noncomputable def extendScalars : (M →ₗ[R] N) →ₗ[S] (M →ₗ[S] N) :=
+  ((sec R S M).lcomp S N).comp (LinearMap.liftBaseChangeEquiv S).toLinearMap
+
+variable (S) in
+lemma extendScalars_apply (f : M →ₗ[R] N) :
+    extendScalars S f = (f.liftBaseChange S).comp (sec R S M) :=
+  rfl
+
+variable (R S M) in
+@[simp]
+lemma extendScalars_zero : extendScalars S (0 : M →ₗ[R] N) = 0 :=
+  map_zero (extendScalars S)
+
+variable (R S M) in
+@[simp]
+lemma extendScalars_one : extendScalars S (1 : M →ₗ[R] M) = 1 :=
+  comp_sec R S M
+
+variable (R S M) in
+@[simp]
+lemma extendScalars_id : extendScalars S (LinearMap.id : M →ₗ[R] M) = LinearMap.id :=
+  extendScalars_one R S M
+
+@[simp]
+lemma extendScalars_apply_comp_restrictScalars (f : M →ₗ[R] N) (g : L →ₗ[S] M) :
+    extendScalars S (f.comp (g.restrictScalars R)) = (extendScalars S f).comp g := by
+  simp [extendScalars_apply, LinearMap.liftBaseChange_comp, LinearMap.comp_assoc, sec_comp]
+
+@[simp]
+lemma extendScalars_apply_restrictScalars_comp (f : M →ₗ[S] N) (g : L →ₗ[R] M) :
+    extendScalars S ((f.restrictScalars R).comp g) = f.comp (extendScalars S g) := by
+  simp [extendScalars_apply, LinearMap.comp_liftBaseChange, ← LinearMap.comp_assoc]
+
+variable (R) in
+@[simp]
+lemma extendScalars_restrictScalars (f : M →ₗ[S] N) :
+    extendScalars S (f.restrictScalars R) = f := by
+  simpa using extendScalars_apply_restrictScalars_comp f (LinearMap.id (R := R))
+
+@[simp]
+lemma extendScalars_comp_mulLeft (f : S →ₗ[R] M) (x : S) :
+    extendScalars S (f.comp (LinearMap.mulLeft R x)) =
+      (extendScalars S f).comp (LinearMap.mulLeft S x) :=
+  extendScalars_apply_comp_restrictScalars f (LinearMap.mulLeft S x)
+
+@[simp]
+lemma extendScalars_mulLeft_comp (f : M →ₗ[R] S) (x : S) :
+    extendScalars S ((LinearMap.mulLeft R x).comp f) =
+      (LinearMap.mulLeft S x).comp (extendScalars S f) :=
+  extendScalars_apply_restrictScalars_comp (LinearMap.mulLeft S x) f
+
+end extendScalars
+
+section equalizer
+
+open Algebra.TensorProduct
+
+variable {R S} {A : Type*} [CommRing A] [Algebra R A] (f g : S →ₐ[R] A)
+
+/-- The idempotent defining the subset of `Spec A` where `f` and `g` agree. -/
+noncomputable def equalizerIdempotent : A :=
+  productMap f g (elem R S)
+
+lemma isIdempotentElem_equalizerIdempotent : IsIdempotentElem (equalizerIdempotent f g) :=
+  (isIdempotentElem_elem R S).map (productMap f g)
+
+@[simp]
+lemma map_equalizerIdempotent {B : Type*} [CommRing B] [Algebra R B] (φ : A →ₐ[R] B) :
+    φ (equalizerIdempotent f g) = equalizerIdempotent (φ.comp f) (φ.comp g) := by
+  simp_rw [equalizerIdempotent, ← AlgHom.comp_apply, comp_productMap]
+
+variable {f g} in
+lemma equalizerIdempotent_mul_eq_iff {a : A} :
+    equalizerIdempotent f g * a = a ↔ ∀ x : S, f x * a = g x * a := by
+  unfold equalizerIdempotent
+  refine ⟨fun h x ↦ ?_, fun h ↦ ?_⟩
+  · simpa [mul_assoc, h] using congrArg (productMap f g · * a) (one_tmul_mul_elem x).symm
+  · suffices ∀ t, productMap f g t * a = f (lmul' R t) * a by simpa using this (elem R S)
+    intro t
+    induction t with
+    | tmul x y => simp [mul_assoc, h]
+    | add x y hx hy => simp [add_mul, hx, hy]
+
+theorem span_equalizerIdempotent_one_sub_eq :
+    Ideal.span {1 - equalizerIdempotent f g} = Ideal.span (Set.range fun x ↦ f x - g x) :=
+  eq_of_forall_ge_iff fun I ↦ by simpa [← map_equalizerIdempotent, ← Ideal.Quotient.eq,
+    Ideal.span_le, Set.range_subset_iff, eq_comm] using (equalizerIdempotent_mul_eq_iff
+      (a := 1) (f := (Ideal.Quotient.mkₐ R I).comp f) (g := (Ideal.Quotient.mkₐ R I).comp g))
+
+variable {f g} in
+@[simp]
+lemma equalizerIdempotent_eq_one_iff : equalizerIdempotent f g = 1 ↔ f = g := by
+  simpa [AlgHom.ext_iff] using equalizerIdempotent_mul_eq_iff (f := f) (g := g) (a := 1)
+
+@[simp]
+lemma equalizerIdempotent_self : equalizerIdempotent f f = 1 :=
+  equalizerIdempotent_eq_one_iff.mpr rfl
+
+lemma apply_mul_equalizerIdempotent (x : S) :
+    f x * equalizerIdempotent f g = g x * equalizerIdempotent f g :=
+  equalizerIdempotent_mul_eq_iff.mp (isIdempotentElem_equalizerIdempotent f g).eq x
+
+lemma equalizerIdempotent_comm : equalizerIdempotent f g = equalizerIdempotent g f := by
+  have hfg := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (apply_mul_equalizerIdempotent f g x).symm
+  have hgf := equalizerIdempotent_mul_eq_iff.mpr fun x ↦ (apply_mul_equalizerIdempotent g f x).symm
+  rw [← hfg, mul_comm, hgf]
+
+end equalizer
+
+section inertia
+
+open Algebra.TensorProduct
+
+variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+
+/-- If `S/R` is formally unramified and essentially finite type, then the inertia idempotent
+of an algebra automorphism `g : G` is an idempotent element `e` of `S` with the property that
+`e ≡ 1 [MOD Q] ↔ g ∈ Q.inertia G`, see `mk_inertiaIdempotent_eq_one_iff`. -/
+noncomputable def inertiaIdempotent (g : G) : S :=
+  equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S)
+
+lemma isIdempotentElem_inertiaIdempotent (g : G) : IsIdempotentElem (inertiaIdempotent R S g) :=
+  isIdempotentElem_equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S)
+
+variable (G) in
+@[simp]
+lemma inertiaIdempotent_one : inertiaIdempotent R S (1 : G) = 1 := by
+  simp [inertiaIdempotent]
+
+variable {S} in
+lemma smul_mul_inertiaIdempotent (g : G) (x : S) :
+    (g • x) * inertiaIdempotent R S g = x * inertiaIdempotent R S g := by
+  simpa [inertiaIdempotent] using
+    apply_mul_equalizerIdempotent (MulSemiringAction.toAlgHom R S g) (AlgHom.id R S) x
+
+variable {S} in
+/-- The inertia idempotent of `g` is congruent to `1` modulo `Q` if and only `g ∈ Q.inertia G`. -/
+@[simp]
+lemma mk_inertiaIdempotent_eq_one_iff {Q : Ideal S} {g : G} :
+    Ideal.Quotient.mk Q (inertiaIdempotent R S g) = 1 ↔ g ∈ Q.inertia G := by
+  rw [inertiaIdempotent, ← Ideal.Quotient.mkₐ_eq_mk R, map_equalizerIdempotent]
+  simp [AlgHom.ext_iff, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+
+variable {S} in
+open Classical in
+lemma mk_inertiaIdempotent (Q : Ideal S) [Q.IsPrime] (g : G) :
+    Ideal.Quotient.mk Q (inertiaIdempotent R S g) = if g ∈ Q.inertia G then 1 else 0 := by
+  rw [← mk_inertiaIdempotent_eq_one_iff R]
+  grind [((isIdempotentElem_inertiaIdempotent R S g).map (Ideal.Quotient.mk Q)).eq_zero_or_one]
+
+end inertia
 
 end Algebra.FormallyUnramified

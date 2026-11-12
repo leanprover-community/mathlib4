@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.TransferInstance
 public import Mathlib.Logic.Small.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer group structures from `α` to `Shrink α`
 -/

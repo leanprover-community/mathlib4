@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Padics.ValuativeRel
 
 import Mathlib.NumberTheory.Padics.ProperSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ℚ_[p]` is a non-archimedean local field
 

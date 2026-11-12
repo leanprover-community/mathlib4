@@ -23,7 +23,6 @@ for commuting endomorphisms but there are important more general situations wher
 * `Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo`: in finite dimensions, the
   simultaneous generalised eigenspaces of a compatible family of endomorphisms span if the same
   is true of each map individually.
-
 -/
 
 public section
@@ -125,7 +124,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_iInf_maxGenEigenspace_iff _ _ _).mp hy l
   have aux (f : End R M) (φ : R) (k : ℕ) (p : Submodule R M) (hp : MapsTo f p p) :
       MapsTo ((f - algebraMap R (Module.End R M) φ) ^ k) p p := by
-    rw [Module.End.coe_pow]
+    rw [FunLike.coe_pow_eq_iterate]
     exact MapsTo.iterate (fun m hm ↦ p.sub_mem (hp hm) (p.smul_mem _ hm)) k
   refine ⟨k, Submodule.mem_inf.mp ⟨?_, ?_⟩⟩
   · refine aux (f l) (χ₂ l) k (⨅ i, (f i).maxGenEigenspace (χ₁ i)) ?_ hx

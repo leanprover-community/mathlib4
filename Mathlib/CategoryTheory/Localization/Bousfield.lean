@@ -29,7 +29,6 @@ The dual results are also obtained.
 ## References
 
 * https://ncatlab.org/nlab/show/left+Bousfield+localization+of+model+categories
-
 -/
 
 @[expose] public section

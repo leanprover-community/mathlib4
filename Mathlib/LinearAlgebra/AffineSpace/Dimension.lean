@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 This file defines the dimension of an affine subspace to be `⊥` for the empty subspace,
 and otherwise equal to the `Module.rank` of the direction of the subspace. The finite dimension
-is similary defined using `Module.finrank`.
+is similarly defined using `Module.finrank`.
 
 ## Main definitions
 

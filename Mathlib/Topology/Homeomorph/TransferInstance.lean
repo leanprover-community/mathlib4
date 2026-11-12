@@ -12,7 +12,6 @@ public import Mathlib.Topology.Homeomorph.Defs
 
 We show how to transport a topological space structure across an `Equiv` and prove that this
 make the equivalence a homeomorphism between the original space and the transported topology.
-
 -/
 
 @[expose] public section

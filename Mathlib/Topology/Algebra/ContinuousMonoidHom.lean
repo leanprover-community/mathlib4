@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
-
 # Continuous Monoid Homs
 
 This file defines the space of continuous homomorphisms between two topological groups.
@@ -290,7 +289,6 @@ end
 section
 
 /-!
-
 ### Continuous MulEquiv
 
 This section defines the space of continuous isomorphisms between two topological groups.

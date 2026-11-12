@@ -12,7 +12,7 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 A fundamental sequence for a countable limit ordinal `o` is a strictly monotone function `ℕ → Iio o`
 with cofinal range. We can generalize this notion to arbitrary ordinals by setting the domain as
-`Iio o.cof.card`. Note that for a countable limit ordinal, one has `o.cof.card = ω`.
+`Iio o.cof.ord`. Note that for a countable limit ordinal, one has `o.cof.ord = ω`.
 
 ## Main results
 
