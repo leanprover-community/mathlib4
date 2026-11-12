@@ -824,14 +824,6 @@ section mulSemiringAction2
 variable {R A₁ A₂ : Type*}
   [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁] [Algebra R A₂]
 
-instance apply_smulCommClass {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
-    SMulCommClass S (A₁ ≃ₐ[R] A₁) A₁ where
-  smul_comm r e a := (e.toLinearEquiv.map_smul_of_tower r a).symm
-
-instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A₁] :
-    SMulCommClass (A₁ ≃ₐ[R] A₁) S A₁ :=
-  SMulCommClass.symm _ _ _
-
 @[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
     algebraMap R A₂ y = e x ↔ algebraMap R A₁ y = x :=
