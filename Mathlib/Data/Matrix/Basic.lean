@@ -723,7 +723,8 @@ def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
   { f.toAlgHom.mapMatrix,
     f.toRingEquiv.mapMatrix with
     toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    invFun := fun M => M.map f.symm
+    map_smul' := map_smul f.toAlgHom.mapMatrix }
 
 @[simp]
 theorem mapMatrix_refl : AlgEquiv.refl.mapMatrix = (AlgEquiv.refl : Matrix m m α ≃ₐ[R] _) :=
@@ -746,8 +747,7 @@ See also `Matrix.transposeAlgEquiv` for a version that doesn't take the opposite
 given that its multiplication is commutative. -/
 @[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := RingEquiv.mopMatrix
-  commutes' _ := MulOpposite.unop_injective <| by
-    ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
+  map_smul' _ _ := MulOpposite.unop_injective <| by ext; simp
 
 end AlgEquiv
 
@@ -883,7 +883,7 @@ variable [CommSemiring R] [DecidableEq n]
 @[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
     Matrix n n (α × β) ≃ₐ[R] Matrix n n α × Matrix n n β where
   __ := prodRingEquiv n α β
-  __ := AlgHom.mk' (prodRingEquiv n α β).toRingHom fun _ _ ↦ rfl
+  map_smul' := map_smul (AlgHom.mk' (prodRingEquiv n α β).toRingHom fun _ _ ↦ rfl)
 
 @[simp] theorem toRingEquiv_prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
     prodAlgEquiv n R α β = prodRingEquiv n α β := rfl
@@ -946,7 +946,7 @@ variable (R) [CommSemiring R] [Π i, Semiring (β i)] [Π i, Algebra R (β i)]
 /-- `piEquiv` as an `AlgEquiv`. -/
 @[simps!] def piAlgEquiv : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
-  commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+  map_smul' := map_smul (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl)
 
 @[simp] theorem toRingEquiv_piAlgEquiv :
     (piAlgEquiv (n := n) R (ι := ι) (β := β) :
@@ -1044,7 +1044,7 @@ multiplication, by taking its opposite. -/
 def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := transposeRingEquiv m α
-  commutes' r := by simp [algebraMap_eq_diagonal]
+  map_smul' := by simp
 
 @[simp]
 theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m]

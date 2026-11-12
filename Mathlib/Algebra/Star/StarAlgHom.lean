@@ -654,7 +654,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
-  { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+  { map_smulₛₗ := fun f r => by simp [map_smul] }
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. -/
@@ -821,13 +821,14 @@ theorem rightInverse_symm (e : A ≃⋆ₐ[R] B) : Function.RightInverse e.symm 
   e.right_inv
 
 section AlgEquiv
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] [Star A] [Star B]
+variable {R A B C : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+    [NonUnitalNonAssocSemiring B] [Module R B] [Star A] [Star B]
+    [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
 
 /-- Interpret a ⋆-algebra equivalence as an algebra equivalence. -/
 def toAlgEquiv (f : A ≃⋆ₐ[R] B) : A ≃ₐ[R] B where
   toRingEquiv := f.toRingEquiv
-  commutes' r := by simp_rw [Algebra.algebraMap_eq_smul_one', map_smul']; simp
+  map_smul' := map_smul f
 
 @[simp]
 theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.symm.toAlgEquiv = f.toAlgEquiv.symm := rfl
@@ -839,8 +840,8 @@ theorem coe_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv = ⇑f := rfl
 theorem coe_symm_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv.symm = ⇑f.symm := rfl
 
 @[simp]
-theorem toAlgEquiv_trans {C : Type*} [Semiring C] [Algebra R C] [Star C] (f : A ≃⋆ₐ[R] B)
-    (g : B ≃⋆ₐ[R] C) : (f.trans g).toAlgEquiv = f.toAlgEquiv.trans g.toAlgEquiv := rfl
+theorem toAlgEquiv_trans (f : A ≃⋆ₐ[R] B) (g : B ≃⋆ₐ[R] C) :
+    (f.trans g).toAlgEquiv = f.toAlgEquiv.trans g.toAlgEquiv := rfl
 
 theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv (R := R) (A := A) (B := B)) :=
   fun _ _ h => ext <| AlgEquiv.congr_fun h
