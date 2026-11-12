@@ -531,23 +531,16 @@ theorem integral_indicator_one ⦃s : Set X⦄ (hs : MeasurableSet s) :
   (integral_indicator_const 1 hs).trans ((smul_eq_mul ..).trans (mul_one _))
 
 theorem setIntegral_indicatorConstLp [CompleteSpace E]
-    {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
-    ∫ x in s, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ = μ.real (t ∩ s) • e :=
-  calc
-    ∫ x in s, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ
-    = ∫ x in s, t.indicator (fun _ => e) x ∂μ := by
-      rw [setIntegral_congr_ae hs (indicatorConstLp_coeFn.mono fun x hx _ => hx)]
-    _ = (μ.real (t ∩ s)) • e := by rw [integral_indicator_const _ ht, measureReal_restrict_apply ht]
+    {p : ℝ≥0∞} (ht : NullMeasurableSet t μ) (hμt : μ t ≠ ∞) (e : E) :
+    ∫ x in s, indicatorConstLp p ht hμt e x ∂μ = μ.real (t ∩ s) • e := by
+  have ht' : NullMeasurableSet t (μ.restrict s) := ht.mono Measure.restrict_le_self
+  rw [integral_congr_ae (ae_restrict_of_ae indicatorConstLp_coeFn), integral_indicator₀ ht',
+    setIntegral_const, measureReal_restrict_apply₀ ht']
 
 theorem integral_indicatorConstLp [CompleteSpace E]
-    {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
-    ∫ x, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ = μ.real t • e :=
-  calc
-    ∫ x, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ =
-      ∫ x in univ, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ := by
-      rw [setIntegral_univ]
-    _ = μ.real (t ∩ univ) • e := setIntegral_indicatorConstLp MeasurableSet.univ ht hμt e
-    _ = μ.real t • e := by rw [inter_univ]
+    {p : ℝ≥0∞} (ht : NullMeasurableSet t μ) (hμt : μ t ≠ ∞) (e : E) :
+    ∫ x, indicatorConstLp p ht hμt e x ∂μ = μ.real t • e := by
+  rw [← setIntegral_univ, setIntegral_indicatorConstLp, inter_univ]
 
 theorem setIntegral_map {Y} [MeasurableSpace Y] {g : X → Y} {f : Y → E} {s : Set Y}
     (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (Measure.map g μ)) (hg : AEMeasurable g μ) :

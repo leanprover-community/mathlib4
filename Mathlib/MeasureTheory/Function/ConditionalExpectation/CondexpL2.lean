@@ -186,23 +186,24 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
     simp
   · exact (Lp.stronglyMeasurable _).eNorm (ε := ℝ)
 
-theorem lintegral_nnNorm_condExpL2_indicator_le_real (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
+theorem lintegral_nnNorm_condExpL2_indicator_le_real (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞)
     (ht : MeasurableSet[m] t) (hμt : μ t ≠ ∞) :
-    ∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs.nullMeasurableSet hμs 1) : α → ℝ) a‖₊ ∂μ ≤
+    ∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ ≤
       μ (s ∩ t) := by
   refine (lintegral_nnNorm_condExpL2_le ht hμt _).trans (le_of_eq ?_)
   have h_eq :
-    ∫⁻ x in t, ‖(indicatorConstLp 2 hs.nullMeasurableSet hμs (1 : ℝ)) x‖₊ ∂μ =
+    ∫⁻ x in t, ‖(indicatorConstLp 2 hs hμs (1 : ℝ)) x‖₊ ∂μ =
       ∫⁻ x in t, s.indicator (fun _ => (1 : ℝ≥0∞)) x ∂μ := by
     refine lintegral_congr_ae (ae_restrict_of_ae ?_)
-    refine (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs.nullMeasurableSet hμs (1 : ℝ)).mono
+    refine (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs hμs (1 : ℝ)).mono
       fun x hx => ?_
     dsimp only
     rw [hx]
     classical
     simp_rw [Set.indicator_apply]
     split_ifs <;> simp
-  rw [h_eq, lintegral_indicator hs, lintegral_const, Measure.restrict_restrict hs]
+  have hs' : NullMeasurableSet s (μ.restrict t) := hs.mono Measure.restrict_le_self
+  rw [h_eq, lintegral_indicator₀ hs', lintegral_const, Measure.restrict_restrict₀ hs']
   simp only [one_mul, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
 
 @[deprecated (since := "2026-10-31")]
@@ -314,18 +315,18 @@ theorem condExpL2_indicator_eq_toSpanSingleton_comp (hm : m ≤ m0) (hs : NullMe
 
 variable {𝕜}
 
-theorem setLIntegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : MeasurableSet s)
+theorem setLIntegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : NullMeasurableSet s μ)
     (hμs : μ s ≠ ∞) (x : E') {t : Set α} (ht : MeasurableSet[m] t) (hμt : μ t ≠ ∞) :
-    ∫⁻ a in t, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs.nullMeasurableSet hμs x) : α → E') a‖₊ ∂μ
+    ∫⁻ a in t, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ
       ≤ μ (s ∩ t) * ‖x‖₊ :=
   calc
-    ∫⁻ a in t, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs.nullMeasurableSet hμs x) : α → E') a‖₊ ∂μ
+    ∫⁻ a in t, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ
       = ∫⁻ a in t,
-        ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs.nullMeasurableSet hμs 1) : α → ℝ) a • x‖₊ ∂μ :=
+        ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x‖₊ ∂μ :=
           setLIntegral_congr_fun_ae (hm t ht)
-            ((condExpL2_indicator_ae_eq_smul 𝕜 hm hs.nullMeasurableSet hμs x).mono
+            ((condExpL2_indicator_ae_eq_smul 𝕜 hm hs hμs x).mono
               fun a ha _ => by rw [ha])
-    _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs.nullMeasurableSet hμs 1) : α → ℝ) a‖₊
+    _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊
         ∂μ) * ‖x‖₊ := by
       simp_rw [nnNorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
@@ -335,9 +336,9 @@ theorem setLIntegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
 @[deprecated (since := "2026-10-31")]
 alias setLIntegral_nnnorm_condExpL2_indicator_le := setLIntegral_nnNorm_condExpL2_indicator_le
 
-theorem lintegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
-    (x : E') [SigmaFinite (μ.trim hm)] :
-    ∫⁻ a, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs.nullMeasurableSet hμs x) : α → E') a‖₊ ∂μ ≤
+theorem lintegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : NullMeasurableSet s μ)
+    (hμs : μ s ≠ ∞) (x : E') [SigmaFinite (μ.trim hm)] :
+    ∫⁻ a, ‖(condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x) : α → E') a‖₊ ∂μ ≤
       μ s * ‖x‖₊ := by
   refine lintegral_le_of_forall_fin_meas_trim_le hm (μ s * ‖x‖₊) fun t ht hμt => ?_
   refine (setLIntegral_nnNorm_condExpL2_indicator_le hm hs hμs x ht hμt).trans ?_
@@ -350,8 +351,8 @@ alias lintegral_nnnorm_condExpL2_indicator_le := lintegral_nnNorm_condExpL2_indi
 /-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a measurable set
 with finite measure is integrable. -/
 theorem integrable_condExpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
-    (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E') :
-    Integrable (ε := E') (condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs.nullMeasurableSet hμs x)) μ := by
+    (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (x : E') :
+    Integrable (ε := E') (condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x)) μ := by
   refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊) (by finiteness) ?_ ?_
   · exact Lp.aestronglyMeasurable _
   · refine fun t ht hμt =>
@@ -408,7 +409,8 @@ theorem setLIntegral_nnNorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
       simp_rw [nnNorm_smul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
       exact (Lp.stronglyMeasurable _).eNorm (ε := ℝ)
-    _ ≤ μ (s ∩ t) * ‖x‖₊ := by grw [lintegral_nnNorm_condExpL2_indicator_le_real hs hμs ht hμt]
+    _ ≤ μ (s ∩ t) * ‖x‖₊ := by
+      grw [lintegral_nnNorm_condExpL2_indicator_le_real hs.nullMeasurableSet hμs ht hμt]
 
 @[deprecated (since := "2026-10-31")]
 alias setLIntegral_nnnorm_condExpIndSMul_le := setLIntegral_nnNorm_condExpIndSMul_le
@@ -438,16 +440,16 @@ theorem condExpIndSMul_empty {x : G} : condExpIndSMul hm MeasurableSet.empty
   rw [condExpIndSMul, indicatorConstLp_empty]
   simp only [Submodule.coe_zero, map_zero]
 
-theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
+theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : NullMeasurableSet t μ)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) :
-    ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht.nullMeasurableSet hμt 1) : α → ℝ) x ∂μ =
+    ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ =
       μ.real (t ∩ s) :=
   calc
-    ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht.nullMeasurableSet hμt 1) : α → ℝ) x ∂μ =
-        ∫ x in s, indicatorConstLp 2 ht.nullMeasurableSet hμt (1 : ℝ) x ∂μ :=
-      @integral_condExpL2_eq α _ ℝ _ _ _ _ _ _ _ _ _ hm (indicatorConstLp 2 ht.nullMeasurableSet hμt
+    ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ =
+        ∫ x in s, indicatorConstLp 2 ht hμt (1 : ℝ) x ∂μ :=
+      @integral_condExpL2_eq α _ ℝ _ _ _ _ _ _ _ _ _ hm (indicatorConstLp 2 ht hμt
         (1 : ℝ)) hs hμs
-    _ = μ.real (t ∩ s) • (1 : ℝ) := setIntegral_indicatorConstLp (hm s hs) ht hμt 1
+    _ = μ.real (t ∩ s) • (1 : ℝ) := setIntegral_indicatorConstLp ht hμt 1
     _ = μ.real (t ∩ s) := by rw [smul_eq_mul, mul_one]
 
 theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
@@ -462,12 +464,13 @@ theorem setIntegral_condExpIndSMul (hs : MeasurableSet[m] s) (ht : MeasurableSet
     _ = (∫ a in s,
           (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht.nullMeasurableSet hμt 1) : α → ℝ) a ∂μ) • x :=
         integral_smul_const _ x
-    _ = μ.real (t ∩ s) • x := by rw [setIntegral_condExpL2_indicator hs ht hμs hμt]
+    _ = μ.real (t ∩ s) • x := by
+      rw [setIntegral_condExpL2_indicator hs ht.nullMeasurableSet hμs hμt]
 
-theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
+theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞)
     [SigmaFinite (μ.trim hm)] : (0 : α → ℝ) ≤ᵐ[μ]
-    condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs.nullMeasurableSet hμs 1) := by
-  have h : AEStronglyMeasurable[m] (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs.nullMeasurableSet
+    condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) := by
+  have h : AEStronglyMeasurable[m] (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs
       hμs 1) : α → ℝ) μ := aestronglyMeasurable_condExpL2 _ _
   refine EventuallyLE.trans_eq ?_ h.ae_eq_mk.symm
   refine @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ ?_
@@ -481,7 +484,7 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
     rw [← setIntegral_trim hm h.stronglyMeasurable_mk ht]
     have h_ae :
         ∀ᵐ x ∂μ, x ∈ t → h.mk _ x =
-          (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs.nullMeasurableSet hμs 1) : α → ℝ) x := by
+          (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) x := by
       filter_upwards [h.ae_eq_mk] with x hx using fun _ => hx.symm
     rw [setIntegral_congr_ae (hm t ht) h_ae,
       setIntegral_condExpL2_indicator ht hs ((le_trim hm).trans_lt hμt).ne hμs]
@@ -492,7 +495,7 @@ theorem condExpIndSMul_nonneg {E}
     [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     (0 : α → E) ≤ᵐ[μ] condExpIndSMul hm hs hμs x := by
   refine EventuallyLE.trans_eq ?_ (condExpIndSMul_ae_eq_smul hm hs hμs x).symm
-  filter_upwards [condExpL2_indicator_nonneg hm hs hμs] with a ha
+  filter_upwards [condExpL2_indicator_nonneg hm hs.nullMeasurableSet hμs] with a ha
   exact smul_nonneg ha hx
 
 end CondexpIndSMul

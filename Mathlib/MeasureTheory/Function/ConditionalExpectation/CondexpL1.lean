@@ -349,7 +349,7 @@ theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
     (isClosed_eq ?_ ?_) f
   · intro x t ht hμt
     simp_rw [condExpL1CLM_indicatorConst ht hμt.ne x]
-    rw [Lp.simpleFunc.coe_indicatorConst ht, setIntegral_indicatorConstLp (hm _ hs) ht]
+    rw [Lp.simpleFunc.coe_indicatorConst ht, setIntegral_indicatorConstLp ht.nullMeasurableSet]
     exact setIntegral_condExpInd hs ht hμs hμt.ne x
   · intro f g hf_Lp hg_Lp _ hf hg
     simp_rw [(condExpL1CLM F' hm μ).map_add]

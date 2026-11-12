@@ -366,9 +366,9 @@ theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) 
   Integrable.indicator h ht
 
 theorem integrable_indicatorConstLp {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
-    (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
-    Integrable (indicatorConstLp p hs.nullMeasurableSet hμs c) μ := by
-  rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
+    (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (c : E) :
+    Integrable (indicatorConstLp p hs hμs c) μ := by
+  rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff₀ hs, IntegrableOn,
     integrable_const_iff, isFiniteMeasure_restrict]
   exact .inr hμs
 

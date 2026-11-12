@@ -104,6 +104,15 @@ theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
   convert ne_top_of_lt hμt
   rw [← bot_eq_empty, bot_symmDiff]
 
+/-- A version of `Measure.MeasureDense.approx` for null measurable sets. -/
+theorem Measure.MeasureDense.approx₀ (h𝒜 : μ.MeasureDense 𝒜) {s : Set X}
+    (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (ε : ℝ) (ε_pos : 0 < ε) :
+    ∃ t ∈ 𝒜, μ (s ∆ t) < ENNReal.ofReal ε := by
+  obtain ⟨t, ht, hμst⟩ := h𝒜.approx (toMeasurable μ s) (measurableSet_toMeasurable μ s)
+    (by rwa [measure_toMeasurable]) ε ε_pos
+  refine ⟨t, ht, ?_⟩
+  rwa [measure_congr <| ae_eq_set_symmDiff hs.toMeasurable_ae_eq.symm .rfl]
+
 /-- The set of measurable sets is measure-dense. -/
 theorem measureDense_measurableSet : μ.MeasureDense {s | MeasurableSet s} where
   measurable _ h := h
@@ -120,12 +129,12 @@ theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.comp
     rw [completion_apply]
     exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm .rfl
 
-/-- If a family of sets `𝒜` is measure-dense in `X`, then any measurable set with finite measure
-can be approximated by sets in `𝒜` with finite measure. -/
+/-- If a family of sets `𝒜` is measure-dense in `X`, then any null measurable set with finite
+measure can be approximated by sets in `𝒜` with finite measure. -/
 lemma Measure.MeasureDense.fin_meas_approx (h𝒜 : μ.MeasureDense 𝒜) {s : Set X}
-    (ms : MeasurableSet s) (hμs : μ s ≠ ∞) (ε : ℝ) (ε_pos : 0 < ε) :
+    (ms : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (ε : ℝ) (ε_pos : 0 < ε) :
     ∃ t ∈ 𝒜, μ t ≠ ∞ ∧ μ (s ∆ t) < ENNReal.ofReal ε := by
-  rcases h𝒜.approx s ms hμs ε ε_pos with ⟨t, t_mem, ht⟩
+  rcases h𝒜.approx₀ ms hμs ε ε_pos with ⟨t, t_mem, ht⟩
   exact ⟨t, t_mem, (measure_ne_top_iff_of_symmDiff <| ne_top_of_lt ht).1 hμs, ht⟩
 
 variable (p) in
@@ -133,8 +142,7 @@ variable (p) in
 with constant `c` whose underlying set is in `𝒜` is dense in the set of constant indicators
 which are in `Lp E p μ` when `1 ≤ p < ∞`. -/
 theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.MeasureDense 𝒜) (c : E) :
-    {indicatorConstLp p hs.nullMeasurableSet hμs c |
-      (s : Set X) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)} ⊆
+    {indicatorConstLp p hs hμs c | (s : Set X) (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞)} ⊆
         closure {indicatorConstLp p (h𝒜.measurable s hs).nullMeasurableSet hμs c |
           (s : Set X) (hs : s ∈ 𝒜) (hμs : μ s ≠ ∞)} := by
   obtain rfl | hc := eq_or_ne c 0
@@ -170,7 +178,7 @@ theorem Measure.MeasureDense.fin_meas (h𝒜 : μ.MeasureDense 𝒜) :
     μ.MeasureDense {s | s ∈ 𝒜 ∧ μ s ≠ ∞} where
   measurable s h := h𝒜.measurable s h.1
   approx s ms hμs ε ε_pos := by
-    rcases Measure.MeasureDense.fin_meas_approx h𝒜 ms hμs ε ε_pos with ⟨t, t_mem, hμt, hμst⟩
+    rcases h𝒜.fin_meas_approx ms.nullMeasurableSet hμs ε ε_pos with ⟨t, t_mem, hμt, hμst⟩
     exact ⟨t, ⟨t_mem, hμt⟩, hμst⟩
 
 variable (μ) in
@@ -474,7 +482,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
       have ⟨b, b_mem, hb⟩ := SeminormedAddCommGroup.mem_closure_iff.1 (dense_u a) _ approx_a_pos
       -- Then we pick `t ∈ 𝒜₀` such that `‖b • 𝟙ₛ - b • 𝟙ₜ‖ < ε / 3`.
       rcases SeminormedAddCommGroup.mem_closure_iff.1
-        (h𝒜₀.indicatorConstLp_subset_closure p b ⟨s, ms, hμs, rfl⟩)
+        (h𝒜₀.indicatorConstLp_subset_closure p b ⟨s, ms.nullMeasurableSet, hμs, rfl⟩)
           (ε / 3) (by linarith [ε_pos]) with ⟨-, ⟨t, ht, hμt, rfl⟩, hst⟩
       have mt := h𝒜₀.measurable t ht
       -- We now show that `‖a • 𝟙ₛ - b • 𝟙ₜ‖ₚ < ε`, as follows:
