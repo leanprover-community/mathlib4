@@ -443,6 +443,7 @@ public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.PNatPowAssoc
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.Pi.Units
@@ -1370,6 +1371,7 @@ public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.MonoidHom
 public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.Algebra.Star.NonUnitalSubsemiring
+public import Mathlib.Algebra.Star.Orthogonal
 public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.Pointwise
 public import Mathlib.Algebra.Star.Prod
@@ -2357,6 +2359,7 @@ public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
+public import Mathlib.Analysis.Normed.Unbundled.GelfandRadiusNorm
 public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
 public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
@@ -3738,6 +3741,7 @@ public import Mathlib.Combinatorics.Configuration
 public import Mathlib.Combinatorics.Derangements.Basic
 public import Mathlib.Combinatorics.Derangements.Exponential
 public import Mathlib.Combinatorics.Derangements.Finite
+public import Mathlib.Combinatorics.Design.Defs
 public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.Digraph.Orientation
 public import Mathlib.Combinatorics.Enumerative.Bell
@@ -6063,6 +6067,7 @@ public import Mathlib.NumberTheory.LSeries.PrimesInAP
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.LSeries.RiemannZetaLogDeriv
 public import Mathlib.NumberTheory.LSeries.SumCoeff
+public import Mathlib.NumberTheory.LSeries.WeakPNT
 public import Mathlib.NumberTheory.LSeries.WienerIkehara
 public import Mathlib.NumberTheory.LSeries.ZMod
 public import Mathlib.NumberTheory.LSeries.ZetaZeros
