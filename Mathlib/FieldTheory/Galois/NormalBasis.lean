@@ -20,7 +20,6 @@ We prove the normal basis theorem `IsGalois.normalBasis`:
 every finite Galois extension has a basis that is an orbit under the Galois group action.
 
 The proof follows [ConradLinearChar] Keith Conrad, *Linear Independence of Characters*.
-
 -/
 
 variable (K L : Type*) [Field K] [Field L] [Algebra K L]

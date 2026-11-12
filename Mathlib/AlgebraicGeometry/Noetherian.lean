@@ -39,7 +39,6 @@ giving definitions, equivalent conditions, and basic properties.
 
 * [Stacks: Noetherian Schemes](https://stacks.math.columbia.edu/tag/01OU)
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
-
 -/
 
 public section

@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.Localization.HasLocalization
 If `L : C ⥤ D` is an additive localization functor between preadditive categories,
 and `C` is `R`-linear, we show that `D` can also be equipped with an `R`-linear
 structure such that `L` is an `R`-linear functor.
-
 -/
 
 @[expose] public section

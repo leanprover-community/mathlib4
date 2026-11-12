@@ -15,7 +15,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 
 * `SimpleGraph.Subgraph.Preconnected` and `SimpleGraph.Subgraph.Connected` give subgraphs
   connectivity predicates via `SimpleGraph.Subgraph.coe`.
-
 -/
 
 @[expose] public section

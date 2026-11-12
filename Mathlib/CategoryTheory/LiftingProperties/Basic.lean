@@ -21,7 +21,6 @@ lifting property
 
 ## TODO
 1) direct/inverse images, adjunctions
-
 -/
 
 @[expose] public section

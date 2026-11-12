@@ -20,7 +20,6 @@ For `P : HeightOneSpectrum A`, the main result of this file is that
 ## Main definitions
 
 * `Ideal.primaryComponent` : The `I`-primary component of an `A`-module `M`.
-
 -/
 
 @[expose] public section
