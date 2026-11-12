@@ -200,31 +200,30 @@ example : ¬AddLeftStrictMono F := fun h =>
 theorem f1 : ∀ a : F, 1 + a = 1 := by boom
 
 @[simp]
-theorem f011 : ofLex (Finsupp.single (0 : F) (1 : F)) 1 = 0 :=
+theorem f011 : Finsupp.single (0 : F) (1 : F) 1 = 0 :=
   single_apply_eq_zero.mpr fun h => h
 
 @[simp]
-theorem f010 : ofLex (Finsupp.single (0 : F) (1 : F)) 0 = 1 :=
+theorem f010 : Finsupp.single (0 : F) (1 : F) 0 = 1 :=
   single_eq_same
 
 @[simp]
-theorem f111 : ofLex (Finsupp.single (1 : F) (1 : F)) 1 = 1 :=
+theorem f111 : Finsupp.single (1 : F) (1 : F) 1 = 1 :=
   single_eq_same
 
 @[simp]
-theorem f110 : ofLex (Finsupp.single (1 : F) (1 : F)) 0 = 0 :=
+theorem f110 : Finsupp.single (1 : F) (1 : F) 0 = 0 :=
   single_apply_eq_zero.mpr fun h => h.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Here we see that (not-necessarily strict) monotonicity of addition on `Lex (F →₀ F)` is not
 a consequence of monotonicity of addition on `F`.  Strict monotonicity of addition on `F` is
 enough and is the content of `Finsupp.Lex.addLeftStrictMono`. -/
 example : ¬AddLeftMono (Lex (F →₀ F)) := by
   rintro ⟨h⟩
-  refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Finsupp.single (0 : F) (1 : F))
-    (Finsupp.single 1 1) (Finsupp.single 0 1) ?_) ⟨1, ?_⟩
+  refine (not_lt (α := Lex (F →₀ F))).mpr (@h (Lex.toLex (Finsupp.single (0 : F) (1 : F)))
+    (Lex.toLex (Finsupp.single 1 1)) (Lex.toLex (Finsupp.single 0 1)) ?_) ⟨1, ?_⟩
   · exact Or.inr ⟨0, by simp [(by boom : ∀ j : F, j < 0 ↔ False)]⟩
-  · simp [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, f010, f1, f110, f011, f111]
+  · simp [(by boom : ∀ j : F, j < 1 ↔ j = 0)]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
   zero_divisors_of_periodic (n := 2) (1 : F) (by simp [two_smul]) z01.ne'
