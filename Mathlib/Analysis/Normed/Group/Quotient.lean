@@ -60,7 +60,7 @@ All the following definitions are in the `AddSubgroup` namespace. Hence we can a
 
 ## Main results
 
-* `norm_normedMk` : the operator norm of the projection is `1` if the subspace is not dense.
+* `norm_normedMk_eq_one` : the operator norm of the projection is `1` if the subspace is not dense.
 
 * `IsQuotient.norm_lift`: Provided `f : normed_hom M N` satisfies `IsQuotient f`, for every
      `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
@@ -314,25 +314,35 @@ theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : Norm
     rintro ⟨x, rfl, hx⟩
     exact ((lt_div_iff₀' h).1 hx).not_ge (le_opNorm f x)
 
-/-- The operator norm of the projection is `1` if the subspace is not dense. -/
-theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :
+/-- The operator norm of the projection is `1` if the quotient topology is nontrivial, i.e., if the
+subgroup is not dense. See `QuotientAddGroup.nontrivialTopology_iff`. -/
+theorem norm_normedMk_eq_one (S : AddSubgroup M) [NontrivialTopology (M ⧸ S)] :
     ‖S.normedMk‖ = 1 := by
   refine le_antisymm (norm_normedMk_le S) ?_
-  obtain ⟨x, hx⟩ : ∃ x : M, 0 < ‖(x : M ⧸ S)‖ := by
-    refine (Set.nonempty_compl.2 h).imp fun x hx ↦ ?_
-    exact (norm_nonneg _).lt_of_ne' <| mt norm_mk_eq_zero_iff_mem_closure.1 hx
-  refine (le_mul_iff_one_le_left hx).1 ?_
+  obtain ⟨x, hx⟩ := exists_norm_ne_zero (M ⧸ S)
+  obtain ⟨x, rfl⟩ := mk_surjective x
+  refine (le_mul_iff_one_le_left <| (norm_nonneg _).lt_of_ne' hx).1 ?_
   exact norm_lift_apply_le S.normedMk (fun x ↦ (eq_zero_iff x).2) x
 
-/-- The operator norm of the projection is `0` if the subspace is dense. -/
+/-- The operator norm of the projection is `0` if the quotient topology is indiscrete, i.e., if the
+subgroup is dense. See `QuotientAddGroup.indiscreteTopology_iff`. -/
+theorem norm_normedMk_eq_zero (S : AddSubgroup M) [IndiscreteTopology (M ⧸ S)] :
+    ‖S.normedMk‖ = 0 :=
+  le_antisymm (opNorm_le_bound _ le_rfl fun x ↦ by simp [IndiscreteTopology.norm_eq_zero])
+    (norm_nonneg _)
+
+@[deprecated norm_normedMk_eq_one +typeChanged (since := "2026-11-12")]
+theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :
+    ‖S.normedMk‖ = 1 :=
+  have : NontrivialTopology (M ⧸ S) := QuotientAddGroup.nontrivialTopology fun h' ↦ h (by simp [h'])
+  norm_normedMk_eq_one S
+
+@[deprecated norm_normedMk_eq_zero +typeChanged (since := "2026-11-12")]
 theorem norm_trivial_quotient_mk (S : AddSubgroup M)
-    (h : (S.topologicalClosure : Set M) = Set.univ) : ‖S.normedMk‖ = 0 := by
-  refine le_antisymm (opNorm_le_bound _ le_rfl fun x => ?_) (norm_nonneg _)
-  have hker : x ∈ S.normedMk.ker.topologicalClosure := by
-    rw [S.ker_normedMk, ← SetLike.mem_coe, h]
-    trivial
-  rw [ker_normedMk] at hker
-  simp [norm_mk_eq_zero_iff_mem_closure.mpr hker]
+    (h : (S.topologicalClosure : Set M) = Set.univ) : ‖S.normedMk‖ = 0 :=
+  have : IndiscreteTopology (M ⧸ S) :=
+    QuotientAddGroup.indiscreteTopology <| SetLike.coe_injective <| by simpa using h
+  norm_normedMk_eq_zero S
 
 end AddSubgroup
 
