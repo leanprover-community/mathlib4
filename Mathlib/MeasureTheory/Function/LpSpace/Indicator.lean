@@ -211,9 +211,8 @@ theorem continuous_indicatorConstLp_set [Fact (1 ≤ p)] {X : Type*} [Topologica
 
 @[simp]
 theorem indicatorConstLp_empty :
-    indicatorConstLp p MeasurableSet.empty.nullMeasurableSet (by simp : μ ∅ ≠ ∞) c = 0 := by
+    indicatorConstLp p nullMeasurableSet_empty (by simp : μ ∅ ≠ ∞) c = 0 := by
   simp only [indicatorConstLp, Set.indicator_empty', MemLp.toLp_zero]
-
 
 theorem indicatorConstLp_inj {s t : Set α} (hs : NullMeasurableSet s μ) (hsμ : μ s ≠ ∞)
     (ht : NullMeasurableSet t μ) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0) :
@@ -263,8 +262,7 @@ lemma MemLp.toLp_const : MemLp.toLp _ (memLp_const c) = Lp.const p μ c := rfl
 
 @[simp]
 lemma indicatorConstLp_univ :
-    indicatorConstLp p MeasurableSet.univ.nullMeasurableSet (measure_ne_top μ _) c =
-      Lp.const p μ c := by
+    indicatorConstLp p nullMeasurableSet_univ (measure_ne_top μ _) c = Lp.const p μ c := by
   rw [← MemLp.toLp_const, indicatorConstLp]
   simp only [Set.indicator_univ]
 

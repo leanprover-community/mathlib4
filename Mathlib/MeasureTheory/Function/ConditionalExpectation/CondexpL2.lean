@@ -348,8 +348,8 @@ theorem lintegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : NullMeasur
 @[deprecated (since := "2026-10-31")]
 alias lintegral_nnnorm_condExpL2_indicator_le := lintegral_nnNorm_condExpL2_indicator_le
 
-/-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a measurable set
-with finite measure is integrable. -/
+/-- If the measure `μ.trim hm` is sigma-finite, then the conditional expectation of a null
+measurable set with finite measure is integrable. -/
 theorem integrable_condExpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (x : E') :
     Integrable (ε := E') (condExpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x)) μ := by
