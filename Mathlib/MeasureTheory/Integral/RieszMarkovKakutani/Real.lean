@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 public import Mathlib.MeasureTheory.Integral.CompactlySupported
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.Order.Interval.Set.Union
 
 /-!
@@ -447,7 +448,9 @@ instance [CompactSpace X] (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ) : IsFiniteMeasure (
   _ < ⊤ := by simp
 
 /-- Given a finite measure on a compact space, there exists another finite measure which
-integrates in the same way bounded continuous functions, and is regular. -/
+integrates in the same way real bounded continuous functions, and is regular. These measures
+automatically integrate in the same way bounded continuous functions to any normed space, see
+`integral_eq_of_forall_integral_real_eq`. -/
 lemma _root_.MeasureTheory.Measure.exists_regular_eq_of_compactSpace [CompactSpace X]
     (μ : Measure X) [IsFiniteMeasure μ] :
     ∃ (ν : Measure X), ν.Regular ∧ IsFiniteMeasure ν ∧
@@ -462,6 +465,26 @@ lemma _root_.MeasureTheory.Measure.exists_regular_eq_of_compactSpace [CompactSpa
   { toFun := g
     hasCompactSupport' := HasCompactSupport.of_compactSpace _ }
   exact (integral_rieszMeasure Λ g').symm
+
+omit [T2Space X] [BorelSpace X] in
+lemma _root_.MeasureTheory.Measure.integral_eq_of_forall_integral_real_eq
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {μ ν : Measure X} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ g : X →ᵇ ℝ, ∫ x, g x ∂μ = ∫ x, g x ∂ν)
+    (f : X →ᵇ E) (hμ : AEStronglyMeasurable f μ) (hν : AEStronglyMeasurable f ν) :
+    ∫ x, f x ∂μ = ∫ x, f x ∂ν := by
+  by_cases hE : CompleteSpace E; swap
+  · simp only [integral_of_not_completeSpace hE]
+  have hfμ : Integrable f μ :=
+    Integrable.of_bound hμ ‖f‖ (Eventually.of_forall fun x ↦ f.norm_coe_le_norm x)
+  have hfν : Integrable f ν :=
+    Integrable.of_bound hν ‖f‖ (Eventually.of_forall fun x ↦ f.norm_coe_le_norm x)
+  by_contra hne
+  obtain ⟨φ, hφ⟩ := SeparatingDual.exists_separating_of_ne (R := ℝ) hne
+  apply hφ
+  rw [← ContinuousLinearMap.integral_comp_comm φ hfμ,
+    ← ContinuousLinearMap.integral_comp_comm φ hfν]
+  exact h (f.comp φ φ.lipschitzWith)
 
 /-- Given a finite measure supported on a compact set, there exists another finite measure which
 integrates in the same way bounded continuous functions, and is regular. -/
