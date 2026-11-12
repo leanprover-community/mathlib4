@@ -6,8 +6,11 @@ Authors: Rida Hamadani
 
 module
 
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+
+import Mathlib.Algebra.Group.Pi.Units
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-!
 # Symmetrizable Matrices
@@ -18,7 +21,7 @@ symmetrizable.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 
@@ -36,17 +39,22 @@ lemma IsSymm.IsSymmetrizable [MonoidWithZero R] (h : M.IsSymm) :
   use 1
   simp [h.apply]
 
-lemma isSymmetrizable_iff [DecidableEq ι] [Fintype ι] [Semiring R] : M.IsSymmetrizable
-      ↔ ∃ d : ι → R, (∀ i, d i ∈ nonZeroDivisors R) ∧ ((diagonal d) * M).IsSymm := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨d, hd, h⟩ := h
-    use d, hd
-    ext i j
+lemma isSymmetrizable_iff [DecidableEq ι] [Fintype ι] [Semiring R] :
+    M.IsSymmetrizable ↔ ∃ d : ι → R, (∀ i, d i ∈ nonZeroDivisors R)
+      ∧ ((diagonal d) * M).IsSymm := by
+  refine ⟨fun ⟨d, hd, h⟩ ↦ ⟨d, hd, ?_⟩, fun ⟨d, hd, h⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩⟩
+  · ext i j
     rw [diagonal_mul, transpose_apply, diagonal_mul, h i j]
-  · obtain ⟨d, hd, h⟩ := h
-    use d, hd
-    intro i j
-    rw [← diagonal_mul, ← diagonal_mul, h.apply i j]
+  · rw [← diagonal_mul, ← diagonal_mul, h.apply i j]
+
+lemma isSymmetrizable_iff' [Field R] [DecidableEq ι] [Fintype ι] (M : Matrix ι ι R) :
+    M.IsSymmetrizable ↔ ∃ d : ι → R, IsUnit (diagonal d) ∧ (diagonal d * M).IsSymm := by
+  rw [isSymmetrizable_iff]
+  refine ⟨fun ⟨d, hd, h⟩ ↦ ⟨d, ?_, h⟩, fun ⟨d, hd, h⟩ ↦ ⟨d, ?_, h⟩⟩
+  · exact Matrix.isUnit_diagonal.mpr <|
+      Pi.isUnit_iff.mpr fun i => isUnit_of_mem_nonZeroDivisors (hd i)
+  · intro i
+    exact (Pi.isUnit_iff.mp (Matrix.isUnit_diagonal.mp hd) i).mem_nonZeroDivisors
 
 lemma IsSymmetrizable.transpose [Finite ι] [CommMonoidWithZero R] (h : M.IsSymmetrizable) :
     Mᵀ.IsSymmetrizable := by
@@ -62,7 +70,7 @@ lemma IsSymmetrizable.transpose [Finite ι] [CommMonoidWithZero R] (h : M.IsSymm
     <| Finset.mem_erase.mpr ⟨hij, Finset.mem_univ i⟩
   have hj := Finset.prod_erase_mul (Finset.univ.erase i) d
     <| Finset.mem_erase.mpr ⟨hij.symm, Finset.mem_univ j⟩
-  rw [← hj, mul_assoc, h j i, ← mul_assoc, ← hi, Finset.erase_comm]
+  rw [← hj, mul_assoc, h j i, ← mul_assoc, ← hi, Finset.erase_right_comm]
 
 lemma transpose_isSymmetrizable_iff [Finite ι] [CommMonoidWithZero R] :
     Mᵀ.IsSymmetrizable ↔ M.IsSymmetrizable :=
@@ -81,25 +89,19 @@ lemma IsSymmetrizable.eq_zero_iff [MonoidWithZero R] (h : M.IsSymmetrizable) (i 
   · exact (mem_nonZeroDivisors_iff.mp (hd j)).left (M j i) <| mul_zero (d i) ▸ hij ▸ h j i
   · exact (mem_nonZeroDivisors_iff.mp (hd i)).left (M i j) <| mul_zero (d j) ▸ hij ▸ h i j
 
-lemma isSymmetrizable_iff_of_offDiag_eq [MonoidWithZero R] (h : ∀ i j, i ≠ j → M i j = N i j) :
+lemma isSymmetrizable_iff_of_pairwise_eq [MonoidWithZero R] (h : Pairwise fun i j ↦ M i j = N i j) :
     M.IsSymmetrizable ↔ N.IsSymmetrizable := by
-  refine ⟨fun hM ↦ ?_, fun hM ↦ ?_⟩
-  · obtain ⟨d, hd, hM⟩ := hM
-    use d
-    refine ⟨hd, fun i j ↦ ?_⟩
-    by_cases! hij : i = j
+  refine ⟨fun ⟨d, hd, hM⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩, fun ⟨d, hd, hM⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩⟩
+  · by_cases! hij : i = j
     · rw [hij]
-    · rw [← h i j hij, hM, h j i hij.symm]
-  · obtain ⟨d, hd, hM⟩ := hM
-    use d
-    refine ⟨hd, fun i j ↦ ?_⟩
-    by_cases! hij : i = j
+    · rw [← h hij, hM, h hij.symm]
+  · by_cases! hij : i = j
     · rw [hij]
-    · rw [h i j hij, hM, h j i hij.symm]
+    · rw [h hij, hM, h hij.symm]
 
 lemma isSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] (d : ι → R) :
     (M + diagonal d).IsSymmetrizable ↔ M.IsSymmetrizable := by
-  rw [isSymmetrizable_iff_of_offDiag_eq]
+  rw [isSymmetrizable_iff_of_pairwise_eq]
   intro _ _ h
   simp [h]
 
@@ -126,15 +128,10 @@ lemma IsSymm.IsPosSymmetrizable [Semiring R] [IsDomain R] [PartialOrder R] [Zero
 
 lemma isPosSymmetrizable_iff [DecidableEq ι] [Fintype ι] [Semiring R] [LT R] :
     M.IsPosSymmetrizable ↔ ∃ d : ι → R, (∀ i, 0 < d i) ∧ ((diagonal d) * M).IsSymm := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨d, hd, h⟩ := h
-    use d, hd
-    ext i j
+  refine ⟨fun ⟨d, hd, h⟩ ↦ ⟨d, hd, ?_⟩, fun ⟨d, hd, h⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩⟩
+  · ext i j
     rw [diagonal_mul, transpose_apply, diagonal_mul, h i j]
-  · obtain ⟨d, hd, h⟩ := h
-    use d, hd
-    intro i j
-    rw [← diagonal_mul, ← diagonal_mul, h.apply i j]
+  · rw [← diagonal_mul, ← diagonal_mul, h.apply i j]
 
 lemma IsPosSymmetrizable.transpose [Finite ι] [CommSemiring R] [IsDomain R] [PartialOrder R]
     [ZeroLEOneClass R] [PosMulStrictMono R] (h : M.IsPosSymmetrizable) :
@@ -152,7 +149,7 @@ lemma IsPosSymmetrizable.transpose [Finite ι] [CommSemiring R] [IsDomain R] [Pa
     <| Finset.mem_erase.mpr ⟨hij, Finset.mem_univ i⟩
   have hj := Finset.prod_erase_mul (Finset.univ.erase i) d
     <| Finset.mem_erase.mpr ⟨hij.symm, Finset.mem_univ j⟩
-  rw [← hj, mul_assoc, h j i, ← mul_assoc, ← hi, Finset.erase_comm]
+  rw [← hj, mul_assoc, h j i, ← mul_assoc, ← hi, Finset.erase_right_comm]
 
 lemma transpose_isPosSymmetrizable_iff [Finite ι] [CommSemiring R] [IsDomain R] [PartialOrder R]
     [ZeroLEOneClass R] [PosMulStrictMono R] :
@@ -176,25 +173,19 @@ lemma IsPosSymmetrizable.eq_zero_iff [Semiring R] [IsDomain R] [Preorder R]
     rw [hij, mul_zero, zero_eq_mul] at h
     exact h.resolve_left (hd i).ne.symm
 
-lemma isPosSymmetrizable_iff_of_offDiag_eq [Semiring R] [LT R] (h : ∀ i j, i ≠ j → M i j = N i j) :
+lemma isPosSymmetrizable_iff_of_pairwise_eq [Semiring R] [LT R] (h : Pairwise fun i j ↦ M i j = N i j) :
     M.IsPosSymmetrizable ↔ N.IsPosSymmetrizable := by
-  refine ⟨fun hM ↦ ?_, fun hM ↦ ?_⟩
-  · obtain ⟨d, hd, hM⟩ := hM
-    use d
-    refine ⟨hd, fun i j ↦ ?_⟩
-    by_cases! hij : i = j
+  refine ⟨fun ⟨d, hd, hM⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩, fun ⟨d, hd, hM⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩⟩
+  · by_cases! hij : i = j
     · rw [hij]
-    · rw [← h i j hij, hM, h j i hij.symm]
-  · obtain ⟨d, hd, hM⟩ := hM
-    use d
-    refine ⟨hd, fun i j ↦ ?_⟩
-    by_cases! hij : i = j
+    · rw [← h hij, hM, h hij.symm]
+  · by_cases! hij : i = j
     · rw [hij]
-    · rw [h i j hij, hM, h j i hij.symm]
+    · rw [h hij, hM, h hij.symm]
 
 lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [LT R] (d : ι → R) :
     (M + diagonal d).IsPosSymmetrizable ↔ M.IsPosSymmetrizable := by
-  rw [isPosSymmetrizable_iff_of_offDiag_eq]
+  rw [isPosSymmetrizable_iff_of_pairwise_eq]
   intro _ _ h
   simp [h]
 
