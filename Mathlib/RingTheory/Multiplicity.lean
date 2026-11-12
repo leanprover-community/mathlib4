@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Order.SuccPred.ENat
 
 import Mathlib.Algebra.Ring.Divisibility.Basic
@@ -358,6 +359,17 @@ theorem FiniteMultiplicity.exists_eq_pow_mul_and_not_dvd (hfin : FiniteMultiplic
   rw [hk, ← mul_assoc, ← _root_.pow_succ] at hc
   have h₁ : a ^ (multiplicity a b + 1) ∣ b := ⟨k, hc⟩
   exact (hfin.multiplicity_eq_iff.1 (by simp)).2 h₁
+
+variable (a) in
+theorem pow_inf'_multiplicity_dvd {ι : Type*} {s : Finset ι} (hsNe : s.Nonempty)
+    (f : ι → α) {i : ι} (hi : i ∈ s) : a ^ (s.inf' hsNe fun j ↦ multiplicity a (f j)) ∣ f i :=
+  pow_dvd_of_le_multiplicity (Finset.inf'_le _ hi)
+
+theorem exists_not_pow_inf'_multiplicity_succ_dvd {ι : Type*} {s : Finset ι}
+    (hsNe : s.Nonempty) {f : ι → α} (hf : ∀ i ∈ s, FiniteMultiplicity a (f i)) :
+    ∃ j ∈ s, ¬a ^ ((s.inf' hsNe fun i ↦ multiplicity a (f i)) + 1) ∣ f j := by
+  obtain ⟨j, hjs, hj⟩ := Finset.exists_mem_eq_inf' hsNe fun i ↦ multiplicity a (f i)
+  exact ⟨j, hjs, hj ▸ (hf j hjs).not_pow_dvd_of_multiplicity_lt (lt_add_one _)⟩
 
 theorem emultiplicity_le_emultiplicity_iff {c d : β} :
     emultiplicity a b ≤ emultiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b → c ^ n ∣ d := by classical
