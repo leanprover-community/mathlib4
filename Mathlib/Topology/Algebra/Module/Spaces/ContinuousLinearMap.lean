@@ -481,20 +481,25 @@ def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
     continuous_snd.smul continuous_fst
   continuous_invFun := continuous_eval_const 1
 
-variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+variable
+  {𝕜 𝕜₂ S E F : Type*}
+  [NontriviallyNormedField 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousConstSMul 𝕜 F]
-  {S : Type*} [Ring S] [TopologicalSpace S] [IsTopologicalAddGroup S] [Module 𝕜 S]
+  [Ring S] [TopologicalSpace S] [IsTopologicalAddGroup S] [Module 𝕜 S]
   [ContinuousConstSMul 𝕜 S] [Module S F] [IsScalarTower 𝕜 S F] [SMulCommClass S 𝕜 F]
   [ContinuousSMul S F]
-  {𝕜₂ : Type*} [NormedField 𝕜₂] [NormedAlgebra 𝕜 𝕜₂] [Module 𝕜₂ F] [IsScalarTower 𝕜 𝕜₂ F]
+  [NormedField 𝕜₂] [NormedAlgebra 𝕜 𝕜₂] [Module 𝕜₂ F] [IsScalarTower 𝕜 𝕜₂ F]
   [ContinuousConstSMul 𝕜₂ F] [SMulCommClass S 𝕜₂ F]
 
+variable (𝕜 𝕜₂ S E F) in
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
-`smulRightL c f x = c x • f`. This is the
-continuous analogue of `ContinuousLinearMap.smulRightₗ`. The hypothesis that
-`𝕜` is nontrivially normed is essential to guarantee
-continuity in `f`. This holds because `(f, x) ↦ c x • f` is jointly continuous. The map is also continuous
-in the variable `c` since bounded set of `F` is absorbed by every neighborhood of zero. -/
+`smulRightL c f x = c x • f`. This is the continuous analogue of `ContinuousLinearMap.smulRightₗ`.
+
+The hypothesis that `𝕜` is nontrivially normed is essential to guarantee continuity in `f`.
+This holds because `(f, x) ↦ c x • f` is jointly continuous. The map is also continuous in the
+variable `c` since bounded set of `F` is absorbed by every neighborhood of zero. -/
 @[simps! apply_apply]
 def smulRightL : (E →L[𝕜] S) →L[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
   letI L : (E →L[𝕜] S) →ₗ[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
@@ -522,7 +527,8 @@ def smulRightL : (E →L[𝕜] S) →L[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
       simpa [L, smul_comm (c x) k] using huv <| Set.mk_mem_prod (hc hx) hf' }
 
 @[simp] lemma toLinearMap_smulRightL (c : E →L[𝕜] S) :
-    (smulRightL c : F →L[𝕜₂] E →L[𝕜] F).toLinearMap = c.smulRightₗ := rfl
+    (smulRightL 𝕜 𝕜₂ S E F c : F →L[𝕜₂] E →L[𝕜] F).toLinearMap = c.smulRightₗ := rfl
+
 end ContinuousLinearMap
 
 open ContinuousLinearMap

@@ -36,8 +36,8 @@ lemma completeSpace_of_completeSpace_continuousLinearMap [CompleteSpace (E →L[
   refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
   obtain ⟨v, hv⟩ : ∃ (v : E), v ≠ 0 := exists_ne 0
   obtain ⟨φ, hφ⟩ : ∃ φ : StrongDual 𝕜 E, φ v = 1 := exists_eq_one hv
-  let g : ℕ → (E →L[𝕜] F) := fun n ↦ ContinuousLinearMap.smulRightL 𝕜 E F φ (f n)
-  have : CauchySeq g := (ContinuousLinearMap.smulRightL 𝕜 E F φ).lipschitzWith.cauchySeq_comp hf
+  let g : ℕ → (E →L[𝕜] F) := fun n ↦ StrongDual.smulRightL 𝕜 E F φ (f n)
+  have : CauchySeq g := (StrongDual.smulRightL 𝕜 E F φ).lipschitzWith.cauchySeq_comp hf
   obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
   refine ⟨a v, ?_⟩
   have : Tendsto (fun n ↦ g n v) atTop (𝓝 (a v)) := by

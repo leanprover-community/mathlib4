@@ -483,40 +483,21 @@ theorem nnNorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight
 variable [IsTopologicalAddGroup Fₗ']
 variable (𝕜 E' Fₗ')
 
-/-- `ContinuousLinearMap.smulRight` as a trilinear map:
-`smulRightLₗ (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
-Do not use: use instead `smulRightL` which outputs a continuous trilinear map. -/
-@[simps! apply_apply]
-def smulRightLₗ : StrongDual 𝕜 E' →ₗ[𝕜] Fₗ' →ₗ[𝕜] E' →L[𝕜] Fₗ' where
-  toFun := smulRightₗ
-  map_add' := fun c₁ c₂ => by
-    ext x
-    simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
-  map_smul' := fun m c => by
-    ext x
-    simp [smul_smul]
-
-private lemma exists_eq_smulRightLₗ :
-    ∃ g : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ',
-      ∀ a b, smulRightLₗ 𝕜 E' Fₗ' a b = g a b := by
-  let : SeminormedAddCommGroup E' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 E'
-  let : NormedSpace 𝕜 E' := IsNormableSpace.toNormedSpace 𝕜 E'
-  let : SeminormedAddCommGroup Fₗ' := IsNormableSpace.toSeminormedAddCommGroup 𝕜 Fₗ'
-  let : NormedSpace 𝕜 Fₗ' := IsNormableSpace.toNormedSpace 𝕜 Fₗ'
-  exact ⟨LinearMap.mkContinuous₂ (smulRightLₗ 𝕜 E' Fₗ') 1
-    fun c x => by simp only [smulRightLₗ, coe_smulRightₗ, one_mul, norm_smulRight_apply,
-      LinearMap.coe_mk, AddHom.coe_mk, le_refl], fun a b ↦ rfl⟩
-
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
 `smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
+
+This is an abbreviation of `ContinuousLinearMap.smulRightL`, which works for arbitrary scalars
+instead of `StrongDual`.
 
 This is also known as a rank-one operator.
 See also `InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
 @[simps! apply_apply]
-def smulRightL : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ' :=
-  (smulRightLₗ 𝕜 E' Fₗ').mkContinuous₂OfExists (by exact exists_eq_smulRightLₗ 𝕜 E' Fₗ')
+protected abbrev _root_.StrongDual.smulRightL : StrongDual 𝕜 E' →L[𝕜] Fₗ' →L[𝕜] E' →L[𝕜] Fₗ' :=
+  .smulRightL 𝕜 𝕜 𝕜 E' Fₗ'
 
-@[simp] lemma toLinearMap_smulRightL : (smulRightL 𝕜 E Fₗ).toLinearMap = smulRightₗ' 𝕜 E Fₗ := rfl
+@[deprecated (since := "2026-11-12")] alias smulRightLₗ := StrongDual.smulRightL
+@[deprecated (since := "2026-11-12")] alias smulRightₗ_apply_apply :=
+  StrongDual.smulRightL_apply_apply
 
 end ContinuousLinearMap
 
