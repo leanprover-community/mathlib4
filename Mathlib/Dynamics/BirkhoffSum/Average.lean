@@ -23,6 +23,7 @@ and `R` is used to formalize division by `n` as `(n : R)⁻¹ • _`.
 While we need an auxiliary division semiring `R` to define `birkhoffAverage`,
 the definition does not depend on the choice of `R`,
 see `birkhoffAverage_congr_ring`.
+
 -/
 
 @[expose] public section
@@ -31,7 +32,7 @@ open Finset
 
 section birkhoffAverage
 
-variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
+variable (R : Type*) {α β M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The average value of `g` on the first `n` points of the orbit of `x` under `f`,
 i.e. the Birkhoff sum `∑ k ∈ Finset.range n, g (f^[k] x)` divided by `n`.
@@ -92,6 +93,10 @@ theorem birkhoffAverage_comp_apply (f : α → α) (g : α → M) (n : ℕ) (x :
     birkhoffAverage R f (g ∘ f) n x = birkhoffAverage R f g n (f x) := by
   simp only [birkhoffAverage, birkhoffSum_comp_apply]
 
+theorem birkhoffAverage_fun_comp_apply (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+    birkhoffAverage R f (fun x ↦ g (f x)) n x = birkhoffAverage R f g n (f x) :=
+  birkhoffAverage_comp_apply R f g n x
+
 theorem birkhoffAverage_comp (f : α → α) (g : α → M) (n : ℕ) :
     birkhoffAverage R f (g ∘ f) n = (birkhoffAverage R f g n) ∘ f :=
   funext <| birkhoffAverage_comp_apply R f g n
@@ -100,6 +105,7 @@ theorem Function.IsFixedPt.birkhoffAverage_eq {f : α → α} {x : α} (h : IsFi
     (g : α → M) {n : ℕ} (hn : (n : R) ≠ 0) : birkhoffAverage R f g n x = g x := by
   rw [birkhoffAverage, h.birkhoffSum_eq, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀ hn]
 
+@[to_fun birkhoffAverage_fun_add_apply]
 lemma birkhoffAverage_add_apply {f : α → α} {g g' : α → M} (n : ℕ) (x : α) :
     birkhoffAverage R f (g + g') n x = birkhoffAverage R f g n x + birkhoffAverage R f g' n x := by
   simp [birkhoffAverage, birkhoffSum, sum_add_distrib, smul_add]
@@ -128,6 +134,12 @@ theorem birkhoffAverage_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f =
 theorem birkhoffAverage_const (f : α → α) (a : M) {n : ℕ} (hn : (n : R) ≠ 0 := by positivity) :
     birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ a :=
   birkhoffAverage_of_comp_eq _ rfl (mod_cast hn)
+
+/-- A semiconjugation between two systems sends Birkhoff sums to Birhoff sums. -/
+theorem Function.Semiconj.birkhoffAverage_comp {f : α → β} {ga : α → α} {gb : β → β} {φ : β → M}
+    (h : Function.Semiconj f ga gb) {n : ℕ} {x : α} :
+    birkhoffAverage R ga (φ ∘ f) n x = birkhoffAverage R gb φ n (f x) := by
+  simp [birkhoffAverage, h.birkhoffSum_comp]
 
 end birkhoffAverage
 
