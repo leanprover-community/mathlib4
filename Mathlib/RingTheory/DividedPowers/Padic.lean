@@ -21,7 +21,6 @@ structure on the ideal `(p) ⊆ ℤ_[p]`. This divided power structure is given 
 TODO: If `K` is a `p`-adic local field with ring of integers `R` and uniformizer `π` such that
 `p = u * π^e` for some unit `u`, then the ideal `(π) ⊆ R` has divided powers if and only if
 `e ≤ p - 1`.
-
 -/
 
 @[expose] public section

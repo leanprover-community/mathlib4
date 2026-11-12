@@ -28,7 +28,6 @@ if it has weak kernels.
 ## References
 
 * [Peter J Freyd, *Representations in Abelian categories*, p. 99][freyd1966repabelian]
-
 -/
 
 @[expose] public section

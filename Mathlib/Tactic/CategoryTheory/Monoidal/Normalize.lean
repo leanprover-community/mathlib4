@@ -14,7 +14,6 @@ public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
 This file provides the implementation of the normalization given in
 `Mathlib/Tactic/CategoryTheory/Coherence/Normalize.lean`. See this file for more details.
-
 -/
 
 public meta section

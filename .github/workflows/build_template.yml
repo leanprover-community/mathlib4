@@ -91,6 +91,28 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
+      # Validate lake-manifest.json before setup downloads dependencies.
+      # Check that dependencies use allowed repositories and references, with full commit hashes.
+      # Check pins against their branch or tag, and detect accidental dependency downgrades.
+      # Full rules:
+      # https://github.com/leanprover-community/mathlib-ci/blob/master/.github/actions/validate-lake-manifest/README.md
+      # Bors uses strict mode; other runs can test unmerged dependencies with warnings.
+      # For an intentional revert, an admin sets MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS to true
+      # and deletes the variable after the revert merges.
+      - name: Validate lake-manifest.json
+        # Skip `bump/*` branches and PRs that target them, because their dependencies track `nightly-testing`.
+        # For PRs, use `github.base_ref`: `pull_request_target` sets `github.ref_name` to the default branch.
+        # Bors batches still run the check on `staging`.
+        if: >-
+          github.repository == 'leanprover-community/mathlib4'
+          && !startsWith(github.ref_name, 'bump/')
+          && !startsWith(github.base_ref, 'bump/')
+        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@e08feb664fe178b59a3fff5de1aa9893535b8a6c
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          strict: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+          allow-older-pins: ${{ vars.MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS == 'true' }}
+
       # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
       # download); see the action for per-step rationale. It is loaded from the
@@ -136,47 +158,6 @@ jobs:
             echo "=============================================================================="
             echo ""
             exit 1
-          fi
-
-      - name: validate lake-manifest.json inputRevs
-        # Only enforce this on the main mathlib4 repository, not on nightly-testing.
-        # `bump/*` branches, and PRs into them, track the dependencies' `nightly-testing`
-        # branches, so they are exempt too. A PR's base branch is `github.base_ref`:
-        # `pull_request_target` sets `github.ref_name` to the default branch, not the base.
-        if: >-
-          github.repository == 'leanprover-community/mathlib4'
-          && github.ref_name != 'nightly-testing'
-          && !startsWith(github.ref_name, 'bump/')
-          && !startsWith(github.base_ref, 'bump/')
-        shell: bash
-        env:
-          IS_PR: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
-        run: |
-          cd pr-branch
-
-          # Check that all inputRevs in lake-manifest.json match the required pattern
-          echo "Validating lake-manifest.json inputRevs..."
-
-          # PR tests can pin unmerged dependencies. Bors requires stable references.
-          pattern='main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?'
-          if [ "$IS_PR" = true ]; then pattern="$pattern|[0-9a-f]{40}"; fi
-
-          # Extract all inputRevs from the manifest
-          invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
-            grep -v -E "^($pattern)$" || true)
-
-          if [ -n "$invalid_revs" ]; then
-            echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
-            echo "$invalid_revs"
-            echo ""
-            echo "All inputRevs must be one of:"
-            echo "  - 'main'"
-            echo "  - 'master'"
-            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3, v1.2.3-pre, or v1.2.3+build)"
-            if [ "$IS_PR" = true ]; then echo "  - a full commit SHA (PR tests only)"; fi
-            exit 1
-          else
-            echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
       # Get this commit's oleans into the local cache — see the action for the steps.
@@ -1089,17 +1070,20 @@ jobs:
 
       # The dump is single-threaded and needs only the Mathlib oleans, so it runs in
       # the background from here; the job waits for it before the upload.
+      # Everything the `import-graph` artifact holds goes into one directory specified by
+      # `--out-dir`.
       - name: dump declarations and transitive-import counts
         id: dump
         background: true
         run: |
+          mkdir -p "$RUNNER_TEMP/import-graph"
           lake env lean --run "${CI_SCRIPTS_DIR}/pr_summary/dumpReasonableDecls.lean" \
-            --out decls.txt --imports-out imports.json Mathlib
+            --out-dir "$RUNNER_TEMP/import-graph" Mathlib
           ## Record the PR number so the post-build `decls-diff` workflow can find
           ## the comment to patch without the (laggy) commit-SHA search API. Empty
           ## for non-PR builds (push to master / bors); the consumer then falls
           ## back to the commit's associated PRs.
-          printf '%s' "${{ github.event.pull_request.number }}" > pr_number.txt
+          printf '%s' "${{ github.event.pull_request.number }}" > "$RUNNER_TEMP/import-graph/pr_number.txt"
 
       - name: get cache for Archive and Counterexamples
         run: |
@@ -1198,36 +1182,47 @@ jobs:
 
       - name: generate our import graph
         run: |
-          lake exe graph
+          mkdir -p "$RUNNER_TEMP/import-graph"
+          lake exe graph "$RUNNER_TEMP/import-graph/import_graph.dot"
 
       - name: wait for the declaration dump
         wait: dump
 
       - name: ensure dump outputs are regular files
         run: |
-          for f in decls.txt imports.json import_graph.dot pr_number.txt; do
-            if [ -L "$f" ] || [ ! -f "$f" ]; then
-              echo "Refusing to upload: $f is not a regular file." >&2
-              ls -la -- "$f" >&2 || true
+          DIR="$RUNNER_TEMP/import-graph"
+          if [ -L "$DIR" ] || [ ! -d "$DIR" ]; then
+            echo "Refusing to upload: $DIR is not a directory." >&2
+            exit 1
+          fi
+          BAD="$(find "$DIR" -mindepth 1 ! -type f)"
+          if [ -n "$BAD" ]; then
+            echo "Refusing to upload: these are not regular files:" >&2
+            printf '%s\n' "$BAD" >&2
+            exit 1
+          fi
+          ## The outputs written above, so that a missing one fails this build rather than
+          ## `decls-diff.yml` for every PR based on this commit. New outputs need not be listed.
+          for f in api.jsonl imports.json import_graph.dot pr_number.txt; do
+            if [ ! -f "$DIR/$f" ]; then
+              echo "Refusing to upload: $f is missing." >&2
               exit 1
             fi
           done
+          ls -la -- "$DIR"
 
       - name: upload the import graph
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: import-graph
-          path: |
-            import_graph.dot
-            decls.txt
-            imports.json
-            pr_number.txt
+          ## The directory's contents, at the artifact's top level as before.
+          path: ${{ runner.temp }}/import-graph/
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
-      - name: clean up the import graph file
-        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt
+      - name: clean up the import graph files
+        run: rm -rf "$RUNNER_TEMP/import-graph"
 
       - name: check all scripts build successfully
         run: |

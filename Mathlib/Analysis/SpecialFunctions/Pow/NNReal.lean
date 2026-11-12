@@ -1020,8 +1020,11 @@ theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun 
 theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0∞ => y ^ x :=
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
 
-lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
-    ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnNorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
+lemma _root_.Real.eNorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [eNorm, nnNorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
+
+@[deprecated (since := "2026-11-06")]
+alias _root_.Real.enorm_rpow_of_nonneg := _root_.Real.eNorm_rpow_of_nonneg
 
 lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) :
     (a + b) ^ p ≤ 2 ^ p * (a ^ p + b ^ p) := calc

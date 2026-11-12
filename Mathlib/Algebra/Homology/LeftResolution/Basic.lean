@@ -18,7 +18,6 @@ This is used in order to construct a resolution functor
 `LeftResolution.chainComplexFunctor : A ⥤ ChainComplex C ℕ`.
 
 This shall be used in order to construct functorial flat resolutions.
-
 -/
 
 @[expose] public section

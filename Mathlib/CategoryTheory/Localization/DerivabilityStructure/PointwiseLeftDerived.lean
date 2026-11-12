@@ -32,7 +32,6 @@ This file contains the dual results to those obtained in the file
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 @[expose] public section

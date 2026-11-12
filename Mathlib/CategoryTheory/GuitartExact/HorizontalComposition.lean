@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 In this file, we show that the horizontal composition of Guitart exact squares
 is Guitart exact.
-
 -/
 
 @[expose] public section

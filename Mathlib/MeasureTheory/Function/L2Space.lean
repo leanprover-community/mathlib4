@@ -159,7 +159,7 @@ private theorem norm_sq_eq_re_inner (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike
       (Lp.aestronglyMeasurable f), eLpNorm', ←
       ENNReal.rpow_mul, one_div, h_two]
     simp [eNorm_eq_nnNorm]
-  · refine (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top zero_lt_two (ε' := E) ?_).ne
+  · refine (lintegral_rpow_eNorm_lt_top_of_eLpNorm'_lt_top zero_lt_two (ε' := E) ?_).ne
     rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top
       (Lp.aestronglyMeasurable f)]
     finiteness
@@ -251,7 +251,7 @@ lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
     ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (s ∩ t) := by
   simp [inner_indicatorConstLp_indicatorConstLp]
 
-lemma _root_.MeasureTheory.posSemidef_matrix_measure_inter {ι : Type*} [Finite ι] {s : ι → (Set α)}
+lemma _root_.MeasureTheory.posSemidef_matrix_measure_inter {ι : Type*} {s : ι → (Set α)}
     (mv : ∀ j, MeasurableSet (s j)) (hv : ∀ j, μ (s j) ≠ ∞ := by finiteness) :
     Matrix.PosSemidef (Matrix.of fun i j : ι ↦ μ.real (s i ∩ s j)) := by
   simp only [mv, ne_eq, hv, not_false_eq_true,

@@ -20,7 +20,6 @@ through a point on that sphere.
 
 * `EuclideanGeometry.Sphere.secondInter` is the second intersection of a sphere with a line
   through a point on that sphere.
-
 -/
 
 @[expose] public section
