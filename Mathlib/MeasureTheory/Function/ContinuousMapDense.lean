@@ -152,14 +152,14 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
     (fun _ _ ⟨hf, hf', hf''⟩ ⟨hg, hg', hg''⟩ ↦ ⟨hf.add hg, hf'.add hg', hf''.add hg''⟩) hε
   obtain ⟨δ, δpos, hδ⟩ := exists_Lp_half E μ p hε
   obtain ⟨η, ηpos, hη⟩ := exists_eLpNorm_indicator_le (μ := μ) hp c δpos.ne'
-  have hη' : (η : ℝ≥0∞) ≠ 0 := ENNReal.coe_ne_zero.2 ηpos.ne'
+  have hη' : (η : ℝ≥0∞) ≠ 0 := ENNReal.coe_ne_zero.mpr ηpos.ne'
   -- Approximate `t` from inside by a compact closed set `s`, and `s` from outside by an open `V`.
   obtain ⟨s, st, s_compact, s_closed, hs⟩ := ht.exists_isCompact_isClosed_sdiff_lt htμ.ne hη'
   obtain ⟨V, sV, V_open, -, hV⟩ :=
     s_closed.measurableSet.exists_isOpen_sdiff_lt (measure_ne_top_of_subset st htμ.ne) hη'
   -- By Urysohn's lemma, there is a compactly supported `g` with `1_s ≤ g ≤ 1_V`.
   obtain ⟨g, hgs, hgV, g_support, hg_range⟩ := exists_continuous_one_zero_of_isCompact s_compact
-    V_open.isClosed_compl (disjoint_compl_right_iff_subset.2 sV)
+    V_open.isClosed_compl (disjoint_compl_right_iff_subset.mpr sV)
   have gc_cont : Continuous fun x ↦ g x • c := by fun_prop
   have gc_support : HasCompactSupport fun x ↦ g x • c := g_support.smul_right
   have gc_bd x : ‖g x • c - s.indicator (fun _ ↦ c) x‖ ≤ ‖(V \ s).indicator (fun _ ↦ c) x‖ := by
