@@ -485,3 +485,34 @@ theorem restrictScalars_injective :
 end NonUnitalAlgHom
 
 end RestrictScalars
+
+section Equiv
+
+variable (R : Type u) (A : Type v) (B : Type w) [Semiring R] [NonUnitalNonAssocSemiring A]
+  [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
+/- A `NonUnitalAlgebraEquiv` is a linear equivalence that preserves the product structures -/
+structure NonUnitalAlgEquiv extends A ≃ₗ[R] B where
+      map_mul' : ∀ x y : A,
+      toLinearEquiv (x * y) =
+      toLinearEquiv x * toLinearEquiv y
+
+notation:25 A " ≃ₙₐ[" R "] " B => NonUnitalAlgEquiv R A B
+
+namespace NonUnitalAlgEquiv
+
+attribute [coe] NonUnitalAlgEquiv.toLinearEquiv
+
+def toNonUnitalAlgHom (f : A ≃ₙₐ[R] B) : A →ₙₐ[R] B :=
+  { toFun := f.toLinearEquiv
+    map_smul' _ _ := by simp [map_smul]
+    map_zero' := by simp [map_zero]
+    map_add' _ _ := by simp [map_add]
+    map_mul' _ _ := by
+      rw [NonUnitalAlgEquiv.map_mul']}
+
+instance : CoeFun (A ≃ₙₐ[R] B) (fun _ => A →ₙₐ[R] B)  where
+  coe := toNonUnitalAlgHom R A B
+
+end NonUnitalAlgEquiv
+
+end Equiv
