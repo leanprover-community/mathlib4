@@ -22,7 +22,7 @@ For `y : Y`, we define a cone operation
 `toSSet.cone : ((toSSet R Y).chainComplex M).X n ⟶ ((toSSet R Y).chainComplex M).X (n + 1)`
 on the simplicial chains of `toSSet R Y` with coefficients in `M`,
 as a linear extension of the cone of affine maps `AffineMap.cone`.
-This cone operation is part of an homotopy which explains that the chain complex
+This cone operation is part of a homotopy which explains that the chain complex
 of `toSSet R Y` is acyclic in nonzero degrees. The proof uses the technical notion
 of extra degeneracy which also allows to show the stronger result that the
 simplicial set `toSSet R Y` is contractible.
