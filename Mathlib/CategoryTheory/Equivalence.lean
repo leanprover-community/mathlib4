@@ -53,7 +53,6 @@ if it is full, faithful and essentially surjective.
 ## Notation
 
 We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bundled equivalence.
-
 -/
 
 @[expose] public section

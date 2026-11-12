@@ -24,7 +24,6 @@ If `f` is not a.e. measurable, then we define `map f μ` to be zero.
 
 * `map_apply`: for `s` a measurable set, `μ.map f s = μ (f ⁻¹' s)`
 * `map_map`: `(μ.map f).map g = μ.map (g ∘ f)`
-
 -/
 
 @[expose] public section

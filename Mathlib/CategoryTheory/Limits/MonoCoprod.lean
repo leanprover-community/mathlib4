@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
-
 # Categories where inclusions into coproducts are monomorphisms
 
 If `C` is a category, the class `MonoCoprod C` expresses that left
@@ -27,7 +26,6 @@ a monomorphism.
 
 TODO: define distributive categories, and show that they satisfy `MonoCoprod`, see
 <https://ncatlab.org/toddtrimble/published/distributivity+implies+monicity+of+coproduct+inclusions>
-
 -/
 
 @[expose] public section

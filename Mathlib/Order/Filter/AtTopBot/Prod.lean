@@ -10,6 +10,9 @@ public import Mathlib.Order.Filter.AtTopBot.Basic
 
 import Mathlib.Order.Filter.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on products
 -/

@@ -12,7 +12,6 @@ import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
-
 # Projective Dimension in ModuleCat
 
 This file deals with preservation of `projectiveDimension` in (semi) linear equivalences.
@@ -34,7 +33,6 @@ all universe level where the ring `R` is small.
 
 * `ModuleCat.projectiveDimension_eq_of_linearEquiv`: `projectiveDimension` is preserved
   under arbitrary linear equivalence.
-
 -/
 
 public section

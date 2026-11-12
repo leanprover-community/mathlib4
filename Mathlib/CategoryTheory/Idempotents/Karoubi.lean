@@ -19,7 +19,6 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
   complete category. It is also preadditive when `C` is preadditive.
 - `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
   (`toKaroubiIsEquivalence`) when `C` is idempotent complete.
-
 -/
 
 @[expose] public section

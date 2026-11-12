@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Pi
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preimage of a `Finset` under an injective map.
 -/
