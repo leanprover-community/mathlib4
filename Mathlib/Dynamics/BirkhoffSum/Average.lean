@@ -32,7 +32,7 @@ open Finset
 
 section birkhoffAverage
 
-variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
+variable (R : Type*) {α β M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The average value of `g` on the first `n` points of the orbit of `x` under `f`,
 i.e. the Birkhoff sum `∑ k ∈ Finset.range n, g (f^[k] x)` divided by `n`.
@@ -134,6 +134,12 @@ theorem birkhoffAverage_of_comp_eq {f : α → α} {g : α → M} (h : g ∘ f =
 theorem birkhoffAverage_const (f : α → α) (a : M) {n : ℕ} (hn : (n : R) ≠ 0 := by positivity) :
     birkhoffAverage R f (fun _ ↦ a) n = fun _ ↦ a :=
   birkhoffAverage_of_comp_eq _ rfl (mod_cast hn)
+
+/-- A semiconjugation between two systems sends Birkhoff sums to Birhoff sums. -/
+theorem Function.Semiconj.birkhoffAverage_comp {f : α → β} {ga : α → α} {gb : β → β} {φ : β → M}
+    (h : Function.Semiconj f ga gb) {n : ℕ} {x : α} :
+    birkhoffAverage R ga (φ ∘ f) n x = birkhoffAverage R gb φ n (f x) := by
+  simp [birkhoffAverage, h.birkhoffSum_comp]
 
 end birkhoffAverage
 

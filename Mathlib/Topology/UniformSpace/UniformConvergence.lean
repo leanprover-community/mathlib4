@@ -119,6 +119,9 @@ def TendstoUniformly (F : ι → α → β) (f : α → β) (p : Filter ι) :=
 theorem tendstoUniformlyOn_univ : TendstoUniformlyOn F f p univ ↔ TendstoUniformly F f p := by
   simp [TendstoUniformlyOn, TendstoUniformly]
 
+@[simp] theorem tendstoUniformlyOn_empty : TendstoUniformlyOn F f p ∅ := by
+  simp [TendstoUniformlyOn]
+
 theorem tendstoUniformly_iff_tendstoUniformlyOnFilter :
     TendstoUniformly F f p ↔ TendstoUniformlyOnFilter F f p ⊤ := by
   rw [← tendstoUniformlyOn_univ, tendstoUniformlyOn_iff_tendstoUniformlyOnFilter, principal_univ]

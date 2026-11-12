@@ -80,7 +80,8 @@ lemma tendsto_integral_comp_sub_integral_empiricalMeasure_of_isBounded
       ∫ y, g y ∂(empiricalMeasure f (x n) (u n))) F (𝓝 0) := by
   simpa [integral_empiricalMeasure_eq_birkhoffaverage, birkhoffAverage_fun_comp_apply,
     birkhoffAverage_apply_congr_ring (R := NNReal) (S := ℝ)] using
-    tendsto_birkhoffAverage_apply_sub_birkhoffAverage' ℝ f x hfg ((tendsto_add_atTop_nat 1).comp hu)
+    tendsto_birkhoffAverage_apply_sub_birkhoffAverage ℝ f x
+      (hfg.subset (Set.range_comp_subset_range _ _)) ((tendsto_add_atTop_nat 1).comp hu)
 
 end NormedAddCommGroup
 
@@ -240,18 +241,92 @@ theorem tendstoUniformly_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [T2
 continuous function converge uniformly to the average against the invariant measure. -/
 theorem tendstoUniformlyOn_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [T2Space X]
     {K : Set X} (hcomp : IsCompact K)
-    {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K)
+    {f : X → X} (hfcont : ContinuousOn f K) (hfmap : Set.MapsTo f K K)
     (μ : Measure X) (hfmeas : Measurable f) -- TODO: relax hfmeas
     (h : ∀ (ν : Measure X), MeasurePreserving f ν ν
-      → Measure.Regular ν ∧ IsProbabilityMeasure ν ∧ Measure.support ν ⊆ K → ν = μ)
+      → Measure.Regular ν → IsProbabilityMeasure ν → Measure.support ν ⊆ K → ν = μ)
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     {g : X → E} (hg : ContinuousOn g K) :
     TendstoUniformlyOn (birkhoffAverage ℝ f g) (fun _ ↦ ∫ y, g y ∂μ) atTop K := by
-  contrapose! h
-  simp only [Metric.tendstoUniformlyOn_iff, gt_iff_lt, eventually_atTop, not_forall,
-    not_exists, not_lt, exists_prop] at h
-  rcases h with ⟨ε, εpos, hε⟩
-  choose u le_u y y_mem hy using hε
+  rcases Set.eq_empty_or_nonempty K with rfl | hKne
+  · simp
+  rw [tendstoUniformlyOn_iff_restrict]
+  have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
+  let ι : K → X := Subtype.val
+  have ιrange : K = Set.range ι := by simp [ι]
+  let fK : K → K := hfmap.restrict f K K
+  have hfKcont : Continuous fK := hfcont.mapsToRestrict hfmap
+  let μK : Measure K := μ.comap ι
+  have I : ∫ y, g (ι y) ∂μK = ∫ x, g x ∂μ := by
+    simp only [μK]
+    rw [integral_subtype_comap hcomp.measurableSet]
+    rcases exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant hcomp hKne
+      hfcont hfmap hfmeas with ⟨μ', h1, h2, h3, h4⟩
+    rw [← h μ' h1 h2 h3 h4]
+    apply setIntegral_eq_integral_of_ae_compl_eq_zero
+    filter_upwards [Measure.support_mem_ae_of_regular] with x hx h'x using (h'x (h4 hx)).elim
+  rw [← I]
+  have hK : ∀ (ν : Measure K), MeasurePreserving fK ν ν
+      → Measure.Regular ν → IsProbabilityMeasure ν → ν = μK := by
+    intro ν hνmap hνreg hνprob
+    have H : ν.map ι = μ := by
+      apply h
+      · have : MeasurePreserving ι ν (ν.map ι) :=
+          Measurable.measurePreserving measurable_subtype_coe ν
+        exact MeasurePreserving.of_semiconj (f := ι) this hνmap (fun x ↦ rfl) hfmeas
+      · have : (ν.map ι).InnerRegular :=
+          Measure.InnerRegular.map_of_continuous continuous_subtype_val
+        infer_instance
+      · infer_instance
+      · refine Measure.support_subset_of_isClosed hcomp.isClosed ?_
+        simp_rw [ιrange]
+        apply MeasureTheory.ae_map_mem_range ?_ (by fun_prop)
+        rw [← ιrange]
+        exact hcomp.measurableSet
+    have : MeasurableEmbedding ι := MeasurableEmbedding.subtype_coe hcomp.measurableSet
+    simp [μK, ← H, this.comap_map]
+  have L : TendstoUniformly (birkhoffAverage ℝ fK (g ∘ ι)) (fun _ ↦ ∫ y, g (ι y) ∂μK) atTop := by
+    apply tendstoUniformly_birkhoffAverage hfKcont μK hK
+    rw [← continuousOn_univ]
+    exact hg.comp (by fun_prop) (by simp [ι])
+  convert! L with n
+  ext x
+  simp [fK]
+
+
+
+
+
+
+
+
+
+
+
+#exit
+
+
+
+  obtain ⟨μm, hμ, hμmreg, hμprob⟩ :=
+    exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
+  let μ : ProbabilityMeasure K := ⟨μm, hμprob⟩
+  have : (μ : Measure K).Regular := hμmreg
+  have hιmeas : Measurable ι :=  measurable_subtype_coe
+  let ν := μ.map ι
+  use ν
+  have : (ν : Measure X).InnerRegular :=
+    Measure.InnerRegular.map_of_continuous continuous_subtype_val
+  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
+  have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
+    intro
+    rfl
+  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, inferInstance, ?_⟩
+  -- Now we prove that the invariant measure is supported on the forward invariant set
+  apply Measure.support_subset_of_isClosed hcomp.isClosed
+  rw [MeasureTheory.mem_ae_iff]
+  simpa [ν, ι] using
+    (ProbabilityMeasure.map_apply' μ hιmeas.aemeasurable hcomp.isClosed.measurableSet.compl)
+
 
 
 
