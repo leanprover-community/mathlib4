@@ -47,7 +47,6 @@ with respect to other language operations.
 * `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
   `l = m * l + n`, and `m` doesn't contain the empty string,
   then `l` is the language `m∗ * n`
-
 -/
 
 @[expose] public section

@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 
 /-!
-
 # Construction of the inverse functor of the Dold-Kan equivalence
 
 
@@ -27,7 +26,6 @@ We also construct `Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialO
 which shall be an equivalence for any additive category `C`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.ResidueField.Separable
 public import Mathlib.RingTheory.Unramified.LocalRing
@@ -30,7 +31,6 @@ an `Sq`-module.
 * `ramificationIdx'_eq_ramificationIdx`: The ramification index agrees with the usual definition in
   the case of Dedekind domains.
 * `ramificationIdx_tower`: Ramification index is multiplicative in towers.
-
 -/
 
 @[expose] public section
@@ -93,8 +93,10 @@ theorem ramificationIdx_bot_eq_one [IsDomain S] : (⊥ : Ideal S).ramificationId
     ← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_bot]
 
 variable {q R} in
-theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
-    [Algebra.HasSeparableResidueFieldsAt R S (q.under R)] :
+theorem ramificationIdx_eq_one_iff_of_isSeparable [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
+    [IsScalarTower R (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
+    [Algebra.IsSeparable (q.under R).ResidueField q.ResidueField] :
     q.ramificationIdx R = 1 ↔ Algebra.IsUnramifiedAt R q := by
   refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx_eq_one q R⟩
   rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
@@ -102,12 +104,18 @@ theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
   let p := q.under R
   let Rp := Localization.AtPrime p
   let Sq := Localization.AtPrime q
-  let := Localization.AtPrime.algebraOfLiesOver p q
   have := Algebra.EssFiniteType.of_comp R Rp Sq
   suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
   rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
     ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
-  exact ⟨Algebra.HasSeparableResidueFieldsAt.isSeparable q, h⟩
+  exact ⟨‹_›, h⟩
+
+variable {q R} in
+theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra.HasSeparableResidueFieldsAt R S (q.under R)] :
+    q.ramificationIdx R = 1 ↔ Algebra.IsUnramifiedAt R q := by
+  let := Localization.AtPrime.algebraOfLiesOver (q.under R) q
+  exact ramificationIdx_eq_one_iff_of_isSeparable
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one_iff :=
   ramificationIdx_eq_one_iff
@@ -193,23 +201,58 @@ theorem ramificationIdx_pos [q.IsPrime] [Algebra.IsIntegral R S]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_pos := ramificationIdx_pos
 
-open Localization IsLocalization.AtPrime in
-theorem ramificationIdx'_eq_ramificationIdx' [IsDedekindDomain S]
-    [q.LiesOver p] [hq : q.IsPrime] (hpS : p.map (algebraMap R S) ≠ ⊥) :
-    p.ramificationIdx' q = q.ramificationIdx R := by
-  have hq' : q ≠ ⊥ := ne_bot_of_le_ne_bot hpS (map_le_of_le_comap (q.over_def p).le)
-  have : q.IsMaximal := hq.isMaximal hq'
-  obtain ⟨I, hqI, h⟩ := Ideal.eq_prime_pow_mul_coprime hpS q
+namespace IsDedekindDomain
+
+open UniqueFactorizationMonoid IsLocalization.AtPrime
+
+theorem ramificationIdx_eq_of_map_eq_pow [q.LiesOver p] [q.IsPrime] (e : ℕ)
+    [IsDomain (Localization.AtPrime q)] [IsDiscreteValuationRing (Localization.AtPrime q)]
+    (hpS : p.map (algebraMap R (Localization.AtPrime q)) = IsLocalRing.maximalIdeal _ ^ e) :
+    q.ramificationIdx R = e := by
+  rw [ramificationIdx_eq p q, hpS, IsDiscreteValuationRing.length_quotient_pow_maximalIdeal,
+    ENat.toNat_natCast]
+
+theorem ramificationIdx_eq_normalizedFactors_count [IsDedekindDomain S]
+    [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx R = (normalizedFactors (p.map (algebraMap R S))).count q := by
+  by_cases hq : q.IsPrime; swap
+  · rw [ramificationIdx_of_not_isPrime q R hq, eq_comm, Multiset.count_eq_zero]
+    contrapose hq
+    exact isPrime_of_prime (prime_of_normalized_factor q hq)
+  have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
+  have : q.IsMaximal := hq.isMaximal hq0
+  obtain ⟨I, hqI, h⟩ := Ideal.eq_prime_pow_mul_coprime hp0 q
   replace hqI : ¬ I ≤ q := by
     contrapose! hqI
     rw [sup_of_le_left hqI]
     exact hq.ne_top
-  rw [← IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hpS hq hq'] at h
-  apply_fun (map (algebraMap S (Localization.AtPrime q))) at h
-  rw [map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_mul, Ideal.map_pow,
-    map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top, AtPrime.map_eq_maximalIdeal] at h
-  have hSq := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
-  rw [ramificationIdx_eq p q, h, hSq.length_quotient_pow_maximalIdeal, ENat.toNat_natCast]
+  have := isDiscreteValuationRing_of_dedekind_domain S hq0 (Localization.AtPrime q)
+  apply ramificationIdx_eq_of_map_eq_pow p q
+  conv_lhs => rw [IsScalarTower.algebraMap_eq R S, ← map_map, h, Ideal.map_mul, Ideal.map_pow,]
+  rw [map_eq_maximalIdeal, map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top]
+
+theorem ramificationIdx_eq_factors_count [IsDedekindDomain S]
+    [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx R = (factors (p.map (algebraMap R S))).count q := by
+  rw [factors_eq_normalizedFactors, ← ramificationIdx_eq_normalizedFactors_count p q hp0]
+
+open UniqueFactorizationMonoid in
+theorem ramificationIdx_eq_multiplicity [IsDedekindDomain S]
+    [q.IsPrime] [q.LiesOver p] (hp : p.map (algebraMap R S) ≠ ⊥) :
+    q.ramificationIdx R = multiplicity q (p.map (algebraMap R S)) := by
+  have hq : q ≠ ⊥ := ne_bot_of_le_ne_bot hp (map_le_of_le_comap (q.over_def p).le)
+  rw [ramificationIdx_eq_normalizedFactors_count p q hp,
+    multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_eq_count_normalizedFactors
+      (prime_of_isPrime hq inferInstance).irreducible hp), normalize_eq]
+
+end IsDedekindDomain
+
+theorem ramificationIdx'_eq_ramificationIdx' [IsDedekindDomain S]
+    [q.LiesOver p] [hq : q.IsPrime] (hpS : p.map (algebraMap R S) ≠ ⊥) :
+    p.ramificationIdx' q = q.ramificationIdx R := by
+  have hq' : q ≠ ⊥ := ne_bot_of_le_ne_bot hpS (map_le_of_le_comap (q.over_def p).le)
+  rw [IsDedekindDomain.ramificationIdx'_eq_normalizedFactors_count hpS hq hq',
+    IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count p q hpS]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_ramificationIdx'' :=
   ramificationIdx'_eq_ramificationIdx'
@@ -222,37 +265,6 @@ theorem ramificationIdx'_eq_ramificationIdx [IsDomain R] [IsDedekindDomain S]
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx_eq_ramificationIdx' :=
   ramificationIdx'_eq_ramificationIdx
-
-namespace IsDedekindDomain
-
-open UniqueFactorizationMonoid
-
-theorem ramificationIdx_eq_factors_count [IsDedekindDomain S]
-    [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
-    q.ramificationIdx R = (factors (p.map (algebraMap R S))).count q := by
-  by_cases hq : q.IsPrime; swap
-  · rw [ramificationIdx_of_not_isPrime q R hq, eq_comm, Multiset.count_eq_zero]
-    contrapose hq
-    exact isPrime_of_prime (prime_of_factor q hq)
-  have hq0 : q ≠ ⊥ := ne_bot_of_le_ne_bot hp0 (map_le_of_le_comap (q.over_def p).le)
-  rw [← ramificationIdx'_eq_ramificationIdx' p q hp0, ramificationIdx'_eq_factors_count hp0 ‹_› hq0]
-
-open UniqueFactorizationMonoid in
-theorem ramificationIdx_eq_normalizedFactors_count [IsDedekindDomain S]
-    [q.LiesOver p] (hp0 : p.map (algebraMap R S) ≠ ⊥) :
-    q.ramificationIdx R = (normalizedFactors (p.map (algebraMap R S))).count q := by
-  rw [← factors_eq_normalizedFactors, ← ramificationIdx_eq_factors_count p q hp0]
-
-open UniqueFactorizationMonoid in
-theorem ramificationIdx_eq_multiplicity [IsDedekindDomain S]
-    [q.IsPrime] [q.LiesOver p] (hp : p.map (algebraMap R S) ≠ ⊥) :
-    q.ramificationIdx R = multiplicity q (p.map (algebraMap R S)) := by
-  have hq : q ≠ ⊥ := ne_bot_of_le_ne_bot hp (map_le_of_le_comap (q.over_def p).le)
-  rw [ramificationIdx_eq_normalizedFactors_count p q hp,
-    multiplicity_eq_of_emultiplicity_eq_some (emultiplicity_eq_count_normalizedFactors
-      (prime_of_isPrime hq inferInstance).irreducible hp), normalize_eq]
-
-end IsDedekindDomain
 
 /-- See `ramificationIdx_tower` for a version that does not assume primality. -/
 theorem ramificationIdx_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]

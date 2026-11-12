@@ -72,7 +72,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
     split_ifs with hq
     · by_cases hn : ∃ k, q ^ k = n
       · obtain ⟨a, rfl⟩ := hn
-        simp [(Nat.pow_right_injective hq).extend_apply, one_apply, hq.ne']
+        simp [(Nat.pow_right_injective hq).extend_apply, ArithmeticFunction.one_apply, hq.ne']
       · simp [hn, one_apply_ne (fun H ↦ hn ⟨0, H.symm⟩)]
     · simp
   map_add' f g := by
@@ -86,7 +86,7 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
   map_mul' f g := by
     ext n
     split_ifs with hq
-    · simp_rw [mul_apply, coe_mk]
+    · simp_rw [ArithmeticFunction.mul_apply, coe_mk]
       by_cases hn : ∃ a, q ^ a = n
       · obtain ⟨k, rfl⟩ := hn
         rw [(Nat.pow_right_injective hq).extend_apply]
@@ -123,8 +123,8 @@ noncomputable def ofPowerSeries (q : ℕ) : PowerSeries R →ₐ[R] ArithmeticFu
     · simp only [Algebra.algebraMap_eq_smul_one, coe_mk]
       by_cases hn : ∃ k, q ^ k = n
       · obtain ⟨k, rfl⟩ := hn
-        simp [(Nat.pow_right_injective hq).extend_apply, one_apply, hq.ne']
-      · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply, smul_map, one_apply_ne, smul_zero]
+        simp [(Nat.pow_right_injective hq).extend_apply, ArithmeticFunction.one_apply, hq.ne']
+      · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply, smul_apply, one_apply_ne, smul_zero]
         contrapose hn
         exact ⟨0, by simp [hn]⟩
     · simp
@@ -290,7 +290,7 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
     rw [Finset.mem_sdiff, Set.Finite.mem_toFinset, Set.notMem_compl_iff] at hi
     exact hi.2
   suffices ∀ k ≤ n, (∏ x ∈ u \ t, f x) k = (∏ x ∈ v \ t, f x) k by
-    rw [mul_apply, mul_apply]
+    rw [ArithmeticFunction.mul_apply, ArithmeticFunction.mul_apply]
     refine Finset.sum_congr rfl fun k hk ↦ ?_
     rw [this k.1 (Nat.divisor_le (Nat.fst_mem_divisors_of_mem_antidiagonal hk))]
   suffices ∀ w, (∀ i ∈ w, i ∈ s) → ∀ k ≤ n, (∏ x ∈ w, f x) k = (1 : ArithmeticFunction R) k by
@@ -301,7 +301,8 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
   case empty => simp
   case insert i w hi hw' =>
     intro k hk
-    rw [← one_mul (1 : ArithmeticFunction R), Finset.prod_insert hi, mul_apply, mul_apply]
+    rw [← one_mul (1 : ArithmeticFunction R), Finset.prod_insert hi, ArithmeticFunction.mul_apply,
+      ArithmeticFunction.mul_apply]
     refine Finset.sum_congr rfl fun j hj ↦ ?_
     have h1 := hs' i (hw i (Finset.mem_insert_self i w)) j.1
       ((Nat.divisor_le (Nat.fst_mem_divisors_of_mem_antidiagonal hj)).trans hk)

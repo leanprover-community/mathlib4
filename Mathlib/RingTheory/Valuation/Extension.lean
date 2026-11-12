@@ -48,7 +48,6 @@ without first determining the normalizations once and for all.
 
 ## Tags
 Valuation, Extension of Valuations
-
 -/
 
 public section

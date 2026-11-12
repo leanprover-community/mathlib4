@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Skeletal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite types.
 

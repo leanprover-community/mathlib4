@@ -35,7 +35,6 @@ convergence in distribution for random variables behave somewhat well in spaces 
   closed set tend to the measure of the set.
 * `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
   of all bounded continuous functions with respect to both agree.
-
 -/
 
 @[expose] public section
@@ -244,7 +243,7 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
   have ν_finite : IsFiniteMeasure ν := by
     constructor
     have whole := h 1
-    simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
+    simp only [FunLike.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
       one_mul] at whole
     simp [← whole]
   have obs_μ := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed μ

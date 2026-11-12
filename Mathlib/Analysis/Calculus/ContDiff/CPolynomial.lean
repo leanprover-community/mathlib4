@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Higher smoothness of continuously polynomial functions
 

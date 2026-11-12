@@ -22,7 +22,6 @@ for `p ⟨i₁, i₂, i₃⟩ = j`.
 This shall be used in order to construct the associator isomorphism for the monoidal
 category structure on `GradedObject I C` induced by a monoidal structure on `C` and
 an additive monoid structure on `I` (TODO @joelriou).
-
 -/
 
 @[expose] public section

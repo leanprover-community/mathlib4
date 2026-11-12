@@ -15,6 +15,9 @@ import Mathlib.Data.EReal.Operations
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.MetricSpace.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology lemma for `ENat.toENNReal`
 

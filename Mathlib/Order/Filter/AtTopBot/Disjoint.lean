@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Order.Interval.Set.Disjoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjointness of `Filter.atTop` and `Filter.atBot`
 -/
