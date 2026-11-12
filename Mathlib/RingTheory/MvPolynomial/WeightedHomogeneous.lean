@@ -39,6 +39,8 @@ occurring in `φ` have the same weighted degree `m`.
 
 * `sum_weightedHomogeneousComponent`: every polynomial is the sum of its weighted homogeneous
   components.
+
+Note: for other kinds of degrees, see docstring of module `Mathlib.Algebra.MvPolynomial.SupDegree`.
 -/
 
 @[expose] public section

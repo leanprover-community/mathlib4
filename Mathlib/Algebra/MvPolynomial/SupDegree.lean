@@ -11,13 +11,38 @@ public import Mathlib.Algebra.MvPolynomial.Basic
 /-!
 # lemmas about sup-degree of an `MvPolynomial`
 
-This file contains some lemmas of `AddMonoidAlgebra.{supDegree,leadingCoeff,Monic}` that are stated
-with notations whose counterparts in `MvPolynomial` are not `abbrev`s of them, while restating them
-in notations of `MvPolynomial`. These notations include
+This file contains restated variants for `MvPolynomial`, of some
+`AddMonoidAlgebra.{supDegree,leadingCoeff,Monic}`-related lemmas that are stated with
+`AddMonoidAlgebra` notations with counterparts in `MvPolynomial` different with them in reducible
+transparency.
 
-- `(AddMonoidAlgebra.coeff _).support`: `MvPolynomial.support`.
+These notations are
+
+- `(AddMonoidAlgebra.coeff p).support`: `MvPolynomial.support p`;
 - `AddMonoidAlgebra.single`: `MvPolynomial.monomial`.
+
+## Existing degrees in `MvPolynomial`
+
+For concrete degrees of `MvPolynomial`, see:
+
+- `MvPolynomial.totalDegree p`: total degree of `p`;
+- `MvPolynomial.degrees p`: degree as multiset of variables, where the count of each variable is the
+  highest degree (exponent) of it in all monomials of `p`;
+- `MvPolynomial.degreeOf n p`: the highest degree of variable `n` in all monomials of `p`;
+- `MvPolynomial.weightedTotalDegree w p`: weighted total degree of `p` with respect to weight `w`;
+- `MvPolynomial.weightedTotalDegree' w p`: weighted total degree of `p` w.r.t. weight `w`,
+  while equal to `⊥` if `p = 0`;
+- `MonomialOrder.degree m p`: degree w.r.t. monomial order `m` of `p`;
+- `MonomialOrder.withBotDegree m`: degree w.r.t. monomial order `m`, while equal to `⊥` if `p = 0`.
+
+And other definitions related to degrees:
+
+- `MonomialOrder.leadingCoeff m p`: the leading coefficient of `p` w.r.t. monomial order `m`;
+- `MonomialOrder.Monic m p`: `p` is monic w.r.t. monomial order `m`.
+
+TODO: generalize more theorems from concrete degrees to `AddMonoidAlgebra.SupDegree`?
 -/
+
 public section
 
 namespace MvPolynomial

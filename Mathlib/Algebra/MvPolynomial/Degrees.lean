@@ -18,6 +18,8 @@ The *degree set* of a polynomial $P \in R[X]$ is a `Multiset` containing, for ea
 variable set, $n$ copies of $x$, where $n$ is the maximum number of copies of $x$ appearing in a
 monomial of $P$.
 
+Note: for other kinds of degrees, see docstring of module `Mathlib.Algebra.MvPolynomial.SupDegree`.
+
 ## Main declarations
 
 * `MvPolynomial.degrees p` : the multiset of variables representing the union of the multisets

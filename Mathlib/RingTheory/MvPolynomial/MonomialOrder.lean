@@ -109,7 +109,10 @@ variable {R : Type*} [CommSemiring R]
 variable (m) in
 /-- the degree of a multivariate polynomial with respect to a monomial ordering, where the
 polynomial `0` has degree `0`. For the variant mapping polynomial `0` to `⊥` which is less than
-`0`, see `MonomialOrder.withBotDegree`. -/
+`0`, see `MonomialOrder.withBotDegree`.
+
+Note: for other kinds of degrees, see docstring of module `Mathlib.Algebra.MvPolynomial.SupDegree`.
+-/
 noncomputable def degree (f : MvPolynomial σ R) : σ →₀ ℕ :=
   m.toSyn.symm (f.supDegree m.toSyn)
 
