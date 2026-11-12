@@ -6129,6 +6129,7 @@ public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 public import Mathlib.NumberTheory.MulChar.Basic
 public import Mathlib.NumberTheory.MulChar.Duality
 public import Mathlib.NumberTheory.MulChar.Lemmas
+public import Mathlib.NumberTheory.MulChar.Teichmuller
 public import Mathlib.NumberTheory.Multiplicity
 public import Mathlib.NumberTheory.Niven
 public import Mathlib.NumberTheory.NumberField.AdeleRing
