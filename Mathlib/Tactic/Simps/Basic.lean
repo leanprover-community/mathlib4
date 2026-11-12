@@ -898,6 +898,9 @@ structure Config where
   current declaration name, or the empty string if the declaration is an instance and the instance
   is named according to the `inst` convention. -/
   nameStem : Option String := none
+  /-- Make the generated lemmas protected. By default (none), the protected status of the original
+  declaration is used. -/
+  isProtected : Option Bool := none
   deriving Inhabited
 
 /-- Function elaborating `Config`. -/
@@ -1152,6 +1155,9 @@ private def addProjection (s : SimpsLemmaData) : SimpsM Unit :=
       value := declValue }
   trace[simps] "Adding `{.ofConstName s.declName}` :{indentExpr declType}"
   inferDefEqAttr s.declName
+  if cfg.isProtected == some true ||
+    (cfg.isProtected.isNone && isProtected (← getEnv) (← read).defName) then
+    modifyEnv (addProtected · s.declName)
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax s.declName (← getRef) s.ref
   addTermInfo' s.ref (← mkConstWithLevelParams s.declName) (isBinder := true) |>.run'

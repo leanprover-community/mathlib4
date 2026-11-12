@@ -1423,3 +1423,18 @@ set_option linter.simpsNoConstructor false in
 def foo : Outer := ⟨i⟩
 
 end WarningError
+
+namespace ProtectedDecls
+
+@[simps] def foo1 := (1, 2)
+@[simps (isProtected := true)] def foo2 := (1, 2)
+@[simps] protected def foo3 := (1, 2)
+@[simps (isProtected := false)] protected def foo4 := (1, 2)
+
+run_cmd liftTermElabM do
+  guard <| !isProtected (← getEnv) `ProtectedDecls.foo1_fst
+  guard <|  isProtected (← getEnv) `ProtectedDecls.foo2_fst
+  guard <|  isProtected (← getEnv) `ProtectedDecls.foo3_fst
+  guard <| !isProtected (← getEnv) `ProtectedDecls.foo4_fst
+
+end ProtectedDecls
