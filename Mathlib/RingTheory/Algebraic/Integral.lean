@@ -126,7 +126,7 @@ theorem Transcendental.of_not_isUnit [IsDomain A] {a : A} (h0 : a ≠ 0) (hu : �
     Transcendental K a :=
   .of_mem_nonZeroDivisors_of_not_isUnit (mem_nonZeroDivisors_of_ne_zero h0) hu
 
-theorem Transcendental.of_mem [IsDomain A] {I : Ideal A} (hI : I ≠ ⊤) {a : A} (h0 : a ≠ 0)
+theorem Transcendental.of_mem_ne_top [IsDomain A] {I : Ideal A} (hI : I ≠ ⊤) {a : A} (h0 : a ≠ 0)
     (ha : a ∈ I) : Transcendental K a :=
   .of_not_isUnit h0 fun hu ↦ hI (I.eq_top_of_isUnit_mem ha hu)
 
