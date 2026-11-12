@@ -500,7 +500,7 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E]
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
-theorem norm_map_le_iff_adjoint_comp_self {G : Type*}
+theorem norm_map_le_norm_map_iff_le {G : Type*}
     [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
     (p : E →L[𝕜] F) (q : E →L[𝕜] G) :
@@ -508,10 +508,10 @@ theorem norm_map_le_iff_adjoint_comp_self {G : Type*}
   simp [le_def, isPositive_iff', isSelfAdjoint_iff, star_eq_adjoint, inner_sub_left,
     adjoint_inner_left, ← RCLike.ofReal_pow, -map_pow, sq_le_sq₀]
 
-theorem norm_map_le_iff_adjoint_comp_self_le_id [CompleteSpace E] [CompleteSpace F]
+theorem norm_map_le_norm_iff_le [CompleteSpace E] [CompleteSpace F]
     (p : E →L[𝕜] F) :
     (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ .id 𝕜 E := by
-  simpa [adjoint_id] using norm_map_le_iff_adjoint_comp_self p (.id 𝕜 E)
+  simpa [adjoint_id] using norm_map_le_norm_map_iff_le p (.id 𝕜 E)
 
 /-- A star projection operator is positive.
 
