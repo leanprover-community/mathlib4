@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Order.SuccPred.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `SuccOrder` structure on `ENat`
 -/
@@ -112,8 +115,8 @@ lemma add_one_le_natCast_iff {n : WithBot ℕ∞} {m : ℕ} : n + 1 ≤ m ↔ n 
     simp [add_one_le_iff']
 
 @[simp]
-lemma add_one_le_zero_iff (n : WithBot ℕ∞) : n + 1 ≤ 0 ↔ n = ⊥ :=
-  add_one_le_natCast_iff.trans (WithBot.lt_zero_iff_eq_bot n)
+lemma add_one_le_zero_iff {n : WithBot ℕ∞} : n + 1 ≤ 0 ↔ n = ⊥ :=
+  add_one_le_natCast_iff.trans WithBot.lt_zero_iff_eq_bot
 
 end WithBot
 end ENat

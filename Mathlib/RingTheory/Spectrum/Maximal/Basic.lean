@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal spectrum of a commutative (semi)ring
 

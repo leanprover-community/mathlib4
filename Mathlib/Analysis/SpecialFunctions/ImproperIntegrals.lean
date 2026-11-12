@@ -93,6 +93,12 @@ theorem integral_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
     simpa using this.sub_const _ |>.div_const _
   simpa [Complex.tendsto_exp_nhds_zero_iff] using tendsto_const_nhds.neg_mul_atTop ha tendsto_id
 
+lemma integral_cexp_neg_mul_Ioi_neg_log {x : ℝ} (hx : 0 < x) {s : ℂ} (hs : 0 < s.re) :
+    ∫ u in Ioi (-log x), Complex.exp (-s * u) = (x : ℂ) ^ s / s := by
+  rw [integral_exp_mul_complex_Ioi (by simpa using hs), neg_div_neg_eq,
+    Complex.cpow_def_of_ne_zero (mod_cast hx.ne'), Complex.ofReal_neg, neg_mul_neg,
+    Complex.ofReal_log hx.le, mul_comm s]
+
 theorem integral_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     ∫ x : ℝ in Set.Iic c, Complex.exp (a * x) = Complex.exp (a * c) / a := by
   simpa [neg_mul, ← mul_neg, ← Complex.ofReal_neg,

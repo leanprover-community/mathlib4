@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
 # Functors which preserve `κ`-presentable objects
-
 -/
 
 public section

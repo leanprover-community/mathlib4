@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
-
 # Support of a module
 
 ## Main results

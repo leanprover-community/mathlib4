@@ -1,4 +1,8 @@
-import Lean.Elab.AssertExists
+module
+
+public import Lean.Elab.AssertExists
+
+@[expose] public section
 
 /-- info: No assertions made. -/
 #guard_msgs in

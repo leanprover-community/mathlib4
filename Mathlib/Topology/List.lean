@@ -14,7 +14,6 @@ import Mathlib.Topology.Constructions
 
 /-!
 # Topology on lists and vectors
-
 -/
 
 public section

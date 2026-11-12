@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Sites.Point.Basic
 Let `Φ` be a point of a site `(C, J)`. In this file, we construct the
 skyscraper sheaf functor `skyscraperSheafFunctor : A ⥤ Sheaf J A` and
 show that it is a right adjoint to `Φ.sheafFiber : Sheaf J A ⥤ A`.
-
 -/
 
 @[expose] public section
@@ -83,7 +82,6 @@ lemma skyscraperPresheafHomEquiv_naturality_left_symm
       Φ.presheafFiber.map f ≫ Φ.skyscraperPresheafHomEquiv.symm g := by
   cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma skyscraperPresheafHomEquiv_app_π
@@ -146,7 +144,6 @@ lemma skyscraperPresheafAdjunction_homEquiv_symm_apply {P : Cᵒᵖ ⥤ A} {M : 
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {Φ} in
 private lemma isSheaf_skyscraperPresheaf_aux

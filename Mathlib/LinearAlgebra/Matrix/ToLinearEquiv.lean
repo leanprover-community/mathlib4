@@ -26,7 +26,6 @@ to linear equivs.
 ## Tags
 
 matrix, linear equivalence, linear isomorphism, determinant, inverse
-
 -/
 
 @[expose] public section

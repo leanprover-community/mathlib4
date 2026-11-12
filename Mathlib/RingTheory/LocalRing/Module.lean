@@ -60,8 +60,8 @@ theorem map_mkQ_eq {N₁ N₂ : Submodule R M} (h : N₁ ≤ N₂) (h' : N₂.FG
     have : N₂ ≤ 𝔪 • N₂ ⊔ N₁ := by
       simpa using Submodule.comap_mono (f := Submodule.mkQ (𝔪 • N₂)) hN.ge
     rw [sup_comm] at this
-    exact h.antisymm (Submodule.le_of_le_smul_of_le_jacobson_bot h'
-      (by rw [jacobson_eq_maximalIdeal]; exact bot_ne_top) this)
+    exact h.antisymm (Submodule.le_of_le_smul_of_le_jacobson h'
+      (ringJacobson_eq_maximalIdeal R).ge this)
   · rintro rfl; simp
 
 theorem map_mkQ_eq_top {N : Submodule R M} [Module.Finite R M] :

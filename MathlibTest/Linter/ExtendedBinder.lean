@@ -1,6 +1,7 @@
 module
 
 import Mathlib.Init
+import Batteries.Util.ExtendedBinder
 
 /-! Test the linter for `∀ᵉ`/`∃ᵉ` syntax. -/
 

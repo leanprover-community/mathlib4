@@ -10,6 +10,9 @@ public import Mathlib.Tactic.Simps
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subtypes
 
@@ -156,6 +159,11 @@ theorem map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subt
 
 theorem map_id {p : α → Prop} {h : ∀ a, p a → p (id a)} : map (@id α) h = id :=
   funext fun _ ↦ rfl
+
+@[simp]
+theorem val_comp_map {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a)) :
+    val ∘ map f h = f ∘ val :=
+  rfl
 
 theorem map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a))
     (hf : Injective f) : Injective (map f h) :=

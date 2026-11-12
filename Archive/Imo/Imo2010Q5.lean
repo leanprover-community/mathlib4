@@ -84,7 +84,7 @@ lemma push {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 5) :
   obtain hc | hc := (B i).eq_zero_or_pos
   · rwa [hc, mul_zero, single_zero, single_zero, add_zero, tsub_zero]
   · convert! (rB.move1 hi hc).push hi using 1
-    ext k; simp only [add_apply, sub_apply]
+    ext k; simp only [Pi.add_apply, Pi.sub_apply]
     rcases eq_or_ne k i with rfl | hk
     · simp_rw [single_eq_same, tsub_self, single_succ]
     · simp_rw [single_eq_of_ne hk, tsub_zero]
@@ -118,8 +118,9 @@ lemma double {B : Fin 6 → ℕ} {i : Fin 6}
     (rB : Reachable B) (hi : i < 4) (pB : 0 < B i) (zB : B (i + 2) = 0) :
     Reachable (B + single (i + 1) (B (i + 1)) - single i 1) := by
   convert!
-    (rB.push (show i + 1 < 5 by grind)).move2 hi (by rw [add_apply, sub_apply, single_succ]; grind)
-  ext k; simp only [comp_apply, add_apply, sub_apply]
+    (rB.push (show i + 1 < 5 by grind)).move2 hi
+    (by rw [Pi.add_apply, Pi.sub_apply, single_succ]; grind)
+  ext k; simp only [comp_apply, Pi.add_apply, Pi.sub_apply]
   have (j : Fin 6) : j + 1 + 1 = j + 2 := by grind
   rcases eq_or_ne k i with rfl | hk
   · rw [swap_apply_of_ne_of_ne (by simp) (by simp), single_succ, this, single_add_two, Nat.sub_zero]
@@ -137,13 +138,13 @@ lemma doubles {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 4) (z
   obtain hc | hc := (B i).eq_zero_or_pos
   · rwa [hc, single_zero, tsub_zero, pow_zero, mul_one, update_eq_self]
   · convert! (rB.double hi hc zB).doubles hi (by
-      rw [sub_apply, add_apply, single_eq_of_ne (by simp), zB, zero_add, zero_tsub]) using 1
+      rw [Pi.sub_apply, Pi.add_apply, single_eq_of_ne (by simp), zB, zero_add, zero_tsub]) using 1
     ext k
-    simp_rw [sub_apply, add_apply, single_eq_same, single_succ, single_succ', add_zero, tsub_zero,
-      ← two_mul, ← mul_rotate, ← pow_succ, Nat.sub_add_cancel hc]
+    simp_rw [Pi.sub_apply, Pi.add_apply, single_eq_same, single_succ, single_succ', add_zero,
+      tsub_zero, ← two_mul, ← mul_rotate, ← pow_succ, Nat.sub_add_cancel hc]
     rcases eq_or_ne k (i + 1) with rfl | hk'
     · simp only [mul_comm, update_self]
-    · simp_rw [update_of_ne hk', sub_apply, add_apply, single_eq_of_ne hk', add_zero]
+    · simp_rw [update_of_ne hk', Pi.sub_apply, Pi.add_apply, single_eq_of_ne hk', add_zero]
       rcases eq_or_ne k i with rfl | hk
       · simp_rw [single_eq_same, tsub_self]
       · simp_rw [single_eq_of_ne hk, tsub_zero]
@@ -154,14 +155,14 @@ lemma exp {B : Fin 6 → ℕ} {i : Fin 6}
     (rB : Reachable B) (hi : i < 4) (pB : 0 < B i) (zB : B (i + 1) = 0) (zB' : B (i + 2) = 0) :
     Reachable (B - single i (B i) + single (i + 1) (2 ^ B i)) := by
   convert! (rB.move1 (show i < 5 by grind) pB).doubles hi (by
-    rw [add_apply, sub_apply, zB', single_eq_of_ne (by simp), tsub_zero,
+    rw [Pi.add_apply, Pi.sub_apply, zB', single_eq_of_ne (by simp), tsub_zero,
         single_eq_of_ne (by simp), zero_add]) using 1
-  simp_rw [add_apply, sub_apply, single_eq_same, single_succ, single_succ', zB, zero_tsub, zero_add,
-    add_zero, ← pow_succ', Nat.sub_add_cancel pB]
-  ext k; simp only [add_apply, sub_apply]
+  simp_rw [Pi.add_apply, Pi.sub_apply, single_eq_same, single_succ, single_succ', zB, zero_tsub,
+    zero_add, add_zero, ← pow_succ', Nat.sub_add_cancel pB]
+  ext k; simp only [Pi.add_apply, Pi.sub_apply]
   rcases eq_or_ne k (i + 1) with rfl | hk'
   · grind [update_self, single_eq_same]
-  · simp only [update_of_ne hk', sub_apply, add_apply, single_eq_of_ne hk', add_zero]
+  · simp only [update_of_ne hk', Pi.sub_apply, Pi.add_apply, single_eq_of_ne hk', add_zero]
     rcases eq_or_ne k i with rfl | hk
     · simp_rw [single_eq_same, tsub_self]
     · simp_rw [single_eq_of_ne hk, tsub_zero]
@@ -170,12 +171,12 @@ lemma exp {B : Fin 6 → ℕ} {i : Fin 6}
 lemma exp_mid {k n : ℕ} (h : Reachable (single 2 (k + 1) + single 3 n)) (hn : 0 < n) :
     Reachable (single 2 k + single 3 (2 ^ n)) := by
   have md := h.exp (show 3 < 4 by decide) (by simp [hn])
-    (by simp [add_apply, single_eq_of_ne]) (by simp [add_apply, single_eq_of_ne])
+    (by simp [Pi.add_apply, single_eq_of_ne]) (by simp [Pi.add_apply, single_eq_of_ne])
   convert! md.move2 (show 2 < 4 by decide) (by
-    simp only [add_apply, sub_apply, single_eq_same]
+    simp only [Pi.add_apply, Pi.sub_apply, single_eq_same]
     iterate 3 rw [single_eq_of_ne (by decide)]
     simp) using 1
-  ext i; simp only [add_apply, sub_apply, comp_apply, Fin.reduceAdd]
+  ext i; simp only [Pi.add_apply, Pi.sub_apply, comp_apply, Fin.reduceAdd]
   rcases eq_or_ne i 2 with rfl | i2
   · simp only [Fin.isValue, single_eq_same, ne_eq, Fin.reduceEq, not_false_eq_true,
       single_eq_of_ne, add_zero, zero_add, add_tsub_cancel_right]
@@ -197,7 +198,7 @@ lemma reduce {m n : ℕ} (h : Reachable (single 3 n)) (hmn : m ≤ n) : Reachabl
   | succ k _ ih =>
     apply ih
     convert! h.move2 (show 3 < 4 by decide) k.succ_pos
-    ext i; simp only [sub_apply, comp_apply]
+    ext i; simp only [Pi.sub_apply, comp_apply]
     rcases eq_or_ne i 3 with rfl | i3
     · rw [swap_apply_of_ne_of_ne (by decide) (by decide)]
       simp_rw [single_eq_same, add_tsub_cancel_right]

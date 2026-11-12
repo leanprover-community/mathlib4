@@ -20,7 +20,6 @@ for predicates `C → Prop`.
   as `ObjectProperty.IsClosedUnderLimitsOfShape` (and make it a type class)
 * refactor the file `Triangulated.Subcategory` in order to make it a type class
   regarding terms in `ObjectProperty C` when `C` is pretriangulated
-
 -/
 
 @[expose] public section

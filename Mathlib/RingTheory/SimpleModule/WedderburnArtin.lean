@@ -38,7 +38,6 @@ import Mathlib.RingTheory.SimpleRing.Matrix
   If the base ring is an algebraically closed field, the only finite-dimensional division algebra
   over it is itself, and we obtain `IsSimpleRing.exists_algEquiv_matrix_of_isAlgClosed` and
   `IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed` (in a later file).
-
 -/
 
 public section
@@ -81,6 +80,13 @@ instance (priority := low) : IsSemisimpleRing R :=
 
 theorem isIsotypic (M) [AddCommGroup M] [Module R M] : IsIsotypic R M :=
   (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).2.1.of_self M
+
+theorem nonempty_linearEquiv_of_isSimpleModule (M N) [AddCommGroup M] [Module R M] [AddCommGroup N]
+    [Module R N] [IsSimpleModule R M] [IsSimpleModule R N] :
+    Nonempty (M ≃ₗ[R] N) := by
+  have := Submodule.topEquiv.isSimpleModule_iff.mpr (show IsSimpleModule R M by assumption)
+  obtain ⟨e⟩ := (isIsotypic R R).isIsotypicOfType M N ⊤
+  exact ⟨Submodule.topEquiv.symm.trans e⟩
 
 /-- The **Wedderburn–Artin Theorem**: an Artinian simple ring is isomorphic to a matrix
 ring over the opposite of the endomorphism ring of its simple module. -/

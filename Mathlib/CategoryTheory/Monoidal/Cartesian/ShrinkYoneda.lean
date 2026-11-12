@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 Let `C` be a locally `w`-small category. We define the Yoneda
 embedding `shrinkYonedaMon : Mon C ⥤ Cᵒᵖ ⥤ MonCat.{w} w` and its `Grp` analogue.
-
 -/
 
 @[expose] public section

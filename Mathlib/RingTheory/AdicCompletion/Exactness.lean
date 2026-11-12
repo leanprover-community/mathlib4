@@ -24,7 +24,6 @@ In this file we establish exactness properties of adic completions. In particula
 ## Implementation details
 
 All results are proven directly without using Mittag-Leffler systems.
-
 -/
 
 public section

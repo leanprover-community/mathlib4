@@ -22,7 +22,6 @@ In this file we show how operations on submodules interact with `Submodule.spanR
 
 * `IsLocalRing.spanFinrank_maximalIdeal_eq_finrank_cotangentSpace`: The minimal number of
   generators of the unique maximal ideal is equal to the dimension of the cotangent space.
-
 -/
 
 public section

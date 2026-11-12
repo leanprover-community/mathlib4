@@ -62,12 +62,6 @@ end Mathlib.Linter
 
 namespace Mathlib.Linter.haveLet
 
-/-- a monadic version of `Lean.Elab.InfoTree.foldInfo`.
-Used to infer types inside a `CommandElabM`. -/
-def InfoTree.foldInfoM {α m} [Monad m] (f : ContextInfo → Info → α → m α) (init : α) :
-    InfoTree → m α :=
-  InfoTree.foldInfo (fun ctx i ma => do f ctx i (← ma)) (pure init)
-
 /-- given a `ContextInfo`, a `LocalContext` and an `Array` of `Expr`essions `es` with a `Name`,
 `toFormat_propTypes` creates a `MetaM` context, and returns an array of
 the pretty-printed `Format` of `e`, together with the (unchanged) name

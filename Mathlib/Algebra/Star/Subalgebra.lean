@@ -306,6 +306,8 @@ end Map
 
 section Centralizer
 
+open scoped Pointwise
+
 variable (R)
 
 /-- The centralizer, or commutant, of the star-closure of a set as a star subalgebra. -/
@@ -421,6 +423,7 @@ end Subalgebra
 
 namespace StarAlgebra
 
+open scoped Pointwise
 open StarSubalgebra
 
 variable {R A : Type*} [CommSemiring R] [StarRing R]
@@ -450,7 +453,7 @@ theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   Set.subset_union_right.trans Algebra.subset_adjoin
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% (rule_sets := [SetLike]), membership .]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
 @[simp]
