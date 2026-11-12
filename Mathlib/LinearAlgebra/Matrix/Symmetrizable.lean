@@ -71,7 +71,7 @@ lemma IsSymmetrizable.transpose [Finite ι] [CommMonoidWithZero R] (h : M.IsSymm
     <| Finset.mem_erase.mpr ⟨hij.symm, Finset.mem_univ j⟩
   rw [← hj, mul_assoc, h j i, ← mul_assoc, ← hi, Finset.erase_right_comm]
 
-lemma transpose_isSymmetrizable_iff [Finite ι] [CommMonoidWithZero R] :
+lemma isSymmetrizable_transpose_iff [Finite ι] [CommMonoidWithZero R] :
     Mᵀ.IsSymmetrizable ↔ M.IsSymmetrizable :=
   ⟨transpose_transpose M ▸ .transpose, .transpose⟩
 
@@ -81,7 +81,7 @@ lemma IsSymmetrizable.submatrix [MonoidWithZero R] (f : κ → ι) (h : M.IsSymm
   use d ∘ f
   simp [hd, h]
 
-lemma IsSymmetrizable.eq_zero_iff [MonoidWithZero R] (h : M.IsSymmetrizable) (i j : ι) :
+lemma IsSymmetrizable.apply_eq_zero_iff [MonoidWithZero R] (h : M.IsSymmetrizable) {i j : ι} :
     M i j = 0 ↔ M j i = 0 := by
   obtain ⟨d, hd, h⟩ := h
   refine ⟨fun hij ↦ ?_, fun hij ↦ ?_⟩
@@ -152,7 +152,7 @@ lemma IsPosSymmetrizable.transpose [Finite ι] [CommSemiring R] [IsDomain R] [Pa
   rw [← hj, mul_assoc, h j i, ← mul_assoc, ← hi, Finset.erase_right_comm]
 
 @[simp]
-lemma transpose_isPosSymmetrizable_iff [Finite ι] [CommSemiring R] [IsDomain R] [PartialOrder R]
+lemma isPosSymmetrizable_transpose_iff [Finite ι] [CommSemiring R] [IsDomain R] [PartialOrder R]
     [IsStrictOrderedRing R] :
     Mᵀ.IsPosSymmetrizable ↔ M.IsPosSymmetrizable :=
   ⟨transpose_transpose M ▸ .transpose, .transpose⟩
@@ -172,6 +172,7 @@ lemma isPosSymmetrizable_iff_of_pairwise_eq [Semiring R] [LT R]
   · by_cases! hij : i = j
     · rw [hij]
     · rw [h hij, hM, h hij.symm]
+
 @[simp]
 lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [LT R] (d : ι → R) :
     (M + diagonal d).IsPosSymmetrizable ↔ M.IsPosSymmetrizable := by
@@ -181,19 +182,19 @@ lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [LT R] (
 
 /-- Extends positive symmetry from the complement of an index `v` to the full matrix,
 given a positive symmetry condition on the entries with `v`. -/
-lemma IsPosSymmetrizable.extend_index {v : ι} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
-    (e : ι → R) (he : ∀ i, 0 < e i)
-    (hE : ∀ i ≠ v, ∀ j ≠ v, e i * M i j = e j * M j i)
-    (h : ∃ a > 0, ∃ b > 0, ∀ j ≠ v, b * M v j = a * e j * M j v) :
+lemma IsPosSymmetrizable.mk_of_forall_ne {k : ι} [Semiring R] [PartialOrder R]
+    [IsStrictOrderedRing R] (e : ι → R) (he : ∀ i, 0 < e i)
+    (hE : ∀ i ≠ k, ∀ j ≠ k, e i * M i j = e j * M j i)
+    (h : ∃ a > 0, ∃ b > 0, ∀ j ≠ k, b * M k j = a * e j * M j k) :
     M.IsPosSymmetrizable := by
   classical
   obtain ⟨a, ha, b, hb, h⟩ := h
-  use fun i ↦ if i = v then b else a * e i
+  use fun i ↦ if i = k then b else a * e i
   refine ⟨fun i ↦ ?_, fun i j ↦ ?_⟩
-  · by_cases hi : i = v
+  · by_cases hi : i = k
     · simp [hi, hb]
     · simp [hi, mul_pos ha (he i)]
-  · by_cases hi : i = v <;> by_cases hj : j = v <;> grind
+  · by_cases hi : i = k <;> by_cases hj : j = k <;> grind
 
 end IsPosSymmetrizable
 
