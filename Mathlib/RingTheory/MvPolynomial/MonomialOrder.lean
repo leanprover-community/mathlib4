@@ -401,8 +401,7 @@ theorem degree_mul_of_mul_leadingCoeff_ne_zero {f g : MvPolynomial σ R}
     (hfg : m.leadingCoeff f * m.leadingCoeff g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
   rw [degree, degree, degree, ← map_add, m.toSyn.symm.apply_eq_iff_eq]
-  apply f.supDegree_mul m.toSyn.injective (by simp) (by simpa [← m.leadingCoeff_def] using hfg)
-  all_goals contrapose hfg; simp [hfg]
+  exact f.supDegree_mul m.toSyn.injective (by simp) (by simpa [← m.leadingCoeff_def] using hfg)
 
 /-- Multiplicativity of leading coefficients -/
 theorem leadingCoeff_mul_of_mul_leadingCoeff_ne_zero {f g : MvPolynomial σ R}
@@ -898,14 +897,17 @@ variable (m) in
 `0` has degree `⊥`, which is not equal to `0`. `MonomialOrder.withBotDegree` is to
 `MonomialOrder.degree` as `Polynomial.degree` is to `Polynomial.natDegree`. -/
 noncomputable def withBotDegree : WithBot (σ →₀ ℕ) :=
-  f.support.image m.toSyn |>.max.map m.toSyn.symm
+  m.toWithBotSyn.symm (f.supDegree (WithBot.some ∘ m.toSyn))
+
+lemma withBotDegree_def :
+    m.withBotDegree f = m.toWithBotSyn.symm (f.supDegree (WithBot.some ∘ m.toSyn)) := rfl
 
 lemma withBotDegree_eq [Decidable (f = 0)] :
     m.withBotDegree f = if f = 0 then ⊥ else ↑(m.degree f) := by
   simp [withBotDegree, degree]
   by_cases hf : f = 0
   · simp [hf]
-  · simp [hf, Finset.max_eq_sup_coe, ← Finset.coe_sup_of_nonempty _ (⇑m.toSyn), f.supDegree_def]
+  · simp [hf, f.supDegree_withBot_some_comp (by simpa), m.toWithBotSyn.symm_apply_eq]
 
 @[simp]
 lemma withBotDegree_eq_coe_degree_iff : m.withBotDegree f = m.degree f ↔ f ≠ 0 := by
