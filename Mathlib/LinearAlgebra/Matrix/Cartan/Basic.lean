@@ -489,21 +489,23 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι] (M : 
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ}
 
-lemma Matrix.IsFiniteGeneralizedCartan.isFiniteCartan_of_exists_posDef
-    (hM : M.IsFiniteGeneralizedCartan) (h : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef) :
+namespace Matrix.IsFiniteCartan
+
+lemma mk_of_exists_posDef (diag : ∀ i, M i i = 2) (offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0)
+   (exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef) :
     M.IsFiniteCartan where
-  diag := hM.diag
-  offDiag_nonpos := hM.offDiag_nonpos
-  zero_comm := hM.zero_comm
+  diag := diag
+  offDiag_nonpos := offDiag_nonpos
+  zero_comm i j := by
+    obtain ⟨_, _, h⟩ := exists_posDef
+    grind [h.isHermitian.apply i j, diagonal_mul, star_trivial, mul_eq_zero]
   exists_posDef' := by
-    obtain ⟨d, hd, h₁, h₂⟩ := h
+    obtain ⟨d, hd, _, h⟩ := exists_posDef
     refine ⟨d, hd, fun x hx ↦ ?_⟩
-    have h : Finsupp.equivFunOnFinite.symm x ≠ 0 := fun h ↦ hx <| funext fun i ↦ by
+    have hcoe : Finsupp.equivFunOnFinite.symm x ≠ 0 := fun h ↦ hx <| funext fun i ↦ by
       simpa using congrArg (fun f : ι →₀ ℤ ↦ f i) h
     simpa [Finsupp.sum_fintype, dotProduct, Matrix.mulVec, mul_assoc, mul_comm, mul_left_comm,
-      Finset.sum_congr, Finset.mul_sum] using h₂ h
-
-namespace Matrix.IsFiniteCartan
+      Finset.sum_congr, Finset.mul_sum] using h hcoe
 
 variable (hM : M.IsFiniteCartan)
 include hM

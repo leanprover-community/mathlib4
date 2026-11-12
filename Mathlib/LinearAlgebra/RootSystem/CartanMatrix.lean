@@ -419,8 +419,8 @@ lemma cartanMatrix_isFiniteGeneralizedCartan [DecidableEq ι] [P.IsRootSystem] :
 
 lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
     b.cartanMatrix.IsFiniteCartan :=
-      b.cartanMatrix_isFiniteGeneralizedCartan.isFiniteCartan_of_exists_posDef
-        b.exists_cartanMatrix_diagonal_mul_posDef
+  IsFiniteCartan.mk_of_exists_posDef b.cartanMatrix_apply_same b.cartanMatrix_le_zero_of_ne
+    b.exists_cartanMatrix_diagonal_mul_posDef
 
 
 end IsCrystallographic
