@@ -5,11 +5,8 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.Algebraic.Integral
-public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -17,7 +14,6 @@ public import Mathlib.RingTheory.LocalRing.Basic
 This file specializes the theory of minpoly to the setting of field extensions
 and derives some well-known properties, amongst which the fact that minimal polynomials
 are irreducible, and uniquely determined by their defining property.
-
 -/
 
 @[expose] public section
@@ -58,7 +54,7 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz (by simp [hp]) |>.not_gt
-  apply degree_sub_lt _ (minpoly.ne_zero hx)
+  apply degree_sub_lt_left _ (minpoly.ne_zero hx)
   · rw [(monic hx).leadingCoeff, pmonic.leadingCoeff]
   · exact le_antisymm (min A x pmonic hp) (pmin (minpoly A x) (monic hx) (aeval A x))
 
@@ -166,6 +162,14 @@ theorem Irreducible.eq_minpoly [Nontrivial B] {p : A[X]} (hi : Irreducible p)
   rw [← minpoly.eq_of_irreducible hi hx, mul_comm, mul_assoc, ← C_mul,
     inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr hi.ne_zero), C_1, mul_one]
 
+theorem _root_.Irreducible.dvd_iff_aeval_eq_zero [Nontrivial B] {p q : A[X]} (hi : Irreducible p)
+    {b : B} (hfa : p.aeval b = 0) : q.aeval b = 0 ↔ p ∣ q := by
+  refine ⟨fun hga ↦ dvd_trans ?_ (minpoly.dvd A b hga), ?_⟩
+  · rw [← minpoly.eq_of_irreducible hi hfa]
+    exact dvd_mul_right _ _
+  · rintro ⟨g, rfl⟩
+    simp [hfa]
+
 theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   by_cases hx : IsIntegral A x
@@ -216,7 +220,7 @@ section AlgHomFintype
 
 open scoped Classical in
 /-- A technical finiteness result. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
   @Pi.instFintype _ _ _ (Finite.fintype hX) _
@@ -235,7 +239,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
   -- needs explicit coercion on the RHS
-  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
+  suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rw [DFunLike.ext'_iff] at this ⊢; assumption
   rw [funext_iff] at h
   exact LinearMap.ext_on (Module.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)
@@ -299,7 +303,7 @@ theorem root {x : B} (hx : IsIntegral A x) {y : A} (h : IsRoot (minpoly A x) y) 
 
 /-- The constant coefficient of the minimal polynomial of `x` is `0` if and only if `x = 0`. -/
 @[simp]
-theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔ x = 0 := by
+theorem coeff_zero_eq_zero (hx : IsIntegral A x) : (minpoly A x).coeff 0 = 0 ↔ x = 0 := by
   constructor
   · intro h
     have zero_root := zero_isRoot_of_coeff_zero_eq_zero h
@@ -309,7 +313,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
     simp
 
 /-- The minimal polynomial of a nonzero element has nonzero constant coefficient. -/
-theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly A x) 0 ≠ 0 := by
+theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : (minpoly A x).coeff 0 ≠ 0 := by
   contrapose h
   simpa only [hx, coeff_zero_eq_zero] using h
 
@@ -333,7 +337,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
     simp_rw [← AlgEquiv.pow_toLinearMap] at hs
     apply hq.ne_zero
     simpa using Fintype.linearIndependent_iff.mp
-      (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_algHom_injective).comp _
+      (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_toAlgHom_injective).comp _
         (Subtype.val_injective.comp ((finEquivPowers hσ).injective)))
       (q.coeff ∘ (↑)) hs ⟨_, H⟩
 
@@ -341,7 +345,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
-    rw [← MonoidHom.coe_coe, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    rw [← MonoidHom.coe_ofClass, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
     exact (AlgEquiv.algHomUnitsEquiv K L).injective
   rw [this, ← minpoly_algEquiv_toLinearMap]
   · apply congr_arg

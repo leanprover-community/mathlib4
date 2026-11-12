@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Basic
 public import Mathlib.Data.Sym.Sym2
 
 /-! # Unordered tuples of elements of a list
@@ -24,7 +23,6 @@ from a given list. These are list versions of `Nat.multichoose`.
 
 * Prove `protected theorem Perm.sym (n : ℕ) {xs ys : List α} (h : xs ~ ys) : xs.sym n ~ ys.sym n`
   and lift the result to `Multiset` and `Finset`.
-
 -/
 
 @[expose] public section
@@ -96,9 +94,11 @@ theorem mem_sym2_iff {xs : List α} {z : Sym2 α} :
   refine z.ind (fun a b => ?_)
   simp [mk_mem_sym2_iff]
 
-lemma setOf_mem_sym2 {xs : List α} :
+lemma setOfPred_mem_sym2 {xs : List α} :
     {z : Sym2 α | z ∈ xs.sym2} = {x : α | x ∈ xs}.sym2 :=
   Set.ext fun z ↦ z.ind fun a b => by simp [mk_mem_sym2_iff]
+
+@[deprecated (since := "2026-07-09")] alias setOf_mem_sym2 := setOfPred_mem_sym2
 
 protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
   induction xs with

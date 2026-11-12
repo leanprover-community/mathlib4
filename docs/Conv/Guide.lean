@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+module
 
 /-! # Guide: Conversion mode tactic
 
@@ -232,6 +233,4 @@ in Lean 4 core.
 * `#conv convTactic => e` is a command to apply the `convTactic` to the expression `e`, yielding
   the converted expression (and dropping the generated proof).
   This is used to implement `#simp`, `#whnf`, `#norm_num`, and `#push`. (Mathlib)
-
-
 -/

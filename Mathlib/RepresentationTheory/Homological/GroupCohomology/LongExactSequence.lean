@@ -5,9 +5,10 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Homology.ConcreteCategory
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-!
 # Long exact sequence in group cohomology
@@ -20,11 +21,14 @@ complexes
 Since the cohomology of `inhomogeneousCochains Xᵢ` is the group cohomology of `Xᵢ`, this allows us
 to specialize API about long exact sequences to group cohomology.
 
-## Main definitions
+## Main Definitions
 
 * `groupCohomology.δ hX i j hij`: the connecting homomorphism `Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)` associated
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
 
+## Main Statements
+
+* `groupCohomology.δ_naturality`: naturality of the connecting homomorphism.
 -/
 
 public section
@@ -102,7 +106,6 @@ theorem isIso_δ_of_isZero (n : ℕ) (h : IsZero (groupCohomology X.X₂ n))
     (hs : IsZero (groupCohomology X.X₂ (n + 1))) :
     IsIso (δ hX n (n + 1) rfl) := SnakeInput.isIso_δ _ h hs
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given an exact sequence of `G`-representations `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0`, this expresses an
 `n + 1`-cochain `x : Gⁿ⁺¹ → X₁` such that `f ∘ x ∈ Bⁿ⁺¹(G, X₂)` as a cocycle.
 Stated for readability of `δ_apply`. -/
@@ -127,7 +130,6 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa using! hx) (j + 1) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₀_apply`. -/
 theorem mem_cocycles₁_of_comp_eq_d₀₁
     {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = d₀₁ X.X₂ y) :
@@ -151,10 +153,9 @@ theorem δ₀_apply
     (by ext; simp [← hy, cochainsIso₀]) ((cochainsIso₁ X.X₁).inv x) <| by
       ext g
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₀₁_comp_inv]
-      simpa [← hx] using! congr_fun (congr($((CommSq.vert_inv
-        ⟨cochainsMap_f_1_comp_cochainsIso₁ (MonoidHom.id G) X.f⟩).w) x)) g
+      simpa [← hx] using! congr($((CommSq.vert_inv
+        ⟨cochainsMap_f_1_comp_cochainsIso₁ (MonoidHom.id G) X.f⟩).w) x g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cocycles₂_of_comp_eq_d₁₂
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = d₁₂ X.X₂ y) :
@@ -178,7 +179,22 @@ theorem δ₁_apply
     ((cochainsIso₂ X.X₁).inv x) <| by
       ext g
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₂_comp_inv]
-      simpa [← hx] using! congr_fun (congr($((CommSq.vert_inv
-        ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x)) g
+      simpa [← hx] using! congr($((CommSq.vert_inv
+        ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x g)
+
+/-- `S.map (cochainsFunctor k G)` is short exact in each degree. -/
+lemma map_cochainsFunctor_eval_shortExact (n : ℕ) :
+    ShortExact (X.map <| cochainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat k) (.up ℕ) n) :=
+  (map_cochainsFunctor_shortExact hX).map_of_exact (HomologicalComplex.eval ..)
+
+omit hX in
+/-- The connecting homomorphism `δ` is actually a natural transformation between
+  `groupCohomology.funtor`s. -/
+theorem δ_naturality {X1 X2 : ShortComplex (Rep k G)} (hX1 : X1.ShortExact)
+    (hX2 : X2.ShortExact) (F : X1 ⟶ X2) (i j : ℕ) (hij : i + 1 = j) :
+    (δ hX1 i j hij) ≫ map (.id G) F.τ₁ j  = map (.id G) F.τ₃ i ≫ δ hX2 i j hij :=
+  HomologicalComplex.HomologySequence.δ_naturality
+    ((cochainsFunctor k G).mapShortComplex.map F)
+    (map_cochainsFunctor_shortExact hX1) (map_cochainsFunctor_shortExact hX2) i j hij
 
 end groupCohomology

@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Sites.Sheafification
 In this file, it is shown that the category of sheaves `Sheaf J A` is a localization
 of the category `Presheaf J A` with respect to the class `J.W` of morphisms
 of presheaves which become isomorphisms after applying the sheafification functor.
-
 -/
 
 universe w
@@ -22,8 +21,6 @@ universe w
 public section
 
 namespace CategoryTheory
-
-open Localization
 
 variable {C : Type*} [Category* C] (J : GrothendieckTopology C) {A : Type*} [Category* A]
 
@@ -43,9 +40,6 @@ lemma W_eq_isLocal_range_sheafToPresheaf_obj :
     exact ⟨⟨P, hP⟩, rfl⟩
   · rintro ⟨F, rfl⟩
     exact F.property
-
-@[deprecated (since := "2025-11-20")] alias W_eq_W_range_sheafToPresheaf_obj :=
-  W_eq_isLocal_range_sheafToPresheaf_obj
 
 lemma W_sheafToPresheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (φ : F₁ ⟶ F₂) :
     J.W ((sheafToPresheaf J A).map φ) ↔ IsIso φ := by
@@ -110,7 +104,7 @@ variable {D : Type*} [Category* D] {K : GrothendieckTopology D}
 lemma Presieve.IsSheaf.comp_of_W_map_of_adjunction
     [LocallySmall.{w} C] {F : C ⥤ D} {H : (Cᵒᵖ ⥤ Type w) ⥤ (Dᵒᵖ ⥤ Type w)}
     (adj : H ⊣ (Functor.whiskeringLeft _ _ _).obj F.op)
-    (h : ∀ ⦃X : C⦄ ⦃S : Sieve X⦄, S ∈ J X → K.W (H.map <| (Sieve.shrinkFunctor.{w} S).ι))
+    (h : ∀ ⦃X : C⦄ ⦃S : Sieve X⦄, S ∈ J X → K.W (H.map (Sieve.shrinkFunctor.{w} S).ι))
     (G : Dᵒᵖ ⥤ Type w) (hG : Presieve.IsSheaf K G) :
     Presieve.IsSheaf J (F.op ⋙ G) := by
   intro X S hS

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Data.Finsupp.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Finsupp`s and sum/product types
 
@@ -24,14 +27,12 @@ function with finite support, module, linear algebra
 
 noncomputable section
 
-open Set LinearMap
+open LinearMap
 
 namespace Finsupp
 
-variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
-variable [AddCommMonoid N] [Module R N]
-variable [AddCommMonoid P] [Module R P]
+variable {α : Type*} {M : Type*} {R : Type*}
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 section Sum
 

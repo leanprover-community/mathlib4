@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Group.Convolution
 public import Mathlib.MeasureTheory.Integral.Prod
 
 /-!

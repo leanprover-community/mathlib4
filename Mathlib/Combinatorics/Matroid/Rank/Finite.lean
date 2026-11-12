@@ -154,9 +154,12 @@ lemma IsRkFinite.isRkFinite_union_iff (hX : M.IsRkFinite X) :
     M.IsRkFinite (X ∪ Y) ↔ M.IsRkFinite Y :=
   ⟨fun h ↦ h.subset subset_union_right, fun h ↦ hX.union h⟩
 
-lemma IsRkFinite.isRkFinite_diff_iff (hX : M.IsRkFinite X) :
+lemma IsRkFinite.isRkFinite_sdiff_iff (hX : M.IsRkFinite X) :
     M.IsRkFinite (Y \ X) ↔ M.IsRkFinite Y := by
-  rw [← hX.isRkFinite_union_iff, union_diff_self, hX.isRkFinite_union_iff]
+  rw [← hX.isRkFinite_union_iff, union_sdiff_self, hX.isRkFinite_union_iff]
+
+@[deprecated (since := "2026-06-03")]
+alias IsRkFinite.isRkFinite_diff_iff := IsRkFinite.isRkFinite_sdiff_iff
 
 lemma IsRkFinite.inter_right (hX : M.IsRkFinite X) : M.IsRkFinite (X ∩ Y) :=
   hX.subset inter_subset_left
@@ -165,7 +168,7 @@ lemma IsRkFinite.inter_left (hX : M.IsRkFinite X) : M.IsRkFinite (Y ∩ X) :=
   hX.subset inter_subset_right
 
 lemma IsRkFinite.diff (hX : M.IsRkFinite X) : M.IsRkFinite (X \ Y) :=
-  hX.subset diff_subset
+  hX.subset sdiff_subset
 
 lemma IsRkFinite.insert (hX : M.IsRkFinite X) (e : α) : M.IsRkFinite (insert e X) := by
   rw [← union_singleton]
@@ -176,8 +179,11 @@ lemma isRkFinite_insert_iff {e : α} : M.IsRkFinite (insert e X) ↔ M.IsRkFinit
   rw [← singleton_union, isRkFinite_singleton.isRkFinite_union_iff]
 
 @[simp]
-lemma IsRkFinite.diff_singleton_iff : M.IsRkFinite (X \ {e}) ↔ M.IsRkFinite X := by
-  rw [isRkFinite_singleton.isRkFinite_diff_iff]
+lemma IsRkFinite.sdiff_singleton_iff : M.IsRkFinite (X \ {e}) ↔ M.IsRkFinite X := by
+  rw [isRkFinite_singleton.isRkFinite_sdiff_iff]
+
+@[deprecated (since := "2026-06-03")]
+alias IsRkFinite.diff_singleton_iff := IsRkFinite.sdiff_singleton_iff
 
 lemma isRkFinite_set (M : Matroid α) [RankFinite M] (X : Set α) : M.IsRkFinite X :=
   let ⟨_, hI⟩ := M.exists_isBasis' X

@@ -5,17 +5,16 @@ Authors: Amelia Livingston, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # Tensor products of Hopf algebras
 
 We define the Hopf algebra instance on the tensor product of two Hopf algebras.
-
 -/
 
-@[expose] public section
+public section
 
 open Coalgebra HopfAlgebra
 

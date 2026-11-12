@@ -5,10 +5,10 @@ Authors: Yizheng Zhu
 -/
 module
 
-public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+
 import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
@@ -36,7 +36,7 @@ open scoped Topology
 /-- If `f` is monotone on `[a, b]`, then `f'` is the limit of `G n` a.e. on `[a, b]`, where each
 `G n` is `AEStronglyMeasurable` and the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ` is at
 most `f b - f a`. -/
-lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
+lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_eNorm_le
     {f : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b) (hf : MonotoneOn f (Icc a b)) :
     ∃ G : (ℕ → ℝ → ℝ), (∀ᵐ x ∂volume.restrict (Icc a b),
       Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (deriv f x))) ∧
@@ -65,23 +65,27 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
     rw [hfg hx₂]
     exact hx₁.hasDerivAt.tendsto_slope.comp <|
       tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
-      (by convert! tendsto_const_nhds.add (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)); simp)
+      (by convert tendsto_const_nhds.add (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)); simp)
       (by simp [eventually_ne_atTop 0])
   · calc
       _ = liminf (fun (n : ℕ) ↦ ENNReal.ofReal (∫ (x : ℝ) in Icc a b, (G (n : ℝ)⁻¹) x)) atTop := by
         apply Filter.liminf_congr
         filter_upwards with n
-        rw [← MeasureTheory.ofReal_integral_norm_eq_lintegral_enorm (G_integrable n)]
+        rw [← MeasureTheory.ofReal_integral_norm_eq_lintegral_eNorm (G_integrable n)]
         congr with y
         exact abs_eq_self.mpr (hg.monotoneOn univ |>.slope_nonneg trivial trivial)
       _ ≤ ENNReal.ofReal (g b - g a) := by
         refine Filter.liminf_le_of_frequently_le'
           (Filter.Frequently.of_forall fun n ↦ ENNReal.ofReal_le_ofReal ?_)
         rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le hab]
-        convert!
+        convert
           hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegral_slope_le hab (by simp) using 2
         simp [g]
       _ = ENNReal.ofReal (f b - f a) := by grind
+
+@[deprecated (since := "2026-11-06")]
+alias MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le :=
+  MonotoneOn.exists_tendsto_deriv_liminf_lintegral_eNorm_le
 
 /-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b`. -/
 theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
@@ -90,7 +94,7 @@ theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
   wlog hab : a ≤ b generalizing a b with h
   · exact h (uIcc_comm a b ▸ hf) (by linarith) |>.symm
   rw [uIcc_of_le hab] at hf
-  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
+  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_eNorm_le hab
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
@@ -109,7 +113,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     simp only [neg_zero, neg_sub]
     rwa [uIcc_of_le (by linarith)] at h
   rw [uIcc_of_le hab] at hf
-  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
+  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_eNorm_le hab
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
@@ -125,16 +129,16 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     rw [Filter.EventuallyLE, ← restrict_Ioo_eq_restrict_Icc,
       MeasureTheory.ae_restrict_iff' measurableSet_Ioo]
     exact Filter.Eventually.of_forall @f_deriv_nonneg
-  · have ebound := lintegral_enorm_le_liminf_of_tendsto
+  · have ebound := lintegral_eNorm_le_liminf_of_tendsto
       ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf))
-      (fun n ↦ (hG n).aemeasurable.enorm)
+      (fun n ↦ (hG n).aemeasurable.eNorm)
     grw [hG'] at ebound
     rw [uIcc_of_le hab,
-        ← MeasureTheory.ofReal_integral_norm_eq_lintegral_enorm integrable_f_deriv,
+        ← MeasureTheory.ofReal_integral_norm_eq_lintegral_eNorm integrable_f_deriv,
         ENNReal.ofReal_le_ofReal_iff (by linarith),
         integral_Icc_eq_integral_Ioc,
         ← intervalIntegral.integral_of_le hab] at ebound
-    convert! ebound using 1
+    convert ebound using 1
     refine intervalIntegral.integral_congr_uIoo ?_
     rw [uIoo_of_le hab]
     intro x hx

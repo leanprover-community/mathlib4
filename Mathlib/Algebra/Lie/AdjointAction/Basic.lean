@@ -5,10 +5,8 @@ Authors: Janos Wolosz
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.LinearAlgebra.Semisimple
-public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Properties of the adjoint action
@@ -25,6 +23,8 @@ Theorems about the adjoint action `LieAlgebra.ad` on associative algebras.
 public section
 
 section CommRing
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 
@@ -60,6 +60,8 @@ section Field
 
 variable {K V : Type*} [Field K] [PerfectField K] [AddCommGroup V] [Module K V]
 variable [FiniteDimensional K V]
+
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The adjoint of a semisimple element is semisimple. -/
 theorem LieAlgebra.ad_isSemisimple_of_isSemisimple {a : Module.End K V} (ha : a.IsSemisimple) :

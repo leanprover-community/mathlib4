@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
 /-!
 # The universal property of the even subalgebra
@@ -113,11 +112,11 @@ theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂
   | algebraMap r =>
     exact (f.commutes r).trans (g.commutes r).symm
   | add x y hx hy ihx ihy =>
-    have := congr_arg₂ (· + ·) ihx ihy
-    exact (map_add f _ _).trans (this.trans <| (map_add g _ _).symm)
+    have := congr($ihx + $ihy)
+    exact (map_add f _ _).trans (this.trans (map_add g _ _).symm)
   | ι_mul_ι_mul m₁ m₂ x hx ih =>
-    have := congr_arg₂ (· * ·) (LinearMap.congr_fun (LinearMap.congr_fun h m₁) m₂) ih
-    exact (map_mul f _ _).trans (this.trans <| (map_mul g _ _).symm)
+    have := congr($h m₁ m₂ * $ih)
+    exact (map_mul f _ _).trans (this.trans (map_mul g _ _).symm)
 
 variable {Q}
 
@@ -141,11 +140,11 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
         don't have any prod or subtype combinators to deal with n-linear maps of this degree.
         ```lean
         (LinearMap.lcomp R _ (Algebra.lmul R A).to_linear_map.flip).comp <|
-          (LinearMap.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A)
+          (LinearMap.llcomp R M A A).flip.comp f.flip : M →ₗ[R] A →ₗ[R] M →ₗ[R] A
         ```
         -/
       (acc.2.val m,
-        ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span <| ⟨_, _, rfl⟩⟩))
+        ⟨(LinearMap.mulRight R acc.1).comp (f.bilin.flip m), Submodule.subset_span ⟨_, _, rfl⟩⟩))
     (fun m₁ m₂ a =>
       Prod.ext (map_add _ m₁ m₂)
         (Subtype.ext <|
@@ -203,11 +202,11 @@ theorem aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
 
 @[simp]
-theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
-  (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
-    (by
-      rw [foldr_ι, foldr_ι]
-      exact mul_one _)
+theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ := by
+  rw [CliffordAlgebra.even.lift.aux_apply]
+  refine (congr_arg Prod.fst (foldr_mul Q (fFold f) _ _ _ _)).trans ?_
+  rw [foldr_ι, foldr_ι]
+  exact mul_one _
 
 @[simp]
 theorem aux_algebraMap (r) :

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.Star.Unitary
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The ⋆-algebra automorphism given by a unitary element
 
@@ -24,6 +27,7 @@ variable {S R : Type*} [Semiring R] [StarMul R]
   [SMul S R] [IsScalarTower S R R] [SMulCommClass S R R]
 
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable (S R) in
 /-- Each unitary element `u` defines a ⋆-algebra automorphism such that
 `x ↦ u * x * star u`.
@@ -38,7 +42,7 @@ def conjStarAlgAut : unitary R →* (R ≃⋆ₐ[S] R) where
       dsimp [ConjAct.units_smul_def]
       simp [mul_assoc, ← Unitary.star_eq_inv] }
   map_one' := by ext; simp
-  map_mul' g h := by ext; simp [mul_smul]
+  map_mul' g h := by ext; simp
 
 @[simp] theorem conjStarAlgAut_apply (u : unitary R) (x : R) :
     conjStarAlgAut S R u x = u * x * (star u : R) := rfl

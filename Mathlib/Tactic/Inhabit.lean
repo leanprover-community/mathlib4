@@ -8,6 +8,9 @@ module
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
 constructively or otherwise.
@@ -20,13 +23,13 @@ open Lean.Meta
 namespace Lean.Elab.Tactic
 
 /-- Derives `Inhabited α` from `Nonempty α` with `Classical.choice`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def nonempty_to_inhabited (α : Sort*) (_ : Nonempty α) : Inhabited α :=
   Inhabited.mk (Classical.ofNonempty)
 
 /-- Derives `Inhabited α` from `Nonempty α` without `Classical.choice`
 assuming `α` is of type `Prop`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def nonempty_prop_to_inhabited (α : Prop) (α_nonempty : Nonempty α) : Inhabited α :=
   Inhabited.mk <| Nonempty.elim α_nonempty id
 

@@ -5,9 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
+public meta import Lean.Elab.InfoTree.Util
+public import Mathlib.Init
 
 /-!
 # The `have` vs `let` linter
@@ -62,12 +62,6 @@ end Mathlib.Linter
 
 namespace Mathlib.Linter.haveLet
 
-/-- a monadic version of `Lean.Elab.InfoTree.foldInfo`.
-Used to infer types inside a `CommandElabM`. -/
-def InfoTree.foldInfoM {α m} [Monad m] (f : ContextInfo → Info → α → m α) (init : α) :
-    InfoTree → m α :=
-  InfoTree.foldInfo (fun ctx i ma => do f ctx i (← ma)) (pure init)
-
 /-- given a `ContextInfo`, a `LocalContext` and an `Array` of `Expr`essions `es` with a `Name`,
 `toFormat_propTypes` creates a `MetaM` context, and returns an array of
 the pretty-printed `Format` of `e`, together with the (unchanged) name
@@ -88,7 +82,7 @@ def toFormat_propTypes (ctx : ContextInfo) (lc : LocalContext) (es : Array (Expr
 also a `Format`ted version of the corresponding Type. -/
 public partial
 def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
-  InfoTree.foldInfoM (init := #[]) fun ctx info args => return args ++ (← do
+  InfoTree.foldInfoM (init := #[]) fun ctx info args => return args ++ (← (do
     let .ofTacticInfo i := info | return #[]
     let stx := i.stx
     let .original .. := stx.getHeadInfo | return #[]
@@ -109,7 +103,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     -- Now, we get the `MetaM` state up and running to find the types of each entry of `newDecls`.
     -- For each entry which is a `Type`, we print a warning on `have`.
     let fmts ← toFormat_propTypes ctx lc (newDecls.map (fun e ↦ (e.type, e.userName))).toArray
-    return fmts.map fun (fmt, na) ↦ (stx, f!"{na} : {fmt}"))
+    return fmts.map fun (fmt, na) ↦ (stx, f!"{na} : {fmt}")))
 
 /-- The main implementation of the `have` vs `let` linter. -/
 def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do

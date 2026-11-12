@@ -5,11 +5,12 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
-public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
-public import Mathlib.Data.Finset.CastCard
+
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
+import Mathlib.Data.Finset.CastCard
 
 /-!
 # Triangle removal lemma
@@ -176,10 +177,11 @@ if `ε` is.
 
 This exploits the positivity of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
 @[positivity triangleRemovalBound _]
-meta def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα pα? e :=
+  match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
-    let .positive hε ← core q(inferInstance) q(inferInstance) ε | failure
+    let .positive hε ← core q(inferInstance) (some q(inferInstance)) ε | failure
     assertInstancesCommute
     pure (.positive q(triangleRemovalBound_pos $hε))
   | _, _, _ => throwError "failed to match on Int.ceil application"

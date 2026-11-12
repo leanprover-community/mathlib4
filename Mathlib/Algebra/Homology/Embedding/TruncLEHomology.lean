@@ -7,9 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
 public import Mathlib.Algebra.Homology.Embedding.TruncLE
-public import Mathlib.Algebra.Homology.HomologySequence
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.Algebra.Homology.HomologySequence
 
 /-! # The homology of a canonical truncation
 
@@ -25,7 +24,6 @@ All the results are obtained by dualising the results in the file `Embedding.Tru
 
 Moreover, if `C` is an abelian category, we introduce the cokernel
 sequence `K.shortComplexTruncLE e` of the monomorphism `K.ιTruncLE e`.
-
 -/
 
 @[expose] public section
@@ -83,6 +81,11 @@ lemma acyclic_truncLE_iff_isSupportedOutside :
   exact K.op.acyclic_truncGE_iff_isSupportedOutside e.op
 
 variable {K L}
+
+lemma Acyclic.truncLE (hK : K.Acyclic) (e : c.Embedding c') [e.IsTruncLE] :
+    (K.truncLE e).Acyclic := by
+  rw [acyclic_truncLE_iff_isSupportedOutside]
+  exact ⟨fun _ ↦ hK _⟩
 
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by

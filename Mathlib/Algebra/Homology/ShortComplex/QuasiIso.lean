@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.Homology
 This file introduces the typeclass `QuasiIso φ` for a morphism `φ : S₁ ⟶ S₂`
 of short complexes (which have homology): the condition is that the induced
 morphism `homologyMap φ` in homology is an isomorphism.
-
 -/
 
 public section
@@ -83,7 +82,6 @@ lemma quasiIso_iff_comp_right (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ' :
   · intro
     exact quasiIso_comp φ φ'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ')
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   let α : S₃ ⟶ S₁ := e.inv.left
@@ -104,7 +102,7 @@ lemma LeftHomologyMapData.quasiIso_iff {φ : S₁ ⟶ S₂} {h₁ : S₁.LeftHom
   rw [ShortComplex.quasiIso_iff, γ.homologyMap_eq]
   constructor
   · intro h
-    haveI : IsIso (γ.φH ≫ (LeftHomologyData.homologyIso h₂).inv) :=
+    have : IsIso (γ.φH ≫ (LeftHomologyData.homologyIso h₂).inv) :=
       IsIso.of_isIso_comp_left (LeftHomologyData.homologyIso h₁).hom _
     exact IsIso.of_isIso_comp_right _ (LeftHomologyData.homologyIso h₂).inv
   · intro h
@@ -116,7 +114,7 @@ lemma RightHomologyMapData.quasiIso_iff {φ : S₁ ⟶ S₂} {h₁ : S₁.RightH
   rw [ShortComplex.quasiIso_iff, γ.homologyMap_eq]
   constructor
   · intro h
-    haveI : IsIso (γ.φH ≫ (RightHomologyData.homologyIso h₂).inv) :=
+    have : IsIso (γ.φH ≫ (RightHomologyData.homologyIso h₂).inv) :=
       IsIso.of_isIso_comp_left (RightHomologyData.homologyIso h₁).hom _
     exact IsIso.of_isIso_comp_right _ (RightHomologyData.homologyIso h₂).inv
   · intro h
@@ -164,7 +162,6 @@ lemma quasiIso_opMap (φ : S₁ ⟶ S₂) [QuasiIso φ] :
   infer_instance
 
 lemma quasiIso_unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} [S₁.HasHomology] [S₂.HasHomology]
-    [S₁.unop.HasHomology] [S₂.unop.HasHomology]
     (φ : S₁ ⟶ S₂) [QuasiIso φ] : QuasiIso (unopMap φ) := by
   rw [← quasiIso_opMap_iff]
   change QuasiIso φ

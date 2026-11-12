@@ -5,8 +5,7 @@ Authors: Kim Morrison, Simon Hudon
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
@@ -48,14 +47,14 @@ the four fields starting from `id_tensorHom_id` were provided by the auto_param 
 @[instance_reducible]
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
-    tensorObj := fun X Y ↦ X ⨿ Y
-    whiskerLeft := fun _ _ _ g ↦ Limits.coprod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f _ ↦ Limits.coprod.map f (𝟙 _)
-    tensorHom := fun f g ↦ Limits.coprod.map f g
+    tensorObj X Y := X ⨿ Y
+    whiskerLeft _ _ _ g := Limits.coprod.map (𝟙 _) g
+    whiskerRight {_ _} f _ := Limits.coprod.map f (𝟙 _)
+    tensorHom := Limits.coprod.map
     tensorUnit := ⊥_ C
     associator := coprod.associator
-    leftUnitor := coprod.leftUnitor
-    rightUnitor := coprod.rightUnitor
+    leftUnitor X := coprod.leftUnitor X
+    rightUnitor X := coprod.rightUnitor X
   }
   .ofTensorHom
     (pentagon := coprod.pentagon)
@@ -63,8 +62,8 @@ def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : Monoi
     (associator_naturality := @coprod.associator_naturality _ _ _)
     (id_tensorHom_id := fun _ _ => coprod.map_id_id)
     (tensorHom_comp_tensorHom := coprod.map_map)
-    (leftUnitor_naturality := coprod.leftUnitor_naturality)
-    (rightUnitor_naturality := coprod.rightUnitor_naturality)
+    (leftUnitor_naturality := coprod.leftUnitor_hom_naturality)
+    (rightUnitor_naturality := coprod.rightUnitor_hom_naturality)
 
 end
 
@@ -127,15 +126,12 @@ section
 
 attribute [local instance] monoidalOfHasFiniteCoproducts
 
-open MonoidalCategory
-
-set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
-@[simps, implicit_reducible]
+@[simps, instance_reducible]
 def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
-  braiding := Limits.coprod.braiding
+  braiding X Y := Limits.coprod.braiding X Y
   braiding_naturality_left f g := by simp
   braiding_naturality_right f g := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp
@@ -143,71 +139,5 @@ def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
   symmetry X Y := by simp
 
 end
-
-namespace monoidalOfHasFiniteProducts
-
-variable {C}
-variable {D : Type*} [Category* D] (F : C ⥤ D)
-  [HasTerminal C] [HasBinaryProducts C]
-  [HasTerminal D] [HasBinaryProducts D]
-
-@[deprecated Functor.OplaxMonoidal.ofChosenFiniteProducts (since := "2025-10-19")]
-instance :
-    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
-    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
-    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    F.OplaxMonoidal := by extract_lets; exact .ofChosenFiniteProducts F
-
-open Functor.OplaxMonoidal
-
-@[deprecated "No replacement" (since := "2025-10-19")]
-lemma η_eq :
-    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
-    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
-    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    η F = terminalComparison F := rfl
-
-@[deprecated "No replacement" (since := "2025-10-19")]
-lemma δ_eq (X Y : C) :
-    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
-    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
-    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    δ F X Y = prodComparison F X Y := rfl
-
-variable [PreservesLimit (Functor.empty.{0} C) F]
-  [PreservesLimitsOfShape (Discrete WalkingPair) F]
-
-set_option backward.defeqAttrib.useBackward true in
-@[deprecated inferInstance (since := "2025-10-19")]
-instance :
-    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
-    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
-    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    IsIso (η F) := by dsimp [η_eq]; apply instIsIsoTerminalComparison
-
-set_option backward.defeqAttrib.useBackward true in
-@[deprecated inferInstance (since := "2025-10-19")]
-instance (X Y : C) :
-    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
-    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
-    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    IsIso (δ F X Y) := by dsimp [δ_eq]; apply instIsIsoProdComparison
-
-/-- Promote a functor that preserves finite products to a monoidal functor between
-categories equipped with the monoidal category structure given by finite products. -/
-@[deprecated Functor.Monoidal.ofChosenFiniteProducts (since := "2025-10-19")]
-instance :
-    have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-    have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
-    let : CartesianMonoidalCategory C := .ofHasFiniteProducts
-    let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    F.Monoidal := by extract_lets; exact .ofOplaxMonoidal F
-
-end monoidalOfHasFiniteProducts
 
 end CategoryTheory

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-! # Vectorization of matrices
 
@@ -131,16 +130,18 @@ theorem kronecker_mulVec_vec_of_commute (A : Matrix l m R) (X : Matrix m n R) (B
     (hB : ∀ x i j, Commute x (B i j)) :
     (B ⊗ₖ A) *ᵥ vec X = vec (A * X * Bᵀ) := by
   ext ⟨k, l⟩
-  simp_rw [vec, mulVec, mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul, transpose_apply,
-    ← Finset.univ_product_univ, Finset.sum_product, (hB ..).right_comm, vec, (hB ..).eq]
+  simp_rw [vec, mulVec, Matrix.mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul,
+    transpose_apply, ← Finset.univ_product_univ, Finset.sum_product, (hB ..).right_comm, vec,
+    (hB ..).eq]
 
 /-- Technical lemma shared with `vec_vecMul_kronecker` and `vec_mul_eq_vecMul`. -/
 theorem vec_vecMul_kronecker_of_commute (A : Matrix m l R) (X : Matrix m n R) (B : Matrix n p R)
     (hA : ∀ x i j, Commute (A i j) x) :
     vec X ᵥ* (B ⊗ₖ A) = vec (Aᵀ * X * B) := by
   ext ⟨k, l⟩
-  simp_rw [vec, vecMul, mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul, transpose_apply,
-    ← Finset.univ_product_univ, Finset.sum_product, (hA ..).eq, (hA ..).right_comm, mul_assoc, vec]
+  simp_rw [vec, vecMul, Matrix.mul_apply, dotProduct, kroneckerMap_apply, Finset.sum_mul,
+    transpose_apply, ← Finset.univ_product_univ, Finset.sum_product, (hA ..).eq, (hA ..).right_comm,
+    mul_assoc, vec]
 
 end NonUnitalSemiring
 

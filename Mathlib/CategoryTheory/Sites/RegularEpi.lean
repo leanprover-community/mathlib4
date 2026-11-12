@@ -5,13 +5,13 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.EffectiveEpi.Comp
-public import Mathlib.CategoryTheory.Functor.RegularEpi
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 public import Mathlib.CategoryTheory.Sites.LeftExact
 
-/-!
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
+import Mathlib.CategoryTheory.Functor.RegularEpi
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 
+/-!
 # The category of type-valued sheaves is a regular epi category
 
 ## Main results
@@ -46,7 +46,6 @@ open Limits
 
 variable {C D : Type*} [Category C] [Category D]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isRegularEpiCategory_sheaf (J : GrothendieckTopology C)
     [HasPullbacks D] [HasPushouts D] [IsRegularEpiCategory D]
     (h : ∀ {F G : Sheaf J D} (f : F ⟶ G) [Epi f], ∃ (I : Cᵒᵖ ⥤ D) (p : F.obj ⟶ I) (i : I ⟶ G.obj),

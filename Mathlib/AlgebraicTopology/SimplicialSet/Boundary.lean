@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
 /-!
 # The boundary of the standard simplex
@@ -19,15 +20,15 @@ There isn't yet a complete API for simplices, boundaries, and horns.
 As an example, we should have a function that constructs
 from a non-surjective order-preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
-
-
 -/
 
 @[expose] public section
 
 universe u
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -35,7 +36,7 @@ namespace SSet
 all `m`-simplices of `stdSimplex n` that are not surjective
 (when viewed as monotone function `m → n`). -/
 def boundary (n : ℕ) : (Δ[n] : SSet.{u}).Subcomplex where
-  obj _ := setOf (fun s ↦ ¬Function.Surjective (stdSimplex.asOrderHom s))
+  obj _ := Set.ofPred (fun s ↦ ¬Function.Surjective (stdSimplex.asOrderHom s))
   map _ _ hs h := hs (Function.Surjective.of_comp h)
 
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
@@ -91,7 +92,7 @@ lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n := by lia) :
 @[simp]
 lemma boundary_zero : boundary.{u} 0 = ⊥ := by
   ext m x
-  simp only [boundary, Nat.reduceAdd, Set.mem_setOf_eq, Subfunctor.bot_obj, Set.bot_eq_empty,
+  simp only [boundary, Nat.reduceAdd, Set.mem_ofPred_eq, Subfunctor.bot_obj,
     Set.mem_empty_iff_false, iff_false, Decidable.not_not]
   intro x
   exact ⟨0, by subsingleton⟩
@@ -111,7 +112,6 @@ namespace stdSimplex
 
 variable {n : ℕ} (A : (Δ[n] : SSet.{u}).Subcomplex)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma subcomplex_hasDimensionLT_of_neq_top (h : A ≠ ⊤) :
     HasDimensionLT A n where
   degenerate_eq_top i hi := by
@@ -124,7 +124,6 @@ lemma subcomplex_hasDimensionLT_of_neq_top (h : A ≠ ⊤) :
       rintro rfl
       exact h (le_antisymm (by simp) (by simpa [← ofSimplex_objEquiv_symm_id]))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_boundary_iff :
     A ≤ boundary.{u} n ↔ A ≠ ⊤ := by
   refine ⟨fun h ↦ ?_, fun hA ↦ ?_⟩
@@ -192,6 +191,7 @@ instance {n : ℕ} (i : Fin (n + 2)) : Mono (stdSimplex.{u}.δ i) := by
   rw [← ι_ι]
   infer_instance
 
+@[ext]
 lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (∂Δ[n + 1] : SSet) ⟶ X}
     (h : ∀ (i : Fin (n + 2)), ι i ≫ f = ι i ≫ g) :
     f = g := by
@@ -199,7 +199,7 @@ lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (∂Δ[n + 1] : SSet) ⟶ X}
   simp only [boundary_eq_iSup, stdSimplex.face_singleton_compl, Subfunctor.iSup_obj,
     Set.mem_iUnion, Subcomplex.mem_ofSimplex_obj_iff, op_unop] at hx
   obtain ⟨i, ⟨y, rfl⟩⟩ := hx
-  exact ConcreteCategory.congr_hom (congr_app (h i) _) _
+  congrm $(h i).app _ _
 
 @[ext]
 lemma hom_ext₀ {X : SSet.{u}} {f g : (∂Δ[0] : SSet) ⟶ X} : f = g := by

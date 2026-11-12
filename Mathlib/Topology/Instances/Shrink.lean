@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Small.Defs
 public import Mathlib.Topology.Homeomorph.TransferInstance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological space structure on `Shrink X`
 -/

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nilpotent elements in quotient rings
 -/
@@ -37,7 +40,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     rw [← Ideal.zero_eq_bot, zero_pow two_ne_zero]
   rcases n with - | n
   · rw [pow_zero, Ideal.one_eq_top] at hI
-    haveI := subsingleton_of_bot_eq_top hI.symm
+    have := subsingleton_of_bot_eq_top hI.symm
     exact (hI' (Subsingleton.elim _ _)).elim
   rcases n with - | n
   · rw [pow_one] at hI

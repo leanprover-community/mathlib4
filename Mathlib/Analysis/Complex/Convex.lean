@@ -71,12 +71,12 @@ namespace Complex
 
 lemma isConnected_of_upperHalfPlane {r} {s : Set ℂ} (hs₁ : {z | r < z.im} ⊆ s)
     (hs₂ : s ⊆ {z | r ≤ z.im}) : IsConnected s := by
-  refine .subset_closure ?_ hs₁ (by simpa only [closure_setOf_lt_im] using hs₂)
+  refine .subset_closure ?_ hs₁ (by simpa only [closure_setOfPred_lt_im] using hs₂)
   exact (convex_halfSpace_im_gt r).isConnected ⟨(r + 1) * I, by simp⟩
 
 lemma isConnected_of_lowerHalfPlane {r} {s : Set ℂ} (hs₁ : {z | z.im < r} ⊆ s)
     (hs₂ : s ⊆ {z | z.im ≤ r}) : IsConnected s := by
-  refine .subset_closure ?_ hs₁ (by simpa only [closure_setOf_im_lt] using hs₂)
+  refine .subset_closure ?_ hs₁ (by simpa only [closure_setOfPred_im_lt] using hs₂)
   exact (convex_halfSpace_im_lt r).isConnected ⟨(r - 1) * I, by simp⟩
 
 lemma rectangle_eq_convexHull (z w : ℂ) :
@@ -98,7 +98,7 @@ lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ
 instance : PathConnectedSpace ℂˣ :=
   have : PathConnectedSpace { z : ℂ // z ≠ 0 } :=
     (isPathConnected_iff_pathConnectedSpace (F := {0}ᶜ)).mp (by
-      convert!
+      convert
         (((convex_halfSpace_im_gt 0).isPathConnected ⟨.I, by simp⟩).union
               ((convex_halfSpace_re_gt 0).isPathConnected ⟨1, by simp⟩) ⟨1 + .I, by simp⟩).union
           (((convex_halfSpace_im_lt 0).isPathConnected ⟨-.I, by simp⟩).union

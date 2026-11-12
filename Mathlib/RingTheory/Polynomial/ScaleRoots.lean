@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Splits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scaling the roots of a polynomial
 
@@ -18,6 +21,8 @@ be the polynomial with root `r * s` for each root `r` of `p` and proves some bas
 
 
 variable {R S A K : Type*}
+
+open AddMonoidAlgebra
 
 namespace Polynomial
 
@@ -32,7 +37,7 @@ noncomputable def scaleRoots (p : R[X]) (s : R) : R[X] :=
 @[simp]
 theorem coeff_scaleRoots (p : R[X]) (s : R) (i : ℕ) :
     (scaleRoots p s).coeff i = coeff p i * s ^ (p.natDegree - i) := by
-  simp +contextual [scaleRoots, coeff_monomial]
+  simp +contextual [scaleRoots, Finsupp.single_apply]
 
 theorem coeff_scaleRoots_natDegree (p : R[X]) (s : R) :
     (scaleRoots p s).coeff p.natDegree = p.leadingCoeff := by
@@ -46,8 +51,7 @@ theorem zero_scaleRoots (s : R) : scaleRoots 0 s = 0 := by
 theorem scaleRoots_ne_zero {p : R[X]} (hp : p ≠ 0) (s : R) : scaleRoots p s ≠ 0 := by
   intro h
   have : p.coeff p.natDegree ≠ 0 := mt leadingCoeff_eq_zero.mp hp
-  have : (scaleRoots p s).coeff p.natDegree = 0 :=
-    congr_fun (congr_arg (coeff : R[X] → ℕ → R) h) p.natDegree
+  have : (scaleRoots p s).coeff p.natDegree = 0 := by rw [h]; simp
   rw [coeff_scaleRoots_natDegree] at this
   contradiction
 
@@ -66,7 +70,7 @@ theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) 
 
 @[simp]
 theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree p := by
-  haveI := Classical.propDecidable
+  have := Classical.propDecidable
   by_cases hp : p = 0
   · rw [hp, zero_scaleRoots]
   refine le_antisymm (Finset.sup_mono (support_scaleRoots_le p s)) (degree_le_degree ?_)
@@ -105,7 +109,7 @@ lemma scaleRoots_zero (p : R[X]) :
     p.scaleRoots 0 = p.leadingCoeff • X ^ p.natDegree := by
   ext n
   simp only [coeff_scaleRoots, tsub_eq_zero_iff_le, zero_pow_eq, mul_ite,
-    mul_one, mul_zero, coeff_smul, coeff_X_pow, smul_eq_mul]
+    mul_one, mul_zero, coeff_smul_apply, coeff_X_pow, smul_eq_mul]
   split_ifs with h₁ h₂ h₂
   · subst h₂; rfl
   · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne h₁ (Ne.symm h₂))
@@ -136,7 +140,7 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
       simp [eval₂_eq_sum, sum_def]
     _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
       (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' => by
-        let this : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
+        let : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
         simp [this])
     _ = p.support.sum fun i : ℕ => f (p.coeff i) * f s ^ (p.natDegree - i + i) * a ^ i :=
       (Finset.sum_congr rfl fun i _hi => by
@@ -158,6 +162,11 @@ lemma scaleRoots_eval_mul (p : R[X]) (r s : R) :
     eval (s * r) (p.scaleRoots s) = s ^ p.natDegree * eval r p :=
   scaleRoots_eval₂_mul _ _ _
 
+lemma scaleRoots_aeval_smul {S} [CommSemiring S] [Algebra S R] {p : S[X]} (r : R) (s : S) :
+    (p.scaleRoots s).aeval (s • r) = s ^ p.natDegree • p.aeval r := by
+  simp_rw [Algebra.smul_def, map_pow]
+  exact scaleRoots_eval₂_mul _ _ _
+
 theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
     aeval (algebraMap R A r * a) (scaleRoots p r) = 0 := by
   rw [aeval_def, scaleRoots_eval₂_mul_of_commute, ← aeval_def, ha, mul_zero]
@@ -168,8 +177,8 @@ theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+
     (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
   -- if we don't specify the type with `(_ : S)`, the proof is much slower
-  nontriviality S using Subsingleton.eq_zero (_ : S)
-  convert! @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
+  nontriviality S using Subsingleton.eq_zero (α := S)
+  convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 
@@ -189,7 +198,7 @@ assume that the product of the leading coeffs does not vanish. See `Polynomial.m
 lemma mul_scaleRoots (p q : R[X]) (r : R) :
     r ^ (natDegree p + natDegree q - natDegree (p * q)) • (p * q).scaleRoots r =
       p.scaleRoots r * q.scaleRoots r := by
-  ext n; simp only [coeff_scaleRoots, coeff_smul, smul_eq_mul]
+  ext n; simp only [coeff_scaleRoots, coeff_smul_apply, smul_eq_mul]
   trans (∑ x ∈ Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
     r ^ (natDegree p + natDegree q - n)
   · rw [← coeff_mul]
@@ -242,7 +251,7 @@ lemma pow_scaleRoots_of_isReduced [IsReduced R] (p : R[X]) (r : R) (n : ℕ) :
 lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = natDegree q) :
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
-  ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
+  ext n; simp only [coeff_smul_apply, coeff_scaleRoots, coeff_add, smul_eq_mul,
     mul_comm (r ^ _), ← h, ← add_mul]
   #adaptation_note /-- v4.7.0-rc1
   Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
@@ -307,8 +316,6 @@ lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
         exact (monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).ne_zero
   · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
     simpa
-
-@[deprecated (since := "2025-12-09")] alias Factors.scaleRoots := Splits.scaleRoots
 
 end CommSemiring
 

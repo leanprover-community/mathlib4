@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 module
 
 public import Mathlib.Algebra.MonoidAlgebra.Degree
-public import Mathlib.Algebra.MvPolynomial.SupDegree
 public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Algebra.MvPolynomial.SupDegree
 
 /-!
 # Degrees of polynomials
@@ -47,7 +47,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `p : MvPolynomial σ R`
-
 -/
 
 @[expose] public section
@@ -63,7 +62,7 @@ variable {R : Type u} {S : Type v}
 
 namespace MvPolynomial
 
-variable {σ τ : Type*} {r : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ τ : Type*} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
 
@@ -84,7 +83,8 @@ def degrees (p : MvPolynomial σ R) : Multiset σ :=
 
 theorem degrees_def [DecidableEq σ] (p : MvPolynomial σ R) :
     p.degrees = p.supDegree fun s : σ →₀ ℕ => Finsupp.toMultiset s := by
-  rw [degrees]; convert! rfl
+  rw [degrees]
+  convert! rfl
 
 theorem degrees_monomial (s : σ →₀ ℕ) (a : R) : degrees (monomial s a) ≤ toMultiset s := by
   classical
@@ -94,8 +94,7 @@ theorem degrees_monomial (s : σ →₀ ℕ) (a : R) : degrees (monomial s a) �
 
 theorem degrees_monomial_eq (s : σ →₀ ℕ) (a : R) (ha : a ≠ 0) :
     degrees (monomial s a) = toMultiset s := by
-  classical
-    exact (supDegree_monomial s a).trans (if_neg ha)
+  classical exact (supDegree_monomial s a).trans (ite_eq_right ha)
 
 theorem degrees_C (a : R) : degrees (C a : MvPolynomial σ R) = 0 :=
   Multiset.le_zero.1 <| degrees_monomial _ _
@@ -161,8 +160,8 @@ theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (
   obtain rfl | h0 := eq_or_ne d 0
   · rw [toMultiset_zero]; apply Multiset.zero_le
   · refine Finset.le_sup_of_le (b := d) ?_ le_rfl
-    rw [mem_support_iff, coeff_add]
-    suffices q.coeff d = 0 by rwa [this, add_zero, coeff, ← Finsupp.mem_support_iff]
+    rw [mem_support_iff, coeff_add, Finsupp.add_apply]
+    suffices q.coeff d = 0 by rw [this, add_zero]; rwa [← mem_support_iff]
     rw [Ne, ← Finsupp.support_eq_empty, ← Ne, ← Finset.nonempty_iff_ne_empty] at h0
     obtain ⟨j, hj⟩ := h0
     contrapose! h
@@ -188,13 +187,13 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   rintro ⟨d, hd, hi⟩
   obtain ⟨x, rfl, hx⟩ := coeff_rename_ne_zero _ _ _ hd
   simp only [Finsupp.mapDomain, Finsupp.mem_support_iff] at hi
-  rw [sum_apply, Finsupp.sum] at hi
+  rw [Finsupp.sum_apply, Finsupp.sum] at hi
   contrapose! hi
   rw [Finset.sum_eq_zero]
   intro j hj
   simp only [mem_degrees] at hi
   specialize hi j ⟨x, hx, hj⟩
-  rw [Finsupp.single_apply, if_neg hi]
+  rw [Finsupp.single_apply, ite_eq_right hi]
 
 theorem degrees_map_of_injective [CommSemiring S] (p : MvPolynomial σ R) {f : R →+* S}
     (hf : Injective f) : (map f p).degrees = p.degrees := by
@@ -220,13 +219,13 @@ def degreeOf (n : σ) (p : MvPolynomial σ R) : ℕ :=
   p.degrees.count n
 
 theorem degreeOf_def [DecidableEq σ] (n : σ) (p : MvPolynomial σ R) :
-    p.degreeOf n = p.degrees.count n := by rw [degreeOf]; convert! rfl
+    p.degreeOf n = p.degrees.count n := by rw [degreeOf]; convert rfl
 
 theorem degreeOf_eq_supDegree (n : σ) (f : MvPolynomial σ R) :
     degreeOf n f = f.supDegree fun m => m n := by
   classical
   simp [degreeOf, degrees,
-    f.apply_supDegree_eq_supDegree_comp (Multiset.count_union n) rfl, Function.comp_def]
+    f.coeff_supDegree_eq_supDegree_comp (Multiset.count_union n) rfl, Function.comp_def]
 
 theorem degreeOf_eq_sup (n : σ) (f : MvPolynomial σ R) :
     degreeOf n f = f.support.sup fun m => m n := degreeOf_eq_supDegree ..
@@ -253,9 +252,8 @@ theorem degreeOf_C (a : R) (x : σ) : degreeOf x (C a : MvPolynomial σ R) = 0 :
 
 theorem degreeOf_X [DecidableEq σ] (i j : σ) [Nontrivial R] :
     degreeOf i (X j : MvPolynomial σ R) = if i = j then 1 else 0 := by
-  classical
   by_cases c : i = j
-  · simp only [c, if_true, degreeOf_def, degrees_X, Multiset.count_singleton]
+  · simp only [c, ite_true, degreeOf_def, degrees_X, Multiset.count_singleton]
   simp [c, degreeOf_def, degrees_X]
 
 @[simp] theorem degreeOf_X_self [Nontrivial R] (i : σ) :
@@ -337,7 +335,7 @@ theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
   simp only [degreeOf]
   apply (Multiset.count_le_of_le j degrees_mul_le).trans
   simp only [Multiset.count_add, add_le_add_iff_left]
-  convert! Multiset.count_le_of_le j <| degrees_X' j
+  convert Multiset.count_le_of_le j <| degrees_X' j
   rw [Multiset.count_singleton_self]
 
 theorem degreeOf_X_pow_of_ne {i j : σ} (k : ℕ) (h : i ≠ j) :
@@ -396,13 +394,13 @@ theorem degreeOf_eq_of_degreeOf_add_lt {i : σ} (h : (p + q).degreeOf i < p.degr
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
-  convert! Multiset.count_le_of_le i degrees_mul_le
+  convert Multiset.count_le_of_le i degrees_mul_le
   simp only [degrees_C, zero_add]
 
 theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (p * C c).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
-  convert! Multiset.count_le_of_le i degrees_mul_le
+  convert Multiset.count_le_of_le i degrees_mul_le
   simp only [degrees_C, add_zero]
 
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)
@@ -460,7 +458,7 @@ theorem totalDegree_X {R} [CommSemiring R] [Nontrivial R] (s : σ) :
 
 theorem totalDegree_add (a b : MvPolynomial σ R) :
     (a + b).totalDegree ≤ max a.totalDegree b.totalDegree :=
-  sup_support_add_le _ _ _
+  sup_support_coeff_add_le _ _ _
 
 theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
     (h : q.totalDegree < p.totalDegree) : (p + q).totalDegree = p.totalDegree :=
@@ -472,7 +470,7 @@ theorem totalDegree_add_eq_right_of_totalDegree_lt {p q : MvPolynomial σ R}
 
 theorem totalDegree_mul (a b : MvPolynomial σ R) :
     (a * b).totalDegree ≤ a.totalDegree + b.totalDegree :=
-  sup_support_mul_le (fun _ _ ↦ (Finsupp.sum_add_index' (fun _ => rfl) (fun _ _ _ => rfl)).le) _ _
+  sup_support_coeff_mul_le (fun _ _ ↦ by simp [Finsupp.sum_add_index']) _ _
 
 theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f : MvPolynomial σ S) :
     (a • f).totalDegree ≤ f.totalDegree :=
@@ -513,8 +511,6 @@ theorem totalDegree_finsetProd {ι : Type*} (s : Finset ι) (f : ι → MvPolyno
     (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree :=
   s.apply_prod_le_sum_apply _ totalDegree_one.le totalDegree_mul
 
-@[deprecated (since := "2026-04-08")] alias totalDegree_finset_prod := totalDegree_finsetProd
-
 theorem totalDegree_finsetSum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by
   induction s using Finset.cons_induction with
@@ -522,8 +518,6 @@ theorem totalDegree_finsetSum {ι : Type*} (s : Finset ι) (f : ι → MvPolynom
   | cons a s has hind =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact (MvPolynomial.totalDegree_add _ _).trans (max_le_max le_rfl hind)
-
-@[deprecated (since := "2026-04-08")] alias totalDegree_finset_sum := totalDegree_finsetSum
 
 lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolynomial σ R} {d : ℕ}
     (hf : ∀ i ∈ s, (f i).totalDegree ≤ d) : (s.sum f).totalDegree ≤ d :=
@@ -548,7 +542,7 @@ theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
     _ ≤ f.totalDegree := le_totalDegree hd
 
 theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ ℕ}
-    (h : f.totalDegree < ∑ i ∈ d.support, d i) : coeff d f = 0 := by
+    (h : f.totalDegree < ∑ i ∈ d.support, d i) : f.coeff d = 0 := by
   classical
     rw [totalDegree, supDegree_def, Finset.sup_lt_iff] at h
     · specialize h d
@@ -568,10 +562,8 @@ theorem totalDegree_eq_zero_iff_eq_C {p : MvPolynomial σ R} :
 
 theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     (rename f p).totalDegree ≤ p.totalDegree :=
-  Finset.sup_le fun b => by
+  Finset.sup_le fun b h => by
     classical
-    intro h
-    rw [rename_eq] at h
     have h' := Finsupp.mapDomain_support h
     rw [Finset.mem_image] at h'
     rcases h' with ⟨s, hs, rfl⟩

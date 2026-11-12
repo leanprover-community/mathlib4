@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-! # THe category of homological complexes is abelian
@@ -17,7 +16,6 @@ category for any complex shape `c : ComplexShape ι`.
 
 We also obtain that a short complex in `HomologicalComplex C c`
 is exact (resp. short exact) iff degreewise it is so.
-
 -/
 
 public section

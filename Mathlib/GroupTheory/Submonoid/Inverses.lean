@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
-
 # Submonoid of inverses
 
 Given a submonoid `N` of a monoid `M`, we define the submonoid `N.leftInv` as the submonoid of
@@ -47,7 +46,7 @@ noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
   { (inferInstance : Group (IsUnit.submonoid M)) with
-    mul_comm := fun a b ↦ by convert! mul_comm a b }
+    mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
 theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
@@ -56,6 +55,7 @@ theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
 
 @[deprecated (since := "2026-05-24")]
 alias _root_.AddSubmonoid.IsUnit.Submonoid.coe_neg := IsAddUnit.addSubmonoid.coe_neg
+set_option linter.dupNamespace false in
 @[to_additive existing, deprecated (since := "2026-05-24")]
 alias IsUnit.Submonoid.coe_inv := IsUnit.submonoid.coe_inv
 
@@ -75,7 +75,7 @@ def leftInv : Submonoid M where
 @[to_additive]
 theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
   rintro x ⟨⟨y, z, h₁⟩, h₂ : x * y = 1⟩
-  convert! z.prop
+  convert z.prop
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
 
 @[to_additive]
@@ -139,6 +139,7 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 
 variable (hS : S ≤ IsUnit.submonoid M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) /-- The additive submonoid of pointwise additive inverse of `S`
 is `AddEquiv` to `S`. -/]
@@ -173,12 +174,12 @@ theorem mul_leftInvEquiv (x : S.leftInv) : (x : M) * S.leftInvEquiv hS x = 1 := 
 
 @[to_additive (attr := simp)]
 theorem leftInvEquiv_symm_mul (x : S) : ((S.leftInvEquiv hS).symm x : M) * x = 1 := by
-  convert! S.mul_leftInvEquiv hS ((S.leftInvEquiv hS).symm x)
+  convert S.mul_leftInvEquiv hS ((S.leftInvEquiv hS).symm x)
   simp
 
 @[to_additive (attr := simp)]
 theorem mul_leftInvEquiv_symm (x : S) : (x : M) * (S.leftInvEquiv hS).symm x = 1 := by
-  convert! S.leftInvEquiv_mul hS ((S.leftInvEquiv hS).symm x)
+  convert S.leftInvEquiv_mul hS ((S.leftInvEquiv hS).symm x)
   simp
 
 end CommMonoid

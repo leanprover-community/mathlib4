@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Zorn
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.Zorn
 
 /-!
 # Zorn lemma for (co)atoms

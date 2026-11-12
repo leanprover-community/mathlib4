@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `IsField` predicate
 
@@ -54,10 +57,10 @@ theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivia
 lemma IsField.isDomain {R : Type u} [Semiring R] (h : IsField R) : IsDomain R where
   mul_left_cancel_of_ne_zero ha _ _ hb := by
     obtain ⟨x, hx⟩ := h.mul_inv_cancel ha
-    simpa [← mul_assoc, h.mul_comm, hx] using congr_arg (x * ·) hb
+    simpa [← mul_assoc, h.mul_comm, hx] using congr(x * $hb)
   mul_right_cancel_of_ne_zero ha _ _ hb := by
     obtain ⟨x, hx⟩ := h.mul_inv_cancel ha
-    simpa [mul_assoc, hx] using congr_arg (· * x) hb
+    simpa [mul_assoc, hx] using congr($hb * x)
   exists_pair_ne := h.exists_pair_ne
 
 instance {R : Type u} [Semifield R] : IsDomain R :=
@@ -69,20 +72,22 @@ theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] :
   let ⟨_, _, h⟩ := h.exists_pair_ne
   h (Subsingleton.elim _ _)
 
-open Classical in
+open scoped Classical in
 /-- Transferring from `IsField` to `Semifield`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R where
   __ := ‹Semiring R›
   __ := h
   inv a := if ha : a = 0 then 0 else Classical.choose (h.mul_inv_cancel ha)
-  inv_zero := dif_pos rfl
-  mul_inv_cancel a ha := by convert! Classical.choose_spec (h.mul_inv_cancel ha); exact dif_neg ha
+  inv_zero := dite_eq_left rfl
+  mul_inv_cancel a ha := by
+    convert Classical.choose_spec (h.mul_inv_cancel ha)
+    exact dite_eq_right ha
   nnqsmul := _
   nnqsmul_def _ _ := rfl
 
 /-- Transferring from `IsField` to `Field`. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R where
   __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slow
   __ := h.toSemifield
@@ -95,13 +100,8 @@ a lemma that there is a unique inverse could be useful.
 -/
 theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
     ∀ x : R, x ≠ 0 → ∃! y : R, x * y = 1 := by
+  have := hf.isDomain
   intro x hx
-  apply existsUnique_of_exists_of_unique
-  · exact hf.mul_inv_cancel hx
-  · intro y z hxy hxz
-    calc
-      y = y * (x * z) := by rw [hxz, mul_one]
-      _ = x * y * z := by rw [← mul_assoc, hf.mul_comm y x]
-      _ = z := by rw [hxy, one_mul]
+  exact (mul_right_injective₀ hx).existsUnique_iff_exists.2 (hf.mul_inv_cancel hx)
 
 end IsField

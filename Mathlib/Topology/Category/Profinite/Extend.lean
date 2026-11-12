@@ -5,11 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
+public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.Topology.Category.Profinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.CofilteredLimit
-public import Mathlib.CategoryTheory.Filtered.Final
-/-!
 
+/-!
 # Extending cones in `Profinite`
 
 Let `(Sᵢ)_{i : I}` be a family of finite sets indexed by a cofiltered category `I` and let `S` be
@@ -42,14 +42,13 @@ the profinite set when written as a cofiltered limit of finite sets.
 -/
 lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj X) :
     ∃ (i : I) (g : F.obj i ⟶ X), f = c.π.app i ≫ toProfinite.map g := by
-  let _ : TopologicalSpace X := ⊥
   have : DiscreteTopology (toProfinite.obj X) := ⟨rfl⟩
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
     ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
   refine ⟨i, ⟨↾g⟩, ?_⟩
   ext x
-  exact LocallyConstant.congr_fun h x
+  congrm $h x
 
 namespace Extend
 
@@ -117,7 +116,6 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
 `(StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G)` with cone point `G.obj S`.
@@ -149,7 +147,6 @@ section Colimit
 
 variable {C : Type*} [Category* C] (G : Profiniteᵒᵖ ⥤ C)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `Profiniteᵒᵖ` and `S : Profinite`, we obtain a cocone on
 `(CostructuredArrow.proj toProfinite.op ⟨S⟩ ⋙ toProfinite.op ⋙ G)` with cocone point `G.obj ⟨S⟩`.
@@ -165,8 +162,7 @@ def cocone (S : Profinite) :
     app := fun i ↦ G.map i.hom
     naturality := fun _ _ f ↦ (by
       have := f.w
-      simp only [op_obj, const_obj_obj, op_map, CostructuredArrow.right_eq_id, const_obj_map,
-        Category.comp_id] at this
+      simp only [op_obj, op_map] at this
       simp [← map_comp, this]) }
 
 example : G.mapCocone c.op = (cocone G c.pt).whisker (functorOp c) := rfl

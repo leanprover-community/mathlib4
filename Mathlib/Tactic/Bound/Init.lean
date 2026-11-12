@@ -5,8 +5,11 @@ Authors: Geoffrey Irving
 -/
 module
 
+public meta import Aesop.Frontend.Command
 public import Mathlib.Init
-public import Aesop.Frontend.Command
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bound Rule Set

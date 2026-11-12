@@ -19,7 +19,6 @@ The skeleton of a monoidal category is a monoid.
 
 * `Skeleton.instMonoid`, for monoidal categories.
 * `Skeleton.instCommMonoid`, for braided monoidal categories.
-
 -/
 
 @[expose] public section
@@ -82,7 +81,7 @@ noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton
 
 end Skeleton
 
-open Functor
+open CategoryTheory.Functor
 
 noncomputable instance : (skeletonEquivalence C).functor.Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse.Monoidal

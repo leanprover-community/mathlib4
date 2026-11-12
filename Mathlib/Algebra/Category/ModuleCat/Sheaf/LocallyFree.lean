@@ -20,7 +20,6 @@ A sheaf of modules is locally free if it is locally isomorphic to a free module.
 
 - `SheafOfModules.IsLocallyFree`: `M : SheafOfModules R` is locally free is there exists locally
   free data for it.
-
 -/
 
 public section
@@ -37,8 +36,7 @@ namespace SheafOfModules
 
 section
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
+variable [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 namespace LocalGeneratorsData
@@ -70,7 +68,6 @@ end
 section
 
 variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
-  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 /-- The generating sections of the free sheaf of modules. -/
 @[expose, simps]
@@ -91,8 +88,7 @@ instance (I : Type u) : IsIso (free.generatingSections (R := R) I).π := by
   rw [free.generatingSections_π]
   infer_instance
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
+variable [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] [HasSheafify J AddCommGrpCat]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -110,8 +106,7 @@ end
 
 section
 
-variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+variable [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 namespace LocalGeneratorsData

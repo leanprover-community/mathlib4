@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.ZMod.QuotientGroup
 
@@ -75,7 +74,7 @@ lemma minOrder_eq_top [IsMulTorsionFree G] : minOrder G = ⊤ := by
 end Group
 
 section CommGroup
-variable [CommGroup G] {s : Subgroup G}
+variable [CommGroup G]
 
 @[to_additive (attr := simp)]
 lemma minOrder_eq_top_iff : minOrder G = ⊤ ↔ IsMulTorsionFree G := by
@@ -91,7 +90,6 @@ namespace ZMod
 @[simp]
 protected lemma minOrder {n : ℕ} (hn : n ≠ 0) (hn₁ : n ≠ 1) : minOrder (ZMod n) = n.minFac := by
   have : Fact (1 < n) := ⟨one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn, hn₁⟩⟩
-  classical
   have : (↑(n / n.minFac) : ZMod n) ≠ 0 := by
     rw [Ne, ringChar.spec, ringChar.eq (ZMod n) n]
     exact
@@ -101,7 +99,7 @@ protected lemma minOrder {n : ℕ} (hn : n ≠ 0) (hn₁ : n ≠ 1) : minOrder (
     le_minOrder_iff_forall_addSubgroup.2 fun s hs _ ↦ ?_
   · rw [Nat.card_zmultiples, ZMod.addOrderOf_coe _ hn,
       gcd_eq_right (div_dvd_of_dvd n.minFac_dvd), Nat.div_div_self n.minFac_dvd hn]
-  · haveI : Nontrivial s := s.bot_or_nontrivial.resolve_left hs
+  · have : Nontrivial s := s.bot_or_nontrivial.resolve_left hs
     exact WithTop.coe_le_coe.2 <| minFac_le_of_dvd Finite.one_lt_card <|
       (card_addSubgroup_dvd_card _).trans n.card_zmod.dvd
 

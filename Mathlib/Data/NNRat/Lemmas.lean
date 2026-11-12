@@ -5,11 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.Field.Rat
 public import Mathlib.Algebra.Group.Indicator
 public import Mathlib.Algebra.Order.Field.Rat
-public import Mathlib.Data.Rat.Lemmas
-public import Mathlib.Tactic.Zify
+
+import Mathlib.Data.Rat.Lemmas
+import Mathlib.Tactic.Zify
 
 /-!
 # Field and action structures on the nonnegative rationals
@@ -20,11 +20,10 @@ cycles.
 
 @[expose] public section
 
-open Function
 open scoped NNRat
 
 namespace NNRat
-variable {α : Type*} {q : ℚ≥0}
+variable {α : Type*}
 
 @[simp, norm_cast]
 lemma coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :

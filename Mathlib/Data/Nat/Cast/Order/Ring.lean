@@ -12,7 +12,6 @@ public import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Cast of natural numbers: lemmas about bundled ordered semirings
-
 -/
 
 public section
@@ -21,11 +20,7 @@ variable {R α : Type*}
 
 namespace Nat
 
-section OrderedSemiring
-/- Note: even though the section indicates `OrderedSemiring`, which is the common use case,
-we use a generic collection of instances so that it applies in other settings (e.g., in a
-`StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
-
+section AddMonoidWithOne
 variable [AddMonoidWithOne α] [PartialOrder α]
 variable [AddLeftMono α] [ZeroLEOneClass α]
 
@@ -59,7 +54,7 @@ variable [NeZero (1 : α)]
 theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] {n : ℕ} :
     (0 : α) < n ↔ 0 < n := cast_pos'
 
-/-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
+/-- See also `Nat.ofNat_pos`, specialised to `IsOrderedRing`. -/
 @[simp low]
 theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
   cast_pos'.mpr (NeZero.pos n)
@@ -73,12 +68,12 @@ theorem ofNat_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontr
 
 end Nontrivial
 
-end OrderedSemiring
+end AddMonoidWithOne
 
 /-- A version of `Nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
 for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
 @[simp, norm_cast]
-theorem cast_tsub [CommSemiring α] [PartialOrder α] [IsOrderedRing α] [CanonicallyOrderedAdd α]
+theorem cast_tsub [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
     [Sub α] [OrderedSub α] [AddLeftReflectLE α] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
   rcases le_total m n with h | h
   · rw [Nat.sub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
