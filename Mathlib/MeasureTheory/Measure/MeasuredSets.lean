@@ -140,7 +140,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     choose! t tC ht using A
     have : Tendsto (fun n ↦ μ (⋃ i ∈ Ici n, f i)) atTop (𝓝 0) :=
       tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
-        (fun i ↦ (f_meas i).nullMeasurableSet) f_disj
+        (fun i ↦ f_meas i) f_disj
     obtain ⟨n, hn⟩ : ∃ n, μ (⋃ i ∈ Ici n, f i) < ε / 2 :=
       ((tendsto_order.1 this).2 _ (ENNReal.half_pos εpos.ne')).exists
     refine ⟨⋃ i ∈ Finset.range n, t i, hC.biUnion_mem _ (fun i hi ↦ tC _), ?_⟩

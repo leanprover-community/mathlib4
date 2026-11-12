@@ -73,8 +73,8 @@ lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Integr
   have h_hahn : IsHahnDecomposition (μ.withDensity f) μ s :=
     isHahnDecomposition_withDensity_of_ae_le_one hs hs_le hs_ge
   rw [h_hahn.tvDist_eq,
-    withDensity_real_apply_eq_integral hf_meas.restrict ?_ hs.nullMeasurableSet,
-    withDensity_real_apply_eq_integral hf_meas.restrict ?_ hs.compl.nullMeasurableSet]
+    withDensity_real_apply_eq_integral hf_meas.restrict ?_ hs,
+    withDensity_real_apply_eq_integral hf_meas.restrict ?_ hs.compl]
   rotate_left
   · filter_upwards [hf_top] with x hx _ using hx.lt_top
   · filter_upwards [hf_top] with x hx _ using hx.lt_top

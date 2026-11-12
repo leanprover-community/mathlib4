@@ -174,8 +174,7 @@ theorem condExp_bilin_of_stronglyMeasurable_left [CompleteSpace E] {f : Ω → F
   suffices (μ.restrict (sets n))[fun ω ↦ B ((sets n).indicator f ω) (g ω) | m]
       =ᵐ[μ.restrict (sets n)] fun ω ↦ B ((sets n).indicator f ω) ((μ.restrict (sets n))[g | m] ω) by
     refine EventuallyEq.trans (condExp_congr_ae ?_) (this.trans ?_) <;>
-    · filter_upwards [indicator_ae_eq_restrict (f := f) (hm _ (h_meas n)).nullMeasurableSet]
-        with ω hω
+    · filter_upwards [indicator_ae_eq_restrict (f := f) (hm _ (h_meas n))] with ω hω
       rw [hω]
   have : IsFiniteMeasure (μ.restrict (sets n)) := by
     constructor

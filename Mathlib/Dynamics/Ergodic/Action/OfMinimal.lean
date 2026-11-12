@@ -96,7 +96,7 @@ theorem ergodic_smul_of_denseRange_pow {M : Type*} [Monoid M] [TopologicalSpace 
     Ergodic (g • ·) μ := by
   borelize M
   refine .of_preimage_eq (measurePreserving_smul _ _) fun s hsm hs ↦ ?_
-  refine aeconst_of_dense_setOfPred_preimage_smul_eq hsm.nullMeasurableSet (hg.mono ?_)
+  refine aeconst_of_dense_setOfPred_preimage_smul_eq hsm (hg.mono ?_)
   refine range_subset_iff.2 fun n ↦ ?_
   rw [mem_ofPred, ← smul_iterate, preimage_iterate_eq, iterate_fixed hs]
 
@@ -120,7 +120,7 @@ theorem ErgodicSMul.trans_isMinimal (N : Type*) [MulAction M N]
   measure_preimage_smul c s hsm := by
     simpa only [smul_one_smul] using SMulInvariantMeasure.measure_preimage_smul (c • 1 : N) hsm
   aeconst_of_forall_preimage_smul_ae_eq {s} hsm hs := by
-    refine aeconst_of_dense_setOfPred_preimage_smul_ae (M := N) hsm.nullMeasurableSet ?_
+    refine aeconst_of_dense_setOfPred_preimage_smul_ae (M := N) hsm ?_
     refine (MulAction.dense_orbit M 1).mono ?_
     rintro _ ⟨g, rfl⟩
     simpa using hs g
@@ -154,7 +154,7 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
     Ergodic (g • ·) μ := by
   borelize G
   refine .of_preimage_eq (measurePreserving_smul _ _) fun s hsm hs ↦ ?_
-  refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
+  refine aeconst_of_dense_aestabilizer_smul hsm (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
     MulAction.mem_aestabilizer, ← preimage_smul]
   exact .of_eq hs
@@ -195,8 +195,7 @@ theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
     simp only [s, preimage_iUnion, ← smul_eq_mul, preimage_smul]
     refine iUnion_congr_of_surjective _ (add_left_surjective (-1)) fun m ↦ ?_
     simp [zpow_add, mul_smul]
-  cases hg.measure_self_or_compl_eq_zero hso.measurableSet.nullMeasurableSet
-    hgs.eventuallyEqSet with
+  cases hg.measure_self_or_compl_eq_zero hso.measurableSet hgs.eventuallyEqSet with
   | inl h => exact hso.measure_ne_zero _ hsne h
   | inr h =>
     refine (hVo.smul a).measure_ne_zero μ (.image _ ⟨1, hV₁⟩) (measure_mono_null ?_ h)

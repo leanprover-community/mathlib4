@@ -194,11 +194,11 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
     refine ⟨s ∪ S, (by finiteness), fun i => ?_⟩
     by_cases! hi : i.val < n
     · rw [show f i = g ⟨i.val, hi⟩ from rfl, compl_union, ← indicator_indicator]
-      apply (eLpNorm_indicator_le _ hms.compl.nullMeasurableSet).trans
+      apply (eLpNorm_indicator_le _ hms.compl).trans
       exact hFε (Fin.castLT i hi)
     · obtain rfl : i = Fin.last n := Fin.ext (le_antisymm i.is_le hi)
       rw [compl_union, inter_comm, ← indicator_indicator]
-      exact (eLpNorm_indicator_le _ hmS.compl.nullMeasurableSet).trans hfε.le
+      exact (eLpNorm_indicator_le _ hmS.compl).trans hfε.le
 
 /-- A finite sequence of Lp functions is uniformly tight. -/
 theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}
@@ -235,7 +235,7 @@ private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemL
   refine ⟨s, hμs.ne, fun n => ?_⟩
   by_cases! hn : n < N
   · exact hFε ⟨n, hn⟩
-  · exact (eLpNorm_indicator_le _ hms.compl.nullMeasurableSet).trans (hNε n hn)
+  · exact (eLpNorm_indicator_le _ hms.compl).trans (hNε n hn)
 
 /-- Convergence in Lp implies uniform tightness. -/
 private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
@@ -304,7 +304,7 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
   have hfngEε := calc
     eLpNorm (E.indicator (f n - g)) p μ
       = eLpNorm (f n - g) p (μ.restrict E) :=
-      eLpNorm_indicator_eq_eLpNorm_restrict hmE.nullMeasurableSet
+      eLpNorm_indicator_eq_eLpNorm_restrict hmE
     _ ≤ ε / 3                              := hfngε n hn
   -- get exterior estimates
   have hmgEc : AEStronglyMeasurable _ μ := hg'.aestronglyMeasurable.indicator hmE.compl
@@ -312,14 +312,14 @@ theorem tendsto_Lp_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
     eLpNorm (Eᶜ.indicator g) p μ
       ≤ eLpNorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ := by
         unfold E; rw [compl_union, ← indicator_indicator]
-    _ ≤ eLpNorm (Egᶜ.indicator g) p μ := eLpNorm_indicator_le _ hmEf.compl.nullMeasurableSet
+    _ ≤ eLpNorm (Egᶜ.indicator g) p μ := eLpNorm_indicator_le _ hmEf.compl
     _ ≤ ε / 3 := hgε.le
   have hmfnEc : AEStronglyMeasurable _ μ := (haef n).indicator hmE.compl
   have hfnEcε : eLpNorm (Eᶜ.indicator (f n)) p μ ≤ ε / 3 := calc
     eLpNorm (Eᶜ.indicator (f n)) p μ
       ≤ eLpNorm (Egᶜ.indicator (Efᶜ.indicator (f n))) p μ := by
         unfold E; rw [compl_union, inter_comm, ← indicator_indicator]
-    _ ≤ eLpNorm (Efᶜ.indicator (f n)) p μ := eLpNorm_indicator_le _ hmEg.compl.nullMeasurableSet
+    _ ≤ eLpNorm (Efᶜ.indicator (f n)) p μ := eLpNorm_indicator_le _ hmEg.compl
     _ ≤ ε / 3 := hfε n
   have hmfngEc := ((haef n).sub hg'.aestronglyMeasurable).indicator hmE.compl
   have hfngEcε := calc

@@ -192,7 +192,7 @@ end MeasurableConstSMul
 theorem MeasurePreserving.smulInvariantMeasure_iterateMulAct
     {f : α → α} {_ : MeasurableSpace α} {μ : Measure α} (hf : MeasurePreserving f μ μ) :
     SMulInvariantMeasure (IterateMulAct f) α μ :=
-  ⟨fun n _s hs ↦ (hf.iterate n.val).measure_preimage hs.nullMeasurableSet⟩
+  ⟨fun n _s hs ↦ (hf.iterate n.val).measure_preimage hs⟩
 
 @[to_additive]
 theorem smulInvariantMeasure_iterateMulAct

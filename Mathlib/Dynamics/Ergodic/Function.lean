@@ -53,7 +53,7 @@ If `g` is invariant under `f`, then `g` is a.e. constant. -/
 theorem PreErgodic.ae_eq_const_of_ae_eq_comp (h : PreErgodic f μ) (hgm : Measurable g)
     (hg_eq : g ∘ f = g) : ∃ c, g =ᵐ[μ] const α c :=
   exists_eventuallyEq_const_of_forall_separating MeasurableSet fun U hU ↦
-    h.ae_mem_or_ae_notMem (s := g ⁻¹' U) (hgm hU).nullMeasurableSet <|
+    h.ae_mem_or_ae_notMem (s := g ⁻¹' U) (hgm hU) <|
       Eq.eventuallyEqSet <| by rw [← preimage_comp, hg_eq]
 
 /-- Let `f : α → α` be a quasi-ergodic map.

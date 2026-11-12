@@ -339,7 +339,7 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
       ← mul_assoc, ENNReal.mul_inv_cancel hδ.ne' hδ_top.ne, one_mul, rpow_one]
     exact eLpNorm_condExp_le_eLpNorm g (le_refl 1)
   refine ⟨C,
-    fun n ↦ (h {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} (hmeas n C).nullMeasurableSet (this n)).trans' ?_⟩
+    fun n ↦ (h {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} (hmeas n C) (this n)).trans' ?_⟩
   have hmeasℱ : MeasurableSet[ℱ n] {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} :=
     @measurableSet_le _ _ _ _ _ (ℱ n) _ _ _ _ _ measurable_const
       (@Measurable.nnNorm _ _ _ _ _ (ℱ n) _ stronglyMeasurable_condExp.measurable)

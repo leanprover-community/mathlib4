@@ -623,7 +623,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     swap
     · exact .inter
         (w.nullMeasurableSet_biUnion fun _ _ ↦ measurableSet_closedBall.nullMeasurableSet)
-        omeas.nullMeasurableSet
+        omeas
     calc
       μ o = 1 / (N + 1) * μ s + N / (N + 1) * μ s := by
         rw [μo, ← add_mul, ENNReal.div_add_div_same, add_comm, ENNReal.div_self, one_mul] <;> simp

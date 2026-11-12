@@ -72,7 +72,7 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
         Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋂ n, s n))) := by
     refine Tendsto.sub ?_ ?_ <;>
       refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal <| ?_).comp <|
-        tendsto_measure_iInter_atTop (fun n ↦ (hs n).nullMeasurableSet) hm ?_
+        tendsto_measure_iInter_atTop (fun n ↦ hs n) hm ?_
     exacts [hμ _, ⟨0, hμ _⟩, hν _, ⟨0, hν _⟩]
   have bdd_c : BddAbove c := by
     use (μ univ).toNNReal

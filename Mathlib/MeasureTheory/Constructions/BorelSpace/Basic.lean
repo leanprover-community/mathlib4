@@ -224,7 +224,7 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 
 theorem IsOpen.nullMeasurableSet {μ} (h : IsOpen s) : NullMeasurableSet s μ :=
-  h.measurableSet.nullMeasurableSet
+  h.measurableSet
 
 open scoped Function in -- required for scoped `on` notation
 @[elab_as_elim]
@@ -258,7 +258,7 @@ theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=
   h.isOpen_compl.measurableSet.of_compl
 
 theorem IsClosed.nullMeasurableSet {μ} (h : IsClosed s) : NullMeasurableSet s μ :=
-  h.measurableSet.nullMeasurableSet
+  h.measurableSet
 
 theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s :=
   h.isClosed.measurableSet

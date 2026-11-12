@@ -228,7 +228,7 @@ theorem finite_const_le_meas_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α
     {ε : ℝ≥0∞} (ε_pos : 0 < ε) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Finite { i : ι | ε ≤ μ (As i) } :=
-  finite_const_le_meas_of_disjoint_iUnion₀ μ ε_pos (fun i ↦ (As_mble i).nullMeasurableSet)
+  finite_const_le_meas_of_disjoint_iUnion₀ μ ε_pos (fun i ↦ As_mble i)
     (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)) Union_As_finite
 
 /-- If all elements of an infinite set have measure uniformly separated from zero,
@@ -269,7 +269,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} {_ : M
     (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Countable { i : ι | 0 < μ (As i) } :=
-  countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
+  countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ μ (fun i ↦ As_mble i)
     ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))) Union_As_finite
 
 /-- In an s-finite space, among disjoint null-measurable sets, only countably many can have positive
@@ -300,7 +300,7 @@ measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) : Set.Countable { i : ι | 0 < μ (As i) } :=
-  countable_meas_pos_of_disjoint_iUnion₀ (fun i ↦ (As_mble i).nullMeasurableSet)
+  countable_meas_pos_of_disjoint_iUnion₀ (fun i ↦ As_mble i)
     ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)))
 
 theorem countable_meas_level_set_pos₀ {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}

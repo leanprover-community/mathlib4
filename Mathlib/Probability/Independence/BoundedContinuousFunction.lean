@@ -286,7 +286,7 @@ lemma indep_comap_pi_of_prod_bcf (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s
       ∫ ω in A, ∏ s, f s (X s ω) ∂P = P.real A * ∫ ω, ∏ s, f s (X s ω) ∂P) :
     Indep m (MeasurableSpace.pi.comap (fun ω s ↦ X s ω)) P :=
   (Indep_iff_IndepSets _ _ P).2
-    (indepSets_comap_pi_of_prod_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mX h)
+    (indepSets_comap_pi_of_prod_bcf (fun A hA ↦ hm A hA) mX h)
 
 omit [Fintype S] in variable [Finite S] in
 /-- A sigma-algebra $\mathcal{A}$ and a family of random variables $(X_1, ..., X_p)$ are independent
@@ -297,7 +297,7 @@ lemma indep_comap_pi_of_bcf (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s) P)
       ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
     Indep m (MeasurableSpace.pi.comap (fun ω s ↦ X s ω)) P :=
   (Indep_iff_IndepSets _ _ P).2
-    (indepSets_comap_pi_of_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mX h)
+    (indepSets_comap_pi_of_bcf (fun A hA ↦ hm A hA) mX h)
 
 /-- A sigma-algebra $\mathcal{A}$ and a random variable $X$ are independent
 if for all set $A \in \mathcal{A}$ and for all real bounded continuous function $f$,
@@ -307,7 +307,7 @@ lemma indep_comap_of_bcf (hm : m ≤ mΩ) (mZ : AEMeasurable Z P)
       ∫ ω in A, f (Z ω) ∂P = P.real A * ∫ ω, f (Z ω) ∂P) :
     Indep m (MeasurableSpace.comap Z inferInstance) P :=
   (Indep_iff_IndepSets _ _ P).2
-    (indepSets_comap_of_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mZ h)
+    (indepSets_comap_of_bcf (fun A hA ↦ hm A hA) mZ h)
 
 end Indep
 
@@ -425,7 +425,7 @@ lemma indep_comap_process_of_prod_bcf
       ∫ ω in A, ∏ s, f s (X s ω) ∂P = P.real A * ∫ ω, ∏ s, f s (X s ω) ∂P) :
     Indep m (MeasurableSpace.pi.comap (fun ω s ↦ X s ω)) P :=
   (Indep_iff_IndepSets _ _ P).2
-    (indepSets_comap_process_of_prod_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mX h)
+    (indepSets_comap_process_of_prod_bcf (fun A hA ↦ hm A hA) mX h)
 
 /-- A sigma-algebra $\mathcal{A}$ and a stochastic process $(X_s)_{s \in S}$ are independent if
 for all $A \in \mathcal{A}$, for all $s_1, ..., s_p \in S$ and
@@ -438,7 +438,7 @@ lemma indep_comap_process_of_bcf
       ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
     Indep m (MeasurableSpace.pi.comap (fun ω s ↦ X s ω)) P :=
   (Indep_iff_IndepSets _ _ P).2
-    (indepSets_comap_process_of_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mX h)
+    (indepSets_comap_process_of_bcf (fun A hA ↦ hm A hA) mX h)
 
 end Indep
 

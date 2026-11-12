@@ -528,7 +528,7 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     _ = κ a (s ×ˢ univ) - κ a (s ×ˢ t) := by
         rw [setLIntegral_toKernel_univ hf a hs, iht]
     _ = κ a (s ×ˢ tᶜ) := by
-        rw [← measure_sdiff _ (hs.prod ht).nullMeasurableSet (measure_ne_top _ _)]
+        rw [← measure_sdiff _ (hs.prod ht) (measure_ne_top _ _)]
         · rw [prod_sdiff_prod, compl_eq_univ_sdiff]
           simp only [sdiff_self, empty_prod, union_empty]
         · rw [prod_subset_prod_iff]

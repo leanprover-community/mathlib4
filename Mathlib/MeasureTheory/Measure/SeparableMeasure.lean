@@ -310,7 +310,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
               apply ENNReal.add_lt_add
               · rw [measure_sdiff
                     (inter_subset_left ..)
-                    (ms.inter (hgen ▸ measurableSet_generateFrom (T_mem N))).nullMeasurableSet
+                    (ms.inter (hgen ▸ measurableSet_generateFrom (T_mem N)))
                     (ne_top_of_le_ne_top hμs (measure_mono (inter_subset_left ..))),
                   lt_ofReal_iff_toReal_lt (sub_ne_top hμs),
                   toReal_sub_of_le (measure_mono (inter_subset_left ..)) hμs]

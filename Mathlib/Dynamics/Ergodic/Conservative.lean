@@ -62,7 +62,7 @@ structure Conservative (f : α → α) (μ : Measure α) : Prop extends QuasiMea
 /-- A self-map preserving a finite measure is conservative. -/
 protected theorem MeasurePreserving.conservative [IsFiniteMeasure μ] (h : MeasurePreserving f μ μ) :
     Conservative f μ :=
-  ⟨h.quasiMeasurePreserving, fun _ hsm h0 => h.exists_mem_iterate_mem hsm.nullMeasurableSet h0⟩
+  ⟨h.quasiMeasurePreserving, fun _ hsm h0 => h.exists_mem_iterate_mem hsm h0⟩
 
 namespace Conservative
 
@@ -208,8 +208,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   rcases n with - | n
   · exact Conservative.id μ
   refine ⟨hf.1.iterate _, fun s hs hs0 => ?_⟩
-  rcases (hf.frequently_ae_mem_and_frequently_image_mem hs.nullMeasurableSet hs0).exists
-    with ⟨x, _, hx⟩
+  rcases (hf.frequently_ae_mem_and_frequently_image_mem hs hs0).exists with ⟨x, _, hx⟩
   /- We take a point `x ∈ s` such that `f^[k] x ∈ s` for infinitely many values of `k`,
     then we choose two of these values `k < l` such that `k ≡ l [MOD (n + 1)]`.
     Then `f^[k] x ∈ s` and `f^[n + 1]^[(l - k) / (n + 1)] (f^[k] x) = f^[l] x ∈ s`. -/

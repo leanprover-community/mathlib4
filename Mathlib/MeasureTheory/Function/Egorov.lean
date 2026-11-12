@@ -136,7 +136,7 @@ theorem measurableSet_iUnionNotConvergentSeq (hε : 0 < ε)
     (hsm : MeasurableSet s) (hs : μ s ≠ ∞)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     MeasurableSet
-      (iUnionNotConvergentSeq hε (fun n ↦ (hf n).aemeasurable) hsm.nullMeasurableSet hs hfg) :=
+      (iUnionNotConvergentSeq hε (fun n ↦ (hf n).aemeasurable) hsm hs hfg) :=
   MeasurableSet.iUnion fun _ ↦ hsm.inter (measurableSet_notConvergentSeq hf)
 
 @[deprecated (since := "2026-10-13")] alias iUnionNotConvergentSeq_measurableSet :=

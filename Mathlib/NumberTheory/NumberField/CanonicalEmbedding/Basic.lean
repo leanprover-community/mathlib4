@@ -1083,7 +1083,7 @@ open scoped Classical in
 theorem volume_negAt_plusPart (hm : MeasurableSet A) :
     volume (negAt s '' (plusPart A)) = volume (plusPart A) := by
   rw [← negAt_symm, ContinuousLinearEquiv.image_symm_eq_preimage,
-    volume_preserving_negAt.measure_preimage (measurableSet_plusPart hm).nullMeasurableSet]
+    volume_preserving_negAt.measure_preimage (measurableSet_plusPart hm)]
 
 include hA in
 open scoped Classical in

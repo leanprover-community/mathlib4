@@ -96,6 +96,15 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
   h.eventuallyMeasurableSet
 
+/-- A proof of `MeasurableSet s` can be passed wherever a proof of `NullMeasurableSet s μ` is
+expected, e.g. as the argument of a lemma or definition with a `NullMeasurableSet` hypothesis.
+
+The coercion unfolds to `MeasurableSet.nullMeasurableSet`, so the elaborated term is the same as
+if `.nullMeasurableSet` had been written. Note that, as for other coercions, it is inserted when
+elaborating an argument or a type ascription, but not by `exact h` for a bare hypothesis `h`, and
+not pointwise for `h : ∀ i, MeasurableSet (s i)` (write `fun i ↦ h i` instead). -/
+instance : Coe (MeasurableSet s) (NullMeasurableSet s μ) := ⟨MeasurableSet.nullMeasurableSet⟩
+
 theorem _root_.MeasureTheory.nullMeasurableSet_iff_eventuallyMeasurableSet (s : Set α) :
     NullMeasurableSet s μ ↔ EventuallyMeasurableSet m0 (ae μ) s :=
   Iff.rfl
@@ -266,7 +275,7 @@ theorem measure_inter_add_sdiff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∩ t) + μ (s \ t) = μ s := by
   refine le_antisymm ?_ (measure_le_inter_add_sdiff _ _ _)
   rcases exists_measurable_superset μ s with ⟨s', hsub, hs'm, hs'⟩
-  replace hs'm : NullMeasurableSet s' μ := hs'm.nullMeasurableSet
+  replace hs'm : NullMeasurableSet s' μ := hs'm
   calc
     μ (s ∩ t) + μ (s \ t) ≤ μ (s' ∩ t) + μ (s' \ t) := by gcongr
     _ = μ (s' ∩ t ∪ s' \ t) :=

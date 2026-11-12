@@ -122,7 +122,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     refine MemLp.smul ?_ (memLp_top_const _) (p := p) (q := ∞)
     have hv : MeasurableSet v := u_open.measurableSet.inter V_open.measurableSet
     have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ∞ :=
-      (eLpNorm_indicator_const_le _ _ hv.nullMeasurableSet).trans_lt <| by
+      (eLpNorm_indicator_const_le _ _ hv).trans_lt <| by
         simp [lt_top_iff_ne_top, hμv.ne]
     refine (eLpNorm_mono g.continuous.aestronglyMeasurable fun x => ?_).trans_lt this
     by_cases hx : x ∈ v
@@ -135,7 +135,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
       gc_support.trans inter_subset_left, gc_mem⟩
   exact hη _ ((measure_mono (sdiff_subset_sdiff inter_subset_right Subset.rfl)).trans hV.le)
     ((u_open.measurableSet.inter V_open.measurableSet).diff
-      s_closed.measurableSet).nullMeasurableSet
+      s_closed.measurableSet)
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
@@ -170,7 +170,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   have hsμ : μ s < ∞ := (measure_mono st).trans_lt htμ
   have I1 : eLpNorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
     rw [← eLpNorm_neg, neg_sub, ← indicator_sdiff st]
-    exact hη _ μs.le (ht.diff s_closed.measurableSet).nullMeasurableSet
+    exact hη _ μs.le (ht.diff s_closed.measurableSet)
   obtain ⟨k, k_compact, sk⟩ : ∃ k : Set α, IsCompact k ∧ s ⊆ interior k :=
     exists_compact_superset s_compact
   rcases exists_continuous_eLpNorm_sub_le_of_closed hp s_closed isOpen_interior sk hsμ.ne c δpos.ne'
@@ -267,7 +267,7 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
   have hsμ : μ s < ∞ := (measure_mono st).trans_lt htμ
   have I1 : eLpNorm ((s.indicator fun _y => c) - t.indicator fun _y => c) p μ ≤ δ := by
     rw [← eLpNorm_neg, neg_sub, ← indicator_sdiff st]
-    exact hη _ μs.le (ht.diff s_closed.measurableSet).nullMeasurableSet
+    exact hη _ μs.le (ht.diff s_closed.measurableSet)
   rcases exists_continuous_eLpNorm_sub_le_of_closed hp s_closed isOpen_univ (subset_univ _) hsμ.ne c
       δpos.ne' with
     ⟨f, f_cont, I2, f_bound, -, f_mem⟩

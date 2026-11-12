@@ -243,7 +243,7 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurabl
 /-- If a measurable equivalence is ergodic, then so is the inverse map. -/
 theorem symm {e : α ≃ᵐ α} (he : Ergodic e μ) : Ergodic e.symm μ :=
   .of_preimage_eq he.toMeasurePreserving.symm fun s hsm hs ↦
-    he.aeconst_set hsm.nullMeasurableSet <| by
+    he.aeconst_set hsm <| by
       conv_lhs => rw [← hs, ← e.image_eq_preimage_symm, e.preimage_image]
 
 @[simp] theorem symm_iff {e : α ≃ᵐ α} : Ergodic e.symm μ ↔ Ergodic e μ := ⟨.symm, .symm⟩

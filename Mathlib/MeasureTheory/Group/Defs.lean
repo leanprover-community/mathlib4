@@ -95,7 +95,7 @@ instance IsMulLeftInvariant.smulInvariantMeasure [Mul G] [IsMulLeftInvariant μ]
     [MeasurableConstSMul G G] :
     SMulInvariantMeasure G G μ :=
   ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_left_eq_self _)
-    (measurable_const_smul (_x)).aemeasurable hs.nullMeasurableSet⟩
+    (measurable_const_smul (_x)).aemeasurable hs⟩
 
 @[to_additive]
 instance [Monoid G] [MeasurableConstSMul G G] (s : Submonoid G) [IsMulLeftInvariant μ] :
@@ -107,7 +107,7 @@ instance IsMulRightInvariant.toSMulInvariantMeasure_op [Mul G] [MeasurableConstS
     [μ.IsMulRightInvariant] :
     SMulInvariantMeasure Gᵐᵒᵖ G μ :=
   ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_right_eq_self _)
-    (measurable_const_smul _x).aemeasurable hs.nullMeasurableSet⟩
+    (measurable_const_smul _x).aemeasurable hs⟩
 
 end Measure
 

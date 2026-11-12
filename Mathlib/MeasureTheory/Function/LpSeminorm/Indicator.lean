@@ -256,7 +256,7 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
           hf.aestronglyMeasurable).1 hf).ne
       · simp [*]
     refine ⟨s, hsm, hs, ?_⟩
-    rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.compl.nullMeasurableSet,
+    rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.compl,
       eLpNorm_eq_lintegral_rpow_eNorm_toReal hp₀ hp_top hf.aestronglyMeasurable.restrict, one_div,
       ENNReal.rpow_inv_lt_iff]
     simp [ENNReal.toReal_pos, *]

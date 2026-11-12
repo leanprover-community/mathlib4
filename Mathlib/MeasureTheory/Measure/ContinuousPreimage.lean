@@ -65,7 +65,7 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
     -- Indeed, we can choose an open set `U` such that `ν (U ∆ s) < ε / 3`,
     -- apply the lemma to `U`, then use the triangle inequality for `μ (_ ∆ _)`.
     rcases hs.exists_isOpen_symmDiff_lt hνs H.ne' with ⟨U, hUo, hU, hUs⟩
-    have hmU : NullMeasurableSet U ν := hUo.measurableSet.nullMeasurableSet
+    have hmU : NullMeasurableSet U ν := hUo.measurableSet
     replace hUs := hUs.le
     filter_upwards [hf, this hmU hU.ne _ H hUo] with a hfa ha
     calc

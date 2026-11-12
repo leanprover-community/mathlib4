@@ -75,13 +75,13 @@ namespace MeasureTheory
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} {s s₁ s₂ s₃ t u : Set α}
 
 theorem measure_union (hd : Disjoint s₁ s₂) (h : MeasurableSet s₂) : μ (s₁ ∪ s₂) = μ s₁ + μ s₂ :=
-  measure_union₀ h.nullMeasurableSet hd.aedisjoint
+  measure_union₀ h hd.aedisjoint
 
 theorem measure_union' (hd : Disjoint s₁ s₂) (h : MeasurableSet s₁) : μ (s₁ ∪ s₂) = μ s₁ + μ s₂ :=
-  measure_union₀' h.nullMeasurableSet hd.aedisjoint
+  measure_union₀' h hd.aedisjoint
 
 theorem measure_inter_add_sdiff (s : Set α) (ht : MeasurableSet t) : μ (s ∩ t) + μ (s \ t) = μ s :=
-  measure_inter_add_sdiff₀ _ ht.nullMeasurableSet
+  measure_inter_add_sdiff₀ _ ht
 
 @[deprecated (since := "2026-06-03")] alias measure_inter_add_diff := measure_inter_add_sdiff
 
@@ -119,7 +119,7 @@ theorem measure_symmDiff_eq_top (hs : μ s ≠ ∞) (ht : μ t = ∞) : μ (s �
   measure_mono_top subset_union_right (measure_sdiff_eq_top ht hs)
 
 theorem measure_add_measure_compl (h : MeasurableSet s) : μ s + μ sᶜ = μ univ :=
-  measure_add_measure_compl₀ h.nullMeasurableSet
+  measure_add_measure_compl₀ h
 
 theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
     (hd : s.Pairwise (AEDisjoint μ on f)) (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
@@ -130,7 +130,7 @@ theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
 
 theorem measure_biUnion {s : Set β} {f : β → Set α} (hs : s.Countable) (hd : s.PairwiseDisjoint f)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) :=
-  measure_biUnion₀ hs hd.aedisjoint fun b hb => (h b hb).nullMeasurableSet
+  measure_biUnion₀ hs hd.aedisjoint fun b hb => h b hb
 
 theorem measure_sUnion₀ {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise (AEDisjoint μ))
     (h : ∀ s ∈ S, NullMeasurableSet s μ) : μ (⋃₀ S) = ∑' s : S, μ s := by
@@ -148,7 +148,7 @@ theorem measure_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
 
 theorem measure_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
     (hm : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑ p ∈ s, μ (f p) :=
-  measure_biUnion_finset₀ hd.aedisjoint fun b hb => (hm b hb).nullMeasurableSet
+  measure_biUnion_finset₀ hd.aedisjoint fun b hb => hm b hb
 
 /-- The measure of an a.e. disjoint union (even uncountable) of null-measurable sets is at least
 the sum of the measures of the sets. -/
@@ -166,7 +166,7 @@ the measures of the sets. -/
 theorem tsum_meas_le_meas_iUnion_of_disjoint (μ : Measure α)
     {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) :=
-  tsum_meas_le_meas_iUnion_of_disjoint₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
+  tsum_meas_le_meas_iUnion_of_disjoint₀ μ (fun i ↦ As_mble i)
     (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))
 
 /-- If `s` is a countable set, then the measure of its preimage can be found as the sum of measures
@@ -299,7 +299,7 @@ lemma measure_compl₀ (h : NullMeasurableSet s μ) (hs : μ s ≠ ∞) :
   rw [← measure_add_measure_compl₀ h, ENNReal.add_sub_cancel_left hs]
 
 theorem measure_compl (h₁ : MeasurableSet s) (h_fin : μ s ≠ ∞) : μ sᶜ = μ univ - μ s :=
-  measure_compl₀ h₁.nullMeasurableSet h_fin
+  measure_compl₀ h₁ h_fin
 
 lemma measure_inter_conull' (ht : μ (s \ t) = 0) : μ (s ∩ t) = μ s := by
   rw [← sdiff_compl, measure_sdiff_null']; rwa [← sdiff_eq]

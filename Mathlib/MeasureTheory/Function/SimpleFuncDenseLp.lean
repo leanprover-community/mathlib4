@@ -613,7 +613,7 @@ variable (p) in
 def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Lp.simpleFunc E p μ :=
   toLp ((SimpleFunc.const _ c).piecewise s hs (SimpleFunc.const _ 0))
-    (memLp_indicator_const p hs.nullMeasurableSet c (.inr hμs))
+    (memLp_indicator_const p hs c (.inr hμs))
 
 @[simp]
 theorem coe_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :

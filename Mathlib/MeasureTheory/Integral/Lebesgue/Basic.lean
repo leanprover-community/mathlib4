@@ -291,7 +291,7 @@ theorem setLIntegral_congr_fun_ae₀ {f g : α → ℝ≥0∞} {s : Set α} (hs 
 
 theorem setLIntegral_congr_fun_ae {f g : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → f x = g x) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ :=
-  setLIntegral_congr_fun_ae₀ hs.nullMeasurableSet hfg
+  setLIntegral_congr_fun_ae₀ hs hfg
 
 theorem setLIntegral_congr_fun₀ {f g : α → ℝ≥0∞} {s : Set α} (hs : NullMeasurableSet s μ)
     (hfg : EqOn f g s) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ :=
@@ -299,7 +299,7 @@ theorem setLIntegral_congr_fun₀ {f g : α → ℝ≥0∞} {s : Set α} (hs : N
 
 theorem setLIntegral_congr_fun {f g : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s)
     (hfg : EqOn f g s) : ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ :=
-  setLIntegral_congr_fun₀ hs.nullMeasurableSet hfg
+  setLIntegral_congr_fun₀ hs hfg
 
 lemma setLIntegral_eq_zero₀ {f : α → ℝ≥0∞} {s : Set α} (hs : NullMeasurableSet s μ)
     (h's : EqOn f 0 s) :
@@ -308,7 +308,7 @@ lemma setLIntegral_eq_zero₀ {f : α → ℝ≥0∞} {s : Set α} (hs : NullMea
 
 lemma setLIntegral_eq_zero {f : α → ℝ≥0∞} {s : Set α} (hs : MeasurableSet s) (h's : EqOn f 0 s) :
     ∫⁻ x in s, f x ∂μ = 0 :=
-  setLIntegral_eq_zero₀ hs.nullMeasurableSet h's
+  setLIntegral_eq_zero₀ hs h's
 
 section
 
@@ -527,7 +527,7 @@ lemma setLIntegral_indicator₀ (f : α → ℝ≥0∞) {s t : Set α}
 
 lemma setLIntegral_indicator {s t : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     ∫⁻ a in t, s.indicator f a ∂μ = ∫⁻ a in s ∩ t, f a ∂μ :=
-  setLIntegral_indicator₀ f hs.nullMeasurableSet
+  setLIntegral_indicator₀ f hs
 
 theorem lintegral_indicator_const_le (s : Set α) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) a ∂μ ≤ c * μ s :=
@@ -539,7 +539,7 @@ theorem lintegral_indicator_const₀ {s : Set α} (hs : NullMeasurableSet s μ) 
 
 theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) a ∂μ = c * μ s :=
-  lintegral_indicator_const₀ hs.nullMeasurableSet c
+  lintegral_indicator_const₀ hs c
 
 lemma setLIntegral_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x, f x ∂μ := by
@@ -596,7 +596,7 @@ theorem lintegral_iUnion₀ [Countable β] {s : β → Set α} (hm : ∀ i, Null
 theorem lintegral_iUnion [Countable β] {s : β → Set α} (hm : ∀ i, MeasurableSet (s i))
     (hd : Pairwise (Disjoint on s)) (f : α → ℝ≥0∞) :
     ∫⁻ a in ⋃ i, s i, f a ∂μ = ∑' i, ∫⁻ a in s i, f a ∂μ :=
-  lintegral_iUnion₀ (fun i => (hm i).nullMeasurableSet) hd.aedisjoint f
+  lintegral_iUnion₀ (fun i => hm i) hd.aedisjoint f
 
 theorem lintegral_biUnion₀ {t : Set β} {s : β → Set α} (ht : t.Countable)
     (hm : ∀ i ∈ t, NullMeasurableSet (s i) μ) (hd : t.Pairwise (AEDisjoint μ on s)) (f : α → ℝ≥0∞) :
@@ -607,7 +607,7 @@ theorem lintegral_biUnion₀ {t : Set β} {s : β → Set α} (ht : t.Countable)
 theorem lintegral_biUnion {t : Set β} {s : β → Set α} (ht : t.Countable)
     (hm : ∀ i ∈ t, MeasurableSet (s i)) (hd : t.PairwiseDisjoint s) (f : α → ℝ≥0∞) :
     ∫⁻ a in ⋃ i ∈ t, s i, f a ∂μ = ∑' i : t, ∫⁻ a in s i, f a ∂μ :=
-  lintegral_biUnion₀ ht (fun i hi => (hm i hi).nullMeasurableSet) hd.aedisjoint f
+  lintegral_biUnion₀ ht (fun i hi => hm i hi) hd.aedisjoint f
 
 theorem lintegral_biUnion_finset₀ {s : Finset β} {t : β → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on t)) (hm : ∀ b ∈ s, NullMeasurableSet (t b) μ)
@@ -618,7 +618,7 @@ theorem lintegral_biUnion_finset₀ {s : Finset β} {t : β → Set α}
 theorem lintegral_biUnion_finset {s : Finset β} {t : β → Set α} (hd : Set.PairwiseDisjoint (↑s) t)
     (hm : ∀ b ∈ s, MeasurableSet (t b)) (f : α → ℝ≥0∞) :
     ∫⁻ a in ⋃ b ∈ s, t b, f a ∂μ = ∑ b ∈ s, ∫⁻ a in t b, f a ∂μ :=
-  lintegral_biUnion_finset₀ hd.aedisjoint (fun b hb => (hm b hb).nullMeasurableSet) f
+  lintegral_biUnion_finset₀ hd.aedisjoint (fun b hb => hm b hb) f
 
 theorem lintegral_iUnion_le [Countable β] (s : β → Set α) (f : α → ℝ≥0∞) :
     ∫⁻ a in ⋃ i, s i, f a ∂μ ≤ ∑' i, ∫⁻ a in s i, f a ∂μ := by
@@ -646,7 +646,7 @@ theorem lintegral_add_compl₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMe
 
 theorem lintegral_add_compl (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ x in s, f x ∂μ + ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ :=
-  lintegral_add_compl₀ f hs.nullMeasurableSet
+  lintegral_add_compl₀ f hs
 
 lemma lintegral_piecewise (hs : NullMeasurableSet s μ) (f g : α → ℝ≥0∞) [∀ j, Decidable (j ∈ s)] :
     ∫⁻ a, s.piecewise f g a ∂μ = ∫⁻ a in s, f a ∂μ + ∫⁻ a in sᶜ, g a ∂μ := by
@@ -663,7 +663,7 @@ theorem setLIntegral_compl₀ {f : α → ℝ≥0∞} {s : Set α} (hsm : NullMe
 theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ :=
-  setLIntegral_compl₀ hsm.nullMeasurableSet hfs
+  setLIntegral_compl₀ hsm hfs
 
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :

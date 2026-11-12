@@ -222,17 +222,17 @@ theorem measureReal_add_measureReal_compl₀ [IsFiniteMeasure μ] (hs : NullMeas
 
 theorem measureReal_add_measureReal_compl [IsFiniteMeasure μ] (h : MeasurableSet s) :
     μ.real s + μ.real sᶜ = μ.real univ :=
-  measureReal_add_measureReal_compl₀ h.nullMeasurableSet
+  measureReal_add_measureReal_compl₀ h
 
 theorem measureReal_union (hd : Disjoint s₁ s₂) (h : MeasurableSet s₂)
     (h₁ : μ s₁ ≠ ∞ := by finiteness) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real (s₁ ∪ s₂) = μ.real s₁ + μ.real s₂ :=
-  measureReal_union₀ h.nullMeasurableSet hd.aedisjoint h₁ h₂
+  measureReal_union₀ h hd.aedisjoint h₁ h₂
 
 theorem measureReal_union' (hd : Disjoint s₁ s₂) (h : MeasurableSet s₁)
     (h₁ : μ s₁ ≠ ∞ := by finiteness) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real (s₁ ∪ s₂) = μ.real s₁ + μ.real s₂ :=
-  measureReal_union₀' h.nullMeasurableSet hd.aedisjoint h₁ h₂
+  measureReal_union₀' h hd.aedisjoint h₁ h₂
 
 theorem measureReal_inter_add_sdiff (ht : MeasurableSet t)
     (h : μ s ≠ ∞ := by finiteness) :
@@ -256,18 +256,18 @@ alias measureReal_diff_add_inter := measureReal_sdiff_add_inter
 theorem measureReal_union_add_inter (ht : MeasurableSet t)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real (s ∪ t) + μ.real (s ∩ t) = μ.real s + μ.real t :=
-  measureReal_union_add_inter₀ ht.nullMeasurableSet h₁ h₂
+  measureReal_union_add_inter₀ ht h₁ h₂
 
 theorem measureReal_union_add_inter' (hs : MeasurableSet s)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real (s ∪ t) + μ.real (s ∩ t) = μ.real s + μ.real t :=
-  measureReal_union_add_inter₀' hs.nullMeasurableSet h₁ h₂
+  measureReal_union_add_inter₀' hs h₁ h₂
 
 lemma measureReal_symmDiff_eq (hs : MeasurableSet s) (ht : MeasurableSet t)
     (h₁ : μ s ≠ ∞ := by finiteness) (h₂ : μ t ≠ ∞ := by finiteness) :
     μ.real (s ∆ t) = μ.real (s \ t) + μ.real (t \ s) := by
   simp only [Measure.real]
-  rw [← ENNReal.toReal_add, measure_symmDiff_eq hs.nullMeasurableSet ht.nullMeasurableSet]
+  rw [← ENNReal.toReal_add, measure_symmDiff_eq hs ht]
   · exact measure_ne_top_of_subset sdiff_subset h₁
   · exact measure_ne_top_of_subset sdiff_subset h₂
 
@@ -290,7 +290,7 @@ theorem measureReal_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
 theorem measureReal_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
     (hm : ∀ b ∈ s, MeasurableSet (f b)) (h : ∀ b ∈ s, μ (f b) ≠ ∞ := by finiteness) :
     μ.real (⋃ b ∈ s, f b) = ∑ p ∈ s, μ.real (f p) :=
-  measureReal_biUnion_finset₀ hd.aedisjoint (fun b hb ↦ (hm b hb).nullMeasurableSet) h
+  measureReal_biUnion_finset₀ hd.aedisjoint (fun b hb ↦ hm b hb) h
 
 /-- If `s` is a `Finset`, then the measure of its preimage can be found as the sum of measures
 of the fibers `f ⁻¹' {y}`. -/
@@ -430,7 +430,7 @@ theorem sum_measureReal_le_measureReal_univ [IsFiniteMeasure μ] {s : Finset ι}
   simp only [measureReal_def]
   rw [← ENNReal.toReal_sum (by finiteness)]
   apply ENNReal.toReal_mono (by finiteness)
-  exact sum_measure_le_measure_univ (fun i mi ↦ (h i mi).nullMeasurableSet) H.aedisjoint
+  exact sum_measure_le_measure_univ (fun i mi ↦ h i mi) H.aedisjoint
 
 theorem measureReal_add_apply {μ₁ μ₂ : Measure α} (h₁ : μ₁ s ≠ ∞ := by finiteness)
     (h₂ : μ₂ s ≠ ∞ := by finiteness) :
@@ -444,7 +444,7 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
     (H : μ.real univ < ∑ i ∈ s, μ.real (t i)) :
     ∃ i ∈ s, ∃ j ∈ s, ∃ _h : i ≠ j, (t i ∩ t j).Nonempty := by
   apply exists_nonempty_inter_of_measure_univ_lt_sum_measure μ
-    (fun i mi ↦ (h i mi).nullMeasurableSet)
+    (fun i mi ↦ h i mi)
   simp only [Measure.real] at H
   apply (ENNReal.toReal_lt_toReal (by finiteness) _).1
   · convert H
@@ -481,7 +481,7 @@ lemma probReal_compl_eq_one_sub₀ (h : NullMeasurableSet s μ) : μ.real sᶜ =
   rw [measureReal_compl₀ h, probReal_univ]
 
 lemma probReal_compl_eq_one_sub (hs : MeasurableSet s) : μ.real sᶜ = 1 - μ.real s :=
-  probReal_compl_eq_one_sub₀ hs.nullMeasurableSet
+  probReal_compl_eq_one_sub₀ hs
 
 end MeasureTheory
 

@@ -1167,7 +1167,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
       μ.restrict (u '' s) := by
     rw [hF, ← Measure.map_map u_meas measurable_subtype_coe, map_comap_subtype_coe hs,
       restrict_withDensity hs]
-    exact map_withDensity_abs_det_fderiv_eq_addHaar μ hs.nullMeasurableSet u' (hf.congr uf.symm)
+    exact map_withDensity_abs_det_fderiv_eq_addHaar μ hs u' (hf.congr uf.symm)
   rw [uf.image_eq] at A
   have : F = s.domRestrict f := by
     ext x

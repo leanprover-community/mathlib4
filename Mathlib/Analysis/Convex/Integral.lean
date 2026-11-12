@@ -227,7 +227,7 @@ theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integ
   by_cases h₀' : μ tᶜ = 0
   · rw [← ae_eq_univ] at h₀'
     rw [restrict_congr_set h₀', restrict_univ, measureReal_congr h₀', measure_smul_average]
-  have := average_mem_openSegment_compl_self ht.nullMeasurableSet h₀ h₀' hfi
+  have := average_mem_openSegment_compl_self ht h₀ h₀' hfi
   rw [← H t ht h₀ h₀', openSegment_same, mem_singleton_iff] at this
   rw [this, measure_smul_setAverage _ (by finiteness)]
 
@@ -243,8 +243,7 @@ theorem Convex.average_mem_interior_of_set [IsFiniteMeasure μ] (hs : Convex ℝ
     rwa [restrict_congr_set h0', restrict_univ] at ht
   exact hs.openSegment_interior_closure_subset_interior ht
       (hs.set_average_mem_closure h0' (by finiteness) (ae_restrict_of_ae hfs) hfi.integrableOn)
-      (average_mem_openSegment_compl_self (measurableSet_toMeasurable μ t).nullMeasurableSet h0
-        h0' hfi)
+      (average_mem_openSegment_compl_self (measurableSet_toMeasurable μ t) h0 h0' hfi)
 
 /-- If an integrable function `f : α → E` takes values in a strictly convex closed set `s`, then
 either it is a.e. equal to its average value, or its average value belongs to the interior of
@@ -258,7 +257,7 @@ theorem StrictConvex.ae_eq_const_or_average_mem_interior [IsFiniteMeasure μ] (h
   rintro ⟨t, hm, h₀, h₀', hne⟩
   exact
     hs.openSegment_subset (this h₀) (this h₀') hne
-      (average_mem_openSegment_compl_self hm.nullMeasurableSet h₀ h₀' hfi)
+      (average_mem_openSegment_compl_self hm h₀ h₀' hfi)
 
 /-- **Jensen's inequality**, strict version: if an integrable function `f : α → E` takes values in a
 convex closed set `s`, and `g : E → ℝ` is continuous and strictly convex on `s`, then
@@ -273,7 +272,7 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
       hfi.integrableOn hgi.integrableOn
   refine (ae_eq_const_or_exists_average_ne_compl hfi).imp_right ?_
   rintro ⟨t, hm, h₀, h₀', hne⟩
-  rcases average_mem_openSegment_compl_self hm.nullMeasurableSet h₀ h₀' (hfi.prodMk hgi) with
+  rcases average_mem_openSegment_compl_self hm h₀ h₀' (hfi.prodMk hgi) with
     ⟨a, b, ha, hb, hab, h_avg⟩
   rw [average_pair hfi hgi, average_pair hfi.integrableOn hgi.integrableOn,
     average_pair hfi.integrableOn hgi.integrableOn, Prod.smul_mk,

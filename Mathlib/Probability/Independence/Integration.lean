@@ -497,7 +497,7 @@ lemma Indep.setIntegral_eq_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace 
     rw [IndepFun.integral_fun_comp_smul_comp _ _ hX (by fun_prop) hf]
     · simp [hm A hA2]
     · exact hA1.indicator_indepFun 1 hA2
-    · exact (aemeasurable_indicator_const_iff 1).2 (hm A hA2).nullMeasurableSet
+    · exact (aemeasurable_indicator_const_iff 1).2 (hm A hA2)
 
 /-- If a random variable `X` is independent of a sigma-algebra `m` and `A` is a set in `m`
 then `∫ ω in A, f (X ω) ∂P = P.real A * ∫ ω, f (X ω) ∂P` for a measurable function `f : 𝓧 → ℝ`. -/

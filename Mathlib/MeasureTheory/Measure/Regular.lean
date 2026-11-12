@@ -387,7 +387,7 @@ theorem _root_.MeasurableSet.exists_isOpen_sdiff_lt [OuterRegular μ] {A : Set �
     ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U < ∞ ∧ μ (U \ A) < ε := by
   rcases A.exists_isOpen_lt_add hA' hε with ⟨U, hAU, hUo, hU⟩
   use U, hAU, hUo, hU.trans_le le_top
-  exact measure_sdiff_lt_of_lt_add hA.nullMeasurableSet hAU hA' hU
+  exact measure_sdiff_lt_of_lt_add hA hAU hA' hU
 
 @[deprecated (since := "2026-06-03")]
 alias _root_.MeasurableSet.exists_isOpen_diff_lt := _root_.MeasurableSet.exists_isOpen_sdiff_lt

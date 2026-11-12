@@ -73,7 +73,7 @@ theorem restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) : μ.restri
   be measurable instead of `t` exists as `Measure.restrict_apply'`. -/
 @[simp]
 theorem restrict_apply (ht : MeasurableSet t) : μ.restrict s t = μ (t ∩ s) :=
-  restrict_apply₀ ht.nullMeasurableSet
+  restrict_apply₀ ht
 
 /-- Restriction of a measure to a subset is monotone both in set and in measure. -/
 theorem restrict_mono' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ ⦃μ ν : Measure α⦄ (hs : s ≤ᵐ[μ] s')
@@ -203,7 +203,7 @@ theorem restrict_restrict₀ (hs : NullMeasurableSet s (μ.restrict t)) :
 
 @[simp]
 theorem restrict_restrict (hs : MeasurableSet s) : (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=
-  restrict_restrict₀ hs.nullMeasurableSet
+  restrict_restrict₀ hs
 
 theorem restrict_restrict_of_subset (h : s ⊆ t) : (μ.restrict t).restrict s = μ.restrict s := by
   ext1 u hu
@@ -216,7 +216,7 @@ theorem restrict_restrict₀' (ht : NullMeasurableSet t μ) :
 
 theorem restrict_restrict' (ht : MeasurableSet t) :
     (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=
-  restrict_restrict₀' ht.nullMeasurableSet
+  restrict_restrict₀' ht
 
 theorem restrict_comm (hs : MeasurableSet s) :
     (μ.restrict t).restrict s = (μ.restrict s).restrict t := by
@@ -262,7 +262,7 @@ theorem restrict_inter_add_sdiff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
 
 theorem restrict_inter_add_sdiff (s : Set α) (ht : MeasurableSet t) :
     μ.restrict (s ∩ t) + μ.restrict (s \ t) = μ.restrict s :=
-  restrict_inter_add_sdiff₀ s ht.nullMeasurableSet
+  restrict_inter_add_sdiff₀ s ht
 
 @[deprecated (since := "2026-06-03")] alias restrict_inter_add_diff := restrict_inter_add_sdiff
 
@@ -273,7 +273,7 @@ theorem restrict_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :
 
 theorem restrict_union_add_inter (s : Set α) (ht : MeasurableSet t) :
     μ.restrict (s ∪ t) + μ.restrict (s ∩ t) = μ.restrict s + μ.restrict t :=
-  restrict_union_add_inter₀ s ht.nullMeasurableSet
+  restrict_union_add_inter₀ s ht
 
 theorem restrict_union_add_inter' (hs : MeasurableSet s) (t : Set α) :
     μ.restrict (s ∪ t) + μ.restrict (s ∩ t) = μ.restrict s + μ.restrict t := by
@@ -285,7 +285,7 @@ theorem restrict_union₀ (h : AEDisjoint μ s t) (ht : NullMeasurableSet t μ) 
 
 theorem restrict_union (h : Disjoint s t) (ht : MeasurableSet t) :
     μ.restrict (s ∪ t) = μ.restrict s + μ.restrict t :=
-  restrict_union₀ h.aedisjoint ht.nullMeasurableSet
+  restrict_union₀ h.aedisjoint ht
 
 theorem restrict_union' (h : Disjoint s t) (hs : MeasurableSet s) :
     μ.restrict (s ∪ t) = μ.restrict s + μ.restrict t := by
@@ -298,7 +298,7 @@ theorem restrict_add_restrict_compl₀ (hs : NullMeasurableSet s μ) :
 @[simp]
 theorem restrict_add_restrict_compl (hs : MeasurableSet s) :
     μ.restrict s + μ.restrict sᶜ = μ :=
-  restrict_add_restrict_compl₀ hs.nullMeasurableSet
+  restrict_add_restrict_compl₀ hs
 
 @[simp]
 theorem restrict_compl_add_restrict (hs : MeasurableSet s) : μ.restrict sᶜ + μ.restrict s = μ := by
@@ -319,7 +319,7 @@ theorem restrict_iUnion_apply_ae [Countable ι] {s : ι → Set α} (hd : Pairwi
 theorem restrict_iUnion_apply [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
     (hm : ∀ i, MeasurableSet (s i)) {t : Set α} (ht : MeasurableSet t) :
     μ.restrict (⋃ i, s i) t = ∑' i, μ.restrict (s i) t :=
-  restrict_iUnion_apply_ae hd.aedisjoint (fun i => (hm i).nullMeasurableSet) ht
+  restrict_iUnion_apply_ae hd.aedisjoint (fun i => hm i) ht
 
 theorem restrict_iUnion_apply_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed (· ⊆ ·) s)
     {t : Set α} (ht : MeasurableSet t) : μ.restrict (⋃ i, s i) t = ⨆ i, μ.restrict (s i) t := by
@@ -375,13 +375,13 @@ theorem restrict_union_congr :
   calc
     μ (u ∩ s ∪ u ∩ t) = μ (US ∪ u ∩ t) :=
       measure_union_congr_of_subset hsub hμ.le Subset.rfl le_rfl
-    _ = μ US + μ ((u ∩ t) \ US) := (measure_add_sdiff hm.nullMeasurableSet _).symm
+    _ = μ US + μ ((u ∩ t) \ US) := (measure_add_sdiff hm _).symm
     _ = restrict μ s u + restrict μ t (u \ US) := by
       simp only [restrict_apply, hu, hu.diff hm, hμ, ← inter_comm t, inter_sdiff_assoc]
     _ = restrict ν s u + restrict ν t (u \ US) := by rw [hs, ht]
     _ = ν US + ν ((u ∩ t) \ US) := by
       simp only [restrict_apply, hu, hu.diff hm, hν, ← inter_comm t, inter_sdiff_assoc]
-    _ = ν (US ∪ u ∩ t) := measure_add_sdiff hm.nullMeasurableSet _
+    _ = ν (US ∪ u ∩ t) := measure_add_sdiff hm _
     _ = ν (u ∩ s ∪ u ∩ t) := .symm <| measure_union_congr_of_subset hsub hν.le Subset.rfl le_rfl
 
 theorem restrict_biUnion_finset_congr {s : Finset ι} {t : ι → Set α} :
@@ -519,7 +519,7 @@ theorem restrict_iUnion_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AE
 
 theorem restrict_iUnion [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
     (hm : ∀ i, MeasurableSet (s i)) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
-  restrict_iUnion_ae hd.aedisjoint fun i => (hm i).nullMeasurableSet
+  restrict_iUnion_ae hd.aedisjoint fun i => hm i
 
 theorem restrict_biUnion {s : ι → Set α} {T : Set ι} (hT : Countable T)
     (hd : T.Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
@@ -614,7 +614,7 @@ theorem ae_restrict_iff₀ {p : α → Prop} (hp : NullMeasurableSet { x | p x }
 
 theorem ae_restrict_iff {p : α → Prop} (hp : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x :=
-  ae_restrict_iff₀ hp.nullMeasurableSet
+  ae_restrict_iff₀ hp
 
 theorem ae_imp_of_ae_restrict {s : Set α} {p : α → Prop} (h : ∀ᵐ x ∂μ.restrict s, p x) :
     ∀ᵐ x ∂μ, x ∈ s → p x := by
@@ -630,7 +630,7 @@ theorem ae_restrict_iff'₀ {p : α → Prop} (hs : NullMeasurableSet s μ) :
 
 theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x :=
-  ae_restrict_iff'₀ hs.nullMeasurableSet
+  ae_restrict_iff'₀ hs
 
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
     f =ᵐ[μ.restrict s] g :=
@@ -640,7 +640,7 @@ theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restri
   (ae_restrict_iff'₀ hs).2 (Filter.Eventually.of_forall fun _ => id)
 
 theorem ae_restrict_mem (hs : MeasurableSet s) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
-  ae_restrict_mem₀ hs.nullMeasurableSet
+  ae_restrict_mem₀ hs
 
 theorem ae_restrict_of_forall_mem {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) {p : α → Prop} (h : ∀ x ∈ s, p x) : ∀ᵐ (x : α) ∂μ.restrict s, p x :=
@@ -704,7 +704,7 @@ theorem ae_restrict_eq₀ (hs : NullMeasurableSet s μ) : ae (μ.restrict s) = a
 
 @[simp]
 theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ 𝓟 s :=
-  ae_restrict_eq₀ hs.nullMeasurableSet
+  ae_restrict_eq₀ hs
 
 theorem ae_restrict_eq_bot {s} : ae (μ.restrict s) = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero
@@ -794,7 +794,7 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
   | hC t' ht' =>
     obtain ⟨s', hs', rfl⟩ := ht'
     rw [Subtype.image_preimage_coe]
-    exact hs.inter (hs'.nullMeasurableSet)
+    exact hs.inter hs'
   | empty => simp only [image_empty, nullMeasurableSet_empty]
   | compl t' _ ht' =>
     simp only [← range_sdiff_image Subtype.coe_injective, Subtype.range_coe_subtype, ofPred_mem_eq]

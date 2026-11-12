@@ -83,7 +83,7 @@ def of_additive_of_le_measure
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
       (h := fun n ↦ μ (⋃ i ∈ Set.Ici n, f i)) ?_ (fun i ↦ bot_le) (fun i ↦ hm _)
     exact tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
-      (fun i ↦ (f_meas i).nullMeasurableSet) f_disj
+      (fun i ↦ f_meas i) f_disj
 
 open scoped ENNReal
 

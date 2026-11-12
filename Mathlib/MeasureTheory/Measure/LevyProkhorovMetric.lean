@@ -586,7 +586,7 @@ lemma continuous_ofMeasure_probabilityMeasure :
   -- `P (⋃ n < N, Es n)ᶜ < ε/3`.
   obtain ⟨N, hN⟩ : ∃ N, P.toMeasure (⋃ j ∈ Iio N, Es j)ᶜ < ENNReal.ofReal (ε / 3) := by
     have exhaust := @tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint Ω _ P.toMeasure _
-                    Es (fun n ↦ (Es_mble n).nullMeasurableSet) Es_disjoint
+                    Es (fun n ↦ Es_mble n) Es_disjoint
     simp only [tendsto_atTop_nhds, Function.comp_apply] at exhaust
     obtain ⟨N, hN⟩ := exhaust (Iio (ENNReal.ofReal (ε / 3))) third_ε_pos' isOpen_Iio
     refine ⟨N, ?_⟩

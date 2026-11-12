@@ -93,7 +93,7 @@ theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
 theorem _root_.IsClosed.measure_eq_univ_iff_eq [OpensMeasurableSpace X] [IsFiniteMeasure μ]
     (hF : IsClosed F) :
     μ F = μ univ ↔ F = univ := by
-  rw [← ae_eq_univ_iff_measure_eq hF.measurableSet.nullMeasurableSet, hF.ae_eq_univ_iff_eq]
+  rw [← ae_eq_univ_iff_measure_eq hF.measurableSet, hF.ae_eq_univ_iff_eq]
 
 theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsProbabilityMeasure μ]
     (hF : IsClosed F) :

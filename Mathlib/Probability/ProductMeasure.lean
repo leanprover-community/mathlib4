@@ -321,7 +321,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   · let _ := Fintype.ofFinite u
     simp_rw [fun n ↦ piContent_eq_measure_pi (fun i : u ↦ μ i) (mB n)]
     convert!
-      tendsto_measure_iInter_atTop (fun n ↦ (mB n).nullMeasurableSet) B_anti ⟨0, measure_ne_top _ _⟩
+      tendsto_measure_iInter_atTop (fun n ↦ mB n) B_anti ⟨0, measure_ne_top _ _⟩
     · rw [B_inter, measure_empty]
     · infer_instance
   · -- If `u` is infinite, then we have an equivalence with `ℕ` so we can apply `secondLemma`.
@@ -329,7 +329,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
     obtain ⟨φ, -⟩ := Classical.exists_true_of_nonempty (α := ℕ ≃ u) nonempty_equiv_of_countable
     conv => enter [1]; ext n; rw [← infinitePiNat_map_piCongrLeft _ φ (B_mem n)]
     convert!
-      tendsto_measure_iInter_atTop (fun n ↦ (mB n).nullMeasurableSet) B_anti ⟨0, measure_ne_top _ _⟩
+      tendsto_measure_iInter_atTop (fun n ↦ mB n) B_anti ⟨0, measure_ne_top _ _⟩
     · rw [B_inter, measure_empty]
     · infer_instance
 

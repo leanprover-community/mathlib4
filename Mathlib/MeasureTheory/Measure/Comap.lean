@@ -93,7 +93,7 @@ theorem le_comap_apply (f : α → β) (μ : Measure β) (hfi : Injective f)
 theorem comap_apply (f : α → β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β) (hs : MeasurableSet s) :
     comap f μ s = μ (f '' s) :=
-  comap_apply₀ f μ hfi (fun s hs => (hf s hs).nullMeasurableSet) hs.nullMeasurableSet
+  comap_apply₀ f μ hfi (fun s hs => hf s hs) hs
 
 theorem comap_apply_le (f : α → β) (μ : Measure β) (hs : NullMeasurableSet s (μ.comap f)) :
     μ.comap f s ≤ μ (f '' s) := by
@@ -143,7 +143,7 @@ theorem NullMeasurableSet.image (f : α → β) (μ : Measure β) (hfi : Injecti
 theorem comap_preimage (f : α → β) (μ : Measure β) (hf : Injective f) (hf' : Measurable f)
     (h : ∀ t, MeasurableSet t → NullMeasurableSet (f '' t) μ) {s : Set β} (hs : MeasurableSet s) :
     μ.comap f (f ⁻¹' s) = μ (s ∩ range f) := by
-  rw [comap_apply₀ _ _ hf h (hf' hs).nullMeasurableSet, image_preimage_eq_inter_range]
+  rw [comap_apply₀ _ _ hf h (hf' hs), image_preimage_eq_inter_range]
 
 @[simp] lemma comap_zero (f : α → β) : (0 : Measure β).comap f = 0 := by
   by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) (0 : Measure β)
@@ -171,8 +171,8 @@ lemma comap_smul {μ : Measure β} (c : ℝ≥0∞) : comap f (c • μ) = c •
   · simp
   by_cases h : Function.Injective f ∧ ∀ s : Set α, MeasurableSet s → NullMeasurableSet (f '' s) μ
   · ext s hs
-    rw [comap_apply₀ f _ h.1 _ hs.nullMeasurableSet, smul_apply, smul_apply,
-      comap_apply₀ f μ h.1 h.2 hs.nullMeasurableSet]
+    rw [comap_apply₀ f _ h.1 _ hs, smul_apply, smul_apply,
+      comap_apply₀ f μ h.1 h.2 hs]
     simpa [nullMeasurableSet_smul_measure_iff hc] using h.2
   · have h' : ¬ (Function.Injective f ∧
         ∀ (s : Set α), MeasurableSet s → NullMeasurableSet (f '' s) (c • μ)) := by

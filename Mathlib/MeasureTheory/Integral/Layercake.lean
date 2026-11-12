@@ -179,7 +179,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     simpa only [mem_univ, Pi.zero_apply, true_and] using
       measurableSet_region_between_oc measurable_zero f_mble MeasurableSet.univ
   exact (ENNReal.measurable_ofReal.comp (g_mble.comp measurable_snd)).aemeasurable.indicator₀
-    mble₀.nullMeasurableSet
+    mble₀
 
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the

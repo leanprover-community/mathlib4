@@ -550,7 +550,7 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
       rw [prod_sdiff_prod, compl_eq_univ_sdiff]
       simp
     rw [this, measureReal_def,
-      measure_sdiff (by intro; simp) (hA.prod hs).nullMeasurableSet (measure_ne_top (κ a) _),
+      measure_sdiff (by intro; simp) (hA.prod hs) (measure_ne_top (κ a) _),
       toReal_sub_of_le (measure_mono (by intro x; simp)) (measure_ne_top _ _)]
     rw [eq_tsub_iff_add_eq_of_le, add_comm]
     · exact h

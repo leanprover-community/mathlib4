@@ -341,7 +341,7 @@ theorem integrable_indicator_iff₀ (hs : NullMeasurableSet s μ) :
 
 theorem integrable_indicator_iff (hs : MeasurableSet s) :
     Integrable (indicator s f) μ ↔ IntegrableOn f s μ :=
-  integrable_indicator_iff₀ hs.nullMeasurableSet
+  integrable_indicator_iff₀ hs
 
 theorem IntegrableOn.integrable_indicator₀ (h : IntegrableOn f s μ) (hs : NullMeasurableSet s μ) :
     Integrable (indicator s f) μ :=
@@ -349,7 +349,7 @@ theorem IntegrableOn.integrable_indicator₀ (h : IntegrableOn f s μ) (hs : Nul
 
 theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
-  h.integrable_indicator₀ hs.nullMeasurableSet
+  h.integrable_indicator₀ hs
 
 @[fun_prop]
 theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
@@ -420,7 +420,7 @@ theorem IntegrableOn.of_ae_sdiff_eq_zero {f : α → ε'}
   have B : IntegrableOn f (t \ v) μ := by
     apply integrableOn_zero.congr
     filter_upwards [ae_restrict_of_ae h't,
-      ae_restrict_mem₀ (ht.diff (measurableSet_toMeasurable μ u).nullMeasurableSet)] with x hxt hx
+      ae_restrict_mem₀ (ht.diff (measurableSet_toMeasurable μ u))] with x hxt hx
     by_cases h'x : x ∈ s
     · by_contra H
       exact hx.2 (subset_toMeasurable μ u ⟨h'x, Ne.symm H⟩)
@@ -437,7 +437,7 @@ if `t` is measurable. -/
 theorem IntegrableOn.of_forall_sdiff_eq_zero {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : MeasurableSet t)
     (h't : ∀ x ∈ t \ s, f x = 0) : IntegrableOn f t μ :=
-  hf.of_ae_sdiff_eq_zero ht.nullMeasurableSet (Eventually.of_forall h't)
+  hf.of_ae_sdiff_eq_zero ht (Eventually.of_forall h't)
 
 @[deprecated (since := "2026-06-03")]
 alias IntegrableOn.of_forall_diff_eq_zero := IntegrableOn.of_forall_sdiff_eq_zero
@@ -765,7 +765,7 @@ theorem ContinuousOn.aemeasurable [TopologicalSpace α] [OpensMeasurableSpace α
   classical
   nontriviality α; inhabit α
   have : (Set.piecewise s f fun _ => f default) =ᵐ[μ.restrict s] f :=
-    piecewise_ae_eq_restrict hs.nullMeasurableSet
+    piecewise_ae_eq_restrict hs
   refine ⟨Set.piecewise s f fun _ => f default, ?_, this.symm⟩
   apply measurable_of_isOpen
   intro t ht

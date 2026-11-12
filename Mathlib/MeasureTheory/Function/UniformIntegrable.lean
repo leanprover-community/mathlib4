@@ -413,8 +413,8 @@ theorem MemLp.tendsto_eLpNorm_restrict_zero (hp_one : 1 ≤ p) (hp_top : p ≠ �
   simp only [mem_Iio, iSup_le_iff]
   refine ⟨δ, hδ, fun γ hγ s hμs ↦ ?_⟩
   obtain ⟨t, hst, ht, hμt⟩ := exists_measurable_superset μ s
-  grw [← hδf t ht.nullMeasurableSet ((hμt ▸ hμs).trans hγ.le),
-    eLpNorm_indicator_eq_eLpNorm_restrict ht.nullMeasurableSet,
+  grw [← hδf t ht ((hμt ▸ hμs).trans hγ.le),
+    eLpNorm_indicator_eq_eLpNorm_restrict ht,
     eLpNorm_mono_measure f (μ.restrict_mono_set hst)]
 
 /-- A constant function is uniformly integrable. -/
@@ -478,17 +478,17 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
   grw [eLpNorm_add_le hp, sub_eq_add_neg, Set.indicator_add' t, Set.indicator_neg',
     eLpNorm_add_le hp]
   have hnf : eLpNorm (t.indicator (f n)) p μ ≤ ε / 3 := by
-    rw [eLpNorm_indicator_eq_eLpNorm_restrict htm.nullMeasurableSet]
+    rw [eLpNorm_indicator_eq_eLpNorm_restrict htm]
     exact heLpNorm₁ n t (ht₁.trans (min_le_left _ _))
   have hng : eLpNorm (t.indicator g) p μ ≤ ε / 3 :=
-    heLpNorm₂ t htm.nullMeasurableSet (ht₁.trans (min_le_right _ _))
+    heLpNorm₂ t htm (ht₁.trans (min_le_right _ _))
   have hlt : eLpNorm (tᶜ.indicator (f n - g)) p μ ≤ ε / 3 := by
     specialize hN n hn
     have : 0 ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)) := by positivity
     have hε₃ : ENNReal.ofReal (ε.toReal / 3) = ε / 3 := by
       rw [ofReal_div_of_pos (show (0 : ℝ) < 3 by simp), ofReal_toReal h.ne]
       simp
-    have := eLpNorm_indicator_sub_le_of_dist_bdd μ hp' htm.compl.nullMeasurableSet this
+    have := eLpNorm_indicator_sub_le_of_dist_bdd μ hp' htm.compl this
       (((hf n).sub hg.aestronglyMeasurable).indicator htm.compl) fun x hx =>
       (dist_comm (g x) (f n x) ▸ (hN x hx).le :
         dist (f n x) (g x) ≤ ε.toReal / (3 * measureUnivNNReal μ ^ (1 / p.toReal)))
@@ -571,7 +571,7 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
   · exact rpow_pos_of_nonneg (ε.div_pos hε.ne' (mul_ne_top ofNat_ne_top coe_ne_top))
       toReal_nonneg
   intro i s hs hμs
-  rw [← eLpNorm_indicator_eq_eLpNorm_restrict hs.nullMeasurableSet]
+  rw [← eLpNorm_indicator_eq_eLpNorm_restrict hs]
   by_cases hμs' : μ s = 0
   · rw [(eLpNorm_eq_zero_iff hpzero).2
         (indicator_meas_zero hμs')]
@@ -599,7 +599,7 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
       · refine (hf i).indicator₀ (hs.nullMeasurableSet.inter ?_)
         exact nullMeasurableSet_le aemeasurable_const (hf i).nnNorm.aemeasurable
       · exact norm_indicator_le_of_subset Set.inter_subset_right _ _
-      rw [← Set.indicator_indicator, eLpNorm_indicator_eq_eLpNorm_restrict hs.nullMeasurableSet]
+      rw [← Set.indicator_indicator, eLpNorm_indicator_eq_eLpNorm_restrict hs]
       have : ∀ᵐ x ∂μ.restrict s, ‖{ x : α | ‖f i x‖₊ < C }.indicator (f i) x‖ ≤ C := by
         filter_upwards
         simp_rw [norm_indicator_eq_indicator_norm]
@@ -642,10 +642,10 @@ lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure {κ : Type*} (u : Filter
   refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' ↦ ?_⟩
   have hfm : AEStronglyMeasurable f μ :=
     hs.aestronglyMeasurable fun n ↦ hfn (s n)
-  rw [← eLpNorm_indicator_eq_eLpNorm_restrict ht.nullMeasurableSet]
+  rw [← eLpNorm_indicator_eq_eLpNorm_restrict ht]
   apply eLpNorm_le_of_tendstoInMeasure _ (hs.indicator t) (fun n ↦ (hfn (s n)).indicator ht)
   apply Eventually.of_forall fun n ↦ ?_
-  rw [Function.comp_apply, eLpNorm_indicator_eq_eLpNorm_restrict ht.nullMeasurableSet]
+  rw [Function.comp_apply, eLpNorm_indicator_eq_eLpNorm_restrict ht]
   exact hδ' (s n) t ht'
 
 /-- If `fn` is `UnifIntegrable`, then the family of a.e. limits of sequences of `fn` is

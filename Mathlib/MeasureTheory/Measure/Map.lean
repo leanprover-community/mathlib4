@@ -162,7 +162,7 @@ lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
   `MeasureTheory.Measure.le_map_apply` and `MeasurableEquiv.map_apply`. -/
 @[simp]
 theorem map_apply_of_aemeasurable (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
-    μ.map f s = μ (f ⁻¹' s) := map_apply₀ hf hs.nullMeasurableSet
+    μ.map f s = μ (f ⁻¹' s) := map_apply₀ hf hs
 
 @[simp]
 theorem map_apply (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :

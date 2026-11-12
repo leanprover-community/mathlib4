@@ -605,7 +605,7 @@ lemma measure_isMulInvariant_eq_smul_of_isCompact_closure_of_innerRegularCompact
     exact t_comp.closure_of_subset sdiff_subset
   have B : μ' t = ν t :=
     measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport _ _ f_cont f_comp
-  rwa [measure_sdiff st hs.nullMeasurableSet, measure_sdiff st hs.nullMeasurableSet, ← B,
+  rwa [measure_sdiff st hs, measure_sdiff st hs, ← B,
     ENNReal.sub_le_sub_iff_left] at A
   · exact measure_mono st
   · exact t_comp.measure_lt_top.ne

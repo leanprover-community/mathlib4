@@ -363,7 +363,7 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
   convert! tendsto_card_div_pow'' b hs₁ hs₂ ?_
   · rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ L]
   · simp only [measureReal_def]
-    rw [volume_image_eq_volume_div_covolume' L b hs₂.nullMeasurableSet, ENNReal.toReal_div,
+    rw [volume_image_eq_volume_div_covolume' L b hs₂, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
   · rw [frontier_equivFun, volume_image_eq_volume_div_covolume', hs₃, ENNReal.zero_div]
     exact NullMeasurableSet.of_null hs₃
@@ -381,7 +381,7 @@ theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
   let b := Module.Free.chooseBasis ℤ L
   convert tendsto_card_le_div'' b hX ?_ h₂ h₃ ?_
   · simp only [measureReal_def]
-    rw [volume_image_eq_volume_div_covolume' L b h₃.nullMeasurableSet, ENNReal.toReal_div,
+    rw [volume_image_eq_volume_div_covolume' L b h₃, ENNReal.toReal_div,
       ENNReal.toReal_ofReal (covolume_pos L volume).le]
   · have : Nontrivial L := nontrivial_of_finrank_pos <| (ZLattice.rank ℝ L).symm ▸ finrank_pos
     infer_instance

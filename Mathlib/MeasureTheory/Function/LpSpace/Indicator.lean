@@ -105,7 +105,7 @@ variable {s : Set α} {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {c : E}
 
 /-- Indicator of a set as an element of `Lp`. -/
 def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) : Lp E p μ :=
-  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs.nullMeasurableSet c (.inr hμs))
+  MemLp.toLp (s.indicator fun _ => c) (memLp_indicator_const p hs c (.inr hμs))
 
 /-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp` -/
 theorem indicatorConstLp_add {c' : E} :
@@ -122,7 +122,7 @@ theorem indicatorConstLp_sub {c' : E} :
   rfl
 
 theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ => c :=
-  MemLp.coeFn_toLp (memLp_indicator_const p hs.nullMeasurableSet c (Or.inr hμs))
+  MemLp.coeFn_toLp (memLp_indicator_const p hs c (Or.inr hμs))
 
 theorem indicatorConstLp_coeFn_mem : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp p hs hμs c x = c :=
   indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_mem hxs _)
@@ -133,13 +133,13 @@ theorem indicatorConstLp_coeFn_notMem : ∀ᵐ x : α ∂μ, x ∉ s → indicat
 theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
-    eLpNorm_indicator_const hs.nullMeasurableSet hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
+    eLpNorm_indicator_const hs hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
       measureReal_def, ENNReal.toReal_rpow, toReal_eNorm]
 
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
-    eLpNorm_indicator_const' hs.nullMeasurableSet hμs_ne_zero ENNReal.top_ne_zero,
+    eLpNorm_indicator_const' hs hμs_ne_zero ENNReal.top_ne_zero,
     ENNReal.toReal_top, div_zero, ENNReal.rpow_zero, mul_one, toReal_eNorm]
 
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
@@ -153,7 +153,7 @@ theorem norm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ ≤ ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [indicatorConstLp, Lp.norm_toLp]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
-  refine (eLpNorm_indicator_const_le c p hs.nullMeasurableSet).trans_eq ?_
+  refine (eLpNorm_indicator_const_le c p hs).trans_eq ?_
   rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, measureReal_def,
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   finiteness
@@ -175,8 +175,7 @@ theorem edist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμ
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
-  rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet
-    ht.nullMeasurableSet, Lp.eNorm_toLp]
+  rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs ht, Lp.eNorm_toLp]
 
 @[deprecated (since := "2026-11-06")]
 alias edist_indicatorConstLp_eq_enorm := edist_indicatorConstLp_eq_eNorm
@@ -313,7 +312,7 @@ theorem indicatorConstLp_compMeasurePreserving {s : Set β} (hs : MeasurableSet 
     (hμs : μb s ≠ ∞) (c : E) (hf : MeasurePreserving f μ μb) :
     Lp.compMeasurePreserving f hf (indicatorConstLp p hs hμs c) =
       indicatorConstLp p (hs.preimage hf.measurable)
-        (by rwa [hf.measure_preimage hs.nullMeasurableSet]) c :=
+        (by rwa [hf.measure_preimage hs]) c :=
   rfl
 
 end Lp

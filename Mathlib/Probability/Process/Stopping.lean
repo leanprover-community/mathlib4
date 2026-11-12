@@ -1212,7 +1212,7 @@ theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : �
     MemLp (stoppedProcess u τ n) p μ := by
   rw [stoppedProcess_eq_of_mem_finset n hbdd]
   refine MemLp.add ?_ ?_
-  · exact (hu n).indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)).nullMeasurableSet
+  · exact (hu n).indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n))
   · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
       convert this using 1; ext1 ω; simp only [Finset.sum_apply]
     refine memLp_finsetSum _ fun i _ ↦ (hu i).indicator ?_

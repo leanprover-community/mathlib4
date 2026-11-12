@@ -42,13 +42,13 @@ protected theorem singularPart [SigmaFinite ν] {f : X → X}
   convert hfμ.restrict_preimage hsm using 1
   · refine singularPart_eq_restrict ?_ (hfν.preimage_null hνs)
     rw [← mem_ae_iff, ← Filter.eventuallyEqSet_univ,
-      ae_eq_univ_iff_measure_eq (hfμ.measurable hsm).nullMeasurableSet]
+      ae_eq_univ_iff_measure_eq (hfμ.measurable hsm)]
     calc
       μ.singularPart ν (f ⁻¹' s) = (ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν) (f ⁻¹' s) := by
-        rw [← hfν.measure_preimage hsm.nullMeasurableSet] at hνs
+        rw [← hfν.measure_preimage hsm] at hνs
         rw [add_apply, withDensity_absolutelyContinuous _ _ hνs, zero_add]
       _ = (ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν) s := by
-        rw [rnDeriv_add_singularPart, hfμ.measure_preimage hsm.nullMeasurableSet]
+        rw [rnDeriv_add_singularPart, hfμ.measure_preimage hsm]
       _ = μ.singularPart ν s := by
         rw [add_apply, withDensity_absolutelyContinuous _ _ hνs, zero_add]
       _ = μ.singularPart ν univ := by
@@ -64,8 +64,8 @@ protected theorem withDensity_rnDeriv [SigmaFinite ν] {f : X → X}
   ext s hs
   rw [← ENNReal.add_left_inj (measure_ne_top (μ.singularPart ν) s), map_apply hfμ.measurable hs,
     ← add_apply, rnDeriv_add_singularPart,
-    ← (hfμ.singularPart hfν).measure_preimage hs.nullMeasurableSet, ← add_apply,
-    rnDeriv_add_singularPart, hfμ.measure_preimage hs.nullMeasurableSet]
+    ← (hfμ.singularPart hfν).measure_preimage hs, ← add_apply,
+    rnDeriv_add_singularPart, hfμ.measure_preimage hs]
 
 /-- The Radon-Nikodym derivative of a finite invariant measure of a self-map `f`
 with respect to another finite invariant measure of `f` is a.e. invariant under `f`. -/
@@ -81,11 +81,9 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   set s := {a | μ.rnDeriv ν a < c}
   have hsm : MeasurableSet s := measurable_rnDeriv _ _ measurableSet_Iio
   have hμ_sdiff : μ (f ⁻¹' s \ s) = μ (s \ f ⁻¹' s) :=
-    measure_sdiff_symm (hfμ.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
-      (hfμ.measure_preimage hsm.nullMeasurableSet) (by finiteness)
+    measure_sdiff_symm (hfμ.measurable hsm) hsm (hfμ.measure_preimage hsm) (by finiteness)
   have hν_sdiff : ν (f ⁻¹' s \ s) = ν (s \ f ⁻¹' s) :=
-    measure_sdiff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
-      (hfν.measure_preimage hsm.nullMeasurableSet) (by finiteness)
+    measure_sdiff_symm (hfν.measurable hsm) hsm (hfν.measure_preimage hsm) (by finiteness)
   suffices f ⁻¹' s =ᵐ[ν] s from this.mem_iff
   suffices ν (f ⁻¹' s \ s) = 0 from (ae_subset.mpr this).antisymm (ae_subset.mpr <| hν_sdiff ▸ this)
   contrapose! hμ_sdiff with h₀
