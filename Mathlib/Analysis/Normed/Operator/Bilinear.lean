@@ -496,7 +496,7 @@ protected abbrev _root_.StrongDual.smulRightL : StrongDual 𝕜 E' →L[𝕜] F�
   .smulRightL 𝕜 𝕜 𝕜 E' Fₗ'
 
 @[deprecated (since := "2026-11-12")] alias smulRightLₗ := StrongDual.smulRightL
-@[deprecated (since := "2026-11-12")] alias smulRightₗ_apply_apply :=
+@[deprecated (since := "2026-11-12")] alias smulRightLₗ_apply_apply :=
   StrongDual.smulRightL_apply_apply
 
 end ContinuousLinearMap
