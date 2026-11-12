@@ -427,7 +427,6 @@ example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) =
 @[simps +simpRhs] def succeed_without_simplification_possible : ℕ ≃ ℕ :=
   ⟨fun n ↦ n, fun n ↦ n, by intro n; rfl, by intro n; rfl⟩
 
-
 /- test that we don't recursively take projections of `prod` and `PProd` -/
 @[simps] def pprodEquivProd2 : PProd ℕ ℕ ≃ ℕ × ℕ :=
   { toFun := fun x ↦ ⟨x.1, x.2⟩

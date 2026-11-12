@@ -945,6 +945,8 @@ abbrev SimpsM := ReaderT Context <| StateRefT State MetaM
 
 /-- The changing data used in the simps-tactic needed to generate a single lemma. -/
 private structure SimpsLemmaData where
+  /-- The syntax for this projection (or for the keyword `simps` if no projections were given). -/
+  ref : Syntax
   /-- the name of the lemma to be generated -/
   declName : NameStruct
   /-- the type of the lemma to be generated -/
@@ -997,10 +999,10 @@ private structure AppliedSimpsData extends SimpsData where
   rhsAp : Expr
   /-- `args` augmented with new arguments -/
   appliedArgs : Array Expr
-  /-- the syntax for this projection, if `simps` is given explicit projection arguments. -/
-  stx? : Option Syntax
   /-- `todo` fo the next iteration -/
   todoNext : List (String × Syntax)
+  /-- Is the current project specified by the user to be added? -/
+  addThisProjection : Bool
 
 /-- Augment the `SimpsData` to `AppliedSimpsData` by applying `lhs` to arguments.
   and the projection to be applied next. -/
@@ -1012,25 +1014,27 @@ private def SimpsData.apply (s : SimpsData) (typeArgs : Array Expr) (tgt : Expr)
   let tgtWhnf ← whnfD tgt
   trace[simps.debug] "Type after reduction: {tgtWhnf}"
   trace[simps.debug] "todo: {s.todo}, toApply: {s.toApply}"
+  let stx? := s.todo.find? (·.1 == "")
   return {
       s with
+      ref := stx?.map (·.2) |>.getD s.ref
       tgt, tgtWhnf
       str := tgtWhnf.getAppFn.constName
       lhsAp := s.lhs.instantiateLambdasOrApps typeArgs
       rhsAp := s.rhs.instantiateLambdasOrApps typeArgs
       appliedArgs := s.args ++ typeArgs
       todoNext := s.todo.filter (·.1 ≠ "")
-      stx? := s.todo.find? (·.1 == "") |>.map (·.2)
+      addThisProjection := stx?.isSome && s.toApply.isEmpty
     }
 
 /-- Extract the applied `SimpsLemmaData`. -/
 private def AppliedSimpsData.applied (s : AppliedSimpsData) : SimpsLemmaData where
+  ref := s.ref
   declName := s.declName
   type := s.tgt
   lhs := s.lhsAp
   rhs := s.rhsAp
   args := s.appliedArgs
-
 
 /-- Compute the `SimpsData` for the next iteration from the current `AppliedSimpsData`
   and the projection to be applied next. -/
@@ -1038,6 +1042,7 @@ private def AppliedSimpsData.next (s : AppliedSimpsData) (c : Expr × Projection
     SimpsM SimpsData :=
   let ⟨newRhs, proj, projExpr, projNrs, _, isPrefix⟩ := c
   return {
+  ref := s.ref
   declName := s.declName.update proj.lastComponentAsString isPrefix
   type := ← inferType newRhs
   lhs := projExpr.instantiateLambdasOrApps #[s.lhsAp]
@@ -1049,9 +1054,6 @@ private def AppliedSimpsData.next (s : AppliedSimpsData) (c : Expr × Projection
   toApply := projNrs
   mustBeStr := false
   }
-
-
-variable (ref : Syntax)
 
 /-- Get the projections of a structure used by `@[simps]` applied to the appropriate arguments.
 Returns a list of tuples
@@ -1078,7 +1080,8 @@ used to generate (and parse) projection names. For example, in the structure
      ...]
   ```
 -/
-def getProjectionExprs (tgt : Expr) (rhs : Expr) : SimpsM <| Array <| Expr × ProjectionData := do
+def getProjectionExprs (ref : Syntax) (tgt : Expr) (rhs : Expr) :
+    SimpsM <| Array <| Expr × ProjectionData := do
   -- the parameters of the structure
   let params := tgt.getAppArgs
   if (← read).cfg.debug && !(← (params.zip rhs.getAppArgs).allM fun ⟨a, b⟩ ↦ isDefEq a b) then
@@ -1140,7 +1143,7 @@ private def addProjection (s : SimpsLemmaData) : SimpsM Unit :=
     throwError "simps tried to add lemma\
     {indentD m!"{.ofConstName s.declName.toName} : {declType}"}\n\
       to the environment, but it already exists."
-  Mathlib.Tactic.warnIfImplicitIllTyped ref s.declName declType
+  Mathlib.Tactic.warnIfImplicitIllTyped s.ref s.declName declType
   prependError "Failed to add projection lemma {declName}:" do
     addDecl <| .thmDecl {
       name := s.declName
@@ -1150,8 +1153,8 @@ private def addProjection (s : SimpsLemmaData) : SimpsM Unit :=
   trace[simps] "Adding `{.ofConstName s.declName}` :{indentExpr declType}"
   inferDefEqAttr s.declName
   -- add term info and apply attributes
-  addDeclarationRangesFromSyntax s.declName (← getRef) ref
-  addTermInfo' ref (← mkConstWithLevelParams s.declName) (isBinder := true) |>.run'
+  addDeclarationRangesFromSyntax s.declName (← getRef) s.ref
+  addTermInfo' s.ref (← mkConstWithLevelParams s.declName) (isBinder := true) |>.run'
   if cfg.isSimp then
     addSimpTheorem simpExtension s.declName true false .global <| eval_prio default
   TermElabM.run' do
@@ -1205,7 +1208,6 @@ private partial def addProjections (s : SimpsData) : SimpsM Unit := do
   /- The syntax object associated to the projection we're making now (if any).
   Note that we use `ref[0]` so that with `simps (config := ...)` we associate it to the word `simps`
   instead of the application of the attribute to arguments. -/
-  let stxProj := s.stx?.getD ref[0]
   let strInfo? := getStructureInfo? env s.str
   /- Don't recursively continue if `str` is not a structure or if the structure is in
   `notRecursive`. -/
@@ -1219,29 +1221,28 @@ private partial def addProjections (s : SimpsData) : SimpsM Unit := do
         Projection {(splitOnNotNumber firstTodo "_")[0]!} doesn't exist, \
         because target {s.str} is not a structure."
     if cfg.fullyApplied then
-      addProjection stxProj s.applied
+      addProjection s.applied
     else
-      addProjection stxProj { s with }
+      addProjection { s with }
     return
   -- if the type is a structure
   let some (.inductInfo { isRec := false, ctors := [ctor], .. }) := env.find? s.str | unreachable!
   trace[simps.debug] "{s.str} is a structure with constructor {ctor}."
   let s := {s with rhsAp := ← headStructureEtaReduce s.rhsAp }
   -- did the user ask to add this projection?
-  let addThisProjection := s.stx?.isSome && s.toApply.isEmpty
-  if addThisProjection then
+  if s.addThisProjection then
     -- we pass the precise argument of simps as syntax argument to `addProjection`
     if cfg.fullyApplied then
-      addProjection stxProj s.applied
+      addProjection s.applied
     else
-      addProjection stxProj { s with }
+      addProjection { s with }
   let rhsWhnf ← withTransparency cfg.rhsMd <| whnf s.rhsAp
   trace[simps.debug] "The right-hand-side {indentExpr s.rhsAp}\n reduces to {indentExpr rhsWhnf}"
   if !rhsWhnf.getAppFn.isConstOf ctor then
     -- if I'm about to run into an error, try to set the transparency for `rhsMd` higher.
     if cfg.rhsMd == .reducible && (s.mustBeStr || !s.todoNext.isEmpty || !s.toApply.isEmpty) then
       trace[simps.debug] "Using relaxed reducibility."
-      Linter.logLintIf linter.simpsNoConstructor stxProj m!"\
+      Linter.logLintIf linter.simpsNoConstructor s.ref m!"\
         The definition {s.declName.toName} is not a constructor application. \
         Please use `@[simps!]` instead.\n\
         \n\
@@ -1263,7 +1264,7 @@ private partial def addProjections (s : SimpsData) : SimpsM Unit := do
         multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to \
         unfold the corresponding `Equiv` to get to the `toFun` field."
       withReader (fun ctx ↦ { ctx with cfg := { cfg with rhsMd := .default, simpRhs := true } }) do
-        addProjections { s with todo := if addThisProjection then s.todoNext else s.todo }
+        addProjections { s with todo := if s.addThisProjection then s.todoNext else s.todo }
       return
     if !s.toApply.isEmpty then
       throwError "Invalid simp lemma {s.declName.toName}.\nThe given definition is not a \
@@ -1275,15 +1276,15 @@ private partial def addProjections (s : SimpsData) : SimpsM Unit := do
       throwError "Invalid simp lemma \
         {s.declName.update (dropLast s.todoNext.head!.1) false |>.toName}.\
         \nThe given definition is not a constructor application:{indentExpr rhsWhnf}"
-    if !addThisProjection then
+    if !s.addThisProjection then
       if cfg.fullyApplied then
-        addProjection stxProj s.applied
+        addProjection s.applied
       else
-        addProjection stxProj { s with }
+        addProjection { s with }
     return
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
-  let projInfo ← getProjectionExprs stxProj s.tgtWhnf rhsWhnf
+  let projInfo ← getProjectionExprs s.ref s.tgtWhnf rhsWhnf
   trace[simps.debug] "Raw projection information:{indentD m!"{projInfo}"}"
   -- If we are in the middle of a composite projection.
   if let idx :: rest := s.toApply then
@@ -1354,6 +1355,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let ctx : Simps.Context :=
     { cfg, defName := nm, univs := d.levelParams, autoProjs := todo.isEmpty }
   let s : SimpsData := {
+      ref := ref[0]
       declName
       type := d.type
       lhs := mkConst d.name <| d.levelParams.map Level.param
@@ -1364,7 +1366,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
       toApply := []
     }
   let ⟨_, { lemmas, ..}⟩ ← MetaM.run' <| StateRefT'.run (s := { lemmas := #[] }) <|
-    ReaderT.run (r := ctx) <| addProjections ref s
+    ReaderT.run (r := ctx) <| addProjections s
   return lemmas
 
 /-- elaborate the syntax and run `simpsTac`. -/
