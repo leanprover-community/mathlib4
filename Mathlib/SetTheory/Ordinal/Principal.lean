@@ -192,11 +192,6 @@ theorem IsAddPrincipal.isSuccLimit (ho₁ : 1 < o) (ho : IsAddPrincipal o) : IsS
 @[deprecated (since := "2026-11-12")]
 alias isSuccLimit_of_isPrincipal_add := IsAddPrincipal.isSuccLimit
 
-theorem IsAddPrincipal.isSuccPrelimit (ho₁ : o ≠ 1) (ho : IsAddPrincipal o) : IsSuccPrelimit o := by
-  obtain ho₁ | ho₁ := ho₁.lt_or_gt
-  · simp_all
-  · exact (ho.isSuccLimit ho₁).isSuccPrelimit
-
 theorem isAddPrincipal_iff_add_left_eq_self : IsAddPrincipal o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
   · rcases lt_or_ge 1 o with ho₁ | ho₁
@@ -524,15 +519,6 @@ alias IsPrincipal.mul_of_opow := IsOpowPrincipal.isMulPrincipal
 theorem IsOpowPrincipal.isSuccLimit (ho₂ : 2 < o) (ho : IsOpowPrincipal o) :
     IsSuccLimit o :=
   ho.isMulPrincipal.isSuccLimit ho₂
-
-theorem IsOpowPrincipal.isSuccPrelimit (ho₂ : o ≠ 2) (ho : IsOpowPrincipal o) :
-    IsSuccPrelimit o := by
-  obtain ho₂ | ho₂ := ho₂.lt_or_gt
-  · rw [Order.lt_two_iff, Order.le_one_iff] at ho₂
-    obtain rfl | rfl := ho₂
-    · simp
-    · simp at ho
-  · exact (ho.isSuccLimit ho₂).isSuccPrelimit
 
 @[deprecated (since := "2026-11-12")]
 alias isSuccLimit_of_isPrincipal_opow := IsOpowPrincipal.isSuccLimit
