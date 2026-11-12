@@ -275,11 +275,9 @@ theorem gelfandRadiusAlgNorm_def (x : L) :
   rfl
 
 variable {L} in
-omit [Algebra.IsAlgebraic K L] in
 /-- The Gelfand radius norm is invariant under algebra maps. -/
 @[simp]
 theorem gelfandRadiusAlgNorm_algebraMap (x : L) :
-    haveI : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.tower_bot K L M
     gelfandRadiusAlgNorm K M (algebraMap L M x) = gelfandRadiusAlgNorm K L x :=
   gelfandRadiusNorm_algebraMap K M x
 
