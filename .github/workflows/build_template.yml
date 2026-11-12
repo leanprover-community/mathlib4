@@ -91,28 +91,6 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
-      # Validate lake-manifest.json before setup downloads dependencies.
-      # Check that dependencies use allowed repositories and references, with full commit hashes.
-      # Check pins against their branch or tag, and detect accidental dependency downgrades.
-      # Full rules:
-      # https://github.com/leanprover-community/mathlib-ci/blob/master/.github/actions/validate-lake-manifest/README.md
-      # Bors uses strict mode; other runs can test unmerged dependencies with warnings.
-      # For an intentional revert, an admin sets MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS to true
-      # and deletes the variable after the revert merges.
-      - name: Validate lake-manifest.json
-        # Skip `bump/*` branches and PRs that target them, because their dependencies track `nightly-testing`.
-        # For PRs, use `github.base_ref`: `pull_request_target` sets `github.ref_name` to the default branch.
-        # Bors batches still run the check on `staging`.
-        if: >-
-          github.repository == 'leanprover-community/mathlib4'
-          && !startsWith(github.ref_name, 'bump/')
-          && !startsWith(github.base_ref, 'bump/')
-        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@e08feb664fe178b59a3fff5de1aa9893535b8a6c
-        with:
-          ref: ${{ inputs.pr_branch_ref }}
-          strict: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
-          allow-older-pins: ${{ vars.MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS == 'true' }}
-
       # Shared self-hosted setup (cache-trust dispatch,
       # PR-branch checkout, elan + toolchain/LEAN_SRC_PATH env, CI tools, dependency
       # download); see the action for per-step rationale. It is loaded from the
@@ -1266,14 +1244,69 @@ jobs:
           # This job runs with only `contents: read` and no persisted credentials,
           # so checking out fork PR code under pull_request_target is safe.
           allow-unsafe-pr-checkout: true
+      - uses: leanprover-community/lint-style-action@a5e3ef275cc682ba79c1f8ba34ae2ade5d8d2101 # 2026-10-28
+        with:
+          mode: check
+          lint-bib-file: true
+          checkout: false
+
+  # Checks for rules that a PR can break to test a change, but that must hold on `master`.
+  # On bors runs (`staging` and `trying`) a finding is an error, and bors requires this job.
+  # On other runs a finding is a warning, so the job passes.
+  merge_checks:
+    name: Merge checks
+    runs-on: ubuntu-latest
+    # The job reads (potentially fork) PR files and runs no PR code.
+    permissions:
+      contents: read
+    env:
+      STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          sparse-checkout: .github
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
+          # This job runs with only `contents: read` and no persisted credentials,
+          # so checking out fork PR code under pull_request_target is safe.
+          allow-unsafe-pr-checkout: true
+
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+
+      # Check that dependencies use allowed repositories and references, with full commit hashes.
+      # Check pins against their branch or tag, and detect accidental dependency downgrades.
+      # Full rules:
+      # https://github.com/leanprover-community/mathlib-ci/blob/master/.github/actions/validate-lake-manifest/README.md
+      # For an intentional revert, an admin sets MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS to true
+      # and deletes the variable after the revert merges.
+      - name: Validate lake-manifest.json
+        # Skip `bump/*` branches and PRs that target them, because their dependencies track `nightly-testing`.
+        # For PRs, use `github.base_ref`: `pull_request_target` sets `github.ref_name` to the default branch.
+        # Bors batches still run the check on `staging`.
+        if: >-
+          github.repository == 'leanprover-community/mathlib4'
+          && !startsWith(github.ref_name, 'bump/')
+          && !startsWith(github.base_ref, 'bump/')
+        uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@e08feb664fe178b59a3fff5de1aa9893535b8a6c
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          strict: ${{ env.STRICT }}
+          allow-older-pins: ${{ vars.MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS == 'true' }}
+
       # Check that each mathlib-ci commit that `.github/` pins is on mathlib-ci `master`.
       # A commit from a mathlib-ci PR branch or fork runs unreviewed code with mathlib4 secrets.
-      # On bors runs a finding is an error; on other runs it is a warning, so a PR can test an
-      # unmerged mathlib-ci change. The step only reads the checked-out files.
       - name: Check mathlib-ci pins
+        if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
-          STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
         run: |
           level=warning; [ "$STRICT" = true ] && level=error
           # `file:line:sha` for each `mathlib-ci/...@<sha>` and for the default ref of get-mathlib-ci.
@@ -1292,11 +1325,106 @@ jobs:
             done
           done
           [ "$level" = warning ] || exit "$status"
-      - uses: leanprover-community/lint-style-action@a5e3ef275cc682ba79c1f8ba34ae2ade5d8d2101 # 2026-10-28
+
+      # The paths are checked against the mathlib-ci commit that the PR pins in get-mathlib-ci,
+      # because the workflows run the scripts at that commit.
+      - name: Read the mathlib-ci pin
+        id: pin
+        if: ${{ !cancelled() }}
+        run: |
+          sha=$(sed -nE 's/^ *default: ([0-9a-f]{40})$/\1/p' .github/actions/get-mathlib-ci/action.yml)
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error file=.github/actions/get-mathlib-ci/action.yml::get-mathlib-ci has no default commit."; exit 1; }
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Get mathlib-ci
+        id: get_mathlib_ci
+        if: ${{ !cancelled() && steps.pin.outcome == 'success' }}
+        # On other runs a missing commit is only a warning, which "Check mathlib-ci pins" reports.
+        continue-on-error: ${{ env.STRICT != 'true' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
         with:
-          mode: check
-          lint-bib-file: true
-          checkout: false
+          ref: ${{ steps.pin.outputs.sha }}
+
+      # 1. Each literal `$CI_SCRIPTS_DIR/<path>` or `${CI_SCRIPTS_DIR}/<path>` in a workflow names a
+      #    file in the mathlib-ci scripts directory. The check does not see paths that a workflow
+      #    builds at run time.
+      # 2. No workflow checks out mathlib-ci with `actions/checkout`; workflows use the local
+      #    get-mathlib-ci action, which holds the pin.
+      - name: Check mathlib-ci usage in workflows
+        if: ${{ !cancelled() && steps.get_mathlib_ci.outcome == 'success' }}
+        env:
+          PIN: ${{ steps.pin.outputs.sha }}
+          CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
+        shell: python
+        run: |
+          import os
+          import re
+          import sys
+          from pathlib import Path
+
+          level = "error" if os.environ["STRICT"] == "true" else "warning"
+          pin = os.environ["PIN"]
+          scripts_dir = Path(os.environ["CI_SCRIPTS_DIR"]).resolve()
+          findings = 0
+
+          def report(path, line, message):
+            global findings
+            findings += 1
+            print(f"::{level} file={path},line={line}::{message}")
+
+          def strip_yaml_comment(line: str) -> str:
+            """Strip YAML comments, preserving # characters inside quotes."""
+            in_single = False
+            in_double = False
+            escaped = False
+            for i, ch in enumerate(line):
+              if in_double:
+                if escaped:
+                  escaped = False
+                elif ch == "\\":
+                  escaped = True
+                elif ch == '"':
+                  in_double = False
+              elif in_single:
+                if ch == "'":
+                  in_single = False
+              else:
+                if ch == '"':
+                  in_double = True
+                elif ch == "'":
+                  in_single = True
+                elif ch == "#":
+                  return line[:i]
+            return line.rstrip()
+
+          def indent(line: str) -> int:
+            return len(line) - len(line.lstrip(" "))
+
+          script_path = re.compile(r"(?:\$\{CI_SCRIPTS_DIR\}|\$CI_SCRIPTS_DIR)/([A-Za-z0-9._/-]+)")
+          workflows_dir = Path(".github/workflows")
+          for workflow in sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml")):
+            lines = [strip_yaml_comment(line) for line in workflow.read_text().splitlines()]
+            for i, content in enumerate(lines):
+              for match in script_path.finditer(content):
+                rel_path = match.group(1)
+                if rel_path == "...":
+                  continue
+                full_path = (scripts_dir / rel_path).resolve()
+                if not full_path.is_relative_to(scripts_dir) or not full_path.exists():
+                  report(workflow, i + 1, f"The mathlib-ci scripts at {pin} have no file `{rel_path}`.")
+
+              repository = re.match(r"^\s*repository:\s*(['\"]?)(.*?)\1\s*$", content)
+              if not repository or not repository.group(2).endswith("/mathlib-ci"):
+                continue
+              # Walk up to the `-` line that starts the step, then look for `uses: actions/checkout@`
+              # between that line and `repository:`.
+              j = i
+              while j >= 0 and not (re.match(r"^\s*-\s+", lines[j]) and indent(lines[j]) < indent(content)):
+                j -= 1
+              if j >= 0 and any(re.match(r"^\s*(-\s+)?uses:\s*actions/checkout@", lines[k]) for k in range(j, i)):
+                report(workflow, i + 1, "The step checks out mathlib-ci with actions/checkout.%0A"
+                       "Hint: Use `./workflow-actions/.github/actions/get-mathlib-ci` instead.")
+
+          sys.exit(1 if findings and level == "error" else 0)
 
   final:
     name: Post-CI job
