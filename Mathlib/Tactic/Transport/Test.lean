@@ -230,6 +230,7 @@ instance : EquivMapClass α α where
 
 end MapClass
 
+@[expose]
 def MapRel {α β : Type*} (map : α → β) (a : α) (b : β) : Prop := map a = b
 
 namespace MapRel
