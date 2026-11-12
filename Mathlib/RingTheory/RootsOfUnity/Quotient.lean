@@ -25,6 +25,13 @@ of `R` to `n`-th roots of unity of `R ⧸ I`.
 * `Ideal.rootsOfUnityMapQuot_injective`: if the absolute norm of `I` is different from `1` and
   coprime with `n`, then the map `Ideal.rootsOfUnityMapQuot` is injective.
 
+* `IsPrimitiveRoot.idealQuotient_mk`: if the absolute norm of `I` is different from `1` and
+  coprime with `n`, then the reduction modulo `I` of a primitive `n`-th root of unity is a
+  primitive `n`-th root of unity.
+
+* `IsPrimitiveRoot.not_coprime_absNorm_of_mk_eq_one`: if a primitive `n`-th root of unity, with
+  `2 ≤ n`, is `1` modulo a proper ideal `I`, then the absolute norm of `I` is not coprime with `n`.
+
 -/
 
 public section
@@ -38,12 +45,12 @@ quotient map `R → R ⧸ I`. -/
 def rootsOfUnityMapQuot (n : ℕ) : rootsOfUnity n R →* (R ⧸ I)ˣ :=
   (rootsOfUnity n (R ⧸ I)).subtype.comp (restrictRootsOfUnity (Ideal.Quotient.mk I) n)
 
-@[deprecated "use `coe_rootsOfUnityMapQuot`" (since := "2026-10-07")]
+@[deprecated "use `rootsOfUnityMapQuot_coe_apply`" (since := "2026-10-07")]
 theorem rootsOfUnityMapQuot_apply (n : ℕ) {x : Rˣ} (hx : x ∈ rootsOfUnity n R) :
     rootsOfUnityMapQuot I n ⟨x, hx⟩ = Ideal.Quotient.mk I x := by rfl
 
 @[simp]
-theorem coe_rootsOfUnityMapQuot (n : ℕ) (ζ : rootsOfUnity n R) :
+theorem rootsOfUnityMapQuot_coe_apply (n : ℕ) (ζ : rootsOfUnity n R) :
     (I.rootsOfUnityMapQuot n ζ : R ⧸ I) = Ideal.Quotient.mk I (ζ : Rˣ) := by
   rfl
 
@@ -53,8 +60,7 @@ theorem rootsOfUnityMapQuot_injective_of_notMem [IsDomain R] {n : ℕ} (hn : (n 
     Function.Injective (I.rootsOfUnityMapQuot n) := by
   refine (injective_iff_map_eq_one _).mpr fun ζ h ↦ ?_
   by_contra hζ
-  obtain ⟨c, hc⟩ := sub_one_dvd_natCast_of_pow_eq_one (n := n)
-    (by simpa using congr_arg Units.val ((mem_rootsOfUnity n _).mp ζ.prop))
+  obtain ⟨c, hc⟩ := sub_one_dvd_natCast_of_pow_eq_one ((mem_rootsOfUnity' n _).mp ζ.prop)
     (fun h₁ ↦ hζ (Subtype.ext (Units.ext h₁)))
   refine hn (hc ▸ I.mul_mem_right c ?_)
   rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one, sub_eq_zero]
@@ -73,22 +79,10 @@ namespace Ideal
 theorem rootsOfUnityMapQuot_injective (n : ℕ) (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime n) :
     Function.Injective (rootsOfUnityMapQuot I n) := by
-  refine rootsOfUnityMapQuot_injective_of_notMem I fun hn ↦ hI₁ ?_
-  obtain h₀ | h₀ := eq_or_ne (absNorm I) 0
-  · rw [h₀, Nat.coprime_zero_left] at hI₂
-    rw [(I.eq_top_iff_one).mpr (by simpa [hI₂] using hn), absNorm_top]
-  have hI : I ≠ ⊥ := fun h ↦ h₀ (h ▸ absNorm_bot)
-  rw [absNorm_of_ne_bot hI, Submodule.cardQuot_apply] at hI₂ h₀ ⊢
-  have := Nat.finite_of_card_ne_zero h₀
-  by_contra h
-  obtain ⟨p, hp, hpd⟩ := Nat.exists_prime_and_dvd h
-  have : Fact p.Prime := ⟨hp⟩
-  obtain ⟨x, hx⟩ := exists_prime_addOrderOf_dvd_card' p hpd
-  refine hp.not_dvd_one (hI₂ ▸ Nat.dvd_gcd hpd (hx ▸ addOrderOf_dvd_of_nsmul_eq_zero ?_))
-  obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
-  rw [nsmul_eq_mul, ← map_natCast (Ideal.Quotient.mk I), ← map_mul,
-    Ideal.Quotient.eq_zero_iff_mem]
-  exact I.mul_mem_right r hn
+  refine rootsOfUnityMapQuot_injective_of_notMem I fun hn ↦ hI₁ <| absNorm_eq_one_iff.mpr <|
+    I.eq_top_iff_one.mpr ?_
+  obtain ⟨u, v, h⟩ := hI₂.cast (R := R)
+  exact h ▸ I.add_mem (I.mul_mem_left u (absNorm_mem I)) (I.mul_mem_left v hn)
 
 theorem rootsOfUnityMapQuot_inj (n : ℕ) (hI₁ : absNorm I ≠ 1)
     (hI₂ : (absNorm I).Coprime n) {x y : rootsOfUnity n R} :

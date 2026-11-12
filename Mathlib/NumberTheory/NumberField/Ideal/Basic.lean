@@ -101,20 +101,15 @@ theorem Ideal.torsionMapQuot_injective' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
     refine ⟨orderOf ζ, ?_, IsPrimitiveRoot.coe_coe_iff.mpr (IsPrimitiveRoot.orderOf ζ)⟩
     rw [Nat.two_le_iff, orderOf_ne_zero_iff]
     exact ⟨hζ₀, by simpa using hζ₂⟩
+  have h_cpr := (hζ₃.of_map_of_injective RingOfIntegers.coe_injective)
+    |>.not_coprime_absNorm_of_mk_eq_one hn (absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP)
+    (by simpa [Units.ext_iff] using hζ₁)
   let p := (Ideal.under ℤ P).absNorm
   have hp := Nat.absNorm_under_prime P
   have : Fact p.Prime := ⟨hp⟩
-  obtain ⟨c, hc⟩ : p ∣ n := by
-    have hnP : (n : 𝓞 K) ∈ P := by
-      obtain ⟨d, hd⟩ := sub_one_dvd_natCast_of_pow_eq_one (ζ := ((ζ : (𝓞 K)ˣ) : 𝓞 K)) (n := n)
-        (RingOfIntegers.coe_injective (by simpa using hζ₃.pow_eq_one))
-        (fun h ↦ hζ₂ (Subtype.ext (Units.ext h)))
-      rw [hd]
-      refine P.mul_mem_right d ?_
-      rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_one, sub_eq_zero]
-      simpa [Units.ext_iff] using hζ₁
-    rw [← Int.natCast_dvd_natCast, ← Ideal.mem_span_singleton, Int.ideal_span_absNorm_eq_self]
-    simpa using hnP
+  rw [← P.pow_inertiaDeg p, Nat.coprime_pow_left_iff (P.inertiaDeg_pos ℤ),
+    ← Nat.Prime.dvd_iff_not_coprime hp] at h_cpr
+  obtain ⟨c, hc⟩ := h_cpr
   have hζ_pow := IsPrimitiveRoot.pow (by positivity) hζ₃ (by rwa [mul_comm])
   let F := ℚ⟮(ζ : K) ^ c⟯
   have : IsCyclotomicExtension {p} ℚ F :=
