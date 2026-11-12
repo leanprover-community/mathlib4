@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
 The `Monoid` and `DistribMulAction` instances and additive versions are provided in
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
-
 -/
 
 @[expose] public section

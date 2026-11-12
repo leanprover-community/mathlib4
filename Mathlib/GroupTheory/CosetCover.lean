@@ -44,7 +44,6 @@ set of all minimal polynomials (not proved here).
 [1] [Neumann-1954], *Groups Covered By Permutable Subsets*, Lemma 4.1
 [2] <https://mathoverflow.net/a/17398/3332>
 [3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
-
 -/
 
 public section

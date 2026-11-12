@@ -17,7 +17,6 @@ public import Mathlib.RingTheory.Unramified.Pi
 
 - `Algebra.FormallyEtale.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-étale
   if and only if each `A i` is `R`-formally-étale.
-
 -/
 
 public section

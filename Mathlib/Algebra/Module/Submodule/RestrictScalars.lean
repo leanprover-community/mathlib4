@@ -18,7 +18,6 @@ this restriction of scalars for submodules.
 
 ## Main definitions:
 * `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
-
 -/
 
 @[expose] public section

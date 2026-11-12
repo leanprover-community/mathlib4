@@ -46,7 +46,6 @@ we could keep the collection of instances behind an `open scoped`.
   `(exp x).snd = ∫ t in 0..1, exp (t • x.fst) • op (exp ((1 - t) • x.fst)) • x.snd`
   ([Physics.SE](https://physics.stackexchange.com/a/41671/185147), and
   https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
-
 -/
 
 public section

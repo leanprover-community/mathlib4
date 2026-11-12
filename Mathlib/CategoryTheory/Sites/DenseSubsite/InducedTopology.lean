@@ -29,7 +29,6 @@ Given a fully faithful cover-dense functor `G : C ⥤ (D, K)` between small site
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
 * https://ncatlab.org/nlab/show/dense+sub-site
 * https://ncatlab.org/nlab/show/comparison+lemma
-
 -/
 
 @[expose] public section

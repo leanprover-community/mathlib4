@@ -32,7 +32,6 @@ We give methods for computing coefficients of the characteristic polynomial.
   polynomial as signed sums of principal minors.
 - `Matrix.charpolyRev` the reverse of the characteristic polynomial.
 - `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
-
 -/
 
 @[expose] public section

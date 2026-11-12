@@ -21,7 +21,6 @@ showing it has an Iwasawa structure.
 
 * `PSL.iwasawaT` : the candidate family of subgroups for the Iwasawa structure on
   `PSL ι F` acting on the projective space `ℙ F (ι → F)` from `Matrix.SpecialLinearGroup.lineStab`.
-
 -/
 
 @[expose] public section
@@ -106,10 +105,12 @@ private lemma LinearMap.exists_restrict_span_singleton_eq_smul_id
   · simp [Subtype.ext_iff, ← hc, smul_comm a c v]
 
 lemma Matrix.SpecialLinearGroup.lineStab_fix_of_span
-    (v : ι → F) (hv : v ≠ 0)
+    (v : ι → F)
     (A : Matrix.SpecialLinearGroup ι F)
     (hA : A ∈ lineStab (Submodule.span F {v})) :
     A • v = v := by
+  rcases eq_or_ne v 0 with rfl | hv
+  · simp
   set L : Submodule F (ι → F) := Submodule.span F {v}
   obtain ⟨c, hcv, hcomap, hres⟩ :=
     LinearMap.exists_restrict_span_singleton_eq_smul_id (A := A.toLin'.toLinearMap)
@@ -123,9 +124,9 @@ lemma Matrix.SpecialLinearGroup.lineStab_fix_of_span
       LinearMap.det_id, LinearMap.det_id, mul_one, mul_one] at hdet
   exact hcv.trans (hdet ▸ one_smul F v)
 
-/-- The subgroup `lineStab (span F {v})` is commutative when `v ≠ 0`. -/
+/-- The subgroup `lineStab (span F {v})` is commutative. -/
 lemma Matrix.SpecialLinearGroup.lineStab_isMulCommutative_of_span'
-    (v : ι → F) (hv : v ≠ 0) (A B : SpecialLinearGroup ι F)
+    (v : ι → F) (A B : SpecialLinearGroup ι F)
     (hA : A ∈ SpecialLinearGroup.lineStab (Submodule.span F {v}))
     (hB : B ∈ SpecialLinearGroup.lineStab (Submodule.span F {v})) :
     A * B = B * A := by
@@ -135,8 +136,8 @@ lemma Matrix.SpecialLinearGroup.lineStab_isMulCommutative_of_span'
   simp only [coe_mul, mul_smul, ← Matrix.SpecialLinearGroup.smul_def]
   rw [← sub_add_cancel (A • w) w, ← hα, ← sub_add_cancel (B • w) w,
     ← hβ, smul_add, smul_add, ← sub_left_inj (a := w), ← add_sub, ← hα, ← add_sub, ← hβ,
-    smul_comm, lineStab_fix_of_span v hv A hA, smul_comm, lineStab_fix_of_span v hv B hB, add_comm]
+    smul_comm, lineStab_fix_of_span v A hA, smul_comm, lineStab_fix_of_span v B hB, add_comm]
 
 lemma Matrix.SpecialLinearGroup.lineStab_isMulCommutative_of_span
-    (v : ι → F) (hv : v ≠ 0) : IsMulCommutative (lineStab (Submodule.span F {v})) :=
-  ⟨⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ by simpa using lineStab_isMulCommutative_of_span' v hv A B hA hB⟩⟩
+    (v : ι → F) : IsMulCommutative (lineStab (Submodule.span F {v})) :=
+  ⟨⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ by simpa using lineStab_isMulCommutative_of_span' v A B hA hB⟩⟩

@@ -18,7 +18,6 @@ and any morphism in `C` can be factored a `i ≫ p` with `W₁ i` and `W₂ p`.
 
 ## References
 * https://ncatlab.org/nlab/show/weak+factorization+system
-
 -/
 
 public section
