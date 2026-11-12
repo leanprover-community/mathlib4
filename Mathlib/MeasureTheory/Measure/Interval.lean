@@ -40,7 +40,7 @@ theorem biSup_measure_Iic {s : Set α} (hsc : s.Countable)
   · congr
     simp only [← bex_def] at hst
     exact iUnion₂_eq_univ_iff.2 hst
-  · exact directedOn_iff_directed.2 (hdir.directed_val.mono_comp _ fun x y => Iic_subset_Iic.2)
+  · exact directedOn_iff_directed.2 (hdir.directed_val.mono_comp fun x y => Iic_subset_Iic.2)
 
 theorem tendsto_measure_Ico_atTop [NoMaxOrder α] [(atTop : Filter α).IsCountablyGenerated]
     (μ : Measure α) (a : α) :
