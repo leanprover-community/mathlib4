@@ -180,7 +180,7 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
     rw [replicate_succ, dedup_cons_of_mem (mem_replicate.2 ⟨n.succ_ne_zero, rfl⟩),
       replicate_dedup n.succ_ne_zero]
 
-lemma replicate_dedup_iff (l : List α) {x : α} :
+lemma dedup_eq_singleton_iff (l : List α) {x : α} :
     l.dedup = [x] ↔ ∃ n : ℕ, l = List.replicate (n+1) x := by
   constructor
   · intro h; use l.length - 1
