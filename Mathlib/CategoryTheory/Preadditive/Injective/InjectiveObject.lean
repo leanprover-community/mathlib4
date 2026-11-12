@@ -11,10 +11,9 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # The full subcategory of injective objects
-
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

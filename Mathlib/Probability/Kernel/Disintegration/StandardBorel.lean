@@ -5,12 +5,10 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.Probability.Kernel.Disintegration.Basic
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
 public import Mathlib.Probability.Kernel.Disintegration.Density
-public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
-public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!
 # Existence of disintegration of measures and kernels for standard Borel spaces
@@ -84,7 +82,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKe
     IsRatCondKernelCDFAux (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ) where
   measurable := measurable_pi_iff.mpr fun _ ↦ measurable_density κ (fst κ) measurableSet_Iic
   mono' a q r hqr :=
-    ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (by exact_mod_cast hqr))
+    ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (mod_cast hqr))
   nonneg' _ _ := ae_of_all _ fun _ ↦ density_nonneg le_rfl _ _ _
   le_one' _ _ := ae_of_all _ fun _ ↦ density_le_one le_rfl _ _ _
   tendsto_integral_of_antitone a s hs_anti hs_tendsto := by
@@ -159,10 +157,11 @@ instance instIsMarkovKernelCondKernelUnitReal (κ : Kernel Unit (α × ℝ)) [Is
   rw [condKernelUnitReal]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance condKernelUnitReal.instIsCondKernel (κ : Kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
     κ.IsCondKernel κ.condKernelUnitReal where
-  disintegrate := by rw [condKernelUnitReal, compProd_toKernel]; ext; simp
+  disintegrate := by
+    rw [condKernelUnitReal]
+    exact compProd_toKernel (isCondKernelCDF_condCDF (κ ()))
 
 end Real
 
@@ -281,7 +280,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   · exact measurable_prodMk_left ht
   · exact measurable_prodMk_left ht
   classical
-  rw [piecewise_apply, if_pos]
+  rw [piecewise_apply, ite_eq_left]
   exact ha
 
 /-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.
@@ -357,8 +356,9 @@ variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 /-- Conditional kernel of a measure on a product space: a Markov kernel such that
 `ρ = ρ.fst ⊗ₘ ρ.condKernel` (see `MeasureTheory.Measure.compProd_fst_condKernel`). -/
+@[no_expose]
 noncomputable
-irreducible_def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
+def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
     Kernel α Ω :=
   comap (condKernelUnitBorel (const Unit ρ)) (fun a ↦ ((), a)) measurable_prodMk_left
 
@@ -401,8 +401,9 @@ open scoped Classical in
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
 It exists whenever `Ω` is standard Borel and either `α` is countable
 or `β` is countably generated. -/
+@[no_expose]
 noncomputable
-irreducible_def condKernel : Kernel (α × β) Ω :=
+def condKernel : Kernel (α × β) Ω :=
   if hα : Countable α then
     condKernelCountable (fun a ↦ (κ a).condKernel)
       fun x y h ↦ by simp [apply_congr_of_mem_measurableAtom _ h]
@@ -410,11 +411,11 @@ irreducible_def condKernel : Kernel (α × β) Ω :=
 
 /-- `condKernel κ` is a Markov kernel. -/
 instance instIsMarkovKernelCondKernel : IsMarkovKernel (condKernel κ) := by
-  rw [condKernel_def]
+  rw [condKernel]
   split_ifs <;> infer_instance
 
 instance condKernel.instIsCondKernel : κ.IsCondKernel κ.condKernel where
-  disintegrate := by rw [condKernel_def]; split_ifs with hα <;> exact disintegrate _ _
+  disintegrate := by rw [condKernel]; split_ifs with hα <;> exact disintegrate _ _
 
 end CountableOrCountablyGenerated
 

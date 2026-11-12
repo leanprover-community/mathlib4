@@ -5,8 +5,11 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
+public import Mathlib.CategoryTheory.Monoidal.Grp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The category of commutative groups in a Cartesian monoidal category
@@ -209,6 +212,7 @@ protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful wher
   map_injective hfg :=
     (CommGrp.forget _ ⋙ F).map_injective ((CommGrp.forget _).congr_map hfg)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `F : C ⥤ D` is a fully faithful monoidal functor, then
 `CommGrpCat(F) : CommGrpCat C ⥤ CommGrpCat D` is fully faithful too. -/
 @[simps]
@@ -224,9 +228,11 @@ theorem mapCommGrp_id_one (A : CommGrp C) :
   rfl
 
 @[simp]
-theorem mapCommpGrp_id_mul (A : CommGrp C) :
+theorem mapCommGrp_id_mul (A : CommGrp C) :
     μ[((𝟭 C).mapCommGrp.obj A).X] = 𝟙 _ ≫ μ[A.X] :=
   rfl
+
+@[deprecated (since := "2026-09-17")] alias mapCommpGrp_id_mul := mapCommGrp_id_mul
 
 @[simp]
 theorem comp_mapCommGrp_one (A : CommGrp C) :
@@ -251,6 +257,7 @@ set_option backward.isDefEq.respectTransparency false in
 def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
   NatIso.ofComponents fun X ↦ CommGrp.mkIso (.refl _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
@@ -272,7 +279,7 @@ noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp C ⥤ CommGrp D w
 
 end Functor
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.Braided]

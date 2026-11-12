@@ -6,7 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.FinCategory.Basic
-public import Mathlib.Data.Fintype.EquivFin
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite categories are equivalent to categories in `Type 0`.
@@ -55,7 +57,6 @@ noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α where
   obj := id
   map {_ _} := (Fintype.equivFin _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The "identity" functor from `ObjAsType α` to `AsType α`. -/
 @[simps]
 noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where

@@ -5,9 +5,11 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules
@@ -31,7 +33,9 @@ sub-modules in a commutative algebra. This important example gives rise to the a
 
 open Set Filter Function Lattice
 
-open Topology Filter Pointwise
+open Filter Pointwise
+
+open scoped Topology
 
 /-- A family of additive subgroups on a ring `A` is a subgroups basis if it satisfies some
 axioms ensuring there is a topology on `A` which is compatible with the ring structure and
@@ -63,7 +67,7 @@ theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
     rightMul := fun x i ↦ (leftMul x i).imp fun j hj ↦ by simpa only [mul_comm] using hj }
 
 /-- Every subgroups basis on a ring leads to a ring filter basis. -/
-@[implicit_reducible]
+@[instance_reducible]
 def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgroupsBasis B) :
     RingFilterBasis A where
   sets := { U | ∃ i, U = B i }
@@ -133,7 +137,7 @@ theorem mem_addGroupFilterBasis (i) : (B i : Set A) ∈ hB.toRingFilterBasis.toA
 
 /-- The topology defined from a subgroups basis, admitting the given subgroups as a basis
 of neighborhoods of zero. -/
-@[implicit_reducible]
+@[instance_reducible]
 def topology : TopologicalSpace A :=
   hB.toRingFilterBasis.toAddGroupFilterBasis.topology
 
@@ -156,9 +160,7 @@ theorem hasBasis_nhds (a : A) :
     constructor
     · rintro ⟨-, ⟨i, rfl⟩, hi⟩
       use i
-      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by
-        rw [h]
-        assumption
+      suffices h : { b : A | b - a ∈ B i } = (fun y => a + y) '' ↑(B i) by rwa [h]
       simp only [image_add_left, neg_add_eq_sub]
       ext b
       simp
@@ -223,7 +225,7 @@ theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
   exact hj ⟨b, b_in, rfl⟩
 
 /-- The topology associated to a basis of submodules in an algebra. -/
-@[implicit_reducible]
+@[instance_reducible]
 def topology [Nonempty ι] (hB : SubmodulesRingBasis B) : TopologicalSpace A :=
   hB.toRing_subgroups_basis.topology
 
@@ -303,7 +305,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     exact hB.smul m₀ i
 
 /-- The topology associated to a basis of submodules in a module. -/
-@[implicit_reducible]
+@[instance_reducible]
 def topology : TopologicalSpace M :=
   hB.toModuleFilterBasis.toAddGroupFilterBasis.topology
 
@@ -347,7 +349,7 @@ section
 In this section, we check that in an `R`-algebra `A` over a ring equipped with a topology,
 a basis of `R`-submodules which is compatible with the topology on `R` is also a submodule basis
 in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
-view definitionaly gives the same topology on `A`.
+view definitionally gives the same topology on `A`.
 -/
 variable [TopologicalSpace R] {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
   (hsmul : ∀ (m : A) (i : ι), ∀ᶠ a : R in 𝓝 0, a • m ∈ B i)

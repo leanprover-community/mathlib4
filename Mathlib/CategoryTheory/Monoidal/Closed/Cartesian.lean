@@ -5,8 +5,8 @@ Authors: Bhavik Mehta, Edward Ayers, Thomas Read
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Cartesian closed categories
@@ -16,7 +16,6 @@ instances. There used to be a separate definition `CartesianClosed`, with its ow
 this ended up as a duplicate of the former. Now, `CartesianClosed` and the surrounding API has been
 deprecated, and the API for `MonoidalClosed` should be used instead. This file now contains a few
 basic constructions for cartesian closed categories.
-
 -/
 
 @[expose] public section
@@ -27,7 +26,7 @@ namespace CategoryTheory
 
 open Category Limits MonoidalCategory CartesianMonoidalCategory
 
-variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {X X' Y Y' Z : C}
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {Y : C}
 
 instance CartesianMonoidalCategory.isLeftAdjoint_prod_functor
     (A : C) [Closed A] :
@@ -134,7 +133,7 @@ variable [CartesianMonoidalCategory D]
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def cartesianClosedOfEquiv (e : C ≌ D) [MonoidalClosed C] : MonoidalClosed D :=
   letI : e.inverse.Monoidal := .ofChosenFiniteProducts _
   MonoidalClosed.ofEquiv e.inverse e.symm.toAdjunction

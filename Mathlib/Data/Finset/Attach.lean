@@ -19,7 +19,6 @@ public import Mathlib.Data.Multiset.MapFold
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -28,11 +27,11 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
-open Multiset Subtype Function
+open Multiset Subtype
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 

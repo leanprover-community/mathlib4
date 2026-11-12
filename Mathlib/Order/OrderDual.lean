@@ -85,6 +85,7 @@ instance (α : Type*) [LT α] [h : DecidableLT α] : DecidableLT (αᵒᵈ) :=
 instance (α : Type*) [LE α] [h : DecidableLE α] : DecidableLE (αᵒᵈ) :=
   fun a b ↦ h b a
 
+set_option backward.isDefEq.respectTransparency false in
 instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   le_total a b := le_total (α := α) b a
   min_def := max_def' (α := α)
@@ -95,13 +96,6 @@ instance (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
-
-set_option linter.style.setOption false in
-set_option backward.inferInstanceAs.wrap.reuseSubInstances false in  -- otherwise we get an identity!
-/-- The opposite linear order to a given linear order -/
-@[implicit_reducible, deprecated "This declaration shouldn't have existed" (since := "2026-04-08")]
-def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
-  inferInstanceAs <| LinearOrder (OrderDual α)
 
 instance [h : Inhabited α] : Inhabited αᵒᵈ := ⟨h.default⟩
 

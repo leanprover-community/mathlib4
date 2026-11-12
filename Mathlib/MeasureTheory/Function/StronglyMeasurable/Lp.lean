@@ -22,7 +22,6 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
 -/
 
 public section
@@ -36,7 +35,7 @@ namespace MeasureTheory
 
 local infixr:25 " →ₛ " => SimpleFunc
 
-variable {α G : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup G]
+variable {α G : Type*} {p : ℝ≥0∞} {m0 : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup G]
   {f : α → G}
 
 theorem MemLp.finStronglyMeasurable_of_stronglyMeasurable (hf : MemLp f p μ)

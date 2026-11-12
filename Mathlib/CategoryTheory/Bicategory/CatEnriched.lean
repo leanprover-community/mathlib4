@@ -5,9 +5,8 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
-public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
 /-!
 # The strict bicategory associated to a Cat-enriched category
@@ -30,7 +29,6 @@ Thus, we define a type alias `CatEnrichedOrdinary C` for a type `C` with an
 `EnrichedOrdinaryCategory Cat C` structure. We provide this with an instance of a strict bicategory
 structure extending the category structure provided by the given instance `Category C` constructing
 `Bicategory.Strict (CatEnrichedOrdinary C)`.
-
 -/
 
 @[expose] public section
@@ -315,6 +313,7 @@ theorem hComp_assoc_heq {a b c d : CatEnrichedOrdinary C}
     {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d} (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
     HEq (hComp (hComp η θ) κ) (hComp η (hComp θ κ)) := by simp [hComp_assoc]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Bicategory (CatEnrichedOrdinary C) where
   homCategory := inferInstance
   whiskerLeft {_ _ _} f {_ _} η := hComp (𝟙 f) η

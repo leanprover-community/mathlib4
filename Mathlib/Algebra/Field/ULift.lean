@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.ULift
 public import Mathlib.Algebra.Ring.ULift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Field instances for `ULift`
 
@@ -17,7 +20,7 @@ This file defines instances for fields, semifields, and related structures on `U
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 -/
 
-@[expose] public section
+public section
 
 universe u
 variable {α : Type u}

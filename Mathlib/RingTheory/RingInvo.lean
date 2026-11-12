@@ -63,6 +63,7 @@ variable {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ]
 instance [RingInvoClass F R] : CoeTC F (RingInvo R) :=
   ⟨RingInvoClass.toRingInvo⟩
 
+@[macro_inline]
 instance : EquivLike (RingInvo R) R Rᵐᵒᵖ where
   coe f := f.toFun
   inv f := f.invFun
@@ -93,8 +94,10 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 
-theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
+theorem toRingEquiv_apply (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringEquiv := toRingEquiv_apply
 
 theorem map_eq_zero_iff (f : RingInvo R) {x : R} : f x = 0 ↔ x = 0 :=
   f.toRingEquiv.map_eq_zero_iff

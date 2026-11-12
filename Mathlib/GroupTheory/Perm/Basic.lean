@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.End
-public import Mathlib.Logic.Equiv.Set
-public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Set.Function
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra lemmas about permutations
@@ -47,7 +50,7 @@ theorem swap_smul_involutive [MulAction (Perm α) β] (i j : α) :
 end Swap
 end Equiv
 
-open Equiv Function
+open Equiv
 
 namespace Set
 variable {α : Type*} {f : Perm α} {s : Set α}

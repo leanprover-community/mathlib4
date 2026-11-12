@@ -139,6 +139,7 @@ lemma rootSet_apply_coroot_eq_zero_of_notMem_rootSet (I : LieIdeal K L)
     LinearMap.BilinForm.orthogonal_span_singleton_eq_toLin_ker, LinearMap.mem_ker]
   exact traceForm_eq_zero_of_mem_ker_of_mem_span_coroot h_ker (Submodule.mem_span_singleton_self _)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The intersection of a Lie ideal and a Cartan subalgebra is the span of the coroots whose roots
 have root spaces in the ideal. -/
 lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
@@ -173,7 +174,7 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
       ⨆ α ∈ I.rootSet, corootSubmodule α.1 ≤ _)
       (hspan_I_roots_incl ▸ LieSubmodule.mem_map_of_mem ha)
   have hbI : (b : L) ∈ I := by
-    have h_sum : (a : L) + b = x := congr_arg Subtype.val hab
+    have h_sum : (a : L) + b = x := congr($(hab).val)
     have h_b_eq : (b : L) = x - a := by rw [← h_sum, add_sub_cancel_left]
     rw [h_b_eq]; exact I.toSubmodule.sub_mem hxI haI
   suffices b = 0 by
@@ -187,7 +188,7 @@ lemma restr_inf_cartan_eq_biSup_corootSubmodule (I : LieIdeal K L) :
     · exact hspan_compl_roots_vanish ⟨μ, hμ_root⟩ hμI hb
     · exact I.root_apply_eq_zero_of_notMem_rootSet hbI hμI
   · simp only [Weight.IsNonZero, not_not] at hμ
-    exact LinearMap.mem_ker.mpr (congr_fun hμ b)
+    exact LinearMap.mem_ker.mpr congr($hμ b)
 
 lemma mem_rootSet_of_mem_rootSpan (I : LieIdeal K L)
     {α : H.root} (hα_span : (α : Dual K H) ∈ I.rootSpan) :
@@ -375,6 +376,7 @@ private theorem chi_not_in_q_aux (h_chi_not_in_q : ↑χ ∉ q) :
 
 end
 
+set_option backward.isDefEq.respectTransparency.types false in
 include hq hx_χ hαq in
 private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot hα₀) :
     ⁅x_χ, m_α⁆ ∈ ⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2 := by
@@ -394,7 +396,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
       have hx_χ_neg : x_χ ∈ genWeightSpace L (-α.toLinear) := by
         rw [← (add_eq_zero_iff_eq_neg.mp w_plus)]
         exact hx_χ
-      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simp [ht.f_ne_zero])).mp
+      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨f, hf⟩ (by simp [ht.f_ne_zero])).mp
         (finrank_rootSpace_eq_one (-α) (by simpa using hα₀)) ⟨x_χ, hx_χ_neg⟩
       exact ⟨0, c, 0, by simpa using hc.symm⟩
     apply LieSubalgebra.lie_mem <;> [exact hx_χ_in_sl2; exact hm_α_original]
@@ -406,14 +408,14 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
       have hx_χ_pos : x_χ ∈ genWeightSpace L α.toLinear := by
         rw [← (sub_eq_zero.mp w_minus)]
         exact hx_χ
-      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨e, he⟩ (by simp [ht.e_ne_zero])).mp
+      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_ne_zero' ⟨e, he⟩ (by simp [ht.e_ne_zero])).mp
         (finrank_rootSpace_eq_one α hα₀) ⟨x_χ, hx_χ_pos⟩
       exact ⟨c, 0, 0, by simpa using hc.symm⟩
     apply LieSubalgebra.lie_mem <;> [exact hx_χ_in_sl2; exact hm_α_original]
   by_cases w_chi : χ.toLinear = 0
   · have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
       rw [← rootSpace_zero_eq K L H]
-      convert! hx_χ; ext h; simp only [Pi.zero_apply]
+      convert hx_χ; ext h; simp only [Pi.zero_apply]
       have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi, LinearMap.zero_apply]
       exact h_apply.symm
     apply LieSubmodule.mem_iSup_of_mem ⟨α, hαq, hα₀⟩

@@ -6,8 +6,8 @@ Authors: Timo Kraenzle, Judith Ludwig, Bryan Wang, Christian Merten,
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Fiber
+public import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Geometrically-`P` schemes over a field
@@ -57,6 +57,7 @@ lemma geometrically_eq_universally (P : ObjectProperty Scheme.{u}) :
     apply h.flip.of_iso (.refl _) (.refl _) W.isoSpec (.refl _) <;> simp
   · exact hf _ _ _ h.flip inferInstance inferInstance
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma geometrically_inf (P Q : ObjectProperty Scheme.{u}) :
     geometrically (P ⊓ Q) = geometrically P ⊓ geometrically Q := by
   simp only [geometrically_eq_universally, ← MorphismProperty.universally_inf]
@@ -65,6 +66,7 @@ lemma geometrically_inf (P Q : ObjectProperty Scheme.{u}) :
 
 variable (P : ObjectProperty Scheme.{u})
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : (geometrically P).IsStableUnderBaseChange := by
   rw [geometrically_eq_universally]
   infer_instance
@@ -112,7 +114,7 @@ lemma geometrically_iff_forall_fiberToSpecResidueField :
   apply H y (Spec.map φ) p snd
   simp only [Scheme.SpecToEquivOfField, Equiv.coe_fn_symm_mk] at h
   refine .flip (.of_bot (.flip ?_) ?_ (IsPullback.of_hasPullback f (Y.fromSpecResidueField y)).flip)
-  · convert! h
+  · convert h
     simp [p]
   · simp [p, Scheme.Hom.fiberToSpecResidueField]
 

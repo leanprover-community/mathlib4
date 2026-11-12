@@ -66,6 +66,10 @@ protected theorem smul [Dvd α] [Monoid β] [Monoid γ] {f : α → γ} [SMul β
     IsDvdSequence (b • f) :=
   .smul' (.const α b) hg
 
+protected theorem comp [Dvd α] [Dvd β] [Dvd γ] {f : α → β} {g : β → γ} (hf : IsDvdSequence f)
+    (hg : IsDvdSequence g) : IsDvdSequence (g ∘ f) :=
+  fun _ _ ↦ hg _ _ ∘ hf _ _
+
 end IsDvdSequence
 
 @[deprecated (since := "2026-06-30")] alias IsDivSequence.smul := IsDvdSequence.smul

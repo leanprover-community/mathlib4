@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory
 Given an embedding of complex shapes `e : c.Embedding c'` and a preadditive
 category `C`, we define a fully faithful functor
 `e.extendHomotopyFunctor C : HomotopyCategory C c ⥤ HomotopyCategory C c'`.
-
 -/
 
 @[expose] public section
@@ -41,6 +40,7 @@ noncomputable def homAux (i' j' : Option ι) : extend.X K i' ⟶ extend.X L j' :
   | _, none => 0
   | some i, some j => φ i j
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma homAux_eq (i' j' : Option ι) (i j : ι) (hi : i' = some i) (hj : j' = some j) :
     homAux φ i' j' = (extend.XIso K hi).hom ≫ φ i j ≫ (extend.XIso L hj).inv := by
   subst hi hj

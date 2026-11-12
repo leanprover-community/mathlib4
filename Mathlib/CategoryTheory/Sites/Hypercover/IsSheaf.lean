@@ -31,7 +31,6 @@ that if `C : Type u` and `Category.{v} C`, then
 ## TODO
 * Show that functors which preserve 1-hypercovers are continuous.
 * Refactor `DenseSubsite` using `1`-hypercovers.
-
 -/
 
 @[expose] public section
@@ -154,6 +153,7 @@ end OneHypercoverFamily
 abbrev IsGeneratedByOneHypercovers : Prop :=
   OneHypercoverFamily.IsGenerating.{w} (J := J) ⊤
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsGeneratedByOneHypercovers.{max u v} J where
   le S hS := ⟨Cover.oneHypercover ⟨S, hS⟩, by simp, by simp⟩
 

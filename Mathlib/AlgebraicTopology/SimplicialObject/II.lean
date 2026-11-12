@@ -26,12 +26,13 @@ by Gabriel and Zisman.
 ## References
 
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
-
 -/
 
 @[expose] public section
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory Opposite
+
+open scoped Simplicial
 
 namespace SimplexCategory
 

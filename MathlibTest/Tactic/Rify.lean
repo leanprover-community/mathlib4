@@ -1,7 +1,7 @@
 module
+import Mathlib.Basic.NNReal.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Rify
-import Mathlib.Data.NNReal.Basic
 
 set_option linter.unusedVariables false
 

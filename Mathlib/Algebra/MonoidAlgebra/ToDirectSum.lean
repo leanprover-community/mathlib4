@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Conversion between `AddMonoidAlgebra` and homogeneous `DirectSum`
@@ -165,7 +164,6 @@ namespace DirectSum
 
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toAddMonoidAlgebra_zero [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     toAddMonoidAlgebra 0 = (0 : AddMonoidAlgebra M ι) := by simp [toAddMonoidAlgebra]

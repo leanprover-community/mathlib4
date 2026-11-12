@@ -5,7 +5,6 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Topology.Order.LowerUpperTopology
 public import Mathlib.Topology.Order.ScottTopology
 
 /-!
@@ -64,7 +63,7 @@ section Preorder
 /--
 The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α univ
 
 variable (α) [Preorder α] [TopologicalSpace α]
@@ -231,9 +230,10 @@ instance (priority := 90) toT1Space : T1Space α where
   t1 a := by
     simp +instances only [IsLawson.topology_eq_lawson]
     rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
-      ← WithLawson.isClosed_preimage_ofLawson]
-    apply IsClosed.inter
-      (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
+      ← WithLawson.isClosed_preimage_ofLawson, preimage_inter]
+    have h₁ : IsClosed (WithLower.ofLower ⁻¹' (↑(upperClosure {a}) : Set α)) :=
+      IsLower.isClosed_upperClosure (α := WithLower α) (finite_singleton a)
+    apply IsClosed.inter (lawsonClosed_of_lowerClosed _ h₁)
     rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
     exact lawsonClosed_of_scottClosed _ isClosed_Iic
 

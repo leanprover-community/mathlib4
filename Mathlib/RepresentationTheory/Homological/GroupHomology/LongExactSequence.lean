@@ -5,9 +5,9 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Homology.ConcreteCategory
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-!
 # Long exact sequence in group homology
@@ -24,7 +24,6 @@ to specialize API about long exact sequences to group homology.
 
 * `groupHomology.δ hX i j hij`: the connecting homomorphism `Hᵢ(G, X₃) ⟶ Hⱼ(G, X₁)` associated
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
-
 -/
 
 public section
@@ -148,7 +147,6 @@ theorem δ₀_apply
       conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]
       simp [chainsIso₀, ← hx])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cycles₁_of_comp_eq_d₂₁
     {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.toLinearMap x =

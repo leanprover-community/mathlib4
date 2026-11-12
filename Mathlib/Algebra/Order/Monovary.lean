@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Algebra.Order.Module.Synonym
-public import Mathlib.Algebra.Order.Monoid.OrderDual
 public import Mathlib.Order.Monotone.Monovary
+
+import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Algebra.Order.Monoid.OrderDual
 
 /-!
 # Monovarying functions and algebraic operations
@@ -92,7 +93,7 @@ end
 
 section
 variable [PartialOrder α] [CommGroup β] [PartialOrder β] [IsOrderedMonoid β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
+  {s : Set ι} {f : ι → α} {g : ι → β}
 
 @[to_additive (attr := simp)]
 lemma monovaryOn_inv_right : MonovaryOn f g⁻¹ s ↔ AntivaryOn f g s := by
@@ -112,7 +113,7 @@ end
 section
 variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
   [CommGroup β] [PartialOrder β] [IsOrderedMonoid β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
+  {s : Set ι} {f : ι → α} {g : ι → β}
 
 @[to_additive] lemma monovaryOn_inv : MonovaryOn f⁻¹ g⁻¹ s ↔ MonovaryOn f g s := by simp
 @[to_additive] lemma antivaryOn_inv : AntivaryOn f⁻¹ g⁻¹ s ↔ AntivaryOn f g s := by simp
@@ -257,7 +258,7 @@ section LinearOrderedSemifield
 
 section
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [LinearOrder β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+  {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
 
 @[simp]
 lemma monovaryOn_inv_left₀ (hf : ∀ i ∈ s, 0 < f i) : MonovaryOn f⁻¹ g s ↔ AntivaryOn f g s :=
@@ -293,7 +294,7 @@ end
 
 section
 variable [LinearOrder α] [Semifield β] [LinearOrder β] [IsStrictOrderedRing β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+  {s : Set ι} {f : ι → α} {g g₁ g₂ : ι → β}
 
 @[simp]
 lemma monovaryOn_inv_right₀ (hg : ∀ i ∈ s, 0 < g i) : MonovaryOn f g⁻¹ s ↔ AntivaryOn f g s :=
@@ -328,7 +329,7 @@ end
 section
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
   [Semifield β] [LinearOrder β] [IsStrictOrderedRing β]
-  {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+  {s : Set ι} {f : ι → α} {g : ι → β}
 
 lemma monovaryOn_inv₀ (hf : ∀ i ∈ s, 0 < f i) (hg : ∀ i ∈ s, 0 < g i) :
     MonovaryOn f⁻¹ g⁻¹ s ↔ MonovaryOn f g s := by

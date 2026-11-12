@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 module
+
 public import Mathlib.Data.List.Find
 public import Mathlib.Data.Multiset.AddSub
 public import Mathlib.Data.Multiset.Basic
-public import Mathlib.Data.Set.Subsingleton
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finding subsingleton elements within multisets
@@ -30,7 +33,7 @@ and is like `Multiset.choose`, but `Option`-valued. -/
     rw [eqRec_eq_cast, cast_eq_iff_heq]
     refine Function.hfunext ?_ (fun hp₁ hp₂ _ ↦ heq_of_eq ?_)
     · congr!
-      exact Quotient.sound h
+      exact congrArg _ (Quotient.sound h)
     refine List.find?_eq_find?_of_perm h ?_
     simpa using hp₁
 
@@ -78,19 +81,13 @@ theorem find?_eq_some_iff {a : α} {s : Multiset α} (hp) :
     · dsimp [Set.Subsingleton] at hp
       specialize hp ⟨mem_cons_self _ _, ‹p x›⟩
       grind
-    · simp_rw [ih]
-      grind
+    · grind
 
 variable {p} in
 @[simp, grind =]
 theorem find?_eq_none_iff {s : Multiset α} (hp) :
     s.find? p hp = none ↔ ∀ a ∈ s, ¬ p a := by
-  induction s using Multiset.induction_on with
-  | empty => simp
-  | cons x s ih =>
-    rw [find?_cons]
-    dsimp [Set.Subsingleton] at hp
-    grind
+  induction s using Multiset.induction_on <;> grind [find?_zero, find?_cons]
 
 /-- If two predicates agree on all the elements, so does `find?`. -/
 @[congr]
@@ -98,7 +95,8 @@ theorem find?_congr {p₁ p₂ : α → Prop} [DecidablePred p₁] [DecidablePre
     (hp₁ : {x ∈ s | p₁ x}.Subsingleton) (h : ∀ x ∈ s, p₁ x ↔ p₂ x) :
     s.find? p₁ hp₁ = s.find? p₂
       (by simp_rw +contextual [← exists_prop, ← h, exists_prop, hp₁]) := by
-  induction s using Quotient.ind with simp +contextual [h]
+  induction s using Quotient.ind
+  exact List.find?_congr fun x hx ↦ by simp [h x (by simpa using hx)]
 
 theorem find?_eq_choose {s : Multiset α} (hp : ∃! x, x ∈ s ∧ p x) :
     s.find? p hp.setSubsingleton = some (s.choose p hp) := by

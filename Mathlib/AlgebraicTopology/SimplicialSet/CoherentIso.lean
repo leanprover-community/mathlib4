@@ -5,9 +5,7 @@ Authors: Johns Hopkins Category Theory Seminar, Arnoud van der Leer
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
-public import Mathlib.AlgebraicTopology.SimplicialSet.NerveCodiscrete
-public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 public import Mathlib.CategoryTheory.CodiscreteCategory
 
 /-!
@@ -25,7 +23,6 @@ and `WalkingIso.one` respectively, and `coherentIso.hom : Edge x₀ x₁` and
 `WalkingIso`. Given any simplicial set `X`, with a morphism `g : coherentIso ⟶ X`, `0`-simplices
 `x₀ x₁: X _⦋0⦌` and an edge between them `f : Edge x₀ x₁`, such that `g` sends `coherentIso.hom` to
 `f`, then `f` has an inverse (in the sense of `Edge.InvStruct`), see `invStructOfEqMapHom`.
-
 -/
 
 @[expose] public section
@@ -81,6 +78,7 @@ protected def rec : ∀ a, motive a
 
 end induction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From an isomorphism in a category, we can build a functor out of `WalkingIso` to
 that category. -/
 def fromIso {X Y : C} (e : X ≅ Y) : WalkingIso.{w} ⥤ C where
@@ -113,6 +111,7 @@ lemma fromIso_map_one_one (f : one ⟶ one) : (fromIso.{w} e).map f = 𝟙 Y := 
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence between the type of `WalkingIso`s in `C` and the type of isomorphisms in `C`. -/
 @[simps]
 def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
@@ -134,7 +133,7 @@ end CategoryTheory
 
 namespace SSet
 
-open Simplicial Edge
+open scoped Simplicial
 
 /-- The simplicial set that encodes a single isomorphism.
 Its n-simplices are formal compositions of arrows in WalkingIso. -/

@@ -5,8 +5,8 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Leibniz Constructions
@@ -107,7 +107,6 @@ lemma hom_ext {X₃ : C₃} {f g : sq.pt ⟶ X₃} (hₗ : sq.inl ≫ f = sq.inl
     (hᵣ : sq.inr ≫ f = sq.inr ≫ g) : f = g :=
   sq.isPushout.hom_ext hₗ hᵣ
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `sq : F.PushoutObjObj f₁ f₂`, flipping the pushout square gives
 `sq.flip : F.flip.PushoutObjObj f₂ f₁`. -/
 @[simps]
@@ -144,7 +143,6 @@ variable (F f₁ f₂)
   [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.flip.obj Y₂)]
   (h : IsInitial X₁)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A `Functor.PushoutObjObj` structure for a functor `F : C₁ ⥤ C₂ ⥤ C₃` and
 morphisms `f₁ : X₁ ⟶ Y₁` and `f₂ : X₂ ⟶ Y₂` when `X₁` is initial and both
 `F.flip.obj X₂` and `F.flip.obj Y₂` preserve the initial object. -/
@@ -196,7 +194,6 @@ variable {f₁ f₁' : Arrow C₁} {f₂ : Arrow C₂}
   (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
   (sq₁₂' : F.PushoutObjObj f₁'.hom f₂.hom)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
   `f₂ : Arrow C₂`, and a morphism `f₁ ⟶ f₁'`, this defines a morphism between the induced
   pushout maps. -/
@@ -218,12 +215,10 @@ def mapArrowLeft (sq : f₁ ⟶ f₁') :
     apply PushoutObjObj.hom_ext
     all_goals simp [← NatTrans.comp_app, ← Functor.map_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapArrowLeft_id :
     mapArrowLeft sq₁₂ sq₁₂ (𝟙 _) = 𝟙 _ := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₂'' : F.PushoutObjObj f₁''.hom f₂.hom)
     (sq : f₁ ⟶ f₁') (sq' : f₁' ⟶ f₁'') :
@@ -243,7 +238,6 @@ variable {f₁ : Arrow C₁} {f₂ f₂' : Arrow C₂}
     (sq₁₂ : F.PushoutObjObj f₁.hom f₂.hom)
     (sq₁₂' : F.PushoutObjObj f₁.hom f₂'.hom)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
   `f₂' : Arrow C₂`, and a morphism `f₂ ⟶ f₂'`, this defines a morphism between the induced
   pushout maps. -/
@@ -266,12 +260,10 @@ def mapArrowRight (sq : f₂ ⟶ f₂') :
     · simp [← map_comp]
     · cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapArrowRight_id :
     mapArrowRight sq₁₂ sq₁₂ (𝟙 _) = 𝟙 _ := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapArrowRight_comp {f₂'' : Arrow C₂} (sq₁₂'' : F.PushoutObjObj f₁.hom f₂''.hom)
     (sq : f₂ ⟶ f₂') (sq' : f₂' ⟶ f₂'') :
@@ -293,7 +285,7 @@ end PushoutObjObj
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` to a category `C₃` which has pushouts, the Leibniz pushout
   (pushout-product) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₂ : X₂ ⟶ Y₂` in `C₂` is the map
   `pushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂) ⟶ (F.obj Y₁).obj Y₂` induced by the diagram
@@ -347,7 +339,6 @@ namespace PullbackObjObj
 
 attribute [reassoc (attr := simp)] π_fst π_snd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `PullbackObjObj` structure given by the pullback of the limits API. -/
 @[simps]
 noncomputable def ofHasPullback
@@ -424,7 +415,6 @@ variable {f₁ f₁' : Arrow C₁} {f₃ : Arrow C₃}
   (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
   (sq₁₃' : G.PullbackObjObj f₁'.hom f₃.hom)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
   `f₃ : Arrow C₃`, and a morphism `f₁' ⟶ f₁`, this defines a morphism between the induced
   pullback maps. -/
@@ -447,12 +437,10 @@ def mapArrowLeft (sq : f₁' ⟶ f₁) :
     · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
     · cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapArrowLeft_id :
     mapArrowLeft sq₁₃ sq₁₃ (𝟙 _) = 𝟙 _ := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₃'' : G.PullbackObjObj f₁''.hom f₃.hom)
     (sq' : f₁'' ⟶ f₁') (sq : f₁' ⟶ f₁) :
@@ -472,7 +460,6 @@ variable {f₁ : Arrow C₁} {f₃ f₃' : Arrow C₃}
   (sq₁₃ : G.PullbackObjObj f₁.hom f₃.hom)
   (sq₁₃' : G.PullbackObjObj f₁.hom f₃'.hom)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
   `f₃' : Arrow C₃`, and a morphism `f₃ ⟶ f₃'`, this defines a morphism between the induced
   pullback maps. -/
@@ -494,12 +481,10 @@ def mapArrowRight (sq : f₃ ⟶ f₃') :
     apply PullbackObjObj.hom_ext
     all_goals simp [← Functor.map_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma mapArrowRight_id :
     mapArrowRight sq₁₃ sq₁₃ (𝟙 _) = 𝟙 _ := by cat_disch
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapArrowRight_comp {f₃'' : Arrow C₃} (sq₁₃'' : G.PullbackObjObj f₁.hom f₃''.hom)
     (sq : f₃ ⟶ f₃') (sq' : f₃' ⟶ f₃'') :
@@ -521,7 +506,7 @@ end PullbackObjObj
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` to a category `C₂` which has pullbacks, the Leibniz
   pullback (pullback-power) of `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₃` is the map
   `(G.obj (op Y₁)).obj X₃ ⟶ pullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)` induced by

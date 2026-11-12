@@ -1,22 +1,5 @@
-/-
-Copyright (c) 2020 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
--/
-module
+module -- shake: keep-all
 
-public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Star
 
-/-!
-# The real numbers are a \*-ring, with the trivial \*-structure
--/
-
-public section
-
-/-- The real numbers are a \*-ring, with the trivial \*-structure. -/
-instance : StarRing ℝ :=
-  starRingOfComm
-
-instance : TrivialStar ℝ :=
-  ⟨fun _ => rfl⟩
+deprecated_module (since := "2026-08-27")

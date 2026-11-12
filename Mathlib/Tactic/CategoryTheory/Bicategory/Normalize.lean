@@ -14,7 +14,6 @@ public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 
 This file provides the implementation of the normalization given in
 `Mathlib/Tactic/CategoryTheory/Coherence/Normalize.lean`. See this file for more details.
-
 -/
 
 public meta section
@@ -31,7 +30,7 @@ universe w v u
 variable {B : Type u} [Bicategory.{w, v} B]
 
 variable {a b c d : B}
-variable {f f' g g' h i j : a ⟶ b}
+variable {f f' g h i j : a ⟶ b}
 
 @[nolint synTaut]
 theorem evalComp_nil_nil (α : f ≅ g) (β : g ≅ h) :

@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Nat.Notation
 public import Batteries.Classes.RatCast
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Basic definitions around the rational numbers

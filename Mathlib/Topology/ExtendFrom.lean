@@ -21,7 +21,6 @@ The main theorem we prove about this definition is `continuousOn_extendFrom`
 which states that, for `extendFrom A f` to be continuous on a set `B ⊆ closure A`,
 it suffices that `f` converges within `A` at any point of `B`, provided that
 `f` is a function to a T₃ space.
-
 -/
 
 @[expose] public section
@@ -29,7 +28,7 @@ it suffices that `f` converges within `A` at any point of `B`, provided that
 
 noncomputable section
 
-open Topology
+open scoped Topology
 
 open Filter Set
 

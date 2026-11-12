@@ -7,21 +7,21 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
 public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
-public import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
+
+import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 
 /-!
 # Morphisms to K-injective complexes in the derived category
 
 In this file, we show that if `L : CochainComplex C ℤ` is K-injective,
 then for any `K : HomotopyCategory C (.up ℤ)`, the functor `DerivedCategory.Qh`
-induces a bijection from the type of morphisms `K ⟶ (HomotopyCategory.quotient _ _).obj L)`
+induces a bijection from the type of morphisms `K ⟶ (HomotopyCategory.quotient _ _).obj L`
 (i.e. homotopy classes of morphisms of cochain complexes) to the type of
 morphisms in the derived category.
 We obtain that a morphism between `K`-injective cochain complexes is a quasi-isomorphism
 iff it is a homotopy equivalence. In particular, a morphism between cochain complexes
 indexed by `ℕ` which consist of injective objects is a quasi-isomorphism iff
 it is a homotopy equivalence.
-
 -/
 
 @[expose] public section
@@ -45,7 +45,6 @@ lemma Qh_map_bijective [HasDerivedCategory C]
       (K ⟶ (HomotopyCategory.quotient _ _).obj L) → _) :=
   (CochainComplex.IsKInjective.rightOrthogonal L).map_bijective_of_isTriangulated _ _
 
-set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKInjective] [L.IsKInjective] (f : K ⟶ L) :
@@ -56,8 +55,8 @@ lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKInjective] [L.IsKInjective
   obtain ⟨g, hg⟩ := (Qh_map_bijective _ _).surjective
     ((quotientCompQhIso C).hom.app L ≫ inv (Q.map f) ≫ (quotientCompQhIso C).inv.app K)
   refine ⟨g, (Qh_map_bijective _ _).injective ?_, (Qh_map_bijective _ _).injective ?_⟩
-  · simp [hg]; rfl
-  · simp [hg, ← quotientCompQhIso_inv_naturality, -NatTrans.naturality]; rfl
+  · simp [hg]
+  · simp [hg, ← quotientCompQhIso_inv_naturality, -NatTrans.naturality]
 
 end IsKInjective
 
@@ -66,7 +65,6 @@ namespace HomComplex.CohomologyClass
 variable (K L : CochainComplex C ℤ) (n : ℤ)
   [HasSmallLocalizedShiftedHom.{w} (HomologicalComplex.quasiIso C (.up ℤ)) ℤ K L]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma bijective_toSmallShiftedHom_of_isKInjective [L.IsKInjective] :
     Function.Bijective (toSmallShiftedHom.{w} (K := K) (L := L) (n := n)) := by
   let := HasDerivedCategory.standard C

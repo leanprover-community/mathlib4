@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Logic.Basic
+public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.LinearOrder
 
 /-!
@@ -16,7 +16,6 @@ relation to decidable propositions.
 
 ## Tags
 bool, boolean, Bool, De Morgan
-
 -/
 
 @[expose] public section

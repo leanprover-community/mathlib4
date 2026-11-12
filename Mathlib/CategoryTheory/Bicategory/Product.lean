@@ -18,14 +18,13 @@ We define:
 * `fst`       : the strict pseudofunctor `⟨X, Y⟩ ↦ X`
 * `snd`       : the strict pseudofunctor `⟨X, Y⟩ ↦ Y`
 * `swap`      : the strict pseudofunctor `B × C ⥤ C × B` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
-
 -/
 
 @[expose] public section
 
 namespace CategoryTheory.Bicategory
 
-open Prod
+open CategoryTheory.Prod
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 

@@ -5,11 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Minimal
-public import Mathlib.Order.Zorn
-public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.DiscreteSubset
-public import Mathlib.Tactic.CrossRefAttribute
+
 import Mathlib.Topology.WithTopology
 
 /-!
@@ -31,7 +28,6 @@ There are good reasons to consider the empty space to be “too simple to be sim
 See also https://ncatlab.org/nlab/show/too+simple+to+be+simple,
 and in particular
 https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_definitions.
-
 -/
 
 @[expose] public section
@@ -133,7 +129,9 @@ lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs :
 
 /-- A maximal irreducible set that contains a given point. -/
 @[stacks 004W "(4)"]
-def irreducibleComponent (x : X) : Set X :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 
 theorem irreducibleComponent_property (x : X) :
@@ -218,8 +216,7 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
   refine ⟨f x, mem_image_of_mem f hxs, ?_, ?_⟩
   all_goals
     rw [← mem_preimage]
-    apply mem_of_mem_inter_left
-    show x ∈ _ ∩ s
+    apply mem_of_mem_inter_left (b := s)
     simp [*]
 
 @[stacks 0379]
@@ -337,7 +334,7 @@ theorem isPreirreducible_iff_subset_closure_inter_open (S : Set X) :
   · intro a b ha hb ⟨p, pS, pa⟩ bS
     by_contra! h0
     suffices p ∉ closure (S ∩ b) from this <| (h b hb bS) pS
-    simp only [closure, mem_sInter, mem_setOf_eq, and_imp, not_forall, exists_prop]
+    simp only [closure, mem_sInter, mem_ofPred_eq, and_imp, not_forall, exists_prop]
     use aᶜ
     grind [isClosed_compl_iff, subset_compl_iff_disjoint_left, disjoint_iff_inter_eq_empty]
 

@@ -52,7 +52,6 @@ advantage of the fact that `(Sᵐᵒᵖ)ᵐᵒᵖ` is defeq to `S`.
 ## TODO
 
 Develop the theory of two-sided ideals, which have type `Submodule (R ⊗[ℕ] Rᵐᵒᵖ) R`.
-
 -/
 
 @[expose] public section
@@ -84,7 +83,7 @@ def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p
   { p with
     carrier := p
     smul_mem' := fun ab m =>
-      TensorProduct.induction_on ab (fun _ => by simp only [zero_smul, SetLike.mem_coe, zero_mem])
+      TensorProduct.inductionOn ab
         (fun a b hm => by simpa only [TensorProduct.Algebra.smul_def] using! hA a (hB b hm))
         fun z w hz hw hm => by simpa only [add_smul] using! p.add_mem (hz hm) (hw hm) }
 

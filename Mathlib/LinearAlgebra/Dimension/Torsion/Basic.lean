@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 # Rank and torsion
@@ -28,7 +27,7 @@ theorem rank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup 
     {M' : Submodule R M} (hN : M' ≤ torsion R M) : Module.rank R (M ⧸ M') = Module.rank R M :=
   (rank_quotient_le M').antisymm <| by
     nontriviality R
-    rw [Module.rank]
+    rw [Module.rank_def]
     refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (M'.mkQ ·)) ?_
     rw [LinearIndepOn, linearIndependent_iff'] at hs
     simp_rw [linearIndependent_iff', ← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
@@ -40,7 +39,7 @@ theorem rank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup 
 theorem finrank_quotient_eq_of_le_torsion {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     {M' : Submodule R M} (hN : M' ≤ torsion R M) :
     Module.finrank R (M ⧸ M') = Module.finrank R M :=
-  congr_arg Cardinal.toNat (rank_quotient_eq_of_le_torsion hN)
+  congr($(rank_quotient_eq_of_le_torsion hN).toNat)
 
 /-- Quotienting an additive commutative group by its torsion subgroup does not change its
 `ℤ`-`finrank`. -/

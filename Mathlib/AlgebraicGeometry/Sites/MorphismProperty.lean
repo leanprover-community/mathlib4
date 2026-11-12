@@ -6,18 +6,15 @@ Authors: Christian Merten, Joël Riou, Adam Topaz
 module
 
 public import Mathlib.AlgebraicGeometry.OpenImmersion
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
 
 /-!
-
 # Site defined by a morphism property
 
 Given a multiplicative morphism property `P` that is stable under base change, we define the
 associated precoverage on the category of schemes, where coverings are given
 by jointly surjective families of morphisms satisfying `P`.
-
 -/
 
 @[expose] public section
@@ -55,6 +52,7 @@ lemma IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
   use (pullbackSymmetry f g).inv a
   rwa [← Scheme.Hom.comp_apply, pullbackSymmetry_inv_comp_snd]
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : IsJointlySurjectivePreserving @IsOpenImmersion where
   exists_preimage_fst_triplet_of_prop {X Y S f g} _ hg x y h := by
     rw [← show _ = (pullback.fst _ _ : pullback f g ⟶ _).base from

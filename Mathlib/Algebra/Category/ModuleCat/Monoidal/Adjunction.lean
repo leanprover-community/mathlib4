@@ -14,12 +14,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 Let `f : R →+* S` be a morphism of commutative rings. We show that the functor
 `extendsScalars f : ModuleCat R ⥤ ModuleCat S` is monoidal, and deduce that
 `restrictScalars f : ModuleCat S ⥤ ModuleCat R` is lax monoidal.
-
 -/
 
-@[expose] public section
-
-set_option backward.defeqAttrib.useBackward true
+public section
 
 universe u
 
@@ -40,6 +37,7 @@ lemma extendsScalars_map_rightUnitor_inv_one_tmul (M : ModuleCat R) (m : M) :
     letI := f.toAlgebra
     (extendScalars f).map (ρ_ M).inv ((1 : S) ⊗ₜ[R] m) = (1 : S) ⊗ₜ[R] (m ⊗ₜ 1) := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 open ModuleCat.MonoidalCategory in
 noncomputable instance : (extendScalars f).Monoidal :=
   letI : Algebra R S := f.toAlgebra

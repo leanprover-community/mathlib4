@@ -1,13 +1,15 @@
-import Mathlib.Tactic.Lift
-import Batteries.Tactic.PermuteGoals
-import Mathlib.Tactic.Coe
-import Mathlib.Data.Set.Defs
-import Mathlib.Order.WithBot
-import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.List
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.PNat.Defs
+module
+
+public import Batteries.Tactic.PermuteGoals
+public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Data.PNat.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.List
+public import Mathlib.Order.WithBot
+public import Mathlib.Tactic.Coe
+public import Mathlib.Tactic.Lift
 
 /-! Some tests of the `lift` tactic. -/
 
@@ -243,3 +245,16 @@ def foo (n : Int) (hn : 0 ≤ n) : Int := n
 example (n : Int) (hn : 0 ≤ n) : foo n hn = n := by
   lift n to Nat using hn
   rfl
+
+-- Regression test for https://github.com/leanprover-community/mathlib4/issues/15865.
+abbrev MyNat := ℕ
+
+namespace MyNat
+
+theorem isTrue (_ : MyNat) : True := trivial
+
+end MyNat
+
+example (n : ℤ) (hn : n ≥ 0) : True := by
+  lift n to MyNat using hn
+  exact n.isTrue

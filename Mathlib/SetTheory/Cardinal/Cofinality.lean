@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Order.Cofinal
 public import Mathlib.SetTheory.Cardinal.Arithmetic

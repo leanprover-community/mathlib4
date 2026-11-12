@@ -6,17 +6,21 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Init
-public import Lean.PrettyPrinter.Delaborator.Basic
+
+import Lean.PrettyPrinter.Delaborator.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additions to the delaborator
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.PrettyPrinter.Delaborator
 
-open SubExpr
+open Delaborator.SubExpr
 
 /-- Assuming the current expression in a lambda or pi,
 descend into the body using an unused name generated from the binder's name.

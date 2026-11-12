@@ -7,8 +7,6 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Coeff
-public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Algebra.AlgebraNF
 public import Mathlib.Tactic.Polynomial.Core
 
@@ -48,7 +46,7 @@ def polynomialInferBase : PolynomialExt where
 
 section Lemmas
 
-variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
 attribute [polynomial_post] mul_one Algebra.smul_def Polynomial.algebraMap_eq
 
@@ -110,7 +108,6 @@ example {P : ℚ[X] → Prop} (h : P (X ^ 2 + X + C 4⁻¹)) : P ((X + C 2⁻¹)
   polynomial_nf at h ⊢
   exact h
 ```
-
 -/
 elab (name := polynomial) "polynomial" tk:"!"? : tactic =>
   withMainContext do

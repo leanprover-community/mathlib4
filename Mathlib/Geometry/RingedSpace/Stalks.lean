@@ -6,8 +6,10 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.Topology.Sheaves.Stalks
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Stalks for presheafed spaces
@@ -83,6 +85,7 @@ theorem restrictStalkIso_inv_eq_germ {U : TopCat.{v}} (X : PresheafedSpace.{_, _
       (X.restrict h).presheaf.germ _ x hx := by
   rw [← restrictStalkIso_hom_eq_germ, Category.assoc, Iso.hom_inv_id, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat.{v}} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x := by
@@ -98,6 +101,7 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat.{v}} (X : PresheafedSpace
   erw [← X.presheaf.map_comp_assoc]
   exact (colimit.w ((OpenNhds.inclusion (f x)).op ⋙ X.presheaf) i.op).symm
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance ofRestrict_stalkMap_isIso {U : TopCat.{v}} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (x : U) :
     IsIso ((X.ofRestrict h).stalkMap x) := by
@@ -115,7 +119,6 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
   ext
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z) (x : X) :
@@ -184,7 +187,6 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}

@@ -2,5 +2,5 @@
 set -euxo pipefail
 
 lake build runLinter
-LEAN_ABORT_ON_PANIC=1 "$BENCH_DIR/measure.py" -t lint -d -a -o "$OUTPUT_FILE" -- \
+LEAN_ABORT_ON_PANIC=1 "$BENCH_DIR/measure.py" -t lint -d -a -o "$OUTPUT_FILE" -F -- \
   lake exe runLinter Mathlib

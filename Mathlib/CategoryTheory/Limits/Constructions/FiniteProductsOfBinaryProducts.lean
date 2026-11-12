@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing finite products from binary products and terminal.
 
@@ -274,6 +277,7 @@ lemma preserves_fin_of_preserves_binary_and_initial :
     · rintro i _
       dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
       rw [comp_id, ← F.map_comp]
+      rfl
 
 /-- If `F` preserves the initial object and binary coproducts, then it preserves colimits of shape
 `Discrete (Fin n)`.
@@ -291,10 +295,6 @@ lemma PreservesFiniteCoproducts.of_preserves_binary_and_initial (J : Type*) [Fin
   let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
   have := preservesShape_fin_of_preserves_binary_and_initial F n
   preservesColimitsOfShape_of_equiv (Discrete.equivalence e).symm _
-
-@[deprecated (since := "2026-03-10")]
-alias preservesFiniteCoproductsOfPreservesBinaryAndInitial :=
-  PreservesFiniteCoproducts.of_preserves_binary_and_initial
 
 end Preserves
 

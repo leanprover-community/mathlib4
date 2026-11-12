@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Generator.Basic
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Generators in the category of presheaves
@@ -14,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 In this file, we show that if `A` is a category with zero morphisms that
 has a separator (and suitable coproducts), then the category of
 presheaves `Cᵒᵖ ⥤ A` also has a separator.
-
 -/
 
 @[expose] public section
@@ -51,6 +49,7 @@ noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Cᵒᵖ ⥤ A} :
     simpa using (Sigma.ι _ (𝟙 _) ≫= f.naturality φ.op).symm
   right_inv g := by simp
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma freeYonedaHomEquiv_comp {X : C} {M : A} {F G : Cᵒᵖ ⥤ A}

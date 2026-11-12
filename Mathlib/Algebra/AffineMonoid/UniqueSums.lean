@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.Finiteness
 import Mathlib.Algebra.AffineMonoid.Embedding
 import Mathlib.Algebra.FreeAbelianGroup.UniqueSums
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine monoids have unique sums
 
@@ -23,10 +26,10 @@ public section
 variable {M : Type*}
 
 instance (priority := low) AffineAddMonoid.to_twoUniqueSums [AddCancelCommMonoid M] [AddMonoid.FG M]
-    [IsAddTorsionFree M] : TwoUniqueSums M :=
+    [HasUniqueDiv M] : TwoUniqueSums M :=
   .of_injective_addHom (embedding M).toAddHom embedding_injective inferInstance
 
 @[to_additive existing AffineAddMonoid.to_twoUniqueSums]
 instance (priority := low) AffineMonoid.to_twoUniqueProds [CancelCommMonoid M] [Monoid.FG M]
-    [IsMulTorsionFree M] : TwoUniqueProds M :=
+    [HasUniqueRoots M] : TwoUniqueProds M :=
   Multiplicative.instTwoUniqueProdsOfTwoUniqueSums (M := Additive M)

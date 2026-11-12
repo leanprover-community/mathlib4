@@ -23,7 +23,6 @@ the pushforward functor along `f`.
 ### TODO
 
 - Any pullback of an exponentiable morphism is exponentiable.
-
 -/
 
 @[expose] public section
@@ -32,7 +31,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Category MonoidalCategory Functor Adjunction
+open Category MonoidalCategory CategoryTheory.Functor Adjunction
 
 open ChosenPullbacksAlong
 
@@ -145,7 +144,7 @@ end
 section
 
 /-- The identity morphisms `𝟙 _` are exponentiable. -/
-@[implicit_reducible]
+@[instance_reducible]
 def id (I : C) [ChosenPullbacksAlong (𝟙 I)] : ExponentiableMorphism (𝟙 I) :=
   ⟨𝟭 _, ofNatIsoLeft (F := 𝟭 _) Adjunction.id (pullbackId I).symm⟩
 
@@ -174,7 +173,7 @@ theorem pushforwardId_hom_counit (I : C) [ChosenPullbacksAlong (𝟙 I)]
   rw [pushforwardId, Adjunction.rightAdjointUniq_hom_counit]
 
 /-- The composition of exponentiable morphisms is exponentiable. -/
-@[implicit_reducible]
+@[instance_reducible]
 def comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
