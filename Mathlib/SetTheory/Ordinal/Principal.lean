@@ -516,8 +516,7 @@ theorem IsOpowPrincipal.isMulPrincipal (ho : IsOpowPrincipal o) : IsMulPrincipal
 @[deprecated (since := "2026-11-12")]
 alias IsPrincipal.mul_of_opow := IsOpowPrincipal.isMulPrincipal
 
-theorem IsOpowPrincipal.isSuccLimit (ho₂ : 2 < o) (ho : IsOpowPrincipal o) :
-    IsSuccLimit o :=
+theorem IsOpowPrincipal.isSuccLimit (ho₂ : 2 < o) (ho : IsOpowPrincipal o) : IsSuccLimit o :=
   ho.isMulPrincipal.isSuccLimit ho₂
 
 @[deprecated (since := "2026-11-12")]
