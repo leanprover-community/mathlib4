@@ -119,7 +119,7 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
     (hg : ∀ x ∈ tsupport f, HasLineDerivAt ℝ g (g' x) x v) :
     ∫ x, B (f x) (g' x) ∂μ = - ∫ x, B (f' x) (g x) ∂μ := by
   by_cases hW : CompleteSpace W; swap
-  · simp [integral, hW]
+  · simp [integral_of_not_completeSpace hW]
   rcases eq_or_ne v 0 with rfl | hv
   · have Hf' x : B (f' x) (g x) = 0 := by
       by_cases hx : x ∈ tsupport g
@@ -204,7 +204,7 @@ theorem integral_bilinear_fderiv_right_eq_neg_left_of_integrable
     (hf · · |>.hasFDerivAt) (hg · · |>.hasFDerivAt)
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-    [NormedSpace 𝕜 G] [IsScalarTower ℝ 𝕜 G]
+    [NormedSpace 𝕜 G]
 
 /-- **Integration by parts for Fréchet derivatives**
 Version with a scalar function: `∫ f • g' = - ∫ f' • g` when `f • g'` and `f' • g` and `f • g`

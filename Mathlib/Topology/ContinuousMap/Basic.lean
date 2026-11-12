@@ -6,8 +6,6 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Data.Set.UnionLift
-public import Mathlib.Topology.ContinuousMap.Defs
-public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -52,7 +50,7 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   map_continuousAt f x
 
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
-  h.map f.2
+  h.map (by fun_prop)
 
 section DiscreteTopology
 variable [DiscreteTopology α]
@@ -155,7 +153,7 @@ theorem cancel_left {f : C(β, γ)} {g₁ g₂ : C(α, β)} (hf : Injective f) :
 
 instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
-  ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
+  ⟨const _ b₁, const _ b₂, fun h => hb congr($h (Classical.arbitrary α))⟩⟩
 
 /-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
 `e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
@@ -298,7 +296,7 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
 theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
     Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
   DFunLike.ext' <| (map_continuous f).ext_on hs (map_continuous g) <|
-    Set.domRestrict_eq_domRestrict_iff.1 <| congr_arg DFunLike.coe h
+    Set.domRestrict_eq_domRestrict_iff.1 congr($h)
 
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]
@@ -342,6 +340,9 @@ lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
     mkD (s.domRestrict f) g = g := by
   rw [continuousOn_iff_continuous_domRestrict] at hf
   exact mkD_of_not_continuous hf
+
+grind_pattern mkD_of_not_continuousOn => mkD (s.domRestrict f) g where
+  guard ¬ ContinuousOn f s
 
 lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
     (hf : ContinuousOn f s) :
@@ -409,10 +410,27 @@ theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
 
 end Gluing
 
+/-- `Subtype.val` as a bundled continuous map. -/
+@[simps!]
+def subtypeVal (s : Set α) : C(s, α) where
+  toFun := Subtype.val
+  continuous_toFun := continuous_subtype_val
+
 /-- `Set.inclusion` as a bundled continuous map. -/
+@[simps!]
 def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
   toFun := Set.inclusion h
   continuous_toFun := continuous_inclusion h
+
+@[simp]
+theorem inclusion_comp_inclusion {r s t : Set α} (hst : s ⊆ t) (hrs : r ⊆ s) :
+    (inclusion hst).comp (inclusion hrs) = inclusion (hrs.trans hst) :=
+  rfl
+
+@[simp]
+theorem subtypeVal_comp_inclusion {s t : Set α} (h : s ⊆ t) :
+    (subtypeVal t).comp (inclusion h) = subtypeVal s :=
+  rfl
 
 end ContinuousMap
 
@@ -441,7 +459,7 @@ noncomputable def homeomorph (hf : IsQuotientMap f) : Quotient (Setoid.ker f) �
   continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr hf.continuous
   continuous_invFun := by
     rw [hf.continuous_iff]
-    convert! continuous_quotient_mk'
+    convert continuous_quotient_mk'
     ext
     simp only [Equiv.invFun_as_coe, Function.comp_apply,
       (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]
@@ -454,7 +472,8 @@ variable (hf : IsQuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 noncomputable def lift : C(Y, Z) where
   toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
     Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
-  continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
+  continuous_toFun :=
+    Continuous.comp (continuous_quot_lift _ (by fun_prop)) (Homeomorph.continuous _)
 
 /--
 The obvious triangle induced by `IsQuotientMap.lift` commutes:

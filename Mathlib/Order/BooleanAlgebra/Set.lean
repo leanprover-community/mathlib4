@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Tactic.Tauto
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Boolean algebra of sets
@@ -29,8 +28,6 @@ set, sets, subset, subsets, complement
 
 assert_not_exists RelIso
 
-open Function
-
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
@@ -39,8 +36,12 @@ instance : HImp (Set α) where
 
 @[simp] theorem mem_himp_iff : a ∈ s ⇨ t ↔ a ∈ s → a ∈ t := .rfl
 
-instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
-  fast_instance% { (inferInstance : BooleanAlgebra (α → Prop)) with }
+instance instBooleanAlgebra : BooleanAlgebra (Set α) where
+  __ := instBoundedOrder
+  inf_compl_le_bot _ _ h := h.2 h.1
+  top_le_sup_compl s x _ := em (x ∈ s)
+  sdiff_eq _ _ := rfl
+  himp_eq _ _ := ext fun _ => imp_iff_or_not
 
 theorem himp_def : s ⇨ t = t ∪ sᶜ := himp_eq
 
@@ -104,11 +105,9 @@ theorem notMem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
 theorem notMem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
   not_not
 
-@[simp]
 theorem inter_compl_self (s : Set α) : s ∩ sᶜ = ∅ :=
   inf_compl_eq_bot
 
-@[simp]
 theorem compl_inter_self (s : Set α) : sᶜ ∩ s = ∅ :=
   compl_inf_eq_bot
 
@@ -116,7 +115,6 @@ theorem compl_inter_self (s : Set α) : sᶜ ∩ s = ∅ :=
 theorem compl_empty : (∅ : Set α)ᶜ = univ :=
   compl_bot
 
-@[simp]
 theorem compl_union (s t : Set α) : (s ∪ t)ᶜ = sᶜ ∩ tᶜ :=
   compl_sup
 
@@ -151,12 +149,11 @@ theorem union_eq_compl_compl_inter_compl (s t : Set α) : s ∪ t = (sᶜ ∩ t�
 theorem inter_eq_compl_compl_union_compl (s t : Set α) : s ∩ t = (sᶜ ∪ tᶜ)ᶜ :=
   ext fun _ => and_iff_not_or_not
 
-@[simp]
 theorem union_compl_self (s : Set α) : s ∪ sᶜ = univ :=
-  eq_univ_iff_forall.2 fun _ => em _
+  sup_compl_eq_top
 
-@[simp]
-theorem compl_union_self (s : Set α) : sᶜ ∪ s = univ := by rw [union_comm, union_compl_self]
+theorem compl_union_self (s : Set α) : sᶜ ∪ s = univ :=
+  compl_sup_eq_top
 
 theorem compl_subset_comm : sᶜ ⊆ t ↔ tᶜ ⊆ s :=
   compl_le_iff_compl_le
@@ -188,9 +185,9 @@ lemma disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t := disjoint_
 
 alias ⟨_, _root_.Disjoint.subset_compl_right⟩ := subset_compl_iff_disjoint_right
 alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_left
-@[deprecated LE.le.disjoint_compl_left (since := "2026-06-05")]
+@[deprecated LE.le.disjoint_compl_left +typeChanged (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
-@[deprecated LE.le.disjoint_compl_right (since := "2026-06-05")]
+@[deprecated LE.le.disjoint_compl_right +typeChanged (since := "2026-06-05")]
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
 
 @[simp] lemma nonempty_compl_of_nontrivial [Nontrivial α] (x : α) : Set.Nonempty {x}ᶜ := exists_ne x
@@ -200,7 +197,7 @@ lemma mem_compl_singleton_iff : a ∈ ({b} : Set α)ᶜ ↔ a ≠ b := .rfl
 lemma compl_singleton_eq (a : α) : {a}ᶜ = {x | x ≠ a} := rfl
 
 @[simp]
-lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl _
+lemma compl_ne_eq_singleton (a : α) : {x | x ≠ a}ᶜ = {a} := compl_compl {a}
 
 @[simp]
 lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm.trans singleton_subset_iff
@@ -259,13 +256,11 @@ theorem union_sdiff_cancel_right {s t : Set α} (h : s ∩ t ⊆ ∅) : (s ∪ t
 
 @[deprecated (since := "2026-06-03")] alias union_diff_cancel_right := union_sdiff_cancel_right
 
-@[simp]
 theorem union_sdiff_left {s t : Set α} : (s ∪ t) \ s = t \ s :=
   sup_sdiff_left_self
 
 @[deprecated (since := "2026-06-03")] alias union_diff_left := union_sdiff_left
 
-@[simp]
 theorem union_sdiff_right {s t : Set α} : (s ∪ t) \ t = s \ t :=
   sup_sdiff_right_self
 
@@ -276,28 +271,23 @@ theorem union_sdiff_distrib {s t u : Set α} : (s ∪ t) \ u = s \ u ∪ t \ u :
 
 @[deprecated (since := "2026-06-03")] alias union_diff_distrib := union_sdiff_distrib
 
-@[simp]
 theorem inter_sdiff_self (a b : Set α) : a ∩ (b \ a) = ∅ :=
   inf_sdiff_self_right
 
 @[deprecated (since := "2026-06-03")] alias inter_diff_self := inter_sdiff_self
 
-@[simp]
 theorem inter_union_sdiff (s t : Set α) : s ∩ t ∪ s \ t = s :=
   sup_inf_sdiff s t
 
 @[deprecated (since := "2026-06-03")] alias inter_union_diff := inter_union_sdiff
 
-@[simp]
-theorem sdiff_union_inter (s t : Set α) : s \ t ∪ s ∩ t = s := by
-  rw [union_comm]
-  exact sup_inf_sdiff _ _
+theorem sdiff_union_inter (s t : Set α) : s \ t ∪ s ∩ t = s :=
+  sup_sdiff_inf _ _
 
 @[deprecated (since := "2026-06-03")] alias diff_union_inter := sdiff_union_inter
 
-@[simp]
 theorem inter_union_compl (s t : Set α) : s ∩ t ∪ s ∩ tᶜ = s :=
-  inter_union_sdiff _ _
+  sup_inf_inf_compl
 
 theorem subset_inter_union_compl_left (s t : Set α) : t ⊆ s ∩ t ∪ sᶜ := by
   simp [inter_union_distrib_right]
@@ -372,7 +362,6 @@ theorem sdiff_sdiff_comm {s t u : Set α} : (s \ t) \ u = (s \ u) \ t :=
 
 @[deprecated (since := "2026-06-03")] alias diff_diff_comm := sdiff_sdiff_comm
 
-@[simp]
 theorem sdiff_subset_iff {s t u : Set α} : s \ t ⊆ u ↔ s ⊆ t ∪ u :=
   sdiff_le_iff
 
@@ -423,31 +412,26 @@ theorem inter_sdiff_right_comm : (s ∩ t) \ u = s \ u ∩ t := by
 
 @[deprecated (since := "2026-06-03")] alias diff_inter_right_comm := inter_sdiff_right_comm
 
-@[simp]
 theorem union_sdiff_self {s t : Set α} : s ∪ t \ s = s ∪ t :=
   sup_sdiff_self _ _
 
 @[deprecated (since := "2026-06-03")] alias union_diff_self := union_sdiff_self
 
-@[simp]
 theorem sdiff_union_self {s t : Set α} : s \ t ∪ t = s ∪ t :=
   sdiff_sup_self _ _
 
 @[deprecated (since := "2026-06-03")] alias diff_union_self := sdiff_union_self
 
-@[simp]
 theorem sdiff_inter_self {a b : Set α} : b \ a ∩ a = ∅ :=
   inf_sdiff_self_left
 
 @[deprecated (since := "2026-06-03")] alias diff_inter_self := sdiff_inter_self
 
-@[simp]
 theorem sdiff_inter_self_eq_sdiff {s t : Set α} : s \ (t ∩ s) = s \ t :=
   sdiff_inf_self_right _ _
 
 @[deprecated (since := "2026-06-03")] alias diff_inter_self_eq_diff := sdiff_inter_self_eq_sdiff
 
-@[simp]
 theorem sdiff_self_inter {s t : Set α} : s \ (s ∩ t) = s \ t :=
   sdiff_inf_self_left _ _
 
@@ -564,6 +548,26 @@ lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_sdiff_self_of_mem ha, fun _s ↦ insert_sdiff_self_of_notMem⟩
 
+lemma union_left_inj (hs : Disjoint u s) (ht : Disjoint u t) : s ∪ u = t ∪ u ↔ s = t :=
+  sup_left_inj_of_disjoint hs ht
+
+lemma disjoint_injOn_union_left (s : Set α) : {t | Disjoint s t}.InjOn (· ∪ s) := by
+  grind [Set.InjOn, union_sdiff_right, Disjoint.sdiff_eq_left]
+
+lemma superset_injOn_sdiff (s : Set α) : {t | s ⊆ t}.InjOn (· \ s) := by
+  grind [Set.InjOn, sdiff_union_of_subset]
+
+lemma insert_right_inj (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t := by
+  grind
+
+lemma insert_injOn_notMem (a : α) : {s : Set α | a ∉ s}.InjOn (insert a) := by
+  intro s hs t ht h
+  exact (insert_right_inj hs ht).1 h
+
+lemma sdiff_singleton_injOn_mem (a : α) : {s : Set α | a ∈ s}.InjOn (· \ {a}) := by
+  intro s hs t ht h
+  exact superset_injOn_sdiff {a} (singleton_subset_iff.2 hs) (singleton_subset_iff.2 ht) h
+
 @[simp]
 lemma sdiff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]
@@ -576,7 +580,7 @@ lemma sdiff_singleton_ssubset : s \ {a} ⊂ s ↔ a ∈ s := by simp
 
 @[simp]
 lemma insert_sdiff_singleton : insert a (s \ {a}) = insert a s := by
-  simp [insert_eq, union_sdiff_self, -union_singleton, -singleton_union]
+  simp [← singleton_union]
 
 @[deprecated (since := "2026-06-03")] alias insert_diff_singleton := insert_sdiff_singleton
 

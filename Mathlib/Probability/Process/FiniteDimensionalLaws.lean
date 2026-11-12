@@ -28,7 +28,6 @@ finite-dimensional distributions.
   their finite-dimensional distributions are equal.
 * `map_eq_of_forall_ae_eq`: if two processes are modifications of each other, then they have the
   same law.
-
 -/
 
 public section
@@ -46,7 +45,7 @@ lemma isProjectiveMeasureFamily_map_restrict (hX : ∀ t, AEMeasurable (X t) P) 
   intro I J hJI
   rw [AEMeasurable.map_map_of_aemeasurable (Finset.measurable_restrict₂ _).aemeasurable]
   · simp [Finset.restrict_def, Finset.restrict₂_def, Function.comp_def]
-  · exact aemeasurable_pi_lambda _ fun _ ↦ hX _
+  · exact .of_eval fun _ ↦ hX _
 
 /-- The projective limit of the finite-dimensional distributions of a stochastic process is the law
 of the process. -/

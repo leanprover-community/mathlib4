@@ -6,10 +6,11 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 module
 
 public import Mathlib.Data.List.Basic
-public import Mathlib.Order.BoundedOrder.Lattice
-public import Mathlib.Data.List.Induction
-public import Mathlib.Order.MinMax
 public import Mathlib.Order.WithBot
+
+import Mathlib.Data.List.Induction
+import Mathlib.Order.BoundedOrder.Lattice
+import Mathlib.Order.MinMax
 
 /-!
 # Minimum and maximum of lists
@@ -57,7 +58,7 @@ private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (som
 
 @[simp]
 theorem argAux_self (hr₀ : Std.Irrefl r) (a : α) : argAux r (some a) a = a :=
-  if_neg <| hr₀.irrefl _
+  ite_eq_right <| hr₀.irrefl _
 
 theorem not_of_mem_foldl_argAux (hr₀ : Std.Irrefl r) (hr₁ : IsTrans α r) :
     ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
@@ -136,7 +137,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     · simp
     dsimp
     rw [← apply_ite, ← apply_ite]
-    grind -abstractProof -- Without `-abstractProof`, `to_dual` gives an error.
+    split_ifs <;> grind -- Without `split_ifs`, `to_dual` gives an error.
 
 variable [DecidableEq α]
 
@@ -151,15 +152,15 @@ theorem index_of_argmax :
       simp_all
     rw [h] at hm
     dsimp only at hm
-    simp only [cond_eq_ite, beq_iff_eq]
+    simp only [beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_gt ‹_› ‹_›
-    · rw [if_pos rfl]
-    · rw [if_neg, if_neg]
+    · rw [ite_eq_left rfl]
+    · rw [ite_eq_right, ite_eq_right]
       · exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne
-    · rw [if_pos rfl]
+    · rw [ite_eq_left rfl]
       exact Nat.zero_le _
 
 @[to_dual]
@@ -325,7 +326,6 @@ theorem Perm.maximum_eq {l l' : List α} (h : l ~ l') :
     l.maximum = l'.maximum := by
   induction h with grind [maximum_cons]
 
-
 @[to_dual]
 lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.maximum.unbotD d := by
   cases hy : l.maximum with
@@ -338,8 +338,8 @@ lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.max
     | some z =>
       have : Std.Antisymm (α := α) (· ≤ ·) := ⟨fun _ _ => _root_.le_antisymm⟩
       rw [List.max?_eq_some_iff] at hz
-      · rw [Option.getD_some]
-        exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
+      rw [Option.getD_some]
+      exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
 
 end LinearOrder
 

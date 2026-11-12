@@ -5,8 +5,6 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Factorization.LCM
 public import Mathlib.GroupTheory.OrderOfElement
@@ -94,7 +92,9 @@ theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := b
 
 @[to_additive]
 theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrder g :=
-  isOfFinOrder_iff_pow_eq_one.mpr <| by peel 2 h; exact this g
+  isOfFinOrder_iff_pow_eq_one.mpr <| by
+    unfold ExponentExists at h
+    gconvert h; exact this g
 
 @[to_additive]
 theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf g :=
@@ -132,7 +132,7 @@ theorem exponent_eq_sInf :
     Monoid.exponent G = sInf {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1} := by
   by_cases h : Monoid.ExponentExists G
   · have h' : {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1}.Nonempty := h
-    rw [Monoid.exponent, dif_pos h, Nat.sInf_def h']
+    rw [Monoid.exponent, dite_eq_left h, Nat.sInf_def h']
     congr
   · have : {d | 0 < d ∧ ∀ (x : G), x ^ d = 1} = ∅ :=
       Set.eq_empty_of_forall_notMem fun n hn ↦ h ⟨n, hn⟩
@@ -150,9 +150,9 @@ theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
   classical
   by_cases h : ExponentExists G
-  · simp_rw [exponent, dif_pos h]
+  · simp_rw [exponent, dite_eq_left h]
     exact (Nat.find_spec h).2 g
-  · simp_rw [exponent, dif_neg h, pow_zero]
+  · simp_rw [exponent, dite_eq_right h, pow_zero]
 
 @[to_additive]
 theorem pow_eq_mod_exponent {n : ℕ} (g : G) : g ^ n = g ^ (n % exponent G) :=
@@ -168,7 +168,7 @@ theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n =
 @[to_additive]
 theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exponent G ≤ n := by
   classical
-  rw [exponent, dif_pos]
+  rw [exponent, dite_eq_left]
   · apply Nat.find_min'
     exact ⟨hpos, hG⟩
   · exact ⟨n, hpos, hG⟩
@@ -279,9 +279,10 @@ lemma _root_.Commute.orderOf_mul_pow_eq_lcm {x y : G} (h : Commute x y) (hx : or
       y ^ (orderOf y / factorizationLCMRight (orderOf x) (orderOf y))) =
       Nat.lcm (orderOf x) (orderOf y) := by
   rw [(h.pow_pow _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
-  all_goals iterate 2 rw [orderOf_pow_orderOf_div]; try rw [Coprime]
-  all_goals simp [factorizationLCMLeft_mul_factorizationLCMRight, factorizationLCMLeft_dvd_left,
-    factorizationLCMRight_dvd_right, coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
+  all_goals iterate 2 rw [orderOf_pow_orderOf_div]
+  all_goals simp [Coprime, factorizationLCMLeft_mul_factorizationLCMRight,
+    factorizationLCMLeft_dvd_left, factorizationLCMRight_dvd_right,
+    coprime_factorizationLCMLeft_factorizationLCMRight, hx, hy]
 
 open Submonoid in
 /-- If two commuting elements `x` and `y` of a monoid have order `n` and `m`, then there is an
@@ -567,10 +568,9 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
   classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push Not at hj ⊢
-  peel hj with n hn _
-  obtain ⟨m, hm⟩ := this
+  gconvert hj with n hn ⟨m, hm⟩
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
-  simpa using congr_fun h j
+  simpa using congr($h j)
 
 /-- If `f : M₁ →⋆ M₂` is surjective, then the exponent of `M₂` divides the exponent of `M₁`. -/
 @[to_additive /-- If `f : M₁ →+ M₂` is surjective, then the exponent of `M₂` divides the exponent of
@@ -626,7 +626,7 @@ variable [Monoid G]
 @[to_additive]
 lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
     orderOf x = 2 ↔ x ≠ 1 :=
-  ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
+  ⟨by rintro hx rfl; simp at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
 
 @[to_additive]
 theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣ 2) (a b : G) :
@@ -696,3 +696,12 @@ lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
 end Group
 
 end ExponentTwo
+
+theorem ringChar_eq_addMonoidExponent (R : Type*) [NonAssocSemiring R] :
+    ringChar R = AddMonoid.exponent R := by
+  apply dvd_antisymm
+  · apply ringChar.dvd
+    rw [← nsmul_one, AddMonoid.exponent_nsmul_eq_zero]
+  · rw [AddMonoid.exponent_dvd_iff_forall_nsmul_eq_zero]
+    intro g
+    rw [nsmul_eq_mul, ringChar.Nat.cast_ringChar, zero_mul]

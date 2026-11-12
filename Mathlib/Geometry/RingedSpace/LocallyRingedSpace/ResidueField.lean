@@ -9,7 +9,6 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
-
 # Residue fields of points
 
 Any point `x` of a locally ringed space `X` comes with a natural residue field, namely the residue
@@ -25,7 +24,6 @@ The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
   `U` to the residue field at `x`.
 - `evaluationMap`: a morphism of locally ringed spaces induces a morphism, i.e. extension, of
   residue fields.
-
 -/
 
 @[expose] public section
@@ -43,7 +41,7 @@ variable (X : LocallyRingedSpace.{u}) {U : Opens X}
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
 def residueField (x : X) : CommRingCat :=
-  CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
+  ↧(IsLocalRing.ResidueField (X.presheaf.stalk x))
 
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
@@ -72,7 +70,6 @@ def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
 def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
   X.evaluation ⟨x, show x ∈ ⊤ from trivial⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma evaluation_eq_zero_iff_notMem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
@@ -118,7 +115,6 @@ lemma residueFieldMap_id (x : X) :
   simp only [residueFieldMap, stalkMap_id]
   apply IsLocalRing.ResidueField.map_id
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.base x) ≫ residueFieldMap f x := by
@@ -144,10 +140,8 @@ lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.base).obj V)
     (a : Y.presheaf.obj (op V)) :
     residueFieldMap f x.val (Y.evaluation ⟨f.base x, x.property⟩ a) =
       X.evaluation x (f.c.app (op V) a) := by
-  simpa using! congrFun (congrArg (DFunLike.coe ∘ CommRingCat.Hom.hom) <|
-    evaluation_naturality f x) a
+  simpa using! congr((DFunLike.coe ∘ CommRingCat.Hom.hom) $(evaluation_naturality f x) a)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Γevaluation_naturality (x : X) :
     Y.Γevaluation (f.base x) ≫ residueFieldMap f x =

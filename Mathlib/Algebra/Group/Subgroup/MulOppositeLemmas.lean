@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Subgroup.MulOpposite
-public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Logic.Encodable.Basic
 
 /-!
@@ -19,7 +18,6 @@ which might be organized and split up further.
 
 ## Tags
 subgroup, subgroups
-
 -/
 
 public section

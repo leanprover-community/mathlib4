@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
-
 # Comparison with the normalized Moore complex functor
 
 In this file, we show that when the category `A` is abelian,
@@ -24,14 +23,15 @@ the Dold-Kan equivalence
 with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-  CategoryTheory.Subobject CategoryTheory.Idempotents DoldKan
+  CategoryTheory.Subobject CategoryTheory.Idempotents
+
+open scoped DoldKan
 
 noncomputable section
 
@@ -43,7 +43,6 @@ universe v
 
 variable {A : Type*} [Category* A] [Abelian A] {X : SimplicialObject A}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
@@ -88,7 +87,6 @@ theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f 
   cat_disch
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PInfty_comp_PInftyToNormalizedMooreComplex (X : SimplicialObject A) :
     PInfty ≫ PInftyToNormalizedMooreComplex X = PInftyToNormalizedMooreComplex X := by cat_disch
@@ -107,7 +105,7 @@ instance : Mono (inclusionOfMooreComplexMap X) :=
     ext n
     dsimp
     ext
-    exact HomologicalComplex.congr_hom hf n⟩
+    congrm $(hf).f n⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `inclusionOfMooreComplexMap X` is a split mono. -/
@@ -121,7 +119,6 @@ def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
 
 variable (A)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When the category `A` is abelian,
 the functor `N₁ : SimplicialObject A ⥤ Karoubi (ChainComplex A ℕ)` defined

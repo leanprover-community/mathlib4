@@ -61,6 +61,13 @@ example [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < 
     c ≤ d := by
   order
 
+-- The `push Not` step in the implementation of the tactic does nothing here:
+-- test that no warning is printed.
+#guard_msgs in
+example {α : Type*} [Preorder α] {a b c : α}
+    (hab : a < b) (hbd : b < c) : a < c := by
+  order
+
 example [Preorder α] (a b : α) (h1 : a < b) : b > a := by
   order
 
@@ -147,14 +154,6 @@ trace:
 example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
   order
 
--- This used to work when a different matching strategy was used in `order`.
--- This example is now considered outside the scope of the `order` tactic.
-/--
-error: No contradiction found.
-
-Additional diagnostic information may be available using the `set_option trace.order true` command.
--/
-#guard_msgs in
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
   order
 

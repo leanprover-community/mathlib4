@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Bicategory.Opposites
 # 2-Yoneda embedding
 
 In this file we define the bicategorical Yoneda embedding.
-
 -/
 
 @[expose] public section
@@ -46,7 +45,6 @@ set_option backward.defeqAttrib.useBackward true in
 def leftUnitorNatIsoCat (a b : B) : (precomposingCat _ _ b).obj (𝟙 a) ≅ 𝟙 (Cat.of (a ⟶ b)) :=
   Cat.Hom.isoMk <| NatIso.ofComponents (λ_ ·)
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- Right component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
@@ -56,7 +54,6 @@ def associatorNatIsoRightCat {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (d : B) :
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ f g ·)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Middle component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def associatorNatIsoMiddleCat {a b c d : B} (f : a ⟶ b) (h : c ⟶ d) :
@@ -88,7 +85,7 @@ the pseudofunctor defined by:
 This is only used for defining `yoneda`, after which `Bicategory.yoneda.obj` should be preferred. -/
 @[simps!]
 def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
-  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of (unop y ⟶ x))
+  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => ↧(unop y ⟶ x))
     (fun a b => unopFunctor a b ⋙ precomposingCat (unop b) (unop a) x)
   mapId a := leftUnitorNatIsoCat (unop a) x
   mapComp f g := associatorNatIsoRightCat g.unop f.unop x

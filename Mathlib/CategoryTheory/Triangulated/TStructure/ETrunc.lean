@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.Order.WithBotTop
 
 /-!
@@ -15,7 +15,6 @@ Let `t` be a t-structure on a triangulated category `C`.
 In this file, we extend the definition of the truncation functors
 `truncLT` and `truncGE` for indices in `ℤ` to `EInt`,
 as `t.eTruncLT : EInt ⥤ C ⥤ C` and `t.eTruncGE : EInt ⥤ C ⥤ C`.
-
 -/
 
 @[expose] public section
@@ -407,7 +406,6 @@ noncomputable def eTruncLTLTIsoLT :
   haveI := t.isIso_eTruncLTLTIsoLT a b hab
   asIso (t.eTruncLTLTToLT a b)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma eTruncLTLTIsoLT_hom_inv_id_app (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) ≫
@@ -452,7 +450,6 @@ noncomputable def eTruncLTGELTSelfToGELT :
   (Functor.associator _ _ _).inv ≫ Functor.whiskerLeft _ (t.eTruncLTι b) ≫
     (Functor.rightUnitor _).hom
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
@@ -508,7 +505,6 @@ lemma eTruncLTGEIsoGELT_hom_naturality (a b : EInt) {X Y : C} (f : X ⟶ Y) :
       (t.eTruncLTGEIsoGELT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLT.obj b).map f) :=
   (t.eTruncLTGEIsoGELT a b).hom.naturality f
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma eTruncLTGEIsoGELT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncGE.obj a).map ((t.eTruncLTι b).app X)) ≫
@@ -522,8 +518,6 @@ lemma eTruncLTGEIsoGELT_hom_app_fac' (a b : EInt) (X : C) :
       (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj X) := by
   simp [eTruncLTGEIsoGELT]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open ComposableArrows in
 @[reassoc]
 lemma eTruncLTGEIsoGELT_naturality_app (a b : EInt) (hab : a ≤ b)

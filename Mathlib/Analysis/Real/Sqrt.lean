@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Instances.NNReal.Lemmas
-public import Mathlib.Topology.Order.MonotoneContinuity
 
 /-!
 # Square root of a real number
@@ -319,7 +318,7 @@ end Real
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Qq
 
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
@@ -445,7 +444,7 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
 
 theorem sqrt_prod {ι : Type*} (s : Finset ι) {x : ι → ℝ} (hx : ∀ i ∈ s, 0 ≤ x i) :
     √(∏ i ∈ s, x i) = ∏ i ∈ s, √(x i) := by
-  convert! congr_arg NNReal.toReal <| map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s <;>
+  convert! congr($(map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s).toReal) <;>
     simp +contextual [-map_prod, NNReal.sqrtHom, hx]
 
 end Real

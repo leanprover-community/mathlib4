@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.GroupTheory.FreeAbelianGroup
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Coproducts
+
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -141,24 +142,24 @@ section Abelianization
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
 -/
 def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
-  obj G := CommGrpCat.of (Abelianization G)
-  map f := CommGrpCat.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
+  obj G := ↧(Group.Abelianization G)
+  map f := CommGrpCat.ofHom (Group.Abelianization.lift (Group.Abelianization.of.comp f.hom))
   map_id := by
     intros
     ext : 1
-    apply (Equiv.eq_symm_apply Abelianization.lift).mp
+    apply (Equiv.eq_symm_apply Group.Abelianization.lift).mp
     rfl
   map_comp := by
     intros
     ext : 1
-    apply (Equiv.eq_symm_apply Abelianization.lift).mp
+    apply (Equiv.eq_symm_apply Group.Abelianization.lift).mp
     rfl
 
 /-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrpCat.{u} GrpCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ((ConcreteCategory.homEquiv (C := CommGrpCat)).trans
-        Abelianization.lift.symm).trans
+        Group.Abelianization.lift.symm).trans
         (ConcreteCategory.homEquiv (C := GrpCat)).symm
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
@@ -166,9 +167,9 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrpCat.{u} GrpCat.{u} :=
         ext
         simp +instances only
         apply Eq.symm
-        apply Abelianization.lift_unique
+        apply Group.Abelianization.lift_unique
         intros
-        apply Abelianization.lift_apply_of }
+        apply Group.Abelianization.lift_apply_of }
 
 end Abelianization
 
@@ -177,7 +178,7 @@ end GrpCat
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
 def MonCat.units : MonCat.{u} ⥤ GrpCat.{u} where
-  obj R := GrpCat.of Rˣ
+  obj R := ↧Rˣ
   map f := GrpCat.ofHom <| Units.map f.hom
   map_id _ := GrpCat.ext fun _ => Units.ext rfl
   map_comp _ _ := GrpCat.ext fun _ => Units.ext rfl
@@ -200,7 +201,7 @@ instance : MonCat.units.{u}.IsRightAdjoint :=
 /-- The functor taking a monoid to its subgroup of units. -/
 @[simps!]
 def CommMonCat.units : CommMonCat.{u} ⥤ CommGrpCat.{u} where
-  obj R := CommGrpCat.of Rˣ
+  obj R := ↧Rˣ
   map f := CommGrpCat.ofHom <| Units.map f.hom
   map_id _ := CommGrpCat.ext fun _ => Units.ext rfl
   map_comp _ _ := CommGrpCat.ext fun _ => Units.ext rfl

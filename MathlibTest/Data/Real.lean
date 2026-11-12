@@ -4,7 +4,7 @@
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Real.Basic
+import Mathlib.Basic.Real.Basic
 
 private axiom test_sorry : ∀ {α}, α
 unsafe def testRepr (r : ℝ) (s : String) : Lean.Elab.Command.CommandElabM Unit :=

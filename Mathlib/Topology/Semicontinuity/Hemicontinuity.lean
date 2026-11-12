@@ -5,14 +5,13 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Topology.NhdsWithin
-public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
+public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.UniformSpace.Closeds
 public import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.Compact
+
 import Mathlib.Topology.Sequences
+import Mathlib.Topology.UniformSpace.Compact
 
 /-! # Hemicontinuity
 
@@ -437,7 +436,7 @@ lemma LowerHemicontinuousAt.exists_seq_tendsto {x₀ : α} (hf : LowerHemicontin
   -- Define `y n` to be some element of `f (x n) ∩ U (g n)` (or be arbitrary)
   let y : ℕ → β := fun n ↦ if h : (f (x n) ∩ U (g n)).Nonempty then h.some else y₀
   have hy (n) (h : (f (x n) ∩ U (g n)).Nonempty) : y n ∈ f (x n) ∩ U (g n) := by
-    simpa only [y, dif_pos h] using h.some_mem
+    simpa only [y, dite_eq_left h] using h.some_mem
   refine ⟨y, (hev 0).mono (by grind), ?_⟩
   -- Have to show for all `k`, eventually, all `y n ∈ U k`.
   rw [hUbasis.tendsto_right_iff]
@@ -462,8 +461,6 @@ lemma LowerHemicontinuousAt.exists_subseq_tendsto {ι : Type*} {l : Filter ι} [
   obtain ⟨u, hu⟩ := Filter.exists_seq_tendsto l
   obtain ⟨y, hy_mem, hy_lim⟩ := hf.exists_seq_tendsto (hx.comp hu) hy₀
   exact ⟨u, y, hu, hy_mem, hy_lim⟩
-
-
 
 end facts
 
@@ -537,13 +534,13 @@ theorem TendstoUniformlyOn.lowerHemicontinuousOn (htendsto : TendstoUniformlyOn 
     ((mem_hausdorffEntourage U (f x₀) (F N x₀)).mp (hN x₀ hx₀s)).1 hy₀f
   -- By lower hemicontinuity, a ball around z₀ intersects all x in a neighborhood of x₀
   obtain ⟨U', ⟨hU'mem, hU'open⟩, hU'sub⟩ := uniformity_hasBasis_open.mem_iff.mp hU
-  have hmeet₀ : (F N x₀ ∩ ball z₀ U').Nonempty := ⟨z₀, hz₀FN, mem_ball_self z₀ hU'mem⟩
-  have hSmeet : ∀ᶠ x in 𝓝[s] x₀, (F N x ∩ ball z₀ U').Nonempty :=
+  have hmeet₀ : (F N x₀ ∩ U'.ball z₀).Nonempty := ⟨z₀, hz₀FN, refl_mem_uniformity hU'mem⟩
+  have hSmeet : ∀ᶠ x in 𝓝[s] x₀, (F N x ∩ U'.ball z₀).Nonempty :=
     lowerHemicontinuousWithinAt_iff.mp (hF _ _ hx₀s) _ (isOpen_ball _ hU'open) hmeet₀
   filter_upwards [hSmeet, self_mem_nhdsWithin] with x ⟨w, hwFN, hwball⟩ hx_s
   obtain ⟨v, hvf, hvw⟩ := ((mem_hausdorffEntourage U (f x) (F N x)).mp (hN x hx_s)).2 hwFN
   exact ⟨v, hvf, hWsub <| hU₁comp
-    ⟨w, hUcomp ⟨z₀, hz₀y₀, hU'sub hwball⟩, hU_le_U₁ (hUsym.symm _ _ hvw)⟩⟩
+    ⟨w, hU_le_U₁ hvw, hUcomp ⟨z₀, hU'sub hwball, hUsym.symm _ _ hz₀y₀⟩⟩⟩
 
 /-- If a net of upper hemicontinuous set-valued functions converges uniformly
 (along a filter `l`) in the Hausdorff uniformity to a set-valued function `f` with
@@ -576,7 +573,7 @@ theorem TendstoUniformlyOn.upperHemicontinuousOn (htendsto : TendstoUniformlyOn 
   obtain ⟨z, hzFN, hyz⟩ := ((mem_hausdorffEntourage U (f x) (F N x)).mp (hN x hx_s)).1 hy
   obtain ⟨y₀, hy₀f, hy₀z⟩ := hFNx hzFN
   -- then use that `U ○ U.symm ⊆ u` to conclude
-  exact hWu y₀ hy₀f (hVcomp ⟨z, hUsub hy₀z, hVsym.symm _ _ (hUsub hyz)⟩)
+  exact hWu y₀ hy₀f (hVcomp ⟨z, hUsub hyz, hVsym.symm _ _ (hUsub hy₀z)⟩)
 
 /-- A net of lower hemicontinuous set-valued functions converging uniformly (along a
 filter `l`) in the Hausdorff uniformity has a lower hemicontinuous limit -/

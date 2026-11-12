@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 
 /-!
 # The transfinite iteration of a successor structure
@@ -16,7 +15,6 @@ Given a successor structure `Φ : SuccStruct C`
 (see the file `Mathlib/CategoryTheory/SmallObject/Iteration/Basic.lean`)
 and a well-ordered type `J`, we define the iteration `Φ.iteration J : C`. It is
 defined as the colimit of a functor `Φ.iterationFunctor J : J ⥤ C`.
-
 -/
 
 @[expose] public section
@@ -62,7 +60,6 @@ noncomputable def isColimitIterationCocone : IsColimit (Φ.iterationCocone J) :=
 
 variable {J}
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma iterationFunctor_obj (i : J) {j : J} (iter : Φ.Iteration j) (hi : i ≤ j) :
     (Φ.iterationFunctor J).obj i = iter.F.obj ⟨i, hi⟩ :=
   Iteration.congr_obj (Φ.iter i) iter i (by simp) hi
@@ -96,12 +93,10 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
     apply Arrow.mk_injective
     simp [Φ.arrowMk_iterationFunctor_map k i hk.le (Φ.iter i) (by simp), e]⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The isomorphism `(Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀`. -/
 noncomputable def iterationFunctorObjBotIso : (Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀ :=
   eqToIso (Φ.iter ⊥).obj_bot
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural map `Φ.X₀ ⟶ (Φ.iterationFunctor J).obj j`. -/
 noncomputable def ιIterationFunctor :
     (Functor.const _).obj Φ.X₀ ⟶ Φ.iterationFunctor J where

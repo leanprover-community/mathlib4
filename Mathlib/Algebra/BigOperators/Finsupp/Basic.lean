@@ -55,9 +55,8 @@ lemma prod_fun_one (f : α →₀ M) : f.prod (fun _ _ ↦ (1 : N)) = 1 := by si
 
 @[to_additive]
 theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
-    (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) := by
-  refine Finset.prod_subset hs fun x hxs hx => h x hxs ▸ (congr_arg (g x) ?_)
-  exact notMem_support_iff.1 hx
+    (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) :=
+  Finset.prod_subset hs <| by simp_all
 
 @[to_additive]
 theorem prod_fintype [Fintype α] (f : α →₀ M) (g : α → M → N) (h : ∀ i, g i 0 = 1) :
@@ -256,8 +255,6 @@ theorem single_finsetSum [AddCommMonoid M] (s : Finset ι) (f : ι → M) (a : �
   · rw [Multiset.map_map]
     rfl
 
-@[deprecated (since := "2026-04-08")] alias single_finset_sum := single_finsetSum
-
 theorem single_sum [Zero M] [AddCommMonoid N] (s : ι →₀ M) (f : ι → M → N) (a : α) :
     single a (s.sum f) = s.sum fun d c => single a (f d c) :=
   single_finsetSum _ _ _
@@ -271,8 +268,6 @@ theorem finsetSum_apply [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ 
     (∑ i ∈ S, f i) a = ∑ i ∈ S, f i a :=
   map_sum (applyAddHom a) _ _
 
-@[deprecated (since := "2026-04-08")] alias finset_sum_apply := finsetSum_apply
-
 @[simp]
 theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} {a₂ : β} :
     (f.sum g) a₂ = f.sum fun a₁ b => g a₁ b a₂ :=
@@ -281,8 +276,6 @@ theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M →
 @[simp, norm_cast] theorem coe_finsetSum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
     ⇑(∑ i ∈ S, f i) = ∑ i ∈ S, ⇑(f i) :=
   map_sum (coeFnAddHom : (α →₀ N) →+ _) _ _
-
-@[deprecated (since := "2026-04-08")] alias coe_finset_sum := coe_finsetSum
 
 @[simp, norm_cast] theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
     ⇑(f.sum g) = f.sum fun a₁ b => ⇑(g a₁ b) :=
@@ -303,8 +296,6 @@ theorem support_finsetSum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f 
   | cons _ _ _ ih =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
-
-@[deprecated (since := "2026-04-08")] alias support_finset_sum := support_finsetSum
 
 theorem sum_eq_one_iff (d : α →₀ ℕ) : sum d (fun _ n ↦ n) = 1 ↔ ∃ a, d = single a 1 := by
   classical
@@ -411,9 +402,16 @@ theorem liftAddHom_singleAddHom [AddCommMonoid M] :
       AddMonoidHom.id _ :=
   liftAddHom.toEquiv.eq_symm_apply.1 rfl
 
+lemma sum_finsetSum
+    (f : ι → (α →₀ A)) (s : Finset ι) (g : α → A → B)
+    (h₁ : ∀ a, g a 0 = 0)
+    (h₂ : ∀ a m₁ m₂, g a (m₁ + m₂) = g a m₁ + g a m₂) :
+    (∑ i ∈ s, f i).sum g = ∑ i ∈ s, (f i).sum g :=
+  map_sum (liftAddHom (fun a ↦ { toFun := g a, map_zero' := h₁ a, map_add' := h₂ a })) f s
+
 @[simp]
 theorem sum_single [AddCommMonoid M] (f : α →₀ M) : f.sum single = f :=
-  DFunLike.congr_fun liftAddHom_singleAddHom f
+  congr($liftAddHom_singleAddHom f)
 
 /-- The `Finsupp` version of `Finset.univ_sum_single` -/
 @[simp]
@@ -488,11 +486,6 @@ theorem prod_finsetSum_index [AddCommMonoid M] [CommMonoid N] {s : Finset ι} {g
     (∏ i ∈ s, (g i).prod h) = (∑ i ∈ s, g i).prod h :=
   Finset.cons_induction_on s rfl fun a s has ih => by
     rw [prod_cons, ih, sum_cons, prod_add_index' h_zero h_add]
-
-@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias prod_finset_sum_index := prod_finsetSum_index
 
 @[to_additive]
 theorem prod_sum_index [Zero M] [AddCommMonoid N] [CommMonoid P] {f : α →₀ M}
@@ -622,12 +615,12 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
 
 section
 
-variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
+variable [Zero M] [NonUnitalNonAssocSemiring S]
 
-theorem Finsupp.sum_mul (b : S) (s : α →₀ R) {f : α → R → S} :
+theorem Finsupp.sum_mul (b : S) (s : α →₀ M) {f : α → M → S} :
     s.sum f * b = s.sum fun a c => f a c * b := by simp only [Finsupp.sum, Finset.sum_mul]
 
-theorem Finsupp.mul_sum (b : S) (s : α →₀ R) {f : α → R → S} :
+theorem Finsupp.mul_sum (b : S) (s : α →₀ M) {f : α → M → S} :
     b * s.sum f = s.sum fun a c => b * f a c := by simp only [Finsupp.sum, Finset.mul_sum]
 
 end

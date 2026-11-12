@@ -5,9 +5,9 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Part
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Nat.Upto
+public import Mathlib.Data.Part
 public import Mathlib.Data.Stream.Defs
 
 /-!
@@ -116,8 +116,6 @@ instance hasFix : Fix (Part α) :=
   ⟨fun f => Part.fix (fun x u => f (x u)) ()⟩
 
 end Part
-
-open Sigma
 
 namespace Pi
 

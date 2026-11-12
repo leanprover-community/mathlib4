@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Algebra.Support
 public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.IsLUB
 public import Mathlib.Topology.Order.LocalExtr
 
 /-!
@@ -97,6 +96,33 @@ theorem isCompact_uIcc {α : Type*} [LinearOrder α] [TopologicalSpace α] [Comp
     {a b : α} : IsCompact (uIcc a b) :=
   isCompact_Icc
 
+section OrderClosed
+
+variable [TopologicalSpace α] [Preorder α] [OrderClosedTopology α] [CompactIccSpace α]
+
+@[compactness .]
+lemma isCompact_closure_Ioc {a b : α} : IsCompact (closure (Ioc a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ioc_subset_Icc_self isClosed_Icc
+
+@[compactness .]
+lemma isCompact_closure_Ico {a b : α} : IsCompact (closure (Ico a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ico_subset_Icc_self isClosed_Icc
+
+@[compactness .]
+lemma isCompact_closure_Ioo {a b : α} : IsCompact (closure (Ioo a b)) :=
+  isCompact_Icc.of_isClosed_subset isClosed_closure <|
+    closure_minimal Ioo_subset_Icc_self isClosed_Icc
+
+end OrderClosed
+
+@[compactness .]
+lemma isCompact_closure_uIoc [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
+    [CompactIccSpace α] {a b : α} : IsCompact (closure (uIoc a b)) :=
+  isCompact_uIcc.of_isClosed_subset isClosed_closure <|
+    closure_minimal uIoc_subset_uIcc isClosed_Icc
+
 -- See note [lower instance priority]
 /-- A complete linear order is a compact space.
 
@@ -142,8 +168,7 @@ end openIntervals
 
 section LinearOrder
 
-variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [TopologicalSpace β]
 
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
@@ -152,10 +177,10 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
     ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
   rw [biInter_eq_iInter]
   by_contra H
-  rw [not_nonempty_iff_eq_empty] at H
+  rw [not_nonempty_iff_eq_empty, ← disjoint_iff_inter_eq_empty] at H
   rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
       (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
-  exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
+  exact disjoint_left.mp hx x.2 le_rfl
 
 theorem IsCompact.exists_isGreatest [ClosedIciTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsGreatest s x :=
@@ -196,7 +221,7 @@ theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
   obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
   refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
   · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
-    convert! univ_mem
+    convert univ_mem
   · have := h_nonempty.nonempty
     obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
     obtain ⟨b, hb⟩ := exists_lt a
@@ -351,8 +376,8 @@ end LinearOrder
 
 section ConditionallyCompleteLinearOrder
 
-variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [ConditionallyCompleteLinearOrder α]
+  [TopologicalSpace α] [TopologicalSpace β]
 
 theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → α} {K : Set β}
     (hK : IsCompact K) (h0K : K.Nonempty) (hf : ContinuousOn f K) (y : α) :

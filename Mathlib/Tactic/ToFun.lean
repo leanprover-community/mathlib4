@@ -5,9 +5,13 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Util.AddRelatedDecl
+public meta import Mathlib.Lean.Name
 public import Mathlib.Tactic.Push
 public import Mathlib.Tactic.Translate.Attributes
+public import Mathlib.Util.AddRelatedDecl
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The `to_fun` attribute

@@ -9,6 +9,9 @@ public import Mathlib.Init
 
 import Mathlib.Tactic.Attr.Register
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # General operations on functions
 -/
@@ -19,7 +22,7 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
-variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
+variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄}
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
@@ -64,7 +67,7 @@ variable {ι} {α β : ι → Type*} (f f' : ∀ i, α i) (g g' : ∀ i, β i)
 
 theorem prod_def : Function.prod f g = fun i : ι => (f i, g i) := rfl
 
-@[simp, grind =] lemma prod_apply (i : ι) : Function.prod f g i = (f i, g i) := rfl
+@[simp, grind =] protected lemma prod_apply (i : ι) : Function.prod f g i = (f i, g i) := rfl
 
 variable {f f' g g'} in
 @[simp] theorem prod_inj : Function.prod f g = Function.prod f' g' ↔ f = f' ∧ g = g' := by
@@ -206,7 +209,7 @@ end Function
 
 namespace Function
 
-variable {α : Type u₁} {β : Type u₂}
+variable {α : Type u₁}
 
 /- ### Fixed points of functions -/
 

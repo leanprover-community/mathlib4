@@ -1,4 +1,12 @@
-import Mathlib.Tactic.DepRewrite
+module
+
+-- for `Type*`, which `DepRewrite` only imports privately
+public meta import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.DepRewrite
+
+/-!
+# Tests for the `rewrite!` and `rw!` tactics
+-/
 
 /-! ## Basic tests for `rewrite!`. -/
 
@@ -227,7 +235,6 @@ example (f : B n → Nat) (b : B n) :
   rewrite! [eq]
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 -- Test casting twice (from the LHS to `x` and back).
 theorem bool_dep_test
     (b : Bool)

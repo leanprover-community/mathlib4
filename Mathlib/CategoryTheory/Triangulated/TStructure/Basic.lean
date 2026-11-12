@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
@@ -33,7 +32,6 @@ use depending on the context.
 
 ## References
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
-
 -/
 
 @[expose] public section
@@ -180,9 +178,6 @@ lemma isLE_of_le (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsLE X p] : t.
 
 lemma isGE_of_ge (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsGE X q] : t.IsGE X p where
   ge := ge_antitone t hpq _ (t.ge_of_isGE X q)
-
-@[deprecated (since := "2026-01-30")] alias isLE_of_LE := isLE_of_le
-@[deprecated (since := "2026-01-30")] alias isGE_of_GE := isGE_of_ge
 
 @[simp]
 lemma le_iff_isLE (X : C) (n : ℤ) : t.le n X ↔ t.IsLE X n :=

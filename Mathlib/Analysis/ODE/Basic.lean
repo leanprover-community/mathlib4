@@ -54,7 +54,7 @@ tangent to `v t (γ t)` for all `t : ℝ`. -/
 def IsIntegralCurve (γ : ℝ → E) (v : ℝ → E → E) : Prop :=
   ∀ t : ℝ, HasDerivAt γ (v t (γ t)) t
 
-variable {γ γ' : ℝ → E} {v : ℝ → E → E} {s s' : Set ℝ} {t₀ : ℝ}
+variable {γ : ℝ → E} {v : ℝ → E → E} {s s' : Set ℝ} {t₀ : ℝ}
 
 lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s : Set ℝ) :
     IsIntegralCurveOn γ v s := fun t _ ↦ (h t).hasDerivWithinAt

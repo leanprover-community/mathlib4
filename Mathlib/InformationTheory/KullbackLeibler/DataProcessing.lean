@@ -5,9 +5,9 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Notation
 
 import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Analysis.Convex.Deriv
@@ -31,7 +31,6 @@ Let `μ, ν` be finite measures on `𝓧`, with sigma-algebra `m𝓧`.
 * `klDiv_trim_le`: `klDiv (μ.trim hm) (ν.trim hm) ≤ klDiv μ ν` for a sub-sigma-algebra `m` of `m𝓧`
   (with `hm : m ≤ m𝓧`).
 * `klDiv_comp_right_le`: `klDiv (κ ∘ₘ μ) (κ ∘ₘ ν) ≤ klDiv μ ν` for a Markov kernel `κ`.
-
 -/
 
 public section
@@ -145,7 +144,7 @@ lemma toReal_klDiv_map_of_ac (hμν : μ ≪ ν) (hg : Measurable g) :
 lemma klDiv_map_of_ac (hμν : μ ≪ ν) (hg : Measurable g) (h_int : Integrable (llr μ ν) μ) :
     klDiv (μ.map g) (ν.map g) =
       ENNReal.ofReal (∫ x, klFun ((ν[fun x ↦ (μ.rnDeriv ν x).toReal | m𝓨.comap g]) x) ∂ν) := by
-  rw [klDiv_eq_integral_klFun, if_pos ⟨hμν.map hg, integrable_llr_map hμν hg h_int⟩]
+  rw [klDiv_eq_integral_klFun, ite_eq_left ⟨hμν.map hg, integrable_llr_map hμν hg h_int⟩]
   congr
   rw [← toReal_klDiv_eq_integral_klFun (hμν.map hg), toReal_klDiv_map_of_ac hμν hg]
 

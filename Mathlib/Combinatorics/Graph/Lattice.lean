@@ -26,12 +26,11 @@ This has the effect of, when taking the intersection of non-compatible graphs,
 
 + Add `ConditionallyCompleteCompleteLatticeInf (Graph α β)` after splitting
   `ConditionallyCompleteCompleteLattice`.
-
 -/
 
 public section
 
-open Function Set
+open Set
 
 variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β}
 

@@ -5,9 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.Filter.Ultrafilter.Defs
-public import Mathlib.Topology.Defs.Basic
 public import Mathlib.Topology.Defs.Filter
 
 /-!
@@ -16,7 +14,6 @@ public import Mathlib.Topology.Defs.Filter
 * `Ultrafilter.lim f`: a limit of an ultrafilter `f`,
   defined as the limit of `(f : Filter X)`
   with a proof of `Nonempty X` deduced from existence of an ultrafilter on `X`.
-
 -/
 
 @[expose] public section

@@ -123,7 +123,7 @@ lemma F_nat_zero_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
 
 lemma F_nat_zero_zero_sub_le {t : ℝ} (ht : 0 < t) :
     ‖F_nat 0 0 t - 1‖ ≤ rexp (-π * t) / (1 - rexp (-π * t)) := by
-  convert! F_nat_zero_le zero_le_one ht using 2
+  convert F_nat_zero_le zero_le_one ht using 2
   · rw [F_nat, (summable_f_nat 0 0 ht).tsum_eq_zero_add, f_nat, Nat.cast_zero, add_zero, pow_zero,
       one_mul, pow_two, mul_zero, mul_zero, zero_mul, exp_zero, add_comm, add_sub_cancel_right]
     simp_rw [F_nat, f_nat, Nat.cast_add, Nat.cast_one, add_zero]
@@ -166,7 +166,7 @@ lemma F_nat_one_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
   apply HasSum.add
   · have h0' : ‖rexp (-π * t)‖ < 1 := by
       simpa only [norm_eq_abs, abs_exp] using exp_lt_aux ht
-    convert! (hasSum_coe_mul_geometric_of_norm_lt_one h0').mul_left (exp (-π * a ^ 2 * t)) using 1
+    convert (hasSum_coe_mul_geometric_of_norm_lt_one h0').mul_left (exp (-π * a ^ 2 * t)) using 1
     · ext1 n
       rw [mul_comm (exp _), ← Real.exp_nat_mul, mul_assoc (n : ℝ), ← Real.exp_add]
       ring_nf
@@ -252,7 +252,7 @@ lemma isBigO_atTop_F_int_zero_sub (a : UnitAddCircle) : ∃ p, 0 < p ∧
   obtain ⟨p, hp, hp'⟩ := isBigO_atTop_F_nat_zero_sub ha.1
   obtain ⟨q, hq, hq'⟩ := isBigO_atTop_F_nat_zero_sub (sub_nonneg.mpr ha.2.le)
   simp_rw [AddCircle.coe_eq_zero_iff_of_mem_Ico ha]
-  simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), if_false, sub_zero] at hq'
+  simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), ite_false, sub_zero] at hq'
   refine ⟨_, lt_min hp hq, ?_⟩
   have : (fun t ↦ F_int 0 a t - (if a = 0 then 1 else 0)) =ᶠ[atTop]
       fun t ↦ (F_nat 0 a t - (if a = 0 then 1 else 0)) + F_nat 0 (1 - a) t := by

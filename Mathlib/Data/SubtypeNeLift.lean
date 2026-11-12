@@ -5,14 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Data.Subtype
+
+import Mathlib.Util.CompileInductive
 
 /-!
 # Extending a function from the complement of a singleton
 
 In this file, we define `Function.subtypeNeLift` which allows to
 extend a (dependent) function defined on the complement of a singleton.
-
 -/
 
 @[expose] public section
@@ -28,10 +29,10 @@ def subtypeNeLift (i : ι) : M i :=
   if h : i = i₀ then by rw [h]; exact x else f ⟨i, h⟩
 
 @[simp]
-lemma subtypeNeLift_self : subtypeNeLift i₀ f x i₀ = x := dif_pos rfl
+lemma subtypeNeLift_self : subtypeNeLift i₀ f x i₀ = x := dite_eq_left rfl
 
 lemma subtypeNeLift_of_neq (i : ι) (h : i ≠ i₀) :
-    subtypeNeLift i₀ f x i = f ⟨i, h⟩ := dif_neg h
+    subtypeNeLift i₀ f x i = f ⟨i, h⟩ := dite_eq_right h
 
 @[simp]
 lemma subtypeNeLift_restriction (φ : ∀ i, M i) (i₀ : ι) :

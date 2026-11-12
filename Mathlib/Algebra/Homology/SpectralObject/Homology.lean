@@ -20,7 +20,6 @@ for this short complex where:
 * the cycles are `E^n(f₂ ≫ f₃, f₄, f₅)`;
 * the opcycles are `E^n(f₃, f₄, f₅ ≫ f₆)`;
 * the homology is `E^n(f₂ ≫ f₃, f₄, f₅ ≫ f₆)`.
-
 -/
 
 @[expose] public section
@@ -39,7 +38,7 @@ variable (X : SpectralObject C ι)
 
 section ExactSequences
 
-variable {i₀ i₁ i₂ i₃ i₄ i₅ i₆ i₇ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
+variable {i₀ i₁ i₂ i₃ i₄ i₅ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂) (f₃ : i₂ ⟶ i₃)
   (f₄ : i₃ ⟶ i₄) (f₅ : i₄ ⟶ i₅)
   (f₂₃ : i₁ ⟶ i₃) (h₂₃ : f₂ ≫ f₃ = f₂₃)
   (f₃₄ : i₂ ⟶ i₄) (h₃₄ : f₃ ≫ f₄ = f₃₄)

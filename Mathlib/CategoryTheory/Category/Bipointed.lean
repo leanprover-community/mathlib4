@@ -83,6 +83,7 @@ instance largeCategory : LargeCategory Bipointed where
 abbrev HomSubtype (X Y : Bipointed) :=
   { f : X → Y // f X.toProd.1 = Y.toProd.1 ∧ f X.toProd.2 = Y.toProd.2 }
 
+@[macro_inline]
 instance (X Y : Bipointed) : FunLike (HomSubtype X Y) X Y where
   coe f := f
   coe_injective _ _ := Subtype.ext

@@ -6,9 +6,10 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Order.Antidiag.Pi
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
-public import Mathlib.Tactic.FinCases
+
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Tactic.FinCases
 
 /-!
 # Sets of tuples with a fixed product
@@ -57,7 +58,7 @@ namespace Nat
 def finMulAntidiag (d : ℕ) (n : ℕ) : Finset (Fin d → ℕ) :=
   if hn : 0 < n then
     (Finset.finAntidiagonal d (Additive.ofMul (α := ℕ+) ⟨n, hn⟩)).map <|
-      .arrowCongrRight <| Additive.toMul.toEmbedding.trans <| ⟨PNat.val, PNat.coe_injective⟩
+      .arrowCongrRight <| Additive.toMul.toEmbedding.trans ⟨PNat.val, PNat.coe_injective⟩
   else
     ∅
 
@@ -194,8 +195,8 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
   dsimp only [Nat.primeFactorsPiBij]
   apply ne_of_mem_of_not_mem (s := {x | p ∣ x}) <;> simp_rw [Set.mem_ofPred_eq]
   · rw [Finset.prod_filter]
-    convert! Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
-    rw [if_pos rfl]
+    convert Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
+    rw [ite_eq_left rfl]
   · rw [mem_primeFactors] at hp
     rw [Prime.dvd_finsetProd_iff hp.1.prime]
     push Not
@@ -235,8 +236,8 @@ open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiag d n) = d ^ ω n := by
   rw [← card_finMulAntidiag_pi d n hn, Finset.card_pi, Finset.prod_const,
-    ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
-    Finset.card_fin]
+    ArithmeticFunction.cardDistinctFactors_eq_length_dedup_primeFactorsList, ← List.card_toFinset,
+    toFinset_factors, Finset.card_fin]
 
 theorem finMulAntidiag_three {n : ℕ} (a) (ha : a ∈ finMulAntidiag 3 n) : a 0 * a 1 * a 2 = n := by
   rw [← (mem_finMulAntidiag.mp ha).1, Fin.prod_univ_three a]
@@ -291,10 +292,10 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
     rw [mem_finMulAntidiag]
     rw [mem_filter, Finset.mem_product] at hb
     refine ⟨?_, hn⟩
-    · rw [Fin.prod_univ_three a]
-      dsimp only [a, Matrix.cons_val]
-      rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
-        Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
+    rw [Fin.prod_univ_three a]
+    dsimp only [a, Matrix.cons_val]
+    rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
+      Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
   use a; use ha
   apply Prod.ext <;> dsimp only [a, Matrix.cons_val]
     <;> apply Nat.mul_div_cancel'

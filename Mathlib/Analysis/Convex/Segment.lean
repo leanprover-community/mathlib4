@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # Segments in vector spaces
@@ -95,8 +94,6 @@ theorem openSegment_subset_iff :
 
 end SMul
 
-open Convex
-
 section MulActionWithZero
 
 variable (𝕜)
@@ -152,13 +149,13 @@ variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
 
 theorem segment.lift [SMulPosMono R 𝕜] (x y : E) : segment R x y ⊆ segment 𝕜 x y := by
   rintro z ⟨a, b, ha, hb, hab, hxy⟩
-  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($(hab) • (1 : 𝕜)), by simpa⟩
+  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($hab • (1 : 𝕜)), by simpa⟩
   all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
 
 theorem openSegment.lift [Nontrivial 𝕜] [SMulPosStrictMono R 𝕜] (x y : E) :
     openSegment R x y ⊆ openSegment 𝕜 x y := by
   rintro z ⟨a, b, ha, hb, hab, hxy⟩
-  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($(hab) • (1 : 𝕜)), by simpa⟩
+  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($hab • (1 : 𝕜)), by simpa⟩
   all_goals exact zero_smul R (1 : 𝕜) ▸ smul_lt_smul_of_pos_right ‹_› zero_lt_one
 
 end lift
@@ -167,7 +164,7 @@ end Module
 
 end OrderedSemiring
 
-open Convex
+open scoped Convex
 
 section OrderedRing
 
@@ -216,24 +213,20 @@ theorem openSegment_eq_image' (x y : E) :
   simp only [smul_sub, sub_smul, one_smul]
   abel
 
-set_option backward.isDefEq.respectTransparency false in
 theorem segment_eq_image_lineMap (x y : E) : [x -[𝕜] y] =
     AffineMap.lineMap x y '' Icc (0 : 𝕜) 1 := by
   convert segment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem openSegment_eq_image_lineMap (x y : E) :
     openSegment 𝕜 x y = AffineMap.lineMap x y '' Ioo (0 : 𝕜) 1 := by
   convert openSegment_eq_image 𝕜 x y
   exact AffineMap.lineMap_apply_module _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lineMap_mem_openSegment (a b : E) {t : 𝕜} (ht : t ∈ Ioo 0 1) :
     AffineMap.lineMap a b t ∈ openSegment 𝕜 a b :=
   openSegment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem lineMap_mem_segment (a b : E) {t : 𝕜} (ht : t ∈ Icc 0 1) :
     AffineMap.lineMap a b t ∈ [a -[𝕜] b] :=
   segment_eq_image_lineMap 𝕜 a b ▸ mem_image_of_mem _ ht
@@ -301,7 +294,7 @@ lemma segment_inter_subset_endpoint_of_linearIndependent_sub
   have Hy : y = (y - c) + c := by abel
   rw [Hx, Hy, smul_add, smul_add] at H
   have : c + q • (y - c) = c + p • (x - c) := by
-    convert! H using 1 <;> simp [sub_smul]
+    convert H using 1 <;> simp [sub_smul]
   obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this).symm
   simp
 
@@ -328,7 +321,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
   apply segment_inter_eq_endpoint_of_linearIndependent_sub
   simp only [add_sub_add_left_eq_sub]
   suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
-    convert! H using 1; simp only [neg_smul, one_smul]; abel_nf
+    convert H using 1; simp only [neg_smul, one_smul]; abel_nf
   nontriviality 𝕜
   rw [LinearIndependent.pair_add_smul_add_smul_iff]
   aesop
@@ -347,7 +340,7 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
 
 theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x - y) (x + y) := by
-  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
 theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
@@ -355,7 +348,7 @@ theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[�
 
 theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x + y) (x - y) := by
-  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
 
 theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=
@@ -421,7 +414,6 @@ theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (
 
 open AffineMap
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `z = lineMap x y c` is a point on the line passing through `x` and `y`, then the open
 segment `openSegment 𝕜 x y` is included in the union of the open segments `openSegment 𝕜 x z`,
 `openSegment 𝕜 z y`, and the point `z`. Informally, `(x, y) ⊆ {z} ∪ (x, z) ∪ (z, y)`. -/
@@ -608,22 +600,22 @@ end LinearOrderedField
 
 namespace Nonneg
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y z : 𝕜}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y : 𝕜}
 
-protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
-    Icc x y ⊆ segment {t : 𝕜 // 0 ≤ t} x y := by
+protected lemma Icc_subset_segment {x y : Nonneg 𝕜} :
+    Icc x y ⊆ segment (Nonneg 𝕜) x y := by
   intro a ⟨hxa, hay⟩
   rw [← Subtype.coe_le_coe] at hxa hay
   rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
   refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le, zero_le, ?_, ?_⟩ <;>
   ext <;> simpa
 
-protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :
-    segment {t : 𝕜 // 0 ≤ t} x y = Icc x y := by
+protected lemma segment_eq_Icc {x y : Nonneg 𝕜} (hxy : x ≤ y) :
+    segment (Nonneg 𝕜) x y = Icc x y := by
   refine subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
 
-protected lemma segment_eq_uIcc {x y : {t : 𝕜 // 0 ≤ t}} :
-    segment {t : 𝕜 // 0 ≤ t} x y = uIcc x y := by
+protected lemma segment_eq_uIcc {x y : Nonneg 𝕜} :
+    segment (Nonneg 𝕜) x y = uIcc x y := by
   rcases le_total x y with h | h
   · simp [h, Nonneg.segment_eq_Icc]
   · simp [h, segment_symm _ x y, Nonneg.segment_eq_Icc]
@@ -636,12 +628,12 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 theorem segment_subset (x y : E × F) : segment 𝕜 x y ⊆ segment 𝕜 x.1 y.1 ×ˢ segment 𝕜 x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
-  exact ⟨⟨a, b, ha, hb, hab, congr_arg Prod.fst hz⟩, a, b, ha, hb, hab, congr_arg Prod.snd hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, congr($(hz).fst)⟩, a, b, ha, hb, hab, congr($(hz).snd)⟩
 
 theorem openSegment_subset (x y : E × F) :
     openSegment 𝕜 x y ⊆ openSegment 𝕜 x.1 y.1 ×ˢ openSegment 𝕜 x.2 y.2 := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩
-  exact ⟨⟨a, b, ha, hb, hab, congr_arg Prod.fst hz⟩, a, b, ha, hb, hab, congr_arg Prod.snd hz⟩
+  exact ⟨⟨a, b, ha, hb, hab, congr($(hz).fst)⟩, a, b, ha, hb, hab, congr($(hz).snd)⟩
 
 theorem image_mk_segment_left (x₁ x₂ : E) (y : F) :
     (fun x => (x, y)) '' [x₁ -[𝕜] x₂] = [(x₁, y) -[𝕜] (x₂, y)] := by
@@ -676,12 +668,12 @@ variable [Semiring 𝕜] [PartialOrder 𝕜] [∀ i, AddCommMonoid (M i)] [∀ i
 
 theorem segment_subset (x y : ∀ i, M i) : segment 𝕜 x y ⊆ s.pi fun i => segment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
-  exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
+  exact ⟨a, b, ha, hb, hab, congr($hz i)⟩
 
 theorem openSegment_subset (x y : ∀ i, M i) :
     openSegment 𝕜 x y ⊆ s.pi fun i => openSegment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
-  exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
+  exact ⟨a, b, ha, hb, hab, congr($hz i)⟩
 
 variable [DecidableEq ι]
 

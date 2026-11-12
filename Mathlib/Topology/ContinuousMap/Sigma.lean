@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.CompactOpen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `C(X, Σ i, Y i)` and `Σ i, C(X, Y i)`
 
@@ -38,7 +41,7 @@ continuous map, sigma type, disjoint union
 
 noncomputable section
 
-open Filter Topology
+open Topology
 
 variable {X ι : Type*} {Y : ι → Type*} [TopologicalSpace X] [∀ i, TopologicalSpace (Y i)]
 
@@ -53,7 +56,7 @@ theorem isEmbedding_sigmaMk_comp [Nonempty X] :
   injective := by
     rintro ⟨i, g⟩ ⟨i', g'⟩ h
     obtain ⟨rfl, hg⟩ : i = i' ∧ ⇑g ≍ ⇑g' :=
-      Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
+      Function.eq_of_sigmaMk_comp congr($h)
     simpa using hg
 
 section ConnectedSpace

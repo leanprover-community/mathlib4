@@ -5,7 +5,6 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.CategoryTheory.Monad.Algebra
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
@@ -14,7 +13,6 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 If `C` is a preadditive category and `T` is an additive monad on `C` then `Algebra T` is also
 preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is preadditive as well.
-
 -/
 
 public section

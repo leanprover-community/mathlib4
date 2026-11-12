@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Data.PNat.Basic
-public import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Typeclasses for power-associative structures
@@ -33,7 +32,6 @@ powers are considered.
 * `NatPowAssoc` for `MulOneClass` - more or less the same flow
 * It seems unlikely that anyone will want `NatSMulAssoc` and `PNatSMulAssoc` as additive versions of
   power-associativity, but we have found that it is not hard to write.
-
 -/
 
 public section

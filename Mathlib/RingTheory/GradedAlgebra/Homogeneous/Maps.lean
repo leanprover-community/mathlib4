@@ -20,7 +20,7 @@ namespace HomogeneousIdeal
 
 section arbitrary_grading
 
-variable {A B C σ τ ω ι F G : Type*}
+variable {A B C σ τ ω ι : Type*}
   [Semiring A] [Semiring B] [Semiring C]
   [SetLike σ A] [SetLike τ B] [SetLike ω C]
   [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddSubmonoidClass ω C]
@@ -55,7 +55,7 @@ def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
     rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff, f.map_directSumDecompose]
     exact I.2 _ ha
 
-variable {I I₁ I₂ I₃ : HomogeneousIdeal 𝒜} {J J₁ J₂ J₃ : HomogeneousIdeal ℬ}
+variable {I : HomogeneousIdeal 𝒜} {J : HomogeneousIdeal ℬ}
   {K : HomogeneousIdeal 𝒞}
 
 lemma map_le_iff_le_comap : I.map f ≤ J ↔ I ≤ J.comap f := Ideal.map_le_iff_le_comap
@@ -92,7 +92,7 @@ end arbitrary_grading
 
 section canonical_grading
 
-variable {A B C σ τ ω ι F G : Type*}
+variable {A B C σ τ ω ι : Type*}
   [Semiring A] [Semiring B] [Semiring C]
   [SetLike σ A] [SetLike τ B] [SetLike ω C]
   [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddSubmonoidClass ω C]
