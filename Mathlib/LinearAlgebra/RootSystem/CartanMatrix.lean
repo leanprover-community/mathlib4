@@ -422,7 +422,6 @@ lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
   IsFiniteCartan.mk_of_exists_posDef b.cartanMatrix_apply_same b.cartanMatrix_le_zero_of_ne
     b.exists_cartanMatrix_diagonal_mul_posDef
 
-
 end IsCrystallographic
 
 end RootPairing.Base
