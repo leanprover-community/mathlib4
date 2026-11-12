@@ -61,10 +61,7 @@ variable {G}
 /-- `of` is the canonical projection from the group `G` to its abelianization. -/
 @[to_additive
 /-- `of` is the canonical projection from the additive group `G` to its abelianization. -/]
-def of : G →* Abelianization G where
-  toFun := QuotientGroup.mk
-  map_one' := rfl
-  map_mul' _ _ := rfl
+def of : G →* Abelianization G := QuotientGroup.mk' (commutator G)
 
 @[to_additive (attr := simp)]
 theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
