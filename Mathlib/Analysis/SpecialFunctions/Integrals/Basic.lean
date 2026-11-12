@@ -274,7 +274,7 @@ lemma integral_exp_mul_I_eq_sinc (r : ℝ) :
   norm_cast
   field
 
-private lemma integral_log_from_zero_of_pos {b : ℝ} (ht : 0 < b) :
+private lemma integral_log_from_zero_aux {b : ℝ} (ht : 0 < b) :
     ∫ s in 0..b, log s = b * log b - b := by
   -- Compute the integral by giving a primitive and considering it limit as x approaches 0 from
   -- the right. The following lines were suggested by Gareth Ma on Zulip.
@@ -288,16 +288,21 @@ private lemma integral_log_from_zero_of_pos {b : ℝ} (ht : 0 < b) :
       (tendsto_nhdsWithin_of_tendsto_nhds Filter.tendsto_id))
   · exact tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
 
+@[deprecated "use `integral_log_from_zero_aux` instead" (since := "2026-11-12")]
+lemma integral_log_from_zero_of_pos {b : ℝ} (ht : 0 < b) :
+    ∫ s in 0..b, log s = b * log b - b :=
+  integral_log_from_zero_aux ht
+
 /-- Helper lemma for `integral_log`: case where `a = 0`. -/
 lemma integral_log_from_zero {b : ℝ} : ∫ s in 0..b, log s = b * log b - b := by
   rcases lt_trichotomy b 0 with h | h | h
   · -- If t is negative, use that log is an even function to reduce to the positive case.
     conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
     rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm, neg_zero,
-      h_pos (Left.neg_pos_iff.mpr h), log_neg_eq_log]
+      integral_log_from_zero_aux (Left.neg_pos_iff.mpr h), log_neg_eq_log]
     ring
   · simp [h]
-  · exact integral_log_from_zero_of_pos h
+  · exact integral_log_from_zero_aux h
 
 @[simp]
 theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := by

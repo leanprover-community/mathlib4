@@ -191,9 +191,8 @@ omit [Nontrivial A] in
 /-- The **spectral mapping theorem** for polynomials in a Banach algebra over `ℂ`. -/
 theorem map_polynomial_aeval (a : A) (p : ℂ[X]) :
     spectrum ℂ (aeval a p) = (fun k => eval k p) '' spectrum ℂ a := by
-  rcases subsingleton_or_nontrivial A with _ | _
-  · simp [spectrum.of_subsingleton]
-  · exact map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
+  nontriviality A
+  exact map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
 
 open Polynomial in
 omit [Nontrivial A] in
