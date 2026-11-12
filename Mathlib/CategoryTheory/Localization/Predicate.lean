@@ -28,7 +28,6 @@ that `F'` lifts `F`, and the associated isomorphism `L ⋙ F' ≅ F` is the
 datum that is part of the class `Lifting L W F F'`. The functions
 `liftNatTrans` and `liftNatIso` can be used to lift natural transformations
 and natural isomorphisms between functors.
-
 -/
 
 @[expose] public section

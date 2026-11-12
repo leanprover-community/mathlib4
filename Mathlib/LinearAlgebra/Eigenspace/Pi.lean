@@ -23,7 +23,6 @@ for commuting endomorphisms but there are important more general situations wher
 * `Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo`: in finite dimensions, the
   simultaneous generalised eigenspaces of a compatible family of endomorphisms span if the same
   is true of each map individually.
-
 -/
 
 public section

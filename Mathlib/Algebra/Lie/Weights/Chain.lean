@@ -52,7 +52,6 @@ It should be possible to unify some of the definitions here such as `LieModule.c
 * The proof that the roots of a Lie algebra are a root system currently depends on these results.
   (This can be resolved by proving the root reflection formula using the approach outlined in
   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
-
 -/
 
 @[expose] public section

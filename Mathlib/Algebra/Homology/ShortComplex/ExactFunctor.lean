@@ -49,7 +49,6 @@ If we further assume that `C` and `D` are abelian categories, then we have:
   2. for every exact sequence `A ⟶ B ⟶ C`, `F(A) ⟶ F(B) ⟶ F(C)` is exact.
   3. `F` preserves homology.
   4. `F` preserves both finite limits and finite colimits.
-
 -/
 
 public section

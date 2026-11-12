@@ -229,9 +229,9 @@ theorem coe_sSup {s : Set α} (hb : BddAbove s) : ↑(sSup s) = (⨆ a ∈ s, �
 
 /-- A version of `WithTop.coe_sInf'` with a more convenient but less general statement. -/
 @[norm_cast]
-theorem coe_sInf {s : Set α} (hs : s.Nonempty) (h's : BddBelow s) :
+theorem coe_sInf {s : Set α} (hs : s.Nonempty) :
     ↑(sInf s) = (⨅ a ∈ s, ↑a : WithTop α) := by
-  rw [coe_sInf' hs h's, sInf_image]
+  rw [coe_sInf' hs (OrderBot.bddBelow s), sInf_image]
 
 end WithTop
 

@@ -18,7 +18,6 @@ This file defines oriented angles in Euclidean affine spaces.
 
 * `EuclideanGeometry.oangle`, with notation `∡`, is the oriented angle determined by three
   points.
-
 -/
 
 @[expose] public section

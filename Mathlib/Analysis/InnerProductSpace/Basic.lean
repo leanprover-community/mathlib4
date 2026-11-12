@@ -25,7 +25,6 @@ This file proves many basic properties of inner product spaces (real or complex)
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 @[expose] public section

@@ -20,7 +20,6 @@ This file defines the dot product and cross product on projective spaces.
 - `Projectivization.cross v w` for `v w : ℙ F (Fin 3 → F)` is defined as the cross product of
   `v` and `w` provided that `v ≠ w`. If `v = w`, then the cross product would be zero, so we
   instead define `cross v v = v`.
-
 -/
 
 @[expose] public section

@@ -17,7 +17,6 @@ that `P` is closed under subobjects (resp. quotients).
 
 We also relate these two classes to their analogues in the opposite category:
 `P.op` is closed under quotients iff `P` is closed under subobjects, and dually.
-
 -/
 
 public section

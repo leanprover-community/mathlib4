@@ -9,7 +9,6 @@ public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-!
 # Differentiability of functions in vector bundles
-
 -/
 
 public section
@@ -243,16 +242,13 @@ theorem mdifferentiableWithinAt_snd_comp_iff₂
   ⟨(hf.change_section_trivialization IB · hex₀ he'x₀),
    (hf.change_section_trivialization IB · he'x₀ hex₀)⟩
 
-variable (e e')
-
 theorem mdifferentiableAt_snd_comp_iff₂
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {x₀ : M}
     (he : f x₀ ∈ e.source) (he' : f x₀ ∈ e'.source)
     (hf : MDiffAt (fun x ↦ (f x).proj) x₀) :
     MDiffAt (fun x ↦ (e (f x)).2) x₀ ↔ MDiffAt (fun x ↦ (e' (f x)).2) x₀ := by
-  simpa [← mdifferentiableWithinAt_univ] using
-    e.mdifferentiableWithinAt_snd_comp_iff₂ IB he he' hf
+  simpa [← mdifferentiableWithinAt_univ] using e.mdifferentiableWithinAt_snd_comp_iff₂ IB he he' hf
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within a set. -/

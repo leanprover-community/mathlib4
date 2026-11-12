@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Multilinear.Finsupp
 
 This file proves lemmas about the action of multilinear maps on basis vectors and constructs a
 basis for multilinear maps given bases on the domain and codomain.
-
 -/
 
 @[expose] public section

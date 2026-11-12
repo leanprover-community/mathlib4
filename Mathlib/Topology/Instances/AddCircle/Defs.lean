@@ -51,7 +51,6 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Link with periodicity
 * Lie group structure
 * Exponential equivalence to `Circle`
-
 -/
 
 @[expose] public section

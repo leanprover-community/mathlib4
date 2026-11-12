@@ -19,7 +19,6 @@ stability properties of `W.functorCategory J : MorphismProperty (J ⥤ C)`.
 Under suitable assumptions, we also show that if monomorphisms
 in `C` are stable under transfinite compositions (or coproducts),
 then the same holds in the category `J ⥤ C`.
-
 -/
 
 public section

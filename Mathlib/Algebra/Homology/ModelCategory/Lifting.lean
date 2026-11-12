@@ -25,7 +25,6 @@ Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`. In this situation,
 we construct a cocycle in `Cocycle Q K 1` and show that there exists
 a lifting `B ⟶ X` if this cocycle is a coboundary.
-
 -/
 
 @[expose] public section

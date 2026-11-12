@@ -23,7 +23,6 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 ## TODO
 - Show that being projective is Zariski-local (very hard)
-
 -/
 
 public section
