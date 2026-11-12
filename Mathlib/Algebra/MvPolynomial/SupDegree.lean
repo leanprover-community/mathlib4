@@ -61,7 +61,7 @@ section LinearOrder
 
 variable [LinearOrder B] [OrderBot B] {p q : MvPolynomial σ R} {D : (σ →₀ ℕ) → B}
 
-@[simp]
+@[simp, nolint simpNF]
 theorem monic_one (hD : D.Injective) : (1 : MvPolynomial σ R).Monic D :=
   AddMonoidAlgebra.monic_one hD
 
