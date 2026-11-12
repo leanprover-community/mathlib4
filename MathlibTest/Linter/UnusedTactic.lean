@@ -38,7 +38,7 @@ warning: Unused tactic linter: `congr` does not change the goal.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
-warning: Unused tactic linter: `done` does not change the goal.
+warning: Unused tactic linter: there are no goals left for `done`.
 
 Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
@@ -178,13 +178,117 @@ example : 1 = 1 ∧ 1 = 1 := by
   conv => congr <;> simp
   exact ⟨trivial, trivial⟩
 
+/--
+@ +2:2...11
+warning: Unused tactic linter: `all_goals` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  all_goals simp
+
+/--
+@ +2:2...5
+warning: Unused tactic linter: `try` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  try simp
+
+/--
+@ +2:2...11
+warning: Unused tactic linter: `any_goals` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True := by
+  any_goals simp
+
+example : True ∧ True := by
+  constructor
+  all_goals simp
+
+/--
+@ +3:2...11
+warning: Unused tactic linter: `any_goals` can be replaced with `all_goals`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs (positions := true) in
+example : True ∧ True := by
+  constructor
+  any_goals simp
+
+/--
+warning: Unused tactic linter: there are no goals left for `all_goals simp`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True ∧ True := by
+  constructor
+  all_goals
+    try exact trivial
+    all_goals simp
+
+example : True ∧ True ∧ True := by
+  constructor <;> ((try apply And.intro); all_goals simp)
+
+/--
+warning: Unused tactic linter: `try` can be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: Unused tactic linter: `any_goals` can be replaced with `all_goals`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: Unused tactic linter: `any_goals` can be replaced with `on_goal 1 =>`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ (1 : Rat) + 1 = 2 := by
+  try constructor
+  any_goals have := trivial
+  any_goals trivial
+  grind
+
+/--
+warning: Unused tactic linter: `rfl` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor
+  try all_goals rfl
+  all_goals trivial
+
+-- TODO: this warning message is weird because `any_goals` behaves weirdly when throwing an error.
+/--
+warning: Unused tactic linter: `any_goals` can be replaced with `on_goal 1 =>`.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : True ∧ True := by
+  constructor
+  try
+    any_goals rfl
+  all_goals trivial
+
 section allowing_more_unused_tactics
 
-/-- info: The `SyntaxNodeKind` is `Lean.Parser.Tactic.refine`. -/
+/-- info: The `Lean.SyntaxNodeKind` is `Lean.Parser.Tactic.refine`. -/
 #guard_msgs in
 #show_kind refine _
 
-/-- info: The `SyntaxNodeKind` is `Lean.Parser.Tactic.skip`. -/
+/-- info: The `Lean.SyntaxNodeKind` is `Lean.Parser.Tactic.skip`. -/
 #guard_msgs in
 #show_kind skip
 
@@ -193,10 +297,10 @@ error: Unknown constant `skip`
 The command `#show_kind skip` may help to find the correct `SyntaxNodeKind`.
 -/
 #guard_msgs in
-#allow_unused_tactic rfl skip
+allow_unused_tactic rfl skip
 
 --  test that allowing more unused tactics has the desired effect of silencing the linter
-#allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
+allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 
 #guard_msgs in
 example : True := by

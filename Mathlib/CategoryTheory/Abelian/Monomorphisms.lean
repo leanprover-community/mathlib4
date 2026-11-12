@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 In an abelian category `C`, the class of morphisms
 `monomorphisms C` is stable under cobase change and
 `epimorphisms C` is stable under base change.
-
 -/
 
 public section

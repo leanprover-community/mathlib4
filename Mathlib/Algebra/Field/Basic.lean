@@ -15,7 +15,6 @@ import Mathlib.Tactic.Tauto
 
 /-!
 # Lemmas about division (semi)rings and (semi)fields
-
 -/
 
 public section

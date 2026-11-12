@@ -16,7 +16,6 @@ public import Mathlib.CategoryTheory.Yoneda
 The forgetful functor `AddCommMonCat.{u} ⥤ Type u` is corepresentable
 by `ULift ℕ`. Similar results are obtained for the variants `CommMonCat`, `AddMonCat`
 and `MonCat`.
-
 -/
 
 @[expose] public section

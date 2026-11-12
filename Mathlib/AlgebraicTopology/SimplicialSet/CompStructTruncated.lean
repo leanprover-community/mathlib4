@@ -18,7 +18,6 @@ Given a `2`-truncated simplicial set `X`, we introduce two types:
   `e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
   data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
   will allow to obtain relations in the homotopy category of `X`.
-
 -/
 
 @[expose] public section

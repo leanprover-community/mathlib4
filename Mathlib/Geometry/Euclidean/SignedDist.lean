@@ -26,7 +26,6 @@ reference point.
 ## References
 
 * https://en.wikipedia.org/wiki/Trilinear_coordinates
-
 -/
 
 @[expose] public section

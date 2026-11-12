@@ -45,9 +45,14 @@ lemma liftBaseChange_one_tmul (l : M →ₗ[R] N) (y) : l.liftBaseChange A (1 �
 lemma liftBaseChangeEquiv_symm_apply (l : A ⊗[R] M →ₗ[A] N) (x) :
     (liftBaseChangeEquiv A).symm l x = l (1 ⊗ₜ x) := rfl
 
-lemma liftBaseChange_comp {P} [AddCommMonoid P] [Module A P] [Module R P] [IsScalarTower R A P]
+lemma comp_liftBaseChange {P} [AddCommMonoid P] [Module A P] [Module R P] [IsScalarTower R A P]
     (l : M →ₗ[R] N) (l' : N →ₗ[A] P) :
       l' ∘ₗ l.liftBaseChange A = (l'.restrictScalars R ∘ₗ l).liftBaseChange A := by
+  ext
+  simp
+
+lemma liftBaseChange_comp {P} [AddCommMonoid P] [Module R P] (l : M →ₗ[R] N) (l' : P →ₗ[R] M) :
+    (l.comp l').liftBaseChange A = (l.liftBaseChange A).comp (l'.baseChange A) := by
   ext
   simp
 

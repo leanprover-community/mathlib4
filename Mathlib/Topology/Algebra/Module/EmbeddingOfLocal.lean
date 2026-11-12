@@ -59,7 +59,6 @@ proof for more details.
 ## References
 
 * [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 5, n° 1, lemme 1][bourbaki2023]
-
 -/
 
 public section

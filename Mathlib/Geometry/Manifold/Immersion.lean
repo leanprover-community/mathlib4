@@ -104,7 +104,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## References
 
 * [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
-
 -/
 
 open scoped Topology ContDiff

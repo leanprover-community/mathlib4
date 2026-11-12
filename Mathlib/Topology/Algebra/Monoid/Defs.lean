@@ -59,7 +59,7 @@ class SeparatelyContinuousAdd (M : Type*) [TopologicalSpace M] [Add M] : Prop wh
   continuous_const_add {a : M} : Continuous (a + ·)
   continuous_add_const {a : M} : Continuous (· + a)
 
-/-- A type class encoding that addition is continuous in each argument. This is weaker than
+/-- A type class encoding that multiplication is continuous in each argument. This is weaker than
 `ContinuousMul`. -/
 @[to_additive]
 class SeparatelyContinuousMul (M : Type*) [TopologicalSpace M] [Mul M] : Prop where
