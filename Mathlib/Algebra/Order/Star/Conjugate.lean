@@ -35,7 +35,6 @@ All of the main declarations are various bundlings of the stated map
 @[expose] public section
 
 namespace StarOrderedRing
--- maybe this should go in a brand new file in Mathlib to avoid increasing imports?
 
 section NonUnital
 
