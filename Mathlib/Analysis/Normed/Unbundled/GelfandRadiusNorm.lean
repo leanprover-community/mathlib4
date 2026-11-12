@@ -14,18 +14,21 @@ public import Mathlib.Analysis.Normed.Unbundled.IsPowMulUnique
 /-!
 # The Gelfand radius as an algebra norm
 
-This file uses the Gelfand radius to define an algebra norm on a finite extension of a normed field.
+This file uses the Gelfand radius to define an algebra norm on an algebraic extension of a normed
+field. Let `K` be a normed field, let `L` be an extension of `K`, and let `x : L`.
 
 ## Main definitions
 
-* `gelfandRadiusNormAux K L`: The algebra norm on a finite extension `L` of a normed field `K`.
-  The norm of `x : L` is defined as the Gelfand radius of multiplication by `x` on `L`.
+* `gelfandRadiusNorm K L x`: If `x : L` is algebraic over `K`, then the Gelfand radius norm of `x`
+  over `K` is the Gelfand radius of multiplication by `x` on any finite subextension containing `x`.
+  If `x` is not algebraic over `K`, then the Gelfand radius norm of `x` over `K` is defined as `0`.
+* `gelfandRadiusAlgNorm K L`: The Gelfand radius norm as an algebra norm when `L/K` is algebraic.
 
 ## Main statements
 
-* `isPowMul_gelfandRadiusNormAux`: the Gelfand radius norm is power-multiplicative.
-* `gelfandRadiusNormAux_algebraMap`: the Gelfand radius norm is invariant under algebra maps.
-* `gelfandRadiusNormAux_map`: the Gelfand radius norm is invariant under algebra homomorphisms.
+* `isPowMul_gelfandRadiusNorm`: the Gelfand radius norm is power-multiplicative.
+* `gelfandRadiusNorm_algebraMap`: the Gelfand radius norm is invariant under algebra maps.
+* `gelfandRadiusNorm_map`: the Gelfand radius norm is invariant under algebra homomorphisms.
 -/
 
 variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Algebra K M]
@@ -151,11 +154,9 @@ section gelfandRadiusNorm
 open IntermediateField
 
 open Classical in
-/-- The Gelfand radius algebra norm on an extension `L` of a normed field `K`.
-
-It is defined to be zero for non-algebraic elements.
-
-The norm of `x : L` is defined as the Gelfand radius of multiplication by `x` on `K⟮x⟯`. -/
+/-- If `x : L` is algebraic over `K`, then the Gelfand radius norm of `x` over `K` is the Gelfand
+radius of multiplication by `x` on any finite subextension containing `x`. If `x` is not algebraic
+over `K`, then the Gelfand radius norm of `x` over `K` is defined as `0`. -/
 noncomputable def gelfandRadiusNorm (x : L) : ℝ :=
   if hx : IsAlgebraic K x then
     haveI := adjoin.finiteDimensional hx.isIntegral
@@ -308,7 +309,7 @@ section gelfandRadiusAlgNorm
 variable [Algebra.IsAlgebraic K L] [Algebra.IsAlgebraic K M]
 
 open Algebra.IsAlgebraic in
-/-- The spectral norm is a `K`-algebra norm on `L`. -/
+/-- The Gelfand radius norm as an algebra norm when `L/K` is algebraic. -/
 noncomputable def gelfandRadiusAlgNorm : AlgebraNorm K L where
   toFun := gelfandRadiusNorm K L
   map_zero' := gelfandRadiusNorm_zero K L
@@ -345,6 +346,7 @@ theorem gelfandRadiusAlgNorm_one : gelfandRadiusAlgNorm K L (1 : L) = 1 :=
 theorem gelfandRadiusAlgNorm_eq_norm (x : K) : gelfandRadiusAlgNorm K K x = ‖x‖ := by
   simpa using map_smul_eq_mul (gelfandRadiusAlgNorm K K) x 1
 
+/-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusAlgNorm : IsPowMul (gelfandRadiusAlgNorm K L) :=
   isPowMul_gelfandRadiusNorm K L
 
