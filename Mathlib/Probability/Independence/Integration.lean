@@ -26,7 +26,6 @@ will always pick the later typeclass in this situation, and does not care whethe
 example {M1 : MeasurableSpace Ω} [M2 : MeasurableSpace Ω] {μ : Measure Ω} : sorry := sorry
 example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : sorry := sorry
 ```
-
 -/
 
 public section

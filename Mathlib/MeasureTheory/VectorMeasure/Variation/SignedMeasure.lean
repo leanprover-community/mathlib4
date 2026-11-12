@@ -20,7 +20,6 @@ In this file the two notions are shown to coincide.
 ## Main results
 
 * `MeasureTheory.SignedMeasure.totalVariation_eq_variation`: `μ.totalVariation = μ.variation`.
-
 -/
 
 public section

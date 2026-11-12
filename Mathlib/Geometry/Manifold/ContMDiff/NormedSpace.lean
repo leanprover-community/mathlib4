@@ -20,7 +20,6 @@ import Mathlib.Geometry.Manifold.Notation
 Smoothness of addition and scalar multiplication in normed spaces is proven not here but in
 `Mathlib/Geometry/Manifold/Algebra/LieGroup.lean` and `Mathlib/Geometry/Manifold/Algebra/SMul.lean`
 in the form of `LieAddGroup` and `ContMDiffSMul` instances.
-
 -/
 
 public section

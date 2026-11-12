@@ -26,7 +26,6 @@ is an alias for `Comma.right`.
 ## References
 * https://ncatlab.org/nlab/show/lifts+and+extensions
 * https://ncatlab.org/nlab/show/Kan+extension
-
 -/
 
 @[expose] public section

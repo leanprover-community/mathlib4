@@ -18,7 +18,6 @@ on presheaves of modules.
 In case we have a morphism of presheaves of rings `S ⟶ F.op ⋙ R`, we also construct
 a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`, and
 we show that they interact with the composition of morphisms similarly as pseudofunctors.
-
 -/
 
 @[expose] public section

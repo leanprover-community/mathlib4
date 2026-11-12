@@ -24,7 +24,6 @@ The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
   `U` to the residue field at `x`.
 - `evaluationMap`: a morphism of locally ringed spaces induces a morphism, i.e. extension, of
   residue fields.
-
 -/
 
 @[expose] public section

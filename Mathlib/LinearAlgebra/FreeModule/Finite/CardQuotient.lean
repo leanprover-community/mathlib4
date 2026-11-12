@@ -17,7 +17,6 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 * `Submodule.natAbs_det_basis_change`: let `b` be a `ℤ`-basis for a module `M` over `ℤ` and
   let `bN` be a basis for a submodule `N` of the same dimension. Then the cardinal of `M ⧸ N`
   is given by taking the determinant of `bN` over `b`.
-
 -/
 
 public section

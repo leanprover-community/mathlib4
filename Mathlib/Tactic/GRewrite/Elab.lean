@@ -21,7 +21,6 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 - `apply_rw`
 - `nth_grewrite`
 - `nth_grw`
-
 -/
 
 meta section

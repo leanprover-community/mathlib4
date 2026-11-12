@@ -18,7 +18,6 @@ the shift: there is a natural isomorphism `(K⟦n⟧).homology a ≅ K.homology 
 when `n + a = a'`. This is summarized by instances
 `(homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ` in the `CochainComplex`
 and `HomotopyCategory` namespaces.
-
 -/
 
 @[expose] public section
