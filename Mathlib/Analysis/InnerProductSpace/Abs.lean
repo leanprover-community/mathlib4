@@ -129,25 +129,25 @@ theorem IsPositive.abs_eq_neg_self {S : E →L[ℂ] E} (hS : (-S).IsPositive) : 
 
 @[simp]
 theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = T† ∘L T :=
-  abs_of_isPositive (isPositive_adjoint_comp_self T)
+  (isPositive_adjoint_comp_self T).abs_eq_self
 
 @[simp]
 theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† :=
-  abs_of_isPositive (isPositive_self_comp_adjoint T)
+  (isPositive_self_comp_adjoint T).abs_eq_self
 
 protected theorem abs_eq_self {S : E →L[ℂ] E} : |S| = S ↔ S.IsPositive :=
-  ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ abs_of_isPositive h⟩
+  ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ h.abs_eq_self⟩
 
 protected theorem abs_eq_neg_self {S : E →L[ℂ] E} : |S| = -S ↔ (-S).IsPositive :=
-  ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ abs_of_isPositive_neg h⟩
+  ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ h.abs_eq_neg_self⟩
 
 @[simp]
 theorem abs_id : |(.id ℂ E : E →L[ℂ] E)| = .id ℂ E :=
-  abs_of_isPositive isPositive_one
+  isPositive_one.abs_eq_self
 
 @[simp]
 protected theorem abs_one : |(1 : E →L[ℂ] E)| = 1 :=
-  abs_of_isPositive isPositive_one
+  isPositive_one.abs_eq_self
 
 protected theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
   rw [ContinuousLinearMap.abs_def, CFC.sqrt_eq_iff _ _ (adjoint_comp_self_nonneg (c • T))]
