@@ -20,6 +20,8 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
   its commutator subgroup.
 * `Group.Abelianization.map`: lifts a group homomorphism to a homomorphism between the
   abelianizations.
+* `Group.Abelianization.quotientMulEquiv`: The abelianization of a quotient `G ⧸ N` is isomorphic
+  to the quotient of the abelianization of `G` by the image of `N`.
 * `MulEquiv.abelianizationCongr`: Isomorphic groups have isomorphic abelianizations.
 -/
 
@@ -143,6 +145,22 @@ theorem lift_of_comp :
 theorem map_of (x : G) : map f (of x) = of (f x) :=
   rfl
 
+@[to_additive]
+lemma map_ker_le_ker_map (f : G →* H) : f.ker.map of ≤ (Abelianization.map f).ker := by
+  rintro _ ⟨x, hx, rfl⟩
+  simp_all [MonoidHom.mem_ker]
+
+@[to_additive]
+lemma map_ker_eq_ker_map (f : G →* H) (hf : Function.Surjective f) :
+    f.ker.map of = (Abelianization.map f).ker :=
+  le_antisymm (map_ker_le_ker_map f) fun y h ↦ by
+    obtain ⟨x, rfl⟩ : ∃ x, of x = y := QuotientGroup.mk_surjective y
+    rw [MonoidHom.mem_ker, map_of, ← MonoidHom.mem_ker, ker_of,
+      ← map_commutator_of_surjective hf] at h
+    obtain ⟨c, hc, hfc⟩ := h
+    have hc' : of c = 1 := by rwa [← MonoidHom.mem_ker, ker_of]
+    exact ⟨x * c⁻¹, by simp [hfc], by simp [hc']⟩
+
 @[to_additive (attr := simp)]
 theorem map_id : map (MonoidHom.id G) = MonoidHom.id (Abelianization G) :=
   hom_ext _ _ rfl
@@ -157,6 +175,36 @@ theorem map_map_apply {I : Type w} [Group I] {g : H →* I} {x : Abelianization 
   congr($(map_comp _ _) x)
 
 end Map
+
+section Quotient
+
+variable (N : Subgroup G) [N.Normal]
+
+/-- Abelianizing a quotient `G ⧸ N` is the same as abelianizing `G`
+and then quotienting by the image of `N`. -/
+@[to_additive
+/-- Abelianizing a quotient `G ⧸ N` is the same as abelianizing `G`
+and then quotienting by the image of `N`. -/]
+def quotientMulEquiv : Abelianization (G ⧸ N) ≃* Abelianization G ⧸ N.map of :=
+ MonoidHom.toMulEquiv
+    (lift <| QuotientGroup.lift N ((QuotientGroup.mk' _).comp of) <|
+      by simp [← MonoidHom.comap_ker, Subgroup.le_comap_map])
+    (QuotientGroup.lift _ (map (QuotientGroup.mk' N)) <|
+      by simpa using map_ker_le_ker_map (QuotientGroup.mk' N))
+    (by ext; simp)
+    (by ext; simp)
+
+@[to_additive (attr := simp)]
+theorem quotientMulEquiv_of_mk (x : G) :
+    quotientMulEquiv N (of (x : G ⧸ N)) = (of x : Abelianization G ⧸ N.map of) :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem quotientMulEquiv_symm_mk (x : Abelianization G) :
+    (quotientMulEquiv N).symm x = map (QuotientGroup.mk' N) x :=
+  rfl
+
+end Quotient
 
 end Abelianization
 
