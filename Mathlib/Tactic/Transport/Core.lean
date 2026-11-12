@@ -336,25 +336,27 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
       else
       let mut hypsPos : Vector (Option Nat) xs.size := .replicate _ none
       let mut pairs : Std.HashMap (Expr × Expr) (Nat × Nat) := {}
-      for h : i in 0...lhsArgs.size do
-        if lhsArgs[i] == rhsArgs[i] then
-          let some idx := xs.finIdxOf? lhsArgs[i] | return none
-          if hypsPos[idx].isSome then
+      for h : i in *...lhsArgs.size do
+        let lhsArg := lhsArgs[i]'h
+        let rhsArg := rhsArgs[i]
+        if lhsArg == rhsArg then
+          let some idx := xs.finIdxOf? lhsArg | return none
+          if (hypsPos[idx]'idx.2).isSome then
             return none
-          hypsPos := hypsPos.set idx (some i)
+          hypsPos := hypsPos.set idx (some i) idx.2
         else
-          let some idxL := xs.finIdxOf? lhsArgs[i] | return none
-          if hypsPos[idxL].isSome then
+          let some idxL := xs.finIdxOf? lhsArg | return none
+          if (hypsPos[idxL]'idxL.2).isSome then
             return none
-          hypsPos := hypsPos.set idxL (some i)
-          let some idxR := xs.finIdxOf? rhsArgs[i] | return none
-          if hypsPos[idxR].isSome then
+          hypsPos := hypsPos.set idxL (some i) idxL.2
+          let some idxR := xs.finIdxOf? rhsArg | return none
+          if (hypsPos[idxR]'idxR.2).isSome then
             return none
-          hypsPos := hypsPos.set idxR (some i)
-          pairs := pairs.insert (lhsArgs[i], rhsArgs[i]) (idxL, idxR)
+          hypsPos := hypsPos.set idxR (some i) idxR.2
+          pairs := pairs.insert (lhsArg, rhsArg) (idxL, idxR)
       let mut relHyps := #[]
-      for h : i in 0...xs.size do
-        if let mkApp2 rel l r ← inferType xs[i] then
+      for h : i in *...xs.size do
+        if let mkApp2 rel l r ← inferType (xs[i]'h) then
           if l.isFVar && r.isFVar then
             let fvarIds := (collectFVars {} rel).fvarIds
             unless fvarIds.any (fun f ↦ lhsVars.contains f || rhsVars.contains f) do
