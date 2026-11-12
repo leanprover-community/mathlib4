@@ -532,7 +532,8 @@ lemma exists_row_with_single_offDiag [Nonempty ι] :
   have : 0 < ∑ l ∈ Finset.univ, M i l := by simpa [mulVec, dotProduct] using hi
   grind [hM.offDiag_nonpos i j hji.symm, hM.offDiag_nonpos i k hki.symm, hM.diag i]
 
-theorem submatrix {κ : Type*} [Fintype κ] [DecidableEq κ] {f : κ → ι} (hf : Function.Injective f) :
+protected theorem submatrix {κ : Type*} [Fintype κ] [DecidableEq κ] {f : κ → ι}
+    (hf : Function.Injective f) :
     (M.submatrix f f).IsFiniteCartan where
   diag i := submatrix_apply M f f i i ▸ hM.diag (f i)
   offDiag_nonpos i j h := submatrix_apply M f f i j ▸ hM.offDiag_nonpos (f i) (f j) (hf.ne h)
@@ -558,7 +559,7 @@ theorem submatrix {κ : Type*} [Fintype κ] [DecidableEq κ] {f : κ → ι} (hf
       rw [hBsub, add_mulVec, dotProduct_add, dotProduct_transpose_mulVec]; ring
     nlinarith
 
-theorem isPosSymmetrizable : M.IsPosSymmetrizable := by
+protected theorem isPosSymmetrizable : M.IsPosSymmetrizable := by
   induction hcard : Fintype.card ι using Nat.strong_induction_on generalizing ι with | ind n ih =>
     by_cases hne : Nonempty ι
     · obtain ⟨v, w, hvw, _⟩ := hM.exists_row_with_single_offDiag
