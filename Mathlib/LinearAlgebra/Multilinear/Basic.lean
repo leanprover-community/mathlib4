@@ -665,7 +665,7 @@ theorem map_sum_finset [DecidableEq ι] [Fintype ι] :
 `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions `r`. This follows from
 multilinearity by expanding successively with respect to each coordinate. -/
 theorem map_sum [DecidableEq ι] [Fintype ι] [Π i, Fintype (α i)] :
-    (f fun i => ∑ j, g i j) = ∑ r : ∀ i, α i, f fun i => g i (r i) :=
+    (f fun i => ∑ j, g i j) = ∑ r : Π i, α i, f fun i => g i (r i) :=
   f.map_sum_finset g fun _ => Finset.univ
 
 theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M i)
@@ -1473,7 +1473,7 @@ variable {R : Type*} [Semiring R] {ι : Type*} [Nonempty ι] {M : ι → Type*} 
 /-- The pushforward of an indexed collection of submodule `p i ⊆ M i` by `f : M → N`.
 
 Note that this is not a submodule - it is not closed under addition. -/
-def map (f : (Π i, M i) →ₘₗ[R] N) (p : ∀ i, Submodule R (M i)) : SubMulAction R N where
+def map (f : (Π i, M i) →ₘₗ[R] N) (p : Π i, Submodule R (M i)) : SubMulAction R N where
   carrier := f '' { v | ∀ i, v i ∈ p i }
   smul_mem' := fun c _ ⟨x, hx, hf⟩ => by
     let ⟨i⟩ := ‹Nonempty ι›
@@ -1486,7 +1486,7 @@ def map (f : (Π i, M i) →ₘₗ[R] N) (p : ∀ i, Submodule R (M i)) : SubMul
     · rw [f.map_update_smul, update_eq_self, RingHom.id_apply]
 
 /-- The map is always nonempty. This lemma is needed to apply `SubMulAction.zero_mem`. -/
-theorem map_nonempty (f : (Π i, M i) →ₘₗ[R] N) (p : ∀ i, Submodule R (M i)) :
+theorem map_nonempty (f : (Π i, M i) →ₘₗ[R] N) (p : Π i, Submodule R (M i)) :
     (map f p : Set N).Nonempty :=
   ⟨f 0, 0, fun i => (p i).zero_mem, rfl⟩
 
