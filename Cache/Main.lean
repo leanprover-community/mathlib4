@@ -252,7 +252,7 @@ def main (args : List String) : IO Unit := do
   let curlMode ← if curlArgs.contains (args.headD "") then validateCurl
     else pure { parallel := true }
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
+    let hashMap := if args.isEmpty then hashMap else hashMemo.filterByRootModules roots.keys
     -- Resolve the repo once (single git-remote probe) and thread it through the
     -- read path, the non-default-scope warning, and the missing-files hint below.
     let cliOverride? ← cacheFromOverride.get

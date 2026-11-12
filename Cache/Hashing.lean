@@ -45,15 +45,13 @@ the Mathlib cache, and the modules that the other roots import and that `Mathlib
 CI uploads the cache only for the closure of `Mathlib`.
 -/
 public def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Name) :
-    IO ModuleHashMap := do
+    ModuleHashMap :=
   let (cacheRoots, otherRoots) := modules.toArray.partition isPartOfMathlibCache
-  for mod in cacheRoots do
-    unless hashMemo.hashMap.contains mod do
-      IO.println s!"{mod} is not covered by the olean cache."
+  -- A root without a hash, such as a downstream module, contributes only its imports.
   let selected := hashMemo.closure cacheRoots
   let downstream := hashMemo.closure otherRoots
   let mathlib := hashMemo.closure #[`Mathlib]
-  return hashMemo.hashMap.filter fun mod _ =>
+  hashMemo.hashMap.filter fun mod _ =>
     selected.contains mod || downstream.contains mod && mathlib.contains mod
 
 /-- We cache the hash of each file and their dependencies for later lookup -/

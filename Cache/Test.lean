@@ -520,7 +520,7 @@ def test_filterByRootModules_downstream : IO Unit := do
     let files := roots.map fun mod => (mod, dir / (mod.toString.replace "." "/" ++ ".lean"))
     let memo ← withSuppressedOutput <| ReaderT.run (getHashMemo (.ofList files))
       { mathlibDepPath := dir, srcSearchPath := [dir] }
-    let selected ← withSuppressedOutput <| memo.filterByRootModules roots
+    let selected := memo.filterByRootModules roots
     assertEq "get selects the closure of Archive.Foo and what both Down.Top and Mathlib import"
       (toString ["Archive.Foo", "Batteries.Z", "Mathlib.B"])
       (toString (selected.keys.map toString |>.toArray.qsort (· < ·) |>.toList))
