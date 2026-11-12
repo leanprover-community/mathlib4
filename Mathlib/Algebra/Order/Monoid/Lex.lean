@@ -100,7 +100,7 @@ def inlₗ : α →*o α ×ₗ β where
 lexicographic M ×ₗ N. -/
 @[to_additive (attr := simps!) /-- Given ordered additive monoids M, N, the natural inclusion
 ordered homomorphism from N to the lexicographic M ×ₗ N. -/]
-def inrₗ : β →*o (α ×ₗ β) where
+def inrₗ : β →*o α ×ₗ β where
   __ := Prod.Lex.toLexOrderHom.comp (inr α β)
   map_one' := rfl
   map_mul' := by simp [Prod.Lex.toLexOrderHom, ← toLex_mul]
@@ -109,7 +109,7 @@ def inrₗ : β →*o (α ×ₗ β) where
 lexicographic M ×ₗ N to M. -/
 @[to_additive (attr := simps!) /-- Given ordered additive monoids M, N, the natural projection
 ordered homomorphism from the lexicographic M ×ₗ N to M. -/]
-def fstₗ : (α ×ₗ β) →*o α where
+def fstₗ : α ×ₗ β →*o α where
   toFun p := p.ofLex.fst
   map_one' := rfl
   map_mul' := by simp

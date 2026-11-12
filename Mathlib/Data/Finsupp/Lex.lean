@@ -83,14 +83,6 @@ theorem Colex.lt_iff_of_unique [Unique α] [LT N] [Preorder α] {x y : Colex (α
 
 variable [LinearOrder α]
 
-instance Lex.isStrictOrder [PartialOrder N] : IsStrictOrder (Lex (α →₀ N)) (· < ·) where
-  irrefl _ := lt_irrefl (α := Lex (α → N)) _
-  trans _ _ _ := lt_trans (α := Lex (α → N))
-
-instance Colex.isStrictOrder [PartialOrder N] : IsStrictOrder (Colex (α →₀ N)) (· < ·) where
-  irrefl _ := lt_irrefl (α := Colex (α → N)) _
-  trans _ _ _ := lt_trans (α := Colex (α → N))
-
 /-- The partial order on `Finsupp`s obtained by the lexicographic ordering.
 See `Finsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
 instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) where
