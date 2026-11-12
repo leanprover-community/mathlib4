@@ -731,6 +731,11 @@ theorem spanSingleton_mul_coeIdeal_eq_coeIdeal {I J : Ideal R₁} {z : K} :
 
 variable [IsDomain R₁]
 
+/-- A fractional ideal `I` equals `I.den⁻¹ * I.num`. -/
+theorem eq_spanSingleton_inv_den_mul_num (I : FractionalIdeal R₁⁰ K) :
+    I = spanSingleton R₁⁰ ((algebraMap R₁ K) I.den)⁻¹ * ↑I.num := by
+  rw [← den_mul_self_eq_num', ← mul_assoc, ← map_mul, inv_mul_cancel₀ (by simp), map_one, one_mul]
+
 theorem one_div_spanSingleton (x : K) : 1 / spanSingleton R₁⁰ x = spanSingleton R₁⁰ x⁻¹ := by
   classical
   exact if h : x = 0 then by simp [h] else (eq_one_div_of_mul_eq_one_right _ _
