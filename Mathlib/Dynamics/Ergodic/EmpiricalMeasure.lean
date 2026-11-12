@@ -112,7 +112,7 @@ the uniform convergence of Birkhoff averages in uniquely ergodic systems. -/
 theorem exists_measurePreserving_isProbabilityMeasure_mapClusterPt
     {ι : Type*} {F : Filter ι} [F.NeBot]
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
-    [CompactSpace X] [Nonempty ι] {f : X → X} (hf : Continuous f) {u : ι → ℕ} (x : ι → X)
+    [CompactSpace X] {f : X → X} (hf : Continuous f) {u : ι → ℕ} (x : ι → X)
     (hu : Tendsto u F atTop)
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     {g : X → E} (hg : Continuous g) :
@@ -248,6 +248,7 @@ theorem tendstoUniformlyOn_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     {g : X → E} (hg : ContinuousOn g K) :
     TendstoUniformlyOn (birkhoffAverage ℝ f g) (fun _ ↦ ∫ y, g y ∂μ) atTop K := by
+  /- This is a restatement of `tendstoUniformly_birkhoffAverage` on the compact subtype `K`. -/
   rcases Set.eq_empty_or_nonempty K with rfl | hKne
   · simp
   rw [tendstoUniformlyOn_iff_restrict]
@@ -257,6 +258,8 @@ theorem tendstoUniformlyOn_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [
   let fK : K → K := hfmap.restrict f K K
   have hfKcont : Continuous fK := hfcont.mapsToRestrict hfmap
   let μK : Measure K := μ.comap ι
+  have hsemi : Function.Semiconj ι fK f := fun x ↦ rfl
+  -- transfer the average from the whole space to `K`
   have I : ∫ y, g (ι y) ∂μK = ∫ x, g x ∂μ := by
     simp only [μK]
     rw [integral_subtype_comap hcomp.measurableSet]
@@ -266,14 +269,13 @@ theorem tendstoUniformlyOn_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [
     apply setIntegral_eq_integral_of_ae_compl_eq_zero
     filter_upwards [Measure.support_mem_ae_of_regular] with x hx h'x using (h'x (h4 hx)).elim
   rw [← I]
-  have hK : ∀ (ν : Measure K), MeasurePreserving fK ν ν
-      → Measure.Regular ν → IsProbabilityMeasure ν → ν = μK := by
-    intro ν hνmap hνreg hνprob
+  -- show that the induced map on `K` is uniquely ergodic
+  have hK (ν : Measure K) (hνmap : MeasurePreserving fK ν ν)
+      (hνreg : Measure.Regular ν) (hνprob : IsProbabilityMeasure ν) : ν = μK := by
     have H : ν.map ι = μ := by
       apply h
-      · have : MeasurePreserving ι ν (ν.map ι) :=
-          Measurable.measurePreserving measurable_subtype_coe ν
-        exact MeasurePreserving.of_semiconj (f := ι) this hνmap (fun x ↦ rfl) hfmeas
+      · exact MeasurePreserving.of_semiconj (f := ι)
+          (Measurable.measurePreserving measurable_subtype_coe ν) hνmap hsemi hfmeas
       · have : (ν.map ι).InnerRegular :=
           Measure.InnerRegular.map_of_continuous continuous_subtype_val
         infer_instance
@@ -285,51 +287,13 @@ theorem tendstoUniformlyOn_birkhoffAverage [TopologicalSpace X] [BorelSpace X] [
         exact hcomp.measurableSet
     have : MeasurableEmbedding ι := MeasurableEmbedding.subtype_coe hcomp.measurableSet
     simp [μK, ← H, this.comap_map]
+  -- use unique ergodicity on `K` to obtain uniform convergence there
   have L : TendstoUniformly (birkhoffAverage ℝ fK (g ∘ ι)) (fun _ ↦ ∫ y, g (ι y) ∂μK) atTop := by
     apply tendstoUniformly_birkhoffAverage hfKcont μK hK
     rw [← continuousOn_univ]
     exact hg.comp (by fun_prop) (by simp [ι])
   convert! L with n
   ext x
-  simp [fK]
-
-
-
-
-
-
-
-
-
-
-
-#exit
-
-
-
-  obtain ⟨μm, hμ, hμmreg, hμprob⟩ :=
-    exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
-  let μ : ProbabilityMeasure K := ⟨μm, hμprob⟩
-  have : (μ : Measure K).Regular := hμmreg
-  have hιmeas : Measurable ι :=  measurable_subtype_coe
-  let ν := μ.map ι
-  use ν
-  have : (ν : Measure X).InnerRegular :=
-    Measure.InnerRegular.map_of_continuous continuous_subtype_val
-  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
-  have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
-    intro
-    rfl
-  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, inferInstance, ?_⟩
-  -- Now we prove that the invariant measure is supported on the forward invariant set
-  apply Measure.support_subset_of_isClosed hcomp.isClosed
-  rw [MeasureTheory.mem_ae_iff]
-  simpa [ν, ι] using
-    (ProbabilityMeasure.map_apply' μ hιmeas.aemeasurable hcomp.isClosed.measurableSet.compl)
-
-
-
-
-
+  simp [hsemi.birkhoffAverage_comp (R := ℝ), ι]
 
 end MeasureTheory
