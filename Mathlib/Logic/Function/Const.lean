@@ -24,7 +24,7 @@ If a constant function has non-empty codomain, then it can be represented by `Fu
 see `isConst_iff_exists_eq_const`.
 -/
 
-assert_not_exists CompleteLattice GaloisConnection
+assert_not_exists CompleteLattice
 
 public section
 
