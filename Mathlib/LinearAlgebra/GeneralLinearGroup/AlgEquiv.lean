@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebra isomorphisms between endomorphisms of projective modules are inner

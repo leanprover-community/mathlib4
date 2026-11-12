@@ -35,7 +35,6 @@ Classes of kernels:
 
 * `ProbabilityTheory.Kernel.ext_fun`: if `∫⁻ b, f b ∂(κ a) = ∫⁻ b, f b ∂(η a)` for all measurable
   functions `f` and all `a`, then the two kernels `κ` and `η` are equal.
-
 -/
 
 @[expose] public section

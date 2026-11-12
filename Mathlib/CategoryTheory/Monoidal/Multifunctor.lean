@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
-
 # Constructing monoidal categories and monoidal functors from multifunctors
 
 This file first constructs monoidal category structures from a tensor bifunctor, associator and
@@ -235,7 +234,6 @@ open MonoidalCategory
 namespace Functor.LaxMonoidal
 
 /-!
-
 ## Lax monoidal functors
 
 Given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and a tensorator `μ : F - ⊗ F - ⟶ F (- ⊗ -)`
@@ -428,7 +426,6 @@ end LaxMonoidal
 namespace OplaxMonoidal
 
 /-!
-
 ## Oplax monoidal functors
 
 Given a counit morphism `η : F.obj (𝟙_ C) ⟶ 𝟙_ D` and a tensorator `δ : F (- ⊗ -) ⟶ F - ⊗ F -`

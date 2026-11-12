@@ -54,7 +54,6 @@ ordered index type `ι`.
 ## Tags
 
 basis, bases
-
 -/
 
 @[expose] public section
@@ -603,7 +602,6 @@ section CommSemiring
 variable {R M M' : Type*} [CommSemiring R]
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 variable (b : Basis ι R M) (b' : Basis ι' R M')
-variable [SMulCommClass R R M']
 
 /-- If `b` is a basis for `M` and `b'` a basis for `M'`,
 and `f`, `g` form a bijection between the basis vectors,

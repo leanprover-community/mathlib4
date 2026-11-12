@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Instances for the range submonoid of a monoid with zero hom
 -/

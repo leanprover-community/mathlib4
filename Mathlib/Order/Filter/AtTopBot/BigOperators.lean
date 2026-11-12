@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 public import Mathlib.Order.Filter.AtTopBot.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Two lemmas about limit of `Π b ∈ s, f b` along
 

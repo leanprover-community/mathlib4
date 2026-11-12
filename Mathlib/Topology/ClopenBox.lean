@@ -29,7 +29,6 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 
 - [buzyakovaClopenBox]: *On clopen sets in Cartesian products*, 2001.
 - [engelking1989]: *General Topology*, 1989.
-
 -/
 
 public section
@@ -49,7 +48,8 @@ theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
   exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.2).preimage
-    (ContinuousMap.id (X × Y)).curry.2⟩, by simp [U, V, MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
+    (map_continuous (ContinuousMap.id (X × Y)).curry)⟩, by simp [U, V, MapsTo],
+    ⟨V, W.2.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
 
