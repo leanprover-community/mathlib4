@@ -56,7 +56,7 @@ private local instance [FiniteDimensional L M] : NeZero (Module.finrank L M) :=
 
 open scoped Matrix.Norms.Operator
 
-/-- The algebra norm on a finite extension `L` of a normed field `K`.
+/-- The Gelfand radius algebra norm on a finite extension `L` of a normed field `K`.
 The norm of `x : L` is defined as the Gelfand radius of multiplication by `x` on `L`. -/
 noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
   toFun x := gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x)
