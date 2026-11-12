@@ -930,8 +930,13 @@ structure Context where
   /-- Universe parameters of the original declaration (and all generated declarations) -/
   univs : List Name
 
+/-- The state for the `simpsM` monad -/
+structure State where
+  /-- The array of generated simp-lemmas -/
+  lemmas : Array Name
+
 /-- Monad for the `simps` attribute -/
-abbrev SimpsM := ReaderT Context MetaM
+abbrev SimpsM := ReaderT Context <| StateRefT State MetaM
 variable (ref : Syntax)
 
 /-- Get the projections of a structure used by `@[simps]` applied to the appropriate arguments.
@@ -1036,6 +1041,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr) : 
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   TermElabM.run' do
     Elab.Term.applyAttributes declName cfg.attrs
+  modify fun s ↦ {s with lemmas := s.lemmas.push declName}
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
@@ -1077,7 +1083,7 @@ was just used. In that case we need to apply these projections before we continu
 -/
 private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     (args : Array Expr) (mustBeStr : Bool)
-    (todo : List (String × Syntax)) (toApply : List Nat) : SimpsM (Array Name) := do
+    (todo : List (String × Syntax)) (toApply : List Nat) : SimpsM Unit := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
   let cfg := (← read).cfg
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
@@ -1116,7 +1122,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
       addProjection stxProj nm.toName tgt lhsAp rhsAp newArgs
     else
       addProjection stxProj nm.toName type lhs rhs args
-    return #[nm.toName]
+    return
   -- if the type is a structure
   let some (.inductInfo { isRec := false, ctors := [ctor], .. }) := env.find? str | unreachable!
   trace[simps.debug] "{str} is a structure with constructor {ctor}."
@@ -1156,11 +1162,10 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
         `MulEquiv` by giving the corresponding `Equiv` and the proof that it respects \
         multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to \
         unfold the corresponding `Equiv` to get to the `toFun` field."
-      let nms ←
-        withReader (fun ctx ↦
-            { ctx with cfg := { cfg with rhsMd := .default, simpRhs := true } }) do
-          addProjections nm type lhs rhs args mustBeStr todo toApply
-      return if addThisProjection then nms.push nm.toName else nms
+      withReader (fun ctx ↦ { ctx with cfg := { cfg with rhsMd := .default, simpRhs := true } }) do
+        addProjections nm type lhs rhs args mustBeStr toApply
+          (todo := if addThisProjection then todoNext else todo)
+      return
     if !toApply.isEmpty then
       throwError "Invalid simp lemma {nm.toName}.\nThe given definition is not a constructor \
         application:{indentExpr rhsWhnf}"
@@ -1175,7 +1180,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
         addProjection stxProj nm.toName tgt lhsAp rhsEta newArgs
       else
         addProjection stxProj nm.toName type lhs rhs args
-    return #[nm.toName]
+    return
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
   let projInfo ← getProjectionExprs stxProj tgtWhnf rhsWhnf
@@ -1187,11 +1192,12 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     let newType ← inferType newRhs
     trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:\
       {indentExpr lhsAp}"
-    return ← addProjections nm newType lhsAp newRhs newArgs false todo rest
+    addProjections nm newType lhsAp newRhs newArgs false todo rest
+    return
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
   automatically choose projections -/
-  if todo.length == 1 && todo.head!.1 == "" then return #[nm.toName]
+  if todo.length == 1 && todo.head!.1 == "" then return
   let projs : Array Name := projInfo.map fun x ↦ x.2.name
   let todo := todoNext
   trace[simps.debug] "Next todo: {todoNext}"
@@ -1208,18 +1214,17 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
       \n  `initialize_simps_projections? {str}`.\n\
       Note: these projection names might be customly defined for `simps`, \
       and could differ from the projection names of the structure."
-  let nms ← projInfo.flatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
+  projInfo.forM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
       fun (x, stx) ↦ (dropPrefixIfNotNumber? x (proj.lastComponentAsString ++ "_")).map
         (·.toString, stx)
     -- we only continue with this field if it is default or mentioned in todo
-    if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
+    if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
     let newName := nm.update proj.lastComponentAsString isPrefix
     trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
     addProjections newName newType newLhs newRhs newArgs false newTodo projNrs
-  return if addThisProjection then nms.push nm.toName else nms
 where
   /-- Drop the last character of a string, used to remove the internal trailing underscore in the
   variable `todo`. -/
@@ -1249,9 +1254,11 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
         else
           let s := nm.lastComponentAsString
           if (← isInstance nm) ∧ s.startsWith "inst" then [] else [s]}
-  MetaM.run' <| ReaderT.run (r := { cfg, defName := nm, univs := d.levelParams }) <|
+  let ⟨_, { lemmas, ..}⟩ ← MetaM.run' <| StateRefT'.run (s := { lemmas := #[] }) <|
+    ReaderT.run (r := { cfg, defName := nm, univs := d.levelParams }) <|
     addProjections ref nm d.type lhs (d.value! (allowOpaque := true)) (args := #[])
       (mustBeStr := true) todo (toApply := [])
+  return lemmas
 
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
