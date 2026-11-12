@@ -572,7 +572,9 @@ file) regarding the specified modules. -/
 def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
   let mut err := false
   for mod in modules do
-    let some hash := hashMap[mod]? | err := true
+    let some hash := hashMap[mod]? | do
+      IO.println s!"{mod}: no cache file"
+      err := true
     let ltar := CACHEDIR / hash.asLTar
     IO.println s!"{mod}: {ltar}"
     for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do

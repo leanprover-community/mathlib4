@@ -68,8 +68,8 @@ The result is the first entry of `sp` that has the file `mod.<ext>`. If no entry
 result is the first entry that has the directory `mod/`.
 
 Dependencies come before the root package in `sp`. A dependency can have a top-level directory
-with the name of a downstream package, for example `DownstreamTest/` in Mathlib. Thus the
-module's file selects the entry, not the package's directory.
+with the name of a downstream package, for example `DownstreamTest/` in Mathlib. Thus
+`findWithExtBase` selects the entry by the file of the module first.
 -/
 def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) :
     BaseIO (Option FilePath) := do

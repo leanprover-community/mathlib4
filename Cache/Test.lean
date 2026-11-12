@@ -510,31 +510,35 @@ private def hashMemoFor (dir : System.FilePath) (extraRoots : List Lean.Name) :
 private def sortedKeys (hashMap : Cache.IO.ModuleHashMap) : List String :=
   hashMap.keys.map toString |>.toArray.qsort (· < ·) |>.toList
 
-/-- `get` with a module of a downstream project (here the package `Down`) selects the Mathlib
-cache modules that it imports, also through other downstream modules, and nothing else.
+/-- `get` with a module of a downstream project (here the package `Down`) selects the cache
+modules that it imports, also through other downstream modules, and that `Mathlib` also imports.
 
 The `partial` scenario of `Cache/test/downstream.sh` checks this against the real cache. This
-test covers cases that the real cache does not have:
-* `Batteries.X`: a cache module outside the `Mathlib` closure that only a downstream module
-  imports.
+test covers cases that the `partial` scenario does not check:
+* `Batteries.X`: a cache module outside the closure of `Mathlib`, which CI does not upload.
+  A downstream module imports it, and it imports `Batteries.Z`, which `Mathlib` imports.
 * `Mathlib.C`: a cache module that only `Mathlib` imports.
-* `Lean.Elab`: an import from Lean core. Here it imports the cache module `Batteries.Y`,
-  so the test fails if `cache` visits the imports of Lean core modules.
+* `Lean.Elab`: an import from Lean core. Here it imports `Batteries.Y`, which `Mathlib`
+  imports. The test fails if `cache` visits the imports of Lean core modules. In a real
+  toolchain, such a visit selects no other modules, but it parses all of Lean core.
 * `Nowhere.Y`: an import that no package has. The test fails if this import stops `cache`.
+* A cache module as a second argument: `get` selects its whole closure.
 -/
 def test_filterByRootModules_downstream : IO Unit := do
+  IO.println "module selection (filterByRootModules):"
   let dir ← IO.FS.createTempDir
   try
     let write (path : System.FilePath) (content : String) : IO Unit := do
       if let some parent := (dir / path).parent then IO.FS.createDirAll parent
       IO.FS.writeFile (dir / path) content
     for f in ["lakefile.lean", "lean-toolchain", "lake-manifest.json"] do write f ""
-    write "Mathlib.lean" "import Mathlib.B\nimport Mathlib.C\n"
+    write "Mathlib.lean" "import Mathlib.B\nimport Mathlib.C\nimport Batteries.Y\n"
     write "Mathlib/A.lean" ""
     write "Mathlib/B.lean" "import Mathlib.A\n"
-    write "Mathlib/C.lean" "import Mathlib.A\n"
-    write "Batteries/X.lean" ""
+    write "Mathlib/C.lean" "import Mathlib.A\nimport Batteries.Z\n"
+    write "Batteries/X.lean" "import Batteries.Z\n"
     write "Batteries/Y.lean" ""
+    write "Batteries/Z.lean" ""
     write "Lean/Elab.lean" "import Batteries.Y\n"
     write "Down/Top.lean" "import Down.Mid\nimport Down.Side\nimport Mathlib.B\n"
     write "Down/Side.lean" "import Down.Mid\n"
@@ -542,14 +546,14 @@ def test_filterByRootModules_downstream : IO Unit := do
 
     let memo ← hashMemoFor dir [`Down.Top]
     let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top]
-    assertEq "get Down.Top selects the cache modules that it imports"
-      (toString ["Batteries.X", "Mathlib.A", "Mathlib.B"])
+    assertEq "get Down.Top selects the cache modules that both it and Mathlib import"
+      (toString ["Batteries.Z", "Mathlib.A", "Mathlib.B"])
       (toString (sortedKeys selected))
 
-    let memo ← hashMemoFor dir [`Down.Top, `Mathlib.C]
-    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top, `Mathlib.C]
-    assertEq "get Down.Top Mathlib.C selects the cache modules that either one imports"
-      (toString ["Batteries.X", "Mathlib.A", "Mathlib.B", "Mathlib.C"])
+    let memo ← hashMemoFor dir [`Down.Top, `Batteries.X]
+    let selected ← withSuppressedOutput <| memo.filterByRootModules [`Down.Top, `Batteries.X]
+    assertEq "get Down.Top Batteries.X also selects the closure of Batteries.X"
+      (toString ["Batteries.X", "Batteries.Z", "Mathlib.A", "Mathlib.B"])
       (toString (sortedKeys selected))
   finally
     IO.FS.removeDirAll dir
@@ -559,6 +563,7 @@ entry of the search path has a directory named like the module's root (see
 `findWithExtBase`). `dep` stands for a dependency with a directory `Down/`, and `root` for
 the downstream package `Down`. -/
 def test_leanModulesFromSpec_shadowedRoot : IO Unit := do
+  IO.println "module arguments (leanModulesFromSpec):"
   let dir ← IO.FS.createTempDir
   try
     let dep := dir / "dep"

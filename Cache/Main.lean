@@ -80,10 +80,13 @@ Options:
 'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
 A module outside the Mathlib cache, such as a module of a downstream project,
 has no cache files of its own. For such a module, 'get' gets the cache for the
-modules that it imports, also through other modules outside the cache.
-Without arguments, 'get' gets the cache for 'Mathlib' only.
-In a downstream project, set MATHLIB_NO_CACHE_ON_UPDATE=1 when Lake updates
-the dependencies: otherwise Mathlib's update hook gets the whole cache.
+modules that it imports (also through other modules outside the cache) and
+that 'Mathlib' also imports. CI uploads the cache only for these modules.
+Without arguments, 'get' gets the cache for 'Mathlib' and its imports.
+
+In a downstream project, 'lake update' runs Mathlib's update hook, which gets
+the cache for all of 'Mathlib'. To get only the cache that 'get [ARGS]'
+selects, run 'MATHLIB_NO_CACHE_ON_UPDATE=1 lake update'.
 
 Valid arguments are:
 
@@ -105,6 +108,9 @@ Valid arguments are:
 * MATHLIB_CACHE_PARALLEL_MAX
                           Number of simultaneous curl transfers (default: 50).
                           Keep it well below the open-file limit (`ulimit -n`).
+* MATHLIB_NO_CACHE_ON_UPDATE
+                          With the value 1, Mathlib's update hook skips 'get'
+                          when a downstream project runs 'lake update'.
 "
 
 /-- Commands which download with `curl`. Uploads validate curl inside the
