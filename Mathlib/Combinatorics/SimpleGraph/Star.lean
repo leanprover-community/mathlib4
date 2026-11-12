@@ -9,7 +9,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 
 /-!
-
 # Star Graphs
 
 ## Main definitions

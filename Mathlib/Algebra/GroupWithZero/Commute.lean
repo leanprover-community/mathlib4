@@ -10,7 +10,6 @@ public import Mathlib.Algebra.GroupWithZero.Semiconj
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.
-
 -/
 
 public section

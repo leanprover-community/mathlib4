@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Module.Submodule.Ker
 
 ## Tags
 linear algebra, vector space, module
-
 -/
 
 @[expose] public section

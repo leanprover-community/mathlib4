@@ -25,7 +25,6 @@ l |      | r
 in `C` such that `t` satisfies `Wₗ` and `l` satisfies `Wᵣ`,
 we construct the bicategory of spans in `C` with left morphism in `Wₗ` and right morphism
 in `Wᵣ`.
-
 -/
 
 @[expose] public section

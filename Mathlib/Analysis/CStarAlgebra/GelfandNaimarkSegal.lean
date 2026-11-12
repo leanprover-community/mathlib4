@@ -32,7 +32,6 @@ space.
 - Explicitly construct a unit norm cyclic vector ζ such that
   a ↦ ⟨(f.gns(NonUnital)StarAlgHom a) \* ζ, ζ⟩ is a state on `A` for both unital and non-unital
   cases.
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ Let `Fᵢ : C ⥤ Dᵢ` be a conservative family of functors (i.e. they jointly
 reflect isomorphisms). Let `G : J ⥤ C` be a functor that has a limit that
 is preserved by the functors `Fᵢ`. In this file, we show that a cone for `G`
 is a limit if it is so after applying the functors `Fᵢ`.
-
 -/
 
 @[expose] public section

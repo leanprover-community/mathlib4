@@ -26,7 +26,6 @@ counterparts.)
 Given `0`-simplices `x₀` and `x₁`, and an edge `hom : Edge x₀ x₁`, `InvStruct hom` records the data
 of an edge `inv : Edge x₁ x₀` and simplices `homInvId : CompStruct hom inv (id x₀)` and
 `invHomId : CompStruct inv hom (id x₁)`, witnessing that `inv` is an inverse to `hom`.
-
 -/
 
 @[expose] public section

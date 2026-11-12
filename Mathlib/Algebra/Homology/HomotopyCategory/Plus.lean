@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Localization.OfQuotient
 
 In this file, we introduce the triangulated full subcategory `HomotopyCategory.Plus C`
 of `HomotopyCategory C (.up ℤ)` consisting of bounded below cochain complexes.
-
 -/
 
 @[expose] public section
@@ -139,7 +138,7 @@ abbrev Plus := (plus C).FullSubcategory
 namespace Plus
 
 /-- The inclusion of the homotopy category of bounded below cochain complexes
-in the homotopy category category of all cochain complexes. -/
+in the homotopy category of all cochain complexes. -/
 abbrev ι : Plus C ⥤ HomotopyCategory C (.up ℤ) := (plus C).ι
 
 /-- The inclusion functor

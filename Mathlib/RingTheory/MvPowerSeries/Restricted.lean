@@ -30,7 +30,6 @@ When `R` is an ultrametric (non-archimedean) normed ring we have the following k
 * `MvPowerSeries.instRingRestricted`: `Restricted R c` is a ring
 * `MvPowerSeries.instModuleRestricted`: `Restricted R c` is an `R`-module
 * `MvPowerSeries.instAlgebraRestricted`: `Restricted R c` is an `R`-algebra
-
 -/
 
 @[expose] public section

@@ -29,7 +29,6 @@ This file defines affinely independent families of points.
 ## References
 
 * https://en.wikipedia.org/wiki/Affine_space
-
 -/
 
 @[expose] public section
@@ -997,14 +996,18 @@ theorem affineIndepOn_pair_iff {p : ι → P} {i j : ι} (hij : i ≠ j) :
   rw [affineIndepOn_iff_linearIndepOn_vsub (Set.mem_insert i _), ne_comm,
     Set.insert_sdiff_self_of_notMem (by simpa), linearIndepOn_singleton_iff, vsub_ne_zero]
 
-/-- Two different points are affinely independent. -/
-theorem affineIndepOn_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndepOn k id {p₁, p₂} :=
-  (affineIndepOn_pair_iff k h).mpr h
+/-- Two points are affinely independent (as a set, so this is trivial when they are equal). -/
+theorem affineIndepOn_pair (p₁ p₂ : P) : AffineIndepOn k id {p₁, p₂} := by
+  rcases eq_or_ne p₁ p₂ with rfl | h
+  · simp
+  · exact (affineIndepOn_pair_iff k h).mpr h
+
+@[deprecated (since := "2026-11-04")] alias affineIndepOn_of_ne := affineIndepOn_pair
 
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [← affineIndepOn_id_range_iff (Matrix.injective_pair_iff_ne.mpr h)]
-  simpa using affineIndepOn_of_ne k h.symm
+  simpa using affineIndepOn_pair k p₂ p₁
 
 variable {k}
 
@@ -1131,10 +1134,12 @@ by `lineMap` with coefficient between 0 and 1. Then the coefficients of those tw
 combination lying in the span have the same sign. -/
 theorem sign_eq_of_affineCombination_mem_affineSpan_single_lineMap {p : ι → P}
     (h : AffineIndependent k p) {w : ι → k} {s : Finset ι} (hw : ∑ i ∈ s, w i = 1) {i₁ i₂ i₃ : ι}
-    (h₁ : i₁ ∈ s) (h₂ : i₂ ∈ s) (h₃ : i₃ ∈ s) (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃)
+    (h₁ : i₁ ∈ s) (h₂ : i₂ ∈ s) (h₃ : i₃ ∈ s) (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     {c : k} (hc0 : 0 < c) (hc1 : c < 1)
     (hs : s.affineCombination k p w ∈ line[k, p i₁, AffineMap.lineMap (p i₂) (p i₃) c]) :
     SignType.sign (w i₂) = SignType.sign (w i₃) := by
+  rcases eq_or_ne i₂ i₃ with rfl | h₂₃
+  · rfl
   classical
     rw [← s.affineCombination_piSingle k p h₁, ←
       s.affineCombination_affineCombinationLineMapWeights p h₂ h₃ c] at hs

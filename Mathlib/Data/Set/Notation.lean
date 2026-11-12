@@ -9,6 +9,9 @@ public meta import Mathlib.Lean.Expr.ExtraRecognizers
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Util.Notation3
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set Notation
 

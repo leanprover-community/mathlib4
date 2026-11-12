@@ -22,7 +22,6 @@ the construction is of particular importance when this linear map is an equivale
 the submodules provide an internal decomposition of `M`.  The property is defined more generally
 elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s are established
 in this file.
-
 -/
 
 @[expose] public section

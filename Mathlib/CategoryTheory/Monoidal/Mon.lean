@@ -330,7 +330,6 @@ but we need to prove that they are monoid morphisms, i.e., compatible with unit 
 These properties translate to the monoidality of the associator and unitors
 (with respect to the monoidal structures on the functors they relate),
 which have also been proved in `Mathlib/CategoryTheory/Monoidal/Braided/Basic.lean`.
-
 -/
 
 -- The proofs that associators and unitors preserve monoid units don't require braiding.
