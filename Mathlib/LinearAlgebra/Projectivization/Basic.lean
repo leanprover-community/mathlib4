@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
-
 # Projective Spaces
 
 This file contains the definition of the projectivization of a vector space over a field,
@@ -31,7 +30,6 @@ We have three ways to construct terms of `ℙ K V`:
 - `Projectivization.equivSubmodule` is the equivalence between `ℙ K V`
   and `{ H : Submodule K V // finrank H = 1 }`.
 - For `v : ℙ K V`, `v.rep : V` is a representative of `v`.
-
 -/
 
 @[expose] public section

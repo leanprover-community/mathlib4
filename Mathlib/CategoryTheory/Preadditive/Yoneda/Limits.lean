@@ -17,7 +17,6 @@ The Yoneda embedding for preadditive categories preserves limits.
 
 This is in a separate file to avoid having to import the development of the abelian structure on
 `ModuleCat` in the main file about the preadditive Yoneda embedding.
-
 -/
 
 public section

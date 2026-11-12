@@ -31,7 +31,6 @@ It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embeddi
 
 - Show that the singular simplicial set is a Kan complex.
 - Show the adjunction `sSetTopAdj` is a Quillen equivalence.
-
 -/
 
 @[expose] public section

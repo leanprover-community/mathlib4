@@ -61,7 +61,6 @@ To make this straightforward, it is crucial that `(↑i : WithTop ι)⁺ = ↑(i
 The predicate `IsSuccPrelimit` allows us to treat limits and the bottom element uniformly, and
 the only place the bottom element requires special treatment is in `equivLim` (the bijection
 between `E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] Ē` over `j < i`).
-
 -/
 
 @[expose] public section
@@ -168,7 +167,7 @@ theorem strictMono_filtration : StrictMono (E⟮<·⟯) :=
     fun incl ↦ (isLeast_leastExt i).1 (incl <| subset_adjoin _ _ ⟨i, h, rfl⟩)⟩
 
 theorem filtration_succ (i : ι) : E⟮<i⁺⟯ = E⟮<i⟯⟮b (φ i)⟯.restrictScalars F := by
-  rw [Iio_succ, ← Iio_insert, image_insert_eq, ← union_singleton, adjoin_adjoin_left]; rfl
+  rw [Iio_succ, ← insert_Iio, image_insert_eq, ← union_singleton, adjoin_adjoin_left]; rfl
 
 local notation "X" i => Field.Emb (E⟮<i⟯) <| E⟮<i⟯⟮b (φ i)⟯
 

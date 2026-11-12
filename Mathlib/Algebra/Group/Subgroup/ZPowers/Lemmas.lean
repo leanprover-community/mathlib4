@@ -21,7 +21,6 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 
 ## Tags
 subgroup, subgroups
-
 -/
 
 public section

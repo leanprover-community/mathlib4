@@ -13,7 +13,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 # Differentiability of uniformly convergent series sums of functions
 
 We collect some results about the differentiability of infinite sums.
-
 -/
 
 public section

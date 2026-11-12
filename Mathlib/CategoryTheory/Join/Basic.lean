@@ -31,7 +31,6 @@ there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 ## References
 
 * [Kerodon: section 1.4.3.2](https://kerodon.net/tag/0160)
-
 -/
 
 @[expose] public section

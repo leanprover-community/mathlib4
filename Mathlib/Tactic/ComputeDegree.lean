@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
-
 # `compute_degree` and `monicity`: tactics for explicit polynomials
 
 This file defines two related tactics: `compute_degree` and `monicity`.

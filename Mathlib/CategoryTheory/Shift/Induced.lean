@@ -22,7 +22,6 @@ the shift functors of a term of type `HasShift D A`.
 As this condition on the functor `F` is satisfied for quotient and localization
 functors, the main construction `HasShift.induced` in this file shall be
 used for both quotient and localized shifts.
-
 -/
 
 @[expose] public section

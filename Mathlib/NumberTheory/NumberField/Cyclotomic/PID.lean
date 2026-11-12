@@ -33,7 +33,7 @@ variable (K : Type u) [Field K] [NumberField K]
 
 /-- If `IsCyclotomicExtension {3} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
-  apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
+  apply NumberField.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   rw [discr_prime 3 K, IsCyclotomicExtension.finrank (n := 3) K
     (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 3, totient_prime
       Nat.prime_three]
@@ -48,7 +48,7 @@ theorem three_pid [IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞
 /-- If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain. -/
 theorem five_pid [IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   have : Fact (Nat.Prime 5) := ⟨Nat.prime_five⟩
-  apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
+  apply NumberField.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   rw [discr_prime 5 K, IsCyclotomicExtension.finrank (n := 5) K
     (irreducible_rat (by simp)), nrComplexPlaces_eq_totient_div_two 5,
     totient_prime Nat.prime_five]

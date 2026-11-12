@@ -21,7 +21,6 @@ exist fibred products `Uᵢ ×[Z] Y` for each `i`, then there exists a fibred pr
 Then, for constructing the fibred product for arbitrary schemes `X, Y, Z`, we can use the
 construction to reduce to the case where `X, Y, Z` are all affine, where fibred products are
 constructed via tensor products.
-
 -/
 
 @[expose] public section

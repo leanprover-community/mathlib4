@@ -19,7 +19,6 @@ Combinations in a type are finite subsets of given cardinality.
 
 * `Set.powersetCard.card` proves that the `Nat.card`-cardinality
   of this set is equal to `(Nat.card α).choose n`.
-
 -/
 
 @[expose] public section

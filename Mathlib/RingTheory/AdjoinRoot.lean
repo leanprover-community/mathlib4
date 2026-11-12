@@ -39,7 +39,6 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 * `equiv : (AdjoinRoot f →ₐ[F] E) ≃ {x // x ∈ f.aroots E}` a
   bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
-
 -/
 
 @[expose] public section

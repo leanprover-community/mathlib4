@@ -35,7 +35,6 @@ that convention because it fits better with the use of the name `comp` elsewhere
 ## Notation
 
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
-
 -/
 
 public section
