@@ -510,13 +510,13 @@ theorem count_mul {I I' : FractionalIdeal R⁰ K} (hI : I ≠ 0) (hI' : I' ≠ 0
 
 /-- The `v`-adic valuation of an ideal `J` of `R` is the multiplicity of `v` in `J`. -/
 @[simp]
-theorem count_coe_eq_multiplicity (J : Ideal R) : count K v J = multiplicity v.asIdeal J := by
+theorem count_coeIdeal_eq_multiplicity (J : Ideal R) : count K v J = multiplicity v.asIdeal J := by
   obtain rfl | hJ := eq_or_ne J 0
   · simp
   rw [count_eq_multiplicity_sub K v (coeIdeal_ne_zero.mpr hJ) (a := 1) (J := J) (by simp)]
   simp [← Ideal.one_eq_top]
 
-@[deprecated count_coe_eq_multiplicity +typeChanged (since := "2026-11-12")]
+@[deprecated count_coeIdeal_eq_multiplicity +typeChanged (since := "2026-11-12")]
 theorem count_coeIdeal {J : Ideal R} (hJ : J ≠ 0) :
     count K v J = (Associates.mk v.asIdeal).count (Associates.mk J).factors := by
   rw [count_well_defined K (J := J) (a := 1), Ideal.span_singleton_one, sub_eq_self,
@@ -525,24 +525,24 @@ theorem count_coeIdeal {J : Ideal R} (hJ : J ≠ 0) :
   · simpa only [ne_eq, coeIdeal_eq_zero]
   · simp only [map_one, inv_one, one_mul]
 
-@[deprecated count_coe_eq_multiplicity +typeChanged (since := "2026-11-10")]
+@[deprecated count_coeIdeal_eq_multiplicity +typeChanged (since := "2026-11-10")]
 alias count_coe := count_coeIdeal
 
 /-- The valuation `val_v(1)` is zero. -/
 @[simp]
 theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
-  rw [← coeIdeal_top, count_coe_eq_multiplicity, ← Ideal.one_eq_top, multiplicity_one_right,
+  rw [← coeIdeal_top, count_coeIdeal_eq_multiplicity, ← Ideal.one_eq_top, multiplicity_one_right,
     Nat.cast_zero]
 
 /-- The valuation `val_v(v)` is one. -/
 theorem count_self : count K v (v.asIdeal : FractionalIdeal R⁰ K) = 1 := by
-  rw [count_coe_eq_multiplicity,
+  rw [count_coeIdeal_eq_multiplicity,
     multiplicity_self (FiniteMultiplicity.of_prime_left v.prime v.ne_bot), Nat.cast_one]
 
 /-- The valuation `val_v(w)` is zero whenever `w ≠ v`. -/
 theorem count_maximal_coprime {w : HeightOneSpectrum R} (hw : w ≠ v) :
     count K v (w.asIdeal : FractionalIdeal R⁰ K) = 0 := by
-  rw [count_coe_eq_multiplicity, multiplicity_eq_zero_of_not_dvd, Nat.cast_zero]
+  rw [count_coeIdeal_eq_multiplicity, multiplicity_eq_zero_of_not_dvd, Nat.cast_zero]
   exact fun h ↦ hw (HeightOneSpectrum.ext
     (w.isMaximal.eq_of_le v.isPrime.ne_top (Ideal.le_of_dvd h)))
 
