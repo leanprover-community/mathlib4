@@ -709,7 +709,7 @@ lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * 
 
 lemma exp_lt_two_add_div_two_sub {x : ℝ} (hx : 0 < x) (hx' : x < 2) :
     exp x < (2 + x) / (2 - x) := by calc
-  _ = exp (x / 2) ^ 2 := by grind [Real.exp_natCast_mul (x / 2) 2]
+  _ = exp (x / 2) ^ 2 := by grind [Real.exp_natCast_mul 2 (x / 2)]
   _ ≤ _ := by
     grw [Real.exp_bound' (x := x / 2) (by grind) (by grind) (n := 3) (by simp)]
     apply Real.exp_nonneg
