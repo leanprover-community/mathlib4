@@ -173,8 +173,8 @@ lemma IsPosSymmetrizable.eq_zero_iff [Semiring R] [IsDomain R] [Preorder R]
     rw [hij, mul_zero, zero_eq_mul] at h
     exact h.resolve_left (hd i).ne.symm
 
-lemma isPosSymmetrizable_iff_of_pairwise_eq [Semiring R] [LT R] (h : Pairwise fun i j ↦ M i j = N i j) :
-    M.IsPosSymmetrizable ↔ N.IsPosSymmetrizable := by
+lemma isPosSymmetrizable_iff_of_pairwise_eq [Semiring R] [LT R]
+    (h : Pairwise fun i j ↦ M i j = N i j) : M.IsPosSymmetrizable ↔ N.IsPosSymmetrizable := by
   refine ⟨fun ⟨d, hd, hM⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩, fun ⟨d, hd, hM⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩⟩
   · by_cases! hij : i = j
     · rw [hij]
