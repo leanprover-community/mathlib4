@@ -34,9 +34,15 @@ def Equiv.ofFreeAddCommGroupLinearEquiv (e : FreeAddCommGroup α ≃ₗ[ℤ] Fre
 def Equiv.ofFreeAddCommGroupEquiv (e : FreeAddCommGroup α ≃+ FreeAddCommGroup β) : α ≃ β :=
   .ofFreeAddCommGroupLinearEquiv e.toIntLinearEquiv
 
+/-- Isomorphic free abelian groups (as multiplicative groups) have equivalent bases. -/
+@[to_additive existing]
+def Equiv.ofFreeCommGroupEquiv (e : FreeCommGroup α ≃* FreeCommGroup β) : α ≃ β :=
+  .ofFreeAddCommGroupEquiv <| FreeAddCommGroup.freeAddCommGroupEquivAdditive.trans <|
+      (MulEquiv.toAdditive e).trans FreeAddCommGroup.freeAddCommGroupEquivAdditive.symm
+
 /-- Isomorphic free groups have equivalent bases. -/
 def Equiv.ofFreeGroupEquiv (e : FreeGroup α ≃* FreeGroup β) : α ≃ β :=
-  .ofFreeAddCommGroupEquiv (MulEquiv.toAdditive e.abelianizationCongr)
+  .ofFreeCommGroupEquiv e.abelianizationCongr
 
 /-- Isomorphic free groups have equivalent bases (`IsFreeGroup` variant). -/
 def Equiv.ofIsFreeGroupEquiv [Group G] [Group H] [IsFreeGroup G] [IsFreeGroup H] (e : G ≃* H) :

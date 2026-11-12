@@ -46,10 +46,15 @@ Here we use the following variables: `(α β : Type*) (A : Type*) [AddCommGroup 
 It has been suggested that we would be better off refactoring this file
 and using `Finsupp` instead.
 
-## Implementation issues
+## Implementation details
 
-The definition is
-`def FreeAddCommGroup : Type u := Additive <| Group.Abelianization <| FreeGroup α`.
+The definitions are
+`def FreeCommGroup : Type u := Group.Abelianization (FreeGroup α)` and
+`def FreeAddCommGroup : Type u := AddGroup.Abelianization (FreeAddGroup α)`,
+the latter generated from the former by `to_additive`. The two are related by
+`FreeCommGroup.freeCommGroupEquivMultiplicative` and
+`FreeAddCommGroup.freeAddCommGroupEquivAdditive`. Results whose natural proofs are additive
+(e.g. those using maps to `ℤ`) are proved for `FreeAddCommGroup` and transferred.
 
 Chris Hughes has suggested that this all be rewritten in terms of `Finsupp`.
 Johan Commelin has written all the API relating the definition to `Finsupp`
@@ -90,8 +95,6 @@ then `FreeAddCommGroup α` is isomorphic to the trivial group, and if `α` has o
 then `FreeAddCommGroup α` is isomorphic to `ℤ`.
 One can think of `FreeAddCommGroup α` as the functions `α →₀ ℤ` with finite support,
 and addition given pointwise.
-
-TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
 -/
 @[to_additive]
 def FreeCommGroup : Type u :=
@@ -150,6 +153,52 @@ end lift
 
 end FreeCommGroup
 
+section AdditiveEquiv
+
+/-- Multiplicative free commutative groups are isomorphic to `Multiplicative` additive free
+commutative groups. -/
+def FreeCommGroup.freeCommGroupEquivMultiplicative :
+    FreeCommGroup α ≃* Multiplicative (FreeAddCommGroup α) :=
+    MonoidHom.toMulEquiv
+    (FreeCommGroup.lift (fun x ↦ Multiplicative.ofAdd (FreeAddCommGroup.of x)))
+    (FreeAddCommGroup.lift (fun x ↦ Additive.ofMul (FreeCommGroup.of x))).toMultiplicativeLeft
+    (by ext; simp)
+    (by ext; simp)
+
+/-- Additive free commutative groups are isomorphic to `Additive` multiplicative free
+commutative groups. -/
+def FreeAddCommGroup.freeAddCommGroupEquivAdditive :
+    FreeAddCommGroup α ≃+ Additive (FreeCommGroup α) :=
+    AddMonoidHom.toAddEquiv
+    (FreeAddCommGroup.lift (fun x ↦ Additive.ofMul (FreeCommGroup.of x)))
+    (FreeCommGroup.lift (fun x ↦ Multiplicative.ofAdd (FreeAddCommGroup.of x))).toAdditiveLeft
+    (by ext; simp)
+    (by ext; simp)
+
+-- simp lemmas: what it does on `of x`, in both directions
+@[simp]
+theorem FreeCommGroup.freeCommGroupEquivMultiplicative_of (x : α) :
+    freeCommGroupEquivMultiplicative (of x) = Multiplicative.ofAdd (FreeAddCommGroup.of x) :=
+  rfl
+
+@[simp]
+theorem FreeCommGroup.freeCommGroupEquivMultiplicative_symm_ofAdd_of (x : α) :
+    freeCommGroupEquivMultiplicative.symm (Multiplicative.ofAdd (FreeAddCommGroup.of x)) =
+      of x :=
+  rfl
+
+@[simp]
+theorem FreeAddCommGroup.freeAddCommGroupEquivAdditive_of (x : α) :
+    freeAddCommGroupEquivAdditive (of x) = Additive.ofMul (FreeCommGroup.of x) :=
+  rfl
+
+@[simp]
+theorem FreeAddCommGroup.freeAddCommGroupEquivAdditive_symm_ofMul_of (x : α) :
+    freeAddCommGroupEquivAdditive.symm (Additive.ofMul (FreeCommGroup.of x)) = of x :=
+  rfl
+
+end AdditiveEquiv
+
 section
 
 namespace FreeAddCommGroup
@@ -175,29 +224,18 @@ end FreeAddCommGroup
 
 namespace FreeCommGroup
 
-/-
-TODO:Once an equivalence `FreeCommGroup α ≃* Multiplicative (FreeAddCommGroup α)` is available,
-derive`of_injective` and `of_ne_one` from the additive versions instead of repeating the arguments.
--/
+/-! The natural proofs of the following results go through maps to `ℤ`, so they are proved
+for `FreeAddCommGroup` and transferred to `FreeCommGroup` via
+`freeCommGroupEquivMultiplicative`. -/
 
 @[to_additive existing]
-theorem of_injective : Function.Injective (FreeCommGroup.of : α → FreeCommGroup α) := by
-  classical
-  exact fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
-    let f : FreeCommGroup α →* Multiplicative ℤ :=
-      lift fun z ↦ if x = z then Multiplicative.ofAdd 1 else 1
-    have hfx1 : f (of x) = Multiplicative.ofAdd 1 := (lift_apply_of _ _).trans <| ite_eq_left rfl
-    have hfy1 : f (of y) = Multiplicative.ofAdd 1 := hoxy ▸ hfx1
-    have hfy0 : f (of y) = 1 := (lift_apply_of _ _).trans <| ite_eq_right hxy
-    one_ne_zero <| ofAdd_eq_one.mp <| hfy1.symm.trans hfy0
+theorem of_injective : Function.Injective (FreeCommGroup.of : α → FreeCommGroup α) := fun x y h ↦
+  FreeAddCommGroup.of_injective <| by
+    simpa using congrArg freeCommGroupEquivMultiplicative h
 
 @[simp, to_additive existing]
-theorem of_ne_one (x : α) : of x ≠ 1 := by
-  intro h
-  let f : FreeCommGroup α →* Multiplicative ℤ := lift (fun _ ↦ Multiplicative.ofAdd 1)
-  have hfx : f (of x) = Multiplicative.ofAdd 1 := lift_apply_of _ _
-  have hf0 : f (of x) = 1 := by rw [h, map_one]
-  exact one_ne_zero <| ofAdd_eq_one.mp <| hfx.symm.trans hf0
+theorem of_ne_one (x : α) : of x ≠ 1 := fun h ↦ by
+  simpa using congrArg freeCommGroupEquivMultiplicative h
 
 @[to_additive (attr := simp)]
 theorem one_ne_of (x : α) : 1 ≠ of x := of_ne_one _ |>.symm
@@ -468,18 +506,9 @@ namespace FreeCommGroup
 
 -- Linking via `to_additive` fails: the additive version is stated with `ℤ`, not `Multiplicative ℤ`.
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
-def uniqueEquiv (T : Type*) [Unique T] : FreeCommGroup T ≃* Multiplicative ℤ where
-  toFun := lift fun _ ↦ Multiplicative.ofAdd 1
-  invFun n := of (default : T) ^ n.toAdd
-  left_inv z := FreeCommGroup.induction_on z
-    (by simp only [map_one, toAdd_one, zpow_ofNat, pow_zero])
-    (Unique.forall_iff.2 <| by simp only [lift_apply_of, toAdd_ofAdd, zpow_ofNat, pow_one])
-    (Unique.forall_iff.2 <| by simp)
-    fun x y hx hy ↦ by
-      simp only [map_mul, toAdd_mul, zpow_add] at *
-      rw [hx, hy]
-  right_inv n := by simp [map_zpow, ← ofAdd_zsmul]
-  map_mul' := map_mul _
+def uniqueEquiv (T : Type*) [Unique T] : FreeCommGroup T ≃* Multiplicative ℤ :=
+  freeCommGroupEquivMultiplicative.trans
+    (AddEquiv.toMultiplicative (FreeAddCommGroup.uniqueEquiv T))
 
 /-- Isomorphic types have isomorphic free abelian groups. -/
 @[to_additive]
