@@ -138,7 +138,7 @@ variable {f f₁ f₂ : A₁ →ₚ[ℂ] A₂} {g : A₂ →ₚ[ℂ] A₃}
 
 @[simp] lemma toPositiveContinuousLinearMap_comp :
     (g.comp f).toPositiveContinuousLinearMap =
-      g.toPositiveContinuousLinearMap.comp (f.toPositiveContinuousLinearMap) :=
+      g.toPositiveContinuousLinearMap.comp f.toPositiveContinuousLinearMap :=
   rfl
 
 @[simp] lemma toPositiveContinuousLinearMap_add :
@@ -163,7 +163,7 @@ theorem toContinuousLinearMap_apply (x : A₁) : f.toContinuousLinearMap x = f x
 
 @[simp] lemma toContinuousLinearMap_comp :
     (g.comp f).toContinuousLinearMap =
-      g.toContinuousLinearMap.comp (f.toContinuousLinearMap) :=
+      g.toContinuousLinearMap.comp f.toContinuousLinearMap :=
   rfl
 
 @[simp] lemma toContinuousLinearMap_add :
