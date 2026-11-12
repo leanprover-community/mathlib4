@@ -80,11 +80,9 @@ def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) :
 def findLeanSource? (sp : SearchPath) (mod : Name) : BaseIO (Option System.FilePath) :=
   return (← sp.findWithExtBase "lean" mod).map (modToFilePath · mod "lean")
 
-/-- `findLeanSource?`, or else `Lean.findLean`. -/
+/-- `findLeanSource?`, or else `Lean.findLean`, which throws for an unknown package. -/
 def findLeanSource (sp : SearchPath) (mod : Name) : IO System.FilePath := do
-  match ← sp.findLeanSource? mod with
-  | some file => return file
-  | none => findLean sp mod
+  (← sp.findLeanSource? mod).getDM (findLean sp mod)
 
 end Lean.SearchPath
 

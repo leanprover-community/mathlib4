@@ -48,11 +48,11 @@ public def HashMemo.filterByRootModules (hashMemo : HashMemo) (modules : List Na
     ModuleHashMap :=
   let (cacheRoots, otherRoots) := modules.toArray.partition isPartOfMathlibCache
   -- A root without a hash, such as a downstream module, contributes only its imports.
-  let selected := hashMemo.closure cacheRoots
-  let downstream := hashMemo.closure otherRoots
-  let mathlib := hashMemo.closure #[`Mathlib]
+  let cacheClosure := hashMemo.closure cacheRoots
+  let otherClosure := hashMemo.closure otherRoots
+  let mathlibClosure := if otherRoots.isEmpty then ∅ else hashMemo.closure #[`Mathlib]
   hashMemo.hashMap.filter fun mod _ =>
-    selected.contains mod || downstream.contains mod && mathlib.contains mod
+    cacheClosure.contains mod || (otherClosure.contains mod && mathlibClosure.contains mod)
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
 abbrev HashM := StateT HashMemo CacheM
@@ -96,21 +96,21 @@ partial def getHash (mod : Name) (sourceFile? : Option FilePath)
     throw <| IO.userError s!"dependency loop found involving {mod}!"
   let stt ← get
   if stt.depsMap.contains mod then return stt.hashMap[mod]?
+  let inCache := isPartOfMathlibCache mod
   let some sourceFile ← sourceFile?.filterM (·.pathExists) | do
     let sourceFile :=
-      sourceFile?.getD <| mkFilePath (mod.components.map toString) |>.addExtension "lean"
+      sourceFile?.getD (mkFilePath (mod.components.map toString) |>.addExtension "lean")
     IO.println s!"Warning: {sourceFile} not found. Skipping all files that depend on it."
     modify fun stt => { stt with depsMap := stt.depsMap.insert mod #[] }
     return none
   let content ← IO.FS.readFile sourceFile
   let imports := (← Lean.parseImports' content mod.toString).imports.map (·.module)
-    |>.filter fun imp =>
-      if isPartOfMathlibCache mod then isPartOfMathlibCache imp else !isInLeanCore imp
+    |>.filter fun imp => if inCache then isPartOfMathlibCache imp else !isInLeanCore imp
   let sp := (← read).srcSearchPath
   let importHashes ← imports.mapM fun imp => do
     getHash imp (← sp.findLeanSource? imp) (visiting.insert mod)
   modify fun stt => { stt with depsMap := stt.depsMap.insert mod imports }
-  if !isPartOfMathlibCache mod then return none
+  unless inCache do return none
   let some importHashes := importHashes.mapM id | return none
   /-
   TODO: Currently, the cache uses the hash of the unresolved file name
@@ -123,7 +123,7 @@ partial def getHash (mod : Name) (sourceFile? : Option FilePath)
   let filePath := mkFilePath (mod.components.map toString) |>.withExtension "lean"
   let pathHash := hash filePath.components -- TODO: change to `hash mod`
   let fileHash :=
-    hash <| stt.rootHash :: pathHash :: hashFileContents content :: importHashes.toList
+    hash <| (← get).rootHash :: pathHash :: hashFileContents content :: importHashes.toList
   modify fun stt => { stt with hashMap := stt.hashMap.insert mod fileHash }
   return some fileHash
 
