@@ -1178,7 +1178,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     return #[nm.toName]
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
-  let projInfo ← getProjectionExprs ref tgtWhnf rhsWhnf
+  let projInfo ← getProjectionExprs stxProj tgtWhnf rhsWhnf
   trace[simps.debug] "Raw projection information:{indentD m!"{projInfo}"}"
   -- If we are in the middle of a composite projection.
   if let idx :: rest := toApply then
