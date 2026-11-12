@@ -201,7 +201,7 @@ theorem IsFormalAdjoint.le_adjoint (h : T.IsFormalAdjoint S) : S ≤ T† :=
   -- `⟪v, S x⟫ = ⟪v, T.adjoint y⟫` for all `v : T.domain`:
   fun _ _ hxy => (adjoint_apply_eq hT _ fun _ => by rw [h.symm, hxy]).symm⟩
 
-/-- A vector `y` belongs to the domain of the adjoint if and only if the 
+/-- A vector `y` belongs to the domain of the adjoint if and only if the
 functional `x ↦ ⟪y, T x⟫` on `T.domain` can be represented as an inner product with
 a vector of `E`. -/
 theorem mem_adjoint_domain_iff_exists {T : E →ₗ.[𝕜] F} (y : F) :
