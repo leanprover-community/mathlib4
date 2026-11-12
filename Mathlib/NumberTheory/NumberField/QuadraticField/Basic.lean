@@ -84,22 +84,17 @@ theorem nonempty_algEquiv_quadraticAlgebra_discr :
   exact ⟨(IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv).toRatAlgEquiv.trans
     (QuadraticAlgebra.algEquivDiscrZero (a : ℚ) b)⟩
 
-/-- The discriminant of a quadratic field is not `1`. A more general version is the
-Hermite-Minkowski theorem, see `NumberField.abs_discr_gt_two`. -/
-theorem discr_ne_one : discr K ≠ 1 := by
-  obtain ⟨a, b, ⟨f⟩⟩ :=
-    Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
-  rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv]
-  exact fun h ↦ QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _) (h ▸ .one)
-
 /-- The square root of `discr K` lies in `K`. -/
 theorem exists_sq_eq_discr : ∃ x : K, x ^ 2 = discr K := by
   obtain ⟨e⟩ := nonempty_algEquiv_quadraticAlgebra_discr K
   exact ⟨e.symm ω, by simp [← map_pow, QuadraticAlgebra.omega_pow_two_eq_add]⟩
 
 /-- The discriminant of a quadratic field is not a square. -/
-theorem not_isSquare_discr : ¬ IsSquare (discr K) :=
-  (Int.IsFundamentalDiscr.eq_one_of_isSquare (isFundamentalDiscr_discr K)).mt <| discr_ne_one K
+theorem not_isSquare_discr : ¬ IsSquare (discr K) := by
+  obtain ⟨a, b, ⟨f⟩⟩ :=
+    Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
+  rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv]
+  exact QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _)
 
 /-- **Stickelberger's theorem**, for quadratic fields: the discriminant is congruent to `0` or
 `1` modulo `4`. -/
