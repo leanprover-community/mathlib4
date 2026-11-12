@@ -26,7 +26,6 @@ equivalences of categories.
 ## References
 * [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
 * [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
-
 -/
 
 public section

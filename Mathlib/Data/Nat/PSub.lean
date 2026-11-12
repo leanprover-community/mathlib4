@@ -21,7 +21,6 @@ wrap the result in an `Option` type instead:
 
 - `Nat.ppred`: a partial predecessor operation
 - `Nat.psub`: a partial subtraction operation
-
 -/
 
 @[expose] public section

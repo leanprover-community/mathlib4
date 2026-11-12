@@ -30,7 +30,6 @@ a `TwistShiftData` structure (see the file `Mathlib.CategoryTheory.Shift.Twist`)
   functor `C₁ × C₂ ⥤ D` commutes with the shift by `ℤ × ℤ`, where `C₁ × C₂` is
   equipped with the obvious product shift, and `D` is equipped with
   the twisted shift.
-
 -/
 
 @[expose] public section

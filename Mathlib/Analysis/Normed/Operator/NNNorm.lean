@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 # Operator norm as an `NNNorm`
 
 Operator norm as an `NNNorm`, i.e. taking values in non-negative reals.
-
 -/
 
 public section
@@ -85,17 +84,17 @@ theorem opNNNorm_comp_le (h : F →SL[σ₂₃] G) (f : E →SL[σ₁₂] F) : �
   opNorm_comp_le h f
 
 lemma opENorm_comp_le (h : F →SL[σ₂₃] G) (f : E →SL[σ₁₂] F) : ‖h.comp f‖ₑ ≤ ‖h‖ₑ * ‖f‖ₑ := by
-  simpa [enorm, ← ENNReal.coe_mul] using opNNNorm_comp_le h f
+  simpa [eNorm, ← ENNReal.coe_mul] using opNNNorm_comp_le h f
 
 theorem le_opNNNorm (f : E →SL[σ₁₂] F) (x : E) : ‖f x‖₊ ≤ ‖f‖₊ * ‖x‖₊ :=
   f.le_opNorm x
 
 lemma le_opENorm (f : E →SL[σ₁₂] F) (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
-  dsimp [enorm]; exact mod_cast le_opNNNorm ..
+  dsimp [eNorm]; exact mod_cast le_opNNNorm ..
 
 @[deprecated (since := "2026-06-27")] alias le_opNorm_enorm := le_opENorm
 
-/-- If one controls the enorm of every `f x`, then one controls the enorm of `f`. -/
+/-- If one controls the eNorm of every `f x`, then one controls the eNorm of `f`. -/
 theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ) :
     ‖f‖ₑ ≤ M := by
   rcases eq_top_or_lt_top M with rfl | h'M

@@ -28,7 +28,6 @@ category of simplicial sets in such a way that morphisms in
 
 ## References
 * [Daniel G. Quillen, *Homotopical algebra*, II §1][quillen-1967]
-
 -/
 
 @[expose] public section

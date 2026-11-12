@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
-
 # Residue Field of local rings
 
 ## Main definitions

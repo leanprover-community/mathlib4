@@ -9,7 +9,6 @@ public import Mathlib.Probability.Martingale.Upcrossing
 public import Mathlib.Probability.Process.LimitProcess
 
 /-!
-
 # Martingale convergence theorems
 
 The martingale convergence theorems are a collection of theorems characterizing the convergence
@@ -39,7 +38,6 @@ theorems.
 * `MeasureTheory.Integrable.tendsto_eLpNorm_condExp`: part c the L¹ martingale convergence theorem:
   given a `⨆ n, ℱ n`-measurable function `g` where `ℱ` is a filtration, `𝔼[g | ℱ n]` converges in
   L¹ to `g`.
-
 -/
 
 public section
@@ -57,7 +55,6 @@ variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω}
 section AeConvergence
 
 /-!
-
 ### Almost everywhere martingale convergence theorem
 
 We will now prove the almost everywhere martingale convergence theorem.
@@ -102,7 +99,6 @@ Furthermore, we introduce `Filtration.limitProcess` which chooses the limiting r
 of a stochastic process if it exists, otherwise returning 0. Hence, instead of showing an
 existence statement, we phrase the a.e. martingale convergence theorem by showing that a
 submartingale converges to its `limitProcess` almost everywhere.
-
 -/
 
 
@@ -168,7 +164,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
           exact nnNorm_add_le _ _
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
           refine add_le_add_left (le_iSup_of_le n ?_) _
-          simp [eLpNorm_one_eq_lintegral_enorm (hf.integrable n).aestronglyMeasurable,
+          simp [eLpNorm_one_eq_lintegral_eNorm (hf.integrable n).aestronglyMeasurable,
             eNorm_eq_nnNorm]
       refine ne_of_lt (iSup_lt_iff.2 ⟨(⨆ n, eLpNorm (f n) 1 μ) + ‖a‖₊ * μ Set.univ, by finiteness,
         fun n ↦ (hR' n).trans' ?_ ⟩)
@@ -242,7 +238,6 @@ section L1Convergence
 variable [IsFiniteMeasure μ] {g : Ω → ℝ}
 
 /-!
-
 ### L¹ martingale convergence theorem
 
 We will now prove the L¹ martingale convergence theorems.
@@ -301,7 +296,6 @@ limiting process, we phrase the L¹-martingale convergence theorem by proving th
 does converge in L¹ to its `limitProcess`. However, in contrast to the a.e. martingale convergence
 theorem, we do not need to introduce an L¹ version of `Filtration.limitProcess` as the L¹ limit
 and the a.e. limit of a submartingale coincide.
-
 -/
 
 

@@ -1016,9 +1016,6 @@ lemma CWComplex.mem_skeleton_iff [CWComplex C] {n : ℕ∞} {x : X} :
     x ∈ skeleton C n ↔ ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
   rw [RelCWComplex.mem_skeleton_iff, mem_empty_iff_false, false_or]
 
-@[deprecated (since := "2026-04-30")] alias CWComplex.exists_mem_openCell_of_mem_skeleton :=
-  CWComplex.mem_skeleton_iff
-
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 @[alias_in CWComplex]
 lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} {m : ℕ}

@@ -21,7 +21,6 @@ This file defines the matrix associated with a permutation
 
 - `Matrix.det_permutation`: the determinant is the sign of the permutation
 - `Matrix.trace_permutation`: the trace is the number of fixed points of the permutation
-
 -/
 
 @[expose] public section

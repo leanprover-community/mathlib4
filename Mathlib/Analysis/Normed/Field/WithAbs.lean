@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.MetricSpace.Completion
 
+import Mathlib.Analysis.Normed.Field.Instances
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.Algebra.UniformField
 
@@ -104,7 +105,10 @@ namespace AbsoluteValue
 
 open WithAbs
 
-variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
+variable {J K L : Type*} [Field J] [Field K] [Field L]
+  [Algebra J K] [Algebra J L] [Algebra K L] [IsScalarTower J K L]
+  (u : AbsoluteValue J ℝ) (v : AbsoluteValue K ℝ) (w : AbsoluteValue L ℝ)
+  [v.LiesOver u] [w.LiesOver u] [w.LiesOver v]
 
 /-- The completion of a field with respect to a real absolute value, as a one-field structure
 wrapping the uniform-space completion of `WithAbs v`. -/
@@ -118,20 +122,15 @@ structure Completion where
 
 namespace Completion
 
-/-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
-private def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) where
+-- Not private because `NormedField` and `Algebra` instances need to be exposed and are
+-- transported along `equivAux`
+/-- Auxiliary equivalence used to transport instances to `v.Completion`. Use `equiv` instead. -/
+def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) where
   toFun := toCompletion'
   invFun := ofCompletion'
   left_inv _ := rfl
   right_inv _ := rfl
 
--- This instance exists to avoid a zsmul diamond.
-@[no_expose]
-noncomputable instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v)] :
-    SMul R v.Completion where
-  smul r x := ofCompletion' (r • x.toCompletion')
-
-@[no_expose]
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
 
 /-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
@@ -311,8 +310,8 @@ section Algebra
 variable {R : Type*} [CommSemiring R] [Algebra R (WithAbs v)]
   [UniformContinuousConstSMul R (WithAbs v)]
 
-@[no_expose]
-noncomputable instance : Algebra R v.Completion := fast_instance% (equiv v).algebra R
+-- Transported along `equivAux`, like `NormedField`, to avoid `nsmul`/`zsmul` diamonds.
+noncomputable instance : Algebra R v.Completion := fast_instance% (equivAux v).algebra R
 
 theorem toCompletion_algebraMap (r : R) :
     (algebraMap R v.Completion r).toCompletion =
@@ -331,8 +330,6 @@ theorem algebraMap_def (r : R) :
 end Algebra
 
 section LiesOver
-
-variable {L : Type*} [Field L] [Algebra K L] (w : AbsoluteValue L ℝ) [w.LiesOver v]
 
 /-- If `w` lies over `v`, then the ring homomorphism `v.Completion →+* w.Completion` induced by
 `algebraMap K L`. -/
@@ -353,6 +350,15 @@ theorem map_coe (x : WithAbs v) : map v w (x : v.Completion) = WithAbs.map v w (
   toCompletion_injective w <| UniformSpace.Completion.mapRingHom_coe
     (WithAbs.isometry_map v w).continuous x
 
+@[simp]
+theorem map_comp_map : (map v w).comp (map u v) = map u w :=
+  DFunLike.ext' <| ext ((continuous_map v w).comp (continuous_map u v)) (continuous_map u w)
+    (by simp [IsScalarTower.algebraMap_apply J K L])
+
+@[simp]
+theorem map_map (x : u.Completion) : map v w (map u v x) = map u w x :=
+  congr($(map_comp_map u v w) x)
+
 /-- If `w` lies over `v` with completions `K_v` and `L_w`, then there is a unique `K_v`-algebra
 structure on `L_w` satisfying both `IsScalarTower K K_v L_w` and `ContinuousSMul K_v L_w`,
 see `AbsoluteValue.Completion.algebraMap_eq_of_liesOver` and
@@ -371,7 +377,12 @@ instance : letI := algebraOfLiesOver v w
   let := algebraOfLiesOver v w
   continuousSMul_of_algebraMap v.Completion w.Completion (continuous_map v w)
 
-variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+variable
+  [Algebra u.Completion v.Completion] [IsScalarTower J u.Completion v.Completion]
+  [Algebra u.Completion w.Completion] [IsScalarTower J u.Completion w.Completion]
+  [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
+  [ContinuousSMul u.Completion v.Completion]
+  [ContinuousSMul u.Completion w.Completion]
   [ContinuousSMul v.Completion w.Completion]
 
 theorem algebraMap_eq_of_liesOver : algebraMap v.Completion w.Completion = map v w :=
@@ -391,6 +402,11 @@ theorem algebra_eq_of_liesOver : ‹_› = algebraOfLiesOver v w :=
 @[deprecated (since := "2026-10-28")] alias algebraMap_apply := algebraMap_apply_of_liesOver
 @[deprecated (since := "2026-10-28")] alias algebra_eq := algebra_eq_of_liesOver
 
+instance instIsScalarTower_of_isScalarTower :
+    IsScalarTower u.Completion v.Completion w.Completion := by
+  apply IsScalarTower.of_algebraMap_eq'
+  simp [AbsoluteValue.Completion.algebraMap_eq_of_liesOver]
+
 end LiesOver
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
@@ -401,4 +417,30 @@ theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
     LocallyCompactSpace v.Completion :=
   (h.completion_extension.comp (isometry_toCompletion v)).isClosedEmbedding.locallyCompactSpace
 
-end AbsoluteValue.Completion
+end Completion
+
+section degree
+
+variable (K) in
+/-- The degree of an extension of absolute values is the degree of their completions. -/
+noncomputable def degree : ℕ :=
+  letI w₀ := w.under K
+  letI := Completion.algebraOfLiesOver w₀ w
+  Module.finrank w₀.Completion w.Completion
+
+theorem degree_eq [Algebra v.Completion w.Completion]
+    [IsScalarTower K v.Completion w.Completion] [ContinuousSMul v.Completion w.Completion] :
+    w.degree K = Module.finrank v.Completion w.Completion := by
+  obtain rfl := LiesOver.under_eq w v
+  rw [degree, Completion.algebra_eq_of_liesOver (w.under K) w]
+
+theorem degree_mul_degree : v.degree J * w.degree K = w.degree J := by
+  let u := v.under J
+  let : Algebra u.Completion v.Completion := Completion.algebraOfLiesOver u v
+  let : Algebra u.Completion w.Completion := Completion.algebraOfLiesOver u w
+  let := Completion.algebraOfLiesOver v w
+  rw [degree_eq u v, degree_eq v w, degree_eq u w, Module.finrank_mul_finrank]
+
+end degree
+
+end AbsoluteValue

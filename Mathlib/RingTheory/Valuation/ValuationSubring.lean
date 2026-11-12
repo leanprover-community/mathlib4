@@ -11,13 +11,11 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
-
 # Valuation subrings of a field
 
 ## Projects
 
 The order structure on `ValuationSubring K`.
-
 -/
 
 @[expose] public section

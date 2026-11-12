@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
-
 # Functors preserving effective epimorphisms
 
 This file concerns functors which preserve and/or reflect effective epimorphisms and effective

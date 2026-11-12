@@ -18,7 +18,6 @@ for a functor `F : J ⥤ MonoOver X` from a filtered category,
 we relate the colimit of `F` (computed in `C`) and the
 supremum of the subobjects corresponding to the objects
 in the image of `F`.
-
 -/
 
 @[expose] public section

@@ -16,7 +16,6 @@ This file defines properties of simplices in a Euclidean space.
 ## Main definitions
 
 * `Affine.Simplex.AcuteAngled`
-
 -/
 
 @[expose] public section

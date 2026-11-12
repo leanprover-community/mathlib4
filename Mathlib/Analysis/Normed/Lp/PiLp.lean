@@ -702,9 +702,11 @@ lemma isUniformInducing_toLp [Finite ι] [∀ i, PseudoEMetricSpace (β i)] :
 section
 variable {β p}
 
-theorem enorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
+theorem eNorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
     ‖x i‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_apply_le x 0 i
+
+@[deprecated (since := "2026-11-06")] alias enorm_apply_le := eNorm_apply_le
 
 theorem nnNorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
     ‖x i‖₊ ≤ ‖x‖₊ := by

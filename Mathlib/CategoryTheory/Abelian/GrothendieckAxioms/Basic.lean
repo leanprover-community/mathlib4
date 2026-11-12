@@ -16,7 +16,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.Logic.Equiv.List
 
 /-!
-
 # Grothendieck Axioms
 
 This file defines some of the Grothendieck Axioms for abelian categories, and proves
@@ -45,7 +44,6 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 
 ## References
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
-
 -/
 
 public section

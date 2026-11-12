@@ -24,7 +24,6 @@ of the axioms is straightforward.)
 
 ## TODO
 * Proceed to the dual construction for `Under S`.
-
 -/
 
 public section

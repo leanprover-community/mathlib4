@@ -60,7 +60,6 @@ Ways to extend `rw??`:
 - Support generalized rewriting (`grw`)
 - Integrate rewrite search with the `calc?` widget so that a `calc` block can be created using
   just point & click.
-
 -/
 
 public meta section

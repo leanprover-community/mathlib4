@@ -841,7 +841,7 @@ instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :
     @CompleteSpace L (uniformSpace K L) := by
   let := (normedAddCommGroup K L)
   let := (normedSpace K L)
-  exact FiniteDimensional.complete K L
+  exact FiniteDimensional.completeSpace K L
 
 omit [Algebra.IsAlgebraic K L] in
 lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra K E] [Algebra L E]

@@ -15,7 +15,6 @@ The main result of this file is the lemma
 that a triangle in `HomotopyCategory C (ComplexShape.up ℤ)`
 is distinguished iff it is isomorphic to the triangle attached to a
 degreewise split short exact sequence of cochain complexes.
-
 -/
 
 @[expose] public section
