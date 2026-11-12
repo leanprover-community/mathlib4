@@ -381,8 +381,9 @@ def headerLinter (stx : Syntax) : CommandElabM Unit := do
   unless stx.isOfKind ``Parser.Command.moduleDoc do
     Linter.logLint linter.style.header stx
       m!"The module doc-string for a file should be the first command after the imports\n\
-        and any necessary `set_option` commands.\n\
-        Please, add a module doc-string (`/-! ... -/`) before `{stx}`.\
+        and any necessary `set_option` commands\
+        {if stx.isOfKind ``Parser.Command.in then ", and should not be preceded by `in`" else ""}.\
+        \nPlease, add a module doc-string (`/-! ... -/`) before `{stx}`.\
         {.hint' m!"Type `m(odule docstring) + [tab]` to insert a template via snippet."}"
   let some rootPath := modPathToRootPath (← getFileName) mainModule | return
   let inLibraryRoot? ← inLibraryRootMutex.atomically do
