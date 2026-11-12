@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Ring.Defs
 
+import Mathlib.Algebra.Ring.TransferInstance
+
 /-!
 # Ring structure on the order type synonyms
 
@@ -162,13 +164,7 @@ instance [NonUnitalCommRing R] : NonUnitalCommRing (Lex R) where
 
 instance [CommRing R] : CommRing (Lex R) where
 
-instance [Ring R] [IsDomain R] : IsDomain (Lex R) where
-  mul_left_cancel_of_ne_zero ha := by
-    rw [isLeftRegular_toLex]
-    exact IsLeftCancelMulZero.mul_left_cancel_of_ne_zero fun hc ↦ ha (ofLex_inj.mp hc)
-  mul_right_cancel_of_ne_zero ha := by
-    rw [isRightRegular_toLex]
-    exact IsRightCancelMulZero.mul_right_cancel_of_ne_zero fun hc ↦ ha (ofLex_inj.mp hc)
+instance [Ring R] [IsDomain R] : IsDomain (Lex R) := ofLexEquiv.isDomain
 
 end Lex
 
