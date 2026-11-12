@@ -69,6 +69,9 @@ theorem isPositive_abs (T : E →L[ℂ] F) : |T|.IsPositive := by
   simp [ContinuousLinearMap.abs_def, ← ContinuousLinearMap.nonneg_iff_isPositive]
 
 @[simp]
+theorem isSelfAdjoint_abs (T : E →L[ℂ] F) : IsSelfAdjoint |T| := T.isPositive_abs.isSelfAdjoint
+
+@[simp]
 protected theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
   rw [ContinuousLinearMap.abs_def, T.isPositive_abs.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self ..
