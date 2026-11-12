@@ -16,7 +16,6 @@ public import Mathlib.Order.SupIndep
 public import Mathlib.Order.Zorn
 public import Mathlib.Tactic.TFAE
 
-import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.RelIso.Set
 
