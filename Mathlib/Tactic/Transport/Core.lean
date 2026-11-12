@@ -26,6 +26,8 @@ open Mathlib Tactic GRewrite
 
 open Lean Meta GCongr
 
+initialize registerTraceClass `transport
+
 namespace Test
 
 inductive RelKind where
@@ -66,11 +68,13 @@ structure TransportHyp where
   /-- Whether the order of the two varying arguments is the opposite from in the conclusion. -/
   isContra : Bool
 
-/-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
+/-- Structure recording the data for a `@[transport]` lemma. -/
 structure TransportLemma where
   /-- The keys under which the lemma is stored. This is usually one key,
   but for `gcongr strict` lemmas, this stores two keys, for the LHS and RHS respectively. -/
   keys : List TransportKey
+  /-- The given priority of the lemma, for example as `@[transport high]`. -/
+  prio : Nat
   /--
   Universe parameter names for universe polymorphic proofs.
   It is non-empty only when we elaborate an expression provided by the user.
@@ -78,14 +82,14 @@ structure TransportLemma where
   -/
   levelParams : Array Name := #[]
   proof       : Expr
-  /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. -/
-  mainSubgoals : Array TransportHyp
   /-- The number of arguments that `declName` takes when applying it. -/
   numHyps : Nat
-  /-- The given priority of the lemma, for example as `@[gcongr high]`. -/
-  prio : Nat
   /-- All pairs of types `α`, `β` such that `α` translates to/from `β`. -/
   relatedTypes : Option (Nat × Nat)
+  /-- The variables that appear on both sides of the conclusion. -/
+  sharedVars : List Nat
+  /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. -/
+  mainSubgoals : Array TransportHyp
   deriving Inhabited
 
 def TransportLemma.getValue (lem : TransportLemma) : MetaM Expr := do
@@ -151,7 +155,7 @@ def withTransportHyps {α} (hyps : List (FVarId × FVarId × Bool)) (goal : MVar
       let (_, goal) ← substCore goal hRel (symm := !forward)
       goal.withContext <| withTransportHyps hyps goal k
     else
-      trace[Meta.grewrite] "`{Expr.fvar fvarId}` satisfies `{rel}`"
+      trace[transport] "`{Expr.fvar fvarId}` satisfies `{rel}`"
       withReader
         (fun c ↦ { c with transportHyps := c.transportHyps.insert fvarId (hRel, forward) })
         (withTransportHyps hyps goal k)
@@ -192,6 +196,11 @@ def applyGCongrLemma (g : MVarId) (lem : TransportLemma) :
   let type ← inferType proof
   let (mvars, bis, type) ← forallMetaBoundedTelescope type lem.numHyps
   guard <| ← approxDefEq <| isDefEq (← g.getType) type
+  -- Check that no transport variables accidentally end up in the result.
+  for i in lem.sharedVars do
+    let transportVars := (← read).transportHyps
+    if (← instantiateMVars mvars[i]!).hasAnyFVar transportVars.contains then
+      throwError "`{mvars[i]!}` contains a variable that it shouldn't"
   if let some (i, j) := lem.relatedTypes then
     let α ← instantiateMVars mvars[i]!
     let β ← instantiateMVars mvars[j]!
@@ -281,24 +290,33 @@ conclusion `target`. -/
 def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
     (levelParams : Array Name) (prio : Nat) (intro? : Bool) : MetaM TransportLemma := do
   let some (relKind, sharedVars, lhs, rhs) ← getRel target | throwError "No relation found"
-  if lhs.getAppFn.isFVar && hyps.contains lhs.getAppFn then
-    throwError "LHS is not suitable"
-  if rhs.getAppFn.isFVar && hyps.contains rhs.getAppFn then
-    throwError "RHS is not suitable"
+  let hyps := hyps.map (·.fvarId!)
+  if let .fvar fvarId := lhs.getAppFn then
+    if hyps.contains fvarId then
+      throwError "LHS is a variable: {lhs}"
+  if let .fvar fvarId := rhs.getAppFn then
+    if hyps.contains fvarId then
+      throwError "RHS is a variable: {rhs}"
   let mut mainSubgoals := #[]
-  let sharedVars := (← sharedVars.addDependencies).fvarSet
-  let lhsVars := (← (collectFVars {} lhs).addDependencies).fvarSet.diff sharedVars
-  let rhsVars := (← (collectFVars {} rhs).addDependencies).fvarSet.diff sharedVars
+  let sharedVars := (← sharedVars.addDependencies).fvarSet.filter hyps.contains
+  let lctx ← getLCtx
+  let lhsVars :=
+    (← (collectFVars {} lhs).addDependencies).fvarSet.filter fun fvarId ↦
+      hyps.contains fvarId && !sharedVars.contains fvarId
+        && !(lctx.get! fvarId).binderInfo.isInstImplicit
+  let rhsVars :=
+    (← (collectFVars {} rhs).addDependencies).fvarSet.filter fun fvarId ↦
+      hyps.contains fvarId && !sharedVars.contains fvarId
+        && !(lctx.get! fvarId).binderInfo.isInstImplicit
   let overlapping := lhsVars.inter rhsVars
-  unless overlapping.isEmpty do
-    logWarning
-      m!"The variable(s) {overlapping.toList.map Expr.fvar} appear in both `{lhs}` and `{rhs}`."
+  let lhsVars := lhsVars.diff overlapping
+  let rhsVars := rhsVars.diff overlapping
   let lVarsRef ← IO.mkRef lhsVars
   let rVarsRef ← IO.mkRef rhsVars
   -- iterate over antecedents `hyp` to the lemma
   for hyp in hyps, i in 0...* do
     -- TODO: find a way around this hard encoding
-    if let .str _ s ← hyp.fvarId!.getUserName then
+    if let .str _ s ← hyp.getUserName then
       if s.startsWith "map" then
         continue
     -- Checks if `∀ xs, lhs ~ rhs` is a valid "main goal".
@@ -310,8 +328,8 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
       and `lhs`, `rhs` are variables from the two sides of the conclusion of the lemma.
       If `yᵢ` is different from `zᵢ`, then they need to be related by a hypothesis `xⱼ : r yᵢ zᵢ`.
       -/
-      let .fvar lhsFVarId := lhs | return none
-      let .fvar rhsFVarId := rhs | return none
+      let .fvar lhs := lhs | return none
+      let .fvar rhs := rhs | return none
       if h : lhsArgs.size ≠ rhsArgs.size then
         return none
       else
@@ -352,14 +370,14 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
       let lVars ← lVarsRef.get
       let rVars ← rVarsRef.get
       let isContra ←
-        if lVars.contains lhsFVarId && rVars.contains rhsFVarId then
-          lVarsRef.modify (·.erase lhsFVarId)
-          rVarsRef.modify (·.erase rhsFVarId)
+        if lVars.contains lhs && rVars.contains rhs then
+          lVarsRef.modify (·.erase lhs)
+          rVarsRef.modify (·.erase rhs)
           pure false
         else
-          if lVars.contains rhsFVarId && rVars.contains lhsFVarId then
-            lVarsRef.modify (·.erase rhsFVarId)
-            rVarsRef.modify (·.erase lhsFVarId)
+          if lVars.contains rhs && rVars.contains lhs then
+            lVarsRef.modify (·.erase rhs)
+            rVarsRef.modify (·.erase lhs)
             pure true
           else
             return none
@@ -372,7 +390,7 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
         isContra
       }
     -- Checks if `hyp` is a valid "main goal".
-    let go := forallTelescope (← inferType hyp) fun xs hypTy => do
+    let go := forallTelescope (← hyp.getType) fun xs hypTy => do
       if let mkApp2 _ lhs₁ rhs₁ := hypTy then
         isMainGoal? lhs₁ rhs₁ xs
       else if let some lastFVar := xs.back? then
@@ -390,8 +408,13 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
   if rhs.toHeadIndex != lhs.toHeadIndex || rhs.headNumArgs != lhs.headNumArgs then
     keys := { relKind, head := lhs.toHeadIndex, arity := lhs.headNumArgs } :: keys
   return {
-    keys, proof, levelParams, mainSubgoals, numHyps := hyps.size, prio,
-    relatedTypes := if intro? then some (0, 1) else none }
+    keys, prio
+    levelParams, proof
+    numHyps := hyps.size
+    relatedTypes := if intro? then some (0, 1) else none
+    sharedVars := sharedVars.toList.map hyps.idxOf
+    mainSubgoals
+  }
 
 def mkTransportLemma (type proof : Expr) (levelParams : Array Name) (prio : Nat) (intro? : Bool) :
     MetaM TransportLemma := do
@@ -530,10 +553,15 @@ and we try to discharge the side goals.
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
 partial def processGCongrLemma (e : Expr) (rel? : Option Expr) (lem : TransportLemma)
     (forward : Bool) : TransportM (Option (Expr × Expr)) :=
-  withTraceNode `Meta.grewrite (fun _ ↦
+  withTraceNode `transport (fun _ ↦
     return m!"applying transport lemma `{lem.proof}`") do
   let (mvar, goal) ← makeGCongrGoal rel? e forward
-  let (mainGoals, sideGoals) ← try applyGCongrLemma goal.mvarId! lem catch _ => return none
+  let (mainGoals, sideGoals) ←
+    try
+      applyGCongrLemma goal.mvarId! lem
+    catch e =>
+      trace[transport] "{e.toMessageData}"
+      return none
   -- Recursively rewrite in the main subgoals
   for (goal, relHyps, isContra) in mainGoals do
     unless ← processTransportHypothesis goal relHyps (forward != isContra) rel?.isNone do
@@ -551,7 +579,7 @@ partial def processGCongrLemma (e : Expr) (rel? : Option Expr) (lem : TransportL
         continue
     else
       dischargeSide mvarId
-  trace[Meta.grewrite] "result: {result}"
+  trace[transport] "result: {result}"
   return (result, goal)
 
 partial def useTransportHyp (hyp : Expr) (goal : MVarId) (forward : Bool) : TransportM Bool := do
@@ -591,7 +619,7 @@ partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (f
       transportEqCore e
     else
       (← transportEqCore e).mapM fun (e', pf) ↦ return (e', ← mkAppM ``Eq.symm #[pf])
-  else withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \
+  else withTraceNodeBefore `transport (fun _ ↦ return m!"visiting `{e}` in the \
     {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
   let e := e.cleanupAnnotations
   if let .fvar fvarId := e.getAppFn then
@@ -604,7 +632,7 @@ partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (f
         else
           pure <| some goal.mvarId! then
         if ← useTransportHyp (.fvar hyp) goal' forward' then
-          trace[Meta.grewrite] "rewriting `{e}` to `{mvar}`"
+          trace[transport] "rewriting `{e}` to `{mvar}`"
           return some (← instantiateMVars mvar, goal)
       setMCtx mctx
   -- Try all applicable `@[transport]` lemmas.
