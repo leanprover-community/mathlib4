@@ -500,9 +500,9 @@ open Cache.Hashing in
 /-- `get` with a downstream module `Down.Top` and the cache module `Archive.Foo`, which is
 outside the closure of `Mathlib`. The `partial` scenario of `Cache/test/downstream.sh` checks
 the common case against the real cache. Here, `Down.Top` imports:
-* through `Down.Mid`, `Batteries.X`, which `Mathlib` does not import, and its import
-  `Batteries.Z`, which `Mathlib` imports;
-* `Nowhere.Y`, which no package has. -/
+* through `Down.Mid`, `Batteries.X`, which is outside the closure of `Mathlib`, and its
+  import `Batteries.Z`, which is inside;
+* the unknown module `Nowhere.Y`. -/
 def test_filterByRootModules_downstream : IO Unit := do
   IO.println "module selection (filterByRootModules):"
   let dir ← IO.FS.createTempDir

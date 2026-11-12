@@ -16,12 +16,12 @@
 #
 # partial  `cache get- Mathlib.Data.Nat.Basic` in the Mathlib checkout downloads
 #          the reference files. Then `cache get DownstreamTest.Partial`, which
-#          imports Mathlib through `DownstreamTest.Helper`, must download
-#          nothing, and `lake build` must build only the two downstream
-#          modules. In a checkout with Mathlib oleans, the build check cannot
-#          show that `cache get` unpacked them. If the server does not have all
-#          reference files (for example, before CI builds a toolchain bump),
-#          the scenario stops with a notice and exits 0.
+#          imports Mathlib through `DownstreamTest.Helper`, must find all its
+#          files in the reference download, and `lake build` must build only
+#          the two downstream modules. In a checkout with Mathlib oleans, the
+#          build check is incomplete. If the server misses a reference file
+#          (for example, before CI builds a toolchain bump), the scenario
+#          stops with a notice and exits 0.
 
 set -euo pipefail
 
@@ -36,14 +36,14 @@ partial() {
   export MATHLIB_CACHE_DIR=$work/cache
   (cd .. && lake exe cache "$@" get- Mathlib.Data.Nat.Basic) 2>&1 | tee "$work/reference.log"
   if grep -q "file(s) were not found in" "$work/reference.log"; then
-    echo "::notice::The server does not have all files of Mathlib.Data.Nat.Basic. \
+    echo "::notice::The server misses files of Mathlib.Data.Nat.Basic. \
 Skipped the partial scenario."
     return
   fi
   lake exe cache "$@" get DownstreamTest.Partial 2>&1 | tee "$work/get.log"
   if ! grep -q "No files to download" "$work/get.log"; then
-    echo "::error::cache get DownstreamTest.Partial asked for files that \
-cache get- Mathlib.Data.Nat.Basic does not download."
+    echo "::error::cache get DownstreamTest.Partial asked for files outside the files of \
+cache get- Mathlib.Data.Nat.Basic."
     exit 1
   fi
   lake build DownstreamTest.Partial 2>&1 | tee "$work/build.log"

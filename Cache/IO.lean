@@ -570,7 +570,7 @@ def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
   let mut err := false
   for mod in modules do
     let some hash := hashMap[mod]? | do
-      IO.println s!"{mod}: no cache file"
+      IO.println s!"{mod} is not covered by the olean cache."
       err := true
     let ltar := CACHEDIR / hash.asLTar
     IO.println s!"{mod}: {ltar}"

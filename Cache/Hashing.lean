@@ -90,8 +90,7 @@ The hash of a module in the Mathlib cache mixes:
 * The hash of its content
 * The hashes of the imported files that are part of the Mathlib cache
 
-A module outside the Mathlib cache has no hash. A module with an import without a hash
-has no hash either.
+Only a module in the Mathlib cache whose imports all have a hash gets a hash.
 -/
 partial def getHash (mod : Name) (sourceFile? : Option FilePath)
     (visiting : Std.HashSet Name := ∅) : HashM <| Option UInt64 := do
@@ -100,8 +99,8 @@ partial def getHash (mod : Name) (sourceFile? : Option FilePath)
   let stt ← get
   if stt.depsMap.contains mod then return stt.hashMap[mod]?
   let some sourceFile ← sourceFile?.filterM (·.pathExists) | do
-    IO.println s!"Warning: no package in the search path has the source file of {mod}. \
-      `cache` skips it and the cache modules that import it."
+    IO.println s!"Warning: the search path is missing the source file of {mod}. `cache` skips \
+      it and the cache modules that import it."
     modify fun stt => { stt with depsMap := stt.depsMap.insert mod #[] }
     return none
   let content ← IO.FS.readFile sourceFile

@@ -64,8 +64,8 @@ Find the source directory for a module. This could be `.`
 module is part of the current package, or something like `.lake/packages/mathlib` if the
 module is from a dependency.
 
-The result is the first entry of `sp` that has the file `mod.<ext>`. If no entry has it, the
-result is the first entry that has the directory `mod/`.
+The result is the first entry of `sp` that has the file `mod.<ext>`, or else the first entry
+that has the directory `mod/`.
 
 Dependencies come before the root package in `sp`. A dependency can have a top-level directory
 with the name of a downstream package, for example `DownstreamTest/` in Mathlib. Thus
