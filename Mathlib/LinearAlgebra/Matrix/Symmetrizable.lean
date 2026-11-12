@@ -40,8 +40,7 @@ lemma IsSymm.IsSymmetrizable [MonoidWithZero R] (h : M.IsSymm) :
   simp [h.apply]
 
 lemma isSymmetrizable_iff [DecidableEq ι] [Fintype ι] [Semiring R] :
-    M.IsSymmetrizable ↔ ∃ d : ι → R, (∀ i, d i ∈ nonZeroDivisors R)
-      ∧ ((diagonal d) * M).IsSymm := by
+    M.IsSymmetrizable ↔ ∃ d : ι → R, (∀ i, d i ∈ nonZeroDivisors R) ∧ (diagonal d * M).IsSymm := by
   refine ⟨fun ⟨d, hd, h⟩ ↦ ⟨d, hd, ?_⟩, fun ⟨d, hd, h⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩⟩
   · ext i j
     rw [diagonal_mul, transpose_apply, diagonal_mul, h i j]
@@ -99,6 +98,7 @@ lemma isSymmetrizable_iff_of_pairwise_eq [MonoidWithZero R] (h : Pairwise fun i 
     · rw [hij]
     · rw [h hij, hM, h hij.symm]
 
+@[simp]
 lemma isSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] (d : ι → R) :
     (M + diagonal d).IsSymmetrizable ↔ M.IsSymmetrizable := by
   rw [isSymmetrizable_iff_of_pairwise_eq]
@@ -127,7 +127,7 @@ lemma IsSymm.IsPosSymmetrizable [Semiring R] [IsDomain R] [PartialOrder R] [Zero
   simp [h.apply]
 
 lemma isPosSymmetrizable_iff [DecidableEq ι] [Fintype ι] [Semiring R] [LT R] :
-    M.IsPosSymmetrizable ↔ ∃ d : ι → R, (∀ i, 0 < d i) ∧ ((diagonal d) * M).IsSymm := by
+    M.IsPosSymmetrizable ↔ ∃ d : ι → R, (∀ i, 0 < d i) ∧ (diagonal d * M).IsSymm := by
   refine ⟨fun ⟨d, hd, h⟩ ↦ ⟨d, hd, ?_⟩, fun ⟨d, hd, h⟩ ↦ ⟨d, hd, fun i j ↦ ?_⟩⟩
   · ext i j
     rw [diagonal_mul, transpose_apply, diagonal_mul, h i j]
@@ -151,9 +151,10 @@ lemma IsPosSymmetrizable.transpose [Finite ι] [CommSemiring R] [IsDomain R] [Pa
     <| Finset.mem_erase.mpr ⟨hij.symm, Finset.mem_univ j⟩
   rw [← hj, mul_assoc, h j i, ← mul_assoc, ← hi, Finset.erase_right_comm]
 
+@[simp]
 lemma transpose_isPosSymmetrizable_iff [Finite ι] [CommSemiring R] [IsDomain R] [PartialOrder R]
-    [ZeroLEOneClass R] [PosMulStrictMono R] :
-    M.IsPosSymmetrizable ↔ Mᵀ.IsPosSymmetrizable :=
+    [IsStrictOrderedRing R] :
+    Mᵀ.IsPosSymmetrizable ↔ M.IsPosSymmetrizable :=
   ⟨transpose_transpose M ▸ .transpose, .transpose⟩
 
 lemma IsPosSymmetrizable.submatrix [Semiring R] [Preorder R] (f : κ → ι)
@@ -171,7 +172,7 @@ lemma isPosSymmetrizable_iff_of_pairwise_eq [Semiring R] [LT R]
   · by_cases! hij : i = j
     · rw [hij]
     · rw [h hij, hM, h hij.symm]
-
+@[simp]
 lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [LT R] (d : ι → R) :
     (M + diagonal d).IsPosSymmetrizable ↔ M.IsPosSymmetrizable := by
   rw [isPosSymmetrizable_iff_of_pairwise_eq]
