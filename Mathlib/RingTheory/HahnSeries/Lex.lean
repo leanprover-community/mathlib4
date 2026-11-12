@@ -387,11 +387,11 @@ variable [PartialOrder R] {Γ' : Type*} [LinearOrder Γ'] (f : Γ ↪o Γ')
 @[simps!]
 noncomputable def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
   toEmbedding := ofLexEquiv.toEmbedding |>.trans
-    ⟨embDomain f, embDomain_injective⟩ |>.trans ofLexEquiv.symm.toEmbedding
+    ⟨embDomain f, embDomain_injective⟩ |>.trans toLexEquiv.toEmbedding
   map_rel_iff' {a b} := by
     simp_rw [le_iff_lt_or_eq, lt_iff]
     simp only [Function.Embedding.mk_trans_mk, Function.Embedding.coeFn_mk, Function.comp_apply,
-      ofLexEquiv_apply, ofLexEquiv_symm_apply, toLex.injEq]
+      toLexEquiv_apply, toLex.injEq]
     constructor
     · rintro (⟨i, hj, hi⟩ | heq)
       · have himem : i ∈ Set.range f := by

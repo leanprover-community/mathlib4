@@ -192,10 +192,10 @@ theorem uniqueProd_apply [Preorder α] [Unique α] [LE β] (x : α ×ₗ β) :
 def prodLexAssoc (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ×ₗ β) ×ₗ γ ≃o α ×ₗ β ×ₗ γ where
   toEquiv := .trans ofLexEquiv <| .trans (.prodCongr ofLexEquiv <| .refl _) <|
-      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) ofLexEquiv.symm) ofLexEquiv.symm
+      .trans (.prodAssoc α β γ) <| .trans (.prodCongr (.refl _) toLexEquiv) toLexEquiv
   map_rel_iff' := by
     simp only [Equiv.trans_apply, ofLexEquiv_apply, Equiv.prodCongr_apply, Equiv.prodAssoc_apply,
-      map_apply, ofLexEquiv_symm_apply, le_iff, lt_iff, «forall», Prod.forall]
+      map_apply, toLexEquiv_apply, le_iff, lt_iff, «forall», Prod.forall]
     grind [EmbeddingLike.apply_eq_iff_eq]
 
 /-- `Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products.
@@ -206,15 +206,14 @@ which is not isomorphic to `ℕ ×ₗ Unit ⊕ₗ ℕ ×ₗ Unit ≃o ℕ ⊕ₗ
 def sumLexProdLexDistrib (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ⊕ₗ β) ×ₗ γ ≃o α ×ₗ γ ⊕ₗ β ×ₗ γ where
   toEquiv := .trans ofLexEquiv <| .trans (.prodCongr ofLexEquiv <| .refl _) <|
-    .trans (.sumProdDistrib α β γ) <|
-    .trans (.sumCongr ofLexEquiv.symm ofLexEquiv.symm) ofLexEquiv.symm
+    .trans (.sumProdDistrib α β γ) <| .trans (.sumCongr toLexEquiv toLexEquiv) toLexEquiv
   map_rel_iff' := by simp [Prod.Lex.le_iff]
 
 /-- `Equiv.prodCongr` promoted to an order isomorphism between lexicographic products. -/
 @[simps! apply]
 def prodLexCongr {α β γ δ : Type*} [Preorder α] [Preorder β]
     [Preorder γ] [Preorder δ] (ea : α ≃o β) (eb : γ ≃o δ) : α ×ₗ γ ≃o β ×ₗ δ where
-  toEquiv := ofLexEquiv.trans ((Equiv.prodCongr ea eb).trans ofLexEquiv.symm)
+  toEquiv := ofLexEquiv.trans ((Equiv.prodCongr ea eb).trans toLexEquiv)
   map_rel_iff' := by simp [Prod.Lex.le_iff]
 
 end Prod.Lex

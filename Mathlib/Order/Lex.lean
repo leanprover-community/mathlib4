@@ -46,12 +46,19 @@ structure Lex (α : Sort*) where
 deriving Inhabited, DecidableEq
 
 /-- The natural equivalence between `Lex α` and `α`. -/
-@[simps]
+@[simps apply symm_apply]
 def ofLexEquiv : Lex α ≃ α where
   toFun := Lex.ofLex
   invFun := Lex.toLex
 
-@[simp] lemma ofLexEquiv_symm_apply (a : α) : ofLexEquiv.symm a = .toLex a := rfl
+/-- The natural equivalence between `α` and `Lex α`. -/
+@[simps apply symm_apply]
+def toLexEquiv : α ≃ Lex α where
+  toFun := Lex.toLex
+  invFun := Lex.ofLex
+
+lemma toLexEquiv_symm_eq : (@toLexEquiv α).symm = ofLexEquiv := rfl
+lemma ofLexEquiv_symm_eq : (@ofLexEquiv α).symm = toLexEquiv := rfl
 @[simp] theorem toLex_ofLex (a : Lex α) : .toLex a.ofLex = a := rfl
 @[simp] theorem ofLex_toLex (a : α) : (Lex.toLex a).ofLex = a := rfl
 
@@ -99,12 +106,19 @@ structure Colex (α : Sort*) where
 deriving Inhabited, DecidableEq
 
 /-- The natural equivalence between `Colex α` and `α`. -/
-@[simps]
+@[simps apply symm_apply]
 def ofColexEquiv : Colex α ≃ α where
   toFun := Colex.ofColex
   invFun := Colex.toColex
 
-@[simp] lemma ofColexEquiv_symm_apply (a : α) : ofColexEquiv.symm a = .toColex a := rfl
+/-- The natural equivalence between `α` and `Colex α`. -/
+@[simps apply symm_apply]
+def toColexEquiv : α ≃ Colex α where
+  toFun := Colex.toColex
+  invFun := Colex.ofColex
+
+lemma toColexEquiv_symm_eq : (@toColexEquiv α).symm = ofColexEquiv := rfl
+lemma ofColexEquiv_symm_eq : (@ofColexEquiv α).symm = toColexEquiv := rfl
 @[simp] theorem toColex_ofColex (a : Colex α) : .toColex a.ofColex = a := rfl
 @[simp] theorem ofColex_toColex (a : α) : (Colex.toColex a).ofColex = a := rfl
 
@@ -140,7 +154,7 @@ instance {α β} [H : CoeFun α fun _ ↦ β] : CoeFun (Colex α) fun _ ↦ β w
 @[simp] lemma Colex.exists {p : Colex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toColex a) :=
   toColex_surjective.exists
 
-@[deprecated "type changed" (since := "2026-11-08")] alias toLex_symm_eq := ofLex_toLex
-@[deprecated "type changed" (since := "2026-11-08")] alias ofLex_symm_eq := toLex_ofLex
-@[deprecated "type changed" (since := "2026-11-08")] alias toColex_symm_eq := ofColex_toColex
-@[deprecated "type changed" (since := "2026-11-08")] alias ofColex_symm_eq := toColex_ofColex
+@[deprecated (since := "2026-11-08")] alias toLex_symm_eq := toLexEquiv_symm_eq
+@[deprecated (since := "2026-11-08")] alias ofLex_symm_eq := ofLexEquiv_symm_eq
+@[deprecated (since := "2026-11-08")] alias toColex_symm_eq := toColexEquiv_symm_eq
+@[deprecated (since := "2026-11-08")] alias ofColex_symm_eq := ofColexEquiv_symm_eq

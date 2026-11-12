@@ -630,7 +630,7 @@ theorem sumDualDistrib_symm_inr : (sumDualDistrib α β).symm (inr (toDual b)) =
 /-- `Equiv.sumCongr` promoted to an order isomorphism between lexicographic sums. -/
 @[simps! apply]
 def sumLexCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ₗ β₁ ≃o α₂ ⊕ₗ β₂ where
-  toEquiv := ofLexEquiv.trans ((Equiv.sumCongr ea eb).trans ofLexEquiv.symm)
+  toEquiv := ofLexEquiv.trans ((Equiv.sumCongr ea eb).trans toLexEquiv)
   map_rel_iff' := by simp_rw [Lex.forall]; rintro (a | a) (b | b) <;> simp
 
 @[simp]
@@ -650,7 +650,7 @@ theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ where
   toEquiv := ofLexEquiv.trans (ofLexEquiv.sumCongr (Equiv.refl _)) |>.trans (Equiv.sumAssoc α β γ)
-    |>.trans ((Equiv.refl _).sumCongr ofLexEquiv.symm) |>.trans ofLexEquiv.symm
+    |>.trans ((Equiv.refl _).sumCongr toLexEquiv) |>.trans toLexEquiv
   map_rel_iff' {a b} :=
       ⟨fun h =>
         match a, b, h with
@@ -698,7 +698,7 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm ⟨inr ⟨i
 
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
 def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ where
-  toEquiv := ofLexEquiv.trans <| (Equiv.sumComm α β).trans ofLexEquiv.symm
+  toEquiv := ofLexEquiv.trans <| (Equiv.sumComm α β).trans toLexEquiv
   map_rel_iff' := by
     rintro ⟨a | a⟩ ⟨b | b⟩
     · change toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
@@ -764,10 +764,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α where
-  toEquiv := (Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm ..).trans ofLexEquiv.symm
+  toEquiv := (Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm ..).trans toLexEquiv
   map_rel_iff' {a b} := by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      Equiv.sumComm_apply, swap, ofLexEquiv_symm_apply, Lex.toLex_le_toLex, le_refl]
+      Equiv.sumComm_apply, swap, toLexEquiv_apply, toLex_le_toLex, Std.le_refl]
     cases a <;> cases b
     · simp only [elim_inr, lex_inl_inl, bot_le]
     · simp only [elim_inr, elim_inl, Lex.sep, bot_le]
@@ -800,10 +800,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit where
-  toEquiv := (Equiv.optionEquivSumPUnit α).trans ofLexEquiv.symm
+  toEquiv := (Equiv.optionEquivSumPUnit α).trans toLexEquiv
   map_rel_iff' {a b} := by
     simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
-      ofLexEquiv_symm_apply, Lex.toLex_le_toLex, le_refl]
+      toLexEquiv_apply, toLex_le_toLex, Std.le_refl]
     cases a <;> cases b
     · simp only [lex_inr_inr, le_top]
     · simp only [lex_inr_inl, false_iff]

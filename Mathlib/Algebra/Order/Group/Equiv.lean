@@ -22,7 +22,7 @@ variable (α : Type*) [Mul α]
 /-- `toLex` as a `MulEquiv`. -/
 @[to_additive /-- `toLex` as an `AddEquiv`. -/]
 def toLexMulEquiv : α ≃* Lex α where
-  toEquiv := ofLexEquiv.symm
+  toEquiv := toLexEquiv
   map_mul' _ _ := by simp
 
 /-- `ofLex` as a `MulEquiv`. -/
@@ -44,7 +44,7 @@ lemma symm_toLexMulEquiv : (toLexMulEquiv α).symm = ofLexMulEquiv α := rfl
 lemma symm_ofLexMulEquiv : (ofLexMulEquiv α).symm = toLexMulEquiv α := rfl
 
 @[to_additive (attr := simp)]
-lemma toEquiv_toLexMulEquiv : (toLexMulEquiv α : α ≃ Lex α) = ofLexEquiv.symm := rfl
+lemma toEquiv_toLexMulEquiv : (toLexMulEquiv α : α ≃ Lex α) = toLexEquiv := rfl
 
 @[to_additive (attr := simp)]
 lemma toEquiv_ofLexMulEquiv : (ofLexMulEquiv α : Lex α ≃ α) = ofLexEquiv := rfl

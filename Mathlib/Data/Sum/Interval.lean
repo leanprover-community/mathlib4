@@ -327,7 +327,7 @@ namespace Lex
 
 open _root_.Lex
 
-local notation "toLexEmb" => ofLexEquiv.symm.toEmbedding
+local notation "toLexEmb" => toLexEquiv.toEmbedding
 
 section LocallyFiniteOrder
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]

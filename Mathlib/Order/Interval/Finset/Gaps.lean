@@ -52,7 +52,7 @@ namespace Finset
 variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) {k : ℕ} (h : #F = k) (a b : α)
   (j : ℕ)
 
-local notation "∗" => map ofLexEquiv.symm.toEmbedding
+local notation "∗" => map toLexEquiv.toEmbedding
 
 /-- We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (k - 1), y (k - 1))`.
 Then `F.intervalGapsWithin h a b i` is
