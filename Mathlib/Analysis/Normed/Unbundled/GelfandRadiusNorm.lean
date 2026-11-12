@@ -167,7 +167,7 @@ variable {K L M} in
 omit [Algebra L M] [IsScalarTower K L M] in
 /-- The Gelfand radius norm is invariant under algebra homomorphisms. -/
 @[simp]
-theorem gelfandRadiusNorm_map {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
+theorem gelfandRadiusNorm_map (f : F) (x : L) :
     gelfandRadiusNorm K M (f x) = gelfandRadiusNorm K L x :=
   let := (AlgHom.ofClass f).toAlgebra
   gelfandRadiusNorm_algebraMap K M x
@@ -285,8 +285,7 @@ variable {K L M} in
 omit [Algebra L M] [IsScalarTower K L M] in
 /-- The Gelfand radius norm is invariant under algebra homomorphisms. -/
 @[simp]
-theorem gelfandRadiusAlgNorm_map
-    {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
+theorem gelfandRadiusAlgNorm_map (f : F) (x : L) :
     gelfandRadiusAlgNorm K M (f x) = gelfandRadiusAlgNorm K L x :=
   gelfandRadiusNorm_map f x
 
