@@ -199,42 +199,36 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
   rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
   exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
 
-/-- Auxiliary statement for `ContinuousMap.continuous_prodMk` and
-`ContinuousMap.continuous_prodMk'`: the pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is
-continuous for the compact-open topologies, provided that for every `f : C(X, Y × Z)`, every
-compact set `K ⊆ X`, every `x ∈ K` and every neighbourhood `V` of `f x` there is a compact set `L`,
-which is a neighbourhood of `x` within `K`, such that `f` maps `L` into `V`. -/
-theorem continuous_prodMk_of_exists_mem_nhdsWithin_isCompact_mapsTo
-    (h : ∀ (f : C(X, Y × Z)) (K : Set X), IsCompact K → ∀ x ∈ K, ∀ V ∈ 𝓝 (f x),
-      ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V) :
+/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)`, `(f, g) ↦ f.prodMk g`, is continuous for the
+compact-open topologies, provided that `(K, Y × Z)` is a locally compact pair for every compact
+set `K ⊆ X`. -/
+theorem continuous_prodMk_of_locallyCompactPair
+    (h : ∀ K : Set X, IsCompact K → LocallyCompactPair K (Y × Z)) :
     Continuous fun p : C(X, Y) × C(X, Z) ↦ p.1.prodMk p.2 := by
   refine continuous_iff_continuousAt.2 fun ⟨f, F⟩ ↦ tendsto_nhds_compactOpen.2 fun K hK U hU H ↦ ?_
+  have := h K hK
   refine hK.induction_on (by simp [MapsTo]) (fun _ _ hst he ↦ he.mono fun _ hp ↦ hp.mono_left hst)
     (fun _ _ hs ht ↦ (hs.and ht).mono fun _ ↦ mapsTo_union.2) fun x hx ↦ ?_
   obtain ⟨V, W, hVo, hWo, hfV, hFW, hVWU⟩ := isOpen_prod_iff.mp hU (f x) (F x) (H hx)
-  obtain ⟨L, hL, hLc, hLVW⟩ :=
-    h (f.prodMk F) K hK x hx _ (prod_mem_nhds (hVo.mem_nhds hfV) (hWo.mem_nhds hFW))
+  obtain ⟨L, hL, hLc, hLVW⟩ := exists_mem_nhdsWithin_isCompact_mapsTo (f.prodMk F).continuous hx
+    (prod_mem_nhds (hVo.mem_nhds hfV) (hWo.mem_nhds hFW))
   exact ⟨L, hL, ((eventually_mapsTo hLc hVo fun _ hy ↦ (hLVW hy).1).prod_nhds
     (eventually_mapsTo hLc hWo fun _ hy ↦ (hLVW hy).2)).mono
     fun p hp y hy ↦ hVWU ⟨hp.1 hy, hp.2 hy⟩⟩
 
-/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is continuous for the compact-open
-topologies, provided that `Y` and `Z` are R₁ spaces (e.g., regular or Hausdorff spaces).
-In particular no local compactness of `X` is required. See `ContinuousMap.continuous_prodMk'`
-for the version with a hypothesis on `X` instead. -/
+/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)`, `(f, g) ↦ f.prodMk g`, is continuous for the
+compact-open topologies, provided that `Y` and `Z` are R₁ spaces. -/
 protected theorem continuous_prodMk [R1Space Y] [R1Space Z] :
     Continuous fun p : C(X, Y) × C(X, Z) ↦ p.1.prodMk p.2 :=
-  continuous_prodMk_of_exists_mem_nhdsWithin_isCompact_mapsTo fun f _ hK _ hx _ hV ↦
-    hK.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space f.continuous hx hV
+  continuous_prodMk_of_locallyCompactPair fun _ hK ↦
+    have := isCompact_iff_compactSpace.1 hK; inferInstance
 
-/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)` is continuous for the compact-open
-topologies, provided that `X` is an R₁ space (e.g., a Hausdorff space); no hypothesis on `Y` and
-`Z` is needed. See `ContinuousMap.continuous_prodMk` for the version with hypotheses on `Y` and `Z`
-instead. -/
+/-- The pairing map `C(X, Y) × C(X, Z) → C(X, Y × Z)`, `(f, g) ↦ f.prodMk g`, is continuous for the
+compact-open topologies, provided that `X` is an R₁ space. -/
 protected theorem continuous_prodMk' [R1Space X] :
     Continuous fun p : C(X, Y) × C(X, Z) ↦ p.1.prodMk p.2 :=
-  continuous_prodMk_of_exists_mem_nhdsWithin_isCompact_mapsTo fun f _ hK _ hx _ hV ↦
-    hK.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space' f.continuous hx hV
+  continuous_prodMk_of_locallyCompactPair fun _ hK ↦
+    have := isCompact_iff_compactSpace.1 hK; inferInstance
 
 variable (X Y Z) in
 /-- The homeomorphism `C(X, Y × Z) ≃ₜ C(X, Y) × C(X, Z)`, `f ↦ (fst ∘ f, snd ∘ f)`, with inverse

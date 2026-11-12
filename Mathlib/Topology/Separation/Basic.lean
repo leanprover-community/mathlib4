@@ -1161,18 +1161,6 @@ instance (priority := 900) {X Y : Type*} [TopologicalSpace X] [WeaklyLocallyComp
     let ⟨_K, hKc, hKx⟩ := exists_compact_mem_nhds _
     exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds hf hs hKc hKx
 
-/-- If `Y` is an R₁ space, `f : X → Y` is continuous, `K ⊆ X` is compact and `x ∈ K`, then every
-neighbourhood `V` of `f x` contains the image of a compact set `L` which is a neighbourhood of `x`
-within `K`. This generalises `exists_mem_nhds_isCompact_mapsTo_of_isCompact_mem_nhds`, which is the
-special case `K ∈ 𝓝 x`. See `IsCompact.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space'` for the
-version with a hypothesis on `X` instead of `Y`. -/
-theorem IsCompact.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space {X Y : Type*}
-    [TopologicalSpace X] [TopologicalSpace Y] [R1Space Y] {K : Set X} (hK : IsCompact K)
-    {f : X → Y} (hf : Continuous f) {x : X} (hx : x ∈ K) {V : Set Y} (hV : V ∈ 𝓝 (f x)) :
-    ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V :=
-  have := isCompact_iff_compactSpace.1 hK
-  exists_mem_nhdsWithin_isCompact_mapsTo hf hx hV
-
 /-- If a point in an R₁ space has a compact neighborhood,
 then it has a basis of compact closed neighborhoods. -/
 theorem IsCompact.isCompact_isClosed_basis_nhds {x : X} {L : Set X} (hLc : IsCompact L)
@@ -1220,18 +1208,6 @@ theorem exists_mem_nhds_isCompact_isClosed (x : X) : ∃ K ∈ 𝓝 x, IsCompact
 /-- A weakly locally compact R₁ space is locally compact. -/
 instance (priority := 80) WeaklyLocallyCompactSpace.locallyCompactSpace : LocallyCompactSpace X :=
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, h, _⟩ ↦ h
-
-/-- If `X` is an R₁ space, `f : X → Y` is continuous, `K ⊆ X` is compact and `x ∈ K`, then every
-neighbourhood `V` of `f x` contains the image of a compact set `L` which is a neighbourhood of `x`
-within `K`; no hypothesis on `Y` is needed. See
-`IsCompact.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space` for the version with a hypothesis on
-`Y` instead of `X`. -/
-theorem IsCompact.exists_mem_nhdsWithin_isCompact_mapsTo_of_r1Space' {X Y : Type*}
-    [TopologicalSpace X] [TopologicalSpace Y] [R1Space X] {K : Set X} (hK : IsCompact K)
-    {f : X → Y} (hf : Continuous f) {x : X} (hx : x ∈ K) {V : Set Y} (hV : V ∈ 𝓝 (f x)) :
-    ∃ L ∈ 𝓝[K] x, IsCompact L ∧ MapsTo f L V :=
-  have := isCompact_iff_compactSpace.1 hK
-  exists_mem_nhdsWithin_isCompact_mapsTo hf hx hV
 
 /-- In a weakly locally compact R₁ space,
 every compact set has an open neighborhood with compact closure. -/
