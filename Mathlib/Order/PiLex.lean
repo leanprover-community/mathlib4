@@ -88,10 +88,10 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) where
 instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) where
   lt x y := Pi.Lex (· > ·) (· < ·) x.ofColex y.ofColex
 
-@[deprecated "syntactic equality" (since := "2026-11-10")] alias toLex_apply := rfl
-@[deprecated "syntactic equality" (since := "2026-11-10")] alias ofLex_apply := rfl
-@[deprecated "syntactic equality" (since := "2026-11-10")] alias toColex_apply := rfl
-@[deprecated "syntactic equality" (since := "2026-11-10")] alias ofColex_apply := rfl
+@[deprecated "syntactic equality" (since := "2026-11-10")] alias toLex_apply := Iff.rfl
+@[deprecated "syntactic equality" (since := "2026-11-10")] alias ofLex_apply := Iff.rfl
+@[deprecated "syntactic equality" (since := "2026-11-10")] alias toColex_apply := Iff.rfl
+@[deprecated "syntactic equality" (since := "2026-11-10")] alias ofColex_apply := Iff.rfl
 
 theorem Lex.lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y : Lex (∀ i, β i)} :
     x < y ↔ x.ofLex default < y.ofLex default :=
