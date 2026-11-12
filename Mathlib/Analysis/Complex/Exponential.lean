@@ -153,9 +153,20 @@ lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p)
   rw [← Complex.exp_nsmul]
   ring_nf
 
-theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
-  | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
-  | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
+lemma exp_mul_natCast (x : ℂ) : ∀ n : ℕ, exp (x * n) = exp x ^ n
+  | 0 => by rw [Nat.cast_zero, mul_zero, exp_zero, pow_zero]
+  | n + 1 => by rw [pow_succ, Nat.cast_add_one, mul_add_one, exp_add, exp_mul_natCast x n]
+
+lemma exp_natCast_mul (n : ℕ) (x : ℂ) : exp (n * x) = exp x ^ n := by
+  rw [mul_comm, exp_mul_natCast]
+
+@[deprecated (since := "2026-11-12")] alias exp_nat_mul := exp_natCast_mul
+
+lemma exp_mul_ofNat (x : ℂ) (n : ℕ) [n.AtLeastTwo] : exp (x * ofNat(n)) = exp x ^ ofNat(n) :=
+  exp_mul_natCast ..
+
+lemma exp_ofNat_mul (n : ℕ) (x : ℂ) [n.AtLeastTwo] : exp (ofNat(n) * x) = exp x ^ ofNat(n) :=
+  exp_natCast_mul ..
 
 @[simp]
 theorem exp_ne_zero : exp x ≠ 0 := fun h =>
@@ -169,8 +180,8 @@ theorem exp_sub : exp (x - y) = exp x / exp y := by
 
 theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
   cases n
-  · simp [exp_nat_mul]
-  · simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
+  · simp [exp_natCast_mul]
+  · simp [exp_add, add_mul, pow_add, exp_neg, exp_natCast_mul]
 
 @[simp]
 theorem exp_conj : exp (conj x) = conj (exp x) := by
@@ -226,8 +237,19 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
-nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
-  ofReal_injective (by simp [exp_nat_mul])
+nonrec lemma exp_mul_natCast (x : ℝ) (n : ℕ) : exp (x * n) = exp x ^ n :=
+  ofReal_injective (by simp [exp_mul_natCast])
+
+lemma exp_natCast_mul (n : ℕ) (x : ℝ) : exp (n * x) = exp x ^ n := by
+  rw [mul_comm, exp_mul_natCast]
+
+@[deprecated (since := "2026-11-12")] alias exp_nat_mul := exp_natCast_mul
+
+lemma exp_ofNat_mul (x : ℝ) (n : ℕ) [n.AtLeastTwo] : exp (ofNat(n) * x) = exp x ^ ofNat(n) :=
+  exp_natCast_mul ..
+
+lemma exp_mul_ofNat (n : ℕ) (x : ℝ) [n.AtLeastTwo] : exp (x * ofNat(n)) = exp x ^ ofNat(n) :=
+  exp_mul_natCast ..
 
 @[simp]
 nonrec theorem exp_ne_zero : exp x ≠ 0 := fun h =>
@@ -644,7 +666,7 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
       gcongr
       · exact sub_nonneg.2 <| div_le_one_of_le₀ ht' n.cast_nonneg
       · exact one_sub_le_exp_neg _
-    _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
+    _ = rexp (-t) := by rw [← Real.exp_natCast_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
 lemma one_add_div_pow_le_exp {m : ℕ} {x : ℝ} (hx : -m ≤ x) : (1 + x / m) ^ m ≤ exp x := by
   simpa [neg_div, sub_neg_eq_add]
@@ -675,7 +697,7 @@ lemma sum_choose_le_exp_pow {d m : ℕ} (hdm : d ≤ m) :
         gcongr; grw [hdm, add_comm 1, add_pow]; congr! 1 with i; ring
     _ ≤ (m / d : ℝ) ^ d * exp 1 ^ d := by
         gcongr
-        simpa [← Real.exp_nat_mul]
+        simpa [← Real.exp_natCast_mul]
           using one_add_div_pow_le_exp ((neg_nonpos.2 m.cast_nonneg).trans d.cast_nonneg)
     _ = (exp 1 / d * m) ^ d := by ring
 
@@ -687,7 +709,7 @@ lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * 
 
 lemma exp_lt_two_add_div_two_sub {x : ℝ} (hx : 0 < x) (hx' : x < 2) :
     exp x < (2 + x) / (2 - x) := by calc
-  _ = exp (x / 2) ^ 2 := by grind [Real.exp_nat_mul (x / 2) 2]
+  _ = exp (x / 2) ^ 2 := by grind [Real.exp_natCast_mul (x / 2) 2]
   _ ≤ _ := by
     grw [Real.exp_bound' (x := x / 2) (by grind) (by grind) (n := 3) (by simp)]
     apply Real.exp_nonneg

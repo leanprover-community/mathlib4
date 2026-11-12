@@ -57,9 +57,9 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ
   convert geom_sum_mul (exp (k / n * π * I)) n using 1
   · simp_rw [sum_mul]
     congr! 1 with i hi
-    rw [← Complex.exp_nat_mul, ← Complex.exp_add]
+    rw [← Complex.exp_natCast_mul, ← Complex.exp_add]
     grind
-  · rw [← Complex.exp_nat_mul,
+  · rw [← Complex.exp_natCast_mul,
       show (n * (k / n * π * I)) = k * (π * I) by field [show (n : ℂ) ≠ 0 by aesop],
       Complex.exp_int_mul, Complex.exp_pi_mul_I]
 
@@ -98,7 +98,7 @@ theorem sumZeroes_T_of_not_dvd {n : ℕ} {k : ℤ} (hk : ¬ (2 * n : ℤ) ∣ k)
     Int.cast_neg, neg_div, neg_mul, neg_mul, Complex.exp_neg,
     neg_div, neg_mul, neg_mul, Complex.exp_neg, this, ← add_mul, mul_eq_zero_of_left]
   set z := exp (k / (2 * n) * π * I) with hz
-  have hz₂ : exp (k / n * π * I) = z ^ 2 := by rw [hz, ← Complex.exp_nat_mul]; grind
+  have hz₂ : exp (k / n * π * I) = z ^ 2 := by rw [hz, ← Complex.exp_natCast_mul]; grind
   rw [hz₂, ← inv_pow z 2]
   field [show z ≠ 0 by grind [Complex.exp_ne_zero],
     show (z ^ 2 - 1 ≠ 0) ∧ (1 - z ^ 2 ≠ 0) by grind [exp_sub_one_ne_zero]]

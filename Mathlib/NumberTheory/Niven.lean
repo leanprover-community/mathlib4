@@ -33,7 +33,7 @@ section IsIntegral
 namespace Complex
 
 lemma exp_rat_mul_pi_mul_I_pow_two_mul_den (q : ℚ) : exp (q * π * I) ^ (2 * q.den) = 1 := by
-  nth_rw 1 [← q.num_div_den, ← exp_nat_mul]
+  nth_rw 1 [← q.num_div_den, ← exp_natCast_mul]
   push_cast
   rw [show 2 * q.den * (q.num / q.den * π * I) = q.num * (2 * π * I) by field,
     exp_int_mul_two_pi_mul_I]

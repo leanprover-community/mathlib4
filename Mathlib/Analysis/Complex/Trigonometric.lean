@@ -540,7 +540,7 @@ theorem exp_ofReal_mul_I (x : ℝ) : exp (x * I) = Real.cos x + (Real.sin x) * I
 /-- **De Moivre's formula** -/
 theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
     (cos z + sin z * I) ^ n = cos (↑n * z) + sin (↑n * z) * I := by
-  rw [← exp_mul_I, ← exp_mul_I, ← exp_nat_mul, mul_assoc]
+  rw [← exp_mul_I, ← exp_mul_I, ← exp_natCast_mul, mul_assoc]
 
 open Finset
 
