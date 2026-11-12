@@ -160,8 +160,7 @@ lemma schwartz_zippel_sup_sum :
               (AddMonoidAlgebra.supDegree Lex.toLex p'.leadingCoeff).ofLex.cons k ∈ p.support := by
               rwa [← mem_support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
                 ← Polynomial.leadingCoeff, ← hpₖ, ← leadingCoeff_toLex,
-                AddMonoidAlgebra.leadingCoeff_ne_zero
-                  (show Lex.toLex.Injective from ofLexEquiv.symm.injective)]
+                AddMonoidAlgebra.leadingCoeff_ne_zero toLex_injective]
             simpa using monomial_le_degreeOf 0 this
     · rw [Finset.sup_add (support_nonempty.mpr hpₖ₀)]
       apply Finset.sup_le

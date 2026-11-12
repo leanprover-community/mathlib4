@@ -174,6 +174,8 @@ lemma esymmAlgHomMonomial_add {t s : Fin n →₀ ℕ} :
 lemma esymmAlgHom_zero : esymmAlgHomMonomial σ (0 : Fin n →₀ ℕ) r = C r := by
   rw [esymmAlgHomMonomial, monomial_zero', esymmAlgHom_apply, aeval_C, algebraMap_eq]
 
+open Lex
+
 private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
     supDegree toLex (esymm (Fin m) R (i + 1)) =
       toLex (Finsupp.indicator (Iic ⟨i, him⟩) fun _ _ ↦ 1) ∧
@@ -181,7 +183,7 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
   have := supDegree_leadingCoeff_sum_eq (D := toLex) (s := univ.powersetCard (i + 1))
     (i := Iic (⟨i, him⟩ : Fin m)) ?_ (f := fun s ↦ monomial (∑ j ∈ s, fun₀ | j => 1) (1 : R)) ?_
   · rwa [← esymm_eq_sum_monomial, ← Finsupp.indicator_eq_sum_single, ← single_eq_monomial,
-      supDegree_single_ne_zero _ one_ne_zero, leadingCoeff_single toLex.injective] at this
+      supDegree_single_ne_zero _ one_ne_zero, leadingCoeff_single toLex_injective] at this
   · exact mem_powersetCard.2 ⟨subset_univ _, Fin.card_Iic _⟩
   intro t ht hne
   have ht' : #t = #(Iic (⟨i, him⟩ : Fin m)) := by
@@ -192,7 +194,7 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
   simp_rw [← mem_sdiff] at hne
   have hkm := mem_sdiff.1 (min'_mem _ hne)
   refine ⟨min' _ hne, fun k hk ↦ ?_, ?_⟩
-  all_goals simp only [ofLex_toLex, Finsupp.indicator_apply]
+  all_goals simp only [Finsupp.indicator_apply]
   · have hki := mem_Iic.2 (hk.le.trans <| mem_Iic.1 hkm.1)
     rw [dite_eq_left hki, dite_eq_left]
     by_contra h
@@ -210,7 +212,7 @@ lemma monic_esymm {i : ℕ} (him : i ≤ m) : Monic toLex (esymm (Fin m) R i) :=
   cases i with
   | zero =>
     rw [esymm_zero]
-    exact monic_one toLex.injective
+    exact monic_one toLex_injective
   | succ i =>
     nontriviality R
     exact (supDegree_monic_esymm him).2
@@ -221,11 +223,10 @@ lemma leadingCoeff_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
   | zero => rw [esymmAlgHom_zero, leadingCoeff_toLex_C]
   | add_single i _ _ _ _ ih =>
     rw [esymmAlgHomMonomial_add, esymmAlgHomMonomial_single_one,
-        ((monic_esymm <| i.2.trans_le hnm).pow toLex_add toLex.injective).leadingCoeff_mul_eq_left,
+        ((monic_esymm <| i.2.trans_le hnm).pow toLex_add toLex_injective).leadingCoeff_mul_eq_left,
         ih]
-    exacts [toLex.injective, toLex_add]
+    exacts [toLex_injective, toLex_add]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
     ofLex (supDegree toLex <| esymmAlgHomMonomial (Fin m) t r) = accumulate n m t := by
   nontriviality R
@@ -234,13 +235,13 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
   | add_single i _ _ _ _ ih =>
     have := i.2.trans_le hnm
     rw [esymmAlgHomMonomial_add, esymmAlgHomMonomial_single_one,
-        Monic.supDegree_mul_of_ne_zero_left toLex.injective toLex_add, ofLex_add, Finsupp.coe_add,
-        ih, Finsupp.coe_add, map_add, Monic.supDegree_pow rfl toLex_add toLex.injective, ofLex_smul,
+        Monic.supDegree_mul_of_ne_zero_left toLex_injective toLex_add, ofLex_add, Finsupp.coe_add,
+        ih, Finsupp.coe_add, map_add, Monic.supDegree_pow rfl toLex_add toLex_injective, ofLex_smul,
         Finsupp.coe_smul, supDegree_esymm this, ← map_nsmul, ← Finsupp.coe_smul,
         Finsupp.smul_single, nsmul_one, Nat.cast_id]
     · exact monic_esymm this
-    · exact (monic_esymm this).pow toLex_add toLex.injective
-    · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_esymmAlgHomMonomial _ hnm]
+    · exact (monic_esymm this).pow toLex_add toLex_injective
+    · rwa [Ne, ← leadingCoeff_eq_zero toLex_injective, leadingCoeff_esymmAlgHomMonomial _ hnm]
 
 omit [Fintype σ] in
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
@@ -253,9 +254,9 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
   apply (le_sup (s := p.support) (f := toLex) _).not_gt
   pick_goal 3
   · rw [← hp (Equiv.swap i j), mem_support_iff, coeff_rename_mapDomain _ (Equiv.injective _)]
-    rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_toLex] at h0
+    rwa [Ne, ← leadingCoeff_eq_zero toLex_injective, leadingCoeff_toLex] at h0
   refine ⟨i, fun k hk ↦ ?_, ?_⟩
-  all_goals dsimp only [Pi.toLex_apply, ofLex_toLex]
+  all_goals dsimp only [ofLex_toLex]
   · conv_rhs => rw [← Equiv.swap_apply_of_ne_of_ne hk.ne (hk.trans_le hle).ne]
     rw [Finsupp.mapDomain_apply_of_injective (Equiv.injective _), supDegree]; rfl
   · apply hlt.trans_eq
@@ -268,6 +269,8 @@ section CommRing
 variable (R)
 variable [Fintype σ] [CommRing R]
 
+open Lex
+
 /- Also holds for a cancellative CommSemiring. -/
 lemma esymmAlgHom_fin_injective (h : n ≤ m) :
     Function.Injective (esymmAlgHom (Fin m) R n) := by
@@ -277,7 +280,7 @@ lemma esymmAlgHom_fin_injective (h : n ≤ m) :
     AddSubmonoidClass.coe_finsetSum]
   refine sum_ne_zero_of_injOn_supDegree (D := toLex) (support_nonempty.2 hp) (fun t ht ↦ ?_)
     (fun t ht s hs he ↦ DFunLike.ext' <| accumulate_injective h ?_)
-  · rw [← esymmAlgHomMonomial, Ne, ← leadingCoeff_eq_zero toLex.injective,
+  · rw [← esymmAlgHomMonomial, Ne, ← leadingCoeff_eq_zero toLex_injective,
       leadingCoeff_esymmAlgHomMonomial t h]
     rwa [mem_support_iff] at ht
   rw [mem_coe, mem_support_iff] at ht hs
@@ -304,10 +307,10 @@ lemma esymmAlgHom_fin_bijective (n : ℕ) :
       (esymmAlgHomMonomial _ t <| p.leadingCoeff toLex).supDegree toLex = p.supDegree toLex := by
     rw [← ofLex_inj, DFunLike.ext'_iff, supDegree_esymmAlgHomMonomial _ _ le_rfl]
     · exact accumulate_invAccumulate le_rfl hp.antitone_supDegree
-    · rwa [Ne, leadingCoeff_eq_zero toLex.injective]
+    · rwa [Ne, leadingCoeff_eq_zero toLex_injective]
   obtain he | hne := eq_or_ne p (esymmAlgHomMonomial _ t <| p.leadingCoeff toLex)
   · convert! AlgHom.mem_range_self _ (monomial t <| p.leadingCoeff toLex)
-  have := (supDegree_sub_lt_of_leadingCoeff_eq toLex.injective hd.symm ?_).resolve_right hne
+  have := (supDegree_sub_lt_of_leadingCoeff_eq toLex_injective hd.symm ?_).resolve_right hne
   · specialize ih _ this _ (Subalgebra.sub_mem _ hp <| isSymmetric_esymmAlgHomMonomial _ _) _ rfl
     · rwa [sub_ne_zero]
     convert ← Subalgebra.add_mem _ ih ⟨monomial t (p.leadingCoeff toLex), rfl⟩

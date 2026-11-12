@@ -132,7 +132,7 @@ lemma toColex_mono : Monotone (@toColex (Finset α)) :=
 /-- If `s ⊂ t`, then `s < t` in the colex order. Note the converse does not hold, as inclusion does
 not form a linear order. -/
 lemma toColex_strictMono : StrictMono (@toColex (Finset α)) :=
-  toColex_mono.strictMono_of_injective ofColexEquiv.symm.injective
+  toColex_mono.strictMono_of_injective toColex_injective
 
 /-- If `s ⊆ t`, then `s ≤ t` in the colex order. Note the converse does not hold, as inclusion does
 not form a linear order. -/
@@ -270,7 +270,7 @@ instance instLinearOrder : LinearOrder (Colex (Finset α)) where
     obtain rfl | hts := eq_or_ne t s
     · simp
     have ⟨a, ha, hamax⟩ := exists_max_image _ id
-      (symmDiff_nonempty.2 <| ofColexEquiv.injective.ne_iff.2 hts)
+      (symmDiff_nonempty.2 <| ofColex_injective.ne_iff.2 hts)
     simp_rw [mem_symmDiff] at ha hamax
     exact ha.imp (fun ha b hbs hbt ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inr ⟨hbs, hbt⟩⟩)
       (fun ha b hbt hbs ↦ ⟨a, ha.1, ha.2, hamax _ <| Or.inl ⟨hbt, hbs⟩⟩)

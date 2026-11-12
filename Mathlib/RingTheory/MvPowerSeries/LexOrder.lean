@@ -23,6 +23,8 @@ namespace MvPowerSeries
 variable {σ R : Type*}
 variable [Semiring R]
 
+open Lex
+
 section LexOrder
 
 open Finsupp
@@ -74,7 +76,7 @@ theorem coeff_ne_zero_of_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
   rcases hφ' with ⟨ne, hφ'⟩
   simp only [← h, WithTop.coe_eq_coe] at hφ'
   suffices toLex d ∈ toLex '' φ.support by
-    simp only [Set.mem_image_equiv, toLex_symm_eq, ofLex_toLex] at this
+    simp only [Set.mem_image, toLex.injEq, exists_eq_right] at this
     apply this
   rw [hφ']
   apply WellFounded.min_mem
@@ -86,7 +88,7 @@ theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ �
   · rcases lexOrder_def_of_ne_zero hφ with ⟨ne, hφ'⟩
     rw [hφ', WithTop.coe_lt_coe] at h
     by_contra h'
-    exact WellFounded.not_lt_min _ (toLex '' φ.support) (Set.mem_image_equiv.mpr h') h
+    exact WellFounded.not_lt_min _ (toLex '' φ.support) (by simpa) h
 
 theorem lexOrder_le_of_coeff_ne_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : coeff d φ ≠ 0) : lexOrder φ ≤ toLex d := by
@@ -124,7 +126,7 @@ theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
   rintro ⟨u, v⟩ h h'
   simp only [Finset.mem_antidiagonal] at h
   rcases trichotomy_of_add_eq_add (congrArg toLex h) with h'' | h'' | h''
-  · exact False.elim (h' (by simp [h''.1, h''.2]))
+  · exact False.elim (h' (by simpa using h''))
   · rw [coeff_eq_zero_of_lt_lexOrder (d := u), zero_mul]
     rw [hp]
     norm_cast

@@ -400,7 +400,7 @@ noncomputable def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦
         obtain ⟨k, rfl⟩ := himem
         refine Or.inl ⟨k, fun j hjk ↦ ?_, by simpa using hi⟩
         simpa using hj (f j) (f.lt_iff_lt.mpr hjk)
-      · exact Or.inr <| embDomain_injective.comp ofLexEquiv.injective heq
+      · exact Or.inr <| embDomain_injective.comp ofLex_injective heq
     · rintro (⟨i, hj, hi⟩ | rfl)
       · refine Or.inl ⟨f i, fun k hki ↦ ?_, by simpa using hi⟩
         by_cases hkmem : k ∈ Set.range f

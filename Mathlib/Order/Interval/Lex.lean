@@ -63,10 +63,10 @@ theorem toLex_strictMono [PartialOrder α] : StrictMono (toLex : NonemptyInterva
 
 instance [PartialOrder α] : PartialOrder (Lex (NonemptyInterval α)) := fast_instance%
   PartialOrder.lift (fun x ↦ toLex (ofLex x).toDualProd) <|
-    ofLexEquiv.symm.injective.comp <| toDualProd_injective.comp ofLexEquiv.injective
+    toLex_injective.comp <| toDualProd_injective.comp ofLex_injective
 
 instance [LinearOrder α] : LinearOrder (Lex (NonemptyInterval α)) := fast_instance%
   LinearOrder.lift' (fun x ↦ toLex (ofLex x).toDualProd) <|
-    ofLexEquiv.symm.injective.comp <| toDualProd_injective.comp ofLexEquiv.injective
+    toLex_injective.comp <| toDualProd_injective.comp ofLex_injective
 
 end NonemptyInterval

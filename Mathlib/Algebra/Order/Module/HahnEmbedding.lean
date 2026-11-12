@@ -345,8 +345,8 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
   · rw [seed.domain_baseEmbedding, ArchimedeanStrata.baseDomain,
       Submodule.mem_iSup_iff_exists_dfinsupp']
     use f'
-  apply_fun ofLex using ofLexEquiv.injective
-  rw [ofLex_toLex, LinearPMap.toFun_eq_coe]
+  apply ofLex_injective
+  rw [LinearPMap.toFun_eq_coe]
   ext d
   rw [seed.coeff_baseEmbedding rfl]
   unfold f'
@@ -406,8 +406,7 @@ theorem apply_of_mem_stratum {x : f.val.domain} {c : FiniteArchimedeanClass M}
   let fx : Π₀ c, seed.stratum c := DFinsupp.single c ⟨x.val, hx⟩
   have hfx : x.val = fx.sum fun c ↦ (seed.stratum c).subtype := by
     simp [fx, DFinsupp.sum_single_index]
-  apply_fun ofLex using ofLexEquiv.injective
-  rw [ofLex_toLex]
+  apply ofLex_injective
   ext d
   rw [seed.coeff_baseEmbedding hfx]
   unfold fx
@@ -809,8 +808,8 @@ theorem truncLT_eval_mem_range_extendFun [IsOrderedAddMonoid R] [Archimedean R] 
   · -- if `x` is isolated within c, truncating has no effect because the trailing coefficients
     -- are already 0
     refine ⟨⟨x, by simpa using Submodule.mem_sup_right (Submodule.mem_span_singleton_self x)⟩, ?_⟩
-    apply_fun ofLex using ofLexEquiv.injective
-    rw [ofLex_toLex, LinearPMap.toFun_eq_coe, LinearPMap.supSpanSingleton_apply_self]
+    apply ofLex_injective
+    rw [LinearPMap.toFun_eq_coe, LinearPMap.supSpanSingleton_apply_self]
     ext d
     obtain hdc | hdc := lt_or_ge d c
     · rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_lt hdc]
