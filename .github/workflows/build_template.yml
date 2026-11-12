@@ -1340,56 +1340,60 @@ jobs:
 
       # Check that each mathlib-ci commit that `.github/` pins is on mathlib-ci `master`.
       # A commit from a mathlib-ci PR branch or fork runs unreviewed code with mathlib4 secrets.
+      # The step also outputs the default commit of get-mathlib-ci as `sha`.
       - name: Check mathlib-ci pins
+        id: pins
         if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           level=warning; [ "$STRICT" = true ] && level=error
-          # `file:line:sha` for each `mathlib-ci/...@<sha>` and for the default ref of get-mathlib-ci.
-          pins=$({ grep -rnoE --include='*.yml' --include='*.yaml' 'leanprover-community/mathlib-ci[^@[:space:]]*@[0-9a-f]{40}' .github
-                   grep -HnoE 'default: [0-9a-f]{40}' .github/actions/get-mathlib-ci/action.yml
-                 } | sed -E 's/^([^:]*:[0-9]+):.*([0-9a-f]{40})$/\1:\2/')
-          echo "$pins"
           status=0
-          mapfile -t shas < <(cut -d: -f3 <<< "$pins" | sort -u)
-          for sha in "${shas[@]}"; do
-            result=$(gh api "repos/leanprover-community/mathlib-ci/compare/$sha...master" --jq .status) || result="unknown commit or API error"
-            case "$result" in ahead|identical) continue ;; esac
+          pin=
+          declare -A compared  # mathlib-ci commit -> its `compare` status against mathlib-ci master
+          # One `file:line:match` line for each `mathlib-ci...@<sha>` and for the default commit of
+          # get-mathlib-ci. Each match ends with the 40-hex commit.
+          while IFS=: read -r file line match; do
+            sha=${match: -40}
+            echo "$file:$line:$sha"
+            [[ "$match" = default:* ]] && pin=$sha
+            if [ -z "${compared[$sha]}" ]; then
+              compared[$sha]=$(gh api "repos/leanprover-community/mathlib-ci/compare/$sha...master" --jq .status) ||
+                compared[$sha]="unknown commit or API error"
+            fi
+            case "${compared[$sha]}" in ahead|identical) continue ;; esac
+            echo "::$level file=$file,line=$line::mathlib-ci commit $sha is not on mathlib-ci master (${compared[$sha]})."
             status=1
-            grep ":$sha\$" <<< "$pins" | while IFS=: read -r file line _; do
-              echo "::$level file=$file,line=$line::mathlib-ci commit $sha is not on mathlib-ci master ($result)."
-            done
-          done
+          done < <(grep -rnoE --include='*.yml' --include='*.yaml' 'leanprover-community/mathlib-ci[^@[:space:]]*@[0-9a-f]{40}' .github || true
+                   grep -HnoE 'default: [0-9a-f]{40}' .github/actions/get-mathlib-ci/action.yml)
+          if [ -n "$pin" ]; then
+            echo "sha=$pin" >> "$GITHUB_OUTPUT"
+          else
+            echo "::$level file=.github/actions/get-mathlib-ci/action.yml::get-mathlib-ci has no default commit."
+            status=1
+          fi
           [ "$level" = warning ] || exit "$status"
 
       # The paths are checked against the mathlib-ci commit that the PR pins in get-mathlib-ci,
       # because the workflows run the scripts at that commit.
-      - name: Read the mathlib-ci pin
-        id: pin
-        if: ${{ !cancelled() }}
-        run: |
-          sha=$(sed -nE 's/^ *default: ([0-9a-f]{40})$/\1/p' .github/actions/get-mathlib-ci/action.yml)
-          [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error file=.github/actions/get-mathlib-ci/action.yml::get-mathlib-ci has no default commit."; exit 1; }
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
       - name: Get mathlib-ci
         id: get_mathlib_ci
-        if: ${{ !cancelled() && steps.pin.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.pins.outputs.sha }}
         # On other runs a missing commit is only a warning, which "Check mathlib-ci pins" reports.
         continue-on-error: ${{ env.STRICT != 'true' }}
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
         with:
-          ref: ${{ steps.pin.outputs.sha }}
+          ref: ${{ steps.pins.outputs.sha }}
 
       - name: Check mathlib-ci usage in workflows
         if: ${{ !cancelled() && steps.get_mathlib_ci.outcome == 'success' }}
         env:
-          PIN: ${{ steps.pin.outputs.sha }}
+          PIN: ${{ steps.pins.outputs.sha }}
           CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
         run: |
           level=warning; [ "$STRICT" = true ] && level=error
-          findings=0
-          report() { echo "::$level file=$1,line=$2::$3"; findings=$((findings + 1)); }
+          status=0
+          report() { echo "::$level file=$1,line=$2::$3"; status=1; }
 
           # 1. Each literal `$CI_SCRIPTS_DIR/<path>` or `${CI_SCRIPTS_DIR}/<path>` with no `#` before it
           #    on its line names a file at the pinned commit. The check does not see paths that a
@@ -1398,19 +1402,20 @@ jobs:
             while read -r path; do
               [[ "/$path/" != */../* && -e "$CI_SCRIPTS_DIR/$path" ]] ||
                 report "$file" "$line" "The mathlib-ci scripts at $PIN have no file \`$path\`."
-            done < <(grep -oE '\$\{?CI_SCRIPTS_DIR\}?/[A-Za-z0-9._/-]+' <<< "$text" | cut -d/ -f2-)
+            done < <(grep -oE '\$\{?CI_SCRIPTS_DIR\}?/[A-Za-z0-9._/-]+' <<< "${text%%#*}" | cut -d/ -f2-)
           done < <(grep -rnE --include='*.yml' --include='*.yaml' '^[^#]*\$\{?CI_SCRIPTS_DIR\}?/' .github/workflows)
 
           # 2. No step checks out mathlib-ci with actions/checkout. Workflows use the local
-          #    get-mathlib-ci action, which holds the pin.
+          #    get-mathlib-ci action, which holds the pin. A file that yq cannot parse fails the step.
+          yq ea '.jobs[].steps[]?
+                 | select((.uses // "") | test("^actions/checkout@"))
+                 | select((.with.repository // "") | test("/mathlib-ci$"))
+                 | filename + ":" + (.with.repository | line | to_string)' .github/workflows/*.y*ml > "$RUNNER_TEMP/checkouts"
           while IFS=: read -r file line; do
             report "$file" "$line" "The step checks out mathlib-ci with actions/checkout.%0AHint: Use \`./workflow-actions/.github/actions/get-mathlib-ci\` instead."
-          done < <(yq ea '.jobs[].steps[]?
-                          | select((.uses // "") | test("^actions/checkout@"))
-                          | select((.with.repository // "") | test("/mathlib-ci$"))
-                          | filename + ":" + (.with.repository | line | to_string)' .github/workflows/*.y*ml)
+          done < "$RUNNER_TEMP/checkouts"
 
-          [ "$level" = warning ] || [ "$findings" = 0 ]
+          [ "$level" = warning ] || exit "$status"
 
   final:
     name: Post-CI job
