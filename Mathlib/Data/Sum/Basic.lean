@@ -51,13 +51,9 @@ section get
 
 variable {x : α ⊕ β}
 
-set_option backward.isDefEq.respectTransparency false in
-theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by
-  cases x <;> simp
+theorem eq_left_iff_getLeft_eq {a : α} : x = inl a ↔ ∃ h, x.getLeft h = a := by grind
 
-set_option backward.isDefEq.respectTransparency false in
-theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by
-  cases x <;> simp
+theorem eq_right_iff_getRight_eq {b : β} : x = inr b ↔ ∃ h, x.getRight h = b := by grind
 
 theorem getLeft_eq_getLeft? (h₁ : x.isLeft) (h₂ : x.getLeft?.isSome) :
     x.getLeft h₁ = x.getLeft?.get h₂ := by grind
