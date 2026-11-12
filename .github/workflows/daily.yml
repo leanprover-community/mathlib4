@@ -161,7 +161,7 @@ jobs:
           type: 'stream'
           topic: 'leanchecker failure'
           content: |
-            ❌ leanchecker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+            ❌ leanchecker [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.leanchecker_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
 
   check-aesop:
     runs-on: ubuntu-latest
@@ -249,7 +249,7 @@ jobs:
           type: 'stream'
           topic: 'AesopTest failure'
           content: |
-            ❌ AesopTest [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.aesop_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+            ❌ AesopTest [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.aesop_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
 
   check-mathlib_test_executable:
     runs-on: ubuntu-latest
@@ -337,7 +337,7 @@ jobs:
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
-            ❌ mathlib_test_executable [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+            ❌ mathlib_test_executable [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.mathlib_test_executable_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
 
   check-nanoda:
     runs-on: ubuntu-latest
@@ -467,4 +467,4 @@ jobs:
           type: 'stream'
           topic: 'nanoda failure'
           content: |
-            ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})
+            ❌ nanoda [${{ steps.get-status.outputs.job_conclusion }}](${{ steps.get-status.outputs.nanoda_url }}) on ${{ env.TESTED_REPO }}@${{ env.TESTED_SHA }} (ref: ${{ env.BRANCH_REF }})${{ matrix.branch_type == 'bump' && '. Fixes to the bump branch go through [downstream-lean4](https://github.com/leanprover/downstream-lean4).' || '' }}
