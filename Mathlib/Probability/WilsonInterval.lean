@@ -140,4 +140,65 @@ theorem wilson_contains (n x : ℕ) (z : ℝ) (hz : 0 ≤ z) (hx : x ≤ n) (hn 
   · unfold wilsonHi
     linarith [hb.2]
 
+
+/-- The lower Wilson endpoint is nonnegative: the interval never leaves `[0, 1]` below. -/
+theorem wilsonLo_nonneg (n x : ℕ) (z : ℝ) (hx : x ≤ n) (hn : 0 < n) :
+    0 ≤ wilsonLo n x z := by
+  have hN : (0 : ℝ) < (n : ℝ) := by exact_mod_cast hn
+  have hk : (0 : ℝ) < (n : ℝ) + z ^ 2 := by positivity
+  have hx' : (x : ℝ) ≤ (n : ℝ) := by exact_mod_cast hx
+  have hx0 : (0 : ℝ) ≤ (x : ℝ) := by positivity
+  have hNp : (0 : ℝ) ≤ (n : ℝ) - (x : ℝ) := by linarith
+  have hprod : (0 : ℝ) ≤ (x : ℝ) * ((n : ℝ) - (x : ℝ)) := mul_nonneg hx0 hNp
+  have hΔ : (0 : ℝ) ≤ (x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4 := by
+    have h1 : (0 : ℝ) ≤ (x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) := div_nonneg hprod hN.le
+    nlinarith [sq_nonneg z]
+  have hsq : z ^ 2 * ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4)
+      ≤ ((x : ℝ) + z ^ 2 / 2) ^ 2 := by
+    have hkey : (0 : ℝ) ≤ (x : ℝ) ^ 2 * ((n : ℝ) + z ^ 2) :=
+      mul_nonneg (sq_nonneg _) hk.le
+    field_simp
+    nlinarith [hkey]
+  have hle : z * Real.sqrt ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4)
+      ≤ (x : ℝ) + z ^ 2 / 2 := by
+    have hs : (z * Real.sqrt ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4)) ^ 2
+        ≤ ((x : ℝ) + z ^ 2 / 2) ^ 2 := by
+      rw [mul_pow, Real.sq_sqrt hΔ]
+      exact hsq
+    have habs := (sq_le_sq).mp hs
+    rwa [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)] at habs
+  unfold wilsonLo wilsonCenter wilsonHalf
+  exact div_nonneg (by linarith) hk.le
+
+/-- The upper Wilson endpoint is at most one. -/
+theorem wilsonHi_le_one (n x : ℕ) (z : ℝ) (hx : x ≤ n) (hn : 0 < n) :
+    wilsonHi n x z ≤ 1 := by
+  have hN : (0 : ℝ) < (n : ℝ) := by exact_mod_cast hn
+  have hk : (0 : ℝ) < (n : ℝ) + z ^ 2 := by positivity
+  have hx' : (x : ℝ) ≤ (n : ℝ) := by exact_mod_cast hx
+  have hx0 : (0 : ℝ) ≤ (x : ℝ) := by positivity
+  have hNp : (0 : ℝ) ≤ (n : ℝ) - (x : ℝ) := by linarith
+  have hprod : (0 : ℝ) ≤ ((n : ℝ) - (x : ℝ)) * (x : ℝ) := mul_nonneg hNp hx0
+  have hΔ : (0 : ℝ) ≤ (x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4 := by
+    have h1 : (0 : ℝ) ≤ (x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) :=
+      div_nonneg (mul_nonneg hx0 hNp) hN.le
+    nlinarith [sq_nonneg z]
+  have hsq : z ^ 2 * ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4)
+      ≤ (((n : ℝ) - (x : ℝ)) + z ^ 2 / 2) ^ 2 := by
+    have hkey : (0 : ℝ) ≤ ((n : ℝ) - (x : ℝ)) ^ 2 * ((n : ℝ) + z ^ 2) :=
+      mul_nonneg (sq_nonneg _) hk.le
+    field_simp
+    nlinarith [hkey]
+  have hle : z * Real.sqrt ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4)
+      ≤ ((n : ℝ) - (x : ℝ)) + z ^ 2 / 2 := by
+    have hs : (z * Real.sqrt ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4)) ^ 2
+        ≤ (((n : ℝ) - (x : ℝ)) + z ^ 2 / 2) ^ 2 := by
+      rw [mul_pow, Real.sq_sqrt hΔ]
+      exact hsq
+    have habs := (sq_le_sq).mp hs
+    rwa [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)] at habs
+  unfold wilsonHi wilsonCenter wilsonHalf
+  rw [div_le_one hk]
+  linarith
+
 end ProbabilityTheory
