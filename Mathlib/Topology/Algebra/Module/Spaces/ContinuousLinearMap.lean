@@ -481,6 +481,7 @@ def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
     continuous_snd.smul continuous_fst
   continuous_invFun := continuous_eval_const 1
 
+section smulRightL
 variable
   {𝕜 𝕜₂ S E F : Type*}
   [NontriviallyNormedField 𝕜]
@@ -528,6 +529,8 @@ def smulRightL : (E →L[𝕜] S) →L[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
 
 @[simp] lemma toLinearMap_smulRightL (c : E →L[𝕜] S) :
     (smulRightL 𝕜 𝕜₂ S E F c : F →L[𝕜₂] E →L[𝕜] F).toLinearMap = c.smulRightₗ := rfl
+
+end smulRightL
 
 end ContinuousLinearMap
 
