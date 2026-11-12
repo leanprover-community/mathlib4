@@ -97,8 +97,9 @@ partial def getHash (mod : Name) (sourceFile? : Option FilePath)
   let stt ← get
   if stt.depsMap.contains mod then return stt.hashMap[mod]?
   let some sourceFile ← sourceFile?.filterM (·.pathExists) | do
-    IO.println s!"Warning: the search path is missing the source file of {mod}. `cache` skips \
-      it and the cache modules that import it."
+    let sourceFile :=
+      sourceFile?.getD <| mkFilePath (mod.components.map toString) |>.addExtension "lean"
+    IO.println s!"Warning: {sourceFile} not found. Skipping all files that depend on it."
     modify fun stt => { stt with depsMap := stt.depsMap.insert mod #[] }
     return none
   let content ← IO.FS.readFile sourceFile
