@@ -7,6 +7,7 @@ module
 
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
+-- Only used by a deprecated theorem
 import Mathlib.Order.Cofinal
 
 /-!
