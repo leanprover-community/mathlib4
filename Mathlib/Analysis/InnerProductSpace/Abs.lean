@@ -149,9 +149,12 @@ theorem abs_id : |(.id ℂ E : E →L[ℂ] E)| = .id ℂ E :=
 protected theorem abs_one : |(1 : E →L[ℂ] E)| = 1 :=
   isPositive_one.abs_eq_self
 
-protected theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
-  rw [ContinuousLinearMap.abs_def, CFC.sqrt_eq_iff _ _ (adjoint_comp_self_nonneg (c • T))]
-  simp [mul_def, ← smul_assoc, Complex.mul_conj', map_smulₛₗ, sq]
+protected theorem abs_smul {𝕜 : Type*} [RCLike 𝕜] [InnerProductSpace 𝕜 F] [NormedAlgebra 𝕜 ℂ]
+    [IsScalarTower 𝕜 ℂ F] (c : 𝕜) (T : E →L[ℂ] F) :
+    |c • T| = ‖c‖ • |T| := by
+  rw [ContinuousLinearMap.abs_def, CFC.sqrt_eq_iff _ _ (c • T).adjoint_comp_self_nonneg,
+    ← algebraMap_smul ℂ c T]
+  simp [mul_def, ← smul_assoc, Complex.mul_conj', map_smulₛₗ, sq, -algebraMap_smul]
   norm_cast
 
 theorem abs_linearIsometry_comp {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℂ G]
