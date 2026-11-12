@@ -18,8 +18,8 @@ We gather results relating cyclotomic polynomials and `expand`.
 
 * `Polynomial.cyclotomic_expand_eq_cyclotomic_mul` : If `p` is a prime such that `¬ p ∣ n`, then
   `expand R p (cyclotomic n R) = (cyclotomic (n * p) R) * (cyclotomic n R)`.
-* `Polynomial.cyclotomic_expand_eq_cyclotomic` : If `p` is a prime such that `p ∣ n`, then
-  `expand R p (cyclotomic n R) = cyclotomic (p * n) R`.
+* `Polynomial.cyclotomic_expand_eq_cyclotomic` : If `m` is such that `m ∣ n`, then
+  `expand R m (cyclotomic n R) = cyclotomic (m * n) R`.
 * `Polynomial.cyclotomic_mul_prime_eq_pow_of_not_dvd` : If `R` is of characteristic `p` and
   `¬p ∣ n`, then `cyclotomic (n * p) R = (cyclotomic n R) ^ (p - 1)`.
 * `Polynomial.cyclotomic_mul_prime_dvd_eq_pow` : If `R` is of characteristic `p` and `p ∣ n`, then
@@ -82,48 +82,55 @@ lemma cyclotomic_six (R : Type*) [Ring R] : cyclotomic 6 R = X ^ 2 - X + 1 := by
   rw [show 6 = 2 * 3 by rfl, ← cyclotomic_expand_eq_cyclotomic_mul Nat.prime_three (by norm_num1)]
   simp; ring
 
-/-- If `p` is a prime such that `p ∣ n`, then
-`expand R p (cyclotomic n R) = cyclotomic (p * n) R`. -/
+/-- If `m` is a  natural number such that `m ∣ n`, then
+`expand R m (cyclotomic n R) = cyclotomic (m * n) R`. -/
 @[simp]
-theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p ∣ n) (R : Type*)
-    [CommRing R] : expand R p (cyclotomic n R) = cyclotomic (n * p) R := by
-  rcases n.eq_zero_or_pos with (rfl | hzero)
+theorem cyclotomic_expand_eq_cyclotomic {m n : ℕ} (hdiv : m ∣ n) (R : Type*)
+    [CommRing R] : expand R m (cyclotomic n R) = cyclotomic (n * m) R := by
+  rcases n.eq_zero_or_pos with rfl | hzero
   · simp
+  rcases m.eq_zero_or_pos with rfl | hm
+  · grind
   have := NeZero.of_pos hzero
-  suffices expand ℤ p (cyclotomic n ℤ) = cyclotomic (n * p) ℤ by
+  suffices expand ℤ m (cyclotomic n ℤ) = cyclotomic (n * m) ℤ by
     rw [← map_cyclotomic_int, ← map_expand, this, map_cyclotomic_int]
   refine eq_of_monic_of_dvd_of_natDegree_le (cyclotomic.monic _ ℤ)
-    ((cyclotomic.monic n ℤ).expand hp.pos) ?_ ?_
-  · have hpos := Nat.mul_pos hzero hp.pos
+    ((cyclotomic.monic n ℤ).expand hm) ?_ ?_
+  · have hpos := Nat.mul_pos hzero hm
     have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne.symm
     rw [cyclotomic_eq_minpoly hprim hpos]
     refine minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) ?_
     rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
-    convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
-    rw [Nat.mul_div_cancel _ hp.pos]
+    convert IsPrimitiveRoot.pow_of_dvd hprim hm.ne.symm (dvd_mul_left m n)
+    rw [Nat.mul_div_cancel _ hm]
   · rw [natDegree_expand, natDegree_cyclotomic, natDegree_cyclotomic, mul_comm n,
       Nat.totient_mul_of_dvd hdiv, mul_comm]
 
-/-- If the `p ^ n`th cyclotomic polynomial is irreducible, so is the `p ^ m`th, for `m ≤ n`. -/
-theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
-    [IsDomain R] {n m : ℕ} (hmn : m ≤ n) (h : Irreducible (cyclotomic (p ^ n) R)) :
-    Irreducible (cyclotomic (p ^ m) R) := by
-  rcases m.eq_zero_or_pos with (rfl | hm)
+/-- If the `r ^ n`th cyclotomic polynomial is irreducible, so is the `r ^ m`th, for `m ≤ n`. -/
+theorem cyclotomic_irreducible_pow_of_irreducible_pow {R} [CommRing R]
+    [IsDomain R] (r : ℕ) {n m : ℕ} (hmn : m ≤ n) (h : Irreducible (cyclotomic (r ^ n) R)) :
+    Irreducible (cyclotomic (r ^ m) R) := by
+  rcases eq_or_ne r 0 with rfl | hr
+  · rcases m.eq_zero_or_pos with rfl | hm
+    · simp only [pow_zero, cyclotomic_one]
+      simpa using irreducible_X_sub_C (1 : R)
+    · simp [zero_pow (n := n) (by grind)] at h
+  rcases m.eq_zero_or_pos with rfl | hm
   · simpa using irreducible_X_sub_C (1 : R)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   induction k with
   | zero => simpa using h
   | succ k hk =>
     have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
-    rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
-    exact hk (by lia) (of_irreducible_expand hp.ne_zero h)
+    rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic <| dvd_pow_self r this] at h
+    exact hk (by lia) (of_irreducible_expand hr h)
 
-/-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
-theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
-    [IsDomain R] {n : ℕ} (hn : n ≠ 0) (h : Irreducible (cyclotomic (p ^ n) R)) :
-    Irreducible (cyclotomic p R) :=
-  pow_one p ▸ cyclotomic_irreducible_pow_of_irreducible_pow hp hn.bot_lt h
+/-- If `Irreducible (cyclotomic (r ^ n) R)` then `Irreducible (cyclotomic m R).` -/
+theorem cyclotomic_irreducible_of_irreducible_pow {R} [CommRing R]
+    [IsDomain R] (r : ℕ) {n : ℕ} (hn : n ≠ 0) (h : Irreducible (cyclotomic (r ^ n) R)) :
+    Irreducible (cyclotomic r R) :=
+  pow_one r ▸ cyclotomic_irreducible_pow_of_irreducible_pow r hn.bot_lt h
 
 section CharP
 
@@ -150,7 +157,7 @@ theorem cyclotomic_mul_prime_dvd_eq_pow (R : Type*) {p n : ℕ} [hp : Fact (Nat.
     rw [← map_cyclotomic _ (algebraMap (ZMod p) R), ← map_cyclotomic _ (algebraMap (ZMod p) R),
       this, Polynomial.map_pow]
   rw [← ZMod.expand_card, ← map_cyclotomic_int n, ← map_expand,
-    cyclotomic_expand_eq_cyclotomic hp.out hn, map_cyclotomic]
+    cyclotomic_expand_eq_cyclotomic hn, map_cyclotomic]
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then
 `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`. -/
@@ -179,8 +186,8 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
     replace h := eq_zero_of_pow_eq_zero h
     rwa [← IsRoot.def, isRoot_cyclotomic_iff] at h
   · rw [← isRoot_cyclotomic_iff, IsRoot.def] at h
-    rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow,
-      h, zero_pow]
+    rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow, h,
+      zero_pow]
     exact Nat.sub_ne_zero_of_lt <| pow_right_strictMono₀ hp.out.one_lt <| Nat.pred_lt hk.ne'
 
 end CharP

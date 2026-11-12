@@ -362,12 +362,12 @@ theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
   refine Finsupp.prod_dvd_prod_of_subset_of_dvd hab' fun p _ => mul_dvd_mul ?_ dvd_rfl
   exact pow_dvd_pow p (tsub_le_tsub_right ((factorization_le_iff_dvd ha0 hb0).2 h p) 1)
 
-theorem totient_mul_of_dvd {p n : ℕ} (h : p ∣ n) :
-    (p * n).totient = p * n.totient := by
+theorem totient_mul_of_dvd {m n : ℕ} (h : m ∣ n) :
+    (m * n).totient = m * n.totient := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp
-  apply mul_left_cancel₀ (a := φ p) (by simp [ne_zero_of_dvd_ne_zero hn h])
-  grind [gcd_eq_left, totient_gcd_mul_totient_mul p n]
+  apply mul_left_cancel₀ (a := φ m) (by simp [ne_zero_of_dvd_ne_zero hn h])
+  grind [gcd_eq_left, totient_gcd_mul_totient_mul m n]
 
 @[deprecated (since := "2026-11-04")] alias totient_mul_of_prime_of_dvd := totient_mul_of_dvd
 
