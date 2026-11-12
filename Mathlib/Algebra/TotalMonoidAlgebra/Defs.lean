@@ -626,8 +626,8 @@ def curryRingEquiv [DecidableEq M] [DecidableEq N] : R⟦M × N⟧ ≃+* R⟦N�
   map_mul' x y := by
     ext m n
     suffices ∑ p ∈ mulAntidiagonal (m, n), x.coeff p.1 * y.coeff p.2 =
-      ∑ x_1 ∈ (mulAntidiagonal m).sigma fun a => mulAntidiagonal n,
-        x.coeff (x_1.fst.1, x_1.snd.1) * y.coeff (x_1.fst.2, x_1.snd.2) by
+      ∑ q ∈ (mulAntidiagonal m).sigma fun a => mulAntidiagonal n,
+        x.coeff (q.fst.1, q.snd.1) * y.coeff (q.fst.2, q.snd.2) by
           simpa [curryAddEquiv, coeff_mul, sum_sigma']
     refine sum_bij (fun p _ ↦ ⟨(p.1.1, p.2.1), (p.1.2, p.2.2)⟩) ?_ ?_ ?_ ?_
     all_goals intros; simp_all [Prod.ext_iff]
