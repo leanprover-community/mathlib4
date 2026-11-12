@@ -5,12 +5,13 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
 
+import Mathlib.Tactic.Basify.Attr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined
@@ -54,11 +55,11 @@ class LinearOrderedAddCommGroupWithTop (α : Type*)
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b c : α}
 
-@[simp]
+@[simp, basify_simp]
 theorem top_add (a : α) : ⊤ + a = ⊤ :=
   LinearOrderedAddCommMonoidWithTop.top_add' a
 
-@[simp]
+@[simp, basify_simp]
 theorem add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
 
@@ -66,10 +67,10 @@ theorem add_top (a : α) : a + ⊤ = ⊤ :=
   simpa using LinearOrderedAddCommMonoidWithTop.isAddLeftRegular_of_ne_top ha
 
 lemma add_left_injective_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ x + b) :=
-  (IsAddRegular.of_ne_top h).2
+  (IsAddRegular.of_ne_top h).right
 
 lemma add_right_injective_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ b + x) :=
-  (IsAddRegular.of_ne_top h).1
+  (IsAddRegular.of_ne_top h).left
 
 @[simp]
 lemma add_left_inj_of_ne_top (h : a ≠ ⊤) : b + a = c + a ↔ b = c :=
@@ -142,7 +143,7 @@ lemma neg_add_cancel_right_of_ne_top (hb : b ≠ ⊤) (a : α) : a + -b + b = a 
 
 instance : LinearOrderedAddCommMonoidWithTop α where
   top_add' := LinearOrderedAddCommGroupWithTop.top_add'
-  isAddLeftRegular_of_ne_top _a ha := (isAddUnit_iff.2 ha).isAddRegular.1
+  isAddLeftRegular_of_ne_top _a ha := (isAddUnit_iff.2 ha).isAddRegular.left
 
 lemma add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ := by simp [← isAddUnit_iff]
 

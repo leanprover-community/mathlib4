@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Kernel.Composition.CompProd
 
 /-!
@@ -99,14 +98,14 @@ lemma _root_.ProbabilityTheory.Kernel.compProd_apply_eq_compProd_sectR {γ : Typ
   ext s hs
   simp_rw [Kernel.compProd_apply hs, compProd_apply hs, Kernel.sectR_apply]
 
-lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map (fun x ↦ (x, x)) := by
+lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map Function.diag := by
   ext s hs
   rw [compProd_apply hs, map_apply (measurable_id.prod measurable_id) hs]
   have h_meas a : MeasurableSet (Prod.mk a ⁻¹' s) := measurable_prodMk_left hs
   simp_rw [Kernel.id_apply, dirac_apply' _ (h_meas _)]
   calc ∫⁻ a, (Prod.mk a ⁻¹' s).indicator 1 a ∂μ
-  _ = ∫⁻ a, ((fun x ↦ (x, x)) ⁻¹' s).indicator 1 a ∂μ := rfl
-  _ = μ ((fun x ↦ (x, x)) ⁻¹' s) := by
+  _ = ∫⁻ a, (Function.diag ⁻¹' s).indicator 1 a ∂μ := rfl
+  _ = μ (Function.diag ⁻¹' s) := by
     rw [lintegral_indicator_one]
     exact (measurable_id.prod measurable_id) hs
 
@@ -256,7 +255,7 @@ section AbsolutelyContinuous
 lemma AbsolutelyContinuous.compProd_left [SFinite ν] (hμν : μ ≪ ν) (κ : Kernel α β) :
     μ ⊗ₘ κ ≪ ν ⊗ₘ κ := by
   by_cases hκ : IsSFiniteKernel κ
-  · have : SFinite μ := sFinite_of_absolutelyContinuous hμν
+  · have : SFinite μ := sfinite_of_absolutelyContinuous hμν
     refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
     rw [Measure.compProd_apply hs, lintegral_eq_zero_iff (Kernel.measurable_kernel_prodMk_left hs)]
       at hs_zero ⊢
@@ -276,7 +275,7 @@ lemma AbsolutelyContinuous.compProd_right [SFinite μ] [IsSFiniteKernel η]
 lemma AbsolutelyContinuous.compProd [SFinite ν] [IsSFiniteKernel η]
     (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η :=
-  have : SFinite μ := sFinite_of_absolutelyContinuous hμν
+  have : SFinite μ := sfinite_of_absolutelyContinuous hμν
   (Measure.AbsolutelyContinuous.compProd_right hκη).trans (hμν.compProd_left _)
 
 lemma absolutelyContinuous_of_compProd [SFinite μ] [IsSFiniteKernel κ] [h_zero : ∀ a, NeZero (κ a)]

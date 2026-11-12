@@ -1,4 +1,8 @@
-import Mathlib.Util.TermReduce
+module
+
+public import Mathlib.Util.TermReduce
+
+@[expose] public section
 -- On command line, tests format functions with => rather than ↦ without this.
 set_option linter.style.setOption false
 set_option pp.unicode.fun true

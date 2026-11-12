@@ -23,7 +23,6 @@ when suitable coproducts exist).
 In particular, we construct an instance of `TotalComplexShape c c c` when `c : ComplexShape I`
 and `I` is an additive monoid equipped with a group homomorphism `ε' : Multiplicative I → ℤˣ`
 satisfying certain properties (see `ComplexShape.TensorSigns`).
-
 -/
 
 @[expose] public section
@@ -343,7 +342,6 @@ lemma σ_ε₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
     σ c₁ c₂ c₁₂ i₁ i₂ * ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ε₁ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ c₁ c₂ c₁₂ i₁ i₂' :=
   TotalComplexShapeSymmetry.σ_ε₂ i₁ h₂
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simps]
 instance : TotalComplexShapeSymmetry (up ℤ) (up ℤ) (up ℤ) where
   symm p q := add_comm q p

@@ -6,16 +6,11 @@ Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
 module
 
+public import Mathlib.Basic.SProd
 public import Mathlib.Data.Set.CoeSort
-public import Mathlib.Data.SProd
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Push.Attr
-
-import Mathlib.Tactic.Attr.Register
-import Aesop.BuiltinRules
-import Aesop.Frontend.Tactic
-import Aesop.Main
+public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Basic definitions about sets
@@ -219,6 +214,7 @@ lemma Subtype.range_coind (f : α → β) {p : β → Prop} (h : ∀ (a : α), p
 section Prod
 
 /-- The Cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
+@[wikidata Q173740]
 def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 ∈ t}
 
 @[default_instance]
@@ -241,13 +237,15 @@ theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 
+attribute [local grind norm] Prod.forall in
 theorem prod_image_left (f : α → γ) (s : Set α) (t : Set β) :
     (f '' s) ×ˢ t = (fun x ↦ (f x.1, x.2)) '' s ×ˢ t := by
-  aesop
+  grind
 
+attribute [local grind norm] Prod.forall in
 theorem prod_image_right (f : α → γ) (s : Set α) (t : Set β) :
     t ×ˢ (f '' s) = (fun x ↦ (x.1, f x.2)) '' t ×ˢ s := by
-  aesop
+  grind
 
 end Prod
 

@@ -5,7 +5,6 @@ Authors: Reid Barton, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Topology.Separation.Regular
 
 /-!
@@ -101,14 +100,14 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
   have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
     apply Subset.antisymm (subset_univ _)
-    · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
-      apply union_subset_union_right sᶜ us
+    simp_rw [← compl_union_self s, Option.elim', iUnion_option]
+    apply union_subset_union_right sᶜ us
   rcases precise_refinement (Option.elim' sᶜ u) (Option.forall.2 ⟨isOpen_compl_iff.2 hs, uo⟩)
       uc with
     ⟨v, vo, vc, vf, vu⟩
   refine ⟨v ∘ some, fun i ↦ vo _, ?_, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
-  · simp only [iUnion_option, ← compl_subset_iff_union] at vc
-    exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
+  simp only [iUnion_option, ← compl_subset_iff_union] at vc
+  exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 
 theorem ParacompactSpace.of_hasBasis {ι : X → Sort*} {p : ∀ x, ι x → Prop} {s : ∀ x, ι x → Set X}
     (hb : ∀ x, (𝓝 x).HasBasis (p x) (s x))
@@ -293,11 +292,11 @@ instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLoc
     ⟨β, c, t, hto, htc, htf⟩
   exact ⟨β, t, fun x ↦ (hto x).1.2, htc, htf, fun b ↦ ⟨i <| c b, (hto b).2⟩⟩
 
-/-- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
+/-- **Dieudonné's theorem**: a paracompact R₁ space is normal.
 Formalization is based on the proof
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
-instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [ParacompactSpace X] :
-    T4Space X := by
+instance (priority := 100) NormalSpace.of_paracompactSpace_r1Space
+    [R1Space X] [ParacompactSpace X] : NormalSpace X := by
   -- First we show how to go from points to a set on one side.
   have : ∀ s t : Set X, IsClosed s →
       (∀ x ∈ s, ∃ u v, IsOpen u ∧ IsOpen v ∧ x ∈ u ∧ t ⊆ v ∧ Disjoint u v) →
@@ -318,6 +317,6 @@ instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [Para
   refine { normal := fun s t hs ht hst ↦ this s t hs fun x hx ↦ ?_ }
   rcases this t {x} ht fun y hy ↦ (by
     simp_rw [singleton_subset_iff]
-    exact t2_separation (hst.symm.ne_of_mem hy hx))
+    exact r1_separation <| ht.not_inseparable hy <| hst.notMem_of_mem_left hx)
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩

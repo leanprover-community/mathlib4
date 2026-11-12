@@ -5,9 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Option
 public import Mathlib.Analysis.BoxIntegral.Box.Basic
-public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`
@@ -323,16 +321,16 @@ def biUnionIndex (πi : ∀ (J : Box ι), Prepartition J) (J : Box ι) : Box ι 
   if hJ : J ∈ π.biUnion πi then (π.mem_biUnion.1 hJ).choose else I
 
 theorem biUnionIndex_mem (hJ : J ∈ π.biUnion πi) : π.biUnionIndex πi J ∈ π := by
-  rw [biUnionIndex, dif_pos hJ]
+  rw [biUnionIndex, dite_eq_left hJ]
   exact (π.mem_biUnion.1 hJ).choose_spec.1
 
 theorem biUnionIndex_le (πi : ∀ J, Prepartition J) (J : Box ι) : π.biUnionIndex πi J ≤ I := by
   by_cases hJ : J ∈ π.biUnion πi
   · exact π.le_of_mem (π.biUnionIndex_mem hJ)
-  · rw [biUnionIndex, dif_neg hJ]
+  · rw [biUnionIndex, dite_eq_right hJ]
 
 theorem mem_biUnionIndex (hJ : J ∈ π.biUnion πi) : J ∈ πi (π.biUnionIndex πi J) := by
-  convert! (π.mem_biUnion.1 hJ).choose_spec.2 <;> exact dif_pos hJ
+  convert! (π.mem_biUnion.1 hJ).choose_spec.2 <;> exact dite_eq_left hJ
 
 theorem le_biUnionIndex (hJ : J ∈ π.biUnion πi) : J ≤ π.biUnionIndex πi J :=
   le_of_mem _ (π.mem_biUnionIndex hJ)
@@ -559,7 +557,7 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (@Set.biUnion_sdiff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
   · simp +contextual
   · rw [Set.PairwiseDisjoint]
-    convert! π.pairwiseDisjoint
+    convert π.pairwiseDisjoint
     rw [Set.union_eq_left, filter_boxes, coe_filter]
     exact fun _ ⟨h, _⟩ => h
 

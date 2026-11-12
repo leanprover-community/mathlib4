@@ -5,10 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.FieldTheory.Finiteness
-public import Mathlib.Geometry.Manifold.Diffeomorph
-public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
+
+import Mathlib.FieldTheory.Finiteness
 
 /-!
 # Whitney embedding theorem
@@ -54,7 +53,7 @@ variable [T2Space M] [Fintype ι] {s : Set M} (f : SmoothBumpCovering ι I M s)
 def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × ℝ⟯ where
   val x i := (f i x • extChartAt I (f.c i) x, f i x)
   property :=
-    contMDiff_pi_space.2 fun i =>
+    contMDiff_pi_module_iff.2 fun i =>
       ((f i).contMDiff_smul contMDiffOn_extChartAt).prodMk_space (f i).contMDiff
 
 @[local simp]

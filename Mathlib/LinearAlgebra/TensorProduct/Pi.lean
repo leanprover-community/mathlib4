@@ -5,11 +5,10 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
-
 # Tensor product and products
 
 In this file we examine the behaviour of the tensor product with arbitrary and finite products.
@@ -25,7 +24,6 @@ and it is packaged as `TensorProduct.piRight`. Also a special case for when `M�
 ## Notes
 
 See `Mathlib/LinearAlgebra/TensorProduct/Prod.lean` for binary products.
-
 -/
 
 @[expose] public section
@@ -89,7 +87,7 @@ private lemma piRightInv_single (x : N) (i : ι) (m : M i) :
 
 /-- Tensor product commutes with finite products on the right. -/
 def piRight : N ⊗[R] (∀ i, M i) ≃ₗ[S] ∀ i, N ⊗[R] M i :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (piRightHom R S N M)
     (piRightInv R S N M)
     (by ext i x m j; simp [tmul_single])
@@ -161,7 +159,7 @@ private lemma piScalarRightInv_single (x : N) (i : ι) :
 /-- For any `R`-module `N` and finite index type `ι`, `N ⊗[R] (ι → R)` is canonically
 isomorphic to `ι → N`. -/
 def piScalarRight : N ⊗[R] (ι → R) ≃ₗ[S] (ι → N) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (piScalarRightHom R S N ι)
     (piScalarRightInv R S N ι)
     (by ext i x j; simp [Pi.single_apply])

@@ -5,10 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise star operation on sets
@@ -83,9 +83,12 @@ theorem iUnion_star {ι : Sort*} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆
 @[simp]
 theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 
-@[simp]
-instance [InvolutiveStar α] : InvolutiveStar (Set α) where
+/-- Pointwise star on sets is involutive in scope `Pointwise`. -/
+@[instance_reducible, simp]
+def instInvolutiveStar [InvolutiveStar α] : InvolutiveStar (Set α) where
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
+
+scoped [Pointwise] attribute [instance] Set.instInvolutiveStar
 
 @[simp]
 theorem star_subset_star [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t⋆ ↔ s ⊆ t :=
@@ -126,8 +129,24 @@ protected theorem star_inv' [GroupWithZero α] [StarMul α] (s : Set α) : s⁻�
 
 end Set
 
+open scoped Pointwise in
 @[simp]
 lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
   ext
   simpa using star_mem_iff
+
+namespace Set.Pairwise
+
+open scoped Pointwise
+
+@[simp]
+lemma commute_star_iff {α : Type*} [Mul α] [StarMul α] {s : Set α} :
+    (star s).Pairwise Commute ↔ s.Pairwise Commute := by
+  simp only [Set.Pairwise]
+  conv_rhs => simp +singlePass only [star_involutive.surjective.forall]
+  simp
+
+alias ⟨commute_of_star, commute_star⟩ := commute_star_iff
+
+end Set.Pairwise

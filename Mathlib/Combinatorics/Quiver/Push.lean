@@ -8,12 +8,10 @@ module
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 
 /-!
-
 # Pushing a quiver structure along a map
 
 Given a map `σ : V → W` and a `Quiver` instance on `V`, this file defines a `Quiver` instance
 on `W` by associating to each arrow `v ⟶ v'` in `V` an arrow `σ v ⟶ σ v'` in `W`.
-
 -/
 
 @[expose] public section
@@ -65,7 +63,6 @@ noncomputable def lift : Push σ ⥤q W' where
 theorem lift_obj : (lift σ φ τ h).obj = τ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lift_comp : (of σ ⋙q lift σ φ τ h) = φ := by
   fapply Prefunctor.ext
   · rintro X

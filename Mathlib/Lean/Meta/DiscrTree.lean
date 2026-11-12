@@ -5,13 +5,19 @@ Authors: Kim Morrison
 -/
 module
 
+public import Lean.Meta.Basic
+public import Lean.Meta.DiscrTree.Main
+public import Lean.Meta.DiscrTree.Types
 public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additions to `Lean.Meta.DiscrTree`
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Meta.DiscrTree
 

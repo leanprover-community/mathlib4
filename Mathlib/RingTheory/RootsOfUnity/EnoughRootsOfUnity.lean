@@ -30,9 +30,11 @@ class HasEnoughRootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) where
 
 namespace HasEnoughRootsOfUnity
 
-lemma exists_primitiveRoot (M : Type*) [CommMonoid M] (n : ℕ) [HasEnoughRootsOfUnity M n] :
+lemma exists_isPrimitiveRoot (M : Type*) [CommMonoid M] (n : ℕ) [HasEnoughRootsOfUnity M n] :
     ∃ ζ : M, IsPrimitiveRoot ζ n :=
   HasEnoughRootsOfUnity.prim
+
+@[deprecated (since := "2026-09-28")] alias exists_primitiveRoot := exists_isPrimitiveRoot
 
 instance rootsOfUnity_isCyclic (M : Type*) [CommMonoid M] (n : ℕ) [HasEnoughRootsOfUnity M n] :
     IsCyclic (rootsOfUnity n M) :=
@@ -43,7 +45,7 @@ lemma of_dvd (M : Type*) [CommMonoid M] {m n : ℕ} [NeZero n] (hmn : m ∣ n)
     [HasEnoughRootsOfUnity M n] :
     HasEnoughRootsOfUnity M m where
   prim :=
-    have ⟨ζ, hζ⟩ := exists_primitiveRoot M n
+    have ⟨ζ, hζ⟩ := exists_isPrimitiveRoot M n
     have ⟨k, hk⟩ := hmn
     ⟨ζ ^ k, IsPrimitiveRoot.pow (NeZero.pos n) hζ (mul_comm m k ▸ hk)⟩
   cyc := Subgroup.isCyclic_of_le <| rootsOfUnity_le_of_dvd hmn
@@ -67,7 +69,7 @@ in `M` (is cyclic and) has order `n`. -/
 lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     [HasEnoughRootsOfUnity M n] :
     Nat.card (rootsOfUnity n M) = n := by
-  obtain ⟨ζ, h⟩ := exists_primitiveRoot M n
+  obtain ⟨ζ, h⟩ := exists_isPrimitiveRoot M n
   rw [← IsCyclic.exponent_eq_card]
   refine dvd_antisymm ?_ ?_
   · exact Monoid.exponent_dvd_of_forall_pow_eq_one fun g ↦ OneMemClass.coe_eq_one.mp g.prop

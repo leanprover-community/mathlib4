@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Filter.Pointwise
 
 /-!
 # Tangent cone
@@ -35,7 +35,7 @@ prove here.
 
 @[expose] public section
 
-open Filter Set Metric
+open Filter Set
 open scoped Topology Pointwise
 
 universe u v
@@ -63,8 +63,10 @@ In a space with first countable topology,
 one can assume that the index type is `ℕ` and the filter is `atTop`,
 but the definition we use is more useful without that assumption.
 -/
-irreducible_def tangentConeAt (s : Set E) (x : E) : Set E :=
+@[no_expose] def tangentConeAt (s : Set E) (x : E) : Set E :=
   {y : E | ClusterPt y ((⊤ : Filter R) • 𝓝[(x + ·) ⁻¹' s] 0)}
+
+alias tangentConeAt_def := tangentConeAt.eq_def
 
 variable {R}
 
@@ -85,7 +87,6 @@ theorem mem_tangentConeAt_of_frequently {α : Type*} (l : Filter α) (c : α →
     (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x := by
   suffices Tendsto (fun n ↦ c n • d n) (l ⊓ 𝓟 {y | x + d y ∈ s}) (⊤ • 𝓝[(x + ·) ⁻¹' s] 0) by
     rw [frequently_iff_neBot] at hds
-    rw [tangentConeAt_def]
     exact ClusterPt.mono (hcd.mono_left inf_le_left).mapClusterPt this
   rw [← map₂_smul, ← map_prod_eq_map₂]
   refine tendsto_map.comp (tendsto_top.prodMk (tendsto_nhdsWithin_iff.mpr ⟨?_, ?_⟩))

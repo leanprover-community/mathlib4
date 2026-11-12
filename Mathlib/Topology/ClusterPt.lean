@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Neighborhoods
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on cluster and accumulation points
 
@@ -20,7 +23,9 @@ In particular the notion of cluster point of a sequence `u` is `MapClusterPt x a
 
 public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v w
 

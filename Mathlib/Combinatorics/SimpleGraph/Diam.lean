@@ -25,7 +25,6 @@ This module defines the eccentricity of vertices, the diameter, and the radius o
 - `SimpleGraph.radius`: the graph radius, which is the minimum eccentricity. It is `ℕ∞`-valued.
 
 - `SimpleGraph.center`: the set of vertices with eccentricity equal to the graph's radius.
-
 -/
 
 @[expose] public section
@@ -313,6 +312,9 @@ lemma diam_bot : (⊥ : SimpleGraph α).diam = 0 := by
 @[simp]
 lemma diam_top [Nontrivial α] : (⊤ : SimpleGraph α).diam = 1 := by
   rw [diam, ediam_top, ENat.toNat_one]
+
+lemma natCast_diam_eq_ediam_iff : G.diam = G.ediam ↔ G.ediam ≠ ⊤ :=
+  ENat.natCast_toNat_eq_self
 
 @[simp]
 lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by

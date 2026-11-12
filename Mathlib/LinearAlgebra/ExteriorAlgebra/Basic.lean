@@ -5,8 +5,8 @@ Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.Order.Hom.PowersetCard
 
 /-!
@@ -287,7 +287,7 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
           rw [hfxy, ← Fin.succ_pred y (ne_of_lt h).symm]
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
-        · convert! mul_zero (ι R (f 0))
+        · convert mul_zero (ι R (f 0))
           refine
             hn
               (fun i => f <| Fin.succ i) (x.pred hx)
@@ -391,6 +391,29 @@ lemma ιMulti_family_mul_of_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v 
   · rw [← Fin.natAdd_subNat_cast hi, Fin.append_right, OrderIso.apply_symm_apply,
       finSumFinEquiv_symm_apply_natAdd]
     aesop
+
+section anticomm
+
+lemma ι_mul_ιMulti_anticomm {j : ℕ} (z : M) (v : Fin j → M) :
+    ι R z * ιMulti R j v = ((-1 : ℤˣ) ^ j) • (ιMulti R j v * ι R z) := by
+  induction j with
+  | zero => simp
+  | succ j ih =>
+    have hzw : ι R z * ι R (v 0) = -(ι R (v 0) * ι R z) :=
+      eq_neg_of_add_eq_zero_left (ι_add_mul_swap z (v 0))
+    rw [ιMulti_succ_apply, ← mul_assoc, hzw, neg_mul, mul_assoc, ih (Matrix.vecTail v),
+      mul_smul_comm, uzpow_add, uzpow_one, mul_smul, Units.neg_smul, one_smul, smul_neg,
+      mul_assoc]
+
+lemma ιMulti_mul_ιMulti_anticomm {i j : ℕ} (u : Fin i → M) (v : Fin j → M) :
+    ιMulti R i u * ιMulti R j v = ((-1 : ℤˣ) ^ (j * i)) • (ιMulti R j v * ιMulti R i u) := by
+  induction i with
+  | zero => simp
+  | succ i ih =>
+    rw [ιMulti_succ_apply, mul_assoc, ih (Matrix.vecTail u), mul_smul_comm, ← mul_assoc,
+      ι_mul_ιMulti_anticomm, smul_mul_assoc, smul_smul, ← uzpow_add, Nat.mul_succ, mul_assoc]
+
+end anticomm
 
 variable {R}
 

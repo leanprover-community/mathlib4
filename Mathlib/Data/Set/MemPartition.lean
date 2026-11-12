@@ -29,7 +29,6 @@ The partition `memPartition f (n + 1)` is finer than `memPartition f n`.
 * `disjoint_memPartition`: the sets in `memPartition f n` are disjoint
 * `sUnion_memPartition`: the union of the sets in `memPartition f n` is `univ`
 * `finite_memPartition`: `memPartition f n` is finite
-
 -/
 
 @[expose] public section
@@ -110,7 +109,9 @@ instance instFintype_memPartition (f : ℕ → Set α) (n : ℕ) : Fintype (memP
 
 open scoped Classical in
 /-- The set in `memPartition f n` to which `a : α` belongs. -/
-def memPartitionSet (f : ℕ → Set α) : ℕ → α → Set α
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def memPartitionSet (f : ℕ → Set α) : ℕ → α → Set α
   | 0 => fun _ ↦ univ
   | n + 1 => fun a ↦ if a ∈ f n then memPartitionSet f n a ∩ f n else memPartitionSet f n a \ f n
 

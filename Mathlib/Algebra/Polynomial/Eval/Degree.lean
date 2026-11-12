@@ -14,14 +14,13 @@ public import Mathlib.Algebra.Polynomial.Eval.Coeff
 # Evaluation of polynomials and degrees
 
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.degree`.
-
 -/
 
 @[expose] public section
 
 noncomputable section
 
-open Finset AddMonoidAlgebra
+open AddMonoidAlgebra Finset
 
 open Polynomial
 
@@ -29,7 +28,7 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v} {a b : R} {m n : ℕ}
 
 section Semiring
 
@@ -90,7 +89,7 @@ section Comp
 theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     coeff (p.comp q) (natDegree p * natDegree q) =
     leadingCoeff p * leadingCoeff q ^ natDegree p := by
-  rw [comp, eval₂_def, coeff_sum]
+  rw [comp, eval₂_eq_sum, coeff_sum]
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
   case h₂ =>
     simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
@@ -108,15 +107,15 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     (p.comp <| C r * X).coeff n = p.coeff n * r ^ n := by
   simp_rw [comp, eval₂_eq_sum_range, (commute_X _).symm.mul_pow,
     ← C_pow, finsetSum_coeff, coeff_C_mul, coeff_X_pow]
-  rw [Finset.sum_eq_single n _ fun h ↦ ?_, if_pos rfl, mul_one]
-  · intro b _ h; simp_rw [if_neg h.symm, mul_zero]
+  rw [Finset.sum_eq_single n _ fun h ↦ ?_, ite_eq_left rfl, mul_one]
+  · intro b _ h; simp_rw [ite_eq_right h.symm, mul_zero]
   · rw [coeff_eq_zero_of_natDegree_lt, zero_mul]
     rwa [Finset.mem_range_succ_iff, not_le] at h
 
 lemma comp_C_mul_X_eq_zero_iff {r : R} (hr : r ∈ nonZeroDivisors R) :
     p.comp (C r * X) = 0 ↔ p = 0 := by
-  simp_rw [ext_iff]
-  refine forall_congr' fun n ↦ ?_
+  simp_rw [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
+  congr! 1 with n
   rw [comp_C_mul_X_coeff, coeff_zero, mul_right_mem_nonZeroDivisors_eq_zero_iff (pow_mem hr _)]
 
 end Comp
@@ -129,8 +128,8 @@ variable (f) in
 /-- If `R` and `S` are isomorphic, then so are their polynomial rings. -/
 @[simps!]
 def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
-  RingEquiv.ofRingHom (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
-    (by ext; simp)
+  RingEquiv.ofRingHom (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by simp)
+    (by simp)
 
 theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
   ⟨fun hfp x =>
@@ -138,7 +137,7 @@ theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
       f x = f x * f p.leadingCoeff := by simp only [mul_one, hp.leadingCoeff, f.map_one]
       _ = f x * (p.map f).coeff p.natDegree := congr_arg _ (coeff_map _ _).symm
       _ = 0 := by simp only [hfp, mul_zero, coeff_zero],
-    fun h => ext fun n => by simp only [h, coeff_map, coeff_zero]⟩
+    fun h => by ext n; simp [h]⟩
 
 theorem map_monic_ne_zero (hp : p.Monic) [Nontrivial S] : p.map f ≠ 0 := fun h =>
   f.map_one_ne_zero ((map_monic_eq_zero_iff hp).mp h _)
@@ -216,7 +215,7 @@ end
 
 section
 
-variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
+variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S]
 
 @[simp]
 theorem iterate_comp_eval :
@@ -238,7 +237,7 @@ lemma isUnit_of_isUnit_leadingCoeff_of_isUnit_map (hf : IsUnit f.leadingCoeff)
   rw [degree_map_eq_of_leadingCoeff_ne_zero] at dz
   · rw [eq_C_of_degree_eq_zero dz]
     refine IsUnit.map C ?_
-    convert! hf
+    convert hf
     change coeff f 0 = coeff f (natDegree f)
     rw [(degree_eq_iff_natDegree_eq _).1 dz]
     · rfl

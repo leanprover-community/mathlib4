@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
-/-!
 
+/-!
 # Effectively enough objects in the image of a functor
 
 We define the class `F.EffectivelyEnough` on a functor `F : C ⥤ D` which says that for every object
@@ -17,8 +17,6 @@ in `D`, there exists an effective epi to it from an object in the image of `F`.
 @[expose] public section
 
 namespace CategoryTheory
-
-open Limits
 
 variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 

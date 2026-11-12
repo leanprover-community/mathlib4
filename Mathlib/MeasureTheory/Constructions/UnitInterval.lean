@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The canonical measure on the unit interval
 
@@ -49,7 +52,6 @@ instance : NullSingletonClass (volume : Measure I) where
 @[fun_prop]
 theorem measurable_symm : Measurable σ := continuous_symm.measurable
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- `unitInterval.symm` bundled as a measurable equivalence. -/
 @[simps apply]
 def symmMeasurableEquiv : I ≃ᵐ I where
@@ -58,15 +60,12 @@ def symmMeasurableEquiv : I ≃ᵐ I where
   left_inv := symm_symm
   right_inv := symm_symm
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma symm_symmMeasurableEquiv : symmMeasurableEquiv.symm = symmMeasurableEquiv := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma coe_symmMeasurableEquiv : symmMeasurableEquiv = σ := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma measurePreserving_symm : MeasurePreserving symm volume volume where
   measurable := measurable_symm
   map_eq := by

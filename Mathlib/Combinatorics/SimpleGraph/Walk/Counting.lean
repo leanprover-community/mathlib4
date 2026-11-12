@@ -100,7 +100,7 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
 theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
   induction n generalizing u v with
-  | zero => grind [finsetWalkLength, Walk.length_eq_zero_iff, Walk.eq_nil_iff_nil, Walk.Nil.eq]
+  | zero => grind [finsetWalkLength, Walk.eq_nil_iff_nil]
   | succ n ih =>
     simp only [finsetWalkLength, Walk.setOfPred_length_eq_add_one, Finset.coe_biUnion,
       Finset.mem_coe, Finset.mem_univ, Set.iUnion_true, Finset.coe_map, Set.iUnion_coe_set]

@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.SpecialFunctions.Arsinh
-public import Mathlib.Geometry.Euclidean.Inversion.Basic
+
+import Mathlib.Geometry.Euclidean.Inversion.Basic
 
 /-!
 # Metric on the upper half-plane
@@ -21,7 +22,6 @@ definitionally equal to the induced topological space structure.
 
 We also prove that a metric ball/closed ball/sphere in Poincaré metric is a Euclidean ball/closed
 ball/sphere with another center and radius.
-
 -/
 
 @[expose] public section
@@ -87,7 +87,7 @@ theorem dist_le_iff_le_sinh :
 
 theorem dist_eq_iff_eq_sinh :
     dist z w = r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) = sinh (r / 2) := by
-  rw [← div_left_inj' (two_ne_zero' ℝ), ← sinh_inj, sinh_half_dist]
+  rw [← div_left_inj₀ (two_ne_zero' ℝ), ← sinh_inj, sinh_half_dist]
 
 theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by
@@ -195,8 +195,8 @@ theorem dist_le_iff_dist_coe_center_le :
   le_iff_le_of_cmp_eq_cmp (cmp_dist_eq_cmp_dist_coe_center z w r)
 
 theorem le_dist_iff_le_dist_coe_center :
-    r < dist z w ↔ w.im * Real.sinh r < dist (z : ℂ) (w.center r) :=
-  lt_iff_lt_of_cmp_eq_cmp (cmp_eq_cmp_symm.1 <| cmp_dist_eq_cmp_dist_coe_center z w r)
+    r ≤ dist z w ↔ w.im * Real.sinh r ≤ dist (z : ℂ) (w.center r) :=
+  le_iff_le_of_cmp_eq_cmp (cmp_eq_cmp_symm.1 <| cmp_dist_eq_cmp_dist_coe_center z w r)
 
 /-- For two points on the same vertical line, the distance is equal to the distance between the
 logarithms of their imaginary parts. -/

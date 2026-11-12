@@ -25,7 +25,6 @@ and `Frac R` denotes the fraction field of a domain `R`.
   `A`-basis of `R₂`.
 * `IsDedekindDomain.range_sup_range_eq_top_of_isCoprime_differentIdeal`: `B` is generated
   (as an `A`-algebra) by `R₁` and `R₂`.
-
 -/
 
 @[expose] public section
@@ -49,7 +48,7 @@ theorem Submodule.traceDual_le_span_map_traceDual [Module.Free A R₂]
       span R₁ (algebraMap F₂ L '' (traceDual A K (1 : Submodule R₂ F₂))) := by
   intro x hx
   have h₂' : F₁.toSubalgebra ⊔ F₂.toSubalgebra = ⊤ := by
-    simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg IntermediateField.toSubalgebra h₂
+    simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr(IntermediateField.toSubalgebra $h₂)
   let b₂ := (Free.chooseBasis A R₂).localizationLocalization K A⁰ F₂
   let B₁ := h₁.basisOfBasisRight h₂' b₂
   have h_main : x ∈ span R₁ (Set.range B₁.traceDual) := by
@@ -62,7 +61,7 @@ theorem Submodule.traceDual_le_span_map_traceDual [Module.Free A R₂]
     exact ⟨_, rfl⟩
   have h : Set.range B₁.traceDual =
       Set.range (IsScalarTower.toAlgHom A F₂ L ∘ b₂.traceDual) := by
-    refine congr_arg Set.range <| B₁.traceDual_eq_iff.mpr fun i j ↦ ?_
+    congrm Set.range $(B₁.traceDual_eq_iff.mpr fun i j ↦ ?_)
     rw [LinearDisjoint.basisOfBasisRight_apply, traceForm_apply, Function.comp_apply,
       IsScalarTower.coe_toAlgHom', ← map_mul, h₁.trace_algebraMap h₂, b₂.trace_traceDual_mul,
       MonoidWithZeroHom.map_ite_one_zero]
@@ -92,8 +91,9 @@ theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
       (FractionRing.algEquiv R₂ ↥F₂).symm _
   rw [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal L, coeIdeal_differentIdeal R₁ F₁ L B,
     ← extendedHom_coeIdeal_eq_map L B (K := F₂), le_inv_comm _ (by simp), ← map_inv₀,
-    coeIdeal_differentIdeal A K, inv_inv, ← coe_le_coe, coe_dual_one, coe_extendedHom_eq_span,
-    ← coeToSet_coeToSubmodule, coe_dual_one]
+    coeIdeal_differentIdeal A K, inv_inv, ← coeToSubmodule_le_coeToSubmodule,
+    coeToSubmodule_dual_one, coeToSubmodule_extendedHom_eq_span, ← coeToSet_coeToSubmodule,
+    coeToSubmodule_dual_one]
   · have := Submodule.span_mono (R := B) <| traceDual_le_span_map_traceDual A B R₁ R₂ h₁ h₂
     rwa [← span_coe_eq_restrictScalars, span_span_of_tower, span_span_of_tower, span_eq] at this
   · exact (_root_.map_ne_zero _).mpr <| coeIdeal_eq_zero.not.mpr differentIdeal_ne_bot
@@ -162,12 +162,12 @@ theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free
       rw [← Submodule.span_span_of_tower R₁ B]
       exact Submodule.subset_span
     · exact traceDual_le_span_map_traceDual A B R₁ R₂ h₁ h₂
-  have := dvd_of_eq <|
+  have := dvd_of_eq
     (IsDedekindDomain.differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃).symm
   rwa [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal (K := L), coeIdeal_differentIdeal R₁ F₁,
     inv_le_comm, ← extendedHom_coeIdeal_eq_map (K := F₂), coeIdeal_differentIdeal A K, map_inv₀,
-    inv_inv, ← coe_le_coe, coe_extendedHom_eq_span, coe_dual_one, ← coeToSet_coeToSubmodule,
-    coe_dual_one] at this
+    inv_inv, ← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_extendedHom_eq_span,
+    coeToSubmodule_dual_one, ← coeToSet_coeToSubmodule, coeToSubmodule_dual_one] at this
   · simp
   · rw [← extendedHom_coeIdeal_eq_map (K := F₂), ne_eq, extendedHom_eq_zero_iff]
     rw [coeIdeal_eq_zero]
@@ -187,8 +187,9 @@ private theorem ofIsCoprimeDifferentIdeal_aux [Module.Free A R₂]
     rwa [← sup_toSubalgebra_of_isAlgebraic_right, ← top_toSubalgebra, toSubalgebra_inj] at h₂
   have : Finite ι := Module.Finite.finite_basis b
   have h_main := congr_arg (Submodule.restrictScalars R₁) <|
-    congr_arg coeToSubmodule <| (1 : FractionalIdeal B⁰ L).dual_dual R₁ F₁
-  rw [← coe_one, ← h_main, coe_dual _ _ (by simp), coe_dual_one, restrictScalars_traceDual,
+    congr(coeToSubmodule $((1 : FractionalIdeal B⁰ L).dual_dual R₁ F₁))
+  rw [← coeToSubmodule_one, ← h_main, coeToSubmodule_dual _ _ (by simp), coeToSubmodule_dual_one,
+    restrictScalars_traceDual,
     ← traceDual_eq_span_map_traceDual_of_linearDisjoint A B R₁ R₂ h₁ h₂' h₃,
     ← coe_restrictScalars A, traceDual_span_of_basis A (1 : Submodule R₂ F₂) b,
     ← IsScalarTower.coe_toAlgHom' A F₂ L, ← AlgHom.coe_toLinearMap, ← map_coe, map_span,
@@ -230,7 +231,7 @@ noncomputable def ofIsCoprimeDifferentIdeal (h₁ : F₁.LinearDisjoint F₂)
     apply map_injective_of_injective (f := (IsScalarTower.toAlgHom R₁ B L).toLinearMap)
       (FaithfulSMul.algebraMap_injective B L)
     rw [map_span, ← Set.range_comp]
-    convert!
+    convert
       Module.Basis.ofIsCoprimeDifferentIdeal_aux A B R₁ R₂ h₁ h₂ h₃ b₂
         (b.localizationLocalization_span K A⁰ F₂)
     · ext

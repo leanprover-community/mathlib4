@@ -6,8 +6,10 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Small sets in the category of structured arrows
@@ -36,8 +38,8 @@ instance [Small.{w} C] [LocallySmall.{w} D] : Small.{w} (StructuredArrow S T) :=
       exact ⟨⟨X, f⟩, rfl⟩)
 
 instance small_inverseImage_proj_of_locallySmall
-    {P : ObjectProperty C} [ObjectProperty.Small.{v₁} P] [LocallySmall.{v₁} D] :
-    ObjectProperty.Small.{v₁} (P.inverseImage (proj S T)) := by
+    {P : ObjectProperty C} [ObjectProperty.Small.{w} P] [LocallySmall.{w} D] :
+    ObjectProperty.Small.{w} (P.inverseImage (proj S T)) := by
   suffices P.inverseImage (proj S T) = .ofObj fun f : Σ (G : Subtype P), S ⟶ T.obj G => mk f.2 by
     rw [this]
     infer_instance
@@ -65,8 +67,8 @@ instance [Small.{w} C] [LocallySmall.{w} D] : Small.{w} (CostructuredArrow S T) 
       exact ⟨⟨X, f⟩, rfl⟩)
 
 instance small_inverseImage_proj_of_locallySmall
-    {P : ObjectProperty C} [ObjectProperty.Small.{v₁} P] [LocallySmall.{v₁} D] :
-    ObjectProperty.Small.{v₁} (P.inverseImage (proj S T)) := by
+    {P : ObjectProperty C} [ObjectProperty.Small.{w} P] [LocallySmall.{w} D] :
+    ObjectProperty.Small.{w} (P.inverseImage (proj S T)) := by
   suffices P.inverseImage (proj S T) = .ofObj fun f : Σ (G : Subtype P), S.obj G ⟶ T => mk f.2 by
     rw [this]
     infer_instance
@@ -75,11 +77,20 @@ instance small_inverseImage_proj_of_locallySmall
     Sigma.exists, Subtype.exists, exists_prop]
   exact ⟨fun h ↦ ⟨_, h, _, rfl⟩, by rintro ⟨_, h, _, rfl⟩; exact h⟩
 
-instance essentiallySmall [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
+variable (S T) in
+lemma essentiallySmall' [EssentiallySmall.{w} C] [∀ (Y : C), Small.{w} (S.obj Y ⟶ T)] :
     EssentiallySmall.{w} (CostructuredArrow S T) := by
   rw [← essentiallySmall_congr
     (CostructuredArrow.pre (equivSmallModel.{w} C).inverse S T).asEquivalence]
+  have : Small.{w} (CostructuredArrow ((equivSmallModel C).inverse ⋙ S) T) :=
+    small_of_surjective.{w}
+      (α := Σ (X : SmallModel.{w} C), S.obj ((equivSmallModel C).inverse.obj X) ⟶ T)
+      (f := fun ⟨X, f⟩ ↦ CostructuredArrow.mk (Y := X) f) (fun g ↦ ⟨⟨g.left, g.hom⟩, rfl⟩)
   exact essentiallySmall_of_small_of_locallySmall _
+
+instance essentiallySmall [EssentiallySmall.{w} C] [LocallySmall.{w} D] :
+    EssentiallySmall.{w} (CostructuredArrow S T) :=
+  essentiallySmall' ..
 
 end CostructuredArrow
 

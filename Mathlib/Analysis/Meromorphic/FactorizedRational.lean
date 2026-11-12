@@ -5,7 +5,6 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Divisor
 public import Mathlib.Analysis.Meromorphic.IsolatedZeros
 public import Mathlib.Analysis.Meromorphic.NormalForm
 public import Mathlib.Analysis.Meromorphic.TrailingCoefficient
@@ -55,7 +54,7 @@ lemma mulSupport (d : 𝕜 → ℤ) :
   constructor <;> intro h
   · simp_all only [mem_mulSupport, ne_eq, mem_support]
     by_contra hCon
-    simp_all [zpow_zero]
+    simp_all
   · simp_all only [mem_mulSupport, ne_eq, ne_iff]
     use u
     simp_all [zero_zpow_eq_one₀]
@@ -345,7 +344,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
     simp only [ne_eq, not_not, Function.mem_support]
     constructor <;> intro hx
     · obtain ⟨y, hy⟩ := NormedField.exists_one_lt_norm 𝕜
-      have := congrFun hx (y + u)
+      have := congr($hx (y + u))
       simp only [add_sub_cancel_right, Pi.zero_apply, mul_eq_zero, Int.cast_eq_zero, log_eq_zero,
         norm_eq_zero] at this
       rcases this with h | h | h | h

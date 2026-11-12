@@ -5,9 +5,8 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
-public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
 /-!
 # The strict bicategory associated to a Cat-enriched category
@@ -30,7 +29,6 @@ Thus, we define a type alias `CatEnrichedOrdinary C` for a type `C` with an
 `EnrichedOrdinaryCategory Cat C` structure. We provide this with an instance of a strict bicategory
 structure extending the category structure provided by the given instance `Category C` constructing
 `Bicategory.Strict (CatEnrichedOrdinary C)`.
-
 -/
 
 @[expose] public section
@@ -101,7 +99,6 @@ instance : EnrichedOrdinaryCategory Cat (CatEnriched C) where
   homEquiv_id _ :=
     ((Cat.Hom.equivFunctor _ _).trans Cat.fromChosenTerminalEquiv).symm_apply_eq.mpr rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem id_hComp_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp (𝟙 (𝟙 a)) η) η := by
   rw [id_eq, ← Functor.map_id]
@@ -111,7 +108,6 @@ theorem id_hComp {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     hComp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
   simp [← heq_eq_eq, id_hComp_heq]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem hComp_id_heq {a b : CatEnriched C} {f f' : a ⟶ b} (η : f ⟶ f') :
     HEq (hComp η (𝟙 (𝟙 b))) η := by
   rw [id_eq, ← Functor.map_id]

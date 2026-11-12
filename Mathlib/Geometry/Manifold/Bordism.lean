@@ -5,11 +5,12 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+
 /-!
-## (Unoriented) bordism theory
+# (Unoriented) bordism theory
 
 This file defines the beginnings of unoriented bordism theory. We define singular manifolds,
 the building blocks of unoriented bordism groups. Future pull requests will define bordisms
@@ -95,7 +96,7 @@ singular manifold, bordism, bordism group
 public section
 
 open scoped Manifold
-open Module Set
+open Module
 
 suppress_compilation
 

@@ -23,7 +23,6 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 * `IsIntegrallyClosed.Minpoly.unique`: The minimal polynomial of an element `x` is uniquely
   characterized by its defining property: if there is another monic polynomial of minimal degree
   that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
-
 -/
 
 @[expose] public section
@@ -132,7 +131,7 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
   refine IsIntegrallyClosed.degree_le_of_ne_zero (s := s) hnz (by simp [hP]) |>.not_gt ?_
-  refine degree_sub_lt ?_ (ne_zero hs) ?_
+  refine degree_sub_lt_left ?_ (ne_zero hs) ?_
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
 
@@ -148,10 +147,10 @@ theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_dvd {s : S} {p : R[X]} (h
     have ⟨q, hMul⟩ := isIntegrallyClosed_dvd hInt hp
     suffices q.degree ≤ 0 by simp [degree_le_zero_iff.mp this ▸ hMul, minpoly.monic hInt, mul_comm]
     apply WithBot.le_of_add_le_add_left <| Polynomial.degree_ne_bot.mpr <| minpoly.ne_zero hInt
-    convert! pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
+    convert pmin _ (minpoly.monic hInt) (minpoly.aeval ..)
     · rw [hMul, degree_mul]
     · rw [add_zero]
-  · convert! right_ne_zero_of_mul <| hMul ▸ h₀
+  · convert right_ne_zero_of_mul <| hMul ▸ h₀
     refine IsIntegrallyClosed.minpoly.unique ?_ ?_ ?_ |>.symm
     · have := hMul ▸ leadingCoeff_mul .. |>.symm
       simp only [leadingCoeff_C, ne_eq, leadingCoeff_eq_zero, h₀, not_false_eq_true, mul_eq_left₀]

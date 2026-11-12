@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Round
-import Mathlib.Algebra.Order.Group.PiLex
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Polynomial.Reverse
+module
+
+public import Mathlib.Algebra.Order.Round
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
 # Floors and ceils aren't preserved under ordered ring homomorphisms
@@ -35,10 +37,9 @@ But it does not preserve floors (nor ceils) as `⌊-ε⌋ = -1` while `⌊f (-ε
 (`IntWithEpsilon.forgetEpsilons_floor_lt`, `IntWithEpsilon.lt_forgetEpsilons_ceil`).
 -/
 
+@[expose] public noncomputable section
 
 namespace Counterexample
-
-noncomputable section
 
 open Function Int Polynomial
 
@@ -53,13 +54,13 @@ local notation "ε" => (X : ℤ[ε])
 namespace IntWithEpsilon
 
 instance linearOrder : LinearOrder ℤ[ε] :=
-  LinearOrder.lift' (toLex ∘ coeff) coeff_injective
+  LinearOrder.lift' (fun x ↦ toLex ⇑x.coeff) <|
+    DFunLike.coe_injective.comp AddMonoidAlgebra.coeff_injective
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
   Function.Injective.isOrderedAddMonoid
-    (toLex ∘ coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
+    (fun x ↦ toLex ⇑x.coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
   refine
@@ -95,9 +96,9 @@ instance : FloorRing ℤ[ε] :=
 
 /-- The ordered ring homomorphisms from `ℤ[ε]` to `ℤ` that "forgets" the `ε`s. -/
 def forgetEpsilons : ℤ[ε] →+*o ℤ where
-  toFun p := coeff p 0
+  toFun p := p.coeff 0
   map_zero' := coeff_zero _
-  map_one' := coeff_one_zero
+  map_one' := AddMonoidAlgebra.coeff_one_zero
   map_add' _ _ := coeff_add _ _ _
   map_mul' := mul_coeff_zero
   monotone' := monotone_iff_forall_lt.2 (by
@@ -107,7 +108,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
     · exact (hn.1 _ n.zero_lt_succ).le)
 
 @[simp]
-theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
+theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = p.coeff 0 :=
   rfl
 
 /-- The floor of `n - ε` is `n - 1` but its image under `forgetEpsilons` is `n`, whose floor is
@@ -116,10 +117,9 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
     forgetEpsilons ⌊(n - ↑ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ↑ε)⌋ := by
   suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [map_sub, this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
-  exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
+  exact (ite_eq_right <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
     rw [coeff_sub, intCast_coeff_zero]; simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ceil of `n + ε` is `n + 1` but its image under `forgetEpsilons` is `n`, whose ceil is
 itself. -/
 theorem lt_forgetEpsilons_ceil (n : ℤ) :
@@ -129,7 +129,5 @@ theorem lt_forgetEpsilons_ceil (n : ℤ) :
   exact forgetEpsilons_floor_lt _
 
 end IntWithEpsilon
-
-end
 
 end Counterexample

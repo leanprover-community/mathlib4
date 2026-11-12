@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Submonoid.Defs
 
 /-!
 # Actions by `Submonoid`s
@@ -18,7 +18,7 @@ These instances work particularly well in conjunction with `Monoid.toMulAction`,
 `s • m` as an alias for `↑s * m`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

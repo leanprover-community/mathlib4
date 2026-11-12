@@ -5,9 +5,9 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Colon
-public import Mathlib.RingTheory.Ideal.Operations
+
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Primary submodules
@@ -31,7 +31,6 @@ to define the nilpotency of `r : R`.
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
   Chapter 4, Exercise 21.
-
 -/
 
 @[expose] public section
@@ -114,7 +113,6 @@ section CommRing
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] {S : Submodule R M}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul :
     S.IsPrimary ↔ S ≠ ⊤ ∧ ∀ (r : R) (x : M ⧸ S), x ≠ 0 → r • x = 0 →
       ∃ n : ℕ, r ^ n • (⊤ : Submodule R (M ⧸ S)) = ⊥ := by
