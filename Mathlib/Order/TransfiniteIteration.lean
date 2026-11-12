@@ -17,10 +17,10 @@ reasonable approaches are to take the suprema or infima of all previous values. 
 `supTransfiniteIterate` and `infTransfiniteIterate`.
 
 If `I` is a complete lattice, we show that `j ↦ supTransfiniteIterate φ j i₀` is a monotone function
-if `i ≤ φ i` for all `i`. Moreover, if `i < φ i` when `i ≠ ⊤`, we show in the theorem
-`top_mem_range_supTransfiniteIterate` that there exists `j : J` such that `transfiniteIteration φ i₀
-j = ⊤` if we assume that `j ↦ transfiniteIterate φ i₀ j : J → I` is not injective (which shall hold
-when we know `Cardinal.mk I < Cardinal.mk J`).
+if `i ≤ φ i` for all `i`, and dually for `infTransfiniteIterate`. Moreover, if `i < φ i` when
+`i ≠ ⊤`, we show in the theorem `top_mem_range_supTransfiniteIterate` that there exists `j : J` such
+that `transfiniteIteration φ i₀ j = ⊤` if we assume that `j ↦ transfiniteIterate φ i₀ j : J → I` is
+not injective (which shall hold when we know `Cardinal.mk I < Cardinal.mk J`).
 
 ## TODO (@joelriou)
 * deduce that in a Grothendieck abelian category, there is a *set* `I` of monomorphisms
@@ -102,7 +102,7 @@ end SupSet
 section CompleteLattice
 variable [CompleteLattice I] {φ : I → I}
 
-@[to_dual (dont_translate := J) infTransfiniteIterate_anti]
+@[to_dual (dont_translate := J) (attr := gcongr) infTransfiniteIterate_anti]
 theorem supTransfiniteIterate_mono (hφ : ∀ i, i ≤ φ i) {j k : J} (h : j ≤ k) :
     supTransfiniteIterate φ j i₀ ≤ supTransfiniteIterate φ k i₀ := by
   have := SuccOrder.ofLinearWellFoundedLT J
