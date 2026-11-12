@@ -8,7 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.TrivPrelim
 
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
+import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-!
 # Everything you always wanted to know about covariant derivatives on the trivial bundle
@@ -200,8 +202,25 @@ lemma contMDiffOn_one_form [IsManifold I 1 M] [IsManifold I (n + 1) M] [FiniteDi
   · -- FIXME: awful delaborator bug!
     exact hcov'.contMDiffWithinAt hx hσ'
   · have := hσ.self_of_nhds
+    let φ : (x : M) → TangentSpace I x →L[𝕜] Trivial M F x := d% σ
+    have : ContMDiffWithinAt I 𝓘(𝕜, F) (n + 1) σ s x := sorry
+    have foo {X : Π x : M, TangentSpace% x} := this.mvfderivWithin (X := X) (m := n)
+    have := @ContMDiffWithinAt.clm_bundle_of_apply' (B := M) (IB := I) (F₁ := E) (F₂ := F)
+      (E₁ := TangentSpace I) (E₂ := Trivial M F) (k := n) (φ := φ) (l := n)
+    apply this<;> clear this
+    · assumption
+    · assumption
+    intro X hX
+    unfold φ
+    specialize foo (X := X) hX.self_of_nhds le_rfl sorry hx
+    refine contMDiffWithinAt_section_iff.mpr ?_
+    simp
+
     sorry
 
+#check ContMDiffWithinAt.clm_bundle_apply_trivial_target
+#check' ContMDiffWithinAt.clm_bundle_of_apply'
+#check' ContMDiffWithinAt.mvfderivWithin
 -- TODO: add global variant!
 
 end classification
