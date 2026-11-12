@@ -5,34 +5,31 @@ Authors: Ezequiel Souza dos Santos
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Order.Group.End
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.GroupTheory.SemidirectProduct
-public import Mathlib.Logic.Equiv.Basic
-public import Mathlib.Order.RelIso.Basic
 
 /-!
 # The infinite rooted binary tree
 
-The infinite rooted binary tree has a vertex for every finite word on the alphabet `{0, 1}`.
-The root is the empty word. The two children of a vertex `v` are the words `v ++ [0]` and
-`v ++ [1]`.
+The infinite rooted binary tree has a vertex for every finite word on the alphabet `{false, true}`.
+The root is the empty word. The two children of a vertex `v` are the words `v ++ [false]` and
+`v ++ [true]`.
 
 This is the tree on which the Grigorchuk group acts.
 
 ## Main definitions
 
-* `InfiniteBinaryTree`: vertices are lists `List (Fin 2)`.
+* `InfiniteBinaryTree`: vertices are lists `List Bool`.
 * `InfiniteBinaryTree.root`: the empty word.
 * `InfiniteBinaryTree.succ`: the child of a vertex obtained by appending a letter.
 * `InfiniteBinaryTree.TreeAut`: order isomorphisms of the prefix partial order on vertices
-  (rooted automorphisms), packaged as `RelIso (· <+: ·) (· <+: ·)`. This is a group under
-  composition. The name `TreeAut` avoids a clash with `MulAut`, which mathlib abbreviates as
-  `Aut`. We use `RelIso` rather than `OrderIso` because `List` already carries the lexicographic
-  `≤`, which is not the tree order.
-* `InfiniteBinaryTree.TreeAut.phi`: act independently on the two subtrees of the root.
+  (rooted automorphisms), as `RelIso` of the prefix relation. This is a group under composition.
+  The name `TreeAut` avoids a clash with `MulAut`, which mathlib abbreviates as `Aut`.
+* `InfiniteBinaryTree.TreeAut.combine`: act independently on the two subtrees of the root
+  (Grigorchuk's φ).
 * `InfiniteBinaryTree.TreeAut.activity`: whether the two children of a vertex are swapped.
 * `InfiniteBinaryTree.TreeAut.equivSemidirect`: `TreeAut ≃* (TreeAut × TreeAut) ⋊ ℤ/2`.
 
@@ -43,8 +40,8 @@ infinite binary tree, rooted tree, geometric group theory
 
 @[expose] public section
 
-/-- The infinite rooted binary tree: vertices are finite words on `{0, 1}`. -/
-abbrev InfiniteBinaryTree := List (Fin 2)
+/-- The infinite rooted binary tree: vertices are finite words on `{false, true}`. -/
+abbrev InfiniteBinaryTree := List Bool
 
 namespace InfiniteBinaryTree
 
@@ -52,15 +49,15 @@ namespace InfiniteBinaryTree
 def root : InfiniteBinaryTree := []
 
 /-- The child of `v` obtained by appending the letter `i`. -/
-def succ (v : InfiniteBinaryTree) (i : Fin 2) : InfiniteBinaryTree := v ++ [i]
+def succ (v : InfiniteBinaryTree) (i : Bool) : InfiniteBinaryTree := v ++ [i]
 
 @[simp] lemma root_eq_nil : root = [] := rfl
 
-@[simp] lemma succ_eq_append (v : InfiniteBinaryTree) (i : Fin 2) : v.succ i = v ++ [i] := rfl
+@[simp] lemma succ_eq_append (v : InfiniteBinaryTree) (i : Bool) : v.succ i = v ++ [i] := rfl
 
 @[simp] lemma length_root : root.length = 0 := rfl
 
-lemma length_succ (v : InfiniteBinaryTree) (i : Fin 2) : (v.succ i).length = v.length + 1 :=
+lemma length_succ (v : InfiniteBinaryTree) (i : Bool) : (v.succ i).length = v.length + 1 :=
   by simp [succ]
 
 lemma isPrefix_root (v : InfiniteBinaryTree) : root <+: v :=
@@ -73,10 +70,7 @@ instance : IsPartialOrder InfiniteBinaryTree (· <+: ·) := inferInstance
 @[reducible] def prefixRel : InfiniteBinaryTree → InfiniteBinaryTree → Prop := (· <+: ·)
 
 /-- A rooted automorphism of the infinite binary tree is an order isomorphism of the prefix
-partial order (equivalently: a graph automorphism fixing the root).
-
-We use `RelIso` of `IsPrefix` rather than `OrderIso` of `≤`, because `List` already carries the
-lexicographic order, which is not the rooted-tree order. -/
+partial order (equivalently: a graph automorphism fixing the root). -/
 abbrev TreeAut := RelIso prefixRel prefixRel
 
 namespace TreeAut
@@ -93,26 +87,7 @@ lemma map_isPrefix_iff (f : TreeAut) {v w : InfiniteBinaryTree} : v <+: w ↔ f 
 @[ext] lemma ext {f g : TreeAut} (h : ∀ v, f v = g v) : f = g :=
   DFunLike.ext f g h
 
-instance : One TreeAut where
-  one := RelIso.refl prefixRel
-
-instance : Mul TreeAut where
-  mul f g := RelIso.trans g f
-
-instance : Inv TreeAut where
-  inv := RelIso.symm
-
-@[simp] lemma one_apply (v : InfiniteBinaryTree) : (1 : TreeAut) v = v := rfl
-
-@[simp] lemma mul_apply (f g : TreeAut) (v : InfiniteBinaryTree) : (f * g) v = f (g v) := rfl
-
 @[simp] lemma inv_eq_symm (f : TreeAut) : f⁻¹ = f.symm := rfl
-
-instance : Group TreeAut where
-  mul_assoc _ _ _ := rfl
-  one_mul _ := rfl
-  mul_one _ := rfl
-  inv_mul_cancel f := ext fun v ↦ RelIso.symm_apply_apply f v
 
 lemma length_lt_of_prefix_ne {v w : InfiniteBinaryTree} (h : v <+: w) (hne : v ≠ w) :
     v.length < w.length :=
@@ -140,29 +115,27 @@ lemma length_map_take_ge (f : TreeAut) (v : InfiniteBinaryTree) :
   · have := length_map_take_ge f v v.length le_rfl
     simpa [List.take_length] using this
 
-/-- The map underlying `phi`: apply `f₀` on the left subtree and `f₁` on the right subtree. -/
-def phiFun (f₀ f₁ : TreeAut) : InfiniteBinaryTree → InfiniteBinaryTree
+/-- The map underlying `combine`: apply `f₀` on the `false`-subtree and `f₁` on the `true`-subtree.
+-/
+def combineFun (f₀ f₁ : TreeAut) : InfiniteBinaryTree → InfiniteBinaryTree
   | [] => []
-  | i :: w => i :: bif i == 0 then f₀ w else f₁ w
+  | i :: w => i :: bif i then f₁ w else f₀ w
 
-lemma phiFun_nil (f₀ f₁ : TreeAut) : phiFun f₀ f₁ [] = [] := rfl
+lemma combineFun_nil (f₀ f₁ : TreeAut) : combineFun f₀ f₁ [] = [] := rfl
 
-lemma phiFun_cons (f₀ f₁ : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
-    phiFun f₀ f₁ (i :: w) = i :: bif i == 0 then f₀ w else f₁ w :=
+lemma combineFun_cons (f₀ f₁ : TreeAut) (i : Bool) (w : InfiniteBinaryTree) :
+    combineFun f₀ f₁ (i :: w) = i :: bif i then f₁ w else f₀ w :=
   rfl
 
-lemma fin2_eq_zero_or_one (i : Fin 2) : i = 0 ∨ i = 1 := by
-  have : i.val = 0 ∨ i.val = 1 := Nat.le_one_iff_eq_zero_or_eq_one.mp (Nat.le_of_lt_succ i.2)
-  rcases this with h | h <;> simp [Fin.ext_iff, h]
-
-lemma phiFun_left_inv (f₀ f₁ : TreeAut) : (phiFun f₀.symm f₁.symm).LeftInverse (phiFun f₀ f₁) := by
+lemma combineFun_left_inv (f₀ f₁ : TreeAut) :
+    (combineFun f₀.symm f₁.symm).LeftInverse (combineFun f₀ f₁) := by
   intro v
   induction v with
   | nil => rfl
   | cons i w ih =>
-    rcases fin2_eq_zero_or_one i with hi | hi <;> simp [phiFun_cons, hi, RelIso.symm_apply_apply]
+    cases i <;> simp [combineFun_cons, RelIso.symm_apply_apply]
 
-lemma exists_apply_succ (f : TreeAut) (v : InfiniteBinaryTree) (i : Fin 2) :
+lemma exists_apply_succ (f : TreeAut) (v : InfiniteBinaryTree) (i : Bool) :
     ∃ j, f (v.succ i) = (f v).succ j := by
   have hpref : f v <+: f (v.succ i) := (f.map_isPrefix_iff).mp (List.prefix_append ..)
   obtain ⟨t, ht⟩ := hpref
@@ -173,68 +146,65 @@ lemma exists_apply_succ (f : TreeAut) (v : InfiniteBinaryTree) (i : Fin 2) :
   obtain ⟨j, rfl⟩ := List.length_eq_one_iff.mp hlen
   exact ⟨j, ht.symm⟩
 
-/-- `activity f v` is `0` if `f` does not swap the children of `v`, and `1` if it does. -/
-noncomputable def activity (f : TreeAut) (v : InfiniteBinaryTree) : Fin 2 :=
-  (exists_apply_succ f v 0).choose
+/-- `activity f v` is `false` if `f` does not swap the children of `v`, and `true` if it does. -/
+noncomputable def activity (f : TreeAut) (v : InfiniteBinaryTree) : Bool :=
+  (exists_apply_succ f v false).choose
 
-lemma apply_succ_zero (f : TreeAut) (v : InfiniteBinaryTree) :
-    f (v.succ 0) = (f v).succ (activity f v) :=
-  (exists_apply_succ f v 0).choose_spec
+lemma apply_succ_false (f : TreeAut) (v : InfiniteBinaryTree) :
+    f (v.succ false) = (f v).succ (activity f v) :=
+  (exists_apply_succ f v false).choose_spec
 
-/-- Combine two tree automorphisms by acting independently on the two subtrees of the root. -/
-def phi (f₀ f₁ : TreeAut) : TreeAut where
+/-- Combine two tree automorphisms by acting independently on the two subtrees of the root.
+In the Grigorchuk literature this map is often denoted φ. -/
+def combine (f₀ f₁ : TreeAut) : TreeAut where
   toEquiv :=
-    { toFun := phiFun f₀ f₁
-      invFun := phiFun f₀.symm f₁.symm
-      left_inv := phiFun_left_inv f₀ f₁
+    { toFun := combineFun f₀ f₁
+      invFun := combineFun f₀.symm f₁.symm
+      left_inv := combineFun_left_inv f₀ f₁
       right_inv := fun v ↦ by
-        simpa [RelIso.symm_symm] using phiFun_left_inv f₀.symm f₁.symm v }
+        simpa [RelIso.symm_symm] using combineFun_left_inv f₀.symm f₁.symm v }
   map_rel_iff' := by
     intro v w
     refine Iff.symm ?_
     induction v generalizing w with
-    | nil => simp [phiFun, prefixRel, List.nil_prefix]
+    | nil => simp [combineFun, prefixRel, List.nil_prefix]
     | cons i a ih =>
       cases w with
-      | nil => simp [phiFun, prefixRel]
+      | nil => simp [combineFun, prefixRel]
       | cons j b =>
         simp only [prefixRel]
-        change i :: a <+: j :: b ↔ phiFun f₀ f₁ (i :: a) <+: phiFun f₀ f₁ (j :: b)
-        rcases fin2_eq_zero_or_one i with hi | hi <;> rcases fin2_eq_zero_or_one j with hj | hj
-        · simp only [hi, hj, phiFun, List.cons_prefix_cons, true_and]
+        change i :: a <+: j :: b ↔ combineFun f₀ f₁ (i :: a) <+: combineFun f₀ f₁ (j :: b)
+        cases i <;> cases j
+        · simp only [combineFun, List.cons_prefix_cons, true_and]
           exact f₀.map_isPrefix_iff
-        · simp [hi, hj, phiFun, List.cons_prefix_cons]
-        · simp [hi, hj, phiFun, List.cons_prefix_cons]
-        · simp only [hi, hj, phiFun, List.cons_prefix_cons, true_and]
+        · simp [combineFun, List.cons_prefix_cons]
+        · simp [combineFun, List.cons_prefix_cons]
+        · simp only [combineFun, List.cons_prefix_cons, true_and]
           exact f₁.map_isPrefix_iff
 
-@[simp] lemma phi_cons (f₀ f₁ : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
-    phi f₀ f₁ (i :: w) = i :: bif i == 0 then f₀ w else f₁ w := by
-  simp [phi, phiFun]
+@[simp] lemma combine_cons (f₀ f₁ : TreeAut) (i : Bool) (w : InfiniteBinaryTree) :
+    combine f₀ f₁ (i :: w) = i :: bif i then f₁ w else f₀ w := by
+  simp [combine, combineFun]
 
 /-- The rooted swap of the two children of the root. This generates the `ℤ/2` factor. -/
 def swapRoot : TreeAut where
   toEquiv :=
     { toFun := fun
         | [] => []
-        | i :: w => (i + 1) :: w
+        | i :: w => (!i) :: w
       invFun := fun
         | [] => []
-        | i :: w => (i + 1) :: w
+        | i :: w => (!i) :: w
       left_inv := by
         intro v
         cases v with
         | nil => rfl
-        | cons i w =>
-          have : (1 + 1 : Fin 2) = 0 := rfl
-          simp [add_assoc, this]
+        | cons i w => cases i <;> rfl
       right_inv := by
         intro v
         cases v with
         | nil => rfl
-        | cons i w =>
-          have : (1 + 1 : Fin 2) = 0 := rfl
-          simp [add_assoc, this] }
+        | cons i w => cases i <;> rfl }
   map_rel_iff' := by
     intro v w
     refine Iff.symm ?_
@@ -244,35 +214,33 @@ def swapRoot : TreeAut where
       cases w with
       | nil => simp [prefixRel]
       | cons j b =>
-        simp [prefixRel, List.cons_prefix_cons, add_left_inj]
+        cases i <;> cases j <;> simp [prefixRel, List.cons_prefix_cons]
 
 @[simp] lemma swapRoot_root : swapRoot [] = [] := rfl
 
-@[simp] lemma swapRoot_cons (i : Fin 2) (w : InfiniteBinaryTree) :
-    swapRoot (i :: w) = (i + 1) :: w :=
+@[simp] lemma swapRoot_cons (i : Bool) (w : InfiniteBinaryTree) :
+    swapRoot (i :: w) = (!i) :: w :=
   rfl
 
 @[simp] lemma swapRoot_mul_self : swapRoot * swapRoot = 1 :=
   TreeAut.ext fun v ↦ by
     cases v with
     | nil => rfl
-    | cons i w =>
-      have : (1 + 1 : Fin 2) = 0 := rfl
-      simp [add_assoc, this]
+    | cons i w => cases i <;> rfl
 
 lemma swapRoot_inv : swapRoot⁻¹ = swapRoot :=
   inv_eq_of_mul_eq_one_right swapRoot_mul_self
 
-lemma apply_cons_ne_nil (f : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) : f (i :: w) ≠ [] := by
+lemma apply_cons_ne_nil (f : TreeAut) (i : Bool) (w : InfiniteBinaryTree) : f (i :: w) ≠ [] := by
   intro h
   have := f.map_length (i :: w)
   simp [h] at this
 
 /-- The first letter of `f [i]`. This is the image of the child `i` of the root. -/
-def firstLetter (f : TreeAut) (i : Fin 2) : Fin 2 :=
+def firstLetter (f : TreeAut) (i : Bool) : Bool :=
   (f [i]).head (apply_cons_ne_nil f i [])
 
-lemma apply_singleton (f : TreeAut) (i : Fin 2) : f [i] = [firstLetter f i] := by
+lemma apply_singleton (f : TreeAut) (i : Bool) : f [i] = [firstLetter f i] := by
   have hne := apply_cons_ne_nil f i []
   have htail : (f [i]).tail = [] := by
     apply List.eq_nil_of_length_eq_zero
@@ -283,17 +251,17 @@ lemma apply_singleton (f : TreeAut) (i : Fin 2) : f [i] = [firstLetter f i] := b
   rfl
 
 /-- Action of `f` on the subtree hanging from the child `i` of the root. -/
-def restrictFun (f : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) : InfiniteBinaryTree :=
+def restrictFun (f : TreeAut) (i : Bool) (w : InfiniteBinaryTree) : InfiniteBinaryTree :=
   (f (i :: w)).tail
 
-lemma apply_cons (f : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
+lemma apply_cons (f : TreeAut) (i : Bool) (w : InfiniteBinaryTree) :
     f (i :: w) = firstLetter f i :: restrictFun f i w := by
   have hpref : f [i] <+: f (i :: w) := (f.map_isPrefix_iff).mp (by simp [List.cons_prefix_cons])
   rw [apply_singleton] at hpref
   obtain ⟨s, hs⟩ := hpref
   simp [restrictFun, ← hs]
 
-lemma firstLetter_symm (f : TreeAut) (i : Fin 2) :
+lemma firstLetter_symm (f : TreeAut) (i : Bool) :
     firstLetter f.symm (firstLetter f i) = i := by
   have h : f.symm [firstLetter f i] = [i] := by
     rw [← apply_singleton f i]
@@ -302,7 +270,7 @@ lemma firstLetter_symm (f : TreeAut) (i : Fin 2) :
   exact (List.cons_eq_cons.mp h).1
 
 /-- Restriction of `f` to the subtree of the child `i` of the root. -/
-def restrict (f : TreeAut) (i : Fin 2) : TreeAut where
+def restrict (f : TreeAut) (i : Bool) : TreeAut where
   toEquiv :=
     { toFun := restrictFun f i
       invFun := restrictFun f.symm (firstLetter f i)
@@ -330,76 +298,77 @@ def restrict (f : TreeAut) (i : Fin 2) : TreeAut where
     rw [apply_cons f i w, apply_cons f i w'] at h
     simpa [prefixRel, List.cons_prefix_cons] using h
 
-@[simp] lemma restrict_apply (f : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
+@[simp] lemma restrict_apply (f : TreeAut) (i : Bool) (w : InfiniteBinaryTree) :
     restrict f i w = (f (i :: w)).tail :=
   rfl
 
-lemma firstLetter_zero (f : TreeAut) : firstLetter f 0 = activity f root := by
-  have h := apply_succ_zero f []
+lemma firstLetter_false (f : TreeAut) : firstLetter f false = activity f root := by
+  have h := apply_succ_false f []
   rw [map_root] at h
   simp only [succ_eq_append, List.nil_append] at h
   rw [apply_singleton] at h
   exact (List.cons_eq_cons.mp h).1
 
-lemma firstLetter_one (f : TreeAut) : firstLetter f 1 = activity f root + 1 := by
-  have hne : firstLetter f 0 ≠ firstLetter f 1 := by
+lemma firstLetter_true (f : TreeAut) : firstLetter f true = !activity f root := by
+  have hne : firstLetter f false ≠ firstLetter f true := by
     intro hf
-    have : ([0] : InfiniteBinaryTree) = [1] :=
+    have : ([false] : InfiniteBinaryTree) = [true] :=
       f.injective (by rw [apply_singleton, apply_singleton, hf])
     cases this
-  rw [firstLetter_zero] at hne
-  rcases fin2_eq_zero_or_one (activity f root) with ha | ha <;>
-    rcases fin2_eq_zero_or_one (firstLetter f 1) with h1 | h1
-  · cases hne (ha.trans h1.symm)
-  · simpa [h1, root] using ha
-  · have : (1 + 1 : Fin 2) = 0 := rfl
-    rw [h1, ha, this]
-  · cases hne (ha.trans h1.symm)
+  rw [firstLetter_false] at hne
+  match hact : activity f root, hfl : firstLetter f true with
+  | false, false =>
+    have : False := hne (by rw [hact, hfl])
+    exact this.elim
+  | false, true =>
+    simp
+  | true, false =>
+    simp
+  | true, true =>
+    have : False := hne (by rw [hact, hfl])
+    exact this.elim
 
-lemma firstLetter_eq_add_activity (f : TreeAut) (i : Fin 2) :
-    firstLetter f i = i + activity f root := by
-  rcases fin2_eq_zero_or_one i with hi | hi
-  · simp [hi, firstLetter_zero]
-  · rw [hi, firstLetter_one, add_comm]
+lemma firstLetter_eq_xor_activity (f : TreeAut) (i : Bool) :
+    firstLetter f i = xor i (activity f root) := by
+  cases i
+  · simp [firstLetter_false]
+  · simpa [Bool.xor_true] using firstLetter_true f
 
-lemma apply_cons_activity (f : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
-    f (i :: w) = (i + activity f root) :: restrict f i w := by
-  rw [apply_cons, firstLetter_eq_add_activity]
+lemma apply_cons_activity (f : TreeAut) (i : Bool) (w : InfiniteBinaryTree) :
+    f (i :: w) = xor i (activity f root) :: restrict f i w := by
+  rw [apply_cons, firstLetter_eq_xor_activity]
   rfl
 
-lemma phi_one : phi (1 : TreeAut) 1 = 1 :=
+lemma combine_one : combine (1 : TreeAut) 1 = 1 :=
   TreeAut.ext fun v ↦ by
     cases v with
     | nil => rfl
-    | cons i w =>
-      rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
+    | cons i w => cases i <;> rfl
 
-lemma phi_mul (f₀ f₁ g₀ g₁ : TreeAut) :
-    phi (f₀ * g₀) (f₁ * g₁) = phi f₀ f₁ * phi g₀ g₁ :=
+lemma combine_mul (f₀ f₁ g₀ g₁ : TreeAut) :
+    combine (f₀ * g₀) (f₁ * g₁) = combine f₀ f₁ * combine g₀ g₁ :=
   TreeAut.ext fun v ↦ by
     cases v with
     | nil => rfl
-    | cons i w =>
-      rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
+    | cons i w => cases i <;> rfl
 
 /-- Independent action on the two subtrees of the root, as a group homomorphism. -/
-def phiHom : TreeAut × TreeAut →* TreeAut where
-  toFun p := phi p.1 p.2
-  map_one' := phi_one
-  map_mul' p q := phi_mul p.1 p.2 q.1 q.2
+def combineHom : TreeAut × TreeAut →* TreeAut where
+  toFun p := combine p.1 p.2
+  map_one' := combine_one
+  map_mul' p q := combine_mul p.1 p.2 q.1 q.2
 
-@[simp] lemma phiHom_apply (f₀ f₁ : TreeAut) : phiHom (f₀, f₁) = phi f₀ f₁ := rfl
+@[simp] lemma combineHom_apply (f₀ f₁ : TreeAut) : combineHom (f₀, f₁) = combine f₀ f₁ := rfl
 
-lemma swapRoot_mul_phi_mul_swapRoot (f₀ f₁ : TreeAut) :
-    swapRoot * phi f₀ f₁ * swapRoot = phi f₁ f₀ :=
+lemma swapRoot_mul_combine_mul_swapRoot (f₀ f₁ : TreeAut) :
+    swapRoot * combine f₀ f₁ * swapRoot = combine f₁ f₀ :=
   TreeAut.ext fun v ↦ by
     cases v with
     | nil =>
-      simp only [mul_apply]
+      simp only [RelIso.mul_apply]
       rfl
     | cons i w =>
-      have : (1 + 1 : Fin 2) = 0 := rfl
-      rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, this, mul_apply, phi_cons]
+      cases i <;> simp [RelIso.mul_apply, combine_cons]
 
 /-- The automorphism of `TreeAut × TreeAut` that swaps the two factors. -/
 def swapComponents : MulAut (TreeAut × TreeAut) := MulEquiv.prodComm
@@ -412,6 +381,12 @@ lemma swapComponents_mul_self : swapComponents * swapComponents = 1 := by
   ext <;> rfl
 
 open Multiplicative (ofAdd toAdd)
+
+/-- Convert a Boolean activity bit to an element of `ZMod 2`. -/
+def boolToZMod2 (b : Bool) : ZMod 2 := if b then 1 else 0
+
+@[simp] lemma boolToZMod2_false : boolToZMod2 false = 0 := rfl
+@[simp] lemma boolToZMod2_true : boolToZMod2 true = 1 := rfl
 
 /-- The `ℤ/2` action on `TreeAut × TreeAut` that swaps the two factors. -/
 def swapHom : Multiplicative (ZMod 2) →* MulAut (TreeAut × TreeAut) where
@@ -451,78 +426,77 @@ def swapRootHom : Multiplicative (ZMod 2) →* TreeAut where
 
 @[simp] lemma swapRootHom_ofAdd_one : swapRootHom (ofAdd 1) = swapRoot := rfl
 
-lemma phiHom_compat (g : Multiplicative (ZMod 2)) :
-    phiHom.comp (swapHom g).toMonoidHom =
-      (MulAut.conj (swapRootHom g)).toMonoidHom.comp phiHom := by
+lemma combineHom_compat (g : Multiplicative (ZMod 2)) :
+    combineHom.comp (swapHom g).toMonoidHom =
+      (MulAut.conj (swapRootHom g)).toMonoidHom.comp combineHom := by
   refine MonoidHom.ext fun p ↦ TreeAut.ext fun v ↦ ?_
   rcases ZMod.eq_zero_or_one g.toAdd with h | h
   · have hg : g = 1 := by rw [← ofAdd_toAdd g, h]; rfl
     simp [hg]
   · have hg : g = ofAdd 1 := by rw [← ofAdd_toAdd g, h]
     rw [hg]
-    change phi p.2 p.1 v = (swapRoot * phi p.1 p.2 * swapRoot⁻¹) v
-    rw [swapRoot_inv, swapRoot_mul_phi_mul_swapRoot]
+    change combine p.2 p.1 v = (swapRoot * combine p.1 p.2 * swapRoot⁻¹) v
+    rw [swapRoot_inv, swapRoot_mul_combine_mul_swapRoot]
 
 /-- The homomorphism `(TreeAut × TreeAut) ⋊ ℤ/2 →* TreeAut` sending
-`⟨(f₀, f₁), ε⟩` to `phi f₀ f₁ * swapRoot^ε`. -/
+`⟨(f₀, f₁), ε⟩` to `combine f₀ f₁ * swapRoot^ε`. -/
 def ofSemidirect : (TreeAut × TreeAut) ⋊[swapHom] Multiplicative (ZMod 2) →* TreeAut :=
-  SemidirectProduct.lift phiHom swapRootHom phiHom_compat
+  SemidirectProduct.lift combineHom swapRootHom combineHom_compat
 
 lemma ofSemidirect_apply (x : (TreeAut × TreeAut) ⋊[swapHom] Multiplicative (ZMod 2)) :
-    ofSemidirect x = phi x.left.1 x.left.2 * swapRootHom x.right :=
+    ofSemidirect x = combine x.left.1 x.left.2 * swapRootHom x.right :=
   rfl
 
-lemma activity_phi (f₀ f₁ : TreeAut) : activity (phi f₀ f₁) root = 0 := by
-  have h : phi f₀ f₁ [0] = [0] := by
-    rw [phi_cons]
-    simp only [Fin.isValue, BEq.rfl, cond_eq_ite, reduceIte, List.cons.injEq, true_and]
+lemma activity_combine (f₀ f₁ : TreeAut) : activity (combine f₀ f₁) root = false := by
+  have h : combine f₀ f₁ [false] = [false] := by
+    rw [combine_cons]
+    simp only [Bool.cond_false, List.cons.injEq, true_and]
     exact map_root f₀
-  have hfl := apply_singleton (phi f₀ f₁) 0
+  have hfl := apply_singleton (combine f₀ f₁) false
   rw [hfl] at h
   have := (List.cons_eq_cons.mp h).1
-  rw [firstLetter_zero] at this
+  rw [firstLetter_false] at this
   exact this
 
-lemma activity_phi_mul_swapRoot (f₀ f₁ : TreeAut) :
-    activity (phi f₀ f₁ * swapRoot) root = 1 := by
-  have h : (phi f₀ f₁ * swapRoot) [0] = [1] := by
-    rw [mul_apply, swapRoot_cons, phi_cons]
-    simp only [Fin.isValue, zero_add, Fin.reduceBEq, cond_eq_ite, Bool.false_eq_true, reduceIte,
-      List.cons.injEq, true_and]
+lemma activity_combine_mul_swapRoot (f₀ f₁ : TreeAut) :
+    activity (combine f₀ f₁ * swapRoot) root = true := by
+  have h : (combine f₀ f₁ * swapRoot) [false] = [true] := by
+    rw [RelIso.mul_apply, swapRoot_cons, combine_cons]
+    simp only [Bool.not_false, Bool.cond_true, List.cons.injEq, true_and]
     exact map_root f₁
-  have hfl := apply_singleton (phi f₀ f₁ * swapRoot) 0
+  have hfl := apply_singleton (combine f₀ f₁ * swapRoot) false
   rw [hfl] at h
   have := (List.cons_eq_cons.mp h).1
-  rw [firstLetter_zero] at this
+  rw [firstLetter_false] at this
   exact this
 
-lemma restrict_phi_zero (f₀ f₁ : TreeAut) : restrict (phi f₀ f₁) 0 = f₀ :=
+lemma restrict_combine_false (f₀ f₁ : TreeAut) : restrict (combine f₀ f₁) false = f₀ :=
   TreeAut.ext fun w ↦ by
-    change (phi f₀ f₁ (0 :: w)).tail = f₀ w
-    simp [phi_cons]
+    change (combine f₀ f₁ (false :: w)).tail = f₀ w
+    simp [combine_cons]
 
-lemma restrict_phi_one (f₀ f₁ : TreeAut) : restrict (phi f₀ f₁) 1 = f₁ :=
+lemma restrict_combine_true (f₀ f₁ : TreeAut) : restrict (combine f₀ f₁) true = f₁ :=
   TreeAut.ext fun w ↦ by
-    change (phi f₀ f₁ (1 :: w)).tail = f₁ w
-    simp [phi_cons]
+    change (combine f₀ f₁ (true :: w)).tail = f₁ w
+    simp [combine_cons]
 
-lemma restrict_phi_mul_swapRoot_zero (f₀ f₁ : TreeAut) :
-    restrict (phi f₀ f₁ * swapRoot) 0 = f₁ :=
+lemma restrict_combine_mul_swapRoot_false (f₀ f₁ : TreeAut) :
+    restrict (combine f₀ f₁ * swapRoot) false = f₁ :=
   TreeAut.ext fun w ↦ by
-    change ((phi f₀ f₁ * swapRoot) (0 :: w)).tail = f₁ w
-    simp [phi_cons]
+    change ((combine f₀ f₁ * swapRoot) (false :: w)).tail = f₁ w
+    simp [RelIso.mul_apply, combine_cons]
 
-lemma restrict_phi_mul_swapRoot_one (f₀ f₁ : TreeAut) :
-    restrict (phi f₀ f₁ * swapRoot) 1 = f₀ :=
+lemma restrict_combine_mul_swapRoot_true (f₀ f₁ : TreeAut) :
+    restrict (combine f₀ f₁ * swapRoot) true = f₀ :=
   TreeAut.ext fun w ↦ by
-    change ((phi f₀ f₁ * swapRoot) (1 :: w)).tail = f₀ w
-    simp [phi_cons]
+    change ((combine f₀ f₁ * swapRoot) (true :: w)).tail = f₀ w
+    simp [RelIso.mul_apply, combine_cons]
 
 /-- The inverse of `ofSemidirect`, recording the two restrictions and the activity at the root. -/
 noncomputable def toSemidirect (f : TreeAut) :
     (TreeAut × TreeAut) ⋊[swapHom] Multiplicative (ZMod 2) where
-  left := (restrict f (activity f root), restrict f (activity f root + 1))
-  right := ofAdd (if activity f root = 0 then (0 : ZMod 2) else 1)
+  left := (restrict f (activity f root), restrict f (!activity f root))
+  right := ofAdd (boolToZMod2 (activity f root))
 
 lemma ofSemidirect_toSemidirect (f : TreeAut) : ofSemidirect (toSemidirect f) = f :=
   TreeAut.ext fun v ↦ by
@@ -531,28 +505,25 @@ lemma ofSemidirect_toSemidirect (f : TreeAut) : ofSemidirect (toSemidirect f) = 
       rw [show f [] = [] from map_root f]
       rw [show ofSemidirect (toSemidirect f) [] = [] from map_root _]
     | cons i w =>
-      rcases fin2_eq_zero_or_one (activity f root) with ha | ha
+      cases hact : activity f root
       · have hf := apply_cons_activity f i w
-        rw [ha, add_zero] at hf
-        have hx : toSemidirect f = ⟨(restrict f 0, restrict f 1), 1⟩ := by
-          simp only [toSemidirect]
-          rw [ha]
+        rw [hact] at hf
+        have hx : toSemidirect f = ⟨(restrict f false, restrict f true), 1⟩ := by
+          simp only [toSemidirect, hact, boolToZMod2_false]
           rfl
         rw [hx]
-        change (phi (restrict f 0) (restrict f 1) * swapRootHom 1) (i :: w) = f (i :: w)
-        rw [map_one, mul_one, phi_cons, hf]
-        rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi]
+        change (combine (restrict f false) (restrict f true) * swapRootHom 1) (i :: w) = f (i :: w)
+        rw [map_one, mul_one, combine_cons, hf]
+        cases i <;> simp
       · have hf := apply_cons_activity f i w
-        rw [ha] at hf
-        have h11 : (1 + 1 : Fin 2) = 0 := rfl
-        have hx : toSemidirect f = ⟨(restrict f 1, restrict f 0), ofAdd 1⟩ := by
-          simp only [toSemidirect]
-          rw [ha]
-          rfl
+        rw [hact] at hf
+        have hx : toSemidirect f = ⟨(restrict f true, restrict f false), ofAdd 1⟩ := by
+          simp only [toSemidirect, hact, boolToZMod2_true, Bool.not_true]
         rw [hx]
-        change (phi (restrict f 1) (restrict f 0) * swapRootHom (ofAdd 1)) (i :: w) = f (i :: w)
-        rw [swapRootHom_ofAdd_one, mul_apply, swapRoot_cons, phi_cons, hf]
-        rcases fin2_eq_zero_or_one i with hi | hi <;> simp [hi, h11]
+        change (combine (restrict f true) (restrict f false) * swapRootHom (ofAdd 1)) (i :: w) =
+          f (i :: w)
+        rw [swapRootHom_ofAdd_one, RelIso.mul_apply, swapRoot_cons, combine_cons, hf]
+        cases i <;> simp
 
 lemma toSemidirect_ofSemidirect (x : (TreeAut × TreeAut) ⋊[swapHom] Multiplicative (ZMod 2)) :
     toSemidirect (ofSemidirect x) = x := by
@@ -560,29 +531,30 @@ lemma toSemidirect_ofSemidirect (x : (TreeAut × TreeAut) ⋊[swapHom] Multiplic
   rcases ZMod.eq_zero_or_one ε.toAdd with h | h
   · have hε : ε = 1 := by rw [← ofAdd_toAdd ε, h]; rfl
     rw [hε, ofSemidirect_apply]
-    change toSemidirect (phi f₀ f₁ * swapRootHom 1) = ⟨(f₀, f₁), 1⟩
+    change toSemidirect (combine f₀ f₁ * swapRootHom 1) = ⟨(f₀, f₁), 1⟩
     rw [swapRootHom_ofAdd_zero, mul_one]
     refine SemidirectProduct.ext ?_ ?_
-    · change (restrict (phi f₀ f₁) (activity (phi f₀ f₁) root),
-        restrict (phi f₀ f₁) (activity (phi f₀ f₁) root + 1)) = (f₀, f₁)
-      rw [activity_phi, zero_add, restrict_phi_zero, restrict_phi_one]
-    · change ofAdd (if activity (phi f₀ f₁) root = 0 then (0 : ZMod 2) else 1) = 1
-      rw [activity_phi]
+    · change (restrict (combine f₀ f₁) (activity (combine f₀ f₁) root),
+        restrict (combine f₀ f₁) (!activity (combine f₀ f₁) root)) = (f₀, f₁)
+      rw [activity_combine, Bool.not_false, restrict_combine_false, restrict_combine_true]
+    · change ofAdd (boolToZMod2 (activity (combine f₀ f₁) root)) = 1
+      rw [activity_combine]
       rfl
   · have hε : ε = ofAdd 1 := by rw [← ofAdd_toAdd ε, h]
     rw [hε, ofSemidirect_apply, swapRootHom_ofAdd_one]
     refine SemidirectProduct.ext ?_ ?_
-    · change (restrict (phi f₀ f₁ * swapRoot) (activity (phi f₀ f₁ * swapRoot) root),
-        restrict (phi f₀ f₁ * swapRoot) (activity (phi f₀ f₁ * swapRoot) root + 1)) = (f₀, f₁)
-      have h11 : (1 + 1 : Fin 2) = 0 := rfl
-      rw [activity_phi_mul_swapRoot, h11, restrict_phi_mul_swapRoot_one,
-        restrict_phi_mul_swapRoot_zero]
-    · change ofAdd (if activity (phi f₀ f₁ * swapRoot) root = 0 then (0 : ZMod 2) else 1) = ofAdd 1
-      rw [activity_phi_mul_swapRoot]
+    · change (restrict (combine f₀ f₁ * swapRoot)
+          (activity (combine f₀ f₁ * swapRoot) root),
+        restrict (combine f₀ f₁ * swapRoot)
+          (!activity (combine f₀ f₁ * swapRoot) root)) = (f₀, f₁)
+      rw [activity_combine_mul_swapRoot, Bool.not_true, restrict_combine_mul_swapRoot_true,
+        restrict_combine_mul_swapRoot_false]
+    · change ofAdd (boolToZMod2 (activity (combine f₀ f₁ * swapRoot) root)) = ofAdd 1
+      rw [activity_combine_mul_swapRoot]
       rfl
 
-/-- Every rooted automorphism of the infinite binary tree is uniquely `phi f₀ f₁` or
-`phi f₀ f₁ * swapRoot`. Equivalently,
+/-- Every rooted automorphism of the infinite binary tree is uniquely `combine f₀ f₁` or
+`combine f₀ f₁ * swapRoot`. Equivalently,
 `TreeAut ≃* (TreeAut × TreeAut) ⋊ ℤ/2`. -/
 noncomputable def equivSemidirect :
     TreeAut ≃* (TreeAut × TreeAut) ⋊[swapHom] Multiplicative (ZMod 2) :=
