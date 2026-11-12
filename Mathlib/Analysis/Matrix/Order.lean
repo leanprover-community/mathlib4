@@ -176,11 +176,10 @@ theorem isStrictlyPositive_iff_posDef [DecidableEq n] {x : Matrix n n 𝕜} :
 alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPositive_iff_posDef
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
+
 end
 
 section kronecker
-variable {m : Type*}
-
 open scoped Kronecker
 
 /-- The kronecker product of two positive semi-definite matrices is positive semi-definite. -/
