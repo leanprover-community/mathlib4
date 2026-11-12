@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Algebra.Rat
 
 /-!
 # Homomorphisms of `ℚ`-algebras
-
 -/
 
 @[expose] public section

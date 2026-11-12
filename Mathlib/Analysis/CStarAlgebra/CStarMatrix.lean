@@ -653,15 +653,15 @@ which induces a topology that is not defeq with the matrix one, and the elementw
 matrices, in order to show that the two topologies are in fact equal -/
 open scoped Matrix.Norms.Elementwise
 
-private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
+private lemma nnNorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, CStarMatrix.toCLM M v⟫_A‖₊ ≤ C * ‖v‖₊ * ‖w‖₊) : ‖M‖₊ ≤ C :=
   CStarMatrix.norm_le_of_forall_inner_le fun v w => h v w
 
 open Finset in
 private lemma lipschitzWith_toMatrixAux :
     LipschitzWith 1 (ofMatrixₗ.symm (R := ℂ) : CStarMatrix m n A → Matrix m n A) := by
-  refine AddMonoidHomClass.lipschitz_of_bound_nnnorm _ _ fun M => ?_
-  rw [one_mul, ← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm, Matrix.norm_le_iff (norm_nonneg _)]
+  refine AddMonoidHomClass.lipschitz_of_bound_nnNorm _ _ fun M => ?_
+  rw [one_mul, ← NNReal.coe_le_coe, coe_nnNorm, coe_nnNorm, Matrix.norm_le_iff (norm_nonneg _)]
   exact fun _ _ ↦ CStarMatrix.norm_entry_le_norm
 
 open CStarMatrix WithCStarModule in

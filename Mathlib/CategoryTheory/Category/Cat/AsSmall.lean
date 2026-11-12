@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.ULift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functorially embedding `Cat` into the category of small categories
 

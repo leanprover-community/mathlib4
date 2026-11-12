@@ -17,7 +17,6 @@ Given an expression `e`, `mkExprInclusionBody` recursively applies `InclusionExt
 `ExprInclusionBody` for `e`. Then `toExprInclusion` applies `HypothesisExt`s to the local context to
 construct inclusion hypotheses for the body's inclusion variables and closes the body into an
 `ExprInclusion`.
-
 -/
 
 namespace Inclusion

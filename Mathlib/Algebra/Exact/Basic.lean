@@ -388,7 +388,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · intro x y e
-      simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
+      simp only [LinearMap.add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
       simpa [h₁, h₂] using congr(g $e)
     · intro x

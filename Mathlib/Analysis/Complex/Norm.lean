@@ -99,7 +99,9 @@ theorem norm_conj (z : ℂ) : ‖conj z‖ = ‖z‖ := by simp [norm_def]
 
 @[simp] lemma norm_I : ‖I‖ = 1 := by simp [norm]
 
-@[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
+@[simp] lemma nnNorm_I : ‖I‖₊ = 1 := by simp [nnNorm]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_I := nnNorm_I
 
 @[simp 1100, norm_cast]
 lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := by
@@ -109,7 +111,9 @@ protected theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : ℂ)‖ = r :
   (norm_real _).trans (abs_of_nonneg h)
 
 @[simp, norm_cast]
-lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
+lemma nnNorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_real := nnNorm_real
 
 @[norm_cast]
 lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := Complex.norm_of_nonneg n.cast_nonneg
@@ -121,11 +125,15 @@ lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
 protected lemma norm_two : ‖(2 : ℂ)‖ = 2 := norm_ofNat 2
 
 @[simp 1100, norm_cast]
-lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp [norm_natCast]
+lemma nnNorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp [norm_natCast]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_natCast := nnNorm_natCast
 
 @[simp 1100]
-lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+lemma nnNorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(ofNat(n) : ℂ)‖₊ = OfNat.ofNat n := nnNorm_natCast n
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofNat := nnNorm_ofNat
 
 @[simp 1100, norm_cast]
 lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := by
@@ -141,10 +149,14 @@ lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := Complex.norm_of_nonneg q.cast_nonneg
 
 @[simp 1100, norm_cast]
-lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
+lemma nnNorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnNorm_real q
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ratCast := nnNorm_ratCast
 
 @[simp 1100, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm]; rfl
+lemma nnNorm_nnRatCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnNorm]; rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnRatCast
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   simp [norm_def, sq, Real.mul_self_sqrt (normSq_nonneg _)]
@@ -286,9 +298,15 @@ theorem isCauSeq_im (f : CauSeq ℂ (‖·‖)) : IsCauSeq abs fun n ↦ (f n).i
 noncomputable def cauSeqRe (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_re f⟩
 
+@[simp]
+theorem cauSeqRe_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqRe f x = (f x).re := rfl
+
 /-- The imaginary part of a complex Cauchy sequence, as a real Cauchy sequence. -/
 noncomputable def cauSeqIm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_im f⟩
+
+@[simp]
+theorem cauSeqIm_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqIm f x = (f x).im := rfl
 
 theorem isCauSeq_norm {f : ℕ → ℂ} (hf : IsCauSeq (‖·‖) f) :
     IsCauSeq abs ((‖·‖) ∘ f) := fun ε ε0 ↦
@@ -325,10 +343,10 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ (‖·‖)) :
           Complex.ext (by simp [limAux, cauSeqRe, ofReal]) (by simp [limAux, cauSeqIm, ofReal])
 
 theorem lim_re (f : CauSeq ℂ (‖·‖)) : lim (cauSeqRe f) = (lim f).re := by
-  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal]
+  rw [lim_eq_lim_im_add_lim_re]; simp
 
 theorem lim_im (f : CauSeq ℂ (‖·‖)) : lim (cauSeqIm f) = (lim f).im := by
-  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal]
+  rw [lim_eq_lim_im_add_lim_re]; simp
 
 theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
     IsCauSeq (‖·‖) fun n ↦ conj (f n) := fun ε ε0 ↦
@@ -340,19 +358,24 @@ theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
 noncomputable def cauSeqConj (f : CauSeq ℂ (‖·‖)) : CauSeq ℂ (‖·‖) :=
   ⟨_, isCauSeq_conj f⟩
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem cauSeqConj_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqConj f x = conj (f x) := rfl
+
 theorem lim_conj (f : CauSeq ℂ (‖·‖)) : lim (cauSeqConj f) = conj (lim f) :=
-  Complex.ext (by simp [cauSeqConj, (lim_re _).symm, cauSeqRe])
-    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm]; rfl)
+  Complex.ext (by simp [← Complex.lim_re]; rfl)
+    (by simp [← Complex.lim_im, ← lim_neg]; rfl)
 
 /-- The norm of a complex Cauchy sequence, as a real Cauchy sequence. -/
 noncomputable def cauSeqNorm (f : CauSeq ℂ (‖·‖)) : CauSeq ℝ abs :=
   ⟨_, isCauSeq_norm f.2⟩
 
+@[simp]
+theorem cauSeqNorm_apply (f : CauSeq ℂ (‖·‖)) (x : ℕ) : cauSeqNorm f x = ‖f x‖ := rfl
+
 theorem lim_norm (f : CauSeq ℂ (‖·‖)) : lim (cauSeqNorm f) = ‖lim f‖ :=
   lim_eq_of_equiv_const fun ε ε0 ↦
     let ⟨i, hi⟩ := equiv_lim f ε ε0
-    ⟨i, fun j hj => lt_of_le_of_lt (abs_norm_sub_norm_le _ _) (hi j hj)⟩
+    ⟨i, fun j hj => lt_of_le_of_lt (by simpa using abs_norm_sub_norm_le _ _) (hi j hj)⟩
 
 lemma ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : s ≠ 0 :=
   fun h ↦ (zero_re ▸ h ▸ hs).false

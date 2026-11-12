@@ -456,7 +456,7 @@ def Mathlib.TacticAnalysis.tryAtEachStep
 /-- Run a tactic (given as a string) at each proof step, with optional timing.
 
 `label` is the human-readable name shown in output (e.g., "grind").
-`tacticStr` is the tactic syntax as a string (e.g., "grind +suggestions").
+`tacticStr` is the tactic syntax as a string (e.g., "grind").
 Tactic sequences like "simp; grind" are also supported.
 
 Reports elapsed time in milliseconds for each successful replacement
@@ -483,7 +483,7 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
 /-- Run a custom tactic at each proof step, configured via environment variables.
 
 Reads from environment variables:
-- `TRY_AT_EACH_STEP_TACTIC`: Tactic syntax to try (e.g., "grind +suggestions") - required
+- `TRY_AT_EACH_STEP_TACTIC`: Tactic syntax to try (e.g., "grind") - required
 - `TRY_AT_EACH_STEP_LABEL`: Human-readable label for output (optional, defaults to tactic)
 
 If `TRY_AT_EACH_STEP_TACTIC` is missing, this linter does nothing.
@@ -495,7 +495,7 @@ To enable, add to the `mathlibOnlyLinters` array in `lakefile.lean`:
 
 Then run with the environment variable:
 ```bash
-TRY_AT_EACH_STEP_TACTIC="grind +suggestions" lake build Mathlib
+TRY_AT_EACH_STEP_TACTIC="grind" lake build Mathlib
 ```
 
 This generic entry point is used by the hammer-bench benchmarking tool

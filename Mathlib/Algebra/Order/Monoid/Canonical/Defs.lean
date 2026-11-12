@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Units.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonically ordered monoids
 -/

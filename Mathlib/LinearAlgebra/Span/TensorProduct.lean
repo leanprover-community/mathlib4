@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Epi
 public import Mathlib.Combinatorics.Matroid.Init
 public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.Data.Nat.Totient

@@ -19,7 +19,6 @@ a shift.
 
 The condition `r.IsCompatibleWithShift A` on the relation `r` is a class so that
 the shift can be automatically inferred on the quotient category.
-
 -/
 
 @[expose] public section
