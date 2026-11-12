@@ -45,16 +45,16 @@ integral, and involutive quantales easier to add on later.
 * We provide basic distributivity laws for sSup into iSup and sup, monotonicity of
   the semigroup operator, and basic equivalences for left- and right-residuation.
 
-* `isMulLeftsided`, `isAddLeftsided`, `isMulRightsided`, `isAddRightsided` :
+* `IsMulLeftsided`, `IsAddLeftsided`, `IsMulRightsided`, `IsAddRightsided` :
   Defining left- and right-sided elements of a (additive) quantale.
 
-* `isStrictMulLeftsided`, `isStrictAddLeftsided`, `isStrictMulRightsided`,
-  `isStrictAddRightsided` :
+* `IsStrictMulLeftsided`, `IsStrictAddLeftsided`, `IsStrictMulRightsided`,
+  `IsStrictAddRightsided` :
   Defining strict left- and right-sided elements of a (additive) quantale.
 
-* `isMulTwosided`, `isAddTwosided` : Defining two-sided elements of a (additive) quantale.
+* `IsMulTwosided`, `IsAddTwosided` : Defining two-sided elements of a (additive) quantale.
 
-* `isStrictMulTwosided`, `isStrictAddTwosided` : Defining strict two-sided elements of a
+* `IsStrictMulTwosided`, `IsStrictAddTwosided` : Defining strict two-sided elements of a
   (additive) quantale.
 
 ## Notation
