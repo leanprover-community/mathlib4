@@ -113,11 +113,11 @@ protected theorem abs_nnrpow (T : E →L[ℂ] F) (x : ℝ≥0) :
     |T| ^ x = (T† ∘L T) ^ (x / 2) := by
   simp [← ContinuousLinearMap.abs_nnrpow_two_mul, mul_div_left_comm]
 
-theorem abs_of_isPositive {S : E →L[ℂ] E} (hS : S.IsPositive) : |S| = S := by
+protected theorem IsPositive.abs_eq_self {S : E →L[ℂ] E} (hS : S.IsPositive) : |S| = S := by
   rw [ContinuousLinearMap.abs_eq_cfcAbs]
   exact CFC.abs_of_nonneg ..
 
-theorem abs_of_isPositive_neg {S : E →L[ℂ] E} (hS : (-S).IsPositive) : |S| = -S := by
+theorem IsPositive.abs_eq_neg_self {S : E →L[ℂ] E} (hS : (-S).IsPositive) : |S| = -S := by
   rw [ContinuousLinearMap.abs_eq_cfcAbs]
   exact CFC.abs_of_nonpos _ (neg_nonneg.mp hS.nonneg)
 
