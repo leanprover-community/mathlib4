@@ -29,10 +29,15 @@ variable {ι κ R : Type*} {M N : Matrix ι ι R}
 
 /-- A matrix is symmetrizable if it is symmetric when multiplied by a diagonal matrix of diagonal
 entries that do not divide zero. -/
+@[expose]
 def IsSymmetrizable [MonoidWithZero R] (M : Matrix ι ι R) : Prop :=
   ∃ d : ι → R, (∀ i, d i ∈ nonZeroDivisors R) ∧ ∀ i j, d i * M i j = d j * M j i
 
 section IsSymmetrizable
+
+lemma IsSymmetrizable.of_isEmpty [Semiring R] [LT R] [IsEmpty ι] :
+    M.IsSymmetrizable :=
+  ⟨1, isEmptyElim, isEmptyElim⟩
 
 lemma IsSymm.IsSymmetrizable [MonoidWithZero R] (h : M.IsSymm) :
     M.IsSymmetrizable := by
@@ -109,11 +114,16 @@ end IsSymmetrizable
 
 /-- A matrix is positively symmetrizable if it is symmetric when multiplied by a diagonal matrix of
 positive diagonal entries. -/
+@[expose]
 def IsPosSymmetrizable [Semiring R] [LT R]
     (M : Matrix ι ι R) : Prop :=
   ∃ d : ι → R, (∀ i, 0 < d i) ∧ ∀ i j, d i * M i j = d j * M j i
 
 section IsPosSymmetrizable
+
+lemma IsPosSymmetrizable.of_isEmpty [Semiring R] [LT R] [IsEmpty ι] :
+    M.IsPosSymmetrizable :=
+  ⟨1, isEmptyElim, isEmptyElim⟩
 
 lemma IsPosSymmetrizable.isSymmetrizable [Semiring R] [IsDomain R] [Preorder R]
     (h : M.IsPosSymmetrizable) : M.IsSymmetrizable := by

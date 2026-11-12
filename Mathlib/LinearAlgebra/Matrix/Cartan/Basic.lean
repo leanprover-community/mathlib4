@@ -559,23 +559,25 @@ theorem submatrix {κ : Type*} [Fintype κ] [DecidableEq κ] {f : κ → ι} (hf
     nlinarith
 
 theorem isPosSymmetrizable : M.IsPosSymmetrizable := by
-  induction hcard : Fintype.card ι using Nat.strong_induction_on generalizing ι with | h n ih =>
+  induction hcard : Fintype.card ι using Nat.strong_induction_on generalizing ι with | ind n ih =>
     by_cases hne : Nonempty ι
     · obtain ⟨v, w, hvw, _⟩ := hM.exists_row_with_single_offDiag
       let κ := {i : ι // i ≠ v}
       have h : Fintype.card κ < n := hcard ▸ Fintype.card_lt_of_injective_not_surjective
         (Subtype.val : κ → ι) Subtype.val_injective (fun h ↦ by grind [h v])
       obtain ⟨e, he, hsub⟩ := ih (Fintype.card κ) h (hM.submatrix Subtype.val_injective) rfl
-      have hE (i j) : e i * M i.1 j.1 = e j * M j.1 i.1 := by
-        simpa only [submatrix_apply] using hsub i j
+      let e' (i : ι) : ℤ := if hi : i = v then 1 else e ⟨i, hi⟩
+      have he' i : 0 < e' i := by by_cases hi : i = v <;> simp [e', hi, he]
+      have hE' i (hi : i ≠ v) j (hj : j ≠ v) : e' i * M i j = e' j * M j i := by
+        simpa [e', hi, hj, submatrix_apply] using hsub ⟨i, hi⟩ ⟨j, hj⟩
       by_cases! hw : w = v
-      · exact .extend_index e he 1 1 (by norm_num) (by norm_num) hE (by grind [hM.zero_comm])
+      · exact .mk_of_forall_ne e' he' hE' ⟨1, one_pos, 1, one_pos, by grind [hM.zero_comm]⟩
       · have hvw_neg : M v w < 0 := lt_of_le_of_ne (hM.offDiag_nonpos v w hw.symm) hvw
         have hwv_neg := lt_of_le_of_ne (hM.offDiag_nonpos w v hw) (by grind [hM.zero_comm])
-        exact .extend_index e he (-M v w) ((-M w v) * e ⟨w, hw⟩) (neg_pos.mpr hvw_neg)
-          (mul_pos (neg_pos.mpr hwv_neg) (he ⟨w, hw⟩)) hE (by grind [hM.zero_comm])
-    · have : IsEmpty ι := ⟨fun i ↦ hne ⟨i⟩⟩
-      exact ⟨1, isEmptyElim, isEmptyElim⟩
+        exact .mk_of_forall_ne e' he' hE'
+          ⟨-M v w, neg_pos.mpr hvw_neg, (-M w v) * e' w,
+            mul_pos (neg_pos.mpr hwv_neg) (he' w), by grind [hM.zero_comm]⟩
+    · exact @IsPosSymmetrizable.of_isEmpty _ _ _ _ _ ⟨fun i ↦ hne ⟨i⟩⟩
 
 lemma exists_pos_mulVec_pos : ∃ u : ι → ℤ, (∀ i, 0 < u i) ∧ (∀ i, 0 < (M *ᵥ u) i) := by
   obtain ⟨u, hMu⟩ : ∃ u, ∀ i, 0 < (M *ᵥ u) i :=
