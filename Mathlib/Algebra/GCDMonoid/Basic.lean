@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.Order.Monoid.Associated
 public import Mathlib.Algebra.Ring.Associated
 
 /-!
@@ -95,7 +96,7 @@ noncomputable abbrev NormalizationMonoid.ofRightInverse {α : Type*} [MonoidWith
   { normUnit a := if a = 0 then 1 else (assoc a).choose
     normUnit_zero := ite_eq_left rfl
     normUnit_one := by
-      nontriviality α; rw [← Units.val_inj]; convert ← (assoc 1).choose_spec <;> simp [out_one]
+      nontriviality α; rw [← Units.val_inj]; convert! ← (assoc 1).choose_spec; simp [out_one]
     normUnit_mul_units {a} u ha := by
       simp_rw [Units.mul_left_eq_zero, ite_eq_right ha, eq_inv_mul_iff_mul_eq, ← Units.val_inj]
       rw [Units.val_mul, ← (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha).eq_iff,
@@ -129,7 +130,7 @@ section NormalizationMonoid
 
 variable [MonoidWithZero α] [NormalizationMonoid α]
 
-@[simp] theorem normUnit_coe_units (u : αˣ) : normUnit u.1 = u⁻¹ := by
+@[simp] theorem normUnit_coe_units (u : αˣ) : normUnit u.val = u⁻¹ := by
   nontriviality α; convert normUnit_mul_units u one_ne_zero using 1 <;> simp
 
 /-- Chooses an element of each associate class, by multiplying by `normUnit` -/
@@ -199,6 +200,15 @@ theorem dvd_normalize_iff {a b : α} : a ∣ normalize b ↔ a ∣ b :=
 @[simp]
 theorem normalize_dvd_iff {a b : α} : normalize a ∣ b ↔ a ∣ b :=
   Units.mul_right_dvd
+
+@[simp]
+theorem irreducible_normalize_iff {x : α} : Irreducible (normalize x) ↔ Irreducible x :=
+  (normalize_associated x).irreducible_iff
+
+@[simp]
+theorem prime_normalize_iff {α : Type*} [CommMonoidWithZero α] [NormalizationMonoid α] {x : α} :
+    Prime (normalize x) ↔ Prime x :=
+  (normalize_associated x).prime_iff
 
 section
 
@@ -1114,7 +1124,6 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
       apply Or.resolve_left (mul_eq_zero.1 _) a0'
       rw [h, mul_zero] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define `NormalizedGCDMonoid` on a structure just from the `gcd` and its properties. -/
 @[instance_reducible]
 noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq α] (gcd : α → α → α)
@@ -1209,7 +1218,6 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       rw [mul_comm, mul_dvd_mul_iff_right h_1.2]
       apply ac }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Define `NormalizedGCDMonoid` on a structure just from the `lcm` and its properties. -/
 @[instance_reducible]
 noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq α] (lcm : α → α → α)
@@ -1399,8 +1407,8 @@ instance instGCDMonoid : GCDMonoid (Associates α) where
     rintro ⟨a⟩ ⟨b⟩
     rw [associated_iff_eq]
     exact Quotient.sound <| gcd_mul_lcm _ _
-  lcm_zero_left := by rintro ⟨a⟩; exact congr_arg Associates.mk <| lcm_zero_left _
-  lcm_zero_right := by rintro ⟨a⟩; exact congr_arg Associates.mk <| lcm_zero_right _
+  lcm_zero_left := by rintro ⟨a⟩; congrm Associates.mk $(lcm_zero_left _)
+  lcm_zero_right := by rintro ⟨a⟩; congrm Associates.mk $(lcm_zero_right _)
 
 theorem gcd_mk_mk {a b : α} : gcd (Associates.mk a) (Associates.mk b) = Associates.mk (gcd a b) :=
   rfl

@@ -5,8 +5,10 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Andrew Yan
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Theory of monic polynomials
@@ -17,13 +19,13 @@ We define `integralNormalization`, which relate arbitrary polynomials to monic o
 @[expose] public section
 
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 
 universe u v y
 
-variable {R : Type u} {S : Type v} {a b : R} {m n : ℕ} {ι : Type y}
+variable {R : Type u} {S : Type v} {a : R} {m n : ℕ}
 
 section IntegralNormalization
 
@@ -54,13 +56,13 @@ theorem integralNormalization_coeff {i : ℕ} :
     (integralNormalization p).coeff i =
       if p.degree = i then 1 else coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) := by
   have : p.coeff i = 0 → p.degree ≠ i := fun hc hd => coeff_ne_zero_of_eq_degree hd hc
-  simp +contextual [sum_def, integralNormalization, coeff_monomial, this,
+  simp +contextual [sum_def, integralNormalization, Finsupp.single_apply, this,
     mem_support_iff]
 
 theorem support_integralNormalization_subset :
     (integralNormalization p).support ⊆ p.support := by
   intro
-  simp +contextual [sum_def, integralNormalization, coeff_monomial, mem_support_iff]
+  simp +contextual [sum_def, integralNormalization, Finsupp.single_apply, mem_support_iff]
 
 theorem integralNormalization_coeff_degree {i : ℕ} (hi : p.degree = i) :
     (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, ite_eq_left hi]
@@ -146,6 +148,13 @@ theorem integralNormalization_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (
     (integralNormalization p).eval₂ f (f p.leadingCoeff * x) =
       f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x :=
   integralNormalization_eval₂_leadingCoeff_mul_of_commute h _ _ (.all _ _) (.all _ _)
+
+lemma integralNormalization_aeval_smul {R} [CommSemiring R] [Algebra R S] {p : R[X]}
+    (h : 1 ≤ p.natDegree) (x : S) :
+    p.integralNormalization.aeval (p.leadingCoeff • x) =
+      p.leadingCoeff ^ (p.natDegree - 1) • p.aeval x := by
+  simp_rw [Algebra.smul_def, map_pow]
+  exact integralNormalization_eval₂_leadingCoeff_mul h _ _
 
 theorem integralNormalization_eval₂_eq_zero_of_commute {p : R[X]} (f : R →+* A) {z : A}
     (hz : eval₂ f z p = 0) (h₁ : Commute (f p.leadingCoeff) z) (h₂ : ∀ {r r'}, Commute (f r) (f r'))

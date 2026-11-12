@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.Local
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
-public import Mathlib.CategoryTheory.ObjectProperty.Local
 
 /-!
 # Orthogonal of triangulated subcategories
@@ -16,7 +16,6 @@ Let `P` be a triangulated subcategory of a pretriangulated category `C`. We show
 that `P.rightOrthogonal` (which consists of objects `Y` with no nonzero
 map `X ⟶ Y` with `X` satisfying `P`) is a triangulated subcategory. The dual result
 for `P.leftOrthogonal` is also obtained.
-
 -/
 
 public section
@@ -71,7 +70,6 @@ example [P.IsTriangulated] : P.rightOrthogonal.IsTriangulated := inferInstance
 
 example [P.IsTriangulated] : P.leftOrthogonal.IsTriangulated := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLocal_trW [P.IsTriangulated] :
     P.trW.isLocal = P.rightOrthogonal := by
   ext Y
@@ -86,7 +84,6 @@ lemma isLocal_trW [P.IsTriangulated] :
       α (hY _ (P.le_shift _ _ hX₃))
     exact ⟨β, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isColocal_trW [P.IsTriangulated] :
     P.trW.isColocal = P.leftOrthogonal := by
   ext X

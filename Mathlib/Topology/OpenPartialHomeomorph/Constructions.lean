@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+
 /-!
 # Constructions of new partial homeomorphisms from old
 
@@ -26,7 +27,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 @[expose] public section
 
-open Function Set Filter Topology
+open Function Set Topology
 
 variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']

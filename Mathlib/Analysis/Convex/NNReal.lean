@@ -6,8 +6,9 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Basic.NNReal.Defs
+
+import Mathlib.Algebra.Order.Module.Field
 
 /-!
 # Specific lemmas about convexity over `ℝ≥0`

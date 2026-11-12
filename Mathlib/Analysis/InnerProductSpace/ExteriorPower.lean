@@ -33,14 +33,15 @@ via the Gram determinant formula: on decomposable elements,
   we need to choose an orthonormal basis of `E`. But we can reduce the general case to
   the finite-dimensional case by noticing that any `x : ⋀[𝕜]^n E` is contained in some
   `⋀[𝕜]^n F` for a finite-dimensional subspace `F ≤ E`.
-
 -/
 
 @[expose] public noncomputable section
 
 namespace exteriorPower
 
-open RealInnerProductSpace Matrix
+open Matrix
+
+open scoped RealInnerProductSpace
 
 variable {n : ℕ} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 

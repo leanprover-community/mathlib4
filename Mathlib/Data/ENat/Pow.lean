@@ -6,7 +6,9 @@ Authors: Damien Thomine
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Data.ENat.Basic
+public import Mathlib.Order.SuccPred.ENat
+
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Powers of extended natural numbers

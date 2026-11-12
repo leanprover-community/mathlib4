@@ -6,7 +6,6 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Analysis.Quaternion
-public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
@@ -21,7 +20,6 @@ This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
 * `Quaternion.exp_of_re_eq_zero`: the special case when the quaternion has a zero real part.
 * `Quaternion.norm_exp`: the norm of the quaternion exponential is the norm of the exponential of
   the real part.
-
 -/
 
 public section
@@ -75,7 +73,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
     norm_cast
   · rw [smul_smul]
     congr 1
-    simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left' hqn]
+    simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left₀ hqn]
     ring
 
 /-- Auxiliary result; if the power series corresponding to `Real.cos` and `Real.sin` evaluated
@@ -87,14 +85,13 @@ theorem hasSum_expSeries_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) {c s 
   replace hc := hasSum_coe.mpr hc
   replace hs := (hs.div_const ‖q‖).smul_const q
   refine HasSum.even_add_odd ?_ ?_
-  · convert! hc using 1
+  · convert hc using 1
     ext n : 1
     rw [expSeries_even_of_imaginary hq]
-  · convert! hs using 1
+  · convert hs using 1
     ext n : 1
     rw [expSeries_odd_of_imaginary hq]
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed or we get errors in later declarations.
 /-- The closed form for the quaternion exponential on imaginary quaternions. -/
 theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
     exp q = ↑(Real.cos ‖q‖) + (Real.sin ‖q‖ / ‖q‖) • q := by
@@ -103,7 +100,6 @@ theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
   simp_rw [← expSeries_apply_eq]
   exact hasSum_expSeries_of_imaginary hq (Real.hasSum_cos _) (Real.hasSum_sin _)
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed or we get errors in later declarations.
 /-- The closed form for the quaternion exponential on arbitrary quaternions. -/
 theorem exp_eq (q : Quaternion ℝ) :
     exp q = exp q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by

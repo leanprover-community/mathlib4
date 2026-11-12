@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.Local
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.Localization.Adjunction
+public import Mathlib.CategoryTheory.ObjectProperty.Local
 
 /-!
 # Bousfield localization
@@ -30,7 +29,6 @@ The dual results are also obtained.
 ## References
 
 * https://ncatlab.org/nlab/show/left+Bousfield+localization+of+model+categories
-
 -/
 
 @[expose] public section
@@ -213,7 +211,6 @@ section
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F) [F.Full] [F.Faithful]
 include adj
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isLocal_adj_unit_app (X : D) : isLocal (· ∈ Set.range F.obj) (adj.unit.app X) := by
   rintro _ ⟨Y, rfl⟩
   convert!
@@ -248,7 +245,6 @@ section
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F) [G.Full] [G.Faithful]
 include adj
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma isColocal_adj_counit_app (X : C) : isColocal (· ∈ Set.range G.obj) (adj.counit.app X) := by
   rintro _ ⟨Y, rfl⟩
   convert!

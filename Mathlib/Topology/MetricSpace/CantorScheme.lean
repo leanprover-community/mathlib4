@@ -37,14 +37,15 @@ in this file. See instead `PiNat.res`.
 ## Tags
 
 scheme, cantor scheme, lusin scheme, approximation.
-
 -/
 
 @[expose] public section
 
 namespace CantorScheme
 
-open List Function Filter Set PiNat Topology
+open List Function Filter Set PiNat
+
+open scoped Topology
 
 variable {β α : Type*} (A : List β → Set α)
 

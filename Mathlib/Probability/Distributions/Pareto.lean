@@ -5,8 +5,8 @@ Authors: Alvan Caleb Arulandu
 -/
 module
 
-public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Probability.CDF
 
 /-! # Pareto distributions over ℝ
 
@@ -19,14 +19,13 @@ Define the Pareto measure over the reals.
 * `paretoPDF`: `ℝ≥0∞`-valued pdf,
   `paretoPDF t r = ENNReal.ofReal (paretoPDFReal t r)`.
 * `paretoMeasure`: a Pareto measure on `ℝ`, parametrized by its scale `t` and shape `r`.
-
 -/
 
 @[expose] public section
 
 open scoped ENNReal NNReal
 
-open MeasureTheory Real Set Filter Topology
+open MeasureTheory Real Set Filter
 
 namespace ProbabilityTheory
 variable {t r x : ℝ}
@@ -90,8 +89,6 @@ lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
     | inr htp =>
       positivity [lt_of_lt_of_le htp h]
   · positivity
-
-open Measure
 
 /-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]

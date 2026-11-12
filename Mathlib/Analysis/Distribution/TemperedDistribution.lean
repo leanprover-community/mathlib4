@@ -40,7 +40,7 @@ open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {ι 𝕜 E F F₁ F₂ : Type*}
+variable {ι 𝕜 E F : Type*}
 
 section definition
 
@@ -398,7 +398,7 @@ instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
     simp [lineDerivOp_left_smul, map_smul_of_tower f]
 
 variable
-  [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
+  [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E]
   {μ : Measure E} [μ.IsAddHaarMeasure]
 
 theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :

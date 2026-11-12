@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.MetricSpace.Thickening
+
+import Mathlib.Analysis.Normed.Group.Bounded
 
 /-!
 # Properties of pointwise addition of sets in normed groups
@@ -39,7 +40,8 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
 @[to_additive]
 theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
   symm
-  exact AntilipschitzWith.isBounded_of_image2_left _ (fun x => (isometry_mul_left x).antilipschitz)
+  exact AntilipschitzWith.isBounded_of_image2_left _
+    (fun x => (isometry_mul_left x).antilipschitzWith)
     (by rwa [image2_swap])
 
 @[to_additive]
@@ -72,8 +74,8 @@ theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹
 @[to_additive]
 theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
-        (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith) fun _ _ =>
-        (isometry_mul_left _).lipschitz.lipschitzOnWith).trans_eq <|
+        (fun _ _ => (isometry_mul_right _).lipschitzWith.lipschitzOnWith) fun _ _ =>
+        (isometry_mul_left _).lipschitzWith.lipschitzOnWith).trans_eq <|
     by simp only [ENNReal.coe_one, one_mul]
 
 end EMetric
@@ -133,11 +135,11 @@ theorem ball_one_div_singleton : ball 1 δ / {x} = ball x⁻¹ δ := by
 
 @[to_additive]
 theorem smul_ball_one : x • ball (1 : E) δ = ball x δ := by
-  rw [smul_ball, smul_eq_mul, mul_one]
+  rw [Metric.smul_ball, smul_eq_mul, mul_one]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_mul_closedBall : {x} * closedBall y δ = closedBall (x * y) δ := by
-  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_closedBall]
+  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, Metric.smul_closedBall]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_div_closedBall : {x} / closedBall y δ = closedBall (x / y) δ := by
@@ -169,7 +171,7 @@ theorem smul_closedBall_one : x • closedBall (1 : E) δ = closedBall x δ := b
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_mul_sphere : {x} * sphere y δ = sphere (x * y) δ := by
-  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, smul_sphere]
+  simp_rw [singleton_mul, ← smul_eq_mul, image_smul, Metric.smul_sphere]
 
 @[to_additive (attr := simp 1100)]
 theorem singleton_div_sphere : {x} / sphere y δ = sphere (x / y) δ := by

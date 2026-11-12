@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Grothendieck
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filteredness of Grothendieck construction
 
@@ -25,7 +28,6 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ Cat)
 
 open IsFiltered
 
-set_option backward.isDefEq.respectTransparency.types false in
 instance [IsFilteredOrEmpty C] [∀ c, IsFilteredOrEmpty (F.obj c)] :
     IsFilteredOrEmpty (Grothendieck F) := by
   refine ⟨?_, ?_⟩

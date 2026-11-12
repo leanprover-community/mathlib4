@@ -6,11 +6,9 @@ Authors: Fox Thomson, Martin Dvorak, Rudy Peterson
 module
 
 public import Mathlib.Algebra.Order.Kleene
-public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Languages
@@ -49,13 +47,14 @@ with respect to other language operations.
 * `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
   `l = m * l + n`, and `m` doesn't contain the empty string,
   then `l` is the language `m∗ * n`
-
 -/
 
 @[expose] public section
 
 
-open List Set Computability
+open List Set
+
+open scoped Computability
 
 universe v
 

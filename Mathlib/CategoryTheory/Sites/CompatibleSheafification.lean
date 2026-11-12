@@ -9,10 +9,10 @@ public import Mathlib.CategoryTheory.Sites.CompatiblePlus
 public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
+# Compatibility of sheafification with functors
 
 In this file, we prove that sheafification is compatible with functors which
 preserve the correct limits and colimits.
-
 -/
 
 @[expose] public section

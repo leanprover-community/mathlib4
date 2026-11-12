@@ -6,8 +6,8 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-public import Mathlib.Algebra.Algebra.Spectrum.Pi
-public import Mathlib.Algebra.Star.StarAlgHom
+
+import Mathlib.Algebra.Algebra.Spectrum.Pi
 
 /-! # The continuous functional calculus on product types
 
@@ -89,7 +89,6 @@ section unital_pi
 variable {ι R S : Type*} {A : ι → Type*} [CommSemiring R] [StarRing R] [MetricSpace R]
   [IsTopologicalSemiring R] [ContinuousStar R] [CommRing S] [Algebra R S]
   [∀ i, Ring (A i)] [∀ i, Algebra S (A i)] [∀ i, Algebra R (A i)] [∀ i, IsScalarTower R S (A i)]
-  [hinst : IsScalarTower R S (∀ i, A i)]
   [∀ i, StarRing (A i)] [∀ i, TopologicalSpace (A i)] {p : (∀ i, A i) → Prop}
   {q : (i : ι) → A i → Prop}
   [ContinuousFunctionalCalculus R (∀ i, A i) p]

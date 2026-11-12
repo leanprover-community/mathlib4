@@ -6,7 +6,11 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Algebra.Regular.Basic
+
+import Mathlib.Algebra.Regular.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Product of regular elements
@@ -19,7 +23,7 @@ Move to `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`?
 public section
 
 
-variable {R : Type*} {a b : R}
+variable {R : Type*} {a : R}
 
 section CommMonoid
 

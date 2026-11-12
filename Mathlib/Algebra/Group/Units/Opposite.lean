@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Units.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Units in multiplicative and additive opposites
 -/
@@ -17,8 +20,6 @@ public import Mathlib.Algebra.Group.Units.Defs
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
-variable {α : Type*}
-
 open MulOpposite
 
 /-- The units of the opposites are equivalent to the opposites of the units. -/
@@ -26,9 +27,10 @@ open MulOpposite
       /-- The additive units of the additive opposites are equivalent to the additive opposites
       of the additive units. -/]
 def Units.opEquiv {M} [Monoid M] : Mᵐᵒᵖˣ ≃* Mˣᵐᵒᵖ where
-  toFun u := op ⟨unop u, unop ↑u⁻¹, op_injective u.4, op_injective u.3⟩
-  invFun := MulOpposite.rec' fun u => ⟨op ↑u, op ↑u⁻¹, unop_injective <| u.4, unop_injective u.3⟩
-  map_mul' _ _ := unop_injective <| Units.ext <| rfl
+  toFun u := op ⟨unop u, unop ↑u⁻¹, op_injective u.inv_val, op_injective u.val_inv⟩
+  invFun := MulOpposite.rec' fun u =>
+    ⟨op ↑u, op ↑u⁻¹, unop_injective u.inv_val, unop_injective u.val_inv⟩
+  map_mul' _ _ := unop_injective <| Units.ext rfl
 
 @[to_additive (attr := simp)]
 theorem Units.coe_unop_opEquiv {M} [Monoid M] (u : Mᵐᵒᵖˣ) :

@@ -20,7 +20,7 @@ This file defines instances for additive and multiplicative actions on the binar
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

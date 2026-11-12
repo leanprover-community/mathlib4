@@ -19,7 +19,6 @@ then there is an isomorphism `K.totalFlipIso c : K.flip.total c ≅ K.total c`.
 Moreover, if we also have `[TotalComplexShapeSymmetry c₂ c₁ c]` and that the signs
 are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomorphisms
 `K.totalFlipIso c` and `K.flip.totalFlipIso c` are inverse to each other.
-
 -/
 
 @[expose] public section
@@ -108,7 +107,6 @@ lemma totalFlipIsoX_hom_D₂ (j j' : J) :
     · rw [K.d₂_eq_zero _ _ _ _ h₂, K.flip.d₁_eq_zero _ _ _ _ h₂, smul_zero, zero_comp]
   · rw [K.D₂_shape _ _ _ h₀, K.flip.D₁_shape c _ _ h₀, zero_comp, comp_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The symmetry isomorphism `K.flip.total c ≅ K.total c` of the total complex of a
 bicomplex when we have `[TotalComplexShapeSymmetry c₁ c₂ c]`. -/
 noncomputable def totalFlipIso : K.flip.total c ≅ K.total c :=

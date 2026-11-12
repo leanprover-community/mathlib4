@@ -31,7 +31,6 @@ variable {J : Type w} [Category.{w'} J]
 namespace CategoryTheory.WithTerminal
 variable {X : C} {K : J ⥤ Over X} {F : C ⥤ D} {t : Cone K}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The category of functors `J ⥤ Over X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.
@@ -55,14 +54,12 @@ def commaFromOver : (J ⥤ Over X) ⥤ Comma (𝟭 (J ⥤ C)) (Functor.const J) 
 @[simps!]
 def liftFromOver : (J ⥤ Over X) ⥤ WithTerminal J ⥤ C := commaFromOver ⋙ equivComma.inverse
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The extension of a functor to over categories behaves well with compositions. -/
 @[simps]
 def liftFromOverComp : liftFromOver.obj (K ⋙ Over.post F) ≅ liftFromOver.obj K ⋙ F where
   hom.app | star | of a => 𝟙 _
   inv.app | star | of a => 𝟙 _
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- A cone of a functor `K : J ⥤ Over X` consists of an object of `Over X`, together
 with morphisms. This same object is a cone of the extended functor
@@ -173,7 +170,6 @@ def commaFromUnder : (J ⥤ Under X) ⥤ Comma (Functor.const J) (𝟭 (J ⥤ C)
 @[simps!]
 def liftFromUnder : (J ⥤ Under X) ⥤ WithInitial J ⥤ C := commaFromUnder ⋙ equivComma.inverse
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The extension of a functor to under categories behaves well with compositions. -/
 @[simps]
 def liftFromUnderComp : liftFromUnder.obj (K ⋙ Under.post F) ≅ liftFromUnder.obj K ⋙ F where

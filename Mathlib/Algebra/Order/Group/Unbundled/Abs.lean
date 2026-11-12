@@ -5,10 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
+public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Order.Group.Lattice
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Absolute values in ordered groups
@@ -23,8 +23,6 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 -/
 
 @[expose] public section
-
-open Function
 
 variable {α : Type*}
 
@@ -133,11 +131,11 @@ lemma mabs_mabs_div_mabs_le (a b : α) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :
   rw [mabs, sup_le_iff]
   constructor
   · apply div_le_iff_le_mul.2
-    convert! mabs_mul_le (a / b) b
+    convert mabs_mul_le (a / b) b
     rw [div_mul_cancel]
   · rw [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_le_iff_le_mul, mabs_div_comm]
-    convert! mabs_mul_le (b / a) a
-    · rw [div_mul_cancel]
+    convert mabs_mul_le (b / a) a
+    rw [div_mul_cancel]
 
 @[to_additive] lemma sup_div_inf_eq_mabs_div (a b : α) : (a ⊔ b) / (a ⊓ b) = |b / a|ₘ := by
   simp_rw [sup_div, div_inf, div_self', sup_comm, sup_sup_sup_comm, sup_idem]

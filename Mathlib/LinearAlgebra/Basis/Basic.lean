@@ -35,7 +35,7 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 namespace Module.Basis
 
@@ -254,12 +254,10 @@ protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :
       map_add' := fun x y => by simp
       map_smul' := fun c x => by simp }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem singleton_apply (ι R : Type*) [Unique ι] [Semiring R] (i) : Basis.singleton ι R i = 1 :=
   apply_eq_iff.mpr (by simp [Basis.singleton])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
@@ -281,13 +279,12 @@ protected def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
 
 instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
   default := Basis.empty M
-  uniq := fun _ => congr_arg ofRepr <| Subsingleton.elim _ _
+  uniq := fun _ => congr(ofRepr $(Subsingleton.elim ..))
 
 end Empty
 
 section Module.IsTorsionFree
 
-set_option backward.isDefEq.respectTransparency false in
 -- Can't be an instance because the basis can't be inferred.
 protected lemma isTorsionFree (b : Basis ι R M) :
     Module.IsTorsionFree R M := b.repr.injective.moduleIsTorsionFree _ (by simp)

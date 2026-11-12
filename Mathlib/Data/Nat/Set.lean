@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Data.Set.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-### Recursion on the natural numbers and `Set.range`
+# Recursion on the natural numbers and `Set.range`
 -/
 
 public section

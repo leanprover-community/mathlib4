@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Products.Associator
+public import Mathlib.CategoryTheory.Sums.Associator
 
 /-!
 # Functors out of sums of categories.
@@ -15,7 +15,6 @@ This file records the universal property of sums of categories as an equivalence
 categories `Sum.functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B)`, and characterizes its
 precompositions with the left and right inclusion as corresponding to the projections on
 the product side.
-
 -/
 
 @[expose] public section
@@ -118,7 +117,6 @@ def natTransOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (Sum.functorEquiv A A' B).inverse.map ((η₁, η₂) :) ≫
       (Sum.functorEquiv A A' B).unitInv.app G
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :

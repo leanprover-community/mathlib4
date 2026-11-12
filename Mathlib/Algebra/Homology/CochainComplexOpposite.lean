@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Opposite
 
 /-!
 # Opposite categories of cochain complexes
@@ -15,7 +15,6 @@ We construct an equivalence of categories `CochainComplex.opEquivalence C`
 between `(CochainComplex C ℤ)ᵒᵖ` and `CochainComplex Cᵒᵖ ℤ`, and we show
 that two morphisms in `CochainComplex C ℤ` are homotopic iff they are
 homotopic as morphisms in `CochainComplex Cᵒᵖ ℤ`.
-
 -/
 
 @[expose] public section
@@ -159,7 +158,6 @@ def homotopyUnop (h : Homotopy ((opEquivalence C).functor.map f.op)
       dsimp
       simp [H (- -(n + 1)) (- -n) (n + 1) n (by simp) (by simp), ← op_comp_assoc, ← op_comp])
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma homotopyUnop_hom_eq
     (h : Homotopy ((opEquivalence C).functor.map f.op)
@@ -193,7 +191,6 @@ def homotopyOpEquiv {K L : CochainComplex C ℤ} {f g : K ⟶ L} :
     simp [homotopyOp_hom_eq _ p q (-p) (-q),
       homotopyUnop_hom_eq _ (-q) (-p) q p]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma exactAt_op {K : CochainComplex C ℤ} {n : ℤ} (hK : K.ExactAt n)
     (m : ℤ) (hm : n + m = 0 := by lia) :
     ((opEquivalence C).functor.obj (op K)).ExactAt m := by

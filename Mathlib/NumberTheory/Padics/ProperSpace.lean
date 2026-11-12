@@ -5,8 +5,9 @@ Authors: Jou Glasheen, Kevin Buzzard
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.ProperSpace
 public import Mathlib.NumberTheory.Padics.RingHoms
+
+import Mathlib.Analysis.Normed.Field.ProperSpace
 
 /-!
 # Properness of the p-adic numbers
@@ -34,7 +35,9 @@ public section
 
 assert_not_exists FiniteDimensional
 
-open Metric Topology
+open Metric
+
+open scoped Topology
 
 variable (p : ℕ) [Fact (Nat.Prime p)]
 

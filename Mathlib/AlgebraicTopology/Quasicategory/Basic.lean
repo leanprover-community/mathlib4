@@ -22,14 +22,15 @@ we show that the nerve of a category is a quasicategory.
 - Generalize the definition to higher universes.
   See the corresponding TODO in
   `Mathlib/AlgebraicTopology/SimplicialSet/KanComplex.lean`.
-
 -/
 
 public section
 
 namespace SSet
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 /-- A simplicial set `S` is a *quasicategory* if it satisfies the following horn-filling condition:
 for every `n : ℕ` and `0 < i < n`,

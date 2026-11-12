@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Countable.Defs
+public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Data.Nat.Prime.Infinite
 public import Mathlib.Data.Set.Finite.Lattice
@@ -34,6 +34,7 @@ instance Primes.infinite : Infinite Primes := infinite_setOfPred_prime.to_subtyp
 instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
 
 /-- The prime factors of a natural number as a finset. -/
+@[oeis A027748 "starting from the 2nd element"]
 def primeFactors (n : ℕ) : Finset ℕ := n.primeFactorsList.toFinset
 
 @[simp] lemma toFinset_factors (n : ℕ) : n.primeFactorsList.toFinset = n.primeFactors := rfl

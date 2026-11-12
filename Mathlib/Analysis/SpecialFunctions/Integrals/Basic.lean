@@ -5,13 +5,13 @@ Authors: Benjamin Davidson
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Integration of specific interval integrals
@@ -47,7 +47,7 @@ namespace intervalIntegral
 
 open MeasureTheory
 
-variable {f : ℝ → ℝ} {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] (c d : ℝ)
+variable {f : ℝ → ℝ} (c d : ℝ)
 
 /-! ### Integrals of the form `c * ∫ x in a..b, f (c * x + d)` -/
 section
@@ -153,7 +153,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
   have :
     (∫ x in a..b, (x : ℂ) ^ (r : ℂ)) = ((b : ℂ) ^ (r + 1 : ℂ) - (a : ℂ) ^ (r + 1 : ℂ)) / (r + 1) :=
     integral_cpow h'
-  apply_fun Complex.re at this; convert! this
+  apply_fun Complex.re at this; convert this
   · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul, rpow_def,
       ← RCLike.re_eq_complex_re, smul_eq_mul]
     rw [integral_re]
@@ -182,7 +182,7 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
         rw [uIoc_of_le hab, ← integral_of_le hab]
       _ = ∫ x in 0..(b - a), x ^ n := by
         simp only [integral_comp_sub_right fun x => |x| ^ n, sub_self]
-        refine integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonneg <| ?_) rfl
+        refine integral_congr fun x hx => congr($(abs_of_nonneg ?_) ^ _)
         rw [uIcc_of_le (sub_nonneg.2 hab)] at hx
         exact hx.1
       _ = |b - a| ^ (n + 1) / (n + 1) := by simp [abs_of_nonneg (sub_nonneg.2 hab)]
@@ -191,7 +191,7 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
         rw [uIoc_of_ge hab.le, ← integral_of_le hab.le]
       _ = ∫ x in b - a..0, (-x) ^ n := by
         simp only [integral_comp_sub_right fun x => |x| ^ n, sub_self]
-        refine integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonpos <| ?_) rfl
+        refine integral_congr fun x hx => congr($(abs_of_nonpos ?_) ^ _)
         rw [uIcc_of_le (sub_nonpos.2 hab.le)] at hx
         exact hx.2
       _ = |b - a| ^ (n + 1) / (n + 1) := by
@@ -367,6 +367,17 @@ theorem integral_div_sq_add_sq {c : ℝ} :
     · rw [integral_const_mul, integral_inv_sq_add_sq hc]
       field_simp
 
+theorem integral_id_div_sq_add_sq {c : ℝ} (hc : c ≠ 0) :
+    ∫ x : ℝ in a..b, x / (c ^ 2 + x ^ 2) = (log (c ^ 2 + b ^ 2) - log (c ^ 2 + a ^ 2)) / 2 := by
+  rw [sub_div]
+  apply integral_eq_sub_of_hasDerivAt (f := fun x => log (c ^ 2 + x ^ 2) / 2)
+  · intro x _
+    have h := (((hasDerivAt_pow 2 x).const_add (c ^ 2)).log
+      (by dsimp; positivity)).div_const 2
+    convert h using 1
+    ring
+  · exact (continuous_id.div (by fun_prop) fun x => by positivity).intervalIntegrable _ _
+
 /-- The integrand is chosen to match the conclusion of `Real.deriv_log_log`. -/
 @[simp]
 theorem integral_inv_div_log (ha : 1 < a) (hb : 1 < b) :
@@ -403,7 +414,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
   apply integral_eq_sub_of_hasDerivAt
   · intro x _
     have f : HasDerivAt (fun y : ℂ => 1 + y ^ 2) (2 * x : ℂ) x := by
-      convert! (hasDerivAt_pow 2 (x : ℂ)).const_add 1
+      convert (hasDerivAt_pow 2 (x : ℂ)).const_add 1
       simp
     have g :
       ∀ {z : ℂ}, 0 < z.re → HasDerivAt (fun z => z ^ (t + 1) / (2 * (t + 1))) (z ^ t / 2) z := by
@@ -431,7 +442,7 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
     rw [ofReal_cpow, ofReal_add, ofReal_pow, ofReal_one]
     exact add_nonneg zero_le_one (sq_nonneg x)
   rw [← ofReal_inj]
-  convert! integral_mul_cpow_one_add_sq (_ : (t : ℂ) ≠ -1)
+  convert integral_mul_cpow_one_add_sq (_ : (t : ℂ) ≠ -1)
   · rw [← intervalIntegral.integral_ofReal]
     congr with x : 1
     rw [ofReal_mul, this x t]
@@ -475,7 +486,7 @@ theorem integral_sin_pow :
       (sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b) / (n + 2) +
         (n + 1) / (n + 2) * ∫ x in a..b, sin x ^ n := by
   field_simp
-  convert! eq_sub_iff_add_eq.mp (integral_sin_pow_aux n) using 1
+  convert eq_sub_iff_add_eq.mp (integral_sin_pow_aux n) using 1
   ring
 
 @[simp]
@@ -548,7 +559,7 @@ theorem integral_cos_pow :
       (cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a) / (n + 2) +
         (n + 1) / (n + 2) * ∫ x in a..b, cos x ^ n := by
   field_simp
-  convert! eq_sub_iff_add_eq.mp (integral_cos_pow_aux n) using 1
+  convert eq_sub_iff_add_eq.mp (integral_cos_pow_aux n) using 1
   ring
 
 @[simp]
@@ -633,7 +644,7 @@ theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
 @[simp]
 theorem integral_sin_sq_mul_cos_sq :
     ∫ x in a..b, sin x ^ 2 * cos x ^ 2 = (b - a) / 8 - (sin (4 * b) - sin (4 * a)) / 32 := by
-  convert! integral_sin_pow_even_mul_cos_pow_even 1 1 using 1
+  convert integral_sin_pow_even_mul_cos_pow_even 1 1 using 1
   have h1 : ∀ c : ℝ, (↑1 - c) / ↑2 * ((↑1 + c) / ↑2) = (↑1 - c ^ 2) / 4 := fun c => by ring
   have h2 : Continuous fun x => cos (2 * x) ^ 2 := by fun_prop
   have h3 : ∀ x, cos x * sin x = sin (2 * x) / 2 := by intro; rw [sin_two_mul]; ring

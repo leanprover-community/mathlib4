@@ -5,8 +5,12 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Sub.Basic
+
+import Mathlib.Algebra.Order.Group.Nat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `Nat.Upto`

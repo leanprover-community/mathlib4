@@ -5,8 +5,8 @@ Authors: Nicolas Rolland
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.ConnectedComponents
 
 /-!
@@ -20,7 +20,6 @@ components and functors to functions between those sets.
 
 ## Notes
 All this could be made with 2-functors
-
 -/
 
 @[expose] public section
@@ -30,7 +29,6 @@ namespace CategoryTheory.Cat
 
 variable (X : Type u) (C : Cat)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
   toFun F := ↾fun x ↦ F.toFunctor.obj ⟨x⟩

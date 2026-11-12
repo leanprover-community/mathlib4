@@ -5,10 +5,10 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Algebra.Order.WithTop.Untop0
-public import Mathlib.Analysis.Meromorphic.IsolatedZeros
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Topology.LocallyFinsupp
+
+import Mathlib.Analysis.Meromorphic.IsolatedZeros
 
 /-!
 # The Divisor of a meromorphic function
@@ -23,7 +23,9 @@ of divisors and of meromorphic functions to subsets of their domain of definitio
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-open Filter Metric Topology
+open Filter Metric
+
+open scoped Topology
 
 namespace MeromorphicOn
 
@@ -232,7 +234,7 @@ The divisor of `f₁ + f₂` is larger than or equal to the minimum of the divis
 respectively.
 -/
 theorem min_divisor_le_divisor_add {f₁ f₂ : 𝕜 → E} {z : 𝕜} {U : Set 𝕜} (hf₁ : MeromorphicOn f₁ U)
-    (hf₂ : MeromorphicOn f₂ U) (h₁z : z ∈ U) (h₃ : meromorphicOrderAt (f₁ + f₂) z ≠ ⊤) :
+    (hf₂ : MeromorphicOn f₂ U) (h₃ : meromorphicOrderAt (f₁ + f₂) z ≠ ⊤) :
     min (divisor f₁ U z) (divisor f₂ U z) ≤ divisor (f₁ + f₂) U z := by
   by_cases! hz : z ∉ U
   · simp_all
@@ -259,7 +261,7 @@ theorem negPart_divisor_add_le_max {f₁ f₂ : 𝕜 → E} {U : Set 𝕜} (hf�
   by_cases hf₁₂ : meromorphicOrderAt (f₁ + f₂) z = ⊤
   · simp [divisor_apply (hf₁.add hf₂) hz, hf₁₂, negPart_nonneg]
   rw [← negPart_min]
-  apply ((le_iff_posPart_negPart _ _).1 (min_divisor_le_divisor_add hf₁ hf₂ hz hf₁₂)).2
+  apply ((le_iff_posPart_negPart _ _).1 (min_divisor_le_divisor_add hf₁ hf₂ hf₁₂)).2
 
 /--
 The pole divisor of `f₁ + f₂` is smaller than or equal to the sum of the pole divisors of `f₁` and
@@ -304,6 +306,18 @@ theorem divisor_fun_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : 
     (h₂f₂ : ∀ z ∈ U, meromorphicOrderAt f₂ z ≠ ⊤) :
     divisor (fun z ↦ f₁ z • f₂ z) U = divisor f₁ U + divisor f₂ U :=
   divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
+
+/-- The divisor of a function is invariant when scaling of the function. -/
+@[to_fun (attr := simp) divisor_fun_const_smul]
+theorem divisor_const_smul {f : 𝕜 → E} {s : 𝕜} {U : Set 𝕜} (hs : s ≠ 0) :
+    divisor (s • f) U = divisor f U := by
+  ext z
+  by_cases h₁f : MeromorphicOn f U
+  · by_cases hz : z ∈ U
+    · rw [divisor_apply h₁f hz, divisor_apply (by simp_all) hz]
+      simp_all
+    · simp_all
+  · simp_all
 
 /--
 If orders are finite, the divisor of the product of two meromorphic functions is the sum of the
@@ -455,7 +469,7 @@ open WithTop in
 /-- The divisor of the function `z ↦ z - z₀` at `x` is `0` if `x ≠ z₀`. -/
 lemma divisor_sub_const_of_ne {U : Set 𝕜} {z₀ x : 𝕜} (hx : x ≠ z₀) : divisor (· - z₀) U x = 0 := by
   by_cases hu : x ∈ U
-  · rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) hu,
+  · rw [divisor_apply (show MeromorphicOn (· - z₀) U by fun_prop) hu,
       ← untop₀_coe 0]
     congr
     exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr
@@ -465,7 +479,7 @@ lemma divisor_sub_const_of_ne {U : Set 𝕜} {z₀ x : 𝕜} (hx : x ≠ z₀) :
 open WithTop in
 /-- The divisor of the function `z ↦ z - z₀` at `z₀` is `1`. -/
 lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : divisor (· - z₀) U z₀ = 1 := by
-  rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) h, ← untop₀_coe 1]
+  rw [divisor_apply (show MeromorphicOn (· - z₀) U by fun_prop) h, ← untop₀_coe 1]
   congr
   exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr ⟨fun _ ↦ 1, analyticAt_const, by simp⟩
 

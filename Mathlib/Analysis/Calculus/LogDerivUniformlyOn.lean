@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 We show that if we have an infinite product of functions `f` that is locally uniformly convergent,
 then the logarithmic derivative of the product is the sum of the logarithmic derivatives of the
 individual functions.
-
 -/
 
 public section
@@ -29,4 +28,4 @@ theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : �
   rw [Eq.comm, ← hm.hasSum_iff]
   refine logDeriv_tendsto hs hx htend.hasProdLocallyUniformlyOn (.of_forall <| by fun_prop) hnez
     |>.congr fun b ↦ ?_
-  rw [logDeriv_prod (fun i _ ↦ hf i) (fun i _ ↦ (hd i x hx).differentiableAt (hs.mem_nhds hx))]
+  rw [logDeriv_fun_prod (fun i _ ↦ hf i) (fun i _ ↦ (hd i x hx).differentiableAt (hs.mem_nhds hx))]

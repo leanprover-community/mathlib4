@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Control.Traversable.Lemmas
 public import Mathlib.Logic.Equiv.Defs
-public import Batteries.Tactic.SeqFocus
 
-import Mathlib.Tactic.Attr.Register
+import Batteries.Tactic.SeqFocus
+
 
 /-!
 # Transferring `Traversable` instances along isomorphisms

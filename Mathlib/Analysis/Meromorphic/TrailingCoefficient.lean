@@ -25,7 +25,9 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f g : 𝕜 → E} {x : 𝕜}
 
-open Filter Topology
+open Filter
+
+open scoped Topology
 
 variable (f x) in
 /--
@@ -495,7 +497,7 @@ The trailing coefficient of the power of a function is the power of the trailing
 lemma MeromorphicAt.meromorphicTrailingCoeffAt_pow {n : ℕ} {f : 𝕜 → 𝕜}
     (h₁ : MeromorphicAt f x) :
     meromorphicTrailingCoeffAt (f ^ n) x = (meromorphicTrailingCoeffAt f x) ^ n := by
-  convert! h₁.meromorphicTrailingCoeffAt_zpow (n := n) <;> simp
+  convert h₁.meromorphicTrailingCoeffAt_zpow (n := n) <;> simp
 
 /--
 The trailing coefficient of the power of a function is the power of the trailing coefficient.

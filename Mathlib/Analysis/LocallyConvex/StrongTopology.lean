@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Local convexity of the strong topology
@@ -28,9 +28,6 @@ locally convex, bounded convergence
 -/
 
 public section
-
-
-open Topology UniformConvergence
 
 variable {R 𝕜₁ 𝕜₂ E F : Type*}
 

@@ -6,12 +6,10 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Expand
-public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.ZMod.Basic
+
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Witt polynomials
@@ -101,7 +99,7 @@ set_option quotPrecheck false in
 @[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
-open Witt
+open scoped Witt
 
 /-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
@@ -163,7 +161,7 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
     refine vars_monomial_single i (pow_ne_zero _ hp.1) ?_
-    exact_mod_cast pow_ne_zero i hp.1
+    exact mod_cast pow_ne_zero i hp.1
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]
@@ -180,7 +178,6 @@ end PPrime
 end
 
 /-!
-
 ## Witt polynomials as a basis of the polynomial algebra
 
 If `p` is invertible in `R`, then the Witt polynomials form a basis

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Meromorphic.NormalForm
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Gamma function is meromorphic
 -/
@@ -22,8 +25,10 @@ lemma MeromorphicNFOn.Gamma : MeromorphicNFOn Gamma univ :=
 
 -- TODO: restate `MeromorphicNFOn.Gamma` when `MeromorphicNF` is defined
 
+@[fun_prop]
 lemma Meromorphic.Gamma : Meromorphic Gamma :=
   meromorphicOn_univ.mp MeromorphicNFOn.Gamma.meromorphicOn
 
+@[fun_prop]
 lemma MeromorphicOn.Gamma {s} : MeromorphicOn Gamma s :=
   Meromorphic.Gamma.meromorphicOn
