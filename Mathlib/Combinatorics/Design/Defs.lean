@@ -7,21 +7,28 @@ module
 
 public import Mathlib.Combinatorics.Hypergraph.Basic
 public import Mathlib.Data.Finset.Density
-public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Data.Set.Card
 
 /-!
 # Combinatorial Designs
 
-This file defines combinatorial designs.
+This file defines incidence systems and combinatorial designs.
+
+An incidence system consists of a carrier set and subsets called blocks. We index our blocks
+by a subset of an indexing type to make it easy to add and remove blocks if desired.
+Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed.
+
+Note the similarity with `Hypergraph` which consists of a carrier set and subsets called sets.
+The primary difference is that `Hypergraph` edges are not indexed and do not allow for duplication.
 
 ## Main definitions
 
-* `IncidenceSystem`
-* `IncidenceSystem.IsSimple`
-* `IncidenceSystem.IsUniform`
+* `IncidenceSystem`: An incidence system consists of a carrier set and subsets called blocks.
+* `IncidenceSystem.IsSimple`: An incidence system is simple if there are no duplicate blocks.
+* `IncidenceSystem.IsUniform`: An incidence system is `k`-uniform if every block has size `k`.
 * `IncidenceSystem.IsBalanced`
 * `IncidenceSystem.IsDesign`
 * `IncidenceSystem.IsSteiner`
@@ -32,36 +39,34 @@ This file defines combinatorial designs.
 
 ## Implementation details
 
-We place everything in the `IncidenceSystem` namespace, but this still allows for
+We place everything in the `IncidenceSystem` namespace, because this still allows one to write
 `{α β : Type*} (d : Design α β) [d.IsSimple] [d.IsUniform]`.
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
 
 ## TODO
 
 * Define regular (number of blocks containing a given point is fixed)
 * Define equidistance (pairwise intersections have a given size)
-
-## Tags
-
-Foobars, barfoos
 -/
-
 
 @[expose] public section
 
 variable (α β : Type*)
 
-/-- A combinatorial design consists of a carrier set and subsets called blocks. We index our blocks
+/-- An incidence system consists of a carrier set and subsets called blocks. We index our blocks
 by a subset of an indexing type `β` to make it easy to add and remove blocks if desired.
 Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed. -/
 structure IncidenceSystem where
+  /-- The ambient set for the incidence system. -/
   carrier : Set α
+  /-- The indexing set for the blocks. -/
   blockSet : Set β
+  /-- The function from the indexing type `β` to the blocks in `α`. -/
   block (b : β) : Set α
-  block_subset {b} (hb : b ∈ blockSet) : block b ⊆ carrier
+  /-- The blocks must be subsets of the ambient set. -/
+  block_subset {b} (hb : b ∈ blockSet) : block b ⊆ carrier := by grind
+
+initialize_simps_projections IncidenceSystem (as_prefix carrier, as_prefix blockSet,
+  as_prefix block)
 
 attribute [grind →] IncidenceSystem.block_subset
 
@@ -103,7 +108,6 @@ def discrete (s : Set α) : IncidenceSystem α α where
   carrier := s
   blockSet := s
   block x := {x}
-  block_subset := Set.singleton_subset_iff.mpr
 
 /-- The indiscrete incidence system consists of the carrier as a single block. -/
 @[simps]
@@ -111,33 +115,35 @@ def indiscrete (s : Set α) (b : β) : IncidenceSystem α β where
   carrier := s
   blockSet := {b}
   block _ := s
-  block_subset _ := subset_rfl
 
 /-- An incidence system is simple if there are no duplicate blocks. -/
 @[mk_iff]
 class IsSimple (d : IncidenceSystem α β) : Prop where
-  injOn : d.blockSet.InjOn d.block
+  block_injOn_blockSet : d.blockSet.InjOn d.block := by simp
 
-theorem isSimple_ofHypergraph (H : Hypergraph α) : (ofHypergraph H).IsSimple where
-  injOn := by simp
+@[simp, grind .]
+protected theorem IsSimple.ofHypergraph (H : Hypergraph α) : (ofHypergraph H).IsSimple where
 
-theorem isSimple_discrete (s : Set α) : (discrete s).IsSimple where
-  injOn := by simp
+@[simp, grind .]
+protected theorem IsSimple.discrete (s : Set α) : (discrete s).IsSimple where
 
-theorem isSimple_indiscrete (s : Set α) (b : β) : (indiscrete s b).IsSimple where
-  injOn := by simp
+@[simp, grind .]
+protected theorem IsSimple.indiscrete (s : Set α) (b : β) : (indiscrete s b).IsSimple where
 
-/-- An incidence system is `k`-uniform if every block has cardinality `k`. -/
+/-- An incidence system is `k`-uniform if every block has size `k`. -/
 @[mk_iff]
 structure IsUniform (d : IncidenceSystem α β) (k : ℕ) : Prop where
   uniform {b} (hb : b ∈ d.blockSet) : (d.block b).ncard = k
 
 attribute [grind .] IsUniform.uniform
 
-theorem isUniform_discrete (s : Set α) : (discrete s).IsUniform 1 where
+@[simp, grind .]
+protected theorem IsUniform.discrete (s : Set α) : (discrete s).IsUniform 1 where
   uniform {x} _ := by simp
 
-theorem isUniform_indiscrete (s : Set α) (b : β) : (indiscrete s b).IsUniform s.ncard where
+@[simp, grind .]
+protected theorem IsUniform.indiscrete (s : Set α) (b : β) :
+    (indiscrete s b).IsUniform s.ncard where
   uniform _ := by simp
 
 theorem IsUniform.nonempty_block {d : IncidenceSystem α β}
