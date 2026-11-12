@@ -291,7 +291,7 @@ def prod (f : (Π i, M i) →ₘₛₗ[σ] N) (g : (Π i, M i) →ₘₛₗ[σ] 
 multilinear map taking values in the space of functions `Π i, M' i`. -/
 @[simps]
 def pi {ι' : Type*} {M' : ι' → Type*} [Π i, AddCommMonoid (M' i)] [Π i, Module S (M' i)]
-    (f : ∀ i, (Π i, M i) →ₘₛₗ[σ] M' i) : (Π i, M i) →ₘₛₗ[σ] Π i, M' i where
+    (f : Π i, (Π i, M i) →ₘₛₗ[σ] M' i) : (Π i, M i) →ₘₛₗ[σ] Π i, M' i where
   toFun m i := f i m
   map_update_add' _ _ _ _ := funext fun j => (f j).map_update_add _ _ _ _
   map_update_smul' _ _ _ _ := funext fun j => (f j).map_update_smul _ _ _ _
@@ -391,7 +391,7 @@ variable {R₁ R₂ R₃ R₄ : Type*} [Semiring R₁] [Semiring R₂] [Semiring
 
 /-- If `g` is a multilinear map and `f` is a collection of linear maps,
 then `g (f₁ m₁, ..., fₙ mₙ)` is again a multilinear map, that we call `g.compLinearMap f`. -/
-def compLinearMap (g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
+def compLinearMap (g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
     (Π i, M₁ i) →ₘₛₗ[σ₁₃] N₃ where
   toFun m := g fun i => f i (m i)
   map_update_add' m i x y := by
@@ -404,20 +404,20 @@ def compLinearMap (g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f : ∀ i, M
     simp [this]
 
 @[simp]
-theorem compLinearMap_apply (g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i)
+theorem compLinearMap_apply (g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i)
     (m : Π i, M₁ i) : g.compLinearMap f m = g fun i => f i (m i) :=
   rfl
 
 /-- Composing a multilinear map twice with a linear map in each argument is
 the same as composing with their composition. -/
-theorem compLinearMap_assoc (g : (Π i, M₃ i) →ₘₛₗ[σ₃₄] N₄) (f₁ : ∀ i, M₂ i →ₛₗ[σ₂₃] M₃ i)
-    (f₂ : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
+theorem compLinearMap_assoc (g : (Π i, M₃ i) →ₘₛₗ[σ₃₄] N₄) (f₁ : Π i, M₂ i →ₛₗ[σ₂₃] M₃ i)
+    (f₂ : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
     (g.compLinearMap f₁).compLinearMap f₂ = g.compLinearMap fun i => f₁ i ∘ₛₗ f₂ i :=
   rfl
 
 /-- Composing the zero multilinear map with a linear map in each argument. -/
 @[simp]
-theorem zero_compLinearMap (f : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
+theorem zero_compLinearMap (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
     (0 : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃).compLinearMap f = 0 :=
   ext fun _ => rfl
 
@@ -427,13 +427,13 @@ theorem compLinearMap_id (g : (Π i, M i) →ₘₛₗ[σ] N) : (g.compLinearMap
   ext fun _ => rfl
 
 /-- Composing with a family of surjective linear maps is injective. -/
-theorem compLinearMap_injective (f : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) (hf : ∀ i, Surjective (f i)) :
+theorem compLinearMap_injective (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) (hf : ∀ i, Surjective (f i)) :
     Injective fun g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃ => g.compLinearMap f := fun g₁ g₂ h =>
   ext fun x => by
     simpa [fun i => surjInv_eq (hf i)]
       using MultilinearMap.ext_iff.mp h fun i => surjInv (hf i) (x i)
 
-theorem compLinearMap_inj (f : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) (hf : ∀ i, Surjective (f i))
+theorem compLinearMap_inj (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) (hf : ∀ i, Surjective (f i))
     (g₁ g₂ : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
   (compLinearMap_injective _ hf).eq_iff
 
@@ -441,7 +441,7 @@ theorem compLinearMap_inj (f : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) (hf : �
 if and only if the multilinear map is the zero map. -/
 @[simp]
 theorem comp_linearEquiv_eq_zero_iff {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
-    [RingHomInvPair σ₂₁ σ₁₂] (g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f : ∀ i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) :
+    [RingHomInvPair σ₂₁ σ₁₂] (g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f : Π i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) :
     (g.compLinearMap fun i => (f i : M₁ i →ₛₗ[σ₁₂] M₂ i)) = 0 ↔ g = 0 := by
   set f' := fun i => (f i : M₁ i →ₛₗ[σ₁₂] M₂ i)
   rw [← zero_compLinearMap (σ₂₃ := σ₂₃) f', compLinearMap_inj f' fun i => (f i).surjective]
@@ -516,7 +516,7 @@ theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : Π i, M i) :
 
 section ApplySum
 
-variable {α : ι → Type*} (g : ∀ i, α i → M i) (A : ∀ i, Finset (α i))
+variable {α : ι → Type*} (g : Π i, α i → M i) (A : ∀ i, Finset (α i))
 
 open Fintype Finset
 
@@ -856,7 +856,7 @@ theorem comp_compMultilinearMap (g : N₃ →ₛₗ[σ₃₄] N₄) (g' : N₂ �
 
 /-- The two types of composition are associative. -/
 theorem compMultilinearMap_compLinearMap
-    (g : N₃ →ₛₗ[σ₃₄] N₄) (f : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f' : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
+    (g : N₃ →ₛₗ[σ₃₄] N₄) (f : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f' : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
     g.compMultilinearMap (f.compLinearMap f') = (g.compMultilinearMap f).compLinearMap f' := rfl
 
 @[simp]
