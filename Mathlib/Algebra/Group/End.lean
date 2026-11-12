@@ -741,7 +741,11 @@ theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 
 @[to_additive]
-theorem conj_conj [Group G] (f : MulAut G) (g : G) : conj f (conj g) = conj (f g) := by ext; simp
+theorem conj_conj [Group G] (f : MulAut G) (g : G) : f * conj g * f⁻¹ = conj (f g) := by ext; simp
+
+@[to_additive]
+theorem conj_apply_conj [Group G] (f : MulAut G) (g : G) : conj f (conj g) = conj (f g) :=
+  conj_conj f g
 
 @[to_additive]
 theorem conj_eq_one_iff [Group G] : conj (G := G) = 1 ↔ IsMulCommutative G := by

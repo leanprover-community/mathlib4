@@ -42,6 +42,17 @@ noncomputable def innerMulEquivQuotientCenter : inner G ≃* G ⧸ Subgroup.cent
   (QuotientGroup.quotientKerEquivRange conj).symm.trans
     (QuotientGroup.quotientMulEquivOfEq Subgroup.ker_conj)
 
+@[to_additive (attr := simp)]
+theorem coe_innerMulEquivQuotientCenter_symm (g : G) :
+    ↑((innerMulEquivQuotientCenter (G := G)).symm ↑g) = conj g := rfl
+
+@[to_additive (attr := simp)]
+theorem innerMulEquivQuotientCenter_conj (g : G) :
+    innerMulEquivQuotientCenter ⟨conj g, conj_mem_inner⟩ = ↑g := by
+  have h : (⟨conj g, conj_mem_inner⟩ : inner G) = (innerMulEquivQuotientCenter (G := G)).symm ↑g :=
+    Subtype.ext (coe_innerMulEquivQuotientCenter_symm g).symm
+  rw [h, MulEquiv.apply_symm_apply]
+
 /-- The **outer automorphism group** of a multiplicative group `G`. -/
 @[to_additive /-- The **outer automorphism group** of an additive group `G`. -/]
 def Outer (G : Type u) [Group G] : Type u := MulAut G ⧸ inner G
@@ -50,7 +61,8 @@ def Outer (G : Type u) [Group G] : Type u := MulAut G ⧸ inner G
 instance (G : Type*) [Group G] : Group (Outer G) := inferInstanceAs (Group (MulAut G ⧸ inner G))
 
 /-- The canonical projection from `MulAut G` to the outer automorphism group `Outer G`. -/
-@[to_additive /-- The canonical projection from `AddAut G` to the outer automorphism group. -/]
+@[to_additive
+/-- The canonical projection from `AddAut G` to the outer automorphism group. -/]
 def Outer.of : MulAut G →* Outer G := QuotientGroup.mk' (inner G)
 
 @[to_additive]
@@ -75,9 +87,18 @@ def outerEquivMulAut [IsMulCommutative G] :
     Outer G ≃* MulAut G :=
   (QuotientGroup.quotientMulEquivOfEq inner_eq_bot).trans QuotientGroup.quotientBot
 
+@[to_additive (attr := simp)]
+theorem outerEquivMulAut_of [IsMulCommutative G] (f : MulAut G) :
+    outerEquivMulAut (Outer.of f) = f := rfl
+
+@[to_additive (attr := simp)]
+theorem outerEquivMulAut_symm_apply [IsMulCommutative G] (f : MulAut G) :
+    (outerEquivMulAut (G := G)).symm f = Outer.of f := rfl
+
 /-- If the outer automorphism group is trivial, the inner automorphism group is the full
 automorphism group. -/
-@[to_additive /-- If the outer automorphism group is trivial, the inner automorphism group is the
+@[to_additive (attr := simps!)
+/-- If the outer automorphism group is trivial, the inner automorphism group is the
   full automorphism group. -/]
 def innerEquivMulAut [Subsingleton (Outer G)] :
     inner G ≃* MulAut G :=
@@ -88,5 +109,13 @@ def innerEquivMulAut [Subsingleton (Outer G)] :
 /-- An isomorphism `G ≃* H` induces an isomorphism of their outer automorphism groups. -/]
 def Outer.congr {H : Type*} [Group H] (e : G ≃* H) : Outer G ≃* Outer H :=
   QuotientGroup.congr (inner G) (inner H) (MulAut.congr e) (map_inner_congr e)
+
+@[to_additive (attr := simp)]
+theorem Outer.congr_of {H : Type*} [Group H] (e : G ≃* H) (f : MulAut G) :
+    Outer.congr e (Outer.of f) = Outer.of (MulAut.congr e f) := rfl
+
+@[to_additive (attr := simp)]
+theorem Outer.congr_symm_of {H : Type*} [Group H] (e : G ≃* H) (f : MulAut H) :
+    (Outer.congr e).symm (Outer.of f) = Outer.of (MulAut.congr e.symm f) := rfl
 
 end MulAut

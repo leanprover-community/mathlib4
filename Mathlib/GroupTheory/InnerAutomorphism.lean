@@ -44,31 +44,18 @@ def inner : Subgroup (MulAut G) := (conj (G := G)).range
 
 variable {G}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mem_inner_iff {f : MulAut G} : f ∈ inner G ↔ ∃ g : G, conj g = f := MonoidHom.mem_range
 
 @[to_additive]
 theorem conj_mem_inner {g : G} : conj g ∈ inner G := ⟨g, rfl⟩
 
-/-- Conjugating an element of `inner G` by any automorphism stays in `inner G`. -/
-@[to_additive]
-theorem conj_apply_mem_inner (h : MulAut G) {f : MulAut G} (hf : f ∈ inner G) :
-    conj h f ∈ inner G := by
-  obtain ⟨g, rfl⟩ := mem_inner_iff.mp hf
-  exact conj_conj h g ▸ conj_mem_inner
-
-/-- An automorphism conjugate of `f` is inner iff `f` is. -/
-@[to_additive]
-theorem conj_mem_iff (h f : MulAut G) : conj h f ∈ inner G ↔ f ∈ inner G :=
-  ⟨fun hf => by
-    have H := conj_apply_mem_inner h⁻¹ hf
-    rwa [← mul_apply, ← map_mul, inv_mul_cancel, map_one, one_apply] at H,
-  conj_apply_mem_inner h⟩
-
 /-- The inner automorphism group is normal in the full automorphism group. -/
 @[to_additive /-- The inner automorphism group is normal in the full automorphism group. -/]
 instance normal_inner : (inner G).Normal where
-  conj_mem _ hn h := conj_apply_mem_inner h hn
+  conj_mem _ hn h := by
+    obtain ⟨g, rfl⟩ := mem_inner_iff.mp hn
+    exact conj_conj h g ▸ conj_mem_inner (g := h g)
 
 @[to_additive]
 theorem inner_eq_bot_iff : inner G = ⊥ ↔ IsMulCommutative G :=
@@ -87,7 +74,7 @@ theorem map_inner_congr (e : G ≃* H) : (inner G).map (MulAut.congr e) = inner 
   exact e.exists_congr (Eq.congr_left <| congr_conj e ·)
 
 /-- An isomorphism `G ≃* H` induces an isomorphism of their inner automorphism groups. -/
-@[to_additive
+@[to_additive (attr := simps!)
 /-- An isomorphism `G ≃* H` induces an isomorphism of their inner automorphism groups. -/]
 def innerCongr (e : G ≃* H) : inner G ≃* inner H :=
   ((MulAut.congr e).subgroupMap (inner G)).trans (MulEquiv.subgroupCongr (map_inner_congr e))
