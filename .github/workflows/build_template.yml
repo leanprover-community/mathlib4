@@ -1266,6 +1266,32 @@ jobs:
           # This job runs with only `contents: read` and no persisted credentials,
           # so checking out fork PR code under pull_request_target is safe.
           allow-unsafe-pr-checkout: true
+      # Check that each mathlib-ci commit that `.github/` pins is on mathlib-ci `master`.
+      # A commit from a mathlib-ci PR branch or fork runs unreviewed code with mathlib4 secrets.
+      # On bors runs a finding is an error; on other runs it is a warning, so a PR can test an
+      # unmerged mathlib-ci change. The step only reads the checked-out files.
+      - name: Check mathlib-ci pins
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+        run: |
+          level=warning; [ "$STRICT" = true ] && level=error
+          # `file:line:sha` for each `mathlib-ci/...@<sha>` and for the default ref of get-mathlib-ci.
+          pins=$({ grep -rnoE --include='*.yml' --include='*.yaml' 'leanprover-community/mathlib-ci[^@[:space:]]*@[0-9a-f]{40}' .github
+                   grep -HnoE 'default: [0-9a-f]{40}' .github/actions/get-mathlib-ci/action.yml
+                 } | sed -E 's/^([^:]*:[0-9]+):.*([0-9a-f]{40})$/\1:\2/')
+          echo "$pins"
+          status=0
+          mapfile -t shas < <(cut -d: -f3 <<< "$pins" | sort -u)
+          for sha in "${shas[@]}"; do
+            result=$(gh api "repos/leanprover-community/mathlib-ci/compare/$sha...master" --jq .status) || result="unknown commit or API error"
+            case "$result" in ahead|identical) continue ;; esac
+            status=1
+            grep ":$sha\$" <<< "$pins" | while IFS=: read -r file line _; do
+              echo "::$level file=$file,line=$line::mathlib-ci commit $sha is not on mathlib-ci master ($result)."
+            done
+          done
+          [ "$level" = warning ] || exit "$status"
       - uses: leanprover-community/lint-style-action@a5e3ef275cc682ba79c1f8ba34ae2ade5d8d2101 # 2026-10-28
         with:
           mode: check
