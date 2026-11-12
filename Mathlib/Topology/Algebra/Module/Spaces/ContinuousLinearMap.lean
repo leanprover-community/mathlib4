@@ -481,22 +481,48 @@ def toSpanSingletonCLE : E ≃L[𝕜] (𝕜 →L[𝕜] E) where
     continuous_snd.smul continuous_fst
   continuous_invFun := continuous_eval_const 1
 
-variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
-  [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul 𝕜 F]
+  {S : Type*} [Ring S] [TopologicalSpace S] [IsTopologicalAddGroup S] [Module 𝕜 S]
+  [ContinuousConstSMul 𝕜 S] [Module S F] [IsScalarTower 𝕜 S F] [SMulCommClass S 𝕜 F]
+  [ContinuousSMul S F]
+  {𝕜₂ : Type*} [NormedField 𝕜₂] [NormedAlgebra 𝕜 𝕜₂] [Module 𝕜₂ F] [IsScalarTower 𝕜 𝕜₂ F]
+  [ContinuousConstSMul 𝕜₂ F] [SMulCommClass S 𝕜₂ F]
 
-variable (𝕜 E F) in
-/-- `smulRight` as a partly continuous trilinear map.
-This is the bundled continuous version of `smulRightₗ`. -/
-@[simps! apply_apply_apply] def smulRightₗ' : StrongDual 𝕜 E →ₗ[𝕜] (F →L[𝕜] E →L[𝕜] F) where
-  toFun c := (c.precomp F) ∘SL toSpanSingletonCLE.toContinuousLinearMap
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp
+/-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
+`smulRightL c f x = c x • f`. This is the
+continuous analogue of `ContinuousLinearMap.smulRightₗ`. The hypothesis that
+`𝕜` is nontrivially normed is essential to guarantee
+continuity in `f`. This holds because `(f, x) ↦ c x • f` is jointly continuous. The map is also continuous
+in the variable `c` since bounded set of `F` is absorbed by every neighborhood of zero. -/
+@[simps! apply_apply]
+def smulRightL : (E →L[𝕜] S) →L[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
+  letI L : (E →L[𝕜] S) →ₗ[𝕜] F →L[𝕜₂] E →L[𝕜] F :=
+    { toFun c :=
+        { toLinearMap := c.smulRightₗ
+          cont := show Continuous (c.smulRightₗ : F →ₗ[𝕜₂] E →L[𝕜] F) from
+            continuous_of_continuous_uncurry (c.smulRightₗ : F →ₗ[𝕜] E →L[𝕜] F) <|
+              (c.continuous.comp continuous_snd).smul continuous_fst }
+      map_add' _ _ := by ext; exact add_smul ..
+      map_smul' _ _ := by ext; exact smul_assoc .. }
+  { toLinearMap := L
+    cont := continuous_of_continuousAt_zero L <| by
+      refine (map_zero L ▸ (ContinuousLinearMap.hasBasis_nhds_zero_of_basis
+        ContinuousLinearMap.hasBasis_nhds_zero).tendsto_right_iff).mpr ?_
+      rintro ⟨t₁, s, t₂⟩ ⟨ht₁, hs, ht₂⟩
+      obtain ⟨u, hu, v, hv, huv⟩ := mem_nhds_prod_iff.1 <|
+        continuous_smul.tendsto' ((0 : S), (0 : F)) 0 (zero_smul _ _) ht₂
+      obtain ⟨r, -, hr⟩ := (ht₁.restrict_scalars 𝕜 hv).exists_pos
+      obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 r
+      simp only at ht₁ hs ht₂ huv
+      simp only [mem_ofPred_eq]
+      filter_upwards [eventually_nhds_zero_mapsTo hs <|
+        (continuous_const_smul k).tendsto' 0 0 (smul_zero k) hu] with c hc f hf x hx
+      obtain ⟨f, hf', rfl⟩ := hr k hk.le hf
+      simpa [L, smul_comm (c x) k] using huv <| Set.mk_mem_prod (hc hx) hf' }
 
-@[simp] lemma smulRightₗ'_apply_apply (c : StrongDual 𝕜 E) (x) :
-    c.smulRightₗ' 𝕜 E F x = c.smulRight x := rfl
-@[simp] lemma toLinearMap_smulRightₗ'_apply (c : StrongDual 𝕜 E) :
-    (c.smulRightₗ' 𝕜 E F).toLinearMap = c.smulRightₗ := rfl
-
+@[simp] lemma toLinearMap_smulRightL (c : E →L[𝕜] S) :
+    (smulRightL c : F →L[𝕜₂] E →L[𝕜] F).toLinearMap = c.smulRightₗ := rfl
 end ContinuousLinearMap
 
 open ContinuousLinearMap
