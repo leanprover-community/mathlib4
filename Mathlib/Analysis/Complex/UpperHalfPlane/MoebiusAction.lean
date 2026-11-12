@@ -317,9 +317,9 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : g 1 
     ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
   refine ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, ?_⟩
-  ext1 ⟨z, hz⟩; ext1
-  suffices ↑a * z * a + b * a = b * a + a * a * z by simpa [specialLinearGroup_apply, add_mul]
-  ring
+  ext
+  simp [specialLinearGroup_apply]
+  grind
 
 theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 0 ≠ 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
