@@ -20,7 +20,6 @@ the file `Mathlib/AlgebraicTopology/SimplicialSet/RelativeMorphism.lean`).
 We show that from `H : SSet.Homotopy f g`, we can obtain a combinatorial
 homotopy `SimplicialObject.Homotopy f g` (where the data involve
 a family of maps `X _⦋n⦌ → Y _⦋n + 1⦌` for all `n : ℕ` and `i : Fin (n + 1)`.)
-
 -/
 
 @[expose] public section

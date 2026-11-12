@@ -24,7 +24,6 @@ Prove that a multiequalizer can be identified with
 an equalizer between products (and analogously for multicoequalizers).
 
 Prove that the limit of any diagram is a multiequalizer (and similarly for colimits).
-
 -/
 
 @[expose] public section

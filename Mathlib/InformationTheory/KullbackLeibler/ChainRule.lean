@@ -74,7 +74,6 @@ _ = ∫ a, llr μ ν a ∂μ + ∫ p, llr (μ ⊗ₘ κ) (μ ⊗ₘ η) p ∂(μ
 
 Add a version of the chain rule for the integral form of the conditional KL divergence, i.e.
 `μ[fun x ↦ klDiv (κ x) (η x)]`.
-
 -/
 
 public section

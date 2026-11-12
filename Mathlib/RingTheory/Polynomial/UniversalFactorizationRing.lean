@@ -26,7 +26,6 @@ We construct the universal ring of the following functors on `R-Alg`:
 - `S ↦ "factorizations of p into coprime (monic deg m) * (monic deg k) in S"`:
   Represented by an etale `R`-algebra (`Polynomial.UniversalCoprimeFactorizationRing`).
   See `Polynomial.UniversalCoprimeFactorizationRing.homEquiv`.
-
 -/
 
 @[expose] public section

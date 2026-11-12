@@ -43,7 +43,6 @@ Generally useful lemmas which are not related to integrals:
   `f =ᵐ[μ] 0`.
 * `ae_eq_zero_of_forall_dual`: if for all constants `c` in the `StrongDual` space,
   `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
-
 -/
 
 public section

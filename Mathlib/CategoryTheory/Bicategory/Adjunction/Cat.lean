@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 
 We show that adjunctions in the bicategory `Cat` correspond to
 adjunctions between functors in the usual categorical sense.
-
 -/
 
 @[expose] public section

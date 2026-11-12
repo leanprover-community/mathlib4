@@ -74,7 +74,6 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 * [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].
 * [Singer, Ivan, Bases in Banach spaces][Singer_1970].
 * [Marti, Jürg T., Introduction to the theory of bases][MartiJurg1969].
-
 -/
 
 @[expose] public section

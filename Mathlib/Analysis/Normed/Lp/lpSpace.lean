@@ -53,7 +53,6 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 * More versions of Hölder's inequality (for example: the case `p = 1`, `q = ∞`; a version for normed
   rings which has `‖∑' i, f i * g i‖` rather than `∑' i, ‖f i‖ * g i‖` on the RHS; a version for
   three exponents satisfying `1 / r = 1 / p + 1 / q`)
-
 -/
 
 @[expose] public section
@@ -66,7 +65,6 @@ variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞}
 
 /-!
 ### `Memℓp` predicate
-
 -/
 
 

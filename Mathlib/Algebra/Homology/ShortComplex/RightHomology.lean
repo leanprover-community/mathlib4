@@ -25,7 +25,6 @@ Similarly, we define `S.opcycles` to be the `Q` field.
 In `Homology.lean`, when `S` has two compatible left and right homology data
 (i.e. they give the same `H` up to a canonical isomorphism), we shall define
 `[S.HasHomology]` and `S.homology`.
-
 -/
 
 @[expose] public section
@@ -924,7 +923,6 @@ noncomputable def rightHomologyιNatTrans :
   app S := rightHomologyι S
   naturality := fun _ _ φ => rightHomologyι_naturality φ
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `S.X₂ ⟶ S.opcycles` for all short complexes `S`. -/
 @[simps]
 noncomputable def pOpcyclesNatTrans :

@@ -27,7 +27,6 @@ example : (1 - 1 = 0) := by with_reducible rfl
 
 This tactic is useful in situations where we want to stop iterating some tactics if they're not
 having any effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
-
 -/
 
 public meta section

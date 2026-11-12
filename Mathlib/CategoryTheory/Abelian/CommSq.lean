@@ -25,7 +25,6 @@ l|    |r
 
 We study the associated exact sequence `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0`.
 We also show that the induced morphism `kernel t ⟶ kernel b` is an epimorphism.
-
 -/
 
 public section

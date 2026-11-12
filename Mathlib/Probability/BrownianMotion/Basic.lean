@@ -50,7 +50,6 @@ weak Markov property: if `B` is a pre-Brownian motion and `t₀ : ℝ≥0`, then
 ## Tags
 
 pre-Brownian motion, Brownian motion, Markov property
-
 -/
 
 public section

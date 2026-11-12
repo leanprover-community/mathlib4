@@ -78,7 +78,6 @@ convention:
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 * [P. Aluffi, *Algebra: Chapter 0*][aluffi2016]
-
 -/
 
 @[expose] public section

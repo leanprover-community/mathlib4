@@ -29,7 +29,6 @@ over `S` and equip it with the induced topology.
 ## References
 
 - [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
-
 -/
 
 @[expose] public section

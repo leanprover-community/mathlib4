@@ -22,7 +22,6 @@ multiplying a Schwartz function by a rescaled smooth cutoff.
 * `SchwartzMap.tendsto_smulLeftCLM_comp_smul`: if `φ` is smooth, compactly supported, and equal
   to `1` near the origin, then `(fun x ↦ φ (ε • x)) • f → f` in the Schwartz topology as `ε → 0`.
 * `SchwartzMap.dense_hasCompactSupport`: compactly supported Schwartz functions are dense.
-
 -/
 
 public noncomputable section

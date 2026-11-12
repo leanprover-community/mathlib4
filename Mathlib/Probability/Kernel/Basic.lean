@@ -35,7 +35,6 @@ kernels.
   on the measurable set `s` and to `η` on its complement.
 
 ## Main statements
-
 -/
 
 @[expose] public section
