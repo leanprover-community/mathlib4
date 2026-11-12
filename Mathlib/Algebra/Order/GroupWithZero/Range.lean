@@ -8,14 +8,14 @@ module
 public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Algebra.Order.Hom.MonoidWithZero
-public import Mathlib.Algebra.Order.Monoid.Basic
+
+import Mathlib.Algebra.Order.Monoid.Basic
 
 /-! # The range of a MonoidWithZeroHom
 
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `LinearOrderedCommGroupWithZero`,
 we provide some order properties of the `MonoidWithZeroHom.ValueGroup₀` as defined in
 `Mathlib.Algebra.GroupWithZero.Range`.
-
 -/
 
 @[expose] public section
@@ -41,7 +41,7 @@ lemma monoidWithZeroHom_strictMono :
 lemma embedding_strictMono : StrictMono (embedding (f := f)) := by
   intro x y hxy
   rw [← monoidWithZeroHom_strictMono.lt_iff_lt] at hxy
-  simpa using (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
+  simpa using! (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
 
 instance : IsOrderedMonoid (ValueGroup₀ f) :=
   Function.Injective.isOrderedMonoid embedding (map_mul _) embedding_strictMono.le_iff_le
@@ -53,13 +53,13 @@ instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
     exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
 
 lemma embedding_unit_pos (a : (ValueGroup₀ f)ˣ) :
-    0 < embedding a.1 := by
+    0 < embedding a.val := by
   conv_lhs => rw [← map_zero f, ← ValueGroup₀.embedding_restrict₀ (0 : A)]
   rw [embedding_strictMono.lt_iff_lt]
   simp
 
 lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) :
-    embedding a.1 ≠ 0 := (embedding_unit_pos a).ne.symm
+    embedding a.val ≠ 0 := (embedding_unit_pos a).ne.symm
 
 end ValueGroup₀
 

@@ -5,8 +5,9 @@ Authors: Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.Final
+
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 
 /-!
 # Finality on Costructured Arrow categories
@@ -24,7 +25,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-open Limits Functor CostructuredArrow
+open Limits CostructuredArrow
 
 section Small
 
@@ -33,6 +34,7 @@ variable {T : Type u₁} [SmallCategory T]
 
 attribute [local instance] Grothendieck.final_map
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The version of `final_of_final_costructuredArrowToOver` on small categories used to prove the
 full statement. -/

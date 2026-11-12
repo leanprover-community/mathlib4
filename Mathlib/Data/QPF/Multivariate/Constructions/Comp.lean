@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Simon Hudon
 -/
 module
 
-public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
@@ -71,6 +70,7 @@ theorem get_map (x : Comp F G α) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance [MvQPF F] [∀ i, MvQPF <| G i] : MvQPF (Comp F G) where
   P := MvPFunctor.comp (P F) fun i ↦ P <| G i
   abs := Comp.mk ∘ (map fun _ ↦ abs) ∘ abs ∘ MvPFunctor.comp.get

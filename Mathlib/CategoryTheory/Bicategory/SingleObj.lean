@@ -76,11 +76,13 @@ def endMonoidalStarFunctor : (EndMonoidal (MonoidalSingleObj.star C)) ⥤ C wher
   obj X := X
   map f := f
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (endMonoidalStarFunctor C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.

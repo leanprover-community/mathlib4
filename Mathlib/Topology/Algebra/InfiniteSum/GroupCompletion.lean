@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sums in the completion of a topological group
 -/
@@ -17,7 +20,7 @@ public section
 open UniformSpace.Completion
 
 variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [IsUniformAddGroup α]
-{L : SummationFilter β}
+  {L : SummationFilter β}
 
 /-- A function `f` has a sum in a uniform additive group `α` if and only if it has that sum in the
 completion of `α`. -/

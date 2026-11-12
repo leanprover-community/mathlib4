@@ -6,8 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.LineDeriv.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Quadratic forms are line (Gateaux) differentiable
@@ -27,7 +29,7 @@ namespace QuadraticMap
 
 theorem hasLineDerivAt (f : QuadraticMap 𝕜 E F) (a b : E) :
     HasLineDerivAt 𝕜 f (polar f a b) a b := by
-  simpa [HasLineDerivAt, QuadraticMap.map_add, f.map_smul] using
+  simpa [HasLineDerivAt, QuadraticMap.map_add, f.map_smul] using!
     ((hasDerivAt_const (0 : 𝕜) (f a)).add <|
       ((hasDerivAt_id 0).mul (hasDerivAt_id 0)).smul (hasDerivAt_const 0 (f b))).add
       ((hasDerivAt_id 0).smul (hasDerivAt_const 0 (polar f a b)))

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugation action of a group with zero on itself
 -/
@@ -21,7 +24,7 @@ variable {α G₀ : Type*}
 namespace ConjAct
 variable [GroupWithZero G₀]
 
-instance : GroupWithZero (ConjAct G₀) := ‹GroupWithZero G₀›
+instance : GroupWithZero (ConjAct G₀) := inferInstanceAs <| GroupWithZero G₀
 
 @[simp] lemma ofConjAct_zero : ofConjAct 0 = (0 : G₀) := rfl
 @[simp] lemma toConjAct_zero : toConjAct (0 : G₀) = 0 := rfl

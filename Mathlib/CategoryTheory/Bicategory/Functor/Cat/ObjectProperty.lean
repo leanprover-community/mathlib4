@@ -22,7 +22,6 @@ to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
   `IsClosedUnderMapObj` saying that if an object locally satisfies
   the property, then it satisfies the property. Assuming this, show that
   `P.fullsubcategory` is a stack if the original pseudofunctor was.
-
 -/
 
 @[expose] public section
@@ -30,8 +29,6 @@ to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
 universe w v v' u u'
 
 namespace CategoryTheory
-
-open Bicategory
 
 namespace Pseudofunctor
 
@@ -121,18 +118,18 @@ lemma mapComp_inv_app {X Y Z : B} (f : X ⟶ Y) (g : Y ⟶ Z) (M : P.Obj X) :
     (P.mapComp f g).inv.app M = ObjectProperty.homMk
       ((F.mapComp f g).inv.toNatTrans.app M.obj) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a property of objects `P` for a pseudofunctor from `B` to `Cat`, this is
 the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj X`
 consisting of objects satisfying `P`. -/
 @[simps]
 def fullsubcategory : Pseudofunctor B Cat where
-  obj X := Cat.of (P.Obj X)
+  obj X := ↧(P.Obj X)
   map f := Cat.Hom.ofFunctor (P.map f)
   map₂ α := Cat.Hom₂.ofNatTrans (P.map₂ α)
   mapId X := Cat.Hom.isoMk (P.mapId X)
   mapComp f g := Cat.Hom.isoMk (P.mapComp f g)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of `P.fullsubcategory` in `F`. -/
 @[simps]

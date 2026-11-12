@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Topology.Convenient.GeneratedBy
-public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
+
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Open or closed subsets that are also `X`-generated spaces
@@ -16,7 +17,6 @@ Let `X : ι → Type*` be a family of topological spaces.
 If all the opens (resp. closed) subsets of the `X i` are
 `X`-generated, then any open (resp. closed) subset of
 an `X`-generated space is `X`-generated.
-
 -/
 
 public section

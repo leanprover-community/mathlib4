@@ -5,14 +5,12 @@ Authors: Yaël Dillies, Andrew Yang
 -/
 module
 
-public import Mathlib.Order.SuccPred.WithBot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Constructible sets in the prime spectrum
 
 This file provides tooling for manipulating constructible sets in the prime spectrum of a ring.
-
 -/
 
 @[expose] public section
@@ -155,7 +153,7 @@ lemma exists_range_eq_of_isConstructible {R : Type u} [CommRing R]
   · rw [localization_away_comap_range _ f, ← comap_basicOpen, TopologicalSpace.Opens.coe_comap,
       ContinuousMap.coe_mk, Set.image_preimage_eq_inter_range,
       range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, BasicConstructibleSetData.toSet,
-      Set.diff_eq_compl_inter, basicOpen_eq_zeroLocus_compl, Ideal.mk_ker, zeroLocus_span]
+      Set.sdiff_eq_compl_inter, basicOpen_eq_zeroLocus_compl, Ideal.mk_ker, zeroLocus_span]
 
 @[stacks 00I0 "(1)"]
 lemma isClosed_of_stableUnderSpecialization_of_isConstructible {R : Type*} [CommRing R]

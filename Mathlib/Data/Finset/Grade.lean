@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Grade
-public import Mathlib.Order.Nat
 
 /-!
 # Finsets and multisets form a graded order
@@ -21,6 +20,8 @@ proves that they form a `ℕ`-graded order.
 * `Multiset.instGradeMinOrder_nat`: Multisets are `ℕ`-graded
 * `Finset.instGradeMinOrder_nat`: Finsets are `ℕ`-graded
 -/
+
+open scoped Finset
 
 public section
 
@@ -95,7 +96,7 @@ lemma _root_.CovBy.exists_finset_cons (h : s ⋖ t) : ∃ a, ∃ ha : a ∉ s, s
 lemma covBy_iff_exists_cons : s ⋖ t ↔ ∃ a, ∃ ha : a ∉ s, s.cons a ha = t :=
   ⟨CovBy.exists_finset_cons, by rintro ⟨a, ha, rfl⟩; exact covBy_cons _⟩
 
-lemma _root_.CovBy.card_finset (h : s ⋖ t) : s.card ⋖ t.card := (val_covBy_val.2 h).card_multiset
+lemma _root_.CovBy.card_finset (h : s ⋖ t) : #s ⋖ #t := (val_covBy_val.2 h).card_multiset
 
 section DecidableEq
 variable [DecidableEq α]
@@ -116,12 +117,12 @@ lemma _root_.CovBy.exists_finset_insert (h : s ⋖ t) : ∃ a ∉ s, insert a s 
   simpa using h.exists_finset_cons
 
 lemma _root_.CovBy.exists_finset_erase (h : s ⋖ t) : ∃ a ∈ t, t.erase a = s := by
-  simpa only [← coe_inj, coe_erase] using h.finset_coe.exists_set_sdiff_singleton
+  simpa only [← coe_inj, coe_erase] using! h.finset_coe.exists_set_sdiff_singleton
 
 lemma covBy_iff_exists_insert : s ⋖ t ↔ ∃ a ∉ s, insert a s = t := by
   simp only [← coe_covBy_coe, Set.covBy_iff_exists_insert, ← coe_inj, coe_insert, mem_coe]
 
-lemma covBy_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := by
+lemma covBy_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ #(s \ t) = 1 := by
   rw [covBy_iff_exists_insert]
   constructor
   · rintro ⟨a, ha, rfl⟩
@@ -168,6 +169,6 @@ instance instGradeMinOrder_nat : GradeMinOrder ℕ (Finset α) where
   covBy_grade _ _ := CovBy.card_finset
   isMin_grade s hs := by rw [isMin_iff_eq_bot.1 hs]; exact isMin_bot
 
-@[simp] lemma grade_eq (s : Finset α) : grade ℕ s = s.card := rfl
+@[simp] lemma grade_eq (s : Finset α) : grade ℕ s = #s := rfl
 
 end Finset

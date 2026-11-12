@@ -5,10 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Properties of comma categories relating to adjunctions
@@ -84,7 +82,6 @@ section OfTerminals
 
 variable [∀ A, HasTerminal (CostructuredArrow G A)]
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] eq_iff_true_of_subsingleton in
 /-- Implementation: If each costructured arrow category on `G` has a terminal object, an equivalence
 which is helpful for constructing a right adjoint to `G`.
@@ -104,7 +101,6 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     rw [this]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If each costructured arrow category on `G` has a terminal object, construct a right adjoint to `G`.
 It is shown that it is a right adjoint in `adjunctionOfCostructuredArrowTerminals`.

@@ -21,14 +21,13 @@ In particular, if `u = v` and `C : Type u` is a small category,
 then `SheafOfModules.{u} R` is abelian: this instance shall be
 found automatically if this file and `Algebra.Category.Grp.FilteredColimits`
 are imported.
-
 -/
 
 public section
 
 universe v v' u u'
 
-open CategoryTheory Limits
+open CategoryTheory
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 

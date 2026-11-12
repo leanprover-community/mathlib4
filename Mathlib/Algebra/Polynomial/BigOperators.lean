@@ -30,7 +30,7 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 public section
 
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Multiset
 
@@ -60,12 +60,13 @@ theorem natDegree_multiset_sum_le (l : Multiset S[X]) :
 
 theorem natDegree_sum_le (f : ι → S[X]) :
     natDegree (∑ i ∈ s, f i) ≤ s.fold max 0 (natDegree ∘ f) := by
-  simpa using natDegree_multiset_sum_le (s.val.map f)
+  simpa using! natDegree_multiset_sum_le (s.val.map f)
 
 lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s, natDegree (f i) ≤ n) :
     natDegree (∑ i ∈ s, f i) ≤ n :=
   le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The leading coefficient of a sum of polynomials with the same degree is
 the sum of the leading coefficients, provided that this sum is nonzero.
 -/
@@ -120,7 +121,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
     have h : natDegree tl.prod ≤ n * tl.length := by
       refine (natDegree_list_prod_le _).trans ?_
       rw [← tl.length_map natDegree, mul_comm]
-      refine List.sum_le_card_nsmul _ _ ?_
+      refine List.sum_le_length_nsmul _ _ ?_
       simpa using hl'
     exact coeff_mul_add_eq_of_natDegree_le (hl _ List.mem_cons_self) h
 
@@ -134,7 +135,7 @@ theorem natDegree_multiset_prod_le : t.prod.natDegree ≤ (t.map natDegree).sum 
   Quotient.inductionOn t (by simpa using natDegree_list_prod_le)
 
 theorem natDegree_prod_le : (∏ i ∈ s, f i).natDegree ≤ ∑ i ∈ s, (f i).natDegree := by
-  simpa using natDegree_multiset_prod_le (s.1.map f)
+  simpa using natDegree_multiset_prod_le (s.val.map f)
 
 /-- The degree of a product of polynomials is at most the sum of the degrees,
 where the degree of the zero polynomial is ⊥.
@@ -143,7 +144,7 @@ theorem degree_multiset_prod_le : t.prod.degree ≤ (t.map Polynomial.degree).su
   Quotient.inductionOn t (by simpa using degree_list_prod_le)
 
 theorem degree_prod_le : (∏ i ∈ s, f i).degree ≤ ∑ i ∈ s, (f i).degree := by
-  simpa only [Multiset.map_map] using degree_multiset_prod_le (s.1.map f)
+  simpa only [Multiset.map_map] using! degree_multiset_prod_le (s.val.map f)
 
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients, provided that this product is nonzero.
@@ -172,7 +173,7 @@ where this condition is automatically satisfied.
 -/
 theorem leadingCoeff_prod' (h : (∏ i ∈ s, (f i).leadingCoeff) ≠ 0) :
     (∏ i ∈ s, f i).leadingCoeff = ∏ i ∈ s, (f i).leadingCoeff := by
-  simpa using leadingCoeff_multiset_prod' (s.1.map f) (by simpa using h)
+  simpa using leadingCoeff_multiset_prod' (s.val.map f) (by simpa using h)
 
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees, provided that the product of leading coefficients is nonzero.
@@ -198,7 +199,7 @@ where this condition is automatically satisfied.
 -/
 theorem natDegree_prod' (h : (∏ i ∈ s, (f i).leadingCoeff) ≠ 0) :
     (∏ i ∈ s, f i).natDegree = ∑ i ∈ s, (f i).natDegree := by
-  simpa using natDegree_multiset_prod' (s.1.map f) (by simpa using h)
+  simpa using natDegree_multiset_prod' (s.val.map f) (by simpa using h)
 
 theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
     t.prod.natDegree = (t.map natDegree).sum := by
@@ -215,11 +216,11 @@ theorem degree_multiset_prod_of_monic [Nontrivial R] (h : ∀ f ∈ t, Monic f) 
 
 theorem natDegree_prod_of_monic (h : ∀ i ∈ s, (f i).Monic) :
     (∏ i ∈ s, f i).natDegree = ∑ i ∈ s, (f i).natDegree := by
-  simpa using natDegree_multiset_prod_of_monic (s.1.map f) (by simpa using h)
+  simpa using natDegree_multiset_prod_of_monic (s.val.map f) (by simpa using h)
 
 theorem degree_prod_of_monic [Nontrivial R] (h : ∀ i ∈ s, (f i).Monic) :
     (∏ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree := by
-  simpa using degree_multiset_prod_of_monic (s.1.map f) (by simpa using h)
+  simpa using degree_multiset_prod_of_monic (s.val.map f) (by simpa using h)
 
 theorem coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegree p ≤ n) :
     coeff t.prod ((Multiset.card t) * n) = (t.map fun p => coeff p n).prod := by
@@ -229,7 +230,7 @@ theorem coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegr
 theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s, natDegree (f p) ≤ n) :
     coeff (∏ i ∈ s, f i) (#s * n) = ∏ i ∈ s, coeff (f i) n := by
   obtain ⟨l, hl⟩ := s
-  convert coeff_multiset_prod_of_natDegree_le (l.map f) n ?_
+  convert! coeff_multiset_prod_of_natDegree_le (l.map f) n ?_
   · simp
   · simp
   · simpa using h
@@ -239,7 +240,7 @@ theorem coeff_zero_multiset_prod : t.prod.coeff 0 = (t.map fun f => coeff f 0).p
   rw [Multiset.prod_cons, Multiset.map_cons, Multiset.prod_cons, Polynomial.mul_coeff_zero, ht]
 
 theorem coeff_zero_prod : (∏ i ∈ s, f i).coeff 0 = ∏ i ∈ s, (f i).coeff 0 := by
-  simpa using coeff_zero_multiset_prod (s.1.map f)
+  simpa using coeff_zero_multiset_prod (s.val.map f)
 
 end CommSemiring
 
@@ -261,13 +262,13 @@ theorem multiset_prod_X_sub_C_nextCoeff (t : Multiset R) :
 
 theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
     nextCoeff (∏ i ∈ s, (X - C (f i))) = -∑ i ∈ s, f i := by
-  simpa using multiset_prod_X_sub_C_nextCoeff (s.1.map f)
+  simpa using multiset_prod_X_sub_C_nextCoeff (s.val.map f)
 
 theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
-  rw [nextCoeff, if_neg]
+  rw [nextCoeff, ite_eq_right]
   swap
   · rw [natDegree_multiset_prod_of_monic]
     swap
@@ -281,7 +282,7 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
 
 theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s) :
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
-  simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
+  simpa using multiset_prod_X_sub_C_coeff_card_pred (s.val.map f) (by simpa using hs)
 
 lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f : ι → R[X]}
     {v : ι → A} (h : LinearIndepOn R v s) :
@@ -298,7 +299,7 @@ lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f :
     rw [finsetSum_coeff]
     conv in (fun _ ↦ _) =>
       ext
-      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+      rw [coeff_smul_apply, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
     intro H
     exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
 
@@ -318,7 +319,7 @@ lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {
     rw [finsetSum_coeff]
     conv in (fun _ ↦ _) =>
       ext
-      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+      rw [coeff_smul_apply, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
     intro H
     exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
 
@@ -335,9 +336,6 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
     (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
   rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
     natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
-
-@[deprecated (since := "2026-04-08")]
-alias natDegree_finset_prod_X_sub_C_eq_card := natDegree_finsetProd_X_sub_C_eq_card
 
 end CommRing
 
@@ -393,6 +391,7 @@ the sum of the degrees, where the degree of the zero polynomial is ⊥.
 theorem degree_prod [Nontrivial R] : (∏ i ∈ s, f i).degree = ∑ i ∈ s, (f i).degree :=
   map_prod (@degreeMonoidHom R _ _ _) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.
 
@@ -411,7 +410,7 @@ See `Polynomial.leadingCoeff_prod'` (with a `'`) for a version for commutative s
 where additionally, the product of the leading coefficients must be nonzero.
 -/
 theorem leadingCoeff_prod : (∏ i ∈ s, f i).leadingCoeff = ∏ i ∈ s, (f i).leadingCoeff := by
-  simpa using leadingCoeff_multiset_prod (s.1.map f)
+  simpa using leadingCoeff_multiset_prod (s.val.map f)
 
 end CommSemiring
 

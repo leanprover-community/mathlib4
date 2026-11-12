@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
-public import Mathlib.Algebra.Ring.Basic
 
 /-!
 # Ring objects in cartesian monoidal categories
@@ -22,7 +21,6 @@ denoted `RingObjCat C` and `CommRingObjCat C` respectively.
 
 ## TODO
 * develop the theory of bimonoidal categories and relate this with `Rig`-objects
-
 -/
 
 @[expose] public section

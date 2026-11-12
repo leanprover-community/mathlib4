@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Convex.ContinuousLinearEquiv
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+
+import Mathlib.Analysis.Convex.ContinuousLinearEquiv
 
 /-!
 # (Strict) convexity and linear isometries
@@ -17,7 +18,7 @@ In this file we prove some basic lemmas about (strict) convexity and linear isom
 
 public section
 
-open Function Set Metric
+open Set Metric
 open scoped Convex
 
 section SeminormedAddCommGroup

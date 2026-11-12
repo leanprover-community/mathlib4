@@ -5,13 +5,10 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Sites.Sheafification
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
-
 # Limits and colimits of sheaves
 
 ## Limits
@@ -27,7 +24,6 @@ Given a diagram `F : K ⥤ Sheaf J D` of sheaves, and a colimit cocone on the le
 we show that the cocone obtained by sheafifying the cocone point is a colimit cocone of sheaves.
 
 This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soon as `D` does.
-
 -/
 
 @[expose] public section
@@ -53,6 +49,8 @@ noncomputable section
 
 section
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- An auxiliary definition to be used below.
 
 Whenever `E` is a cone of shape `K` of sheaves, and `S` is the multifork associated to a
@@ -224,7 +222,6 @@ instance [HasFiniteColimits D] : HasFiniteColimits (Sheaf J D) :=
 instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   ⟨inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If every cocone on a diagram of sheaves which is a colimit on the level of presheaves satisfies
 the condition that the cocone point is a sheaf, then the functor from sheaves to presheaves
@@ -232,7 +229,7 @@ creates colimits of the diagram.
 Note: this almost never holds in sheaf categories in general, but it does for the extensive
 topology (see `Mathlib/CategoryTheory/Sites/Coherent/ExtensiveColimits.lean`).
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
     (h : ∀ (c : Cocone (F ⋙ sheafToPresheaf J D)) (_ : IsColimit c), Presheaf.IsSheaf J c.pt) :
     CreatesColimit F (sheafToPresheaf J D) :=

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex trigonometric functions
 
@@ -17,8 +20,6 @@ Basic facts and derivatives for the complex trigonometric functions.
 public section
 
 
-noncomputable section
-
 namespace Complex
 
 open Set Filter
@@ -26,7 +27,7 @@ open Set Filter
 open scoped Real
 
 theorem hasStrictDerivAt_tan {x : ℂ} (h : cos x ≠ 0) : HasStrictDerivAt tan (1 / cos x ^ 2) x := by
-  convert (hasStrictDerivAt_sin x).div (hasStrictDerivAt_cos x) h using 1
+  convert! (hasStrictDerivAt_sin x).div (hasStrictDerivAt_cos x) h using 1
   rw_mod_cast [← sin_sq_add_cos_sq x]
   ring
 
@@ -68,5 +69,10 @@ theorem deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
 @[simp]
 theorem contDiffAt_tan {x : ℂ} {n : WithTop ℕ∞} : ContDiffAt ℂ n tan x ↔ cos x ≠ 0 :=
   ⟨fun h => continuousAt_tan.1 h.continuousAt, contDiff_sin.contDiffAt.div contDiff_cos.contDiffAt⟩
+
+/-- The limit `lim_{z → 0} (tan z) / z = 1`, for the complex tangent. -/
+theorem tendsto_tan_div_nhdsNE_zero : Tendsto (fun z : ℂ ↦ tan z / z) (𝓝[≠] 0) (𝓝 1) :=
+  (hasDerivAt_iff_tendsto_slope.mp (by simpa using hasDerivAt_tan (x := 0) (by simp))).congr
+    fun _ ↦ by simp [slope_def_field]
 
 end Complex

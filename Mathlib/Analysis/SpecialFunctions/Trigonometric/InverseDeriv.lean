@@ -5,8 +5,11 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # derivatives of the inverse trigonometric functions
@@ -15,8 +18,6 @@ Derivatives of `arcsin` and `arccos`.
 -/
 
 public section
-
-noncomputable section
 
 open scoped Topology Filter Real ContDiff
 open Set
@@ -163,7 +164,7 @@ theorem contDiffOn_arccos {n : ℕ∞ω} : ContDiffOn ℝ n arccos {-1, 1}ᶜ :=
 theorem contDiffAt_arccos_iff {x : ℝ} {n : ℕ∞ω} :
     ContDiffAt ℝ n arccos x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 := by
   refine Iff.trans ⟨fun h => ?_, fun h => ?_⟩ contDiffAt_arcsin_iff <;>
-    simpa [arccos] using (contDiffAt_const (c := π / 2)).sub h
+    simpa [arccos] using! (contDiffAt_const (c := π / 2)).sub h
 
 end Arccos
 

@@ -6,7 +6,6 @@ Authors: Junyan Xu, Andrew Yang
 module
 
 public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.RingTheory.Jacobson.Ring
 
 /-!
 # Artinian rings over Jacobson rings
@@ -14,7 +13,6 @@ public import Mathlib.RingTheory.Jacobson.Ring
 ## Main results
 - `Module.finite_iff_isArtinianRing`: If `A` is a finite type algebra over an Artinian ring `R`,
   then `A` is finite over `R` if and only if `A` is an Artinian ring.
-
 -/
 
 public section
@@ -41,7 +39,7 @@ lemma Module.finite_of_isArtinianRing [IsJacobsonRing R] [IsArtinianRing A] :
 then `A` is finite over `R` if and only if `A` is an Artinian ring. -/
 lemma Module.finite_iff_isArtinianRing [IsArtinianRing R] :
     Module.Finite R A ↔ IsArtinianRing A :=
-  ⟨isArtinian_of_tower _ ∘ ((IsArtinianRing.tfae R A).out 0 2).mp,
+  ⟨isArtinian_of_tower _ ∘ ((IsArtinianRing.tfae R A).out 1 3).mp,
     fun _ ↦ finite_of_isArtinianRing R A⟩
 
 /-- If `A` is a finite type algebra over an Artinian ring `R`,

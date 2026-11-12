@@ -5,11 +5,10 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Primitive
-public import Mathlib.GroupTheory.SpecificGroups.Alternating
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-public import Mathlib.SetTheory.Cardinal.Embedding
-public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
+
+import Mathlib.SetTheory.Cardinal.Embedding
 
 /-! # Multiple transitivity
 
@@ -33,7 +32,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
   If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
   provided `α` has at least `n` elements.
 
-## Results for `SubMulAction`.
+## Results for `SubMulAction`
 
 * `SubMulAction.ofStabilizer.isPretransitive_iff_conj` shows
   that for `a`, `b` and `g` such that `g • a = b`, the actions
@@ -59,7 +58,6 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 These results are results about actions on types `n ↪ α` induced by an action
 on `α`, and some results are developed in this context.
-
 -/
 
 @[expose] public section
@@ -96,8 +94,6 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
   apply hf
   simp only [← hf.mulActionHom_embedding_apply, hxy]
 
-variable (hf' : Function.Bijective f)
-
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :
     Function.Bijective (hf.injective.mulActionHom_embedding ι) := by
@@ -130,7 +126,7 @@ theorem isMultiplyPretransitive_iff {n : ℕ} :
 variable {H β : Type*} [Group H] [MulAction H β] {σ : G → H}
   {f : α →ₑ[σ] β} (hf : Function.Injective f)
 
-/- If there exists a surjective equivariant map `α →ₑ[σ] β`
+/-- If there exists a surjective equivariant map `α →ₑ[σ] β`
 then pretransitivity descends from `n ↪ α` to `n ↪ β`.
 
 The subtlety is that if it is not injective, this map does not induce
@@ -180,13 +176,13 @@ variable {one : Type*} [Unique one]
 @[to_additive /-- For `Unique one`, the equivariant map from `one ↪ α` to `α` -/]
 def _root_.MulActionHom.oneEmbeddingMap :
     (one ↪ α) →[G] α := {
-  oneEmbeddingEquiv with
+  Equiv.embeddingUnique with
   map_smul' _ _ := rfl }
 
 @[to_additive]
 theorem _root_.MulActionHom.oneEmbeddingMap_bijective :
     Function.Bijective (oneEmbeddingMap (one := one) (G := G) (α := α)) :=
-  oneEmbeddingEquiv.bijective
+  Equiv.embeddingUnique.bijective
 
 /-- An action is `1`-pretransitive iff it is pretransitive. -/
 @[to_additive /-- An additive action is `1`-pretransitive iff it is pretransitive. -/]
@@ -362,7 +358,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
       simp [ofStabilizer.snoc_last]
     use ⟨g, hg⟩
     ext i
-    simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+    simp only [smul_apply, SetLike.val_smul, subgroup_smul_def]
     rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc]
   · -- gx • x = x1 :: a
     obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
@@ -373,7 +369,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     use gy⁻¹ * g * gx
     ext i
     simp only [mul_smul, smul_apply, inv_smul_eq_iff]
-    simp only [← smul_apply _ _ i, hgy, hgx]
+    simp only [← smul_apply, hgy, hgx]
     simp only [smul_apply]
     rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
     · simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
@@ -463,14 +459,14 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     have hat : Subtype.val '' t = s \ {a} := by
       rw [Set.image_preimage_eq_inter_range]
       simp only [Subtype.range_coe_subtype]
-      rw [Set.diff_eq_compl_inter, Set.inter_comm]
+      rw [Set.sdiff_eq_compl_inter, Set.inter_comm]
       congr
     have hat' : s = insert a (Subtype.val '' t) := by
-      rw [hat, Set.insert_diff_singleton, Set.insert_eq_of_mem has]
+      rw [hat, Set.insert_sdiff_singleton, Set.insert_eq_of_mem has]
     have hfs := SubMulAction.fixingSubgroup_of_insert a t
     rw [← hat'] at hfs
     rw [hfs, Subgroup.index_map,
-      (MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
+      MonoidHom.ker_eq_bot (stabilizer G a).subtype
         (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
     simp only [sup_bot_eq, Subgroup.range_subtype]
     have htcard : t.ncard = k := by
@@ -517,7 +513,7 @@ other. This is the action-form of `Equiv.Perm.exists_extending_pair`. -/
 theorem exists_smul_eq_embedding {ι : Type*} [Finite ι] {β : Type*}
     (x y : ι ↪ β) : ∃ σ : Perm β, σ • x = y := by
   obtain ⟨σ, hσ⟩ := Equiv.Perm.exists_extending_pair x y x.injective y.injective
-  exact ⟨σ, Function.Embedding.ext fun i => by simp [Function.Embedding.smul_apply, hσ]⟩
+  exact ⟨σ, Function.Embedding.ext fun i => by simp [hσ]⟩
 
 variable (α) in
 /-- The permutation group `Equiv.Perm α` acts `n`-pretransitively on `α` for all `n`. -/
@@ -567,7 +563,7 @@ theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
   ext a
   obtain ⟨i, rfl⟩ := (hx x) a
   specialize hgk i
-  simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at hgk
+  simp only [smul_apply, Perm.smul_def] at hgk
   simp [← hgk, Subgroup.smul_def, Perm.smul_def]
 
 end Equiv.Perm
@@ -631,9 +627,9 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
 theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
     IsPretransitive (alternatingGroup α) α := by
   rw [← is_one_pretransitive_iff]
-  letI := isMultiplyPretransitive α
+  let := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
-  rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
+  rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by simp) h)]
 
 /-- The action of the alternating group has trivial blocks.
 
@@ -652,7 +648,7 @@ theorem isTrivialBlock_of_isBlock {B : Set α} (hB : IsBlock (alternatingGroup �
   suffices IsPreprimitive (alternatingGroup α) α by
     apply IsPreprimitive.isTrivialBlock_of_isBlock hB
   apply isPreprimitive_of_is_two_pretransitive
-  letI := isMultiplyPretransitive α
+  let := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
   rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_of_lt h2)]
 
@@ -663,16 +659,3 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end alternatingGroup
-
-namespace AlternatingGroup
-
-@[deprecated (since := "2025-12-16")]
-alias isMultiplyPretransitive := alternatingGroup.isMultiplyPretransitive
-@[deprecated (since := "2025-12-16")]
-alias isPretransitive_of_three_le_card := alternatingGroup.isPretransitive_of_three_le_card
-@[deprecated (since := "2025-12-16")]
-alias isTrivialBlock_of_isBlock := alternatingGroup.isTrivialBlock_of_isBlock
-@[deprecated (since := "2025-12-16")]
-alias isPreprimitive_of_three_le_card := alternatingGroup.isPreprimitive_of_three_le_card
-
-end AlternatingGroup

@@ -26,7 +26,6 @@ These definitions and constructions are useful in particular for the comonadicit
 
 This file was adapted from `Mathlib/CategoryTheory/Limits/Shapes/SplitCoequalizer.lean`. Please try
 to keep them in sync.
-
 -/
 
 @[expose] public section
@@ -111,6 +110,8 @@ def IsSplitEqualizer.asFork {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
 theorem IsSplitEqualizer.asFork_ι {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
     t.asFork.ι = h := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 The fork induced by a split equalizer is an equalizer, justifying the name. In some cases it
 is more convenient to show a given fork is an equalizer by showing it is split.
@@ -119,7 +120,7 @@ def IsSplitEqualizer.isEqualizer {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g
     IsLimit t.asFork :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨ s.ι ≫ t.leftRetraction,
-      by simp [- top_rightRetraction, ← t.top_rightRetraction, s.condition_assoc],
+      by simp [-top_rightRetraction, ← t.top_rightRetraction, s.condition_assoc],
       fun hm => by simp [← hm] ⟩
 
 end

@@ -1,23 +1,30 @@
 #!/usr/bin/env bash
 set -euxo pipefail
 
-BENCH="scripts/bench"
-
 # Prepare build
 lake clean
 rm -f .lake/packages/batteries/.lake/build/bin/runLinter
 
+# Mirror the real Lean toolchain in the fake root, except for our `bin/lean` wrapper.
+# Lake derives the include dir, libraries, C compiler etc. from the sysroot
+# reported by `lean --print-prefix`, which the wrapper sets to the fake root.
+REAL_PREFIX="$(lean --print-prefix)"
+FAKE_ROOT="$BENCH_DIR/build/fake-root"
+for entry in "$REAL_PREFIX"/*; do
+  [[ "$(basename "$entry")" == bin ]] || ln -sfn "$entry" "$FAKE_ROOT/"
+done
+for entry in "$REAL_PREFIX"/bin/*; do
+  [[ "$(basename "$entry")" == lean ]] || ln -sfn "$entry" "$FAKE_ROOT/bin/"
+done
+
 # Run build
-LAKE_OVERRIDE_LEAN=true LEAN=$(realpath "$BENCH/build/fake-root/bin/lean") \
-  "$BENCH/measure.py" --append -t build -d -- \
+LAKE_OVERRIDE_LEAN=true \
+  LEAN="$BENCH_DIR/build/fake-root/bin/lean" \
+  WRAPPER_OUT="$OUTPUT_FILE" \
+  WRAPPER_PREFIX="$BENCH_DIR/build/fake-root" \
+  "$BENCH_DIR/measure.py" -t build -d -a -o "$OUTPUT_FILE" -- \
   lakeprof record lake build --no-cache
 
 # Analyze lakeprof data
-lakeprof report -pj | jq -c '{metric: "build/lakeprof/longest build path//wall-clock", value: .[-1][2], unit: "s"}' >> measurements.jsonl
-lakeprof report -rj | jq -c '{metric: "build/lakeprof/longest rebuild path//wall-clock", value: .[-1][2], unit: "s"}' >> measurements.jsonl
-
-# Upload lakeprof report
-# Guarded to prevent accidental uploads (which wouldn't work anyways) during local runs.
-if [ -f build_upload_lakeprof_report ]; then
-  python3 "$BENCH/build/lakeprof_report_upload.py"
-fi
+"$BENCH_DIR/build/lakeprof_measurements.py" "$OUTPUT_FILE"
+python3 "$BENCH_DIR/build/lakeprof_report_upload.py"

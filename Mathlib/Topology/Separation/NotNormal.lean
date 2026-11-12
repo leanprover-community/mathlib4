@@ -36,12 +36,12 @@ theorem two_pow_mk_le_two_pow_mk_dense [NormalSpace X] {s d : Set X} (hs : IsClo
     rw [← inter_eq_self_of_subset_right ht, ← Subtype.image_preimage_val]
     exact hs.isClosedMap_subtype_val _ (isClosed_discrete _)
   choose U V hU hV hUs hVs hUV using fun t : 𝒫 s ↦
-    normal_separation (h_closed t t.2) (h_closed _ diff_subset) disjoint_sdiff_right
+    normal_separation (h_closed t t.2) (h_closed _ sdiff_subset) disjoint_sdiff_right
   have hUd {t₁ t₂} (h : U t₁ ∩ d = U t₂ ∩ d) : t₁.1 ⊆ t₂.1 := by
     by_contra ht
-    rw [← diff_nonempty] at ht
+    rw [← sdiff_nonempty] at ht
     have hUVd := hd.inter_open_nonempty _ ((hU t₁).inter (hV t₂)) <| ht.mono <|
-      subset_inter (diff_subset.trans (hUs t₁)) ((diff_subset_diff_left t₁.2).trans (hVs t₂))
+      subset_inter (sdiff_subset.trans (hUs t₁)) ((sdiff_subset_sdiff_left t₁.2).trans (hVs t₂))
     rw [inter_right_comm, h] at hUVd
     exact hUVd.not_disjoint <| disjoint_of_subset_left inter_subset_left (hUV t₂)
   have h_inj : Injective (U · ∩ d) := fun _ _ h ↦ SetCoe.ext <| (hUd h).antisymm (hUd h.symm)

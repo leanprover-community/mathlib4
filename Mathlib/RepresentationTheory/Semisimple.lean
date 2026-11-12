@@ -16,7 +16,6 @@ public import Mathlib.Tactic.Positivity
 # Semisimple representations
 
 This file defines the typeclass `IsSemisimpleRepresentation` for semisimple monoid representations.
-
 -/
 
 namespace Representation
@@ -34,7 +33,6 @@ variable [Monoid G] [Field k] [AddCommGroup V] [Module k V]
 abbrev IsSemisimpleRepresentation :=
   ComplementedLattice (Subrepresentation ρ)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleRepresentation_iff_isSemisimpleModule_asModule :
     IsSemisimpleRepresentation ρ ↔ IsSemisimpleModule k[G] ρ.asModule := by
   rw [isSemisimpleModule_iff]

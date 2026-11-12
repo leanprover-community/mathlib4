@@ -6,8 +6,9 @@ Authors: Yaël Dillies, Moisés Herradón Cueto
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.WithTerminal.FinCategory
 public import Mathlib.CategoryTheory.WithTerminal.Cone
+
+import Mathlib.CategoryTheory.WithTerminal.FinCategory
 
 /-!
 # If a functor preserves limits, so does the induced functor in the `Over` or `Under` category
@@ -35,6 +36,8 @@ instance PreservesLimitsOfShape.ofWidePullbacks {J : Type*}
     PreservesLimitsOfShape (WithTerminal <| Discrete J) F :=
   preservesLimitsOfShape_of_equiv WithTerminal.widePullbackShapeEquiv F
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 open WithTerminal in
 instance PreservesLimitsOfShape.overPost [PreservesLimitsOfShape (WithTerminal J) F] :
     PreservesLimitsOfShape J (Over.post F (X := X)) where
@@ -50,6 +53,8 @@ instance PreservesFiniteLimits.overPost [PreservesFiniteLimits F] :
 instance PreservesLimitsOfSize.overPost [PreservesLimitsOfSize.{w', w} F] :
     PreservesLimitsOfSize.{w', w} (Over.post F (X := X)) where
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 open WithInitial in
 instance PreservesColimitsOfShape.underPost [PreservesColimitsOfShape (WithInitial J) F] :
     PreservesColimitsOfShape J (Under.post F (X := X)) where

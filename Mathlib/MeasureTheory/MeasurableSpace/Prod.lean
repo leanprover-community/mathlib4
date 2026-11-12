@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.MeasureTheory.PiSystem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The product sigma algebra
 
@@ -17,8 +20,6 @@ This file talks about the measurability of operations on binary functions.
 public section
 
 assert_not_exists MeasureTheory.Measure
-
-noncomputable section
 
 open Set MeasurableSpace
 

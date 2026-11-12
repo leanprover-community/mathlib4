@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.Deriv.Support
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+
+import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Derivative of `f x * g x`
@@ -27,13 +27,9 @@ public section
 
 universe u v w
 
-noncomputable section
-
 open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
-
-open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
+open Filter Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -213,17 +209,11 @@ lemma derivWithin_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
   · simp [← fderivWithin_derivWithin, ← Pi.smul_def, fderivWithin_const_smul_field c hsx]
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-@[deprecated (since := "2026-01-11")] alias derivWithin_fun_const_smul' :=
-  derivWithin_fun_const_smul_field
-
 /-- A variant of `derivWithin_const_smul` without differentiability assumption when the scalar
 multiplication is by division ring elements. -/
 lemma derivWithin_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     derivWithin (c • f) s x = c • derivWithin f s x :=
   derivWithin_fun_const_smul_field c f
-
-@[deprecated (since := "2026-01-11")] alias derivWithin_const_smul' :=
-  derivWithin_const_smul_field
 
 theorem deriv_fun_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
     deriv (fun y => c • f y) x = c • deriv f x :=
@@ -239,15 +229,11 @@ lemma deriv_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (fun y ↦ c • f y) x = c • deriv f x := by
   simp only [← derivWithin_univ, derivWithin_fun_const_smul_field]
 
-@[deprecated (since := "2026-01-11")] alias deriv_fun_const_smul' := deriv_fun_const_smul_field
-
 /-- A variant of `deriv_const_smul` without differentiability assumption when the scalar
 multiplication is by division ring elements. -/
 lemma deriv_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (c • f) x = c • deriv f x := by
   simp only [← derivWithin_univ, derivWithin_const_smul_field]
-
-@[deprecated (since := "2026-01-11")] alias deriv_const_smul' := deriv_const_smul_field
 
 end ConstSMul
 
@@ -410,58 +396,35 @@ variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [N
 
 theorem HasDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
-    (HasFDerivAt.finsetProd (fun i hi ↦ (hf i hi).hasFDerivAt)).hasDerivAt
-
-@[deprecated (since := "2026-04-08")] alias HasDerivAt.fun_finset_prod := HasDerivAt.fun_finsetProd
+  simpa using (HasFDerivAt.finsetProd (hf · · |> hasFDerivAt)).hasDerivAt
 
 theorem HasDerivAt.finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  convert HasDerivAt.fun_finsetProd hf; simp
-
-@[deprecated (since := "2026-04-08")] alias HasDerivAt.finset_prod := HasDerivAt.finsetProd
+  convert! HasDerivAt.fun_finsetProd hf; simp
 
 theorem HasDerivWithinAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
-  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
-    (HasFDerivWithinAt.finsetProd (fun i hi ↦ (hf i hi).hasFDerivWithinAt)).hasDerivWithinAt
-
-@[deprecated (since := "2026-04-08")]
-alias HasDerivWithinAt.fun_finset_prod := HasDerivWithinAt.fun_finsetProd
+  simpa using (HasFDerivWithinAt.finsetProd (hf · · |> hasFDerivWithinAt)).hasDerivWithinAt
 
 theorem HasDerivWithinAt.finsetProd (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
-  convert HasDerivWithinAt.fun_finsetProd hf; simp
-
-@[deprecated (since := "2026-04-08")]
-alias HasDerivWithinAt.finset_prod := HasDerivWithinAt.finsetProd
+  convert! HasDerivWithinAt.fun_finsetProd hf; simp
 
 theorem HasStrictDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
-    (HasStrictFDerivAt.finsetProd (fun i hi ↦ (hf i hi).hasStrictFDerivAt)).hasStrictDerivAt
-
-@[deprecated (since := "2026-04-08")]
-alias HasStrictDerivAt.fun_finset_prod := HasStrictDerivAt.fun_finsetProd
+  simpa using (HasStrictFDerivAt.finsetProd (hf · · |> hasStrictFDerivAt)).hasStrictDerivAt
 
 theorem HasStrictDerivAt.finsetProd (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  convert HasStrictDerivAt.fun_finsetProd hf; simp
-
-@[deprecated (since := "2026-04-08")]
-alias HasStrictDerivAt.finset_prod := HasStrictDerivAt.finsetProd
+  convert! HasStrictDerivAt.fun_finsetProd hf; simp
 
 theorem deriv_fun_finsetProd (hf : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     deriv (∏ i ∈ u, f i ·) x = ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • deriv (f i) x :=
   (HasDerivAt.fun_finsetProd fun i hi ↦ (hf i hi).hasDerivAt).deriv
 
-@[deprecated (since := "2026-04-08")] alias deriv_fun_finset_prod := deriv_fun_finsetProd
-
 theorem deriv_finsetProd (hf : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     deriv (∏ i ∈ u, f i) x = ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • deriv (f i) x :=
   (HasDerivAt.finsetProd fun i hi ↦ (hf i hi).hasDerivAt).deriv
-
-@[deprecated (since := "2026-04-08")] alias deriv_finset_prod := deriv_finsetProd
 
 theorem derivWithin_fun_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     derivWithin (∏ i ∈ u, f i ·) s x =
@@ -470,15 +433,10 @@ theorem derivWithin_fun_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt �
   · exact (HasDerivWithinAt.fun_finsetProd fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-@[deprecated (since := "2026-04-08")]
-alias derivWithin_fun_finset_prod := derivWithin_fun_finsetProd
-
 theorem derivWithin_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     derivWithin (∏ i ∈ u, f i) s x =
       ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • derivWithin (f i) s x := by
-  convert derivWithin_fun_finsetProd hf; simp
-
-@[deprecated (since := "2026-04-08")] alias derivWithin_finset_prod := derivWithin_finsetProd
+  convert! derivWithin_fun_finsetProd hf; simp
 
 end HasDeriv
 
@@ -492,16 +450,10 @@ theorem DifferentiableAt.fun_finsetProd (hd : ∀ i ∈ u, DifferentiableAt 𝕜
   exact
     (HasDerivAt.fun_finsetProd (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
 
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableAt.fun_finset_prod := DifferentiableAt.fun_finsetProd
-
 @[fun_prop]
 theorem DifferentiableAt.finsetProd (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     DifferentiableAt 𝕜 (∏ i ∈ u, f i) x := by
-  convert DifferentiableAt.fun_finsetProd hd; simp
-
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableAt.finset_prod := DifferentiableAt.finsetProd
+  convert! DifferentiableAt.fun_finsetProd hd; simp
 
 @[fun_prop]
 theorem DifferentiableWithinAt.fun_finsetProd (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
@@ -510,47 +462,30 @@ theorem DifferentiableWithinAt.fun_finsetProd (hd : ∀ i ∈ u, DifferentiableW
   exact (HasDerivWithinAt.fun_finsetProd (fun i hi ↦
     DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
 
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableWithinAt.fun_finset_prod := DifferentiableWithinAt.fun_finsetProd
-
 @[fun_prop]
 theorem DifferentiableWithinAt.finsetProd (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i) s x := by
-  convert DifferentiableWithinAt.fun_finsetProd hd; simp
-
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableWithinAt.finset_prod := DifferentiableWithinAt.finsetProd
+  convert! DifferentiableWithinAt.fun_finsetProd hd; simp
 
 @[fun_prop]
 theorem DifferentiableOn.fun_finsetProd (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
     DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s :=
   fun x hx ↦ .fun_finsetProd (fun i hi ↦ hd i hi x hx)
 
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableOn.fun_finset_prod := DifferentiableOn.fun_finsetProd
-
 @[fun_prop]
 theorem DifferentiableOn.finsetProd (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
     DifferentiableOn 𝕜 (∏ i ∈ u, f i) s :=
   fun x hx ↦ .finsetProd (fun i hi ↦ hd i hi x hx)
-
-@[deprecated (since := "2026-04-08")]
-alias DifferentiableOn.finset_prod := DifferentiableOn.finsetProd
 
 @[fun_prop]
 theorem Differentiable.fun_finsetProd (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
     Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
   fun x ↦ .fun_finsetProd (fun i hi ↦ hd i hi x)
 
-@[deprecated (since := "2026-04-08")]
-alias Differentiable.fun_finset_prod := Differentiable.fun_finsetProd
-
 @[fun_prop]
 theorem Differentiable.finsetProd (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
     Differentiable 𝕜 (∏ i ∈ u, f i) :=
   fun x ↦ .finsetProd (fun i hi ↦ hd i hi x)
-
-@[deprecated (since := "2026-04-08")] alias Differentiable.finset_prod := Differentiable.finsetProd
 
 end Prod
 

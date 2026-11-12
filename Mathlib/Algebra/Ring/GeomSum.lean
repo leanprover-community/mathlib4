@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Algebra.Ring.GrindInstances
+
+import Mathlib.Algebra.Ring.GrindInstances
+import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Partial sums of geometric series in a ring
@@ -117,7 +118,7 @@ protected lemma Commute.geom_sum₂_comm (n : ℕ) (h : Commute x y) :
   simp only [Nat.add_sub_cancel]
   rw [← Finset.sum_flip]
   refine Finset.sum_congr rfl fun i hi => ?_
-  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using h.pow_pow _ _
+  simpa [Nat.sub_sub_self (Nat.succ_le_succ_iff.mp (Finset.mem_range.mp hi))] using! h.pow_pow _ _
 
 -- TODO: for consistency, the next two lemmas should be moved to the root namespace
 lemma RingHom.map_geom_sum (x : R) (n : ℕ) (f : R →+* S) :
@@ -152,7 +153,7 @@ lemma geom_sum₂_mul_of_ge (hxy : y ≤ x) (n : ℕ) :
 lemma geom_sum₂_mul_of_le (hxy : x ≤ y) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (y - x) = y ^ n - x ^ n := by
   rw [← Finset.sum_range_reflect]
-  convert geom_sum₂_mul_of_ge hxy n using 3
+  convert! geom_sum₂_mul_of_ge hxy n using 3
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
@@ -238,7 +239,7 @@ lemma mul_geom_sum (x : R) (n : ℕ) : ((x - 1) * ∑ i ∈ range n, x ^ i) = x 
   op_injective <| by simpa using geom_sum_mul (op x) n
 
 lemma geom_sum_mul_neg (x : R) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (1 - x) = 1 - x ^ n := by
-  have := congr_arg Neg.neg (geom_sum_mul x n)
+  have := congr(-$(geom_sum_mul x n))
   rw [neg_sub, ← mul_neg, neg_sub] at this
   exact this
 
@@ -303,10 +304,6 @@ theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum {x : R} {m n : ℕ}
     (x ^ m - 1) * ∑ k ∈ range n, x ^ k = (x ^ n - 1) * ∑ k ∈ range m, x ^ k := by
   grind [geom_sum_mul]
 
-@[deprecated (since := "2025-10-31")]
-protected alias IsPrimitiveRoot.pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum :=
-  pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum
-
 lemma geom_sum₂_mul (x y : R) (n : ℕ) :
     (∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=
   (Commute.all x y).geom_sum₂_mul n
@@ -326,6 +323,17 @@ lemma geom_sum₂_succ_eq (x y : R) {n : ℕ} :
 lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
     ((x - y) * ∑ i ∈ Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) = x ^ n - x ^ m * y ^ (n - m) :=
   (Commute.all x y).mul_geom_sum₂_Ico hmn
+
+/-- Summing `k` against the weights `x ^ k * (1 - x)` for `k < m`, plus `m` against the
+boundary weight `x ^ m`, gives the geometric sum `∑ k ∈ Icc 1 m, x ^ k`. This is the identity
+behind the mean of a censored geometric distribution: `x ^ k * (1 - x)` is the mass at `k` and
+`x ^ m` the mass collected at `m`. -/
+theorem sum_range_mul_geometric_add (x : R) (m : ℕ) :
+    (∑ k ∈ range m, (k : R) * (x ^ k * (1 - x))) + (m : R) * x ^ m =
+      ∑ k ∈ Finset.Icc 1 m, x ^ k := by
+  induction m with
+  | zero => simp
+  | succ m ih => grind [sum_range_succ, sum_Icc_succ_top]
 
 end CommRing
 

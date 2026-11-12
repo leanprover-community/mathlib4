@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
-public import Mathlib.Data.Finite.Sigma
+
+import Mathlib.Basic.Finite.Sigma
 
 /-!
 # Existence of a rank function to natural numbers
@@ -14,18 +15,21 @@ public import Mathlib.Data.Finite.Sigma
 In this file, we show that if `P : A.Pairing` is
 a regular pairing of subcomplex `A` of a simplicial set `X`,
 then there exists a rank function for `P` with values in `ℕ`.
-
 -/
 
 @[expose] public section
 
 universe u
 
-open Simplicial
+open scoped Simplicial
 
-namespace SSet.Subcomplex.Pairing
+namespace SSet.Subcomplex
 
-variable {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
+variable {X : SSet.{u}} {A : X.Subcomplex}
+
+namespace Pairing
+
+variable (P : A.Pairing)
 
 instance (y : P.II) : Finite { x // P.AncestralRel x y } := by
   let T := { x : P.II // P.AncestralRel x y }
@@ -94,4 +98,22 @@ lemma isRegular_iff_nonempty_weakRankFunction [P.IsProper] :
     P.IsRegular ↔ Nonempty (P.WeakRankFunction ℕ) :=
   ⟨fun _ ↦ inferInstance, fun ⟨h⟩ ↦ h.isRegular⟩
 
-end SSet.Subcomplex.Pairing
+end Pairing
+
+namespace PairingCore
+
+variable (P : A.PairingCore)
+
+lemma isRegular_iff_nonempty_rankFunction [P.IsProper] :
+    P.IsRegular ↔ Nonempty (P.RankFunction ℕ) := by
+  rw [← isRegular_pairing_iff, Pairing.isRegular_iff_nonempty_rankFunction]
+  exact (P.rankFunctionEquiv ℕ).symm.nonempty_congr
+
+lemma isRegular_iff_nonempty_weakRankFunction [P.IsProper] :
+    P.IsRegular ↔ Nonempty (P.WeakRankFunction ℕ) := by
+  rw [← isRegular_pairing_iff, Pairing.isRegular_iff_nonempty_weakRankFunction]
+  exact (P.weakRankFunctionEquiv ℕ).symm.nonempty_congr
+
+end PairingCore
+
+end SSet.Subcomplex

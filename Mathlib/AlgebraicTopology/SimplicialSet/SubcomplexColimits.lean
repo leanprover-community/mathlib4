@@ -19,7 +19,6 @@ the `U i` along the `V i j`.
 
 Similarly, bicartesian squares in the lattice `Subcomplex X` give pushout
 squares in the category of simplicial sets.
-
 -/
 
 @[expose] public section
@@ -60,6 +59,8 @@ noncomputable def isColimit :
     exact (Multicofork.isColimitMapEquiv _ _).2
       (Types.isColimitOfMulticoequalizerDiagram h'))
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- A colimit multicofork attached to a `MulticoequalizerDiagram`
 structure in the complete lattice of subcomplexes of a simplicial set.
 In this variant, we assume that the index type `ι` has a linear order. This allows

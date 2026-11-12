@@ -5,8 +5,12 @@ Authors: Bhavik Mehta
 -/
 module
 
+public import Mathlib.Basic.Finite.Defs
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Tactic.ToAdditive
+
+import Mathlib.Data.Finset.Attr
 import Mathlib.Topology.Compactness.Compact
-public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Combinatorial compactness and the Rado selection lemma
@@ -47,7 +51,6 @@ have the finite intersection property, so their intersection is nonempty.
 * de Bruijn, N. G.; Erdős, P. (1951). "A colour problem for infinite graphs and a problem
   in the theory of relations".
 * Rado, R. (1949). "Axiomatic treatment of rank in infinite sets".
-
 -/
 
 public section
@@ -73,10 +76,10 @@ theorem Finset.rado_selection (g : Finset α → (a : α) → β a) :
     exact (isClosed_discrete _).preimage (by fun_prop)
   have he'' (B : Finset (Finset α)) : (⋂ i ∈ B, e i).Nonempty := by
     refine ⟨g (B.biUnion id), ?_⟩
-    simp only [Set.mem_iInter, Set.mem_setOf_eq, e]
+    simp only [Set.mem_iInter, Set.mem_ofPred_eq, e]
     intro i hi
     exact ⟨_, subset_biUnion_of_mem id hi, by simp⟩
-  simpa using CompactSpace.iInter_nonempty he' he''
+  simpa using! CompactSpace.iInter_nonempty he' he''
 
 /--
 Given a (dependent) function `g s : (a : s) → β a` for each finset `s` of `α`, provided that

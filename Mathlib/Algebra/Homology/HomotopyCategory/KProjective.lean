@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.CochainComplexOpposite
+public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 
 /-!
 # K-projective cochain complexes
@@ -19,7 +19,6 @@ and show that bounded above complexes of projective objects are K-projective.
 
 ## References
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
-
 -/
 
 @[expose] public section
@@ -45,7 +44,8 @@ class IsKProjective (K : CochainComplex C ℤ) : Prop where
 
 /-- A choice of homotopy to zero for a morphism from a
 K-projective cochain complex to an acyclic cochain complex. -/
-noncomputable irreducible_def IsKProjective.homotopyZero
+@[no_expose]
+noncomputable def IsKProjective.homotopyZero
     {K L : CochainComplex C ℤ} (f : K ⟶ L)
     (hL : L.Acyclic) [K.IsKProjective] :
     Homotopy f 0 :=
@@ -106,6 +106,8 @@ lemma isKProjective_of_op {K : CochainComplex C ℤ}
       ((opEquivalence C).functor.map f.op) (acyclic_op hL)).trans
         (.ofEq (by simp)))⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] opEquivalence ChainComplex.cochainComplexEquivalence in
 open Cochain.InductionUp in
 lemma isKProjective_of_projective (K : CochainComplex C ℤ) (d : ℤ)

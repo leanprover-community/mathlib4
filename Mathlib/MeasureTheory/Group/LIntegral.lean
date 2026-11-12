@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Group.Measure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lebesgue Integration on Groups
 
@@ -52,7 +55,7 @@ with respect to a left-invariant measure. -/
       respect to a left-invariant measure. -/]
 theorem lintegral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (g * x) ∂μ) = ∫⁻ x, f x ∂μ := by
-  convert (lintegral_map_equiv f <| MeasurableEquiv.mulLeft g).symm
+  convert! (lintegral_map_equiv f <| MeasurableEquiv.mulLeft g).symm
   simp [map_mul_left_eq_self μ g]
 
 /-- Translating a function by right-multiplication does not change its Lebesgue integral
@@ -62,7 +65,7 @@ with respect to a right-invariant measure. -/
       respect to a right-invariant measure. -/]
 theorem lintegral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0∞) (g : G) :
     (∫⁻ x, f (x * g) ∂μ) = ∫⁻ x, f x ∂μ := by
-  convert (lintegral_map_equiv f <| MeasurableEquiv.mulRight g).symm using 1
+  convert! (lintegral_map_equiv f <| MeasurableEquiv.mulRight g).symm using 1
   simp [map_mul_right_eq_self μ g]
 
 @[to_additive]

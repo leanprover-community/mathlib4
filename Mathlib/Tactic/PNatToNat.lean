@@ -5,9 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-import all Lean.Elab.Tactic.Induction
-public import Mathlib.Data.PNat.Basic
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Data.PNat.Basic
 
 
 /-!
@@ -19,7 +18,6 @@ This file implements the `pnat_to_nat` tactic that shifts `PNat`s in the context
 The implementation follows these steps:
 1. For each `x : PNat` in the context, add the hypothesis `0 < (↑x : ℕ)`.
 2. Translate arithmetic on `PNat` to `Nat` using the `pnat_to_nat_coe` simp set.
-
 -/
 
 public meta section
@@ -57,6 +55,7 @@ lemma coe_lt_coe (m n : PNat) : m < n ↔ (m : ℕ) < (n : ℕ) := by simp
 
 attribute [pnat_to_nat_coe] PNat.add_coe PNat.mul_coe PNat.val_ofNat
 
+set_option backward.isDefEq.respectTransparency false in
 @[pnat_to_nat_coe]
 lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := by
   cases a

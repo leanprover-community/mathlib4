@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
 /-!
@@ -21,7 +20,6 @@ and `W₁.rlp = W₂` if `W₂` is.
 
 ## Reference
 - https://ncatlab.org/nlab/show/weak+factorization+system#retract_argument
-
 -/
 
 @[expose] public section

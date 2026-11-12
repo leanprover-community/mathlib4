@@ -20,7 +20,6 @@ We introduce type-classes `HasSurjectiveInjectiveFactorization` and
 `HasFunctorialSurjectiveInjectiveFactorization` expressing that in a concrete category `C`,
 all morphisms can be factored (resp. factored functorially) as a surjective map
 followed by an injective map.
-
 -/
 
 @[expose] public section
@@ -118,11 +117,8 @@ open ConcreteCategory
 map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
     FunctorialSurjectiveInjectiveFactorizationData (Type u) where
-  Z :=
-    { obj := fun f => Subtype (Set.range f.hom.hom)
-      map := fun φ => ↾fun y => ⟨φ.right y.1, by
-        obtain ⟨_, x, rfl⟩ := y
-        exact ⟨φ.left x, congr_hom φ.w x⟩ ⟩ }
+  Z.obj f := Set.range f.hom.hom
+  Z.map φ := ↾fun y ↦ ⟨φ.right y.1, by obtain ⟨_, x, rfl⟩ := y; exact ⟨φ.left x, congr_hom φ.w x⟩⟩
   i :=
     { app := fun f => ↾fun x => ⟨f.hom x, ⟨x, rfl⟩⟩
       naturality := fun f g φ => by

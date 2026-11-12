@@ -6,16 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.Logic.UnivLE
+
+import Mathlib.Basic.UnivLE
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # Presentation of free modules
 
 A module is free iff it admits a presentation with generators but no relation,
 see `Module.free_iff_exists_presentation`.
-
 -/
 
 @[expose] public section
@@ -76,6 +76,7 @@ noncomputable def presentationFinsupp (G : Type w₀) :
   toSolution := Relations.solutionFinsupp _
   toIsPresentation := by exact Relations.solutionFinsupp_isPresentation _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma free_iff_exists_presentation :
     Free A M ↔ ∃ (p : Presentation.{v, w₁} A M), IsEmpty p.R := by
   constructor

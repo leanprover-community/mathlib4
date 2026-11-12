@@ -231,12 +231,12 @@ theorem Icc_self (a : α) : Icc a a = {a} := by rw [Icc, Finset.Icc_self, Finset
 
 theorem Ico_cons_right (h : a ≤ b) : b ::ₘ Ico a b = Icc a b := by
   classical
-    rw [Ico, ← Finset.insert_val_of_notMem right_notMem_Ico, Finset.Ico_insert_right h]
+    rw [Ico, ← Finset.insert_val_of_notMem right_notMem_Ico, Finset.insert_right_Ico h]
     rfl
 
 theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
   classical
-    rw [Ioo, ← Finset.insert_val_of_notMem left_notMem_Ioo, Finset.Ioo_insert_left h]
+    rw [Ioo, ← Finset.insert_val_of_notMem left_notMem_Ioo, Finset.insert_left_Ioo h]
     rfl
 
 theorem Ico_disjoint_Ico {a b c d : α} (h : b ≤ c) : Disjoint (Ico a b) (Ico c d) :=
@@ -293,11 +293,11 @@ theorem Ico_filter_le (a b c : α) : ((Ico a b).filter fun x => c ≤ x) = Ico (
 
 @[simp]
 theorem Ico_sub_Ico_left (a b c : α) : Ico a b - Ico a c = Ico (max a c) b := by
-  rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_diff_Ico_left]
+  rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_sdiff_Ico_left]
 
 @[simp]
 theorem Ico_sub_Ico_right (a b c : α) : Ico a b - Ico c b = Ico a (min b c) := by
-  rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_diff_Ico_right]
+  rw [Ico, Ico, Ico, ← Finset.sdiff_val, Finset.Ico_sdiff_Ico_right]
 
 end LinearOrder
 end Multiset

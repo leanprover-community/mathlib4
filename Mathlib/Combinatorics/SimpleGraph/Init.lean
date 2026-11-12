@@ -5,8 +5,12 @@ Authors: Jannis Limperg
 -/
 module
 
-public import Mathlib.Init
-public import Aesop
+public meta import Aesop
+
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # SimpleGraph Rule Set
@@ -15,7 +19,5 @@ This module defines the `SimpleGraph` Aesop rule set which is used by the
 `aesop_graph` tactic. Aesop rule sets only become visible once the file in which
 they're declared is imported, so we must put this declaration into its own file.
 -/
-
-public section
 
 declare_aesop_rule_sets [SimpleGraph]

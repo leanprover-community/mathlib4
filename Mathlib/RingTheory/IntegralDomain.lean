@@ -6,10 +6,11 @@ Authors: Johan Commelin, Chris Hughes
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Fintype.Inv
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Tactic.FieldSimp
+
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Integral domains
@@ -51,14 +52,14 @@ theorem mul_left_bijective_of_finite₀ [IsRightCancelMulZero M] {a : M} (ha : a
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
 /-- Every finite nontrivial cancellative monoid with zero is a group with zero. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMulZero M]
     [DecidableEq M] [Fintype M] [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
     ‹MonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
-      simp only [dif_neg ha]
+      simp only [dite_eq_right ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp }
 
@@ -93,7 +94,7 @@ section Ring
 
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib/RingTheory/LittleWedderburn.lean`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
   __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slightly slow
@@ -105,7 +106,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
   { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 
@@ -120,7 +121,7 @@ variable [CommRing R] [IsDomain R] [Group G]
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
     #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by
-  haveI : DecidableEq R := Classical.decEq _
+  have : DecidableEq R := Classical.decEq _
   calc
     _ ≤ #(nthRoots n (f g₀)).toFinset :=
       card_le_card_of_injOn f (by aesop (add safe unfold Set.MapsTo)) hf.injOn
@@ -133,9 +134,6 @@ theorem isCyclic_of_injective_ringHom [Finite G] (f : G →* R) (hf : Injective 
     apply isCyclic_of_card_pow_eq_one_le
     intro n hn
     exact le_trans (card_nthRoots_subgroup_units f hf hn 1) (card_nthRoots n (f 1))
-
-@[deprecated (since := "2026-03-04")]
-alias isCyclic_of_subgroup_isDomain := isCyclic_of_injective_ringHom
 
 /-- The unit group of a finite integral domain is cyclic.
 
@@ -152,8 +150,6 @@ variable (S : Subgroup Rˣ) [Finite S]
 instance isCyclic_subgroup_units : IsCyclic S :=
   isCyclic_of_injective_ringHom { toFun s := (s.val : R), map_one' := rfl, map_mul' := by simp }
     (Units.val_injective.comp Subtype.val_injective)
-
-@[deprecated (since := "2026-03-03")] alias subgroup_units_cyclic := isCyclic_subgroup_units
 
 end
 

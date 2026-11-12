@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Kleisli construction on the Type category
 
@@ -48,6 +51,7 @@ instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
 theorem KleisliCat.ext {m} [Monad.{u, v} m] (α β : KleisliCat m)
     (f g : α ⟶ β) (h : ∀ x, f x = g x) : f = g := funext h
 
+set_option backward.isDefEq.respectTransparency false in
 instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
   refine { id_comp := ?_, comp_id := ?_, assoc := ?_ } <;> intros <;>
   ext <;>

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 
 /-!
@@ -13,7 +12,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 
 Let `A` be a subcomplex of a simplicial set `X`. If `P` is a pairing of `A`,
 we construct a pairing `P.op` for the subcomplex `A.op` of `X.op`.
-
 -/
 
 @[expose] public section
@@ -26,7 +24,7 @@ variable {X : SSet.{u}} {A : X.Subcomplex} (P : A.Pairing)
 
 /-- If `P` is a pairing for a subcomplex `A` of a simplicial set `X`,
 this is the corresponding pairing of `A.op`. -/
-@[simps I II]
+@[implicit_reducible, simps I II]
 def op : A.op.Pairing where
   I := Subcomplex.N.opEquiv ⁻¹' P.I
   II := Subcomplex.N.opEquiv ⁻¹' P.II
@@ -43,7 +41,7 @@ lemma op_p (x : P.II) :
 lemma op_ancestralRel_iff (x y : P.II) :
     P.op.AncestralRel ⟨Subcomplex.N.opEquiv.symm x.1, x.2⟩
       ⟨Subcomplex.N.opEquiv.symm y.1, y.2⟩ ↔ P.AncestralRel x y :=
-  and_congr (not_congr (by aesop)) (by simp)
+  and_congr (not_congr (by simp [Subtype.ext_iff])) (by simp)
 
 instance [P.IsProper] : P.op.IsProper where
   isUniquelyCodimOneFace x := (P.isUniquelyCodimOneFace ⟨_, x.2⟩).op

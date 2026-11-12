@@ -5,11 +5,11 @@ Authors: Nailin Guan, Yi Song, Xuchun Li, Bryan Wang
 -/
 module
 
-public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Separation.Profinite
-public import Mathlib.Topology.Separation.Connected
+
+import Mathlib.Topology.Separation.Connected
+
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element
 
@@ -27,6 +27,7 @@ public section
 
 namespace IsTopologicalGroup
 
+@[to_additive]
 theorem exist_openNormalSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
     ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ W := by
@@ -40,15 +41,16 @@ end IsTopologicalGroup
 
 namespace ProfiniteGrp
 
-variable {G : Type*} [Group G] [TopologicalSpace G]
-    [IsTopologicalGroup G] [CompactSpace G] [TotallyDisconnectedSpace G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
+  [ZeroDimensionalSpace G]
 
+@[to_additive]
 theorem exist_openNormalSubgroup_sub_open_nhds_of_one
     {U : Set G} (UOpen : IsOpen U) (einU : 1 ∈ U) :
     ∃ H : OpenNormalSubgroup G, (H : Set G) ⊆ U := by
-  rcases ((Filter.HasBasis.mem_iff' ((nhds_basis_clopen (1 : G))) U).mp <|
-    mem_nhds_iff.mpr (by use U)) with ⟨W, hW, h⟩
-  rcases IsTopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhds_of_one hW.2 hW.1 with ⟨H, hH⟩
+  rcases (Filter.HasBasis.mem_iff' (nhds_basis_isClopen 1) U).mp <|
+    mem_nhds_iff.mpr (by use U) with ⟨W, hW, h⟩
+  rcases IsTopologicalGroup.exist_openNormalSubgroup_sub_clopen_nhds_of_one hW.1 hW.2 with ⟨H, hH⟩
   exact ⟨H, fun _ a ↦ h (hH a)⟩
 
 open scoped Pointwise in
@@ -56,6 +58,10 @@ open scoped Pointwise in
 Any closed subgroup of a profinite group is the intersection of the open subgroups containing it.
 See https://math.stackexchange.com/questions/5023433/closed-subgroups-of-a-compact-topological-group.
 -/
+@[to_additive /--
+Any closed subgroup of a profinite group is the intersection of the open subgroups containing it.
+See https://math.stackexchange.com/questions/5023433/closed-subgroups-of-a-compact-topological-group.
+-/]
 theorem closedSubgroup_eq_sInf_open (H : ClosedSubgroup G) :
     H = sInf {N : Subgroup G | IsOpen (N : Set G) ∧ H ≤ N} := by
   apply le_antisymm

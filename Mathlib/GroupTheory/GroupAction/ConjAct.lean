@@ -30,7 +30,6 @@ The scalar action in defined in this file can also be written using `MulAut.conj
 has the advantage of not using the type alias `ConjAct`, but the downside of this approach
 is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
-
 -/
 
 @[expose] public section
@@ -49,11 +48,11 @@ open MulAction Subgroup
 
 variable {M G}
 
-instance [Group G] : Group (ConjAct G) := ‹Group G›
+instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := inferInstanceAs <| DivInvMonoid G
 
-instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
+instance [Group G] : Group (ConjAct G) := inferInstanceAs <| Group G
 
-instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
+instance [Fintype G] : Fintype (ConjAct G) := inferInstanceAs <| Fintype G
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
@@ -255,7 +254,7 @@ theorem _root_.MulAut.conjNormal_apply {H : Subgroup G} [H.Normal] (g : G) (h : 
 @[simp]
 theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g).symm h) = g⁻¹ * h * g := by
-  change _ * _⁻¹⁻¹ = _
+  change _ * g⁻¹⁻¹ = _
   rw [inv_inv]
   rfl
 
@@ -286,7 +285,7 @@ units of the centralizer of `x : M`. -/
 def unitsCentralizerEquiv (x : Mˣ) :
     (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
   MulEquiv.symm
-  { toFun := MonoidHom.toHomUnits <|
+  { toFun := MonoidHom.toHomUnits
       { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
           rintro x ⟨rfl⟩
           have : (u : ConjAct Mˣ) • x = x := u.2
@@ -297,7 +296,7 @@ def unitsCentralizerEquiv (x : Mˣ) :
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
-      exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
+      exact Units.ext (u.1.2 x <| Set.mem_singleton _).symm⟩
     map_mul' := map_mul _ }
 
 end Units

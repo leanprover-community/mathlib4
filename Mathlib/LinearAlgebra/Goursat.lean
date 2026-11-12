@@ -6,7 +6,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.GroupTheory.Goursat
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
@@ -24,7 +23,7 @@ respectively.
 
 @[expose] public section
 
-open Function Set LinearMap
+open Function LinearMap
 
 namespace Submodule
 variable {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -61,7 +60,7 @@ lemma goursatSnd_toAddSubgroup :
 variable (L) in
 lemma goursatFst_prod_goursatSnd_le : L.goursatFst.prod L.goursatSnd ≤ L := by
   simpa only [← toAddSubgroup_le, goursatFst_toAddSubgroup, goursatSnd_toAddSubgroup]
-    using L.toAddSubgroup.goursatFst_prod_goursatSnd_le
+    using! L.toAddSubgroup.goursatFst_prod_goursatSnd_le
 
 set_option backward.isDefEq.respectTransparency false in
 include hL₁ hL₂ in
@@ -90,7 +89,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
   -- define the map as an R-linear equiv
   use { e with map_smul' := this }
   rw [← toAddSubgroup_injective.eq_iff]
-  convert he using 1
+  convert! he using 1
   ext v
   rw [mem_toAddSubgroup, mem_graph_iff, Eq.comm]
   rfl

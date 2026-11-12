@@ -6,10 +6,13 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Order.Interval.Finset.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite intervals of integers
@@ -41,7 +44,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     · lia
     · intro
       use (x - a).toNat
-      omega
+      lia
   finset_mem_Ico a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
@@ -49,7 +52,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     · lia
     · intro
       use (x - a).toNat
-      omega
+      lia
   finset_mem_Ioc a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
@@ -57,7 +60,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
     · lia
     · intro
       use (x - (a + 1)).toNat
-      omega
+      lia
   finset_mem_Ioo a b x := by
     simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
       addLeftEmbedding_apply]
@@ -125,9 +128,7 @@ theorem card_Ioo_of_lt (h : a < b) : (#(Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 
 theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
-  ext
-  simp
-  omega
+  grind
 
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   simp [h]
@@ -175,26 +176,18 @@ section Nat
 
 lemma Finset.Icc_succ_succ (m n : ℕ) :
     Icc (-(m + 1) : ℤ) (n + 1) = Icc (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n + 1 : ℤ)} := by
-  ext
-  simp only [mem_Icc, union_insert, union_singleton, mem_insert]
-  omega
+  grind
 
 lemma Finset.Ico_succ_succ (m n : ℕ) :
     Ico (-(m + 1) : ℤ) (n + 1) = Ico (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n : ℤ)} := by
-  ext
-  simp only [mem_Ico, union_insert, union_singleton, mem_insert]
-  omega
+  grind
 
 lemma Finset.Ioc_succ_succ (m n : ℕ) :
     Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
-  ext
-  simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
-  lia
+  grind
 
 lemma Finset.Ioo_succ_succ (m n : ℕ) :
     Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
-  ext
-  simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
-  lia
+  grind
 
 end Nat

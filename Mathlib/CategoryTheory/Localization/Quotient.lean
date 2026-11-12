@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Localization of quotient categories
@@ -20,7 +19,6 @@ category with respect to `W`. When `W` is compatible with `homRel`
 `hW : W = W'.inverseImage (Quotient.functor homRel)`),
 we show that `LocalizerMorphism.ofEq hW : LocalizerMorphism W W'`
 induces an equivalence on localized categories.
-
 -/
 
 @[expose] public section
@@ -61,7 +59,7 @@ def strictUniversalPropertyFixedTarget (L' : Quotient homRel ⥤ D)
     univ.lift (CategoryTheory.Quotient.lift _ F
         (fun _ _ f g hfg ↦ (h hfg).map_eq_of_isInvertedBy _ hF)) (by
       rintro K L ⟨f⟩ hf
-      exact hF _ (by simpa [hW] using hf))
+      exact hF _ (by simpa [hW] using! hf))
   fac F hF := by rw [Functor.assoc, univ.fac, Quotient.lift_spec]
   uniq F₁ F₂ h := univ.uniq _ _ (Quotient.lift_unique' _ _ _ h)
 

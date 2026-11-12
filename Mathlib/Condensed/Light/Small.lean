@@ -5,11 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Light.Module
 
 /-!
-
 # Equivalence of light condensed objects with sheaves on a small site
 -/
 
@@ -39,6 +37,8 @@ instance (X Y : LightCondensed.{u} C) : Small.{max u v} (X ⟶ Y) where
     ⟨(equivSmall C).functor.obj X ⟶ (equivSmall C).functor.obj Y,
       ⟨(equivSmall C).fullyFaithfulFunctor.homEquiv⟩⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /--
 Sheafifying is preserved under conjugating with the equivalence between light condensed objects
 and sheaves on a small site.
@@ -57,6 +57,7 @@ noncomputable def equivSmallSheafificationIso
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] LightCondensed.forget in
 set_option backward.isDefEq.respectTransparency false in
 /--

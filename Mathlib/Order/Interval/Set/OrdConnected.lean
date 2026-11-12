@@ -5,9 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.Antichain
+public import Mathlib.Order.Interval.Set.OrderEmbedding
 public import Mathlib.Order.SetNotation
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Order-connected sets
@@ -15,13 +18,13 @@ public import Mathlib.Order.SetNotation
 We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
-`LinearOrderedField`, then this condition is also equivalent to `Convex α s`.
+linearly ordered field, then this condition is also equivalent to `Convex α s`.
 
 In this file we prove that intersection of a family of `OrdConnected` sets is `OrdConnected` and
 that all standard intervals are `OrdConnected`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Interval
 open Set
@@ -49,7 +52,7 @@ theorem ordConnected_of_Ioo {α : Type*} [PartialOrder α] {s : Set α}
   rw [ordConnected_iff]
   intro x hx y hy hxy
   rcases eq_or_lt_of_le hxy with (rfl | hxy'); · simpa
-  rw [← Ioc_insert_left hxy, ← Ioo_insert_right hxy']
+  rw [← insert_left_Ioc hxy, ← insert_right_Ioo hxy']
   exact insert_subset_iff.2 ⟨hx, insert_subset_iff.2 ⟨hy, hs x hx y hy hxy'⟩⟩
 
 theorem OrdConnected.preimage_mono {f : β → α} (hs : OrdConnected s) (hf : Monotone f) :
@@ -137,9 +140,7 @@ theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual �
 
 @[simp]
 theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s) ↔ OrdConnected s :=
-  ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
-
-@[deprecated (since := "2025-10-28")] alias dual_ordConnected_iff := ordConnected_dual
+  ⟨fun h => by simpa only [ordConnected_def] using! h.dual, fun h => h.dual⟩
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=

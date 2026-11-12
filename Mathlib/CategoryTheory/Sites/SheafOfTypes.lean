@@ -5,8 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
+public import Mathlib.CategoryTheory.Sites.Pretopology
 
 /-!
 # Sheaves of types on a Grothendieck topology
@@ -45,7 +45,6 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
-
 -/
 
 @[expose] public section

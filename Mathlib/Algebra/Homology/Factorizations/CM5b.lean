@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
-public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.Algebra.Homology.Factorizations.Basic
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 
 /-!
 # Factorization lemma
@@ -18,7 +18,6 @@ can be factored as `i ≫ p` where `i : K ⟶ L'` is a monomorphism (with
 `L'` bounded below) and `p : L' ⟶ L` a quasi-isomorphism that is an epimorphism
 with a degreewise injective kernel. (This is part of the factorization axiom CM5
 for a model category structure on bounded below cochain complexes (TODO @joelriou).)
-
 -/
 
 @[expose] public section
@@ -41,6 +40,7 @@ noncomputable def I : CochainComplex C ℤ where
   X n := Injective.under (K.X n)
   d _ _ := 0
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n : ℤ) : Injective ((I K).X n) := by
   dsimp
   infer_instance

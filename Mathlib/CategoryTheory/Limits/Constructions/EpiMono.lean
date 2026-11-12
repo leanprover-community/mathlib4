@@ -5,8 +5,6 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
 /-!
@@ -15,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 If `F` preserves (resp. reflects) pullbacks, then it preserves (resp. reflects) monomorphisms.
 
 We also provide the dual version for epimorphisms.
-
 -/
 
 public section

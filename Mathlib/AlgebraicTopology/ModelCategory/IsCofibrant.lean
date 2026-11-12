@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Fibrant and cofibrant objects in a model category
@@ -15,7 +14,6 @@ Once a category `C` has been endowed with a `CategoryWithCofibrations C`
 instance, it is possible to define the property `IsCofibrant X` for
 any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 (Fibrant objects are defined similarly.)
-
 -/
 
 public section

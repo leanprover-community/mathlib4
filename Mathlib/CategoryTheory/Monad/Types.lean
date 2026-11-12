@@ -6,17 +6,13 @@ Authors: Johannes Hölzl, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Category.KleisliCat
-public import Mathlib.CategoryTheory.Monad.Basic
 public import Mathlib.CategoryTheory.Monad.Kleisli
-public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Control.Basic
 
 /-!
-
 # Convert from `Monad` (i.e. Lean's `Type`-based monads) to `CategoryTheory.Monad`
 
 This allows us to use these monads in category theory.
-
 -/
 
 @[expose] public section
@@ -42,6 +38,7 @@ def ofTypeMonad : Monad (Type u) where
   left_unit _ := by ext; exact joinM_pure _
   right_unit _ := by ext; exact joinM_map_pure _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `Kleisli` category of a `Control.Monad` is equivalent to the `Kleisli` category of its
 category-theoretic version, provided the monad is lawful.
@@ -70,8 +67,6 @@ def kleisliCatEquivKleisli : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
-
-@[deprecated (since := "2026-04-16")] alias eq := kleisliCatEquivKleisli
 
 end
 

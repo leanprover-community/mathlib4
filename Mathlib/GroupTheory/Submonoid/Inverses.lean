@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
-
 # Submonoid of inverses
 
 Given a submonoid `N` of a monoid `M`, we define the submonoid `N.leftInv` as the submonoid of
@@ -50,9 +49,15 @@ noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
     mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
-theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
+theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
     ↑x⁻¹ = (↑x.prop.unit⁻¹ : M) :=
   rfl
+
+@[deprecated (since := "2026-05-24")]
+alias _root_.AddSubmonoid.IsUnit.Submonoid.coe_neg := IsAddUnit.addSubmonoid.coe_neg
+set_option linter.dupNamespace false in
+@[to_additive existing, deprecated (since := "2026-05-24")]
+alias IsUnit.Submonoid.coe_inv := IsUnit.submonoid.coe_inv
 
 section Monoid
 
@@ -134,6 +139,7 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 
 variable (hS : S ≤ IsUnit.submonoid M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) /-- The additive submonoid of pointwise additive inverse of `S`
 is `AddEquiv` to `S`. -/]

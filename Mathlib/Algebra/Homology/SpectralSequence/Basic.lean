@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 
 /-!
@@ -19,7 +18,6 @@ for the objects on each page (e.g. `κ := ℤ × ℤ` or `κ := ℕ × ℕ`).
 A spectral sequence is defined as the data of a sequence of homological complexes
 (the pages) and a sequence of isomorphisms between the homology of a page and the
 next page.
-
 -/
 
 @[expose] public section
@@ -93,6 +91,7 @@ def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
   obj E := E.page r
   map f := f.hom r
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between the homology of a spectral sequence on the
 object `pq : κ` of the `r`th page and the corresponding object on the next page. -/
 @[simps!]

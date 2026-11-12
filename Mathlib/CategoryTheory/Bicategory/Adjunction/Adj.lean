@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
-public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # The bicategory of adjunctions in a bicategory
@@ -26,7 +25,6 @@ both pullback and pushforward functors.
 * https://ncatlab.org/nlab/show/2-category+of+adjunctions
 * https://ncatlab.org/nlab/show/transformation+of+adjoints
 * https://ncatlab.org/nlab/show/mate
-
 -/
 
 @[expose] public section
@@ -131,23 +129,27 @@ def iso₂Mk {α β : a ⟶ b} (el : α.l ≅ β.l) (er : β.r ≅ α.r)
 
 namespace Bicategory
 
+set_option linter.dupNamespace false in
 /-- The associator in the bicategory `Adj B`. -/
 @[simps!]
 def associator (α : a ⟶ b) (β : b ⟶ c) (γ : c ⟶ d) : (α ≫ β) ≫ γ ≅ α ≫ β ≫ γ :=
   iso₂Mk (α_ _ _ _) (α_ _ _ _) (conjugateEquiv_associator_hom _ _ _)
 
+set_option linter.dupNamespace false in
 /-- The left unitor in the bicategory `Adj B`. -/
 @[simps!]
 def leftUnitor (α : a ⟶ b) : 𝟙 a ≫ α ≅ α :=
   iso₂Mk (λ_ _) (ρ_ _).symm
     (by simpa using conjugateEquiv_id_comp_right_apply α.adj α.adj (𝟙 _))
 
+set_option linter.dupNamespace false in
 /-- The right unitor in the bicategory `Adj B`. -/
 @[simps!]
 def rightUnitor (α : a ⟶ b) : α ≫ 𝟙 b ≅ α :=
   iso₂Mk (ρ_ _) (λ_ _).symm
     (by simpa using conjugateEquiv_comp_id_right_apply α.adj α.adj (𝟙 _))
 
+set_option linter.dupNamespace false in
 /-- The left whiskering in the bicategory `Adj B`. -/
 @[simps]
 def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β ⟶ α ≫ β' where
@@ -156,6 +158,7 @@ def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β �
   conjugateEquiv_τl := by
     simp [conjugateEquiv_whiskerLeft, Hom₂.conjugateEquiv_τl]
 
+set_option linter.dupNamespace false in
 /-- The right whiskering in the bicategory `Adj B`. -/
 @[simps]
 def whiskerRight {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) : α ≫ β ⟶ α' ≫ β where

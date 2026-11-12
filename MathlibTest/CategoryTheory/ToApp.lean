@@ -1,5 +1,7 @@
-import Mathlib.Tactic.CategoryTheory.ToApp
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 universe w v u
 

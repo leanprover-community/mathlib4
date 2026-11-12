@@ -5,20 +5,20 @@ Authors: Hanting Zhang
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-! # Pointwise instances on `AffineSubspace`s
 
 This file provides the additive action `AffineSubspace.pointwiseAddAction` in the
 `Pointwise` locale.
-
 -/
 
 @[expose] public section
 
 
-open Affine Pointwise
+open Pointwise
+
+open scoped Affine
 
 open Set
 

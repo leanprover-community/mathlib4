@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective Special Linear Group
 
@@ -23,7 +26,7 @@ namespace Matrix
 
 universe u v
 
-open Matrix LinearMap
+open Matrix
 
 open scoped MatrixGroups
 

@@ -5,8 +5,8 @@ Authors: Junyan Xu, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 public import Mathlib.CategoryTheory.Sites.Pullback
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # functors between categories of sheaves
@@ -22,7 +22,6 @@ topological spaces X and Y.
 - `TopCat.Sheaf.pullback`: The pullback functor between sheaf categories over topological spaces.
 - `TopCat.Sheaf.pullbackPushforwardAdjunction`:
   The adjunction between pullback and pushforward for sheaves on topological spaces.
-
 -/
 
 @[expose] public section
@@ -47,8 +46,6 @@ variable ⦃ι : Type w⦄ {U : ι → Opens Y}
 namespace TopCat
 
 namespace Sheaf
-
-open Presheaf
 
 /-- The pushforward of a sheaf (by a continuous map) is a sheaf.
 -/
@@ -113,7 +110,7 @@ end TopCat
 
 namespace Topology.IsOpenEmbedding
 
-open TopCat Sheaf
+open TopCat
 
 variable (A : Type*) [Category.{w} A]
 variable {f : X ⟶ Y} (hf : IsOpenEmbedding f)
@@ -132,6 +129,7 @@ variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
 variable [PreservesFilteredColimits (CategoryTheory.forget A)]
 variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The pullback of a sheaf by an open embedding `f` is isomorphic to its naive pullback

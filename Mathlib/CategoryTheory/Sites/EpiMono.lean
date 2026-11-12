@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.MorphismProperty.Concrete
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
@@ -18,7 +17,6 @@ a locally injective morphism (which is mono).
 
 Moreover, if we assume that the category of sheaves `Sheaf J A` is balanced
 (see `Sites.LeftExact`), then epimorphisms are exactly locally surjective morphisms.
-
 -/
 
 @[expose] public section
@@ -27,7 +25,7 @@ universe w v' u' v u
 
 namespace CategoryTheory
 
-open Category ConcreteCategory Functor
+open Category ConcreteCategory CategoryTheory.Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w}
@@ -50,7 +48,6 @@ section
 variable {A}
 variable (data : FunctorialSurjectiveInjectiveFactorizationData A) [HasWeakSheafify J A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a functorial surjective/injective factorizations of morphisms in a concrete
 category `A`, this is the induced functorial locally surjective/locally injective
 factorization of morphisms in the category `Sheaf J A`. -/

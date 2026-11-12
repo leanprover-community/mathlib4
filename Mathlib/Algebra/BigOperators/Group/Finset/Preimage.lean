@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Preimage
 
 /-!
 # Sums and products over preimages of finite sets.
@@ -17,8 +17,6 @@ public section
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {ι κ β : Type*}
-
-open Fin Function
 
 namespace Finset
 

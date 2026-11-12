@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.NonAssoc.PreLie.Basic
+
 /-!
 # Lie admissible rings and algebras
 
@@ -39,7 +40,7 @@ documentation of `Algebra`.
 Frames.**][munthe-kaas_lundervold_2013]
 -/
 
-@[expose] public section
+public section
 
 /-- A `LieAdmissibleRing` is a `NonUnitalNonAssocRing` such that the canonical bracket
 `⁅x, y⁆ := x * y - y * x` turns it into a `LieRing`. This is expressed by an associator identity. -/

@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
-## Locally directed gluing
+# Locally directed gluing
 
 We say that a diagram of sets is "locally directed" if for any `V, W ⊆ U` in the diagram,
 `V ∩ W` is a union of elements in the diagram. Equivalently, for every `x ∈ U` in the diagram,

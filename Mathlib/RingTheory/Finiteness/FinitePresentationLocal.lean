@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
 /-!
-
 # `Algebra.FinitePresentation` is local
 
 In this file we show that being a finitely presented algebra is local.
@@ -18,7 +17,6 @@ In this file we show that being a finitely presented algebra is local.
 
 - `Algebra.FinitePresentation.of_span_eq_top_target`: finite presentation is local on the
   (algebraic) target
-
 -/
 
 public section
@@ -56,6 +54,7 @@ lemma of_span_eq_top_target_aux {A : Type*} [CommRing A] [Algebra R A]
 
 universe u
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- Finite-presentation can be checked on a standard covering of the target. -/
 lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
     (h : ∀ i ∈ s, Algebra.FinitePresentation R (Localization.Away i)) :

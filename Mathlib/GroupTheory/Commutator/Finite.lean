@@ -5,12 +5,17 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.GroupTheory.Commutator.Basic
-public import Mathlib.GroupTheory.Rank
 public import Mathlib.GroupTheory.Index
+public import Mathlib.GroupTheory.Rank
+
+import Mathlib.Algebra.Group.Subgroup.Finite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
+# Commutators of finite direct products
+
 The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
 
@@ -22,6 +27,8 @@ namespace Subgroup
 
 /-- The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
+@[to_additive /-- The commutator of a finite direct product is contained in the direct product of
+the commutators. -/]
 theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} [∀ i, Group (Gs i)]
     (H K : ∀ i, Subgroup (Gs i)) : ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ =
     Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ := by
@@ -42,7 +49,7 @@ theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} 
 variable [Finite (commutatorSet G)]
 
 instance : Group.FG (_root_.commutator G) := by
-  rw [commutator_eq_closure]; apply Group.closure_finite_fg
+  rw [commutator_eq_closure]; infer_instance
 
 variable (G) in
 lemma rank_commutator_le_card : Group.rank (_root_.commutator G) ≤ Nat.card (commutatorSet G) := by
@@ -83,7 +90,7 @@ variable [Finite (commutatorSet G)]
 instance : Finite (commutatorRepresentatives G) := Set.finite_coe_iff.mpr (Set.finite_range _)
 
 instance closureCommutatorRepresentatives_fg : Group.FG (closureCommutatorRepresentatives G) :=
-  Group.closure_finite_fg _
+  inferInstanceAs (Group.FG (closure _))
 
 variable (G) in
 lemma rank_closureCommutatorRepresentatives_le :

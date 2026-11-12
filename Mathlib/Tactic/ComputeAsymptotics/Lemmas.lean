@@ -5,9 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Topology.Algebra.Group.Order
 
 /-!
 # Conversion lemmas
@@ -32,7 +31,9 @@ We also use lemmas from other files:
 
 public section
 
-open Filter Topology Asymptotics
+open Filter Asymptotics
+
+open scoped Topology
 
 namespace Tactic.ComputeAsymptotics
 

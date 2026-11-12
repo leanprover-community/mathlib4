@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
-
 # Integer elements of a localized module
 
 This is a mirror of the corresponding notion for localizations of rings.
@@ -21,7 +20,6 @@ This is a mirror of the corresponding notion for localizations of rings.
 
 After `IsLocalizedModule` and `IsLocalization` are unified, the two `IsInteger` predicates
 can be unified.
-
 -/
 
 @[expose] public section
@@ -29,8 +27,6 @@ can be unified.
 
 variable {R : Type*} [CommSemiring R] {S : Submonoid R} {M : Type*} [AddCommMonoid M]
   [Module R M] {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
-
-open Function
 
 namespace IsLocalizedModule
 
@@ -134,9 +130,9 @@ theorem smul_mem_finsetIntegerMultiple_span [DecidableEq M] (x : M) (s : Finset 
   obtain ⟨x', hx', hx''⟩ := hx
   obtain ⟨a, ha⟩ := (IsLocalizedModule.eq_iff_exists S f).mp hx''
   use a * y
-  convert (Submodule.span R
-    (IsLocalizedModule.finsetIntegerMultiple S f s : Set M)).smul_mem
-      a hx' using 1
+  convert
+    (Submodule.span R (IsLocalizedModule.finsetIntegerMultiple S f s : Set M)).smul_mem a hx'
+      using 1
   convert ha.symm using 1
   simp only [Submonoid.smul_def, ← smul_smul]
 

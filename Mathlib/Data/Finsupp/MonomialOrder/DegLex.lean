@@ -22,7 +22,6 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 
 * [Cox, Little and O'Shea, *Ideals, varieties, and algorithms*][coxlittleoshea1997]
 * [Becker and Weispfenning, *Gröbner bases*][Becker-Weispfenning1993]
-
 -/
 
 @[expose] public section
@@ -184,7 +183,7 @@ noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
     · simp [h]
 
 instance wellFoundedLT [WellFoundedGT α] : WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun _ ↦ not_lt_zero⟩
+  wellFounded wellFounded_gt wellFounded_lt fun n ↦ n.not_lt_zero
 
 end DegLex
 

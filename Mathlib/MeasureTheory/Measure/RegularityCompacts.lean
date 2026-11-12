@@ -5,11 +5,10 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Topology.GDelta.MetrizableSpace
-public import Mathlib.Topology.MetricSpace.Polish
-public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
+
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Inner regularity of finite measures
@@ -77,10 +76,9 @@ theorem innerRegularWRT_of_exists_compl_lt {p q : Set α → Prop} (hpq : ∀ A 
   obtain ⟨K, hK, hK_subset, h_lt⟩ : ∃ K, p K ∧ K ⊆ A ∧ μ (A \ K) < μ A - r := by
     obtain ⟨K', hpK', hK'_lt⟩ := hμ (μ A - r) (tsub_pos_of_lt hr)
     refine ⟨K' ∩ A, hpq K' A hpK' hA, inter_subset_right, ?_⟩
-    · refine (measure_mono fun x ↦ ?_).trans_lt hK'_lt
-      simp only [diff_inter_self_eq_diff, mem_diff, mem_compl_iff, and_imp, imp_self, imp_true_iff]
+    gconvert hK'_lt; simp
   refine ⟨K, hK_subset, hK, ?_⟩
-  have h_lt' : μ A - μ K < μ A - r := le_measure_diff.trans_lt h_lt
+  have h_lt' : μ A - μ K < μ A - r := le_measure_sdiff.trans_lt h_lt
   exact lt_of_tsub_lt_tsub_left h_lt'
 
 theorem innerRegularWRT_isCompact_closure_of_univ [TopologicalSpace α]
@@ -103,7 +101,7 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
   of natural numbers `u n`, such that `interUnionBalls seq u t`, which is the intersection over
   `n` of the `t n`-neighborhood of `seq 1, ..., seq (u n)`, covers the space arbitrarily well.
   -/
-  letI := upgradeIsCompletelyPseudoMetrizable α
+  let := upgradeIsCompletelyPseudoMetrizable α
   cases isEmpty_or_nonempty α
   case inl =>
     refine ⟨∅, by simp, ?_⟩
@@ -116,23 +114,19 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
         h_basis : (uniformity α).HasAntitoneBasis t⟩ :=
       (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
     choose htu hto _ using ht
-    let f : ℕ → ℕ → Set α := fun n m ↦ UniformSpace.ball (seq m) (t n)
+    let f : ℕ → ℕ → Set α := fun n m ↦ (t n).ball (seq m)
     have h_univ n : (⋃ m, f n m) = univ := hseq_dense.iUnion_uniformity_ball (htu n)
     have h3 n (ε : ℝ≥0∞) (hε : 0 < ε) : ∃ m, P (⋂ m' ≤ m, (f n m')ᶜ) < ε := by
       refine exists_measure_iInter_lt (fun m ↦ ?_) hε ⟨0, measure_ne_top P _⟩ ?_
-      · exact (measurable_prodMk_left (hto n).measurableSet).compl.nullMeasurableSet
+      · exact (measurable_prodMk_right (hto n).measurableSet).compl.nullMeasurableSet
       · rw [← compl_iUnion, h_univ, compl_univ]
     choose! s' s'bound using h3
     rcases ENNReal.exists_pos_sum_of_countable' (ne_of_gt hε) ℕ with ⟨δ, hδ1, hδ2⟩
-    classical
     let u : ℕ → ℕ := fun n ↦ s' n (δ n)
     refine ⟨interUnionBalls seq u t, isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
-    rw [interUnionBalls, Set.compl_iInter]
-    refine ((measure_iUnion_le _).trans ?_).trans_lt hδ2
-    refine ENNReal.tsum_le_tsum (fun n ↦ ?_)
-    have h'' n : Prod.swap ⁻¹' t n = t n := by ext; exact (t n).comm
-    simp only [h'', compl_iUnion, ge_iff_le]
-    exact (s'bound n (δ n) (hδ1 n)).le
+    grw [interUnionBalls, Set.compl_iInter, measure_iUnion_le, ← hδ2]
+    gcongr with n
+    simpa [compl_iUnion] using (s'bound n (δ n) (hδ1 n)).le
 
 theorem innerRegularWRT_isCompact_closure [TopologicalSpace α]
     [SecondCountableTopology α] [IsCompletelyPseudoMetrizableSpace α]
@@ -208,18 +202,14 @@ theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [TopologicalSpac
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
   suffices P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s)
       fun s ↦ MeasurableSet s ∧ P s ≠ ∞ by
-    convert this
+    convert! this
     simp only [iff_self_and]
     exact fun _ ↦ measure_ne_top P _
   refine Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_
   · exact innerRegularWRT_isCompact_isClosed_isOpen P
   · rintro s t ⟨hs_compact, hs_closed⟩ ht_open
-    rw [diff_eq]
+    rw [sdiff_eq]
     exact ⟨hs_compact.inter_right ht_open.isClosed_compl,
       hs_closed.inter (isClosed_compl_iff.mpr ht_open)⟩
-
-@[deprecated (since := "2025-12-08")] alias
-PolishSpace.innerRegular_isCompact_isClosed_measurableSet :=
-innerRegular_isCompact_isClosed_measurableSet_of_finite
 
 end MeasureTheory

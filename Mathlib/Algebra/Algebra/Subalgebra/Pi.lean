@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.LinearAlgebra.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of subalgebras
 
@@ -44,5 +47,8 @@ lemma pi_top (s : Set ι) : pi s (fun i ↦ (⊤ : Subalgebra R (S i))) = ⊤ :=
   SetLike.coe_injective <| Set.pi_univ _
 
 @[gcongr] lemma pi_mono (h : ∀ i ∈ s, t₁ i ≤ t₂ i) : pi s t₁ ≤ pi s t₂ := Set.pi_mono h
+
+protected theorem center_pi : center R (Π i, S i) = pi .univ fun i ↦ center R (S i) :=
+  SetLike.coe_injective Set.center_pi
 
 end Subalgebra

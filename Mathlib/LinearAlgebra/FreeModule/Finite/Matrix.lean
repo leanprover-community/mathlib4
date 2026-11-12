@@ -5,8 +5,9 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.Dimension.Finite
+
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Finite and free modules using matrices
@@ -21,7 +22,7 @@ We provide some instances for finite and free modules involving matrices.
   is finite.
 -/
 
-@[expose] public section
+public section
 
 
 universe u u' v w
@@ -89,7 +90,7 @@ theorem cardinalMk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K
 
 @[stacks 09HS]
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
-  convert toNat_le_toNat (cardinalMk_algHom_le_rank K M L) ?_
+  convert! toNat_le_toNat (cardinalMk_algHom_le_rank K M L) ?_
   · rw [toNat_lift, finrank]
   · rw [lift_lt_aleph0]; have := Module.nontrivial K L; apply Module.rank_lt_aleph0
 
