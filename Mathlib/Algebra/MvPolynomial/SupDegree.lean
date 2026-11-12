@@ -15,7 +15,7 @@ This file contains some lemmas of `AddMonoidAlgebra.{supDegree,leadingCoeff,Moni
 with notations whose counterparts in `MvPolynomial` are not `abbrev`s of them, while restating them
 in notations of `MvPolynomial`. These notations include
 
-- `AddMonoidAlgebra.support`: `MvPolynomial.support`.
+- `(AddMonoidAlgebra.coeff _).support`: `MvPolynomial.support`.
 - `AddMonoidAlgebra.single`: `MvPolynomial.monomial`.
 -/
 public section
@@ -23,7 +23,6 @@ public section
 namespace MvPolynomial
 
 variable {R : Type*} [CommSemiring R] {B : Type*}
-variable {R' : Type*} [CommRing R']
 variable {σ : Type*} (D : (σ →₀ ℕ) → B)
 variable {p : MvPolynomial σ R}
 
