@@ -185,6 +185,35 @@ lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionR
     smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff, Function.comp_def,
     ← image_smul, image_image, eval, Pi.smul_apply, Pi.zero_apply]
 
+section IsInducing
+
+open Topology IsInducing
+
+variable {𝕜 E ι : Type*} {Eι : ι → Type*} [NormedDivisionRing 𝕜]
+    [AddCommGroup E] [Module 𝕜 E]
+    [∀ i, AddCommGroup (Eι i)] [∀ i, Module 𝕜 (Eι i)]
+    [∀ i, TopologicalSpace (Eι i)]
+    {f : (i : ι) → E →ₗ[𝕜] Eι i}
+
+/-- If the topology on `E` is induced by a family of linear maps, then a set `s : Set E` is von
+Neumann bounded if and only if its image under each map is von Neumann bounded. -/
+lemma _root_.Topology.IsInducing.isVonNBounded_iff [TopologicalSpace E]
+    (hf : Topology.IsInducing (fun x i ↦ f i x))
+    (s : Set E) :
+    IsVonNBounded 𝕜 s ↔ ∀ i, IsVonNBounded 𝕜 (f i '' s) := by
+  replace hf : IsInducing (LinearMap.pi f) := hf
+  calc
+    IsVonNBounded 𝕜 s ↔ IsVonNBounded 𝕜 (LinearMap.pi f '' s) := by
+      simp [isVonNBounded_iff_tendsto_smallSets_nhds, hf.nhds_eq_comap,
+        smallSets_comap_eq_comap_image, Function.comp_def]
+    _ ↔ ∀ i, IsVonNBounded 𝕜 (f i '' s) := by simp [isVonNBounded_pi_iff, Set.image_image]
+
+/-- If the topology on `E` is induced by a family of linear maps, then a set `s : Set E` is von
+Neumann bounded if its image under each map is von Neumann bounded. -/
+alias ⟨_, _root_.Topology.IsInducing.isVonNBounded⟩ := isVonNBounded_iff
+
+end IsInducing
+
 section Image
 
 variable {𝕜₁ 𝕜₂ : Type*} [NormedDivisionRing 𝕜₁] [NormedDivisionRing 𝕜₂] [AddCommGroup E]
