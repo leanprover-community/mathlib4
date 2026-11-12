@@ -54,6 +54,7 @@ equivalence, see `RingEquiv.equivRatAlgEquiv`. -/
 def toRatAlgEquiv (f : R ≃+* S) : R ≃ₐ[ℚ] S where
   toEquiv := f
   __ := f.toRingHom.toRatAlgHom
+  map_smul' := f.toRingHom.toRatAlgHom.map_smul_of_tower
 
 @[simp]
 theorem coe_toRatAlgEquiv (f : R ≃+* S) : ⇑f.toRatAlgEquiv = ⇑f := rfl

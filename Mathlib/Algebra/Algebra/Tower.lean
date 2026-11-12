@@ -232,10 +232,10 @@ namespace AlgEquiv
 
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
-  { (f : A ≃+* B) with
-    commutes' := fun r => by
+  .ofCommutes (f : A ≃+* B)
+    fun r => by
       rw [algebraMap_apply R S A, algebraMap_apply R S B]
-      exact f.commutes (algebraMap R S r) }
+      exact f.commutes (algebraMap R S r)
 
 theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl
 
@@ -298,7 +298,7 @@ variable {R}
 @[simps! apply symm_apply]
 def extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S)) :
     (A ≃ₐ[R] B) ≃ A ≃ₐ[S] B where
-  toFun f := { f with commutes' := (f.toAlgHom.extendScalarsOfSurjective h).commutes' }
+  toFun f := .ofCommutes f (f.toAlgHom.extendScalarsOfSurjective h).commutes'
   invFun := AlgEquiv.restrictScalars R
 
 @[simp] lemma coe_extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
