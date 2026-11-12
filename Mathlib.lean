@@ -1244,12 +1244,14 @@ public import Mathlib.Algebra.Polynomial.PartialFractions
 public import Mathlib.Algebra.Polynomial.Reverse
 public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.Polynomial.RootsIn
 public import Mathlib.Algebra.Polynomial.RuleOfSigns
 public import Mathlib.Algebra.Polynomial.Sequence
 public import Mathlib.Algebra.Polynomial.Smeval
 public import Mathlib.Algebra.Polynomial.SpecificDegree
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Algebra.Polynomial.Sturm.Sequence
+public import Mathlib.Algebra.Polynomial.Sturm.SturmTarski
 public import Mathlib.Algebra.Polynomial.SumIteratedDerivative
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.Algebra.Polynomial.UnitTrinomial
