@@ -54,7 +54,7 @@ theorem ContinuousAlternatingMap.hasStrictFDerivAt_toContinuousMultilinearMap_co
       ContinuousLinearMap.comp_apply, ← map_sub]
     apply LinearMap.isBigOTVS_rev_comp
     simp [isEmbedding_toContinuousMultilinearMap.nhds_eq_comap]
-  · exact (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.comp x h
+  · exact (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.fun_comp x h
 
 section HasFDerivAt
 
@@ -72,14 +72,14 @@ theorem ContinuousAlternatingMap.hasStrictFDerivAt_compContinuousLinearMap
     (fg.1.1, fun _ : ι ↦ fg.2)
   have H₂ := ((toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt (x := fg.1))
   have H₃ := hasStrictFDerivAt_pi.mpr fun i : ι ↦ hasStrictFDerivAt_id (𝕜 := 𝕜) fg.2
-  exact H₁.comp fg (H₂.prodMap fg H₃)
+  exact H₁.fun_comp fg (H₂.prodMap fg H₃)
 
 theorem HasStrictFDerivAt.continuousAlternatingMapCompContinuousLinearMap
     (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun x ↦ (f x).compContinuousLinearMap (g x))
       (compContinuousLinearMapCLM (g x) ∘L f' +
         (f x).fderivCompContinuousLinearMap (g x) ∘L g') x :=
-  hasStrictFDerivAt_compContinuousLinearMap (f x, g x) |>.comp x (hf.prodMk hg)
+  hasStrictFDerivAt_compContinuousLinearMap (f x, g x) |>.fun_comp x (hf.prodMk hg)
 
 theorem HasFDerivAt.continuousAlternatingMapCompContinuousLinearMap
     (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
@@ -181,7 +181,7 @@ theorem HasStrictFDerivAt.continuousAlternatingMap_apply (hf : HasStrictFDerivAt
       (fun x ↦ f x (g · x))
       (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
       x :=
-  (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.comp x hf
+  (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.fun_comp x hf
     |>.continuousMultilinearMap_apply hg
 
 theorem HasFDerivAt.continuousAlternatingMap_apply (hf : HasFDerivAt f f' x)
