@@ -479,7 +479,6 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
     (M : Matrix ι ι ℤ) : Prop where
   diag : ∀ i, M i i = 2
   offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
-  zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
   exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
 
 namespace Matrix.IsFiniteCartan
@@ -487,12 +486,11 @@ namespace Matrix.IsFiniteCartan
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
 include hM
 
-lemma det_pos :
-    0 < M.det := by
+lemma det_pos : 0 < M.det := by
   obtain ⟨d, hd, hd'⟩ := hM.exists_posDef
-  replace hd : 0 < (diagonal d).det := by simpa using Finset.prod_pos fun i a ↦ hd i
-  replace hd' : 0 < (diagonal d).det * M.det := by simpa only [← det_mul] using hd'.det_pos
-  nlinarith
+  apply pos_of_mul_pos_right (a := (diagonal d).det)
+  · simpa using hd'.det_pos
+  · simpa using (Finset.prod_pos fun i a ↦ hd i).le
 
 protected lemma isUnit_map (k : Type*) [Field k] [CharZero k] :
     IsUnit <| M.map (Int.cast : ℤ → k) := by
@@ -500,15 +498,13 @@ protected lemma isUnit_map (k : Type*) [Field k] [CharZero k] :
   rw [Matrix.isUnit_iff_isUnit_det, ← RingHom.map_det]
   simpa using hM.det_pos.ne'
 
-protected lemma transpose :
-    Mᵀ.IsFiniteCartan := by
+protected lemma transpose : Mᵀ.IsFiniteCartan := by
   obtain ⟨d, hd_pos, hdM⟩ := hM.exists_posDef
   set d' : ι → ℤ := fun i ↦ ∏ j ∈ Finset.univ.erase i, d j with hd'
   have hd'_pos (i : ι) : 0 < d' i := Finset.prod_pos fun j _ ↦ hd_pos j
   suffices (diagonal d' * Mᵀ).PosDef from
     { diag i := by simpa using hM.diag i
       offDiag_nonpos i j hij := by simpa using hM.offDiag_nonpos j i hij.symm
-      zero_comm i j := by simpa using hM.zero_comm j i
       exists_posDef := ⟨d', hd'_pos, this⟩ }
   set C : ℤ := ∏ j, d j with hC
   have hCd (i : ι) : d i * d' i = C := Finset.mul_prod_erase _ _ (Finset.mem_univ i)
@@ -530,9 +526,17 @@ protected lemma transpose :
   rwa [star_trivial, ← mul_pos_iff_of_pos_left hCpos]
 
 omit hM in
-@[simp] protected lemma transpose_iff :
-    Mᵀ.IsFiniteCartan ↔ M.IsFiniteCartan :=
+@[simp] protected lemma transpose_iff : Mᵀ.IsFiniteCartan ↔ M.IsFiniteCartan :=
   ⟨fun h ↦ by simpa using h.transpose, IsFiniteCartan.transpose⟩
+
+private theorem zero_imp {i j} (hij : M i j = 0) : M j i = 0 := by
+  obtain ⟨d, hd, hd'⟩ := hM.exists_posDef
+  simpa [hij, (hd j).ne'] using hd'.isHermitian.isSymm.apply i j
+
+/-- This is often included as part of the definition of a Cartan matrix, but follows from the other
+conditions. -/
+theorem zero_comm {i j} : M i j = 0 ↔ M j i = 0 :=
+  ⟨hM.zero_imp, hM.zero_imp⟩
 
 end Matrix.IsFiniteCartan
 
