@@ -33,14 +33,13 @@ The primary difference is that `Hypergraph` edges are not indexed and do not all
   set has size `n`, every subset of size `t` is a subset of exactly one block, and every block has
   size exactly `k`.
 
-## Main statements
-
-* `fooBar_unique`
-
 ## Implementation details
 
 We place everything in the `IncidenceSystem` namespace, because this still allows one to write
 `{α β : Type*} (d : Design α β) [d.IsSimple] [d.IsUniform]`.
+
+We index our blocks by a subset of an indexing type `β` to make it easy to add and remove blocks
+if desired. Duplicate blocks are permitted unless `IncidenceSystem.IsSimple` is imposed.
 
 ## TODO
 
