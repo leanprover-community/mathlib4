@@ -118,20 +118,15 @@ structure Completion where
 
 namespace Completion
 
-/-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
-private def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) where
+-- Not private because `NormedField` and `Algebra` instances need to be exposed and are
+-- transported along `equivAux`
+/-- Auxiliary equivalence used to transport instances to `v.Completion`. Use `equiv` instead. -/
+def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) where
   toFun := toCompletion'
   invFun := ofCompletion'
   left_inv _ := rfl
   right_inv _ := rfl
 
--- This instance exists to avoid a zsmul diamond.
-@[no_expose]
-noncomputable instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v)] :
-    SMul R v.Completion where
-  smul r x := ofCompletion' (r • x.toCompletion')
-
-@[no_expose]
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
 
 /-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
@@ -311,8 +306,8 @@ section Algebra
 variable {R : Type*} [CommSemiring R] [Algebra R (WithAbs v)]
   [UniformContinuousConstSMul R (WithAbs v)]
 
-@[no_expose]
-noncomputable instance : Algebra R v.Completion := fast_instance% (equiv v).algebra R
+-- Transported along `equivAux`, like `NormedField`, to avoid `nsmul`/`zsmul` diamonds.
+noncomputable instance : Algebra R v.Completion := fast_instance% (equivAux v).algebra R
 
 theorem toCompletion_algebraMap (r : R) :
     (algebraMap R v.Completion r).toCompletion =

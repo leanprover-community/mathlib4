@@ -20,7 +20,6 @@ application of the functor `coyoneda.obj X` for all `X : Cᵒᵖ`.
 Similarly, a square is a pushout square iff the opposite
 square becomes a pullback square after the application of the
 functor `yoneda.obj X` for all `X : C`.
-
 -/
 
 public section

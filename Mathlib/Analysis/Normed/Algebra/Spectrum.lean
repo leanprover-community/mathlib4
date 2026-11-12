@@ -236,7 +236,7 @@ theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} {r
     spectralRadius 𝕜 a < r := by
   rw [spectralRadius_eq_of_unital]
   exact sSup_image.symm.trans_lt <| ((spectrum.isCompact a).sSup_lt_iff_of_continuous ha
-    continuous_enorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
+    continuous_eNorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
 
 end Unital
 
@@ -519,7 +519,7 @@ alias exists_nnnorm_quasispectrum_eq_spectralRadius := exists_nnNorm_quasispectr
 theorem spectralRadius_lt_of_forall_quasispectrum_lt [ProperSpace 𝕜] {a : A} {r : ℝ≥0}
     (hr : ∀ k ∈ quasispectrum 𝕜 a, ‖k‖₊ < r) : spectralRadius 𝕜 a < r :=
   sSup_image.symm.trans_lt <| ((isCompact a).sSup_lt_iff_of_continuous
-    (nonempty 𝕜 a) continuous_enorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
+    (nonempty 𝕜 a) continuous_eNorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
 
 end quasispectrum
 

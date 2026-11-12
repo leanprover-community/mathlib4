@@ -19,7 +19,6 @@ the Radon-Nikodym theorem for signed measures.
 
 * `MeasureTheory.Measure.withDensityᵥ`: the vector measure formed by integrating a function `f`
   with respect to a measure `μ` on some set if `f` is integrable, and `0` otherwise.
-
 -/
 
 @[expose] public section

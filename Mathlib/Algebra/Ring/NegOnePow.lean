@@ -14,7 +14,6 @@ This file defines the map `negOnePow : ℤ → ℤˣ` which sends `n` to `(-1 : 
 
 The definition of `negOnePow` and some lemmas first appeared in contributions by
 Johan Commelin to the Liquid Tensor Experiment.
-
 -/
 
 @[expose] public section

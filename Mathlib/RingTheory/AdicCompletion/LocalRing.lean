@@ -37,7 +37,6 @@ this side condition for convenience.
 
 * `AdicCompletion.spanFinrank_maximalIdeal_eq` : for Noetherian local ring `R`, minimal number of
   generators of maximal ideal of `R` and `AdicCompletion (IsLocalRing.maximalIdeal R) R` are equal.
-
 -/
 
 public section

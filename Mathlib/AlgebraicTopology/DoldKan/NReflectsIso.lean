@@ -19,7 +19,6 @@ In this file, it is shown that the functors
 reflect isomorphisms for any preadditive category `C`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 public section
