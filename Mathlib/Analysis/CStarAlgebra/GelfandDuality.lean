@@ -339,28 +339,26 @@ end NonUnital
 
 namespace CommCStarAlgebra
 
-open scoped StarRing
-
 variable {A : Type*} [NonUnitalCommCStarAlgebra A] {a b : A}
 
 @[deprecated IsStarOrtho.norm_add +typeChanged (since := "2026-10-29")]
 lemma norm_add_eq_max (h : a * b = 0) : ‖a + b‖ = max ‖a‖ ‖b‖ :=
-  (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).norm_add
+  IsStarOrtho.norm_add <| .of_mul_eq_zero h
 
 @[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-29")]
 lemma nnNorm_add_eq_max (h : a * b = 0) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).nnNorm_add
+  IsStarOrtho.nnNorm_add <| .of_mul_eq_zero h
 
 @[deprecated IsStarOrtho.nnNorm_add +typeChanged (since := "2026-10-31")]
 alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 @[deprecated IsStarOrtho.norm_sub +typeChanged (since := "2026-10-29")]
 lemma norm_sub_eq_max (h : a * b = 0) : ‖a - b‖ = max ‖a‖ ‖b‖ :=
-  (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).norm_sub
+  IsStarOrtho.norm_sub <| .of_mul_eq_zero h
 
 @[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-29")]
 lemma nnNorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
-  (isStarOrtho_iff_mul_eq_zero_of_comm.mpr h).nnNorm_sub
+  IsStarOrtho.nnNorm_sub <| .of_mul_eq_zero h
 
 @[deprecated IsStarOrtho.nnNorm_sub +typeChanged (since := "2026-10-31")]
 alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
@@ -369,7 +367,7 @@ open scoped Function in
 @[deprecated IsStarOrtho.nnNorm_sum +typeChanged (since := "2026-10-29")]
 lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) :=
-  IsStarOrtho.nnNorm_sum fun _ _ _ _ hij ↦ isStarOrtho_iff_mul_eq_zero_of_comm.mpr (h0 hij)
+  IsStarOrtho.nnNorm_sum fun _ _ _ _ hij ↦ .of_mul_eq_zero (h0 hij)
 
 @[deprecated IsStarOrtho.nnNorm_sum +typeChanged (since := "2026-10-31")]
 alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
