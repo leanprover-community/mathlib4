@@ -15,13 +15,18 @@ provides proofs.
 
 example : Nat.Prime 17007377 := by primality
 
--- Pollard's rho method cannot split `10000000000037 * 10000000000453` within the default
--- `2 ^ 17` steps, so the factor `10000000000037` is given.
-example : Nat.Prime (2 * 10000000000037 * 10000000000453 + 1) := by
-  primality (cert := .search { factors := [10000000000037] })
+-- Pollard's rho method cannot split `10000003003 * 100000000000031` within the default
+-- `2 ^ 17` steps.
+/--
+error: primality failed to factor the intermediate value 1000000300300310000093093; provide the
+certificate at `.witnesses […]`
+-/
+#guard_msgs in
+example : Nat.Prime (2 * 10000003003 * 100000000000031 + 1) := by primality
 
--- Pollard's rho method needs more than the default `2 ^ 17` steps to split
--- `10000003003 * 100000000000031`.
+example : Nat.Prime (2 * 10000003003 * 100000000000031 + 1) := by
+  primality (cert := .search { factors := [10000003003] })
+
 example : Nat.Prime (2 * 10000003003 * 100000000000031 + 1) := by
   primality (cert := .search { rhoSteps := 2 ^ 18 })
 

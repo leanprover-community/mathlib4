@@ -147,10 +147,12 @@ def jacobi (a n : ℕ) : ℤ := Id.run do
   return if n == 1 then s else 0
 
 /-- Searches for the root and the factorization of `p - 1` of a Lucas witness for `p`, trying
-`2, …, 1023` as primitive roots. The part of `p - 1` that the factorizer leaves is taken to be
-prime. -/
+`2, …, 1023` as primitive roots. The part of `p - 1` that the factorizer leaves must pass
+`isProbablePrime`, and is then taken to be prime. -/
 def findLucasWitness (factorizer : Factorizer) (p : ℕ) : CoreM (ℕ × List (ℕ × ℕ)) := do
   let (factors, rest) ← factorizer.decompose (p - 1)
+  unless rest == 1 || isProbablePrime rest do
+    throwError "primality failed to factor the intermediate value {rest}"
   let primeFactors := (if rest == 1 then factors else factors.push rest).toList
   for root in 2...1024 do
     -- A primitive root is not a square modulo `p`, and `jacobi` decides that without a `powMod`.
