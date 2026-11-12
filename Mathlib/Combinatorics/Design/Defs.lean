@@ -29,9 +29,14 @@ The primary difference is that `Hypergraph` edges are not indexed and do not all
 * `IncidenceSystem`: An incidence system consists of a carrier set and subsets called blocks.
 * `IncidenceSystem.IsSimple`: An incidence system is simple if there are no duplicate blocks.
 * `IncidenceSystem.IsUniform`: An incidence system is `k`-uniform if every block has size `k`.
-* `IncidenceSystem.IsBalanced`
-* `IncidenceSystem.IsDesign`
-* `IncidenceSystem.IsSteiner`
+* `IncidenceSystem.IsBalanced`: An incidence system is balanced (for some `t` and `l`) if every
+  subset of size `t` is a subset of exactly `l` blocks.
+* `IncidenceSystem.IsDesign`: An incidence system is a `t-(n,k,l)`-design if the ambient set has
+  size `n`, every subset of size `t` is a subset of exactly `l` blocks, and every block has size
+  exactly `k`.
+* `IncidenceSystem.IsSteiner`: An incidence system is an `S(t,k,n)` Steiner system if the ambient
+  set has size `n`, every subset of size `t` is a subset of exactly one block, and every block has
+  size exactly `k`.
 
 ## Main statements
 
@@ -156,11 +161,24 @@ theorem IsUniform.finite_block {d : IncidenceSystem α β}
     (d.block b).Finite := by
   grind [Set.finite_of_ncard_ne_zero]
 
+/-- An incidence system is balanced (for some `t` and `l`) if every subset of size `t` is a subset
+of exactly `l` blocks. -/
 @[mk_iff]
 structure IsBalanced (d : IncidenceSystem α β) (t l : ℕ) where
   balanced (s : Set α) (hs : s ⊆ d.carrier) (hs : s.ncard = t) :
     {b ∈ d.blockSet | s ⊆ d.block b}.ncard = l
 
+@[simp, grind .]
+protected theorem IsBalanced.discrete (s : Set α) : (discrete s).IsBalanced 1 1 where
+  balanced := by grind [blockSet_discrete, block_discrete, carrier_discrete, Set.ncard_eq_one]
+
+@[simp, grind .]
+protected theorem IsBalanced.indiscrete (s : Set α) (b : β) (k : ℕ) :
+    (indiscrete s b).IsBalanced k 1 where
+  balanced := by grind [blockSet_indiscrete, block_indiscrete, carrier_indiscrete, Set.ncard_eq_one]
+
+/-- An incidence system is a `t-(n,k,l)`-design if the ambient set has size `n`, every subset of
+size `t` is a subset of exactly `l` blocks, and every block has size exactly `k`. -/
 @[mk_iff]
 structure IsDesign (d : IncidenceSystem α β) (t n k l : ℕ) extends
     d.IsUniform k, d.IsBalanced t l where
@@ -168,21 +186,39 @@ structure IsDesign (d : IncidenceSystem α β) (t n k l : ℕ) extends
 
 attribute [grind .] IsDesign.card_carrier
 
-theorem IsDesign.nonempty {d : IncidenceSystem α β}
-    {t n k l : ℕ} (hd : d.IsDesign t n k l) (hk : n ≠ 0) :
-    d.carrier.Nonempty := by
+@[simp, grind .]
+protected theorem IsDesign.discrete (s : Set α) : (discrete s).IsDesign 1 s.ncard 1 1 where
+  __ := IsUniform.discrete s
+  __ := IsBalanced.discrete s
+  card_carrier := rfl
+
+@[simp, grind .]
+protected theorem IsDesign.indiscrete (s : Set α) (b : β) (k : ℕ) :
+    (indiscrete s b).IsDesign k s.ncard s.ncard 1 where
+  __ := IsUniform.indiscrete s b
+  __ := IsBalanced.indiscrete s b k
+  card_carrier := rfl
+
+theorem IsDesign.nonempty {d : IncidenceSystem α β} {t n k l : ℕ}
+    (hd : d.IsDesign t n k l) (hk : n ≠ 0) : d.carrier.Nonempty := by
   grind [Set.nonempty_of_ncard_ne_zero]
 
-theorem IsDesign.finite {d : IncidenceSystem α β}
-    {t n k l : ℕ} (hd : d.IsDesign t n k l) (hk : n ≠ 0) :
-    d.carrier.Finite := by
+theorem IsDesign.finite {d : IncidenceSystem α β} {t n k l : ℕ}
+    (hd : d.IsDesign t n k l) (hk : n ≠ 0) : d.carrier.Finite := by
   grind [Set.finite_of_ncard_ne_zero]
 
+/-- An incidence system is an `S(t,k,n)` Steiner system if the ambient set has size `n`, every
+subset of size `t` is a subset of exactly one block, and every block has size exactly `k`. -/
 def IsSteiner (d : IncidenceSystem α β) (t k n : ℕ) := d.IsDesign t n k 1
 
-theorem _root_.Set.subsingleton_of_ncard_eq_one {s : Set α} (hs : s.ncard = 1) : s.Subsingleton := by
-  have : Finite s := Set.finite_of_ncard_pos (by grind)
-  rw [← Set.ncard_le_one_iff_subsingleton, hs]
+@[simp, grind .]
+protected theorem IsSteiner.discrete (s : Set α) : (discrete s).IsSteiner 1 1 s.ncard :=
+  IsDesign.discrete s
+
+@[simp, grind .]
+protected theorem IsSteiner.indiscrete (s : Set α) (b : β) (k : ℕ) :
+    (indiscrete s b).IsSteiner k s.ncard s.ncard :=
+  IsDesign.indiscrete s b k
 
 theorem IsSteiner.isSimple {d : IncidenceSystem α β} {t k n : ℕ} (hd : d.IsSteiner t k n)
     (htk : t ≤ k) : d.IsSimple where
