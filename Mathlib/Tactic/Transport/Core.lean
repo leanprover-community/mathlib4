@@ -53,9 +53,9 @@ instance : Ord TransportKey where
 That is a hypothesis of the form `∀ xs, a xs' ~ b xs'` where `xs'` is a subset of `xs`,
 and `a` and `b` form a "varying pair" in the conclusion of the `gcongr` lemma. -/
 structure TransportHyp where
-  /-- Index of the left varying argument. -/
+  /-- Index of the left varying argument. Used only for preserving names of bound variables. -/
   lhsIdx : Nat
-  /-- Index of the right varying argument. -/
+  /-- Index of the right varying argument. Used only for preserving names of bound variables. -/
   rhsIdx : Nat
   /-- Index of the hypothesis itself. -/
   hypIdx : Nat
@@ -64,9 +64,7 @@ structure TransportHyp where
   and whether it appears in both.
   This information is used to infer suitable names when introducing these variables. -/
   hypsPos : List (Option Nat)
-  relHyps : List (Nat × Nat × Nat × Bool)
-  /-- Whether the order of the two varying arguments is the opposite from in the conclusion. -/
-  isContra : Bool
+  relHyps : List (Nat × Nat × Nat)
 
 /-- Structure recording the data for a `@[transport]` lemma. -/
 structure TransportLemma where
@@ -144,23 +142,23 @@ structure Context where
   A map from introduced free variables `a` to the proof of their relation `r a b` to its
   corresponding variable. The `Bool` is `true` in the case `r a b` and `false` in the case `r b a`.
   -/
-  transportHyps : FVarIdMap (FVarId × Bool) := {}
+  transportHyps : FVarIdMap FVarId := {}
 
 abbrev TransportM := ReaderT Context GCongrM
 
-def withTransportHyps {α} (hyps : List (FVarId × FVarId × Bool)) (goal : MVarId)
+def withTransportHyps {α} (hyps : List (FVarId × FVarId)) (goal : MVarId)
     (k : MVarId → TransportM α) : TransportM α := do
   match hyps with
   | [] => k goal
-  | (fvarId, hRel, forward) :: hyps =>
+  | (fvarId, hRel) :: hyps =>
     let rel ← instantiateMVars (← hRel.getType)
     if rel.isEq then
-      let (_, goal) ← substCore goal hRel (symm := !forward)
+      let (_, goal) ← substCore goal hRel
       goal.withContext <| withTransportHyps hyps goal k
     else
-      trace[transport] "`{Expr.fvar fvarId}` satisfies `{rel}`"
+      trace[transport] "variable `{Expr.fvar fvarId}` satisfies transport relation `{rel}`"
       withReader
-        (fun c ↦ { c with transportHyps := c.transportHyps.insert fvarId (hRel, forward) })
+        (fun c ↦ { c with transportHyps := c.transportHyps.insert fvarId hRel })
         (withTransportHyps hyps goal k)
 
 -- structure LCtx where
@@ -192,9 +190,8 @@ In the main subgoals, the forall binders are introduced. They are named using th
 `gcongr`, or otherwise using binder names in the goal. `grw` relies on these names to ensure that
 binder names are preserved in the goal.
 -/
-def applyGCongrLemma (g : MVarId) (lem : TransportLemma) :
-    TransportM
-      (Array (MVarId × List (FVarId × FVarId × FVarId × Bool) × Bool) × Array MVarId) := do
+def applyGCongrLemma (g : MVarId) (lem : TransportLemma) (forward : Bool) :
+    TransportM (Array (MVarId × List (FVarId × FVarId)) × Array MVarId) := do
   let proof ← lem.getValue
   let type ← inferType proof
   let (mvars, bis, type) ← forallMetaBoundedTelescope type lem.numHyps
@@ -220,7 +217,7 @@ def applyGCongrLemma (g : MVarId) (lem : TransportLemma) :
     let mvarId := mvar.mvarId!
     if ← mvarId.isAssigned then continue
     -- Filter out metavariables from the main subgoals
-    if lem.mainSubgoals.any (fun h ↦ h.lhsIdx == i || h.rhsIdx == i || h.hypIdx == i) then continue
+    if lem.mainSubgoals.any (·.hypIdx == i) then continue
     -- Synthesize instance implicit arguments.
     -- We allow synthesis to get stuck, because in the case of `grw`
     -- there may be unassigned metavariables in the type.
@@ -239,8 +236,9 @@ def applyGCongrLemma (g : MVarId) (lem : TransportLemma) :
     let lambdaNames := if lhsNames.size ≥ rhsNames.size then lhsNames else rhsNames
     let names := h.hypsPos.map (·.elim `_ (lambdaNames.getD · `_))
     let (fvarIds, mvarId) ← mvarId.introN h.hypsPos.length names
-    let relHyps := h.relHyps.map fun (i, j, k, b) ↦ (fvarIds[i]!, fvarIds[j]!, fvarIds[k]!, b)
-    return (mvarId, relHyps, h.isContra)
+    let relHyps := h.relHyps.map fun (i, j, k) ↦
+      (if forward then fvarIds[i]! else fvarIds[j]!, fvarIds[k]!)
+    return (mvarId, relHyps)
   return (mainGoals, sideGoals)
 where
   /-- Get the binder names from a lambda function. -/
@@ -362,35 +360,31 @@ def mkTransportLemmaCore (hyps : Array Expr) (target : Expr) (proof : Expr)
             unless fvarIds.any (fun f ↦ lhsVars.contains f || rhsVars.contains f) do
               if let some (idxL, idxR) := pairs[(l, r)]? then
                 pairs := pairs.erase (l, r)
-                relHyps := relHyps.push (idxL, idxR, i, true)
+                relHyps := relHyps.push (idxL, idxR, i)
               else if let some (idxR, idxL) := pairs[(r, l)]? then
                 pairs := pairs.erase (r, l)
-                relHyps := relHyps.push (idxR, idxL, i, false)
+                relHyps := relHyps.push (idxR, idxL, i)
       unless pairs.isEmpty do
         return none
       let some lhsIdx := hyps.idxOf? lhs | return none
       let some rhsIdx := hyps.idxOf? rhs | return none
       let lVars ← lVarsRef.get
       let rVars ← rVarsRef.get
-      let isContra ←
-        if lVars.contains lhs && rVars.contains rhs then
-          lVarsRef.modify (·.erase lhs)
-          rVarsRef.modify (·.erase rhs)
-          pure false
+      if lVars.contains lhs && rVars.contains rhs then
+        lVarsRef.modify (·.erase lhs)
+        rVarsRef.modify (·.erase rhs)
+      else
+        if lVars.contains rhs && rVars.contains lhs then
+          lVarsRef.modify (·.erase rhs)
+          rVarsRef.modify (·.erase lhs)
         else
-          if lVars.contains rhs && rVars.contains lhs then
-            lVarsRef.modify (·.erase rhs)
-            rVarsRef.modify (·.erase lhs)
-            pure true
-          else
-            return none
+          return none
       return some {
         lhsIdx
         rhsIdx
         hypIdx := i
         hypsPos := hypsPos.toList
         relHyps := relHyps.toList
-        isContra
       }
     -- Checks if `hyp` is a valid "main goal".
     let go := forallTelescope (← hyp.getType) fun xs hypTy => do
@@ -526,18 +520,14 @@ mutual
 /-- Recursively call `transportCore` to process a subgoal of a `gcongr` lemma.
 
 Returns whether we have done a rewrite in this subgoal, in which case it has been closed. -/
-partial def processTransportHypothesis (goal : MVarId)
-    (relHyps : List (FVarId × FVarId × FVarId × Bool))
-    (forward fail : Bool) : TransportM Bool := do
-  goal.withContext do
-  let relHyps :=
-    if forward then relHyps.map fun (i, _, k, b) ↦ (i, k, b)
-    else relHyps.map fun (_, j, k, b) ↦ (j, k, !b)
-  withTransportHyps relHyps goal fun goal ↦ do
-  let some (relName, rel?, lhs, rhs) := getRel' (← goal.getType) |
-    throwError "internal `grewrite` error: invalid `gcongr` goal {goal}"
+partial def processTransportHypothesis (fail : Bool) (goal : MVarId) : TransportM Bool := do
+  let some (relName, rel?, lhs, rhs) := getRel' (← instantiateMVars (← goal.getType)) |
+    throwError "invalid transport goal {goal}"
+  let forward ← match lhs.getAppFn.isMVar, rhs.getAppFn.isMVar with
+    | false, true => pure true
+    | true, false => pure false
+    | _, _ => throwError "expected exactly one of `{lhs}` and `{rhs}` to be unassigned."
   let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
-  let target ← instantiateMVars target; let rel? ← rel?.mapM instantiateMVars
   let some (result, proof) ← transportCoreOrRfl relName rel? target forward |
     if fail then
       throwError "transport made no progress on `{target}`"
@@ -565,13 +555,16 @@ partial def processGCongrLemma (e : Expr) (rel? : Option Expr) (lem : TransportL
   let (mvar, goal) ← makeGCongrGoal rel? e forward
   let (mainGoals, sideGoals) ←
     try
-      applyGCongrLemma goal.mvarId! lem
+      applyGCongrLemma goal.mvarId! lem forward
     catch e =>
       trace[transport] "{e.toMessageData}"
       return none
   -- Recursively rewrite in the main subgoals
-  for (goal, relHyps, isContra) in mainGoals do
-    unless ← processTransportHypothesis goal relHyps (forward != isContra) rel?.isNone do
+  for (goal, relHyps) in mainGoals do
+    let success ←
+      goal.withContext <| withTransportHyps relHyps goal <|
+        processTransportHypothesis rel?.isNone
+    unless success do
       return none
   let result ← instantiateMVars mvar
   if result == e then
@@ -596,7 +589,7 @@ partial def useTransportHyp (hyp : Expr) (goal : MVarId) (forward : Bool) : Tran
     if ← useTransportHyp (mkAppN hyp mvars) goal forward then
       let some (relKind, rel?, lhs, rhs) := getRel' (← instantiateMVars (← inferType mvars[2]!))
         | return false
-      let e ← instantiateMVars <| if forward then rhs else lhs
+      let e := if forward then rhs else lhs
       let some (result, proof) ← transportCoreOrRfl relKind rel? e forward
         | return false
       let mvar := if forward then lhs else rhs
@@ -630,17 +623,13 @@ partial def transportCore (relKind : RelKind) (rel? : Option Expr) (e : Expr) (f
     {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
   let e := e.cleanupAnnotations
   if let .fvar fvarId := e.getAppFn then
-    if let some (hyp, forward') := (← read).transportHyps.get? fvarId then
+    if let some hyp := (← read).transportHyps.get? fvarId then
       let mctx ← getMCtx
       let (mvar, goal) ← makeGCongrGoal rel? e forward
-      if let some goal' ←
-        if forward != forward' then
-          try some <$> goal.mvarId!.applySymm catch _ => pure none
-        else
-          pure <| some goal.mvarId! then
-        if ← useTransportHyp (.fvar hyp) goal' forward' then
-          trace[transport] "rewriting `{e}` to `{mvar}`"
-          return some (← instantiateMVars mvar, goal)
+      -- TODO: try `.applySymm` on the goal if this fails: might be needed for dual relations?
+      if ← useTransportHyp (.fvar hyp) goal.mvarId! forward then
+        trace[transport] "rewriting `{e}` to `{mvar}`"
+        return some (← instantiateMVars mvar, goal)
       setMCtx mctx
   -- Try all applicable `@[transport]` lemmas.
   let lemmas ← findTransportLemmas? relKind e.toHeadIndex forward e.headNumArgs
