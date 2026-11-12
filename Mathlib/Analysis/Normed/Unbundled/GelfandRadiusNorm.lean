@@ -276,6 +276,7 @@ theorem gelfandRadiusAlgNorm_def (x : L) :
 
 variable {L} in
 omit [Algebra.IsAlgebraic K L] in
+/-- The Gelfand radius norm is invariant under algebra maps. -/
 @[simp]
 theorem gelfandRadiusAlgNorm_algebraMap (x : L) :
     haveI : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.tower_bot K L M
