@@ -259,7 +259,7 @@ alias CNF.coeff_of_notMem_CNF := cantorCoeff_of_notMem
 theorem cantorCoeff_eq_zero_of_lt {b o e : Ordinal} (h : o < b ^ e) : cantorCoeff b o e = 0 := by
   apply cantorCoeff_of_notMem
   rw [mem_map]
-  rintro ⟨⟨e, c⟩, ⟨he, rfl⟩⟩
+  rintro ⟨⟨e, c⟩, he, rfl⟩
   obtain rfl | he' := eq_or_ne e 0
   · simp_all
   · exact (opow_le_of_le_log he' (fst_le_log_of_mem_cantorNF he)).not_gt h
