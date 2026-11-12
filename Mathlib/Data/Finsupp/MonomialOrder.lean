@@ -204,9 +204,9 @@ noncomputable def MonomialOrder.lex [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := Lex (σ →₀ ℕ)
   toSyn :=
-  { toEquiv := ⟨toLex, ofLex, ofLex_toLex, toLex_ofLex⟩
+  { toEquiv := toLexEquiv
     map_add' := toLex_add }
-  toSyn_monotone := Finsupp.toLex_monotone
+  toSyn_monotone := by simpa [toLexEquiv] using Finsupp.toLex_monotone
 
 theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
     c ≼[lex] d ↔ toLex c ≤ toLex d := Iff.rfl
