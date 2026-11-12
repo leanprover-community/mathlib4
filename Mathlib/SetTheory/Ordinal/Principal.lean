@@ -25,7 +25,7 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 * `IsPrincipal`: A principal (or indecomposable) ordinal under some binary operation. We include `0`
   and other typically excluded edge cases for simplicity.
-* `not_bddAbove_setOfPred_isPrincipal`: Principal ordinals (under any operation) are unbounded.
+* `isCofinal_setOfPred_isPrincipal`: Principal ordinals (under any operation) are unbounded.
 * `isAddPrincipal_iff_zero_or_omega0_opow`: The additive principal ordinals are
   `0` and the ordinal powers of `ω`.
 * `isMulPrincipal_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
