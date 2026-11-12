@@ -24,7 +24,7 @@ again inner (`MulAut.conj_conj`).
 
 ## Main results
 
-* `MulAut.inner_normal` : `MulAut.inner G` is a normal subgroup of `MulAut G`. This is the
+* `MulAut.normal_inner` : `MulAut.inner G` is a normal subgroup of `MulAut G`. This is the
   foundational fact behind the outer automorphism group `MulAut G ⧸ MulAut.inner G`.
 * `MulAut.inner_eq_bot_iff` : `MulAut.inner G` is trivial iff `G` is commutative.
 -/
@@ -67,7 +67,7 @@ theorem conj_mem_iff (h f : MulAut G) : conj h f ∈ inner G ↔ f ∈ inner G :
 
 /-- The inner automorphism group is normal in the full automorphism group. -/
 @[to_additive /-- The inner automorphism group is normal in the full automorphism group. -/]
-instance inner_normal : (inner G).Normal where
+instance normal_inner : (inner G).Normal where
   conj_mem _ hn h := conj_apply_mem_inner h hn
 
 @[to_additive]

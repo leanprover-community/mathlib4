@@ -14,7 +14,7 @@ public import Mathlib.GroupTheory.Subgroup.Center
 
 The *outer automorphism group* of a group `G` is the quotient of its automorphism group by the
 inner automorphisms, `MulAut G ⧸ MulAut.inner G`. It is a group because `MulAut.inner G` is
-normal (`MulAut.inner_normal`).
+normal (`MulAut.normal_inner`).
 
 ## Main definitions
 
@@ -71,7 +71,7 @@ theorem inner_eq_top [Subsingleton (Outer G)] : inner G = ⊤ := by
 /-- If `G` is commutative, the outer automorphism group is the full automorphism group. -/
 @[to_additive /-- If `G` is commutative, the outer automorphism group is the full automorphism
 group. -/]
-def outerMulEquivOfIsMulCommutative [IsMulCommutative G] :
+def outerEquivMulAut [IsMulCommutative G] :
     Outer G ≃* MulAut G :=
   (QuotientGroup.quotientMulEquivOfEq inner_eq_bot).trans QuotientGroup.quotientBot
 
@@ -79,7 +79,7 @@ def outerMulEquivOfIsMulCommutative [IsMulCommutative G] :
 automorphism group. -/
 @[to_additive /-- If the outer automorphism group is trivial, the inner automorphism group is the
   full automorphism group. -/]
-def innerMulEquivOfOuterSubsingleton [Subsingleton (Outer G)] :
+def innerEquivMulAut [Subsingleton (Outer G)] :
     inner G ≃* MulAut G :=
   (MulEquiv.subgroupCongr inner_eq_top).trans Subgroup.topEquiv
 
