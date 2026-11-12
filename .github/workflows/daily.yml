@@ -19,6 +19,9 @@ jobs:
     name: Resolve the current Mathlib bump branch
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      actions: read
+      checks: read
     outputs:
       bump_ref: ${{ steps.bump.outputs.ref }}
       bump_sha: ${{ steps.bump.outputs.sha }}
@@ -26,16 +29,32 @@ jobs:
     steps:
       - name: Resolve branch and commit
         id: bump
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          read -r sha ref < <(
+          read -r _ ref < <(
             git ls-remote --heads https://github.com/leanprover-community/mathlib4.git \
               'refs/heads/bump/v4.*.0' | sort -V -k2 | tail -n 1
           )
-          {
-            echo "ref=${ref#refs/heads/}"
-            echo "sha=$sha"
-            echo 'branch_types=["master","bump"]'
-          } >> "$GITHUB_OUTPUT"
+          ref=${ref#refs/heads/}
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+
+          # Test the newest pushed commit whose build succeeded, so that the cache has its oleans.
+          for sha in $(gh run list --workflow build.yml --branch "$ref" --event push --limit 20 \
+              --json headSha --jq '.[].headSha'); do
+            conclusions=$(gh api "repos/$GH_REPO/commits/$sha/check-runs?check_name=ci%20%2F%20Build" \
+              --jq '[.check_runs[].conclusion] | join(",")')
+            if [ "$conclusions" = success ]; then
+              echo "Testing $ref@$sha"
+              {
+                echo "sha=$sha"
+                echo 'branch_types=["master","bump"]'
+              } >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "::warning::No push to $ref in the last 20 builds has a successful 'ci / Build' check."
+          echo 'branch_types=["master"]' >> "$GITHUB_OUTPUT"
 
   check-leanchecker:
     runs-on: ubuntu-latest
