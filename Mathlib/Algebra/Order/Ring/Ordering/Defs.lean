@@ -29,6 +29,8 @@ All orderings are preorderings.
 
 @[expose] public section
 
+open scoped Pointwise
+
 namespace Subsemiring
 
 variable {R : Type*} [CommRing R] {S : Subsemiring R}
