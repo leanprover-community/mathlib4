@@ -47,6 +47,7 @@ section default
 
 variable (A : Type*) {B : Type*}
 
+/-- The meet-semilattice induced from a `SetLike` instance by inclusion. -/
 @[reducible] def SemilatticeInf.ofSetLike [SetLike A B] [Min A] [IsMemInf A] :
     SemilatticeInf A where
   __ := PartialOrder.ofSetLike A
@@ -55,6 +56,7 @@ variable (A : Type*) {B : Type*}
   inf_le_right := by membership
   le_inf := by membership
 
+/-- The join-semilattice induced from a `SetLike` instance by inclusion. -/
 @[reducible] def SemilatticeSup.ofSetLike [SetLike A B] [Max A] [IsMemSup A] :
     SemilatticeSup A where
   __ := PartialOrder.ofSetLike A
