@@ -121,5 +121,3 @@ theorem ker_mk' : (mk' s R).ker = s := by ext l; simp
 
 end Quotient
 end StrictLieRinehartIdeal
-
-end
