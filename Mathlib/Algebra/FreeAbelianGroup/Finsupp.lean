@@ -164,3 +164,62 @@ lemma coeff_of (x y : X) [Decidable (x = y)] : coeff x (of y) = if x = y then 1 
   aesop
 
 end FreeAddCommGroup
+
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.toFinsupp :=
+  FreeAddCommGroup.toFinsupp
+@[deprecated (since := "2026-11-11")] alias Finsupp.toFreeAbelianGroup :=
+  Finsupp.toFreeAddCommGroup
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.toFinsupp_of :=
+  FreeAddCommGroup.toFinsupp_of
+@[deprecated (since := "2026-11-11")] alias Finsupp.toFreeAbelianGroup_single :=
+  Finsupp.toFreeAddCommGroup_single
+@[deprecated (since := "2026-11-11")] alias Finsupp.toFreeAbelianGroup_comp_singleAddHom :=
+  Finsupp.toFreeAddCommGroup_comp_singleAddHom
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :=
+  FreeAddCommGroup.toFinsupp_comp_toFreeAddCommGroup
+@[deprecated (since := "2026-11-11")] alias Finsupp.toFreeAbelianGroup_comp_toFinsupp :=
+  Finsupp.toFreeAddCommGroup_comp_toFinsupp
+@[deprecated (since := "2026-11-11")] alias Finsupp.toFreeAbelianGroup_toFinsupp :=
+  Finsupp.toFreeAddCommGroup_toFinsupp
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.toFinsupp_toFreeAbelianGroup :=
+  FreeAddCommGroup.toFinsupp_toFreeAddCommGroup
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.equivFinsupp :=
+  FreeAddCommGroup.equivFinsupp
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.equivFinsupp_apply :=
+  FreeAddCommGroup.equivFinsupp_apply
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.equivFinsupp_symm_apply :=
+  FreeAddCommGroup.equivFinsupp_symm_apply
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.coeff :=
+  FreeAddCommGroup.coeff
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.support :=
+  FreeAddCommGroup.support
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.mem_support_iff :=
+  FreeAddCommGroup.mem_support_iff
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.notMem_support_iff :=
+  FreeAddCommGroup.notMem_support_iff
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.support_zero :=
+  FreeAddCommGroup.support_zero
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.support_of :=
+  FreeAddCommGroup.support_of
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.support_neg :=
+  FreeAddCommGroup.support_neg
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.support_zsmul :=
+  FreeAddCommGroup.support_zsmul
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.support_nsmul :=
+  FreeAddCommGroup.support_nsmul
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.support_add :=
+  FreeAddCommGroup.support_add
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.support_eq_empty :=
+  FreeAddCommGroup.support_eq_empty
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.nonempty_support_iff :=
+  FreeAddCommGroup.nonempty_support_iff
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.card_support_eq_zero :=
+  FreeAddCommGroup.card_support_eq_zero
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.eq_sum_support_coeff_smul_of :=
+  FreeAddCommGroup.eq_sum_support_coeff_smul_of
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.coeff_of_self :=
+  FreeAddCommGroup.coeff_of_self
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.coeff_of_of_ne :=
+  FreeAddCommGroup.coeff_of_of_ne
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.coeff_of :=
+  FreeAddCommGroup.coeff_of

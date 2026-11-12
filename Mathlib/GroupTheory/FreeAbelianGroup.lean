@@ -523,7 +523,7 @@ end FreeCommGroup
 
 section deprecated
 
-namespace FreeAddCommGroup
+namespace FreeAbelianGroup
 
 /-!
 This section defines a ring structure on `FreeAddCommGroup α` when `α` is a monoid. It is deprecated
@@ -543,26 +543,30 @@ variable [Mul α]
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance mul : Mul (FreeAddCommGroup α) :=
-  ⟨fun x ↦ lift fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x⟩
+  ⟨fun x ↦ FreeAddCommGroup.lift fun x₂ ↦ FreeAddCommGroup.lift
+    (fun x₁ ↦ FreeAddCommGroup.of (x₁ * x₂)) x⟩
 
 variable {α}
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem mul_def (x y : FreeAddCommGroup α) :
-    x * y = lift (fun x₂ ↦ lift (fun x₁ ↦ of (x₁ * x₂)) x) y :=
+    x * y = FreeAddCommGroup.lift (fun x₂ ↦ FreeAddCommGroup.lift
+      (fun x₁ ↦ FreeAddCommGroup.of (x₁ * x₂)) x) y :=
   rfl
 
 @[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
-theorem of_mul_of (x y : α) : of x * of y = of (x * y) := by
-  rw [mul_def, lift_apply_of, lift_apply_of]
+theorem of_mul_of (x y : α) :
+    FreeAddCommGroup.of x * FreeAddCommGroup.of y = FreeAddCommGroup.of (x * y) := by
+  rw [mul_def, FreeAddCommGroup.lift_apply_of, FreeAddCommGroup.lift_apply_of]
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
-theorem of_mul (x y : α) : of (x * y) = of x * of y :=
+theorem of_mul (x y : α) :
+    FreeAddCommGroup.of (x * y) = FreeAddCommGroup.of x * FreeAddCommGroup.of y :=
   Eq.symm <| of_mul_of x y
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance distrib : Distrib (FreeAddCommGroup α) where
-  left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
+  left_distrib := fun _ _ _ ↦ (FreeAddCommGroup.lift _).map_add _ _
   right_distrib x y z := by simp [mul_def, ← Pi.add_def]
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
@@ -579,14 +583,14 @@ variable [One α]
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance one : One (FreeAddCommGroup α) :=
-  ⟨of 1⟩
+  ⟨FreeAddCommGroup.of 1⟩
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
-theorem one_def : (1 : FreeAddCommGroup α) = of 1 :=
+theorem one_def : (1 : FreeAddCommGroup α) = FreeAddCommGroup.of 1 :=
   rfl
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
-theorem of_one : (of 1 : FreeAddCommGroup α) = 1 :=
+theorem of_one : (FreeAddCommGroup.of 1 : FreeAddCommGroup α) = 1 :=
   rfl
 
 end One
@@ -619,17 +623,17 @@ variable {R : Type*} [Monoid α] [Ring R]
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance ring : Ring (FreeAddCommGroup α) where
   mul_one x := by
-    rw [mul_def, one_def, lift_apply_of]
+    rw [mul_def, one_def, FreeAddCommGroup.lift_apply_of]
     induction x using FreeAddCommGroup.induction_on with
     | zero => rfl
-    | of L => rw [lift_apply_of, mul_one]
+    | of L => rw [FreeAddCommGroup.lift_apply_of, mul_one]
     | neg L ih => rw [map_neg, ih]
     | add x1 x2 ih1 ih2 => rw [map_add, ih1, ih2]
   one_mul x := by
-    simp_rw [mul_def, one_def, lift_apply_of]
+    simp_rw [mul_def, one_def, FreeAddCommGroup.lift_apply_of]
     induction x using FreeAddCommGroup.induction_on with
     | zero => rfl
-    | of L => rw [lift_apply_of, one_mul]
+    | of L => rw [FreeAddCommGroup.lift_apply_of, one_mul]
     | neg L ih => rw [map_neg, ih]
     | add x1 x2 ih1 ih2 => rw [map_add, ih1, ih2]
 
@@ -638,20 +642,20 @@ variable {α}
 /-- `FreeAddCommGroup.of` is a `MonoidHom` when `α` is a `Monoid`. -/
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 def ofMulHom : α →* FreeAddCommGroup α where
-  toFun := of
+  toFun := FreeAddCommGroup.of
   map_one' := of_one _
   map_mul' := of_mul
 
 @[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
-theorem ofMulHom_coe : (ofMulHom : α → FreeAddCommGroup α) = of :=
+theorem ofMulHom_coe : (ofMulHom : α → FreeAddCommGroup α) = FreeAddCommGroup.of :=
   rfl
 
 /-- If `f` preserves multiplication, then so does `lift f`. -/
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 def liftMonoid : (α →* R) ≃ (FreeAddCommGroup α →+* R) where
-  toFun f := { lift f with
-    toFun := lift f
-    map_one' := (lift_apply_of f _).trans f.map_one
+  toFun f := { FreeAddCommGroup.lift f with
+    toFun := FreeAddCommGroup.lift f
+    map_one' := (FreeAddCommGroup.lift_apply_of f _).trans f.map_one
     map_mul' x y := by
       induction y using FreeAddCommGroup.induction_on with
       | zero => simp only [mul_zero, map_zero]
@@ -659,7 +663,7 @@ def liftMonoid : (α →* R) ≃ (FreeAddCommGroup α →+* R) where
         induction x using FreeAddCommGroup.induction_on with
         | zero => simp only [zero_mul, map_zero]
         | of L1 =>
-          simp_rw [of_mul_of, lift_apply_of]
+          simp_rw [of_mul_of, FreeAddCommGroup.lift_apply_of]
           exact f.map_mul _ _
         | neg L1 ih =>
           simp_rw [neg_mul, map_neg, neg_mul]
@@ -670,14 +674,14 @@ def liftMonoid : (α →* R) ≃ (FreeAddCommGroup α →+* R) where
   invFun F := MonoidHom.comp (↑F) ofMulHom
   left_inv f := MonoidHom.ext <| by
     simp only [RingHom.toMonoidHom_mk, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
-      ofMulHom_coe, Function.comp_apply, lift_apply_of, forall_const]
+      ofMulHom_coe, Function.comp_apply, FreeAddCommGroup.lift_apply_of, forall_const]
   right_inv F := RingHom.toAddMonoidHom_injective <| by
     simp only
-    rw [← lift.apply_symm_apply (↑F : FreeAddCommGroup α →+ R)]
+    rw [← FreeAddCommGroup.lift.apply_symm_apply (↑F : FreeAddCommGroup α →+ R)]
     rfl
 
 @[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
-theorem toAddMonoidHom_liftMonoid (f : α →* R) : ↑(liftMonoid f) = lift f :=
+theorem toAddMonoidHom_liftMonoid (f : α →* R) : ↑(liftMonoid f) = FreeAddCommGroup.lift f :=
   rfl
 
 set_option linter.deprecated.deprecatedTarget false in
@@ -685,12 +689,12 @@ set_option linter.deprecated.deprecatedTarget false in
 alias liftMonoid_coe_addMonoidHom := toAddMonoidHom_liftMonoid
 
 @[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
-theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = lift f :=
+theorem liftMonoid_coe (f : α →* R) : ⇑(liftMonoid f) = FreeAddCommGroup.lift f :=
   rfl
 
 @[simp, deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29")]
 theorem liftMonoid_symm_coe (f : FreeAddCommGroup α →+* R) :
-    ⇑(liftMonoid.symm f) = lift.symm f :=
+    ⇑(liftMonoid.symm f) = FreeAddCommGroup.lift.symm f :=
   rfl
 
 end Monoid
@@ -707,7 +711,7 @@ local instance [CommMonoid α] : CommRing (FreeAddCommGroup α) where
       | zero => exact (zero_mul _).symm
       | of t =>
         dsimp only [(· * ·), Mul.mul]
-        iterate 4 rw [lift_apply_of]
+        iterate 4 rw [FreeAddCommGroup.lift_apply_of]
         congr 1
         exact mul_comm _ _
       | neg t ih => rw [mul_neg, ih, neg_mul_eq_neg_mul]
@@ -715,7 +719,7 @@ local instance [CommMonoid α] : CommRing (FreeAddCommGroup α) where
     | neg s ih => rw [neg_mul, ih, neg_mul_eq_mul_neg]
     | add x1 x2 ih1 ih2 => rw [add_mul, mul_add, ih1, ih2]
 
-end FreeAddCommGroup
+end FreeAbelianGroup
 
 @[deprecated (since := "2026-11-11")] alias FreeAbelianGroup :=
   FreeAddCommGroup
@@ -745,6 +749,14 @@ FreeAddCommGroup.lift
   FreeAbelianGroup.lift_add := FreeAddCommGroup.lift_add
 @[deprecated (since := "2026-11-11")] alias
   FreeAbelianGroup.liftAddEquiv := FreeAddCommGroup.liftAddEquiv
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.liftAddEquiv_apply_apply :=
+  FreeAddCommGroup.liftAddEquiv_apply_apply
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.liftAddEquiv_symm_apply :=
+  FreeAddCommGroup.liftAddEquiv_symm_apply
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.liftAddGroupHom_apply :=
+  FreeAddCommGroup.liftAddMonoidHom_apply
+@[deprecated (since := "2026-11-11")] alias FreeAbelianGroup.lift_ext_iff :=
+  FreeAddCommGroup.lift_ext_iff
 @[deprecated (since := "2026-11-11")] alias
   FreeAbelianGroup.liftAddGroupHom := FreeAddCommGroup.liftAddMonoidHom
 @[deprecated (since := "2026-11-11")] alias
