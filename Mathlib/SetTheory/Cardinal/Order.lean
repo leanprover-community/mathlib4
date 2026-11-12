@@ -402,18 +402,21 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) := by
 
 /-! ### Limit cardinals -/
 
-theorem ne_zero_of_isSuccLimit {c} (h : IsSuccLimit c) : c ≠ 0 :=
-  h.ne_bot
+@[deprecated IsSuccLimit.ne_zero +typeChanged (since := "2026-11-12")]
+theorem ne_zero_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : c ≠ 0 :=
+  h.ne_zero
 
-theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
-  isSuccPrelimit_bot
+@[deprecated isSuccPrelimit_zero +typeChanged (since := "2026-11-12")]
+protected theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
+  isSuccPrelimit_zero
 
+@[deprecated isSuccLimit_iff_ne_zero_and_isSuccPrelimit +typeChanged (since := "2026-11-12")]
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
-  isSuccLimit_iff_of_orderBot
+  isSuccLimit_iff_ne_zero_and_isSuccPrelimit
 
-@[simp]
+@[deprecated not_isSuccLimit_zero +typeChanged (since := "2026-11-12")]
 protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
-  not_isSuccLimit_bot
+  not_isSuccLimit_zero
 
 /-- A cardinal is a strong pre-limit if it's closed under powersets.
 
@@ -435,7 +438,7 @@ protected theorem IsStrongPrelimit.isSuccPrelimit {c} (hc : IsStrongPrelimit c) 
   isSuccPrelimit_of_succ_lt fun x hx ↦ (succ_le_of_lt <| cantor x).trans_lt (hc hx)
 
 protected theorem IsStrongLimit.isSuccLimit {c} (hc : IsStrongLimit c) : IsSuccLimit c := by
-  rw [Cardinal.isSuccLimit_iff]
+  rw [isSuccLimit_iff_ne_zero_and_isSuccPrelimit]
   exact ⟨hc.ne_zero, hc.isStrongPrelimit.isSuccPrelimit⟩
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=

@@ -168,21 +168,30 @@ theorem IsSuccPrelimit.noMaxOrder_Iio (h : IsSuccPrelimit a) : NoMaxOrder (Set.I
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
   isMin_bot.isSuccPrelimit
 
+@[simp]
+theorem isSuccPrelimit_zero [Zero α] [IsBotZeroClass α] : IsSuccPrelimit (0 : α) :=
+  let := IsBotZeroClass.toOrderBot α
+  isMin_bot.isSuccPrelimit
+
 @[to_dual (attr := simp)]
 theorem not_isSuccLimit_bot [OrderBot α] : ¬ IsSuccLimit (⊥ : α) :=
   isMin_bot.not_isSuccLimit
+
+@[simp]
+theorem not_isSuccLimit_zero [Zero α] [IsBotZeroClass α] : ¬ IsSuccLimit (0 : α) :=
+  isBot_zero.isMin.not_isSuccLimit
 
 @[to_dual]
 theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
   not_isMin_iff_bot_lt.1 h.not_isMin
 
-@[to_dual]
-theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ :=
-  h.bot_lt.ne'
-
 theorem IsSuccLimit.pos [Zero α] [IsBotZeroClass α] (h : IsSuccLimit a) : 0 < a :=
   let := IsBotZeroClass.toOrderBot α
   h.bot_lt
+
+@[to_dual]
+theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ :=
+  h.bot_lt.ne'
 
 theorem IsSuccLimit.ne_zero [Zero α] [IsBotZeroClass α] (h : IsSuccLimit a) : a ≠ 0 :=
   h.pos.ne'
@@ -339,8 +348,17 @@ section PartialOrder
 variable [PartialOrder α]
 
 @[to_dual]
-theorem isSuccLimit_iff_of_orderBot [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
+theorem isSuccLimit_iff_ne_bot_and_isSuccPrelimit [OrderBot α] :
+    IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
   rw [isSuccLimit_iff, isMin_iff_eq_bot]
+
+theorem isSuccLimit_iff_ne_zero_and_isSuccPrelimit [Zero α] [IsBotZeroClass α] :
+    IsSuccLimit a ↔ a ≠ 0 ∧ IsSuccPrelimit a :=
+  let := IsBotZeroClass.toOrderBot
+  isSuccLimit_iff_ne_bot_and_isSuccPrelimit
+
+@[deprecated (since := "2026-11-12")]
+alias isSuccLimit_iff_of_orderBot := isSuccLimit_iff_ne_bot_and_isSuccPrelimit
 
 variable [SuccOrder α]
 
@@ -443,8 +461,13 @@ theorem not_isSuccLimit_of_isSuccArchimedean : ¬ IsSuccLimit a :=
 theorem not_isSuccPrelimit_of_isSuccArchimedean [NoMinOrder α] : ¬ IsSuccPrelimit a := by simp
 
 @[to_dual]
-theorem isSuccPrelimit_iff_of_orderBot [OrderBot α] {a : α} : IsSuccPrelimit a ↔ a = ⊥ := by
+theorem isSuccPrelimit_iff_eq_bot [OrderBot α] {a : α} : IsSuccPrelimit a ↔ a = ⊥ := by
   rw [isSuccPrelimit_iff_isMin, isMin_iff_eq_bot]
+
+@[deprecated (since := "2026-11-12")]
+alias isSuccPrelimit_iff_of_orderBot := isSuccPrelimit_iff_eq_bot
+@[deprecated (since := "2026-11-12")]
+alias isPredPrelimit_iff_of_orderTop := isPredPrelimit_iff_eq_top
 
 @[to_dual]
 theorem _root_.WithTop.isSuccPrelimit_iff_of_isSuccArchimedean {α} [Preorder α] [SuccOrder α]

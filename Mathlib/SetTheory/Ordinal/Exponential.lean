@@ -173,7 +173,7 @@ theorem isSuccLimit_opow_left {a b : Ordinal} (l : IsSuccLimit a) (hb : b ≠ 0)
   · exact absurd e hb
   · rw [succ_eq_add_one, opow_add_one]
     exact isSuccLimit_mul_right (opow_pos _ l.bot_lt) l
-  · exact isSuccLimit_opow (one_lt_of_isSuccLimit l) l'
+  · exact isSuccLimit_opow l.one_lt l'
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
   rcases (one_le_iff_pos.2 h₁).eq_or_lt' with h₁ | h₁

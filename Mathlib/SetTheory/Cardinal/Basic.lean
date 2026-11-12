@@ -366,7 +366,7 @@ theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
     apply natCast_lt_aleph0
 
 theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ := by
-  rw [Cardinal.isSuccLimit_iff]
+  rw [isSuccLimit_iff_ne_zero_and_isSuccPrelimit]
   exact ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
 lemma not_isSuccLimit_natCast : (n : ℕ) → ¬ IsSuccLimit (n : Cardinal.{u})

@@ -195,6 +195,10 @@ theorem IsSuccLimit.natCast_lt [AddMonoidWithOne α] [SuccAddOrder α] [IsBotZer
     (hx : IsSuccLimit x) : ∀ n : ℕ, n < x := by
   simpa using hx.add_natCast_lt hx.pos
 
+theorem IsSuccLimit.one_lt [AddMonoidWithOne α] [SuccAddOrder α] [IsBotZeroClass α]
+    (hx : IsSuccLimit x) : 1 < x := by
+  simpa using hx.natCast_lt 1
+
 theorem not_isSuccLimit_natCast [AddMonoidWithOne α] [SuccAddOrder α] [IsBotZeroClass α] (n : ℕ) :
     ¬ IsSuccLimit (n : α) :=
   fun h ↦ (h.natCast_lt n).false

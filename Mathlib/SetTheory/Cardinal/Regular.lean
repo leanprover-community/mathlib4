@@ -258,7 +258,7 @@ theorem not_isRegular_aleph_add_one (o : Ordinal) : ¬ IsSingular (ℵ_ (o + 1))
   simp [← succ_aleph]
 
 theorem IsSingular.isSuccLimit (hc : IsSingular c) : IsSuccLimit c := by
-  rw [Cardinal.isSuccLimit_iff, isSuccPrelimit_iff_succ_ne]
+  rw [isSuccLimit_iff_ne_zero_and_isSuccPrelimit, isSuccPrelimit_iff_succ_ne]
   refine ⟨hc.pos.ne', ?_⟩
   rintro c rfl
   exact not_isSingular_succ c hc

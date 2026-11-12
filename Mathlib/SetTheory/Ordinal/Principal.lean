@@ -168,7 +168,7 @@ theorem isPrincipal_add_of_le_one (ho : o ≤ 1) : IsPrincipal (· + ·) o := by
 
 theorem isSuccLimit_of_isPrincipal_add (ho₁ : 1 < o) (ho : IsPrincipal (· + ·) o) :
     IsSuccLimit o := by
-  rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
+  rw [isSuccLimit_iff_ne_zero_and_isSuccPrelimit, isSuccPrelimit_iff_succ_lt]
   exact ⟨ho₁.ne_bot, fun _ ha ↦ ho ha ho₁⟩
 
 theorem isPrincipal_add_iff_add_left_eq_self : IsPrincipal (· + ·) o ↔ ∀ a < o, a + o = o := by
