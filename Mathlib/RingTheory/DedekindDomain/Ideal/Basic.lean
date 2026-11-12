@@ -123,7 +123,7 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
   wlog hM : I.IsMaximal generalizing I
   · rcases I.exists_le_maximal hI1 with ⟨M, hmax, hIM⟩
     have hMbot : M ≠ ⊥ := (M.bot_lt_of_maximal hNF).ne'
-    refine mt (le_trans <| inv_anti_mono ?_ ?_ ?_) (this hMbot hmax.ne_top hmax) <;>
+    refine mt (le_trans <| inv_anti_mono ?_ ?_) (this hMbot hmax.ne_top hmax) <;>
       simpa only [coeIdeal_ne_zero, coeIdeal_le_coeIdeal]
   have hI0 : ⊥ < I := I.bot_lt_of_maximal hNF
   obtain ⟨⟨a, haI⟩, ha0⟩ := Submodule.nonzero_mem_of_bot_lt hI0
@@ -158,8 +158,8 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥) (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) :
-    I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
+private theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥)
+    (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show a contradiction with `exists_notMem_one_of_ne_bot`:
   -- `J⁻¹ = (I * I⁻¹)⁻¹` cannot have an element `x ∉ 1`, so it must equal `1`.
   obtain ⟨J, hJ⟩ : ∃ J : Ideal A, (J : FractionalIdeal A⁰ K) = I * (I : FractionalIdeal A⁰ K)⁻¹ :=
