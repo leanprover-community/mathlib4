@@ -19,7 +19,6 @@ We introduce the category of ringed spaces, as an alias for `SheafedSpace CommRi
 
 The facts collected in this file are typically stated for locally ringed spaces, but never actually
 make use of the locality of stalks. See for instance <https://stacks.math.columbia.edu/tag/01HZ>.
-
 -/
 
 @[expose] public section

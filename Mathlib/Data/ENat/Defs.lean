@@ -15,7 +15,7 @@ import Mathlib.Tactic.Basify.Attr
 @[expose] public section
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-def ENat : Type := WithTop ℕ deriving Top, Inhabited
+def ENat : Type := WithTop ℕ deriving Top, Inhabited, Repr
 
 @[inherit_doc] notation "ℕ∞" => ENat
 

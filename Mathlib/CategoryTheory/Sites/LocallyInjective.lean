@@ -20,7 +20,6 @@ if `x` and `y` are two elements of some `F₁.obj U` such
 the images of `x` and `y` in `F₂.obj U` coincide, then
 the equality `x = y` must hold locally, i.e. after restriction
 by the maps of a covering sieve.
-
 -/
 
 @[expose] public section

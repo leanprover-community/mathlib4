@@ -33,7 +33,6 @@ over a base `X`. Here `Q = ⊤`.
 
 - Most results are developed only in the case where `Q = ⊤` and `W = ⊤`, but the definition
   is setup in the general case to allow for a later generalization if needed.
-
 -/
 
 set_option backward.defeqAttrib.useBackward true

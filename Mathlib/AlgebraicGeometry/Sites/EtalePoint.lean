@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 In this file, we show that a morphism `Spec (.of Ω) ⟶ S` where `Ω` is
 a separably closed field defines a point on the small étale site of `S`.
 We show that these points form a conservative family.
-
 -/
 
 @[expose] public section

@@ -30,7 +30,6 @@ generalized to fully semi-bilinear forms.
 ## Tags
 
 Sesquilinear form, Sesquilinear map, matrix, basis
-
 -/
 
 @[expose] public section

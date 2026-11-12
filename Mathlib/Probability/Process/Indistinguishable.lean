@@ -23,7 +23,6 @@ In this file we introduce a predicate `Indistinguishable P X Y`, denoted `X ≡�
 that `∀ᵐ ω ∂P, ∀ t, X t ω = Y t ω`. The symbol `≡` can be typed with `\==`.
 
 The recommended spelling for `Indistinguishable` in names is `indist`.
-
 -/
 
 public section

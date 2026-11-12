@@ -46,7 +46,6 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of a fun
 
 * https://stacks.math.columbia.edu/tag/02XV
 * https://ncatlab.org/nlab/show/Grothendieck+construction
-
 -/
 
 @[expose] public section

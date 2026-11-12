@@ -13,7 +13,6 @@ public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
 This file proves the result `TopCat.effectiveEpi_iff_isQuotientMap`:
 The effective epimorphisms in `TopCat` are precisely the quotient maps.
-
 -/
 
 @[expose] public section

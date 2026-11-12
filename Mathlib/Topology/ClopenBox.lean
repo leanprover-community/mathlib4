@@ -29,7 +29,6 @@ Cartesian products of compact spaces (this is relevant to the theory of light pr
 
 - [buzyakovaClopenBox]: *On clopen sets in Cartesian products*, 2001.
 - [engelking1989]: *General Topology*, 1989.
-
 -/
 
 public section

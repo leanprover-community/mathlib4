@@ -20,7 +20,6 @@ realization of `Δ[n]` and `stdSimplex ℝ (Fin (n + 1))`;
 * `SSet.stdSimplex.toTopObjIsoI : |Δ[1]| ≅ TopCat.I`;
 * `SSet.stdSimplex.toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`:
 the morphism corresponding to `toTopObjIsoI.hom` by adjunction.
-
 -/
 
 @[expose] public section

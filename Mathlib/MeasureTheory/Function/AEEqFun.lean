@@ -66,7 +66,6 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 ## Tags
 
 function space, almost everywhere equal, `L⁰`, ae_eq_fun
-
 -/
 
 @[expose] public section

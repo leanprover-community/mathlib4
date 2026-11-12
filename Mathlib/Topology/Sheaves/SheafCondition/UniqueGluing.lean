@@ -31,7 +31,6 @@ in terms of pairwise intersections. Our approach is as follows: First, we show t
 for `Type`-valued presheaves. Then we use that composing a presheaf with a limit-preserving and
 isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
 `Mathlib/Topology/Sheaves/Forget.lean`.
-
 -/
 
 @[expose] public section

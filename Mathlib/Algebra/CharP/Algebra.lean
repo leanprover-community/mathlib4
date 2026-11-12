@@ -26,7 +26,6 @@ and the fraction field `FractionRing R`.
 Instances constructed from this result:
 - Any `FreeAlgebra R X` has the same characteristic as `R`.
 - The `FractionRing R` of an integral domain `R` has the same characteristic as `R`.
-
 -/
 
 public section

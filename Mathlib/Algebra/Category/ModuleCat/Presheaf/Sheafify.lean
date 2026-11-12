@@ -20,7 +20,6 @@ sheaf of modules over `R`: this is `PresheafOfModules.sheafify α φ`.
 In many applications, the morphism `α` shall be the identity, but this more
 general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
-
 -/
 
 @[expose] public section

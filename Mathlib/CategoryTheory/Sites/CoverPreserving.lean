@@ -33,7 +33,6 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.3.
 * https://stacks.math.columbia.edu/tag/00WU
-
 -/
 
 public section

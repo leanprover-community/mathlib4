@@ -25,7 +25,6 @@ We promote `eval₂` to an algebra hom in `aeval`.
 
 - `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `mapAlgHom φ` applies `φ` on the
   coefficients of a polynomial in `S[X]`.
-
 -/
 
 @[expose] public section

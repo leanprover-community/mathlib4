@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # The full subcategory of injective objects
-
 -/
 
 public section

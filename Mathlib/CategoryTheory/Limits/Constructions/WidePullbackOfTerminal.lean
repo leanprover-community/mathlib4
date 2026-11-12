@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 In this file, we show that the wide pullback of a family of arrows `objs j ⟶ B`
 exists when `B` is terminal and the product of the objects `objs j` exists.
-
 -/
 
 @[expose] public section

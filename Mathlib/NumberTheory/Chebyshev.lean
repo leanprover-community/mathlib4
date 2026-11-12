@@ -54,7 +54,6 @@ functions.
 ## References
 
 Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kontorovich et al, https://github.com/alexKontorovich/PrimeNumberTheoremAnd.
-
 -/
 
 @[expose] public section

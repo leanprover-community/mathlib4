@@ -22,7 +22,6 @@ When these coproducts are finite, we say that the sheaf is of finite presentatio
 ## References
 
 * https://stacks.math.columbia.edu/tag/01BD
-
 -/
 
 @[expose] public section

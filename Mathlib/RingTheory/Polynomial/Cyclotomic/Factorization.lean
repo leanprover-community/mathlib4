@@ -22,7 +22,6 @@ field of characteristic `p`, where `p` and `n` are coprime.
 * `Polynomial.natDegree_of_dvd_cyclotomic_of_irreducible` : Let `K` be a finite field of cardinality
   `p ^ f` and let `P` be an irreducible factor of the `n`-th cyclotomic polynomial over `K`, where
   `p` and `n` are coprime. Then the degree of `P` is the multiplicative order of `p ^ f` modulo `n`.
-
 -/
 
 public section

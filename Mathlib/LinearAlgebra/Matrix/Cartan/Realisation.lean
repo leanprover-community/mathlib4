@@ -33,7 +33,6 @@ to formalise item 2.
  * `Matrix.IsFiniteCartan.toRealisation`: a realisation associated to an invertible Cartan matrix.
  * `Matrix.IsFiniteCartan.toRootPairing`: a reduced, irreducible, crystallographic root system
    associated to a Cartan matrix, with coefficients in any field of characteristic zero.
-
 -/
 
 public noncomputable section

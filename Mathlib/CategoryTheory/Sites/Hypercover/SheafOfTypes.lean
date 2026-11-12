@@ -23,7 +23,6 @@ In this file we provide some API for working with `1`-hypercovers for sheaves of
 - `CategoryTheory.PreOneHypercover.IsStronglySheafFor.isLimitMultifork`: If `E`
   satisfies the strong sheaf condition for `F`, then the multiequalizer diagram
   for `E` is limiting.
-
 -/
 
 universe w
