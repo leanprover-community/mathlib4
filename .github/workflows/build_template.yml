@@ -1374,87 +1374,36 @@ jobs:
         with:
           ref: ${{ steps.pin.outputs.sha }}
 
-      # 1. Each literal `$CI_SCRIPTS_DIR/<path>` or `${CI_SCRIPTS_DIR}/<path>` in a workflow names a
-      #    file in the mathlib-ci scripts directory. The check does not see paths that a workflow
-      #    builds at run time.
-      # 2. No workflow checks out mathlib-ci with `actions/checkout`; workflows use the local
-      #    get-mathlib-ci action, which holds the pin.
       - name: Check mathlib-ci usage in workflows
         if: ${{ !cancelled() && steps.get_mathlib_ci.outcome == 'success' }}
         env:
           PIN: ${{ steps.pin.outputs.sha }}
           CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
-        shell: python
         run: |
-          import os
-          import re
-          import sys
-          from pathlib import Path
+          level=warning; [ "$STRICT" = true ] && level=error
+          findings=0
+          report() { echo "::$level file=$1,line=$2::$3"; findings=$((findings + 1)); }
 
-          level = "error" if os.environ["STRICT"] == "true" else "warning"
-          pin = os.environ["PIN"]
-          scripts_dir = Path(os.environ["CI_SCRIPTS_DIR"]).resolve()
-          findings = 0
+          # 1. Each literal `$CI_SCRIPTS_DIR/<path>` or `${CI_SCRIPTS_DIR}/<path>` with no `#` before it
+          #    on its line names a file at the pinned commit. The check does not see paths that a
+          #    workflow builds at run time.
+          while IFS=: read -r file line text; do
+            while read -r path; do
+              [[ "/$path/" != */../* && -e "$CI_SCRIPTS_DIR/$path" ]] ||
+                report "$file" "$line" "The mathlib-ci scripts at $PIN have no file \`$path\`."
+            done < <(grep -oE '\$\{?CI_SCRIPTS_DIR\}?/[A-Za-z0-9._/-]+' <<< "$text" | cut -d/ -f2-)
+          done < <(grep -rnE --include='*.yml' --include='*.yaml' '^[^#]*\$\{?CI_SCRIPTS_DIR\}?/' .github/workflows)
 
-          def report(path, line, message):
-            global findings
-            findings += 1
-            print(f"::{level} file={path},line={line}::{message}")
+          # 2. No step checks out mathlib-ci with actions/checkout. Workflows use the local
+          #    get-mathlib-ci action, which holds the pin.
+          while IFS=: read -r file line; do
+            report "$file" "$line" "The step checks out mathlib-ci with actions/checkout.%0AHint: Use \`./workflow-actions/.github/actions/get-mathlib-ci\` instead."
+          done < <(yq ea '.jobs[].steps[]?
+                          | select((.uses // "") | test("^actions/checkout@"))
+                          | select((.with.repository // "") | test("/mathlib-ci$"))
+                          | filename + ":" + (.with.repository | line | to_string)' .github/workflows/*.y*ml)
 
-          def strip_yaml_comment(line: str) -> str:
-            """Strip YAML comments, preserving # characters inside quotes."""
-            in_single = False
-            in_double = False
-            escaped = False
-            for i, ch in enumerate(line):
-              if in_double:
-                if escaped:
-                  escaped = False
-                elif ch == "\\":
-                  escaped = True
-                elif ch == '"':
-                  in_double = False
-              elif in_single:
-                if ch == "'":
-                  in_single = False
-              else:
-                if ch == '"':
-                  in_double = True
-                elif ch == "'":
-                  in_single = True
-                elif ch == "#":
-                  return line[:i]
-            return line.rstrip()
-
-          def indent(line: str) -> int:
-            return len(line) - len(line.lstrip(" "))
-
-          script_path = re.compile(r"(?:\$\{CI_SCRIPTS_DIR\}|\$CI_SCRIPTS_DIR)/([A-Za-z0-9._/-]+)")
-          workflows_dir = Path(".github/workflows")
-          for workflow in sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml")):
-            lines = [strip_yaml_comment(line) for line in workflow.read_text().splitlines()]
-            for i, content in enumerate(lines):
-              for match in script_path.finditer(content):
-                rel_path = match.group(1)
-                if rel_path == "...":
-                  continue
-                full_path = (scripts_dir / rel_path).resolve()
-                if not full_path.is_relative_to(scripts_dir) or not full_path.exists():
-                  report(workflow, i + 1, f"The mathlib-ci scripts at {pin} have no file `{rel_path}`.")
-
-              repository = re.match(r"^\s*repository:\s*(['\"]?)(.*?)\1\s*$", content)
-              if not repository or not repository.group(2).endswith("/mathlib-ci"):
-                continue
-              # Walk up to the `-` line that starts the step, then look for `uses: actions/checkout@`
-              # between that line and `repository:`.
-              j = i
-              while j >= 0 and not (re.match(r"^\s*-\s+", lines[j]) and indent(lines[j]) < indent(content)):
-                j -= 1
-              if j >= 0 and any(re.match(r"^\s*(-\s+)?uses:\s*actions/checkout@", lines[k]) for k in range(j, i)):
-                report(workflow, i + 1, "The step checks out mathlib-ci with actions/checkout.%0A"
-                       "Hint: Use `./workflow-actions/.github/actions/get-mathlib-ci` instead.")
-
-          sys.exit(1 if findings and level == "error" else 0)
+          [ "$level" = warning ] || [ "$findings" = 0 ]
 
   final:
     name: Post-CI job
