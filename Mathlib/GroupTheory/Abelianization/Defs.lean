@@ -150,6 +150,17 @@ lemma map_ker_le_ker_map (f : G →* H) : f.ker.map of ≤ (Abelianization.map f
   rintro _ ⟨x, hx, rfl⟩
   simp_all [MonoidHom.mem_ker]
 
+@[to_additive]
+lemma map_ker_eq_ker_map (f : G →* H) (hf : Function.Surjective f) :
+    f.ker.map of = (Abelianization.map f).ker :=
+  le_antisymm (map_ker_le_ker_map f) fun y h ↦ by
+    obtain ⟨x, rfl⟩ : ∃ x, of x = y := QuotientGroup.mk_surjective y
+    rw [MonoidHom.mem_ker, map_of, ← MonoidHom.mem_ker, ker_of,
+      ← map_commutator_of_surjective hf] at h
+    obtain ⟨c, hc, hfc⟩ := h
+    have hc' : of c = 1 := by rwa [← MonoidHom.mem_ker, ker_of]
+    exact ⟨x * c⁻¹, by simp [hfc], by simp [hc']⟩
+
 @[to_additive (attr := simp)]
 theorem map_id : map (MonoidHom.id G) = MonoidHom.id (Abelianization G) :=
   hom_ext _ _ rfl
