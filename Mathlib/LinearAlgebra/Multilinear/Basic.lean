@@ -90,7 +90,7 @@ set_option genInjectivity false in
 over a ring homomorphism `σ : R →+* S`. -/
 structure MultilinearMap {R : Type uR} {S : Type uS} [Semiring R] [Semiring S]
     (σ : R →+* S) {ι : Type uι} (M : ι → Type u) (N : Type v)
-    [∀ i, AddCommMonoid (M i)] [AddCommMonoid N] [∀ i, Module R (M i)] [Module S N] where
+    [Π i, AddCommMonoid (M i)] [AddCommMonoid N] [Π i, Module R (M i)] [Module S N] where
   /-- The underlying multivariate function of a multilinear map. -/
   toFun : (Π i, M i) → N
   /-- A multilinear map is additive in every argument. -/
@@ -145,7 +145,7 @@ namespace MultilinearMap
 section Semiring
 
 variable {R S S' : Type*} [Semiring R] [Semiring S] {σ : R →+* S}
-  {ι : Type*} {M : ι → Type*} {N N' : Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+  {ι : Type*} {M : ι → Type*} {N N' : Type*} [Π i, AddCommMonoid (M i)] [Π i, Module R (M i)]
   [AddCommMonoid N] [AddCommMonoid N'] [Module S N] [Module S N'] (f : (Π i, M i) →ₘₛₗ[σ] N)
 
 @[macro_inline]
@@ -290,7 +290,7 @@ def prod (f : (Π i, M i) →ₘₛₗ[σ] N) (g : (Π i, M i) →ₘₛₗ[σ] 
 /-- Combine a family of multilinear maps with the same domain and codomains `M' i` into a
 multilinear map taking values in the space of functions `Π i, M' i`. -/
 @[simps]
-def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, Module S (M' i)]
+def pi {ι' : Type*} {M' : ι' → Type*} [Π i, AddCommMonoid (M' i)] [Π i, Module S (M' i)]
     (f : ∀ i, (Π i, M i) →ₘₛₗ[σ] M' i) : (Π i, M i) →ₘₛₗ[σ] Π i, M' i where
   toFun m i := f i m
   map_update_add' _ _ _ _ := funext fun j => (f j).map_update_add _ _ _ _
@@ -336,7 +336,7 @@ def restr [Module R N] {n k : ℕ} (f : (Fin n → N) →ₘₛₗ[σ] N') (s : 
 
 section
 
-variable {n : ℕ} {M' : Fin n.succ → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, Module R (M' i)]
+variable {n : ℕ} {M' : Fin n.succ → Type*} [Π i, AddCommMonoid (M' i)] [Π i, Module R (M' i)]
 
 /-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
 an element of `Π (i : Fin (n+1)), M i` using `cons`, one can express directly the additivity of a
@@ -385,8 +385,8 @@ variable {R₁ R₂ R₃ R₄ : Type*} [Semiring R₁] [Semiring R₂] [Semiring
   {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
   [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
   {ι : Type*} {M₁ M₂ M₃ : ι → Type*} {N₂ N₃ N₄ : Type*}
-  [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [∀ i, AddCommMonoid (M₃ i)]
-  [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)] [∀ i, Module R₃ (M₃ i)] [AddCommMonoid N₂]
+  [Π i, AddCommMonoid (M₁ i)] [Π i, AddCommMonoid (M₂ i)] [Π i, AddCommMonoid (M₃ i)]
+  [Π i, Module R₁ (M₁ i)] [Π i, Module R₂ (M₂ i)] [Π i, Module R₃ (M₃ i)] [AddCommMonoid N₂]
   [AddCommMonoid N₃] [AddCommMonoid N₄] [Module R₂ N₂] [Module R₃ N₃] [Module R₄ N₄]
 
 /-- If `g` is a multilinear map and `f` is a collection of linear maps,
@@ -449,7 +449,7 @@ theorem comp_linearEquiv_eq_zero_iff {σ₂₁ : R₂ →+* R₁} [RingHomInvPai
 section compMultilinear
 
 variable {β : ι → Type*} {M₁' : (i : ι) → (b : β i) → Type*}
-  [∀ i, ∀ b, AddCommMonoid (M₁' i b)] [∀ i, ∀ b, Module R₁ (M₁' i b)]
+  [Π i, Π b, AddCommMonoid (M₁' i b)] [Π i, Π b, Module R₁ (M₁' i b)]
 
 /-- Composition of multilinear maps. If `g` is multilinear, and if for every `i : ι`, we have a
 multilinear map `f i` with index type `β i`, then `m ↦ g (f₁ m_11 m_12 ...) (f₂ m_21 m_22 ...) ...`
@@ -664,7 +664,7 @@ theorem map_sum_finset [DecidableEq ι] [Fintype ι] :
 /-- If `f` is multilinear, then `f (Σ_{j₁} g₁ j₁, ..., Σ_{jₙ} gₙ jₙ)` is the sum of
 `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions `r`. This follows from
 multilinearity by expanding successively with respect to each coordinate. -/
-theorem map_sum [DecidableEq ι] [Fintype ι] [∀ i, Fintype (α i)] :
+theorem map_sum [DecidableEq ι] [Fintype ι] [Π i, Fintype (α i)] :
     (f fun i => ∑ j, g i j) = ∑ r : ∀ i, α i, f fun i => g i (r i) :=
   f.map_sum_finset g fun _ => Finset.univ
 
@@ -688,8 +688,8 @@ def codRestrict (p : Submodule S N) (h : ∀ v, f v ∈ p) : (Π i, M i) →ₘ�
 
 section RestrictScalar
 
-variable (R) {A : Type*} [Semiring A] [SMul R A] [∀ i : ι, Module A (M i)] [Module A N] [Module R N]
-  [∀ i, IsScalarTower R A (M i)] [IsScalarTower R A N]
+variable (R) {A : Type*} [Semiring A] [SMul R A] [Π i : ι, Module A (M i)] [Module A N] [Module R N]
+  [Π i, IsScalarTower R A (M i)] [IsScalarTower R A N]
 
 /-- Reinterpret an `A`-multilinear map as an `R`-multilinear map, if `A` is an algebra over `R`
 and their actions on all involved modules agree with the action of `R` on `A`. -/
@@ -825,9 +825,9 @@ variable {R₁ R₂ R₃ R₄ S : Type*} [Semiring R₁] [Semiring R₂] [Semiri
   {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄}
   {σ₁₄ : R₁ →+* R₄} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
   [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] {ι : Type*} {M₁ M₂ : ι → Type*}
-  {N₂ N₂' N₃ N₄ : Type*} [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂]
-  [AddCommMonoid N₂'] [AddCommMonoid N₃] [AddCommMonoid N₄] [∀ i, Module R₁ (M₁ i)]
-  [∀ i, Module R₂ (M₂ i)] [Module R₂ N₂] [Module R₂ N₂'] [Module R₃ N₃] [Module R₄ N₄]
+  {N₂ N₂' N₃ N₄ : Type*} [Π i, AddCommMonoid (M₁ i)] [Π i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂]
+  [AddCommMonoid N₂'] [AddCommMonoid N₃] [AddCommMonoid N₄] [Π i, Module R₁ (M₁ i)]
+  [Π i, Module R₂ (M₂ i)] [Module R₂ N₂] [Module R₂ N₂'] [Module R₃ N₃] [Module R₄ N₄]
 
 /-- Composing a multilinear map with a linear map gives again a multilinear map. -/
 def compMultilinearMap (g : N₂ →ₛₗ[σ₂₃] N₃) (f : (Π i, M₁ i) →ₘₛₗ[σ₁₂] N₂) :
@@ -926,8 +926,8 @@ section Semiring
 
 variable {R₁ R₂ R₃ R₄ S : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃] {σ₁₂ : R₁ →+* R₂}
   {ι : Type*} {M₁ : ι → Type*} {N₁ N₂ N₂' : Type*}
-  [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₂']
-  [∀ i, Module R₁ (M₁ i)] [Module R₁ N₁] [Module R₂ N₂] [Module R₂ N₂']
+  [Π i, AddCommMonoid (M₁ i)] [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₂']
+  [Π i, Module R₁ (M₁ i)] [Module R₁ N₁] [Module R₂ N₂] [Module R₂ N₂']
 
 instance [Monoid S] [DistribMulAction S N₂] [SMulCommClass R₂ S N₂] :
     DistribMulAction S ((Π i, M₁ i) →ₘₛₗ[σ₁₂] N₂) := fast_instance% FunLike.distribMulAction
@@ -1140,8 +1140,8 @@ section
 variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [CommSemiring R₂] [CommSemiring R₃]
   {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
   {ι : Type*} {M₁ M₂ : ι → Type*} {N₂ N₃ : Type*}
-  [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂] [AddCommMonoid N₃]
-  [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)] [Module R₂ N₂] [Module R₃ N₃]
+  [Π i, AddCommMonoid (M₁ i)] [Π i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂] [AddCommMonoid N₃]
+  [Π i, Module R₁ (M₁ i)] [Π i, Module R₂ (M₂ i)] [Module R₂ N₂] [Module R₃ N₃]
 
 /-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
@@ -1187,8 +1187,8 @@ end
 section
 
 variable {R S : Type*} [Semiring R] [CommSemiring S] {σ : R →+* S}
-  {ι : Type*} {M : ι → Type*} {N : Type*} [∀ i, AddCommMonoid (M i)] [AddCommMonoid N]
-  [∀ i, Module R (M i)] [Module S N] (f : (Π i, M i) →ₘₛₗ[σ] N)
+  {ι : Type*} {M : ι → Type*} {N : Type*} [Π i, AddCommMonoid (M i)] [AddCommMonoid N]
+  [Π i, Module R (M i)] [Module S N] (f : (Π i, M i) →ₘₛₗ[σ] N)
 
 /-- If one multiplies by `c i` the coordinates in a finset `s`, then the image under a multilinear
 map is multiplied by `∏ i ∈ s, σ (c i)`. This is mainly an auxiliary statement to prove the result
@@ -1287,7 +1287,7 @@ theorem mkPiAlgebraFin_apply_const (a : A) :
 end
 
 variable {R S : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {ι : Type*} {M : ι → Type*}
-  {N : Type*} [∀ i, AddCommMonoid (M i)] [AddCommMonoid N] [∀ i, Module R (M i)] [Module S N]
+  {N : Type*} [Π i, AddCommMonoid (M i)] [AddCommMonoid N] [Π i, Module R (M i)] [Module S N]
 
 /-- Given a `σ`-multilinear map `f` taking values in `S`, `f.smulRight z` is the map
 sending `m` to `f m • z`. -/
@@ -1300,7 +1300,7 @@ theorem smulRight_apply (f : (Π i, M i) →ₘₛₗ[σ] S) (z : N) (m : Π i, 
   rfl
 
 variable {R : Type*} [CommSemiring R] {ι : Type*} {M : ι → Type*} {N : Type*}
-  [∀ i, AddCommMonoid (M i)] [AddCommMonoid N] [∀ i, Module R (M i)] [Module R N]
+  [Π i, AddCommMonoid (M i)] [AddCommMonoid N] [Π i, Module R (M i)] [Module R N]
 
 variable (R ι) in
 /-- The canonical multilinear map on `R^ι` when `ι` is finite, associating to `m` the product of
@@ -1337,7 +1337,7 @@ end CommSemiring
 section RangeAddCommGroup
 
 variable {R S : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {ι : Type*} {M : ι → Type*}
-  {N : Type*} [∀ i, AddCommMonoid (M i)] [AddCommGroup N] [∀ i, Module R (M i)] [Module S N]
+  {N : Type*} [Π i, AddCommMonoid (M i)] [AddCommGroup N] [Π i, Module R (M i)] [Module S N]
 
 instance : Neg ((Π i, M i) →ₘₛₗ[σ] N) :=
   ⟨fun f => ⟨fun m => -f m, fun m i x y => by simp [add_comm], fun m i c x => by simp⟩⟩
@@ -1364,8 +1364,8 @@ end RangeAddCommGroup
 section AddCommGroup
 
 variable {R S : Type*} [Semiring R] [Semiring S] {σ : R →+* S}
-  {ι : Type*} {M : ι → Type*} {N : Type*} [∀ i, AddCommGroup (M i)] [AddCommGroup N]
-  [∀ i, Module R (M i)] [Module S N] (f : (Π i, M i) →ₘₛₗ[σ] N)
+  {ι : Type*} {M : ι → Type*} {N : Type*} [Π i, AddCommGroup (M i)] [AddCommGroup N]
+  [Π i, Module R (M i)] [Module S N] (f : (Π i, M i) →ₘₛₗ[σ] N)
 
 @[simp]
 theorem map_update_neg [DecidableEq ι] (m : Π i, M i) (i : ι) (x : M i) :
@@ -1446,7 +1446,7 @@ section CommSemiring
 
 variable {R : Type*} [CommSemiring R] {ι : Type*}
   {M : ι → Type*} {N : Type*}
-  [∀ i, AddCommMonoid (M i)] [AddCommMonoid N] [∀ i, Module R (M i)] [Module R N]
+  [Π i, AddCommMonoid (M i)] [AddCommMonoid N] [Π i, Module R (M i)] [Module R N]
 
 /-- When `ι` is finite, multilinear maps on `R^ι` with values in `N` are in bijection with `N`,
 as such a multilinear map is completely determined by its value on the constant vector made of ones.
@@ -1468,7 +1468,7 @@ end CommSemiring
 section Submodule
 
 variable {R : Type*} [Semiring R] {ι : Type*} [Nonempty ι] {M : ι → Type*} {N : Type*}
-  [∀ i, AddCommMonoid (M i)] [AddCommMonoid N] [∀ i, Module R (M i)] [Module R N]
+  [Π i, AddCommMonoid (M i)] [AddCommMonoid N] [Π i, Module R (M i)] [Module R N]
 
 /-- The pushforward of an indexed collection of submodule `p i ⊆ M i` by `f : M → N`.
 
