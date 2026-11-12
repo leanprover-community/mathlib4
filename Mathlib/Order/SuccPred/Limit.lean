@@ -359,6 +359,8 @@ theorem isSuccLimit_iff_ne_zero_and_isSuccPrelimit [Zero α] [IsBotZeroClass α]
 
 @[deprecated (since := "2026-11-12")]
 alias isSuccLimit_iff_of_orderBot := isSuccLimit_iff_ne_bot_and_isSuccPrelimit
+@[deprecated (since := "2026-11-12")]
+alias isPredLimit_iff_of_orderTop := isPredLimit_iff_ne_top_and_isPredPrelimit
 
 variable [SuccOrder α]
 
