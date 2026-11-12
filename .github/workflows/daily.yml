@@ -371,11 +371,8 @@ jobs:
         id: nanoda
         run: |
           # Clone and build lean4export
-          # TODO: Once https://github.com/leanprover/lean4export/pull/11 is merged,
-          # switch to leanprover/lean4export and remove the `git checkout` line below.
-          git clone https://github.com/kim-em/lean4export
+          git clone https://github.com/leanprover/lean4export
           cd lean4export
-          git checkout fix-nondep-normalization
           # Match toolchain to mathlib
           cp ../lean-toolchain .
           lake build
@@ -384,7 +381,6 @@ jobs:
           # Clone and build nanoda_lib
           git clone https://github.com/ammkrn/nanoda_lib
           cd nanoda_lib
-          git checkout debug
           cargo build --release
           cd ..
 
