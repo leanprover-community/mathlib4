@@ -490,7 +490,7 @@ section Equiv
 
 variable (R : Type u) (A : Type v) (B : Type w) [Semiring R] [NonUnitalNonAssocSemiring A]
   [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
-/- A `NonUnitalAlgebraEquiv` is a linear equivalence that preserves the product structures -/
+/- A `NonUnitalAlgEquiv` is a linear equivalence that preserves the product structures -/
 structure NonUnitalAlgEquiv extends A ≃ₗ[R] B where
       map_mul' : ∀ x y : A,
       toLinearEquiv (x * y) =
