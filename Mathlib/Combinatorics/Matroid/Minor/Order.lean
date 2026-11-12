@@ -26,7 +26,6 @@ instead writing `N ≤m M` and `N <m M` for more convenient dot notation.
 * `Matroid.IsStrictMinor N M`, written `N <m M`, means that `N = M ／ C ＼ D`
   for some subsets `C` and `D` of `M.E` that are not both nonempty.
 * `Matroid.IsMinor.exists_eq_contract_delete_disjoint` : we can choose `C` and `D` disjoint.
-
 -/
 
 @[expose] public section
@@ -59,7 +58,7 @@ lemma IsMinor.exists_eq_contract_delete_disjoint (h : N ≤m M) :
   obtain ⟨C, D, rfl⟩ := h
   exact ⟨C ∩ M.E, (D ∩ M.E) \ C, inter_subset_right, sdiff_subset.trans inter_subset_right,
     disjoint_sdiff_right.mono_left inter_subset_left,
-    by simp [delete_eq_delete_iff, inter_assoc, inter_sdiff_assoc]⟩
+    by simp [delete_eq_delete_iff, inter_sdiff_assoc]⟩
 
 /-- `N` is a strict minor of `M` if `N` is a minor of `M` and `N ≠ M`.
 Equivalently, `N` is obtained from `M` by deleting/contracting subsets of the ground set

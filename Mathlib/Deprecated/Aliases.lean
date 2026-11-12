@@ -7,6 +7,9 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 Deprecated aliases can be dumped here if they are no longer used in Mathlib,
 to avoid needing their imports if they are otherwise unnecessary.

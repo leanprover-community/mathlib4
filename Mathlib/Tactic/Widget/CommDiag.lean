@@ -57,7 +57,7 @@ abbrev ExprEmbeds := Array (String × Expr)
 
 /-- Construct a commutative diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
-def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM Html := do
+def mkCommDiag (sub : String) (embeds : ExprEmbeds) : MetaM ProofWidgets.Html := do
   let embeds ← embeds.mapM fun (s, h) =>
       return (s, jsx%{<InteractiveCode fmt={← Widget.ppExprTagged h} />})
   return jsx%{
@@ -81,7 +81,7 @@ def subTriangle := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"triangle
 
 /-- Given a commutative triangle `f ≫ g = h` or `e ≡ h = f ≫ g`, return a triangle diagram.
 Otherwise `none`. -/
-def commTriangleM? (e : Expr) : MetaM (Option Html) := do
+def commTriangleM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
   let e ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   if let some (f, g) := homComp? lhs then
@@ -120,7 +120,7 @@ D h C
 def subSquare := include_str ".."/".."/".."/"widget"/"src"/"penrose"/"square.sub"
 
 /-- Given a commutative square `f ≫ g = i ≫ h`, return a square diagram. Otherwise `none`. -/
-def commSquareM? (e : Expr) : MetaM (Option Html) := do
+def commSquareM? (e : Expr) : MetaM (Option ProofWidgets.Html) := do
   let e ← instantiateMVars e
   let some (_, lhs, rhs) := e.eq? | return none
   let some (f, g) := homComp? lhs | return none

@@ -257,9 +257,9 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
       refine IsLittleO.right_isBigO_sub ?_
       simpa [div_eq_inv_mul, Function.comp_def] using
         .atTop_of_const_mul₀ zero_lt_three (by simp [tendsto_natCast_atTop_atTop])
-    · rw [IsBigO_def]
+    · rw [isBigO_iff]
       refine ⟨12, ?_⟩
-      simp only [IsBigOWith, norm_natCast, eventually_atTop]
+      simp only [norm_natCast, eventually_atTop]
       exact ⟨15, fun x hx ↦ by norm_cast; lia⟩
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩

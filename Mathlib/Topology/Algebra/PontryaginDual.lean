@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Topology.Algebra.Group.CompactOpen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pontryagin dual
 

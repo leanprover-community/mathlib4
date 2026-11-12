@@ -26,6 +26,8 @@ noncomputable section
 
 namespace UpperHalfPlane
 
+variable {α : Type*}
+
 /-- Filter for approaching `i∞`. -/
 def atImInfty :=
   Filter.atTop.comap UpperHalfPlane.im
@@ -42,14 +44,14 @@ theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : �
   simp only [atImInfty_basis.mem_iff, true_and]; rfl
 
 /-- A function `f : ℍ → α` is bounded at infinity if it is bounded along `atImInfty`. -/
-def IsBoundedAtImInfty {α : Type*} [Norm α] (f : ℍ → α) : Prop :=
+def IsBoundedAtImInfty [Norm α] (f : ℍ → α) : Prop :=
   BoundedAtFilter atImInfty f
 
 /-- A function `f : ℍ → α` is zero at infinity it is zero along `atImInfty`. -/
-def IsZeroAtImInfty {α : Type*} [Zero α] [TopologicalSpace α] (f : ℍ → α) : Prop :=
+def IsZeroAtImInfty [Zero α] [TopologicalSpace α] (f : ℍ → α) : Prop :=
   ZeroAtFilter atImInfty f
 
-theorem zero_form_isBoundedAtImInfty {α : Type*} [NormedField α] :
+theorem zero_form_isBoundedAtImInfty [NormedField α] :
     IsBoundedAtImInfty (0 : ℍ → α) :=
   const_boundedAtFilter atImInfty (0 : α)
 
@@ -61,18 +63,30 @@ def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ →
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
   boundedFilterSubalgebra _ atImInfty
 
-theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
+theorem isBoundedAtImInfty_iff [Norm α] {f : ℍ → α} :
     IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ M := by
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 
-theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
+theorem isZeroAtImInfty_iff [SeminormedAddGroup α] {f : ℍ → α} :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
 
-theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
+theorem IsZeroAtImInfty.isBoundedAtImInfty [SeminormedAddGroup α] {f : ℍ → α}
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
   hf.boundedAtFilter
+
+@[simp] theorem isBoundedAtImInfty_neg_iff [SeminormedAddGroup α] {f : ℍ → α} :
+    IsBoundedAtImInfty (-f) ↔ IsBoundedAtImInfty f := by
+  simp [isBoundedAtImInfty_iff]
+
+alias ⟨_, IsBoundedAtImInfty.neg⟩ := isBoundedAtImInfty_neg_iff
+
+@[simp] theorem isZeroAtImInfty_neg_iff [TopologicalSpace α] [SubtractionMonoid α]
+    [ContinuousNeg α] {f : ℍ → α} : IsZeroAtImInfty (-f) ↔ IsZeroAtImInfty f :=
+  zeroAtFilter_neg_iff
+
+alias ⟨_, IsZeroAtImInfty.neg⟩ := isZeroAtImInfty_neg_iff
 
 set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_comap_im_ofComplex :
