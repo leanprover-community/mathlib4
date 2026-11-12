@@ -532,17 +532,19 @@ theorem integral_indicator_one ⦃s : Set X⦄ (hs : MeasurableSet s) :
 
 theorem setIntegral_indicatorConstLp [CompleteSpace E]
     {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
-    ∫ x in s, indicatorConstLp p ht hμt e x ∂μ = μ.real (t ∩ s) • e :=
+    ∫ x in s, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ = μ.real (t ∩ s) • e :=
   calc
-    ∫ x in s, indicatorConstLp p ht hμt e x ∂μ = ∫ x in s, t.indicator (fun _ => e) x ∂μ := by
+    ∫ x in s, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ
+    = ∫ x in s, t.indicator (fun _ => e) x ∂μ := by
       rw [setIntegral_congr_ae hs (indicatorConstLp_coeFn.mono fun x hx _ => hx)]
     _ = (μ.real (t ∩ s)) • e := by rw [integral_indicator_const _ ht, measureReal_restrict_apply ht]
 
 theorem integral_indicatorConstLp [CompleteSpace E]
     {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
-    ∫ x, indicatorConstLp p ht hμt e x ∂μ = μ.real t • e :=
+    ∫ x, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ = μ.real t • e :=
   calc
-    ∫ x, indicatorConstLp p ht hμt e x ∂μ = ∫ x in univ, indicatorConstLp p ht hμt e x ∂μ := by
+    ∫ x, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ =
+      ∫ x in univ, indicatorConstLp p ht.nullMeasurableSet hμt e x ∂μ := by
       rw [setIntegral_univ]
     _ = μ.real (t ∩ univ) • e := setIntegral_indicatorConstLp MeasurableSet.univ ht hμt e
     _ = μ.real t • e := by rw [inter_univ]

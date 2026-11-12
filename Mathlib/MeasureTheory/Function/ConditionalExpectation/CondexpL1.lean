@@ -134,7 +134,7 @@ theorem condExpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
   grw [Lp.coeFn_add, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndL1Fin_ae_eq_condExpIndSMul,
     condExpIndL1Fin_ae_eq_condExpIndSMul]
   rw [condExpIndSMul]
-  rw [indicatorConstLp_disjoint_union hs ht hμs hμt hst (1 : ℝ)]
+  rw [indicatorConstLp_disjoint_union hs.nullMeasurableSet ht.nullMeasurableSet hμs hμt hst (1 : ℝ)]
   rw [map_add]
   push_cast
   rw [map_add]
@@ -289,12 +289,13 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
     _ = μ.real (t ∩ s) • x := setIntegral_condExpIndSMul hs ht hμs hμt x
 
 theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
-    condExpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
+    condExpInd G hm μ s c = indicatorConstLp 1 (hm s hs).nullMeasurableSet hμs c := by
   ext1
   grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs,
     condExpIndSMul_ae_eq_smul]
   rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
-  filter_upwards [@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)] with x hx
+  filter_upwards [@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs).nullMeasurableSet hμs (1 : ℝ)]
+    with x hx
   rw [hx]
   by_cases hx_mem : x ∈ s <;> simp [hx_mem]
 
@@ -332,7 +333,8 @@ theorem condExpL1CLM_smul (c : 𝕜) (f : α →₁[μ] F') :
   exact fun c s x => condExpInd_smul' c x
 
 theorem condExpL1CLM_indicatorConstLp (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : F') :
-    (condExpL1CLM F' hm μ) (indicatorConstLp 1 hs hμs x) = condExpInd F' hm μ s x :=
+    (condExpL1CLM F' hm μ) (indicatorConstLp 1 hs.nullMeasurableSet hμs x) =
+      condExpInd F' hm μ s x :=
   L1.setToL1_indicatorConstLp (dominatedFinMeasAdditive_condExpInd F' hm μ) hs hμs x
 
 theorem condExpL1CLM_indicatorConst (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : F') :
@@ -347,7 +349,7 @@ theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
     (isClosed_eq ?_ ?_) f
   · intro x t ht hμt
     simp_rw [condExpL1CLM_indicatorConst ht hμt.ne x]
-    rw [Lp.simpleFunc.coe_indicatorConst, setIntegral_indicatorConstLp (hm _ hs)]
+    rw [Lp.simpleFunc.coe_indicatorConst ht, setIntegral_indicatorConstLp (hm _ hs) ht]
     exact setIntegral_condExpInd hs ht hμs hμt.ne x
   · intro f g hf_Lp hg_Lp _ hf hg
     simp_rw [(condExpL1CLM F' hm μ).map_add]
@@ -426,7 +428,7 @@ theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     ↑((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g)) ?_ ?_ ?_ g
   · intro c s hs hμs
     rw [@Lp.simpleFunc.coe_indicatorConst _ _ m, lpMeasToLpTrimLie_symm_indicator hs hμs.ne c,
-      condExpL1CLM_indicatorConstLp]
+      condExpL1CLM_indicatorConstLp (hm _ hs)]
     exact condExpInd_of_measurable hs ((le_trim hm).trans_lt hμs).ne c
   · intro f g hf hg _ hf_eq hg_eq
     rw [LinearIsometryEquiv.map_add]
