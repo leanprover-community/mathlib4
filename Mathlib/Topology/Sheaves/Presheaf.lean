@@ -235,7 +235,6 @@ theorem map_restrict
     e.app _ (x |_ U) = e.app _ x |_ U := by
   rw [← ConcreteCategory.comp_apply, NatTrans.naturality, ConcreteCategory.comp_apply]
 
-@[simp]
 lemma restrict_self {F : X.Presheaf C} {U : Opens X} (x : ToType (F.obj (op U))) :
     x |_ U = x := by
   simp
