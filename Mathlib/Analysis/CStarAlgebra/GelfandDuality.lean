@@ -230,7 +230,7 @@ lemma norm_add (h : a ⋆⟂ b) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
   case h₁ | h₂ | h₃ | h₄ => positivity
   simp_rw [sq, ← CStarRing.norm_star_mul_self, h.star_add_mul_add]
   have h' := h.star_mul_self
-  refine IsStarNormal.norm_add_eq_max_aux (IsSelfAdjoint.star_mul_self a).isStarNormal
+  refine (IsSelfAdjoint.star_mul_self a).isStarNormal.norm_add_eq_max_aux
     (IsSelfAdjoint.star_mul_self b).isStarNormal ?_ ?_
   · simpa using h'.commute_star
   · simpa using h'.mul_star_eq_zero
