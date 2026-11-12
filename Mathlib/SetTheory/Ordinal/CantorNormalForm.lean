@@ -44,20 +44,21 @@ namespace Ordinal.CNF
 
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
-protected def rec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
-    (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) (o : Ordinal) : C o :=
-  if h : o = 0 then h ▸ H0 else H o h (CNF.rec b H0 H (o % b ^ log b o))
+protected def rec (b : Ordinal) {motive : Ordinal → Sort*} (zero : motive 0)
+    (ne_zero : ∀ o, o ≠ 0 → motive (o % b ^ log b o) → motive o) (o : Ordinal) : motive o :=
+  if h : o = 0 then h ▸ zero else ne_zero o h (CNF.rec b zero ne_zero (o % b ^ log b o))
 termination_by o
 decreasing_by exact mod_opow_log_lt_self b h
 
 @[simp]
-theorem rec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
-    (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : CNF.rec b H0 H 0 = H0 := by
+theorem rec_zero (b : Ordinal) {motive : Ordinal → Sort*} (zero : motive 0)
+    (ne_zero : ∀ o, o ≠ 0 → motive (o % b ^ log b o) → motive o) :
+    CNF.rec b zero ne_zero 0 = zero := by
   rw [CNF.rec, dite_eq_left rfl]
 
-theorem rec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
-    (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
-    CNF.rec b H0 H o = H o ho (@CNF.rec b C H0 H _) := by
+theorem rec_pos (b : Ordinal) {motive : Ordinal → Sort*} (zero : motive 0)
+    (ne_zero : ∀ o, o ≠ 0 → motive (o % b ^ log b o) → motive o) {o : Ordinal} (ho : o ≠ 0) :
+    CNF.rec b zero ne_zero o = ne_zero o ho (@CNF.rec b motive zero ne_zero _) := by
   rw [CNF.rec, dite_eq_right]
 
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
@@ -68,88 +69,89 @@ We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 `CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]` -/
 @[pp_nodot]
 def _root_.Ordinal.CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
-  CNF.rec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o)::IH) o
+  CNF.rec b [] (fun o _ ↦ ((log b o, o / b ^ log b o) :: ·)) o
 
 @[simp]
 theorem zero_right (b : Ordinal) : CNF b 0 = [] :=
   rec_zero b _ _
 
 /-- Recursive definition for the Cantor normal form. -/
-protected theorem ne_zero {b o : Ordinal} (ho : o ≠ 0) :
-    CNF b o = (log b o, o / b ^ log b o)::CNF b (o % b ^ log b o) :=
-  rec_pos b ho _ _
+protected theorem ne_zero (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) :
+    CNF b o = (log b o, o / b ^ log b o) :: CNF b (o % b ^ log b o) :=
+  rec_pos b _ _ ho
 
-protected theorem opow_mul_add {b e x y : Ordinal}
-    (hb : 1 < b) (hx : x ≠ 0) (hxb : x < b) (hy : y < b ^ e) :
+protected theorem opow_mul_add {b e x y : Ordinal} (hx : x ≠ 0) (hxb : x < b) (hy : y < b ^ e) :
     CNF b (b ^ e * x + y) = (e, x) :: CNF b y := by
-  have hb' := hb.ne_bot
-  rw [CNF.ne_zero]
-  · rw [log_opow_mul_add hb hx hy, log_eq_zero hxb, add_zero,
+  obtain hb | hb := le_or_gt b 1
+  · grw [hb, Order.lt_one_iff] at hxb
+    contradiction
+  · have hb' := hb.ne_zero
+    rw [CNF.ne_zero b (by simp_all), log_opow_mul_add hb hx hy, log_eq_zero hxb, add_zero,
       mul_add_div _ (opow_ne_zero _ hb'), Ordinal.div_eq_zero_of_lt hy, add_zero,
       mul_add_mod_self, mod_eq_of_lt hy]
-  · simp_all
-
-protected theorem zero_left {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [(0, o)] := by
-  simp [CNF.ne_zero ho]
-
-protected theorem one_left {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [(0, o)] := by
-  simp [CNF.ne_zero ho]
 
 protected theorem of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [(0, o)] := by
-  rcases Order.le_one_iff.1 hb with (rfl | rfl)
-  exacts [CNF.zero_left ho, CNF.one_left ho]
+  simpa [log_of_left_le_one hb] using CNF.ne_zero b ho
+
+protected theorem zero_left {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [(0, o)] :=
+  CNF.of_le_one zero_le_one ho
+
+protected theorem one_left {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [(0, o)] :=
+  CNF.of_le_one le_rfl ho
 
 protected theorem of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o)] := by
-  rw [CNF.ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, zero_right]
+  rw [CNF.ne_zero b ho, log_eq_zero hb, opow_zero, div_one, mod_one, zero_right]
 
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
 protected theorem foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o := by
-  refine CNF.rec b ?_ ?_ o
-  · rw [zero_right, foldr_nil]
-  · intro o ho IH
-    rw [CNF.ne_zero ho, foldr_cons, IH, div_add_mod]
+  induction o using CNF.rec b with
+  | zero => simp
+  | ne_zero o ho IH => rw [CNF.ne_zero b ho, foldr_cons, IH, div_add_mod]
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `log b o`. -/
-theorem fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → x.1 ≤ log b o := by
-  refine CNF.rec b ?_ (fun o ho H ↦ ?_) o
-  · simp
-  · rw [CNF.ne_zero ho, mem_cons]
+theorem fst_le_log {b o : Ordinal} {x : Ordinal × Ordinal} : x ∈ CNF b o → x.1 ≤ log b o := by
+  induction o using CNF.rec b with
+  | zero => simp
+  | ne_zero o ho IH =>
+    rw [CNF.ne_zero b ho, mem_cons]
     rintro (rfl | h)
     · rfl
-    · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
+    · grw [IH h, mod_opow_log_lt_self b ho]
 
 /-- Every coefficient in a Cantor normal form is positive. -/
-theorem snd_pos {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
-  refine CNF.rec b (by simp) (fun o ho IH ↦ ?_) o
-  rw [CNF.ne_zero ho]
-  rintro (h | ⟨_, h⟩)
-  · exact div_opow_log_pos b ho
-  · exact IH h
+theorem snd_pos {b o : Ordinal} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
+  induction o using CNF.rec b with
+  | zero => simp
+  | ne_zero o ho IH =>
+    rw [CNF.ne_zero b ho, mem_cons]
+    rintro (rfl | h)
+    · exact div_opow_log_pos b ho
+    · exact IH h
 
 /-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
-theorem snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
+theorem snd_lt {b o : Ordinal} (hb : 1 < b) {x : Ordinal × Ordinal} :
     x ∈ CNF b o → x.2 < b := by
-  refine CNF.rec b ?_ (fun o ho IH ↦ ?_) o
-  · simp
-  · rw [CNF.ne_zero ho]
-    intro h
-    obtain rfl | h := mem_cons.mp h
+  induction o using CNF.rec b with
+  | zero => simp
+  | ne_zero o ho IH =>
+    rw [CNF.ne_zero b ho, mem_cons]
+    rintro (rfl | h)
     · exact div_opow_log_lt o hb
     · exact IH h
 
 /-- The exponents of the Cantor normal form are decreasing. -/
 protected theorem sortedGT (b o : Ordinal) : ((CNF b o).map Prod.fst).SortedGT := by
   simp_rw [sortedGT_iff_pairwise]
-  refine CNF.rec b ?_ (fun o ho IH ↦ ?_) o
-  · rw [zero_right]
-    exact .nil
-  · rcases le_or_gt b 1 with hb | hb
+  induction o using CNF.rec b with
+  | zero => simp
+  | ne_zero o ho IH =>
+    rcases le_or_gt b 1 with hb | hb
     · rw [CNF.of_le_one hb ho]
       exact pairwise_singleton _ _
     · obtain hob | hbo := lt_or_ge o b
       · rw [CNF.of_lt ho hob]
         exact pairwise_singleton _ _
-      · rw [CNF.ne_zero ho, map_cons, pairwise_cons]
+      · rw [CNF.ne_zero b ho, map_cons, pairwise_cons]
         refine ⟨fun a H ↦ ?_, IH⟩
         rw [mem_map] at H
         rcases H with ⟨⟨a, a'⟩, H, rfl⟩
@@ -169,13 +171,13 @@ Cantor Normal Form (`CNF`) of `o`, for each `e`. -/
 def coeff (b o : Ordinal) : Ordinal →₀ Ordinal :=
   lookupFinsupp ⟨_, nodupKeys b o⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_coeff (b o : Ordinal) :
     (coeff b o).support = ((CNF b o).map Prod.fst).toFinset := by
   rw [coeff, lookupFinsupp_support, filter_eq_self.2]
   · simp [List.keys]
   · simp_rw [mem_map]
     rintro _ ⟨a, ⟨ha, rfl⟩⟩
+    apply decide_eq_true
     simpa using (snd_pos ha).ne'
 
 theorem coeff_of_mem_CNF {b o e c : Ordinal} (h : ⟨e, c⟩ ∈ CNF b o) :
@@ -189,9 +191,8 @@ theorem coeff_of_notMem_CNF {b o e : Ordinal} (h : e ∉ (CNF b o).map Prod.fst)
 
 theorem coeff_eq_zero_of_lt {b o e : Ordinal} (h : o < b ^ e) : coeff b o e = 0 := by
   apply coeff_of_notMem_CNF
-  intro he
-  rw [mem_map] at he
-  obtain ⟨⟨e, c⟩, he, rfl⟩ := he
+  rw [mem_map]
+  rintro ⟨⟨e, c⟩, he, rfl⟩
   obtain rfl | he' := eq_or_ne e 0
   · simp_all
   · exact (opow_le_of_le_log he' (fst_le_log he)).not_gt h
@@ -205,8 +206,8 @@ theorem coeff_zero_right (b : Ordinal) : coeff b 0 = 0 := by
   ext e
   exact coeff_zero_apply b e
 
-theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o = single 0 o := by
-  ext a
+theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) : coeff b = single 0 := by
+  ext o a
   obtain rfl | ho := eq_or_ne o 0
   · simp
   · obtain rfl | ha := eq_or_ne a 0
@@ -219,22 +220,21 @@ theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o =
       simpa using ha
 
 @[simp]
-theorem coeff_zero_left (o : Ordinal) : coeff 0 o = single 0 o :=
-  coeff_of_le_one zero_le_one o
+theorem coeff_zero_left : coeff 0 = single 0 :=
+  coeff_of_le_one zero_le_one
 
 @[simp]
-theorem coeff_one_left (o : Ordinal) : coeff 1 o = single 0 o :=
-  coeff_of_le_one le_rfl o
+theorem coeff_one_left : coeff 1 = single 0 :=
+  coeff_of_le_one le_rfl
 
-theorem coeff_opow_mul_add {b e x y : Ordinal}
-    (hb : 1 < b) (hx : x ≠ 0) (hxb : x < b) (hy : y < b ^ e) :
+theorem coeff_opow_mul_add {b e x y : Ordinal} (hx : x ≠ 0) (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
   ext e'
   rw [Finsupp.add_apply]
   obtain rfl | he := eq_or_ne e e'
   · rw [single_eq_same, coeff_eq_zero_of_lt hy, add_zero]
     apply coeff_of_mem_CNF
-    rw [CNF.opow_mul_add hb hx hxb hy]
+    rw [CNF.opow_mul_add hx hxb hy]
     exact mem_cons_self
   · rw [single_eq_of_ne' he, zero_add]
     by_cases h : e' ∈ (CNF b y).map Prod.fst
@@ -242,12 +242,12 @@ theorem coeff_opow_mul_add {b e x y : Ordinal}
       obtain ⟨⟨f, c⟩, hf, rfl⟩ := h
       rw [coeff_of_mem_CNF hf]
       apply coeff_of_mem_CNF
-      rw [CNF.opow_mul_add hb hx hxb hy]
+      rw [CNF.opow_mul_add hx hxb hy]
       exact mem_cons_of_mem _ hf
-    · rw [coeff_of_notMem_CNF h, coeff_of_notMem_CNF]
-      rw [mem_map] at h ⊢
-      rw [CNF.opow_mul_add hb hx hxb hy]
-      simp_all
+    · rw [coeff_of_notMem_CNF h]
+      apply coeff_of_notMem_CNF
+      rw [mem_map, CNF.opow_mul_add hx hxb hy]
+      simpa [he] using h
 
 /-! ### Evaluate a Cantor normal form -/
 
@@ -334,14 +334,12 @@ theorem eval_lt {b e : Ordinal} {f : Ordinal →₀ Ordinal}
 @[simp]
 theorem eval_coeff (b o : Ordinal) : eval b (coeff b o) = o := by
   conv_rhs => rw [← CNF.foldr b o]
-  rw [eval, support_coeff, (toFinset_sort _ _).2, foldr_map]
-  · apply foldr_ext
-    intro a ha x
-    rw [coeff_of_mem_CNF ha]
-  · exact (CNF.sortedGT b o).sortedGE.pairwise
-  · exact (CNF.sortedGT b o).nodup
+  rw [eval, support_coeff, (CNF.sortedGT b o).sort_toFinset, foldr_map]
+  apply foldr_ext
+  intro a ha x
+  rw [coeff_of_mem_CNF ha]
 
-theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e < b) :
+theorem coeff_eval {b : Ordinal} {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e < b) :
     coeff b (eval b f) = f := by
   induction f using Finsupp.induction_on_max with
   | zero => simp
@@ -352,15 +350,15 @@ theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf :
         rw [Finsupp.add_apply, single_eq_of_ne, zero_add]
         exact (hf' _ he').ne
       · rw [notMem_support_iff.1 he']
-        exact hb.pos
-    rw [eval_single_add' _ hf', coeff_opow_mul_add hb hx, IH IH']
+        exact (hf 0).pos
+    rw [eval_single_add' _ hf', coeff_opow_mul_add hx, IH IH']
     · apply (hf e).trans_eq'
       rw [Finsupp.add_apply, single_eq_same, notMem_support_iff.1, add_zero]
       exact fun h ↦ (hf' _ h).false
     · exact eval_lt IH' hf'
 
 theorem coeff_injective (b : Ordinal) : Function.Injective (coeff b) :=
-  Function.LeftInverse.injective fun _ ↦ eval_coeff ..
+  Function.LeftInverse.injective (eval_coeff b)
 
 @[simp]
 theorem coeff_inj {b x y : Ordinal} : coeff b x = coeff b y ↔ x = y :=
