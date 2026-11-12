@@ -289,20 +289,6 @@ theorem opNorm_le_of_nhds_zero {f : E →SL[σ₁₂] F} {C : ℝ} (hC : 0 ≤ C
   let ⟨_, ε0, hε⟩ := Metric.eventually_nhds_iff_ball.1 hf
   opNorm_le_of_ball ε0 hC hε
 
-/-- If `f` has dense range and is `K`-antilipschitz, then the norm of a continuous linear map
-from the codomain of `f` is bounded by `K` multiplied by the norm of the precomposition with `f`.
-See `opNorm_le_mul_opNorm_comp_of_antilipschitz_liftQL` for a version which instead assumes the
-induced map `E ⧸ f.ker →L[𝕜] E'` is antilipschitz, rather than `f` itself. -/
-theorem opNorm_le_mul_opNorm_comp_of_antilipschitz {E' : Type*} [SeminormedAddCommGroup E']
-    [NormedSpace 𝕜 E'] (g : E' →SL[σ₁₂] F) {f : E →L[𝕜] E'} (hf : DenseRange f) {K : ℝ≥0}
-    (hK : AntilipschitzWith K f) : ‖g‖ ≤ K * ‖g.comp f‖ := by
-  refine g.opNorm_le_bound (mul_nonneg K.coe_nonneg (opNorm_nonneg _)) fun y ↦ ?_
-  refine hf.induction_on y (isClosed_le (by fun_prop) (by fun_prop)) fun x ↦ ?_
-  calc ‖g (f x)‖ ≤ ‖g.comp f‖ * ‖x‖ := (g.comp f).le_opNorm x
-    _ ≤ ‖g.comp f‖ * (K * ‖f x‖) :=
-      mul_le_mul_of_nonneg_left (f.bound_of_antilipschitz hK x) (opNorm_nonneg _)
-    _ = K * ‖g.comp f‖ * ‖f x‖ := by ring
-
 theorem opNorm_le_of_shell' {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C) {c : 𝕜}
     (hc : ‖c‖ < 1) (hf : ∀ x, ε * ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C := by
   by_cases h0 : c = 0
@@ -434,6 +420,20 @@ respect to the operator norm. -/
 instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) := { toNormedSpace, algebra with }
 
 end
+
+/-- If `f` has dense range and is `K`-antilipschitz, then the norm of a continuous linear map
+from the codomain of `f` is bounded by `K` multiplied by the norm of the precomposition with `f`.
+See `opNorm_le_mul_opNorm_comp_of_antilipschitz_liftQL` for a version which instead assumes the
+induced map `E ⧸ f.ker →SL[σ₁₂] F` is antilipschitz, rather than `f` itself. -/
+theorem opNorm_le_mul_opNorm_comp_of_antilipschitz [RingHomIsometric σ₁₃] (g : F →SL[σ₂₃] G)
+    {f : E →SL[σ₁₂] F} (hf : DenseRange f) {K : ℝ≥0} (hK : AntilipschitzWith K f) :
+    ‖g‖ ≤ K * ‖g.comp f‖ := by
+  refine g.opNorm_le_bound (mul_nonneg K.coe_nonneg (opNorm_nonneg _)) fun y ↦ ?_
+  refine hf.induction_on y (isClosed_le (by fun_prop) (by fun_prop)) fun x ↦ ?_
+  calc ‖g (f x)‖ ≤ ‖g.comp f‖ * ‖x‖ := (g.comp f).le_opNorm x
+    _ ≤ ‖g.comp f‖ * (K * ‖f x‖) :=
+      mul_le_mul_of_nonneg_left (f.bound_of_antilipschitz hK x) (opNorm_nonneg _)
+    _ = K * ‖g.comp f‖ * ‖f x‖ := by ring
 
 variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
 
