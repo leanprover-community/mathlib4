@@ -250,6 +250,7 @@ end tracePositiveLinearMap
 
 section
 variable [Fintype m] [Fintype n]
+variable (m)
 
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
@@ -272,7 +273,7 @@ set_option backward.privateInPublic.warn false in
 @[instance_reducible]
 noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     SeminormedAddCommGroup (Matrix m n 𝕜) :=
-  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
+  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ (hM.matrixPreInnerProductSpace m)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -282,7 +283,7 @@ set_option backward.privateInPublic.warn false in
 noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
     NormedAddCommGroup (Matrix m n 𝕜) :=
   letI : InnerProductSpace.Core 𝕜 (Matrix m n 𝕜) :=
-  { __ := hM.posSemidef.matrixPreInnerProductSpace
+  { __ := hM.posSemidef.matrixPreInnerProductSpace m
     definite x hx := by
       classical
       obtain ⟨y, hy, rfl⟩ := CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self.mp
@@ -299,7 +300,7 @@ noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDe
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
 @[instance_reducible]
 def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    letI : SeminormedAddCommGroup (Matrix m n 𝕜) := M.toMatrixSeminormedAddCommGroup hM
+    letI : SeminormedAddCommGroup (Matrix m n 𝕜) := M.toMatrixSeminormedAddCommGroup m hM
     InnerProductSpace 𝕜 (Matrix m n 𝕜) :=
   InnerProductSpace.ofCore _
 
