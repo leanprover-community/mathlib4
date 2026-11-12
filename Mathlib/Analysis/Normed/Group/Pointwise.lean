@@ -28,9 +28,11 @@ section SeminormedGroup
 
 variable [SeminormedGroup E] {s t : Set E}
 
+namespace Bornology
+
 -- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsIsometricSMul E E]`
 @[to_additive]
-theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
+theorem IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
   obtain ⟨Rs, hRs⟩ : ∃ R, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le'
   obtain ⟨Rt, hRt⟩ : ∃ R, ∀ x ∈ t, ‖x‖ ≤ R := ht.exists_norm_le'
   refine isBounded_iff_forall_norm_le'.2 ⟨Rs + Rt, ?_⟩
@@ -38,20 +40,35 @@ theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounde
   exact norm_mul_le_of_le' (hRs x hx) (hRt y hy)
 
 @[to_additive]
-theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
+theorem IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ IsBounded t := by
   symm
   exact AntilipschitzWith.isBounded_of_image2_left _
     (fun x => (isometry_mul_left x).antilipschitzWith)
     (by rwa [image2_swap])
 
 @[to_additive]
-theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
+theorem IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
   simp_rw [isBounded_iff_forall_norm_le', ← image_inv_eq_inv, forall_mem_image, norm_inv']
   exact id
 
 @[to_additive]
-theorem Bornology.IsBounded.div (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s / t) :=
+theorem IsBounded.div (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s / t) :=
   div_eq_mul_inv s t ▸ hs.mul ht.inv
+
+@[to_additive isBounded_norm_iff]
+lemma isBounded_norm_iff' {E : Type*} [SeminormedGroup E] {s : Set E} :
+    IsBounded ((‖·‖) '' s) ↔ IsBounded s := by
+  refine ⟨fun hs ↦ ?_, lipschitzWith_one_norm'.isBounded_image⟩
+  rw [isBounded_iff_forall_norm_le']
+  rw [isBounded_iff_bddBelow_bddAbove] at hs
+  simpa [BddAbove, upperBounds] using! hs.2
+
+alias ⟨IsBounded.of_norm', IsBounded.norm'⟩ := isBounded_norm_iff'
+
+attribute [to_additive IsBounded.of_norm] IsBounded.of_norm'
+attribute [to_additive IsBounded.norm] IsBounded.norm'
+
+end Bornology
 
 end SeminormedGroup
 
