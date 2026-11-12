@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.UniformSpace.Ultra.Basic
 public import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 /-!
@@ -16,7 +15,6 @@ public import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 * `IsUltraUniformity.completion_iff`: a Hausdorff completion has a nonarchimedean uniformity
   iff the underlying space has a nonarchimedean uniformity.
-
 -/
 
 public section

@@ -23,7 +23,6 @@ cocones `c₁` and `c₂` for two functors `F₁ : J ⥤ C` and `F₂ : J ⥤ C`
 produces a cocone for `F₁ ⊗ F₂ : J ⥤ C` with point `c₁.pt ⊗ c₂.pt` and we show
 that it is a colimit cocone when `PreservesColimit₂ F₁ F₂ (curriedTensor C)`
 holds and `J` is sifted.
-
 -/
 
 @[expose] public section
@@ -59,7 +58,6 @@ section
 
 variable {F₁ F₂ : J ⥤ C} {c₁ : Cocone F₁} {c₂ : Cocone F₂}
 
-set_option backward.defeqAttrib.useBackward true in
 variable (c₁ c₂) in
 /-- The tensor product of two cocones. -/
 @[simps!]

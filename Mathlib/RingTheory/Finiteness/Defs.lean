@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.RingTheory.Ideal.Span
@@ -28,7 +27,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 Redefine `Submodule.FG` to be in terms of `Module.FG` (rather than the other way around) to match
 finite generation in the group theory folder.
-
 -/
 
 @[expose] public section
@@ -80,7 +78,7 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
   · intro hN
     obtain ⟨n, f, h⟩ := fg_iff_exists_fin_generating_family.mp hN
     refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
-    convert! h
+    convert h
     ext
     simp
   · rintro ⟨G, _, g, hg⟩

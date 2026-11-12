@@ -6,9 +6,6 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Yoneda
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Simplicial sets
@@ -19,7 +16,6 @@ i.e. a `Type`-valued presheaf on the simplex category.
 (One might be tempted to call these "simplicial types" when working in type-theoretic foundations,
 but this would be unnecessarily confusing given the existing notion of a simplicial type in
 homotopy type theory.)
-
 -/
 
 @[expose] public section

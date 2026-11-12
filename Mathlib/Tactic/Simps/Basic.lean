@@ -5,16 +5,14 @@ Authors: Floris van Doorn
 -/
 module
 
-public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
 public meta import Lean.Elab.ConfigEval
-public meta import Mathlib.Lean.Expr.Basic
-public import Mathlib.Util.AddRelatedDecl
+public meta import Lean.Elab.Tactic.Simp
+public meta import Mathlib.Lean.Name
+public import Batteries.Util.LibraryNote
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.Translate.Attributes
-public import Batteries.Util.LibraryNote
-public import Lean.Elab.ConfigEval
-public import Lean.Elab.Tactic.Simp
+public import Mathlib.Util.AddRelatedDecl
 
 /-!
 # Simps attribute
@@ -893,7 +891,7 @@ structure Config where
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
-  notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite]
+  notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite, `Set]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   /-- The stem to use for the projection names. If `none`, the default, use the suffix of the
@@ -1210,7 +1208,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
   return if addThisProjection then nms.push nm.toName else nms
 where
-  /-- Drop the last character of a string, used to remove the interal trailing underscore in the
+  /-- Drop the last character of a string, used to remove the internal trailing underscore in the
   variable `todo`. -/
   dropLast (todo : String) : String :=
     todo.dropEnd 1 |>.copy

@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Generator.Basic
-public import Mathlib.CategoryTheory.Limits.Indization.Category
 public import Mathlib.CategoryTheory.Preadditive.Indization
 
 /-!
@@ -14,7 +13,6 @@ public import Mathlib.CategoryTheory.Preadditive.Indization
 
 We construct a separating set in the category of ind-objects and conclude that if `C` is small
 and additive, then `Ind C` has a separator.
-
 -/
 
 public section

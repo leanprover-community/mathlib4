@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-public import Mathlib.Tactic.FunProp
 
 /-!
 # Measurable embeddings and equivalences
@@ -142,14 +141,14 @@ variable {α₁ α₂ α₃ : Type*} {mα : MeasurableSpace α} {mβ : Measurabl
 lemma MeasurableSet.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (h : univ ⊆ range i₁ ∪ range i₂)
     (hs₁ : MeasurableSet (i₁ ⁻¹' s)) (hs₂ : MeasurableSet (i₂ ⁻¹' s)) : MeasurableSet s := by
-  convert! (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
+  convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
   simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
 
 lemma MeasurableSet.of_union₃_range_cover (hi₁ : MeasurableEmbedding i₁)
     (hi₂ : MeasurableEmbedding i₂) (hi₃ : MeasurableEmbedding i₃)
     (h : univ ⊆ range i₁ ∪ range i₂ ∪ range i₃) (hs₁ : MeasurableSet (i₁ ⁻¹' s))
     (hs₂ : MeasurableSet (i₂ ⁻¹' s)) (hs₃ : MeasurableSet (i₃ ⁻¹' s)) : MeasurableSet s := by
-  convert!
+  convert
     (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂) |>.union
       (hi₃.measurableSet_image' hs₃)
   simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
@@ -360,6 +359,14 @@ protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace �
 /-- Measurable equivalence between `ULift α` and `α`. -/
 def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α :=
   ⟨Equiv.ulift, measurable_down, measurable_up⟩
+
+/-- Measurable equivalence between `α` and `Additive α`. -/
+def additive {α : Type*} [MeasurableSpace α] : α ≃ᵐ Additive α :=
+  ⟨Additive.ofMul, measurable_ofMul, measurable_toMul⟩
+
+/-- Measurable equivalence between `α` and `Multiplicative α`. -/
+def multiplicative {α : Type*} [MeasurableSpace α] : α ≃ᵐ Multiplicative α :=
+  ⟨Multiplicative.ofAdd, measurable_ofAdd, measurable_toAdd⟩
 
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     Measurable (f ∘ e) ↔ Measurable f :=

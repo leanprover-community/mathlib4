@@ -1,5 +1,7 @@
-import Aesop
-import Mathlib.Tactic.Says
+module
+
+public import Aesop
+public import Mathlib.Tactic.Says
 
 set_option says.verify true
 

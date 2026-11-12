@@ -5,9 +5,9 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.HomCompletion
 public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.Analysis.Normed.Group.HomCompletion
 
 /-!
 # Completions of normed groups
@@ -29,7 +29,6 @@ objects and morphisms).
   and promote the `Completion` functor below to a functor landing in this category.
 2. Prove that the functor `Completion : SemiNormedGrp ⥤ CompleteSemiNormedGrp`
   is left adjoint to the forgetful functor.
-
 -/
 
 @[expose] public section

@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.ModelTheory.Substructures
 
 /-!

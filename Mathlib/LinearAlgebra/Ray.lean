@@ -6,14 +6,13 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Module
 public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Rays in modules
@@ -32,6 +31,7 @@ This file defines rays in modules.
 @[expose] public noncomputable section
 
 open Module
+open scoped Function
 
 section StrictOrderedCommSemiring
 
@@ -98,7 +98,7 @@ theorem of_subsingleton' [Subsingleton R] (x y : M) : SameRay R x y :=
 /-- `SameRay` is reflexive. -/
 @[refl]
 theorem refl (x : M) : SameRay R x x :=
-  Or.inr (Or.inr <| ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
+  Or.inr (Or.inr ⟨1, 1, zero_lt_one, zero_lt_one, rfl⟩)
 
 protected theorem rfl : SameRay R x x :=
   refl _
@@ -127,7 +127,7 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   · exact (hy rfl).elim (fun h => (hx h).elim) fun h => (hz h).elim
   rcases hxy.exists_pos hx hy with ⟨r₁, r₂, hr₁, hr₂, h₁⟩
   rcases hyz.exists_pos hy hz with ⟨r₃, r₄, hr₃, hr₄, h₂⟩
-  refine Or.inr (Or.inr <| ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
+  refine Or.inr (Or.inr ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 
 variable {S : Type*} [CommSemiring S] [PartialOrder S]
@@ -213,7 +213,28 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=
   (hy.symm.add_left hz.symm).symm
 
+instance : Std.Refl (SameRay R (M := M)) where
+  refl := .refl
+
+instance : Std.Symm (SameRay R (M := M)) where
+  symm _ _ := .symm
+
+theorem sum_left {ι : Type*} {s : Finset ι} {v : ι → M}
+    {z : M} (h : ∀ i ∈ s, SameRay R (v i) z) : SameRay R (∑ i ∈ s, v i) z :=
+  Finset.sum_induction v (SameRay R · z) (fun _ _ ↦ .add_left) (.zero_left z) h
+
+theorem sum_right {ι : Type*} {s : Finset ι} {v : ι → M}
+    {x : M} (h : ∀ i ∈ s, SameRay R x (v i)) : SameRay R x (∑ i ∈ s, v i) :=
+  (sum_left fun _ hi ↦ (h _ hi).symm).symm
+
 end SameRay
+
+/-- If the summands pairwise lie on a common ray, then each of them lies on the same ray as
+their sum. This is the `Finset.sum` version of `SameRay.add_right`. -/
+theorem sameRay_sum_right_of_pairwise {ι : Type*} {s : Finset ι} {i : ι} {v : ι → M}
+    (hp : (s : Set ι).Pairwise (SameRay R on v)) (hi : i ∈ s) :
+    SameRay R (v i) (∑ j ∈ s, v j) :=
+  SameRay.sum_right fun _ hj ↦ hp.forall₂ hi hj
 
 variable (R M)
 
@@ -244,7 +265,7 @@ def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
 /-- An induction principle for `Module.Ray`, used as `induction x using Module.Ray.ind`. -/
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
     (x : Module.Ray R M) : C x :=
-  Quotient.ind (Subtype.rec <| h) x
+  Quotient.ind (Subtype.rec h) x
 
 variable {R}
 
@@ -301,8 +322,8 @@ variable [SMulCommClass R G M]
 `G = Rˣ` -/
 instance : MulAction G (Module.Ray R M) where
   smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
-  mul_smul a b := Quotient.ind fun _ => congr_arg Quotient.mk' <| mul_smul a b _
-  one_smul := Quotient.ind fun _ => congr_arg Quotient.mk' <| one_smul _ _
+  mul_smul a b := Quotient.ind fun _ => congr(Quotient.mk' $(mul_smul a b _))
+  one_smul := Quotient.ind fun _ => congr(Quotient.mk' $(one_smul ..))
 
 /-- The action via `LinearEquiv.apply_distribMulAction` corresponds to `Module.Ray.map`. -/
 @[simp]

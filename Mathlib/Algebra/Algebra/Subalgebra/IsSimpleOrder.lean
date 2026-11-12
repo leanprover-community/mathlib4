@@ -5,9 +5,13 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subalgebras of an algebra of prime dimension

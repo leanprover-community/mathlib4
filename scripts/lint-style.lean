@@ -178,7 +178,7 @@ def undocumentedScripts (opts : LinterOptions) : IO Nat := do
   -- Check if the README text contains each file enclosed in backticks.
   let readme : String ← IO.FS.readFile ("scripts" / "README.md")
   -- These are data files for linter exceptions: don't complain about these *for now*.
-  let dataFiles := #["noshake.json", "nolints-style.txt"]
+  let dataFiles := #["nolints-style.txt"]
   let undocumented := allScripts.filter fun script ↦
     !readme.contains s!"`{script}`" && !dataFiles.contains script
   if undocumented.size > 0 then

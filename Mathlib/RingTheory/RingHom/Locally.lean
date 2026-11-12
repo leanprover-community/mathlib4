@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.Localization.Away.Lemmas
 
 /-!
@@ -39,7 +38,6 @@ composition, base change, etc., so is `Locally P`.
   composition with localization away maps if `P` is.
 - `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
-
 -/
 
 @[expose] public section
@@ -310,7 +308,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
     inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
   have (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
-    convert! (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))
+    convert (inferInstance : IsLocalization.Away (rₐ a) (Sₐ a))
     simp [rₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by
@@ -322,7 +320,7 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   refine ⟨s, fun a ↦ algebraMap S S' a.val, ?_, Sₐ,
       inferInstance, inferInstance, fun a ↦ ?_, fun a ↦ ?_⟩
   · rw [← Set.image_eq_range, ← Ideal.map_span, hsone, Ideal.map_top]
-  · convert!
+  · convert
     IsLocalization.commutes (T := Sₐ a) (M₁ := (Submonoid.powers r).map f) (S₁ := S') (S₂ :=
       Localization.Away a.val) (M₂ := Submonoid.powers a.val)
     simp [Algebra.algebraMapSubmonoid]
@@ -355,7 +353,7 @@ lemma locally_localizationPreserves (hPl : LocalizationPreserves P) :
   refine ⟨s, fun a ↦ algebraMap S S' a.val, ?_, Sₐ,
       inferInstance, inferInstance, fun a ↦ ?_, fun a ↦ ?_⟩
   · rw [← Set.image_eq_range, ← Ideal.map_span, hsone, Ideal.map_top]
-  · convert!
+  · convert
     IsLocalization.commutes (T := Sₐ a) (M₁ := M.map f) (S₁ := S') (S₂ := Localization.Away a.val)
       (M₂ := Submonoid.powers a.val)
     simp [Algebra.algebraMapSubmonoid]

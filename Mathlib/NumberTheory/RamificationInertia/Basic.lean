@@ -3,13 +3,10 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-module
+module -- shake: keep-all
 
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
-public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Ramification index and inertia degree
@@ -41,7 +38,6 @@ We will try to relax the above hypotheses as much as possible.
 
 In this file, `e` stands for the ramification index and `f` for the inertia degree of `P` over `p`,
 leaving `p` and `P` implicit.
-
 -/
 
 deprecated_module "Use RingTheory.RamificationInertia.Basic" (since := "2026-07-01")
@@ -115,9 +111,9 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     obtain ⟨a'', ha'', hx⟩ := (Submodule.mem_ideal_smul_span_iff_exists_sum p a x).1
       (by { rw [ha, smul_top_eq]; exact Submodule.mem_top } :
         x ∈ p • Submodule.span R (Set.range a))
-    · refine ⟨fun i => a'' i, fun i => ha'' _, ?_⟩
-      rw [← hx, Finsupp.sum_fintype]
-      exact fun _ => zero_smul _ _
+    refine ⟨fun i => a'' i, fun i => ha'' _, ?_⟩
+    rw [← hx, Finsupp.sum_fintype]
+    exact fun _ => zero_smul _ _
   choose A' hA'p hA' using fun i => exists_sum (a i)
   -- This gives us a(n invertible) matrix `A` such that `det A ∈ (M = span R b)`,
   let A : Matrix (Fin n) (Fin n) R := Matrix.of A' - 1
@@ -147,9 +143,8 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [← Submodule.Quotient.mk_eq_zero, Submodule.Quotient.mk_smul]
     obtain ⟨a', _, quot_x_eq⟩ := exists_sum (Submodule.Quotient.mk x')
     rw [← quot_x_eq, Finset.smul_sum]
-    conv =>
-      lhs; congr; next => skip
-      intro x; rw [smul_comm A.det, d_smul, smul_zero]
+    conv_lhs =>
+      enter [2, x]; rw [smul_comm A.det, d_smul, smul_zero]
     exact Finset.sum_const_zero
   refine top_le_iff.mp
       (calc
@@ -169,10 +164,10 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       _ = Matrix.det (-1 : Matrix (Fin n) (Fin n) (R ⧸ p)) := ?_
       _ = (-1 : R ⧸ p) ^ n := by rw [Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
       _ ≠ 0 := IsUnit.ne_zero (isUnit_one.neg.pow _)
-    · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
+    · congrm $(Matrix.ext fun i j => ?_).det
       rw [map_sub, RingHom.mapMatrix_apply, map_one]
       simp
-    · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
+    · congrm $(Matrix.ext fun i j => ?_).det
       rw [Ideal.Quotient.eq_zero_iff_mem.mpr (hA'p i j), zero_sub, Matrix.neg_apply]
   -- And we conclude `L = span L {det A} ≤ span K b`, so `span K b` spans everything.
   · intro x hx
@@ -362,7 +357,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
     induction x, y using Quotient.inductionOn₂' with | _ x y
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
-    refine congr_arg Submodule.Quotient.mk ?_
+    congrm Submodule.Quotient.mk ?_
     ext
     simp only [map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
@@ -451,14 +446,11 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
     (i : ℕ) (hi : i ≤ e) :
     Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) =
       (e - i) • Module.rank (R ⧸ p) (S ⧸ P) := by
-  let Q : ℕ → Prop :=
-    fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
-      = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
-  refine Nat.decreasingInduction' (P := Q) (fun j lt_e _le_j ih => ?_) hi ?_
-  · dsimp only [Q]
+  induction hi using Nat.decreasingInduction with
+  | of_succ j lt_e ih =>
     rwa [rank_pow_quot_aux p P _ lt_e, ih, ← succ_nsmul', Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
-  · dsimp only [Q]
+  | self =>
     rw [Nat.sub_self, zero_nsmul, map_quotient_self]
     exact rank_bot (R ⧸ p) (S ⧸ P ^ e)
 

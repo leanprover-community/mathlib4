@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.MetricSpace.IsometricSMul
-public import Mathlib.Tactic.Finiteness
 
 /-!
 # Hausdorff distance
@@ -257,8 +256,10 @@ end InfEDist
 
 /-- The Hausdorff edistance between two sets is the smallest `r` such that each set
 is contained in the `r`-neighborhood of the other one -/
-irreducible_def hausdorffEDist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
+@[no_expose] def hausdorffEDist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
   (⨆ x ∈ s, infEDist x t) ⊔ ⨆ y ∈ t, infEDist y s
+
+alias hausdorffEDist_def := hausdorffEDist.eq_def
 
 section HausdorffEDist
 
@@ -267,18 +268,18 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t u : Set
 /-- The Hausdorff edistance of a set to itself vanishes. -/
 @[simp]
 theorem hausdorffEDist_self : hausdorffEDist s s = 0 := by
-  simp only [hausdorffEDist_def, sup_idem, ENNReal.iSup_eq_zero]
+  simp only [hausdorffEDist, sup_idem, ENNReal.iSup_eq_zero]
   exact fun x hx => infEDist_zero_of_mem hx
 
 /-- The Hausdorff edistances of `s` to `t` and of `t` to `s` coincide. -/
 theorem hausdorffEDist_comm : hausdorffEDist s t = hausdorffEDist t s := by
-  simp only [hausdorffEDist_def]; apply sup_comm
+  simp only [hausdorffEDist]; apply sup_comm
 
 /-- Bounding the Hausdorff edistance by bounding the edistance of any point
 in each set to the other set -/
 theorem hausdorffEDist_le_of_infEDist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, infEDist x t ≤ r)
     (H2 : ∀ x ∈ t, infEDist x s ≤ r) : hausdorffEDist s t ≤ r := by
-  simp only [hausdorffEDist_def, sup_le_iff, iSup_le_iff]
+  simp only [hausdorffEDist, sup_le_iff, iSup_le_iff]
   exact ⟨H1, H2⟩
 
 /-- Bounding the Hausdorff edistance by exhibiting, for any point in each set,
@@ -293,7 +294,7 @@ theorem hausdorffEDist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y
 
 /-- The distance to a set is controlled by the Hausdorff distance. -/
 theorem infEDist_le_hausdorffEDist_of_mem (h : x ∈ s) : infEDist x t ≤ hausdorffEDist s t := by
-  rw [hausdorffEDist_def]
+  rw [hausdorffEDist]
   refine le_trans ?_ le_sup_left
   grw [← le_iSup₂ x h]
 
@@ -329,7 +330,7 @@ theorem infEDist_le_infEDist_add_hausdorffEDist :
 /-- The Hausdorff edistance is invariant under isometries. -/
 theorem hausdorffEDist_image (h : Isometry Φ) :
     hausdorffEDist (Φ '' s) (Φ '' t) = hausdorffEDist s t := by
-  simp only [hausdorffEDist_def, iSup_image, infEDist_image h]
+  simp only [hausdorffEDist, iSup_image, infEDist_image h]
 
 /-- The Hausdorff distance is controlled by the diameter of the union. -/
 theorem hausdorffEDist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
@@ -344,7 +345,7 @@ theorem hausdorffEDist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
 
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + hausdorffEDist t u := by
-  rw [hausdorffEDist_def]
+  rw [hausdorffEDist]
   simp only [sup_le_iff, iSup_le_iff]
   constructor
   · change ∀ x ∈ s, infEDist x u ≤ hausdorffEDist s t + hausdorffEDist t u
@@ -364,7 +365,7 @@ theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + ha
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure. -/
 theorem hausdorffEDist_zero_iff_closure_eq_closure :
     hausdorffEDist s t = 0 ↔ closure s = closure t := by
-  simp [hausdorffEDist_def, ← subset_def, ← mem_closure_iff_infEDist_zero,
+  simp [hausdorffEDist, ← subset_def, ← mem_closure_iff_infEDist_zero,
     subset_antisymm_iff, isClosed_closure.closure_subset_iff]
 
 /-- The Hausdorff edistance between a set and its closure vanishes. -/
@@ -518,7 +519,8 @@ theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y �
 the distance between `x` and `y`. -/
 theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := by
   rw [infDist, infDist, dist_edist]
-  refine ENNReal.toReal_le_add' infEDist_le_infEDist_add_edist ?_ (flip absurd (edist_ne_top _ _))
+  refine ENNReal.toReal_le_add_of_top_imp_top infEDist_le_infEDist_add_edist ?_
+    (flip absurd (edist_ne_top _ _))
   simp only [infEDist_eq_top_iff, imp_self]
 
 theorem notMem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
@@ -534,8 +536,9 @@ theorem ball_infDist_compl_subset : ball x (infDist x sᶜ) ⊆ s :=
   ball_infDist_subset_compl.trans_eq (compl_compl s)
 
 theorem disjoint_closedBall_of_lt_infDist {r : ℝ} (h : r < infDist x s) :
-    Disjoint (closedBall x r) s :=
-  disjoint_ball_infDist.mono_left <| closedBall_subset_ball h
+    Disjoint (closedBall x r) s := by
+  grw [h]
+  exact disjoint_ball_infDist
 
 theorem dist_le_infDist_add_diam (hs : IsBounded s) (hy : y ∈ s) :
     dist x y ≤ infDist x s + diam s := by
@@ -770,7 +773,8 @@ theorem exists_dist_lt_of_hausdorffDist_lt' {r : ℝ} (h : y ∈ t) (H : hausdor
 between `s` and `t` -/
 theorem infDist_le_infDist_add_hausdorffDist (fin : hausdorffEDist s t ≠ ⊤) :
     infDist x t ≤ infDist x s + hausdorffDist s t := by
-  refine toReal_le_add' infEDist_le_infEDist_add_hausdorffEDist (fun h ↦ ?_) (flip absurd fin)
+  refine toReal_le_add_of_top_imp_top infEDist_le_infEDist_add_hausdorffEDist (fun h ↦ ?_)
+    (flip absurd fin)
   rw [infEDist_eq_top_iff, ← not_nonempty_iff_eq_empty] at h ⊢
   rw [hausdorffEDist_comm] at fin
   exact mt (nonempty_of_hausdorffEDist_ne_top · fin) h
@@ -783,7 +787,8 @@ theorem hausdorffDist_image (h : Isometry Φ) :
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffDist_triangle (fin : hausdorffEDist s t ≠ ⊤) :
     hausdorffDist s u ≤ hausdorffDist s t + hausdorffDist t u := by
-  refine toReal_le_add' hausdorffEDist_triangle (flip absurd fin) (not_imp_not.1 fun h ↦ ?_)
+  refine toReal_le_add_of_top_imp_top hausdorffEDist_triangle (flip absurd fin)
+    (not_imp_not.1 fun h ↦ ?_)
   rw [hausdorffEDist_comm] at fin
   exact ne_top_of_le_ne_top (add_ne_top.2 ⟨fin, h⟩) hausdorffEDist_triangle
 

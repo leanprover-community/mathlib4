@@ -1,4 +1,6 @@
-import Mathlib.Topology.Order
+module
+
+public import Mathlib.Topology.Order
 
 open TopologicalSpace
 

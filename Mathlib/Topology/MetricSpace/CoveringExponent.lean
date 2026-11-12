@@ -27,7 +27,6 @@ for a stochastic process to have a modification with Hölder continuous paths.
 * `HasCoveringExponent.subset`: if `A` has bounded covering exponent with constant `c` and
   exponent `d`, then any subset of `A` has bounded covering exponent with constant `2^d * c` and
   exponent `d`.
-
 -/
 
 @[expose] public section
@@ -64,7 +63,7 @@ lemma HasCoveringExponent.coveringNumber_ne_top (h : HasCoveringExponent A c d) 
 
 lemma HasCoveringExponent.subset (h : HasCoveringExponent A c d) (hBA : B ⊆ A) (hd : 0 ≤ d) :
     HasCoveringExponent B (2 ^ d * c) d where
-  ediam_lt_top := lt_of_le_of_lt (Metric.ediam_mono hBA) h.ediam_lt_top
+  ediam_lt_top := by grw [hBA, h.ediam_lt_top]
   coveringNumber_le ε hε_le :=
     calc (coveringNumber ε B : ℝ≥0∞)
     _ ≤ coveringNumber (ε / 2) A := mod_cast coveringNumber_subset_le hBA

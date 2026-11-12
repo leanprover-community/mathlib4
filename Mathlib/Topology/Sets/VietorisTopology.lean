@@ -77,6 +77,12 @@ theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
   rw [← powerset_empty]
   exact ⟨isClosed_empty.powerset_vietoris, isOpen_empty.powerset_vietoris⟩
 
+theorem isClosed_supersets [T1Space α] (s : Set α) : IsClosed {t | s ⊆ t} := by
+  simp_rw [Set.subset_def, Set.ofPred_forall]
+  refine isClosed_biInter fun x _ => ?_
+  simp_rw [← inter_singleton_nonempty]
+  exact isClosed_inter_nonempty_of_isClosed isClosed_singleton
+
 /-- The Vietoris topology has a basis consisting of sets of the form
 `{s | s ⊆ U₁ ∪ … ∪ Uₙ, s ∩ U₁ ≠ ∅, …, s ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ` are open sets. -/
 theorem isTopologicalBasis :
@@ -262,7 +268,8 @@ private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     the compactness of `Lᵢ`. -/
     obtain ⟨L, hL, hLu⟩ := hsu
     rw [sUnion_eq_biUnion] at hLu
-    obtain ⟨T, hTS, hT, hLT⟩ := (hs L hL).elim_finite_subcover_image (fun _ h => h.1) hLu
+    obtain ⟨T, hTS, hT, hLT⟩ :=
+      (hs L hL).elim_finite_subcover_image (b := u) (fun _ h => h.1) hLu
     refine ⟨(fun U => {s | (s ∩ U).Nonempty}) '' T, by grind [image_subset_iff], hT.image _, ?_⟩
     simp_rw [sUnion_image, ← ofPred_exists, ← nonempty_iUnion, ← inter_iUnion]
     grw [← hLT]
@@ -275,7 +282,8 @@ private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     · /- If `K \ ⋃ Uⱼ ⊆ U`, then every subset of `K` is either a subset of `U` or intersects some
       `Uⱼ`. By the compactness of `K \ U`, `Uⱼ` can be chosen from a finite subfamily. -/
       rw [mem_powerset_iff, sdiff_subset_comm, sUnion_eq_biUnion] at hUu
-      obtain ⟨T, hTS, hT, hKT⟩ := (hK.diff hU).elim_finite_subcover_image (fun _ h => h.1) hUu
+      obtain ⟨T, hTS, hT, hKT⟩ :=
+        (hK.diff hU).elim_finite_subcover_image (b := u) (fun _ h => h.1) hUu
       refine ⟨insert U.powerset ((fun V => {s | (s ∩ V).Nonempty}) '' T),
         insert_subset hUS <| Set.image_subset_iff.mpr <| hTS.trans fun _ h => h.2,
         (hT.image _).insert _, ?_⟩
@@ -333,8 +341,7 @@ instance [T1Space α] : T0Space (Set α) where
 theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} := by
   rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
-  · convert isPreconnected_empty
-    grind [Set.not_nonempty_empty]
+  · simp +contextual [and_iff_right_of_imp, Set.nonempty_iff_ne_empty, isPreconnected_empty]
   suffices {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} =
       ⋃ n : ℕ+, range (ι := Fin n) '' Set.pi univ fun _ => s by
     rw [this]
@@ -430,8 +437,12 @@ theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
   exact (isOpen_subsets_of_isOpen h.isOpen_compl).isClosed_compl
 
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
-  convert! vietoris.isClopen_singleton_empty.preimage continuous_coe
+  convert vietoris.isClopen_singleton_empty.preimage continuous_coe
   rw [← coe_bot, ← image_singleton (f := SetLike.coe), SetLike.coe_injective.preimage_image]
+
+theorem isClosed_supersets [T1Space α] (s : Set α) :
+    IsClosed {K : Compacts α | s ⊆ ↑K} :=
+  (vietoris.isClosed_supersets s).preimage continuous_coe
 
 theorem isOpen_setOfPred_disjoint_coe [T2Space α] :
     IsOpen {p : Compacts α × Compacts α | Disjoint (p.1 : Set α) p.2} := by
@@ -595,7 +606,7 @@ theorem _root_.Topology.IsClosedEmbedding.compacts_map (hf : IsClosedEmbedding f
 instance [DiscreteTopology α] : DiscreteTopology (Compacts α) := by
   rw [discreteTopology_iff_isOpen_singleton]
   intro K
-  convert!
+  convert
     (isOpen_subsets_of_isOpen (isOpen_discrete (K : Set α))).inter
       (K.isCompact.finite_of_discrete.isOpen_biInter fun x hx =>
         isOpen_inter_nonempty_of_isOpen (isOpen_discrete { x }))
@@ -691,7 +702,7 @@ theorem isCompact_biUnion_coe_of_isCompact {S : Set (Compacts α)} (hS : IsCompa
 @[simp]
 theorem compactSpace_iff : CompactSpace (Compacts α) ↔ CompactSpace α := by
   refine ⟨fun h => ⟨?_⟩, fun _ => inferInstance⟩
-  convert! isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
+  convert isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
   symm
   simp_rw [biUnion_univ, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨{x}, Set.mem_singleton x⟩
@@ -761,8 +772,12 @@ theorem separableSpace_iff : SeparableSpace (Compacts α) ↔ SeparableSpace α 
 theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} := by
   rw [← isEmbedding_coe.isPreconnected_image]
-  convert vietoris.isPreconnected_nonempty_finite_subsets hs
-  exact subset_antisymm (image_subset_iff.mpr .rfl) (fun t ht => ⟨⟨t, ht.2.1.isCompact⟩, ht, rfl⟩)
+  have himg : SetLike.coe '' {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} =
+      {t : Set α | t.Nonempty ∧ t.Finite ∧ t ⊆ s} :=
+    subset_antisymm (image_subset_iff.mpr fun K hK => hK)
+      (fun t ht => ⟨⟨t, ht.2.1.isCompact⟩, ht, rfl⟩)
+  rw [himg]
+  exact vietoris.isPreconnected_nonempty_finite_subsets hs
 
 theorem isPreconnected_nonempty_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {K : Compacts α | (K : Set α).Nonempty ∧ ↑K ⊆ s} := by
@@ -816,6 +831,22 @@ instance [LocallyConnectedSpace α] : LocallyConnectedSpace (Compacts α) := by
     refine fun f hf => ⟨by grind, fun U hU => ?_, finite_iUnion (by grind)⟩
     obtain ⟨h₁, -, h₂⟩ := hf ⟨U, hU⟩ trivial
     exact h₁.mono (subset_inter (subset_iUnion _ _) h₂)
+
+instance [T1Space α] : ClosedIciTopology (Compacts α) where
+  isClosed_Ici _ := isClosed_supersets _
+
+instance [T2Space α] : OrderClosedTopology (Compacts α) where
+  isClosed_le' := by
+    simp_rw [← sup_eq_right]
+    exact isClosed_eq (by fun_prop) (by fun_prop)
+
+@[simp]
+theorem orderClosedTopology_iff : OrderClosedTopology (Compacts α) ↔ T2Space α :=
+  ⟨fun _ => t2Space_iff.mp inferInstance, fun _ => inferInstance⟩
+
+theorem isClosed_setOfPred_mem [T2Space α] : IsClosed {p : α × Compacts α | p.1 ∈ p.2} := by
+  simp_rw [← singleton_le_iff]
+  exact isClosed_le (by fun_prop) (by fun_prop)
 
 end Compacts
 
@@ -872,6 +903,10 @@ theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : NonemptyCompacts α | (↑K ∩ F).Nonempty} :=
   (vietoris.isClosed_inter_nonempty_of_isClosed h).preimage continuous_coe
+
+theorem isClosed_supersets [T1Space α] (s : Set α) :
+    IsClosed {K : NonemptyCompacts α | s ⊆ ↑K} :=
+  (vietoris.isClosed_supersets s).preimage continuous_coe
 
 theorem isOpen_setOfPred_disjoint_coe [T2Space α] :
     IsOpen {p : NonemptyCompacts α × NonemptyCompacts α | Disjoint (p.1 : Set α) p.2} :=
@@ -1032,13 +1067,13 @@ theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
 
 theorem isCompact_biUnion_coe_of_isCompact {S : Set (NonemptyCompacts α)} (hs : IsCompact S) :
     IsCompact (⋃ K ∈ S, (K : Set α)) := by
-  convert! Compacts.isCompact_biUnion_coe_of_isCompact (hs.image continuous_toCompacts)
+  convert Compacts.isCompact_biUnion_coe_of_isCompact (hs.image continuous_toCompacts)
   simp_rw [biUnion_image, coe_toCompacts]
 
 @[simp]
 theorem compactSpace_iff : CompactSpace (NonemptyCompacts α) ↔ CompactSpace α := by
   refine ⟨fun h => ⟨?_⟩, fun _ => inferInstance⟩
-  convert! isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
+  convert isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
   symm
   simp_rw [biUnion_univ, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨{x}, Set.mem_singleton x⟩
@@ -1083,18 +1118,22 @@ theorem separableSpace_iff : SeparableSpace (NonemptyCompacts α) ↔ SeparableS
 theorem isPreconnected_finite_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} := by
   rw [← isEmbedding_toCompacts.isPreconnected_image]
-  convert Compacts.isPreconnected_nonempty_finite_subsets hs
-  exact subset_antisymm
-    (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
-    (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+  have himg : toCompacts '' {K : NonemptyCompacts α | (K : Set α).Finite ∧ ↑K ⊆ s} =
+      {K : Compacts α | (K : Set α).Nonempty ∧ (K : Set α).Finite ∧ ↑K ⊆ s} :=
+    subset_antisymm (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
+      (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+  rw [himg]
+  exact Compacts.isPreconnected_nonempty_finite_subsets hs
 
 theorem isPreconnected_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {K : NonemptyCompacts α | ↑K ⊆ s} := by
   rw [← isEmbedding_toCompacts.isPreconnected_image]
-  convert Compacts.isPreconnected_nonempty_subsets hs
-  exact subset_antisymm
-    (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
-    (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+  have himg : toCompacts '' {K : NonemptyCompacts α | ↑K ⊆ s} =
+      {K : Compacts α | (K : Set α).Nonempty ∧ ↑K ⊆ s} :=
+    subset_antisymm (image_subset_iff.mpr fun K hK => ⟨K.nonempty, hK⟩)
+      (fun K hK => ⟨⟨K, hK.1⟩, hK.2, rfl⟩)
+  rw [himg]
+  exact Compacts.isPreconnected_nonempty_subsets hs
 
 theorem isPreconnected_Icc {K L : NonemptyCompacts α} (hL : IsPreconnected (L : Set α)) :
     IsPreconnected (Icc K L) := by
@@ -1156,6 +1195,35 @@ theorem _root_.TopologicalSpace.Compacts.locallyConnectedSpace_iff :
     LocallyConnectedSpace (Compacts α) ↔ LocallyConnectedSpace α :=
   ⟨fun _ => NonemptyCompacts.locallyConnectedSpace_iff.mp
     isOpenEmbedding_toCompacts.locallyConnectedSpace, fun _ => inferInstance⟩
+
+instance [T1Space α] : ClosedIciTopology (NonemptyCompacts α) where
+  isClosed_Ici _ := isClosed_supersets _
+
+@[simp]
+theorem closedIciTopology_iff : ClosedIciTopology (NonemptyCompacts α) ↔ T1Space α := by
+  refine ⟨fun _ => ⟨fun x => ?_⟩, fun _ => inferInstance⟩
+  rw [← isOpen_compl_iff]
+  convert isOpen_biUnion_coe_of_isOpen (isClosed_Ici (a := {x})).isOpen_compl
+  refine le_antisymm (fun y hy => mem_biUnion (x := {y}) ?_ (by rfl)) ?_
+  · simpa [Eq.comm] using hy
+  · simp [← SetLike.coe_subset_coe]
+
+@[simp]
+theorem _root_.TopologicalSpace.Compacts.closedIciTopology_iff :
+    ClosedIciTopology (Compacts α) ↔ T1Space α :=
+  ⟨fun _ => NonemptyCompacts.closedIciTopology_iff.mp
+    ⟨fun _ => isClosed_Ici.preimage continuous_toCompacts⟩, fun _ => inferInstance⟩
+
+instance [T2Space α] : OrderClosedTopology (NonemptyCompacts α) where
+  isClosed_le' := isClosed_le_prod.preimage <| continuous_toCompacts.prodMap continuous_toCompacts
+
+@[simp]
+theorem orderClosedTopology_iff : OrderClosedTopology (NonemptyCompacts α) ↔ T2Space α :=
+  ⟨fun _ => t2Space_iff.mp inferInstance, fun _ => inferInstance⟩
+
+theorem isClosed_setOfPred_mem [T2Space α] : IsClosed {p : α × NonemptyCompacts α | p.1 ∈ p.2} := by
+  simp_rw [← singleton_le_iff]
+  exact isClosed_le (by fun_prop) (by fun_prop)
 
 end NonemptyCompacts
 

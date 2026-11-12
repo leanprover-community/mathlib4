@@ -5,11 +5,10 @@ Authors: Anne Baanen, Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Matrix.Block
-public import Mathlib.RingTheory.Polynomial.Basic
+
+import Mathlib.LinearAlgebra.Matrix.Block
 
 /-!
 # Polynomials with degree strictly less than `n`
@@ -32,7 +31,6 @@ This file contains the properties of the submodule of polynomials of degree less
 
 * `taylorLinear r n`: The linear automorphism induced by `taylor r` on `R[X]_n` which sends `X` to
   `X + r` and preserves degrees.
-
 -/
 
 @[expose] public section

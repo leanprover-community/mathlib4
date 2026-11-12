@@ -84,7 +84,7 @@ theorem iSup_iInf_ge_nat_add (f : ℕ → α) (k : ℕ) :
     ⨆ n, ⨅ i ≥ n, f (i + k) = ⨆ n, ⨅ i ≥ n, f i := by
   have hf : Monotone fun n => ⨅ i ≥ n, f i := fun n m h => biInf_mono fun i => h.trans
   rw [← Monotone.iSup_nat_add hf k]
-  · simp_rw [iInf_ge_eq_iInf_nat_add, ← Nat.add_assoc]
+  simp_rw [iInf_ge_eq_iInf_nat_add, ← Nat.add_assoc]
 
 -- Not `@[simp]` since the subterm `?f (i + ?k)` produces an ugly higher-order unification problem.
 -- (Although the `simpNF` linter does not complain.)
@@ -192,7 +192,7 @@ theorem down_iSup [SupSet α] (f : ι → ULift.{v} α) : (⨆ i, f i).down = �
 
 @[to_dual]
 theorem up_iSup [SupSet α] (f : ι → α) : up (⨆ i, f i) = ⨆ i, up (f i) :=
-  congr_arg ULift.up <| (down_iSup _).symm
+  congr_arg ULift.up (down_iSup _).symm
 
 instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
   ULift.down_injective.completeLattice _ .rfl .rfl down_sup down_inf

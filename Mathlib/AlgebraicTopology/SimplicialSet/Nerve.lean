@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
-
 # The nerve of a category
 
 This file provides the definition of the nerve of a category `C`,
@@ -19,7 +18,6 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 ## References
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
-
 -/
 
 @[expose] public section
@@ -107,7 +105,6 @@ lemma σ_obj {n : ℕ} (i : Fin (n + 1)) (x : ComposableArrows C n) (j : Fin (n 
 lemma δ₀_eq {x : ComposableArrows C (n + 1)} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma σ₀_mk₀_eq (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 

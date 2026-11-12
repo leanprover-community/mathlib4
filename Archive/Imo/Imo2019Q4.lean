@@ -87,16 +87,16 @@ theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
   intro h
   -- We know that n < 6.
   have := Imo2019Q4.upper_bound hk h
-  interval_cases n
+  interval_cases n <;>
+  simp_rw [prod_range_succ, prod_range_zero, Int.reducePow, Int.reduceSub] at h <;> norm_cast at h
   -- n = 1
-  · norm_num at h; simp [le_antisymm h (succ_le_of_lt hk)]
+  · rw [mul_one, factorial_eq_one] at h
+    simp [le_antisymm h hk]
   -- n = 2
-  · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rwa [← factorial_inj']
-    norm_num
-  all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
+  · right; congr; rwa [← factorial_inj' (by lia)]
   -- n = 3
-  · refine monotone_factorial.ne_of_lt_of_lt_nat 5 ?_ ?_ _ h <;> decide
+  · refine absurd h (monotone_factorial.ne_of_lt_of_lt_nat 5 ?_ ?_ _) <;> decide
   -- n = 4
-  · refine monotone_factorial.ne_of_lt_of_lt_nat 7 ?_ ?_ _ h <;> decide
+  · refine absurd h (monotone_factorial.ne_of_lt_of_lt_nat 7 ?_ ?_ _) <;> decide
   -- n = 5
-  · refine monotone_factorial.ne_of_lt_of_lt_nat 10 ?_ ?_ _ h <;> decide
+  · refine absurd h (monotone_factorial.ne_of_lt_of_lt_nat 10 ?_ ?_ _) <;> decide

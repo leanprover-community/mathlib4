@@ -65,7 +65,7 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
-instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L) L
+instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L)
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   change -x ∈ S.toSubalgebra; simpa
@@ -754,7 +754,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 /-- Construct an algebra isomorphism from an equality of intermediate fields. -/
 @[simps! apply]
 def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
-  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
+  Subalgebra.equivOfEq _ _ congr(toSubalgebra $h)
 
 @[simp]
 theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :

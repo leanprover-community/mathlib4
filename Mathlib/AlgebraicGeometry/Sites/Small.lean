@@ -8,8 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Cover.Over
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.CategoryTheory.MorphismProperty.CommaSites
-public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
-public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
 # Small sites
@@ -29,7 +27,6 @@ generating pretopologies.
 - `AlgebraicGeometry.Scheme.smallPretopology`: the pretopology on `P.Over ⊤ S` defined by
   `P`-coverings of `S`-schemes with `P`. The induced topology agrees
   with `AlgebraicGeometry.Scheme.smallGrothendieckTopology`.
-
 -/
 
 @[expose] public section

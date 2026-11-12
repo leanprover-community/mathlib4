@@ -5,9 +5,13 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Yoneda
-public import Mathlib.CategoryTheory.Generator.Abelian
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
+public import Mathlib.CategoryTheory.Abelian.Yoneda
+
+import Mathlib.CategoryTheory.Generator.Abelian
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Embedding opposites of Grothendieck categories

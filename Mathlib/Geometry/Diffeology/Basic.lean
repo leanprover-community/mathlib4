@@ -208,8 +208,10 @@ protected theorem _root_.DiffeologicalSpace.ext {X : Type*} {d₁ d₂ : Diffeol
     (h : @IsPlot _ d₁ = @IsPlot _ d₂) : d₁ = d₂ := by
   obtain ⟨p₁, _, _, _, t₁, h₁⟩ := d₁
   obtain ⟨p₂, _, _, _, t₂, h₂⟩ := d₂
-  congr 1; ext s
-  exact ((show p₁ = p₂ from h) ▸ @h₁ s).trans (@h₂ s).symm
+  obtain rfl : p₁ = p₂ := by ext n p; exact congr($h p)
+  congr
+  ext s
+  exact (@h₁ s).trans (@h₂ s).symm
 
 @[fun_prop]
 lemma isPlot_const {n : ℕ} {x : X} : IsPlot (fun _ ↦ x : 𝔼ⁿ → X) :=
@@ -358,7 +360,7 @@ protected theorem DSmooth.continuous' {X Y : Type*}
     [TopologicalSpace X] [DiffeologicalSpace X] [IsDTopologyCompatible X]
     [TopologicalSpace Y] [DiffeologicalSpace Y] [IsDTopologyCompatible Y]
     {f : X → Y} (hf : DSmooth f) : Continuous f := by
-  convert! hf.continuous
+  convert hf.continuous
   · rw [IsDTopologyCompatible.dTop_eq X]
   · rw [IsDTopologyCompatible.dTop_eq Y]
 
