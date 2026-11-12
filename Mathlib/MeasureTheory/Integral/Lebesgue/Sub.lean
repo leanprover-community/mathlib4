@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subtraction of Lebesgue integrals
 
@@ -74,10 +77,9 @@ theorem lintegral_iInf_ae {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measu
               induction n with
               | zero => rfl
               | succ n ih => exact (h n).trans ih
-          congr_arg iSup <|
-            funext fun n =>
+          congr(iSup $(funext fun n =>
               lintegral_sub (h_meas _) (ne_top_of_le_ne_top h_fin <| lintegral_mono_ae <| h_mono n)
-                (h_mono n))
+                (h_mono n))))
         _ = ∫⁻ a, f 0 a ∂μ - ⨅ n, ∫⁻ a, f n a ∂μ := ENNReal.sub_iInf.symm
 
 /-- **Monotone convergence theorem** for nonincreasing sequences of functions. -/

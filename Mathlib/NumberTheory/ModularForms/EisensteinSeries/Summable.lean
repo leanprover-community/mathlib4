@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Order.Interval.Finset.Box
-public import Mathlib.Analysis.Asymptotics.Defs
 
 /-!
 # Summability of Eisenstein series
@@ -30,9 +29,9 @@ variable (z : ℍ)
 namespace EisensteinSeries
 
 lemma norm_eq_max_natAbs (x : Fin 2 → ℤ) : ‖x‖ = max (x 0).natAbs (x 1).natAbs := by
-  rw [← coe_nnnorm, ← NNReal.coe_natCast, NNReal.coe_inj, Nat.cast_max]
+  rw [← coe_nnNorm, ← NNReal.coe_natCast, NNReal.coe_inj, Nat.cast_max]
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  simp only [pi_nnnorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
+  simp only [pi_nnNorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
 
 lemma norm_symm (x y : ℤ) : ‖![x, y]‖ = ‖![y, x]‖ := by
   simp [EisensteinSeries.norm_eq_max_natAbs, max_comm]
@@ -134,9 +133,9 @@ lemma r_mul_max_le {x : Fin 2 → ℤ} (hx : x ≠ 0) : r z * ‖x‖ ≤ ‖x 0
     rw [div_mul_eq_mul_div, ← add_div, div_mul_cancel₀ _ (mod_cast hn0)]
   rw [norm_eq_max_natAbs, h11, norm_mul, norm_real, norm_norm, norm_eq_max_natAbs]
   gcongr
-  · rcases div_max_sq_ge_one x hx with H1 | H2
-    · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound1 z (x 1 / ‖x‖) H1
-    · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound2 z (x 0 / ‖x‖) H2
+  rcases div_max_sq_ge_one x hx with H1 | H2
+  · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound1 z (x 1 / ‖x‖) H1
+  · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound2 z (x 0 / ‖x‖) H2
 
 /-- Upper bound for the summand `|c * z + d| ^ (-k)`, as a product of a function of `z` and a
 function of `c, d`. -/

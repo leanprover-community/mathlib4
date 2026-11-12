@@ -8,17 +8,15 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Grp
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
-
 # `CartesianMonoidalCategory` for `Over X`
 
 We provide a `CartesianMonoidalCategory (Over X)` instance via pullbacks, and provide simp lemmas
 for the induced `MonoidalCategory (Over X)` instance.
-
 -/
 
 public noncomputable section
@@ -205,7 +203,6 @@ lemma ε_pullback_left : (LaxMonoidal.ε (Over.pullback f)).left = inv (pullback
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← η_pullback_left, ← Over.comp_left, Monoidal.η_ε, Over.id_left]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma μ_pullback_left_fst_fst (R S : Over X) :
     (LaxMonoidal.μ (Over.pullback f) R S).left ≫
       pullback.fst _ _ ≫ pullback.fst _ _ = pullback.fst _ _ ≫ pullback.fst _ _ := by
@@ -214,7 +211,6 @@ lemma μ_pullback_left_fst_fst (R S : Over X) :
     Iso.hom_inv_id]
   simp [CartesianMonoidalCategory.prodComparison, fst]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma μ_pullback_left_fst_snd (R S : Over X) :
     (LaxMonoidal.μ (Over.pullback f) R S).left ≫
       pullback.fst _ _ ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.fst _ _ := by
@@ -223,7 +219,6 @@ lemma μ_pullback_left_fst_snd (R S : Over X) :
     ← Over.comp_left_assoc, Iso.hom_inv_id]
   simp [CartesianMonoidalCategory.prodComparison, snd]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma μ_pullback_left_snd (R S : Over X) :
     (LaxMonoidal.μ (Over.pullback f) R S).left ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.snd _ _ := by
@@ -258,7 +253,6 @@ lemma preservesTerminalIso_pullback (f : R ⟶ S) :
       Over.isoMk (asIso (pullback.snd (𝟙 _) f)) (by simp) := by
   ext1; exact toUnit_unique _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma prodComparisonIso_pullback_inv_left_fst_fst (f : X ⟶ Y) (A B : Over Y) :
     (prodComparisonIso (Over.pullback f) A B).inv.left ≫
@@ -275,7 +269,6 @@ lemma prodComparisonIso_pullback_Spec_inv_left_fst_fst' (f : X ⟶ Y) (gA : A �
         pullback.fst (pullback.snd gA f) (pullback.snd gB f) ≫ pullback.fst _ _ :=
   prodComparisonIso_pullback_inv_left_fst_fst ..
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma prodComparisonIso_pullback_inv_left_fst_snd' (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
     (prodComparisonIso (Over.pullback f) (.mk gA) (.mk gB)).inv.left ≫
@@ -285,7 +278,6 @@ lemma prodComparisonIso_pullback_inv_left_fst_snd' (f : X ⟶ Y) (gA : A ⟶ Y) 
     Over.hom_left_inv_left_assoc]
   simp [CartesianMonoidalCategory.prodComparison, snd]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma prodComparisonIso_pullback_inv_left_snd' (f : X ⟶ Y) (gA : A ⟶ Y) (gB : B ⟶ Y) :
     (prodComparisonIso (Over.pullback f) (.mk gA) (.mk gB)).inv.left ≫
@@ -311,7 +303,6 @@ abbrev grpObjMkPullbackSnd [GrpObj (Over.mk f)] : GrpObj (Over.mk (pullback.snd 
   ((Over.pullback g).mapGrp.obj <| .mk <| .mk f).grp
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] monObjMkPullbackSnd_one in
 instance isMonHom_pullbackFst_id_right [MonObj (Over.mk f)] :
     IsMonHom <| Over.homMk (U := Over.mk <| pullback.snd f (𝟙 X)) (V := Over.mk f)

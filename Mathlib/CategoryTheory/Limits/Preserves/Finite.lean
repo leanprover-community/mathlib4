@@ -20,7 +20,6 @@ involved are abelian, or more generally, finitely (co)complete.
   Also provides the dual version.
 * `CategoryTheory.Limits.preservesFiniteLimitsIffFlat` :
   see `Mathlib/CategoryTheory/Functor/Flat.lean`.
-
 -/
 
 public section
@@ -84,7 +83,7 @@ lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
         exact preservesLimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 
 /-- The composition of two left exact functors is left exact. -/
-lemma comp_preservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
+instance comp_preservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 
@@ -240,7 +239,7 @@ lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
         exact preservesColimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 
 /-- The composition of two right exact functors is right exact. -/
-lemma comp_preservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
+instance comp_preservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 

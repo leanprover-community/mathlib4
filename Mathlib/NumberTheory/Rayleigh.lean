@@ -5,7 +5,7 @@ Authors: Jason Yuen
 -/
 module
 
-public import Mathlib.Data.Real.ConjExponents
+public import Mathlib.Basic.Real.ConjExponents
 public import Mathlib.NumberTheory.Real.Irrational
 
 /-!

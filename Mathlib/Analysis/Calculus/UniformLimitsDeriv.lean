@@ -6,8 +6,8 @@ Authors: Kevin H. Wilson
 module
 
 public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Normed.Module.RCLike.Basic
-public import Mathlib.Order.Filter.Curry
+
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
 /-!
 # Swapping limits and derivatives via uniform convergence
@@ -336,8 +336,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   --   * The `f' n` are the derivatives of the `f n`
   --   * The `f' n` converge to `g'` at `x`
   conv =>
-    congr
-    ext
+    enter [1, _]
     rw [← abs_norm, ← abs_inv, ← @RCLike.norm_ofReal 𝕜 _ _, RCLike.ofReal_inv, ← norm_smul]
   rw [← tendsto_zero_iff_norm_tendsto_zero]
   have :
@@ -360,8 +359,8 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     apply ((this ε hε).filter_mono curry_le_prod).mono
     intro n hn
     rw [dist_eq_norm] at hn ⊢
-    convert! hn using 2
-    module
+    module_nf at hn ⊢
+    exact hn
   · -- (Almost) the definition of the derivatives
     rw [Metric.tendsto_nhds]
     intro ε hε

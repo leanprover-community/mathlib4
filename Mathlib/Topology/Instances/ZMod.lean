@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Topology.Order
 public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Topology.Order
 
 /-!
 # Topology on `ZMod N`

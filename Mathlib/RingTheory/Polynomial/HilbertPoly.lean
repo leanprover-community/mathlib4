@@ -5,14 +5,14 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Order.Interval.Set.Infinite
 public import Mathlib.RingTheory.Polynomial.Pochhammer
 public import Mathlib.RingTheory.PowerSeries.WellKnown
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Hilbert polynomials
@@ -56,9 +56,9 @@ is exactly the Hilbert polynomial of the polynomial ring `ℚ[X_0,...,X_d]` view
 a graded module over itself. In fact, `Polynomial.preHilbertPoly F d k` is the
 same as `Polynomial.hilbertPoly ((X : F[X]) ^ k) (d + 1)` for any field `F` and
 `d k : ℕ` (see the lemma `Polynomial.hilbertPoly_X_pow_succ`). See also the lemma
-`Polynomial.preHilbertPoly_eq_choose_sub_add`, which states that if `CharZero F`,
-then for any `d k n : ℕ` with `k ≤ n`, `(Polynomial.preHilbertPoly F d k).eval (n : F)`
-equals `(n - k + d).choose d`.
+`Polynomial.preHilbertPoly_eq_choose_add_sub`, which states that if `CharZero F`,
+then for any `d k n : ℕ` with `k ≤ n + d`, `(Polynomial.preHilbertPoly F d k).eval (n : F)`
+equals `(n + d - k).choose d`.
 -/
 noncomputable def preHilbertPoly (d k : ℕ) : F[X] :=
   (d.factorial : F)⁻¹ • ((ascPochhammer F d).comp (Polynomial.X - (C (k : F)) + 1))
@@ -78,7 +78,7 @@ lemma coeff_preHilbertPoly_self [CharZero F] (d k : ℕ) :
   nth_rw 3 [heq]
   calc
   _ = (d ! : F)⁻¹ • ((ascPochhammer F d).comp (X - C ((k : F) - 1))).leadingCoeff := by
-    simp only [sub_add, ← C_1, ← map_sub, coeff_smul, coeff_natDegree]
+    simp only [sub_add, ← C_1, ← map_sub, AddMonoidAlgebra.coeff_smul_apply, coeff_natDegree]
   _ = (d ! : F)⁻¹ := by
     simp only [leadingCoeff_comp (ne_of_eq_of_ne (natDegree_X_sub_C _) one_ne_zero), Monic.def.1
       (monic_ascPochhammer _ _), leadingCoeff_X_sub_C, one_pow, smul_eq_mul, mul_one]
@@ -87,14 +87,21 @@ lemma leadingCoeff_preHilbertPoly [CharZero F] (d k : ℕ) :
     (preHilbertPoly F d k).leadingCoeff = (d ! : F)⁻¹ := by
   rw [leadingCoeff, natDegree_preHilbertPoly, coeff_preHilbertPoly_self]
 
-lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n) :
-    (preHilbertPoly F d k).eval (n : F) = (n - k + d).choose d := by
+lemma preHilbertPoly_eq_choose_add_sub [CharZero F] (d : ℕ) {k n : ℕ} (hkn : k ≤ n + d) :
+    (preHilbertPoly F d k).eval (n : F) = (n + d - k).choose d := by
   have : (d ! : F) ≠ 0 := by norm_cast; positivity
-  calc
-  _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub hkn, preHilbertPoly]
-  _ = (n - k + d).choose d := by
-    rw [ascPochhammer_nat_eq_natCast_ascFactorial];
-    simp [field, ascFactorial_eq_factorial_mul_choose]
+  rcases le_or_gt k n with h | h
+  · calc
+    _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub h, preHilbertPoly]
+    _ = (n + d - k).choose d := by
+      rw [ascPochhammer_nat_eq_natCast_ascFactorial]
+      simp [field, ascFactorial_eq_factorial_mul_choose, Nat.sub_add_comm h]
+  · rw [Nat.choose_eq_zero_of_lt (by omega)]
+    simpa [preHilbertPoly] using
+      Or.inr ⟨k - n - 1, by omega, by rw [Nat.sub_sub, Nat.cast_sub h]; push_cast; ring⟩
+
+@[deprecated (since := "2026-08-25")]
+alias preHilbertPoly_eq_choose_sub_add := preHilbertPoly_eq_choose_add_sub
 
 variable {F}
 
@@ -175,7 +182,8 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
       have h_le (i : p.support) : (i : ℕ) ≤ n :=
         le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 i.2) hn.le
       have h (i : p.support) : eval ↑n (preHilbertPoly F d ↑i) = (n + d - ↑i).choose d := by
-        rw [preHilbertPoly_eq_choose_sub_add _ _ (h_le i), Nat.sub_add_comm (h_le i)]
+        rw [preHilbertPoly_eq_choose_add_sub _ _ (Nat.le_add_right_of_le (h_le i)),
+          Nat.sub_add_comm (h_le i)]
       simp_rw [h]
       rw [Finset.sum_coe_sort _ (fun x => (p.coeff ↑x) * (_ + d - ↑x).choose _),
         PowerSeries.coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
@@ -258,10 +266,10 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     apply le_trans (natDegree_smul_le _ _)
     rw [natDegree_preHilbertPoly]
   · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp only [one_pow, mul_one]
-    simp only [finsetSum_coeff, coeff_smul, smul_eq_mul, coeff_preHilbertPoly_self,
-      ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum, eval_mul, eval_pow,
-      eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq,
-      false_and, or_false, inv_eq_zero, cast_eq_zero, not_or]
+    simp only [finsetSum_coeff, AddMonoidAlgebra.coeff_smul_apply, smul_eq_mul,
+      coeff_preHilbertPoly_self, ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum,
+      eval_mul, eval_pow, eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero,
+      one_ne_zero, ne_eq, false_and, or_false, inv_eq_zero, cast_eq_zero, not_or]
     exact ⟨(not_iff_not.2 dvd_iff_isRoot).1 hq2, factorial_ne_zero _⟩
 
 theorem natDegree_hilbertPoly_of_ne_zero

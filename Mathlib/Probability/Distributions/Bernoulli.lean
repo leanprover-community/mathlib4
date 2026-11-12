@@ -5,9 +5,7 @@ Authors: Etienne Marion, David Ledvinka
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Topology.UnitInterval
 
 /-!
 # Bernoulli distribution
@@ -141,8 +139,9 @@ lemma bernoulliMeasure_real_apply_of_notMem_of_notMem (p : I) {s : Set X}
   classical
   simp_all [bernoulliMeasure_real_apply]
 
-instance : IsProbabilityMeasure Ber(x, y, p) where
-  measure_univ := by simp [bernoulliMeasure_def]
+instance : IsProbabilityMeasure Ber(x, y, p) := by
+  rw [bernoulliMeasure_def]
+  infer_instance
 
 @[simp]
 theorem bernoulliMeasure_self_eq_dirac (x : X) (p : I) :
@@ -156,11 +155,11 @@ theorem map_bernoulliMeasure [MeasurableSingletonClass X] [MeasurableSingletonCl
   have hf (x : X) : AEMeasurable f (dirac x) := by fun_prop
   simp only [bernoulliMeasure_def]
   rw [AEMeasurable.map_add₀ (by fun_prop) (by fun_prop)]
-  simp
+  simp [hf]
 
 theorem map_bernoulliMeasure' (x y : X) {f : X → Y} (hf : Measurable f) (p : I) :
     Ber(x, y, p).map f = bernoulliMeasure (f x) (f y) p := by
-  simp [bernoulliMeasure_def, Measure.map_add _ _ hf, Measure.map_smul, map_dirac' hf]
+  simp [bernoulliMeasure_def, Measure.map_add _ _ hf, hf.aemeasurable, map_dirac' hf]
 
 lemma eq_bernoulliMeasure {μ : Measure X}
     (h1 : ∀ s, MeasurableSet s → x ∈ s → y ∈ s → μ s = 1)

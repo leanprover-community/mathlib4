@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Nat.NthRoot.Defs
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Ring.Basic
-public import Mathlib.Tactic.Zify
 public import Mathlib.Algebra.Order.Ring.Pow
+public import Mathlib.Data.Nat.NthRoot.Defs
+
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Zify
 
 /-!
 # Lemmas about `Nat.nthRoot`
@@ -76,7 +77,7 @@ private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
     (ha := by positivity) (Hsq := by positivity) (Hsq' := by positivity) (H := by omega)
     (n := n + 1)
   rw [← sub_nonneg] at h ⊢
-  convert! h using 1
+  convert h using 1
   rw [pow_succ]; push_cast; ring1
 
 private theorem nthRoot.always_exists (n a : ℕ) :
@@ -155,7 +156,9 @@ theorem nthRoot_eq_of_le_of_lt (h₁ : a ^ n ≤ b) (h₂ : b < (a + 1) ^ n) :
   simp only [← le_nthRoot_iff hn, ← nthRoot_lt_iff hn] at h₁ h₂
   grind
 
-theorem exists_pow_eq_iff' (hn : n ≠ 0) : (∃ x, x ^ n = a) ↔ (nthRoot n a) ^ n = a := by
+theorem exists_pow_eq_iff' : (∃ x, x ^ n = a) ↔ (nthRoot n a) ^ n = a := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
   constructor
   · rintro ⟨x, rfl⟩
     rw [nthRoot_pow hn]

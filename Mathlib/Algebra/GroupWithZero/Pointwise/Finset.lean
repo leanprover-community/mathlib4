@@ -5,8 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Pointwise operations of finsets in a group with zero

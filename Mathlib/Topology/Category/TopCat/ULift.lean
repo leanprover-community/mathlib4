@@ -7,14 +7,14 @@ module
 
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Homeomorph.Lemmas
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Lifting topological spaces to a higher universe
 
 In this file, we construct the functor `uliftFunctor.{v, u} : TopCat.{u} ⥤ TopCat.{max u v}`
 which sends a topological space `X : Type u` to a homeomorphic space in `Type (max u v)`.
-
 -/
 
 @[expose] public section
@@ -31,7 +31,7 @@ namespace TopCat
 /-- The functor which sends a topological space in `Type u` to a homeomorphic
 space in `Type (max u v)`. -/
 def uliftFunctor : TopCat.{u} ⥤ TopCat.{max u v} where
-  obj X := TopCat.of (ULift.{v} X)
+  obj X := ↧(ULift.{v} X)
   map {X Y} f := ofHom ⟨ULift.map f, by fun_prop⟩
 
 /-- Given `X : TopCat.{u}`, this is the homeomorphism `X ≃ₜ uliftFunctor.{v}.obj X`. -/

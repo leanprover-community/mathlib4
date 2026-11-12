@@ -33,6 +33,8 @@ This file defines cubic polynomials over a semiring and their discriminants over
 cubic, discriminant, polynomial, root
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 
@@ -240,12 +242,12 @@ section Degree
 @[simps]
 def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   toFun P := ⟨P.toPoly, degree_cubic_le⟩
-  invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
+  invFun f := ⟨f.1.coeff 3, f.1.coeff 2, f.1.coeff 1, f.1.coeff 0⟩
   left_inv P := by ext <;> simp only [coeffs]
   right_inv f := by
     ext n
     obtain hn | hn := le_or_gt n 3
-    · interval_cases n <;> simp only <;> ring_nf <;> try simp only [coeffs]
+    · interval_cases n <;> simp only <;> ring_nf <;> simp only [coeffs]
     · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
       simpa using hn
 
@@ -397,7 +399,7 @@ theorem mem_roots_iff [IsDomain R] (h0 : P.toPoly ≠ 0) (x : R) :
   rw [roots, mem_roots h0, IsRoot, toPoly]
   simp only [eval_C, eval_X, eval_add, eval_mul, eval_pow]
 
-theorem card_roots_le [IsDomain R] [DecidableEq R] : P.roots.toFinset.card ≤ 3 := by
+theorem card_roots_le [IsDomain R] [DecidableEq R] : #P.roots.toFinset ≤ 3 := by
   apply (toFinset_card_le P.toPoly.roots).trans
   by_cases hP : P.toPoly = 0
   · simp [hP]

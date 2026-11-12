@@ -8,9 +8,10 @@ module
 public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
 public import Mathlib.CategoryTheory.Sites.EpiMono
-public import Mathlib.CategoryTheory.Sites.Subcanonical
-/-!
 
+import Mathlib.CategoryTheory.Sites.Subcanonical
+
+/-!
 # Limits of epimorphisms in coherent topoi
 
 This file proves that a sequential limit of epimorphisms is epimorphic in the category of sheaves
@@ -111,7 +112,6 @@ lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
 
 include h in
 lemma epi_π_app_zero_of_epi [HasSheafify (coherentTopology C) (Type v)]
-    [Balanced (Sheaf (coherentTopology C) (Type v))]
     [(coherentTopology C).WEqualsLocallyBijective (Type v)]
     {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)}
     {c : Cone F} (hc : IsLimit c)
