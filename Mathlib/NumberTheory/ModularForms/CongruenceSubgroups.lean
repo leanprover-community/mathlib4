@@ -237,13 +237,12 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   refine ⟨a₁ * a₂ * M, mul_ne_zero (mul_ne_zero A₁.den_ne_zero A₂.den_ne_zero) (NeZero.ne _),
     fun y hy ↦ ?_⟩
   -- Show that `y` is of the form `1 + (a₁ * a₂) • k` for some integer matrix `k`.
-  let y' := y.1
-  have hy' : y'.map (Int.cast : ℤ → ZMod (a₁ * a₂ * M)) = 1 := by
+  have hy' : y.1.map (Int.cast : ℤ → ZMod (a₁ * a₂ * M)) = 1 := by
     simp only [Gamma_mem, Fin.isValue] at hy
     ext i j
-    fin_cases i <;> fin_cases j <;> simp [y', hy]
-  obtain ⟨k, hk⟩ : ∃ k, y' = 1 + (a₁ * a₂ * M) • k := by
-    use Matrix.of fun i j ↦ (y' - 1) i j / (a₁ * a₂ * M)
+    fin_cases i <;> fin_cases j <;> simp [hy]
+  obtain ⟨k, hk⟩ : ∃ k, y.1 = 1 + (a₁ * a₂ * M) • k := by
+    use Matrix.of fun i j ↦ (y.1 - 1) i j / (a₁ * a₂ * M)
     rw [← sub_eq_iff_eq_add']
     ext i j
     simp_rw [Matrix.smul_apply, Matrix.of_apply, nsmul_eq_mul, Nat.cast_mul]
@@ -254,7 +253,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
       Nat.cast_mul] using! congr($hy' i j)
   -- use this `k` to cook up a new integer matrix, which we will show comes from `SL(2, ℤ)`
   let z := 1 + M • (A₁.num * k * A₂.num)
-  have hz_coe : z.map Int.cast = A₁ * (y'.map Int.cast) * A₂ := by
+  have hz_coe : z.map Int.cast = A₁ * (y.1.map Int.cast) * A₂ := by
     simp only [Matrix.map_add _ Int.cast_add, Matrix.map_one _ Int.cast_zero Int.cast_one, hk,
       mul_add, mul_one, add_mul, hA₁₂, add_right_inj, z]
     conv_rhs => rw [← A₁.inv_denom_smul_num, ← A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
@@ -266,13 +265,11 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
       mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]
   have hz_det : z.det = 1 := by
     have := congr($(hz_coe).det)
-    simp_rw [Matrix.det_mul, ← Int.cast_det, y', y.2] at this
+    simp_rw [Matrix.det_mul, ← Int.cast_det, y.2] at this
     simpa [← Matrix.det_mul, hA₁₂]
   refine ⟨.mk z hz_det, ?_, by
     simpa only [Subtype.ext_iff, Subgroup.coe_mul, Units.ext_iff, Units.val_mul] using! hz_coe⟩
-  simp only [SetLike.mem_coe, Gamma_mem, Fin.isValue, coe_mk, Matrix.add_apply, one_apply_eq,
-    z, Matrix.smul_apply]
-  simp
+  simp [z, -nsmul_eq_mul]
 
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g Γ(N) g⁻¹ ≤ Γ(M)`. -/
 theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
