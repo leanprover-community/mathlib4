@@ -88,6 +88,7 @@ public def baseChangeEquiv : S ⊗[R] ExteriorAlgebra R M ≃ₐ[S] ExteriorAlge
   invFun := baseChangeExteriorAlgebraToTensor R M S
   left_inv x := AlgHom.congr_fun (baseChangeEquiv_leftInverse R M S) x
   right_inv x := AlgHom.congr_fun (baseChangeEquivForward_rightInverse R M S) x
+  map_smul' := by simp
 
 public lemma baseChangeEquiv_apply (s : S) (m : M) :
     baseChangeEquiv R M S (s ⊗ₜ[R] ι R m) = ι S (s ⊗ₜ[R] m) := by
