@@ -241,7 +241,7 @@ lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
   rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnreal v)).ne']
   norm_cast
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
-  simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
+  simp [valuation_of_algebraMap, intValuation_eq_exp_neg_multiplicity, h_x_nezero]
 
 end HasFiniteQuotients
 
@@ -414,8 +414,7 @@ lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ ⊥)
 
 lemma apply_mul_absNorm_pow_eq_one (v : FinitePlace K) {x : 𝓞 K} (hx : x ≠ 0) :
     v x * v.maximalIdeal.asIdeal.absNorm ^ multiplicity v.maximalIdeal.asIdeal (span {x}) = 1 := by
-  have hnz : span {x} ≠ ⊥ := mt Submodule.span_singleton_eq_bot.mp hx
-  rw [← norm_embedding_eq v x, ← Nat.cast_pow, ← map_pow, ← maxPowDividing_eq_pow_multiplicity hnz]
+  rw [← norm_embedding_eq v x, ← Nat.cast_pow, ← map_pow, ← maxPowDividing_eq_pow_multiplicity]
   exact HeightOneSpectrum.embedding_mul_absNorm K v.maximalIdeal hx
 
 end FinitePlace
