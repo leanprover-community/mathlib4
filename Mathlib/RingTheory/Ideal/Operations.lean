@@ -17,8 +17,6 @@ public import Mathlib.Tactic.Order
 # More operations on modules and ideals
 -/
 
-set_option linter.style.longFile 1700
-
 @[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
@@ -582,7 +580,7 @@ theorem mem_span_singleton_mul {x y : R} {I : Ideal R} : x ∈ span {y} * I ↔ 
 
 @[simp]
 lemma range_mul (A : Type*) [CommSemiring A] [Module R A]
-    [SMulCommClass R A A] [IsScalarTower R A A] (a : A) : LinearMap.range (LinearMap.mul R A a) =
+    [IsScalarTower R A A] (a : A) : LinearMap.range (LinearMap.mul R A a) =
     (Ideal.span {a}).restrictScalars R := by
   aesop (add simp Ideal.mem_span_singleton) (add simp dvd_def)
 
@@ -683,12 +681,6 @@ theorem multiset_prod_le_inf {s : Multiset (Ideal R)} : s.prod ≤ s.inf := by
 theorem prod_le_inf {s : Finset ι} {f : ι → Ideal R} : s.prod f ≤ s.inf f :=
   multiset_prod_le_inf
 
-theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
-  le_antisymm mul_le_inf fun r ⟨hri, hrj⟩ =>
-    let ⟨s, hsi, t, htj, hst⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
-    mul_one r ▸
-      hst ▸
-        (mul_add r s t).symm ▸ Ideal.add_mem (I * J) (mul_mem_mul_rev hsi hrj) (mul_mem_mul hri htj)
 
 theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ∏ i ∈ s, J i) = ⊤ :=
@@ -774,9 +766,16 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
   simp only [isCoprime_iff_add, one_eq_top] at hf ⊢
   exact sup_iInf_eq_top hf
 
--- TODO: Deprecate `Ideal.mul_eq_inf_of_coprime` in favor of this lemma.
 theorem mul_eq_inf_of_isCoprime (coprime : IsCoprime I J) : I * J = I ⊓ J :=
-  (Ideal.mul_eq_inf_of_coprime coprime.sup_eq)
+  le_antisymm mul_le_inf <| calc
+    I ⊓ J = I * (I ⊓ J) + (I ⊓ J) * J := by
+      simpa [mul_sup, mul_comm _ I] using congr((I ⊓ J) * $coprime.add_eq.symm)
+    _ ≤ I * J := by apply add_le <;> gcongr <;> order
+
+@[deprecated mul_eq_inf_of_isCoprime +typeChanged (since := "2026-10-08")]
+theorem mul_eq_inf_of_coprime (h : I ⊔ J = ⊤) : I * J = I ⊓ J :=
+  mul_eq_inf_of_isCoprime (isCoprime_iff_sup_eq.mpr h)
+
 
 open Function
 theorem prod_eq_iInf_of_pairwise_isCoprime {s : Finset ι} {J : ι → Ideal R}
@@ -1050,180 +1049,71 @@ theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   AddSubgroupClass.subset_union
 
-theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} {a b : ι}
-    (hp : ∀ i ∈ s, IsPrime (f i)) {I : Ideal R} :
-    ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
-  suffices
-    ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) → I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i from
-    ⟨this, fun h =>
-      Or.casesOn h
-        (fun h =>
-          Set.Subset.trans h <|
-            Set.Subset.trans Set.subset_union_left Set.subset_union_left)
-        fun h =>
-        Or.casesOn h
-          (fun h =>
-            Set.Subset.trans h <|
-              Set.Subset.trans Set.subset_union_right Set.subset_union_left)
-          fun ⟨i, his, hi⟩ => by
-          refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right
-          exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
-  generalize hn : s.card = n; intro h
-  induction n generalizing a b s with
-  | zero =>
-    clear hp
-    rw [Finset.card_eq_zero] at hn
-    subst hn
-    rw [Finset.coe_empty, Set.biUnion_empty, Set.union_empty, subset_union] at h
-    simpa only [exists_prop, Finset.notMem_empty, false_and, exists_false, or_false]
-  | succ n ih =>
-    classical
-    replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
-      Finset.card_eq_succ.1 hn
-    rcases hn with ⟨i, t, hit, rfl, hn⟩
-    replace hp : IsPrime (f i) ∧ ∀ x ∈ t, IsPrime (f x) := (t.forall_mem_insert _ _).1 hp
-    by_cases Ht : ∃ j ∈ t, f j ≤ f i
-    · obtain ⟨j, hjt, hfji⟩ : ∃ j ∈ t, f j ≤ f i := Ht
-      obtain ⟨u, hju, rfl⟩ : ∃ u, j ∉ u ∧ insert j u = t :=
-        ⟨t.erase j, t.notMem_erase j, Finset.insert_erase hjt⟩
-      have hp' : ∀ k ∈ insert i u, IsPrime (f k) := by
-        rw [Finset.forall_mem_insert] at hp ⊢
-        exact ⟨hp.1, hp.2.2⟩
-      have hiu : i ∉ u := mt Finset.mem_insert_of_mem hit
-      have hn' : (insert i u).card = n := by
-        rw [Finset.card_insert_of_notMem] at hn ⊢
-        exacts [hn, hiu, hju]
-      have h' : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ k ∈ (↑(insert i u) : Set ι), f k := by
-        rw [Finset.coe_insert] at h ⊢
-        rw [Finset.coe_insert] at h
-        simp only [Set.biUnion_insert] at h ⊢
-        rw [← Set.union_assoc (f i : Set R),
-            Set.union_eq_self_of_subset_right hfji] at h
-        exact h
-      specialize ih hp' hn' h'
-      refine ih.imp id (Or.imp id (Exists.imp fun k => ?_))
-      exact And.imp (fun hk => Finset.insert_subset_insert i (Finset.subset_insert j u) hk) id
-    by_cases Ha : f a ≤ f i
-    · have h' : (I : Set R) ⊆ f i ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j := by
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_assoc,
-          Set.union_right_comm (f a : Set R),
-          Set.union_eq_self_of_subset_left Ha] at h
-        exact h
-      specialize ih hp.2 hn h'
-      right
-      rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · exact Or.inr ⟨i, Finset.mem_insert_self i t, ih⟩
-      · exact Or.inl ih
-      · exact Or.inr ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
-    by_cases Hb : f b ≤ f i
-    · have h' : (I : Set R) ⊆ f a ∪ f i ∪ ⋃ j ∈ (↑t : Set ι), f j := by
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_assoc,
-          Set.union_assoc (f a : Set R),
-          Set.union_eq_self_of_subset_left Hb] at h
-        exact h
-      specialize ih hp.2 hn h'
-      rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · exact Or.inl ih
-      · exact Or.inr (Or.inr ⟨i, Finset.mem_insert_self i t, ih⟩)
-      · exact Or.inr (Or.inr ⟨k, Finset.mem_insert_of_mem hkt, ih⟩)
-    by_cases Hi : I ≤ f i
-    · exact Or.inr (Or.inr ⟨i, Finset.mem_insert_self i t, Hi⟩)
-    have : ¬I ⊓ f a ⊓ f b ⊓ t.inf f ≤ f i := by
-      simp only [hp.1.inf_le, hp.1.inf_le', not_or]
-      exact ⟨⟨⟨Hi, Ha⟩, Hb⟩, Ht⟩
-    rcases Set.not_subset.1 this with ⟨r, ⟨⟨⟨hrI, hra⟩, hrb⟩, hr⟩, hri⟩
-    by_cases HI : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j
-    · specialize ih hp.2 hn HI
-      rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · order
-      · order
-      · right
-        right
-        exact ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
-    exfalso
-    rcases Set.not_subset.1 HI with ⟨s, hsI, hs⟩
-    rw [Finset.coe_insert, Set.biUnion_insert] at h
-    have hsi : s ∈ f i := ((h hsI).resolve_left (mt Or.inl hs)).resolve_right (mt Or.inr hs)
-    rcases h (I.add_mem hrI hsI) with (⟨ha | hb⟩ | hi | ht)
-    · exact hs (Or.inl <| Or.inl <| add_sub_cancel_left r s ▸ (f a).sub_mem ha hra)
-    · exact hs (Or.inl <| Or.inr <| add_sub_cancel_left r s ▸ (f b).sub_mem hb hrb)
-    · exact hri (add_sub_cancel_right r s ▸ (f i).sub_mem hi hsi)
-    · rw [Set.mem_iUnion₂] at ht
-      rcases ht with ⟨j, hjt, hj⟩
-      simp only [Finset.inf_eq_iInf, SetLike.mem_coe, Submodule.mem_iInf] at hr
-      exact hs <| Or.inr <| Set.mem_biUnion hjt <|
-        add_sub_cancel_left r s ▸ (f j).sub_mem hj <| hr j hjt
+/-- **Prime avoidance**: if an ideal `I` is contained in a finite union of ideals `f i`, all of
+which are prime except possibly `f a` and `f b`, then `I` is contained in one of them.
 
-/-- Prime avoidance. Atiyah-Macdonald 1.11, Eisenbud 3.3, Matsumura Ex.1.6. -/
+Atiyah-Macdonald 1.11, Eisenbud 3.3, Matsumura Ex.1.6. -/
 @[stacks 00DS]
-theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R} (a b : ι)
-    (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
-    ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i :=
-  suffices ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) → ∃ i, i ∈ s ∧ I ≤ f i by
-    have aux := fun h => (bex_def.2 <| this h)
-    simp_rw [exists_prop] at aux
-    refine ⟨aux, fun ⟨i, his, hi⟩ ↦ Set.Subset.trans hi ?_⟩
-    apply Set.subset_biUnion_of_mem (show i ∈ (↑s : Set ι) from his)
-  fun h : (I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i => by
+theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R}
+    (a b : ι) (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
+    ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i := by
+  refine ⟨fun h ↦ ?_, fun ⟨i, his, hi⟩ ↦ Set.subset_iUnion₂_of_subset i his hi⟩
   classical
-    by_cases has : a ∈ s
-    · obtain ⟨t, hat, rfl⟩ : ∃ t, a ∉ t ∧ insert a t = s :=
-        ⟨s.erase a, Finset.notMem_erase a s, Finset.insert_erase has⟩
-      by_cases hbt : b ∈ t
-      · obtain ⟨u, hbu, rfl⟩ : ∃ u, b ∉ u ∧ insert b u = t :=
-          ⟨t.erase b, Finset.notMem_erase b t, Finset.insert_erase hbt⟩
-        have hp' : ∀ i ∈ u, IsPrime (f i) := by
-          intro i hiu
-          refine hp i (Finset.mem_insert_of_mem (Finset.mem_insert_of_mem hiu)) ?_ ?_ <;>
-              rintro rfl <;>
-            solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Finset.coe_insert, Set.biUnion_insert, Set.biUnion_insert, ←
-          Set.union_assoc, subset_union_prime' hp'] at h
-        rwa [Finset.exists_mem_insert, Finset.exists_mem_insert]
-      · have hp' : ∀ j ∈ t, IsPrime (f j) := by
-          intro j hj
-          refine hp j (Finset.mem_insert_of_mem hj) ?_ ?_ <;> rintro rfl <;>
-            solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f a : Set R),
-          subset_union_prime' hp', ← or_assoc, or_self_iff] at h
-        rwa [Finset.exists_mem_insert]
-    · by_cases hbs : b ∈ s
-      · obtain ⟨t, hbt, rfl⟩ : ∃ t, b ∉ t ∧ insert b t = s :=
-          ⟨s.erase b, Finset.notMem_erase b s, Finset.insert_erase hbs⟩
-        have hp' : ∀ j ∈ t, IsPrime (f j) := by
-          intro j hj
-          refine hp j (Finset.mem_insert_of_mem hj) ?_ ?_ <;> rintro rfl <;>
-            solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
-          subset_union_prime' hp', ← or_assoc, or_self_iff] at h
-        rwa [Finset.exists_mem_insert]
-      rcases s.eq_empty_or_nonempty with rfl | hsne
-      · rw [Finset.coe_empty, Set.biUnion_empty] at h
-        exact (h I.zero_mem).elim
-      · obtain ⟨i, his⟩ := hsne
-        obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
-          ⟨s.erase i, Finset.notMem_erase i s, Finset.insert_erase his⟩
-        have hp' : ∀ j ∈ t, IsPrime (f j) := by
-          intro j hj
-          refine hp j (Finset.mem_insert_of_mem hj) ?_ ?_ <;> rintro rfl <;>
-            solve_by_elim only [Finset.mem_insert_of_mem, *]
-        rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f i : Set R),
-          subset_union_prime' hp', ← or_assoc, or_self_iff] at h
-        rwa [Finset.exists_mem_insert]
+  induction s using Finset.strongInduction generalizing a b with | H s ih =>
+  obtain ⟨j, hj, -⟩ := Set.mem_iUnion₂.1 (h I.zero_mem)
+  wlog ha : a ∈ s generalizing a
+  · exact this j (fun j hj _ ↦ hp j hj (ne_of_mem_of_not_mem hj ha)) hj
+  wlog hb : b ∈ s generalizing b
+  · exact this j (fun j hj hja _ ↦ hp j hj hja (ne_of_mem_of_not_mem hj hb)) hj
+  by_cases! hab : ∀ j ∈ s, j = a ∨ j = b
+  · have : (I : Set R) ⊆ f a ∪ f b := h.trans <| Set.iUnion₂_subset (by grind)
+    exact (subset_union.1 this).elim (⟨a, ha, ·⟩) (⟨b, hb, ·⟩)
+  obtain ⟨i, his, hia, hib⟩ := hab
+  have hpi := hp i his hia hib
+  let t : Finset ι := {j ∈ s | ¬f j ≤ f i}
+  have hts : t ⊂ s := by grind
+  by_cases hIt : (I : Set R) ⊆ ⋃ j ∈ t, f j
+  · obtain ⟨j, hj, hIj⟩ := ih t hts a b (fun j hj ↦ hp j (hts.subset hj)) hIt
+    exact ⟨j, hts.subset hj, hIj⟩
+  by_cases hIi : I ≤ f i
+  · exact ⟨i, his, hIi⟩
+  replace h : (I : Set R) ⊆ f i ∪ ⋃ j ∈ t, f j := by
+    refine h.trans <| Set.iUnion₂_subset fun j hj x hx ↦ ?_
+    by_cases hji : f j ≤ f i
+    · exact .inl (hji hx)
+    · apply Or.inr
+      simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
+      exact ⟨j, by grind, by simpa using hx⟩
+  obtain ⟨x, hxI, hxt⟩ := Set.not_subset.mp hIt
+  have hxi : x ∈ f i := (h hxI).resolve_right hxt
+  have : ¬I ⊓ t.inf f ≤ f i := by
+    rw [hpi.inf_le, hpi.inf_le']
+    exact not_or.mpr ⟨hIi, fun ⟨j, hj, hji⟩ ↦ (Finset.mem_filter.mp hj).right hji⟩
+  obtain ⟨r, ⟨hrI, hrt⟩, hri⟩ := IsConcreteLE.not_le_iff_exists.mp this
+  exfalso
+  obtain hrxi | hrxt := h (I.add_mem hrI hxI)
+  · exact hri (((f i).add_mem_iff_left hxi).mp hrxi)
+  · obtain ⟨j, hj, hrxj⟩ := Set.mem_iUnion₂.mp hrxt
+    exact hxt <| Set.mem_biUnion hj <|
+      ((f j).add_mem_iff_right ((Submodule.mem_finsetInf.mp hrt j hj))).mp hrxj
+
+/-- Prime avoidance, with the two possibly non-prime ideals `f a`, `f b` written separately. -/
+theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι → Ideal R}
+    {a b : ι} (hp : ∀ i ∈ s, IsPrime (f i)) {I : Ideal R} :
+    ((I : Set R) ⊆ f a ∪ f b ∪ ⋃ i ∈ (↑s : Set ι), f i) ↔ I ≤ f a ∨ I ≤ f b ∨ ∃ i ∈ s, I ≤ f i := by
+  classical
+  convert subset_union_prime (s := insert a (insert b s)) (I := I) a b
+    (fun i _ _ _ ↦ hp i (by grind))
+  · ext; simp; grind
+  · simp
 
 /-- Another version of prime avoidance using `Set.Finite` instead of `Finset`. -/
 lemma subset_union_prime_finite {R ι : Type*} [CommRing R] {s : Set ι}
     (hs : s.Finite) {f : ι → Ideal R} (a b : ι)
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → (f i).IsPrime) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ∃ i ∈ s, I ≤ f i := by
-  rcases Set.Finite.exists_finset hs with ⟨t, ht⟩
-  have heq : ⋃ i ∈ s, f i = ⋃ i ∈ t, (f i : Set R) := by
-    ext
-    simpa using exists_congr (fun i ↦ (and_congr_left fun a ↦ ht i).symm)
-  have hmem_union : ((I : Set R) ⊆ ⋃ i ∈ s, f i) ↔ ((I : Set R) ⊆ ⋃ i ∈ (t : Set ι), f i) :=
-    (congrArg _ heq).to_iff
-  rw [hmem_union, Ideal.subset_union_prime a b (fun i hin ↦ hp i ((ht i).mp hin))]
-  exact exists_congr (fun i ↦ and_congr_left fun _ ↦ ht i)
+  rw [← hs.coe_toFinset, subset_union_prime a b fun i hi ↦ hp i (hs.mem_toFinset.1 hi)]
+  simp
 
 lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
     {R : Type*} [CommRing R] {M : Ideal R} [M.IsMaximal] {S : Set (Ideal R)}
@@ -1298,9 +1188,6 @@ theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
     span {a} ∣ span ({b} : Set R) ↔ a ∣ b :=
   ⟨fun h => span_singleton_le_span_singleton.mp (le_of_dvd h),
    fun ⟨c, hc⟩ => ⟨span {c}, by rw [hc, span_singleton_mul_span_singleton]⟩⟩
-
-@[deprecated (since := "2026-04-16")]
-alias _root_.span_singleton_dvd_span_singleton_iff_dvd := span_singleton_dvd_span_singleton_iff_dvd
 
 /-- Every ideal has multiplicity `0` in `⊤`, the unit ideal. -/
 @[simp]

@@ -46,7 +46,6 @@ the real and imaginary parts using the real subalgebra of real-valued functions 
 
 Extend to cover the case of subalgebras of the continuous functions vanishing at infinity,
 on non-compact spaces.
-
 -/
 
 @[expose] public section
@@ -71,7 +70,6 @@ def attachBound (f : C(X, ℝ)) : C(X, Set.Icc (-‖f‖) ‖f‖) where
 theorem attachBound_apply_coe (f : C(X, ℝ)) (x : X) : ((attachBound f) x : ℝ) = f x :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : ℝ[X]) :
     (g.toContinuousMapOn (Set.Icc (-‖f‖) ‖f‖)).comp (f : C(X, ℝ)).attachBound =
@@ -380,8 +378,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
   have hFA : F ∈ A := by
     refine A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ ?_ <| A.smul_mem A.one_mem <| f x₂)
     ext1
-    simp only [ContinuousMap.smul_apply, one_apply, smul_eq_mul, mul_one,
-      const_apply]
+    simp only [ContinuousMap.smul_apply, ContinuousMap.one_apply, smul_eq_mul, mul_one, const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
   refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
   · -- This is also an element of the subalgebra, and takes only real values
@@ -604,7 +601,7 @@ theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebr
   · intro x ⟨hxs, (hxφ : φ x = 0)⟩
     rw [mem_closure_iff_clusterPt, ClusterPt] at hxs
     have : Tendsto (fun y ↦ y - φ y • 1) (𝓝 x ⊓ 𝓟 s) (𝓝 x) := by
-      conv => congr; rfl; rfl; rw [← sub_zero x, ← zero_smul K 1, ← hxφ]
+      conv => enter [3]; rw [← sub_zero x, ← zero_smul K 1, ← hxφ]
       exact Filter.tendsto_inf_left (Continuous.tendsto (by fun_prop) x)
     refine mem_closure_of_tendsto this <| eventually_inf_principal.mpr ?_
     filter_upwards [] with g hg using

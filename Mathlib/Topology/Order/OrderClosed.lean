@@ -345,11 +345,11 @@ theorem continuousWithinAt_Ioo_iff_Iio (h : a < b) :
 
 @[to_dual]
 protected theorem CovBy.nhdsLE (H : a ⋖ b) : 𝓝[≤] b = pure b := by
-  rw [← Iio_insert, nhdsWithin_insert, H.nhdsLT, sup_bot_eq]
+  rw [← insert_Iio, nhdsWithin_insert, H.nhdsLT, sup_bot_eq]
 
 @[to_dual]
 protected theorem PredOrder.nhdsLE [PredOrder α] : 𝓝[≤] b = pure b := by
-  rw [← Iio_insert, nhdsWithin_insert, PredOrder.nhdsLT, sup_bot_eq]
+  rw [← insert_Iio, nhdsWithin_insert, PredOrder.nhdsLT, sup_bot_eq]
 
 @[to_dual]
 theorem Ioc_mem_nhdsLE (H : a < b) : Ioc a b ∈ 𝓝[≤] b :=
@@ -576,6 +576,20 @@ instance (priority := 90) OrderClosedTopology.to_t2Space : T2Space α :=
       t.isClosed_le'.inter (isClosed_le continuous_snd continuous_fst)
 
 end PartialOrder
+
+section Lattice
+
+variable [TopologicalSpace α] [Lattice α] [OrderClosedTopology α]
+
+@[closedness .]
+theorem isClosed_uIcc {a b : α} : IsClosed (uIcc a b) :=
+  isClosed_Icc
+
+@[simp, closedness =]
+lemma closure_uIcc {a b : α} : closure (uIcc a b) = uIcc a b :=
+  isClosed_uIcc.closure_eq
+
+end Lattice
 
 section LinearOrder
 

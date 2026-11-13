@@ -9,7 +9,6 @@ public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
-
 # Derivation bundle
 
 In this file we define the derivations at a point of a manifold on the algebra of smooth functions.

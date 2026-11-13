@@ -16,7 +16,6 @@ object and one morphism.
 ## References
 
 * https://mathoverflow.net/a/136480
-
 -/
 
 @[expose] public section

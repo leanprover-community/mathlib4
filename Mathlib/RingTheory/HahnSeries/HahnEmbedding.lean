@@ -13,7 +13,6 @@ import Mathlib.Basic.Real.Embedding
 import Mathlib.GroupTheory.DivisibleHull
 
 /-!
-
 # Hahn embedding theorem
 
 In this file, we prove the Hahn embedding theorem: every linearly ordered abelian group
@@ -23,7 +22,6 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 ## References
 
 * [A. H. Clifford, *Note on Hahn’s theorem on ordered Abelian groups.*][clifford1954]
-
 -/
 
 public section

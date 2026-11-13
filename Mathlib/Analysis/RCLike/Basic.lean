@@ -316,7 +316,9 @@ theorem conj_ofReal (r : ℝ) : conj (r : K) = (r : K) := by
   rw [ext_iff]
   simp only [ofReal_im, conj_im, conj_re, and_self_iff, neg_zero]
 
-theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+theorem conj_natCast (n : ℕ) : conj (n : K) = n := map_natCast _ _
+
+@[deprecated (since := "2026-10-13")] alias conj_nat_cast := conj_natCast
 
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : K) = ofNat(n) :=
   map_ofNat _ _
@@ -352,7 +354,7 @@ theorem im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by
 
 open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
-theorem is_real_TFAE (z : K) :
+theorem is_real_tfae (z : K) :
     TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0, IsSelfAdjoint z] := by
   tfae_have 1 → 4
   | h => by
@@ -367,24 +369,26 @@ theorem is_real_TFAE (z : K) :
   tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias is_real_TFAE := is_real_tfae
+
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
-    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 1 2
+    _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_tfae z).out 1 2
     _ ↔ _                    := by simp only [eq_comm]
 
 theorem conj_eq_iff_re {z : K} : conj z = z ↔ (re z : K) = z :=
-  (is_real_TFAE z).out 1 3
+  (is_real_tfae z).out 1 3
 
 theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
-  (is_real_TFAE z).out 1 4
+  (is_real_tfae z).out 1 4
 
 @[simp]
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
 
 lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x :=
-  is_real_TFAE x |>.out 4 5
+  is_real_tfae x |>.out 4 5
 
 lemma re_eq_ofReal_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
     re x = y ↔ x = y := by
@@ -535,15 +539,17 @@ theorem div_re_ofReal {z : K} {r : ℝ} : re (z / r) = re z / r := by
 theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : K) = (r : K) ^ n :=
   map_zpow₀ (algebraMap ℝ K) r n
 
-theorem I_mul_I_of_nonzero : (I : K) ≠ 0 → (I : K) * I = -1 :=
+theorem I_mul_I_of_ne_zero : (I : K) ≠ 0 → (I : K) * I = -1 :=
   I_mul_I_ax.resolve_left
+
+@[deprecated (since := "2026-10-13")] alias I_mul_I_of_nonzero := I_mul_I_of_ne_zero
 
 @[simp, rclike_simps]
 theorem inv_I : (I : K)⁻¹ = -I := by
   by_cases h : (I : K) = 0
   · simp [h]
   · field_simp
-    linear_combination I_mul_I_of_nonzero h
+    linear_combination I_mul_I_of_ne_zero h
 
 @[simp, rclike_simps]
 theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
@@ -561,9 +567,13 @@ theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
 @[simp 1100, rclike_simps]
 theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
 
-@[simp 1100, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
+@[simp 1100, rclike_simps] lemma nnNorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnNorm]
 
-@[simp 1100, rclike_simps] lemma enorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [enorm]
+@[deprecated (since := "2026-10-31")] alias nnnorm_conj := nnNorm_conj
+
+@[simp 1100, rclike_simps] lemma eNorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [eNorm]
+
+@[deprecated (since := "2026-11-06")] alias enorm_conj := eNorm_conj
 
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq ((norm_mul _ _).trans congr($(norm_conj _) * ‖x‖)).symm
@@ -656,33 +666,43 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 
-@[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
+@[simp, rclike_simps, norm_cast] lemma nnNorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnNorm]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_natCast := nnNorm_natCast
 
 @[simp, rclike_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖ = ofNat(n) :=
   norm_natCast n
 
 @[simp, rclike_simps]
-lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖₊ = ofNat(n) :=
-  nnnorm_natCast n
+lemma nnNorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(ofNat(n) : K)‖₊ = ofNat(n) :=
+  nnNorm_natCast n
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_ofNat := nnNorm_ofNat
 
 lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
-lemma nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
+lemma nnNorm_two : ‖(2 : K)‖₊ = 2 := nnNorm_ofNat 2
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_two := nnNorm_two
 
 @[simp, rclike_simps, norm_cast]
 lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
   rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
 
 @[simp, rclike_simps, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]; rfl
+lemma nnNorm_nnRatCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnNorm]; rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnratCast := nnNorm_nnRatCast
 
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
-lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
-    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
+lemma nnNorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnNorm_smul (n : K) x
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_nsmul := nnNorm_nsmul
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -725,7 +745,7 @@ theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
 
 theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
-    I_mul_I_of_nonzero hI, norm_neg, norm_one]
+    I_mul_I_of_ne_zero hI, norm_neg, norm_one]
 
 theorem norm_I : ‖(I : K)‖ = if (I : K) = 0 then 0 else 1 := by
   grind [norm_I_of_ne_zero, norm_eq_zero]
@@ -817,8 +837,10 @@ lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
   simpa [NNRat.cast_smul_eq_nnqsmul] using! norm_smul (q : K) x
 
 variable (K) in
-lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnnorm_smul (q : K) x
+lemma nnNorm_nnqsMul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnNorm_smul (q : K) x
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_nnqsmul := nnNorm_nnqsMul
 
 @[bound]
 lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
@@ -969,7 +991,7 @@ lemma toPosMulReflectLT : PosMulReflectLT K where
     rintro ⟨x, hx⟩ y z hyz
     dsimp at *
     rw [RCLike.le_iff_re_im, map_zero, map_zero, eq_comm] at hx
-    obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 4 2).1 hx.2
+    obtain ⟨r, rfl⟩ := ((is_real_tfae x).out 4 2).1 hx.2
     simp only [RCLike.lt_iff_re_im (K := K), mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero,
       mul_im, add_zero, mul_eq_mul_left_iff] at hyz ⊢
     refine ⟨lt_of_mul_lt_mul_of_nonneg_left hyz.1 <| by simpa using hx, hyz.2.resolve_right ?_⟩
@@ -1195,17 +1217,17 @@ theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
 
 lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
   intro x y
-  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  simp only [ENNReal.coe_one, one_mul, eDist_eq_eNorm_sub]
   calc ‖re x - re y‖ₑ
   _ = ‖re (x - y)‖ₑ := by rw [map_sub re x y]
-  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+  _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
 
 lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   intro x y
-  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  simp only [ENNReal.coe_one, one_mul, eDist_eq_eNorm_sub]
   calc ‖im x - im y‖ₑ
   _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
-  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
+  _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
 /-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
 @[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where
@@ -1269,7 +1291,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
     convert norm_le_re_iff_eq_norm (z := -I * z) using 2
-    all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
+    all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_ne_zero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
     im z ≤ -‖z‖ ↔ z = -(I * ‖z‖) := by

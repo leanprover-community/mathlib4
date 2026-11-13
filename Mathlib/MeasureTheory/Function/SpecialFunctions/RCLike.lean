@@ -11,7 +11,6 @@ import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Measurability of the basic `RCLike` functions
-
 -/
 
 public section
