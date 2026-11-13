@@ -61,10 +61,7 @@ variable {G}
 /-- `of` is the canonical projection from the group `G` to its abelianization. -/
 @[to_additive
 /-- `of` is the canonical projection from the additive group `G` to its abelianization. -/]
-def of : G →* Abelianization G where
-  toFun := QuotientGroup.mk
-  map_one' := rfl
-  map_mul' _ _ := rfl
+def of : G →* Abelianization G := QuotientGroup.mk' (commutator G)
 
 @[to_additive (attr := simp)]
 theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
@@ -74,6 +71,11 @@ variable (G) in
 @[to_additive (attr := simp)]
 theorem ker_of : of.ker = commutator G :=
   QuotientGroup.ker_mk' (commutator G)
+
+variable (G) in
+@[to_additive]
+lemma surjective_of : Function.Surjective (of : G →* Abelianization G) :=
+  QuotientGroup.mk'_surjective (commutator G)
 
 section lift
 
@@ -139,27 +141,31 @@ def map : Abelianization G →* Abelianization H :=
 /-- Use `map` as the preferred simp normal form. -/
 @[to_additive (attr := simp) /-- Use `map` as the preferred simp normal form. -/]
 theorem lift_of_comp :
-    Abelianization.lift (Abelianization.of.comp f) = Abelianization.map f := rfl
+    Abelianization.lift (Abelianization.of.comp f) = Abelianization.map f :=
+  rfl
 
 @[to_additive (attr := simp)]
 theorem map_of (x : G) : map f (of x) = of (f x) :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem map_comp_of : (map f).comp of = of.comp f :=
+  rfl
+
+@[to_additive]
+lemma ker_map (f : G →* H) : (map f).ker = ((commutator H).comap f).map of := by
+  rw [← ker_of, MonoidHom.comap_ker, ← map_comp_of, ← MonoidHom.comap_ker,
+    Subgroup.map_comap_eq_self_of_surjective (surjective_of G)]
+
 @[to_additive]
 lemma map_ker_le_ker_map (f : G →* H) : f.ker.map of ≤ (Abelianization.map f).ker := by
-  rintro _ ⟨x, hx, rfl⟩
-  simp_all [MonoidHom.mem_ker]
+  grw [ker_map, Subgroup.ker_le_comap]
 
 @[to_additive]
 lemma map_ker_eq_ker_map (f : G →* H) (hf : Function.Surjective f) :
-    f.ker.map of = (Abelianization.map f).ker :=
-  le_antisymm (map_ker_le_ker_map f) fun y h ↦ by
-    obtain ⟨x, rfl⟩ : ∃ x, of x = y := QuotientGroup.mk_surjective y
-    rw [MonoidHom.mem_ker, map_of, ← MonoidHom.mem_ker, ker_of,
-      ← map_commutator_of_surjective hf] at h
-    obtain ⟨c, hc, hfc⟩ := h
-    have hc' : of c = 1 := by rwa [← MonoidHom.mem_ker, ker_of]
-    exact ⟨x * c⁻¹, by simp [hfc], by simp [hc']⟩
+    f.ker.map of = (map f).ker := by
+  rw [ker_map, ← map_commutator_of_surjective hf, Subgroup.comap_map_eq, Subgroup.map_sup,
+    ← ker_of, Subgroup.map_ker_self, bot_sup_eq]
 
 @[to_additive (attr := simp)]
 theorem map_id : map (MonoidHom.id G) = MonoidHom.id (Abelianization G) :=
