@@ -99,4 +99,33 @@ public theorem map_ofCoeffList_cons {R : Type*} [Ring R] (c : ℤ) (p : List ℤ
 
 end ofCoeffList
 
+variable {p q : List ℤ} {st : SturmStep} {steps : List SturmStep}
+
+/-- The real polynomial that `p` represents. -/
+noncomputable def toReal (p : List ℤ) : ℝ[X] := (ofCoeffList p).map (Int.castRingHom ℝ)
+
+theorem toReal_ne_zero (h : coeffLead p ≠ 0) : toReal p ≠ 0 := by
+  simp only [toReal, Polynomial.map_ne_zero_iff, RingHom.injective_int]
+  exact ofCoeffList_ne_zero h
+
+theorem natDegree_toReal (h : coeffLead p ≠ 0) : (toReal p).natDegree = p.length - 1 := by
+  simp only [toReal, natDegree_map_eq_of_injective, RingHom.injective_int, natDegree_ofCoeffList h]
+
+theorem degree_toReal_lt_degree (hlen : p.length < q.length) (h : coeffLead q ≠ 0) :
+    (toReal p).degree < (toReal q).degree := by
+  rw [degree_eq_natDegree (toReal_ne_zero h), natDegree_toReal h, degree_lt_iff_coeff_zero]
+  intro k hk
+  rw [toReal, coeff_map, coeff_ofCoeffList, List.getD_eq_default _ _ (by lia), map_zero]
+
+theorem toReal_coeffDerivative (p : List ℤ) :
+    toReal (coeffDerivative p) = derivative (toReal p) := by
+  simp only [toReal, derivative_map, ofCoeffList_coeffDerivative]
+
+theorem toReal_coeffAddSmul (c : ℤ) (p q : List ℤ) :
+    toReal (coeffAddSmul c p q) = C (c : ℝ) * toReal p + toReal q := by
+  simp [toReal, ofCoeffList_coeffAddSmul]
+
+theorem toReal_coeffMul (p q : List ℤ) : toReal (coeffMul p q) = toReal p * toReal q := by
+  simp [toReal, ofCoeffList_coeffMul]
+
 end Mathlib.Tactic.RealRootCount
