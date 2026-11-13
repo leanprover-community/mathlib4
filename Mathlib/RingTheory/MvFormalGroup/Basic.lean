@@ -5,8 +5,8 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Rename
 public import Mathlib.Data.Matrix.Diagonal
+public import Mathlib.RingTheory.MvPowerSeries.Rename
 
 /-!
 # Multidimensional formal group laws
