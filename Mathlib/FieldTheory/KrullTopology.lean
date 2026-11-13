@@ -16,6 +16,11 @@ import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Connected.Separation
 import Mathlib.Topology.UniformSpace.Separation
 
+/- Keep the `public import Mathlib.Topology.Algebra.FilterBasis` at the bottom of the import block
+to distinguish it from the other imports, since it should be removed once the deprecated material
+is removed. -/
+set_option linter.style.header.imports false
+
 /-!
 # Krull topology
 
