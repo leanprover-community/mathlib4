@@ -333,7 +333,7 @@ theorem lt_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {x y}, (x ⟶ y) →
     {a b : V} (p : Path a b) (hp : 0 < p.length) : f a < f b := by
   cases p with
   | nil => cases hp
-  | cons q e => exact lt_of_le_of_lt (le_of_hom_le (fun e' => (hf e').le) q) (hf e)
+  | cons q e => exact lt_of_le_of_lt (le_of_hom_le (fun e' => le_of_lt (hf e')) q) (hf e)
 
 /-- In a quiver admitting a strictly monotonic valuation into a preorder,
 any closed path (cycle) must have length zero. -/
