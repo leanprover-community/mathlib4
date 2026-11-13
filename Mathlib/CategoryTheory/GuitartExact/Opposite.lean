@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 
 A `2`-square is Guitart exact iff the opposite (transposed) `2`-square
 is Guitart exact.
-
 -/
 
 @[expose] public section

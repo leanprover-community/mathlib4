@@ -57,7 +57,6 @@ only assumes `R` is a commutative semiring.
 
 * [Roby, Norbert. 1963. «Lois polynomes et lois formelles en théorie des modules».
   Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348][Roby-1963]
-
 -/
 
 open scoped Finset
@@ -471,7 +470,7 @@ theorem exists_lift' (t : S ⊗[R] M) (s : S) : ∃ (n : ℕ) (ψ : MvPolynomial
   have hs : s ∈ (φ R gen).range := by
     rw [hgen]
     apply Algebra.subset_adjoin
-    simp only [Finset.coe_singleton, Set.sup_eq_union, Set.mem_union, SetLike.mem_coe]
+    simp only [Finset.coe_singleton, Set.mem_union, SetLike.mem_coe]
     exact Or.inr (Algebra.subset_adjoin rfl)
   use #gen, φ R gen, p, hs.choose, hp, hs.choose_spec
 

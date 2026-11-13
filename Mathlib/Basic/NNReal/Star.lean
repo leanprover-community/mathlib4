@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Basic.Real.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The non-negative real numbers are a \*-ring, with the trivial \*-structure
 -/

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.ULift
 public import Mathlib.Algebra.Ring.ULift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Field instances for `ULift`
 

@@ -31,7 +31,6 @@ that if `C : Type u` and `Category.{v} C`, then
 ## TODO
 * Show that functors which preserve 1-hypercovers are continuous.
 * Refactor `DenseSubsite` using `1`-hypercovers.
-
 -/
 
 @[expose] public section

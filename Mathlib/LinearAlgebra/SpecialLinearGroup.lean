@@ -33,7 +33,6 @@ and its variant
 `Matrix.SpecialLinearGroup.toLin_equiv`,
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R V`,
 associated with a finite basis of `V`.
-
 -/
 
 @[expose] public section

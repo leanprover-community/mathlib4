@@ -5,6 +5,7 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 module
 
+public import Mathlib.Logic.Function.Const
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.GaloisConnection.Basic
 
@@ -214,6 +215,11 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x
 @[simp]
 theorem ker_eq_bot_iff {f : α → β} : ker f = ⊥ ↔ f.Injective := le_bot_iff.symm
 
+@[simp]
+theorem ker_eq_top_iff {f : α → β} : ker f = ⊤ ↔ f.IsConst := eq_top_iff
+
+@[deprecated (since := "2026-11-10")] alias ker_eq_top := ker_eq_top_iff
+
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
     letI := sInf S
     x ≈ y ↔ ∀ s ∈ S, s x y := Iff.rfl
@@ -309,10 +315,10 @@ theorem eqvGen_mono {r s : α → α → Prop} (h : ∀ x y, r x y → s x y) :
 /-- There is a Galois insertion of equivalence relations on α into binary relations
 on α, with equivalence closure the lower adjoint. -/
 def gi : @GaloisInsertion (α → α → Prop) (Setoid α) _ _ EqvGen.setoid (⇑) where
-  choice r _ := EqvGen.setoid r
+  choice r hr := { r, iseqv := le_antisymm hr EqvGen.rel ▸ (EqvGen.setoid r).iseqv }
   gc _ s := ⟨fun H _ _ h => H <| EqvGen.rel _ _ h, fun H => eqvGen_of_setoid s ▸ eqvGen_mono H⟩
   le_l_u x := (eqvGen_of_setoid x).symm ▸ le_refl x
-  choice_eq _ _ := rfl
+  choice_eq _ _ := (eqvGen_of_setoid _).symm
 
 end EqvGen
 
