@@ -20,7 +20,7 @@ see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 This file contains the usual formulas (and existence assertions)
 for the derivative of continuous linear maps, both bundled and unbundled.
 
-We also prove versions of the chain rule when one of the map is a continuous linear map.
+We also prove versions of the chain rule when one of the maps is a continuous linear map.
 -/
 
 public section
@@ -100,6 +100,10 @@ the function `g ∘ f` is differentiable too, with derivative `g' ∘L f'`.
 
 The theorems below deal with the special cases
 when one of the two functions is a continuous linear map.
+
+These are explicitly not tagged `@[fun_prop]` because
+`fun_prop` can already prove them with more general lemmas,
+and this would only slow it down in failing situations.
 -/
 
 section CompLeft
