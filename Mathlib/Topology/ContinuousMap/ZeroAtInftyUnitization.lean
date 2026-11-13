@@ -29,7 +29,7 @@ equivalence between `Unitization R C₀(X, R)` and `C(OnePoint X, R)`.
 ## Implementation notes
 
 The simp normal form of each bundled morphism is the unbundled map, so the unbundled maps
-have their own simp lemmas for various operatoins.
+have their own simp lemmas for various operations.
 -/
 
 @[expose] public section

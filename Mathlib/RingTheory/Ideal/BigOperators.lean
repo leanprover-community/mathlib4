@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 
 /-!
-
 # Big operators for ideals
 
 This contains some results on the big operators `∑` and `∏` interacting with the `Ideal` type.

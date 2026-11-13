@@ -16,7 +16,6 @@ i.e. a `Type`-valued presheaf on the simplex category.
 (One might be tempted to call these "simplicial types" when working in type-theoretic foundations,
 but this would be unnecessarily confusing given the existing notion of a simplicial type in
 homotopy type theory.)
-
 -/
 
 @[expose] public section
@@ -188,6 +187,13 @@ end adjunctions
 augmented simplicial objects. -/
 abbrev Augmented :=
   SimplicialObject.Augmented (Type u)
+
+/-- Given `X : SSet`, this is the augmented simplicial set given by
+the natural transformation from `X` to the constant functor with value `PUnit`. -/
+abbrev toAugmented (X : SSet.{u}) : Augmented.{u} where
+  left := X
+  right := PUnit
+  hom.app _ := ↾fun _ ↦ .unit
 
 section applications
 variable {S : SSet}

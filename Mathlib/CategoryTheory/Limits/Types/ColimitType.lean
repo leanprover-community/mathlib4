@@ -30,7 +30,6 @@ in a categorical sense is a colimit.
 * refactor `DirectedSystem` and the construction of colimits in `Type`
   by using `Functor.ColimitType`.
 * add a similar API for limits in `Type`?
-
 -/
 
 @[expose] public section
@@ -87,7 +86,6 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
   ι_naturality f := by
     rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
 the induced cocone in `(G ⋙ F).CoconeTypes`. -/
 @[simps]

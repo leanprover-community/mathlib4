@@ -21,7 +21,6 @@ makes `ContinuousGeneratedByCat X` the localized category of `TopCat` with
 respect to this class of morphisms. Similarly,
 `TopCat.toGeneratedByTopCat : TopCat ⥤ GeneratedByTopCat X` is also
 a localization functor.
-
 -/
 
 @[expose] public section

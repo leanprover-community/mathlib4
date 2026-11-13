@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Category.Cat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Objects of a category up to an isomorphism
 

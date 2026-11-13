@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 This file collects basic general facts about algebra representations. The purpose of this file is
 to have general results so that when we prove a corresponding fact about group representations
 (or Lie algebra representations etc), we can deduce them as special cases of facts from this file.
-
 -/
 
 public section
@@ -56,6 +55,6 @@ theorem IsSimpleModule.finrank_eq_one_of_isMulCommutative [IsMulCommutative A] :
       simpa only [← show _ = a • w from congr($ht w)] using! (k ∙ v).smul_mem t hw }
   obtain hU | hU := eq_bot_or_eq_top U
   · exact (v_nz <| hU.le <| Submodule.mem_span_singleton_self v).elim
-  · rw [finrank_eq_one_iff_of_nonzero v v_nz]
+  · rw [finrank_eq_one_iff_of_ne_zero v v_nz]
     rw [← top_le_iff] at hU ⊢
     assumption

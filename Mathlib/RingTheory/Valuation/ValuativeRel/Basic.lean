@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.Tactic.Continuity
 
 /-!
-
 # Valuative Relations
 
 In this file we introduce a class called `ValuativeRel R` for a ring `R`.
@@ -1251,7 +1250,7 @@ we say that `B|A` is a valuative extension if the valuative relation on `A` is
 induced by the one on `B`. -/
 class ValuativeExtension (A B : Type*) [CommSemiring A] [Semiring B] [ValuativeRel A]
     [ValuativeRel B] [Algebra A B] where
-  vle_iff_vle (a b : A) : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
+  vle_iff_vle {a b : A} : algebraMap A B a ≤ᵥ algebraMap A B b ↔ a ≤ᵥ b
 
 namespace ValuativeExtension
 
@@ -1264,8 +1263,15 @@ section Semiring
 variable [CommSemiring A] [Semiring B] [ValuativeRel A] [ValuativeRel B]
   [Algebra A B] [ValuativeExtension A B]
 
-lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b := by
-  rw [← not_vle, vle_iff_vle, not_vle]
+attribute [simp] vle_iff_vle
+
+@[simp]
+lemma vlt_iff_vlt {a b : A} : algebraMap A B a <ᵥ algebraMap A B b ↔ a <ᵥ b :=
+  vle_iff_vle.not
+
+@[simp]
+lemma veq_iff_veq {a b : A} : algebraMap A B a =ᵥ algebraMap A B b ↔ a =ᵥ b :=
+  vle_iff_vle.and vle_iff_vle
 
 variable (A B) in
 /-- The morphism of `posSubmonoid`s associated to an algebra map.

@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.RingHom.Unramified
 public import Mathlib.RingTheory.Smooth.Fiber
 public import Mathlib.RingTheory.Smooth.Flat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Étale ring homomorphisms
 

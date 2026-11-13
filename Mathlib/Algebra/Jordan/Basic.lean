@@ -70,7 +70,6 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
   [cabreragarciarodriguezpalacios2014]
 * [Hanche-Olsen and Størmer, Jordan Operator Algebras][hancheolsenstormer1984]
 * [McCrimmon, A taste of Jordan algebras][mccrimmon2004]
-
 -/
 
 public section

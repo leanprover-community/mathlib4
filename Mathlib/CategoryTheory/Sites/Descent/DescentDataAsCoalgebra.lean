@@ -33,7 +33,6 @@ to the adjunction `(F.map f.op.toLoc).adj`.
 ## TODO (@joelriou, @chrisflav)
 * Compare `DescentDataAsCoalgebra` with `DescentData` when suitable
   pullbacks exist and certain base change morphisms are isomorphisms
-
 -/
 
 @[expose] public section

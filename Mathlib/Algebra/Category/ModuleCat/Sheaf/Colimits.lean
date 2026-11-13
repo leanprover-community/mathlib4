@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 In this file, we show that colimits of shape `J` exist in a category
 of sheaves of modules if it exists in the corresponding category
 of presheaves of modules.
-
 -/
 
 public section

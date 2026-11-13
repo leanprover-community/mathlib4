@@ -17,7 +17,6 @@ strong epi mono factorizations and is such that `forget C` preserves
 both epi and mono, then any morphism in `C` can be factored in a
 functorial manner as a composition of a surjective morphism followed
 by an injective morphism.
-
 -/
 
 @[expose] public section
