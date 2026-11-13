@@ -20,7 +20,11 @@ If `Y` is a convex space, we define a subdivision endomorphism
 simplicial set `toSSet ℝ Y` (i.e. the chain complex of *affine* singular chains).
 We define `sd` by modifying the identity by a null homotopic map given by
 a sequence of morphisms (from affine `n`-chains to affine `(n + 1)`-chains)
-which we define by induction on `n`.
+which we define by induction on `n`. Then, by its very definition, we know
+that `sd` is a chain map that is homotopic to the identity.
+The lemma `ConvexSpace.toSSet.ι_sd_f_eq_sum` computes the image of a `n`-simplex `s`
+as an alternating sum (indexed by the symmetric group in `n + 1` letters) of
+simplices obtained by subdividing `s`.
 
 ## References
 * [Allen Hatcher, *Algebraic topology*, §2.1][hatcher02]
@@ -160,8 +164,7 @@ variable {Y} in
 @[reassoc]
 lemma ι_sd_f_eq_sum {n : ℕ} (s : ConvexSpace.AffineMap ℝ (StdSimplex ℝ (Fin (n + 1))) Y) :
     SSet.ιChainComplex _ s ≫ (sd Y R).f n =
-      ∑ (σ : Equiv.Perm (Fin (n + 1))),
-        σ.sign • (SSet.ιChainComplex _ (ConvexSpace.AffineMap.sd s σ)) := by
+      ∑ (σ : Equiv.Perm (Fin (n + 1))), σ.sign • (SSet.ιChainComplex _ (s.sd σ)) := by
   induction n with
   | zero => simp
   | succ n hn =>

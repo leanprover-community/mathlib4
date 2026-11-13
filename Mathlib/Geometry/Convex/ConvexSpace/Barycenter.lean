@@ -10,12 +10,12 @@ public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
 import Mathlib.Tactic.FinCases
 
 /-!
-# The barycenter of the standard simplex
+# The barycenter of the standard simplex and the barycentric subdivision
 
 We define `StdSimplex.barycenter` as the barycenter of the standard simplex
-`StdSimplex K M` when `M` is a non empty finite type. More generaly,
+`StdSimplex K M` when `M` is a non empty finite type. More generally,
 if `S : Finset M` is a non empty finite subset of `M`, we define the
-barycenter of the vertex corresponding to the elements in `S` as
+barycenter of the vertices corresponding to the elements in `S` as
 `StdSimplex.subBarycenter`.
 
 We introduce similar definitions for a convex map
@@ -23,10 +23,12 @@ We introduce similar definitions for a convex map
 as the image by `f` of the barycenter of `StdSimplex K M` (resp. the barycenter
 of a non empty finite subset of `M`).
 
-For each `σ : Equiv.Perm (Fin n)` and `f : ConvexSpace.AffineMap K (StdSimplex K (Fin n)) Y`,
-we define `f.sd σ` (in the same type) as the affine map with sends the `i`th
-vertex of `StdSimplex K (Fin n)` to `f.sdVertex σ i` which is the image by `f`
-of the barycenter of the vertices in `{ x : Fin n | i ≤ σ⁻¹ x}`.
+We define a "subdivision" of `f : ConvexSpace.AffineMap K (StdSimplex K (Fin n)) Y`:
+for each `σ : Equiv.Perm (Fin n)`, we define `f.sd σ` (in the same type) as the
+affine map with sends the `i`th vertex of `StdSimplex K (Fin n)` to `f.sdVertex σ i`
+which is the image by `f` of the barycenter of the vertices in `{ x : Fin n | i ≤ σ⁻¹ x}`.
+(See `Mathlib/Geometry/Convex/ConvexSpace/Subdivision.lean` for the definition of
+the subdivision operator on affine singular chains of `Y`.)
 
 -/
 
