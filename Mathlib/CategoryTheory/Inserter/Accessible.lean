@@ -941,18 +941,18 @@ open PartialChainUpTo Order Limits in
 /-- The key technical ingredient in the proof that inserters are accessible: given a diagram
 ```
      F(u)      F(v)
-F(S) --> F(T) ---> F(K)
+F(S) --> F(T) ---> F(E)
  |                  | Φ
  v                  v
-G(T) ------------> G(K)
+G(T) ------------> G(E)
         G(v)
 ```
-where u : S → T and v : T ⟶ K are maps of κ-presentable objects, one can find a factorization
+where u : S → T and v : T ⟶ E are maps of κ-presentable objects, one can find a factorization
 ```
-F(S) --> F(T) ---> F(U) --> F(K)
+F(S) --> F(T) ---> F(U) --> F(E)
  |          F(v')   | σ      | Φ
  v                  v        v
-G(T) ------------> G(U) --> F(K)
+G(T) ------------> G(U) --> F(E)
          G(v')
 ```
 -/
