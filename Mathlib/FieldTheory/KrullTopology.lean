@@ -211,13 +211,9 @@ alias IntermediateField.fixingSubgroup_isOpen := IntermediateField.isOpen_fixing
 /-- Given a tower of fields `L/E/K`, the subgroup `Gal(L/E) ≤ Gal(L/K)` is closed. -/
 theorem IntermediateField.isClosed_fixingSubgroup (E : IntermediateField K L) :
     IsClosed (E.fixingSubgroup : Set Gal(L/K)) := by
-  have hx (x : E) : IsClosed ((adjoin K {(x : L)}).fixingSubgroup : Set Gal(L/K)) :=
-    Subgroup.isClosed_of_isOpen _ (isOpen_fixingSubgroup _)
-  convert isClosed_iInter hx
-  ext g
-  simp only [SetLike.mem_coe, mem_fixingSubgroup_iff, Set.mem_iInter, Subtype.forall]
-  exact ⟨fun h a ha x hx => h x (adjoin_simple_le_iff.2 ha hx),
-    fun h x hx => h x hx x (mem_adjoin_simple_self K x)⟩
+  rw [← adjoin_self K E, ← Set.iUnion_of_singleton_coe (E : Set L), adjoin_iUnion,
+    fixingSubgroup_iSup, Subgroup.coe_iInf]
+  exact isClosed_iInter fun i => Subgroup.isClosed_of_isOpen _ (isOpen_fixingSubgroup _)
 
 @[deprecated (since := "2026-03-05")]
 alias IntermediateField.fixingSubgroup_isClosed := IntermediateField.isClosed_fixingSubgroup
