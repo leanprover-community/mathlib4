@@ -49,7 +49,7 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
   induction r with
   | top => simp
   | coe r =>
-    induction r using Nat.strong_induction_on generalizing N with | h r ihr =>
+    induction r using Nat.strong_induction_on generalizing N with | ind r ihr =>
     by_cases eq0 : r = 0
     · simp only [eq0, CharP.cast_eq_zero, WithBot.unbot_eq_iff, WithBot.coe_zero] at dim
       have smul_lt := (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
