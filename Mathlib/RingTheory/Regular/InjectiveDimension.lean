@@ -81,7 +81,6 @@ lemma ext_subsingleton_of_support_subset (N M : ModuleCat.{v} R) [Nfin : Module.
       (AddCommGrpCat.isZero_of_iff_subsingleton.mpr (h1 h2.1))
     exact AddCommGrpCat.subsingleton_of_isZero this
 
-attribute [local implicit_reducible] ModuleCat.smulShortComplex in
 lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : ℕ)
     (p : Ideal R) [p.IsPrime] (ne : p ≠ maximalIdeal R) (h : ∀ q > p, q.IsPrime →
       Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ q))) M (n + 1))) :
@@ -255,7 +254,6 @@ lemma hasProjectiveDimensionLE_finsupp_quotient_regular [Small.{v} R] (ι : Type
 
 variable [Small.{v} R]
 
-attribute [local implicit_reducible] ModuleCat.smulShortComplex in
 open Limits in
 lemma extClass_postcomp_bijective_of_isSMulRegular {M : ModuleCat.{v} R} {x : R}
     (regM : IsSMulRegular M x) (N : ModuleCat.{v} R) (ann : x • 𝟙 N = 0) :
