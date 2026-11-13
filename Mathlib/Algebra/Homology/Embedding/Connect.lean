@@ -37,7 +37,6 @@ Now say `h : ConnectData K L`.
 ## TODO
 
 * Computation of `h.cochainComplex.homology k` when `k = 0` or `k = -1`.
-
 -/
 
 @[expose] public section

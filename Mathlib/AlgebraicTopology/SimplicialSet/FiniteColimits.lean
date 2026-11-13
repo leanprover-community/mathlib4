@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Finite colimits of finite simplicial sets are finite
-
 -/
 
 public section
@@ -74,7 +73,7 @@ instance {ι : Type v} [Finite ι] (X : ι → SSet.{u}) [HasCoproduct X]
 
 lemma range_eq_iSup_sigma_ι
     {ι : Type v} [HasColimitsOfShape (Discrete ι) (Type u)]
-    {X : ι → SSet.{u}} {Y : SSet.{u}} [HasCoproduct X]
+    {X : ι → SSet.{u}} {Y : SSet.{u}}
     (f : ∐ X ⟶ Y) :
     Subcomplex.range f = ⨆ (i : ι), Subcomplex.range (Sigma.ι X i ≫ f) := by
   rw [range_eq_iSup_of_isColimit (coproductIsCoproduct X) f]

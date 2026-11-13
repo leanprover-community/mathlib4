@@ -19,7 +19,6 @@ Let `J` be a Grothendieck topology on a category `C`. We provide a constructor
   that `a ≫ g = p.map q ≫ f`.
 We show that the fiber of a presheaf for the constructed point identifies
 to a colimit indexed by the category `N`.
-
 -/
 
 @[expose] public section
@@ -167,7 +166,7 @@ lemma toPresheafFiberOfIsCofiltered_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ 
 
 /-- The (colimit) cocone which, for a point constructed using `Point.ofIsCofiltered`
 and a functor `p : N ⥤ C` expresses the fiber of a presheaf as a colimit
-indexed indexed by `N`. -/
+indexed by `N`. -/
 @[simps]
 noncomputable def presheafFiberOfIsCofilteredCocone (P : Cᵒᵖ ⥤ A) :
     Cocone (p.op ⋙ P) where

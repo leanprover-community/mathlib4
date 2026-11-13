@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Order.Monotone.Defs
 
 /-!
-
 # Covariants and contravariants
 
 This file contains general lemmas and instances to work with the interactions between a relation and

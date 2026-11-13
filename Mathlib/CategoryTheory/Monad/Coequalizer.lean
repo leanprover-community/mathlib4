@@ -21,7 +21,6 @@ monadicity theorem).
 
 This file has been adapted to `Mathlib/CategoryTheory/Monad/Equalizer.lean`.
 Please try to keep them in sync.
-
 -/
 
 @[expose] public section

@@ -22,7 +22,6 @@ In this file we establish functorial properties of the adic completion.
 
 - `sumEquivOfFintype`: adic completion commutes with finite sums
 - `piEquivOfFintype`: adic completion commutes with finite products
-
 -/
 
 @[expose] public section
@@ -117,10 +116,11 @@ def map : (M →ₗ[R] N) →ₗ[R] (AdicCompletion I M →ₗ[AdicCompletion I 
         rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul] }
   map_add' f g := LinearMap.ext fun _ ↦ by
     simp only [map_add, restrictScalars_add, add_comp, ← Pi.add_def, coe_mk, coe_toAddHom,
-      add_apply]
+      LinearMap.add_apply]
     rw [← LinearMap.add_apply, ← lift_add]
   map_smul' c f := LinearMap.ext fun _ ↦ by
-    simp only [map_smul, restrictScalars_smul, coe_mk, coe_toAddHom, RingHom.id_apply, smul_apply]
+    simp only [map_smul, restrictScalars_smul, coe_mk, coe_toAddHom, RingHom.id_apply,
+      LinearMap.smul_apply]
     simp_rw [← LinearMap.smul_apply, ← lift_smul, Pi.smul_def, LinearMap.smul_comp]
 
 @[simp]
@@ -214,7 +214,6 @@ the formal properties of adic completions we obtain two canonical maps
 If `ι` is finite, both are isomorphisms and, modulo
 the equivalence `⨁ j, (AdicCompletion I (M j)` and `∀ j, AdicCompletion I (M j)`,
 inverse to each other.
-
 -/
 
 variable {ι : Type*} (M : ι → Type*) [∀ i, AddCommGroup (M i)]

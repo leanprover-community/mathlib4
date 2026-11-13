@@ -19,7 +19,6 @@ an `OmegaCompletePartialOrder`.
 
 * `ωCPO`
   * an instance of `Category` and `ConcreteCategory`
-
 -/
 
 @[expose] public section

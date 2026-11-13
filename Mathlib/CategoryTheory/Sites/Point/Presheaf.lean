@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
 /-!
@@ -15,7 +16,6 @@ that the category of sheaves with values in `A` identifies to `Cᵒᵖ ⥤ A`
 (see `sheafBotEquivalence` in the file `Mathlib/CategoryTheory/Sites/Sheaf.lean`).
 In this file, we show that any `X : C` defines a point for this site, and that
 these points form a conservative family of points.
-
 -/
 
 @[expose] public section
@@ -30,7 +30,6 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
 
 namespace GrothendieckTopology
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `X` is an object of `C`, this is the point of the site `(C, ⊥)` (whose
 sheaves are presheaves, see `sheafBotEquivalence`) corresponding to `X`. -/
 @[simps]
@@ -58,7 +57,8 @@ instance :
       (shrinkYonedaObjObjEquiv.symm (𝟙 X))) := by
   rw [NatTrans.isIso_iff_isIso_app]
   exact fun _ ↦ (colimit.isColimit _).isIso_ι_app_of_isTerminal _
-    (Functor.Elements.isInitialElementsMkShrinkYonedaObjObjEquivId X).op
+    ((Functor.Elements.isInitialOfCorepresentableBy
+      (shrinkCoyonedaCorepresentableBy (op X))).op)
 
 /-- The fiber functor `(Cᵒᵖ ⥤ A) ⥤ A` corresponding to the point
 of the Grothendieck topology `⊥` attached to an object `X : C`
