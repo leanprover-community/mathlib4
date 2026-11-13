@@ -219,8 +219,6 @@ alias IntermediateField.fixingSubgroup_isOpen := IntermediateField.isOpen_fixing
 theorem IntermediateField.isClosed_fixingSubgroup (E : IntermediateField K L) :
     IsClosed (E.fixingSubgroup : Set Gal(L/K)) := by
   have hx (x : E) : IsClosed ((adjoin K {(x : L)}).fixingSubgroup : Set Gal(L/K)) :=
-    have : Algebra.EssFiniteType K (adjoin K {(x : L)}) :=
-      essFiniteType_iff.2 (fg_adjoin_of_finite (Set.finite_singleton _))
     Subgroup.isClosed_of_isOpen _ (isOpen_fixingSubgroup _)
   convert isClosed_iInter hx
   ext g
@@ -398,9 +396,6 @@ theorem AlgEquiv.totallyBounded_fixingSubgroup
   rw [AlgEquiv.mem_uniformity_iff] at hU
   obtain ⟨s, hs⟩ := hU
   let F := IntermediateField.adjoin E (s : Set L)
-  have : IsScalarTower K F L := ⟨fun a b c => smul_assoc a b.1 c⟩
-  have : FiniteDimensional E F :=
-    IntermediateField.finiteDimensional_adjoin fun _ _ => Algebra.IsIntegral.isIntegral _
   let f (σ : Gal(L/E)) : F →ₐ[E] L := σ.toAlgHom.comp (IsScalarTower.toAlgHom E F L)
   refine ⟨Set.range (AlgEquiv.restrictScalars K ∘ Function.invFun f),
     Set.finite_range _, fun σ hσ => ?_⟩
