@@ -38,7 +38,6 @@ of some code.
 ## References
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
-
 -/
 
 @[expose] public section

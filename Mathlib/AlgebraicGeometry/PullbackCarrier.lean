@@ -23,7 +23,6 @@ topological space of `pullback f g`, i.e. the fiber product `X ×[S] Y`.
   `f x = s = g y`, there exists `z : X ×[S] Y` lying above `x` and `y`.
 
 We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
-
 -/
 
 @[expose] public section

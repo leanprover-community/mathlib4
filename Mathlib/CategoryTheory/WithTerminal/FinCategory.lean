@@ -14,7 +14,6 @@ public import Mathlib.Data.Fintype.Option
 
 If `C` has finitely many objects, then so do `WithTerminal C` and `WithInitial C`,
 and likewise if `C` has finitely many morphisms as well.
-
 -/
 
 @[expose] public section

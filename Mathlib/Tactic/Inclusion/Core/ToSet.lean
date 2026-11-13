@@ -16,7 +16,6 @@ This file defines the `ToSet` class and its API needed for the `inclusion` tacti
 
 * `Inclusion.IntervalBool` is nearly identical to `Lean.LBool` but with a separate API and
 documentation which is catered to the needs of the inclusion tactic.
-
 -/
 
 @[expose] public section

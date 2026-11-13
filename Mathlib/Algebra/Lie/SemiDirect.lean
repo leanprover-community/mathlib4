@@ -23,7 +23,6 @@ forms an extension of `L`.
 ## References
 
 * https://en.wikipedia.org/wiki/Lie_algebra_extension#By_semidirect_sum
-
 -/
 
 

@@ -65,7 +65,6 @@ notation which mentions the orientation explicitly (something like `ω[o]`). Wri
 local notation "ω" => o.areaForm
 local notation "J" => o.rightAngleRotation
 ```
-
 -/
 
 @[expose] public section

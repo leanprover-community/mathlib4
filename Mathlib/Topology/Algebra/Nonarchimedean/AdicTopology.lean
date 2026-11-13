@@ -43,7 +43,6 @@ corresponding adic topology to the type class inference system.
 
 The `I`-adic topology on a ring `R` has a contrived definition using `I^n • ⊤` instead of `I`
 to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R`-module.
-
 -/
 
 @[expose] public section

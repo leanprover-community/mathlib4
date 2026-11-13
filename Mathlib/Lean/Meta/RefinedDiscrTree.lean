@@ -98,7 +98,6 @@ matching, the lookup algorithm is most optimized for matching.
 
 #### Future work:
 Improve the unification lookup.
-
 -/
 
 public section

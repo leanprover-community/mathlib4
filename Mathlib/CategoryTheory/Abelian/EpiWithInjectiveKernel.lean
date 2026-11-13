@@ -17,7 +17,6 @@ abelian category. We show that this property of morphisms is multiplicative.
 This shall be used in the file `Mathlib/Algebra/Homology/Factorizations/Basic.lean` in
 order to define morphisms of cochain complexes which satisfy this property
 degreewise.
-
 -/
 
 @[expose] public section

@@ -22,7 +22,6 @@ under `R`-algebra homomorphisms and compositions.
 
 We show that étale is stable under algebra isomorphisms, composition and
 localization at an element.
-
 -/
 
 @[expose] public section
