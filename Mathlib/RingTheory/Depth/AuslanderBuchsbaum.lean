@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Products
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+public import Mathlib.Data.ENat.WithBot
 public import Mathlib.RingTheory.Depth.Finite
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.Tactic.ENatToNat
@@ -263,13 +264,11 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
   obtain ⟨n, hn⟩: ∃ n : ℕ, projectiveDimension M = n := by
     generalize hd : projectiveDimension M = d
     induction d with
+    | top => simp [hd] at netop
     | bot =>
       absurd (ModuleCat.isZero_iff_subsingleton.mp ((projectiveDimension_eq_bot_iff M).mp hd))
       exact not_subsingleton M
-    | coe d =>
-      induction d with
-      | top => simp [hd] at netop
-      | coe d => exact ⟨d, rfl⟩
+    | coe d => use d
   induction n generalizing M with
   | zero =>
     simp only [hn, CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, zero_add, WithBot.coe_inj]
