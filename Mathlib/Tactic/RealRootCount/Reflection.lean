@@ -260,12 +260,41 @@ theorem signVariationsLine_map_toReal {L : List (List ℤ)} (hL : ∀ e ∈ L, c
   · refine List.map_congr_left fun e he => ?_
     simp [signAtBot_toReal (hL e he), signAtTop_toReal (hL e he)]
 
+theorem sturm_R_of_isScaledSturmSeq {f : ℝ[X]} {L : List ℝ[X]}
+    (h : IsScaledSturmSeq f (derivative f) L) :
+    f.roots.toFinset.card = signVariationsLine L := by
+  simp only [sturm_R, signVariationsLine_def]
+  congrm (List.signVariations ?_ - List.signVariations ?_ : ℤ) <;>
+  · rw [← List.forall₂_eq_eq_eq]
+    refine List.rel_map ?_ h
+    rintro s _ ⟨c, hc, rfl⟩
+    simp [sign_pos hc]
+
+theorem toReal_eq_map_algebraMap (R : Type*) [CommRing R] [Algebra R ℝ] (s : List ℤ) :
+    toReal s = ((ofCoeffList s).map (Int.castRingHom R)).map (algebraMap R ℝ) := by
+  rw [toReal, Polynomial.map_map]
+  congrm (ofCoeffList s).map ?_
+  exact RingHom.ext_int (Int.castRingHom ℝ) ((algebraMap R ℝ).comp (Int.castRingHom R))
+
 public theorem card_rootSet_of_realRootCount? {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]}
     {d : SturmCertificate} {n : ℕ} [Fintype (f.rootSet ℝ)]
     (hf : (d.k : R[X]) * f = (ofCoeffList d.s).map (Int.castRingHom R))
     (h : realRootCount? d = some n) :
     Fintype.card (f.rootSet ℝ) = n := by
-  sorry
+  simp only [realRootCount?, Option.ite_none_right_eq_some, Option.some.injEq] at h
+  obtain ⟨hc, rfl⟩ := h
+  obtain ⟨hk, _, _⟩ := checkSturm_iff.mp hc
+  calc Fintype.card (f.rootSet ℝ)
+    _ = (toReal d.s).roots.toFinset.card := by
+      rw [toReal_eq_map_algebraMap R, ← hf, Polynomial.map_mul, Polynomial.map_natCast,
+        ← C_eq_natCast, roots_C_mul _ (Nat.cast_ne_zero.mpr hk.ne')]
+      simp [rootSet_def]
+    _ = (signVariationsLine (d.entries.map toReal)).toNat := by
+      rw [← sturm_R_of_isScaledSturmSeq (isScaledSturmSeq_of_checkSturm hc), Int.toNat_natCast]
+    _ = (d.entries.map fun e =>
+            if e.length % 2 = 0 then -coeffLead e else coeffLead e).signVariations -
+          (d.entries.map coeffLead).signVariations := by
+      rw [signVariationsLine_map_toReal (coeffLead_ne_zero_of_checkSturm hc), Int.toNat_sub]
 
 theorem eval_toReal_cons (c : ℤ) (p : List ℤ) (x : ℝ) :
     (toReal (c :: p)).eval x = c + x * (toReal p).eval x := by
