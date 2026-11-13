@@ -41,7 +41,6 @@ additive character, trace
 ## TODO
 
 * Define `FiniteField.primitiveChar` using `AddChar.traceChar`.
-
 -/
 
 public section

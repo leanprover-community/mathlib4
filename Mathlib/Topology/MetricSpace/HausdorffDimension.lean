@@ -626,14 +626,14 @@ theorem ContDiff.dimH_range_le (h : ContDiff ℝ 1 f) : dimH (range f) ≤ finra
 
 @[deprecated DifferentiableOn.dense_compl_image_of_dimH_lt_finrank +typeChanged
   (since := "2026-08-03")]
-theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank [FiniteDimensional ℝ F]
+theorem ContDiffOn.dense_compl_image_of_dimH_lt_finrank
     (h : ContDiffOn ℝ 1 f s) (hc : Convex ℝ s) (ht : t ⊆ s)
     (htF : dimH t < finrank ℝ F) : Dense (f '' t)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| (h.dimH_image_le hc ht).trans_lt htF
 
 @[deprecated Differentiable.dense_compl_range_of_finrank_lt_finrank +typeChanged
   (since := "2026-08-03")]
-theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ F]
+theorem ContDiff.dense_compl_range_of_finrank_lt_finrank
     (h : ContDiff ℝ 1 f) (hEF : finrank ℝ E < finrank ℝ F) : Dense (range f)ᶜ :=
   dense_compl_of_dimH_lt_finrank <| h.dimH_range_le.trans_lt <| Nat.cast_lt.2 hEF
 

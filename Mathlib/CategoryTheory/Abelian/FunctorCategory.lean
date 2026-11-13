@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
-
 -/
 
 @[expose] public section

@@ -37,7 +37,6 @@ bijection and that the residual degree and ramification index are preserved by t
 
 - `IsDedekindDomain.primesOverEquivPrimesOver_ramificationIdx_eq`: the bijection
   `primesOverEquivPrimesOver` preserves the ramification index.
-
 -/
 
 @[expose] public section

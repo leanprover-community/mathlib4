@@ -37,7 +37,6 @@ The dual results for left derivability structures are also obtained.
 This will be particularly useful when `L.functor` and `R.functor` are functors
 from a category to a quotient category (e.g. functors from categories of homological
 complexes to homotopy categories).
-
 -/
 
 public section

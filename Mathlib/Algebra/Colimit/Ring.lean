@@ -25,7 +25,6 @@ the disjoint union so as to make the operations (addition etc.) "computable".
 ## Main definition
 
 * `Ring.DirectLimit G f`
-
 -/
 
 @[expose] public section

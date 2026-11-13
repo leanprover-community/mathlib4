@@ -16,7 +16,6 @@ We show that for a group `G` the category of finite `G`-sets is a `PreGaloisCate
 forgetful functor to `FintypeCat` is a `FiberFunctor`.
 
 The connected finite `G`-sets are precisely the ones with transitive `G`-action.
-
 -/
 
 @[expose] public section

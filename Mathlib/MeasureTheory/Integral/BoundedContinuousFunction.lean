@@ -59,7 +59,7 @@ theorem lintegral_lt_top_of_nnreal (f : X →ᵇ ℝ≥0) : ∫⁻ x, f x ∂μ 
 theorem integrable_of_nnreal [OpensMeasurableSpace X] (f : X →ᵇ ℝ≥0) :
     Integrable (((↑) : ℝ≥0 → ℝ) ∘ ⇑f) μ := by
   refine ⟨(NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable, ?_⟩
-  simp only [hasFiniteIntegral_iff_enorm, Function.comp_apply, NNReal.enorm_eq]
+  simp only [hasFiniteIntegral_iff_eNorm, Function.comp_apply, NNReal.eNorm_eq]
   exact lintegral_lt_top_of_nnreal _ f
 
 theorem integral_eq_integral_nnrealPart_sub [OpensMeasurableSpace X] (f : X →ᵇ ℝ) :
@@ -87,11 +87,13 @@ variable (μ : Measure X)
 variable {E : Type*} [NormedAddCommGroup E]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-lemma lintegral_nnnorm_le (f : X →ᵇ E) :
+lemma lintegral_nnNorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ       := by gcongr; apply nnnorm_coe_le_nnnorm
+    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ       := by gcongr; apply nnNorm_coe_le_nnNorm
     _ = ‖f‖₊ * (μ Set.univ) := by rw [lintegral_const]
+
+@[deprecated (since := "2026-10-31")] alias lintegral_nnnorm_le := lintegral_nnNorm_le
 
 variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
 
@@ -100,8 +102,8 @@ lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
   refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ‖f‖₊ * (μ Set.univ) := f.lintegral_nnnorm_le μ
-    _ < ∞                   := ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top μ Set.univ)
+    _ ≤ ‖f‖₊ * (μ Set.univ) := f.lintegral_nnNorm_le μ
+    _ < ∞                   := by finiteness
 
 variable [NormedSpace ℝ E]
 
