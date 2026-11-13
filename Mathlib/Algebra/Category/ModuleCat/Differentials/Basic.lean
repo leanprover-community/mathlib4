@@ -17,7 +17,6 @@ and `M : ModuleCat B`, we define the type `M.Derivation f` of
 derivations with values in `M` relative to `f`.
 We also construct the module of differentials
 `CommRingCat.KaehlerDifferential f : ModuleCat B` and the corresponding derivation.
-
 -/
 
 @[expose] public section

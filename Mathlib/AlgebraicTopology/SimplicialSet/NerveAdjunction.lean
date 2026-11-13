@@ -7,9 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 
 import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
-import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 
@@ -34,7 +34,6 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 
 Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
 that it fails to preserve infinite products.
-
 -/
 
 @[expose] public section
@@ -450,7 +449,7 @@ lemma isIso_prodComparison_of_stdSimplex {D : SSet.{u}} (X : SSet.{u})
     rw [NatTrans.isIso_iff_isIso_app]
     exact fun x ↦ H (x.left).len
   exact isIso_app_coconePt_of_preservesColimit _ (prodComparisonNatTrans hoFunctor _) _
-    (Presheaf.isColimitTautologicalCocone' X)
+    (denseAtUliftYoneda X)
 
 instance isIso_prodComparison (X Y : SSet.{u}) :
     IsIso (prodComparison hoFunctor X Y) := isIso_prodComparison_of_stdSimplex _ fun m ↦ by

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finsupp.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation for `Finsupp`
 

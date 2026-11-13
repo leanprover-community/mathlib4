@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vitali covering theorems
 

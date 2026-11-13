@@ -8,6 +8,9 @@ module
 public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Topology.Separation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Support of a self-map
 

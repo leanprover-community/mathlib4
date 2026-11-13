@@ -18,7 +18,6 @@ we redefine it as `CochainComplex.mappingCone φ`. The API involves definitions
 - `mappingCone.inr φ : G ⟶ mappingCone φ`,
 - `mappingCone.fst φ : Cocycle (mappingCone φ) F 1` and
 - `mappingCone.snd φ : Cochain (mappingCone φ) G 0`.
-
 -/
 
 @[expose] public section

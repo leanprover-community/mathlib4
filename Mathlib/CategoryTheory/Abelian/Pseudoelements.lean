@@ -411,8 +411,6 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
           change app g (a'' : Over P) ≈ app g a
           exact ⟨R, 𝟙 R, p, inferInstance, ep, by simp [a'', sub_eq_add_neg, this]⟩⟩⟩
 
-variable [Limits.HasPullbacks C]
-
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : P ⟶ R` and `g : Q ⟶ R` are morphisms and `p : P` and `q : Q` are pseudoelements such
 that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.

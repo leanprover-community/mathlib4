@@ -195,7 +195,7 @@ theorem range_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : range f = ⊥ ↔ f = 0 
 theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ₂₃] M₃} :
     range f ≤ ker g ↔ (g.comp f : M →ₛₗ[τ₁₃] M₃) = 0 :=
   ⟨fun h => ker_eq_top.1 <| eq_top_iff'.2 fun _ => h ⟨_, rfl⟩, fun h x hx =>
-    mem_ker.2 <| Exists.elim hx fun y hy => by rw [← hy, ← comp_apply, h, zero_apply]⟩
+    mem_ker.2 <| Exists.elim hx fun y hy => by rw [← hy, ← comp_apply, h, LinearMap.zero_apply]⟩
 
 theorem comap_le_comap_iff {f : M →ₛₗ[τ₁₂] M₂} (hf : range f = ⊤) {p p'} :
     comap f p ≤ comap f p' ↔ p ≤ p' :=
@@ -486,6 +486,16 @@ variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) {p : Subm
 theorem range_restrict (h : ∀ x ∈ p, f x ∈ q) :
     range (f.restrict h) = comap q.subtype (map f p) := by
   rw [← Submodule.map_top, map_restrict, Submodule.map_top, p.range_subtype]
+
+variable (q) in
+@[simp]
+theorem range_submoduleComap : range (submoduleComap f q) = (range f).submoduleOf q := by
+  simp [submoduleComap, Submodule.map_comap_eq, Submodule.submoduleOf]
+
+variable (p) in
+@[simp]
+theorem range_submoduleMap : range (submoduleMap f p) = ⊤ := by
+  simp [submoduleMap]
 
 end restrict
 

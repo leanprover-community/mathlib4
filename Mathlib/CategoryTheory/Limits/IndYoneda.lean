@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
-
 # Ind- and pro- (co)yoneda lemmas
 
 We define limit versions of the yoneda and coyoneda lemmas.
@@ -22,7 +21,6 @@ Notation: categories `C`, `I` and functors `D : Iᵒᵖ ⥤ C`, `F : C ⥤ Type`
   diagram `D` to `F` is limit of `F` evaluated at `D`.
 - `colimitCoyonedaHomIsoLimit'`: a variant of `colimitCoyonedaHomIsoLimit` for a covariant
   diagram.
-
 -/
 
 @[expose] public section
