@@ -66,6 +66,9 @@ lemma weights_subBarycenter_apply_eq_zero
   rintro rfl
   exact (hm hx).elim
 
+@[deprecated (since := "2026-11-13")] alias subBarycenter_weights_apply_eq_zero :=
+  weights_subBarycenter_apply_eq_zero
+
 @[simp]
 lemma subBarycenter_singleton (m : M) :
     subBarycenter (K := K) {m} (by simp) = .single m := by
