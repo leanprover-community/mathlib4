@@ -418,6 +418,10 @@ theorem symm_trans_self (e : M ≃* N) : e.symm.trans e = refl N :=
 theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
   DFunLike.ext _ _ e.symm_apply_apply
 
+@[to_additive]
+theorem isMulCommutative (e : M ≃* N) : IsMulCommutative M ↔ IsMulCommutative N :=
+  ⟨fun _ ↦ e.surjective.isMulCommutative, fun _ ↦ e.symm.surjective.isMulCommutative⟩
+
 end trans
 
 /-- `MulEquiv.symm` defines an equivalence between `α ≃* β` and `β ≃* α`. -/

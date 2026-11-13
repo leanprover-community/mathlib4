@@ -18,8 +18,8 @@ This file develops the theory of commuting elements in a free group.
 
 * `FreeGroup.center_eq_top_of_subsingleton` and `FreeGroup.center_eq_bot_of_nontrivial`: the center
   of a free group is `⊤` or `⊥`, depending on the number of generators.
-* `FreeGroup.isCyclic_centralizer`: the centralizer of a non-unit element is a cyclic subgroup.
-* `FreeGroup.commute_iff_exists_zpow`: two elements of a free group commute iff they are powers of
+* `IsFreeGroup.isCyclic_centralizer`: the centralizer of a non-unit element is a cyclic subgroup.
+* `IsFreeGroup.commute_iff_exists_zpow`: two elements of a free group commute iff they are powers of
   the same element.
 -/
 
@@ -33,18 +33,18 @@ variable {α : Type*}
 
 @[to_additive]
 theorem mem_zpowers_of_iff [DecidableEq α] {a : α} {x : FreeGroup α} :
-    x ∈ zpowers (of a) ↔ ∀ p ∈ x.toWord, p.1 = a := by
-  refine ⟨by rintro ⟨_, rfl⟩; simp, fun h ↦ ?_⟩
-  by_cases! heq : ∀ p ∈ x.toWord, p.2 = true
-  · refine ⟨x.toWord.length, toWord_inj.mp <| List.ext_getElem (by simp) fun i _ hi ↦ ?_⟩
-    grind [zpow_natCast, toWord_of_pow]
-  refine ⟨-x.toWord.length, toWord_inj.mp <| List.ext_getElem (by simp) fun i _ hi ↦ ?_⟩
-  obtain ⟨m, hm, _⟩ := heq
-  obtain ⟨j, hj₁, hj₂⟩ := List.mem_iff_getElem.mp hm
-  have : x.toWord.Pairwise (·.2 = ·.2) :=
-    List.isChain_iff_pairwise.mp <| isReduced_toWord.imp_of_mem_imp <| by grind
-  simp [invRev]
-  grind [List.pairwise_iff_getElem.mp this (i ⊓ j) (i ⊔ j)]
+    x ∈ Subgroup.zpowers (of a) ↔ ∀ p ∈ x.toWord, p.1 = a := by
+  refine ⟨by rintro ⟨_, rfl⟩; simp, fun h ↦ mk_toWord (x := x) ▸ ?_⟩
+  generalize x.toWord = L at h
+  induction L with
+  | nil => exact one_mem _
+  | cons p L ih =>
+    rw [← List.singleton_append, ← mul_mk]
+    refine mul_mem ?_ (ih (by grind))
+    obtain ⟨b, _ | _⟩ := p
+    all_goals
+    · simp at h
+      simp [h.1, mk_eq_of, mk_eq_inv_of]
 
 @[to_additive]
 theorem centralizer_of (a : α) : centralizer {of a} = zpowers (of a) := by
@@ -52,7 +52,7 @@ theorem centralizer_of (a : α) : centralizer {of a} = zpowers (of a) := by
   refine le_antisymm ?_ (zpowers_le_centralizer_singleton _)
   refine fun x hx ↦ mem_zpowers_of_iff.mpr fun p hp ↦ ?_
   by_contra! hpne
-  have : of a * x = x * of a := by simpa using hx (of a) rfl
+  specialize hx (of a) rfl
   grind [idxOf_toWord_mul_of_eq x hpne hp, idxOf_toWord_of_mul_eq x hpne,
     List.idxOf_eq_zero_iff_eq_nil_or_head_eq]
 
@@ -82,13 +82,29 @@ open Subgroup
 variable {G : Type*} [Group G] [IsFreeGroup G]
 
 @[to_additive]
-theorem isCyclic_centralizer {g : G} (hg : g ≠ 1) : IsCyclic (centralizer {g}) := by
-  have hi := isFreeGroupOfIsFreeGroup (centralizer {g})
-  rw [hi.mulEquiv.symm.isCyclic, FreeGroup.isCyclic_iff_subsingleton]
-  by_contra!
+theorem isCyclic_iff_isMulCommutative : IsCyclic G ↔ IsMulCommutative G := by
+  have e := IsFreeGroup.mulEquiv G
+  rw [← e.isCyclic, ← e.isMulCommutative, FreeGroup.isCyclic_iff_subsingleton,
+    FreeGroup.isMulCommutative_iff_subsingleton]
+
+@[to_additive]
+theorem center_eq_bot_or_top : Subgroup.center G = ⊥ ∨ Subgroup.center G = ⊤ := by
+  have e := IsFreeGroup.mulEquiv G
+  rw [← map_bot (e : FreeGroup (Generators G) →* G), ← map_equiv_top e, ← map_center_eq e,
+    (map_injective e.injective).eq_iff, (map_injective e.injective).eq_iff]
+  refine (subsingleton_or_nontrivial (Generators G)).symm.imp ?_ ?_
+  · exact fun h ↦ FreeGroup.center_eq_bot_of_nontrivial
+  · exact fun h ↦ FreeGroup.center_eq_top_of_subsingleton
+
+@[to_additive]
+theorem isCyclic_centralizer {g : G} (ha : g ≠ 1) :
+    IsCyclic (Subgroup.centralizer {g}) := by
+  rw [IsFreeGroup.isCyclic_iff_isMulCommutative, ← Subgroup.center_eq_top_iff]
+  apply IsFreeGroup.center_eq_bot_or_top.resolve_left
+  contrapose ha
   have : ⟨g, mem_centralizer_singleton_iff.mpr rfl⟩ ∈ center (centralizer {g}) := by
     simp [mem_center_iff, mem_centralizer_singleton_iff, commute_iff_eq]
-  simp [← map_center_eq hi.mulEquiv, FreeGroup.center_eq_bot_of_nontrivial, hg] at this
+  simpa [ha] using this
 
 /-- Free groups are commutative-transitive. -/
 @[to_additive /-- Free additive groups are commutative-transitive. -/]
