@@ -28,7 +28,6 @@ commutative binomial ring `R`.
 ## TODO
 * When `A` is a commutative `R`-algebra, the exponentiation action makes the multiplicative group
   `1 + XA[[X]]` into an `R`-module.
-
 -/
 
 @[expose] public section

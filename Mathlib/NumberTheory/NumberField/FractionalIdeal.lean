@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.FractionalIdeal.Norm
 import Mathlib.Algebra.CharZero.Infinite
 
 /-!
-
 # Fractional ideals of number fields
 
 Prove some results on the fractional ideals of number fields.

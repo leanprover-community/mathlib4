@@ -17,7 +17,6 @@ This file contains results about smoothness of standard maps associated to produ
 - functions into a product (*pi type*) are `C^n` iff their components are
 - if `M` and `N` are manifolds modelled over the same space, `Sum.inl` and `Sum.inr` are
   `C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
-
 -/
 
 assert_not_exists mfderiv

@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 We define a bijective map `SimplexCategory.toMk₁ : Fin (n + 2) → ⦋n⦌ ⟶ ⦋1⦌`.
 This is used in the file `Mathlib.AlgebraicTopology.SimplicialSet.StdSimplexOne`
 in the study of simplices in the simplicial set `Δ[1]`.
-
 -/
 
 @[expose] public section

@@ -306,6 +306,8 @@ end Map
 
 section Centralizer
 
+open scoped Pointwise
+
 variable (R)
 
 /-- The centralizer, or commutant, of the star-closure of a set as a star subalgebra. -/
@@ -421,6 +423,7 @@ end Subalgebra
 
 namespace StarAlgebra
 
+open scoped Pointwise
 open StarSubalgebra
 
 variable {R A : Type*} [CommSemiring R] [StarRing R]

@@ -5,10 +5,12 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.HasExactLimitsOfShape
+
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 /-!
-
 # AB axioms in functor categories
 
 This file proves that, when the relevant limits and colimits exist, exactness of limits and

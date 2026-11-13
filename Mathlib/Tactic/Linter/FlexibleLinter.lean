@@ -118,8 +118,16 @@ The prototypical non-flexible tactic `rw`.
 `simp only` is also non-flexible. -/
 --  TODO: adding more entries here, allows to consider more tactics to be flexible
 def flexible? : Syntax → Bool
-  | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
-  | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
+  | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _]
+  | .node _ ``Lean.Parser.Tactic.simpAutoUnfold #[_, _, _, only?, _, _]
+  | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _]
+  | .node _ ``Lean.Parser.Tactic.simpAllAutoUnfold #[_, _, _, only?, _] =>
+    only?[0].getAtomVal != "only"
+  | .node _ ``Lean.Parser.Tactic.simpTrace #[_, _, rest]
+  | .node _ ``Lean.Parser.Tactic.simpAllTrace #[_, _, rest]
+  | .node _ ``Lean.Parser.Tactic.tacticSimp?!_ #[_, rest]
+  | .node _ ``Lean.Parser.Tactic.tacticSimp_all?!_ #[_, rest] =>
+    rest[2][0].getAtomVal != "only"
   | _ => false
 
 end Mathlib.Linter
@@ -538,6 +546,26 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
         m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
           Try `simp_all?` and use the suggested `simp_all only [...]`. \
           Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpAutoUnfold =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `simp?!` and use the suggested `simp! only [...]`. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpAllAutoUnfold =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Try `simp_all?!` and use the suggested `simp_all! only [...]`. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpTrace =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Use the suggested `simp only [...]` string."
+      | ``Lean.Parser.Tactic.simpAllTrace =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Use the suggested `simp_all only [...]` string."
+      | ``Lean.Parser.Tactic.tacticSimp?!_ =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Use the suggested `simp! only [...]` string."
+      | ``Lean.Parser.Tactic.tacticSimp_all?!_ =>
+        m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
+          Use the suggested `simp_all! only [...]` string."
       | `Aesop.Frontend.Parser.aesopTactic =>
         m!"`{stainStr}` is a flexible tactic modifying `{d}`. \
           Try `aesop?` and use the suggested proof."

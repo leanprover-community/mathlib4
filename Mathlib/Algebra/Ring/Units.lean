@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Ring.InjSurj
 
 /-!
 # Units in semirings and rings
-
 -/
 
 public section

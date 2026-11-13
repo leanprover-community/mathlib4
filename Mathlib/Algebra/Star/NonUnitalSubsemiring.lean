@@ -16,7 +16,6 @@ In this file we define `NonUnitalStarSubsemiring`s and the usual operations on t
 ## Implementation
 
 This file is heavily inspired by `Mathlib/Algebra/Star/NonUnitalSubalgebra.lean`.
-
 -/
 
 @[expose] public section

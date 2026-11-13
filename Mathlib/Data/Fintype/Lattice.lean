@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Fintype.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas relating fintypes and order/lattice structure.
 -/

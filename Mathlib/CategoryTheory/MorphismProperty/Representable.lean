@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
-
 # Relatively representable morphisms
 
 In this file we define and develop basic results about relatively representable morphisms.
@@ -76,7 +75,6 @@ as possible is phrased internally to `C`.
 * `relativelyRepresentable.isStableUnderBaseChange`: Being relatively representable is stable under
   base change.
 * `relativelyRepresentable.of_isIso`: Isomorphisms are relatively representable.
-
 -/
 
 @[expose] public section

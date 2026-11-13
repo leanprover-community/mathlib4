@@ -292,7 +292,7 @@
     pull request: https://github.com/leanprover-community/mathlib4/pull/28013
 57:
   title  : Heron’s Formula
-  decl   : Theorems100.heron
+  decl   : Affine.Triangle.volume_eq_sqrt_mul_sub_mul_sub_mul_sub
   authors: Matt Kempster
 58:
   title  : Formula for the Number of Combinations

@@ -23,7 +23,6 @@ holds in particular if `W` is the inverse image of
 the class of isomorphisms by `G`.
 
 (The dual statement is also obtained.)
-
 -/
 
 public section

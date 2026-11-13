@@ -9,6 +9,9 @@ public import Mathlib.Order.Hom.BoundedLattice
 public import Mathlib.Order.WithBot
 public import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoining `⊤` and `⊥` to order maps and lattice homomorphisms
 

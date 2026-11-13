@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.ModularForms.Bounds
 
 import Mathlib.Analysis.PSeries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `L`-function of a modular form
 -/

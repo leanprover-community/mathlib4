@@ -59,7 +59,6 @@ natural number' into the nonrecursive constructor `zero` of the inductive type `
 ## Tags
 
 miu, derivable strings
-
 -/
 
 @[expose] public section

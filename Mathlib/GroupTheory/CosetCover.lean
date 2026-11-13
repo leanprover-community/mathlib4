@@ -44,7 +44,6 @@ set of all minimal polynomials (not proved here).
 [1] [Neumann-1954], *Groups Covered By Permutable Subsets*, Lemma 4.1
 [2] <https://mathoverflow.net/a/17398/3332>
 [3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
-
 -/
 
 public section
@@ -237,7 +236,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     rw [← s.filter_union_filter_not_eq (fun i => (H i).FiniteIndex)] at hcovers
     rw [← hcovers, ← Finset.univ.filter_union_filter_not_eq (fun k => (H k.1).FiniteIndex),
       Finset.set_biUnion_union, Finset.set_biUnion_union]
-    apply congrArg₂ (· ∪ ·) <;> rw [Set.iUnion_sigma, Set.iUnion_subtype] <;>
+    congr <;> rw [Set.iUnion_sigma, Set.iUnion_subtype] <;>
         refine Set.iUnion_congr fun i => ?_
     · by_cases hfi : (H i).FiniteIndex <;>
         simp [← Set.smul_set_iUnion₂, Set.iUnion_subtype, ← leftCoset_assoc, f, K, ht, hfi]
