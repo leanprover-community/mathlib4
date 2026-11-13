@@ -7943,6 +7943,7 @@ public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.Expr
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.Omit
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
