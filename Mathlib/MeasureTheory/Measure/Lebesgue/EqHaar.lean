@@ -387,7 +387,7 @@ variable {μ} {s : Set E}
 
 -- Note: We might want to rename this once we acquire the lemma corresponding to
 -- `MeasurableSet.const_smul`
-theorem NullMeasurableSet.const_smul (hs : NullMeasurableSet s μ) (r : ℝ) :
+theorem _root_.MeasureTheory.NullMeasurableSet.const_smul (hs : NullMeasurableSet s μ) (r : ℝ) :
     NullMeasurableSet (r • s) μ := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simp
@@ -397,6 +397,10 @@ theorem NullMeasurableSet.const_smul (hs : NullMeasurableSet s μ) (r : ℝ) :
   refine ⟨_, ht.const_smul_of_ne_zero hr, ?_⟩
   rw [← measure_symmDiff_eq_zero_iff] at hst ⊢
   rw [← smul_set_symmDiff₀ hr, addHaar_smul μ, hst, mul_zero]
+
+@[deprecated (since := "2026-11-13")]
+alias _root_.MeasureTheory.Measure.NullMeasurableSet.const_smul :=
+  _root_.MeasureTheory.NullMeasurableSet.const_smul
 
 variable (μ)
 
