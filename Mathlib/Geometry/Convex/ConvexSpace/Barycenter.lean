@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
 
+import Mathlib.Tactic.FinCases
+
 /-!
 # The barycenter of the standard simplex
 
@@ -79,6 +81,14 @@ lemma barycenter_fin_one :
     barycenter (K := K) (M := Fin 1) = .single 0 :=
   barycenter_of_unique
 
+
+lemma map_subBarycenter_of_injective -- [CharZero K]
+    {M N : Type*} [DecidableEq N] (S : Finset M) (hS : S.Nonempty)
+    (f : M → N) (hf : Function.Injective f) :
+    map f (subBarycenter (K := K) S hS) =
+      subBarycenter (Finset.image f S) (by simpa) := by
+  sorry
+
 end StdSimplex
 
 namespace ConvexSpace.AffineMap
@@ -106,7 +116,7 @@ lemma subBarycenter_comp_of_injective
     (g : N → M) (hg : Function.Injective g) :
     (f.comp (StdSimplex.affineMap (R := K) g)).subBarycenter S hS =
       f.subBarycenter (Finset.image g S) (by simpa) := by
-  sorry--simp [subBarycenter, StdSimplex.map_subBarycenter_of_injective _ _ _ hg]
+  simp [subBarycenter, StdSimplex.map_subBarycenter_of_injective _ _ _ hg]
 
 /-- The image of the isobarycenter of the standard simplex by an affine map. -/
 noncomputable abbrev barycenter [Nonempty M] [Fintype M] : Y := f .barycenter
@@ -178,9 +188,8 @@ lemma sd_eq_self
     (f : ConvexSpace.AffineMap K (StdSimplex K (Fin 1)) Y) (σ : Equiv.Perm (Fin 1)) :
     f.sd σ = f := by
   obtain ⟨f, rfl⟩ := StdSimplex.affineMapMk_surjective f
-  sorry
-  --obtain ⟨s, rfl⟩ := Fin.exists_vecCons₁ f
-  --simp [sd]
+  obtain ⟨s, rfl⟩ : ∃ (s : Y), f = ![s] := ⟨f 0, by ext i; fin_cases i; simp⟩
+  simp [sd]
 
 end
 
