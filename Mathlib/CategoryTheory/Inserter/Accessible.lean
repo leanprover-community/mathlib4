@@ -47,8 +47,7 @@ variable {K L : Type*} [Category* K] [Category* L] {F G : K ⥤ L} (κ : Cardina
 
 /-- If the underlying object of an inserter `X` is κ-presentable, then `X` is κ-presentable. -/
 public instance (X : Inserter F G)
-    [IsCardinalPresentable X.obj κ]
-    [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
+    [IsCardinalPresentable X.obj κ] [HasCardinalFilteredColimits K κ]
     [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ] :
     IsCardinalPresentable X κ := by
   apply IsCardinalPresentable.mk
