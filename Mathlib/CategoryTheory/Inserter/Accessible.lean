@@ -37,10 +37,6 @@ We follow the proof from this reference.
 
 - [L. Positselski, *Notes On Limits of Accessible Categories*][positselski2024]
 
-## TODOs
-
-This file is still in active WIP
-
 -/
 
 namespace CategoryTheory.Inserter
