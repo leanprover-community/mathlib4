@@ -475,16 +475,16 @@ end Properties
 
 end CartanMatrix
 
-/-- The proposition that a matrix is a finite-type generalized Cartan matrix. -/
-structure Matrix.IsFiniteGeneralizedCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
+/-- The proposition that a matrix is a generalized Cartan matrix. -/
+structure Matrix.IsGeneralizedCartan {ι : Type*}
     (M : Matrix ι ι ℤ) : Prop where
-  diag : ∀ i, M i i = 2
-  offDiag_nonpos : ∀ i j, i ≠ j → M i j ≤ 0
-  zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
+  diag (i : ι) : M i i = 2
+  offDiag_nonpos (i j : ι) : i ≠ j → M i j ≤ 0
+  zero_comm (i j : ι) : M i j = 0 ↔ M j i = 0
 
 /-- The proposition that a matrix is a finite-type Cartan matrix. -/
 structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι] (M : Matrix ι ι ℤ)
-    extends IsFiniteGeneralizedCartan M where
+    extends IsGeneralizedCartan M where
   exists_posDef' : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ x ≠ 0, 0 < x ⬝ᵥ ((diagonal d * M) *ᵥ x)
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ}
@@ -500,7 +500,7 @@ lemma mk_of_exists_posDef (diag : ∀ i, M i i = 2) (offDiag_nonpos : ∀ i j, i
     obtain ⟨_, _, h⟩ := exists_posDef
     grind [h.isHermitian.apply i j, diagonal_mul, star_trivial, mul_eq_zero]
   exists_posDef' := by
-    obtain ⟨d, hd, _, h⟩ := exists_posDef
+    obtain ⟨d, hd, -, h⟩ := exists_posDef
     refine ⟨d, hd, fun x hx ↦ ?_⟩
     have hcoe : Finsupp.equivFunOnFinite.symm x ≠ 0 := fun h ↦ hx <| funext fun i ↦ by
       simpa using congrArg (fun f : ι →₀ ℤ ↦ f i) h
@@ -510,12 +510,23 @@ lemma mk_of_exists_posDef (diag : ∀ i, M i i = 2) (offDiag_nonpos : ∀ i j, i
 variable (hM : M.IsFiniteCartan)
 include hM
 
+lemma eq_zero_iff_forall {x : ι → ℤ} :
+    x = 0 ↔ ∀ i, x i * (M *ᵥ x) i ≤ 0 := by
+  refine ⟨by rintro rfl; simp, fun h ↦ ?_⟩
+  obtain ⟨d, hd, hd'⟩ := hM.exists_posDef'
+  by_contra hx
+  refine (hd' x hx).not_ge ?_
+  simp_rw [dotProduct_diagonal_mul_mulVec, mul_assoc]
+  exact Finset.sum_nonpos fun i _ ↦ mul_nonpos_of_nonneg_of_nonpos (hd i).le (h i)
+
+lemma eq_zero_iff_forall' {x : ι → ℤ} :
+    x = 0 ↔ ∀ i, x i * (M *ᵥ x) i = 0 :=
+  ⟨by rintro rfl; simp, fun h ↦ hM.eq_zero_iff_forall.mpr fun i ↦ (h i).le⟩
+
 lemma exists_mul_mulVec_pos {x : ι → ℤ} (hx : x ≠ 0) :
     ∃ i, 0 < x i * (M *ᵥ x) i := by
-  obtain ⟨d, hd, h⟩ := hM.exists_posDef'
   by_contra! hc
-  exact (h x hx).not_ge <| dotProduct_diagonal_mul_mulVec _ _ M ▸ Finset.sum_nonpos fun i _ ↦
-    mul_assoc (d i) _ _ ▸ mul_nonpos_of_nonneg_of_nonpos (hd i).le (hc i)
+  exact hx <| hM.eq_zero_iff_forall.mpr hc
 
 lemma det_ne_zero : M.det ≠ 0 := by
   by_contra h
@@ -568,11 +579,12 @@ protected theorem isPosSymmetrizable : M.IsPosSymmetrizable := by
       let κ := {i : ι // i ≠ v}
       have h : Fintype.card κ < n := hcard ▸ Fintype.card_lt_of_injective_not_surjective
         (Subtype.val : κ → ι) Subtype.val_injective (fun h ↦ by grind [h v])
-      obtain ⟨e, he, hsub⟩ := ih (Fintype.card κ) h (hM.submatrix Subtype.val_injective) rfl
+      obtain ⟨e, he, hsub⟩ := isPosSymmetrizable_iff.mp <|
+        ih (Fintype.card κ) h (hM.submatrix Subtype.val_injective) rfl
       let e' (i : ι) : ℤ := if hi : i = v then 1 else e ⟨i, hi⟩
       have he' i : 0 < e' i := by by_cases hi : i = v <;> simp [e', hi, he]
       have hE' i (hi : i ≠ v) j (hj : j ≠ v) : e' i * M i j = e' j * M j i := by
-        simpa [e', hi, hj, submatrix_apply] using hsub ⟨i, hi⟩ ⟨j, hj⟩
+        simpa [e', hi, hj, diagonal_mul] using hsub.apply ⟨j, hj⟩ ⟨i, hi⟩
       by_cases! hw : w = v
       · exact .mk_of_forall_ne e' he' hE' ⟨1, one_pos, 1, one_pos, by grind [hM.zero_comm]⟩
       · have hvw_neg : M v w < 0 := lt_of_le_of_ne (hM.offDiag_nonpos v w hw.symm) hvw
@@ -605,7 +617,8 @@ lemma exists_pos_mulVec_pos : ∃ u : ι → ℤ, (∀ i, 0 < u i) ∧ (∀ i, 0
 open Finset in
 theorem exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef := by
   obtain ⟨u, hu, hMu⟩ := hM.exists_pos_mulVec_pos
-  obtain ⟨e, he, he'⟩ := hM.isPosSymmetrizable
+  obtain ⟨e, he, hsymm⟩ := isPosSymmetrizable_iff.mp <| hM.isPosSymmetrizable
+  have he' i j : e i * M i j = e j * M j i := by simpa [diagonal_mul] using hsymm.apply j i
   use e, he
   apply posDef_iff_dotProduct_mulVec.mpr ⟨by ext; simp [diagonal_mul, he'], fun x hx ↦ ?_⟩
   let y : ι → ℤ := fun i ↦ (∏ k ∈ univ.erase i, u k) * x i

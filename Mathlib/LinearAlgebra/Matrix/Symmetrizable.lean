@@ -35,7 +35,7 @@ def IsSymmetrizable [MonoidWithZero R] (M : Matrix ι ι R) : Prop :=
 
 section IsSymmetrizable
 
-lemma IsSymmetrizable.of_isEmpty [Semiring R] [LT R] [IsEmpty ι] :
+lemma IsSymmetrizable.of_isEmpty [Semiring R] [IsEmpty ι] :
     M.IsSymmetrizable :=
   ⟨1, isEmptyElim, isEmptyElim⟩
 
@@ -114,7 +114,6 @@ end IsSymmetrizable
 
 /-- A matrix is positively symmetrizable if it is symmetric when multiplied by a diagonal matrix of
 positive diagonal entries. -/
-@[expose]
 def IsPosSymmetrizable [Semiring R] [LT R]
     (M : Matrix ι ι R) : Prop :=
   ∃ d : ι → R, (∀ i, 0 < d i) ∧ ∀ i j, d i * M i j = d j * M j i
