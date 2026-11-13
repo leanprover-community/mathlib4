@@ -29,7 +29,6 @@ variable {ι κ R : Type*} {M N : Matrix ι ι R}
 
 /-- A matrix is symmetrizable if it is symmetric when multiplied by a diagonal matrix of diagonal
 entries that do not divide zero. -/
-@[expose]
 def IsSymmetrizable [MonoidWithZero R] (M : Matrix ι ι R) : Prop :=
   ∃ d : ι → R, (∀ i, d i ∈ nonZeroDivisors R) ∧ ∀ i j, d i * M i j = d j * M j i
 
