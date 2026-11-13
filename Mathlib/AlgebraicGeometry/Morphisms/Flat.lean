@@ -247,8 +247,6 @@ lemma isIso_pushoutSection_of_isAffineOpen (hUS : IsAffineOpen US) (hUT : IsAffi
   exact .of_iso (Scheme.Hom.isPullback_resLE H hUST hUSX hUY).flip hUY'.isoSpec hUT.isoSpec
     hUX.isoSpec hUS.isoSpec (by simp) (by simp) (by simp) (by simp)
 
-set_option maxHeartbeats 9000000 in
--- for some reason the `dsimp [φ]` keeps timing out, so bumping up heartbeats for now
 open TensorProduct in
 lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Opens) (hVU : iSup VX = UX)
     (hV : ∀ i, Mono (pushoutSection H hUST (show VX i ≤ _ by aesop) rfl))
@@ -294,11 +292,11 @@ lemma mono_pushoutSection_of_iSup_eq {ι : Type*} [Finite ι] (VX : ι → X.Ope
       ((CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.hom.hom.comp
       (by exact Pi.evalRingHom _ _))).comp (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).toRingHom
   -- ... is also injective by our hypotheses on `Vᵢ`.
-  have hφ : Function.Injective φ := by
-    dsimp [φ] -- fixme: this keeps giving a timeout error
-    refine .comp ?_ (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).injective
-    exact .piMap fun i ↦ (hV _).comp <| CommRingCat.isPushout_tensorProduct _ _ _
-      |>.flip.isoPushout.commRingCatIsoToRingEquiv.injective
+  have hφ : Function.Injective φ :=
+    Function.Injective.comp (f := ⇑(Algebra.TensorProduct.piRight _ Γ(S, US) _ _))
+      (.piMap fun i ↦ (hV _).comp <| CommRingCat.isPushout_tensorProduct _ _ _
+        |>.flip.isoPushout.commRingCatIsoToRingEquiv.injective)
+      (Algebra.TensorProduct.piRight _ Γ(S, US) _ _).injective
   let e : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ≅
       .of (Γ(T, UT) ⊗[Γ(S, US)] Γ(X, UX)) :=
     (CommRingCat.isPushout_tensorProduct _ _ _).flip.isoPushout.symm

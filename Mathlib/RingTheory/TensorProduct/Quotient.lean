@@ -128,12 +128,8 @@ noncomputable def quotientTensorEquiv (I : Ideal A) :
       Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv
       (I.map_map _ _).symm)
   { __ := f
-    map_smul' r x := by
-      suffices f (algebraMap S ((A ⧸ I) ⊗[R] T) r) = algebraMap _ _ r by
-        simp only [Algebra.smul_def', AlgEquiv.toRingEquiv_toRingHom, AlgHom.toRingHom_eq_coe,
-          RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe]
-        erw [map_mul f, this, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul]
-        rfl
+    map_smul' r x := show f (r • x) = r • f x by
+      rw [Algebra.smul_def, Algebra.smul_def, map_mul]
       rfl }
 
 @[simp]
