@@ -34,7 +34,6 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 
 Finally we show that `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` preserves finite cartesian products; note
 that it fails to preserve infinite products.
-
 -/
 
 @[expose] public section

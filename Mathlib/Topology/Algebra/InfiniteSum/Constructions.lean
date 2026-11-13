@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Star
 
 Lemmas on the interaction of `tprod`, `tsum`, `HasProd`, `HasSum` etc. with products, Sigma and Pi
 types, `MulOpposite`, etc.
-
 -/
 
 public section

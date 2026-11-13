@@ -123,7 +123,6 @@ assuming `S` is commutative.
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
 -/
 
 @[expose] public section

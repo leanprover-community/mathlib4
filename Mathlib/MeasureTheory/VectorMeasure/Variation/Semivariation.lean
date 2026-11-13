@@ -35,7 +35,6 @@ there exists `C < ∞` such that `‖μ s‖ ≤ C` for all `s`.
 ## References
 
 * [J. Diestel and J.J. Uhl, Vector Measures][DiestelUhl1977]
-
 -/
 
 public section

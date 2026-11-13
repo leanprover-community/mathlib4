@@ -51,7 +51,6 @@ then `ξ.equivFun : E →ₗ (ι → 𝕜)` is continuous. However, for technica
 prove this when `ι` and `E` live in the same universe. So we start by doing that as a private
 lemma, then we deduce `LinearMap.continuous_of_finiteDimensional` from it, and then the general
 result follows as `continuous_equivFun_basis`.
-
 -/
 
 @[expose] public section

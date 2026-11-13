@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 If we assume `Small.{v} R`, the category `ModuleCat.{v} R` has enough projectives, which allows to
 introduce the instance `HasExt.{v} (ModuleCat.{v} R)`. As a result, `Ext`-groups in this category
 of modules are defined and belong to `Type v`.
-
 -/
 
 public section

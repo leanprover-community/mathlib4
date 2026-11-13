@@ -29,7 +29,6 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 ## References
 * https://ncatlab.org/nlab/show/Kan+extension
-
 -/
 
 @[expose] public section

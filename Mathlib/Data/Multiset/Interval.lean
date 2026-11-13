@@ -23,7 +23,6 @@ We implement the intervals via the intervals on `DFinsupp`, rather than via filt
 `Multiset.Powerset`; this is because `(Multiset.replicate n x).Powerset` has `2^n` entries not `n+1`
 entries as it contains duplicates. We do not go via `Finsupp` as this would be noncomputable, and
 multisets are typically used computationally.
-
 -/
 
 public section

@@ -14,7 +14,6 @@ public import Mathlib.Tactic.GRewrite.Elab
 The `grw`/`grewrite` tactic is a generalization of the `rewrite` tactic that works with relations
 other than equality. The core implementation of `grewrite` is in the file
 `Mathlib/Tactic/GRewrite/Core.lean`
-
 -/
 
 public meta section

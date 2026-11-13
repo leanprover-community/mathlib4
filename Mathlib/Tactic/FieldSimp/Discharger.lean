@@ -35,7 +35,6 @@ fundamentally difficult.
 * `Mathlib.Tactic.FieldSimp.discharge`: the discharger, of type `Expr → SimpM (Option Expr)`
 
 * `field_simp_discharge`: tactic syntax for the discharger (most useful for testing/debugging)
-
 -/
 
 public meta section

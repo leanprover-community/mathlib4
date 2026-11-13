@@ -33,7 +33,6 @@ final can be restated. We show:
 ## References
 
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 3.2
-
 -/
 
 public section

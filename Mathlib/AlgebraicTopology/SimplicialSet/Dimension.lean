@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 For a simplicial set `X` and `d : ℕ`, we introduce a typeclass
 `X.HasDimensionLT d` saying that the dimension of `X` is `< d`,
 i.e. all nondegenerate simplices of `X` are of dimension `< d`.
-
 -/
 
 public section
