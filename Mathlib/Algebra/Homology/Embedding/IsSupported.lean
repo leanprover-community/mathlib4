@@ -21,7 +21,6 @@ when the conditions above are satisfied for those `i'` that are of the form `e.f
 (These two predicates are not made typeclasses because in most practical applications,
 they are equivalent to `K.IsSupported e'` or `K.IsStrictlySupported e'` for a
 complementary embedding `e'`.)
-
 -/
 
 public section

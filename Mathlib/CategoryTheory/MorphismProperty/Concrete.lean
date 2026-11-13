@@ -20,7 +20,6 @@ We introduce type-classes `HasSurjectiveInjectiveFactorization` and
 `HasFunctorialSurjectiveInjectiveFactorization` expressing that in a concrete category `C`,
 all morphisms can be factored (resp. factored functorially) as a surjective map
 followed by an injective map.
-
 -/
 
 @[expose] public section

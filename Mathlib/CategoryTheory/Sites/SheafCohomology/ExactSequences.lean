@@ -31,7 +31,6 @@ so the objects in it are really `AddCommGrpCat.of (H F n)`). To do this, you can
   first morphism is `H.map` applied to `f.τ₁`.
 * `CategoryTheory.Sheaf.H.longSequenceFunctor`: This is the functor that sends a short exact
   sequence to its long exact sequence on cohomology and sends morphisms to `longSequenceHom`.
-
 -/
 
 @[expose] public section
@@ -80,7 +79,7 @@ open ComposableArrows
 theorem longSequence_exact : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
-/-- The induced homomorphism of long exact equences obtained by applying `H.map` everywhere. -/
+/-- The induced homomorphism of long exact sequences obtained by applying `H.map` everywhere. -/
 noncomputable abbrev longSequenceHom (h : n₀ + 1 = n₁ := by lia) :
     longSequence h₁ n₀ n₁ h ⟶ longSequence h₂ n₀ n₁ h := by
   refine ComposableArrows.homMk₅ (ofHom (map f.τ₁ n₀)) (ofHom (map f.τ₂ n₀)) (ofHom (map f.τ₃ n₀))

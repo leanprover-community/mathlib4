@@ -201,14 +201,14 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
 Version for open intervals -/
-theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) {n : ℕ} (hx : a < b)
+theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) {n : ℕ}
     (ht : t ∈ Ioo a b) (hf : ContDiffOn ℝ n f (Icc a b))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Ioo a b)) :
     HasDerivAt (fun y => taylorWithinEval f n (Icc a b) y x)
       (((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) t :=
   have h_nhds : Ioo a b ∈ 𝓝 t := isOpen_Ioo.mem_nhds ht
   have h_nhds' : Ioo a b ∈ 𝓝[Icc a b] t := nhdsWithin_le_nhds h_nhds
-  (hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx) h_nhds' ht
+  (hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc (ht.1.trans ht.2)) h_nhds' ht
     Ioo_subset_Icc_self hf <| (hf' t ht).mono_of_mem_nhdsWithin h_nhds').hasDerivAt h_nhds
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
@@ -312,9 +312,8 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
   rcases exists_ratio_hasDerivAt_eq_ratio_slope (fun t => taylorWithinEval f n (uIcc x₀ x) t x)
       (fun t => ((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t) hx₁
       (continuousOn_taylorWithinEval (uniqueDiffOn_Icc hx₁) hf)
-      (fun _ hy => taylorWithinEval_hasDerivAt_Ioo x hx₁ hy hf hf')
+      (fun _ hy => taylorWithinEval_hasDerivAt_Ioo x hy hf hf')
     g g' gcont gdiff with ⟨y, hy, h⟩
-  use y, hy
   -- The rest is simplifications and trivial calculations
   grind [uIoo, smul_eq_mul, taylorWithinEval_self]
 
@@ -388,10 +387,11 @@ theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.
 The difference of `f` and its `n`-th Taylor polynomial can be estimated by
 `C * (x - a)^(n+1) / n!` where `C` is a bound for the `n+1`-th iterated derivative of `f`. -/
-theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (hab : a ≤ b)
+theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) (hx : x ∈ Icc a b)
     (hC : ∀ y ∈ Icc a b, ‖iteratedDerivWithin (n + 1) f (Icc a b) y‖ ≤ C) :
     ‖f x - taylorWithinEval f n (Icc a b) a x‖ ≤ C * (x - a) ^ (n + 1) / n ! := by
+  have hab : a ≤ b := hx.1.trans hx.2
   rcases eq_or_lt_of_le hab with (rfl | h)
   · rw [Icc_self, mem_singleton_iff] at hx
     simp [hx]
@@ -428,9 +428,11 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.
 There exists a constant `C` such that for all `x ∈ Icc a b` the difference of `f` and its `n`-th
 Taylor polynomial can be estimated by `C * (x - a)^(n+1)`. -/
-theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ} (hab : a ≤ b)
+theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ (n + 1) f (Icc a b)) :
     ∃ C, ∀ x ∈ Icc a b, ‖f x - taylorWithinEval f n (Icc a b) a x‖ ≤ C * (x - a) ^ (n + 1) := by
+  rcases lt_or_ge b a with hba | hab
+  · exact ⟨0, fun x hx ↦ absurd (hx.1.trans hx.2) hba.not_ge⟩
   rcases eq_or_lt_of_le hab with (rfl | h)
   · refine ⟨0, fun x hx => ?_⟩
     have : x = a := by simpa [← le_antisymm_iff] using hx
@@ -440,7 +442,7 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   use SupSet.sSup (g '' Icc a b) / (n !)
   intro x hx
   rw [div_mul_eq_mul_div₀]
-  refine taylor_mean_remainder_bound hab hf hx fun y => ?_
+  refine taylor_mean_remainder_bound hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
 
 /-- **Taylor's theorem** with the Integral form of the remainder. This is an auxiliary theorem

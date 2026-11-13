@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.LawfulXor.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # LawfulXor equivalences
 -/

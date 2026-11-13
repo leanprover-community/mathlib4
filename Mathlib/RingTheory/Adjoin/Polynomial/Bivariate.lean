@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bivariate polynomials and adjoining transcendental elements
 

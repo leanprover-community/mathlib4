@@ -29,7 +29,6 @@ once the `Field` class has been defined.
 ## Notation
 
 - `/.` is infix notation for `Rat.divInt`.
-
 -/
 
 @[expose] public section

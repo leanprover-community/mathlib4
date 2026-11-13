@@ -8,8 +8,7 @@ module
 public import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 
 /-!
-
-## F-isocrystals over a perfect field
+# F-isocrystals over a perfect field
 
 When `k` is an integral domain, so is `𝕎 k`, and we can consider its field of fractions `K(p, k)`.
 The endomorphism `WittVector.frobenius` lifts to `φ : K(p, k) → K(p, k)`; if `k` is perfect, `φ` is
@@ -49,7 +48,6 @@ This file introduces notation in the scope `Isocrystal`.
 * [Formalized functional analysis via semilinear maps][dupuis-lewis-macbeth2022]
 * [Theory of commutative formal groups over fields of finite characteristic][manin1963]
 * <https://www.math.ias.edu/~lurie/205notes/Lecture26-Isocrystals.pdf>
-
 -/
 
 @[expose] public section

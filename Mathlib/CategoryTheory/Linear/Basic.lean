@@ -29,7 +29,6 @@ This makes for longer signatures than would be ideal.
 
 It would be nice to have a usable framework of enriched categories in which this would just be
 a category enriched in `Module R`.
-
 -/
 
 @[expose] public section

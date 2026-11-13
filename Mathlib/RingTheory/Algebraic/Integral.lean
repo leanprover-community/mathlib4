@@ -171,7 +171,7 @@ theorem of_smul_isIntegral {y : R} (hy : ¬ IsNilpotent y)
     (h : IsIntegral R (y • z)) : IsAlgebraic R z := by
   have ⟨p, monic, eval0⟩ := h
   refine ⟨p.comp (C y * X), fun h ↦ ?_, by simpa [aeval_comp, Algebra.smul_def] using! eval0⟩
-  apply_fun (coeff · p.natDegree) at h
+  apply_fun (·.coeff p.natDegree) at h
   have hy0 : y ≠ 0 := by rintro rfl; exact hy .zero
   rw [coeff_zero, ← mul_one p.natDegree, ← natDegree_C_mul_X y hy0,
     coeff_comp_degree_mul_degree, monic, one_mul, leadingCoeff_C_mul_X] at h
@@ -256,7 +256,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   have := Algebra.nontrivial_of_isAlgebraic R S
   have : IsDomain R := NoZeroDivisors.to_isDomain _
   classical
-  have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
+  have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image p.coeff)
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by
     obtain ⟨n, hn, rfl⟩ := mem_coeffs_iff.mp hs
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)
@@ -566,6 +566,11 @@ attribute [local instance] FractionRing.liftAlgebra in
 /-- Tower law for `Module.finrank` in a tower of domains `R → S → T`. This is a variant of
 `Module.finrank_mul_finrank` that assumes the rings are domains instead of the modules being
 free. -/
+@[deprecated
+  "Use the more general theorem `Module.IsTorsionFree.finrank_mul_finrank` instead.
+  (Note that this theorem's hypotheses imply `IsDomain S`, and hence `NoZeroDivisors S`, via
+  `IsDomain.of_faithfulSMul S T`.)"
+  +typeChanged (since := "2026-09-20")]
 theorem Module.finrank_mul_finrank' (T : Type*) [CommRing T] [IsDomain T]
     [Algebra S T] [Algebra R T] [IsScalarTower R S T] [FaithfulSMul S T] :
     Module.finrank R S * Module.finrank S T = Module.finrank R T := by

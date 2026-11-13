@@ -29,7 +29,7 @@ jobs:
     steps:
       # Applies `lake exe mk_all`, `lake exe lint-style --fix` and `scripts/lint-bib.sh`, and
       # leaves the results in the working tree for the last step to pick up.
-      - uses: leanprover-community/lint-style-action@c1e9eda133c7710e4d1c7da18afc4c116e588441 # 2026-10-23
+      - uses: leanprover-community/lint-style-action@a5e3ef275cc682ba79c1f8ba34ae2ade5d8d2101 # 2026-10-28
         with:
           mode: fix-worktree
           lint-bib-file: true
@@ -68,7 +68,7 @@ jobs:
       # linter list has no end-of-file or line-ending check, so the pre-commit hooks still carry
       # `scripts/*.py`, `.github/**`, `*.md` and the trailing-newline/CRLF fixes everywhere.
       # They run after the Lean fixers so they also normalise whatever `mk_all` just wrote.
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: 3.x
       - run: python -m pip install pre-commit==4.6.2

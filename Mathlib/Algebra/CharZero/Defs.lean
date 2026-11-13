@@ -11,7 +11,6 @@ import Mathlib.Basic.Logic.Basic
 import Mathlib.Tactic.Basify.Attr
 
 /-!
-
 # Characteristic zero
 
 A ring `R` is called of characteristic zero if every natural number `n` is non-zero when considered

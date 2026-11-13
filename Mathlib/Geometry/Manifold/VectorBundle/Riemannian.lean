@@ -101,7 +101,7 @@ variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 is a Riemannian bundle. -/
 instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
   refine ⟨fun x ↦ innerSL ℝ, fun x ↦ ?_, fun x v w ↦ rfl⟩
-  simp only [contMDiffAt_section]
+  simp only [contMDiffAt_section_iff]
   convert! contMDiffAt_const (c := innerSL ℝ)
   ext v w
   simp [hom_trivializationAt_apply, inCoordinates]
@@ -125,7 +125,7 @@ lemma ContMDiffWithinAt.inner_bundle
     CMDiffAt[s] n (fun m ↦ ⟪v m, w m⟫) x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
   have hb : CMDiffAt[s] n b x := by
-    simp only [contMDiffWithinAt_totalSpace] at hv
+    simp only [contMDiffWithinAt_totalSpace_iff] at hv
     exact hv.1
   simp only [hg]
   have : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ)) n
@@ -134,7 +134,7 @@ lemma ContMDiffWithinAt.inner_bundle
     · exact ContMDiffAt.comp_contMDiffWithinAt x g_smooth.contMDiffAt hb
     · exact hv
     · exact hw
-  simp only [contMDiffWithinAt_totalSpace] at this
+  simp only [contMDiffWithinAt_totalSpace_iff] at this
   exact this.2
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,

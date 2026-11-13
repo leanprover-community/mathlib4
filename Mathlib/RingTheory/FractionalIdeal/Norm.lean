@@ -11,7 +11,6 @@ import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
-
 # Fractional ideal norms
 
 This file defines the absolute ideal norm of a fractional ideal `I : FractionalIdeal R⁰ K` where
@@ -73,7 +72,8 @@ noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
   map_mul' I J := by
     rw [absNorm_div_absNorm_span_eq (I.den * J.den) (I.num * J.num) (by
         have : Algebra.linearMap R K = (IsScalarTower.toAlgHom R R K).toLinearMap := rfl
-        rw [coe_mul, this, Submodule.map_mul, ← this, ← den_mul_self_eq_num, ← den_mul_self_eq_num]
+        rw [coeToSubmodule_mul, this, Submodule.map_mul, ← this, ← den_mul_self_eq_num,
+        ← den_mul_self_eq_num]
         exact Submodule.mul_smul_mul_eq_smul_mul_smul _ _ _ _),
       Submonoid.coe_mul, map_mul, ← Ideal.span_singleton_mul_span_singleton, map_mul,
       Nat.cast_mul, Nat.cast_mul, div_mul_div_comm]
@@ -129,7 +129,7 @@ theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R
 
 section IsLocalization
 
-variable [IsLocalization (Algebra.algebraMapSubmonoid R ℤ⁰) K] [Algebra ℚ K]
+variable [Algebra ℚ K]
 
 theorem abs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ R)
     (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
@@ -170,9 +170,9 @@ theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
       rw [ne_eq, abs_eq_zero, Algebra.norm_eq_zero_iff, IsFractionRing.to_map_eq_zero_iff]
       exact nonZeroDivisors.coe_ne_zero _)]
   · ext
-    simp_rw [Submodule.mem_smul_pointwise_iff_exists, mem_coe, mem_spanSingleton, Submodule.mem_map,
-      Algebra.linearMap_apply, Submonoid.smul_def, Ideal.mem_span_singleton', exists_exists_eq_and,
-      map_mul, hr, ← Algebra.smul_def, smul_comm (d : R)]
+    simp_rw [Submodule.mem_smul_pointwise_iff_exists, mem_coeToSubmodule, mem_spanSingleton,
+      Submodule.mem_map, Algebra.linearMap_apply, Submonoid.smul_def, Ideal.mem_span_singleton',
+      exists_exists_eq_and, map_mul, hr, ← Algebra.smul_def, smul_comm (d : R)]
 
 end IsLocalization
 

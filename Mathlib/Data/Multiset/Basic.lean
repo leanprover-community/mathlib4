@@ -9,7 +9,6 @@ public import Mathlib.Data.Multiset.ZeroCons
 
 /-!
 # Basic results on multisets
-
 -/
 
 @[expose] public section
