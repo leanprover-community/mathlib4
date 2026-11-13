@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.RootsOfUnity.Quotient
 /-!
 # The Teichmüller character
 
-Let `I` be an ideal of a ring `R` such that reduction modulo `I` is a bijection from the `n`-th
-roots of unity of `R` onto the units of `R ⧸ I`, a property recorded by the class
+Let `I` be an ideal of a commutative ring `R` such that reduction modulo `I` is a bijection from
+the `n`-th roots of unity of `R` onto the units of `R ⧸ I`, a property recorded by the class
 `Ideal.HasTeichmullerLift`. Inverting that bijection and extending by zero gives a multiplicative
 character of `R ⧸ I` with values in `R`, the Teichmüller character, which is a multiplicative
 section of the reduction map.
@@ -112,6 +112,7 @@ theorem teichmuller_mk_coe (ζ : rootsOfUnity n R) :
     ← Ideal.HasTeichmullerLift.equiv_apply, MulEquiv.symm_apply_apply]
 
 /-- The values of the Teichmüller character at units are `n`-th roots of unity. -/
+@[simp]
 theorem teichmuller_apply_coe_pow_eq_one (x : (R ⧸ I)ˣ) : teichmuller I n x ^ n = 1 := by
   rw [teichmuller_apply_coe, ← Units.val_pow_eq_pow_val,
     (mem_rootsOfUnity _ _).mp ((Ideal.HasTeichmullerLift.equiv I n).symm x).prop, Units.val_one]
@@ -132,7 +133,14 @@ theorem mk_teichmuller_apply [I.IsMaximal] (x : R ⧸ I) :
   · simp
   · exact mk_teichmuller_apply_coe u
 
+/-- The Teichmüller character is nontrivial if and only if the group of units of `R ⧸ I` is
+nontrivial. -/
+theorem teichmuller_ne_one_iff : teichmuller I n ≠ 1 ↔ Nontrivial (R ⧸ I)ˣ := by
+  rw [MulChar.ne_one_iff, nontrivial_iff_exists_ne 1]
+  simp [teichmuller_apply_coe]
+
 /-- The `n`-th power of the Teichmüller character is trivial. -/
+@[simp]
 theorem teichmuller_pow_eq_one : teichmuller I n ^ n = 1 := by
   ext x
   rw [MulChar.pow_apply_coe, teichmuller_apply_coe_pow_eq_one, MulChar.one_apply_coe]
@@ -143,38 +151,24 @@ theorem teichmuller_zpow_eq_one_of_dvd {a : ℤ} (ha : (n : ℤ) ∣ a) : teichm
   rw [zpow_mul, zpow_natCast, teichmuller_pow_eq_one, one_zpow]
 
 /-- The Teichmüller character has order `n`. -/
-theorem orderOf_teichmuller [NeZero n] {ζ : R} (hζ : IsPrimitiveRoot ζ n) :
+theorem orderOf_teichmuller [NeZero n] [HasEnoughRootsOfUnity R n] :
     orderOf (teichmuller I n) = n := by
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot R n
   refine (orderOf_eq_iff (NeZero.pos _)).mpr ⟨teichmuller_pow_eq_one,
     fun m hmn hm ↦ MulChar.ne_one_iff.mpr ⟨I.rootsOfUnityMapQuot n hζ.toRootsOfUnity, ?_⟩⟩
   rw [MulChar.pow_apply_coe, Ideal.coe_rootsOfUnityMapQuot, teichmuller_mk_coe,
     IsPrimitiveRoot.val_toRootsOfUnity_coe, ne_eq, hζ.pow_eq_one_iff_dvd]
   exact Nat.not_dvd_of_pos_of_lt hm hmn
 
-/-- The Teichmüller character is nontrivial as soon as `n ≠ 1`. -/
-theorem teichmuller_ne_one [NeZero n] {ζ : R} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 1) :
-    teichmuller I n ≠ 1 :=
-  orderOf_eq_one_iff.not.mp <| by rwa [orderOf_teichmuller hζ]
-
-/-- A power of the Teichmüller character is trivial exactly when `n` divides its exponent. -/
-theorem teichmuller_zpow_eq_one_iff [NeZero n] {ζ : R} (hζ : IsPrimitiveRoot ζ n) {a : ℤ} :
-    teichmuller I n ^ a = 1 ↔ (n : ℤ) ∣ a := by
-  rw [← orderOf_dvd_iff_zpow_eq_one, orderOf_teichmuller hζ]
-
-/-- The order of a power of the Teichmüller character divides `n`. -/
-theorem orderOf_teichmuller_zpow_dvd (a : ℤ) : orderOf (teichmuller I n ^ a) ∣ n :=
-  (orderOf_dvd_of_mem_zpowers <| Subgroup.zpow_mem_zpowers (teichmuller I n) a).trans
-    (orderOf_dvd_of_pow_eq_one teichmuller_pow_eq_one)
-
-/-- The values at units of the powers of the Teichmüller character are powers of `ζ`. -/
+/-- The values at units of the powers of the Teichmüller character are powers of a primitive
+`n`-th root of unity `ζ`. -/
 theorem exists_teichmuller_zpow_apply_eq_pow [IsDomain R] [NeZero n] {ζ : R}
     (hζ : IsPrimitiveRoot ζ n) (a : ℤ) (x : (R ⧸ I)ˣ) :
     ∃ m < n, (teichmuller I n ^ a) x = ζ ^ m := by
-  suffices ((teichmuller I n ^ a) x) ^ n = 1 by
-    obtain ⟨k, hk, hk'⟩ := hζ.eq_pow_of_pow_eq_one this
-    exact ⟨k, hk, hk'.symm⟩
-  simpa [← MulChar.pow_apply_coe] using DFunLike.congr_fun
-    (orderOf_dvd_iff_pow_eq_one.mp (orderOf_teichmuller_zpow_dvd a)) x.val
+  obtain ⟨k, hk, hk'⟩ := hζ.eq_pow_of_pow_eq_one (ξ := (teichmuller I n ^ a) x) <| by
+    rw [← MulChar.pow_apply_coe, ← zpow_natCast, ← zpow_mul,
+      teichmuller_zpow_eq_one_of_dvd (dvd_mul_left _ _), MulChar.one_apply_coe]
+  exact ⟨k, hk, hk'.symm⟩
 
 /-- A ring homomorphism sending `ζ` to `ζ ^ m` multiplies by `m` the exponent of a power of the
 Teichmüller character. -/

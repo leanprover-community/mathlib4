@@ -102,9 +102,7 @@ modulo `I` of a primitive `n`-th root of unity is a primitive `n`-th root of uni
 theorem IsPrimitiveRoot.idealQuotient_mk {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n)
     (hI₁ : Ideal.absNorm I ≠ 1) (hI₂ : (Ideal.absNorm I).Coprime n) :
     IsPrimitiveRoot (Ideal.Quotient.mk I ζ) n := by
-  have : NeZero n := ⟨by
-    rintro rfl
-    exact hI₁ (Nat.coprime_zero_right _ |>.mp hI₂)⟩
+  have : NeZero n := ⟨fun h ↦ hI₁ (Nat.coprime_zero_right _ |>.mp (h ▸ hI₂))⟩
   have h : IsPrimitiveRoot hζ.toRootsOfUnity n :=
     IsPrimitiveRoot.coe_submonoidClass_iff.mp <| IsPrimitiveRoot.coe_units_iff.mp hζ
   simpa using IsPrimitiveRoot.coe_units_iff.mpr <|
