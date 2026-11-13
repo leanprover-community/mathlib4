@@ -220,25 +220,27 @@ section Semiring
 
 variable [Semiring R] {x y : R}
 
-/-- In a semiring, two elements whose sum is zero have equal squares. -/
-theorem sq_eq_sq_of_add_eq_zero (h : x + y = 0) : x ^ 2 = y ^ 2 := by
-  simpa [h] using show x ^ 2 + (x + y) * y = x * (x + y) + y ^ 2 by grind
+/-- In a semiring, two elements whose sum is zero have equal even powers. -/
+theorem Even.pow_eq_pow_of_add_eq_zero {n : ℕ} (hn : Even n) (h : x + y = 0) :
+    x ^ n = y ^ n := by
+  obtain ⟨k, rfl⟩ := even_iff_two_dvd.mp hn
+  let u : AddUnits R := ⟨x, y, h, add_eq_zero_comm.mp h⟩
+  rw [pow_mul, pow_mul, sq, sq, ← AddUnits.neg_mul_neg (x := u) (y := u)]
+  rfl
 
-theorem pow_even_eq_pow_even_of_add_eq_zero
-    (h : x + y = 0) (n : ℕ) : x ^ (2 * n) = y ^ (2 * n) := by
-  simp [pow_mul, sq_eq_sq_of_add_eq_zero h]
-
-theorem pow_odd_add_pow_odd_eq_zero_of_add_eq_zero
-    (h : x + y = 0) (n : ℕ) : x ^ (2 * n + 1) + y ^ (2 * n + 1) = 0 := by
-  simp_rw [pow_succ, pow_mul, sq_eq_sq_of_add_eq_zero h, ← mul_add, h, mul_zero]
+/-- In a semiring, two elements whose sum is zero have odd powers summing to zero. -/
+theorem Odd.pow_add_pow_eq_zero_of_add_eq_zero {n : ℕ} (hn : Odd n) (h : x + y = 0) :
+    x ^ n + y ^ n = 0 := by
+  obtain ⟨k, rfl⟩ := hn
+  rw [pow_succ, pow_succ, (even_two_mul k).pow_eq_pow_of_add_eq_zero h, ← mul_add, h, mul_zero]
 
 /-- If two elements of a semiring sum to zero and a power of the right one vanishes,
 then the same power of the left one vanishes. -/
 theorem pow_eq_zero_of_add_eq_zero_left {n : ℕ} (h : x + y = 0) (hy : y ^ n = 0) :
     x ^ n = 0 := by
-  obtain ⟨k, rfl | rfl⟩ := Nat.even_or_odd' n
-  · rwa [pow_even_eq_pow_even_of_add_eq_zero h k]
-  · rwa [eq_zero_iff_eq_zero_of_add_eq_zero (pow_odd_add_pow_odd_eq_zero_of_add_eq_zero h k)]
+  obtain hn | hn := Nat.even_or_odd n
+  · rwa [hn.pow_eq_pow_of_add_eq_zero h]
+  · rwa [eq_zero_iff_eq_zero_of_add_eq_zero (hn.pow_add_pow_eq_zero_of_add_eq_zero h)]
 
 /-- If two elements of a semiring sum to zero and a power of the left one vanishes,
 then the same power of the right one vanishes. -/
