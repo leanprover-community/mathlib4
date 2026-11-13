@@ -21,7 +21,6 @@ sheaf condition.
 The functor between sheaf categories is called `sheafCompose J F`.
 Given a natural transformation `η : F ⟶ G`, we obtain a natural transformation
 `sheafCompose J F ⟶ sheafCompose J G`, which we call `sheafCompose_map J η`.
-
 -/
 
 @[expose] public section
@@ -47,7 +46,7 @@ class GrothendieckTopology.HasSheafCompose : Prop where
 variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 
 /-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
-@[simps! obj_obj map_hom]
+@[implicit_reducible, simps! obj_obj map_hom]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B :=
   ObjectProperty.lift _
     (sheafToPresheaf _ _ ⋙ (Functor.whiskeringRight _ _ _).obj F)
@@ -87,7 +86,6 @@ instance [F.ReflectsIsomorphisms] : (sheafCompose J F).ReflectsIsomorphisms wher
 
 variable {F G}
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.

@@ -142,7 +142,6 @@ def fst : Comma L R ⥤ A where
   obj X := X.left
   map f := f.left
 
-set_option backward.defeqAttrib.useBackward true in
 /-- We can interpret the commutative square constituting a morphism in the comma category as a
 natural transformation between the functors `fst ⋙ L` and `snd ⋙ R` from the comma category
 to `T`, where the components are given by the morphism that constitutes an object of the comma
@@ -265,7 +264,6 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
         _ = _ := by rw [← Functor.comp_map, β.naturality] )},
       by cat_disch⟩
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual self (reorder := A B, 2 4, A' B', 8 10, L R, L' R', F₁ F₂, α β, 22 23, 25 26)]
 instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
     (map α β).EssSurj where
@@ -342,7 +340,6 @@ def mapLeftComp (l : L₁ ⟶ L₂) (l' : L₂ ⟶ L₃) :
 def mapLeftEq (l l' : L₁ ⟶ L₂) (h : l = l') : mapLeft R l ≅ mapLeft R l' :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A natural isomorphism `L₁ ≅ L₂` induces an equivalence of categories
 `Comma L₁ R ≌ Comma L₂ R`. -/
 @[to_dual (attr := simps!, implicit_reducible)
@@ -373,7 +370,6 @@ def preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) : Comma (F ⋙ L) R ⥤ Co
       right := f.right
       w := by simpa using! f.w }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `Comma.preLeft` is a particular case of `Comma.map`,
 but with better definitional properties. -/
 @[to_dual (reorder := F L R)
@@ -451,7 +447,6 @@ def fromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
     { left := f.1
       right := f.2 }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Taking the comma category of two functors into `Discrete PUnit` results in something
 is equivalent to their product. -/
 @[simps!]
@@ -492,7 +487,6 @@ section Opposite
 
 open Opposite
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical functor from `Comma L R` to `(Comma R.op L.op)ᵒᵖ`. -/
 @[implicit_reducible, simps]
 def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where

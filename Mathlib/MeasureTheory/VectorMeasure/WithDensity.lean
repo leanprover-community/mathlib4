@@ -9,7 +9,6 @@ public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.MeasureTheory.VectorMeasure.Relations
 
 /-!
-
 # Vector measure defined by an integral
 
 Given a measure `μ` and an integrable function `f : α → E`, we can define a vector measure `v` such
@@ -20,7 +19,6 @@ the Radon-Nikodym theorem for signed measures.
 
 * `MeasureTheory.Measure.withDensityᵥ`: the vector measure formed by integrating a function `f`
   with respect to a measure `μ` on some set if `f` is integrable, and `0` otherwise.
-
 -/
 
 @[expose] public section

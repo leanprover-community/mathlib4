@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!
 # The Yoneda embedding for `R`-linear categories
@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Linear.LinearFunctor
 The Yoneda embedding for `R`-linear categories `C`,
 sends an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`.
-
 -/
 
 @[expose] public section

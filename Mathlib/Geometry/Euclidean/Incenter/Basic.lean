@@ -54,7 +54,6 @@ duplicated.
 
 * https://en.wikipedia.org/wiki/Incircle_and_excircles
 * https://en.wikipedia.org/wiki/Incenter
-
 -/
 
 @[expose] public section

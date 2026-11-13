@@ -32,7 +32,6 @@ import Mathlib.Logic.Small.List
 - `Primcodable` instances for terms and formulas, based on the `encoding`s
 - Computability facts about term and formula operations, to set up a computability approach to
   incompleteness
-
 -/
 
 @[expose] public section

@@ -9,7 +9,6 @@ public import Mathlib.RepresentationTheory.Basic
 
 /-!
 # Invariant submodules of a group representation
-
 -/
 
 @[expose] public section

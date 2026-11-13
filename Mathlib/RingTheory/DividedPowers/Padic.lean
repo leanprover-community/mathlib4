@@ -21,7 +21,6 @@ structure on the ideal `(p) ⊆ ℤ_[p]`. This divided power structure is given 
 TODO: If `K` is a `p`-adic local field with ring of integers `R` and uniformizer `π` such that
 `p = u * π^e` for some unit `u`, then the ideal `(π) ⊆ R` has divided powers if and only if
 `e ≤ p - 1`.
-
 -/
 
 @[expose] public section
@@ -91,8 +90,8 @@ private lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
   · rw [hx0]
     simp [inverse_eq_inv', coe_zero, ne_eq, hn, not_false_eq_true, zero_pow, mul_zero,
       norm_zero, inv_nonneg, cast_nonneg]
-  · have hlt : (padicValNat p n.factorial : ℤ) < n := by
-      exact_mod_cast padicValNat_factorial_lt_of_ne_zero p hn
+  · have hlt : (multiplicity p n.factorial : ℤ) < n := by
+      exact mod_cast multiplicity_factorial_lt_of_ne_zero p hn
     have hnorm : 0 < ‖(n ! : ℚ_[p])‖ := by
       simp only [norm_pos_iff, ne_eq, cast_eq_zero]
       exact factorial_ne_zero n
@@ -102,7 +101,7 @@ private lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
     rw [norm_eq_zpow_neg_valuation hx0, inv_mul_lt_one₀ hnorm, Padic.norm_eq_zpow_neg_valuation
       (cast_ne_zero.mpr n.factorial_ne_zero), ← zpow_natCast, ← zpow_mul]
     gcongr
-    · exact_mod_cast Nat.Prime.one_lt hp.elim
+    · exact mod_cast Nat.Prime.one_lt hp.elim
     · simp only [neg_mul, Padic.valuation_natCast, neg_lt_neg_iff]
       apply lt_of_lt_of_le hlt
       conv_lhs => rw [← one_mul (n : ℤ)]
@@ -119,7 +118,7 @@ private lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ
   · apply le_trans (dpow'_norm_le_of_ne_zero p hn hx)
     rw [← zpow_neg_one, ← zpow_zero ↑p]
     gcongr
-    · exact_mod_cast Nat.Prime.one_le hp.elim
+    · exact mod_cast Nat.Prime.one_le hp.elim
     · simp
 
 set_option backward.privateInPublic true in
