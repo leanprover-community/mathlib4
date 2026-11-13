@@ -3,12 +3,14 @@ Copyright (c) 2026 rytjy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: rytjy
 -/
-import Mathlib.Analysis.Real.Sqrt
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Analysis.Real.Sqrt
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
 
 /-!
 # Wilson score interval
@@ -33,6 +35,8 @@ inside the interval.
 * E. B. Wilson, *Probable inference, the law of succession, and statistical
   inference*, J. Amer. Statist. Assoc. 22 (1927), 209–212.
 -/
+
+public section
 
 namespace ProbabilityTheory
 
