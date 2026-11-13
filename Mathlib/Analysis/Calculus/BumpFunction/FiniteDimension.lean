@@ -5,13 +5,17 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Calculus.SmoothSeries
 public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 public import Mathlib.Analysis.Calculus.ContDiff.Convolution
-public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-public import Mathlib.Data.Set.Pointwise.Support
 public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
+
+import Mathlib.Analysis.Calculus.SmoothSeries
+import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.Data.Set.Pointwise.Support
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bump functions in finite-dimensional vector spaces
@@ -159,8 +163,8 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
       _ = δ n := by simp [field]
   choose r rpos hr using this
   have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
-    refine .of_nnnorm_bounded δc.summable fun n => ?_
-    rw [← NNReal.coe_le_coe, coe_nnnorm]
+    refine .of_nnNorm_bounded δc.summable fun n => ?_
+    rw [← NNReal.coe_le_coe, coe_nnNorm]
     simpa only [norm_iteratedFDeriv_zero] using! hr n 0 zero_le x
   refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
@@ -516,7 +520,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, ite_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
-        refine congr (congr_arg ball (Eq.refl 0)) ?_
+        refine congr congr(ball $(Eq.refl 0)) ?_
         field }
 
 end ExistsContDiffBumpBase

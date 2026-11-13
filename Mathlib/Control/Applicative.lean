@@ -5,9 +5,9 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Control.Functor
+public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Control.Basic
+public import Mathlib.Control.Functor
 
 import Mathlib.Tactic.Attr.Register
 
@@ -120,17 +120,16 @@ theorem applicative_comp_id {F} [AF : Applicative F] [LawfulApplicative F] :
 
 open CommApplicative
 
-set_option backward.isDefEq.respectTransparency false in
 instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applicative g]
     [CommApplicative f] [CommApplicative g] : CommApplicative (Comp f g) where
-  commutative_prod _ _ := by
-    simp! [map, Seq.seq]
+  commutative_prod x y := by
+    apply Comp.ext
+    simp only [Comp.run_seq, Comp.run_map]
     rw [commutative_map]
-    simp only [mk, flip, seq_map_assoc, Function.comp_def, map_map]
-    congr
-    funext x y
-    rw [commutative_map]
-    congr
+    simp only [flip, seq_map_assoc, Function.comp_def, map_map]
+    congr 2
+    ext
+    exact commutative_map _ _
 
 end Comp
 

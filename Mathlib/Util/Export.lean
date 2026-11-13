@@ -5,15 +5,19 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.CoreM
 public meta import Lean.Util.FoldConsts
+public import Mathlib.Init
 
 /-!
-A rudimentary export format, adapted from
+# A rudimentary export format
+
+Adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
 with support for Lean 4 kernel primitives.
 -/
+
+deprecated_module "instead, use https://github.com/leanprover/lean4export" (since := "2026-10-27")
 
 public meta section
 
@@ -113,6 +117,7 @@ def biStr : BinderInfo → String
 open ConstantInfo in
 mutual
 
+@[deprecated "instead, use https://github.com/leanprover/lean4export" (since := "2026-10-27")]
 partial def exportExpr (E : Expr) : ExportM Nat := do
   match (← get).exprs.map[E]? with
   | some i => pure i
@@ -144,6 +149,7 @@ partial def exportExpr (E : Expr) : ExportM Nat := do
     | .proj n k e =>
       let i ← alloc E; IO.println s!"{i} #EJ {← exportName n} {k} {← exportExpr e}"; pure i
 
+@[deprecated "instead, use https://github.com/leanprover/lean4export" (since := "2026-10-27")]
 partial def exportDef (n : Name) : ExportM Unit := do
   if (← get).defs.contains n then return
   let ci ← getConstInfo n
@@ -201,6 +207,7 @@ where
 
 end
 
+@[deprecated "instead, use https://github.com/leanprover/lean4export" (since := "2026-10-27")]
 def runExportM {α : Type} (m : ExportM α) : CoreM α := m.run' default
 
 -- #eval runExportM (exportDef `Lean.Expr)

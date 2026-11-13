@@ -22,10 +22,10 @@ noncomputable section
 
 universe u
 
-variable {ι ι' R R₂ M M' : Type*}
+variable {ι R M : Type*}
 
 namespace Module.Basis
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (b : Basis ι R M)
 
@@ -49,9 +49,9 @@ theorem mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {
 end Basis
 
 variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M]
-variable [Module R M] [Module R₂ M]
-variable {x y : M}
+variable [Ring R] [AddCommGroup M]
+variable [Module R M]
+variable {x : M}
 variable (b : Basis ι R M)
 
 theorem Basis.eq_bot_of_rank_eq_zero [IsDomain R] (b : Basis ι R M) (N : Submodule R M)
@@ -65,7 +65,7 @@ theorem Basis.eq_bot_of_rank_eq_zero [IsDomain R] (b : Basis ι R M) (N : Submod
   rintro g sum_eq i
   simp only [Fin.default_eq_zero, Finset.univ_unique,
     Finset.sum_singleton] at sum_eq
-  convert! (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
+  convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
 
 end Module
 
@@ -99,7 +99,7 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     apply rank_ih
     intro m v hli
     refine Nat.succ_le_succ_iff.mp (rank_le (Fin.cons ⟨x, x_mem⟩ fun i => ⟨v i, N'_le (v i).2⟩) ?_)
-    convert! hli.finCons' x _ ?_
+    convert hli.finCons' x _ ?_
     · ext i
       refine Fin.cases ?_ ?_ i <;> simp
     · intro c y hy hc
@@ -177,7 +177,7 @@ theorem restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
   suffices
     Finsupp.mapRange.linearMap (Algebra.linearMap R S) ∘ₗ (b.restrictScalars R).repr.toLinearMap =
       ((b.repr : M →ₗ[S] ι →₀ S).restrictScalars R).domRestrict _
-    by exact DFunLike.congr_fun (LinearMap.congr_fun this m) i
+    from congr($this m i)
   refine Basis.ext (b.restrictScalars R) fun _ => ?_
   simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply, map_one,
     Basis.repr_self, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
@@ -201,7 +201,7 @@ end RestrictScalars
 
 section AddSubgroup
 
-variable {M R : Type*} [Ring R] [Nontrivial R] [IsAddTorsionFree R]
+variable {M R : Type*} [Ring R] [Nontrivial R] [HasUniqueDiv R]
   [AddCommGroup M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
 
 /--
@@ -225,7 +225,7 @@ theorem addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (x : A)
   suffices Finsupp.mapRange.linearMap (Algebra.linearMap ℤ R) ∘ₗ
       (b.addSubgroupOfClosure A h).repr.toLinearMap =
         ((b.repr : M →ₗ[R] ι →₀ R).restrictScalars ℤ).domRestrict A.toIntSubmodule by
-    exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
+    congrm $this x i
   exact (b.addSubgroupOfClosure A h).ext fun _ ↦ by simp
 
 end AddSubgroup

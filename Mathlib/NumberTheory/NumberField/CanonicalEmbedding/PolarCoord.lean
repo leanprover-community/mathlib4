@@ -46,7 +46,6 @@ mixed space with enough symmetries, see `volume_eq_two_pi_pow_mul_integral` and
 * `mixedEmbedding.volume_eq_two_pow_mul_two_pi_pow_mul_integral`: if the measurable set `A` of the
   mixed space is norm-stable in the sense that `normAtAllPlaces⁻¹ (normAtAllPlaces '' A) = A`,
   then its volume can be computed via an integral over `normAtAllPlaces '' A`.
-
 -/
 
 @[expose] public section
@@ -99,8 +98,7 @@ def polarCoordReal : OpenPartialHomeomorph (realMixedSpace K) (realMixedSpace K)
 theorem measurable_polarCoordReal_symm :
     Measurable (polarCoordReal K).symm := by
   refine measurable_fst.prodMk <| Measurable.comp ?_ measurable_snd
-  exact measurable_pi_lambda _
-    fun _ ↦ continuous_polarCoord_symm.measurable.comp (measurable_pi_apply _)
+  exact .of_eval fun _ ↦ continuous_polarCoord_symm.measurable.comp (measurable_pi_apply _)
 
 theorem polarCoordReal_source :
     (polarCoordReal K).source = Set.univ ×ˢ (Set.univ.pi fun _ ↦ polarCoord.source) := rfl
@@ -401,12 +399,12 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
       ← two_mul, Finset.prod_const, Finset.card_univ, ← Set.indicator_const_mul,
       ← Set.indicator_comp_right, Function.comp_def, Pi.one_apply, mul_one]
     rw [lintegral_mul_const' _ _ (ne_of_beq_false rfl).symm, mul_comm]
-    erw [setLIntegral_indicator (by convert! hm.preimage mixedSpaceOfRealSpace.measurable)]
+    erw [setLIntegral_indicator (by convert hm.preimage mixedSpaceOfRealSpace.measurable)]
     rw [hA, volume_eq_two_pi_pow_mul_integral_aux hA]
     congr 1
     refine setLIntegral_congr (ae_eq_set_inter (by rfl) (Measure.ae_eq_set_pi fun w _ ↦ ?_))
     split_ifs
-    exacts [ae_eq_rfl, Ioi_ae_eq_Ici]
+    exacts [.rfl, Ioi_ae_eq_Ici]
   · exact (Measurable.mul (by fun_prop)
       <| measurable_const.indicator <| hm.preimage (measurable_polarSpaceCoord_symm K)).aemeasurable
 
@@ -455,7 +453,7 @@ theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
       exact ha₁.2 w
   rw [volume_eq_two_pow_mul_volume_plusPart hA₁ hm, volume_eq_two_pi_pow_mul_integral hA₃
     (measurableSet_plusPart hm), ← mul_assoc]
-  refine congr_arg (_ * _ * ·) <| setLIntegral_congr ?_
+  congrm _ * _ * $(setLIntegral_congr ?_)
   rw [← volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux hA]
   refine inter_ae_eq_left_of_ae_eq_univ <| ae_eq_univ.mpr
     <| Set.compl_iInter _ ▸ measure_iUnion_null_iff.mpr fun w ↦ ?_

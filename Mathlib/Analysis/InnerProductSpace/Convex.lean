@@ -18,7 +18,6 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 public section
@@ -29,7 +28,7 @@ noncomputable section
 open Real
 open LinearMap (BilinForm)
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {F : Type*}
   [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 -- See note [lower instance priority]

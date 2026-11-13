@@ -21,7 +21,6 @@ it is so after evaluation at any `t : T`.
 ## Future work
 In fact there is an equivalence of categories
 `HomologicalComplex (T ⥤ V) c ≌ T ⥤ HomologicalComplex V c`.
-
 -/
 
 @[expose] public section
@@ -73,7 +72,7 @@ def complexOfFunctorsToFunctorToComplex :
   map f :=
     { app := fun t =>
         { f := fun i => (f.f i).app t
-          comm' := fun i j _ => NatTrans.congr_app (f.comm i j) t }
+          comm' i j _ := congr($(f.comm i j).app t) }
       naturality := fun t t' g => by
         ext i
         exact (f.f i).naturality g }

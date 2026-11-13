@@ -40,8 +40,13 @@ instance str' (C : Quiv.{v, u}) : Quiver.{v, u} C :=
 def of (C : Type u) [Quiver.{v} C] : Quiv.{v, u} :=
   Bundled.of C
 
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `CategoryTheory.Quiv.of X` as `↧X`. -/
+@[app_delab CategoryTheory.Quiv.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
+
 instance : Inhabited Quiv :=
-  ⟨Quiv.of (Quiver.Empty PEmpty)⟩
+  ⟨↧(Quiver.Empty PEmpty)⟩
 
 /-- Category structure on `Quiv` -/
 instance category : LargeCategory.{max v u} Quiv.{v, u} where
@@ -52,7 +57,7 @@ instance category : LargeCategory.{max v u} Quiv.{v, u} where
 /-- The forgetful functor from categories to quivers. -/
 @[simps]
 def forget : Cat.{v, u} ⥤ Quiv.{v, u} where
-  obj C := Quiv.of C
+  obj C := ↧C
   map F := F.toFunctor.toPrefunctor
 
 /-- The identity in the category of quivers equals the identity prefunctor. -/
@@ -120,7 +125,7 @@ theorem freeMap_comp {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
 /-- The functor sending each quiver to its path category. -/
 @[simps]
 def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
-  obj V := Cat.of (Paths V)
+  obj V := ↧(Paths V)
   map F := Functor.toCatHom (freeMap (Prefunctor.ofQuivHom F))
   map_id _ := congr($(freeMap_id _).toCatHom)
   map_comp _ _ := congr($(freeMap_comp _ _).toCatHom)
@@ -282,8 +287,8 @@ def pathsEquiv {V : Type u} {C : Type u₁} [Quiver.{v} V] [Category.{v₁} C] :
 
 @[simp]
 lemma adj_homEquiv {V C : Type u} [Quiver.{max u v} V] [Category.{max u v} C] :
-    adj.homEquiv (Quiv.of V) (Cat.of C) =
-      (Cat.Hom.equivFunctor (.of (Paths V)) (.of C)).trans (pathsEquiv (V := V) (C := C)) := rfl
+    adj.homEquiv ↧V ↧C =
+      (Cat.Hom.equivFunctor ↧(Paths V) ↧C).trans (pathsEquiv (V := V) (C := C)) := rfl
 
 end Quiv
 

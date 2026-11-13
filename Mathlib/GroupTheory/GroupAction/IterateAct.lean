@@ -6,7 +6,10 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Data.Countable.Defs
+public import Mathlib.Basic.Countable.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monoid action by iterates of a map

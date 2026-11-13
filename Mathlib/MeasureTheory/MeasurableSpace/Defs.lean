@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Countable
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.Measurability
 
 /-!
@@ -43,10 +41,10 @@ assert_not_exists Covariant MonoidWithZero
 
 open Set Function
 
-variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
+variable {α β γ δ : Type*} {ι : Sort*} {s t u : Set α}
 
 /-- A measurable space is a space equipped with a σ-algebra. -/
-@[class] structure MeasurableSpace (α : Type*) where
+@[class, wikidata Q3058218] structure MeasurableSpace (α : Type*) where
   /-- Predicate saying that a given set is measurable. Use `MeasurableSet` in the root namespace
   instead. -/
   MeasurableSet' : Set α → Prop
@@ -61,13 +59,14 @@ variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 
 /-- `MeasurableSet s` means that `s` is measurable (in the ambient measure space on `α`) -/
+@[wikidata Q3054889]
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-open MeasureTheory
+open scoped MeasureTheory
 
 section
 
@@ -110,15 +109,15 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
     rw [← iUnion_congr_of_surjective _ he (fun _ => rfl)]
     exact m.measurableSet_iUnion _ fun _ => h _
 
-protected theorem MeasurableSet.biUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by
-  rw [biUnion_eq_iUnion]
-  have := hs.to_subtype
+protected theorem MeasurableSet.biUnion {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Countable)
+    (h : ∀ b, p b → MeasurableSet (f b)) : MeasurableSet (⋃ (b : β) (_ : p b), f b) := by
+  rw [← iUnion_subtype (p := p) (s := fun b ↦ f b)]
+  have := hp.to_subtype
   exact MeasurableSet.iUnion (by simpa using h)
 
-theorem Set.Finite.measurableSet_biUnion {f : β → Set α} {s : Set β} (hs : s.Finite)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) :=
-  .biUnion hs.countable h
+theorem Set.Finite.measurableSet_biUnion {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Finite)
+    (h : ∀ b, p b → MeasurableSet (f b)) : MeasurableSet (⋃ (b : β) (_ : p b), f b) :=
+  .biUnion hp.countable h
 
 theorem Finset.measurableSet_biUnion {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) :=
@@ -138,13 +137,13 @@ theorem MeasurableSet.iInter [Countable ι] {f : ι → Set α} (h : ∀ b, Meas
     MeasurableSet (⋂ b, f b) :=
   .of_compl <| by rw [compl_iInter]; exact .iUnion fun b => (h b).compl
 
-theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
-  .of_compl <| by rw [compl_iInter₂]; exact .biUnion hs fun b hb => (h b hb).compl
+theorem MeasurableSet.biInter {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Countable)
+    (h : ∀ b, p b → MeasurableSet (f b)) : MeasurableSet (⋂ (b : β) (_ : p b), f b) :=
+  .of_compl <| by rw [compl_iInter₂]; exact .biUnion hp fun b hb => (h b hb).compl
 
-theorem Set.Finite.measurableSet_biInter {f : β → Set α} {s : Set β} (hs : s.Finite)
-    (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
-  .biInter hs.countable h
+theorem Set.Finite.measurableSet_biInter {f : β → Set α} {p : β → Prop} (hp : {b | p b}.Finite)
+    (h : ∀ b, p b → MeasurableSet (f b)) : MeasurableSet (⋂ (b : β) (_ : p b), f b) :=
+  .biInter hp.countable h
 
 theorem Finset.measurableSet_biInter {f : β → Set α} (s : Finset β)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=
@@ -219,7 +218,7 @@ protected lemma MeasurableSet.imp {p q : α → Prop}
 protected lemma MeasurableSet.iff {p q : α → Prop}
     (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
     MeasurableSet {x | p x ↔ q x} := by
-  have h_eq : {x | p x ↔ q x} = {x | p x → q x} ∩ {x | q x → p x} := by ext; simp; grind
+  have h_eq : {x | p x ↔ q x} = {x | p x → q x} ∩ {x | q x → p x} := by ext; grind
   rw [h_eq]
   exact (hs.imp ht).inter (ht.imp hs)
 
@@ -510,30 +509,52 @@ scoped notation "Measurable[" mα ", " mβ "]" => @Measurable _ _ mα mβ
 end MeasureTheory
 
 section MeasurableFunctions
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ} {p : Prop}
 
-theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
+theorem measurable_id : Measurable (@id α) := fun _ => id
 
 @[fun_prop]
-theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
+theorem measurable_id' : Measurable fun a : α => a := measurable_id
 
 -- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
 -- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
 attribute [local push ←] Function.comp_def
 @[to_fun]
-protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
+protected theorem Measurable.comp {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (g ∘ f) :=
   fun _ h => hf (hg h)
 
 attribute [fun_prop] Measurable.fun_comp
 
 @[simp, fun_prop]
-theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
-    Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
+theorem measurable_const {a : α} : Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 
 @[fun_prop]
-theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} (hm : m ≤ m0)
-    {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
+lemma Measurable.le {mα₀ : MeasurableSpace α} (hm : mα ≤ mα₀) {f : α → β} (hf : Measurable[mα] f) :
+    Measurable[mα₀] f := fun _ hs => hm _ (hf hs)
+
+@[fun_prop]
+lemma Measurable.dite_const [Decidable p] {f : p → α → β} {g : ¬ p → α → β}
+    (hf : ∀ h, Measurable (f h)) (hg : ∀ h, Measurable (g h)) : Measurable (dite p f g) := by
+  split <;> simp [*]
+
+-- FIXME: Get this generated by `to_fun`
+@[fun_prop]
+lemma Measurable.fun_dite_const [Decidable p] {f : p → α → β} {g : ¬ p → α → β}
+    (hf : ∀ h, Measurable (f h)) (hg : ∀ h, Measurable (g h)) :
+    Measurable fun a ↦ if h : p then f h a else g h a := by
+  split <;> simp [*]
+
+@[fun_prop]
+lemma Measurable.ite_const [Decidable p] {f g : α → β} (hf : Measurable f) (hg : Measurable g) :
+    Measurable (ite p f g) := by
+  split <;> simp [*]
+
+-- FIXME: Get this generated by `to_fun`
+@[fun_prop]
+lemma Measurable.fun_ite_const [Decidable p] {f g : α → β} (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun a ↦ if p then f a else g a := by
+  split <;> simp [*]
 
 end MeasurableFunctions
 

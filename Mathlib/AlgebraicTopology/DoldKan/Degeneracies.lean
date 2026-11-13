@@ -6,11 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
 
 /-!
-
 # Behaviour of `P_infty` with respect to degeneracies
 
 For any `X : SimplicialObject C` where `C` is an abelian category,
@@ -25,14 +23,15 @@ if `X : SimplicialObject C` with `C` a preadditive category,
 statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-  CategoryTheory.Preadditive Simplicial
+  CategoryTheory.Preadditive
+
+open scoped Simplicial
 
 namespace AlgebraicTopology
 

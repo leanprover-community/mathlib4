@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Action of bifunctors on cokernels
@@ -18,7 +17,6 @@ the obvious morphism `(F.obj X₁).obj Y₂ ⨿ (F.obj Y₁).obj X₂ ⟶ (F.obj
 and show that it is a colimit when both coforks are colimit, the cokernel of `f₁`
 is preserved by `F.obj c₁.pt` and the cokernel of `f₂` is preserved by
 `F.flip.obj X₁` and `F.flip.obj Y₁`.
-
 -/
 
 @[expose] public section
@@ -36,7 +34,6 @@ variable {X₁ Y₁ : C₁} {f₁ : X₁ ⟶ Y₁} {c₁ : CokernelCofork f₁} 
   [(F.obj c₁.pt).PreservesZeroMorphisms]
   [F.PreservesZeroMorphisms]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (c₁ c₂) in
 /-- Let `c₁` (resp. `c₂`) be a cokernel cofork for a morphism `f₁ : X₁ ⟶ Y₁`
 in a category `C₁` (resp. `f₂ : X₂ ⟶ Y₂` in `C₂`). Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C`,
@@ -66,7 +63,6 @@ lemma hom_ext {T : C} {f g : (F.obj c₁.pt).obj c₂.pt ⟶ T}
 variable [HasBinaryCoproduct ((F.obj X₁).obj Y₂) ((F.obj Y₁).obj X₂)]
   [PreservesColimit (parallelPair f₁ 0) (F.flip.obj X₂)]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma exists_desc (s : CokernelCofork (coprod.desc ((F.map f₁).app Y₂) ((F.obj Y₁).map f₂))) :
     ∃ (l : (F.obj c₁.pt).obj c₂.pt ⟶ s.pt),
       (F.map c₁.π).app Y₂ ≫ (F.obj c₁.pt).map c₂.π ≫ l = s.π := by
@@ -86,7 +82,6 @@ end isColimitMapBifunctor
 variable [HasBinaryCoproduct ((F.obj X₁).obj Y₂) ((F.obj Y₁).obj X₂)]
   [PreservesColimit (parallelPair f₁ 0) (F.flip.obj X₂)]
 
-set_option backward.defeqAttrib.useBackward true in
 open isColimitMapBifunctor in
 /-- Let `c₁` (resp. `c₂`) be a colimit cokernel cofork for a morphism `f₁ : X₁ ⟶ Y₁`
 in a category `C₁` (resp. `f₂ : X₂ ⟶ Y₂` in `C₂`). If `F : C₁ ⥤ C₂ ⥤ C` is a bifunctor,

@@ -5,8 +5,9 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
 public import Mathlib.MeasureTheory.Measure.WithDensity
+
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.ENNReal
 
 /-! # From equality of integrals to equality of functions
 
@@ -25,7 +26,6 @@ The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 * `ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
 * `AEMeasurable.ae_eq_of_forall_setLIntegral_eq`: for functions which are `AEMeasurable` and
   have finite integral.
-
 -/
 
 public section

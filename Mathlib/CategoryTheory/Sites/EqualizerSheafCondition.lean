@@ -29,7 +29,6 @@ equalizer diagrams.
 * [MM92]: *Sheaves in geometry and logic*, Saunders MacLane, and Ieke Moerdijk:
   Chapter III, Section 4.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
-
 -/
 
 @[expose] public section
@@ -260,7 +259,7 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
 
 namespace Arrows
 
-variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
+variable (P : Cᵒᵖ ⥤ Type w) {X : C} (S : Sieve X)
 
 open Presieve
 

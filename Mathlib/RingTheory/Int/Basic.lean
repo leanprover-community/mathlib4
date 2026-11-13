@@ -5,9 +5,8 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
@@ -137,5 +136,13 @@ theorem eq_pow_of_mul_eq_pow_odd_right {a b c : ℤ} (hab : IsCoprime a b) {k : 
 theorem eq_pow_of_mul_eq_pow_odd {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : (∃ d, a = d ^ k) ∧ ∃ e, b = e ^ k :=
   ⟨eq_pow_of_mul_eq_pow_odd_left hab hk h, eq_pow_of_mul_eq_pow_odd_right hab hk h⟩
+
+/-- Two squarefree integers whose product is a square are equal. -/
+theorem eq_of_squarefree_of_isSquare_mul {d₁ d₂ : ℤ} (h₁ : Squarefree d₁)
+    (h₂ : Squarefree d₂) (h : IsSquare (d₁ * d₂)) : d₁ = d₂ := by
+  refine (Int.associated_iff.mp <| h₁.associated_of_isSquare_mul h₂ h).resolve_right fun h' ↦ ?_
+  refine not_isSquare_of_neg (neg_one_lt_zero : -1 < 0) ?_
+  refine IsSquare.of_mul_right (Int.mul_ne_zero h₂.ne_zero h₂.ne_zero) ?_ (IsSquare.mul_self d₂)
+  rwa [Int.neg_one_mul, Int.neg_mul_eq_neg_mul, ← h']
 
 end Int

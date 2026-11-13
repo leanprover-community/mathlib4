@@ -6,10 +6,6 @@ Authors: Beibei Xiong, Yu Shao, Weijie Jiang, Zhengfeng Yang
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Stirling Numbers
@@ -55,6 +51,7 @@ namespace Nat
 `Nat.stirlingFirst n k` is the (unsigned) Stirling number of the first kind,
 counting the number of permutations of `n` elements with exactly `k` disjoint cycles.
 -/
+@[oeis A132393]
 def stirlingFirst : ℕ → ℕ → ℕ
   | 0, 0 => 1
   | 0, _ + 1 => 0
@@ -118,6 +115,7 @@ theorem stirlingFirst_one_right (n : ℕ) : stirlingFirst (n + 1) 1 = n.factoria
 `Nat.stirlingSecond n k` is the Stirling number of the second kind,
 counting the number of ways to partition a set of `n` elements into `k` nonempty subsets.
 -/
+@[oeis A048993]
 def stirlingSecond : ℕ → ℕ → ℕ
   | 0, 0 => 1
   | 0, _ + 1 => 0

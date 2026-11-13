@@ -28,7 +28,6 @@ the projection from `∀ i, α i` to `∀ i : I, α i` maps `μ` to `P I`.
 
 * `MeasureTheory.IsProjectiveLimit.unique`: the projective limit of a family of finite measures
   is unique.
-
 -/
 
 @[expose] public section
@@ -68,7 +67,7 @@ lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ 
     rw [preimage_univ]
   rw [this, ← Measure.map_apply _ MeasurableSet.univ]
   · rw [hP I J hJI]
-  · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+  · exact .of_eval (fun _ ↦ measurable_pi_apply _)
 
 lemma measure_univ_eq (hP : IsProjectiveMeasureFamily P) (I J : Finset ι) :
     P I univ = P J univ := by
@@ -90,7 +89,7 @@ lemma congr_cylinder_of_subset (hP : IsProjectiveMeasureFamily P)
     have : S = Finset.restrict₂ hJI ⁻¹' T :=
       eq_of_cylinder_eq_of_subset h_eq hJI
     rw [hP I J hJI, Measure.map_apply _ hT, this]
-    exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+    exact .of_eval (fun _ ↦ measurable_pi_apply _)
 
 lemma congr_cylinder (hP : IsProjectiveMeasureFamily P)
     {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (hS : MeasurableSet S) (hT : MeasurableSet T)
@@ -124,7 +123,7 @@ lemma measure_cylinder (h : IsProjectiveLimit μ P)
     (I : Finset ι) {s : Set (∀ i : I, α i)} (hs : MeasurableSet s) :
     μ (cylinder I s) = P I s := by
   rw [cylinder, ← Measure.map_apply _ hs, h I]
-  exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+  exact .of_eval (fun _ ↦ measurable_pi_apply _)
 
 lemma measure_univ_eq (hμ : IsProjectiveLimit μ P) (I : Finset ι) :
     μ univ = P I univ := by

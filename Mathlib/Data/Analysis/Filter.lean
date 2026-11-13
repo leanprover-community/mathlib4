@@ -91,7 +91,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 end CFilter
 
 -- TODO write doc strings
-/-- A realizer for filter `f` is a cfilter which generates `f`. -/
+/-- A realizer for filter `f` is a `CFilter` which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*
   F : CFilter (Set α) σ

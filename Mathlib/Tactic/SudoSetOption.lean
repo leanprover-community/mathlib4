@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Defines the `sudo set_option` command.
 
@@ -47,7 +50,7 @@ but it also allows to set undeclared options.
 elab "sudo " "set_option " n:ident ppSpace val:term " in " body:term : term <= expectedType => do
   let options ← setOption n val (← getOptions)
   withTheReader Core.Context (fun ctx ↦
-      { ctx with maxRecDepth := maxRecDepth.get options, options := options }) do
+      { ctx.setOptions options with maxRecDepth := maxRecDepth.get options }) do
     elabTerm body expectedType
 
 /-

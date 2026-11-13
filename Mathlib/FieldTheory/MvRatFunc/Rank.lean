@@ -6,18 +6,20 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.MvPolynomial.Cardinal
-public import Mathlib.RingTheory.Algebraic.LinearIndependent
-public import Mathlib.RingTheory.Algebraic.MvPolynomial
 public import Mathlib.RingTheory.Localization.Cardinality
 public import Mathlib.RingTheory.MvPolynomial
+
+import Mathlib.RingTheory.Algebraic.LinearIndependent
+import Mathlib.RingTheory.Algebraic.MvPolynomial
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Rank of multivariate rational function field
 -/
 
 public section
-
-noncomputable section
 
 universe u v
 

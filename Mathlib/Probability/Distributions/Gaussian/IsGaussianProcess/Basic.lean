@@ -48,8 +48,7 @@ lemma isProbabilityMeasure (hX : IsGaussianProcess X P) :
   hX.hasGaussianLaw Classical.ofNonempty |>.isProbabilityMeasure
 
 lemma aemeasurable (hX : IsGaussianProcess X P) (t : T) : AEMeasurable (X t) P :=
-  AEMeasurable.of_map_ne_zero
-    (hX.hasGaussianLaw {t}).isGaussian_map.toIsProbabilityMeasure.ne_zero |>.eval ⟨t, by simp⟩
+  (hX.hasGaussianLaw {t}).aemeasurable.eval ⟨t, by simp⟩
 
 /-- A modification of a Gaussian process is a Gaussian process. -/
 lemma congr (hX : IsGaussianProcess X P) (hXY : ∀ t, X t =ᵐ[P] Y t) :
@@ -93,7 +92,7 @@ lemma hasGaussianLaw_fun_sub (hX : IsGaussianProcess X P) {s t : T} :
 
 lemma hasGaussianLaw_sum (hX : IsGaussianProcess X P) {I : Finset T} :
     HasGaussianLaw (∑ i ∈ I, X i) P := by
-  convert! (hX.hasGaussianLaw I).sum
+  convert (hX.hasGaussianLaw I).sum
   simp [I.sum_attach X]
 
 lemma hasGaussianLaw_fun_sum (hX : IsGaussianProcess X P) {I : Finset T} :

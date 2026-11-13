@@ -5,11 +5,8 @@ Authors: Kim Morrison, Simon Hudon
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.SetLike
 
 /-!
 # The natural monoidal structure on any category with finite (co)products.
@@ -50,14 +47,14 @@ the four fields starting from `id_tensorHom_id` were provided by the auto_param 
 @[instance_reducible]
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
-    tensorObj := fun X Y ↦ X ⨿ Y
-    whiskerLeft := fun _ _ _ g ↦ Limits.coprod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f _ ↦ Limits.coprod.map f (𝟙 _)
-    tensorHom := fun f g ↦ Limits.coprod.map f g
+    tensorObj X Y := X ⨿ Y
+    whiskerLeft _ _ _ g := Limits.coprod.map (𝟙 _) g
+    whiskerRight {_ _} f _ := Limits.coprod.map f (𝟙 _)
+    tensorHom := Limits.coprod.map
     tensorUnit := ⊥_ C
     associator := coprod.associator
-    leftUnitor := coprod.leftUnitor
-    rightUnitor := coprod.rightUnitor
+    leftUnitor X := coprod.leftUnitor X
+    rightUnitor X := coprod.rightUnitor X
   }
   .ofTensorHom
     (pentagon := coprod.pentagon)
@@ -65,8 +62,8 @@ def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : Monoi
     (associator_naturality := @coprod.associator_naturality _ _ _)
     (id_tensorHom_id := fun _ _ => coprod.map_id_id)
     (tensorHom_comp_tensorHom := coprod.map_map)
-    (leftUnitor_naturality := coprod.leftUnitor_naturality)
-    (rightUnitor_naturality := coprod.rightUnitor_naturality)
+    (leftUnitor_naturality := coprod.leftUnitor_hom_naturality)
+    (rightUnitor_naturality := coprod.rightUnitor_hom_naturality)
 
 end
 
@@ -129,13 +126,12 @@ section
 
 attribute [local instance] monoidalOfHasFiniteCoproducts
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
 @[simps, instance_reducible]
 def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
-  braiding := Limits.coprod.braiding
+  braiding X Y := Limits.coprod.braiding X Y
   braiding_naturality_left f g := by simp
   braiding_naturality_right f g := by simp
   hexagon_forward X Y Z := by dsimp [monoidalOfHasFiniteCoproducts.associator_hom]; simp

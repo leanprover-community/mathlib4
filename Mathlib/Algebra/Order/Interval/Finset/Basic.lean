@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Order.Interval.Set.Monoid
 public import Mathlib.Order.Interval.Finset.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic properties of finset intervals
 
@@ -19,7 +22,7 @@ public section
 
 open Function
 
-variable {ι α : Type*}
+variable {α : Type*}
 
 namespace Finset
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]

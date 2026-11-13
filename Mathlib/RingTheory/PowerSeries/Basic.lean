@@ -5,14 +5,11 @@ Authors: Johan Commelin, Kenny Lau, Ralf Stephan
 -/
 module
 
-public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+
+import Mathlib.Tactic.MoveAdd
 
 /-!
 # Formal power series (in one variable)
@@ -46,7 +43,6 @@ However, it means that formal power series are indexed by `Unit →₀ ℕ`,
 which is of course canonically isomorphic to `ℕ`.
 We then build some glue to treat formal power series as if they were indexed by `ℕ`.
 Occasionally this leads to proofs that are uglier than expected.
-
 -/
 
 @[expose] public section
@@ -116,7 +112,7 @@ def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
 
 @[simp]
 theorem coeff_mk (n : ℕ) (f : ℕ → R) : coeff n (mk f) = f n :=
-  congr_arg f Finsupp.single_eq_same
+  congr(f $Finsupp.single_eq_same)
 
 theorem coeff_monomial (m n : ℕ) (a : R) : coeff m (monomial n a) = if m = n then a else 0 :=
   calc
@@ -227,7 +223,7 @@ theorem coeff_one_X : coeff 1 (X : R⟦X⟧) = 1 := by rw [coeff_X, ite_eq_left 
 
 @[simp]
 theorem X_ne_zero [Nontrivial R] : (X : R⟦X⟧) ≠ 0 := fun H => by
-  simpa only [coeff_one_X, one_ne_zero, map_zero] using congr_arg (coeff 1) H
+  simpa only [coeff_one_X, one_ne_zero, map_zero] using congr(coeff 1 $H)
 
 theorem X_pow_eq (n : ℕ) : (X : R⟦X⟧) ^ n = monomial n 1 :=
   MvPowerSeries.X_pow_eq _ n
@@ -260,6 +256,26 @@ theorem coeff_mul_C (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff n (φ * C a) = coe
 @[simp]
 theorem coeff_C_mul (n : ℕ) (φ : R⟦X⟧) (a : R) : coeff n (C a * φ) = a * coeff n φ :=
   MvPowerSeries.coeff_C_mul _ φ a
+
+@[simp] lemma coeff_mul_natCast {φ : R⟦X⟧} {a n : ℕ} :
+    coeff n (φ * (a : R⟦X⟧)) = coeff n φ * a := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_natCast_mul {φ : R⟦X⟧} {a n : ℕ} :
+    coeff n ((a : R⟦X⟧) * φ) = a * coeff n φ := coeff_C_mul _ _ _
+
+@[simp] lemma coeff_mul_ofNat {φ : R⟦X⟧} {a n : ℕ} [Nat.AtLeastTwo a] :
+    coeff n (φ * ofNat(a)) = coeff n φ * ofNat(a) := coeff_mul_C _ _ _
+
+@[simp] lemma coeff_ofNat_mul {φ : R⟦X⟧} {a n : ℕ} [Nat.AtLeastTwo a] :
+    coeff n (ofNat(a) * φ) = ofNat(a) * coeff n φ := coeff_C_mul _ _ _
+
+@[simp] lemma coeff_mul_intCast {R : Type*} [Ring R] {φ : R⟦X⟧} {a : ℤ} {n : ℕ} :
+    coeff n (φ * (a : R⟦X⟧)) = coeff n φ * a := by
+  simpa using coeff_mul_C n φ a
+
+@[simp] lemma coeff_intCast_mul {R : Type*} [Ring R] {φ : R⟦X⟧} {a : ℤ} {n : ℕ} :
+    coeff n ((a : R⟦X⟧) * φ) = a * coeff n φ := by
+  simpa using coeff_C_mul n φ a
 
 @[simp]
 theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSeries S) (a : R) :
@@ -604,7 +620,7 @@ theorem rescale_map {S : Type*} [CommSemiring S] (φ : R →+* S) (r : R) (f : R
 theorem rescale_algebraMap_map {A S : Type*} [CommSemiring A] [Algebra A R] [CommSemiring S]
     [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
     rescale (algebraMap A S a) (f.map φ) = (rescale (algebraMap A R a) f).map φ := by
-  convert! rescale_map (φ : R →+* S) _ _
+  convert rescale_map (φ : R →+* S) _ _
   simp
 
 end CommSemiring
@@ -667,7 +683,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
           rw [h'] at h''
           simp only [pow_zero, one_mul, coeff_one, one_ne_zero, ↓reduceIte, zero_mul, add_zero,
             mul_one] at h''
-          norm_num at h''
+          simp at h''
         · rw [ih]
           · conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
             move_mul [← constantCoeff φ ^ (n' - 1)]
@@ -752,24 +768,24 @@ variable {R : Type*} [Semiring R] (φ ψ : R[X])
 /-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
 def toPowerSeries : R[X] → PowerSeries R := fun φ =>
-  PowerSeries.mk fun n => coeff φ n
+  PowerSeries.mk fun n => φ.coeff n
 
 /-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
   ⟨toPowerSeries⟩
 
-theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
+theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk ⇑φ.coeff :=
   rfl
 
-@[simp, norm_cast]
-theorem coeff_coe (n) : PowerSeries.coeff n φ = coeff φ n :=
-  congr_arg (coeff φ) Finsupp.single_eq_same
+@[simp]
+theorem coeff_coe (n) : PowerSeries.coeff n φ = φ.coeff n :=
+  congr(φ.coeff $Finsupp.single_eq_same)
 
 @[simp, norm_cast]
 theorem coe_monomial (n : ℕ) (a : R) :
     (monomial n a : PowerSeries R) = PowerSeries.monomial n a := by
   ext
-  simp [coeff_coe, PowerSeries.coeff_monomial, Polynomial.coeff_monomial, eq_comm]
+  simp [coeff_coe, PowerSeries.coeff_monomial, Finsupp.single_apply, eq_comm]
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R[X]) : PowerSeries R) = 0 :=
@@ -860,7 +876,7 @@ end Semiring
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
+variable {R : Type*} [CommSemiring R] (φ : R[X])
 
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     (f.toMvPowerSeries : PowerSeries R) =

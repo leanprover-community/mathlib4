@@ -7,16 +7,13 @@ module
 
 public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
-public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Sheaves of modules over a sheaf of rings
 
 In this file, we define the category `SheafOfModules R` when `R : Sheaf J RingCat`
 is a sheaf of rings on a category `C` equipped with a Grothendieck topology `J`.
-
 -/
 
 @[expose] public section
@@ -98,13 +95,12 @@ when `X` is initial.
 @[simps]
 noncomputable def forgetToSheafModuleCat
       (X : Cᵒᵖ) (hX : Limits.IsInitial X) :
-    SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
-  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
+    SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.obj.obj X)) where
+  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.val,
     Presheaf.isSheaf_of_isSheaf_comp _ _
-      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
-  map f := { hom := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
+      (forget₂ (ModuleCat.{w} (R.obj.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
+  map f := { hom := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.val }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphism on `forgetToSheafModuleCat` when given isomorphic initial objects. -/
 noncomputable def forgetToSheafModuleCatOfIso (X Y : Cᵒᵖ) (hX : Limits.IsInitial X)
     (hY : Limits.IsInitial Y) (φ : X ≅ Y) :
@@ -228,7 +224,7 @@ noncomputable def homEquivOfIsLocallyBijective : (M₂ ⟶ N) ≃ (M₁ ⟶ N) w
           ((PresheafOfModules.toPresheaf R).map ψ)
         simp only [← hφ, Equiv.symm_apply_apply]
         replace hφ : ∀ (Z : Cᵒᵖ) (x : M₁.obj Z), φ.app Z (f.app Z x) = ψ.app Z x :=
-          fun Z x ↦ CategoryTheory.congr_fun (congr_app hφ Z) x
+          fun Z x ↦ congr($(hφ).app Z x)
         intro X r y
         apply hN.isSeparated _ _
           (Presheaf.imageSieve_mem J ((toPresheaf R).map f) y)

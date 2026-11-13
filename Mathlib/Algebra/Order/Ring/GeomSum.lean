@@ -70,7 +70,7 @@ lemma geom_sum_pos_and_lt_one (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
   intro n _ ihn
   rw [geom_sum_succ, add_lt_iff_neg_right, ← neg_lt_iff_pos_add', neg_mul_eq_neg_mul]
   exact
-    ⟨mul_lt_one_of_nonneg_of_lt_one_left (neg_nonneg.2 hx.le) (neg_lt_iff_pos_add'.2 hx') ihn.2.le,
+    ⟨by grw [ihn.2, mul_one, neg_le_iff_add_nonneg', hx']; exact neg_pos.2 hx,
       mul_neg_of_neg_of_pos hx ihn.1⟩
 
 lemma geom_sum_alternating_of_lt_neg_one (hx : x + 1 < 0) (hn : 1 < n) :
@@ -136,13 +136,9 @@ lemma geom_sum_ne_zero (hx : x ≠ -1) (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i
   · exact (geom_sum_pos' h n.succ.succ_ne_zero).ne'
 
 lemma geom_sum_eq_zero_iff_neg_one (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i = 0 ↔ x = -1 ∧ Even n := by
-  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, ite_true]⟩
-  contrapose! h
-  have hx := eq_or_ne x (-1)
-  rcases hx with hx | hx
-  · rw [hx, neg_one_geom_sum]
-    simp only [h hx, ite_false, ne_eq, one_ne_zero, not_false_eq_true]
-  · exact geom_sum_ne_zero hx hn
+  rcases eq_or_ne x (-1) with rfl | hx
+  · simp
+  · simp [geom_sum_ne_zero, hx, hn]
 
 lemma geom_sum_neg_iff (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i < 0 ↔ Even n ∧ x + 1 < 0 := by
   rw [← not_iff_not, not_lt, le_iff_lt_or_eq, eq_comm,

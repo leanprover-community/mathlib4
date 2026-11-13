@@ -6,8 +6,8 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.DirectSum.Basic
-public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # Direct sum of modules
@@ -22,7 +22,6 @@ the construction is of particular importance when this linear map is an equivale
 the submodules provide an internal decomposition of `M`.  The property is defined more generally
 elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s are established
 in this file.
-
 -/
 
 @[expose] public section
@@ -297,7 +296,7 @@ lemma range_lmap :
 end AddCommMonoid
 
 section AddCommGroup
-variable {R : Type u} {ι : Type v} {M : ι → Type w} {N : ι → Type*}
+variable {ι : Type v} {M : ι → Type w} {N : ι → Type*}
 
 lemma ker_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i) :
     (map f).ker =

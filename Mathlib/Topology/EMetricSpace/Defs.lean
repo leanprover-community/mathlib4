@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
-public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Topology.UniformSpace.Basic
 public import Mathlib.Topology.UniformSpace.OfFun
 
@@ -58,7 +58,7 @@ export EDist (edist)
 
 namespace Metric
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} [EDist α]
+variable {x y : α} {ε ε₁ ε₂ : ℝ≥0∞} [EDist α]
 
 /-- `Metric.eball x ε` is the set of all points `y` with `edist y x < ε` -/
 def eball (x : α) (ε : ℝ≥0∞) : Set α :=
@@ -69,6 +69,13 @@ def eball (x : α) (ε : ℝ≥0∞) : Set α :=
 @[gcongr]
 theorem eball_subset_eball (h : ε₁ ≤ ε₂) : eball x ε₁ ⊆ eball x ε₂ := fun _y (yx : _ < ε₁) =>
   lt_of_lt_of_le yx h
+
+/-- The points at finite distance from `a`. -/
+def boundedComponent (a : α) : Set α := {x | edist a x ≠ ∞}
+
+@[simp]
+theorem mem_boundedComponent_iff {a x : α} :
+    x ∈ boundedComponent a ↔ edist a x ≠ ∞ := Iff.rfl
 
 end Metric
 
@@ -521,7 +528,7 @@ theorem Prod.edist_eq [PseudoEMetricSpace β] (x y : α × β) :
 namespace Metric
 
 variable {α : Type*} [TopologicalSpace α] [WeakPseudoEMetricSpace α] {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞}
-  {s t : Set α}
+  {s : Set α}
 
 theorem mem_eball' : y ∈ eball x ε ↔ edist x y < ε := by rw [edist_comm, mem_eball]
 
@@ -605,6 +612,12 @@ def edistLtTopSetoid : Setoid α where
     { refl x := by rw [edist_self]; exact ENNReal.coe_lt_top
       symm h := by rwa [edist_comm]
       trans hxy hyz := lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩) }
+
+theorem boundedComponent_eq {a b : α} (h : b ∈ boundedComponent a) :
+    boundedComponent a = boundedComponent b := by
+  ext x
+  simp only [mem_boundedComponent_iff, ← lt_top_iff_ne_top] at h ⊢
+  exact ⟨edistLtTopSetoid.trans (edistLtTopSetoid.symm h), edistLtTopSetoid.trans h⟩
 
 @[simp]
 theorem eball_zero {α : Type*} [EDist α] {x : α} : eball x 0 = ∅ := by
@@ -709,12 +722,14 @@ end
 end EMetric
 
 namespace Metric
-variable {x : α} {ε : ℝ≥0∞} {s t : Set α}
+variable {x : α} {ε : ℝ≥0∞}
 
 theorem isClosed_eball_top : IsClosed (eball x ⊤) :=
   isOpen_compl_iff.1 <| EMetric.isOpen_iff.2 fun _y hy =>
     ⟨⊤, ENNReal.coe_lt_top, fun _z hzy hzx =>
       hy (edistLtTopSetoid.trans (edistLtTopSetoid.symm hzy) hzx)⟩
+
+theorem isClopen_eball_top : IsClopen (eball x ⊤) := ⟨isClosed_eball_top, isOpen_eball⟩
 
 variable (x)
 
@@ -791,7 +806,6 @@ protected theorem EMetricSpace.ext
   congr
   ext1
   assumption
-
 
 /-- A weak extended metric space extends a `WeakPseudoEMetricSpace` with the condition
 `edist x y = 0 ↔ x = y`. -/

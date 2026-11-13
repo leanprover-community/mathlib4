@@ -1,4 +1,6 @@
-import Mathlib.Algebra.DualNumber
+module
+
+public meta import Mathlib.Algebra.DualNumber
 
 open DualNumber
 

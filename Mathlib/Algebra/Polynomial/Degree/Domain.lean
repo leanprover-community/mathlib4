@@ -18,15 +18,13 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 
 public section
 
-noncomputable section
-
 open Polynomial
 
 namespace Polynomial
 
 universe u v
 
-variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
+variable {R : Type u} {S : Type v} {a : R} {n : ℕ}
 
 section Semiring
 
@@ -44,7 +42,7 @@ lemma natDegree_smul {S : Type*} [Semiring S] [IsDomain S] [Module S R] [Module.
   · simp only [hp, smul_zero]
   · apply natDegree_eq_of_le_of_coeff_ne_zero
     · exact (natDegree_smul_le _ _).trans (le_refl _)
-    · simp only [coeff_smul]
+    · simp only [AddMonoidAlgebra.coeff_smul_apply]
       apply smul_ne_zero ha
       simp [hp]
 

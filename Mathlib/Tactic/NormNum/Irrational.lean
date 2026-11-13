@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.NormNum.GCD
-public import Mathlib.Tactic.Qify
 public import Mathlib.Tactic.Rify
+
+import Mathlib.Tactic.Qify
 
 /-! # `norm_num` extension for `Irrational`
 
@@ -25,7 +26,6 @@ such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 
 ## TODO
 Disprove `Irrational x` for rational `x`.
-
 -/
 
 public meta section
@@ -101,7 +101,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
     subst h_coprime
     use 1
     simp
-  by_contra! h
+  by_contra h
   rw [← Rat.num_div_den q] at h
   set x' := q.num
   set y := q.den
