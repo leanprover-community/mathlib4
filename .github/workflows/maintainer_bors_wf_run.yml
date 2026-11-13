@@ -79,14 +79,12 @@ jobs:
 
       - name: Generate app token
         id: app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
+        uses: leanprover-community/mathlib-ci/.github/actions/mint-github-app-token@5c94feb419bec2cb85cb6aea6199431aabc0847c
         if: ${{ steps.merge_or_delegate.outputs.mOrD != '' }}
         with:
-          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
-          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
-          key-name: mathlib-triage-app-pk
-          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_TRIAGE }}
-          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          broker-url: ${{ vars.MATHLIB_GITHUB_APP_BROKER_URL }}
+          audience: mathlib-github-app-broker
+          app: mathlib-triage
 
       # The `ready-to-merge` / `delegated` lifecycle labels are managed by bors
       # itself (see the `[labels]` table in bors.toml); this workflow no longer
