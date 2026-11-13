@@ -141,7 +141,7 @@ theorem cyclotomic_nonneg (n : ℕ) {R}
 power. -/
 theorem eval_one_cyclotomic_of_not_isPrimePow {R : Type*} [Ring R] {n : ℕ} (hn : n ≠ 1)
     (h : ¬ IsPrimePow n) : eval 1 (cyclotomic n R) = 1 := by
-  rcases n.eq_zero_or_pos with (rfl | hn')
+  obtain rfl | hn' := n.eq_zero_or_pos
   · simp
   replace hn : 1 < n := one_lt_iff_ne_zero_and_ne_one.mpr ⟨hn'.ne', hn⟩
   rsuffices h | h : eval 1 (cyclotomic n ℤ) = 1 ∨ eval 1 (cyclotomic n ℤ) = -1
@@ -349,8 +349,8 @@ theorem isUnit_sub_one_of_not_isPrimePow (hζ : IsPrimitiveRoot ζ n) (hn : 1 < 
 
 /-- If the order of `ζ` is a power of the prime `p`, then `ζ - 1` is a unit precisely when `p` is
 a unit in `R`. -/
-theorem isUnit_sub_one_iff_of_prime_pow {p k : ℕ} [Fact p.Prime] (hk : k ≠ 0)
-    (hζ : IsPrimitiveRoot ζ (p ^ k)) : IsUnit (ζ - 1) ↔ IsUnit (p : R) := by
+theorem isUnit_sub_one_iff_of_prime_pow {p k : ℕ} [Fact p.Prime] (hζ : IsPrimitiveRoot ζ (p ^ k))
+    (hk : k ≠ 0) : IsUnit (ζ - 1) ↔ IsUnit (p : R) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hk
   simp [hζ.isUnit_sub_one_iff_isUnit_eval_one_cyclotomic]
 
