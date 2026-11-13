@@ -88,7 +88,7 @@ theorem isCyclic_iff_isMulCommutative : IsCyclic G ↔ IsMulCommutative G := by
     FreeGroup.isMulCommutative_iff_subsingleton]
 
 @[to_additive]
-theorem center_eq_bot_or_top : Subgroup.center G = ⊥ ∨ Subgroup.center G = ⊤ := by
+theorem center_eq_bot_or_top : center G = ⊥ ∨ center G = ⊤ := by
   have e := IsFreeGroup.mulEquiv G
   rw [← map_bot (e : FreeGroup (Generators G) →* G), ← map_equiv_top e, ← map_center_eq e,
     (map_injective e.injective).eq_iff, (map_injective e.injective).eq_iff]
@@ -97,9 +97,8 @@ theorem center_eq_bot_or_top : Subgroup.center G = ⊥ ∨ Subgroup.center G = �
   · exact fun h ↦ FreeGroup.center_eq_top_of_subsingleton
 
 @[to_additive]
-theorem isCyclic_centralizer {g : G} (ha : g ≠ 1) :
-    IsCyclic (Subgroup.centralizer {g}) := by
-  rw [IsFreeGroup.isCyclic_iff_isMulCommutative, ← Subgroup.center_eq_top_iff]
+theorem isCyclic_centralizer {g : G} (ha : g ≠ 1) : IsCyclic (centralizer {g}) := by
+  rw [IsFreeGroup.isCyclic_iff_isMulCommutative, ← center_eq_top_iff]
   apply IsFreeGroup.center_eq_bot_or_top.resolve_left
   contrapose ha
   have : ⟨g, mem_centralizer_singleton_iff.mpr rfl⟩ ∈ center (centralizer {g}) := by
