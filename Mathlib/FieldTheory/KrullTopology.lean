@@ -61,7 +61,7 @@ open scoped Pointwise Uniformity
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 variable (K L) in
-/-- For a field extension `L/K`, we equiv `Gal(L/K)` with the left uniform structure. -/
+/-- For a field extension `L/K`, we equip `Gal(L/K)` with the left uniform structure. -/
 @[no_expose]
 instance : UniformSpace Gal(L/K) := .ofCore
   { uniformity := ⨅ x : L, 𝓟 {p | p.1 x = p.2 x}
