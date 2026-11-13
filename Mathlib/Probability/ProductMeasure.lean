@@ -389,9 +389,8 @@ theorem eq_infinitePi_generateFrom {ν : Measure (Π i, X i)} {C : (i : ι) → 
       (∀ i ∈ s, (t i) ∈ C i) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
     ν = infinitePi μ := by
   refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
-  refine fun s ↦ (pi_eq_generateFrom (C := fun i : s ↦ C i) ?_ ?_ ?_ fun t ht ↦ ?_).symm
-  · grind
-  · grind
+  refine fun s ↦ (pi_eq_generateFrom (C := fun i : s ↦ C i)
+    (by grind) (by grind) ?_ fun t ht ↦ ?_).symm
   · intro i
     constructor
     · exact fun _ ↦ hC3 i
