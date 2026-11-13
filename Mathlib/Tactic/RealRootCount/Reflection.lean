@@ -261,12 +261,51 @@ theorem signVariationsLine_map_toReal (hL : ∀ e ∈ L, coeffLead e ≠ 0) :
   rw [signVariationsLine_def, hBot, hTop, List.signVariations_map_sign,
     List.signVariations_map_sign]
 
+theorem sturm_R_of_isScaledSturmSeq {f : ℝ[X]} {L : List ℝ[X]}
+    (h : IsScaledSturmSeq f (derivative f) L) :
+    f.roots.toFinset.card = signVariationsLine L := by
+  simp only [sturm_R, signVariationsLine_def]
+  congrm (List.signVariations ?_ - List.signVariations ?_ : ℤ) <;>
+  · rw [← List.forall₂_eq_eq_eq]
+    refine List.rel_map ?_ h
+    rintro s _ ⟨c, hc, rfl⟩
+    simp [sign_pos hc]
+
+theorem toReal_eq_map_algebraMap (R : Type*) [CommRing R] [Algebra R ℝ] (s : List ℤ) :
+    toReal s = ((ofCoeffList s).map (Int.castRingHom R)).map (algebraMap R ℝ) := by
+  rw [toReal, Polynomial.map_map]
+  congrm (ofCoeffList s).map ?_
+  exact RingHom.ext_int (Int.castRingHom ℝ) ((algebraMap R ℝ).comp (Int.castRingHom R))
+
+theorem roots_toReal {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]} {k : ℕ} {s : List ℤ}
+    (hf : (k : R[X]) * f = (ofCoeffList s).map (Int.castRingHom R)) (hs : coeffLead s ≠ 0) :
+    (toReal s).roots = f.aroots ℝ := by
+  have hk : k ≠ 0 := by
+    rintro rfl
+    apply toReal_ne_zero hs
+    rw [toReal_eq_map_algebraMap R, ← hf]
+    simp
+  rw [toReal_eq_map_algebraMap R, ← hf, Polynomial.map_mul, Polynomial.map_natCast,
+    ← C_eq_natCast]
+  exact roots_C_mul _ (Nat.cast_ne_zero.mpr hk)
+
 public theorem card_rootSet_of_realRootCount? {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]}
     {d : SturmCertificate} {k n : ℕ} [Fintype (f.rootSet ℝ)]
     (hf : (k : R[X]) * f = (ofCoeffList d.s).map (Int.castRingHom R))
     (h : realRootCount? d = some n) :
     Fintype.card (f.rootSet ℝ) = n := by
-  sorry
+  rw [realRootCount?, Option.map_eq_some_iff] at h
+  obtain ⟨L, hL, rfl⟩ := h
+  obtain ⟨hlead, _⟩ := SturmCertificate.entries?_eq_some_iff.mp hL
+  calc Fintype.card (f.rootSet ℝ)
+    _ = (toReal d.s).roots.toFinset.card := by
+      rw [roots_toReal hf hlead]
+      simp [rootSet_def]
+    _ = (signVariationsLine (L.map toReal)).toNat := by
+      rw [← sturm_R_of_isScaledSturmSeq (isScaledSturmSeq_of_entries? hL), Int.toNat_natCast]
+    _ = (L.map fun e => if e.length % 2 = 0 then -coeffLead e else coeffLead e).signVariations -
+          (L.map coeffLead).signVariations := by
+      rw [signVariationsLine_map_toReal (coeffLead_ne_zero_of_entries? hL), Int.toNat_sub]
 
 theorem eval_toReal_cons (c : ℤ) (p : List ℤ) (x : ℝ) :
     (toReal (c :: p)).eval x = c + x * (toReal p).eval x := by
