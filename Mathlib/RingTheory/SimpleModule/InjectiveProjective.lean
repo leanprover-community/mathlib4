@@ -9,9 +9,13 @@ public import Mathlib.Algebra.Module.Injective
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.SimpleModule.Basic
 
-/-!
-If `R` is a semisimple ring, then any `R`-module is both injective and projective.
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
+# Modules over semisimple rings are injective and projective
+
+If `R` is a semisimple ring, then any `R`-module is both injective and projective.
 -/
 
 public section

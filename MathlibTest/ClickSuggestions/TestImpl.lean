@@ -22,8 +22,8 @@ namespace Mathlib.Tactic.ClickSuggestions
 
 open Lean Meta SubExpr ProofWidgets RefreshComponent Server
 
-partial def getHtmlComponentProps {Props} [RpcEncodable Props] (html : Html) (c : Component Props)
-    (arr : Array Props) : CoreM (Array Props) := do
+partial def getHtmlComponentProps {Props} [RpcEncodable Props] (html : ProofWidgets.Html)
+    (c : Component Props) (arr : Array Props) : CoreM (Array Props) := do
   match html with
   | .element _ _ htmls => htmls.foldlM (fun arr html ↦ getHtmlComponentProps html c arr) arr
   | .text _ => return arr
@@ -47,7 +47,7 @@ where
     | .error e => throwError "An error occurred when looking at the HTML: {e}"
 /- Wait until the state has finished refreshing, and the return the final HTML.
 This is useful for inspecting `Html` from within Lean. -/
-  getFinalHtml (info : RefreshRef) : BaseIO Html := do
+  getFinalHtml (info : RefreshRef) : BaseIO ProofWidgets.Html := do
   let { curr, next, .. } ← info.ref.atomically get
   if next.get.isNone then
     return curr.get
@@ -60,6 +60,7 @@ elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ :
   let goals ← Elab.Tactic.getGoals
   let onGoal := onGoal?.map (·.getNat - 1)
   let some goal := goals[onGoal.getD 0]? | throwError "there is no goal number {onGoal}"
+  let focus := onGoal.getD 0 == 0 && 2 ≤ goals.length
   goal.withContext do
   let hyp? ← hyp?.mapM fun hyp ↦ return (← getLocalDeclFromUserName hyp.getId).fvarId
   let pos? ← pos?.mapM fun pos ↦ do
@@ -81,7 +82,7 @@ elab "click_test" onGoal?:(num)? hyp?:(ident)? pos?:(str)? "=>" expecteds:str+ :
   let ctx := {
     cursorPos, masterToken, statusToken, solvedToken
     «meta» := { (default : DocumentMeta) with text }
-    onGoal
+    onGoal, focus
     stx := default
     goal
     hyp?

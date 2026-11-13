@@ -35,7 +35,6 @@ the subtype of `PreLp` satisfying `Memℓp`.
 
 * Equivalence between `lp` and `MeasureTheory.Lp`, for `f : α → E` (i.e., functions rather than
   pi-types) and the counting measure on `α`
-
 -/
 
 @[expose] public section
@@ -103,6 +102,11 @@ theorem coe_lpPiLpₗᵢ [Fact (1 ≤ p)] (f : lp E p) : (lpPiLpₗᵢ E 𝕜 f 
 
 theorem coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
     ((lpPiLpₗᵢ E 𝕜).symm f : ∀ i, E i) = f :=
+  rfl
+
+@[simp]
+theorem lpPiLpₗᵢ_symm_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) (a : E i) :
+    (lpPiLpₗᵢ E 𝕜).symm (PiLp.single p i a) = lp.single p i a :=
   rfl
 
 end Equivₗᵢ

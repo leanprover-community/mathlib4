@@ -36,7 +36,6 @@ Additionally, we give the constructions
 We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
 `StrongMonoCategory`s resp. `StrongEpiCategory`s.
-
 -/
 
 @[expose] public section
@@ -129,7 +128,6 @@ def Fork.IsLimit.regularMono {A B : C} {p₁ p₂ : A ⟶ B} {c : Fork p₁ p₂
 section IsRegularMono
 
 /-!
-
 Given a regular monomorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularMono`),
 this section gives an equalizer diagram
 ```
@@ -171,7 +169,6 @@ lemma IsRegularMono.fac {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
     (h : k ≫ left f = k ≫ right f) : lift f k h ≫ f = k :=
   Fork.IsLimit.lift_ι (isLimit f)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma IsRegularMono.uniq {W : C} (f : X ⟶ Y) [IsRegularMono f] (k : W ⟶ Y)
     (h : k ≫ left f = k ≫ right f) (m : W ⟶ X) (hm : m ≫ f = k) : m = lift f k h :=
   Fork.IsLimit.existsUnique (isLimit f) k h |>.unique hm <| by simp
@@ -380,7 +377,6 @@ def Cofork.IsColimit.regularEpi {A B : C} {p₁ p₂ : A ⟶ B} {c : Cofork p₁
 section IsRegularEpi
 
 /-!
-
 Given a regular epimorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularEpi`),
 this section gives a coequalizer diagram
 ```
@@ -424,7 +420,6 @@ lemma IsRegularEpi.fac {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
     (h : left f ≫ k = right f ≫ k) : f ≫ desc f k h = k :=
   Cofork.IsColimit.π_desc (isColimit f)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma IsRegularEpi.uniq {Z : C} (f : X ⟶ Y) [IsRegularEpi f] (k : X ⟶ Z)
     (h : left f ≫ k = right f ≫ k) (m : Y ⟶ Z) (hm : f ≫ m = k) : m = desc f k h :=
   Cofork.IsColimit.existsUnique (isColimit f) k h |>.unique hm <| by simp
@@ -552,7 +547,6 @@ def RegularEpi.desc' {W : C} {f : X ⟶ Y} (hf : RegularEpi f) (k : X ⟶ W)
     { l : Y ⟶ W // f ≫ l = k } :=
   Cofork.IsColimit.desc' hf.isColimit _ h
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The second leg of a pushout cocone is a regular epimorphism if the right component is too.
 
 See also `Pushout.sndOfEpi` for the basic epimorphism version, and

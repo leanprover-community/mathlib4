@@ -28,7 +28,6 @@ We define the covariance of two real-valued random variables.
 
 * `cov[X, Y; μ] = covariance X Y μ`
 * `cov[X, Y] = covariance X Y volume`
-
 -/
 
 @[expose] public section

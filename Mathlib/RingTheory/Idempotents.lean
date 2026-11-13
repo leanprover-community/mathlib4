@@ -12,7 +12,6 @@ import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Tactic.LinearCombination
 
 /-!
-
 # Idempotents in rings
 
 The predicate `IsIdempotentElem` is defined for general monoids in

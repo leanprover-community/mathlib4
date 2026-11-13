@@ -415,6 +415,9 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
+  decls:
+    - Nat.isEquivalent_primeCounting
+    - Chebyshev.isEquivalent_theta_id
   authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
   url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   date: 2025
@@ -1575,7 +1578,7 @@ Q1249069:
 
 Q1259814:
   title: Nielsen–Schreier theorem
-  decl: subgroupIsFreeOfIsFree
+  decl: Subgroup.isFreeGroupOfIsFreeGroup
 
 Q1276318:
   title: Schwartz kernel theorem

@@ -13,6 +13,9 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Tactic.Contrapose
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cyclic groups
 
@@ -58,11 +61,6 @@ instance IsCyclic.isMulCommutative [Group α] [IsCyclic α] : IsMulCommutative �
     let ⟨_, hx⟩ := hg x
     let ⟨_, hy⟩ := hg y
     hy ▸ hx ▸ zpow_mul_comm ..
-
-@[deprecated (since := "2026-04-09")]
-alias IsAddCyclic.commutative := IsAddCyclic.isAddCommutative
-@[to_additive existing, deprecated (since := "2026-04-09")]
-alias IsCyclic.commutative := IsCyclic.isMulCommutative
 
 open scoped IsMulCommutative in
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better

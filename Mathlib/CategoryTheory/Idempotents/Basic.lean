@@ -29,7 +29,6 @@ preadditive categories).
 
 ## References
 * [Stacks: Karoubian categories] https://stacks.math.columbia.edu/tag/09SF
-
 -/
 
 public section

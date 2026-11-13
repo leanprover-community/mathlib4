@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Generator.Basic
 # Generator of Type
 
 In this file, we show that `PUnit` is a separator of the category `Type u`.
-
 -/
 
 public section

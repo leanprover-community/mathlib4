@@ -188,7 +188,7 @@ We have to insert a coordinate change from `x₀` to `x` to make the derivative 
 This is a special case of `ContMDiffWithinAt.mfderivWithin` where `f` does not contain any
 parameters and `g = id`.
 -/
-theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
+protected theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
     (hf : CMDiffAt[s] n f x₀) (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiff[s]) :
     CMDiffAt[s] m (inTangentCoordinates I I' id f (mfderiv[s] f) x₀) x₀ := by
   have : CMDiffAt[s ×ˢ s] n (fun x : M × M ↦ f x.2) (x₀, x₀) :=
@@ -364,7 +364,7 @@ protected lemma ContMDiffWithinAt.mvfderivWithin
   have aux := hf'.contMDiffWithinAt_tangentMapWithin hx hmn hs
   -- Compose the tangent map `Tf` with `X` to obtain a `C^n` map `M → TN`.
   -- In particular, the fiber component of this map is smooth, which is the desired conclusion.
-  convert (Bundle.contMDiffWithinAt_totalSpace.mp (aux.comp x hX (by intro; simp))).2
+  convert (contMDiffWithinAt_totalSpace_iff.mp (aux.comp x hX (by intro; simp))).2
   simp
   rfl
 
@@ -505,7 +505,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     apply UniqueDiffWithinAt.prod
     · exact ModelWithCorners.uniqueDiffWithinAt_image I
     · exact ModelWithCorners.uniqueDiffWithinAt_image I'
-  rw [contMDiffAt_totalSpace]
+  rw [contMDiffAt_totalSpace_iff]
   simp only [equivTangentBundleProd, TangentBundle.trivializationAt_apply, mfld_simps,
     Equiv.coe_fn_symm_mk]
   refine ⟨?_, (contMDiffAt_prod_module_iff _).2 ⟨?_, ?_⟩⟩
@@ -515,7 +515,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     the target chart, which is obviously smooth. -/
     have smooth_pM : CMDiffAt n (Prod.fst : TangentBundle I M × TangentBundle I' M' → _) (a, b) :=
       contMDiffAt_fst
-    apply (contMDiffAt_totalSpace.1 smooth_pM).2.congr_of_eventuallyEq
+    apply (contMDiffAt_totalSpace_iff.1 smooth_pM).2.congr_of_eventuallyEq
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM` read in target chart.
@@ -554,7 +554,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     the target chart, which is obviously smooth. -/
     have smooth_pM' : CMDiffAt n (Prod.snd : TangentBundle I M × TangentBundle I' M' → _) (a, b) :=
       contMDiffAt_snd
-    apply (contMDiffAt_totalSpace.1 smooth_pM').2.congr_of_eventuallyEq
+    apply (contMDiffAt_totalSpace_iff.1 smooth_pM').2.congr_of_eventuallyEq
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
       with p hp
     -- now we have to check that the original map coincides locally with `pM'` read in target chart.

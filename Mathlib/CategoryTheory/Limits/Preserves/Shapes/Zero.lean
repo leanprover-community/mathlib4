@@ -21,7 +21,6 @@ We provide the following results:
 * if both categories involved have a zero object, then a functor preserves zero morphisms if and
   only if it preserves the zero object;
 * functors which preserve initial or terminal objects preserve zero morphisms.
-
 -/
 
 @[expose] public section

@@ -8,11 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
-
 # Subsemiring of opposite semirings
 
 For every semiring `R`, we construct an equivalence between subsemirings of `R` and that of `Rᵐᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -155,14 +153,12 @@ def addEquivOp (S : Subsemiring R) : S ≃+ S.op where
   toEquiv := S.toSubmonoid.equivOp
   map_add' _ _ := rfl
 
--- TODO: Add this for `[Add]Submonoid` and `[Add]Subgroup`
 /-- Bijection between a subsemiring `S` and `MulOpposite` of its opposite. -/
 @[simps!]
 def ringEquivOpMop (S : Subsemiring R) : S ≃+* (S.op)ᵐᵒᵖ where
   __ := S.addEquivOp.trans MulOpposite.opAddEquiv
   map_mul' _ _ := rfl
 
--- TODO: Add this for `[Add]Submonoid` and `[Add]Subgroup`
 /-- Bijection between `MulOpposite` of a subsemiring `S` and its opposite. -/
 @[simps!]
 def mopRingEquivOp (S : Subsemiring R) : Sᵐᵒᵖ ≃+* S.op where

@@ -22,7 +22,6 @@ the shift functors of a term of type `HasShift D A`.
 As this condition on the functor `F` is satisfied for quotient and localization
 functors, the main construction `HasShift.induced` in this file shall be
 used for both quotient and localized shifts.
-
 -/
 
 @[expose] public section
@@ -53,7 +52,6 @@ noncomputable def add (a b : A) : s (a + b) ≅ s a ⋙ s b :=
         isoWhiskerLeft _ (i b).symm ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (i a).symm _ ≪≫ Functor.associator _ _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma zero_hom_app_obj (X : C) :
     (zero F s i).hom.app (F.obj X) =
@@ -62,7 +60,6 @@ lemma zero_hom_app_obj (X : C) :
     ((whiskeringLeft C D D).obj F).map_preimage _
   exact congr($(h).app X).trans (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma zero_inv_app_obj (X : C) :
     (zero F s i).inv.app (F.obj X) =
@@ -71,7 +68,6 @@ lemma zero_inv_app_obj (X : C) :
     ((whiskeringLeft C D D).obj F).map_preimage _
   exact congr($(h).app X).trans (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma add_hom_app_obj (a b : A) (X : C) :
     (add F s i a b).hom.app (F.obj X) =
@@ -81,7 +77,6 @@ lemma add_hom_app_obj (a b : A) (X : C) :
     ((whiskeringLeft C D D).obj F).map_preimage _
   exact congr($(h).app X).trans (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma add_inv_app_obj (a b : A) (X : C) :
     (add F s i a b).inv.app (F.obj X) =
@@ -95,7 +90,6 @@ end Induced
 
 variable (A)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When `F : C ⥤ D` is a functor satisfying suitable technical assumptions,
 this is the induced term of type `HasShift D A` deduced from `[HasShift C A]`. -/
 @[instance_reducible]
@@ -211,7 +205,6 @@ lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
 
 variable (A)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- When the target category of a functor `F : C ⥤ D` is equipped with
 the induced shift, this is the compatibility of `F` with the shifts on
 the categories `C` and `D`. -/

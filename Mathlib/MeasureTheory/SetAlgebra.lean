@@ -195,7 +195,7 @@ end IsSetAlgebra
 union of finite intersections of sets which are in `𝒜` or have their complement in `𝒜`. -/
 theorem mem_generateSetAlgebra_elim (s_mem : s ∈ generateSetAlgebra 𝒜) :
     ∃ A : Set (Set (Set α)), A.Finite ∧ (∀ a ∈ A, a.Finite) ∧
-    (∀ᵉ (a ∈ A) (t ∈ a), t ∈ 𝒜 ∨ tᶜ ∈ 𝒜) ∧ s = ⋃ a ∈ A, ⋂ t ∈ a, t := by
+    (∀ a ∈ A, ∀ t ∈ a, t ∈ 𝒜 ∨ tᶜ ∈ 𝒜) ∧ s = ⋃ a ∈ A, ⋂ t ∈ a, t := by
   induction s_mem using generateSetAlgebra_induction with
   | base u u_mem =>
     refine ⟨{{u}}, finite_singleton {u},

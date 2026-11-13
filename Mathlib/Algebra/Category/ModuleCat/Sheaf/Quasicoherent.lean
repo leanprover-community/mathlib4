@@ -22,7 +22,6 @@ When these coproducts are finite, we say that the sheaf is of finite presentatio
 ## References
 
 * https://stacks.math.columbia.edu/tag/01BD
-
 -/
 
 @[expose] public section
@@ -57,10 +56,6 @@ class Presentation.IsFinite {M : SheafOfModules.{u} R} (p : M.Presentation) : Pr
 
 attribute [instance] Presentation.IsFinite.isFiniteType_generators
   Presentation.IsFinite.isFiniteType_relations
-
-@[deprecated Presentation.IsFinite.isFiniteType_relations +typeChanged (since := "2026-04-14")]
-lemma Presentation.IsFinite.finite_relations {M : SheafOfModules.{u} R} (p : M.Presentation)
-    [p.IsFinite] : Finite p.relations.I := GeneratingSections.IsFiniteType.finite
 
 end
 
@@ -137,8 +132,6 @@ noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N
   generators := σ.generators.ofEpi f
   relations := σ.relations.ofEpi ((kernelCompMono _ f).symm.trans <| eqToIso (by simp)).hom
 
-@[deprecated (since := "2026-04-15")] alias Presentation.of_isIso := Presentation.ofIsIso
-
 set_option backward.isDefEq.respectTransparency.types false in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
     (σ : M.Presentation) [σ.IsFinite] : (σ.ofIsIso f).IsFinite where
@@ -175,7 +168,6 @@ theorem Presentation.mapRelations_mapGenerators :
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
@@ -437,7 +429,7 @@ noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
   presentation i :=
     letI e := pushforwardPushforwardEquivalence (Over.iteratedSliceEquiv ((D i.1).X i.2))
       (S := (R.over _).over _) (R := R.over _) (𝟙 _) (𝟙 _)
-      (by ext : 2; exact R.1.map_id _) (by ext : 2; exact R.1.map_id _)
+      (by ext : 2; exact R.obj.map_id _) (by ext : 2; exact R.obj.map_id _)
     (((D i.1).presentation i.2).map e.inverse (.refl _)).ofIsIso
       (e.fullyFaithfulFunctor.preimageIso
       (by exact e.counitIso.app ((M.over (X i.1)).over ((D i.1).X i.2)))).hom

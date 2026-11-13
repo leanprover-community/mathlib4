@@ -38,7 +38,7 @@ noncomputable section
 
 variable {α : Type*}
 
-open NNReal ENNReal MeasureTheory
+open NNReal ENNReal MeasureTheory CompleteLattice
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
   that the values have (infinite) sum `1`. -/
@@ -68,7 +68,7 @@ theorem tsum_coe_ne_top (p : PMF α) : ∑' a, p a ≠ ∞ :=
 
 theorem tsum_coe_indicator_ne_top (p : PMF α) (s : Set α) : ∑' a, s.indicator p a ≠ ∞ :=
   ne_of_lt (lt_of_le_of_lt
-    (ENNReal.tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl))
+    (tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl))
     (lt_of_le_of_ne le_top p.tsum_coe_ne_top))
 
 @[simp]
@@ -104,7 +104,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
   suffices 1 < ∑' a, p a from ne_of_lt this p.tsum_coe.symm
   classical
   have : 0 < ∑' b, ite (b = a) 0 (p b) := by
-    rw [pos_iff_ne_zero, ENNReal.summable.tsum_ne_zero_iff]
+    rw [pos_iff_ne_zero, summable.tsum_ne_zero_iff]
     exact ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩
   calc
     1 = 1 + 0 := (add_zero 1).symm
@@ -114,7 +114,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
     _ = (∑' b, ite (b = a) (p b) 0) + ∑' b, ite (b = a) 0 (p b) := by
       congr
       exact symm (tsum_eq_single a fun b hb => ite_eq_right hb)
-    _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := ENNReal.tsum_add.symm
+    _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := tsum_add.symm
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero]
 
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
@@ -169,7 +169,7 @@ theorem toOuterMeasure_inj {p q : PMF α} : p.toOuterMeasure = q.toOuterMeasure 
   toOuterMeasure_injective.eq_iff
 
 theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p.support s := by
-  rw [toOuterMeasure_apply, ENNReal.tsum_eq_zero]
+  rw [toOuterMeasure_apply, tsum_eq_zero_iff]
   exact funext_iff.symm.trans Set.indicator_eq_zero'
 
 theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
@@ -304,7 +304,7 @@ is the measure of the singleton set under the original measure. -/
 def toPMF [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
     [h : IsProbabilityMeasure μ] : PMF α :=
   ⟨fun x => μ ({x} : Set α),
-    ENNReal.summable.hasSum_iff.2
+    summable.hasSum_iff.2
       (_root_.trans
         (symm <|
           (tsum_indicator_apply_singleton μ Set.univ MeasurableSet.univ).symm.trans

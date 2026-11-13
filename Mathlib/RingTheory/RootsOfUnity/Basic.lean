@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.IntegralDomain
 
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Roots of unity
 
