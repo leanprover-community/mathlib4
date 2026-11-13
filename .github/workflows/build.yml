@@ -48,5 +48,11 @@ jobs:
         }}
       # the single producer: the master `push` build
       publish_cache: ${{ github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      # bors validated this commit on `staging`, so a bors push to master only publishes.
+      revalidate: &not_bors_master_push ${{ !(github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master' && github.actor == 'mathlib-bors[bot]') }}
+      run_post_ci: *not_bors_master_push
+      # The `master` cache container serves everyone, and `nightly-testing-green` needs a
+      # complete cache.
+      gate_cache_verification: ${{ (github.repository == 'leanprover-community/mathlib4' && github.event_name == 'push' && github.ref == 'refs/heads/master') || github.repository == 'leanprover-community/mathlib4-nightly-testing' }}
       runs_on: pr
     secrets: inherit

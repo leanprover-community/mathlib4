@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: false # We shouldn't need this job in typical experiments
+      revalidate:
+        description: Run the test, lint and cache verification jobs? Turn off to run the job set of a bors master push.
+        required: false
+        type: boolean
+        default: true
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -38,6 +43,7 @@ jobs:
       tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
       pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
       run_post_ci: ${{ inputs.run_post_ci }}
+      revalidate: ${{ inputs.revalidate }}
       # The ref inputs choose the code that holds the upload credential, so
       # the environment requires a CI admin to approve each run.
       cache_environment: cache-upload-ci-dev
