@@ -35,7 +35,6 @@ This file contains
 * basic lemmas about `mvfderiv` (such as addition, subtraction, multiplication and constants),
 * analogous lemmas about `mvfderivWithin`,
 * composition lemmas about `mvfderivWithin` and `mvfderiv`.
-
 -/
 
 public section

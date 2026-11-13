@@ -13,7 +13,6 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 
 /-!
 # The category of presheaves of modules is abelian
-
 -/
 
 public section

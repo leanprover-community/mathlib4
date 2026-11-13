@@ -23,7 +23,6 @@ This file proves some results regarding the conditional expectation of real-valu
   Radon-Nikodym derivative of `fμ` restricted on `m` with respect to `μ` restricted on `m`.
 * `MeasureTheory.Integrable.uniformIntegrable_condExp`: the conditional expectation of a function
   form a uniformly integrable class.
-
 -/
 
 public section

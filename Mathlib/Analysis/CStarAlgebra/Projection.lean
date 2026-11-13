@@ -24,7 +24,6 @@ Here we collect results about projections specific to C⋆-algebras.
   - `p * q = p`
   - `q - p` is a star projection
   - `q - p` is an idempotent element
-
 -/
 
 public section

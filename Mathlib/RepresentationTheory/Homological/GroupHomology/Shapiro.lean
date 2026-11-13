@@ -33,7 +33,6 @@ group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)
 
 * `groupHomology.indIso A n`: Shapiro's lemma for group homology: an isomorphism
   `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)`, given a subgroup `S ≤ G` and an `S`-representation `A`.
-
 -/
 
 @[expose] public section

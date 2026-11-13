@@ -39,7 +39,6 @@ namespace NNReal
 /-!
 ### Topology on `ℝ≥0`
 All the instances are inherited from the corresponding structures on the reals.
-
 -/
 
 instance : TopologicalSpace ℝ≥0 := inferInstance

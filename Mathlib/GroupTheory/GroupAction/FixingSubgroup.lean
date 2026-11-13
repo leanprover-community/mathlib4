@@ -34,7 +34,6 @@ TODO :
 * Maybe other lemmas are useful
 
 * Treat semigroups ?
-
 -/
 
 @[expose] public section

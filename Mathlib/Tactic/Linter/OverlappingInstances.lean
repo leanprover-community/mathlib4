@@ -35,7 +35,6 @@ declarations with duplicate type class assumptions, but it is still not desirabl
 ## TODO
 
 Support declarations without bodies (`structure`s/`class`es/`inductive`s etc.)
-
 -/
 
 open Lean Meta Elab Command

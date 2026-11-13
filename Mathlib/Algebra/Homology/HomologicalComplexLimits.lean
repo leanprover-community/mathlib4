@@ -17,7 +17,6 @@ In this file, it is shown that if a category `C` has (co)limits of shape `J`,
 then it is also the case of the categories `HomologicalComplex C c`,
 and the evaluation functors `eval C c i : HomologicalComplex C c ⥤ C`
 commute to these.
-
 -/
 
 @[expose] public section

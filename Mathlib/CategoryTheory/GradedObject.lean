@@ -27,7 +27,6 @@ show that it is faithful, and deduce that when `C` is concrete so is `GradedObje
 A covariant functoriality of `GradedObject β C` with respect to the index set `β` is also
 introduced: if `p : I → J` is a map such that `C` has coproducts indexed by `p ⁻¹' {j}`, we
 have a functor `map : GradedObject I C ⥤ GradedObject J C`.
-
 -/
 
 @[expose] public section

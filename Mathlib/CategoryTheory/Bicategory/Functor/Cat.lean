@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 In this file, we state naturality properties of `mapId'` and `mapComp'`
 for pseudofunctors to `Cat`.
-
 -/
 
 public section

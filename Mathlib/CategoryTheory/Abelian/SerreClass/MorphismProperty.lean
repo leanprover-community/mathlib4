@@ -27,7 +27,6 @@ of three property and is stable under retracts. (Similarly, we define
 ## TODO
 
 * show that a localized category with respect to `P.isoModSerre` is abelian.
-
 -/
 
 @[expose] public section

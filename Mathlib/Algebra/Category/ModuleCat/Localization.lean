@@ -16,7 +16,6 @@ import Mathlib.Algebra.Module.LocalizedModule.Exact
 For a ring `R` satisfying `[Small.{v} R]` and a submonoid `S` of `R`,
 this file defines an exact functor `ModuleCat.{v} R ⥤ ModuleCat.{v} (Localization S)`,
 see `ModuleCat.localizedModuleFunctor`.
-
 -/
 
 @[expose] public section

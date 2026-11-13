@@ -46,7 +46,6 @@ is just used to show existence. However for (potential) convenience the actual d
 
 * Prove the pullout property
 * Prove a dominated convergence theorem.
-
 -/
 
 public section

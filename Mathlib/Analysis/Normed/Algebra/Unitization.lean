@@ -56,7 +56,6 @@ We ensure that the uniform structure, and hence also the topological structure, 
 equal to the pullback of `instUniformSpaceProd` along `Unitization.addEquiv` (this is essentially
 viewing `Unitization 𝕜 A` as `𝕜 × A`) by means of forgetful inheritance. The same is true of the
 bornology.
-
 -/
 
 @[expose] public section
