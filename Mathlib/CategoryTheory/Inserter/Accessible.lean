@@ -1219,11 +1219,6 @@ lemma final (E : Inserter F G) : (U κ E).Final := by
   have : Nonempty (StructuredArrow p (U κ E)) := final.nonempty_structured_arrow κ Λ hΛ E p
   apply CategoryTheory.zigzag_isConnected
   intro r' r''
-  -- It’s useful to have this in context to help simp_all
-  have r'w := r''.hom.w
-  have r''w := r'.hom.w
-  dsimp at r'w r''w
-  simp only [U_obj_hom] at r'w r''w
   -- Reformulate the goal in a more unbundled way:
   suffices H :
       ∃ (u : Δ κ E) (f1 : r'.right ⟶ u) (f2 : r''.right ⟶ u),
@@ -1232,7 +1227,10 @@ lemma final (E : Inserter F G) : (U κ E).Final := by
        r'.hom.left.hom ≫ f1.left.hom.hom = r''.hom.left.hom ≫ f2.left.hom.hom by
     obtain ⟨u, f1, f2, h1, h2, h3⟩ := H
     let u' : StructuredArrow p (U κ E) := StructuredArrow.mk (T := U κ E)
-      (CostructuredArrow.homMk ⟨r'.hom.left.hom ≫ f1.left.hom.hom⟩ (by simp_all))
+      (CostructuredArrow.homMk ⟨r'.hom.left.hom ≫ f1.left.hom.hom⟩ (by
+        have r'w := r''.hom.w
+        have r''w := r'.hom.w
+        simp_all))
     calc
       Zigzag r' u' := .of_zag <| .of_hom <| StructuredArrow.homMk f1
       Zigzag u' r'' := .of_zag <| .of_inv <| StructuredArrow.homMk f2
