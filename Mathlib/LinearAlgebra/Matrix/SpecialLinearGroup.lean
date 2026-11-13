@@ -150,7 +150,7 @@ protected def mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup n R := 
 
 @[simp]
 theorem coe_mk {A : Matrix n n R} (h : det A = 1) : SpecialLinearGroup.mk A h = A :=
-    rfl
+  rfl
 
 @[simp]
 theorem mk_inj {A B : Matrix n n R} (hA : det A = 1) (hB : det B = 1) :
