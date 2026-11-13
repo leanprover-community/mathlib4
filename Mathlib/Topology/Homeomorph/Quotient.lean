@@ -62,7 +62,9 @@ def quotientTrivial (s : Setoid X) (h : ∀ ⦃x y⦄, s x y → x = y) : Quotie
   continuous_invFun := continuous_quot_mk
 
 /-- The quotient by the trivial relation is homeomorphic to the original space. -/
-@[simps! apply symm_apply toEquiv]
+@[simps! apply symm_apply]
 def quotientBot : Quotient (⊥ : Setoid X) ≃ₜ X := quotientTrivial _ (by simp)
+
+@[simp] lemma toEquiv_quotientBot : quotientBot.toEquiv = Setoid.quotientBotEquiv (α := X) := rfl
 
 end Homeomorph
