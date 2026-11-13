@@ -136,7 +136,7 @@ theorem updateSubmatrix_equiv_equiv (e : n ≃ o) (f : m ≃ p) :
 
 @[simp]
 theorem updateSubmatrix_refl_refl (C : Matrix n m α) :
-    updateSubmatrix (Embedding.refl n) (Embedding.refl m) A C = A := by
+    updateSubmatrix (.refl n) (.refl m) A C = A := by
   ext
   exact updateSubmatrix_apply_embedding ..
 
@@ -193,7 +193,7 @@ theorem updateSubmatrix_map {β : Type*} (f : α → β) :
   (eq_updateSubmatrix_iff eₙ eₘ (A.map f) (B.map f)).mpr
     ⟨by ext; simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
 
-theorem updateSubmatrix_reindex_reindex (σ : n ≃ k) (τ : m ≃ l) (eₖ : k ↪ o) (eₗ : l ↪ p) :
+theorem updateSubmatrix_reindex (σ : n ≃ k) (τ : m ≃ l) (eₖ : k ↪ o) (eₗ : l ↪ p) :
     updateSubmatrix eₖ eₗ (reindex σ τ A) B =
       updateSubmatrix (σ.toEmbedding.trans eₖ) (τ.toEmbedding.trans eₗ) A B := by
   refine (eq_updateSubmatrix_iff (σ.toEmbedding.trans eₖ)
@@ -202,7 +202,7 @@ theorem updateSubmatrix_reindex_reindex (σ : n ≃ k) (τ : m ≃ l) (eₖ : k 
   · exact updateSubmatrix_apply_of_notMem_left _ _ _ _ (by simpa using h)
   · exact updateSubmatrix_apply_of_notMem_right _ _ _ _ (by simpa using h)
 
-theorem reindex_reindex_updateSubmatrix (ρ : o ≃ q) (π : p ≃ r) :
+theorem reindex_updateSubmatrix (ρ : o ≃ q) (π : p ≃ r) :
     reindex ρ π (updateSubmatrix eₙ eₘ A B) =
       updateSubmatrix (eₙ.trans ρ.toEmbedding) (eₘ.trans π.toEmbedding) A (reindex ρ π B) := by
   refine (eq_updateSubmatrix_iff (eₙ.trans ρ.toEmbedding) (eₘ.trans π.toEmbedding) A
@@ -213,7 +213,7 @@ theorem reindex_reindex_updateSubmatrix (ρ : o ≃ q) (π : p ≃ r) :
   · exact updateSubmatrix_apply_of_notMem_right _ _ _ _ fun ⟨a, ha⟩ ↦ h ⟨a, by simp [ha]⟩
 
 theorem updateSubmatrix_inl_inl (B : Matrix (n ⊕ o) (m ⊕ p) α) :
-    updateSubmatrix Embedding.inl Embedding.inl A B =
+    updateSubmatrix .inl .inl A B =
       fromBlocks A B.toBlocks₁₂ B.toBlocks₂₁ B.toBlocks₂₂ := by
   ext (i | i) (j | j) <;>
   first
@@ -221,12 +221,28 @@ theorem updateSubmatrix_inl_inl (B : Matrix (n ⊕ o) (m ⊕ p) α) :
   | simp [toBlocks₁₂, toBlocks₂₁, toBlocks₂₂]
 
 theorem updateSubmatrix_inr_inr (B : Matrix (o ⊕ n) (p ⊕ m) α) :
-    updateSubmatrix Embedding.inr Embedding.inr A B =
+    updateSubmatrix .inr .inr A B =
       fromBlocks B.toBlocks₁₁ B.toBlocks₁₂ B.toBlocks₂₁ A := by
   ext (i | i) (j | j) <;>
   first
   | exact updateSubmatrix_apply_embedding ..
   | simp [toBlocks₁₁, toBlocks₁₂, toBlocks₂₁]
+
+theorem updateSubmatrix_inl_inr (B : Matrix (n ⊕ o) (p ⊕ m) α) :
+    updateSubmatrix .inl .inr A B =
+      fromBlocks B.toBlocks₁₁ A B.toBlocks₂₁ B.toBlocks₂₂ := by
+  ext (i | i) (j | j) <;>
+  first
+  | exact updateSubmatrix_apply_embedding ..
+  | simp [toBlocks₁₁, toBlocks₂₁, toBlocks₂₂]
+
+theorem updateSubmatrix_inr_inl (B : Matrix (o ⊕ n) (m ⊕ p) α) :
+    updateSubmatrix .inr .inl A B =
+      fromBlocks B.toBlocks₁₁ B.toBlocks₁₂ A B.toBlocks₂₂ := by
+  ext (i | i) (j | j) <;>
+  first
+  | exact updateSubmatrix_apply_embedding ..
+  | simp [toBlocks₁₁, toBlocks₁₂, toBlocks₂₂]
 
 theorem submatrix_toSquareBlockProp_updateSubmatrix (M : Matrix n n α) (N : Matrix o o α) :
     ((updateSubmatrix eₙ eₙ M N).toSquareBlockProp (· ∈ Set.range eₙ)).submatrix
@@ -241,8 +257,8 @@ theorem toSquareBlockProp_updateSubmatrix_compl (M : Matrix n n α) (N : Matrix 
   simp [toSquareBlockProp_def, hi]
 
 theorem updateRow_eq_updateSubmatrix [DecidableEq o] (i : o) (b : p → α) :
-    B.updateRow i b = updateSubmatrix (Embedding.punit i) (Embedding.refl p) (of fun _ ↦ b) B := by
-  refine (eq_updateSubmatrix_iff (Embedding.punit i) (Embedding.refl p)
+    B.updateRow i b = updateSubmatrix (.punit i) (.refl p) (of fun _ ↦ b) B := by
+  refine (eq_updateSubmatrix_iff (.punit i) (.refl p)
     (of fun _ ↦ b) B).mpr ⟨by ext; simp [Embedding.punit], fun _ _ h ↦ ?_⟩
   rcases h with h | h
   · simp_all [updateRow_apply, Embedding.punit]
@@ -250,8 +266,8 @@ theorem updateRow_eq_updateSubmatrix [DecidableEq o] (i : o) (b : p → α) :
 
 theorem updateCol_eq_updateSubmatrix [DecidableEq p] (j : p) (b : o → α) :
     B.updateCol j b =
-      updateSubmatrix (Embedding.refl o) (Embedding.punit j) (of fun i _ ↦ b i) B := by
-  refine (eq_updateSubmatrix_iff (Embedding.refl o) (Embedding.punit j)
+      updateSubmatrix (.refl o) (.punit j) (of fun i _ ↦ b i) B := by
+  refine (eq_updateSubmatrix_iff (.refl o) (.punit j)
     (of fun i _ ↦ b i) B).mpr ⟨by ext; simp [Embedding.punit], fun _ _ h ↦ ?_⟩
   rcases h with h | h
   · exact (h ⟨_, rfl⟩).elim
@@ -359,13 +375,13 @@ theorem extendedByOne_equiv (σ : n ≃ m) (A : Matrix n n R) :
     A.extendedByOne σ.toEmbedding = reindex σ σ A :=
   updateSubmatrix_equiv_equiv ..
 
-theorem extendedByOne_reindex_reindex (σ : n ≃ n') (f : n' ↪ m) (A : Matrix n n R) :
+theorem extendedByOne_reindex (σ : n ≃ n') (f : n' ↪ m) (A : Matrix n n R) :
     (reindex σ σ A).extendedByOne f = A.extendedByOne (σ.toEmbedding.trans f) :=
-  updateSubmatrix_reindex_reindex ..
+  updateSubmatrix_reindex ..
 
-theorem reindex_reindex_extendedByOne [DecidableEq m'] (ρ : m ≃ m') (A : Matrix n n R) :
+theorem reindex_extendedByOne [DecidableEq m'] (ρ : m ≃ m') (A : Matrix n n R) :
     reindex ρ ρ (A.extendedByOne e) = A.extendedByOne (e.trans ρ.toEmbedding) := by
-  rw [extendedByOne, reindex_reindex_updateSubmatrix, reindex_apply, submatrix_one_equiv]
+  rw [extendedByOne, reindex_updateSubmatrix, reindex_apply, submatrix_one_equiv]
 
 theorem transpose_extendedByOne (A : Matrix n n R) :
     (A.extendedByOne e)ᵀ = Aᵀ.extendedByOne e := by
@@ -427,7 +443,7 @@ theorem extendedByOneMonoidHom_comp_map (f : R →+* S) :
   MonoidHom.ext fun _ ↦ (extendedByOne_map ..).symm
 
 theorem extendedByOneMonoidHom_refl :
-    extendedByOneMonoidHom (Embedding.refl n) = MonoidHom.id (Matrix n n R) := by
+    extendedByOneMonoidHom (.refl n) = MonoidHom.id (Matrix n n R) := by
   ext
   simp
 
@@ -443,24 +459,24 @@ theorem extendedByOneMonoidHom_equiv (σ : n ≃ m) :
 theorem extendedByOneMonoidHom_reindex [DecidableEq n'] [Fintype n']
     (σ : n ≃ n') (f : n' ↪ m) (A : Matrix n n R) :
     extendedByOneMonoidHom f (reindex σ σ A) = extendedByOneMonoidHom (σ.toEmbedding.trans f) A :=
-  extendedByOne_reindex_reindex ..
+  extendedByOne_reindex ..
 
 theorem reindex_extendedByOneMonoidHom [DecidableEq m'] [Fintype m']
     (ρ : m ≃ m') (A : Matrix n n R) :
     reindex ρ ρ (extendedByOneMonoidHom e A) = extendedByOneMonoidHom (e.trans ρ.toEmbedding) A :=
-  reindex_reindex_extendedByOne ..
+  reindex_extendedByOne ..
 
 theorem extendedByOneMonoidHom_comp_reindexRingEquiv [DecidableEq n'] [Fintype n']
     (σ : n ≃ n') (f : n' ↪ m) :
     (extendedByOneMonoidHom f).comp (reindexRingEquiv R σ).toRingHom.toMonoidHom =
       extendedByOneMonoidHom (σ.toEmbedding.trans f) :=
-  MonoidHom.ext fun _ ↦ extendedByOne_reindex_reindex ..
+  MonoidHom.ext fun _ ↦ extendedByOne_reindex ..
 
 theorem reindexRingEquiv_comp_extendedByOneMonoidHom [DecidableEq m'] [Fintype m']
     (ρ : m ≃ m') :
     (reindexRingEquiv R ρ).toRingHom.toMonoidHom.comp (extendedByOneMonoidHom e) =
       extendedByOneMonoidHom (e.trans ρ.toEmbedding) :=
-  MonoidHom.ext fun _ ↦ reindex_reindex_extendedByOne ..
+  MonoidHom.ext fun _ ↦ reindex_extendedByOne ..
 
 theorem extendedByOneMonoidHom_submatrix (A : Matrix n n R) :
     (extendedByOneMonoidHom e A).submatrix e e = A := by
