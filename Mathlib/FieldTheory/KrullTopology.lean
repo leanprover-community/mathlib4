@@ -91,12 +91,7 @@ theorem AlgEquiv.isOpen_mulActionStabilizer (x : L) :
 open SetRel in
 theorem AlgEquiv.mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
     s ∈ 𝓤 Gal(L/K) ↔ ∃ u : Finset L, ∀ σ τ : Gal(L/K), Set.EqOn σ τ u → σ ~[s] τ := by
-  rw [AlgEquiv.uniformity_def, Filter.mem_iInf_finite]
-  refine exists_congr fun u => ?_
-  rw [Filter.iInf_principal_finset, Filter.mem_principal, Set.subset_def, Prod.forall]
-  refine forall₂_congr fun σ τ => imp_congr_left ?_
-  rw [Set.mem_iInter₂]
-  rfl
+  simp [AlgEquiv.uniformity_def, Filter.mem_iInf_finite, Set.EqOn, Set.subset_def]
 
 open SetRel IntermediateField in
 theorem AlgEquiv.mem_uniformity_iff_fg {s : SetRel Gal(L/K) Gal(L/K)} :
