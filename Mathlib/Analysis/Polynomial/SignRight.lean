@@ -49,6 +49,8 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R] [LinearOrder R]
 
+/-- The sign of `p` immediately to the right of `x`: the sign of the trailing coefficient of
+the Taylor polynomial of `p` centered at `x`. -/
 def signRight (x : R) (p : R[X]) : SignType :=
   SignType.sign (taylor x p).trailingCoeff
 
