@@ -500,12 +500,8 @@ lemma mk_of_exists_posDef (diag : ∀ i, M i i = 2) (offDiag_nonpos : ∀ i j, i
     obtain ⟨_, _, h⟩ := exists_posDef
     grind [h.isHermitian.apply i j, diagonal_mul, star_trivial, mul_eq_zero]
   exists_posDef' := by
-    obtain ⟨d, hd, -, h⟩ := exists_posDef
-    refine ⟨d, hd, fun x hx ↦ ?_⟩
-    have hcoe : Finsupp.equivFunOnFinite.symm x ≠ 0 := fun h ↦ hx <| funext fun i ↦ by
-      simpa using congrArg (fun f : ι →₀ ℤ ↦ f i) h
-    simpa [Finsupp.sum_fintype, dotProduct, Matrix.mulVec, mul_assoc, mul_comm, mul_left_comm,
-      Finset.sum_congr, Finset.mul_sum] using h hcoe
+    obtain ⟨d, hd, hd'⟩ := exists_posDef
+    exact ⟨d, hd, fun x hx ↦ by simpa using hd'.dotProduct_mulVec_pos hx⟩
 
 variable (hM : M.IsFiniteCartan)
 include hM

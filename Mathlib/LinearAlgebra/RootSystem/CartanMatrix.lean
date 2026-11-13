@@ -411,16 +411,14 @@ lemma cartanMatrix_isIndecomposable [P.IsReduced] [P.IsIrreducible] :
   · aesop
   · simp [he, hv, ← ha] at huv
 
-lemma cartanMatrix_isFiniteGeneralizedCartan [DecidableEq ι] [P.IsRootSystem] :
-    b.cartanMatrix.IsFiniteGeneralizedCartan where
+lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
+    b.cartanMatrix.IsFiniteCartan where
   diag := b.cartanMatrix_apply_same
   offDiag_nonpos := b.cartanMatrix_le_zero_of_ne
   zero_comm _ _ := b.cartanMatrix_apply_eq_zero_iff_symm
-
-lemma cartanMatrix_isFiniteCartan [DecidableEq ι] [P.IsRootSystem] :
-    b.cartanMatrix.IsFiniteCartan :=
-  IsFiniteCartan.mk_of_exists_posDef b.cartanMatrix_apply_same b.cartanMatrix_le_zero_of_ne
-    b.exists_cartanMatrix_diagonal_mul_posDef
+  exists_posDef' := by
+    obtain ⟨d, hd, hd'⟩ := b.exists_cartanMatrix_diagonal_mul_posDef
+    exact ⟨d, hd, fun x hx ↦ by simpa using hd'.dotProduct_mulVec_pos hx⟩
 
 end IsCrystallographic
 
