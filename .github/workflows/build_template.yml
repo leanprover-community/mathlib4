@@ -1083,6 +1083,11 @@ jobs:
           ## for non-PR builds (push to master / bors); the consumer then falls
           ## back to the commit's associated PRs.
           printf '%s' "${{ github.event.pull_request.number }}" > "$RUNNER_TEMP/import-graph/pr_number.txt"
+          ## Executing this runs the export and writes a (gitignored) `crossrefs.json`,
+          ## which doubles as a smoke test of the `export_crossrefs.yml` workflow. The
+          ## output is uploaded below for the post-build `crossref-diff` workflow,
+          ## which diffs it against the build at the PR's merge base.
+          lake env lean scripts/export_crossrefs.lean
 
       - name: get cache for Archive and Counterexamples
         run: |
@@ -1189,6 +1194,12 @@ jobs:
 
       - name: ensure dump outputs are regular files
         run: |
+<<<<<<< HEAD
+          for f in decls.txt imports.json import_graph.dot pr_number.txt crossrefs.json; do
+            if [ -L "$f" ] || [ ! -f "$f" ]; then
+              echo "Refusing to upload: $f is not a regular file." >&2
+              ls -la -- "$f" >&2 || true
+=======
           DIR="$RUNNER_TEMP/import-graph"
           if [ -L "$DIR" ] || [ ! -d "$DIR" ]; then
             echo "Refusing to upload: $DIR is not a directory." >&2
@@ -1205,6 +1216,7 @@ jobs:
           for f in api.jsonl imports.json import_graph.dot pr_number.txt; do
             if [ ! -f "$DIR/$f" ]; then
               echo "Refusing to upload: $f is missing." >&2
+>>>>>>> master
               exit 1
             fi
           done
@@ -1214,22 +1226,33 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: import-graph
+<<<<<<< HEAD
+          path: |
+            import_graph.dot
+            decls.txt
+            imports.json
+            pr_number.txt
+            crossrefs.json
+=======
           ## The directory's contents, at the artifact's top level as before.
           path: ${{ runner.temp }}/import-graph/
+>>>>>>> master
           ## Master pushes: 90 days, so later PRs forked from these commits
           ## can consume the dumps from the artifact. Other branches: 7 days.
           retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
+<<<<<<< HEAD
+      - name: clean up the import graph file
+        run: rm -f import_graph.dot decls.txt imports.json pr_number.txt crossrefs.json
+=======
       - name: clean up the import graph files
         run: rm -rf "$RUNNER_TEMP/import-graph"
+>>>>>>> master
 
       - name: check all scripts build successfully
         run: |
           lake env lean scripts/create_deprecated_modules.lean
           lake env lean scripts/autolabel.lean
-          # Executing this also runs the export and writes a (gitignored) `crossrefs.json`,
-          # which doubles as a smoke test of the `export_crossrefs.yml` workflow.
-          lake env lean scripts/export_crossrefs.lean
           lake exe check-title-labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
