@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.GaussSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gauss sums for Dirichlet characters
 -/

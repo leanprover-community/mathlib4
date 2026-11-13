@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite colimits.
 
 And hence `FGModuleCat K` has all finite colimits.
-
 -/
 
 @[expose] public section

@@ -31,7 +31,6 @@ an `Sq`-module.
 * `ramificationIdx'_eq_ramificationIdx`: The ramification index agrees with the usual definition in
   the case of Dedekind domains.
 * `ramificationIdx_tower`: Ramification index is multiplicative in towers.
-
 -/
 
 @[expose] public section
@@ -94,8 +93,10 @@ theorem ramificationIdx_bot_eq_one [IsDomain S] : (⊥ : Ideal S).ramificationId
     ← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_bot]
 
 variable {q R} in
-theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
-    [Algebra.HasSeparableResidueFieldsAt R S (q.under R)] :
+theorem ramificationIdx_eq_one_iff_of_isSeparable [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
+    [IsScalarTower R (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
+    [Algebra.IsSeparable (q.under R).ResidueField q.ResidueField] :
     q.ramificationIdx R = 1 ↔ Algebra.IsUnramifiedAt R q := by
   refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx_eq_one q R⟩
   rw [ramificationIdx_def, ENat.toNat_eq_iff_eq_natCast, Nat.cast_one, Module.length_eq_one_iff,
@@ -103,12 +104,18 @@ theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
   let p := q.under R
   let Rp := Localization.AtPrime p
   let Sq := Localization.AtPrime q
-  let := Localization.AtPrime.algebraOfLiesOver p q
   have := Algebra.EssFiniteType.of_comp R Rp Sq
   suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
   rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
     ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
-  exact ⟨Algebra.HasSeparableResidueFieldsAt.isSeparable q, h⟩
+  exact ⟨‹_›, h⟩
+
+variable {q R} in
+theorem ramificationIdx_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra.HasSeparableResidueFieldsAt R S (q.under R)] :
+    q.ramificationIdx R = 1 ↔ Algebra.IsUnramifiedAt R q := by
+  let := Localization.AtPrime.algebraOfLiesOver (q.under R) q
+  exact ramificationIdx_eq_one_iff_of_isSeparable
 
 @[deprecated (since := "2026-07-01")] alias ramificationIdx'_eq_one_iff :=
   ramificationIdx_eq_one_iff

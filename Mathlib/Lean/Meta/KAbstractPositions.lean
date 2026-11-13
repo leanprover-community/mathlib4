@@ -12,7 +12,6 @@ public import Lean.Meta.ExprLens
 import Mathlib.Init
 
 /-!
-
 # Find the positions of a pattern in an expression
 
 This file defines some tools for dealing with subexpressions and occurrence numbers.
@@ -24,7 +23,6 @@ the subexpression using `kabstract` (which is what `rw` uses to find the positio
 
 `rw` can fail if the motive is not type correct. `kabstractIsTypeCorrect` checks
 whether this is the case.
-
 -/
 
 public section

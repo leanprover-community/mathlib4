@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 public import Mathlib.MeasureTheory.Measure.Trim
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Almost everywhere measurable functions
 
@@ -379,8 +382,8 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
   choose! U hUf hUm hUeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_superset_ae_eq
   set v := ⋃ s ∈ S, U s \ T s
   have hvm : MeasurableSet v := .biUnion hSc fun s hs ↦ (hUm s hs).diff (hTm s hs)
-  have hvμ : μ v = 0 := (measure_biUnion_null_iff hSc).2 fun s hs ↦ ae_le_set.1
-    ((hUeq s hs).trans (hTeq s hs).symm).le
+  have hvμ : μ v = 0 := (measure_biUnion_null_iff hSc).2 fun s hs ↦ ae_subset.1
+    ((hUeq s hs).trans (hTeq s hs).symm).subset
   refine ⟨v.piecewise (fun _ ↦ default) f, ?_, measure_mono_null (fun x ↦
     not_imp_comm.2 fun hxv ↦ (piecewise_eq_of_notMem _ _ _ hxv).symm) hvμ⟩
   refine measurable_of_restrict_of_restrict_compl hvm ?_ ?_

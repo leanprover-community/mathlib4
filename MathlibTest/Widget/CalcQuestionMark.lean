@@ -43,7 +43,7 @@ warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example (a : Nat) : a ≤ a := by
-  all_goals
+  focus
     calc?
 
 -- a deliberately long line

@@ -74,12 +74,23 @@ instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
 instance Option.instCountable [Countable α] : Countable (Option α) :=
   Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{0, _} α).symm
 
+/-- `Option α` is countable if and only if the underlying type `α` is countable. -/
+@[simp]
+lemma Option.countable_iff : Countable (Option α) ↔ Countable α where
+  mp _ := (Option.some_injective α).countable
+  mpr _ := inferInstance
+
 instance WithTop.instCountable [Countable α] : Countable (WithTop α) := Option.instCountable
 instance WithBot.instCountable [Countable α] : Countable (WithBot α) := Option.instCountable
 instance ENat.instCountable : Countable ℕ∞ := Option.instCountable
 
 instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
   Injective.uncountable fun _ _ ↦ Option.some_inj.1
+
+/-- `Option α` is uncountable if and only if the underlying type `α` is uncountable. -/
+@[simp]
+lemma Option.uncountable_iff : Uncountable (Option α) ↔ Uncountable α := by
+  simp [← not_countable_iff]
 
 instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) := Option.instUncountable
 instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) := Option.instUncountable

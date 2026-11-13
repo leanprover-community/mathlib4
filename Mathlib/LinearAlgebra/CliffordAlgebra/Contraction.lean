@@ -37,7 +37,6 @@ refer to the latter.
 Within this file, we use the local notation
 * `x ⌊ d` for `contractRight x d`
 * `d ⌋ x` for `contractLeft d x`
-
 -/
 
 @[expose] public section

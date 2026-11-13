@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Group.Cone
 public import Mathlib.Algebra.Ring.Subsemiring.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Construct ordered rings from rings with a specified positive cone.
 

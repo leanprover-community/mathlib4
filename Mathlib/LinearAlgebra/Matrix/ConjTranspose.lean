@@ -18,7 +18,6 @@ public import Mathlib.Data.Matrix.Basis
 The scope `Matrix` gives the following notation:
 
 * `ᴴ` for `Matrix.conjTranspose`
-
 -/
 
 @[expose] public section
@@ -438,8 +437,6 @@ instance [Star α] [Star β] [SMul α β] [StarModule α β] : StarModule α (Ma
 instance [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] : StarRing (Matrix n n α) where
   star_add := conjTranspose_add
   star_mul := conjTranspose_mul
-
-@[deprecated (since := "2026-04-20")] protected alias star_mul := StarMul.star_mul
 
 end Star
 
