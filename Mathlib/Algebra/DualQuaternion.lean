@@ -45,7 +45,7 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
     refine .trans ?_ (DualNumber.snd_mul _ _).symm
     dsimp [-TrivSqZeroExt.snd_mul]; ext <;> ring
   map_add' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 /-! Lemmas characterizing `Quaternion.dualNumberEquiv`. -/
 
