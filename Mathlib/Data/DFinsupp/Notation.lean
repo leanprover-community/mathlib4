@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Data.Finsupp.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation for `DFinsupp`
 

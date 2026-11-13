@@ -166,7 +166,7 @@ theorem laverage_add_measure :
   · rw [not_isFiniteMeasure_iff] at hν
     simp [laverage_eq, hν]
   simp only [← ENNReal.mul_div_right_comm, measure_mul_laverage, ← ENNReal.add_div,
-    ← lintegral_add_measure, ← Measure.add_apply, ← laverage_eq]
+    ← lintegral_add_measure, ← add_apply, ← laverage_eq]
 
 theorem measure_mul_setLAverage (f : α → ℝ≥0∞) (h : μ s ≠ ∞) :
     μ s * ⨍⁻ x in s, f x ∂μ = ∫⁻ x in s, f x ∂μ := by
@@ -192,7 +192,7 @@ theorem laverage_union_mem_segment (hd : AEDisjoint μ s t) (ht : NullMeasurable
     ⨍⁻ x in s ∪ t, f x ∂μ ∈ [⨍⁻ x in s, f x ∂μ -[ℝ≥0∞] ⨍⁻ x in t, f x ∂μ] := by
   by_cases hs₀ : μ s = 0
   · rw [← ae_eq_empty] at hs₀
-    rw [restrict_congr_set (hs₀.union EventuallyEq.rfl), empty_union]
+    rw [restrict_congr_set (hs₀.union .rfl), empty_union]
     exact right_mem_segment _ _ _
   · refine
       ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), zero_le, zero_le, ?_, (laverage_union hd ht).symm⟩
@@ -458,7 +458,7 @@ theorem average_union_mem_segment {f : α → E} {s t : Set α} (hd : AEDisjoint
     ⨍ x in s ∪ t, f x ∂μ ∈ [⨍ x in s, f x ∂μ -[ℝ] ⨍ x in t, f x ∂μ] := by
   by_cases hse : μ s = 0
   · rw [← ae_eq_empty] at hse
-    rw [restrict_congr_set (hse.union EventuallyEq.rfl), empty_union]
+    rw [restrict_congr_set (hse.union .rfl), empty_union]
     exact right_mem_segment _ _ _
   · refine
       mem_segment_iff_div.mpr

@@ -296,20 +296,26 @@ theorem hasDerivAt_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r 
     (by rwa [ne_eq, sub_eq_neg_self])
   simpa [sub_add_cancel, mul_div_cancel₀ _ hr] using this
 
+variable (c) in
 /-- A version of `DifferentiableAt.cpow_const` for a real function. -/
 theorem DifferentiableAt.ofReal_cpow_const {f : ℝ → ℝ} {x : ℝ} (hf : DifferentiableAt ℝ f x)
-    (h0 : f x ≠ 0) (h1 : c ≠ 0) :
-    DifferentiableAt ℝ (fun (y : ℝ) => (f y : ℂ) ^ c) x :=
-  (hasDerivAt_ofReal_cpow_const h0 h1).differentiableAt.comp x hf
+    (h0 : f x ≠ 0) :
+    DifferentiableAt ℝ (fun (y : ℝ) => (f y : ℂ) ^ c) x := by
+  rcases eq_or_ne c 0 with rfl | h1
+  · simp
+  exact (hasDerivAt_ofReal_cpow_const h0 h1).differentiableAt.comp x hf
 
 theorem Complex.deriv_cpow_const (hx : x ∈ Complex.slitPlane) :
     deriv (fun (x : ℂ) ↦ x ^ c) x = c * x ^ (c - 1) :=
   (hasStrictDerivAt_cpow_const hx).hasDerivAt.deriv
 
+variable (c) in
 /-- A version of `Complex.deriv_cpow_const` for a real variable. -/
-theorem Complex.deriv_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) (hc : c ≠ 0) :
-    deriv (fun x : ℝ ↦ (x : ℂ) ^ c) x = c * x ^ (c - 1) :=
-  (hasDerivAt_ofReal_cpow_const hx hc).deriv
+theorem Complex.deriv_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) :
+    deriv (fun x : ℝ ↦ (x : ℂ) ^ c) x = c * x ^ (c - 1) := by
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  exact (hasDerivAt_ofReal_cpow_const hx hc).deriv
 
 theorem deriv_cpow_const (hf : DifferentiableAt ℂ f x) (hx : f x ∈ Complex.slitPlane) :
     deriv (fun (x : ℂ) ↦ f x ^ c) x = c * f x ^ (c - 1) * deriv f x :=
@@ -319,7 +325,7 @@ theorem isTheta_deriv_ofReal_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
     deriv (fun (x : ℝ) => (x : ℂ) ^ c) =Θ[atTop] fun x => x ^ (c.re - 1) := by
   calc
     _ =ᶠ[atTop] fun x : ℝ ↦ c * x ^ (c - 1) := by
-      filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_ofReal_cpow_const hx hc]
+      filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_ofReal_cpow_const c hx]
     _ =Θ[atTop] fun x : ℝ ↦ ‖(x : ℂ) ^ (c - 1)‖ :=
       (Asymptotics.IsTheta.of_norm_eventuallyEq EventuallyEq.rfl).const_mul_left hc
     _ =ᶠ[atTop] fun x ↦ x ^ (c.re - 1) := by
@@ -512,7 +518,7 @@ theorem iter_deriv_rpow_const (r x : ℝ) (k : ℕ) :
 
 theorem hasStrictDerivAt_rpow_const {x p : ℝ} (hx : x ≠ 0 ∨ 1 ≤ p) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x :=
-  ContDiffAt.hasStrictDerivAt' (contDiffAt_rpow_const (by rwa [← Nat.cast_one] at hx))
+  ContDiffAt.hasStrictDerivAt (contDiffAt_rpow_const (by rwa [← Nat.cast_one] at hx))
     (hasDerivAt_rpow_const hx) one_ne_zero
 
 end Real

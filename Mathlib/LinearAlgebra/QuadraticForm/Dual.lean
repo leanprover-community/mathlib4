@@ -19,7 +19,6 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Prod
   `f x`.
 * `QuadraticForm.toDualProd : (Q.prod <| -Q) →qᵢ QuadraticForm.dualProd R M` a form-preserving map
   from `(Q.prod <| -Q)` to `QuadraticForm.dualProd R M`.
-
 -/
 
 @[expose] public section

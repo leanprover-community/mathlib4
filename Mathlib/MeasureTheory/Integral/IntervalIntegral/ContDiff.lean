@@ -82,7 +82,7 @@ end intervalIntegral
 
 open intervalIntegral
 
-theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
+theorem eNorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
     (hab : a ≤ b) :
     ‖f b - f a‖ₑ ≤ ∫⁻ x in Icc a b, ‖deriv f x‖ₑ := by
   /- We want to write `f b - f a = ∫ x in Icc a b, deriv f x` and use the inequality between
@@ -90,10 +90,10 @@ theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (
   true when `E` is not complete, so we need to go first to the completion, and argue there. -/
   let g := UniformSpace.Completion.toComplₗᵢ (𝕜 := ℝ) (E := E)
   have : ‖(g ∘ f) b - (g ∘ f) a‖ₑ = ‖f b - f a‖ₑ := by
-    rw [← edist_eq_enorm_sub, Function.comp_def, g.isometry.edist_eq, edist_eq_enorm_sub]
+    rw [← eDist_eq_eNorm_sub, Function.comp_def, g.isometry.edist_eq, eDist_eq_eNorm_sub]
   rw [← this, ← integral_deriv_of_contDiffOn_Icc (g.contDiff.comp_contDiffOn h) hab,
     integral_of_le hab, restrict_Ioc_eq_restrict_Icc]
-  apply (enorm_integral_le_lintegral_enorm _).trans
+  apply (eNorm_integral_le_lintegral_eNorm _).trans
   apply lintegral_mono_ae
   rw [← restrict_Ioo_eq_restrict_Icc]
   filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
@@ -104,11 +104,19 @@ theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (
   have : fderiv ℝ g (f x) = g.toContinuousLinearMap := g.toContinuousLinearMap.fderiv
   simp [this]
 
-theorem enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
+@[deprecated (since := "2026-11-06")]
+alias enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc :=
+  eNorm_sub_le_lintegral_deriv_of_contDiffOn_Icc
+
+theorem eNorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
     (hab : a ≤ b) :
     ‖f b - f a‖ₑ ≤ ∫⁻ x in Icc a b, ‖derivWithin f (Icc a b) x‖ₑ := by
-  apply (enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc h hab).trans_eq
+  apply (eNorm_sub_le_lintegral_deriv_of_contDiffOn_Icc h hab).trans_eq
   apply lintegral_congr_ae
   rw [← restrict_Ioo_eq_restrict_Icc]
   filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
   rw [derivWithin_of_mem_nhds (Icc_mem_nhds hx.1 hx.2)]
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc :=
+  eNorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc

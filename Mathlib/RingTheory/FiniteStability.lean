@@ -11,12 +11,10 @@ public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
-
 # Stability of finiteness conditions in commutative algebra
 
 In this file we show that `Algebra.FiniteType` and `Algebra.FinitePresentation` are
 stable under base change.
-
 -/
 
 public section

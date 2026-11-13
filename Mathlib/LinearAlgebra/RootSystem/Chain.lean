@@ -24,7 +24,6 @@ length, `p + q` is at most 3.
   `β - q • α, ..., β - α, β, β + α, ..., β + p • α`
 * `RootPairing.root_add_zsmul_mem_range_iff`: every chain is an interval (aka unbroken).
 * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
-
 -/
 
 @[expose] public section

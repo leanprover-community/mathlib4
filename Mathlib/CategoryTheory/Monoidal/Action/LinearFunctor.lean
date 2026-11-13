@@ -26,7 +26,6 @@ express compatibility of `F` with the action of `C`:
 * `F.RightLinear C` expresses that `F` has both a `LaxRightLinear C` and
   an `F.OplaxRightLinear C` structure, and that they are compatible, i.e.
   `δᵣ F` is a left and right inverse to `μᵣ`.
-
 -/
 
 public section

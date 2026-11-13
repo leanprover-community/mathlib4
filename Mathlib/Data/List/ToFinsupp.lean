@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Data.List.GetD
 
 /-!
-
 # Lists as finsupp
 
 ## Main definitions

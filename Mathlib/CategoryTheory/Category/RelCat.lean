@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Rel
 public import Mathlib.CategoryTheory.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basics on the category of relations
 

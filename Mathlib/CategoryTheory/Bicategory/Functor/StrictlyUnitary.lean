@@ -33,7 +33,6 @@ unitary).
   bicategories, strictly unitary pseudofunctors and icons.
 * Construct the Duskin nerve of a bicategory using lax-composable arrows
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
-
 -/
 
 @[expose] public section
@@ -303,7 +302,6 @@ def mk' (S : StrictlyUnitaryPseudofunctorCore B C) :
   map₂_whisker_right η f := by
     simpa using S.map₂_whisker_right η f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- By forgetting the inverse to `mapComp`, a `StrictlyUnitaryPseudofunctor`
 is a `StrictlyUnitaryLaxFunctor`. -/
 def toStrictlyUnitaryLaxFunctor (F : StrictlyUnitaryPseudofunctor B C) :
