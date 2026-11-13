@@ -84,7 +84,7 @@ lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
 
 theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsMaximalCohenMacaulay] : Module.Free R M := by
-  rcases FiniteRingKrullDim.ringKrullDim_eq_nat (R := R) with ⟨n, hn⟩
+  obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat R
   induction n generalizing R M with
   | zero =>
     let : Field R := (isField_of_isRegularLocalRing_of_dimension_zero hn).toField
