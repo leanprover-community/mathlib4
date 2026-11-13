@@ -21,8 +21,8 @@ public section
 variable {A V : Type*} (k : Type*) [Field k] [Ring A] [Algebra k A] [AddCommGroup V] [Module k V]
   [Module A V] [IsScalarTower k A V] [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k]
 
-/-- Schur's Lemma: If `V` is a simple module of a `k`-algebra `A` where `k` is an algebraically
-closed field, then any endomorphism of `V` is a scalar. -/
+/-- Schur's Lemma: If `V` is a finite dimensional simple module of a `k`-algebra `A` where `k` is an
+algebraically closed field, then any `A`-endomorphism of `V` is a scalar. -/
 theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     Function.Bijective (algebraMap k (Module.End A V)) := by
   have : Module.Finite k (Module.End A V) := .of_injective (LinearMap.restrictScalarsₗ k A V V k) <|
