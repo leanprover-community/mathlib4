@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 /-!
-
 # Lexicographical order on Hahn series
 
 In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this is a `LinearOrder` when
@@ -24,7 +23,6 @@ In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this i
 
 * `HahnSeries.finiteArchimedeanClassOrderIsoLex`: `FiniteArchimedeanClass` of `Lex R⟦Γ⟧`
   can be decomposed by `Γ`.
-
 -/
 
 @[expose] public section

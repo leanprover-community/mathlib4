@@ -24,7 +24,6 @@ This file defines totally unimodular matrices and provides basic API for them.
 - `Matrix.isTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
   (possibly with repeated rows and/or repeated columns) has determinant `0` or `1` or `-1`.
 - `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
-
 -/
 
 @[expose] public section
@@ -167,7 +166,7 @@ lemma fromRows_isTotallyUnimodular_iff_rows [DecidableEq n] {A : Matrix m n R} {
 lemma fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows A (1 : Matrix n n R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
   fromRows_isTotallyUnimodular_iff_rows <| fun h i ↦
-    ⟨i, 1, funext fun j ↦ by simp [one_apply, Pi.single_apply, eq_comm]⟩
+    ⟨i, 1, funext fun j ↦ by simp [Matrix.one_apply, Pi.single_apply, eq_comm]⟩
 
 lemma one_fromRows_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows (1 : Matrix n n R) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by

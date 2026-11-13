@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!
-
 # Extension of continuous linear maps on Banach spaces
 
 In this file we provide several different ways to extend a continuous linear map defined on a dense
@@ -348,7 +347,7 @@ namespace LinearIsometry
 open UniformSpace
 
 variable {R R₂ : Type*} [Semiring R] [Semiring R₂] [SeminormedAddCommGroup E] [Module R E]
-  [IsUniformAddGroup E] [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
+  [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
   {σ₁₂ : R →+* R₂} (f : E →ₛₗᵢ[σ₁₂] F)
 
 section fromCompletion

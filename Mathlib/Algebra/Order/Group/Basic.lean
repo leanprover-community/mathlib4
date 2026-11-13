@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the interaction of power operations with order
 -/

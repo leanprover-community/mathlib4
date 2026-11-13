@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Data.List.SignVariations
 
 /-!
-
 # Descartes' Rule of Signs
 
 We define the "sign changes" in the coefficients of a polynomial, and prove Descartes'
@@ -37,6 +36,8 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 -/
 
 @[expose] public section
+
+open AddMonoidAlgebra
 
 namespace Polynomial
 

@@ -21,7 +21,6 @@ In this file we provide some API for handling exact sequences.
 Write a simproc to generate unrolled, universe-polymorphic versions of
 `Module.sum_neg_one_pow_finrank_eq_zero_of_exact` on the fly and so obviate the need for
 `Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six`.
-
 -/
 
 universe u₀ u₁ u₂ u₃ u₄ u₅
@@ -55,7 +54,7 @@ public lemma sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} (V : Fin (n + 2)
         finrank k ↥(LinearMap.range (f i.castSucc)) :=
       congrArg (fun S : Submodule k (V i.succ.castSucc) => finrank k ↥S)
         (h_exact i).linearMap_ker_eq
-    omega
+    lia
   · #adaptation_note /-- Prior to v4.31.0-rc1, this proof was
       ```
       grind [finrank_top]

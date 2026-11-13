@@ -9,6 +9,9 @@ public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Category.BoolAlg
 public import Mathlib.Order.Category.FinBddDistLat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite Boolean algebras
 

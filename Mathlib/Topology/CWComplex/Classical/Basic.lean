@@ -446,7 +446,7 @@ lemma RelCWComplex.cellFrontier_one_eq [RelCWComplex C D] (e : cell C 1) :
   congr 1
   ext f
   simp only [mem_sphere_iff_norm, sub_zero, Pi.norm_def, Finset.univ_unique, Fin.default_eq_zero,
-    Fin.isValue, Finset.sup_singleton, coe_nnnorm, Real.norm_eq_abs, abs_eq (zero_le_one' ℝ),
+    Fin.isValue, Finset.sup_singleton, coe_nnNorm, Real.norm_eq_abs, abs_eq (zero_le_one' ℝ),
     mem_insert_iff, mem_singleton_iff]
   rw [eq_const_of_unique (f := f), ← funext_iff_of_subsingleton (x := 0) (y := 0)]
   simp [const_apply, or_comm]
@@ -495,8 +495,8 @@ private lemma RelCWComplex.iUnion_openCell_eq_iUnion_closedCell [RelCWComplex C 
     rw [← cellFrontier_union_openCell_eq_closedCell]
     apply union_subset
     · induction m using Nat.case_strong_induction_on with
-      | hz => simp [cellFrontier_zero_eq_empty]
-      | hi m hm' =>
+      | zero => simp [cellFrontier_zero_eq_empty]
+      | succ m hm' =>
         obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (m + 1) j
         apply hI.trans
         apply union_subset subset_union_left
@@ -570,10 +570,10 @@ lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedC
   refine ⟨?_, hDA⟩
   intro n j
   induction n using Nat.case_strong_induction_on with
-  | hz =>
+  | zero =>
     rw [closedCell_zero_eq_singleton]
     exact isClosed_inter_singleton
-  | hi n hn =>
+  | succ n hn =>
     specialize h n.succ n.zero_lt_succ j
     rcases h with h1 | h2
     · rw [← cellFrontier_union_openCell_eq_closedCell, inter_union_distrib_left]
@@ -614,8 +614,8 @@ lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : �
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ D ∪ (⋃ (m < n) (j ∈ I m), openCell m j) := by
   induction n using Nat.case_strong_induction_on with
-  | hz => simp [cellFrontier_zero_eq_empty]
-  | hi n hn =>
+  | zero => simp [cellFrontier_zero_eq_empty]
+  | succ n hn =>
     -- We apply `cellFrontier_subset_base_union_finite_closedCell` once and then apply
     -- the induction hypothesis to the finitely many cells that
     -- `cellFrontier_subset_base_union_finite_closedCell` gives us.
@@ -770,7 +770,7 @@ def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComple
       exact closedCell_subset n ⟨j, h⟩
     · left
       simp_rw [← union, disjoint_union_left, disjoint_iUnion_left]
-      exact ⟨disjointBase n j |>.symm, fun _ _ ↦ disjoint_openCell_of_ne (by aesop)⟩
+      exact ⟨disjointBase n j |>.symm, fun _ _ ↦ disjoint_openCell_of_ne (by grind)⟩
   union' := union
 
 /-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
@@ -1015,9 +1015,6 @@ lemma RelCWComplex.mem_skeleton_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
 lemma CWComplex.mem_skeleton_iff [CWComplex C] {n : ℕ∞} {x : X} :
     x ∈ skeleton C n ↔ ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
   rw [RelCWComplex.mem_skeleton_iff, mem_empty_iff_false, false_or]
-
-@[deprecated (since := "2026-04-30")] alias CWComplex.exists_mem_openCell_of_mem_skeleton :=
-  CWComplex.mem_skeleton_iff
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 @[alias_in CWComplex]

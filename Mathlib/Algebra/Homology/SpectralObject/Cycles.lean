@@ -303,7 +303,6 @@ lemma toCycles_i (n : ℤ) :
     X.toCycles f g fg h n ≫ X.iCycles f g n = (X.H n).map (twoδ₁Toδ₀ f g fg h) :=
   kernel.lift_ι ..
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma toCycles_cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk₁ fg') (n : ℤ)
     (hβ₀ : β.app 0 = α.app 0 := by cat_disch) (hβ₁ : β.app 1 = α.app 2 := by cat_disch) :
@@ -334,7 +333,6 @@ lemma p_fromOpcycles (n : ℤ) :
       (X.H n).map (twoδ₂Toδ₁ f g fg h) :=
   cokernel.π_desc ..
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma opcyclesMap_fromOpcycles (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk₁ fg') (n : ℤ)
     (hβ₀ : β.app 0 = α.app 0 := by cat_disch) (hβ₁ : β.app 1 = α.app 2 := by cat_disch) :

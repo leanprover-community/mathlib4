@@ -34,7 +34,7 @@ We also provide `positivity` extensions to handle floor and ceil.
 * `⌈a⌉` is `Int.ceil a`.
 
 The index `₊` in the notations for `Nat.floor` and `Nat.ceil` is used in analogy to the notation
-for `nnnorm`.
+for `nnNorm`.
 
 ## TODO
 
@@ -245,7 +245,7 @@ noncomputable def FloorRing.ofBounded
   have above (x : α) : ∃ n : ℤ, x ≤ n := by
     obtain ⟨n, hn⟩ := bounded x
     use n
-    exact_mod_cast hn
+    exact mod_cast hn
   .ofFloor _ _ fun n x ↦ (Classical.choose_spec (exists_floor' x (below x) (above x)) n).symm
 
 namespace Int

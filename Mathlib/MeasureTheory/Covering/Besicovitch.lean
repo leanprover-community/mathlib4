@@ -603,7 +603,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     ∃ w : Finset (u i), μ s / (N + 1) <
       ∑ x ∈ w, μ (o ∩ closedBall (x : α) (r (x : α))) := by
     have C : HasSum (fun x : u i => μ (o ∩ closedBall x (r x))) (μ (o ∩ v i)) := by
-      rw [B]; exact ENNReal.summable.hasSum
+      rw [B]; exact CompleteLattice.summable.hasSum
     have : μ s / (N + 1) < μ (o ∩ v i) := hi.trans_le (measure_mono (inter_subset_inter_left _ so))
     exact ((tendsto_order.1 C).1 _ this).exists
   -- Bring back the finset `w i` of `↑(u i)` to a finset of `α`, and check that it works by design.
@@ -893,9 +893,8 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
     intro x hx
     rcases Metric.mem_nhds_iff.1 (v_open.mem_nhds (s'v hx)) with ⟨r, rpos, hr⟩
     rcases hf x (s's hx) (min r 1) (lt_min rpos zero_lt_one) with ⟨R', hR'⟩
-    exact
-      ⟨R', ⟨hR'.1, hR'.2.1, hR'.2.2.trans_le (min_le_right _ _)⟩,
-        Subset.trans (closedBall_subset_ball (hR'.2.2.trans_le (min_le_left _ _))) hr⟩
+    use R', ⟨hR'.1, hR'.2.1, hR'.2.2.trans_le (min_le_right _ _)⟩
+    grw [hR'.2.2, min_le_left, hr]
   choose! r1 hr1 using this
   let q : BallPackage s' α :=
     { c := fun x => x
@@ -972,7 +971,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
           apply measure_mono
           simp only [SetCoe.forall, iUnion_subset_iff]
           intro x hx
-          apply Subset.trans (closedBall_subset_ball (hr0 x hx).2.2) (hR x (t0s hx)).2
+          grw [(hr0 x hx).2.2, (hR x (t0s hx)).2]
         _ ≤ μ s + ε / 2 := μu
     -- each subfamily in the second step has measure at most `ε / (2 N)`.
     have B : ∀ i : Fin N, (∑' x : ((↑) : s' → α) '' S i, μ (closedBall x (r x))) ≤ ε / 2 / N :=
@@ -1001,11 +1000,11 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
       (∑' x : ↥(t0 ∪ ⋃ i : Fin N, ((↑) : s' → α) '' S i), μ (closedBall x (r x))) ≤
           (∑' x : t0, μ (closedBall x (r x))) +
             ∑' x : ⋃ i : Fin N, ((↑) : s' → α) '' S i, μ (closedBall x (r x)) :=
-        ENNReal.tsum_union_le (fun x => μ (closedBall x (r x))) _ _
+        tsum_union_le (fun x => μ (closedBall x (r x))) _ _
       _ ≤
           (∑' x : t0, μ (closedBall x (r x))) +
             ∑ i : Fin N, ∑' x : ((↑) : s' → α) '' S i, μ (closedBall x (r x)) :=
-        (add_le_add le_rfl (ENNReal.tsum_iUnion_le (fun x => μ (closedBall x (r x))) _))
+        (add_le_add le_rfl (tsum_iUnion_le (fun x => μ (closedBall x (r x))) _))
       _ ≤ μ s + ε / 2 + ∑ i : Fin N, ε / 2 / N := by
         gcongr
         apply B

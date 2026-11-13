@@ -25,7 +25,6 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
   in another word taking character module as a functor sends monos to epis.
 - `CharacterModule.homEquiv` : there is a bijection between linear map `Hom(N, M⋆)` and
   `(N ⊗ M)⋆` given by `curry` and `uncurry`.
-
 -/
 
 @[expose] public section

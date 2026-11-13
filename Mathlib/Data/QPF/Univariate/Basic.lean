@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
-
 # Quotients of Polynomial Functors
 
 We assume the following:
@@ -36,7 +35,6 @@ The present theory focuses on the univariate case for qpfs
 
 * [Jeremy Avigad, Mario M. Carneiro and Simon Hudon, *Data Types as Quotients of Polynomial
   Functors*][avigad-carneiro-hudon2019]
-
 -/
 
 @[expose] public section

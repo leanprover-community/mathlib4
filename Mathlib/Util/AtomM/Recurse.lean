@@ -28,7 +28,6 @@ recursive ring-normalization in which `sin (x + y) + sin (y + x)` is normalized 
 
 * `Mathlib.Tactic.AtomM.recurse`: run a normalization operation (in `AtomM`) recursively on an
   expression.
-
 -/
 
 public meta section

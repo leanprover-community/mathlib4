@@ -23,7 +23,6 @@ of equivalent conditions.
 
 We provide the instance `CategoryTheory.Category (TopCat.Sheaf C X)` as the full subcategory of
 presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
-
 -/
 
 @[expose] public section
@@ -81,7 +80,7 @@ preserve limits. This applies to most "algebraic" categories, e.g. groups, abeli
   See `TopCat.Presheaf.isSheaf_iff_isSheaf_comp` and
   `CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget`.
 -/
-nonrec def IsSheaf (F : Presheaf.{w, v, u} C X) : Prop :=
+nonrec abbrev IsSheaf (F : Presheaf.{w, v, u} C X) : Prop :=
   Presheaf.IsSheaf (Opens.grothendieckTopology X) F
 
 /-- The presheaf valued in `Unit` over any topological space is a sheaf.
@@ -104,9 +103,8 @@ variable (C X)
 /-- A `TopCat.Sheaf C X` is a presheaf of objects from `C` over a (bundled) topological space `X`,
 satisfying the sheaf condition.
 -/
-nonrec def Sheaf : Type max u v w :=
+nonrec abbrev Sheaf : Type max u v w :=
   Sheaf (Opens.grothendieckTopology X) C
-deriving Category
 
 variable {C X}
 

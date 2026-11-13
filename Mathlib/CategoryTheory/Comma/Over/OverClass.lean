@@ -23,7 +23,6 @@ For other applications use unbundled arrows or `CategoryTheory.Over`.
   `X ↘ S : X ⟶ S` is the structure morphism.
 - `CategoryTheory.HomIsOver`:
   `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
-
 -/
 
 @[expose] public section

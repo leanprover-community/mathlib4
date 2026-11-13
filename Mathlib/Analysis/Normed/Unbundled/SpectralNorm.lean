@@ -841,7 +841,7 @@ instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :
     @CompleteSpace L (uniformSpace K L) := by
   let := (normedAddCommGroup K L)
   let := (normedSpace K L)
-  exact FiniteDimensional.complete K L
+  exact FiniteDimensional.completeSpace K L
 
 omit [Algebra.IsAlgebraic K L] in
 lemma spectralMulAlgNorm_eq_of_mem_roots (x : L) {E : Type*} [Field E] [Algebra K E] [Algebra L E]
@@ -905,7 +905,7 @@ theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     hspl.coeff_zero_eq_prod_roots_of_monic _, map_mul, map_pow,
     map_neg_eq_map, map_one, one_pow, one_mul, spectralNorm_pow_natDegree_eq_prod_roots _ _ x]
   · simp [monic_mapAlg_iff, minpoly.monic (Algebra.IsAlgebraic.isAlgebraic x).isIntegral]
-  · exact_mod_cast (minpoly.natDegree_pos (Algebra.IsIntegral.isIntegral x)).ne'
+  · exact mod_cast (minpoly.natDegree_pos (Algebra.IsIntegral.isIntegral x)).ne'
 
 end spectralNorm
 

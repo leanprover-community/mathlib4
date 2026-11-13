@@ -476,7 +476,6 @@ instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful wher
   map_injective {_X} {_Y} f g h :=
     ConeMorphism.ext f g <| G.map_injective congr(ConeMorphism.hom $h)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
 -/

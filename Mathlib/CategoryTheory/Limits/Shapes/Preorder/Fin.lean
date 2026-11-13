@@ -16,7 +16,6 @@ and `Fin.last n` is a terminal object. This allows to compute
 limits and colimits indexed by `Fin (n + 1)`, see
 `limitOfDiagramInitial` and `colimitOfDiagramTerminal`
 in the file `Limits.Shapes.IsTerminal`.
-
 -/
 
 @[expose] public section
