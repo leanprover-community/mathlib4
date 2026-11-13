@@ -2033,6 +2033,7 @@ public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.Convex.FunctionTopology
 public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.Convex.GaugeRescale
+public import Mathlib.Analysis.Convex.HomeomorphClosedBall
 public import Mathlib.Analysis.Convex.Hull
 public import Mathlib.Analysis.Convex.Independent
 public import Mathlib.Analysis.Convex.Integral
