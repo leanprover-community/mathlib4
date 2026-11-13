@@ -5,8 +5,8 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Inserter.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Inserter.Basic
 
 /-! # Inserter categories are locally small when the source category is locally small
 
