@@ -487,14 +487,14 @@ theorem SL2_inv_expl (A : SL(2, R)) :
   ext
   simp [adjugate_fin_two]
 
-theorem eta_fin_two (g : SL(2, R)) :
+protected theorem eta_fin_two (g : SL(2, R)) :
     g = .mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← Matrix.eta_fin_two]) :=
   Subtype.ext (Matrix.eta_fin_two g.1)
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1),
     P (.mk !![a, b; c, d] (by rwa [det_fin_two_of]))) (g : SL(2, R)) : P g := by
-  rw [eta_fin_two g]
+  rw [SpecialLinearGroup.eta_fin_two g]
   exact h _ _ _ _ ((det_fin_two _).symm.trans g.2)
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
