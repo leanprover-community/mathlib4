@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Polynomial.CoeffList
 import Mathlib.Algebra.Polynomial.Sturm.Sequence
 import Mathlib.Basic.Real.Basic
 import Mathlib.Data.List.GetD
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.RealRootCount.SturmCertificate
 
 /-!
@@ -17,6 +19,11 @@ import Mathlib.Tactic.RealRootCount.SturmCertificate
 
 This file proves that the entries of a `SturmCertificate` that passes `checkSturm` are the Sturm
 sequence of its polynomial and its derivative, up to positive constant factors.
+
+## Main results
+
+- `isScaledSturmSeq_of_checkSturm`: If `checkSturm d = true` then the entries of `d` are the Sturm
+  sequence of `d.s` and its derivative, up to positive constant factors.
 -/
 
 open Polynomial SignType
@@ -148,5 +155,60 @@ theorem checkSteps_cons :
     checkSteps p q (st :: steps) = true ↔
       st.check p q = true ∧ checkSteps q st.r steps = true := by
   rw [checkSteps, Bool.and_eq_true]
+
+theorem exists_pos_eq_C_mul_neg_mod {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+    {a c x y : K} {b u v r : K[X]} (ha : 0 < a) (hc : 0 < c) (hx : 0 < x) (hy : 0 < y)
+    (h : C a * (C x * u) + b * (C y * v) + C c * r = 0) (hdeg : r.degree < (C y * v).degree) :
+    ∃ z > 0, r = C z * (-u % v) := by
+  rw [degree_C_mul hy.ne', ← degree_C_mul hc.ne'] at hdeg
+  have key : C c * r = C (a * x) * (-u % v) :=
+    calc C c * r
+      _ = (b * C y * v + C c * r) % v := (mul_add_mod_of_degree_lt hdeg).symm
+      _ = (C (a * x) * -u) % v := by
+        congrm ?_ % v
+        rw [C_mul]
+        linear_combination h
+      _ = C (a * x) * (-u % v) := C_mul_mod ..
+  refine ⟨c⁻¹ * (a * x), by positivity, mul_left_cancel₀ (C_ne_zero.mpr hc.ne') ?_⟩
+  rw [key, ← mul_assoc, ← C_mul, mul_inv_cancel_left₀ hc.ne']
+
+/-- `L` is the Sturm sequence of `u` and `v` up to positive constant factors. -/
+def IsScaledSturmSeq (u v : ℝ[X]) (L : List ℝ[X]) : Prop :=
+  List.Forall₂ (fun s t => ∃ c > 0, t = C c * s) (sturmSeq u v) L
+
+theorem isScaledSturmSeq_of_checkSteps {u v : ℝ[X]} {x y : ℝ}
+    (hx : 0 < x) (hy : 0 < y) (hp : toReal p = C x * u) (hq : toReal q = C y * v) (hu : u ≠ 0)
+    (h : checkSteps p q steps = true) :
+    IsScaledSturmSeq u v ((chain p q steps).map toReal) := by
+  unfold IsScaledSturmSeq
+  induction steps generalizing p q u v x y with
+  | nil =>
+    obtain rfl := checkSteps_nil.mp h
+    obtain rfl : v = 0 := by simpa [toReal, hy.ne'] using hq.symm
+    rw [sturmSeq_cons hu, sturmSeq_zero_left]
+    exact .cons ⟨x, hx, hp⟩ .nil
+  | cons st steps ih =>
+    obtain ⟨hstep, hsteps⟩ := checkSteps_cons.mp h
+    obtain ⟨ha, hc, hlead, hlen, _⟩ := SturmStep.check_iff.mp hstep
+    obtain ⟨z, hz, hr⟩ : ∃ z > 0, toReal st.r = C z * (-u % v) := by
+      apply exists_pos_eq_C_mul_neg_mod (Int.cast_pos.mpr ha) (Int.cast_pos.mpr hc) hx hy
+      · simpa only [hp, hq] using SturmStep.eq_zero_of_check hstep
+      · simpa only [hq] using degree_toReal_lt_degree hlen hlead
+    rw [chain, List.map_cons, sturmSeq_cons hu]
+    have hv := toReal_ne_zero hlead
+    rw [hq] at hv
+    exact .cons ⟨x, hx, hp⟩ (ih hy hz hq hr (right_ne_zero_of_mul hv) hsteps)
+
+theorem checkSturm_iff {d : SturmCertificate} :
+    checkSturm d = true ↔ 0 < d.k ∧ coeffLead d.s ≠ 0 ∧
+      checkSteps d.s (coeffDerivative d.s) d.steps = true := by
+  simp [checkSturm, and_assoc]
+
+theorem isScaledSturmSeq_of_checkSturm {d : SturmCertificate} (h : checkSturm d = true) :
+    IsScaledSturmSeq (toReal d.s) (derivative (toReal d.s)) (d.entries.map toReal) := by
+  obtain ⟨_, hlead, hsteps⟩ := checkSturm_iff.mp h
+  refine isScaledSturmSeq_of_checkSteps one_pos one_pos ?_ ?_ (toReal_ne_zero hlead) hsteps
+  · simp
+  · simp [toReal_coeffDerivative]
 
 end Mathlib.Tactic.RealRootCount

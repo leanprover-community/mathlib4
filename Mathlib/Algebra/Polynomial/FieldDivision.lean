@@ -338,6 +338,9 @@ theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 
 theorem neg_mod : (-p) % q = -(p % q) := by rw [mod_def, mod_def, neg_modByMonic]
 
+theorem C_mul_mod (a : R) (p q : R[X]) : (C a * p) % q = C a * (p % q) := by
+  simp only [mod_def, ← smul_eq_C_mul, smul_modByMonic]
+
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
     simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
