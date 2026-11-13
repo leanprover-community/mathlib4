@@ -463,6 +463,12 @@ theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
     (StarRingEquiv.ofBijective f hf) a = f a :=
   rfl
 
+lemma ofBijective_coe (e : A ≃⋆+* B) : StarRingEquiv.ofBijective e e.bijective = e := by ext; rfl
+
+@[simp]
+lemma ofBijective_toEquiv {f : F} (hf : Function.Bijective f) :
+    (StarRingEquiv.ofBijective f hf).toEquiv = .ofBijective f hf := rfl
+
 end Bijective
 
 end StarRingEquiv

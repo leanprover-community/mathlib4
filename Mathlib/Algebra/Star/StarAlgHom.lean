@@ -1086,6 +1086,12 @@ theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
     (StarAlgEquiv.ofBijective f hf) a = f a :=
   rfl
 
+lemma ofBijective_coe (e : A ≃⋆ₐ[R] B) : .ofBijective e e.bijective = e := by ext; rfl
+
+@[simp]
+lemma ofBijective_toEquiv {f : F} (hf : Function.Bijective f) :
+    (StarAlgEquiv.ofBijective f hf).toEquiv = .ofBijective f hf := rfl
+
 end Bijective
 
 section Group

@@ -798,9 +798,14 @@ theorem ext {f g : α ≃o β} (h : (f : α → β) = g) : f = g :=
 
 /-- Build an order isomorphism from a bijective map that preserves and reflects `≤`. -/
 noncomputable def ofBijective (f : α → β) (hf : f.Bijective) (hf' : ∀ a b, f a ≤ f b ↔ a ≤ b) :
-    α ≃o β where
-  toEquiv := .ofBijective f hf
-  map_rel_iff' := hf' ..
+    α ≃o β :=
+  RelIso.ofBijective f hf hf'
+
+lemma ofBijective_orderIso (f : α → β) (hf hf') :
+    ofBijective f hf hf' = RelIso.ofBijective (r := (· ≤ ·)) (s := (· ≤ ·)) f hf hf' := rfl
+
+@[simp] lemma toEquiv_ofBijective (f : α → β) (hf hf') :
+    (ofBijective f hf hf').toEquiv = .ofBijective f hf := rfl
 
 @[simp, grind =] lemma coe_ofBijective (f : α → β) (hf hf') : ⇑(ofBijective f hf hf') = f := rfl
 
