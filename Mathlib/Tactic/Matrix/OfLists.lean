@@ -5,6 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
+public import Mathlib.LinearAlgebra.Matrix.Array
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Tactic.Matrix.ListMatrix
 
@@ -18,6 +19,7 @@ operations to the matrix ones.
 
 * `ofLists_transpose`
 * `ofLists_mul`
+* `toArray_ofLists`
 
 ## Implementation notes
 
@@ -81,12 +83,34 @@ theorem ofLists_transpose [Zero α] (m n : ℕ) (rows : List (List α)) :
   ext j i
   simpa using ListMatrix.getD_transpose rows i j.isLt
 
-theorem ofLists_mul [Mul α] [AddCommMonoid α] {l m n : ℕ} {A B C : List (List α)}
-    (h : ListMatrix.mul l m n A B = C) : ofLists l m A * ofLists m n B = ofLists l n C := by
-  subst h
+theorem ofLists_mul [Mul α] [AddCommMonoid α] (l m n : ℕ) (A B : List (List α)) :
+    ofLists l m A * ofLists m n B = ofLists l n (ListMatrix.mul l m n A B) := by
   ext i j
   rw [mul_apply', ← col_apply' (ofLists m n B) j]
   simp only [← row_transpose, ← ofLists_transpose, row_apply', ofLists_apply, ofList_apply,
     ← ListMatrix.dotProduct_eq, ListMatrix.getD_mul A B i.isLt j.isLt]
+
+private theorem getD_flatten_of_forall_length_eq {n i j : ℕ} {rows : List (List α)}
+    (hrows : ∀ row ∈ rows, row.length = n) (hj : j < n) (d : α) :
+    rows.flatten.getD (n * i + j) d = (rows.getD i []).getD j d := by
+  induction rows generalizing i with
+  | nil => simp
+  | cons row rows ih =>
+    obtain ⟨hrow, hrows⟩ := List.forall_mem_cons.mp hrows
+    cases i with
+    | zero => grind
+    | succ i => grind [ih (i := i) hrows]
+
+/-- The row-major array of the entries of the matrix of `m` rows of `n` entries is the array of
+their concatenation. -/
+theorem toArray_ofLists [Zero α] {m n : ℕ} {rows : List (List α)}
+    (hrows : ∀ row ∈ rows, row.length = n) (hl : rows.flatten.toArray.size = m * n) :
+    (ofLists m n rows).toArray = rows.flatten.toArray := by
+  rw [← Matrix.toArray_ofArray _ hl]
+  congrm Matrix.toArray ?_
+  ext i j
+  rw [Matrix.ofArray_eq_of_getD, ofLists_apply, ofList_apply,
+    ← getD_flatten_of_forall_length_eq hrows j.isLt]
+  simp
 
 end Mathlib.Tactic.Matrix

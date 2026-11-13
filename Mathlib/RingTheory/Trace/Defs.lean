@@ -39,7 +39,6 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 ## References
 
 * https://en.wikipedia.org/wiki/Field_trace
-
 -/
 
 @[expose] public section

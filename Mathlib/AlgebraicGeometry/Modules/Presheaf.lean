@@ -15,7 +15,6 @@ of modules over `X`. As categories of presheaves of modules are
 defined for presheaves of rings (and not presheaves of commutative rings),
 we also introduce a definition `X.ringCatSheaf` for the underlying sheaf
 of rings of `X`.
-
 -/
 
 @[expose] public section

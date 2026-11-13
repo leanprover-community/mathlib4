@@ -16,7 +16,6 @@ We provide constructors for combining (co)fans and show their (co)limit properti
 ## TODO
 
 * Combine (co)fans on sigma types
-
 -/
 
 @[expose] public section

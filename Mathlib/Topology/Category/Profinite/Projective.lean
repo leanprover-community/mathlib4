@@ -21,7 +21,6 @@ Let `X` be a profinite set.
 * `Profinite.projective_ultrafilter`: the space `Ultrafilter X` is a projective object
 * `Profinite.projectivePresentation`: the natural map `Ultrafilter X → X`
   is a projective presentation
-
 -/
 
 @[expose] public section

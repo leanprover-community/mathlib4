@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
 import Mathlib.Data.Set.Function
+import Mathlib.Order.MinMax
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -560,7 +561,7 @@ lemma strictMonoOn_mul_self [PosMulStrictMono M₀] [MulPosMono M₀] :
     StrictMonoOn (fun x ↦ x * x) {x : M₀ | 0 ≤ x} := fun _ hx _ _ hxy ↦ mul_self_lt_mul_self hx hxy
 
 -- See Note [decidable namespace]
-protected lemma Decidable.mul_lt_mul'' [PosMulMono M₀] [PosMulStrictMono M₀] [MulPosStrictMono M₀]
+protected lemma Decidable.mul_lt_mul'' [PosMulStrictMono M₀] [MulPosStrictMono M₀]
     [DecidableLE M₀] (h1 : a < c) (h2 : b < d) (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
   h4.lt_or_eq_dec.elim (fun b0 ↦ mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 ↦ by
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
@@ -676,6 +677,19 @@ lemma StrictMono.mul [PosMulStrictMono M₀] [MulPosStrictMono M₀] (hf : Stric
     StrictMono (f * g) := fun _ _ h ↦ mul_lt_mul'' (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 end PartialOrder
+
+section LinearOrder
+variable [LinearOrder M₀] [PosMulMono M₀] [MulPosMono M₀] {a b : M₀}
+
+lemma max_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
+    max a b ^ n = max (a ^ n) (b ^ n) :=
+  pow_left_monotoneOn.map_max ha hb
+
+lemma min_pow_of_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) (n : ℕ) :
+    min a b ^ n = min (a ^ n) (b ^ n) :=
+  pow_left_monotoneOn.map_min ha hb
+
+end LinearOrder
 
 section LinearOrder
 variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}

@@ -41,7 +41,6 @@ by using the first bijection applied to `l₁ ⊣ r₁`.
 
 To be precise, the definitions in `Mathlib/CategoryTheory/Adjunction/Mates.lean` are universe
 polymorphic, so they are not simple specializations of the definitions in this file.
-
 -/
 
 @[expose] public section
