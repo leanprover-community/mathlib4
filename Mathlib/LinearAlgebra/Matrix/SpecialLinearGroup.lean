@@ -484,8 +484,8 @@ section SpecialCases
 open scoped MatrixGroups
 
 theorem SL2_inv_expl_det (A : SL(2, R)) :
-    det !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] = 1 :=
-  (det_fin_two _).trans (by simpa [-det_coe, det_fin_two, mul_comm] using A.2)
+    det !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] = 1 := by
+  simpa [-det_coe, det_fin_two, mul_comm] using A.2
 
 theorem SL2_inv_expl (A : SL(2, R)) :
     A⁻¹ = .mk !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] (SL2_inv_expl_det A) := by
