@@ -43,7 +43,7 @@ abbrev Units.ModPow (α : Type*) [CommMonoid α] (n : ℕ) :=
 
 namespace Units.ModPow
 
-variable {α β : Type*} [CommMonoid α] [CommMonoid β] {a b c : α} {n : ℕ}
+variable {α β : Type*} [CommMonoid α] [CommMonoid β] {n : ℕ}
 
 open QuotientGroup
 
@@ -62,14 +62,15 @@ lemma mk_eq_one_iff_exists_val_eq_pow {u : αˣ} : (u : ModPow α n) = 1 ↔ ∃
   mk_eq_one_iff.trans exists_unit_eq_pow_iff
 
 @[to_additive]
-lemma mk_eq_mk_iff {u v : αˣ} : (u : ModPow α n) = v ↔ ∃ w : αˣ, v = u * w ^ n := by
-  simp [eq_comm, QuotientGroup.eq, _root_.eq_inv_mul_iff_mul_eq]
+lemma mk_eq_mk_iff {u v : αˣ} : (u : ModPow α n) = v ↔ ∃ w : αˣ, u = v * w ^ n := by
+  simp [eq_comm (a := (u : ModPow α n)), QuotientGroup.eq, _root_.eq_inv_mul_iff_mul_eq,
+    eq_comm (a := u)]
 
 @[to_additive]
 lemma mk_eq_mk_iff_exists_eq_mul_pow {u v : αˣ} :
-    (u : ModPow α n) = v ↔ ∃ w : α, v = u * w ^ n := by
-  rw [← _root_.inv_mul_eq_one, ← mk_inv, ← mk_mul, mk_eq_one_iff_exists_val_eq_pow]
-  simp [u.inv_mul_eq_iff_eq_mul]
+    (u : ModPow α n) = v ↔ ∃ w : α, u = v * w ^ n := by
+  rw [eq_comm, ← _root_.inv_mul_eq_one, ← mk_inv, ← mk_mul, mk_eq_one_iff_exists_val_eq_pow]
+  simp [v.inv_mul_eq_iff_eq_mul]
 
 /-- The class of a unit `u` is trivial in `Units.ModPow α 2` exactly when `u` is a square
 in `α`. -/
@@ -119,13 +120,13 @@ lemma map_map {γ : Type*} [CommMonoid γ] (ψ : β →* γ) (φ : α →* β) {
   simp [map_comp]
 
 @[to_additive]
-lemma map_unit (φ : α →* β) (n : ℕ) (ha : IsUnit a) :
+lemma map_unit (φ : α →* β) (n : ℕ) {a : α} (ha : IsUnit a) :
     map φ n (ha.unit : ModPow α n) = ((ha.map φ).unit : ModPow β n) :=
   (map_mk ..).trans (congrArg _ (Units.ext rfl))
 
 /-- An isomorphism `α ≃* β` induces an isomorphism `Units.ModPow α n ≃* Units.ModPow β n`
 of the groups of units modulo `n`-th powers. -/
-@[to_additive /-- An isomorphism `α ≃+ β` induces an isomorphism
+@[to_additive (attr := simps!) /-- An isomorphism `α ≃+ β` induces an isomorphism
 `AddUnits.ModNSMul α n ≃+ AddUnits.ModNSMul β n` of the groups of additive units modulo `n`-th
 multiples. -/]
 def congr (e : α ≃* β) (n : ℕ) : ModPow α n ≃* ModPow β n :=
@@ -137,8 +138,7 @@ lemma congr_mk (e : α ≃* β) (n : ℕ) (u : αˣ) :
   rfl
 
 @[to_additive]
-lemma coe_congr_eq_coe_map {φ : α →* β} (hφ : Function.Bijective φ) (n : ℕ) :
-    ⇑(congr (MulEquiv.ofBijective φ hφ) n) = ⇑(map φ n) :=
+lemma coe_congr_eq_coe_map (φ : α ≃* β) (n : ℕ) : ⇑(congr φ n) = ⇑(map φ n) :=
   funext fun m ↦ QuotientGroup.induction_on m fun _ ↦ rfl
 
 /-- The map on units modulo `n`-th powers induced by a bijective homomorphism is bijective. -/
@@ -146,7 +146,7 @@ lemma coe_congr_eq_coe_map {φ : α →* β} (hφ : Function.Bijective φ) (n : 
 homomorphism is bijective. -/]
 lemma bijective_map {φ : α →* β} (hφ : Function.Bijective φ) (n : ℕ) :
     Function.Bijective (map φ n) :=
-  coe_congr_eq_coe_map hφ n ▸ (congr (MulEquiv.ofBijective φ hφ) n).bijective
+  coe_congr_eq_coe_map (.ofBijective φ hφ) n ▸ (congr (MulEquiv.ofBijective φ hφ) n).bijective
 
 /-- Taking units modulo `n`-th powers commutes with products. -/
 @[to_additive /-- Taking additive units modulo `n`-th multiples commutes with products. -/]

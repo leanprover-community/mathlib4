@@ -64,7 +64,6 @@ class group, selmer group, unit group
 
 @[expose] public section
 
-set_option quotPrecheck false
 local notation K "/" n => Units.ModPow K n
 
 namespace IsDedekindDomain
