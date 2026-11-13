@@ -21,7 +21,6 @@ are developed later in the import tree. Hence in this file, they have additional
 that will be automatically satisfied in later files. The motivation here is that we already
 know that these assumptions are satisfied for open immersions and hence the cover API for open
 immersions can be used to deduce these assumptions in the general case.
-
 -/
 
 @[expose] public section
@@ -101,7 +100,7 @@ def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj
   f := map
   mem₀ := by
     simp_rw [presieve₀_mem_precoverage_iff, Set.mem_range]
-    grind
+    exact ⟨covers, map_prop⟩
 
 /-- An isomorphism `X ⟶ Y` is a `P`-cover of `Y`. -/
 @[simps! I₀ X f]

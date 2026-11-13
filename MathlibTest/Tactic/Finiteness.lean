@@ -1,7 +1,9 @@
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Basic.ENNReal.Inv
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
-import Mathlib.Tactic.Finiteness
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Basic.ENNReal.Inv
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.Tactic.Finiteness
 
 open MeasureTheory Set
 open scoped ENNReal NNReal

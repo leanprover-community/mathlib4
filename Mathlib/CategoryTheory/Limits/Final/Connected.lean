@@ -15,7 +15,6 @@ A category `C` is connected iff the constant functor `C ⥤ Discrete PUnit`
 is final (or initial).
 
 We deduce that the projection `C × D ⥤ C` is final (or initial) if `D` is connected.
-
 -/
 
 public section

@@ -31,150 +31,36 @@ exponential growth rate arbitrarily close to `1`, then `u n / n` tends to `l`. -
 theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (l : ℝ)
     (hmono : Monotone u)
     (hlim : ∀ a : ℝ, 1 < a → ∃ c : ℕ → ℕ, (∀ᶠ n in atTop, (c (n + 1) : ℝ) ≤ a * c n) ∧
-      Tendsto c atTop atTop ∧ Tendsto (fun n => u (c n) / c n) atTop (𝓝 l)) :
-    Tendsto (fun n => u n / n) atTop (𝓝 l) := by
+      Tendsto c atTop atTop ∧ Tendsto (fun n ↦ u (c n) / c n) atTop (𝓝 l)) :
+    Tendsto (fun n ↦ u n / n) atTop (𝓝 l) := by
   /- To check the result up to some `ε > 0`, we use a sequence `c` for which the ratio
-    `c (N+1) / c N` is bounded by `1 + ε`. Sandwiching a given `n` between two consecutive values of
-    `c`, say `c N` and `c (N+1)`, one can then bound `u n / n` from above by `u (c N) / c (N - 1)`
-    and from below by `u (c (N - 1)) / c N` (using that `u` is monotone), which are both comparable
-    to the limit `l` up to `1 + ε`.
-    We give a version of this proof by clearing out denominators first, to avoid discussing the sign
-    of different quantities. -/
-  have lnonneg : 0 ≤ l := by
-    rcases hlim 2 one_lt_two with ⟨c, _, ctop, clim⟩
-    have : Tendsto (fun n => u 0 / c n) atTop (𝓝 0) :=
-      tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_iff.2 ctop)
-    apply le_of_tendsto_of_tendsto' this clim fun n => ?_
-    gcongr
-    exact hmono zero_le
-  have A : ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, u n - n * l ≤ ε * (1 + ε + l) * n := by
-    intro ε εpos
-    rcases hlim (1 + ε) ((lt_add_iff_pos_right _).2 εpos) with ⟨c, cgrowth, ctop, clim⟩
-    have L : ∀ᶠ n in atTop, u (c n) - c n * l ≤ ε * c n := by
-      rw [← tendsto_sub_nhds_zero_iff, ← Asymptotics.isLittleO_one_iff ℝ,
-        Asymptotics.isLittleO_iff] at clim
-      filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
-      have cnpos : 0 < c n := cnpos'
-      calc
-        u (c n) - c n * l = (u (c n) / c n - l) * c n := by field
-        _ ≤ ε * c n := by
-          gcongr
-          refine (le_abs_self _).trans ?_
-          simpa using hn
-    obtain ⟨a, ha⟩ :
-      ∃ a : ℕ, ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ u (c b) - c b * l ≤ ε * c b :=
-      eventually_atTop.1 (cgrowth.and L)
-    let M := ((Finset.range (a + 1)).image fun i => c i).max' (by simp)
-    filter_upwards [Ici_mem_atTop M] with n hn
-    have exN : ∃ N, n < c N := by
-      rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by lia⟩
-    let N := Nat.find exN
-    have ncN : n < c N := Nat.find_spec exN
-    have aN : a + 1 ≤ N := by
-      by_contra! h
-      have cNM : c N ≤ M := by
-        apply le_max'
-        apply mem_image_of_mem
-        exact mem_range.2 h
-      exact lt_irrefl _ ((cNM.trans hn).trans_lt ncN)
-    have Npos : 0 < N := lt_of_lt_of_le Nat.succ_pos' aN
-    have cNn : c (N - 1) ≤ n := by
-      have : N - 1 < N := Nat.pred_lt Npos.ne'
-      simpa only [not_lt] using Nat.find_min exN this
-    have IcN : (c N : ℝ) ≤ (1 + ε) * c (N - 1) := by
-      have A : a ≤ N - 1 := (Nat.le_sub_one_iff_lt Npos).mpr aN
-      have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
-      have := (ha _ A).1
-      rwa [B] at this
-    calc
-      u n - n * l ≤ u (c N) - c (N - 1) * l := by gcongr; exact hmono ncN.le
-      _ = u (c N) - c N * l + (c N - c (N - 1)) * l := by ring
-      _ ≤ ε * c N + ε * c (N - 1) * l := by
-        gcongr
-        · exact (ha N (a.le_succ.trans aN)).2
-        · linarith only [IcN]
-      _ ≤ ε * ((1 + ε) * c (N - 1)) + ε * c (N - 1) * l := by gcongr
-      _ = ε * (1 + ε + l) * c (N - 1) := by ring
-      _ ≤ ε * (1 + ε + l) * n := by gcongr
-  have B : ∀ ε : ℝ, 0 < ε → ∀ᶠ n : ℕ in atTop, (n : ℝ) * l - u n ≤ ε * (1 + l) * n := by
-    intro ε εpos
-    rcases hlim (1 + ε) ((lt_add_iff_pos_right _).2 εpos) with ⟨c, cgrowth, ctop, clim⟩
-    have L : ∀ᶠ n : ℕ in atTop, (c n : ℝ) * l - u (c n) ≤ ε * c n := by
-      rw [← tendsto_sub_nhds_zero_iff, ← Asymptotics.isLittleO_one_iff ℝ,
-        Asymptotics.isLittleO_iff] at clim
-      filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
-      have cnpos : 0 < c n := cnpos'
-      calc
-        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field
-        _ ≤ ε * c n := by
-          gcongr
-          refine le_trans (neg_le_abs _) ?_
-          simpa using hn
-    obtain ⟨a, ha⟩ :
-      ∃ a : ℕ,
-        ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ (c b : ℝ) * l - u (c b) ≤ ε * c b :=
-      eventually_atTop.1 (cgrowth.and L)
-    let M := ((Finset.range (a + 1)).image fun i => c i).max' (by simp)
-    filter_upwards [Ici_mem_atTop M] with n hn
-    have exN : ∃ N, n < c N := by
-      rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by lia⟩
-    let N := Nat.find exN
-    have ncN : n < c N := Nat.find_spec exN
-    have aN : a + 1 ≤ N := by
-      by_contra! h
-      have cNM : c N ≤ M := by
-        apply le_max'
-        apply mem_image_of_mem
-        exact mem_range.2 h
-      exact lt_irrefl _ ((cNM.trans hn).trans_lt ncN)
-    have Npos : 0 < N := lt_of_lt_of_le Nat.succ_pos' aN
-    have aN' : a ≤ N - 1 := (Nat.le_sub_one_iff_lt Npos).mpr aN
-    have cNn : c (N - 1) ≤ n := by
-      have : N - 1 < N := Nat.pred_lt Npos.ne'
-      simpa only [not_lt] using Nat.find_min exN this
-    calc
-      (n : ℝ) * l - u n ≤ c N * l - u (c (N - 1)) := by
-        gcongr
-        exact hmono cNn
-      _ ≤ (1 + ε) * c (N - 1) * l - u (c (N - 1)) := by
-        gcongr
-        have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
-        simpa [B] using (ha _ aN').1
-      _ = c (N - 1) * l - u (c (N - 1)) + ε * c (N - 1) * l := by ring
-      _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := add_le_add (ha _ aN').2 le_rfl
-      _ = ε * (1 + l) * c (N - 1) := by ring
-      _ ≤ ε * (1 + l) * n := by gcongr
-  refine tendsto_order.2 ⟨fun d hd => ?_, fun d hd => ?_⟩
-  · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, d + ε * (1 + l) < l ∧ 0 < ε := by
-      have L : Tendsto (fun ε => d + ε * (1 + l)) (𝓝[>] 0) (𝓝 (d + 0 * (1 + l))) := by
-        apply Tendsto.mono_left _ nhdsWithin_le_nhds
-        exact tendsto_const_nhds.add (tendsto_id.mul tendsto_const_nhds)
-      simp only [zero_mul, add_zero] at L
-      exact (((tendsto_order.1 L).2 l hd).and self_mem_nhdsWithin).exists
-    filter_upwards [B ε εpos, Ioi_mem_atTop 0] with n hn npos
-    simp_rw [div_eq_inv_mul]
-    calc
-      d < (n : ℝ)⁻¹ * n * (l - ε * (1 + l)) := by
-        rw [inv_mul_cancel₀, one_mul]
-        · linarith only [hε]
-        · exact Nat.cast_ne_zero.2 (ne_of_gt npos)
-      _ = (n : ℝ)⁻¹ * (n * l - ε * (1 + l) * n) := by ring
-      _ ≤ (n : ℝ)⁻¹ * u n := by gcongr; linarith only [hn]
-  · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, l + ε * (1 + ε + l) < d ∧ 0 < ε := by
-      have L : Tendsto (fun ε => l + ε * (1 + ε + l)) (𝓝[>] 0) (𝓝 (l + 0 * (1 + 0 + l))) := by
-        apply Tendsto.mono_left _ nhdsWithin_le_nhds
-        exact
-          tendsto_const_nhds.add
-            (tendsto_id.mul ((tendsto_const_nhds.add tendsto_id).add tendsto_const_nhds))
-      simp only [zero_mul, add_zero] at L
-      exact (((tendsto_order.1 L).2 d hd).and self_mem_nhdsWithin).exists
-    filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn (npos : 0 < n)
-    calc
-      u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linarith only [hn]
-      _ = (l + ε * (1 + ε + l)) := by field
-      _ < d := hε
+    `c (b + 1) / c b` is bounded by `1 + ε`. Sandwiching a given `n` between two consecutive values
+    of `c`, say `c b ≤ n < c (b + 1)`, one can then bound `u n / n` from above using `u (c (b + 1))`
+    and from below using `u (c b)` (since `u` is monotone), which are both comparable to the limit
+    `l` up to `1 + ε`. -/
+  have key (ε : ℝ) (hε : 0 < ε) :
+      ∀ᶠ n : ℕ in atTop, l - ε * (1 + l) ≤ u n / n ∧ u n / n ≤ (1 + ε) * (l + ε) := by
+    obtain ⟨c, cgrowth, ctop, clim⟩ := hlim (1 + ε) (by grind)
+    have ctop' : Tendsto (fun n ↦ (c n : ℝ)) atTop atTop := tendsto_natCast_atTop_iff.mpr ctop
+    have hl : 0 ≤ l := le_of_tendsto_of_tendsto' ((tendsto_const_nhds (x := u 0)).div_atTop ctop')
+      clim fun n ↦ div_le_div_of_nonneg_right (hmono zero_le) (c n).cast_nonneg
+    obtain ⟨a, ha⟩ := eventually_atTop.mp <| cgrowth.and <| (ctop'.eventually_gt_atTop 0).and <|
+      clim.eventually <| Icc_mem_nhds (sub_lt_self l hε) (lt_add_of_pos_right l hε)
+    filter_upwards [eventually_ge_atTop (c a)] with n hn
+    obtain ⟨b, hab, hb, hb'⟩ := ctop.exists_le_lt_succ hn
+    obtain ⟨hgrowth, hcb, hb₁, -⟩ := ha b hab
+    obtain ⟨-, hcb', -, hb₂⟩ := ha (b + 1) (by lia)
+    have hbn : (c b : ℝ) ≤ n := Nat.cast_le.mpr hb
+    rw [le_div_iff₀ (hcb.trans_le hbn), div_le_iff₀ (hcb.trans_le hbn)]
+    constructor
+    · nlinarith [(Nat.cast_le.mpr hb'.le).trans hgrowth, hmono hb, mul_nonneg hl hε.le,
+        (le_div_iff₀ hcb).mp hb₁]
+    · nlinarith [hmono hb'.le, (by positivity : 0 ≤ (l + ε) * ε), (div_le_iff₀ hcb').1 hb₂]
+  have : Tendsto (fun ε ↦ ε ^ 2 + ε * l + ε) (𝓝 0) (𝓝 0) :=
+    Continuous.tendsto' (by fun_prop) 0 0 (by simp)
+  refine tendsto_order.mpr ⟨fun d hd ↦ ?_, fun d hd ↦ ?_⟩ <;>
+    obtain ⟨ε, hε, hεd⟩ := (this.eventually_lt_const (sub_pos.mpr hd)).exists_gt <;>
+    exact (key ε hε).mono fun n hn ↦ by nlinarith
 
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all
 `c > 1`, then `u n / n` tends to `l`. It is even enough to have the assumption for a sequence of

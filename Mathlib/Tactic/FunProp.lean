@@ -350,7 +350,6 @@ There are four types of theorems that are used a bit differently.
     theorem contdiff_le (f : ContDiff 𝕜 n f) (h : m ≤ n) : ContDiff 𝕜 m f := ...
     ```
     is used together with `aesop` to discharge the `2 ≤ ∞` subgoal.
-
 -/
 
 public meta section

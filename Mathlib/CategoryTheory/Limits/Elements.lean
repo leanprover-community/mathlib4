@@ -21,7 +21,6 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 ## Further results
 
 - If `A` is (co)representable, then `A.Elements` has an initial object.
-
 -/
 
 @[expose] public section
@@ -120,7 +119,6 @@ instance {F : C ⥤ Type*} [F.IsCorepresentable] : HasInitial F.Elements :=
 end Initial
 
 end
-
 
 /-- An initial object in the category `F.Elements` of a covariant functor defines a
 corepresentation for that functor. -/

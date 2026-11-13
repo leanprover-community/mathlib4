@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.MeasureTheory.Integral.SetToL1.SimpleFunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of set functions to L¹
 

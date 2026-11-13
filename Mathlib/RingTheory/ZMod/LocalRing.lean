@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 For a prime `p` and `r ≠ 0`, the reduction map `ZMod (p ^ r) →+* ZMod p` is a local ring
 homomorphism into a field, hence `ZMod (p ^ r)` is a local ring.
-
 -/
 
 public section

@@ -33,7 +33,6 @@ Let `G` be a group acting on a type `α`.
   If an action is `s.ncard + m`-primitive, then
   the action of `FixingSubgroup G s` on the complement of `s`
   is `m`-primitive.
-
 -/
 
 public section

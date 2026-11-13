@@ -8,6 +8,8 @@ module
 
 import Mathlib.Init
 import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+import Std.Internal.Parsec.Basic
+import Std.Internal.Parsec.String
 
 /-!
 # Checker for well-formed title and labels

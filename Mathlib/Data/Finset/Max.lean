@@ -281,10 +281,10 @@ theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
 
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card t + 1`. -/
 theorem card_le_of_interleaved {s t : Finset α}
-    (h : ∀ᵉ (x ∈ s) (y ∈ s),
+    (h : ∀ x ∈ s, ∀ y ∈ s,
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
     s.card ≤ t.card + 1 := by
-  replace h : ∀ᵉ (x ∈ s) (y ∈ s), x < y → ∃ z ∈ t, x < z ∧ z < y := by
+  replace h : ∀ x ∈ s, ∀ y ∈ s, x < y → ∃ z ∈ t, x < z ∧ z < y := by
     intro x hx y hy hxy
     rcases exists_next_right ⟨y, hy, hxy⟩ with ⟨a, has, hxa, ha⟩
     rcases h x hx a has hxa fun z hzs hz => hz.2.not_ge <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
@@ -309,7 +309,7 @@ theorem card_le_of_interleaved {s t : Finset α}
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card (t \ s) + 1`. -/
 theorem card_le_sdiff_of_interleaved {s t : Finset α}
     (h :
-      ∀ᵉ (x ∈ s) (y ∈ s),
+      ∀ x ∈ s, ∀ y ∈ s,
         x < y → (∀ z ∈ s, z ∉ Set.Ioo x y) → ∃ z ∈ t, x < z ∧ z < y) :
     s.card ≤ (t \ s).card + 1 :=
   card_le_of_interleaved fun x hx y hy hxy hs =>

@@ -13,7 +13,6 @@ import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
-
 # Krull dimension and non-zero-divisors
 
 ## Main results

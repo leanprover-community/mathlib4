@@ -255,6 +255,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonad", ["Monad"]),
   ("monadic", ["Comonadic"]),
   ("comonadic", ["Monadic"]),
+  ("kleisli", ["Cokleisli"]),
+  ("cokleisli", ["Kleisli"]),
   ("section", ["Retraction"]),
   ("retraction", ["Section"]),
   ("ofπ", ["Ofι"]),

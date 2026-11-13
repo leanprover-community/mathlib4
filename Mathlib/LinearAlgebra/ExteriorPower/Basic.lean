@@ -31,7 +31,6 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   expresses the universal property of the exterior power as a
   linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
   alternating maps and linear maps from the exterior power.
-
 -/
 
 @[expose] public section
@@ -50,7 +49,7 @@ open Function Set Set.powersetCard
 
 /-! The canonical alternating map from `Fin n → M` to `⋀[R]^n M`. -/
 
-/-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
+/-- `exteriorPower.ιMulti` is the alternating map from `Fin n → M` to `⋀[r]^n M`
 induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
 def ιMulti : M [⋀^Fin n]→ₗ[R] (⋀[R]^n M) :=

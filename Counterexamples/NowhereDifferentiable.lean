@@ -28,7 +28,6 @@ which is the original bound given by Karl Weierstrass. There is a better bound $
 * [Weierstrass, Karl, *Über continuirliche Functionen eines reellen Arguments, die für keinen Werth
   des letzeren einen bestimmten Differentialquotienten besitzen*][weierstrass1895]
 * [G. H. Hardy, *Weierstrass's Non-Differentiable Function*][hardyweierstrass]
-
 -/
 
 @[expose] public section

@@ -50,7 +50,6 @@ namespace ForgetCreatesLimits
 
 variable (D : J ⥤ Algebra T) (c : Cone (D ⋙ T.forget)) (t : IsLimit c)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) The natural transformation used to define the new cone -/
 @[simps]
 def γ : D ⋙ T.forget ⋙ ↑T ⟶ D ⋙ T.forget where app j := (D.obj j).a
@@ -171,7 +170,6 @@ theorem commuting (j : J) : (T : C ⥤ C).map (c.ι.app j) ≫ lambda c t = (D.o
 
 variable [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl)
 Construct the colimiting algebra from the map `λ : TL ⟶ L` given by `lambda`. We are required to
 show it satisfies the two algebra laws, which follow from the algebra laws for the image of `D` and
@@ -195,7 +193,6 @@ noncomputable def coconePoint : Algebra T where
       Functor.map_comp_assoc, commuting, Functor.map_comp, Category.assoc, commuting]
     apply (D.obj j).assoc_assoc _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) Construct the lifted cocone in `Algebra T` which will be colimiting. -/
 @[simps]
 noncomputable def liftedCocone : Cocone D where
@@ -509,7 +506,6 @@ theorem commuting (j : J) : lambda c t ≫ (T : C ⥤ C).map (c.π.app j) = c.π
 variable [PreservesLimit ((D ⋙ forget T) ⋙ T.toFunctor) T.toFunctor]
 variable [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl)
 Construct the limiting coalgebra from the map `λ : L ⟶ TL` given by `lambda`. We are required to
 show it satisfies the two coalgebra laws, which follow from the coalgebra laws for the image of `D`
@@ -530,7 +526,6 @@ noncomputable def conePoint : Coalgebra T where
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, assoc]
     rw [(D.obj j).coassoc, ← assoc, ← assoc, commuting]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- (Impl) Construct the lifted cone in `Coalgebra T` which will be limiting. -/
 @[simps]
 noncomputable def liftedCone : Cone D where
