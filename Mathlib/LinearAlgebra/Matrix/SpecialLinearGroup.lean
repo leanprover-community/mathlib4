@@ -149,8 +149,13 @@ Use this definition instead of `(⟨A, h⟩ : SpecialLinearGroup n R)`. -/
 protected def mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup n R := ⟨A, h⟩
 
 @[simp]
-theorem coe_mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup.mk A h = A :=
+theorem coe_mk {A : Matrix n n R} (h : det A = 1) : SpecialLinearGroup.mk A h = A :=
     rfl
+
+@[simp]
+theorem mk_inj {A B : Matrix n n R} (hA : det A = 1) (hB : det B = 1) :
+    SpecialLinearGroup.mk A hA = .mk B hB ↔ A = B :=
+  ⟨fun h ↦ by injection h, fun h ↦ (ext_iff (.mk ..) (.mk ..)).mpr fun _ ↦ congrFun (congrFun h _)⟩
 
 @[simp]
 theorem coe_inv : ↑ₘ(A⁻¹) = adjugate A :=
