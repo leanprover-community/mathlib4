@@ -438,7 +438,7 @@ instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
 
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
     ↑(g : SpecialLinearGroup n R) = (↑g : Matrix n n ℤ).map (Int.castRingHom R) :=
-  ext_col (congrFun rfl)
+  rfl
 
 lemma map_intCast_injective [CharZero R] :
     Function.Injective ((↑) : SpecialLinearGroup n ℤ → SpecialLinearGroup n R) := fun g h ↦ by
