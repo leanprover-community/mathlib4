@@ -159,6 +159,9 @@ instance [Mul α] : SMul α (Holor α ds) :=
 instance [Semiring α] : Module α (Holor α ds) :=
   inferInstanceAs <| Module α (HolorIndex ds → α)
 
+instance [DecidableEq α] : DecidableEq (Holor α ds) :=
+  Fintype.decidablePiFintype
+
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
   x t.take * y t.drop
