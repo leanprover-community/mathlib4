@@ -12,8 +12,6 @@ public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
-public import Mathlib.RingTheory.Valuation.Integers
-public import Mathlib.RingTheory.Valuation.IsTrivialOn
 
 /-!
 # Adic valuations on Dedekind domains

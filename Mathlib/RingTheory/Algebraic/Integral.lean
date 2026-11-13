@@ -119,8 +119,7 @@ variable {K L} [Field K] [Ring A] [Algebra K A]
 
 theorem Transcendental.of_mem_nonZeroDivisors_of_not_isUnit {a : A} (ha : a ∈ A⁰)
     (hu : ¬ IsUnit a) : Transcendental K a :=
-  fun h ↦ hu (IsArtinianRing.isUnit_of_isIntegral_of_nonZeroDivisor
-    (isAlgebraic_iff_isIntegral.mp h) ha)
+  fun h ↦ hu (IsArtinianRing.isUnit_of_isIntegral_of_nonZeroDivisor h.isIntegral ha)
 
 theorem Transcendental.of_not_isUnit [IsDomain A] {a : A} (h0 : a ≠ 0) (hu : ¬ IsUnit a) :
     Transcendental K a :=
