@@ -60,7 +60,6 @@ The proof concludes because characteristic polynomials are independent of the ch
 ## References
 
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
 -/
 
 @[expose] public section

@@ -38,7 +38,6 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 * Mohamad Akra and Louay Bazzi, On the solution of linear recurrence equations
 * Tom Leighton, Notes on better master theorems for divide-and-conquer recurrences
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
-
 -/
 
 @[expose] public section

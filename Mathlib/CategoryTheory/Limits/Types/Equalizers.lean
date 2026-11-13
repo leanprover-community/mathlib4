@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Limits
 # Equalizers in Type
 
 The equalizer of a pair of maps `(g, h)` from `X` to `Y` is the subtype `{x : Y // g x = h x}`.
-
 -/
 
 @[expose] public section

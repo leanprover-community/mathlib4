@@ -54,7 +54,6 @@ independence condition.
 A `ZLattice` could be defined either as a `AddSubgroup E` or a `Submodule ℤ E`. However, the module
 aspect appears to be the more useful one (especially in computations involving basis) and is also
 consistent with the `ZSpan` construction of `ℤ`-lattices.
-
 -/
 
 @[expose] public section

@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Discriminant
 public import Mathlib.RingTheory.Norm.Basic
 
 /-!
-
 # Field/algebra norm / trace and localization
 
 This file contains results on the combination of `IsLocalization` and `Algebra.norm`,
@@ -32,7 +31,6 @@ This file contains results on the combination of `IsLocalization` and `Algebra.n
 ## Tags
 
 field norm, algebra norm, localization
-
 -/
 
 public section

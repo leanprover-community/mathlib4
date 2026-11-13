@@ -146,7 +146,6 @@ namespace Mathlib.Tactic.Linarith
 
 The config object is defined in the frontend, instead of in `Datatypes.lean`, since the oracles must
 be in context to choose a default.
-
 -/
 
 section
@@ -591,7 +590,7 @@ elab_rules : tactic
             `(tactic| linarith! $filteredCfg:optConfig only [$(idsList.toArray),*])
           else
             `(tactic| linarith $filteredCfg:optConfig only [$(idsList.toArray),*])
-          Lean.Meta.Tactic.TryThis.addSuggestion tk sugg
+          Lean.Meta.Tactic.TryThis.addSuggestion tk sugg (origSpan? := ← getRef)
         catch e =>
           discard st.restore
           throw e

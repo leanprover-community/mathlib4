@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Sites.Coverage
 
 /-!
-
 # The Coherent, Regular and Extensive Grothendieck Topologies
 
 This file defines three related Grothendieck topologies on a category `C`.
@@ -38,7 +37,6 @@ from the coproduct to the target.
 ## References:
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
 - [nLab, *Coherent Coverage*](https://ncatlab.org/nlab/show/coherent+coverage)
-
 -/
 
 @[expose] public section

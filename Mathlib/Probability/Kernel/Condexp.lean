@@ -27,7 +27,6 @@ on `Ω` allows us to do so.
 ## Main statements
 
 * `condExp_ae_eq_integral_condExpKernel`: `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
-
 -/
 
 public section

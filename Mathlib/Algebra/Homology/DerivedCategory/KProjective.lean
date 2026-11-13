@@ -22,7 +22,6 @@ We obtain that a morphism between `K`-projective cochain complexes is a quasi-is
 iff it is a homotopy equivalence. In particular, a morphism between chain complexes
 indexed by `ℕ` which consist of projective objects is a quasi-isomorphism iff
 it is a homotopy equivalence.
-
 -/
 
 @[expose] public section

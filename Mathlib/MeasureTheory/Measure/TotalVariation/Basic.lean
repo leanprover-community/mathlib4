@@ -21,7 +21,6 @@ We prove properties of the total variation distance, in particular alternative f
 
 * `tvDist_eq_integral_abs_rnDeriv_add_singularPart`: the total variation distance satisfies the
   formula `tvDist μ ν = ∫ x, |1 - (μ.rnDeriv ν x).toReal| ∂ν + (μ.singularPart ν).real Set.univ`.
-
 -/
 
 public section
@@ -123,10 +122,13 @@ lemma tvDist_eq_integral_abs_rnDeriv_of_ac (hμν : μ ≪ ν) :
   conv_lhs => rw! [← μ.withDensity_rnDeriv_eq ν hμν,
     tvDist_withDensity_self_eq_integral Measure.integrable_rnDeriv]
 
-lemma etvDist_eq_lintegral_enorm_rnDeriv_of_ac (hμν : μ ≪ ν) :
+lemma etvDist_eq_lintegral_eNorm_rnDeriv_of_ac (hμν : μ ≪ ν) :
     etvDist μ ν = ∫⁻ x, ‖1 - (μ.rnDeriv ν x).toReal‖ₑ ∂ν := by
   conv_lhs => rw! [← μ.withDensity_rnDeriv_eq ν hμν,
     etvDist_withDensity_self_eq_lintegral Measure.integrable_rnDeriv]
+
+@[deprecated (since := "2026-11-06")]
+alias etvDist_eq_lintegral_enorm_rnDeriv_of_ac := etvDist_eq_lintegral_eNorm_rnDeriv_of_ac
 
 lemma tvDist_add_of_ac_of_mutuallySingular {μ' : Measure 𝓧} [IsFiniteMeasure μ']
     (hμν : μ ≪ ν) (hμ'ν : μ' ⟂ₘ ν) :
@@ -156,7 +158,7 @@ theorem tvDist_eq_integral_abs_rnDeriv_add_singularPart :
     (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) (μ.mutuallySingular_singularPart ν),
     tvDist_withDensity_self_eq_integral Measure.integrable_rnDeriv]
 
-theorem etvDist_eq_lintegral_enorm_rnDeriv_add_singularPart :
+theorem etvDist_eq_lintegral_eNorm_rnDeriv_add_singularPart :
     etvDist μ ν = ∫⁻ x, ‖1 - (μ.rnDeriv ν x).toReal‖ₑ ∂ν + μ.singularPart ν Set.univ := by
   rw [← ofReal_tvDist, tvDist_eq_integral_abs_rnDeriv_add_singularPart,
     ENNReal.ofReal_add (by positivity) (by simp), ofReal_measureReal,
@@ -167,5 +169,9 @@ theorem etvDist_eq_lintegral_enorm_rnDeriv_add_singularPart :
     exact Measure.integrable_toReal_rnDeriv
   · filter_upwards with
     positivity
+
+@[deprecated (since := "2026-11-06")]
+alias etvDist_eq_lintegral_enorm_rnDeriv_add_singularPart :=
+  etvDist_eq_lintegral_eNorm_rnDeriv_add_singularPart
 
 end MeasureTheory

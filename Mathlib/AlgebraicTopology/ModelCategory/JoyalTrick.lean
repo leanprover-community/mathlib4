@@ -20,7 +20,6 @@ namely that cofibrations are stable under composition and cobase change.
 
 ## References
 * [John F. Jardine, Simplicial presheaves][jardine-1987]
-
 -/
 
 public section

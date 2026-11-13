@@ -5,6 +5,7 @@ Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 module
 
+public import Mathlib.Logic.Function.Const
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.GaloisConnection.Basic
 
@@ -213,6 +214,11 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x
 
 @[simp]
 theorem ker_eq_bot_iff {f : α → β} : ker f = ⊥ ↔ f.Injective := le_bot_iff.symm
+
+@[simp]
+theorem ker_eq_top_iff {f : α → β} : ker f = ⊤ ↔ f.IsConst := eq_top_iff
+
+@[deprecated (since := "2026-11-10")] alias ker_eq_top := ker_eq_top_iff
 
 lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
     letI := sInf S

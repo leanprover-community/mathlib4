@@ -56,7 +56,6 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
 Angelo Vistoli
-
 -/
 
 @[expose] public section

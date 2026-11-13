@@ -39,7 +39,6 @@ Throughout this file, `R`, `S`, `A`, `B` ... are `CommRing`s, and `K`, `L`, ... 
 ## Tags
 
 power basis, powerbasis
-
 -/
 
 @[expose] public section

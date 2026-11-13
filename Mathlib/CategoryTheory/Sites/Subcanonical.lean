@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Continuous
 
 /-!
-
 # Subcanonical Grothendieck topologies
 
 This file provides some API for the Yoneda embedding into the category of sheaves for a
