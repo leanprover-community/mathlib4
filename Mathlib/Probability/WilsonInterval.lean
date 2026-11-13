@@ -5,8 +5,8 @@ Authors: rytjy
 -/
 module
 
-public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Positivity
