@@ -420,8 +420,9 @@ theorem liftAux.smul {φ : (Π i, s i) →ₘₛₗ[σ] E} (r : R) (x : ⨂[R] i
   · intro z y ihz ihy
     rw [smul_add, (liftAux φ).map_add, ihz, ihy, (liftAux φ).map_add, smul_add]
 
-/-- Constructing a semilinear map `(⨂[R] i, s i) → E` given a `(Π i, s i) →ₘₛₗ[σ] E` with the property
-that its composition with the canonical `(Π i, s i) →ₘₗ[R] E` is the given multilinear map `φ`. -/
+/-- Constructing a semilinear map `(⨂[R] i, s i) → E` given a `(Π i, s i) →ₘₛₗ[σ] E` with
+the property that its composition with the canonical `(Π i, s i) →ₘₗ[R] E`
+is the given multilinear map `φ`. -/
 def lift : ((Π i, s i) →ₘₛₗ[σ] E) ≃ₗ[S] (⨂[R] i, s i) →ₛₗ[σ] E where
   toFun φ := { liftAux φ with map_smul' := liftAux.smul }
   invFun φ' := φ'.compMultilinearMap (tprod R)
@@ -467,8 +468,7 @@ section map
 variable {R₃ : Type*} [CommSemiring R₂] [CommSemiring R₃]
   {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
   {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-  {s t t' : ι → Type*} {N₃ : Type*}
-  [∀ i, AddCommMonoid (s i)] [∀ i, Module R (s i)]
+  {t t' : ι → Type*} {N₃ : Type*}
   [∀ i, AddCommMonoid (t i)] [∀ i, Module R₂ (t i)]
   [∀ i, AddCommMonoid (t' i)] [∀ i, Module R₃ (t' i)]
   [AddCommMonoid N₃] [Module R₃ N₃]
