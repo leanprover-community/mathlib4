@@ -573,7 +573,9 @@ so by making definitions irreducible, we hope to avoid deep unfolds.
 @[no_expose] def mul (I J : FractionalIdeal S P) : FractionalIdeal S P :=
   ⟨I * J, I.isFractional.mul J.isFractional⟩
 
-alias mul_def' := mul.eq_def
+theorem mul_def' (I J : FractionalIdeal S P) :
+    mul I J = ⟨I * J, I.isFractional.mul J.isFractional⟩ :=
+  mul.eq_def I J
 
 -- local attribute [semireducible] mul
 instance : Mul (FractionalIdeal S P) :=
