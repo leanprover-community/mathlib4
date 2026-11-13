@@ -449,7 +449,8 @@ open WithLp in
 private lemma quasispectrum_eq_spectrum_toLp_inr (a : A) :
     quasispectrum 𝕜 a = spectrum 𝕜 (toLp 1 (a : Unitization 𝕜 A)) := by
   simpa [Unitization.quasispectrum_eq_spectrum_inr 𝕜, unitizationAlgEquiv] using
-    AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 A) |>.symm
+    AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv (𝕜 := 𝕜) (A := A) 𝕜).symm
+      (a : Unitization 𝕜 A) |>.symm
 
 variable [CompleteSpace 𝕜] [CompleteSpace A]
 
