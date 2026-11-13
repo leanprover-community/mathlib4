@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
-
 # Prime spectrum of (multivariate) polynomials
 
 Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary schemes.
@@ -25,7 +24,6 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
 - `MvPolynomial.isOpenMap_comap_C`:
   The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
-
 -/
 
 public section
@@ -144,7 +142,7 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
       (Algebra.TensorProduct.comm R _ _).trans (polyEquivTensor R x.asIdeal.ResidueField).symm
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
     simp [e]
-  · simp [Polynomial.ext_iff]
+  · simp [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
     comap C '' basicOpen f = (zeroLocus (Set.range f.coeff))ᶜ := by

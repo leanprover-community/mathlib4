@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Fourier.AddCircle
 
 import Mathlib.MeasureTheory.Integral.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate Fourier series
 

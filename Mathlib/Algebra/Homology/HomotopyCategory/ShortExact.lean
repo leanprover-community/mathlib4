@@ -19,7 +19,6 @@ we construct a quasi-isomorphism `descShortComplex S : mappingCone S.f ⟶ S.X�
 We obtain this by comparing the homology sequence of `S` and the homology
 sequence of the homology functor on the homotopy category, applied to the
 distinguished triangle attached to the mapping cone of `S.f`.
-
 -/
 
 @[expose] public section
@@ -178,7 +177,6 @@ lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C �
 
 variable {D : Type*} [Category* D] [Abelian D]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexIso_hom_descShortComplex (F : C ⥤ D) [F.Additive]
     (S : ShortComplex (CochainComplex C ℤ)) :

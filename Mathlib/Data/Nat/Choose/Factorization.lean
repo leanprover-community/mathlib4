@@ -169,28 +169,33 @@ theorem factorization_choose_prime_pow_add_factorization (hp : p.Prime) (hkn : k
   · nth_rewrite 1 [← factorization_pow_self (n := n) hp]
     exact factorization_le_factorization_choose_add hkn hk0
 
-theorem factorization_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
+theorem factorization_choose_prime_pow (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
     (choose (p ^ n) k).factorization p = n - k.factorization p := by
   nth_rewrite 2 [← factorization_choose_prime_pow_add_factorization hp hkn hk0]
   rw [Nat.add_sub_cancel_right]
 
-end Nat
-
-
-namespace Nat
-
-variable {p n k : ℕ}
+lemma factorization_add_factorization_choose_le_log (lk : k ≤ n) :
+    k.factorization p + (n.choose k).factorization p ≤ log p n := by
+  by_cases! pp : ¬p.Prime
+  · simp [factorization_eq_zero_of_not_prime _ pp]
+  by_cases! nk : k = 0
+  · simp [nk]
+  have dj : Disjoint {i ∈ Ico 1 (log p n + 1) | p ^ i ∣ k}
+      {i ∈ Ico 1 (log p n + 1) | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
+    simp only [Finset.disjoint_right, Finset.mem_filter, dvd_iff_mod_eq_zero]
+    intro i
+    have := mod_lt (n - k) (pow_pos pp.pos i)
+    lia
+  rw [factorization_choose pp lk (lt_add_one _), factorization_eq_card_pow_dvd_of_lt pp nk.pos
+    (lk.trans_lt (lt_pow_succ_log_self pp.one_lt n)), ← card_union_of_disjoint dj]
+  conv_rhs => rw [← (log p n).add_one_sub_one, ← card_Ico]
+  exact card_le_card (by grind)
 
 /-- A logarithmic upper bound on the multiplicity of a prime in a binomial coefficient. -/
-theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n := by
-  by_cases h : (choose n k).factorization p = 0
-  · simp [h]
-  have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_not_prime h
-  have hkn : k ≤ n := by
-    refine le_of_not_gt fun hnk => h ?_
-    simp [choose_eq_zero_of_lt hnk]
-  rw [factorization_choose hp hkn (Nat.lt_add_one _)]
-  exact (card_filter_le ..).trans_eq (Nat.card_Ico _ _)
+theorem factorization_choose_le_log : (n.choose k).factorization p ≤ log p n := by
+  by_cases! lk : n < k
+  · simp [choose_eq_zero_of_lt lk]
+  exact le_of_add_left_le (factorization_add_factorization_choose_le_log lk)
 
 /-- A `pow` form of `Nat.factorization_choose_le` -/
 theorem pow_factorization_choose_le (hn : 0 < n) : p ^ (choose n k).factorization p ≤ n :=

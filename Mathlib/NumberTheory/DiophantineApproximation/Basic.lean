@@ -26,13 +26,16 @@ then $x/y$ must be a convergent of the continued fraction expansion of $\xi$.
 
 ## Main statements
 
-The main results are three variants of Dirichlet's approximation theorem:
+The main results are four variants of Dirichlet's approximation theorem:
 * `Real.exists_int_int_abs_mul_sub_le`, which states that for all real `ξ` and natural `0 < n`,
   there are integers `j` and `k` with `0 < k ≤ n` and `|k*ξ - j| ≤ 1/(n+1)`,
 * `Real.exists_nat_abs_mul_sub_round_le`, which replaces `j` by `round(k*ξ)` and uses
   a natural number `k`,
 * `Real.exists_rat_abs_sub_le_and_den_le`, which says that there is a rational number `q`
   satisfying `|ξ - q| ≤ 1/((n+1)*q.den)` and `q.den ≤ n`,
+* `Real.exists_pi_nat_abs_mul_sub_lt`, which states that for all `d`-tuples of reals `ξ` and
+  natural `0 < n`, there exist a natural `k` with `0 < k ≤ n ^ d` and a `d`-tuple of integers `j`
+  with `|k * ξ i - j i| < 1 / n` for all `i`.
 
 and
 * `Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational`, which states that
@@ -155,6 +158,31 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   refine (mul_le_mul_of_nonneg_left (Int.cast_le.mpr hden : _ ≤ (k : ℝ)) (abs_nonneg _)).trans ?_
   rwa [← abs_of_pos hk₀', Rat.cast_div, Rat.cast_intCast, Rat.cast_intCast, ← abs_mul, sub_mul,
     div_mul_cancel₀ _ hk₀'.ne', mul_comm]
+
+/-- *Simultaneous Dirichlet's approximation theorem:*
+For any `d`-tuple of real numbers `ξ` and positive natural `n`,
+there exist a natural `k` with `0 < k ≤ n ^ d` and a `d`-tuple of integers `j`
+with `|k * ξ i - j i| < 1 / n` for all `i`. -/
+theorem exists_pi_nat_abs_mul_sub_lt {d n : ℕ} (ξ : Fin d → ℝ) (n_pos : 0 < n) :
+    ∃ j : Fin d → ℤ, ∃ k : ℕ, 0 < k ∧ k ≤ n ^ d ∧ ∀ i, |k * ξ i - j i| < 1 / n := by
+  let f (m : ℕ) (i : Fin d) : ℤ := ⌊fract (ξ i * m) * n⌋
+  have hn : 0 < (n : ℝ) := mod_cast n_pos
+  have hfu m i : fract (ξ i * m) * n < n := mul_lt_of_lt_one_left hn (fract_lt_one _)
+  conv in |_| < _ => rw [mul_comm, lt_div_iff₀ hn, ← abs_of_pos hn, ← abs_mul]
+  let D := range (n ^ d + 1)
+  have hwd (m) (_ : m ∈ D) : f m ∈ Fintype.piFinset fun _ ↦ Ico (0 : ℤ) n := by
+    simp_rw [Fintype.mem_piFinset, mem_Ico]
+    exact fun i ↦ ⟨by positivity, by exact_mod_cast (floor_le _).trans_lt (hfu ..)⟩
+  have hD : #(Fintype.piFinset fun _ : Fin d ↦ Ico (0 : ℤ) n) < #D := by simp [D]
+  obtain ⟨x, hx, y, hy, x_lt_y, hxy⟩ : ∃ x ∈ D, ∃ y ∈ D, x < y ∧ f x = f y := by
+    obtain ⟨x, hx, y, hy, x_ne_y, hxy⟩ := exists_ne_map_eq_of_card_lt_of_maps_to hD hwd
+    obtain h | rfl | h := lt_trichotomy x y
+    exacts [⟨x, hx, y, hy, h, hxy⟩, by contradiction, ⟨y, hy, x, hx, h, hxy.symm⟩]
+  refine ⟨fun i ↦ ⌊ξ i * y⌋ - ⌊ξ i * x⌋, y - x, by lia, by grind, fun i ↦ ?_⟩
+  rw [cast_sub, Nat.cast_sub x_lt_y.le]
+  convert_to |fract (ξ i * y) * n - fract (ξ i * x) * n| < 1
+  · grind [fract]
+  exact abs_sub_lt_one_of_floor_eq_floor congr($hxy i).symm
 
 end Dirichlet
 
@@ -490,7 +518,7 @@ end
 /-- The technical version of *Legendre's Theorem*. -/
 theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
-  induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
+  induction v using Nat.strong_induction_on generalizing ξ u with | ind v ih
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2
     simp only [Nat.lt_one_iff.mp ht, Nat.cast_zero, div_zero, tsub_zero, zero_mul,

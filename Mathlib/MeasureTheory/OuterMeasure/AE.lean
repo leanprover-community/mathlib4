@@ -201,25 +201,30 @@ theorem ae_eq_empty : s =ᵐ[μ] ∅ ↔ μ s = 0 :=
 theorem ae_eq_univ : s =ᵐ[μ] univ ↔ μ sᶜ = 0 :=
   eventuallyEqSet_univ
 
-theorem ae_le_set : s ≤ᵐ[μ] t ↔ μ (s \ t) = 0 :=
+theorem ae_subset : s ≤ᵐ[μ] t ↔ μ (s \ t) = 0 :=
   calc
     s ≤ᵐ[μ] t ↔ ∀ᵐ x ∂μ, x ∈ s → x ∈ t := Iff.rfl
     _ ↔ μ (s \ t) = 0 := by simp [ae_iff]; rfl
 
-theorem ae_le_set_inter {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ] t') :
+@[deprecated (since := "2026-11-05")] alias ae_le_set := ae_subset
+
+theorem ae_subset_inter {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ] t') :
     s ∩ s' ≤ᵐ[μ] t ∩ t' :=
   h.inter h'
 
-theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ] t') :
+@[deprecated (since := "2026-11-05")] alias ae_le_set_inter := ae_subset_inter
+
+theorem ae_subset_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ] t') :
     s ∪ s' ≤ᵐ[μ] t ∪ t' :=
   h.union h'
 
+@[deprecated (since := "2026-11-05")] alias ae_le_set_union := ae_subset_union
+
 theorem union_ae_eq_right : s ∪ t =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
-  simp [eventuallySubset_antisymm_iff, ae_le_set, union_sdiff_right,
-    sdiff_eq_empty.2 Set.subset_union_right]
+  simp [eventuallySubset_antisymm_iff, ae_subset, sdiff_eq_empty.2 Set.subset_union_right]
 
 theorem sdiff_ae_eq_self : s \ t =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
-  simp [eventuallySubset_antisymm_iff, ae_le_set]
+  simp [eventuallySubset_antisymm_iff, ae_subset]
 
 @[deprecated (since := "2026-06-03")] alias diff_ae_eq_self := sdiff_ae_eq_self
 
@@ -229,7 +234,7 @@ theorem sdiff_null_ae_eq_self (ht : μ t = 0) : s \ t =ᵐ[μ] s :=
 @[deprecated (since := "2026-06-03")] alias diff_null_ae_eq_self := sdiff_null_ae_eq_self
 
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
-  simp [eventuallySubset_antisymm_iff, ae_le_set]
+  simp [eventuallySubset_antisymm_iff, ae_subset]
 
 open scoped symmDiff in
 @[simp]
@@ -310,7 +315,7 @@ theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
     μ s ≤ μ (s ∪ t) := measure_mono subset_union_left
     _ = μ (t ∪ s \ t) := by rw [union_sdiff_self, Set.union_comm]
     _ ≤ μ t + μ (s \ t) := measure_union_le _ _
-    _ = μ t := by rw [ae_le_set.1 H, add_zero]
+    _ = μ t := by rw [ae_subset.1 H, add_zero]
 
 alias _root_.Filter.EventuallySubset.measure_le := measure_mono_ae
 

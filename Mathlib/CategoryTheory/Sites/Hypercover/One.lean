@@ -23,7 +23,6 @@ The definition `OneHypercover.isLimitMultifork` shows that if `E` is a
 `1`-hypercover of `S`, and `F` is a sheaf, then `F.obj (op S)`
 identifies to the multiequalizer of suitable maps
 `F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`.
-
 -/
 
 @[expose] public section
@@ -171,7 +170,6 @@ def forkOfIsColimit {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : Is
     exact Cofan.IsColimit.hom_ext hd _ _ (by simp [E.w])
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma forkOfIsColimit_ι_map_inj {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'}
     (hd : IsColimit d) (F : Cᵒᵖ ⥤ A) (i : E.I₀) :
@@ -245,7 +243,6 @@ instance {c : Cofan E.X} (hc : IsColimit c) {d : Cofan E.Y'} (hd : IsColimit d) 
   default := ⟨(⟨⟩, ⟨⟩), ⟨⟩⟩
   uniq _ := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a pre-`1`-hypercover and `F` a presheaf, the induced equalizer of
 the single object covering obtained from `E` by taking coproducts is limiting

@@ -10,7 +10,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
 /-!
-
 # Acyclic graphs and trees
 
 This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.
@@ -162,17 +161,10 @@ theorem IsTree.coe_singletonSubgraph (G : SimpleGraph V) (v : V) :
     G.singletonSubgraph v |>.coe.IsTree :=
   .of_subsingleton
 
-set_option backward.defeqAttrib.useBackward true in
 theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |>.coe.IsTree := by
   refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
   have : _ = _ := p.adj_snd hp.not_nil
   have : _ = _ := p.adj_penultimate hp.not_nil
-  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
-  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
-  canonicalizer; a minimization would help. The original proof was:
-  `grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]` -/
-  simp_all
   grind [IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_isBridge : G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ G.edgeSet → G.IsBridge e where
@@ -558,36 +550,6 @@ theorem IsTree.exists_ne_and_degree_eq_one [Nontrivial V] [Finite G.edgeSet] [G.
     have : ¬(p.concat hadj).IsPath := by grind [length_concat]
     grind [hp.concat]
 
-/-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
-lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
-    [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
-  obtain ⟨u, adj_vu, hu⟩ := degree_eq_one_iff_existsUnique_adj.mp hdeg
-  refine (connected_iff _).mpr ⟨?_, u, by aesop⟩
-  /- There exists a walk between any two vertices w and x in G.induce {v}ᶜ
-  via the unique vertex u adjacent to vertex v. -/
-  intro w x
-  obtain ⟨pwu, hpwu⟩ := hconn.exists_isPath w u
-  obtain ⟨pux, hpux⟩ := hconn.exists_isPath u x
-  rw [Reachable, ← exists_true_iff_nonempty]
-  classical
-  use ((pwu.append pux).toPath.val.induce {v}ᶜ ?_).copy (SetCoe.ext rfl) (SetCoe.ext rfl)
-  /- Each path between vertex u and another vertex in G.induce {v}ᶜ
-  is contained in G.induce {v}ᶜ. -/
-  intro z hz
-  rw [Set.mem_compl_iff, Set.mem_singleton_iff]
-  obtain ⟨pwz, pzx, p_eq_pwzx⟩ := mem_support_iff_exists_append.mp hz
-  /- Prove vertex v is not in the path formed from the concatenated walks
-  by showing that vertex u must then be passed twice. -/
-  by_contra
-  subst_vars
-  refine List.nodup_iff_forall_not_duplicate.mp (pwu.append pux).toPath.nodup_support u ?_
-  rw [p_eq_pwzx, support_append, List.duplicate_iff_two_le_count, List.count_append]
-  have := List.one_le_count_iff.mpr (pwz.getVert_mem_support (pwz.length - 1))
-  simp only [hu _ (pwz.adj_penultimate (not_nil_of_ne (by aesop))).symm] at this
-  have := List.one_le_count_iff.mpr (pzx.snd_mem_tail_support (not_nil_of_ne (by aesop)))
-  rw [hu _ (pzx.adj_snd (not_nil_of_ne (by aesop)))] at this
-  lia
-
 /-- A finite nontrivial connected graph contains a vertex that leaves the graph connected if
 removed. -/
 lemma Connected.exists_connected_induce_compl_singleton_of_finite_nontrivial
@@ -614,8 +576,7 @@ lemma IsAcyclic.dist_ne_of_adj (hG : G.IsAcyclic) {u v w : V} (hadj : G.Adj v w)
   by_cases hw : w ∈ p.support
   · rw [hG.path_concat hq hp hadj.symm hw, q.length_concat]
     exact q.length.ne_add_one.symm
-  · have hv : v ∈ q.support := hG.mem_support_of_ne_mem_support_of_adj_of_isPath hq hp
-      hadj.symm hw
+  · have hv : v ∈ q.support := hG.mem_support_of_ne_mem_support_of_adj_of_isPath hq hp hadj.symm hw
     rw [hG.path_concat hp hq hadj hv, p.length_concat]
     exact p.length.ne_add_one
 
@@ -634,8 +595,7 @@ lemma IsTree.dist_eq_dist_add_one_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj
 
 /-- The unique two-coloring of a tree that colors the given vertex with zero -/
 noncomputable def IsTree.coloringTwoOfVert (hG : G.IsTree) (u : V) : G.Coloring (Fin 2) :=
-  Coloring.mk (fun v ↦ ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩) <| by
-    grind [dist_eq_dist_add_one_of_adj]
+  .mk (.ofNat 2 <| G.dist u ·) <| by grind [Fin.ofNat_eq_cast, dist_eq_dist_add_one_of_adj]
 
 /-- Arbitrary coloring with two colors for a tree -/
 noncomputable def IsTree.coloringTwo (hG : G.IsTree) : G.Coloring (Fin 2) :=
@@ -647,14 +607,10 @@ lemma IsTree.isBipartite (hG : G.IsTree) : G.IsBipartite :=
 /-- The unique two-coloring of a forest that colors the given vertices with zero -/
 noncomputable def IsAcyclic.coloringTwoOfVerts (hG : G.IsAcyclic) (verts : G.ConnectedComponent → V)
     (h : ∀ C, verts C ∈ C) : G.Coloring (Fin 2) where
-  toFun v :=
-    let u := verts <| G.connectedComponentMk v
-    ⟨G.dist u v % 2, Nat.mod_lt (G.dist u v) Nat.zero_lt_two⟩
-  map_rel' := by
-    intro u v hadj
-    have := ConnectedComponent.sound hadj.reachable
+  toFun v := .ofNat 2 <| G.dist (verts <| G.connectedComponentMk v) v
+  map_rel' hadj := by
     have := hG.dist_eq_dist_add_one_of_adj_of_reachable _ hadj <| ConnectedComponent.exact <| h _
-    grind [top_adj]
+    grind [top_adj, ConnectedComponent.sound hadj.reachable]
 
 /-- Arbitrary coloring with two colors for a forest -/
 noncomputable def IsAcyclic.coloringTwo (hG : G.IsAcyclic) : G.Coloring (Fin 2) :=

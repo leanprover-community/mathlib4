@@ -12,7 +12,6 @@ import Mathlib.Order.MinMax
 
 /-!
 # Lemmas about `Fin.clamp`
-
 -/
 
 namespace Fin

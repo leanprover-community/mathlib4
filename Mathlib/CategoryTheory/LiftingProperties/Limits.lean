@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 In this file, we show some consequences of lifting properties in the presence of
 certain (co)limits.
-
 -/
 
 public section
