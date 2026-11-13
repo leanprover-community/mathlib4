@@ -5,8 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 public import Mathlib.Order.SuccPred.Limit
+
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Relation between `IsSuccPrelimit` and `iSup` in (conditionally) complete linear orders.
