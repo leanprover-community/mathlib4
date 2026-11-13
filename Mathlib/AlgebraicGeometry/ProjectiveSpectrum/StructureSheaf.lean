@@ -66,7 +66,6 @@ local notation3 "at " x =>
 
 namespace ProjectiveSpectrum.StructureSheaf
 
-
 variable {𝒜} in
 /-- The predicate saying that a dependent function on an open `U` is realised as a fixed fraction
 `r / s` of *same grading* in each of the stalks (which are localizations at various prime ideals).
@@ -82,7 +81,6 @@ subset `V` of `U`.
 def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x where
   pred f := IsFraction f
   res := by rintro V U i f ⟨j, r, s, h, w⟩; exact ⟨j, r, s, (h <| i ·), (w <| i ·)⟩
-
 
 /-- We will define the structure sheaf as the subsheaf of all dependent functions in
 `Π x : U, HomogeneousLocalization 𝒜 x` consisting of those functions which can locally be expressed
@@ -328,7 +326,6 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
   rw [Proj.res_apply, Proj.res_apply]
   simp [sectionInBasicOpen, HomogeneousLocalization.val_mk, Localization.mk_eq_mk', e t ht]
 
--- set_option backward.isDefEq.respectTransparency.types false in
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
     stalkToFiberRingHom 𝒜 x (homogeneousLocalizationToStalk 𝒜 x z) = z := by
   obtain ⟨z, rfl⟩ := Quotient.mk''_surjective z
