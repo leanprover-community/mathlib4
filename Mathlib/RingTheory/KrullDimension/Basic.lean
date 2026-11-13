@@ -97,6 +97,7 @@ lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
 
+variable (R) in
 lemma FiniteRingKrullDim.ringKrullDim_eq_nat [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n :=
   ENat.WithBot.eq_natCast_of_ne_bot_of_ne_top ringKrullDim_ne_bot ringKrullDim_ne_top
 
