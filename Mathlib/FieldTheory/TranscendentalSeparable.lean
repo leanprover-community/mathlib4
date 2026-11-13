@@ -153,14 +153,14 @@ private lemma Polynomial.isReduced_quotient_of_separable' (S : Type*) [Field S] 
     (sep : f.Separable) : IsReduced (S[X] ⧸ Ideal.span {f}) := by
   generalize deg : f.natDegree = n
   induction n using Nat.case_strong_induction_on generalizing f with
-  | hz =>
+  | zero =>
     rcases Polynomial.natDegree_eq_zero.mp deg with ⟨s, rfl⟩
     by_cases eq0 : s = 0
     · have : (Ideal.span {Polynomial.C s}).IsPrime := by simpa [eq0] using Ideal.isPrime_bot
       infer_instance
     · have : Subsingleton (S[X] ⧸ Ideal.span {Polynomial.C s}) := by simp [eq0]
       infer_instance
-  | hi n ih =>
+  | succ n ih =>
     have nu : ¬IsUnit f := Polynomial.not_isUnit_of_natDegree_pos f (by simp [deg])
     rcases WfDvdMonoid.exists_irreducible_factor nu sep.ne_zero with ⟨p, irr, ⟨g, rfl⟩⟩
     rw [← Ideal.span_singleton_mul_span_singleton]
