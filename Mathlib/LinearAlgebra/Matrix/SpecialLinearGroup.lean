@@ -143,7 +143,9 @@ section CoeLemmas
 
 variable (A B : SpecialLinearGroup n R)
 
-/-- Make a `A : SL n R` from `A : Matrix n n R ` and `det A = 1`. -/
+/-- Make a `A : SpecialLinearGroup n R` from `A : Matrix n n R ` such that `det A = 1`.
+
+Use this definition instead of `(⟨A, h⟩ : SpecialLinearGroup n R)`. -/
 protected def mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup n R := ⟨A, h⟩
 
 @[simp]
