@@ -969,7 +969,7 @@ theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 :=
 theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
 
-lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
+lemma S_mul_S_eq : S * S = -1 := by
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
