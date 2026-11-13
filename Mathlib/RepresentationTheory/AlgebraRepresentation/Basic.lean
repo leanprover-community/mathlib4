@@ -32,9 +32,8 @@ theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
 /-- Burnside's theorem: If `V` is a simple module of a `k`-algebra `A` where `k` is an algebraically
 closed field, then the algebra map `A → Endₖ(V)` is surjective. -/
 theorem IsSimpleModule.lsmul_surjective_of_isAlgClosed :
-    Function.Surjective (Algebra.lsmul k k V : A →ₐ[k] Module.End k V) := by
+    Function.Surjective (Algebra.lsmul k k V : A →ₐ[k] Module.End k V) := fun f ↦ by
   have : Module.Finite (Module.End A V) V := Module.Finite.of_restrictScalars_finite k _ V
-  intro f
   obtain ⟨a, ha⟩ := Module.Finite.toModuleEnd_moduleEnd_surjective (R := A) <|
     LinearMap.extendScalarsOfSurjective (algebraMap_end_bijective_of_isAlgClosed k).surjective f
   exact ⟨a, LinearMap.ext fun m => congrArg (fun f => f m) ha⟩
