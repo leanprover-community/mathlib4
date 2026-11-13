@@ -321,7 +321,7 @@ variable {V : Type u} [Quiver V] {α : Type*}
 
 /-- If a valuation `f : V → α` into a preorder is weakly monotonic along arrows,
 then it is weakly monotonic along any path. -/
-theorem le_of_hom_le [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u ≤ f v)
+theorem le_of_hom_le [Preorder α] {f : V → α} (hf : ∀ {x y}, (x ⟶ y) → f x ≤ f y)
     {a b : V} (p : Path a b) : f a ≤ f b := by
   induction p with
   | nil => rfl
@@ -329,15 +329,15 @@ theorem le_of_hom_le [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) →
 
 /-- If a valuation `f : V → α` into a preorder is strictly monotonic along arrows,
 then along any path of positive length, the valuation strictly increases. -/
-theorem lt_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u < f v)
+theorem lt_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {x y}, (x ⟶ y) → f x < f y)
     {a b : V} (p : Path a b) (hp : 0 < p.length) : f a < f b := by
   cases p with
   | nil => cases hp
-  | cons q e => exact lt_of_le_of_lt (le_of_hom_le (fun e => le_of_lt (hf e)) q) (hf e)
+  | cons q e => exact lt_of_le_of_lt (le_of_hom_le (fun e' => (hf e').le) q) (hf e)
 
 /-- In a quiver admitting a strictly monotonic valuation into a preorder,
 any closed path (cycle) must have length zero. -/
-theorem length_eq_zero_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u < f v)
+theorem length_eq_zero_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {x y}, (x ⟶ y) → f x < f y)
     {a : V} (p : Path a a) : p.length = 0 := by
   by_contra h
   have hp : 0 < p.length := Nat.pos_of_ne_zero h
@@ -345,7 +345,7 @@ theorem length_eq_zero_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {u v}, (
 
 /-- In a quiver admitting a strictly monotonic valuation into a preorder,
 the only closed path on a vertex is `nil`. -/
-theorem eq_nil_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u < f v)
+theorem eq_nil_of_hom_lt [Preorder α] {f : V → α} (hf : ∀ {x y}, (x ⟶ y) → f x < f y)
     {a : V} (p : Path a a) : p = Path.nil :=
   p.eq_nil_of_length_zero (length_eq_zero_of_hom_lt hf p)
 
@@ -390,14 +390,14 @@ variable {α : Type*}
 
 /-- If a valuation `f : V → α` into a preorder is weakly monotonic along arrows,
 then `Reachable a b` implies `f a ≤ f b`. -/
-theorem Reachable.le_of_hom_le [Preorder α] {f : V → α} (hf : ∀ {u v}, (u ⟶ v) → f u ≤ f v)
+theorem Reachable.le_of_hom_le [Preorder α] {f : V → α} (hf : ∀ {x y}, (x ⟶ y) → f x ≤ f y)
     {a b : V} (hab : Reachable a b) : f a ≤ f b :=
   hab.elim fun p => p.le_of_hom_le hf
 
 /-- If a quiver admits a strictly increasing valuation into a preorder,
 then `Reachable` is antisymmetric. -/
 theorem Reachable.antisymm_of_hom_lt [Preorder α] {f : V → α}
-    (hf : ∀ {u v}, (u ⟶ v) → f u < f v) {a b : V}
+    (hf : ∀ {x y}, (x ⟶ y) → f x < f y) {a b : V}
     (hab : Reachable a b) (hba : Reachable b a) : a = b := by
   obtain ⟨p⟩ := hab
   obtain ⟨q⟩ := hba
@@ -408,7 +408,7 @@ theorem Reachable.antisymm_of_hom_lt [Preorder α] {f : V → α}
 /-- If a quiver admits a strictly increasing valuation into a preorder,
 then its reachability relation is a partial order. -/
 theorem Reachable.isPartialOrder_of_hom_lt [Preorder α] {f : V → α}
-    (hf : ∀ {u v}, (u ⟶ v) → f u < f v) : IsPartialOrder V Reachable where
+    ​(hf : ∀ {x y}, (x ⟶ y) → f x < f y) : IsPartialOrder V Reachable where
   antisymm _ _ := Reachable.antisymm_of_hom_lt hf
 
 end Reachable
