@@ -6,14 +6,12 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Join.Basic
-public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Opposites of joins of categories
 
 This file constructs the canonical equivalence of categories `(C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ`.
 This equivalence is characterized in both directions.
-
 -/
 
 @[expose] public section

@@ -8,8 +8,8 @@ module
 public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 public import Mathlib.Topology.Category.Stonean.Limits
-/-!
 
+/-!
 # Effective epimorphisms in `Stonean`
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `Stonean`.

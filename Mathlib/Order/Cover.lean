@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van 
 -/
 module
 
-public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Interval.Set.WithBotTop
 
@@ -502,12 +501,6 @@ namespace Bool
 @[simp] theorem wcovBy_iff : ∀ {a b : Bool}, a ⩿ b ↔ a ≤ b := by unfold WCovBy; decide
 @[simp] theorem covBy_iff : ∀ {a b : Bool}, a ⋖ b ↔ a < b := by unfold CovBy; decide
 
-instance instDecidableRelWCovBy : DecidableRel (· ⩿ · : Bool → Bool → Prop) := fun _ _ ↦
-  decidable_of_iff _ wcovBy_iff.symm
-
-instance instDecidableRelCovBy : DecidableRel (· ⋖ · : Bool → Bool → Prop) := fun _ _ ↦
-  decidable_of_iff _ covBy_iff.symm
-
 end Bool
 
 namespace Set
@@ -522,7 +515,7 @@ variable {s t : Set α} {a : α}
 
 @[simp] lemma sdiff_singleton_wcovBy (s : Set α) (a : α) : s \ {a} ⩿ s := by
   by_cases ha : a ∈ s
-  · convert! wcovBy_insert a _
+  · convert wcovBy_insert a _
     ext
     simp [ha]
   · simp [ha]

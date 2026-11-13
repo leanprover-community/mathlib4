@@ -20,7 +20,6 @@ transcendental separable field extensions.
 
 * `Algebra.IsTranscendentalSeparable` : A field extension is transcendental separable if
   every finitely generated subextension is separably generated.
-
 -/
 
 @[expose] public section
@@ -87,5 +86,8 @@ lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
 
 instance (priority := low) [Algebra.IsSeparable k K] : Algebra.IsTranscendentalSeparable k K :=
   ((Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic k K).mp ‹_›).1
+
+instance [PerfectField k] : Algebra.IsTranscendentalSeparable k K :=
+  ⟨fun _ _ ↦ inferInstance⟩
 
 end

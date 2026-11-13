@@ -5,12 +5,13 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Algebra.MonoidAlgebra.Cardinal
-public import Mathlib.Data.Rat.Encodable
-public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.RingTheory.Localization.Cardinality
 public import Mathlib.SetTheory.Cardinal.Divisibility
+
+import Mathlib.Algebra.Field.TransferInstance
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
+import Mathlib.Data.Rat.Encodable
+import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # Cardinality of Fields
@@ -24,7 +25,6 @@ a field structure, and so can all types with prime power cardinalities, and this
   prime power.
 * `Infinite.nonempty_field` : Any infinite type can be endowed a field structure.
 * `Field.nonempty_iff` : There is a field structure on type iff its cardinality is a prime power.
-
 -/
 
 public section

@@ -6,7 +6,6 @@ Authors: Oliver Nash, Antoine Labelle
 module
 
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!
@@ -242,7 +241,7 @@ theorem dualTensorHom_bijective_of_comp_eq_id_right (f : N →ₗ[R] P) (g : P �
   right := .of_comp (g := g.lTensor _) <| by
     rw [← coe_comp, dualTensorHom_comp_lTensor, coe_comp]
     refine (surjective_of_comp_eq_id (f.compRight R) _ ?_).comp h.2
-    ext; exact congr($comp_eq_id _)
+    ext; congrm $comp_eq_id _
 
 theorem dualTensorHom_fun_bijective [Finite ι] (h : Function.Bijective (dualTensorHom R M N)) :
     Function.Bijective (dualTensorHom R M (ι → N)) :=
@@ -277,7 +276,7 @@ lemma dualTensorHom_bijective : Function.Bijective (dualTensorHom R M N) := by
       ← coe_dualTensorHomEquivOfBasis (Pi.basisFun ..)]
     refine (surjective_of_comp_eq_id (f.lcomp R N) _ ?_).comp (EquivLike.surjective _)
     ext φ x
-    exact congr(φ ($eq x))
+    congrm φ ($eq x)
 
 variable (R M N) in
 /-- If `M` is finite projective, the natural map $M^* ⊗ N → Hom(M, N)$ is an equivalence. -/
@@ -409,7 +408,7 @@ variable (R M N) in
 projective modules. It sends `f ⊗ g` to the composition of `TensorProduct.map f g` with the natural
 isomorphism `R ⊗ R ≃ R`.
 
-Note that `dualDistribEquiv` is not defined directly in terms of `dualDistri`, but the
+Note that `dualDistribEquiv` is not defined directly in terms of `dualDistrib`, but the
 equivalence between the two is given by `toLinearMap_dualDistribEquiv` and
 `dualDistribEquiv_tmul_tmul`.
 -/

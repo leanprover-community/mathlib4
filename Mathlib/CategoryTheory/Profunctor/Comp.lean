@@ -27,7 +27,7 @@ This file defines composition of profunctors. Given profunctors `P : C ⥤ Dᵒ�
 * `associator` : The associator isomorphism `(P.comp Q).comp R ≅ P.comp (Q.comp R)`.
 
 These satisfy the coherence laws for a bicategory, see the file
-`CategoryTheory.Profunctor.Bicategory` (to be added in a future PR: #39619).
+`Mathlib.CategoryTheory.Profunctor.Bicategory`.
 -/
 
 @[expose] public section
@@ -194,7 +194,6 @@ def leftUnitor (P : Profunctor.{u} C D) : Profunctor.id.comp P ≅ P :=
     (fun f ↦ by dsimp; ext; simp [compDiagram, chosenCoend.ι_apply _]))
     (fun f ↦ by ext _ ⟨_, _⟩; simp [Types.chosenCoend_def, chosenCoend.map_apply])
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Types.chosenCoend_def in
 @[simp]
 lemma leftUnitor_hom_app_app_mk (P : Profunctor.{u} C D) (X : C) (Y : Dᵒᵖ)
@@ -370,7 +369,6 @@ def associator : (P.comp Q).comp R ≅ P.comp (Q.comp R) :=
       simp [associatorComponents, associatorHom, associatorHomFun, chosenCoend_def,
         chosenCoend.map_apply, Quot.map]
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Types.chosenCoend_def in
 @[simp]
 lemma associator_hom_app_app_mk (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
@@ -379,7 +377,6 @@ lemma associator_hom_app_app_mk (X : C) (Y : Fᵒᵖ) (d : D) (e : E)
       (Quot.mk _ ⟨e, Quot.mk _ ⟨d, p, q⟩, r⟩)) =
       Quot.mk _ ⟨d, p, Quot.mk _ ⟨e, q, r⟩⟩ := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Types.chosenCoend_def in
 @[simp]
 lemma associator_inv_app_app_mk (X : C) (Y : Fᵒᵖ) (d : D) (e : E)

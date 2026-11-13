@@ -5,21 +5,21 @@ Authors: Michael Rothgang
 -/
 module
 
+public meta import Batteries.Tactic.Lint.Basic
 public meta import Lean.Elab.Command
+public meta import Lean.Parser.Module
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
-public import Batteries.Tactic.Lint.Basic
-public import Lean.Parser.Module
+
+meta import Lean.Parser.Command
 
 /-!
 ## Style linters
 
 This file contain linters about stylistic aspects: these are only about coding style,
 but do not affect correctness nor global coherence of mathlib.
-Historically, some of these were ported from the `lint-style.py` Python script.
 
 This file defines the following linters:
 - the `setOption` linter checks for the presence of `set_option` commands activating
@@ -27,13 +27,6 @@ This file defines the following linters:
   It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
   of the file: enforcing this invariant makes minimising files or moving code between files easier
-- the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
-  this is allowed Lean syntax, but it is nicer to be uniform
-- the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
-  similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
-  the `|>` symbol
-- the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
-  instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
 - the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
@@ -147,189 +140,33 @@ public register_option linter.style.missingEnd : Bool := {
 namespace Style.missingEnd
 
 @[inherit_doc Mathlib.Linter.linter.style.missingEnd]
-def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    -- Only run this linter at the end of a module.
-    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
-        !(← MonadState.get).messages.hasErrors then
-      let sc ← getScopes
-      -- The last scope is always the "base scope", corresponding to no active `section`s or
-      -- `namespace`s. We are interested in any *other* unclosed scopes.
-      if sc.length == 1 then return
-      let ends := sc.dropLast
-      -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
-      -- them.
-      let ends := ends.reverse
-        |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
-          (sc.isMeta || sc.isPublic || sc.isNoncomputable))
-        |>.reverse
-      -- If there are any further un-closed scopes, we emit a warning.
-      if !ends.isEmpty then
-        let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
-          a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-        Linter.logLint linter.style.missingEnd stx
-         m!"unclosed sections or namespaces; expected: '{ending}'"
+def missingEndLinter : ModuleLinter where run _ := do
+  if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
+      !(← MonadState.get).messages.hasErrors then
+    let sc ← getScopes
+    -- The last scope is always the "base scope", corresponding to no active `section`s or
+    -- `namespace`s. We are interested in any *other* unclosed scopes.
+    if sc.length == 1 then return
+    let ends := sc.dropLast
+    -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
+    -- them.
+    let ends := ends.reverse
+      |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
+        (sc.isMeta || sc.isPublic || sc.isNoncomputable))
+      |>.reverse
+    -- If there are any further un-closed scopes, we emit a warning.
+    if !ends.isEmpty then
+      let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
+        a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+      let bottom := (← getFileMap).source.utf8ByteSize
+      let bottomOfFile := Syntax.atom (.synthetic ⟨bottom⟩ ⟨bottom⟩) ""
+      Linter.logLint linter.style.missingEnd bottomOfFile
+        m!"unclosed sections or namespaces; expected: '{ending}'"
 
-initialize addLinter missingEndLinter
+initialize addModuleLinter missingEndLinter
 
 end Style.missingEnd
 
-/-!
-### The `cdot` linter
-
-The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
-by typing a character different from `·`.
-For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
-It also flags "isolated cdots", i.e. when the `·` is on its own line.
--/
-
-/--
-The `cdot` linter flags uses of the "cdot" `·` that are achieved by typing a character
-different from `·`.
-For instance, a "plain" dot `.` is allowed syntax, but is flagged by the linter.
-It also flags "isolated cdots", i.e. when the `·` is on its own line. -/
-public register_option linter.style.cdot : Bool := {
-  defValue := false
-  descr := "enable the `cdot` linter"
-}
-
-/-- `isCDot? stx` checks whether `stx` is a `Syntax` node corresponding to a `cdot` typed with
-the character `·`. -/
-public def isCDot? : Syntax → Bool
-  | .node _ ``cdotTk #[.atom _ v] => v == "·"
-  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v, _] => v == "·"
-  | _ => false
-
-/--
-`findCDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`.
--/
-partial
-def findCDot : Syntax → Array Syntax
-  | stx@(.node _ kind args) =>
-    let dargs := (args.map findCDot).flatten
-    match kind with
-      | ``Lean.Parser.Term.cdot | ``cdotTk => dargs.push stx
-      | _ =>  dargs
-  |_ => #[]
-
-/-- `unwanted_cdot stx` returns an array of syntax atoms within `stx`
-corresponding to `cdot`s that are not written with the character `·`.
-This is precisely what the `cdot` linter flags.
--/
-def unwanted_cdot (stx : Syntax) : Array Syntax :=
-  (findCDot stx).filter (!isCDot? ·)
-
-namespace Style
-
-@[inherit_doc linter.style.cdot]
-def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.style.cdot (← getLinterOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    for s in unwanted_cdot stx do
-      Linter.logLint linter.style.cdot s
-        m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
-    -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
-    for cdot in Mathlib.Linter.findCDot stx do
-      -- Apply this only to cdot tactics
-      if cdot.isOfKind ``cdotTk then
-        match cdot.getTrailing? with
-        |  some afterCDot =>
-          if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-            Linter.logLint linter.style.cdot cdot
-              m!"This central dot `·` is isolated; please merge it with the next line."
-        | _ => return
-
-initialize addLinter cdotLinter
-
-end Style
-
-/-!
-### The `dollarSyntax` linter
-
-The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
-These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
--/
-
-/-- The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
-These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`. -/
-public register_option linter.style.dollarSyntax : Bool := {
-  defValue := false
-  descr := "enable the `dollarSyntax` linter"
-}
-
-namespace Style.dollarSyntax
-
-/-- `findDollarSyntax stx` extracts from `stx` the syntax nodes of `kind` `$`. -/
-public partial
-def findDollarSyntax : Syntax → Array Syntax
-  | stx@(.node _ kind args) =>
-    let dargs := (args.map findDollarSyntax).flatten
-    match kind with
-      | ``«term_$__» => dargs.push stx
-      | _ => dargs
-  |_ => #[]
-
-@[inherit_doc linter.style.dollarSyntax]
-def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.style.dollarSyntax (← getLinterOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    for s in findDollarSyntax stx do
-      Linter.logLint linter.style.dollarSyntax s
-        m!"Please use '<|' instead of '$' for the pipe operator."
-
-initialize addLinter dollarSyntaxLinter
-
-end Style.dollarSyntax
-
-/-!
-### The `lambdaSyntax` linter
-
-The `lambdaSyntax` linter is a syntax linter that flags uses of the symbol `λ` to define anonymous
-functions, as opposed to the `fun` keyword. These are syntactically equivalent; mathlib style
-prefers the latter as it is considered more readable.
--/
-
-/--
-The `lambdaSyntax` linter flags uses of the symbol `λ` to define anonymous functions.
-This is syntactically equivalent to the `fun` keyword; mathlib style prefers using the latter.
--/
-public register_option linter.style.lambdaSyntax : Bool := {
-  defValue := false
-  descr := "enable the `lambdaSyntax` linter"
-}
-
-namespace Style.lambdaSyntax
-
-/--
-`findLambdaSyntax stx` extracts from `stx` all syntax nodes of `kind` `Term.fun`. -/
-public partial
-def findLambdaSyntax : Syntax → Array Syntax
-  | stx@(.node _ kind args) =>
-    let dargs := (args.map findLambdaSyntax).flatten
-    match kind with
-      | ``Parser.Term.fun => dargs.push stx
-      | _ =>  dargs
-  |_ => #[]
-
-@[inherit_doc linter.style.lambdaSyntax]
-def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.style.lambdaSyntax (← getLinterOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    for s in findLambdaSyntax stx do
-      if let .atom _ "λ" := s[0] then
-        Linter.logLint linter.style.lambdaSyntax s[0] m!"\
-        Please use 'fun' and not 'λ' to define anonymous functions.\n\
-        The 'λ' syntax is deprecated in mathlib4."
-
-initialize addLinter lambdaSyntaxLinter
-
-end Style.lambdaSyntax
 
 /-!
 ### The "longFile" linter

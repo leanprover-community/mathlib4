@@ -119,7 +119,8 @@ end Metric
 
 theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
-  simpa only [ball, UniformSpace.ball, preimage_ofPred_eq, dist_comm]
+  simpa only [ball, SetRel.ball, SetRel.inv, preimage_ofPred_eq, mem_ofPred_eq, Prod.fst_swap,
+    Prod.snd_swap, dist_comm]
     using uniformity_basis_dist.lebesgue_number_lemma hs hc₁ hc₂
 
 theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)

@@ -6,11 +6,8 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.Basic.Finite.Prod
-public import Mathlib.Data.Set.Card
+public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.GroupTheory.Coset.Card
 public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
@@ -71,7 +68,7 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
   have key : ∀ x y : G',
       QuotientGroup.leftRel (H.comap f) x y ↔ QuotientGroup.leftRel H (f x) (f y) := by
     simp only [QuotientGroup.leftRel_apply]
-    exact fun x y => iff_of_eq (congr_arg (· ∈ H) (by rw [f.map_mul, f.map_inv]))
+    exact fun x y => iff_of_eq congr($(by rw [f.map_mul, f.map_inv]) ∈ H)
   refine Nat.card_congr (Equiv.ofBijective (Quotient.map' f fun x y => (key x y).mp) ⟨?_, ?_⟩)
   · simp_rw [← Quotient.eq''] at key
     refine Quotient.ind' fun x => ?_
@@ -79,12 +76,12 @@ theorem index_comap_of_surjective {f : G' →* G} (hf : Function.Surjective f) :
     exact (key x y).mpr
   · refine Quotient.ind' fun x => ?_
     obtain ⟨y, hy⟩ := hf x
-    exact ⟨y, (Quotient.map'_mk'' f _ y).trans (congr_arg Quotient.mk'' hy)⟩
+    exact ⟨y, (Quotient.map'_mk'' f _ y).trans congr(Quotient.mk'' $hy)⟩
 
 @[to_additive]
 theorem index_comap (f : G' →* G) :
     (H.comap f).index = H.relIndex f.range :=
-  Eq.trans (congr_arg index (by rfl))
+  .trans congr(index $(by rfl))
     ((H.subgroupOf f.range).index_comap_of_surjective f.rangeRestrict_surjective)
 
 @[to_additive]
@@ -483,7 +480,7 @@ theorem index_iInf_le {ι : Type*} [Fintype ι] (f : ι → Subgroup G) :
 theorem index_eq_one : H.index = 1 ↔ H = ⊤ :=
   ⟨fun h =>
     QuotientGroup.subgroup_eq_top_of_subsingleton H (Nat.card_eq_one_iff_unique.mp h).1,
-    fun h => (congr_arg index h).trans index_top⟩
+    fun h => congr(index $h).trans index_top⟩
 
 @[to_additive (attr := simp) relIndex_eq_one]
 theorem relIndex_eq_one : H.relIndex K = 1 ↔ K ≤ H :=
@@ -596,7 +593,7 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
     rw [eq_comm, QuotientGroup.eq, ← zpow_natCast, ← zpow_natCast, ← zpow_neg, ← zpow_add,
         add_comm] at he
     rw [← zpow_natCast]
-    convert! he
+    convert he
     lia
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
@@ -634,7 +631,7 @@ lemma pow_mem_of_index_ne_zero_of_dvd (h : H.index ≠ 0) (a : G) {n : ℕ}
 @[to_additive]
 lemma pow_mem_of_relIndex_ne_zero_of_dvd (h : H.relIndex K ≠ 0) {a : G} (ha : a ∈ K) {n : ℕ}
     (hn : ∀ m, 0 < m → m ≤ H.relIndex K → m ∣ n) : a ^ n ∈ H ⊓ K := by
-  convert! pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
+  convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
   simp [pow_mem ha, mem_subgroupOf]
 
 @[to_additive (attr := simp) index_prod]
@@ -694,8 +691,17 @@ variable (H K) in
 @[to_additive] class IsFiniteRelIndex : Prop where
   protected relIndex_ne_zero : H.relIndex K ≠ 0
 
-@[to_additive] lemma relIndex_ne_zero [H.IsFiniteRelIndex K] : H.relIndex K ≠ 0 :=
+@[to_additive] theorem index_ne_zero [H.FiniteIndex] : H.index ≠ 0 :=
+  FiniteIndex.index_ne_zero
+
+@[to_additive] theorem index_pos [H.FiniteIndex] : 0 < H.index :=
+  index_ne_zero.pos
+
+@[to_additive] theorem relIndex_ne_zero [H.IsFiniteRelIndex K] : H.relIndex K ≠ 0 :=
   IsFiniteRelIndex.relIndex_ne_zero
+
+@[to_additive] theorem relIndex_pos [H.IsFiniteRelIndex K] : 0 < H.relIndex K :=
+  relIndex_ne_zero.pos
 
 @[to_additive]
 instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
@@ -749,7 +755,7 @@ lemma isFiniteRelIndex_top_iff : H.IsFiniteRelIndex ⊤ ↔ H.FiniteIndex := by
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive (attr := instance_reducible) /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
-  fintypeOfIndexNeZero FiniteIndex.index_ne_zero
+  fintypeOfIndexNeZero index_ne_zero
 
 @[to_additive]
 instance finite_quotient_of_finiteIndex [FiniteIndex H] : Finite (G ⧸ H) :=
@@ -776,7 +782,7 @@ variable (H) in
 theorem finite_iff_finite_and_finiteIndex : Finite G ↔ Finite H ∧ H.FiniteIndex where
   mp _ := ⟨inferInstance, inferInstance⟩
   mpr := fun ⟨_, _⟩ ↦ Nat.finite_of_card_ne_zero <|
-    H.card_mul_index ▸ mul_ne_zero Nat.card_pos.ne' FiniteIndex.index_ne_zero
+    H.card_mul_index ▸ mul_ne_zero Nat.card_pos.ne' index_ne_zero
 
 @[to_additive]
 theorem _root_.MonoidHom.finite_iff_finite_ker_range (f : G →* G') :
@@ -790,7 +796,11 @@ instance : FiniteIndex (⊤ : Subgroup G) :=
 
 @[to_additive]
 instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
-  ⟨index_inf_ne_zero FiniteIndex.index_ne_zero FiniteIndex.index_ne_zero⟩
+  ⟨index_inf_ne_zero index_ne_zero index_ne_zero⟩
+
+@[to_additive (attr := simp)]
+theorem finiteIndex_bot_iff : FiniteIndex (⊥ : Subgroup G) ↔ Finite G := by
+  simp [finiteIndex_iff, Nat.card_eq_zero]
 
 @[to_additive]
 theorem finiteIndex_iInf {ι : Type*} [Finite ι] {f : ι → Subgroup G}
@@ -813,17 +823,17 @@ instance instFiniteIndex_subgroupOf (H K : Subgroup G) [H.FiniteIndex] :
 instance (H' : Subgroup G') [H'.FiniteIndex] : (H'.comap f).FiniteIndex where
   index_ne_zero := by
     rw [index_comap]
-    exact FiniteIndex.index_ne_zero
+    exact index_ne_zero
 
 variable (H) in
 @[to_additive]
 theorem FiniteIndex.map_of_surjective [H.FiniteIndex] (hf : Function.Surjective f) :
     (H.map f).FiniteIndex where
-  index_ne_zero := ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (H.index_map_dvd hf)
+  index_ne_zero := ne_zero_of_dvd_ne_zero index_ne_zero (H.index_map_dvd hf)
 
 @[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
-  ⟨ne_zero_of_dvd_ne_zero FiniteIndex.index_ne_zero (index_dvd_of_le h)⟩
+  ⟨ne_zero_of_dvd_ne_zero index_ne_zero (index_dvd_of_le h)⟩
 
 /-- If `H ≤ K` and `H.index` divides `K.index`, then `H = K`. -/
 @[to_additive]
@@ -873,7 +883,7 @@ lemma isFiniteRelIndex_of_finiteIndex [h : H.FiniteIndex] : H.IsFiniteRelIndex K
 
 @[to_additive (attr := gcongr)]
 lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=
-  Nat.le_of_dvd (Nat.zero_lt_of_ne_zero FiniteIndex.index_ne_zero) (index_dvd_of_le h)
+  Nat.le_of_dvd (Nat.zero_lt_of_ne_zero index_ne_zero) (index_dvd_of_le h)
 
 @[to_additive (attr := gcongr)]
 lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by

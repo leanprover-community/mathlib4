@@ -5,8 +5,6 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Defs
-public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Subring.Basic
@@ -14,9 +12,7 @@ public import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Group.Submonoid.Units
 
 /-!
-
 # Unit subgroups of a ring
-
 -/
 
 @[expose] public section

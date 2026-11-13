@@ -138,10 +138,6 @@ theorem coe_coalgHomOfClass : ⇑(CoalgHom.ofClass e) = e :=
 
 @[deprecated (since := "2026-09-09")] alias coe_coe := coe_coalgHomOfClass
 
-@[nolint synTaut, deprecated "Now a syntactic tautology" (since := "2026-04-12")]
-theorem toLinearEquiv_eq_coe (f : A ≃ₗc[R] B) : f.toLinearEquiv = f :=
-  rfl
-
 @[simp]
 theorem toCoalgHom_eq_ofClass (f : A ≃ₗc[R] B) : f.toCoalgHom = f :=
   rfl
@@ -169,7 +165,7 @@ protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
 protected theorem congr_fun (h : e = e') (x : A) : e x = e' x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 end
 

@@ -45,7 +45,7 @@ instance forgetToTop_full : (forget₂ AlexDisc TopCat).Full where
 instance forgetToTop_faithful : (forget₂ AlexDisc TopCat).Faithful where
   map_injective {X Y f g} h := by
     ext x
-    exact ConcreteCategory.congr_hom h x
+    congrm $h x
 
 
 /-- Construct a bundled `AlexDisc` from the underlying topological space. -/

@@ -5,8 +5,6 @@ Authors: Kalle Kytölä, Moritz Doll
 -/
 module
 
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
@@ -42,7 +40,6 @@ with the respective topology instances on it.
 ## Tags
 
 weak-star, weak dual, duality
-
 -/
 
 @[expose] public section

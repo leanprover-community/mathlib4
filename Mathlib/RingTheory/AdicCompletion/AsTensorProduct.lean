@@ -7,12 +7,10 @@ module
 
 public import Mathlib.Algebra.FiveLemma
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Flat.Tensor
 
 /-!
-
 # Adic completion as tensor product
 
 In this file we examine properties of the natural map
@@ -35,7 +33,6 @@ As a corollary we obtain
 - Show that `ofTensorProduct` is an isomorphism for any finite free `R`-module over an arbitrary
   ring. This is mostly composing with the isomorphism to `R^n` and checking that the diagram
   commutes.
-
 -/
 
 @[expose] public section
@@ -219,7 +216,6 @@ variable {R : Type u} [CommRing R] (I : Ideal R)
 variable (M : Type u) [AddCommGroup M] [Module R M]
 
 /-!
-
 ### Noetherian case
 
 Suppose `R` is Noetherian. Then we show that the canonical map
@@ -242,7 +238,6 @@ by the previous section the first vertical map is surjective.
 
 Moreover, both rows are exact by right-exactness of the tensor product and exactness of adic
 completions over Noetherian rings. Hence we conclude by the 5-lemma.
-
 -/
 
 open CategoryTheory

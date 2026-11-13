@@ -6,10 +6,12 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 module
 
 public import Mathlib.Data.Finset.Order
-public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Interval.Finset.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters and finite sets.

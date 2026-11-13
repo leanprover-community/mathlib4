@@ -6,7 +6,6 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # SeminormFromConst
@@ -68,13 +67,13 @@ theorem seminormFromConst_bddBelow (x : R) :
   rintro r ⟨n, rfl⟩
   exact seminormFromConst_seq_nonneg c f x n
 
-variable {f}
-
 /-- `seminormFromConst_seq c f 0` is the constant sequence zero. -/
-theorem seminormFromConst_seq_zero (hf : f 0 = 0) : seminormFromConst_seq c f 0 = 0 := by
+theorem seminormFromConst_seq_zero : seminormFromConst_seq c f 0 = 0 := by
   rw [seminormFromConst_seq_def]
   ext n
-  rw [zero_mul, hf, zero_div, Pi.zero_apply]
+  rw [zero_mul, map_zero, zero_div, Pi.zero_apply]
+
+variable {f}
 
 variable {c}
 variable (hc : f c ≠ 0) (hpm : IsPowMul f)
@@ -129,7 +128,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 def seminormFromConst : RingSeminorm R where
   toFun     := seminormFromConst' c f
   map_zero' := tendsto_nhds_unique (tendsto_seminormFromConst_seq_atTop hc hpm 0)
-    (by simpa [seminormFromConst_seq_zero c (map_zero _)] using! tendsto_const_nhds)
+    (by simpa [seminormFromConst_seq_zero c f] using! tendsto_const_nhds)
   add_le' x y := by
     apply le_of_tendsto_of_tendsto' (tendsto_seminormFromConst_seq_atTop hc hpm (x + y)) <|
       (tendsto_seminormFromConst_seq_atTop hc hpm x).add
@@ -151,7 +150,7 @@ def seminormFromConst : RingSeminorm R where
       apply (tendsto_seminormFromConst_seq_atTop hc hpm (x * y)).comp
         (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
           simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
-      · rintro n; use n; lia
+      rintro n; use n; lia
     refine le_of_tendsto_of_tendsto' hlim ((tendsto_seminormFromConst_seq_atTop hc hpm x).mul
       (tendsto_seminormFromConst_seq_atTop hc hpm y)) (fun n ↦ ?_)
     simp only [seminormFromConst_seq]

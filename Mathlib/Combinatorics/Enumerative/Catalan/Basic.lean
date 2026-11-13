@@ -39,7 +39,6 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
 * Prove that the Catalan numbers enumerate many interesting objects.
 * Provide the many variants of Catalan numbers, e.g. associated to complex reflection groups,
   Fuss-Catalan, etc.
-
 -/
 
 @[expose] public section
@@ -49,6 +48,7 @@ open Finset
 
 /-- The recursive definition of the sequence of Catalan numbers:
 `catalan (n + 1) = ∑ i : Fin n.succ, catalan i * catalan (n - i)` -/
+@[oeis A000108]
 def catalan : ℕ → ℕ
   | 0 => 1
   | n + 1 =>

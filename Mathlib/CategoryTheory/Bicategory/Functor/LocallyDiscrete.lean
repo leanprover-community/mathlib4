@@ -25,7 +25,6 @@ the source bicategory is of the form `B := LocallyDiscrete B₀` for a category 
 We also prove that a functor `F : I ⥤ B` with `B` a strict bicategory can be promoted
 to a pseudofunctor (or oplax functor) (`Functor.toPseudofunctor`) with domain
 `LocallyDiscrete I`.
-
 -/
 
 @[expose] public section

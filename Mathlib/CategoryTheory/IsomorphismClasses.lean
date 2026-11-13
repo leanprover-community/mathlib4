@@ -6,8 +6,9 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
-public import Mathlib.CategoryTheory.Groupoid
-public import Mathlib.CategoryTheory.Types.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Objects of a category up to an isomorphism

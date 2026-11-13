@@ -6,11 +6,11 @@ Authors: Yunzhou Xie, Kenny Lau, Jiayang Hong
 module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 
 /-!
-
 # Quadratic Algebra
 
 In this file we define the quadratic algebra `QuadraticAlgebra R a b` over a commutative ring `R`,
@@ -21,10 +21,14 @@ and define some algebraic structures on it.
 * `QuadraticAlgebra R a b`:
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b` in `R`.
 
+## Implementation notes
+
+The canonical way of writing an element `r` of `R` in `QuadraticAlgebra R a b` is
+`QuadraticAlgebra.C r` (or `algebraMap R _ r` when `R` is a commutative ring), rather than `⟨r, 0⟩`.
+
 ## Tags
 
 Quadratic algebra, quadratic extension
-
 -/
 
 @[expose] public section
@@ -77,8 +81,11 @@ theorem re_C : (.C r : QuadraticAlgebra R a b).re = r := rfl
 @[simp]
 theorem im_C : (.C r : QuadraticAlgebra R a b).im = 0 := rfl
 
+@[simp]
+theorem mk_zero_eq_C (r : R) : (⟨r, 0⟩ : QuadraticAlgebra R a b) = .C r := rfl
+
 theorem C_injective : Function.Injective (.C : R → QuadraticAlgebra R a b) :=
-  fun _ _ h => congr_arg re h
+  fun _ _ h => congr(re $h)
 
 @[simp]
 theorem C_inj {x y : R} : (.C x : QuadraticAlgebra R a b) = .C y ↔ x = y :=
@@ -191,7 +198,7 @@ section Mul
 variable [Mul R] [Add R]
 
 instance : Mul (QuadraticAlgebra R a b) where
-  mul z w := ⟨z.1 * w.1 + a * z.2 * w.2, z.1 * w.2 + z.2 * w.1 + b * z.2 * w.2⟩
+  mul z w := ⟨z.re * w.re + a * z.im * w.im, z.re * w.im + z.im * w.re + b * z.im * w.im⟩
 
 @[simp] theorem re_mul (z w : QuadraticAlgebra R a b) :
     (z * w).re = z.re * w.re + a * z.im * w.im := rfl
@@ -298,7 +305,7 @@ variable [AddCommGroupWithOne R]
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
   intCast n := .C n
   intCast_ofNat n := by norm_cast
-  intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, C_neg]; norm_cast
+  intCast_negSucc n := by ext <;> simp [Int.negSucc_eq]
 
 @[simp, norm_cast]
 theorem re_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl
@@ -407,7 +414,7 @@ instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
   mul_comm _ _ := by ext <;> simp <;> ring
 
 instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
-  algebraMap.toFun s := ⟨algebraMap S R s, 0⟩
+  algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y := by ext <;> simp
   algebraMap.map_zero' := by ext <;> simp
@@ -415,7 +422,7 @@ instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) whe
   commutes' s z := by ext <;> simp [Algebra.commutes]
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
 
-theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 0⟩ := rfl
+theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = .C r := rfl
 
 theorem algebraMap_injective : (algebraMap R (QuadraticAlgebra R a b) : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]

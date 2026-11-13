@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Filtered.Final
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Types.Equalizers
 public import Mathlib.CategoryTheory.Subfunctor.Basic
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Types.Equalizers
 
 /-!
 # Type-valued flat functors
@@ -22,7 +23,6 @@ for a clarification about the differences between these notions.)
 
 In this file, we show that if finite limits exist in `C` and are preserved by `F`,
 then `F.Elements` is cofiltered.
-
 -/
 
 public section
@@ -53,8 +53,7 @@ lemma Functor.isCofiltered_elements
     let h' := (Types.equalizerLimit (g := F.map f.hom) (h := F.map g.hom)).isLimit
     refine ⟨.mk ((h'.conePointUniqueUpToIso h).hom ⟨x.val, by simp⟩),
       Elements.homMk (equalizer.ι f.hom g.hom)
-        (ConcreteCategory.congr_hom
-        (h'.conePointUniqueUpToIso_hom_comp h .zero) ⟨x.val, by simp⟩),
+        congr($(h'.conePointUniqueUpToIso_hom_comp h .zero) ⟨x.val, by simp⟩),
       by ext; exact equalizer.condition f.hom g.hom⟩
 
 namespace FunctorToTypes

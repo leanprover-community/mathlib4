@@ -6,7 +6,6 @@ Authors: Tanner Duve, Elan Roth
 module
 
 public import Mathlib.Computability.RecursiveIn
-public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Turing degrees

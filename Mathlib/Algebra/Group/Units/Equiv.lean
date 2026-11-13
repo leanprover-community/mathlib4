@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Units.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative and additive equivalence acting on units.
 -/

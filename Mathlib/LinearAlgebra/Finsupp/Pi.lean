@@ -5,9 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the module `α →₀ M`
@@ -137,7 +137,7 @@ theorem prodOfFinsuppNat_injective (inj : Injective f) : Injective (prodOfFinsup
   · simp_all [s]
   set n := s.max' ne with hn
   clear_value n; revert x y
-  induction n using Nat.strong_induction_on with | h n ih =>
+  induction n using Nat.strong_induction_on with | ind n ih
   intro x y s _ hn eq
   rw [← x.single_add_erase 0, ← y.single_add_erase 0]
   simp_rw [← mapDomain_comapDomain_nat_add_one, ← f.fst_prodOfFinsuppNat, eq]
@@ -182,7 +182,7 @@ theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α
 
 theorem leftInverse_splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : LeftInverse f (splittingOfFunOnFintypeSurjective f s) := fun g =>
-  LinearMap.congr_fun (splittingOfFunOnFintypeSurjective_splits f s) g
+  congr($(splittingOfFunOnFintypeSurjective_splits f s) g)
 
 theorem splittingOfFunOnFintypeSurjective_injective [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : Injective (splittingOfFunOnFintypeSurjective f s) :=

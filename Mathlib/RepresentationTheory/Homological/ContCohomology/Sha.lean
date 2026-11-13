@@ -5,9 +5,10 @@ Authors: Edison Xie, David Kurniadi Angdinata
 -/
 module
 
-public import Mathlib.FieldTheory.IsSepClosed
 public import Mathlib.FieldTheory.AbsoluteGaloisGroup
 public import Mathlib.RepresentationTheory.Homological.ContCohomology.Functoriality
+
+import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 # The Tate–Shafarevich group of a Galois module

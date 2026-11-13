@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Small
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
@@ -21,7 +20,6 @@ A morphism of schemes `f : X ⟶ Y` is locally of finite type if for each affine
 A morphism of schemes is of finite type if it is both locally of finite type and quasi-compact.
 
 We show that these properties are local, and are stable under compositions and base change.
-
 -/
 
 public section

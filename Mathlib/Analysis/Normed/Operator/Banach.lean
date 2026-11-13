@@ -6,11 +6,11 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Topology.Baire.Lemmas
-public import Mathlib.Topology.Baire.CompleteMetrizable
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.Baire.CompleteMetrizable
+
+import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
 # Banach open mapping theorem
@@ -41,9 +41,12 @@ structure NonlinearRightInverse where
   Do NOT use directly. Use the coercion instead. -/
   toFun : F → E
   /-- The bound `C` so that `‖inverse x‖ ≤ C * ‖x‖` for all `x`. -/
-  nnnorm : ℝ≥0
-  bound' : ∀ y, ‖toFun y‖ ≤ nnnorm * ‖y‖
+  nnNorm : ℝ≥0
+  bound' : ∀ y, ‖toFun y‖ ≤ nnNorm * ‖y‖
   right_inv' : ∀ y, f (toFun y) = y
+
+@[deprecated (since := "2026-10-31")]
+alias NonlinearRightInverse.nnnorm := NonlinearRightInverse.nnNorm
 
 instance : CoeFun (NonlinearRightInverse f) fun _ => F → E :=
   ⟨fun fsymm => fsymm.toFun⟩
@@ -54,7 +57,7 @@ theorem NonlinearRightInverse.right_inv {f : E →SL[σ] F} (fsymm : NonlinearRi
   fsymm.right_inv' y
 
 theorem NonlinearRightInverse.bound {f : E →SL[σ] F} (fsymm : NonlinearRightInverse f) (y : F) :
-    ‖fsymm y‖ ≤ fsymm.nnnorm * ‖y‖ :=
+    ‖fsymm y‖ ≤ fsymm.nnNorm * ‖y‖ :=
   fsymm.bound' y
 
 end ContinuousLinearMap
@@ -67,7 +70,7 @@ noncomputable def ContinuousLinearEquiv.toNonlinearRightInverse
     [RingHomInvPair σ' σ] (f : E ≃SL[σ] F) :
     ContinuousLinearMap.NonlinearRightInverse (f : E →SL[σ] F) where
   toFun := f.invFun
-  nnnorm := ‖(f.symm : F →SL[σ'] E)‖₊
+  nnNorm := ‖(f.symm : F →SL[σ'] E)‖₊
   bound' _ := ContinuousLinearMap.le_opNorm (f.symm : F →SL[σ'] E) _
   right_inv' := f.apply_symm_apply
 
@@ -277,12 +280,12 @@ theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
   ((f.isOpenMap hsurj).preimage_frontier_eq_frontier_preimage f.continuous s).symm
 
 theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F) (hsurj : f.range = ⊤) :
-    ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
+    ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnNorm := by
   choose C hC fsymm h using
     exists_preimage_norm_le _ (LinearMap.range_eq_top.1 hsurj)
   use {
       toFun := fsymm
-      nnnorm := ⟨C, hC.lt.le⟩
+      nnNorm := ⟨C, hC.lt.le⟩
       bound' := fun y => (h y).2
       right_inv' := fun y => (h y).1 }
   exact hC
@@ -293,14 +296,18 @@ end
 controlled right inverse. In general, it is not possible to ensure that such a right inverse
 is linear (take for instance the map from `E` to `E/F` where `F` is a closed subspace of `E`
 without a closed complement. Then it doesn't have a continuous linear right inverse.) -/
-noncomputable irreducible_def nonlinearRightInverseOfSurjective (f : E →SL[σ] F)
+@[no_expose]
+noncomputable def nonlinearRightInverseOfSurjective (f : E →SL[σ] F)
   (hsurj : f.range = ⊤) : NonlinearRightInverse f :=
   Classical.choose (exists_nonlinearRightInverse_of_surjective f hsurj)
 
-theorem nonlinearRightInverseOfSurjective_nnnorm_pos (f : E →SL[σ] F) (hsurj : f.range = ⊤) :
-    0 < (nonlinearRightInverseOfSurjective f hsurj).nnnorm := by
+theorem nonlinearRightInverseOfSurjective_nnNorm_pos (f : E →SL[σ] F) (hsurj : f.range = ⊤) :
+    0 < (nonlinearRightInverseOfSurjective f hsurj).nnNorm := by
   rw [nonlinearRightInverseOfSurjective]
   exact Classical.choose_spec (exists_nonlinearRightInverse_of_surjective f hsurj)
+
+@[deprecated (since := "2026-10-31")]
+alias nonlinearRightInverseOfSurjective_nnnorm_pos := nonlinearRightInverseOfSurjective_nnNorm_pos
 
 end ContinuousLinearMap
 
@@ -382,7 +389,7 @@ variable {E F : Type*}
 `f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
-  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitz⟩
+  ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitzWith⟩
 
 /-- A choice of anti-Lipschitz constant for `f : E →L[𝕜] F` injective with closed range
 (assuming `E` and `F` are Banach spaces). -/
@@ -629,7 +636,7 @@ lemma bijective_iff_dense_range_and_antilipschitz (f : E →SL[σ] F) :
   refine ⟨fun h ↦ ⟨?eq_top, ?anti⟩, fun ⟨hd, c, hf⟩ ↦ ⟨hf.injective, ?surj⟩⟩
   case eq_top => simpa [SetLike.ext'_iff] using! h.2.denseRange.closure_eq
   case anti =>
-    refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitz⟩ <;>
+    refine ⟨_, ContinuousLinearEquiv.ofBijective f ?_ ?_ |>.antilipschitzWith⟩ <;>
     simp only [LinearMap.range_eq_top, LinearMap.ker_eq_bot, f.coe_coe, h.1, h.2]
   case surj => rwa [← f.coe_coe, ← LinearMap.range_eq_top, ← closed_range_of_antilipschitz hf]
 

@@ -6,14 +6,14 @@ Authors: Christian Merten
 module
 
 public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.Algebra.Module.SnakeLemma
+
+import Mathlib.Algebra.Module.SnakeLemma
 
 /-!
 # Base change along flat modules preserves equalizers
 
 We show that base change along flat modules (resp. algebras)
 preserves kernels and equalizers.
-
 -/
 
 @[expose] public section

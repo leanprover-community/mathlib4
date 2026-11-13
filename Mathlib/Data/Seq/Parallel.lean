@@ -213,7 +213,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
             exact ⟨d, List.Mem.tail _ dm, ad⟩
   intro C aC
   -- Porting note: `revert this e'` & `intro this e'` are required.
-  apply memRecOn aC <;> [skip; intro C' IH] <;> intro l S e <;> have e' := congr_arg destruct e <;>
+  apply memRecOn aC <;> [skip; intro C' IH] <;> intro l S e <;> have e' := congr(destruct $e) <;>
     have := lem1 l <;> simp only [parallel.aux1, corec_eq, destruct_pure, destruct_think] at e' <;>
     revert this e' <;> rcases parallel.aux2 l with a' | l' <;> intro this e' <;>
     [injection e' with h'; injection e'; injection e'; injection e' with h']
@@ -285,12 +285,12 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
   let T : WSeq (Computation (α × Computation α)) := S.map fun c => c.map fun a => (a, c)
   have : S = T.map (map fun c => c.1) := by
     rw [← WSeq.map_comp]
-    refine (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) ?_)
+    refine (WSeq.map_id _).symm.trans congr(WSeq.map $(?_) S)
     funext c
     dsimp [id, Function.comp_def]
     rw [← map_comp]
     exact (map_id _).symm
-  have pe := congr_arg parallel this
+  have pe := congr(parallel $this)
   rw [← map_parallel] at pe
   have h' := h
   rw [pe] at h'

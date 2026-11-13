@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-public import Mathlib.MeasureTheory.Measure.Dirac.Def
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
@@ -40,8 +39,7 @@ theorem map_dirac' {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map 
 @[simp]
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
-  simp only [Measure.coe_smul, Pi.smul_apply,
-    dirac_apply' _ hs, smul_eq_mul]
+  simp only [smul_apply, dirac_apply' _ hs, smul_eq_mul]
   classical
   rw [Measure.map_apply measurable_const hs, Set.preimage_const]
   by_cases hsc : c ∈ s
@@ -105,8 +103,8 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
   let points : measurableAtoms → α := fun s ↦ (h_nonempty s).some
   have h_points_mem (s : measurableAtoms) : points s ∈ s.1 := (h_nonempty s).some_mem
   refine ⟨Set.range points, ext_of_measurableAtoms fun x ↦ ?_⟩
-  rw [sum_apply _ (MeasurableSet.measurableAtom_of_countable x)]
-  simp only [Measure.smul_apply, smul_eq_mul]
+  rw [Measure.sum_apply _ (MeasurableSet.measurableAtom_of_countable x)]
+  simp only [smul_apply, smul_eq_mul]
   simp_rw [dirac_apply' _ (MeasurableSet.measurableAtom_of_countable x)]
   rw [tsum_eq_single ⟨points ⟨measurableAtom x, by simp [measurableAtoms]⟩, by simp⟩]
   · rw [indicator_of_mem]
@@ -140,7 +138,7 @@ theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass 
   calc
     (∑' x : α, s.indicator (fun x => μ {x}) x) =
       Measure.sum (fun a => μ {a} • Measure.dirac a) s := by
-      simp only [Measure.sum_apply _ hs, Measure.smul_apply, smul_eq_mul, Measure.dirac_apply,
+      simp only [Measure.sum_apply _ hs, smul_apply, smul_eq_mul, Measure.dirac_apply,
         Set.indicator_apply, mul_ite, Pi.one_apply, mul_one, mul_zero]
     _ = μ s := by rw [μ.sum_smul_dirac]
 
@@ -210,9 +208,11 @@ theorem dirac_eq_one_iff_mem (hs : MeasurableSet s) : dirac a s = 1 ↔ a ∈ s 
   rw [← prob_compl_eq_zero_iff hs, ← mem_ae_iff]
   apply mem_ae_dirac_iff hs
 
-theorem dirac_eq_zero_iff_not_mem (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
+theorem dirac_eq_zero_iff_notMem (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
   rw [← compl_compl s, ← mem_ae_iff, notMem_compl_iff]
   apply mem_ae_dirac_iff (MeasurableSet.compl_iff.mpr hs)
+
+@[deprecated (since := "2026-09-28")] alias dirac_eq_zero_iff_not_mem := dirac_eq_zero_iff_notMem
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by
@@ -241,7 +241,7 @@ lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
     Measure.dirac x = Measure.dirac y ↔ ∀ A, MeasurableSet A → (x ∈ A ↔ y ∈ A) := by
   constructor
   · intro h A A_mble
-    have obs := congr_arg (fun μ ↦ μ A) h
+    have obs := congr($h A)
     simp only [Measure.dirac_apply' _ A_mble] at obs
     by_cases x_in_A : x ∈ A
     · simpa only [x_in_A, indicator_of_mem, Pi.one_apply, true_iff, Eq.comm (a := (1 : ℝ≥0∞)),
@@ -308,7 +308,7 @@ lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a}
     simp_rw [Finset.mem_coe, Set.inter_iUnion]
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
       (by measurability)]
-    · simp only [coe_finsetSum, Finset.sum_apply, smul_apply]
+    · simp only [sum_apply, smul_apply, dirac_apply, smul_eq_mul]
       congr with a
       by_cases ha : a ∈ t <;> simp [*]
     simpa

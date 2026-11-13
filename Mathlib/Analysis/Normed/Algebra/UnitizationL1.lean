@@ -6,7 +6,6 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Algebra.Algebra.TransferInstance
-public import Mathlib.Algebra.Algebra.Unitization
 public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-! # Unitization equipped with the $L^1$ norm
@@ -68,15 +67,21 @@ lemma unitization_norm_def (x : WithLp 1 (Unitization 𝕜 A)) :
     prod_norm_eq_add (by simp : 0 < (1 : ℝ≥0∞).toReal) _
   _ = ‖(ofLp x).fst‖ + ‖(ofLp x).snd‖ := by simp
 
-lemma unitization_nnnorm_def (x : WithLp 1 (Unitization 𝕜 A)) :
+lemma unitization_nnNorm_def (x : WithLp 1 (Unitization 𝕜 A)) :
     ‖x‖₊ = ‖(ofLp x).fst‖₊ + ‖(ofLp x).snd‖₊ :=
   Subtype.ext <| unitization_norm_def x
 
+@[deprecated (since := "2026-10-31")] alias unitization_nnnorm_def := unitization_nnNorm_def
+
+@[simp]
 lemma unitization_norm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖ = ‖x‖ := by
   simp [unitization_norm_def]
 
-lemma unitization_nnnorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ = ‖x‖₊ := by
-  simp [unitization_nnnorm_def]
+@[simp]
+lemma unitization_nnNorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ = ‖x‖₊ := by
+  simp [unitization_nnNorm_def]
+
+@[deprecated (since := "2026-10-31")] alias unitization_nnnorm_inr := unitization_nnNorm_inr
 
 lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm
@@ -109,13 +114,15 @@ lemma unitization_algebraMap (r : 𝕜) :
     ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 
 /-- `equiv` bundled as an algebra isomorphism with `Unitization 𝕜 A`. -/
-@[simps!]
+@[simps! -isSimp apply symm_apply symm_apply_ofLp]
 def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A]
     [IsScalarTower R 𝕜 A] : WithLp 1 (Unitization 𝕜 A) ≃ₐ[R] Unitization 𝕜 A where
   __ := WithLp.linearEquiv _ R _
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
   commutes' _ := rfl
+
+attribute [simp] unitizationAlgEquiv_apply unitizationAlgEquiv_symm_apply
 
 noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
   dist_eq := dist_eq_norm_neg_add

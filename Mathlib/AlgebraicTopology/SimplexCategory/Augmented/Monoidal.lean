@@ -24,7 +24,6 @@ there are maps `AugmentedSimplexCategory.inl x y : x ⟶ x ⊗ y` and
 of maps is given by  `AugmentedSimplexCategory.tensorObj_hom_ext`, which characterizes maps
 `x ⊗ y ⟶ z` in terms of their composition with these two maps. We also characterize the behaviour
 of the associator isomorphism with respect to these maps.
-
 -/
 
 @[expose] public section
@@ -205,10 +204,10 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
     cases j using Fin.addCases (m := x.len + 1) (n := y.len + 1) with
     | left j =>
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₁
-      simpa [← inl'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₁ j
+      simpa [← inl'_eval, ConcreteCategory.hom, Fin.ext_iff] using congr($h₁ j)
     | right j =>
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₂
-      simpa [← inr'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₂ j
+      simpa [← inr'_eval, ConcreteCategory.hom, Fin.ext_iff] using congr($h₂ j)
   | .of x, .star, .of z, f, g => by
       simp only [inl, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
         whiskerLeft_id_star] at h₁
@@ -244,7 +243,7 @@ lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
       rw [Fin.addCases_left]
     rfl
   | _, _, .star, _, f₁, f₂ => by cat_disch
-  | .star, _, _, _, _, _ => rfl
+  | .star, _, _, _, _, _ => by subsingleton
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -271,7 +270,7 @@ lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
       rw [Fin.addCases_right]
     rfl
   | .star, _, _, _, f₁, f₂ => by cat_disch
-  | _, _, .star, _, _, _ => rfl
+  | _, _, .star, _, _, _ => by subsingleton
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

@@ -6,9 +6,10 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Computability.Encoding
-public import Mathlib.Logic.Small.List
 public import Mathlib.ModelTheory.Syntax
 public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.Logic.Small.List
 
 /-!
 # Encodings and Cardinality of First-Order Syntax
@@ -31,7 +32,6 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 - `Primcodable` instances for terms and formulas, based on the `encoding`s
 - Computability facts about term and formula operations, to set up a computability approach to
   incompleteness
-
 -/
 
 @[expose] public section

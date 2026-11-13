@@ -5,15 +5,14 @@ Authors: Yongxi Lin
 -/
 module
 
-public import Mathlib.Data.Setoid.Partition
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.Order.Setoid.Partition
 
 /-!
 # Measurability of piecewise functions
 
 In this file, we prove some results about measurability of functions defined by using
 `IndexedPartition.piecewise`.
-
 -/
 
 @[expose] public section

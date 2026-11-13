@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
-public import Mathlib.Analysis.Calculus.FDeriv.Add
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+
+import Mathlib.Analysis.Calculus.FDeriv.Add
 
 /-!
 # Implicit function theorem
@@ -253,7 +254,7 @@ theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
-  convert! φ.hasStrictFDerivAt_implicitFunction_fderiv
+  convert φ.hasStrictFDerivAt_implicitFunction_fderiv
   ext1 x
   rw [eq_comm, fderiv_implicitFunction_apply_eq_iff]
   simp_all [DFunLike.ext_iff]
@@ -390,7 +391,7 @@ theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (h
       f (hf.implicitFunctionOfComplemented f f' hf' hker p.1 p.2) = p.1 :=
   ((hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).eventually_right_inverse <|
         hf.mem_implicitToOpenPartialHomeomorphOfComplemented_target hf' hker).mono
-    fun ⟨_, _⟩ h => congr_arg Prod.fst h
+    fun ⟨_, _⟩ h => congr($(h).fst)
 
 /-- Any point in some neighborhood of `a` can be represented as
 `HasStrictFDerivAt.implicitFunctionOfComplemented` of some point. -/
@@ -456,7 +457,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] {E :
 returns an open partial homeomorphism between `E` and `F × ker f'`. -/
 def implicitToOpenPartialHomeomorph (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :
     OpenPartialHomeomorph E (F × f'.ker) :=
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf'
     f'.ker_closedComplemented_of_finiteDimensional_range
 
@@ -475,24 +476,24 @@ theorem implicitToOpenPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf'
 theorem implicitToOpenPartialHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) (y : f'.ker) :
     hf.implicitToOpenPartialHomeomorph f f' hf' (y + a) = (f (y + a), y) :=
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   implicitToOpenPartialHomeomorphOfComplemented_apply_ker ..
 
 @[simp]
 theorem implicitToOpenPartialHomeomorph_self (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :
     hf.implicitToOpenPartialHomeomorph f f' hf' a = (f a, 0) :=
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   implicitToOpenPartialHomeomorphOfComplemented_self ..
 
 theorem mem_implicitToOpenPartialHomeomorph_source (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) : a ∈ (hf.implicitToOpenPartialHomeomorph f f' hf').source :=
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   ImplicitFunctionData.pt_mem_toOpenPartialHomeomorph_source _
 
 theorem mem_implicitToOpenPartialHomeomorph_target (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) :
     (f a, (0 : f'.ker)) ∈ (hf.implicitToOpenPartialHomeomorph f f' hf').target :=
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   mem_implicitToOpenPartialHomeomorphOfComplemented_target ..
 
 theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) {α : Type*}
@@ -509,13 +510,13 @@ alias _root_.Filter.Tendsto.implicitFunction := tendsto_implicitFunction
 /-- `HasStrictFDerivAt.implicitFunction` sends `(z, y)` to a point in `f ⁻¹' z`. -/
 theorem map_implicitFunction_eq (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :
     ∀ᶠ p : F × f'.ker in 𝓝 (f a, 0), f (hf.implicitFunction f f' hf' p.1 p.2) = p.1 :=
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   map_implicitFunctionOfComplemented_eq ..
 
 @[simp]
 theorem implicitFunction_apply_image (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :
     hf.implicitFunction f f' hf' (f a) 0 = a := by
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   apply implicitFunctionOfComplemented_apply_image
 
 /-- Any point in some neighborhood of `a` can be represented as `HasStrictFDerivAt.implicitFunction`
@@ -523,12 +524,12 @@ of some point. -/
 theorem eq_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :
     ∀ᶠ x in 𝓝 a,
       hf.implicitFunction f f' hf' (f x) (hf.implicitToOpenPartialHomeomorph f f' hf' x).snd = x :=
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   eq_implicitFunctionOfComplemented ..
 
 theorem to_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤) :
     HasStrictFDerivAt (hf.implicitFunction f f' hf' (f a)) f'.ker.subtypeL 0 :=
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 F
   to_implicitFunctionOfComplemented ..
 
 end FiniteDimensional

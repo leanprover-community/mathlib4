@@ -6,7 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Order.Defs.LinearOrder
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # More `Char` instances

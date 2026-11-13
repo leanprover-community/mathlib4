@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Group.Finsupp
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.GetD
 
 /-!
-
 # Lists as finsupp
 
 ## Main definitions

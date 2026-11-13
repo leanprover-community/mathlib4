@@ -5,9 +5,10 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -175,7 +176,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   rcases exists_continuous_eLpNorm_sub_le_of_closed hp s_closed isOpen_interior sk hsμ.ne c δpos.ne'
     with ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
   have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
-    convert! (hδ _ _ I2 I1).le using 2
+    convert (hδ _ _ I2 I1).le using 2
     ext x
     simp
   refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
@@ -217,7 +218,7 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
     (memLp_one_iff_integrable.2 hf).exists_hasCompactSupport_eLpNorm_sub_le
       ENNReal.one_ne_top hε
   exact ⟨g, hg_support, by
-    rwa [eLpNorm_one_eq_lintegral_enorm
+    rwa [eLpNorm_one_eq_lintegral_eNorm
       ((memLp_one_iff_integrable.2 hf).sub hg_mem).aestronglyMeasurable] at hg,
     hg_cont, memLp_one_iff_integrable.1 hg_mem⟩
 
@@ -271,7 +272,7 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
       δpos.ne' with
     ⟨f, f_cont, I2, f_bound, -, f_mem⟩
   have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
-    convert! (hδ _ _ I2 I1).le using 2
+    convert (hδ _ _ I2 I1).le using 2
     ext x
     simp
   refine ⟨f, I3, f_cont, f_mem, ?_⟩
@@ -302,7 +303,7 @@ theorem Integrable.exists_boundedContinuous_lintegral_sub_le [μ.WeaklyRegular] 
   obtain ⟨g, hg, hg_mem⟩ := (memLp_one_iff_integrable.2 hf).exists_boundedContinuous_eLpNorm_sub_le
     ENNReal.one_ne_top hε
   exact ⟨g, by
-    rwa [eLpNorm_one_eq_lintegral_enorm
+    rwa [eLpNorm_one_eq_lintegral_eNorm
       ((memLp_one_iff_integrable.2 hf).sub hg_mem).aestronglyMeasurable] at hg,
     memLp_one_iff_integrable.1 hg_mem⟩
 

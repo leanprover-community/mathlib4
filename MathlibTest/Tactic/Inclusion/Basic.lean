@@ -19,6 +19,37 @@ example : ((-3 : ℤ) : ℝ) = -3 := by dyadic_interval
 
 end Constants
 
+section Integers
+
+example {n : ℤ} (hn₀ : 1 < n) (hn₁ : n < 3) : n = 2 := by
+  dyadic_interval
+
+example {x y z : ℤ} (hx : x ∈ Set.Ico 0 2) (hy : y ∈ Set.Ioc 1 3)
+    (hz : z ∈ Set.Ioo (-3) 0) : x + y - z ∈ Set.Icc 3 6 := by dyadic_interval
+
+example {x y : ℤ} (hx : x ∈ Set.Ioo (-3) 4) (hy : y ∈ Set.Icc (-2) 1) :
+    x * y ∈ Set.Icc (-6) 4 := by dyadic_interval
+
+example {x : ℤ} (hx : x ∈ Set.Ioo (-3) 2) :
+    -x ∈ Set.Icc (-1) 2 ∧ |x| ∈ Set.Icc 0 2 := by dyadic_interval
+
+example {x : ℤ} (hx : x < -2) : x ^ 3 ≤ -27 ∧ 81 ≤ x ^ 4 := by
+  dyadic_interval [binSplit := 3]
+
+example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc 1 2) (hn : n ∈ Set.Ioo (-2) 3) :
+    x * ((n ^ 2 + 1 : ℤ) : ℝ) + (n : ℝ) ^ 2 ∈ Set.Icc 1 14 := by dyadic_interval
+
+example {n : ℤ} (hn : n < -2) : 9 ≤ (n : ℝ) ^ 2 := by dyadic_interval
+
+example {n : ℤ} (hn : n ∈ Set.Icc (-2) 2) : n * n - n ^ 2 = 0 := by
+  dyadic_interval [binSplit := 3]
+
+example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc (-1) 1) (hn : n ∈ Set.Icc 0 1) :
+    x + ((n * (1 - n) : ℤ) : ℝ) - x ∈ Set.Icc (-0.5) 0.5 := by
+  dyadic_interval [binSplit := 2, prec := 1]
+
+end Integers
+
 section Rationals
 
 example : ((1 / 2 : ℚ) : ℝ) = 0.5 := by dyadic_interval [prec := 1]
@@ -108,6 +139,11 @@ example {x y : ℝ} (hx : x ∈ Set.Icc (-2) 3) (hy : y ∈ Set.Icc (-5) 7) :
 
 example {x y : ℝ} (hx : 3 ≤ x) (hy : 2 ≤ y) : 6 ≤ x * y := by dyadic_interval
 
+example {x : ℝ} (hx : x ≤ -2) : 16 ≤ x ^ 4 ∧ x ^ 3 ≤ -8 := by dyadic_interval
+
+example {x y : ℝ} (hx₀ : 1 ≤ x) (hx₁ : x ≤ 2) (hy : y ∈ Set.Icc (-1) 2) :
+    x ^ 2 * (y - 1) ^ 3 - (x - y) ^ 2 ∈ Set.Icc (-41) 4 := by dyadic_interval
+
 example {x : ℝ} (hx : x ∈ Set.Icc (-2) 1) : -x ∈ Set.Icc (-1) 2 := by dyadic_interval
 
 example {x y : ℝ} (hx : 3 ≤ x) : 3 ≤ |x| + |y| := by dyadic_interval
@@ -148,6 +184,10 @@ example {x y : ℝ} (hx : x ≤ 1.25) (hy : 0.5 ≤ y) :
 
 example {x y : ℝ} (hx₀ : 1 ≤ x) (hx₁ : x ≤ 2) (hy : y ∈ Set.Icc 0.5 1.25) :
     x * y + ((1 / 3 : ℚ) : ℝ) ∈ Set.Icc 0.8 2.9 := by dyadic_interval [prec := 12]
+
+example {x y : ℝ} (hx : x ∈ Set.Icc (-0.5) 1.5) (hy₀ : -2 ≤ y) (hy₁ : y ≤ -1) :
+    x ^ 4 + 0.5 * x ^ 2 * y + ((1 / 8 : ℚ) : ℝ) ∈ Set.Icc (-2.125) 5.1875 := by
+  dyadic_interval [prec := 4]
 
 end Arithmetic
 
@@ -201,7 +241,6 @@ example : (1 : ℝ) ≤ 2 := by
 /-- error: The inclusion check failed:
 The proposition is provably false -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 example (h : False) : (2 : ℝ) ≤ 1 := by
   dyadic_interval?
   exact h.elim
@@ -209,7 +248,6 @@ example (h : False) : (2 : ℝ) ≤ 1 := by
 /-- error: The inclusion check failed:
 The proposition was not proven true or false. -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 example (x : ℝ) (h : False) : x ≤ 1 := by
   dyadic_interval?
   exact h.elim
