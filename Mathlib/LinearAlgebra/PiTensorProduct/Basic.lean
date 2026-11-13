@@ -665,8 +665,8 @@ def piTensorHomMap₂ : (⨂[R₃] i, s i →ₛₗ[σ₁₃] t i →ₛₗ[σ�
 
 @[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₛₗ[σ₁₃] t i →ₛₗ[σ₂₃] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
-    piTensorHomMap₂ (tprod R₃ f) (tprod R a) (tprod R₂ b)
-      = tprod R₃ (fun i ↦ f i (a i) (b i)) := by
+    piTensorHomMap₂ (tprod R₃ f) (tprod R a) (tprod R₂ b) =
+      tprod R₃ (fun i ↦ f i (a i) (b i)) := by
   simp [piTensorHomMapFun₂, piTensorHomMap₂]
 
 end map
