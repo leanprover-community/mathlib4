@@ -447,14 +447,14 @@ theorem CliqueFree.anti_isContained (h : G ⊑ H) : H.CliqueFree n → G.CliqueF
 theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
 
-theorem Free.cliqueFree_card [Finite β] {H : SimpleGraph β} (h : H.Free G) :
+theorem Free.cliqueFree_natCard [Finite β] {H : SimpleGraph β} (h : H.Free G) :
     G.CliqueFree (Nat.card β) := by
   have := Fintype.ofFinite β
   rw [Nat.card_eq_fintype_card, cliqueFree_card_iff_free_top]
   exact h.mono <| .of_le le_top
 
 theorem Free.cliqueFree {n : ℕ} {H : SimpleGraph (Fin n)} (h : H.Free G) : G.CliqueFree n := by
-  simpa using h.cliqueFree_card
+  simpa using h.cliqueFree_natCard
 
 /-- If a graph is cliquefree, any graph that is contained in it is also cliquefree. -/
 @[gcongr only]
