@@ -5,6 +5,7 @@ Authors: Fangming Li, Jujian Zhang
 -/
 module
 
+public import Mathlib.Data.ENat.WithBot
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
@@ -96,12 +97,8 @@ lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
 
-lemma FiniteRingKrullDim.ringKrullDim_eq_nat [FiniteRingKrullDim R] :
-    ∃ n : ℕ, ringKrullDim R = n := by
-  obtain ⟨m, hm⟩ := WithBot.ne_bot_iff_exists.mp (ringKrullDim_ne_bot (R := R))
-  obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp
-    (WithBot.coe_inj.not.mp (ne_of_eq_of_ne hm ringKrullDim_ne_top))
-  exact ⟨n, ((WithBot.coe_inj.mpr hn).trans hm).symm⟩
+lemma FiniteRingKrullDim.ringKrullDim_eq_nat [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n :=
+  ENat.WithBot.eq_natCast_of_ne_bot_of_ne_top ringKrullDim_ne_bot ringKrullDim_ne_top
 
 lemma Nontrivial.of_finiteRingKrullDim [FiniteRingKrullDim R] : Nontrivial R := by
   rw [← PrimeSpectrum.nonempty_iff_nontrivial]
