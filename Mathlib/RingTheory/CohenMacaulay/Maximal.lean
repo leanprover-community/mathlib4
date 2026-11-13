@@ -84,7 +84,7 @@ lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
 
 theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsMaximalCohenMacaulay] : Module.Free R M := by
-  rcases FiniteRingKrullDim.ringKrullDim_eq_nat R with ⟨n, hn⟩
+  rcases FiniteRingKrullDim.ringKrullDim_eq_nat (R := R) with ⟨n, hn⟩
   induction n generalizing R M with
   | zero =>
     let : Field R := (isField_of_isRegularLocalRing_of_dimension_zero hn).toField
@@ -122,4 +122,5 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
     have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
     have free := ih (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) dim
     have := Module.finitePresentation_of_finite R M
-    exact (Module.free_quotSMulTop_iff_free R M (maximalIdeal_le_jacobson _ xmem) reg).mp free
+    have xmem' : x ∈ Ring.jacobson R := by simpa [IsLocalRing.ringJacobson_eq_maximalIdeal]
+    exact (Module.free_quotSMulTop_iff_free R M xmem' reg).mp free
