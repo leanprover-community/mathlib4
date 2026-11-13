@@ -62,7 +62,7 @@ def parametric
   hasStrictFDerivAt_rightFun := ContinuousLinearMap.hasStrictFDerivAt (.prodMap (.id 𝕜 E) projKer)
   pt := a
   range_leftDeriv := by
-    rw [← top_le_iff, ← hdf, fderiv_fun_comp_prodMk, ContinuousLinearMap.coe_comp]
+    rw [← top_le_iff, ← hdf, fderiv_fun_comp_prodMk, ContinuousLinearMap.toLinearMap_comp]
     · exact LinearMap.range_comp_le_range _ _
     · exact hfa.hasFDerivAt.differentiableAt
   range_rightDeriv := by simp [LinearMap.range_eq_of_proj hprojKer]
@@ -74,7 +74,7 @@ def parametric
     · convert isCompl_top_bot
       rw [LinearMap.map_fst_ker_eq_top, ← H, hdf]
       apply le_top
-    · simpa [H] using projKer.isCompl_of_proj hprojKer
+    · simpa [H, LinearMap.ker_comp] using projKer.isCompl_of_proj hprojKer
 
 theorem rightDeriv_parametric_apply_ker' {f : E × F → G} {a : E × F}
     (hfa : HasStrictFDerivAt f (fderiv 𝕜 f a) a)
@@ -100,19 +100,19 @@ theorem fst_implicitFunction_parametric_eventuallyEq_fst_snd {f : E × F → G} 
     (hdf : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).range = ⊤)
     (projKer : F →L[𝕜] (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).ker)
     (hprojKer : ∀ x : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).ker, projKer x = x) :
-    (fun z ↦ ((parametric f a hfa hdf projKer hprojKer).implicitFunction z.1 z.2).fst)
-      =ᶠ[𝓝 (f a, a.1, projKer a.2)] (fun z ↦ z.snd.fst) := by
-  have := (parametric f a hfa hdf projKer hprojKer).implicitFunction -- TODO delete
-  filter_upwards [(parametric f a hfa hdf projKer hprojKer).right_map_implicitFunction]
-  simp +contextual [parametric_rightFun, Prod.map]
+    letI φ := (parametric f a hfa hdf projKer hprojKer).implicitFunction
+    (fun z ↦ (φ z.1 z.2).fst) =ᶠ[𝓝 (f a, a.1, projKer a.2)] fun z ↦ z.2.1 := by
+  simpa [Filter.EventuallyEq, parametric_rightFun, Prod.map_apply']
+    using Filter.EventuallyEq.fun_comp
+      (parametric f a hfa hdf projKer hprojKer).rightFun_implicitFunction (·.1)
 
 theorem fst_implicitFunction_parametric_eventuallyEq_fst {f : E × F → G} {a : E × F}
     (hfa : HasStrictFDerivAt f (fderiv 𝕜 f a) a)
     (hdf : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).range = ⊤)
     (projKer : F →L[𝕜] (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).ker)
     (hprojKer : ∀ x : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).ker, projKer x = x) :
-    (fun z ↦ ((parametric f a hfa hdf projKer hprojKer).implicitFunction (f a) z).fst)
-      =ᶠ[𝓝 (a.1, projKer a.2)] (fun z ↦ z.fst) :=
+    letI φ := (parametric f a hfa hdf projKer hprojKer).implicitFunction
+    (fun z ↦ (φ (f a) z).fst) =ᶠ[𝓝 (a.1, projKer a.2)] Prod.fst :=
   fst_implicitFunction_parametric_eventuallyEq_fst_snd hfa hdf projKer hprojKer
     |>.comp_tendsto (tendsto_const_nhds.prodMk_nhds Filter.tendsto_id)
 
@@ -121,17 +121,18 @@ theorem apply_implicitFunction_parametric_eventuallyEq_fst {f : E × F → G} {a
     (hdf : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).range = ⊤)
     (projKer : F →L[𝕜] (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).ker)
     (hprojKer : ∀ x : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).ker, projKer x = x) :
-    (fun z ↦ (f ((parametric f a hfa hdf projKer hprojKer).implicitFunction z.1 z.2)))
-      =ᶠ[𝓝 (f a, a.1, projKer a.2)] (fun z ↦ z.fst) := by
-  simpa using (parametric f a hfa hdf projKer hprojKer).left_map_implicitFunction
+    letI φ := (parametric f a hfa hdf projKer hprojKer).implicitFunction
+    (fun z ↦ f (φ z.1 z.2)) =ᶠ[𝓝 (f a, a.1, projKer a.2)] Prod.fst := by
+  simpa [Filter.EventuallyEq, parametric_rightFun, Prod.map_apply']
+    using (parametric f a hfa hdf projKer hprojKer).leftFun_implicitFunction
 
 theorem apply_implicitFunction_parametric_eventuallyEq_const {f : E × F → G} {a : E × F}
     (hfa : HasStrictFDerivAt f (fderiv 𝕜 f a) a)
     (hdf : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).range = ⊤)
     (projKer : F →L[𝕜] (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).ker)
     (hprojKer : ∀ x : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2).ker, projKer x = x) :
-    (fun z ↦ (f ((parametric f a hfa hdf projKer hprojKer).implicitFunction (f a) z)))
-      =ᶠ[𝓝 (a.1, projKer a.2)] fun _ ↦ f a :=
+    letI φ := (parametric f a hfa hdf projKer hprojKer).implicitFunction
+    (fun z ↦ f (φ (f a) z)) =ᶠ[𝓝 (a.1, projKer a.2)] fun _ ↦ f a :=
   apply_implicitFunction_parametric_eventuallyEq_fst hfa hdf projKer hprojKer
     |>.comp_tendsto (tendsto_const_nhds.prodMk_nhds Filter.tendsto_id)
 
