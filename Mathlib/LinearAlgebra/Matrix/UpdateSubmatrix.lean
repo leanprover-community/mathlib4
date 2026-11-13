@@ -15,8 +15,6 @@ Given embeddings `eₙ : n ↪ o` and `eₘ : m ↪ p`, a matrix `A : Matrix n m
 `B : Matrix o p α`, this file provides the machinery to build the matrix that replaces in
 `B` the entries at positions `(eₙ i, eₘ j)` with `A i j`. It generalizes `Matrix.updateRow` and
 `Matrix.updateCol` .
-It also provides the special case of a square matrix extended by the identity with the
-corresponding `MonoidHom` `Matrix n n R →* Matrix m m R` for any embedding `n ↪ m`.
 
 ## Main definitions
 
@@ -25,8 +23,6 @@ corresponding `MonoidHom` `Matrix n n R →* Matrix m m R` for any embedding `n 
 * `Matrix.updateSubmatrixAddMonoidHom eₙ eₘ`, `Matrix.updateSubmatrixLinearMap R eₙ eₘ`:
   `updateSubmatrix` as an additive monoid homomorphism, resp. a linear map,
   `Matrix n m α × Matrix o p α → Matrix o p α`.
-* `Matrix.extendedByOne e A`: the square matrix `A` extended along `e : n ↪ m` by the identity.
-* `Matrix.extendedByOneMonoidHom e`: `extendedByOne e` as a monoid homomorphism.
 -/
 
 @[expose] public section
@@ -352,152 +348,5 @@ theorem updateSubmatrixLinearMap_toAddMonoidHom [Semiring R] [AddCommMonoid α] 
   rfl
 
 end UpdateSubmatrix
-
-section ExtendByOne
-
-variable {n' m' S : Type*} [DecidableEq l] [DecidableEq m] [Semiring R] [Semiring S] (e : n ↪ m)
-
-/-- Extend a matrix `A : Matrix n n R` along an embedding `e : n ↪ m`: the entry at `(e i, e j)`
-is `A i j`, and every other entry is that of the identity matrix. -/
-noncomputable abbrev extendedByOne (A : Matrix n n R) : Matrix m m R :=
-  updateSubmatrix e e A (1 : Matrix m m R)
-
-theorem eq_extendedByOne_iff {B : Matrix m m R} {A : Matrix n n R} :
-    B = A.extendedByOne e ↔ B.submatrix e e = A ∧
-      ∀ i j, (i ∉ Set.range e ∨ j ∉ Set.range e) → B i j = (1 : Matrix m m R) i j :=
-  eq_updateSubmatrix_iff ..
-
-theorem extendedByOne_trans (f : m ↪ l) (A : Matrix n n R) :
-    A.extendedByOne (e.trans f) = (A.extendedByOne e).extendedByOne f := by
-  rw [extendedByOne, updateSubmatrix_trans, submatrix_one_embedding]
-
-theorem extendedByOne_equiv (σ : n ≃ m) (A : Matrix n n R) :
-    A.extendedByOne σ.toEmbedding = reindex σ σ A :=
-  updateSubmatrix_equiv_equiv ..
-
-theorem extendedByOne_reindex (σ : n ≃ n') (f : n' ↪ m) (A : Matrix n n R) :
-    (reindex σ σ A).extendedByOne f = A.extendedByOne (σ.toEmbedding.trans f) :=
-  updateSubmatrix_reindex ..
-
-theorem reindex_extendedByOne [DecidableEq m'] (ρ : m ≃ m') (A : Matrix n n R) :
-    reindex ρ ρ (A.extendedByOne e) = A.extendedByOne (e.trans ρ.toEmbedding) := by
-  rw [extendedByOne, reindex_updateSubmatrix, reindex_apply, submatrix_one_equiv]
-
-theorem transpose_extendedByOne (A : Matrix n n R) :
-    (A.extendedByOne e)ᵀ = Aᵀ.extendedByOne e := by
-  rw [extendedByOne, transpose_updateSubmatrix, transpose_one]
-
-theorem conjTranspose_extendedByOne [StarRing R] (A : Matrix n n R) :
-    (A.extendedByOne e)ᴴ = Aᴴ.extendedByOne e := by
-  rw [extendedByOne, conjTranspose_updateSubmatrix, conjTranspose_one]
-
-theorem extendedByOne_map (f : R →+* S) (A : Matrix n n R) :
-    (A.extendedByOne e).map f = (A.map f).extendedByOne e := by
-  simp [extendedByOne, updateSubmatrix_map]
-
-theorem toSquareBlockProp_extendedByOne_compl (M : Matrix n n R) :
-    (M.extendedByOne e).toSquareBlockProp (fun i ↦ i ∉ Set.range e) = 1 := by
-  ext ⟨-, hi⟩ ⟨-, hj⟩
-  simp [toSquareBlockProp_def, hi, Matrix.one_apply]
-
-theorem extendedByOne_one [DecidableEq n] : extendedByOne e (1 : Matrix n n R) = 1 := by
-  rw [extendedByOne, updateSubmatrix_eq_self_iff, submatrix_one_embedding]
-
-theorem extendedByOne_diagonal [DecidableEq n] (d : n → R) :
-    (diagonal d).extendedByOne e = diagonal (extend e d 1) := by
-  rw [extendedByOne, ← diagonal_one, updateSubmatrix_diagonal]
-  rfl
-
-theorem extendedByOne_eq_one_iff [DecidableEq n] {A : Matrix n n R} :
-    A.extendedByOne e = 1 ↔ A = 1 := by
-  rw [extendedByOne, updateSubmatrix_eq_self_iff, submatrix_one_embedding]
-
-theorem extendedByOne_mul [Fintype n] [Fintype m] (A B : Matrix n n R) :
-    (A * B).extendedByOne e = A.extendedByOne e * B.extendedByOne e := by
-  rw [eq_comm, eq_updateSubmatrix_iff]
-  refine ⟨?_, fun i j h ↦ ?_⟩
-  · ext
-    rw [submatrix_apply, Matrix.mul_apply]
-    exact (Fintype.sum_of_injective e e.injective _ _
-      (fun k hk ↦ by simp [ne_of_mem_of_not_mem _ hk]) (by simp)).symm
-  · rcases h with h | h <;> simp [Matrix.mul_apply, h, Matrix.one_apply]
-
-section MonoidHom
-
-variable [DecidableEq n] [Fintype n] [Fintype m] [Fintype l]
-
-/-- The `MonoidHom` induced by `extendedByOne`. -/
-@[simps!]
-noncomputable def extendedByOneMonoidHom : Matrix n n R →* Matrix m m R where
-  toFun := extendedByOne e
-  map_mul' := extendedByOne_mul _
-  map_one' := extendedByOne_one _
-
-theorem extendedByOneMonoidHom_map (f : R →+* S) (A : Matrix n n R) :
-    (extendedByOneMonoidHom e A).map f = extendedByOneMonoidHom e (A.map f) :=
-  extendedByOne_map ..
-
-theorem extendedByOneMonoidHom_comp_map (f : R →+* S) :
-    (extendedByOneMonoidHom e).comp (RingHom.mapMatrix f).toMonoidHom =
-      (RingHom.mapMatrix f).toMonoidHom.comp (extendedByOneMonoidHom e) :=
-  MonoidHom.ext fun _ ↦ (extendedByOne_map ..).symm
-
-theorem extendedByOneMonoidHom_refl :
-    extendedByOneMonoidHom (.refl n) = MonoidHom.id (Matrix n n R) := by
-  ext
-  simp
-
-theorem extendedByOneMonoidHom_trans (f : m ↪ l) :
-    extendedByOneMonoidHom (e.trans f) =
-      (extendedByOneMonoidHom (R := R) f).comp (extendedByOneMonoidHom e) :=
-  MonoidHom.ext fun _ ↦ extendedByOne_trans ..
-
-theorem extendedByOneMonoidHom_equiv (σ : n ≃ m) :
-    extendedByOneMonoidHom σ.toEmbedding = (reindexRingEquiv R σ).toRingHom.toMonoidHom :=
-  MonoidHom.ext fun _ ↦ extendedByOne_equiv ..
-
-theorem extendedByOneMonoidHom_reindex [DecidableEq n'] [Fintype n']
-    (σ : n ≃ n') (f : n' ↪ m) (A : Matrix n n R) :
-    extendedByOneMonoidHom f (reindex σ σ A) = extendedByOneMonoidHom (σ.toEmbedding.trans f) A :=
-  extendedByOne_reindex ..
-
-theorem reindex_extendedByOneMonoidHom [DecidableEq m'] [Fintype m']
-    (ρ : m ≃ m') (A : Matrix n n R) :
-    reindex ρ ρ (extendedByOneMonoidHom e A) = extendedByOneMonoidHom (e.trans ρ.toEmbedding) A :=
-  reindex_extendedByOne ..
-
-theorem extendedByOneMonoidHom_comp_reindexRingEquiv [DecidableEq n'] [Fintype n']
-    (σ : n ≃ n') (f : n' ↪ m) :
-    (extendedByOneMonoidHom f).comp (reindexRingEquiv R σ).toRingHom.toMonoidHom =
-      extendedByOneMonoidHom (σ.toEmbedding.trans f) :=
-  MonoidHom.ext fun _ ↦ extendedByOne_reindex ..
-
-theorem reindexRingEquiv_comp_extendedByOneMonoidHom [DecidableEq m'] [Fintype m']
-    (ρ : m ≃ m') :
-    (reindexRingEquiv R ρ).toRingHom.toMonoidHom.comp (extendedByOneMonoidHom e) =
-      extendedByOneMonoidHom (e.trans ρ.toEmbedding) :=
-  MonoidHom.ext fun _ ↦ reindex_extendedByOne ..
-
-theorem extendedByOneMonoidHom_submatrix (A : Matrix n n R) :
-    (extendedByOneMonoidHom e A).submatrix e e = A := by
-  simp
-
-theorem extendedByOneMonoidHom_injective :
-    Function.Injective (extendedByOneMonoidHom (R := R) e) :=
-  fun _ _ h ↦ updateSubmatrix_left_injective _ _ _ h
-
-end MonoidHom
-
-end ExtendByOne
-
-section Inv
-
-variable [CommRing R] [DecidableEq n] [DecidableEq m] [Fintype n] [Fintype m] (e : n ↪ m)
-
-theorem inv_extendedByOne {A : Matrix n n R} (h : IsUnit A.det) :
-    (A.extendedByOne e)⁻¹ = A⁻¹.extendedByOne e :=
-  inv_eq_right_inv (by rw [← extendedByOne_mul, mul_nonsing_inv _ h, extendedByOne_one])
-
-end Inv
 
 end Matrix
