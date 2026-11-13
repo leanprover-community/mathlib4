@@ -162,9 +162,8 @@ theorem wilsonLo_nonneg (n x : ℕ) (z : ℝ) (hx : x ≤ n) (hn : 0 < n) :
         ((n : ℝ) + z ^ 2) := by
     unfold wilsonLo wilsonCenter wilsonHalf
     field_simp
-    ring
   rw [hlo]
-  rcases le_or_lt 0 z with hz | hz
+  rcases le_total 0 z with hz | hz
   · have hsqrt : (0 : ℝ) ≤
         Real.sqrt ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4) := Real.sqrt_nonneg _
     have h1 : (0 : ℝ) ≤ z * Real.sqrt
@@ -188,7 +187,7 @@ theorem wilsonLo_nonneg (n x : ℕ) (z : ℝ) (hx : x ≤ n) (hn : 0 < n) :
         Real.sqrt ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4) := Real.sqrt_nonneg _
     have hzle : z * Real.sqrt
         ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4) ≤ 0 :=
-      mul_nonpos_of_nonpos_of_nonneg (le_of_lt hz) hsqrt
+      mul_nonpos_of_nonpos_of_nonneg hz hsqrt
     exact div_nonneg (by nlinarith [sq_nonneg z]) hk.le
 
 /-- The upper Wilson endpoint is at most one. -/
@@ -209,14 +208,14 @@ theorem wilsonHi_le_one (n x : ℕ) (z : ℝ) (hx : x ≤ n) (hn : 0 < n) :
         ((n : ℝ) + z ^ 2) := by
     unfold wilsonHi wilsonCenter wilsonHalf
     field_simp
-    ring
   rw [hhi, div_le_one hk]
-  rcases le_or_lt 0 z with hz | hz
+  rcases le_total 0 z with hz | hz
   · have hsqrt : (0 : ℝ) ≤
         Real.sqrt ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4) := Real.sqrt_nonneg _
     have h1 : (0 : ℝ) ≤ z * Real.sqrt
         ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4) := mul_nonneg hz hsqrt
-    have h2 : (0 : ℝ) ≤ ((n : ℝ) - (x : ℝ)) + z ^ 2 / 2 := by linarith
+    have h2 : (0 : ℝ) ≤ ((n : ℝ) - (x : ℝ)) + z ^ 2 / 2 := by
+      nlinarith [sq_nonneg z]
     have hsq : z ^ 2 * ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4)
         ≤ (((n : ℝ) - (x : ℝ)) + z ^ 2 / 2) ^ 2 := by
       have hkey : (0 : ℝ) ≤ ((n : ℝ) - (x : ℝ)) ^ 2 * ((n : ℝ) + z ^ 2) :=
@@ -235,7 +234,7 @@ theorem wilsonHi_le_one (n x : ℕ) (z : ℝ) (hx : x ≤ n) (hn : 0 < n) :
         Real.sqrt ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4) := Real.sqrt_nonneg _
     have hzle : z * Real.sqrt
         ((x : ℝ) * ((n : ℝ) - (x : ℝ)) / (n : ℝ) + z ^ 2 / 4) ≤ 0 :=
-      mul_nonpos_of_nonpos_of_nonneg (le_of_lt hz) hsqrt
+      mul_nonpos_of_nonpos_of_nonneg hz hsqrt
     nlinarith [sq_nonneg z]
 
 end ProbabilityTheory
