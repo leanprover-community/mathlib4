@@ -13,6 +13,7 @@ import Mathlib.CategoryTheory.Inserter.Limits
 import Mathlib.CategoryTheory.Presentable.Dense
 import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
+import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-! # Inserter categories are accessible
 
@@ -856,16 +857,218 @@ end
 end Seg
 
 end limit
+
+section constructor
+
+variable {κ} in
+/-- Construct a `PartialChainUpTo κ Λ E ⊥` from the data of an object `ξ₀`. -/
+noncomputable def mkBot [OrderBot Λ] {E : Inserter F G}
+    (ξ₀ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj) :
+    PartialChainUpTo κ Λ E ⊥ where
+  ξ := Functor.const _ |>.obj ξ₀
+  ψ i j hij hk := False.elim <| by valid
+  t₁ j k l hjk hkl hl := False.elim <| by valid
+  t₂ j k l hjk hkl hl := False.elim <| by valid
+  sq₁ j hj := False.elim <| by valid
+
+variable {κ} in
+/-- Characterization of `mkBot`. -/
+noncomputable def mkBotObjBotIso [OrderBot Λ] {E : Inserter F G}
+    (c : CostructuredArrow (isCardinalPresentable K κ).ι E.obj) :
+  (mkBot Λ c).ξ.obj (iic% ⊥ ⊥) ≅ c := .refl _
+
+variable {κ} in
+/-- Construct a `PartialChainUpTo κ Λ E (succ ⊥)` from the data
+of `ξ₀ ⟶ ξ₁` equipped with a map `F.obj ξ₀ ⟶ G.map ξ₁` -/
+noncomputable def mkSuccBot [NoMaxOrder Λ] [OrderBot Λ] {E : Inserter F G}
+    (ξ₀ ξ₁ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
+    (ν₀ : ξ₀ ⟶ ξ₁) (ψ₀ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj)
+    (h : F.map ξ₀.hom ≫ E.hom = ψ₀ ≫ G.map ξ₁.hom) :
+    PartialChainUpTo κ Λ E (succ ⊥) :=
+  (mkBot Λ ξ₀).extend κ Λ ξ₁ ν₀ ψ₀ h (by valid)
+
+section
+
+variable {κ} [NoMaxOrder Λ] [OrderBot Λ] {E : Inserter F G}
+    (ξ₀ ξ₁ : CostructuredArrow (isCardinalPresentable K κ).ι E.obj)
+    (ν₀ : ξ₀ ⟶ ξ₁) (ψ₀ : F.obj ξ₀.left.obj ⟶ G.obj ξ₁.left.obj)
+    (h : F.map ξ₀.hom ≫ E.hom = ψ₀ ≫ G.map ξ₁.hom)
+
+lemma mkSuccBot_bot_eq : (mkSuccBot Λ ξ₀ ξ₁ ν₀ ψ₀ h).ξ.obj (iic% ⊥ (succ ⊥)) = ξ₀ :=
+  SmallObject.SuccStruct.extendToSucc_obj_eq (hi := le_rfl) ..
+
+lemma mkSuccBot_succ_bot_eq : (mkSuccBot Λ ξ₀ ξ₁ ν₀ ψ₀ h).ξ.obj (iic% (succ ⊥) (succ ⊥)) = ξ₁ :=
+  SmallObject.SuccStruct.extendToSucc_obj_succ_eq ..
+
+lemma mkSuccBot_map_homOfLE_eq :
+    (mkSuccBot Λ ξ₀ ξ₁ ν₀ ψ₀ h).ξ.map
+      (homOfLE (Order.le_succ _) : iic% ⊥ (succ ⊥) ⟶ iic% (succ ⊥) (succ ⊥)) =
+    eqToHom (mkSuccBot_bot_eq ..) ≫ ν₀ ≫ eqToHom (mkSuccBot_succ_bot_eq ..).symm :=
+  SmallObject.SuccStruct.extendToSucc_map_le_succ ..
+
+lemma mkSuccBot_ψ :
+    (mkSuccBot Λ ξ₀ ξ₁ ν₀ ψ₀ h).ψ ⊥ (succ ⊥) (by valid) (by valid) =
+      F.map (eqToHom (mkSuccBot_bot_eq ..)).left.hom ≫ ψ₀ ≫
+      G.map (eqToHom (mkSuccBot_succ_bot_eq ..).symm).left.hom := by
+  dsimp [mkSuccBot, extend]
+  rw [extend.ψ_succ (mkBot Λ ξ₀) ξ₁ ν₀ ψ₀ _]
+  simp only [homOfLE_refl, Functor.map_id, CostructuredArrow.id_left,
+    ObjectProperty.FullSubcategory.id_hom, Category.comp_id, Category.id_comp]
+  rfl
+
+end
+
+end constructor
+
+end PartialChainUpTo
+
+/-- Shorthand for the object property that we will eventually prove to be equal to
+the class of κ-presentable objects of the Inserter category -/
+abbrev O₁ (F G : K ⥤ L) : ObjectProperty (Inserter F G) :=
+  (isCardinalPresentable K κ).inverseImage (Inserter.proj F G)
+
+/-- Shorthand for the index type of the canonical diagram to write any
+inserter as a κ-filtered colimit of κ-presentable inserters. -/
+abbrev Δ (E : Inserter F G) := CostructuredArrow (O₁ κ F G).ι E
+
+instance {E : Inserter F G} (x : Δ κ E) : IsCardinalPresentable x.left.obj.obj κ :=
+  x.left.property
+
+instance {E : Inserter F G} (x : Δ κ E) : IsCardinalPresentable ((O₁ κ F G).ι.obj x.left).obj κ :=
+  x.left.property
+
+open PartialChainUpTo Order Limits in
+/-- The key technical ingredient in the proof that inserters are accessible: given a diagram
+```
+     F(u)      F(v)
+F(S) --> F(T) ---> F(K)
+ |                  | Φ
+ v                  v
+G(T) ------------> G(K)
+        G(v)
+```
+where u : S → T and v : T ⟶ K are maps of κ-presentable objects, one can find a factorization
+```
+F(S) --> F(T) ---> F(U) --> F(K)
+ |          F(v')   | σ      | Φ
+ v                  v        v
+G(T) ------------> G(U) --> F(K)
+         G(v')
+```
+-/
+lemma exists_Δ_of_pentagon
+    [IsCardinalAccessibleCategory K κ]
+    [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ]
+    [F.PreservesCardinalPresentable κ]
+    [LinearOrder Λ] [OrderBot Λ] [SuccOrder Λ] [NoMaxOrder Λ] [WellFoundedLT Λ]
+    (hΛ : HasCardinalLT Λ κ) (E : Inserter F G) (S T : K)
+    [IsCardinalPresentable S κ] [IsCardinalPresentable T κ]
+    [HasColimitsOfShape Λ K] [HasColimitsOfShape Λ L]
+    [PreservesColimitsOfShape Λ F] [PreservesColimitsOfShape Λ G]
+    (σ : F.obj S ⟶ G.obj T)
+    (u : S ⟶ T) (v : T ⟶ E.obj)
+    (h : σ ≫ G.map v = F.map u ≫ F.map v ≫ E.hom) :
+    ∃ (B : Δ κ E) (g : T ⟶ B.left.obj.obj),
+      σ ≫ G.map g = F.map u ≫ F.map g ≫ B.left.obj.hom ∧
+      g ≫ B.hom.hom = v := by
+  let O₀ := isCardinalPresentable K κ -- shorthand to make things a bit more compact
+  -- First, we summon a diagram to write T as a κ-filtered colimits of κ-filtered objects.
+  have : IsFiltered (CostructuredArrow O₀.ι E.obj) := isFiltered_of_isCardinalFiltered _ κ
+  let hcolimT := O₀.ι.denseAt E.obj -- E.obj ≅ colim_ξ T_ξ
+  have (X : K) : PreservesColimitsOfShape (CostructuredArrow O₀.ι X) G :=
+    G.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ _
+  let hcolimGT := isColimitOfPreserves G (O₀.ι.denseAt E.obj) -- G(E.obj) ≅ colim_ξ G(T_ξ)
+  -- Now we get a first factorization for σ
+  obtain ⟨ξ₀, v₀, hv₀⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimT v
+  dsimp at v₀ hv₀
+  simp only [Category.id_comp] at hv₀
+  obtain ⟨ξ₁₀, ψ₀₀, hψ₀₀⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ hcolimGT
+    (F.map ξ₀.hom ≫ E.hom)
+  dsimp at ψ₀₀ hψ₀₀
+  obtain ⟨ξ₁, u₀, ψ₀, hψ₀₁⟩ := IsCardinalPresentable.exists_of_square κ hcolimGT
+    (F.map u ≫ F.map v₀) (F.map ξ₀.hom ≫ E.hom) (σ ≫ G.map v₀) (by dsimp; grind)
+  dsimp at u₀ ψ₀ hψ₀₁
+  -- Now, we construct a chain by iterating.
+  -- This requires a fair amount of setup: first the induction data,
+  let data : CategoryTheory.Functor.WellOrderInductionData (functor κ Λ E) :=
+    Functor.WellOrderInductionData.ofExists
+      (fun i hi ↦ surjective_trunc κ Λ hΛ E i)
+      (fun j hj S ↦ ISeg.exists_extension E j hj S hΛ)
+  -- then the initial segment of the chain, corresponding to our `u₀ : ξ₀ ⟶ ξ₁`,
+  let D₀ : PartialChainUpTo κ Λ E (succ ⊥) := .mkSuccBot Λ ξ₀ ξ₁ u₀ ψ₀ (by
+    have he2 : ψ₀ ≫ G.map ξ₁.hom = F.map u₀.left.hom ≫ F.map ξ₁.hom ≫ E.hom := by
+      simp [← Functor.map_comp_assoc, hψ₀₁.right]
+    rwa [← dsimp% CostructuredArrow.w u₀, Functor.map_comp, Category.assoc, Eq.comm])
+  -- then its extension to a full `Seg`, from which we extract the chain ξ
+  let S : Seg κ Λ E := (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose
+  let ξ : Λ ⥤ CostructuredArrow O₀.ι E.obj := S.functor
+  -- Ψ : F ξ_i ⟶ G ξᵢ₊₁ as a natural transformation
+  let Ψ :
+      ξ ⋙ CostructuredArrow.proj (isCardinalPresentable K κ).ι E.obj ⋙
+          (isCardinalPresentable K κ).ι ⋙ F ⟶
+        _ ⋙ ξ ⋙ CostructuredArrow.proj (isCardinalPresentable K κ).ι E.obj ⋙
+          (isCardinalPresentable K κ).ι ⋙ G :=
+    S.ψNatTrans
+  -- Now some shorthands around S.val with pinned types to ease automation:
+  have S_val : S.val (Opposite.op <| succ ⊥) = D₀ :=
+    (data.surjective' (succ ⊥) (not_isSuccLimit_succ ⊥) D₀).choose_spec
+  have e₀ : ξ.obj ⊥ = ξ₀ :=
+    (S.ξ_obj_eq ⊥ (succ ⊥) (le_succ _)).trans <|
+      congr($(S_val).ξ.obj ⟨⊥, le_succ ⊥⟩).trans <| mkSuccBot_bot_eq ..
+  have e₁ : ξ.obj (succ ⊥) = ξ₁ :=
+    (S.ξ_obj_eq (succ ⊥) (succ ⊥) le_rfl).trans <|
+      congr($(S_val).ξ.obj ⟨succ ⊥, le_rfl⟩).trans <| mkSuccBot_succ_bot_eq ..
+  have e₂ : ξ.map (homOfLE <| le_succ ⊥) = eqToHom e₀ ≫ u₀ ≫ eqToHom e₁.symm := by
+    dsimp [ξ, Seg.functor]
+    rw [Functor.congr_hom congr($(S_val).ξ), mkSuccBot_map_homOfLE_eq]
+    simp [Seg.ξObjIso, Seg.ξ]
+  have e₁ : Ψ.app ⊥ = F.map (eqToHom e₀).left.hom ≫ ψ₀ ≫ G.map (eqToHom e₁.symm).left.hom := by
+    dsimp [Ψ, Seg.ψNatTrans, Seg.ψ]
+    rw [congr_ψ _ _ S_val, mkSuccBot_ψ]
+    simp [Seg.ξObjIso, Seg.ξ]
+  -- We use the chain ξ: its colimit U exists and is κ-presentable,
+  have : O₀.IsClosedUnderColimitsOfShape Λ :=
+    have : Small.{w} Λ := hΛ.small
+    CategoryTheory.isClosedUnderColimitsOfShape_isCardinalPresentable K (by
+      rwa [hasCardinalLT_arrow_iff_of_isThin _ κ (Cardinal.IsRegular.aleph0_le Fact.out)])
+  have : HasColimitsOfShape Λ O₀.FullSubcategory := hasColimitsOfShape_of_closedUnderColimits ..
+  let U := colimit ξ
+  -- the map t := colim_i (Ψ : F ξ_i ⟶ G ξᵢ₊₁) identifies to a map `t1 : F U ⟶ G U`
+  let t := colimMap Ψ
+  have : (succ_mono (α := Λ)).functor.Final :=
+    (Monotone.final_functor_iff _).mpr fun j ↦ ⟨j, le_succ j⟩
+  let t1 : F.obj U.left.obj ⟶ G.obj U.left.obj :=
+    (preservesColimitIso (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) ξ).hom ≫ t ≫
+    (Functor.Final.colimitIso succ_mono.functor _).hom ≫ (preservesColimitIso _ _).inv
+  -- Finally, we bundle `t1` as an object of Δ κ E
+  let B₀ : (O₁ κ F G).FullSubcategory :=
+    ⟨⟨t1⟩, by simp only [ObjectProperty.prop_inverseImage_iff, proj_obj]; infer_instance⟩
+  let B : Δ κ E :=
+    CostructuredArrow.mk (Y := B₀) ⟨U.hom, by
+      apply isColimitOfPreserves (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F)
+        (colimit.isColimit ξ) |>.hom_ext
+      intro j
+      simp [U, B₀, t1, ← Functor.map_comp_assoc,
+        reassoc_of% dsimp% ι_preservesColimitIso_hom
+          (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) ξ j, t,
+        ← G.map_comp, Ψ, ξ, (S.sq₁ j (succ j) (lt_succ j)).symm]⟩
+  refine ⟨B, v₀ ≫ (eqToHom e₀.symm).left.hom ≫ (colimit.ι ξ ⊥).left.hom, ?_, ?_⟩
+  · have := ι_preservesColimitIso_hom (CostructuredArrow.proj O₀.ι E.obj ⋙ O₀.ι ⋙ F) ξ ⊥
+    have he1 : σ ≫ G.map v₀ ≫ G.map u₀.left.hom = F.map u ≫ F.map v₀ ≫ ψ₀ := by grind
+    simp [B, B₀, U, t1, t, reassoc_of% dsimp% this]
+    simp [e₁, ← reassoc_of% he1, ← colimit.w ξ (homOfLE (le_succ ⊥) : ⊥ ⟶ _), -colimit.w, e₂]
+  · simp only [B, B₀, U, Functor.comp_obj, CostructuredArrow.proj_obj, ObjectProperty.ι_obj,
+      Category.assoc, t1, t, ← colimit.w ξ (homOfLE (le_succ ⊥) : ⊥ ⟶ _), e₂]
+    simp [-CostructuredArrow.eqToHom_left, -ObjectProperty.eqToHom_hom, hv₀]
+
 /- TODOs (@robin-carlier):
-  - Prove Lemma 4.5 of [positselski2024]
-  - Use the lemma to show that given an inserter E, the canonical functor
+  - Use the lemma `exists_Δ_of_pentagon` to show that given an inserter E, the canonical functor
     ```
       CostructuredArrow ((isCardinalPresentable K κ).inverseImage (Inserter.proj F G)).ι E ⥤
         CostructuredArrow (isCardinalPresentable K κ).ι E.obj
     ```
     is final and that its source category is κ-filtered
+  - Use the finality of the functor above to show that inserters are accessible
 -/
-
-end PartialChainUpTo
 
 end CategoryTheory.Inserter.Accessible
