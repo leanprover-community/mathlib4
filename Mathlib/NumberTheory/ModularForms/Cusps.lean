@@ -455,7 +455,7 @@ lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : Modular
 
 @[simp] lemma widthInfty_SL2Z : widthInfty 𝒮ℒ = 1 := by
   rw [widthInfty, adjoinNegOne_eq_self_iff.mpr, strictWidthInfty_SL2Z]
-  refine ⟨-1, by ext; simp⟩
+  exact ⟨-1, by ext; simp⟩
 
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods

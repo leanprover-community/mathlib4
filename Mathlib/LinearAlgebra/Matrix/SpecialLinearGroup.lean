@@ -169,6 +169,9 @@ theorem det_coe : det ↑ₘA = 1 :=
   A.2
 
 @[simp]
+theorem mk_coe : .mk A A.det_coe = A := rfl
+
+@[simp]
 theorem coe_pow (m : ℕ) : ↑ₘ(A ^ m) = ↑ₘA ^ m :=
   rfl
 
@@ -233,10 +236,6 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
     (by rw [← f.map_det]; simp [g.prop])
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
-
-@[simp]
-theorem coe_map_mk (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
-    SpecialLinearGroup.map f (.mk A h) = A.map f := rfl
 
 @[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
