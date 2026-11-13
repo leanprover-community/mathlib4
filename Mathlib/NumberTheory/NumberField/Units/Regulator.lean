@@ -343,7 +343,7 @@ theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : Is
         ← SupHomClass.map_sup, ← SupHomClass.map_sup]
       exact AddSubgroup.map_mono <| (OrderIso.le_iff_le Subgroup.toAddSubgroup).mpr h
     rw [regOfFamily_of_isMaxRank hu, regOfFamily_of_isMaxRank hv,
-      covolume_div_covolume_eq_relIndex _ _ this, span_basisOfIsMaxRank hu,
+      ZLattice.covolume_div_covolume_eq_relIndex _ _ this, span_basisOfIsMaxRank hu,
       span_basisOfIsMaxRank hv, AddSubgroup.relIndex_map_map, logEmbedding_ker,
       ← OrderIso.map_sup, ← OrderIso.map_sup, ← Subgroup.relIndex_toAddSubgroup]
   · rw [regOfFamily_eq_zero hu, zero_div, eq_comm, Nat.cast_eq_zero]
