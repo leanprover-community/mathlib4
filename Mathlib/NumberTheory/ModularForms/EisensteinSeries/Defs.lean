@@ -29,7 +29,8 @@ public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup Set
+open ModularForm UpperHalfPlane Complex CongruenceSubgroup Set
+open Matrix hiding zpow_neg
 
 open scoped MatrixGroups
 

@@ -31,7 +31,6 @@ and `φ` is given by the following matrix:
 Indeed the snake lemma gives an exact sequence involving the kernels and cokernels
 of the vertical maps: in order to get the expected long exact sequence, it suffices
 to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ≫ g)`.
-
 -/
 
 @[expose] public section
@@ -205,11 +204,9 @@ noncomputable abbrev kernelCokernelCompSequence : ComposableArrows C 5 :=
     (cokernel.map f (f ≫ g) (𝟙 _) g (by simp))
     (cokernel.map (f ≫ g) g f (𝟙 _) (by simp))
 
-set_option backward.defeqAttrib.useBackward true in
 instance : Mono ((kernelCokernelCompSequence f g).map' 0 1) := by
   dsimp; infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance : Epi ((kernelCokernelCompSequence f g).map' 4 5) := by
   dsimp [ComposableArrows.Precomp.map]
   infer_instance

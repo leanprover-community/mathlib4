@@ -9,7 +9,6 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
-
 # Residue fields of points
 
 Any point `x` of a locally ringed space `X` comes with a natural residue field, namely the residue
@@ -25,7 +24,6 @@ The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
   `U` to the residue field at `x`.
 - `evaluationMap`: a morphism of locally ringed spaces induces a morphism, i.e. extension, of
   residue fields.
-
 -/
 
 @[expose] public section

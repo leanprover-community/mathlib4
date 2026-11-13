@@ -58,7 +58,6 @@ special case.
 ## Tags
 
 M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
-
 -/
 
 public section

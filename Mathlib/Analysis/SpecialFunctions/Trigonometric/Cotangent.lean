@@ -16,6 +16,9 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cotangent
 

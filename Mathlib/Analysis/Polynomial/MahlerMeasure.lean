@@ -194,17 +194,19 @@ theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z�
   simp [← sub_neg_eq_add, ← map_neg]
 
 @[simp]
-theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
+theorem mahlerMeasure_C_mul_X_add_C (a b : ℂ) :
     (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp
   simp only [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
-    mahlerMeasure_mul, mahlerMeasure_const, ← coe_nnnorm, mahlerMeasure_X_add_C]
+    mahlerMeasure_mul, mahlerMeasure_const, ← coe_nnNorm, mahlerMeasure_X_add_C]
   norm_cast
   simp [mul_max, ha]
 
 theorem mahlerMeasure_of_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) :
     p.mahlerMeasure = max ‖p.coeff 1‖ ‖p.coeff 0‖ := by
   rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
-  simp [mahlerMeasure_C_mul_X_add_C (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
+  simp
 
 /-- The logarithmic Mahler measure of a polynomial is the `log` of the absolute value of its leading
   coefficient plus the sum of the `log`s of the absolute values of its roots lying outside the unit
@@ -383,7 +385,7 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       gcongr with a
       exact le_max_right 1 ‖a‖
     _ ≤ ∏ z ∈ p.roots.toFinset, (1 ⊔ ‖z‖) ^ count z x := by
-      simp_rw [← coe_nnnorm]
+      simp_rw [← coe_nnNorm]
       norm_cast
       exact Finset.prod_le_prod_of_subset_of_one_le (toFinset_subset.mpr (subset_of_le hx.1))
         (fun a _ _ ↦ one_le_pow₀ (le_max_left 1 ‖a‖))
@@ -413,7 +415,7 @@ theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial �
   calc p.supNorm = ‖p.coeff i‖ := hi
     _ ≤ (p.natDegree.choose i) * p.mahlerMeasure := p.norm_coeff_le_choose_mul_mahlerMeasure i
     _ ≤ (p.natDegree.choose (p.natDegree / 2)) * p.mahlerMeasure :=
-      mul_le_mul_of_nonneg_right (by exact_mod_cast Nat.choose_le_middle i p.natDegree)
+      mul_le_mul_of_nonneg_right (mod_cast Nat.choose_le_middle i p.natDegree)
         p.mahlerMeasure_nonneg
 
 /-!

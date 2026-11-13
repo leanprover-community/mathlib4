@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 
 ## Tags
 subgroup, subgroups
-
 -/
 
 @[expose] public section
