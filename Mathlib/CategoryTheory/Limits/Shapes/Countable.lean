@@ -24,7 +24,6 @@ limits, see `sequentialFunctor_initial`.
   limits.
 
 * Prove the dual result for filtered colimits.
-
 -/
 
 @[expose] public section

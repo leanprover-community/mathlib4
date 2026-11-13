@@ -786,7 +786,6 @@ def homEquiv {X : ModuleCat R} {Y : ModuleCat S} :
     dsimp
     rw [one_smul]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 For any `R`-module X, there is a natural `R`-linear map from `X` to `X ⨂ S` by sending `x ↦ x ⊗ 1`
@@ -847,7 +846,6 @@ lemma Counit.map_apply_one_tmul {Y : ModuleCat S} (y : Y) :
   change (1 : S) • y = y
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation from the composition of restriction and extension of scalars to the
 identity functor on `S`-module.
@@ -909,7 +907,6 @@ lemma extendRestrictScalarsAdj_unit_app_apply
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma extendRestrictScalarsAdj_counit_app_apply_one_tmul (M : ModuleCat S) (m : M) :
     dsimp% (extendRestrictScalarsAdj f).counit.app M ((1 : S) ⊗ₜ[R] m) = m := by
@@ -1002,7 +999,6 @@ lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
   rw [← extendRestrictScalarsAdj_homEquiv_apply, homEquiv_extendScalarsComp]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extendScalars_assoc :
@@ -1034,7 +1030,6 @@ lemma extendScalars_assoc' :
   simp only [Iso.inv_hom_id_assoc, ← Functor.whiskerLeft_comp_assoc, Iso.hom_inv_id,
     Functor.whiskerLeft_id', Category.id_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extendScalars_id_comp :

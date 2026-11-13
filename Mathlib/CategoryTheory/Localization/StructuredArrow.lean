@@ -20,7 +20,6 @@ and if `P` is stable by post-composition with the inverse of `L.map w` when `W w
 
 We obtain a similar lemma `Localization.induction_costructuredArrow` for
 costructured arrows.
-
 -/
 
 @[expose] public section

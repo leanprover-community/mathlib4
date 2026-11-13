@@ -17,7 +17,6 @@ public import Mathlib.Data.List.Nodup
 ## Implementation details
 
 In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
-
 -/
 
 public section

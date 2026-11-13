@@ -41,7 +41,6 @@ for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-
 -/
 
 @[expose] public section
@@ -125,7 +124,6 @@ instance : F.homologicalKernel.IsTriangulated where
 
 end
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
@@ -252,7 +250,6 @@ lemma homologySequence_mono_shift_map_mor₂_iff :
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
 end
 
-set_option backward.defeqAttrib.useBackward true in
 lemma mem_homologicalKernel_trW_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.trW f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f

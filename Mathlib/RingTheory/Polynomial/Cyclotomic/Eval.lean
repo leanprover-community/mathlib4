@@ -149,7 +149,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
   have := prod_cyclotomic_eq_geom_sum hn' ℤ
   apply_fun eval 1 at this
   rw [eval_geom_sum, one_geom_sum, eval_prod, eq_comm, ←
-    Finset.prod_sdiff <| @range_pow_padicValNat_subset_divisors' p _ _, Finset.prod_image] at this
+    Finset.prod_sdiff <| @range_pow_multiplicity_subset_divisors' p _ _, Finset.prod_image] at this
   · simp_rw [eval_one_cyclotomic_prime_pow, Finset.prod_const, Finset.card_range, mul_comm] at this
     rw [← Finset.prod_sdiff (s₁ := {n})] at this
     swap
@@ -159,10 +159,10 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     rw [← Int.natAbs_natCast p, Int.natAbs_dvd_natAbs] at hpe
     obtain ⟨t, ht⟩ := hpe
     rw [Finset.prod_singleton, ht, mul_left_comm, mul_comm, ← mul_assoc, mul_assoc] at this
-    have : (p : ℤ) ^ padicValNat p n * p ∣ n := ⟨_, this⟩
+    have : (p : ℤ) ^ multiplicity p n * p ∣ n := ⟨_, this⟩
     simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_natCast,
       Int.natAbs_pow] at this
-    exact pow_succ_padicValNat_not_dvd hn'.ne' this
+    exact pow_succ_multiplicity_not_dvd hn'.ne' this
   · rintro x - y - hxy
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
@@ -195,22 +195,22 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
   suffices Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq']) ^ totient n <
       Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) by
     simp only [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
-      hq'.le, coe_nnnorm, NNReal.coe_pow, Real.coe_toNNReal', sub_nonneg, sup_of_le_left] at this
+      hq'.le, coe_nnNorm, NNReal.coe_pow, Real.coe_toNNReal', sub_nonneg, sup_of_le_left] at this
     convert this
     rw [eq_comm]
     simp [cyclotomic_nonneg n hq'.le]
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
-    nnnorm_prod, Units.mk0_prod]
+    nnNorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod (M := NNRealˣ) _ _
   swap; · exact fun _ => Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq'])
   · simp only [Complex.card_primitiveRoots, prod_const, card_attach]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, norm_nonneg, Units.val_mk0,
-      Real.coe_toNNReal', coe_nnnorm, max_le_iff, tsub_le_iff_right]
+      Real.coe_toNNReal', coe_nnNorm, max_le_iff, tsub_le_iff_right]
     intro x hx
     simpa only [and_true, tsub_le_iff_right] using hfor x hx
   · simp only [Finset.mem_attach, Subtype.exists, ←
-      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnnorm]
+      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnNorm]
     simpa [hq'.le, Real.coe_toNNReal', max_eq_left, sub_nonneg] using hex
 
 theorem sub_one_pow_totient_le_cyclotomic_eval {q : ℝ} (hq' : 1 < q) :
@@ -259,7 +259,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
   suffices Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) <
       Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith) ^ totient n by
     simp only [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
-      coe_nnnorm, NNReal.coe_pow,
+      coe_nnNorm, NNReal.coe_pow,
       Real.coe_toNNReal'] at this
     convert this using 2
     · rw [eq_comm]
@@ -267,18 +267,18 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
     rw [eq_comm, max_eq_left_iff]
     linarith
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
-    nnnorm_prod, Units.mk0_prod]
+    nnNorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod (M := NNRealˣ) _ _
   swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by positivity)
   · simp [Complex.card_primitiveRoots]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, Units.val_mk0,
-      coe_nnnorm]
+      coe_nnNorm]
     intro x hx
     have : ‖_‖ ≤ _ := hfor x hx
     simp [this]
   · simp only [Finset.mem_attach, Subtype.exists, ←
-      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnnorm]
+      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnNorm]
     obtain ⟨ζ, hζ, hhζ : ‖_‖ < _⟩ := hex
     exact ⟨ζ, hζ, by simp [hhζ]⟩
 

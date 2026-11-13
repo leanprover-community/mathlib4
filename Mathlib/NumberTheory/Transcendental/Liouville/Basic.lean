@@ -14,7 +14,6 @@ import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 
 /-!
-
 # Liouville's theorem
 
 This file contains a proof of Liouville's theorem stating that all Liouville numbers are
