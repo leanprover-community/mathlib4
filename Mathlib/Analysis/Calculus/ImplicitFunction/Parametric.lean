@@ -67,8 +67,8 @@ def parametric
     · exact hfa.hasFDerivAt.differentiableAt
   range_rightDeriv := by simp [LinearMap.range_eq_of_proj hprojKer]
   isCompl_ker := by
-    have H := congr($(fderiv_fun_comp_prodMk hfa.hasFDerivAt.differentiableAt).toLinearMap)
-    push_cast [Prod.eta] at H
+    have H : (fderiv 𝕜 (fun y ↦ f (a.1, y)) a.2 : F →ₗ[𝕜] G) = fderiv 𝕜 f a ∘ₗ .inr 𝕜 E F := by
+      simp [fderiv_fun_comp_prodMk hfa.hasFDerivAt.differentiableAt]
     suffices IsCompl (fderiv 𝕜 f a).ker (.prod ⊥ projKer.ker) by simpa [LinearMap.ker_prodMap]
     apply Submodule.isCompl_prod_right
     · convert isCompl_top_bot
