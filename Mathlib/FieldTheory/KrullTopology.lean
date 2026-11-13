@@ -91,7 +91,7 @@ theorem AlgEquiv.mem_uniformity_iff {s : SetRel Gal(L/K) Gal(L/K)} :
   rw [AlgEquiv.uniformity_def, Filter.mem_iInf_finite]
   refine exists_congr fun u => ?_
   rw [Filter.iInf_principal_finset, Filter.mem_principal, Set.subset_def, Prod.forall]
-  refine forall_congr' fun σ => forall_congr' fun τ => imp_congr_left ?_
+  refine forall₂_congr fun σ τ => imp_congr_left ?_
   rw [Set.mem_iInter₂]
   rfl
 
@@ -101,7 +101,7 @@ theorem AlgEquiv.mem_uniformity_iff_fg {s : SetRel Gal(L/K) Gal(L/K)} :
     F.FG ∧ ∀ σ τ : Gal(L/K), Set.EqOn σ τ F → σ ~[s] τ := by
   rw [AlgEquiv.mem_uniformity_iff]
   simp_rw [FG, existsAndEq, true_and]
-  refine exists_congr fun u => forall_congr' fun σ => forall_congr' fun τ => imp_congr_left ?_
+  refine exists_congr fun u => forall₂_congr fun σ τ => imp_congr_left ?_
   unfold Set.EqOn
   simp_rw [← AlgEquiv.symm_apply_eq, ← AlgEquiv.coe_inv, ← AlgEquiv.mul_apply]
   have hst (σ : Gal(L/K)) (x : L) : σ x = x ↔ x ∈ fixedField (Subgroup.zpowers σ) := by
