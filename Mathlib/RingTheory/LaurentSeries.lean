@@ -1069,11 +1069,11 @@ instance : Algebra K (RatFuncAdicCompl K) :=
   RingHom.toAlgebra ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C)
 
 /-- The algebra equivalence between `K⸨X⸩` and the `X`-adic completion of `RatFunc X` -/
-def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K := by
-  let e : @AlgEquiv K _ _ _ _ _ (powerSeriesAlgebra ℤ K).toModule _ :=
-    .ofCommutes (e := LaurentSeriesRingEquiv K) (fun a ↦ by simp [RingHom.algebraMap_toAlgebra])
-  convert e
-  ext; simp [SMul.smul]
+def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K where
+  __ := LaurentSeriesRingEquiv K
+  map_smul' r x := show LaurentSeriesRingEquiv K (r • x) = r • LaurentSeriesRingEquiv K x by
+    rw [← HahnSeries.C_mul_eq_smul (r := r) (x := x), map_mul, Algebra.smul_def]
+    rfl
 
 open Filter WithZero
 
