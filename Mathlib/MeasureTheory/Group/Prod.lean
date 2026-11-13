@@ -141,7 +141,7 @@ theorem measurePreserving_mul_prod_inv [IsMulLeftInvariant ν] :
 
 @[to_additive (attr := fun_prop)]
 theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) μ μ := by
-  refine ⟨measurable_inv, AbsolutelyContinuous.mk fun s hsm hμs => ?_⟩
+  refine ⟨measurable_inv.aemeasurable, AbsolutelyContinuous.mk fun s hsm hμs => ?_⟩
   rw [map_apply measurable_inv hsm, inv_preimage]
   have hf : Measurable fun z : G × G => (z.2 * z.1, z.1⁻¹) :=
     (measurable_snd.mul measurable_fst).prodMk measurable_fst.inv
@@ -278,7 +278,7 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s
   refine (absolutelyContinuous_of_isMulLeftInvariant μ' ν' ?_).ae_le
   refine mt ?_ h2s
   intro hν
-  rw [hν, Measure.coe_zero, Pi.zero_apply]
+  rw [hν, zero_apply]
 
 /-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A].
   Note that if `f` is the characteristic function of a measurable set `t` this states that
@@ -331,7 +331,7 @@ theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s �
 theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' = (μ' s / ν' s) • ν' := by
   ext1 t -
-  rw [Measure.smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
+  rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
     measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
 
 end SigmaFinite
@@ -451,7 +451,8 @@ theorem quasiMeasurePreserving_div_left_of_right_invariant [IsMulRightInvariant 
 @[to_additive]
 theorem quasiMeasurePreserving_div_of_right_invariant [IsMulRightInvariant μ] :
     QuasiMeasurePreserving (fun p : G × G => p.1 / p.2) (μ.prod ν) μ := by
-  refine QuasiMeasurePreserving.prod_of_left measurable_div (Eventually.of_forall fun y => ?_)
+  refine QuasiMeasurePreserving.prod_of_left measurable_div.aemeasurable
+    (Eventually.of_forall fun y => ?_)
   exact (measurePreserving_div_right μ y).quasiMeasurePreserving
 
 @[to_additive]
@@ -467,7 +468,7 @@ This should not be confused with `(measurePreserving_mul_right μ g).quasiMeasur
 This should not be confused with `(measurePreserving_add_right μ g).quasiMeasurePreserving`. -/]
 theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
     QuasiMeasurePreserving (fun h : G => h * g) μ μ := by
-  refine ⟨measurable_mul_const g, AbsolutelyContinuous.mk fun s hs => ?_⟩
+  refine ⟨(measurable_mul_const g).aemeasurable, AbsolutelyContinuous.mk fun s hs => ?_⟩
   rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
 
 /-- A *right*-invariant measure is quasi-preserved by *left*-multiplication.

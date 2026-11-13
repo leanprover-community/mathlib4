@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.LightProfinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.Extend
 
 /-!
-
 # Extending cones in `LightProfinite`
 
 Let `(Sₙ)_{n : ℕᵒᵖ}` be a sequential inverse system of finite sets and let `S` be
@@ -96,7 +95,6 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : LightProfinite ⥤ C)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `LightProfinite` and `S : LightProfinite`, we obtain a cone on
 `(StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite ⋙ G)` with cone point `G.obj S`.
@@ -127,7 +125,6 @@ section Colimit
 
 variable {C : Type*} [Category* C] (G : LightProfiniteᵒᵖ ⥤ C)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 Given a functor `G` from `LightProfiniteᵒᵖ` and `S : LightProfinite`, we obtain a cocone on
 `(CostructuredArrow.proj toLightProfinite.op ⟨S⟩ ⋙ toLightProfinite.op ⋙ G)` with cocone point

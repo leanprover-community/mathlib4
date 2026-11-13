@@ -41,7 +41,6 @@ partition of a `U`-large set, one of the parts is `U`-large.
 ## Tags
 
 Ramsey theory, ultrafilter
-
 -/
 
 @[expose] public section
@@ -253,11 +252,6 @@ theorem FP.finsetProd {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : 
     have := ih _ (s.min'_mem hs) h
     rw [hd, ← Stream'.drop_drop, add_comm] at this
     exact FP_drop_subset_FP _ _ this
-
-@[deprecated (since := "2026-04-08")] alias FS.finset_sum := FS.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-alias FP.finset_prod := FP.finsetProd
 
 @[deprecated (since := "2026-08-14")] alias FS.head' := FS.head
 

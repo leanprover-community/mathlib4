@@ -36,7 +36,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
   rcases eq_or_ne c 0 with rfl | hc₀
   · convert zero_measure hf.measurable
     rw [← measure_univ_eq_zero, h.1.2]
-  · refine ⟨hf, .of_preimage_eq hf.quasiMeasurePreserving ?_⟩
+  · refine .of_preimage_eq hf ?_
     have : IsFiniteMeasure μ := by
       constructor
       rwa [h.1.2, lt_top_iff_ne_top]
@@ -46,7 +46,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
       refine ⟨.smul_measure (.smul_measure ?_ _) c, ?_⟩
       · convert hf.restrict_preimage hsm
         exact hfs.symm
-      · rw [Measure.smul_apply, (cond_isProbabilityMeasure hμs).1, smul_eq_mul, mul_one]
+      · rw [smul_apply, (cond_isProbabilityMeasure hμs).1, smul_eq_mul, mul_one]
     intro s hsm hfs
     by_contra H
     obtain ⟨hs, hs'⟩ : μ s ≠ 0 ∧ μ sᶜ ≠ 0 := by

@@ -6,13 +6,13 @@ Authors: Mario Carneiro, Kyle Miller
 module
 
 public meta import Batteries.Lean.Syntax
+public meta import Lean.Elab.AuxDef
 public meta import Lean.Elab.MacroArgUtil
 public meta import Lean.PrettyPrinter.Delaborator  -- shake: keep (dependency of elaborator output)
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public import Batteries.Linter.UnreachableTactic
 public import Batteries.Util.ExtendedBinder
-public import Lean.Elab.AuxDef
 public import Mathlib.Lean.Elab.Term
 public import Mathlib.Tactic.ScopedNS
 

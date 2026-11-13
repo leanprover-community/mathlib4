@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
+
 /-!
 # Partial homeomorphisms: composition
 

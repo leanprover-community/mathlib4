@@ -27,7 +27,6 @@ that the two ways to deduce an isomorphism
 These definitions and properties can be summarised by saying that the bifunctor
 `F.map₂CochainComplex : CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ`
 commutes with shifts by `ℤ`.
-
 -/
 
 @[expose] public section
@@ -112,7 +111,6 @@ lemma ι_mapBifunctorShift₁Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₁XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
 
-set_option backward.defeqAttrib.useBackward true in
 variable {K₁ L₁} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorShift₁Iso_hom_naturality₁ [HasMapBifunctor L₁ K₂ F] :
@@ -173,7 +171,6 @@ lemma ι_mapBifunctorShift₂Iso_hom_f (n₁ n₂ n : ℤ) (h : n₁ + n₂ = n)
   simp [HomologicalComplex₂.ιTotal, HomologicalComplex₂.shiftFunctor₂XXIso,
     HomologicalComplex.XIsoOfEq, eqToHom_map]
 
-set_option backward.defeqAttrib.useBackward true in
 variable {K₂ L₂} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorShift₂Iso_hom_naturality₂ [HasMapBifunctor K₁ L₂ F] :

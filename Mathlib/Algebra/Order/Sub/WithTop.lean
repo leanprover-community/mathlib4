@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Algebra.Order.Sub.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemma about subtraction in ordered monoids with a top element adjoined.
 

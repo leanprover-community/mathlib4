@@ -28,7 +28,6 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
   The same holds for open thickenings.
 * `IsCompact.cthickening_eq_biUnion_closedBall`: if `s` is compact, `cthickening δ s` is the union
   of `closedBall`s of radius `δ` around `x : E`.
-
 -/
 
 @[expose] public section
@@ -357,7 +356,7 @@ theorem ediam_thickening_le (ε : ℝ≥0) : ediam (thickening ε s) ≤ ediam s
 theorem diam_cthickening_le {α : Type*} [PseudoMetricSpace α] (s : Set α) (hε : 0 ≤ ε) :
     diam (cthickening ε s) ≤ diam s + 2 * ε := by
   lift ε to ℝ≥0 using hε
-  refine (toReal_le_add' (ediam_cthickening_le _) ?_ ?_).trans_eq ?_
+  refine (toReal_le_add_of_top_imp_top (ediam_cthickening_le _) ?_ ?_).trans_eq ?_
   · exact fun h ↦ top_unique <| h ▸ ediam_mono (self_subset_cthickening _)
   · simp [mul_eq_top]
   · simp [diam]
@@ -382,7 +381,7 @@ theorem cthickening_closure : cthickening δ (closure s) = cthickening δ s := b
 
 lemma thickening_eq_empty_iff_of_pos (hε : 0 < ε) :
     thickening ε s = ∅ ↔ s = ∅ :=
-  ⟨fun h ↦ subset_eq_empty (self_subset_thickening hε _) h, by simp +contextual⟩
+  ⟨by gcongr; apply self_subset_thickening hε, by simp +contextual⟩
 
 lemma thickening_nonempty_iff_of_pos (hε : 0 < ε) :
     (thickening ε s).Nonempty ↔ s.Nonempty := by

@@ -62,9 +62,15 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : 
   have : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
 
+instance [IsIntegral X] {U : X.Opens} (x : U) : FaithfulSMul Γ(X, U) (X.presheaf.stalk x) :=
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (germ_injective_of_isIntegral X x x.2)
+
 theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonempty U] :
     Function.Injective (X.germToFunctionField U) :=
   germ_injective_of_isIntegral _ _ _
+
+instance [IsIntegral X] (U : X.Opens) [Nonempty U] : FaithfulSMul Γ(X, U) X.functionField :=
+  (faithfulSMul_iff_algebraMap_injective _ _).mpr (X.germToFunctionField_injective U)
 
 theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :

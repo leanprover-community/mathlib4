@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Divisibility.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility in localizations of commutative monoids
 -/

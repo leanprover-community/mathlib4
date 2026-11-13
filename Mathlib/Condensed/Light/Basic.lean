@@ -6,13 +6,12 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
-/-!
 
+/-!
 # Light condensed objects
 
 This file defines the category of light condensed objects in a category `C`, following the work
 of Clausen-Scholze (see https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gmL-Kf_Rl_6Mm7juZO).
-
 -/
 
 public section
@@ -37,14 +36,6 @@ abbrev LightCondSet := LightCondensed.{u} <| Type u
 namespace LightCondensed
 
 variable {C : Type w} [Category.{v} C]
-
-@[deprecated ObjectProperty.FullSubcategory.id_hom +typeChanged (since := "2026-04-08")]
-lemma id_hom (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
-
-@[deprecated ObjectProperty.FullSubcategory.comp_hom +typeChanged (since := "2026-04-08")]
-lemma comp_hom {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = f.hom ≫ g.hom :=
-  rfl
 
 @[ext]
 lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
