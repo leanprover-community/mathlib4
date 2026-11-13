@@ -32,7 +32,7 @@ permissions:
 jobs:
   guard:
     name: Supersede older runs
-    if: ${{ github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing' }}
+    if: ${{ github.event.pull_request.head.repo.fork }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     # Overrides the workflow-level block for this job only; the `build` job below still gets

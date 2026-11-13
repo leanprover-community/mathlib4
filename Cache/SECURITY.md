@@ -22,7 +22,7 @@ CI job and assigned a trust level:
 | Container             | Who may write                                          | Trust  |
 |-----------------------|--------------------------------------------------------|--------|
 | `master`              | mathlib4 `master`/`staging`, `v4.*` release tags       | high   |
-| `forks`               | mathlib4 PR builds, non-master branches, `bors try`, and every nightly-testing push build | medium |
+| `forks`               | mathlib4 PR builds, non-master branches, `bors try`    | medium |
 
 Each writer identity is granted write access to exactly one container, enforced
 by the storage backend. An upload aimed at any other container is rejected,
@@ -34,11 +34,7 @@ containers a consumer reads from:
 | Consumer                | Default lookup chain |
 |-------------------------|----------------------|
 | mathlib4                | `master`             |
-| forks (PRs), nightly-testing | `master`, `forks` |
-
-The nightly-testing repo is a fork in this model. Its builds, including those
-of experimental toolchain branches, upload under its repo and commit namespace
-in `forks` (see [Per-commit namespace for fork uploads](#per-commit-namespace-for-fork-uploads)).
+| forks (PRs)             | `master`, `forks`    |
 
 ## Four enforcement layers
 
@@ -56,9 +52,6 @@ fixed when it is issued and cannot be widened afterward.
 CI mints the credential per job. It is an S3-compatible key pair scoped to
 one container's namespace, and the cache tool signs each request with it
 (SigV4).
-
-The nightly-testing credential is narrower than one container: it reaches only
-the namespace of the commit being built.
 
 The `forks` credential covers the whole container. Inside it, the trusted upload
 tool selects the repo and commit namespace from GitHub's event data (Layer 2),
@@ -112,10 +105,10 @@ default and must opt into a wider lookup chain explicitly.
 
 Within the fork container, uploads are further namespaced by the build's head
 commit. This closes a replay window: artifacts from a closed, hidden, or
-force-pushed-away PR, or from an experimental nightly-testing branch, live
-under a different commit, so a later honest build of the same repo cannot read
-them. Uploads to `master` are not commit-scoped: `master` receives uploads from
-a single trust level, so the container boundary alone isolates them.
+force-pushed-away PR live under a different commit, so a later honest build of
+the same repo cannot read them. Uploads to `master` are not commit-scoped:
+`master` receives uploads from a single trust level, so the container boundary
+alone isolates them.
 
 By default a `cache get` reads the fork namespace at the checked-out HEAD: it
 can only serve artifacts built from the commit the reader already has, so it

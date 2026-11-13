@@ -77,8 +77,9 @@ runs:
         # The privileged container `master` is writable only by mathlib4's own
         # native CI, whose OIDC-gated credential is scoped to match. A cross-repo pull
         # request is built by build_fork.yml with fork-trust credentials
-        # whatever repo the PR head lives on (e.g. a `bump/*` branch on the
-        # mathlib4-nightly-testing fork), so it can only write `forks`.
+        # whatever repo the PR head lives on (e.g. a downstream-lean4 export
+        # branch on `leanprover/downstream-lean4-fork-mathlib4`), so it can only
+        # write `forks`.
         # `GITHUB_REPOSITORY` is the repo the workflow runs as (the base repo
         # for `pull_request_target`), i.e. the one whose credentials this job
         # holds; when it differs from `$REPO`, the build is a fork and targets
@@ -136,8 +137,7 @@ runs:
             fi
             ;;
           *)
-            # Foreign fork, or the nightly-testing repo, which is a fork in
-            # the cache's model. The cache tool's default chain for a fork repo
+            # Foreign fork. The cache tool's default chain for a fork repo
             # is [master, forks] (master-first): master supplies the
             # bulk of unchanged upstream deps, forks supplies PR-specific
             # files. No widening needed, so MATHLIB_CACHE_FROM stays unset.
