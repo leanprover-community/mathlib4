@@ -10,10 +10,14 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 
 import Mathlib.CategoryTheory.Inserter.Limits
+import Mathlib.CategoryTheory.Inserter.LocallySmall
 import Mathlib.CategoryTheory.Presentable.Dense
+import Mathlib.CategoryTheory.Presentable.StrongGenerator
+import Mathlib.CategoryTheory.Presentable.Uniformization
 import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
 import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
+import Mathlib.Order.Interval.Set.InitialSeg
 
 /-! # Inserter categories are accessible
 
@@ -1294,8 +1298,167 @@ lemma final (E : Inserter F G) : (U κ E).Final := by
       CostructuredArrow.homMk ⟨⟨f₁ ≫ u.left.hom ≫ v₁, by simp [← hu₁, reassoc_of% hr]⟩⟩,
       by simp [hv₁, hf₀], by simp [hv₁, hf₁], by simp [reassoc_of% hsq]⟩
 
-/- TODOs (@robin-carlier):
-  Use `isCardinalFiltered_Δ` and `final` and to prove that inserters are accessible.
--/
+attribute [local ext] Inserter in
+instance [LocallySmall.{w} L] :
+    ObjectProperty.EssentiallySmall.{w} (O₁ κ F G) := by
+  dsimp [O₁]
+  have : ObjectProperty.EssentiallySmall.{w} <|
+      ((isCardinalPresentable K κ).inverseImage (proj F G)).map (proj F G) :=
+    ObjectProperty.EssentiallySmall.of_le (ObjectProperty.map_inverseImage_le _ (proj F G))
+  apply ObjectProperty.EssentiallySmall.of_functor _ (proj F G) this
+  · intro y
+    suffices h : ObjectProperty.EssentiallySmall.{w}
+        (fun (x : Inserter F G) ↦ Nonempty ((proj F G).obj x ≅ y)) by
+      exact ObjectProperty.EssentiallySmall.of_le.{w} (inf_le_right)
+    dsimp
+    let Q : ObjectProperty (Inserter F G) := fun x : Inserter F G ↦ x.obj = y
+    have : ObjectProperty.Small.{w} Q := by
+      let f (x : Subtype Q) : (F.obj y ⟶ G.obj y) :=
+        eqToHom (by rw [x.2]) ≫ x.1.hom ≫ eqToHom (by rw [x.2])
+      apply small_of_injective.{w} (f := f)
+      intro u v huv
+      ext
+      · rw [u.2, v.2]
+      · rwa [← heq_iff_eq, eqToHom_comp_heq_iff, heq_comm, eqToHom_comp_heq_iff,
+          comp_eqToHom_heq_iff, heq_comm, comp_eqToHom_heq_iff] at huv
+    exact ⟨Q, this, fun x ⟨e⟩ ↦
+      (ObjectProperty.prop_isoClosure_iff ..).mpr
+      ⟨⟨F.map e.inv ≫ x.hom ≫ G.map e.hom⟩, rfl, ⟨Inserter.mkIso e⟩⟩⟩
 
-end CategoryTheory.Inserter.Accessible
+end Accessible
+
+section
+
+open Accessible
+variable {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L) (κ : Cardinal.{w})
+    [Fact κ.IsRegular] [IsCardinalAccessibleCategory K κ] [IsCardinalAccessibleCategory L κ]
+    [F.IsCardinalAccessible κ] [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ]
+    (Λ : Type*) [Nonempty Λ] [LinearOrder Λ] [SuccOrder Λ] [WellFoundedLT Λ] [NoMaxOrder Λ]
+    (hΛ : HasCardinalLT Λ κ)
+    [Limits.HasColimitsOfShape Λ K] [Limits.HasColimitsOfShape Λ L]
+    [Limits.PreservesColimitsOfShape Λ F] [Limits.PreservesColimitsOfShape Λ G]
+
+include Λ hΛ in
+public theorem isCardinalFilteredGenerator_inverseImage_isCardinalPresentable :
+    ((isCardinalPresentable K κ).inverseImage
+      (Inserter.proj F G)).IsCardinalFilteredGenerator κ := by
+  have (X : Inserter F G) : IsCardinalFiltered (CostructuredArrow (O₁ κ F G).ι X) κ := by
+    have : OrderBot Λ := WellFoundedLT.toOrderBot Λ
+    exact isCardinalFiltered_Δ κ Λ hΛ X
+  apply +allowSynthFailures IsCardinalFilteredGenerator.of_isDense_ι
+  · constructor
+    intro E
+    /- Using that the functor `U : Δ κ E ⥤ CostructuredArrow (isCardinalPresentable K κ).ι E.obj`
+    is final, any inserter is the κ-filtered colimit of its projection from Δ κ E:
+    This can be checked after postcomposition with `proj F G` and extension through `U`,
+    and the cocone obtained this way identifies to the canonical cocone for E.obj,
+    which is a colimit diagram as `K` is κ-accessible. -/
+    dsimp [Functor.isDenseAt]
+    -- The canonical cocone making E.hom a κ-filtered colimit of κ-presentable objects
+    let hcolimT := (isCardinalPresentable K κ).ι.denseAt E.obj -- E.obj ≅ colim_ξ S_ξ
+    have : OrderBot Λ := WellFoundedLT.toOrderBot Λ
+    have : (U κ E).Final := final κ Λ hΛ E
+    let t1 := (Functor.Final.isColimitWhiskerEquiv (U κ E) _).symm hcolimT
+    have : Limits.PreservesColimitsOfShape (CostructuredArrow (O₁ κ F G).ι E) F :=
+      Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall _ κ _
+    have : Limits.PreservesColimitsOfShape (CostructuredArrow (O₁ κ F G).ι E) G :=
+      Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall _ κ _
+    have : Limits.HasColimitsOfShape (CostructuredArrow (O₁ κ F G).ι E) L :=
+      HasCardinalFilteredColimits.hasColimitsOfShape (κ := κ) ..
+    have : Limits.HasColimitsOfShape (CostructuredArrow (O₁ κ F G).ι E) K :=
+      HasCardinalFilteredColimits.hasColimitsOfShape (κ := κ) ..
+    apply Limits.ReflectsColimit.reflects (F := Inserter.proj F G)
+      (K := CostructuredArrow.proj (O₁ κ F G).ι E ⋙ (O₁ κ F G).ι)
+    let e₁ :
+      (U κ E ⋙ CostructuredArrow.proj (isCardinalPresentable K κ).ι E.obj ⋙
+        (isCardinalPresentable K κ).ι) ≅
+      (CostructuredArrow.proj (O₁ κ F G).ι E ⋙ (O₁ κ F G).ι) ⋙ proj F G := .refl _
+    exact Limits.IsColimit.equivOfNatIsoOfIso e₁
+      (Limits.Cocone.whisker (U κ E) _)
+      ((proj F G).mapCocone
+        ((Functor.LeftExtension.mk (𝟭 _) (O₁ κ F G).ι.rightUnitor.inv).coconeAt E))
+      (Limits.Cocone.ext (.refl _) (by intros; simp [e₁])) t1
+  · intro x hx
+    simp only [ObjectProperty.prop_inverseImage_iff, proj_obj] at hx
+    infer_instance
+
+include Λ hΛ in
+/-- Let `Λ < κ` be a pair of infinite cardinals such that `κ` is regular. Assume that
+- `K` and `L` are `κ`-accessible categories with colimits of `Λ`-chains.
+- `F G : C ⥤ D` are `κ`-accessible functors preserving colimits of `Λ`-chains
+- `F` preserves `κ`-presentable objects.
+
+Then the category `Inserter F G` is `κ`-accessible.
+
+This theorem appears as Theorem 4.1 in [positselski2014].
+
+Note that if `K` and `L` are `κ`-accessible, and `F`, `G` are `κ`-accessible with `F` preserving
+`κ`-presentable objects then since `κ` is sharply less than `κ⁺`, one can show that the pair
+`κ < κ⁺` satisfies the conditions above, and hence `Inserter F G` is `κ⁺`-accessible in
+this situation. -/
+public theorem isCardinalAccessibleCategory :
+    IsCardinalAccessibleCategory (Inserter F G) κ where
+  exists_generator := ⟨O₁ κ F G, inferInstance,
+      isCardinalFilteredGenerator_inverseImage_isCardinalPresentable F G κ Λ hΛ ..⟩
+  hasColimitsOfShape' J _ _ := by
+    have : Limits.PreservesColimitsOfShape J F :=
+      Functor.IsCardinalAccessible.preservesColimitOfShape κ J
+    have : Limits.HasColimitsOfShape J K :=
+      HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+    have : Limits.HasColimitsOfShape J L :=
+      HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+    infer_instance
+
+include Λ hΛ in
+public lemma isCardinalPresentable_eq :
+    isCardinalPresentable (Inserter F G) κ =
+      (isCardinalPresentable K κ).inverseImage (Inserter.proj F G) := by
+  have := isCardinalFilteredGenerator_inverseImage_isCardinalPresentable F G κ Λ hΛ
+  rw [this.isPresentable_eq_retractClosure]
+  apply ObjectProperty.retractClosure_eq_self
+
+omit [G.IsCardinalAccessible κ] [F.PreservesCardinalPresentable κ] in
+public lemma isCardinalAccessible_proj :
+    (Inserter.proj F G).IsCardinalAccessible κ := by
+  constructor
+  intro J _ _
+  have : Limits.PreservesColimitsOfShape J F :=
+    Functor.IsCardinalAccessible.preservesColimitOfShape κ J
+  have : Limits.HasColimitsOfShape J K :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  have : Limits.HasColimitsOfShape J L :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  infer_instance
+
+end
+
+public instance {K L : Type*} [Category* K] [Category* L] (F G : K ⥤ L)
+    [IsAccessibleCategory.{w} K] [IsAccessibleCategory.{w} L]
+    [F.IsAccessible.{w}] [G.IsAccessible.{w}] :
+    IsAccessibleCategory.{w} (Inserter F G) := by
+  obtain ⟨κ, _, _, _, _, _, _, _, _, _⟩ := IsCardinalAccessibleCategory.uniformization_pair F G
+  -- To apply the theorem `isCardinalAccessibleCategory`, `κ` must be at least uncountable,
+  -- so we fix this by picking an arbitrary cardinal κ' such that κ is sharply less than κ
+  obtain ⟨κ', _, h⟩ := Cardinal.SharplyLT.exists_single κ
+  have : IsCardinalAccessibleCategory K κ' := h.isCardinalAccessibleCategory K
+  have : IsCardinalAccessibleCategory L κ' := h.isCardinalAccessibleCategory L
+  have : F.IsCardinalAccessible κ' := Functor.isCardinalAccessible_of_le _ h.le
+  have : G.IsCardinalAccessible κ' := Functor.isCardinalAccessible_of_le _ h.le
+  have : F.PreservesCardinalPresentable κ' := F.preservesCardinalPresentable_of_sharplyLT h
+  have : G.PreservesCardinalPresentable κ' := G.preservesCardinalPresentable_of_sharplyLT h
+  have : Nonempty κ.ord.ToType := Cardinal.nonempty_ord_toType (Cardinal.IsRegular.ne_zero Fact.out)
+  have : NoMaxOrder κ.ord.ToType := Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
+  have hCard: HasCardinalLT κ.ord.ToType κ' := by
+    rw [hasCardinalLT_iff_cardinal_mk_lt]
+    simpa using h.lt
+  have : Limits.HasColimitsOfShape κ.ord.ToType K :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  have : Limits.HasColimitsOfShape κ.ord.ToType L :=
+    HasCardinalFilteredColimits.hasColimitsOfShape _ κ _
+  have : Limits.PreservesColimitsOfShape κ.ord.ToType F :=
+    Functor.IsCardinalAccessible.preservesColimitOfShape κ _
+  have : Limits.PreservesColimitsOfShape κ.ord.ToType G :=
+    Functor.IsCardinalAccessible.preservesColimitOfShape κ _
+  exact ⟨κ', inferInstance, isCardinalAccessibleCategory F G κ' κ.ord.ToType hCard⟩
+
+end CategoryTheory.Inserter
