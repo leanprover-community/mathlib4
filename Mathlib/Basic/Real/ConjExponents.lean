@@ -298,15 +298,15 @@ theorem one_div_ne_zero' : 1 / r ≠ 0 := ne_of_gt h.one_div_pos'
 theorem all_pos : 0 < p ∧ 0 < q ∧ 0 < r := ⟨h.pos, h.symm.pos, h.pos'⟩
 
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := h.inv_add_inv_eq_inv.symm
-lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by exact_mod_cast h.coe.one_div_add_one_div
+lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := mod_cast h.coe.one_div_add_one_div
 lemma one_div_eq : 1 / r = 1 / p + 1 / q := h.one_div_add_one_div.symm
-lemma inv_inv_add_inv : (p⁻¹ + q⁻¹)⁻¹ = r := by exact_mod_cast h.coe.inv_inv_add_inv
+lemma inv_inv_add_inv : (p⁻¹ + q⁻¹)⁻¹ = r := mod_cast h.coe.inv_inv_add_inv
 
 protected lemma inv_lt_inv : p⁻¹ < r⁻¹ := h.coe.inv_lt_inv
 lemma lt : r < p := h.coe.lt
 lemma inv_sub_inv_eq_inv : r⁻¹ - q⁻¹ = p⁻¹ := by
   have := h.symm.inv_lt_inv.le
-  exact_mod_cast h.coe.inv_sub_inv_eq_inv
+  exact mod_cast h.coe.inv_sub_inv_eq_inv
 
 lemma holderConjugate_div_div : (p / r).HolderConjugate (q / r) where
   inv_add_inv_eq_inv := by
@@ -359,7 +359,7 @@ end
 
 lemma _root_.NNReal.holderConjugate_iff : p.HolderConjugate q ↔ 1 < p ∧ p⁻¹ + q⁻¹ = 1 := by
   rw [← holderConjugate_coe_iff, Real.holderConjugate_iff, ← coe_one]
-  exact_mod_cast Iff.rfl
+  exact mod_cast Iff.rfl
 
 protected lemma inv_inv (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a⁻¹.HolderConjugate b⁻¹ where
   inv_add_inv_eq_inv := by simpa using hab
@@ -377,9 +377,9 @@ end HolderConjugate
 lemma holderConjugate_comm : p.HolderConjugate q ↔ q.HolderConjugate p := ⟨.symm, .symm⟩
 
 lemma holderConjugate_iff_eq_conjExponent (hp : 1 < p) : p.HolderConjugate q ↔ q = p / (p - 1) := by
-  rw [← holderConjugate_coe_iff, Real.holderConjugate_iff_eq_conjExponent (by exact_mod_cast hp),
+  rw [← holderConjugate_coe_iff, Real.holderConjugate_iff_eq_conjExponent (mod_cast hp),
     ← coe_one, ← NNReal.coe_sub hp.le]
-  exact_mod_cast Iff.rfl
+  exact mod_cast Iff.rfl
 
 lemma HolderConjugate.conjExponent (h : 1 < p) : p.HolderConjugate (conjExponent p) :=
   (holderConjugate_iff_eq_conjExponent h).2 rfl
@@ -424,11 +424,11 @@ lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
         rintro rfl
         apply hr
         exact_mod_cast (coe_zero ▸ h).unique _ _ r 0
-    exact ⟨by exact_mod_cast h.inv_add_inv_eq_inv, hp.bot_lt, hq.bot_lt⟩
+    exact ⟨mod_cast h.inv_add_inv_eq_inv, hp.bot_lt, hq.bot_lt⟩
   · rw [holderTriple_iff]
     have hp := h.ne_zero
     have hq := h.symm.ne_zero
-    exact_mod_cast h.inv_add_inv_eq_inv
+    exact mod_cast h.inv_add_inv_eq_inv
 
 alias ⟨_, _root_.NNReal.HolderTriple.coe_ennreal⟩ := holderTriple_coe_iff
 

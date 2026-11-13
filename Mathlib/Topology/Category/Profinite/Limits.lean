@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.CompHausLike.Limits
 public import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
-
 # Explicit limits and colimits
 
 This file applies the general API for explicit limits and colimits in `CompHausLike P` (see

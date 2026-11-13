@@ -19,7 +19,6 @@ given by the tensor product on `C`).
 
 If `C` also has pullbacks, then `Arrow C` has a monoidal closed structure given by the pullback-hom
 (the Leibniz construction given by the internal hom on `C`).
-
 -/
 
 public section

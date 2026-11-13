@@ -37,7 +37,6 @@ Given a type `C` and a category instance on `C`:
 The free groupoid on a category `C` is first defined by taking the free groupoid `G`
 on the underlying *quiver* of `C`. Then the free groupoid on the *category* `C` is defined as
 the quotient of `G` by the relation that makes the inclusion prefunctor `C ⥤q G` a functor.
-
 -/
 
 @[expose] public section

@@ -24,7 +24,6 @@ In this case, V- and H-cones are known as polyhedral cones.
 ## Main declarations
 
 - `PointedCone.DualFG` expresses that a cone is the dual of a finite set.
-
 -/
 
 @[expose] public section

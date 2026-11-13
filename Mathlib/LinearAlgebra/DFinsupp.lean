@@ -691,7 +691,7 @@ theorem coe_dfinsuppSum (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ�
 @[simp]
 theorem dfinsuppSum_apply (t : Π₀ i, γ i) (g : ∀ i, γ i → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (t.sum g) b = t.sum fun i d => g i d b :=
-  sum_apply _ _ _
+  LinearMap.sum_apply _ _ _
 
 end Sum
 

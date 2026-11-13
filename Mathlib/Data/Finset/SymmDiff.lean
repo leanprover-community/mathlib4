@@ -15,7 +15,6 @@ This file concerns the symmetric difference operator `s Δ t` on finite sets.
 ## Tags
 
 finite sets, finset
-
 -/
 
 public section
@@ -41,7 +40,7 @@ open scoped symmDiff
 variable [DecidableEq α] {s t : Finset α} {a : α}
 
 theorem mem_symmDiff : a ∈ s ∆ t ↔ a ∈ s ∧ a ∉ t ∨ a ∈ t ∧ a ∉ s := by
-  simp_rw [symmDiff, sup_eq_union, mem_union, mem_sdiff]
+  simp_rw [symmDiff, mem_union, mem_sdiff]
 
 protected theorem symmDiff_def (s t : Finset α) : s ∆ t = s \ t ∪ t \ s := rfl
 

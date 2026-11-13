@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Products.Associator
 
 We study the equivalence of categories
 `currying₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E`.
-
 -/
 
 @[expose] public section

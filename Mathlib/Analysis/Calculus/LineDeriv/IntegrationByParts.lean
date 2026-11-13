@@ -204,7 +204,7 @@ theorem integral_bilinear_fderiv_right_eq_neg_left_of_integrable
     (hf · · |>.hasFDerivAt) (hg · · |>.hasFDerivAt)
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-    [NormedSpace 𝕜 G] [IsScalarTower ℝ 𝕜 G]
+    [NormedSpace 𝕜 G]
 
 /-- **Integration by parts for Fréchet derivatives**
 Version with a scalar function: `∫ f • g' = - ∫ f' • g` when `f • g'` and `f' • g` and `f • g`

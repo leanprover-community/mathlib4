@@ -40,7 +40,6 @@ general $R$-algebras.
 
 ## TODO
 - Induction principle for `FreeProduct`
-
 -/
 
 @[expose] public section

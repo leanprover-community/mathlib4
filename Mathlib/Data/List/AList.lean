@@ -31,7 +31,6 @@ provides ways to access, modify, and combine `AList`s.
 ## References
 
 * <https://en.wikipedia.org/wiki/Association_list>
-
 -/
 
 @[expose] public section

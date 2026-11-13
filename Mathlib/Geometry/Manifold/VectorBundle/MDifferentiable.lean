@@ -9,7 +9,6 @@ public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-!
 # Differentiability of functions in vector bundles
-
 -/
 
 public section
@@ -243,16 +242,13 @@ theorem mdifferentiableWithinAt_snd_comp_iff₂
   ⟨(hf.change_section_trivialization IB · hex₀ he'x₀),
    (hf.change_section_trivialization IB · he'x₀ hex₀)⟩
 
-variable (e e')
-
 theorem mdifferentiableAt_snd_comp_iff₂
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {x₀ : M}
     (he : f x₀ ∈ e.source) (he' : f x₀ ∈ e'.source)
     (hf : MDiffAt (fun x ↦ (f x).proj) x₀) :
     MDiffAt (fun x ↦ (e (f x)).2) x₀ ↔ MDiffAt (fun x ↦ (e' (f x)).2) x₀ := by
-  simpa [← mdifferentiableWithinAt_univ] using
-    e.mdifferentiableWithinAt_snd_comp_iff₂ IB he he' hf
+  simpa [← mdifferentiableWithinAt_univ] using e.mdifferentiableWithinAt_snd_comp_iff₂ IB he he' hf
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within a set. -/
@@ -711,14 +707,14 @@ lemma exists_contMDiffOn_extend [(x : M) → Module 𝕜 (V x)] [VectorBundle �
     exact FiberBundle.mem_baseSet_trivializationAt' x₀
   suffices CMDiff[t.baseSet] k (fun x ↦ (t ⟨x, extend F σ₀ x⟩).2) by
     intro x hx
-    rw [t.contMDiffWithinAt_section _ hx]
+    rw [t.contMDiffWithinAt_section_iff _ hx]
     exact this x hx
   let w : F := (t ⟨x₀, σ₀⟩).2
   have : CMDiff[t.baseSet] k (fun (_x : M) ↦ w) := contMDiffOn_const
   exact this.congr (fun x hx ↦ by simp [extend, t, w, hx])
 
 lemma contMDiffAt_extend {x : M} (σ₀ : V x) : CMDiffAt k (T% (extend F σ₀)) x := by
-  rw [contMDiffAt_section]
+  rw [contMDiffAt_section_iff]
   set t := trivializationAt F V x
   let w : F := (t ⟨x, σ₀⟩).2
   have : CMDiffAt k (fun (_x : M) ↦ w) x := contMDiffAt_const

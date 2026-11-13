@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.ZMod
 
 /-!
-
 # Relating `ℤ_[p]` to `ZMod (p ^ n)`, aka `ℤ/p^nℤ`.
 
 In this file we establish connections between the `p`-adic integers `ℤ_[p]`
@@ -39,7 +38,6 @@ there is a unique limit `R → ℤ_[p]`
 
 The constructions of the ring homomorphisms go through an auxiliary constructor
 `PadicInt.toZModHom`, which removes some boilerplate code.
-
 -/
 
 @[expose] public section
@@ -422,7 +420,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       simp only [mul_zero] at hc
       contradiction
     conv_rhs =>
-      congr
+      enter [1]
       simp only [hc]
     rw [show (x - (appr x n : ℤ_[p])).valuation = ((p : ℤ_[p]) ^ n * c).valuation by rw [hc]]
     rw [valuation_p_pow_mul _ _ hc', Nat.cast_add, add_sub_cancel_left, _root_.pow_succ, ← mul_sub]
@@ -751,7 +749,7 @@ lemma toZModPow_ofIntSeq_of_pow_dvd_sub
   obtain ⟨e, he⟩ := Ideal.mem_span_singleton.mp (PadicInt.appr_spec n x)
   rw [sub_eq_iff_eq_add] at he
   obtain ⟨N, hN⟩ := padicNormE.defn s (ε := p ^ (-n : ℤ))
-    (by simp only [zpow_neg, zpow_natCast, inv_pos]; exact_mod_cast Nat.pos_of_neZero _)
+    (by simp only [zpow_neg, zpow_natCast, inv_pos]; exact mod_cast Nat.pos_of_neZero _)
   replace hN := hN (N + n) (Nat.le_add_right N n)
   rw [← hs, he, ← Rat.cast_lt (K := ℝ)] at hN
   push_cast at hN

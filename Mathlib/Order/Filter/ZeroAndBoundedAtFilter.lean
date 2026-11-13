@@ -15,7 +15,6 @@ Given a filter `l` we define the notion of a function being `ZeroAtFilter` as we
 `BoundedAtFilter`. Alongside this we construct the `Submodule`, `AddSubmonoid` of functions
 that are `ZeroAtFilter`. Similarly, we construct the `Submodule` and `Subalgebra` of functions
 that are `BoundedAtFilter`.
-
 -/
 
 @[expose] public section
@@ -44,6 +43,10 @@ nonrec theorem ZeroAtFilter.add [TopologicalSpace β] [AddZeroClass β] [Continu
 nonrec theorem ZeroAtFilter.neg [TopologicalSpace β] [SubtractionMonoid β] [ContinuousNeg β]
     {l : Filter α} {f : α → β} (hf : ZeroAtFilter l f) : ZeroAtFilter l (-f) := by
   simpa using! hf.neg
+
+@[simp] theorem zeroAtFilter_neg_iff [TopologicalSpace β] [SubtractionMonoid β] [ContinuousNeg β]
+    {l : Filter α} {f : α → β} : ZeroAtFilter l (-f) ↔ ZeroAtFilter l f :=
+  ⟨fun hf ↦ neg_neg f ▸ hf.neg, ZeroAtFilter.neg⟩
 
 theorem ZeroAtFilter.smul [TopologicalSpace β] [Zero β]
     [SMulZeroClass 𝕜 β] [ContinuousConstSMul 𝕜 β] {l : Filter α} {f : α → β} (c : 𝕜)
@@ -91,6 +94,10 @@ nonrec theorem BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {
 theorem BoundedAtFilter.neg [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
     (hf : BoundedAtFilter l f) : BoundedAtFilter l (-f) :=
   hf.neg_left
+
+@[simp] theorem boundedAtFilter_neg_iff [SeminormedAddCommGroup β] {l : Filter α} {f : α → β} :
+    BoundedAtFilter l (-f) ↔ BoundedAtFilter l f :=
+  ⟨fun hf ↦ neg_neg f ▸ hf.neg, BoundedAtFilter.neg⟩
 
 theorem BoundedAtFilter.smul
     [SeminormedRing 𝕜] [SeminormedAddCommGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]

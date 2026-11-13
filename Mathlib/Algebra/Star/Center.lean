@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Star.Pointwise
 
 public section
 
+open scoped Pointwise
+
 variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 
 theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R where

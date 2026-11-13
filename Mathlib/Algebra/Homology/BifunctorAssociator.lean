@@ -33,7 +33,6 @@ commutation of certain functors to certain coproducts.
 
 The main application of these results shall be the construction of
 the associator for the monoidal category structure on homological complexes.
-
 -/
 
 @[expose] public section

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological properties of units
 
