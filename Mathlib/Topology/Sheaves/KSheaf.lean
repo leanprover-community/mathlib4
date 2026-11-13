@@ -175,7 +175,7 @@ open Compacts KPresheaf
 variable {Y : TopCat.{w}} [T2Space Y] [LocallyCompactSpace Y] {f : X ⟶ Y}
     (pf : IsProperMap f.hom') (F : KSheaf A X)
 
-lemma isKSheaf_pushforward_obj: ((pushforward f pf).obj F.obj).IsKSheaf where
+lemma isKSheaf_pushforward_obj : ((pushforward f pf).obj F.obj).IsKSheaf where
   nonempty_isTerminal := by
     exact F.property.nonempty_isTerminal
   isPullback h :=
