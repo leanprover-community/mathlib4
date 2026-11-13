@@ -48,7 +48,13 @@ noncomputable def subBarycenter (S : Finset M) (hS : S.Nonempty) : StdSimplex K 
     rw [← Finsupp.sum_finsetSum_index (by simp) (by simp)]
     simpa using IsUnit.mul_inv_cancel (Ne.isUnit (by simpa [← Finset.nonempty_iff_ne_empty]))
 
-lemma subBarycenter_weights_apply_eq_zero
+lemma weights_subBarycenter_apply_eq (S : Finset M) (m : M) (hm : m ∈ S) :
+    (subBarycenter (K := K) S (by grind)).weights m = (S.card⁻¹ : K) := by
+  rw [weights_subBarycenter, Finsupp.coe_finsetSum, Finset.sum_apply,
+    Finset.sum_eq_single m (fun a ha ha' ↦ Finsupp.single_eq_of_ne ha'.symm) (by tauto),
+    Finsupp.single_eq_same]
+
+lemma weights_subBarycenter_apply_eq_zero
     (S : Finset M) (hS : S.Nonempty) (m : M) (hm : m ∉ S) :
     (subBarycenter (K := K) S hS).weights m = 0 := by
   simp only [weights_subBarycenter, Finsupp.coe_finsetSum, Finset.sum_apply]
@@ -81,13 +87,23 @@ lemma barycenter_fin_one :
     barycenter (K := K) (M := Fin 1) = .single 0 :=
   barycenter_of_unique
 
-
-lemma map_subBarycenter_of_injective -- [CharZero K]
+lemma map_subBarycenter_of_injective
     {M N : Type*} [DecidableEq N] (S : Finset M) (hS : S.Nonempty)
     (f : M → N) (hf : Function.Injective f) :
-    map f (subBarycenter (K := K) S hS) =
-      subBarycenter (Finset.image f S) (by simpa) := by
-  sorry
+    map f (subBarycenter (K := K) S hS) = subBarycenter (Finset.image f S) (by simpa) := by
+  ext n
+  rw [weights_map]
+  by_cases hn : n ∈ Set.range f
+  · obtain ⟨m, rfl⟩ := hn
+    rw [Finsupp.mapDomain_apply_of_injective hf]
+    by_cases hm : m ∈ S
+    · rw [weights_subBarycenter_apply_eq _ _ hm,
+        weights_subBarycenter_apply_eq _ _ (by grind),
+        Finset.card_image_of_injective S hf]
+    · rw [weights_subBarycenter_apply_eq_zero _ _ _ (by grind),
+        weights_subBarycenter_apply_eq_zero _ _ _ (by grind)]
+  · rw [weights_subBarycenter_apply_eq_zero _ (by simpa) _ (by grind),
+      Finsupp.mapDomain_of_notMem_range _ _ hn]
 
 end StdSimplex
 
