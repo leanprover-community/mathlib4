@@ -1069,9 +1069,11 @@ instance : Algebra K (RatFuncAdicCompl K) :=
   RingHom.toAlgebra ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C)
 
 /-- The algebra equivalence between `K⸨X⸩` and the `X`-adic completion of `RatFunc X` -/
-def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K :=
-  AlgEquiv.ofRingEquiv (f := LaurentSeriesRingEquiv K)
-    (fun a ↦ by simp [RingHom.algebraMap_toAlgebra])
+def LaurentSeriesAlgEquiv : K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K := by
+  let e : @AlgEquiv K _ _ _ _ _ (powerSeriesAlgebra ℤ K).toModule _ :=
+    .ofCommutes (e := LaurentSeriesRingEquiv K) (fun a ↦ by simp [RingHom.algebraMap_toAlgebra])
+  convert e
+  ext; simp [SMul.smul]
 
 open Filter WithZero
 
@@ -1223,7 +1225,7 @@ instance : Algebra K ((idealX K).adicCompletionIntegers K⟮X⟯) :=
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
 def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers K⟮X⟯ := by
-  apply AlgEquiv.ofRingEquiv (f := powerSeriesRingEquiv K)
+  apply AlgEquiv.ofCommutes (e := powerSeriesRingEquiv K)
   intro a
   rw [PowerSeries.algebraMap_eq, RingHom.algebraMap_toAlgebra, ← Subtype.coe_inj,
     powerSeriesRingEquiv_coe_apply,
