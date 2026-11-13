@@ -765,8 +765,8 @@ theorem map_reindex (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι₂) (x : �
   congr($(map_comp_reindex_eq _ _) _)
 
 theorem map_comp_reindex_symm (f : Π i, s i →ₛₗ[σ] t i) (e : ι ≃ ι₂) :
-    map f ∘ₛₗ (reindex R s e).symm.toLinearMap
-      = (reindex S t e).symm.toLinearMap ∘ₛₗ map (fun i => f (e.symm i)) := by
+    map f ∘ₛₗ (reindex R s e).symm.toLinearMap =
+      (reindex S t e).symm.toLinearMap ∘ₛₗ map (fun i => f (e.symm i)) := by
   ext m
   apply LinearEquiv.injective (reindex S t e)
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
