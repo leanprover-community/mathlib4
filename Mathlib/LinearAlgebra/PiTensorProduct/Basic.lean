@@ -592,7 +592,7 @@ lemma piTensorHomMap_tprod_eq_map (f : Π i, s i →ₛₗ[σ₁₂] t i) :
   ext; simp
 
 /-- If `s i` and `t i` are linearly equivalent for every `i` in `ι`, then `⨂[R] i, s i` and
-`⨂[R] i, t i` are linearly equivalent.
+`⨂[R₂] i, t i` are linearly equivalent.
 
 This is the n-ary version of `TensorProduct.congr`
 -/
