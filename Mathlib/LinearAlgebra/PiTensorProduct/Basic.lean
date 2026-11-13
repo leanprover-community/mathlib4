@@ -28,7 +28,7 @@ binary tensor product in `Mathlib/LinearAlgebra/TensorProduct/Basic.lean`.
   function `φ : (R × Π i, s i) → F` with the appropriate properties.
 * `lift φ` with `φ : (Π i, s i) →ₘₛₗ[σ] E` is the corresponding linear map
   `(⨂[R] i, s i) →ₛₗ[σ] E`. This is bundled as a linear equivalence.
-* `PiTensorProduct.reindex e` re-indexes the components of `⨂[R] i : ι, s` along `e : ι ≃ ι₂`.
+* `PiTensorProduct.reindex e` re-indexes the components of `⨂[R] i : ι, s i` along `e : ι ≃ ι₂`.
 * `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
   a single `PiTensorProduct`.
 
