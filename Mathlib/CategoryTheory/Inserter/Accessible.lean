@@ -6,8 +6,8 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Inserter.Basic
-public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 
 import Mathlib.CategoryTheory.Inserter.Limits
 import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
