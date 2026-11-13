@@ -512,7 +512,7 @@ lemma eq_zero_iff_forall {x : ι → ℤ} :
   obtain ⟨d, hd, hd'⟩ := hM.exists_posDef'
   by_contra hx
   refine (hd' x hx).not_ge ?_
-  simp_rw [dotProduct_diagonal_mul_mulVec, mul_assoc]
+  simp_rw [dotProduct_diagonal_mul_mulVec]
   exact Finset.sum_nonpos fun i _ ↦ mul_nonpos_of_nonneg_of_nonpos (hd i).le (h i)
 
 lemma eq_zero_iff_forall' {x : ι → ℤ} :
