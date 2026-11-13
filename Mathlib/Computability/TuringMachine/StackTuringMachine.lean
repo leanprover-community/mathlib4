@@ -723,6 +723,7 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L)
       rw [ListBlank.nth_mk, List.getI_eq_getElem?_getD, List.map, List.reverse_nil]
       cases L.reverse[i]? <;> rfl
   · rw [trInit, TM1.init]
+    dsimp only
     congr <;> cases L.reverse <;> try rfl
     simp only [List.map_map, List.tail_cons, List.map]
     rfl
