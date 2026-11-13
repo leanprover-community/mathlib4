@@ -2954,6 +2954,7 @@ public import Mathlib.CategoryTheory.InducedCategory
 public import Mathlib.CategoryTheory.Inserter.Accessible
 public import Mathlib.CategoryTheory.Inserter.Basic
 public import Mathlib.CategoryTheory.Inserter.Limits
+public import Mathlib.CategoryTheory.Inserter.LocallySmall
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.CategoryTheory.IsoCat
