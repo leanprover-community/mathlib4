@@ -26,7 +26,6 @@ we introduce a property `MulticoequalizerDiagram x u v` which says that `x` is
 the supremum of `u`, and that for all `i` and `j`, `v i j` is the minimum of `u i` and `u j`.
 Again, when `T := Set X`, we shall show (TODO) that we obtain a multicoequalizer diagram
 in the category of types.
-
 -/
 
 @[expose] public section

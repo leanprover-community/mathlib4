@@ -139,7 +139,7 @@ theorem update_inr_apply_inr' {γ : α ⊕ β → Type*} [DecidableEq β] [Decid
 lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
     (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (a : α) (x : γ (.inl a)) :
     Sum.rec (update f a x) g = update (Sum.rec f g) (.inl a) x :=
-  Function.rec_update Sum.inl_injective (Sum.rec · g) (fun _ _ => rfl) (fun
+  Function.rec_update (Sum.rec · g) (fun _ _ => rfl) (fun
     | _, _, .inl _, h => (h _ rfl).elim
     | _, _, .inr _, _ => rfl) _ _ _
 
@@ -147,7 +147,7 @@ lemma rec_update_left {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq �
 lemma rec_update_right {γ : α ⊕ β → Sort*} [DecidableEq α] [DecidableEq β]
     (f : ∀ a, γ (.inl a)) (g : ∀ b, γ (.inr b)) (b : β) (x : γ (.inr b)) :
     Sum.rec f (update g b x) = update (Sum.rec f g) (.inr b) x :=
-  Function.rec_update Sum.inr_injective (Sum.rec f) (fun _ _ => rfl) (fun
+  Function.rec_update (Sum.rec f) (fun _ _ => rfl) (fun
     | _, _, .inr _, h => (h _ rfl).elim
     | _, _, .inl _, _ => rfl) _ _ _
 

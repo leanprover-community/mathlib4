@@ -41,7 +41,6 @@ graph colorings and back is the identity.
 
 * `SimpleGraph.partitionable_iff_colorable` is that `n`-partitionability and
   `n`-colorability are equivalent.
-
 -/
 
 @[expose] public section

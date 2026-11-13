@@ -65,9 +65,13 @@ theorem single_eq_of_single_single (i : m) (j : n) (a : α) :
   by_cases hi : i = a <;> by_cases hj : j = b <;> simp [*]
 
 @[simp]
+theorem row_single (i : m) (j : n) (a : α) : (single i j a).row = Pi.single i (Pi.single j a) :=
+  single_eq_of_single_single i j a
+
+@[deprecated "by simp" (since := "2026-10-23")]
 theorem of_symm_single (i : m) (j : n) (a : α) :
-    of.symm (single i j a) = Pi.single i (Pi.single j a) :=
-  congr(of.symm $(single_eq_of_single_single i j a))
+    of.symm (single i j a) = Pi.single i (Pi.single j a) := by
+  simp
 
 @[simp]
 theorem smul_single [SMulZeroClass R α] (r : R) (i : m) (j : n) (a : α) :
@@ -266,13 +270,10 @@ theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
     liftLinear S f M = ∑ i, ∑ j, f i j (M i j) := by
   simp [liftLinear, map_sum, LinearEquiv.congrLeft]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
-  dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
-  simp_rw [of_symm_single, LinearMap.lsum_piSingle]
+  simp [liftLinear, LinearMap.lsum_piSingle, -LinearMap.lsum_apply]
 
 @[simp]
 theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :

@@ -372,11 +372,13 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     simp_all
 
 /-- **Jensen's Formula** specialized to the case that `f` is analytic and `f c ≠ 0`. -/
-theorem AnalyticOnNhd.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → ℂ} (hR : R ≠ 0)
+theorem AnalyticOnNhd.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → ℂ}
     (h₁f : AnalyticOnNhd ℂ f (closedBall c |R|))
     (h₂f : f c ≠ 0) :
     circleAverage (Real.log ‖f ·‖) c R
       = ∑ᶠ u, divisor f (closedBall c |R|) u * Real.log (R * ‖c - u‖⁻¹) + Real.log ‖f c‖ := by
+  rcases eq_or_ne R 0 with rfl | hR
+  · simp
   rw [h₁f.meromorphicOn.circleAverage_log_norm hR, h₁f.divisor_apply (by simp),
     (h₁f c (by simp)).analyticOrderAt_eq_zero.mpr h₂f,
     (h₁f c (by simp)).meromorphicTrailingCoeffAt_of_ne_zero h₂f]
@@ -400,7 +402,7 @@ theorem AnalyticOnNhd.sum_divisor_le {c : ℂ} {r R M : ℝ} {f : ℂ → ℂ} (
   suffices ∑ᶠ u, divisor f (closedBall c |r|) u * Real.log (R / r) ≤ Real.log (M / ‖f c‖) by
     rwa [← finsum_mul, ← le_div_iff₀] at this
     simpa using log_pos hrR
-  have jensen := h₁f.circleAverage_log_norm (abs_ne_zero.mp (by linarith)) h₂f
+  have jensen := h₁f.circleAverage_log_norm h₂f
   -- Estimate the circleAverage using the bound on f
   have integral_bound : circleAverage (fun x ↦ Real.log ‖f x‖) c R ≤ Real.log M := by
     apply circleAverage_mono_on_of_le_circle

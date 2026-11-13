@@ -20,7 +20,6 @@ More generally, `Localization.of_equivalences` shows that we may replace both th
 source and target categories by equivalent categories. This is obtained using
 `Localization.isEquivalence` which provide a sufficient condition in order to show
 that a functor between localized categories is an equivalence.
-
 -/
 
 @[expose] public section

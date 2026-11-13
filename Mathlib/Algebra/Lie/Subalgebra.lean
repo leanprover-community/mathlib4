@@ -31,6 +31,7 @@ lie algebra, lie subalgebra
 
 @[expose] public section
 
+open scoped Pointwise
 
 universe u v w w₁ w₂
 

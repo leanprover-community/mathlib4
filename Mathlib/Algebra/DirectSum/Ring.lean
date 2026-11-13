@@ -362,7 +362,6 @@ Implementation detail: Note that these instances on `A 0` have very general disc
 tree keys (e.g. `DirectSum.instRingOfNat` has discrimination tree key `Ring _` and often
 sends typeclass inference on a wild goose chase with any goal of the form `Ring (F X)`),
 so we scope these instances to the `DirectSum` namespace.
-
 -/
 
 
