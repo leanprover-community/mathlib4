@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Notation.Bracket
 ## Notation
 
 After `open scoped commutatorElement`, `⁅g₁, g₂⁆` is syntax for `g₁ * g₂ * g₁⁻¹ * g₂⁻¹`.
-
 -/
 
 @[expose] public section

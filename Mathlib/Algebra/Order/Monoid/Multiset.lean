@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 # Multisets as ordered monoids
 
 The `IsOrderedCancelAddMonoid` and `CanonicallyOrderedAdd` instances on `Multiset α`
-
 -/
 
 public section

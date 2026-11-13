@@ -10,6 +10,9 @@ public import Mathlib.Order.UpperLower.Closure
 
 import Mathlib.Data.Set.Finite.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Upper and lower sets in a locally finite order
 

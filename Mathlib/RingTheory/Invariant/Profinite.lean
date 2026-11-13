@@ -26,7 +26,6 @@ Let `G` be a profinite group acting continuously on a
   `G` acts transitivity on the prime ideals of `B` lying above a given prime ideal of `A`.
 * `Ideal.Quotient.stabilizerHom_surjective_of_profinite`: if `Q` is a prime ideal of `B` lying over
   a prime ideal `P` of `A`, then the stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`.
-
 -/
 
 @[expose] public section

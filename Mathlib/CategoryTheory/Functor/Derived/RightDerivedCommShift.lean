@@ -18,7 +18,6 @@ are equipped with shifts by an additive group `A`, that `L` and `F` commute with
 and that `W` is compatible with the shift. Under these assumptions, we show that
 `RF` commutes with shifts, and that for this structure, the natural
 transformation `α` is compatible with the shifts.
-
 -/
 
 @[expose] public section

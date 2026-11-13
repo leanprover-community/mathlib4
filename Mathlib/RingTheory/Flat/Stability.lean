@@ -86,7 +86,6 @@ section BaseChange
 
 Let `R` be a ring, `M` a flat `R`-module and `S` an `R`-algebra, then
 `S ⊗[R] M` is a flat `S`-module. This is a special case of `Module.Flat.instTensorProduct`.
-
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)

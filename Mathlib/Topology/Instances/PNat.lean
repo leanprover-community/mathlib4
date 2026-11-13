@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Instances.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on the positive natural numbers
 

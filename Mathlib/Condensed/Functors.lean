@@ -19,7 +19,6 @@ sets.
 
 * `compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u}` is essentially the yoneda presheaf
   functor. We also define `profiniteToCondensed` and `stoneanToCondensed`.
-
 -/
 
 @[expose] public section

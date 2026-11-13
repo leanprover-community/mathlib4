@@ -13,7 +13,6 @@ import Mathlib.Init
 /-! # Additional simp utilities
 
 This file adds additional tools for metaprogramming with the `simp` tactic
-
 -/
 
 public meta section
