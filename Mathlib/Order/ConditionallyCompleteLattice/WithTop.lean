@@ -36,15 +36,15 @@ variable [LE α]
 
 open scoped Classical in
 /-- This instance ensures `OrderSupSet (WithTop α)` whenever `OrderSupSet α`. -/
-@[no_expose,
-  to_dual /-- This instance ensures `OrderInfSet (WithBot α)` whenever `OrderInfSet α`. -/]
+@[no_expose, to_dual
+/-- This instance ensures `OrderInfSet (WithBot α)` whenever `OrderInfSet α`. -/]
 instance instSupSet [SupSet α] : SupSet (WithTop α) :=
   ⟨fun S => if ⊤ ∈ S ∨ ¬BddAbove ((↑) ⁻¹' S : Set α) then ⊤ else ↑(sSup ((↑) ⁻¹' S : Set α))⟩
 
 open scoped Classical in
 /-- This instance ensures `OrderInfSet (WithTop α)` whenever `OrderInfSet α`. -/
-@[no_expose,
-  to_dual /-- This instance ensures `OrderSupSet (WithBot α)` whenever `OrderSupSet α`. -/]
+@[no_expose, to_dual
+/-- This instance ensures `OrderSupSet (WithBot α)` whenever `OrderSupSet α`. -/]
 instance instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
