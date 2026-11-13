@@ -165,6 +165,68 @@ theorem SameCycle.of_pow {n : ℕ} : SameCycle (f ^ n) x y → SameCycle f x y :
 theorem SameCycle.of_zpow {n : ℤ} : SameCycle (f ^ n) x y → SameCycle f x y := fun ⟨m, h⟩ =>
   ⟨n * m, by simp [zpow_mul, h]⟩
 
+theorem sameCycle_apply_left_self : SameCycle f (f x) x :=
+  (SameCycle.refl _ _).apply_left
+
+theorem sameCycle_apply_right_self : SameCycle f x (f x) :=
+  (SameCycle.refl _ _).apply_right
+
+variable (f x) in
+theorem SameCycle.apply_left_self : SameCycle f (f x) x :=
+  sameCycle_apply_left_self
+variable (f x) in
+theorem SameCycle.apply_right_self : SameCycle f x (f x) :=
+  sameCycle_apply_right_self
+
+theorem SameCycle.map_of_apply {g : Equiv.Perm β} {φ : α → β}
+    (hφ : ∀ z, SameCycle g (φ z) (φ (f z))) (h : SameCycle f x y) :
+    SameCycle g (φ x) (φ y) := by
+  obtain ⟨z, hz⟩ := h
+  induction z using Int.induction_on generalizing x with
+  | zero => rw[← hz]; rfl
+  | succ z ih =>
+    rw[zpow_add_one, coe_mul, comp_apply] at hz
+    exact trans (hφ _) (ih hz)
+  | pred z ih =>
+    rw[zpow_sub_one, coe_mul, comp_apply] at hz
+    specialize ih hz
+    apply trans ?_ ih
+    symm
+    apply trans (hφ _)
+    rw[coe_inv, apply_symm_apply]
+
+theorem SameCycle.map {g : Equiv.Perm β} {φ : α → β}
+    (hφ : Semiconj φ f g) (h : SameCycle f x y) :
+    SameCycle g (φ x) (φ y) :=
+    h.map_of_apply (hφ · ▸ apply_right_self _ _)
+
+theorem SameCycle.eq_of_invariant {φ : α → β}
+    (hφ : ∀ x, φ (f x) = φ x) (h : SameCycle f x y) :
+    φ x = φ y :=
+  sameCycle_one.mp (map (fun z => one_apply _ ▸ hφ z) h)
+
+theorem sameCycle_iff_eqvGen :
+    f.SameCycle x y ↔ Relation.EqvGen (f · = ·) x y := by
+  constructor
+  · intro ⟨z, hz⟩
+    induction z using Int.induction_on generalizing x with
+    | zero => rw[← hz]; apply Relation.EqvGen.refl
+    | succ z ih =>
+      rw[zpow_add_one, coe_mul, comp_apply] at hz
+      exact Relation.EqvGen.trans _ _ _ (Relation.EqvGen.rel _ _ rfl) (ih hz)
+    | pred z ih =>
+      rw[zpow_sub_one, coe_mul, comp_apply] at hz
+      apply Relation.EqvGen.trans _ _ _ ?_ (ih hz)
+      apply Relation.EqvGen.symm
+      apply Relation.EqvGen.rel
+      rw[coe_inv, apply_symm_apply]
+  · intro h
+    induction h with
+    | rel _ _ h => exact ⟨1, h⟩
+    | refl => rfl
+    | symm _ _ _ ih => exact ih.symm
+    | trans _ _ _ _ _ ih1 ih2 => exact ih1.trans ih2
+
 @[simp]
 theorem sameCycle_subtypePerm {h} {x y : { x // p x }} :
     (f.subtypePerm h).SameCycle x y ↔ f.SameCycle x y :=
