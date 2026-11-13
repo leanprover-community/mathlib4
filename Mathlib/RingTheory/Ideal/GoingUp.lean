@@ -54,9 +54,9 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
   · intro p a coeff_eq_zero a_ne_zero _ _ hp
     refine ⟨0, ?_, coeff_zero_mem_comap_of_root_mem hr hp⟩
     simp [coeff_eq_zero, a_ne_zero]
-  · intro p p_nonzero ih _ hp
+  · intro p p_ne_zero ih _ hp
     rw [eval₂_mul, eval₂_X] at hp
-    obtain ⟨i, hi, mem⟩ := ih p_nonzero (r_non_zero_divisor hp)
+    obtain ⟨i, hi, mem⟩ := ih p_ne_zero (r_non_zero_divisor hp)
     refine ⟨i + 1, ?_, ?_⟩
     · simp [hi]
     · simpa [hi] using mem
@@ -73,11 +73,9 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
         le_comap_map := by
   refine quotientMap_injective' (le_of_eq ?_)
   rw [comap_map_of_surjective (mapRingHom (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))))
-      (map_surjective (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))) Ideal.Quotient.mk_surjective)]
-  refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
-  refine fun p hp =>
-    polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp ?_
-  simpa only [coeff_map, coe_mapRingHom] using! ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
+      (map_surjective (Quotient.mk (P.comap (C : R →+* R[X]))) Quotient.mk_surjective), sup_eq_left]
+  refine fun p hp ↦ polynomial_mem_ideal_of_coeff_mem_ideal P p fun n ↦ ?_
+  simpa [Quotient.eq_zero_iff_mem] using congr($(hp).coeff n)
 
 /-- The identity in this lemma asserts that the "obvious" square
 ```
@@ -101,7 +99,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
 that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
 `P ≠ 0` and `P ∩ R = (0)`.
 -/
-theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
+theorem exists_ne_zero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :
     ∃ p : R[X], p ∈ P ∧ Polynomial.map (Quotient.mk (P.comap (C : R →+* R[X]))) p ≠ 0 := by
   obtain ⟨m, hm⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr Pb)
   refine ⟨m, Submodule.coe_mem m, fun pp0 => hm (Submodule.coe_eq_zero.mp ?_)⟩
@@ -112,6 +110,9 @@ theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀
   refine map_injective _ ((RingHom.injective_iff_ker_eq_bot (Ideal.Quotient.mk (P.comap C))).mpr ?_)
   rw [mk_ker]
   exact (Submodule.eq_bot_iff _).mpr fun x hx => hP x (mem_comap.mp hx)
+
+@[deprecated (since := "2026-10-13")]
+alias exists_nonzero_mem_of_ne_bot := exists_ne_zero_mem_of_ne_bot
 
 end
 
@@ -395,7 +396,7 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
 /-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
 a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
 lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
-    {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime] (hq : p.primesOver S = {q})
+    {p : Ideal R} [p.IsPrime] {q : Ideal S} (hq : p.primesOver S = {q})
     [Algebra.IsIntegral R S] (x : S) (hx : x ∉ q) : ∃ r ∉ p, x ∣ algebraMap _ _ r := by
   simp only [dvd_def, eq_comm, mul_comm x]
   by_contra!

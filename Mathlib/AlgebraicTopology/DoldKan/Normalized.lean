@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
 
 /-!
-
 # Comparison with the normalized Moore complex functor
 
 In this file, we show that when the category `A` is abelian,
@@ -24,7 +23,6 @@ the Dold-Kan equivalence
 with a functor (definitionally) equal to `normalizedMooreComplex A`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section
@@ -45,7 +43,6 @@ universe v
 
 variable {A : Type*} [Category* A] [Abelian A] {X : SimplicialObject A}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
@@ -122,7 +119,6 @@ def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
 
 variable (A)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When the category `A` is abelian,
 the functor `N₁ : SimplicialObject A ⥤ Karoubi (ChainComplex A ℕ)` defined

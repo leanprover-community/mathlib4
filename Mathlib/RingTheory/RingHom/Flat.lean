@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Flat.Localization
 # Flat ring homomorphisms
 
 In this file we define flat ring homomorphisms and show their meta properties.
-
 -/
 
 @[expose] public section

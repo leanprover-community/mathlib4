@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
-
 # ℕ-indexed products as sequential limits
 
 Given sequences `M N : ℕ → C` of objects with morphisms `f n : M n ⟶ N n` for all `n`, this file
@@ -145,7 +144,6 @@ lemma cone_π_app (n : ℕ) : (cone f).π.app ⟨n⟩ =
     Limits.Pi.map fun m ↦ if h : m < n then eqToHom (functorObj_eq_pos h).symm else
     f m ≫ eqToHom (functorObj_eq_neg h).symm := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m⟩ ≫
@@ -153,7 +151,6 @@ lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m�
     Pi.π _ n ≫ eqToHom (functorObj_eq_pos h).symm := by
   simp [cone_π_app, dite_eq_left h]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app ⟨m⟩ ≫ Pi.π _ n =

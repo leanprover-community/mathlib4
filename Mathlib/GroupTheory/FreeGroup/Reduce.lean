@@ -19,7 +19,6 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 * `FreeGroup.reduce`: the maximal reduction of a word in a free group
 * `FreeGroup.norm`: the length of the maximal reduction of a word in a free group
-
 -/
 
 @[expose] public section

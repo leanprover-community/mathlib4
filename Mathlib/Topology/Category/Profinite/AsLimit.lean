@@ -27,7 +27,6 @@ There are a handful of definitions in this file, given `X : Profinite`:
   induced by `X.isoAsLimitConeLift`.
 6. `X.asLimit` is a term of type `IsLimit X.asLimitCone`.
 7. `X.lim : CategoryTheory.Limits.LimitCone X.asLimitCone` is a bundled combination of 3 and 6.
-
 -/
 
 @[expose] public section

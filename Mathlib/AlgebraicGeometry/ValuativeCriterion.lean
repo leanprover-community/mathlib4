@@ -28,7 +28,6 @@ import Mathlib.RingTheory.RingHom.Injective
 
 ## Future projects
 Show that it suffices to check discrete valuation rings when the base is Noetherian.
-
 -/
 
 @[expose] public section

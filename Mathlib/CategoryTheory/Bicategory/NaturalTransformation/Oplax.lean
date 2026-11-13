@@ -47,7 +47,6 @@ We also provide API for going between oplax transformations and strong transform
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
-
 -/
 
 @[expose] public section

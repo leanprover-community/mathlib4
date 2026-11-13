@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 
 /-!
-
 # Localization of symmetric monoidal categories
 
 Let `C` be a monoidal category equipped with a class of morphisms `W` which
@@ -142,7 +141,6 @@ section Symmetric
 
 variable [SymmetricCategory C]
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance : SymmetricCategory (LocalizedMonoidal L W ε) := by
   refine .ofCurried (natTrans₂_ext (L') (L') W W fun X Y ↦ ?_)
   simp [-Functor.map_braiding, β_hom_app, ← Functor.map_comp_assoc]

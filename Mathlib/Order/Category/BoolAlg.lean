@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Category.HeytAlg
 public import Mathlib.Order.Hom.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of Boolean algebras
 

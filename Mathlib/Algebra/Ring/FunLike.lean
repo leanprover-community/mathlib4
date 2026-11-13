@@ -22,7 +22,7 @@ typeclass searches.
 
 public section
 
-variable {F α β : Type*}
+variable {F α β R : Type*}
 
 namespace FunLike
 
@@ -30,8 +30,8 @@ section Comp
 
 section Semiring
 
-variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddCommMonoid α]
-  [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [NPow F] [AddCommMonoid α]
+  [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] [IsNPowApplyEqIterate F]
   [SMul ℕ F] [IsSMulApply ℕ F] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApplyEqSMul F]
 
 /-- A `FunLike` type with `(f * g) x = f (g x)` is a `Semiring`. -/
@@ -47,10 +47,10 @@ end Semiring
 
 section Ring
 
-variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F] [NPow F]
   [AddCommGroup α]
   [IsZeroApply F] [IsAddApply F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F]
-  [IsNegApply F] [IsSubApply F]
+  [IsNegApply F] [IsSubApply F] [IsNPowApplyEqIterate F]
   [SMul ℕ F] [IsSMulApply ℕ F]
   [SMul ℤ F] [IsSMulApply ℤ F] [AddMonoidHomClass F α α]
   [NatCast F] [IsNatCastApplyEqSMul F] [IntCast F] [IsIntCastApplyEqSMul F]
@@ -201,5 +201,32 @@ protected abbrev commRing [CommRing β] [IsZeroApply F] [IsOneApply F]
     coe_mul coe_neg coe_sub coe_smul coe_smul coe_pow coe_natCast coe_intCast
 
 end PointwiseMul
+
+section SMulSelf
+
+variable [Semiring R] [SMul R F] [NonUnitalNonAssocSemiring F] [NonUnitalNonAssocSemiring β]
+  [SMul R β]
+
+variable [FunLike F α β] [IsMulApply F] [IsSMulApply R F]
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` is an `R`-scalar tower if `β` is an `R`-scalar
+tower. -/
+protected abbrev isScalarTowerSelf [IsScalarTower R β β] : IsScalarTower R F F where
+  smul_assoc r f g := by
+    apply DFunLike.ext
+    intro x
+    simp only [smul_eq_mul, mul_apply, smul_apply]
+    rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
+
+/-- A `FunLike` type with `(f * g) x = f x * g x` has commutative `R`-scalar multiplication if `β`
+has commutative `R`-scalar multiplication. -/
+protected abbrev smulCommClassSelf [SMulCommClass R β β] : SMulCommClass R F F where
+  smul_comm r f g := by
+    apply DFunLike.ext
+    intro x
+    simp only [smul_eq_mul, mul_apply, smul_apply]
+    rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
+
+end SMulSelf
 
 end FunLike
