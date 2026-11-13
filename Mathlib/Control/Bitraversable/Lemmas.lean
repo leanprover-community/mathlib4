@@ -30,8 +30,6 @@ with the applicatives `id` and `comp`
 ## Tags
 
 traversable bitraversable functor bifunctor applicative
-
-
 -/
 
 public section

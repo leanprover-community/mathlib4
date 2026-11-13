@@ -10,7 +10,6 @@ public import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
-
 # Congruences modulo an integer
 
 This file defines the equivalence relation `a ≡ b [ZMOD n]` on the integers, similarly to how
@@ -20,7 +19,6 @@ which is defined to be `a % n = b % n` for integers `a b n`.
 ## Tags
 
 modeq, congruence, mod, MOD, modulo, integers
-
 -/
 
 @[expose] public section

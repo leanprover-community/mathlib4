@@ -31,9 +31,8 @@ lemma Ideal.ofList_spanFinrank_le_length (rs : List R) :
   apply List.toFinset_card_le
 
 lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) :
-    (Ideal.ofList rs).height ≤ rs.length := by
-  apply le_trans (Ideal.height_le_spanFinrank _ h)
-  exact (Nat.cast_le.mpr (ofList_spanFinrank_le_length rs))
+    (Ideal.ofList rs).height ≤ rs.length :=
+  (Ideal.height_le_spanFinrank _ h).trans (Nat.cast_le.mpr (ofList_spanFinrank_le_length rs))
 
 lemma IsLocalRing.Ideal.ofList_height_le_length' [IsLocalRing R] (rs : List R)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) : (Ideal.ofList rs).height ≤ rs.length :=
@@ -51,19 +50,18 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWe
     intro p hp
     have := hp.isPrime
     have : Ideal.ofList (rs.take n) ≤ p :=
-      le_trans (Ideal.span_mono (fun r hr ↦ List.mem_of_mem_take hr)) hp.le
+      (Ideal.span_mono (fun r hr ↦ List.mem_of_mem_take hr)).trans hp.le
     rcases Ideal.exists_minimalPrimes_le this with ⟨q, hq, lep⟩
     have len' : (List.take n rs).length = n := by simp [len]
     have reg' : IsWeaklyRegular R (List.take n rs) := by
       apply (isWeaklyRegular_iff R (List.take n rs)).mpr fun i hi ↦ ?_
       have : (rs.take n).take i  = rs.take i := by
-        rw [len'] at hi
-        simp [List.take_take, le_of_lt hi]
+        simp [List.take_take, (lt_of_lt_of_eq hi len').le]
       rw [List.getElem_take, this]
       exact reg.1 i (lt_of_lt_of_le hi (rs.length_take_le' n))
     have := hq.isPrime
-    have le := le_trans (hn (rs.take n) reg' (ne_top_of_le_ne_top h (Ideal.span_mono
-      (fun r hr ↦ List.mem_of_mem_take hr))) len') (Ideal.height_mono hq.1.2)
+    have le := (hn (rs.take n) reg' (ne_top_of_le_ne_top h (Ideal.span_mono
+      (fun r hr ↦ List.mem_of_mem_take hr))) len').trans (Ideal.height_mono hq.1.2)
     apply (add_le_add_left le 1).trans (Ideal.height_add_one_le_of_lt_of_isPrime (lep.lt_of_ne _))
     by_contra eq
     have p_min : p ∈ (Module.annihilator R

@@ -49,7 +49,6 @@ We leave the explicitly graph-theoretic version of the statement as TODO.
 ## TODO
 
 Formulate the lemma as a statement about graphs.
-
 -/
 
 public section

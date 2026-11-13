@@ -1,4 +1,6 @@
-import Mathlib.AlgebraicGeometry.Restrict
+module
+
+public import Mathlib.AlgebraicGeometry.Restrict
 
 universe u
 

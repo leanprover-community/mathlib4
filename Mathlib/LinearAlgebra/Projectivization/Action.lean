@@ -24,7 +24,6 @@ Prove that these actions are 2-transitive.
 ## TODO
 
 Generalize to the special linear group over a division ring.
-
 -/
 
 @[expose] public section

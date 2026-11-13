@@ -28,7 +28,6 @@ To compute all the keys at once, we have
 * `encodeExprWithEta`, which computes all possible key sequences.
 * `encodeExpr`, which computes the canonical key sequence.
   This will be used for expressions that are looked up in a `RefinedDiscrTree` using `getMatch`.
-
 -/
 
 public section
