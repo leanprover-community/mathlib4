@@ -205,8 +205,7 @@ theorem singleton_ne_empty (a : α) : ({a} : Set α) ≠ ∅ :=
   (singleton_nonempty _).ne_empty
 
 @[simp]
-theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Set α) :=
-  (singleton_nonempty a).ne_empty.symm
+theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Set α) := by simp
 
 theorem empty_ssubset_singleton : (∅ : Set α) ⊂ {a} :=
   (singleton_nonempty _).empty_ssubset

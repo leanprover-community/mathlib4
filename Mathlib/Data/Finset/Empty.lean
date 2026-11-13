@@ -150,6 +150,11 @@ lemma ne_empty_iff_nonempty {s : Finset α} : s ≠ ∅ ↔ s.Nonempty :=
 theorem nonempty_iff_ne_empty {s : Finset α} : s.Nonempty ↔ s ≠ ∅ :=
   ne_empty_iff_nonempty.symm
 
+/-- Variant of `ne_empty_iff_nonempty` used by `push Not`. -/
+@[simp, push]
+lemma empty_ne_iff_nonempty {s : Finset α} : ∅ ≠ s ↔ s.Nonempty :=
+  ne_comm.trans ne_empty_iff_nonempty
+
 @[simp, push]
 theorem not_nonempty_iff_eq_empty {s : Finset α} : ¬s.Nonempty ↔ s = ∅ :=
   ne_empty_iff_nonempty.symm.not.trans not_not

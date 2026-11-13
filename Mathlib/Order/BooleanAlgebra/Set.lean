@@ -602,8 +602,7 @@ lemma mem_sdiff_singleton : a ∈ s \ {b} ↔ a ∈ s ∧ a ≠ b := .rfl
 
 @[deprecated (since := "2026-06-03")] alias mem_diff_singleton := mem_sdiff_singleton
 
-lemma mem_sdiff_singleton_empty {t : Set (Set α)} :
-    s ∈ t \ {∅} ↔ s ∈ t ∧ s.Nonempty := by simp
+lemma mem_sdiff_singleton_empty {t : Set (Set α)} : s ∈ t \ {∅} ↔ s ∈ t ∧ s.Nonempty := by simp
 
 @[deprecated (since := "2026-06-03")] alias mem_diff_singleton_empty := mem_sdiff_singleton_empty
 
