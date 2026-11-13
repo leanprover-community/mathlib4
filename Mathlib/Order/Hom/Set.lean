@@ -23,6 +23,12 @@ variable {α β γ : Type*}
 
 namespace Set
 
+/-- Membership as an order isomorphism between sets and predicates. -/
+@[simps!]
+def memOrderIso : Set α ≃o (α → Prop) where
+  toEquiv := memEquiv
+  map_rel_iff' := .rfl
+
 /-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
 @[simps apply]
 def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
@@ -43,7 +49,7 @@ theorem MapsTo.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β} {t
   rintro (a | b) <;> aesop
 
 theorem InjOn.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β}
-    (hf : Set.InjOn f s.1) (hg : Set.InjOn g s.2) (hfg : ∀ᵉ (a ∈ s.1) (b ∈ s.2), f a ≠ g b) :
+    (hf : Set.InjOn f s.1) (hg : Set.InjOn g s.2) (hfg : ∀ a ∈ s.1, ∀ b ∈ s.2, f a ≠ g b) :
     Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm s) := by
   rintro (a₁ | b₁) h₁ (a₂ | b₂) h₂ heq <;> aesop
 

@@ -5,8 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 
@@ -24,7 +24,6 @@ import Mathlib.LinearAlgebra.TensorProduct.Prod
 * `IsBaseChange.end`:
   If `M` is finite free and `P` is a base change of `M` to `S`,
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
-
 -/
 
 @[expose] public section

@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
+public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.LocallyConvex.AbsConvex
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Convex.Gauge
 
 /-!
 # Absolutely convex open sets
@@ -28,7 +28,6 @@ convex open neighborhoods of zero.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
   `gaugeSeminormFamily`.
 * `LocallyConvexSpace.toPolynormableSpace`: a locally convex space is polynormable
-
 -/
 
 @[expose] public section

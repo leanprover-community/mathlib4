@@ -5,8 +5,8 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # Kernel pairs
@@ -28,7 +28,6 @@ is developed here.
 
 - Internal equivalence relations (or congruences) and the fact that every kernel pair induces one,
   and the converse in an effective regular category (WIP by b-mehta).
-
 -/
 
 @[expose] public section

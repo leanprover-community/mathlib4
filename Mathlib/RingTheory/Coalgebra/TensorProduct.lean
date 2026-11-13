@@ -8,8 +8,8 @@ module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Equiv
 
-import Mathlib.RingTheory.Coalgebra.CoassocSimps
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.RingTheory.Coalgebra.CoassocSimps
 
 /-!
 # Tensor products of coalgebras
@@ -24,7 +24,6 @@ as a coalgebra morphism.
 
 In particular, when `R = S` we get tensor products of coalgebras, and when `A = S` we get
 the base change `S ⊗[R] B` as an `S`-coalgebra.
-
 -/
 
 @[expose] public section

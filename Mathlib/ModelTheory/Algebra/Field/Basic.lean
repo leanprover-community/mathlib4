@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.Algebra.Field.MinimalAxioms
+public import Mathlib.ModelTheory.Algebra.Ring.Basic
 
 import Mathlib.Data.Nat.Cast.Order.Ring
 

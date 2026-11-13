@@ -394,8 +394,6 @@ theorem NNReal.summable_geometric {r : ℝ≥0} (hr : r < 1) : Summable fun n : 
 theorem NNReal.tsum_geometric {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (NNReal.hasSum_geometric hr).tsum_eq
 
-@[deprecated (since := "2026-03-18")] alias tsum_geometric_nnreal := NNReal.tsum_geometric
-
 /-- The series `pow r` converges to `(1-r)⁻¹`. For `r < 1` the RHS is a finite number,
 and for `1 ≤ r` the RHS equals `∞`. -/
 @[simp]
@@ -427,13 +425,13 @@ protected lemma ENNReal.tsum_geometric_two : ∑' n, (2⁻¹ : ℝ≥0∞) ^ n =
 
 lemma ENNReal.tsum_geometric_two_encode_le_two {ι : Type*} [Encodable ι] :
     ∑' i : ι, (2⁻¹ : ℝ≥0∞) ^ encode i ≤ 2 :=
-  (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_eq ENNReal.tsum_geometric_two
+  (tsum_comp_le_tsum_of_injective encode_injective _).trans_eq ENNReal.tsum_geometric_two
 
 lemma tsum_geometric_lt_top {r : ℝ≥0∞} : ∑' n, r ^ n < ∞ ↔ r < 1 := by simp
 
 lemma tsum_geometric_encode_lt_top {r : ℝ≥0∞} (hr : r < 1) {ι : Type*} [Encodable ι] :
     ∑' i : ι, (r : ℝ≥0∞) ^ encode i < ∞ :=
-  (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_lt <| by simpa
+  (tsum_comp_le_tsum_of_injective encode_injective _).trans_lt <| by simpa
 
 end Geometric
 
@@ -657,7 +655,7 @@ theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {
   rcases exists_pos_sum_of_countable hε ι with ⟨δ', Hpos, Hsum⟩
   have : ∀ i, 0 < max 1 (w i) := fun i ↦ zero_lt_one.trans_le (le_max_left _ _)
   refine ⟨fun i ↦ δ' i / max 1 (w i), fun i ↦ div_pos (Hpos _) (this i), ?_⟩
-  refine lt_of_le_of_lt (ENNReal.tsum_le_tsum fun i ↦ ?_) Hsum
+  refine lt_of_le_of_lt (tsum_le_tsum fun i ↦ ?_) Hsum
   rw [coe_div (this i).ne']
   refine mul_le_of_le_div' ?_
   grw [← le_max_right]
@@ -708,7 +706,7 @@ theorem tendsto_nat_floor_atTop {α : Type*}
   Nat.floor_mono.tendsto_atTop_atTop fun x ↦ ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 
 lemma tendsto_nat_ceil_atTop {α : Type*}
-    [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorSemiring α] :
+    [Semiring α] [LinearOrder α] [FloorSemiring α] :
     Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
   refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
   simp only [Nat.ceil_natCast, le_refl]

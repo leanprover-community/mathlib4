@@ -5,9 +5,12 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
 module
 
-public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
-public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.

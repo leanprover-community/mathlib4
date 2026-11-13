@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Spotte-Smith, Bhavik Mehta
 -/
 module
+
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -52,7 +53,6 @@ the vertex or edge set. This is an issue, but is likely amenable to automation."
 
 Because `edgeSet` is a `Set (Set α)`, rather than a multiset, here we are assuming that
 all hypergraphs are *without repeated edge*.
-
 -/
 
 public section

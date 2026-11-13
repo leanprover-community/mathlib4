@@ -64,7 +64,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 ### References
 
 * https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
-
 -/
 
 @[expose] public section

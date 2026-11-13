@@ -8,9 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.BoundedVariation
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere

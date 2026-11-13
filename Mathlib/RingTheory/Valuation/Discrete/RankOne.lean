@@ -5,9 +5,9 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 module
 
+public import Mathlib.Data.Int.WithZero
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.RankOne
-public import Mathlib.Data.Int.WithZero
 
 /-!
 # Discrete valuations have rank one

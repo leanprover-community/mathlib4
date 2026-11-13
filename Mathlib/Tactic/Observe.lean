@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Meta.Tactic.LibrarySearch
+public meta import Lean.Meta.Tactic.TryThis
 
 import Mathlib.Init
 

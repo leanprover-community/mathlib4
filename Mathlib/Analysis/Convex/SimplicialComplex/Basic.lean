@@ -113,7 +113,7 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
 @[simps]
 def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent 𝕜 ((↑) : s → E))
     (down_closed : IsLowerSet faces)
-    (inter_subset_convexHull : ∀ᵉ (s ∈ faces) (t ∈ faces),
+    (inter_subset_convexHull : ∀ s ∈ faces, ∀ t ∈ faces,
       convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)) :
     SimplicialComplex 𝕜 E where
   faces := faces \ {∅}

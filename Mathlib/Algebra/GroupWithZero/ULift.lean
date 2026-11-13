@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ULift` instances for groups and monoids with zero
 

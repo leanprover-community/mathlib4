@@ -47,9 +47,9 @@ However the difference is illusory since the construction stays inside the Lie s
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*](bourbaki1968)
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*](bourbaki1975b) chapter VIII, §4.3
-* [J.P. Serre, *Complex Semisimple Lie Algebras*](serre1965) chapter VI, appendix
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968]
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*][bourbaki1975b] chapter VIII, §4.3
+* [J.P. Serre, *Complex Semisimple Lie Algebras*][serre1965] chapter VI, appendix
 
 ## Tags
 

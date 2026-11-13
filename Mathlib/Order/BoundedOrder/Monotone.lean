@@ -10,7 +10,6 @@ public import Mathlib.Order.Monotone.Basic
 
 /-!
 # Monotone functions on bounded orders
-
 -/
 
 public section

@@ -5,8 +5,8 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Order.BourbakiWitt
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.Order.BourbakiWitt
 
 /-!
 # Category of types with an omega complete partial order
@@ -19,7 +19,6 @@ an `OmegaCompletePartialOrder`.
 
 * `ωCPO`
   * an instance of `Category` and `ConcreteCategory`
-
 -/
 
 @[expose] public section

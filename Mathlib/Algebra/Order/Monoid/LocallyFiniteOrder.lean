@@ -11,12 +11,11 @@ public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Cast.Order.Ring
 public import Mathlib.Order.Interval.Finset.Basic
 
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Group.Embedding
 
 /-!
-
 # Locally Finite Linearly Ordered Abelian Groups
 
 ## Main results
@@ -29,7 +28,6 @@ import Mathlib.Algebra.Group.Embedding
 - `LocallyFiniteOrder.orderMonoidWithZeroEquiv`:
   Any nontrivial linearly ordered abelian group with zero that is locally finite
   is isomorphic to `ℤᵐ⁰`.
-
 -/
 
 @[expose] public section
@@ -178,7 +176,7 @@ def LocallyFiniteOrder.orderMonoidHom (G : Type*) [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
     G →*o Multiplicative ℤ :=
   have : LocallyFiniteOrder (Additive G) := ‹LocallyFiniteOrder G›
-  ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).2⟩
+  ⟨(orderAddMonoidHom (Additive G)).toMultiplicative, (orderAddMonoidHom (Additive G)).monotone'⟩
 
 lemma LocallyFiniteOrder.orderMonoidHom_strictMono {G : Type*} [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :

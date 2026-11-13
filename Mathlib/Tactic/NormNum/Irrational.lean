@@ -26,7 +26,6 @@ such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 
 ## TODO
 Disprove `Irrational x` for rational `x`.
-
 -/
 
 public meta section

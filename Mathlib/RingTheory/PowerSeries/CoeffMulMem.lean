@@ -7,11 +7,10 @@ module
 
 public import Mathlib.RingTheory.PowerSeries.Basic
 
-import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.RingTheory.Ideal.Operations
 
 /-!
-
 # Some results on the coefficients of multiplication of two power series
 
 ## Main results
@@ -33,7 +32,6 @@ import Mathlib.RingTheory.Ideal.BigOperators
   if for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of power series `f` are
   in ideal `I`, then for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of `f * g` are
   in `I`.
-
 -/
 
 public section

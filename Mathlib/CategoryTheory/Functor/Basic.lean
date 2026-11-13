@@ -5,10 +5,10 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
 module
 
+public meta import Mathlib.Tactic.ToDual
 public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Functors
@@ -105,7 +105,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
 
 /-- The prefunctor between the underlying quivers. -/
-@[simps]
+@[implicit_reducible, simps]
 def toPrefunctor (F : C ⥤ D) : Prefunctor C D := { F with }
 
 @[to_dual self]

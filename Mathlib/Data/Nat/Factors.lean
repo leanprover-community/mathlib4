@@ -6,11 +6,11 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.List
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.List.Perm.Subperm
 public import Mathlib.Data.List.Prime
 public import Mathlib.Data.List.Sort
-public import Mathlib.Data.List.Perm.Subperm
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime numbers
@@ -21,7 +21,6 @@ This file deals with the factors of natural numbers.
 
 - `Nat.primeFactorsList n`: the prime factorization of `n`
 - `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
-
 -/
 
 @[expose] public section
@@ -35,6 +34,7 @@ open Nat
 namespace Nat
 
 /-- `primeFactorsList n` is the prime factorization of `n`, listed in increasing order. -/
+@[oeis A027746 "starting from the 2nd element"]
 def primeFactorsList : ℕ → List ℕ
   | 0 => []
   | 1 => []

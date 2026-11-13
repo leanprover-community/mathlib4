@@ -13,6 +13,7 @@ public import Mathlib.Data.Num.Bitwise
 
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Order.Basic
+
 import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
@@ -764,13 +765,13 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
       cases b <;> simp
     induction m generalizing n with | one => ?_ | bit1 m IH => ?_ | bit0 m IH => ?_ <;>
     obtain - | n | n := n
-    any_goals simp only [show one = 1 from rfl, show pos 1 = 1 from rfl,
+    all_goals simp only [show one = 1 from rfl, show pos 1 = 1 from rfl,
       show PosNum.bit0 = PosNum.bit false from rfl, show PosNum.bit1 = PosNum.bit true from rfl,
       show ((1 : Num) : ℕ) = Nat.bit true 0 from rfl]
     all_goals
       repeat rw [this']
       rw [Nat.bitwise_bit gff]
-    any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
+    · rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
     any_goals rw [Nat.bitwise_zero_left, ← Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
     any_goals rw [Nat.bitwise_zero_right, ← Bool.cond_eq_ite, this, ← bit_to_nat, pb1]
     all_goals

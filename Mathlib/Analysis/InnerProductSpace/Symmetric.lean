@@ -5,8 +5,8 @@ Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Analysis.Normed.Operator.Banach
 
 import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
@@ -87,7 +87,7 @@ protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T + S).IsSymmetric := by
   intro x y
-  rw [add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right, add_apply]
+  rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right, LinearMap.add_apply]
 
 theorem isSymmetric_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} (s : Finset ι)
     (hT : ∀ i ∈ s, (T i).IsSymmetric) : (∑ i ∈ s, T i).IsSymmetric := fun _ _ ↦ by
@@ -97,13 +97,13 @@ theorem isSymmetric_sum {ι : Type*} {T : ι → (E →ₗ[𝕜] E)} (s : Finset
 theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T - S).IsSymmetric := by
   intro x y
-  rw [sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right, sub_apply]
+  rw [LinearMap.sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right, LinearMap.sub_apply]
 
 @[aesop safe apply]
 theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     c • T |>.IsSymmetric := by
   intro x y
-  simp only [smul_apply, inner_smul_left, hc, hT x y, inner_smul_right]
+  simp [inner_smul_left, hc, hT x y, inner_smul_right]
 
 theorem IsSymmetric.natCast (n : ℕ) : IsSymmetric (n : E →ₗ[𝕜] E) := fun x y => by
   simp [← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, inner_smul_right]
@@ -114,7 +114,7 @@ theorem IsSymmetric.intCast (n : ℤ) : IsSymmetric (n : E →ₗ[𝕜] E) := fu
 @[aesop 30% apply]
 lemma IsSymmetric.mul_of_commute {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (hT : T.IsSymmetric)
     (hST : Commute S T) : (S * T).IsSymmetric :=
-  fun _ _ ↦ by rw [Module.End.mul_apply, hS, hT, hST, Module.End.mul_apply]
+  fun _ _ ↦ by rw [mul_apply_eq_comp, hS, hT, hST, mul_apply_eq_comp]
 
 @[aesop safe apply]
 lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
@@ -271,7 +271,7 @@ theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : Is
 See `inner_map_self_eq_zero` for the complex version without the symmetric assumption. -/
 theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     (∀ x, ⟪T x, x⟫ = 0) ↔ T = 0 := by
-  simp_rw [LinearMap.ext_iff, zero_apply]
+  simp_rw [LinearMap.ext_iff, LinearMap.zero_apply]
   refine ⟨fun h x => ?_, fun h => by simp_rw [h, inner_zero_left, forall_const]⟩
   rw [← @inner_self_eq_zero 𝕜, hT.inner_map_polarization]
   simp_rw [h _]
@@ -361,12 +361,12 @@ theorem IsSymmetricProjection.sub_of_range_le_range {p q : E →ₗ[𝕜] E}
   rw [← hq.isIdempotentElem.comp_eq_right_iff] at hqp
   refine ⟨hp.isIdempotentElem.sub hq.isIdempotentElem (LinearMap.ext fun x => ext_inner_left 𝕜
     fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
-  simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
+  simp_rw [mul_apply_eq_comp, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
 
 theorem IsSymmetric.isSymmetric_smul_iff {f : E →ₗ[𝕜] E} (hf : f.IsSymmetric) (hf' : f ≠ 0)
     {α : 𝕜} : (α • f).IsSymmetric ↔ IsSelfAdjoint α := by
   refine ⟨fun h ↦ ?_, hf.smul⟩
-  simp only [ne_eq, LinearMap.ext_iff, zero_apply, ext_iff_inner_left 𝕜 (E := E),
+  simp only [ne_eq, LinearMap.ext_iff, LinearMap.zero_apply, ext_iff_inner_left 𝕜 (E := E),
     inner_zero_right] at hf'
   simpa [IsSymmetric, inner_smul_left, inner_smul_right, hf _ _, forall_or_left,
     (forall_comm.eq ▸ hf')] using! h

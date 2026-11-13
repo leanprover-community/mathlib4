@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.NumberTheory.LSeries.Convergence
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.Complex.HalfPlane
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Differentiability and derivatives of L-series

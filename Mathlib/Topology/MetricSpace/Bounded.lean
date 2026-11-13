@@ -5,12 +5,12 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 module
 
+public import Mathlib.Topology.EMetricSpace.Diam
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Cauchy
+public import Mathlib.Topology.MetricSpace.ProperSpace
 public import Mathlib.Topology.Order.Bornology
 public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.MetricSpace.ProperSpace
-public import Mathlib.Topology.MetricSpace.Cauchy
-public import Mathlib.Topology.MetricSpace.Basic
-public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 # Boundedness in (pseudo)-metric spaces
@@ -105,8 +105,8 @@ theorem _root_.Bornology.IsBounded.subset_closedBall (h : IsBounded s) (c : α) 
 theorem _root_.Bornology.IsBounded.subset_ball_lt (h : IsBounded s) (a : ℝ) (c : α) :
     ∃ r, a < r ∧ s ⊆ ball c r :=
   let ⟨r, hr⟩ := h.subset_closedBall c
-  ⟨max r a + 1, (le_max_right _ _).trans_lt (lt_add_one _), hr.trans <| closedBall_subset_ball <|
-    (le_max_left _ _).trans_lt (lt_add_one _)⟩
+  ⟨max r a + 1, (le_max_right _ _).trans_lt (lt_add_one _), by
+    grw [← lt_add_one, ← le_max_left, ← hr]⟩
 
 theorem _root_.Bornology.IsBounded.subset_ball (h : IsBounded s) (c : α) : ∃ r, s ⊆ ball c r :=
   (h.subset_ball_lt 0 c).imp fun _ ↦ And.right
@@ -340,6 +340,11 @@ theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
     CompactSpace α ↔ IsBounded (univ : Set α) :=
   ⟨@isBounded_of_compactSpace α _ _, fun hb => ⟨isCompact_of_isClosed_isBounded isClosed_univ hb⟩⟩
 
+@[compactness .]
+lemma isCompact_closure_ball [ProperSpace α] {x : α} {ε : ℝ} :
+    IsCompact (closure (Metric.ball x ε)) :=
+  Metric.isBounded_ball.isCompact_closure
+
 section CompactIccSpace
 
 variable [Preorder α] [CompactIccSpace α]
@@ -381,15 +386,13 @@ section CompactIccSpace_abs
 variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [PseudoMetricSpace α]
   [CompactIccSpace α]
 
-lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by
-  convert Metric.isBounded_Icc (-C) C
-  ext1 x
-  simp [abs_le]
+lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} :=
+  (show {x : α | |x| ≤ C} = Set.Icc (-C) C by ext x; simp [abs_le]) ▸
+    Metric.isBounded_Icc (-C) C
 
-lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} := by
-  convert Metric.isBounded_Ioo (-C) C
-  ext1 x
-  simp [abs_lt]
+lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} :=
+  (show {x : α | |x| < C} = Set.Ioo (-C) C by ext x; simp [abs_lt]) ▸
+    Metric.isBounded_Ioo (-C) C
 
 end CompactIccSpace_abs
 
@@ -511,7 +514,7 @@ obviously true if `s ∪ t` is unbounded. -/
 theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
     diam (s ∪ t) ≤ diam s + dist x y + diam t := by
   simp only [diam, dist_edist]
-  grw [ENNReal.toReal_le_add' (ediam_union_le_add_edist xs yt), ENNReal.toReal_add_le]
+  grw [ENNReal.toReal_le_add_of_top_imp_top (ediam_union_le_add_edist xs yt), ENNReal.toReal_add_le]
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
     exact fun h ↦ top_unique <| h ▸ ediam_mono subset_union_left
   · exact fun h ↦ top_unique <| h ▸ ediam_mono subset_union_right

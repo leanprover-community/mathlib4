@@ -26,13 +26,10 @@ open System (FilePath)
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
 
-/-- The full name of the Mathlib nightly-testing GitHub repository. -/
-def NIGHTLY_TESTING_REPO := "leanprover-community/mathlib4-nightly-testing"
-
-/-- Whether `repo` is a first-party Mathlib repo rather than a fork. Forks cache
-into the per-commit `forks` namespace; the canonical repos do not. -/
+/-- Whether `repo` is the canonical Mathlib repo. Every other repo caches into the
+per-commit `forks` namespace. -/
 def isCanonicalRepo (repo : String) : Bool :=
-  repo == MATHLIBREPO || repo == NIGHTLY_TESTING_REPO
+  repo == MATHLIBREPO
 
 /--
 Canonical form of a GitHub `owner/repo` name for use as a cache blob path
@@ -57,38 +54,28 @@ first.
 inductive Container where
   /-- Most-trusted container (`mathlib4-master`); only master CI writes here. -/
   | master
-  /-- Container for PR builds on forks of mathlib4. -/
+  /-- Container for fork PR builds, mathlib4 development branches, and every
+  push build on the nightly-testing repo. -/
   | forks
-  /-- Container for the `nightly-testing` branch and related refs. -/
-  | nightlyTesting
-  /-- Container for toolchain-PR test runs. -/
-  | prToolchainTests
   deriving DecidableEq, Repr, BEq, Inhabited
-
-/-- Base URL of the `lakecache` Azure Blob Storage account. -/
-def azureAccountURL : String := "https://lakecache.blob.core.windows.net"
 
 namespace Container
 
 /-- Canonical short name for a container, used in CLI flags and URLs. -/
 def name : Container → String
-  | .master           => "master"
-  | .forks            => "forks"
-  | .nightlyTesting   => "nightly-testing"
-  | .prToolchainTests => "pr-toolchain-tests"
+  | .master => "master"
+  | .forks  => "forks"
 
 /-- All known containers, listed in their canonical declaration order. -/
 def all : List Container :=
-  [.master, .forks, .nightlyTesting, .prToolchainTests]
+  [.master, .forks]
 
 /-- Parse a short name back into a `Container`. Matching is case-insensitive. -/
 def parse? (s : String) : Option Container :=
   match s.toLower with
-  | "master"             => some .master
-  | "forks"              => some .forks
-  | "nightly-testing"    => some .nightlyTesting
-  | "pr-toolchain-tests" => some .prToolchainTests
-  | _                    => none
+  | "master" => some .master
+  | "forks"  => some .forks
+  | _        => none
 
 /--
 The container's segment in the URL contract `{base}/{pathSegment}/{key}`
@@ -105,10 +92,6 @@ or an upload base that serves the `/{container}/{key}` namespace. -/
 def urlUnder (c : Container) (base : String) : String :=
   s!"{base}/{c.pathSegment}"
 
-/-- Public Azure Blob Storage base URL for a container. -/
-def azureURL (c : Container) : String :=
-  c.urlUnder azureAccountURL
-
 /--
 Whether file lookups in this container use the flat `/f/<hash>` layout, or
 namespace under `/f/<repo>/<hash>`.
@@ -120,48 +103,27 @@ writers in sync.
 
 - `master` is flat: RBAC admits only master CI, whose writes all carry
   `repo == MATHLIBREPO`, so a single hash never collides.
-- `forks`, `nightly-testing`, and `pr-toolchain-tests` always namespace by
-  repo. They collect artifacts from many writers — different forks, different
-  toolchain refs, and canonical-repo builds whose trust is fork-equivalent
-  (`ci-dev/*`, `bors trying`) — so identical hashes from different writers must
-  stay on distinct paths.
+- `forks` always namespaces by repo. It collects artifacts from many writers —
+  different forks, the nightly-testing repo, and canonical-repo builds whose
+  trust is fork-equivalent (`ci-dev/*`, `bors trying`) — so identical hashes
+  from different writers must stay on distinct paths.
 -/
 def flatPath : Container → Bool
   | .master => true
-  | _ => false
+  | .forks => false
 
 end Container
 
 /--
-The public Mathlib cache endpoint. It serves the same `/{container}/{key}`
-namespace as the storage account and caches artifacts at its edge, so reads
-cost the project less and land nearer the reader.
+The public Mathlib cache endpoint. It serves the `/{container}/{key}`
+namespace and caches artifacts at its edge.
 -/
 def publicCacheEndpoint : String := "https://cache.mathlib.org"
 
 /--
-Whether reads of the `master` container address the Azure storage account
-instead of `publicCacheEndpoint`. `main` sets this from
-`MATHLIB_CACHE_DEBUG_USE_LEGACY` at startup. Every other container reads from
-`publicCacheEndpoint` either way.
-
-The variable is a troubleshooting fallback for the transition to the public
-endpoint, enabled in September 2026, and it should be retired together with
-direct reads from the storage account.
--/
-initialize useLegacy : IO.Ref Bool ← IO.mkRef false
-
-/--
-Default base URL for reads of container `c`: `publicCacheEndpoint`, or
-`azureAccountURL` for the `master` container when `useLegacy` is set.
--/
-def defaultGetBaseURL (c : Container) (useLegacy : Bool) : String :=
-  if useLegacy && c == .master then azureAccountURL else publicCacheEndpoint
-
-/--
-Base URL for reads of container `c`: `MATHLIB_CACHE_BASE_URL` if set,
-otherwise `defaultGetBaseURL c useLegacy`. `normalizeBaseURL` reads the value, so it
-arrives trimmed, free of trailing slashes, and unset when empty.
+Base URL for reads: `MATHLIB_CACHE_BASE_URL` if set, otherwise
+`publicCacheEndpoint`. `normalizeBaseURL` reads the value: it trims it,
+removes trailing slashes, and treats an empty value as unset.
 
 A read URL is `{base}/{pathSegment}/{key}`, the namespace every cache
 host serves. Any host that mirrors that namespace is therefore a valid base.
@@ -171,18 +133,18 @@ lookup chain. `MATHLIB_CACHE_BASE_URL` serves internal consumers, that is,
 CI and contributors to the mathlib4 repository. It keeps the lookup chain and
 rebases each container read under the given host.
 
-Only reads follow this base. Uploads and marker writes use the location of
-the selected backend (`uploadLocation`).
+The tool uses this base only for reads, and `uploadLocation` for uploads and
+marker writes.
 -/
-def getBaseURLFrom (c : Container) (envValue? : Option String) (useLegacy : Bool) : String :=
-  (normalizeBaseURL envValue?).getD (defaultGetBaseURL c useLegacy)
+def getBaseURLFrom (envValue? : Option String) : String :=
+  (normalizeBaseURL envValue?).getD publicCacheEndpoint
 
 /--
-Base URL for reads of container `c`, resolved from the environment.
+Base URL for reads, resolved from the environment.
 Written on top of the pure function above, which is separate to be testable.
 -/
-def getBaseURL (c : Container) : BaseIO String := do
-  return getBaseURLFrom c (← IO.getEnv "MATHLIB_CACHE_BASE_URL") (← useLegacy.get)
+def getBaseURL : BaseIO String := do
+  return getBaseURLFrom (← IO.getEnv "MATHLIB_CACHE_BASE_URL")
 
 /--
 Comma-separated list parser for `--cache-from=a,b,c`.
@@ -202,17 +164,10 @@ Fork chains lead with `master`. The layout is fixed per container
 whatever the `repo` is, and a fork build finds the master-built deps that make
 up the bulk of its files there; the fork's own container then supplies the
 PR-specific files at `/f/{repo}/...`.
-
-Nightly-testing chains omit `master`: that repo builds under a non-release
-toolchain, so its root hash differs and a master probe never matches.
 -/
 def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master]
-  else if repo == NIGHTLY_TESTING_REPO then
-    -- `forks` is needed for PRs opened from this repo into mathlib4: their CI
-    -- uploads land in `forks`. `pr-toolchain-tests` is excluded.
-    [.nightlyTesting, .forks]
   else
     -- Forks and everything else: `master` for shared upstream deps, the fork's
     -- own container for PR-specific files.

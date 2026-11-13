@@ -48,12 +48,10 @@ namespace InnerProductSpace
 
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
-noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
+noncomputable def gramSchmidt (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, (𝕜 ∙ gramSchmidt f i).starProjection (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
-
-variable [WellFoundedLT ι]
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :
@@ -71,7 +69,7 @@ theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
 
 @[simp]
 theorem gramSchmidt_bot {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
-    [WellFoundedLT ι] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
+    (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
 
 @[simp]

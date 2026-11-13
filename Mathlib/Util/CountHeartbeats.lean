@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public meta import Lean.Util.Heartbeats
 public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Util.Heartbeats
+public import Mathlib.Init
 
 /-!
 # Counting heartbeats

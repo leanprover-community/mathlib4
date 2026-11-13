@@ -5,8 +5,11 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # derivatives of the inverse trigonometric functions

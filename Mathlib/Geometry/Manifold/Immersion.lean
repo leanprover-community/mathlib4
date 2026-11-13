@@ -5,9 +5,9 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
 public import Mathlib.Geometry.Manifold.ImmersionDiff
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
 
 import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 import Mathlib.Topology.Algebra.Module.TransferInstance
@@ -104,7 +104,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## References
 
 * [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
-
 -/
 
 open scoped Topology ContDiff

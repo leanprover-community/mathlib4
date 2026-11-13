@@ -220,7 +220,6 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
   exact one_ne_zero this
 
-set_option backward.defeqAttrib.useBackward true in
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
       (Finset.range n).sum fun i : ℕ => (n.choose (i + 1) : R[X]) * X ^ i := by
@@ -280,16 +279,16 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) 
         Subring.closure (↑p.coeffs : Set R))
 
 @[simp]
-theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑(coeff (restriction p) n) = coeff p n := by
+theorem coeff_restriction {p : R[X]} {n : ℕ} : ↑((restriction p).coeff n) = p.coeff n := by
   classical
-  simp only [restriction, coeff_monomial, finsetSum_coeff, mem_support_iff, Finset.sum_ite_eq',
-    Ne, ite_not]
+  simp only [restriction, coeff_monomial, Finsupp.single_apply, finsetSum_coeff, mem_support_iff,
+    Finset.sum_ite_eq', Ne, ite_not]
   split_ifs with h
   · rw [h]
     rfl
   · rfl
 
-theorem coeff_restriction' {p : R[X]} {n : ℕ} : (coeff (restriction p) n).1 = coeff p n := by
+theorem coeff_restriction' {p : R[X]} {n : ℕ} : ((restriction p).coeff n).1 = p.coeff n := by
   simp
 
 @[simp]
@@ -301,8 +300,8 @@ theorem support_restriction (p : R[X]) : support (restriction p) = support p := 
 
 @[simp]
 theorem map_restriction {R : Type u} [CommRing R] (p : R[X]) :
-    p.restriction.map (algebraMap _ _) = p :=
-  ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubsemiring_apply, coeff_restriction]
+    p.restriction.map (algebraMap _ _) = p := by
+  ext n; rw [coeff_map, Algebra.algebraMap_ofSubsemiring_apply, coeff_restriction]
 
 @[simp]
 theorem degree_restriction {p : R[X]} : (restriction p).degree = p.degree := by simp [degree]
@@ -322,8 +321,8 @@ theorem restriction_zero : restriction (0 : R[X]) = 0 := by
   simp only [restriction, Finset.sum_empty, support_zero]
 
 @[simp]
-theorem restriction_one : restriction (1 : R[X]) = 1 :=
-  ext fun i => Subtype.ext <| by rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
+theorem restriction_one : restriction (1 : R[X]) = 1 := by
+  ext i; rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
 
 variable [Semiring S] {f : R →+* S} {x : S}
 
@@ -414,10 +413,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
 
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
     RingHom.ker (Polynomial.mapRingHom f) = (RingHom.ker f).map (C : R →+* R[X]) := by
-  ext
-  simp only [RingHom.mem_ker, coe_mapRingHom]
-  rw [mem_map_C_iff, Polynomial.ext_iff]
-  simp [RingHom.mem_ker]
+  ext; simp [mem_map_C_iff, AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
 
 variable (I : Ideal R[X])
 
@@ -589,7 +585,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     constructor
     · rw [Ne, eq_top_iff_one, mem_map_C_iff, not_forall]
       use 0
-      rw [coeff_one_zero, ← eq_top_iff_one]
+      rw [AddMonoidAlgebra.coeff_one_zero, ← eq_top_iff_one]
       exact h.1
     · intro f g
       simp only [mem_map_C_iff]
@@ -656,21 +652,21 @@ theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
   simp only [@eq_comm _ _ (C _)]
   exact (Ideal.span_le.trans range_subset_iff).mpr cf
 
-theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) } := by
-  let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) }
+theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (f.coeff i) } := by
+  let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (f.coeff i) }
   nth_rw 2 [(sum_C_mul_X_pow_eq f).symm]
   refine Submodule.sum_mem _ fun n _hn => ?_
   dsimp
-  have : C (coeff f n) ∈ p := by
+  have : C (f.coeff n) ∈ p := by
     apply subset_span
     rw [mem_ofPred_eq]
     use n
-  have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
+  have : monomial n (1 : R) • C (f.coeff n) ∈ p := p.smul_mem _ this
   convert this using 1
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
   rw [← C_mul_X_pow_eq_monomial]
 
-theorem exists_C_coeff_notMem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
+theorem exists_C_coeff_notMem : f ∉ I → ∃ i : ℕ, C (f.coeff i) ∉ I :=
   Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff
 
 end Ideal
@@ -811,7 +807,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
             rw [Polynomial.degree_mul', Polynomial.degree_X_pow]
             · rw [Polynomial.degree_eq_natDegree hp0, Polynomial.degree_eq_natDegree hq0]
               rw [← Nat.cast_add, add_tsub_cancel_of_le, hn]
-              · refine le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
+              exact le_trans (Polynomial.natDegree_le_of_degree_le hdq) (le_of_lt h)
             rw [Polynomial.leadingCoeff_X_pow, mul_one]
             exact mt Polynomial.leadingCoeff_eq_zero.1 hq0
           have h2 : p.leadingCoeff = (q * Polynomial.X ^ (k - q.natDegree)).leadingCoeff := by
@@ -834,7 +830,7 @@ namespace Polynomial
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
   simp [linearIndependent_iff, Finsupp.linearCombination_apply, aeval_endomorphism, Finsupp.sum,
-    forall_iff_forall_finsupp, AddMonoidAlgebra.coeffEquiv.forall_congr_left, Polynomial.sum]
+    AddMonoidAlgebra.coeffEquiv.forall_congr_left, Polynomial.sum, Polynomial.support_ofCoeff]
 
 theorem disjoint_ker_aeval_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     Disjoint (LinearMap.ker (aeval f p)) (LinearMap.ker (aeval f q)) := by
@@ -852,9 +848,9 @@ theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hp
   rw [Submodule.mem_sup]
   rcases hpq with ⟨p', q', hpq'⟩
   use aeval f (p * p') v
-  use LinearMap.mem_range.2 ⟨aeval f p' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
+  use LinearMap.mem_range.2 ⟨aeval f p' v, by simp⟩
   use aeval f (q * q') v
-  use LinearMap.mem_range.2 ⟨aeval f q' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
+  use LinearMap.mem_range.2 ⟨aeval f q' v, by simp⟩
   simpa only [mul_comm p p', mul_comm q q', aeval_one, aeval_add] using!
     congr(aeval f $hpq' v)
 
@@ -863,9 +859,9 @@ theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
   intro v hv
   rcases Submodule.mem_sup.1 hv with ⟨x, hx, y, hy, hxy⟩
   have h_eval_x : aeval f (p * q) x = 0 := by
-    rw [mul_comm, aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hx, map_zero]
+    rw [mul_comm, aeval_mul, mul_apply_eq_comp, LinearMap.mem_ker.1 hx, map_zero]
   have h_eval_y : aeval f (p * q) y = 0 := by
-    rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hy, map_zero]
+    rw [aeval_mul, mul_apply_eq_comp, LinearMap.mem_ker.1 hy, map_zero]
   rw [LinearMap.mem_ker, ← hxy, map_add, h_eval_x, h_eval_y, add_zero]
 
 theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X]}
@@ -879,11 +875,11 @@ theorem sup_ker_aeval_eq_ker_aeval_mul_of_coprime (f : M →ₗ[R] M) {p q : R[X
     calc
       aeval f (q * (p * p')) v = aeval f (p' * (p * q)) v := by
         rw [mul_comm, mul_assoc, mul_comm, mul_assoc, mul_comm q p]
-      _ = 0 := by rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hv, map_zero]
+      _ = 0 := by rw [aeval_mul, mul_apply_eq_comp, LinearMap.mem_ker.1 hv, map_zero]
   have h_eval₂_pqq' :=
     calc
       aeval f (p * (q * q')) v = aeval f (q' * (p * q)) v := by rw [← mul_assoc, mul_comm]
-      _ = 0 := by rw [aeval_mul, Module.End.mul_apply, LinearMap.mem_ker.1 hv, map_zero]
+      _ = 0 := by rw [aeval_mul, mul_apply_eq_comp, LinearMap.mem_ker.1 hv, map_zero]
   rw [aeval_mul] at h_eval₂_qpp' h_eval₂_pqq'
   refine
     ⟨aeval f (q * q') v, LinearMap.mem_ker.1 h_eval₂_pqq', aeval f (p * p') v,

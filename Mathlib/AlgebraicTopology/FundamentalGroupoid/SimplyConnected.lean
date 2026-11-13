@@ -9,8 +9,8 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.Topology.Homotopy.Contractible
 
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
-import Mathlib.CategoryTheory.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+import Mathlib.CategoryTheory.PUnit
 
 /-!
 # Simply connected spaces

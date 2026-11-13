@@ -5,10 +5,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Combinatorics.Additive.FreimanHom
 public import Mathlib.Order.Interval.Finset.Fin
-public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.Group.Action.Defs
 
 import Mathlib.Algebra.Order.Interval.Finset.Basic
 
@@ -216,7 +216,7 @@ end OrderedCancelCommMonoid
 
 section CancelCommMonoidWithZero
 
-variable [CommMonoidWithZero α] [IsCancelMulZero α] [NoZeroDivisors α] {s : Set α} {a : α}
+variable [CommMonoidWithZero α] [IsCancelMulZero α] {s : Set α} {a : α}
 
 lemma ThreeGPFree.smul_set₀ (hs : ThreeGPFree s) (ha : a ≠ 0) : ThreeGPFree (a • s) := by
   rintro _ ⟨b, hb, rfl⟩ _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ h

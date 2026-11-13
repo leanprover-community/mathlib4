@@ -5,9 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Generator.Preadditive
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 import Mathlib.CategoryTheory.Abelian.Subobject
 
@@ -20,7 +20,6 @@ import Mathlib.CategoryTheory.Abelian.Subobject
 
 ## References
 * [Peter J Freyd, *Abelian Categories* (Theorem 3.37)][freyd1964abelian]
-
 -/
 
 public section

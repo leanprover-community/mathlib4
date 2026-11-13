@@ -5,8 +5,8 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 import Mathlib.MeasureTheory.Measure.IntegralCharFun
@@ -26,7 +26,6 @@ characteristic functions and convergence in distribution in finite dimensional i
   to a function which is continuous at 0, then `{μ n | n}` is tight.
 * `ProbabilityMeasure.tendsto_iff_tendsto_charFun`: the weak convergence of probability measures is
   equivalent to the pointwise convergence of their characteristic functions.
-
 -/
 
 public section

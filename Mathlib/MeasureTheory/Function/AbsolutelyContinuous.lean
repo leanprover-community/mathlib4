@@ -6,8 +6,8 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 import Mathlib.Order.SuccPred.IntervalSucc
 
@@ -474,7 +474,7 @@ theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegra
   filter_upwards [this] with (n, I) hnI
   obtain ⟨hnI1, hnI2⟩ := mem_ofPred_eq ▸ hnI
   simp only
-  rw [← integral_norm_eq_lintegral_enorm (h.aestronglyMeasurable_restrict_uIoc.restrict),
+  rw [← integral_norm_eq_lintegral_eNorm (h.aestronglyMeasurable_restrict_uIoc.restrict),
       integral_biUnion_finset _ (by simp +contextual [uIoc]) hnI2]
   · refine Finset.sum_le_sum (fun i hi ↦ ?_)
     rw [Real.dist_eq,

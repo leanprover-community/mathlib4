@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Data.List.SignVariations
 
 /-!
-
 # Descartes' Rule of Signs
 
 We define the "sign changes" in the coefficients of a polynomial, and prove Descartes'
@@ -37,6 +36,8 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 -/
 
 @[expose] public section
+
+open AddMonoidAlgebra
 
 namespace Polynomial
 
@@ -277,8 +278,8 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     have hcQ : 0 < coeff P 0 := by grind [leadingCoeff]
     have hxcQ : coeff ((X - C η) * P) 1 = coeff P 0 := by
       simp_all [coeff_X_sub_C_mul, coeff_eq_zero_of_natDegree_lt]
-    dsimp [signVariations, List.signVariations, coeffList]
-    rw [withBotSucc_degree_eq_natDegree_add_one hP, withBotSucc_degree_eq_natDegree_add_one h_mul]
+    dsimp [signVariations, List.signVariations]
+    rw [coeffList_of_ne_zero hP, coeffList_of_ne_zero h_mul]
     simp [h_deg_mul, hxcQ, hη, hcQ, hd, List.range_succ]
   -- P is positive degree. Set up some temporary variables for signs for the nextCoeffs.
   generalize hs_nC : SignType.sign P.nextCoeff = s_nC

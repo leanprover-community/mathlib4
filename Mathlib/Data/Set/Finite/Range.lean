@@ -98,7 +98,7 @@ end SetFiniteConstructors
 
 lemma Finite.exists_subset_finite_image_eq {f : α → β} {s : Set α} {u : Set β}
     (hu : u.Finite) (hsu : u ⊆ f '' s) :
-    ∃ᵉ (t ⊆ s) (_ : t.Finite), f '' t = u := by
+    ∃ t ⊆ s, ∃ _ : t.Finite, f '' t = u := by
   have : Finite u := Finite.to_subtype hu
   choose g hg hg' using hsu
   let g' (x : u) : α := g x.property

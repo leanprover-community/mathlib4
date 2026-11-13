@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Center.Preadditive
+public import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
 # Center of a linear category
@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Center.Preadditive
 If `C` is an `R`-linear category, we define a ring morphism `R →+* CatCenter C`
 and conversely, if `C` is a preadditive category, and `φ : R →+* CatCenter C`
 is a ring morphism, we define an `R`-linear structure on `C` attached to `φ`.
-
 -/
 
 @[expose] public section

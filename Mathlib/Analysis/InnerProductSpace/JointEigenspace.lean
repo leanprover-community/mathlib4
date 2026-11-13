@@ -5,8 +5,8 @@ Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Pi
@@ -37,7 +37,6 @@ and a proof obligation that the basis vectors are eigenvectors.
 ## Tags
 
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
-
 -/
 
 public section

@@ -122,7 +122,7 @@ section restrictₗ -- do we want this for CuspForm etc? probably not so useful?
 
 variable (k) (R : Type*) [Semiring R] [SMul R ℂ]
   [Module R (ModularForm 𝒢 k)] [Module R (ModularForm ℋ k)]
-  [IsSMulApply R (ModularForm 𝒢 k) ℍ ℂ] [IsSMulApply R (ModularForm ℋ k) ℍ ℂ]
+  [IsSMulApply R (ModularForm 𝒢 k)] [IsSMulApply R (ModularForm ℋ k)]
 
 /-- Restriction bundled as a linear map. The typeclass assumptions will be satisfied for `R = ℝ`
 and any levels, or `R = ℂ` if `HasDetOne` is available. -/

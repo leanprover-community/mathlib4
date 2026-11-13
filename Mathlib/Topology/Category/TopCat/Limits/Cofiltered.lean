@@ -5,8 +5,8 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
 module
 
-public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # Cofiltered limits in the category of topological spaces
@@ -33,7 +33,6 @@ section CofilteredLimit
 
 variable {J : Type v} [Category.{w} J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.

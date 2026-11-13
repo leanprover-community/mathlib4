@@ -5,8 +5,8 @@ Authors: David Loeffler, Terence Tao
 -/
 module
 
-public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.Harmonic.GammaDeriv
+public import Mathlib.NumberTheory.LSeries.Dirichlet
 
 import Mathlib.Analysis.Calculus.Deriv.Star
 import Mathlib.Analysis.Normed.Module.Connected
@@ -182,7 +182,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
       rw [intervalIntegral.integral_sub, intervalIntegral.integral_const_mul] <;>
       [skip; apply IntervalIntegrable.const_mul] <;>
       · refine intervalIntegral.intervalIntegrable_rpow (Or.inr <| notMem_uIcc_of_lt ?_ ?_)
-        · exact_mod_cast hn
+        · exact mod_cast hn
         · linarith
     _ = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
           - n / s * (1 / n ^ s - 1 / (n + 1) ^ s) := by
@@ -234,7 +234,7 @@ lemma termTSum_of_lt {s : ℝ} (hs : 1 < s) :
     exact tendsto_atTop_add_const_right _ _ tendsto_natCast_atTop_atTop
   · rw [← sub_zero (tsum _)]
     apply (((Summable.hasSum ?_).tendsto_sum_nat).sub ?_).const_mul
-    · exact_mod_cast (summable_nat_add_iff 1).mpr (summable_one_div_nat_rpow.mpr hs)
+    · exact mod_cast (summable_nat_add_iff 1).mpr (summable_one_div_nat_rpow.mpr hs)
     · apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
               (h := fun n : ℕ ↦ (1 / ↑(n + 1) : ℝ) ^ (s - 1))
       · rw [show 𝓝 (0 : ℝ) = 𝓝 (0 ^ (s - 1)) by rw [zero_rpow]; linarith]
@@ -283,11 +283,11 @@ lemma continuousOn_term (n : ℕ) :
     have : 1 < x := lt_of_le_of_lt (by simp) hx.1
     rw [norm_of_nonneg (div_nonneg (sub_nonneg.mpr hx.1.le) (by positivity)), Nat.cast_add_one]
     gcongr
-    · exact_mod_cast sub_nonneg.mpr hx.1.le
+    · exact mod_cast sub_nonneg.mpr hx.1.le
     · exact this.le
     · linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
-    exact_mod_cast term_welldef (by lia : 0 < (n + 1)) zero_lt_one
+    exact mod_cast term_welldef (by lia : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
     refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
@@ -483,6 +483,34 @@ theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s)
           ((isOpen_lt continuous_const continuous_re).mem_nhds (by simp)) hgz)
     simpa using congrArg (starRingEnd ℂ) (heq hs)
 
+/-- **Conjugation symmetry of the completed zeta function** for `0 < re s`, where the
+relation `Λ s = ζ s * Γ_ℝ s` is available. -/
+private theorem completedRiemannZeta_conj_of_re_pos {s : ℂ} (hs : 0 < s.re) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  have hcs : 0 < (conj s).re := by rwa [conj_re]
+  have key {z : ℂ} (hz : 0 < z.re) : completedRiemannZeta z = riemannZeta z * Gammaℝ z := by
+    have hz0 : z ≠ 0 := fun h ↦ by simp [h] at hz
+    rw [riemannZeta_def_of_ne_zero hz0]
+    exact (div_mul_cancel₀ _ (Gammaℝ_ne_zero_of_re_pos hz)).symm
+  rw [key hcs, key hs, map_mul, riemannZeta_conj, Complex.Gammaℝ_conj]
+
+-- TODO: prove the analogous conjugation symmetry for `completedHurwitzZetaEven`,
+-- `completedHurwitzZetaOdd` and `DirichletCharacter.completedLFunction`, and deduce this
+-- lemma as a special case.
+/-- **Conjugation symmetry of the completed zeta function**: `Λ (conj s) = conj (Λ s)`.
+
+For `0 < re s` this is `riemannZeta_conj` together with `Gammaℝ_conj`; the remaining
+half-plane follows from the functional equation `completedRiemannZeta_one_sub`. -/
+@[simp]
+theorem completedRiemannZeta_conj (s : ℂ) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  rcases lt_or_ge 0 s.re with hs | hs
+  · exact completedRiemannZeta_conj_of_re_pos hs
+  · have h1 : 0 < (1 - s).re := by simp only [sub_re, one_re]; linarith
+    have hcs : conj (1 - s) = 1 - conj s := by simp
+    have := completedRiemannZeta_conj_of_re_pos h1
+    rwa [hcs, completedRiemannZeta_one_sub, completedRiemannZeta_one_sub] at this
+
 lemma riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
   filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
   grind [riemannZeta_one_ne_zero]
@@ -611,7 +639,7 @@ lemma log_riemannZeta_add_log_sub_isBigO_ofReal :
     simp [log_riemannZeta_eq_neg_log_sub_add_ofReal hs]
   suffices DifferentiableAt ℝ (fun (s : ℝ) ↦ (riemannZeta₁ s).re.log) 1 by
     simpa using this.isBigO_sub
-  have : Differentiable ℝ riemannZeta₀ := by fun_prop
+  have : Differentiable ℝ riemannZeta₁ := by fun_prop
   fun_prop (disch := simp)
 
 lemma log_riemannZeta_add_log_sub_isLittleO_ofReal :

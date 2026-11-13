@@ -5,11 +5,14 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Tactic.Common
 public import Batteries.Data.List.Lemmas
+public import Mathlib.Tactic.Common
 
 import Batteries.Data.List.Perm
 import Mathlib.Tactic.Attr.Core
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Counting in lists

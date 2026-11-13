@@ -9,8 +9,8 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.GroupTheory.GroupAction.Hom
 
-import Mathlib.Data.Set.Function
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Data.Set.Function
 
 /-!
 # Pointwise actions of equivariant maps
@@ -29,7 +29,6 @@ import Mathlib.Algebra.Group.Units.Hom
 
 - `image_smul_set`, `preimage_smul_set` and `Group.preimage_smul_set` are
   the variants when `σ` is the identity.
-
 -/
 
 public section

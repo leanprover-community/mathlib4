@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The quotient category is preadditive
@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 If an equivalence relation `r : HomRel C` on the morphisms of a preadditive category
 is compatible with the addition, then the quotient category `Quotient r` is also
 preadditive.
-
 -/
 
 @[expose] public section

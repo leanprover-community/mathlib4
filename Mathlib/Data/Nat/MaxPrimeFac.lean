@@ -36,6 +36,7 @@ variable {m n p : ℕ}
 
 At the exceptional inputs `n = 0` and `n = 1`, it returns the explicit default `n` because
 `n.primeFactorsList` is empty. -/
+@[oeis A006530]
 def maxPrimeFac (n : ℕ) : ℕ := n.primeFactorsList.getLastD n
 
 @[simp] lemma maxPrimeFac_zero : maxPrimeFac 0 = 0 := by simp [maxPrimeFac]

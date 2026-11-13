@@ -6,7 +6,6 @@ Authors: Floris van Doorn
 module
 
 public meta import Mathlib.Lean.Name
-public import Batteries.Tactic.Alias
 public import Mathlib.Tactic.Core
 
 /-! # The `@[alias_in]` attribute -/

@@ -5,11 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 import Mathlib.CategoryTheory.Abelian.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
@@ -27,7 +27,6 @@ of three property and is stable under retracts. (Similarly, we define
 ## TODO
 
 * show that a localized category with respect to `P.isoModSerre` is abelian.
-
 -/
 
 @[expose] public section

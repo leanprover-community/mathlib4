@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Data.List.MinMax
 public import Mathlib.Data.Multiset.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on a multiset in ordered groups
 

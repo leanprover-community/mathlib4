@@ -76,7 +76,7 @@ example : 1 + 1 = 2 := by
 `subsingleton` does not itself try `rfl` if it's not in error recovery mode
 -/
 example : 1 + 1 = 2 := by
-  try subsingleton
+  fail_if_success subsingleton
   guard_target =ₛ 1 + 1 = 2
   rfl
 

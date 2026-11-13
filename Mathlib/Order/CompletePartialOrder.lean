@@ -5,9 +5,9 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.OmegaCompletePartialOrder
-public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 public import Mathlib.Order.CompleteLattice.Defs
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Complete Partial Orders

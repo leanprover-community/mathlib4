@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
+import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Binomial coefficients and factorial variants

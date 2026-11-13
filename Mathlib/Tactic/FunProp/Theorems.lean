@@ -5,11 +5,11 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public meta import Mathlib.Tactic.FunProp.Decl
-public meta import Mathlib.Tactic.FunProp.Types
-public meta import Mathlib.Tactic.FunProp.FunctionData
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public meta import Mathlib.Tactic.FunProp.Decl
+public meta import Mathlib.Tactic.FunProp.FunctionData
+public meta import Mathlib.Tactic.FunProp.Types
 public import Mathlib.Tactic.FunProp.Decl
 public import Mathlib.Tactic.FunProp.Types
 
@@ -328,7 +328,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
     let fData? ←
-      withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f defaultUnfoldPred
+      withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f unfoldPred
     if let some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funPropName := funPropName

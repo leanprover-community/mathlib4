@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.CompleteSeparated
 public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
 
 /-!
 # Antilipschitz functions
@@ -38,7 +38,7 @@ def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ�
 
 protected lemma AntilipschitzWith.edist_lt_top [PseudoEMetricSpace α] [PseudoMetricSpace β]
     {K : ℝ≥0} {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y < ⊤ :=
-  (h x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top (edist_lt_top _ _)
+  (h x y).trans_lt <| by finiteness
 
 theorem AntilipschitzWith.edist_ne_top [PseudoEMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} (h : AntilipschitzWith K f) (x y : α) : edist x y ≠ ⊤ :=
