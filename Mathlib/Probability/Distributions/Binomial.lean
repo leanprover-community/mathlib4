@@ -214,38 +214,22 @@ lemma IndepFun.hasLaw_add_map_cast_binomial [MeasurableAdd₂ R] {n1 n2 : ℕ}
   have : HasLaw (fun ω ↦ (((S ω ∩ (Iio n1)).ncard : R), ((S ω ∩ (Ico n1 (n1 + n2))).ncard : R)))
       (Bin(R, n1, p).prod Bin(R, n2, p)) P' := by
     refine IndepFun.hasLaw_prod ?_ ?_ ?_
-    · convert (hS.setBernoulli_inter (Iio n1)).cast_ncard_setBernoulli R (by simp)
+    · convert (hS.setBernoulli_inter _).cast_ncard_setBernoulli R (by toFinite_tac)
       simp
-    · have : Iio (n1 + n2) ∩ Ico n1 (n1 + n2) = Ico n1 (n1 + n2) := by grind
-      convert (hS.setBernoulli_inter (Ico n1 (n1 + n2))).cast_ncard_setBernoulli R (by toFinite_tac)
-      simp [this]
+    · convert (hS.setBernoulli_inter _).cast_ncard_setBernoulli R (by toFinite_tac)
+      simp
     · exact (hS.indepFun_setBernoulli_inter (by grind)).comp
         (φ := (Nat.cast (R := R)) ∘ ncard) (ψ := (Nat.cast (R := R)) ∘ ncard)
         (by fun_prop) (by fun_prop)
-  -- convert IndepFun.hasLaw_union_setBernoulli ?_
-  --   (hS.setBernoulli_inter (Iio n1))
-  --   (hS.setBernoulli_inter (Ico n1 (n1 + n2)))
-  --   (by grind) |>.cast_ncard_setBernoulli R (by toFinite_tac)
-
   convert this.comp_of_hasLaw_comp (f := fun x ↦ x.1 + x.2)
     (by fun_prop) (hXY.hasLaw_prod hX hY) ?_
-  convert IndepFun.hasLaw_union_setBernoulli ?_
-    (hS.setBernoulli_inter (Iio n1))
-    (hS.setBernoulli_inter (Ico n1 (n1 + n2)))
+  convert IndepFun.hasLaw_union_setBernoulli (hS.indepFun_setBernoulli_inter (by grind))
+    (hS.setBernoulli_inter (Iio n1)) (hS.setBernoulli_inter (Ico n1 (n1 + n2)))
     (by grind) |>.cast_ncard_setBernoulli R (by toFinite_tac) with ω'
   · rw [ncard_union_eq (by grind)]
     simp
   · rw [ncard_union_eq (by grind)]
     simp
-    grind
-  simp only
-  convert (hS.cast_ncard_setBernoulli R (finite_Iio (n1 + n2))).congr ?_
-  · simp
-  filter_upwards [IsSetBernoulli.ae_subset hS] with ω hω
-  rw [← Nat.cast_add, ← ncard_union_eq, ← inter_union_distrib_left, Iio_union_Ico]
-  · simp [inter_eq_left.2 hω]
-  · grind
-  · grind
 
 /-- The sum of two independent binomial random variables is a binomial random variable. -/
 lemma IndepFun.hasLaw_add_binomial {X Y : Ω → ℕ} {n1 n2 : ℕ}
