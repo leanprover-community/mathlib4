@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Geometry.Convex.AffineMap.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module

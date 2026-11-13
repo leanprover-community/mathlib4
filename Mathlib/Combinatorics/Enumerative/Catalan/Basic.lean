@@ -39,7 +39,6 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
 * Prove that the Catalan numbers enumerate many interesting objects.
 * Provide the many variants of Catalan numbers, e.g. associated to complex reflection groups,
   Fuss-Catalan, etc.
-
 -/
 
 @[expose] public section

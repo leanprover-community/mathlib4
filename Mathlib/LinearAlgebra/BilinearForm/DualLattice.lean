@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 /-!
-
 # Dual submodule with respect to a bilinear form.
 
 ## Main definitions and results

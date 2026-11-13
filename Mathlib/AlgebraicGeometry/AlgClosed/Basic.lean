@@ -14,7 +14,6 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 We show that if `X` is locally of finite type over an algebraically closed field `k`,
 then the closed points of `X` are in bijection with the `k`-points of `X`.
 See `AlgebraicGeometry.pointEquivClosedPoint`.
-
 -/
 
 @[expose] public noncomputable section
@@ -61,7 +60,6 @@ lemma pointOfClosedPoint_apply (a : _) : pointOfClosedPoint f x hx a = x := by
   simp [pointOfClosedPoint]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If `k` is algebraically closed,
 then the closed points of `X` are in bijection with the `k`-points of `X`. -/
 @[simps]

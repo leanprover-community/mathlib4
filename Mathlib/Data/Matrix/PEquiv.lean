@@ -88,7 +88,7 @@ theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m 
 theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
     ((PEquiv.refl n).toMatrix : Matrix n n α) = 1 := by
   ext
-  simp [toMatrix_apply, one_apply]
+  simp [toMatrix_apply, Matrix.one_apply]
 
 @[simp]
 theorem toMatrix_toPEquiv_apply [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (i) :

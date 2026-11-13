@@ -25,7 +25,6 @@ If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 
 This structure should match the `AddSubmonoid.CompleteLattice` structure, and we should try
 to unify the APIs where possible.
-
 -/
 
 @[expose] public section

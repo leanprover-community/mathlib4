@@ -35,7 +35,6 @@ TODO: generalize universe level when calculating stalks, after generalizing univ
 TODO(@joelriou): refactor the definitions in this file so as to make them
 particular cases of general constructions for points of sites from
 `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.
-
 -/
 
 @[expose] public section
@@ -288,7 +287,6 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
     · split_ifs
       exact ((ite_eq_right hV).symm.ndrec terminalIsTerminal).hom_ext ..
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `f : 𝓕 ⟶ skyscraperPresheaf p₀ c` is a natural transformation, then there is a morphism
 `𝓕.stalk p₀ ⟶ c` defined as the morphism from colimit to cocone at `c`.
