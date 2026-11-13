@@ -178,10 +178,14 @@ theorem exp_neg : exp (-x) = (exp x)⁻¹ := by
 theorem exp_sub : exp (x - y) = exp x / exp y := by
   simp [sub_eq_add_neg, exp_add, exp_neg, div_eq_mul_inv]
 
-theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
-  cases n
-  · simp [exp_natCast_mul]
-  · simp [exp_add, add_mul, pow_add, exp_neg, exp_natCast_mul]
+lemma exp_mul_intCast (x : ℂ) : ∀ n : ℤ, exp (x * n) = exp x ^ n
+  | (n : ℕ) => by simp [exp_mul_natCast]
+  | .negSucc n => by rw [Int.cast_negSucc, zpow_negSucc, mul_neg, exp_neg, exp_mul_natCast]
+
+lemma exp_intCast_mul (n : ℤ) (x : ℂ) : exp (n * x) = exp x ^ n := by
+  rw [mul_comm, exp_mul_intCast]
+
+@[deprecated (since := "2026-11-13")] alias exp_int_mul := exp_intCast_mul
 
 @[simp]
 theorem exp_conj : exp (conj x) = conj (exp x) := by
@@ -245,11 +249,17 @@ lemma exp_natCast_mul (n : ℕ) (x : ℝ) : exp (n * x) = exp x ^ n := by
 
 @[deprecated (since := "2026-11-12")] alias exp_nat_mul := exp_natCast_mul
 
-lemma exp_ofNat_mul (x : ℝ) (n : ℕ) [n.AtLeastTwo] : exp (ofNat(n) * x) = exp x ^ ofNat(n) :=
+lemma exp_ofNat_mul (n : ℕ) (x : ℝ) [n.AtLeastTwo] : exp (ofNat(n) * x) = exp x ^ ofNat(n) :=
   exp_natCast_mul ..
 
-lemma exp_mul_ofNat (n : ℕ) (x : ℝ) [n.AtLeastTwo] : exp (x * ofNat(n)) = exp x ^ ofNat(n) :=
+lemma exp_mul_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] : exp (x * ofNat(n)) = exp x ^ ofNat(n) :=
   exp_mul_natCast ..
+
+nonrec lemma exp_mul_intCast (x : ℝ) (n : ℤ) : exp (x * n) = exp x ^ n :=
+  ofReal_injective (by simp [exp_mul_intCast])
+
+lemma exp_intCast_mul (n : ℤ) (x : ℝ) : exp (n * x) = exp x ^ n := by
+  rw [mul_comm, exp_mul_intCast]
 
 @[simp]
 nonrec theorem exp_ne_zero : exp x ≠ 0 := fun h =>

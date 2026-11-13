@@ -112,7 +112,7 @@ lemma circleMap_zero_pow (n : ℕ) (R θ : ℝ) :
 
 lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
     (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
-  simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
+  simp [circleMap_zero, mul_zpow, ← Complex.exp_intCast_mul, ← mul_assoc]
 
 lemma conj_circleMap_zero (r θ : ℝ) :
     conj (circleMap 0 r θ) = circleMap 0 r (-θ) := by

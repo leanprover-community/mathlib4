@@ -61,7 +61,7 @@ private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ
     grind
   · rw [← Complex.exp_natCast_mul,
       show (n * (k / n * π * I)) = k * (π * I) by field [show (n : ℂ) ≠ 0 by aesop],
-      Complex.exp_int_mul, Complex.exp_pi_mul_I]
+      Complex.exp_intCast_mul, Complex.exp_pi_mul_I]
 
 /-- Weighted sum of `P (x)` where `x` goes over `cos ((2 * i + 1) / (2 * n) * π)` for
   `0 ≤ i < n`. -/
