@@ -45,12 +45,6 @@ def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   map f :=
     { app _ := ↾fun g ↦ g ≫ f }
 
-/-- Unification hint for `(yoneda.obj X).obj (op Y) = Y ⟶ X`. -/
-unif_hint yoneda_obj_obj_eq_hom (X X' Y Y' : C) where
-  X ≟ X'
-  Y ≟ Y' ⊢
-  (yoneda.obj X).obj (op Y) ≟ Y' ⟶ X'
-
 /-- Unification hint for `(yoneda.obj X).obj Y = unop Y ⟶ X`. -/
 unif_hint yoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
   X ≟ X'
@@ -62,12 +56,6 @@ for the category of types. -/
 @[implicit_reducible, pp_with_univ, simps! obj_obj obj_map map_app]
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
-
-/-- Unification hint for `(uliftYoneda.obj X).obj (op Y) = ULift (Y ⟶ X)`. -/
-unif_hint uliftYoneda_obj_obj_eq_hom (X X' Y Y' : C) where
-  X ≟ X'
-  Y ≟ Y' ⊢
-  (uliftYoneda.{w}.obj X).obj (op Y) ≟ ULift (Y' ⟶ X')
 
 /-- Unification hint for `(uliftYoneda.obj X).obj Y = ULift (unop Y ⟶ X)`. -/
 unif_hint uliftYoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
@@ -86,12 +74,6 @@ def uliftYonedaIsoYoneda {C : Type u₁} [Category.{max w v₁} C] :
 -/
 abbrev coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ := yoneda.flip
 
-/-- Unification hint for `(coyoneda.obj (op X)).obj Y = X ⟶ Y`. -/
-unif_hint coyoneda_obj_obj_eq_hom (X X' Y Y' : C) where
-  X ≟ X'
-  Y ≟ Y' ⊢
-  (coyoneda.obj (op X)).obj Y ≟ X' ⟶ Y'
-
 /-- Unification hint for `(coyoneda.obj Y).obj X = unop Y ⟶ X`. -/
 unif_hint coyoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
   X ≟ X'
@@ -102,12 +84,6 @@ unif_hint coyoneda_obj_obj_eq_hom' (X X' : C) (Y Y' : Cᵒᵖ) where
 for the category of types. -/
 @[pp_with_univ]
 abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.{w}.flip
-
-/-- Unification hint for `(uliftCoyoneda.{w}.obj (op X)).obj Y = ULift (X ⟶ Y)`. -/
-unif_hint uliftCoyoneda_obj_obj_eq_hom (X X' Y Y' : C) where
-  X ≟ X'
-  Y ≟ Y' ⊢
-  (uliftCoyoneda.{w}.obj (op X)).obj Y ≟ ULift (X' ⟶ Y')
 
 /-- Unification hint for `(uliftCoyoneda.{w}.obj X).obj Y = ULift (unop X ⟶ Y)`. -/
 unif_hint uliftCoyoneda_obj_obj_eq_hom' (X X' : Cᵒᵖ) (Y Y' : C) where

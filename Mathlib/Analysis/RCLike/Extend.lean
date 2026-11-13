@@ -133,4 +133,11 @@ noncomputable def extendRCLikeₗ : StrongDual ℝ F ≃ₗ[ℝ] StrongDual 𝕜
   map_add' := by intros; ext; simp [extendRCLike_apply]; ring
   map_smul' := by intros; ext; simp [extendRCLike_apply, real_smul_eq_coe_mul]; ring
 
+/-- Transfer principle for continuous linear functionals: a property `P` holds for the real part
+`reCLM.comp (f.restrictScalars ℝ)` of some continuous `𝕜`-linear functional `f` on `F` if and only
+if it holds for some continuous real-linear functional on `F`. -/
+theorem exists_reCLM_comp_iff {P : StrongDual ℝ F → Prop} :
+    (∃ f : StrongDual 𝕜 F, P (reCLM.comp (f.restrictScalars ℝ))) ↔ ∃ g, P g :=
+  extendRCLikeₗ.symm.surjective.exists.symm
+
 end StrongDual

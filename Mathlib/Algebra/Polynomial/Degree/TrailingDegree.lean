@@ -16,6 +16,7 @@ public import Mathlib.Data.ENat.Monoid
 * `trailingDegree p`: the multiplicity of `X` in the polynomial `p`
 * `natTrailingDegree`: a variant of `trailingDegree` that takes values in the natural numbers
 * `trailingCoeff`: the coefficient at index `natTrailingDegree p`
+* `nextCoeffUp`: the coefficient at index `natTrailingDegree p + 1`
 
 Converts most results about `degree`, `natDegree` and `leadingCoeff` to results about the bottom
 end of a polynomial
@@ -401,9 +402,12 @@ section Semiring
 
 variable [Semiring R]
 
-/-- The second-lowest coefficient, or 0 for constants -/
+/-- The coefficient one degree above the lowest nonzero term of `p`, that is, the coefficient of
+`X ^ (p.natTrailingDegree + 1)`. It is `0` for monomials, in particular for constants.
+
+See `nextCoeff` for the coefficient one degree below the leading term. -/
 def nextCoeffUp (p : R[X]) : R :=
-  if p.natTrailingDegree = 0 then 0 else p.coeff (p.natTrailingDegree + 1)
+  p.coeff (p.natTrailingDegree + 1)
 
 @[simp] lemma nextCoeffUp_zero : nextCoeffUp (0 : R[X]) = 0 := by simp [nextCoeffUp]
 
@@ -412,11 +416,11 @@ theorem nextCoeffUp_C_eq_zero (c : R) : nextCoeffUp (C c) = 0 := by
   rw [nextCoeffUp]
   simp
 
-theorem nextCoeffUp_of_constantCoeff_eq_zero (p : R[X]) (hp : coeff p 0 = 0) :
-    nextCoeffUp p = p.coeff (p.natTrailingDegree + 1) := by
-  obtain rfl | hp₀ := eq_or_ne p 0
-  · simp
-  · rw [nextCoeffUp, ite_eq_right (natTrailingDegree_ne_zero.2 ⟨hp₀, hp⟩)]
+@[deprecated "Use `rfl` or `rw [nextCoeffUp]`: this holds by definition, without the hypothesis."
+  (since := "2026-11-10")]
+theorem nextCoeffUp_of_constantCoeff_eq_zero (p : R[X]) (_hp : coeff p 0 = 0) :
+    nextCoeffUp p = p.coeff (p.natTrailingDegree + 1) :=
+  rfl
 
 end Semiring
 

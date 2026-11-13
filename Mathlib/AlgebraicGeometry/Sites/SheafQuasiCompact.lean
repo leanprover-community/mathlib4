@@ -73,7 +73,7 @@ nonrec lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u
           exact (this _ (.ofQuasiCompactCover ((𝒱.cover.pullback₂ f).pullback₂ _)
               (qc := by dsimp; infer_instance))
             ⟨fun l ↦ .of_isIso (pullbackLeftPullbackSndIso (𝒱.f l) f _).hom, hfin⟩).isSeparatedFor
-      refine f.isSheafFor_iff ?_ fun f ↦ (H _ f).isSeparatedFor
+      refine f.isSheafFor_of_isSheafFor ?_ fun f ↦ (H _ f).isSeparatedFor
       exact this _ (.ofQuasiCompactCover 𝒱.cover)
         ⟨fun i ↦ inferInstanceAs <| IsAffine (Spec _), hfin⟩
     obtain ⟨_, _⟩ := h𝒰

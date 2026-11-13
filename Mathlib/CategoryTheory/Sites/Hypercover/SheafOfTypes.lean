@@ -69,9 +69,11 @@ lemma isLimit_toPreOneHypercover_type_iff (E : PreZeroHypercover.{w} S) [E.HasPu
 
 end PreZeroHypercover
 
-lemma Precoverage.ZeroHypercover.Hom.isSheafFor_iff [Limits.HasPullbacks C] {K : Precoverage C}
-    [K.IsStableUnderBaseChange] {S : C} {F : Cᵒᵖ ⥤ Type*} {𝒰 𝒱 : K.ZeroHypercover S}
-    (f : 𝒰.Hom K 𝒱) (H₁ : Presieve.IsSheafFor F (.ofArrows _ 𝒰.f))
+/-- If there is a morphism of `0`-hypercovers `𝒰 ⟶ 𝒱`, and `F` is a sheaf for `𝒰` and separated
+for the pullbacks of `𝒰`, then `F` is a sheaf for `𝒱`. -/
+lemma Precoverage.ZeroHypercover.Hom.isSheafFor_of_isSheafFor [Limits.HasPullbacks C]
+    {K : Precoverage C} [K.IsStableUnderBaseChange] {S : C} {F : Cᵒᵖ ⥤ Type*}
+    {𝒰 𝒱 : K.ZeroHypercover S} (f : 𝒰.Hom K 𝒱) (H₁ : Presieve.IsSheafFor F (.ofArrows _ 𝒰.f))
     (H₂ : ∀ {X : C} (f : X ⟶ S),
       Presieve.IsSeparatedFor F (.ofArrows (𝒰.pullback₂ f).X (𝒰.pullback₂ f).f)) :
     Presieve.IsSheafFor F (.ofArrows 𝒱.X 𝒱.f) := by
@@ -87,6 +89,10 @@ lemma Precoverage.ZeroHypercover.Hom.isSheafFor_iff [Limits.HasPullbacks C] {K :
     rw [← Sieve.pullbackArrows_comm, ← Presieve.isSeparatedFor_iff_generate,
       ← Presieve.ofArrows_pullback]
     apply H₂
+
+@[deprecated (since := "2026-11-11")]
+alias Precoverage.ZeroHypercover.Hom.isSheafFor_iff :=
+  Precoverage.ZeroHypercover.Hom.isSheafFor_of_isSheafFor
 
 namespace PreOneHypercover
 

@@ -243,6 +243,15 @@ theorem IsLindelof.inter_iInter_nonempty {ι : Type v} (hs : IsLindelof s) (t : 
   contrapose! hst
   exact hs.elim_countable_subfamily_closed t htc hst
 
+/-- To show that a Lindelöf set intersects the intersection of a set `t` of closed sets,
+it is sufficient to show that it intersects the intersection of every countable subset of `t`. -/
+theorem IsLindelof.nonempty_inter_sInter (hs : IsLindelof s) {t : Set (Set X)}
+    (ht : ∀ a ∈ t, IsClosed a) (h : ∀ a ⊆ t, a.Countable → (s ∩ ⋂₀ a).Nonempty) :
+    (s ∩ ⋂₀ t).Nonempty := by
+  rw [sInter_eq_iInter]
+  refine hs.inter_iInter_nonempty _ (fun i ↦ ht _ i.2) fun u hu ↦ ?_
+  simpa [sInter_image] using h (Subtype.val '' u) (by simp) (hu.image _)
+
 /-- For every open cover of a Lindelöf set, there exists a countable subcover. -/
 theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X} (hs : IsLindelof s)
     (hc₁ : ∀ i ∈ b, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i ∈ b, c i) :
@@ -509,6 +518,20 @@ theorem lindelofSpace_of_countable_subfamily_closed
       ∃ u : Set ι, u.Countable ∧ ⋂ i ∈ u, t i = ∅) :
     LindelofSpace X where
   isLindelof_univ := isLindelof_of_countable_subfamily_closed fun t => by simpa using h t
+
+/-- Given a family of closed sets `t i` in a Lindelöf space, if they satisfy the countable
+intersection property, then the intersection of all `t i` is nonempty. -/
+theorem LindelofSpace.iInter_nonempty {ι : Type v} [LindelofSpace X] {t : ι → Set X}
+    (htc : ∀ i, IsClosed (t i)) (hst : ∀ u : Set ι, u.Countable → (⋂ i ∈ u, t i).Nonempty) :
+    (⋂ i, t i).Nonempty := by
+  simpa using isLindelof_univ.inter_iInter_nonempty t htc (by simpa using hst)
+
+/-- Given a set `s` of closed sets in a Lindelöf space, if every countable subset of `s` has
+nonempty intersection, then the intersection of all sets in `s` is nonempty. -/
+theorem LindelofSpace.nonempty_sInter [LindelofSpace X] {s : Set (Set X)}
+    (hsc : ∀ t ∈ s, IsClosed t) (hs : ∀ t ⊆ s, t.Countable → (⋂₀ t).Nonempty) :
+    (⋂₀ s).Nonempty := by
+  simpa using isLindelof_univ.nonempty_inter_sInter hsc (by simpa using hs)
 
 theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
   isLindelof_univ.of_isClosed_subset h (subset_univ _)

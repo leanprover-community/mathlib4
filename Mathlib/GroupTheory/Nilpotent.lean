@@ -767,11 +767,15 @@ theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Pr
 
 end Group
 
-@[to_additive]
+@[to_additive AddSubgroup.upperCentralSeries_one_eq_top_iff]
 theorem Subgroup.upperCentralSeries_one_eq_top_iff :
     upperCentralSeries G 1 = ⊤ ↔ IsMulCommutative G := by
   rw [upperCentralSeries_one]
   exact Subgroup.center_eq_top_iff
+
+@[deprecated (since := "2026-11-11")]
+alias AddSubgroup.upperCentralSeries_zero_eq_top_iff :=
+  AddSubgroup.upperCentralSeries_one_eq_top_iff
 
 @[to_additive]
 theorem Group.IsNilpotent.nilpotencyClass_le_one_iff [IsNilpotent G] :

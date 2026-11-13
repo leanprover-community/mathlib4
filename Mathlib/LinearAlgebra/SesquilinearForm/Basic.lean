@@ -757,19 +757,20 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self {B : M →ₗ[R] M �
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is right-separating
 if the basis has no elements which are self-orthogonal. -/
-lemma IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
-    (hO : B.IsOrthoᵢ v) (h : ∀ i, B (v i) (v i) ≠ 0) : B.SeparatingRight := by
-  rw [isOrthoᵢ_flip] at hO
-  rw [← flip_separatingLeft]
-  refine IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO fun i ↦ ?_
-  exact h i
+lemma IsOrthoᵢ.separatingRight_of_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
+    (hO : B.IsOrthoᵢ v) (h : ∀ i, B (v i) (v i) ≠ 0) : B.SeparatingRight :=
+  flip_separatingLeft.mp <| ((isOrthoᵢ_flip B).mp hO).separatingLeft_of_not_isOrtho_basis_self v h
+
+@[deprecated (since := "2026-11-11")]
+alias IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self :=
+  IsOrthoᵢ.separatingRight_of_not_isOrtho_basis_self
 
 /-- Given an orthogonal basis with respect to a bilinear map, the bilinear map is nondegenerate
 if the basis has no elements which are self-orthogonal. -/
 theorem IsOrthoᵢ.nondegenerate_of_not_isOrtho_basis_self {B : M →ₗ[R] M →ₗ[R] M₁} (v : Basis n R M)
     (hO : B.IsOrthoᵢ v) (h : ∀ i, B (v i) (v i) ≠ 0) : B.Nondegenerate :=
   ⟨IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self v hO h,
-    IsOrthoᵢ.separatingRight_iff_not_isOrtho_basis_self v hO h⟩
+    IsOrthoᵢ.separatingRight_of_not_isOrtho_basis_self v hO h⟩
 
 end IsOrthoᵢ
 

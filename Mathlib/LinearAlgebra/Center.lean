@@ -21,8 +21,8 @@ the center of `Module.End R V`.
 In what follows, `V` is assumed to be a free `R`-module.
 
 * `LinearMap.commute_transvections_iff_of_basis`:
-  if an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvection
-  (in a given basis), then it is a homothety with central ratio.
+  an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvection
+  (in a given basis) iff it is a homothety with central ratio.
   (Assumes that the basis is provided and has a non trivial set of indices.)
 
 * `LinearMap.exists_eq_smul_id_of_forall_notLinearIndependent`:
@@ -60,13 +60,19 @@ theorem mem_center_of_apply_eq_smul [Semiring R] [AddCommMonoid V]
   simp [mem_center_iff, isMulCentral_iff, commute_iff_eq, mul_assoc, LinearMap.ext_iff, hf]
 
 /-- A linear endomorphism of a free module of rank at least 2
-that commutes with transvections consists of homotheties with central ratio. -/
+commutes with the elementary transvections of a basis
+iff it is a homothety with central ratio. -/
 theorem commute_transvections_iff_of_basis
     [Ring R] [AddCommGroup V] [Module R V]
     {ι : Type*} [Nontrivial ι] (b : Basis ι R V)
-    {f : V →ₗ[R] V}
-    (hcomm : ∀ i j (r : R) (_ : i ≠ j), Commute f (transvection (b.coord i) (r • b j))) :
-    ∃ a : Subring.center R, f = a • 1 := by
+    {f : V →ₗ[R] V} :
+    (∀ i j (r : R), i ≠ j → Commute f (transvection (b.coord i) (r • b j))) ↔
+      ∃ a : Subring.center R, f = a • 1 := by
+  refine ⟨fun hcomm ↦ ?_, ?_⟩
+  swap
+  · rintro ⟨a, rfl⟩ i j r -
+    ext x
+    simp [Subring.smul_def]
   simp only [SetLike.exists, Subring.mem_center_iff]
   rcases subsingleton_or_nontrivial V with hV | hV
   · refine ⟨1, by simp, ?_⟩

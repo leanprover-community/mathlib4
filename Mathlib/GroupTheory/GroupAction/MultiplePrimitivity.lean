@@ -116,7 +116,7 @@ theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
   isPreprimitive_ofFixingSubgroup hs := by simp at hs
 
 /-- An action is preprimitive iff it is `1`-preprimitive. -/
-@[to_additive
+@[to_additive is_one_preprimitive_iff
 /-- An action is preprimitive iff it is `1`-preprimitive. -/]
 theorem is_one_preprimitive_iff :
     IsMultiplyPreprimitive M α 1 ↔ IsPreprimitive M α := by
@@ -129,6 +129,9 @@ theorem is_one_preprimitive_iff :
     constructor
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
     · simpa using isPreprimitive_of_fixingSubgroup_empty_iff.mpr h
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddAction.is_zero_preprimitive_iff := AddAction.is_one_preprimitive_iff
 
 /-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]

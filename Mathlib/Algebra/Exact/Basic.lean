@@ -188,9 +188,12 @@ lemma monoidHom_ker_eq (hfg : MulExact f g) :
     ker g = range f :=
   SetLike.ext hfg
 
-@[to_additive]
-lemma monoidHom_comp_eq_zero (h : MulExact f g) : g.comp f = 1 :=
+/-- If `f` and `g` are exact, then `g.comp f` is the trivial homomorphism. -/
+@[to_additive /-- If `f` and `g` are exact, then `g.comp f` is the zero homomorphism. -/]
+lemma monoidHom_comp_eq_one (h : MulExact f g) : g.comp f = 1 :=
   DFunLike.coe_injective h.comp_eq_one
+
+@[deprecated (since := "2026-11-11")] alias monoidHom_comp_eq_zero := monoidHom_comp_eq_one
 
 section
 

@@ -47,10 +47,16 @@ This is an analog of linear independence in a vector space, but with the "scalar
 `0` and `±1`. -/]
 def MulDissociated (s : Set α) : Prop := {t : Finset α | ↑t ⊆ s}.InjOn (∏ x ∈ ·, x)
 
-@[to_additive] lemma mulDissociated_iff_sum_eq_subsingleton :
+/-- A set is dissociated iff for every `a`, at most one of its finite subsets has product `a`. -/
+@[to_additive
+/-- A set is dissociated iff for every `a`, at most one of its finite subsets has sum `a`. -/]
+lemma mulDissociated_iff_prod_eq_subsingleton :
     MulDissociated s ↔ ∀ a, {t : Finset α | ↑t ⊆ s ∧ ∏ x ∈ t, x = a}.Subsingleton :=
   ⟨fun hs _ _t ht _u hu ↦ hs ht.1 hu.1 <| ht.2.trans hu.2.symm,
     fun hs _t ht _u hu htu ↦ hs _ ⟨ht, htu⟩ ⟨hu, rfl⟩⟩
+
+@[deprecated (since := "2026-11-11")]
+alias mulDissociated_iff_sum_eq_subsingleton := mulDissociated_iff_prod_eq_subsingleton
 
 @[to_additive] lemma MulDissociated.subset {t : Set α} (hst : s ⊆ t) (ht : MulDissociated t) :
     MulDissociated s := ht.mono fun _ ↦ hst.trans'

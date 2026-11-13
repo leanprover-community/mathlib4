@@ -191,10 +191,14 @@ theorem oneEmbedding_isPretransitive_iff :
   isPretransitive_congr Function.surjective_id oneEmbeddingMap_bijective
 
 /-- An action is `1`-pretransitive iff it is pretransitive. -/
-@[to_additive /-- An additive action is `1`-pretransitive iff it is pretransitive. -/]
+@[to_additive is_one_pretransitive_iff
+/-- An additive action is `1`-pretransitive iff it is pretransitive. -/]
 theorem is_one_pretransitive_iff :
     IsMultiplyPretransitive G α 1 ↔ IsPretransitive G α :=
   oneEmbedding_isPretransitive_iff
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.AddAction.is_zero_pretransitive_iff := AddAction.is_one_pretransitive_iff
 
 end One
 

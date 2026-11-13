@@ -249,6 +249,7 @@ public import Mathlib.Tactic.Linter.SyntaxBased
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
+public import Mathlib.Tactic.Linter.UnificationHint
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UpstreamableDecl

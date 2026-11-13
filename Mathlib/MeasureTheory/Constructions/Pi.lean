@@ -214,8 +214,8 @@ instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, Measur
     MeasureSpace (∀ i, α i) :=
   ⟨Measure.pi fun _ => volume⟩
 
-theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
-    Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
+private theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i))
+    (hs : ∀ i, MeasurableSet (s i)) : Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
   refine le_antisymm ?_ ?_
   · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
     apply OuterMeasure.pi_pi_le
@@ -233,28 +233,25 @@ variable {μ}
 /-- `Measure.pi μ` has finite spanning sets in rectangles of finite spanning sets. -/
 def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
     (hμ : ∀ i, (μ i).FiniteSpanningSetsIn (C i)) :
-    (Measure.pi μ).FiniteSpanningSetsIn (pi univ '' pi univ C) := by
-  haveI := fun i => (hμ i).sigmaFinite
+    (Measure.pi μ).FiniteSpanningSetsIn (pi univ '' pi univ C) :=
   haveI := Fintype.toEncodable ι
-  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).getD default i),
-    fun n => ?_, fun n => ?_, ?_⟩ <;>
-  -- TODO (kmill) If this let comes before the refine, while the noncomputability checker
-  -- correctly sees this definition is computable, the Lean VM fails to see the binding is
-  -- computationally irrelevant. The `noncomputable section` doesn't help because all it does
-  -- is insert `noncomputable` for you when necessary.
-  let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).getD default
-  · refine mem_image_of_mem _ fun i _ => (hμ i).set_mem _
-  · calc
-      Measure.pi μ (Set.pi univ fun i => (hμ i).set (e n i)) ≤
-          Measure.pi μ (Set.pi univ fun i => toMeasurable (μ i) ((hμ i).set (e n i))) :=
-        measure_mono (pi_mono fun i _ => subset_toMeasurable _ _)
-      _ = ∏ i, μ i (toMeasurable (μ i) ((hμ i).set (e n i))) :=
-        (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
-      _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
-      _ < ∞ := ENNReal.prod_lt_top fun i _ => (hμ i).finite _
-  · simp_rw [(surjective_decode_getD (ι → ℕ) default).iUnion_comp fun x =>
-        Set.pi univ fun i => (hμ i).set (x i),
-      iUnion_univ_pi fun i => (hμ i).set, (hμ _).spanning, Set.pi_univ]
+  { set n := Set.pi univ fun i ↦ (hμ i).set ((@decode (ι → ℕ) _ n).getD default i)
+    set_mem n := mem_image_of_mem _ fun i _ ↦ (hμ i).set_mem _
+    finite n := private by
+      have := fun i ↦ (hμ i).sigmaFinite
+      let e : ℕ → ι → ℕ := fun n ↦ (@decode (ι → ℕ) _ n).getD default
+      calc
+        Measure.pi μ (Set.pi univ fun i ↦ (hμ i).set (e n i)) ≤
+            Measure.pi μ (Set.pi univ fun i ↦ toMeasurable (μ i) ((hμ i).set (e n i))) :=
+          measure_mono (pi_mono fun i _ ↦ subset_toMeasurable _ _)
+        _ = ∏ i, μ i (toMeasurable (μ i) ((hμ i).set (e n i))) :=
+          pi_pi_aux μ _ fun i ↦ measurableSet_toMeasurable _ _
+        _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
+        _ < ∞ := ENNReal.prod_lt_top fun i _ ↦ (hμ i).finite _
+    spanning := by
+      simp_rw [(surjective_decode_getD (ι → ℕ) default).iUnion_comp fun x ↦
+          Set.pi univ fun i ↦ (hμ i).set (x i),
+        iUnion_univ_pi fun i ↦ (hμ i).set, (hμ _).spanning, Set.pi_univ] }
 
 /-- A measure on a finite product space equals the product measure if they are equal on rectangles
   with as sides sets that generate the corresponding σ-algebras. -/

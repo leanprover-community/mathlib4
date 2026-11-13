@@ -142,12 +142,15 @@ theorem tendsto_nhds_mean (hfoel : IsFoelner G μ u F) (s : Set X) :
     (u.map (fun i ↦ μ (s ∩ F i) / μ (F i))) (mem_map.1 mem_Icc)
   exact tendsto_nhds_limUnder (by use x; exact hx.2)
 
-@[to_additive]
+@[to_additive mean_univ_eq_one]
 theorem mean_univ_eq_one (hfoel : IsFoelner G μ u F) :
     mean μ u F .univ = 1 := by
   refine tendsto_nhds_unique_of_eventuallyEq (hfoel.tendsto_nhds_mean _) tendsto_const_nhds ?_
   filter_upwards [hfoel.eventually_meas_ne_zero, hfoel.eventually_meas_ne_top] with i hi hi'
   simp [ENNReal.div_self hi hi']
+
+@[deprecated (since := "2026-11-11")]
+alias _root_.IsAddFoelner.mean_univ_eq_zero := IsAddFoelner.mean_univ_eq_one
 
 @[to_additive]
 theorem mean_union_eq_add_of_disjoint (hfoel : IsFoelner G μ u F)
