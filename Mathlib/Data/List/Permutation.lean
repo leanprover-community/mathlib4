@@ -289,9 +289,15 @@ theorem length_permutationsAux :
 theorem length_permutations (l : List α) : length (permutations l) = (length l)! :=
   length_permutationsAux l []
 
-private theorem mem_permutations_of_perm_lemma {is l : List α}
+private theorem mem_permutations_of_perm_aux {is l : List α}
     (H : l ~ [] ++ is → (∃ (ts' : _) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
     l ~ is → l ∈ permutations is := by simpa [permutations, perm_nil] using H
+
+@[deprecated "use `mem_permutations` instead" (since := "2026-11-13")]
+theorem mem_permutations_of_perm_lemma {is l : List α}
+    (H : l ~ [] ++ is → (∃ (ts' : _) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
+    l ~ is → l ∈ permutations is :=
+  mem_permutations_of_perm_aux H
 
 theorem mem_permutationsAux_of_perm :
     ∀ {ts is l : List α},
@@ -309,12 +315,12 @@ theorem mem_permutationsAux_of_perm :
     have p := (perm_middle.symm.trans p').cons_inv
     rcases l₂ with - | ⟨a, l₂'⟩
     · exact Or.inl ⟨l₁, by simpa using p⟩
-    · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_lemma (IH2 _) p, by simp⟩)
+    · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_aux (IH2 _) p, by simp⟩)
   · exact Or.inr (Or.inl m)
 
 @[simp]
 theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
-  ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
+  ⟨perm_of_mem_permutations, mem_permutations_of_perm_aux mem_permutationsAux_of_perm⟩
 
 /-- A list is a permutation of the pair `[a, b]` if and only if it is equal to `[a, b]` or to
 `[b, a]`. -/
