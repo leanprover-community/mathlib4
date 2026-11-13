@@ -99,7 +99,7 @@ public theorem map_ofCoeffList_cons {R : Type*} [Ring R] (c : ℤ) (p : List ℤ
 
 end ofCoeffList
 
-variable {p q : List ℤ} {st : SturmStep} {steps : List SturmStep}
+variable {p q : List ℤ} {st : SturmStep} {steps : List SturmStep} {L : List (List ℤ)}
 
 /-- The real polynomial that `p` represents. -/
 noncomputable def toReal (p : List ℤ) : ℝ[X] := (ofCoeffList p).map (Int.castRingHom ℝ)
@@ -127,5 +127,26 @@ theorem toReal_coeffAddSmul (c : ℤ) (p q : List ℤ) :
 
 theorem toReal_coeffMul (p q : List ℤ) : toReal (coeffMul p q) = toReal p * toReal q := by
   simp [toReal, ofCoeffList_coeffMul]
+
+theorem SturmStep.check_iff :
+    st.check p q = true ↔ 0 < st.a ∧ 0 < st.c ∧ coeffLead q ≠ 0 ∧ st.r.length < q.length ∧
+      ∀ x ∈ coeffAddSmul st.c st.r (coeffAddSmul st.a p (coeffMul st.b q)), x = 0 := by
+  simp [SturmStep.check, and_assoc]
+
+theorem SturmStep.eq_zero_of_check (h : st.check p q = true) :
+    C (st.a : ℝ) * toReal p + toReal st.b * toReal q + C (st.c : ℝ) * toReal st.r = 0 := by
+  obtain ⟨_, _, _, _, hz⟩ := SturmStep.check_iff.mp h
+  calc C (st.a : ℝ) * toReal p + toReal st.b * toReal q + C (st.c : ℝ) * toReal st.r
+    _ = toReal (coeffAddSmul st.c st.r (coeffAddSmul st.a p (coeffMul st.b q))) := by
+      rw [toReal_coeffAddSmul, toReal_coeffAddSmul, toReal_coeffMul, add_comm]
+    _ = 0 := by rw [toReal, ofCoeffList_eq_zero hz, Polynomial.map_zero]
+
+theorem sturmEntries?_nil : sturmEntries? p q [] = some L ↔ q = [] ∧ [p] = L := by
+  cases q <;> simp [sturmEntries?]
+
+theorem sturmEntries?_cons :
+    sturmEntries? p q (st :: steps) = some L ↔
+      st.check p q = true ∧ ∃ L', sturmEntries? q st.r steps = some L' ∧ p :: L' = L := by
+  simp [sturmEntries?]
 
 end Mathlib.Tactic.RealRootCount
