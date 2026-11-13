@@ -25,7 +25,6 @@ modules commutes with the sheafification.
 
 From the compatibility of `pushforward` with respect to composition, we deduce
 similar pseudofunctor-like properties of the `pullback` functors.
-
 -/
 
 @[expose] public section

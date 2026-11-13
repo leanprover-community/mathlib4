@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalar
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
-
 # Normed space structure on `ℂ`.
 
 This file gathers basic facts of analytic nature on the complex numbers.
@@ -37,7 +36,6 @@ namespace `Complex`.
 |`conjLIE`         |ℂ ≃ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
 
 We also register the fact that `ℂ` is an `RCLike` field.
-
 -/
 
 @[expose] public section
@@ -90,18 +88,23 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
 
 -- This result cannot be moved to `Data/Complex/Norm` since `ℤ` gets its norm from its
 -- normed ring structure and that file does not know about rings
-@[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
+@[simp 1100, norm_cast] lemma nnNorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
   ext; exact norm_intCast n
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_intCast := nnNorm_intCast
 
 @[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
   simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).fun_pow 2
 
-theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
-  (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
+theorem nnNorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
+  (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnNorm_pow, h, nnNorm_one, one_pow]
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_eq_one_of_pow_eq_one := nnNorm_eq_one_of_pow_eq_one
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
-  congr($(nnnorm_eq_one_of_pow_eq_one h hn).val)
+  congr($(nnNorm_eq_one_of_pow_eq_one h hn).val)
 
 lemma le_of_eq_sum_of_eq_sum_norm {ι : Type*} {a b : ℝ} (f : ι → ℂ) (s : Finset ι) (ha₀ : 0 ≤ a)
     (ha : a = ∑ i ∈ s, f i) (hb : b = ∑ i ∈ s, (‖f i‖ : ℂ)) : a ≤ b := by

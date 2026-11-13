@@ -20,7 +20,6 @@ for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a preshea
 and `R` a sheaf of rings.
 In particular, if `α` is the identity of `R.val`, we obtain the
 sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
-
 -/
 
 @[expose] public section

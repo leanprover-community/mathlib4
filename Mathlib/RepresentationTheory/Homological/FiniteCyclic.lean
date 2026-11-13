@@ -37,7 +37,6 @@ this resolution to compute the group cohomology of representations of finite cyc
 ## TODO
 
 * Use this to analyse the group homology of representations of finite cyclic groups.
-
 -/
 
 @[expose] public section

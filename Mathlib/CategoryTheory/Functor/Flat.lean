@@ -5,13 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Filtered.Connected
-public import Mathlib.CategoryTheory.Limits.Bicones
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
+import Mathlib.CategoryTheory.Filtered.Connected
+import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 
 /-!
@@ -41,7 +43,6 @@ This definition is equivalent to left exact functors (functors that preserves fi
 * `preservesFiniteLimits_iff_lanPreservesFiniteLimits`: If `C`, `D` are small and `C` has all
   finite limits, then `F` preserves finite limits iff `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)`
   does.
-
 -/
 
 @[expose] public section

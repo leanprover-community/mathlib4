@@ -25,7 +25,6 @@ Under this assumption, if `L₂ : C₂ ⥤ D₂` is a localization functor
 for `W₂`, then a functor `RF : D₂ ⥤ H` equipped with a natural
 transformation `α : F ⟶ L₂ ⋙ RF` is the right derived functor of `F` iff
 for any `X₁ : C₁`, the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
-
 -/
 
 public section

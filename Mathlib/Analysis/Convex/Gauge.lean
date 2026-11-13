@@ -286,7 +286,7 @@ theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set
     rw [← mem_smul_set_iff_inv_smul_mem₀ this.ne', smul_assoc]
     exact smul_mem_smul_set hx
 
-theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ ℝ]
+theorem gauge_smul_left_of_nonneg [MulActionWithZero α E]
     [IsScalarTower α ℝ ℝ] [IsScalarTower α ℝ E] {s : Set E} {a : α} (ha : 0 ≤ a) :
     gauge (a • s) = a⁻¹ • gauge s := by
   obtain rfl | ha' := ha.eq_or_lt
@@ -306,7 +306,7 @@ theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ
     refine ⟨smul_pos (inv_pos.2 ha') hr, r⁻¹ • x, hx, ?_⟩
     rw [smul_inv₀, smul_assoc, inv_inv]
 
-theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower α ℝ ℝ]
+theorem gauge_smul_left [Module α E] [IsScalarTower α ℝ ℝ]
     [IsScalarTower α ℝ E] {s : Set E} (symmetric : ∀ x ∈ s, -x ∈ s) (a : α) :
     gauge (a • s) = |a|⁻¹ • gauge s := by
   rw [← gauge_smul_left_of_nonneg (abs_nonneg a)]

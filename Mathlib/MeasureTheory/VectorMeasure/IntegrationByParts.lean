@@ -35,7 +35,6 @@ We denote by `f⁻ x` the left limit of `f` at `x`, and by `f⁺ x` its right li
   version is `setIntegral_Icc_leftLim_smul_vectorMeasure_eq_sub`.
 * There are versions of all the previous statements using `f⁺` and `g⁻` instead. The names
   are the same, modulo the replacement of `leftLim` with `rightLim`.
-
 -/
 
 
