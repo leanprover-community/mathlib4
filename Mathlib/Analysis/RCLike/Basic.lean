@@ -467,9 +467,6 @@ theorem mul_conj (z : K) : z * conj z = ‖z‖ ^ 2 := by
 
 theorem conj_mul (z : K) : conj z * z = ‖z‖ ^ 2 := by rw [mul_comm, mul_conj]
 
-theorem conj_div_mul_eq_norm (z : K) : conj (z / ‖z‖) * z = ‖z‖ := by
-  simp [div_mul_eq_mul_div, conj_mul, sq]
-
 lemma inv_eq_conj (hz : ‖z‖ = 1) : z⁻¹ = conj z :=
   inv_eq_of_mul_eq_one_left <| by simp_rw [conj_mul, hz, algebraMap.coe_one, one_pow]
 
@@ -514,6 +511,12 @@ theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv₀ _
 
 lemma conj_div (x y : K) : conj (x / y) = conj x / conj y := map_div' conj conj_inv _ _
+
+lemma conj_div_norm (z : K) : conj (z / ‖z‖) = ‖z‖ / z := by
+  grind [conj_div, conj_ofReal, conj_mul]
+
+lemma conj_norm_div (z : K) : conj (‖z‖ / z) = z / ‖z‖ := by
+  rw [← conj_div_norm, conj_conj]
 
 --TODO: Do we rather want the map as an explicit definition?
 lemma exists_norm_eq_mul_self (x : K) : ∃ c, ‖c‖ = 1 ∧ ↑‖x‖ = c * x := by
