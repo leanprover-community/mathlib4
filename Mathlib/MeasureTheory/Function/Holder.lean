@@ -161,6 +161,13 @@ lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
   simpa [lpPairing, ← L1.integral_eq', L1.integral_eq_integral] using
     integral_congr_ae <| B.coeFn_holder _ _
 
+lemma norm_lpPairing_le : ‖B.lpPairing μ p q‖ ≤ ‖B‖ := by
+  refine opNorm_le_bound _ (norm_nonneg B) fun f ↦ ?_
+  refine opNorm_le_bound _ (by positivity) fun g ↦ ?_
+  rw [lpPairing, comp_apply, postcomp_apply, comp_apply, ← L1.integral_eq' 𝕜]
+  grw [L1.norm_integral_le]
+  exact B.norm_holder_apply_apply_le f g
+
 end ContinuousLinearMap
 
 end Bilinear
