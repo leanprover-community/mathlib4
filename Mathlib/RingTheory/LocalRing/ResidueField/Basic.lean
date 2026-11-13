@@ -239,6 +239,7 @@ See `mapAlgEquiv'` for a variant where the base ring `R` is also quotiented. -/
 noncomputable def mapAlgEquiv (e : S ≃ₐ[R] T) : ResidueField S ≃ₐ[R] ResidueField T where
   __ := mapAlgHom e.toAlgHom
   __ := mapEquiv e.toRingEquiv
+  map_smul' := by simp
 
 @[simp]
 theorem mapAlgEquiv_residue (e : S ≃ₐ[R] T) (x : S) :

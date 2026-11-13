@@ -315,6 +315,7 @@ noncomputable def localAlgEquiv [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ide
     Localization.AtPrime I ≃ₐ[R] Localization.AtPrime J where
   __ := localAlgHom I J f.toAlgHom hIJ
   __ := localRingEquiv I J f.toRingEquiv hIJ
+  map_smul' := by simp
 
 lemma localRingHom_bijective_of_saturated_inf_eq_top
     {P : Ideal S} [P.IsPrime] {s : Subalgebra R S}

@@ -48,7 +48,7 @@ private lemma quotIdealMapEquivTensorQuotAux_mk (b : B) :
 /-- `B ⊗[A] (A ⧸ I)` is isomorphic as a `B`-algebra to `B ⧸ I B`. -/
 noncomputable def quotIdealMapEquivTensorQuot :
     (B ⧸ (I.map <| algebraMap A B)) ≃ₐ[B] B ⊗[A] (A ⧸ I) :=
-  AlgEquiv.ofLinearEquiv (quotIdealMapEquivTensorQuotAux B I) rfl
+  AlgEquiv.ofLinearEquiv (quotIdealMapEquivTensorQuotAux B I)
     (fun x y ↦ by
       obtain ⟨u, rfl⟩ := Ideal.Quotient.mk_surjective x
       obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective y
@@ -69,14 +69,14 @@ lemma quotIdealMapEquivTensorQuot_symm_tmul (b : B) (a : A) :
 noncomputable def quotIdealMapEquivQuotTensor :
     (B ⧸ (I.map (algebraMap A B))) ≃ₐ[A ⧸ I] (A ⧸ I) ⊗[A] B :=
   AlgEquiv.extendScalarsOfSurjective Ideal.Quotient.mk_surjective
-  { __ := (quotIdealMapEquivTensorQuot B I).toRingEquiv.trans
-      (Algebra.TensorProduct.comm A B (A ⧸ I)).toRingEquiv
-    commutes' x := by
+    (.ofCommutes ((quotIdealMapEquivTensorQuot B I).toRingEquiv.trans
+      (Algebra.TensorProduct.comm A B (A ⧸ I)).toRingEquiv)
+    fun x ↦ by
       suffices Algebra.TensorProduct.comm A B (A ⧸ I) (quotIdealMapEquivTensorQuot B I
         (Ideal.Quotient.mk (I.map (algebraMap A B)) (algebraMap A B x))) =
           (algebraMap A (TensorProduct A (A ⧸ I) B)) x by simpa
       rw [quotIdealMapEquivTensorQuot_mk, tmul_one_eq_one_tmul]
-      simp }
+      simp)
 
 @[simp]
 lemma quotIdealMapEquivQuotTensor_mk (b : B) :
@@ -99,7 +99,7 @@ noncomputable def tensorQuotientEquiv (I : Ideal T) :
       (I.subtype.restrictScalars R))) ≃ₗ[S]
       A ⊗[R] T ⧸ (I.map (includeRight (A := A) (R := R))).restrictScalars S :=
     Submodule.quotEquivOfEq _ _ (AlgebraTensorModule.range_lTensor_idealMap _ _ _)
-  .ofLinearEquiv (AlgebraTensorModule.tensorQuotientEquiv (R := R) S T A I ≪≫ₗ g) rfl <| by
+  .ofLinearEquiv (AlgebraTensorModule.tensorQuotientEquiv (R := R) S T A I ≪≫ₗ g) <| by
     refine LinearMap.map_mul_of_map_mul_tmul fun a₁ a₂ b₁ b₂ ↦ ?_
     obtain ⟨b₁, rfl⟩ := Ideal.Quotient.mk_surjective b₁
     obtain ⟨b₂, rfl⟩ := Ideal.Quotient.mk_surjective b₂
@@ -122,11 +122,19 @@ lemma tensorQuotientEquiv_symm_apply_tmul (I : Ideal T) (a : A) (t : T) :
 /-- The tensor product over `R` of the quotient of an `S`-algebra `A` by an ideal `I` with `T`
 is isomorphic (as an `S`-algebra) to the quotient of `A ⊗[R] T` by the extended ideal. -/
 noncomputable def quotientTensorEquiv (I : Ideal A) :
-    (A ⧸ I) ⊗[R] T ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (algebraMap A (A ⊗[R] T)) where
-  __ := (TensorProduct.comm R (A ⧸ I) T).toRingEquiv.trans <|
-    (tensorQuotientEquiv (R := R) R A T I).toRingEquiv.trans <|
-    Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv (I.map_map _ _).symm
-  commutes' _ := rfl
+    (A ⧸ I) ⊗[R] T ≃ₐ[S] (A ⊗[R] T) ⧸ I.map (algebraMap A (A ⊗[R] T)) :=
+  letI f : _ ≃+* _ := ((TensorProduct.comm R (A ⧸ I) T).toRingEquiv.trans <|
+      (tensorQuotientEquiv (R := R) R A T I).toRingEquiv.trans <|
+      Ideal.quotientEquiv _ _ (TensorProduct.comm R T A).toRingEquiv
+      (I.map_map _ _).symm)
+  { __ := f
+    map_smul' r x := by
+      suffices f (algebraMap S ((A ⧸ I) ⊗[R] T) r) = algebraMap _ _ r by
+        simp only [Algebra.smul_def', AlgEquiv.toRingEquiv_toRingHom, AlgHom.toRingHom_eq_coe,
+          RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe]
+        erw [map_mul f, this, Algebra.algebraMap_eq_smul_one, smul_mul_assoc, one_mul]
+        rfl
+      rfl }
 
 @[simp]
 lemma quotientTensorEquiv_apply_tmul (I : Ideal A) (a : A) (t : T) :
