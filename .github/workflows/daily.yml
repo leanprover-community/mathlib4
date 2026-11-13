@@ -9,6 +9,11 @@ on:
 env:
   TESTED_REPO: leanprover-community/mathlib4
   GH_REPO: ${{ github.repository }}
+  # The bump branch's CI uploads its oleans to the `forks` container under its commit, so
+  # `lake exe cache get` reads `forks` after `master`. lean-action reads only `master` when
+  # `MATHLIB_CACHE_GET_URL` is unset, and the empty value makes it use the container list.
+  MATHLIB_CACHE_GET_URL: ''
+  MATHLIB_CACHE_FROM: master,forks
 
 permissions:
   contents: read
