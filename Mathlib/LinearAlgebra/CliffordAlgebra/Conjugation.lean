@@ -119,7 +119,7 @@ protected theorem reverse.map_mul (a b : CliffordAlgebra Q) :
 
 @[simp]
 theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=
-  AlgHom.congr_fun reverseOpEquiv.symm_comp
+  AlgHom.congr_fun (reverseOpEquiv (R := R)).symm_comp
 
 @[simp]
 theorem reverse_comp_reverse :

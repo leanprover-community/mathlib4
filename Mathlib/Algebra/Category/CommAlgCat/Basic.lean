@@ -170,6 +170,7 @@ def algEquivOfIso (i : A ≅ B) : A ≃ₐ[R] B where
   invFun := i.inv
   left_inv x := by simp
   right_inv x := by simp
+  map_smul' := by simp
 
 /-- Algebra equivalences between `Algebra`s are the same as isomorphisms in `CommAlgCat`. -/
 @[simps]
@@ -180,7 +181,7 @@ def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where
 instance reflectsIsomorphisms_forget : (forget (CommAlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (CommAlgCat.{u} R)).map f)
-    let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
+    let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with map_smul' := by simp }
     exact (isoMk e).isIso_hom
 
 variable (R)
@@ -213,7 +214,7 @@ def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
   inverse.obj A := ↧A
   inverse.map {A B} f := CommAlgCat.ofHom <| CommRingCat.toAlgHom f
   unitIso := NatIso.ofComponents fun A ↦
-    CommAlgCat.isoMk { toRingEquiv := .refl A, commutes' _ := rfl }
+    CommAlgCat.isoMk (.ofCommutes (.refl A) fun _ ↦ rfl)
   counitIso := .refl _
 
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.

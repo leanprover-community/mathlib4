@@ -172,15 +172,16 @@ variable (α)
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
 /-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
-  { RingEquiv.lpBCF with commutes' := fun _k ↦ rfl }
+  { RingEquiv.lpBCF with map_smul' _ _ := rfl }
 
 
 variable {α 𝕜}
 
-theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) : (AlgEquiv.lpBCF α 𝕜 f : α → A) = f :=
+theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) :
+    (AlgEquiv.lpBCF (A := A) α 𝕜 f : α → A) = f :=
   rfl
 
-theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α 𝕜).symm f : α → A) = f :=
+theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF (A := A) α 𝕜).symm f : α → A) = f :=
   rfl
 
 end RingAlgebra
