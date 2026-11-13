@@ -156,7 +156,7 @@ theorem Ideal.span_singleton_mul_eq_self_of_isPrime {p : Ideal R} [p.IsPrime]
 
 open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
-  obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat (R := R)
+  obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat R
   induction n generalizing R with
   | zero =>
     suffices IsField R from this.isDomain
