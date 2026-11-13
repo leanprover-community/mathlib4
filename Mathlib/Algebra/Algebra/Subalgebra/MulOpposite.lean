@@ -29,7 +29,7 @@ protected def op (S : Subalgebra R A) : Subalgebra R Aᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
   algebraMap_mem' := S.algebraMap_mem
 
-attribute [norm_cast] coe_op
+attribute [norm_cast] Subalgebra.coe_op
 
 @[simp]
 theorem mem_op {x : Aᵐᵒᵖ} {S : Subalgebra R A} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
@@ -40,7 +40,7 @@ protected def unop (S : Subalgebra R Aᵐᵒᵖ) : Subalgebra R A where
   toSubsemiring := S.toSubsemiring.unop
   algebraMap_mem' := S.algebraMap_mem
 
-attribute [norm_cast] coe_unop
+attribute [norm_cast] Subalgebra.coe_unop
 
 @[simp]
 theorem mem_unop {x : A} {S : Subalgebra R Aᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
@@ -124,7 +124,7 @@ theorem unop_iInf (S : ι → Subalgebra R Aᵐᵒᵖ) : (iInf S).unop = ⨅ i, 
 theorem op_adjoin (s : Set A) :
     (Algebra.adjoin R s).op = Algebra.adjoin R (MulOpposite.unop ⁻¹' s) := by
   apply toSubsemiring_injective
-  simp_rw [Algebra.adjoin, op_toSubsemiring, Subsemiring.op_closure, Set.preimage_union]
+  simp_rw [Algebra.adjoin, Subalgebra.op_toSubsemiring, Subsemiring.op_closure, Set.preimage_union]
   congr with x
   simp_rw [Set.mem_preimage, Set.mem_range, MulOpposite.algebraMap_apply]
   congr!
@@ -133,7 +133,8 @@ theorem op_adjoin (s : Set A) :
 theorem unop_adjoin (s : Set Aᵐᵒᵖ) :
     (Algebra.adjoin R s).unop = Algebra.adjoin R (MulOpposite.op ⁻¹' s) := by
   apply toSubsemiring_injective
-  simp_rw [Algebra.adjoin, unop_toSubsemiring, Subsemiring.unop_closure, Set.preimage_union]
+  simp_rw [Algebra.adjoin, Subalgebra.unop_toSubsemiring, Subsemiring.unop_closure,
+    Set.preimage_union]
   congr with x
   simp
 

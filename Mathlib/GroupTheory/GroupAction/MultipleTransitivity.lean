@@ -139,7 +139,7 @@ theorem IsPretransitive.of_embedding {n : Type*}
     let aux (x : n ↪ β) : (n ↪ α) :=
       x.trans (Function.Embedding.ofSurjective (⇑f) hf)
     have aux_apply (x : n ↪ β) (i : n) : f.toFun (aux x i) = x i := by
-      simp only [trans_apply, aux]
+      simp only [Function.Embedding.trans_apply, aux]
       apply Function.surjInv_eq
     obtain ⟨g, hg⟩ := exists_smul_eq (M := G) (aux x) (aux y)
     use σ g

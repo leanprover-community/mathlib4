@@ -111,7 +111,8 @@ theorem refl_trans : (OpenPartialHomeomorph.refl X).trans e = e :=
 
 theorem trans_ofSet {s : Set Y} (hs : IsOpen s) : e.trans (ofSet s hs) = e.restr (e ⁻¹' s) :=
   OpenPartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) <| by
-    rw [trans_source, restr_source, ofSet_source, ← preimage_interior, hs.interior_eq]
+    rw [trans_source, OpenPartialHomeomorph.restr_source, ofSet_source, ← preimage_interior,
+      hs.interior_eq]
 
 theorem trans_of_set' {s : Set Y} (hs : IsOpen s) :
     e.trans (ofSet s hs) = e.restr (e.source ∩ e ⁻¹' s) := by rw [trans_ofSet, restr_source_inter]
@@ -167,7 +168,8 @@ theorem restr_symm_trans {e' : OpenPartialHomeomorph X Y}
     refine image_inter_on ?_
     intro x hx y hy h
     rw [← left_inv e hy, ← left_inv e (hs'' hx), h]
-  · simp_rw [coe_trans, restr_symm_apply, restr_apply, coe_trans]
+  · simp_rw [coe_trans, OpenPartialHomeomorph.restr_symm_apply, OpenPartialHomeomorph.restr_apply,
+      coe_trans]
     intro x hx
     simp
 

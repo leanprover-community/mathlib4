@@ -57,7 +57,7 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
   have : f.toAlgHom = g.toAlgHom := by
     apply (hμ.powerBasis K).algHom_ext
-    rw [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_toAlgHom, powerBasis_gen,
+    rw [AlgEquiv.coe_toAlgHom, AlgEquiv.coe_toAlgHom, IsPrimitiveRoot.powerBasis_gen,
       ← autToPow_spec K hμ g, ← autToPow_spec K hμ f, hfg]
   exact AlgEquiv.coe_toAlgHom_injective this
 

@@ -221,7 +221,7 @@ def idGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H where
       rcases h with ⟨x, hx⟩
       rcases he x hx with ⟨s, open_s, xs, hs⟩
       have x's : x ∈ (e.restr s).source := by
-        rw [restr_source, open_s.interior_eq]
+        rw [OpenPartialHomeomorph.restr_source, open_s.interior_eq]
         exact ⟨hx, xs⟩
       rcases hs with hs | hs
       · replace hs : OpenPartialHomeomorph.restr e s = OpenPartialHomeomorph.refl H := by

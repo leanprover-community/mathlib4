@@ -242,9 +242,9 @@ instance isCommMonObj_spec_asOver_spec [Bialgebra R A] [IsCocomm R A] :
        (Algebra.TensorProduct.includeRight : A →ₐ[R] A ⊗[R] A) := rfl
     convert! this using 1
     simp only [mul_spec_asOver_spec_left, ← Category.assoc, algSpec, Equivalence.op_functor,
-      comp_obj, op_obj, commAlgCatEquivUnder_functor_obj, Over.opEquivOpUnder_inverse_obj,
-      CommRingCat.mkUnder_hom, Over.post_obj, Spec_obj, Over.mk_left, Over.mk_hom, Spec_map,
-      Quiver.Hom.unop_op, Spec.map_comp]
+      comp_obj, Functor.op_obj, commAlgCatEquivUnder_functor_obj, Over.opEquivOpUnder_inverse_obj,
+      CommRingCat.mkUnder_hom, Over.post_obj, Scheme.Spec_obj, Over.mk_left, Over.mk_hom,
+      Scheme.Spec_map, Quiver.Hom.unop_op, Spec.map_comp]
     congr 1
     rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
     ext

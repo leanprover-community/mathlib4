@@ -447,7 +447,7 @@ noncomputable def ofFixingSubgroup.append
   rw [Set.disjoint_iff_forall_ne]
   rintro _ ⟨j, rfl⟩ _ ⟨i, rfl⟩ H
   apply (x i).prop
-  simp only [trans_apply, Function.Embedding.subtype_apply] at H
+  simp only [Embedding.trans_apply, Function.Embedding.subtype_apply] at H
   simpa [H] using Subtype.coe_prop (y j)
 
 @[to_additive]

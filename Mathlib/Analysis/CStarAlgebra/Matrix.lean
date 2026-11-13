@@ -111,9 +111,9 @@ lemma continuous_uncurry_toEuclideanCLM :
   simp only [LinearEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.invFun_as_coe,
     LinearEquiv.coe_symm_toEquiv, toMatrix'_symm, OrthonormalBasis.coe_toBasis_repr,
     LinearEquiv.coe_coe, LinearEquiv.trans_apply, LinearIsometryEquiv.coe_toLinearEquiv,
-    linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
-    addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, coe_mk, AddHom.coe_mk, LinearEquiv.coe_mk,
-    LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
+    WithLp.linearEquiv_apply, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+    WithLp.addEquiv_apply, toLin'_apply, LinearEquiv.symm_mk, coe_mk, AddHom.coe_mk,
+    LinearEquiv.coe_mk, LinearEquiv.coe_toEquiv, Finsupp.linearEquivFunOnFinite_apply,
     Finsupp.equivFunOnFinite_symm_apply_apply]
   fun_prop
 

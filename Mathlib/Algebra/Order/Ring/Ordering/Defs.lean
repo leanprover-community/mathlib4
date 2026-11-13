@@ -195,7 +195,7 @@ protected def copy (P : RingPreordering R) (S : Set R) (hS : S = P) : RingPreord
   one_mem' := by aesop
   mul_mem' ha hb := by aesop
 
-attribute [deprecated "no replacement" (since := "2026-10-28"), norm_cast] coe_copy
+attribute [deprecated "no replacement" (since := "2026-10-28"), norm_cast] RingPreordering.coe_copy
 
 @[deprecated "no replacement" (since := "2026-10-28"), simp]
 theorem mem_copy (P : RingPreordering R) (S : Set R) (hS : S = P) {x} :

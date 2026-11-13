@@ -26,7 +26,7 @@ protected def op (S : Subring R) : Subring Rᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
   neg_mem' := by simp
 
-attribute [norm_cast] coe_op
+attribute [norm_cast] Subring.coe_op
 
 @[simp]
 theorem mem_op {x : Rᵐᵒᵖ} {S : Subring R} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
@@ -37,7 +37,7 @@ protected def unop (S : Subring Rᵐᵒᵖ) : Subring R where
   toSubsemiring := S.toSubsemiring.unop
   neg_mem' := by simp
 
-attribute [norm_cast] coe_unop
+attribute [norm_cast] Subring.coe_unop
 
 @[simp]
 theorem mem_unop {x : R} {S : Subring Rᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
@@ -135,7 +135,7 @@ theorem unop_iInf (S : ι → Subring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i)
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, coe_unop]
+  simp_rw [closure, op_sInf, Set.preimage_ofPred_eq, Subring.coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 

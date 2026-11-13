@@ -124,8 +124,8 @@ def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
     simp
   map_smul' s x := by
     ext i j
-    dsimp only [coe_comp, coe_single, Function.comp_apply, compLeft_apply, toSpanSingleton_apply,
-      RingHom.id_apply, smul_apply, Pi.smul_apply]
+    dsimp only [coe_comp, coe_single, Function.comp_apply, LinearMap.compLeft_apply,
+      toSpanSingleton_apply, RingHom.id_apply, smul_apply, Pi.smul_apply]
     rw [← IsScalarTower.smul_assoc, _root_.Algebra.smul_def, mul_comm, mul_smul]
     simp
 
