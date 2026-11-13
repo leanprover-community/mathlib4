@@ -192,8 +192,7 @@ namespace WithTop
 variable [ConditionallyCompleteLinearOrderBot α]
 
 theorem sSup_eq_top_iff_lt {s : Set (WithTop α)} : sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a < b := by
-  rw [sSup_eq_top]
-  exact forall_lt_top
+  rw [sSup_eq_top, forall_lt_top]
 
 theorem iSup_eq_top_iff_lt {f : ι → WithTop α} : iSup f = ⊤ ↔ ∀ a : α, ∃ i, a < f i :=
   sSup_eq_top_iff_lt.trans <| forall_congr' fun _ ↦ exists_range_iff
