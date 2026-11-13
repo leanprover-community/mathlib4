@@ -16,8 +16,8 @@ import Mathlib.RingTheory.SimpleModule.Basic
 
 This file defines the absolute ideal norm of a fractional ideal `I : FractionalIdeal R⁰ K` where
 `K` is a fraction field of `R`. The norm is defined by
-`FractionalIdeal.absNorm I = Ideal.absNorm I.num / Ideal.absNorm (span {I.den})` where `I.num` is
-an ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
+`FractionalIdeal.absNorm I = Ideal.absNorm I.num / Ideal.absNorm (Ideal.span {I.den})` where
+`I.num` is an ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 ## Main definitions and results
 
@@ -56,8 +56,7 @@ theorem absNorm_div_absNorm_span_eq {I : FractionalIdeal R⁰ K} (a : R⁰) (I�
     rw [h, Submonoid.smul_def, Submonoid.smul_def, ← Submodule.ideal_span_singleton_smul,
       ← Submodule.ideal_span_singleton_smul, ← Submodule.map_smul'', ← Submodule.map_smul'',
       (LinearMap.map_injective ?_).eq_iff, smul_eq_mul, smul_eq_mul] at h'
-    · simp_rw [← Nat.cast_mul]
-      rw [← map_mul, ← map_mul, mul_comm, ← h', mul_comm]
+    · rw [← Nat.cast_mul, ← Nat.cast_mul, ← map_mul, ← map_mul, mul_comm, ← h', mul_comm]
     · exact LinearMap.ker_eq_bot.mpr (IsFractionRing.injective R K)
   all_goals simp
 
@@ -113,14 +112,14 @@ variable [Module.Free ℤ R] [Module.Finite ℤ R]
 -- can be deduced from the ones above.
 local instance : Ring.HasFiniteQuotients R := .of_module_finite ℤ R
 
-theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
-    absNorm I = (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| := by
-  rw [absNorm_eq_absNorm_span, Ideal.absNorm_span_singleton, Nat.cast_natAbs, Int.cast_abs]
-
 theorem absNorm_eq' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
     absNorm I = (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| := by
   rw [absNorm_eq_absNorm_span' a I₀ h, Ideal.absNorm_span_singleton, Nat.cast_natAbs, Int.cast_abs]
+
+theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
+    absNorm I = (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| :=
+  absNorm_eq' _ _ (den_mul_self_eq_num I)
 
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
