@@ -270,32 +270,28 @@ section AdditiveMultiplicativeEquiv
 abelianization of `A`. -/
 def Group.Abelianization.abelianizationEquivMultiplicative (A : Type*) [AddGroup A] :
     Group.Abelianization (Multiplicative A) ≃* Multiplicative (AddGroup.Abelianization A) :=
-  MonoidHom.toMulEquiv
-    (Group.Abelianization.lift (AddMonoidHom.toMultiplicative AddGroup.Abelianization.of))
-    (AddMonoidHom.toMultiplicativeLeft
-      (AddGroup.Abelianization.lift (MonoidHom.toAdditiveRight Group.Abelianization.of)))
-    (by ext; rfl)
-    (by ext; rfl)
+  (lift AddGroup.Abelianization.of.toMultiplicative).toMulEquiv
+    (AddGroup.Abelianization.lift of.toAdditiveRight).toMultiplicativeLeft
+    (by ext; simp)
+    (by ext; simp)
 
 /-- The additive abelianization of `Additive G` is `Additive` of the abelianization of `G` -/
 def AddGroup.Abelianization.abelianizationEquivAdditive (G : Type*) [Group G] :
     AddGroup.Abelianization (Additive G) ≃+ Additive (Group.Abelianization G) :=
-  AddMonoidHom.toAddEquiv
-    (AddGroup.Abelianization.lift (MonoidHom.toAdditive Group.Abelianization.of))
-    (MonoidHom.toAdditiveLeft
-      (Group.Abelianization.lift (AddMonoidHom.toMultiplicativeRight AddGroup.Abelianization.of)))
-    (by ext; rfl)
-    (by ext; rfl)
+  (lift Group.Abelianization.of.toAdditive).toAddEquiv
+    (Group.Abelianization.lift of.toMultiplicativeRight).toAdditiveLeft
+    (by ext; simp)
+    (by ext; simp)
 
 @[simp]
-theorem AddGroup.Abelianization.abelianizationEquivMultiplicative_of
+theorem Group.Abelianization.abelianizationEquivMultiplicative_of
     {A : Type*} [AddGroup A] (x : Multiplicative A) :
     Group.Abelianization.abelianizationEquivMultiplicative A (Group.Abelianization.of x) =
       Multiplicative.ofAdd (AddGroup.Abelianization.of x.toAdd) :=
   rfl
 
 @[simp]
-theorem AddGroup.Abelianization.abelianizationEquivMultiplicative_symm_ofAdd_of
+theorem Group.Abelianization.abelianizationEquivMultiplicative_symm_ofAdd_of
     {A : Type*} [AddGroup A] (a : A) :
     (Group.Abelianization.abelianizationEquivMultiplicative A).symm
         (Multiplicative.ofAdd (AddGroup.Abelianization.of a)) =
@@ -303,14 +299,14 @@ theorem AddGroup.Abelianization.abelianizationEquivMultiplicative_symm_ofAdd_of
   rfl
 
 @[simp]
-theorem Group.Abelianization.abelianizationEquivAdditive_of
+theorem AddGroup.Abelianization.abelianizationEquivAdditive_of
     {G : Type*} [Group G] (a : Additive G) :
     AddGroup.Abelianization.abelianizationEquivAdditive G (AddGroup.Abelianization.of a) =
       Additive.ofMul (Group.Abelianization.of a.toMul) :=
   rfl
 
 @[simp]
-theorem Group.Abelianization.abelianizationEquivAdditive_symm_ofMul_of
+theorem AddGroup.Abelianization.abelianizationEquivAdditive_symm_ofMul_of
     {G : Type*} [Group G] (x : G) :
     (AddGroup.Abelianization.abelianizationEquivAdditive G).symm
         (Additive.ofMul (Group.Abelianization.of x)) =
