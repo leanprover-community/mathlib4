@@ -1145,6 +1145,11 @@ theorem mulVec_vecMul [Fintype n] [Fintype o] (A : Matrix m n α) (B : Matrix o 
 theorem vecMul_mulVec [Fintype m] [Fintype n] (A : Matrix m n α) (B : Matrix m o α) (x : n → α) :
     (A *ᵥ x) ᵥ* B = x ᵥ* (Aᵀ * B) := by rw [← vecMul_vecMul, vecMul_transpose]
 
+theorem dotProduct_diagonal_mul_mulVec [Fintype m] [DecidableEq m] (d x : m → α)
+    (M : Matrix m m α) :
+    x ⬝ᵥ (diagonal d * M) *ᵥ x = ∑ i, d i * (x i * (M *ᵥ x) i) := by
+  simp_rw [← mulVec_mulVec, dotProduct, mulVec_diagonal, mul_left_comm]
+
 end NonUnitalCommSemiring
 
 section Semiring
