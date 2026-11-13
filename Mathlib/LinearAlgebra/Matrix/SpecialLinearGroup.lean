@@ -489,7 +489,7 @@ theorem SL2_inv_expl (A : SL(2, R)) :
   simp [adjugate_fin_two]
 
 theorem eta_fin_two (g : SL(2, R)) :
-    g = .mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← eta_fin_two]) :=
+    g = .mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← Matrix.eta_fin_two]) :=
   Subtype.ext (Matrix.eta_fin_two g.1)
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
