@@ -1131,12 +1131,11 @@ theorem continuous_im : Continuous (im : K → ℝ) :=
 
 /-- Conjugate as an `ℝ`-algebra equivalence -/
 def conjAe : K ≃ₐ[ℝ] K :=
-  .ofCommutes
-    { conj with
-      invFun := conj
-      left_inv := conj_conj
-      right_inv := conj_conj }
-    conj_ofReal
+  { conj with
+    invFun := conj
+    left_inv := conj_conj
+    right_inv := conj_conj
+    map_smul' := conj_smul }
 
 @[simp, rclike_simps]
 theorem conjAe_coe : (conjAe : K → K) = conj :=

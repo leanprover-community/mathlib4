@@ -634,33 +634,13 @@ structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A
 the scalar multiplication. -/
 add_decl_doc StarAlgEquiv.toStarRingEquiv
 
-/-- The class that directly extends `RingEquivClass` and `SMulHomClass`.
-
-Mostly an implementation detail for the ⋆-algebra equivalence class
-which is currently: `[NonUnitalAlgEquivClass]` and `[StarHomClass]`.
--/
-class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
-  [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
-  extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
-
--- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
-    [NonUnitalAlgEquivClass F R A B] :
-    NonUnitalAlgHomClass F R A B :=
-  { }
-
--- See note [lower instance priority]
-instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
-    AlgEquivClass F R A B :=
-  { map_smulₛₗ := fun f r => by simp [map_smul] }
+@[deprecated (since := "2026-11-13")] alias NonUnitalAlgEquivClass := AlgEquivClass
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. -/
 def StarAlgEquiv.ofClass {F R A B : Type*}
     [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B] [Star B]
-    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] (f : F) : A ≃⋆ₐ[R] B :=
+    [EquivLike F A B] [AlgEquivClass F R A B] [StarHomClass F A B] (f : F) : A ≃⋆ₐ[R] B :=
   { (RingEquivClass.toRingEquiv f : A ≃+* B) with
     map_star' := map_star f
     map_smul' := map_smul f }
@@ -685,7 +665,7 @@ instance : EquivLike (A ≃⋆ₐ[R] B) A B where
     rcases g with ⟨⟨⟨⟨_, _, _⟩, _⟩, _⟩, _⟩
     congr
 
-instance : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
+instance : AlgEquivClass (A ≃⋆ₐ[R] B) R A B where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
   map_smulₛₗ := map_smul'

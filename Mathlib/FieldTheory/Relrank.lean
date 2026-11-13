@@ -123,7 +123,7 @@ theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
   rw [relrank_eq_rank_of_le (show A ≤ ⊤ from le_top), extendScalars_top,
-    IntermediateField.topEquiv.toLinearEquiv.rank_eq]
+    (IntermediateField.topEquiv (F := A) (E := E)).toLinearEquiv.rank_eq]
 
 @[simp]
 theorem relfinrank_top_right : relfinrank A ⊤ = finrank A E := by

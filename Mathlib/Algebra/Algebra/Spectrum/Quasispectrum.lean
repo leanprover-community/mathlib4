@@ -354,7 +354,7 @@ lemma NonUnitalAlgHom.quasispectrum_apply_subset {F R A B : Type*}
 
 @[simp]
 lemma AlgEquiv.quasispectrum_eq {F R A B : Type*} [CommSemiring R] [NonUnitalRing A]
-    [NonUnitalRing B] [Module R A] [Module R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
+    [NonUnitalRing B] [Module R A] [Module R B] [EquivLike F A B] [AlgEquivClass F R A B]
     (f : F) (a : A) : quasispectrum R (f a) = quasispectrum R a := by
   /- the `Star` material is here because `AlgEquiv` only exists for unital algebras,
   and we have no `NonUnitalAlgEquiv` type, so we use `StarAlgEquiv` instead because that allows

@@ -406,19 +406,20 @@ section
 
 omit [Algebra S A] [IsScalarTower R S A]
 
-attribute [-instance] leftModule in
+attribute [-instance] leftHasSMul in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `S`-linear version of `Algebra.TensorProduct.comm` when `A ⊗[R] S`
 is viewed as an `S`-algebra via the right component. -/
 def commRight : S ⊗[R] A ≃ₐ[S] A ⊗[R] S :=
-  .ofCommutes (Algebra.TensorProduct.comm R S A) fun _ ↦ rfl
+  AlgEquiv.ofCommutes (R := S) (A₁ := S ⊗[R] A) (A₂ := A ⊗[R] S)
+    (Algebra.TensorProduct.comm R S A).toRingEquiv fun _ ↦ rfl
 
 variable {S A} in
 @[simp]
 lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s := rfl
 
 variable {S A} in
-attribute [-instance] leftModule in
+attribute [-instance] leftHasSMul in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma commRight_symm_tmul (s : S) (a : A) :

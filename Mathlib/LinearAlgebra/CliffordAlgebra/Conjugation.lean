@@ -194,7 +194,7 @@ section Involute
 theorem submodule_map_involute_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
     p.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
       p.comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap :=
-  Submodule.map_equiv_eq_comap_symm involuteEquiv.toLinearEquiv _
+  Submodule.map_equiv_eq_comap_symm (involuteEquiv (R := R)).toLinearEquiv _
 
 @[simp]
 theorem ι_range_map_involute :
