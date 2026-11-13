@@ -38,7 +38,7 @@ lemma IsSymmetrizable.of_isEmpty [Semiring R] [IsEmpty ι] :
     M.IsSymmetrizable :=
   ⟨1, isEmptyElim, isEmptyElim⟩
 
-lemma IsSymm.IsSymmetrizable [MonoidWithZero R] (h : M.IsSymm) :
+lemma IsSymm.isSymmetrizable [MonoidWithZero R] (h : M.IsSymm) :
     M.IsSymmetrizable := by
   use 1
   simp [h.apply]
