@@ -14,8 +14,8 @@ import Mathlib.LinearAlgebra.FreeModule.PID
 
 Let `A` be an `R`-algebra and `V` an `A`-module. An `R`-submodule `M` of `V` is a lattice if it is
 finitely generated and every `R`-linearly independent subset of `M` is `A`-linearly independent.
-Equivalently, the `R`-rank of `M` equals the `A`-rank of its `A`-span (see
-`Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`).
+If `A` is a field, this is equivalent to the `R`-rank of `M` being equal to the `A`-rank of its
+`A`-span (see `Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`).
 
 The typical use-case of this is when `A = K` is a field with `[FaithfulSMul R K]`,
 which includes e.g. `(R, K) = (ℤ, ℚ)` or `(R, K) = (ℤ, ℝ)`.
@@ -60,8 +60,8 @@ variable {R : Type*} [CommRing R]
 namespace Submodule
 
 /-- An `R`-submodule `M` of an `A`-module `V` is a lattice if it is finitely generated and every
-`R`-linearly independent subset of `M` is `A`-linearly independent. Equivalently, the `R`-rank of
-`M` equals the `A`-rank of its `A`-span, see
+`R`-linearly independent subset of `M` is `A`-linearly independent. If `A is a field, this is
+equivalent to the `R`-rank of `M` being equal to the `A`-rank of its `A`-span, see
 `Submodule.IsLattice.iff_fg_and_finrank_span_eq_finrank`.
 
 Note: for `R = ℤ` and `A` a normed field there is also `IsZLattice`, the analogue of
