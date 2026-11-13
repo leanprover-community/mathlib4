@@ -198,7 +198,7 @@ theorem primesOver_eq_singleton [P.IsPrime] [Finite (stabilizer G P)] :
   obtain ⟨σ, rfl⟩ := 𝓟.exists_smul_eq_of_isGaloisGroup P Q (stabilizer G P)
   exact σ.prop
 
-include G P in
+include G in
 /-- If `R` is a decomposition ring of `P` and `𝓟` is the prime of `R` below `P`, then any prime
 of `B` above `𝓟` is equal to `P`. -/
 theorem eq_of_liesOver [P.IsPrime] [Finite (stabilizer G P)] (Q : Ideal B) [Q.IsPrime]
@@ -273,12 +273,10 @@ include G P p in
 theorem inertiaDeg_eq_one :
     𝓟.inertiaDeg A = 1 := by
   have := IsGaloisGroup.finite G A B
-  have : 𝓟.IsPrime := P.isPrime_of_liesOver 𝓟
   have : Module.Finite R B := Module.Finite.right A R B
   have := 𝓟.inertiaDeg_tower (R := A) P
-  rwa [← p.inertiaDegIn_eq_inertiaDeg P G, ← inertiaDegIn_eq G P R p 𝓟,
-    ← 𝓟.inertiaDegIn_eq_inertiaDeg P (stabilizer G P),
-    right_eq_mul₀ <| inertiaDegIn_ne_zero (stabilizer G P)] at this
+  rwa [← p.inertiaDegIn_eq_inertiaDeg P G, ← inertiaDeg_eq G P R p,
+    right_eq_mul₀ (P.inertiaDeg_pos R).ne'] at this
 
 end IsDecompositionRing
 
