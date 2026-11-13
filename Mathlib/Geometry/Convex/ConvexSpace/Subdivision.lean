@@ -15,6 +15,16 @@ public import Mathlib.GroupTheory.Perm.Sign
 /-!
 # Affine chains and subdivision
 
+If `Y` is a convex space, we define a subdivision endomorphism
+`Convexity.ConvexSpace.toSSet.sd` of the chain complex of the
+simplicial set `toSSet ℝ Y` (i.e. the chain complex of *affine* singular chains).
+We define `sd` by modifying the identity by a null homotopic map given by
+a sequence of morphisms (from affine `n`-chains to affine `(n + 1)`-chains)
+which we define by induction on `n`.
+
+## References
+* [Allen Hatcher, *Algebraic topology*, §2.1][hatcher02]
+
 -/
 
 universe w
@@ -35,8 +45,8 @@ namespace ConvexSpace.toSSet
 the subdivision endomorphism `sd Y R` of the complex of affine
 chains with coefficients in `R` in the convex space `Y`.
 (We mostly follow the proof in Proposition 2.21 in Hatcher's book.
-It seems that this can be zero for `n = 0` though, which is different
-from the definition in the book.) -/
+We use the same induction formula, but we can set `hSd` to be zero
+when `n = 0`, which does not coincide with the definition in the book.) -/
 noncomputable def hSd : ∀ (n : ℕ),
     ((toSSet ℝ Y).chainComplex R).X n ⟶
       ((toSSet ℝ Y).chainComplex R).X (n + 1)
