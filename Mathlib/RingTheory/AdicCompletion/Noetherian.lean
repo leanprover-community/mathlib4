@@ -105,7 +105,7 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
       · have := (g_spec i).1
         simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff] at this
         simpa [eq, coeff] using this j
-      · simp [coeff_monomial_of_ne _ eq]
+      · simp only [coeff_monomial_of_ne _ eq, zero_mem]
   let f : ι → reesAlgebra I := fun i ↦ ⟨monomial (deg i) (coeff i), monomial_mem i⟩
   use ι, f, deg, coeff
   refine ⟨inferInstance, fun i ↦ rfl, fun ⟨i, j⟩ ↦ ?_, le_antisymm ?_ ?_⟩
@@ -145,7 +145,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
     intro m
     by_cases eq : m = n
     · simpa [eq]
-    · simp [coeff_monomial_of_ne _ eq]
+    · simp only [coeff_monomial_of_ne _ eq, zero_mem]
   rw [← span_eq, Ideal.map_span, ← Set.range_comp, Ideal.mem_span_range_iff_exists_fun] at this
   rcases this with ⟨c, hc⟩
   let c' : ι → (reesAlgebra I) := fun i ↦ Classical.choose (Ideal.Quotient.mk_surjective (c i))
@@ -158,8 +158,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
   simp only [AddSubgroupClass.coe_sub, AddSubmonoidClass.coe_finsetSum, MulMemClass.coe_mul, eq,
     coeff_sub, coeff_monomial_same, finsetSum_coeff] at coeff_eq
   let coeff' : ι → R := fun i ↦ if deg i ≤ n then (c' i).1.coeff (n - (deg i)) else 0
-  have : ∑ i, ((c' i).1 * (monomial (deg i)) (coeff i)).coeff n =
-    ∑ i, (coeff' i) * (coeff i) := by
+  have : ∑ i, ((c' i).1 * (monomial (deg i)) (coeff i)).coeff n = ∑ i, (coeff' i) * (coeff i) := by
     congr
     ext i
     rw [← Polynomial.C_mul_X_pow_eq_monomial, ← mul_assoc]
