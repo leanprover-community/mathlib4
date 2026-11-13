@@ -782,7 +782,7 @@ lemma diag_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
   intro _ hi1 _ hi2 _
   rw [Finset.mem_coe, Finset.mem_filter_univ] at hi1 hi2
   ext
-  simp [dite_eq_left hi1, dite_eq_left hi2, diag2n_coe, diagonal_mul_diagonal, mul_comm,
+  simp [hi1, hi2, diag2n_coe, diagonal_mul_diagonal, mul_comm,
     -diagonal_mul, -mul_diagonal]
 
 lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
