@@ -10,6 +10,9 @@ public import Mathlib.Algebra.GroupWithZero.Opposite
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Int.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring structures on the multiplicative opposite
 -/

@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.
-
 -/
 
 @[expose] public section

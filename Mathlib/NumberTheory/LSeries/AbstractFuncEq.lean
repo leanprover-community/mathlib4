@@ -152,7 +152,7 @@ variable (P : WeakFEPair E)
 lemma hf_zero (r : ℝ) :
     (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
   have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_nhdsGT_zero
-  simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
+  simp_rw [isBigO_iff, eventually_nhdsWithin_iff] at this ⊢
   obtain ⟨C, hC⟩ := this
   use ‖P.ε‖ * C
   filter_upwards [hC] with x hC' (hx : 0 < x)

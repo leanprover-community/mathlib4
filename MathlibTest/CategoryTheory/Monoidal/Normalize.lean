@@ -1,4 +1,6 @@
-import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+module
+
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
 open CategoryTheory Mathlib.Tactic BicategoryLike
 open MonoidalCategory

@@ -90,14 +90,16 @@ private lemma convexOn_piecewise_Ici_descPochhammer_eval_zero (hn : n ≠ 0) :
   apply convexOn_univ_piecewise_Ici_of_monotoneOn_Ici_antitoneOn_Iic
     (convexOn_descPochhammer_eval n) (convexOn_const 0 (convex_Iic (n - 1 : ℝ)))
     (monotoneOn_descPochhammer_eval n) antitoneOn_const
-  simpa [← Nat.cast_pred hn] using descPochhammer_eval_coe_nat_of_lt (Nat.sub_one_lt_of_lt hn)
+  simpa [← Nat.cast_pred hn] using descPochhammer_eval_natCast_of_lt (Nat.sub_one_lt_of_lt hn)
 
 /-- Special case of **Jensen's inequality** for `Nat.descFactorial`. -/
 theorem descPochhammer_eval_le_sum_descFactorial
-    (hn : n ≠ 0) {ι : Type*} {t : Finset ι} (p : ι → ℕ) (w : ι → ℝ)
+    {ι : Type*} {t : Finset ι} (p : ι → ℕ) (w : ι → ℝ)
     (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i ∈ t, w i = 1) (h_avg : n - 1 ≤ ∑ i ∈ t, w i * p i) :
     (descPochhammer ℝ n).eval (∑ i ∈ t, w i * p i)
       ≤ ∑ i ∈ t, w i * (p i).descFactorial n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [h₁]
   let f : ℝ → ℝ := (Set.Ici (n - 1 : ℝ)).piecewise (descPochhammer ℝ n).eval 0
   suffices h_jensen : f (∑ i ∈ t, w i • p i) ≤ ∑ i ∈ t, w i • f (p i) by
     simpa only [smul_eq_mul, f, Set.piecewise_eq_of_mem (Set.Ici (n - 1 : ℝ)) _ _ h_avg,
@@ -106,13 +108,15 @@ theorem descPochhammer_eval_le_sum_descFactorial
 
 /-- Special case of **Jensen's inequality** for `Nat.choose`. -/
 theorem descPochhammer_eval_div_factorial_le_sum_choose
-    (hn : n ≠ 0) {ι : Type*} {t : Finset ι} (p : ι → ℕ) (w : ι → ℝ)
+    {ι : Type*} {t : Finset ι} (p : ι → ℕ) (w : ι → ℝ)
     (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i ∈ t, w i = 1) (h_avg : n - 1 ≤ ∑ i ∈ t, w i * p i) :
     (descPochhammer ℝ n).eval (∑ i ∈ t, w i * p i) / n.factorial
       ≤ ∑ i ∈ t, w i * (p i).choose n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [h₁]
   simp_rw [Nat.cast_choose_eq_descPochhammer_div,
     mul_div, ← Finset.sum_div, descPochhammer_eval_eq_descFactorial]
   apply div_le_div_of_nonneg_right _ (by positivity)
-  exact descPochhammer_eval_le_sum_descFactorial hn p w h₀ h₁ h_avg
+  exact descPochhammer_eval_le_sum_descFactorial p w h₀ h₁ h_avg
 
 end DescPochhammer

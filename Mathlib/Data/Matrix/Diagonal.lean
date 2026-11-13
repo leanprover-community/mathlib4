@@ -180,20 +180,20 @@ protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
+protected theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
     (d : Matrix n n α) i j = if i = j then d else 0 := by
   rw [Nat.cast_ite, Nat.cast_zero, ← diagonal_natCast, diagonal_apply]
 
 theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
     (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
-  natCast_apply
+  Matrix.natCast_apply
 
 protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
-theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
+protected theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
     (d : Matrix n n α) i j = if i = j then d else 0 := by
   rw [Int.cast_ite, Int.cast_zero, ← diagonal_intCast, diagonal_apply]
 
@@ -231,7 +231,7 @@ theorem diagonal_one' : (diagonal 1 : Matrix n n α) = 1 :=
 theorem diagonal_eq_one {d : n → α} : diagonal d = 1 ↔ d = 1 :=
   diagonal_injective.eq_iff' diagonal_one
 
-theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=
+protected theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=
   rfl
 
 @[simp]
@@ -249,11 +249,11 @@ theorem one_apply_ne' {i j} : j ≠ i → (1 : Matrix n n α) i j = 0 :=
 protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
     (1 : Matrix n n α).map f = (1 : Matrix n n β) := by
   ext
-  simp only [one_apply, map_apply]
+  simp only [Matrix.one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
 theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (M := fun _ => α) i 1 j := by
-  simp only [one_apply, Pi.single_apply, eq_comm]
+  simp only [Matrix.one_apply, Pi.single_apply, eq_comm]
 
 end One
 

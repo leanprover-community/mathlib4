@@ -42,6 +42,13 @@ structure Reduction where
 def Reduction.perm (d : Reduction) : Array ℕ :=
   d.swaps.foldl (fun ord (a, b) => ord.swapIfInBounds a b) (Array.range d.L.size)
 
+/-- Arrange the rows and columns of the matrix `M`, given as an array of rows, by the interchanges
+of the reduction: the entry at `(i, j)` of the result is the entry of `M` at
+`(d.perm[i], d.perm[j])`. -/
+def Reduction.arrange {β : Type} [Inhabited β] (d : Reduction) (M : Array (Array β)) :
+    Array (Array β) :=
+  d.perm.map fun i => d.perm.map fun j => (M[i]!)[j]!
+
 /-- Reduce the `n × n` matrix `A` over `ℚ`, given as an array of rows, to upper Hessenberg form by
 Gaussian elimination with row and column swaps. -/
 def reduce (n : ℕ) (A : Array (Array ℚ)) : Reduction := Id.run do

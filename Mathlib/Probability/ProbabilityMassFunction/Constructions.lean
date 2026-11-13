@@ -24,7 +24,6 @@ by allowing the "sum equals 1" constraint to be in terms of `Finset.sum` instead
 and `filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
 
 `bernoulliMeasure` represents the Bernoulli distribution on `Bool`.
-
 -/
 
 @[expose] public section
@@ -37,7 +36,7 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open NNReal ENNReal Finset MeasureTheory
+open NNReal ENNReal Finset MeasureTheory CompleteLattice
 
 section Map
 
@@ -246,7 +245,7 @@ section normalize
 -/
 def normalize (f : α → ℝ≥0∞) (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞) : PMF α :=
   ⟨fun a => f a * (∑' x, f x)⁻¹,
-    ENNReal.summable.hasSum_iff.2 (ENNReal.tsum_mul_right.trans (ENNReal.mul_inv_cancel hf0 hf))⟩
+    summable.hasSum_iff.2 (ENNReal.tsum_mul_right.trans (ENNReal.mul_inv_cancel hf0 hf))⟩
 
 variable {f : α → ℝ≥0∞} (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞)
 

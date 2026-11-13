@@ -10,15 +10,12 @@ public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Algebra.Algebra.Tower
 
 /-!
-
-## Algebraize tactic
+# Algebraize tactic
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to
 automatically add `Algebra` instances given `RingHom`s. For example, `algebraize [f, g]` where
 `f : A →+* B` and `g : B →+* C` are `RingHom`s, will add the instances `Algebra A B` and
 `Algebra B C` corresponding to these `RingHom`s.
-
-## Further functionality
 
 When given a composition of `RingHom`s, e.g. `algebraize [g.comp f]`, the tactic will also try to
 add the instance `IsScalarTower A B C` if possible.
@@ -30,7 +27,7 @@ the instance `Algebra A B` and the corresponding property `Algebra.FiniteType A 
 which `RingHom` properties have a corresponding `Algebra` property through the `algebraize`
 attribute.
 
-## Algebraize attribute
+## The `algebraize` attribute
 
 The `algebraize` attribute is used to tag `RingHom` properties that can be converted to `Algebra`
 properties. It assumes that the tagged declaration has a name of the form `RingHom.Property` and

@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Measurability
 
 /-!
 # Differentiability of the complex `log` function
-
 -/
 
 public section

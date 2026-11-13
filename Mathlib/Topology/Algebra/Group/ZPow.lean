@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integer powers in topological groups
 

@@ -11,7 +11,6 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Conditionally complete lattices and finite sets.
-
 -/
 
 public section
