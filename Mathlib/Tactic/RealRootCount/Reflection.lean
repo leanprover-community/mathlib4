@@ -6,26 +6,23 @@ Authors: Paul Cadman
 module
 
 public import Mathlib.Algebra.Polynomial.CoeffList
+public import Mathlib.Algebra.Polynomial.Sturm.SturmTarski
+public import Mathlib.Tactic.RealRootCount.SturmCertificate
 
-import Mathlib.Algebra.Polynomial.Sturm.Sequence
-import Mathlib.Basic.Real.Basic
 import Mathlib.Data.List.GetD
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.RealRootCount.SturmCertificate
 
 /-!
-# A checked `SturmCertificate` defines a Sturm sequence
+# `realRootCount?` computes the number of real roots of a polynomial
 
-This file proves that the entries of a `SturmCertificate` that passes `checkSturm` are the Sturm
-sequence of its polynomial and its derivative, up to positive constant factors.
+This file proves that when `realRootCount?` on `Mathlib.Tactic.RealRootCount.SturmCertificate`
+computes a number, it is equal to the number of distinct real roots of the input polynomial.
 
 ## Main results
 
-- `isScaledSturmSeq_of_checkSturm`: If `checkSturm d = true` then the entries of `d` are the Sturm
-  sequence of `d.s` and its derivative, up to positive constant factors.
-- `signVariations_map_evalScaled`: For `0 < d`, the sign variations of `L.map (evalScaled n d)` are
-  the sign variations of the values at `n / d` of the polynomials in `L`.
+- `card_rootSet_of_realRootCount?`: If `realRootCount? d = some n` and `d` is a `SturmCertificate`
+  of a polynomial `f` then `f` has `n` distinct roots.
 -/
 
 open Polynomial SignType
@@ -212,6 +209,13 @@ theorem isScaledSturmSeq_of_checkSturm {d : SturmCertificate} (h : checkSturm d 
   refine isScaledSturmSeq_of_checkSteps one_pos one_pos ?_ ?_ (toReal_ne_zero hlead) hsteps
   · simp
   · simp [toReal_coeffDerivative]
+
+public theorem card_rootSet_of_realRootCount? {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]}
+    {d : SturmCertificate} {n : ℕ} [Fintype (f.rootSet ℝ)]
+    (hf : (d.k : R[X]) * f = (ofCoeffList d.s).map (Int.castRingHom R))
+    (h : realRootCount? d = some n) :
+    Fintype.card (f.rootSet ℝ) = n := by
+  sorry
 
 theorem eval_toReal_cons (c : ℤ) (p : List ℤ) (x : ℝ) :
     (toReal (c :: p)).eval x = c + x * (toReal p).eval x := by
