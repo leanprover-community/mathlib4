@@ -24,7 +24,6 @@ at the end.
 ## Tags
 
 outer measure
-
 -/
 
 @[expose] public section

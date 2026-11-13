@@ -24,7 +24,6 @@ triangle unnecessarily.
 
 * https://en.wikipedia.org/wiki/Pythagorean_theorem
 * https://en.wikipedia.org/wiki/Geometric_mean_theorem
-
 -/
 
 public section

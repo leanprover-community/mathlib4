@@ -146,7 +146,6 @@ namespace Mathlib.Tactic.Linarith
 
 The config object is defined in the frontend, instead of in `Datatypes.lean`, since the oracles must
 be in context to choose a default.
-
 -/
 
 section

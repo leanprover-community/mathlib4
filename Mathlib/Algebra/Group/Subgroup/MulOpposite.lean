@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 
 ## Tags
 subgroup, subgroups
-
 -/
 
 @[expose] public section

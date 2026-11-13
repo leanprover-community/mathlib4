@@ -29,7 +29,6 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 * Move the results that `Module.Finite` over a semilocal ring is a local property from
   `Mathlib/RingTheory/LocalProperties/Semilocal.lean` to this file.
-
 -/
 
 public section

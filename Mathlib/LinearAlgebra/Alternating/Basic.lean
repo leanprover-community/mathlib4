@@ -5,6 +5,7 @@ Authors: Eric Wieser, Zhangir Azerbayev
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 
@@ -382,17 +383,17 @@ variable (R M N)
 and `1`-multilinear alternating maps from `M` to `N`. -/
 @[simps!]
 def ofSubsingleton [Subsingleton ι] (i : ι) : (M →ₗ[R] N) ≃ (M [⋀^ι]→ₗ[R] N) where
-  toFun f := ⟨MultilinearMap.ofSubsingleton R M N i f, fun _ _ _ _ ↦ absurd (Subsingleton.elim _ _)⟩
-  invFun f := (MultilinearMap.ofSubsingleton R M N i).symm f
+  toFun f := ⟨MultilinearMap.ofSubsingleton _ M N i f, fun _ _ _ _ ↦ absurd (Subsingleton.elim _ _)⟩
+  invFun f := (MultilinearMap.ofSubsingleton _ M N i).symm f
   right_inv _ := coe_multilinearMap_injective <|
-    (MultilinearMap.ofSubsingleton R M N i).apply_symm_apply _
+    (MultilinearMap.ofSubsingleton _ M N i).apply_symm_apply _
 
 variable (ι) {N}
 
 /-- The constant map is alternating when `ι` is empty. -/
 @[simps -fullyApplied]
 def constOfIsEmpty [IsEmpty ι] (m : N) : M [⋀^ι]→ₗ[R] N :=
-  { MultilinearMap.constOfIsEmpty R _ m with
+  { MultilinearMap.constOfIsEmpty _ _ m with
     toFun := Function.const _ m
     map_eq_zero_of_eq' := fun _ => isEmptyElim }
 

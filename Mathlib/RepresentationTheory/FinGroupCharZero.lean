@@ -28,7 +28,6 @@ an algebraically closed field in which the order of `G` is invertible:
   space of dimension `1`.
 * `FDRep.simple_iff_char_is_norm_one`: when `k` is characteristic zero, `V` is simple
   if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
-
 -/
 
 public section

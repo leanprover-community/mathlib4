@@ -40,7 +40,6 @@ of `Measurable`:
 ## Tags
 
 adapted, progressively measurable
-
 -/
 
 @[expose] public section
@@ -421,58 +420,5 @@ theorem StronglyAdapted.isStronglyProgressive_of_isLeftContinuous [TopologicalSp
     · exact (hw p.1).eventually self_mem_nhdsWithin
 
 end LinearOrder
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable := IsStronglyProgressive
-
-@[deprecated (since := "2026-04-24")] alias progMeasurable_const := isStronglyProgressive_const
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.stronglyAdapted := IsStronglyProgressive.stronglyAdapted
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable.comp := IsStronglyProgressive.comp
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable.add := IsStronglyProgressive.add
-
-@[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.mul := IsStronglyProgressive.mul
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_sum' := IsStronglyProgressive.finsetSum'
-
-@[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_prod' := IsStronglyProgressive.finsetProd'
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_sum := IsStronglyProgressive.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_prod := IsStronglyProgressive.finsetProd
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.neg := IsStronglyProgressive.neg
-
-@[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.inv := IsStronglyProgressive.inv
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable.sub := IsStronglyProgressive.sub
-
-@[to_additive existing ProgMeasurable.sub, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.div' := IsStronglyProgressive.div'
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable.norm := IsStronglyProgressive.norm
-
-@[deprecated (since := "2026-04-24")]
-alias progMeasurable_of_tendsto := isStronglyProgressive_of_tendsto
-
-@[deprecated (since := "2026-04-24")]
-alias progMeasurable_of_tendsto' := isStronglyProgressive_of_tendsto'
-
-@[deprecated (since := "2026-04-24")]
-alias StronglyAdapted.progMeasurable_of_continuous :=
-  StronglyAdapted.isStronglyProgressive_of_continuous
-
-@[deprecated (since := "2026-04-24")]
-alias StronglyAdapted.progMeasurable_of_discrete :=
-  StronglyAdapted.isStronglyProgressive_of_discrete
 
 end MeasureTheory

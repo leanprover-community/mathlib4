@@ -6,8 +6,10 @@ Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, 
 module
 
 public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Order.LeftRightLim
+
+import Mathlib.Topology.MetricSpace.Bounded
 
 /-! # Càdlàg functions
 
@@ -15,7 +17,6 @@ This file defines *càdlàg functions*, i.e. right-continuous functions with lef
 are for instance a common hypothesis made on stochastic processes.
 
 Using the `to_dual` machinery we also define *càglàd functions* (left-continuous with right limits).
-
 -/
 
 @[expose] public section
