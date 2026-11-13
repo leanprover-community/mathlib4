@@ -126,8 +126,8 @@ instance inf [IsDomain R] [IsNoetherianRing R] (M N : Submodule R V)
   apply of_rank_le
   have := IsLattice.finite K M
   have h := Submodule.rank_sup_add_rank_inf_eq M N
-  rw [rank_eq K M, rank_eq K N, rank_eq K (M ⊔ N)] at h
-  exact (Cardinal.eq_of_add_eq_add_left h (rank_eq K M ▸ rank_lt_aleph0 R M)).ge
+  rw [rank_eq K (M ⊔ N), ← rank_eq K M, rank_eq K N] at h
+  exact (Cardinal.eq_of_add_eq_add_left h (rank_lt_aleph0 R M)).ge
 
 end IsFractionRing
 
