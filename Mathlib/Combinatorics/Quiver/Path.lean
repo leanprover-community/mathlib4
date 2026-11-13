@@ -408,7 +408,7 @@ theorem Reachable.antisymm_of_hom_lt [Preorder α] {f : V → α}
 /-- If a quiver admits a strictly increasing valuation into a preorder,
 then its reachability relation is a partial order. -/
 theorem Reachable.isPartialOrder_of_hom_lt [Preorder α] {f : V → α}
-    ​(hf : ∀ {x y}, (x ⟶ y) → f x < f y) : IsPartialOrder V Reachable where
+    (hf : ∀ {x y}, (x ⟶ y) → f x < f y) : IsPartialOrder V Reachable where
   antisymm _ _ := Reachable.antisymm_of_hom_lt hf
 
 end Reachable
