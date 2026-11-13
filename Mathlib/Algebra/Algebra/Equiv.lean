@@ -288,10 +288,6 @@ theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
 
 end refl
 
--- needed?
-instance : MulActionHomClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
-  map_smulₛₗ f := f.map_smul'
-
 section symm
 
 /-- Algebra equivalences are symmetric. -/
