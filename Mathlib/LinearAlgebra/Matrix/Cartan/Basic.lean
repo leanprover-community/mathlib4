@@ -49,7 +49,7 @@ cartan matrix, lie algebra, dynkin diagram
 
 @[expose] public section
 
-open Matrix
+open Function Matrix Set
 
 namespace CartanMatrix
 
@@ -529,8 +529,25 @@ lemma det_ne_zero : M.det ≠ 0 := by
   obtain ⟨v, hv, hMv⟩ := exists_mulVec_eq_zero_iff.mpr h
   simpa [hMv] using hM.exists_mul_mulVec_pos hv
 
-lemma exists_row_with_single_offDiag [Nonempty ι] :
-    ∃ v w : ι, M v w ≠ 0 ∧ ∀ j, j ≠ v → M v j ≠ 0 → j = w := by
+protected theorem submatrix {κ : Type*} [Fintype κ] [DecidableEq κ] {f : κ → ι} (hf : Injective f) :
+    (M.submatrix f f).IsFiniteCartan where
+  diag i := hM.diag (f i)
+  offDiag_nonpos i j h := hM.offDiag_nonpos (f i) (f j) (hf.ne h)
+  zero_comm i j := hM.zero_comm (f i) (f j)
+  exists_posDef' := by
+    obtain ⟨d, hd, h⟩ := hM.exists_posDef'
+    refine ⟨d ∘ f, fun i ↦ hd (f i), fun x hx ↦ ?_⟩
+    let y := extend f x 0
+    have hy : y ∘ f = x := extend_comp hf x 0
+    have hy₀ (i) (hi : i ∉ range f) : y i = 0 := extend_apply' _ _ _ hi
+    have hmul : M.submatrix f f *ᵥ x = (M *ᵥ y) ∘ f :=
+      funext fun k ↦ Fintype.sum_of_injective f hf _ _ (by aesop) (by aesop)
+    convert h y (fun h0 ↦ hx <| by simp [← hy, h0]) using 1
+    simp only [dotProduct_diagonal_mul_mulVec, hmul]
+    exact Fintype.sum_of_injective f hf _ _ (by aesop) (by aesop)
+
+lemma exists_apply_ne_zero_and [Nonempty ι] :
+    ∃ i j, M i j ≠ 0 ∧ ∀ k ≠ i, M i k ≠ 0 → k = j := by
   by_contra! h
   obtain ⟨i, hi⟩ := hM.exists_mul_mulVec_pos zero_ne_one.symm
   obtain ⟨j, hji, hij, -⟩ := h i i (by simp [hM.diag])
@@ -541,109 +558,90 @@ lemma exists_row_with_single_offDiag [Nonempty ι] :
   have : 0 < ∑ l ∈ Finset.univ, M i l := by simpa [mulVec, dotProduct] using hi
   grind [hM.offDiag_nonpos i j hji.symm, hM.offDiag_nonpos i k hki.symm, hM.diag i]
 
-protected theorem submatrix {κ : Type*} [Fintype κ] [DecidableEq κ] {f : κ → ι}
-    (hf : Function.Injective f) :
-    (M.submatrix f f).IsFiniteCartan where
-  diag i := submatrix_apply M f f i i ▸ hM.diag (f i)
-  offDiag_nonpos i j h := submatrix_apply M f f i j ▸ hM.offDiag_nonpos (f i) (f j) (hf.ne h)
-  zero_comm i j := by rw [submatrix_apply, submatrix_apply, hM.zero_comm]
-  exists_posDef' := by
-    obtain ⟨d, hd, h⟩ := hM.exists_posDef'
-    use d ∘ f
-    refine ⟨fun i ↦ hd (f i), fun x hx ↦ ?_⟩
-    let A := diagonal d * M
-    let B := A + Aᵀ
-    have hB : B.PosDef := by
-      refine posDef_iff_dotProduct_mulVec.mpr ⟨?_, fun x hx ↦ ?_⟩
-      · ext; simp [B, add_comm]
-      · simpa [B, add_mulVec, dotProduct_add, dotProduct_transpose_mulVec] using h x hx
-    have hAsub : A.submatrix f f = diagonal (d ∘ f) * M.submatrix f f := by
-      ext; simp [A, submatrix_apply, diagonal_mul]
-    have hBsub : B.submatrix f f = A.submatrix f f + (A.submatrix f f)ᵀ := by
-      ext; simp [B, submatrix_apply, transpose_apply]
-    rw [← hAsub]
-    have : 0 < x ⬝ᵥ ((B.submatrix f f) *ᵥ x) := by
-      simpa only [star_trivial] using (hB.submatrix hf).dotProduct_mulVec_pos hx
-    have : x ⬝ᵥ ((B.submatrix f f) *ᵥ x) = 2 * (x ⬝ᵥ ((A.submatrix f f) *ᵥ x)) := by
-      rw [hBsub, add_mulVec, dotProduct_add, dotProduct_transpose_mulVec]; ring
-    nlinarith
+lemma exists_ne_and_apply_ne_zero_and [Nontrivial ι] (hM' : M.IsIndecomposable) :
+    ∃ i j, i ≠ j ∧ M i j ≠ 0 ∧ ∀ k ≠ i, M i k ≠ 0 → k = j := by
+  obtain ⟨i, j, hij, h⟩ := hM.exists_apply_ne_zero_and
+  obtain ⟨k, hk⟩ := exists_ne i
+  obtain ⟨l, hl, hil⟩ : ∃ l ≠ i, M i l ≠ 0 := by
+    induction (isIndecomposable_iff_reflTransGen M).mp hM' i k with
+    | refl => contradiction
+    | @tail b c _ hbc ih => by_cases hb : b = i <;> grind
+  exact ⟨i, j, by aesop, hij, h⟩
 
 protected theorem isPosSymmetrizable : M.IsPosSymmetrizable := by
   induction hcard : Fintype.card ι using Nat.strong_induction_on generalizing ι with | ind n ih =>
-    by_cases hne : Nonempty ι
-    · obtain ⟨v, w, hvw, _⟩ := hM.exists_row_with_single_offDiag
-      let κ := {i : ι // i ≠ v}
-      have h : Fintype.card κ < n := hcard ▸ Fintype.card_lt_of_injective_not_surjective
-        (Subtype.val : κ → ι) Subtype.val_injective (fun h ↦ by grind [h v])
-      obtain ⟨e, he, hsub⟩ := isPosSymmetrizable_iff.mp <|
-        ih (Fintype.card κ) h (hM.submatrix Subtype.val_injective) rfl
-      let e' (i : ι) : ℤ := if hi : i = v then 1 else e ⟨i, hi⟩
-      have he' i : 0 < e' i := by by_cases hi : i = v <;> simp [e', hi, he]
-      have hE' i (hi : i ≠ v) j (hj : j ≠ v) : e' i * M i j = e' j * M j i := by
-        simpa [e', hi, hj, diagonal_mul] using hsub.apply ⟨j, hj⟩ ⟨i, hi⟩
-      by_cases! hw : w = v
-      · exact .mk_of_forall_ne e' he' hE' ⟨1, one_pos, 1, one_pos, by grind [hM.zero_comm]⟩
-      · have hvw_neg : M v w < 0 := lt_of_le_of_ne (hM.offDiag_nonpos v w hw.symm) hvw
-        have hwv_neg := lt_of_le_of_ne (hM.offDiag_nonpos w v hw) (by grind [hM.zero_comm])
-        exact .mk_of_forall_ne e' he' hE'
-          ⟨-M v w, neg_pos.mpr hvw_neg, (-M w v) * e' w,
-            mul_pos (neg_pos.mpr hwv_neg) (he' w), by grind [hM.zero_comm]⟩
-    · exact @IsPosSymmetrizable.of_isEmpty _ _ _ _ _ ⟨fun i ↦ hne ⟨i⟩⟩
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · exact .of_isEmpty
+  obtain ⟨v, w, hvw, hv⟩ := hM.exists_apply_ne_zero_and
+  obtain ⟨e, he, hsub⟩ := isPosSymmetrizable_iff.mp <| ih _
+    ((Fintype.card_subtype_lt (p := (· ≠ v)) (x := v) (by simp)).trans_eq hcard)
+    (hM.submatrix Subtype.val_injective) rfl
+  let e' (i : ι) : ℤ := if hi : i = v then 1 else e ⟨i, hi⟩
+  have he' i : 0 < e' i := by by_cases hi : i = v <;> simp [e', hi, he]
+  have aux (j) (hj : j ≠ v) : |M w v| * e' w * M v j = |M v w| * e' j * M j v := by
+    grind [hM.zero_comm, hM.offDiag_nonpos v j hj.symm, hM.offDiag_nonpos j v hj]
+  have aux' (i : ι) (hi : i ≠ v) (j) (hj : j ≠ v) : e' i * M i j = e' j * M j i := by
+    simpa [e', hi, hj, diagonal_mul] using hsub.apply ⟨j, hj⟩ ⟨i, hi⟩
+  exact .mk_of_forall_ne (k := v) e' he' aux' ⟨|M v w|, abs_pos.mpr hvw, |M w v| * e' w,
+    mul_pos (abs_pos.mpr <| (hM.zero_comm v w).not.mp hvw) (he' w), aux⟩
 
-lemma exists_pos_mulVec_pos : ∃ u : ι → ℤ, (∀ i, 0 < u i) ∧ (∀ i, 0 < (M *ᵥ u) i) := by
+lemma exists_pos_and_mulVec_pos : ∃ u : ι → ℤ, (∀ i, 0 < u i) ∧ (∀ i, 0 < (M *ᵥ u) i) := by
   obtain ⟨u, hMu⟩ : ∃ u, ∀ i, 0 < (M *ᵥ u) i :=
     ⟨M.adjugate *ᵥ M.det, by simp [mul_adjugate, mul_self_pos.mpr hM.det_ne_zero]⟩
-  suffices ∀ i, 0 ≤ u i by
-    refine ⟨u, fun i ↦ ?_, hMu⟩
-    specialize hMu i
-    rw [mulVec, dotProduct, ← Finset.add_sum_erase _ _ (Finset.mem_univ i), hM.diag] at hMu
-    grind [Finset.sum_nonpos fun j (hj : j ∈ Finset.univ.erase i) ↦ mul_nonpos_of_nonpos_of_nonneg
-      (hM.offDiag_nonpos i j (Finset.ne_of_mem_erase hj).symm) (this j)]
-  suffices (fun j ↦ min (u j) 0) = 0 by simpa using congr_fun this
-  by_contra hy
-  obtain ⟨i, hi⟩ := hM.exists_mul_mulVec_pos hy
-  apply hi.not_ge (le_trans ?_ (mul_nonpos_of_nonpos_of_nonneg (min_le_right (u i) 0) (hMu i).le))
-  simp_rw [mulVec, dotProduct, Finset.mul_sum]
-  apply Finset.sum_le_sum fun j _ ↦ ?_
-  by_cases hij : i = j
-  · grind [le_total (u i) 0]
-  · simpa only [mul_assoc] using mul_le_mul_of_nonneg_left (min_le_left (u j) 0)
-      (mul_nonneg_of_nonpos_of_nonpos (min_le_right (u i) 0) (hM.offDiag_nonpos i j hij))
+  have hu : 0 ≤ u := by
+    suffices u ⊓ 0 = 0 from inf_eq_right.mp this
+    have h₁ : u ⊓ 0 ≤ u := inf_le_left
+    have h₂ : u ⊓ 0 ≤ 0 := inf_le_right
+    refine hM.eq_zero_iff_forall.mpr fun i ↦
+      (mul_nonpos_of_nonpos_of_nonneg (h₂ i) (hMu i).le).trans' ?_
+    simp_rw [mulVec, dotProduct, Finset.mul_sum]
+    refine Finset.sum_le_sum fun j _ ↦ ?_
+    rcases eq_or_ne i j with rfl | hij
+    · rcases le_total (u i) 0 with h | h <;> simp [h]
+    · exact mul_le_mul_of_nonpos_left
+        (mul_le_mul_of_nonpos_left (h₁ j) (hM.offDiag_nonpos i j hij)) (h₂ i)
+  refine ⟨u, fun i ↦ ?_, hMu⟩
+  suffices 0 < ∑ j ∈ {i}, M i j * u j by simpa [hM.diag] using this
+  exact (hMu i).trans_le <| Finset.sum_le_sum_of_subset_of_nonpos (Finset.subset_univ _)
+    fun j _ hj ↦ mul_nonpos_of_nonpos_of_nonneg (hM.offDiag_nonpos i j <| by aesop) (hu j)
 
 open Finset in
 theorem exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef := by
-  obtain ⟨u, hu, hMu⟩ := hM.exists_pos_mulVec_pos
-  obtain ⟨e, he, hsymm⟩ := isPosSymmetrizable_iff.mp <| hM.isPosSymmetrizable
-  have he' i j : e i * M i j = e j * M j i := by simpa [diagonal_mul] using hsymm.apply j i
-  use e, he
-  apply posDef_iff_dotProduct_mulVec.mpr ⟨by ext; simp [diagonal_mul, he'], fun x hx ↦ ?_⟩
-  let y : ι → ℤ := fun i ↦ (∏ k ∈ univ.erase i, u k) * x i
+  obtain ⟨u, hu, hMu⟩ := hM.exists_pos_and_mulVec_pos
+  obtain ⟨d, hd, hsymm⟩ := isPosSymmetrizable_iff.mp <| hM.isPosSymmetrizable
+  have hd' i j : d i * M i j = d j * M j i := by simpa [diagonal_mul] using hsymm.apply j i
+  suffices ∀ x, x ≠ 0 → 0 < x ⬝ᵥ (diagonal d * M) *ᵥ x by
+    refine ⟨d, hd, posDef_iff_dotProduct_mulVec.mpr ⟨by ext; simp [diagonal_mul, hd'], ?_⟩⟩
+    exact fun x hx ↦ (this (star x) hx)
+  intro x hx
+  let y i := (∏ k ∈ univ.erase i, u k) * x i
   have hy : u * y = (∏ k, u k) • x := funext fun _ ↦ by simp [y, ← mul_assoc, mul_prod_erase]
-  suffices 0 < (u * y) ⬝ᵥ (diagonal e * M) *ᵥ (u * y) by simpa only [hy, smul_dotProduct,
+  suffices 0 < (u * y) ⬝ᵥ (diagonal d * M) *ᵥ (u * y) by simpa only [hy, smul_dotProduct,
     dotProduct_smul, mulVec_smul, smul_eq_mul, mul_pos_iff_of_pos_left (prod_pos fun k _ ↦ hu k)]
-  have : ∑ i, ∑ j, e i * M i j * u i * u j * y j ^ 2 =
-      ∑ i, ∑ j, e i * M i j * u i * u j * y i ^ 2 := by
+  let C i j := d i * M i j * u i * u j
+  have h₁ : ∑ i, ∑ j, C i j * y j ^ 2 = ∑ i, ∑ j, C i j * y i ^ 2 := by
     rw [sum_comm]
-    exact sum_congr rfl fun i _ ↦ sum_congr rfl fun j _ ↦ by rw [he' j i]; ring
-  have : ∑ i, ∑ j, e i * M i j * u i * u j * y i ^ 2 = ∑ i, e i * (M *ᵥ u) i * u i * y i ^ 2 := by
-    grind [mulVec, dotProduct, mul_sum, sum_mul, sum_congr]
-  have : 2 * (u * y) ⬝ᵥ (diagonal e * M) *ᵥ (u * y) = ∑ i, ∑ j, e i * M i j * u i * u j * y i ^ 2 +
-      ∑ i, ∑ j, e i * M i j * u i * u j * y j ^ 2 -
-        ∑ i, ∑ j, e i * M i j * u i * u j * (y i - y j) ^ 2 := by
-    simpa [dotProduct, mulVec, diagonal_mul, mul_sum, ← sum_sub_distrib,
-      ← sum_add_distrib] using sum_congr rfl fun i _ ↦ by grind
-  have : ∑ i, ∑ j, e i * M i j * u i * u j * (y i - y j) ^ 2 ≤ 0 := by
+    exact sum_congr rfl fun i _ ↦ sum_congr rfl fun j _ ↦ by grind [hsymm.apply i j, diagonal_mul]
+  have h₂ : 2 * (u * y) ⬝ᵥ (diagonal d * M) *ᵥ (u * y) = ∑ i, ∑ j, C i j * y i ^ 2 +
+      ∑ i, ∑ j, C i j * y j ^ 2 - ∑ i, ∑ j, C i j * (y i - y j) ^ 2 := by
+    simp only [C, mulVec, dotProduct, diagonal_mul, mul_sum, Pi.mul_apply, ← sum_add_distrib,
+      ← sum_sub_distrib]
+    exact sum_congr rfl fun _ _ ↦ sum_congr rfl fun _ _ ↦ by ring
+  have h₃ : ∑ i, ∑ j, C i j * (y i - y j) ^ 2 ≤ 0 := by
     refine sum_nonpos fun i _ ↦ sum_nonpos fun j _ ↦ ?_
     rcases eq_or_ne i j with rfl | hij
     · simp
-    · have hc : 0 ≤ e i * u i * u j * (y i - y j) ^ 2 :=
-        mul_nonneg (mul_nonneg (mul_nonneg (he i).le (hu i).le) (hu j).le) (sq_nonneg _)
-      grind [mul_nonpos_of_nonpos_of_nonneg (hM.offDiag_nonpos i j hij) hc]
-  have hr (j : ι) : 0 < e j * (M *ᵥ u) j * u j := mul_pos (mul_pos (he j) (hMu j)) (hu j)
-  obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx
-  have : y i ≠ 0 := mul_ne_zero (prod_pos fun k _ ↦ hu k).ne' hi
-  have : 0 < ∑ i, e i * (M *ᵥ u) i * u i * y i ^ 2 := sum_pos' (fun j _ ↦ mul_nonneg
-    (hr j).le (sq_nonneg _)) ⟨i, mem_univ i, mul_pos (hr i) (by positivity)⟩
+    · linarith [mul_nonpos_of_nonpos_of_nonneg (hM.offDiag_nonpos i j hij) <|
+        mul_nonneg (mul_pos (hd i) (mul_pos (hu i) (hu j))).le (sq_nonneg (y i - y j))]
+  have h₄ : 0 < ∑ i, ∑ j, C i j * y i ^ 2 := by
+    have hr j : ∑ k, C j k * y j ^ 2 = d j * u j * (M *ᵥ u) j * y j ^ 2 := by
+      simp only [C, mulVec, dotProduct, mul_sum, sum_mul]
+      exact sum_congr rfl fun _ _ ↦ by ring
+    have hr' j : 0 < d j * u j * (M *ᵥ u) j := mul_pos (mul_pos (hd j) (hu j)) (hMu j)
+    obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
+    have : y i ≠ 0 := mul_ne_zero (prod_pos fun k _ ↦ hu k).ne' hi
+    simpa only [hr] using sum_pos' (fun j _ ↦ mul_nonneg (hr' j).le (sq_nonneg _))
+      ⟨i, mem_univ i, mul_pos (hr' i) <| by positivity⟩
   linarith
 
 lemma det_pos :
