@@ -286,31 +286,25 @@ def AddGroup.Abelianization.abelianizationEquivAdditive (G : Type*) [Group G] :
 @[simp]
 theorem Group.Abelianization.abelianizationEquivMultiplicative_of
     {A : Type*} [AddGroup A] (x : Multiplicative A) :
-    Group.Abelianization.abelianizationEquivMultiplicative A (Group.Abelianization.of x) =
-      Multiplicative.ofAdd (AddGroup.Abelianization.of x.toAdd) :=
+    abelianizationEquivMultiplicative A (of x) = .ofAdd (.of x.toAdd) :=
   rfl
 
 @[simp]
 theorem Group.Abelianization.abelianizationEquivMultiplicative_symm_ofAdd_of
     {A : Type*} [AddGroup A] (a : A) :
-    (Group.Abelianization.abelianizationEquivMultiplicative A).symm
-        (Multiplicative.ofAdd (AddGroup.Abelianization.of a)) =
-      Group.Abelianization.of (Multiplicative.ofAdd a) :=
+    (abelianizationEquivMultiplicative A).symm (.ofAdd (.of a)) = of (.ofAdd a) :=
   rfl
 
 @[simp]
 theorem AddGroup.Abelianization.abelianizationEquivAdditive_of
     {G : Type*} [Group G] (a : Additive G) :
-    AddGroup.Abelianization.abelianizationEquivAdditive G (AddGroup.Abelianization.of a) =
-      Additive.ofMul (Group.Abelianization.of a.toMul) :=
+    abelianizationEquivAdditive G (of a) = .ofMul (.of a.toMul) :=
   rfl
 
 @[simp]
 theorem AddGroup.Abelianization.abelianizationEquivAdditive_symm_ofMul_of
     {G : Type*} [Group G] (x : G) :
-    (AddGroup.Abelianization.abelianizationEquivAdditive G).symm
-        (Additive.ofMul (Group.Abelianization.of x)) =
-      AddGroup.Abelianization.of (Additive.ofMul x) :=
+    (abelianizationEquivAdditive G).symm (.ofMul (.of x)) = of (.ofMul x) :=
   rfl
 
 end AdditiveMultiplicativeEquiv
