@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Generator.Basic
 In this file, we show that if `A` is a category with zero morphisms that
 has a separator (and suitable coproducts), then the category of
 presheaves `Cᵒᵖ ⥤ A` also has a separator.
-
 -/
 
 @[expose] public section

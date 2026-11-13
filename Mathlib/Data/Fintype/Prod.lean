@@ -10,7 +10,6 @@ public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instance for the product of two fintypes.
-
 -/
 
 public section

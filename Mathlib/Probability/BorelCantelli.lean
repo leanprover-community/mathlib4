@@ -11,7 +11,6 @@ public import Mathlib.Probability.Martingale.BorelCantelli
 import Mathlib.Probability.ConditionalExpectation
 
 /-!
-
 # The second Borel-Cantelli lemma
 
 This file contains the *second Borel-Cantelli lemma* which states that, given a sequence of
@@ -80,8 +79,7 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
   have : ∀ᵐ ω ∂μ, ∀ n, (μ[(s (n + 1)).indicator (1 : Ω → ℝ) | filtrationOfSet hsm n]) ω = _ :=
     ae_all_iff.2 fun n => hs.condExp_indicator_filtrationOfSet_ae_eq hsm n.lt_succ_self
   filter_upwards [this] with ω hω
-  refine eq_true (?_ : Tendsto _ _ _)
-  simp_rw [hω]
+  simp only [hω, Set.mem_univ, iff_true]
   have htends : Tendsto (fun n => ∑ k ∈ Finset.range n, μ (s (k + 1))) atTop (𝓝 ∞) := by
     rw [← ENNReal.tsum_add_one_eq_top hs' (measure_ne_top _ _)]
     exact ENNReal.tendsto_nat_tsum _

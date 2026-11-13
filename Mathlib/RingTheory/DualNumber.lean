@@ -18,7 +18,6 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 * `DualNumber.instLocalRing`: The dual numbers over a field `K` form a local ring.
 * `DualNumber.instPrincipalIdealRing`: The dual numbers over a field `K` form a principal ideal
   ring.
-
 -/
 
 public section

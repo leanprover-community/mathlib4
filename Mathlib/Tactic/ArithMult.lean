@@ -11,7 +11,6 @@ public import Mathlib.Tactic.ArithMult.Init
 # Multiplicativity
 
 We define the `arith_mult` tactic using aesop
-
 -/
 
 public meta section

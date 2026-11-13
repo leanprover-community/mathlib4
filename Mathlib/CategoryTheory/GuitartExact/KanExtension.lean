@@ -35,7 +35,6 @@ The dual results for right Kan extensions are also obtained.
 ## References
 
 * https://ncatlab.org/nlab/show/exact+square
-
 -/
 
 @[expose] public section

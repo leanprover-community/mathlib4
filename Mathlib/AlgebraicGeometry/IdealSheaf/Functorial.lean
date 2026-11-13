@@ -18,7 +18,6 @@ We define the pullback and pushforward of ideal sheaves in this file.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
   The Galois connection between pullback and pushforward.
-
 -/
 
 @[expose] public section

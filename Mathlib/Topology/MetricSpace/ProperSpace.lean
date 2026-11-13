@@ -20,7 +20,6 @@ import Mathlib.Topology.MetricSpace.Pseudo.Basic
 * `secondCountable_of_proper`: proper spaces are sigma-compact, hence second countable.
 * `locallyCompact_of_proper`: proper spaces are locally compact.
 * `pi_properSpace`: finite products of proper spaces are proper.
-
 -/
 
 public section

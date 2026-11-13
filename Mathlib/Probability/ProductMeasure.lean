@@ -379,7 +379,7 @@ instance : IsProbabilityMeasure (infinitePi μ) := by
   rw [← cylinder_univ ∅, cylinder, ← map_apply (measurable_restrict _) .univ,
     infinitePi_map_restrict, measure_univ]
 
-/-- To prove that a measure is equal to the product measure it is enough to check that it
+/-- To prove that a measure is equal to the product measure it is enough to check that
 it gives the same measure to measurable boxes. -/
 theorem eq_infinitePi {ν : Measure (Π i, X i)}
     (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),

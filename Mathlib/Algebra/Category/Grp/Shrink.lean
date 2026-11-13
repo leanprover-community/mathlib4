@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Group.Shrink
 public import Mathlib.CategoryTheory.ShrinkYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shrinking a functor to `GrpCat`
 

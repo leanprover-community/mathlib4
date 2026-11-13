@@ -72,7 +72,6 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 | `𝓝[Set.Ici a] b` | `𝓝[Set.Ici a] b` | `𝓝[Set.Ici a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` |
 | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` |
 | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` |
-
 -/
 
 public section

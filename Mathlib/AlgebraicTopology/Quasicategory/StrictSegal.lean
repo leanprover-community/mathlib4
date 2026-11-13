@@ -30,7 +30,6 @@ open scoped Simplicial
 
 namespace SSet.StrictSegal
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
 theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := by

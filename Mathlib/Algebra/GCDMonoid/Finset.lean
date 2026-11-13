@@ -50,7 +50,7 @@ def lcm (s : Finset β) (f : β → α) : α :=
 
 variable {s s₁ s₂ : Finset β} {f : β → α}
 
-theorem lcm_def : s.lcm f = (s.1.map f).lcm :=
+theorem lcm_def : s.lcm f = (s.val.map f).lcm :=
   rfl
 
 @[simp]
@@ -74,7 +74,7 @@ theorem lcm_insert [DecidableEq β] {b : β} :
     (insert b s : Finset β).lcm f = GCDMonoid.lcm (f b) (s.lcm f) := by
   by_cases h : b ∈ s
   · rw [insert_eq_of_mem h,
-      (lcm_eq_right_iff (f b) (s.lcm f) (Multiset.normalize_lcm (s.1.map f))).2 (dvd_lcm h)]
+      (lcm_eq_right_iff (f b) (s.lcm f) (Multiset.normalize_lcm (s.val.map f))).2 (dvd_lcm h)]
   apply fold_insert h
 
 @[simp]
@@ -126,7 +126,7 @@ def gcd (s : Finset β) (f : β → α) : α :=
 
 variable {s s₁ s₂ : Finset β} {f : β → α}
 
-theorem gcd_def : s.gcd f = (s.1.map f).gcd :=
+theorem gcd_def : s.gcd f = (s.val.map f).gcd :=
   rfl
 
 @[simp]
@@ -153,7 +153,7 @@ theorem gcd_insert [DecidableEq β] {b : β} :
     (insert b s : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) := by
   by_cases h : b ∈ s
   · rw [insert_eq_of_mem h,
-      (gcd_eq_right_iff (f b) (s.gcd f) (Multiset.normalize_gcd (s.1.map f))).2 (gcd_dvd h)]
+      (gcd_eq_right_iff (f b) (s.gcd f) (Multiset.normalize_gcd (s.val.map f))).2 (gcd_dvd h)]
   apply fold_insert h
 
 @[simp]

@@ -61,7 +61,7 @@ variable (E)
 instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
-    rw [← sSup_unitClosedBall_eq_nnnorm]
+    rw [← sSup_unitClosedBall_eq_nnNorm]
     refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_
     · exact (Metric.nonempty_closedBall.mpr zero_le_one).image _
     · rintro - ⟨x, hx, rfl⟩
@@ -71,11 +71,11 @@ instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
     · have ha : 0 < ‖a‖₊ := hr.pos
       rw [← inv_inv ‖a‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero ha.ne')] at hr
       obtain ⟨k, hk₁, hk₂⟩ :=
-        NormedField.exists_lt_nnnorm_lt 𝕜 (mul_lt_mul_of_pos_right hr <| inv_pos.2 ha)
+        NormedField.exists_lt_nnNorm_lt 𝕜 (mul_lt_mul_of_pos_right hr <| inv_pos.2 ha)
       refine ⟨_, ⟨k • star a, ?_, rfl⟩, ?_⟩
       · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using!
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
-      · simp only [map_smul, nnnorm_smul, mul_apply', CStarRing.nnnorm_self_mul_star]
+      · simp only [map_smul, nnNorm_smul, mul_apply', CStarRing.nnNorm_self_mul_star]
         rwa [← div_lt_iff₀ (mul_pos ha ha), div_eq_mul_inv, mul_inv, ← mul_assoc]
 
 section CStarProperty

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of circulant graphs
 
@@ -45,6 +48,7 @@ theorem circulantGraph_eq_erase_zero : circulantGraph s = circulantGraph (s \ {0
       | inl h1 => exact Or.inl h1.left
       | inr h1 => exact Or.inr h1.left
 
+open scoped Pointwise in
 theorem circulantGraph_eq_symm : circulantGraph s = circulantGraph (s ∪ (-s)) := by
   ext
   simp only [circulantGraph_adj, Set.mem_union, Set.mem_neg, neg_sub]

@@ -13,7 +13,6 @@ public import Mathlib.Logic.Small.Defs
 In this file we define a structure `Opposite α` containing a single field of type `α` and
 two bijections `op : α → αᵒᵖ` and `unop : αᵒᵖ → α`. If `α` is a category, then `αᵒᵖ` is the
 opposite category, with all arrows reversed.
-
 -/
 
 @[expose] public section

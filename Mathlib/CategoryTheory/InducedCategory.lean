@@ -22,7 +22,6 @@ The type of morphisms between `X` and `Y` in `InducedCategory D F` is
 not definitionally equal to `F X ⟶ F Y`. Instead, this type is made
 a `1`-field structure. Use `InducedCategory.homMk` to construct
 morphisms in induced categories.
-
 -/
 
 @[expose] public section
