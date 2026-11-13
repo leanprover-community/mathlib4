@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
+Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir, Osman Safa
 -/
 module
 
@@ -263,6 +263,61 @@ instance [Unique G] :
   Unique (Abelianization G) := Quotient.instUniqueQuotient _
 
 end Group
+
+section AdditiveMultiplicativeEquiv
+
+/-- The abelianization of `Multiplicative A` is `Multiplicative` of the additive
+abelianization of `A`. -/
+def Group.Abelianization.abelianizationEquivMultiplicative (A : Type*) [AddGroup A] :
+    Group.Abelianization (Multiplicative A) ≃* Multiplicative (AddGroup.Abelianization A) :=
+  MonoidHom.toMulEquiv
+    (Group.Abelianization.lift (AddMonoidHom.toMultiplicative AddGroup.Abelianization.of))
+    (AddMonoidHom.toMultiplicativeLeft
+      (AddGroup.Abelianization.lift (MonoidHom.toAdditiveRight Group.Abelianization.of)))
+    (by ext; rfl)
+    (by ext; rfl)
+
+/-- The additive abelianization of `Additive G` is `Additive` of the abelianization of `G` -/
+def AddGroup.Abelianization.abelianizationEquivAdditive (G : Type*) [Group G] :
+    AddGroup.Abelianization (Additive G) ≃+ Additive (Group.Abelianization G) :=
+  AddMonoidHom.toAddEquiv
+    (AddGroup.Abelianization.lift (MonoidHom.toAdditive Group.Abelianization.of))
+    (MonoidHom.toAdditiveLeft
+      (Group.Abelianization.lift (AddMonoidHom.toMultiplicativeRight AddGroup.Abelianization.of)))
+    (by ext; rfl)
+    (by ext; rfl)
+
+@[simp]
+theorem AddGroup.Abelianization.abelianizationEquivMultiplicative_of
+    {A : Type*} [AddGroup A] (x : Multiplicative A) :
+    Group.Abelianization.abelianizationEquivMultiplicative A (Group.Abelianization.of x) =
+      Multiplicative.ofAdd (AddGroup.Abelianization.of x.toAdd) :=
+  rfl
+
+@[simp]
+theorem AddGroup.Abelianization.abelianizationEquivMultiplicative_symm_ofAdd_of
+    {A : Type*} [AddGroup A] (a : A) :
+    (Group.Abelianization.abelianizationEquivMultiplicative A).symm
+        (Multiplicative.ofAdd (AddGroup.Abelianization.of a)) =
+      Group.Abelianization.of (Multiplicative.ofAdd a) :=
+  rfl
+
+@[simp]
+theorem Group.Abelianization.abelianizationEquivAdditive_of
+    {G : Type*} [Group G] (a : Additive G) :
+    AddGroup.Abelianization.abelianizationEquivAdditive G (AddGroup.Abelianization.of a) =
+      Additive.ofMul (Group.Abelianization.of a.toMul) :=
+  rfl
+
+@[simp]
+theorem Group.Abelianization.abelianizationEquivAdditive_symm_ofMul_of
+    {G : Type*} [Group G] (x : G) :
+    (AddGroup.Abelianization.abelianizationEquivAdditive G).symm
+        (Additive.ofMul (Group.Abelianization.of x)) =
+      AddGroup.Abelianization.of (Additive.ofMul x) :=
+  rfl
+
+end AdditiveMultiplicativeEquiv
 
 @[deprecated (since := "2026-11-03")] alias Abelianization := Group.Abelianization
 @[deprecated (since := "2026-11-03")]
