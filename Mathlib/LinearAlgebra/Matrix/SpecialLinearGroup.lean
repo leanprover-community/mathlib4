@@ -302,6 +302,20 @@ theorem reindex_trans_mapEquiv (e : m ≃ n) (f : R ≃+* S) :
 
 end Reindex
 
+section Prod
+
+variable (n R S)
+
+/-- The equivalence between `SL n (R × S)` and `SL n R × SL n S`. -/
+@[simps! apply symm_apply]
+def prodEquiv :
+    SpecialLinearGroup n (R × S) ≃* SpecialLinearGroup n R × SpecialLinearGroup n S where
+  __ := (map (RingHom.fst R S)).prod (map (RingHom.snd R S))
+  invFun A := ⟨(Matrix.prodRingEquiv n R S).symm ⟨A.fst, A.snd⟩, by
+    rw [det_prodRingEquiv_symm, A.fst.2, A.snd.2, Prod.mk_one_one]⟩
+
+end Prod
+
 section Pi
 
 variable (n) {ι : Type*} (R : ι → Type*) [Π i, CommRing (R i)]

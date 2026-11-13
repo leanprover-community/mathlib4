@@ -19,7 +19,6 @@ An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
-
 -/
 
 @[expose] public section

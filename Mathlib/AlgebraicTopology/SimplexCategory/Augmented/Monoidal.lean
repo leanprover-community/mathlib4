@@ -24,7 +24,6 @@ there are maps `AugmentedSimplexCategory.inl x y : x ⟶ x ⊗ y` and
 of maps is given by  `AugmentedSimplexCategory.tensorObj_hom_ext`, which characterizes maps
 `x ⊗ y ⟶ z` in terms of their composition with these two maps. We also characterize the behaviour
 of the associator isomorphism with respect to these maps.
-
 -/
 
 @[expose] public section

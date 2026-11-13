@@ -18,7 +18,6 @@ about the roots of the minimal polynomial of `s` over `R`.
 ## References
 
 * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
-
 -/
 
 @[expose] public section

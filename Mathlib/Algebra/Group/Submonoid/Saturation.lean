@@ -27,7 +27,6 @@ lattice.
   `Submonoid.PowSaturated`.
 * `SaturatedSubmonoid`: the type of `Submonoid` satisfying `MulSaturated`. It is a complete lattice.
 * `Submonoid.saturation`: the smallest saturated submonoid containing a given submonoid.
-
 -/
 
 @[expose] public section

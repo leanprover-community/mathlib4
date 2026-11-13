@@ -25,7 +25,6 @@ given in SGA III Exp. 21 Section 6.
 ## Implementation details
 
 This is mostly copied from `ModuleCat`.
-
 -/
 
 public section

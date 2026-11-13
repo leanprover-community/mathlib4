@@ -19,7 +19,6 @@ avoid long typeclass searches.
 
 Moreover, we define the homomorphism `FunLike.coeMulHom : F →* α → β` that acts by coercion. This
 definition is mainly needed to define a module instance on `F`.
-
 -/
 
 @[expose] public section

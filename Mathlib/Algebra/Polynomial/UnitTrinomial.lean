@@ -23,7 +23,6 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
 
 - `Polynomial.IsUnitTrinomial.irreducible_of_coprime`: An irreducibility criterion for unit
   trinomials.
-
 -/
 
 @[expose] public section

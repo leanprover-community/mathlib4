@@ -33,7 +33,6 @@ the following isomorphisms:
 ## Tags
 
 Quotient, Tensor Product
-
 -/
 
 @[expose] public section

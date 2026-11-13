@@ -65,7 +65,6 @@ which can be convenient.
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
-
 -/
 
 @[expose] public section

@@ -23,7 +23,6 @@ We show that the following properties of continuous maps are local at the target
 We show that the following properties of continuous maps are local at the source:
 - `IsOpenMap`
 - `GeneralizingMap`
-
 -/
 
 public section

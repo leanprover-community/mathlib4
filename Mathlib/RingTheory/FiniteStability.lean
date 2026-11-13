@@ -15,7 +15,6 @@ import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 In this file we show that `Algebra.FiniteType` and `Algebra.FinitePresentation` are
 stable under base change.
-
 -/
 
 public section

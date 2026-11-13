@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 # Pullbacks in functor categories
 
 We prove the isomorphism `(pullback f g).obj d ≅ pullback (f.app d) (g.app d)`.
-
 -/
 
 @[expose] public section

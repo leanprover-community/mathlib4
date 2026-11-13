@@ -34,7 +34,6 @@ in the lemma `PathObject.exists_very_good`.
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 * https://ncatlab.org/nlab/show/path+space+object
-
 -/
 
 @[expose] public section

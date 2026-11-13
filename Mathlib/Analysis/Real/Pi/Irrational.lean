@@ -32,7 +32,6 @@ The proof idea is as follows.
   `b ^ (2 * n + 1) * sinPoly n (a / b)` is a positive integer by the degree bound. But it is equal
   to `a ^ (2 * n + 1) / n ! * I n (π / 2) ≤ 2 * a * (2 * n + 1) / n !`, which converges to 0 as
   `n → ∞`.
-
 -/
 
 public section

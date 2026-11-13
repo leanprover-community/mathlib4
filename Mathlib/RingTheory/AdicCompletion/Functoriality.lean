@@ -22,7 +22,6 @@ In this file we establish functorial properties of the adic completion.
 
 - `sumEquivOfFintype`: adic completion commutes with finite sums
 - `piEquivOfFintype`: adic completion commutes with finite products
-
 -/
 
 @[expose] public section
@@ -215,7 +214,6 @@ the formal properties of adic completions we obtain two canonical maps
 If `ι` is finite, both are isomorphisms and, modulo
 the equivalence `⨁ j, (AdicCompletion I (M j)` and `∀ j, AdicCompletion I (M j)`,
 inverse to each other.
-
 -/
 
 variable {ι : Type*} (M : ι → Type*) [∀ i, AddCommGroup (M i)]

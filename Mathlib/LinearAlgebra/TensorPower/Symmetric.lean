@@ -29,7 +29,6 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 * Universal property: linear maps from `Sym[R]^n M` to `N` correspond to symmetric multilinear
   maps `M ^ n` to `N`.
 * Relate to homogeneous (multivariate) polynomials of degree `n`.
-
 -/
 
 @[expose] public section
