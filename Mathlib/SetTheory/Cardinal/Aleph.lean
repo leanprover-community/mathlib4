@@ -83,10 +83,10 @@ theorem isInitial_natCast (n : ℕ) : IsInitial n := by
   rw [IsInitial, card_nat, ord_natCast]
 
 theorem isInitial_zero : IsInitial 0 := by
-  exact_mod_cast isInitial_natCast 0
+  exact mod_cast isInitial_natCast 0
 
 theorem isInitial_one : IsInitial 1 := by
-  exact_mod_cast isInitial_natCast 1
+  exact mod_cast isInitial_natCast 1
 
 theorem isInitial_omega0 : IsInitial ω := by
   rw [IsInitial, card_omega0, ord_aleph0]
@@ -473,6 +473,14 @@ theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
 @[simp]
 theorem aleph0_lt_aleph {o : Ordinal} : ℵ₀ < ℵ_ o ↔ 0 < o := by
   rw [← aleph_zero, aleph_lt_aleph]
+
+@[simp]
+theorem aleph_eq_aleph0 {o : Ordinal} : ℵ_ o = ℵ₀ ↔ o = 0 := by
+  rw [← aleph_zero, aleph.eq_iff_eq]
+
+@[simp]
+theorem aleph0_eq_aleph {o : Ordinal} : ℵ₀ = ℵ_ o ↔ o = 0 := by
+  rw [eq_comm, aleph_eq_aleph0]
 
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)

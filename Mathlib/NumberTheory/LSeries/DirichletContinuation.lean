@@ -109,7 +109,7 @@ lemma Even.LFunction_neg_two_mul_nat_add_one {χ : DirichletCharacter ℂ N} (h�
 lemma Even.LFunction_neg_two_mul_nat {χ : DirichletCharacter ℂ N} (hχ : Even χ) (n : ℕ) [NeZero n] :
     LFunction χ (-(2 * n)) = 0 := by
   obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
-  exact_mod_cast hχ.LFunction_neg_two_mul_nat_add_one m
+  exact mod_cast hχ.LFunction_neg_two_mul_nat_add_one m
 
 /-- The L-function of an odd Dirichlet character vanishes at negative odd integers. -/
 @[simp] lemma Odd.LFunction_neg_two_mul_nat_sub_one

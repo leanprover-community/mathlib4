@@ -16,7 +16,6 @@ import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 
 /-!
-
 # `ℓ`-adic cohomology of a scheme
 
 Let `X` be a scheme and `ℓ` be a prime number. In this file we define the sheaf
@@ -38,7 +37,6 @@ definition using étale cohomology. This will show that the groups defined here 
 ## References
 
 - [Bhatt, Bhargav and Scholze, Peter, The pro-étale topology for schemes][proetale2015]
-
 -/
 
 @[expose] public section

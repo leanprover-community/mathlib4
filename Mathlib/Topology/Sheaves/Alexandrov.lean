@@ -19,7 +19,6 @@ functor `X ⥤ (Opens X)ᵒᵖ` sending `x : X` to the principal open `{y | x �
 Alexandrov topology.
 
 This file proves that this presheaf is a sheaf.
-
 -/
 
 @[expose] public section

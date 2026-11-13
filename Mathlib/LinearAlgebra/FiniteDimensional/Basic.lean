@@ -379,7 +379,7 @@ theorem ker_comp_eq_of_commute_of_disjoint_ker [FiniteDimensional K V] {f g : V 
     ker (f ∘ₗ g) = ker f ⊔ ker g := by
   suffices ∀ x, f x = 0 → f (g x) = 0 by rw [ker_comp, comap_eq_sup_ker_of_disjoint _ h']; simpa
   intro x hx
-  rw [← comp_apply, ← Module.End.mul_eq_comp, h.eq, Module.End.mul_apply, hx, map_zero]
+  rw [← comp_apply, ← Module.End.mul_eq_comp, h.eq, mul_apply_eq_comp, hx, map_zero]
 
 theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} {f : ι → V →ₗ[K] V}
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :

@@ -20,7 +20,6 @@ import Mathlib.Data.Finite.Perm
   (This does not require `G` to be finite.)
 
 * `Subgroup.isCoatom_of_index_prime`: a subgroup of prime index is maximal.
-
 -/
 
 public section

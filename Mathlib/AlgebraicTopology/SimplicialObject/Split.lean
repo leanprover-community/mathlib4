@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Data.Fintype.Sigma
 
 /-!
-
 # Split simplicial objects
 
 In this file, we introduce the notion of split simplicial object.
@@ -32,7 +31,6 @@ Simplicial objects equipped with a splitting form a category
 
 ## References
 * [Stacks: Splitting simplicial objects] https://stacks.math.columbia.edu/tag/017O
-
 -/
 
 @[expose] public section

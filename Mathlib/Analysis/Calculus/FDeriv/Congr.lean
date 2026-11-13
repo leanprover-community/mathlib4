@@ -15,7 +15,6 @@ Lemmas about congruence properties of the Fréchet derivative under change of fu
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
-
 -/
 
 public section

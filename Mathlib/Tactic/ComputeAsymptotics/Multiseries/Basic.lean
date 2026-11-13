@@ -23,7 +23,6 @@ For each construction, we provide two definitions: one for `Multiseries` and one
 `MultiseriesExpansion`. We then prove structural `simp`-lemmas describing their relationships with
 `MultiseriesExpansion.seq` and `MultiseriesExpansion.toFun`. Finally, we prove that all
 constructions are `Sorted` and `Approximates` their attached functions.
-
 -/
 
 @[expose] public section

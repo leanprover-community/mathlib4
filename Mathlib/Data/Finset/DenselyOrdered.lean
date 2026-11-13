@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Finite.Basic
 
 import Mathlib.Data.Finset.Max
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dense orders and finsets
 

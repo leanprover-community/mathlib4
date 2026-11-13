@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Algebra.Star.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of star-ordered rings
 -/

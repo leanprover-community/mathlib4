@@ -24,7 +24,6 @@ We define the total variation distance between two vector measures `μ, ν` as
 
 * `etvDist_self`, `etvDist_eq_zero_iff`, `etvDist_comm`, `etvDist_triangle`: the total
   variation distance between vector measures is a distance.
-
 -/
 
 @[expose] public section
@@ -40,11 +39,14 @@ variable {𝓧 M : Type*} {m𝓧 : MeasurableSpace 𝓧} [NormedAddCommGroup M] 
 /-- Total variation distance between two vector measures, with value in `ℝ≥0∞`. -/
 noncomputable def etvDist (μ ν : VectorMeasure 𝓧 M) : ℝ≥0∞ := (μ - ν).variation Set.univ
 
-lemma etvDist_eq_iSup_finPartition_enorm :
+lemma etvDist_eq_iSup_finPartition_eNorm :
     etvDist μ ν = ⨆ P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧))),
       ∑ x ∈ P.parts, ‖μ x - ν x‖ₑ := by
   simp [etvDist, variation, preVariation, ennrealPreVariation,
     ennrealToMeasure_apply .univ, preVariationFun]
+
+@[deprecated (since := "2026-11-06")]
+alias etvDist_eq_iSup_finPartition_enorm := etvDist_eq_iSup_finPartition_eNorm
 
 @[simp]
 lemma etvDist_self (μ : VectorMeasure 𝓧 M) : etvDist μ μ = 0 := by simp [etvDist]
@@ -76,8 +78,7 @@ lemma etvDist_restrict_add_compl {s : Set 𝓧} (hs : MeasurableSet s) :
     etvDist (μ.restrict s) (ν.restrict s) + etvDist (μ.restrict sᶜ) (ν.restrict sᶜ) =
       etvDist μ ν := by
   simp [etvDist, ← restrict_sub, variation_restrict hs, variation_restrict hs.compl,
-    MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter,
-    ← measure_union disjoint_compl_right hs.compl]
+    MeasurableSet.univ, Measure.restrict_apply, ← measure_union disjoint_compl_right hs.compl]
 
 end VectorMeasure
 

@@ -19,7 +19,6 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.succAbove` : embeds `Fin n` into `Fin (n + 1)` skipping `p`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
-
 -/
 
 @[expose] public section

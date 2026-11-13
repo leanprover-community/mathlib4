@@ -28,7 +28,7 @@ variable
 
 namespace InnerProductSpace
 
-private lemma continuousOn_herglotz_riesz (_ : w ∈ ball c R) :
+private lemma continuousOn_herglotz_riesz :
     ContinuousOn (fun x ↦ ((x - c + (w - c)) / (x - c - (w - c))).re)
       {z | ‖z - c‖ ∈ Set.Ioc ‖w - c‖ R} := by
   have : ∀ x ∈ {z | ‖z - c‖ ∈ Set.Ioc ‖w - c‖ R}, x - c - (w - c) ≠ 0 := by
@@ -62,7 +62,7 @@ theorem HarmonicOnNhd.circleAverage_re_herglotzRieszKernel_smul
     grind [mem_ball]
   -- CircleIntegrable (fun z ↦ ((z - c + (w - c)) / (z - c - (w - c))).re • F z) c R
   apply (ContinuousOn.fun_smul _ _).circleIntegrable'
-  · apply (continuousOn_herglotz_riesz hw).mono
+  · apply (continuousOn_herglotz_riesz (R := R)).mono
     grind [mem_ball, dist_eq_norm, mem_sphere_iff_norm, (pos_of_mem_ball hw)]
   · apply (h₁F.mono _).continuousOn (𝕜 := ℂ)
     grind [mem_sphere, mem_ball, (pos_of_mem_ball hw)]
@@ -77,7 +77,7 @@ theorem HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
   apply ContinuousOn.eq_of_eqOn_Ioo (r := ‖w - c‖)
   · apply ContinuousOn.circleAverage
     · rw [herglotzRieszKernel_fun_def]
-      apply (continuousOn_herglotz_riesz hw).smul (hf.2.mono _)
+      apply continuousOn_herglotz_riesz.smul (hf.2.mono _)
       grind [closure_ball c (pos_of_mem_ball hw).ne', mem_closedBall_iff_norm]
     · grind [norm_nonneg (w - c)]
   · grind [mem_ball_iff_norm]

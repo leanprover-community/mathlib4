@@ -25,7 +25,6 @@ both pullback and pushforward functors.
 * https://ncatlab.org/nlab/show/2-category+of+adjunctions
 * https://ncatlab.org/nlab/show/transformation+of+adjoints
 * https://ncatlab.org/nlab/show/mate
-
 -/
 
 @[expose] public section
