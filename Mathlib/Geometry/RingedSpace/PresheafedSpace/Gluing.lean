@@ -51,7 +51,6 @@ that it is an open immersion. The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, _)` 
 of the red arrows, and the map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{V_{jk}}, _)` is given by the composition of the
 blue arrows. To lift this into a map from `Γ(𝒪_X, ι i '' U)`, we also need to show that these
 commute with the maps in the diagram (the green arrows), which is just a lengthy diagram-chasing.
-
 -/
 
 @[expose] public section
@@ -167,7 +166,6 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   erw [(D.V (i, k)).presheaf.map_id]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.

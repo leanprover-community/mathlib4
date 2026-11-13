@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.Tactic.ENatToNat
 
 /-!
-
 # The Definition of Depth
 
 In this file, we give the definition of depth of a module over a local ring. We also establish
@@ -57,7 +56,6 @@ all modules refer to `R`-module.
 
 * [Commutative Algebra, Theorem 28][matsumuraCommAlg]
 * [W. Bruns, J. Herzog, Cohen–Macaulay rings][brunsHerzog1998]
-
 -/
 
 @[expose] public section

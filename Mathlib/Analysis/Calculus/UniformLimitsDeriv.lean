@@ -336,8 +336,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   --   * The `f' n` are the derivatives of the `f n`
   --   * The `f' n` converge to `g'` at `x`
   conv =>
-    congr
-    ext
+    enter [1, _]
     rw [← abs_norm, ← abs_inv, ← @RCLike.norm_ofReal 𝕜 _ _, RCLike.ofReal_inv, ← norm_smul]
   rw [← tendsto_zero_iff_norm_tendsto_zero]
   have :

@@ -115,14 +115,14 @@ theorem measure_image_eq_zero_of_comap_eq_zero (f : α → β) (μ : Measure β)
 theorem ae_eq_image_of_ae_eq_comap (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
     {s t : Set α} (hst : s =ᵐ[comap f μ] t) : f '' s =ᵐ[μ] f '' t := by
-  rw [EventuallyEqSet, EventuallyEq, ae_iff] at hst ⊢
-  have h_eq_α : { a : α | ¬(a ∈ s) = (a ∈ t) } = s \ t ∪ t \ s := by
+  rw [eventuallyEqSet_iff, ae_iff] at hst ⊢
+  have h_eq_α : { a : α | ¬(a ∈ s ↔ a ∈ t) } = s \ t ∪ t \ s := by
     ext1 x
-    simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
+    simp only [mem_ofPred_eq, mem_union, Set.mem_sdiff]
     tauto
-  have h_eq_β : { a : β | ¬(a ∈ f '' s) = (a ∈ f '' t) } = f '' s \ f '' t ∪ f '' t \ f '' s := by
+  have h_eq_β : { a : β | ¬(a ∈ f '' s ↔ a ∈ f '' t) } = f '' s \ f '' t ∪ f '' t \ f '' s := by
     ext1 x
-    simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
+    simp only [mem_ofPred_eq, mem_union, Set.mem_sdiff]
     tauto
   rw [← Set.image_sdiff hfi, ← Set.image_sdiff hfi, ← Set.image_union] at h_eq_β
   rw [h_eq_β]
@@ -133,7 +133,7 @@ theorem NullMeasurableSet.image (f : α → β) (μ : Measure β) (hfi : Injecti
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
     (hs : NullMeasurableSet s (μ.comap f)) : NullMeasurableSet (f '' s) μ := by
   refine ⟨toMeasurable μ (f '' toMeasurable (μ.comap f) s), measurableSet_toMeasurable _ _, ?_⟩
-  refine EventuallyEq.trans ?_ (NullMeasurableSet.toMeasurable_ae_eq ?_).symm
+  refine EventuallyEqSet.trans ?_ (NullMeasurableSet.toMeasurable_ae_eq ?_).symm
   swap
   · exact hf _ (measurableSet_toMeasurable _ _)
   have h : toMeasurable (comap f μ) s =ᵐ[comap f μ] s :=

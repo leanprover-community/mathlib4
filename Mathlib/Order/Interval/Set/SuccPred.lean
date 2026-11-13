@@ -82,11 +82,11 @@ lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :
 @[to_dual insert_Ioc_left_eq_Ioc_pred_of_not_isMin]
 lemma insert_Ico_right_eq_Ico_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert b (Ico a b) = Ico a (succ b) := by
-  rw [Ico_succ_right_of_not_isMax hb, ← Ico_insert_right h]
+  rw [Ico_succ_right_of_not_isMax hb, ← insert_right_Ico h]
 
 @[to_dual insert_Ioc_pred_right_eq_Ioc]
 lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico a b := by
-  rw [Ico_succ_left_of_not_isMax h.not_isMax, ← Ioo_insert_left h]
+  rw [Ico_succ_left_of_not_isMax h.not_isMax, ← insert_left_Ioo h]
 
 @[to_dual insert_Ico_left_eq_Ico_pred_of_not_isMin]
 lemma insert_Ioc_right_eq_Ioc_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
@@ -95,7 +95,7 @@ lemma insert_Ioc_right_eq_Ioc_succ_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) 
 
 @[to_dual insert_Ico_pred_right_eq_Ico]
 lemma insert_Ioc_succ_left_eq_Ioc (h : a < b) : insert (succ a) (Ioc (succ a) b) = Ioc a b := by
-  rw [Ioc_insert_left (succ_le_of_lt h), Icc_succ_left_of_not_isMax h.not_isMax]
+  rw [insert_left_Ioc (succ_le_of_lt h), Icc_succ_left_of_not_isMax h.not_isMax]
 
 /-!
 #### Orders with no maximal elements

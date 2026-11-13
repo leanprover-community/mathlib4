@@ -21,7 +21,6 @@ comonadicity theorem).
 
 This file is adapted from `Mathlib/CategoryTheory/Monad/Coequalizer.lean`.
 Please try to keep them in sync.
-
 -/
 
 @[expose] public section

@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.GradedObject
 In this file, we define the functor `GradedObject.single j : C ⥤ GradedObject J C`
 which sends an object `X : C` to the graded object which is `X` in degree `j` and
 the initial object of `C` in other degrees.
-
 -/
 
 @[expose] public section
@@ -76,7 +75,6 @@ lemma single_map_singleObjApplyIso_hom (j : J) {X Y : C} (f : X ⟶ Y) :
     (single j).map f j ≫ (singleObjApplyIso j Y).hom = (singleObjApplyIso j X).hom ≫ f := by
   apply single_map_singleObjApplyIsoOfEq_hom
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The composition of the single functor `single j : C ⥤ GradedObject J C` and the
 evaluation functor `eval j` identifies to the identity functor. -/

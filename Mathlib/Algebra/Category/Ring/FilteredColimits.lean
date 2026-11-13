@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Category.Ring.Colimits
 
 import Mathlib.Algebra.Ring.ULift
 
@@ -22,7 +23,6 @@ carries the structure of a semiring, thereby showing that the forgetful functor
 `forget₂ SemiRingCat MonCat` preserves filtered colimits.
 In particular, this implies that `forget SemiRingCat` preserves filtered colimits.
 Similarly for `CommSemiRingCat`, `RingCat` and `CommRingCat`.
-
 -/
 
 @[expose] public section
@@ -131,7 +131,7 @@ namespace colimitCoconeIsColimit
 variable {F} (t : Cocone F)
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
-def descAddMonoidHom : R F →+ t.1 :=
+def descAddMonoidHom : R F →+ t.pt :=
   ((AddCommMonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget₂ SemiRingCat AddCommMonCat)).desc
       ((forget₂ SemiRingCat AddCommMonCat).mapCocone t)).hom
@@ -144,7 +144,7 @@ lemma descAddMonoidHom_quotMk {j : J} (x : F.obj j) :
         ((forget₂ SemiRingCat AddCommMonCat).mapCocone t) j)) x)
 
 /-- Auxiliary definition for `colimitCoconeIsColimit`. -/
-def descMonoidHom : R F →* t.1 :=
+def descMonoidHom : R F →* t.pt :=
   ((MonCat.FilteredColimits.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget₂ _ _)).desc ((forget₂ _ _).mapCocone t)).hom
 
@@ -362,6 +362,9 @@ instance forget₂Ring_preservesFilteredColimits :
 instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget CommRingCat.{u}) :=
   Limits.comp_preservesFilteredColimits (forget₂ CommRingCat RingCat) (forget RingCat.{u})
 
+instance forget_reflectsFilteredColimits : ReflectsFilteredColimits (forget CommRingCat.{u}) :=
+  ⟨fun _ ↦ reflectsColimitsOfShape_of_reflectsIsomorphisms⟩
+
 omit [IsFiltered J] in
 protected lemma nontrivial {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     [∀ i, Nontrivial (F.obj i)] {c : Cocone F} (hc : IsColimit c) : Nontrivial c.pt := by
@@ -378,7 +381,7 @@ set_option linter.overlappingInstances false in
 omit [IsFiltered J] in
 instance {F : J ⥤ CommRingCat.{v}} [IsFilteredOrEmpty J]
     [HasColimit F] [∀ i, Nontrivial (F.obj i)] : Nontrivial ↑(Limits.colimit F) :=
-  FilteredColimits.nontrivial (getColimitCocone F).2
+  FilteredColimits.nontrivial (getColimitCocone F).isColimit
 
 end
 

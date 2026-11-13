@@ -9,14 +9,12 @@ public import Mathlib.LinearAlgebra.Charpoly.Basic
 public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
-
 # Characteristic polynomial
 
 ## Main result
 
 * `LinearMap.charpoly_toMatrix f` : `charpoly f` is the characteristic polynomial of the matrix
   of `f` in any basis.
-
 -/
 
 public section

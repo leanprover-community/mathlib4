@@ -21,7 +21,6 @@ Lists together. In particular, we include lemmas about:
 * `zipWith`
 * `zipLeft'`
 * `zipRight'`
-
 -/
 
 public section
