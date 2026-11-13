@@ -5,6 +5,7 @@ Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
 module
 
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 public import Mathlib.GroupTheory.FreeGroup.Reduce
 
 import Mathlib.Tactic.Group
@@ -241,6 +242,12 @@ instance : HasUniqueRoots (FreeGroup α) where
       exact (List.append_inj heq' <| mul_left_cancel₀ hn <| by grind).1
     have := congr(mk $((conj_conjugator_reduceCyclically x.toWord).symm))
     rwa [hc, hm, conj_conjugator_reduceCyclically, mk_toWord, mk_toWord] at this
+
+/-- A group isomorphic to a free group has unique roots. -/
+@[to_additive]
+instance {G : Type*} [Group G] [IsFreeGroup G] : HasUniqueRoots G :=
+  Function.Injective.hasUniqueRoots (IsFreeGroup.basis G).repr.toMonoidHom
+    (IsFreeGroup.basis G).repr.injective
 
 end IsMulTorsionFree
 end FreeGroup
