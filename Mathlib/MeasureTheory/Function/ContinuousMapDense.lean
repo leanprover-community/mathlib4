@@ -27,6 +27,8 @@ closure of the relevant subgroups of `Lp` are the whole space.
   in the sense that `eLpNorm (f - g) p μ` is small.
 * `MeasureTheory.MemLp.exists_hasCompactSupport_integral_rpow_sub_le`: same result, but expressed in
   terms of `∫ ‖f - g‖^p`.
+* `MeasureTheory.Lp.dense_hasCompactSupport_continuous`: in a locally compact space with a
+  regular measure, compactly supported continuous functions are dense in `Lp` when `p < ∞`.
 
 Versions with `Integrable` instead of `MemLp` are specialized to the case `p = 1`.
 Versions with `boundedContinuous` instead of `HasCompactSupport` drop the locally
@@ -227,6 +229,23 @@ theorem Integrable.exists_hasCompactSupport_integral_sub_le
   simp only [← memLp_one_iff_integrable, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_hasCompactSupport_integral_rpow_sub_le zero_lt_one hε
+
+omit [NormalSpace α] in
+/-- In a locally compact space with a regular measure, compactly supported continuous functions
+are dense in `Lp` when `p < ∞`. -/
+theorem Lp.dense_hasCompactSupport_continuous [R1Space α] [WeaklyLocallyCompactSpace α]
+    [μ.Regular] [Fact (1 ≤ p)] (hp : p ≠ ∞) :
+    Dense {f : Lp E p μ | ∃ g : α → E, f =ᵐ[μ] g ∧ HasCompactSupport g ∧ Continuous g} := by
+  intro f
+  refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).mpr fun ε hε ↦ ?_
+  obtain ⟨g, hg₁, hg₂, hg₃, hg₄⟩ := (Lp.memLp f).exists_hasCompactSupport_eLpNorm_sub_le hp
+    (ε := ENNReal.ofReal ε) (by positivity)
+  refine ⟨hg₄.toLp g, ⟨g, hg₄.coeFn_toLp, hg₁, hg₃⟩, ?_⟩
+  rw [Metric.mem_closedBall, dist_comm, Lp.dist_def,
+    ← ENNReal.le_ofReal_iff_toReal_le ((Lp.memLp f).sub (Lp.memLp _)).eLpNorm_ne_top hε.le]
+  convert hg₂ using 1
+  apply eLpNorm_congr_ae
+  grw [hg₄.coeFn_toLp]
 
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `p < ∞`,
 version in terms of `eLpNorm`. -/
