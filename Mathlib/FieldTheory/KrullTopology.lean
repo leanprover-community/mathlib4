@@ -74,17 +74,10 @@ theorem AlgEquiv.uniformity_def : 𝓤 Gal(L/K) = ⨅ x : L, 𝓟 {p | p.1 x = p
 
 theorem AlgEquiv.isOpen_setOfPred_fst_eq_snd (x : L) :
     IsOpen {p : Gal(L/K) × Gal(L/K) | p.1 x = p.2 x} := by
-  rw [isOpen_iff_nhds, Set.forall_mem_ofPred]
-  intro p hp
-  rw [nhds_prod_eq, nhds_eq_comap_uniformity', nhds_eq_comap_uniformity, le_principal_iff]
-  simp_rw [AlgEquiv.uniformity_def, comap_iInf, comap_principal, Set.preimage_ofPred_eq]
-  rw [mem_prod_iff]
-  refine ⟨{a | a x = p.1 x}, mem_iInf_of_mem x (mem_principal_self _),
-    {a | p.2 x = a x}, mem_iInf_of_mem x (mem_principal_self _), fun c hc => ?_⟩
-  calc
-    c.1 x = p.1 x := hc.left
-    p.1 x = p.2 x := hp
-    p.2 x = c.2 x := hc.right
+  have hx : {p : Gal(L/K) × Gal(L/K) | p.1 x = p.2 x} ∈ 𝓤 Gal(L/K) := mem_iInf_of_mem x (by simp)
+  refine isOpen_iff_mem_nhds.mpr fun (σ, τ) hστ ↦ ?_
+  filter_upwards [prod_mem_nhds (mem_nhds_right σ hx) (mem_nhds_left τ hx)] with p hp
+  exact hp.1.trans (hστ.trans hp.2)
 
 /-- The stabilizer in `Gal(L/K)` of any element in `L` is open for the Krull topology. -/
 theorem AlgEquiv.isOpen_mulActionStabilizer (x : L) :
