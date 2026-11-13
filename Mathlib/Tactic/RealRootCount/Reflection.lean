@@ -50,6 +50,10 @@ theorem natDegree_ofCoeffList (h : l.getLastD 0 ≠ 0) :
     rw [coeff_ofCoeffList, List.getD_eq_default _ _ (by lia)]
   · rwa [coeff_ofCoeffList_length_sub_one]
 
+theorem leadingCoeff_ofCoeffList (h : l.getLastD 0 ≠ 0) :
+    (ofCoeffList l).leadingCoeff = l.getLastD 0 := by
+  rw [leadingCoeff, natDegree_ofCoeffList h, coeff_ofCoeffList_length_sub_one]
+
 theorem ofCoeffList_coeffDerivative (p : List R) :
     ofCoeffList (coeffDerivative p) = derivative (ofCoeffList p) := by
   ext n
@@ -116,6 +120,10 @@ theorem toReal_ne_zero (h : coeffLead p ≠ 0) : toReal p ≠ 0 := by
 
 theorem natDegree_toReal (h : coeffLead p ≠ 0) : (toReal p).natDegree = p.length - 1 := by
   simp only [toReal, natDegree_map_eq_of_injective, RingHom.injective_int, natDegree_ofCoeffList h]
+
+theorem leadingCoeff_toReal (h : coeffLead p ≠ 0) : (toReal p).leadingCoeff = coeffLead p := by
+  simp only [toReal, leadingCoeff_map_of_injective, RingHom.injective_int,
+    leadingCoeff_ofCoeffList h, eq_intCast, coeffLead]
 
 theorem degree_toReal_lt_degree (hlen : p.length < q.length) (h : coeffLead q ≠ 0) :
     (toReal p).degree < (toReal q).degree := by
@@ -209,6 +217,48 @@ theorem isScaledSturmSeq_of_checkSturm {d : SturmCertificate} (h : checkSturm d 
   refine isScaledSturmSeq_of_checkSteps one_pos one_pos ?_ ?_ (toReal_ne_zero hlead) hsteps
   · simp
   · simp [toReal_coeffDerivative]
+
+theorem coeffLead_ne_zero_of_mem_chain (hp : coeffLead p ≠ 0) (h : checkSteps p q steps = true) :
+    ∀ e ∈ chain p q steps, coeffLead e ≠ 0 := by
+  induction steps generalizing p q with
+  | nil =>
+    obtain rfl := checkSteps_nil.mp h
+    simpa [chain] using hp
+  | cons st steps ih =>
+    rw [checkSteps_cons] at h
+    obtain ⟨_, _, hlead, _⟩ := SturmStep.check_iff.mp h.1
+    rw [chain, List.forall_mem_cons]
+    exact ⟨hp, ih hlead h.2⟩
+
+theorem coeffLead_ne_zero_of_checkSturm {d : SturmCertificate} (h : checkSturm d = true) :
+    ∀ e ∈ d.entries, coeffLead e ≠ 0 := by
+  obtain ⟨_, hlead, hsteps⟩ := checkSturm_iff.mp h
+  exact coeffLead_ne_zero_of_mem_chain hlead hsteps
+
+theorem signAtTop_toReal (h : coeffLead p ≠ 0) : signAtTop (toReal p) = sign (coeffLead p) := by
+  rw [signAtTop_def, leadingCoeff_toReal h, sign_intCast]
+
+theorem signAtBot_toReal (h : coeffLead p ≠ 0) :
+    signAtBot (toReal p) = sign (if p.length % 2 = 0 then -coeffLead p else coeffLead p) := by
+  cases p with
+  | nil => exact absurd rfl h
+  | cons c p =>
+    simp only [signAtBot_def, signAtTop_toReal h, natDegree_toReal h, List.length_cons,
+      Nat.even_iff, apply_ite sign, Left.sign_neg]
+    split_ifs <;> lia
+
+theorem signVariationsLine_map_toReal {L : List (List ℤ)} (hL : ∀ e ∈ L, coeffLead e ≠ 0) :
+    signVariationsLine (L.map toReal) =
+      (L.map fun e => if e.length % 2 = 0 then -coeffLead e else coeffLead e).signVariations -
+        (L.map coeffLead).signVariations := by
+  rw [signVariationsLine_def, List.map_map, List.map_map,
+    ← List.signVariations_map_sign (L.map coeffLead),
+    ← List.signVariations_map_sign
+      (L.map fun e => if e.length % 2 = 0 then -coeffLead e else coeffLead e),
+    List.map_map, List.map_map]
+  congrm (List.signVariations ?_ - List.signVariations ?_ : ℤ) <;>
+  · refine List.map_congr_left fun e he => ?_
+    simp [signAtBot_toReal (hL e he), signAtTop_toReal (hL e he)]
 
 public theorem card_rootSet_of_realRootCount? {R : Type*} [CommRing R] [Algebra R ℝ] {f : R[X]}
     {d : SturmCertificate} {n : ℕ} [Fintype (f.rootSet ℝ)]
