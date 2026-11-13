@@ -420,7 +420,7 @@ theorem liftAux.smul {φ : (Π i, s i) →ₘₛₗ[σ] E} (r : R) (x : ⨂[R] i
   · intro z y ihz ihy
     rw [smul_add, (liftAux φ).map_add, ihz, ihy, (liftAux φ).map_add, smul_add]
 
-/-- Constructing a linear map `(⨂[R] i, s i) → E` given a `(Π i, s i) →ₘₛₗ[σ] E` with the property
+/-- Constructing a semilinear map `(⨂[R] i, s i) → E` given a `(Π i, s i) →ₘₛₗ[σ] E` with the property
 that its composition with the canonical `(Π i, s i) →ₘₗ[R] E` is the given multilinear map `φ`. -/
 def lift : ((Π i, s i) →ₘₛₗ[σ] E) ≃ₗ[S] (⨂[R] i, s i) →ₛₗ[σ] E where
   toFun φ := { liftAux φ with map_smul' := liftAux.smul }
