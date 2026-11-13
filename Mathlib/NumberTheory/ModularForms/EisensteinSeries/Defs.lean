@@ -169,7 +169,7 @@ def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N r a ≃ gammaSet N r (a ᵥ* γ
   invFun v := ⟨v.1 ᵥ* ↑(γ⁻¹), by
       have := vecMul_SL2_mem_gammaSet v.2 γ⁻¹
       rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul] at this
-      simpa [map_inv]⟩
+      simpa⟩
   left_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, mul_inv_cancel,
     SpecialLinearGroup.coe_one, vecMul_one]
   right_inv v := by simp_rw [vecMul_vecMul, ← SpecialLinearGroup.coe_mul, inv_mul_cancel,
