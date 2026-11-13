@@ -86,24 +86,16 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
           have dimlt : (Module.supportDim R (QuotSMulTop x L)).unbot
             (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) < r := by
             have : (Module.supportDim R (QuotSMulTop x L)) + 1 ≤ Module.supportDim R L := by
-              simp only [Module.supportDim_eq_ringKrullDim_quotient_annihilator]
-              rw [e.annihilator_eq, Ideal.annihilator_quotient]
-              have ple : p.1 ≤ Module.annihilator R (QuotSMulTop x L) := by
-                rw [← p.1.annihilator_quotient, ← LinearEquiv.annihilator_eq e]
-                exact (Submodule.mkQ _).annihilator_le_of_surjective (Submodule.mkQ_surjective _)
-              have : Ideal.Quotient.mk p.asIdeal x ∈ nonZeroDivisors (R ⧸ p.1) := by
-                simpa [Ideal.Quotient.eq_zero_iff_mem] using hx2
-              exact ringKrullDim_succ_le_of_surjective _ (Quotient.factor_surjective ple) this
-                (by simpa [Ideal.Quotient.eq_zero_iff_mem] using QuotSMulTop.mem_annihilator L x)
+              apply Module.supportDim_quotSMulTop_succ_le_of_isSMulRegular
+              rw [e.isSMulRegular_congr]
+              have : IsRegular (Ideal.Quotient.mk p.asIdeal x) := by
+                simpa [isRegular_iff_mem_nonZeroDivisors, Ideal.Quotient.eq_zero_iff_mem] using hx2
+              exact this.isSMulRegular
             have succle : (Module.supportDim R (QuotSMulTop x L)).unbot
               (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) + 1 ≤ r := by
               simpa [← dim_eq, WithBot.le_unbot_iff] using this
-            have : (Module.supportDim R (QuotSMulTop x L)).unbot
-              (Module.supportDim_ne_bot_of_nontrivial R (QuotSMulTop x L)) ≠ ⊤ := by
-              by_contra h
-              simp [h] at succle
-            exact (ENat.add_one_le_iff this).mp succle
-          rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt dimlt) with ⟨m, hm⟩
+            exact ENat.add_one_le_natCast_iff.mp succle
+          rcases ENat.ne_top_iff_exists.mp dimlt.ne_top with ⟨m, hm⟩
           simp only [← hm, Nat.cast_lt] at dimlt
           apply subsingleton_ext_of_lt_depth
           refine lt_of_lt_of_le ?_ (ihr m dimlt (ModuleCat.of R (QuotSMulTop x L)) hm.symm)
@@ -119,9 +111,8 @@ theorem depth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N : Modul
           simp only [smulShortComplex, AddCommGrpCat.epi_iff_surjective] at epi
           convert epi
           ext a
-          simp only [LinearMap.smul_apply, id_coe, id_eq]
-          nth_rw 1 [← Ext.mk₀_id_comp a, ← Ext.smul_comp, ← Ext.mk₀_smul]
-          congr
+          have : ↟(LinearMap.lsmul R L x) = x • 𝟙 ↧L := rfl
+          simp [this, Ext.mk₀_smul]
         by_contra! ntr
         have mem : x ∈ (Module.annihilator R (Ext (of R L) M i)).jacobson :=
           maximalIdeal_le_jacobson _ hx1
