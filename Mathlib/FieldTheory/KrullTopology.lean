@@ -105,10 +105,12 @@ theorem AlgEquiv.mem_uniformity_iff_fg {s : SetRel Gal(L/K) Gal(L/K)} :
   unfold Set.EqOn
   simp_rw [← AlgEquiv.symm_apply_eq, ← AlgEquiv.coe_inv, ← AlgEquiv.mul_apply]
   have hst (σ : Gal(L/K)) (x : L) : σ x = x ↔ x ∈ fixedField (Subgroup.zpowers σ) := by
-    rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← adjoin_le_iff, le_iff_le,
-      Subgroup.zpowers_le, ← AlgEquiv.smul_def, ← MulAction.mem_stabilizer_iff]
+    rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← adjoin_le_iff,
+      le_fixedField_iff_le_fixingSubgroup, Subgroup.zpowers_le, ← AlgEquiv.smul_def,
+      ← MulAction.mem_stabilizer_iff]
     revert σ
-    rw [← SetLike.ext_iff, le_antisymm_iff, ← le_iff_le, adjoin_simple_le_iff]
+    rw [← SetLike.ext_iff, le_antisymm_iff, ← le_fixedField_iff_le_fixingSubgroup,
+      adjoin_simple_le_iff]
     constructor
     · simp
     · intro σ hσ
@@ -159,10 +161,12 @@ lemma AlgEquiv.mem_nhds_one_iff' {s : Set Gal(L/K)} :
   refine exists_congr fun u => forall_congr' fun σ => imp_congr_left ?_
   revert σ
   have hst (σ : Gal(L/K)) (x : L) : σ x = x ↔ x ∈ fixedField (Subgroup.zpowers σ) := by
-    rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← adjoin_le_iff, le_iff_le,
-      Subgroup.zpowers_le, ← AlgEquiv.smul_def, ← MulAction.mem_stabilizer_iff]
+    rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← adjoin_le_iff,
+      le_fixedField_iff_le_fixingSubgroup, Subgroup.zpowers_le, ← AlgEquiv.smul_def,
+      ← MulAction.mem_stabilizer_iff]
     revert σ
-    rw [← SetLike.ext_iff, le_antisymm_iff, ← le_iff_le, adjoin_simple_le_iff]
+    rw [← SetLike.ext_iff, le_antisymm_iff, ← le_fixedField_iff_le_fixingSubgroup,
+      adjoin_simple_le_iff]
     constructor
     · simp
     · intro σ hσ
@@ -280,12 +284,12 @@ instance [Algebra.EssFiniteType K L] : DiscreteUniformity Gal(L/K) := by
   have hpe (x : L) : p.1 x = p.2 x ↔
       x ∈ IntermediateField.fixedField (Subgroup.zpowers (p.1⁻¹ * p.2)) := by
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← IntermediateField.adjoin_le_iff,
-      IntermediateField.le_iff_le, Subgroup.zpowers_le, ← p.1.eq_symm_apply,
-      ← AlgEquiv.coe_inv, ← AlgEquiv.mul_apply, ← AlgEquiv.smul_def, eq_comm,
+      IntermediateField.le_fixedField_iff_le_fixingSubgroup, Subgroup.zpowers_le,
+      ← p.1.eq_symm_apply, ← AlgEquiv.coe_inv, ← AlgEquiv.mul_apply, ← AlgEquiv.smul_def, eq_comm,
       ← MulAction.mem_stabilizer_iff]
     generalize p.1⁻¹ * p.2 = σ
     revert σ
-    rw [← SetLike.ext_iff, le_antisymm_iff, ← IntermediateField.le_iff_le,
+    rw [← SetLike.ext_iff, le_antisymm_iff, ← IntermediateField.le_fixedField_iff_le_fixingSubgroup,
       IntermediateField.adjoin_simple_le_iff]
     constructor
     · simp
