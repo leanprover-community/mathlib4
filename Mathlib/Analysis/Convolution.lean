@@ -419,6 +419,20 @@ open scoped Convolution
 theorem convolution_def [Sub G] : (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ :=
   rfl
 
+/--
+The convolution of `f` and the translation of `g` by `a` is equal to the translation
+of the convolution `f * g` by `a`.
+
+Mathematically, this states that $f * (g \circ \tau_a) = (f * g) \circ \tau_a$, where
+$\tau_a(x) = x + a$.
+-/
+theorem convolution_comp_add_right [AddCommGroup G] (L : E →L[𝕜] E' →L[𝕜] F) (a : G) :
+  MeasureTheory.convolution f (fun x => g (a + x)) L μ
+    = fun x => MeasureTheory.convolution f g L μ (x + a) :=
+by
+  funext x
+  simp [MeasureTheory.convolution, sub_eq_add_neg, add_comm, add_assoc]
+
 /-- The definition of convolution where the bilinear operator is scalar multiplication.
 Note: it often helps the elaborator to give the type of the convolution explicitly. -/
 theorem convolution_lsmul [Sub G] {f : G → 𝕜} {g : G → F} :
