@@ -6,6 +6,8 @@ module
 public import Mathlib.Basic.Complex.Basic
 public import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Tactic.Ring
+import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.EReal.Basic
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
@@ -57,10 +59,43 @@ example : ((an : ℤ) : ℝ) < bq ∧ (cr : ℂ) ^ 2 = dz ↔ (an : ℚ) < bq �
   norm_cast
 
 --testing numerals
+section numerals
+
 example : ((42 : ℕ) : ℤ) = 42 := by norm_cast
 example : ((42 : ℕ) : ℂ) = 42 := by norm_cast
 example : ((42 : ℤ) : ℚ) = 42 := by norm_cast
 example : ((42 : ℚ) : ℝ) = 42 := by norm_cast
+
+open scoped ENNReal NNReal
+
+example : ((2 : ℕ∞) : WithTop ℕ∞) = 2 := by norm_cast
+example : ((2 : ℝ≥0) : ℝ≥0∞) = 2 := by norm_cast
+example : ((2 : ℝ≥0) : ℝ) = 2 := by norm_cast
+example : ((2 : ℝ) : EReal) = 2 := by norm_cast
+
+set_option autoImplicit false
+
+example (k : ℕ) : ((k : ℕ∞) : WithTop ℕ∞) ≤ (k : ℕ∞) + 2 := by
+  norm_cast
+  guard_target = (k : ℕ) ≤ k + 2
+  lia
+
+example (k : ℕ) : ((k : ℝ≥0) : ℝ≥0∞) ≤ (k : ℝ≥0∞) + 2 := by
+  norm_cast
+  guard_target = (k : ℕ) ≤ k + 2
+  lia
+
+example (k : ℕ) : ((k : ℝ) : EReal) ≤ (k : EReal) + 2 := by
+  norm_cast
+  guard_target = (k : ℕ) ≤ k + 2
+  lia
+
+example (k : ℕ) : ((k : ℝ≥0∞) : WithTop ℝ≥0∞) ≤ (k : WithTop ℝ≥0∞) + 2 := by
+  norm_cast
+  guard_target = (k : ℕ) ≤ k + 2
+  lia
+
+end numerals
 
 structure p (n : ℤ)
 example : p 42 := by
