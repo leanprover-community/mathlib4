@@ -70,6 +70,24 @@ attribute [to_additive IsBounded.norm] IsBounded.norm'
 
 end Bornology
 
+open Bornology
+
+variable (E) in
+@[to_additive (attr := simp) bddBelow_range_norm]
+lemma bddBelow_range_norm' : BddBelow (range (‖·‖ : E → ℝ)) :=
+  ⟨0, by rintro - ⟨x, rfl⟩; positivity⟩
+
+@[to_additive bddAbove_image_norm_iff]
+lemma bddAbove_image_norm_iff' :
+    BddAbove ((‖·‖) '' s) ↔ IsBounded s := by
+  simp [← isBounded_image_norm_iff', isBounded_iff_bddBelow_bddAbove,
+    (bddBelow_range_norm' E).mono (s.image_subset_range (‖·‖))]
+
+alias ⟨BddAbove.isBounded_of_norm', Bornology.IsBounded.bddAbove_norm'⟩ := bddAbove_image_norm_iff'
+
+attribute [to_additive BddAbove.isBounded_of_norm] BddAbove.isBounded_of_norm'
+attribute [to_additive Bornology.IsBounded.bddAbove_norm] Bornology.IsBounded.bddAbove_norm'
+
 end SeminormedGroup
 
 section SeminormedCommGroup
