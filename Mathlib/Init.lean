@@ -11,6 +11,7 @@ public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note availa
 public meta import Mathlib.Tactic.Lemma
 public meta import Mathlib.Tactic.Linter.DeclType
 public meta import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+public meta import Mathlib.Tactic.Linter.DeprecationDate
 public meta import Mathlib.Tactic.Linter.DirectoryDependency
 public meta import Mathlib.Tactic.Linter.DocPrime
 public meta import Mathlib.Tactic.Linter.DocString
@@ -94,6 +95,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.induction
   linter.style.refine
   linter.style.cdot
+  linter.style.deprecationDate
   linter.style.docString
   linter.style.dollarSyntax
   linter.style.emptyLine
