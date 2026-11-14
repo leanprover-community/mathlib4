@@ -49,8 +49,7 @@ lemma cpow_mul_div_cpow_eq_div_div_cpow (m n : ℕ) (z : ℂ) (x : ℝ) :
   congr
   simp_rw [div_eq_mul_inv]
   rw [show (n + 1 : ℂ)⁻¹ = (n + 1 : ℝ)⁻¹ by simp,
-    show (n + 1 : ℂ) = (n + 1 : ℝ) by norm_cast, show (m : ℂ) = (m : ℝ) by norm_cast,
-    mul_cpow_ofReal_nonneg m.cast_nonneg Hn, mul_inv, mul_comm]
+    show (n + 1 : ℂ) = (n + 1 : ℝ) by norm_cast, natCast_mul_cpow, mul_inv, mul_comm]
   congr
   rw [← cpow_neg, show (-x : ℂ) = (-1 : ℝ) * x by simp, cpow_mul_ofReal_nonneg Hn,
     Real.rpow_neg_one, inv_inv]

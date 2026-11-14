@@ -188,12 +188,12 @@ private lemma hasSum_L_of_hasSum_Λ (hs : 0 < s.re)
   · ext n
     generalize (PowerSeries.coeff n) (qExpansion (h Γ) f) = p
     rw [Gammaℂ, ← div_div, ← div_div, div_self two_ne_zero, one_div, cpow_neg (2 * _), inv_inv,
-      ← ofReal_ofNat, mul_cpow_ofReal_nonneg two_pos.le Real.pi_pos.le]
+      ← ofReal_ofNat, ofReal_mul_cpow two_pos.le]
     simp only [ofReal_div, ofReal_mul, ofReal_ofNat, ofReal_natCast]
     have : (2 * n / h Γ : ℂ) ^ s = 2 ^ s * n ^ s / h Γ ^ s := by
       rw [← ofReal_ofNat, ← ofReal_natCast, ← ofReal_mul,
         div_cpow_ofReal_nonneg (by grind) Γ.strictWidthInfty_nonneg, ofReal_mul,
-        mul_cpow_ofReal_nonneg zero_le_two n.cast_nonneg]
+        ofReal_mul_cpow zero_le_two]
     rw [this, cpow_neg, cpow_neg]
     have := Gamma_ne_zero_of_re_pos hs
     have := cpow_ne_zero_iff (y := s).mpr (.inl <| ofReal_ne_zero.mpr Γ.strictWidthInfty_pos.ne')
