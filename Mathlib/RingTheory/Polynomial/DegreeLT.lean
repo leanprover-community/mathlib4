@@ -31,7 +31,6 @@ This file contains the properties of the submodule of polynomials of degree less
 
 * `taylorLinear r n`: The linear automorphism induced by `taylor r` on `R[X]_n` which sends `X` to
   `X + r` and preserves degrees.
-
 -/
 
 @[expose] public section

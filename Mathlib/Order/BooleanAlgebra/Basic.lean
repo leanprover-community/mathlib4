@@ -23,7 +23,6 @@ classes related to Boolean algebras as defined in `Mathlib/Order/BooleanAlgebra/
 ## Tags
 
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
-
 -/
 
 public section
@@ -40,7 +39,6 @@ Some of the lemmas in this section are from:
 * [*Lattice Theory: Foundation*, George Grätzer][Gratzer2011]
 * <https://ncatlab.org/nlab/show/relative+complement>
 * <https://people.math.gatech.edu/~mccuan/courses/4317/symmetricdifference.pdf>
-
 -/
 
 -- We might want an `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
@@ -293,10 +291,6 @@ theorem sdiff_eq_comm (hy : y ≤ x) (hz : z ≤ x) : x \ y = z ↔ x \ z = y :=
 
 theorem sdiff_right_inj (hxz : x ≤ z) (hyz : y ≤ z) : z \ x = z \ y ↔ x = y :=
   ⟨fun h => by rw [← sdiff_sdiff_eq_self hxz, h, sdiff_sdiff_eq_self hyz], congrArg (z \ ·)⟩
-
-@[deprecated sdiff_right_inj +typeChanged (since := "2026-04-16")]
-theorem eq_of_sdiff_eq_sdiff (hxz : x ≤ z) (hyz : y ≤ z) (h : z \ x = z \ y) : x = y :=
-  (sdiff_right_inj hxz hyz).mp h
 
 theorem sdiff_le_sdiff_iff_le (hx : x ≤ z) (hy : y ≤ z) : z \ x ≤ z \ y ↔ y ≤ x := by
   refine ⟨fun h ↦ ?_, sdiff_le_sdiff_left⟩

@@ -15,6 +15,9 @@ public import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Make `fun_prop` work for finite (multiplicative) support
 

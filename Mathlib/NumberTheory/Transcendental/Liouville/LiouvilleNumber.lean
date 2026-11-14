@@ -8,7 +8,6 @@ module
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 
 /-!
-
 # Liouville constants
 
 This file contains a construction of a family of Liouville numbers, indexed by a natural number $m$.

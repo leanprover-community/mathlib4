@@ -33,7 +33,6 @@ This file defines Carmichael numbers and proves Korselt's criterion about them.
 ## References
 
 https://en.wikipedia.org/wiki/Carmichael_number
-
 -/
 
 public section

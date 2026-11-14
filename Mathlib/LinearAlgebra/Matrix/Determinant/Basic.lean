@@ -32,7 +32,6 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 
 It is possible to configure `simp` to compute determinants. See the file
 `MathlibTest/matrix.lean` for some examples.
-
 -/
 
 @[expose] public section
@@ -141,7 +140,7 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
 theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
   calc
     det (M * N) = ∑ p : n → n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
-      simp only [det_apply', mul_apply, prod_univ_sum, mul_sum, Fintype.piFinset_univ]
+      simp only [det_apply', Matrix.mul_apply, prod_univ_sum, mul_sum, Fintype.piFinset_univ]
       rw [Finset.sum_comm]
     _ = ∑ p : n → n with Bijective p, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
       refine (sum_subset (filter_subset _ _) fun f _ hbij ↦ det_mul_aux ?_).symm
@@ -280,7 +279,7 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
 
 @[simp]
 theorem det_smul_of_tower {α} [Monoid α] [MulAction α R] [IsScalarTower α R R]
-    [SMulCommClass α R R] (c : α) (A : Matrix n n R) :
+    (c : α) (A : Matrix n n R) :
     det (c • A) = c ^ Fintype.card n • det A := by
   rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
 
@@ -322,6 +321,12 @@ theorem _root_.RingHom.map_det (f : R →+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) := by
   simp [Matrix.det_apply', map_sum f, map_prod f]
 
+/-- The determinant of submatrices are natural with respect to a ring homomorphism. -/
+theorem _root_.RingHom.map_det_submatrix {m n t : Type*} [Fintype t] [DecidableEq t]
+  (f : R →+* S) (A : Matrix m n R) (row : t → m) (col : t → n) :
+    f (det (submatrix A row col)) = det (submatrix (A.map f) row col) := by
+  simp [submatrix_map, f.map_det]
+
 theorem _root_.RingEquiv.map_det (f : R ≃+* S) (M : Matrix n n R) :
     f M.det = Matrix.det (f.mapMatrix M) :=
   f.toRingHom.map_det _
@@ -349,6 +354,26 @@ end HomMap
 @[simp]
 theorem det_conjTranspose [StarRing R] (M : Matrix m m R) : det Mᴴ = star (det M) :=
   ((starRingEnd R).map_det _).symm.trans congr(star $M.det_transpose)
+
+section Prod
+
+variable {S : Type*} [CommRing S]
+
+@[simp]
+theorem fst_det (M : Matrix n n (R × S)) :
+    M.det.fst = (M.map Prod.fst).det :=
+  RingHom.map_det (RingHom.fst R S) _
+
+@[simp]
+theorem snd_det (M : Matrix n n (R × S)) :
+    M.det.snd = (M.map Prod.snd).det :=
+  RingHom.map_det (RingHom.snd R S) _
+
+theorem det_prodRingEquiv_symm (M : Matrix n n R × Matrix n n S) :
+    ((prodRingEquiv n R S).symm M).det = (M.fst.det, M.snd.det) :=
+  Prod.ext (fst_det _) (snd_det _)
+
+end Prod
 
 section DetZero
 
@@ -484,20 +509,20 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
   exact det_updateRow_add_smul_self Aᵀ hij c
 
 theorem det_eq_zero_of_not_linearIndependent_rows [IsDomain R] {A : Matrix m m R}
-    (hA : ¬ LinearIndependent R (fun i ↦ A i)) :
+    (hA : ¬ LinearIndependent R A.row) :
     det A = 0 := detRowAlternating.map_linearDependent A hA
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
-    LinearIndependent R (fun i ↦ A i) := by
+    LinearIndependent R A.row := by
   contrapose hA
   exact det_eq_zero_of_not_linearIndependent_rows hA
 
 theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
     LinearIndependent R A.col :=
-  Matrix.linearIndependent_rows_of_det_ne_zero (by simpa [Matrix.col])
+  Aᵀ.linearIndependent_rows_of_det_ne_zero <| by simpa
 
 theorem det_eq_zero_of_not_linearIndependent_cols [IsDomain R] {A : Matrix m m R}
-    (hA : ¬ LinearIndependent R (fun i ↦ Aᵀ i)) :
+    (hA : ¬ LinearIndependent R A.col) :
     det A = 0 := by
   contrapose! hA
   exact linearIndependent_cols_of_det_ne_zero hA
@@ -719,7 +744,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
       · have hn := (not_exists.mp ha) a2
         exact absurd hx.symm hn
       · rw [Finset.prod_eq_zero (Finset.mem_univ (Sum.inl a)), mul_zero]
-        rw [hx, fromBlocks_apply₂₁, zero_apply]
+        rw [hx, fromBlocks_apply₂₁, Matrix.zero_apply]
 
 /-- The determinant of a 2×2 block matrix with the upper-right block equal to zero is the product of
 the determinants of the diagonal blocks. For the generalization to any number of blocks, see

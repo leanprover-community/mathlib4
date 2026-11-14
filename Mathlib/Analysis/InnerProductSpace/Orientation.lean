@@ -32,7 +32,6 @@ This file provides definitions and proves lemmas about orientations of real inne
 * `Orientation.abs_volumeForm_apply_of_pairwise_orthogonal` states that the result of applying the
   volume form to a set of `n` orthogonal vectors, where `n` is the dimension the inner product
   space, is equal up to sign to the product of the lengths of the vectors.
-
 -/
 
 @[expose] public section
@@ -167,7 +166,7 @@ variable [_i : Fact (finrank ℝ E = n)] (o : Orientation ℝ E (Fin n))
 /-- The volume form on an oriented real inner product space, a nonvanishing top-dimensional
 alternating form uniquely defined by compatibility with the orientation and inner product structure.
 -/
-irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
+@[no_expose] def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
   classical
     cases n with
     | zero =>

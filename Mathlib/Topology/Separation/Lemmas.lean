@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Separation.CompletelyRegular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further separation lemmas
 -/
