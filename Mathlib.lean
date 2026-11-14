@@ -3324,6 +3324,7 @@ public import Mathlib.CategoryTheory.Monoidal.Limits.HasLimits
 public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 public import Mathlib.CategoryTheory.Monoidal.Limits.Shapes.Pullback
 public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Linear.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Mod
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Multifunctor
@@ -3332,6 +3333,7 @@ public import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 public import Mathlib.CategoryTheory.Monoidal.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Opposite.Mon
 public import Mathlib.CategoryTheory.Monoidal.Preadditive
+public import Mathlib.CategoryTheory.Monoidal.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
