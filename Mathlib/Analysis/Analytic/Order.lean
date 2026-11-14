@@ -392,15 +392,20 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
 
 lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
-    (hf : AnalyticAt 𝕜 f z₀) {k n : ℕ} [CharZero 𝕜] :
-    n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+    {k n : ℕ} [CharZero 𝕜] :
+    n = analyticOrderAt f z₀ → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
   induction k generalizing n with
-  | zero => exact fun Hn Hpos Hk ↦ Hn.symm
+  | zero => exact fun Hn Hk ↦ Hn.symm
   | succ n' hk =>
-    intro Hn Hpos Hk
+    intro Hn Hk
+    have hf : AnalyticAt 𝕜 f z₀ := by
+      by_contra h
+      have h0 : (n : ℕ∞) = 0 := Hn.trans (analyticOrderAt_eq_zero.mpr (.inl h))
+      norm_cast at h0
+      lia
     rw [Function.iterate_succ']
     have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by
-      refine (hk Hn Hpos (by lia)).trans ?_
+      refine (hk Hn (by lia)).trans ?_
       have : (n - n'.succ) + 1 = n - n' := by grind
       rw [← this]
       simp

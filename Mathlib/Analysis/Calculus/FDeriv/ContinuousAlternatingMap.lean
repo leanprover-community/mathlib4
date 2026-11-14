@@ -54,7 +54,7 @@ theorem ContinuousAlternatingMap.hasStrictFDerivAt_toContinuousMultilinearMap_co
       ContinuousLinearMap.comp_apply, ← map_sub]
     apply LinearMap.isBigOTVS_rev_comp
     simp [isEmbedding_toContinuousMultilinearMap.nhds_eq_comap]
-  · exact (toContinuousMultilinearMapCLM 𝕜).hasStrictFDerivAt.comp x h
+  · exact (toContinuousMultilinearMapCLM 𝕜).comp_hasStrictFDerivAt h
 
 section HasFDerivAt
 
