@@ -373,21 +373,19 @@ instance (priority := low) : WellFoundedGT α :=
 
 variable [LocallyFiniteOrder α]
 
-theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
-  simpa [← coe_subset] using Set.Icc_subset_Ici_self
+@[simp] theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by simp [← coe_subset]
 
-theorem Ico_subset_Ici_self : Ico a b ⊆ Ici a := by
-  simpa [← coe_subset] using Set.Ico_subset_Ici_self
+@[simp] theorem Ico_subset_Ici_self : Ico a b ⊆ Ici a := by simp [← coe_subset]
 
-theorem Ioc_subset_Ioi_self : Ioc a b ⊆ Ioi a := by
-  simpa [← coe_subset] using Set.Ioc_subset_Ioi_self
+@[simp] theorem Ioc_subset_Ioi_self : Ioc a b ⊆ Ioi a := by simp [← coe_subset]
 
-theorem Ioo_subset_Ioi_self : Ioo a b ⊆ Ioi a := by
-  simpa [← coe_subset] using Set.Ioo_subset_Ioi_self
+@[simp] theorem Ioo_subset_Ioi_self : Ioo a b ⊆ Ioi a := by simp [← coe_subset]
 
+@[simp]
 theorem Ioc_subset_Ici_self : Ioc a b ⊆ Ici a :=
   Ioc_subset_Icc_self.trans Icc_subset_Ici_self
 
+@[simp]
 theorem Ioo_subset_Ici_self : Ioo a b ⊆ Ici a :=
   Ioo_subset_Ico_self.trans Ico_subset_Ici_self
 
@@ -445,21 +443,19 @@ theorem sup_Iic_of_monotone {β : Type*} [SemilatticeSup β] [OrderBot β] {f : 
 
 variable [LocallyFiniteOrder α]
 
-theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := by
-  simpa [← coe_subset] using Set.Icc_subset_Iic_self
+@[simp] theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := by simp [← coe_subset]
 
-theorem Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := by
-  simpa [← coe_subset] using Set.Ioc_subset_Iic_self
+@[simp] theorem Ioc_subset_Iic_self : Ioc a b ⊆ Iic b := by simp [← coe_subset]
 
-theorem Ico_subset_Iio_self : Ico a b ⊆ Iio b := by
-  simpa [← coe_subset] using Set.Ico_subset_Iio_self
+@[simp] theorem Ico_subset_Iio_self : Ico a b ⊆ Iio b := by simp [← coe_subset]
 
-theorem Ioo_subset_Iio_self : Ioo a b ⊆ Iio b := by
-  simpa [← coe_subset] using Set.Ioo_subset_Iio_self
+@[simp] theorem Ioo_subset_Iio_self : Ioo a b ⊆ Iio b := by simp [← coe_subset]
 
+@[simp]
 theorem Ico_subset_Iic_self : Ico a b ⊆ Iic b :=
   Ico_subset_Icc_self.trans Icc_subset_Iic_self
 
+@[simp]
 theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
   Ioo_subset_Ioc_self.trans Ioc_subset_Iic_self
 

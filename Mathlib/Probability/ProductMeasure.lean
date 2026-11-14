@@ -379,6 +379,36 @@ instance : IsProbabilityMeasure (infinitePi μ) := by
   rw [← cylinder_univ ∅, cylinder, ← map_apply (measurable_restrict _) .univ,
     infinitePi_map_restrict, measure_univ]
 
+open MeasurableSpace in
+/-- To prove that a measure is equal to the product measure it is enough to check that
+it gives the same measure to measurable boxes. -/
+theorem eq_infinitePi_generateFrom {ν : Measure (Π i, X i)} {C : (i : ι) → Set (Set (X i))}
+    (hC1 : ∀ i, generateFrom (C i) = mX i) (hC2 : ∀ i, IsPiSystem (C i))
+    (hC3 : ∀ i, Set.univ ∈ C i)
+    (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
+      (∀ i ∈ s, (t i) ∈ C i) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
+    ν = infinitePi μ := by
+  refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
+  refine fun s ↦ (pi_eq_generateFrom (C := fun i : s ↦ C i) ?_ ?_ ?_ fun t ht ↦ ?_).symm
+  · grind
+  · grind
+  · intro i
+    constructor
+    · exact fun _ ↦ hC3 i
+    · simp
+    · simp [Set.iUnion_const]
+  classical
+  rw [Measure.map_apply, restrict_preimage_univ, hν, ← prod_attach, univ_eq_attach]
+  · congr with i
+    rw [dite_eq_left i.2]
+  · rintro i hi
+    simpa [hi] using ht ⟨i, hi⟩
+  · fun_prop
+  · refine .univ_pi (fun ⟨i, hi⟩ ↦ ?_)
+    rw [← hC1]
+    apply measurableSet_generateFrom
+    exact ht _
+
 /-- To prove that a measure is equal to the product measure it is enough to check that
 it gives the same measure to measurable boxes. -/
 theorem eq_infinitePi {ν : Measure (Π i, X i)}
@@ -408,6 +438,33 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · rw [univ_eq_attach, prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
+
+lemma infinitePi_prod_infinitePi {ν : (i : ι) → Measure (X i)} [∀ i, IsProbabilityMeasure (ν i)] :
+    ((infinitePi μ).prod (infinitePi ν)).map (fun p i ↦ (p.1 i, p.2 i)) =
+      infinitePi (fun i ↦ (μ i).prod (ν i)) := by
+  apply eq_infinitePi_generateFrom (μ := fun i ↦ (μ i).prod (ν i))
+    (C := fun i ↦ Set.image2 (· ×ˢ ·) ({s : Set (X i) | MeasurableSet s})
+      ({s : Set (X i) | MeasurableSet s}))
+  · intro i
+    exact generateFrom_prod
+  · intro i
+    exact isPiSystem_prod
+  · exact fun i ↦ ⟨Set.univ, .univ, Set.univ, .univ, by simp⟩
+  intro s t ht
+  choose! u hu v hv ht using ht
+  have h1 : Set.pi s t = Set.pi s (fun i ↦ (u i) ×ˢ v i) := by grind
+  have h2 : (fun p i ↦ (p.1 i, p.2 i)) ⁻¹' (Set.pi s (fun i ↦ (u i) ×ˢ (v i))
+        : Set ((i : ι) → (X i × X i))) =
+      (Set.pi s u) ×ˢ (Set.pi s v) := by grind
+  rw [map_apply, h1, h2, prod_prod, infinitePi_pi, infinitePi_pi, ← prod_mul_distrib]
+  · refine prod_congr rfl fun i hi ↦ ?_
+    rw [← ht i hi, ← prod_prod]
+  · exact hv
+  · exact hu
+  · fun_prop
+  · refine .pi s.countable_toSet (fun i hi ↦ ?_)
+    rw [← ht i hi]
+    exact (hu i hi).prod (hv i hi)
 
 theorem infinitePi_map_restrict' {I : Set ι} :
     (infinitePi μ).map I.domRestrict = infinitePi fun i : I ↦ μ i := by
