@@ -626,10 +626,12 @@ instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : 
 namespace Normal
 
 @[to_additive]
-theorem conj_mem' (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
+theorem conj_inv_mem (nH : H.Normal) (n : G) (hn : n ∈ H) (g : G) :
     g⁻¹ * n * g ∈ H := by
   convert nH.conj_mem n hn g⁻¹
   rw [inv_inv]
+
+@[to_additive, deprecated (since := "2026-11-12")] alias conj_mem' := conj_inv_mem
 
 @[to_additive]
 theorem mem_comm (nH : H.Normal) {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
@@ -639,6 +641,14 @@ theorem mem_comm (nH : H.Normal) {a b : G} (h : a * b ∈ H) : b * a ∈ H := by
 @[to_additive]
 theorem mem_comm_iff (nH : H.Normal) {a b : G} : a * b ∈ H ↔ b * a ∈ H :=
   ⟨nH.mem_comm, nH.mem_comm⟩
+
+@[to_additive (attr := simp)]
+theorem conj_mem_iff [hH : H.Normal] (n g : G) : g * n * g⁻¹ ∈ H ↔ n ∈ H := by
+  rw [mul_assoc, hH.mem_comm_iff, inv_mul_cancel_right]
+
+@[to_additive (attr := simp)]
+theorem conj_inv_mem_iff [hH : H.Normal] (n g : G) : g⁻¹ * n * g ∈ H ↔ n ∈ H := by
+  rw [mul_assoc, hH.mem_comm_iff, mul_inv_cancel_right]
 
 end Normal
 

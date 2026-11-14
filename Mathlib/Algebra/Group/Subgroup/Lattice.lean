@@ -644,7 +644,7 @@ theorem mem_sup_of_normal_right {s t : Subgroup G} [ht : t.Normal] {x : G} :
     · exact ⟨1, s.one_mem, 1, t.one_mem, by simp⟩
     · rintro _ _ _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨y₁ * y₂, s.mul_mem hy₁ hy₂,
-            (y₂⁻¹ * z₁ * y₂) * z₂, t.mul_mem (ht.conj_mem' z₁ hz₁ y₂) hz₂, by simp [mul_assoc]⟩
+            (y₂⁻¹ * z₁ * y₂) * z₂, t.mul_mem (ht.conj_inv_mem z₁ hz₁ y₂) hz₂, by simp [mul_assoc]⟩
     · rintro _ _ ⟨y, hy, z, hz, rfl⟩
       exact ⟨y⁻¹, s.inv_mem hy,
             y * z⁻¹ * y⁻¹, ht.conj_mem z⁻¹ (t.inv_mem hz) y, by simp [mul_assoc]⟩
@@ -656,7 +656,7 @@ theorem mem_sup_of_normal_left {s t : Subgroup G} [hs : s.Normal] {x : G} :
   have h := (sup_comm t s) ▸ mem_sup_of_normal_right (s := t) (t := s) (x := x)
   exact h.trans
     ⟨fun ⟨y, hy, z, hz, hp⟩ ↦ ⟨y * z * y⁻¹, hs.conj_mem z hz y, y, hy, by simp [hp]⟩,
-    fun ⟨y, hy, z, hz, hp⟩ ↦ ⟨z, hz, z⁻¹ * y * z, hs.conj_mem' y hy z, by simp [mul_assoc, hp]⟩⟩
+    fun ⟨y, hy, z, hz, hp⟩ ↦ ⟨z, hz, z⁻¹ * y * z, hs.conj_inv_mem y hy z, by simp [mul_assoc, hp]⟩⟩
 
 @[to_additive]
 theorem mem_closure_pair {x y z : C} :

@@ -449,7 +449,7 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
   to_normal := by
     apply normal_iff_forall_map_le'.mpr
     rintro σ x ⟨a, ha, rfl⟩ τ
-    exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.1 τ.2 σ⟩)
+    exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_inv_mem hn τ.1 τ.2 σ⟩)
 
 /-- If `H` is a normal Subgroup of `Gal(L / K)`, then `Gal(fixedField H / K)` is isomorphic to
 `Gal(L / K) ⧸ H`. -/

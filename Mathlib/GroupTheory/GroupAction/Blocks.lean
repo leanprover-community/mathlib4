@@ -438,7 +438,7 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
     simp only [Subgroup.mk_smul]
     rw [smul_smul, inv_mul_cancel_right, ← smul_smul]
   · rintro ⟨⟨k, hk⟩, rfl⟩
-    use ⟨g⁻¹ * k * g, nN.conj_mem' k hk g⟩
+    use ⟨g⁻¹ * k * g, nN.conj_inv_mem k hk g⟩
     simp only [Subgroup.mk_smul]
     simp only [← smul_smul, smul_inv_smul]
 

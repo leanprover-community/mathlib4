@@ -47,7 +47,7 @@ theorem IsGaloisGroup.smul_mem_of_normal (N : Subgroup G) [hN : N.Normal]
   apply hC.isInvariant.isInvariant (g • algebraMap C B x)
   intro n
   rw [← inv_smul_eq_iff, Subgroup.smul_def, ← mul_smul, ← mul_smul]
-  exact Subgroup.smul_algebraMap B (hN.conj_mem' n n.prop g) x
+  exact Subgroup.smul_algebraMap B (hN.conj_inv_mem n n.prop g) x
 
 @[deprecated (since := "2026-05-28")] alias smul_eq_self := Subgroup.smul_algebraMap
 @[deprecated (since := "2026-05-28")] alias smul_mem_of_normal := IsGaloisGroup.smul_mem_of_normal

@@ -595,7 +595,7 @@ lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
     g • a ∈ MulAction.fixedPoints H α := by
   intro h
   rw [Subgroup.smul_def, ← inv_smul_eq_iff, smul_smul, smul_smul]
-  exact ha ⟨_, hH.conj_mem' _ h.2 _⟩
+  exact ha ⟨_, hH.conj_inv_mem _ h.2 _⟩
 
 /-- The set of fixed points of a normal subgroup is stable under the group action. -/
 @[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]

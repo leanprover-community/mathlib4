@@ -407,7 +407,7 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
         abel
       _ = x g - A.ρ g y + y := by
         simp [eq_sub_of_add_eq' (h1 g (g⁻¹ * s * g)).symm,
-          h2 (g⁻¹ * s * g) (Subgroup.Normal.conj_mem' ‹_› _ s.2 _)]
+          h2 (g⁻¹ * s * g) (Subgroup.Normal.conj_inv_mem ‹_› _ s.2 _)]
   · intro g h hgh
     have := congr(A.ρ g $(h2 (g⁻¹ * h) <| QuotientGroup.leftRel_apply.1 hgh))
     simp_all [← sub_eq_add_neg, sub_eq_sub_iff_sub_eq_sub]
