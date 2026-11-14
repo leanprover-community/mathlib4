@@ -37,6 +37,7 @@ variable [TopologicalSpace β] [ENorm ε] [TopologicalSpace ε]
 
 /-- A function `f` is strongly measurable at a filter `l` w.r.t. a measure `μ` if it is
 ae strongly measurable w.r.t. `μ.restrict s` for some `s ∈ l`. -/
+@[fun_prop]
 def StronglyMeasurableAtFilter (f : α → β) (l : Filter α) (μ : Measure α := by volume_tac) :=
   ∃ s ∈ l, AEStronglyMeasurable f (μ.restrict s)
 
@@ -91,6 +92,7 @@ alias HasFiniteIntegral.restrict_of_bounded_enorm := HasFiniteIntegral.restrict_
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
+@[fun_prop]
 def IntegrableOn (f : α → ε) (s : Set α) (μ : Measure α := by volume_tac) : Prop :=
   Integrable f (μ.restrict s)
 
