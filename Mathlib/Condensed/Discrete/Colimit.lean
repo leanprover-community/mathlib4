@@ -260,7 +260,7 @@ finite sets is isomorphic to `finYoneda F`.
 @[simps! +dsimpLhs]
 def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toProfinite.obj X.unop)) fun _ ↦ by
-    simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
+    simp only [comp_obj, Functor.op_obj, finYoneda_obj, Functor.comp_map, Functor.op_map]
     ext
     simp only [isoFinYonedaComponents_hom, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
       ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, toProfinite_obj,
@@ -295,7 +295,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
     (locallyConstantPresheaf _).map g ≫ counitAppApp (Opposite.unop S) X by
       simpa [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp]
   erw [(counitApp.{u, u + 1} X).naturality]
-  simp only [← Category.assoc, op_obj, functorToPresheaves_obj_obj]
+  simp only [← Category.assoc, Functor.op_obj, functorToPresheaves_obj_obj]
   congr
   ext f
   simp only [toProfinite_obj, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
@@ -550,7 +550,7 @@ finite sets is isomorphic to `finYoneda F`.
 @[simps! +dsimpLhs]
 def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
   NatIso.ofComponents (fun X ↦ isoFinYonedaComponents F (toLightProfinite.obj X.unop)) fun _ ↦ by
-    simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
+    simp only [comp_obj, Functor.op_obj, finYoneda_obj, Functor.comp_map, Functor.op_map]
     ext
     simp only [isoFinYonedaComponents_hom, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
       ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, toLightProfinite_obj,
@@ -586,7 +586,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
     (locallyConstantPresheaf _).map g ≫ counitAppApp (Opposite.unop S) X by
       simpa [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp]
   erw [(counitApp.{u, u} X).naturality]
-  simp only [← Category.assoc, op_obj, functorToPresheaves_obj_obj]
+  simp only [← Category.assoc, Functor.op_obj, functorToPresheaves_obj_obj]
   congr
   ext f
   apply presheaf_ext.{u, u} (X := X) (Y := X) (f := f)

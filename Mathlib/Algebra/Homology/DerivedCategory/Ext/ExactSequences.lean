@@ -335,13 +335,13 @@ lemma δ_exact₁ {n₀ : ℕ} (x₁ : Ext S.X₁ Y n₀) {n₁ : ℕ} (hn₁ : 
     (hx₁ : Ext.δ hS n₀ n₁ hn₁ x₁ = 0) :
     ∃ (x₂ : Ext S.X₂ Y n₀), (mk₀ S.f).comp x₂ (zero_add n₀) = x₁ :=
   contravariant_sequence_exact₁ hS Y x₁ (n₁ := n₁) (by lia)
-    (by simpa [δ_apply, Units.smul_def] using hx₁)
+    (by simpa [Ext.δ_apply, Units.smul_def] using hx₁)
 
 lemma δ_exact₃ {n₁ : ℕ} (x₃ : Ext S.X₃ Y n₁) (hx₃ : (mk₀ S.g).comp x₃ (zero_add n₁) = 0)
     {n₀ : ℕ} (hn₀ : n₀ + 1 = n₁) :
     ∃ (x₁ : Ext S.X₁ Y n₀), Ext.δ hS n₀ n₁ hn₀ x₁ = x₃ := by
   obtain ⟨x₁, hx₁⟩ := contravariant_sequence_exact₃ hS Y x₃ hx₃ (n₀ := n₀) (by lia)
-  exact ⟨Int.negOnePow n₁ • x₁, by simpa [δ_apply, smul_smul]⟩
+  exact ⟨Int.negOnePow n₁ • x₁, by simpa [Ext.δ_apply, smul_smul]⟩
 
 end ContravariantSequence
 

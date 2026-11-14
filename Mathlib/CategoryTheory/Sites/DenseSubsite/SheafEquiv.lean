@@ -84,7 +84,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     have := (isPointwiseRightKanExtensionRanCounit G.op Y.1 (.op (G.obj U))).fac c (.mk (𝟙 _))
     simp only [id_obj, comp_obj, StructuredArrow.proj_obj, StructuredArrow.mk_right,
       RightExtension.coneAt_pt, RightExtension.mk_left, RightExtension.coneAt_π_app,
-      const_obj_obj, op_obj, StructuredArrow.mk_hom_eq_self, map_id, whiskeringLeft_obj_obj,
+      const_obj_obj, Functor.op_obj, StructuredArrow.mk_hom_eq_self, map_id, whiskeringLeft_obj_obj,
       RightExtension.mk_hom, Category.id_comp] at this
     simp only [c, id_obj, yoneda_map_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, this]
     apply Y.2.hom_ext ⟨_, IsDenseSubsite.imageSieve_mem J K G (𝟙 (G.obj U))⟩ _ _ fun I ↦ ?_

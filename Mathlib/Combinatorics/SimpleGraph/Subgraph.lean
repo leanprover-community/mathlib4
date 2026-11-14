@@ -174,7 +174,7 @@ attribute [grind =] Subgraph.spanningCoe_adj
 lemma spanningCoe_coe (G' : G.Subgraph) : G'.coe.spanningCoe = G'.spanningCoe := by
   ext
   simp only [map_adj, Function.Embedding.subtype_apply, Subtype.exists]
-  grind [coe_adj, edge_vert, adj_symm]
+  grind [Subgraph.coe_adj, edge_vert, adj_symm]
 
 theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCoe.Adj u v) :
     G.Adj u v :=
@@ -663,7 +663,7 @@ lemma map_comp {U : Type*} {G'' : SimpleGraph U} (H : G.Subgraph) (f : G →g G'
 @[gcongr] lemma map_mono {H₁ H₂ : G.Subgraph} (hH : H₁ ≤ H₂) : H₁.map f ≤ H₂.map f := by
   constructor
   · intro
-    simp only [map_verts, Set.mem_image, forall_exists_index, and_imp]
+    simp only [Subgraph.map_verts, Set.mem_image, forall_exists_index, and_imp]
     rintro v hv rfl
     exact ⟨_, hH.1 hv, rfl⟩
   · rintro _ _ ⟨u, v, ha, rfl, rfl⟩
@@ -672,7 +672,7 @@ lemma map_comp {U : Type*} {G'' : SimpleGraph U} (H : G.Subgraph) (f : G →g G'
 lemma map_monotone : Monotone (Subgraph.map f) := fun _ _ ↦ map_mono
 
 theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f = H₁.map f ⊔ H₂.map f := by
-  ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
+  ext <;> simp [Set.image_union, sup_adj, Relation.Map, or_and_right, exists_or]
 
 @[simp] lemma map_iso_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.map e.toHom ⊤ = ⊤ := by
   ext <;> simp [Relation.Map, ← e.eq_symm_apply, ← e.map_rel_iff]
@@ -704,10 +704,10 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
   intro H H' h
   constructor
   · intro
-    simp only [comap_verts, Set.mem_preimage]
+    simp only [Subgraph.comap_verts, Set.mem_preimage]
     apply h.1
   · intro v w
-    simp +contextual only [comap_adj, and_imp, true_and]
+    simp +contextual only [Subgraph.comap_adj, and_imp, true_and]
     intro
     apply h.2
 
@@ -717,14 +717,14 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
 theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) (H' : G'.Subgraph) :
     H.map f ≤ H' ↔ H ≤ H'.comap f := by
   refine ⟨fun h ↦ ⟨fun v hv ↦ ?_, fun v w hvw ↦ ?_⟩, fun h ↦ ⟨fun v ↦ ?_, fun v w ↦ ?_⟩⟩
-  · simp only [comap_verts, Set.mem_preimage]
+  · simp only [Subgraph.comap_verts, Set.mem_preimage]
     exact h.1 ⟨v, hv, rfl⟩
-  · simp only [H.adj_sub hvw, comap_adj, true_and]
+  · simp only [H.adj_sub hvw, Subgraph.comap_adj, true_and]
     exact h.2 ⟨v, w, hvw, rfl, rfl⟩
-  · simp only [map_verts, Set.mem_image, forall_exists_index, and_imp]
+  · simp only [Subgraph.map_verts, Set.mem_image, forall_exists_index, and_imp]
     rintro w hw rfl
     exact h.1 hw
-  · simp only [Relation.Map, map_adj, forall_exists_index, and_imp]
+  · simp only [Relation.Map, Subgraph.map_adj, forall_exists_index, and_imp]
     rintro u u' hu rfl rfl
     exact (h.2 hu).2
 
@@ -930,15 +930,15 @@ theorem singletonSubgraph_le_iff (v : V) (H : G.Subgraph) :
   refine ⟨fun h ↦ h.1 (Set.mem_singleton v), ?_⟩
   intro h
   constructor
-  · rwa [singletonSubgraph_verts, Set.singleton_subset_iff]
+  · rwa [SimpleGraph.singletonSubgraph_verts, Set.singleton_subset_iff]
   · exact fun _ _ ↦ False.elim
 
 @[simp]
 theorem map_singletonSubgraph (f : G →g G') {v : V} :
     Subgraph.map f (G.singletonSubgraph v) = G'.singletonSubgraph (f v) := by
-  ext <;> simp only [Relation.Map, Subgraph.map_adj, singletonSubgraph_adj, Pi.bot_apply,
-    exists_and_left, and_iff_left_iff_imp, Subgraph.map_verts,
-    singletonSubgraph_verts, Set.image_singleton]
+  ext <;> simp only [Relation.Map, Subgraph.map_adj, SimpleGraph.singletonSubgraph_adj,
+    Pi.bot_apply, exists_and_left, and_iff_left_iff_imp, Subgraph.map_verts,
+    SimpleGraph.singletonSubgraph_verts, Set.image_singleton]
   exact False.elim
 
 @[simp]
@@ -951,10 +951,10 @@ theorem edgeSet_singletonSubgraph (v : V) : (G.singletonSubgraph v).edgeSet = �
 
 theorem eq_singletonSubgraph_iff_verts_eq (H : G.Subgraph) {v : V} :
     H = G.singletonSubgraph v ↔ H.verts = {v} := by
-  refine ⟨fun h ↦ by rw [h, singletonSubgraph_verts], fun h ↦ ?_⟩
+  refine ⟨fun h ↦ by rw [h, SimpleGraph.singletonSubgraph_verts], fun h ↦ ?_⟩
   ext
-  · rw [h, singletonSubgraph_verts]
-  · simp only [Prop.bot_eq_false, singletonSubgraph_adj, Pi.bot_apply, iff_false]
+  · rw [h, SimpleGraph.singletonSubgraph_verts]
+  · simp only [Prop.bot_eq_false, SimpleGraph.singletonSubgraph_adj, Pi.bot_apply, iff_false]
     intro ha
     have ha1 := ha.fst_mem
     have ha2 := ha.snd_mem
@@ -1145,8 +1145,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     G'.coe.deleteEdges s = (G'.deleteEdges (Sym2.map (↑) '' s)).coe := by
   ext ⟨v, hv⟩ ⟨w, hw⟩
-  simp only [SimpleGraph.deleteEdges_adj, coe_adj, deleteEdges_adj, Set.mem_image, not_exists,
-    not_and, and_congr_right_iff]
+  simp only [SimpleGraph.deleteEdges_adj, Subgraph.coe_adj, deleteEdges_adj, Set.mem_image,
+    not_exists, not_and, and_congr_right_iff]
   intro
   constructor
   · intro hs

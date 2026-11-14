@@ -43,7 +43,7 @@ protected def sum (G : SimpleGraph V) (H : SimpleGraph W) : SimpleGraph (V ⊕ W
 
 @[inherit_doc] infixl:60 " ⊕g " => SimpleGraph.sum
 
-attribute [grind =] sum_adj
+attribute [grind =] SimpleGraph.sum_adj
 
 theorem sum_adj_inl : (G ⊕g H).Adj (.inl v) (.inl v') ↔ G.Adj v v' := by
   simp

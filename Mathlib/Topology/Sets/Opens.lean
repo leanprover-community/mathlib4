@@ -267,13 +267,13 @@ theorem mem_himp {U V : Opens α} {x : α} : x ∈ U ⇨ V ↔ ∃ W : Opens α,
 
 theorem himp_def {U V : Opens α} : U ⇨ V = Opens.interior ((U : Set α) ⇨ V) := by
   ext x
-  simp_rw [BooleanAlgebra.himp_eq, coe_interior, _root_.mem_interior,
+  simp_rw [BooleanAlgebra.himp_eq, Opens.coe_interior, _root_.mem_interior,
     SetLike.mem_coe, mem_himp, ← SetLike.coe_subset_coe, coe_inf, inter_subset]
   exact ⟨fun ⟨⟨W, hW⟩, hsub, hx⟩ => ⟨W, union_comm _ _ ▸ hsub, hW, hx⟩,
     fun ⟨W, hsub, hW, hx⟩ => ⟨⟨W, hW⟩, union_comm _ _ ▸ hsub, hx⟩⟩
 
 theorem coe_himp {U V : Opens α} : ↑(U ⇨ V) = interior ((U : Set α) ⇨ V) := by
-  rw [himp_def, coe_interior]
+  rw [himp_def, Opens.coe_interior]
 
 theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Disjoint V U ∧ x ∈ V := by
   simp [compl_eq_sSup_disjoint]
@@ -282,7 +282,7 @@ theorem interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ :=
   simp [← himp_bot, himp_def]
 
 theorem coe_compl_eq_interior_compl {U : Opens α} : ↑(Uᶜ) = interior (U : Set α)ᶜ := by
-  rw [← interior_compl, coe_interior]
+  rw [← interior_compl, Opens.coe_interior]
 
 /-- The coercion from open sets to sets as a `FrameHom`. -/
 @[simps] protected def frameHom : FrameHom (Opens α) (Set α) where

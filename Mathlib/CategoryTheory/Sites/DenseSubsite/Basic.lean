@@ -192,7 +192,7 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
     {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
     pushforwardFamily α x f (Presieve.in_coverByImage G f) = α.app (op Y) (ℱ.map f.op x) := by
-  simp only [pushforwardFamily_def, op_obj]
+  simp only [pushforwardFamily_def, Functor.op_obj]
   generalize Nonempty.some (Presieve.in_coverByImage G f) = l
   obtain ⟨W, iYW, iWX, rfl⟩ := l
   simp only [← op_comp, ← Functor.map_comp_apply, naturality_apply]

@@ -135,8 +135,8 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
     discr K (hζ.powerBasis K).basis =
       (-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
   rcases k with - | k
-  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero,
-      show 1 / 2 = 0 by rfl, discr, traceMatrix]
+  · simp only [coe_basis, _root_.pow_zero, IsPrimitiveRoot.powerBasis_gen _ hζ, totient_one,
+      mul_zero, show 1 / 2 = 0 by rfl, discr, traceMatrix]
     have hζone : ζ = 1 := by simpa using hζ
     rw [hζ.powerBasis_dim _, hζone, ← (algebraMap K L).map_one,
       minpoly.eq_X_sub_C_of_algebraMap_inj _ (algebraMap K L).injective, natDegree_X_sub_C]
@@ -157,8 +157,9 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact p
           minpoly.eq_X_sub_C_of_algebraMap_inj _ (FaithfulSMul.algebraMap_injective K L)]
         exact natDegree_X_sub_C (-1)
       rcases Fin.equiv_iff_eq.2 this with ⟨e⟩
-      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis, powerBasis_gen]
-      simp only [powerBasis_dim,
+      rw [← Algebra.discr_reindex K (hζ.powerBasis K).basis e, coe_basis,
+        IsPrimitiveRoot.powerBasis_gen]
+      simp only [IsPrimitiveRoot.powerBasis_dim,
         zero_add, pow_one, totient_two, reduceDiv, pow_zero, cast_ofNat, tsub_self,
         Nat.add_one_sub_one, mul_one, mul_zero]
       simp_rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp]

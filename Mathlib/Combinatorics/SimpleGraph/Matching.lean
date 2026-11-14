@@ -282,7 +282,7 @@ lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMat
 @[simp]
 lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
     (G'.toSubgraph M.spanningCoe h).IsPerfectMatching ↔ M.IsPerfectMatching := by
-  simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
+  simp only [isPerfectMatching_iff, toSubgraph_adj, Subgraph.spanningCoe_adj]
 
 end Subgraph
 
@@ -443,7 +443,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
   obtain ⟨w', hw'⟩ := hM'.1 (hM'.2 v)
   simp only [symmDiff_def, Set.ncard_eq_two, ne_eq, imp_iff_not_or, Set.not_nonempty_iff_eq_empty,
     Set.eq_empty_iff_forall_notMem, SimpleGraph.mem_neighborSet, SimpleGraph.sup_adj, sdiff_adj,
-    spanningCoe_adj, not_or, not_and, not_not]
+    Subgraph.spanningCoe_adj, not_or, not_and, not_not]
   by_cases hww' : w = w'
   · simp_all [← imp_iff_not_or]
   · right

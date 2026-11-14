@@ -73,7 +73,7 @@ theorem restrictSurjective_of_add_le_ENatCard (hn : m + n ≤ ENat.card α) :
       (by simpa [← Nat.card_coe_set_eq, Nat.card_range_of_injective x.injective])
   use append hxy
   ext i
-  simp [trans_apply, coe_castAddEmb, append]
+  simp [Embedding.trans_apply, coe_castAddEmb, append]
 
 theorem restrictSurjective_of_le_ENatCard (hmn : m ≤ n) (hn : n ≤ ENat.card α) :
     Function.Surjective (fun x : Fin n ↪ α ↦ (castLEEmb hmn).trans x) := by

@@ -590,7 +590,7 @@ def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ 
     (by
       intros
       ext
-      simp only [comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
+      simp only [NormedAddGroupHom.comp_apply, Pi.add_apply, AddMonoidHom.add_apply,
         AddMonoidHom.mk'_apply, coe_add])
 
 @[simp]
@@ -649,7 +649,7 @@ theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
 the corestriction of `f` to the kernel of `g`. -/
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
-  toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩
+  toFun v := ⟨f v, by rw [g.mem_ker, ← NormedAddGroupHom.comp_apply g f, h, zero_apply]⟩
   map_add' v w := by simp only [map_add, AddMemClass.mk_add_mk]
   bound' := f.bound'
 
@@ -769,7 +769,8 @@ def ι : NormedAddGroupHom (f.equalizer g) V :=
 
 theorem comp_ι_eq : f.comp (ι f g) = g.comp (ι f g) := by
   ext x
-  rw [comp_apply, comp_apply, ← sub_eq_zero, ← NormedAddGroupHom.sub_apply]
+  rw [NormedAddGroupHom.comp_apply, NormedAddGroupHom.comp_apply, ← sub_eq_zero,
+    ← NormedAddGroupHom.sub_apply]
   exact x.2
 
 variable {f g}
@@ -782,7 +783,8 @@ def lift (φ : NormedAddGroupHom V₁ V) (h : f.comp φ = g.comp φ) :
   toFun v :=
     ⟨φ v,
       show (f - g) (φ v) = 0 by
-        rw [NormedAddGroupHom.sub_apply, sub_eq_zero, ← comp_apply, h, comp_apply]⟩
+        rw [NormedAddGroupHom.sub_apply, sub_eq_zero, ← NormedAddGroupHom.comp_apply, h,
+          NormedAddGroupHom.comp_apply]⟩
   map_add' v₁ v₂ := by
     ext
     simp only [map_add, AddSubgroup.coe_add]

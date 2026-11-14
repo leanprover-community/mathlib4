@@ -169,7 +169,8 @@ theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
 def ofStabilizer.snoc {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     Fin n.succ ↪ α :=
   Fin.Embedding.snoc (x.trans (subtype _)) (a := a) (by
-    simp only [Set.mem_range, trans_apply, Function.Embedding.subtype_apply, not_exists]
+    simp only [Set.mem_range, Function.Embedding.trans_apply, Function.Embedding.subtype_apply,
+      not_exists]
     exact fun i ↦ (x i).prop)
 
 @[to_additive]

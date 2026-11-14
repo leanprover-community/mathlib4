@@ -265,9 +265,9 @@ instance [P.ContainsIdentities] (Y : P.Over ⊤ X) :
   default := Over.homMk Y.hom
   uniq a := by
     ext
-    simp only [mk_left, homMk_hom, Over.homMk_left]
+    simp only [Over.mk_left, Over.homMk_hom, Over.homMk_left]
     rw [← Over.w a]
-    simp only [mk_left, Functor.const_obj_obj, mk_hom, Category.comp_id]
+    simp only [Over.mk_left, Functor.const_obj_obj, Over.mk_hom, Category.comp_id]
 
 /-- `X ⟶ X` is the terminal object of `P.Over ⊤ X`. -/
 def mkIdTerminal [P.ContainsIdentities] :

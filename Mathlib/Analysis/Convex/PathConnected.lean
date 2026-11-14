@@ -45,7 +45,7 @@ protected def segment (a b : E) : Path a b where
 @[simp]
 theorem range_segment (a b : E) : Set.range (Path.segment a b) = [a -[ℝ] b] := by
   rw [segment_eq_image_lineMap, image_eq_range]
-  simp only [← segment_apply]
+  simp only [← Path.segment_apply]
 
 @[simp]
 protected theorem segment_same (a : E) : Path.segment a a = .refl a := by ext; simp

@@ -126,7 +126,7 @@ protected noncomputable def powerBasis : PowerBasis K L :=
 
 theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
     (hζ.powerBasis K).gen ∈ adjoin K ({ζ - 1} : Set L) := by
-  rw [powerBasis_gen, adjoin_singleton_eq_range_aeval, AlgHom.mem_range]
+  rw [IsPrimitiveRoot.powerBasis_gen, adjoin_singleton_eq_range_aeval, AlgHom.mem_range]
   exact ⟨X + 1, by simp⟩
 
 /-- The `PowerBasis` given by `η - 1`. -/

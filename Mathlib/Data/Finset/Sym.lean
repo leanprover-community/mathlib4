@@ -44,11 +44,11 @@ section
 variable {s t : Finset α} {a b : α}
 
 theorem mk_mem_sym2_iff : s(a, b) ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
-  rw [mem_mk, sym2_val, Multiset.mk_mem_sym2_iff, mem_mk, mem_mk]
+  rw [mem_mk, Finset.sym2_val, Multiset.mk_mem_sym2_iff, mem_mk, mem_mk]
 
 @[simp, grind =]
 theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
-  rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
+  rw [mem_mk, Finset.sym2_val, Multiset.mem_sym2_iff]
   simp only [mem_val]
 
 @[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
@@ -111,7 +111,7 @@ theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
 
 @[simp]
 theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
-  rw [← val_eq_zero, sym2_val, Multiset.sym2_eq_zero_iff, val_eq_zero]
+  rw [← val_eq_zero, Finset.sym2_val, Multiset.sym2_eq_zero_iff, val_eq_zero]
 
 @[simp]
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
@@ -125,7 +125,7 @@ theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := rfl
 
 /-- Finset **stars and bars** for the case `n = 2`. -/
 theorem card_sym2 (s : Finset α) : s.sym2.card = Nat.choose (s.card + 1) 2 := by
-  rw [card_def, sym2_val, Multiset.card_sym2, ← card_def]
+  rw [card_def, Finset.sym2_val, Multiset.card_sym2, ← card_def]
 
 end
 

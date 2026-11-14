@@ -76,7 +76,8 @@ theorem equalizerCondition_precomp_of_preservesPullback (P : Cᵒᵖ ⥤ D) (F :
   intro X B π _ c hc
   have h : P.map (F.map π).op = (F.op ⋙ P).map π.op := by simp
   refine ⟨(IsLimit.equivIsoLimit (ForkOfι.ext ?_ _ h)) ?_⟩
-  · simp only [Functor.comp_map, op_map, Quiver.Hom.unop_op, ← map_comp, ← op_comp, c.condition]
+  · simp only [Functor.comp_map, Functor.op_map, Quiver.Hom.unop_op, ← map_comp, ← op_comp,
+      c.condition]
   · refine (hP (F.map π) (PullbackCone.mk (F.map c.fst) (F.map c.snd) ?_) ?_).some
     · simp only [← map_comp, c.condition]
     · exact (isLimitMapConePullbackConeEquiv F c.condition)
