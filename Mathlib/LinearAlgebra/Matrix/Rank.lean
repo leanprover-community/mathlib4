@@ -336,18 +336,6 @@ theorem rank_submatrix_le [CommSemiring R] [StrongRankCondition R] [Finite n] [F
       (Equiv.refl n).symm from rfl, LinearEquiv.range, Submodule.map_top]
   exact Submodule.finrank_map_le _ _
 
-theorem rank_reindex [Finite n] [Finite n₀] [CommSemiring R] (em : m ≃ m₀) (en : n ≃ n₀)
-    (A : Matrix m n R) : rank (A.reindex em en) = rank A := by
-  have := Fintype.ofFinite n
-  have := Fintype.ofFinite n₀
-  rw [← finrank_range_mulVecLin, ← finrank_range_mulVecLin, mulVecLin_reindex, LinearMap.range_comp,
-    LinearMap.range_comp, LinearEquiv.range, Submodule.map_top, LinearEquiv.finrank_map_eq]
-
-@[simp]
-theorem rank_submatrix [Finite n] [Finite n₀] [CommSemiring R] (A : Matrix m n R) (em : m₀ ≃ m)
-    (en : n₀ ≃ n) : rank (A.submatrix em en) = rank A := by
-  simpa only [reindex_apply] using! rank_reindex em.symm en.symm A
-
 @[simp]
 theorem lift_cRank_submatrix {n : Type un} [Semiring R] (A : Matrix m n R) (em : m₀ ≃ m)
     (en : n₀ ≃ n) : lift.{um} (cRank (A.submatrix em en)) = lift.{um₀} (cRank A) :=
@@ -360,6 +348,16 @@ theorem cRank_submatrix {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix 
     (en : n₀ ≃ n) : cRank (A.submatrix em en) = cRank A := by
   simpa [-lift_cRank_submatrix] using A.lift_cRank_submatrix em en
 
+@[simp]
+theorem eRank_submatrix {n : Type un} [Semiring R] (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
+    eRank (A.submatrix em en) = eRank A := by
+  simpa [-lift_cRank_submatrix] using! congr(Cardinal.toENat $(A.lift_cRank_submatrix em en))
+
+@[simp]
+theorem rank_submatrix [Semiring R] (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
+    rank (A.submatrix em en) = rank A := by
+  simp [← eRank_toNat_eq_rank, eRank_submatrix]
+
 theorem lift_cRank_reindex {n : Type un} [Semiring R] (A : Matrix m n R) (em : m ≃ m₀)
     (en : n ≃ n₀) : lift.{um} (cRank (A.reindex em en)) = lift.{um₀} (cRank A) :=
   lift_cRank_submatrix ..
@@ -369,14 +367,13 @@ theorem cRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m 
     (en : n ≃ n₀) : cRank (A.reindex em en) = cRank A :=
   cRank_submatrix ..
 
-@[simp]
-theorem eRank_submatrix {n : Type un} [Semiring R] (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
-    eRank (A.submatrix em en) = eRank A := by
-  simpa [-lift_cRank_submatrix] using! congr(Cardinal.toENat $(A.lift_cRank_submatrix em en))
-
 theorem eRank_reindex {m₀ : Type um₀} {n : Type un} [Semiring R] (A : Matrix m n R) (em : m ≃ m₀)
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
   eRank_submatrix ..
+
+theorem rank_reindex [Semiring R] (em : m ≃ m₀) (en : n ≃ n₀) (A : Matrix m n R) :
+    rank (A.reindex em en) = rank A :=
+  rank_submatrix ..
 
 /-- The rank of a matrix equals the dimension of the range of the corresponding linear map,
 and is therefore independent of the choice of bases. -/
