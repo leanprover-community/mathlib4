@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
 
-import Mathlib.Tactic
 
 /-!
 # The residue of `Gamma` at zero
