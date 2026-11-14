@@ -3,12 +3,15 @@ Copyright (c) 2026 Pablo Cohen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pablo Cohen
 -/
+module
+
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.FLT.Four
+public import Mathlib.NumberTheory.PythagoreanTriples
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
+
 import Mathlib.Data.Nat.Factors
-import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.FLT.Four
-import Mathlib.NumberTheory.PythagoreanTriples
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -52,6 +55,8 @@ forces `2 e ^ 2 = b ^ 4 + c ^ 4` with `|e| ≤ k ^ 2 < a`.
 * `Fermat42Sub` — the difference-form predicate.
 * `not_fermat_42_sub` — no non-zero integer solutions.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -216,8 +221,9 @@ theorem fermat42Sub_caseA_reduces
   -- Then derive `IsCoprime (m - 2k) (m + 2k) = IsCoprime (m - 2k) ((m - 2k) + 4k)`.
   have hcop1 : IsCoprime (m - 2 * k) (2 * k) := by
     -- m - 2k = m + (-1) * (2k).  IsCoprime m (2k) ⟹ IsCoprime (m + (-1)*(2k)) (2k).
-    have := hmn_coprime.add_mul_right_left (-1)
-    simpa using this
+    have hrw : m - 2 * k = m + (-1) * (2 * k) := by ring
+    rw [hrw]
+    exact hmn_coprime.add_mul_right_left (-1)
   -- Derive IsCoprime (m - 2k) 2 from m - 2k odd.
   have hm_minus_odd : (m - 2 * k) % 2 = 1 := by
     rw [Int.sub_emod, hm_odd]; simp [Int.mul_emod]
