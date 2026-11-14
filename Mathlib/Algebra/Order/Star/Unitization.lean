@@ -72,7 +72,7 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid (Unitization R A) :=
   .ofAddSubmonoid isPointed_cone
 
 instance instStarOrderedRing : StarOrderedRing (Unitization R A) :=
-  .of_nonneg_iff (by simp) (by simp [mem_starOrder_iff])
+  .of_nonneg_iff (by simp) (by simp [mem_starOrder_iff, PartialOrder.ofAddSubmonoid_le_iff])
 
 @[simp, norm_cast, grind =]
 lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization R A) ↔ 0 ≤ a := by
