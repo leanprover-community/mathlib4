@@ -127,13 +127,13 @@ end Algebra
 
 variable {v w} in
 theorem inertiaDeg_eq_one (hw : w ∈ unramifiedPlacesOver L v) : v.inertiaDeg w = 1 :=
-  have := (Set.mem_ofPred.1 hw).1
+  have := (Set.mem_ofPred.mp hw).1
   let := algebraOfLiesOver v.1 w.1
   hw.2.finrank_eq_one v ▸ inertiaDeg_eq_finrank v w
 
 variable {v w} in
 theorem inertiaDeg_eq_two (hw : w ∈ ramifiedPlacesOver L v) : v.inertiaDeg w = 2 :=
-  have := (Set.mem_ofPred.1 hw).1
+  have := (Set.mem_ofPred.mp hw).1
   let := algebraOfLiesOver v.1 w.1
   hw.2.finrank_eq_two v ▸ inertiaDeg_eq_finrank v w
 

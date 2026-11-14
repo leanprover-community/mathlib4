@@ -507,7 +507,7 @@ theorem tsum_iUnion_le_sum [Fintype ι'] (f : ι → α) (t : ι' → Set ι) :
 theorem tsum_subtype_eq_tsum_support (s : Set ι) (f : ι → α) :
     ∑' (x : s), f x = ∑' (x : {x | x ∈ s ∧ f x ≠ 0}), f x := by
   have hu : s = {i | i ∈ s ∧ f i ≠ 0} ∪ {i | i ∈ s ∧ f i = 0} := by
-    simp only [Set.ext_iff, ne_eq, mem_union, mem_ofPred_eq]
+    simp only [Set.ext_iff, ne_eq, mem_union, mem_ofPred]
     grind
   have hrw : ∑' i : {i | i ∈ s ∧ f i = 0}, f i = 0 := by simp
   rw [hu, tsum_union_of_disjoint (by grind), hrw, add_zero, ← hu]
