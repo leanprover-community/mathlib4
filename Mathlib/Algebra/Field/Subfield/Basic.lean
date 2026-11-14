@@ -177,6 +177,11 @@ theorem map_le_iff_le_comap {f : K →+* L} {s : Subfield K} {t : Subfield L} :
 theorem gc_map_comap (f : K →+* L) : GaloisConnection (map f) (comap f) := fun _ _ =>
   map_le_iff_le_comap
 
+/-- `map f` and `comap f` form a `GaloisCoinsertion`, since a ring homomorphism out of a field is
+injective. -/
+def gciMapComap (f : K →+* L) : GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun S x ↦ by simp
+
 end Subfield
 
 namespace RingHom
@@ -201,6 +206,10 @@ theorem mem_fieldRange {f : K →+* L} {y : L} : y ∈ f.fieldRange ↔ ∃ x, f
 theorem fieldRange_eq_map : f.fieldRange = Subfield.map f ⊤ := by
   ext
   simp
+
+/-- The image of `⊤` under a ring homomorphism is its field range. -/
+theorem _root_.Subfield.map_top : (⊤ : Subfield K).map f = f.fieldRange :=
+  (fieldRange_eq_map f).symm
 
 theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
   simpa only [fieldRange_eq_map] using (⊤ : Subfield K).map_map g f
@@ -405,6 +414,57 @@ theorem map_bot (f : K →+* L) : (⊥ : Subfield K).map f = ⊥ :=
 @[simp]
 theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   (gc_map_comap f).u_top
+
+theorem map_comap_eq (f : K →+* L) (s : Subfield L) : (s.comap f).map f = s ⊓ f.fieldRange :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : K →+* L} {s : Subfield L} (h : s ≤ f.fieldRange) : (s.comap f).map f = s := by
+  simpa only [inf_of_le_left h] using map_comap_eq f s
+
+theorem map_comap_eq_self_of_surjective
+    {f : K →+* L} (hf : Function.Surjective f) (s : Subfield L) : (s.comap f).map f = s :=
+  SetLike.coe_injective (Set.image_preimage_eq _ hf)
+
+section GaloisCoinsertion
+
+variable {ι : Sort*} (f : K →+* L)
+
+theorem comap_map (s : Subfield K) : (s.map f).comap f = s :=
+  (gciMapComap f).u_l_eq _
+
+theorem comap_surjective : Function.Surjective (comap f) :=
+  (gciMapComap f).u_surjective
+
+theorem map_injective : Function.Injective (map f) :=
+  (gciMapComap f).l_injective
+
+theorem comap_inf_map (S T : Subfield K) : (S.map f ⊓ T.map f).comap f = S ⊓ T :=
+  (gciMapComap f).u_inf_l _ _
+
+theorem comap_iInf_map (S : ι → Subfield K) : (⨅ i, (S i).map f).comap f = ⨅ i, S i :=
+  (gciMapComap f).u_iInf_l _
+
+theorem comap_sup_map (S T : Subfield K) : (S.map f ⊔ T.map f).comap f = S ⊔ T :=
+  (gciMapComap f).u_sup_l _ _
+
+theorem comap_iSup_map (S : ι → Subfield K) : (⨆ i, (S i).map f).comap f = ⨆ i, S i :=
+  (gciMapComap f).u_iSup_l _
+
+theorem map_le_map_iff {S T : Subfield K} : S.map f ≤ T.map f ↔ S ≤ T :=
+  (gciMapComap f).l_le_l_iff
+
+/-- `comap f` preserves the supremum of two subfields lying in the range of `f`. -/
+theorem comap_sup {S T : Subfield L} (hS : S ≤ f.fieldRange) (hT : T ≤ f.fieldRange) :
+    (S ⊔ T).comap f = S.comap f ⊔ T.comap f := by
+  rw [← map_comap_eq_self hS, ← map_comap_eq_self hT, comap_sup_map, comap_map, comap_map]
+
+/-- `comap f` preserves the supremum of a family of subfields lying in the range of `f`. -/
+theorem comap_iSup {S : ι → Subfield L} (hS : ∀ i, S i ≤ f.fieldRange) :
+    (⨆ i, S i).comap f = ⨆ i, (S i).comap f := by
+  simp [← comap_iSup_map f, map_comap_eq_self, hS]
+
+end GaloisCoinsertion
 
 /-- The underlying set of a non-empty directed sSup of subfields is just a union of the subfields.
   Note that this fails without the directedness assumption (the union of two subfields is
@@ -614,23 +674,26 @@ theorem mem_closure_iff {s : Set K} {x} :
 
 end Commutative
 
-end Subfield
+section Subtype
 
-namespace Subfield
+variable {s t : Subfield K}
 
-theorem map_comap_eq (f : K →+* L) (s : Subfield L) : (s.comap f).map f = s ⊓ f.fieldRange :=
-  SetLike.coe_injective Set.image_preimage_eq_inter_range
+theorem comap_eq_top_iff {f : K →+* L} {t : Subfield L} :
+    t.comap f = ⊤ ↔ f.fieldRange ≤ t := by
+  rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
 
-theorem map_comap_eq_self
-    {f : K →+* L} {s : Subfield L} (h : s ≤ f.fieldRange) : (s.comap f).map f = s := by
-  simpa only [inf_of_le_left h] using map_comap_eq f s
+@[simp]
+theorem comap_subtype_eq_top : t.comap s.subtype = ⊤ ↔ s ≤ t := by
+  rw [comap_eq_top_iff, fieldRange_subtype]
 
-theorem map_comap_eq_self_of_surjective
-    {f : K →+* L} (hf : Function.Surjective f) (s : Subfield L) : (s.comap f).map f = s :=
-  SetLike.coe_injective (Set.image_preimage_eq _ hf)
+@[simp]
+theorem comap_subtype_self (s : Subfield K) : s.comap s.subtype = ⊤ :=
+  comap_subtype_eq_top.mpr le_rfl
 
-theorem comap_map (f : K →+* L) (s : Subfield K) : (s.map f).comap f = s :=
-  SetLike.coe_injective (Set.preimage_image_eq _ f.injective)
+theorem map_comap_subtype (s t : Subfield K) : (t.comap s.subtype).map s.subtype = s ⊓ t := by
+  rw [map_comap_eq, fieldRange_subtype, inf_comm]
+
+end Subtype
 
 end Subfield
 

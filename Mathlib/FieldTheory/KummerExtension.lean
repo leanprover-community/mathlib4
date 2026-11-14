@@ -527,7 +527,7 @@ lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic Gal(L/K)] :
       mul_comm, pow_mul, hζ.pow_eq_one, one_pow, one_smul]
   · -- Since `σ` does not fix `K⟮α⟯`, `K⟮α⟯` is `L`.
     apply IsGalois.intermediateFieldEquivSubgroup.injective
-    rw [map_top, eq_top_iff]
+    rw [TopHomClass.map_top, eq_top_iff]
     intro σ' hσ'
     obtain ⟨n, rfl : σ ^ n = σ'⟩ := mem_powers_iff_mem_zpowers.mpr (hσ σ')
     have := hσ' ⟨v, IntermediateField.mem_adjoin_simple_self K v⟩
