@@ -335,6 +335,16 @@ theorem sum_range_mul_geometric_add (x : R) (m : ℕ) :
   | zero => simp
   | succ m ih => grind [sum_range_succ, sum_Icc_succ_top]
 
+theorem dvd_sub_pow_of_dvd_sub {p : ℕ} {a b : R} (h : (p : R) ∣ a - b) (k : ℕ) :
+    (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
+  induction k with
+  | zero => simp [h]
+  | succ k ih =>
+    grw [pow_succ p, pow_mul, pow_mul, ← geom_sum₂_mul, pow_succ', mul_dvd_mul ?_ ih]
+    rw [← dvd_sub_left (geom_sum₂_self (b ^ p ^ k) p ▸ dvd_mul_right ..), ← sum_sub_distrib]
+    refine dvd_sum fun i mi ↦ ?_
+    grw [← sub_mul, ← dvd_mul_right, ← sub_dvd_pow_sub_pow, ← sub_dvd_pow_sub_pow, h]
+
 end CommRing
 
 namespace Nat
