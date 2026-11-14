@@ -1363,6 +1363,10 @@ theorem ncard_le_one (hs : s.Finite := by toFinite_tac) :
     s.ncard ≤ 1 ↔ s.Subsingleton :=
   ncard_le_one <| inferInstanceAs (Finite s)
 
+theorem subsingleton_of_ncard_eq_one (hs : s.ncard = 1) : s.Subsingleton := by
+  have : Finite s := Set.finite_of_ncard_pos (by grind)
+  rw [← Set.ncard_le_one_iff_subsingleton, hs]
+
 theorem ncard_le_one_iff (hs : s.Finite := by toFinite_tac) :
     s.ncard ≤ 1 ↔ ∀ {a b}, a ∈ s → b ∈ s → a = b := by
   rw [ncard_le_one hs]
