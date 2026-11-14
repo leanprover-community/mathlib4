@@ -42,8 +42,20 @@ integral, and involutive quantales easier to add on later.
 * `leftMulResiduation`, `rightMulResiduation`, `leftAddResiduation`, `rightAddResiduation` :
   Defining the left- and right- residuations of the semigroup (see notation below).
 
-* Finally, we provide basic distributivity laws for sSup into iSup and sup, monotonicity of
+* We provide basic distributivity laws for sSup into iSup and sup, monotonicity of
   the semigroup operator, and basic equivalences for left- and right-residuation.
+
+* `IsMulLeftsided`, `IsAddLeftsided`, `IsMulRightsided`, `IsAddRightsided` :
+  Defining left- and right-sided elements of a (additive) quantale.
+
+* `IsStrictMulLeftsided`, `IsStrictAddLeftsided`, `IsStrictMulRightsided`,
+  `IsStrictAddRightsided` :
+  Defining strict left- and right-sided elements of a (additive) quantale.
+
+* `IsMulTwosided`, `IsAddTwosided` : Defining two-sided elements of a (additive) quantale.
+
+* `IsStrictMulTwosided`, `IsStrictAddTwosided` : Defining strict two-sided elements of a
+  (additive) quantale.
 
 ## Notation
 
@@ -100,6 +112,31 @@ theorem sSup_mul_distrib : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mu
 
 end
 
+section Residuation
+
+namespace AddQuantale
+
+variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
+variable [AddSemigroup α] [CompleteLattice α] [IsAddQuantale α]
+
+/-- Left- and right- residuation operators on an additive quantale are similar
+to the Heyting operator on complete lattices, but for a non-commutative logic.
+I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`. -/
+def leftAddResiduation (x y : α) := sSup {z | z + x ≤ y}
+
+/-- Left- and right- residuation operators on an additive quantale are similar
+to the Heyting operator on complete lattices, but for a non-commutative logic.
+I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`." -/
+def rightAddResiduation (x y : α) := sSup {z | x + z ≤ y}
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ₗ " => leftAddResiduation
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
+
+end AddQuantale
+
 namespace Quantale
 
 variable {α : Type*} {ι : Type*} {x y z : α} {f : ι → α}
@@ -108,19 +145,13 @@ variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
 /-- Left- and right-residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z * x ≤ y }`. -/
-@[to_additive
-/-- Left- and right- residuation operators on an additive quantale are similar
-to the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`. -/]
+@[to_additive existing]
 def leftMulResiduation (x y : α) := sSup {z | z * x ≤ y}
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ᵣ z ↔ y * x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x * z ≤ y }`. -/
-@[to_additive
-/-- Left- and right- residuation operators on an additive quantale are similar
-to the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`." -/]
+@[to_additive existing]
 def rightMulResiduation (x y : α) := sSup {z | x * z ≤ y}
 
 @[inherit_doc]
@@ -179,7 +210,13 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
+end Quantale
+
+end Residuation
+
 section Zero
+
+namespace Quantale
 
 variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
 variable {x : α}
@@ -194,6 +231,66 @@ theorem mul_bot : x * ⊥ = ⊥ := by
   rw [← sSup_empty, mul_sSup_distrib]
   simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
 
+end Quantale
+
 end Zero
 
+section Twosidedness
+
+namespace AddQuantale
+
+variable {α : Type*} [AddSemigroup α] [CompleteLattice α]
+
+/-- A left-sided element of a quantale is an element `x` such that `⊤ + x ≤ x`. -/
+def IsAddLeftsided (x : α) := ⊤ + x ≤ x
+
+/-- A strict left-sided element of a quantale is an element `x` such that `⊤ + x = x`. -/
+def IsStrictAddLeftsided (x : α) := ⊤ + x = x
+
+/-- A right-sided element of a quantale is an element `x` such that `x + ⊤ ≤ x`. -/
+def IsAddRightsided (x : α) := x + ⊤ ≤ x
+
+/-- A strict right-sided element of a quantale is an element `x` such that `x + ⊤ = x`. -/
+def IsStrictAddRightsided (x : α) := x + ⊤ = x
+
+/-- A two-sided element of a quantale is an element `x` that is both left- and right-sided. -/
+def IsAddTwosided (x : α) := IsAddLeftsided x ∧ IsAddRightsided x
+
+/-- A strict two-sided element of a quantale is an element `x` that is both strict left-
+and strict right-sided. -/
+def IsStrictAddTwosided (x : α) := IsStrictAddLeftsided x ∧ IsStrictAddRightsided x
+
+end AddQuantale
+
+namespace Quantale
+
+variable {α : Type*} [Semigroup α] [CompleteLattice α]
+
+/-- A left-sided element of a quantale is an element `x` such that `⊤ * x ≤ x`. -/
+@[to_additive existing]
+def IsMulLeftsided (x : α) := ⊤ * x ≤ x
+
+/-- A strict left-sided element of a quantale is an element `x` such that `⊤ * x = x`. -/
+@[to_additive existing]
+def IsStrictMulLeftsided (x : α) := ⊤ * x = x
+
+/-- A right-sided element of a quantale is an element `x` such that `x * ⊤ ≤ x`. -/
+@[to_additive existing]
+def IsMulRightsided (x : α) := x * ⊤ ≤ x
+
+/-- A strict right-sided element of a quantale is an element `x` such that `x * ⊤ = x`. -/
+@[to_additive existing]
+def IsStrictMulRightsided (x : α) := x * ⊤ = x
+
+/-- A two-sided element of a quantale is an element `x` that is both left- and right-sided. -/
+@[to_additive existing]
+def IsMulTwosided (x : α) := IsMulLeftsided x ∧ IsMulRightsided x
+
+/-- A strict two-sided element of a quantale is an element `x` that is both strict left-
+and strict right-sided. -/
+@[to_additive existing]
+def IsStrictMulTwosided (x : α) := IsStrictMulLeftsided x ∧ IsStrictMulRightsided x
+
 end Quantale
+
+end Twosidedness
