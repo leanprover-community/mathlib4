@@ -70,7 +70,7 @@ theorem _root_.EuclideanGeometry.mul_sin_eq_sqrt_mul_sub_mul_sub_mul_sub (p₁ p
     a ^ 2 * c ^ 2 / 4 * sin_sq_add_cos_sq (∠ p₁ p₂ p₃)
 
 include h₁₂ h₁₃ h₂₃ in
-/-- Wiedijk #57.  **Heron's formula** for triangles. The area of a triangle with side lengths
+/-- Wiedijk #57. **Heron's formula** for triangles. The area of a triangle with side lengths
 `a`, `b`, and `c` is `√(s * (s - a) * (s - b) * (s - c))` where `s = (a + b + c) / 2` is the
 semiperimeter. -/
 theorem volume_eq_sqrt_mul_sub_mul_sub_mul_sub :
