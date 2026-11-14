@@ -43,9 +43,9 @@ structure DifferentialObject where
   /-- The underlying object of a differential object. -/
   obj : C
   /-- The differential of a differential object. -/
-  d : obj ⟶ obj⟦(1 : S)⟧
+  d : obj ⟶ obj⟦1⟧
   /-- The differential `d` satisfies that `d² = 0`. -/
-  d_squared : d ≫ d⟦(1 : S)⟧' = 0 := by cat_disch
+  d_squared : d ≫ d⟦1⟧' = 0 := by cat_disch
 
 attribute [reassoc (attr := simp)] DifferentialObject.d_squared
 
@@ -112,7 +112,7 @@ instance forget_faithful : (forget S C).Faithful where
 variable {S C}
 
 section
-variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
+variable [(shiftFunctor C 1).PreservesZeroMorphisms]
 
 instance {X Y : DifferentialObject S C} : Zero (X ⟶ Y) := ⟨{f := 0}⟩
 
@@ -167,13 +167,13 @@ variable [HasZeroMorphisms D] [HasShift D S]
 morphisms can be lifted to a functor `DifferentialObject S C ⥤ DifferentialObject S D`. -/
 @[simps]
 def mapDifferentialObject (F : C ⥤ D)
-    (η : (shiftFunctor C (1 : S)).comp F ⟶ F.comp (shiftFunctor D (1 : S)))
+    (η : (shiftFunctor C 1).comp F ⟶ F.comp (shiftFunctor D 1))
     (hF : ∀ c c', F.map (0 : c ⟶ c') = 0) : DifferentialObject S C ⥤ DifferentialObject S D where
   obj X :=
     { obj := F.obj X.obj
       d := F.map X.d ≫ η.app X.obj
       d_squared := by
-        rw [Functor.map_comp, ← Functor.comp_map F (shiftFunctor D (1 : S))]
+        rw [Functor.map_comp, ← Functor.comp_map F (shiftFunctor D 1)]
         slice_lhs 2 3 => rw [← η.naturality X.d]
         rw [Functor.comp_map]
         slice_lhs 1 2 => rw [← F.map_comp, X.d_squared, hF]
@@ -182,7 +182,7 @@ def mapDifferentialObject (F : C ⥤ D)
     { f := F.map f.f
       comm := by
         dsimp
-        slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : S)), ← η.naturality f.f]
+        slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D 1), ← η.naturality f.f]
         slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
         rw [Category.assoc] }
   map_id := by intros; ext; simp
@@ -198,7 +198,7 @@ namespace DifferentialObject
 
 variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
 variable [HasZeroObject C] [HasZeroMorphisms C] [HasShift C S]
-variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
+variable [(shiftFunctor C 1).PreservesZeroMorphisms]
 
 open scoped ZeroObject
 
@@ -298,7 +298,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
-def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
+def shiftZero : shiftFunctor C 0 ≅ 𝟭 (DifferentialObject S C) := by
   refine NatIso.ofComponents (fun X => mkIso ((shiftFunctorZero C S).app X.obj) ?_) (fun f => ?_)
   · erw [← NatTrans.naturality]
     dsimp
