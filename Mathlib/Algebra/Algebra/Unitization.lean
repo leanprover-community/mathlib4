@@ -657,6 +657,18 @@ theorem algebraMap_eq_inl : ⇑(algebraMap R (Unitization R A)) = inl :=
 theorem algebraMap_eq_inlRingHom : algebraMap R (Unitization R A) = inlRingHom R A :=
   rfl
 
+variable {S R A}
+
+@[simp]
+theorem fst_algebraMap (s : S) : (algebraMap S (Unitization R A) s).fst = algebraMap S R s :=
+  rfl
+
+@[simp]
+theorem snd_algebraMap (s : S) : (algebraMap S (Unitization R A) s).snd = 0 :=
+  rfl
+
+variable (S R A)
+
 /-- The canonical `R`-algebra projection `Unitization R A → R`. -/
 @[simps]
 def fstHom : Unitization R A →ₐ[R] R where
@@ -845,6 +857,12 @@ lemma starMap_inl (φ : A →⋆ₙₐ[R] B) (r : R) :
     starMap φ (inl r) = algebraMap R (Unitization R B) r := by
   simp
 
+lemma fst_starMap (φ : A →⋆ₙₐ[R] B) (x : Unitization R A) : (starMap φ x).fst = x.fst := by
+  simp [starMap_apply, algebraMap_eq_inl]
+
+lemma snd_starMap (φ : A →⋆ₙₐ[R] B) (x : Unitization R A) : (starMap φ x).snd = φ x.snd := by
+  simp [starMap_apply, algebraMap_eq_inl]
+
 /-- If `φ : A →⋆ₙₐ[R] B` is injective, the lift `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B`
 is also injective. -/
 lemma starMap_injective {φ : A →⋆ₙₐ[R] B} (hφ : Function.Injective φ) :
@@ -893,6 +911,15 @@ variable (R) in
 lemma _root_.IsSelfAdjoint.inr (ha : IsSelfAdjoint a) : IsSelfAdjoint (a : Unitization R A) :=
   isSelfAdjoint_inr.mpr ha
 
+lemma isSelfAdjoint_iff_fst_snd {x : Unitization R A} :
+    IsSelfAdjoint x ↔ IsSelfAdjoint x.fst ∧ IsSelfAdjoint x.snd :=
+  Unitization.ext_iff
+
+@[simp]
+lemma isSelfAdjoint_iff_snd [TrivialStar R] {x : Unitization R A} :
+    IsSelfAdjoint x ↔ IsSelfAdjoint x.snd := by
+  rw [isSelfAdjoint_iff_fst_snd, and_iff_right (.all _)]
+
 variable [AddCommMonoid A] [Mul A] [SMulWithZero R A]
 
 @[simp]
@@ -907,6 +934,21 @@ instance instIsStarNormal (a : A) [IsStarNormal a] :
   isStarNormal_inr.mpr ‹_›
 
 end StarNormal
+
+section StarNormalSnd
+
+variable {R A : Type*} [CommSemiring R] [StarRing R] [NonUnitalRing A] [StarRing A]
+variable [Module R A]
+
+@[simp]
+lemma isStarNormal_iff_snd {x : Unitization R A} : IsStarNormal x ↔ IsStarNormal x.snd := by
+  simp only [isStarNormal_iff, commute_iff_eq]
+  refine ⟨fun h ↦ ?_, fun h ↦ Unitization.ext (by simp [mul_comm]) ?_⟩
+  · have := congr($(h).snd)
+    simpa [add_comm, add_left_comm] using this
+  · simpa [add_comm, add_left_comm] using h
+
+end StarNormalSnd
 
 @[simp]
 lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
