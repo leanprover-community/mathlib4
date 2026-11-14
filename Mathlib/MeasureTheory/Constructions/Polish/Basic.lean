@@ -1117,10 +1117,6 @@ theorem MeasurableSet.standardBorel {s : Set α} (hs : MeasurableSet s) :
 measure. -/
 theorem MeasureTheory.IsZeroOneMeasure.exists_eq_dirac
     {μ : Measure α} [IsZeroOneMeasure μ] [NeZero μ] : ∃ x₀, μ = Measure.dirac x₀ := by
-  have : IsProbabilityMeasure μ := by
-    rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
-    · simp_all
-    · exact ⟨h⟩
   obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
   let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
   have mBn : MeasurableSet (⋂ n, B n) := by
