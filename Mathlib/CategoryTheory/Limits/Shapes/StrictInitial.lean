@@ -67,22 +67,22 @@ section
 
 variable [HasStrictInitialObjects C] {I : C}
 
-theorem IsInitial.isIso_to (hI : IsInitial I) {A : C} (f : A ⟶ I) : IsIso f :=
+theorem StrictInitial.isIso_to (hI : IsInitial I) {A : C} (f : A ⟶ I) : IsIso f :=
   HasStrictInitialObjects.out f hI
 
 theorem IsInitial.strict_hom_ext (hI : IsInitial I) {A : C} (f g : A ⟶ I) : f = g := by
-  have := hI.isIso_to f
-  have := hI.isIso_to g
+  have := StrictInitial.isIso_to hI f
+  have := StrictInitial.isIso_to hI g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 
 theorem IsInitial.subsingleton_to (hI : IsInitial I) {A : C} : Subsingleton (A ⟶ I) :=
-  ⟨hI.strict_hom_ext⟩
+  ⟨strict_hom_ext hI⟩
 
 /-- If `X ⟶ Y` with `Y` being a strict initial object, then `X` is also an initial object. -/
 noncomputable
 def IsInitial.ofStrict {X Y : C} (f : X ⟶ Y)
     (hY : IsInitial Y) : IsInitial X :=
-  letI := hY.isIso_to f
+  letI := StrictInitial.isIso_to hY f
   hY.ofIso (asIso f).symm
 
 instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoClass C where
@@ -91,7 +91,7 @@ instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoC
 /-- If `I` is initial, then `X ⨯ I` is isomorphic to it. -/
 @[simps! hom]
 noncomputable def mulIsInitial (X : C) [HasBinaryProduct X I] (hI : IsInitial I) : X ⨯ I ≅ I := by
-  have := hI.isIso_to (prod.snd : X ⨯ I ⟶ I)
+  have := StrictInitial.isIso_to hI (prod.snd : X ⨯ I ⟶ I)
   exact asIso prod.snd
 
 @[simp]
@@ -102,7 +102,7 @@ theorem mulIsInitial_inv (X : C) [HasBinaryProduct X I] (hI : IsInitial I) :
 /-- If `I` is initial, then `I ⨯ X` is isomorphic to it. -/
 @[simps! hom]
 noncomputable def isInitialMul (X : C) [HasBinaryProduct I X] (hI : IsInitial I) : I ⨯ X ≅ I := by
-  have := hI.isIso_to (prod.fst : I ⨯ X ⟶ I)
+  have := StrictInitial.isIso_to hI (prod.fst : I ⨯ X ⟶ I)
   exact asIso prod.fst
 
 @[simp]
@@ -113,7 +113,7 @@ theorem isInitialMul_inv (X : C) [HasBinaryProduct I X] (hI : IsInitial I) :
 variable [HasInitial C]
 
 instance initial_isIso_to {A : C} (f : A ⟶ ⊥_ C) : IsIso f :=
-  initialIsInitial.isIso_to _
+  StrictInitial.isIso_to initialIsInitial _
 
 @[ext]
 theorem initial.strict_hom_ext {A : C} (f g : A ⟶ ⊥_ C) : f = g :=
@@ -180,19 +180,19 @@ section
 
 variable [HasStrictTerminalObjects C] {I : C}
 
-theorem IsTerminal.isIso_from (hI : IsTerminal I) {A : C} (f : I ⟶ A) : IsIso f :=
+theorem StrictTerminal.isIso_from (hI : IsTerminal I) {A : C} (f : I ⟶ A) : IsIso f :=
   HasStrictTerminalObjects.out f hI
 
 theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : f = g := by
-  have := hI.isIso_from f
-  have := hI.isIso_from g
+  have := StrictTerminal.isIso_from hI f
+  have := StrictTerminal.isIso_from hI g
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 
 /-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also a terminal object. -/
 noncomputable
 def IsTerminal.ofStrict {X Y : C} (f : X ⟶ Y)
     (hY : IsTerminal X) : IsTerminal Y :=
-  letI := hY.isIso_from f
+  letI := StrictTerminal.isIso_from hY f
   hY.ofIso (asIso f)
 
 theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I ⟶ A) :=
@@ -217,7 +217,7 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
         obtain rfl : f = 𝟙 _ := Subsingleton.elim _ _
         simp
       · cases h
-        have : IsIso (F.map f) := (H _ h_1).isIso_from _
+        have : IsIso (F.map f) := StrictTerminal.isIso_from (H _ h_1) _
         rw [← IsIso.comp_inv_eq]
         apply (H _ h_1).hom_ext
       · cases h_1
@@ -236,7 +236,7 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
 variable [HasTerminal C]
 
 instance terminal_isIso_from {A : C} (f : ⊤_ C ⟶ A) : IsIso f :=
-  terminalIsTerminal.isIso_from _
+  StrictTerminal.isIso_from terminalIsTerminal _
 
 @[ext]
 theorem terminal.strict_hom_ext {A : C} (f g : ⊤_ C ⟶ A) : f = g :=
