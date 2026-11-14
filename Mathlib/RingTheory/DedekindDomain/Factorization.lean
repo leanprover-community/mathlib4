@@ -346,28 +346,6 @@ open Int IsLocalization
 
 open Ideal in
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
-`I = a⁻¹J`, then `I` is equal to the product `∏_v v^(val_v(J) - val_v(a))`. -/
-@[deprecated "Use `FractionalIdeal.finprod_heightOneSpectrum_zpow_multiplicity_sub`."
-  (since := "2026-11-12")]
-theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
-    {J : Ideal R} (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
-    ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
-      ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
-        (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ) = I := by
-  have hJ_ne_zero : J ≠ 0 := ideal_factor_ne_zero hI haJ
-  have hJ := finprod_heightOneSpectrum_factorization_coeIdeal K hJ_ne_zero
-  have ha_ne_zero : Ideal.span {a} ≠ 0 := constant_factor_ne_zero hI haJ
-  have ha := finprod_heightOneSpectrum_factorization_coeIdeal K ha_ne_zero
-  rw [haJ, ← div_spanSingleton, div_eq_mul_inv, ← coeIdeal_span_singleton, ← hJ, ← ha,
-    ← finprod_inv_distrib]
-  simp_rw [← zpow_neg]
-  rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
-  apply finprod_congr
-  intro v
-  rw [← zpow_add₀ ((@coeIdeal_ne_zero R _ K _ _ _ _).mpr v.ne_bot), sub_eq_add_neg]
-
-open Ideal in
-/-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
 `I = a⁻¹J`, then `I` is equal to the product `∏_v v ^ (multiplicity v J - multiplicity v (a))`. -/
 theorem finprod_heightOneSpectrum_zpow_multiplicity_sub {I : FractionalIdeal R⁰ K} (hI : I ≠ 0)
     {a : R} {J : Ideal R} (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
@@ -382,6 +360,19 @@ theorem finprod_heightOneSpectrum_zpow_multiplicity_sub {I : FractionalIdeal R�
   rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
   refine finprod_congr fun v ↦ ?_
   rw [← zpow_add₀ ((@coeIdeal_ne_zero R _ K _ _ _ _).mpr v.ne_bot), sub_eq_add_neg]
+
+open Ideal in
+/-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
+`I = a⁻¹J`, then `I` is equal to the product `∏_v v^(val_v(J) - val_v(a))`. -/
+@[deprecated "Use `FractionalIdeal.finprod_heightOneSpectrum_zpow_multiplicity_sub`."
+  (since := "2026-11-12")]
+theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
+    {J : Ideal R} (haJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
+    ∏ᶠ v : HeightOneSpectrum R, (v.asIdeal : FractionalIdeal R⁰ K) ^
+      ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
+        (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ) = I := by
+  simp_rw [Ideal.count_associates_factors_eq_multiplicity]
+  exact finprod_heightOneSpectrum_zpow_multiplicity_sub hI haJ
 
 /-- For a nonzero `k = r/s ∈ K`, the fractional ideal `(k)` is equal to the product
 `∏_v v ^ (multiplicity v (r) - multiplicity v (s))`. -/
@@ -489,8 +480,8 @@ theorem count_well_defined {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     {J : Ideal R} (h_aJ : I = spanSingleton R⁰ ((algebraMap R K) a)⁻¹ * ↑J) :
     count K v I = ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
       (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ) := by
-  rw [count_eq_multiplicity_sub K v hI h_aJ, count_associates_factors_eq_multiplicity,
-    count_associates_factors_eq_multiplicity]
+  rw [count_eq_multiplicity_sub K v hI h_aJ, Ideal.count_associates_factors_eq_multiplicity,
+    Ideal.count_associates_factors_eq_multiplicity]
 
 open Classical in
 @[deprecated count_of_ne_zero +typeChanged (since := "2026-11-12")]
@@ -717,8 +708,9 @@ theorem finite_factors (I : FractionalIdeal R⁰ K) :
   by_cases hI : I = 0
   · simp only [hI, count_zero, Filter.eventually_cofinite, not_true_eq_false, ofPred_false,
       finite_empty]
-  filter_upwards [Ideal.eventually_multiplicity_eq_zero I.num,
-    Ideal.eventually_multiplicity_eq_zero (Ideal.span {(I.den : R)})] with v h₁ h₂
+  filter_upwards [Filter.eventually_cofinite.mpr (Ideal.hasFiniteSupport_multiplicity I.num),
+    Filter.eventually_cofinite.mpr
+      (Ideal.hasFiniteSupport_multiplicity (Ideal.span {(I.den : R)}))] with v h₁ h₂
   simp [count_of_ne_zero K v hI, h₁, h₂]
 
 end FractionalIdeal
