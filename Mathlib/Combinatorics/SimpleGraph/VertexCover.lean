@@ -58,7 +58,7 @@ theorem IsVertexCover.mono {c : Set V} (hG : G ≤ G') (hc : IsVertexCover G' c)
 /-- A set `c` is a vertex cover iff the complement of `c` is an independent set. -/
 @[simp]
 theorem isIndepSet_compl_iff_isVertexCover {c : Set V} : G.IsIndepSet cᶜ ↔ IsVertexCover G c := by
-  refine ⟨fun hi v w hadj ↦ ?_, by grind [IsVertexCover, Set.Pairwise]⟩
+  refine ⟨fun hi v w hadj ↦ ?_, by grind [IsVertexCover, Set.Pairwise, isIndepSet_iff_pairwise_not]⟩
   by_contra! hh
   exact hi hh.1 hh.2 (Adj.ne hadj) hadj
 
