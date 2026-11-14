@@ -38,7 +38,6 @@ section Class
 
 -/
 
-class Transport {α β : Type*} (r : outParam <| α → β → Prop)
 
 instance (priority := high) (α : Type*) : Transport (@Eq α) where
 
@@ -79,13 +78,13 @@ theorem forall_transport_eq [Transport r] [Total α β] [Total β α]
 @[transport]
 theorem exists_transport [BiTransport r] [Total α β]
     (h : ∀ {a b}, r a b → p a → q b) :
-    (∃ a, p a) → (∃ b, q b) :=
+    Exists p → Exists q :=
   fun ⟨a, ha⟩ ↦ (total β a).rec fun b hb ↦ ⟨b, h hb ha⟩
 
 @[transport]
 theorem exists_transport_eq [Transport r] [Total α β] [Total β α]
     (h : ∀ {a b}, r a b → p a = q b) :
-    (∃ a, p a) = (∃ b, q b) :=
+    Exists p = Exists q :=
   propext ⟨exists_transport (h · |>.mp), exists_transport (h · |>.mpr)⟩
 
 end
@@ -128,8 +127,6 @@ theorem ne_transport_eq [Transport r] [Unique α β] [Unique β α]
   (eq_transport_eq h h').to_iff.ne.eq
 
 end
-
-class MapTransport (r : outParam <| α → β → Prop) (map : outParam <| α → β)
 
 variable (α β : Type*) {r : α → β → Prop} {map : α → β}
 
@@ -192,9 +189,6 @@ instance : EquivMapClass α α where
 
 
 end Class
-
-@[expose]
-def MapRel {α β : Type*} (map : α → β) (a : α) (b : β) : Prop := map a = b
 
 namespace MapRel
 
@@ -472,7 +466,7 @@ theorem Set.transport_mem' (hs : SetRel r s' s) {a a'} (ha : r a a') :
     {a : α} {b : β} (h : r a b) : SetRel r {b} {a} := by
   intro _ _ h'
   simp only [Set.mem_singleton_iff]
-  transport [h, h'] α to β
+  transport [h, h', α to β]
   rfl
 
 @[transport]
@@ -480,7 +474,7 @@ theorem Set.transport_subset [Transport r] [Total α β] [Total β α]
     (hs : SetRel r s' s) (ht : SetRel r t' t) :
     (s ⊆ t) = (s' ⊆ t') := by
   simp_rw [Set.subset_def]
-  transport [hs, ht] α to β
+  transport [hs, ht, α to β]
   rfl
 
 @[transport]
@@ -488,7 +482,7 @@ theorem Set.transport_ssubset [Transport r] [Total α β] [Total β α]
     (hs : SetRel r s' s) (ht : SetRel r t' t) :
     (s ⊂ t) = (s' ⊂ t') := by
   simp_rw [Set.ssubset_def]
-  transport [hs, ht] β to α
+  transport [hs, ht, β to α]
   rfl
 
 section
@@ -501,7 +495,7 @@ theorem Set.transport_iUnion [Total ι ι'] [Total ι' ι]
   intro a b hr
   push _ ∈ _
   have : Transport r := ⟨⟩
-  transport [h, hr] α to β, ι to ι'
+  transport [h, hr, α to β, ι to ι']
   rfl
 
 @[transport]
@@ -525,7 +519,7 @@ theorem Set.transport_iUnion'
   intro a b hr
   push _ ∈ _
   have : Transport r := ⟨⟩
-  transport [h, hr] α to β
+  transport [h, hr, α to β]
   rfl
 
 @[transport low]
@@ -535,7 +529,7 @@ theorem Set.transport_iInter'
   intro a b hr
   push _ ∈ _
   have : Transport r := ⟨⟩
-  transport [h, hr] α to β
+  transport [h, hr, α to β]
   rfl
 
 end Set
@@ -607,12 +601,12 @@ end Finset
 variable {α : Type*} (s t : Finset α) (s' t' : Set α)
 
 example [DecidableEq α] (a : α) : insert a (∅ : Finset α) = {a} := by
-  transport Finset α to Set α
+  transport [Finset α to Set α]
   guard_target = insert a (∅ : Set α) = {a}
   rw [← Set.singleton_def]
 
 example [DecidableEq α] (a : α) : ∀ s : Finset α, s ∪ {a} = insert a s := by
-  transport Finset α to Set α
+  transport [Finset α to Set α]
   intro s
   exact Set.union_singleton
 
@@ -623,12 +617,10 @@ s' t' : Set α
 inst✝ : DecidableEq α
 a : α
 ⊢ ¬∀ (s : Finset α), insert a ∅ = s
----
-warning: declaration uses `sorry`
 -/
-#guard_msgs in
+#guard_msgs(trace) in
 example [DecidableEq α] (a : α) : ¬ ∀ s : Set α, insert a ∅ = s := by
-  transport Set α to Finset α
+  transport [Set α to Finset α]
   trace_state
   sorry
 
@@ -641,20 +633,18 @@ inst✝ : DecidableEq α
 a : α
 s : Option (Set α)
 ⊢ (s.elim {a} fun s ↦ s \ {a}) = ∅
----
-warning: declaration uses `sorry`
 -/
-#guard_msgs in
+#guard_msgs(trace) in
 example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (fun s ↦ s.erase a) = ∅ := by
-  transport Finset α to Set α generalizing s
+  transport [Finset α to Set α] generalizing s
   trace_state
   sorry
 
 -- In this example, transport cannot eliminate all occurrences of `s`, so it should fail.
 /-- error: transport made no progress on `p s✝` -/
-#guard_msgs in
+#guard_msgs(error) in
 example (p : Finset α → Prop) : ∀ s, p s ∧ s = s := by
-  transport Finset α to Set α
+  transport [Finset α to Set α]
 
 
 
@@ -676,7 +666,7 @@ example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f)
     (hX : MyCompact X) : MyCompact Y := by
   unfold MyCompact
   have : MapTransport (MapRel f) f := ⟨⟩; have := MapRel.instSurjMapClass hf
-  transport Y to X
+  transport [Y to X]
   exact hX
 
 end TransportTest

@@ -54,7 +54,7 @@ theorem transport_inv_inv_comp {g : A ⊗ A ⟶ A} {φ : ∀ T : C, (T ⟶ A) �
   simp [elems, Hom.inv_def]
 
 example [BraidedCategory C] : μ ≫ ι = (β_ A A).hom ≫ (ι[A] ⊗ₘ ι) ≫ μ := by
-  transport (A ⊗ A ⟶ A) to (∀ T : C, (T ⟶ A) → (T ⟶ A) → (T ⟶ A))
+  transport [(A ⊗ A ⟶ A) to (∀ T : C, (T ⟶ A) → (T ⟶ A) → (T ⟶ A))]
   guard_target = (fun (T : C) (x y : T ⟶ A) ↦ (x * y)⁻¹) = fun T x y ↦ y⁻¹ * x⁻¹
   funext T x y
   exact mul_inv_rev x y
