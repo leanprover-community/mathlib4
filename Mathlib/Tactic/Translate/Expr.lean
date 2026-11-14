@@ -367,4 +367,7 @@ public def applyReplacementLambda (t : TranslateData) (dontTranslate : List Nat)
         e := .lam decl.userName xType (e.abstract #[.fvar x]) decl.binderInfo
       return e
 
+-- Registered in `Mathlib.Tactic.Translate.Core`.
+allow_unregistered_trace_class translate_detail
+
 end Mathlib.Tactic.Translate
