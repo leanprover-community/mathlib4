@@ -54,10 +54,10 @@ instance instCommMonoid : CommMonoid ℕ where
 -- typeclass search, but it is better practice to not rely on algebraic order theory to prove
 -- purely algebraic results on concrete types. Eg the results can be made available earlier.
 
-instance instIsMulTorsionFree : IsMulTorsionFree ℕ where
+instance : HasUniqueRoots ℕ where
   pow_left_injective _ h _ _ := (Nat.pow_left_inj h).mp
 
-instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
+instance : HasUniqueDiv ℕ where
   nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
 
 /-!

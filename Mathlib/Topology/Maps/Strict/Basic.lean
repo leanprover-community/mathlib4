@@ -6,6 +6,7 @@ Authors: Ziyan Wei, Anatole Dedecker
 module
 
 public import Mathlib.Topology.Homeomorph.Quotient
+
 import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!

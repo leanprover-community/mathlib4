@@ -356,7 +356,7 @@ to the definition of `Graph`, so it doesn't require equality of the edge sets.) 
 protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
     (h : ∀ e x y, G₁.IsLink e x y ↔ G₂.IsLink e x y) : G₁ = G₂ := by
   rw [← G₁.mk_eq_self G₁.edge_mem_iff_exists_isLink, ← G₂.mk_eq_self G₂.edge_mem_iff_exists_isLink]
-  convert! rfl using 2
+  convert rfl using 2
   · exact hV.symm
   · simp [funext_iff, h]
   simp [edgeSet_eq_setOfPred_exists_isLink, h]
@@ -542,8 +542,6 @@ abbrev bouquet (v : α) (edgeSet : Set β) : Graph α β :=
   banana v v edgeSet
 
 lemma vertexSet_bouquet (v : α) (edgeSet : Set β) : V(bouquet v edgeSet) = {v} := by simp
-
-@[deprecated (since := "2026-04-09")] alias bouquet_vertexSet := vertexSet_bouquet
 
 lemma bouquet_isLink (v : α) (edgeSet : Set β) :
     (bouquet v edgeSet).IsLink e x y ↔ e ∈ edgeSet ∧ x = v ∧ y = v := by simp

@@ -5,10 +5,11 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-/-!
 
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+
+/-!
 # Locally surjective morphisms of coherent sheaves
 
 This file characterises locally surjective morphisms of presheaves for the coherent, regular
@@ -102,7 +103,6 @@ lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
         ∀ (X : C), Function.Surjective (f.hom.app (op X)) :=
   extensiveTopology.presheafIsLocallySurjective_iff _ f.hom
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
     {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
@@ -125,7 +125,7 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.trans_hom, Iso.symm_hom,
       Functor.mapIso_inv, comp_apply, ← f.naturality_apply (Sigma.ι Z a).op, i']
     have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
-    convert! this
+    convert this
     · rw [← Functor.map_comp_apply, opCoproductIsoProduct_inv_comp_ι, ← piComparison_comp_π]
       change ((PreservesProduct.iso F _).hom ≫ _) _ = _
       have := Types.productIso_hom_comp_eval (fun a ↦ F.obj (op (Z a))) a

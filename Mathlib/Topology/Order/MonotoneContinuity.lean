@@ -292,7 +292,7 @@ instance : HomeomorphClass (α ≃o β) α β where
 
 /-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
 abbrev toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
-  HomeomorphClass.toHomeomorph e
+  Homeomorph.ofClass e
 
 theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=
   rfl --Simp can prove this too

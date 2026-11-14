@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
 module
 
-import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Data.Set.Functor
+
+import Mathlib.Basic.Finite.Prod
 
 /-!
 # Finiteness of the Set monad operations

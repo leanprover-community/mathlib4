@@ -21,7 +21,6 @@ at the (algebraic) source.
 
 Typical examples of this are affine morphisms (where `Q` is trivial), finite morphisms
 (where `Q` is module finite) or closed immersions (where `Q` is being surjective).
-
 -/
 
 @[expose] public section
@@ -304,11 +303,11 @@ lemma HasAffineProperty.coprodDesc_affineAnd {P : MorphismProperty Scheme.{u}}
   refine this _ ?_ ?_
   · have : (Limits.coprod.desc f g).app W ≫ e.hom ≫ Limits.prod.fst = f.app W := by
       simp [e, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE]
-    convert! (hf W hW).2
+    convert (hf W hW).2
     congrm ($this).1
   · have : (Limits.coprod.desc f g).app W ≫ e.hom ≫ Limits.prod.snd = g.app W := by
       simp [e, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_comp_appLE]
-    convert! (hg W hW).2
+    convert (hg W hW).2
     congrm ($this).1
 
 end

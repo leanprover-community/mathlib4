@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
+
 import Mathlib.RingTheory.Ideal.Quotient.Over
 
 /-!
@@ -20,7 +21,6 @@ We construct etale neighborhoods that split fibers of finite algebras.
   We may construct an etale `R`-algebra `R'` and a prime `P` lying over `p` with `κ(P) = κ(p)`,
   such that `R' ⊗[R] S = A × B` and there exists a unique prime in `A` lying over `P`.
   This prime will also lie over `q`.
-
 -/
 
 @[expose] public section
@@ -142,7 +142,7 @@ lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.right
   DivisionRing.instIsArtinianRing in
-/-- A variant of `Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver` that also gives you
+/-- A variant of `Ideal.exists_notMem_forall_mem_of_ne_of_liesOver` that also gives you
 control on the primes in the integral closure. -/
 lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
@@ -152,7 +152,7 @@ lemma Algebra.exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     ∃ s ∉ q, ∃ hs : IsIntegral R s, (∀ q' : Ideal S, q'.IsPrime → q' ≠ q → q'.LiesOver p → s ∈ q') ∧
       ∀ (q' : Ideal (integralClosure R S)), q'.IsPrime →
         q' ≠ q.under _ → q'.LiesOver p → ⟨s, hs⟩ ∈ q' := by
-  obtain ⟨s₁, hs₁q, hs₁⟩ := Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver (R := R) p q
+  obtain ⟨s₁, hs₁q, hs₁⟩ := Ideal.exists_notMem_forall_mem_of_ne_of_liesOver (R := R) p q
   obtain ⟨s₂, hs₂q, hs₂⟩ := Algebra.ZariskisMainProperty.of_finiteType (R := R) q
   obtain ⟨s₃, hs₃⟩ := hs₂.2 (algebraMap _ _ s₁)
   obtain ⟨s₃, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s₂) s₃
@@ -358,7 +358,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
       (Localization.Away (φ e))
       (Localization.Away (Algebra.ofId R' (Localization.Away e) f))
   refine RingHom.finite_algebraMap.mp ?_
-  convert! equiv.symm.toRingEquiv.finite.comp hf
+  convert equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
   dsimp [-AlgEquiv.symm_toRingEquiv,
     ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_ofClass]
@@ -425,7 +425,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
     rwa [← P'f.over_def P']
   · suffices Function.Bijective ⇑(Ideal.ResidueField.mapₐ P Pf
         (IsScalarTower.toAlgHom R R' (Localization.Away f)) (Pf.over_def P)) by
-      convert! this.comp hpP; rw [← AlgHom.coe_comp]; congr; ext
+      convert this.comp hpP; rw [← AlgHom.coe_comp]; congr; ext
     exact (RingHom.surjectiveOnStalks_of_isLocalization (.powers f)
       _).residueFieldMap_bijective _ _ _
   · intro P'' _ _ hP''
@@ -446,11 +446,10 @@ attribute [local instance] Localization.AtPrime.algebraOfLiesOver
 /-- A key induction step of `exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq`. -/
 private theorem Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux
     {R : Type u} {S : Type (max u v)} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S)
+    (p : Ideal R) [p.IsPrime]
     (R' : Type u) [CommRing R'] [Algebra R R'] [Algebra.Etale R R'] (P : Ideal R')
     [P.IsPrime] [P.LiesOver p] (e : R' ⊗[R] S) (P' : Ideal (R' ⊗[R] S))
     [P'.IsPrime] [P'.LiesOver P]
-    (hP'q : Ideal.comap Algebra.TensorProduct.includeRight.toRingHom P' = q)
     (heP' : e ∉ P') (hpP : Function.Bijective
       (Ideal.ResidueField.mapₐ p P (Algebra.ofId _ _) (P.over_def p)))
     (H : ∀ (P'' : Ideal (R' ⊗[R] S)), P''.IsPrime → P''.LiesOver P → e ∉ P'' → P'' = P')
@@ -527,7 +526,7 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
       ∀ (P'' : Ideal (R' ⊗[R] S)), P''.IsPrime → P''.LiesOver P →
         e (.last n) ∈ P'' ∧ ∀ i, e i.castSucc ∉ P'' → P'' = P' i := by
   induction h : (p.primesOver S).ncard using Nat.strong_induction_on generalizing R S with
-  | h n IH =>
+  | ind n IH =>
     have : IsArtinianRing (p.ResidueField ⊗[R] S) := IsArtinianRing.of_finite p.ResidueField _
     have hpSfin : (p.primesOver S).Finite :=
       (PrimeSpectrum.primesOverOrderIsoFiber R S p).finite_iff.mpr inferInstance
@@ -564,8 +563,8 @@ private lemma Algebra.exists_etale_completeOrthogonalIdempotents_forall_liesOver
       (e₁ ∘ e') (he'.map e₁.toRingHom) (fun _ ↦ Ideal.Quotient.mk_surjective _)
     have he''e'' (i : _) : e₁ (e' i) = e'' i := congr($he''e' i)
     have hψe'' (i : _) : (e' i) = e₁.symm (e'' i) := e₁.eq_symm_apply.mpr (he''e'' i)
-    refine exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux p q R' P e P'
-      hP'q heP' hpP (fun P'' h₁ h₂ heP'' ↦ H P'' h₁ h₂ heP'') R'' Q n _
+    refine exists_etale_completeOrthogonalIdempotents_forall_liesOver_eq_aux p R' P e P'
+      heP' hpP (fun P'' h₁ h₂ heP'' ↦ H P'' h₁ h₂ heP'') R'' Q n _
       ((CompleteOrthogonalIdempotents.equiv (finSuccEquiv _)).mpr he'') rfl
       (Q' · |>.comap (e₁.symm.toAlgHom.comp (Ideal.Quotient.mkₐ _ _))) hPQ
       (fun i ↦ by rw [Function.comp_def]; simpa [← hψe''] using hQ' i) ?_

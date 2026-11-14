@@ -24,7 +24,6 @@ We prove two extension theorems:
   defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
   then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
   for all `x`
-
 -/
 
 public section
@@ -125,7 +124,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
       directedOn_image.2 (hcd.mono LinearPMap.domain_mono.monotone)
     rcases (mem_sSup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
     have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
-    convert! ← hcs hfc ⟨x, hfx⟩ hxs using 1
+    convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
     exact this.2 rfl
   obtain ⟨q, hpq, hqs, hq⟩ := zorn_le_nonempty₀ S hSc p hp_nonneg
   refine ⟨q, hpq, ?_, hqs⟩

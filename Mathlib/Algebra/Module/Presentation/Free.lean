@@ -6,16 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+
 import Mathlib.Basic.UnivLE
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Presentation of free modules
 
 A module is free iff it admits a presentation with generators but no relation,
 see `Module.free_iff_exists_presentation`.
-
 -/
 
 @[expose] public section

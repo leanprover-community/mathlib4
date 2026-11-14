@@ -5,8 +5,11 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.Normed.Module.Completion
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Completion of an inner product space

@@ -5,11 +5,11 @@ Authors: Yury Kudryashov, Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.Module
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # (Local) homeomorphism between a normed space and a ball

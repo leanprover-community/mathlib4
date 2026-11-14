@@ -6,6 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -28,7 +29,6 @@ from `ι → M` to `Sym[R] ι M` by `⨂ₛ[R] i, f i`. We also reserve the nota
 * Universal property: linear maps from `Sym[R]^n M` to `N` correspond to symmetric multilinear
   maps `M ^ n` to `N`.
 * Relate to homogeneous (multivariate) polynomials of degree `n`.
-
 -/
 
 @[expose] public section
@@ -72,13 +72,13 @@ lemma smul (r : R) (x y : ⨂[R] _, M) (h : addConGen (Rel R ι M) x y) :
   | of x y h => cases h with
     | perm e f =>
       apply isEmpty_or_nonempty ι |>.elim <;> intro h
-      · convert! addConGen (Rel R ι M) |>.refl _
+      · convert addConGen (Rel R ι M) |>.refl _
       · let i := Nonempty.some h
         classical
         convert!
           AddConGen.Rel.of _ _ <|
             SymmetricPower.Rel.perm (R := R) (ι := ι) e <| Function.update f i (r • f i)
-        · rw [MultilinearMap.map_update_smul, Function.update_eq_self]
+        · rw [MultilinearMap.map_update_smul, Function.update_eq_self, RingHom.id_apply]
         · simp_rw [Function.update_apply_equiv_apply, MultilinearMap.map_update_smul,
               ← Function.update_comp_equiv, Function.update_eq_self]; rfl
   | refl => exact AddCon.refl _ _
@@ -112,7 +112,7 @@ def mk : (⨂[R] (_ : ι), M) →ₗ[R] Sym[R] ι M where
 variable {M ι} in
 /-- The multilinear map that takes `ι`-indexed elements of `M` and
 returns their symmetric tensor power. Denoted `⨂ₛ[R] i, f i`. -/
-def tprod : MultilinearMap R (fun _ : ι ↦ M) Sym[R] ι M :=
+def tprod : (ι → M) →ₘₗ[R] Sym[R] ι M :=
   (mk R ι M).compMultilinearMap (PiTensorProduct.tprod R)
 
 unsuppress_compilation in

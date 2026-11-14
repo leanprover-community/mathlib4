@@ -5,9 +5,10 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 module
 
-import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Order.Closure
 public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+
+import Mathlib.Data.Finset.Lattice.Prod
 
 /-!
 # Sets closed under join/meet

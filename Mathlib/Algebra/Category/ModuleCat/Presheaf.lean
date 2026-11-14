@@ -154,8 +154,8 @@ lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
 
 @[reassoc]
 lemma smul_map {U V : Cᵒᵖ} (f : U ⟶ V) (r : R.obj U) :
-    dsimp% ModuleCat.smul _ r ≫ M.presheaf.map f =
-      M.presheaf.map f ≫ ModuleCat.smul _ (R.map f r) := by
+    (ModuleCat.smul _ r).asHom ≫ M.presheaf.map f =
+      M.presheaf.map f ≫ (ModuleCat.smul _ (R.map f r)).asHom := by
   ext x
   exact (M.map f).hom.map_smul r x
 
@@ -384,7 +384,6 @@ variable (X : Cᵒᵖ) (hX : Limits.IsInitial X)
 ## `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)` when `X` is initial
 
 When `X` is initial, we have `Module (R.obj X) (M.obj c)` for any `c : Cᵒᵖ`.
-
 -/
 
 section

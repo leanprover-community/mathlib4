@@ -6,8 +6,9 @@ Authors: Mario Carneiro, Thomas Murrills
 module
 
 public import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Tactic.Positivity.Basic
+
+import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Tactic.SetLike
 
 /-!

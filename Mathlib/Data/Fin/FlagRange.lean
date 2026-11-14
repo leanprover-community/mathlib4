@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Preorder.Chain
+
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Range of `f : Fin (n + 1) → α` as a `Flag`

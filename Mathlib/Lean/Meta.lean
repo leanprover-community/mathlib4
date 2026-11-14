@@ -6,8 +6,9 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Init
-import Lean.Elab.Term
+
 import Lean.Elab.Tactic.Basic
+import Lean.Elab.Term
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
 

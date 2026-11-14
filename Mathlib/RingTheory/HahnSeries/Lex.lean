@@ -9,10 +9,10 @@ public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.PiLex
 public import Mathlib.RingTheory.HahnSeries.Multiplication
+
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 
 /-!
-
 # Lexicographical order on Hahn series
 
 In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this is a `LinearOrder` when
@@ -23,7 +23,6 @@ In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this i
 
 * `HahnSeries.finiteArchimedeanClassOrderIsoLex`: `FiniteArchimedeanClass` of `Lex R⟦Γ⟧`
   can be decomposed by `Γ`.
-
 -/
 
 @[expose] public section
@@ -198,7 +197,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
     · -- impossible case: `x` and `y` differ before their leading coefficients
       have hjlt' : j < (ofLex |y|).orderTop := h'.symm ▸ hjlt
       simp [coeff_eq_zero_of_lt_orderTop hjlt, coeff_eq_zero_of_lt_orderTop hjlt'] at hi
-    · convert! hi.le <;> exact (WithTop.untop_eq_iff _).mpr hjeq.symm
+    · convert hi.le <;> exact (WithTop.untop_eq_iff _).mpr hjeq.symm
     · exact (hj _ ((WithTop.untop_lt_iff _).mpr hjgt)).le
   · -- `mk x.leadingCoeff ≤ mk y.leadingCoeff → mk x ≤ mk y`
     intro ⟨n, hn⟩
@@ -218,7 +217,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
       simp_rw [← leadingCoeff_abs] at this
       rw [leadingCoeff_of_ne_zero (by simpa using hy), leadingCoeff_of_ne_zero (by simpa using hx)]
         at this
-      convert! this using 3 <;> simp [h]
+      convert this using 3 <;> simp [h]
     refine lt_of_le_of_lt hn <| nsmul_lt_nsmul_left ?_ (by simp)
     rwa [abs_pos, leadingCoeff_ne_zero]
 

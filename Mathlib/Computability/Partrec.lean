@@ -72,7 +72,7 @@ def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
           exact h₁.fst
         · injection mem_unique h₁ (al _ h₃)
       cases e : (p m).get pm
-      · suffices ∀ᵉ k ≤ m, false ∈ p k from IH _ ⟨rfl, this⟩ fun n h => this _ (le_of_lt_succ h)
+      · suffices ∀ k ≤ m, false ∈ p k from IH _ ⟨rfl, this⟩ fun n h => this _ (le_of_lt_succ h)
         intro n h
         rcases h.lt_or_eq_dec with h | h
         · exact al _ h

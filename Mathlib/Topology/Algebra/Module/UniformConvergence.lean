@@ -6,8 +6,9 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.UniformConvergence
+
+import Mathlib.Topology.Algebra.FilterBasis
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -37,7 +38,6 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 ## Tags
 
 uniform convergence, strong dual
-
 -/
 
 public section

@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
 module
 
-public meta import Std.Data.TreeMap.Basic
 public meta import Mathlib.Data.String.Defs
+public meta import Std.Data.TreeMap.Basic
 public import Mathlib.Init
 
 /-!
@@ -206,8 +206,8 @@ def GuessNameExt.addTranslation (ext : GuessNameExt) (srcId tgtId : Ident) :
     Elab.Command.CommandElabM Unit := do
   let src := srcId.getId.toString
   let tgt := tgtId.getId.toString
-  unless src.front.isUpper do throwErrorAt srcId "`{src}` should be capitalized"
-  unless tgt.front.isUpper do throwErrorAt tgtId "`{tgt}` should be capitalized"
+  if src.front.isLower then throwErrorAt srcId "`{src}` should be capitalized"
+  if tgt.front.isLower then throwErrorAt tgtId "`{tgt}` should be capitalized"
   modifyEnv fun env ↦ ext.modifyState env fun data ↦
     let src := src.decapitalizeSeq
     if src.splitCase matches [_] then

@@ -11,6 +11,9 @@ public import Mathlib.Data.PNat.Basic
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.Order.Lattice.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extra lemmas about periodic points
 -/
@@ -79,7 +82,7 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
   · exact (isPeriodicPt_minimalPeriod _ _).mul_const _
 
-theorem iterate_not_monotone_of_mem_periodicPts [PartialOrder α]
+theorem not_monotone_of_mem_periodicPts [PartialOrder α]
     (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
     ¬Monotone (f^[·] x) := by
   intro h
@@ -90,7 +93,7 @@ theorem iterate_not_monotone_of_mem_periodicPts [PartialOrder α]
 theorem exists_apply_lt_of_mem_periodicPts [LinearOrder α]
     (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
     ∃ b ∈ periodicOrbit f x, f b < b := by
-  have h := iterate_not_monotone_of_mem_periodicPts hx hnfix
+  have h := not_monotone_of_mem_periodicPts hx hnfix
   rw [monotone_nat_iff] at h
   push Not at h
   obtain ⟨n, hn⟩ := h

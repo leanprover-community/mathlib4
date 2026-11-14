@@ -5,8 +5,8 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Functoriality of the prime spectrum
@@ -17,7 +17,6 @@ In this file we define the induced map on prime spectra induced by a ring homomo
 
 * `PrimeSpectrum.comap`: The induced map on prime spectra by a ring homomorphism. The proof that
   it is continuous is in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
-
 -/
 
 @[expose] public section
@@ -115,9 +114,6 @@ lemma sigmaToPi_apply (i : ι) (p : PrimeSpectrum (R i)) :
     sigmaToPi R ⟨i, p⟩ = comap (Pi.evalRingHom R i) p :=
   rfl
 
-@[deprecated (since := "2026-04-17")]
-alias coe_sigmaToPi_asIdeal := sigmaToPi_apply
-
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
   classical
   obtain rfl | ne := eq_or_ne i j
@@ -176,7 +172,7 @@ lemma exists_comap_evalRingHom_eq
   let h₁ : Function.Surjective (Pi.evalRingHom R i) := RingHomSurjective.is_surjective
   have h₂ : RingHom.ker (Pi.evalRingHom R i) ≤ p.asIdeal := by
     intro x hx
-    convert! p.asIdeal.mul_mem_left x hi
+    convert p.asIdeal.mul_mem_left x hi
     ext j
     by_cases hj : i = j
     · subst hj; simpa [e]

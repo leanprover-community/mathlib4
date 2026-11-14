@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.MeasureTheory.Integral.PeakFunction
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+
+import Mathlib.MeasureTheory.Integral.PeakFunction
 
 /-!
 # Fourier inversion formula

@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
+
 import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
-
 # Standard etale maps
 
 ## Main definitions
@@ -27,7 +27,6 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 - We also provide the instance that `P.Ring` is etale over `R`.
 
 - `Algebra.IsStandardEtale`: The class of standard etale algebras.
-
 -/
 
 @[expose] public section

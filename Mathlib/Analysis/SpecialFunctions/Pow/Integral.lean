@@ -5,9 +5,10 @@ Authors: Kalle Kytölä
 -/
 module
 
+public import Mathlib.MeasureTheory.Constructions.HaarToSphere
+
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
-public import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.Tactic.MoveAdd
 
 /-!

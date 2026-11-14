@@ -20,7 +20,6 @@ This actions is available in the `Pointwise` locale.
 
 This file is almost identical to the file `Mathlib/Algebra/Ring/Subsemiring/Pointwise.lean`. Where
 possible, try to keep them in sync.
-
 -/
 
 @[expose] public section
@@ -31,6 +30,16 @@ open Set
 variable {M R : Type*}
 
 namespace Subring
+
+section NonAssocRing
+
+variable [NonAssocRing R]
+
+theorem coe_iSup_eq_iUnion_finset_coe_biSup {ι : Type*} (S : ι → Subring R) :
+    ((⨆ i, S i : Subring R) : Set R) = ⋃ s : Finset ι, (⨆ i ∈ s, S i : Subring R) := by
+  rw [iSup_eq_iSup_finset, coe_iSup_of_directed <| Monotone.directed_le fun _ _ ↦ biSup_mono]
+
+end NonAssocRing
 
 section Monoid
 

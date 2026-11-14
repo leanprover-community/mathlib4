@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
+public import Mathlib.GroupTheory.SpecificGroups.Dihedral
+
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.GroupTheory.Abelianization.Finite
-public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Qify
 

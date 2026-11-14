@@ -6,6 +6,7 @@ Authors: Yuval Filmus
 module
 
 public import Mathlib.Analysis.Polynomial.Basic
+
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!

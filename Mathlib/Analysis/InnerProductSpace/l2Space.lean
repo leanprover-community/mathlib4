@@ -5,8 +5,8 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.LpEquiv
 public import Mathlib.Analysis.Normed.Module.Bases
 
 /-!
@@ -160,7 +160,7 @@ theorem inner_single_left [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
     ⟪lp.single 2 i a, f⟫ = ⟪a, f i⟫ := by
   refine (hasSum_inner (lp.single 2 i a) f).unique ?_
   simp_rw [lp.coeFn_single]
-  convert! hasSum_ite_eq i ⟪a, f i⟫ using 1
+  convert hasSum_ite_eq i ⟪a, f i⟫ using 1
   ext j
   split_ifs with h
   · subst h; rw [Pi.single_eq_same]
@@ -348,7 +348,7 @@ theorem Orthonormal.isHilbertSum {v : ι → E} (hv : Orthonormal 𝕜 v)
     (hsp : ⊤ ≤ (span 𝕜 (Set.range v)).topologicalClosure) :
     IsHilbertSum 𝕜 (fun _ : ι => 𝕜) fun i => LinearIsometry.toSpanSingleton 𝕜 E (hv.1 i) :=
   IsHilbertSum.mk hv.orthogonalFamily (by
-    convert! hsp
+    convert hsp
     simp [← LinearMap.span_singleton_eq_range, ← Submodule.span_iUnion])
 
 theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSpace K] :
@@ -403,7 +403,7 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
   dsimp +instances [instFunLike]
-  convert! rfl
+  convert rfl
 
 
 protected theorem repr_self [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
@@ -472,22 +472,21 @@ protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     ∑' i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ :=
   (b.hasSum_inner_mul_inner x y).tsum_eq
 
--- Note: this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
--- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
 /-- A finite Hilbert basis is an orthonormal basis. -/
 protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : OrthonormalBasis ι 𝕜 E :=
-  OrthonormalBasis.mk b.orthonormal
-    (by
-      refine Eq.ge ?_
-      classical
-      have := (span 𝕜 (Finset.univ.image b : Set E)).closed_of_finiteDimensional
-      simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ, HilbertBasis.dense_span] using
-        this.submodule_topologicalClosure_eq.symm)
+  ⟨b.repr.trans (lpPiLpₗᵢ _ 𝕜)⟩
+
+@[simp]
+theorem repr_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
+    b.toOrthonormalBasis.repr = b.repr.trans (lpPiLpₗᵢ _ 𝕜) :=
+  rfl
 
 @[simp]
 theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
-    (b.toOrthonormalBasis : ι → E) = b :=
-  OrthonormalBasis.coe_mk _ _
+    (b.toOrthonormalBasis : ι → E) = b := by
+  classical
+  ext
+  simp [← OrthonormalBasis.repr_symm_single]
 
 /-- A Hilbert basis of is an unconditional Schauder basis (`UnconditionalSchauderBasis`),
 with coordinate functionals `x ↦ ⟪b i, x⟫`. The basis expansion `x = ∑' i, ⟪b i, x⟫ • b i`

@@ -5,8 +5,9 @@ Authors: Kevin Buzzard
 -/
 module
 
-import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Analysis.Analytic.OfScalars
+
+import Mathlib.Algebra.Algebra.TransferInstance
 
 /-!
 # The logarithm in a topological algebra
@@ -86,7 +87,7 @@ way as `NormedSpace.exp`, and takes the junk value `0` where the series does not
 
 If `𝔸` can't be equipped with a `ℚ`-algebra structure, we use the junk value `0`.
 -/
-noncomputable irreducible_def log (x : 𝔸) : 𝔸 :=
+@[no_expose] noncomputable def log (x : 𝔸) : 𝔸 :=
   if h : Nonempty (Algebra ℚ 𝔸) then
     letI _ := h.some
     (NormedSpace.logSeries ℚ 𝔸).sum (x - 1)

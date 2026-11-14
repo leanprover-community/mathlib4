@@ -5,9 +5,9 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the module `α →₀ M`
@@ -137,7 +137,7 @@ theorem prodOfFinsuppNat_injective (inj : Injective f) : Injective (prodOfFinsup
   · simp_all [s]
   set n := s.max' ne with hn
   clear_value n; revert x y
-  induction n using Nat.strong_induction_on with | h n ih =>
+  induction n using Nat.strong_induction_on with | ind n ih
   intro x y s _ hn eq
   rw [← x.single_add_erase 0, ← y.single_add_erase 0]
   simp_rw [← mapDomain_comapDomain_nat_add_one, ← f.fst_prodOfFinsuppNat, eq]

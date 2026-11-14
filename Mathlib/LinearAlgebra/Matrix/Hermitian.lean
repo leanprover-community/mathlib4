@@ -5,9 +5,10 @@ Authors: Alexander Bentkamp
 -/
 module
 
-import Mathlib.Algebra.Star.Pi
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.LinearAlgebra.Matrix.ZPow
+
+import Mathlib.Algebra.Star.Pi
 
 /-! # Hermitian matrices
 
@@ -22,7 +23,6 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 ## Tags
 
 self-adjoint matrix, hermitian matrix
-
 -/
 
 @[expose] public section
@@ -100,6 +100,14 @@ theorem IsHermitian.conjTranspose {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ
 @[simp]
 theorem IsHermitian.submatrix {A : Matrix n n α} (h : A.IsHermitian) (f : m → n) :
     (A.submatrix f f).IsHermitian := (conjTranspose_submatrix _ _ _).trans (h.symm ▸ rfl)
+
+/-- A matrix `M : Matrix n n R` is Hermitian iff every finite principal submatrix is
+Hermitian. -/
+theorem isHermitian_iff_submatrix_finset {M : Matrix n n α} :
+    M.IsHermitian ↔ ∀ s : Finset n, (M.submatrix (↑) (↑) : Matrix s s α).IsHermitian := by
+  classical
+  refine ⟨fun hM s ↦ hM.submatrix _, fun h ↦ Matrix.ext fun i j ↦ ?_⟩
+  exact (h {i, j}).apply ⟨i, by simp⟩ ⟨j, by simp⟩
 
 @[simp]
 theorem isHermitian_submatrix_equiv {A : Matrix n n α} (e : m ≃ n) :
@@ -408,7 +416,7 @@ theorem fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m α) (B : Ma
     (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (A - B * D⁻¹ * Bᴴ).IsHermitian := by
   rw [← isHermitian_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert! IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
+  convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
 
 end IsHermitian
 

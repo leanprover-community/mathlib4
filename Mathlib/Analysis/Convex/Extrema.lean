@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Topology.Algebra.Affine
-public import Mathlib.Topology.Order.LocalExtr
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Order.LocalExtr
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Minima and maxima of convex functions

@@ -7,11 +7,12 @@ module
 
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Complex.Isometry
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
-public import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Conformal maps between complex vector spaces

@@ -102,7 +102,7 @@ noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
   have hst (x : α) : x ∈ fs \ ft ↔ x ∈ s \ t := by simp [hs, ht]
   have hts (x : α) : x ∈ ft \ fs ↔ x ∈ t \ s := by simp [hs, ht]
   have hc : fs.card = ft.card := by
-    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert! h
+    rw [← Fintype.subtype_card fs hs, ← Fintype.subtype_card ft ht]; convert h
   replace hc := Finset.card_sdiff_comm hc
   rw [← Fintype.subtype_card (fs \ ft) hst, ← Fintype.subtype_card (ft \ fs) hts] at hc
   exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
@@ -145,9 +145,7 @@ theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
 
 theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
-  simp only [extendSubtype, subtypeCongr, Equiv.trans_apply,
-    sumCompl_symm_apply_of_neg hx]
-  rfl
+  simp [extendSubtype, subtypeCongr, hx]
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) :=

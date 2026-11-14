@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monad.Types
 public import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
-
 # Compacta and Compact Hausdorff Spaces
 
 Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
@@ -66,7 +65,6 @@ We also add wrappers around structures which already exist. Here are the main on
 
 - E. Manes, Algebraic Theories, Graduate Texts in Mathematics 26, Springer-Verlag, 1976.
 - https://ncatlab.org/nlab/show/ultrafilter
-
 -/
 
 @[expose] public section
@@ -317,14 +315,9 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
         exact claim4 Q hQ
     intro S hS
     apply finiteInterClosure_insert
-    · constructor
-      · use Set.univ
-        refine ⟨Filter.univ_sets _, ?_⟩
-        ext
-        refine ⟨?_, by tauto⟩
-        · intro
-          apply Filter.univ_sets
-      · exact claim3
+    · refine ⟨⟨Set.univ, Filter.univ_sets _, ?_⟩, claim3⟩
+      ext
+      exact ⟨fun _ ↦ Filter.univ_sets _, by tauto⟩
     · exact hS
   -- It suffices to show that the intersection of any finite subset of T1 is nonempty.
   suffices ∀ F : fsu, ↑F ⊆ T1 → (⋂₀ ι F).Nonempty by
@@ -431,7 +424,7 @@ namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
 instance full : compactumToCompHaus.{u}.Full where
-  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.hom.hom.2, rfl⟩
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 (map_continuous f.hom.hom), rfl⟩
 
 /-- The functor `compactumToCompHaus` is faithful. -/
 instance faithful : compactumToCompHaus.Faithful where

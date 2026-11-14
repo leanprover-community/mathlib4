@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Computability.StateTransition
-public import Mathlib.Data.Finset.Prod
+public import Mathlib.Computability.TuringMachine.Tape
 public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Vector.Basic
 
 /-!
@@ -772,7 +772,7 @@ theorem trTape'_move_left (L R : ListBlank Γ) :
   | nil => cases e; rfl
   | cons b l₁ IH =>
     simp only [List.length, iterate_succ_apply]
-    convert! IH e
+    convert IH e
     simp only [ListBlank.tail_cons, ListBlank.append, Tape.move_left_mk', ListBlank.head_cons]
 
 theorem trTape'_move_right (L R : ListBlank Γ) :

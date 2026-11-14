@@ -5,11 +5,12 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.ToFun
-import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
+public import Mathlib.Tactic.FunProp.Attr
+
+import Mathlib.Order.Bounds.Image
+import Mathlib.Tactic.ToFun
 
 /-!
 # Scott continuity
@@ -30,7 +31,6 @@ in this file, and ωScott Continuity on chains later in
 
 * [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
-
 -/
 
 @[expose] public section

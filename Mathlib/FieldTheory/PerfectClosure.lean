@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.Perfect
 
 /-!
-
 # The perfect closure of a characteristic `p` ring
 
 ## Main definitions
@@ -45,7 +44,6 @@ public import Mathlib.FieldTheory.Perfect
 ## Tags
 
 perfect ring, perfect closure
-
 -/
 
 @[expose] public section

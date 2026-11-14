@@ -5,8 +5,9 @@ Authors: Markus Himmel
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.Indization.ParallelPair
+
+import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 
 /-!
 # Equalizers of ind-objects

@@ -6,17 +6,16 @@ Authors: Thomas Browning
 
 module
 
-import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
-
 # Minimal primes over a colon ideal
 
 We prove that a minimal prime over an ideal of the form `N.colon {x}` in a Noetherian ring is
 itself an ideal of the form `N.colon {x'}`.
-
 -/
 
 public section

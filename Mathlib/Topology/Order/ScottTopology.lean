@@ -57,7 +57,7 @@ The converse is true in some special cases, but not in general
 
 ## Tags
 
-Scott topology, preorder
+Scott topology, preorder, d-topology
 -/
 
 @[expose] public section
@@ -70,7 +70,7 @@ namespace Topology
 
 /-! ### Scott-Hausdorff topology -/
 
-/-- The Scott-Hausdorff topology.
+/-- The Scott-Hausdorff topology, sometimes called the d-topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`.
@@ -92,6 +92,7 @@ def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSp
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩
 
 /-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
+See `scottHausdorff`.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`.
@@ -215,14 +216,13 @@ lemma dirSupClosed_of_isClosed [IsScott α univ] : IsClosed s → DirSupClosed s
   (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).right
 
 lemma lowerClosure_subset_closure [IsScott α univ] : ↑(lowerClosure s) ⊆ closure s := by
-  convert! closure.mono (@upperSet_le_scott α _)
+  convert closure.mono (@upperSet_le_scott α _)
   · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
     infer_instance
   · exact topology_eq α univ
 
 instance [IsScott α univ] : ClosedIicTopology α where
-  isClosed_Iic _ :=
-    isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
+  isClosed_Iic _ := isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨.Iic _, .Iic _⟩
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
