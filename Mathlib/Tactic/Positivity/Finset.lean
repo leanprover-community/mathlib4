@@ -30,24 +30,22 @@ open Qq Lean Meta Finset
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.card _]
-meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
+meta def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Finset.card $s) =>
     let some ps ← proveFinsetNonempty s | return .none
     assertInstancesCommute
-    return .positive q(Finset.Nonempty.card_pos $ps)
+    return .nonzero q((Finset.Nonempty.card_pos $ps).ne')
   | _ => throwError "not Finset.card"
 
 /-- Extension for `Fintype.card`. `Fintype.card α` is positive if `α` is nonempty. -/
 @[positivity Fintype.card _]
-meta def evalFintypeCard : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
+meta def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Fintype.card $β $instβ) =>
     let instβno ← synthInstanceQ q(Nonempty $β)
     assumeInstancesCommute
-    return .positive q(@Fintype.card_pos $β $instβ $instβno)
+    return .nonzero q((@Fintype.card_pos $β $instβ $instβno).ne')
   | _ => throwError "not Fintype.card"
 
 /-- Extension for `Finset.dens`. `s.dens` is positive if `s` is nonempty.
