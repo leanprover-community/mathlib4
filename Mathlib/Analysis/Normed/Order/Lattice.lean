@@ -107,6 +107,7 @@ theorem norm_inf_sub_inf_le_add_norm (a b c d : α) : ‖a ⊓ b - c ⊓ d‖ �
       · rw [inf_comm c, inf_comm c]
         exact abs_inf_sub_inf_le_abs _ _ _
 
+@[to_dual existing]
 theorem norm_sup_sub_sup_le_add_norm (a b c d : α) : ‖a ⊔ b - c ⊔ d‖ ≤ ‖a - c‖ + ‖b - d‖ := by
   rw [← norm_abs_eq_norm (a - c), ← norm_abs_eq_norm (b - d)]
   refine le_trans (solid ?_) (norm_add_le |a - c| |b - d|)
@@ -124,6 +125,7 @@ theorem norm_inf_le_add (x y : α) : ‖x ⊓ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊓ y - 0 ⊓ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_inf_sub_inf_le_add_norm x y 0 0
   simpa only [inf_idem, sub_zero] using h
 
+@[to_dual existing]
 theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
   have h : ‖x ⊔ y - 0 ⊔ 0‖ ≤ ‖x - 0‖ + ‖y - 0‖ := norm_sup_sub_sup_le_add_norm x y 0 0
   simpa only [sup_idem, sub_zero] using h
@@ -158,13 +160,32 @@ theorem norm_abs_sub_abs (a b : α) : ‖|a| - |b|‖ ≤ ‖a - b‖ := solid (
 theorem norm_sup_sub_sup_le_norm (x y z : α) : ‖x ⊔ z - y ⊔ z‖ ≤ ‖x - y‖ :=
   solid (abs_sup_sub_sup_le_abs x y z)
 
+@[to_dual existing]
 theorem norm_inf_sub_inf_le_norm (x y z : α) : ‖x ⊓ z - y ⊓ z‖ ≤ ‖x - y‖ :=
   solid (abs_inf_sub_inf_le_abs x y z)
 
+@[to_dual]
 theorem lipschitzWith_sup_right (z : α) : LipschitzWith 1 fun x => x ⊔ z :=
-  LipschitzWith.of_dist_le_mul fun x y => by
+  .of_dist_le_mul fun x y => by
     rw [NNReal.coe_one, one_mul, dist_eq_norm, dist_eq_norm]
     exact norm_sup_sub_sup_le_norm x y z
+
+/-- Supremum as a function `⊔ : α × α → α` on a solid normed lattice is 2-Lipschitz. -/
+@[to_dual
+/-- Infimum as a function `⊓ : α × α → α` on a solid normed lattice is 2-Lipschitz. -/]
+lemma lipschitzWith_uncurry_sup : LipschitzWith 2 (fun p : α × α ↦ p.1 ⊔ p.2) := by
+  refine .of_dist_le_mul fun p q ↦ ?_
+  grw [dist_eq_norm, norm_sup_sub_sup_le_add_norm, NNReal.coe_ofNat, two_mul, Prod.dist_eq]
+  grind [dist_eq_norm]
+
+@[to_dual]
+lemma norm_finsetSup'_sub_finsetSup'_le {ι : Type*} {s : Finset ι} (hs : s.Nonempty) (a b : ι → α) :
+    ‖s.sup' hs a - s.sup' hs b‖ ≤ ∑ i ∈ s, ‖a i - b i‖ := by
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton i => simp
+  | cons i s hi hs ih =>
+    grw [Finset.sup'_cons hs, Finset.sup'_cons hs, Finset.sum_cons, norm_sup_sub_sup_le_add_norm,
+      ih]
 
 lemma lipschitzWith_posPart : LipschitzWith 1 (posPart : α → α) :=
   lipschitzWith_sup_right 0

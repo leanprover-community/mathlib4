@@ -2231,6 +2231,7 @@ public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Field.Instances
 public import Mathlib.Analysis.Normed.Field.Krasner
 public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Field.Lipschitz
 public import Mathlib.Analysis.Normed.Field.ProperSpace
 public import Mathlib.Analysis.Normed.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Field.Ultra
@@ -2255,6 +2256,7 @@ public import Mathlib.Analysis.Normed.Group.Indicator
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.Group.Int
 public import Mathlib.Analysis.Normed.Group.Lemmas
+public import Mathlib.Analysis.Normed.Group.Lipschitz
 public import Mathlib.Analysis.Normed.Group.NullSubmodule
 public import Mathlib.Analysis.Normed.Group.Pointwise
 public import Mathlib.Analysis.Normed.Group.Quotient
@@ -2353,6 +2355,7 @@ public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.Analysis.Normed.Ring.InfiniteSum
 public import Mathlib.Analysis.Normed.Ring.Int
 public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Analysis.Normed.Ring.Lipschitz
 public import Mathlib.Analysis.Normed.Ring.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.Ultra
 public import Mathlib.Analysis.Normed.Ring.Units
