@@ -7947,6 +7947,7 @@ public import Mathlib.Tactic.Translate.Omit
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Tactic.Translate.ToDifferentiable
 public import Mathlib.Tactic.Translate.ToDual
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 public import Mathlib.Tactic.TryThis

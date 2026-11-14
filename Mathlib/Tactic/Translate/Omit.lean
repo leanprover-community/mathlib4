@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Init
+public import Mathlib.Tactic.Translate.Reorder -- TODO: move elabArgStx to a better shared location!
 
 /-!
 # Omitting arguments in a translation
@@ -281,27 +282,6 @@ For example:
 - `(omit := H (2 3))` will omit the second and third arguments that appear in the hypothesis `H`.
 -/
 syntax (name := «omit») omissionPart,* : translateOmission
-
-/-- Elaborate syntax that refers to an argument of a declaration or hypothesis.
-This is either a 1-indexed number, or a name from `argNames`.
-- `fvars` is only used to add hover information to `stx`
-- `head` is only used for the error message. -/
-def elabArgStx (stx : TSyntax [`ident, `num]) (argNames : Array Name) (fvars : Array Expr)
-    (head : MessageData) : MetaM Nat := do
-  let n ← match stx with
-    | `($name:ident) => match argNames.idxOf? name.getId with
-      | some n => pure n
-      | none => throwErrorAt stx
-        "invalid argument `{stx}`, it is not an argument of `{head}`."
-    | `($n:num) =>
-      if n.getNat = 0 then
-        throwErrorAt stx "invalid index `{stx}`, arguments are counted starting from 1."
-      if n.getNat > fvars.size then
-        throwErrorAt stx "index `{stx}` is out of bounds, there are only `{fvars.size}` arguments"
-      pure (n.getNat - 1)
-    | _ => throwUnsupportedSyntax
-  Elab.Term.addTermInfo' stx fvars[n]! |>.run'
-  return n
 
 /-- Elaborate the argument of an `(omit := ...)` option. -/
 partial def elabOmit (stx : TSyntax `translateOmission) (argNames : Array Name)

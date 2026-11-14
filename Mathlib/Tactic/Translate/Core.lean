@@ -44,6 +44,9 @@ syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
 syntax reorderOption := &"reorder" " := " translateReorder
 attribute [inherit_doc reorder] reorderOption
 
+syntax omitOption := &"omit" " := " translateOmission
+attribute [inherit_doc «omit»] omitOption
+
 /--
 the `(relevant_arg := ...)` option tells which argument to look at to determine whether to
 translate this constant. This is inferred automatically,
@@ -87,7 +90,7 @@ The `(rename := ...)` option takes a comma-separated list of rename rules of the
 -/
 syntax renameOption := &"rename" " := " renameRule,+
 
-syntax bracketedOption := "(" attrOption <|> reorderOption <|>
+syntax bracketedOption := "(" attrOption <|> reorderOption <|> omitOption <|>
   relevantArgOption <|> dontTranslateOption <|> renameOption ")"
 
 /-- A hint about the translated declaration
@@ -217,15 +220,17 @@ register_option linter.translateRedundant : Bool := {
 also add the reverse translation, but don't do this when `unfold := true`,
 because then `tgt` is an implementation detail. -/
 def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
-    (relevantArg : RelevantArg) (allowDuplicate unfold := false) :
+    (omitted : Omission) (relevantArg : RelevantArg) (allowDuplicate unfold := false) :
     CoreM Unit := do
-  insertTranslationAux src { translation := tgt, reorder, relevantArg, unfold }
+  insertTranslationAux src { translation := tgt, reorder, omitted, relevantArg, unfold }
   trace[translate] "Adding `{.ofConstName src}` {ite t.isDual "↔" "↦"} `{.ofConstName tgt}`\
     {if reorder.reorder.isEmpty then "" else s!" (reorder := {reorder.reorder})"} \
+    {if omitted.omission.isEmpty then "" else s!" (omit := {omitted.omission})"} \
     (relevant_arg := {relevantArg})"
   if t.isDual && src != tgt && !unfold then
     /- In practice, `relevantArg` does not overlap with `reorder` for dual translations,
     so we don't bother applying the permutation to `relevantArg`. -/
+    -- TODO: error when there is omission information specified; cannot dualise that!
     insertTranslationAux tgt {
       translation := src, reorder := reorder.reverse, relevantArg }
 where
@@ -251,6 +256,8 @@ structure Config : Type where
   doc : Option (TSyntax ``Lean.Parser.Command.docComment) := .none
   /-- The arguments that should be reordered when translating, using cycle notation. -/
   reorder? : Option ArgReorder := .none
+  /-- The arguments that should be omitted when translating -/
+  omit? : Option ArgOmit := .none
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg? : Option RelevantArg := .none
   /-- The attributes which we want to give to the original and translated declaration.
@@ -278,7 +285,7 @@ structure Config : Type where
 
 /-- Run `applyReplacementFun` on the given `srcDecl` to make a new declaration with name `tgt`. -/
 def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : ArgReorder) (dont : List Nat)
+    (reorder : ArgReorder) (omissions : ArgOmit) (dont : List Nat)
     (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) (rename : NameMap Name) :
     MetaM (ConstantInfo × RelevantArg) := do
   unless srcDecl.all == [srcDecl.name] do
@@ -293,12 +300,14 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   trace[translate_detail] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
   value ← reorderLambda reorder value'
+  value ← omitLambda omissions value'
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
   let (type', relevantArg₂) ← applyReplacementForall t dont <|
     GuessName.renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
   type ← reorderForall reorder type'
+  type ← omitForall omissions type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return (decl.updateType type, .min relevantArg₁ relevantArg₂)
@@ -311,7 +320,7 @@ and only if that fails do we try to include them.
 The reason is that in the most common case, `to_dual` succeeds without needing to insert
 unfold boundaries, and figuring out whether to insert them can be quite expensive. -/
 def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
-    (reorder : ArgReorder) (dont : List Nat) (rename : NameMap Name) :
+    (reorder : ArgReorder) (omissions : ArgOmit) (dont : List Nat) (rename : NameMap Name) :
     MetaM (ConstantInfo × RelevantArg) :=
   -- Set `Elab.async` to `false` so that we can catch kernel errors.
   withOptions (Elab.async.set · false) do
@@ -324,7 +333,7 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     if let some unfoldBoundaries := t.unfoldBoundaries? then
       let env ← getEnv
       -- First attempt to generate the translation without unfold boundaries.
-      let declAttempt ← updateDecl t tgt srcDecl reorder dont none rename
+      let declAttempt ← updateDecl t tgt srcDecl reorder omissions dont none rename
       try
         addDecl declAttempt.1.toDeclaration!
         trace[translate_detail] "generating\n{tgt} : {declAttempt.1.type} :=\
@@ -332,9 +341,9 @@ def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
         return declAttempt -- early return
       catch _ =>
         setEnv env
-        updateDecl t tgt srcDecl reorder dont (unfoldBoundaries.getState env) rename
+        updateDecl t tgt srcDecl reorder omissions dont (unfoldBoundaries.getState env) rename
     else
-      updateDecl t tgt srcDecl reorder dont none rename
+      updateDecl t tgt srcDecl reorder omissions dont none rename
   let value := decl.1.value! (allowOpaque := true)
   trace[translate_detail] "generating\n{tgt} : {decl.1.type} :={indentExpr value}"
   try
@@ -465,10 +474,11 @@ occurring in `src` using the `translations` dictionary.
 
 - `rootSrc` is the declaration that got the translation attribute and `rootTgt` is its target.
 - `src` is assumed to have a value available in the environment.
-- `reorder` and `rename` are only used for the translation of `src`.
+- `reorder`, `omitted` and `rename` are only used for the translation of `src`.
 -/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
-    (reorder : ArgReorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
+    (reorder : ArgReorder := {}) (omitted : ArgOmit := {}) (rename : NameMap Name := {}) :
+    CoreM Unit := do
   trace[translate_detail] "visiting `{.ofConstName src}`"
   -- if we have already translated this declaration, we do nothing.
   if (findTranslation? (← getEnv) t src).isSome && src != rootSrc then
@@ -506,13 +516,13 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
       pure <| cfg.dontTranslate.filterMap (namesPre[·]? >>= namesSrc.idxOf?)
   -- now transform the source declaration
   let (tgtDecl, relevantArg) ←
-    MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder dontTranslate rename
+    MetaM.run' <| updateAndAddDecl t tgt srcDecl reorder omitted dontTranslate rename
   let relevantArg ←
     if src == rootSrc then
       getRelevantArg t relevantArg cfg.relevantArg? src
     else
       pure relevantArg
-  insertTranslation t src tgt { reorder } relevantArg
+  insertTranslation t src tgt { reorder } ⟨omitted⟩ relevantArg
   if src == rootSrc && srcDecl.isThm && tgtDecl.type == srcDecl.type then
     Linter.logLintIf linter.translate.redundant (← getRef)
       m!"`{t.attrName}` did not change the type \
@@ -528,7 +538,8 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   produce executable code but fails to do so (e.g. outside of `noncomputable section`). However,
   the `messages` and `infoState` are reset before this runs, so we cannot check for compilation
   errors on `src`. The scope set by `noncomputable` section lives in the `CommandElabM` state
-  (which is inaccessible here), so we cannot test for `noncomputable section` directly. See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
+  (which is inaccessible here), so we cannot test for `noncomputable section` directly.
+  See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/to_additive.20and.20noncomputable/with/310541981). -/
   if isNoncomputable (← getEnv) src then
     modifyEnv (addNoncomputable · tgt)
   else
@@ -704,14 +715,20 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
         pure reorder
       else
         pure reorderGuess
-  if isMainTranslation && cfg.self && reorder.isEmpty && cfg.relevantArg?.isNone then
+  let omissions := cfg.omit?.getD {}
+  if omissions.range > srcType.getForallArity then
+    if isMainTranslation then
+      throwError "The given (omit := {omissions}) is out of bounds for `{.ofConstName src}`"
+  if isMainTranslation && cfg.self &&
+      reorder.isEmpty && omissions.isEmpty && cfg.relevantArg?.isNone then
     Linter.logLintIf linter.translate.redundant (← getRef) m!"\
-      `{t.attrName} self` is redundant when none of the arguments are reordered \
-      and no `(relevant_arg := ...)` is provided.\nPlease remove the attribute, \
-      or provide an explicit `(reorder := ...)` or `(relevant_arg := ...)` argument.\n\
+      `{t.attrName} self` is redundant when none of the arguments are reordered or omitted \
+      and no `(relevant_arg := ...)` is provided.\nPlease remove the attribute, pr provide \
+      an explicit `(reorder := ...)`, `(omit := ...)` or `(relevant_arg := ...)` argument.\n\
       If you need to give a hint to `{t.attrName}` to translate expressions involving `{src}`,\n\
       use `{t.attrName}_do_translate` instead"
   srcType ← reorderForall reorder srcType
+  srcType ← omitForall omissions srcType
   if let some b := unfoldBoundaries? then
     srcType ← b.unfoldInsertions srcType
   -- We rely on unification to determine how the universe parameters need to be reordered.
@@ -743,8 +760,8 @@ def insertTranslationChecked (t : TranslateData) (src tgt : Name) (cfg : Config)
     (isMainTranslation : Bool) (allowDuplicate unfold := false) : CoreM Unit := do
   let (reorder, relevantArg) ←
     checkExistingType t src tgt cfg (isMainTranslation := isMainTranslation) |>.run'
-  insertTranslation t src tgt reorder relevantArg (allowDuplicate := allowDuplicate)
-    (unfold := unfold)
+  insertTranslation t src tgt reorder ⟨cfg.omit?.getD {}⟩ relevantArg
+    (allowDuplicate := allowDuplicate) (unfold := unfold)
 
 /-- Add translations from `srcs` to `tgts`, trying all pairings until one
 succeeds. -/
@@ -889,6 +906,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     let argNames ← xs.mapM (·.fvarId!.getUserName)
     let mut attrs := #[]
     let mut reorder? := none
+    let mut omit? := none
     let mut relevantArg? := none
     let mut dontTranslate := []
     let mut rename : NameMap Name := {}
@@ -900,6 +918,10 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
         if reorder?.isSome then
           throwErrorAt opt "cannot specify `reorder` multiple times"
         reorder? ← some <$> elabReorder reorder argNames xs (.ofConstName declName)
+      | `(bracketedOption| (omit := $omitted)) =>
+        if omit?.isSome then
+          throwErrorAt opt "cannot specify `omit` multiple times"
+        omit? ← some <$> elabOmit omitted argNames xs (.ofConstName declName)
       | `(bracketedOption| (relevant_arg := $n)) =>
         if relevantArg?.isSome then
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
@@ -926,12 +948,13 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
         as there is no other declaration for the attributes.\n\
         Instead, you can write the attributes in the usual way."
     trace[translate_detail]
-      "attributes: {attrs}; reorder arguments: {reorder?.elim "none" (·.toString)}"
+      "attributes: {attrs}; reorder arguments: {reorder?.elim "none" (·.toString)}; \
+      omit arguments: {omit?.elim "none" (·.toString)}"
     return {
       trace := !stx[1].isNone
       target := match tgt with | some tgt => tgt.getId | _ => Name.anonymous
       attrs := ← (← liftCommandElabM (elabAttrs attrs)).mapM (setDeprecatedTarget declName ·)
-      doc, reorder?, relevantArg?, dontTranslate, existing, self, none, rename,
+      doc, reorder?, omit?, relevantArg?, dontTranslate, existing, self, none, rename,
       ref := match tgt with | some tgt => tgt.raw | _ => stx[0] }
   | _ => throwUnsupportedSyntax
 
@@ -1047,7 +1070,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       throwError "`{t.attrName}` cannot translate `{.ofConstName src}` because it has no value."
     let reorder := cfg.reorder?.getD {}
     -- tgt doesn't exist, so let's make it
-    transformDeclRec t cfg src tgt src reorder cfg.rename
+    transformDeclRec t cfg src tgt src reorder (cfg.omit?.getD {}) cfg.rename
   if let some doc := cfg.doc then
     if alreadyExists then
       logWarningAt doc <|
@@ -1092,7 +1115,7 @@ def addTranslationFor (t : TranslateData) (src : Name) (tgt : Term)
         mkThmOrUnsafeDef { name, type, value, levelParams := cinfo.levelParams }
       else
         .defnDecl <$> mkDefinitionValInferringUnsafe name cinfo.levelParams type value .opaque
-  insertTranslation t src name {} relevantArg (unfold := !isTheorem)
+  insertTranslation t src name {} {} relevantArg (unfold := !isTheorem)
 where
   /-- Return how many variables can be introduced without introducing one with an
   inaccessible username. -/
