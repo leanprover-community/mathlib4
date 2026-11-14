@@ -38,7 +38,7 @@ theorem IsMaxChain.range_fin_of_covBy (h0 : f 0 = ⊥) (hlast : f (.last n) = �
     (hcovBy : ∀ k : Fin n, f k.castSucc ⩿ f k.succ) :
     IsMaxChain (· ≤ ·) (range f) := by
   have hmono : Monotone f := Fin.monotone_iff_le_succ.2 fun k ↦ (hcovBy k).1
-  refine ⟨hmono.isChain_range, fun t htc hbt ↦ hbt.antisymm fun x hx ↦ ?_⟩
+  refine ⟨hmono.isLEChain_range, fun t htc hbt ↦ hbt.antisymm fun x hx ↦ ?_⟩
   rw [mem_range]; by_contra! h
   suffices ∀ k, f k < x by simpa [hlast] using this (.last _)
   intro k
@@ -46,7 +46,7 @@ theorem IsMaxChain.range_fin_of_covBy (h0 : f 0 = ⊥) (hlast : f (.last n) = �
   | zero => simpa [h0, bot_lt_iff_ne_bot] using (h 0).symm
   | succ k ihk =>
     rw [range_subset_iff] at hbt
-    exact (htc.lt_of_le (hbt k.succ) hx (h _)).resolve_right ((hcovBy k).2 ihk)
+    exact (IsLEChain.isLTChain htc (hbt k.succ) hx (h _)).resolve_right ((hcovBy k).2 ihk)
 
 /-- Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple `(f₀, …, fₙ)` such that
 - `f₀ = ⊥` and `fₙ = ⊤`;

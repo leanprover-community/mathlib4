@@ -153,13 +153,13 @@ instance : SemilatticeInf (ExtensionOf i f) :=
 variable {i f}
 
 theorem chain_linearPMap_of_chain_extensionOf {c : Set (ExtensionOf i f)}
-    (hchain : IsChain (· ≤ ·) c) :
-    IsChain (· ≤ ·) <| (fun x : ExtensionOf i f => x.toLinearPMap) '' c := by
+    (hchain : IsLEChain c) :
+    IsLEChain <| (fun x : ExtensionOf i f => x.toLinearPMap) '' c := by
   rintro _ ⟨a, a_mem, rfl⟩ _ ⟨b, b_mem, rfl⟩ ne
   exact hchain a_mem b_mem (ne_of_apply_ne _ ne)
 
 /-- The maximal element of every nonempty chain of `extension_of i f`. -/
-def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
+def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsLEChain c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
   { LinearPMap.sSup _
       (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) with
@@ -175,7 +175,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
         LinearPMap.sSup_apply (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
           ((Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩) ⟨i m, h1⟩ }
 
-theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
+theorem ExtensionOf.le_max {c : Set (ExtensionOf i f)} (hchain : IsLEChain c)
     (hnonempty : c.Nonempty) (a : ExtensionOf i f) (ha : a ∈ c) :
     a ≤ ExtensionOf.max hchain hnonempty :=
   LinearPMap.le_sSup (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain) <|
