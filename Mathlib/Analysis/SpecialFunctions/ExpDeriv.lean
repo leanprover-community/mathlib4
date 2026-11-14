@@ -25,8 +25,6 @@ public section
 
 assert_not_exists IsConformalMap Conformal
 
-noncomputable section
-
 open Filter Asymptotics Set Function
 open scoped Topology
 
@@ -116,7 +114,7 @@ theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp :=
   analyticOnNhd_cexp.restrictScalars.contDiff
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
-  contDiff_exp.contDiffAt.hasStrictDerivAt' (hasDerivAt_exp x) one_ne_zero
+  contDiff_exp.contDiffAt.hasStrictDerivAt (hasDerivAt_exp x) one_ne_zero
 
 theorem hasStrictFDerivAt_exp_real (x : ℂ) : HasStrictFDerivAt exp (exp x • (1 : ℂ →L[ℝ] ℂ)) x :=
   (hasStrictDerivAt_exp x).complexToReal_fderiv
@@ -166,7 +164,7 @@ theorem HasFDerivWithinAt.cexp (hf : HasFDerivWithinAt f f' s x) :
 
 theorem HasFDerivAt.cexp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
-  hasFDerivWithinAt_univ.1 <| hf.hasFDerivWithinAt.cexp
+  hasFDerivWithinAt_univ.1 hf.hasFDerivWithinAt.cexp
 
 theorem DifferentiableWithinAt.cexp (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (fun x => Complex.exp (f x)) s x :=

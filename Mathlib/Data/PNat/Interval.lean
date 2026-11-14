@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Data.PNat.Defs
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Finite intervals of positive naturals

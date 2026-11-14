@@ -141,7 +141,7 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
     let _inst₂ := Fintype.ofEquiv G₁ e
     intro x y
     by_cases hx : x = 1 <;> by_cases hy : y = 1
-    all_goals try simp only [hx, hy, mul_one, one_mul, Equiv.toFun_as_coe, he]
+    all_goals simp only [hx, hy, mul_one, one_mul, Equiv.toFun_as_coe, he]
     by_cases hxy : x = y
     · simp [hxy, mul_self, ← pow_two (e y), h ▸ Monoid.pow_exponent_eq_one (e y), he]
     · classical

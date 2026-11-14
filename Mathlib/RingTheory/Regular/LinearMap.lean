@@ -5,16 +5,16 @@ Authors: Nailin Guan, Yi Song
 -/
 module
 
-public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
-public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Support
 
-/-!
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
+import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+import Mathlib.RingTheory.Regular.IsSMulRegular
 
+/-!
 # Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
 
 Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subsingleton iff
@@ -25,7 +25,6 @@ This is the case if `Depth[I](M) = 0`.
 
 * `IsSMulRegular.subsingleton_linearMap_iff` : for `R` module `N M`, `Hom(N, M) = 0`
   iff there is a `M`-regular in `Module.annihilator R N`.
-
 -/
 
 public section

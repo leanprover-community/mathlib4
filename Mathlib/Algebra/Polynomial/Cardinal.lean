@@ -5,9 +5,10 @@ Authors: Chris Hughes, Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.SetTheory.Cardinal.Finsupp
+
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
 
 /-!
 # Cardinality of Polynomial Ring
@@ -25,9 +26,7 @@ variable {R : Type u} [Semiring R]
 
 namespace Polynomial
 
-@[simp]
-lemma cardinalMk_eq_max {R : Type u} [Semiring R] [Nontrivial R] : #(R[X]) = max #R ℵ₀ := by
-  simp [(toFinsuppIso R).toEquiv.cardinal_eq]
+lemma cardinalMk_eq_max {R : Type u} [Semiring R] [Nontrivial R] : #(R[X]) = max #R ℵ₀ := by simp
 
 lemma cardinalMk_le_max {R : Type u} [Semiring R] : #(R[X]) ≤ max #R ℵ₀ := by
   cases subsingleton_or_nontrivial R

@@ -5,10 +5,9 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Composition
-public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # Various complex special functions are analytic
@@ -154,7 +153,7 @@ lemma AnalyticOnNhd.log (fs : AnalyticOnNhd ℝ f s) (m : ∀ x ∈ s, 0 < f x) 
 
 lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
     AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
-  fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
+  fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) (t := .Ioi 0) m
 
 theorem iteratedDeriv_succ_log {n : ℕ} {x : ℂ} (hx : x ∈ slitPlane) :
     iteratedDeriv (n + 1) log x = (-1 : ℂ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) := by
@@ -168,7 +167,7 @@ theorem hasFPowerSeriesAt_clog_one :
     HasFPowerSeriesAt log (.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) 1 := by
   suffices ((FormalMultilinearSeries.ofScalars ℂ (fun n ↦ -(-1 : ℂ) ^ n / n)) =
       FormalMultilinearSeries.ofScalars ℂ (fun n ↦ iteratedDeriv n log 1 / (n.factorial : ℂ))) by
-    convert! AnalyticAt.hasFPowerSeriesAt _ using 1 <;> try infer_instance
+    convert AnalyticAt.hasFPowerSeriesAt _ using 1 <;> try infer_instance
     exact analyticAt_clog (by simp)
   ext n
   simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, Finset.prod_const_one,

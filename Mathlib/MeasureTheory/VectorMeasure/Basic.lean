@@ -5,15 +5,15 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.MeasureTheory.VectorMeasure.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.Metrizable.Uniformity
+
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
-
 # Basic API for vector measures
 
 This file develops the basic consequences of countable additivity for vector measures, equips
@@ -241,8 +241,7 @@ def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
 instance instSMul : SMul R (VectorMeasure α M) :=
   ⟨smul⟩
 
-instance : IsSMulApply R (VectorMeasure α M) (Set α) M where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply R (VectorMeasure α M) where
 
 @[deprecated (since := "2026-06-10")] alias coe_smul := FunLike.coe_smul
 
@@ -257,8 +256,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 instance instZero : Zero (VectorMeasure α M) :=
   ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
 
-instance : IsZeroApply (VectorMeasure α M) (Set α) M where
-  zero_apply _ := rfl
+instance : IsZeroApply (VectorMeasure α M) where
 
 instance instInhabited : Inhabited (VectorMeasure α M) :=
   ⟨0⟩
@@ -290,8 +288,7 @@ def add (v w : VectorMeasure α M) : VectorMeasure α M where
 instance instAdd : Add (VectorMeasure α M) :=
   ⟨add⟩
 
-instance : IsAddApply (VectorMeasure α M) (Set α) M where
-  add_apply _ _ _ := rfl
+instance : IsAddApply (VectorMeasure α M) where
 
 @[deprecated (since := "2026-06-10")] alias coe_add := FunLike.coe_add
 
@@ -322,8 +319,7 @@ def neg (v : VectorMeasure α M) : VectorMeasure α M where
 instance instNeg : Neg (VectorMeasure α M) :=
   ⟨neg⟩
 
-instance : IsNegApply (VectorMeasure α M) (Set α) M where
-  neg_apply _ _ := rfl
+instance : IsNegApply (VectorMeasure α M) where
 
 @[deprecated (since := "2026-06-10")] alias coe_neg := FunLike.coe_neg
 
@@ -339,8 +335,7 @@ def sub (v w : VectorMeasure α M) : VectorMeasure α M where
 instance instSub : Sub (VectorMeasure α M) :=
   ⟨sub⟩
 
-instance : IsSubApply (VectorMeasure α M) (Set α) M where
-  sub_apply _ _ _ := rfl
+instance : IsSubApply (VectorMeasure α M) where
 
 @[deprecated (since := "2026-06-10")] alias coe_sub := FunLike.coe_sub
 

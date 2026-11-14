@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Category.TopCat.Opens
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of open neighborhoods of a point
@@ -69,6 +68,7 @@ instance (x : X) : OrderTop (OpenNhds x) where
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
+@[macro_inline]
 instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
   coe f := Set.inclusion f.le
   coe_injective := by rintro ⟨⟨_⟩⟩ _ _; congr!

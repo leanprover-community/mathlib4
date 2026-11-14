@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.PrecoverageToGrothendieck
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
-
 # Coverages
 
 A coverage `K` on a category `C` is a set of presieves associated to every object `X : C`,
@@ -452,7 +451,7 @@ lemma Precoverage.isSheaf_toGrothendieck_iff_of_isStableUnderBaseChange_of_small
   rw [Presieve.isSheafFor_iff_generate]
   let E : ZeroHypercover J X := ⟨E₀, hR⟩
   apply Presieve.isSheafFor_subsieve
-      (S := .generate <| (ZeroHypercover.restrictIndexOfSmall.{w} E).presieve₀)
+      (S := .generate (ZeroHypercover.restrictIndexOfSmall.{w} E).presieve₀)
   · exact Sieve.generate_mono (by simp [E])
   · intro Y f
     rw [← Sieve.pullbackArrows_comm, ← Presieve.isSheafFor_iff_generate,

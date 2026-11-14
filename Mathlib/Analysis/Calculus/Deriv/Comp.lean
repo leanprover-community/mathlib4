@@ -6,8 +6,9 @@ Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Yuyang Zhao
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+
+import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
 # One-dimensional derivatives of compositions of functions
@@ -218,7 +219,7 @@ theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' L')
   rw [mul_comm]
   exact hh₂.scomp hh hL
 
-@[deprecated HasDerivAtFilter.comp (since := "2026-07-17")]
+@[deprecated HasDerivAtFilter.comp +typeChanged (since := "2026-07-17")]
 theorem HasDerivAtFilter.comp_of_eq {L : Filter 𝕜} {L' : Filter 𝕜'}
     (hh₂ : HasDerivAtFilter h₂ h₂' (L' ×ˢ pure y))
     (hh : HasDerivAtFilter h h' (L ×ˢ pure x)) (hL : Tendsto h L L') (hy : y = h x) :

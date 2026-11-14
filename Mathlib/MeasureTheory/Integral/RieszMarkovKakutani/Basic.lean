@@ -26,7 +26,6 @@ literature.
 ## References
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
-
 -/
 
 @[expose] public section
@@ -158,9 +157,9 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
   have soopen (j : Fin 2) : IsOpen (so j) := by
     fin_cases j
     · simp only [hso, Fin.zero_eta, Fin.isValue, ↓reduceIte, isOpen_compl_iff]
-      exact IsCompact.isClosed <| s₀_compact
+      exact IsCompact.isClosed s₀_compact
     · simp only [hso, Fin.isValue, Fin.mk_one, one_ne_zero, ↓reduceIte, isOpen_compl_iff]
-      exact IsCompact.isClosed <| s₁_compact
+      exact IsCompact.isClosed s₁_compact
   have hsot : t ⊆ ⋃ j, so j := by
     rw [hso]
     simp only [Fin.isValue]
@@ -302,11 +301,12 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   rw [mul_comm, ← smul_eq_mul, ← map_smul]
   set K' := f ⁻¹' Ici α⁻¹
   have hKK' : ↑K ⊆ interior K' :=
-    subset_interior_iff.2 ⟨f ⁻¹' Ioi α⁻¹, isOpen_Ioi.preimage f.1.2,
+    subset_interior_iff.2 ⟨f ⁻¹' Ioi α⁻¹, isOpen_Ioi.preimage (by fun_prop),
       fun x hx ↦ (inv_lt_one_of_one_lt₀ hα).trans_le (hfleoneonK x hx),
       preimage_mono Ioi_subset_Ici_self⟩
-  have hK'cp : IsCompact K' := .of_isClosed_subset f.2 (isClosed_Ici.preimage f.1.2) fun x hx ↦
-    subset_closure ((inv_pos_of_pos <| zero_lt_one.trans hα).trans_le hx).ne'
+  have hK'cp : IsCompact K' :=
+    .of_isClosed_subset f.2 (isClosed_Ici.preimage (by fun_prop)) fun x hx ↦
+      subset_closure ((inv_pos_of_pos <| zero_lt_one.trans hα).trans_le hx).ne'
   set hb' := hb ⟨K', hK'cp⟩
   simp only [Compacts.coe_mk, le_iInf_iff] at hb'
   exact (ENNReal.toNNReal_mono (by simp) <| hb' hKK').trans <| csInf_le'

@@ -101,6 +101,17 @@ instance : CommMonoid (WithConv <| C →ₐ[R] A) := fast_instance%
 end AlgHom
 
 namespace BialgHom
+
+section AlgebraCoalgebra
+variable [Semiring A] [Algebra R A] [Coalgebra R A] [Semiring C] [Algebra R C] [Coalgebra R C]
+  (f : A →ₐc[R] C) {g : C →ₗ[R] C} {g' : A →ₗ[R] A}
+
+lemma convPrecomp_eq_convPostcomp (h : Function.Semiconj f g' g) :
+    f.toCoalgHom.convPrecomp (toConv g) = f.toAlgHom.convPostcomp (toConv g') :=
+  WithConv.ext <| LinearMap.ext fun a ↦ by simpa [BialgHom.toCoalgHom_apply] using (h a).symm
+
+end AlgebraCoalgebra
+
 variable [CommSemiring A] [Semiring C] [Bialgebra R A] [Bialgebra R C]
 
 instance : One (WithConv <| C →ₐc[R] A) where
@@ -113,7 +124,7 @@ lemma convOne_apply (c : C) : (1 : WithConv <| C →ₐc[R] A) c = algebraMap R 
 
 @[simp]
 lemma toLinearMap_convOne :
-    toConv (SemilinearMapClass.semilinearMap (1 : WithConv <| C →ₐc[R] A).ofConv) = 1 := rfl
+    toConv (LinearMap.ofClass (1 : WithConv <| C →ₐc[R] A).ofConv) = 1 := rfl
 
 @[simp] lemma toAlgHom_convOne : toConv (1 : WithConv <| C →ₐc[R] A).ofConv.toAlgHom = 1 := rfl
 
@@ -131,7 +142,7 @@ lemma convMul_def (f g : WithConv <| C →ₐc[R] A) :
 
 private lemma convPow_succ (f : WithConv <| C →ₐc[R] A) (n : ℕ) : f ^ (n + 1) = (f ^ n) * f := rfl
 
--- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
+-- TODO: Make simp once `LinearMap.ofClass` is not simp nf anymore.
 -- @[simp]
 lemma toLinearMap_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toLinearMap = toConv f.ofConv.toLinearMap * toConv g.ofConv.toLinearMap :=
@@ -142,7 +153,7 @@ lemma toAlgHom_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toAlgHom = toConv f.ofConv.toAlgHom * toConv g.ofConv.toAlgHom :=
   rfl
 
--- TODO: Make simp once `SemilinearMapClass.semilinearMap` is not simp nf anymore.
+-- TODO: Make simp once `LinearMap.ofClass` is not simp nf anymore.
 -- @[simp]
 lemma toLinearMap_convPow (f : WithConv <| C →ₐc[R] A) :
     ∀ n, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n

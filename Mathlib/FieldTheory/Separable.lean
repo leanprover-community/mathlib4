@@ -5,12 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
 /-!
-
 # Separable polynomials
 
 We define a polynomial to be separable if it is coprime with its derivative. We prove basic
@@ -23,7 +21,6 @@ properties about separable polynomials here.
   over `K` is separable.
 * `Algebra.IsSeparable K L`: `L` is separable over `K` iff every element in `L` is separable
   over `K`.
-
 -/
 
 @[expose] public section
@@ -156,7 +153,7 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
       (q * (derivative q * p + derivative q * p + q * derivative p)) := by
     simp only [← mul_assoc, mul_add]
     dsimp only [Separable] at hp
-    convert! hp using 1
+    convert hp using 1
     rw [derivative_mul, derivative_mul]
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
@@ -734,7 +731,7 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun x ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using! DFunLike.congr_fun he.symm (e₁.symm x) }
+        simpa [RingHom.algebraMap_toAlgebra] using! congr($he.symm (e₁.symm x)) }
   (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
 lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=

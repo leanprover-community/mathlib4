@@ -69,9 +69,7 @@ private theorem MonotoneOn.eventually_le_two_mul' {S : ℝ → ℝ} {a : ℝ}
     refine mem_iUnion.2 ⟨Nat.find h₄, hr, ?_, Nat.find_spec h₄⟩
     rcases Nat.eq_zero_or_pos (Nat.find h₄) with h₅ | h₅
     · simpa [h₅] using h₃
-    · have h₆ := Nat.find_min h₄ (Nat.sub_lt h₅ one_pos)
-      rw [show Nat.find h₄ - 1 + 1 = Nat.find h₄ by omega] at h₆
-      exact not_lt.1 h₆
+    · grind only [Nat.find_min h₄ (Nat.sub_lt h₅ one_pos)]
   -- Two points of a slice are at distance at most `(2 ^ n * S a)⁻¹`
   have hkey {n : ℕ} {x y : ℝ} (hx : x ∈ En n) (hy : y ∈ En n) : y - x ≤ (2 ^ n * S a)⁻¹ := by
     obtain ⟨⟨h₁x, h₂x⟩, h₃x, -⟩ := hx
@@ -101,7 +99,7 @@ private theorem MonotoneOn.eventually_le_two_mul' {S : ℝ → ℝ} {a : ℝ}
   have hvol : volume E < ⊤ := by
     have hsum : Summable fun n ↦ ((2 : ℝ) ^ n * S a)⁻¹ := by
       simp only [mul_inv, ← inv_pow]
-      exact (summable_geometric_of_lt_one (r := 2⁻¹) (by norm_num) (by norm_num)).mul_right _
+      exact (summable_geometric_of_lt_one (r := 2⁻¹) (by simp) (by norm_num)).mul_right _
     have h₃ : ∑' n : ℕ, ENNReal.ofReal (((2 : ℝ) ^ n * S a)⁻¹) = ENNReal.ofReal (2 * (S a)⁻¹) := by
       rw [← ENNReal.ofReal_tsum_of_nonneg (f := fun n ↦ ((2 : ℝ) ^ n * S a)⁻¹)
         (fun n ↦ by positivity) hsum]
@@ -111,7 +109,7 @@ private theorem MonotoneOn.eventually_le_two_mul' {S : ℝ → ℝ} {a : ℝ}
     calc volume E
         ≤ ∑' n, volume (En n) := le_trans (measure_mono hcov) (measure_iUnion_le En)
       _ ≤ ∑' n : ℕ, ENNReal.ofReal (((2 : ℝ) ^ n * S a)⁻¹) :=
-          ENNReal.tsum_le_tsum fun n ↦ le_trans (Real.volume_le_diam (En n)) (hdiam n)
+          tsum_le_tsum fun n ↦ le_trans (Real.volume_le_diam (En n)) (hdiam n)
       _ = ENNReal.ofReal (2 * (S a)⁻¹) := h₃
       _ < ⊤ := ENNReal.ofReal_lt_top
   -- Conclusion

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Endofunctors as a monoidal category.
 
@@ -19,8 +22,6 @@ Can we use this to show coherence results, e.g. a cheap proof that `λ_ (𝟙_ C
 I suspect this is harder than is usually made out.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 
@@ -32,7 +33,6 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 variable (C : Type u) [Category.{v} C]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The category of endofunctors of any category is a monoidal category,
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
@@ -102,8 +102,6 @@ namespace MonoidalCategory
 
 variable [MonoidalCategory C]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 instance : (tensoringRight C).Monoidal :=
@@ -294,6 +292,7 @@ noncomputable def unitOfTensorIsoUnit (m n : M) (h : m ⊗ n ≅ 𝟙_ M) [F.Mon
     F.obj m ⋙ F.obj n ≅ 𝟭 C :=
   μIso F m n ≪≫ F.mapIso h ≪≫ (εIso F).symm
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `m ⊗ n ≅ 𝟙_M` and `n ⊗ m ≅ 𝟙_M` (subject to some commuting constraints),
   then `F.obj m` and `F.obj n` forms a self-equivalence of `C`. -/
 @[simps]

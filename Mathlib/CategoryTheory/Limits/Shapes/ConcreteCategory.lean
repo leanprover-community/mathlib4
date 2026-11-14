@@ -7,15 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Limits in concrete categories
@@ -33,7 +31,6 @@ to compatible tuples of elements in `X₁ × X₂`.
 
 Some results are also obtained for the terminal object, binary products,
 wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
-
 -/
 
 @[expose] public section
@@ -126,7 +123,11 @@ variable [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) (forget C)]
 noncomputable def terminalEquiv : ToType (⊤_ C) ≃ PUnit :=
   (PreservesTerminal.iso (forget C) ≪≫ Types.terminalIso).toEquiv
 
-noncomputable instance : Unique (ToType (⊤_ C)) where
+-- We use the `{}` binder for the `FunLike` instance in order to get the right synthOrder.
+noncomputable instance
+    {FC : C → C → Type*} {CC : C → Type w} {_ : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
+    [ConcreteCategory.{w} C FC] [PreservesLimit (Functor.empty.{0} C) (forget C)] :
+    Unique (ToType (⊤_ C)) where
   default := (terminalEquiv C).symm PUnit.unit
   uniq _ := (terminalEquiv C).injective (Subsingleton.elim _ _)
 
@@ -265,7 +266,6 @@ section Multiequalizer
 variable {FC : C → C → Type*} {CC : C → Type s} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 variable [ConcreteCategory.{s} C FC]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
     {I : MulticospanIndex J C} [HasMultiequalizer I]
@@ -278,7 +278,6 @@ theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
       ConcreteCategory.comp_apply]
     simp [h]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
 def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :
     (I.multicospan ⋙ forget C).sections ≃

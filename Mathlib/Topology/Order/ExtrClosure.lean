@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.OrderClosed
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Maximum/minimum on the closure of a set

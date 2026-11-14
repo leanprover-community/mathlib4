@@ -20,7 +20,6 @@ for each `i₁ : I₁`, `K.X i₁` is a column of `K`.
 In this file, we obtain the equivalence of categories
 `HomologicalComplex₂.flipEquivalence : HomologicalComplex₂ C c₁ c₂ ≌ HomologicalComplex₂ C c₂ c₁`
 which is obtained by exchanging the horizontal and vertical directions.
-
 -/
 
 @[expose] public section
@@ -66,9 +65,7 @@ def toGradedObjectFunctor : HomologicalComplex₂ C c₁ c₂ ⥤ GradedObject (
   map φ := toGradedObjectMap φ
 
 instance : (toGradedObjectFunctor C c₁ c₂).Faithful where
-  map_injective {_ _ φ₁ φ₂} h := by
-    ext i₁ i₂
-    exact congr_fun h ⟨i₁, i₂⟩
+  map_injective {_ _ φ₁ φ₂} h := by ext i₁ i₂; congrm $h ⟨i₁, i₂⟩
 
 section OfGradedObject
 

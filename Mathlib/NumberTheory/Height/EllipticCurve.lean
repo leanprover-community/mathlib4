@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.AddSubMap
 public import Mathlib.GroupTheory.Descent
 public import Mathlib.NumberTheory.Height.MvPolynomial
-public import Mathlib.Order.Northcott
 
 /-!
 # The naïve height and the approximate parallelogram law
@@ -90,11 +89,6 @@ theorem approx_parallelogram_law [DecidableEq F] :
   have hPQ := hC₁ P Q
   have haddsub := hC₁ (P + Q) (P - Q)
   have hC := ht ▸ hC₂ (P.sym2x Q)
-  -- speed up `grind` below by reducing to the essentials
-  generalize (P + Q).naiveHeight + (P - Q).naiveHeight = A at haddsub ⊢
-  generalize logHeight ((P + Q).sym2x (P - Q)) = B at hC haddsub
-  generalize logHeight (P.sym2x Q) = B' at hPQ hC
-  generalize P.naiveHeight + Q.naiveHeight = A' at hPQ ⊢
   grind only [= abs.eq_1, = max_def]
 
 end NaiveHeight

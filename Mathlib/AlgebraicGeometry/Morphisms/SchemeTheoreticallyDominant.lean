@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Adjunctions
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 
@@ -22,7 +21,6 @@ In this file, we define scheme-theoretically dominant morphisms as morphisms wit
   is equivalent to dominant.
 - `AlgebraicGeometry.IsSchemeTheoreticallyDominant.of_isPullback`:
   quasicompact + scheme-theoretically dominant is stable under flat base change.
-
 -/
 
 public section
@@ -90,7 +88,6 @@ lemma IsSchemeTheoreticallyDominant.isReduced (f : X ⟶ Y) [IsSchemeTheoretical
     [QuasiCompact f] [IsReduced X] : IsReduced Y :=
   ⟨fun _ ↦ isReduced_of_injective _ (f.app_injective _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance IsSchemeTheoreticallyDominant.pullbackSnd (f : X ⟶ S) (g : Y ⟶ S)
     [IsSchemeTheoreticallyDominant f] [QuasiCompact f] [Flat g] :
     IsSchemeTheoreticallyDominant (pullback.snd f g) := by

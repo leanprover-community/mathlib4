@@ -1,5 +1,7 @@
-import Mathlib.Util.CompileInductive
-import Mathlib.Data.Fin.Fin2
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Util.CompileInductive
 
 compile_inductive% Fin2
 
@@ -26,7 +28,7 @@ example := @List._sizeOf_1
 
 open Lean Elab Term
 
-def tryToCompileAllInductives : TermElabM Unit := do
+meta def tryToCompileAllInductives : TermElabM Unit := do
   let ivs := (← getEnv).constants.toList.filterMap fun | (_, .inductInfo iv) => some iv | _ => none
   let mut success : Nat := 0
   for iv in ivs do

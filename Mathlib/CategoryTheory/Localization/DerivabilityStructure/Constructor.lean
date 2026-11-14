@@ -30,7 +30,6 @@ This statement is essentially Lemme 6.5 in
 ## References
 
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 @[expose] public section
@@ -56,8 +55,6 @@ namespace Constructor
 variable {D : Type*} [Category* D] (L : C₂ ⥤ D) [L.IsLocalization W₂]
   {X₂ : C₂} {X₃ : D} (y : L.obj X₂ ⟶ X₃)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `Φ : LocalizerMorphism W₁ W₂`, `L : C₂ ⥤ D` a localization functor for `W₂` and
 a morphism `y : L.obj X₂ ⟶ X₃`, this is the functor which sends `R : Φ.RightResolution d` to
 `(isoOfHom L W₂ R.w R.hw).inv ≫ y` in the category `w.CostructuredArrowDownwards y`
@@ -108,7 +105,6 @@ lemma isConnected :
 
 end Constructor
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If a localizer morphism `Φ` is a localized equivalence, then it is a right
 derivability structure if the categories of right resolutions are connected and the
 categories of right resolutions of arrows are nonempty. -/

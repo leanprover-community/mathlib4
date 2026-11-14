@@ -5,12 +5,11 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Defs
 public import Mathlib.Algebra.Module.Submodule.Bilinear
+public import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Finitely generated submodules and bilinear maps
-
 -/
 
 public section

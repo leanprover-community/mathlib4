@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.RingTheory.Trace.Basic
 public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # The trace and norm maps for finite fields

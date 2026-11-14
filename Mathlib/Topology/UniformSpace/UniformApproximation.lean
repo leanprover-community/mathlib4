@@ -29,9 +29,6 @@ Uniform limit, uniform convergence, tends uniformly to
 
 public section
 
-
-noncomputable section
-
 open Filter SetRel Set Uniform
 
 open scoped Topology Uniformity

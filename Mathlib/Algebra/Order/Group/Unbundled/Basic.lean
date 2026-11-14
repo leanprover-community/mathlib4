@@ -5,8 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Algebra.Order.Sub.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Ordered groups

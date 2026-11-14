@@ -5,15 +5,14 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Images in the category of types
 
 In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
-
 -/
 
 @[expose] public section

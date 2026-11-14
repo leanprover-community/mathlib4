@@ -5,7 +5,6 @@ Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
 module
 
-
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
@@ -97,13 +96,13 @@ theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : p ∈ line[ℝ, a, b])
   rw [dist_eq_norm_vsub V a q, dist_eq_norm_vsub V b q, ← h3, h] at hq
   refine mul_norm_eq_abs_sub_sq_norm ?_ hq
   -- TODO: factor this out as a separate lemma?
-  · rw [← vsub_vadd p a, vadd_left_mem_affineSpan_pair] at hp
-    rcases hp with ⟨r, hr⟩
-    rw [h, ← h1', eq_sub_iff_add_eq, ← eq_sub_iff_add_eq'] at hr
-    rw [hr]
-    use 1 - r * 2
-    match_scalars
-    ring
+  rw [← vsub_vadd p a, vadd_left_mem_affineSpan_pair] at hp
+  rcases hp with ⟨r, hr⟩
+  rw [h, ← h1', eq_sub_iff_add_eq, ← eq_sub_iff_add_eq'] at hr
+  rw [hr]
+  use 1 - r * 2
+  match_scalars
+  ring
 
 /-- If `A`, `B`, `C`, `D` are cospherical and `P` is on both lines `AB` and `CD`, then
 `AP * BP = CP * DP`. -/
@@ -201,7 +200,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
     rw [← affineIndependent_iff_not_collinear_set,
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
-    convert! hindep
+    convert hindep
     ext i; fin_cases i <;> rfl
   have : Fact (finrank ℝ S.direction = 2) := Affine.Simplex.fact_finrank_direction_affineSpan_eq
   exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux h_dist' hp₁'p₂' hp₃'p₄' hncol

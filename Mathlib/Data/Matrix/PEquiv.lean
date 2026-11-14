@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Basic.PEquiv
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Data.PEquiv
 
 /-!
 # partial equivalences for matrices
@@ -88,7 +88,7 @@ theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m 
 theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
     ((PEquiv.refl n).toMatrix : Matrix n n α) = 1 := by
   ext
-  simp [toMatrix_apply, one_apply]
+  simp [toMatrix_apply, Matrix.one_apply]
 
 @[simp]
 theorem toMatrix_toPEquiv_apply [DecidableEq n] [Zero α] [One α] (f : m ≃ n) (i) :
@@ -185,7 +185,7 @@ theorem single_mul_single_right [Fintype n] [Fintype k] [DecidableEq n] [Decidab
   rw [← Matrix.mul_assoc, single_mul_single]
 
 /-- We can also define permutation matrices by permuting the rows of the identity matrix. -/
-theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm n) :
+theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : m ≃ n) :
     σ.toPEquiv.toMatrix = (1 : Matrix n n α).submatrix σ id :=
   Matrix.ext fun _ _ => if_congr Option.some_inj rfl rfl
 

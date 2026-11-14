@@ -7,11 +7,10 @@ module
 
 public import Mathlib.Algebra.Category.Grp.FiniteGrp
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Separation.Connected
-/-!
 
+/-!
 # Category of Profinite Groups
 
 We say `G` is a profinite group if it is a topological group which is compact and totally
@@ -27,7 +26,6 @@ disconnected.
   profinite group.
 
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
-
 -/
 
 @[expose] public section
@@ -264,7 +262,8 @@ def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) 
   inv := ofHom e.symm
 
 /-- The functor mapping a profinite group to its underlying profinite space. -/
-@[to_additive]
+@[to_additive /-- The functor mapping a profinite additive group to its underlying profinite
+space. -/]
 instance : HasForget₂ ProfiniteGrp Profinite where
   forget₂ := {
     obj G := G.toProfinite
@@ -298,7 +297,6 @@ In this section, we construct limits in the category of profinite groups.
 * `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`.
 
 * `ProfiniteGrp.limitConeIsLimit`: `ProfiniteGrp.limitCone` is a limit cone.
-
 -/
 
 section Limits
@@ -324,7 +322,6 @@ instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))
 instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The explicit limit cone in `ProfiniteGrp`. -/
 @[to_additive /-- The explicit limit cone in `ProfiniteAddGrp`. -/]
 abbrev limitCone : Limits.Cone F where

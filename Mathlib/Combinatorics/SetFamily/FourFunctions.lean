@@ -5,17 +5,16 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Finset.Sups
-public import Mathlib.Order.Birkhoff
-public import Mathlib.Order.Booleanisation
-public import Mathlib.Order.Sublattice
-public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.GCongr
+
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Order.Birkhoff
+import Mathlib.Order.Booleanisation
+import Mathlib.Order.Sublattice
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # The four functions theorem and corollaries
@@ -281,7 +280,8 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
       (collapse_nonneg h₄) (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
     have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ
     have : 𝒜 ⊻ ℬ ⊆ powerset (insert a u) := by simpa using sups_subset h𝒜 hℬ
-    simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse,
+    simpa only [powerset_sups_powerset_self, infs_eq_inter, coe_powerset,
+      isLowerSet_preimage_coe_powerset, inter_self, sum_collapse,
       not_false_eq_true, *] using ih
 
 variable (f₁ f₂ f₃ f₄) [Finite α]
@@ -326,7 +326,7 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   rintro s t
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
   · obtain ⟨b, rfl⟩ | ht := em (∃ b, g b = t)
-    · simp_rw [← sup_eq_union, ← inf_eq_inter, ← map_sup, ← map_inf, hg.extend_apply]
+    · simp_rw [← map_sup, ← map_inf, hg.extend_apply]
       exact h _ _
     · simpa [extend_apply' _ _ _ ht] using! mul_nonneg
         (extend_nonneg (fun a : L ↦ h₃ a) le_rfl _) (extend_nonneg (fun a : L ↦ h₄ a) le_rfl _)

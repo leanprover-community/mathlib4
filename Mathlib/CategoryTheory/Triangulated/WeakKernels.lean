@@ -5,8 +5,8 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 public import Mathlib.CategoryTheory.Limits.WeakLimits.WeakKernels
+public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 /-!
 # Weak kernels in pretriangulated categories

@@ -5,9 +5,9 @@ Authors: Elazar Gershuni
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.InformationTheory.Coding.PrefixFree
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 import Mathlib.InformationTheory.Coding.KraftMcMillan
 import Mathlib.Topology.Algebra.InfiniteSum.Real
@@ -45,7 +45,7 @@ theorem IsPrefixFree.finsetSum_one_div_card_pow_length_le_one
     ∑ w ∈ S, (1 / (Fintype.card α : ℝ)) ^ w.length ≤ 1 := by
   by_cases hε : [] ∈ S
   · have hS' : S = {[]} := by
-      exact_mod_cast hS.eq_singleton_empty_of_empty_mem hε
+      exact mod_cast hS.eq_singleton_empty_of_empty_mem hε
     simp [hS']
   · exact (hS.isUniquelyDecodable hε).finsetSum_one_div_card_pow_length_le_one
 

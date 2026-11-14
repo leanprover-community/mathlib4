@@ -111,8 +111,8 @@ lemma mulIndicator_apply_ne_one {a : α} : s.mulIndicator f a ≠ 1 ↔ a ∈ s 
 
 @[to_additive (attr := simp)]
 lemma mulSupport_mulIndicator :
-    Function.mulSupport (s.mulIndicator f) = s ∩ Function.mulSupport f :=
-  ext fun x => by simp [Function.mem_mulSupport, mulIndicator_apply_eq_one]
+    Function.mulSupport (s.mulIndicator f) = s ∩ Function.mulSupport f := by
+  grind [mulIndicator_apply_eq_one]
 
 /-- If a multiplicative indicator function is not equal to `1` at a point, then that point is in the
 set. -/

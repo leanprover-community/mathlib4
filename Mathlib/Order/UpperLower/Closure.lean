@@ -6,8 +6,9 @@ Authors: Yaël Dillies, Sara Rousta
 module
 
 public import Mathlib.Order.Interval.Set.OrdConnected
-public import Mathlib.Order.Minimal
 public import Mathlib.Order.UpperLower.Principal
+
+import Mathlib.Order.Minimal
 
 /-!
 # Upper and lower closures

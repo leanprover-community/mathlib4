@@ -8,6 +8,9 @@ module
 public import Batteries.Data.DList.Basic
 public import Mathlib.Data.WSeq.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous definitions concerning weak sequences
 

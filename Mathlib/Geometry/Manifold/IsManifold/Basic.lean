@@ -6,11 +6,9 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.RCLike.TangentCone
 public import Mathlib.Data.Bundle
 public import Mathlib.Geometry.Manifold.HasGroupoid
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -312,7 +310,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
   let := NormedSpace.restrictScalars ℝ 𝕜 E
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
-  convert! hs hu hv ha hb hab using 2
+  convert hs hu hv ha hb hab using 2
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
 
@@ -339,7 +337,7 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
     simp only [h, ↓reduceDIte, toPartialEquiv_coe] at W
     simp only [Convex, StarConvex] at W ⊢
     intro u hu v hv a b ha hb hab
-    convert! W hu hv ha hb hab using 2
+    convert W hu hv ha hb hab using 2
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
       rfl
     · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
@@ -1041,7 +1039,7 @@ deriving
   ContinuousSMul 𝕜,
   -- the following instance derives from the previous one, but through an instance with priority 100
   -- which takes a long time to be found. We register a shortcut instance instead
-  ContinuousConstSMul 𝕜
+  ContinuousConstSMul 𝕜, IsNormableSpace 𝕜
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]

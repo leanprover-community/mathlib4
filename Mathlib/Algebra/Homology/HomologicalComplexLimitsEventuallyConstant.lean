@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # Limits of degreewise eventually constant systems
@@ -17,7 +18,6 @@ such that for any degree `q`, the functor `F ⋙ eval C c q : J ⥤ C` is
 eventually constant. Let `cF` be a limit cone for `F`. For a given degree `q`,
 we show that for suitable `j : J`, the map `(cF.π.app j).f q` is an
 isomorphism, and that `cf.π.app j` is a quasi-isomorphism in degree `q`.
-
 -/
 
 public section

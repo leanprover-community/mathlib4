@@ -8,12 +8,10 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
-
 # `Π Rᵢ`-Points of Schemes
 
 We show that the canonical map `X(Π Rᵢ) ⟶ Π X(Rᵢ)` (`AlgebraicGeometry.pointsPi`)
 is injective and surjective under various assumptions.
-
 -/
 
 @[expose] public section
@@ -103,7 +101,7 @@ def pointsPi : (Spec (.of <| Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
 lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi R X) := by
   rintro f g e
   have := isIso_of_comp_eq_sigmaSpec R (V := equalizer f g)
-    (equalizer.lift (sigmaSpec R) (by ext1 i; simpa using! congr_fun e i))
+    (equalizer.lift (sigmaSpec R) (by ext1 i; simpa using! congr($e i)))
     (equalizer.ι f g) (by simp)
   rw [← cancel_epi (equalizer.ι f g), equalizer.condition]
 
@@ -143,6 +141,6 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     (Pi.evalRingHom _ ⟨i, rfl⟩).comp (Pi.evalRingHom (R' ·) (j i)) := rfl
   rw [pointsPi, ← Spec.map_comp_assoc, ← CommRingCat.ofHom_comp, this, CommRingCat.ofHom_comp,
     Spec.map_comp_assoc, ← ι_sigmaSpec R', Category.assoc, IsIso.hom_inv_id_assoc,
-    Sigma.ι_desc, ← Category.assoc, hg, IsOpenImmersion.lift_fac]
+    Sigma.ι_comp_desc, ← Category.assoc, hg, IsOpenImmersion.lift_fac]
 
 end AlgebraicGeometry

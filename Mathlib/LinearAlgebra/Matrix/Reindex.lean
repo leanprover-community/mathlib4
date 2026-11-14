@@ -20,11 +20,12 @@ to an `m'` by `n'` matrix, as long as `m ≃ m'` and `n ≃ n'`.
 * `Matrix.reindexLinearEquiv R A`: `Matrix.reindex` is an `R`-linear equivalence between
   `A`-matrices.
 * `Matrix.reindexAlgEquiv R A`: `Matrix.reindex` is an `R`-algebra equivalence between `A`-matrices.
+* `Matrix.reindexStarAlgEquiv R A`: `Matrix.reindex` is an `R`-⋆-algebra equivalence between
+  `A`-matrices.
 
 ## Tags
 
 matrix, reindex
-
 -/
 
 @[expose] public section
@@ -137,7 +138,7 @@ theorem toAddEquiv_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     reindexLinearEquiv R A eₘ eₙ = reindexAddEquiv A eₘ eₙ :=
   rfl
 
-@[deprecated coe_reindexLinearEquiv (since := "2026-06-06")]
+@[deprecated coe_reindexLinearEquiv +typeChanged (since := "2026-06-06")]
 theorem reindexLinearEquiv_apply (eₘ : m ≃ m') (eₙ : n ≃ n') (M : Matrix m n A) :
     reindexLinearEquiv R A eₘ eₙ M = reindex eₘ eₙ M := by
   simp
@@ -234,7 +235,7 @@ theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
     reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
   rfl
 
-@[deprecated coe_reindexAlgEquiv (since := "2026-06-06")]
+@[deprecated coe_reindexAlgEquiv +typeChanged (since := "2026-06-06")]
 theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
     reindexAlgEquiv R A e M = reindex e e M := by
   simp
@@ -255,12 +256,68 @@ theorem reindexAlgEquiv_trans_reindexAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexAlgEquiv R A e) (reindexAlgEquiv R A e') = reindexAlgEquiv R A (.trans e e') :=
   rfl
 
-@[deprecated map_mul (since := "2026-06-06")]
+@[deprecated map_mul +typeChanged (since := "2026-06-06")]
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
     reindexAlgEquiv R A e (M * N) = reindexAlgEquiv R A e M * reindexAlgEquiv R A e N :=
   map_mul ..
 
 end Algebra
+
+section StarAlgebra
+
+variable [Semiring R] [Fintype n] [Fintype m] [Fintype o] [NonUnitalNonAssocSemiring A] [Module R A]
+  [Star A]
+
+/-- For square matrices with coefficients in a (non-unital, non-associative) semiring `A` with a
+star operation and an `R`-module structure, the natural map that reindexes a matrix's rows and
+columns with equivalent types, `Matrix.reindex`, is an equivalence of ⋆-algebras. -/
+def reindexStarAlgEquiv (e : m ≃ n) : Matrix m m A ≃⋆ₐ[R] Matrix n n A where
+  __ := reindexRingEquiv A e
+  __ := reindexLinearEquiv R A e e
+  map_star' _ := rfl
+
+@[simp]
+theorem coe_reindexStarAlgEquiv (e : m ≃ n) : ⇑(reindexStarAlgEquiv R A e) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toEquiv_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e : Matrix m m A ≃ Matrix n n A) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e : Matrix m m A ≃+ Matrix n n A) = reindexAddEquiv A e e :=
+  rfl
+
+@[simp]
+theorem toRingEquiv_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e).toRingEquiv = reindexRingEquiv A e :=
+  rfl
+
+@[simp]
+theorem symm_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e).symm = reindexStarAlgEquiv R A e.symm :=
+  rfl
+
+@[simp]
+theorem reindexStarAlgEquiv_refl :
+    reindexStarAlgEquiv R A (Equiv.refl m) = StarAlgEquiv.refl .. :=
+  rfl
+
+@[simp]
+theorem reindexStarAlgEquiv_trans_reindexStarAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindexStarAlgEquiv R A e) (reindexStarAlgEquiv R A e') =
+      reindexStarAlgEquiv R A (.trans e e') :=
+  rfl
+
+end StarAlgebra
+
+@[simp]
+theorem toAlgEquiv_reindexStarAlgEquiv [CommSemiring R] [Fintype m] [Fintype n] [Semiring A]
+    [Algebra R A] [Star A] [DecidableEq m] [DecidableEq n] (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
+  rfl
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 

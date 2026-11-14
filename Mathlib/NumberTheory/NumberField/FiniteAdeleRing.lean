@@ -6,17 +6,16 @@ Authors: Salvatore Mercuri
 
 module
 
-public import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
-public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
-public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.NumberTheory.NumberField.ProductFormula
-public import Mathlib.Algebra.FiniteSupport.Basic
+public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+
+import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!
 # The finite adele ring of a number field
 
 This file concerns the finite adele ring of a Dedekind domain `R` and its field of
-fractions under the assumption that `Ring.HasFiniteQuotients R` and `Infinite R`.
+fractions under the assumption that `Ring.HasFiniteQuotients R`.
 Later, these results are applied to the case where `K` is a number field and `R` is `𝓞 K`.
 
 ## Main definitions
@@ -27,13 +26,15 @@ Later, these results are applied to the case where `K` is a number field and `R`
 adele ring, number field
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 namespace NumberField
 
 open IsDedekindDomain FiniteAdeleRing
 
-variable {R K : Type*} [CommRing R] [IsDedekindDomain R] [Ring.HasFiniteQuotients R] [Infinite R]
+variable {R K : Type*} [CommRing R] [IsDedekindDomain R] [Ring.HasFiniteQuotients R]
   [Field K] [Algebra R K] [IsFractionRing R K]
 
 namespace AdeleRing
@@ -65,7 +66,7 @@ private theorem hasProd_zero_subset_lt_one_valued {x : 𝔸ᶠ[R, K]} (hx : ¬Is
   have hx_prop : {v | 1 < Valued.v (x v)}.Finite := finite_valued_one_lt x
   have hx_inf : {v | Valued.v (x v) < 1}.Infinite := (hx.sdiff hx_prop).mono (by grind)
   have : atTop.Tendsto (fun s : Finset {v | Valued.v (x v) < 1} ↦ (∏ v ∈ s, ‖x v‖)⁻¹) atTop := by
-    have h_le (S : Finset {v | Valued.v (x v) < 1}) : 2 ^ S.card ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
+    have h_le (S : Finset {v | Valued.v (x v) < 1}) : 2 ^ #S ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
       have (v : _) (h : v ∈ S) : 2 ≤ ‖(x v)⁻¹‖ := by
         apply FinitePlace.two_le_norm_of_one_lt_norm
         grind [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ (Valued.v.pos_iff.2 (hx₀ v))]
@@ -109,6 +110,9 @@ theorem norm_def (x : 𝔸ᶠ[R, K]) : ‖x‖ = ∏' v, ‖x v‖ := rfl
 
 theorem norm_eq_finprod_of_unit (x : 𝔸ᶠ[R, K]ˣ) : ‖(x : 𝔸ᶠ[R, K])‖ = ∏ᶠ v, ‖(x : 𝔸ᶠ[R, K]) v‖ :=
   tprod_norm_eq_finprod_of_unit x
+
+theorem norm_eq_finprod_of_isUnit {x : 𝔸ᶠ[R, K]} (hx : IsUnit x) :
+    ‖x‖ = ∏ᶠ v, ‖x v‖ := norm_eq_finprod_of_unit hx.unit
 
 theorem norm_eq_zero_of_not_isUnit {x : 𝔸ᶠ[R, K]} (hx : ¬IsUnit x) : ‖x‖ = 0 :=
   tprod_eq_zero_of_not_isUnit hx

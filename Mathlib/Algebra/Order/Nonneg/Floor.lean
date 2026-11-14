@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Algebra.Order.Nonneg.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonnegative elements are archimedean
 

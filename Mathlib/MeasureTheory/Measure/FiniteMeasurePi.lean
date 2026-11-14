@@ -25,7 +25,6 @@ the underlying space is metrizable and separable.
 
 `MeasureTheory.ProbabilityMeasure.continuous_pi`: the product probability measure depends
 continuously on the factors.
-
 -/
 
 @[expose] public section

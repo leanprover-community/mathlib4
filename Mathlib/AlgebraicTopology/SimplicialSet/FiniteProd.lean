@@ -14,7 +14,6 @@ If `X₁` and `X₂` are respectively of dimensions `≤ d₁` and `≤ d₂`,
 then `X₁ ⊗ X₂` has dimension `≤ d₁ + d₂`.
 
 We also show that if `X₁` and `X₂` are finite, then `X₁ ⊗ X₂` is also finite.
-
 -/
 
 public section

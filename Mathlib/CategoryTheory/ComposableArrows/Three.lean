@@ -18,7 +18,6 @@ The names are justified by the fact that `ComposableArrow.mk₃ f₁ f₂ f₃`
 can be thought of as a `3`-simplex in the simplicial set `nerve C`,
 and its faces (numbered from `0` to `3`) are respectively
 `mk₂ f₂ f₃`, `mk₂ f₁₂ f₃`, `mk₂ f₁ f₂₃`, `mk₂ f₁ f₂`.
-
 -/
 
 @[expose] public section
@@ -35,7 +34,6 @@ variable {C : Type u} [Category.{v} C]
   {i j k l : C} (f₁ : i ⟶ j) (f₂ : j ⟶ k) (f₃ : k ⟶ l)
   (f₁₂ : i ⟶ k) (f₂₃ : j ⟶ l)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃` when `f₂ ≫ f₃ = f₂₃`. -/
 def threeδ₃Toδ₂ (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) :
     mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃ :=

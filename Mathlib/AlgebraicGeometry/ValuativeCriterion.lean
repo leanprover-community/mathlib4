@@ -5,10 +5,11 @@ Authors: Andrew Yang, Qi Ge, Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
-public import Mathlib.RingTheory.RingHom.Injective
 public import Mathlib.RingTheory.Valuation.LocalSubring
+
+import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+import Mathlib.RingTheory.RingHom.Injective
 
 /-!
 # Valuative criterion
@@ -27,7 +28,6 @@ public import Mathlib.RingTheory.Valuation.LocalSubring
 
 ## Future projects
 Show that it suffices to check discrete valuation rings when the base is Noetherian.
-
 -/
 
 @[expose] public section

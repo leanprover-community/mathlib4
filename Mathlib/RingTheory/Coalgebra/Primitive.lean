@@ -80,7 +80,7 @@ end IsSkewPrimitiveElem
 @[simp] lemma isSkewPrimitiveElem_map_equiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
     IsSkewPrimitiveElem R (f g) (f h) (f a) ↔ IsSkewPrimitiveElem R g h a where
   mp ha :=
-    let e := CoalgEquivClass.toCoalgEquiv f
+    let e := CoalgEquiv.ofClass f
     e.symm_apply_apply g ▸ e.symm_apply_apply h ▸ e.symm_apply_apply a ▸ ha.map _
   mpr := .map f
 

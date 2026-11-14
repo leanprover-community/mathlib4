@@ -29,7 +29,7 @@ class AddSubmonoidWithOneClass (S : Type*) (R : outParam Type*) [AddMonoidWithOn
 
 variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 
@@ -37,6 +37,9 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     ofNat(n) ∈ s := by
   rw [← Nat.cast_ofNat]; exact natCast_mem s n
+
+/- `no_index` breaks the default pattern so we can't use the `grind` attribute -/
+grind_pattern [membership] ofNat_mem => OfNat.ofNat n ∈ s
 
 instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=
@@ -142,7 +145,7 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R) R
+instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R)
 
 initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 
@@ -298,6 +301,10 @@ theorem coe_add (x y : s) : ((x + y : s) : R) = (x + y : R) :=
 
 @[simp, norm_cast]
 theorem coe_mul (x y : s) : ((x * y : s) : R) = (x * y : R) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = (n : R) :=
   rfl
 
 instance nontrivial [Nontrivial R] : Nontrivial s :=

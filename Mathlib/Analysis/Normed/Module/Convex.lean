@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Convex.Jensen
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Group.Pointwise
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
@@ -99,10 +98,12 @@ theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) 
 
 open scoped Pointwise in
 theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
+    [Nontrivial F] (x : F) (r : ℝ) :
     convexHull ℝ (sphere x r) = closedBall x r := by
+  rcases lt_or_ge r 0 with hr | hr
+  · simp [closedBall_eq_empty.2 hr, sphere_eq_empty_of_neg hr]
   suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by
-    rw [← add_zero x, ← vadd_eq_add, ← vadd_sphere, convexHull_vadd,
+    rw [← add_zero x, ← vadd_eq_add, ← Metric.vadd_sphere, convexHull_vadd,
       this, vadd_closedBall_zero, vadd_eq_add, add_zero]
   refine subset_antisymm (convexHull_min sphere_subset_closedBall (convex_closedBall 0 r))
     (fun x h ↦ mem_convexHull_iff.mpr fun U hU_sub hU ↦ ?_)

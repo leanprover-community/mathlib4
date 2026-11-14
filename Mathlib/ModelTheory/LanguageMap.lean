@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 module
 
 public import Mathlib.ModelTheory.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Language Maps
@@ -30,7 +31,6 @@ For the Flypitch project:
   hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
-
 -/
 
 @[expose] public section
@@ -364,7 +364,7 @@ theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β 
   let := constantsOn.structure fα
   let := constantsOn.structure fβ
   exact
-    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F :)) fun n F => isEmptyElim F, fun R =>
+    ⟨fun {n} => Nat.casesOn n (fun F _x => congr($h F)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
 
 end ConstantsOn

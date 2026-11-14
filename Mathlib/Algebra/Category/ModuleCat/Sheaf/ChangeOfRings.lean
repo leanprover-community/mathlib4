@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
 /-!
 # Change of sheaf of rings
@@ -15,7 +14,6 @@ public import Mathlib.CategoryTheory.Sites.LocallySurjective
 In this file, we define the restriction of scalars functor
 `restrictScalars α : SheafOfModules.{v} R' ⥤ SheafOfModules.{v} R`
 attached to a morphism of sheaves of rings `α : R ⟶ R'`.
-
 -/
 
 @[expose] public section
@@ -60,7 +58,7 @@ noncomputable def restrictHomEquivOfIsLocallySurjective
     apply hM₂.isSeparated _ _ (Presheaf.imageSieve_mem J α r')
     rintro Y p ⟨r : R.obj _, hr⟩
     have hg : ∀ (z : M₁.obj X), g.app _ (M₁.map p.op z) = M₂.map p.op (g.app X z) :=
-      fun z ↦ CategoryTheory.congr_fun (g.naturality p.op) z
+      fun z ↦ congr($(g.naturality p.op) z)
     change M₂.map p.op (g.app X (r' • m)) = M₂.map p.op (r' • show M₂.obj X from g.app X m)
     dsimp at hg ⊢
     rw [← hg, M₂.map_smul, ← hg, ← hr]

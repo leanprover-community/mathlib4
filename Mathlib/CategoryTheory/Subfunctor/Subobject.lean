@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Subobject.Basic
 Given a type-valued functor `F : C ⥤ Type w`, we define an equivalence
 of categories `Subfunctor.equivalenceMonoOver F : Subfunctor F ≌ MonoOver F`
 and an order isomorphism `Subfunctor.orderIsoSubject F : Subfunctor F ≃o Subobject F`.
-
 -/
 
 @[expose] public section
@@ -27,7 +26,6 @@ variable {C : Type u} [Category.{v} C] (F : C ⥤ Type w)
 
 namespace Subfunctor
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories `Subfunctor F ≌ MonoOver F`. -/
 @[simps]
 noncomputable def equivalenceMonoOver : Subfunctor F ≌ MonoOver F where

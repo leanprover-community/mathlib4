@@ -7,7 +7,8 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
-public import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
+
+import Mathlib.LinearAlgebra.Matrix.FixedDetMatrices
 
 /-!
 # Slash action on E2
@@ -63,7 +64,6 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 ## References
 * P. Bruin and S. Dahmen, Modular Forms, https://www.few.vu.nl/~sdn249/modularforms16/notes.pdf
-
 -/
 
 open UpperHalfPlane hiding I
@@ -161,7 +161,7 @@ lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z)
     rw [hasSum_symmetricIco_int_iff]
     apply (tendsto_double_sum_S_act z).congr (fun x ↦ ?_)
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
-    simpa using! linear_left_summable (ne_zero z) i (k := 2) (by norm_num)
+    simpa using! linear_left_summable (ne_zero z) i (k := 2) (by simp)
   · apply HasSum.summable (a := -2 * π * I / z)
     rw [hasSum_symmetricIco_int_iff, ← tendsto_comp_val_Ioi_atTop]
     exact tendsto_tsum_one_div_linear_sub_succ_eq z
@@ -193,11 +193,10 @@ lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2
   rw [G2_S_action_eq_tsum_G2Term, G2_eq_tsum_G2Term z, ← tsum_G2Term_eq_tsum',
   tsum_G2Term_eq_tsum]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma G2_T_transform : G2 ∣[(2 : ℤ)] T = G2 := by
   ext z
-  simp_rw [SL_slash_def, modular_T_smul z]
-  simp [G2_eq_tsum_cexp, T, denom_apply, ← exp_periodic.nat_mul 1 (2 * π * I * z)]
+  simp [SL_slash_def, modular_T_smul z, G2_eq_tsum_cexp, denom_apply, coe_T,
+    ← exp_periodic.nat_mul 1 (2 * π * I * z)]
   grind
 
 lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := by
@@ -214,17 +213,12 @@ lemma G2_slash_action (γ : SL(2, ℤ)) : G2 ∣[(2 : ℤ)] γ = G2 - D2 γ := b
         aesop
       · simpa only [h2, D2_T, sub_zero] using G2_T_transform
   | mul g h _ _ ig ih =>
-      rw [D2_mul, SlashAction.slash_mul, ig, sub_eq_add_neg, SlashAction.add_slash, ih]
-      grind [SlashAction.neg_slash, SL_slash]
+      grind [D2_mul, SlashAction.slash_mul, SlashAction.sub_slash]
   | inv g _ ig =>
       have H1 : (G2 ∣[(2 : ℤ)] g) ∣[(2 : ℤ)] g⁻¹ = (G2 - D2 g) ∣[(2 : ℤ)] g⁻¹ := by
         rw [ig]
-      simp_rw [← SlashAction.slash_mul, sub_eq_add_neg, SlashAction.add_slash, mul_inv_cancel,
-        SlashAction.slash_one, SL_slash, SlashAction.neg_slash] at H1
-      nth_rw 2 [H1]
-      have := D2_inv g
-      simp only [SL_slash] at this
-      rw [← sub_eq_add_neg, this, SL_slash, sub_neg_eq_add, add_sub_cancel_right]
+      rwa [← SlashAction.slash_mul, mul_inv_cancel, SlashAction.slash_one, SlashAction.sub_slash,
+        D2_inv, sub_neg_eq_add, eq_comm, ← eq_sub_iff_add_eq] at H1
 
 lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * riemannZeta 2)) • D2 γ := by
   ext z
@@ -236,7 +230,7 @@ lemma E2_T_transform : E2 ∣[(2 : ℤ)] T = E2 := by
 
 /-- `E2` is invariant under `z ↦ z + 1` (the action of `T`). -/
 lemma E2_T_smul (z : ℍ) : E2 (T • z) = E2 z := by
-  simpa [denom_apply, SL_slash_apply] using congrFun E2_T_transform z
+  simpa [denom_apply, SL_slash_apply] using congr($E2_T_transform z)
 
 /-- `E2 ∘ ofComplex` has period `1`. -/
 lemma E2_periodic : Function.Periodic (E2 ∘ ofComplex) 1 :=

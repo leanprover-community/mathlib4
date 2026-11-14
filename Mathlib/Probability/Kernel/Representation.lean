@@ -5,7 +5,6 @@ Authors: Gaëtan Serré, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
 public import Mathlib.Probability.Kernel.Defs
 

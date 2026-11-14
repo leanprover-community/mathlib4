@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplication by a nonzero element in a `GroupWithZero` is a permutation.
 -/

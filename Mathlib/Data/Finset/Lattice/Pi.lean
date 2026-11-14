@@ -43,7 +43,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   -- TODO: This `have` must be named to prevent it being shadowed by the internal `this` in `simpa`
   have aux : ∀ j : { x // x ∈ s }, ↑j ≠ i := fun j : s => ne_of_mem_of_not_mem j.2 hi
   -- `simpa` doesn't support placeholders in proof terms
-  have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
+  have := h (fun j hj => if hji : j = i then cast congr(κ $hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
   · simpa only [cast_eq, dite_eq_left, Function.comp_def, Subtype.coe_mk, dite_eq_right,
       aux] using! this

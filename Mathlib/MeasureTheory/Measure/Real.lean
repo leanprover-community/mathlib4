@@ -349,7 +349,7 @@ theorem le_measureReal_sdiff (h : μ s₂ ≠ ∞ := by finiteness) :
   simp only [tsub_le_iff_left]
   calc
     μ.real s₁ ≤ μ.real (s₂ ∪ s₁) := measureReal_le_measureReal_union_right h
-    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr_arg μ.real union_sdiff_self.symm
+    _ = μ.real (s₂ ∪ s₁ \ s₂) := congr(μ.real $union_sdiff_self.symm)
     _ ≤ μ.real s₂ + μ.real (s₁ \ s₂) := measureReal_union_le _ _
 
 @[deprecated (since := "2026-06-03")] alias le_measureReal_diff := le_measureReal_sdiff
@@ -447,7 +447,7 @@ theorem exists_nonempty_inter_of_measureReal_univ_lt_sum_measureReal [IsFiniteMe
     (fun i mi ↦ (h i mi).nullMeasurableSet)
   simp only [Measure.real] at H
   apply (ENNReal.toReal_lt_toReal (by finiteness) _).1
-  · convert! H
+  · convert H
     rw [ENNReal.toReal_sum (by finiteness)]
   · exact (ENNReal.sum_lt_top.mpr (fun i hi ↦ measure_lt_top ..)).ne
 
@@ -493,7 +493,7 @@ open Lean Meta Qq Function
 @[positivity MeasureTheory.Measure.real _ _]
 meta def evalMeasureReal : PositivityExt where eval {_ _} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let .app (.app _ a) b ← whnfR e | throwError "not measureReal"
+  let .app (.app _ a) b ← whnf e | throwError "not measureReal"
   let p ← mkAppOptM ``MeasureTheory.measureReal_nonneg #[none, none, a, b]
   pure (.nonnegative p)
 

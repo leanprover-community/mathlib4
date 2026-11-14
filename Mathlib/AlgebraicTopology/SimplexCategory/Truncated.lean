@@ -17,7 +17,7 @@ simplex category, for `n ≤ m` are initial.
 
 public section
 
-open CategoryTheory
+open CategoryTheory Limits
 
 open scoped Simplicial
 
@@ -107,5 +107,59 @@ lemma δ₂_zero_eq_const : δ₂ (0 : Fin 2) = Hom.tr (const _ _ 1) := by decid
 lemma δ₂_zero_comp_δ₂_two : δ₂ (0 : Fin 2) ≫ δ₂ 2 = δ₂ 1 ≫ δ₂ 0 := by decide
 
 end Two
+
+/-- A morphism in `Truncated d` is a monomorphism if and only if it is a monomorphism in
+`SimplexCategory`. -/
+lemma mono_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Mono f ↔ Mono f.hom := by
+  constructor
+  · intro hf
+    rw [SimplexCategory.mono_iff_injective]
+    intro x y hxy
+    have h : ObjectProperty.homMk (SimplexCategory.const ⦋0⦌ a.obj x) ≫ f =
+        ObjectProperty.homMk (X := ⟨⦋0⦌, by simp⟩) (SimplexCategory.const ⦋0⦌ a.obj y) ≫ f :=
+      Hom.ext _ _ <| OrderHom.ext _ _ <| funext fun _ ↦ hxy
+    exact congr($((cancel_mono f).mp h).hom.toOrderHom 0)
+  · intro hf
+    exact (inclusion d).mono_of_mono_map hf
+
+/-- A morphism in `Truncated d` is an epimorphism if and only if it is an epimorphism in
+`SimplexCategory`. -/
+lemma epi_iff {d : ℕ} {a b : Truncated d} {f : a ⟶ b} : Epi f ↔ Epi f.hom := by
+  constructor
+  · intro hf
+    refine SimplexCategory.epi_iff_surjective.mpr fun j ↦ not_forall_not.mp fun hj ↦ ?_
+    have hb : 1 ≤ b.obj.len := by grind [hj 0]
+    let g (t : ℕ) : b ⟶ ⟨⦋1⦌, hb.trans b.property⟩ :=
+      ObjectProperty.homMk <| Hom.mk ⟨fun x ↦ if t ≤ x then 1 else 0, fun x y h ↦ by grind⟩
+    have hg (t x) : (g t).hom.toOrderHom x = if t ≤ x.val then 1 else 0 := rfl
+    have h := (cancel_epi f (g := g (j + 1)) (h := g j)).1 (by ext x : 4; simp [hg]; grind [hj x])
+    simpa [hg] using congr($(h).hom.toOrderHom j)
+  · intro hf
+    exact (inclusion d).epi_of_epi_map hf
+
+instance {d : ℕ} : SplitEpiCategory (Truncated d) where
+  isSplitEpi_of_epi f hf :=
+    have := epi_iff.mp hf
+    ((inclusion d).isSplitEpi_iff f).mp (isSplitEpi_of_epi f.hom)
+
+instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Epi g] :
+    Epi (ObjectProperty.homMk g : a ⟶ b) :=
+  epi_iff.mpr hg
+
+instance {d : ℕ} {a b : Truncated d} (g : a.obj ⟶ b.obj) [hg : Mono g] :
+    Mono (ObjectProperty.homMk g : a ⟶ b) :=
+  mono_iff.mpr hg
+
+instance {d : ℕ} : StrongEpiCategory (Truncated d) where
+  strongEpi_of_epi f _ :=
+    have := isSplitEpi_of_epi f
+    inferInstance
+
+instance {d : ℕ} : HasStrongEpiMonoFactorisations (Truncated d) where
+  has_fac {a b} f :=
+    ⟨{ I := ⟨image f.hom, (len_le_of_epi (factorThruImage f.hom)).trans a.2⟩
+       m := ObjectProperty.homMk (image.ι f.hom)
+       e := ObjectProperty.homMk (factorThruImage f.hom)
+       e_strong_epi := strongEpi_of_epi _ }⟩
 
 end SimplexCategory.Truncated

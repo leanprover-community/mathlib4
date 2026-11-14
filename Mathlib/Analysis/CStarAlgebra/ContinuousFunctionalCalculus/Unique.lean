@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
@@ -41,7 +41,7 @@ instance (priority := 100) RCLike.instContinuousMapUniqueHom [TopologicalSpace A
     ContinuousMap.UniqueHom 𝕜 A where
   eq_of_continuous_of_map_id s _ φ ψ hφ hψ h :=
     ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
-      convert! h using 1
+      convert h using 1
       all_goals exact congr_arg _ (by ext; simp)
 
 instance Real.instContinuousMapUniqueHom [TopologicalSpace A]
@@ -123,13 +123,13 @@ noncomputable def realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥
     have := congr(φ $(f.toNNReal_mul_add_neg_mul_add_mul_neg_eq g))
     simp only [map_add, map_mul, sub_mul, mul_sub] at this ⊢
     rw [← sub_eq_zero] at this ⊢
-    convert! this using 1
+    convert this using 1
     abel
   map_add' f g := by
     have := congr(φ $(f.toNNReal_add_add_neg_add_neg_eq g))
     simp only [map_add] at this ⊢
     rw [← sub_eq_zero] at this ⊢
-    convert! this using 1
+    convert this using 1
     abel
   commutes' r := by
     obtain (hr | hr) := le_total 0 r
@@ -167,7 +167,7 @@ lemma realContinuousMapOfNNReal_injective :
     Function.Injective (realContinuousMapOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
   ext f
-  simpa using congr($(h) ((ContinuousMap.mk toReal continuous_coe).comp f))
+  simpa using congr($h ((ContinuousMap.mk toReal continuous_coe).comp f))
 
 end StarAlgHom
 
@@ -345,7 +345,7 @@ lemma realContinuousMapZeroOfNNReal_injective :
     Function.Injective (realContinuousMapZeroOfNNReal (X := X) (A := A)) := by
   intro φ ψ h
   ext f
-  simpa using congr($(h) ((ContinuousMapZero.mk ⟨toReal, continuous_coe⟩ rfl).comp f))
+  simpa using congr($h ((ContinuousMapZero.mk ⟨toReal, continuous_coe⟩ rfl).comp f))
 
 end NonUnitalStarAlgHom
 
@@ -413,7 +413,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
     (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac)
     (hφa : q (φ a) := by cfc_tac) : φ (cfcₙ f a) = cfcₙ f (φ a) := by
-  let ψ : A →⋆ₙₐ[R] B := (φ : A →⋆ₙₐ[S] B).restrictScalars R
+  let ψ : A →⋆ₙₐ[R] B := (.ofClass φ : A →⋆ₙₐ[S] B).restrictScalars R
   have : Continuous ψ := hφ
   have h_spec := NonUnitalAlgHom.quasispectrum_apply_subset' (R := R) S φ a
   have hψa : q (ψ a) := hφa
@@ -463,7 +463,7 @@ lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac) (hφa : q (φ a) := by cfc_tac) :
     φ (cfc f a) = cfc f (φ a) := by
-  let ψ : A →⋆ₐ[R] B := (φ : A →⋆ₐ[S] B).restrictScalars R
+  let ψ : A →⋆ₐ[R] B := (.ofClass φ : A →⋆ₐ[S] B).restrictScalars R
   have : Continuous ψ := hφ
   have h_spec := AlgHom.spectrum_apply_subset ψ a
   have hψa : q (ψ a) := hφa

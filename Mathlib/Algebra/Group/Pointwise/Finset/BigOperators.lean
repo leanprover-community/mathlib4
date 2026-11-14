@@ -38,31 +38,20 @@ section CommMonoid
 
 variable [CommMonoid α]
 
-variable [DecidableEq α]
-
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod (s : Finset ι) (f : ι → Finset α) :
+theorem coe_prod [DecidableEq α] (s : Finset ι) (f : ι → Finset α) :
     ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
   map_prod (coeMonoidHom : Finset α →* Set α) _ _
 
-omit [DecidableEq α]
 variable [DecidableEq ι]
 
-@[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
+@[to_additive (dont_translate := ι) (attr := simp) sum_inv_index]
+lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
     ∏ i ∈ s⁻¹, f i = ∏ i ∈ s, f i⁻¹ := prod_image inv_injective.injOn
 
-@[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
+@[to_additive (attr := simp)] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
     ∏ i ∈ -s, f i = ∏ i ∈ s, f (-i) := prod_image neg_injective.injOn
 
 end CommMonoid
-
-section AddCommMonoid
-
-variable [AddCommMonoid α] [DecidableEq ι]
-
-@[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i ∈ s⁻¹, f i = ∑ i ∈ s, f i⁻¹ := sum_image inv_injective.injOn
-
-end AddCommMonoid
 
 end Finset

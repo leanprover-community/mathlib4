@@ -6,9 +6,10 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.Data.ENat.Lattice
+
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Injective dimension
@@ -24,7 +25,6 @@ if all `Ext Y X i` vanish when `n ≤ i`. This defines a type class
 
 We also define the Injective dimension in `WithBot ℕ∞` as `injectiveDimension`,
 `injectiveDimension X = ⊥` iff `X` is zero and behaves as expected on non-negative values.
-
 -/
 
 @[expose] public section

@@ -5,12 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
-public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
+
+import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
-
 # Immersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is an immersion if the underlying map of topological spaces
@@ -24,7 +23,6 @@ if and only if it can be factored into a closed immersion followed by an open im
 - `isImmersion_iff_exists_of_quasiCompact`:
   A quasicompact morphism is a (locally-closed) immersion if and only if it can be factored into
   an open immersion followed by a closed immersion.
-
 -/
 
 @[expose] public section
@@ -157,7 +155,6 @@ lemma isImmersion_iff_exists : IsImmersion f ↔ ∃ (Z : Scheme) (g₁ : X ⟶ 
   ⟨fun _ ↦ ⟨_, f.liftCoborder, f.coborderRange.ι, inferInstance, inferInstance, f.liftCoborder_ι⟩,
     fun ⟨_, _, _, _, _, e⟩ ↦ e ▸ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsImmersion where
   of_isPullback := by
     intro X Y Y' S f g f' g' H hg
@@ -226,7 +223,7 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
 set_option backward.isDefEq.respectTransparency false in
 instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _ (prodIsoPullback X X).hom]
-  convert! (inferInstance : IsImmersion (pullback.diagonal (terminal.from X)))
+  convert (inferInstance : IsImmersion (pullback.diagonal (terminal.from X)))
   ext : 1 <;> simp
 
 instance (f g : X ⟶ Y) : IsImmersion (equalizer.ι f g) :=

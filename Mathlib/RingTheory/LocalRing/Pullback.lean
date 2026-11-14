@@ -6,13 +6,13 @@ Authors: Bingyu Xia
 
 module
 
-
-import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.LocalRing.Defs
+
+import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
 # Local Ring Properties of Equalizers and Pullbacks
@@ -36,7 +36,6 @@ suitable conditions.
 
 * `RingHom.isLocalRing_pullback`: The pullback of `f : R →+* T` and `g : S →+* T` is a
   local ring, provided that `R` is a local ring and `g` is a local homomorphism.
-
 -/
 
 public section

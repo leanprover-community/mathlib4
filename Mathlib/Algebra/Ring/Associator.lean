@@ -5,9 +5,11 @@ Authors: Bernhard Reinke
 -/
 module
 
-public import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Tactic.Abel
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Associator in a ring

@@ -5,10 +5,10 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.List.Pairwise
 public import Mathlib.Data.Set.Notation
 public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Hom.Set
 
@@ -341,7 +341,7 @@ instance : SetLike (Flag α) α where
     cases t
     congr
 
-instance : PartialOrder (Flag α) := .ofSetLike (Flag α) α
+instance : PartialOrder (Flag α) := .ofSetLike (Flag α)
 
 @[ext]
 theorem ext : (s : Set α) = t → s = t :=

@@ -81,15 +81,15 @@ instance instStarOrderedRing {R : Type*}
     StarOrderedRing C(α, R)₀ where
   le_iff f g := by
     constructor
-    · rw [le_def, ← ContinuousMap.coe_coe, ← ContinuousMap.coe_coe g, ← ContinuousMap.le_def,
-        StarOrderedRing.le_iff]
+    · rw [le_def, ← ContinuousMap.coe_ofClass, ← ContinuousMap.coe_ofClass g,
+        ← ContinuousMap.le_def, StarOrderedRing.le_iff]
       rintro ⟨p, hp_mem, hp⟩
       induction hp_mem using AddSubmonoid.closure_induction_left generalizing f g with
       | zero => exact ⟨0, zero_mem _, by ext x; congrm($(hp) x)⟩
       | add_left s s_mem p p_mem hp' =>
         obtain ⟨s, rfl⟩ := s_mem
         simp only at *
-        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($(hp) 0).symm
+        have h₀ : (star s * s + p) 0 = 0 := by simpa using congr($hp 0).symm
         rw [← add_assoc] at hp
         have p'₀ : 0 ≤ p 0 := by rw [← StarOrderedRing.nonneg_iff] at p_mem; exact p_mem 0
         have s₉ : (star s * s) 0 = 0 := le_antisymm ((le_add_of_nonneg_right p'₀).trans_eq h₀)

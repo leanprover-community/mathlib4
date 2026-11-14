@@ -6,8 +6,9 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
-public import Mathlib.LinearAlgebra.Matrix.Basis
-public import Mathlib.LinearAlgebra.Matrix.BaseChange
+
+import Mathlib.LinearAlgebra.Matrix.BaseChange
+import Mathlib.LinearAlgebra.Matrix.Basis
 
 /-!
 # Restriction to submodules and restriction of scalars for perfect pairings.
@@ -20,15 +21,12 @@ We provide API for restricting perfect pairings to submodules and for restrictin
   subring.
 * `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
   of a perfect pairing with coefficients in a field.
-
 -/
 
 public section
 
 open Function Module Set
 open Submodule (span subset_span)
-
-noncomputable section
 
 namespace LinearMap
 
@@ -51,7 +49,7 @@ private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
       simp only [Submodule.mem_map, Submodule.mem_dualAnnihilator]
       refine ⟨p.toPerfPair (i m), ?_, LinearEquiv.symm_apply_apply _ _⟩
       rintro - ⟨n, rfl⟩
-      simpa using LinearMap.congr_fun hm n
+      simpa using congr($hm n)
     suffices i m ∈ (⊥ : Submodule R M) by simpa [hi] using this
     simpa only [← hij.isCompl_left.inf_eq_bot, Submodule.mem_inf]
       using ⟨LinearMap.mem_range_self i m, hm⟩
@@ -66,7 +64,7 @@ private lemma restrict_aux : Bijective (p.compl₁₂ i j) := by
       obtain ⟨g, hg, rfl⟩ := hy
       simpa using hg _ (LinearMap.mem_range_self j n)
     rw [hm, ← LinearEquiv.symm_apply_eq, map_add, LinearEquiv.symm_symm] at hm'
-    simpa [← hF, ← LinearMap.congr_fun hm' (j n)]
+    simpa [← hF, ← congr($hm' (j n))]
 
 /-- The restriction of a perfect pairing to submodules is a perfect pairing. -/
 lemma IsPerfPair.restrict : (p.compl₁₂ i j).IsPerfPair where
@@ -99,7 +97,7 @@ private lemma restrictScalars_injective_aux
     induction hn using Submodule.span_induction with
     | mem z hz =>
       obtain ⟨n', rfl⟩ := hz
-      simpa [f] using LinearMap.congr_fun hx n'
+      simpa [f] using congr($hx n')
     | zero => simp
     | add => rw [map_add]; aesop
     | smul => rw [map_smul]; aesop
@@ -121,7 +119,7 @@ private lemma restrictScalars_surjective_aux
   ext n
   apply FaithfulSMul.algebraMap_injective S R
   change Algebra.linearMap S R _ = _
-  simpa using LinearMap.congr_fun hm n
+  simpa using congr($hm n)
 
 /-- Restricting a perfect pairing to a subring of the scalars results in a perfect pairing. -/
 lemma IsPerfPair.restrictScalars (hi : Injective i) (hj : Injective j)
@@ -157,7 +155,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
     (M' : Submodule K M) (N' : Submodule K N)
     (hM : span L (M' : Set M) = ⊤)
     (hN : span L (N' : Set N) = ⊤)
-    (hp : ∀ᵉ (x ∈ M') (y ∈ N'), p x y ∈ (algebraMap K L).range) :
+    (hp : ∀ x ∈ M', ∀ y ∈ N', p x y ∈ (algebraMap K L).range) :
     ∃ (n : ℕ) (b : Basis (Fin n) L M) (b' : Basis (Fin n) K M'), ∀ i, b i = b' i := by
   classical
   have : IsReflexive L M := .of_isPerfPair p
@@ -198,7 +196,8 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
       Basis.dualBasis_repr]
     exact hp (b j) (by simpa [b] using hv₁ j.2) (bN i) (by simpa [bN] using hw₁ i.2)
   have hA (i j) : b.toMatrix bM i j ∈ (algebraMap K L).range :=
-    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _ (by simp [bM]) hp i j
+    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _
+      (b.toMatrix_mul_toMatrix_flip bM) hp i j
   have h_span : span K v = span K (Set.range b) := by simp [b]
   rw [h_span, Basis.mem_span_iff_repr_mem, ← Basis.toMatrix_mulVec_repr bM b m]
   exact fun i ↦ Subring.sum_mem _ fun j _ ↦ Subring.mul_mem _ (hA i j) (hj j)
@@ -207,7 +206,7 @@ lemma finrank_eq_of_isPerfPair
     (M' : Submodule K M) (N' : Submodule K N)
     (hM : span L (M' : Set M) = ⊤)
     (hN : span L (N' : Set N) = ⊤)
-    (hp : ∀ᵉ (x ∈ M') (y ∈ N'), p x y ∈ (algebraMap K L).range) :
+    (hp : ∀ x ∈ M', ∀ y ∈ N', p x y ∈ (algebraMap K L).range) :
     finrank K M' = finrank L M := by
   obtain ⟨n, b, b', hb⟩ := exists_basis_basis_of_span_eq_top_of_mem_algebraMap p M' N' hM hN hp
   rw [finrank_eq_card_basis b, finrank_eq_card_basis b']

@@ -36,7 +36,6 @@ of pairs can be obtained from measurability of each `X t`.
 
 * `IsKolmogorovProcess.mk_of_secondCountableTopology`: in a space with second-countable topology,
   a process is a Kolmogorov process if each `X t` is measurable and the Kolmogorov condition holds.
-
 -/
 
 @[expose] public section
@@ -82,7 +81,7 @@ lemma ae_eq_mk (h : IsAEKolmogorovProcess X P p q M) : ∀ t, X t =ᵐ[P] h.mk X
 
 lemma kolmogorovCondition (hX : IsAEKolmogorovProcess X P p q M) (s t : T) :
     ∫⁻ ω, edist (X s ω) (X t ω) ^ p ∂P ≤ M * edist s t ^ q := by
-  convert! hX.IsKolmogorovProcess_mk.kolmogorovCondition s t using 1
+  convert hX.IsKolmogorovProcess_mk.kolmogorovCondition s t using 1
   refine lintegral_congr_ae ?_
   filter_upwards [hX.ae_eq_mk s, hX.ae_eq_mk t] with ω hω₁ hω₂
   simp_rw [hω₁, hω₂]

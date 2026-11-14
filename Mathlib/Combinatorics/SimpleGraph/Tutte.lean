@@ -5,11 +5,9 @@ Authors: Pim Otte
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Matching
-public import Mathlib.Combinatorics.SimpleGraph.Metric
-public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
-public import Mathlib.Data.Fintype.Card
+
+import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Tutte's theorem
@@ -229,7 +227,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
         htw _ (by simp) (Walk.mem_support_of_adj_toSubgraph h)] at hnxb
     have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
       apply Walk.toSubgraph_adj_snd
-      rw [Walk.nil_takeUntil]
       grind
     rwa [Walk.snd_takeUntil, hp'.2.1] at this
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx'
@@ -241,8 +238,8 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     intro v w hvw
     apply hsupG ▸ sup_le_sup hM1sub hM2sub
     have := p.toSubgraph.spanningCoe_le hvw
-    simp only [cycles, symmDiff_def] at this
-    aesop
+    simp only [cycles, symmDiff_def, sup_adj, sdiff_adj, Subgraph.spanningCoe_adj] at this ⊢
+    tauto
   -- Helper condition to show that `p` ends with an edge in `M2`
   have aux {x' : V} (hx' : x' ∈ ({x, b} : Set V)) (c' : V) (hc : c' ≠ a)
       (hadj : p.toSubgraph.Adj c' x') : M2.Adj c' x' := by
@@ -277,7 +274,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
   -- It suffices to consider the edge-maximal case
   obtain ⟨Gmax, hSubgraph, hMatchingFree, hMaximal⟩ := exists_maximal_isMatchingFree h
   refine ⟨Gmax.universalVerts, .mono hSubgraph ?_⟩
-  by_contra! hc
+  by_contra hc
   simp only [IsTutteViolator, Set.ncard_eq_toFinset_card', Set.toFinset_card] at hc
   by_cases! h' : ∀ (K : ConnectedComponent Gmax.deleteUniversalVerts.coe),
       Gmax.deleteUniversalVerts.coe.IsClique K.supp

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group-like elements in a bialgebra
 

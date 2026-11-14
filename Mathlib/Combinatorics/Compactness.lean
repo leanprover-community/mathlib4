@@ -5,11 +5,12 @@ Authors: Bhavik Mehta
 -/
 module
 
-import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Basic.Finite.Defs
-public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Finset.Defs
 public import Mathlib.Tactic.ToAdditive
+
+import Mathlib.Data.Finset.Attr
+import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Combinatorial compactness and the Rado selection lemma
@@ -50,7 +51,6 @@ have the finite intersection property, so their intersection is nonempty.
 * de Bruijn, N. G.; Erdős, P. (1951). "A colour problem for infinite graphs and a problem
   in the theory of relations".
 * Rado, R. (1949). "Axiomatic treatment of rank in infinite sets".
-
 -/
 
 public section

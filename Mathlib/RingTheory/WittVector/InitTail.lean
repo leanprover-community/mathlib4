@@ -5,11 +5,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.RingTheory.WittVector.Basic
 public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
-
 # `init` and `tail`
 
 Given a Witt vector `x`, we are sometimes interested
@@ -32,7 +30,6 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 * [Hazewinkel, *Witt Vectors*][Haze09]
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
-
 -/
 
 @[expose] public section
@@ -123,7 +120,7 @@ theorem coeff_add_of_disjoint (x y : 𝕎 R) (h : ∀ n, x.coeff n = 0 ∨ y.coe
   calc
     (x + y).coeff n = z.coeff n := by rw [← hx, ← hy, select_add_select_not P z]
     _ = x.coeff n + y.coeff n := by
-      simp only [z, mk.eq_1]
+      simp only [z]
       split_ifs with y0
       · rw [y0, add_zero]
       · rw [h n |>.resolve_right y0, zero_add]

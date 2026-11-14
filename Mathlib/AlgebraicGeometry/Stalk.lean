@@ -5,7 +5,6 @@ Authors: Andrew Yang, Fangming Li
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 /-!
@@ -344,7 +343,7 @@ lemma stalkClosedPointTo_fromSpecStalk (x : X) :
   refine TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ?_
   simp only [TopCat.Presheaf.stalkCongr_hom, TopCat.Presheaf.germ_stalkSpecializes]
   have : X.fromSpecStalk x = Spec.map (𝟙 (X.presheaf.stalk x)) ≫ X.fromSpecStalk x := by simp
-  convert! germ_stalkClosedPointTo_Spec_fromSpecStalk (𝟙 (X.presheaf.stalk x)) U hxU
+  convert germ_stalkClosedPointTo_Spec_fromSpecStalk (𝟙 (X.presheaf.stalk x)) U hxU
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]

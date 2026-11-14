@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Algebraic properties of dual numbers
@@ -17,7 +18,6 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 * `DualNumber.instLocalRing`: The dual numbers over a field `K` form a local ring.
 * `DualNumber.instPrincipalIdealRing`: The dual numbers over a field `K` form a principal ideal
   ring.
-
 -/
 
 public section

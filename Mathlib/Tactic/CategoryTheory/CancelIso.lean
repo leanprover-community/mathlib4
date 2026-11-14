@@ -5,7 +5,6 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.Tactic.Push
 public import Mathlib.CategoryTheory.Iso
 
 /-!

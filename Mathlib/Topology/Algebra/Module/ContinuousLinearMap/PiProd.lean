@@ -291,6 +291,11 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
 
+@[simp]
+theorem proj_comp_piCompRightL {α : Type*} (f : α → ι) (a : α) :
+    proj a ∘L Pi.compRightL R φ f = proj (f a) :=
+  rfl
+
 /-- `Pi.single` as a bundled continuous linear map. -/
 @[simps! -fullyApplied]
 def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
@@ -394,7 +399,7 @@ lemma comp_coprod (f : M →L[R] N) (g₁ : M₁ →L[R] M) (g₂ : M₂ →L[R]
 
 @[simp]
 lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .id R (M × N) :=
-  coe_injective <| LinearMap.coprod_inl_inr
+  coe_injective LinearMap.coprod_inl_inr
 
 @[simp]
 lemma coprod_comp_inl_inr [ContinuousAdd M₁] [ContinuousAdd M₂] (f : M × M₁ →L[R] M₂) :

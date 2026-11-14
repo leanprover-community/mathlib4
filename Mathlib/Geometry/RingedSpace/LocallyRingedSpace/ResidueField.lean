@@ -9,7 +9,6 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
-
 # Residue fields of points
 
 Any point `x` of a locally ringed space `X` comes with a natural residue field, namely the residue
@@ -25,7 +24,6 @@ The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
   `U` to the residue field at `x`.
 - `evaluationMap`: a morphism of locally ringed spaces induces a morphism, i.e. extension, of
   residue fields.
-
 -/
 
 @[expose] public section
@@ -142,8 +140,7 @@ lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.base).obj V)
     (a : Y.presheaf.obj (op V)) :
     residueFieldMap f x.val (Y.evaluation ⟨f.base x, x.property⟩ a) =
       X.evaluation x (f.c.app (op V) a) := by
-  simpa using! congrFun (congrArg (DFunLike.coe ∘ CommRingCat.Hom.hom) <|
-    evaluation_naturality f x) a
+  simpa using! congr((DFunLike.coe ∘ CommRingCat.Hom.hom) $(evaluation_naturality f x) a)
 
 @[reassoc]
 lemma Γevaluation_naturality (x : X) :

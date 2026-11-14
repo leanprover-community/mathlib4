@@ -5,11 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.LocalExtr
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Proper spaces
@@ -41,7 +38,8 @@ theorem exists_pos_lt_subset_ball (hr : 0 < r) (hs : IsClosed s) (h : s ⊆ ball
     this.exists_isMaxOn (β := α) (α := ℝ) hne (by fun_prop)
   have hyr : dist y x < r := h hys
   rcases exists_between hyr with ⟨r', hyr', hrr'⟩
-  exact ⟨r', ⟨dist_nonneg.trans_lt hyr', hrr'⟩, hy.trans <| closedBall_subset_ball hyr'⟩
+  use r', ⟨dist_nonneg.trans_lt hyr', hrr'⟩
+  grw [hy, hyr']
 
 /-- If a ball in a proper space includes a closed set `s`, then there exists a ball with the same
 center and a strictly smaller radius that includes `s`. -/
@@ -68,7 +66,7 @@ lemma isProperMap_dist (x : α) : IsProperMap (dist x) :=
 omit [ProperSpace α] in
 lemma properSpace_iff_isProperMap_dist : ProperSpace α ↔ ∀ x : α, IsProperMap (dist x) := by
   refine ⟨fun _ ↦ isProperMap_dist, fun H ↦ ⟨fun x r ↦ ?_⟩⟩
-  convert! (H x).isCompact_preimage (isCompact_closedBall 0 r)
+  convert (H x).isCompact_preimage (isCompact_closedBall 0 r)
   ext
   simp [dist_comm, Real.dist_eq]
 

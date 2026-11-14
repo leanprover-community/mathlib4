@@ -176,7 +176,7 @@ theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
 @[ext (iff := false)]
 theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
     (h : ∀ (a b : V) (e : a ⟶ b), F.map e.toPath =
-        eqToHom (congr_fun h_obj a) ≫ G.map e.toPath ≫ eqToHom (congr_fun h_obj.symm b)) :
+        eqToHom congr($h_obj a) ≫ G.map e.toPath ≫ eqToHom congr($h_obj.symm b)) :
     F = G := by
   fapply Functor.ext
   · intro X

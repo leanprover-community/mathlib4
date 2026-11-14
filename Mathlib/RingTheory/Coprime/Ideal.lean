@@ -5,9 +5,13 @@ Authors: Pierre-Alexandre Bazin
 -/
 module
 
-public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.Ideal.Operations
+
+import Mathlib.LinearAlgebra.DFinsupp
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # An additional lemma about coprime ideals

@@ -5,12 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.ApplyFun
-public import Mathlib.Data.List.GetD
-public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
+public import Mathlib.Data.List.GetD
+public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Turing machine tapes
@@ -25,7 +25,6 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   of `List Γ` by extension by blanks at the end.
 * `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
-
 -/
 
 @[expose] public section

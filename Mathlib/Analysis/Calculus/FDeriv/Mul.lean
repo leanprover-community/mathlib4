@@ -5,9 +5,10 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 
 /-!
 # Multiplicative operations on derivatives
@@ -481,15 +482,10 @@ theorem hasStrictFDerivAt_finsetProd [DecidableEq ι] [Finite ι] {x : ι → �
   simp only [Finset.sum_eq_multiset_sum, Finset.prod_eq_multiset_prod]
   exact hasStrictFDerivAt_multiset_prod
 
-@[deprecated (since := "2026-04-08")]
-alias hasStrictFDerivAt_finset_prod := hasStrictFDerivAt_finsetProd
-
 theorem hasFDerivAt_finsetProd [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x :=
   have := Fintype.ofFinite ι
   hasStrictFDerivAt_finsetProd.hasFDerivAt
-
-@[deprecated (since := "2026-04-08")] alias hasFDerivAt_finset_prod := hasFDerivAt_finsetProd
 
 section Comp
 
@@ -605,17 +601,12 @@ theorem HasStrictFDerivAt.finsetProd [DecidableEq ι] {x : E}
     (hasStrictFDerivAt_finsetProd.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ hg i i.prop)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
-@[deprecated (since := "2026-04-08")]
-alias HasStrictFDerivAt.finset_prod := HasStrictFDerivAt.finsetProd
-
 theorem HasFDerivAt.finsetProd [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
     (hasFDerivAt_finsetProd.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
-
-@[deprecated (since := "2026-04-08")] alias HasFDerivAt.finset_prod := HasFDerivAt.finsetProd
 
 theorem HasFDerivWithinAt.finsetProd [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivWithinAt (g i) (g' i) s x) :
@@ -625,22 +616,15 @@ theorem HasFDerivWithinAt.finsetProd [DecidableEq ι] {x : E}
       hasFDerivWithinAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
-@[deprecated (since := "2026-04-08")]
-alias HasFDerivWithinAt.finset_prod := HasFDerivWithinAt.finsetProd
-
 theorem fderiv_finsetProd [DecidableEq ι] {x : E} (hg : ∀ i ∈ u, DifferentiableAt 𝕜 (g i) x) :
     fderiv 𝕜 (∏ i ∈ u, g i ·) x = ∑ i ∈ u, (∏ j ∈ u.erase i, (g j x)) • fderiv 𝕜 (g i) x :=
   (HasFDerivAt.finsetProd fun i hi ↦ (hg i hi).hasFDerivAt).fderiv
-
-@[deprecated (since := "2026-04-08")] alias fderiv_finset_prod := fderiv_finsetProd
 
 theorem fderivWithin_finsetProd [DecidableEq ι] {x : E} (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hg : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (g i) s x) :
     fderivWithin 𝕜 (∏ i ∈ u, g i ·) s x =
       ∑ i ∈ u, (∏ j ∈ u.erase i, (g j x)) • fderivWithin 𝕜 (g i) s x :=
   (HasFDerivWithinAt.finsetProd fun i hi ↦ (hg i hi).hasFDerivWithinAt).fderivWithin hxs
-
-@[deprecated (since := "2026-04-08")] alias fderivWithin_finset_prod := fderivWithin_finsetProd
 
 end Comp
 

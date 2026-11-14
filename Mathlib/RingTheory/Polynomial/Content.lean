@@ -5,9 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.Polynomial.CancelLeads
-public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
@@ -28,7 +26,6 @@ Let `p : R[X]`.
 ## Note
 
 This has nothing to do with minimal polynomials of primitive elements in finite fields.
-
 -/
 
 @[expose] public section

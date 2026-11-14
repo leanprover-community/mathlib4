@@ -5,8 +5,8 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.Ring.TransferInstance
+public import Mathlib.Algebra.Star.Basic
 
 /-! # Transfer star (algebraic) structures across `Equiv`s
 

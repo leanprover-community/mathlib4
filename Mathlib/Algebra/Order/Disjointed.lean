@@ -6,8 +6,11 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Algebra.Order.SuccPred.PartialSups
-public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.Disjointed
+public import Mathlib.Order.SuccPred.Nat
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `Disjointed` for functions on a `SuccAddOrder`

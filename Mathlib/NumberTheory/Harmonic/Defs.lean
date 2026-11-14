@@ -5,21 +5,21 @@ Authors: Koundinya Vajjha, Thomas Browning
 -/
 module
 
-public import Mathlib.Data.Rat.Defs
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Rat.Defs
 
 /-!
-
 This file defines the harmonic numbers.
 
 * `Mathlib/NumberTheory/Harmonic/Int.lean` proves that the `n`th harmonic number is not an integer.
 * `Mathlib/NumberTheory/Harmonic/Bounds.lean` provides basic log bounds.
-
 -/
 
 @[expose] public section
 
 /-- The nth-harmonic number defined as a finset sum of consecutive reciprocals. -/
+@[oeis A001008 "numerators; the sequence skips `n = 0`",
+  oeis A002805 "denominators; the sequence skips `n = 0`"]
 def harmonic : ℕ → ℚ := fun n => ∑ i ∈ Finset.range n, (↑(i + 1))⁻¹
 
 @[simp]

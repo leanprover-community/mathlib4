@@ -36,7 +36,6 @@ The difference `-2πi/z` between these two orderings is precisely the correction
 
 2. For fixed `n`, the inner sum over `m` can be computed using the cotangent series expansion.
    As `n → ±∞` in symmetric intervals, these sums contribute `-2πi/z`.
-
 -/
 
 open UpperHalfPlane hiding I σ
@@ -45,7 +44,7 @@ open Filter Complex Finset SummationFilter
 
 open scoped Interval Real Topology Nat ArithmeticFunction.sigma
 
-public noncomputable section
+public section
 
 namespace EisensteinSeries
 
@@ -109,7 +108,7 @@ theorem hasSum_qExpansion_E2 :
   have hS : Summable fun n : ℕ ↦ σ 1 (n + 1) * 𝕢 z ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (k := 2) (one_le_two) z)
   rw [← hasSum_nat_add_iff' 1]
-  convert! (hS.mul_left (-24)).hasSum using 1
+  convert (hS.mul_left (-24)).hasSum using 1
   · ext : 1
     simp [mul_assoc]
   · rw [E2_eq_tsum_cexp, tsum_pnat_eq_tsum_succ (f := fun n ↦ σ 1 n * 𝕢 z ^ n), tsum_mul_left]

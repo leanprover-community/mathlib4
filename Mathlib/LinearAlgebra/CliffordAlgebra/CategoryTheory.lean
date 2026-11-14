@@ -5,9 +5,9 @@ Authors: Eric Wieser
 -/
 module
 
+public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
-public import Mathlib.Algebra.Category.AlgCat.Basic
 
 /-! # Category-theoretic interpretations of `CliffordAlgebra`
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Sylow
-public import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # The Transfer Homomorphism
@@ -58,8 +57,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
   prod_mul_distrib.symm.trans
     (prod_congr rfl fun q _ =>
       (ϕ.map_mul _ _).symm.trans
-        (congr_arg ϕ
-          (by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
+        congr(ϕ $(by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
 
 @[to_additive]
 theorem diff_self : diff ϕ T T = 1 :=
@@ -191,7 +189,7 @@ theorem transfer_eq_pow_aux (g : G)
   let := fintypeOfIndexNeZero hH
   classical
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
-      (congr_arg (· ∈ H) (key k g₀ hk)).mp hk
+      congr($(key k g₀ hk) ∈ H).mp hk
     replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q =>
       key (Function.minimalPeriod (g • ·) q) q.out
         (QuotientGroup.out_conj_pow_minimalPeriod_mem H g q)
@@ -280,7 +278,7 @@ alias transferSylow_restrict_eq_pow := transferSylow_domRestrict_eq_pow
 complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
   have hf : Function.Bijective ((transferSylow P hP).domRestrict (P : Subgroup G)) :=
-    (transferSylow_domRestrict_eq_pow P hP).symm ▸ (P.2.powEquiv' P.not_dvd_index).bijective
+    (transferSylow_domRestrict_eq_pow P hP).symm ▸ (P.isPGroup.powEquiv' P.not_dvd_index).bijective
   rw [Function.Bijective, ← range_eq_top, domRestrict_range] at hf
   have := range_eq_top.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
@@ -321,7 +319,7 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) :
   have key := card_dvd_of_injective _ (QuotientGroup.kerLift_injective P.normalizerMonoidHom)
   rw [normalizerMonoidHom_ker, ← index, ← relIndex] at key
   refine relIndex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
-  obtain ⟨k, hk⟩ := P.2.exists_card_eq
+  obtain ⟨k, hk⟩ := P.isPGroup.exists_card_eq
   rcases eq_zero_or_pos k with h0 | h0
   · rw [hP.card_mulAut, hk, h0, pow_zero, Nat.totient_one]
     apply Nat.coprime_one_right

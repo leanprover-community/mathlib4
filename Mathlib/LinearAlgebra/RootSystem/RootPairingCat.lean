@@ -5,8 +5,8 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.Hom
 public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Hom
 
 /-!
 # The category of root pairings
@@ -25,7 +25,6 @@ given in SGA III Exp. 21 Section 6.
 ## Implementation details
 
 This is mostly copied from `ModuleCat`.
-
 -/
 
 public section

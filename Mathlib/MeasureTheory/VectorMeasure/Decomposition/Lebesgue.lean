@@ -5,8 +5,8 @@ Authors: Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 public import Mathlib.MeasureTheory.Measure.Complex
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
@@ -196,7 +196,7 @@ theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ]
     add_assoc (-(s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure),
     ← toSignedMeasure_add, add_comm, ← add_assoc, ← neg_add, ← toSignedMeasure_add, add_comm,
     ← sub_eq_add_neg]
-  · convert! rfl
+  · convert rfl
     -- `convert rfl` much faster than `congr`
     · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
     · rw [add_comm]
@@ -294,7 +294,7 @@ theorem eq_singularPart (t : SignedMeasure α) (f : α → ℝ) (htμ : t ⟂ᵥ
     (hadd : s = t + μ.withDensityᵥ f) : t = s.singularPart μ := by
   by_cases hfi : Integrable f μ
   · refine eq_singularPart' t hfi.1.measurable_mk (hfi.congr hfi.1.ae_eq_mk) htμ ?_
-    convert! hadd using 2
+    convert hadd using 2
     exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
   · rw [withDensityᵥ, dite_eq_right hfi, add_zero] at hadd
     refine eq_singularPart' t measurable_zero (integrable_zero _ _ μ) htμ ?_
@@ -313,9 +313,9 @@ theorem singularPart_smul_nnreal (s : SignedMeasure α) (μ : Measure α) (r : �
   rw [singularPart, singularPart, smul_sub, ← toSignedMeasure_smul, ← toSignedMeasure_smul]
   conv_lhs =>
     congr
-    · congr
-      · rw [toJordanDecomposition_smul, JordanDecomposition.smul_posPart, singularPart_smul]
-    · congr
+    · enter [1]
+      rw [toJordanDecomposition_smul, JordanDecomposition.smul_posPart, singularPart_smul]
+    · enter [1]
       rw [toJordanDecomposition_smul, JordanDecomposition.smul_negPart, singularPart_smul]
 
 nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : ℝ) :
@@ -328,12 +328,12 @@ nonrec theorem singularPart_smul (s : SignedMeasure α) (μ : Measure α) (r : �
     rw [singularPart, singularPart]
     conv_lhs =>
       congr
-      · congr
-        · rw [toJordanDecomposition_smul_real,
-            JordanDecomposition.real_smul_posPart_neg _ _ hr, singularPart_smul]
-      · congr
-        · rw [toJordanDecomposition_smul_real,
-            JordanDecomposition.real_smul_negPart_neg _ _ hr, singularPart_smul]
+      · enter [1]
+        rw [toJordanDecomposition_smul_real,
+          JordanDecomposition.real_smul_posPart_neg _ _ hr, singularPart_smul]
+      · enter [1]
+        rw [toJordanDecomposition_smul_real,
+          JordanDecomposition.real_smul_negPart_neg _ _ hr, singularPart_smul]
     rw [toSignedMeasure_smul, toSignedMeasure_smul, ← neg_sub, ← smul_sub, NNReal.smul_def,
       ← neg_smul, Real.coe_toNNReal _ (le_of_lt (neg_pos.mpr hr)), neg_neg]
 
@@ -362,7 +362,7 @@ theorem eq_rnDeriv (t : SignedMeasure α) (f : α → ℝ) (hfi : Integrable f �
     f =ᵐ[μ] s.rnDeriv μ := by
   set f' := hfi.1.mk f
   have hadd' : s = t + μ.withDensityᵥ f' := by
-    convert! hadd using 2
+    convert hadd using 2
     exact WithDensityᵥEq.congr_ae hfi.1.ae_eq_mk.symm
   have := haveLebesgueDecomposition_mk μ hfi.1.measurable_mk htμ hadd'
   refine (Integrable.ae_eq_of_withDensityᵥ_eq (integrable_rnDeriv _ _) hfi ?_).symm

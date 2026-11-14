@@ -6,10 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.RingTheory.SurjectiveOnStalks
 
 /-!
-
 # Lemmas regarding the prime spectrum of tensor products
 
 ## Main result

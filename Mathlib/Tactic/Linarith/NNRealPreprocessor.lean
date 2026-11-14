@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.Linarith
 public import Mathlib.Basic.NNReal.Basic -- shake: keep (tactic dependency)
 public import Mathlib.Tactic.Rify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # NNReal linarith preprocessing
 

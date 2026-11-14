@@ -16,7 +16,6 @@ These are just restatements of similar statements about `TrivSqZeroExt R M`.
 ## Main results
 
 * `exp_eps`
-
 -/
 
 public section

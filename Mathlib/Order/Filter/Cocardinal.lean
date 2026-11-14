@@ -5,11 +5,8 @@ Authors: Josha Dekker
 -/
 module
 
-public import Mathlib.Order.Filter.Cofinite
-public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Order.Filter.CardinalInter
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # The cocardinal filter
@@ -17,7 +14,6 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 In this file we define `Filter.cocardinal hc`: the filter of sets with cardinality less than
   a regular cardinal `c` that satisfies `Cardinal.aleph0 < c`.
   Such filters are `CardinalInterFilter` with cardinality `c`.
-
 -/
 
 @[expose] public section

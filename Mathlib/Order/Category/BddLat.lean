@@ -11,6 +11,9 @@ public import Mathlib.Order.Category.Lat
 public import Mathlib.Order.Category.Semilat
 public import Mathlib.Order.Hom.WithTopBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of bounded lattices
 
@@ -216,8 +219,8 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
     { homEquiv X _ :=
         { toFun f := Lat.ofHom
             { toFun := f ∘ some ∘ some
-              map_sup' := fun a b => (congr_arg f <| by rfl).trans (f.hom.map_sup' _ _)
-              map_inf' := fun a b => (congr_arg f <| by rfl).trans (f.hom.map_inf' _ _) }
+              map_sup' := fun a b => congr(f $(by rfl)).trans (f.hom.map_sup' _ _)
+              map_inf' := fun a b => congr(f $(by rfl)).trans (f.hom.map_inf' _ _) }
           invFun f := BddLat.ofHom <| LatticeHom.withTopWithBot' f.hom
           left_inv := fun f =>
             BddLat.ext fun a =>

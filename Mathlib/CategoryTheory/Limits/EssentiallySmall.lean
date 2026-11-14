@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Limits over essentially small indexing categories
@@ -14,15 +13,12 @@ public import Mathlib.CategoryTheory.EssentiallySmall
 If `C` has limits of size `w` and `J` is `w`-essentially small, then `C` has limits of shape `J`.
 
 See also the file `FinallySmall.lean` for more general results.
-
 -/
 
 public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
-
-noncomputable section
 
 open CategoryTheory
 

@@ -5,9 +5,7 @@ Authors: Blake Farman
 -/
 module
 
-public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.Preradical.Colon
-public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
 /-!
 # Radicals

@@ -324,7 +324,7 @@ zeta function.
 -/
 lemma completedLFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
     completedLFunction Φ s = Φ 1 * completedRiemannZeta s := by
-  rw [completedLFunction_def_even (show Φ.Even from fun _ ↦ congr_arg Φ (Subsingleton.elim ..)),
+  rw [completedLFunction_def_even (show Φ.Even from fun _ ↦ congr(Φ $(Subsingleton.elim ..))),
     Nat.cast_one, one_cpow, one_mul, ← singleton_eq_univ 0, sum_singleton, map_zero,
     completedHurwitzZetaEven_zero, Subsingleton.elim 0 1]
 
@@ -419,7 +419,7 @@ private lemma completedLFunction_one_sub_of_one_lt_even (hΦ : Φ.Even) {s : ℂ
   suffices ∑ x, Φ x * cosZeta (toAddCircle x) s = LFunction (𝓕 Φ) s by
     simpa only [cosZeta, Function.update_of_ne hs₀, ← mul_div_assoc, ← sum_div,
       LFunction_eq_completed_div_gammaFactor_even (dft_even_iff.mpr hΦ) _ (.inl hs₀),
-      div_left_inj' (Gammaℝ_ne_zero_of_re_pos (zero_lt_one.trans hs))]
+      div_left_inj₀ (Gammaℝ_ne_zero_of_re_pos (zero_lt_one.trans hs))]
   -- expand out `LFunction (𝓕 Φ)` and use parity:
   simp only [cosZeta_eq, ← mul_div_assoc _ _ (2 : ℂ), mul_add, ← sum_div, sum_add_distrib,
     LFunction_dft Φ (.inr hs₁), map_neg, div_eq_iff (two_ne_zero' ℂ), mul_two, add_left_inj]
@@ -440,7 +440,7 @@ private lemma completedLFunction_one_sub_of_one_lt_odd (hΦ : Φ.Odd) {s : ℂ} 
   -- reduce to equality with un-completed L-functions:
   suffices ∑ x, Φ x * sinZeta (toAddCircle x) s = I * LFunction (𝓕 Φ) s by
     have hs' : 0 < re (s + 1) := by simp only [add_re, one_re]; linarith
-    simpa only [sinZeta, ← mul_div_assoc, ← sum_div, div_left_inj' (Gammaℝ_ne_zero_of_re_pos hs'),
+    simpa only [sinZeta, ← mul_div_assoc, ← sum_div, div_left_inj₀ (Gammaℝ_ne_zero_of_re_pos hs'),
       LFunction_eq_completed_div_gammaFactor_odd (dft_odd_iff.mpr hΦ)]
   -- now calculate:
   calc ∑ x, Φ x * sinZeta (toAddCircle x) s
@@ -480,7 +480,7 @@ theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
       apply Countable.union <;>
       split_ifs <;>
       simp only [countable_singleton, countable_empty]
-    convert! (this.isConnected_compl_of_one_lt_rank ?_).isPreconnected using 1
+    convert (this.isConnected_compl_of_one_lt_rank ?_).isPreconnected using 1
     · ext x
       by_cases h : Φ 0 = 0 <;>
       by_cases h' : ∑ j, Φ j = 0 <;>
@@ -525,7 +525,7 @@ theorem completedLFunction_one_sub_odd (hΦ : Φ.Odd) (s : ℂ) :
     using completedLFunction_one_sub_of_one_lt_odd hΦ ht
   -- now apply the big hammer to finish
   rw [← analyticOnNhd_univ_iff_differentiable] at hF hG
-  exact congr_fun (hF.eq_of_eventuallyEq hG hFG) s
+  congrm $(hF.eq_of_eventuallyEq hG hFG) s
 
 end signed
 

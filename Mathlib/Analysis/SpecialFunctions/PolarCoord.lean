@@ -7,8 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.Jacobian
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Polar coordinates
@@ -18,7 +19,6 @@ We define polar coordinates, as an open partial homeomorphism in `ℝ^2` between
 
 It satisfies the following change of variables formula (see `integral_comp_polarCoord_symm`):
 `∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) = ∫ p, f p`
-
 -/
 
 @[expose] public section
@@ -63,7 +63,7 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · conv_rhs => rw [← sqrt_sq (le_of_lt hr), ← one_mul (r ^ 2), ← sin_sq_add_cos_sq θ]
       congr 1
       ring
-    · convert! Complex.arg_mul_cos_add_sin_mul_I hr ⟨hθ.1, hθ.2.le⟩
+    · convert Complex.arg_mul_cos_add_sin_mul_I hr ⟨hθ.1, hθ.2.le⟩
       simp only [Complex.equivRealProd_symm_apply, Complex.ofReal_mul, Complex.ofReal_cos,
         Complex.ofReal_sin]
       ring

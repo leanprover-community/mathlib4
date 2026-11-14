@@ -6,7 +6,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Basic.ENNReal.Holder
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Real conjugate exponents
@@ -152,13 +153,13 @@ theorem sub_one_pos : 0 < p - 1 := sub_pos.2 h.lt
 theorem sub_one_ne_zero : p - 1 ≠ 0 := h.sub_one_pos.ne'
 
 theorem conjugate_eq : q = p / (p - 1) := by
-  convert! inv_inv q ▸ congr($(h.symm.inv_sub_inv_eq_inv.symm)⁻¹) using 1
+  convert! inv_inv q ▸ congr($h.symm.inv_sub_inv_eq_inv.symm⁻¹) using 1
   field [h.ne_zero]
 
 lemma conjExponent_eq : conjExponent p = q := h.conjugate_eq.symm
 
 lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := sub_eq_of_eq_add h.symm.inv_add_inv_eq_one.symm
-lemma inv_sub_one : p⁻¹ - 1 = -q⁻¹ := by simpa using congr(-$(h.one_sub_inv))
+lemma inv_sub_one : p⁻¹ - 1 = -q⁻¹ := by simpa using congr(-$h.one_sub_inv)
 
 theorem sub_one_mul_conj : (p - 1) * q = p :=
   mul_comm q (p - 1) ▸ (eq_div_iff h.sub_one_ne_zero).1 h.conjugate_eq
@@ -297,15 +298,15 @@ theorem one_div_ne_zero' : 1 / r ≠ 0 := ne_of_gt h.one_div_pos'
 theorem all_pos : 0 < p ∧ 0 < q ∧ 0 < r := ⟨h.pos, h.symm.pos, h.pos'⟩
 
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := h.inv_add_inv_eq_inv.symm
-lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by exact_mod_cast h.coe.one_div_add_one_div
+lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := mod_cast h.coe.one_div_add_one_div
 lemma one_div_eq : 1 / r = 1 / p + 1 / q := h.one_div_add_one_div.symm
-lemma inv_inv_add_inv : (p⁻¹ + q⁻¹)⁻¹ = r := by exact_mod_cast h.coe.inv_inv_add_inv
+lemma inv_inv_add_inv : (p⁻¹ + q⁻¹)⁻¹ = r := mod_cast h.coe.inv_inv_add_inv
 
 protected lemma inv_lt_inv : p⁻¹ < r⁻¹ := h.coe.inv_lt_inv
 lemma lt : r < p := h.coe.lt
 lemma inv_sub_inv_eq_inv : r⁻¹ - q⁻¹ = p⁻¹ := by
   have := h.symm.inv_lt_inv.le
-  exact_mod_cast h.coe.inv_sub_inv_eq_inv
+  exact mod_cast h.coe.inv_sub_inv_eq_inv
 
 lemma holderConjugate_div_div : (p / r).HolderConjugate (q / r) where
   inv_add_inv_eq_inv := by
@@ -346,7 +347,7 @@ theorem sub_one_mul_conj : (p - 1) * q = p :=
   mul_comm q (p - 1) ▸ (eq_div_iff h.sub_one_ne_zero).1 h.conjugate_eq
 
 theorem mul_eq_add : p * q = p + q := by
-  simpa [mul_add, add_mul, h.ne_zero, h.symm.ne_zero, add_comm q] using congr(p * $(h.inv_eq) * q)
+  simpa [mul_add, add_mul, h.ne_zero, h.symm.ne_zero, add_comm q] using congr(p * $h.inv_eq * q)
 
 theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
@@ -358,7 +359,7 @@ end
 
 lemma _root_.NNReal.holderConjugate_iff : p.HolderConjugate q ↔ 1 < p ∧ p⁻¹ + q⁻¹ = 1 := by
   rw [← holderConjugate_coe_iff, Real.holderConjugate_iff, ← coe_one]
-  exact_mod_cast Iff.rfl
+  exact mod_cast Iff.rfl
 
 protected lemma inv_inv (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) : a⁻¹.HolderConjugate b⁻¹ where
   inv_add_inv_eq_inv := by simpa using hab
@@ -376,9 +377,9 @@ end HolderConjugate
 lemma holderConjugate_comm : p.HolderConjugate q ↔ q.HolderConjugate p := ⟨.symm, .symm⟩
 
 lemma holderConjugate_iff_eq_conjExponent (hp : 1 < p) : p.HolderConjugate q ↔ q = p / (p - 1) := by
-  rw [← holderConjugate_coe_iff, Real.holderConjugate_iff_eq_conjExponent (by exact_mod_cast hp),
+  rw [← holderConjugate_coe_iff, Real.holderConjugate_iff_eq_conjExponent (mod_cast hp),
     ← coe_one, ← NNReal.coe_sub hp.le]
-  exact_mod_cast Iff.rfl
+  exact mod_cast Iff.rfl
 
 lemma HolderConjugate.conjExponent (h : 1 < p) : p.HolderConjugate (conjExponent p) :=
   (holderConjugate_iff_eq_conjExponent h).2 rfl
@@ -423,11 +424,11 @@ lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
         rintro rfl
         apply hr
         exact_mod_cast (coe_zero ▸ h).unique _ _ r 0
-    exact ⟨by exact_mod_cast h.inv_add_inv_eq_inv, hp.bot_lt, hq.bot_lt⟩
+    exact ⟨mod_cast h.inv_add_inv_eq_inv, hp.bot_lt, hq.bot_lt⟩
   · rw [holderTriple_iff]
     have hp := h.ne_zero
     have hq := h.symm.ne_zero
-    exact_mod_cast h.inv_add_inv_eq_inv
+    exact mod_cast h.inv_add_inv_eq_inv
 
 alias ⟨_, _root_.NNReal.HolderTriple.coe_ennreal⟩ := holderTriple_coe_iff
 
@@ -443,7 +444,7 @@ namespace HolderTriple
 lemma _root_.Real.HolderTriple.ennrealOfReal {p q r : ℝ} (h : p.HolderTriple q r) :
     HolderTriple (ENNReal.ofReal p) (ENNReal.ofReal q) (ENNReal.ofReal r) := by
   simpa [holderTriple_iff, ofReal_inv_of_pos, h.pos, h.symm.pos, h.pos', ofReal_add, h.nonneg,
-    h.symm.nonneg] using congr(ENNReal.ofReal $(h.inv_add_inv_eq_inv))
+    h.symm.nonneg] using congr(ENNReal.ofReal $h.inv_add_inv_eq_inv)
 
 lemma _root_.Real.HolderConjugate.ennrealOfReal {p q : ℝ} (h : p.HolderConjugate q) :
     HolderConjugate (ENNReal.ofReal p) (ENNReal.ofReal q) := by
@@ -462,7 +463,7 @@ lemma toReal_iff (hp : 0 < p.toReal) (hq : 0 < q.toReal) :
   refine ⟨of_toReal, fun h ↦ ⟨?_, hp, hq⟩⟩
   rw [toReal_pos_iff] at hp hq
   simpa [toReal_add, Finiteness.inv_ne_top, hp.1.ne', hq.1.ne']
-    using congr(ENNReal.toReal $(h.inv_add_inv_eq_inv))
+    using congr($(h.inv_add_inv_eq_inv).toReal)
 
 variable (r) in
 lemma toReal (hp : 0 < p.toReal) (hq : 0 < q.toReal) [HolderTriple p q r] :
@@ -519,7 +520,7 @@ lemma toNNReal_iff (hp : 1 < p.toNNReal) :
     NNReal.HolderConjugate p.toNNReal q.toNNReal ↔ HolderConjugate p q := by
   simp_rw [← NNReal.holderTriple_coe_iff, coe_toNNReal_eq_toReal]
   apply toReal_iff ?_
-  all_goals simpa [← coe_toNNReal_eq_toReal]
+  simpa [← coe_toNNReal_eq_toReal]
 
 lemma toNNReal (hp : 1 < p.toNNReal) [HolderConjugate p q] :
     NNReal.HolderConjugate p.toNNReal q.toNNReal :=

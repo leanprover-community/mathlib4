@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel, Yury Kudryashov, David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Convex.Slope
 public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+
+import Mathlib.Analysis.Convex.Slope
 
 /-!
 # Convexity of functions and derivatives

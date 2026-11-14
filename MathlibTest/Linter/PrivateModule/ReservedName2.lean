@@ -31,7 +31,6 @@ Eq.refl foo
 #show_new_reserved
 
 -- The linter should fire despite the public name `foo.eq_1` being present
--- Run the linter on artificial `eoi` syntax so that we can actually guard the message
 set_option linter.mathlibStandardSet true in
 open Mathlib.Linter Parser in
 /--
@@ -42,6 +41,4 @@ Consider adding `public section` at the beginning of the module, or selectively 
 Note: This linter can be disabled with `set_option linter.privateModule false`
 -/
 #guard_msgs in
-run_cmd do
-  let eoi := mkNode ``Command.eoi #[mkAtom .none ""]
-  privateModule.run eoi
+run_cmd do privateModule.run #[]

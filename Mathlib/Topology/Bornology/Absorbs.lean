@@ -5,7 +5,6 @@ Authors: Jean Lo, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Ring.Action.Pointwise.Set
 public import Mathlib.Topology.Bornology.Basic
 

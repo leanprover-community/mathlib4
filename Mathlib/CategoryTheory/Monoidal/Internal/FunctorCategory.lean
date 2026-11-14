@@ -28,8 +28,6 @@ and could be generalised to any internal algebraic objects,
 if the appropriate framework was available.
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 
@@ -105,7 +103,7 @@ def inverse : (C ⥤ Mon D) ⥤ Mon (C ⥤ D) where
   obj := inverseObj
   map α := .mk'
     { app := fun X => (α.app X).hom
-      naturality := fun _ _ f => congr_arg Mon.Hom.hom (α.naturality f) }
+      naturality _ _ f := congr($(α.naturality f).hom) }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -208,7 +206,7 @@ private def inverse : (C ⥤ Comon D) ⥤ Comon (C ⥤ D) where
   map α :=
     { hom :=
       { app := fun X => (α.app X).hom
-        naturality := fun _ _ f => congr_arg Comon.Hom.hom (α.naturality f) }
+        naturality _ _ f := congr($(α.naturality f).hom) }
       isComonHom_hom.hom_counit := by ext x; dsimp; rw [IsComonHom.hom_counit (α.app x).hom]
       isComonHom_hom.hom_comul := by ext x; dsimp; rw [IsComonHom.hom_comul (α.app x).hom] }
 
@@ -287,6 +285,7 @@ def inverse : (C ⥤ CommMon D) ⥤ CommMon (C ⥤ D) where
   map α :=
     CommMon.homMk ((monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The unit for the equivalence `CommMon (C ⥤ D) ≌ C ⥤ CommMon D`.
 -/
@@ -294,6 +293,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def unitIso : 𝟭 (CommMon (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A => CommMon.mkIso (Iso.refl _))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit for the equivalence `CommMon (C ⥤ D) ≌ C ⥤ CommMon D`.
 -/
@@ -305,6 +305,7 @@ end CommMonFunctorCategoryEquivalence
 
 open CommMonFunctorCategoryEquivalence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `D` is a braided monoidal category,
 commutative monoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the commutative monoid objects of `D`.

@@ -30,6 +30,8 @@ Use the ergodic theorem to deduce the refinement of the Poincaré recurrence the
 Bergelson.
 -/
 
+open scoped Finset
+
 public section
 
 open Filter Function MeasureTheory Set
@@ -103,7 +105,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     -- TODO: Separate it out to a lemma once we have a natural density API.
     · refine ENNReal.div_ne_zero.2 ⟨hr₀, by finiteness⟩ <| eq_bot_mono hx <|
         Tendsto.limsup_eq <| tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_right ?_ _
+        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * #hxs.toFinset) ?_ bot_le fun n ↦ mul_le_mul_right ?_ _
       · simpa using ENNReal.Tendsto.mul_const (ENNReal.tendsto_inv_nat_nhds_zero.comp <|
           tendsto_add_atTop_nat 1) (.inr <| ENNReal.natCast_ne_top _)
       · classical
@@ -126,7 +128,7 @@ lemma bergelson [Infinite ι] {s : ι → Set α} (hs : ∀ i, MeasurableSet (s 
     (hr : ∀ i, r ≤ μ (s i)) :
     ∃ t : Set ι, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ i ∈ u, s i) := by
   obtain ⟨t, ht, h⟩ := bergelson' (fun n ↦ hs <| Infinite.natEmbedding _ n) hr₀ (fun n ↦ hr _)
-  refine ⟨_, ht.image <| (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
+  refine ⟨_, ht.image (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
     (h (preimage_subset_of_surjOn (Infinite.natEmbedding _).injective hut) <| hu.preimage
     (Embedding.injective _).injOn).trans_le <| measure_mono <| subset_iInter₂ fun i hi ↦ ?_⟩
   obtain ⟨n, -, rfl⟩ := hut hi

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.LocallySurjective
-public import Mathlib.CategoryTheory.Sites.Localization
 
 /-!
 # Locally bijective morphisms of presheaves
@@ -19,7 +18,6 @@ after sheafification) is the class of morphisms that are both locally injective
 and locally surjective (i.e. locally bijective). We prove that this holds iff
 for any presheaf `P : Cᵒᵖ ⥤ A`, the sheafification map `toSheafify J P` is locally bijective.
 We show that this holds under certain universe assumptions.
-
 -/
 
 public section
@@ -60,17 +58,17 @@ private lemma isLocallyBijective_iff_isIso' :
       apply h₁
       have eq₁ := NatTrans.naturality_apply f.hom g₁.op (t f₁ hf₁)
       have eq₂ := NatTrans.naturality_apply f.hom g₂.op (t f₂ hf₂)
-      have eq₃ := congr_arg (G.obj.map g₁.op) (Presheaf.app_localPreimage f.hom s _ hf₁)
-      have eq₄ := congr_arg (G.obj.map g₂.op) (Presheaf.app_localPreimage f.hom s _ hf₂)
+      have eq₃ := congr(G.obj.map g₁.op $(Presheaf.app_localPreimage f.hom s _ hf₁))
+      have eq₄ := congr(G.obj.map g₂.op $(Presheaf.app_localPreimage f.hom s _ hf₂))
       refine eq₁.trans (eq₃.trans (Eq.trans ?_ (eq₄.symm.trans eq₂.symm)))
       rw [← Functor.map_comp_apply, ← Functor.map_comp_apply]
       simp only [← op_comp, w]
     refine ⟨H.amalgamate t ht, ?_⟩
-    · apply (((isSheaf_iff_isSheaf_of_type J G.obj).1 G.property).isSeparated _
-        (Presheaf.imageSieve_mem J f.hom s)).ext
-      intro Y g hg
-      rw [← NatTrans.naturality_apply, H.valid_glue ht]
-      exact Presheaf.app_localPreimage f.hom s g hg
+    apply (((isSheaf_iff_isSheaf_of_type J G.obj).1 G.property).isSeparated _
+      (Presheaf.imageSieve_mem J f.hom s)).ext
+    intro Y g hg
+    rw [← NatTrans.naturality_apply, H.valid_glue ht]
+    exact Presheaf.app_localPreimage f.hom s g hg
   · intro
     constructor <;> infer_instance
 

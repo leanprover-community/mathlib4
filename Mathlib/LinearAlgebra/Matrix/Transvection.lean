@@ -5,11 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Data.Matrix.Basis
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
-public import Mathlib.Tactic.Field
-public import Mathlib.GroupTheory.GroupAction.Ring
+
+import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.Tactic.Field
 
 /-!
 # Transvections
@@ -96,14 +95,13 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
   ext a b
   by_cases ha : i = a
   · by_cases hb : j = b
-    · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
-        smul_eq_mul, mul_one, transvection, add_apply, single_apply_same]
-    · simp only [ha, updateRow_self, Pi.add_apply, one_apply, Pi.smul_apply, hb, ↓reduceIte,
-        smul_eq_mul, mul_zero, add_zero, transvection, add_apply, and_false, not_false_eq_true,
-        single_apply_of_ne]
+    · simp only [ha, updateRow_self, Pi.add_apply, Matrix.one_apply, Pi.smul_apply, hb, ↓reduceIte,
+        smul_eq_mul, mul_one, transvection, Matrix.add_apply, single_apply_same]
+    · simp only [ha, updateRow_self, Pi.add_apply, Matrix.one_apply, Pi.smul_apply, hb, ↓reduceIte,
+        smul_eq_mul, mul_zero, add_zero, transvection, Matrix.add_apply, and_false,
+        not_false_eq_true, single_apply_of_ne]
   · simp only [updateRow_ne, transvection, ha, Ne.symm ha, single_apply_of_ne, add_zero,
-      Ne, not_false_iff,
-      false_and, add_apply]
+      Ne, not_false_iff, false_and, Matrix.add_apply]
 
 variable [Fintype n]
 
@@ -237,7 +235,7 @@ theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matri
   refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
   rw [mem_range_scalar_iff_commute_single] at h
   refine (Commute.one_left M).add_left ?_
-  convert! (h _ _ t.hij).smul_left t.c using 1
+  convert (h _ _ t.hij).smul_left t.c using 1
   rw [smul_single, smul_eq_mul, mul_one]
 
 end
@@ -263,8 +261,8 @@ theorem toMatrix_sumInl (t : TransvectionStruct n R) :
   · by_cases h : a = b <;> simp [TransvectionStruct.sumInl, transvection, h]
 
 @[simp]
-theorem sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
-    (L : List (TransvectionStruct n R)) (N : Matrix p p R) :
+theorem sumInl_toMatrix_prod_mul {m q : Type*} [Fintype n] [Fintype p] (M : Matrix n m R)
+    (L : List (TransvectionStruct n R)) (N : Matrix p q R) :
     (L.map (toMatrix ∘ sumInl p)).prod * fromBlocks M 0 0 N =
       fromBlocks ((L.map toMatrix).prod * M) 0 0 N := by
   induction L with
@@ -272,13 +270,16 @@ theorem sumInl_toMatrix_prod_mul [Fintype n] [Fintype p] (M : Matrix n n R)
   | cons t L IH => simp [Matrix.mul_assoc, IH, toMatrix_sumInl, fromBlocks_multiply]
 
 @[simp]
-theorem mul_sumInl_toMatrix_prod [Fintype n] [Fintype p] (M : Matrix n n R)
-    (L : List (TransvectionStruct n R)) (N : Matrix p p R) :
+theorem mul_sumInl_toMatrix_prod {m q : Type*} [Fintype n] [Fintype p] (M : Matrix m n R)
+    (L : List (TransvectionStruct n R)) (N : Matrix q p R) :
     fromBlocks M 0 0 N * (L.map (toMatrix ∘ sumInl p)).prod =
       fromBlocks (M * (L.map toMatrix).prod) 0 0 N := by
   induction L generalizing M N with
   | nil => simp
-  | cons t L IH => simp [IH, toMatrix_sumInl, fromBlocks_multiply]
+  | cons t L IH =>
+    rw [List.map_cons, List.prod_cons, Function.comp_apply, toMatrix_sumInl,
+      ← Matrix.mul_assoc, fromBlocks_multiply]
+    simpa [Matrix.mul_assoc] using IH (M * t.toMatrix) N
 
 variable {p}
 

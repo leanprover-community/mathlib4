@@ -171,7 +171,6 @@ lemma GrothendieckTopology.mem_toPretopology (t : GrothendieckTopology C) {X : C
 
 namespace Pretopology
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The trivial pretopology, in which the coverings are exactly singleton isomorphisms. This topology is
 also known as the indiscrete, coarse, or chaotic topology. -/

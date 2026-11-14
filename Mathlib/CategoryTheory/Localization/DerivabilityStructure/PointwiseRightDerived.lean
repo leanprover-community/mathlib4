@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
-public import Mathlib.CategoryTheory.GuitartExact.KanExtension
-public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+
+import Mathlib.CategoryTheory.GuitartExact.KanExtension
 
 /-!
 # Existence of pointwise right derived functors via derivability structures
@@ -29,7 +29,6 @@ right derived functor of `F` with respect to `W₂` exists.
 
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 @[expose] public section
@@ -75,7 +74,6 @@ lemma rightDerivedFunctorComparison_fac :
   dsimp only [rightDerivedFunctorComparison]
   rw [Functor.rightDerived_fac]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma rightDerivedFunctorComparison_fac_app (X : C₁) :
     α₁.app X ≫ (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂).app (L₁.obj X) =
@@ -84,7 +82,6 @@ lemma rightDerivedFunctorComparison_fac_app (X : C₁) :
 
 variable [Φ.IsRightDerivabilityStructure]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseRightDerivedFunctorAt W₁ X ↔
       F.HasPointwiseRightDerivedFunctorAt W₂ (Φ.functor.obj X) := by

@@ -5,8 +5,8 @@ Authors: Brian Nugent
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.HopkinsLevitzki
 
 /-!
@@ -34,7 +34,6 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
   Spec R is Artinian.
-
 -/
 
 public section

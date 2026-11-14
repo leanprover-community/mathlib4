@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.RingTheory.Bialgebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of commutative bialgebras over a commutative ring
 
@@ -120,9 +123,6 @@ instance : Inhabited (CommBialgCat R) := ⟨of R R⟩
 lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A :=
   rfl
 
-@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-06")]
-lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = (f : _ → _) := rfl
-
 instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| CommRing A
 
 instance : Bialgebra R ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| Bialgebra R A
@@ -218,7 +218,7 @@ variable (R) in
   unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def commBialgCatEquivComonCommAlgCat : CommBialgCat R ≌ (Mon (CommAlgCat R)ᵒᵖ)ᵒᵖ where
   functor.obj A := .op <| .mk <| .op <| .of R A
-  functor.map {A B} f := .op <| .mk' <| .op <| CommAlgCat.ofHom <| f.hom.toAlgHom
+  functor.map {A B} f := .op <| .mk' <| .op <| CommAlgCat.ofHom f.hom.toAlgHom
   inverse.obj A := .of R A.unop.X.unop
   inverse.map {A B} f := CommBialgCat.ofHom <| .ofAlgHom f.unop.hom.unop.hom
     congr(($(IsMonHom.one_hom (f := f.unop.hom))).unop.hom)

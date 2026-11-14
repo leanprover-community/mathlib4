@@ -5,9 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.AdjoinRoot
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Adjoining elements to a field

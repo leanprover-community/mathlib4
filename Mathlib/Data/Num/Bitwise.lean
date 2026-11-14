@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.Num.Basic
 public import Mathlib.Data.Vector.Basic
 

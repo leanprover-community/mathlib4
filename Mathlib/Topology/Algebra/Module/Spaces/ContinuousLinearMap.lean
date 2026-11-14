@@ -5,9 +5,9 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
-public import Mathlib.Topology.Algebra.Algebra.Equiv
 
 /-!
 # Topology of bounded convergence on the space of continuous linear map
@@ -517,6 +517,19 @@ def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
       (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp
       (postcomp F e₄₃.symm.toContinuousLinearMap)).continuous }
+
+variable (F σ₁₂) in
+/-- The partly continuous semilinear map obtained by applying a continuous semilinear map
+at a given vector. -/
+@[simps apply_apply] def _root_.ContinuousLinearMap.applyₗ
+    [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] :
+    E →ₛₗ[σ₁₂] (E →SL[σ₁₂] F) →L[𝕜₂] F where
+  toFun x :=
+    { toFun f := f x
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 end Semilinear
 

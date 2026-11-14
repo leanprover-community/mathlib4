@@ -5,13 +5,14 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
-public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.Field.ZMod
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.Polynomial.Chebyshev
+
+import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Polynomial.Roots
 
 /-!
 # Dickson polynomials
@@ -109,14 +110,12 @@ theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
 section Dickson
 
 /-!
-
 ### A Lambda structure on `ℤ[X]`
 
 Mathlib doesn't currently know what a Lambda ring is.
 But once it does, we can endow `ℤ[X]` with a Lambda structure
 in terms of the `dickson 1 1` polynomials defined below.
 There is exactly one other Lambda structure on `ℤ[X]` in terms of binomial polynomials.
-
 -/
 
 theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
@@ -245,7 +244,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         simpa [φ, eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
           mul_zero, sq, zero_add, one_ne_zero]
       classical
-        convert! (φ.roots ∪ {0}).toFinset.finite_toSet using 1
+        convert (φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y
         simp only [φ, Multiset.mem_toFinset, Set.mem_ofPred_eq, Finset.mem_coe, Multiset.mem_union,
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,

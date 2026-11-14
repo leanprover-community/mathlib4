@@ -5,9 +5,10 @@ Authors: Vlad Tsyrklevich
 -/
 module
 
-public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Matching
+
+import Mathlib.Combinatorics.Hall.Basic
 
 /-!
 # Hall's Marriage Theorem

@@ -5,8 +5,8 @@ Authors: James Arthur, Chris Hughes, Shing Tak Lam
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
 /-!
 # Inverse of the sinh function

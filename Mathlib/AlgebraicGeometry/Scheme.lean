@@ -5,9 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.AlgebraicGeometry.Spec
-public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of schemes
@@ -17,7 +15,6 @@ where there is an isomorphism of presheaves between the restriction to that open
 and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
 A morphism of schemes is just a morphism of the underlying locally ringed spaces.
-
 -/
 
 @[expose] public section
@@ -146,7 +143,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := f.base.hom.2
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := by fun_prop
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -445,7 +442,7 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 
 /-- Copies a morphism with a different underlying map -/
 def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
-  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
+  base := TopCat.ofHom ⟨g, by rw [← h]; fun_prop⟩
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
     subst h
@@ -556,7 +553,7 @@ theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
     {i : W ⟶ X} {j : W ⟶ Y} (h : CommSq i j f g)
     (H : Disjoint (Set.range f) (Set.range g)) : IsEmpty W :=
   ⟨fun x ↦ (Set.disjoint_iff_inter_eq_empty.mp H).le
-    ⟨⟨i x, congr($(h.w) x)⟩, ⟨j x, rfl⟩⟩⟩
+    ⟨⟨i x, congr($h.w x)⟩, ⟨j x, rfl⟩⟩⟩
 
 /-- The empty scheme. -/
 @[simps]
@@ -780,7 +777,7 @@ open scoped Pointwise in
 lemma zeroLocus_setMul {U : X.Opens} (s t : Set Γ(X, U)) :
     X.zeroLocus (s * t) = X.zeroLocus s ∪ X.zeroLocus t := by
   simp only [← Set.image2_mul, zeroLocus_def, Set.biInter_image2]
-  simp [Set.compl_inter, ← Set.union_iInter₂, ← Set.iInter₂_union]
+  simp [← Set.union_iInter₂, ← Set.iInter₂_union]
 
 open scoped Pointwise in
 lemma zeroLocus_mul {U : X.Opens} (I J : Ideal Γ(X, U)) :
@@ -848,7 +845,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
     (Spec R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.ΓSpecIso R).hom f) := by
-  convert! basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
+  convert basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -900,7 +897,7 @@ theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
 
 theorem Spec_zeroLocus {R : CommRingCat} (s : Set Γ(Spec R, ⊤)) :
     (Spec R).zeroLocus s = PrimeSpectrum.zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s) := by
-  convert! Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
+  convert Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
   rw [Set.image_preimage_eq]
   exact (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
 section Stalks
@@ -930,7 +927,7 @@ lemma stalkSpecializes_stalkMap (x x' : X)
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
     f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) y) =
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
+  congr($(CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y)
 
 @[reassoc]
 lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
@@ -959,7 +956,7 @@ lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
     e.inv.stalkMap y (e.hom.stalkMap (e.inv y) z) =
       (Y.presheaf.stalkCongr (.of_eq (by simp))).hom z :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z
+  congr($(CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z)
 
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
@@ -971,7 +968,7 @@ lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
     e.hom.stalkMap x (e.inv.stalkMap (e.hom x) y) =
       (X.presheaf.stalkCongr (.of_eq (by simp))).hom y :=
-  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y
+  congr($(CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y)
 
 @[reassoc (attr := simp)]
 lemma germ_stalkMap (U : Y.Opens) (x : X) (hx : f x ∈ U) :
@@ -986,7 +983,6 @@ lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f x ∈ U) (y) :
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If `x = y`, the stalk maps are isomorphic. -/
 noncomputable def arrowStalkMapIsoOfEq {x y : X}
     (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=

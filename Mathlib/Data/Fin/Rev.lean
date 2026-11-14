@@ -6,6 +6,11 @@ Authors: Eric Rodriguez, Joel Riou, Yury Kudryashov
 module
 
 public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Equiv.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reverse on `Fin n`
 

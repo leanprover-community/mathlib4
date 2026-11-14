@@ -5,9 +5,12 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.ClickSuggestions.SectionState
 public meta import Mathlib.Control.Basic
 public meta import Mathlib.Tactic.ClickSuggestions.Util
+public import Mathlib.Tactic.ClickSuggestions.SectionState
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Support for `rw` suggestions in `#click_suggestions`
@@ -17,7 +20,7 @@ public meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Meta ProofWidgets Jsx
+open Lean Meta ProofWidgets
 
 /-- The structure for rewrite lemmas stored in the `RefinedDiscrTree`. -/
 structure RwLemma where
@@ -64,7 +67,7 @@ instance : Ord RwKey where
     (compare a.1 b.1).then <|
     (compare a.2 b.2).then <|
     (compare a.3 b.3).then <|
-    (compare a.4 b.4).then <|
+    (compare a.4 b.4).then
     (compare a.5 b.5)
 
 /-- Whether the two suggestions are duplicates of each other. -/
@@ -82,8 +85,8 @@ private def tacticSyntax (lem : RwLemma) (rwKind : RwKind) (hyp? : Option Ident)
   mkRewrite rwKind lem.symm proof hyp?
 
 /-- Generate the suggestion for rewriting with `lem`. -/
-def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) :=
-  withNewMCtxDepth do
+def RwLemma.try (i : RwInfo) (lem : RwLemma) (assignableMVars : Array Expr) :
+    ClickSuggestionsM (Result RwKey) := do
   let e := i.subExpr
   let (proof, mvars, binderInfos, eqn) ← lem.name.forallMetaTelescopeReducing
   let mkApp2 _ lhs rhs ← whnf eqn | throwError "Exected an equality or iff, not {eqn}"
@@ -97,20 +100,22 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) 
   if lhs.toHeadIndex != e.toHeadIndex || lhs.headNumArgs != e.headNumArgs then
     throwError "{lhs} and {e} do not match according to the head-constant indexing"
   synthAppInstances `click_suggestions default mvars binderInfos false false
+  let mvars ← mvars.map (·.mvarId!) |>.filterM (not <$> ·.isAssigned)
   let mut extraGoals := #[]
   let mut justLemmaName := true
   let mut rwKind := i.rwKind
-  for mvar in mvars do
-    unless ← mvar.mvarId!.isAssigned do
-      if ← pure (rwKind matches .valid ..) <&&> isProof mvar <&&> mvar.mvarId!.assumptionCore then
-        justLemmaName := false
-      else
-        extraGoals := extraGoals.push (← instantiateMVars (← inferType mvar))
+  for mvarId in mvars do
+    let type ← instantiateMVars (← mvarId.getType)
+    if rwKind matches .valid .. then
+      if ← isProp type then
+        if let some fvarId ← withNewMCtxDepth <| findLocalDeclWithType? type then
+          mvarId.assign (.fvar fvarId)
+          justLemmaName := false
+          continue
+    extraGoals := extraGoals.push type
 
   let replacement ← instantiateMVars rhs
-  let makesNewMVars :=
-    (replacement.findMVar? (mvars.contains <| .mvar ·)).isSome ||
-    extraGoals.any fun goal ↦ (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
+  let unhelpfulMVars ← hasUnhelpfulMVars mvars assignableMVars (extraGoals.push replacement)
   let proof ← instantiateMVars proof
   let isRefl ← isExplicitEq e replacement
   if let .valid tpCorrect _ := rwKind then
@@ -128,25 +133,26 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) : ClickSuggestionsM (Result RwKey) 
     replacement := ← abstractMVars replacement
   }
   let tactic ← tacticSyntax lem rwKind (← getHypIdent?) proof justLemmaName
-  let isClosing ← (do
+  let solves ← (do
     if extraGoals.isEmpty then
       if let some rflTarget := i.rflTarget? then
         return ← withoutModifyingMCtx <| isDefEq replacement rflTarget
       else if (← read).pos == .root && (← read).hyp?.isNone then
         return ← succeeds (← mkFreshExprMVar replacement).mvarId!.applyRfl
     return false)
-  if isClosing then
-    addSolvedSuggestion tactic
+  if solves then
+    addSolvingSuggestion tactic
   let mut htmls := #[← exprToHtml replacement]
   for goal in extraGoals do
-    htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
+    htmls := htmls.push
+      jsx%{<div><strong className="goal-vdash">⊢ </strong>{← exprToHtml goal}</div>}
   let filtered ←
-    if !isRefl && !makesNewMVars then
-      some <$> mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
-    else
+    if isRefl || unhelpfulMVars then
       pure none
-  htmls := htmls.push (<div> {← lem.name.toHtml} </div>)
-  let unfiltered ← mkSuggestion tactic (.element "div" #[] htmls) (isClosing := isClosing)
+    else
+      some <$> mkSuggestion tactic "rw" (.element "div" #[] htmls) (solves := solves)
+  htmls := htmls.push jsx%{<div>{← lem.name.toHtml}</div>}
+  let unfiltered ← mkSuggestion tactic "rw" (.element "div" #[] htmls) (solves := solves)
   let pattern ← do
     let (_, _, e) ← forallMetaTelescopeReducing (← lem.name.getType)
     let mkApp2 _ lhs rhs ← whnf e | throwError "Expected equation, not{indentExpr e}"

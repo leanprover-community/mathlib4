@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.Order.Restriction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurability of the restriction function for functions indexed by a preorder
 

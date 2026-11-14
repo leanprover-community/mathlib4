@@ -251,7 +251,7 @@ lemma mul_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) 
 
 @[to_additive (attr := simp) addCentralizer_eq_top_iff_subset]
 theorem centralizer_eq_top_iff_subset : centralizer S = Set.univ ↔ S ⊆ center M :=
-  eq_top_iff.trans <| ⟨
+  eq_top_iff.trans ⟨
     fun h _ hx ↦ Semigroup.mem_center_iff.mpr fun _ ↦ by rw [h trivial _ hx],
     fun h _ _ _ hm ↦ (h hm).comm _⟩
 

@@ -5,9 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Basic Results about Star on Pi Types
@@ -59,6 +58,20 @@ lemma conj_apply {ι : Type*} {α : ι → Type*} [∀ i, CommSemiring (α i)] [
     (f : ∀ i, α i) (i : ι) : conj f i = conj (f i) := rfl
 
 end Pi
+
+namespace IsStarOrtho
+
+open scoped StarRing
+
+variable [∀ i, NonUnitalSemiring (f i)] [∀ i, StarRing (f i)]
+
+lemma pi_iff {x y : ∀ i, f i} : x ⋆⟂ y ↔ ∀ i, x i ⋆⟂ y i := by
+  aesop (add simp [isStarOrtho_iff, funext_iff])
+
+protected lemma pi {x y : ∀ i, f i} (h : ∀ i, x i ⋆⟂ y i) : x ⋆⟂ y :=
+  pi_iff.mpr h
+
+end IsStarOrtho
 
 namespace Function
 

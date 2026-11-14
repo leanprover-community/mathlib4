@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+
 /-!
 # Action of `DomMulAct` and `DomAddAct` on `α →ₘ[μ] β`
 
@@ -20,7 +21,6 @@ In fact, it suffices to require that `(c • ·)` is only quasi-measure-preservi
 typeclass for quasi-measure-preserving actions yet.
 
 ## Keywords
-
 -/
 
 public section

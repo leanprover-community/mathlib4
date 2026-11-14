@@ -5,17 +5,17 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.RingTheory.MvPowerSeries.Expand
+public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
-## Expand power series
+# Expand power series
 
 Given a power series `φ`, one may replace every occurrence of `X i` by `X i ^ n`,
 for some nonzero natural number `n`.
 This operation is called `PowerSeries.expand` and it is an algebra homomorphism.
 
-### Main declaration
+## Main declaration
 
 * `PowerSeries.expand`: expand a power series by a nonzero factor of p,
   so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
@@ -47,7 +47,7 @@ theorem expand_mul_eq_comp (q : ℕ) (hq : q ≠ 0) :
 
 theorem expand_mul (q : ℕ) (hq : q ≠ 0) (φ : PowerSeries R) :
     φ.expand (p * q) (p.mul_ne_zero hp hq) = (φ.expand q hq).expand p hp :=
-  DFunLike.congr_fun (expand_mul_eq_comp p hp q hq) φ
+  congr($(expand_mul_eq_comp p hp q hq) φ)
 
 theorem expand_smul (a : R) (φ : PowerSeries R) :
     expand p hp (a • φ) = a • φ.expand p hp := AlgHom.map_smul_of_tower _ _ _

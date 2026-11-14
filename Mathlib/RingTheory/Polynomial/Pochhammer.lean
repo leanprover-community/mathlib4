@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
+
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # The Pochhammer polynomials
@@ -137,7 +137,7 @@ theorem ascPochhammer_succ_comp_X_add_one (n : ℕ) :
       ascPochhammer S (n + 1) + (n + 1) • (ascPochhammer S n).comp (X + 1) := by
   suffices (ascPochhammer ℕ (n + 1)).comp (X + 1) =
       ascPochhammer ℕ (n + 1) + (n + 1) * (ascPochhammer ℕ n).comp (X + 1)
-    by simpa [map_comp] using congr_arg (Polynomial.map (Nat.castRingHom S)) this
+    by simpa [map_comp] using congr(Polynomial.map (Nat.castRingHom S) $this)
   nth_rw 2 [ascPochhammer_succ_left]
   rw [← add_mul, ascPochhammer_succ_right ℕ n, mul_comp, mul_comm, add_comp, X_comp, natCast_comp,
     add_comm, ← add_assoc]
@@ -218,18 +218,17 @@ theorem factorial_mul_ascPochhammer (S : Type*) [Semiring S] (r n : ℕ) :
     (r ! : S) * (ascPochhammer S n).eval (r + 1 : S) = (r + n)! := by
   rw_mod_cast [ascPochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
-theorem ascPochhammer_nat_eval_succ (r : ℕ) :
-    ∀ n : ℕ, n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n
-  | 0 => by
-    by_cases h : r = 0
-    · simp only [h, zero_mul, zero_add]
-    · simp only [ascPochhammer_eval_zero, zero_mul, ite_eq_right h, mul_zero]
-  | k + 1 => by simp only [ascPochhammer_nat_eq_ascFactorial, Nat.succ_ascFactorial, add_right_comm]
+variable {S} in
+theorem ascPochhammer_eval_succ (r : ℕ) (n : S) :
+    n * (ascPochhammer S r).eval (n + 1) = (ascPochhammer S r).eval n * (n + r) := by
+  induction r with
+  | zero => simp
+  | succ r ih => grind [ascPochhammer_succ_eval]
 
-theorem ascPochhammer_eval_succ (r n : ℕ) :
-    (n : S) * (ascPochhammer S r).eval (n + 1 : S) =
-    (n + r) * (ascPochhammer S r).eval (n : S) :=
-  mod_cast congr_arg Nat.cast (ascPochhammer_nat_eval_succ r n)
+@[deprecated ascPochhammer_eval_succ +typeChanged (since := "2026-08-16")]
+theorem ascPochhammer_nat_eval_succ (r : ℕ) (n : ℕ) :
+    n * (ascPochhammer ℕ r).eval (n + 1) = (n + r) * (ascPochhammer ℕ r).eval n := by
+  simp [ascPochhammer_eval_succ, mul_comm]
 
 namespace Nat
 variable (a b : ℕ)
@@ -355,7 +354,7 @@ theorem descPochhammer_succ_comp_X_sub_one (n : ℕ) :
       descPochhammer R (n + 1) - (n + (1 : R[X])) • (descPochhammer R n).comp (X - 1) := by
   suffices (descPochhammer ℤ (n + 1)).comp (X - 1) =
       descPochhammer ℤ (n + 1) - (n + 1) * (descPochhammer ℤ n).comp (X - 1)
-    by simpa [map_comp] using congr_arg (Polynomial.map (Int.castRingHom R)) this
+    by simpa [map_comp] using congr(Polynomial.map (Int.castRingHom R) $this)
   nth_rw 2 [descPochhammer_succ_left]
   rw [← sub_mul, descPochhammer_succ_right ℤ n, mul_comp, mul_comm, sub_comp, X_comp, natCast_comp]
   ring
@@ -417,7 +416,7 @@ theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
 variable {R}
 
 /-- The Pochhammer polynomial of degree `n` has roots at `0`, `-1`, ..., `-(n - 1)`. -/
-theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
+theorem ascPochhammer_eval_neg_natCast_of_lt {n k : ℕ} (h : k < n) :
     (ascPochhammer R n).eval (-(k : R)) = 0 := by
   induction n with
   | zero => contradiction
@@ -427,6 +426,9 @@ theorem ascPochhammer_eval_neg_coe_nat_of_lt {n k : ℕ} (h : k < n) :
     · simp [ih hkn]
     · simp
     · lia
+
+@[deprecated (since := "2026-10-13")]
+alias ascPochhammer_eval_neg_coe_nat_of_lt := ascPochhammer_eval_neg_natCast_of_lt
 
 /-- Over an integral domain, the Pochhammer polynomial of degree `n` has roots *only* at
 `0`, `-1`, ..., `-(n - 1)`. -/
@@ -445,15 +447,18 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
       | inr h =>
         exact ⟨n, lt_add_one n, eq_neg_of_add_eq_zero_right h⟩
   · obtain ⟨rn, hrn, rnn⟩ := hrn
-    convert! ascPochhammer_eval_neg_coe_nat_of_lt hrn
+    convert ascPochhammer_eval_neg_natCast_of_lt hrn
     simp [rnn]
 
 /-- `descPochhammer R n` is `0` for `0, 1, …, n-1`. -/
-theorem descPochhammer_eval_coe_nat_of_lt {k n : ℕ} (h : k < n) :
+theorem descPochhammer_eval_natCast_of_lt {k n : ℕ} (h : k < n) :
     (descPochhammer R n).eval (k : R) = 0 := by
   rw [descPochhammer_eval_eq_ascPochhammer, sub_add_eq_add_sub,
     ← Nat.cast_add_one, ← neg_sub, ← Nat.cast_sub h]
-  exact ascPochhammer_eval_neg_coe_nat_of_lt (Nat.sub_lt_of_pos_le k.succ_pos h)
+  exact ascPochhammer_eval_neg_natCast_of_lt (Nat.sub_lt_of_pos_le k.succ_pos h)
+
+@[deprecated (since := "2026-10-13")]
+alias descPochhammer_eval_coe_nat_of_lt := descPochhammer_eval_natCast_of_lt
 
 lemma descPochhammer_eval_eq_prod_range {R : Type*} [CommRing R] (n : ℕ) (r : R) :
     (descPochhammer R n).eval r = ∏ j ∈ Finset.range n, (r - j) := by

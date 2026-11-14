@@ -5,9 +5,9 @@ Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Set.Finite.Basic
+
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Hall's Marriage Theorem for finite index types
@@ -58,7 +58,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases! he : s'.Nonempty
   · have ha' : #s' < #(s'.biUnion fun x => t x) := by
-      convert! ha he fun h => by simpa [← h] using mem_univ x using 2
+      convert ha he fun h => by simpa [← h] using mem_univ x using 2
       ext x
       simp only [mem_image, mem_biUnion, SetCoe.exists, exists_and_right,
         exists_eq_right]
@@ -125,7 +125,7 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
     #s' ≤ #(s'.biUnion fun a' => t a') := by
   classical
     rw [← card_image_of_injective s' Subtype.coe_injective]
-    convert! ht (s'.image fun z => z.1) using 1
+    convert ht (s'.image fun z => z.1) using 1
     apply congr_arg
     ext y
     simp

@@ -6,10 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.Order.ZeroLEOne
 public import Mathlib.Order.WithBot
 
 /-! # Adjoining top/bottom elements to ordered monoids.
@@ -453,6 +451,10 @@ theorem one_eq_map_iff {α} {f : α → β} {v : WithBot α} [One β] :
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
+
+@[to_additive lt_zero_iff_eq_bot]
+lemma lt_one_iff_eq_bot [Preorder α] [IsBotOneClass α] {a : WithBot α} : a < 1 ↔ a = ⊥ := by
+  induction a <;> simp
 
 end One
 

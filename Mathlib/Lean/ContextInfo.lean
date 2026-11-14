@@ -16,7 +16,7 @@ This file contains helper functions for running `CoreM`, `MetaM` and tactic acti
 in the context of an infotree node.
 -/
 
-@[expose] public meta section
+public meta section
 
 open Lean Elab Term Command Linter
 

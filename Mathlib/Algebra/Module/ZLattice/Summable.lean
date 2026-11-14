@@ -6,9 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Module.ZLattice.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-public import Mathlib.Analysis.PSeries
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+
+import Mathlib.Analysis.PSeries
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Convergence of `p`-series on lattices
@@ -21,7 +21,6 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
 - `ZLattice.summable_norm_sub_rpow`: `∑ z ∈ L, ‖z - x‖ʳ` converges when `r < -d`.
 - `ZLattice.tsum_norm_rpow_le`:
   `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
-
 -/
 
 @[expose] public section
@@ -52,7 +51,7 @@ lemma exists_forall_abs_repr_le_norm :
   have : Finite ι := Module.Finite.finite_basis b
   let b' : Basis ι ℝ E := Basis.ofZLatticeBasis ℝ L b
   let e := ((b'.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _).toContinuousLinearEquiv (𝕜 := ℝ))
-  have := e.continuous.1 (Set.univ.pi fun _ ↦ Set.Ioo (-1) 1)
+  have := e.continuous.isOpen_preimage (Set.univ.pi fun _ ↦ Set.Ioo (-1) 1)
     (isOpen_set_pi Set.finite_univ fun _ _ ↦ isOpen_Ioo)
   obtain ⟨ε, hε, hε'⟩ := Metric.isOpen_iff.mp this 0 (by simp)
   refine ⟨ε / 2, by positivity, fun x i ↦ ?_⟩
@@ -240,8 +239,7 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
   · exact .of_finite
   refine Summable.of_norm_bounded_eventually
     (.mul_left ((1 / 2) ^ r) (summable_norm_rpow L r hr)) ?_
-  have H : IsClosed (X := E) L := @AddSubgroup.isClosed_of_discrete _ _ _ _ _
-    L.toAddSubgroup (inferInstanceAs (DiscreteTopology L))
+  have H : IsClosed (X := E) L := L.toAddSubgroup.isClosed_of_discreteTopology
   refine ((Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
     (Metric.isBounded_closedBall (x := (0 : E)) (r := 2 * ‖x‖)) H).preimage_embedding
     (.subtype _)).subset ?_

@@ -3,9 +3,10 @@ Copyright (c) 2025 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Arthur Paulino
 -/
+module
 
-import Lean.Data.Json
-import Lean.Util.Path
+public import Lean.Data.Json
+public import Lean.Util.Path
 
 /-!
 # Helper Functions
@@ -15,6 +16,8 @@ or replaced by an appropriate function from Lean.
 
 Some functions here are duplicates from the folder `Mathlib/Lean/`.
 -/
+
+public section
 
 /-- Format as hex digit string. Used by `Cache` to format hashes. -/
 def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
@@ -65,7 +68,7 @@ This is an exact copy of the first part of `Lean.SearchPath.findWithExt` which, 
 is used by `Lean.findLean sp mod`. In the future, `findWithExt` could be refactored to
 expose this base path.
 -/
-def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : IO (Option FilePath) := do
+def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : BaseIO (Option FilePath) := do
   let pkg := mod.getRoot.toString (escape := false)
   sp.findM? fun p =>
     (p / pkg).isDir <||> ((p / pkg).addExtension ext).pathExists

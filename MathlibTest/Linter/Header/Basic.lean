@@ -12,7 +12,8 @@ import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Aliases
 
 /--
-warning: The module doc-string for a file should be the first command after the imports.
+warning: The module doc-string for a file should be the first command after the imports
+and any necessary `set_option` commands.
 Please, add a module doc-string (`/-! ... -/`) before `example :=
   trivial`.
 

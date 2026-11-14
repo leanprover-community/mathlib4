@@ -5,8 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.BumpFunction.Convolution
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+
+import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Density of smooth functions in the space of continuous functions

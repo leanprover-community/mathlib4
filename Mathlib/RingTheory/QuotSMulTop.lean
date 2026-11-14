@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reducing a module modulo an element of the ring
 

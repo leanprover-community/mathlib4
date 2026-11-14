@@ -17,7 +17,6 @@ generated (i.e. FG).
 ## Main declarations
 
 - `Submodule.CoFG` expresses that a submodule is co-finitely generated.
-
 -/
 
 public section
@@ -81,7 +80,7 @@ variable {N : Type*} [AddCommGroup N] [Module R N]
 /-- The range of a linear map is FG if and only if the kernel is CoFG. -/
 theorem range_fg_iff_ker_cofg {f : M →ₗ[R] N} : (range f).FG ↔ (ker f).CoFG := by
   rw [← Module.Finite.iff_fg]
-  exact Module.Finite.equiv_iff <| f.quotKerEquivRange.symm
+  exact Module.Finite.equiv_iff f.quotKerEquivRange.symm
 
 /-- The kernel of a linear map into a noetherian module is CoFG. -/
 protected theorem CoFG.ker [IsNoetherian R N] (f : M →ₗ[R] N) : (ker f).CoFG :=

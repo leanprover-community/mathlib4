@@ -99,7 +99,7 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
     (huv : u =O[l] v) (hu : Tendsto (fun x => ‖u x‖) l atTop) :
     Tendsto (fun x => ‖v x‖) l atTop := by
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
-  rw [IsBigOWith] at hcuv
+  rw [isBigOWith_iff] at hcuv
   convert! Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
   rw [mul_div_cancel_left₀ _ hc.ne.symm]
 
@@ -114,7 +114,7 @@ theorem Asymptotics.IsEquivalent.rpow {α : Type*} {u v : α → ℝ} {l : Filte
   rw [isEquivalent_iff_exists_eq_mul]
   have hφr : Tendsto ((fun x ↦ x ^ r) ∘ φ) l (𝓝 1) := by
     rw [← Real.one_rpow r]
-    exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; norm_num)) hφ
+    exact Tendsto.comp (Real.continuousAt_rpow_const _ _ (by left; simp)) hφ
   use (· ^ r) ∘ φ, hφr
   conv => enter [3]; change fun x ↦ φ x ^ r * v x ^ r
   filter_upwards [Tendsto.eventually_const_lt (zero_lt_one) hφ, huφv] with x hφ_pos huv'
@@ -126,7 +126,7 @@ theorem Asymptotics.IsEquivalent.log {α : Type*} {l : Filter α} {f g : α → 
   have hg := g_tendsto.eventually_ne_atTop 0
   have hf := hfg.symm.tendsto_atTop g_tendsto |>.eventually_ne_atTop 0
   rw [isEquivalent_iff_tendsto_one hg] at hfg
-  have := hfg.log (by norm_num) |>.congr' <| by
+  have := hfg.log (by simp) |>.congr' <| by
     filter_upwards [hf, hg] with n hf hg using Real.log_div hf hg
   exact IsLittleO.isEquivalent <| calc
     (fun n ↦ Real.log (f n) - Real.log (g n)) =o[l] fun _ ↦ (1 : ℝ) := by simpa

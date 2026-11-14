@@ -6,7 +6,8 @@ Authors: Eric Wieser, Ahmad Alkhalawi
 module
 
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
-public import Mathlib.Tactic.Abel
+
+import Mathlib.Tactic.Abel
 
 /-! # Extra lemmas about invertible matrices
 
@@ -112,7 +113,7 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
 
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   let := invertibleTranspose A
-  convert! (rfl : _ = ⅟(Aᵀ))
+  convert (rfl : _ = ⅟(Aᵀ))
 
 /-- `Aᵀ` is invertible when `A` is. -/
 @[implicit_reducible]

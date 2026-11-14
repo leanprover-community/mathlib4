@@ -49,6 +49,7 @@ namespace AbstractMeasure
 section NoContinuousSMul
 
 /-- Inherit `FunLike` structure from `C(X, R) →L[R] E`. -/
+@[macro_inline]
 instance : FunLike (AbstractMeasure X R E) C(X, R) E :=
   inferInstanceAs (FunLike (C(X, R) →L[R] E) C(X, R) E)
 
@@ -60,8 +61,12 @@ instance : ContinuousLinearMapClass (AbstractMeasure X R E) R C(X, R) E :=
 instance : AddCommGroup (AbstractMeasure X R E) :=
   inferInstanceAs (AddCommGroup (C(X, R) →L[R] E))
 
-instance isAddApply : IsAddApply (AbstractMeasure X R E) C(X, R) E where
-  add_apply _ _ _ := rfl
+instance isAddApply : IsAddApply (AbstractMeasure X R E) where
+
+omit [IsTopologicalAddGroup E] in
+@[ext] lemma ext {μ ν : AbstractMeasure X R E} (hμν : ∀ f : C(X, R), μ f = ν f) :
+    μ = ν :=
+  DFunLike.ext _ _ hμν
 
 end NoContinuousSMul
 
@@ -73,8 +78,7 @@ variable [ContinuousSMul R E]
 instance : Module R (AbstractMeasure X R E) :=
   inferInstanceAs (Module R (C(X, R) →L[R] E))
 
-instance isSMulApply : IsSMulApply R (AbstractMeasure X R E) C(X, R) E where
-  smul_apply _ _ _ := rfl
+instance isSMulApply : IsSMulApply R (AbstractMeasure X R E) where
 
 /-- The defining equivalence between measures and continuous linear maps on continuous functions. -/
 def toCLMEquiv : AbstractMeasure X R E ≃ₗ[R] C(X, R) →L[R] E :=
@@ -156,8 +160,9 @@ section Prod
 /-- Send a measure `ν` on `Y` and a function `f` on `X × Y` to the function on `X` given by
 `x ↦ ν (f (x, ·))`, or more suggestively, `x ↦ ∫ f(x, y) dμ(y)`. -/
 def contractSnd : D(Y, R) →ₗ[R] C(X × Y, R) →ₗ[R] C(X, R) :=
-  LinearMap.mk₂ R (fun ν f ↦ comp ν f.curry) ?_ ?_ ?_ ?_ where finally
-    all_goals intros; ext; simp
+  LinearMap.mk₂ R (fun ν f ↦ comp ν f.curry) ?_ ?_ ?_ ?_
+where finally
+  all_goals intros; ext; simp
 
 /-- Send a measure `μ` on `X` and a function `f` on `X × Y` to the function on `Y` given by
 `y ↦ μ (f (·, y))`, or more suggestively, `y ↦ ∫ f(x, y) dμ(x)`. -/
@@ -251,7 +256,6 @@ lemma prodMk_eq_prodMk' : prodMk μ ν = prodMk' μ ν := by
   apply DFunLike.coe_injective
   apply denseRange_tensorHom.equalizer (by fun_prop) (by fun_prop) (funext fun h ↦ ?_)
   induction h with
-  | zero => simp
   | add => grind
   | tmul f g => simp [prodMul_def, prodMk_prod_apply μ, prodMk'_prod_apply μ]
 

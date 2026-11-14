@@ -93,6 +93,12 @@ theorem integral_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
     simpa using this.sub_const _ |>.div_const _
   simpa [Complex.tendsto_exp_nhds_zero_iff] using tendsto_const_nhds.neg_mul_atTop ha tendsto_id
 
+lemma integral_cexp_neg_mul_Ioi_neg_log {x : ℝ} (hx : 0 < x) {s : ℂ} (hs : 0 < s.re) :
+    ∫ u in Ioi (-log x), Complex.exp (-s * u) = (x : ℂ) ^ s / s := by
+  rw [integral_exp_mul_complex_Ioi (by simpa using hs), neg_div_neg_eq,
+    Complex.cpow_def_of_ne_zero (mod_cast hx.ne'), Complex.ofReal_neg, neg_mul_neg,
+    Complex.ofReal_log hx.le, mul_comm s]
+
 theorem integral_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     ∫ x : ℝ in Set.Iic c, Complex.exp (a * x) = Complex.exp (a * c) / a := by
   simpa [neg_mul, ← mul_neg, ← Complex.ofReal_neg,
@@ -179,12 +185,12 @@ theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     ∫ t : ℝ in Ioi c, t ^ a = -c ^ (a + 1) / (a + 1) := by
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
-    convert! (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
+    convert (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
     simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
   have ht : Tendsto (fun t => t ^ (a + 1) / (a + 1)) atTop (𝓝 (0 / (a + 1))) := by
     apply Tendsto.div_const
     simpa only [neg_neg] using tendsto_rpow_neg_atTop (by linarith : 0 < -(a + 1))
-  convert! integral_Ioi_of_hasDerivAt_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht using 1
+  convert integral_Ioi_of_hasDerivAt_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht using 1
   simp only [neg_div, zero_div, zero_sub]
 
 theorem integrableOn_Ioi_norm_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
@@ -219,7 +225,7 @@ theorem integrableOn_Ioi_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs 
     refine (integrableOn_Ioi_cpow_of_lt ?_ ht).const_mul _
     rwa [Complex.sub_re, Complex.one_re, sub_lt_iff_lt_add, neg_add_cancel]
   refine h.congr_fun (fun x hx ↦ ?_) measurableSet_Ioi
-  rw [Complex.deriv_ofReal_cpow_const (ht.trans hx).ne' (fun h ↦ (Complex.zero_re ▸ h ▸ hs).false)]
+  rw [Complex.deriv_ofReal_cpow_const s (ht.trans hx).ne']
 
 theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re ≤ 0) :
     IntegrableOn (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Set.Ioi t) := by
@@ -326,7 +332,7 @@ theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     IntegrableOn (fun t ↦ t⁻¹ / (log t) ^ 2) (.Ioi c) volume := by
   apply integrableOn_Ioi_deriv_of_nonneg' _ _ tendsto_log_atTop.inv_tendsto_atTop.neg
   · intro t _
-    convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
+    convert (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
     field
   · intro t _
     have : 0 < t := by grind
@@ -335,11 +341,11 @@ theorem integrableOn_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
 @[simp]
 theorem integral_inv_div_log_sq_Ioi {c : ℝ} (hc : 1 < c) :
     ∫ (t : ℝ) in .Ioi c, t⁻¹ / (log t) ^ 2 = (log c)⁻¹ := by
-  convert! integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
+  convert integral_Ioi_of_hasDerivAt_of_tendsto' (m := 0) (f := fun t ↦ -(log t)⁻¹) ?_
     (integrableOn_inv_div_log_sq_Ioi hc) ?_ using 1
   · simp
   · intro t _
-    convert! (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
+    convert (hasDerivAt_inv_log (by grind : t ≠ 0) (by grind) (by grind)).neg using 1
     field
-  convert! tendsto_log_atTop.inv_tendsto_atTop.neg using 1
+  convert tendsto_log_atTop.inv_tendsto_atTop.neg using 1
   simp

@@ -6,13 +6,12 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Basic.Nontrivial.Basic
-public import Mathlib.Order.TypeTags
-public import Mathlib.Data.Option.NAry
-public import Mathlib.Tactic.Contrapose
-public import Mathlib.Tactic.Lift
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Order.Lattice
+public import Mathlib.Data.Option.NAry
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.TypeTags
+public import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -22,7 +21,6 @@ Adding a `bot` or a `top` to an order.
 ## Main declarations
 
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
-
 -/
 
 @[expose] public section
@@ -396,13 +394,13 @@ variable {a b : α}
 
 section LE
 
-variable [LE α] {x y : WithBot α}
+variable [LE α] [LE β] {x y : WithBot α}
 
 @[to_dual]
 lemma le_iff_forall : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := by
   cases x <;> cases y <;> simp [le_def]
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := simp, norm_cast, gcongr)]
 lemma coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by simp [le_def]
 
 @[to_dual not_top_le_coe]
@@ -482,6 +480,10 @@ lemma unbotA_le_iff [Nonempty α] (hx : x ≠ ⊥) : x.unbotA ≤ a ↔ x ≤ a 
 @[to_dual]
 lemma unbotA_mono [Nonempty α] (hy : x ≠ ⊥) (h : x ≤ y) : x.unbotA ≤ y.unbotA := unbotD_mono hy h
 
+@[to_dual]
+lemma map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
+    x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
+
 end LE
 
 section LT
@@ -492,7 +494,7 @@ variable [LT α] {x y : WithBot α}
 lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
   cases x <;> cases y <;> simp [lt_def]
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := simp, norm_cast, gcongr)]
 lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
 @[to_dual (attr := simp) coe_lt_top]
 lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
@@ -585,10 +587,6 @@ theorem strictMono_map_iff {f : α → β} :
 
 @[to_dual]
 alias ⟨_, _root_.StrictMono.withBot_map⟩ := strictMono_map_iff
-
-@[to_dual]
-lemma map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
-    x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
 
 @[to_dual coe_untopD_le]
 theorem le_coe_unbotD (x : WithBot α) (b : α) : x ≤ x.unbotD b := by cases x <;> simp
@@ -768,16 +766,16 @@ instance _root_.WithTop.linearOrder [LinearOrder α] : LinearOrder (WithTop α) 
   Lattice.toLinearOrder _
 
 @[to_dual]
-instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
-  wf := .intro fun
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) :=
+  .intro fun
   | ⊥ => ⟨_, by simp⟩
   | (a : α) => (wellFounded_lt.1 a).rec fun _ _ ih ↦ .intro _ fun
     | ⊥, _ => ⟨_, by simp⟩
     | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
 
 @[to_dual]
-instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) where
-  wf := have acc_some (a : α) : @Acc (WithBot α) (· > ·) a :=
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithBot α) :=
+  have acc_some (a : α) : @Acc (WithBot α) (· > ·) a :=
     (wellFounded_gt.1 a).rec fun _ _ ih ↦ ⟨_, by simpa [WithBot.forall]⟩
   .intro fun
     | (a : α) => acc_some a

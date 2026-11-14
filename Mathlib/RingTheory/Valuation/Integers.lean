@@ -214,8 +214,8 @@ lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
   rcases eq_or_ne x 0 with rfl | hx
   · simp
-  · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
-      ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le
+  · exact congr($(Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
+      ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1).val).le
 
 lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
     I.IsPrincipal ↔ ∃ x, IsGreatest (v ∘ algebraMap O F '' I) x := by
@@ -446,7 +446,7 @@ lemma leIdeal_v_le_of_mem {K : Type*} [Field K] (v : Valuation K Γ₀)
   · simp
   intro y hy
   have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le
-  convert! I.smul_mem ⟨_, this⟩ hx using 1
+  convert I.smul_mem ⟨_, this⟩ hx using 1
   simp [Subtype.ext_iff, div_mul_cancel₀ _ (ZeroMemClass.coe_eq_zero.not.mpr hx0)]
 
 lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] {v : Valuation K Γ₀}

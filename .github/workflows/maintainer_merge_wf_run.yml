@@ -16,98 +16,66 @@ jobs:
       actions: read
       contents: read
       id-token: write
+      issues: read # for `verify` on issue comments
       pull-requests: write
     steps:
+      # For review events, GitHub runs the producer workflow from the PR, so the artifact is
+      # untrusted. With `verify`, the bridge fetches the comment or review and its PR from the
+      # API and checks them against GitHub's record of the producer run; we only use those
+      # verified values (and `run.*`), never the artifact's own contents.
       - name: Consume bridge artifact
         id: bridge
-        uses: leanprover-community/privilege-escalation-bridge/consume@ea7d63d1c8ece92a8e89b6a6d8fda40603167a91 # v1.3.0
+        uses: leanprover-community/privilege-escalation-bridge/consume@120e98bbb1e9438be8973be645ef67e9cddc39ba # v2.1.0
         with:
           artifact: workflow-data
           source_workflow: Maintainer merge
           require_event: issue_comment,pull_request_review,pull_request_review_comment
+          verify: true
           fail_on_missing: false
           token: ${{ github.token }}
           extract: |
-            author=event.comment.user.login|event.review.user.login
-            pr_author=event.issue.user.login|event.pull_request.user.login
-            pr_number=meta.pr_number
-            comment=event.comment.body|event.review.body
-            pr_title=event.issue.title|event.pull_request.title
-            pr_url=event.issue.html_url|event.pull_request.html_url
-            event_name=meta.event_name
-            mOrD=outputs.mOrD
+            author=verified.trigger.author
+            comment=verified.trigger.body
+            pr_number=verified.pr.number
+            pr_author=verified.pr.author
+            pr_title=verified.pr.title
+            pr_url=verified.pr.url
+            event_name=run.event
 
-      - name: Download legacy artifact (fallback)
-        id: download-legacy-artifact
-        if: ${{ steps.bridge.outputs.pr_number == '' }}
-        uses: dawidd6/action-download-artifact@b6e2e70617bc3265edd6dab6c906732b2f1ae151 # v21
-        with:
-          workflow: maintainer_merge.yml
-          name: workflow-data
-          path: ./artifacts
-          if_no_artifact_found: ignore
-          run_id: ${{ github.event.workflow_run.id }}
-
-      - name: Extract legacy artifact data (fallback)
-        id: legacy
-        if: ${{ steps.bridge.outputs.pr_number == '' && steps.download-legacy-artifact.outputs.found_artifact == 'true' }}
-        run: |
-          data_file="./artifacts/artifact-data.json"
-          if [ ! -f "${data_file}" ]
-          then
-            echo "Legacy artifact not found at ${data_file}."
-            exit 0
-          fi
-          {
-            echo "author=$(jq -r '.author // empty' "${data_file}")"
-            echo "pr_author=$(jq -r '.pr_author // empty' "${data_file}")"
-            echo "pr_number=$(jq -r '.pr_number // empty' "${data_file}")"
-            echo "pr_title=$(jq -r '.pr_title // empty' "${data_file}")"
-            echo "pr_url=$(jq -r '.pr_url // empty' "${data_file}")"
-            echo "event_name=$(jq -r '.event_name // empty' "${data_file}")"
-            echo "mOrD=$(jq -r '.mOrD // .m_or_d // empty' "${data_file}")"
-          } | tee -a "$GITHUB_OUTPUT"
-          comment="$(jq -r '.comment // empty' "${data_file}")"
-          printf 'comment<<EOF\n%s\nEOF\n' "${comment}" | tee -a "$GITHUB_OUTPUT"
-
-      - name: Select bridge or legacy inputs
-        id: inputs
-        if: ${{ steps.bridge.outputs.pr_number != '' || steps.legacy.outputs.pr_number != '' }}
+      - name: Find maintainer merge/delegate
+        id: merge_or_delegate
+        if: ${{ steps.bridge.outputs.pr_number != '' }}
         env:
-          INPUT_AUTHOR: ${{ steps.bridge.outputs.author }}${{ steps.legacy.outputs.author }}
-          INPUT_PR_AUTHOR: ${{ steps.bridge.outputs.pr_author }}${{ steps.legacy.outputs.pr_author }}
-          INPUT_PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}${{ steps.legacy.outputs.pr_number }}
-          INPUT_PR_TITLE: ${{ steps.bridge.outputs.pr_title }}${{ steps.legacy.outputs.pr_title }}
-          INPUT_PR_URL: ${{ steps.bridge.outputs.pr_url }}${{ steps.legacy.outputs.pr_url }}
-          INPUT_EVENT_NAME: ${{ steps.bridge.outputs.event_name }}${{ steps.legacy.outputs.event_name }}
-          INPUT_MORD: ${{ steps.bridge.outputs.mOrD }}${{ steps.legacy.outputs.mOrD }}
-          INPUT_SOURCE: ${{ steps.bridge.outputs.pr_number != '' && 'bridge' || (steps.legacy.outputs.pr_number != '' && 'legacy' || 'none') }}
-          INPUT_COMMENT: ${{ steps.bridge.outputs.comment }}${{ steps.legacy.outputs.comment }}
+          AUTHOR: ${{ steps.bridge.outputs.author }}
+          COMMENT: ${{ steps.bridge.outputs.comment }}
         run: |
-          {
-            echo "author=${INPUT_AUTHOR}"
-            echo "pr_author=${INPUT_PR_AUTHOR}"
-            echo "pr_number=${INPUT_PR_NUMBER}"
-            echo "pr_title=${INPUT_PR_TITLE}"
-            echo "pr_url=${INPUT_PR_URL}"
-            echo "event_name=${INPUT_EVENT_NAME}"
-            echo "mOrD=${INPUT_MORD}"
-            echo "input_source=${INPUT_SOURCE}"
-          } | tee -a "$GITHUB_OUTPUT"
-          printf 'comment<<EOF\n%s\nEOF\n' "${INPUT_COMMENT}" | tee -a "$GITHUB_OUTPUT"
+          # same parsing as in maintainer_merge.yml, but applied to the verified comment
+          # we strip `\r` since line endings from GitHub contain this character
+          COMMENT="${COMMENT//$'\r'/}"
 
-      - name: Note legacy artifact fallback
-        if: ${{ steps.inputs.outputs.input_source == 'legacy' }}
-        run: |
-          echo "::notice::Using legacy workflow-data artifact fallback from maintainer_merge.yml"
-          echo "Using legacy workflow-data artifact fallback from maintainer_merge.yml" >> "$GITHUB_STEP_SUMMARY"
+          # mathlib-splicebot[bot] relays put the command on the first line (see the comment
+          # template in the SPLICEBOT_LABEL_COMMANDS repo variable), while its other comments
+          # can quote user-controlled text (such as file names) on later lines, so for the bot
+          # we only look at the first line.
+          if [ "${AUTHOR}" = "mathlib-splicebot[bot]" ]
+          then
+            COMMENT="${COMMENT%%$'\n'*}"
+          fi
 
-      - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
+          m_or_d="$(printf '%s' "${COMMENT}" |
+            # captures `maintainer merge/delegate` as well as an optional `?`, ignoring subsequent spaces
+            sed -n 's=^maintainer  *\(merge\|delegate\)\(?\?\) *$=\1\2=p' | head -1)"
+
+          printf $'"maintainer delegate" or "maintainer merge" found? \'%s\'\n' "${m_or_d}"
+
+          printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
+
+      - if: ${{ steps.merge_or_delegate.outputs.mOrD != '' }}
         name: Resolve splice-bot attribution
         id: attribution
         env:
-          AUTHOR: ${{ steps.inputs.outputs.author }}
-          COMMENT: ${{ steps.inputs.outputs.comment }}
+          AUTHOR: ${{ steps.bridge.outputs.author }}
+          COMMENT: ${{ steps.bridge.outputs.comment }}
         run: |
           # When mathlib-splicebot[bot] relays a 'maintainer merge/delegate' command
           # from a review comment on the original PR, its comment ends with an
@@ -132,7 +100,7 @@ jobs:
 
       # bot usernames would cause this step to error with "Could not resolve to a User...",
       # so we skip it for all bot accounts; allowed bots are validated in the next step
-      - if: ${{ ! steps.inputs.outputs.mOrD == '' && ! endsWith(steps.inputs.outputs.author, '[bot]') }}
+      - if: ${{ steps.merge_or_delegate.outputs.mOrD != '' && ! endsWith(steps.bridge.outputs.author, '[bot]') }}
         name: Check whether user is part of mathlib-reviewers team
         uses: tspascoal/get-user-teams-membership@b2546c5affc730fd8e3d8483ae9ad3621938c2f9 # v4.0.2
         id: actorTeams
@@ -140,14 +108,14 @@ jobs:
           organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
                   # Organization to get membership from.
           team: 'mathlib-reviewers'
-          username: ${{ steps.inputs.outputs.author }}
+          username: ${{ steps.bridge.outputs.author }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
-      - if: ${{ ! steps.inputs.outputs.mOrD == '' }}
+      - if: ${{ steps.merge_or_delegate.outputs.mOrD != '' }}
         name: Determine whether the author may use the maintainer merge command
         id: authorized
         env:
-          AUTHOR: ${{ steps.inputs.outputs.author }}
+          AUTHOR: ${{ steps.bridge.outputs.author }}
           IS_TEAM_MEMBER: ${{ steps.actorTeams.outputs.isTeamMember }}
         run: |
           # mathlib-splicebot[bot] posts 'maintainer merge' comments on split PRs
@@ -180,35 +148,31 @@ jobs:
           "${CI_SCRIPTS_DIR}/maintainer/get_tlabel.sh" "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          PR_NUMBER: ${{ steps.inputs.outputs.pr_number }}
+          PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}
 
       - name: Form the message
         if: ${{ steps.authorized.outputs.authorized == 'true' }}
         id: form_the_message
         run: |
           message="$(
-            "${CI_SCRIPTS_DIR}/maintainer/maintainer_merge_message.sh" "${AUTHOR}" "${{ steps.inputs.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE}" "${COMMENT}" "${PR_AUTHOR}"
+            "${CI_SCRIPTS_DIR}/maintainer/maintainer_merge_message.sh" "${AUTHOR}" "${M_OR_D}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE}" "${COMMENT}" "${PR_AUTHOR}"
           )"
-          trigger_name="${{ steps.inputs.outputs.event_name }}"
+          trigger_name="${EVENT_NAME}"
           trigger_run_url="${{ github.event.workflow_run.html_url }}"
           wf_run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          legacy_suffix=""
-          if [ "${{ steps.inputs.outputs.input_source }}" = "legacy" ]
-          then
-            legacy_suffix=" (legacy)"
-          fi
-          metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
+          metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'
           echo "${metadata}"
           # message="${message}"$'\n\n---\n'"${metadata}"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
           AUTHOR: ${{ steps.attribution.outputs.display_author }}
-          EVENT_NAME: ${{ steps.inputs.outputs.event_name }}
-          PR_NUMBER: ${{ steps.inputs.outputs.pr_number }}
-          PR_URL: ${{ steps.inputs.outputs.pr_url }}
-          PR_TITLE: ${{ steps.inputs.outputs.pr_title }}
-          COMMENT: ${{ steps.inputs.outputs.comment }}
-          PR_AUTHOR: ${{ steps.inputs.outputs.pr_author }}
+          M_OR_D: ${{ steps.merge_or_delegate.outputs.mOrD }}
+          EVENT_NAME: ${{ steps.bridge.outputs.event_name }}
+          PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}
+          PR_URL: ${{ steps.bridge.outputs.pr_url }}
+          PR_TITLE: ${{ steps.bridge.outputs.pr_title }}
+          COMMENT: ${{ steps.bridge.outputs.comment }}
+          PR_AUTHOR: ${{ steps.bridge.outputs.pr_author }}
 
       - name: Send message on Zulip
         if: ${{ steps.authorized.outputs.authorized == 'true' }}
@@ -228,17 +192,13 @@ jobs:
         id: pr_comment
         env:
           DISPLAY_AUTHOR: ${{ steps.attribution.outputs.display_author }}
+          EVENT_NAME: ${{ steps.bridge.outputs.event_name }}
         run: |
           body="🚀 Pull request has been placed on the maintainer queue by ${DISPLAY_AUTHOR}."
-          trigger_name="${{ steps.inputs.outputs.event_name }}"
+          trigger_name="${EVENT_NAME}"
           trigger_run_url="${{ github.event.workflow_run.html_url }}"
           wf_run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          legacy_suffix=""
-          if [ "${{ steps.inputs.outputs.input_source }}" = "legacy" ]
-          then
-            legacy_suffix=" (legacy)"
-          fi
-          metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'"${legacy_suffix}"
+          metadata=$'['"${trigger_name}"$']('"${trigger_run_url}"$'), [wf_run]('"${wf_run_url}"$')'
           echo "${metadata}"
           # body="${body}"$'\n\n---\n'"${metadata}"
           printf 'body<<EOF\n%s\nEOF\n' "${body}" | tee -a "$GITHUB_OUTPUT"
@@ -248,15 +208,13 @@ jobs:
         continue-on-error: true
         uses: GrantBirki/comment@937820f3623fd0e300294bcc64ac7577fc0ad4cc # v3.0.3
         with:
-          # if a comment triggers the action, then `issue.number` is set
-          # if a review or review comment triggers the action, then `pull_request.number` is set
-          issue-number: ${{ steps.inputs.outputs.pr_number }}
+          issue-number: ${{ steps.bridge.outputs.pr_number }}
           body: ${{ steps.pr_comment.outputs.body }}
 
       - if: ${{ steps.authorized.outputs.authorized == 'true' }}
         name: Generate app token
         id: app-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
           app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
@@ -268,11 +226,13 @@ jobs:
         if: ${{ steps.authorized.outputs.authorized == 'true' }}
         continue-on-error: true
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}
         with:
           # labels added by GITHUB_TOKEN won't trigger the Zulip emoji workflow
           # This token is masked by the token minting action and will not be logged accidentally.
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const { owner, repo } = context.repo;
-            const issue_number = ${{ steps.inputs.outputs.pr_number }};
+            const issue_number = Number(process.env.PR_NUMBER);
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });

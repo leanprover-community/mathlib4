@@ -5,8 +5,6 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.Flat
-public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Smooth.Flat
 
 /-!
@@ -82,16 +80,16 @@ lemma trans (R : Type u₁) (S : Type u₂) [CommRing R] [CommRing S] [Algebra R
     [WeaklyEtale R S] [WeaklyEtale S T] : WeaklyEtale R T := by
   rw [← ulift_iff.{max u₁ u₂ u₃, max u₁ u₂ u₃}] at *
   refine ⟨.trans _ (ULift.{max u₁ u₂ u₃} S) _, ?_⟩
-  · have heq : TensorProduct.lmul' (S := ULift.{max u₁ u₂ u₃} T) (ULift R) =
-        AlgHom.comp ((TensorProduct.lmul' (S := ULift.{max u₁ u₂ u₃} T)
-          (ULift.{max u₁ u₂ u₃} S)).restrictScalars (ULift.{max u₁ u₂ u₃} R))
-          (TensorProduct.mapOfCompatibleSMul ..) := by
-      ext <;> simp
-    rw [heq]
-    refine .comp ?_ ?_
-    · exact (flat_lmul' (ULift R) (ULift S)).mapOfCompatibleSMul
-        (ULift.{max u₁ u₂ u₃} T) (ULift.{max u₁ u₂ u₃} T)
-    · exact WeaklyEtale.flat_lmul' (ULift S) (ULift T)
+  have heq : TensorProduct.lmul' (S := ULift.{max u₁ u₂ u₃} T) (ULift R) =
+      AlgHom.comp ((TensorProduct.lmul' (S := ULift.{max u₁ u₂ u₃} T)
+        (ULift.{max u₁ u₂ u₃} S)).restrictScalars (ULift.{max u₁ u₂ u₃} R))
+        (TensorProduct.mapOfCompatibleSMul ..) := by
+    ext <;> simp
+  rw [heq]
+  refine .comp ?_ ?_
+  · exact (flat_lmul' (ULift R) (ULift S)).mapOfCompatibleSMul
+      (ULift.{max u₁ u₂ u₃} T) (ULift.{max u₁ u₂ u₃} T)
+  · exact WeaklyEtale.flat_lmul' (ULift S) (ULift T)
 
 end WeaklyEtale
 

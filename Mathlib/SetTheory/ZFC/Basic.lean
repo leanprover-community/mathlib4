@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Logic.Small.Basic
 public import Mathlib.SetTheory.ZFC.PSet
 
@@ -177,11 +177,7 @@ private lemma ext_aux : (∀ z : ZFSet.{u}, z ∈ x.toSet ↔ z ∈ y.toSet) →
 
 instance : SetLike ZFSet.{u} ZFSet.{u} where
   coe := toSet
-  coe_injective x y hxy := by apply ext_aux; intro z; exact congr(z ∈ $hxy)
-
-/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
-@[deprecated "use `∈` notation" (since := "2026-03-16")]
-protected def Mem : ZFSet → ZFSet → Prop := (· ∈ ·)
+  coe_injective x y hxy := by apply ext_aux; intro z; congrm z ∈ $hxy
 
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
@@ -189,7 +185,7 @@ theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
 
 @[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y := ext_aux
 
-instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
+instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u}
 
 instance small_coe (x : ZFSet.{u}) : Small.{u} x :=
   Quotient.inductionOn x fun a => by
@@ -211,19 +207,8 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 
 @[simp, norm_cast] lemma nonempty_coe : (x : Set ZFSet.{u}).Nonempty ↔ x.Nonempty := .rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
-lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
-lemma lt_def : x < y ↔ x ⊂ y := .rfl
-
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
-
-instance : @Std.Refl ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ => id⟩
-
-instance : IsTrans ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ _ hxy hyz _ ha => hyz (hxy ha)⟩
 
 @[simp]
 theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
@@ -234,12 +219,6 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
         ⟨b, za.trans ab⟩⟩
 
 lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := SetLike.coe_subset_coe
-
-instance : @Std.Antisymm ZFSet (· ⊆ ·) :=
-  ⟨@le_antisymm ZFSet _⟩
-
-instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
@@ -377,10 +356,10 @@ protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
     fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
-        ⟨⟨b, by simpa only [mk_func, ← ZFSet.sound hb]⟩, hb⟩,
+        ⟨⟨b, by simpa only [← ZFSet.sound hb]⟩, hb⟩,
         fun ⟨b, pb⟩ =>
         let ⟨a, ha⟩ := βα b
-        ⟨⟨a, by simpa only [mk_func, ZFSet.sound ha]⟩, ha⟩⟩
+        ⟨⟨a, by simpa only [ZFSet.sound ha]⟩, ha⟩⟩
 
 -- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
 instance : Sep ZFSet ZFSet :=
@@ -509,7 +488,7 @@ lemma coe_sInter (h : x.Nonempty) : (⋂₀ x : Set ZFSet) = ⋂₀ (SetLike.coe
   simp [mem_sInter h]
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
-  let := congr_arg sUnion H
+  let := congr(sUnion $H)
   rwa [sUnion_singleton, sUnion_singleton] at this
 
 @[simp]
@@ -528,10 +507,10 @@ protected def inter (x y : ZFSet.{u}) : ZFSet.{u} :=
 protected def diff (x y : ZFSet.{u}) : ZFSet.{u} :=
   ZFSet.sep (fun z => z ∉ y) x -- { z ∈ x | z ∉ y }
 
-instance : Union ZFSet :=
+instance : Max ZFSet :=
   ⟨ZFSet.union⟩
 
-instance : Inter ZFSet :=
+instance : Min ZFSet :=
   ⟨ZFSet.inter⟩
 
 instance : SDiff ZFSet :=
@@ -568,7 +547,7 @@ def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
 theorem insert_eq (x y : ZFSet) : insert x y = {x} ∪ y := by
   ext; simp
 
-theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
+instance mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
 
@@ -576,9 +555,6 @@ theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
 @[elab_as_elim]
 theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → p x) : p x :=
   mem_wf.induction x h
-
-instance : IsWellFounded ZFSet (· ∈ ·) :=
-  ⟨mem_wf⟩
 
 instance : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
@@ -612,7 +588,7 @@ def image (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
         (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).trans <|
           Iff.trans
               ⟨fun ⟨w, h1, h2⟩ => ⟨w, (Mem.congr_right e).1 h1, h2⟩, fun ⟨w, h1, h2⟩ =>
-                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩ <|
+                ⟨w, (Mem.congr_right e).2 h1, h2⟩⟩
             (mem_image (fun _ _ ↦ Definable₁.out_equiv _)).symm
 
 theorem image.mk (f : ZFSet.{u} → ZFSet.{u}) [Definable₁ f] (x) {y} : y ∈ x → f y ∈ image f x :=

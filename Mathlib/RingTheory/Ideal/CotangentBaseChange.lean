@@ -5,10 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Base change of cotangent spaces
@@ -42,7 +40,7 @@ This map is always surjective (`tensorCotangentHom_surjective`) and injective
 if `T` is `R`-flat (`tensorCotangentHom_injective_of_flat`). -/
 def tensorCotangentHom :
     T ⊗[R] I.Cotangent →ₗ[T]
-      (I.map <| (Algebra.TensorProduct.includeRight.toRingHom : S →+* T ⊗[R] S)).Cotangent :=
+      (I.map (Algebra.TensorProduct.includeRight.toRingHom : S →+* T ⊗[R] S)).Cotangent :=
   LinearMap.liftBaseChange T <|
     Cotangent.lift
       ((map (algebraMap S (T ⊗[R] S)) I).toCotangent.restrictScalars R ∘ₗ
@@ -70,7 +68,6 @@ lemma tensorCotangentHom_surjective :
   obtain ⟨y, rfl⟩ := I.map_includeRight_eq.le hx
   obtain rfl : hx = I.map_includeRight_eq.ge ⟨y, rfl⟩ := rfl
   induction y with
-  | zero => exact ⟨0, by simp only [map_zero]; exact (map_zero _).symm⟩
   | add x y hx hy =>
     obtain ⟨a, ha⟩ := hx
     obtain ⟨b, hb⟩ := hy
@@ -103,9 +100,9 @@ lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :
     simp
   rw [this, LinearMap.coe_comp]
   apply hₐ.injective.comp
-  · apply Module.Flat.lTensor_preserves_injective_linearMap (M := T)
-      (I.cotangentToQuotientSquare.restrictScalars R)
-    apply cotangentToQuotientSquare_injective
+  apply Module.Flat.lTensor_preserves_injective_linearMap (M := T)
+    (I.cotangentToQuotientSquare.restrictScalars R)
+  apply cotangentToQuotientSquare_injective
 
 /-- If `T` is a flat `R`-module, the base change of the cotangent space of `I` is linearly
 equivalent to the cotangent space of the extended ideal `I · (T ⊗[R] S)`. -/

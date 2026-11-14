@@ -5,14 +5,15 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.PartialOrder
+
+import Mathlib.Basic.Logic.Basic
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # `NeZero` typeclass
 
 We give basic facts about the `NeZero n` typeclass.
-
 -/
 
 public section
@@ -29,7 +30,7 @@ variable {α : Type*} [Zero α]
 
 @[simp] lemma zero_ne_one [One α] [NeZero (1 : α)] : (0 : α) ≠ 1 := NeZero.ne' (1 : α)
 
-@[simp] lemma one_ne_zero [One α] [NeZero (1 : α)] : (1 : α) ≠ 0 := NeZero.ne (1 : α)
+@[simp, basify_simp] lemma one_ne_zero [One α] [NeZero (1 : α)] : (1 : α) ≠ 0 := NeZero.ne (1 : α)
 
 lemma ne_zero_of_eq_one [One α] [NeZero (1 : α)] {a : α} (h : a = 1) : a ≠ 0 := h ▸ one_ne_zero
 

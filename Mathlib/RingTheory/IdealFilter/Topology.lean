@@ -6,8 +6,8 @@ Authors: Blake Farman
 module
 
 public import Mathlib.RingTheory.IdealFilter.Basic
-public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.LinearTopology
 
 /-!
 # Topologies associated to ideal filters

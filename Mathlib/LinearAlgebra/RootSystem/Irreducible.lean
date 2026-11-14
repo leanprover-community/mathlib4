@@ -5,9 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
-public import Mathlib.RepresentationTheory.Submodule
+
+import Mathlib.RepresentationTheory.Submodule
 
 /-!
 # Irreducible root pairings
@@ -20,7 +20,6 @@ This file contains basic definitions and results about irreducible root systems.
 * `RootPairing.IsIrreducible`: a typeclass encoding the fact that a root pairing is irreducible.
 * `RootPairing.IsIrreducible.mk'`: an alternative constructor for irreducibility when the
   coefficients are a field.
-
 -/
 
 @[expose] public section

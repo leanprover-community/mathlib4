@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 
@@ -27,7 +26,6 @@ We define the absolute Galois group of a field `K` and its topological abelianiz
 
 ## Tags
 field, algebraic closure, galois group, abelianization
-
 -/
 
 @[expose] public noncomputable section

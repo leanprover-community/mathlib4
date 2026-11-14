@@ -9,11 +9,11 @@ public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Basic.Finite.Defs
 
 /-!
+# The category of finite groups
 
 ## Main definitions and results
 
 * `FiniteGrp` is the category of finite groups.
-
 -/
 
 @[expose] public section

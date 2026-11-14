@@ -5,11 +5,8 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Algebra.GCDMonoid.Multiset
-public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Algebra.Group.TypeTags.Finite
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
-public import Mathlib.Data.List.Rotate
 public import Mathlib.GroupTheory.Perm.Closure
 public import Mathlib.GroupTheory.Perm.Cycle.Factors
 public import Mathlib.Tactic.NormNum.GCD
@@ -112,7 +109,7 @@ theorem one_lt_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType
   two_le_of_mem_cycleType h
 
 theorem IsCycle.cycleType {σ : Perm α} (hσ : IsCycle σ) : σ.cycleType = {#σ.support} :=
-  cycleType_eq [σ] (mul_one σ) (fun _τ hτ => (congr_arg IsCycle (List.mem_singleton.mp hτ)).mpr hσ)
+  cycleType_eq [σ] (mul_one σ) (fun _τ hτ => congr(IsCycle $(List.mem_singleton.mp hτ)).mpr hσ)
     (List.pairwise_singleton Disjoint σ)
 
 theorem card_cycleType_eq_one {σ : Perm α} : Multiset.card σ.cycleType = 1 ↔ σ.IsCycle := by
@@ -195,7 +192,7 @@ theorem orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f 
     · simp [(isCycle_cycleOf _ hx).orderOf]
 
 theorem two_dvd_card_support {σ : Perm α} (hσ : σ ^ 2 = 1) : 2 ∣ #σ.support :=
-  (congr_arg (Dvd.dvd 2) σ.sum_cycleType).mp
+  congr(Dvd.dvd 2 $σ.sum_cycleType).mp
     (Multiset.dvd_sum fun n hn => by
       rw [_root_.le_antisymm
           (Nat.le_of_dvd zero_lt_two <|
@@ -366,23 +363,22 @@ theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime
     exact dvd_pow_self _ fun h => (one_lt_of_mem_cycleType hk).ne <| by rw [h, pow_zero]
   · exact Finset.card_le_univ _
 
-set_option backward.isDefEq.respectTransparency false in
 open Function in
 /-- The number of fixed points of a `p ^ n`-th root of the identity function over a finite set
 and the set's cardinality have the same residue modulo `p`, where `p` is a prime. -/
-theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ}
-    [hp : Fact p.Prime] (hf : f ^ p ^ n = 1) :
+theorem card_fixedPoints_modEq [DecidableEq α] {f : α → α} {p n : ℕ}
+    [hp : Fact p.Prime] (hf : f^[p ^ n] = id) :
     Fintype.card α ≡ Fintype.card f.fixedPoints [MOD p] := by
-  let σ : α ≃ α := ⟨f, f ^ (p ^ n - 1),
-    leftInverse_iff_comp.mpr ((pow_sub_mul_pow f (Nat.one_le_pow n p hp.out.pos)).trans hf),
-    leftInverse_iff_comp.mpr ((pow_mul_pow_sub f (Nat.one_le_pow n p hp.out.pos)).trans hf)⟩
+  have red : (p ^ n - 1).succ = p ^ n := by simp [n.one_le_pow p hp.out.pos]
+  let σ : α ≃ α := ⟨f, f^[p ^ n - 1],
+    by rwa [leftInverse_iff_comp, ← iterate_succ, red],
+    by rwa [rightInverse_iff_comp, ← iterate_succ', red]⟩
   have hσ : σ ^ p ^ n = 1 := by
     rw [DFunLike.ext'_iff, coe_pow]
     exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
   suffices Fintype.card f.fixedPoints = (support σ)ᶜ.card from
     this ▸ (card_compl_support_modEq hσ).symm
-  suffices f.fixedPoints = (support σ)ᶜ by
-    simp only [this]; apply Fintype.card_coe
+  suffices f.fixedPoints = (support σ)ᶜ by simp [this, ← Fintype.card_coe]
   simp [σ, Set.ext_iff, IsFixedPt]
 
 theorem exists_fixed_point_of_prime {p n : ℕ} [hp : Fact p.Prime] (hα : ¬p ∣ Fintype.card α)
@@ -409,7 +405,7 @@ theorem isCycle_of_prime_order' {σ : Perm α} (h1 : (orderOf σ).Prime)
 
 theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
     (h2 : orderOf σ = Fintype.card α) : σ.IsCycle :=
-  isCycle_of_prime_order' ((congr_arg Nat.Prime h2).mpr h1) <| by
+  isCycle_of_prime_order' (congr(Nat.Prime $h2).mpr h1) <| by
     rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_iff_left₀ (orderOf_pos σ)]
     exact one_lt_two
 
@@ -432,7 +428,7 @@ theorem zero_eq : vectorsProdEqOne G 0 = {Vector.nil} :=
 theorem one_eq : vectorsProdEqOne G 1 = {Vector.nil.cons 1} := by
   simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, List.Vector.toList_singleton,
     List.prod_singleton, List.Vector.head_cons, true_and]
-  exact fun v hv => v.cons_head_tail.symm.trans (congr_arg₂ Vector.cons hv v.tail.eq_nil)
+  exact fun v hv => v.cons_head_tail.symm.trans congr(Vector.cons $hv $v.tail.eq_nil)
 
 instance zeroUnique : Unique (vectorsProdEqOne G 0) := by
   rw [zero_eq]
@@ -453,9 +449,9 @@ def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
   right_inv v := Subtype.ext <|
     calc
       v.1.tail.toList.prod⁻¹ ::ᵥ v.1.tail = v.1.head ::ᵥ v.1.tail :=
-        congr_arg (· ::ᵥ v.1.tail) <| Eq.symm <| eq_inv_of_mul_eq_one_left <| by
+        congr((· ::ᵥ v.1.tail) $(Eq.symm <| eq_inv_of_mul_eq_one_left <| by
           rw [← List.prod_cons, ← Vector.toList_cons, v.1.cons_head_tail]
-          exact v.2
+          exact v.2))
       _ = v.1 := v.1.cons_head_tail
 
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,
