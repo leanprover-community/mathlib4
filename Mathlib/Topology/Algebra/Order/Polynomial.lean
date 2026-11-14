@@ -95,14 +95,24 @@ theorem abs_tendsto_atTop_iff : Tendsto (|P.eval ·|) atTop atTop ↔ 0 < P.degr
   ⟨fun h ↦ not_le.mp (mt isBoundedUnder_abs_atTop_iff.mpr
     (not_isBoundedUnder_of_tendsto_atTop h)), abs_tendsto_atTop⟩
 
--- TODO : improve this lemma statement
-theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
-    Tendsto P.eval atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
+theorem tendsto_atTop_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
+    Tendsto P.eval atTop (𝓝 c) ↔ P = C c := by
   rcases eq_or_ne P 0 with rfl | hP
-  · simp
+  · simp [Eq.comm, ← C_eq_zero]
   rw [tendsto_nhds_iff_of_tendsto_div_nhds_one (tendsTo_atTop_div_nhds_one hP),
     tendsto_const_mul_pow_nhds_iff (by grind [leadingCoeff_eq_zero])]
-  grind [natDegree_eq_zero_iff_degree_le_zero]
+  grind [eq_C_coeff_zero_iff_natDegree_eq_zero, leadingCoeff, leadingCoeff_C]
+
+@[deprecated tendsto_atTop_nhds_iff +typeChanged (since := "2026-11-09")]
+theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
+    Tendsto P.eval atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
+  rw [tendsto_atTop_nhds_iff]
+  grind [degree_le_zero_iff, leadingCoeff, leadingCoeff_C]
+
+theorem tendsto_nhds_of_degree_le_zero [TopologicalSpace F] [OrderTopology F]
+    (h : P.degree ≤ 0) : Tendsto P.eval atTop (𝓝 P.leadingCoeff) := by
+  rw [tendsto_atTop_nhds_iff]
+  grind [degree_le_zero_iff, leadingCoeff]
 
 end PolynomialAtTop
 
