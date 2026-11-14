@@ -137,9 +137,11 @@ lemma ContDiff.add [Add F] {f g : E → F} (_hf : ContDiff R 2 f) (_hg : ContDif
 lemma ContDiff.add' [Add F] {f g : E → F} (_hf : ContDiff R n f) (_hg : ContDiff R n g) :
   ContDiff R n (fun x ↦ f x + g x) := fun _ ↦ rfl
 
--- TODO: is this because of translating numerals? investigate and fix!
--- @[to_differentiable differentiable_one]
--- lemma contDiff_one [One R] : ContDiff R 0 (fun (_ : R) ↦ (1 : R)) := fun _ ↦ rfl
+@[to_differentiable (omit := 3) differentiable_one]
+lemma contDiff_one [One R] : ContDiff R n (fun (_ : R) ↦ (1 : R)) := fun _ ↦ rfl
+
+@[to_differentiable (omit := 3) differentiable_zero]
+lemma contDiff_zero [Zero R] : ContDiff R n (fun (_ : R) ↦ (0 : R)) := fun _ ↦ rfl
 
 -- Translating a proof involving other lemmas.
 @[to_differentiable bar]

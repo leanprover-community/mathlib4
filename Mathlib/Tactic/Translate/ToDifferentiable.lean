@@ -199,7 +199,7 @@ initialize guessNameExt : GuessName.GuessNameExt ←
 def data : TranslateData where
   dontTranslateAttr; translations
   attrName := `to_differentiable
-  changeNumeral := true
+  changeNumeral := false
   isDual := false
   guessNameExt
 
