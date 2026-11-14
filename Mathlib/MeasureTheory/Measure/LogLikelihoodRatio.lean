@@ -179,8 +179,7 @@ lemma integral_llr_fintype [Fintype α] [MeasurableSingletonClass α]
   refine Finset.sum_congr rfl fun x _ ↦ ?_
   by_cases hx : ν {x} = 0
   · simp [measureReal_def, hμν hx]
-  · rw [smul_eq_mul, llr, Measure.rnDeriv_eq_div_measure_singleton hμν hx, ENNReal.toReal_div]
-    simp only [measureReal_def]
+  · simp [llr, Measure.rnDeriv_eq_div_measure_singleton hμν hx, measureReal_def]
 
 section llr_tilted
 

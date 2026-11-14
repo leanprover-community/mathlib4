@@ -96,7 +96,8 @@ lemma sum_smul_dirac_singleton [MeasurableSingletonClass α] {f : α → ℝ≥0
 /-- The real mass of a singleton in a sum of weighted Dirac measures is its weight. -/
 lemma sum_smul_dirac_real_singleton [MeasurableSingletonClass α] {p : α → ℝ≥0} {a : α} :
     (sum fun b ↦ p b • dirac b).real {a} = p a := by
-  simp only [measureReal_def, ← coe_nnreal_smul, sum_smul_dirac_singleton, ENNReal.coe_toReal]
+  simpa [measureReal_def, coe_nnreal_smul] using
+    congrArg ENNReal.toReal (sum_smul_dirac_singleton (f := fun b ↦ (p b : ℝ≥0∞)) (a := a))
 
 /-- The real total mass of a sum of weighted Dirac measures over a finite type is the sum of
 its weights. -/
@@ -111,7 +112,8 @@ lemma absolutelyContinuous_sum_smul_dirac_iff [MeasurableSingletonClass α] {p q
       ∀ x, q x = 0 → p x = 0 := by
   constructor
   · intro h x
-    simpa only [sum_smul_dirac_singleton] using (h (s := {x}))
+    have hx := h (s := {x})
+    rwa [sum_smul_dirac_singleton, sum_smul_dirac_singleton] at hx
   · intro hpq
     refine absolutelyContinuous_sum_left fun x ↦ absolutelyContinuous_sum_right x ?_
     by_cases hq : q x = 0

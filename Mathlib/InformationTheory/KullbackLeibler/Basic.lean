@@ -388,7 +388,7 @@ lemma klDiv_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have hx' : klFun (μ.rnDeriv ν x).toReal = 0 := le_antisymm hx (klFun_nonneg ENNReal.toReal_nonneg)
   rwa [klFun_eq_zero_iff ENNReal.toReal_nonneg, ENNReal.toReal_eq_one_iff] at hx'
 
-section FiniteSpace
+section Fintype
 
 variable [Fintype α] [MeasurableSingletonClass α]
 
@@ -427,19 +427,21 @@ lemma klDiv_sum_smul_dirac (p q : α → ℝ≥0) (hpq : ∀ x, q x = 0 → p x 
       (Measure.sum fun x ↦ q x • Measure.dirac x) =
       ENNReal.ofReal ((∑ x, p x * log (p x / q x)) + ∑ x, (q x : ℝ) - ∑ x, (p x : ℝ)) := by
   rw [klDiv_eq_sum]
-  · simp only [Measure.sum_smul_dirac_real_singleton, Measure.sum_smul_dirac_real_univ]
-  · simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
-      ENNReal.coe_eq_zero] using hpq
+  · simp [-Measure.sum_fintype, Measure.sum_smul_dirac_real_singleton,
+      Measure.sum_smul_dirac_real_univ]
+  · simpa [-Measure.sum_fintype, ← Measure.coe_nnreal_smul,
+      Measure.absolutelyContinuous_sum_smul_dirac_iff] using hpq
 
 lemma toReal_klDiv_sum_smul_dirac (p q : α → ℝ≥0) (hpq : ∀ x, q x = 0 → p x = 0) :
     (klDiv (Measure.sum fun x ↦ p x • Measure.dirac x)
       (Measure.sum fun x ↦ q x • Measure.dirac x)).toReal =
       (∑ x, p x * log (p x / q x)) + ∑ x, (q x : ℝ) - ∑ x, (p x : ℝ) := by
   rw [toReal_klDiv_eq_sum]
-  · simp only [Measure.sum_smul_dirac_real_singleton, Measure.sum_smul_dirac_real_univ]
-  · simpa only [← Measure.coe_nnreal_smul, Measure.absolutelyContinuous_sum_smul_dirac_iff,
-      ENNReal.coe_eq_zero] using hpq
+  · simp [-Measure.sum_fintype, Measure.sum_smul_dirac_real_singleton,
+      Measure.sum_smul_dirac_real_univ]
+  · simpa [-Measure.sum_fintype, ← Measure.coe_nnreal_smul,
+      Measure.absolutelyContinuous_sum_smul_dirac_iff] using hpq
 
-end FiniteSpace
+end Fintype
 
 end InformationTheory

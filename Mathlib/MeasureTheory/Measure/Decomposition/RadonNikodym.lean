@@ -345,7 +345,7 @@ lemma rnDeriv_eq_div_measure_singleton [MeasurableSingletonClass α] [HaveLebesg
     [SigmaFinite ν] (hμν : μ ≪ ν) {x : α} (hx : ν {x} ≠ 0) :
     μ.rnDeriv ν x = μ {x} / ν {x} := by
   apply (ENNReal.eq_div_iff hx measure_singleton_lt_top.ne).mpr
-  simpa only [lintegral_singleton, mul_comm] using setLIntegral_rnDeriv hμν {x}
+  simpa [mul_comm] using setLIntegral_rnDeriv hμν {x}
 
 lemma integrableOn_toReal_rnDeriv {s : Set α} (hμs : μ s ≠ ∞) :
     IntegrableOn (fun x ↦ (μ.rnDeriv ν x).toReal) s ν := by
