@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Divisibility.Hom
 public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Algebra.Group.WithOne.Map
 public import Mathlib.Algebra.GroupWithZero.Equiv
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Data.Nat.Cast.Defs
@@ -65,9 +65,9 @@ section Mul
 variable [Mul α]
 
 instance instMulZeroClass : MulZeroClass (WithZero α) where
-  mul := Option.map₂ (· * ·)
-  zero_mul := Option.map₂_none_left (· * ·)
-  mul_zero := Option.map₂_none_right (· * ·)
+  mul := WithZero.map₂ (· * ·)
+  zero_mul := WithZero.map₂_zero_left (· * ·)
+  mul_zero := WithZero.map₂_zero_right (· * ·)
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithZero α) = a * b := rfl
 
@@ -75,7 +75,7 @@ lemma unzero_mul {x y : WithZero α} (hxy : x * y ≠ 0) :
     unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy) := by
   simp only [← coe_inj, coe_mul, coe_unzero]
 
-instance instNoZeroDivisors : NoZeroDivisors (WithZero α) := ⟨Option.map₂_eq_none_iff.1⟩
+instance instNoZeroDivisors : NoZeroDivisors (WithZero α) := ⟨WithZero.map₂_eq_zero_iff.1⟩
 
 /-- `WithZero.coe` as a mul hom. -/
 @[simps apply]
@@ -89,7 +89,7 @@ section Semigroup
 variable [Semigroup M] {a b : M}
 
 instance instSemigroupWithZero : SemigroupWithZero (WithZero M) where
-  mul_assoc _ _ _ := Option.map₂_assoc mul_assoc
+  mul_assoc _ _ _ := WithZero.map₂_assoc mul_assoc
 
 @[simp]
 lemma coe_dvd_coe_iff : (a : WithZero M) ∣ b ↔ a ∣ b := by
@@ -101,13 +101,13 @@ lemma coe_dvd_coe_iff : (a : WithZero M) ∣ b ↔ a ∣ b := by
 end Semigroup
 
 instance instCommSemigroup [CommSemigroup α] : CommSemigroup (WithZero α) where
-  mul_comm _ _ := Option.map₂_comm mul_comm
+  mul_comm _ _ := WithZero.map₂_comm mul_comm
 
 section MulOneClass
 
 instance instMulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) where
-  one_mul := Option.map₂_left_identity one_mul
-  mul_one := Option.map₂_right_identity mul_one
+  one_mul := WithZero.map₂_left_identity one_mul
+  mul_one := WithZero.map₂_right_identity mul_one
 
 variable [MulOneClass α]
 
@@ -126,7 +126,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
     (h : f.toMonoidHom.comp coeMonoidHom = g.toMonoidHom.comp coeMonoidHom) :
     f = g :=
   DFunLike.ext _ _ fun
-    | 0 => (map_zero f).trans (map_zero g).symm
+    | 0 => by simp
     | (g : α) => congr($h g)
 
 /-- The (multiplicative) universal property of `WithZero`. -/
@@ -203,8 +203,8 @@ variable [One α] [Pow α ℕ]
 
 instance pow : Pow (WithZero α) ℕ where
   pow
-    | none, 0 => 1
-    | none, _ + 1 => 0
+    | zero, 0 => 1
+    | zero, _ + 1 => 0
     | some x, n => ↑(x ^ n)
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithZero α) = a ^ n := rfl
@@ -227,7 +227,7 @@ section Inv
 variable [Inv α]
 
 /-- Extend the inverse operation on `α` to `WithZero α` by sending `0` to `0`. -/
-instance inv : Inv (WithZero α) where inv a := Option.map (·⁻¹) a
+instance inv : Inv (WithZero α) where inv a := WithZero.map (·⁻¹) a
 
 @[simp, norm_cast] lemma coe_inv (a : α) : ((a⁻¹ : α) : WithZero α) = (↑a)⁻¹ := rfl
 
@@ -241,7 +241,7 @@ instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) where
 section Div
 variable [Div α]
 
-instance div : Div (WithZero α) where div := Option.map₂ (· / ·)
+instance div : Div (WithZero α) where div := WithZero.map₂ (· / ·)
 
 @[norm_cast] lemma coe_div (a b : α) : ↑(a / b : α) = (a / b : WithZero α) := rfl
 
@@ -252,9 +252,9 @@ variable [One α] [Pow α ℤ]
 
 instance : Pow (WithZero α) ℤ where
   pow
-    | none, Int.ofNat 0 => 1
-    | none, Int.ofNat (Nat.succ _) => 0
-    | none, Int.negSucc _ => 0
+    | zero, Int.ofNat 0 => 1
+    | zero, Int.ofNat (Nat.succ _) => 0
+    | zero, Int.negSucc _ => 0
     | some x, n => ↑(x ^ n)
 
 @[simp, norm_cast] lemma coe_zpow (a : α) (n : ℤ) : ↑(a ^ n) = (↑a : WithZero α) ^ n := rfl
@@ -263,36 +263,36 @@ end ZPow
 
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
   div_eq_mul_inv
-    | none, _ => rfl
-    | some _, none => rfl
+    | zero, _ => rfl
+    | some _, zero => rfl
     | some a, some b => congr(some $(div_eq_mul_inv a b))
   zpow n a := a ^ n
   zpow_zero'
-    | none => rfl
+    | zero => rfl
     | some _ => congr(some $(zpow_zero _))
   zpow_succ'
-    | n, none => by change 0 ^ _ = 0 ^ _ * 0; simp only [mul_zero]; rfl
+    | n, zero => by change 0 ^ _ = 0 ^ _ * 0; simp only [mul_zero]; rfl
     | n, some _ => congr(some $(DivInvMonoid.zpow_succ' ..))
   zpow_neg'
-    | n, none => rfl
+    | n, zero => rfl
     | n, some _ => congr(some $(DivInvMonoid.zpow_neg' ..))
 
 instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
 set_option backward.isDefEq.respectTransparency false in
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) where
-  inv_inv a := (Option.map_map _ _ _).trans <| by simp
+  inv_inv a := (WithZero.map_map _ _ _).trans <| by simp
 
 instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) where
   mul_inv_rev
-    | none, none => rfl
-    | none, some _ => rfl
-    | some _, none => rfl
+    | zero, zero => rfl
+    | zero, some _ => rfl
+    | some _, zero => rfl
     | some _, some _ => congr(some $(mul_inv_rev ..))
   inv_eq_of_mul
-    | none, none, _ => rfl
+    | zero, zero, _ => rfl
     | some _, some _, h =>
-      congr(some $(inv_eq_of_mul_eq_one_right <| Option.some_injective _ h))
+      congr(some $(inv_eq_of_mul_eq_one_right <| WithZero.coe_injective h))
 
 instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) where
 
@@ -395,7 +395,7 @@ construct its value at `0` and its value at `exp a` for all `a : M`. -/
 -- See https://github.com/leanprover-community/mathlib4/issues/31213
 @[elab_as_elim] -- , induction_eliminator, cases_eliminator]
 def expRecOn {motive : Mᵐ⁰ → Sort*} (x : Mᵐ⁰) (zero : motive 0) (exp : ∀ a, motive (exp a)) :
-    motive x := Option.recOn x zero exp
+    motive x := WithZero.recZeroCoe zero exp x
 
 @[simp] lemma expRecOn_zero {motive : Mᵐ⁰ → Sort*} (zero : motive 0) (exp : ∀ a, motive (exp a)) :
     expRecOn 0 zero exp = zero := rfl

@@ -204,7 +204,7 @@ namespace WithZero
 section Bot
 
 instance instBot : Bot (WithZero α) :=
-  ⟨none⟩
+  ⟨zero⟩
 
 @[simp ←]
 lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
@@ -214,9 +214,11 @@ end Bot
 section LE
 variable [LE α] {x y : WithZero α} {a b : α}
 
-instance (priority := 10) le : LE (WithZero α) := (WithBot.toOption α).symm.le
+instance (priority := 10) le : LE (WithZero α) :=
+    ((toOption α).trans (WithBot.toOption α).symm).le
 
-lemma le_def' : x ≤ y ↔ (WithBot.toOption α).symm x ≤ (WithBot.toOption α).symm y :=
+lemma le_def' : x ≤ y ↔
+    (WithBot.toOption α).symm (toOption α x) ≤ (WithBot.toOption α).symm (toOption α y) :=
   (Equiv.le_def _ _ _).symm
 
 lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := by
@@ -227,10 +229,11 @@ lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a �
 
 lemma not_coe_le_zero (a : α) : ¬(a : WithZero α) ≤ 0 := WithBot.not_coe_le_bot _
 
-instance instOrderBot : OrderBot (WithZero α) := inferInstanceAs <| OrderBot (WithBot α)
+instance instOrderBot : OrderBot (WithZero α) where bot_le := by simp [le_def]
 
-instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) :=
-  inferInstanceAs <| BoundedOrder (WithBot α)
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) where
+  top := ((⊤ : α) : WithZero α)
+  le_top a := by cases a <;> simp [le_def]
 
 instance : IsBotZeroClass (WithZero α) where
   isBot_zero _ := bot_le
@@ -240,21 +243,35 @@ protected lemma zero_le (a : WithZero α) : 0 ≤ a := by simp
 
 /-- There is a general version `le_zero_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]
-protected lemma nonpos_iff_eq_zero : x ≤ 0 ↔ x = 0 := WithBot.le_bot_iff
+protected lemma nonpos_iff_eq_zero : x ≤ 0 ↔ x = 0 := by cases x <;> simp [le_def]
 
-lemma coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := WithBot.coe_le_iff
-lemma le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := WithBot.le_coe_iff
+lemma coe_le_iff : a ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by cases x <;> simp [le_def]
+lemma le_coe_iff : x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b := by cases x <;> simp [le_def]
 
-protected lemma _root_.IsMax.withZero (h : IsMax a) : IsMax (a : WithZero α) := h.withBot
+@[simp]
+theorem isMax_coe_iff : IsMax (a : WithZero α) ↔ IsMax a := by
+  simp [IsMax, WithZero.forall]
 
-lemma le_unzero_iff (hy : y ≠ 0) : a ≤ unzero hy ↔ a ≤ y := WithBot.le_unbot_iff _
-lemma unbot_le_iff (hx : x ≠ 0) : unzero hx ≤ b ↔ x ≤ b := WithBot.unbot_le_iff _
+protected lemma _root_.IsMax.withZero (h : IsMax a) : IsMax (a : WithZero α) :=
+  isMax_coe_iff.mpr h
+
+@[simp]
+lemma le_unzero_iff (hy : y ≠ 0) : a ≤ unzero hy ↔ a ≤ y := by
+  cases y
+  · grind
+  · simp
+
+@[simp]
+lemma unbot_le_iff (hx : x ≠ 0) : unzero hx ≤ b ↔ x ≤ b := by
+  cases x
+  · grind
+  · simp
 
 @[simp, norm_cast] lemma one_le_coe [One α] : 1 ≤ (a : WithZero α) ↔ 1 ≤ a := coe_le_coe
 @[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
 
-@[simp] lemma unzero_le_unzero (hx : x ≠ 0) (hy : y ≠ 0) : unzero hx ≤ unzero hy ↔ x ≤ y :=
-  WithBot.unbot_le_unbot_iff ..
+@[simp] lemma unzero_le_unzero (hx : x ≠ 0) (hy : y ≠ 0) : unzero hx ≤ unzero hy ↔ x ≤ y := by
+  simp
 
 end LE
 
@@ -263,27 +280,41 @@ section LT
 variable [LT α] {x y : WithZero α} {a b : α}
 
 /-- The order on `WithZero α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`. -/
-instance (priority := 10) instLT : LT (WithZero α) := inferInstanceAs <| LT (WithBot α)
+instance (priority := 10) instLT : LT (WithZero α) :=
+  ((toOption α).trans (WithBot.toOption α).symm).lt
 
-lemma lt_def : x < y ↔ x = 0 ∧ (∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b :=
-  WithBot.lt_def
+lemma lt_def' : x < y ↔
+    (WithBot.toOption α).symm (toOption α x) < (WithBot.toOption α).symm (toOption α y) :=
+  (Equiv.lt_def _ _ _).symm
 
-lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := WithBot.lt_iff_exists
+lemma lt_def : x < y ↔ x = 0 ∧ (∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b := by
+  rw [lt_def', WithBot.lt_def]
+  simp
+
+lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
+  cases x <;> cases y <;> simp [lt_def]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithZero α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma zero_lt_coe (a : α) : 0 < (a : WithZero α) := by simp [lt_def]
 @[simp] protected lemma not_lt_zero (a : WithZero α) : ¬a < 0 := by simp [lt_def]
 
-lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := WithBot.lt_iff_exists_coe
+lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := by cases y <;> simp
 
-lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := WithBot.lt_coe_iff
+lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_iff_exists]
 
 /-- A version of `pos_iff_ne_zero` for `WithZero` that only requires `LT α`,
 not `PartialOrder α`. -/
-protected lemma pos_iff_ne_zero : 0 < x ↔ x ≠ 0 := WithBot.bot_lt_iff_ne_bot
+protected lemma pos_iff_ne_zero : 0 < x ↔ x ≠ 0 := by cases x <;> simp
 
-lemma lt_unzero_iff (hy : y ≠ 0) : a < unzero hy ↔ a < y := WithBot.lt_unbot_iff _
-lemma unzero_lt_iff (hx : x ≠ 0) : unzero hx < b ↔ x < b := WithBot.unbot_lt_iff _
+lemma lt_unzero_iff (hy : y ≠ 0) : a < unzero hy ↔ a < y := by
+  cases y
+  · grind
+  · simp
+
+lemma unzero_lt_iff (hx : x ≠ 0) : unzero hx < b ↔ x < b := by
+  cases x
+  · grind
+  · simp
 
 @[simp, norm_cast] lemma one_lt_coe [One α] : 1 < (a : WithZero α) ↔ 1 < a := coe_lt_coe
 @[simp, norm_cast] lemma coe_lt_one [One α] : (a : WithZero α) < 1 ↔ a < 1 := coe_lt_coe
@@ -294,7 +325,8 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithZero α} {a b : α}
 
-instance instPreorder : Preorder (WithZero α) := inferInstanceAs <| Preorder (WithBot α)
+instance instPreorder : Preorder (WithZero α) :=
+  ((toOption α).trans (WithBot.toOption α).symm).preorder
 
 instance instMulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
@@ -388,7 +420,7 @@ section PartialOrder
 variable [PartialOrder α]
 
 instance instPartialOrder : PartialOrder (WithZero α) :=
-  inferInstanceAs <| PartialOrder (WithBot α)
+  ((toOption α).trans (WithBot.toOption α).symm).partialOrder
 
 instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by
@@ -434,7 +466,7 @@ instance instLattice [Lattice α] : Lattice (WithZero α) where
 end Lattice
 
 instance decidableEq [DecidableEq α] : DecidableEq (WithZero α) :=
-  inferInstanceAs <| DecidableEq (Option α)
+  ((toOption α).trans (WithBot.toOption α).symm).decidableEq
 
 instance decidableLE [Preorder α] [DecidableLE α] : DecidableLE (WithZero α)
   | 0, _ => isTrue <| by simp

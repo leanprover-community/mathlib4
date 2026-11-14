@@ -59,8 +59,16 @@ lemma toOption_eq_some_iff {x : WithBot α} {a : α} :
     toOption α x = Option.some a ↔ x = a := by cases x <;> simp
 
 @[to_dual (attr := simp)]
+lemma toOption_eq_none_iff {x : WithBot α} :
+    toOption α x = Option.none ↔ x = ⊥ := by cases x <;> simp
+
+@[to_dual (attr := simp)]
 lemma symm_toOption_eq_coe_iff {x : Option α} {a : α} :
     (toOption α).symm x = a ↔ x = Option.some a := by cases x <;> simp
+
+@[to_dual (attr := simp)]
+lemma symm_toOption_eq_bot_iff {x : Option α} :
+    (toOption α).symm x = ⊥ ↔ x = Option.none := by cases x <;> simp
 
 @[to_dual]
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) := (toOption α).nontrivial
@@ -251,7 +259,7 @@ lemma map₂_left_identity {f : α → β → β} (h : ∀ b, f a b = b) (y : Wi
 
 @[to_dual]
 lemma map₂_right_identity {f : α → β → α} {b : β} (h : ∀ a, f a b = a) (x : WithBot α) :
-    map₂ f x (some b) = x := by cases x <;> simp [h]
+    map₂ f x b = x := by cases x <;> simp [h]
 
 @[to_dual (attr := simp)]
 lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :

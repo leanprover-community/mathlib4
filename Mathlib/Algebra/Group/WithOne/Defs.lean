@@ -85,8 +85,8 @@ instance instOne : One (WithOne α) :=
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator, cases_eliminator)
 /-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/]
-def recOneCoe {C : WithOne α → Sort*} (bot : C 1) (coe : ∀ a : α, C a) : ∀ n : WithOne α, C n
-  | 1 => bot
+def recOneCoe {C : WithOne α → Sort*} (one : C 1) (coe : ∀ a : α, C a) : ∀ n : WithOne α, C n
+  | 1 => one
   | (a : α) => coe a
 
 @[to_additive (attr := simp)]
@@ -126,10 +126,18 @@ lemma symm_toOption_comp_some : (toOption α).symm ∘ Option.some = (↑) := rf
 lemma toOption_eq_some_iff {x : WithOne α} {a : α} :
     toOption α x = Option.some a ↔ x = a := by
   cases x
-  · simp only [toOption_apply_bot, reduceCtorEq, false_iff]; nofun
+  · simp only [toOption_apply_bot, reduceCtorEq, false_iff]
+    nofun
   · simp only [toOption_apply_coe, Option.some.injEq]
     rw [← some.injEq]
     rfl
+
+@[to_additive (attr := simp)]
+lemma toOption_eq_none_iff {x : WithOne α} :
+    toOption α x = Option.none ↔ x = 1 := by
+  cases x
+  · simp
+  · simp only [toOption_apply_coe, reduceCtorEq, false_iff]; nofun
 
 @[to_additive (attr := simp)]
 lemma symm_toOption_eq_coe_iff {x : Option α} {a : α} :
@@ -141,6 +149,13 @@ lemma symm_toOption_eq_coe_iff {x : Option α} {a : α} :
     symm
     rw [← some.injEq]
     rfl
+
+@[to_additive (attr := simp)]
+lemma symm_toOption_eq_one_iff {x : Option α} :
+    (toOption α).symm x = 1 ↔ x = Option.none := by
+  cases x
+  · simp
+  · simp only [symm_toOption_apply_some, reduceCtorEq, iff_false]; nofun
 
 @[to_additive]
 instance instMul [Mul α] : Mul (WithOne α) where
