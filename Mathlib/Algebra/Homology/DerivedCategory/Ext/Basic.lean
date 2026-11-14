@@ -114,7 +114,6 @@ variable [HasExt.{w} C]
 namespace Abelian
 
 /-- An Ext-group in an abelian category `C`, defined as a `Type w` when `[HasExt.{w} C]`. -/
-@[implicit_reducible]
 def Ext (X Y : C) (n : ℕ) : Type w :=
   SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
     ((CochainComplex.singleFunctor C 0).obj X)
