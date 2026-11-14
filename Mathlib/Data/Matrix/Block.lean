@@ -864,8 +864,8 @@ lemma Matrix.comp_toSquareBlock {b : m → α}
 
 variable [Zero R] [DecidableEq m]
 
-lemma Matrix.comp_diagonal (d) :
-    comp m m n n R (diagonal d) =
+lemma Matrix.comp_diagonal (d : m → Matrix n p R) :
+    comp m m n p R (diagonal d) =
       (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by
   ext
   simp [diagonal, blockDiagonal, Matrix.ite_apply]
