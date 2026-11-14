@@ -108,7 +108,7 @@ theorem teichmuller_apply_coe (x : (R ⧸ I)ˣ) :
 @[simp]
 theorem teichmuller_mk_coe (ζ : rootsOfUnity n R) :
     teichmuller I n (Ideal.Quotient.mk I ((ζ : Rˣ) : R)) = ((ζ : Rˣ) : R) := by
-  rw [← Ideal.coe_rootsOfUnityMapQuot, teichmuller_apply_coe,
+  rw [← Ideal.rootsOfUnityMapQuot_coe_apply, teichmuller_apply_coe,
     ← Ideal.HasTeichmullerLift.equiv_apply, MulEquiv.symm_apply_apply]
 
 /-- The values of the Teichmüller character at units are `n`-th roots of unity. -/
@@ -156,7 +156,7 @@ theorem orderOf_teichmuller [NeZero n] [HasEnoughRootsOfUnity R n] :
   obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot R n
   refine (orderOf_eq_iff (NeZero.pos _)).mpr ⟨teichmuller_pow_eq_one,
     fun m hmn hm ↦ MulChar.ne_one_iff.mpr ⟨I.rootsOfUnityMapQuot n hζ.toRootsOfUnity, ?_⟩⟩
-  rw [MulChar.pow_apply_coe, Ideal.coe_rootsOfUnityMapQuot, teichmuller_mk_coe,
+  rw [MulChar.pow_apply_coe, Ideal.rootsOfUnityMapQuot_coe_apply, teichmuller_mk_coe,
     IsPrimitiveRoot.val_toRootsOfUnity_coe, ne_eq, hζ.pow_eq_one_iff_dvd]
   exact Nat.not_dvd_of_pos_of_lt hm hmn
 
