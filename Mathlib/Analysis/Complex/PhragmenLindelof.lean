@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 public import Mathlib.Analysis.Complex.AbsMax
 
+import Mathlib.Analysis.Calculus.FDeriv.Pow
+
 /-!
 # Phragmen-Lindelöf principle
 

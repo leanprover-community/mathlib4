@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 import Mathlib.Analysis.Analytic.Binomial
+import Mathlib.Analysis.Calculus.FDeriv.Pow
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas

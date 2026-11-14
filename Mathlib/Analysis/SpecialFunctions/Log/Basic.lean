@@ -309,6 +309,10 @@ theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   convert add_one_le_exp (log x)
   rw [exp_log hx]
 
+/-- See `Real.log_le_sub_one_of_pos` for the same statement written for `log x`. -/
+lemma log_one_add_le_self {x : ℝ} (hx : -1 < x) : log (1 + x) ≤ x := by
+  linarith [log_le_sub_one_of_pos (by linarith : 0 < 1 + x)]
+
 lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
   simpa [add_comm] using log_le_sub_one_of_pos (inv_pos.2 hx)
 
