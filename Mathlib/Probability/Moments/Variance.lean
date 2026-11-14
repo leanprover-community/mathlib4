@@ -306,6 +306,17 @@ lemma variance_fun_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i
   convert! variance_sum hX
   simp
 
+lemma posSemidef_covariance [IsFiniteMeasure μ] [Finite ι] {Z : ι → Ω → ℝ}
+    (hZ : ∀ i, MemLp (Z i) 2 μ) : (Matrix.of fun i j ↦ cov[Z i, Z j; μ]).PosSemidef := by
+  let := Fintype.ofFinite ι
+  refine Matrix.PosSemidef.of_dotProduct_mulVec_nonneg ?_ fun t ↦ ?_
+  · ext i j
+    simp [Matrix.conjTranspose_apply, covariance_comm]
+  · simp only [dotProduct, Pi.star_apply, star_trivial, Matrix.mulVec, Matrix.of_apply, mul_sum,
+    ← mul_assoc]
+    simp_rw [←covariance_const_mul_left, ←covariance_mul_const_right, mul_comm,
+    ←variance_fun_sum (fun i ↦ (hZ i).mul_const (t i)), variance_nonneg]
+
 variable {X : Ω → ℝ}
 
 @[simp]

@@ -340,6 +340,11 @@ protected theorem mono {m m' : MeasurableSpace α} [TopologicalSpace β]
       (SimpleFunc.finite_range (hf.approx n))
   exact ⟨f_approx, hf.tendsto_approx⟩
 
+protected theorem eval {δ : Type*} {π : δ → Type*} {m : MeasurableSpace α}
+    [∀ i, TopologicalSpace (π i)] {i : δ} {f : α → ∀ i, π i}
+    (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ f x i :=
+  (continuous_apply i).comp_stronglyMeasurable hf
+
 @[fun_prop]
 protected theorem fst {m : MeasurableSpace α} [TopologicalSpace β] [TopologicalSpace γ]
     {f : α → β × γ} (hf : StronglyMeasurable f) : StronglyMeasurable fun x ↦ (f x).1 :=
