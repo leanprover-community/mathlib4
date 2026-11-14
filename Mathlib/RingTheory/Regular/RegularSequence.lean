@@ -137,10 +137,12 @@ structure IsWeaklyRegular (rs : List R) : Prop where
   regular_mod_prev : ∀ i (h : i < rs.length),
     IsSMulRegular (M ⧸ (ofList (rs.take i) • ⊤ : Submodule R M)) rs[i]
 
-lemma isWeaklyRegular_iff_Fin (rs : List R) :
+lemma isWeaklyRegular_iff_fin (rs : List R) :
     IsWeaklyRegular M rs ↔ ∀ (i : Fin rs.length),
       IsSMulRegular (M ⧸ (ofList (rs.take i) • ⊤ : Submodule R M)) rs[i] :=
   Iff.trans (isWeaklyRegular_iff M rs) (Iff.symm Fin.forall_iff)
+
+@[deprecated (since := "2026-10-27")] alias isWeaklyRegular_iff_Fin := isWeaklyRegular_iff_fin
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
 @[mk_iff]
@@ -178,7 +180,7 @@ private lemma _root_.AddHom.map_smul_top_toAddSubgroup_of_surjective
 lemma _root_.AddEquiv.isWeaklyRegular_congr {e : M ≃+ M₂} {as bs}
     (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :
     IsWeaklyRegular M as ↔ IsWeaklyRegular M₂ bs := by
-  conv => congr <;> rw [isWeaklyRegular_iff_Fin]
+  conv => congr <;> rw [isWeaklyRegular_iff_fin]
   let e' i : (M ⧸ (Ideal.ofList (as.take i) • ⊤ : Submodule R M)) ≃+
       M₂ ⧸ (Ideal.ofList (bs.take i) • ⊤ : Submodule S M₂) :=
     QuotientAddGroup.congr _ _ e <|
@@ -231,10 +233,10 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
       IsSMulRegular M r ∧ IsWeaklyRegular (QuotSMulTop r M) rs :=
   have := Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
   let e i := quotOfListConsSMulTopEquivQuotSMulTopInner M r (rs.take i)
-  Iff.trans (isWeaklyRegular_iff_Fin _ _) <| Iff.trans Fin.forall_iff_succ <|
+  Iff.trans (isWeaklyRegular_iff_fin _ _) <| Iff.trans Fin.forall_iff_succ <|
     and_congr ((quotEquivOfEqBot _ this).isSMulRegular_congr r) <|
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
-        (isWeaklyRegular_iff_Fin _ _).symm
+        (isWeaklyRegular_iff_fin _ _).symm
 
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
