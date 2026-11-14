@@ -187,13 +187,11 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum_sub
     TendstoInDistribution (fun (n : ℕ) ω ↦ (√n)⁻¹ •
       (∑ k ∈ Finset.range n, X k ω - (n : ℝ) • P[X 0])) atTop Y (fun _ ↦ P) P' := by
   have mX n : AEMeasurable (X n) P := (hident n).aemeasurable_fst
-  refine .of_inner hY.aemeasurable (by fun_prop) fun t ↦ ?_
   have hS : S.PosSemidef := by
     convert posSemidef_covariance (fun i ↦ hX.eval_piLp i) using 1
     ext i j
     exact (h1 i j).symm
-  have hY' : HasLaw (fun ω ↦ ⟪t, Y ω⟫) (gaussianReal 0 (t ⬝ᵥ S *ᵥ t).toNNReal) P' := by
-    simpa using hY.inner_multivariateGaussian hS t
+  refine .of_inner hY.aemeasurable (by fun_prop) fun t ↦ ?_
   have hYmean : P[fun ω ↦ ⟪t, X 0 ω⟫] = ⟪t, P[X 0]⟫ :=
     integral_inner (hX.integrable (by norm_num)) t
   have hY2 : P[fun ω ↦ ⟪t, X 0 ω⟫ ^ 2] = t ⬝ᵥ S *ᵥ t + ⟪t, P[X 0]⟫ ^ 2 := by
@@ -223,7 +221,7 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum_sub
   simpa [hYmean, real_inner_comm, real_inner_smul_right, inner_sum, inner_sub_left, inner_sub_right]
     using
     (tendstoInDistribution_inv_sqrt_mul_sum_sub (X := fun i ω ↦ ⟪t, X i ω⟫) (Y := fun ω ↦ ⟪t, Y ω⟫)
-      (by simpa [hYVar] using hY') (hX.const_inner t)
+      (by simpa [hYVar] using (hY.inner_multivariateGaussian hS t)) (hX.const_inner t)
       (hindep.comp (fun _ x ↦ ⟪t, x⟫) (by fun_prop))
       (fun i ↦ (hident i).comp (u := fun x ↦ ⟪t, x⟫) (by fun_prop)))
 
