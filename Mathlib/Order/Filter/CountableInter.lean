@@ -79,6 +79,13 @@ theorem EventuallySubset.countable_iUnion [Countable ι] {s t : ι → Set α} (
     ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
 
+theorem EventuallySubset.countable_iUnion' [Countable ι] {s : ι → Set α} {t : Set α}
+    (h : ∀ i, s i ≤ᶠ[l] t) :
+    ⋃ i, s i ≤ᶠ[l] t := by
+  refine (eventually_countable_forall.2 h).mono fun x hx1 hx2 ↦ ?_
+  obtain ⟨i, hi⟩ := mem_iUnion.1 hx2
+  exact hx1 i hi
+
 theorem EventuallyEqSet.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
   (EventuallySubset.countable_iUnion fun i => (h i).subset).antisymm
