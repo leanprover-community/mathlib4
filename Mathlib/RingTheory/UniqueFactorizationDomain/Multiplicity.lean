@@ -31,35 +31,69 @@ public section
 
 assert_not_exists Field
 
-variable {α : Type*}
-
 local infixl:50 " ~ᵤ " => Associated
 
-theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
-    (h : a₀ ≠ 0) (hx : ¬IsUnit x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
+section
+
+variable {α ι : Type*}
+
+variable [CommMonoidWithZero α] [WfDvdMonoid α]
+
+theorem WfDvdMonoid.max_power_factor' {a₀ x : α} (h : a₀ ≠ 0) (hx : ¬IsUnit x) :
+    ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
   obtain ⟨a, ⟨n, rfl⟩, hm⟩ := wellFounded_dvdNotUnit.has_min
     {a | ∃ n, x ^ n * a = a₀} ⟨a₀, 0, by rw [pow_zero, one_mul]⟩
   refine ⟨n, a, ?_, rfl⟩; rintro ⟨d, rfl⟩
   exact hm d ⟨n + 1, by rw [pow_succ, mul_assoc]⟩
     ⟨(right_ne_zero_of_mul <| right_ne_zero_of_mul h), x, hx, mul_comm _ _⟩
 
-theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
-    (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
+theorem WfDvdMonoid.max_power_factor {a₀ x : α} (h : a₀ ≠ 0) (hx : Irreducible x) :
+    ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
   max_power_factor' h hx.not_isUnit
 
-theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
-    {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by
+variable [IsCancelMulZero α]
+
+theorem FiniteMultiplicity.of_not_isUnit {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) :
+    FiniteMultiplicity a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
   exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
-theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
-    {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
+theorem FiniteMultiplicity.of_prime_left {a b : α} (ha : Prime a) (hb : b ≠ 0) :
+    FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_isUnit hb
 
 /-- An element of a `WfDvdMonoid` has finite multiplicity at a prime iff it is nonzero. -/
-theorem Prime.finiteMultiplicity_iff_ne_zero [CommMonoidWithZero α] [IsCancelMulZero α]
-    [WfDvdMonoid α] {a p : α} (hp : Prime p) : FiniteMultiplicity p a ↔ a ≠ 0 :=
+theorem Prime.finiteMultiplicity_iff_ne_zero {a p : α} (hp : Prime p) :
+    FiniteMultiplicity p a ↔ a ≠ 0 :=
   ⟨FiniteMultiplicity.ne_zero, .of_prime_left hp⟩
+
+/--
+Given a finitely supported function `f : ι →₀ α` we can factor the biggest
+power of some irreducible `b : α` out of `f`. -/
+theorem WfDvdMonoid.max_power_factor_of_finsupp {b : α} (hbI : Irreducible b) {f : ι →₀ α}
+    (h0 : f ≠ 0) : ∃ (n : ℕ), (∀ i, b ^ n ∣ f i) ∧ ∃ j, ¬b ^ (n + 1) ∣ f j := by
+  have hs : f.support.Nonempty := Finsupp.support_nonempty_iff.mpr h0
+  obtain ⟨j, -, hj⟩ := exists_not_pow_inf'_multiplicity_succ_dvd hs fun i hi ↦
+    .of_not_isUnit hbI.not_isUnit (Finsupp.mem_support_iff.mp hi)
+  refine ⟨f.support.inf' hs fun i ↦ multiplicity b (f i), fun i ↦ ?_, j, hj⟩
+  by_cases hi : i ∈ f.support
+  · exact pow_inf'_multiplicity_dvd b hs f hi
+  · exact (Finsupp.notMem_support_iff.mp hi) ▸ dvd_zero _
+
+/--
+Given a finitely supported function `f : ι →₀ α` we can factor the biggest
+power of some irreducible `b : α` out of `f`.
+
+This is a variant of `WfDvdMonoid.max_power_factor_of_finsupp` where the function obtained by
+dividing by `b ^ n` is explicit. -/
+theorem WfDvdMonoid.max_power_factor_of_finsupp' {b : α} (hbI : Irreducible b) {f : ι →₀ α}
+    (h0 : f ≠ 0) : ∃ (n : ℕ) (f' : ι →₀ α), (∀ i, f i = b ^ n * f' i) ∧ ∃ j, ¬b ∣ f' j := by
+  obtain ⟨n, h1, j, hj⟩ := max_power_factor_of_finsupp hbI h0
+  choose! f' hf using h1
+  let F : ι →₀ α := ⟨f.support, f', by aesop⟩
+  refine ⟨n, F, ?_, j, ?_⟩ <;> aesop (add norm [Finsupp.ext_iff, pow_succ, dvd_def, mul_assoc])
+
+end
 
 namespace UniqueFactorizationMonoid
 
