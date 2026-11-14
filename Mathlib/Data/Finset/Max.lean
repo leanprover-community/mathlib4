@@ -189,15 +189,15 @@ theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
 theorem max'_union {s₁ s₂ : Finset α} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
     (s₁ ∪ s₂).max' (h₁.mono subset_union_left) = s₁.max' h₁ ⊔ s₂.max' h₂ := sup'_union h₁ h₂ id
 
-@[to_dual]
-theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
-  rw [min_eq_inf_withTop, inf_image]
-  congrm $WithTop.map_id _
+-- @[to_dual]
+-- theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
+--   rw [min_eq_inf_withTop, inf_image]
+--   congrm $WithTop.map_id _
 
-@[to_dual]
-theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
-  rw [min_eq_inf_withTop, inf_image]
-  congrm $WithTop.map_id _
+-- @[to_dual]
+-- theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
+--   rw [min_eq_inf_withTop, inf_image]
+--   congrm $WithTop.map_id _
 
 @[to_dual]
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :

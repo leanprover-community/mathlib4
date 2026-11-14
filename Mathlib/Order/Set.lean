@@ -16,10 +16,36 @@ open Set
 
 variable {α β : Type*}
 
-theorem WithBot.range_eq (f : WithBot α → β) :
-    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
+namespace WithBot
 
-theorem WithTop.range_eq (f : WithTop α → β) :
-    range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
+@[expose, to_dual]
+def toOption (α : Type*) : WithBot α ≃ Option α where
+  toFun | bot => none | some x => .some x
+  invFun | none => bot | .some x => some x
+  left_inv | bot => rfl | some _ => rfl
+  right_inv | none => rfl | .some _ => rfl
+
+@[to_dual (attr := simp)] lemma toOption_apply_some (x : α) : toOption α (some x) = .some x := rfl
+
+@[to_dual (attr := simp)] lemma toOption_apply_bot : toOption α bot = none := rfl
+
+@[to_dual (attr := simp)]
+lemma toOption_comp_some : (toOption α) ∘ some = Option.some := rfl
+
+@[to_dual (attr := simp)]
+lemma symm_toOption_apply_some (x : α) : (toOption α).symm (.some x) = some x := rfl
+
+@[to_dual (attr := simp)]
+lemma symm_toOption_apply_none : (toOption α).symm none = bot := rfl
+
+@[to_dual (attr := simp)]
+lemma symm_toOption_comp_some : (toOption α).symm ∘ Option.some = some := rfl
+
+@[to_dual]
+theorem range_eq (f : WithBot α → β) :
+    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) := by
+  rw [← EquivLike.range_comp f (toOption α).symm, Option.range_eq]
+  simp [Function.comp_assoc]
+  rfl
+
+end WithBot

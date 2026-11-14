@@ -703,13 +703,23 @@ protected theorem sup'_apply {C : β → Type*} [∀ b : β, SemilatticeSup (C b
 
 @[to_dual (attr := simp)]
 theorem toDual_sup' [SemilatticeSup α] {s : Finset ι} (hs : s.Nonempty) (f : ι → α) :
-    toDual (s.sup' hs f) = s.inf' hs (toDual ∘ f) :=
-  rfl
+    toDual (s.sup' hs f) = s.inf' hs (toDual ∘ f) := by
+  apply le_antisymm
+  · refine le_inf' hs _ fun b hb ↦ ?_
+    grw [toDual_le_toDual.2 (le_sup' f hb), comp_apply]
+  · rw [le_toDual, sup'_le_iff]
+    intro b hb
+    grw [← ofDual_toDual (f b), ofDual_le_ofDual, inf'_le _ hb, comp_apply]
 
 @[to_dual (attr := simp)]
 theorem ofDual_sup' [SemilatticeInf α] {s : Finset ι} (hs : s.Nonempty) (f : ι → αᵒᵈ) :
-    ofDual (s.sup' hs f) = s.inf' hs (ofDual ∘ f) :=
-  rfl
+    ofDual (s.sup' hs f) = s.inf' hs (ofDual ∘ f) := by
+  apply le_antisymm
+  · refine le_inf' hs _ fun b hb ↦ ?_
+    grw [ofDual_le_ofDual.2 (le_sup' f hb), comp_apply]
+  · rw [← le_toDual, sup'_le_iff]
+    intro b hb
+    grw [← toDual_ofDual (f b), toDual_le_toDual, inf'_le _ hb, comp_apply]
 
 section DistribLattice
 variable [DistribLattice α] {s : Finset ι} (hs : s.Nonempty)

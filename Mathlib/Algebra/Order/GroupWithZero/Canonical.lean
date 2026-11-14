@@ -214,9 +214,14 @@ end Bot
 section LE
 variable [LE α] {x y : WithZero α} {a b : α}
 
-instance (priority := 10) le : LE (WithZero α) := inferInstanceAs <| LE (WithBot α)
+instance (priority := 10) le : LE (WithZero α) := (WithBot.toOption α).symm.le
 
-lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := WithBot.le_iff_forall
+lemma le_def' : x ≤ y ↔ (WithBot.toOption α).symm x ≤ (WithBot.toOption α).symm y :=
+  (Equiv.le_def _ _ _).symm
+
+lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := by
+  rw [le_def', WithBot.le_iff_forall]
+  simp
 
 @[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := WithBot.coe_le_coe
 

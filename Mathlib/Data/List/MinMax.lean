@@ -197,7 +197,7 @@ variable [Preorder α] [DecidableLT α] {l : List α} {a m : α}
 /-- `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]` -/]
 def maximum (l : List α) : WithBot α :=
-  argmax id l
+  (WithBot.toOption α).symm (argmax id l)
 
 @[to_dual (attr := simp)]
 theorem maximum_nil : maximum ([] : List α) = ⊥ :=
@@ -208,16 +208,19 @@ theorem maximum_singleton (a : α) : maximum [a] = a :=
   rfl
 
 @[to_dual]
-theorem maximum_mem {l : List α} {m : α} : (maximum l : WithTop α) = m → m ∈ l :=
-  argmax_mem
+theorem maximum_mem {l : List α} {m : α} : maximum l = m → m ∈ l := by
+  rw [maximum, Equiv.symm_apply_eq]
+  simpa using argmax_mem
 
 @[to_dual (attr := simp)]
-theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] :=
-  argmax_eq_none
+theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] := by
+  rw [maximum, Equiv.symm_apply_eq]
+  simp
 
 @[to_dual not_lt_minimum_of_mem]
-theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
-  not_lt_of_mem_argmax
+theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a := by
+  rw [maximum, Equiv.symm_apply_eq]
+  simpa using! not_lt_of_mem_argmax
 
 @[to_dual not_lt_minimum_of_mem']
 theorem not_maximum_lt_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
@@ -235,11 +238,12 @@ theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximu
   simp only [maximum, argmax_concat, id]
   cases argmax id l
   · exact (max_eq_right bot_le).symm
-  · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
+  · simp [max_def_lt, WithBot.coe_lt_coe, apply_ite (Equiv.symm _)]
 
 @[to_dual minimum_le_of_mem]
-theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m :=
-  le_of_mem_argmax
+theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m := by
+  rw [maximum, Equiv.symm_apply_eq]
+  simpa using! le_of_mem_argmax
 
 @[to_dual minimum_le_of_mem']
 theorem le_maximum_of_mem' (ha : a ∈ l) : (a : WithBot α) ≤ maximum l :=
@@ -271,7 +275,8 @@ theorem maximum_mono {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₁.maximum �
 set_option backward.isDefEq.respectTransparency false in
 @[to_dual]
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
-  rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
+  rw [maximum, ← WithBot.some_eq_coe, Equiv.symm_apply_eq, WithBot.toOption_apply_coe,
+    argmax_eq_some_iff]
   simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
   intro _ h a hal hma
   rw [_root_.le_antisymm hma (h a hal)]

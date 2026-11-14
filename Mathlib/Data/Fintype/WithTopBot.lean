@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Data.Fintype.Option
-public import Mathlib.Order.TypeTags
+public import Mathlib.Order.WithBot
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -20,8 +20,7 @@ public section
 variable {α : Type*}
 
 @[to_dual]
-instance [Fintype α] : Fintype (WithTop α) :=
-  inferInstanceAs <| Fintype (Option α)
+instance [Fintype α] : Fintype (WithTop α) := .ofEquiv _ (WithTop.toOption α).symm
 
 @[to_dual]
 instance [Finite α] : Finite (WithTop α) :=

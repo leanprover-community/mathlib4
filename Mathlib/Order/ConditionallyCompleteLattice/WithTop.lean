@@ -90,7 +90,7 @@ theorem coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
   classical
   change _ = ite _ _ _
   rw [ite_eq_right, preimage_image_eq, ite_eq_left hs]
-  · exact Option.some_injective _
+  · exact WithTop.coe_injective
   · rintro ⟨x, _, ⟨⟩⟩
 
 @[to_dual]
@@ -116,7 +116,7 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
     · cases h1 (mem_image_of_mem _ hx)
     · exact (h2 (Monotone.map_bddBelow coe_mono h's)).elim
   · rw [preimage_image_eq]
-    exact Option.some_injective _
+    exact WithTop.coe_injective
 
 end Preorder
 
