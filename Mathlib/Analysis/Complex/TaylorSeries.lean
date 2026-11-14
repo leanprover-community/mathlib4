@@ -74,6 +74,21 @@ lemma taylorSeries_eq_on_ball' {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f (M
   convert! taylorSeries_eq_on_ball hf hz using 3 with n
   rw [mul_right_comm, smul_eq_mul, smul_eq_mul, mul_assoc]
 
+include hf hz in
+/-- `hasSum_taylorSeries_on_ball` specialized to `f c = 0`. -/
+lemma hasSum_taylorSeries_on_ball_of_eq_zero (hf0 : f c = 0) :
+    HasSum (fun n : ℕ ↦ ((n + 1) ! : ℂ)⁻¹ • (z - c) ^ (n + 1) • iteratedDeriv (n + 1) f c)
+      (f z) := by
+  simpa [hf0] using (hasSum_nat_add_iff' 1).mpr (hasSum_taylorSeries_on_ball hf hz)
+
+include hf hz in
+/-- The derivative of a function that is complex differentiable on an open ball
+is given by evaluating the derivative of its Taylor series. -/
+lemma hasSum_taylorSeries_deriv_on_ball :
+    HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv (n + 1) f c) (deriv f z) := by
+  simpa only [← iteratedDeriv_succ'] using
+    hasSum_taylorSeries_on_ball (hf.deriv Metric.isOpen_ball) hz
+
 end ball
 
 section emetric
