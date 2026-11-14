@@ -25,6 +25,7 @@ public meta import Mathlib.Tactic.Linter.Lint
 public meta import Mathlib.Tactic.Linter.Multigoal
 public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.Style
+public meta import Mathlib.Tactic.Linter.SuggestedName.Options
 public meta import Mathlib.Tactic.Linter.SyntaxBased
 public meta import Mathlib.Tactic.Linter.TacticDocumentation
 public meta import Mathlib.Tactic.Linter.UnusedTactic
