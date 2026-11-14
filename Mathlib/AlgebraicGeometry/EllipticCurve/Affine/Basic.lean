@@ -258,14 +258,9 @@ variable (W) (f : R →+* S)
 abbrev map : Affine S :=
   WeierstrassCurve.map W f
 
-variable (S) in
-/-- The Weierstrass curve in affine coordinates base changed to an algebra `S` over `R`. -/
-@[simps!]
-abbrev baseChange [Algebra R S] : Affine S :=
-  WeierstrassCurve.baseChange W S
-
-/-- The notation `\textf` for `WeierstrassCurve.Affine.baseChange W S`. -/
-scoped notation:max W:max "⁄" S:max => baseChange W S
+/-- The notation `W⁄A`, the base change of the curve `W` to an algebra `A` over `R`.
+This is equivalent to `W.map <| algebraMap R A` where `R` is the base ring of `W`. -/
+scoped notation:max W:max "⁄" A:max => toAffine W ⁄ A
 
 lemma map_polynomial : (W.map f).polynomial = W.polynomial.map (mapRingHom f) := by
   simp only [polynomial]

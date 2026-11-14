@@ -78,7 +78,7 @@ as `p` ranges over all prime ideals of the ring of integers of `K`.
 -/
 noncomputable def LFunction : ArithmeticFunction ℤ :=
   eulerProduct fun p : HeightOneSpectrum (𝓞 K) ↦
-      (W.baseChange (p.adicCompletion K)).localEulerFactor (p.adicCompletionIntegers K)
+      (W⁄(p.adicCompletion K)).localEulerFactor (p.adicCompletionIntegers K)
 
 /-- The L-series of a Weierstrass curve over a number field. -/
 protected noncomputable def LSeries (W : WeierstrassCurve K) (s : ℂ) :=

@@ -509,13 +509,9 @@ variable (W') (f : R →+* S)
 abbrev map : Jacobian S :=
   WeierstrassCurve.map W' f
 
-variable (S) in
-/-- The Weierstrass curve in Jacobian coordinates base changed to an algebra `S` over `R`. -/
-abbrev baseChange [Algebra R S] : Jacobian S :=
-  WeierstrassCurve.baseChange W' S
-
-/-- The notation `\textf` for `WeierstrassCurve.Jacobian.baseChange W S`. -/
-scoped notation:max W:max "⁄" S:max => baseChange W S
+/-- The notation `W⁄A`, the base change of the curve `W` to an algebra `A` over `R`.
+This is equivalent to `W.map <| algebraMap R A` where `R` is the base ring of `W`. -/
+scoped notation:max W:max "⁄" A:max => toJacobian W⁄A
 
 @[simp]
 lemma map_polynomial : (W'.map f).polynomial = .map f W'.polynomial := by
