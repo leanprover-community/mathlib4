@@ -77,7 +77,7 @@ lemma toMulHom_conjOrderHomMonoidHom :
     (conjOrderHomMonoidHom (R := R)).toMulHom = conjOrderHomMulHom :=
   rfl
 
-/-- The map  `r x ↦ r * x * star r` as a group homomorphism from `Rˣ` into `R ≃o R`
+/-- The map `r x ↦ r * x * star r` as a group homomorphism from `Rˣ` into `R ≃o R`
 in a star-ordered ring `R`. -/
 def conjUnitsOrderIso : Rˣ →* (R ≃o R) where
   toFun r := .ofHomInv (conjOrderHomMonoidHom (r : R)) (conjOrderHomMonoidHom (↑r⁻¹ : R))
@@ -87,24 +87,24 @@ def conjUnitsOrderIso : Rˣ →* (R ≃o R) where
   map_one' := by ext; simp
 
 lemma _root_.IsLUB.conjugate_star_right_of_isUnit {s : Set R} {x : R}
-      (h : IsLUB s x) {r : R} (hr : IsUnit r) :
+    (h : IsLUB s x) {r : R} (hr : IsUnit r) :
     IsLUB ((r * · * star r) '' s) (r * x * star r) := by
   lift r to Rˣ using hr
   exact (conjUnitsOrderIso r).isLUB_image'.mpr h
 
 lemma _root_.IsLUB.conjugate_star_left_of_isUnit {s : Set R} {x : R}
-      (h : IsLUB s x) {r : R} (hr : IsUnit r) :
+    (h : IsLUB s x) {r : R} (hr : IsUnit r) :
     IsLUB ((star r * · * r) '' s) (star r * x * r) := by
   simpa using h.conjugate_star_right_of_isUnit hr.star
 
 lemma _root_.IsGLB.conjugate_star_right_of_isUnit {s : Set R} {x : R}
-      (h : IsGLB s x) {r : R} (hr : IsUnit r) :
+    (h : IsGLB s x) {r : R} (hr : IsUnit r) :
     IsGLB ((r * · * star r) '' s) (r * x * star r) := by
   lift r to Rˣ using hr
   exact (conjUnitsOrderIso r).isGLB_image'.mpr h
 
 lemma _root_.IsGLB.conjugate_star_left_of_isUnit {s : Set R} {x : R}
-      (h : IsGLB s x) {r : R} (hr : IsUnit r) :
+    (h : IsGLB s x) {r : R} (hr : IsUnit r) :
     IsGLB ((star r * · * r) '' s) (star r * x * r) := by
   simpa using h.conjugate_star_right_of_isUnit hr.star
 
