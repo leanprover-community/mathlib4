@@ -72,12 +72,6 @@ set_option linter.unusedTactic false
 set_option linter.flexible false
 set_option linter.unnecessarySimpa false
 
--- `push_neg` is deprecated in mathlib master in favour of `push Not`; we keep
--- the familiar syntax as a local macro.
-open Lean.Parser.Tactic in
-macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
-  `(tactic| push $cfg:optConfig Not $[$loc]?)
-
 noncomputable section
 
 /-! ## Section: Fermat42SubFoundations_2026_11_13 -/
@@ -178,7 +172,7 @@ Proof structure: Pythagorean decomposition of the derived equation
 infinite descent.
 
 Stated as a named Prop.  Discharging requires ~50-80 Lean lines. -/
-def Fermat42Double_impossible : Prop :=
+def Fermat42DoubleImpossible : Prop :=
   ∀ s t a : ℤ, s ≠ 0 → t ≠ 0 → a ≠ 0 → IsCoprime s t → s ^ 2 ≠ t ^ 2 →
     2 * a ^ 2 ≠ s ^ 4 + t ^ 4
 
@@ -187,7 +181,7 @@ def Fermat42Double_impossible : Prop :=
 
 Standard coprime-square-product lemma.  Named for the descent.
 Requires `0 ≤ m - 2*k` (the square itself). -/
-def Fermat42SubCaseA_squareSplit : Prop :=
+def Fermat42SubCaseASquareSplit : Prop :=
   ∀ m k b : ℤ, 0 ≤ m - 2 * k → 0 ≤ m + 2 * k →
     IsCoprime (m - 2 * k) (m + 2 * k) →
     b ^ 2 = (m - 2 * k) * (m + 2 * k) →
@@ -197,8 +191,8 @@ def Fermat42SubCaseA_squareSplit : Prop :=
 /-- **Case A reduction**: under the Case A hypothesis, we derive
 an auxiliary `2a² = s⁴ + t⁴` instance that must be contradicted. -/
 theorem fermat42Sub_caseA_reduces
-    (hSplit3 : Fermat42SubCaseA_squareSplit)
-    (hDouble : Fermat42Double_impossible)
+    (hSplit3 : Fermat42SubCaseASquareSplit)
+    (hDouble : Fermat42DoubleImpossible)
     (a b c m n : ℤ)
     (_h_min : Minimal a b c)
     (_ha_pos : 0 < a) (_hc_pos : 0 < c)
@@ -318,7 +312,7 @@ namespace Fermat42Sub
 implies `m` and `n/2` are each perfect squares.
 
 Standard coprime-square-product lemma.  Stated as a named sub-gap. -/
-def Fermat42SubCaseB_squareSplit : Prop :=
+def Fermat42SubCaseBSquareSplit : Prop :=
   ∀ m n b : ℤ, 0 ≤ m → 0 < n → IsCoprime m n →
     m % 2 = 1 → n % 2 = 0 → b ^ 2 = 2 * m * n →
     ∃ i j : ℤ, m = i ^ 2 ∧ n = 2 * j ^ 2 ∧ b = 2 * i * j
@@ -329,15 +323,15 @@ with `gcd(a, i·j) = 1`, there exist `p, q` coprime with `pq = i` and
 
 Follows from coprimality of `(a - 2j²)` and `(a + 2j²)` plus the
 coprime-product-is-4th-power argument.  Stated as a named sub-gap. -/
-def Fermat42SubCaseB_fourthPowerSplit : Prop :=
+def Fermat42SubCaseBFourthPowerSplit : Prop :=
   ∀ a i j : ℤ, 0 < a → i % 2 = 1 → j ≠ 0 → IsCoprime a (i * j) →
     a ^ 2 - i ^ 4 = 4 * j ^ 4 →
     ∃ p q : ℤ, p * q = i ∧ a - 2 * j ^ 2 = p ^ 4 ∧ a + 2 * j ^ 2 = q ^ 4
 
 /-- **Case B closure**: conditional on the two square-split sub-gaps. -/
 theorem fermat42Sub_caseB_descends
-    (hSplit1 : Fermat42SubCaseB_squareSplit)
-    (hSplit2 : Fermat42SubCaseB_fourthPowerSplit)
+    (hSplit1 : Fermat42SubCaseBSquareSplit)
+    (hSplit2 : Fermat42SubCaseBFourthPowerSplit)
     (a b c m n : ℤ)
     (h_min : Minimal a b c)
     (ha_pos : 0 < a) (hc_pos : 0 < c)
@@ -466,8 +460,8 @@ private lemma eq_sq_of_nonneg_of_or {x y : ℤ} (hx : 0 ≤ x)
     have hy_zero : y = 0 := pow_eq_zero_iff (by norm_num : (2 : ℕ) ≠ 0) |>.mp hy_sq_zero
     rw [hx_eq_zero, hy_zero]; ring
 
-/-- Discharge of `Fermat42SubCaseB_squareSplit`. -/
-theorem fermat42SubCaseB_squareSplit_holds : Fermat42SubCaseB_squareSplit := by
+/-- Discharge of `Fermat42SubCaseBSquareSplit`. -/
+theorem fermat42SubCaseB_squareSplit_holds : Fermat42SubCaseBSquareSplit := by
   intro m n b hm_nn hn_pos hmn_coprime hm_odd hn_even hb_sq
   obtain ⟨k, hk⟩ : (2 : ℤ) ∣ n := Int.dvd_of_emod_eq_zero hn_even
   subst hk
@@ -506,8 +500,8 @@ theorem fermat42SubCaseB_squareSplit_holds : Fermat42SubCaseB_squareSplit := by
     · rw [hk_eq]; ring
     · rw [hb₀, hb₀_neg]; ring
 
-/-- Discharge of `Fermat42SubCaseA_squareSplit`. -/
-theorem fermat42SubCaseA_squareSplit_holds : Fermat42SubCaseA_squareSplit := by
+/-- Discharge of `Fermat42SubCaseASquareSplit`. -/
+theorem fermat42SubCaseA_squareSplit_holds : Fermat42SubCaseASquareSplit := by
   intro m k b hm_minus_nn hm_plus_nn hpair_coprime hb_sq
   have h_gcd : Int.gcd (m - 2 * k) (m + 2 * k) = 1 :=
     isCoprime_iff_gcd_eq_one.mp hpair_coprime
@@ -560,11 +554,11 @@ private lemma coprime_mul_eq_sq_split {u v c : ℤ}
     · right; linarith
   exact ⟨e, f, he_eq, hf_eq, h_cases⟩
 
-/-- **Discharge of `Fermat42SubCaseB_fourthPowerSplit`**.
+/-- **Discharge of `Fermat42SubCaseBFourthPowerSplit`**.
 Iterates `coprime_mul_eq_sq_split` twice (on `uv = (i²)²` then on
 the roots via `|e|·|f| = i²`), with sign adjustment. -/
 theorem fermat42SubCaseB_fourthPowerSplit_holds :
-    Fermat42SubCaseB_fourthPowerSplit := by
+    Fermat42SubCaseBFourthPowerSplit := by
   intro a i j ha_pos hi_odd hj_ne haij_coprime ha_eq
   have hj_sq_pos : 0 < j ^ 2 := by positivity
   have hi_ne : i ≠ 0 := by
@@ -863,14 +857,14 @@ def Fermat42DoubleAssembler : Prop :=
     (∃ p q : ℤ, (p ≠ 0 ∨ q ≠ 0) ∧ p ^ 2 + 4 * p * q - q ^ 2 = 0) ∨
     (∃ p q : ℤ, (p ≠ 0 ∨ q ≠ 0) ∧ p ^ 2 - 4 * p * q - q ^ 2 = 0)
 
-/-- **`Fermat42Double_impossible` holds** conditional on the
+/-- **`Fermat42DoubleImpossible` holds** conditional on the
 Pythagorean assembler.  Composition: parity reduction forces `s, t`
 odd, then the assembler produces either variant of the key quadratic,
 and the key-quadratic lemma forces `p = q = 0`, contradicting the
 assembler's output. -/
 theorem fermat42Double_impossible_of_assembler
     (hAssemble : Fermat42DoubleAssembler) :
-    Fermat42Double_impossible := by
+    Fermat42DoubleImpossible := by
   intro s t a hs_ne ht_ne ha_ne hst_coprime hst_sq_ne h_eq
   obtain ⟨hs_odd, ht_odd⟩ :=
     fermat42Double_parity hs_ne ht_ne hst_coprime h_eq
@@ -1780,7 +1774,7 @@ quadratic in `d` to force the discriminant `2(b⁴ + c⁴)` to be a perfect
 square, yielding `2e² = b⁴ + c⁴` with `e = ⌊√(2(b⁴ + c⁴))⌋ / 2`.
 
 Composed via strong induction on `a.natAbs`, this closes
-`Fermat42Double_impossible`.
+`Fermat42DoubleImpossible`.
 
 Structural prerequisites (parity, coprime factors, product = 8k²) are
 discharged in `fermat42Double_descent_factorization_facts`. -/
@@ -1799,11 +1793,11 @@ def Fermat42DoubleDescentStep : Prop :=
     ∃ b c e : ℤ, b ≠ 0 ∧ c ≠ 0 ∧ e ≠ 0 ∧ IsCoprime b c ∧ b ^ 2 ≠ c ^ 2 ∧
       2 * e ^ 2 = b ^ 4 + c ^ 4 ∧ e.natAbs < a.natAbs
 
-/-- **`Fermat42Double_impossible` via descent step** — strong induction
+/-- **`Fermat42DoubleImpossible` via descent step** — strong induction
 on `a.natAbs` composed with the Pythagorean setup + descent step. -/
 theorem fermat42Double_impossible_of_descent_step
     (hDescent : Fermat42DoubleDescentStep) :
-    Fermat42Double_impossible := by
+    Fermat42DoubleImpossible := by
   have H : ∀ n : ℕ, ∀ s t a : ℤ, a.natAbs = n →
       s ≠ 0 → t ≠ 0 → a ≠ 0 → IsCoprime s t → s ^ 2 ≠ t ^ 2 →
       2 * a ^ 2 ≠ s ^ 4 + t ^ 4 := by
@@ -1854,11 +1848,11 @@ theorem fermat42Double_descent_step_holds : Fermat42DoubleDescentStep := by
   exact fermat42Double_descent_step_body s t a m k hs_ne ht_ne ha_pos
     hst_coprime hst_lt hs_odd ht_odd hm_pos hk_pos hm_odd hmk_cop hs_sq ht_sq ha_eq h_eq
 
-/-- **★★★ `Fermat42Double_impossible` IS UNCONDITIONAL ★★★**
+/-- **★★★ `Fermat42DoubleImpossible` IS UNCONDITIONAL ★★★**
 
 Composition of the strong-induction wrapper `fermat42Double_impossible_of_descent_step`
 with the full descent-step discharge `fermat42Double_descent_step_holds`. -/
-theorem fermat42Double_impossible_unconditional : Fermat42Double_impossible :=
+theorem fermat42Double_impossible_unconditional : Fermat42DoubleImpossible :=
   fermat42Double_impossible_of_descent_step fermat42Double_descent_step_holds
 
 end Fermat42Sub
@@ -1875,8 +1869,8 @@ Pythagorean classification of a primitive triple with odd leg
 Proof structure mirrors `fermat42Sub_caseB_descends` by calling
 `hSplit1` with the (m, n) roles swapped. -/
 theorem fermat42Sub_caseB_descends_mirror
-    (hSplit1 : Fermat42SubCaseB_squareSplit)
-    (hSplit2 : Fermat42SubCaseB_fourthPowerSplit)
+    (hSplit1 : Fermat42SubCaseBSquareSplit)
+    (hSplit2 : Fermat42SubCaseBFourthPowerSplit)
     (a b c m n : ℤ)
     (h_min : Minimal a b c)
     (ha_pos : 0 < a) (hc_pos : 0 < c)
