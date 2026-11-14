@@ -200,9 +200,18 @@ lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a :
   ext i j : 1
   simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
 
-lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
+lemma BlockTriangular.charpoly_eq {α : Type*} {b : n → α} [LinearOrder α]
+    (h : M.BlockTriangular b) :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
   simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
+
+@[deprecated (since := "2026-11-03")]
+alias BlockTriangular.charpoly := BlockTriangular.charpoly_eq
+
+lemma StrictBlockTriangular.charpoly_eq {α : Type*} {b : n → α} [LinearOrder α]
+    (hM : M.StrictBlockTriangular b) : M.charpoly = X ^ Fintype.card n := by
+  rw [← charpoly_zero, hM.blockTriangular.charpoly_eq, (blockTriangular_zero (b := b)).charpoly_eq]
+  simp only [hM.toSquareBlock_eq_zero, toSquareBlock_zero]
 
 lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.IsUpperTriangular) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
