@@ -32,7 +32,6 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 - We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
   the product projections have chosen pullbacks.
-
 -/
 
 @[expose] public section

@@ -9,11 +9,9 @@ public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
-
 # Local rings homomorphisms
 
 We prove basic properties of local rings homomorphisms.
-
 -/
 
 public section

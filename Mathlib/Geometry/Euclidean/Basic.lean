@@ -35,7 +35,6 @@ theorems that need it.
 ## References
 
 * https://en.wikipedia.org/wiki/Euclidean_space
-
 -/
 
 public section

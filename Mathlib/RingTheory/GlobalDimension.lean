@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+public import Mathlib.Data.ENat.WithBot
 public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.LocalProperties.ProjectiveDimension
@@ -88,29 +89,25 @@ lemma globalDimension_eq_biSup_module_finite_projectiveDimension [Small.{v} R] :
       ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
+  | top => simp
   | bot =>
     simp only [le_bot_iff, globalDimension_eq_bot_iff, iSup_eq_bot,
       projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
     exact ⟨fun h M _ ↦ Module.subsingleton R M, fun h ↦
       (equivShrink.{v} R).subsingleton_congr.mpr (h (ModuleCat.of R (Shrink.{v} R)) inferInstance)⟩
-  | coe N =>
-    induction N with
-    | top => simp
-    | coe n => simp [projectiveDimension_le_iff, (globalDimension_le_tfae R n).out 1 2]
+  | coe n => simp [projectiveDimension_le_iff, (globalDimension_le_tfae R n).out 1 2]
 
 lemma globalDimension_eq_iSup_injectiveDimension [Small.{v} R] : globalDimension.{v} R =
     ⨆ (M : ModuleCat.{v} R), injectiveDimension.{v} M := by
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
+  | top => simp
   | bot =>
     simp only [le_bot_iff, globalDimension_eq_bot_iff, iSup_eq_bot,
       injectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
     exact ⟨fun h M ↦ Module.subsingleton R M,
       fun h ↦ (equivShrink.{v} R).subsingleton_congr.mpr (h (ModuleCat.of R (Shrink.{v} R)))⟩
-  | coe N =>
-    induction N with
-    | top => simp
-    | coe n => simp [injectiveDimension_le_iff, (globalDimension_le_tfae R n).out 1 4]
+  | coe n => simp [injectiveDimension_le_iff, (globalDimension_le_tfae R n).out 1 4]
 
 /-- Global dimension is invariant of universe level when assume ring itself small. -/
 lemma globalDimension_eq_of_small [Small.{v} R] :

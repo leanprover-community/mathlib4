@@ -18,7 +18,6 @@ potentially too big to exist in `Type u`.
 
 As this functor is fully faithful, we also deduce that it creates `u`-small limits and
 colimits.
-
 -/
 
 @[expose] public section
@@ -27,7 +26,6 @@ universe v w w' u
 
 namespace CategoryTheory.Limits.Types
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The equivalence between `K.sections` and `(K ⋙ uliftFunctor.{v, u}).sections`. This is used to show
 that `uliftFunctor` preserves limits that are potentially too large to exist in the source

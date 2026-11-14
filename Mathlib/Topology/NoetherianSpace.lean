@@ -37,7 +37,6 @@ of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
   space is a finite union of irreducible closed subsets.
 - `TopologicalSpace.NoetherianSpace.finite_irreducibleComponents`: The number of irreducible
   components of a Noetherian space is finite.
-
 -/
 
 public section

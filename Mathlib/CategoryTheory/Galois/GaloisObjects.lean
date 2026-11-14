@@ -23,7 +23,6 @@ way and show equivalent characterisations.
 
 * `galois_iff_pretransitive` : A connected object `X` is Galois if and only if `Aut X`
                                acts transitively on `F.obj X` for a fiber functor `F`.
-
 -/
 
 @[expose] public section

@@ -305,7 +305,7 @@ theorem AffineSubspace.euclideanHausdorffMeasure_eq_lintegral (s : AffineSubspac
   congr with x
   let u : Set (mk' (x +ᵥ p).val s.directionᗮ) := Subtype.val ⁻¹' (t ∩ mk' (x +ᵥ p).val s.directionᗮ)
   have hu : MeasurableSet u :=
-    (ht.inter (closed_of_finiteDimensional _).measurableSet).preimage measurable_subtype_coe
+    (ht.inter (isClosed_of_finiteDimensional _).measurableSet).preimage measurable_subtype_coe
   have hinter : t ∩ (mk' (x +ᵥ p).val s.directionᗮ) = Subtype.val '' u := by
     ext x
     simp [u]

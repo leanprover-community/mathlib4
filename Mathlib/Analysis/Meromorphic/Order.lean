@@ -899,12 +899,11 @@ alias codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top :=
 Variant of `codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top`: The set where a meromorphic
 function has zero or infinite order is codiscrete within its domain of meromorphicity.
 -/
-theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
-    (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
+theorem codiscreteWithin_setOfPred_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f U) :
     {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
   convert
     mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
-      h₁f.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
+      hf.codiscrete_setOfPred_meromorphicOrderAt_eq_zero_or_top
   aesop
 
 @[deprecated (since := "2026-07-09")]
@@ -1050,9 +1049,12 @@ variable [CompleteSpace 𝕜] {f : 𝕜 → 𝕜}
 At zeros and poles of a meromorphic function `f`, the logarithmic derivative has a simple pole: its
 meromorphic order equals `-1`.
 -/
-theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜] (hf : MeromorphicAt f x)
+theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜]
     (h₁ : meromorphicOrderAt f x ≠ 0) (h₂ : meromorphicOrderAt f x ≠ ⊤) :
     meromorphicOrderAt (logDeriv f) x = -1 := by
+  have hf : MeromorphicAt f x := by
+    by_contra h
+    exact h₁ (meromorphicOrderAt_of_not_meromorphicAt h)
   lift meromorphicOrderAt f x to ℤ using h₂ with n hn
   rw [logDeriv, meromorphicOrderAt_div hf.deriv hf,
     meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (mod_cast h₁)) hn.symm,
