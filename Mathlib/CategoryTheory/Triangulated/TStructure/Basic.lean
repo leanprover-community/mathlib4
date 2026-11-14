@@ -170,8 +170,16 @@ lemma ge_of_isGE (X : C) (n : ℤ) [t.IsGE X n] : t.ge n X := IsGE.ge
 lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n where
   le := (t.le n).prop_of_iso e (t.le_of_isLE X n)
 
+lemma isLE_iff_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) :
+    t.IsLE X n ↔ t.IsLE Y n :=
+  ⟨fun _ ↦ t.isLE_of_iso e n, fun _ ↦ t.isLE_of_iso e.symm n⟩
+
 lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
   ge := (t.ge n).prop_of_iso e (t.ge_of_isGE X n)
+
+lemma isGE_iff_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) :
+    t.IsGE X n ↔ t.IsGE Y n :=
+  ⟨fun _ ↦ t.isGE_of_iso e n, fun _ ↦ t.isGE_of_iso e.symm n⟩
 
 lemma isLE_of_le (X : C) (p q : ℤ) (hpq : p ≤ q := by lia) [t.IsLE X p] : t.IsLE X q where
   le := le_monotone t hpq _ (t.le_of_isLE X p)
