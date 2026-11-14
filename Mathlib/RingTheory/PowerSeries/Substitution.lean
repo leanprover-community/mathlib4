@@ -460,7 +460,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
     coeff n (P.subst (∑ i : Fin (n + 1), C (substInvFun P i.1) * X ^ i.1) - X) = 0 := by
   obtain (_ | _ | n) := n
   · rw [map_sub, coeff_subst']
-    · simp +contextual [finsum_eq_single (a := 0), substInvFun, zero_pow_eq, hP]
+    · simp [finsum_eq_single (a := 0), substInvFun, zero_pow_eq, hP]
     · simp [substInvFun, HasSubst]
   · rw [map_sub, coeff_subst']
     · rw [finsum_eq_single (a := 1)]
@@ -499,7 +499,7 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
             rw [coeff_subst']
             · rfl
             · simp [HasSubst, ← PowerSeries.constantCoeff.eq_def, hB']
-          · simp +contextual
+          · simp
         · refine .subset (Set.finite_Iio (n + 3)) fun i ↦ ?_
           obtain ⟨B, rfl⟩ : X ∣ B := by rwa [X_dvd_iff]
           simp +contextual [mul_pow, coeff_X_pow_mul', Nat.lt_succ_iff]

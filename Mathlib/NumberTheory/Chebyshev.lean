@@ -308,7 +308,7 @@ theorem psi_le_primeCounting_mul_log' (x : ℝ) : ψ x ≤ (π ⌊x⌋₊) * log
 
 /-- `ψ n` is the logarithm of `lcmUpto n`. -/
 theorem psi_eq_log_lcmUpto (n : ℕ) : ψ n = log (lcmUpto n) := by
-  rw [lcmUpto_eq_prod_pow_log, cast_prod, log_prod (by simp +contextual)]
+  rw [lcmUpto_eq_prod_pow_log, cast_prod, log_prod (by simp)]
   simp [psi_eq_sum_mul_log_prime]
 
 /-- `lcmUpto n` is divisible by `choose n k` for all `k ≤ n` -/

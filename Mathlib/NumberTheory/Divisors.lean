@@ -602,7 +602,7 @@ local notation "negNatCast" =>
 def divisors (z : ℤ) : Finset ℤ :=
   letI s := z.natAbs.divisors
   (s.map natCast).disjUnion (s.map negNatCast) <| by
-    simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
+    simp +contextual [s, disjoint_left]
 
 /-- Pairs of divisors of an integer as a finset.
 
@@ -618,7 +618,7 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
   | negSucc n =>
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
-      simp +contextual [s, disjoint_left, eq_comm, forall_comm (α := _ * _ = _)]
+      simp [s, disjoint_left]
 
 theorem mem_divisors_iff_natAbs_mem_divisors_natAbs :
     x ∈ z.divisors ↔ x.natAbs ∈ z.natAbs.divisors := calc

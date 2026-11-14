@@ -51,7 +51,7 @@ lemma fst_mono : Monotone (MonoidHom.fst α β) :=
 
 @[to_additive]
 lemma snd_mono : Monotone (MonoidHom.snd α β) :=
-  fun _ _ ↦ by simp +contextual [Prod.le_def]
+  fun _ _ ↦ by simp [Prod.le_def]
 
 end MonoidHom
 

@@ -569,7 +569,7 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
     gcongr
     · simpa [Submodule.one_eq_span]
     · refine Submodule.span_le.mpr ?_
-      simp [Set.subset_def, hM, forall_comm (α := R), hS y hy]
+      simp [Set.subset_def, hM, hS y hy]
     · delta powBound
       by_cases h : S.degBound = 0
       · have : degBound ⟨y.g⟩ = 0 := by nlinarith

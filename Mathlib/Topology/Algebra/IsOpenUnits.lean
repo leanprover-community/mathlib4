@@ -76,7 +76,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
   simp only [Homeomorph.comap_nhds_eq, Homeomorph.symm_symm, MulOpposite.opHomeomorph_apply,
     MulOpposite.op_one, and_self, Set.image_add_left] at this
   have : ∃ n₁ n₂, ∀ (u : Rˣ), (-1 + u : R) ∈ I ^ n₁ → (-1 + u⁻¹ : R) ∈ I ^ n₂ → ↑u ∈ s := by
-    simpa [Set.subset_def, forall_comm (β := Rˣ), forall_comm (β := _ = _)] using
+    simpa [Set.subset_def] using
       (((this.comap (Units.embedProduct R)).map (Units.coeHom R)).1 _).mp hs
   obtain ⟨n, hn, hn'⟩ : ∃ n ≠ 0, ∀ (u : Rˣ), (-1 + u : R) ∈ I ^ n →
       (-1 + u⁻¹ : R) ∈ I ^ n → ↑u ∈ s := by

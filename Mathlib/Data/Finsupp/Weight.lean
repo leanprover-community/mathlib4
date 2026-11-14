@@ -329,7 +329,7 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
   | succ n ih =>
     rw [succ_nsmul, ih]
     refine subset_antisymm ?_ fun f ⟨f_deg, f_supp⟩ ↦ ?_
-    · simp [Set.subset_def, Set.mem_add, @forall_comm (α →₀ ℕ)]; grind
+    · simp [Set.subset_def, Set.mem_add]; grind
     obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
     obtain ⟨x, hx⟩ := le_iff_exists_add'.mp
       (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
