@@ -148,6 +148,18 @@ theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
   simp [← dotProduct_comp_equiv_symm, Function.comp_def _ e.symm]
 
+/-- Extending the left argument with zeros is the same as slicing the right argument. -/
+@[simp]
+theorem extend_zero_dotProduct {s : m → n} (hs : Function.Injective s) (u : m → α) (x : n → α) :
+    s.extend u 0 ⬝ᵥ x = u ⬝ᵥ (x ∘ s) :=
+  (Fintype.sum_of_injective s hs _ _ (by simp +contextual) (by simp [hs.extend_apply])).symm
+
+/-- Extending the right argument with zeros is the same as slicing the left argument. -/
+@[simp]
+theorem dotProduct_extend_zero {s : n → m} (hs : Function.Injective s) (u : m → α) (x : n → α) :
+    u ⬝ᵥ s.extend x 0 = (u ∘ s) ⬝ᵥ x :=
+  (Fintype.sum_of_injective s hs _ _ (by simp +contextual) (by simp [hs.extend_apply])).symm
+
 theorem dotProduct_sum {ι : Type*} (u : m → α) (s : Finset ι) (v : ι → (m → α)) :
     u ⬝ᵥ ∑ i ∈ s, v i = ∑ i ∈ s, u ⬝ᵥ v i := by
   simp only [dotProduct, Finset.sum_apply, Finset.mul_sum]
@@ -857,6 +869,16 @@ theorem vecMul_smul [Fintype m] [DistribSMul R α] [SMulCommClass R α α]
     v ᵥ* (b • M) = b • v ᵥ* M := by
   ext
   exact dotProduct_smul _ _ _
+
+@[simp]
+theorem mulVec_extend_zero [Fintype n] [Fintype o] {c : o → n} (hs : Function.Injective c)
+    (M : Matrix m n α) (w : o → α) : M *ᵥ c.extend w 0 = M.submatrix id c *ᵥ w :=
+  funext fun _ ↦ dotProduct_extend_zero hs _ _
+
+@[simp]
+theorem extend_zero_vecMul [Fintype m] [Fintype o] {r : o → m} (hs : Function.Injective r)
+    (v : o → α) (M : Matrix m n α) : r.extend v 0 ᵥ* M = v ᵥ* M.submatrix r id :=
+  funext fun _ ↦ extend_zero_dotProduct hs _ _
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
