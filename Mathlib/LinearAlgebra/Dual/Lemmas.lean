@@ -775,9 +775,12 @@ lemma finrank_ker_add_one_of_ne_zero :
     f.quotKerEquivRange.finrank_eq, this]
   rw [range_eq_top_of_ne_zero hf, finrank_top, finrank_self]
 
+omit hf in
 lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
     (hpf : Disjoint (LinearMap.ker f) p) (hp : p ≠ ⊥) :
     IsCompl (LinearMap.ker f) p := by
+  rcases eq_or_ne f 0 with rfl | hf
+  · simp [hp] at hpf
   refine ⟨hpf, codisjoint_iff.mpr <| eq_of_le_of_finrank_le le_top ?_⟩
   have : finrank K ↑(LinearMap.ker f ⊔ p) = finrank K (LinearMap.ker f) + finrank K p := by
     simp [← Submodule.finrank_sup_add_finrank_inf_eq (LinearMap.ker f) p, hpf.eq_bot]
@@ -797,11 +800,10 @@ lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V
     obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hpy
     have ht : t = 0 := by simpa [hx] using hfy
     simp [ht]
-  have hf : f ≠ 0 := by aesop
   ext v
   obtain ⟨y, hy, z, hz, rfl⟩ : ∃ y ∈ LinearMap.ker f, ∃ z ∈ p, y + z = v := by
     have : v ∈ (⊤ : Submodule K V₁) := Submodule.mem_top
-    rwa [← (isCompl_ker_of_disjoint_of_ne_bot hf hpf hp).sup_eq_top, Submodule.mem_sup] at this
+    rwa [← (isCompl_ker_of_disjoint_of_ne_bot hpf hp).sup_eq_top, Submodule.mem_sup] at this
   have hy' : g y = 0 := by rwa [← LinearMap.mem_ker, ← h]
   replace hy : f y = 0 := by rwa [LinearMap.mem_ker] at hy
   obtain ⟨t, rfl⟩ := Submodule.mem_span_singleton.mp hz

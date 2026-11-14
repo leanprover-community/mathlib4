@@ -698,8 +698,10 @@ set_option linter.overlappingInstances false
 
 include K L in
 lemma pow_sub_one_dvd_differentIdeal_aux
-    {p : Ideal A} [p.IsMaximal] (P : Ideal B) {e : ℕ} (he : e ≠ 0) (hp : p ≠ ⊥)
+    {p : Ideal A} [p.IsMaximal] (P : Ideal B) {e : ℕ} (hp : p ≠ ⊥)
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
+  rcases eq_or_ne e 0 with rfl | he
+  · simp
   obtain ⟨a, ha⟩ := (pow_dvd_pow _ (Nat.sub_le e 1)).trans hP
   have hp' := (Ideal.map_eq_bot_iff_of_injective
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
@@ -753,9 +755,7 @@ lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (Frac
   have : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
   have : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
-  by_cases he : e = 0
-  · rw [he, pow_zero]; exact one_dvd _
-  exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
+  exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ hp hP
 
 theorem not_dvd_differentIdeal_of_intTrace_notMem
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
