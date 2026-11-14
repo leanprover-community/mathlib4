@@ -56,7 +56,7 @@ theorem IsBounded.div (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s / t) 
   div_eq_mul_inv s t ▸ hs.mul ht.inv
 
 @[to_additive isBounded_norm_iff]
-lemma isBounded_norm_iff' {E : Type*} [SeminormedGroup E] {s : Set E} :
+lemma isBounded_image_norm_iff' :
     IsBounded ((‖·‖) '' s) ↔ IsBounded s := by
   refine ⟨fun hs ↦ ?_, lipschitzWith_one_norm'.isBounded_image⟩
   rw [isBounded_iff_forall_norm_le']
