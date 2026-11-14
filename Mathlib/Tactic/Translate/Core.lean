@@ -725,7 +725,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
       reorder.isEmpty && omissions.isEmpty && cfg.relevantArg?.isNone then
     Linter.logLintIf linter.translate.redundant (← getRef) m!"\
       `{t.attrName} self` is redundant when none of the arguments are reordered or omitted \
-      and no `(relevant_arg := ...)` is provided.\nPlease remove the attribute, pr provide \
+      and no `(relevant_arg := ...)` is provided.\nPlease remove the attribute, or provide \
       an explicit `(reorder := ...)`, `(omit := ...)` or `(relevant_arg := ...)` argument.\n\
       If you need to give a hint to `{t.attrName}` to translate expressions involving `{src}`,\n\
       use `{t.attrName}_do_translate` instead"

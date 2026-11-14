@@ -5,8 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Init
-public import Mathlib.Tactic.Translate.Reorder -- TODO: move elabArgStx to a better shared location!
+public import Mathlib.Tactic.Translate.Util
 
 /-!
 # Omitting arguments in a translation

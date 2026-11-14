@@ -292,10 +292,10 @@ where
         args ← args.modifyM arg (reorderLambda argReorder ·)
       args := reorder.permute! args
       -- Handle argument omissions after reordering (to not invalidate indices).
-      -- TODO: ensure reordering and omission values do not overlap!
+      -- Argument validation elsewhere ensures that reordered and omitted values do not overlap.
       -- If the number of arguments is smaller than some argument index in `omittedArguments`,
       -- we need to eta expand first.
-      -- TODO: why do I need to write omitted.omission here?
+      -- TODO(Michael): why do I need to write omitted.omission here? We don't need to for reorders.
       if args.size < ArgOmit.range omitted.omission then
         let e' ← etaExpandN (omitted.omission.range - args.size) e
         trace[translate_detail] "eta expanded {e} to {e'}"
