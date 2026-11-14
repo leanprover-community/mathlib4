@@ -1,5 +1,3 @@
-
-import Mathlib.NumberTheory.FLT.FourSub
 module  -- shake: keep-all --deprecated_module: ignore
 public import Batteries
 public import Mathlib.Algebra.AddConstMap.Basic
@@ -6001,6 +5999,7 @@ public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 public import Mathlib.NumberTheory.EulerProduct.ExpLog
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.Four
+public import Mathlib.NumberTheory.FLT.FourSub
 public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.NumberTheory.FLT.Polynomial
 public import Mathlib.NumberTheory.FLT.Three
