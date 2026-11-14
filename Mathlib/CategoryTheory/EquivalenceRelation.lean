@@ -291,11 +291,12 @@ class IsUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A) 
     Nonempty (UniversallyEffectiveEquivalenceRelation p₁ p₂)
 
 variable (C) in
-/-- A category `C` is a universally exact category if all equivalence relations in `C` are
-universally effective equivalence relations. -/
-class IsUniversallyEffectiveEquivalenceRelationCategory where
-  isUniversallyEffectiveEquivalenceRelation (p₁ p₂ : R ⟶ A) [IsEquivalenceRelation p₁ p₂] :
-    IsUniversallyEffectiveEquivalenceRelation p₁ p₂
+/-- A category in which every equivalence relation is universally effective. This is condition (c)
+in Giraud's characterisation of Grothendieck toposes, [SGA4, IV, 1.1.2][sga-4-tome-1]. -/
+class IsUniversallyEffectiveEquivalenceRelationCategory : Prop where
+  /-- Every equivalence relation `p₁, p₂ : R ⟶ A` is universally effective. -/
+  isUniversallyEffectiveEquivalenceRelation {R A : C} (p₁ p₂ : R ⟶ A)
+    [IsEquivalenceRelation p₁ p₂] : IsUniversallyEffectiveEquivalenceRelation p₁ p₂
 
 end Effective
 
