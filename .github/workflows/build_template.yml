@@ -136,9 +136,8 @@ jobs:
       - name: check the cache tool is recent
         # Canonical repo only. This nudge targets human fork-PR / dev-branch
         # contributors who run `lake exe cache get` locally. The nightly-testing
-        # repo's branches (nightly-testing, bump/*, batteries-pr-testing-*) are
-        # machine-managed and don't merge master the same way, so "merge master
-        # and push" is the wrong remedy there; never fail their CI on it.
+        # repo's `batteries-pr-testing-*` branches are machine-managed, so
+        # "merge master and push" is the wrong remedy there.
         if: github.repository == 'leanprover-community/mathlib4'
         shell: bash
         run: |
@@ -287,7 +286,7 @@ jobs:
 
       # The three checks ask Lake whether each target is up to date and free
       # of warnings, so each target reports its own outcome to the staging
-      # gates, the test gate and the nightly-testing comment. They only read.
+      # gates, the test gate and the Batteries PR comment. They only read.
       - parallel:
           - name: check that Archive built
             id: archive
@@ -1238,12 +1237,6 @@ jobs:
         # and that miscellaneous executables still work
         run: |
           lake build Batteries Qq Aesop ProofWidgets Plausible
-
-      - name: build AesopTest (nightly-testing only)
-        # Only run on the mathlib4-nightly-testing repository
-        if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
-        run: |
-          lake build AesopTest
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `daily.yml`.

@@ -185,7 +185,7 @@ theorem single_mul_single_right [Fintype n] [Fintype k] [DecidableEq n] [Decidab
   rw [← Matrix.mul_assoc, single_mul_single]
 
 /-- We can also define permutation matrices by permuting the rows of the identity matrix. -/
-theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : Equiv.Perm n) :
+theorem toMatrix_toPEquiv_eq [DecidableEq n] [Zero α] [One α] (σ : m ≃ n) :
     σ.toPEquiv.toMatrix = (1 : Matrix n n α).submatrix σ id :=
   Matrix.ext fun _ _ => if_congr Option.some_inj rfl rfl
 
