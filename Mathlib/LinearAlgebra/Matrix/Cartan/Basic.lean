@@ -20,7 +20,9 @@ This file defines Cartan matrices for simple Lie algebras, both the exceptional 
 (E₆, E₇, E₈, F₄, G₂) and the classical infinite families (A, B, C, D), as well as the
 generalized Eₙ family obtained by continuing the E-type Dynkin diagram.
 
-It also defines the predicate that a matrix is a finite-type Cartan matrix `Matrix.IsFiniteCartan`.
+It also defines the predicate that a matrix is a finite-type Cartan matrix `Matrix.IsFiniteCartan`,
+and `CartanMatrix.IsBond`, the five possible pairs `(Mᵢⱼ, Mⱼᵢ)` of non-zero entries
+(`Matrix.IsFiniteCartan.apply_cases`).
 
 ## Main definitions
 
@@ -197,6 +199,38 @@ theorem A_isSymm : (A n).IsSymm := A_transpose n
   ext; simp only [D, transpose_apply, of_apply]; grind
 
 theorem D_isSymm : (D n).IsSymm := D_transpose n
+
+/-! ### Symmetries -/
+
+/-- Reversing the order of the indices is a symmetry of the path `Aₙ`. -/
+theorem A_submatrix_revPerm :
+    (A n).submatrix Fin.revPerm Fin.revPerm = A n := by
+  ext i j
+  simp [A, Fin.ext_iff]
+  lia
+
+/-- Swapping the two short arms `n-2` and `n-1` is a symmetry of `Dₙ`. -/
+theorem D_submatrix_swap (hn : 2 ≤ n) :
+    (D n).submatrix (Equiv.swap ⟨n - 2, by lia⟩ ⟨n - 1, by lia⟩)
+      (Equiv.swap ⟨n - 2, by lia⟩ ⟨n - 1, by lia⟩) = D n := by
+  set p : Fin n := ⟨n - 2, by lia⟩ with hp
+  set q : Fin n := ⟨n - 1, by lia⟩ with hq
+  -- the swap fixes the nodes `i < n - 2` and exchanges `p` and `q`
+  have key (i : Fin n) : Equiv.swap p q i = i ∧ (i : ℕ) < n - 2 ∨
+      i = p ∧ Equiv.swap p q i = q ∨ i = q ∧ Equiv.swap p q i = p := by
+    obtain hi | hi | hi : (i : ℕ) < n - 2 ∨ i = p ∨ i = q := by
+      simp only [hp, hq, Fin.ext_iff]; lia
+    · exact .inl ⟨Equiv.swap_apply_of_ne_of_ne (by simp [hp, Fin.ext_iff]; lia)
+        (by simp [hq, Fin.ext_iff]; lia), hi⟩
+    · exact .inr (.inl ⟨hi, hi ▸ Equiv.swap_apply_left _ _⟩)
+    · exact .inr (.inr ⟨hi, hi ▸ Equiv.swap_apply_right _ _⟩)
+  ext i j
+  rw [Matrix.submatrix_apply]
+  obtain ⟨hi, hi'⟩ | ⟨rfl, hi⟩ | ⟨rfl, hi⟩ := key i <;>
+    obtain ⟨hj, hj'⟩ | ⟨rfl, hj⟩ | ⟨rfl, hj⟩ := key j <;>
+    simp only [hi, hj, D_diag] <;>
+    simp only [hp, hq, D, Matrix.of_apply, Fin.ext_iff] <;>
+    simp (disch := lia) only [ite_eq_right, Nat.sub_add_cancel, true_or, or_true, and_true]
 
 /-! ### Small cases -/
 
@@ -482,6 +516,34 @@ structure Matrix.IsFiniteCartan {ι : Type*} [Fintype ι] [DecidableEq ι]
   zero_comm : ∀ i j, M i j = 0 ↔ M j i = 0
   exists_posDef : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ (diagonal d * M).PosDef
 
+namespace CartanMatrix
+
+/-- The pairs `(Mᵢⱼ, Mⱼᵢ)` that can occur between two distinct joined indices of a finite Cartan
+matrix (see `Matrix.IsFiniteCartan.apply_cases`): a simple bond, a double bond in either
+direction, or a triple bond in either direction. -/
+def IsBond (a b : ℤ) : Prop :=
+  a = -1 ∧ b = -1 ∨ a = -1 ∧ b = -2 ∨ a = -2 ∧ b = -1 ∨ a = -1 ∧ b = -3 ∨ a = -3 ∧ b = -1
+
+namespace IsBond
+
+variable {a b : ℤ}
+
+lemma swap (h : IsBond a b) : IsBond b a := by
+  unfold IsBond at *; lia
+
+lemma one_le_mul (h : IsBond a b) : 1 ≤ a * b := by
+  unfold IsBond at h
+  rcases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;> norm_num
+
+/-- A bond is either simple or has at least two bonds. -/
+lemma eq_neg_one_or_two_le_mul (h : IsBond a b) : a = -1 ∧ b = -1 ∨ 2 ≤ a * b := by
+  unfold IsBond at h
+  rcases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;> norm_num
+
+end IsBond
+
+end CartanMatrix
+
 namespace Matrix.IsFiniteCartan
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {M : Matrix ι ι ℤ} (hM : M.IsFiniteCartan)
@@ -533,6 +595,66 @@ omit hM in
 @[simp] protected lemma transpose_iff :
     Mᵀ.IsFiniteCartan ↔ M.IsFiniteCartan :=
   ⟨fun h ↦ by simpa using h.transpose, IsFiniteCartan.transpose⟩
+
+section Submatrix
+
+variable {κ : Type*} [Fintype κ] [DecidableEq κ]
+
+/-- A principal submatrix of a finite Cartan matrix is a finite Cartan matrix. -/
+protected lemma submatrix {f : κ → ι} (hf : Function.Injective f) :
+    (M.submatrix f f).IsFiniteCartan := by
+  obtain ⟨d, hd, hdM⟩ := hM.exists_posDef
+  refine ⟨fun i ↦ hM.diag _, fun i j h ↦ hM.offDiag_nonpos _ _ (hf.ne h),
+    fun i j ↦ hM.zero_comm _ _, d ∘ f, fun i ↦ hd _, ?_⟩
+  convert hdM.submatrix hf using 1
+  ext i j
+  simp [diagonal_mul]
+
+protected lemma reindex (e : ι ≃ κ) : (M.reindex e e).IsFiniteCartan :=
+  hM.submatrix e.symm.injective
+
+omit hM in
+@[simp] lemma submatrix_equiv_iff (σ : κ ≃ ι) :
+    (M.submatrix σ σ).IsFiniteCartan ↔ M.IsFiniteCartan := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.submatrix σ.injective⟩
+  simpa using h.submatrix σ.symm.injective
+
+end Submatrix
+
+/-- The symmetrising weights: `dᵢ Mᵢⱼ = dⱼ Mⱼᵢ`. -/
+lemma exists_symmetrizer : ∃ d : ι → ℤ, (∀ i, 0 < d i) ∧ ∀ i j, d i * M i j = d j * M j i := by
+  obtain ⟨d, hd, hdM⟩ := hM.exists_posDef
+  exact ⟨d, hd, fun i j ↦ by simpa using hdM.isHermitian.apply j i⟩
+
+/-- Two distinct indices are joined by at most three bonds: the `2 × 2` principal minor
+`4 - Mᵢⱼ Mⱼᵢ` is positive. -/
+lemma mul_lt_four {i j : ι} (hij : i ≠ j) : M i j * M j i < 4 := by
+  have hf : Function.Injective ![i, j] := by
+    intro a b h; fin_cases a <;> fin_cases b <;> simp_all [eq_comm]
+  have h := (hM.submatrix hf).det_pos
+  rw [det_fin_two] at h
+  simp [hM.diag] at h
+  linarith
+
+lemma mul_nonneg_of_ne {i j : ι} (hij : i ≠ j) : 0 ≤ M i j * M j i :=
+  mul_nonneg_of_nonpos_of_nonpos (hM.offDiag_nonpos i j hij) (hM.offDiag_nonpos j i hij.symm)
+
+/-- Two distinct indices are either not joined, or joined by one of the five bonds. -/
+lemma apply_cases {i j : ι} (hij : i ≠ j) :
+    M i j = 0 ∧ M j i = 0 ∨ CartanMatrix.IsBond (M i j) (M j i) := by
+  have h₁ := hM.offDiag_nonpos i j hij
+  have h₂ := hM.offDiag_nonpos j i hij.symm
+  have h₃ := hM.mul_lt_four hij
+  obtain h | h := eq_or_ne (M i j) 0
+  · exact .inl ⟨h, (hM.zero_comm i j).mp h⟩
+  have h' : M j i ≠ 0 := by simpa [hM.zero_comm] using h
+  have : -3 ≤ M i j := by nlinarith [show M j i ≤ -1 by lia]
+  have : -3 ≤ M j i := by nlinarith [show M i j ≤ -1 by lia]
+  have hu : M i j = -1 ∨ M i j = -2 ∨ M i j = -3 := by lia
+  have hv : M j i = -1 ∨ M j i = -2 ∨ M j i = -3 := by lia
+  right
+  unfold CartanMatrix.IsBond
+  rcases hu with hu | hu | hu <;> rcases hv with hv | hv | hv <;> simp_all
 
 end Matrix.IsFiniteCartan
 
