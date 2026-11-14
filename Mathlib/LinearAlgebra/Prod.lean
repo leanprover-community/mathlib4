@@ -877,13 +877,13 @@ end LinearMap
 
 namespace LinearMap
 
-open Submodule
+section RangeProdFstSndEquiv
 
-variable [Ring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃]
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃]
   [Module R M] [Module R M₂] [Module R M₃]
 
-/-- The range of `(fst, f) : M × M₂ →ₗ[R] M × M₃` is linearly equivalent to
-the product of `M` and the range of `f ∘ₗ inr R M M₂`. -/
+/-- The range of the linear map `M × M₂ →ₗ[R] M × M₃` given by `(x, y) ↦ (x, f (x, y))`
+is linearly equivalent to the product of `M` and the range of `y ↦ f (0, y)`. -/
 @[simps! apply_fst apply_snd_coe symm_apply_coe]
 def rangeProdFstEquiv (f : M × M₂ →ₗ[R] M₃) :
     range (prod (fst R M M₂) f) ≃ₗ[R] M × range (f ∘ₗ inr R M M₂) :=
@@ -898,8 +898,8 @@ def rangeProdFstEquiv (f : M × M₂ →ₗ[R] M₃) :
         exact ⟨(x, y), by simp [← map_add]⟩)
     (by ext <;> simp) (by ext ⟨_, x, rfl⟩ <;> simp)
 
-/-- The range of `(snd, f) : M × M₂ →ₗ[R] M₂ × M₃` is linearly equivalent to
-the product of `M₂` and the range of `f ∘ₗ inl R M M₂`. -/
+/-- The range of the linear map `M × M₂ →ₗ[R] M₂ × M₃` given by `(x, y) ↦ (y, f (x, y))`
+is linearly equivalent to the product of `M₂` and the range of `x ↦ f (x, 0)`. -/
 @[simps! apply_fst apply_snd_coe symm_apply_coe]
 def rangeProdSndEquiv (f : M × M₂ →ₗ[R] M₃) :
     range (prod (snd R M M₂) f) ≃ₗ[R] M₂ × range (f ∘ₗ inl R M M₂) :=
@@ -914,9 +914,7 @@ def rangeProdSndEquiv (f : M × M₂ →ₗ[R] M₃) :
         exact ⟨(x, y), by simp [← map_add, add_comm]⟩)
     (by ext <;> simp) (by ext ⟨_, x, rfl⟩ <;> simp)
 
-end LinearMap
-
-namespace LinearMap
+end RangeProdFstSndEquiv
 
 section Graph
 

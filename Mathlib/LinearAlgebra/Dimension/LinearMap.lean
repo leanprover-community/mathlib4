@@ -138,18 +138,45 @@ theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} {f : V →ₗ[K] V
   · rintro ⟨s, rfl, si⟩
     exact ⟨s, ⟨s, rfl, rfl⟩, si⟩
 
-variable [AddCommGroup V''] [Module K V'']
+end DivisionRing
 
-theorem rank_prod_fst (f : V × V' →ₗ[K] V'') :
+section StrongRankCondition
+
+variable [Semiring K] [StrongRankCondition K] [AddCommMonoid V] [Module K V] [Module.Free K V]
+  [AddCommMonoid V'] [Module K V'] [AddCommGroup V''] [Module K V'']
+
+theorem rank_prod_fst (f : V × V' →ₗ[K] V'') [Module.Free K (range (f ∘ₗ inr K V V'))] :
     rank (prod (fst K V V') f) =
       lift.{v''} (Module.rank K V) + lift.{v} (rank (f ∘ₗ inr K V V')) := by
   simpa using (rangeProdFstEquiv f).lift_rank_eq
 
-theorem rank_prod_snd (f : V × V' →ₗ[K] V'') :
-    rank (prod (snd K V V') f) =
-      lift.{v''} (Module.rank K V') + lift.{v'} (rank (f ∘ₗ inl K V V')) := by
+theorem rank_prod_fst_eq_lift_rank_iff [Module.Finite K V] (f : V × V' →ₗ[K] V'')
+    [Module.Free K (range (f ∘ₗ inr K V V'))] :
+    rank (prod (fst K V V') f) = lift.{v''} (Module.rank K V) ↔ f ∘ₗ inr K V V' = 0 := by
+  have : IsAddLeftRegular (lift.{v''} (Module.rank K V)) :=
+    isAddLeftRegular_iff_lt_aleph0.2 <| lift_lt_aleph0.2 <| Module.rank_lt_aleph0 K V
+  calc _ ↔ lift.{v''} (Module.rank K V) + lift.{v} (rank (f ∘ₗ inr K V V')) =
+        lift.{v''} (Module.rank K V) + 0 := by rw [rank_prod_fst, add_zero]
+    _ ↔ f ∘ₗ inr K V V' = 0 := by
+      rw [this.eq_iff, lift_eq_zero, Module.rank_zero_iff_of_free (R := K), subsingleton_iff_eq_bot,
+        range_eq_bot]
+
+theorem rank_prod_snd (f : V' × V →ₗ[K] V'') [Module.Free K (range (f ∘ₗ inl K V' V))] :
+    rank (prod (snd K V' V) f) =
+      lift.{v''} (Module.rank K V) + lift.{v} (rank (f ∘ₗ inl K V' V)) := by
   simpa using (rangeProdSndEquiv f).lift_rank_eq
 
-end DivisionRing
+theorem rank_prod_snd_eq_lift_rank_iff [Module.Finite K V] (f : V' × V →ₗ[K] V'')
+    [Module.Free K (range (f ∘ₗ inl K V' V))] :
+    rank (prod (snd K V' V) f) = lift.{v''} (Module.rank K V) ↔ f ∘ₗ inl K V' V = 0 := by
+  have : IsAddLeftRegular (lift.{v''} (Module.rank K V)) :=
+    isAddLeftRegular_iff_lt_aleph0.2 <| lift_lt_aleph0.2 <| Module.rank_lt_aleph0 K V
+  calc _ ↔ lift.{v''} (Module.rank K V) + lift.{v} (rank (f ∘ₗ inl K V' V)) =
+        lift.{v''} (Module.rank K V) + 0 := by rw [rank_prod_snd, add_zero]
+    _ ↔ f ∘ₗ inl K V' V = 0 := by
+      rw [this.eq_iff, lift_eq_zero, Module.rank_zero_iff_of_free (R := K), subsingleton_iff_eq_bot,
+        range_eq_bot]
+
+end StrongRankCondition
 
 end LinearMap

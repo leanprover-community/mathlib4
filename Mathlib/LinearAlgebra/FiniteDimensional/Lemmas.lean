@@ -190,26 +190,6 @@ lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂
   suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
   lia
 
-variable {V₃ : Type*} [AddCommGroup V₃] [Module K V₃] [Module.Finite K V] [Module.Finite K V₂]
-
-theorem finrank_range_prod_fst (f : V × V₂ →ₗ[K] V₃) :
-    finrank K (range (prod (fst K V V₂) f)) =
-      finrank K V + finrank K (range (f ∘ₗ inr K V V₂)) := by
-  rw [(rangeProdFstEquiv f).finrank_eq, finrank_prod]
-
-theorem finrank_range_prod_snd (f : V × V₂ →ₗ[K] V₃) :
-    finrank K (range (prod (snd K V V₂) f)) =
-      finrank K V₂ + finrank K (range (f ∘ₗ inl K V V₂)) := by
-  rw [(rangeProdSndEquiv f).finrank_eq, finrank_prod]
-
-theorem finrank_range_prod_fst_eq_finrank_iff (f : V × V₂ →ₗ[K] V₃) :
-    finrank K (range (prod (fst K V V₂) f)) = finrank K V ↔ f ∘ₗ inr K V V₂ = 0 := by
-  simp [finrank_range_prod_fst, range_eq_bot]
-
-theorem finrank_range_prod_snd_eq_finrank_iff (f : V × V₂ →ₗ[K] V₃) :
-    finrank K (range (prod (snd K V V₂) f)) = finrank K V₂ ↔ f ∘ₗ inl K V V₂ = 0 := by
-  simp [finrank_range_prod_snd, range_eq_bot]
-
 end DivisionRing
 
 end LinearMap

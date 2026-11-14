@@ -163,6 +163,37 @@ theorem Module.finrank_prod [Module.Finite R M] [Module.Finite R M'] :
 
 end Prod
 
+namespace LinearMap
+
+variable [StrongRankCondition R] [Module R M'] {N : Type*} [AddCommGroup N] [Module R N]
+  [Module.Free R M] [Module.Finite R M]
+
+theorem finrank_range_prod_fst (f : M × M' →ₗ[R] N) [Module.Free R (range (f ∘ₗ inr R M M'))]
+    [Module.Finite R (range (f ∘ₗ inr R M M'))] :
+    finrank R (range (prod (fst R M M') f)) =
+      finrank R M + finrank R (range (f ∘ₗ inr R M M')) := by
+  rw [(rangeProdFstEquiv f).finrank_eq, finrank_prod]
+
+theorem finrank_range_prod_fst_eq_finrank_iff (f : M × M' →ₗ[R] N)
+    [Module.Free R (range (f ∘ₗ inr R M M'))] [Module.Finite R (range (f ∘ₗ inr R M M'))] :
+    finrank R (range (prod (fst R M M') f)) = finrank R M ↔ f ∘ₗ inr R M M' = 0 := by
+  rw [finrank_range_prod_fst, Nat.add_eq_left, finrank_eq_zero_iff_of_free, subsingleton_iff_eq_bot,
+    range_eq_bot]
+
+theorem finrank_range_prod_snd (f : M' × M →ₗ[R] N) [Module.Free R (range (f ∘ₗ inl R M' M))]
+    [Module.Finite R (range (f ∘ₗ inl R M' M))] :
+    finrank R (range (prod (snd R M' M) f)) =
+      finrank R M + finrank R (range (f ∘ₗ inl R M' M)) := by
+  rw [(rangeProdSndEquiv f).finrank_eq, finrank_prod]
+
+theorem finrank_range_prod_snd_eq_finrank_iff (f : M' × M →ₗ[R] N)
+    [Module.Free R (range (f ∘ₗ inl R M' M))] [Module.Finite R (range (f ∘ₗ inl R M' M))] :
+    finrank R (range (prod (snd R M' M) f)) = finrank R M ↔ f ∘ₗ inl R M' M = 0 := by
+  rw [finrank_range_prod_snd, Nat.add_eq_left, finrank_eq_zero_iff_of_free, subsingleton_iff_eq_bot,
+    range_eq_bot]
+
+end LinearMap
+
 section Finsupp
 
 variable (R M M')
