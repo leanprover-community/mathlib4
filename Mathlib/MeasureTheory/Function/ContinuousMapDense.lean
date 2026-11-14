@@ -34,8 +34,8 @@ compact assumption and give only approximation by a bounded continuous function.
 
 * `MeasureTheory.Lp.boundedContinuousFunction_dense`: The subgroup
   `MeasureTheory.Lp.boundedContinuousFunction` of `Lp E p μ`, the additive subgroup of
-  `Lp E p μ` consisting of equivalence classes containing a continuous representative, is dense in
-  `Lp E p μ`.
+  `Lp E p μ` consisting of equivalence classes containing a bounded continuous representative,
+  is dense in `Lp E p μ`.
 * `BoundedContinuousFunction.toLp_denseRange`: For finite-measure `μ`, the continuous linear
   map `BoundedContinuousFunction.toLp p μ 𝕜` from `α →ᵇ E` to `Lp E p μ` has dense range.
 * `ContinuousMap.toLp_denseRange`: For compact `α` and finite-measure `μ`, the continuous linear
@@ -320,7 +320,7 @@ namespace Lp
 
 variable (E μ)
 
-/-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
+/-- A function in `Lp` can be approximated in `Lp` by bounded continuous functions. -/
 theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fact (1 ≤ p)]
     (hp : p ≠ ∞) [μ.WeaklyRegular] :
     Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := by
@@ -332,7 +332,7 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fa
   refine ⟨g_mem.toLp _, ⟨g, rfl⟩, ?_⟩
   rwa [Metric.mem_closedEBall', ← Lp.toLp_coeFn f (Lp.memLp f), Lp.edist_toLp_toLp]
 
-/-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
+/-- The closure of the subgroup of bounded continuous functions is all of `Lp`. -/
 theorem boundedContinuousFunction_topologicalClosure [SecondCountableTopologyEither α E]
     [Fact (1 ≤ p)] (hp : p ≠ ∞) [μ.WeaklyRegular] :
     (boundedContinuousFunction E p μ).topologicalClosure = ⊤ :=
