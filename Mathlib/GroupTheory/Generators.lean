@@ -148,8 +148,8 @@ lemma reindex_val (P : Generators G ι) {e : ι' → ι} (he : Function.Surjecti
 
 /-- If `G` has a finite generating family, then `G` is finitely generated. -/
 @[to_additive /-- If `G` has a finite generating family, then `G` is finitely generated. -/]
-theorem fg [Finite ι] (P : Generators G ι) : Group.FG G :=
-  Group.fg_of_surjective P.lift_surjective
+theorem fg [Finite ι] (P : Generators G ι) : IsMulFG G :=
+  IsMulFG.of_surjective P.lift P.lift_surjective
 
 end Generators
 
@@ -157,9 +157,9 @@ end Generators
 @[to_additive /-- An additive group is finitely generated if and only if it admits a finite
 generating family. -/]
 theorem fg_iff_nonempty_finite_generators :
-    Group.FG G ↔ ∃ n : ℕ, Nonempty (Generators G (Fin n)) := by
+    IsMulFG G ↔ ∃ n : ℕ, Nonempty (Generators G (Fin n)) := by
   constructor
-  · rw [Group.FG, isMulFG_iff]
+  · rw [isMulFG_iff]
     rintro ⟨S, hS⟩
     exact ⟨#S, ⟨(Generators.ofSet hS).reindex S.equivFin.symm.surjective⟩⟩
   · rintro ⟨n, ⟨P⟩⟩

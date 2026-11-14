@@ -33,15 +33,16 @@ namespace Group
 variable (G) in
 /-- The minimum number of generators of a group. -/
 @[to_additive /-- The minimum number of generators of an additive group. -/]
-noncomputable def rank [h : FG G] : ℕ := @Nat.find _ (Classical.decPred _) (fg_iff'.mp h)
+noncomputable def rank [h : IsMulFG G] : ℕ := @Nat.find _ (Classical.decPred _) (fg_iff'.mp h)
 
 variable (G) in
 @[to_additive]
-lemma rank_spec [h : FG G] : ∃ S : Finset G, S.card = rank G ∧ .closure S = (⊤ : Subgroup G) :=
+lemma rank_spec [h : IsMulFG G] : ∃ S : Finset G, S.card = rank G ∧ .closure S = (⊤ : Subgroup G) :=
   @Nat.find_spec _ (Classical.decPred _) (fg_iff'.mp h)
 
 @[to_additive]
-lemma rank_le [h : FG G] {S : Finset G} (hS : .closure S = (⊤ : Subgroup G)) : rank G ≤ S.card :=
+lemma rank_le [h : IsMulFG G] {S : Finset G} (hS : .closure S = (⊤ : Subgroup G)) :
+    rank G ≤ S.card :=
   @Nat.find_le _ _ (Classical.decPred _) (fg_iff'.mp h) ⟨S, rfl, hS⟩
 
 variable (G) in
@@ -51,7 +52,7 @@ theorem rank_eq_zero [Subsingleton G] : rank G = 0 := by
   exact rank_le (Subsingleton.elim _ _)
 
 @[to_additive]
-theorem rank_eq_zero_iff [FG G] : rank G = 0 ↔ Subsingleton G := by
+theorem rank_eq_zero_iff [IsMulFG G] : rank G = 0 ↔ Subsingleton G := by
   refine ⟨fun h ↦ ?_, fun _ ↦ rank_eq_zero G⟩
   obtain ⟨s, hs, hs'⟩ := rank_spec G
   rw [h, Finset.card_eq_zero] at hs
@@ -59,13 +60,14 @@ theorem rank_eq_zero_iff [FG G] : rank G = 0 ↔ Subsingleton G := by
 
 variable (G) in
 @[to_additive]
-theorem rank_pos [Nontrivial G] [FG G] : 0 < rank G := by
+theorem rank_pos [Nontrivial G] [IsMulFG G] : 0 < rank G := by
   rwa [pos_iff_ne_zero, ne_eq, rank_eq_zero_iff, not_subsingleton_iff_nontrivial]
 
 -- TODO: Prove monotonicity of `rank` along injective homomorphisms of abelian groups. This could
 -- potentially be deduced from a (yet unproved) analogous statement for `Submodule.spanRank`.
 @[to_additive]
-lemma rank_le_of_surjective [FG G] [FG H] (f : G →* H) (hf : Surjective f) : rank H ≤ rank G := by
+lemma rank_le_of_surjective [IsMulFG G] [IsMulFG H] (f : G →* H) (hf : Surjective f) :
+    rank H ≤ rank G := by
   classical
   obtain ⟨S, hS1, hS2⟩ := rank_spec G
   trans (S.image f).card
@@ -74,11 +76,11 @@ lemma rank_le_of_surjective [FG G] [FG H] (f : G →* H) (hf : Surjective f) : r
   · exact Finset.card_image_le.trans_eq hS1
 
 @[to_additive]
-lemma rank_range_le [FG G] {f : G →* H} : rank f.range ≤ rank G :=
+lemma rank_range_le [IsMulFG G] {f : G →* H} : rank f.range ≤ rank G :=
   rank_le_of_surjective f.rangeRestrict f.rangeRestrict_surjective
 
 @[to_additive]
-lemma rank_congr [FG G] [FG H] (e : G ≃* H) : rank G = rank H :=
+lemma rank_congr [IsMulFG G] [IsMulFG H] (e : G ≃* H) : rank G = rank H :=
   le_antisymm (rank_le_of_surjective e.symm e.symm.surjective)
     (rank_le_of_surjective e e.surjective)
 
@@ -87,7 +89,7 @@ end Group
 namespace Subgroup
 
 @[to_additive]
-lemma rank_congr {H K : Subgroup G} [Group.FG H] [Group.FG K] (h : H = K) : rank H = rank K := by
+lemma rank_congr {H K : Subgroup G} [IsMulFG H] [IsMulFG K] (h : H = K) : rank H = rank K := by
   subst h; rfl
 
 @[to_additive]
