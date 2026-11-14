@@ -99,9 +99,6 @@ theorem recOneCoe_coe {C : WithOne α → Sort*} (d : C 1) (f : ∀ a : α, C a)
     @recOneCoe _ C d f ↑x = f x :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b := by simp
-
 @[to_additive]
 def toOption (α : Type*) : WithOne α ≃ Option α where
   toFun | one => none | some x => .some x
@@ -127,7 +124,10 @@ lemma symm_toOption_comp_some : (toOption α).symm ∘ Option.some = (↑) := rf
 
 @[to_additive (attr := simp)]
 lemma toOption_eq_some_iff {x : WithOne α} {a : α} :
-    toOption α x = Option.some a ↔ x = a := by cases x <;> simp
+    toOption α x = Option.some a ↔ x = a := by
+  cases x
+  · simp; nofun
+  · simp
 
 @[to_additive (attr := simp)]
 lemma symm_toOption_eq_coe_iff {x : Option α} {a : α} :
