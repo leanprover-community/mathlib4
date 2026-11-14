@@ -68,7 +68,7 @@ def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decida
 theorem coe_toFinset (s : Set α) [Fintype s] : (↑s.toFinset : Set α) = s :=
   Set.ext fun _ => mem_toFinset
 
-@[simp]
+@[simp, grind =]
 theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, coe_toFinset]
 

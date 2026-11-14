@@ -93,7 +93,7 @@ theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
 theorem pi_empty {t : ∀ a : α, Finset (β a)} : pi (∅ : Finset α) t = singleton (Pi.empty β) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 lemma pi_nonempty : (s.pi t).Nonempty ↔ ∀ a ∈ s, (t a).Nonempty := by
   simp [Finset.Nonempty, Classical.skolem]
 

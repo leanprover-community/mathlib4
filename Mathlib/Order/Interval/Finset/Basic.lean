@@ -55,21 +55,21 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α]
 
-@[simp]
+@[simp, grind =]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Icc_of_le⟩ := nonempty_Icc
 
-@[simp]
+@[simp, grind =]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ico_of_lt⟩ := nonempty_Ico
 
-@[simp]
+@[simp, grind =]
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
 
@@ -344,8 +344,10 @@ theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_t
 theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
   ext a; simp only [mem_Ici, bot_le, mem_univ]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty]), grind ·]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
+
+@[grind =]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
@@ -411,8 +413,10 @@ theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty.mpr isMin_b
 theorem Iic_top [OrderTop α] [Fintype α] : Iic (⊤ : α) = univ := by
   ext a; simp only [mem_Iic, le_top, mem_univ]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty]), grind ·]
 lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
+
+@[grind =]
 lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
