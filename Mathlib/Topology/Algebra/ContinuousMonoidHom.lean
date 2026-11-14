@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
-
 # Continuous Monoid Homs
 
 This file defines the space of continuous homomorphisms between two topological groups.
@@ -141,11 +140,11 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
-  ext <| by convert! DFunLike.ext_iff.1 h
+  ext <| by convert DFunLike.ext_iff.1 h
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
-  ext <| by convert! DFunLike.ext_iff.1 h
+  ext <| by convert DFunLike.ext_iff.1 h
 
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) /-- Composition of two continuous homomorphisms. -/]
@@ -290,7 +289,6 @@ end
 section
 
 /-!
-
 ### Continuous MulEquiv
 
 This section defines the space of continuous isomorphisms between two topological groups.
@@ -593,7 +591,7 @@ lemma toMulEquiv_toContinuousMulEquiv : (e.toContinuousMulEquiv he : G ≃* H) =
 @[to_additive]
 lemma symm_toContinuousMulEquiv :
     (e.toContinuousMulEquiv he).symm = e.symm.toContinuousMulEquiv
-      (fun s ↦ by convert! (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
+      (fun s ↦ by convert (he _).symm; exact (e.preimage_symm_preimage s).symm) :=
   rfl
 
 end MulEquiv

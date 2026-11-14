@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.TypeTags
+
 import Mathlib.Tactic.Basify.Attr
 
 /-! # Definition and notation for extended natural numbers -/
@@ -15,7 +15,7 @@ import Mathlib.Tactic.Basify.Attr
 @[expose] public section
 
 /-- Extended natural numbers `ℕ∞ = WithTop ℕ`. -/
-def ENat : Type := WithTop ℕ deriving Top, Inhabited
+def ENat : Type := WithTop ℕ deriving Top, Inhabited, Repr
 
 @[inherit_doc] notation "ℕ∞" => ENat
 

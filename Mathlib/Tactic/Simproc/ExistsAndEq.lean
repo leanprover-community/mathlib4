@@ -5,10 +5,10 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Init
 public meta import Qq
-public import Qq
-public import Qq.Typ
+public import Mathlib.Init
+
+meta import Qq.Typ
 
 /-!
 # Simproc for `∃ a', ... ∧ a' = a ∧ ...`

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
@@ -15,7 +14,6 @@ If `F₁` and `F₂` are type-valued functors, `A : Subfunctor F₁`, and
 `f` and `g` are two morphisms `A.toFunctor ⟶ F₂`, we introduce
 `Subcomplex.equalizer f g`, which is the subfunctor of `F₁` contained in `A`
 where `f` and `g` coincide.
-
 -/
 
 @[expose] public section

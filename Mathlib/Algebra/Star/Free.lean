@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # A \*-algebra structure on the free algebra.
@@ -26,9 +26,9 @@ namespace FreeMonoid
 variable {α : Type*}
 
 instance : StarMul (FreeMonoid α) where
-  star := List.reverse
-  star_involutive := List.reverse_reverse
-  star_mul := fun _ _ => List.reverse_append
+  star := ofList ∘ .reverse ∘ toList
+  star_involutive _ := by simp
+  star_mul _ _ := by simp
 
 @[simp]
 theorem star_of (x : α) : star (of x) = of x :=

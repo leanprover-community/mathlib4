@@ -5,16 +5,19 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.Data.Nat.Factorization.Basic
-public import Mathlib.Data.Nat.Prime.Pow
 public import Mathlib.NumberTheory.Divisors
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Prime powers and factorizations
 
 This file deals with factorizations of prime powers.
 -/
+
+open scoped Finset
 
 @[expose] public section
 
@@ -52,7 +55,7 @@ theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
       Finsupp.mem_support_iff.2 (by simp [hn, hk.ne'] : n.factorization p ≠ 0), hk, rfl⟩
 
 theorem isPrimePow_iff_card_primeFactors_eq_one {n : ℕ} :
-    IsPrimePow n ↔ n.primeFactors.card = 1 := by
+    IsPrimePow n ↔ #n.primeFactors = 1 := by
   simp_rw [isPrimePow_iff_factorization_eq_single, ← Nat.support_factorization,
     Finsupp.card_support_eq_one', pos_iff_ne_zero]
 

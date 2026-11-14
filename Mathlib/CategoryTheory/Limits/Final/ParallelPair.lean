@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Final
-/-!
 
+/-!
 # Conditions for `parallelPair` to be initial
 
 In this file we give sufficient conditions on a category `C` and parallel morphisms `f g : X ⟶ Y`

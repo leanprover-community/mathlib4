@@ -5,11 +5,11 @@ Authors: Josha Dekker
 -/
 module
 
-public import Mathlib.Order.Filter.Tendsto
-public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.SetTheory.Cardinal.Regular
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Order.Filter.Finite
 
 /-!
 # Filters with a cardinal intersection property

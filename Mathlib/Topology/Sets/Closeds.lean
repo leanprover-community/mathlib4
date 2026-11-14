@@ -5,8 +5,8 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Closed sets

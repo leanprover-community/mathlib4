@@ -5,8 +5,8 @@ Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.BooleanAlgebra.Basic
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Order.BooleanAlgebra.Basic
 
 /-!
 # Symmetric difference and bi-implication
@@ -82,8 +82,6 @@ theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a 
 
 theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor p q :=
   rfl
-
-@[deprecated (since := "2026-04-27")] alias symmDiff_eq_Xor' := symmDiff_eq_xor
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=
@@ -213,7 +211,7 @@ theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
 
 @[to_dual]
 theorem le_symmDiff_sup_right (a b : α) : a ≤ (a ∆ b) ⊔ b := by
-  convert! symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
+  convert symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
 
 @[to_dual]
 theorem le_symmDiff_sup_left (a b : α) : b ≤ (a ∆ b) ⊔ a :=

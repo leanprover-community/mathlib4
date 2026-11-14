@@ -5,7 +5,6 @@ Authors: Rémi Bottinelli
 -/
 module
 
-public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
@@ -29,7 +28,6 @@ Given the type `V` and a quiver instance on `V`:
 
 The free groupoid is first defined by symmetrifying the quiver, taking the induced path category
 and finally quotienting by the reducibility relation.
-
 -/
 
 @[expose] public section
@@ -198,7 +196,7 @@ theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
     change Φ.map (Groupoid.inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
       Groupoid.inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
-    convert! this <;> simp only [Groupoid.inv_eq_inv]
+    convert this <;> simp only [Groupoid.inv_eq_inv]
 
 end UniversalProperty
 

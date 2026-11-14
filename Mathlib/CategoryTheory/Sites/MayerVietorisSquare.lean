@@ -9,11 +9,10 @@ public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.Square
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 public import Mathlib.CategoryTheory.Sites.Abelian
-public import Mathlib.CategoryTheory.Sites.Adjunction
-public import Mathlib.CategoryTheory.Sites.Sheafification
+
+import Mathlib.CategoryTheory.Sites.Adjunction
 
 /-!
 # Mayer-Vietoris squares
@@ -49,7 +48,6 @@ that it is indeed satisfied by sheaves.
 
 ## References
 * https://stacks.math.columbia.edu/tag/08GL
-
 -/
 
 @[expose] public section

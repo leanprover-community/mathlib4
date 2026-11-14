@@ -5,8 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
@@ -25,7 +23,6 @@ We use these assumptions on `l` for two reasons. First, these are the assumption
 appear in the proof. Second, in some applications (e.g., in Ilyashenko's proof of the individual
 finiteness theorem for limit cycles of polynomial ODEs with hyperbolic singularities only) natural
 stronger assumptions (e.g., `im z` is bounded from below and from above) are not available.
-
 -/
 
 public section

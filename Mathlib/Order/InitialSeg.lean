@@ -5,11 +5,8 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Sum.Order
 public import Mathlib.Order.Hom.Lex
-public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.UpperLower.Basic
-public import Mathlib.Order.WellFounded
 
 /-!
 # Initial and principal segments
@@ -77,7 +74,7 @@ instance : FunLike (r ≼i s) α β where
   coe_injective := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
     congr with x
-    exact congr_fun h x
+    congrm $h x
 
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'

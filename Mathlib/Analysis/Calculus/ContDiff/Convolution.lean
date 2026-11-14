@@ -6,8 +6,9 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Comp
-public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Convolution
+
+import Mathlib.Analysis.Calculus.ParametricIntegral
 
 /-!
 # Differentiability of a convolution of functions
@@ -22,7 +23,6 @@ Criteria for a convolution of functions to be differentiable.
 * `HasCompactSupport.contDiff_convolution_right` and
   `HasCompactSupport.contDiff_convolution_left`: the convolution is `𝒞ⁿ` if one of the functions
   is `𝒞ⁿ` with compact support and the other function in locally integrable.
-
 -/
 
 public section

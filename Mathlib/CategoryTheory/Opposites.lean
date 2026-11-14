@@ -39,12 +39,12 @@ variable [Quiver.{v₁} C]
 @[to_dual self]
 theorem Quiver.Hom.op_inj {X Y : C} :
     Function.Injective (Quiver.Hom.op : (X ⟶ Y) → (Opposite.op Y ⟶ Opposite.op X)) := fun _ _ H =>
-  congr_arg Quiver.Hom.unop H
+  congr($(H).unop)
 
 @[to_dual self]
 theorem Quiver.Hom.unop_inj {X Y : Cᵒᵖ} :
     Function.Injective (Quiver.Hom.unop : (X ⟶ Y) → (Opposite.unop Y ⟶ Opposite.unop X)) :=
-  fun _ _ H => congr_arg Quiver.Hom.op H
+  fun _ _ H => congr($(H).op)
 
 @[simp, to_dual self]
 theorem Quiver.Hom.unop_op {X Y : C} (f : X ⟶ Y) : f.op.unop = f :=
@@ -773,7 +773,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- An equivalence between categories gives an equivalence between the opposite categories.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
   functor := e.functor.op
   inverse := e.inverse.op
@@ -785,7 +785,7 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
 
 /-- An equivalence between opposite categories gives an equivalence between the original categories.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
   functor := e.functor.unop
   inverse := e.inverse.unop
@@ -796,10 +796,12 @@ def unop (e : Cᵒᵖ ≌ Dᵒᵖ) : C ≌ D where
     simp
 
 /-- An equivalence between `C` and `Dᵒᵖ` gives an equivalence between `Cᵒᵖ` and `D`. -/
-@[simps!] def leftOp (e : C ≌ Dᵒᵖ) : Cᵒᵖ ≌ D := e.op.trans (opOpEquivalence D)
+@[implicit_reducible, simps!] def leftOp (e : C ≌ Dᵒᵖ) : Cᵒᵖ ≌ D :=
+  e.op.trans (opOpEquivalence D)
 
 /-- An equivalence between `Cᵒᵖ` and `D` gives an equivalence between `C` and `Dᵒᵖ`. -/
-@[simps!] def rightOp (e : Cᵒᵖ ≌ D) : C ≌ Dᵒᵖ := (opOpEquivalence C).symm.trans e.op
+@[implicit_reducible, simps!] def rightOp (e : Cᵒᵖ ≌ D) : C ≌ Dᵒᵖ :=
+  (opOpEquivalence C).symm.trans e.op
 
 end Equivalence
 

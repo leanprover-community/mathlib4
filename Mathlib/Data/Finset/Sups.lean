@@ -370,7 +370,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
-  simp only [mem_sups, mem_powerset, sup_eq_union]
+  simp only [mem_sups, mem_powerset]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
   · rwa [← union_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
@@ -570,11 +570,11 @@ protected lemma Nonempty.diffs : s.Nonempty → t.Nonempty → (s \\ t).Nonempty
 lemma Nonempty.of_diffs_left : (s \\ t).Nonempty → s.Nonempty := Nonempty.of_image₂_left
 lemma Nonempty.of_diffs_right : (s \\ t).Nonempty → t.Nonempty := Nonempty.of_image₂_right
 
-@[simp] lemma empty_sdiffs : ∅ \\ t = ∅ := image₂_empty_left
+@[simp] lemma empty_diffs : ∅ \\ t = ∅ := image₂_empty_left
 @[simp] lemma diffs_empty : s \\ ∅ = ∅ := image₂_empty_right
 @[simp] lemma diffs_eq_empty : s \\ t = ∅ ↔ s = ∅ ∨ t = ∅ := image₂_eq_empty_iff
 
-@[deprecated (since := "2026-06-03")] alias empty_diffs := empty_sdiffs
+@[deprecated (since := "2026-10-13")] alias empty_sdiffs := empty_diffs
 
 @[simp] lemma singleton_diffs : {a} \\ t = t.image (a \ ·) := image₂_singleton_left
 @[simp] lemma diffs_singleton : s \\ {b} = s.image (· \ b) := image₂_singleton_right

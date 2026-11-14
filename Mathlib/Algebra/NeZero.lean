@@ -5,15 +5,15 @@ Authors: Eric Rodriguez
 -/
 module
 
-public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.PartialOrder
+
+import Mathlib.Basic.Logic.Basic
 import Mathlib.Tactic.Basify.Attr
 
 /-!
 # `NeZero` typeclass
 
 We give basic facts about the `NeZero n` typeclass.
-
 -/
 
 public section

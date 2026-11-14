@@ -6,14 +6,13 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Module
 public import Mathlib.Tactic.ModuleNF
 public import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Rays in modules
@@ -32,6 +31,7 @@ This file defines rays in modules.
 @[expose] public noncomputable section
 
 open Module
+open scoped Function
 
 section StrictOrderedCommSemiring
 
@@ -213,7 +213,28 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=
   (hy.symm.add_left hz.symm).symm
 
+instance : Std.Refl (SameRay R (M := M)) where
+  refl := .refl
+
+instance : Std.Symm (SameRay R (M := M)) where
+  symm _ _ := .symm
+
+theorem sum_left {ι : Type*} {s : Finset ι} {v : ι → M}
+    {z : M} (h : ∀ i ∈ s, SameRay R (v i) z) : SameRay R (∑ i ∈ s, v i) z :=
+  Finset.sum_induction v (SameRay R · z) (fun _ _ ↦ .add_left) (.zero_left z) h
+
+theorem sum_right {ι : Type*} {s : Finset ι} {v : ι → M}
+    {x : M} (h : ∀ i ∈ s, SameRay R x (v i)) : SameRay R x (∑ i ∈ s, v i) :=
+  (sum_left fun _ hi ↦ (h _ hi).symm).symm
+
 end SameRay
+
+/-- If the summands pairwise lie on a common ray, then each of them lies on the same ray as
+their sum. This is the `Finset.sum` version of `SameRay.add_right`. -/
+theorem sameRay_sum_right_of_pairwise {ι : Type*} {s : Finset ι} {i : ι} {v : ι → M}
+    (hp : (s : Set ι).Pairwise (SameRay R on v)) (hi : i ∈ s) :
+    SameRay R (v i) (∑ j ∈ s, v j) :=
+  SameRay.sum_right fun _ hj ↦ hp.forall₂ hi hj
 
 variable (R M)
 
@@ -301,8 +322,8 @@ variable [SMulCommClass R G M]
 `G = Rˣ` -/
 instance : MulAction G (Module.Ray R M) where
   smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
-  mul_smul a b := Quotient.ind fun _ => congr_arg Quotient.mk' <| mul_smul a b _
-  one_smul := Quotient.ind fun _ => congr_arg Quotient.mk' <| one_smul _ _
+  mul_smul a b := Quotient.ind fun _ => congr(Quotient.mk' $(mul_smul a b _))
+  one_smul := Quotient.ind fun _ => congr(Quotient.mk' $(one_smul ..))
 
 /-- The action via `LinearEquiv.apply_distribMulAction` corresponds to `Module.Ray.map`. -/
 @[simp]

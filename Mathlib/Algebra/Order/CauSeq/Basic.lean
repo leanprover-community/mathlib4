@@ -9,10 +9,10 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Algebra.Order.Group.MinMax
+public import Mathlib.Algebra.Ring.FunLike
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.Tactic.GCongr
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # Cauchy sequences
@@ -161,11 +161,18 @@ section Ring
 
 variable [Ring β] {abv : β → α}
 
-instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
-  ⟨Subtype.val⟩
+instance : FunLike (CauSeq β abv) ℕ β where
+  coe := Subtype.val
+  coe_injective := Subtype.val_injective
+
+/-- Create a Cauchy sequence from the predicate `IsCauSeq`. -/
+def mk (f : ℕ → β) (hf : IsCauSeq abv f) : CauSeq β abv := ⟨f, hf⟩
+
+@[simp]
+theorem mk_apply {f : ℕ → β} (hf : IsCauSeq abv f) (n : ℕ) : (CauSeq.mk f hf) n = f n := rfl
 
 @[ext]
-theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.ext (funext h)
+theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := DFunLike.ext f g h
 
 theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
   f.2
@@ -193,12 +200,14 @@ theorem bounded' (f : CauSeq β abv) (x : α) : ∃ r > x, ∀ i, abv (f i) < r 
 instance : Add (CauSeq β abv) :=
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
-@[simp, norm_cast]
+instance : IsAddApply (CauSeq β abv) where
+
+@[deprecated FunLike.coe_add +typeChanged (since := "2026-10-21")]
 theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = (f : ℕ → β) + g :=
   rfl
 
-@[simp, norm_cast]
-theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
+@[deprecated add_apply +typeChanged (since := "2026-10-21")]
+protected theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
   rfl
 
 variable (abv) in
@@ -217,31 +226,35 @@ theorem const_apply (x : β) (i : ℕ) : (const x : ℕ → β) i = x :=
   rfl
 
 theorem const_inj {x y : β} : (const x : CauSeq β abv) = const y ↔ x = y :=
-  ⟨fun h => congr_arg (fun f : CauSeq β abv => (f : ℕ → β) 0) h, congr_arg _⟩
+  ⟨fun h => congr($h 0), congr_arg _⟩
 
 instance : Zero (CauSeq β abv) :=
   ⟨const 0⟩
 
+instance : IsZeroApply (CauSeq β abv) where
+
 instance : One (CauSeq β abv) :=
   ⟨const 1⟩
+
+instance : IsOneApply (CauSeq β abv) where
 
 instance : Inhabited (CauSeq β abv) :=
   ⟨0⟩
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-21")]
 theorem coe_zero : ⇑(0 : CauSeq β abv) = 0 :=
   rfl
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_one +typeChanged (since := "2026-10-21")]
 theorem coe_one : ⇑(1 : CauSeq β abv) = 1 :=
   rfl
 
-@[simp, norm_cast]
-theorem zero_apply (i) : (0 : CauSeq β abv) i = 0 :=
+@[deprecated zero_apply +typeChanged (since := "2026-10-21")]
+protected theorem zero_apply (i) : (0 : CauSeq β abv) i = 0 :=
   rfl
 
-@[simp, norm_cast]
-theorem one_apply (i) : (1 : CauSeq β abv) i = 1 :=
+@[deprecated one_apply +typeChanged (since := "2026-10-21")]
+protected theorem one_apply (i) : (1 : CauSeq β abv) i = 1 :=
   rfl
 
 @[simp]
@@ -257,12 +270,14 @@ theorem const_add (x y : β) : const (x + y) = const x + const y :=
 
 instance : Mul (CauSeq β abv) := ⟨fun f g ↦ ⟨f * g, f.2.mul g.2⟩⟩
 
-@[simp, norm_cast]
+instance : IsMulApply (CauSeq β abv) where
+
+@[deprecated FunLike.coe_mul +typeChanged (since := "2026-10-21")]
 theorem coe_mul (f g : CauSeq β abv) : ⇑(f * g) = (f : ℕ → β) * g :=
   rfl
 
-@[simp, norm_cast]
-theorem mul_apply (f g : CauSeq β abv) (i : ℕ) : (f * g) i = f i * g i :=
+@[deprecated mul_apply +typeChanged (since := "2026-10-21")]
+protected theorem mul_apply (f g : CauSeq β abv) (i : ℕ) : (f * g) i = f i * g i :=
   rfl
 
 theorem const_mul (x y : β) : const (x * y) = const x * const y :=
@@ -270,12 +285,14 @@ theorem const_mul (x y : β) : const (x * y) = const x * const y :=
 
 instance : Neg (CauSeq β abv) := ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
 
-@[simp, norm_cast]
+instance : IsNegApply (CauSeq β abv) where
+
+@[deprecated FunLike.coe_neg +typeChanged (since := "2026-10-21")]
 theorem coe_neg (f : CauSeq β abv) : ⇑(-f) = -f :=
   rfl
 
-@[simp, norm_cast]
-theorem neg_apply (f : CauSeq β abv) (i) : (-f) i = -f i :=
+@[deprecated neg_apply +typeChanged (since := "2026-10-21")]
+protected theorem neg_apply (f : CauSeq β abv) (i) : (-f) i = -f i :=
   rfl
 
 theorem const_neg (x : β) : const (-x) = -const x :=
@@ -284,12 +301,14 @@ theorem const_neg (x : β) : const (-x) = -const x :=
 instance : Sub (CauSeq β abv) :=
   ⟨fun f g => ofEq (f + -g) (fun x => f x - g x) fun i => by simp [sub_eq_add_neg]⟩
 
-@[simp, norm_cast]
+instance : IsSubApply (CauSeq β abv) where
+
+@[deprecated FunLike.coe_sub +typeChanged (since := "2026-10-21")]
 theorem coe_sub (f g : CauSeq β abv) : ⇑(f - g) = (f : ℕ → β) - g :=
   rfl
 
-@[simp, norm_cast]
-theorem sub_apply (f g : CauSeq β abv) (i : ℕ) : (f - g) i = f i - g i :=
+@[deprecated sub_apply +typeChanged (since := "2026-10-21")]
+protected theorem sub_apply (f g : CauSeq β abv) (i : ℕ) : (f - g) i = f i - g i :=
   rfl
 
 theorem const_sub (x y : β) : const (x - y) = const x - const y :=
@@ -302,12 +321,14 @@ variable {G : Type*} [SMul G β] [IsScalarTower G β β]
 instance : SMul G (CauSeq β abv) :=
   ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
 
-@[simp, norm_cast]
+instance : IsSMulApply G (CauSeq β abv) where
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-21")]
 theorem coe_smul (a : G) (f : CauSeq β abv) : ⇑(a • f) = a • (f : ℕ → β) :=
   rfl
 
-@[simp, norm_cast]
-theorem smul_apply (a : G) (f : CauSeq β abv) (i : ℕ) : (a • f) i = a • f i :=
+@[deprecated smul_apply +typeChanged (since := "2026-10-21")]
+protected theorem smul_apply (a : G) (f : CauSeq β abv) (i : ℕ) : (a • f) i = a • f i :=
   rfl
 
 theorem const_smul (a : G) (x : β) : const (a • x) = a • const x :=
@@ -318,44 +339,39 @@ instance : IsScalarTower G (CauSeq β abv) (CauSeq β abv) :=
 
 end SMul
 
-instance addGroup : AddGroup (CauSeq β abv) :=
-  Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
+instance addGroup : AddGroup (CauSeq β abv) := fast_instance% FunLike.addGroup
 
 instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
 
+instance : IsNatCastApply (CauSeq β abv) where
+
 instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
 
-instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
-  Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
-  coe_add coe_neg coe_sub
-  (by intros; rfl)
-  (by intros; rfl)
-  (by intros; rfl)
-  (by intros; rfl)
+instance : IsIntCastApply (CauSeq β abv) where
+
+instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) := fast_instance% FunLike.addGroupWithOne
 
 instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n =>
     (ofEq (npowRec n f) fun i => f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
 
-@[simp, norm_cast]
+instance : IsPowApply ℕ (CauSeq β abv) where
+
+@[deprecated FunLike.coe_pow +typeChanged (since := "2026-10-21")]
 theorem coe_pow (f : CauSeq β abv) (n : ℕ) : ⇑(f ^ n) = (f : ℕ → β) ^ n :=
   rfl
 
-@[simp, norm_cast]
-theorem pow_apply (f : CauSeq β abv) (n i : ℕ) : (f ^ n) i = f i ^ n :=
+@[deprecated pow_apply +typeChanged (since := "2026-10-21")]
+protected theorem pow_apply (f : CauSeq β abv) (n i : ℕ) : (f ^ n) i = f i ^ n :=
   rfl
 
 theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 
-instance ring : Ring (CauSeq β abv) :=
-  Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
-    (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
+instance ring : Ring (CauSeq β abv) := fast_instance% FunLike.ring
 
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
-  { CauSeq.ring with
-    mul_comm := fun a b => ext fun n => by simp [mul_comm] }
+  fast_instance% FunLike.commRing
 
 /-- `LimZero f` holds when `f` approaches 0. -/
 def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
@@ -787,7 +803,7 @@ protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈
   obtain ⟨ε, ε0 : _ < _, i, h⟩ | h := h
   · intro _ _
     refine ⟨i, fun j hj => ?_⟩
-    dsimp
+    simp only [sub_apply, coe_sup, Pi.sup_apply]
     rw [← max_sub_sub_right]
     rwa [sub_self, max_eq_right, abs_zero]
     rw [sub_nonpos, ← sub_nonneg]
@@ -799,7 +815,7 @@ protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈
   obtain ⟨ε, ε0 : _ < _, i, h⟩ | h := h
   · intro _ _
     refine ⟨i, fun j hj => ?_⟩
-    dsimp
+    simp only [sub_apply, coe_inf, Pi.inf_apply]
     rw [← min_sub_sub_right]
     rwa [sub_self, min_eq_right, abs_zero]
     exact ε0.le.trans (h _ hj)

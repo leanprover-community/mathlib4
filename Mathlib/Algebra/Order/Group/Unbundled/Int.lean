@@ -5,8 +5,8 @@ Authors: Jeremy Avigad
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Data.Int.Basic
 
 /-!

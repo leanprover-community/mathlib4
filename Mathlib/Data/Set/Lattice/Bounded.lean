@@ -345,8 +345,8 @@ theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b
   simp only [eq_univ_iff_forall, mem_sUnion]
 
 theorem iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set α} (h : f i = ∅) :
-    ⋂ j, f j = ∅ :=
-  subset_eq_empty (iInter_subset _ i) h
+    ⋂ j, f j = ∅ := by
+  grw [iInter_subset _ i, h]
 
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
@@ -596,6 +596,30 @@ theorem pi_iUnion_eq_iInter_pi {α' : Type*} (s : α' → Set α) (t : (a : α) 
   ext f
   simp
   grind
+
+theorem iInter_pi (t : ι → ∀ a, Set (π a)) (s : Set α) :
+    ⋂ i, pi s (t i) = pi s fun a ↦ ⋂ i, t i a := by
+  ext
+  simp [forall_comm (α := ι)]
+
+/-- The intersection of a family of boxes `(s i).pi (t i)` is empty iff there is a coordinate `a`
+such that the intersection of the `t i a` over all `i` with `a ∈ s i` is empty. -/
+theorem iInter_pi_eq_empty_iff {s : ι → Set α} {t : ι → ∀ a, Set (π a)} :
+    ⋂ i, (s i).pi (t i) = ∅ ↔ ∃ a, ⋂ (i) (_ : a ∈ s i), t i a = ∅ := by
+  rw [iInter_eq_empty_iff, ← not_iff_not]
+  push Not
+  simp only [mem_pi, nonempty_iInter, mem_iInter]
+  refine ⟨fun ⟨x, hx⟩ a ↦ ⟨x a, fun i ha ↦ hx i a ha⟩, fun h ↦ ?_⟩
+  choose x hx using h
+  exact ⟨x, fun i a ha ↦ hx a i ha⟩
+
+theorem iInter_univ_pi_eq_empty_iff {t : ι → ∀ a, Set (π a)} :
+    ⋂ i, pi univ (t i) = ∅ ↔ ∃ a, ⋂ i, t i a = ∅ := by
+  rw [iInter_pi, univ_pi_eq_empty_iff]
+
+theorem biInter_univ_pi_eq_empty_iff {t : ι → ∀ a, Set (π a)} {p : ι → Prop} :
+    ⋂ (i) (_ : p i), pi univ (t i) = ∅ ↔ ∃ a, ⋂ (i) (_ : p i), t i a = ∅ := by
+  simp_rw [iInter_pi, univ_pi_eq_empty_iff]
 
 end Pi
 

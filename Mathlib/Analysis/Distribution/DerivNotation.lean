@@ -5,9 +5,6 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Data.Fin.Tuple.Basic
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-! # Type classes for derivatives and the Laplacian
@@ -19,7 +16,6 @@ Moreover, we provide type-classes that encode the linear structure.
 We also define the iterated line derivative and prove elementary properties.
 We define a Laplacian based on the sum of second derivatives formula and prove that the Laplacian
 thus defined is independent of the choice of basis.
-
 -/
 
 @[expose] public noncomputable section

@@ -5,7 +5,6 @@ Authors: Peter Nelson
 -/
 module
 
-public import Mathlib.Data.SetLike.Basic
 public import Mathlib.Order.SupIndep
 
 /-!
@@ -57,7 +56,6 @@ proved separately.
 
 * Link this to `Finpartition`.
 * Show that when `α` is a frame `Partition α` also has finite joins, i.e. that it is a lattice.
-
 -/
 
 @[expose] public section

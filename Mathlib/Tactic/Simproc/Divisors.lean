@@ -8,19 +8,19 @@ module
 public meta import Mathlib.NumberTheory.Divisors
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Util.Qq
-public import Mathlib.Data.Finset.Attr
-public import Mathlib.Tactic.Bound.Init
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Tactic.SetLike
-public import Mathlib.Util.CompileInductive
+
+import Mathlib.Data.Finset.Attr
+import Mathlib.Tactic.Bound.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Tactic.SetLike
+import Mathlib.Util.CompileInductive
 
 /-! # Divisor Simprocs
 
 This file implements (d)simprocs to compute various objects related to divisors:
 - `Nat.divisors_ofNat`: computes `Nat.divisors n` for explicit values of `n`
 - `Nat.properDivisors_ofNat`: computes `Nat.properDivisors n` for explicit values of `n`
-
 -/
 
 public meta section

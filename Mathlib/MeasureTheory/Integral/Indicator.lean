@@ -5,8 +5,9 @@ Authors: Kalle Kytölä
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
+
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 
 /-!
 # Results about indicator functions, their integrals, and measures

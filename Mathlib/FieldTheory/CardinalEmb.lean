@@ -61,7 +61,6 @@ To make this straightforward, it is crucial that `(↑i : WithTop ι)⁺ = ↑(i
 The predicate `IsSuccPrelimit` allows us to treat limits and the bottom element uniformly, and
 the only place the bottom element requires special treatment is in `equivLim` (the bijection
 between `E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] Ē` over `j < i`).
-
 -/
 
 @[expose] public section
@@ -148,7 +147,7 @@ theorem strictMono_leastExt : StrictMono φ := fun i j h ↦ by
   have least := isLeast_leastExt (F := F) (E := E)
   by_contra!
   obtain eq | lt := this.eq_or_lt
-  · exact (least j).1 (subset_adjoin _ _ ⟨i, h, congr_arg b eq.symm⟩)
+  · exact (least j).1 (subset_adjoin _ _ ⟨i, h, congr(b $eq.symm)⟩)
   · refine ((least i).2 <| mt (adjoin.mono _ _ _ (image_mono ?_) ·) (least j).1).not_gt lt
     exact fun k (hk : k < i) ↦ hk.trans h
 
@@ -168,7 +167,7 @@ theorem strictMono_filtration : StrictMono (E⟮<·⟯) :=
     fun incl ↦ (isLeast_leastExt i).1 (incl <| subset_adjoin _ _ ⟨i, h, rfl⟩)⟩
 
 theorem filtration_succ (i : ι) : E⟮<i⁺⟯ = E⟮<i⟯⟮b (φ i)⟯.restrictScalars F := by
-  rw [Iio_succ, ← Iio_insert, image_insert_eq, ← union_singleton, adjoin_adjoin_left]; rfl
+  rw [Iio_succ, ← insert_Iio, image_insert_eq, ← union_singleton, adjoin_adjoin_left]; rfl
 
 local notation "X" i => Field.Emb (E⟮<i⟯) <| E⟮<i⟯⟮b (φ i)⟯
 

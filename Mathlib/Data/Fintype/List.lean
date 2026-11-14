@@ -6,11 +6,9 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Data.Finset.Powerset
-public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.List.Permutation
 
 /-!
-
 # Fintype instance for nodup lists
 
 The subtype of `{l : List α // l.Nodup}` over a `[Fintype α]`
@@ -20,7 +18,6 @@ admits a `Fintype` instance.
 To construct the `Fintype` instance, a function lifting a `Multiset α`
 to the `Multiset (List α)` is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
-
 -/
 
 @[expose] public section
@@ -94,7 +91,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      convert! f.nodup
+      convert f.nodup
       rw [hf]
       rfl
     · intro h
