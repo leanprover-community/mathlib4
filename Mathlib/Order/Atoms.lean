@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 public import Mathlib.Order.ModularLattice
-public import Mathlib.Order.SuccPred.Basic
+public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Tactic.Nontriviality.Core
 
 /-!
@@ -377,9 +377,25 @@ instance SuccOrder.toIsStronglyAtomic [SuccOrder α] : IsStronglyAtomic α where
 instance [PredOrder α] : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance
 
-end StronglyAtomic
+theorem IsStronglyAtomic.not_isPredLimit [IsStronglyAtomic α] (a : α) : ¬IsPredLimit a := by
+  intro h
+  have ⟨b, hlt⟩ := not_isMax_iff.mp h.not_isMax
+  have ⟨c, hcov, _⟩ := exists_covBy_le_of_lt _ _ hlt
+  exact h.isPredPrelimit c hcov
 
-section WellFounded
+theorem IsStronglyCoatomic.not_isSuccLimit [IsStronglyCoatomic α] (a : α) : ¬IsSuccLimit a := by
+  intro h
+  have ⟨b, hlt⟩ := not_isMin_iff.mp h.not_isMin
+  have ⟨c, _, hcov⟩ := exists_le_covBy_of_lt _ _ hlt
+  exact h.isSuccPrelimit c hcov
+
+theorem IsStronglyAtomic.not_isPredPrelimit [IsStronglyAtomic α] [NoMaxOrder α] (a : α) :
+    ¬IsPredPrelimit a :=
+  (IsStronglyAtomic.not_isPredLimit a ⟨not_isMax a, ·⟩)
+
+theorem IsStronglyCoatomic.not_isSuccPrelimit [IsStronglyCoatomic α] [NoMinOrder α] (a : α) :
+    ¬IsSuccPrelimit a :=
+  (IsStronglyCoatomic.not_isSuccLimit a ⟨not_isMin a, ·⟩)
 
 instance [WellFoundedLT α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
@@ -389,7 +405,9 @@ instance [WellFoundedLT α] : IsStronglyAtomic α where
 instance [WellFoundedGT α] : IsStronglyCoatomic α :=
   isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| inferInstanceAs (IsStronglyAtomic (αᵒᵈ))
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+end StronglyAtomic
+
+@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
   inferInstance
@@ -402,14 +420,12 @@ theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α �
 @[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
-  (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
+  inferInstance
 
 @[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
-  isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)
-
-end WellFounded
+  inferInstance
 
 namespace BooleanAlgebra
 
