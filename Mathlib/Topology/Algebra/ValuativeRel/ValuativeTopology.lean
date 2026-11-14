@@ -59,6 +59,11 @@ class IsValuativeTopology [TopologicalSpace R] where
   mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
 
+theorem isValuativeTopology_iff [TopologicalSpace R] :
+    IsValuativeTopology R ↔ ∀ {s : Set R} {x : R},
+      s ∈ 𝓝 x ↔ ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s :=
+  ⟨fun h ↦ h.mem_nhds_iff, fun h ↦ ⟨h⟩⟩
+
 namespace ValuativeRel
 
 /-- The topology induced by a valuative relation. Note that this is not made into a global instance
@@ -95,9 +100,48 @@ variable {K : Type*} [DivisionRing K] [ValuativeRel K] {Γ₀ : Type*}
 
 section TopologicalSpace
 
-variable [TopologicalSpace R] (v : Valuation R Γ₀) [v.Compatible]
+variable [TopologicalSpace R] [TopologicalSpace K] (v : Valuation R Γ₀) [v.Compatible]
 
 namespace IsValuativeTopology
+
+theorem _root_.isValuativeTopology_iff_mem_nhds_iff_exists_mul_vlt_subset :
+    IsValuativeTopology R ↔ ∀ {s : Set R} {x : R},
+      s ∈ 𝓝 x ↔ ∃ (a b : posSubmonoid R), {z | (z - x) * a <ᵥ b} ⊆ s := by
+  rw [isValuativeTopology_iff]
+  congrm ∀ s x, _ ↔ $(⟨fun h ↦ ?_, fun h ↦ ?_⟩)
+  · obtain ⟨γ, h⟩ := h
+    obtain ⟨b, a, hab⟩ := exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq γ
+    use a, b
+    convert h with z
+    suffices (z - x) * a <ᵥ b ↔ valuation R (-x + z) < γ by simpa
+    rw [← hab, lt_div_iff₀ (by simp), ← map_mul, (valuation R).vlt_iff_lt, neg_add_eq_sub]
+  · obtain ⟨a, b, hab⟩ := h
+    use .mk0 (valuation R b / valuation R a) (by simp)
+    convert hab with z
+    suffices valuation R (-x + z) < valuation R b / valuation R a ↔ (z - x) * a <ᵥ b by
+      simpa
+    rw [lt_div_iff₀ (by simp), ← map_mul, (valuation R).vlt_iff_lt, neg_add_eq_sub]
+
+theorem mem_nhds_iff_exists_mul_vlt_subset [IsValuativeTopology R] {s : Set R} {x : R} :
+    s ∈ 𝓝 x ↔ ∃ (a b : posSubmonoid R), {z | (z - x) * a <ᵥ b} ⊆ s :=
+  (isValuativeTopology_iff_mem_nhds_iff_exists_mul_vlt_subset).mp ‹_›
+
+theorem _root_.isValuativeTopology_iff_mem_nhds_iff_exists_vlt_subset :
+    IsValuativeTopology K ↔ ∀ {s : Set K} {x : K}, s ∈ 𝓝 x ↔ ∃ y ≠ 0, {z | z - x <ᵥ y} ⊆ s := by
+  rw [isValuativeTopology_iff_mem_nhds_iff_exists_mul_vlt_subset]
+  congrm ∀ s x, _ ↔ $(⟨fun h ↦ ?_, fun h ↦ ?_⟩)
+  · obtain ⟨a, b, h⟩ := h
+    use b.val / a.val, (by simp)
+    convert h using 3 with z
+    rw [vlt_div_iff (by simp)]
+  · obtain ⟨y, hy, h⟩ := h
+    use 1, ⟨y, by simpa using hy⟩
+    convert h with x
+    simp
+
+theorem mem_nhds_iff_exists_vlt_subset [IsValuativeTopology K] {s : Set K} {x : K} :
+    s ∈ 𝓝 x ↔ ∃ y ≠ 0, {z | z - x <ᵥ y} ⊆ s :=
+  (isValuativeTopology_iff_mem_nhds_iff_exists_vlt_subset).mp ‹_›
 
 /-- If the neighborhoods of every point for a given topology are defined by a valuation `v`
 compatible with the valuative relation, then the topology is a valuative topology. -/
@@ -159,6 +203,96 @@ lemma hasBasis_nhds_zero' :
     (𝓝 0).HasBasis (· ≠ 0) ({ x | valuation R x < · }) :=
   (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
     fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
+
+theorem isOpen_mul_vlt (a b : R) : IsOpen {x | x * a <ᵥ b} := by
+  refine isOpen_iff_mem_nhds.mpr fun x hx ↦ ?_
+  rw [mem_ofPred_eq] at hx
+  have hb : 0 <ᵥ b := fun hb ↦ by simpa using hx.trans_vle hb
+  by_cases ha : a ≤ᵥ 0
+  · have (z : R) : z * a <ᵥ b := vle.trans_vlt (by simpa using mul_vle_mul (vle_refl z) ha) hb
+    simp [this]
+  refine mem_nhds_iff_exists_mul_vlt_subset.mpr ⟨⟨a, ha⟩, ⟨b, hb⟩, ?_⟩
+  suffices ∀ z, (z - x) * a <ᵥ b → z * a <ᵥ b by simpa
+  intro z hz
+  simpa [← add_mul] using add_vlt_of_vlt_of_vlt hx hz
+
+theorem isOpen_vlt (a : R) : IsOpen {x | x <ᵥ a} := by simpa using isOpen_mul_vlt 1 a
+
+theorem isClosed_mul_vlt (a b : R) : IsClosed {x | x * a <ᵥ b} := by
+  simp_rw [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_ofPred_eq, not_vlt]
+  intro x hx
+  by_cases hb : b ≤ᵥ 0
+  · have (z : R) : b ≤ᵥ z * a := hb.trans (zero_vle (z * a))
+    simp [Set.compl_ofPred, this]
+  have ha : 0 <ᵥ a := fun ha ↦ hb <| by simpa using hx.trans (mul_vle_mul (vle_refl x) ha)
+  refine mem_nhds_iff_exists_mul_vlt_subset.mpr ⟨⟨a, ha⟩, ⟨b, hb⟩, ?_⟩
+  suffices ∀ z, (z - x) * a <ᵥ b → b ≤ᵥ z * a by simpa [Set.compl_ofPred]
+  intro z hz
+  rw [← neg_sub, neg_mul, neg_vlt_iff] at hz
+  contrapose! hx
+  simpa [← add_mul] using add_vlt_of_vlt_of_vlt hz hx
+
+theorem isClosed_vlt (a : R) : IsClosed {x | x <ᵥ a} := by simpa using isClosed_mul_vlt 1 a
+
+theorem isClopen_mul_vlt (a b : R) : IsClopen {x | x * a <ᵥ b} :=
+  ⟨isClosed_mul_vlt a b, isOpen_mul_vlt a b⟩
+
+theorem isClopen_vlt (a : R) : IsClopen {x | x <ᵥ a} := ⟨isClosed_vlt a, isOpen_vlt a⟩
+
+theorem isOpen_mul_vle (a : R) {b : R} (hb : 0 <ᵥ b) : IsOpen {x | x * a ≤ᵥ b} := by
+  refine isOpen_iff_mem_nhds.mpr fun x hx ↦ ?_
+  rw [mem_ofPred_eq] at hx
+  by_cases ha : a ≤ᵥ 0
+  · have (z : R) : z * a ≤ᵥ b := vle.trans (by simpa using mul_vle_mul (vle_refl z) ha) (zero_vle b)
+    simp [this]
+  refine mem_nhds_iff_exists_mul_vlt_subset.mpr ⟨⟨a, ha⟩, ⟨b, hb⟩, ?_⟩
+  suffices ∀ z, (z - x) * a <ᵥ b → z * a ≤ᵥ b by simpa
+  intro z hz
+  simpa [← add_mul] using vle_add hx hz.vle
+
+theorem isOpen_vle {a : R} (ha : 0 <ᵥ a) : IsOpen {x | x ≤ᵥ a} := by simpa using isOpen_mul_vle 1 ha
+
+theorem isClosed_mul_vle (a b : R) : IsClosed {x | x * a ≤ᵥ b} := by
+  simp_rw [← isOpen_compl_iff, isOpen_iff_mem_nhds, mem_compl_iff, mem_ofPred_eq, not_vle]
+  intro x hx
+  have ha : 0 <ᵥ a := fun h ↦ by
+    have : b <ᵥ 0 := hx.trans_vle <| by simpa using hx.trans_vle (mul_vle_mul (vle_refl x) h)
+    simp at this
+  refine mem_nhds_iff_exists_mul_vlt_subset.mpr ⟨⟨a, ha⟩, ⟨x * a, (zero_vle b).trans_vlt hx⟩, ?_⟩
+  suffices ∀ z, (z - x) * a <ᵥ x * a → b <ᵥ z * a by simpa [Set.compl_ofPred]
+  intro z hz h
+  rw [← neg_sub, neg_mul, neg_vlt_iff] at hz
+  have : x * a <ᵥ x * a := by simpa [← add_mul] using add_vlt_of_vlt_of_vlt hz (h.trans_vlt hx)
+  exact this (vle_refl (x * a))
+
+theorem isClosed_vle (a : R) : IsClosed {x | x ≤ᵥ a} := by simpa using isClosed_mul_vle 1 a
+
+theorem isClopen_mul_vle (a : R) {b : R} (hb : 0 <ᵥ b) : IsClopen {x | x * a ≤ᵥ b} :=
+  ⟨isClosed_mul_vle a b, isOpen_mul_vle a hb⟩
+
+theorem isClopen_vle {a : R} (ha : 0 <ᵥ a) : IsClopen {x | x ≤ᵥ a} :=
+  ⟨isClosed_vle a, isOpen_vle ha⟩
+
+theorem isClopen_mul_veq (a : R) {b : R} (hb : 0 <ᵥ b) : IsClopen {x | x * a =ᵥ b} := by
+  convert (isClopen_mul_vle a hb).diff (isClopen_mul_vlt a b) with x
+  simp [veq_def]
+
+theorem isClopen_veq {a : R} (ha : 0 <ᵥ a) : IsClopen {x | x =ᵥ a} := by
+  simpa using isClopen_mul_veq 1 ha
+
+theorem isOpen_mul_veq (a : R) {b : R} (hb : 0 <ᵥ b) : IsOpen {x | x * a =ᵥ b} :=
+  (isClopen_mul_veq a hb).isOpen
+
+theorem isOpen_veq {a : R} (ha : 0 <ᵥ a) : IsOpen {x | x =ᵥ a} := (isClopen_veq ha).isOpen
+
+theorem isClosed_mul_veq (a b : R) : IsClosed {x | x * a =ᵥ b} := by
+  by_cases hb : b ≤ᵥ 0
+  · convert isClosed_mul_vle a 0 with x
+    rw [veq_def]
+    exact ⟨fun h ↦ h.1.trans hb, fun h ↦ ⟨h.trans (zero_vle b), hb.trans (zero_vle _)⟩⟩
+  exact (isClopen_mul_veq a hb).isClosed
+
+theorem isClosed_veq (a : R) : IsClosed {x | x =ᵥ a} := by simpa using isClosed_mul_veq 1 a
 
 end IsValuativeTopology
 
