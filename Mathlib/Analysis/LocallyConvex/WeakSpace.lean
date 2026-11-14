@@ -47,7 +47,7 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     hs.closure isClosed_closure (by simpa using hx)
   let f' : StrongDual 𝕜 (WeakSpace 𝕜 E) :=
     { toLinearMap := (f : E →ₗ[𝕜] 𝕜).comp ((toWeakSpace 𝕜 E).symm : WeakSpace 𝕜 E →ₗ[𝕜] E)
-      cont := WeakBilin.eval_continuous (topDualPairing 𝕜 E).flip _ }
+      cont := LinearMap.IsWeak.continuous_eval (WeakSpace.pairing 𝕜 E) _ }
   have hux' : u < RCLike.reCLM.comp (f'.restrictScalars ℝ) (toWeakSpace 𝕜 E x) := by simpa [f']
   have hus' : closure (toWeakSpace 𝕜 E '' s) ⊆
       {y | RCLike.reCLM.comp (f'.restrictScalars ℝ) y ≤ u} := by
@@ -75,9 +75,10 @@ theorem LinearMap.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e : E
     rw [← Set.image_subset_image_iff (toWeakSpace 𝕜 F).injective, h_convex.toWeakSpace_closure 𝕜]
     simpa only [Set.image_image, ← hs.toWeakSpace_closure 𝕜, LinearEquiv.symm_apply_apply]
       using he'.continuousOn.image_closure (s := toWeakSpace 𝕜 E '' s)
-  exact WeakBilin.continuous_of_continuous_eval _ fun f ↦ WeakBilin.eval_continuous _ ({
-      toLinearMap := e.dualMap f
-      cont := by dsimp; fun_prop } : StrongDual 𝕜 E)
+  refine WeakSpace.continuous_of_continuous_eval fun f ↦ ?_
+  let f' : StrongDual 𝕜 E := ⟨e.dualMap f, he f⟩
+  change Continuous fun x ↦ WeakSpace.pairing 𝕜 E x f'
+  fun_prop
 
 /-- If `e` is a linear isomorphism between two locally convex spaces, and `e` induces (via
 precomposition) an isomorphism between their continuous duals, then `e` commutes with the closure
@@ -114,11 +115,22 @@ theorem LinearEquiv.image_closure_of_convex' {s : Set E} (hs : Convex ℝ s) (e 
   · simpa [← he] using fun f ↦ map_continuous (e_dual f)
   · simpa [← he'] using fun f ↦ map_continuous (e_dual.symm f)
 
+/-- The weak topology on a space with separating dual itself has a separating dual. -/
+instance {R V : Type*} [CommRing R] [TopologicalSpace R]
+    [IsTopologicalAddGroup R] [ContinuousConstSMul R R] [AddCommGroup V] [Module R V]
+    [TopologicalSpace V] [SeparatingDual R V] : SeparatingDual R (WeakSpace R V) where
+  exists_ne_zero' x hx := by
+    have : (toWeakSpace R V).symm x ≠ 0 := by simpa
+    obtain ⟨f, hf⟩ := SeparatingDual.exists_ne_zero (R := R) this
+    use LinearMap.IsWeak.eval (WeakSpace.pairing R V) f
+    simpa
+
 /-- The weak topology on a space with separating dual is T2 (Hausdorff). -/
 instance {R V : Type*} [CommRing R] [TopologicalSpace R] [T2Space R]
     [ContinuousAdd R] [ContinuousConstSMul R R] [AddCommGroup V] [Module R V]
     [TopologicalSpace V] [SeparatingDual R V] : T2Space (WeakSpace R V) :=
-  (WeakBilin.isEmbedding (B := (topDualPairing R V).flip) fun _ _ h => by
+  (LinearMap.IsWeak.isEmbedding (B := WeakSpace.pairing R V) fun x₁ x₂ h => by
     by_contra hne
-    obtain ⟨f, hf⟩ := SeparatingDual.exists_separating_of_ne (R := R) hne
+    obtain ⟨f, hf⟩ := SeparatingDual.exists_separating_of_ne (R := R)
+      ((toWeakSpace R V).symm.injective.ne hne)
     exact hf congr($h f)).t2Space
