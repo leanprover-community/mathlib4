@@ -201,7 +201,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
       have := charP_of_model_fieldOfChar q K
       simp only [eqZero, Term.equal, BoundedFormula.realize_not, BoundedFormula.realize_bdEqual,
         Term.realize_relabel, Sum.elim_comp_inl, realize_termOfFreeCommRing, map_natCast,
-        realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
+        Structure.realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
       exact hqp <| CharP.eq K this inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
