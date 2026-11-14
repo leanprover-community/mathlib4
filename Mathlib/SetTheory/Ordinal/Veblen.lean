@@ -563,13 +563,20 @@ theorem mem_range_epsilon : o ∈ range epsilon ↔ ω ^ o = o := by
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
   simp [← mem_range_epsilon]
 
-theorem isPrincipal_opow_epsilon (o : Ordinal) : IsPrincipal (· ^ ·) (ε_ o) :=
-  (omega0_lt_and_isPrincipal_opow_iff.2 (omega0_opow_epsilon o)).2
+theorem IsOpowPrincipal.epsilon (o : Ordinal) : IsOpowPrincipal (ε_ o) :=
+  (omega0_lt_and_isOpowPrincipal_iff.2 (omega0_opow_epsilon o)).2
+
+@[deprecated (since := "2026-11-12")]
+alias isPrincipal_opow_epsilon := IsOpowPrincipal.epsilon
 
 /-- The exponential principal ordinals are `0`, `2`, `ω`, and the epsilon numbers. -/
-theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_epsilon :
-    IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ range epsilon := by
-  rw [isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq, mem_range_epsilon]
+theorem isOpowPrincipal_iff_zero_or_two_or_omega0_or_epsilon :
+    IsOpowPrincipal o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ range epsilon := by
+  rw [isOpowPrincipal_iff_zero_or_two_or_omega0_or_omega0_opow_eq, mem_range_epsilon]
+
+@[deprecated (since := "2026-11-12")]
+alias isPrincipal_opow_iff_zero_or_two_or_omega0_or_epsilon :=
+  isOpowPrincipal_iff_zero_or_two_or_omega0_or_epsilon
 
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
 theorem lt_epsilon_zero : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
