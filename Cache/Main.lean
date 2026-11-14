@@ -270,8 +270,10 @@ def main (args : List String) : IO Unit := do
           for s in scopes do IO.eprintln s!"  {s}"
         pure scopes
       | none => pure []
+    -- A module argument limits the run to one closure, so it must not record
+    -- the root hash for the whole build directory.
     let missing ← getFiles resolvedRepo hashMap force force curlMode decompress
-      (unsafeScopes := unsafeScopes)
+      hashMemo.rootHash (fullRun := args.isEmpty) (unsafeScopes := unsafeScopes)
     -- Explain any files no location served — keyed on the actual outcome, so
     -- a read fully served by the configured locations stays silent even when
     -- HEAD has no fork cache of its own.
@@ -296,8 +298,9 @@ def main (args : List String) : IO Unit := do
   | "get-" :: args => get args (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
-  | ["unpack"] => unpackCache hashMap false
-  | ["unpack!"] => unpackCache hashMap true
+  -- `unpack` takes no module argument, so it always covers the whole cache.
+  | ["unpack"] => unpackCache hashMap false hashMemo.rootHash (fullRun := true)
+  | ["unpack!"] => unpackCache hashMap true hashMemo.rootHash (fullRun := true)
   -- We allow arguments for `put*` so they can be added to the roots.
   | "put" :: _ => put
   | "put!" :: _ => put (overwrite := true)
