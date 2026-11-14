@@ -21,8 +21,8 @@ To compile a definition even when `suppress_compilation` is active, use
 `unsuppress_compilation in def foo : ...`. This is activated by default on notations to make
 sure that they work properly.
 
-Note that `suppress_compilation` does not work with `notation3`. You need to prefix such a notation
-declaration with `unsuppress_compilation` if `suppress_compilation` is active.
+Note that `suppress_compilation` does not work with `notation +delab`. You need to prefix such a
+notation declaration with `unsuppress_compilation` if `suppress_compilation` is active.
 -/
 
 public meta section
@@ -72,8 +72,8 @@ def expandSuppressCompilationNotation : Macro := fun
 /-- Replacing `def` and `instance` by `noncomputable def` and `noncomputable instance`, designed
 to disable the compiler in a given file or a given section.
 This is a hack to work around https://github.com/leanprover-community/mathlib4/issues/7103.
-Note that it does not work with `notation3`. You need to prefix such a notation declaration with
-`unsuppress_compilation` if `suppress_compilation` is active. -/
+Note that it does not work with `notation +delab`. You need to prefix such a notation declaration
+with `unsuppress_compilation` if `suppress_compilation` is active. -/
 macro "suppress_compilation" : command => do
   let declKind := mkIdent ``declaration
   let notaKind := mkIdent ``«notation»

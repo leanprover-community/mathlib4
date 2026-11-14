@@ -54,7 +54,7 @@ protected def Lex (x y : ∀ i, β i) : Prop :=
 basic API, just in case -/
 /-- The notation `Πₗ i, α i` refers to a pi type equipped with the lexicographic order. -/
 -- The type ascription on `p` lets the delaborator generator elaborate the expansion.
-notation3 "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, (p : (_ : (_ : Type _)) → Type _) i)) =>
+notation +delab "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, (p : (_ : (_ : Type _)) → Type _) i)) =>
   r
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}

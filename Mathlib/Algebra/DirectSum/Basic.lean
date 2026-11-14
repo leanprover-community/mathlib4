@@ -43,7 +43,7 @@ deriving instance CoeFun for DirectSum
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/
-scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
+scoped[DirectSum] notation +delab "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 
 -- Porting note: The below recreates some of the lean3 notation, not fully yet
 -- section

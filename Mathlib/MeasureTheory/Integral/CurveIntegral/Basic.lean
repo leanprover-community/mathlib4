@@ -129,7 +129,7 @@ because calculus-related definitions in Mathlib expect globally defined function
 alias curveIntegral_def' := curveIntegral.eq_def
 
 @[inherit_doc curveIntegral]
-notation3 "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) => r
+notation +delab "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) => r
 
 /-- curve integral is defined using Bochner integral,
 thus it is defined as zero whenever the codomain is not a complete space. -/

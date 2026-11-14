@@ -65,7 +65,7 @@ structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
   support' : Trunc { s : Multiset ι // ∀ i, i ∈ s ∨ toFun i = 0 }
 
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `DFinsupp β`. -/
-notation3 "Π₀ "(...)", "r:(scoped f => DFinsupp f) => r
+notation +delab "Π₀ "(...)", "r:(scoped f => DFinsupp f) => r
 
 namespace DFinsupp
 

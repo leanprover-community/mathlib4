@@ -281,7 +281,7 @@ protected def Eventually (p : α → Prop) (f : Filter α) : Prop :=
   { x | p x } ∈ f
 
 @[inherit_doc Filter.Eventually]
-notation3 "∀ᶠ "(...)" in "f", "r:(scoped p => Filter.Eventually p f) => r
+notation +delab "∀ᶠ "(...)" in "f", "r:(scoped p => Filter.Eventually p f) => r
 
 /-- `f.Frequently p` or `∃ᶠ x in f, p x` mean that `{x | ¬p x} ∉ f`. E.g., `∃ᶠ x in atTop, p x`
 means that there exist arbitrarily large `x` for which `p` holds true. -/
@@ -289,7 +289,7 @@ protected def Frequently (p : α → Prop) (f : Filter α) : Prop :=
   ¬∀ᶠ x in f, ¬p x
 
 @[inherit_doc Filter.Frequently]
-notation3 "∃ᶠ "(...)" in "f", "r:(scoped p => Filter.Frequently p f) => r
+notation +delab "∃ᶠ "(...)" in "f", "r:(scoped p => Filter.Frequently p f) => r
 
 /-- Two functions `f` and `g` are *eventually equal* along a filter `l` if the set of `x` such that
 `f x = g x` belongs to `l`. -/

@@ -68,7 +68,7 @@ lemma mem_weightSpace (χ : L → R) (m : M) : m ∈ weightSpace M χ ↔ ∀ x,
 section notation_genWeightSpaceOf
 
 /-- Until we define `LieModule.genWeightSpaceOf`, it is useful to have some notation as follows: -/
-local notation3 "𝕎("M", " χ", " x")" => (toEnd R L M x).maxGenEigenspace χ
+local notation +delab "𝕎("M", " χ", " x")" => (toEnd R L M x).maxGenEigenspace χ
 
 /-- See also `bourbaki1975b` Chapter VII §1.1, Proposition 2 (ii). -/
 protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)

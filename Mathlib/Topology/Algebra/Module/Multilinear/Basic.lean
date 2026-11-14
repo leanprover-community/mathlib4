@@ -57,7 +57,7 @@ structure ContinuousMultilinearMap (R : Type u) {ι : Type v} (M₁ : ι → Typ
 attribute [inherit_doc ContinuousMultilinearMap] ContinuousMultilinearMap.cont
 
 @[inherit_doc ContinuousMultilinearMap]
-notation3:25 M " [×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun _i : Fin n => M) M'
+notation:25 +delab M " [×" n "]→L[" R "] " M' => ContinuousMultilinearMap R (fun _i : Fin n => M) M'
 
 namespace ContinuousMultilinearMap
 
