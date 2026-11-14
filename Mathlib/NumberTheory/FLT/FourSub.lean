@@ -58,6 +58,8 @@ forces `2 e ^ 2 = b ^ 4 + c ^ 4` with `|e| ≤ k ^ 2 < a`.
 
 @[expose] public section
 
+set_option maxHeartbeats 400000
+
 noncomputable section
 
 /-! ## Section: Fermat42SubFoundations_2026_11_13 -/
@@ -1726,10 +1728,11 @@ private theorem fermat42Double_descent_step_body
       rw [show ((e.natAbs : ℤ)) = |e| from (Int.abs_eq_natAbs e).symm, sq_abs]
       exact h_e_sq_le
     have h_e_abs_le_ksq : (e.natAbs : ℤ) ≤ k ^ 2 := by
-      have h_e_nn : 0 ≤ (e.natAbs : ℤ) := Int.natCast_nonneg _
+      have h1 : (e.natAbs : ℤ) ^ 2 ≤ (k ^ 2) ^ 2 := by
+        have h_ksq4 : (k ^ 2) ^ 2 = k ^ 4 := by ring
+        linarith [h_e_abs_sq, h_ksq4]
       have h_k_sq_nn : 0 ≤ k ^ 2 := sq_nonneg _
-      have h_ksq4 : (k ^ 2) ^ 2 = k ^ 4 := by ring
-      nlinarith [h_e_abs_sq, sq_nonneg ((e.natAbs : ℤ) - k ^ 2), h_ksq4]
+      exact (abs_le_of_sq_le_sq' h1 h_k_sq_nn).2
     have h_a_cast : (a.natAbs : ℤ) = a := Int.natAbs_of_nonneg ha_pos.le
     have h_e_lt_a_int : (e.natAbs : ℤ) < (a.natAbs : ℤ) := by
       rw [h_a_cast]; linarith [h_e_abs_le_ksq, h_a_ge, hk_pos]
