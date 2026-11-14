@@ -5,8 +5,11 @@ Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, 
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Order.LeftRightLim
+
+import Mathlib.Topology.MetricSpace.Bounded
 
 /-! # Càdlàg functions
 
@@ -20,6 +23,10 @@ Using the `to_dual` machinery we also define *càglàd functions* (left-continuo
 
 open Filter TopologicalSpace Bornology Set
 open scoped Topology ENNReal
+
+-- Allow `to_fun` to eta-expand `g ∘ f`. Ideally, `Function.comp_def` would be a global pull lemma
+-- instead, which is not supported yet: see https://github.com/leanprover-community/mathlib4/issues/40183.
+attribute [local push ←] Function.comp_def
 
 variable {X Y : Type*} [TopologicalSpace X] {f g : X → Y}
 
@@ -300,6 +307,28 @@ variable [LinearOrder X] [TopologicalSpace Y]
 lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X) :
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
   tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)
+
+/-- The image of a set of a second-countable linear order under a right-continuous function is a
+separable space. -/
+@[to_dual /-- The image of a set of a second-countable linear order under a left-continuous function
+is a separable space. -/]
+lemma IsRightContinuousOn.separableSpace_image [OrderTopology X] [SecondCountableTopology X]
+    {s : Set X} (hf : IsRightContinuousOn f s) : SeparableSpace (f '' s) := by
+  obtain ⟨d, hds, hdc, hd⟩ := exists_countable_subset_mem_closure_inter_Ici s
+  refine ⟨Subtype.val ⁻¹' (f '' d), (hdc.image _).preimage Subtype.val_injective, ?_⟩
+  rw [Subtype.dense_iff, Subtype.image_preimage_coe,
+    Set.inter_eq_self_of_subset_right (Set.image_mono hds)]
+  rintro _ ⟨x, hxs, rfl⟩
+  refine closure_mono (s := f '' (d ∩ Set.Ici x)) (Set.image_mono Set.inter_subset_left) ?_
+  exact ((isRightContinuousOn_iff_continuousWithinAt_inter_Ici.1 hf x hxs).mono
+    (Set.inter_subset_inter_left _ hds)).mem_closure_image (hd x hxs)
+
+/-- The range of a right-continuous function on a second-countable linear order is separable. -/
+@[to_dual /-- The range of a left-continuous function on a second-countable linear order is
+separable. -/]
+lemma IsRightContinuous.separableSpace_range [OrderTopology X] [SecondCountableTopology X]
+    (hf : IsRightContinuous f) : SeparableSpace (Set.range f) :=
+  Set.image_univ ▸ hf.isRightContinuousOn.separableSpace_image
 
 end LinearOrder
 

@@ -200,8 +200,9 @@ def holder (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK :
 @[simps!]
 noncomputable def holderₗ (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K) :
     lp E p →ₗ[𝕜] lp F q →ₗ[𝕜] lp G r :=
-  .mk₂ 𝕜 (holder r B hBK) ?_ ?_ ?_ ?_ where finally
-    all_goals intros; ext; simp
+  .mk₂ 𝕜 (holder r B hBK) ?_ ?_ ?_ ?_
+where finally
+  all_goals intros; ext; simp
 
 /-- `lp.holder` as a continuous bilinear map. -/
 noncomputable def holderL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
