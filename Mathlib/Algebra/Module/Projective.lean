@@ -148,7 +148,7 @@ instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
       simp only [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
 
 /-- Free modules are projective. -/
-theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
+theorem Projective.of_basis (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
@@ -187,6 +187,13 @@ theorem Projective.of_equiv {R S} [Semiring R] [Semiring S] {M N}
 theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
   .of_equiv e
+
+instance [Projective R M] : Projective R (ι →₀ M) := by
+  classical exact .of_equiv' (finsuppLequivDFinsupp R).symm
+
+instance [Finite ι] [Π i, Projective R (A i)] : Projective R (Π i, A i) :=
+  have := Fintype.ofFinite ι
+  .of_equiv' DFinsupp.linearEquivFunOnFintype
 
 instance [Projective R M] : Projective R (ULift.{w} M) :=
   Projective.of_equiv' ULift.moduleEquiv.symm
@@ -284,5 +291,15 @@ instance Projective.directSum [∀ (i : ι), Projective R (M i)] : Projective R 
   directSum_iff.mpr ‹_›
 
 end DirectSum
+
+/-- Projectivity is transitive along a scalar tower. -/
+theorem Projective.trans (R S M : Type*) [Semiring R] [Semiring S]
+    [Module R S] [IsScalarTower R S S]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
+    [Projective R S] [Projective S M] : Projective R M :=
+  have ⟨i, hi⟩ := (projective_def' (R := S) (P := M)).mp inferInstance
+  .of_split (i.restrictScalars R)
+    ((Finsupp.linearCombination S id).restrictScalars R)
+    (congrArg (restrictScalars R) hi)
 
 end Module
