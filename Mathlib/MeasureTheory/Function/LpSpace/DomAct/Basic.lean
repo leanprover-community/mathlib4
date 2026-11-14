@@ -56,10 +56,10 @@ theorem smul_Lp_const [IsFiniteMeasure μ] (c : Mᵈᵐᵃ) (a : E) :
 
 @[to_additive]
 theorem mk_smul_indicatorConstLp (c : M)
-    {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (b : E) :
+    {s : Set α} (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (b : E) :
     mk c • indicatorConstLp p hs hμs b =
-      indicatorConstLp p (hs.preimage <| measurable_const_smul c)
-        (by rwa [SMulInvariantMeasure.measure_preimage_smul c hs]) b :=
+      indicatorConstLp p (hs.preimage <| (measurePreserving_smul c μ).quasiMeasurePreserving)
+        (by rwa [measure_preimage_smul_of_nullMeasurableSet hs c]) b :=
   rfl
 
 instance [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [MeasurableConstSMul N α] :

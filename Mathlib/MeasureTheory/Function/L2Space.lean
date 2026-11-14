@@ -202,9 +202,9 @@ variable (𝕜) {s t : Set α}
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ ∂μ`. -/
-theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : MeasurableSet s) (c : E)
-    (hμs : μ s ≠ ∞) : (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
-  rw [inner_def, ← integral_indicator hs]
+theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : NullMeasurableSet s μ)
+    (c : E) (hμs : μ s ≠ ∞) : (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
+  rw [inner_def, ← integral_indicator₀ hs]
   refine integral_congr_ae ((@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs c).mono fun x hx ↦ ?_)
   have : ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = s.indicator (fun x ↦ ⟪c, f x⟫) x := by
     by_cases hxs : x ∈ s <;> simp [hx, hxs]
@@ -213,7 +213,7 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/
 theorem inner_indicatorConstLp_eq_inner_setIntegral [CompleteSpace E] [NormedSpace ℝ E]
-    (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) (f : Lp E 2 μ) :
+    (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (c : E) (f : Lp E 2 μ) :
     (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ⟪c, ∫ x in s, f x ∂μ⟫ := by
   rw [← integral_inner (integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs),
     L2.inner_indicatorConstLp_eq_setIntegral_inner]
@@ -222,37 +222,37 @@ variable {𝕜}
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs (1 : 𝕜)` and
 a real or complex function `f` is equal to the integral of `f` over `s`. -/
-theorem inner_indicatorConstLp_one (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (f : Lp 𝕜 2 μ) :
+theorem inner_indicatorConstLp_one (hs : NullMeasurableSet s μ) (hμs : μ s ≠ ∞) (f : Lp 𝕜 2 μ) :
     ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), f⟫ = ∫ x in s, f x ∂μ := by
   rw [L2.inner_indicatorConstLp_eq_inner_setIntegral 𝕜 hs hμs (1 : 𝕜) f]; simp
 
 /-- The inner product in `L2` of two `indicatorConstLp`s, i.e. functions which are constant `a : E`
-and `b : E` on measurable `s t : Set α` with finite measure, respectively, is `⟪a, b⟫` times the
-measure of `s ∩ t`. -/
+and `b : E` on null measurable `s t : Set α` with finite measure, respectively, is `⟪a, b⟫` times
+the measure of `s ∩ t`. -/
 lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E]
-    (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞ := by finiteness)
+    (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) (hμs : μ s ≠ ∞ := by finiteness)
     (hμt : μ t ≠ ∞ := by finiteness) (a b : E) :
     ⟪indicatorConstLp 2 hs hμs a, indicatorConstLp 2 ht hμt b⟫ = μ.real (s ∩ t) • ⟪a, b⟫ := by
   let : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  rw [inner_indicatorConstLp_eq_inner_setIntegral, setIntegral_indicatorConstLp hs,
+  rw [inner_indicatorConstLp_eq_inner_setIntegral, setIntegral_indicatorConstLp ht,
     inner_smul_right_eq_smul, Set.inter_comm]
 
 /-- The inner product in `L2` of indicators of two sets with finite measure
 is the measure of the intersection. -/
 lemma inner_indicatorConstLp_one_indicatorConstLp_one
-    (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
     ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), indicatorConstLp 2 ht hμt (1 : 𝕜)⟫ = μ.real (s ∩ t) := by
   simp [inner_indicatorConstLp_indicatorConstLp, RCLike.ofReal_alg]
 
 lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
-    (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
     ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (s ∩ t) := by
   simp [inner_indicatorConstLp_indicatorConstLp]
 
 lemma _root_.MeasureTheory.posSemidef_matrix_measure_inter {ι : Type*} {s : ι → (Set α)}
-    (mv : ∀ j, MeasurableSet (s j)) (hv : ∀ j, μ (s j) ≠ ∞ := by finiteness) :
+    (mv : ∀ j, NullMeasurableSet (s j) μ) (hv : ∀ j, μ (s j) ≠ ∞ := by finiteness) :
     Matrix.PosSemidef (Matrix.of fun i j : ι ↦ μ.real (s i ∩ s j)) := by
   simp only [mv, ne_eq, hv, not_false_eq_true,
     ← real_inner_indicatorConstLp_one_indicatorConstLp_one]
