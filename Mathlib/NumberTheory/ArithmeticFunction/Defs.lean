@@ -71,9 +71,14 @@ instance : FunLike (ArithmeticFunction R) ℕ R :=
 @[simp]
 theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl
 
+/-- Creates an arithmetic function from a bare function and the proposition `f 0 = 0`. -/
+def mk (f : ℕ → R) (hf : f 0 = 0) : ArithmeticFunction R := ⟨f, hf⟩
+
 @[simp]
-theorem coe_mk (f : ℕ → R) (hf) : @DFunLike.coe (ArithmeticFunction R) _ _ _
-    (ZeroHom.mk f hf) = f := rfl
+theorem mk_apply (f : ℕ → R) (hf : f 0 = 0) (x : ℕ) : ArithmeticFunction.mk f hf x = f x := rfl
+
+@[norm_cast, simp]
+theorem coe_mk (f : ℕ → R) (hf : f 0 = 0) : (ArithmeticFunction.mk f hf : ℕ → R) = f := rfl
 
 @[simp]
 theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
@@ -201,9 +206,8 @@ instance instAddMonoid : AddMonoid (ArithmeticFunction R) := fast_instance% FunL
 
 end AddMonoid
 
-set_option backward.isDefEq.respectTransparency false in
 instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) where
-  natCast n := ⟨fun x ↦ if x = 1 then (n : R) else 0, by simp⟩
+  natCast n := .mk (fun x ↦ if x = 1 then (n : R) else 0) (by simp)
   natCast_zero := by ext; simp
   natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
@@ -390,11 +394,12 @@ theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
   conv_rhs => rw [← Finset.sum_attach, Finset.attach_eq_univ]
 
 /-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. -/
-@[simp]
 def dirichletInverse : ArithmeticFunction R :=
-  ⟨dirichletInverseFun f hf, dirichletInverseFun_apply_zero f hf⟩
+  .mk (dirichletInverseFun f hf) (dirichletInverseFun_apply_zero f hf)
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem dirichletInverse_apply (n : ℕ) : dirichletInverse f hf n = dirichletInverseFun f hf n := rfl
+
 theorem self_mul_dirichletInverse (f : ArithmeticFunction R) (hf : Invertible (f 1)) :
     f * dirichletInverse f hf = 1 := by
   ext n
