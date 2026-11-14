@@ -91,6 +91,35 @@ jobs:
           path: workflow-actions
           persist-credentials: false # no later step needs git credentials
 
+      # A bors batch builds on `staging` or `trying`. Its commits sit on top of the tip of the
+      # branch that the batch merges into, so that branch is the `master` or `bump/*` branch whose
+      # tip the batch is ahead of by the fewest commits. On a tie, the step chooses `master`.
+      - name: Find the target branch of a bors batch
+        id: bors_target
+        if: >-
+          github.repository == 'leanprover-community/mathlib4'
+          && (github.ref_name == 'staging' || github.ref_name == 'trying')
+        # On an API error the output stays empty, and the manifest check runs as for `master`.
+        continue-on-error: true
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const bumps = await github.paginate(github.rest.git.listMatchingRefs, { owner, repo, ref: 'heads/bump/' });
+            let target = 'master', fewest = Infinity;
+            for (const branch of ['master', ...bumps.map((ref) => ref.ref.replace('refs/heads/', ''))]) {
+              const { data } = await github.rest.repos.compareCommitsWithBasehead({
+                owner, repo, basehead: `${branch}...${context.sha}`, per_page: 1,
+              });
+              core.info(`${branch}: ${data.status}, ahead by ${data.ahead_by}`);
+              if (['ahead', 'identical'].includes(data.status) && data.ahead_by < fewest) {
+                target = branch;
+                fewest = data.ahead_by;
+              }
+            }
+            core.info(`The batch merges into ${target}.`);
+            core.setOutput('branch', target);
+
       # Validate lake-manifest.json before setup downloads dependencies.
       # Check that dependencies use allowed repositories and references, with full commit hashes.
       # Check pins against their branch or tag, and detect accidental dependency downgrades.
@@ -100,13 +129,14 @@ jobs:
       # For an intentional revert, an admin sets MATHLIB_ALLOW_OLDER_DEPENDENCY_PINS to true
       # and deletes the variable after the revert merges.
       - name: Validate lake-manifest.json
-        # Skip `bump/*` branches and PRs that target them, because their dependencies track `nightly-testing`.
-        # For PRs, use `github.base_ref`: `pull_request_target` sets `github.ref_name` to the default branch.
-        # Bors batches still run the check on `staging`.
+        # Skip `bump/*` branches, PRs into them and bors batches into them, because their
+        # dependencies track `nightly-testing`. For PRs, use `github.base_ref`: `pull_request_target`
+        # sets `github.ref_name` to the default branch.
         if: >-
           github.repository == 'leanprover-community/mathlib4'
           && !startsWith(github.ref_name, 'bump/')
           && !startsWith(github.base_ref, 'bump/')
+          && !startsWith(steps.bors_target.outputs.branch, 'bump/')
         uses: leanprover-community/mathlib-ci/.github/actions/validate-lake-manifest@e08feb664fe178b59a3fff5de1aa9893535b8a6c
         with:
           ref: ${{ inputs.pr_branch_ref }}
@@ -1264,6 +1294,121 @@ jobs:
           mode: check
           lint-bib-file: true
           checkout: false
+
+  # Checks for rules that a PR can break to test a change, but that must hold on `master`.
+  # On bors runs (`staging` and `trying`) a finding is an error, and bors requires this job.
+  # On other runs a finding is a warning, so the job passes.
+  merge_checks:
+    name: Merge checks
+    runs-on: ubuntu-latest
+    # The job reads (potentially fork) PR files and runs no PR code. The PR files are in
+    # `pr-branch/`, so no local action path (`uses: ./...`) leads into them.
+    permissions:
+      contents: read
+    env:
+      STRICT: ${{ github.ref_name == 'staging' || github.ref_name == 'trying' }}
+    defaults:
+      run:
+        working-directory: pr-branch
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.pr_branch_ref }}
+          path: pr-branch
+          sparse-checkout: .github
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its .git/config.
+          persist-credentials: false
+          # This job runs with only `contents: read` and no persisted credentials,
+          # so checking out fork PR code under pull_request_target is safe.
+          allow-unsafe-pr-checkout: true
+
+      - name: Checkout local actions
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
+
+      # Check that each mathlib-ci commit that `.github/` pins is on mathlib-ci `master`.
+      # A commit from a mathlib-ci PR branch or fork runs unreviewed code with mathlib4 secrets.
+      # The step also outputs the default commit of get-mathlib-ci as `sha`.
+      - name: Check mathlib-ci pins
+        id: pins
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          level=warning; [ "$STRICT" = true ] && level=error
+          status=0
+          pin=
+          declare -A compared  # mathlib-ci commit -> its `compare` status against mathlib-ci master
+          # One `file:line:match` line for each `mathlib-ci...@<sha>` and for the default commit of
+          # get-mathlib-ci. Each match ends with the 40-hex commit.
+          while IFS=: read -r file line match; do
+            sha=${match: -40}
+            echo "$file:$line:$sha"
+            [[ "$match" = default:* ]] && pin=$sha
+            if [ -z "${compared[$sha]}" ]; then
+              compared[$sha]=$(gh api "repos/leanprover-community/mathlib-ci/compare/$sha...master" --jq .status) ||
+                compared[$sha]="unknown commit or API error"
+            fi
+            case "${compared[$sha]}" in ahead|identical) continue ;; esac
+            echo "::$level file=$file,line=$line::mathlib-ci commit $sha is not on mathlib-ci master (${compared[$sha]})."
+            status=1
+          done < <(grep -rnoE --include='*.yml' --include='*.yaml' 'leanprover-community/mathlib-ci[^@[:space:]]*@[0-9a-f]{40}' .github || true
+                   grep -HnoE 'default: [0-9a-f]{40}' .github/actions/get-mathlib-ci/action.yml)
+          if [ -n "$pin" ]; then
+            echo "sha=$pin" >> "$GITHUB_OUTPUT"
+          else
+            echo "::$level file=.github/actions/get-mathlib-ci/action.yml::get-mathlib-ci has no default commit."
+            status=1
+          fi
+          [ "$level" = warning ] || exit "$status"
+
+      # The paths are checked against the mathlib-ci commit that the PR pins in get-mathlib-ci,
+      # because the workflows run the scripts at that commit.
+      - name: Get mathlib-ci
+        id: get_mathlib_ci
+        if: ${{ !cancelled() && steps.pins.outputs.sha }}
+        # On other runs a missing commit is only a warning, which "Check mathlib-ci pins" reports.
+        continue-on-error: ${{ env.STRICT != 'true' }}
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ steps.pins.outputs.sha }}
+
+      - name: Check mathlib-ci usage in workflows
+        if: ${{ !cancelled() && steps.get_mathlib_ci.outcome == 'success' }}
+        env:
+          PIN: ${{ steps.pins.outputs.sha }}
+          CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
+        run: |
+          level=warning; [ "$STRICT" = true ] && level=error
+          status=0
+          report() { echo "::$level file=$1,line=$2::$3"; status=1; }
+
+          # 1. Each literal `$CI_SCRIPTS_DIR/<path>` or `${CI_SCRIPTS_DIR}/<path>` with no `#` before it
+          #    on its line names a file at the pinned commit. The check does not see paths that a
+          #    workflow builds at run time.
+          while IFS=: read -r file line text; do
+            while read -r path; do
+              [[ "/$path/" != */../* && -e "$CI_SCRIPTS_DIR/$path" ]] ||
+                report "$file" "$line" "The mathlib-ci scripts at $PIN have no file \`$path\`."
+            done < <(grep -oE '\$\{?CI_SCRIPTS_DIR\}?/[A-Za-z0-9._/-]+' <<< "${text%%#*}" | cut -d/ -f2-)
+          done < <(grep -rnE --include='*.yml' --include='*.yaml' '^[^#]*\$\{?CI_SCRIPTS_DIR\}?/' .github/workflows)
+
+          # 2. No step checks out mathlib-ci with actions/checkout. Workflows use the local
+          #    get-mathlib-ci action, which holds the pin. A file that yq cannot parse fails the step.
+          yq ea '.jobs[].steps[]?
+                 | select((.uses // "") | test("^actions/checkout@"))
+                 | select((.with.repository // "") | test("/mathlib-ci$"))
+                 | filename + ":" + (.with.repository | line | to_string)' .github/workflows/*.y*ml > "$RUNNER_TEMP/checkouts"
+          while IFS=: read -r file line; do
+            report "$file" "$line" "The step checks out mathlib-ci with actions/checkout.%0AHint: Use \`./workflow-actions/.github/actions/get-mathlib-ci\` instead."
+          done < "$RUNNER_TEMP/checkouts"
+
+          [ "$level" = warning ] || exit "$status"
 
   final:
     name: Post-CI job
