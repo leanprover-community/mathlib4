@@ -63,7 +63,7 @@ lemma isBounded_image_norm_iff' :
   rw [isBounded_iff_bddBelow_bddAbove] at hs
   simpa [BddAbove, upperBounds] using! hs.2
 
-alias ⟨IsBounded.of_norm', IsBounded.norm'⟩ := isBounded_norm_iff'
+alias ⟨IsBounded.of_norm', IsBounded.norm'⟩ := isBounded_image_norm_iff'
 
 attribute [to_additive IsBounded.of_norm] IsBounded.of_norm'
 attribute [to_additive IsBounded.norm] IsBounded.norm'
