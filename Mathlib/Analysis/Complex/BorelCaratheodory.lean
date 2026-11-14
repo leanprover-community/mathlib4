@@ -100,7 +100,7 @@ public theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f 
       · simpa using norm_sub_le_norm_add 1 w
     _ = 2 * M * (‖w‖ / (1 - ‖w‖)) := by ring
     _ ≤ 2 * M * (‖z‖ / R / (1 - ‖z‖ / R)) := by gcongr; simpa [div_lt_one hR]
-    _ = 2 * M * ‖z‖ / (R - ‖z‖) := by field_simp
+    _ = 2 * M * ‖z‖ / (R - ‖z‖) := by field
 
 /-- **Borel-Carathéodory theorem**.
 
@@ -118,7 +118,7 @@ public theorem borelCaratheodory (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball
   have h_denom_ne : R - ‖z‖ ≠ 0 := by linarith [mem_ball_zero_iff.mp hz]
   calc ‖f z‖ ≤ ‖f z - f 0‖ + ‖f 0‖ := norm_le_norm_sub_add _ _
     _ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) + ‖f 0‖ := by gcongr
-    _ = 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by field_simp; ring
+    _ = 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by field
 
 end BorelCaratheodory
 
