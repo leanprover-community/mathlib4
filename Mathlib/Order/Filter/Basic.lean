@@ -1131,6 +1131,9 @@ lemma inter (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s ∩ s' =
 lemma union (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t') : s ∪ s' =ᶠ[l] t ∪ t' :=
   eventuallyEqSet_iff'.2 <| (eventuallyEqSet_iff'.1 h).comp₂ (· ∨ ·) (eventuallyEqSet_iff'.1 h')
 
+lemma compl_eventuallyEq_iff {s t : Set α} {l : Filter α} : sᶜ =ᶠ[l] tᶜ ↔ s =ᶠ[l] t :=
+  ⟨fun h ↦ by simpa using h.compl, fun _ ↦ by gcongr⟩
+
 @[gcongr]
 lemma compl (h : s =ᶠ[l] t) : sᶜ =ᶠ[l] tᶜ :=
   eventuallyEqSet_iff'.2 <| (eventuallyEqSet_iff'.1 h).fun_comp Not
