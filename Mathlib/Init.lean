@@ -20,6 +20,7 @@ public meta import Mathlib.Tactic.Linter.HashCommandLinter
 public meta import Mathlib.Tactic.Linter.HaveILetI
 public meta import Mathlib.Tactic.Linter.Header
 public meta import Mathlib.Tactic.Linter.InternalConstructor
+public meta import Mathlib.Tactic.Linter.LibraryNote
 -- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
 public meta import Mathlib.Tactic.Linter.Lint
 public meta import Mathlib.Tactic.Linter.Multigoal
