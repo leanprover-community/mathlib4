@@ -63,7 +63,7 @@ lemma exists_ideal_gt_liesOver_of_lt [Algebra.HasGoingUp R S]
 
 /-- This generalizes `exists_ideal_over_prime_of_isIntegral_of_isPrime`
 to arbitrary length chains. -/
-lemma exists_ltSeries_of_hasGoingUp [Algebra.HasGoingUp R S]
+lemma exists_ltseries_of_hasGoingUp [Algebra.HasGoingUp R S]
     (l : LTSeries (PrimeSpectrum R))
     (P : Ideal S) [P.IsPrime]
     [lo : P.LiesOver (RelSeries.head l).asIdeal] :
@@ -84,6 +84,9 @@ lemma exists_ltSeries_of_hasGoingUp [Algebra.HasGoingUp R S]
       simp_all only [Set.mem_ofPred_eq]
       exact PQlt), by simpa using len, rfl, ?_⟩
     simpa [spec, PrimeSpectrum.ext_iff] using lo.over.symm
+
+@[deprecated (since := "2026-10-04")]
+alias exists_ltSeries_of_hasGoingUp := exists_ltseries_of_hasGoingUp
 
 end Ideal
 
