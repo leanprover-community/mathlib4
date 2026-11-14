@@ -161,7 +161,7 @@ theorem cRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
 
 @[simp] theorem eRank_one [Semiring R] [DecidableEq m] [StrongRankCondition R] :
     (eRank (1 : Matrix m m R)) = ENat.card m := by
-  simp [eRank, ENat.card]
+  simp [eRank, Cardinal.toENat_mk]
 
 @[simp]
 theorem rank_one [Fintype n] [Semiring R] [DecidableEq n] [StrongRankCondition R] :
