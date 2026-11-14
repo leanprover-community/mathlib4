@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
-import Mathlib.Tactic
 
 /-!
 # The modulus of `Gamma` on the line `Re z = 1 / 2`
