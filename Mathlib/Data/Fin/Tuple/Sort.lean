@@ -54,10 +54,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
-  · intro _ _
-    -- Porting note: proof was `simp`
-    rw [Prod.ext_iff]
-    simp
+  · -- Porting note: proof was `simp`
+    exact fun _ _ h ↦ congr($h.2)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `graphEquiv₁ f` is the natural equivalence between `Fin n` and `graph f`,

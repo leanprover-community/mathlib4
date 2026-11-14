@@ -89,9 +89,7 @@ def isLimitOfFactors (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ Z) [Mono h] (x : X �
         (show s.fst ≫ x = s.snd ≫ y from
           (cancel_mono h).1 <| by simp only [Category.assoc, hxh, hyh, s.condition])) :=
   PullbackCone.isLimitAux' _ fun t =>
-    have : fst t ≫ x ≫ h = snd t ≫ y ≫ h := by  -- Porting note: reassoc workaround
-      rw [← Category.assoc, ← Category.assoc]
-      apply congrArg (· ≫ h) t.condition
+    have : fst t ≫ x ≫ h = snd t ≫ y ≫ h := t.condition_assoc h
     ⟨hs.lift (PullbackCone.mk t.fst t.snd <| by rw [← hxh, ← hyh, this]),
       ⟨hs.fac _ WalkingCospan.left, hs.fac _ WalkingCospan.right, fun hr hr' => by
         apply PullbackCone.IsLimit.hom_ext hs <;>
