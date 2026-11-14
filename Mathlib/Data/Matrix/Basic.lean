@@ -1040,14 +1040,13 @@ variable (R m α)
 See also `AlgEquiv.mopMatrix` for a version that doesn't require `α` to have commutative
 multiplication, by taking its opposite. -/
 @[simps!]
-def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableEq m] [Algebra R α] :
+def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [Algebra R α] :
     Matrix m m α ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
   __ := transposeRingEquiv m α
   map_smul' := by simp
 
 @[simp]
-theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m]
-    [DecidableEq m] [Algebra R α] :
+theorem toRingEquiv_transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [Algebra R α] :
     transposeAlgEquiv m R α = transposeRingEquiv m α := rfl
 
 end Transpose
