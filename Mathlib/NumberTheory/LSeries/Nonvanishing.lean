@@ -420,6 +420,14 @@ lemma _root_.riemannZeta_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hs : 1 ≤ s.re) :
   · exact riemannZeta_one_ne_zero
   · exact LFunction_modOne_eq (χ := 1) ▸ LFunction_ne_zero_of_one_le_re _ (.inr hs₀) hs
 
+/-- The regularized Riemann zeta function `riemannZeta₁ s = (s - 1) * ζ s` (with value `1` at
+`s = 1`) does not vanish on the closed half-plane `re s ≥ 1`. -/
+lemma _root_.riemannZeta₁_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hs : 1 ≤ s.re) :
+    riemannZeta₁ s ≠ 0 := by
+  rcases eq_or_ne s 1 with rfl | hs₁
+  · simp
+  · grind [riemannZeta_eq_inv_sub_mul hs₁, riemannZeta_ne_zero_of_one_le_re]
+
 /-- The completed `L`-function of a Dirichlet character does not vanish for `1 ≤ re s`,
 except when `χ` is trivial and `s = 1`. -/
 theorem completedLFunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 ∨ s ≠ 1)
