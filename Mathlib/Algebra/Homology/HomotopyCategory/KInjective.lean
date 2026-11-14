@@ -166,7 +166,6 @@ instance (K : CochainComplex C ℕ) [∀ n, Injective (K.X n)] :
     IsKInjective (K.extend ComplexShape.embeddingUpNat) :=
   isKInjective_of_injective _ 0
 
-set_option backward.defeqAttrib.useBackward true in
 lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
     ∃ (α : Cochain K L m), δ m n α = z.1 := by
@@ -175,7 +174,7 @@ lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
   dsimp at hφ
   obtain ⟨h⟩ := IsKInjective.nonempty_homotopy_zero φ hK
   obtain ⟨f, hf⟩ := Cochain.equivHomotopy _ _ h
-  simp only [Int.reduceNeg, Cochain.ofHom_zero, add_zero] at hf
+  simp only [Cochain.ofHom_zero, add_zero] at hf
   refine ⟨n.negOnePow • Cochain.rightUnshift f m (by lia), ?_⟩
   apply (Cochain.rightShiftAddEquiv _ _ _ n 0 (by simp)).injective
   dsimp

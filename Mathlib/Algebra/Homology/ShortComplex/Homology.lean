@@ -512,7 +512,7 @@ lemma homologyMap'_comp (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃)
       homologyMap' φ₂ h₂ h₃ :=
   leftHomologyMap'_comp _ _ _ _ _
 
-@[simp]
+@[simp, reassoc]
 lemma homologyMap_comp [HasHomology S₁] [HasHomology S₂] [HasHomology S₃]
     (φ₁ : S₁ ⟶ S₂) (φ₂ : S₂ ⟶ S₃) :
     homologyMap (φ₁ ≫ φ₂) = homologyMap φ₁ ≫ homologyMap φ₂ :=

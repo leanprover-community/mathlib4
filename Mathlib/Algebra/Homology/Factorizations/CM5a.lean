@@ -302,7 +302,7 @@ lemma quasiIsoAt_π (q : ℤ) (hq : q < n) : QuasiIsoAt (π f n) q := by
   apply Balanced.isIso_of_mono_of_epi
 
 /-- The (exact) short complex `K.homology n ⟶ L.homology n ⟶ (S f n).homology n`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def homologyShortComplex : ShortComplex C :=
   ShortComplex.mk (homologyMap f n) (homologyMap (α f n) n) (by
     rw [← homologyMap_comp, comp_α, homologyMap_zero])
@@ -325,7 +325,6 @@ omit [EnoughInjectives C] in
 lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
 
-set_option backward.defeqAttrib.useBackward true in
 lemma exact_homologyShortComplex [Mono f] :
     (homologyShortComplex f n).Exact := by
   let T := ShortComplex.mk (homologyMap f n) (homologyMap (cokernel.π f) n)
@@ -370,8 +369,6 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (ι f n) q := by
@@ -427,6 +424,7 @@ namespace CofFibFactorizationQuasiIsoLE
 /-- When `K` and `L` are both strictly `≥ n + 1`, this is the factorization `f ≫ 𝟙 L = f`
 of a monomorphism `f : K ⟶ L` as a monomorphism that is a quasi-isomorphism in degrees `≤ n`
 followed by a degreewise epimorphism with an injective kernel. -/
+@[implicit_reducible]
 def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
     CofFibFactorizationQuasiIsoLE f (n + (0 : ℕ)) :=
   .mk (.mk { mid := L, ι := f, π := 𝟙 L }
@@ -476,6 +474,7 @@ lemma isIso_fromNext_hom_h_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n
 /-- Assuming `f : K ⟶ L` is a monomorphism between complexes that are strictly `≥ n₀ + 1`,
 this is a dependent sequence of terms in `CofFibFactorizationQuasiIsoLE f (n₀ + q)`
 for all `q : ℕ`. -/
+@[implicit_reducible]
 noncomputable def sequence
     [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)] :
     ∀ (q : ℕ), CofFibFactorizationQuasiIsoLE f (n₀ + q)
@@ -485,6 +484,7 @@ noncomputable def sequence
 variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
 
 /-- The morphism `(sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj` given by `fromNext`. -/
+@[implicit_reducible]
 noncomputable def toSequenceNext (q : ℕ) :
     (sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj :=
   (sequence f n₀ q).fromNext _ (by lia)
@@ -496,7 +496,7 @@ variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀
 /-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
 this is a projective system in `(cofFib f).FullSubcategory` given by the
 sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
-noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
+noncomputable abbrev functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
   (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
 
 lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :
@@ -544,13 +544,13 @@ noncomputable def midπ (q : ℕ) : mid f n₀ ⟶ ((functor f n₀).obj (op q))
 
 @[reassoc (attr := simp)]
 lemma midπ_w (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) :
-    midπ f n₀ q₂ ≫ ((functor f n₀).map (homOfLE hq).op).hom.h =
+    dsimp% midπ f n₀ q₂ ≫ ((functor f n₀).map (homOfLE hq).op).hom.h =
       midπ f n₀ q₁ :=
   limit.w _ _
 
 @[reassoc (attr := simp)]
 lemma midπ_w_f (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) (i : ℤ) :
-    (midπ f n₀ q₂).f i ≫ ((functor f n₀).map (homOfLE hq).op).hom.h.f i =
+    dsimp% (midπ f n₀ q₂).f i ≫ ((functor f n₀).map (homOfLE hq).op).hom.h.f i =
       (midπ f n₀ q₁).f i := by
   rw [← midπ_w f n₀ q₁ q₂ hq]
   dsimp
@@ -568,12 +568,10 @@ lemma quasiIsoAt_midπ (q : ℕ) (i : ℤ) (h : i + 1 ≤ n₀ + q) :
     (isEventuallyConstantTo f n₀ _ _)
     (isEventuallyConstantTo f n₀ _ _)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The first morphism `ι f n₀ : K ⟶ mid f n₀` of the factorization lemma `cm5a_cof`. -/
 noncomputable def ι : K ⟶ mid f n₀ :=
   limit.lift _ (Cone.mk _ { app q := ((functor f n₀).obj q).obj.ι })
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_midπ (q : ℕ) : ι f n₀ ≫ midπ f n₀ q = ((functor f n₀).obj (op q)).obj.ι := by
   simp [ι, midπ]
@@ -592,16 +590,15 @@ lemma ι_π : ι f n₀ ≫ π f n₀ = f := by
   simp [π]
 
 @[reassoc (attr := simp)]
-lemma midπ_π (q : ℕ) : midπ f n₀ q ≫ ((functor f n₀).obj (op q)).obj.π = π f n₀ := by
+lemma midπ_π (q : ℕ) : dsimp% midπ f n₀ q ≫ ((functor f n₀).obj (op q)).obj.π = π f n₀ := by
   simp [π, ← midπ_w_assoc f n₀ 0 q (by lia)]
 
 @[reassoc (attr := simp)]
 lemma midπ_π_f (q : ℕ) (i : ℤ) :
-    (midπ f n₀ q).f i ≫ ((functor f n₀).obj (op q)).obj.π.f i = (π f n₀).f i := by
+    dsimp% (midπ f n₀ q).f i ≫ ((functor f n₀).obj (op q)).obj.π.f i = (π f n₀).f i := by
   rw [← midπ_π f n₀ q]
   dsimp
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (mid f n₀).IsStrictlyGE (n₀ + 1) := by
   rw [isStrictlyGE_iff]
   intro i hi

@@ -78,7 +78,7 @@ instance : Inhabited (Triangle C) :=
 
 /-- For each object in `C`, there is a triangle of the form `(X,X,0,𝟙 X,0,0)`
 -/
-@[simps!]
+@[simps!, implicit_reducible]
 def contractibleTriangle (X : C) : Triangle C :=
   Triangle.mk (𝟙 X) (0 : X ⟶ 0) 0
 
@@ -118,7 +118,7 @@ attribute [map (attr := reassoc (attr := simp))] TriangleMorphism.comm₁ Triang
 
 /-- The identity triangle morphism.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def triangleMorphismId (T : Triangle C) : TriangleMorphism T T where
   hom₁ := 𝟙 T.obj₁
   hom₂ := 𝟙 T.obj₂
@@ -131,7 +131,7 @@ variable {T₁ T₂ T₃ : Triangle C}
 
 /-- Composition of triangle morphisms gives a triangle morphism.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def TriangleMorphism.comp (f : TriangleMorphism T₁ T₂) (g : TriangleMorphism T₂ T₃) :
     TriangleMorphism T₁ T₃ where
   hom₁ := f.hom₁ ≫ g.hom₁
@@ -418,19 +418,19 @@ def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] : C ⥤ T
 namespace Triangle
 
 /-- The first projection `Triangle C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₁ : Triangle C ⥤ C where
   obj T := T.obj₁
   map f := f.hom₁
 
 /-- The second projection `Triangle C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₂ : Triangle C ⥤ C where
   obj T := T.obj₂
   map f := f.hom₂
 
 /-- The third projection `Triangle C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₃ : Triangle C ⥤ C where
   obj T := T.obj₃
   map f := f.hom₃

@@ -34,7 +34,6 @@ section
 variable (C : Type*) [Category* C] {ι : Type*} (c : ComplexShape ι) [HasZeroMorphisms C]
   [CategoryWithHomology C]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
   rw [mem_quasiIso_iff] at hf
@@ -108,7 +107,6 @@ lemma mem_quasiIso_iff {X Y : HomotopyCategory C c} (f : X ⟶ Y) :
     quasiIso C c f ↔ ∀ (n : ι), IsIso ((homologyFunctor _ _ n).map f) := by
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     quasiIso C c ((quotient C c).map f) ↔ HomologicalComplex.quasiIso C c f := by
   have eq := fun (i : ι) => NatIso.isIso_map_iff (homologyFunctorFactors C c i) f
@@ -201,7 +199,6 @@ noncomputable def homologyFunctorFactorsh (i : ι) :
     Functor.isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
     homologyFunctorFactors C c i ≪≫ (HomotopyCategory.homologyFunctorFactors C c i).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyFunctorFactorsh_hom_app_quotient_obj
     (K : HomologicalComplex C c) (i : ι) :
@@ -211,7 +208,6 @@ lemma homologyFunctorFactorsh_hom_app_quotient_obj
         (HomotopyCategory.homologyFunctorFactors C c i).inv.app K :=
   (Quotient.natTransLift_app ..).trans (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyFunctorFactorsh_inv_app_quotient_obj
     (K : HomologicalComplex C c) (i : ι) :
@@ -341,7 +337,7 @@ variable [Preadditive C] [Preadditive D]
 
 /-- The localizer morphism which expresses that `F.mapHomologicalComplex c` preserves
 quasi-isomorphisms. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapHomologicalComplexUpToQuasiIsoLocalizerMorphism :
     LocalizerMorphism (HomologicalComplex.quasiIso C c) (HomologicalComplex.quasiIso D c) where
   functor := F.mapHomologicalComplex c
@@ -402,8 +398,7 @@ noncomputable instance :
 
 variable {c}
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
+attribute [local implicit_reducible] HomologicalComplexUpToQuasiIso.Qh in
 @[reassoc]
 lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex C c) :
     (F.mapHomologicalComplexUpToQuasiIsoFactorsh c).hom.app
@@ -415,7 +410,7 @@ lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex 
             HomologicalComplexUpToQuasiIso.Qh.map
               ((F.mapHomotopyCategoryFactors c).inv.app K) := by
   dsimp [mapHomologicalComplexUpToQuasiIsoFactorsh]
-  rw [Localization.liftNatTrans_app]
+  rw [Localization.liftNatIso_hom, Localization.liftNatTrans_app]
   dsimp
   simp only [Category.comp_id, Category.id_comp]
   change _ = (F.mapHomologicalComplexUpToQuasiIso c).map (𝟙 _) ≫ _ ≫ 𝟙 _ ≫

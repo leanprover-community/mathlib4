@@ -74,7 +74,6 @@ instance : (Qh : _ ⥤ Plus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
     (_ : CochainComplex.IsKInjective L.obj.as) : Function.Bijective (Qh.map : (K ⟶ L) → _) := by
   have := CochainComplex.IsKInjective.Qh_map_bijective K.obj L.obj.as
