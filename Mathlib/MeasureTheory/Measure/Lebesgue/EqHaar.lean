@@ -431,6 +431,15 @@ theorem addHaar_closedBall_center {E : Type*} [NormedAddCommGroup E] [Measurable
   have : closedBall (0 : E) r = (x + ·) ⁻¹' closedBall x r := by simp
   rw [this, measure_preimage_add]
 
+/-- The measure of a closed ball for a left-invariant measure does not depend on its center. -/
+theorem addHaar_closedEBall_center {E : Type*} [SeminormedAddCommGroup E] [MeasurableSpace E]
+    [BorelSpace E] (μ : Measure E) [IsAddLeftInvariant μ] (x : E) (r : ℝ≥0∞) :
+    μ (closedEBall x r) = μ (closedEBall (0 : E) r) := by
+  have : closedEBall (0 : E) r = (x + ·) ⁻¹' closedEBall x r := by
+    ext y
+    simp [edist_eq_enorm_sub]
+  rw [this, measure_preimage_add]
+
 theorem addHaar_real_closedBall_center {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
     μ.real (closedBall x r) = μ.real (closedBall (0 : E) r) := by
@@ -505,6 +514,29 @@ theorem addHaar_real_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ.real (closedBall x r) = r ^ finrank ℝ E * μ.real (ball 0 1) := by
   simp [addHaar_real_closedBall' μ x hr, measureReal_def,
     addHaar_unitClosedBall_eq_addHaar_unitBall]
+
+/-- The measure of a closed ball of radius `r` for an additive Haar measure in dimension `d` is
+`r ^ d` times the measure of the unit ball. -/
+theorem addHaar_closedEBall (x : E) (r : ℝ≥0∞) :
+    μ (closedEBall x r) = r ^ finrank ℝ E * μ (ball 0 1) := by
+  rcases subsingleton_or_nontrivial E with hE | hE
+  · rw [finrank_zero_of_subsingleton, pow_zero, one_mul,
+      Subsingleton.eq_univ_of_nonempty nonempty_closedEBall,
+      Subsingleton.eq_univ_of_nonempty (nonempty_ball.2 one_pos)]
+  rcases eq_top_or_lt_top r with rfl | hr
+  · rw [closedEBall_top, measure_univ_of_isAddLeftInvariant, ENNReal.top_pow finrank_pos.ne',
+      ENNReal.top_mul (measure_ball_pos μ _ one_pos).ne']
+  lift r to ℝ≥0 using hr.ne
+  rw [closedEBall_coe, addHaar_closedBall μ x r.coe_nonneg, ENNReal.ofReal_pow r.coe_nonneg,
+    ENNReal.ofReal_coe_nnreal]
+
+/-- For an additive Haar measure in dimension `d`, the ratio of the measures of two closed balls of
+radii `r` and `s` is `(r / s) ^ d`. -/
+theorem addHaar_closedEBall_div (x y : E) (r s : ℝ≥0∞) :
+    μ (closedEBall x r) / μ (closedEBall y s) = (r / s) ^ finrank ℝ E := by
+  rw [addHaar_closedEBall, addHaar_closedEBall,
+    ENNReal.mul_div_mul_right _ _ (measure_ball_pos μ _ one_pos).ne' measure_ball_lt_top.ne,
+    ENNReal.div_pow]
 
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
