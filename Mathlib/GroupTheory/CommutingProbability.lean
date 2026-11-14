@@ -72,7 +72,10 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
     div_pos (Nat.cast_pos.mpr (Finite.card_pos_iff.mpr ⟨⟨(x, x), rfl⟩⟩))
       (pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2)
 
+omit [Finite M] in
 theorem commProb_le_one : commProb M ≤ 1 := by
+  rcases (finite_or_infinite M).symm with _ | _
+  · simp
   refine div_le_one_of_le₀ ?_ (sq_nonneg (Nat.card M : ℚ))
   norm_cast
   rw [sq, ← Nat.card_prod]

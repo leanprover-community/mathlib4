@@ -236,11 +236,12 @@ theorem lcm_orderOf_dvd_exponent [Fintype G] :
   exact order_dvd_exponent g
 
 @[to_additive exists_addOrderOf_eq_pow_padic_val_nat_add_exponent]
-theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} (hp : p.Prime) :
+theorem exists_orderOf_eq_pow_factorization_exponent (p : ℕ) :
     ∃ g : G, orderOf g = p ^ (exponent G).factorization p := by
-  have := Fact.mk hp
   rcases eq_or_ne ((exponent G).factorization p) 0 with (h | h)
   · refine ⟨1, by rw [h, pow_zero, orderOf_one]⟩
+  have hp : p.Prime := not_not.1 fun hp => h (Nat.factorization_eq_zero_of_not_prime _ hp)
+  have := Fact.mk hp
   have he : 0 < exponent G :=
     Ne.bot_lt fun ht => by
       rw [ht] at h
@@ -262,6 +263,14 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
   · rwa [hk, mul_comm, ht, pow_succ, ← mul_assoc, Nat.mul_div_cancel _ hp.pos, pow_mul] at hg
   · rw [← Nat.succ_eq_add_one, ← ht, ← pow_mul, mul_comm, ← hk]
     exact pow_exponent_eq_one g
+
+@[deprecated (since := "2026-11-04")]
+alias _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent :=
+  exists_orderOf_eq_pow_factorization_exponent
+
+@[deprecated (since := "2026-11-04")]
+alias _root_.Nat.Prime.exists_addOrderOf_eq_pow_padic_val_nat_add_exponent :=
+  AddMonoid.exists_addOrderOf_eq_pow_padic_val_nat_add_exponent
 
 variable {G} in
 open Nat in
@@ -452,7 +461,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   replace hp := Nat.prime_of_mem_primeFactorsList hp
   simp only [Nat.primeFactorsList_count_eq] at hpe
   set k := (orderOf t).factorization p with hk
-  obtain ⟨g, hg⟩ := hp.exists_orderOf_eq_pow_factorization_exponent G
+  obtain ⟨g, hg⟩ := exists_orderOf_eq_pow_factorization_exponent G p
   suffices orderOf t < orderOf (t ^ p ^ k * g) by
     rw [ht] at this
     exact this.not_ge (le_csSup hfin.bddAbove <| Set.mem_range_self _)
