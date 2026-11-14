@@ -93,6 +93,10 @@ theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x
       hv.1 <| by rw [map_mul, map_one, hr1, hr2, Units.inv_mul]⟩,
     hv.1 <| hr1.trans hu⟩
 
+theorem smul_le (hv : Integers v O) {x : O} {r : R} : v (x • r) ≤ v r := by
+  rw [Algebra.smul_def, map_mul]
+  exact mul_le_of_le_one_of_le (hv.map_le_one x) le_rfl
+
 theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
     v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   obtain ⟨z, rfl⟩ := h
@@ -455,5 +459,60 @@ lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] {v : Valuation K Γ₀}
   (leIdeal_v_le_of_mem v hx).trans' (ltIdeal_le_leIdeal _ _)
 
 end Ideal
+
+section SMul
+
+variable {R O Γ₀ : Type*} [Ring R] [Semiring O] [Module O R] [LinearOrderedCommGroupWithZero Γ₀]
+  (v : Valuation R Γ₀) (h : ∀ (o : O) (x : R), v (o • x) ≤ v x)
+
+/-- The closed ball of radius `γ` around `0`, as an `O`-submodule of `R`, for any ring `O` acting
+on `R` without increasing the valuation. This generalizes `Valuation.leSubmodule`, which is the
+case `O = v.integer`. -/
+def leSubmoduleOfSMulLe (γ : Γ₀) : Submodule O R where
+  __ := leAddSubgroup v γ
+  smul_mem' o x hx := (h o x).trans hx
+
+/-- The open ball of radius `γ` around `0`, as an `O`-submodule of `R`, for any ring `O` acting
+on `R` without increasing the valuation. This generalizes `Valuation.ltSubmodule`, which is the
+case `O = v.integer`. -/
+def ltSubmoduleOfSMulLe (γ : Γ₀ˣ) : Submodule O R where
+  __ := ltAddSubgroup v γ
+  smul_mem' o x hx := (h o x).trans_lt hx
+
+lemma leSubmoduleOfSMulLe_monotone : Monotone (leSubmoduleOfSMulLe v h) :=
+  leAddSubgroup_monotone v
+
+lemma ltSubmoduleOfSMulLe_monotone : Monotone (ltSubmoduleOfSMulLe v h) :=
+  ltAddSubgroup_monotone v
+
+lemma ltSubmoduleOfSMulLe_le_leSubmoduleOfSMulLe (γ : Γ₀ˣ) :
+    ltSubmoduleOfSMulLe v h γ ≤ leSubmoduleOfSMulLe v h γ :=
+  ltAddSubgroup_le_leAddSubgroup v γ
+
+variable {v} in
+@[simp]
+lemma mem_leSubmoduleOfSMulLe_iff {γ : Γ₀} {x : R} :
+    x ∈ leSubmoduleOfSMulLe v h γ ↔ v x ≤ γ :=
+  Iff.rfl
+
+variable {v} in
+@[simp]
+lemma mem_ltSubmoduleOfSMulLe_iff {γ : Γ₀ˣ} {x : R} :
+    x ∈ ltSubmoduleOfSMulLe v h γ ↔ v x < γ :=
+  Iff.rfl
+
+/-- The integers of `v` act on `R` without increasing the valuation. -/
+lemma valuation_integer_smul_le (o : v.integer) (x : R) : v (o • x) ≤ v x := by
+  simpa [Subring.smul_def] using mul_le_of_le_one_of_le o.prop le_rfl
+
+lemma leSubmoduleOfSMulLe_integer (γ : Γ₀) :
+    leSubmoduleOfSMulLe v (valuation_integer_smul_le v) γ = leSubmodule v γ :=
+  rfl
+
+lemma ltSubmoduleOfSMulLe_integer (γ : Γ₀ˣ) :
+    ltSubmoduleOfSMulLe v (valuation_integer_smul_le v) γ = ltSubmodule v γ :=
+  rfl
+
+end SMul
 
 end Valuation
