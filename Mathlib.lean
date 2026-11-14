@@ -2422,6 +2422,7 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Modulus
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
