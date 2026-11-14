@@ -62,4 +62,9 @@ instance instCharZero : CharZero ℕ where cast_injective := Function.injective_
 
 instance instIsDomain : IsDomain ℕ where
 
+attribute [grind =] Nat.add_mod
+attribute [grind =] Nat.mul_mod_mul_left
+attribute [grind =] Nat.mod_eq_of_lt
+attribute [grind .] Nat.mod_lt
+
 end Nat
