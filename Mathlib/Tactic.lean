@@ -396,11 +396,14 @@ public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.Expr
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.Omit
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 public import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Tactic.Translate.ToDifferentiable
 public import Mathlib.Tactic.Translate.ToDual
 public import Mathlib.Tactic.Translate.UnfoldBoundary
+public import Mathlib.Tactic.Translate.Util
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Tactic.TypeCheck
 public import Mathlib.Tactic.TypeStar

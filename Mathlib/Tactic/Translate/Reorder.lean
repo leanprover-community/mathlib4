@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
+public import Mathlib.Tactic.Translate.Util
 
 /-!
 # Reordering arguments in a translation
@@ -59,6 +59,10 @@ open Lean Meta Elab
 abbrev Permutation := List {l : List Nat // 2 ≤ l.length}
 
 namespace Permutation
+
+/-- Return a list of all elements moved in a permutation. -/
+def toList (c : Permutation) : List Nat :=
+  c.foldl (init := []) (fun l perm ↦ l ++ perm.1)
 
 /-- Permute an array of arguments using the given reorder. -/
 def permute! {α} [Inhabited α] (c : Permutation) : Array α → Array α :=
@@ -348,27 +352,6 @@ For example:
 If the translated declaration already exists (i.e. when using `existing` or `self`), the reorder
 argument is automatically inferred using the function `guessReorder`. -/
 syntax (name := reorder) reorderPart,* : translateReorder
-
-/-- Elaborate syntax that refers to an argument of a declaration or hypothesis.
-This is either a 1-indexed number, or a name from `argNames`.
-- `fvars` is only used to add hover information to `stx`
-- `head` is only used for the error message. -/
-def elabArgStx (stx : TSyntax [`ident, `num]) (argNames : Array Name) (fvars : Array Expr)
-    (head : MessageData) : MetaM Nat := do
-  let n ← match stx with
-    | `($name:ident) => match argNames.idxOf? name.getId with
-      | some n => pure n
-      | none => throwErrorAt stx
-        "invalid argument `{stx}`, it is not an argument of `{head}`."
-    | `($n:num) =>
-      if n.getNat = 0 then
-        throwErrorAt stx "invalid index `{stx}`, arguments are counted starting from 1."
-      if n.getNat > fvars.size then
-        throwErrorAt stx "index `{stx}` is out of bounds, there are only `{fvars.size}` arguments"
-      pure (n.getNat - 1)
-    | _ => throwUnsupportedSyntax
-  Elab.Term.addTermInfo' stx fvars[n]! |>.run'
-  return n
 
 /-- Elaborate the argument of a `(reorder := ...)` option. -/
 partial def elabReorder (stx : TSyntax `translateReorder) (argNames : Array Name)

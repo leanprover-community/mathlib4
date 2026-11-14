@@ -7,6 +7,7 @@ module
 
 public meta import Batteries.Lean.NameMapAttribute
 public import Mathlib.Tactic.Translate.GuessName
+public import Mathlib.Tactic.Translate.Omit
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
 
@@ -55,6 +56,8 @@ public structure TranslationInfo where
   translation : Name
   /-- The arguments that should be reordered when translating, using disjoint cycle notation. -/
   reorder : Reorder := {}
+  /-- The arguments that should be omitted when translating -/
+  omitted : Omission := {}
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg : RelevantArg := .arg 0
   /-- Whether `translation` should be unfolded. This is used by `to_dual_for`. -/
@@ -262,7 +265,8 @@ where
             trace[translate_detail] "changing the numeral in this expression to 0."
             let args := args.set 1 (mkRawNatLit 0)
             return mkAppN f (← args.mapM visit)
-      let some { translation := n₁, reorder, relevantArg, unfold } ← findPrefixTranslation? n₀ t |
+      let some { translation := n₁, reorder, omitted, relevantArg, unfold }
+          ← findPrefixTranslation? n₀ t |
         return mkAppN f (← args.mapM visit)
       -- Use `relevantArg` to test if the head should be translated.
       if let .arg relevantArg := relevantArg then
@@ -287,6 +291,20 @@ where
       for (arg, argReorder) in reorder.argReorders do
         args ← args.modifyM arg (reorderLambda argReorder ·)
       args := reorder.permute! args
+      -- Handle argument omissions after reordering (to not invalidate indices).
+      -- Argument validation elsewhere ensures that reordered and omitted values do not overlap.
+      -- If the number of arguments is smaller than some argument index in `omittedArguments`,
+      -- we need to eta expand first.
+      -- TODO(Michael): why do I need to write omitted.omission here? We don't need to for reorders.
+      if args.size < ArgOmit.range omitted.omission then
+        let e' ← etaExpandN (omitted.omission.range - args.size) e
+        trace[translate_detail] "eta expanded {e} to {e'}"
+        return ← visit e'
+      unless omitted.omission.isEmpty do
+        trace[translate_detail] "omitting the argument(s) {omitted.omission} of {f'}"
+      for (arg, argOmit) in omitted.omission.argOmissions do
+        args ← args.modifyM arg (omitLambda argOmit ·)
+      args := omitted.omission.omit! args
       let result := mkAppN f' (← args.mapM visit)
       if unfold then
         unfoldDefinition result
