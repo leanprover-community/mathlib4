@@ -55,7 +55,7 @@ variable {n : ℕ} [_i : Fact (finrank ℝ F = n)]
 parallelepiped associated to any orthonormal basis. This is a rephrasing of
 `abs_volumeForm_apply_of_orthonormal` in terms of measures. -/
 theorem Orientation.measure_orthonormalBasis (o : Orientation ℝ F (Fin n))
-    (b : OrthonormalBasis ι ℝ F) : o.volumeForm.measure (parallelepiped b) = 1 := by
+    (b : OrthonormalBasis ι ℝ F) : o.volumeForm.measure (parallelepiped ℝ b) = 1 := by
   have e : ι ≃ Fin n := by
     refine Fintype.equivFinOfCardEq ?_
     rw [← _i.out, finrank_eq_card_basis b.toBasis]
@@ -80,7 +80,7 @@ end
 /-- The volume measure in a finite-dimensional inner product space gives measure `1` to the
 parallelepiped spanned by any orthonormal basis. -/
 theorem OrthonormalBasis.volume_parallelepiped (b : OrthonormalBasis ι ℝ F) :
-    volume (parallelepiped b) = 1 := by
+    volume (parallelepiped ℝ b) = 1 := by
   have : Fact (finrank ℝ F = finrank ℝ F) := ⟨rfl⟩
   let o := (stdOrthonormalBasis ℝ F).toBasis.orientation
   rw [← o.measure_eq_volume]
