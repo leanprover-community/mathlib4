@@ -24,6 +24,9 @@ facts about the existing norm.
 * `isUltrametricDist_iff_forall_norm_natCast_le_one`: a norm in a division ring is ultrametric
   if and only if the norm of the image of a natural is less than or equal to one
 
+* `AbsoluteValue.isNonarchimedean_iff_forall_natCast_le_one`: a real absolute value on a field is
+  nonarchimedean if and only if it is bounded by one on the image of the naturals
+
 ## Implementation details
 
 The proof relies on a bounded-from-above argument. The main result has a longer proof
@@ -141,3 +144,11 @@ theorem isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
     [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
   ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
       IsUltrametricDist.isUltrametricDist_of_forall_norm_natCast_le_one⟩
+
+/-- A real absolute value on a field is nonarchimedean if and only if it is bounded by `1` on
+the natural numbers. -/
+theorem AbsoluteValue.isNonarchimedean_iff_forall_natCast_le_one {K : Type*} [Field K]
+    {v : AbsoluteValue K ℝ} : IsNonarchimedean v ↔ ∀ n : ℕ, v n ≤ 1 :=
+  letI := v.toNormedField
+  IsUltrametricDist.isUltrametricDist_iff_isNonarchimedean_norm.symm.trans
+    isUltrametricDist_iff_forall_norm_natCast_le_one
