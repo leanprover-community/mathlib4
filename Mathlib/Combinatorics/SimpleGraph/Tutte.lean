@@ -261,7 +261,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     exact tutte_exists_isAlternating_isCycles p hp hcalt (hnM2 _ hnbc) hpac hnpxb hM2ac
       hab.symm hnbc hxa.ne.symm hle (aux (by simp))
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- From a graph on an even number of vertices with no perfect matching, we can remove an odd number
 of vertices such that there are more odd components in the resulting graph than vertices we removed.
 
@@ -289,12 +288,14 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     obtain ⟨K, hK⟩ := h'
     obtain ⟨x, y, hxy⟩ := (not_isClique_iff _).mp hK
     obtain ⟨p, hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
-    obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
-      (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
-    simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts,
-      Subgraph.verts_top, comap_adj, Function.Embedding.coe_subtype,
-      Subgraph.coe_adj, Subgraph.induce_adj, Subtype.coe_prop, Subgraph.top_adj, true_and]
-      at hxa hxb hnadjxb
+    obtain ⟨x, a, b, hxa : Gmax.deleteUniversalVerts.Adj x.1.1 a.1.1,
+        hxb : Gmax.deleteUniversalVerts.Adj a.1.1 b.1.1,
+        hnadjxb : ¬Gmax.deleteUniversalVerts.Adj x.1.1 b.1.1, hnxb⟩ :=
+      Walk.exists_adj_adj_not_adj_ne hp.2 (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
+    rw [deleteUniversalVerts_adj] at hxa hxb hnadjxb
+    replace hnadjxb : ¬Gmax.Adj x.1.1 b.1.1 := fun h ↦ hnadjxb ⟨hxa.1, hxb.2.1, h⟩
+    replace hxa := hxa.2.2
+    replace hxb := hxb.2.2
     obtain ⟨c, hc⟩ : ∃ (c : V), (a : V) ≠ c ∧ ¬ Gmax.Adj a c := by
       simpa [universalVerts, IsUniversal] using a.1.2.2
     have hbnec : b.val.val ≠ c := by rintro rfl; exact hc.2 hxb

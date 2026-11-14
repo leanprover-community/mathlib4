@@ -34,13 +34,12 @@ namespace Represents
 
 variable {C : Set G.ConnectedComponent} {s : Set V} {c : G.ConnectedComponent}
 
-set_option backward.isDefEq.respectTransparency false in
-lemma image_out (C : Set G.ConnectedComponent) :
-    Represents (Quot.out '' C) C :=
-  Set.BijOn.mk (by rintro c ⟨x, ⟨hx, rfl⟩⟩; simp_all [connectedComponentMk]) (by
-    rintro x ⟨c, ⟨hc, rfl⟩⟩ y ⟨d, ⟨hd, rfl⟩⟩ hxy
-    simp only [connectedComponentMk] at hxy
-    aesop) (fun _ _ ↦ by simpa [connectedComponentMk])
+lemma image_out (C : Set G.ConnectedComponent) : Represents (Quot.out '' C) C := by
+  refine ⟨?_, ?_, fun c hc ↦ ⟨_, ⟨c, hc, rfl⟩, c.out_eq⟩⟩
+  · rintro _ ⟨c, hc, rfl⟩
+    rwa [show G.connectedComponentMk c.out = c from c.out_eq]
+  · rintro _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩ (h : Quot.mk _ c.out = Quot.mk _ d.out)
+    simpa using congr(Quot.out $h)
 
 lemma existsUnique_rep (hrep : Represents s C) (h : c ∈ C) : ∃! x, x ∈ s ∩ c.supp := by
   obtain ⟨x, ⟨hx, rfl⟩⟩ := hrep.2.2 h
