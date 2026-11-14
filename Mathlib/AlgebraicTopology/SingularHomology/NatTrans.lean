@@ -20,7 +20,7 @@ See `singularChainComplexFunctor.natTransMk`and `singularChainComplexFunctor.nat
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
@@ -35,7 +35,6 @@ namespace singularChainComplexFunctor
 variable {R : C} {n : ℕ} {F : TopCat.{w} ⥤ C}
 
 /-- Constructor for natural transformations from the functor of `n`-singular chains. -/
-@[no_expose]
 noncomputable def natTransMk (f : R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)) :
     (singularChainComplexFunctor C).obj R ⋙ HomologicalComplex.eval _ _ n ⟶ F where
   app X := Sigma.desc (fun s ↦ f ≫ F.map s.down)
@@ -67,7 +66,7 @@ lemma natTransMk_zero :
 
 /-- Natural transformations from the singular `n`-chains functor to a
 functor `F : TopCat ⥤ C` identify to morphisms `R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)`. -/
-@[simps]
+@[expose, simps]
 noncomputable def natTransEquiv :
     ((singularChainComplexFunctor C).obj R ⋙ HomologicalComplex.eval _ _ n ⟶ F) ≃
       (R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)) where
