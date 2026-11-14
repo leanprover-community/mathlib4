@@ -299,7 +299,7 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
 `k : ℕ` has q-expansion of order strictly greater than `k / 12`, then `f` is identically zero. -/
 theorem sturm_bound_levelOne_nat {k : ℕ} {f : ModularForm 𝒮ℒ (k : ℤ)}
     (h : (↑(k / 12) : ℕ∞) < (qExpansion 1 f).order) : f = 0 := by
-  induction k using Nat.strong_induction_on with | _ k ih =>
+  induction k using Nat.strong_induction_on with | ind k ih
   have h0 : (qExpansion 1 f).coeff 0 = 0 :=
     PowerSeries.coeff_of_lt_order _ ((Nat.cast_nonneg _).trans_lt h)
   suffices CuspForm.discriminantEquiv (toCuspForm f h0) = 0 by
