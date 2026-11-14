@@ -15,7 +15,7 @@ rings by forgetting to rings. In particular, these names reduce the need for
 repeatedly writing the relevant forgetful functor.
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ v₂ u₁ u₂ u
 

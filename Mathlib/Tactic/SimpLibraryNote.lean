@@ -15,7 +15,7 @@ import Mathlib.Init
 This file contains a library note explaining how to handle `simp` lemmas that have "weak keys".
 -/
 
-@[expose] public section
+public section
 
 library_note «Simp lemmas with weak keys» /--
 Certain theorems shouldn't be tagged with the `simp` attribute as they have "weak keys", i.e. they

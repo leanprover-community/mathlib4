@@ -15,7 +15,7 @@ This file contains lemmas about asymptotic relations for product-valued function
 filters.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 

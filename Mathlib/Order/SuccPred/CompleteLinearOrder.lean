@@ -12,7 +12,7 @@ public import Mathlib.Order.SuccPred.Limit
 # Relation between `IsSuccPrelimit` and `iSup` in (conditionally) complete linear orders.
 -/
 
-@[expose] public section
+public section
 
 open Order Set
 

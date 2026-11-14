@@ -22,7 +22,7 @@ Add sections about algebra-order and algebra-topology mixins and interactions wi
 normed typeclasses.
 -/
 
-@[expose] public section
+public section
 
 library_note «the algebraic hierarchy» /-- # The algebraic hierarchy
 

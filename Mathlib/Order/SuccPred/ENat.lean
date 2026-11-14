@@ -15,7 +15,7 @@ set_option doc.verso.suggestions false
 # `SuccOrder` structure on `ENat`
 -/
 
-@[expose] public section
+public section
 
 deriving instance SuccOrder for ENat
 

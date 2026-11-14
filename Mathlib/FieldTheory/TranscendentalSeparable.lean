@@ -22,7 +22,7 @@ transcendental separable field extensions.
   every finitely generated subextension is separably generated.
 -/
 
-@[expose] public section
+public section
 
 section
 

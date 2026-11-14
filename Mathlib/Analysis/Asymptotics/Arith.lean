@@ -16,7 +16,7 @@ This file develops the behavior of `IsBigOWith`, `IsBigO`, and `IsLittleO` under
 negation, addition, subtraction, zero, constants, and finite sums.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 

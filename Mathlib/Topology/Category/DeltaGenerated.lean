@@ -24,7 +24,7 @@ for all `n : ℕ`.
 * https://ncatlab.org/nlab/show/Delta-generated+topological+space
 -/
 
-@[expose] public section
+public section
 
 universe u
 

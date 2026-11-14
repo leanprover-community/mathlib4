@@ -40,7 +40,7 @@ universe than `ModuleCat.{v} R`.
   `ModuleCat.hasInjectiveDimensionLT_of_quotients`
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

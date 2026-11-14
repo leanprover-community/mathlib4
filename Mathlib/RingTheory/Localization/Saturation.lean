@@ -16,7 +16,7 @@ on the saturation of `S`.
 Crucially, the saturation of `S` is precisely the elements that become a unit in `A`.
 -/
 
-@[expose] public section
+public section
 
 namespace IsLocalization
 variable {R : Type*} [CommRing R] {S T : Submonoid R} {A : Type*} [CommRing A] [Algebra R A]

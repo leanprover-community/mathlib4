@@ -23,7 +23,7 @@ and families of seminorms.
 * `WithSeminorms.isLittleOTVS_iff`
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 open Filter

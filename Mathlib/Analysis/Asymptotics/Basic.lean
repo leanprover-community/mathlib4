@@ -15,7 +15,7 @@ operations, and norm simplification lemmas for the asymptotic relations defined 
 `Mathlib.Analysis.Asymptotics.Defs`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 
