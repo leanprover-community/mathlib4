@@ -155,4 +155,19 @@ theorem aedisjoint_compl_left : AEDisjoint μ sᶜ s :=
 theorem aedisjoint_compl_right : AEDisjoint μ s sᶜ :=
   (@disjoint_compl_right _ _ s).aedisjoint
 
+/-- A finite sum of functions with pairwise a.e.-disjoint supports vanishes a.e. if and only if
+each term vanishes a.e. -/
+theorem ae_eq_zero_finsetSum_iff {M : Type*} [AddCommMonoid M] {s : Finset ι}
+    {f : ι → α → M} (hf : (s : Set ι).Pairwise (AEDisjoint μ on fun i ↦ support (f i))) :
+    ∑ i ∈ s, f i =ᵐ[μ] 0 ↔ ∀ i ∈ s, f i =ᵐ[μ] 0 := by
+  refine ⟨fun h j hj ↦ ?_, fun h ↦ by simpa using eventuallyEq_sum h⟩
+  have hU : μ (⋃ i ∈ (s : Set ι) \ {j}, support (f j) ∩ support (f i)) = 0 :=
+    (measure_biUnion_null_iff (s.countable_toSet.mono sdiff_subset)).2 fun i ⟨hi, hij⟩ ↦
+      hf hj hi (Ne.symm hij)
+  filter_upwards [h, measure_eq_zero_iff_ae_notMem.1 hU] with x hx hxU
+  by_contra hxj
+  rw [Finset.sum_apply, Finset.sum_eq_single_of_mem j hj fun i hi hij ↦
+    not_ne_iff.1 fun hxi ↦ hxU (mem_biUnion ⟨hi, hij⟩ ⟨hxj, hxi⟩)] at hx
+  exact hxj hx
+
 end MeasureTheory
