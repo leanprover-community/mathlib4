@@ -9,6 +9,7 @@ public import Mathlib.Basic.Finite.Set
 public import Mathlib.Data.Finset.Order
 public import Mathlib.Data.Set.Lattice.Order
 public import Mathlib.Order.Atoms
+public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.Interval.Set.OrderIso
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.SupIndep
@@ -93,6 +94,25 @@ theorem IsCompactElement.of_wellFoundedGT [WellFoundedGT α] : IsCompactElement 
   intro s u hne hdir hlub hle
   have ⟨m, hm⟩ := ‹WellFoundedGT α›.exists_maximal s hne
   exact ⟨m, hm.prop, hle.trans <| hlub.right <| hdir.maximal_iff_isGreatest.mp hm |>.right⟩
+
+variable (a) in
+@[simp]
+theorem dirSupInacc_Ici_iff : DirSupInacc (Ici a) ↔ IsCompactElement a := by
+  rw [← dirSupClosed_compl, DirSupClosed, IsCompactElement]
+  grind
+
+@[simp]
+theorem dirSupClosed_Iio_iff {α : Type*} [LinearOrder α] (a : α) :
+    DirSupClosed (Iio a) ↔ IsCompactElement a := by
+  simp [← dirSupInacc_compl]
+
+@[simp]
+theorem IsCompactElement.dirSupClosed_Iio (h : IsCompactElement a) : DirSupClosed (Iio a) := by
+  intro s hsub hne hdir u hlub
+  have : a ∈ upperBounds s := fun x hmem ↦ hsub hmem |>.le
+  refine isLUB_le_iff hlub |>.mpr this |>.lt_of_not_ge fun hau ↦ ?_
+  have ⟨x, hmem, hax⟩ := h s u hne hdir hlub hau
+  exact hax.not_gt <| hsub hmem
 
 end Preorder
 
