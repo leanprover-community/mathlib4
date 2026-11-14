@@ -147,24 +147,12 @@ noncomputable abbrev singularChainComplex (X : TopCat.{w}) (R : C) :
     ChainComplex C ℕ :=
   ((singularChainComplexFunctor C).obj R).obj X
 
-/-- The morphism of singular chain complexes that is induced by a morphism in `TopCat`. -/
-noncomputable abbrev singularChainComplexMap {X Y : TopCat.{w}} (f : X ⟶ Y) (R : C) :
-    X.singularChainComplex R ⟶ Y.singularChainComplex R :=
-  ((singularChainComplexFunctor C).obj R).map f
-
 /-- Inclusion of a summand of an object in the singular chain complex of
 a topological space. -/
 noncomputable abbrev ιSingularChainComplex
     (X : TopCat.{w}) {R : C} {n : ℕ} (x : (toSSet.obj X) _⦋n⦌) :
     R ⟶ (X.singularChainComplex R).X n :=
   Sigma.ι (fun _ ↦ R) x
-
-lemma singularChainComplexX_hom_ext {X : TopCat.{w}} {R : C} {n : ℕ} {T : C}
-    {f g : (X.singularChainComplex R).X n ⟶ T}
-    (h : ∀ (x : (toSSet.obj X) _⦋n⦌),
-      X.ιSingularChainComplex x ≫ f = X.ιSingularChainComplex x ≫ g) :
-    f = g :=
-  Sigma.hom_ext _ _ h
 
 @[reassoc]
 lemma ι_singularChainComplex_d
@@ -173,6 +161,26 @@ lemma ι_singularChainComplex_d
       ∑ (i : Fin (n + 2)), (-1 : ℤ) ^ (i : ℕ) • X.ιSingularChainComplex ((toSSet.obj X).δ i x) := by
   simp [singularChainComplex, singularChainComplexFunctor, SSet.chainComplexFunctor,
     Preadditive.comp_sum]
+
+lemma singularChainComplexX_hom_ext {X : TopCat.{w}} {R : C} {n : ℕ} {T : C}
+    {f g : (X.singularChainComplex R).X n ⟶ T}
+    (h : ∀ (x : (toSSet.obj X) _⦋n⦌),
+      X.ιSingularChainComplex x ≫ f = X.ιSingularChainComplex x ≫ g) :
+    f = g :=
+  Sigma.hom_ext _ _ h
+
+/-- The morphism of singular chain complexes that is induced by a morphism in `TopCat`. -/
+noncomputable abbrev singularChainComplexMap {X Y : TopCat.{w}} (f : X ⟶ Y) (R : C) :
+    X.singularChainComplex R ⟶ Y.singularChainComplex R :=
+  ((singularChainComplexFunctor C).obj R).map f
+
+@[reassoc (attr := simp)]
+lemma ι_singularChainComplexMap
+    {X Y : TopCat.{w}} (f : X ⟶ Y) {R : C} {n : ℕ} (x : (toSSet.obj X) _⦋n⦌) :
+    X.ιSingularChainComplex (R := R) x ≫ (singularChainComplexMap f R).f n =
+        Y.ιSingularChainComplex ((toSSet.map f).app _ x) := by
+  simp [singularChainComplexFunctor, singularChainComplexMap, ιSingularChainComplex,
+    SSet.chainComplexFunctor]
 
 /-- The universal element in `(toSSet.obj (SimplexCategory.toTop ^⦋n⦌)) _⦋n⦌`. -/
 @[simps]
@@ -191,13 +199,5 @@ lemma toSSet.exists_map_app_univObj_eq
       (toSSet.map f).app _ (univObj n) = s := by
   obtain ⟨s, rfl⟩ := (toSSetObjEquiv _ _).symm.surjective s
   exact ⟨ofHom (s.comp ⟨ULift.down, by fun_prop⟩), rfl⟩
-
-@[reassoc (attr := simp)]
-lemma ι_singularChainComplexMap
-    {X Y : TopCat.{w}} (f : X ⟶ Y) {R : C} {n : ℕ} (x : (toSSet.obj X) _⦋n⦌) :
-    X.ιSingularChainComplex (R := R) x ≫ (singularChainComplexMap f R).f n =
-        Y.ιSingularChainComplex ((toSSet.map f).app _ x) := by
-  simp [singularChainComplexFunctor, singularChainComplexMap, ιSingularChainComplex,
-    SSet.chainComplexFunctor]
 
 end TopCat
