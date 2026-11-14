@@ -95,15 +95,106 @@ variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
+@[deprecated "use `LocallyIntegrable.toTemperedDistribution`" (since := "2026-10-06")]
 def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
   toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
 
 set_option backward.privateInPublic true in
-@[simp]
+@[deprecated "use `LocallyIntegrable.toTemperedDistribution_apply`" (since := "2026-10-06")]
 theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, ℂ)) :
     toTemperedDistribution μ hf g = ∫ (x : E), g x • f x ∂μ := rfl
 
 end Function.HasTemperateGrowth
+
+namespace MeasureTheory.LocallyIntegrable
+
+open Asymptotics Filter
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  {μ : Measure E} [hμ : μ.HasTemperateGrowth]
+
+/-- A locally integrable and polynomially bounded function `f` defines a tempered distribution via
+integration, namely `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
+def toTemperedDistribution {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
+    (hf' : f =O[Filter.cocompact E] (‖·‖ ^ k)) : 𝓢'(E, F) :=
+  toPointwiseConvergenceCLM _ _ _ _ <|
+    SchwartzMap.mkCLMtoNormedSpace (fun g ↦ ∫ x, g x • f x ∂μ) ?_ ?_ ?_
+where finally
+  · intro g₁ g₂
+    simp only [_root_.add_apply, add_smul]
+    exact integral_add (by fun_prop) (by fun_prop)
+  · intro c g
+    simp only [_root_.smul_apply, smul_assoc, RingHom.id_apply]
+    apply integral_smul
+  · obtain ⟨c, _hc, s, hs₁, hs₂⟩ := isBigO_cocompact_iff.mp hf'
+    simp only [norm_pow, norm_norm] at hs₂
+    set C₁ := ∫ x in sᶜ, ‖f x‖ ∂μ
+    have hC₁ : 0 ≤ C₁ := by positivity
+    set μP := μ.integrablePower
+    set C₂ := c * 2 ^ μP * ∫ x, ((1 + ‖x‖) ^ μP)⁻¹ ∂μ
+    use {(0, 0), (k + μP, 0)}, 2 * (C₁ + C₂), by positivity
+    intro g
+    set k₁ := g.seminorm ℂ 0 0
+    set k₂ := g.seminorm ℂ (k + μP) 0
+    have hs : ‖∫ x in sᶜ, g x • f x ∂μ‖ ≤ C₁ * k₁ := calc
+      _ ≤ ∫ x in sᶜ, ‖g x • f x‖ ∂μ := by
+        grw [MeasureTheory.norm_integral_le_integral_norm]
+      _ ≤ ∫ x in sᶜ, k₁ * ‖f x‖ ∂μ := by
+        simp_rw [norm_smul]
+        have hf : IntegrableOn (‖f ·‖) sᶜ μ :=
+          MeasureTheory.Integrable.norm (hf.integrableOn_isCompact hs₁)
+        apply MeasureTheory.setIntegral_mono_on (hf.continuousOn_mul (by fun_prop) hs₁)
+          (hf.const_mul _) hs₁.measurableSet
+        intro x _hx
+        grw [norm_le_seminorm ℂ g]
+      _ ≤ _ := by
+        rw [integral_const_mul, mul_comm]
+    have hsc : ‖∫ x in s, g x • f x ∂μ‖ ≤ C₂ * (k₁ + k₂) := calc
+      _ ≤ ∫ x in s, ‖g x • f x‖ ∂μ := by
+        grw [MeasureTheory.norm_integral_le_integral_norm]
+      _ ≤ ∫ x in s, c * (‖x‖ ^ k * ‖g x‖) ∂μ := by
+        apply setIntegral_mono_on
+          (g.integrable_smul_locallyIntegrable hf hf').integrableOn.norm
+          ((integrable_pow_mul μ g k).integrableOn.const_mul _)
+          (by simpa using hs₁.measurableSet.compl)
+        intro x hx
+        simp_rw [norm_smul]
+        grw [hs₂ x hx]
+        grind
+      _ ≤ c * ∫ x, ‖x‖ ^ k * ‖g x‖ ∂μ := by
+        simp_rw [integral_const_mul]
+        gcongr
+        · filter_upwards with; positivity
+        · fun_prop
+        · exact restrict_le_self
+      _ ≤ c * (2 ^ μP * (∫ x, ((1 + ‖x‖) ^ μP)⁻¹ ∂μ) * (k₁ + k₂)) := by
+        gcongr
+        simpa using integral_pow_mul_iteratedFDeriv_le ℂ μ g k 0
+      _ = _ := by grind
+    calc
+      _ = ‖∫ x, g x • f x ∂μ‖ := rfl
+      _ ≤ ‖∫ x in sᶜ, g x • f x ∂μ‖ + ‖∫ x in s, g x • f x ∂μ‖ := by
+        rw [← MeasureTheory.integral_add_compl₀ hs₁.nullMeasurableSet (by fun_prop)]
+        simp only [compl_compl]
+        apply norm_add_le
+      _ ≤ C₁ * k₁ + C₂ * (k₁ + k₂) := by
+        grw [hs, hsc]
+      _ = (C₁ + C₂) * k₁ + C₂ * k₂ := by ring
+      _ ≤ (C₁ + C₂) * k₁ + (C₁ + C₂) * k₂ := by
+        gcongr
+        grw [← hC₁]
+        simp
+      _ = (C₁ + C₂) * (k₁ + k₂) := by ring
+      _ ≤ (C₁ + C₂) * (2 * max k₁ k₂) := by gcongr; grind
+      _ = 2 * (C₁ + C₂) * (max k₁ k₂) := by ring
+      _ = _ := by simp [k₁, k₂]
+
+@[simp]
+theorem toTemperedDistribution_apply {f : E → F} {k : ℕ} (hf : LocallyIntegrable f μ)
+    (hf' : f =O[Filter.cocompact E] (‖·‖ ^ k)) (g : 𝓢(E, ℂ)) :
+    toTemperedDistribution hf hf' g = ∫ x, g x • f x ∂μ := rfl
+
+end MeasureTheory.LocallyIntegrable
 
 namespace SchwartzMap
 
