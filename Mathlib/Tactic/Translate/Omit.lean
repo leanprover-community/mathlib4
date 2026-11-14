@@ -261,7 +261,7 @@ end
 --     modify (·.insert (src, tgt))
 --     return map
 
-/-! ### Syntax for specifying a reorder -/
+/-! ### Syntax for specifying an omission -/
 
 -- Note: We have to use `declare_syntax_cat` because the omissions syntax is recursive.
 /-- The syntax category for the omission syntax. -/
@@ -288,29 +288,29 @@ partial def elabOmit (stx : TSyntax `translateOmission) (argNames : Array Name)
     (args : Array Expr) (head : MessageData) : MetaM ArgOmit :=
   match stx with
   | `(«omit»| $[$parts],*) => withRef stx do
-    let mut perm := []
-    let mut argOmissions := #[]
+    let mut omitArgs := []
+    let mut omitArgOmissions := #[]
     for part in parts do
-      let `(omissionPart| $[$idxStx]* $[($argReorder?)]?) := part | throwUnsupportedSyntax
+      let `(omissionPart| $[$idxStx]* $[($argOmit?)]?) := part | throwUnsupportedSyntax
       let indices ← idxStx.toList.mapM (elabArgStx · argNames args head)
-      perm := indices ++ perm
-      if let some argReorder := argReorder? then
+      omitArgs := indices ++ omitArgs
+      if let some argOmit := argOmit? then
         for arg in indices do
-        let reorder ←
+        let omission ←
           -- Use a reducing telescope to see through `autoParam`.
           withReducible <| forallTelescopeReducing (← inferType args[arg]!) fun xs _ ↦ do
             let argNames ← xs.mapM (·.fvarId!.getUserName)
-            -- Recursively elaborate the nested reorder syntax.
-            elabOmit argReorder argNames xs m!"{args[arg]!}"
-        argOmissions := argOmissions.push (arg, reorder)
-    argOmissions := argOmissions.qsort (·.1 < ·.1)
+            -- Recursively elaborate the nested omission syntax.
+            elabOmit argOmit argNames xs m!"{args[arg]!}"
+        omitArgOmissions := omitArgOmissions.push (arg, omission)
+    omitArgOmissions := omitArgOmissions.qsort (·.1 < ·.1)
     -- check that the `argOmissions` aren't duplicated.
-    for h : i in *...(argOmissions.size - 1) do
-      let arg₀ := argOmissions[i]; let arg₁ := argOmissions[i + 1]
+    for h : i in *...(omitArgOmissions.size - 1) do
+      let arg₀ := omitArgOmissions[i]; let arg₁ := omitArgOmissions[i + 1]
       if arg₀.1 == arg₁.1 then
-        throwError "The reorder within argument {arg₀.1 + 1} has been set to both \
+        throwError "The omission within argument {arg₀.1 + 1} has been set to both \
           `{arg₀.2.toString}` and `{arg₁.2.toString}`. Please specify it only once."
-    return ArgOmit.mk perm argOmissions -- return { perm, argOmissions }
+    return { args := omitArgs, argOmissions := omitArgOmissions }
   | _ => throwUnsupportedSyntax
 
 end Mathlib.Tactic.Translate
