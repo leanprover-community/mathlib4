@@ -120,6 +120,15 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
 
 end Preorder
 
+@[to_dual WithBot.coe_csSup_le]
+lemma WithTop.le_coe_csInf [ConditionallyCompleteLattice α] {s : Set α}
+    {a : WithTop α} (hs : s.Nonempty) (h : ∀ b ∈ s, a ≤ (b : WithTop α)) :
+    a ≤ (sInf s : α) := by
+  obtain ⟨b, hb⟩ := hs
+  obtain ⟨a, rfl, _⟩ := WithTop.le_coe_iff.mp (h b hb)
+  simp only [WithTop.coe_le_coe] at h ⊢
+  exact le_csInf ⟨b, hb⟩ h
+
 namespace WithTop
 
 variable [ConditionallyCompleteLinearOrderBot α]
