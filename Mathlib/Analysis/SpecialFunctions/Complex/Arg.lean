@@ -182,20 +182,48 @@ theorem arg_nonneg_iff {z : ℂ} : 0 ≤ arg z ↔ 0 ≤ z.im := by
 theorem arg_neg_iff {z : ℂ} : arg z < 0 ↔ z.im < 0 :=
   lt_iff_lt_of_le_iff_le arg_nonneg_iff
 
-theorem arg_real_mul (x : ℂ) {r : ℝ} (hr : 0 < r) : arg (r * x) = arg x := by
+theorem arg_ofReal_mul {r : ℝ} (hr : 0 < r) (x : ℂ) : arg (r * x) = arg x := by
   rcases eq_or_ne x 0 with (rfl | hx); · rw [mul_zero]
   conv_lhs =>
     rw [← norm_mul_cos_add_sin_mul_I x, ← mul_assoc, ← ofReal_mul,
       arg_mul_cos_add_sin_mul_I (mul_pos hr (norm_pos_iff.mpr hx)) x.arg_mem_Ioc]
 
-theorem arg_mul_real {r : ℝ} (hr : 0 < r) (x : ℂ) : arg (x * r) = arg x :=
-  mul_comm x r ▸ arg_real_mul x hr
+@[deprecated (since := "2026-11-15")] alias arg_real_mul := arg_ofReal_mul
+
+theorem arg_mul_ofReal (x : ℂ) {r : ℝ} (hr : 0 < r) : arg (x * r) = arg x :=
+  mul_comm x r ▸ arg_ofReal_mul hr x
+
+@[deprecated (since := "2026-11-15")] alias arg_mul_real := arg_mul_ofReal
+
+theorem arg_natCast_mul {r : ℕ} (hr : r ≠ 0) (x : ℂ) : arg (r * x) = arg x := by
+  rw [← ofReal_natCast, arg_ofReal_mul (by simpa [Nat.pos_iff_ne_zero] using hr)]
+
+@[simp]
+theorem arg_ofNat_mul (r : ℕ) [r.AtLeastTwo] (x : ℂ) : arg (ofNat(r) * x) = arg x :=
+  arg_natCast_mul (Nat.AtLeastTwo.toNeZero r).ne x
+
+theorem arg_mul_natCast (x : ℂ) {r : ℕ} (hr : r ≠ 0) : arg (x * r) = arg x := by
+  rw [← ofReal_natCast, arg_mul_ofReal x (by simpa [Nat.pos_iff_ne_zero] using hr)]
+
+@[simp]
+theorem arg_mul_ofNat (x : ℂ) (r : ℕ) [r.AtLeastTwo] : arg (x * ofNat(r)) = arg x :=
+  arg_mul_natCast x (Nat.AtLeastTwo.toNeZero r).ne
+
+theorem arg_div_ofReal (x : ℂ) {r : ℝ} (hr : 0 < r) : arg (x / r) = arg x := by
+  rw [div_eq_mul_inv, ← ofReal_inv, arg_mul_ofReal x (by simpa using hr)]
+
+theorem arg_div_natCast (x : ℂ) {r : ℕ} (hr : r ≠ 0) : arg (x / r) = arg x := by
+  rw [← ofReal_natCast, arg_div_ofReal x (by simpa [Nat.pos_iff_ne_zero] using hr)]
+
+@[simp]
+theorem arg_div_ofNat (x : ℂ) (r : ℕ) [r.AtLeastTwo] : arg (x / ofNat(r)) = arg x :=
+  arg_div_natCast x (Nat.AtLeastTwo.toNeZero r).ne
 
 theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     arg x = arg y ↔ (‖y‖ / ‖x‖ : ℂ) * x = y := by
   simp only [ext_norm_arg_iff, norm_mul, norm_div, norm_real, norm_norm,
     div_mul_cancel₀ _ (norm_ne_zero_iff.mpr hx), true_and]
-  rw [← ofReal_div, arg_real_mul]
+  rw [← ofReal_div, arg_ofReal_mul]
   exact div_pos (norm_pos_iff.mpr hy) (norm_pos_iff.mpr hx)
 
 @[simp] lemma arg_one : arg 1 = 0 := by simp [arg, zero_le_one]
@@ -251,7 +279,7 @@ theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
     simp [h₀]
   · obtain ⟨x, y⟩ := z
     rintro ⟨h : x < 0, rfl : y = 0⟩
-    rw [← arg_neg_one, ← arg_real_mul (-1) (neg_pos.2 h)]
+    rw [← arg_neg_one, ← arg_ofReal_mul (neg_pos.2 h) (-1)]
     simp [← ofReal_def]
 
 open ComplexOrder in
@@ -271,7 +299,7 @@ theorem arg_eq_pi_div_two_iff {z : ℂ} : arg z = π / 2 ↔ z.re = 0 ∧ 0 < z.
     simp [h₀]
   · obtain ⟨x, y⟩ := z
     rintro ⟨rfl : x = 0, hy : 0 < y⟩
-    rw [← arg_I, ← arg_real_mul I hy, ofReal_mul', I_re, I_im, mul_zero, mul_one]
+    rw [← arg_I, ← arg_ofReal_mul hy I, ofReal_mul', I_re, I_im, mul_zero, mul_one]
 
 theorem arg_eq_neg_pi_div_two_iff {z : ℂ} : arg z = -(π / 2) ↔ z.re = 0 ∧ z.im < 0 := by
   by_cases h₀ : z = 0; · simp [h₀, Real.pi_ne_zero]
@@ -281,7 +309,7 @@ theorem arg_eq_neg_pi_div_two_iff {z : ℂ} : arg z = -(π / 2) ↔ z.re = 0 ∧
     simp [h₀]
   · obtain ⟨x, y⟩ := z
     rintro ⟨rfl : x = 0, hy : y < 0⟩
-    rw [← arg_neg_I, ← arg_real_mul (-I) (neg_pos.2 hy), mk_eq_add_mul_I]
+    rw [← arg_neg_I, ← arg_ofReal_mul (neg_pos.2 hy) (-I), mk_eq_add_mul_I]
     simp
 
 theorem arg_of_re_nonneg {x : ℂ} (hx : 0 ≤ x.re) : arg x = Real.arcsin (x.im / ‖x‖) :=
@@ -326,7 +354,7 @@ theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
   rw [← arg_conj, inv_def, mul_comm]
   by_cases hx : x = 0
   · simp [hx]
-  · exact arg_real_mul (conj x) (by simp [hx])
+  · exact arg_ofReal_mul (by simp [hx]) (conj x)
 
 @[simp] lemma abs_arg_inv (x : ℂ) : |x⁻¹.arg| = |x.arg| := by rw [arg_inv]; split_ifs <;> simp [*]
 
@@ -460,7 +488,7 @@ theorem arg_neg_coe_angle {x : ℂ} (hx : x ≠ 0) : (arg (-x) : Real.Angle) = a
 
 theorem arg_mul_cos_add_sin_mul_I_eq_toIocMod {r : ℝ} (hr : 0 < r) (θ : ℝ) :
     arg (r * (cos θ + sin θ * I)) = toIocMod Real.two_pi_pos (-π) θ := by
-  rw [arg_real_mul _ hr, ← exp_mul_I, arg_exp_mul_I]
+  rw [arg_ofReal_mul hr, ← exp_mul_I, arg_exp_mul_I]
 
 theorem arg_cos_add_sin_mul_I_eq_toIocMod (θ : ℝ) :
     arg (cos θ + sin θ * I) = toIocMod Real.two_pi_pos (-π) θ := by

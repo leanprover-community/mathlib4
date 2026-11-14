@@ -85,7 +85,7 @@ theorem log_ofReal_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [lo
 theorem log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
     log (r * x) = Real.log r + log x := by
   replace hx := norm_ne_zero_iff.mpr hx
-  simp_rw [log, norm_mul, norm_real, arg_real_mul _ hr, Real.norm_of_nonneg hr.le,
+  simp_rw [log, norm_mul, norm_real, arg_ofReal_mul hr, Real.norm_of_nonneg hr.le,
     Real.log_mul hr.ne' hx, ofReal_add, add_assoc]
 
 theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
