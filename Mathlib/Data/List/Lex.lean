@@ -38,7 +38,7 @@ universe u
 
 variable {α : Type u}
 
-/-! ### lexicographic ordering -/
+/-! ### Lexicographic ordering -/
 
 theorem lex_cons_iff {r : α → α → Prop} [Std.Irrefl r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
@@ -55,6 +55,16 @@ theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [
 
 namespace Lex
 
+instance isTrans (r : α → α → Prop) [IsTrans α r] : IsTrans (List α) (Lex r) where
+  trans := aux where
+    aux
+    | [], _, _ :: _, _, _ => nil
+    | _, _, _, rel h₁, rel h₂ => rel (trans_of r h₁ h₂)
+    | _, _, _, cons _, rel h₂ => rel h₂
+    | _, _, _, rel h₁, cons _ => rel h₁
+    | _, _, _, cons h₁, cons h₂ => cons (aux _ _ _ h₁ h₂)
+
+@[deprecated isTrans +typeChanged (since := "2026-11-08")]
 instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [Std.Trichotomous r] :
     IsOrderConnected (List α) (Lex r) where
   conn := aux where
@@ -87,6 +97,9 @@ instance asymm (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (Lex r) where
     | _, _, Lex.rel h₁, Lex.cons _ => _root_.asymm h₁ h₁
     | _, _, Lex.cons _, Lex.rel h₂ => _root_.asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
+
+instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
+    IsStrictTotalOrder (List α) (Lex r) where
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
   | l₁, [] => isFalse fun h => by cases h
@@ -139,8 +152,6 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 end Lex
 
 instance [LinearOrder α] : LinearOrder (List α) :=
-  have : ∀ {r} [IsStrictTotalOrder α r], IsStrictTotalOrder (List α) (Lex r) :=
-    { isStrictWeakOrder_of_isOrderConnected with }
   linearOrderOfSTO (Lex (· < ·))
 
 --Note: this overrides an instance in core lean
