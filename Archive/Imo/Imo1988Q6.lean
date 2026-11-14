@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Nat.Prime.Defs -- shake: keep (used in an `example`)
 public import Mathlib.Data.Rat.Defs
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Linarith
