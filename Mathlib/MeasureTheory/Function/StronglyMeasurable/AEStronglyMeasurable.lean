@@ -317,10 +317,21 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable[m] 
     AEStronglyMeasurable[m] f⁻¹ μ :=
   ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv, hf.ae_eq_mk.inv⟩
 
+@[to_fun (attr := to_additive)]
+theorem _root_.MeasureTheory.aestronglyMeasurable_inv_iff [InvolutiveInv β] [ContinuousInv β] :
+    AEStronglyMeasurable[m] f⁻¹ μ ↔ AEStronglyMeasurable[m] f μ :=
+  ⟨fun h ↦ by simpa using h.inv, fun h ↦ h.inv⟩
+
 @[to_fun (attr := fun_prop)]
 theorem inv₀ [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpace β]
     (hf : AEStronglyMeasurable[m] f μ) : AEStronglyMeasurable[m] f⁻¹ μ :=
   ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv₀, hf.ae_eq_mk.inv⟩
+
+@[to_fun]
+theorem _root_.MeasureTheory.aestronglyMeasurable_inv_iff₀
+    [GroupWithZero β] [ContinuousInv₀ β] [MetrizableSpace β] :
+    AEStronglyMeasurable[m] f⁻¹ μ ↔ AEStronglyMeasurable[m] f μ :=
+  ⟨fun h ↦ by simpa using h.inv₀, fun h ↦ h.inv₀⟩
 
 @[to_fun (attr := to_additive (attr := fun_prop))]
 protected theorem div [Group β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)

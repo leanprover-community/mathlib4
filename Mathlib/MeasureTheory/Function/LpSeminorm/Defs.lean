@@ -16,8 +16,12 @@ This file describes properties of almost everywhere strongly measurable function
 `p`-seminorm, denoted by `eLpNorm f p μ` and defined for `p:ℝ≥0∞` as `0` if `p=0`,
 `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and `essSup ‖f‖ μ` for `p=∞`.
 
-The Prop-valued `MemLp f p μ` states that a function `f : α → E` has finite `p`-seminorm
-and is almost everywhere strongly measurable.
+It also introduces the inhomogeneous `p`-seminorm, equal to the `L^p` norm for `p ≥ 1`, to
+`∫ ‖f a‖^p ∂μ` for `0 < p < 1`, and to the measure of the support of `f` for `p = 0`. This
+version is denoted by `inhmgELpNorm` and always satisfies the triangle inequality.
+
+The Prop-valued `MemLp f p μ` states that a function `f : α → E` has finite
+inhomogeneous `p`-seminorm.
 
 ## Main definitions
 
@@ -26,9 +30,10 @@ and is almost everywhere strongly measurable.
 * `eLpNormEssSup f μ` : seminorm in `ℒ∞`, equal to the essential supremum `essSup ‖f‖ μ`.
 * `eLpNorm f p μ` : for `p : ℝ≥0∞`, seminorm in `ℒp`, equal to `0` for `p=0`, to `eLpNorm' f p μ`
   for `0 < p < ∞` and to `eLpNormEssSup f μ` for `p = ∞`.
-* `MemLp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
-  finite `p`-seminorm for the measure `μ` (`eLpNorm f p μ < ∞`)
 * `inhmgELpNorm`: An inhomogeneous version of `eLpNorm`, defined differently for `p < 1`.
+* `MemLp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
+  finite inhomogeneous `p`-seminorm for the measure `μ` (`inhmgELpNorm f p μ < ∞`, which
+  implies almost everywhere strong measurability by definition of the seminorm).
 -/
 
 @[expose] public section
@@ -163,23 +168,6 @@ theorem eLpNormEssSup_le_eLpNorm_top [TopologicalSpace ε] {f : α → ε} :
   · simp [hf]
   · simp [eLpNorm_of_not_aestronglyMeasurable, hf]
 
-/-- The property that `f : α → E` is a.e. strongly measurable and `(∫ ‖f a‖ ^ p ∂μ) ^ (1/p)`
-is finite if `p < ∞`, or `essSup ‖f‖ < ∞` if `p = ∞`. -/
-def MemLp [TopologicalSpace ε] (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : Prop :=
-  eLpNorm f p μ < ∞
-
-lemma memLp_iff [TopologicalSpace ε] {f : α → ε} : MemLp f p μ ↔ eLpNorm f p μ < ∞ := Iff.rfl
-
-theorem MemLp.aestronglyMeasurable [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0∞} (h : MemLp f p μ) :
-    AEStronglyMeasurable f μ :=
-  aestronglyMeasurable_of_eLpNorm_ne_top h.ne
-
-lemma MemLp.aemeasurable [MeasurableSpace ε] [TopologicalSpace ε]
-    [TopologicalSpace.PseudoMetrizableSpace ε] [BorelSpace ε]
-    {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) :
-    AEMeasurable f μ :=
-  hf.aestronglyMeasurable.aemeasurable
-
 theorem lintegral_rpow_eNorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
     ∫⁻ a, ‖f a‖ₑ ^ q ∂μ = eLpNorm' f q μ ^ q := by
   rw [eLpNorm'_eq_lintegral_eNorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
@@ -275,6 +263,54 @@ theorem inhmgELpNorm_eq_lintegral
   rw [inhmgELpNorm_eq_eLpNorm_pow hp hp', lintegral_rpow_eNorm_eq_rpow_eLpNorm'
     (ENNReal.toReal_pos hp' (fun _ ↦ by simp_all)),
     eLpNorm_eq_eLpNorm' hp' (fun _ ↦ by simp_all) hf]
+
+lemma inhmgELpNorm_le_iff_eLpNorm_le {β ε' : Type*} {hβ : MeasurableSpace β} {ν : Measure β}
+    [ENorm ε'] [TopologicalSpace ε'] {f : α → ε} {g : β → ε'} (hp : p ≠ 0) :
+    inhmgELpNorm f p μ ≤ inhmgELpNorm g p ν ↔ eLpNorm f p μ ≤ eLpNorm g p ν := by
+  rcases le_or_gt 1 p with h'p | h'p
+  · simp [inhmgELpNorm_eq_eLpNorm h'p]
+  · simp only [inhmgELpNorm_eq_eLpNorm_pow h'p.le hp]
+    rw [ENNReal.rpow_le_rpow_iff]
+    exact ENNReal.toReal_pos hp (by finiteness)
+
+/-- The property that `f : α → E` is a.e. strongly measurable and `(∫ ‖f a‖ ^ p ∂μ) ^ (1/p)`
+is finite if `0 < p < ∞`, or `essSup ‖f‖ < ∞` if `p = ∞`, or the support of `f` has finite
+measure if `p = 0`. -/
+def MemLp (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : Prop :=
+  inhmgELpNorm f p μ < ∞
+
+lemma memLp_iff {f : α → ε} : MemLp f p μ ↔ inhmgELpNorm f p μ < ∞ := Iff.rfl
+
+lemma memLp_iff_eLpNorm_of_ne_zero {f : α → ε} (hp : p ≠ 0) :
+    MemLp f p μ ↔ eLpNorm f p μ < ∞ := by
+  rcases le_or_gt 1 p with h'p | h'p
+  · simp [memLp_iff, inhmgELpNorm_eq_eLpNorm h'p]
+  · simp only [memLp_iff, ← inhmgELpNorm_pow_eq_eLpNorm h'p.le hp]
+    refine ⟨fun h ↦ by finiteness, fun h ↦ ?_⟩
+    rwa [ENNReal.rpow_lt_top_iff_of_pos] at h
+    simpa using ENNReal.toReal_pos hp (by finiteness)
+
+lemma memLp_iff_eLpNorm_of_pos {f : α → ε} (hp : 0 < p) :
+    MemLp f p μ ↔ eLpNorm f p μ < ∞ :=
+  memLp_iff_eLpNorm_of_ne_zero hp.ne'
+
+lemma memLp_iff_eLpNorm_of_isFiniteMeasure [IsFiniteMeasure μ] {f : α → ε} :
+    MemLp f p μ ↔ eLpNorm f p μ < ∞ := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · have : μ (Function.support fun x ↦ ‖f x‖ₑ) < ∞ := by finiteness
+    simp only [memLp_iff, inhmgELpNorm, eLpNorm]
+    split_ifs <;> simp
+  · simp [memLp_iff_eLpNorm_of_ne_zero hp]
+
+theorem MemLp.aestronglyMeasurable {f : α → ε} {p : ℝ≥0∞} (h : MemLp f p μ) :
+    AEStronglyMeasurable f μ :=
+  aestronglyMeasurable_of_inhmgELpNorm_ne_top h.ne
+
+lemma MemLp.aemeasurable [MeasurableSpace ε]
+    [TopologicalSpace.PseudoMetrizableSpace ε] [BorelSpace ε]
+    {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) :
+    AEMeasurable f μ :=
+  hf.aestronglyMeasurable.aemeasurable
 
 end Inhomogeneous
 
