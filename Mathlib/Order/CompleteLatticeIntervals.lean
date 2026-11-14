@@ -129,11 +129,9 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
     ConditionallyCompleteLinearOrder s :=
   letI := OrderSupSet.chooseBot (default : s)
   letI := OrderInfSet.chooseTop (default : s)
-  { DistribLattice.toLattice, (inferInstance : LinearOrder s) with
-    isLUB_csSup _ ht h_bdd :=
-      (Subtype.isLUB_of_csSup_image_mem ht h_bdd (h_Sup ht h_bdd)).isLUB_sSup
-    isGLB_csInf _ ht h_bdd :=
-      (Subtype.isGLB_of_csInf_image_mem ht h_bdd (h_Inf ht h_bdd)).isGLB_sInf
+  { DistribLattice.toLattice, (inferInstance : LinearOrder s), ‹OrderSupSet s›, ‹OrderInfSet s› with
+    exists_isLUB_cond _ ht h_bdd := ⟨_, Subtype.isLUB_of_csSup_image_mem ht h_bdd (h_Sup ht h_bdd)⟩
+    exists_isGLB_cond _ ht h_bdd := ⟨_, Subtype.isGLB_of_csInf_image_mem ht h_bdd (h_Inf ht h_bdd)⟩
     csSup_of_not_bddAbove _ ht :=
       OrderSupSet.chooseBot_sSup_of_not_exists (ht ·.choose_spec.bddAbove)
     csInf_of_not_bddBelow _ ht :=

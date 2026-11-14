@@ -61,13 +61,12 @@ attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 on the properties of sInf and sSup in a complete lattice. -/
 instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [CompleteLattice α] :
     ConditionallyCompleteLattice α where
-  isLUB_csSup _ _ _ := isLUB_sSup _
-  isGLB_csInf _ _ _ := isGLB_sInf _
+  exists_isLUB_cond _ _ _ := ⟨_, isLUB_sSup _⟩
+  exists_isGLB_cond _ _ _ := ⟨_, isGLB_sInf _⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrderBot {α : Type*}
     [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrderBot α where
-  csSup_empty := sSup_empty
   csSup_of_not_bddAbove := fun s H ↦ (H (OrderTop.bddAbove s)).elim
   csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim
   __ := CompleteLattice.toConditionallyCompleteLattice
@@ -77,8 +76,8 @@ namespace OrderDual
 
 instance instConditionallyCompleteLattice (α : Type*) [ConditionallyCompleteLattice α] :
     ConditionallyCompleteLattice αᵒᵈ where
-  isLUB_csSup := ConditionallyCompleteLattice.isGLB_csInf (α := α)
-  isGLB_csInf := ConditionallyCompleteLattice.isLUB_csSup (α := α)
+  exists_isLUB_cond := ConditionallyCompleteLattice.exists_isGLB_cond (α := α)
+  exists_isGLB_cond := ConditionallyCompleteLattice.exists_isLUB_cond (α := α)
 
 instance (α : Type*) [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder αᵒᵈ where
@@ -94,8 +93,13 @@ section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 
 @[to_dual]
+theorem exists_isLUB_cond (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) :
+    ∃ a, IsLUB s a :=
+  ConditionallyCompleteLattice.exists_isLUB_cond s hn hb
+
+@[to_dual]
 theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) : IsLUB s (sSup s) :=
-  ConditionallyCompleteLattice.isLUB_csSup _ hn hb
+  exists_isLUB_iff_isLUB_sSup.mp (exists_isLUB_cond hn hb)
 
 @[to_dual csInf_le]
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
@@ -123,8 +127,8 @@ theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
 
 instance (priority := 100) ConditionallyCompleteLattice.toConditionallyCompletePartialOrder :
     ConditionallyCompletePartialOrder α where
-  isGLB_csInf_of_directed _ _ := isGLB_csInf _
-  isLUB_csSup_of_directed _ _ := isLUB_csSup _
+  isGLB_csInf_of_directed _ _ hn hb := isGLB_csInf hn hb
+  isLUB_csSup_of_directed _ _ hn hb := isLUB_csSup hn hb
 
 theorem subset_Icc_csInf_csSup (hb : BddBelow s) (ha : BddAbove s) : s ⊆ Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨csInf_le hb hx, le_csSup ha hx⟩
@@ -246,12 +250,12 @@ end ConditionallyCompleteLattice
 
 instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
     [∀ i, ConditionallyCompleteLattice (α i)] : ConditionallyCompleteLattice (∀ i, α i) where
-  isLUB_csSup _ hn hb := isLUB_pi.mpr fun _ ↦ by
+  exists_isLUB_cond s hn hb := ⟨sSup s, isLUB_pi.mpr fun _ ↦ by
     rw [sSup_apply_eq_sSup_image]
-    exact isLUB_csSup (image_nonempty.mpr hn) ((monotone_eval _).map_bddAbove hb)
-  isGLB_csInf _ hn hb := isGLB_pi.mpr fun _ ↦ by
+    exact isLUB_csSup (image_nonempty.mpr hn) ((monotone_eval _).map_bddAbove hb)⟩
+  exists_isGLB_cond s hn hb := ⟨sInf s, isGLB_pi.mpr fun _ ↦ by
     rw [sInf_apply_eq_sInf_image]
-    exact isGLB_csInf (image_nonempty.mpr hn) ((monotone_eval _).map_bddBelow hb)
+    exact isGLB_csInf (image_nonempty.mpr hn) ((monotone_eval _).map_bddBelow hb)⟩
 
 section ConditionallyCompleteLinearOrder
 
@@ -397,19 +401,15 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-@[to_dual (attr := simp)]
-theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
-  isLeast_univ.csInf_eq
+@[to_dual (attr := deprecated (since := "2026-10-27"))] alias csInf_univ := sInf_univ
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
 
-@[simp]
-theorem csSup_empty : (sSup ∅ : α) = ⊥ :=
-  ConditionallyCompleteLinearOrderBot.csSup_empty
+@[deprecated (since := "2026-10-27")] alias csSup_empty := sSup_empty
 
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
-  · simp only [csSup_empty, isLUB_empty]
+  · simp only [sSup_empty, isLUB_empty]
   · exact isLUB_csSup hne hs
 
 /-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
@@ -451,7 +451,7 @@ theorem csInf_le_csInf' {s t : Set α} (h₁ : t.Nonempty) (h₂ : t ⊆ s) : sI
 @[gcongr mid]
 theorem csSup_le_csSup' {s t : Set α} (h₁ : BddAbove t) (h₂ : s ⊆ t) : sSup s ≤ sSup t := by
   rcases eq_empty_or_nonempty s with rfl | h
-  · rw [csSup_empty]
+  · rw [sSup_empty]
     exact bot_le
   · exact csSup_le_csSup h₁ h h₂
 

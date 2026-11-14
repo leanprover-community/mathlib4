@@ -27,6 +27,9 @@ noncomputable section
 
 namespace Int
 
+instance : NoBotOrder ℤ := ⟨fun x ↦ ⟨x - 1, (Int.sub_one_lt_of_le le_rfl).not_ge⟩⟩
+instance : NoTopOrder ℤ := ⟨fun x ↦ ⟨x + 1, (Int.lt_add_one_of_le le_rfl).not_ge⟩⟩
+
 open scoped Classical in
 instance : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
@@ -39,12 +42,16 @@ instance : ConditionallyCompleteLinearOrder ℤ where
     if h : s.Nonempty ∧ BddBelow s then
       leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
     else 0
-  isLUB_csSup _ hn hb := by
-    rw [dite_eq_left ⟨hn, hb⟩]
-    exact (isGreatest_coe_greatestOfBdd ..).isLUB
-  isGLB_csInf _ hn hb := by
-    rw [dite_eq_left ⟨hn, hb⟩]
-    exact (isLeast_coe_leastOfBdd ..).isGLB
+  isLUB_sSup_of_isLUB s _ h := by
+    rw [dite_eq_left ⟨h.nonempty, h.bddAbove⟩]
+    exact (isGreatest_coe_greatestOfBdd _ _ h.nonempty).isLUB
+  isGLB_sInf_of_isGLB s _ h := by
+    rw [dite_eq_left ⟨h.nonempty, h.bddBelow⟩]
+    exact (isLeast_coe_leastOfBdd _ _ h.nonempty).isGLB
+  exists_isLUB_cond _ hn hb :=
+    ⟨greatestOfBdd hb.choose hb.choose_spec hn, (isGreatest_coe_greatestOfBdd _ _ hn).isLUB⟩
+  exists_isGLB_cond _ hn hb :=
+    ⟨leastOfBdd hb.choose hb.choose_spec hn, (isLeast_coe_leastOfBdd _ _ hn).isGLB⟩
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 

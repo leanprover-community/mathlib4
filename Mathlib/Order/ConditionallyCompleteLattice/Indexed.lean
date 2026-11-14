@@ -412,8 +412,8 @@ theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i �
 theorem ciSup₂_le' {f : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
   ciSup_le' fun i ↦ ciSup_le' <| h i
 
-@[simp]
-theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := le_bot_iff.mp (ciSup_le' fun _ ↦ bot_le)
+@[deprecated iSup_bot +typeChanged (since := "2026-10-27")]
+theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := iSup_bot
 
 /-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
 from `lt_ciSup_iff`. -/
