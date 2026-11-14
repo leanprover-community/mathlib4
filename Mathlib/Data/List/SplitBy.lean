@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.List.Chain
 
 import Mathlib.Data.List.Flatten
+import Mathlib.Data.List.Infix
 
 /-!
 # Split a list into contiguous runs of elements which pairwise satisfy a relation.
@@ -230,6 +231,64 @@ theorem splitBy_append {r : α → α → Bool} {l m : List α}
     exact getLast_mem_getLast? _
   · simp_rw [← head_of_mem_head? hy, head_head_splitBy _ hm]
     exact head_mem_head? _
+
+theorem splitBy_append_of_apply_getLast_head_beq_true {r : α → α → Bool} {l m : List α}
+    {hl : l ≠ []} {hm : m ≠ []} (hr : r (l.getLast hl) (m.head hm) = true) :
+    (l ++ m).splitBy r = (l.splitBy r).dropLast ++
+      ((l.splitBy r).getLast (splitBy_ne_nil.2 hl) ++ (m.splitBy r).head (splitBy_ne_nil.2 hm)) ::
+      (m.splitBy r).tail:= by
+  rw [splitBy_eq_iff]
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · simp only [flatten_append, flatten_cons]
+    rw [← @flatten_singleton _ ((l.splitBy r).getLast _),
+      ← @flatten_singleton _ ((m.splitBy r).head _)]
+    simp only [← flatten_append, ← append_assoc]
+    simp [dropLast_concat_getLast, append_assoc]
+  · by_contra
+    simp only [mem_append, mem_cons, nil_eq, append_eq_nil_iff] at this
+    rcases this with hl' | ⟨hl', hr'⟩ | hr'
+    · exact hl' |> mem_of_mem_dropLast |> nil_notMem_splitBy r l
+    · apply nil_notMem_splitBy r m
+      rw [← hr']
+      apply head_mem
+    · exact hr' |> mem_of_mem_tail |> nil_notMem_splitBy r m
+  · intro n hn
+    simp only [mem_append, mem_cons] at hn
+    rcases hn with hn | hn | hn
+    · exact hn |> mem_of_mem_dropLast |> isChain_of_mem_splitBy
+    · simp only [hn, isChain_append, Option.mem_def]
+      refine ⟨?_, ?_, ?_⟩
+      · exact @isChain_of_mem_splitBy _ _ r l <| getLast_mem _
+      · exact @isChain_of_mem_splitBy _ _ r m <| head_mem _
+      · intro _ hx _ hy
+        simp only [← getLast_of_getLast?_eq_some hx, ← head_of_head?_eq_some hy,
+          flatten_splitBy, getLast_getLast_eq_getLast_flatten, head_head_eq_head_flatten]
+        exact hr
+    · exact hn |> mem_of_mem_tail |> isChain_of_mem_splitBy
+  · rw [append_cons]
+    simp only [isChain_append]
+    refine ⟨⟨?_, ?_, ?_⟩, ?_, ?_⟩
+    · exact IsChain.dropLast <| isChain_getLast_head_splitBy _ _
+    · apply isChain_singleton
+    · intro _ hx _ hy
+      have h := isChain_getLast_head_splitBy r l
+      rw [← dropLast_append_getLast (splitBy_ne_nil.2 hl), isChain_append] at h
+      simp only [head?_cons, Option.mem_def, Option.some.injEq] at hy
+      rcases h.right.right _ hx ((l.splitBy r).getLast (splitBy_ne_nil.2 hl)) (by simp)
+        with ⟨hx', h', h''⟩
+      simp only [← hy, ← h'']
+      use hx', append_ne_nil_of_left_ne_nil h' _
+      rw [head_append_left]
+    · exact IsChain.tail <| isChain_getLast_head_splitBy _ _
+    · intro _ hx _ hy
+      have h := isChain_getLast_head_splitBy r m
+      rw [← cons_head_tail (splitBy_ne_nil.2 hm), isChain_cons] at h
+      simp only [getLast?_append, getLast?_singleton, Option.some_or, Option.mem_def,
+        Option.some.injEq] at hx
+      rcases h.left _ hy with ⟨h', hy', h''⟩
+      simp only [← hx, ← h'']
+      use append_ne_nil_of_right_ne_nil _ h', hy'
+      rw [getLast_append_right]
 
 theorem splitBy_append_cons {r : α → α → Bool} {l : List α} {a : α} (m : List α)
     (ha : ∀ x ∈ l.getLast?, r x a = false) :
