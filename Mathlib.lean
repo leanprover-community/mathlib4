@@ -6039,8 +6039,8 @@ public import Mathlib.NumberTheory.LSeries.Linearity
 public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 public import Mathlib.NumberTheory.LSeries.Nonvanishing
 public import Mathlib.NumberTheory.LSeries.Positivity
-public import Mathlib.NumberTheory.LSeries.PsiLowerBound
 public import Mathlib.NumberTheory.LSeries.PrimesInAP
+public import Mathlib.NumberTheory.LSeries.PsiLowerBound
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.LSeries.RiemannZetaLogDeriv
 public import Mathlib.NumberTheory.LSeries.SumCoeff
