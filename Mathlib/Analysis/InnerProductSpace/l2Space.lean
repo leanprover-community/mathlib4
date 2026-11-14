@@ -632,17 +632,14 @@ protected theorem reindex_reindex {ι'' : Type*} (b : HilbertBasis ι 𝕜 E) (e
   ext
   simp
 
-@[simp]
 protected theorem reindex_symm_reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
     (b.reindex e).reindex e.symm = b := by
   simp
 
-@[simp]
 protected theorem reindex_reindex_symm (b : HilbertBasis ι' 𝕜 E) (e : ι ≃ ι') :
     (b.reindex e.symm).reindex e = b := by
   simp
 
-@[simp]
 protected theorem range_reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
     Set.range (b.reindex e) = Set.range b := by
   rw [HilbertBasis.coe_reindex, e.symm.surjective.range_comp]
