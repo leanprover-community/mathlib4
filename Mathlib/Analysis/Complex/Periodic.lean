@@ -63,6 +63,13 @@ theorem qParam_right_inv (hh : h ≠ 0) {q : ℂ} (hq : q ≠ 0) : 𝕢 h (invQP
   simp only [qParam, invQParam, ← mul_assoc, mul_div_cancel₀ _ two_pi_I_ne_zero,
     mul_div_cancel_left₀ _ (ofReal_ne_zero.mpr hh), exp_log hq]
 
+/-- Translating by half the period negates the `q`-parameter. -/
+theorem qParam_add_half_period (hh : h ≠ 0) (z : ℂ) :
+    𝕢 (2 * h) (h + z) = -𝕢 (2 * h) z := by
+  simp only [qParam, ofReal_mul, ofReal_ofNat, ← exp_add_pi_mul_I]
+  field_simp [hh]
+  ring_nf
+
 theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
     ∃ m : ℤ, invQParam h (𝕢 h z) = z + m * h := by
   dsimp only [qParam, invQParam]
