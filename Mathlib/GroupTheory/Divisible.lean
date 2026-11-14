@@ -36,7 +36,7 @@ For additive monoids and groups:
 
 and their multiplicative counterparts:
 
-* `Group.isRootableBy_int_iff_isRootableBy_nat`: for additive groups, `ℤ`-rootability is equivalent
+* `Group.isRootableBy_int_iff_isRootableBy_nat`: for groups, `ℤ`-rootability is equivalent
   to `ℕ`-rootability.
 * `QuotientGroup.isRootableBy`: quotient group of rootable group is rootable.
 
@@ -68,14 +68,14 @@ Here we adopt a constructive approach where we ask an explicit `div : A → α �
 * `div a 0 = 0` for all `a ∈ A`
 * `n • div a n = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
 -/
-@[deprecated IsDivisibleBy +typeChanged (since := "2026-10-26")]
+@[deprecated IsDivisibleBy +typeChanged (since := "2026-11-13")]
 class DivisibleBy where
   /-- The division function -/
   div : A → α → A
   div_zero : ∀ a, div a 0 = 0
   div_cancel : ∀ {n : α} (a : A), n ≠ 0 → n • div a n = a
 
-attribute [deprecated IsDivisibleBy +typeChanged (since := "2026-10-26")]
+attribute [deprecated IsDivisibleBy +typeChanged (since := "2026-11-13")]
   DivisibleBy.div DivisibleBy.div_zero DivisibleBy.div_cancel
 
 end AddMonoid
@@ -96,14 +96,14 @@ Here we adopt a constructive approach where we ask an explicit `root : A → α 
 * `root a 0 = 1` for all `a ∈ A`
 * `(root a n)ⁿ = a` for all `n ≠ 0 ∈ α` and `a ∈ A`.
 -/
-@[to_additive existing, deprecated IsRootableBy +typeChanged (since := "2026-10-26")]
+@[to_additive existing, deprecated IsRootableBy +typeChanged (since := "2026-11-13")]
 class RootableBy where
   /-- The root function -/
   root : A → α → A
   root_zero : ∀ a, root a 0 = 1
   root_cancel : ∀ {n : α} (a : A), n ≠ 0 → root a n ^ n = a
 
-attribute [deprecated IsRootableBy +typeChanged (since := "2026-10-26")]
+attribute [deprecated IsRootableBy +typeChanged (since := "2026-11-13")]
   RootableBy.root RootableBy.root_zero RootableBy.root_cancel
 
 @[to_additive IsDivisibleBy.surjective_smul]
@@ -112,7 +112,7 @@ theorem IsRootableBy.surjective_pow [IsRootableBy A α] {n : α} (hn : n ≠ 0) 
   IsRootableBy.exists_root x hn
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated IsRootableBy.surjective_pow +typeChanged (since := "2026-10-26"))
+@[to_additive (attr := deprecated IsRootableBy.surjective_pow +typeChanged (since := "2026-11-13"))
 DivisibleBy.surjective_smul]
 theorem RootableBy.surjective_pow [RootableBy A α] {n : α} (hn : n ≠ 0) :
     Function.Surjective fun a : A => a ^ n := fun x =>
@@ -129,7 +129,7 @@ A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the
 implies the textbook approach.
 -/
 @[to_additive (attr := instance_reducible,
-deprecated isRootableBy_iff_pow_surjective +typeChanged (since := "2026-10-26"))
+deprecated isRootableBy_iff_pow_surjective +typeChanged (since := "2026-11-13"))
 divisibleByOfSMulRightSurj
   /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the
   constructive version implies the textbook approach. -/]
@@ -161,7 +161,7 @@ variable {ι β : Type*} (B : ι → Type*) [∀ i : ι, Pow (B i) β]
 variable [Zero β] [∀ i : ι, Monoid (B i)]
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated Pi.isRootableBy +typeChanged (since := "2026-10-26"))]
+@[to_additive (attr := deprecated Pi.isRootableBy +typeChanged (since := "2026-11-13"))]
 instance Pi.rootableBy [∀ i, RootableBy (B i) β] : RootableBy (∀ i, B i) β where
   root x n i := RootableBy.root (x i) n
   root_zero _x := funext fun _i => RootableBy.root_zero _
@@ -189,7 +189,7 @@ variable {β B B' : Type*} [Pow B β] [Pow B' β]
 variable [Zero β] [Monoid B] [Monoid B']
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated Prod.isRootableBy +typeChanged (since := "2026-10-26"))]
+@[to_additive (attr := deprecated Prod.isRootableBy +typeChanged (since := "2026-11-13"))]
 instance Prod.rootableBy [RootableBy B β] [RootableBy B' β] : RootableBy (B × B') β where
   root p n := (RootableBy.root p.1 n, RootableBy.root p.2 n)
   root_zero _p := Prod.ext (RootableBy.root_zero _) (RootableBy.root_zero _)
@@ -210,7 +210,7 @@ end ULift
 section ULift
 
 set_option linter.deprecated false in
-@[to_additive (attr := deprecated ULift.isRootableBy +typeChanged (since := "2026-10-26"))]
+@[to_additive (attr := deprecated ULift.isRootableBy +typeChanged (since := "2026-11-13"))]
 instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
   root x a := ULift.up <| RootableBy.root x.down a
   root_zero x := ULift.ext <| RootableBy.root_zero x.down
@@ -242,7 +242,7 @@ open Int in
 /-- A group is `ℤ`-rootable if it is `ℕ`-rootable.
 -/
 @[to_additive (attr := instance_reducible,
-deprecated isRootableBy_int_iff_isRootableBy_nat +typeChanged (since := "2026-10-26"))
+deprecated isRootableBy_int_iff_isRootableBy_nat +typeChanged (since := "2026-11-13"))
   /-- An additive group is `ℤ`-divisible if it is `ℕ`-divisible. -/]
 def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root a z :=
@@ -260,7 +260,7 @@ set_option linter.deprecated false in
 /-- A group is `ℕ`-rootable if it is `ℤ`-rootable
 -/
 @[to_additive (attr := instance_reducible,
-deprecated isRootableBy_int_iff_isRootableBy_nat +typeChanged (since := "2026-10-26"))
+deprecated isRootableBy_int_iff_isRootableBy_nat +typeChanged (since := "2026-11-13"))
   /-- An additive group is `ℕ`-divisible if it `ℤ`-divisible. -/]
 def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
@@ -283,15 +283,25 @@ theorem smul_top_eq_top_of_isDivisibleBy [IsDivisibleBy A ℕ] {n : ℤ} (hn : n
     n • (⊤ : AddSubgroup A) = ⊤ :=
   AddSubgroup.map_top_of_surjective _ (IsDivisibleBy.exists_div · hn)
 
-@[deprecated smul_top_eq_top_of_isDivisibleBy +typeChanged (since := "2026-10-26")]
+@[deprecated smul_top_eq_top_of_isDivisibleBy +typeChanged (since := "2026-11-13")]
 theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n ≠ 0) :
     n • (⊤ : AddSubgroup A) = ⊤ :=
   AddSubgroup.map_top_of_surjective _ fun a => ⟨DivisibleBy.div a n, DivisibleBy.div_cancel _ hn⟩
 
+theorem isDivisibleBy_of_nsmul_top_eq (H : ∀ {n : ℕ}, n ≠ 0 → n • (⊤ : AddSubgroup A) = ⊤) :
+    IsDivisibleBy A ℕ where
+  exists_div a n hn := by
+    simpa [AddSubgroup.mem_smul_pointwise_iff_exists] using AddSubgroup.ext_iff.1 (H hn) a
+
+theorem isDivisibleBy_of_zsmul_top_eq (H : ∀ {n : ℤ}, n ≠ 0 → n • (⊤ : AddSubgroup A) = ⊤) :
+    IsDivisibleBy A ℤ where
+  exists_div a n hn := by
+    simpa [AddSubgroup.mem_smul_pointwise_iff_exists] using AddSubgroup.ext_iff.1 (H hn) a
+
 /-- If for all `n ≠ 0 ∈ ℤ`, `n • A = A`, then `A` is divisible.
 -/
 @[instance_reducible,
-deprecated smul_top_eq_top_of_isDivisibleBy +typeChanged (since := "2026-10-26")]
+deprecated isDivisibleBy_of_zsmul_top_eq +typeChanged (since := "2026-11-13")]
 noncomputable def divisibleByIntOfSMulTopEqTop
     (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
@@ -309,12 +319,6 @@ instance (priority := 100) isDivisibleBy_nat_of_charZero {𝕜} [DivisionRing �
   exists_div a n hn := by
     use a / n
     rw [nsmul_eq_mul', div_mul_cancel₀ _ (mod_cast hn)]
-
-instance (priority := 100) isDivisibleBy_int_of_charZero {𝕜} [DivisionRing 𝕜] [CharZero 𝕜] :
-    IsDivisibleBy 𝕜 ℤ where
-  exists_div a n hn := by
-    use a / n
-    rw [zsmul_eq_mul', div_mul_cancel₀ _ (mod_cast hn)]
 
 instance (priority := 100) isDivisibleBy_rat_of_charZero {𝕜} [DivisionRing 𝕜] [CharZero 𝕜] :
     IsDivisibleBy 𝕜 ℚ where
@@ -348,7 +352,7 @@ set_option linter.deprecated false in
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
 @[to_additive (attr := instance_reducible,
-deprecated Function.Surjective.isRootableBy +typeChanged (since := "2026-10-26"))
+deprecated Function.Surjective.isRootableBy +typeChanged (since := "2026-11-13"))
       /-- If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
       `α`-divisible. -/]
 noncomputable def Function.Surjective.rootableBy [RootableBy A α] (hf : Function.Surjective f)
@@ -371,7 +375,7 @@ instance QuotientGroup.isRootableBy [IsRootableBy A ℕ] : IsRootableBy (A ⧸ B
 
 set_option linter.deprecated false in
 /-- Any quotient group of a rootable group is rootable. -/
-@[to_additive (attr := deprecated QuotientGroup.isRootableBy +typeChanged (since := "2026-10-26"))
+@[to_additive (attr := deprecated QuotientGroup.isRootableBy +typeChanged (since := "2026-11-13"))
 /-- Any quotient group of a divisible group is divisible -/]
 noncomputable instance QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ :=
   QuotientGroup.mk_surjective.rootableBy _ fun _ _ => rfl
