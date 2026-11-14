@@ -294,13 +294,13 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] [TopologicalSpace α] (D : Set (Set α))
 
+/--
+The Scott topology on a partial order is T₀.
+-/
 theorem t0Space [IsScott α D] : T0Space α := by
   refine (t0Space_iff_inseparable α).2 fun x y h ↦ Iic_injective ?_
   simpa [inseparable_iff_closure_eq, IsScott.closure_singleton D] using h
 
-/--
-The Scott topology on a partial order is T₀.
--/
 -- see Note [lower instance priority]
 instance (priority := 90) [IsScott α univ] : T0Space α :=
   t0Space univ
