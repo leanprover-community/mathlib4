@@ -212,7 +212,7 @@ lemma variation_finsetSum_le [ContinuousAdd V] {ι} (s : Finset ι) (μ : ι →
 lemma variation_apply_eq_zero (hs : MeasurableSet s) :
     μ.variation s = 0 ↔ ∀ t, t ⊆ s → MeasurableSet t → μ t = 0 := by
   refine ⟨fun h t hts ht ↦ ?_, fun h ↦ ?_⟩
-  · rw [← eNorm_eq_zero, ← le_zero_iff, ← h]
+  · rw [← eNorm_eq_zero, ← nonpos_iff_eq_zero, ← h]
     apply (eNorm_measure_le_variation _ _).trans (measure_mono hts)
   · suffices μ.variation s ≤ (0 : Measure X) s by simpa
     apply variation_apply_le_of_forall_eNorm_le hs (fun t ht hts ↦ ?_)
