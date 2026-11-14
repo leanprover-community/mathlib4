@@ -83,8 +83,7 @@ theorem isChain_of_trichotomous [Std.Trichotomous r] (s : Set α) : IsChain r s 
 
 protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
     IsChain r (insert a s) :=
-  have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
-  hs.insert_of_symm ha
+  hs.insert_of_symm (r := Relation.SymmGen r) ha
 
 lemma IsChain.pair (h : r a b) : IsChain r {a, b} :=
   IsChain.singleton.insert fun _ hb _ ↦ .inl <| (eq_of_mem_singleton hb).symm.recOn ‹_›
@@ -107,9 +106,8 @@ theorem IsChain.preimage (r : α → α → Prop) (s : β → β → Prop) (f : 
   grind
 
 lemma isChain_union {s t : Set α} :
-    IsChain r (s ∪ t) ↔ IsChain r s ∧ IsChain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∨ r b a := by
-  have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
-  rw [IsChain, IsChain, IsChain, pairwise_union_of_symm]
+    IsChain r (s ∪ t) ↔ IsChain r s ∧ IsChain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∨ r b a :=
+  pairwise_union_of_symm (r := Relation.SymmGen r)
 
 lemma Monotone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
     (hf : Monotone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
