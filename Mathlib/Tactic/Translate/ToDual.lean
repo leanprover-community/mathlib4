@@ -181,6 +181,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("codisjoint", ["Disjoint"]),
   ("atom", ["Coatom"]),
   ("coatom", ["Atom"]),
+  ("height", ["Coheight"]),
+  ("coheight", ["Height"]),
   ("atoms", ["Coatoms"]),
   ("coatoms", ["Atoms"]),
   ("atomic", ["Coatomic"]),
