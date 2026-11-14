@@ -128,6 +128,10 @@ protected def B : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
+/- Start with the Aₙ chain on vertices 0, …, n - 1. Remove the edge between n - 2 and n - 1,
+then join n - 1 to n - 3 instead. For n ≥ 4, this gives a fork at n - 3 with tips n - 2 and n - 1.
+For n = 2, both n - 2 and n - 3 are 0. The first branch removes the only edge, giving D₂ = A₁ × A₁.
+For n = 3, the resulting path is 1 — 0 — 2, so D₃ is A₃ up to reindexing. -/
 /-- The Coxeter matrix of type Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -142,8 +146,9 @@ The corresponding Coxeter-Dynkin diagram is:
 protected def D : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
-      else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
-        else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
+      else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 2
+        else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
+          else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)))
   isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by aesop
