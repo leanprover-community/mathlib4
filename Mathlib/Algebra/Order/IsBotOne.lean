@@ -110,7 +110,7 @@ alias bot_eq_zero'' := bot_eq_zero
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
   one_le.ge_iff_eq'
 
-@[deprecated (since := "2026-10-17")]
+@[deprecated (since := "2026-11-13")]
 alias le_zero_iff := nonpos_iff_eq_zero
 
 @[to_additive] alias ⟨eq_one_of_le_one, _⟩ := le_one_iff_eq_one
@@ -120,7 +120,7 @@ alias le_zero_iff := nonpos_iff_eq_zero
 theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
   one_le.lt_iff_ne.trans ne_comm
 
-@[deprecated (since := "2026-10-17")]
+@[deprecated (since := "2026-11-13")]
 alias zero_lt_iff := pos_iff_ne_zero
 
 @[to_additive] alias ⟨_, one_lt_of_ne_one⟩ := one_lt_iff_ne_one
