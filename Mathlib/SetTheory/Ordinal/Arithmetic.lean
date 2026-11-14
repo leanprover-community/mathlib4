@@ -854,8 +854,130 @@ theorem lift_natCast : ∀ n : ℕ, lift.{u, v} n = n
 
 @[simp]
 theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift.{u, v} ofNat(n) = OfNat.ofNat n :=
+    lift.{u, v} ofNat(n) = ofNat(n) :=
   lift_natCast n
+
+@[simp]
+theorem lift_eq_natCast_iff {a : Ordinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a = n :=
+  lift_injective.eq_iff' (lift_natCast n)
+
+@[simp]
+theorem lift_eq_ofNat_iff {a : Ordinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    lift.{v} a = ofNat(n) ↔ a = ofNat(n) :=
+  lift_eq_natCast_iff
+
+@[simp]
+theorem lift_eq_zero {a : Ordinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
+  lift_injective.eq_iff' lift_zero
+
+@[simp]
+theorem lift_eq_one {a : Ordinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
+  lift_injective.eq_iff' lift_one
+
+@[simp]
+theorem lift_eq_omega0 {a : Ordinal.{v}} : lift.{u} a = ω ↔ a = ω :=
+  lift_injective.eq_iff' lift_omega0
+
+@[simp]
+theorem natCast_eq_lift_iff {n : ℕ} {a : Ordinal.{u}} :
+    (n : Ordinal) = lift.{v} a ↔ (n : Ordinal) = a := by
+  rw [← lift_natCast.{v, u} n, lift_inj]
+
+@[simp]
+theorem ofNat_eq_lift_iff {a : Ordinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    ofNat(n) = lift.{v} a ↔ ofNat(n) = a :=
+  natCast_eq_lift_iff
+
+@[simp]
+theorem zero_eq_lift_iff {a : Ordinal.{u}} :
+    0 = lift.{v} a ↔ 0 = a := by
+  simp [eqComm]
+
+@[simp]
+theorem one_eq_lift_iff {a : Ordinal.{u}} :
+    1 = lift.{v} a ↔ 1 = a := by
+  simp [eqComm]
+
+@[simp]
+theorem omega0_eq_lift_iff {a : Ordinal.{u}} :
+    ω = lift.{v} a ↔ ω = a := by
+  simp [eqComm]
+
+@[simp]
+theorem lift_le_natCast_iff {a : Ordinal.{u}} {n : ℕ} : lift.{v} a ≤ n ↔ a ≤ n := by
+  rw [← lift_natCast.{v, u}, lift_le]
+
+@[simp]
+theorem lift_le_ofNat_iff {a : Ordinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    lift.{v} a ≤ ofNat(n) ↔ a ≤ ofNat(n) :=
+  lift_le_natCast_iff
+
+@[simp]
+theorem lift_le_one_iff {a : Ordinal.{u}} :
+    lift.{v} a ≤ 1 ↔ a ≤ 1 := by
+  simpa using lift_le_natCast_iff (n := 1)
+
+@[simp]
+theorem lift_le_omega0_iff {a : Ordinal.{u}} :
+    lift.{v} a ≤ ω ↔ a ≤ ω := by
+  simpa using lift_le (b := ω)
+
+@[simp]
+theorem natCast_le_lift_iff {n : ℕ} {a : Ordinal.{u}} : n ≤ lift.{v} a ↔ n ≤ a := by
+  rw [← lift_natCast.{v, u}, lift_le]
+
+@[simp]
+theorem ofNat_le_lift_iff {a : Ordinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    ofNat(n) ≤ lift.{v} a ↔ ofNat(n) ≤ a :=
+  natCast_le_lift_iff
+
+@[simp]
+theorem one_le_lift_iff {a : Ordinal.{u}} :
+    1 ≤ lift.{v} a ↔ 1 ≤ a := by
+  simpa using natCast_le_lift_iff (n := 1)
+
+@[simp]
+theorem omega0_le_lift_iff {a : Ordinal.{u}} :
+    ω ≤ lift.{v} a ↔ ω ≤ a := by
+  simpa using lift_le (a := ω)
+
+@[simp]
+theorem lift_lt_natCast_iff {a : Ordinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
+  rw [← lift_natCast.{v, u}, lift_lt]
+
+@[simp]
+theorem lift_lt_ofNat_iff {a : Ordinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    lift.{v} a < ofNat(n) ↔ a < ofNat(n) :=
+  lift_lt_natCast_iff
+
+@[simp]
+theorem lift_lt_omega0_iff {a : Ordinal.{u}} :
+    lift.{v} a < ω ↔ a < ω := by
+  simpa using lift_lt (b := ω)
+
+@[simp]
+theorem natCast_lt_lift_iff {n : ℕ} {a : Ordinal.{u}} : n < lift.{v} a ↔ n < a := by
+  rw [← lift_natCast.{v, u}, lift_lt]
+
+@[simp]
+theorem ofNat_lt_lift_iff {a : Ordinal.{u}} {n : ℕ} [n.AtLeastTwo] :
+    ofNat(n) < lift.{v} a ↔ ofNat(n) < a :=
+  natCast_lt_lift_iff
+
+@[simp]
+theorem zero_lt_lift_iff {a : Ordinal.{u}} :
+    0 < lift.{v} a ↔ 0 < a := by
+  simpa using natCast_lt_lift_iff (n := 0)
+
+@[simp]
+theorem one_lt_lift_iff {a : Ordinal.{u}} :
+    1 < lift.{v} a ↔ 1 < a := by
+  simpa using natCast_lt_lift_iff (n := 1)
+
+@[simp]
+theorem omega0_lt_lift_iff {a : Ordinal.{u}} :
+    ω < lift.{v} a ↔ ω < a := by
+  simpa using lift_lt (a := ω)
 
 @[simp]
 theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
