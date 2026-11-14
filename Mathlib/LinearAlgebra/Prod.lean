@@ -199,6 +199,10 @@ theorem inr_injective : Function.Injective (inr R M M₂) := fun _ => by simp
 def coprod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) : M × M₂ →ₗ[R] M₃ :=
   f.comp (fst _ _ _) + g.comp (snd _ _ _)
 
+theorem coprod_def (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
+    f.coprod g = f.comp (fst _ _ _) + g.comp (snd _ _ _) :=
+  rfl
+
 @[simp]
 theorem coprod_apply (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (x : M × M₂) :
     coprod f g x = f x.1 + g x.2 :=
@@ -477,6 +481,31 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rw [this] at h
   simpa [this] using h
 
+section AddCommGroup
+
+variable {N P : Type*} [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
+
+theorem map_fst_comap_coprod (f : M →ₗ[R] P) (g : N →ₗ[R] P) (q : Submodule R P) :
+    map (fst R M N) (comap (f.coprod g) q) = comap f (g.range ⊔ q) := by
+  ext m
+  suffices (∃ n, f m + g n ∈ q) ↔ ∃ n, ∃ z ∈ q, g n + z = f m by simpa [mem_sup]
+  exact ⟨fun ⟨n, hn⟩ ↦ ⟨-n, f m + g n, hn, by simp⟩,
+    fun ⟨n, z, hz, h⟩ ↦ ⟨-n, by simpa [← h] using hz⟩⟩
+
+theorem map_fst_comap (f : M × N →ₗ[R] P) (q : Submodule R P) :
+    map (fst R M N) (comap f q) = comap (f ∘ₗ inl R M N) ((f ∘ₗ inr R M N).range ⊔ q) := by
+  rw [← map_fst_comap_coprod, coprod_comp_inl_inr]
+
+theorem map_fst_ker (f : M × N →ₗ[R] P) :
+    map (fst R M N) f.ker = comap (f ∘ₗ inl R M N) (f ∘ₗ inr R M N).range := by
+  rw [ker, map_fst_comap, sup_bot_eq]
+
+theorem map_fst_ker_eq_top {f : M × N →ₗ[R] P} :
+    map (fst R M N) f.ker = ⊤ ↔ (f ∘ₗ inl R M N).range ≤ (f ∘ₗ inr R M N).range := by
+  rw [map_fst_ker, eq_top_iff, ← map_le_iff_le_comap, Submodule.map_top]
+
+end AddCommGroup
+
 /-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
 equivalence between `C` and `range f`. -/
 @[simps!]
@@ -503,6 +532,8 @@ variable [Module R M] [Module R M₂]
 
 theorem sup_eq_range (p q : Submodule R M) : p ⊔ q = range (p.subtype.coprod q.subtype) :=
   Submodule.ext fun x => by simp [Submodule.mem_sup]
+
+section
 
 variable (p : Submodule R M) (q : Submodule R M₂)
 
@@ -547,6 +578,44 @@ theorem range_fst : range (fst R M M₂) = ⊤ := by rw [range_eq_map, ← prod_
 
 @[simp]
 theorem range_snd : range (snd R M M₂) = ⊤ := by rw [range_eq_map, ← prod_top, prod_map_snd]
+
+end
+
+section AddCommMonoid
+
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+  {p : Submodule R (M × N)} {q : Submodule R M} {r : Submodule R N}
+
+theorem disjoint_prod_right (hq : Disjoint (p.map (.fst R M N)) q)
+    (hr : Disjoint (p.comap (.inr R M N)) r) : Disjoint p (q.prod r) := by
+  simp only [disjoint_def, mem_map, mem_comap, mem_prod, LinearMap.fst_apply,
+    LinearMap.inr_apply] at *
+  rintro ⟨a, b⟩ habp ⟨haq, hbr⟩
+  obtain rfl : a = 0 := hq a ⟨(a, b), habp, rfl⟩ haq
+  simp [hr b habp hbr]
+
+end AddCommMonoid
+
+section AddCommGroup
+
+variable {N : Type*} [AddCommGroup N] [Module R N]
+  {p : Submodule R (M × N)} {q : Submodule R M} {r : Submodule R N}
+
+theorem codisjoint_prod_right (hpq : Codisjoint (p.map (.fst R M N)) q)
+    (hpr : Codisjoint (p.comap (.inr R M N)) r) : Codisjoint p (q.prod r) := by
+  simp only [Submodule.codisjoint_iff_exists_add_eq, mem_map, mem_comap, mem_prod,
+    LinearMap.fst_apply, LinearMap.inr_apply] at *
+  rintro ⟨x, y⟩
+  rcases hpq x with ⟨_a, c, ⟨⟨a, b⟩, hab, rfl⟩, hcS, rfl⟩
+  rcases hpr (y - b) with ⟨d, e, hdp, heq, hde⟩
+  use (a, b) + (0, d), (c, e), add_mem hab hdp
+  simp [hcS, heq, add_assoc, hde]
+
+theorem isCompl_prod_right (hpq : IsCompl (p.map (.fst R M N)) q)
+    (hpr : IsCompl (p.comap (.inr R M N)) r) : IsCompl p (q.prod r) :=
+  ⟨disjoint_prod_right hpq.1 hpr.1, codisjoint_prod_right hpq.2 hpr.2⟩
+
+end AddCommGroup
 
 variable (R M M₂)
 
