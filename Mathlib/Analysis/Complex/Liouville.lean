@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 
 In this file we prove Liouville's theorem: if `f : E → F` is complex differentiable on the whole
 space and its range is bounded, then the function is a constant. Various versions of this theorem
-are formalized in `Differentiable.apply_eq_apply_of_bounded`,
+are formalized in `Differentiable.isConst_of_bounded`,
 `Differentiable.exists_const_forall_eq_of_bounded`, and
 `Differentiable.exists_eq_const_of_bounded`.
 
@@ -91,11 +91,11 @@ theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : �
       norm_deriv_le_aux hR (e.differentiable.comp_diffContOnCl hd) fun z hz =>
         (UniformSpace.Completion.norm_coe _).trans_le (hC z hz)
 
-/-- An auxiliary lemma for Liouville's theorem `Differentiable.apply_eq_apply_of_bounded`. -/
-theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))
-    (z w : ℂ) : f z = f w := by
-  suffices ∀ c, deriv f c = 0 from is_const_of_deriv_eq_zero hf this z w
-  clear z w; intro c
+/-- An auxiliary lemma for Liouville's theorem `Differentiable.isConst_of_bounded`. -/
+theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f)) :
+    IsConst f := by
+  suffices ∀ c, deriv f c = 0 from is_const_of_deriv_eq_zero hf this
+  intro c
   obtain ⟨C, C₀, hC⟩ : ∃ C > (0 : ℝ), ∀ z, ‖f z‖ ≤ C := by
     rcases isBounded_iff_forall_norm_le.1 hb with ⟨C, hC⟩
     exact
@@ -114,18 +114,24 @@ namespace Differentiable
 open Complex
 
 /-- **Liouville's theorem**: a complex differentiable bounded function `f : E → F` is a constant. -/
-theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f))
-    (z w : E) : f z = f w := by
+theorem isConst_of_bounded {f : E → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f)) :
+    IsConst f := by
+  intro z w
   set g : ℂ → F := f ∘ fun t : ℂ => t • (w - z) + z
   suffices g 0 = g 1 by simpa [g]
   apply liouville_theorem_aux
   exacts [hf.comp ((differentiable_id.smul_const (w - z)).add_const z),
     hb.subset (range_comp_subset_range _ _)]
 
+@[deprecated isConst_of_bounded +typeChanged (since := "2026-11-10")]
+theorem apply_eq_apply_of_bounded {f : E → F} (hf : Differentiable ℂ f)
+    (hb : IsBounded (range f)) (z w : E) : f z = f w :=
+  hf.isConst_of_bounded hb z w
+
 /-- **Liouville's theorem**: a complex differentiable bounded function is a constant. -/
 theorem exists_const_forall_eq_of_bounded {f : E → F} (hf : Differentiable ℂ f)
     (hb : IsBounded (range f)) : ∃ c, ∀ z, f z = c :=
-  ⟨f 0, fun _ => hf.apply_eq_apply_of_bounded hb _ _⟩
+  ⟨f 0, fun _ => hf.isConst_of_bounded hb _ _⟩
 
 /-- **Liouville's theorem**: a complex differentiable bounded function is a constant. -/
 theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f)

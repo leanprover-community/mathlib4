@@ -219,8 +219,8 @@ variable {p : ℕ} {ζ : K}
 /-- For a prime `p`, a ℚ-linear combination `∑_{i < p} αᵢ ζⁱ` vanishes if and only if all
 coefficients `αᵢ` are equal. This follows from the irreducibility of the `p`-th cyclotomic
 polynomial. See de Launey–Flannery, *Algebraic Design Theory*, Lemma 2.8.5. -/
-lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
-    ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
+lemma sum_eq_zero_iff_isConst (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
+    ∑ i, α i * ζ ^ i.val = 0 ↔ Function.IsConst α := by
   have : Fact p.Prime := ⟨hp⟩
   let P : ℚ[X] := ∑ i, C (α i) * X ^ i.1
   have hP (i : Fin p) : α i = P.coeff i := by simp [P, ← Fin.ext_iff]
@@ -232,15 +232,26 @@ lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α 
   · rw [hc, degree_mul, degree_cyclotomic, Nat.totient_prime hp] at hP'
     have : c.degree ≤ 0 := (WithBot.add_le_add_iff_left (x := ↑(p - 1)) (by simp)).mp (by simpa)
     obtain ⟨c, rfl⟩ := natDegree_eq_zero.mp (natDegree_eq_zero_iff_degree_le_zero.mpr this)
+    intro i j
     simp [hP, hc, cyclotomic_prime]
   ext i
   by_cases h : i < p
   · lift i to Fin p using h; simp [cyclotomic_prime, ← hP, H i 0]
   · simp [cyclotomic_prime, P, h, Fin.forall_iff, @forall_comm _ (_ = _), Finset.sum_eq_zero]
 
-/-- Variant of `sum_eq_zero_iff_forall_eq` with integer coefficients. -/
+@[deprecated sum_eq_zero_iff_isConst +typeChanged (since := "2026-11-10")]
+lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
+    ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j :=
+  sum_eq_zero_iff_isConst hp hζ α
+
+/-- Variant of `sum_eq_zero_iff_isConst` with integer coefficients. -/
+lemma sum_eq_zero_iff_isConst_int (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℤ) :
+    ∑ i, α i * ζ ^ i.val = 0 ↔ Function.IsConst α := by
+  simpa [Function.IsConst] using sum_eq_zero_iff_isConst hp hζ (Int.cast ∘ α)
+
+@[deprecated sum_eq_zero_iff_isConst_int +typeChanged (since := "2026-11-10")]
 lemma sum_eq_zero_iff_forall_eq_int (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℤ) :
-    ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
-  simpa using sum_eq_zero_iff_forall_eq hp hζ (Int.cast ∘ α)
+    ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j :=
+  sum_eq_zero_iff_isConst_int hp hζ α
 
 end IsPrimitiveRoot
