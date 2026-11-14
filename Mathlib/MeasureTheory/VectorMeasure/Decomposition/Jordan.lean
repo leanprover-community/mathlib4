@@ -243,9 +243,12 @@ section
 variable {u v w : Set α}
 
 /-- A subset `v` of a null-set `w` has zero measure if `w` is a subset of a positive set `u`. -/
-theorem subset_positive_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
+theorem subset_positive_null_set (hu : MeasurableSet u)
     (hw : MeasurableSet w) (hsu : 0 ≤[u] s) (hw₁ : s w = 0) (hw₂ : w ⊆ u) (hwt : v ⊆ w) :
     s v = 0 := by
+  by_cases hv : MeasurableSet v
+  swap
+  · exact s.not_measurable hv
   have : s v + s (w \ v) = 0 := by
     rw [← hw₁, ← of_union Set.disjoint_sdiff_right hv (hw.diff hv), Set.union_sdiff_self,
       Set.union_eq_self_of_subset_left hwt]
@@ -256,11 +259,11 @@ theorem subset_positive_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
   linarith
 
 /-- A subset `v` of a null-set `w` has zero measure if `w` is a subset of a negative set `u`. -/
-theorem subset_negative_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
+theorem subset_negative_null_set (hu : MeasurableSet u)
     (hw : MeasurableSet w) (hsu : s ≤[u] 0) (hw₁ : s w = 0) (hw₂ : w ⊆ u) (hwt : v ⊆ w) :
     s v = 0 := by
-  rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
-  have := subset_positive_null_set hu hv hw hsu
+  rw [← s.neg_le_neg_iff _, neg_zero] at hsu
+  have := subset_positive_null_set (v := v) hu hw hsu
   simp only [neg_apply, neg_eq_zero] at this
   exact this hw₁ hw₂ hwt
 
@@ -291,8 +294,8 @@ alias of_diff_eq_zero_of_symmDiff_eq_zero_positive := of_sdiff_eq_zero_of_symmDi
 between the two sets. -/
 theorem of_sdiff_eq_zero_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hsu : s ≤[u] 0) (hsv : s ≤[v] 0) (hs : s (u ∆ v) = 0) : s (u \ v) = 0 ∧ s (v \ u) = 0 := by
-  rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
-  rw [← s.neg_le_neg_iff _ hv, neg_zero] at hsv
+  rw [← s.neg_le_neg_iff _, neg_zero] at hsu
+  rw [← s.neg_le_neg_iff _, neg_zero] at hsv
   have := of_sdiff_eq_zero_of_symmDiff_eq_zero_positive hu hv hsu hsv
   simp only [neg_apply, neg_eq_zero] at this
   exact this hs
@@ -305,9 +308,8 @@ theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : Me
     s (w ∩ u) = s (w ∩ v) := by
   have hwuv : s ((w ∩ u) ∆ (w ∩ v)) = 0 := by
     refine
-      subset_positive_null_set (hu.union hv) ((hw.inter hu).symmDiff (hw.inter hv))
-        (hu.symmDiff hv) (restrict_le_restrict_union _ _ hu hsu hv hsv) hs
-        Set.symmDiff_subset_union ?_
+      subset_positive_null_set (hu.union hv) (hu.symmDiff hv)
+        (restrict_le_restrict_union _ _ hu hsu hv hsv) hs Set.symmDiff_subset_union ?_
     rw [← Set.inter_symmDiff_distrib_left]
     exact Set.inter_subset_right
   obtain ⟨huv, hvu⟩ :=
@@ -319,8 +321,8 @@ theorem of_inter_eq_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : Me
 theorem of_inter_eq_of_symmDiff_eq_zero_negative (hu : MeasurableSet u) (hv : MeasurableSet v)
     (hw : MeasurableSet w) (hsu : s ≤[u] 0) (hsv : s ≤[v] 0) (hs : s (u ∆ v) = 0) :
     s (w ∩ u) = s (w ∩ v) := by
-  rw [← s.neg_le_neg_iff _ hu, neg_zero] at hsu
-  rw [← s.neg_le_neg_iff _ hv, neg_zero] at hsv
+  rw [← s.neg_le_neg_iff _, neg_zero] at hsu
+  rw [← s.neg_le_neg_iff _, neg_zero] at hsv
   have := of_inter_eq_of_symmDiff_eq_zero_positive hu hv hw hsu hsv
   simp only [neg_apply, neg_inj, neg_eq_zero] at this
   exact this hs
