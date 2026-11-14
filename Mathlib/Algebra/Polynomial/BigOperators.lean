@@ -6,7 +6,9 @@ Authors: Aaron Anderson, Jalex Stark
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Order.Ring.Finset
 public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Data.Finset.Insert
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
@@ -65,6 +67,66 @@ theorem natDegree_sum_le (f : ι → S[X]) :
 lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s, natDegree (f i) ≤ n) :
     natDegree (∑ i ∈ s, f i) ≤ n :=
   le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
+
+lemma leadingCoeff_sum_nonneg {R ι : Type*} [Semiring R] [PartialOrder R] [AddLeftMono R]
+    {f : ι → R[X]} {s : Finset ι} (hf : ∀ i ∈ s, 0 ≤ (f i).leadingCoeff) :
+    0 ≤ (∑ i ∈ s, f i).leadingCoeff := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h =>
+    obtain ⟨hi, hs⟩ := (Finset.forall_mem_insert _ _ _).mp hf
+    rw [Finset.sum_insert his]
+    exact leadingCoeff_add_nonneg hi (h hs)
+
+lemma le_leadingCoeff_sum_of_forall_nonneg {R ι : Type*}
+    [Semiring R] [CompleteLattice R] [AddLeftMono R]
+    {f : ι → R[X]} {s : Finset ι} (hs : s.Nonempty) (hf : ∀ i ∈ s, 0 ≤ (f i).leadingCoeff) :
+    (⨅ i ∈ s, (f i).leadingCoeff) ≤ (∑ i ∈ s, f i).leadingCoeff := by
+  classical
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton i => simp
+  | cons i t hit htne hd =>
+    obtain ⟨hi, ht⟩ := (Finset.forall_mem_cons _ _).mp hf
+    rw [Finset.cons_eq_insert, Finset.iInf_insert, Finset.sum_insert hit]
+    exact le_trans (inf_le_inf_left _ (hd ht))
+      (le_leadingCoeff_add_of_nonneg hi (leadingCoeff_sum_nonneg ht))
+
+lemma degree_sum_of_leadingCoeff_nonneg {R ι : Type*} [Semiring R] [PartialOrder R]
+    [AddLeftMono R] {f : ι → R[X]} {s : Finset ι} (hf : ∀ i ∈ s, 0 ≤ (f i).leadingCoeff) :
+    (∑ i ∈ s, f i).degree = s.sup fun i ↦ (f i).degree := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h =>
+    obtain ⟨hi, hs⟩ := (Finset.forall_mem_insert _ _ _).mp hf
+    rw [Finset.sup_insert, ← h hs, Finset.sum_insert his]
+    exact degree_add_of_leadingCoeff_nonneg hi (leadingCoeff_sum_nonneg hs)
+
+lemma natDegree_sum_of_leadingCoeff_nonneg {R ι : Type*} [Semiring R] [PartialOrder R]
+    [AddLeftMono R] {f : ι → R[X]} {s : Finset ι} (hf : ∀ i ∈ s, 0 ≤ (f i).leadingCoeff) :
+    (∑ i ∈ s, f i).natDegree = s.sup fun i ↦ (f i).natDegree := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h =>
+    obtain ⟨hi, hs⟩ := (Finset.forall_mem_insert _ _ _).mp hf
+    rw [Finset.sup_insert, ← h hs, Finset.sum_insert his]
+    exact natDegree_add_of_leadingCoeff_nonneg hi (leadingCoeff_sum_nonneg hs)
+
+lemma degree_sum_pow_eq_of_even {R ι : Type*} [Semiring R] [NoZeroDivisors R]
+    [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R] {s : Finset ι} (f : ι → R[X])
+    {n : ℕ} (hn : Even n) : (∑ i ∈ s, f i ^ n).degree = s.sup fun i ↦ (f i ^ n).degree := by
+  refine degree_sum_of_leadingCoeff_nonneg fun i hi ↦ ?_
+  rw [leadingCoeff_pow]
+  exact hn.pow_nonneg _
+
+lemma natDegree_sum_pow_eq_of_even {R ι : Type*} [Semiring R] [NoZeroDivisors R]
+    [LinearOrder R] [IsStrictOrderedRing R] [ExistsAddOfLE R] (s : Finset ι) (f : ι → R[X])
+    {n : ℕ} (hn : Even n) : (∑ i ∈ s, f i ^ n).natDegree = s.sup fun i ↦ (f i ^ n).natDegree := by
+  refine natDegree_sum_of_leadingCoeff_nonneg fun i hi ↦ ?_
+  rw [leadingCoeff_pow]
+  exact hn.pow_nonneg _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The leading coefficient of a sum of polynomials with the same degree is
