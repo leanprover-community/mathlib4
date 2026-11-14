@@ -593,4 +593,66 @@ theorem _root_.exists_hilbertBasis : ∃ (w : Set E) (b : HilbertBasis w 𝕜 E)
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_hilbertBasis_extension
   ⟨w, hw, hw''⟩
 
+section reindex
+
+variable {𝕜 E} {ι' : Type*}
+
+/-- For a HilbertBasis `b` indexed by `ι`, `b.reindex (e : ι ≃ ι')` is a `HilbertBasis` indexed
+by `ι'`. -/
+protected def reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') : HilbertBasis ι' 𝕜 E :=
+  HilbertBasis.mk (b.orthonormal.comp _ e.symm.injective)
+    (by
+      rw [e.symm.surjective.range_comp]
+      exact b.dense_span.ge)
+
+@[simp]
+protected theorem coe_reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
+    ⇑(b.reindex e) = b ∘ e.symm :=
+  HilbertBasis.coe_mk _ _
+
+protected theorem reindex_apply (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') (i' : ι') :
+    b.reindex e i' = b (e.symm i') := by
+  rw [HilbertBasis.coe_reindex, Function.comp_apply]
+
+@[simp]
+protected theorem repr_reindex_apply (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') (x : E) (i' : ι') :
+    (b.reindex e).repr x i' = b.repr x (e.symm i') := by
+  rw [HilbertBasis.repr_apply_apply, b.repr_apply_apply, HilbertBasis.reindex_apply]
+
+@[simp]
+protected theorem reindex_refl (b : HilbertBasis ι 𝕜 E) : b.reindex (Equiv.refl ι) = b := by
+  apply DFunLike.coe_injective
+  simp
+
+@[simp]
+protected theorem reindex_reindex {ι'' : Type*} (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι')
+    (e' : ι' ≃ ι'') :
+    (b.reindex e).reindex e' = b.reindex (e.trans e') := by
+  apply DFunLike.coe_injective
+  ext
+  simp
+
+@[simp]
+protected theorem reindex_symm_reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
+    (b.reindex e).reindex e.symm = b := by
+  simp
+
+@[simp]
+protected theorem reindex_reindex_symm (b : HilbertBasis ι' 𝕜 E) (e : ι ≃ ι') :
+    (b.reindex e.symm).reindex e = b := by
+  simp
+
+@[simp]
+protected theorem range_reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
+    Set.range (b.reindex e) = Set.range b := by
+  rw [HilbertBasis.coe_reindex, e.symm.surjective.range_comp]
+
+@[simp]
+theorem reindex_toOrthonormalBasis [Fintype ι] [Fintype ι'] (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
+    (b.reindex e).toOrthonormalBasis = b.toOrthonormalBasis.reindex e := by
+  apply DFunLike.coe_injective
+  simp
+
+end reindex
+
 end HilbertBasis
