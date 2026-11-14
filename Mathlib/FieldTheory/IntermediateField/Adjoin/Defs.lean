@@ -676,6 +676,13 @@ theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h :
   simp_rw [← hs, ← adjoin_iUnion]
   exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
 
+theorem fg_restrictScalars {S : IntermediateField F E} {T : IntermediateField S E}
+    (hS : S.FG) (hT : T.FG) : (T.restrictScalars F).FG := by
+  classical
+  obtain ⟨s, rfl⟩ := hS
+  obtain ⟨t, rfl⟩ := hT
+  exact ⟨s ∪ t, by simp [adjoin_adjoin_left]⟩
+
 /-- A field is finitely generated if and only if it is finitely generated over its prime
 subfield. -/
 theorem _root_.Field.fg_iff_fg_top_bot :
@@ -694,12 +701,17 @@ theorem induction_on_adjoin_finset (S : Finset E)
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
     exact adjoin_simple (adjoin F _) _ ha h
 
-theorem induction_on_adjoin_fg {motive : IntermediateField F E → Prop} (bot : motive ⊥)
-    (adjoin_simple : ∀ (K : IntermediateField F E)
-      (x : E), motive K → motive (K⟮x⟯.restrictScalars F))
-    (K : IntermediateField F E) (hK : K.FG) : motive K := by
+theorem induction_on_adjoin_fg {motive : (K : IntermediateField F E) → K.FG → Prop}
+    (bot : motive ⊥ fg_bot)
+    (adjoin_simple : ∀ (K : IntermediateField F E) (fg : K.FG) (x : E),
+      motive K fg → motive (K⟮x⟯.restrictScalars F)
+        (fg_restrictScalars fg (fg_adjoin_of_finite (Set.finite_singleton x))))
+    (K : IntermediateField F E) (hK : K.FG) : motive K hK := by
   obtain ⟨S, rfl⟩ := hK
-  exact induction_on_adjoin_finset S bot fun K x _ hK => adjoin_simple K x hK
+  induction S using Finset.cons_induction_on with
+  | empty => simpa using bot
+  | cons x s _ ih =>
+    simpa [adjoin_adjoin_left] using adjoin_simple (adjoin F s) (fg_adjoin_finset s) x ih
 
 end Induction
 
