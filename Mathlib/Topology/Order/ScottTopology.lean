@@ -252,11 +252,15 @@ variable (D a) in
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 `(-∞,a]`.
 -/
-@[simp] lemma closure_singleton [IsScott α D] : closure {a} = Iic a := by
+lemma closure_singleton [IsScott α D] : closure {a} = Iic a := by
   have := closedIicTopology D
   apply le_antisymm <| closure_minimal (by simp) isClosed_Iic
   rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
   apply lowerClosure_subset_closure D
+
+-- Since `simp` can't infer the value of `D`, we need a separate `univ` lemma for `@[simp]`
+@[simp] lemma closure_singleton_of_univ [IsScott α univ] : closure {a} = Iic a :=
+  closure_singleton univ a
 
 variable [Preorder β] [TopologicalSpace β] [IsScott β univ] {f : α → β}
 
