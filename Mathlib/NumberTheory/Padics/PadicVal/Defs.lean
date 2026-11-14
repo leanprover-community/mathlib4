@@ -48,7 +48,7 @@ theorem Nat.toNat_emultiplicity (p n : ℕ) : (emultiplicity p n).toNat = multip
     · simp
     · simp [← multiplicity_eq_emultiplicity_of_ne_one, *]
 
-@[deprecated (since := "2026-09-08")] alias padicValNat_def' := padicValNat_def
+@[deprecated (since := "2026-09-08")] alias maxPowDvdDiv_eq_multiplicity' := fst_maxPowDvdDiv
 
 /-- A simplification of `multiplicity` when one input is prime, by analogy with
 `padicValRat_def`. -/
@@ -81,7 +81,7 @@ theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : 
     n ≤ multiplicity a b ↔ replicate n a <+~ b.primeFactorsList := by
   rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩
-      |>.emultiplicity_eq_multiplicity, ← padicValNat_def,
+      |>.emultiplicity_eq_multiplicity, ← fst_maxPowDvdDiv,
     ENat.natCast_le_natCast]
 
 @[deprecated (since := "2026-10-28")] alias le_padicValNat_iff_replicate_subperm_primeFactorsList :=
