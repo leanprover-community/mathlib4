@@ -787,7 +787,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
     simp only [hg]
     refine ((isBigO_refl (fun z : ℂ => expR z.re ^ n) _).mul hO.norm_left).trans (.of_bound' ?_)
     filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
-    simp only [← Real.exp_nat_mul, ← Real.exp_add, Real.norm_eq_abs, Real.abs_exp, add_mul]
+    simp only [← Real.exp_natCast_mul, ← Real.exp_add, Real.norm_eq_abs, Real.abs_exp, add_mul]
     gcongr
     · calc
         z.re ≤ ‖z‖ := re_le_norm _

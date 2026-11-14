@@ -254,7 +254,7 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
     eventually_atTop.1
       ((tendsto_pow_const_div_const_pow_of_one_lt n (one_lt_exp_iff.2 zero_lt_one)).eventually
         (gt_mem_nhds this))
-  simp only [← exp_nat_mul, mul_one, div_lt_iff₀, exp_pos, ← div_eq_inv_mul] at hN
+  simp only [← exp_natCast_mul, mul_one, div_lt_iff₀, exp_pos, ← div_eq_inv_mul] at hN
   refine ⟨N, trivial, fun x hx => ?_⟩
   rw [Set.mem_Ioi] at hx
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
@@ -460,7 +460,7 @@ theorem isTheta_exp_comp_one {f : α → ℝ} :
 
 lemma summable_exp_nat_mul_iff {a : ℝ} :
     Summable (fun n : ℕ ↦ exp (n * a)) ↔ a < 0 := by
-  simp only [exp_nat_mul, summable_geometric_iff_norm_lt_one, norm_of_nonneg (exp_nonneg _),
+  simp only [exp_natCast_mul, summable_geometric_iff_norm_lt_one, norm_of_nonneg (exp_nonneg _),
     exp_lt_one_iff]
 
 lemma summable_exp_neg_nat : Summable fun n : ℕ ↦ exp (-n) := by
@@ -475,7 +475,7 @@ lemma summable_exp_nat_mul_of_ge {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (hf : 
 
 lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
     Summable fun n : ℕ ↦ n ^ k * exp (-r * n) := by
-  simp_rw [mul_comm (-r), exp_nat_mul]
+  simp_rw [mul_comm (-r), exp_natCast_mul]
   apply summable_pow_mul_geometric_of_norm_lt_one
   rwa [norm_of_nonneg (exp_nonneg _), exp_lt_one_iff, neg_lt_zero]
 

@@ -378,8 +378,8 @@ lemma jacobiTheta₂_add_right (z τ : ℂ) : jacobiTheta₂ z (τ + 2) = jacobi
   refine tsum_congr (fun n ↦ ?_)
   simp_rw [jacobiTheta₂_term, Complex.exp_add]
   suffices cexp (π * I * n ^ 2 * 2 : ℂ) = 1 by rw [mul_add, Complex.exp_add, this, mul_one]
-  rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)), exp_int_mul,
-    exp_two_pi_mul_I, one_zpow]
+  rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)),
+    Complex.exp_intCast_mul, exp_two_pi_mul_I, one_zpow]
 
 /-- The two-variable Jacobi theta function is periodic in `z` with period 1. -/
 lemma jacobiTheta₂_add_left (z τ : ℂ) : jacobiTheta₂ (z + 1) τ = jacobiTheta₂ z τ := by
@@ -413,8 +413,8 @@ lemma jacobiTheta₂'_add_right (z τ : ℂ) : jacobiTheta₂' z (τ + 2) = jaco
   refine tsum_congr (fun n ↦ ?_)
   simp_rw [jacobiTheta₂'_term, jacobiTheta₂_term, Complex.exp_add]
   suffices cexp (π * I * n ^ 2 * 2 : ℂ) = 1 by rw [mul_add, Complex.exp_add, this, mul_one]
-  rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)), exp_int_mul,
-    exp_two_pi_mul_I, one_zpow]
+  rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)),
+    Complex.exp_intCast_mul, exp_two_pi_mul_I, one_zpow]
 
 lemma jacobiTheta₂'_add_left (z τ : ℂ) : jacobiTheta₂' (z + 1) τ = jacobiTheta₂' z τ := by
   unfold jacobiTheta₂' jacobiTheta₂'_term jacobiTheta₂_term

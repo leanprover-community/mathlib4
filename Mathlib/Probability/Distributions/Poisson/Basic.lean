@@ -145,7 +145,7 @@ lemma charFun_map_cast_poissonMeasure (r : ℝ≥0) (t : ℝ) :
   _ = ∑' a, (rexp (-r)) * ((r * cexp (t * I)) ^ a / a !) := by
       congr with a
       push_cast
-      rw [mul_pow, ← Complex.exp_nat_mul]
+      rw [mul_pow, ← Complex.exp_natCast_mul]
       ring_nf
   _ = (rexp (-r)) * ∑' a, ((r * cexp (t * I)) ^ a / a !) := tsum_mul_left
   _ = (rexp (-r)) * cexp (r * cexp (t * I)) := by

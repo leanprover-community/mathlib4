@@ -105,7 +105,7 @@ lemma cpow_int_mul (x : ℂ) (n : ℤ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := 
   · rcases eq_or_ne n 0 with rfl | hn
     · simp
     · rcases eq_or_ne y 0 with rfl | hy <;> simp [*, zero_zpow]
-  · rw [cpow_def_of_ne_zero hx, cpow_def_of_ne_zero hx, mul_left_comm, exp_int_mul]
+  · rw [cpow_def_of_ne_zero hx, cpow_def_of_ne_zero hx, mul_left_comm, exp_intCast_mul]
 
 lemma cpow_mul_int (x y : ℂ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by rw [mul_comm, cpow_int_mul]
 
