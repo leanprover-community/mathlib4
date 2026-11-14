@@ -36,8 +36,8 @@ Kleene star, such that (informally) `a∗ = 1 + a + a * a + a * a * a + ...`
 
 ## References
 
-* [D. Kozen, *A completeness theorem for Kleene algebras and the algebra of regular events*]
-  [kozen1994]
+* [D. Kozen, *A completeness theorem for Kleene algebras and the algebra of regular
+  events*][kozen1994]
 * https://planetmath.org/idempotentsemiring
 * https://encyclopediaofmath.org/wiki/Idempotent_semi-ring
 * https://planetmath.org/kleene_algebra
