@@ -149,6 +149,17 @@ instance instIsMulCommutative_closure {S : Type*} [SetLike S G] [MulMemClass S G
   isMulCommutative_closure fun _ h₁ _ h₂ _ => setLike_mul_comm h₁ h₂
 
 @[to_additive]
+theorem forall_mem_closure_commute {s t : Set G}
+    (h : ∀ x ∈ s, ∀ y ∈ t, Commute x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, Commute x y := by
+  intro x hx y hy
+  have hts : t ⊆ centralizer s := by
+    intro z hz
+    rw [SetLike.mem_coe, mem_centralizer_iff]
+    exact fun x hx ↦ h x hx z hz
+  rw [← centralizer_closure, ← closure_le] at hts
+  exact hts hy _ hx
+
+@[to_additive]
 theorem centralizer_le_normalizer (s : Set G) : centralizer s ≤ normalizer s := by
   refine fun g hg h ↦ ⟨fun hh ↦ ?_, fun hh ↦ ?_⟩
   · simpa [← hg h hh]
