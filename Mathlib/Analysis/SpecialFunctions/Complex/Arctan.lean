@@ -124,19 +124,13 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   have := ((hasSum_taylorSeries_log (z := z * I) (by simpa)).add
     (hasSum_taylorSeries_neg_log (z := z * I) (by simpa))).mul_left (-I / 2)
   simp_rw [← add_div, ← add_one_mul, hasSum_arctan_aux hz] at this
-  replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp_def] at this
-  simp_rw [← mul_comm 2 _] at this
-  refine this.prod_fiberwise fun k => ?_
-  dsimp only
-  convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
-  rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
-    neg_add_cancel, zero_mul, zero_div, mul_zero, zero_add,
-    show 2 * k + 1 + 1 = 2 * (k + 1) by ring, Even.neg_one_pow (n := 2 * (k + 1)) (by simp),
-    ← mul_div_assoc (_ / _), ← mul_assoc, show -I / 2 * (1 + 1) = -I by ring]
-  congr 1
-  rw [mul_pow, pow_succ' I, pow_mul, I_sq,
-    show -I * _ = -(I * I) * (-1) ^ k * z ^ (2 * k + 1) by ring, I_mul_I, neg_neg, one_mul]
+  refine (((add_left_injective 1).comp (mul_right_injective₀ (two_ne_zero' ℕ))).hasSum_iff
+    fun n hn => ?_).mpr this |>.congr_fun fun k => ?_
+  · have : Even n := Nat.not_odd_iff_even.mp fun ⟨k, hk⟩ => hn ⟨k, hk.symm⟩
+    rw [this.add_one.neg_one_pow, neg_add_cancel, zero_mul, zero_div, mul_zero]
+  · dsimp only [Function.comp_apply]
+    rw [(odd_two_mul_add_one k).add_one.neg_one_pow, mul_pow, pow_succ I, pow_mul I, I_sq]
+    linear_combination ((-1) ^ k * z ^ (2 * k + 1) / ↑(2 * k + 1)) * I_sq
 
 end Complex
 

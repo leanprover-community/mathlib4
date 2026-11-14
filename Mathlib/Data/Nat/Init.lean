@@ -461,4 +461,70 @@ lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); lia⟩
 
 end AtLeastTwo
 
+/-- `Nat.mkDivMod n i j` computes the natural number with
+quotient `i` and remainder `j` with respect to modulus `n`.
+This is the `ℕ`-level analogue of `Fin.mkDivMod`. -/
+def mkDivMod (n i j : ℕ) : ℕ := n * i + j
+
+theorem mkDivMod_def {n i j : ℕ} : n.mkDivMod i j = n * i + j := rfl
+
+@[simp, grind =] theorem div_mkDivMod_of_pos {n : ℕ} (hn : 0 < n) (i j : ℕ) :
+    (n.mkDivMod i j) / n = i + j / n := (Nat.mul_add_div hn _ _)
+
+@[simp, grind =] theorem div_mkDivMod_of_neZero {n : ℕ} [NeZero n] (i j : ℕ) :
+    (n.mkDivMod i j) / n = i + j / n := div_mkDivMod_of_pos (Nat.pos_of_neZero n) _ _
+
+@[simp, grind =] theorem mod_mkDivMod {n : ℕ} (i j : ℕ) :
+    (n.mkDivMod i j) % n = j % n := Nat.mul_add_mod _ _ _
+
+@[simp] theorem mkDivMod_inj_of_pos (hn : 0 < n) {i₁ i₂ : ℕ} {j₁ : ℕ} {j₂ : ℕ} :
+    n.mkDivMod i₁ j₁ = n.mkDivMod i₂ j₂ ↔ i₁ + j₁ / n = i₂ + j₂ / n ∧ j₁ % n = j₂ % n :=
+  (n.ext_div_mod_iff _ _).trans <| by simp [hn]
+
+@[simp] theorem mkDivMod_inj_of_neZero [NeZero n] {i₁ i₂ : ℕ} {j₁ : ℕ} {j₂ : ℕ} :
+    n.mkDivMod i₁ j₁ = n.mkDivMod i₂ j₂ ↔ i₁ + j₁ / n = i₂ + j₂ / n ∧ j₁ % n = j₂ % n :=
+   mkDivMod_inj_of_pos (Nat.pos_of_neZero n)
+
+@[simp, grind =] theorem mkDivMod_div_mod {n : ℕ} (k : ℕ) :
+    n.mkDivMod (k / n) (k % n) = k := Nat.div_add_mod _ _
+
+@[simp] theorem ofNat_mkDivMod {n : ℕ} [NeZero n] (i j : ℕ) :
+    Fin.ofNat n (n.mkDivMod i j) = Fin.ofNat n j := Fin.ext <| mod_mkDivMod _ _
+
+/-- `Nat.mkDivFin n i j` is `Nat.mkDivMod n i j` with the remainder `j` bundled as a `Fin n`,
+so that it is guaranteed to be the remainder of the result modulo `n`.
+This makes the quotient `i` and remainder `j` recoverable without side conditions. -/
+def mkDivFin (n i : ℕ) (j : Fin n) : ℕ := n.mkDivMod i j
+
+@[simp, grind =] theorem div_mkDivFin {n : ℕ} (i : ℕ) (j : Fin n) :
+    (n.mkDivFin i j) / n = i := (div_mkDivMod_of_pos j.pos i j).trans
+  (Nat.add_eq_left.mpr <| Nat.div_eq_of_lt j.isLt)
+
+@[simp, grind =] theorem mod_mkDivFin {n : ℕ} (i : ℕ) (j : Fin n) :
+    (n.mkDivFin i j) % n = j := (mod_mkDivMod _ _).trans (Nat.mod_eq_of_lt j.isLt)
+
+@[simp, grind =] theorem ofNat_mkDivFin {n : ℕ} (i : ℕ) (j : Fin n) :
+    haveI : NeZero n := ⟨Nat.ne_zero_of_lt j.isLt⟩
+    Fin.ofNat n (n.mkDivFin i j) = j := Fin.ext <| mod_mkDivFin _ _
+
+@[simp, grind =] theorem mkDivFin_inj {n i₁ i₂ : ℕ} {j₁ : Fin n} {j₂ : Fin n} :
+    n.mkDivFin i₁ j₁ = n.mkDivFin i₂ j₂ ↔ i₁ = i₂ ∧ j₁ = j₂ :=
+  (n.ext_div_mod_iff _ _).trans <| by simp [Fin.ext_iff]
+
+/-- `Nat.mkDivFin` is strictly monotone with respect to the lexicographic order on
+quotient and remainder. -/
+theorem mkDivFin_lt_mkDivFin_iff {n i₁ i₂ : ℕ} {j₁ j₂ : Fin n} :
+    n.mkDivFin i₁ j₁ < n.mkDivFin i₂ j₂ ↔ i₁ < i₂ ∨ i₁ = i₂ ∧ j₁ < j₂ := by
+  refine ⟨fun h => ?_, ?_⟩
+  · have : i₁ ≤ i₂ := by simpa using Nat.div_le_div_right (c := n) (Nat.le_of_lt h)
+    rcases Nat.lt_or_eq_of_le this with h' | rfl
+    · exact .inl h'
+    · exact .inr ⟨rfl, Fin.lt_def.mpr (Nat.lt_of_add_lt_add_left h)⟩
+  · rintro (h | ⟨rfl, h⟩)
+    · exact Nat.lt_of_div_lt_div (c := n) (by simpa using h)
+    · exact Nat.add_lt_add_left (Fin.lt_def.mp h) _
+
+@[simp, grind =] theorem mkDivFin_div_ofNat {n : ℕ} [NeZero n] (k : ℕ) :
+    n.mkDivFin (k / n) (Fin.ofNat n k) = k := Nat.div_add_mod _ _
+
 end Nat
