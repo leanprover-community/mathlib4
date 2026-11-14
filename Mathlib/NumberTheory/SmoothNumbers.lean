@@ -204,8 +204,8 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
     have hpm : ¬ p ∣ m := by grind [mem_primeFactorsList]
     simp only [Prod.mk.injEq, Subtype.mk.injEq]
     constructor
-    · rw [factorization_mul (pow_ne_zero e hp.ne_zero) hm₀, Finsupp.add_apply,
-        factorization_pow_self hp, factorization_eq_zero_of_not_dvd hpm, add_zero]
+    · rw [factorization_mul (pow_ne_zero e hp.ne_zero) hm₀, add_apply, factorization_pow_self hp,
+        factorization_eq_zero_of_not_dvd hpm, add_zero]
     · conv_rhs => rw [← prod_primeFactorsList hm₀]
       refine prod_eq <|
         (filter _ <| perm_primeFactorsList_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_

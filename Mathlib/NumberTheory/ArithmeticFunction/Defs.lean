@@ -199,6 +199,12 @@ protected theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n =
 
 instance instAddMonoid : AddMonoid (ArithmeticFunction R) := fast_instance% FunLike.addMonoid
 
+instance : IsSMulApply ℕ (ArithmeticFunction R) where
+  smul_apply f a b := by
+    induction a with
+    | zero => simp
+    | succ k hk => simp [add_nsmul, hk]
+
 end AddMonoid
 
 set_option backward.isDefEq.respectTransparency false in

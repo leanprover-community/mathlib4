@@ -104,7 +104,7 @@ theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a, 
 
 /-- Interpret `fun f : α →₀ M ↦ f a` as a linear map. -/
 def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
-  { Finsupp.applyAddHom a with map_smul' := fun _ _ => rfl }
+  { FunLike.evalAddMonoidHom (α →₀ M) a with map_smul' := fun _ _ => rfl }
 
 instance [Nonempty α] [FaithfulSMul R M] : FaithfulSMul R (α →₀ M) :=
   .of_injective (Finsupp.lsingle <| Classical.arbitrary _) (Finsupp.single_injective _)

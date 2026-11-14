@@ -469,7 +469,7 @@ instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, UniqueSums 
 
 instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
   UniqueSums.of_injective_addHom
-    Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
+    (FunLike.coeAddMonoidHom (ι →₀ G) ι G).toAddHom DFunLike.coe_injective inferInstance
 
 namespace TwoUniqueProds
 
@@ -625,4 +625,4 @@ instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSu
 
 instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
   TwoUniqueSums.of_injective_addHom
-    Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
+    (FunLike.coeAddMonoidHom (ι →₀ G) ι G).toAddHom DFunLike.coe_injective inferInstance
