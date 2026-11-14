@@ -504,7 +504,7 @@ lemma PartialMap.isOver_toRationalMap_iff_of_isSeparated {sX : X ⟶ S} {sY : Y 
   obtain ⟨U, hU, hU', H⟩ := f.exists_restrict_isOver sX sY
   rw [isOver_iff]
   have : IsDominant (X.homOfLE hU') := Opens.isDominant_homOfLE hU _
-  exact ext_of_isDominant (ι := X.homOfLE hU') (by simpa using H.comp_over)
+  exact ext_of_isDominant (ι := X.homOfLE hU') (by simpa using H.over)
 
 section functionField
 
