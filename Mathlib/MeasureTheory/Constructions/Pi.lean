@@ -214,30 +214,30 @@ instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, Measur
     MeasureSpace (∀ i, α i) :=
   ⟨Measure.pi fun _ => volume⟩
 
+theorem pi_pi_le (s : ∀ i, Set (α i)) : Measure.pi μ (pi univ s) ≤ ∏ i, μ i (s i) := by
+  simp_rw [← measure_toMeasurable (s _)]
+  grw [pi_mono fun i _ ↦ subset_toMeasurable (μ i) (s i)]
+  rw [Measure.pi, toMeasure_apply _ _ (.univ_pi fun i ↦ measurableSet_toMeasurable _ _)]
+  exact OuterMeasure.pi_pi_le _ _
+
 theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
-  refine le_antisymm ?_ ?_
-  · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
-    apply OuterMeasure.pi_pi_le
-  · have : Encodable ι := Fintype.toEncodable ι
-    simp_rw [← pi'_pi μ s, Measure.pi,
-      toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
-    suffices (pi' μ).toOuterMeasure ≤ OuterMeasure.pi fun i => (μ i).toOuterMeasure by exact this _
-    clear hs s
-    rw [OuterMeasure.le_pi]
-    intro s _
-    exact (pi'_pi μ s).le
+  refine le_antisymm (pi_pi_le μ s) ?_
+  have : Encodable ι := Fintype.toEncodable ι
+  simp_rw [← pi'_pi μ s, Measure.pi,
+    toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
+  suffices (pi' μ).toOuterMeasure ≤ OuterMeasure.pi fun i => (μ i).toOuterMeasure by exact this _
+  clear hs s
+  rw [OuterMeasure.le_pi]
+  intro s _
+  exact (pi'_pi μ s).le
 
 theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
   classical
-  -- WLOG, `s` is measurable
-  rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
-  suffices Measure.pi μ (eval i ⁻¹' t) = 0 from measure_mono_null (preimage_mono hst) this
-  -- Now rewrite it as `Set.pi`, and apply `pi_pi`
-  rw [← univ_pi_update_univ, pi_pi]
-  apply Finset.prod_eq_zero (Finset.mem_univ i)
-  simp [hμt]
+  rw [← univ_pi_update_univ, ← nonpos_iff_eq_zero]
+  grw [pi_pi_le]
+  exact Finset.prod_eq_zero (Finset.mem_univ i) (by simp [hs]) |>.le
 
 theorem quasiMeasurePreserving_eval (i : ι) :
     QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
@@ -532,7 +532,7 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
     prod_prod, pi_pi, mul_comm]
 
 instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
-    [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NullSingletonClass (volume : Measure (α i))] :
+    [∀ i, NullSingletonClass (volume : Measure (α i))] :
     NullSingletonClass (volume : Measure (∀ i, α i)) :=
   pi_nullSingletonClass'
 
