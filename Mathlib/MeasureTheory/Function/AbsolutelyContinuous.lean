@@ -374,7 +374,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   have hab₁ : 0 < b - a := by linarith
   -- Split `[a, b]` into subintervals `[a + i * δ', a + (i + 1) * δ']` for `i = 0, ..., n`, where
   --   `a + (n + 1) * δ' = b` and `δ' < δ`.
-  obtain ⟨n, hn⟩ := exists_nat_one_div_lt (div_pos hδ₁ hab₁)
+  obtain ⟨n, hn⟩ := exists_natCast_one_div_lt (div_pos hδ₁ hab₁)
   set δ' := (b - a) / (n + 1)
   have hδ₃ : δ' < δ := by
     dsimp only [δ']

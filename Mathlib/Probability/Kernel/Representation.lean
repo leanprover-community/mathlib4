@@ -57,7 +57,7 @@ private lemma exists_measurable_map_eq_unitInterval_aux (κ : Kernel X I) [IsMar
         mem_iUnion, exists_prop, exists_and_left, f]
       constructor
       · rintro ⟨y, hyI, y_mem, (hy : a.1 < y)⟩
-        obtain ⟨q, hqa, hqy⟩ := exists_rat_btwn hy
+        obtain ⟨q, hqa, hqy⟩ := exists_ratCast_btwn hy
         refine ⟨q, hqa, ⟨?_, hqy.le.trans hyI.2⟩, lt_of_lt_of_le' y_mem (h_monotone e.1 hqy.le)⟩
         simp [← Rat.cast_nonneg (K := ℝ), a.2.1.trans hqa.le]
       · intro he

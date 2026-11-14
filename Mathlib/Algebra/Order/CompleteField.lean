@@ -55,7 +55,7 @@ open scoped Pointwise
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 scoped instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
     [Field α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α] : Archimedean α :=
-  archimedean_iff_nat_lt.2 <| by
+  archimedean_iff_natCast_lt.2 <| by
     by_contra! ⟨x, h⟩
     have := csSup_le (range_nonempty Nat.cast)
       (forall_mem_range.2 fun m =>
@@ -112,16 +112,16 @@ variable [Archimedean α]
 
 omit [LinearOrder β] [IsStrictOrderedRing β] in
 theorem cutMap_nonempty (a : α) : (cutMap β a).Nonempty :=
-  Nonempty.image _ <| exists_rat_lt a
+  Nonempty.image _ <| exists_ratCast_lt a
 
 theorem cutMap_bddAbove (a : α) : BddAbove (cutMap β a) := by
-  obtain ⟨q, hq⟩ := exists_rat_gt a
+  obtain ⟨q, hq⟩ := exists_ratCast_gt a
   exact ⟨q, forall_mem_image.2 fun r hr => mod_cast (hq.trans' hr).le⟩
 
 theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b := by
   refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
   · rw [mem_ofPred_eq, ← sub_lt_iff_lt_add] at hq
-    obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
+    obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_ratCast_btwn hq
     refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel _ _⟩
     norm_cast
     rw [coe_mem_cutMap_iff]
@@ -171,7 +171,7 @@ theorem inducedMap_rat (q : ℚ) : inducedMap α β (q : α) = q := by
   · rw [cutMap_coe] at h
     obtain ⟨r, h, rfl⟩ := h
     exact le_of_lt h
-  · obtain ⟨q', hwq, hq⟩ := exists_rat_btwn h
+  · obtain ⟨q', hwq, hq⟩ := exists_ratCast_btwn h
     rw [cutMap_coe]
     exact ⟨q', ⟨_, hq, rfl⟩, hwq⟩
 
@@ -190,23 +190,23 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
   refine ⟨fun h => ?_, fun hq => ?_⟩
   · rw [← inducedMap_rat α] at h
     exact (inducedMap_mono α β).reflect_lt h
-  · obtain ⟨q', hq, hqa⟩ := exists_rat_btwn hq
+  · obtain ⟨q', hq, hqa⟩ := exists_ratCast_btwn hq
     apply lt_csSup_of_lt (cutMap_bddAbove β a) (coe_mem_cutMap_iff.mpr hqa)
     exact mod_cast hq
 
 theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
-  ⟨fun h => (exists_rat_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
+  ⟨fun h => (exists_ratCast_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
     fun ⟨q, hbq, hqa⟩ => hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
 
 @[simp]
 theorem inducedMap_self (b : β) : inducedMap β β b = b :=
-  eq_of_forall_rat_lt_iff_lt fun _ => coe_lt_inducedMap_iff
+  eq_of_forall_ratCast_lt_iff_lt fun _ => coe_lt_inducedMap_iff
 
 variable (α β)
 
 @[simp]
 theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) = inducedMap α γ a :=
-  eq_of_forall_rat_lt_iff_lt fun q => by
+  eq_of_forall_ratCast_lt_iff_lt fun q => by
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
@@ -224,7 +224,7 @@ variable {α β}
 theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ cutMap β (a * a)) :
     b ≤ inducedMap α β a * inducedMap α β a := by
   obtain ⟨q, hb, rfl⟩ := hb
-  obtain ⟨q', hq', hqq', hqa⟩ := exists_rat_pow_btwn two_ne_zero hb (mul_self_pos.2 ha.ne')
+  obtain ⟨q', hq', hqq', hqa⟩ := exists_ratCast_pow_btwn two_ne_zero hb (mul_self_pos.2 ha.ne')
   trans (q' : β) ^ 2
   · exact mod_cast hqq'.le
   · rw [pow_two] at hqa ⊢
@@ -239,7 +239,7 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
   · refine ⟨0, ?_, hb⟩
     rw [← Rat.cast_zero, coe_mem_cutMap_iff, Rat.cast_zero]
     exact mul_self_pos.2 ha.ne'
-  obtain ⟨q, hq, hbq, hqa⟩ := exists_rat_pow_btwn two_ne_zero hba (hb.trans_lt hba)
+  obtain ⟨q, hq, hbq, hqa⟩ := exists_ratCast_pow_btwn two_ne_zero hba (hb.trans_lt hba)
   rw [← cast_pow] at hbq
   refine ⟨(q ^ 2 : ℚ), coe_mem_cutMap_iff.2 ?_, hbq⟩
   rw [pow_two] at hqa ⊢
