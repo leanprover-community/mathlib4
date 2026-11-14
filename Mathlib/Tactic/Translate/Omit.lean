@@ -12,25 +12,26 @@ public import Mathlib.Tactic.Translate.Reorder -- TODO: move elabArgStx to a bet
 # Omitting arguments in a translation
 
 This module defines omissions, which can be specified with `to_mdifferentiable (omit := ...)` or
-`to_additive (omit := ...)` TODO!, to deal with definitions and theorems that need to have some
+`to_additive (omit := ...)`, to deal with definitions and theorems that need to have some
 argument(s) omitted during translation.
 
 An omission is specified with a single number: for example, `1 2` will omit the 1st and 2nd
 argument of the declaration during translation.
 
 Instead of using numbers to refer to argument, you can also refer to them by name. For example
-`a b` will omit the arguments named `a` and `b`. This is implemented in `elabArgStx`. TODO!
+`a b` will omit the arguments named `a` and `b`. This is implemented in `elabArgStx`.
 
 ## Examples
 
 - `to_differentiable` needs to omit the regularity arguments during translation, such as
   `ContDiff 𝕜 n f` ↦ `Differentiable 𝕜 f`
 
-- TODO: are there examples of a lemma with a hypothesis `hn : n ≠ 0` or similar
+- TODO(Michael): are there examples of a lemma with a hypothesis `hn : n ≠ 0` or similar
   which should have their argument omitted upon translation?
   existing lemmas like `ContDiff.differentiable` seem to not be examples
 
-- TODO: examples like a `ContMDiffVectorBundle ... n` hypothesis to `ContMDiffVectorBundle ... 1`
+- TODO(Michael): examples like translating a `ContMDiffVectorBundle ... n` hypothesis to
+  `ContMDiffVectorBundle ... 1`, as in
   `Bundle.Trivialization.contMDiffAt_section_iff` (over a C^n bundle) ↦
   `Bundle.Trivialization.mdifferentiableAt_section_iff` (which requires a `C¹` bundle)
 
@@ -49,7 +50,7 @@ structure ArgOmit where
   in ascending order. -/
   args : List Nat := []
   /-- The recursive omission for omitting arguments of arguments.
-  TODO true? For the purpose of checking equality between omissions, this should be sorted. -/
+  For the purpose of checking equality between omissions, this should be sorted. -/
   argOmissions : Array (Nat × ArgOmit) := #[]
   deriving Inhabited
 
@@ -136,9 +137,9 @@ private partial def reorderMVars (mvars : Array Expr) (omissions : ArgOmit) :
     let mvarId' ← mkFreshExprMVar (← omitForall argOmission decl.type) (userName := decl.userName)
     -- Note: we assign `mvarId` in terms of `mvarId'`, and to do this we need to reorder `mvarId'`
     -- with the reverse reorder of `argReorder`.
-    -- TODO: this won't work here, right? cannot inverse a re-ordering, hm...
+    -- TODO(Michael): does this comment apply here? If so, how to fix it?
+    -- We cannot invert omitting arguments...
     mvarId.assign (← omitLambda argOmission mvarId')
-    --mvarId.assign (← omitLambda argOmission.reverse mvarId')
     mvars := mvars.set! arg mvarId'
   return omissions.omit! mvars
 
