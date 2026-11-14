@@ -397,7 +397,7 @@ theorem exists_forall_hasDerivWithinAt (hs : Convex ℝ s) (hf : DifferentiableO
   let : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   apply hs.exists_forall_hasFDerivWithinAt_of_hasFDerivWithinAt_symmetric
   · intro a ha
-    exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 E 1).hasFDerivAt
+    exact (StrongDual.smulRightL 𝕜 𝕜 E 1).hasFDerivAt
       |>.comp_hasDerivWithinAt a (hf a ha).hasDerivWithinAt |>.restrictScalars ℝ
   · rintro a ha x - y -
     simpa using smul_comm ..

@@ -452,7 +452,7 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
     (hf' : UniformCauchySeqOnFilter f' l l') :
     UniformCauchySeqOnFilter (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l l' := by
   intro u hu
-  simpa using hf' _ ((ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous hu)
+  simpa using hf' _ ((StrongDual.smulRightL 𝕜 𝕜 G 1).uniformContinuous hu)
 
 variable [IsRCLikeNormedField 𝕜]
 
@@ -469,7 +469,7 @@ theorem uniformCauchySeqOn_ball_of_deriv {r : ℝ} (hf' : UniformCauchySeqOn f' 
   have hf' :
     UniformCauchySeqOn (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l
       (Metric.ball x r) :=
-    (ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_uniformCauchySeqOn hf'
+    (StrongDual.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_uniformCauchySeqOn hf'
   exact uniformCauchySeqOn_ball_of_fderiv hf' hf hfg
 
 theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
@@ -482,7 +482,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   let G' z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (g' z)
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf ⊢
   have hf' : TendstoUniformlyOnFilter F' G' l (𝓝 x) :=
-    (ContinuousLinearMap.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_tendstoUniformlyOnFilter hf'
+    (StrongDual.smulRightL 𝕜 𝕜 G 1).uniformContinuous.comp_tendstoUniformlyOnFilter hf'
   exact hasFDerivAt_of_tendstoUniformlyOnFilter hf' hf hfg
 
 theorem hasDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s)

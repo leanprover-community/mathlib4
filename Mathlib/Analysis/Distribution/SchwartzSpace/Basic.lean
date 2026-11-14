@@ -866,7 +866,7 @@ where finally
       _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), (n.choose i) *
           ‖iteratedFDeriv ℝ i L x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
         gcongr 1
-        exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (smulRightL ℝ G F)
+        exact norm_iteratedFDeriv_le_of_bilinear_of_le_one (StrongDual.smulRightL ℝ G F)
           (by fun_prop) (f.smooth ⊤) x (mod_cast le_top) norm_smulRightL_le
       _ ≤ ‖x‖ ^ k *
           (‖L x‖ * ‖iteratedFDeriv ℝ n f x‖ + n * ‖L‖ * ‖iteratedFDeriv ℝ (n - 1) f x‖) := by
