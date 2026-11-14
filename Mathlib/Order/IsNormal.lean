@@ -193,18 +193,15 @@ section ConditionallyCompleteLinearOrderBot
 variable {ι : Sort*} [ConditionallyCompleteLinearOrderBot α]
   [ConditionallyCompleteLinearOrderBot β]
 
-/-- An initial segment embedding preserves suprema of bounded sets. -/
-theorem _root_.InitialSeg.map_sSup (f : α ≤i β) {s : Set α} (hs : BddAbove s) :
+theorem _root_.InitialSeg.map_csSup (f : α ≤i β) {s : Set α} (hs : BddAbove s) :
     f (sSup s) = sSup (f '' s) := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simp
   · exact f.isNormal.leftOrdContinuous.map_csSup hs' hs
 
-/-- An initial segment embedding preserves bounded indexed suprema. -/
-theorem _root_.InitialSeg.map_iSup (f : α ≤i β) {g : ι → α} (hg : BddAbove (range g)) :
+theorem _root_.InitialSeg.map_ciSup (f : α ≤i β) {g : ι → α} (hg : BddAbove (range g)) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
-  rw [← sSup_range, ← sSup_range, f.map_sSup hg, ← range_comp]
-  rfl
+  rw [← sSup_range, ← sSup_range, f.map_csSup hg, ← range_comp, Function.comp_def]
 
 end ConditionallyCompleteLinearOrderBot
 
