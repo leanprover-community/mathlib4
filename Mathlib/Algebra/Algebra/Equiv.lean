@@ -80,10 +80,6 @@ def _root_.AlgEquiv.ofClass {F R A B : Type*} [Add A] [Mul A] [SMul R A]
     [Add B] [Mul B] [SMul R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (RingEquivClass.toRingEquiv f : A ≃+* B) with map_smul' := map_smul f }
 
-instance (F R A B : Type*) [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B]
-    [EquivLike F A B] [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
-  ⟨AlgEquiv.ofClass⟩
-
 @[deprecated (since := "2026-09-08")] alias toAlgEquiv := AlgEquiv.ofClass
 
 end AlgEquivClass
