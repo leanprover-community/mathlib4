@@ -116,9 +116,9 @@ wrapping the uniform-space completion of `WithAbs v`. -/
 structure Completion where
   /-- Wrap an element of the underlying completion `UniformSpace.Completion (WithAbs v)` into
   `v.Completion`. -/
-  private ofCompletion' ::
+  ofCompletion' ::
   /-- The underlying element of the completion `UniformSpace.Completion (WithAbs v)`. -/
-  private toCompletion' : UniformSpace.Completion (WithAbs v)
+  toCompletion' : UniformSpace.Completion (WithAbs v)
 
 namespace Completion
 
@@ -134,6 +134,7 @@ def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) where
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
 
 /-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
+@[expose]
 def equiv : v.Completion ≃+* UniformSpace.Completion (WithAbs v) where
   toEquiv := equivAux v
   map_mul' _ _ := rfl
@@ -210,7 +211,6 @@ theorem isometry_ofCompletion : Isometry (ofCompletion (v := v)) :=
   Isometry.of_dist_eq fun _ _ ↦ rfl
 
 /-- `Completion.toCompletion` as an isometry equivalence onto the underlying completion. -/
-@[simps!]
 noncomputable def isometryEquiv : v.Completion ≃ᵢ UniformSpace.Completion (WithAbs v) where
   toEquiv := equiv v
   isometry_toFun := isometry_toCompletion v

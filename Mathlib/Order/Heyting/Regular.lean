@@ -121,6 +121,7 @@ instance top : Top (Regular α) :=
 instance bot : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
+@[nolint instanceDiamonds]
 instance inf : Min (Regular α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
