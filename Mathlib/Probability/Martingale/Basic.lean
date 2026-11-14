@@ -33,7 +33,6 @@ with respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 
 * `MeasureTheory.martingale_condExp f ℱ μ`: the sequence `fun i => μ[f | ℱ i]` is a
   martingale with respect to `ℱ` and `μ`.
-
 -/
 
 @[expose] public section

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Semiconj.Basic
 
 /-!
 # Additional lemmas about commuting pairs of elements in monoids
-
 -/
 
 public section

@@ -19,7 +19,6 @@ This file proves basic facts about the asymptotics of of polynomial and rational
 The main result is `Polynomial.isEquivalent_atTop_lead`, which states that for
 any polynomial `P` of degree `n` with leading coefficient `a`, the corresponding
 polynomial function is equivalent to `a * x^n` as `x` goes to +∞.
-
 -/
 
 public section

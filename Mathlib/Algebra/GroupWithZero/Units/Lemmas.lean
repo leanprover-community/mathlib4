@@ -11,7 +11,6 @@ public import Mathlib.Algebra.GroupWithZero.Hom
 
 /-!
 # Further lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
-
 -/
 
 @[expose] public section

@@ -27,7 +27,6 @@ then `S` is a strong generator.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
-
 -/
 
 @[expose] public section

@@ -16,7 +16,6 @@ If `f : X ⟶ Y` and `f' : X' ⟶ Y'` are 1-morphisms in a bicategory,
 we introduce a structure `RetractArrow₁ f' f` expressing that
 `f'` is a retract of `f`, and we show that if `f` is an
 equivalence, then `f'` is also an equivalence.
-
 -/
 
 @[expose] public section

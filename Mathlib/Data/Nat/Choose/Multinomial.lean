@@ -50,7 +50,6 @@ we define it in terms of `Finsupp.multinomial`, via lists:
 If `m : Multiset ℕ` is the multiset associated with a list `l : List ℕ`,
 then `m.multinomial = l.toFinsupp.multinomial`.
 Then we prove its invariance under permutation.
-
 -/
 
 @[expose] public section

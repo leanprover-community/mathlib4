@@ -33,7 +33,6 @@ to formalise item 2.
  * `Matrix.IsFiniteCartan.toRealisation`: a realisation associated to an invertible Cartan matrix.
  * `Matrix.IsFiniteCartan.toRootPairing`: a reduced, irreducible, crystallographic root system
    associated to a Cartan matrix, with coefficients in any field of characteristic zero.
-
 -/
 
 public noncomputable section
@@ -222,6 +221,7 @@ lemma flip_weyl :
 
 @[simp] lemma coreflection_inv (i : n) : (rl.coreflection i)⁻¹ = rl.coreflection i := by rfl
 
+open scoped Pointwise in
 @[elab_as_elim]
 lemma weylGroup.induction {pred : (g : (M ≃ₗ[R] M) × (N ≃ₗ[R] N)) → g ∈ rl.weylGroup → Prop}
     (mem : ∀ i, pred (rl.reflection i, rl.coreflection i) (rl.mem_weyl i))

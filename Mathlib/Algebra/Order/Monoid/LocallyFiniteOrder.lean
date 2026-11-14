@@ -28,7 +28,6 @@ import Mathlib.Tactic.Abel
 - `LocallyFiniteOrder.orderMonoidWithZeroEquiv`:
   Any nontrivial linearly ordered abelian group with zero that is locally finite
   is isomorphic to `ℤᵐ⁰`.
-
 -/
 
 @[expose] public section

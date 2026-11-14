@@ -40,10 +40,6 @@ from the free R-module on the type M down to M splits. This is more convenient
 than certain other definitions which involve quantifying over universes,
 and also universe-polymorphic (the ring and module can be in different universes).
 
-We require that the module sits in at least as high a universe as the ring:
-without this, free modules don't even exist,
-and it's unclear if projective modules are even a useful notion.
-
 ## References
 
 https://en.wikipedia.org/wiki/Projective_module
@@ -51,7 +47,6 @@ https://en.wikipedia.org/wiki/Projective_module
 ## Tags
 
 projective module
-
 -/
 
 public section

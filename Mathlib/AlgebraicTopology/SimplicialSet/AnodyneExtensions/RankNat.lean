@@ -15,7 +15,6 @@ import Mathlib.Basic.Finite.Sigma
 In this file, we show that if `P : A.Pairing` is
 a regular pairing of subcomplex `A` of a simplicial set `X`,
 then there exists a rank function for `P` with values in `ℕ`.
-
 -/
 
 @[expose] public section

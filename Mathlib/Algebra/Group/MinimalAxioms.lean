@@ -19,7 +19,6 @@ equalities.
   `∀ a, a⁻¹ * a = 1` and associativity.
 * `Group.ofRightAxioms`: Define a group structure on a Type by proving `∀ a, a * 1 = a` and
   `∀ a, a * a⁻¹ = 1` and associativity.
-
 -/
 
 public section

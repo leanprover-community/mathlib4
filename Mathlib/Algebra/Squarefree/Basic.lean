@@ -29,7 +29,6 @@ Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 
 ## Tags
 squarefree, multiplicity
-
 -/
 
 @[expose] public section

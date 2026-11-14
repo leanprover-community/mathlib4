@@ -31,7 +31,6 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 ## References
 
 * https://en.wikipedia.org/wiki/Field_norm
-
 -/
 
 @[expose] public section

@@ -17,7 +17,6 @@ If `F` is a type of functions from `α` onto itself equipped with a monoid struc
 corresponds to iteration of composition.
 
 This is separated from the `Mathlib.Algebra.Group.IsApply` file to avoid importing `Monoid` there.
-
 -/
 
 public section

@@ -19,7 +19,6 @@ We also construct an extension `functorExtension₂` of functors
 when `D` is idempotent complete, we get equivalences
 `karoubiUniversal₂ C D : C ⥤ D ≌ Karoubi C ⥤ Karoubi D`
 and `karoubiUniversal C D : C ⥤ D ≌ Karoubi C ⥤ D`.
-
 -/
 
 @[expose] public section

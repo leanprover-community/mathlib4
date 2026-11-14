@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Ring.Int.Parity -- shake: keep (Qq dependency)
 
 /-! # Lemmas for the `field_simp` tactic
-
 -/
 
 public section

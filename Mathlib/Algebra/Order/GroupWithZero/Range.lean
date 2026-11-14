@@ -16,7 +16,6 @@ import Mathlib.Algebra.Order.Monoid.Basic
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `LinearOrderedCommGroupWithZero`,
 we provide some order properties of the `MonoidWithZeroHom.ValueGroup₀` as defined in
 `Mathlib.Algebra.GroupWithZero.Range`.
-
 -/
 
 @[expose] public section

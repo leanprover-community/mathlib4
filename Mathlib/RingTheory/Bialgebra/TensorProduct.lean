@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Coalgebra.TensorProduct
 We define the data in the monoidal structure on the category of bialgebras - e.g. the bialgebra
 instance on a tensor product of bialgebras, and the tensor product of two `BialgHom`s as a
 `BialgHom`. This is done by combining the corresponding API for coalgebras and algebras.
-
 -/
 
 public noncomputable section

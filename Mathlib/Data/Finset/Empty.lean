@@ -20,7 +20,6 @@ This file defines the empty finite set ∅ and a predicate for nonempty `Finset`
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

@@ -19,7 +19,6 @@ and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is étale.
 
 - `AlgebraicGeometry.Etale.iff_smoothOfRelativeDimension_zero`: Etale is equivalent to
   smooth of relative dimension `0`.
-
 -/
 
 @[expose] public section

@@ -27,7 +27,6 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * Cartesian product is the product
 * arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
-
 -/
 
 @[expose] public section

@@ -18,7 +18,6 @@ is an Azumaya algebra where `R` is a commutative ring.
 ## Main Results
 
 - `IsAzumaya.Matrix`: Finite-dimensional matrix algebra over `R` is Azumaya.
-
 -/
 
 public section

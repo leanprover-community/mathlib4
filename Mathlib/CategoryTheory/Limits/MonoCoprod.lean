@@ -26,7 +26,6 @@ a monomorphism.
 
 TODO: define distributive categories, and show that they satisfy `MonoCoprod`, see
 <https://ncatlab.org/toddtrimble/published/distributivity+implies+monicity+of+coproduct+inclusions>
-
 -/
 
 @[expose] public section

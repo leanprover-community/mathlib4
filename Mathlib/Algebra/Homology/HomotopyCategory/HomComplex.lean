@@ -31,7 +31,6 @@ We follow the signs conventions appearing in the introduction of
 
 ## References
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
-
 -/
 
 @[expose] public section
@@ -236,7 +235,6 @@ It is advisable to use a `p₂` that has good definitional properties
 
 When `z₁` or `z₂` is a `0`-cochain, there is a better choice of `p₂`, and this leads
 to the two simplification lemmas `comp_zero_cochain_v` and `zero_cochain_comp_v`.
-
 -/
 
 lemma comp_v {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)

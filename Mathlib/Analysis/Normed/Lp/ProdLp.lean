@@ -45,7 +45,6 @@ This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.l
 TODO: the results about uniformity and bornology in the `Aux` section should be using the tools in
 `Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
-
 -/
 
 @[expose] public section

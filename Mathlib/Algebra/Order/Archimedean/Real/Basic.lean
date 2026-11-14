@@ -15,7 +15,6 @@ import Mathlib.Order.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
-
 -/
 
 @[expose] public section

@@ -25,7 +25,6 @@ The proof of `Commute.cfcHom` and `Commute.cfcₙHom` could be made simpler by a
 facts about double commutants, but doing so would require extra type class assumptions so that we
 can talk about topological star algebras. Instead, we avoid this to minimize the work Lean must do
 to call these lemmas, and give a straightforward proof by induction.
-
 -/
 
 public section

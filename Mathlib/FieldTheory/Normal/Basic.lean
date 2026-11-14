@@ -21,7 +21,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 * `Algebra.IsQuadraticExtension.normal`: the instance that a quadratic extension, given as a class
   `Algebra.IsQuadraticExtension`, is normal.
-
 -/
 
 @[expose] public section

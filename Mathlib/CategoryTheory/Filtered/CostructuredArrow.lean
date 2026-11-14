@@ -19,7 +19,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
 ## References
 
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8
-
 -/
 
 public section

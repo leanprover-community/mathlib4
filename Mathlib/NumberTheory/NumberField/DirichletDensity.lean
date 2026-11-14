@@ -33,7 +33,6 @@ it does not exist).
 * `NumberField.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
 * `NumberField.dirichletDensity_nonneg` — the Dirichlet density is nonnegative.
 * `NumberField.dirichletDensity_le_one` — the Dirichlet density is at most `1`.
-
 -/
 
 public section

@@ -16,7 +16,6 @@ public import Mathlib.FieldTheory.IsSepClosed
 - `WeierstrassCurve.exists_variableChange_of_j_eq`: if `E` and `E'` are elliptic curves with the
   same `j`-invariants defined over a separably closed field, then there exists a change of variables
   over that field which change `E` into `E'`.
-
 -/
 
 public section

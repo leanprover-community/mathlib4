@@ -20,7 +20,6 @@ and deduce that `Module.Free` is stable under base change.
 - `Algebra.TensorProduct.basis`: given a basis of a module `M` over a commutative semiring `R`,
   and an `R`-algebra `A`, this provides a basis for `A ⊗[R] M` over `A`.
 - `Algebra.TensorProduct.instFree`: if `M` is free, then so is `A ⊗[R] M`.
-
 -/
 
 @[expose] public section

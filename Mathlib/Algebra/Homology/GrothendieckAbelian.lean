@@ -17,7 +17,6 @@ Let `c : ComplexShape ι` be a complex shape with no loop, and
 such that `Small.{w} ι`. Then, if `C` is a Grothendieck abelian
 category (with `IsGrothendieckAbelian.{w} C`), the category
 `HomologicalComplex C c` is Grothendieck abelian.
-
 -/
 
 public section

@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 # Colimits in the category of types
 
 We show that the category of types has all colimits, by providing the usual concrete models.
-
 -/
 
 @[expose] public section

@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Products.Basic
 
 We define the pointwise category structure on indexed families of objects in a category
 (and also the dependent generalization).
-
 -/
 
 @[expose] public section

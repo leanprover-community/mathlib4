@@ -17,7 +17,6 @@ import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 In this file, we define the singular chain complex and singular homology of a topological space.
 We also calculate the homology of a totally disconnected space as an example.
-
 -/
 
 @[expose] public section

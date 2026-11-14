@@ -27,7 +27,6 @@ and they are also jointly faithful.
 We provide a constructor `ObjectProperty.IsConservativeFamilyOfPoints.mk'`
 which allows to verify that a family of points is conservative
 using a condition involving covering sieves (SGA 4 IV 6.5 (a)).
-
 -/
 
 public section

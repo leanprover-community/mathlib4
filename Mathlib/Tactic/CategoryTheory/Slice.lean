@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic outp
 
 Applies a tactic to an interval of terms from a term obtained by repeated application
 of `Category.comp`.
-
 -/
 
 public meta section

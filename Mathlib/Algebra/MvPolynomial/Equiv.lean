@@ -35,7 +35,6 @@ As in other polynomial files, we typically use the notation:
 ## Tags
 
 equivalence, isomorphism, morphism, ring hom, hom
-
 -/
 
 @[expose] public section

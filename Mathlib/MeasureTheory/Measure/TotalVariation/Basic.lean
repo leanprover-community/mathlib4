@@ -21,7 +21,6 @@ We prove properties of the total variation distance, in particular alternative f
 
 * `tvDist_eq_integral_abs_rnDeriv_add_singularPart`: the total variation distance satisfies the
   formula `tvDist μ ν = ∫ x, |1 - (μ.rnDeriv ν x).toReal| ∂ν + (μ.singularPart ν).real Set.univ`.
-
 -/
 
 public section

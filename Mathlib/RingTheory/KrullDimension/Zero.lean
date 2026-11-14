@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 We provide further API for zero-dimensional rings.
 Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/Basic.lean`.
-
 -/
 
 public section

@@ -23,7 +23,6 @@ import Mathlib.RingTheory.AdjoinRoot
 - `MvPolynomial.isIntegral_iff_isIntegral_coeff`: `p : MvPolynomial σ S` is integral over
   `MvPolynomial σ R` iff the coefficients of `p` are integral over `R`.
 - We also provide the instance `[IsIntegrallyClosed R] : IsIntegrallyClosed R[X]`.
-
 -/
 
 public section

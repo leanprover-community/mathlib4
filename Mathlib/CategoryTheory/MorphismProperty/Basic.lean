@@ -19,7 +19,6 @@ The following meta-property is defined
 * `RespectsRight P Q`: `P` respects the property `Q` on the right if `P f → P (f ≫ i)` where
   `i` satisfies `Q`.
 * `Respects`: `P` respects `Q` if `P` respects `Q` both on the left and on the right.
-
 -/
 
 @[expose] public section

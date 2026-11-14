@@ -35,7 +35,6 @@ One might dispute whether this sequence should start at `f 0` or `⊥`. We choos
 * Starting at `⊥` requires... having a bottom element.
 * `fun f i ↦ (Finset.Iio i).sup f` is already effectively the sequence starting at `⊥`.
 * If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.
-
 -/
 
 @[expose] public section
