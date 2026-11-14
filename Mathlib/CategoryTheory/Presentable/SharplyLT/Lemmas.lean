@@ -23,9 +23,99 @@ that is sharply greater than all the cardinals in the family.
 
 @[expose] public section
 
-universe u
+universe u v w
 
 open CategoryTheory Limits
+
+namespace Cardinal
+
+abbrev SigmaPowLT (X : Type v) (κ : Cardinal.{u}) : Type max (u + 1) v :=
+  Σ (b : Set.Iio κ), b.val.ord.ToType → X
+
+def sigmaPowLT (α β : Cardinal.{u}) : Cardinal.{u} :=
+  .mk (Shrink.{u} (SigmaPowLT α.ord.ToType β))
+
+lemma lift_sigmaPowLT (α β : Cardinal.{u}) :
+    Cardinal.lift.{u + 1} (sigmaPowLT α β) = #(SigmaPowLT α.ord.ToType β) := by
+  simp [sigmaPowLT]
+
+lemma pow_le_sigmaPowLT (α : Cardinal.{u}) {β γ : Cardinal.{u}} (h : β < γ) :
+    α ^ β ≤ α.sigmaPowLT γ := by
+  rw [← lift_le.{u + 1}]
+  simp only [lift_power, sigmaPowLT, lift_mk_shrink', mk_sigma, mk_pi, mk_toType, card_ord,
+    prod_const, lift_eq_id, id_eq, lift_sum]
+  exact le_trans (by simp) (lift_le_sum _ ⟨β, h⟩)
+
+lemma le_sigmaPowLT (α : Cardinal.{u}) {β : Cardinal.{u}} (hβ : 2 ≤ β) :
+    α ≤ sigmaPowLT α β := by
+  let f (x : α.ord.ToType) : SigmaPowLT α.ord.ToType β :=
+    ⟨⟨1, lt_of_lt_of_le (by simp) hβ⟩, fun _ ↦ x⟩
+  have hf : Function.Injective f := fun x y h ↦ by
+    let z : (ord.{u} 1).ToType := Nonempty.some (by simp)
+    exact congr($(h).2 z)
+  simpa using! Cardinal.lift_mk_le_lift_mk_of_injective ((equivShrink.{u} _).injective.comp hf)
+
+lemma aleph0_le_sigmaPowLT {α β : Cardinal.{u}} (hα : .aleph0 ≤ α) (hβ : 2 ≤ β) :
+    .aleph0 ≤ sigmaPowLT α β :=
+  hα.trans (le_sigmaPowLT _ hβ)
+
+def SigmaPowLT.φ {X : Type v} {κ : Cardinal.{u}} {Y : Type w}
+    (f : Y → SigmaPowLT X κ) :
+    Σ (b : (Y → Set.Iio κ)), (y : Y) → (b y).val.ord.ToType → X :=
+  ⟨fun y ↦ (f y).fst, fun y ↦ (f y).2⟩
+
+lemma SigmaPowLT.φ_injective (X : Type v) (κ : Cardinal.{u}) (Y : Type w) :
+    Function.Injective (φ : (Y → SigmaPowLT X κ) → _) := by
+  intro a b h
+  simp only [φ] at h
+  ext y : 1
+  let ψ (y : Y) (s : Σ (b : (Y → Set.Iio κ)), (y : Y) → (b y).val.ord.ToType → X) :
+      Σ (b : Set.Iio κ), b.val.ord.ToType → X := ⟨_, s.2 y⟩
+  exact congr(ψ y $(h))
+
+lemma lift_eq_lift (α : Cardinal.{v}) : lift.{max u v} α = lift.{u} α := by
+  rw [← lift_inj.{_, max u v}, lift_lift, lift_lift]
+
+lemma lift_eq_lift' (α : Cardinal.{max u v}) : lift.{u} α = α := by
+  rw [← lift_inj.{_, max u v}, lift_lift]
+
+lemma sum_le' {ι : Type u} {β : ι → Cardinal.{v}} {β' : Cardinal.{max u v}}
+    (h : ∀ i, lift.{u} (β i) ≤ β') :
+    Cardinal.sum β ≤ lift.{v} #ι * β' := by
+  rw [← lift_le.{max u v}]
+  refine le_trans ?_ ((Cardinal.sum_le_sum _ _ h).trans ?_)
+  · rw [lift_eq_id, id_eq, ← lift_sum, lift_eq_lift']
+  · simp only [sum_const, lift_eq_id, id_eq]
+    rw [lift_eq_lift.{v, u}, lift_eq_lift'.{u, v}]
+
+lemma sum_le_of_aleph0_le {ι : Type u} (α : ι → Cardinal.{v}) (β : Cardinal.{max u v})
+    (h₁ : lift.{v} #ι ≤ β) (h₂ : ∀ i, lift.{u} (α i) ≤ β) (hβ : .aleph0 ≤ β) :
+    Cardinal.sum α ≤ β := by
+  rw [← mul_eq_self hβ]
+  exact (sum_le' h₂).trans (mul_le_mul_left h₁ _)
+
+lemma sigmaPowLT_pow_le
+    (α : Cardinal.{u}) {β γ : Cardinal.{u}} [Fact γ.IsRegular] (h : β < γ) (h' : γ ≤ α) :
+    (α.sigmaPowLT γ) ^ β ≤ α.sigmaPowLT γ := by
+  rw [← lift_le.{u + 1}, lift_sigmaPowLT, lift_power]
+  conv_lhs => simp only [sigmaPowLT, lift_mk_shrink', mk_sigma, mk_pi, mk_toType, card_ord,
+    prod_const, lift_eq_id, id_eq, lift_sum]
+  have := Cardinal.lift_mk_le_lift_mk_of_injective
+    (SigmaPowLT.φ_injective α.ord.ToType γ β.ord.ToType)
+  simp only [lift_eq_id, mk_pi, mk_sigma, mk_toType, card_ord, prod_const, id_eq, lift_sum] at this
+  have hγ : .aleph0 ≤ γ := Cardinal.IsRegular.aleph0_le Fact.out
+  refine this.trans (sum_le_of_aleph0_le _ _ ?_ (fun f ↦ ?_) ?_)
+  · simp only [mk_pi, prod_const, mk_toType, card_ord, lift_power, lift_lift, mk_sigma, lift_eq_id,
+      id_eq]
+    refine le_trans ?_ (Cardinal.lift_le_sum _ ⟨β, h⟩)
+    rw [lift_power, lift_eq_lift'.{u, u + 1}]
+    exact Cardinal.power_le_power_right ((mk_Iio_le_lift γ).trans (by simpa))
+  · rw [← lift_sigmaPowLT, lift_le, ← power_sum]
+    exact pow_le_sigmaPowLT _ (sum_lt_of_isRegular Fact.out (by simpa) (fun i ↦ (f i).property))
+  · simpa [← lift_le.{u + 1}, lift_sigmaPowLT] using
+      hγ.trans (h'.trans (le_sigmaPowLT α (le_trans (by simp) hγ)))
+
+end Cardinal
 
 namespace CategoryTheory.CardinalDirectedPoset.SetCardinalLT
 
@@ -34,7 +124,7 @@ variable (κ : Cardinal.{u}) (X : Type u)
 /-- The surjectivity of this map (see lemma `fromSigma_surjective`) says that
 if `X` is a type, then any subset of `X` that is of cardinality `< κ` can be obtained
 as the range of a map `κ'.ord.ToType → X` for some `κ' < κ`. -/
-def fromSigma (x : Σ (κ' : Set.Iio κ), κ'.val.ord.ToType → X) : SetCardinalLT κ X :=
+def fromSigma (x : Cardinal.SigmaPowLT X κ) : SetCardinalLT κ X :=
   ⟨Set.range x.2,
     HasCardinalLT.of_surjective
       (by simpa only [hasCardinalLT_iff_cardinal_mk_lt,
@@ -115,9 +205,32 @@ lemma exists_of_pair (κ₁ κ₂ : Cardinal.{u})
 lemma exists_of_triple (κ₁ κ₂ κ₃ : Cardinal.{u})
     [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] [Fact κ₃.IsRegular] :
     ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
-      SharplyLT κ₁ κ' ∧ SharplyLT κ₂ κ' ∧ SharplyLT κ₃ κ':= by
+      SharplyLT κ₁ κ' ∧ SharplyLT κ₂ κ' ∧ SharplyLT κ₃ κ' := by
   obtain ⟨κ₁₂, _, h₁, h₂⟩ := exists_of_pair κ₁ κ₂
   obtain ⟨κ, _, h₁₂, h₃⟩ := exists_of_pair κ₁₂ κ₃
   exact ⟨κ, inferInstance, h₁.trans h₁₂, h₂.trans h₁₂, h₃⟩
+
+lemma exists_of_quadruple (κ₁ κ₂ κ₃ κ₄ : Cardinal.{u})
+    [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] [Fact κ₃.IsRegular] [Fact κ₄.IsRegular] :
+    ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
+      SharplyLT κ₁ κ' ∧ SharplyLT κ₂ κ' ∧ SharplyLT κ₃ κ' ∧ SharplyLT κ₄ κ' := by
+  obtain ⟨κ₁₂₃, _, h₁, h₂, h₃⟩ := exists_of_triple κ₁ κ₂ κ₃
+  obtain ⟨κ, _, h₁₂₃, h₄⟩ := exists_of_pair κ₁₂₃ κ₄
+  exact ⟨κ, inferInstance, h₁.trans h₁₂₃, h₂.trans h₁₂₃, h₃.trans h₁₂₃, h₄⟩
+
+lemma _root_.Cardinal.fact_isRegular_succ_sigmaPowLT
+    (κ κ' : Cardinal.{u}) [Fact κ.IsRegular] [Fact κ'.IsRegular] :
+    Fact (Order.succ (κ.sigmaPowLT κ')).IsRegular :=
+  ⟨Cardinal.isRegular_succ (Cardinal.aleph0_le_sigmaPowLT
+    (Cardinal.IsRegular.aleph0_le Fact.out)
+      (le_trans (by simp) (Cardinal.IsRegular.aleph0_le Fact.out)))⟩
+
+attribute [local instance] fact_isRegular_succ_sigmaPowLT in
+lemma sigmaPowLT (κ : Cardinal.{u}) [Fact κ.IsRegular] :
+    κ.SharplyLT (Order.succ (κ.sigmaPowLT κ)) := by
+  refine of_pow_lt ?_ (fun α β h₁ h₂ ↦ ?_)
+  · simpa using κ.le_sigmaPowLT (le_trans (by simp) (Cardinal.IsRegular.aleph0_le Fact.out))
+  · simp only [Order.lt_succ_iff] at h₂ ⊢
+    exact (power_le_power_right h₂).trans (sigmaPowLT_pow_le κ h₁ (by simp))
 
 end Cardinal.SharplyLT

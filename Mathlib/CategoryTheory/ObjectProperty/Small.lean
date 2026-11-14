@@ -159,6 +159,14 @@ lemma EssentiallySmall.exists_eq_isoClosure_ofObj
   obtain ⟨ι, X, rfl⟩ := Small.exists_eq_ofObj.{w} P₀
   exact ⟨ι, X, h⟩
 
+lemma EssentiallySmall.exists_eq_isoClosure
+    (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms]
+    [ObjectProperty.EssentiallySmall.{w} P] :
+    ∃ (P₀ : ObjectProperty C) (_ : ObjectProperty.Small.{w} P₀),
+      P = P₀.isoClosure := by
+  obtain ⟨ι, X, hX⟩ := EssentiallySmall.exists_eq_isoClosure_ofObj.{w} P
+  exact ⟨_, inferInstance, hX⟩
+
 lemma EssentiallySmall.of_le {P Q : ObjectProperty C}
     [ObjectProperty.EssentiallySmall.{w} Q] (h : P ≤ Q) :
     ObjectProperty.EssentiallySmall.{w} P where
@@ -224,6 +232,11 @@ instance [EssentiallySmall.{w} C] :
   exists_small_le' :=
     ⟨ofObj (equivSmallModel.{w} C).inverse.obj, inferInstance,
       fun X _ ↦ ⟨_, ⟨_⟩, ⟨(equivSmallModel.{w} C).unitIso.app X⟩⟩⟩
+
+instance (priority := low)
+    (C : Type*) [Category* C] [EssentiallySmall.{w} C] (P : ObjectProperty C) :
+    ObjectProperty.EssentiallySmall.{w} P :=
+  .of_le le_top
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] (F : C ⥤ D) :
     ObjectProperty.Small.{w} (P.strictMap F) :=

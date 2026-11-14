@@ -165,4 +165,8 @@ instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
       inv_hom_id := by simp [← reassoc_of% hri]
     }⟩⟩
 
+instance {D : Type*} [Category* D] (F : D ⥤ C) [P.IsStableUnderRetracts] :
+    (P.inverseImage F).IsStableUnderRetracts where
+  of_retract r h := P.prop_of_retract (r.map F) h
+
 end CategoryTheory.ObjectProperty

@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.KanExtension.Dense
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseIff
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
@@ -66,6 +66,27 @@ instance [IsCardinalAccessibleCategory C κ] (X : C) :
   obtain ⟨J, _, _, ⟨p⟩⟩ :=
     (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
   exact IsCardinalFiltered.of_final p.toCostructuredArrow κ
+
+variable (C κ) in
+/-- If `C` is a `κ`-accessible category, the functor
+`C ⥤ (isCardinalPresentable C κ).FullSubcategoryᵒᵖ ⥤ Type w` is fully faithful. -/
+noncomputable def fullyFaithfulRestrictedShrinkYoneda [IsCardinalAccessibleCategory C κ] :
+    (Presheaf.restrictedShrinkYoneda.{w} (isCardinalPresentable C κ).ι).FullyFaithful :=
+  .ofFullyFaithful _
+
+instance [IsCardinalAccessibleCategory C κ]
+    (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
+    PreservesColimitsOfShape J
+      (Presheaf.restrictedShrinkYoneda.{w} (isCardinalPresentable C κ).ι) where
+  preservesColimit :=
+    ⟨fun hc ↦ ⟨evaluationJointlyReflectsColimits _ (fun X ↦
+      have := Functor.preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall
+        (shrinkCoyoneda.{w}.obj (op (X.unop).obj)) κ J
+      isColimitOfPreserves (shrinkCoyoneda.{w}.obj (op X.unop.obj)) hc)⟩⟩
+
+instance [IsCardinalAccessibleCategory C κ] :
+    (Presheaf.restrictedShrinkYoneda.{w}
+      (isCardinalPresentable C κ).ι).IsCardinalAccessible κ where
 
 end IsCardinalAccessibleCategory
 

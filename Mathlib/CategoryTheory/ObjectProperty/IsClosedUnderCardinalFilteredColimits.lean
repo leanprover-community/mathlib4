@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
@@ -18,9 +19,10 @@ the full subcategory `P.FullSubcategory` also has `κ`-filtered colimits,
 and the inclusion functor `P.ι` commutes with them (i.e. `P.ι` is
 a `κ`-accessible functor).
 
-In the terminology of the book by Adámek and Rosický,
-the condition `P.IsClosedUnderCardinalFilteredColimits κ` means
-that the subcategory `P.FullSubcategory` is accessibly embedded in `C`.
+Following the terminology in the book by Adámek and Rosický,
+we say that `P` is accessibly embedded (typeclass `P.IsAccessiblyEmbedded`)
+when that there exists a regular cardinal `κ` such that
+`P.IsClosedUnderCardinalFilteredColimits κ` holds.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -32,7 +34,7 @@ universe w
 
 namespace CategoryTheory.ObjectProperty
 
-open Limits
+open Limits Opposite
 
 variable {C : Type*} [Category* C]
 
@@ -43,7 +45,7 @@ class IsClosedUnderCardinalFilteredColimits
     (P : ObjectProperty C) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   isCardinalClosedUnderColimitsOfShape'
       (P) (κ) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
-    P.IsClosedUnderColimitsOfShape J := by infer_instance
+    P.IsClosedUnderColimitsOfShape J := by intros; infer_instance
 
 namespace IsClosedUnderCardinalFilteredColimits
 
@@ -56,6 +58,13 @@ lemma isCardinalClosedUnderColimitsOfShape
   rw [P.isClosedUnderColimitsOfShape_iff_of_equivalence (equivSmallModel.{w} J)]
   have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
   exact isCardinalClosedUnderColimitsOfShape' P κ _
+
+variable {P κ}
+lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    P.IsClosedUnderCardinalFilteredColimits κ' where
+  isCardinalClosedUnderColimitsOfShape' J _ _ :=
+    have := IsCardinalFiltered.of_le J h
+    isCardinalClosedUnderColimitsOfShape P κ J
 
 instance [HasCardinalFilteredColimits C κ] :
     HasCardinalFilteredColimits P.FullSubcategory κ where
@@ -91,5 +100,22 @@ instance {D : Type*} [Category* D] (F : D ⥤ C) [F.IsCardinalAccessible κ] :
     infer_instance
 
 end IsClosedUnderCardinalFilteredColimits
+
+lemma isCardinalPresentable_of_fullSubcategory
+    {P : ObjectProperty C} (X : P.FullSubcategory)
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
+    [P.IsClosedUnderCardinalFilteredColimits κ]
+    (hX : IsCardinalPresentable X.obj κ := by infer_instance) :
+    IsCardinalPresentable X κ :=
+  let e : coyoneda.obj (op X) ≅ P.ι ⋙ coyoneda.obj (op X.obj) :=
+    NatIso.ofComponents (fun _ ↦ P.fullyFaithfulι.homEquiv.toIso)
+  Functor.isCardinalAccessible_of_natIso e.symm _
+
+/-- If `P : ObjectProperty C`, we say that `P` is an accessibly embedded
+full subcategory when `P` is closed under `κ`-filtered colimits
+for some regular cardinal `κ`. -/
+class IsAccessiblyEmbedded (P : ObjectProperty C) where
+  exists_cardinal (P) : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+    P.IsClosedUnderCardinalFilteredColimits κ
 
 end CategoryTheory.ObjectProperty
