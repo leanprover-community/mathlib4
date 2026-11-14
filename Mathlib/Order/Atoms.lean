@@ -297,7 +297,8 @@ theorem isAtomic_iff_forall_isAtomic_Iic [OrderBot α] :
     ⟨fun x =>
       ((@eq_bot_or_exists_atom_le _ _ _ (h x)) (⊤ : Set.Iic x)).imp Subtype.mk_eq_mk.1
         (Exists.imp' (↑) fun ⟨_, _⟩ => And.imp_left IsAtom.of_isAtom_coe_Iic)⟩⟩
-section StronglyAtomic
+
+section IsStronglyAtomic
 
 variable {α : Type*} {a b : α} [Preorder α]
 
@@ -305,39 +306,37 @@ variable {α : Type*} {a b : α} [Preorder α]
 contains an element covering `a`. -/
 @[mk_iff]
 class IsStronglyAtomic (α : Type*) [Preorder α] : Prop where
-  exists_covBy_le_of_lt : ∀ (a b : α), a < b → ∃ x, a ⋖ x ∧ x ≤ b
-
-theorem exists_covBy_le_of_lt [IsStronglyAtomic α] (h : a < b) : ∃ x, a ⋖ x ∧ x ≤ b :=
-  IsStronglyAtomic.exists_covBy_le_of_lt a b h
-
-alias LT.lt.exists_covby_le := exists_covBy_le_of_lt
+  exists_covBy_le_of_lt (a b : α) : a < b → ∃ x, a ⋖ x ∧ x ≤ b
 
 /-- An order is strongly coatomic if every nontrivial interval `[a, b]`
 contains an element covered by `b`. -/
-@[mk_iff]
+@[mk_iff, to_dual]
 class IsStronglyCoatomic (α : Type*) [Preorder α] : Prop where
-  (exists_le_covBy_of_lt : ∀ (a b : α), a < b → ∃ x, a ≤ x ∧ x ⋖ b)
+  exists_covBy_le_of_gt (a b : α) : b < a → ∃ x, x ⋖ a ∧ b ≤ x
 
-theorem exists_le_covBy_of_lt [IsStronglyCoatomic α] (h : a < b) : ∃ x, a ≤ x ∧ x ⋖ b :=
-  IsStronglyCoatomic.exists_le_covBy_of_lt a b h
+attribute [to_dual existing] isStronglyAtomic_iff
 
-alias LT.lt.exists_le_covby := exists_le_covBy_of_lt
+@[to_dual exists_covBy_le_of_gt]
+theorem exists_covBy_le_of_lt [IsStronglyAtomic α] (h : a < b) : ∃ x, a ⋖ x ∧ x ≤ b :=
+  IsStronglyAtomic.exists_covBy_le_of_lt a b h
 
+@[to_dual exists_le_covBy_of_lt]
+theorem exists_le_covBy_of_gt [IsStronglyAtomic α] (h : b < a) : ∃ x, x ≤ a ∧ b ⋖ x := by
+  simp_rw [and_comm]; exact exists_covBy_le_of_lt h
+
+@[to_dual none] alias LT.lt.exists_covby_le := exists_covBy_le_of_lt
+@[to_dual none] alias LT.lt.exists_le_covby := exists_le_covBy_of_lt
+
+@[to_dual (attr := simp)]
 theorem isStronglyAtomic_dual_iff_is_stronglyCoatomic :
     IsStronglyAtomic αᵒᵈ ↔ IsStronglyCoatomic α := by
-  simpa [isStronglyAtomic_iff, OrderDual.exists, OrderDual.forall,
-    OrderDual.toDual_le_toDual, and_comm, isStronglyCoatomic_iff] using forall_comm
+  simp [isStronglyAtomic_iff, isStronglyCoatomic_iff]
 
-@[simp] theorem isStronglyCoatomic_dual_iff_is_stronglyAtomic :
-    IsStronglyCoatomic αᵒᵈ ↔ IsStronglyAtomic α := by
-  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; rfl
-
+@[to_dual]
 instance OrderDual.instIsStronglyCoatomic [IsStronglyAtomic α] : IsStronglyCoatomic αᵒᵈ := by
   rwa [isStronglyCoatomic_dual_iff_is_stronglyAtomic]
 
-instance [IsStronglyCoatomic α] : IsStronglyAtomic αᵒᵈ := by
-  rwa [isStronglyAtomic_dual_iff_is_stronglyCoatomic]
-
+@[to_dual]
 instance IsStronglyAtomic.isAtomic (α : Type*) [PartialOrder α] [OrderBot α] [IsStronglyAtomic α] :
     IsAtomic α where
   eq_bot_or_exists_atom_le a := by
@@ -346,10 +345,7 @@ instance IsStronglyAtomic.isAtomic (α : Type*) [PartialOrder α] [OrderBot α] 
     obtain ⟨x, hx, hxa⟩ := hlt.exists_covby_le
     exact ⟨x, bot_covBy_iff.1 hx, hxa⟩
 
-instance IsStronglyCoatomic.toIsCoatomic (α : Type*) [PartialOrder α] [OrderTop α]
-    [IsStronglyCoatomic α] : IsCoatomic α :=
-  isAtomic_dual_iff_isCoatomic.1 <| IsStronglyAtomic.isAtomic (α := αᵒᵈ)
-
+@[to_dual]
 theorem Set.OrdConnected.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
     (h : Set.OrdConnected s) : IsStronglyAtomic s where
   exists_covBy_le_of_lt := by
@@ -359,57 +355,43 @@ theorem Set.OrdConnected.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
       ⟨by simpa
         using! hcx.lt, fun y hy hy' ↦ hcx.2 (by simpa using! hy) (by simpa using! hy')⟩, hxd⟩
 
-theorem Set.OrdConnected.isStronglyCoatomic [IsStronglyCoatomic α] {s : Set α}
-    (h : Set.OrdConnected s) : IsStronglyCoatomic s :=
-  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 h.dual.isStronglyAtomic
-
-instance [IsStronglyAtomic α] {s : Set α} [Set.OrdConnected s] : IsStronglyAtomic s :=
+@[to_dual]
+instance [IsStronglyAtomic α] {s : Set α} [s.OrdConnected] : IsStronglyAtomic s :=
   Set.OrdConnected.isStronglyAtomic <| by assumption
 
-instance [IsStronglyCoatomic α] {s : Set α} [h : Set.OrdConnected s] : IsStronglyCoatomic s :=
-  Set.OrdConnected.isStronglyCoatomic <| by assumption
-
+@[to_dual]
 instance SuccOrder.toIsStronglyAtomic [SuccOrder α] : IsStronglyAtomic α where
-  exists_covBy_le_of_lt a _ hab :=
-    ⟨SuccOrder.succ a, Order.covBy_succ_of_not_isMax fun ha ↦ ha.not_lt hab,
-      SuccOrder.succ_le_of_lt hab⟩
+  exists_covBy_le_of_lt _a _ hab :=
+    ⟨_, covBy_succ_of_not_isMax fun ha ↦ ha.not_lt hab, hab.succ_le⟩
 
-instance [PredOrder α] : IsStronglyCoatomic α := by
-  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance
-
-end StronglyAtomic
-
-section WellFounded
-
-instance [WellFoundedLT α] : IsStronglyAtomic α where
+@[to_dual]
+instance WellFoundedLT.isStronglyAtomic [WellFoundedLT α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
-    obtain ⟨m, ⟨ham, hmb⟩, hm⟩ := wellFounded_lt.has_min (.Ioc a b) ⟨b, hab, le_rfl⟩
+    obtain ⟨m, hab, hm⟩ := wellFounded_lt.has_min (.Ioc a b) (Set.nonempty_Ioc.2 hab)
+    obtain ⟨ham, hmb⟩ := Set.mem_Ioc.1 hab
     exact ⟨m, ⟨⟨ham, fun c hac hcm ↦ hm _ ⟨hac, hcm.le.trans hmb⟩ hcm⟩, hmb⟩⟩
 
-instance [WellFoundedGT α] : IsStronglyCoatomic α :=
-  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| inferInstanceAs (IsStronglyAtomic (αᵒᵈ))
+end IsStronglyAtomic
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT (since := "2026-08-01")]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-08-01")]
 theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α :=
   inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-08-01")]
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
   inferInstance
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-08-01")]
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
   (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
 
-@[deprecated instIsStronglyAtomicOfWellFoundedLT +typeChanged (since := "2026-08-01")]
+@[deprecated WellFoundedLT.isStronglyAtomic +typeChanged (since := "2026-08-01")]
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
     (h : WellFounded ((· > ·) : α → α → Prop)) : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 (@isAtomic_of_orderBot_wellFounded_lt αᵒᵈ _ _ h)
-
-end WellFounded
 
 namespace BooleanAlgebra
 
