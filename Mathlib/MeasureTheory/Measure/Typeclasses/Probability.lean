@@ -176,17 +176,15 @@ lemma mem_ae_iff_prob_eq_one (hs : MeasurableSet s) : s ∈ ae μ ↔ μ s = 1 :
 lemma ae_iff_prob_eq_one (hp : Measurable p) : (∀ᵐ a ∂μ, p a) ↔ μ {a | p a} = 1 :=
   mem_ae_iff_prob_eq_one hp.setOf
 
-lemma isProbabilityMeasure_comap (hf : Injective f) (hf' : ∀ᵐ a ∂μ, a ∈ range f)
-    (hf'' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) :
-    IsProbabilityMeasure (μ.comap f) where
+lemma isProbabilityMeasure_comap (hf : ‹MeasurableSpace β› ≤ μ.caratheodory.comap f)
+    (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) where
   measure_univ := by
-    rw [comap_apply _ hf hf'' _ MeasurableSet.univ,
-      ← mem_ae_iff_prob_eq_one (hf'' _ MeasurableSet.univ)]
-    simpa
+    rw [comap_apply hf .univ, image_univ, ← measure_univ (μ := μ)]
+    exact measure_congr (ae_eq_univ.2 hf')
 
 protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : MeasurableEmbedding f)
     (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
-  isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
+  isProbabilityMeasure_comap (hf.le_comap_caratheodory μ) hf'
 
 instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.down) :=
   MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by

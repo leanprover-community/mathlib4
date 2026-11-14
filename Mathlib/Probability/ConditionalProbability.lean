@@ -280,16 +280,9 @@ lemma comap_cond {i : Ω' → Ω} (hi : MeasurableEmbedding i) (hi' : ∀ᵐ ω 
     (hs : MeasurableSet s) : comap i μ[|s] = (comap i μ)[|i in s] := by
   ext t ht
   change μ (range i)ᶜ = 0 at hi'
-  rw [cond_apply, comap_apply, cond_apply, comap_apply, comap_apply, image_inter,
-    image_preimage_eq_inter_range, inter_right_comm, measure_inter_conull hi',
-    measure_inter_conull hi']
-  all_goals first
-  | exact hi.injective
-  | exact hi.measurableSet_image'
-  | exact hs
-  | exact ht
-  | exact hi.measurable hs
-  | exact (hi.measurable hs).inter ht
+  rw [hi.comap_apply, cond_apply hs, cond_apply (hi.measurable hs), hi.comap_apply, hi.comap_apply,
+    image_inter hi.injective, image_preimage_eq_inter_range, inter_right_comm,
+    measure_inter_conull hi', measure_inter_conull hi']
 
 variable [Fintype α] [MeasurableSpace α] [DiscreteMeasurableSpace α]
 
