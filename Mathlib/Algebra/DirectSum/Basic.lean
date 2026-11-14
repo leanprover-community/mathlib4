@@ -373,7 +373,7 @@ end Sigma
 
 section SigmaFiber
 
-variable {ι₁ ι₂ : Type v} [DecidableEq ι₂] (f : ι₁ → ι₂)
+variable {ι₁ ι₂ : Type*} [DecidableEq ι₂] (f : ι₁ → ι₂)
 variable {β : ι₁ → Type w} [Π i, AddCommMonoid (β i)]
 
 /-- The equivalence between a direct sum indexed by a type `ι₁` and the double sum indexed by a type
@@ -399,6 +399,16 @@ theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
       rw [sigmaFiberAddEquiv_apply]
       exact congrArg sigmaCurry (equivCongrLeft_of (h := h.symm) _ _)
     _ = of _ k.1 (of _ k.2 x) := by simp
+
+@[simp]
+theorem sigmaFiberAddEquiv_symm_apply (y : ⨁ (j : ι₂) (i : {i : ι₁ // f i = j}), β i) (i : ι₁) :
+    (sigmaFiberAddEquiv f).symm y i = y (f i) ⟨i, rfl⟩ := rfl
+
+@[simp]
+theorem sigmaFiberAddEquiv_symm_of [DecidableEq ι₁] {j : ι₂} (i : {i : ι₁ // f i = j}) (x : β i) :
+    (sigmaFiberAddEquiv f).symm (of _ j (of _ i x)) = of β i x := by
+  obtain ⟨i, rfl⟩ := i
+  simp [AddEquiv.symm_apply_eq]
 
 end SigmaFiber
 
