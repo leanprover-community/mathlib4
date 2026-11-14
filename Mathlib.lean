@@ -8290,6 +8290,7 @@ public import Mathlib.Topology.ContinuousMap.CocompactMap
 public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero.Unitization
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Topology.ContinuousMap.Ideals

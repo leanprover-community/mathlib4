@@ -295,6 +295,10 @@ protected theorem continuous_fst : Continuous (fun x : Unitization 𝕜 A ↦ x.
 protected theorem continuous_snd : Continuous (fun x : Unitization 𝕜 A ↦ x.snd) :=
   Unitization.uniformContinuous_snd.continuous
 
+protected theorem continuous_iff {X : Type*} [TopologicalSpace X] {f : X → Unitization 𝕜 A} :
+    Continuous f ↔ (Continuous fun x ↦ (f x).fst) ∧ (Continuous fun x ↦ (f x).snd) :=
+  uniformEquivProd.toHomeomorph.comp_continuous_iff.symm.trans continuous_prodMk
+
 end
 
 end Unitization
