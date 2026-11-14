@@ -6,6 +6,34 @@ import Mathlib.Tactic.Primality
 
 /-! # Tests for the `primality` tactic -/
 
+/-! ## Lucas certificates
+
+Proves `Nat.Prime p` by the Lucas test from a primitive root and certified prime factors of `p - 1`,
+with each of the intermediate primes proved the same way with the same factor hints, unless the user
+provides proofs.
+-/
+
+example : Nat.Prime 17007377 := by primality
+
+-- Pollard's rho method cannot split `10000003003 * 100000000000031` within the default
+-- `2 ^ 17` steps.
+/--
+error: primality failed to factor the intermediate value 1000000300300310000093093; provide the
+certificate at `.witnesses […]`
+-/
+#guard_msgs in
+example : Nat.Prime (2 * 10000003003 * 100000000000031 + 1) := by primality
+
+example : Nat.Prime (2 * 10000003003 * 100000000000031 + 1) := by
+  primality (cert := .search { factors := [10000003003] })
+
+example : Nat.Prime (2 * 10000003003 * 100000000000031 + 1) := by
+  primality (cert := .search { rhoSteps := 2 ^ 18 })
+
+-- Takes an already proven prime as a hint.
+example (h : Nat.Prime 4398046517687) : Nat.Prime (2 * 4398046517687 * 10000000001437 + 1) := by
+  primality [h]
+
 /-! ## Certificates given by witnesses -/
 
 example : Nat.Prime 65537 := by
