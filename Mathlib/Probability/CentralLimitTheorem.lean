@@ -17,14 +17,21 @@ import Mathlib.Probability.Independence.CharacteristicFunction
 /-!
 # Central limit theorem
 
-We prove the central limit theorem in dimension 1.
+We prove the central limit theorem in dimension 1 and in finite-dimensional Euclidean spaces.
 
-## Main statement
+## Main statements
 
 * `tendstoInDistribution_inv_sqrt_mul_sum_sub`: Given a sequence of random variables
   `X : ℕ → Ω → ℝ` that are independent, identically distributed with mean `μ` and variance `v`,
   and a random variable `Y : Ω' → ℝ` following `gaussianReal 0 v`, the sequence
   `n ↦ (√n)⁻¹ * (∑ k ∈ Finset.range n, X k ω - n * μ)` converges to `Y` in distribution.
+
+* `tendstoInDistribution_inv_sqrt_smul_sum_sub`: Given a sequence of random variables
+  `X : ℕ → Ω → EuclideanSpace ℝ ι` that are independent, identically distributed,
+  square-integrable with mean `μ` and covariance matrix `S`, and a random variable
+  `Y : Ω' → EuclideanSpace ℝ ι` following `multivariateGaussian 0 S`, the sequence
+  `n ↦ (√n)⁻¹ • (∑ k ∈ Finset.range n, X k ω - (n : ℝ) • μ)`
+  converges to `Y` in distribution.
 
 ## Tags
 
