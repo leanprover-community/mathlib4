@@ -472,6 +472,30 @@ theorem lintegral_eq_lintegral_measure_ofReal_le (μ : Measure α) {f : α → �
     · gcongr
       simp +contextual
 
+theorem lintegral_eq_lintegral_Ioc_measure_ofReal_le (μ : Measure α) {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f μ) {a : ℝ} (ha : f ≤ᵐ[μ] fun _ ↦ .ofReal a) :
+    ∫⁻ x, f x ∂μ = ∫⁻ t in Ioc 0 a, μ {x | .ofReal t ≤ f x} := by
+  by_cases! ha0 : a < 0
+  · have : f =ᵐ[μ] 0 := by
+      filter_upwards [ha] with x hx
+      simpa [ENNReal.ofReal_eq_zero.mpr ha0.le] using hx
+    simp [Ioc_eq_empty_of_le ha0.le, lintegral_congr_ae this]
+  rw [lintegral_eq_lintegral_measure_ofReal_le μ hf]
+  suffices Function.support (fun t ↦ μ {x | .ofReal t ≤ f x}) ⊆ Iic a by
+    rw [← setLIntegral_eq_of_support_subset this, restrict_restrict (by simp), Iic_inter_Ioi]
+  intro t
+  contrapose
+  suffices a < t → μ {x | .ofReal t ≤ f x} = 0 by simp +contextual [this]
+  intro ht
+  rw [measure_eq_zero_iff_ae_notMem]
+  filter_upwards [ha] with x hx
+  simpa using hx.trans_lt <| (ENNReal.ofReal_lt_ofReal_iff_of_nonneg ha0).mpr ht
+
+theorem lintegral_eq_lintegral_Ioo_measure_ofReal_le (μ : Measure α) {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f μ) {a : ℝ} (ha : f ≤ᵐ[μ] fun _ ↦ .ofReal a) :
+    ∫⁻ x, f x ∂μ = ∫⁻ t in Ioo 0 a, μ {x | .ofReal t ≤ f x} := by
+  rw [lintegral_eq_lintegral_Ioc_measure_ofReal_le μ hf ha, setLIntegral_congr Ioo_ae_eq_Ioc.symm]
+
 end Layercake
 
 section LayercakeLT
