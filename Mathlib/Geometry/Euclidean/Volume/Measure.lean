@@ -83,11 +83,10 @@ theorem MeasureTheory.Measure.euclideanHausdorffMeasure_zero :
     (μHE[0] : Measure X) = (μH[0] : Measure X) := by
   let basis : OrthonormalBasis (Fin 0) ℝ (EuclideanSpace ℝ (Fin 0)) :=
     EuclideanSpace.basisFun (Fin 0) ℝ
-  have heq : ({0} : Set (EuclideanSpace ℝ (Fin 0))) = parallelepiped basis := by
-    simp [parallelepiped]
   obtain h := isAddLeftInvariant_eq_smul (volume : Measure (EuclideanSpace ℝ (Fin 0))) μH[(0 : ℕ)]
   obtain h := congr($h.symm {0})
-  conv_rhs at h => rw [heq, OrthonormalBasis.volume_parallelepiped]
+  conv_rhs at h => rw [← parallelepiped_of_isEmpty (K := ℝ) basis,
+    OrthonormalBasis.volume_parallelepiped]
   simp_rw [CharP.cast_eq_zero, smul_apply, hausdorffMeasure_zero_singleton, ENNReal.smul_def,
     smul_eq_mul, mul_one, ENNReal.coe_eq_one] at h
   simp [euclideanHausdorffMeasure_def, h]
@@ -97,7 +96,7 @@ theorem MeasureTheory.Measure.addHaarScalarFactor_volume_hausdorffMeasure_ne_zer
     addHaarScalarFactor (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d] ≠ 0 := by
   intro h0
   obtain h := isAddLeftInvariant_eq_smul (volume : Measure (EuclideanSpace ℝ (Fin d))) μH[d]
-  obtain h := congr($h (parallelepiped (stdOrthonormalBasis ℝ (EuclideanSpace ℝ (Fin d)))))
+  obtain h := congr($h (parallelepiped ℝ (stdOrthonormalBasis ℝ (EuclideanSpace ℝ (Fin d)))))
   simp [OrthonormalBasis.volume_parallelepiped, h0] at h
 
 set_option backward.isDefEq.respectTransparency false in -- needed by `ENNReal.smul_def`
