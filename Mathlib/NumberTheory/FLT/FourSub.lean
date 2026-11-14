@@ -58,7 +58,6 @@ forces `2 e ^ 2 = b ^ 4 + c ^ 4` with `|e| ≤ k ^ 2 < a`.
 
 @[expose] public section
 
-set_option maxHeartbeats 400000
 set_option linter.style.longFile 2300
 set_option linter.style.longLine false
 set_option linter.style.show false
@@ -1515,6 +1514,7 @@ private theorem fermat42Double_four_way_split
 /-- **Quadruple extraction** — combines the s-side + t-side square splits
 with the four-way UFD split to produce positive `(a, b, c, d)` with
 `k = a·b·c·d` and the key identities. -/
+set_option maxHeartbeats 400000 in
 private theorem fermat42Double_quadruple_extraction
     (s t m k : ℤ) (hs_ne : s ≠ 0) (ht_ne : t ≠ 0)
     (hs_odd : s % 2 = 1) (ht_odd : t % 2 = 1)
@@ -1650,6 +1650,7 @@ private theorem fermat42Double_smaller_equation
 
 /-- Core of the descent step — used by `fermat42Double_descent_step_holds`
 (declared below `Fermat42DoubleDescentStep` def). -/
+set_option maxHeartbeats 400000 in
 private theorem fermat42Double_descent_step_body
     (s t a m k : ℤ) (hs_ne : s ≠ 0) (ht_ne : t ≠ 0) (ha_pos : 0 < a)
     (_hst_coprime : IsCoprime s t) (_hst_lt : s ^ 2 < t ^ 2)
