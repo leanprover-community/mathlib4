@@ -24,7 +24,7 @@ We provide many variations to stricten the result under more assumptions on the 
   other is a singleton. Weak separation.
 * `geometric_hahn_banach_open_open`: Both sets are open. Semistrict separation.
 * `geometric_hahn_banach_of_nonempty_interior'`: One set has nonempty interior. Nonstrict
-  separation.
+  separation, strict on the interior.
 * `geometric_hahn_banach_of_nonempty_interior`: One set has nonempty interior, the other one is
   nonempty. Nonstrict separation by a nonzero functional.
 * `geometric_hahn_banach_of_nonempty_interior_point`: One set has nonempty interior, the other one
@@ -147,38 +147,33 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   simp_rw [zero_apply] at hf₁ hf₂
   exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
-/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a nonzero
-continuous linear functional weakly separates `s` and `t`. The proof first separates `interior s`
-from `t`, then extends the inequality from `interior s` to all of `s` using
-`closure (interior s) = closure s`. -/
-theorem geometric_hahn_banach_of_nonempty_interior
-  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
-    (hsint : (interior s).Nonempty) (htne : t.Nonempty) :
-    ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
-  obtain ⟨f, u, hfA, hfB⟩ :=
-    geometric_hahn_banach_open hs.interior isOpen_interior ht hst
-  refine ⟨f, u, ?_, fun a ha ↦ ?_, hfB⟩
-  · obtain ⟨a, ha⟩ := hsint
-    obtain ⟨b, hb⟩ := htne
-    intro hzero
-    have ha' : (0 : ℝ) < u := by simpa [hzero] using hfA a ha
-    have hb' : u ≤ (0 : ℝ) := by simpa [hzero] using hfB b hb
-    linarith
-  · apply closure_minimal (fun x hx => le_of_lt (hfA x hx)) <| isClosed_Iic.preimage f.continuous
-    simpa [hs.closure_interior_eq_closure_of_nonempty_interior hsint] using subset_closure ha
+/-- A version of `geometric_hahn_banach_of_nonempty_interior` that does not assume `t` nonempty.
+If `s` and `t` are convex and `interior s` is nonempty and disjoint from `t`, then there are a
+continuous linear functional `f` and a real number `u` such that `f < u` on `interior s`,
+`f ≤ u` on `s` and `u ≤ f` on `t`. When `t` is nonempty the strict inequality forces `f ≠ 0`;
+when `t` is empty the statement is trivial (take `f = 0` and `u = 1`). -/
+theorem geometric_hahn_banach_of_nonempty_interior' (hs : Convex ℝ s) (ht : Convex ℝ t)
+    (hst : Disjoint (interior s) t) (hsint : (interior s).Nonempty) :
+    ∃ (f : StrongDual ℝ E) (u : ℝ), (∀ a ∈ interior s, f a < u) ∧ (∀ a ∈ s, f a ≤ u) ∧
+      ∀ b ∈ t, u ≤ f b := by
+  -- First separate the open convex set `interior s` from `t`.
+  obtain ⟨f, u, hfA, hfB⟩ := geometric_hahn_banach_open hs.interior isOpen_interior ht hst
+  refine ⟨f, u, hfA, fun a ha ↦ ?_, hfB⟩
+  -- Then extend the inequality from `interior s` to `s` using `closure (interior s) = closure s`.
+  exact closure_minimal (fun x hx ↦ (hfA x hx).le) (isClosed_Iic.preimage f.continuous) <|
+    (hs.closure_interior_eq_closure_of_nonempty_interior hsint).superset (subset_closure ha)
 
-/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a continuous
-linear functional weakly separates `s` and `t`. If `t` is nonempty, this follows from
-`geometric_hahn_banach_of_nonempty_interior`; if `t = ∅`, the zero functional works. -/
-theorem geometric_hahn_banach_of_nonempty_interior'
-  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
-    (hsint : (interior s).Nonempty) :
-    ∃ (f : StrongDual ℝ E) (u : ℝ), (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
-  by_cases htne : t.Nonempty
-  · obtain ⟨f, u, -, hs', ht'⟩ :=
-      geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
-    exact ⟨f, u, hs', ht'⟩
-  · exact ⟨0, 0, by simp⟩
+/-- **Eidelheit's separation theorem**: if `s` and `t` are convex, `interior s` is nonempty and
+disjoint from `t`, and `t` is nonempty, then there are a nonzero continuous linear functional `f`
+and a real number `u` such that `f ≤ u` on `s` and `u ≤ f` on `t`. See
+`geometric_hahn_banach_of_nonempty_interior'` for a version that does not assume `t` nonempty and
+has `f < u` on `interior s` in place of `f ≠ 0`. -/
+theorem geometric_hahn_banach_of_nonempty_interior (hs : Convex ℝ s) (ht : Convex ℝ t)
+    (hst : Disjoint (interior s) t) (hsint : (interior s).Nonempty) (htne : t.Nonempty) :
+    ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ s, f a ≤ u) ∧ ∀ b ∈ t, u ≤ f b := by
+  obtain ⟨f, u, hfA, hfs, hft⟩ := geometric_hahn_banach_of_nonempty_interior' hs ht hst hsint
+  refine ⟨f, u, fun hf ↦ ?_, hfs, hft⟩
+  simpa [hf] using (hfA _ hsint.some_mem).trans_le (hft _ htne.some_mem)
 
 /-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
 continuous linear functional whose maximum on `A` is attained at `x`. -/
@@ -306,21 +301,19 @@ theorem geometric_hahn_banach_of_nonempty_interior
   · simpa [f.extendRCLikeₗ_apply] using hA'
   · simpa [f.extendRCLikeₗ_apply] using hB'
 
-/-- If `s` and `t` are convex, `interior s` is nonempty and disjoint from `t`, then a continuous
-`𝕜`-linear functional weakly separates `s` and `t`. If `t` is nonempty, this follows from
-`geometric_hahn_banach_of_nonempty_interior`; if `t = ∅`, the zero functional works. -/
-theorem geometric_hahn_banach_of_nonempty_interior'
-  (hs : Convex ℝ s) (ht : Convex ℝ t) (hst : Disjoint (interior s) t)
-    (hsint : (interior s).Nonempty) :
-    ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) := by
-  by_cases htne : t.Nonempty
-  · have hsep :
-        ∃ (f : StrongDual 𝕜 E) (u : ℝ),
-          f ≠ 0 ∧ (∀ a ∈ s, re (f a) ≤ u) ∧ ∀ b ∈ t, u ≤ re (f b) :=
-        geometric_hahn_banach_of_nonempty_interior hs ht hst hsint htne
-    obtain ⟨f, u, -, hs', ht'⟩ := hsep
-    exact ⟨f, u, hs', ht'⟩
-  · exact ⟨0, 0, by simp⟩
+/-- A version of `RCLike.geometric_hahn_banach_of_nonempty_interior` that does not assume `t`
+nonempty. If `s` and `t` are convex and `interior s` is nonempty and disjoint from `t`, then there
+are a continuous `𝕜`-linear functional `f` and a real number `u` such that `re (f a) < u` for
+`a ∈ interior s`, `re (f a) ≤ u` for `a ∈ s` and `u ≤ re (f b)` for `b ∈ t`. When `t` is nonempty
+the strict inequality forces `f ≠ 0`; when `t` is empty the statement is trivial (take `f = 0` and
+`u = 1`). -/
+theorem geometric_hahn_banach_of_nonempty_interior' (hs : Convex ℝ s) (ht : Convex ℝ t)
+    (hst : Disjoint (interior s) t) (hsint : (interior s).Nonempty) :
+    ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ interior s, re (f a) < u) ∧ (∀ a ∈ s, re (f a) ≤ u) ∧
+      ∀ b ∈ t, u ≤ re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_of_nonempty_interior' hs ht hst hsint
+  exact ⟨f.extendRCLikeₗ, u, by simpa [f.extendRCLikeₗ_apply] using h⟩
 
 /-- If `A` is convex with nonempty interior and `x ∉ interior A`, then there is a nonzero
 continuous `𝕜`-linear functional whose real part attains its maximum on `A` at `x`. -/
