@@ -222,7 +222,7 @@ bound along `atTop` already suffices (`Continuous.isBounded_range_iff_isBigO_atT
 -/
 
 variable
-  {E : Type*} [SeminormedAddCommGroup E]
+  {E : Type*} [SeminormedAddGroup E]
   {D : Type*} [TopologicalSpace D]
   {β : Type*} [TopologicalSpace β] [LinearOrder β] [OrderClosedTopology β] [CompactIccSpace β]
     [NoMaxOrder β] [NoMinOrder β]
