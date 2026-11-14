@@ -70,21 +70,20 @@ namespace ContinuousCohomology
 /-- The Tate–Shafarevich group of a Galois module. -/
 @[simps!]
 noncomputable def tateShafarevich : AddSubgroup (continuousCohomology n A) :=
-  ⨅ v, (map (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker
+  ⨅ v, (resMap (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker
 
 lemma tateShafarevich_eq_iInf : tateShafarevich f A n =
-    ⨅ v : V, (ContinuousCohomology.map
+    ⨅ v : V, (resMap
       (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom.ker := rfl
 
 lemma tateShafarevich_eq_ker_pi : tateShafarevich f A n =
-    (AddMonoidHom.pi fun v : V ↦ (ContinuousCohomology.map
+    (AddMonoidHom.pi fun v : V ↦ (resMap
       (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom.toAddMonoidHom).ker := by
   ext; simp [tateShafarevich_eq_iInf, funext_iff]
 
 @[simp]
 lemma mem_tateShafarevich (x : continuousCohomology n A) : x ∈ tateShafarevich f A n ↔
-    ∀ v : V, (ContinuousCohomology.map
-      (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom x = 0 := by
+    ∀ v : V, (resMap (Field.absoluteGaloisGroup.map (algebraMap K (f v))) (𝟙 _) n).hom x = 0 := by
   simp [tateShafarevich_eq_iInf]
 
 end ContinuousCohomology
