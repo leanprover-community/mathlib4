@@ -214,21 +214,141 @@ instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, Measur
     MeasureSpace (∀ i, α i) :=
   ⟨Measure.pi fun _ => volume⟩
 
+/-- The product measure of a box is at most the product of the measures of its sides. Unlike
+`Measure.pi_pi`, this needs neither measurability of the sides nor σ-finiteness. -/
+theorem pi_pi_le (s : ∀ i, Set (α i)) : Measure.pi μ (pi univ s) ≤ ∏ i, μ i (s i) := by
+  simp_rw [← measure_toMeasurable (s _)]
+  grw [pi_mono fun i _ ↦ subset_toMeasurable (μ i) (s i)]
+  rw [Measure.pi, toMeasure_apply _ _ (.univ_pi fun i ↦ measurableSet_toMeasurable _ _)]
+  exact OuterMeasure.pi_pi_le _ _
+
 theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
-  refine le_antisymm ?_ ?_
-  · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
-    apply OuterMeasure.pi_pi_le
-  · have : Encodable ι := Fintype.toEncodable ι
-    simp_rw [← pi'_pi μ s, Measure.pi,
-      toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
-    suffices (pi' μ).toOuterMeasure ≤ OuterMeasure.pi fun i => (μ i).toOuterMeasure by exact this _
-    clear hs s
-    rw [OuterMeasure.le_pi]
-    intro s _
-    exact (pi'_pi μ s).le
+  refine le_antisymm (pi_pi_le μ s) ?_
+  have : Encodable ι := Fintype.toEncodable ι
+  simp_rw [← pi'_pi μ s, Measure.pi,
+    toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
+  suffices (pi' μ).toOuterMeasure ≤ OuterMeasure.pi fun i => (μ i).toOuterMeasure by exact this _
+  clear hs s
+  rw [OuterMeasure.le_pi]
+  intro s _
+  exact (pi'_pi μ s).le
+
+theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
+    Measure.pi μ (eval i ⁻¹' s) = 0 := by
+  classical
+  rw [← univ_pi_update_univ, ← nonpos_iff_eq_zero]
+  grw [pi_pi_le]
+  exact (Finset.prod_eq_zero (Finset.mem_univ i) (by simp [hs])).le
+
+theorem quasiMeasurePreserving_eval (i : ι) :
+    QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
+  refine ⟨(measurable_pi_apply i).aemeasurable, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
+  rw [map_apply (measurable_pi_apply i) hs, pi_eval_preimage_null μ h2s]
+
+theorem pi_hyperplane (i : ι) [NullSingletonClass (μ i)] (x : α i) :
+    Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
+  show Measure.pi μ (eval i ⁻¹' {x}) = 0 from pi_eval_preimage_null _ (measure_singleton x)
+
+theorem ae_eval_ne (i : ι) [NullSingletonClass (μ i)] (x : α i) :
+    ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
+  compl_mem_ae_iff.2 (pi_hyperplane μ i x)
 
 variable {μ}
+
+theorem tendsto_eval_ae_ae {i : ι} : Tendsto (eval i) (ae (Measure.pi μ)) (ae (μ i)) := fun _ hs =>
+  pi_eval_preimage_null μ hs
+
+theorem ae_pi_le_pi : ae (Measure.pi μ) ≤ Filter.pi fun i => ae (μ i) :=
+  le_iInf fun _ => tendsto_eval_ae_ae.le_comap
+
+theorem ae_eq_pi {β : ι → Type*} {f f' : ∀ i, α i → β i} (h : ∀ i, f i =ᵐ[μ i] f' i) :
+    (fun (x : ∀ i, α i) i => f i (x i)) =ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
+  (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => funext hx
+
+theorem ae_le_pi {β : ι → Type*} [∀ i, Preorder (β i)] {f f' : ∀ i, α i → β i}
+    (h : ∀ i, f i ≤ᵐ[μ i] f' i) :
+    (fun (x : ∀ i, α i) i => f i (x i)) ≤ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
+  (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => hx
+
+theorem ae_subset_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i ≤ᵐ[μ i] t i) :
+    Set.pi I s ≤ᵐ[Measure.pi μ] Set.pi I t :=
+  ((eventually_all_finite I.toFinite).2 fun i hi => tendsto_eval_ae_ae.eventually (h i hi)).mono
+    fun _ hst hx i hi => hst i hi <| hx i hi
+
+@[deprecated (since := "2026-11-05")] alias ae_le_set_pi := ae_subset_pi
+
+theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i =ᵐ[μ i] t i) :
+    Set.pi I s =ᵐ[Measure.pi μ] Set.pi I t :=
+  (ae_subset_pi fun i hi => (h i hi).subset).antisymm
+    (ae_subset_pi fun i hi => (h i hi).symm.subset)
+
+section Intervals
+
+variable [∀ i, PartialOrder (α i)] [∀ i, NullSingletonClass (μ i)]
+
+theorem pi_Iio_ae_eq_pi_Iic {s : Set ι} {f : ∀ i, α i} :
+    (pi s fun i => Iio (f i)) =ᵐ[Measure.pi μ] pi s fun i => Iic (f i) :=
+  ae_eq_set_pi fun _ _ => Iio_ae_eq_Iic
+
+theorem pi_Ioi_ae_eq_pi_Ici {s : Set ι} {f : ∀ i, α i} :
+    (pi s fun i => Ioi (f i)) =ᵐ[Measure.pi μ] pi s fun i => Ici (f i) :=
+  ae_eq_set_pi fun _ _ => Ioi_ae_eq_Ici
+
+theorem univ_pi_Iio_ae_eq_Iic {f : ∀ i, α i} :
+    (pi univ fun i => Iio (f i)) =ᵐ[Measure.pi μ] Iic f := by
+  rw [← pi_univ_Iic]; exact pi_Iio_ae_eq_pi_Iic
+
+theorem univ_pi_Ioi_ae_eq_Ici {f : ∀ i, α i} :
+    (pi univ fun i => Ioi (f i)) =ᵐ[Measure.pi μ] Ici f := by
+  rw [← pi_univ_Ici]; exact pi_Ioi_ae_eq_pi_Ici
+
+theorem pi_Ioo_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
+    (pi s fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
+  ae_eq_set_pi fun _ _ => Ioo_ae_eq_Icc
+
+theorem pi_Ioo_ae_eq_pi_Ioc {s : Set ι} {f g : ∀ i, α i} :
+    (pi s fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Ioc (f i) (g i) :=
+  ae_eq_set_pi fun _ _ => Ioo_ae_eq_Ioc
+
+theorem univ_pi_Ioo_ae_eq_Icc {f g : ∀ i, α i} :
+    (pi univ fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
+  rw [← pi_univ_Icc]; exact pi_Ioo_ae_eq_pi_Icc
+
+theorem pi_Ioc_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
+    (pi s fun i => Ioc (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
+  ae_eq_set_pi fun _ _ => Ioc_ae_eq_Icc
+
+theorem univ_pi_Ioc_ae_eq_Icc {f g : ∀ i, α i} :
+    (pi univ fun i => Ioc (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
+  rw [← pi_univ_Icc]; exact pi_Ioc_ae_eq_pi_Icc
+
+theorem pi_Ico_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
+    (pi s fun i => Ico (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
+  ae_eq_set_pi fun _ _ => Ico_ae_eq_Icc
+
+theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
+    (pi univ fun i => Ico (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
+  rw [← pi_univ_Icc]; exact pi_Ico_ae_eq_pi_Icc
+
+end Intervals
+
+/-- If one of the measures `μ i` has value zero on singletons, then `Measure.pi µ`
+has value zero on singletons. The instance below assumes that all `μ i` have value zero on
+singletons. -/
+theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :
+    NullSingletonClass (Measure.pi μ) :=
+  ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
+
+@[deprecated (since := "2026-06-09")]
+alias pi_noAtoms := pi_nullSingletonClass
+
+instance pi_nullSingletonClass' [h : Nonempty ι] [∀ i, NullSingletonClass (μ i)] :
+    NullSingletonClass (Measure.pi μ) :=
+  h.elim fun i => pi_nullSingletonClass i
+
+@[deprecated (since := "2026-06-09")]
+alias pi_noAtoms' := pi_nullSingletonClass'
 
 /-- `Measure.pi μ` has finite spanning sets in rectangles of finite spanning sets. -/
 def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
@@ -356,22 +476,6 @@ theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
     Measure.pi μ (Set.univ) = 1 := by
   rw [pi_of_empty, measure_univ]
 
-theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
-    Measure.pi μ (eval i ⁻¹' s) = 0 := by
-  classical
-  -- WLOG, `s` is measurable
-  rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
-  suffices Measure.pi μ (eval i ⁻¹' t) = 0 from measure_mono_null (preimage_mono hst) this
-  -- Now rewrite it as `Set.pi`, and apply `pi_pi`
-  rw [← univ_pi_update_univ, pi_pi]
-  apply Finset.prod_eq_zero (Finset.mem_univ i)
-  simp [hμt]
-
-theorem quasiMeasurePreserving_eval (i : ι) :
-    QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
-  refine ⟨(measurable_pi_apply i).aemeasurable, AbsolutelyContinuous.mk fun s hs h2s => ?_⟩
-  rw [map_apply (measurable_pi_apply i) hs, pi_eval_preimage_null μ h2s]
-
 lemma pi_map_eval [DecidableEq ι] (i : ι) :
      (Measure.pi μ).map (Function.eval i) = (∏ j ∈ Finset.univ.erase i, μ j Set.univ) • (μ i) := by
   ext s hs
@@ -405,14 +509,6 @@ lemma _root_.MeasureTheory.measurePreserving_eval [∀ i, IsProbabilityMeasure (
   rw [Measure.pi_map_eval, Finset.prod_eq_one, one_smul]
   exact fun _ _ ↦ measure_univ
 
-theorem pi_hyperplane (i : ι) [NullSingletonClass (μ i)] (x : α i) :
-    Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
-  show Measure.pi μ (eval i ⁻¹' {x}) = 0 from pi_eval_preimage_null _ (measure_singleton x)
-
-theorem ae_eval_ne (i : ι) [NullSingletonClass (μ i)] (x : α i) :
-    ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
-  compl_mem_ae_iff.2 (pi_hyperplane μ i x)
-
 theorem restrict_pi_pi (s : (i : ι) → Set (α i)) :
     (Measure.pi μ).restrict (Set.univ.pi fun i ↦ s i) = .pi (fun i ↦ (μ i).restrict (s i)) := by
   refine (pi_eq fun _ h ↦ ?_).symm
@@ -420,33 +516,6 @@ theorem restrict_pi_pi (s : (i : ι) → Set (α i)) :
     ← Set.pi_inter_distrib, pi_pi]
 
 variable {μ}
-
-theorem tendsto_eval_ae_ae {i : ι} : Tendsto (eval i) (ae (Measure.pi μ)) (ae (μ i)) := fun _ hs =>
-  pi_eval_preimage_null μ hs
-
-theorem ae_pi_le_pi : ae (Measure.pi μ) ≤ Filter.pi fun i => ae (μ i) :=
-  le_iInf fun _ => tendsto_eval_ae_ae.le_comap
-
-theorem ae_eq_pi {β : ι → Type*} {f f' : ∀ i, α i → β i} (h : ∀ i, f i =ᵐ[μ i] f' i) :
-    (fun (x : ∀ i, α i) i => f i (x i)) =ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
-  (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => funext hx
-
-theorem ae_le_pi {β : ι → Type*} [∀ i, Preorder (β i)] {f f' : ∀ i, α i → β i}
-    (h : ∀ i, f i ≤ᵐ[μ i] f' i) :
-    (fun (x : ∀ i, α i) i => f i (x i)) ≤ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
-  (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => hx
-
-theorem ae_subset_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i ≤ᵐ[μ i] t i) :
-    Set.pi I s ≤ᵐ[Measure.pi μ] Set.pi I t :=
-  ((eventually_all_finite I.toFinite).2 fun i hi => tendsto_eval_ae_ae.eventually (h i hi)).mono
-    fun _ hst hx i hi => hst i hi <| hx i hi
-
-@[deprecated (since := "2026-11-05")] alias ae_le_set_pi := ae_subset_pi
-
-theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i =ᵐ[μ i] t i) :
-    Set.pi I s =ᵐ[Measure.pi μ] Set.pi I t :=
-  (ae_subset_pi fun i hi => (h i hi).subset).antisymm
-    (ae_subset_pi fun i hi => (h i hi).symm.subset)
 
 lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
     (μ : (i : Option ι) → Measure (β i)) [∀ (i : Option ι), SigmaFinite (μ i)] :
@@ -464,75 +533,8 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
   simp only [e_meas, me.map_apply, univ_option, Finset.prod_insertNone, this,
     prod_prod, pi_pi, mul_comm]
 
-section Intervals
-
-variable [∀ i, PartialOrder (α i)] [∀ i, NullSingletonClass (μ i)]
-
-theorem pi_Iio_ae_eq_pi_Iic {s : Set ι} {f : ∀ i, α i} :
-    (pi s fun i => Iio (f i)) =ᵐ[Measure.pi μ] pi s fun i => Iic (f i) :=
-  ae_eq_set_pi fun _ _ => Iio_ae_eq_Iic
-
-theorem pi_Ioi_ae_eq_pi_Ici {s : Set ι} {f : ∀ i, α i} :
-    (pi s fun i => Ioi (f i)) =ᵐ[Measure.pi μ] pi s fun i => Ici (f i) :=
-  ae_eq_set_pi fun _ _ => Ioi_ae_eq_Ici
-
-theorem univ_pi_Iio_ae_eq_Iic {f : ∀ i, α i} :
-    (pi univ fun i => Iio (f i)) =ᵐ[Measure.pi μ] Iic f := by
-  rw [← pi_univ_Iic]; exact pi_Iio_ae_eq_pi_Iic
-
-theorem univ_pi_Ioi_ae_eq_Ici {f : ∀ i, α i} :
-    (pi univ fun i => Ioi (f i)) =ᵐ[Measure.pi μ] Ici f := by
-  rw [← pi_univ_Ici]; exact pi_Ioi_ae_eq_pi_Ici
-
-theorem pi_Ioo_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
-    (pi s fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
-  ae_eq_set_pi fun _ _ => Ioo_ae_eq_Icc
-
-theorem pi_Ioo_ae_eq_pi_Ioc {s : Set ι} {f g : ∀ i, α i} :
-    (pi s fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Ioc (f i) (g i) :=
-  ae_eq_set_pi fun _ _ => Ioo_ae_eq_Ioc
-
-theorem univ_pi_Ioo_ae_eq_Icc {f g : ∀ i, α i} :
-    (pi univ fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
-  rw [← pi_univ_Icc]; exact pi_Ioo_ae_eq_pi_Icc
-
-theorem pi_Ioc_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
-    (pi s fun i => Ioc (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
-  ae_eq_set_pi fun _ _ => Ioc_ae_eq_Icc
-
-theorem univ_pi_Ioc_ae_eq_Icc {f g : ∀ i, α i} :
-    (pi univ fun i => Ioc (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
-  rw [← pi_univ_Icc]; exact pi_Ioc_ae_eq_pi_Icc
-
-theorem pi_Ico_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
-    (pi s fun i => Ico (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
-  ae_eq_set_pi fun _ _ => Ico_ae_eq_Icc
-
-theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
-    (pi univ fun i => Ico (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
-  rw [← pi_univ_Icc]; exact pi_Ico_ae_eq_pi_Icc
-
-end Intervals
-
-/-- If one of the measures `μ i` has value zero on singletons, then `Measure.pi µ`
-has value zero on singletons. The instance below assumes that all `μ i` have value zero on
-singletons. -/
-theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :
-    NullSingletonClass (Measure.pi μ) :=
-  ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
-
-@[deprecated (since := "2026-06-09")]
-alias pi_noAtoms := pi_nullSingletonClass
-
-instance pi_nullSingletonClass' [h : Nonempty ι] [∀ i, NullSingletonClass (μ i)] :
-    NullSingletonClass (Measure.pi μ) :=
-  h.elim fun i => pi_nullSingletonClass i
-
-@[deprecated (since := "2026-06-09")]
-alias pi_noAtoms' := pi_nullSingletonClass'
-
 instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
-    [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NullSingletonClass (volume : Measure (α i))] :
+    [∀ i, NullSingletonClass (volume : Measure (α i))] :
     NullSingletonClass (volume : Measure (∀ i, α i)) :=
   pi_nullSingletonClass'
 
