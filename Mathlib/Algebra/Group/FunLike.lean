@@ -5,8 +5,8 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Pi.Hom
 public import Mathlib.Algebra.Group.Pi.Torsion
 public import Mathlib.Algebra.Group.PowIterate
 
@@ -52,6 +52,15 @@ theorem coeMulHom_injective : Function.Injective (coeMulHom F α β) := by
   rw [coe_coeMulHom]
   exact DFunLike.coe_injective
 
+variable (F) in
+/-- Evaluation as a multiplicative homomorphism. -/
+@[to_additive
+/-- Evaluation as an additive homomorphism. -/]
+def evalMulHom (x : α) : F →ₙ* β := (Pi.evalMulHom _ x).comp (coeMulHom F α β)
+
+@[to_additive (attr := simp)]
+theorem evalMulHom_apply (x : α) (f : F) : evalMulHom F x f = f x := rfl
+
 end MulHom
 
 section MonoidHom
@@ -74,12 +83,24 @@ theorem coeMonoidHom_apply (f : F) : coeMonoidHom F α β f = f := rfl
 theorem coe_coeMonoidHom : (coeMonoidHom F α β : F → α → β) = DFunLike.coe := rfl
 
 @[to_additive (attr := norm_cast)]
-theorem coe_coeMonoidHom' : (coeMonoidHom F α β : F →ₙ* α → β) = coeMulHom F α β := rfl
+theorem toMulHom_coeMonoidHom : (coeMonoidHom F α β : F →ₙ* α → β) = coeMulHom F α β := rfl
 
 @[to_additive]
 theorem coeMonoidHom_injective : Function.Injective (coeMonoidHom F α β) := by
   rw [coe_coeMonoidHom]
   exact DFunLike.coe_injective
+
+variable (F) in
+/-- Evaluation as a multiplicative homomorphism. -/
+@[to_additive
+/-- Evaluation as an additive homomorphism. -/]
+def evalMonoidHom (x : α) : F →* β := (Pi.evalMonoidHom _ x).comp (coeMonoidHom F α β)
+
+@[to_additive (attr := simp)]
+theorem evalMonoidHom_apply (x : α) (f : F) : evalMonoidHom F x f = f x := rfl
+
+@[to_additive (attr := simp)]
+theorem toMulHom_evalMonoidHom (x : α) : (evalMonoidHom F x : F →ₙ* β) = evalMulHom F x := rfl
 
 end MonoidHom
 
