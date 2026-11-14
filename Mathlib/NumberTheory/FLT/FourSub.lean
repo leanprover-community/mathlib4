@@ -1512,6 +1512,10 @@ private theorem fermat42Double_four_way_split
          hα_rw, hγ_rw, hf, hδ_eq⟩
 
 set_option maxHeartbeats 400000 in
+-- The quadruple extraction composes s-side, t-side, and 4-way UFD splits;
+-- the resulting term has many positivity/coprimality sub-obligations and
+-- exceeds the default 200000 ceiling on mathlib CI (clean under the 400000
+-- bump).
 /-- **Quadruple extraction** — combines the s-side + t-side square splits
 with the four-way UFD split to produce positive `(a, b, c, d)` with
 `k = a·b·c·d` and the key identities. -/
@@ -1649,6 +1653,11 @@ private theorem fermat42Double_smaller_equation
   linarith
 
 set_option maxHeartbeats 400000 in
+-- The descent step body is the main Fermat-descent work for
+-- `2a^2 = s^4 + t^4`: Pythagorean classification, UFD factorisations,
+-- key relation `4abcd = (c^2 - b^2)(2a^2 - d^2)`, smaller equation
+-- extraction via completing the square. Return type is large and
+-- whnf-reduction alone exceeds the default 200000 heartbeats.
 /-- Core of the descent step — used by `fermat42Double_descent_step_holds`
 (declared below `Fermat42DoubleDescentStep` def). -/
 private theorem fermat42Double_descent_step_body
