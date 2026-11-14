@@ -42,50 +42,10 @@ public meta section
 namespace Mathlib.Tactic.Translate
 open Lean Meta Elab
 
-/-- A permutation, represented using cycle notation. -/
-abbrev Permutation := List {l : List Nat // 2 ≤ l.length}
-
-namespace Permutation
-
-/-- Permute an array of arguments using the given reorder. -/
-def permute! {α} [Inhabited α] (c : Permutation) : Array α → Array α :=
-  c.foldl (cyclicPermute! · ·.1)
-where
-  /-- Permute the array using a sequence of indices defining a cyclic permutation.
-  If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
-  `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
-  cyclicPermute! : Array α → List Nat → Array α
-    | a, [] => a
-    | a, i :: is => cyclicPermuteAux a is a[i]! i
-  cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
-    | a, [], x, i0 => a.set! i0 x
-    | a, i :: is, x, i0 =>
-      let (y, a) := a.swapAt! i x
-      cyclicPermuteAux a is y i0
-
-/-- Permute a list of either universe levels or universe parameters. -/
-def permuteList! {α} [Inhabited α] (p : Permutation) (us : List α) : List α :=
-  if p.isEmpty then us else (p.permute! us.toArray).toList
-
-/-- Return the inverse permutation. -/
-def reverse (c : Permutation) : Permutation :=
-  c.map (⟨·.1.reverse, by grind⟩)
-
-/-- Return the minimum size of an array on which the permutation is valid. -/
-def range (p : Permutation) : Nat :=
-  p.iter.flatMap (·.1.iter) |>.map (· + 1) |>.fold max 0
-
-/-- Two permutations are considered equal if they permute in the same way. -/
-def beq (p₁ p₂ : Permutation) : Bool :=
-  p₁.range == p₂.range &&
-    let rangeArr := (0...p₁.range).toArray;
-    p₁.permute! rangeArr == p₂.permute! rangeArr
-
-end Permutation
-
 /-- `ArgOmit` represents a list of arguments to be omitted during translation. -/
 structure ArgOmit where
-  /-- The list of argument indices which are omitted. -/
+  /-- The list of argument indices which are omitted: we assume these are sorted
+  in ascending order. -/
   args : List Nat := []
   /-- The recursive omission for omitting arguments of arguments.
   TODO true? For the purpose of checking equality between omissions, this should be sorted. -/
@@ -97,20 +57,28 @@ namespace ArgOmit
 /-- Return `true` if the omissions doesn't do anything. -/
 def isEmpty (r : ArgOmit) : Bool := r matches ⟨[], #[]⟩
 
-/-- Modify an array of arguments using the given omission. -/
-private def _root_.omit! {α} [Inhabited α] (c : List Nat) : Array α → Array α :=
-  fun arr ↦ arr -- TODO! does nothing!
+/-- Modify an array of arguments by omitting all elements of given indices. -/
+private def _root_.test {α} [Inhabited α] (c : List Nat) : Array α → Array α := fun arr ↦
+  -- Assume `c` is a list of ascending indices, and remove from the highest indices.
+  c.reverse.foldl (α := Array α) (fun a i ↦ a.eraseIdxIfInBounds i) arr
 
-/-- Permute an array of arguments using the given reorder. -/
+#eval test [2] #["a", "b", "c"]
+#eval test [1] #["a", "b", "c"]
+#eval test [0, 2] #["a", "b", "c"]
+#eval test [0, 2, 4] #["a", "b", "c", "d", "e"]
+
+/-- Remove a collection of arguments from a given an array of arguments. -/
 def omit! {α} [Inhabited α] (r : ArgOmit) : Array α → Array α :=
-  fun c ↦ c -- TODO! r.perm.permute!
+  -- We assume `r.args` has indices in ascending order: remove from the end
+  -- as otherwise we invalidate indices.
+  r.args.reverse.foldl (α := Array α) (fun a i ↦ a.eraseIdxIfInBounds i)
 
-/-- Return the minimum size of an array on which the given reorder is valid. -/
+/-- Return the minimum size of an array on which the given omissions configuration is valid. -/
 def range (r : ArgOmit) : Nat :=
   r.argOmissions.foldl (max · <| ·.1 + 1) <|
     r.args.iter.map (· + 1) |>.fold max 0
 
-/-- Two reorders are considered equal if all permutations are the same. -/
+/-- Two omissions are considered equal if all arguments are the same. -/
 partial def beq (r₁ r₂ : ArgOmit) : Bool :=
   r₁.args.beq r₂.args &&
     have : BEq ArgOmit := ⟨beq⟩
@@ -153,19 +121,20 @@ Instead, we implicitly rely on `instantiateMVars`.
 mutual
 
 /-- Omit the given metavariables using the given `ArgOmit`. -/
-private partial def reorderMVars (mvars : Array Expr) (reorder : ArgOmit) :
+private partial def reorderMVars (mvars : Array Expr) (omissions : ArgOmit) :
     MetaM (Array Expr) := do
   let mut mvars := mvars
-  return mvars -- TODO!
-  -- for (arg, argReorder) in reorder.argReorders do
-  --   let mvarId := mvars[arg]!.mvarId!
-  --   let decl ← mvarId.getDecl
-  --   let mvarId' ← mkFreshExprMVar (← reorderForall argReorder decl.type) (userName := decl.userName)
-  --   -- Note: we assign `mvarId` in terms of `mvarId'`, and to do this we need to reorder `mvarId'`
-  --   -- with the reverse reorder of `argReorder`.
-  --   mvarId.assign (← reorderLambda argReorder.reverse mvarId')
-  --   mvars := mvars.set! arg mvarId'
-  -- return reorder.permute! mvars
+  for (arg, argOmission) in omissions.argOmissions do
+    let mvarId := mvars[arg]!.mvarId!
+    let decl ← mvarId.getDecl
+    let mvarId' ← mkFreshExprMVar (← omitForall argOmission decl.type) (userName := decl.userName)
+    -- Note: we assign `mvarId` in terms of `mvarId'`, and to do this we need to reorder `mvarId'`
+    -- with the reverse reorder of `argReorder`.
+    -- TODO: this won't work here, right? cannot inverse a re-ordering, hm...
+    mvarId.assign (← omitLambda argOmission mvarId')
+    --mvarId.assign (← omitLambda argOmission.reverse mvarId')
+    mvars := mvars.set! arg mvarId'
+  return omissions.omit! mvars
 
 /-- Reorder the arguments of a function type using the given `ArgOmit`. -/
 partial def omitForall (omission : ArgOmit) (e : Expr) : MetaM Expr := do
@@ -178,7 +147,7 @@ partial def omitForall (omission : ArgOmit) (e : Expr) : MetaM Expr := do
   fixBinderInfos bis <$> mkForallFVars (← reorderMVars mvars omission) e
 
 /-- Reorder the arguments of a function using the given `ArgOmit`. -/
-partial def reorderLambda (omission : ArgOmit) (e : Expr) : MetaM Expr := do
+partial def omitLambda (omission : ArgOmit) (e : Expr) : MetaM Expr := do
   let (mvars, bis, _) ← forallMetaBoundedTelescope (← inferType e) omission.range
   unless mvars.size = omission.range do
     throwError "the omissions configuration (reorder := {omission}) is out of bounds, \
