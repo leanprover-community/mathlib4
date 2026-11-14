@@ -485,7 +485,7 @@ theorem SeparatingRight.toMatrix {B : BilinForm R₂ M₂} (h : B.SeparatingRigh
   (separatingRight_toMatrix_iff b).mpr h
 
 
-/-! Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero` -/
+/-! Some shorthands for combining the above with `Matrix.Nondegenerate.of_det_ne_zero` -/
 
 theorem nondegenerate_toBilin'_iff_det_ne_zero {M : Matrix ι ι A} :
     M.toBilin'.Nondegenerate ↔ M.det ≠ 0 := by
@@ -499,9 +499,12 @@ theorem nondegenerate_iff_det_ne_zero {B : BilinForm A M₂} (b : Basis ι A M�
     B.Nondegenerate ↔ (BilinForm.toMatrix b B).det ≠ 0 := by
   rw [← Matrix.nondegenerate_iff_det_ne_zero, nondegenerate_toMatrix_iff]
 
-theorem nondegenerate_of_det_ne_zero (b : Basis ι A M₂) (h : (BilinForm.toMatrix b B₃).det ≠ 0) :
+theorem Nondegenerate.of_det_ne_zero (b : Basis ι A M₂) (h : (BilinForm.toMatrix b B₃).det ≠ 0) :
     B₃.Nondegenerate :=
   (nondegenerate_iff_det_ne_zero b).mpr h
+
+@[deprecated (since := "2026-11-13")] alias nondegenerate_of_det_ne_zero :=
+  Nondegenerate.of_det_ne_zero
 
 end Det
 

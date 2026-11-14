@@ -214,7 +214,7 @@ theorem Nondegenerate.smul_iff [Finite n] {t : A} (h : t ≠ 0) :
   rw [nondegenerate_def, nondegenerate_def]
   simp [smul_mulVec, mul_eq_zero_iff_left h]
 
-alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
+alias ⟨Nondegenerate.det_ne_zero, _⟩ := nondegenerate_iff_det_ne_zero
 
 end Nondegenerate
 

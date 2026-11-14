@@ -813,7 +813,7 @@ end GeneralBasis
 
 section Det
 /-!
-Some shorthands for combining the above with `Matrix.nondegenerate_of_det_ne_zero` in the
+Some shorthands for combining the above with `Matrix.Nondegenerate.of_det_ne_zero` in the
 case of a domain
 -/
 
@@ -856,22 +856,28 @@ theorem separatingLeft_iff_det_ne_zero :
     B.SeparatingLeft ↔ (toMatrix₂ b b B).det ≠ 0 := by
   rw [← Matrix.separatingLeft_iff_det_ne_zero, separatingLeft_toMatrix₂_iff]
 
-theorem separatingLeft_of_det_ne_zero (h : (toMatrix₂ b b B).det ≠ 0) : B.SeparatingLeft :=
-  (separatingLeft_iff_det_ne_zero b).mpr h
+alias ⟨_, SeparatingLeft.of_det_ne_zero⟩ := separatingLeft_iff_det_ne_zero
+
+@[deprecated (since := "2026-11-13")] alias separatingLeft_of_det_ne_zero :=
+  SeparatingLeft.of_det_ne_zero
 
 theorem separatingRight_iff_det_ne_zero :
     B.SeparatingRight ↔ (toMatrix₂ b b B).det ≠ 0 := by
   rw [← Matrix.separatingRight_iff_det_ne_zero, separatingRight_toMatrix₂_iff]
 
-theorem separatingRight_of_det_ne_zero (h : (toMatrix₂ b b B).det ≠ 0) : B.SeparatingRight :=
-  (separatingRight_iff_det_ne_zero b).mpr h
+alias ⟨_, SeparatingRight.of_det_ne_zero⟩ := separatingRight_iff_det_ne_zero
+
+@[deprecated (since := "2026-11-13")] alias separatingRight_of_det_ne_zero :=
+  SeparatingRight.of_det_ne_zero
 
 theorem nondegenerate_iff_det_ne_zero :
     B.Nondegenerate ↔ (toMatrix₂ b b B).det ≠ 0 := by
   rw [← Matrix.nondegenerate_iff_det_ne_zero, nondegenerate_toMatrix₂_iff]
 
-theorem nondegenerate_of_det_ne_zero (h : (toMatrix₂ b b B).det ≠ 0) : B.Nondegenerate :=
-  (nondegenerate_iff_det_ne_zero b).mpr h
+alias ⟨_, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
+
+@[deprecated (since := "2026-11-13")] alias nondegenerate_of_det_ne_zero :=
+  Nondegenerate.of_det_ne_zero
 
 end Det
 
