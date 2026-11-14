@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 public import Mathlib.MeasureTheory.Function.SimpleFunc
+public import Mathlib.Topology.Order.WithTop
 
 /-!
 # Density of simple functions
@@ -47,6 +48,63 @@ namespace MeasureTheory
 local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
+
+/-- Monotone simple functions approximate every point of a second-countable linear order with a
+top element from above. -/
+theorem exists_seq_monotone_le_tendsto [MeasurableSpace α] [TopologicalSpace α] [LinearOrder α]
+    [OrderTopology α] [SecondCountableTopology α] [OpensMeasurableSpace α] [OrderTop α] :
+    ∃ w : ℕ → α →ₛ α, (∀ n, Monotone (w n)) ∧ (∀ n x, x ≤ w n x) ∧
+      ∀ x, Tendsto (w · x) atTop (𝓝 x) := by
+  classical
+  obtain ⟨S, -, hSc, hS⟩ := exists_countable_subset_mem_closure_inter_Ici (univ : Set α)
+  obtain ⟨e, he⟩ := countable_iff_exists_subset_range.1 hSc
+  let w (n : ℕ) (x : α) := {k ∈ Finset.range n | x ≤ e k}.inf e
+  have hl (n : ℕ) (x : α) : x ≤ w n x :=
+    Finset.le_inf fun k hk ↦ (Finset.mem_filter.1 hk).2
+  have hm (n : ℕ) : Monotone (w n) := fun x y hxy ↦
+    Finset.inf_mono (Finset.monotone_filter_right _ fun k _ ↦ hxy.trans)
+  have hf (n : ℕ) : (Set.range (w n)).Finite := by
+    refine ((Finset.range n).finite_toSet.image e |>.insert ⊤).subset ?_
+    rintro _ ⟨x, rfl⟩
+    rcases {k ∈ Finset.range n | x ≤ e k}.eq_empty_or_nonempty with hF | hF
+    · simp [w, hF]
+    · obtain ⟨k, hk, hk'⟩ := Finset.exists_mem_eq_inf _ hF e
+      exact Or.inr ⟨k, (Finset.mem_filter.1 hk).1, hk'.symm⟩
+  refine ⟨fun n ↦ ofMonotone (w n) (hm n) (hf n), hm, hl, fun x ↦ ?_⟩
+  refine tendsto_order.2 ⟨fun a ha ↦ .of_forall fun n ↦ ha.trans_le (hl n x), fun b hb ↦ ?_⟩
+  obtain ⟨_, hdb, hdS, hxd⟩ := mem_closure_iff.1 (hS x (mem_univ x)) _ isOpen_Iio hb
+  obtain ⟨k, rfl⟩ := he hdS
+  exact eventually_atTop.2 ⟨k + 1, fun n hn ↦
+    (Finset.inf_le (Finset.mem_filter.2 ⟨Finset.mem_range.2 hn, hxd⟩)).trans_lt hdb⟩
+
+/-- Monotone simple functions approximate every point of a second-countable linear order with a
+bottom element from below. -/
+theorem exists_seq_monotone_ge_tendsto [MeasurableSpace α] [TopologicalSpace α] [LinearOrder α]
+    [OrderTopology α] [SecondCountableTopology α] [OpensMeasurableSpace α] [OrderBot α] :
+    ∃ w : ℕ → α →ₛ α, (∀ n, Monotone (w n)) ∧ (∀ n x, w n x ≤ x) ∧
+      ∀ x, Tendsto (w · x) atTop (𝓝 x) := by
+  obtain ⟨w, hm, hl, ht⟩ := exists_seq_monotone_le_tendsto (α := αᵒᵈ)
+  exact ⟨w, fun n ↦ (hm n).dual, hl, ht⟩
+
+/-- Simple functions approximate every point of a nonempty second-countable linear order from
+below. Without a bottom element, the approximants need only lie below each point eventually. -/
+theorem exists_seq_tendsto_nhdsLE [MeasurableSpace α] [TopologicalSpace α] [LinearOrder α]
+    [OrderTopology α] [SecondCountableTopology α] [OpensMeasurableSpace α] [Nonempty α] :
+    ∃ w : ℕ → α →ₛ α, ∀ x, Tendsto (w · x) atTop (𝓝[≤] x) := by
+  let _ : MeasurableSpace (WithTop αᵒᵈ) := borel _
+  let _ : BorelSpace (WithTop αᵒᵈ) := ⟨rfl⟩
+  obtain ⟨w, -, hl, ht⟩ := exists_seq_monotone_le_tendsto (α := WithTop αᵒᵈ)
+  let a : αᵒᵈ := OrderDual.toDual (Classical.arbitrary α)
+  let e : α → WithTop αᵒᵈ := fun x ↦ WithTop.some (OrderDual.toDual x)
+  refine ⟨fun n ↦ ((w n).map (WithTop.untopD a)).comp e
+    (WithTop.continuous_coe (ι := αᵒᵈ)).measurable,
+    fun x ↦ ?_⟩
+  refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
+  · exact continuous_ofDual.continuousAt.tendsto.comp
+      ((WithTop.tendsto_untopD a WithTop.coe_ne_top).comp (ht (e x)))
+  · filter_upwards [(ht (e x)).eventually (isOpen_ne.mem_nhds WithTop.coe_ne_top)] with n hn
+    change OrderDual.toDual x ≤ WithTop.untopD a (w n (e x))
+    exact (WithTop.le_untopD_iff (fun hb ↦ (hn hb).elim)).2 (hl n (e x))
 
 /-! ### Pointwise approximation by simple functions -/
 
