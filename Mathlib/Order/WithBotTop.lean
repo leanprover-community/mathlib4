@@ -75,7 +75,7 @@ lemma coe_monotone [Preorder ι] :
     Monotone (WithBotTop.coe : ι → _) :=
   fun _ _ _ ↦ by simpa
 
-lemma eq_coe_of_ne_top_of_ne_bot {x : WithBotTop ι} (ne1 : x ≠ ⊥) (ne2 : x ≠ ⊤) :
+lemma eq_coe_of_ne_bot_of_ne_top {x : WithBotTop ι} (ne1 : x ≠ ⊥) (ne2 : x ≠ ⊤) :
     ∃ n : ι, x = n := by
   obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp ne1
   obtain ⟨n, rfl⟩ := WithTop.ne_top_iff_exists.mp (WithBot.coe_inj.not.mp ne2)
