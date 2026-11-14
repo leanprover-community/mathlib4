@@ -263,6 +263,16 @@ theorem fixingSubgroup_sup {K L : IntermediateField F E} :
   exact ⟨fun h ↦ ⟨fixingSubgroup_antitone le_sup_left h, fixingSubgroup_antitone le_sup_right h⟩,
     by simp [← Subgroup.zpowers_le, ← IntermediateField.le_fixedField_iff_le_fixingSubgroup]⟩
 
+theorem fixingSubgroup_iSup {ι : Sort*} {f : ι → IntermediateField F E} :
+    (⨆ i, f i).fixingSubgroup = ⨅ i, (f i).fixingSubgroup := by
+  apply le_antisymm
+  · apply fixingSubgroup_antitone.map_iSup_le
+  · rw [← IntermediateField.le_fixedField_iff_le_fixingSubgroup]
+    apply iSup_le
+    intro i
+    rw [IntermediateField.le_fixedField_iff_le_fixingSubgroup]
+    apply iInf_le
+
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `Gal(E/K)`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : Gal(E/F)) with commutes' := ϕ.mem }
