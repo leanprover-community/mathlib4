@@ -11,7 +11,7 @@ import Mathlib.Data.EReal.Basic
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
-set_option autoImplicit true
+set_option autoImplicit false
 set_option linter.unusedVariables false
 
 variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
@@ -58,7 +58,6 @@ example : (((((an : ℚ) : ℝ) * bq) + (cq : ℝ) ^ dn) : ℂ) = (an : ℂ) * (
 example : ((an : ℤ) : ℝ) < bq ∧ (cr : ℂ) ^ 2 = dz ↔ (an : ℚ) < bq ∧ ((cr ^ 2) : ℂ) = dz := by
   norm_cast
 
---testing numerals
 section numerals
 
 example : ((42 : ℕ) : ℤ) = 42 := by norm_cast
@@ -72,8 +71,6 @@ example : ((2 : ℕ∞) : WithTop ℕ∞) = 2 := by norm_cast
 example : ((2 : ℝ≥0) : ℝ≥0∞) = 2 := by norm_cast
 example : ((2 : ℝ≥0) : ℝ) = 2 := by norm_cast
 example : ((2 : ℝ) : EReal) = 2 := by norm_cast
-
-set_option autoImplicit false
 
 example (k : ℕ) : ((k : ℕ∞) : WithTop ℕ∞) ≤ (k : ℕ∞) + 2 := by
   norm_cast
@@ -116,6 +113,8 @@ example (h : (cz : ℚ) = az / bz) : (cz : ℝ) = az / bz := by assumption_mod_c
 namespace hidden
 
 def WithZero (α) := Option α
+
+variable {α : Type*}
 
 @[coe]
 def WithZero.of (a : α) : WithZero α := some a
