@@ -297,7 +297,7 @@ instance prod [Module.FinitePresentation R M] [Module.FinitePresentation R N] :
   have hf : Function.Surjective (LinearMap.fst R M N) := LinearMap.fst_surjective
   have : FinitePresentation R ↥(LinearMap.ker (LinearMap.fst R M N)) := by
     rw [LinearMap.ker_fst]
-    exact .of_equiv (LinearEquiv.ofInjective (LinearMap.inr R M N) LinearMap.inr_injective)
+    exact .of_equiv (Submodule.sndEquiv R M N).symm
   apply Module.finitePresentation_of_ker (.fst R M N) hf
 
 instance pi {ι : Type*} (M : ι → Type*)

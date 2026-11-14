@@ -453,7 +453,8 @@ instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing 
   rw [IsSemisimpleRing, ← _e₁.isSemisimpleModule_iff_of_bijective Function.bijective_id] at hR
   rw [IsSemisimpleRing, ← _e₂.isSemisimpleModule_iff_of_bijective Function.bijective_id] at hS
   rw [IsSemisimpleRing, ← Submodule.topEquiv.isSemisimpleModule_iff_of_bijective
-    (LinearEquiv.bijective _), ← LinearMap.sup_range_inl_inr]
+    (LinearEquiv.bijective _), ← Submodule.fst_sup_snd, ← LinearMap.range_inl,
+    ← LinearMap.range_inr]
   exact .sup (.range _) (.range _)
 
 theorem RingHom.isSemisimpleRing_of_surjective (f : R →+* S) (hf : Function.Surjective f)
