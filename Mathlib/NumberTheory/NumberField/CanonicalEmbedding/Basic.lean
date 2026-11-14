@@ -854,7 +854,7 @@ theorem stdOrthonormalBasis_map_eq :
 open scoped Classical in
 theorem volumePreserving_toMixed :
     MeasurePreserving (toMixed K) where
-  measurable := (toMixed K).continuous.measurable
+  aemeasurable := (toMixed K).continuous.aemeasurable
   map_eq := by
     rw [← (OrthonormalBasis.addHaar_eq_volume (euclidean.stdOrthonormalBasis K)), Basis.map_addHaar,
       stdOrthonormalBasis_map_eq, Basis.addHaar_eq_iff, Basis.coe_parallelepiped,

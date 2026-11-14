@@ -294,8 +294,8 @@ theorem coeFn_compMeasurePreserving (g : β →ₘ[ν] γ) (hf : MeasurePreservi
   g.coeFn_compQuasiMeasurePreserving _
 
 theorem compMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν)
-    {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
-    compMeasurePreserving g f hf = compMeasurePreserving g f' (hf.congr hf' h) :=
+    {f' : α → β} (h : f =ᵐ[μ] f') :
+    compMeasurePreserving g f hf = compMeasurePreserving g f' (hf.congr h) :=
   compQuasiMeasurePreserving_congr _ _ h
 
 @[simp]

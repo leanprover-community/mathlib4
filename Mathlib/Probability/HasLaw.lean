@@ -78,12 +78,11 @@ lemma hasLaw_congr (hXY : X =ᵐ[P] Y) : HasLaw X μ P ↔ HasLaw Y μ P where
 
 lemma _root_.MeasureTheory.MeasurePreserving.hasLaw (h : MeasurePreserving X P μ) :
     HasLaw X μ P where
-  aemeasurable := h.measurable.aemeasurable
+  aemeasurable := h.aemeasurable
   map_eq := h.map_eq
 
-lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
-    MeasurePreserving X P μ where
-  measurable := h₂
+lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) : MeasurePreserving X P μ where
+  aemeasurable := h₁.aemeasurable
   map_eq := h₁.map_eq
 
 @[to_fun (attr := simp)]

@@ -148,7 +148,7 @@ noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T
 lemma measurePreserving_equivIoc {a : ℝ} :
     MeasurePreserving (equivIoc T a) volume (Measure.comap Subtype.val volume) := by
   have h := (measurableEquivIoc T a).measurable
-  refine ⟨h, ?_⟩
+  refine ⟨h.aemeasurable, ?_⟩
   ext s hs
   rw [comap_apply _ Subtype.val_injective (fun _ ↦ measurableSet_Ioc.subtype_image) _ hs,
     map_apply (by measurability) hs, add_projection_respects_measure T a (by exact h hs)]

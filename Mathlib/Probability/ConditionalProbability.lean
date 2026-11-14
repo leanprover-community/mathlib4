@@ -210,10 +210,14 @@ variable (μ) in
 
 lemma cond_eq_zero_of_meas_eq_zero (hμs : μ s = 0) : μ[|s] = 0 := by simp [hμs]
 
+theorem cond_apply₀ (hms : NullMeasurableSet s μ) (t : Set Ω) :
+    μ[t | s] = (μ s)⁻¹ * μ (s ∩ t) := by
+  rw [cond, smul_apply, Measure.restrict_apply₀' hms, Set.inter_comm, smul_eq_mul]
+
 /-- The axiomatic definition of conditional probability derived from a measure-theoretic one. -/
 theorem cond_apply (hms : MeasurableSet s) (μ : Measure Ω) (t : Set Ω) :
-    μ[t | s] = (μ s)⁻¹ * μ (s ∩ t) := by
-  rw [cond, smul_apply, Measure.restrict_apply' hms, Set.inter_comm, smul_eq_mul]
+    μ[t | s] = (μ s)⁻¹ * μ (s ∩ t) :=
+  cond_apply₀ hms.nullMeasurableSet t
 
 theorem cond_apply' (ht : MeasurableSet t) (μ : Measure Ω) : μ[t | s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, smul_apply, Measure.restrict_apply ht, Set.inter_comm, smul_eq_mul]

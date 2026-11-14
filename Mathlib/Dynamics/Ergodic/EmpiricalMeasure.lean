@@ -35,11 +35,6 @@ spaces.
 - `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` gives an invariant
   probability measure defined over a (not necessarily compact) ambient space, supported on a
   compact, forward invariant subset.
-
-## TODO
-
-- When the `Measurable` requirement of `MeasurePreserving` is relaxed,
-  `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` can be generalized.
 -/
 
 public section
@@ -134,14 +129,13 @@ public theorem exists_measurePreserving_probabilityMeasure
       exact g.toBoundedContinuousFunction.isBounded_range.subset <| Set.range_comp_subset_range ..
     · exact g.continuous.aestronglyMeasurable
   use ν
-  exact ⟨⟨hf.measurable, hmap⟩, hνreg, ⟨hprob⟩⟩
+  exact ⟨⟨hf.aemeasurable, hmap⟩, hνreg, ⟨hprob⟩⟩
 
 /-- **Krylov-Bogolyubov theorem** for forward invariant compact sets. -/
 theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     {K : Set X} (hcomp : IsCompact K) (hnonempty : K.Nonempty)
-    {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K)
-    (hfmeas : Measurable f) : -- TODO: relax this
+    {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K) :
     ∃ μ : Measure X, MeasurePreserving f μ μ
       ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ ∧ Measure.support μ ⊆ K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
@@ -156,10 +150,13 @@ theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
   use ν
   have : (ν : Measure X).InnerRegular :=
     Measure.InnerRegular.map_of_continuous continuous_subtype_val
-  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
+  have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas.aemeasurable, by simp [ν]⟩
   have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
     intro
     rfl
+  have hfmeas : AEMeasurable f ν :=
+    (MeasurableEmbedding.subtype_coe hcomp.measurableSet).aemeasurable_map_iff.2
+      hfcont.domRestrict.measurable.aemeasurable
   refine ⟨hιmp.of_semiconj hμ hsemi hfmeas, inferInstance, inferInstance, ?_⟩
   -- Now we prove that the invariant measure is supported on the forward invariant set
   apply Measure.support_subset_of_isClosed hcomp.isClosed
