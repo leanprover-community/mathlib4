@@ -4803,6 +4803,8 @@ public import Mathlib.Geometry.Convex.ConvexSpace.PathConnectedSpaceStdSimplex
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Convex.ConvexSpace.ToSSet
 public import Mathlib.Geometry.Convex.ConvexSpace.Topology
+public import Mathlib.Geometry.Convex.Fun.Proper
+public import Mathlib.Geometry.Convex.Fun.Subgradient.Basic
 public import Mathlib.Geometry.Convex.Hull
 public import Mathlib.Geometry.Convex.Segment
 public import Mathlib.Geometry.Convex.Set
