@@ -138,6 +138,18 @@ theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} {f : V →ₗ[K] V
   · rintro ⟨s, rfl, si⟩
     exact ⟨s, ⟨s, rfl, rfl⟩, si⟩
 
+variable [AddCommGroup V''] [Module K V'']
+
+theorem rank_prod_fst (f : V × V' →ₗ[K] V'') :
+    rank (prod (fst K V V') f) =
+      lift.{v''} (Module.rank K V) + lift.{v} (rank (f ∘ₗ inr K V V')) := by
+  simpa using (rangeProdFstEquiv f).lift_rank_eq
+
+theorem rank_prod_snd (f : V × V' →ₗ[K] V'') :
+    rank (prod (snd K V V') f) =
+      lift.{v''} (Module.rank K V') + lift.{v'} (rank (f ∘ₗ inl K V V')) := by
+  simpa using (rangeProdSndEquiv f).lift_rank_eq
+
 end DivisionRing
 
 end LinearMap

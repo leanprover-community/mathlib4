@@ -877,6 +877,47 @@ end LinearMap
 
 namespace LinearMap
 
+open Submodule
+
+variable [Ring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃]
+  [Module R M] [Module R M₂] [Module R M₃]
+
+/-- The range of `(fst, f) : M × M₂ →ₗ[R] M × M₃` is linearly equivalent to
+the product of `M` and the range of `f ∘ₗ inr R M M₂`. -/
+@[simps! apply_fst apply_snd_coe symm_apply_coe]
+def rangeProdFstEquiv (f : M × M₂ →ₗ[R] M₃) :
+    range (prod (fst R M M₂) f) ≃ₗ[R] M × range (f ∘ₗ inr R M M₂) :=
+  .ofLinearMap
+    (prod (fst R M M₃ ∘ₗ Submodule.subtype _)
+      (codRestrict _ ((snd R M M₃ - f ∘ₗ inl R M M₂ ∘ₗ fst R M M₃) ∘ₗ Submodule.subtype _) <| by
+        rintro ⟨_, x, rfl⟩
+        exact ⟨x.2, by simp [eq_sub_iff_add_eq, ← map_add]⟩))
+    (codRestrict _
+      (prod (fst R M _) (f ∘ₗ inl R M M₂ ∘ₗ fst R M _ + Submodule.subtype _ ∘ₗ snd R M _)) <| by
+        rintro ⟨x, _, y, rfl⟩
+        exact ⟨(x, y), by simp [← map_add]⟩)
+    (by ext <;> simp) (by ext ⟨_, x, rfl⟩ <;> simp)
+
+/-- The range of `(snd, f) : M × M₂ →ₗ[R] M₂ × M₃` is linearly equivalent to
+the product of `M₂` and the range of `f ∘ₗ inl R M M₂`. -/
+@[simps! apply_fst apply_snd_coe symm_apply_coe]
+def rangeProdSndEquiv (f : M × M₂ →ₗ[R] M₃) :
+    range (prod (snd R M M₂) f) ≃ₗ[R] M₂ × range (f ∘ₗ inl R M M₂) :=
+  .ofLinearMap
+    (prod (fst R M₂ M₃ ∘ₗ Submodule.subtype _)
+      (codRestrict _ ((snd R M₂ M₃ - f ∘ₗ inr R M M₂ ∘ₗ fst R M₂ M₃) ∘ₗ Submodule.subtype _) <| by
+        rintro ⟨_, x, rfl⟩
+        exact ⟨x.1, by simp [eq_sub_iff_add_eq, ← map_add]⟩))
+    (codRestrict _
+      (prod (fst R M₂ _) (f ∘ₗ inr R M M₂ ∘ₗ fst R M₂ _ + Submodule.subtype _ ∘ₗ snd R M₂ _)) <| by
+        rintro ⟨y, _, x, rfl⟩
+        exact ⟨(x, y), by simp [← map_add, add_comm]⟩)
+    (by ext <;> simp) (by ext ⟨_, x, rfl⟩ <;> simp)
+
+end LinearMap
+
+namespace LinearMap
+
 section Graph
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃] [AddCommGroup M₄]
