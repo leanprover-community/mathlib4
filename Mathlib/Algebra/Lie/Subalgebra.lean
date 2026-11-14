@@ -146,6 +146,7 @@ protected theorem sub_mem {x y : L} : x ∈ L' → y ∈ L' → (x - y : L) ∈ 
 protected theorem smul_mem (t : R) {x : L} (h : x ∈ L') : t • x ∈ L' :=
   SMulMemClass.smul_mem _ h
 
+@[membership .]
 theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈ L' :=
   L'.lie_mem' hx hy
 
