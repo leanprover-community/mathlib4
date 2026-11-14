@@ -619,21 +619,9 @@ lemma mapHomologyIso'_eq_mapHomologyIso [S.HasHomology] [F.PreservesLeftHomology
     [F.PreservesRightHomologyOf S] :
     S.mapHomologyIso' F = S.mapHomologyIso F := by
   ext
-  rw [S.homologyData.left.mapHomologyIso_eq F, S.homologyData.right.mapHomologyIso'_eq F]
-  dsimp
-  simp only [Iso.trans, Iso.symm, Iso.refl, RightHomologyData.homologyIso,
-    rightHomologyIso, RightHomologyData.rightHomologyIso, LeftHomologyData.homologyIso,
-    leftHomologyIso, LeftHomologyData.leftHomologyIso]
-  simp only [RightHomologyData.map_H, rightHomologyMapIso'_inv, rightHomologyMapIso'_hom, assoc,
-    Functor.map_comp, RightHomologyData.map_rightHomologyMap', Functor.mapShortComplex_obj,
-    Functor.map_id, LeftHomologyData.map_H, leftHomologyMapIso'_inv, leftHomologyMapIso'_hom,
-    LeftHomologyData.map_leftHomologyMap', ← rightHomologyMap'_comp_assoc, ← leftHomologyMap'_comp,
-    id_comp]
-  have γ : HomologyMapData (𝟙 (S.map F)) (map S F).homologyData (S.homologyData.map F) := default
-  have eq := γ.comm
-  rw [← γ.left.leftHomologyMap'_eq, ← γ.right.rightHomologyMap'_eq,
-    HomologyData.map_iso, Functor.mapIso_hom] at eq
-  simp only [← reassoc_of% dsimp% eq, ← F.map_comp, Iso.hom_inv_id, F.map_id, comp_id]
+  simp [S.homologyData.left.mapHomologyIso_eq F, S.homologyData.right.mapHomologyIso'_eq F,
+    dsimp% (S.homologyData.map F).right_homologyIso_eq_left_homologyIso_trans_iso,
+    S.homologyData.right_homologyIso_eq_left_homologyIso_trans_iso]
 
 end
 

@@ -138,10 +138,8 @@ lemma quasiIso_iff_isIso_homologyMap' (φ : S₁ ⟶ S₂)
   quasiIso_iff_isIso_leftHomologyMap' _ _ _
 
 lemma quasiIso_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
-    QuasiIso φ := by
-  rw [((LeftHomologyMapData.ofEpiOfIsIsoOfMono φ) S₁.leftHomologyData).quasiIso_iff]
-  change IsIso (𝟙 S₁.leftHomology)
-  infer_instance
+    QuasiIso φ where
+  isIso' := isIso_homologyMap_of_epi_of_isIso_of_mono φ
 
 lemma quasiIso_opMap_iff (φ : S₁ ⟶ S₂) :
     QuasiIso (opMap φ) ↔ QuasiIso φ := by

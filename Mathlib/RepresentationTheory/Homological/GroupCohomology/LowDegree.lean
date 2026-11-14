@@ -813,6 +813,7 @@ def isoCocycles₁ : cocycles A 1 ≅ ↧(cocycles₁ A) :=
   ShortComplex.cyclesMapIso (isoShortComplexH1 A) ≪≫
     (shortComplexH1 A).moduleCatLeftHomologyData.cyclesIso
 
+attribute [local implicit_reducible] cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_hom_comp_i :
     (isoCocycles₁ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
@@ -864,6 +865,7 @@ def isoCocycles₂ : cocycles A 2 ≅ ↧(cocycles₂ A) :=
   ShortComplex.cyclesMapIso (isoShortComplexH2 A) ≪≫
     (shortComplexH2 A).moduleCatLeftHomologyData.cyclesIso
 
+attribute [local implicit_reducible] cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_hom_comp_i :
     (isoCocycles₂ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
