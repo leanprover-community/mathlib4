@@ -537,22 +537,22 @@ theorem iUnion_nonempty_index (s : Set α) (t : s.Nonempty → Set β) :
 end
 
 @[simp]
-theorem iInter_iInter_eq_left {b : β} {s : ∀ x : β, x = b → Set α} :
+theorem iInter_iInter_eq_left {b : ι} {s : ∀ x : ι, x = b → Set α} :
     ⋂ (x) (h : x = b), s x h = s b rfl :=
   iInf_iInf_eq_left
 
 @[simp]
-theorem iInter_iInter_eq_right {b : β} {s : ∀ x : β, b = x → Set α} :
+theorem iInter_iInter_eq_right {b : ι} {s : ∀ x : ι, b = x → Set α} :
     ⋂ (x) (h : b = x), s x h = s b rfl :=
   iInf_iInf_eq_right
 
 @[simp]
-theorem iUnion_iUnion_eq_left {b : β} {s : ∀ x : β, x = b → Set α} :
+theorem iUnion_iUnion_eq_left {b : ι} {s : ∀ x : ι, x = b → Set α} :
     ⋃ (x) (h : x = b), s x h = s b rfl :=
   iSup_iSup_eq_left
 
 @[simp]
-theorem iUnion_iUnion_eq_right {b : β} {s : ∀ x : β, b = x → Set α} :
+theorem iUnion_iUnion_eq_right {b : ι} {s : ∀ x : ι, b = x → Set α} :
     ⋃ (x) (h : b = x), s x h = s b rfl :=
   iSup_iSup_eq_right
 
@@ -623,12 +623,12 @@ theorem biInter_and' (p : ι' → Prop) (q : ι → ι' → Prop) (s : ∀ x y, 
   simp only [iInter_and, @iInter_comm _ ι]
 
 @[simp]
-theorem iUnion_iUnion_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x = b ∨ p x → Set α} :
+theorem iUnion_iUnion_eq_or_left {b : ι} {p : ι → Prop} {s : ∀ x : ι, x = b ∨ p x → Set α} :
     ⋃ (x) (h), s x h = s b (Or.inl rfl) ∪ ⋃ (x) (h : p x), s x (Or.inr h) := by
   simp only [iUnion_or, iUnion_union_distrib, iUnion_iUnion_eq_left]
 
 @[simp]
-theorem iInter_iInter_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x = b ∨ p x → Set α} :
+theorem iInter_iInter_eq_or_left {b : ι} {p : ι → Prop} {s : ∀ x : ι, x = b ∨ p x → Set α} :
     ⋂ (x) (h), s x h = s b (Or.inl rfl) ∩ ⋂ (x) (h : p x), s x (Or.inr h) := by
   simp only [iInter_or, iInter_inter_distrib, iInter_iInter_eq_left]
 
@@ -636,20 +636,20 @@ lemma iUnion_sum {s : α ⊕ β → Set γ} : ⋃ x, s x = (⋃ x, s (.inl x)) �
 
 lemma iInter_sum {s : α ⊕ β → Set γ} : ⋂ x, s x = (⋂ x, s (.inl x)) ∩ ⋂ x, s (.inr x) := iInf_sum
 
-theorem iUnion_psigma {γ : α → Type*} (s : PSigma γ → Set β) : ⋃ ia, s ia = ⋃ i, ⋃ a, s ⟨i, a⟩ :=
+theorem iUnion_psigma (s : PSigma κ → Set β) : ⋃ ia, s ia = ⋃ i, ⋃ a, s ⟨i, a⟩ :=
   iSup_psigma _
 
 /-- A reversed version of `iUnion_psigma` with a curried map. -/
-theorem iUnion_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
-    ⋃ i, ⋃ a, s i a = ⋃ ia : PSigma γ, s ia.1 ia.2 :=
+theorem iUnion_psigma' (s : ∀ i, κ i → Set β) :
+    ⋃ i, ⋃ a, s i a = ⋃ ia : PSigma κ, s ia.1 ia.2 :=
   iSup_psigma' _
 
-theorem iInter_psigma {γ : α → Type*} (s : PSigma γ → Set β) : ⋂ ia, s ia = ⋂ i, ⋂ a, s ⟨i, a⟩ :=
+theorem iInter_psigma (s : PSigma κ → Set β) : ⋂ ia, s ia = ⋂ i, ⋂ a, s ⟨i, a⟩ :=
   iInf_psigma _
 
 /-- A reversed version of `iInter_psigma` with a curried map. -/
-theorem iInter_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
-    ⋂ i, ⋂ a, s i a = ⋂ ia : PSigma γ, s ia.1 ia.2 :=
+theorem iInter_psigma' (s : ∀ i, κ i → Set β) :
+    ⋂ i, ⋂ a, s i a = ⋂ ia : PSigma κ, s ia.1 ia.2 :=
   iInf_psigma' _
 
 end Set
