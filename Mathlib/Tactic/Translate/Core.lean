@@ -943,6 +943,13 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
     | `(translationHint| self) => existing := true; self := true
     | `(translationHint| none) => none := true
     | _ => pure ()
+    if let some omissions := omit? then
+      if let some reorder := reorder? then
+        let overlap := omissions.args.filter reorder.perm.toList.contains
+        if !overlap.isEmpty then
+          -- `overlap` has argument indices, we convert back to 1-based indexing.
+          throwError "argument(s) {overlap.map (· + 1)} are supposed to be both omitted and \
+            reordered: this is currently not supported."
     if (self || none) && !attrs.isEmpty then
       throwError "invalid `(attr := ...)` after `self` or `none`, \
         as there is no other declaration for the attributes.\n\

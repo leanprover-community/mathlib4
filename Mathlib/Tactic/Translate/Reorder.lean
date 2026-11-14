@@ -60,6 +60,10 @@ abbrev Permutation := List {l : List Nat // 2 ≤ l.length}
 
 namespace Permutation
 
+/-- Return a list of all elements moved in a permutation. -/
+def toList (c : Permutation) : List Nat :=
+  c.foldl (init := []) (fun l perm ↦ l ++ perm.1)
+
 /-- Permute an array of arguments using the given reorder. -/
 def permute! {α} [Inhabited α] (c : Permutation) : Array α → Array α :=
   c.foldl (cyclicPermute! · ·.1)

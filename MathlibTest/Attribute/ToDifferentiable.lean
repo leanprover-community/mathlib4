@@ -85,9 +85,19 @@ attribute [to_differentiable (omit := 4 3) Foo4] Foo
 
 -- Omitting arguments together with the dual option errors. TODO can we test this? Is fine here.
 
--- Specifying overlapping arguments to omit and reorder errors. TODO!
+-- Specifying overlapping arguments to omit and reorder errors.
+-- On first sight, this is contradictory. On second sight, this could be carefully specified,
+-- but there is no use case yet. If this changes, this may be revisited.
+/--
+error: argument(s) [3, 4] are supposed to be both omitted and reordered: this is currently not supported.
+-/
+#guard_msgs in
 attribute [to_differentiable (reorder := 3 4) (omit := 3 4) Foo4] Foo
 
+/--
+error: argument(s) [2] are supposed to be both omitted and reordered: this is currently not supported.
+-/
+#guard_msgs in
 attribute [to_differentiable (reorder := 2 4) (omit := 2 3) Foo4] Foo
 
 end inputValidation
