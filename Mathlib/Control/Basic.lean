@@ -44,6 +44,10 @@ def zipWithM' (f : α → β → F γ) : List α → List β → F PUnit
   | [], _ => pure PUnit.unit
   | _, [] => pure PUnit.unit
 
+/-- Lifts a binary function to operate on `Applicative`s. -/
+def liftA2 (f : α → β → γ) (x : F α) (y : F β) : F γ :=
+  f <$> x <*> y
+
 variable [LawfulApplicative F]
 
 @[simp]
@@ -62,6 +66,10 @@ theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
 theorem map_seq (f : β → γ) (x : F (α → β)) (y : F α) :
     f <$> (x <*> y) = (f ∘ ·) <$> x <*> y := by
   simp only [← pure_seq]; simp [seq_assoc]
+
+theorem liftA2_pure (f : α → β → γ) (x : α) (y : β) :
+    liftA2 (F := F) f (pure x) (pure y) = pure (f x y) := by
+  simp [liftA2]
 
 end Applicative
 
