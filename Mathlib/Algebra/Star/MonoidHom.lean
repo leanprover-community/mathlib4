@@ -350,6 +350,13 @@ theorem ofBijective_apply {f : A →⋆* B} (hf : Function.Bijective f) (a : A) 
     StarMulEquiv.ofBijective f hf a = f a :=
   rfl
 
+lemma ofBijective_toStarMonoidHom (e : A ≃⋆* B) :
+    .ofBijective e.toStarMonoidHom e.bijective = e := by ext; rfl
+
+@[simp]
+lemma ofBijective_toEquiv {f : A →⋆* B} (hf : Function.Bijective f) :
+    (StarMulEquiv.ofBijective f hf).toEquiv = .ofBijective f hf := rfl
+
 end Bijective
 
 end StarMulEquiv

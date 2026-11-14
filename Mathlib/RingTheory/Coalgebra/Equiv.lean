@@ -301,6 +301,12 @@ noncomputable def ofBijective : A ≃ₗc[R] B where
 theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
+lemma ofBijective_toCoalgHom (e : A ≃ₗc[R] B) :
+    .ofBijective (f := e.toCoalgHom) e.bijective = e := by ext; rfl
+
+@[simp]
+lemma ofBijective_toEquiv : (CoalgEquiv.ofBijective hf).toEquiv = .ofBijective f hf := rfl
+
 end
 variable
   [AddCommMonoid A] [Module R A] [Coalgebra R A]
