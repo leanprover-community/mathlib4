@@ -47,11 +47,7 @@ theorem intValuation_liesOver (x : A) :
   rw [intValuation_eq_exp_neg_multiplicity v hx, intValuation_eq_exp_neg_multiplicity w (by simpa),
     ← Set.image_singleton, ← Ideal.map_span, exp_neg, exp_neg, inv_pow, ← exp_nsmul,
     Int.nsmul_eq_mul, inv_inj, exp_inj, ← Nat.cast_mul, Nat.cast_inj]
-  refine multiplicity_eq_of_emultiplicity_eq_some ?_ |>.symm
-  replace hx : Ideal.span {x} ≠ ⊥ := by simp [hx]
-  rw [← Ideal.ramificationIdx'_eq_ramificationIdx v.asIdeal w.asIdeal v.ne_bot]
-  rw [emultiplicity_map_eq_ramificationIdx'_mul hx v.irreducible w.irreducible w.ne_bot,
-    Nat.cast_mul, (FiniteMultiplicity.of_prime_left v.prime hx).emultiplicity_eq_multiplicity]
+  exact (multiplicity_map_eq_ramificationIdx_mul v.asIdeal w.asIdeal w.ne_bot (Ideal.span {x})).symm
 
 theorem valuation_liesOver (x : K) :
     v.valuation K x ^ w.asIdeal.ramificationIdx A =
