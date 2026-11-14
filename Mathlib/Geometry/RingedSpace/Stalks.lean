@@ -43,7 +43,6 @@ def Hom.stalkMap {X Y : PresheafedSpace.{_, _, v} C} (α : Hom X Y) (x : X) :
     Y.presheaf.stalk (α.base x) ⟶ X.presheaf.stalk x :=
   (stalkFunctor C (α.base x)).map α.c ≫ X.presheaf.stalkPushforward C α.base x
 
-set_option backward.isDefEq.respectTransparency false in
 @[elementwise, reassoc]
 theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Opens Y)
     (x : X) (hx : α x ∈ U) :
