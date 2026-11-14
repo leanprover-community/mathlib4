@@ -33,7 +33,7 @@ This file defines the focal subgroup and proves the Focal Subgroup Theorem.
 
 ## References
 
-* [D. Gorenstein, *Finite Groups*][gorenstein1968]
+* [D. Gorenstein, *Finite Groups*][Gorenstein1968]
 -/
 
 @[expose] public section
