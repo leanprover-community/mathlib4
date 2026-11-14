@@ -190,9 +190,8 @@ instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) where coe := toRingEqu
 theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
   rfl
 
-@[simp]
-theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
-  rfl
+@[deprecated "syntactic tatuology" (since := "2026-11-14")]
+theorem toRingEquiv_eq_coe : e.toRingEquiv = e := rfl
 
 @[simp]
 lemma toRingEquiv_toRingHom {A₁ A₂ : Type*} [Semiring R] [NonAssocSemiring A₁] [NonAssocSemiring A₂]

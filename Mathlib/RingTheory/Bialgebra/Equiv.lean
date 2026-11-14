@@ -280,7 +280,7 @@ lemma symm_apply_apply (e : A ≃ₐc[R] B) : ∀ x, e.symm (e x) = x := e.toEqu
 @[simp] lemma symm_comp (e : A ≃ₐc[R] B) : (e.symm : B →ₐc[R] A).comp e = .id R A :=
   BialgHom.coe_toAlgHom_injective e.toAlgEquiv.symm_comp
 
-@[simp] lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
+lemma toRingEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃+* B) : A →+* B) = e := rfl
 @[simp] lemma toAlgEquiv_toRingHom (e : A ≃ₐc[R] B) : ((e : A ≃ₐ[R] B) : A →+* B) = e := rfl
 
 /-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
