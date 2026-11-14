@@ -285,7 +285,7 @@ theorem hom_trivializationAt_baseSet (x₀ : B) :
       ((trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet) :=
   rfl
 
-theorem continuousWithinAt_hom_bundle {M : Type*} [TopologicalSpace M]
+theorem continuousWithinAt_hom_bundle_iff {M : Type*} [TopologicalSpace M]
     (f : M → TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) {s : Set M} {x₀ : M} :
     ContinuousWithinAt f s x₀ ↔
       ContinuousWithinAt (fun x ↦ (f x).1) s x₀ ∧
@@ -293,13 +293,18 @@ theorem continuousWithinAt_hom_bundle {M : Type*} [TopologicalSpace M]
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
   FiberBundle.continuousWithinAt_totalSpace ..
 
-theorem continuousAt_hom_bundle {M : Type*} [TopologicalSpace M]
+@[deprecated (since := "2026-11-03")]
+alias continuousWithinAt_hom_bundle := continuousWithinAt_hom_bundle_iff
+
+theorem continuousAt_hom_bundle_iff {M : Type*} [TopologicalSpace M]
     (f : M → TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) {x₀ : M} :
     ContinuousAt f x₀ ↔
       ContinuousAt (fun x ↦ (f x).1) x₀ ∧
         ContinuousAt
           (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   FiberBundle.continuousAt_totalSpace ..
+
+@[deprecated (since := "2026-11-03")] alias continuousAt_hom_bundle := continuousAt_hom_bundle_iff
 
 section
 
@@ -421,7 +426,7 @@ lemma ContinuousWithinAt.clm_bundle_apply
     (hv : ContinuousWithinAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x) :
     ContinuousWithinAt
       (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s x := by
-  simp only [continuousWithinAt_hom_bundle] at hϕ
+  simp only [continuousWithinAt_hom_bundle_iff] at hϕ
   exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a basemap `b : M → B`, and
