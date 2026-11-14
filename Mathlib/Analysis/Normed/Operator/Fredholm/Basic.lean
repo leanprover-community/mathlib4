@@ -220,7 +220,7 @@ lemma FredholmPackage.isQuasiInverse {u : E →L[𝕜] F} (pkg : FredholmPackage
     have := pkg.decCodom.finite_X₀
     isQuasiInverse_subtype_projectionOnto _
   -- For some reason `exact` and `refine` are slow here!
-  apply hdom.comp (pkg.equiv.isQuasiInverse.comp hcodom.symm)
+  apply (hcodom.symm.comp pkg.equiv.isQuasiInverse).comp hdom
 
 end FredholmPackage
 
@@ -545,21 +545,21 @@ theorem IsFredholm.comp {f' : F →L[𝕜] G} {f : E →L[𝕜] F} (hf' : IsFred
     (hf : IsFredholm f) : IsFredholm (f' ∘L f) := by
   obtain ⟨g, hg⟩ := hf.exists_isQuasiInverse
   obtain ⟨g', hg'⟩ := hf'.exists_isQuasiInverse
-  exact .of_isQuasiInverse (mod_cast hg.comp hg')
+  exact .of_isQuasiInverse (mod_cast hg'.comp hg)
 
 theorem IsFredholm.comp_iff_left {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholm f) :
     IsFredholm (f' ∘L f) ↔ IsFredholm f' := by
   refine ⟨fun hcomp ↦ ?_, fun hf' ↦ hf'.comp hf⟩
   obtain ⟨g, hg⟩ := hf.exists_isQuasiInverse
   obtain ⟨w, hw⟩ := hcomp.exists_isQuasiInverse
-  exact .of_isQuasiInverse (mod_cast hg.of_comp_left hw)
+  exact .of_isQuasiInverse (mod_cast hg.of_comp_right hw)
 
 theorem IsFredholm.comp_iff_right {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf' : IsFredholm f') :
     IsFredholm (f' ∘L f) ↔ IsFredholm f := by
   refine ⟨fun hcomp ↦ ?_, fun hf ↦ hf'.comp hf⟩
   obtain ⟨g', hg'⟩ := hf'.exists_isQuasiInverse
   obtain ⟨w, hw⟩ := hcomp.exists_isQuasiInverse
-  exact .of_isQuasiInverse (mod_cast hg'.of_comp_right hw)
+  exact .of_isQuasiInverse (mod_cast hg'.of_comp_left hw)
 
 @[simp]
 theorem isFredholm_comp_equiv {f : E ≃L[𝕜] F} {f' : F →L[𝕜] G} :
