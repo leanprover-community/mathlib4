@@ -125,16 +125,26 @@ theorem mapRange_apply (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) 
   rfl
 
 @[simp]
-theorem mapRange_id (h : ∀ i, id (0 : β₁ i) = 0 := fun _ => rfl) (g : Π₀ i : ι, β₁ i) :
-    mapRange (fun i => (id : β₁ i → β₁ i)) h g = g := by
+theorem mapRange_fun_id (g : Π₀ i : ι, β₁ i) :
+    mapRange (fun _ x => x) (fun _ => rfl) g = g := by
   ext
   rfl
 
+@[simp]
+theorem mapRange_id (g : Π₀ i : ι, β₁ i) :
+    mapRange (fun i => (id : β₁ i → β₁ i)) (fun _ => rfl) g = g :=
+  mapRange_fun_id g
+
+theorem mapRange_fun_comp (f : ∀ i, β₁ i → β₂ i) (f₂ : ∀ i, β i → β₁ i) (hf : ∀ i, f i 0 = 0)
+    (hf₂ : ∀ i, f₂ i 0 = 0) (h : ∀ i, f i (f₂ i 0) = 0) (g : Π₀ i : ι, β i) :
+    mapRange (fun i x => f i (f₂ i x)) h g = mapRange f hf (mapRange f₂ hf₂ g) := by
+  ext
+  simp only [mapRange_apply]
+
 theorem mapRange_comp (f : ∀ i, β₁ i → β₂ i) (f₂ : ∀ i, β i → β₁ i) (hf : ∀ i, f i 0 = 0)
     (hf₂ : ∀ i, f₂ i 0 = 0) (h : ∀ i, (f i ∘ f₂ i) 0 = 0) (g : Π₀ i : ι, β i) :
-    mapRange (fun i => f i ∘ f₂ i) h g = mapRange f hf (mapRange f₂ hf₂ g) := by
-  ext
-  simp only [mapRange_apply]; rfl
+    mapRange (fun i => f i ∘ f₂ i) h g = mapRange f hf (mapRange f₂ hf₂ g) :=
+  mapRange_fun_comp f f₂ hf hf₂ h g
 
 @[simp]
 theorem mapRange_zero (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
