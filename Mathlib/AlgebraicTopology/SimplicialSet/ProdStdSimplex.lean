@@ -22,7 +22,6 @@ the corresponding monotone map `Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`
 is injective (or a strict mono).
 
 We also show that the dimension of `Δ[p] ⊗ Δ[q]` is `≤ p + q`.
-
 -/
 
 @[expose] public section

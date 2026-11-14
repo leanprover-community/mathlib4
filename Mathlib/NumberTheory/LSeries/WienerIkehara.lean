@@ -337,7 +337,7 @@ private lemma sum_range_ite_w_le :
       exact setIntegral_mono_set
         (by simpa using (integrableOn_mul_w_div (a := 1) zero_lt_one).mono_set Ioi_subset_Ici_self)
         (eventually_of_mem (self_mem_ae_restrict measurableSet_Ioi) fun t ht ↦ w_nonneg ht.le)
-        Ioc_subset_Ioi_self.eventuallyLE
+        Ioc_subset_Ioi_self.eventuallySubset
 
 include bound hpos hx in
 private lemma bound_sum_log_range :

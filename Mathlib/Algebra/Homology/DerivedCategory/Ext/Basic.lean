@@ -35,7 +35,6 @@ Then, for `C := Sheaf X.etale AddCommGrpCat.{u}`, we will have
 `Category.{u + 1} C`, but `HasExt.{u} C` will hold
 (as `C` has enough injectives). Then, the `Ext` groups between étale
 sheaves over `X` shall be in `Type u`.
-
 -/
 
 @[expose] public section

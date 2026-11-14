@@ -265,7 +265,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     · rfl
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
     · refine ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, ?_⟩
-      simpa [withDensity_apply _ s_meas, hasFiniteIntegral_iff_enorm] using hs
+      simpa [withDensity_apply _ s_meas, hasFiniteIntegral_iff_eNorm] using hs
   · intro u u' _ u_int u'_int h h'
     change
       (∫ x : X, u x + u' x ∂μ.withDensity fun x : X => ↑(f x)) = ∫ x : X, f x • (u x + u' x) ∂μ

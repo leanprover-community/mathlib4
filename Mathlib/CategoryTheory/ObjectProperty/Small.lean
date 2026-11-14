@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
 In this file, given `P : ObjectProperty C`, we define
 `ObjectProperty.Small.{w} P` as an abbreviation for `Small.{w} (Subtype P)`.
-
 -/
 
 public section

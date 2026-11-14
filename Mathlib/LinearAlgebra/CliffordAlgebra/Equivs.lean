@@ -55,7 +55,6 @@ and vice-versa:
 
 * `CliffordAlgebraDualNumber.equiv`: `R[ε]` is equivalent as an `R`-algebra to a clifford
   algebra over `R` where `Q = 0`.
-
 -/
 
 @[expose] public section

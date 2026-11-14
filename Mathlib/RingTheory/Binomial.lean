@@ -62,7 +62,6 @@ Further results in Elliot's paper:
 * Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
   ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
   `1 + I`.
-
 -/
 
 @[expose] public section

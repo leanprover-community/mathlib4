@@ -63,7 +63,6 @@ into a single statement about nilpotency of Lie modules. This is not usually emp
   * `LieAlgebra.isEngelian_of_isNoetherian`
   * `LieModule.isNilpotent_iff_forall`
   * `LieAlgebra.isNilpotent_iff_forall`
-
 -/
 
 @[expose] public section

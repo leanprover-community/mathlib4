@@ -217,6 +217,9 @@ namespace Set
 protected def univ (α) : @univ α ≃ α :=
   ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
 
+@[simp]
+theorem coe_univ (α) : ⇑(Equiv.Set.univ α) = (↑) := rfl
+
 /-- An empty set is equivalent to the `Empty` type. -/
 protected def empty (α) : (∅ : Set α) ≃ Empty :=
   equivEmpty _

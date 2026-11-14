@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 Let `F G : C ⥤ D` be a parallel pair of functors. In this file, we show that if `F` (resp. `G`)
 preserves colimits (resp. limits) of shape `J` and if `C` has colimits (resp. limits) of shape `J`,
 then `Inserter F G` has colimits (resp. limits) of shape `J` and the projection preserves them.
-
 -/
 
 @[expose] public section

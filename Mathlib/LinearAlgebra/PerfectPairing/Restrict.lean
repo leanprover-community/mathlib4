@@ -21,7 +21,6 @@ We provide API for restricting perfect pairings to submodules and for restrictin
   subring.
 * `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
   of a perfect pairing with coefficients in a field.
-
 -/
 
 public section
@@ -197,7 +196,8 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
       Basis.dualBasis_repr]
     exact hp (b j) (by simpa [b] using hv₁ j.2) (bN i) (by simpa [bN] using hw₁ i.2)
   have hA (i j) : b.toMatrix bM i j ∈ (algebraMap K L).range :=
-    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _ (by simp [bM]) hp i j
+    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _
+      (b.toMatrix_mul_toMatrix_flip bM) hp i j
   have h_span : span K v = span K (Set.range b) := by simp [b]
   rw [h_span, Basis.mem_span_iff_repr_mem, ← Basis.toMatrix_mulVec_repr bM b m]
   exact fun i ↦ Subring.sum_mem _ fun j _ ↦ Subring.mul_mem _ (hA i j) (hj j)
