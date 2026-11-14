@@ -58,21 +58,26 @@ namespace ArgOmit
 /-- Return `true` if the omissions doesn't do anything. -/
 def isEmpty (r : ArgOmit) : Bool := r matches ⟨[], #[]⟩
 
+/- only for internal testing anyway; this is not the actually executed code
 /-- Modify an array of arguments by omitting all elements of given indices. -/
 private def _root_.test {α} [Inhabited α] (c : List Nat) : Array α → Array α := fun arr ↦
-  -- Assume `c` is a list of ascending indices, and remove from the highest indices.
-  c.reverse.foldl (α := Array α) (fun a i ↦ a.eraseIdxIfInBounds i) arr
+  -- Sort `c` into ascending order, and remove from the highest indices.
+  c.mergeSort.reverse.foldl (α := Array α) (fun a i ↦ a.eraseIdxIfInBounds i) arr
 
-#eval test [2] #["a", "b", "c"]
-#eval test [1] #["a", "b", "c"]
-#eval test [0, 2] #["a", "b", "c"]
-#eval test [0, 2, 4] #["a", "b", "c", "d", "e"]
+#guard test [2] #["a", "b", "c"] == #["a", "b"]
+#guard test [1] #["a", "b", "c"] == #["a", "c"]
+#guard test [0, 2] #["a", "b", "c"] == #["b"]
+#guard test [0, 2, 4] #["a", "b", "c", "d", "e"] == #["b", "d"]
+
+#guard test [0, 2] #["a", "b", "c", "d", "e"] == #["b", "d", "e"]
+#guard test [2, 0] #["a", "b", "c", "d", "e"] == #["b", "d", "e"]
+-/
 
 /-- Remove a collection of arguments from a given an array of arguments. -/
 def omit! {α} [Inhabited α] (r : ArgOmit) : Array α → Array α :=
   -- We assume `r.args` has indices in ascending order: remove from the end
   -- as otherwise we invalidate indices.
-  r.args.reverse.foldl (α := Array α) (fun a i ↦ a.eraseIdxIfInBounds i)
+  r.args.mergeSort.reverse.foldl (α := Array α) (fun a i ↦ a.eraseIdxIfInBounds i)
 
 /-- Return the minimum size of an array on which the given omissions configuration is valid. -/
 def range (r : ArgOmit) : Nat :=

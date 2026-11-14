@@ -79,7 +79,8 @@ but `Foo4` has type
 #guard_msgs in
 attribute [to_differentiable (omit := 3) Foo4] Foo
 
--- Arguments in not sorted order: TODO fix this!
+-- Omission arguments are treated as if they were in sorted order.
+set_option linter.translate.existing false in
 attribute [to_differentiable (omit := 4 3) Foo4] Foo
 
 -- Omitting arguments together with the dual option errors. TODO can we test this? Is fine here.
