@@ -28,7 +28,7 @@ section One
 variable [One α] {a : α}
 
 @[to_additive]
-instance one : One (WithTop α) :=
+instance : One (WithTop α) :=
   ⟨(1 : α)⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -96,7 +96,7 @@ section Add
 
 variable [Add α] {w x y z : WithTop α} {a b : α}
 
-instance add : Add (WithTop α) :=
+instance : Add (WithTop α) :=
   ⟨WithTop.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
@@ -240,25 +240,20 @@ protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
 
 end Add
 
-instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
-  { WithTop.add with
-    add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
+instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) where
+  add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
-  { WithTop.addSemigroup with
-    add_comm := fun _ _ => Option.map₂_comm add_comm }
+instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) where
+  add_comm := fun _ _ => Option.map₂_comm add_comm
 
-instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
-  { WithTop.zero, WithTop.add with
-    zero_add := Option.map₂_left_identity zero_add
-    add_zero := Option.map₂_right_identity add_zero }
+instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) where
+  zero_add := Option.map₂_left_identity zero_add
+  add_zero := Option.map₂_right_identity add_zero
 
 section AddMonoid
 variable [AddMonoid α]
 
 instance addMonoid : AddMonoid (WithTop α) where
-  __ := WithTop.addSemigroup
-  __ := WithTop.addZeroClass
   nsmul n a := match a, n with
     | (a : α), n => ↑(n • a)
     | ⊤, 0 => 0
@@ -280,8 +275,7 @@ def addHom : α →+ WithTop α where
 
 end AddMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
-  { WithTop.addMonoid, WithTop.addCommSemigroup with }
+instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) where
 
 instance natCast [NatCast α] : NatCast (WithTop α) :=
   ⟨fun n => ↑(n : α)⟩
@@ -336,8 +330,7 @@ instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
       (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective }
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
-  { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
+instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) where
 
 -- instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
 --   add_le_add_left _ _ := add_le_add_left
@@ -401,7 +394,7 @@ namespace WithBot
 section One
 variable [One α] {a : α}
 
-@[to_additive] instance one : One (WithBot α) := ⟨(1 : α)⟩
+@[to_additive] instance : One (WithBot α) := ⟨(1 : α)⟩
 
 @[to_additive (attr := simp, norm_cast)] lemma coe_one : ((1 : α) : WithBot α) = 1 := rfl
 
@@ -461,7 +454,7 @@ end One
 section Add
 variable [Add α] {w x y z : WithBot α} {a b : α}
 
-instance add : Add (WithBot α) :=
+instance : Add (WithBot α) :=
   ⟨WithBot.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithBot α) := rfl

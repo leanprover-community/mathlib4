@@ -65,16 +65,14 @@ section Monoid
 
 variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 
-protected instance mul : Mul (PushoutI φ) := by
+instance : Mul (PushoutI φ) := by
   delta PushoutI; infer_instance
 
-protected instance one : One (PushoutI φ) := by
+instance : One (PushoutI φ) := by
   delta PushoutI; infer_instance
 
 instance monoid : Monoid (PushoutI φ) :=
-  { Con.monoid _ with
-    toMul := PushoutI.mul
-    toOne := PushoutI.one }
+  inferInstanceAs <| Monoid (con φ).Quotient
 
 /-- The map from each indexing group into the pushout -/
 def of (i : ι) : G i →* PushoutI φ :=

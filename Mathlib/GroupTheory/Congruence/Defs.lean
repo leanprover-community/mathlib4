@@ -541,7 +541,7 @@ section
 variable [Mul M] [One M] (c : Con M)
 
 @[to_additive]
-instance one : One c.Quotient where
+instance : One c.Quotient where
   -- Using Quotient.mk'' here instead of c.toQuotient
   -- since c.toQuotient is not reducible.
   -- This would lead to non-defeq diamonds since this instance ends up in

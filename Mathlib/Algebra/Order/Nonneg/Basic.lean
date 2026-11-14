@@ -54,7 +54,7 @@ namespace Nonneg
 instance inhabited [Preorder α] {a : α} : Inhabited { x : α // a ≤ x } :=
   ⟨⟨a, le_rfl⟩⟩
 
-instance zero [Zero α] [Preorder α] : Zero (Nonneg α) :=
+instance [Zero α] [Preorder α] : Zero (Nonneg α) :=
   ⟨⟨0, le_rfl⟩⟩
 
 @[simp, norm_cast]
@@ -66,7 +66,7 @@ theorem mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
     (⟨x, hx⟩ : Nonneg α) = 0 ↔ x = 0 :=
   Subtype.ext_iff
 
-instance add [AddZeroClass α] [Preorder α] [AddLeftMono α] : Add (Nonneg α) :=
+instance [AddZeroClass α] [Preorder α] [AddLeftMono α] : Add (Nonneg α) :=
   ⟨fun x y => ⟨x + y, add_nonneg x.2 y.2⟩⟩
 
 @[simp]
@@ -91,7 +91,7 @@ instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsRightCancelAdd α] 
 instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsCancelAdd α] :
     IsCancelAdd (Nonneg α) where
 
-instance nsmul [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ (Nonneg α) :=
+instance [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ (Nonneg α) :=
   ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
 
 @[simp]
@@ -108,7 +108,7 @@ section One
 
 variable [Zero α] [One α] [LE α] [ZeroLEOneClass α]
 
-instance one : One (Nonneg α) where
+instance : One (Nonneg α) where
   one := ⟨1, zero_le_one⟩
 
 @[simp, norm_cast]
@@ -126,7 +126,7 @@ section Mul
 
 variable [MulZeroClass α] [Preorder α] [PosMulMono α]
 
-instance mul : Mul (Nonneg α) where
+instance : Mul (Nonneg α) where
   mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
 
 @[simp, norm_cast]
@@ -196,11 +196,10 @@ protected theorem coe_natCast (n : ℕ) : ((↑n : Nonneg α) : α) = n :=
 theorem mk_natCast (n : ℕ) : (⟨n, n.cast_nonneg'⟩ : Nonneg α) = n :=
   rfl
 
-instance addMonoidWithOne : AddMonoidWithOne (Nonneg α) :=
-  { Nonneg.one (α := α) with
-    toNatCast := Nonneg.natCast
-    natCast_zero := by ext; simp
-    natCast_succ := fun _ => by ext; simp }
+instance addMonoidWithOne : AddMonoidWithOne (Nonneg α) where
+  toNatCast := Nonneg.natCast
+  natCast_zero := by ext; simp
+  natCast_succ := fun _ => by ext; simp
 
 end AddMonoidWithOne
 
@@ -208,7 +207,7 @@ section Pow
 
 variable [MonoidWithZero α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
 
-instance pow : Pow (Nonneg α) ℕ where
+instance : Pow (Nonneg α) ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 
 @[simp, norm_cast]
@@ -282,7 +281,7 @@ theorem toNonneg_le {a : α} {b : Nonneg α} : toNonneg a ≤ b ↔ a ≤ b := b
   obtain ⟨b, hb⟩ := b
   simp [toNonneg, hb]
 
-instance sub [Sub α] : Sub (Nonneg α) :=
+instance [Sub α] : Sub (Nonneg α) :=
   ⟨fun x y => toNonneg (x - y)⟩
 
 @[simp]

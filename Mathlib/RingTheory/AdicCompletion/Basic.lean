@@ -175,7 +175,7 @@ def AdicCompletion : Type _ :=
 
 namespace IsHausdorff
 
-instance bot : IsHausdorff (⊥ : Ideal R) M :=
+instance : IsHausdorff (⊥ : Ideal R) M :=
   ⟨fun x hx => by simpa only [pow_one ⊥, bot_smul, SModEq.bot] using hx 1⟩
 
 variable {M} in
@@ -243,7 +243,7 @@ end Hausdorffification
 
 namespace IsPrecomplete
 
-instance bot : IsPrecomplete (⊥ : Ideal R) M := by
+instance : IsPrecomplete (⊥ : Ideal R) M := by
   refine ⟨fun f hf => ⟨f 1, fun n => ?_⟩⟩
   rcases n with - | n
   · rw [pow_zero, Ideal.one_eq_top, top_smul]
@@ -251,7 +251,7 @@ instance bot : IsPrecomplete (⊥ : Ideal R) M := by
   specialize hf (Nat.le_add_left 1 n)
   rw [pow_one, bot_smul, SModEq.bot] at hf; rw [hf]
 
-instance top : IsPrecomplete (⊤ : Ideal R) M :=
+instance : IsPrecomplete (⊤ : Ideal R) M :=
   ⟨fun f _ =>
     ⟨0, fun n => by
       rw [Ideal.top_pow, top_smul]
@@ -869,7 +869,7 @@ theorem eq_lift {F : M →ₗ[R] N}
 
 end StrictMono
 
-instance bot : IsAdicComplete (⊥ : Ideal R) M where
+instance : IsAdicComplete (⊥ : Ideal R) M where
 
 protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingleton M :=
   h.1.subsingleton
