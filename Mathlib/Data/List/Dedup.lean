@@ -180,6 +180,17 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
     rw [replicate_succ, dedup_cons_of_mem (mem_replicate.2 ⟨n.succ_ne_zero, rfl⟩),
       replicate_dedup n.succ_ne_zero]
 
+lemma dedup_eq_singleton_iff (l : List α) {x : α} :
+    l.dedup = [x] ↔ ∃ n : ℕ, l = List.replicate (n+1) x := by
+  constructor
+  · intro h; use l.length - 1
+    convert eq_replicate_of_mem <| fun y yl ↦ mem_singleton.mp (h ▸ mem_dedup.mpr yl)
+    rw [Nat.sub_add_cancel]
+    rw [← length_singleton, ← h]
+    exact Nodup.length_le_of_subset (nodup_dedup l) (dedup_subset l)
+  · rintro ⟨n, rfl⟩
+    exact replicate_dedup n.zero_ne_add_one.symm
+
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [List.Nodup.count <| nodup_dedup l, mem_dedup]
 
