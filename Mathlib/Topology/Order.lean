@@ -659,7 +659,8 @@ def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
   IsOpen s := a ∈ s → s ∈ f
   isOpen_univ _ := univ_mem
   isOpen_inter := fun _s _t hs ht ⟨has, hat⟩ => inter_mem (hs has) (ht hat)
-  isOpen_sUnion := fun _k hk ⟨u, hu, hau⟩ => mem_of_superset (hk u hu hau) (subset_sUnion_of_mem hu)
+  isOpen_sUnion := fun _k hk ⟨u, hu, hau⟩ =>
+    mem_of_superset (hk u hu hau) (subset_sUnion_of_mem hu)
 
 theorem gc_nhds (a : α) : GaloisConnection (nhdsAdjoint a) fun t => @nhds α t a := fun f t => by
   rw [le_nhds_iff]
