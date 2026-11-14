@@ -551,7 +551,7 @@ end MulOneClass
 
 section Monoid
 
-variable [Monoid M] [HasMulAntidiagonal M]
+variable [Monoid M] [Monoid N] [HasMulAntidiagonal M] [HasMulAntidiagonal N]
 
 @[to_additive (dont_translate := R)]
 instance semiring [DecidableEq M] : Semiring R⟦M⟧ where
@@ -561,8 +561,265 @@ lemma single_pow [DecidableEq M] (m : M) (r : R) : ∀ n : ℕ, single m r ^ n =
   | 0 => by simp [one_def]
   | n + 1 => by simp [pow_succ, single_pow _ _ n]
 
+@[to_additive (dont_translate := R)]
+instance isLocalHom_singleOneRingHom [DecidableEq M] :
+    IsLocalHom (singleOneRingHom (R := R) (M := M)) where
+  map_nonunit := by
+    simp_rw [isUnit_iff_exists]
+    rintro a ⟨x, hax, hxa⟩
+    refine ⟨x.coeff 1, ?_, ?_⟩
+    · simpa [coeff_single_one_mul] using congr(($hax).coeff 1)
+    · simpa [coeff_mul_single_one] using congr(($hxa).coeff 1)
+
+variable (M) in
+/-- The trivial total monoid algebra is the base ring. -/
+@[to_additive (dont_translate := R) (attr := simps! apply)
+/-- The trivial total additive monoid algebra is the base ring. -/]
+def uniqueRingEquiv [Subsingleton M] : R⟦M⟧ ≃+* R where
+  toAddEquiv :=
+    letI : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
+    coeffAddEquiv.trans <| AddEquiv.funUnique M R
+  map_mul' x y := by
+    let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
+    have : mulAntidiagonal (default : M) = {(1, 1)} := by
+      ext ⟨a, b⟩
+      suffices a * b = default ↔ a = 1 ∧ b = 1 by simpa
+      refine ⟨fun _ ↦ ⟨?_, ?_⟩, fun _ ↦ ?_⟩ <;> subsingleton
+    refine (coeff_mul ..).trans ?_
+    simp [this, Unique.eq_default]
+
+variable (M) in
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma uniqueRingEquiv_symm_apply [Subsingleton M] (r : R) :
+    (uniqueRingEquiv M).symm r = single 1 r := by
+  let : Unique M := ⟨⟨1⟩, fun _ ↦ Subsingleton.elim ..⟩
+  simp [RingEquiv.symm_apply_eq, Subsingleton.elim (default : M) 1]
+
+-- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
+@[to_additive (dont_translate := R) (attr := simp↓ high)]
+lemma coeff_uniqueRingEquiv_symm [Subsingleton M] (r : R) (m : M) :
+    ((uniqueRingEquiv M).symm r).coeff m = r := by simp [Subsingleton.elim m 1]
+
+/-- A product total monoid algebra is a nested total monoid algebra. -/
+@[to_additive (dont_translate := R)
+/-- An product total additive monoid algebra is a nested total additive monoid algebra. -/]
+def curryAddEquiv [DecidableEq M] [DecidableEq N] : R⟦M × N⟧ ≃+ R⟦N⟧⟦M⟧ :=
+  coeffAddEquiv.trans <| .trans (AddEquiv.curry ..) <| .trans
+    (AddEquiv.arrowCongr (Equiv.refl _) coeffAddEquiv.symm) coeffAddEquiv.symm
+
+@[to_additive (attr := simp)]
+lemma curryAddEquiv_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
+    curryAddEquiv (single (m, n) r) = single m (single n r) := by
+  ext; simp [curryAddEquiv, Pi.single_apply, apply_ite, ite_apply]
+  grind
+
+@[to_additive (attr := simp)]
+lemma curryAddEquiv_symm_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
+    curryAddEquiv.symm (single m (single n r)) = (single (m, n) r) :=
+  (AddEquiv.symm_apply_eq _).mpr (curryAddEquiv_single m n r).symm
+
+/-- A product total monoid algebra is a nested total monoid algebra. -/
+@[to_additive (dont_translate := R)
+/-- An product total additive monoid algebra is a nested additive monoid algebra. -/]
+def curryRingEquiv [DecidableEq M] [DecidableEq N] : R⟦M × N⟧ ≃+* R⟦N⟧⟦M⟧ where
+  toAddEquiv := curryAddEquiv
+  map_mul' x y := by
+    ext m n
+    suffices ∑ p ∈ mulAntidiagonal (m, n), x.coeff p.1 * y.coeff p.2 =
+      ∑ q ∈ (mulAntidiagonal m).sigma fun a => mulAntidiagonal n,
+        x.coeff (q.fst.1, q.snd.1) * y.coeff (q.fst.2, q.snd.2) by
+          simpa [curryAddEquiv, coeff_mul, sum_sigma']
+    refine sum_bij (fun p _ ↦ ⟨(p.1.1, p.2.1), (p.1.2, p.2.2)⟩) ?_ ?_ ?_ ?_
+    all_goals intros; simp_all [Prod.ext_iff]
+    grind
+
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma curryRingEquiv_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
+    curryRingEquiv (single (m, n) r) = single m (single n r) := by simp [curryRingEquiv]
+
+@[to_additive (attr := simp)]
+lemma curryRingEquiv_symm_single [DecidableEq M] [DecidableEq N] (m : M) (n : N) (r : R) :
+    curryRingEquiv.symm (single m <| single n r) = (single (m, n) r) := by
+  simp [RingEquiv.symm_apply_eq]
+
+@[to_additive (dont_translate := R) (attr := simp) coeff_mul_single_add]
+lemma coeff_mul_single_mul [IsCancelMul M] [DecidableEq M] (x : R⟦M⟧) (r : R) (m m' : M) :
+    (x * single m r).coeff (m' * m) = x.coeff m' * r :=
+  coeff_mul_single_eq_coeff_mul _ (by simp)
+
+@[to_additive (dont_translate := R) (attr := simp) coeff_single_mul_add]
+lemma coeff_single_mul_mul [IsCancelMul M] [DecidableEq M] (x : R⟦M⟧) (r : R) (m m' : M) :
+    (single m r * x).coeff (m * m') = r * x.coeff m' :=
+  x.coeff_single_mul_eq_mul_coeff _ (by simp)
+
 end Monoid
 
 end Semiring
 
+section CommSemiRing
+
+open Finset
+
+variable [CommSemiring R]
+
+@[to_additive (dont_translate := R)]
+instance nonUnitalCommSemiring [CommSemigroup M] [HasMulAntidiagonal M] :
+    NonUnitalCommSemiring R⟦M⟧ where
+  mul_comm f g := by
+    ext; simp_rw [coeff_mul]
+    refine sum_bij (fun p _ ↦ p.swap) ?_ ?_ ?_ ?_
+    all_goals intros; simp_all
+    all_goals grind
+
+@[to_additive (dont_translate := R)]
+lemma single_one_comm [DecidableEq M] [MulOneClass M] [HasMulAntidiagonal M]
+    (r : R) (f : R⟦M⟧) : single (1 : M) r * f = f * single (1 : M) r :=
+  single_commute .one_left (.all _) f
+
+variable [CommMonoid M] [HasMulAntidiagonal M]
+
+@[to_additive (dont_translate := R)]
+instance commSemiring [DecidableEq M] : CommSemiring R⟦M⟧ where
+
+@[to_additive (dont_translate := R) (attr := simp) prod_single]
+lemma prod_single [DecidableEq M] (s : Finset ι) (m : ι → M) (r : ι → R) :
+    ∏ i ∈ s, single (m i) (r i) = single (∏ i ∈ s, m i) (∏ i ∈ s, r i) :=
+  Finset.cons_induction_on s rfl fun i s hi ih ↦ by
+    rw [prod_cons, ih, single_mul_single, prod_cons, prod_cons]
+
+@[to_additive (dont_translate := R) (attr := simp) finsuppProd_single]
+lemma finsuppProd_single [DecidableEq M] [AddCommMonoid N] (f : ι →₀ N) (m : ι → N → M)
+    (r : ι → N → R) :
+    f.prod (fun i n ↦ single (m i n) (r i n)) = single (f.prod m) (f.prod r) := prod_single ..
+
+end CommSemiRing
+
+section Ring
+variable [Ring R]
+
+@[to_additive (dont_translate := R) addCommGroup]
+instance addCommGroup : AddCommGroup R⟦M⟧ := fast_instance% coeffEquiv.addCommGroup
+
+@[to_additive (attr := simp)]
+lemma coeff_neg (x : R⟦M⟧) : coeff (-x) = -coeff x := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_neg (x : M → R) : ofCoeff (-x) = -ofCoeff x := rfl
+
+@[to_additive (attr := simp)]
+lemma coeff_sub (x y : R⟦M⟧) : coeff (x - y) = coeff x - coeff y := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_sub (x y : M → R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y := rfl
+
+@[to_additive (attr := simp) (dont_translate := R)]
+lemma single_neg [DecidableEq M] (m : M) (r : R) : single m (-r) = -single m r := by
+  ext; simp [Pi.single_neg]
+
+@[to_additive (attr := simp) (dont_translate := R)]
+lemma single_sub [DecidableEq M] (m : M) (r s : R) :
+    single m (r - s) = single m r - single m s := by ext; simp [Pi.single_sub]
+
+@[to_additive (dont_translate := R)]
+instance nonUnitalNonAssocRing [Mul M] [Finset.HasMulAntidiagonal M] :
+    NonUnitalNonAssocRing R⟦M⟧ where
+
+@[to_additive (dont_translate := R)]
+instance nonUnitalRing [Semigroup M] [Finset.HasMulAntidiagonal M] :
+    NonUnitalRing R⟦M⟧ where
+
+@[to_additive (dont_translate := R)]
+instance nonAssocRing [DecidableEq M] [MulOneClass M] [Finset.HasMulAntidiagonal M] :
+    NonAssocRing R⟦M⟧ where
+  intCast z := single 1 z
+  intCast_ofNat n := by simp [natCast_def]
+  intCast_negSucc n := by simp [natCast_def, one_def]
+
+@[to_additive (dont_translate := R)]
+lemma intCast_def [DecidableEq M] [MulOneClass M] [Finset.HasMulAntidiagonal M] (z : ℤ) :
+    (z : R⟦M⟧) = single 1 (z : R) := rfl
+
+@[to_additive (dont_translate := R)]
+instance ring [DecidableEq M] [Monoid M] [Finset.HasMulAntidiagonal M] :
+    Ring R⟦M⟧ where
+
+lemma neg_apply (m : M) (x : R⟦M⟧) : (-x).coeff m = -x.coeff m := rfl
+
+end Ring
+
+section CommRing
+variable [CommRing R]
+
+@[to_additive (dont_translate := R)]
+instance nonUnitalCommRing [CommSemigroup M] [Finset.HasMulAntidiagonal M] :
+    NonUnitalCommRing R⟦M⟧ where
+
+@[to_additive (dont_translate := R)]
+instance commRing [DecidableEq M] [CommMonoid M] [Finset.HasMulAntidiagonal M] :
+    CommRing R⟦M⟧ where
+
+end CommRing
+
 end TotalMonoidAlgebra
+
+/-! ### Total additive monoids -/
+
+namespace TotalAddMonoidAlgebra
+variable [Semiring R]
+
+section
+
+variable (R M : Type*) [Semiring R]
+
+/-- The embedding of an additive magma into its total additive magma algebra. -/
+@[simps]
+def ofMagma [DecidableEq M] [Add M] [HasAntidiagonal M] :
+    Multiplicative M →ₙ* R⟦M⟧ where
+  toFun a := single a.toAdd 1
+  map_mul' _ _ := by ext; simp [Pi.single_apply]
+
+/-- Embedding of an additive magma with zero into its total magma algebra. -/
+def of [DecidableEq M] [AddZeroClass M] [HasAntidiagonal M] :
+    Multiplicative M →* R⟦M⟧ where
+  __ := ofMagma R M
+  map_one' := rfl
+
+/-- Embedding of a magma `M`, into its total magma algebra, having `M` as source. -/
+def of' [DecidableEq M] : M → R⟦M⟧ := fun m => single m 1
+
+end
+
+@[simp]
+theorem of_apply [DecidableEq M] [AddZeroClass M] [HasAntidiagonal M] (a : Multiplicative M) :
+    of R M a = single a.toAdd 1 := rfl
+
+@[simp]
+theorem of'_apply [DecidableEq M] (a : M) : of' R M a = single a 1 :=
+  rfl
+
+theorem of'_eq_of [DecidableEq M] [AddZeroClass M] [HasAntidiagonal M] (a : M) :
+    of' R M a = of R M (.ofAdd a) := rfl
+
+theorem of_injective [DecidableEq M] [Nontrivial R] [AddZeroClass M] [HasAntidiagonal M] :
+    Function.Injective (of R M) := fun a b h ↦ by
+  simpa [← coeff_inj, Pi.single_eq_single_iff] using h
+
+lemma of'_commute [DecidableEq M] [AddZeroClass M] [HasAntidiagonal M] {a : M}
+    (h : ∀ a', AddCommute a a') (f : TotalAddMonoidAlgebra R M) : Commute (of' R M a) f :=
+  single_commute h .one_left f
+
+/-- `Pi.single` as a `MonoidHom` from the product type into the total additive monoid algebra.
+
+Note the order of the elements of the product are reversed compared to the arguments of
+`Pi.single`.
+-/
+@[simps]
+def singleHom [DecidableEq M] [AddZeroClass M] [HasAntidiagonal M] :
+    R × Multiplicative M →* R⟦M⟧ where
+  toFun a := single a.2.toAdd a.1
+  map_one' := rfl
+  map_mul' _ _ := (single_mul_single ..).symm
+
+end TotalAddMonoidAlgebra
+
+end
