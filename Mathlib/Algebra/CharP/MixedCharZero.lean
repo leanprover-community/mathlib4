@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.LocalRing.Defs
 
 import Mathlib.Algebra.CharP.LocalRing
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-!
 # Equal and mixed characteristic
