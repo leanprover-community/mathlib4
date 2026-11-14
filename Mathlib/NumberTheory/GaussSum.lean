@@ -257,7 +257,7 @@ of `χ` and `ψ` is the Gauss sum of `χ^p` and `ψ^p`. -/
 theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
     gaussSum χ ψ ^ p = gaussSum (χ ^ p) (ψ ^ p) := by
   rw [← frobenius_def, gaussSum, gaussSum, map_sum]
-  simp_rw [pow_apply' χ fp.1.ne_zero, map_mul, frobenius_def]
+  simp_rw [pow_apply' χ fp.out.ne_zero, map_mul, frobenius_def]
   rfl
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
@@ -280,7 +280,7 @@ theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {
   | zero => rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
   | succ n ih =>
     rw [pow_succ, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ, map_mul,
-      ← pow_apply' χ fp.1.ne_zero ((p : R) ^ n), hχ.pow_char p]
+      ← pow_apply' χ fp.out.ne_zero ((p : R) ^ n), hχ.pow_char p]
 
 end gaussSum_frob
 
@@ -308,7 +308,7 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
   rw [← hg]
   apply mul_right_cancel₀ this
   rw [← hχ.gaussSum_frob_iter p n hp ψ, ← pow_mul, ← pow_succ,
-    Nat.two_mul_div_two_add_one_of_odd (fp.1.eq_two_or_odd'.resolve_left hp').pow]
+    Nat.two_mul_div_two_add_one_of_odd (fp.out.eq_two_or_odd'.resolve_left hp').pow]
 
 /-- When `F` and `F'` are finite fields and `χ : F → F'` is a nontrivial quadratic character,
 then `(χ(-1) * #F)^(#F'/2) = χ #F'`. -/

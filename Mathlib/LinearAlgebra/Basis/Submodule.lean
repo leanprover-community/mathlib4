@@ -125,9 +125,9 @@ lemma mem_center_iff {A}
   · intro h
     constructor
     · intro i
-      apply (h.1 (b i)).symm
+      apply (h.comm (b i)).symm
     · intros
-      exact ⟨h.2 _ _, h.3 _ _⟩
+      exact ⟨h.left_assoc _ _, h.right_assoc _ _⟩
   · intro h
     rw [center, mem_ofPred_eq]
     constructor

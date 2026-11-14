@@ -257,7 +257,7 @@ namespace Prefunctor.IsCovering
 variable {φ}
 
 protected theorem pathStar_bijective (hφ : φ.IsCovering) (u : U) : Bijective (φ.pathStar u) :=
-  φ.pathStar_bijective hφ.1 u
+  φ.pathStar_bijective hφ.star_bijective u
 
 end Prefunctor.IsCovering
 

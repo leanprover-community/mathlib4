@@ -91,7 +91,7 @@ theorem isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
 /-- The tagged partition made of boxes of `π` that satisfy predicate `p`. -/
 @[simps! -fullyApplied]
 def filter (p : Box ι → Prop) : TaggedPrepartition I :=
-  ⟨π.1.filter p, π.2, π.3⟩
+  ⟨π.toPrepartition.filter p, π.tag, π.tag_mem_Icc⟩
 
 @[simp]
 theorem mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p J := by

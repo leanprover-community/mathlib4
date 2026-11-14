@@ -80,7 +80,7 @@ lemma of_span_range_eq_top {ι : Type*} (f : ι → S) (h : Ideal.span (Set.rang
   have : ⟨q, hq⟩ ∈ PrimeSpectrum.basicOpen (f i) := hi
   rw [← SetLike.mem_coe, ← PrimeSpectrum.localization_away_comap_range (T i)] at this
   obtain ⟨q', hq'⟩ := this
-  obtain ⟨g', hg', h⟩ := exists_notMem_isStandardOpenImmersion (R := R) q'.1
+  obtain ⟨g', hg', h⟩ := exists_notMem_isStandardOpenImmersion (R := R) q'.asIdeal
   obtain ⟨n, g, hg⟩ := IsLocalization.Away.surj (f i) g'
   refine ⟨g * (f i), ?_, ?_⟩
   · refine Ideal.IsPrime.mul_notMem hq ?_ hi

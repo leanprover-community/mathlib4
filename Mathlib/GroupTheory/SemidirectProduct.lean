@@ -61,9 +61,10 @@ variable {N G}
 variable {φ : G →* MulAut N}
 
 instance : Mul (SemidirectProduct N G φ) where
-  mul a b := ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩
+  mul a b := ⟨a.left * φ a.right b.left, a.right * b.right⟩
 
-lemma mul_def (a b : SemidirectProduct N G φ) : a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
+lemma mul_def (a b : SemidirectProduct N G φ) :
+    a * b = ⟨a.left * φ a.right b.left, a.right * b.right⟩ := rfl
 
 @[simp]
 theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left := rfl
@@ -80,7 +81,7 @@ theorem one_left : (1 : N ⋊[φ] G).left = 1 := rfl
 theorem one_right : (1 : N ⋊[φ] G).right = 1 := rfl
 
 instance : Inv (SemidirectProduct N G φ) where
-  inv x := ⟨φ x.2⁻¹ x.1⁻¹, x.2⁻¹⟩
+  inv x := ⟨φ x.right⁻¹ x.left⁻¹, x.right⁻¹⟩
 
 @[simp]
 theorem inv_left (a : N ⋊[φ] G) : a⁻¹.left = φ a.right⁻¹ a.left⁻¹ := rfl
@@ -90,7 +91,7 @@ theorem inv_right (a : N ⋊[φ] G) : a⁻¹.right = a.right⁻¹ := rfl
 
 instance : Group (N ⋊[φ] G) where
   mul_assoc a b c := SemidirectProduct.ext (by simp [mul_assoc]) (by simp [mul_assoc])
-  one_mul a := SemidirectProduct.ext (by simp) (one_mul a.2)
+  one_mul a := SemidirectProduct.ext (by simp) (one_mul a.right)
   mul_one a := SemidirectProduct.ext (by simp) (mul_one _)
   inv_mul_cancel a := SemidirectProduct.ext (by simp) (by simp)
 
@@ -179,7 +180,7 @@ theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.
 /-- The bijection between the semidirect product and the product. -/
 @[simps]
 def equivProd : N ⋊[φ] G ≃ N × G where
-  toFun x := ⟨x.1, x.2⟩
+  toFun x := ⟨x.left, x.right⟩
   invFun x := ⟨x.1, x.2⟩
 
 /-- The group isomorphism between a semidirect product with respect to the trivial map
@@ -195,7 +196,7 @@ variable (fn : N →* H) (fg : G →* H)
 
 /-- Define a group hom `N ⋊[φ] G →* H`, by defining maps `N →* H` and `G →* H` -/
 def lift : N ⋊[φ] G →* H where
-  toFun a := fn a.1 * fg a.2
+  toFun a := fn a.left * fg a.right
   map_one' := by simp
   map_mul' a b := by
     have := fun n g ↦ DFunLike.ext_iff.1 (h n) g
@@ -251,7 +252,7 @@ variable {N₁ G₁ N₂ G₂ : Type*} [Group N₁] [Group G₁] [Group N₂] [G
 /-- Define a map from `N₁ ⋊[φ₁] G₁` to `N₂ ⋊[φ₂] G₂` given maps `N₁ →* N₂` and `G₁ →* G₂` that
   satisfy a commutativity condition `∀ n g, fn (φ₁ g n) = φ₂ (fg g) (fn n)`. -/
 def map : N₁ ⋊[φ₁] G₁ →* N₂ ⋊[φ₂] G₂ where
-  toFun x := ⟨fn x.1, fg x.2⟩
+  toFun x := ⟨fn x.left, fg x.right⟩
   map_one' := by simp
   map_mul' x y := by
     replace h := DFunLike.ext_iff.1 (h x.right) y.left
@@ -291,8 +292,8 @@ variable {N₁ G₁ N₂ G₂ : Type*} [Group N₁] [Group G₁] [Group N₂] [G
   `G₁ ≃* G₂` that satisfy a commutativity condition `∀ n g, fn (φ₁ g n) = φ₂ (fg g) (fn n)`. -/
 @[simps]
 def congr : N₁ ⋊[φ₁] G₁ ≃* N₂ ⋊[φ₂] G₂ where
-  toFun x := ⟨fn x.1, fg x.2⟩
-  invFun x := ⟨fn.symm x.1, fg.symm x.2⟩
+  toFun x := ⟨fn x.left, fg x.right⟩
+  invFun x := ⟨fn.symm x.left, fg.symm x.right⟩
   left_inv _ := by simp
   right_inv _ := by simp
   map_mul' x y := by

@@ -38,8 +38,8 @@ def GroupLike.toUnits : GroupLike R A →* Aˣ where
   toFun a := {
     val := a
     inv := antipode R a
-    val_inv := a.2.mul_antipode_cancel
-    inv_val := a.2.antipode_mul_cancel
+    val_inv := a.isGroupLikeElem_val.mul_antipode_cancel
+    inv_val := a.isGroupLikeElem_val.antipode_mul_cancel
   }
   map_one' := by ext; rfl
   map_mul' a b := by ext; rfl
@@ -57,7 +57,7 @@ lemma IsGroupLikeElem.isUnit (ha : IsGroupLikeElem R a) : IsUnit a :=
 
 namespace GroupLike
 
-instance : Inv (GroupLike R A) where inv a := ⟨antipode R a, a.2.antipode⟩
+instance : Inv (GroupLike R A) where inv a := ⟨antipode R a, a.isGroupLikeElem_val.antipode⟩
 
 @[simp] lemma val_inv (a : GroupLike R A) : ↑(a⁻¹) = (antipode R a : A) := rfl
 

@@ -63,7 +63,7 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
 
 protected theorem integralClosure : integralClosure O R = ⊥ :=
   bot_unique fun _ hr =>
-    let ⟨x, hx⟩ := hv.3 (hv.mem_of_integral hr)
+    let ⟨x, hx⟩ := hv.exists_of_le_one (hv.mem_of_integral hr)
     Algebra.mem_bot.2 ⟨x, hx⟩
 
 end CommRing

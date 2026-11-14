@@ -511,7 +511,7 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
     (h : ∀ e ∈ f ⁻¹' {x}, ∃ φ : OpenPartialHomeomorph E X, e ∈ φ.source ∧ φ = f) :
     IsEvenlyCovered f x (f ⁻¹' {x}) := by
   have : DiscreteTopology (f ⁻¹' {x}) :=
-    (IsDiscrete.of_openPartialHomeomorph f subset_rfl h).1
+    (IsDiscrete.of_openPartialHomeomorph f subset_rfl h).to_subtype
   /- for each preimage e of x, choose a homeomorphism φₑ
     from a neighborhood of e to its image -/
   choose φ hφ using fun e : f ⁻¹' {x} ↦ h e e.2

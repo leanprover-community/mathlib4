@@ -49,7 +49,7 @@ variable (s s₁ s₂ : UpperSet α) (t t₁ t₂ : UpperSet β) {x : α × β}
 
 /-- The product of two upper sets as an upper set. -/
 def prod : UpperSet (α × β) :=
-  ⟨s ×ˢ t, s.2.prod t.2⟩
+  ⟨s ×ˢ t, s.upper'.prod t.upper'⟩
 
 instance instSProd : SProd (UpperSet α) (UpperSet β) (UpperSet (α × β)) where
   sprod := UpperSet.prod
@@ -140,7 +140,7 @@ namespace LowerSet
 variable (s s₁ s₂ : LowerSet α) (t t₁ t₂ : LowerSet β) {x : α × β}
 
 /-- The product of two lower sets as a lower set. -/
-def prod : LowerSet (α × β) := ⟨s ×ˢ t, s.2.prod t.2⟩
+def prod : LowerSet (α × β) := ⟨s ×ˢ t, s.lower'.prod t.lower'⟩
 
 instance instSProd : SProd (LowerSet α) (LowerSet β) (LowerSet (α × β)) where
   sprod := LowerSet.prod

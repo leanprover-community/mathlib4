@@ -67,7 +67,7 @@ theorem induction_on_irreducible {motive : α → Prop} (a : α)
         else
           let ⟨i, i_irred, b, hb⟩ := exists_irreducible_factor hau ha0
           let hb0 : b ≠ 0 := ne_zero_of_dvd_ne_zero ha0 ⟨i, mul_comm i b ▸ hb⟩
-          hb.symm ▸ mul b i hb0 i_irred <| ih b ⟨hb0, i, i_irred.1, mul_comm i b ▸ hb⟩)
+          hb.symm ▸ mul b i hb0 i_irred <| ih b ⟨hb0, i, i_irred.not_isUnit, mul_comm i b ▸ hb⟩)
     a
 
 theorem exists_factors (a : α) :

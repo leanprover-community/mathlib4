@@ -346,7 +346,7 @@ theorem isComplement' (hP : IsCyclic P) :
   by_cases hn : Nat.card G = 1
   · have := (Nat.card_eq_one_iff_unique.mp hn).1
     rw [Subsingleton.elim (MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)).ker ⊥,
-      Subsingleton.elim P.1 ⊤]
+      Subsingleton.elim P.toSubgroup ⊤]
     exact isComplement'_bot_top
   have := Fact.mk (Nat.minFac_prime hn)
   exact MonoidHom.ker_transferSylow_isComplement' P (hP.normalizer_le_centralizer rfl)

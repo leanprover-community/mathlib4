@@ -110,7 +110,7 @@ lemma isProperMap_iff_ultrafilter : IsProperMap f ↔ Continuous f ∧
     exact ⟨x, hxy, 𝒰, le_inf hx (hy.trans inf_le_right)⟩
 
 lemma isProperMap_iff_ultrafilter_of_t2 [T2Space Y] : IsProperMap f ↔ Continuous f ∧
-    ∀ ⦃𝒰 : Ultrafilter X⦄, ∀ ⦃y : Y⦄, Tendsto f 𝒰 (𝓝 y) → ∃ x, 𝒰.1 ≤ 𝓝 x :=
+    ∀ ⦃𝒰 : Ultrafilter X⦄, ∀ ⦃y : Y⦄, Tendsto f 𝒰 (𝓝 y) → ∃ x, 𝒰.toFilter ≤ 𝓝 x :=
   isProperMap_iff_ultrafilter.trans <| and_congr_right fun hc ↦ forall₃_congr fun _𝒰 _y hy ↦
     exists_congr fun x ↦ and_iff_right_of_imp fun h ↦
       tendsto_nhds_unique ((hc.tendsto x).mono_left h) hy

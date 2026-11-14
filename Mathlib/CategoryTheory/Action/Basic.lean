@@ -280,9 +280,9 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
 
 instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
     [ConcreteCategory V FV] : ConcreteCategory (Action V G) (HomSubtype V G) where
-  hom f := ⟨ConcreteCategory.hom (C := V) f.1, fun g => by
+  hom f := ⟨ConcreteCategory.hom (C := V) f.hom, fun g => by
     ext
-    simpa using congr($(f.2 g) _)⟩
+    simpa using congr($(f.comm g) _)⟩
   ofHom f := ⟨ConcreteCategory.ofHom (C := V) f, fun g => ConcreteCategory.ext_apply fun x => by
     simpa [ConcreteCategory.hom_ofHom] using congr($(f.2 g) x)⟩
   hom_ofHom _ := by dsimp; ext; simp [ConcreteCategory.hom_ofHom]

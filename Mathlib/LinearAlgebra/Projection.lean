@@ -77,7 +77,7 @@ def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   constructor
   · rw [← ker_eq_bot, ker_coprod_of_disjoint_range, ker_subtype, ker_subtype, prod_bot]
     rw [range_subtype, range_subtype]
-    exact h.1
+    exact h.disjoint
   · rw [← range_eq_top, ← sup_eq_range, h.sup_eq_top]
 
 @[simp]

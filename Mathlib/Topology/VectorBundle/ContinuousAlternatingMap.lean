@@ -165,8 +165,8 @@ trivialization, after the bundle of continuous semilinear maps is equipped with 
 topological vector bundle structure. -/
 def continuousAlternatingMap :
     Pretrivialization (F₁ [⋀^ι]→L[𝕜] F₂) (π (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) where
-  toFun p := ⟨p.1, (e₂.continuousLinearMapAt 𝕜 p.1).compContinuousAlternatingMap <|
-    p.2.compContinuousLinearMap <| e₁.symmL 𝕜 p.1⟩
+  toFun p := ⟨p.proj, (e₂.continuousLinearMapAt 𝕜 p.proj).compContinuousAlternatingMap <|
+    p.snd.compContinuousLinearMap <| e₁.symmL 𝕜 p.proj⟩
   invFun p := ⟨p.1, (e₂.symmL 𝕜 p.1).compContinuousAlternatingMap <|
     p.2.compContinuousLinearMap <| e₁.continuousLinearMapAt 𝕜 p.1⟩
   source := Bundle.TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
@@ -200,8 +200,8 @@ instance continuousAlternatingMap.isLinear
 theorem continuousAlternatingMap_apply
     (p : TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x) :
     continuousAlternatingMap 𝕜 ι e₁ e₂ p =
-      ⟨p.1, (e₂.continuousLinearMapAt 𝕜 p.1).compContinuousAlternatingMap <|
-        p.2.compContinuousLinearMap <| e₁.symmL 𝕜 p.1⟩ :=
+      ⟨p.proj, (e₂.continuousLinearMapAt 𝕜 p.proj).compContinuousAlternatingMap <|
+        p.snd.compContinuousLinearMap <| e₁.symmL 𝕜 p.proj⟩ :=
   rfl
 
 theorem continuousAlternatingMap_symm_apply (p : B × (F₁ [⋀^ι]→L[𝕜] F₂)) :
@@ -354,8 +354,8 @@ theorem baseSet_continuousAlternatingMap :
 theorem continuousAlternatingMap_apply
     (p : TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :
     e₁.continuousAlternatingMap 𝕜 ι e₂ p =
-      ⟨p.1, (e₂.continuousLinearMapAt 𝕜 p.1 : _ →L[𝕜] _) |>.compContinuousAlternatingMap p.2
-        |>.compContinuousLinearMap (e₁.symmL 𝕜 p.1 : F₁ →L[𝕜] E₁ p.1)⟩ :=
+      ⟨p.proj, (e₂.continuousLinearMapAt 𝕜 p.proj : _ →L[𝕜] _) |>.compContinuousAlternatingMap p.snd
+        |>.compContinuousLinearMap (e₁.symmL 𝕜 p.proj : F₁ →L[𝕜] E₁ p.proj)⟩ :=
   rfl
 
 end Bundle.Trivialization
@@ -387,7 +387,7 @@ theorem trivializationAt_continuousAlternatingMap (x₀ : B) :
 theorem trivializationAt_continuousAlternatingMap_apply (x₀ : B)
     (x : TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :
     trivializationAt (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x) x₀ x =
-      ⟨x.1, inCoordinates F₁ F₂ x₀ x.1 x₀ x.1 x.2⟩ :=
+      ⟨x.proj, inCoordinates F₁ F₂ x₀ x.proj x₀ x.proj x.snd⟩ :=
   rfl
 
 @[simp, mfld_simps]
@@ -437,17 +437,19 @@ variable {X : Type*} [TopologicalSpace X] {s : Set X} {x₀ : X}
 theorem continuousWithinAt_continuousAlternatingMap_bundle
     (f : X → TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :
     ContinuousWithinAt f s x₀ ↔
-      ContinuousWithinAt (fun x ↦ (f x).1) s x₀ ∧
+      ContinuousWithinAt (fun x ↦ (f x).proj) s x₀ ∧
         ContinuousWithinAt
-          (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
+          (fun x ↦
+            inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) s x₀ :=
   FiberBundle.continuousWithinAt_totalSpace ..
 
 theorem continuousAt_continuousAlternatingMap_bundle
     (f : X → TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :
     ContinuousAt f x₀ ↔
-      ContinuousAt (fun x ↦ (f x).1) x₀ ∧
+      ContinuousAt (fun x ↦ (f x).proj) x₀ ∧
         ContinuousAt
-          (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+          (fun x ↦
+            inCoordinates F₁ F₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   FiberBundle.continuousAt_totalSpace ..
 
 end Continuity

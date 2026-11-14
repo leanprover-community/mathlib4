@@ -109,15 +109,15 @@ namespace AECover
 /-- Elementwise intersection of two `AECover`s is an `AECover`. -/
 theorem inter {φ ψ : ι → Set α} (hφ : AECover μ l φ) (hψ : AECover μ l ψ) :
     AECover μ l (fun i ↦ φ i ∩ ψ i) where
-  ae_eventually_mem := hψ.1.mp <| hφ.1.mono fun _ ↦ Eventually.and
-  measurableSet _ := (hφ.2 _).inter (hψ.2 _)
+  ae_eventually_mem := hψ.ae_eventually_mem.mp <| hφ.ae_eventually_mem.mono fun _ ↦ Eventually.and
+  measurableSet _ := (hφ.measurableSet _).inter (hψ.measurableSet _)
 
 theorem superset {φ ψ : ι → Set α} (hφ : AECover μ l φ) (hsub : ∀ i, φ i ⊆ ψ i)
     (hmeas : ∀ i, MeasurableSet (ψ i)) : AECover μ l ψ :=
-  ⟨hφ.1.mono fun _x hx ↦ hx.mono fun i hi ↦ hsub i hi, hmeas⟩
+  ⟨hφ.ae_eventually_mem.mono fun _x hx ↦ hx.mono fun i hi ↦ hsub i hi, hmeas⟩
 
 theorem mono_ac {ν : Measure α} {φ : ι → Set α} (hφ : AECover μ l φ) (hle : ν ≪ μ) :
-    AECover ν l φ := ⟨hle hφ.1, hφ.2⟩
+    AECover ν l φ := ⟨hle hφ.ae_eventually_mem, hφ.measurableSet⟩
 
 theorem mono {ν : Measure α} {φ : ι → Set α} (hφ : AECover μ l φ) (hle : ν ≤ μ) :
     AECover ν l φ := hφ.mono_ac hle.absolutelyContinuous
@@ -351,7 +351,7 @@ variable {α ι : Type*} [Countable ι] [MeasurableSpace α] {μ : Measure α}
 theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
     AECover μ atTop fun n : ι => ⋃ (k) (_h : k ∈ Iic n), φ k :=
   hφ.superset (fun _ ↦ subset_biUnion_of_mem self_mem_Iic) fun _ ↦ .biUnion (to_countable _)
-    fun _ _ ↦ (hφ.2 _)
+    fun _ _ ↦ (hφ.measurableSet _)
 
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
     (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where

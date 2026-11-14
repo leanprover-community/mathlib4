@@ -223,7 +223,7 @@ theorem _root_.ZFSet.isOrdinal_iff_trichotomous :
 
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder _ (Subrel (· ∈ ·) (· ∈ x)) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
-  trichotomous := h.trichotomous.1
+  trichotomous := h.trichotomous.trichotomous
 
 /-- An ordinal is a transitive set, well-ordered under membership. -/
 theorem _root_.ZFSet.isOrdinal_iff_isWellOrder : x.IsOrdinal ↔

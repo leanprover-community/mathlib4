@@ -92,7 +92,7 @@ theorem exists_countable_separating (α : Type*) (p : Set α → Prop) (t : Set 
     [h : HasCountableSeparatingOn α p t] :
     ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧
       ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y :=
-  h.1
+  h.exists_countable_separating
 
 theorem exists_nonempty_countable_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p s₀)
     (t : Set α) [HasCountableSeparatingOn α p t] :
@@ -114,13 +114,13 @@ theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t
     [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :
     HasCountableSeparatingOn α p₂ t₂ where
   exists_countable_separating :=
-    let ⟨S, hSc, hSp, hSt⟩ := h.1
+    let ⟨S, hSc, hSp, hSt⟩ := h.exists_countable_separating
     ⟨S, hSc, fun s hs ↦ hp s (hSp s hs), fun x hx y hy ↦ hSt x (ht hx) y (ht hy)⟩
 
 theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {t : Set α}
     {q : Set t → Prop} [h : HasCountableSeparatingOn t q univ]
     (hpq : ∀ U, q U → ∃ V, p V ∧ (↑) ⁻¹' V = U) : HasCountableSeparatingOn α p t := by
-  rcases h.1 with ⟨S, hSc, hSq, hS⟩
+  rcases h.exists_countable_separating with ⟨S, hSc, hSq, hS⟩
   choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
   refine ⟨⟨V '' S, hSc.image _, forall_mem_image.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
   congrm $(hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_).val
@@ -160,7 +160,7 @@ If `s ∈ l`, then it suffices to assume that the countable family separates onl
 theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop)
     {s : Set α} [h : HasCountableSeparatingOn α p s] (hs : s ∈ l)
     (hl : ∀ U, p U → U ∈ l ∨ Uᶜ ∈ l) : ∃ t, t ⊆ s ∧ t.Subsingleton ∧ t ∈ l := by
-  rcases h.1 with ⟨S, hSc, hSp, hS⟩
+  rcases h.exists_countable_separating with ⟨S, hSc, hSp, hS⟩
   refine ⟨s ∩ ⋂₀ (S ∩ l.sets) ∩ ⋂ (U ∈ S) (_ : Uᶜ ∈ l), Uᶜ, ?_, ?_, ?_⟩
   · exact fun _ h ↦ h.1.1
   · intro x hx y hy
@@ -239,7 +239,7 @@ the filter.
 theorem of_eventually_mem_of_forall_separating_mem_iff (p : Set β → Prop) {s : Set β}
     [h' : HasCountableSeparatingOn β p s] (hf : ∀ᶠ x in l, f x ∈ s) (hg : ∀ᶠ x in l, g x ∈ s)
     (h : ∀ U : Set β, p U → ∀ᶠ x in l, f x ∈ U ↔ g x ∈ U) : f =ᶠ[l] g := by
-  rcases h'.1 with ⟨S, hSc, hSp, hS⟩
+  rcases h'.exists_countable_separating with ⟨S, hSc, hSp, hS⟩
   have H : ∀ᶠ x in l, ∀ s ∈ S, f x ∈ s ↔ g x ∈ s :=
     (eventually_countable_ball hSc).2 fun s hs ↦ (h _ (hSp _ hs))
   filter_upwards [H, hf, hg] with x hx hxf hxg using hS _ hxf _ hxg hx

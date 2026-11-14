@@ -52,7 +52,7 @@ theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
 @[to_dual]
 theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C] :
     HasLimitsOfShape (Discrete.{w'} PEmpty) C where
-  has_limit _ := hasTerminalChangeDiagram C (h.1 (Functor.empty C))
+  has_limit _ := hasTerminalChangeDiagram C (h.has_limit (Functor.empty C))
 
 end Univ
 

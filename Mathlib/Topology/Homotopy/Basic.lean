@@ -635,7 +635,7 @@ variable {S : Set X}
 
 /-- If two maps are homotopic relative to a set, then they are homotopic. -/
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
-  h.map fun F ↦ F.1
+  h.map fun F ↦ F.toHomotopy
 
 /-- If two maps are homotopic relative to a set, then they agree on it. -/
 theorem fst_eq_snd ⦃f₀ f₁ : C(X, Y)⦄ (h : HomotopicRel f₀ f₁ S) {x : X} (hx : x ∈ S) :

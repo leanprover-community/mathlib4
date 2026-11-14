@@ -203,7 +203,7 @@ set_option backward.isDefEq.respectTransparency false in
 natural transformation between the sheaves.
 -/
 @[simps hom inv]
-def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y where
+def isoOfComponents (H : X.carrier ≅ Y.carrier) (α : H.hom _* X.presheaf ≅ Y.presheaf) : X ≅ Y where
   hom :=
     { base := H.hom
       c := α.inv }
@@ -224,7 +224,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic `PresheafedSpace`s have naturally isomorphic presheaves. -/
 @[simps]
-def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
+def sheafIsoOfIso (H : X ≅ Y) : Y.presheaf ≅ H.hom.base _* X.presheaf where
   hom := H.hom.c
   inv := Presheaf.pushforwardToOfIso ((forget _).mapIso H).symm H.inv.c
   hom_inv_id := by
@@ -282,7 +282,7 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
           rfl }
 
 set_option backward.isDefEq.respectTransparency false in
-instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
+instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.carrier)
     (hf : IsOpenEmbedding f) : Mono (X.ofRestrict hf) := by
   have : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
   constructor

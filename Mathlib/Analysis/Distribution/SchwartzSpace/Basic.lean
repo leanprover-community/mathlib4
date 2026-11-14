@@ -641,7 +641,7 @@ where finally
   · intros; rfl
   · intros; rfl
   · intro f
-    exact f.2.clm_apply contDiff_const
+    exact f.smooth'.clm_apply contDiff_const
   · intro ⟨k, n⟩
     use {(k, n)}, ‖m‖, norm_nonneg _
     intro f x
