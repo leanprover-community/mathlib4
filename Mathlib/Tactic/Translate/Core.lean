@@ -302,14 +302,14 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   trace[translate_detail] "Value before translation:{indentExpr value}"
   let (value', relevantArg₁) ← applyReplacementLambda t dont value
   value ← reorderLambda reorder value'
-  value ← omitLambda omissions value'
+  value ← omitLambda omissions value
   if let some b := unfoldBoundaries? then
     value ← b.unfoldInsertions value
   let decl := decl.updateValue value
   let (type', relevantArg₂) ← applyReplacementForall t dont <|
     GuessName.renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
   type ← reorderForall reorder type'
-  type ← omitForall omissions type'
+  type ← omitForall omissions type
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
   return (decl.updateType type, .min relevantArg₁ relevantArg₂)
