@@ -46,7 +46,6 @@ lemma Sheaf.sections_exact_of_left_exact {S : ShortComplex (TopCat.Sheaf AddComm
 
 lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V ≤ U)
     (s t : F.obj (op U)) : (s + t) |_ V = s |_ V + t |_ V := by
-  delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
 
 end TopCat

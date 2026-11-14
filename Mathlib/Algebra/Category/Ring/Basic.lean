@@ -635,7 +635,8 @@ instance : Inhabited CommRingCat :=
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
-An example where this is needed is in applying `TopCat.Presheaf.restrictOpen` to commutative rings.
+An example where this is needed is in using the notation `x |_ U` for sections of presheaves of
+commutative rings.
 -/
 unif_hint forget_obj_eq_coe (R R' : CommRingCat) where
   R ≟ R' ⊢

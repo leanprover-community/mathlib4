@@ -131,7 +131,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S
     -- difference `t₂`
     let t₂ := t.right.2 |_ (t.right.1.unop ⊓ W) - t₁ |_ (t.right.1.unop ⊓ W)
     have : (S.g.hom.app (op (t.right.1.unop ⊓ W))) t₂ = 0 := by
-      simp [map_restrict, ← tcomp, restrict_restrict, ht₁, t₂]
+      simp [← tcomp, restrict_restrict, ht₁, t₂]
     -- Since `S` is exact and `t₂` maps to zero, we can lift it to a section `t₃` of `S.X₁`
     obtain ⟨t₃, ht₃⟩ := Sheaf.sections_exact_of_left_exact hS.1 hS.2 t₂ this
     -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`.
@@ -149,7 +149,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S
       apply Sheaf.existsUnique_gluing
       simp only [IsCompatible, Fin.forall_fin_two]
       refine ⟨⟨rfl, this⟩, Eq.symm ?_, rfl⟩
-      apply_fun (fun s ↦ restrictOpen s (W ⊓ t.right.1.unop) (le_of_eq (inf_comm _ _))) at this
+      apply_fun (fun s ↦ s |_ₗ (W ⊓ t.right.1.unop) ⟪le_of_eq (inf_comm _ _)⟫) at this
       rw [restrict_restrict, restrict_restrict] at this
       exact this
     have le : iSup f ≤ U := iSup_le_iff.mpr (Fin.forall_fin_two.mpr ⟨tle, Wle⟩)
@@ -165,13 +165,12 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat.{u} X)} (hS : S
           have : (S.f.hom.app (op W) ≫ S.g.hom.app (op W)) = 0 := by
             rw [← NatTrans.comp_app, ← ObjectProperty.FullSubcategory.comp_hom, S.zero]
             rfl
-          simp [← CategoryTheory.comp_apply, this, ht₁]
-          rfl)
+          simp [← CategoryTheory.comp_apply, this, ht₁])
     -- We prove that `t₆` is bigger than `t` for the preorder used on `Under S.g s`.
     have : Nonempty (t₆ ⟶ t) := Nonempty.intro (StructuredArrow.homMk (Functor.Elements.homMk
       (homOfLE (le_iSup f 0)).op (ht₅ 0)) (by cat_disch))
     exact leOfHom ((ht t₆) this).some.right.1.unop ((le_iSup f 1) hW)
-  exact ⟨t.right.2 |_ U, by simp [map_restrict, ← tcomp, restrict_restrict]⟩
+  exact ⟨t.right.2 |_ U, by simp [← tcomp, restrict_restrict]⟩
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
