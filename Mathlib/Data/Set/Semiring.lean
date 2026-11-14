@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Set.BooleanAlgebra
@@ -86,16 +87,23 @@ instance : AddCommMonoid (SetSemiring α) where
 instance : AddLeftMono (SetSemiring α) where
   elim _ _ _ := union_subset_union_right _
 
+section One
+
+variable [One α]
+
+instance : One (SetSemiring α) where one := ofSet 1
+
+lemma one_def : (1 : SetSemiring α) = ofSet 1 := rfl
+@[simp] lemma toSet_one : (1 : SetSemiring α).toSet = 1 := rfl
+@[simp] lemma ofSet_one : ofSet (1 : Set α) = 1 := rfl
+
+end One
+
 section Mul
 
 variable [Mul α]
 
-instance : NonUnitalNonAssocSemiring (SetSemiring α) where
-  mul s t := ofSet (s.toSet * t.toSet)
-  zero_mul _ := SetSemiring.ext empty_mul
-  mul_zero _ := SetSemiring.ext mul_empty
-  left_distrib _ _ _ := SetSemiring.ext mul_union
-  right_distrib _ _ _ := SetSemiring.ext union_mul
+instance : Mul (SetSemiring α) := fast_instance% toSetEquiv.mul
 
 lemma mul_def (s t : SetSemiring α) : s * t = ofSet (s.toSet * t.toSet) := rfl
 @[simp] lemma toSet_mul (s t : SetSemiring α) : (s * t).toSet = s.toSet * t.toSet := rfl
@@ -112,38 +120,30 @@ instance : MulRightMono (SetSemiring α) where
 
 end Mul
 
-section One
+instance [MulOneClass α] : MulOneClass (SetSemiring α) := fast_instance% toSetEquiv.mulOneClass
 
-variable [One α]
+instance [Semigroup α] : Semigroup (SetSemiring α) := fast_instance% toSetEquiv.semigroup
 
-instance : One (SetSemiring α) where one := ofSet 1
+instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
+  fast_instance% toSetEquiv.commSemigroup
 
-lemma one_def : (1 : SetSemiring α) = ofSet 1 := rfl
-@[simp] lemma toSet_one : (1 : SetSemiring α).toSet = 1 := rfl
-@[simp] lemma ofSet_one : ofSet (1 : Set α) = 1 := rfl
+instance [Monoid α] : Monoid (SetSemiring α) := fast_instance% toSetEquiv.monoid
 
-end One
+instance [CommMonoid α] : CommMonoid (SetSemiring α) := fast_instance% toSetEquiv.commMonoid
 
-instance [MulOneClass α] : MulOneClass (SetSemiring α) := fast_instance%
-  toSetEquiv.injective.mulOneClass toSet rfl fun _ _ ↦ rfl
+instance [Mul α] : NonUnitalNonAssocSemiring (SetSemiring α) where
+  zero_mul _ := SetSemiring.ext empty_mul
+  mul_zero _ := SetSemiring.ext mul_empty
+  left_distrib _ _ _ := SetSemiring.ext mul_union
+  right_distrib _ _ _ := SetSemiring.ext union_mul
 
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
 
-instance [Semigroup α] : Semigroup (SetSemiring α) := fast_instance%
-  toSetEquiv.injective.semigroup toSet fun _ _ ↦ rfl
-
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
-
-instance [Monoid α] : IdemSemiring (SetSemiring α) where
-
-instance [CommSemigroup α] : CommSemigroup (SetSemiring α) := fast_instance%
-  toSetEquiv.injective.commSemigroup toSet fun _ _ ↦ rfl
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) := fast_instance%
-  toSetEquiv.injective.commMonoid toSet rfl (fun _ _ ↦ rfl)
-    fun _ n ↦ by induction n <;> simp [*, pow_succ]
+instance [Monoid α] : IdemSemiring (SetSemiring α) where
 
 instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
 
