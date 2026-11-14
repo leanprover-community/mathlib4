@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
+-- Only used by a deprecated theorem
+import Mathlib.Order.Cofinal
+
 /-!
 # Principal ordinals
 
@@ -23,7 +26,7 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 * `IsPrincipal`: A principal (or indecomposable) ordinal under some binary operation. We include `0`
   and other typically excluded edge cases for simplicity.
-* `not_bddAbove_setOfPred_isPrincipal`: Principal ordinals (under any operation) are unbounded.
+* `isCofinal_setOfPred_isPrincipal`: Principal ordinals (under any operation) are unbounded.
 * `isPrincipal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are
   `0` and the ordinal powers of `ω`.
 * `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
@@ -115,35 +118,31 @@ protected theorem IsPrincipal.iSup {ι} {f : ι → Ordinal} (H : ∀ i, IsPrinc
 
 end Arbitrary
 
-/-- We give an explicit construction for a principal ordinal larger or equal than `o`. -/
-private theorem isPrincipal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
-    IsPrincipal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
+/-- Principal ordinals under any operation are unbounded. -/
+theorem isCofinal_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
+    IsCofinal { o | IsPrincipal op o } := by
+  refine fun o ↦ ⟨nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.1.1 y.1.2 + 1) o, ?_, le_nfp ..⟩
   intro a b ha hb
   rw [lt_nfp_iff] at *
   obtain ⟨m, ha⟩ := ha
   obtain ⟨n, hb⟩ := hb
   obtain h | h := le_total
-    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2))^[m] o)
-    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2))^[n] o)
+    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.1.1 y.1.2 + 1)^[m] o)
+    ((fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, op y.1.1 y.1.2 + 1)^[n] o)
   · use n + 1
-    rw [Function.iterate_succ']
-    apply (lt_succ _).trans_le
-    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ Set.Iio _ ↦ succ (op y.1.1 y.1.2))
-      ⟨_, Set.mk_mem_prod (ha.trans_le h) hb⟩
+    rw [Function.iterate_succ', ← add_one_le_iff]
+    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ _ ↦ _) ⟨_, Set.mk_mem_prod (ha.trans_le h) hb⟩
   · use m + 1
-    rw [Function.iterate_succ']
-    apply (lt_succ _).trans_le
-    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ Set.Iio _ ↦ succ (op y.1.1 y.1.2))
-      ⟨_, Set.mk_mem_prod ha (hb.trans_le h)⟩
+    rw [Function.iterate_succ', ← add_one_le_iff]
+    exact Ordinal.le_iSup (fun y : Set.Iio _ ×ˢ _ ↦ _) ⟨_, Set.mk_mem_prod ha (hb.trans_le h)⟩
 
-/-- Principal ordinals under any operation are unbounded. -/
+@[deprecated isCofinal_setOfPred_isPrincipal +typeChanged (since := "2026-11-12")]
 theorem not_bddAbove_setOfPred_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
-    ¬ BddAbove { o | IsPrincipal op o } := by
-  rintro ⟨a, ha⟩
-  exact ((le_nfp _ _).trans (ha (isPrincipal_nfp_iSup op (succ a)))).not_gt (lt_succ a)
+    ¬ BddAbove { o | IsPrincipal op o } :=
+  (isCofinal_setOfPred_isPrincipal op).not_bddAbove
 
 @[deprecated (since := "2026-07-09")]
-alias not_bddAbove_setOf_isPrincipal := not_bddAbove_setOfPred_isPrincipal
+alias not_bddAbove_setOf_isPrincipal := isCofinal_setOfPred_isPrincipal
 
 /-! ### Additive principal ordinals -/
 
