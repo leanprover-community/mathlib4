@@ -26,6 +26,8 @@ rank at most 1" if it is a tensor product of one-dimensional holors.
 The CP rank of a holor `x` is the smallest N such that `x` is the sum
 of N holors of rank at most 1.
 
+The Hadamard product of two holors of the same type is the pointwise product.
+
 Based on the tensor library found in <https://www.isa-afp.org/entries/Deep_Learning.html>
 
 ## References
@@ -338,5 +340,48 @@ theorem cprank_upper_bound [Ring α] : ∀ {ds}, ∀ x : Holor α ds, cprank x �
   letI := Classical.decPred fun n : ℕ => CPRankMax n x
   Nat.find_min' ⟨ds.prod, show (fun n => CPRankMax n x) ds.prod from cprankMax_upper_bound x⟩
     (cprankMax_upper_bound x)
+
+section HadamardMul
+
+/-- The Hadamard product of two holors of the same type is the pointwise product. -/
+def HadamardMul [Mul α] (x : Holor α ds) (y : Holor α ds) : Holor α ds := fun t ↦ x t * y t
+
+@[inherit_doc] scoped infixl:70 " ⊙ " => HadamardMul
+
+variable (x y z w : Holor α ds)
+
+@[simp]
+theorem hadamard_apply [Mul α] (t : HolorIndex ds) : (x ⊙ y) t = x t * y t := rfl
+
+theorem hadamard_comm [CommMagma α] : x ⊙ y = y ⊙ x :=
+  funext fun _ ↦ mul_comm _ _
+
+theorem hadamard_assoc [Semigroup α] : x ⊙ y ⊙ z = x ⊙ (y ⊙ z) :=
+  funext fun _ ↦ Semigroup.mul_assoc _ _ _
+
+theorem hadamard_add [Mul α] [Add α] [LeftDistribClass α] : x ⊙ (y + z) = x ⊙ y + x ⊙ z :=
+  funext fun _ ↦ left_distrib _ _ _
+
+theorem add_hadamard [Mul α] [Add α] [RightDistribClass α] : (y + z) ⊙ x = y ⊙ x + z ⊙ x :=
+  funext fun _ ↦ right_distrib _ _ _
+
+theorem smul_hadamard [Semigroup α] (k : α) : (k • x) ⊙ y = k • (x ⊙ y) :=
+  funext fun _ ↦ Semigroup.mul_assoc _ _ _
+
+theorem hadamard_smul [CommSemigroup α] (k : α) : x ⊙ (k • y) = k • (x ⊙ y) :=
+  funext fun _ ↦ mul_left_comm _ _ _
+
+@[simp]
+theorem hadamard_zero [MulZeroClass α] : x ⊙ (0 : Holor α ds) = 0 :=
+  funext fun _ ↦ MulZeroClass.mul_zero _
+
+@[simp]
+theorem zero_hadamard [MulZeroClass α] : (0 : Holor α ds) ⊙ x = 0 :=
+  funext fun _ ↦ MulZeroClass.zero_mul _
+
+theorem hadamard_mul_hadamard_comm [CommSemigroup α] : (x ⊗ y) ⊙ (z ⊗ w) = (x ⊙ z) ⊗ (y ⊙ w) :=
+  funext fun _ ↦ mul_mul_mul_comm _ _ _ _
+
+end HadamardMul
 
 end Holor
