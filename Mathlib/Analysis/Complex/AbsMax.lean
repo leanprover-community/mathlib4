@@ -192,9 +192,9 @@ theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
   suffices ‖(f ∘ e) (1 : ℂ)‖ = ‖(f ∘ e) (0 : ℂ)‖ by simpa [e]
   have hr : dist (1 : ℂ) 0 = 1 := by simp
   have hball : MapsTo e (ball 0 1) (ball z r) := by
-    refine ((lipschitzWith_lineMap z w).mapsTo_ball (mt nndist_eq_zero.1 hne) 0 1).mono
+    refine ((lipschitzWith_lineMap z w).mapsTo_ball (mt nnDist_eq_zero.1 hne) 0 1).mono
       Subset.rfl ?_
-    simpa only [lineMap_apply_zero, mul_one, coe_nndist] using ball_subset_ball hw
+    simpa only [lineMap_apply_zero, mul_one, coe_nnDist] using ball_subset_ball hw
   exact norm_max_aux₃ hr (hd.comp hde.diffContOnCl hball)
       (hz.comp_of_mapsTo hball (lineMap_apply_zero z w))
 
@@ -412,7 +412,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
   rcases exists_ne z with ⟨w, hne⟩
   set e := (lineMap z w : ℂ → E)
   have hde : Differentiable ℂ e := (differentiable_id.smul_const (w - z)).add_const z
-  have hL : AntilipschitzWith (nndist z w)⁻¹ e := antilipschitzWith_lineMap hne.symm
+  have hL : AntilipschitzWith (nnDist z w)⁻¹ e := antilipschitzWith_lineMap hne.symm
   replace hd : DiffContOnCl ℂ (f ∘ e) (e ⁻¹' U) :=
     hd.comp hde.diffContOnCl (mapsTo_preimage _ _)
   have h₀ : (0 : ℂ) ∈ e ⁻¹' U := by simpa only [e, mem_preimage, lineMap_apply_zero]

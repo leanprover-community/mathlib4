@@ -120,8 +120,10 @@ theorem opENorm_le_iff {f : E →SL[σ₁₂] F} {M : ℝ≥0∞} :
     ‖f‖ₑ ≤ M ↔ ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ :=
   ⟨f.le_of_opENorm_le, opENorm_le_bound f⟩
 
-theorem nndist_le_opNNNorm (f : E →SL[σ₁₂] F) (x y : E) : nndist (f x) (f y) ≤ ‖f‖₊ * nndist x y :=
+theorem nnDist_le_opNNNorm (f : E →SL[σ₁₂] F) (x y : E) : nnDist (f x) (f y) ≤ ‖f‖₊ * nnDist x y :=
   dist_le_opNorm f x y
+
+@[deprecated (since := "2026-11-07")] alias nndist_le_opNNNorm := nnDist_le_opNNNorm
 
 /-- continuous linear maps are Lipschitz continuous. -/
 theorem lipschitzWith (f : E →SL[σ₁₂] F) : LipschitzWith ‖f‖₊ f :=

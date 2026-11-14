@@ -62,7 +62,9 @@ instance pseudoMetricSpace : PseudoMetricSpace (Subtype p) :=
 
 lemma dist_eq (x y : Subtype p) : dist x y = dist (x : α) y := rfl
 
-lemma nndist_eq (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+lemma nnDist_eq (x y : Subtype p) : nnDist x y = nnDist (x : α) y := rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
 @[simp]
 theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
@@ -98,10 +100,16 @@ lemma dist_unop (x y : αᵐᵒᵖ) : dist (unop x) (unop y) = dist x y := rfl
 lemma dist_op (x y : α) : dist (op x) (op y) = dist x y := rfl
 
 @[to_additive (attr := simp)]
-lemma nndist_unop (x y : αᵐᵒᵖ) : nndist (unop x) (unop y) = nndist x y := rfl
+lemma nnDist_unop (x y : αᵐᵒᵖ) : nnDist (unop x) (unop y) = nnDist x y := rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_unop := nnDist_unop
 
 @[to_additive (attr := simp)]
-lemma nndist_op (x y : α) : nndist (op x) (op y) = nndist x y := rfl
+lemma nnDist_op (x y : α) : nnDist (op x) (op y) = nnDist x y := rfl
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_op := nnDist_op
 
 end MulOpposite
 
@@ -112,26 +120,34 @@ instance : PseudoMetricSpace ℝ≥0 :=
 
 lemma NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 
-lemma NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
+lemma NNReal.nnDist_eq (a b : ℝ≥0) : nnDist a b = max (a - b) (b - a) :=
   eq_of_forall_ge_iff fun _ => by
     simp only [max_le_iff, tsub_le_iff_right (α := ℝ≥0)]
-    simp only [← NNReal.coe_le_coe, coe_nndist, dist_eq, abs_sub_le_iff,
+    simp only [← NNReal.coe_le_coe, coe_nnDist, dist_eq, abs_sub_le_iff,
       tsub_le_iff_right, NNReal.coe_add]
 
-@[simp]
-lemma NNReal.nndist_zero_eq_val (z : ℝ≥0) : nndist 0 z = z := by
-  simp [NNReal.nndist_eq]
+@[deprecated (since := "2026-11-07")] alias NNReal.nndist_eq := NNReal.nnDist_eq
 
 @[simp]
-lemma NNReal.nndist_zero_eq_val' (z : ℝ≥0) : nndist z 0 = z := by
-  rw [nndist_comm]
-  exact NNReal.nndist_zero_eq_val z
+lemma NNReal.nnDist_zero_eq_val (z : ℝ≥0) : nnDist 0 z = z := by
+  simp [NNReal.nnDist_eq]
 
-lemma NNReal.le_add_nndist (a b : ℝ≥0) : a ≤ b + nndist a b := by
+@[deprecated (since := "2026-11-07")] alias NNReal.nndist_zero_eq_val := NNReal.nnDist_zero_eq_val
+
+@[simp]
+lemma NNReal.nnDist_zero_eq_val' (z : ℝ≥0) : nnDist z 0 = z := by
+  rw [nnDist_comm]
+  exact NNReal.nnDist_zero_eq_val z
+
+@[deprecated (since := "2026-11-07")] alias NNReal.nndist_zero_eq_val' := NNReal.nnDist_zero_eq_val'
+
+lemma NNReal.le_add_nnDist (a b : ℝ≥0) : a ≤ b + nnDist a b := by
   suffices (a : ℝ) ≤ (b : ℝ) + dist a b by
-    rwa [← NNReal.coe_le_coe, NNReal.coe_add, coe_nndist]
+    rwa [← NNReal.coe_le_coe, NNReal.coe_add, coe_nnDist]
   rw [← sub_le_iff_le_add']
   exact le_of_abs_le (dist_eq a b).ge
+
+@[deprecated (since := "2026-11-07")] alias NNReal.le_add_nndist := NNReal.le_add_nnDist
 
 lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
     Metric.ball (0 : ℝ≥0) c.toReal = Set.Ico 0 c := by ext x; simp
@@ -161,11 +177,15 @@ instance : PseudoMetricSpace (ULift β) :=
 
 lemma dist_eq (x y : ULift β) : dist x y = dist x.down y.down := rfl
 
-lemma nndist_eq (x y : ULift β) : nndist x y = nndist x.down y.down := rfl
+lemma nnDist_eq (x y : ULift β) : nnDist x y = nnDist x.down y.down := rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
 @[simp] lemma dist_up_up (x y : β) : dist (ULift.up x) (ULift.up y) = dist x y := rfl
 
-@[simp] lemma nndist_up_up (x y : β) : nndist (ULift.up x) (ULift.up y) = nndist x y := rfl
+@[simp] lemma nnDist_up_up (x y : β) : nnDist (ULift.up x) (ULift.up y) = nnDist x y := rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_up_up := nnDist_up_up
 
 end ULift
 
@@ -244,22 +264,32 @@ lemma continuous_iff_continuous_dist [TopologicalSpace β] {f : β → α} :
     continuous_iff_continuousAt.2 fun _ => tendsto_iff_dist_tendsto_zero.2 <|
       (h.comp (.prodMk_left _)).tendsto' _ _ <| dist_self _⟩
 
-lemma uniformContinuous_nndist : UniformContinuous fun p : α × α => nndist p.1 p.2 :=
+lemma uniformContinuous_nnDist : UniformContinuous fun p : α × α => nnDist p.1 p.2 :=
   uniformContinuous_dist.subtype_mk _
 
-protected lemma UniformContinuous.nndist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
-    (hg : UniformContinuous g) : UniformContinuous fun b => nndist (f b) (g b) :=
-  uniformContinuous_nndist.comp (hf.prodMk hg)
+@[deprecated (since := "2026-11-07")] alias uniformContinuous_nndist := uniformContinuous_nnDist
 
-lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
-  uniformContinuous_nndist.continuous
+protected lemma UniformContinuous.nnDist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
+    (hg : UniformContinuous g) : UniformContinuous fun b => nnDist (f b) (g b) :=
+  uniformContinuous_nnDist.comp (hf.prodMk hg)
+
+@[deprecated (since := "2026-11-07")] alias UniformContinuous.nndist := UniformContinuous.nnDist
+
+lemma continuous_nnDist : Continuous fun p : α × α => nnDist p.1 p.2 :=
+  uniformContinuous_nnDist.continuous
+
+@[deprecated (since := "2026-11-07")] alias continuous_nndist := continuous_nnDist
 
 @[fun_prop]
-protected lemma Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
-  continuous_nndist.comp₂ hf hg
+protected lemma Continuous.nnDist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
+    (hg : Continuous g) : Continuous fun b => nnDist (f b) (g b) :=
+  continuous_nnDist.comp₂ hf hg
 
-protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : α}
+@[deprecated (since := "2026-11-07")] protected alias Continuous.nndist := Continuous.nnDist
+
+protected lemma Filter.Tendsto.nnDist {f g : β → α} {x : Filter β} {a b : α}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
-    Tendsto (fun x => nndist (f x) (g x)) x (𝓝 (nndist a b)) :=
-  (continuous_nndist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
+    Tendsto (fun x => nnDist (f x) (g x)) x (𝓝 (nnDist a b)) :=
+  (continuous_nnDist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
+
+@[deprecated (since := "2026-11-07")] protected alias Filter.Tendsto.nndist := Filter.Tendsto.nnDist

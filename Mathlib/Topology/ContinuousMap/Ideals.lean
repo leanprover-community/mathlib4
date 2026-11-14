@@ -193,7 +193,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   refine (fun f hf => Metric.mem_closure_iff.mpr fun ε hε => ?_)
   lift ε to ℝ≥0 using hε.lt.le
   replace hε := show (0 : ℝ≥0) < ε from hε
-  simp_rw [dist_nndist]
+  simp_rw [dist_nnDist]
   norm_cast
   -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}

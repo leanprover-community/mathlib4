@@ -613,7 +613,7 @@ theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
   refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_
   specialize hN n hn
   -- We simplify the known inequality.
-  rw [dist_nndist, NNReal.nndist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
+  rw [dist_nnDist, NNReal.nnDist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
     NNReal.coe_lt_coe, max_lt_iff] at hN
   rw [edist_comm]
   -- Then use `hf` to simplify the goal to the same form.
