@@ -581,6 +581,14 @@ theorem IsCycle.pow_eq_one_iff'' [Finite β] {f : Perm β} (hf : IsCycle f) {n :
     (hf.pow_eq_one_iff' hx).2 (h _ hx)⟩
 
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
+/-- A power of a cycle fixes a point moved by the cycle exactly when the exponent is a multiple
+of the order of the cycle. Since the right-hand side does not depend on the point, a power of a
+cycle either moves every point the cycle moves, or fixes all of them. -/
+theorem IsCycle.pow_apply_eq_self_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} {x : β}
+    (hx : f x ≠ x) : (f ^ n) x = x ↔ orderOf f ∣ n := by
+  rw [← hf.pow_eq_one_iff' hx, orderOf_dvd_iff_pow_eq_one]
+
+-- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {a b : ℕ} :
     f ^ a = f ^ b ↔ ∃ x, f x ≠ x ∧ (f ^ a) x = (f ^ b) x := by
   classical
