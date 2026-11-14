@@ -168,6 +168,13 @@ lemma end_mem_vertices {a b : V} (p : Path a b) : b ∈ p.vertices := by
   have h₂ := getLast_mem (l := p.vertices) (vertices_ne_nil p)
   simpa [h₁] using h₂
 
+@[simp]
+lemma vertices_mapPath {W : Type*} [Quiver W] (F : V ⥤q W) {a b : V} (p : Path a b) :
+    (F.mapPath p).vertices = p.vertices.map F.obj := by
+  induction p with
+  | nil => simp
+  | cons p e ih => simp [ih]
+
 /-!  ### Path vertices decomposition -/
 section
 
