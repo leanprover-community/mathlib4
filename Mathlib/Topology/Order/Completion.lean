@@ -57,8 +57,8 @@ namespace Order
 /-- A dense linear order into which α embeds continuously, formed by "filling in" the blanks. -/
 abbrev Fill (α : Type*) [LinearOrder α] : Type _ :=
   {x : α ×ₗ ℚ //
-    (IsSuccPrelimit (ofLex x).1 → 0 ≤ (ofLex x).2) ∧
-    (IsPredPrelimit (ofLex x).1 → (ofLex x).2 ≤ 0) }
+    (IsSuccPrelimit x.ofLex.1 → 0 ≤ x.ofLex.2) ∧
+    (IsPredPrelimit x.ofLex.1 → x.ofLex.2 ≤ 0) }
 
 namespace Fill
 
@@ -69,7 +69,7 @@ instance : OrderTopology (Fill α) := ⟨rfl⟩
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A continuous embedding of `α` into `Fill α`. -/
 def some : α ↪o Fill α where
-  toFun x := ⟨toLex (x, 0), by simp⟩
+  toFun x := ⟨Lex.toLex (x, 0), by simp⟩
   inj' _ := by simp
   map_rel_iff' := by simp [Prod.Lex.toLex_le_toLex']
 
@@ -85,12 +85,12 @@ instance : DenselyOrdered (Fill α) where
         simp [some, Prod.Lex.lt_iff, hz', hz]
       obtain ⟨s, hs⟩ := exists_gt (max 0 q)
       rw [max_lt_iff] at hs
-      refine ⟨⟨toLex (x, s), ?_⟩, ?_⟩
+      refine ⟨⟨Lex.toLex (x, s), ?_⟩, ?_⟩
       · simp [hx, hs.1.le]
       · simp [Prod.Lex.lt_iff, hs.2, h]
     · obtain ⟨s, hs, hs'⟩ := exists_between h
-      refine ⟨⟨toLex (x, s), ?_⟩, ?_⟩
-      · grind [ofLex_toLex]
+      refine ⟨⟨Lex.toLex (x, s), ?_⟩, ?_⟩
+      · grind
       · simp [Prod.Lex.lt_iff, hs, hs']
 
 set_option backward.isDefEq.respectTransparency.types false in

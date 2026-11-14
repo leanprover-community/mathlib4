@@ -24,8 +24,8 @@ def toLexLinearEquiv : β ≃ₗ[α] Lex β := (toLexAddEquiv β).toLinearEquiv 
 /-- `ofLex` as a linear equivalence -/
 def ofLexLinearEquiv : Lex β ≃ₗ[α] β := (ofLexAddEquiv β).toLinearEquiv ofLex_smul
 
-@[simp] lemma coe_toLexLinearEquiv : ⇑(toLexLinearEquiv α β) = toLex := rfl
-@[simp] lemma coe_ofLexLinearEquiv : ⇑(ofLexLinearEquiv α β) = ofLex := rfl
+@[simp] lemma coe_toLexLinearEquiv : ⇑(toLexLinearEquiv α β) = Lex.toLex := rfl
+@[simp] lemma coe_ofLexLinearEquiv : ⇑(ofLexLinearEquiv α β) = Lex.ofLex := rfl
 
 @[simp] lemma symm_toLexLinearEquiv : (toLexLinearEquiv α β).symm = ofLexLinearEquiv α β := rfl
 @[simp] lemma symm_ofLexLinearEquiv : (ofLexLinearEquiv α β).symm = toLexLinearEquiv α β := rfl

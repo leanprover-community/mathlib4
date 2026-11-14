@@ -29,17 +29,17 @@ instance instOrderTopology : OrderTopology (ℝ ×ₗ Bool) := ⟨rfl⟩
 noncomputable instance instLinearOrder : LinearOrder (ℝ ×ₗ Bool) := inferInstance
 
 instance instSeparableSpace : SeparableSpace (ℝ ×ₗ Bool) := by
-  refine ⟨⟨range fun q : ℚ ↦ toLex (q, false), countable_range _, ?_⟩⟩
-  simp only [dense_iff_inter_open, Set.Nonempty, toLex.surjective.exists]
+  refine ⟨⟨range fun q : ℚ ↦ Lex.toLex (q, false), countable_range _, ?_⟩⟩
+  simp only [dense_iff_inter_open, Set.Nonempty, toLex_surjective.exists]
   rintro U hUo ⟨⟨x, _ | _⟩, hx⟩
   · rcases exists_Ioc_subset_of_mem_nhds (hUo.mem_nhds hx) (exists_lt _) with ⟨y, hyx, hyU⟩
-    rcases toLex.surjective y with ⟨y, rfl⟩
+    rcases toLex_surjective y with ⟨y, rfl⟩
     have : y.1 < x := by simpa [Prod.Lex.toLex_lt_toLex, y.2.false_le.not_gt] using hyx
     rcases exists_rat_btwn this with ⟨q, hyq, hqx⟩
     refine ⟨(q, false), hyU ?_, mem_range_self _⟩
     simp [Prod.Lex.toLex_le_toLex, Prod.Lex.toLex_lt_toLex, hyq, hqx]
   · rcases exists_Ico_subset_of_mem_nhds (hUo.mem_nhds hx) (exists_gt _) with ⟨y, hyx, hyU⟩
-    rcases toLex.surjective y with ⟨y, rfl⟩
+    rcases toLex_surjective y with ⟨y, rfl⟩
     have : x < y.1 := by simpa [Prod.Lex.toLex_lt_toLex, y.2.le_true.not_gt] using hyx
     rcases exists_rat_btwn this with ⟨q, hyq, hqx⟩
     refine ⟨(q, false), hyU ?_, mem_range_self _⟩
@@ -47,10 +47,10 @@ instance instSeparableSpace : SeparableSpace (ℝ ×ₗ Bool) := by
 
 theorem not_secondCountableTopology : ¬SecondCountableTopology (ℝ ×ₗ Bool) := by
   intro h
-  have : {x : ℝ ×ₗ Bool | (ofLex x).2}.Countable := by
+  have : {x : ℝ ×ₗ Bool | x.ofLex.2}.Countable := by
     simpa [Prod.Lex.covBy_iff, not_covBy_of_denselyOrdered, (Bool.le_true _).not_gt,
       (Bool.false_le _).lt_iff_ne] using countable_setOfPred_covBy_left (α := ℝ ×ₗ Bool)
-  refine not_countable_univ <| (this.image fun x ↦ (ofLex x).1).mono fun x _ ↦ ?_
-  exact ⟨toLex (x, true), rfl, rfl⟩
+  refine not_countable_univ <| (this.image fun x ↦ x.ofLex.1).mono fun x _ ↦ ?_
+  exact ⟨Lex.toLex (x, true), rfl, rfl⟩
 
 end RealProdLexBool

@@ -122,20 +122,18 @@ theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
 
 variable {α β}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inl_eq_coe_inlₗ {m : α} (hm : m ≠ 0) :
     inl α β m = OrderMonoidHom.inlₗ αˣ βˣ (Units.mk0 _ hm) := by
   lift m to αˣ using isUnit_iff_ne_zero.mpr hm
-  simp
+  simp [← ofLex_inj]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inr_eq_coe_inrₗ {n : β} (hn : n ≠ 0) :
     inr α β n = OrderMonoidHom.inrₗ αˣ βˣ (Units.mk0 _ hn) := by
   lift n to βˣ using isUnit_iff_ne_zero.mpr hn
-  simp
+  simp [← ofLex_inj]
 
 theorem inl_mul_inr_eq_coe_toLex {m : α} {n : β} (hm : m ≠ 0) (hn : n ≠ 0) :
-    inl α β m * inr α β n = toLex (Units.mk0 _ hm, Units.mk0 _ hn) := by
+    inl α β m * inr α β n = Lex.toLex (Units.mk0 _ hm, Units.mk0 _ hn) := by
   rw [inl_eq_coe_inlₗ hm, inr_eq_coe_inrₗ hn,
       ← WithZero.coe_mul, OrderMonoidHom.inlₗ_mul_inrₗ_eq_toLex]
 

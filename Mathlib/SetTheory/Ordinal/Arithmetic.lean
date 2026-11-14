@@ -393,7 +393,8 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 @[simp]
 theorem type_lt_prod_lex {α β : Type u} [LinearOrder α] [LinearOrder β]
     [WellFoundedLT α] [WellFoundedLT β] : typeLT (α ×ₗ β) = (typeLT β) * (typeLT α) :=
-  rfl
+  let ri : (· < · : α ×ₗ β → α ×ₗ β → Prop) ≃r Prod.Lex (· < ·) (· < ·) := ⟨ofLexEquiv, Iff.rfl⟩
+  ri.ordinalType_congr.trans (type_prod_lex ..)
 
 private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
   induction a, b using inductionOn₂ with | _ α _ β _

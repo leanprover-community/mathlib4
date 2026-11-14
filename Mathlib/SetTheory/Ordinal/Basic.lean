@@ -816,7 +816,7 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 @[simp]
 theorem type_lt_sum_lex {α β : Type u} [LinearOrder α] [LinearOrder β]
     [WellFoundedLT α] [WellFoundedLT β] : typeLT (α ⊕ₗ β) = typeLT α + typeLT β :=
-  rfl
+  (Sum.Lex.toLexRelIsoLT (α := α) (β := β)).symm.ordinalType_congr.trans (type_sum_lex ..)
 
 @[simp]
 theorem type_lt_withTop {α : Type u} [LinearOrder α] [WellFoundedLT α] :
