@@ -374,7 +374,7 @@ theorem eRank_submatrix {n : Type un} [Semiring R] (A : Matrix m n R) (em : m₀
     eRank (A.submatrix em en) = eRank A := by
   simpa [-lift_cRank_submatrix] using! congr(Cardinal.toENat $(A.lift_cRank_submatrix em en))
 
-theorem eRank_reindex {m₀ : Type um} {n : Type un} [Semiring R] (A : Matrix m n R) (em : m ≃ m₀)
+theorem eRank_reindex {m₀ : Type um₀} {n : Type un} [Semiring R] (A : Matrix m n R) (em : m ≃ m₀)
     (en : n ≃ n₀) : eRank (A.reindex em en) = eRank A :=
   eRank_submatrix ..
 
