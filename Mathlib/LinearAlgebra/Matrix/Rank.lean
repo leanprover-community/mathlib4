@@ -401,9 +401,13 @@ theorem rank_eq_finrank_range_toLin [Fintype n] [Finite m] [DecidableEq n] {M₁
   simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
     aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
-theorem rank_le_card_height [Fintype m] [CommSemiring R] [StrongRankCondition R]
+theorem rank_le_card_height [Fintype m] [Semiring R] [StrongRankCondition R]
     (A : Matrix m n R) : A.rank ≤ Fintype.card m :=
   (Submodule.finrank_le _).trans (finrank_pi R).le
+
+theorem rank_le_height [Semiring R] [StrongRankCondition R] {m n : ℕ}
+    (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ m :=
+  A.rank_le_card_height.trans (Fintype.card_fin m).le
 
 /-- The rank of a matrix is at most the size of any finset containing all its nonzero rows. -/
 theorem rank_le_card_of_support_subset [Finite n] [CommSemiring R] [StrongRankCondition R]
@@ -424,10 +428,6 @@ theorem rank_le_card_of_support_subset [Finite n] [CommSemiring R] [StrongRankCo
     _ ≤ (A.submatrix Subtype.val id).rank := rank_mul_le_right _ _
     _ ≤ Fintype.card {x // x ∈ s} := rank_le_card_height _
     _ = s.card := Fintype.card_coe s
-
-theorem rank_le_height [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
-    (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ m :=
-  A.rank_le_card_height.trans (Fintype.card_fin m).le
 
 section Field
 
