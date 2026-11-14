@@ -207,6 +207,26 @@ theorem ramificationIdxIn_mul_ramificationIdxIn [Flat B C] :
 @[deprecated (since := "2026-06-18")] alias ramificationIdxIn_mul_ramificationIdxIn' :=
   ramificationIdxIn_mul_ramificationIdxIn
 
+variable {p} in
+omit hPp in
+include GAC GBC in
+theorem ramificationIdxIn_above_le [Module.Finite A C] [Flat B C] :
+    P.ramificationIdxIn C ≤ p.ramificationIdxIn C := by
+  obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [ramificationIdxIn_eq_ramificationIdx p Q GAC, ramificationIdxIn_eq_ramificationIdx P Q GBC]
+  exact P.ramificationIdx_above_le Q
+
+variable {p} in
+omit hPp in
+include GAC GBC in
+theorem inertiaDegIn_above_le [Module.Finite A C] :
+    P.inertiaDegIn C ≤ p.inertiaDegIn C := by
+  obtain ⟨⟨Q, _, _⟩⟩ := (inferInstance : Nonempty (primesOver P C))
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [inertiaDegIn_eq_inertiaDeg p Q GAC, inertiaDegIn_eq_inertiaDeg P Q GBC]
+  exact P.inertiaDeg_above_le Q
+
 end tower
 
 end RamificationInertia
