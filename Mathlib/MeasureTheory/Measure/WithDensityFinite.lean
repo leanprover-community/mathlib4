@@ -34,7 +34,6 @@ In this definition and the results below, `μ` is an s-finite measure (`SFinite 
 * `absolutelyContinuous_toFinite`: `μ ≪ μ.toFinite`.
 * `toFinite_absolutelyContinuous`: `μ.toFinite ≪ μ`.
 * `ae_toFinite`: `ae μ.toFinite = ae μ`.
-
 -/
 
 @[expose] public section

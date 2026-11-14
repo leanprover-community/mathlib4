@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 If `F` preserves (resp. reflects) pullbacks, then it preserves (resp. reflects) monomorphisms.
 
 We also provide the dual version for epimorphisms.
-
 -/
 
 public section

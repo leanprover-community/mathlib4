@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 # Finite and projective modules
-
 -/
 
 public section
