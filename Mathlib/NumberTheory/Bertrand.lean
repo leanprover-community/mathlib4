@@ -155,17 +155,17 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
   · rw [factorization_eq_zero_of_not_prime n.centralBinom h, Nat.pow_zero]
   · rw [factorization_centralBinom_of_two_mul_self_lt_three_mul n_large h h2x, Nat.pow_zero]
 
-/-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
-The bound splits the prime factors of `centralBinom n` into those
+/-- An upper bound on the central binomial coefficient in terms of the number of primes in
+`(n, 2 * n]`. The bound splits the prime factors of `centralBinom n` into those
 1. At most `sqrt (2 * n)`, which contribute at most `2 * n` for each such prime.
 2. Between `sqrt (2 * n)` and `2 * n / 3`, which contribute at most `4^(2 * n / 3)` in total.
 3. Between `2 * n / 3` and `n`, which do not exist.
-4. Between `n` and `2 * n`, which would not exist in the case where Bertrand's postulate is false.
+4. Between `n` and `2 * n`, which contribute at most `2 * n` for each such prime.
 5. Above `2 * n`, which do not exist.
 -/
-theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
-    (no_prime : ∀ p : ℕ, p.Prime → n < p → 2 * n < p) :
-    centralBinom n ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) := by
+theorem Nat.centralBinom_le_mul_pow_card {n : ℕ} (n_large : 2 < n) :
+    centralBinom n ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) *
+      (2 * n) ^ #{p ∈ Finset.Ioc n (2 * n) | p.Prime} := by
   have n_pos : 0 < n := (Nat.zero_le _).trans_lt n_large
   have n2_pos : 1 ≤ 2 * n := mul_pos (zero_lt_two' ℕ) n_pos
   let S := {p ∈ Finset.range (2 * n / 3 + 1) | Nat.Prime p}
@@ -174,9 +174,17 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
     refine Finset.prod_filter_of_ne fun p _ h => ?_
     contrapose h; dsimp only [f]
     rw [factorization_eq_zero_of_not_prime n.centralBinom h, _root_.pow_zero]
-  rw [centralBinom_factorization_small n n_large no_prime, ← this, ←
-    Finset.prod_filter_mul_prod_filter_not S (· ≤ sqrt (2 * n))]
-  apply mul_le_mul'
+  have hsplit : centralBinom n =
+      (∏ x ∈ Finset.range (2 * n / 3 + 1), f x) * ∏ x ∈ Finset.Ioc n (2 * n) with x.Prime, f x := by
+    rw [← Finset.prod_union (by grind [Finset.disjoint_left])]
+    refine (Eq.trans ?_ n.prod_pow_factorization_centralBinom).symm
+    refine Finset.prod_subset (by grind) fun x _ _ => ?_
+    obtain h | h : ¬x.Prime ∨ x ≤ n := by grind
+    · simp [f, factorization_eq_zero_of_not_prime n.centralBinom h]
+    · simp [f, factorization_centralBinom_of_two_mul_self_lt_three_mul n_large h (by grind)]
+  rw [hsplit, ← this, ← Finset.prod_filter_mul_prod_filter_not S (· ≤ sqrt (2 * n))]
+  refine mul_le_mul' (mul_le_mul' ?_ ?_) <|
+    Finset.prod_le_pow_card _ _ _ fun p _ => pow_factorization_choose_le (mul_pos two_pos n_pos)
   · refine (Finset.prod_le_prod fun p _ => (?_ : f p ≤ 2 * n)).trans ?_
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : #(Finset.Icc 1 (sqrt (2 * n))) = sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
@@ -191,6 +199,14 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine Finset.prod_le_prod_of_subset_of_one_le (Finset.filter_subset _ _) ?_
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
+
+/-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate:
+`Nat.centralBinom_le_mul_pow_card` when there is no prime in `(n, 2 * n]`. -/
+theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
+    (no_prime : ∀ p : ℕ, p.Prime → n < p → 2 * n < p) :
+    centralBinom n ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) := by
+  have : #{p ∈ Finset.Ioc n (2 * n) | p.Prime} = 0 := by grind [Finset.card_filter_eq_zero_iff]
+  simpa [this] using centralBinom_le_mul_pow_card n_large
 
 namespace Nat
 
