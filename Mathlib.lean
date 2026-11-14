@@ -6174,6 +6174,7 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
 public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 public import Mathlib.NumberTheory.WellApproximable
 public import Mathlib.NumberTheory.Wilson
+public import Mathlib.NumberTheory.ZetaNegativeIntegers
 public import Mathlib.NumberTheory.ZetaValues
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
