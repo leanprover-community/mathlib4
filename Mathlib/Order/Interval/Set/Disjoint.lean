@@ -237,6 +237,7 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     rw [mem_iUnion₂]
     exact ⟨y, hys, hyx.le⟩
 
+@[to_dual existing]
 theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Iic x = Iio a :=
   a_lub.dual.biUnion_Ici_eq_Ioi a_notMem
