@@ -3,6 +3,7 @@ import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.Order.Lattice.SetLike
 
 set_option autoImplicit true
 
@@ -52,11 +53,9 @@ example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx
     x * y * z ∈ S₂ := by
   membership
 
--- TODO : make `membership` work here and remove `h`
-example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (h : S₁ ≤ S₂) (hx : x ∈ S₁)
-    (hy : y ∈ S₁) (hz : z ∈ S₂) :
+example [Monoid M] (x y z : M) (S₁ S₂ : Submonoid M) (hx : x ∈ S₁) (hy : y ∈ S₁) (hz : z ∈ S₂) :
     x * y * z ∈ S₁ ⊔ S₂ := by
-  aesop
+  membership
 
 example [Monoid M] (x y z : M) (S : Submonoid M) (hxy : x * y ∈ S) (hz : z ∈ S) :
     z * (x * y) ∈ S := by
