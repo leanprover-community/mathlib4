@@ -172,8 +172,10 @@ lemma fst_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsMarkovK
   ext s
   rw [compProd, Measure.fst, ← Kernel.fst_apply, Kernel.fst_compProd, Kernel.const_apply]
 
-lemma compProd_smul_left (a : ℝ≥0∞) [SFinite μ] [IsSFiniteKernel κ] :
+lemma compProd_smul_left (a : ℝ≥0∞) [SFinite μ] :
     (a • μ) ⊗ₘ κ = a • (μ ⊗ₘ κ) := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [compProd_of_not_isSFiniteKernel _ _ hκ]
   ext s hs
   simp only [compProd_apply hs, lintegral_smul_measure, smul_apply, smul_eq_mul]
 
@@ -262,9 +264,11 @@ lemma AbsolutelyContinuous.compProd_left [SFinite ν] (hμν : μ ≪ ν) (κ : 
     exact hμν.ae_eq hs_zero
   · simp [compProd_of_not_isSFiniteKernel _ _ hκ]
 
-lemma AbsolutelyContinuous.compProd_right [SFinite μ] [IsSFiniteKernel η]
+lemma AbsolutelyContinuous.compProd_right [IsSFiniteKernel η]
     (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     μ ⊗ₘ κ ≪ μ ⊗ₘ η := by
+  by_cases hμ : SFinite μ
+  swap; · simp [compProd_of_not_sfinite _ _ hμ]
   by_cases hκ : IsSFiniteKernel κ
   · refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
     rw [Measure.compProd_apply hs, lintegral_eq_zero_iff (Kernel.measurable_kernel_prodMk_left hs)]
@@ -304,9 +308,11 @@ lemma absolutelyContinuous_compProd_left_iff [SFinite μ] [SFinite ν]
     μ ⊗ₘ κ ≪ ν ⊗ₘ κ ↔ μ ≪ ν :=
   ⟨absolutelyContinuous_of_compProd, fun h ↦ h.compProd_left κ⟩
 
-lemma AbsolutelyContinuous.compProd_of_compProd [SFinite ν] [IsSFiniteKernel η]
+lemma AbsolutelyContinuous.compProd_of_compProd [SFinite ν]
     (hμν : μ ≪ ν) (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η := by
+  by_cases hη : IsSFiniteKernel η
+  swap; · simpa [compProd_of_not_isSFiniteKernel _ _ hη] using hκη
   by_cases hμ : SFinite μ
   swap; · rw [compProd_of_not_sfinite _ _ hμ]; simp
   refine AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
@@ -399,7 +405,7 @@ lemma absolutelyContinuous_compProd_of_compProd [SigmaFinite μ] [SigmaFinite ν
   exact withDensity_absolutelyContinuous _ _
 
 lemma absolutelyContinuous_compProd_iff
-    [SigmaFinite μ] [SigmaFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η] [∀ x, NeZero (κ x)] :
+    [SigmaFinite μ] [SigmaFinite ν] [IsSFiniteKernel κ] [∀ x, NeZero (κ x)] :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ μ ⊗ₘ κ ≪ μ ⊗ₘ η :=
   ⟨fun h ↦ ⟨absolutelyContinuous_of_compProd h, absolutelyContinuous_compProd_of_compProd h⟩,
     fun h ↦ h.1.compProd_of_compProd h.2⟩
