@@ -7,8 +7,14 @@ module
 
 public meta import Mathlib.Lean.Name
 public meta import Std.Time.Format
+public import Mathlib.Algebra.Group.Monoid
 
+import Batteries
 import Mathlib.Init
+import Mathlib.Tactic.ToAdditive
+import Mathlib.Tactic.ToDual
+
+#check Lean.Position.getDeclsAfter
 
 /-!
 # `#deprecate to` -- a deprecation tool
@@ -45,42 +51,133 @@ namespace Mathlib.Tactic.DeprecateTo
 
 open Lean Elab Term Command
 
-/-- Produce the syntax for the command `@[deprecated (since := "YYYY-MM-DD")] alias n := id`. -/
-def mkDeprecationStx (id : TSyntax `ident) (n : Name) (date : Option String := none) :
-    CommandElabM (TSyntax `command) := do
+/-- Produce the syntax for the command `@[deprecated (since := "YYYY-MM-DD")] alias n := id`.
+
+This unresolves the name `newDecl`, and throws if `newDecl` is not present in the environment or
+could not be referred to unambiguously. -/
+def mkDeprecationAlias (oldId : Ident) (newDecl : Name)
+    (mods : TSyntax ``Parser.Command.declModifiers)
+    (date : Option String := none) : CommandElabM Syntax.Command := do
   let date ← date.getDM (toString <$> Std.Time.PlainDate.now)
-  let nd := Syntax.mkStrLit date
-  `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
+  /- TODO: after leanprover-community/batteries#810, we should exapnd the old declaration's
+  namespaces with `expandDeclNamespace?` and unresolve in there. -/
+  let some newId ← withoutExporting <| unresolveNameGlobal? newDecl
+    | if (← getEnv).contains newDecl then
+        throwError "Could not find a way to refer to `{.ofConstName newDecl}`."
+      else
+        throwError "The declaration `{newDecl}` is not present in the environment."
+  let mods ← deprecatedAliasModifiers mods date
+  `(command| $mods:declModifiers alias $oldId := $(mkIdent newId))
+where
+  deprecatedAliasModifiers (mods : TSyntax ``Parser.Command.declModifiers) (date : String) :
+      CommandElabM (TSyntax ``Parser.Command.declModifiers) :=
+    /-
+    def declModifiers (inline : Bool) := leading_parser
+      optional docComment >>
+      optional (Term.«attributes» >> if inline then skip else ppDedent ppLine) >>
+      optional visibility >>
+      optional «protected» >>
+      optional («meta» <|> «noncomputable») >>
+      optional «unsafe» >>
+      optional («partial» <|> «nonrec»)
+    -/
+    match mods with
+    | `(Lean.Parser.Command.declModifiersF|
+        $[$_:docComment]? -- inherited already
+        $[$_:attributes]? -- ignored
+        $[$vis:visibility]?
+        $[$p:protected]?
+        $[$_]? -- inherited already
+        $[$_:unsafe]? -- inherited already
+        $[$_]?)  -- not relevant
+        => (⟨·⟩) <$> -- `declModifiersF` produces a `declModifiers` nodekind
+        `(Lean.Parser.Command.declModifiersF|
+          @[deprecated (since := $(Syntax.mkStrLit date))]
+          $[$vis:visibility]?
+          $[$p:protected]?)
+    | _ => throwUnsupportedSyntax
+
 
 /-- Returns the array of names that are in `new` but not in `old`. -/
-def newNames (old new : Environment) : Array Name := Id.run do
+private def newDecls (old new : Environment) : Array Name := Id.run do
   let mut diffs := #[]
-  for (c, _) in new.constants.map₂.toList do
+  for (c, _) in new.constants.map₂ do
     unless old.constants.map₂.contains c do
       diffs := diffs.push c
-  pure <| diffs.qsort (·.toString < ·.toString)
+  diffs.qsort (·.toString < ·.toString)
 
+-- declId := ident (".{" ident,+ "}")?
+abbrev DeclId := TSyntax ``Parser.Command.declId
+
+@[inline] def DeclId.modifyIdent (id : DeclId) (f : Ident → Ident) : DeclId :=
+  ⟨id.raw.modifyArg 0 (f ⟨·⟩)⟩
+
+@[inline] def DeclId.setIdent (id : DeclId) (newId : Ident) := id.modifyIdent fun _ => newId
+
+def DeclId.getIdent (id : DeclId) : Ident := ⟨id.raw[0]⟩
+
+structure RenamedTheorem where
+  oldCmd : Syntax.Command
+  oldId : Ident
+  oldDeclName : Name
+  newCmd : Syntax.Command
+  newId : Ident
+  newDeclName : Name
+  mods : Modifiers
+
+/-- Creates a string to suggest for replacing the old command. Does not replace trailing
+whitespace. -/
+def RenamedTheorem.mkSuggestion (r : RenamedTheorem) : CommandElabM String := do
+  let file ← getFileMap
+  let some oldIdRange := r.oldId.raw.getRange?
+    | throwError "Could not find syntax range for syntax `{r.oldId}`"
+  let some fullRange := r.oldCmd.raw.getRange?
+    | throwError "Could not find syntax range for command:{indentD r.oldCmd}"
+  let .ident _ newIdStr .. := r.newId.raw
+    | throwError "Could not find substring for identifier `{r.newId}`"
+  return fullRange.start.extract file.source oldIdRange.start
+    ++ newIdStr.toString
+    ++ oldIdRange.stop.extract file.source fullRange.stop
+
+/-- `(oldDeclName, newDeclName)`. -/
+protected def RenamedTheorem.declNames (r : RenamedTheorem) :
+    CommandElabM (Name × Name) := do
+  let ns ← getCurrNamespace
+  let (oldDeclName, _) ← mkDeclName ns r.mods r.oldId.getId
+  let (newDeclName, _) ← mkDeclName ns r.mods r.newId.getId
+  return (oldDeclName, newDeclName)
+
+/-- Like `Lean.Elab.mkDeclName`. Gets the `(declName, shortName)` relative to the current namespace
+for the new decl if `new := true` and for the old decl if `new := false`. -/
+protected def RenamedTheorem.mkDeclName (r : RenamedTheorem) (new : Bool) :
+    CommandElabM (Name × Name) := do
+  mkDeclName (← getCurrNamespace) r.mods (if new then r.newId else r.oldId).getId
+
+
+-- Create the syntax for the new command
+/- also need to create data necessary for rhs's of new aliases which will be "unresolved form" of
+declId ident in the new command -/
 /--
 If the input command is a `theorem` or a `lemma`, then it replaces the name of the
 resulting declaration with `newName` and it returns the old declaration name and the
 renamed command.
 -/
-def renameTheorem (newName : String) (stx : TSyntax `command) : CoreM (Name × String) := do
-  -- declId := ident (".{" ident,+ "}")?
-  match stx with
-  | `(command| $dm:declModifiers theorem $id:declId $d:declSig $v:declVal)
-  | `(command| $dm:declModifiers lemma $id:declId $d:declSig $v:declVal) =>
-    let file ← getFileMap
-    let some nameRange := id.raw[0].getHeadInfo.getRange?
-      | throwError m!"Could not find declaration name{indentD stx}"
-    let some fullRange := stx.raw.getRange?
-      | throwError m!"Could not extract syntax range of declaration{indentD stx}"
-    let newCmd :=
-      String.Pos.Raw.extract file.source fullRange.start nameRange.start ++
-      newName ++
-      String.Pos.Raw.extract file.source nameRange.stop fullRange.stop
-    return (id.raw[0].getId, newCmd)
-  | _ => throwError m!"Command is not a `theorem` or a `lemma`{indentD stx}"
+def renameTheorem (newId : Ident) (oldCmd : Syntax.Command)
+    : CommandElabM RenamedTheorem := do
+  match oldCmd with
+  | `(command| $dm:declModifiers theorem%$tk $oldId:ident$[.{$ls,*}]? $d:declSig $v:declVal)
+  | `(command| $dm:declModifiers lemma%$tk $oldId:ident$[.{$ls,*}]? $d:declSig $v:declVal) =>
+    let newCmd ←
+      if oldCmd.raw.isOfKind ``«lemma» then
+        `(command| $dm:declModifiers lemma%$tk $newId:ident$[.{$ls,*}]? $d:declSig $v:declVal)
+      else
+        `(command| $dm:declModifiers theorem%$tk $newId:ident$[.{$ls,*}]? $d:declSig $v:declVal)
+    let mods ← elabModifiers dm
+    let ns ← getCurrNamespace
+    let (oldDeclName, _) ← mkDeclName ns mods oldId.getId
+    let (newDeclName, _) ← mkDeclName ns mods newId.getId
+    return { oldCmd, oldId, oldDeclName, newCmd, newId, newDeclName, mods }
+  | _ => throwError m!"Command is not a `theorem` or a `lemma`{indentD oldCmd}"
 
 open Meta.Tactic.TryThis in
 /--
@@ -116,48 +213,114 @@ Technically, the command also take an optional `String` argument to fill in the 
 However, its use is mostly intended for debugging purposes, where having a variable date would
 make tests time-dependent.
 -/
-elab (name := deprecateTo) tk:"#deprecate " "to" id:ident+ date:(ppSpace str ppSpace)? ppLine
-    cmd:command : command => do
+elab (name := deprecateTo) tk:"#deprecate " "to" ids:ident+ date:(ppSpace str ppSpace)? ppLine
+    oldCmd:command : command => do
   let oldEnv ← getEnv
-  try
-    elabCommand cmd
-  finally
-    let newEnv ← getEnv
-    let allNew := newNames oldEnv newEnv
-    let skip ← allNew.filterM (·.isBlackListed)
-    let mut news := allNew.filter (! · ∈ skip)
-    if id.size < news.size then
-      logWarningAt tk
-        m!"Un-deprecated declarations: command produced {news.size} new constants, \
-          but only {id.size} names were provided, so the remiaining declarations \
-          are left without deprecations:\n{news.toList.drop id.size |>.map MessageData.ofConstName}"
-    if news.size < id.size then
-      logWarningAt (mkNullNode (id.toList.drop news.size).toArray)
-        m!"Unused names: {id.size} names were provided, but only {news.size} new declarations \
-          were found, so the remiaining names are unused:\n{id.drop news.size}"
-    let (oldId, newCmd) ← liftCoreM <| renameTheorem id[0]!.getId.toString cmd
-    let oldNames ← resolveGlobalName oldId
-    let fil := news.filter fun n => oldNames.any (·.fst == n)
-    let #[newId] := fil
-      | throwError m!"Expected to find one declaration called {oldId}, found {fil.size}"
-    news := #[newId] ++ (news.erase newId)
-    let pairs := id.zip news
-    let msg := s!"* Pairings:\n{pairs.map fun (l, r) => (l.getId, r)}" ++
-      if skip.size != 0 then s!"\n\n* Ignoring: {skip}" else ""
-    let date := date.map (·.getString)
-    let stxs ← pairs.mapM fun (id, n) => mkDeprecationStx id n date
-    liftTermElabM do
-      let prettyStxs ← stxs.mapM (SuggestionText.prettyExtra <| .tsyntax ·)
-      let suggestion := prettyStxs.foldl
-        (fun x y => x ++ "\n\n" ++ y) newCmd
-      addSuggestion (header := msg ++ "\n\nTry this:\n") (← getRef)
-        suggestion
+  let some newIdent := ids[0]? | throwUnsupportedSyntax
+  let rn ← renameTheorem newIdent oldCmd
+  -- Elaborate the replaced command
+  let s ← get
+  elabCommand rn.newCmd
+  let newEnvAfterNew ← getEnv
+  -- Strategy: get the main deprecation, then the aux deprecations
+  -- Idents after the first are different, as they should *resolve* in the new state,
+  -- instead of being totally novel
+  let newDeclsAfterNew := newDecls oldEnv newEnvAfterNew
+  unless newDeclsAfterNew.contains rn.newDeclName do
+    throwError "Could not find the new declaration `{rn.newDeclName}` in the environment after \
+      elaborating the new command."
+  let newDeclsAfterNew ← newDeclsAfterNew.filterM fun decl =>
+    pure (decl != rn.newDeclName) <&&> notM decl.isBlackListed
+  -- TODO: resolve all of the new things here under withoutExporting
+  -- Does that mean we *don't* reset this state, for hovers?
+  -- Infer whether they each need `public` or `private` as `Option Bool`
+  -- Infer whether they each need protected via `Lean.isProtected`
+  -- let newDeclsAfterRenamed ←
+  let otherDecls ← liftCoreM <| ids.foldlM (start := 1) (init := #[]) fun acc id => do
+    return acc.push <|← realizeGlobalConstNoOverloadWithInfo id
+  if ids.size < newDeclsAfterNew.size then
+    logWarningAt tk
+      m!"Un-deprecated declarations: command produced {newDeclsAfterNew.size + 1} new constants, \
+        but only {ids.size} names were provided, so the remiaining declarations \
+        are left without deprecations:\n\
+        {newDeclsAfterNew.toList.drop ids.size |>.map MessageData.ofConstName}"
+  if newDeclsAfterNew.size < ids.size then
+    logWarningAt (mkNullNode (ids.drop newDeclsAfterNew.size))
+      m!"Unused names: {ids.size} names were provided, but only {newDeclsAfterNew.size} \
+        new declarations were found, so the remaining names are unused:\n\
+        {ids.drop newDeclsAfterNew.size}"
+  let mainAlias ← mkDeprecationAlias rn.oldId rn.newDeclName rn.mods.stx
+  -- Reset and elaborate the original, current command
+  set s
+
+  elabCommand rn.oldCmd
+  let newEnvAfterOld ← getEnv
+  let newDeclsAfterOld := newDecls oldEnv newEnvAfterOld
+  unless newDeclsAfterOld.contains rn.oldDeclName do
+    throwError "Could not find the old declaration `{rn.oldDeclName}` in the environment after \
+      elaborating the old command."
+  let newDeclsAfterOld ← newDeclsAfterOld.filterM fun decl =>
+    pure (decl != rn.oldDeclName) <&&> notM decl.isBlackListed
+  -- TODO:
+  let pairs := id.zip news
+  let msg := s!"* Pairings:\n{pairs.map fun (l, r) => (l.getId, r)}" ++
+    if skip.size != 0 then s!"\n\n* Ignoring: {skip}" else ""
+  let date := date.map (·.getString)
+  let stxs ← pairs.mapM fun (id, n) => mkDeprecationStx id n date
+  liftTermElabM do
+    -- TODO: can we just tsyntax a command sequence...?
+    let prettyStxs ← stxs.mapM (SuggestionText.prettyExtra <| .tsyntax ·)
+    let suggestion := prettyStxs.foldl
+      (fun x y => x ++ "\n\n" ++ y) newCmd
+    addSuggestion (header := msg ++ "\n\nTry this:\n") (← getRef)
+      suggestion
 
 @[inherit_doc deprecateTo]
 macro (name := oldStx) "deprecate" "to" id:ident* dat:(ppSpace str ppSpace)? ppLine cmd:command :
     command =>
   `(command| #deprecate to $id* $[$dat]? $cmd)
 
+protected theorem foo {α} (n : α) [Monoid α] : n * n = n * n := rfl
+
+#deprecate to foo
+protected theorem baz.bar {α} (n : α) [Monoid α] : n * n = n * n := rfl
+
+def Foo.bar := true
+
+alias Foo.foo := bar
+
+/-
+When moving to alias:
+- remove docstring
+- can remove unsafe
+- private/public
+- never attach attributes
+
+-/
+
 deprecated_syntax oldStx "use `#deprecate to` instead of `deprecate to`" (since := "2026-09-19")
+
+-- @[simp]
+#deprecate to bar
+protected theorem Foo.foo_mul_atom {α} (n : α) [Monoid α] : n * n = n * n := rfl
+
+#check Foo.foo_mul_atom
+
+attribute [to_additive (attr := deprecated (), to_dual) asdasdf_atom] foo_mul_atom
+#check @asdasdf_atom
+#check @asdasdf_coatom
+#check @foo_mul_atom
+#check @foo_mul_coatom
+
+@[to_additive (attr :=
+  to_dual (attr := deprecated (since := "2026-11-04")))]
+
+
+#check @bar_add_atom
+#check @bar_add_coatom
+#check @bar_mul_atom
+#check @bar_mul_coatom
+
+
 
 end Mathlib.Tactic.DeprecateTo
