@@ -101,6 +101,7 @@ public import Mathlib.Tactic.Substs
 public import Mathlib.Tactic.SuccessIfFailWithMsg
 public import Mathlib.Tactic.SudoSetOption
 public import Mathlib.Tactic.SwapVar
+public import Mathlib.Tactic.TacticAnalysis.Replacements
 public import Mathlib.Tactic.Tauto
 public import Mathlib.Tactic.ToFun
 public import Mathlib.Tactic.TermCongr
