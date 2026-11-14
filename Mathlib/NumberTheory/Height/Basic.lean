@@ -188,7 +188,7 @@ meta def evalMulHeight₁ : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(mulHeight₁_pos $a))
   | _, _, _ => throwError "not Height.mulHeight₁"
@@ -199,7 +199,7 @@ meta def evalLogHeight₁ : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.nonnegative q(zero_le_logHeight₁ $a))
   | _, _, _ => throwError "not Height.logHeight₁"
@@ -514,7 +514,7 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ pα? e :=
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
-      return ← catchNone do
+      catchNone do
         assertInstancesCommute
         return .positive q(mulHeight_pos $a)
     | _ => throwError "index type in Height.mulHeight not known to be finite"
@@ -529,7 +529,7 @@ meta def evalLogHeight : PositivityExt where eval {u α} _ pα? e :=
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
-      return ← catchNone do
+      catchNone do
         assertInstancesCommute
         return .nonnegative q(logHeight_nonneg $a)
     | _ => throwError "index type in Height.logHeight not known to be finite"

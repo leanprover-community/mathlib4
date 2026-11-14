@@ -1160,12 +1160,12 @@ meta def evalNNRealRpow : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
-    liftM <| catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(NNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0), ~q($a ^ ($b : ℝ)) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa =>
@@ -1192,13 +1192,13 @@ meta def evalENNRealRpow : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
-    liftM <| catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(ENNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0∞), ~q($a ^ ($b : ℝ)) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     let rb ← core q(inferInstance) (some q(inferInstance)) b
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra, rb with
       | .positive pa, .positive pb =>

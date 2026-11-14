@@ -399,7 +399,7 @@ meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    liftM <| catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa))

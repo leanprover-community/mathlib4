@@ -34,7 +34,7 @@ meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Finset.card $s) =>
-    return ← catchNone do
+    catchNone do
       let some ps ← proveFinsetNonempty s | return .none
       assertInstancesCommute
       return .positive q(Finset.Nonempty.card_pos $ps)
@@ -133,7 +133,7 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e :=
     if let some p_pos' := p_pos' then
       return .positive p_pos'
     -- Fall back to showing that the sum is nonnegative
-    return ← catchNone do
+    catchNone do
       let _pα' ← synthInstanceQ q(AddLeftMono $α)
       assertInstancesCommute
       return .nonnegative q(sum_nonneg fun i _ ↦ $pr i)

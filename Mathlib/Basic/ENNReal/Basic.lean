@@ -771,7 +771,7 @@ meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
-    liftM <| catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.nonnegative q(ENNReal.toReal_nonneg))
   | _, _, _ => throwError "not ENNReal.toReal"
@@ -783,7 +783,7 @@ meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    liftM <| catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure <| .positive q(ENNReal.coe_pos.mpr $pa)

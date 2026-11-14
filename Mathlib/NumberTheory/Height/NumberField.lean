@@ -456,7 +456,7 @@ meta def evalHeightTotalWeight : PositivityExt where eval {u α} _ pα? e :=
     -- Check whether there is a `NumberField` instance for `$K` around.
     match ← trySynthInstanceQ q(NumberField $K) with
     | .some _inst =>
-      return ← catchNone do
+      catchNone do
         assertInstancesCommute
         return .positive q(NumberField.totalWeight_pos $K)
     | _ => throwError "field in Height.totalWeight not known to be a number field"

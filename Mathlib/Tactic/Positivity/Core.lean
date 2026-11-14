@@ -111,10 +111,6 @@ structure State where
 /-- Monad to run `positivity` tactic in. -/
 abbrev PositivityM := StateT Positivity.State MetaM
 
-/-- Cache for failed goals such that `positivity` can fail fast next time. -/
-def cacheFailure (e : Expr) : PositivityM Unit := do
-  modify fun s => { s with cache := s.cache.insert e .none }
-
 /-- Gives a message describing all results in the `positivity` cache. -/
 def cacheInfo : PositivityM MessageData := do
   let ms := (← get).cache.toList.map fun r => m!"{r.1} => {r.2.toString}"
@@ -132,12 +128,12 @@ def cacheStrictness {e} {pα?} (r : Strictness zα e pα?) : PositivityM Unit :=
       modify fun s => { s with cache := s.cache.insert e <| .nonnegative pf }
     | .nonzero pf =>
       modify fun s => { s with cache := s.cache.insert e <| .nonzero pf }
-    | .none => cacheFailure e
+    | .none => modify fun s => { s with cache := s.cache.insert e .none }
   | none =>
     match r with
     | .nonzero pf =>
       modify fun s => { s with cache := s.cache.insert e <| .nonzero pf }
-    | _ => cacheFailure e
+    | _ => modify fun s => { s with cache := s.cache.insert e .none }
   trace[Tactic.positivity] "all in cache:\n{←cacheInfo}"
 
 /-- An extension for `positivity`. -/

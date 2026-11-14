@@ -908,7 +908,7 @@ meta def evalRealToEReal : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(EReal), ~q(Real.toEReal $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(EReal.coe_pos.2 $pa))
@@ -924,7 +924,7 @@ meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(EReal.coe_ennreal_pos.2 $pa))
@@ -943,7 +943,7 @@ meta def evalERealToReal : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(Real), ~q(EReal.toReal $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra.toNonneg with
       | .some pa => pure (.nonnegative q(EReal.toReal_nonneg $pa))
@@ -962,7 +962,7 @@ meta def evalERealToENNReal : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))

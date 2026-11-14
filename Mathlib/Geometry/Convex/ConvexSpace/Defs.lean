@@ -819,7 +819,7 @@ This handles `w.weights`; see `evalStdSimplexWeightsApply` for the applied `w.we
 @[positivity StdSimplex.weights _]
 meta def evalStdSimplexWeights : PositivityExt where eval {_u α} _zα pα? e :=
   -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.
-  match pα? with | none => pure .none | some _ => liftM <| catchNone do
+  match pα? with | none => pure .none | some _ => catchNone do
   let some ⟨_uX, _uR, _X, R, _instZero, _hu, _hα⟩ ← matchFinsupp α | throwError "not a `Finsupp`"
   let _semiringR ← synthInstanceQ q(Semiring $R)
   let _partialOrderR ← synthInstanceQ q(PartialOrder $R)

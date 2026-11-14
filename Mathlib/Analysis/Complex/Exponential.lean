@@ -692,7 +692,7 @@ open Lean.Meta Qq
 meta def evalExp : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(Real.exp $a) => liftM <| catchNone do
+  | 0, ~q(ℝ), ~q(Real.exp $a) => catchNone do
     assertInstancesCommute
     pure (.positive q(Real.exp_pos $a))
   | _, _, _ => throwError "not Real.exp"

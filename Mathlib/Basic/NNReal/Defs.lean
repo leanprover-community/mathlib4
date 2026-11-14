@@ -1008,7 +1008,7 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    liftM <| catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
@@ -1022,7 +1022,7 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.toNNReal $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    liftM <| catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
@@ -1038,7 +1038,7 @@ meta def evalRealNNAbs : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q(Real.nnabs $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    liftM <| catchNone do
+    catchNone do
       assertInstancesCommute
       match ra.toNonzero with
       | some pa => pure (.positive q(nnabs_pos_of_pos $pa))

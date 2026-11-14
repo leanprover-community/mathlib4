@@ -85,7 +85,7 @@ meta def evalMersenne : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℕ), ~q(mersenne $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(mersenne_pos_of_pos $pa))

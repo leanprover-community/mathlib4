@@ -636,7 +636,7 @@ meta def evalTsum : PositivityExt where eval {u α} zα pα? e :=
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
       let #[(i : Q($ι))] := args | return .none
       let rbody ← core zα pα body
-      return ← catchNone do
+      catchNone do
         let pbody ← rbody.toNonneg
         let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
         let mα' ← synthInstanceQ q(AddCommMonoid $α)

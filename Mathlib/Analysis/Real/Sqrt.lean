@@ -328,7 +328,7 @@ meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
@@ -343,7 +343,7 @@ meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e :=
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))

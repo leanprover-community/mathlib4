@@ -570,7 +570,7 @@ meta def evalERealInv : PositivityExt where eval {u α} zα pα? e :=
   match u, α, e with
   | 0, ~q(EReal), ~q($a⁻¹) =>
     let ra ← core zα pα a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra.toNonneg with
       | some pa => pure (.nonnegative q(EReal.inv_nonneg_of_nonneg <| $pa))
@@ -585,7 +585,7 @@ meta def evalERealDiv : PositivityExt where eval {u α} zα pα? e :=
   | 0, ~q(EReal), ~q($a / $b) =>
     let some pa := (← core zα pα a).toNonneg | return .none
     let rb ← core zα pα b
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match rb.toNonneg with
       | some pb => pure (.nonnegative q(EReal.div_nonneg $pa $pb))

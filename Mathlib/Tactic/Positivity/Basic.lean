@@ -164,7 +164,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(HAdd.hAdd)
   let ra ← core zα pα a; let rb ← core zα pα b
-  return ← catchNone do
+  catchNone do
     match ra, rb with
     | .positive pa, .positive pb =>
       let _a ← synthInstanceQ q(AddLeftMono $α)
@@ -283,7 +283,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     result ← orElse result (tryProveNonzero pα ra.toNonzero rb.toNonzero)
     return result
   | none =>
-    return ← catchNone <| tryProveNonzero .none ra.toNonzero rb.toNonzero
+    catchNone <| tryProveNonzero .none ra.toNonzero rb.toNonzero
 
 lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one
@@ -305,7 +305,7 @@ where `a` and `b` are integers. -/
   | 0, ~q(ℤ), ~q($a / $b) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     let rb ← core q(inferInstance) (some q(inferInstance)) b
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra, rb with
       | .positive (pa : Q(0 < $a)), .positive (pb : Q(0 < $b)) =>
@@ -443,7 +443,7 @@ meta def evalNatAbs : PositivityExt where eval {u α} _zα pα? e :=
     let zα' : Q(Zero Int) := q(inferInstance)
     let pα' : Q(PartialOrder Int) := q(inferInstance)
     let ra ← core zα' pα' a
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       match ra with
       | .positive pa =>
@@ -520,7 +520,7 @@ meta def evalNatSucc : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.succ $a) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(Nat.succ_pos $a))
   | _, _, _ => throwError "not Nat.succ"
@@ -531,7 +531,7 @@ meta def evalPNatVal : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(PNat.val $a) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(PNat.pos $a))
   | _, _, _ => throwError "not PNat.val"
@@ -542,7 +542,7 @@ meta def evalFactorial : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.factorial $a) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(Nat.factorial_pos $a))
   | _, _, _ => throwError "failed to match Nat.factorial"
@@ -553,7 +553,7 @@ meta def evalAscFactorial : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.ascFactorial ($n + 1) $k) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(Nat.ascFactorial_pos $n $k))
   | _, _, _ => throwError "failed to match Nat.ascFactorial"
@@ -588,7 +588,7 @@ meta def evalNatLCM : PositivityExt where eval {u α} z p e :=
     match ← core z p a with
     | .positive pa =>
       match ← core z p b with
-      | .positive pb => return ← catchNone do
+      | .positive pb => catchNone do
         assertInstancesCommute
         return .positive q(Nat.lcm_pos $pa $pb)
       | _ => pure .none
@@ -619,13 +619,13 @@ meta def evalIntGCD : PositivityExt where eval {u α} _ pα? e :=
     let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
     let ra ← core z (some p) a
     match ra.toNonzero z with
-    | some na => liftM <| catchNone do
+    | some na => catchNone do
       assertInstancesCommute
       return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
     | none =>
       let rb ← core z (some p) b
       match rb.toNonzero z with
-      | some nb => liftM <| catchNone do
+      | some nb => catchNone do
         assertInstancesCommute
         return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
       | none => pure .none
@@ -642,7 +642,7 @@ meta def evalIntLCM : PositivityExt where eval {u α} _ pα? e :=
     match (← core z (some p) a).toNonzero z with
     | some na =>
       match (← core z (some p) b).toNonzero z with
-      | some nb => liftM <| catchNone do
+      | some nb => catchNone do
         assertInstancesCommute
         return .positive q(Int.lcm_pos $na $nb)
       | none => pure .none

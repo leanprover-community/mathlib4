@@ -101,7 +101,7 @@ meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ pβ? e :=
   let some pα ← try? <| synthInstanceQ q(PartialOrder $α) | pure .none
   match ← core q(inferInstance) (some pα) a with
   | .positive pa =>
-    return ← catchNone do
+    catchNone do
       let _instαSemiring ← synthInstanceQ q(Semiring $α)
       try
         let _instβSemiring ← synthInstanceQ q(Semiring $β)
@@ -118,7 +118,7 @@ meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ pβ? e :=
         assertInstancesCommute
         return .nonnegative q(algebraMap_nonneg $β <| le_of_lt $pa)
   | .nonnegative pa =>
-    return ← catchNone do
+    catchNone do
       let _instαSemiring ← synthInstanceQ q(CommSemiring $α)
       let _instβSemiring ← synthInstanceQ q(Semiring $β)
       let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)

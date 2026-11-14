@@ -168,7 +168,7 @@ meta def evalVonMangoldt : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@ArithmeticFunction.vonMangoldt $a) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.nonnegative q(ArithmeticFunction.vonMangoldt_nonneg))
   | _, _, _ => throwError "not von Mangoldt"

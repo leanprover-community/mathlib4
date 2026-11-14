@@ -144,7 +144,7 @@ open Lean Qq
 meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) => liftM <| catchNone do
+  | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) => catchNone do
     assertInstancesCommute
     pure (.positive q(@UpperHalfPlane.im_pos $a))
   | _, _, _ => throwError "not UpperHalfPlane.im"
@@ -154,7 +154,7 @@ meta def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα pα? e :=
 meta def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) => liftM <| catchNone do
+  | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) => catchNone do
     assertInstancesCommute
     pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
   | _, _, _ => throwError "not UpperHalfPlane.coe"

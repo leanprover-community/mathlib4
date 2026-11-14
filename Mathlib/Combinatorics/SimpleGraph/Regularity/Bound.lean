@@ -243,7 +243,7 @@ meta def evalInitialBound : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.initialBound $ε $l) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(SzemerediRegularity.initialBound_pos $ε $l))
   | _, _, _ => throwError "not initialBound"
@@ -257,7 +257,7 @@ meta def evalBound : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.bound $ε $l) =>
-    return ← catchNone do
+    catchNone do
       assertInstancesCommute
       pure (.positive q(SzemerediRegularity.bound_pos $ε $l))
   | _, _, _ => throwError "not bound"
