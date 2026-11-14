@@ -177,13 +177,13 @@ lemma coverEntropy_restrict_subset [UniformSpace X] {T : X → X} {F G : Set X} 
     (hG : MapsTo T G G) :
     coverEntropy (hG.restrict T G G) (val ⁻¹' F) = coverEntropy T F := by
   rw [← coverEntropy_image_of_comap _ hG.val_restrict_apply (val ⁻¹' F), image_preimage_coe G F,
-    inter_eq_right.2 hF]
+    inter_eq_right_iff.2 hF]
 
 lemma coverEntropyInf_restrict_subset [UniformSpace X] {T : X → X} {F G : Set X} (hF : F ⊆ G)
     (hG : MapsTo T G G) :
     coverEntropyInf (hG.restrict T G G) (val ⁻¹' F) = coverEntropyInf T F := by
   rw [← coverEntropyInf_image_of_comap _ hG.val_restrict_apply (val ⁻¹' F), image_preimage_coe G F,
-    inter_eq_right.2 hF]
+    inter_eq_right_iff.2 hF]
 
 /-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy T F`. This
 theorem justifies our definition of `coverEntropy T F`. -/
@@ -216,7 +216,7 @@ lemma coverEntropy_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [U
     rw [G.domRestrict_apply, G.domRestrict_apply, hG.val_restrict_apply, h.eq x]
   apply (coverEntropy_image_le_of_uniformContinuous hφ
     (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
-  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right_iff.2 hF]
 
 lemma coverEntropyInf_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [UniformSpace Y]
     {S : X → X} {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) {F G : Set X}
@@ -228,6 +228,6 @@ lemma coverEntropyInf_image_le_of_uniformContinuousOn_invariant [UniformSpace X]
     rw [G.domRestrict_apply, G.domRestrict_apply, hG.val_restrict_apply, h.eq a]
   apply (coverEntropyInf_image_le_of_uniformContinuous hφ
     (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
-  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+  rw [← image_image_val_eq_domRestrict_image, image_preimage_coe G F, inter_eq_right_iff.2 hF]
 
 end Dynamics

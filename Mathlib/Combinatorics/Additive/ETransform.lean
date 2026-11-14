@@ -77,7 +77,7 @@ theorem mulDysonETransform_idem :
   ext : 1 <;> dsimp
   · rw [smul_finset_inter, smul_inv_smul, inter_comm, union_eq_left]
     exact inter_subset_union
-  · rw [smul_finset_union, inv_smul_smul, union_comm, inter_eq_left]
+  · rw [smul_finset_union, inv_smul_smul, union_comm, inter_eq_left_iff]
     exact inter_subset_union
 
 variable {e x}

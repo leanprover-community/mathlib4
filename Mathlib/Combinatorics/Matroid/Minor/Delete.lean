@@ -234,7 +234,7 @@ lemma delete_closure_eq (M : Matroid α) (D X : Set α) :
     (M ＼ D).closure X = M.closure (X \ D) \ D := by
   rw [← restrict_compl, restrict_closure_eq', sdiff_sdiff_self, bot_eq_empty, union_empty,
     sdiff_eq, inter_comm M.E, ← inter_assoc X, ← sdiff_eq, closure_inter_ground,
-    ← inter_assoc, ← sdiff_eq, inter_eq_left]
+    ← inter_assoc, ← sdiff_eq, inter_eq_left_iff]
   exact sdiff_subset.trans (M.closure_subset_ground _)
 
 lemma delete_closure_eq_of_disjoint (M : Matroid α) {D X : Set α} (hXD : Disjoint X D) :

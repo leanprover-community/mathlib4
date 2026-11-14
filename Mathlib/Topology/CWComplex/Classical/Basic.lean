@@ -472,9 +472,9 @@ lemma RelCWComplex.isClosed [T2Space X] [RelCWComplex C D] : IsClosed C := by
   rw [closed C C (by rfl)]
   constructor
   · intros
-    rw [inter_eq_right.2 (closedCell_subset_complex _ _)]
+    rw [inter_eq_right_iff.2 (closedCell_subset_complex _ _)]
     exact isClosed_closedCell
-  · rw [inter_eq_right.2 base_subset_complex]
+  · rw [inter_eq_right_iff.2 base_subset_complex]
     exact isClosedBase C
 
 /-- A helper lemma that is essentially the same as `RelCWComplex.iUnion_openCell_eq_skeletonLT`.
@@ -543,7 +543,7 @@ lemma RelCWComplex.isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedC
     IsClosed (A ∩ cellFrontier (n + 1) j) := by
   -- this is a consequence of `cellFrontier_subset_base_union_finite_closedCell`
   obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell (n + 1) j
-  rw [← inter_eq_right.2 hI, ← inter_assoc]
+  rw [← inter_eq_right_iff.2 hI, ← inter_assoc]
   refine IsClosed.inter ?_ isClosed_cellFrontier
   simp_rw [inter_union_distrib_left, inter_iUnion,
     ← iUnion_subtype (fun m ↦ m < n + 1) (fun m ↦ ⋃ i ∈ I m, A ∩ closedCell m i)]
@@ -759,13 +759,13 @@ def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComple
     · have : D ⊆ E := by
         rw [← union]
         exact subset_union_left
-      rw [inter_eq_right.2 this]
+      rw [inter_eq_right_iff.2 this]
       exact isClosedBase C
     intro n _ j
     by_cases h : j ∈ I n
     · right
       suffices closedCell n j ⊆ E by
-        rw [inter_eq_right.2 this]
+        rw [inter_eq_right_iff.2 this]
         exact isClosed_closedCell
       exact closedCell_subset n ⟨j, h⟩
     · left

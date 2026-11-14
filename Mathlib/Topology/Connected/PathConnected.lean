@@ -531,7 +531,8 @@ theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPat
 ambient type `U` (when `U` contains `W`). -/
 theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU : W ⊆ U) :
     IsPathConnected (((↑) : U → X) ⁻¹' W) := by
-  rwa [IsInducing.subtypeVal.isPathConnected_iff, Subtype.image_preimage_val, inter_eq_right.2 hWU]
+  rwa [IsInducing.subtypeVal.isPathConnected_iff, Subtype.image_preimage_val,
+    inter_eq_right_iff.2 hWU]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem IsPathConnected.exists_path_through_family {n : ℕ}

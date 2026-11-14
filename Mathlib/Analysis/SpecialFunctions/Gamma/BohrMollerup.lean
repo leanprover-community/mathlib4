@@ -355,7 +355,7 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
     convexOn_Gamma.strictMonoOn (by simp : (0 : ℝ) < 3 / 2) (by norm_num : (3 / 2 : ℝ) < 2)
       (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
-  rw [inter_eq_right]
+  rw [inter_eq_right_iff]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
 
 -- TODO: prove uniqueness once the necessary material to do so makes its way into Mathlib

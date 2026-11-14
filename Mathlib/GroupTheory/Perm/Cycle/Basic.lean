@@ -502,7 +502,7 @@ theorem IsCycle.eq_on_support_inter_nonempty_congr (hf : IsCycle f) (hg : IsCycl
     intro y hy
     obtain ⟨k, rfl⟩ := hf.exists_pow_eq (mem_support.mp hx') (mem_support.mp hy)
     rwa [pow_eq_on_of_mem_support h _ _ (mem_inter_of_mem hx' hx''), pow_apply_mem_support]
-  rw [inter_eq_left.mpr this] at h
+  rw [inter_eq_left_iff.mpr this] at h
   exact hf.support_congr hg this h
 
 theorem IsCycle.support_pow_eq_iff (hf : IsCycle f) {n : ℕ} :

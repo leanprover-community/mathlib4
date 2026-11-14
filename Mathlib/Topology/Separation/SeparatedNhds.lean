@@ -167,7 +167,7 @@ lemma isOpen_left_of_isOpen_union (hst : SeparatedNhds s t) (hst' : IsOpen (s �
   obtain ⟨u, v, hu, hv, hsu, htv, huv⟩ := hst
   suffices s = (s ∪ t) ∩ u from this ▸ hst'.inter hu
   rw [union_inter_distrib_right, (huv.symm.mono_left htv).inter_eq, union_empty,
-    inter_eq_left.2 hsu]
+    inter_eq_left_iff.2 hsu]
 
 lemma isOpen_right_of_isOpen_union (hst : SeparatedNhds s t) (hst' : IsOpen (s ∪ t)) : IsOpen t :=
   hst.symm.isOpen_left_of_isOpen_union (union_comm _ _ ▸ hst')

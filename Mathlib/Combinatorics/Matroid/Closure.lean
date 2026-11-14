@@ -328,7 +328,7 @@ lemma Indep.closure_eq_setOfPred_isBasis_insert (hI : M.Indep I) :
       (insert_subset (Or.inl heX) (hIF.subset.trans subset_union_right))
   rw [subset_antisymm_iff, closure_def, subset_sInter_iff, and_iff_right (sInter_subset_of_mem _)]
   · rintro F' ⟨hF', hIF'⟩ e (he : M.IsBasis I (insert e I))
-    rw [inter_eq_left.mpr (hIF.subset.trans hIF.subset_ground)] at hIF'
+    rw [inter_eq_left_iff.mpr (hIF.subset.trans hIF.subset_ground)] at hIF'
     obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset hIF' hF'.2
     exact (hF'.1 hJ (he.isBasis_union_of_subset hJ.indep hIJ)) (Or.inr (mem_insert _ _))
   exact ⟨hF, inter_subset_left.trans hIF.subset⟩
@@ -1054,11 +1054,12 @@ lemma closure_empty_eq_ground_iff : M.closure ∅ = M.E ↔ M = loopyOn M.E := b
 
 lemma restrict_spanning_iff (hSR : S ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
     (M ↾ R).Spanning S ↔ R ⊆ M.closure S := by
-  rw [spanning_iff, restrict_ground_eq, and_iff_left hSR, restrict_closure_eq _ hSR, inter_eq_right]
+  rw [spanning_iff, restrict_ground_eq, and_iff_left hSR, restrict_closure_eq _ hSR,
+    inter_eq_right_iff]
 
 lemma restrict_spanning_iff' : (M ↾ R).Spanning S ↔ R ∩ M.E ⊆ M.closure S ∧ S ⊆ R := by
   rw [spanning_iff, restrict_closure_eq', restrict_ground_eq, and_congr_left_iff,
-    sdiff_eq_compl_inter, ← union_inter_distrib_right, inter_eq_right, union_comm,
+    sdiff_eq_compl_inter, ← union_inter_distrib_right, inter_eq_right_iff, union_comm,
     ← sdiff_subset_iff, sdiff_compl]
   intro hSR
   rw [inter_eq_self_of_subset_left hSR]

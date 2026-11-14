@@ -160,7 +160,7 @@ lemma IsRetrocompact.preimage_of_isClosedEmbedding {s : Set Y} (hf : IsClosedEmb
     simpa [← range_sdiff_image hf.injective, sdiff_eq, compl_inter, union_comm]
       using (hf.isClosedMap _ hUopen.isClosed_compl).isOpen_compl
   have hfUcomp : IsCompact (f '' U ∪ (range f)ᶜ) := (hUcomp.image hf.continuous).union hf'
-  simpa [inter_union_distrib_left, inter_left_comm, inter_eq_right.2 (image_subset_range ..),
+  simpa [inter_union_distrib_left, inter_left_comm, inter_eq_right_iff.2 (image_subset_range ..),
     hf.isCompact_iff, image_preimage_inter] using (hs hfUcomp hfUopen).inter_left hf.isClosed_range
 
 /-! ### Constructible sets -/
@@ -278,7 +278,7 @@ lemma IsConstructible.image_of_isClosedEmbedding (hf : IsClosedEmbedding f)
       simpa [← range_sdiff_image hf.injective, sdiff_eq, compl_inter, union_comm]
         using (hf.isClosedMap _ hUopen.isClosed_compl).isOpen_compl
     suffices h : IsRetrocompact (f '' U ∪ (range f)ᶜ) by
-      simpa [union_inter_distrib_right, inter_eq_left.2 (image_subset_range ..)]
+      simpa [union_inter_distrib_right, inter_eq_left_iff.2 (image_subset_range ..)]
         using (h.isConstructible hfU).sdiff (hfcomp.isConstructible hf.isClosed_range.isOpen_compl)
     rintro V hVcomp hVopen
     rw [union_inter_distrib_right, ← image_inter_preimage]
@@ -292,7 +292,7 @@ lemma IsConstructible.image_of_isClosedEmbedding (hf : IsClosedEmbedding f)
 lemma isConstructible_preimage_iff_of_isOpenEmbedding {s : Set Y} (hf : IsOpenEmbedding f)
     (hfcomp : IsRetrocompact (range f)) (hsf : s ⊆ range f) :
     IsConstructible (f ⁻¹' s) ↔ IsConstructible s where
-  mp hs := by simpa [image_preimage_eq_range_inter, inter_eq_right.2 hsf]
+  mp hs := by simpa [image_preimage_eq_range_inter, inter_eq_right_iff.2 hsf]
     using hs.image_of_isOpenEmbedding hf hfcomp
   mpr := .preimage_of_isOpenEmbedding hf
 
