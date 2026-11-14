@@ -216,6 +216,96 @@ def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
   catch _ =>
     return .continue
 
+section simprocs
+
+/-- Expose a `norm_num` extension as a simproc.
+
+Note that the resulting simproc will recursively normalize subexpressions using `norm_num`
+extensions before returning, since the wrapped `NormNumExt.eval` calls `derive` on subexpressions.
+(As such, it returns `.done` on success.)
+
+This safely reverts the `MetaM` state if the `norm_num` extension fails, in which case the
+simproc returns `.continue`.
+
+`post` says which of `simp`'s phases the resulting simproc will be registered in, and the
+extension's corresponding `pre`/`post` field is honoured: an extension that opts out of that phase
+yields a simproc that always returns `.continue`. -/
+def NormNumExt.toSimproc (ext : NormNumExt) (post := true) : Simp.Simproc := fun e => do
+  unless (if post then ext.post else ext.pre) do return .continue
+  let eval : MetaM (Option Simp.Result) := observing? do
+    let ⟨_, _, e⟩ ← inferTypeQ' e
+    let r ← withReducibleAndInstances <| ext.eval e
+    r.toSimpResult
+  let some r ← eval | return .continue
+  return .done r
+
+/-- Declare a `norm_num` extension and register it as a simproc in the given simproc sets:
+```
+norm_num_simproc [simp, seval] evalNatFib (Nat.fib _) where
+  eval {_ _} e := ...
+```
+This declares `evalNatFib : Simp.Simproc` and `evalNatFib.normNumExt : NormNumExt`, registers
+the extension under `@[norm_num Nat.fib _]`, and registers the simproc under `[simp, seval]`.
+Registering in `seval` makes the procedure available to `grind`.
+
+If omitted, the simproc sets default to `[simp]`.
+
+`simp` is *not* included in the simproc sets by default if any simproc sets are provided
+explicitly. For example, `norm_num_simproc [seval]` will only register the simproc for `seval`.
+
+Likewise, `norm_num_simproc []` registers a `norm_num` extension and produces a
+user-accessible simproc (available through e.g. `simp only [evalNatFib]`) but does not activate it
+in any simproc set. Note that the `norm_num` extension will be activated in `norm_num` in all cases.
+
+A `local` or `scoped` modifier applies to both the `norm_num` registration and the selected simproc
+sets.
+
+All `norm_num_simproc`s are registered as ordinary `post` simprocs, since numerical evaluation
+wants its operands already normalized. An extension declaring `post := false` therefore produces a
+simproc that never fires. Setting `pre` is an error: there is no phase for it to select here, so
+declare the extension with `@[norm_num]` and write the simproc separately if you need one in
+`simp`'s pre phase.
+
+Both declarations are generated as `public meta`, so the command does not need to be used inside a
+`public meta section`. -/
+syntax (docComment)? Parser.Term.attrKind "norm_num_simproc" (" [" ident,* "]")? ident
+  " (" term ")" Parser.Command.declVal : command
+
+macro_rules
+  | `($[$doc?:docComment]? $kind:attrKind norm_num_simproc%$tk
+      $[[$sets:ident,*]]? $name:ident ($pat:term) $val:declVal) => withRef tk do
+    -- The generated simproc is always a `post` simproc, so there is no phase for `pre` to select.
+    -- Rather than silently ignore it, refuse it.
+    if let some fld := val.raw.find? fun s =>
+        s.isOfKind ``Parser.Term.structInstField && s[0][0].getId.eraseMacroScopes == `pre then
+      Macro.throwErrorAt fld "`norm_num_simproc` generates a `post` simproc, so the `pre` field \
+        has no effect on it. Declare the extension with `@[norm_num]` and write the simproc \
+        separately if you need one in `simp`'s pre phase."
+    let extName := mkIdentFrom name (name.getId ++ `normNumExt)
+    let sets := sets.elim #[mkIdentFrom tk `simp] (·.getElems)
+    -- The following is patterned off of the private `mkAttributeCmds` in `Init.Simproc`.
+    let attrs ← sets.mapM fun id => withRef id do
+      let (attrName, attrKey) :=
+        if id.getId == `simp then (`simprocAttr, "simproc")
+        else if id.getId == `seval then (`sevalprocAttr, "sevalproc")
+        else
+          let procAttr := id.getId.appendAfter "_proc"
+          (`Parser.Attr ++ procAttr, procAttr.toString)
+      let attr : TSyntax `attr :=
+        -- `mkOptionalNode none` reflects the absence of `↓`.
+        ⟨mkNode attrName #[mkAtomFrom id attrKey, mkOptionalNode none]⟩
+      `(attribute [$kind $attr] $name)
+    let simprocDeclVal ← withRef val `(Parser.Command.declVal| := NormNumExt.toSimproc $extName)
+    return mkNullNode <| #[
+      ← `(/-- The `norm_num` extension underlying the companion simproc. -/
+        public meta def%$tk $extName : NormNumExt $val:declVal),
+      -- Apply this outside the definition's namespace so `scoped` uses the user's namespace.
+      ← `(attribute%$tk [$kind norm_num $pat] $extName),
+      ← `($[$doc?:docComment]? public meta def%$tk $name : Simp.Simproc $simprocDeclVal:declVal),
+      ← `(simproc_pattern%%$tk $pat => $name)] ++ attrs
+
+end simprocs
+
 /-- A `Methods` implementation which calls `norm_num`. -/
 def methods (simprocs : Simp.SimprocsArray := #[]) (useSimp := true) : Simp.Methods :=
   if useSimp then {
