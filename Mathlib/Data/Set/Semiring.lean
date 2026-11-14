@@ -127,9 +127,9 @@ instance [Semigroup α] : Semigroup (SetSemiring α) := fast_instance% toSetEqui
 instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
   fast_instance% toSetEquiv.commSemigroup
 
-instance [Monoid α] : Monoid (SetSemiring α) := fast_instance% toSetEquiv.monoid
+instance [Monoid α] : Monoid (SetSemiring α) where
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) := fast_instance% toSetEquiv.commMonoid
+instance [CommMonoid α] : CommMonoid (SetSemiring α) where
 
 instance [Mul α] : NonUnitalNonAssocSemiring (SetSemiring α) where
   zero_mul _ := SetSemiring.ext empty_mul
