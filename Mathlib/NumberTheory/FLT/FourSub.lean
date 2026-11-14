@@ -59,6 +59,15 @@ forces `2 e ^ 2 = b ^ 4 + c ^ 4` with `|e| ≤ k ^ 2 < a`.
 @[expose] public section
 
 set_option maxHeartbeats 400000
+set_option linter.style.longFile 2300
+set_option linter.style.longLine false
+set_option linter.style.show false
+
+-- `push_neg` is deprecated in mathlib master in favour of `push Not`; we keep
+-- the familiar syntax as a local macro.
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
 
 noncomputable section
 
