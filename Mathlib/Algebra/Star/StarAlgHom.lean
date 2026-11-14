@@ -829,8 +829,7 @@ theorem toAlgEquiv_refl : (StarAlgEquiv.refl R A).toAlgEquiv = AlgEquiv.refl := 
 `star` operation. -/
 def ofAlgEquiv (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) :
     A ≃⋆ₐ[R] B where
-  toRingEquiv := f.toRingEquiv
-  map_smul' := f.map_smul'
+  toAlgEquiv := f
   map_star' := map_star
 
 @[simp]
