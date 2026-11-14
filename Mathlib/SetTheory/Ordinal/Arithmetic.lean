@@ -119,14 +119,15 @@ alias add_eq_zero_iff := add_eq_zero
 
 /-! ### Limit ordinals -/
 
+@[deprecated isSuccLimit_iff_ne_zero_and_isSuccPrelimit +typeChanged (since := "2026-11-12")]
 theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o :=
-  isSuccLimit_iff_of_orderBot
+  isSuccLimit_iff_ne_zero_and_isSuccPrelimit
 
-@[simp]
-theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
+@[deprecated Order.isSuccPrelimit_zero +typeChanged (since := "2026-11-12")]
+protected theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_zero
 
-@[simp]
-theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Ordinal) := not_isSuccLimit_bot
+@[deprecated Order.not_isSuccLimit_zero +typeChanged (since := "2026-11-12")]
+protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Ordinal) := not_isSuccLimit_zero
 
 @[simp]
 theorem isSuccPrelimit_lift {o : Ordinal} : IsSuccPrelimit (lift.{u, v} o) ↔ IsSuccPrelimit o :=
@@ -136,14 +137,17 @@ theorem isSuccPrelimit_lift {o : Ordinal} : IsSuccPrelimit (lift.{u, v} o) ↔ I
 theorem isSuccLimit_lift {o : Ordinal} : IsSuccLimit (lift.{u, v} o) ↔ IsSuccLimit o :=
   liftInitialSeg.isSuccLimit_apply_iff
 
-theorem natCast_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) (n : ℕ) : n < o := by
-  simpa using h.add_natCast_lt h.bot_lt n
+@[deprecated Order.IsSuccLimit.natCast_lt +typeChanged (since := "2026-11-12")]
+theorem natCast_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) (n : ℕ) : n < o :=
+  h.natCast_lt n
 
+@[deprecated Order.IsSuccLimit.one_lt +typeChanged (since := "2026-11-12")]
 theorem one_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) : 1 < o :=
-  mod_cast natCast_lt_of_isSuccLimit h 1
+  h.one_lt
 
-theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o := by
-  simpa using isMin_or_mem_range_succ_or_isSuccLimit o
+@[deprecated zero_or_add_one_or_isSuccLimit +typeChanged (since := "2026-11-12")]
+theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o :=
+  zero_or_add_one_or_isSuccLimit o
 
 /-- Limit induction on ordinals: if one can prove a property by induction at successor ordinals and
 at limit ordinals, then it holds for all ordinals.
@@ -364,7 +368,8 @@ theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLi
 
 theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
     IsSuccLimit (a - b) := by
-  rw [isSuccLimit_iff, Ordinal.sub_ne_zero_iff_lt, isSuccPrelimit_iff_succ_lt]
+  rw [isSuccLimit_iff_ne_zero_and_isSuccPrelimit, Ordinal.sub_ne_zero_iff_lt,
+    isSuccPrelimit_iff_succ_lt]
   refine ⟨h, fun c hc ↦ ?_⟩
   rw [lt_sub] at hc ⊢
   rw [succ_eq_add_one, ← add_assoc]
@@ -507,9 +512,9 @@ theorem isSuccPrelimit_mul_right {a b : Ordinal} (hb : IsSuccLimit b) : IsSuccPr
 
 theorem isSuccLimit_mul_left {a b : Ordinal} (l : IsSuccLimit a) (b0 : 0 < b) :
     IsSuccLimit (a * b) := by
-  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨b, rfl⟩ | lb)
+  rcases zero_or_add_one_or_isSuccLimit b with (rfl | ⟨b, rfl⟩ | lb)
   · exact b0.false.elim
-  · rw [mul_succ]
+  · rw [mul_add_one]
     exact isSuccLimit_add _ l
   · exact isSuccLimit_mul_right l.bot_lt lb
 
@@ -685,7 +690,7 @@ theorem isSuccLimit_add_iff_of_isSuccLimit {a b : Ordinal} (h : IsSuccLimit a) :
   rw [isSuccLimit_add_iff]
   obtain rfl | hb := eq_or_ne b 0
   · simpa
-  · simp [hb, isSuccLimit_iff]
+  · simp [hb, isSuccLimit_iff_ne_zero_and_isSuccPrelimit]
 
 theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ c)
   | a, _, c, ⟨b, rfl⟩ =>
@@ -919,7 +924,7 @@ theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using natCast_lt_
 
 @[simp]
 theorem isSuccLimit_omega0 : IsSuccLimit ω := by
-  rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
+  rw [isSuccLimit_iff_ne_zero_and_isSuccPrelimit, isSuccPrelimit_iff_succ_lt]
   refine ⟨omega0_ne_zero, fun o h => ?_⟩
   obtain ⟨n, rfl⟩ := lt_omega0.1 h
   exact natCast_lt_omega0 (n + 1)
@@ -931,7 +936,7 @@ theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩
 
 theorem omega0_le_of_isSuccLimit {o} (h : IsSuccLimit o) : ω ≤ o :=
-  omega0_le.2 fun n => le_of_lt <| natCast_lt_of_isSuccLimit h n
+  omega0_le.2 fun n => (h.natCast_lt n).le
 
 theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
   refine le_antisymm (le_of_forall_lt fun a ha ↦ ?_) le_add_self
@@ -965,7 +970,7 @@ theorem isSuccPrelimit_iff_omega0_dvd {a : Ordinal} : IsSuccPrelimit a ↔ ω �
     intro b hb
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
     grw [mul_div_le]
-    exact (lt_sub.1 <| natCast_lt_of_isSuccLimit (isSuccLimit_sub l hx) _).le
+    exact (lt_sub.1 <| (isSuccLimit_sub l hx).natCast_lt _).le
   · rcases h with ⟨a0, b, rfl⟩
     exact isSuccPrelimit_mul_left isSuccLimit_omega0
 

@@ -110,7 +110,7 @@ theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
 theorem one_lt_cof_iff {o : Ordinal} : 1 < cof o ↔ IsSuccLimit o := by
-  rw [← not_iff_not, not_lt, Cardinal.le_one_iff, isSuccLimit_iff,
+  rw [← not_iff_not, not_lt, Cardinal.le_one_iff, isSuccLimit_iff_ne_zero_and_isSuccPrelimit,
     not_and_or, not_ne_iff, not_isSuccPrelimit_iff_mem_range_succ, cof_eq_zero, cof_eq_one_iff]
 
 @[simp]
@@ -320,9 +320,9 @@ theorem nfp_lt_ord {f : Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hf : ∀
 
 @[simp]
 theorem cof_add (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : cof (a + b) = cof b := by
-  rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
+  rcases zero_or_add_one_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
-  · rw [succ_eq_add_one, ← add_assoc, cof_add_one, cof_add_one]
+  · rw [← add_assoc, cof_add_one, cof_add_one]
   · exact cof_map_of_isNormal (isNormal_add_right a) hb
 
 @[simp]
