@@ -222,8 +222,7 @@ variable (K V) in
 theorem cardinal_lt_aleph0_of_finiteDimensional [Finite K] [Module.Free K V] [Module.Finite K V] :
     #V < ℵ₀ := by
   rw [← lift_lt_aleph0.{v, u}, lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank K V]
-  exact power_lt_aleph0 (lift_lt_aleph0.2 (lt_aleph0_of_finite K))
-    (lift_lt_aleph0.2 (rank_lt_aleph0 K V))
+  apply power_lt_aleph0 <;> simp
 
 end Module
 

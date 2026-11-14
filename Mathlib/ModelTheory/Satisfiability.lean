@@ -150,7 +150,7 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (
   rw [distinctConstantsTheory_eq_iUnion, Set.union_iUnion, isSatisfiable_directed_union_iff]
   · exact fun t =>
       isSatisfiable_union_distinctConstantsTheory_of_card_le T _ M
-        ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
+        ((lift_le_aleph0.2 (mk_finset_lt_aleph0 _).le).trans
           (aleph0_le_lift.2 (aleph0_le_mk M)))
   · apply Monotone.directed_le
     refine monotone_const.union (monotone_distinctConstantsTheory.comp ?_)

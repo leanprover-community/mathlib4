@@ -1114,7 +1114,7 @@ theorem ord_aleph0 : ord.{u} ℵ₀ = ω := by
   refine le_antisymm (ord_le.2 le_rfl) <| le_of_forall_lt fun o h ↦ ?_
   rcases Ordinal.lt_lift_iff.1 h with ⟨o, ho, rfl⟩
   rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum _ ho]
-  exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
+  exact (Set.finite_Iio_nat _).mk_lt_aleph0
 
 @[simp]
 theorem lift_ord (c) : Ordinal.lift.{u, v} (ord c) = ord (lift.{u, v} c) := by
@@ -1307,7 +1307,7 @@ ordered by `r`, when `s` is finite. See `card_typein_min_le_mk` for the `Ordinal
 theorem not_lt_enum_ord_mk_min_compl [IsWellOrder α r] {s : Set α} (hfin : s.Finite)
     (h : sᶜ.Nonempty) :
     ¬r (enum r ⟨#s |>.ord, ord_mk_lt_type r hfin h⟩) (IsWellOrder.wf.min (r := r) sᶜ h) := by
-  grw [← typein_le_typein, typein_enum, Cardinal.le_ord_iff_card_le_of_lt_aleph0 _ hfin.lt_aleph0,
+  grw [← typein_le_typein, typein_enum, le_ord_iff_card_le_of_lt_aleph0 _ hfin.mk_lt_aleph0,
     card_typein_min_le_mk]
 
 theorem finite_toType_of_lt_omega0 {o} (h : o < ω) : Finite (ToType o) := by

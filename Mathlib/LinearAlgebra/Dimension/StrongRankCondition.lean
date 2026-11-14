@@ -158,7 +158,7 @@ theorem Module.Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤
     suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_gt this ⟨Set.embeddingOfSubset _ _ hs⟩
     refine lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
       (Cardinal.sum_le_sum _ (fun _ => ℵ₀) ?_)) ?_
-    · exact fun j => (Cardinal.lt_aleph0_of_finite _).le
+    · exact fun j => (Cardinal.mk_lt_aleph0 _).le
     · simpa
 
 end RankCondition
@@ -491,6 +491,7 @@ noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : U
 variable (M)
 
 /-- The rank of a finite module is finite. -/
+@[simp]
 theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹_›
@@ -498,11 +499,9 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
     natCast_lt_aleph0
 
 noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]
-    {s t : Set M} [Module.Finite R (span R t)]
-    (hs : LinearIndepOn R id s) (hst : s ⊆ t) :
-    Fintype (hs.extend hst) := by
-  refine Classical.choice (Cardinal.lt_aleph0_iff_fintype.1 ?_)
-  rw [← rank_span_set (hs.linearIndepOn_extend hst), hs.span_extend_eq_span]
+    {s t : Set M} [Module.Finite R (span R t)] (hs : LinearIndepOn R id s) (hst : s ⊆ t) :
+    Finite (hs.extend hst) := by
+  rw [← mk_lt_aleph0_iff, ← rank_span_set (hs.linearIndepOn_extend hst), hs.span_extend_eq_span]
   exact Module.rank_lt_aleph0 ..
 
 /-- If `M` is finite, `finrank M = rank M`. -/

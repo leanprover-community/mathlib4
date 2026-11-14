@@ -329,7 +329,7 @@ instance invariantCardinalRank_of_finitary [Finitary M] : InvariantCardinalRank 
     refine (mk_le_mk_of_subset this).trans <| (mk_iUnion_le ..).trans
       <| (mul_le_max_of_aleph0_le_left (by simp)).trans ?_
     simp only [sup_le_iff, le_refl, true_and]
-    exact ciSup_le' fun e ↦ (lt_aleph0_of_finite _).le.trans <| by simp
+    exact ciSup_le' fun e ↦ (mk_lt_aleph0 _).le.trans <| by simp
   rw [← sdiff_inter_self_eq_sdiff, sdiff_subset_iff, inter_comm]
   have hUB : (B ∩ B') ∪ U ⊆ B :=
     union_subset inter_subset_left (iUnion_subset fun e ↦ (hSB e.1 e.2))
@@ -373,9 +373,9 @@ end Instances
 theorem rankFinite_iff_cRank_lt_aleph0 : M.RankFinite ↔ M.cRank < ℵ₀ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨?_⟩⟩
   · have ⟨B, hB, fin⟩ := h
-    exact hB.cardinalMk_eq_cRank ▸ lt_aleph0_iff_finite.mpr fin
+    exact hB.cardinalMk_eq_cRank ▸ fin.mk_lt_aleph0
   have ⟨B, hB⟩ := M.exists_isBase
-  simp_rw [← finite_coe_iff, ← lt_aleph0_iff_finite]
+  simp_rw [← finite_coe_iff, ← mk_lt_aleph0_iff]
   exact ⟨B, hB, hB.cardinalMk_le_cRank.trans_lt h⟩
 
 theorem rankInfinite_iff_aleph0_le_cRank : M.RankInfinite ↔ ℵ₀ ≤ M.cRank := by
@@ -397,7 +397,7 @@ theorem Spanning.isBase_of_le_cRank [M.RankFinite] (h : M.Spanning X) (le : #X �
 
 theorem Indep.isBase_of_cRank_le_of_finite (ind : M.Indep I)
     (le : M.cRank ≤ #I) (fin : I.Finite) : M.IsBase I :=
-  have := rankFinite_iff_cRank_lt_aleph0.mpr (le.trans_lt <| lt_aleph0_iff_finite.mpr fin)
+  have := rankFinite_iff_cRank_lt_aleph0.mpr (le.trans_lt fin.mk_lt_aleph0)
   ind.isBase_of_cRank_le le
 
 theorem Spanning.isBase_of_le_cRank_of_finite (h : M.Spanning X)
