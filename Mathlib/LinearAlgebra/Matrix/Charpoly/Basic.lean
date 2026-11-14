@@ -241,7 +241,6 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
 See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.
@@ -266,7 +265,7 @@ theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
     rw [hNM, det_fromBlocks_zero₂₁, ← neg_sub, det_neg (_ - _)]
     simp
     ring
-  dsimp only [charpoly, charmatrix, RingHom.mapMatrix_apply]
+  simp only [charpoly, charmatrix, RingHom.mapMatrix_apply]
   rw [← (isUnit_neg_one.pow _).isRegular.left.eq_iff, ← hdet_NM, ← hdet_MN, det_mul_comm]
 
 theorem charpoly_mul_comm_of_le
