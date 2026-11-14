@@ -518,8 +518,9 @@ meta def evalMultinomial : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(multinomial $a) =>
-    assertInstancesCommute
-    return .positive q(multinomial_pos $a)
+    return ← catchNone do
+      assertInstancesCommute
+      return .positive q(multinomial_pos $a)
   | _, _, _ => throwError "not multinomial"
 
 end PositivityExtension

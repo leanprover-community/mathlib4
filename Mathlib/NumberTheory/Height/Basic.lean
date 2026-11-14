@@ -187,8 +187,9 @@ meta def evalMulHeight₁ : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
-    assertInstancesCommute
-    pure (.positive q(mulHeight₁_pos $a))
+    return ← catchNone do
+      assertInstancesCommute
+      pure (.positive q(mulHeight₁_pos $a))
   | _, _, _ => throwError "not Height.mulHeight₁"
 
 /-- Extension for the `positivity` tactic: `Height.logHeight₁` is always nonnegative. -/
@@ -197,8 +198,9 @@ meta def evalLogHeight₁ : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
-    assertInstancesCommute
-    pure (.nonnegative q(zero_le_logHeight₁ $a))
+    return ← catchNone do
+      assertInstancesCommute
+      pure (.nonnegative q(zero_le_logHeight₁ $a))
   | _, _, _ => throwError "not Height.logHeight₁"
 
 end Mathlib.Meta.Positivity
@@ -511,8 +513,9 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ pα? e :=
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
-      assertInstancesCommute
-      return .positive q(mulHeight_pos $a)
+      return ← catchNone do
+        assertInstancesCommute
+        return .positive q(mulHeight_pos $a)
     | _ => throwError "index type in Height.mulHeight not known to be finite"
   | _, _, _ => throwError "not Height.mulHeight"
 
@@ -525,8 +528,9 @@ meta def evalLogHeight : PositivityExt where eval {u α} _ pα? e :=
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
-      assertInstancesCommute
-      return .nonnegative q(logHeight_nonneg $a)
+      return ← catchNone do
+        assertInstancesCommute
+        return .nonnegative q(logHeight_nonneg $a)
     | _ => throwError "index type in Height.logHeight not known to be finite"
   | _, _, _ => throwError "not Height.logHeight"
 

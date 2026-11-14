@@ -561,12 +561,13 @@ meta def evalDyckWordFirstReturn : PositivityExt where eval {u α} _zα pα? e :
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
   | 0, ~q(ℕ), ~q(DyckWord.firstReturn $a) =>
-    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
-    match ra with
-    | .positive pa => pure (.positive q(DyckWord.firstReturn_pos ($pa).ne'))
-    | .nonzero pa => pure (.positive q(DyckWord.firstReturn_pos $pa))
-    | _ => pure .none
+    return ← catchNone do
+      assertInstancesCommute
+      match ra with
+      | .positive pa => pure (.positive q(DyckWord.firstReturn_pos ($pa).ne'))
+      | .nonzero pa => pure (.positive q(DyckWord.firstReturn_pos $pa))
+      | _ => pure .none
   | _, _, _ => throwError "not DyckWord.firstReturn"
 
 end Mathlib.Meta.Positivity

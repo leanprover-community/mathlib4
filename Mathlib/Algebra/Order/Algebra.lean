@@ -101,29 +101,31 @@ meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ pβ? e :=
   let some pα ← try? <| synthInstanceQ q(PartialOrder $α) | pure .none
   match ← core q(inferInstance) (some pα) a with
   | .positive pa =>
-    let _instαSemiring ← synthInstanceQ q(Semiring $α)
-    try
-      let _instβSemiring ← synthInstanceQ q(Semiring $β)
-      let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
-      let _instβIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $β)
-      let _instαβsmul ← synthInstanceQ q(SMulPosStrictMono $α $β)
-      assertInstancesCommute
-      return .positive q(algebraMap_pos $β $pa)
-    catch _ =>
+    return ← catchNone do
+      let _instαSemiring ← synthInstanceQ q(Semiring $α)
+      try
+        let _instβSemiring ← synthInstanceQ q(Semiring $β)
+        let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
+        let _instβIsStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $β)
+        let _instαβsmul ← synthInstanceQ q(SMulPosStrictMono $α $β)
+        assertInstancesCommute
+        return .positive q(algebraMap_pos $β $pa)
+      catch _ =>
+        let _instβSemiring ← synthInstanceQ q(Semiring $β)
+        let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
+        let _instβIsOrderedRing ← synthInstanceQ q(IsOrderedRing $β)
+        let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
+        assertInstancesCommute
+        return .nonnegative q(algebraMap_nonneg $β <| le_of_lt $pa)
+  | .nonnegative pa =>
+    return ← catchNone do
+      let _instαSemiring ← synthInstanceQ q(CommSemiring $α)
       let _instβSemiring ← synthInstanceQ q(Semiring $β)
       let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
       let _instβIsOrderedRing ← synthInstanceQ q(IsOrderedRing $β)
       let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
       assertInstancesCommute
-      return .nonnegative q(algebraMap_nonneg $β <| le_of_lt $pa)
-  | .nonnegative pa =>
-    let _instαSemiring ← synthInstanceQ q(CommSemiring $α)
-    let _instβSemiring ← synthInstanceQ q(Semiring $β)
-    let _instβPartialOrder ← synthInstanceQ q(PartialOrder $β)
-    let _instβIsOrderedRing ← synthInstanceQ q(IsOrderedRing $β)
-    let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
-    assertInstancesCommute
-    return .nonnegative q(algebraMap_nonneg $β $pa)
+      return .nonnegative q(algebraMap_nonneg $β $pa)
   | _ => pure .none
 
 example [IsOrderedRing β] [SMulPosMono α β]
