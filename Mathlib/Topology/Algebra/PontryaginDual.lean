@@ -23,6 +23,14 @@ isomorphic to its double dual.
 ## Main definitions
 
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
+* `AddPontryaginDual A`: The additive version for additive groups, the group of continuous
+  additive homomorphisms `A →+ Additive Circle`.
+
+## Implementation notes
+
+`AddPontryaginDual` and its basic API are generated from `PontryaginDual` by `to_additive`.
+Since `to_additive` can only translate a constant to a constant, we introduce the abbreviation
+`AdditiveCircle := Additive Circle` and register it as the additive version of `Circle`.
 -/
 
 @[expose] public section
@@ -30,16 +38,45 @@ isomorphic to its double dual.
 open scoped Pointwise
 open Real
 
+noncomputable section
+
+/-! ### The circle as an additive group -/
+
+/-- The circle group, written additively. This abbreviation for `Additive Circle` exists so that
+`to_additive` can translate `Circle` to it. -/
+abbrev AdditiveCircle : Type :=
+  Additive Circle
+
+namespace AdditiveCircle
+
+instance instAddCommGroup : AddCommGroup AdditiveCircle := inferInstance
+
+instance instTopologicalSpace : TopologicalSpace AdditiveCircle := inferInstance
+
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup AdditiveCircle := inferInstance
+
+end AdditiveCircle
+
+attribute [to_additive existing AdditiveCircle] Circle
+attribute [to_additive existing] Circle.instCommGroup Circle.instIsTopologicalGroup
+attribute [to_additive existing AdditiveCircle.instTopologicalSpace] instTopologicalSpaceCircle
+
+section PontryaginDual
+
 variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalGroup G] [IsTopologicalGroup H]
 
-noncomputable section
-
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → Circle`. -/
+@[to_additive AddPontryaginDual
+/-- The additive Pontryagin dual of `A` is the group of continuous additive homomorphisms
+`A → Additive Circle`. -/]
 def PontryaginDual :=
   A →ₜ* Circle
-deriving TopologicalSpace
+
+@[to_additive instTopologicalSpaceAddPontryaginDual]
+instance : TopologicalSpace (PontryaginDual A) :=
+  inferInstanceAs (TopologicalSpace (A →ₜ* Circle))
 
 instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
   let Vn : ℕ → Set Circle := fun n ↦ Circle.centeredArc (π / 2 ^ (n + 1))
@@ -64,19 +101,40 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
+@[to_additive]
 instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ* Circle))
 
-deriving instance
-  T2Space, IsTopologicalGroup,
-  Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
-  [DiscreteTopology A] → CompactSpace _
-for PontryaginDual A
+@[to_additive]
+instance : T2Space (PontryaginDual A) := inferInstanceAs (T2Space (A →ₜ* Circle))
 
-@[ext]
+@[to_additive]
+instance : IsTopologicalGroup (PontryaginDual A) :=
+  inferInstanceAs (IsTopologicalGroup (A →ₜ* Circle))
+
+@[to_additive]
+instance : Inhabited (PontryaginDual A) := inferInstanceAs (Inhabited (A →ₜ* Circle))
+
+@[to_additive instFunLikeAdditiveCircle]
+instance : FunLike (PontryaginDual A) A Circle :=
+  inferInstanceAs (FunLike (A →ₜ* Circle) A Circle)
+
+@[to_additive instContinuousMapClassAdditiveCircle]
+instance : ContinuousMapClass (PontryaginDual A) A Circle :=
+  inferInstanceAs (ContinuousMapClass (A →ₜ* Circle) A Circle)
+
+@[to_additive instAddMonoidHomClassAdditiveCircle]
+instance : MonoidHomClass (PontryaginDual A) A Circle :=
+  inferInstanceAs (MonoidHomClass (A →ₜ* Circle) A Circle)
+
+@[to_additive]
+instance [DiscreteTopology A] : CompactSpace (PontryaginDual A) :=
+  inferInstanceAs (CompactSpace (A →ₜ* Circle))
+
+@[to_additive (attr := ext)]
 theorem ext {ψ φ : PontryaginDual A} (h : ∀ a, ψ a = φ a) : ψ = φ :=
   DFunLike.ext _ _ h
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem one_apply (a : A) : (1 : PontryaginDual A) a = 1 :=
   rfl
 
@@ -109,31 +167,33 @@ noncomputable instance [DiscreteTopology A] [CompactSpace A] : Fintype (Pontryag
   .ofFinite _
 
 /-- `PontryaginDual` is a contravariant functor. -/
+@[to_additive /-- `AddPontryaginDual` is a contravariant functor. -/]
 def map (f : A →ₜ* B) :
     (PontryaginDual B) →ₜ* (PontryaginDual A) :=
   f.compLeft Circle
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem map_apply (f : A →ₜ* B) (x : PontryaginDual B) (y : A) :
     map f x y = x (f y) :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem map_one : map (1 : A →ₜ* B) = 1 :=
   ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun _y => OneHomClass.map_one x
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem map_comp (g : B →ₜ* C) (f : A →ₜ* B) :
     map (comp g f) = ContinuousMonoidHom.comp (map f) (map g) :=
   ContinuousMonoidHom.ext fun _x => PontryaginDual.ext fun _y => rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 nonrec theorem map_mul (f g : A →ₜ* G) : map (f * g) = map f * map g :=
   ContinuousMonoidHom.ext fun x => PontryaginDual.ext fun y => map_mul x (f y) (g y)
 
 variable (A B C G)
 
 /-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
+@[to_additive /-- `AddPontryaginDual.map` as a `ContinuousAddMonoidHom`. -/]
 def mapHom [LocallyCompactSpace G] :
     (A →ₜ* G) →ₜ* ((PontryaginDual G) →ₜ* (PontryaginDual A)) where
   toFun := map
@@ -142,3 +202,57 @@ def mapHom [LocallyCompactSpace G] :
   continuous_toFun := continuous_of_continuous_uncurry _ continuous_comp
 
 end PontryaginDual
+
+end PontryaginDual
+
+/-! ### The additive Pontryagin dual
+
+The instances whose proofs use the geometry of `Circle` cannot be translated by `to_additive`.
+We transfer them along the homeomorphism `AddPontryaginDual A ≃ₜ PontryaginDual (Multiplicative A)`.
+-/
+
+section AddPontryaginDual
+
+variable (A H : Type*) [AddMonoid A] [AddGroup H] [TopologicalSpace A] [TopologicalSpace H]
+  [IsTopologicalAddGroup H]
+
+namespace AddPontryaginDual
+
+/-- The additive Pontryagin dual of `A` is homeomorphic to the Pontryagin dual of
+`Multiplicative A`. -/
+def toMultiplicative : AddPontryaginDual A ≃ₜ PontryaginDual (Multiplicative A) where
+  toFun φ := ⟨AddMonoidHom.toMultiplicativeLeft φ.toAddMonoidHom, φ.continuous_toFun⟩
+  invFun ψ := ⟨MonoidHom.toAdditiveRight ψ.toMonoidHom, ψ.continuous_toFun⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  continuous_toFun :=
+    (ContinuousMonoidHom.isInducing_toContinuousMap _ _).continuous_iff.2
+      (ContinuousAddMonoidHom.isInducing_toContinuousMap A _).continuous
+  continuous_invFun :=
+    (ContinuousAddMonoidHom.isInducing_toContinuousMap A _).continuous_iff.2
+      (ContinuousMonoidHom.isInducing_toContinuousMap _ _).continuous
+
+variable {A} in
+@[simp]
+theorem toMultiplicative_apply (φ : AddPontryaginDual A) (a : Multiplicative A) :
+    toMultiplicative A φ a = (φ a.toAdd).toMul :=
+  rfl
+
+instance [LocallyCompactSpace H] : LocallyCompactSpace (AddPontryaginDual H) :=
+  have : LocallyCompactSpace (Multiplicative H) := ‹LocallyCompactSpace H›
+  (toMultiplicative H).isClosedEmbedding.locallyCompactSpace
+
+/-- A compact additive monoid has discrete Pontryagin dual. -/
+instance [CompactSpace A] : DiscreteTopology (AddPontryaginDual A) :=
+  have : CompactSpace (Multiplicative A) := ‹CompactSpace A›
+  (toMultiplicative A).symm.discreteTopology
+
+instance [DiscreteTopology A] [CompactSpace A] : Finite (AddPontryaginDual A) :=
+  finite_of_compact_of_discrete
+
+noncomputable instance [DiscreteTopology A] [CompactSpace A] : Fintype (AddPontryaginDual A) :=
+  .ofFinite _
+
+end AddPontryaginDual
+
+end AddPontryaginDual
