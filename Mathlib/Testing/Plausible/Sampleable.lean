@@ -19,6 +19,8 @@ set_option doc.verso true
 set_option doc.verso.suggestions false
 
 /-!
+# `Plausible`: `Shrinkable` and `SampleableExt` instances
+
 This module contains `Plausible.Shrinkable` and `Plausible.SampleableExt` instances for mathlib
 types.
 -/
