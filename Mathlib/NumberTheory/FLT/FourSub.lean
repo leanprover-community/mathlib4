@@ -216,7 +216,7 @@ theorem fermat42Sub_caseA_reduces
     have hbsq_nn : 0 ≤ b ^ 2 := sq_nonneg b
     rw [hb_fact] at hbsq_nn
     by_contra h_lt
-    push_neg at h_lt
+    push Not at h_lt
     have h_neg : m - 2 * k < 0 := h_lt
     have h_sum_pos : 0 < m + 2 * k ∨ m + 2 * k = 0 := by
       rcases lt_or_eq_of_le hm_plus_nn with h | h
@@ -397,7 +397,7 @@ theorem fermat42Sub_caseB_descends
   -- c > 0 and c = i⁴ - 4j⁴ > 0 → i⁴ > 4j⁴ → i² > 2j² (taking sqrt).
   have hi_sq_gt : i ^ 2 > 2 * j ^ 2 := by
     by_contra h_le_ij
-    push_neg at h_le_ij
+    push Not at h_le_ij
     have h_i4_le : i ^ 4 ≤ 4 * j ^ 4 := by
       have : i ^ 2 * i ^ 2 ≤ (2 * j ^ 2) * (2 * j ^ 2) := by
         exact mul_le_mul h_le_ij h_le_ij (sq_nonneg _) (by positivity)
@@ -693,7 +693,7 @@ theorem fermat42Double_parity {s t a : ℤ} (_hs_ne : s ≠ 0) (_ht_ne : t ≠ 0
     (ha_eq : 2 * a ^ 2 = s ^ 4 + t ^ 4) :
     s % 2 = 1 ∧ t % 2 = 1 := by
   by_contra h_not_both
-  push_neg at h_not_both
+  push Not at h_not_both
   have hs_par : s % 2 = 0 ∨ s % 2 = 1 := Int.emod_two_eq_zero_or_one s
   have ht_par : t % 2 = 0 ∨ t % 2 = 1 := Int.emod_two_eq_zero_or_one t
   rcases hs_par with hs_ev | hs_od
@@ -1004,7 +1004,7 @@ private theorem fermat42Double_pythagorean_setup
     -- k = n / 2 and n > 0 (since v = 2mn > 0 and m > 0 ⟹ n > 0).
     have hn_pos : 0 < n := by
       by_contra h_not_pos
-      push_neg at h_not_pos
+      push Not at h_not_pos
       have hn_le : n ≤ 0 := h_not_pos
       have : v ≤ 0 := by
         rw [hu_eq]
@@ -1552,22 +1552,22 @@ private theorem fermat42Double_quadruple_extraction
     · rw [heq, abs_of_pos hk_pos]
     · rw [heq, abs_neg, abs_of_pos hk_pos]
   have hα'_pos : 0 < |α| := by
-    by_contra h; push_neg at h
+    by_contra h; push Not at h
     have : |α| = 0 := le_antisymm h (abs_nonneg α)
     rw [this, zero_mul] at hα'β'_eq
     exact hk_ne hα'β'_eq.symm
   have hβ'_pos : 0 < |β| := by
-    by_contra h; push_neg at h
+    by_contra h; push Not at h
     have : |β| = 0 := le_antisymm h (abs_nonneg β)
     rw [this, mul_zero] at hα'β'_eq
     exact hk_ne hα'β'_eq.symm
   have hγ'_pos : 0 < |γ| := by
-    by_contra h; push_neg at h
+    by_contra h; push Not at h
     have : |γ| = 0 := le_antisymm h (abs_nonneg γ)
     rw [this, zero_mul] at hγ'δ'_eq
     exact hk_ne hγ'δ'_eq.symm
   have hδ'_pos : 0 < |δ| := by
-    by_contra h; push_neg at h
+    by_contra h; push Not at h
     have : |δ| = 0 := le_antisymm h (abs_nonneg δ)
     rw [this, mul_zero] at hγ'δ'_eq
     exact hk_ne hγ'δ'_eq.symm
@@ -1925,7 +1925,7 @@ theorem fermat42Sub_caseB_descends_mirror
     rw [hc_eq, hm_eq, hn_eq]; ring
   have h_2j_sq_gt : 2 * j ^ 2 > i ^ 2 := by
     by_contra h_le_ij
-    push_neg at h_le_ij
+    push Not at h_le_ij
     have h_4j4_le : 4 * j ^ 4 ≤ i ^ 4 := by
       have h1 : (2 * j ^ 2) * (2 * j ^ 2) ≤ i ^ 2 * i ^ 2 := by
         exact mul_le_mul h_le_ij h_le_ij (by positivity) (sq_nonneg _)
@@ -2051,7 +2051,7 @@ theorem not_fermat_42_sub : ∀ a b c : ℤ,
       rw [show B ^ 2 = B * B from sq B, Int.mul_emod, hB_ev]; decide
     have hA_odd : A % 2 = 1 := by
       by_contra hA_ev'
-      push_neg at hA_ev'
+      push Not at hA_ev'
       have : A % 2 = 0 := by omega
       have h2_dvd_A : (2 : ℤ) ∣ A := Int.dvd_of_emod_eq_zero this
       have h2_dvd_B : (2 : ℤ) ∣ B := Int.dvd_of_emod_eq_zero hB_ev
