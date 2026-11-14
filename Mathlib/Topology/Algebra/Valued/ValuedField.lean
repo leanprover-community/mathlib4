@@ -62,7 +62,7 @@ instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
       intro y y_in
       apply hs
       simp only [mem_ofPred_eq, Units.min_val, Units.val_mul] at y_in
-      exact Valuation.inversion_estimate _ x_ne y_in }
+      exact Valuation.inversion_estimate _ y_in }
 
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
@@ -163,13 +163,8 @@ instance (priority := 100) completable : CompletableTopField K :=
         replace x_in₀ := H₀ x x_in₀
         clear H₀
         apply Valuation.inversion_estimate
-        · have : (v.restrict x) ≠ 0 := by
-            intro h
-            rw [h] at x_in₀
-            simp at x_in₀
-          exact (Valuation.ne_zero_iff _).mp this
-        · refine lt_of_lt_of_le H₁ ?_
-          grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, x_in₀] }
+        refine lt_of_lt_of_le H₁ ?_
+        grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, x_in₀] }
 
 open MonoidWithZeroHom WithZeroTopology
 
