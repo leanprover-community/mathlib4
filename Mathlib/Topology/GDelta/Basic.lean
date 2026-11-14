@@ -5,11 +5,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.Set.Notation
 public import Mathlib.Order.Filter.CountableInter
-public import Mathlib.Topology.Defs.Induced
-
-import Mathlib.Topology.Constructions
+public import Mathlib.Topology.SigmaLocallyFinite
 
 /-!
 # `Gδ` sets
@@ -18,8 +15,8 @@ In this file we define `Gδ` sets and prove their basic properties.
 
 ## Main definitions
 
-* `IsGδ`: a set `s` is a `Gδ` set if it can be represented as an intersection
-  of countably many open sets;
+* `IsGδ`: a set `s` is a `Gδ` set if it is an intersection of countably many open sets. Dually,
+  an `Fσ` set is a countable union of closed sets.
 
 * `residual`: the σ-filter of residual sets. A set `s` is called *residual* if it includes a
   countable intersection of dense open sets.
@@ -29,8 +26,9 @@ In this file we define `Gδ` sets and prove their basic properties.
 
 ## Main results
 
-We prove that finite or countable intersections of Gδ sets are Gδ sets.
-
+- Countable intersections, finite unions and continuous preimages of Gδ sets are Gδ sets.
+- Finite intersections, σ-locally finite unions (in particular countable unions), continuous
+  preimages and closed images of Fσ sets are Fσ sets.
 - `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
   its complement is open and dense
 - `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
@@ -163,6 +161,114 @@ theorem IsGδ.preimage [TopologicalSpace Y] {f : X → Y} {s : Set Y} (hf : Cont
 @[deprecated (since := "2026-05-19")] alias isGδ_induced := IsGδ.preimage
 
 end IsGδ
+
+section IsFσ
+
+variable [TopologicalSpace X] [TopologicalSpace Y] {s : Set X}
+
+/-- An Fσ set is a countable intersection of open sets. -/
+def IsFσ (s : Set X) : Prop :=
+  ∃ T : Set (Set X), (∀ t ∈ T, IsClosed t) ∧ T.Countable ∧ s = ⋃₀ T
+
+lemma IsFσ.isGδ_compl (hs : IsFσ s) : IsGδ sᶜ := by
+  have ⟨T, hT⟩ := hs
+  exact ⟨(fun t ↦ tᶜ) '' T, by rintro t ⟨t', ht', rfl⟩; exact (hT.1 t' ht').isOpen_compl,
+    hT.2.1.image _, by simp [hT.2.2, compl_sUnion]⟩
+
+lemma IsGδ.isFσ_compl (hs : IsGδ s) : IsFσ sᶜ := by
+  have ⟨T, hT⟩ := hs
+  exact ⟨(fun t ↦ tᶜ) '' T, by rintro t ⟨t', ht', rfl⟩; exact (hT.1 t' ht').isClosed_compl,
+    hT.2.1.image _, by simp [hT.2.2, compl_sInter]⟩
+
+@[simp]
+lemma isFσ_compl_iff : IsFσ sᶜ ↔ IsGδ s :=
+  ⟨fun h ↦ by simpa using h.isGδ_compl, fun h ↦ h.isFσ_compl⟩
+
+@[simp]
+lemma isGδ_compl_iff : IsGδ sᶜ ↔ IsFσ s := by
+  simp [← isFσ_compl_iff]
+
+/-- Closed sets are Fσ. -/
+lemma IsClosed.isFσ (hs : IsClosed s) : IsFσ s :=
+  ⟨{s}, by grind, by simp⟩
+
+@[simp]
+lemma IsFσ.empty : IsFσ (∅ : Set X) := isClosed_empty.isFσ
+
+@[simp]
+lemma IsFσ.univ : IsFσ (univ : Set X) := isClosed_univ.isFσ
+
+lemma IsFσ.biUnion_of_isClosed {I : Set ι} (hI : I.Countable) {f : ι → Set X}
+    (hf : ∀ i ∈ I, IsClosed (f i)) : IsFσ (⋃ i ∈ I, f i) := by
+  simp [← isGδ_compl_iff, IsGδ.biInter_of_isOpen hI (fun i hi ↦ (hf i hi).isOpen_compl)]
+
+lemma IsFσ.iUnion_of_isClosed [Countable ι] {f : ι → Set X}
+    (hf : ∀ i, IsClosed (f i)) : IsFσ (⋃ i, f i) := by
+  simpa using IsFσ.biUnion_of_isClosed countable_univ fun i _ ↦ hf i
+
+lemma isFσ_iff_eq_iUnion_nat :
+    IsFσ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsClosed (f n)) ∧ s = ⋃ n, f n := by
+  rw [← isGδ_compl_iff, isGδ_iff_eq_iInter_nat]
+  exact ⟨fun ⟨f, hf⟩ ↦ ⟨_, fun n ↦ (hf.1 n).isClosed_compl, by grind [compl_iInter]⟩,
+    fun ⟨f, hf⟩ ↦ ⟨_, fun n ↦ (hf.1 n).isOpen_compl, by grind [compl_iUnion]⟩⟩
+
+lemma IsFσ.eq_iUnion_nat (hs : IsFσ s) :
+    ∃ (f : ℕ → Set X), (∀ n, IsClosed (f n)) ∧ s = ⋃ n, f n :=
+  isFσ_iff_eq_iUnion_nat.1 hs
+
+/-- σ-locally finite unions of Fσ sets are Fσ. -/
+lemma IsFσ.iUnion {ι : Type*} {s : ι → Set X} (hs : SigmaLocallyFinite s)
+    (hs' : ∀ i, IsFσ (s i)) : IsFσ (⋃ i, s i) := by
+  replace hs' := fun n ↦ (hs' n).eq_iUnion_nat
+  choose w hw using hs'
+  simp_rw [hw]
+  have ⟨κ, e, he⟩ := sigmaLocallyFinite_iff_exists_equiv.1 hs
+  rw [← e.symm.surjective.iUnion_comp, iUnion_sigma, ← isGδ_compl_iff, compl_iUnion]
+  exact .iInter fun n ↦ IsFσ.isGδ_compl <| iUnion_comm _ ▸ .iUnion_of_isClosed fun m ↦
+    ((he n).subset fun k ↦ (subset_iUnion _ _).trans_eq (hw _).2.symm).isClosed_iUnion
+      fun k ↦ (hw _).1 _
+
+lemma IsFσ.biUnion {I : Set ι} (hI : I.Countable) {s : (i : ι) → i ∈ I → Set X}
+    (hs : ∀ i hi, IsFσ (s i hi)) : IsFσ (⋃ i, ⋃ hi, s i hi) := by
+  simpa [← compl_iUnion] using IsGδ.biInter hI fun i hi ↦ (hs i hi).isGδ_compl
+
+lemma IsFσ.sUnion {S : Set (Set X)} (h : ∀ s ∈ S, IsFσ s) (hS : S.Countable) :
+    IsFσ (⋃₀ S) := by
+  simpa [sUnion_eq_biUnion] using IsFσ.biUnion hS h
+
+/-- Binary unions of Fσ sets are Fσ sets. -/
+lemma IsFσ.union {s t : Set X} (hs : IsFσ s) (ht : IsFσ t) : IsFσ (s ∪ t) := by
+  rw [union_eq_iUnion]
+  exact .iUnion .of_countable (Bool.forall_bool.2 ⟨ht, hs⟩)
+
+/-- Binary intersections of Fσ sets are Fσ sets. -/
+lemma isFσ.inter {s t : Set X} (hs : IsFσ s) (ht : IsFσ t) : IsFσ (s ∩ t) := by
+  simpa [← compl_inter] using hs.isGδ_compl.union ht.isGδ_compl
+
+lemma IsFσ.sInter {S : Set (Set X)} (hS : S.Finite) (h : ∀ s ∈ S, IsFσ s) : IsFσ (⋂₀ S) := by
+  simpa [← isGδ_compl_iff, compl_sInter] using IsGδ.biUnion hS fun s hs ↦ (h s hs).isGδ_compl
+
+lemma IsFσ.biInter {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i ∈ s, IsFσ (f i)) :
+    IsFσ (⋂ i ∈ s, f i) := by
+  exact sInter_image _ _ ▸ .sInter (hs.image _) (forall_mem_image.2 h)
+
+/-- Finite intersections of Fσ sets are Fσ sets. -/
+lemma IsFσ.iInter {ι' : Sort*} [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsFσ (f i)) :
+    IsFσ (⋂ i, f i) :=
+  .sInter (finite_range _) <| forall_mem_range.2 h
+
+/-- Preimages of Fσ sets under continuous maps are Fσ sets. -/
+lemma IsFσ.preimage (hs : IsFσ s) {f : Y → X} (hf : Continuous f) : IsFσ (f ⁻¹' s) := by
+  simpa using hs.isGδ_compl.preimage hf
+
+/-- Images of Fσ sets under closed maps are Fσ sets.
+
+Note that the same is not true for Gδ sets and open maps. -/
+lemma IsFσ.image (hs : IsFσ s) {f : X → Y} (hf : IsClosedMap f) : IsFσ (f '' s) := by
+  obtain ⟨w, hw, rfl⟩ := hs.eq_iUnion_nat
+  exact image_iUnion ▸ IsFσ.iUnion_of_isClosed fun n ↦ hf _ (hw n)
+
+end IsFσ
 
 section residual
 
