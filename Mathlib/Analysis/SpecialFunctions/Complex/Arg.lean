@@ -71,6 +71,33 @@ lemma norm_mul_cos_arg (x : ℂ) : ‖x‖ * Real.cos (arg x) = x.re := by
 lemma norm_mul_sin_arg (x : ℂ) : ‖x‖ * Real.sin (arg x) = x.im := by
   simpa [-norm_mul_cos_add_sin_mul_I] using! congr(im $(norm_mul_cos_add_sin_mul_I x))
 
+/--
+**Law of cosines** in `ℂ`: the squared distance between `a` and `b` is expressed in terms of their
+norms and the angle `a.arg - b.arg` between them. See `Complex.law_cos_half_angle` for the
+half-angle form.
+-/
+theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_arg_sub_arg
+    (a b : ℂ) :
+    ‖a - b‖ ^ 2 = ‖a‖ ^ 2 + ‖b‖ ^ 2 - 2 * ‖a‖ * ‖b‖ * Real.cos (a.arg - b.arg) := by
+  rw [Real.cos_sub, ← normSq_eq_norm_sq, ← normSq_eq_norm_sq, ← normSq_eq_norm_sq, normSq_sub]
+  simp only [mul_re, conj_re, conj_im, mul_neg, sub_neg_eq_add, mul_assoc]
+  simp only [← norm_mul_cos_arg, ← norm_mul_sin_arg, mul_add]
+  ring
+
+alias law_cos := norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_arg_sub_arg
+
+/--
+**Law of cosines** in `ℂ`, half-angle form: the squared distance between `a` and `b` is expressed in
+terms of their norms and the half-angle `(a.arg - b.arg) / 2`. See `Complex.law_cos` for the
+standard form, and `Complex.norm_exp_I_mul_ofReal_sub_one` for the chord from a point of the unit
+circle to `1`.
+-/
+theorem norm_sub_sq_eq_norm_sub_norm_sq_add_four_mul_norm_mul_norm_mul_sin_sq (a b : ℂ) :
+    ‖a - b‖ ^ 2 = (‖a‖ - ‖b‖) ^ 2 + 4 * ‖a‖ * ‖b‖ * Real.sin ((a.arg - b.arg) / 2) ^ 2 := by
+  rw [law_cos, Real.sin_sq_eq_half_sub]; ring_nf
+
+alias law_cos_half_angle := norm_sub_sq_eq_norm_sub_norm_sq_add_four_mul_norm_mul_norm_mul_sin_sq
+
 theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) = z := by
   refine ⟨fun hz => ⟨arg z, ?_⟩, ?_⟩
   · calc
