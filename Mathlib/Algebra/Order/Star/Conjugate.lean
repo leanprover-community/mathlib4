@@ -79,12 +79,18 @@ lemma toMulHom_conjOrderHomMonoidHom :
 
 /-- The map  `r x ↦ r * x * star r` as a group homomorphism from `Rˣ` into `R ≃o R`
 in a star-ordered ring `R`. -/
+@[simps! apply]
 def conjUnitsOrderIso : Rˣ →* (R ≃o R) where
   toFun r := .ofHomInv (conjOrderHomMonoidHom (r : R)) (conjOrderHomMonoidHom (↑r⁻¹ : R))
     (by rw [← OrderHom.mul_eq_comp, ← map_mul]; simp)
     (by rw [← OrderHom.mul_eq_comp, ← map_mul]; simp)
   map_mul' _ _ := by ext; simp [mul_assoc]
   map_one' := by ext; simp
+
+@[simp]
+lemma conjUnitsOrderIso_apply_symm_apply (r : Rˣ) (a : R) :
+    (conjUnitsOrderIso r).symm a = r⁻¹ * a * star (↑r⁻¹ : R) :=
+  rfl
 
 lemma _root_.IsLUB.conjugate_star_right_of_isUnit {s : Set R} {x : R}
       (h : IsLUB s x) {r : R} (hr : IsUnit r) :

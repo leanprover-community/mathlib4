@@ -363,6 +363,18 @@ end NonUnitalRing
 section Semiring
 variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
+protected theorem IsUnit.star_left_conjugate_le_conjugate {a b c : R} (hc : IsUnit c) :
+    star c * a * c ≤ star c * b * c ↔ a ≤ b := by
+  refine ⟨fun h ↦ ?_, (star_left_conjugate_le_conjugate · c)⟩
+  lift c to Rˣ using hc
+  have := star_left_conjugate_le_conjugate h (↑c⁻¹)
+  simp_rw [mul_assoc, Units.mul_inv, mul_one, ← mul_assoc, ← star_mul] at this
+  simpa
+
+protected theorem IsUnit.star_right_conjugate_le_conjugate {a b c : R} (hc : IsUnit c) :
+    c * a * star c ≤ c * b * star c ↔ a ≤ b := by
+  simpa using hc.star.star_left_conjugate_le_conjugate
+
 instance : ZeroLEOneClass R where
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
 
