@@ -107,10 +107,9 @@ instance hasCoeffs : D.P.HasCoeffs (D.subalgebra R) where
     rw [Subalgebra.setRange_algebraMap]
     grind [subalgebra, Algebra.subset_adjoin]
 
-set_option quotPrecheck false in
 local notation "f₀" =>
   Ideal.Quotient.mkₐ (D.subalgebra R)
-    (Ideal.span <| .range <| D.P.relationOfHasCoeffs (D.subalgebra R))
+    (Ideal.span <| Set.range <| D.P.relationOfHasCoeffs (D.subalgebra R))
 
 set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_h_subset (i) : ↑(D.h i).coeffs ⊆ Set.range ⇑(algebraMap (D.subalgebra R) A) := by

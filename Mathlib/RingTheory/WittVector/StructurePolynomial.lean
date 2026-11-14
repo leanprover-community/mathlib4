@@ -103,22 +103,18 @@ attribute [-simp] coe_eval₂Hom
 
 variable {p : ℕ} {R : Type*} {idx : Type*} [CommRing R]
 
-open scoped Witt
-
 section PPrime
 
 variable (p)
 variable [hp : Fact p.Prime]
 
 -- Notation with ring of coefficients explicit
-set_option quotPrecheck false in
 @[inherit_doc]
-scoped[Witt] notation "W_" => wittPolynomial p
+local notation "W_" => wittPolynomial p
 
 -- Notation with ring of coefficients implicit
-set_option quotPrecheck false in
 @[inherit_doc]
-scoped[Witt] notation "W" => wittPolynomial p _
+local notation "W" => wittPolynomial p _
 
 /-- `wittStructureRat Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℚ`
 that are uniquely characterised by the property that

@@ -73,7 +73,6 @@ def TensorProduct : Type _ :=
   (addConGen (TensorProduct.Eqv R M N)).Quotient
 deriving Zero, Add, AddZeroClass, AddSemigroup
 
-set_option quotPrecheck false in
 @[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
 @[inherit_doc] scoped[TensorProduct] notation:100 M:100 " ⊗[" R "] " N:101 => TensorProduct R M N

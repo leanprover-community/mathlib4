@@ -499,7 +499,6 @@ add_aesop_rules safe tactic
 
 namespace MeasureTheory
 
-set_option quotPrecheck false in
 /-- Notation for `Measurable` with respect to a non-standard σ-algebra in the domain. -/
 scoped notation "Measurable[" m "]" => @Measurable _ _ m _
 /-- Notation for `Measurable` with respect to a non-standard σ-algebra in the domain and codomain.
