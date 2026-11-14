@@ -7,6 +7,7 @@ Neil Strickland, Aaron Anderson
 module
 
 public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 
 set_option doc.verso true
@@ -15,10 +16,6 @@ set_option doc.verso.suggestions false
 /-!
 # Mapping divisibility across multiplication-preserving homomorphisms
 
-## Main definitions
-
-* `map_dvd`
-
 ## Tags
 
 divisibility, divides
@@ -26,17 +23,25 @@ divisibility, divides
 
 public section
 
-attribute [local simp] mul_assoc mul_comm mul_left_comm
+variable {E F M N : Type*} [Semigroup M] [Semigroup N] [FunLike F M N] [MulHomClass F M N]
+  [EquivLike E M N] [MulEquivClass E M N] {a b : M}
 
-variable {M N : Type*}
+@[gcongr] lemma map_dvd (f : F) : a ∣ b → f a ∣ f b | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
+@[gcongr] lemma map_rightDvd (f : F) : a ∣ᵣ b → f a ∣ᵣ f b | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f c a⟩
 
-@[gcongr]
-theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [FunLike F M N] [MulHomClass F M N]
-    (f : F) {a b} : a ∣ b → f a ∣ f b
-  | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
+@[simp]
+lemma map_dvd_iff (e : E) : e a ∣ e b ↔ a ∣ b :=
+  ⟨fun h ↦ by simpa using map_dvd (MulEquivClass.toMulEquiv e).symm h, map_dvd e⟩
 
-theorem MulHom.map_dvd [Semigroup M] [Semigroup N] (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
-  _root_.map_dvd f
+@[simp]
+lemma map_rightDvd_iff (e : E) : e a ∣ᵣ e b ↔ a ∣ᵣ b :=
+  ⟨fun h ↦ by simpa using map_rightDvd (MulEquivClass.toMulEquiv e).symm h, map_rightDvd e⟩
 
-theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
-  _root_.map_dvd f
+@[deprecated map_dvd_iff +typeChanged (since := "2026-10-26")]
+lemma map_dvd_iff_dvd_symm (e : E) {b : N} : e a ∣ b ↔ a ∣ (MulEquivClass.toMulEquiv e).symm b := by
+  simp [← map_dvd_iff e]
+
+protected lemma MulHom.map_dvd (f : M →ₙ* N) : a ∣ b → f a ∣ f b := map_dvd f
+
+protected lemma MonoidHom.map_dvd {M N : Type*} [Monoid M] [Monoid N] (f : M →* N) {a b : M} :
+    a ∣ b → f a ∣ f b := map_dvd f
