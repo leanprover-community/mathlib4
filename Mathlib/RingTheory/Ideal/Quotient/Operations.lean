@@ -544,7 +544,7 @@ theorem kerLiftAlg_injective (f : A →ₐ[R₁] B) : Function.Injective (kerLif
 def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
     (hf : Function.RightInverse g f) : (A ⧸ RingHom.ker f) ≃ₐ[R₁] B :=
   { RingHom.quotientKerEquivOfRightInverse hf,
-    kerLiftAlg f with map_smul' := map_smul (kerLiftAlg f) }
+    (kerLiftAlg f).toNonUnitalAlgHom with }
 
 /-- The **first isomorphism theorem** for algebras. -/
 @[simps! -isSimp apply]

@@ -1349,8 +1349,7 @@ instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
 /-- `Submonoid.map` as an `AlgEquiv`, when applied to an `AlgEquiv`. -/
 -- TODO: when A, B noncommutative, still has `MulEquiv`.
 @[simps!] def mapAlgEquiv (f : A ≃ₐ[R] B) : Submodule R A ≃ₐ[Ideal R] Submodule R B where
-  __ := mapAlgHom f
-  map_smul' := by simp
+  __ := (mapAlgHom f).toNonUnitalAlgHom
   invFun := mapAlgHom f.symm
   left_inv I := (map_comp _ _ I).symm.trans <|
     (congr(map $(LinearMap.ext (f.left_inv ·)) I)).trans (map_id I)

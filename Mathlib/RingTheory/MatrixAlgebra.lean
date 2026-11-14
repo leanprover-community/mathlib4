@@ -204,8 +204,8 @@ variable [Fintype n] [DecidableEq n]
 /-- The `R`-algebra isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
-  AlgEquiv.symm { MatrixEquivTensor.toFunAlgHom n R A, MatrixEquivTensor.equiv n R A with
-    map_smul' := map_smul (MatrixEquivTensor.toFunAlgHom n R A) }
+  AlgEquiv.symm { (MatrixEquivTensor.toFunAlgHom n R A).toNonUnitalAlgHom,
+    MatrixEquivTensor.equiv n R A with }
 
 @[simp]
 theorem matrixEquivTensor_apply (M : Matrix n n A) :

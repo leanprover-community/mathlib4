@@ -266,12 +266,11 @@ def quotientEquivQuotientMvPolynomial (I : Ideal R) :
         fun _ hi => quotient_map_C_eq_zero hi)
       fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i) with
       commutes' := fun r => eval₂Hom_C _ _ (Ideal.Quotient.mk I r) }
-  { e with
+  { e.toNonUnitalAlgHom with
     invFun := Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
       (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha
     left_inv := quotientEquivQuotientMvPolynomial_rightInverse I
-    right_inv := quotientEquivQuotientMvPolynomial_leftInverse I
-    map_smul' := map_smul e }
+    right_inv := quotientEquivQuotientMvPolynomial_leftInverse I }
 
 end MvPolynomial
 

@@ -565,9 +565,8 @@ variable (c)
 /-- The **first isomorphism theorem for algebra morphisms**. -/
 noncomputable def quotientKerEquivRangeₐ (f : M →ₐ[R] P) :
     (ker (f : M →+* P)).Quotient ≃ₐ[R] f.range where
-  __ := AlgHom.codRestrict (kerLiftₐ f) _ _
+  __ := (AlgHom.codRestrict (kerLiftₐ f) _ _).toNonUnitalAlgHom
   __ := quotientKerEquivRangeS f.toRingHom
-  map_smul' _ _ := by convert! (AlgHom.codRestrict (kerLiftₐ f) _ _).toLinearMap.map_smul _ _
 
 theorem quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
     quotientKerEquivRangeₐ f x = ⟨f x, AlgHom.mem_range_self f x⟩ :=

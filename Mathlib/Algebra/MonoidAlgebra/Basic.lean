@@ -430,7 +430,7 @@ noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
   invFun := mapAlgHom M e.symm.toAlgHom
   left_inv _ := by aesop
   right_inv _ := by aesop
-  map_smul' := (mapAlgHom M e.toAlgHom).map_smul_of_tower
+  map_smul' := map_smul (mapAlgHom M e.toAlgHom)
 
 @[deprecated (since := "2026-06-18")] alias mapRangeAlgEquiv := mapAlgEquiv
 

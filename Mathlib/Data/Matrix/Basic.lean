@@ -720,11 +720,10 @@ variable [Algebra R α] [Algebra R β] [Algebra R γ]
 coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
-  { f.toAlgHom.mapMatrix,
+  { (f.toAlgHom.mapMatrix).toNonUnitalAlgHom,
     f.toRingEquiv.mapMatrix with
     toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm
-    map_smul' := map_smul f.toAlgHom.mapMatrix }
+    invFun := fun M => M.map f.symm }
 
 @[simp]
 theorem mapMatrix_refl : AlgEquiv.refl.mapMatrix = (AlgEquiv.refl : Matrix m m α ≃ₐ[R] _) :=

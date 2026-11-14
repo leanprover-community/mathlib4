@@ -607,15 +607,14 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 This is a computable alternative to `AlgEquiv.ofInjective`. -/
 def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) : A ≃ₐ[R] f.range :=
-  { f.rangeRestrict with
+  { f.rangeRestrict.toNonUnitalAlgHom with
     toFun := f.rangeRestrict
     invFun := g ∘ f.range.val
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
         let ⟨x', hx'⟩ := f.mem_range.mp x.prop
-        show f (g x) = x by rw [← hx', h x']
-    map_smul' := f.rangeRestrict.map_smul_of_tower }
+        show f (g x) = x by rw [← hx', h x'] }
 
 @[simp]
 theorem ofLeftInverse_apply {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) (x : A) :
@@ -741,7 +740,6 @@ def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   toFun x := ⟨x, h ▸ x.2⟩
   invFun x := ⟨x, h.symm ▸ x.2⟩
   map_mul' _ _ := rfl
-  map_smul' _ _ := rfl
 
 @[simp]
 theorem equivOfEq_symm (S T : Subalgebra R A) (h : S = T) :

@@ -711,9 +711,8 @@ theorem AlgHom.extendScalarsOfIsLocalization_apply (f : A →ₐ[R] B) (a : A) :
 `S` of `R`, then `f` is automatically an `S`-algebra isomorphism. -/
 @[simps]
 def AlgEquiv.extendScalarsOfIsLocalization (f : A ≃ₐ[R] B) : A ≃ₐ[S] B where
-  __ := f.toAlgHom.extendScalarsOfIsLocalization S M
+  __ := (f.toAlgHom.extendScalarsOfIsLocalization S M).toNonUnitalAlgHom
   __ := f
-  map_smul' := by simp
 
 end extend
 
