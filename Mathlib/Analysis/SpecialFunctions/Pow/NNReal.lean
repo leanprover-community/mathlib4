@@ -513,13 +513,13 @@ theorem top_rpow_of_neg {y : ℝ} (h : y < 0) : (⊤ : ℝ≥0∞) ^ y = 0 := by
 
 @[simp]
 theorem zero_rpow_of_pos {y : ℝ} (h : 0 < y) : (0 : ℝ≥0∞) ^ y = 0 := by
-  rw [← ENNReal.coe_zero, ← ENNReal.some_eq_coe]
+  rw [← ENNReal.coe_zero, ← optionSome_eq_ofNNReal]
   dsimp only [(· ^ ·), rpow, Pow.pow]
   simp [asymm h, ne_of_gt h]
 
 @[simp]
 theorem zero_rpow_of_neg {y : ℝ} (h : y < 0) : (0 : ℝ≥0∞) ^ y = ⊤ := by
-  rw [← ENNReal.coe_zero, ← ENNReal.some_eq_coe]
+  rw [← ENNReal.coe_zero, ← optionSome_eq_ofNNReal]
   dsimp only [(· ^ ·), rpow, Pow.pow]
   simp [h]
 
@@ -537,7 +537,7 @@ theorem zero_rpow_mul_self (y : ℝ) : (0 : ℝ≥0∞) ^ y * (0 : ℝ≥0∞) ^
 
 @[norm_cast]
 theorem coe_rpow_of_ne_zero {x : ℝ≥0} (h : x ≠ 0) (y : ℝ) : (↑(x ^ y) : ℝ≥0∞) = x ^ y := by
-  rw [← ENNReal.some_eq_coe]
+  rw [← optionSome_eq_ofNNReal]
   dsimp only [(· ^ ·), Pow.pow, rpow]
   simp [h]
 

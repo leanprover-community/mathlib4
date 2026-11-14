@@ -235,7 +235,7 @@ theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximu
   simp only [maximum, argmax_concat, id]
   cases argmax id l
   · exact (max_eq_right bot_le).symm
-  · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
+  · simp [WithBot.optionSome_eq_some, max_def_lt, WithBot.coe_lt_coe]
 
 @[to_dual minimum_le_of_mem]
 theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m :=
@@ -271,7 +271,7 @@ theorem maximum_mono {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₁.maximum �
 set_option backward.isDefEq.respectTransparency false in
 @[to_dual]
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
-  rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
+  rw [maximum, ← WithBot.optionSome_eq_some, argmax_eq_some_iff]
   simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
   intro _ h a hal hma
   rw [_root_.le_antisymm hma (h a hal)]

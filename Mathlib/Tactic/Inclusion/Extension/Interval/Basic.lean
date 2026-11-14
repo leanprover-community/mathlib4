@@ -411,12 +411,12 @@ theorem Interval.pow_mem [Pow α ℕ] [Zero α] [One α] [Neg α] [LinearOrder �
   · obtain ⟨ub, hub, hub0⟩ := WithTop.le_coe_iff.mp hneg
     have hub0 : f ub ≤ 0 := by simpa [map_zero] using f.monotone hub0
     constructor
-    · simpa [hub, Interval.map, WithBot.some_eq_coe, map_pow] using
+    · simpa [hub, Interval.map, WithBot.optionSome_eq_some, map_pow] using
         hn.pow_le_pow_of_nonpos hub0 (hu _ hub)
     · cases h : I.lb with
       | bot => exact le_top
       | coe lb =>
-        simpa [Interval.map, WithTop.some_eq_coe, map_pow] using
+        simpa [Interval.map, WithTop.optionSome_eq_some, map_pow] using
           hn.pow_le_pow_of_nonpos ((hu _ hub).trans hub0) (hl _ h)
   · constructor
     · simpa [Interval.map, map_zero] using hn.pow_nonneg x
