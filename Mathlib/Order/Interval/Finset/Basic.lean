@@ -59,22 +59,13 @@ variable [LocallyFiniteOrder α]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Icc_of_le⟩ := nonempty_Icc
-
 @[simp]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Ico_of_lt⟩ := nonempty_Ico
-
 @[simp]
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
-
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
 -- TODO: This is nonsense. A locally finite order is never densely ordered;
 -- See `not_lt_of_denselyOrdered_of_locallyFinite`
@@ -335,21 +326,16 @@ theorem Ioi_eq_empty : Ioi a = ∅ ↔ IsMax a := by
 
 @[simp] alias ⟨_, _root_.IsMax.finsetIoi_eq⟩ := Ioi_eq_empty
 
-@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by
-  contrapose!; exact Ioi_eq_empty
-
 theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_top
 
 @[simp]
 theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
   ext a; simp only [mem_Ici, bot_le, mem_univ]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
-lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
+@[simp] lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
+@[simp] lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ∃ b, a < b := by simp [Finset.Nonempty]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Ioi_of_not_isMax⟩ := nonempty_Ioi
+@[deprecated (since := "2026-11-05")] alias Ioi_nonempty := nonempty_Ioi
 
 @[simp, gcongr]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
@@ -402,21 +388,16 @@ theorem Iio_eq_empty : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty (α := αᵒᵈ)
 
 @[simp] alias ⟨_, _root_.IsMin.finsetIio_eq⟩ := Iio_eq_empty
 
-@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by
-  contrapose!; exact Iio_eq_empty
-
 theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty.mpr isMin_bot
 
 @[simp]
 theorem Iic_top [OrderTop α] [Fintype α] : Iic (⊤ : α) = univ := by
   ext a; simp only [mem_Iic, le_top, mem_univ]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
-lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
-lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
+@[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
+@[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ∃ b, b < a := by simp [Finset.Nonempty]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Iio_of_not_isMin⟩ := nonempty_Iio
+@[deprecated (since := "2026-11-05")] alias Iio_nonempty := nonempty_Iio
 
 @[simp, gcongr]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
