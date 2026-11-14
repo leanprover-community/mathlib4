@@ -36,7 +36,7 @@ def isLimitOfIsPullbackOfIsConnected
     let f (i : _) : s.pt ⟶ cF.pt :=
       (hf i).lift (s.π.app i) (hcG.lift ((Cone.postcompose α).obj s)) (by simp)
     have (i j : _) : f i = f j := by
-      refine constant_of_preserves_morphisms f (fun j₁ j₂ g ↦ ?_) i j
+      refine isConst_of_preserves_morphisms f (fun j₁ j₂ g ↦ ?_) i j
       refine (hf j₂).hom_ext ?_ (by simp [f])
       rw [IsPullback.lift_fst, ← cF.w g, IsPullback.lift_fst_assoc, Cone.w]
     change f _ ≫ _ = _
@@ -63,7 +63,7 @@ def isColimitOfIsPushoutOfIsConnected
     let f (i : _) : cG.pt ⟶ s.pt :=
       (hf i).desc (hcF.desc ((Cocone.precompose α).obj s)) (s.ι.app i) (by simp)
     have (i j : _) : f i = f j := by
-      refine constant_of_preserves_morphisms f (fun j₁ j₂ g ↦ ?_) i j
+      refine isConst_of_preserves_morphisms f (fun j₁ j₂ g ↦ ?_) i j
       refine (hf j₁).hom_ext (by simp [f]) ?_
       rw [IsPushout.inr_desc, ← cG.w g, Category.assoc, IsPushout.inr_desc, Cocone.w]
     change _ ≫ f _ = _
