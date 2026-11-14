@@ -180,7 +180,7 @@ This should be fast, so this pattern-matches on the type, rather than searching 
 Use `typeToCharP (expensive := true)` to do more work in finding the characteristic,
 in particular it will search for a `CharP` instance in the context. -/
 partial def typeToCharP (expensive := false) (t : Q(Type u)) : MetaM (TypeToCharPResult t) :=
-match Expr.getAppFnArgs t with
+match Expr.getAppFnArgs t.cleanupAnnotations with
 | (``ZMod, #[(n : Q(ℕ))]) =>
   return .intLike n
     (q((ZMod.commRing _).toRing) : Q(Ring (ZMod $n)))

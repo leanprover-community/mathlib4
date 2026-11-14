@@ -144,7 +144,7 @@ def applyFunTarget (f : Term) (using? : Option Term) (g : MVarId) : TacticM (Lis
     return ng.mvarId! :: gs
   let gty ← whnfR (← instantiateMVars (← g.getType))
   match gty.getAppFnArgs with
-  | (``Not, #[p]) => match p.getAppFnArgs with
+  | (``Not, #[p]) => match p.cleanupAnnotations.getAppFnArgs with
     | (``Eq, #[_, _, _]) => handle ``ne_of_apply_ne
     | _ => applyFunTargetFailure f
   | (``LE.le, _)
