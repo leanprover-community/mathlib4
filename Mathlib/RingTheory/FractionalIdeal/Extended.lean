@@ -280,7 +280,7 @@ alias coe_extendedHom_eq_span := coeToSubmodule_extendedHom_eq_span
 theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
     (hI : extendedHom L B I ≤ 1) : I ≤ 1 := by
   contrapose hI
-  rw [IsConcreteLE.not_le_iff_exists] at hI ⊢
+  rw [not_le_iff_exists_mem_notMem] at hI ⊢
   obtain ⟨x, hx₁, hx₂⟩ := hI
   refine ⟨algebraMap K L x, ?_, ?_⟩
   · simpa [← mem_coeToSubmodule, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
