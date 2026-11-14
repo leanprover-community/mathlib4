@@ -179,16 +179,13 @@ lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ Dense
 
 end LinearOrderedCommGroupWithZero
 
-instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
-    [LinearOrderedAddCommMonoidWithTop α] :
+instance [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) where
   zero := .ofAdd <| .toDual ⊤
-  zero_mul := @top_add _ (_)
-  mul_zero := @add_top _ (_)
+  zero_mul _ := by ext; exact top_add _
+  mul_zero _ := by ext; exact add_top _
   isBot_zero _ := (le_top : _ ≤ ⊤)
-  mul_lt_mul_of_pos_left := by
-    simpa [← ofAdd_add, ← toDual_add]
-      using! fun a ha b c hbc ↦ add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
+  mul_lt_mul_of_pos_left a ha b c hbc := add_right_strictMono_of_ne_top (by simpa using! ha.ne') hbc
 
 @[simp]
 theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
@@ -196,8 +193,9 @@ theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) where
-  inv_zero := LinearOrderedAddCommGroupWithTop.neg_top (α := α)
-  mul_inv_cancel := LinearOrderedAddCommGroupWithTop.add_neg_cancel_of_ne_top (α := α)
+  inv_zero := by ext; exact LinearOrderedAddCommGroupWithTop.neg_top
+  mul_inv_cancel _ _ := by
+    ext; exact LinearOrderedAddCommGroupWithTop.add_neg_cancel_of_ne_top (by simpa)
 
 namespace WithZero
 

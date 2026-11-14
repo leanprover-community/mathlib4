@@ -26,34 +26,38 @@ variable {M N α : Type*}
 namespace OrderDual
 
 @[to_additive]
-instance [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α := inferInstanceAs <| MulAction M α
+instance [Monoid M] [MulAction M α] : MulAction Mᵒᵈ α where
+  mul_smul _ _ _ := by rw [← ofDual_smul', ofDual_mul, mul_smul]; rfl
+  one_smul _ := by rw [← toDual_one, ← ofDual_smul', one_smul]
 
 @[to_additive]
-instance [Monoid M] [MulAction M α] : MulAction M αᵒᵈ := inferInstanceAs <| MulAction M α
+instance [Monoid M] [MulAction M α] : MulAction M αᵒᵈ where
+  mul_smul _ _ _ := by rw [← toDual_smul, mul_smul]; rfl
+  one_smul _ := by rw [← toDual_smul, one_smul]
 
 @[to_additive]
-instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α :=
-  ‹SMulCommClass M N α›
+instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵒᵈ N α where
+  smul_comm _ _ _ := by rw [← ofDual_smul', smul_comm]; rfl
 
 @[to_additive]
-instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M Nᵒᵈ α :=
-  ‹SMulCommClass M N α›
+instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M Nᵒᵈ α where
+  smul_comm _ _ _ := by rw [← ofDual_smul', smul_comm]; rfl
 
 @[to_additive]
-instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵒᵈ :=
-  ‹SMulCommClass M N α›
+instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵒᵈ where
+  smul_comm _ _ _ := by rw [← toDual_smul, ofDual_smul, smul_comm]; rfl
 
 @[to_additive]
-instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower Mᵒᵈ N α :=
-  ‹IsScalarTower M N α›
+instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower Mᵒᵈ N α where
+  smul_assoc _ _ _ := by rw [← ofDual_smul', smul_assoc, ofDual_smul']
 
 @[to_additive]
-instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower M Nᵒᵈ α :=
-  ‹IsScalarTower M N α›
+instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower M Nᵒᵈ α where
+  smul_assoc _ _ _ := by rw [← ofDual_smul', ofDual_smul, smul_assoc]; rfl
 
 @[to_additive]
-instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower M N αᵒᵈ :=
-  ‹IsScalarTower M N α›
+instance [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] : IsScalarTower M N αᵒᵈ where
+  smul_assoc _ _ _ := by rw [← toDual_smul, smul_assoc]; rfl
 
 end OrderDual
 

@@ -28,35 +28,41 @@ variable {G₀ M₀ : Type*}
 
 namespace OrderDual
 
-instance [Zero M₀] [SMulZeroClass G₀ M₀] : SMulZeroClass G₀ᵒᵈ M₀ :=
-  inferInstanceAs <| SMulZeroClass G₀ M₀
+instance [Zero M₀] [SMulZeroClass G₀ M₀] : SMulZeroClass G₀ᵒᵈ M₀ where
+  smul_zero _ := by rw [← ofDual_smul', smul_zero]
 
-instance [Zero M₀] [SMulZeroClass G₀ M₀] : SMulZeroClass G₀ M₀ᵒᵈ :=
-  inferInstanceAs <| SMulZeroClass G₀ M₀
+instance [Zero M₀] [SMulZeroClass G₀ M₀] : SMulZeroClass G₀ M₀ᵒᵈ where
+  smul_zero _ := by rw [← toDual_smul, ofDual_zero, smul_zero]; rfl
 
-instance [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ᵒᵈ M₀ :=
-  inferInstanceAs <| SMulWithZero G₀ M₀
+instance [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ᵒᵈ M₀ where
+  zero_smul _ := by rw [← toDual_zero, toDual_smul', zero_smul]
 
-instance [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ M₀ᵒᵈ :=
-  inferInstanceAs <| SMulWithZero G₀ M₀
+instance [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ M₀ᵒᵈ where
+  zero_smul _ := by rw [← toDual_smul, zero_smul]; rfl
 
-instance [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ᵒᵈ M₀ :=
-  inferInstanceAs <| DistribSMul G₀ M₀
+instance [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ᵒᵈ M₀ where
+  smul_add _ _ _ := by rw [← ofDual_smul', smul_add]; rfl
 
-instance [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ M₀ᵒᵈ :=
-  inferInstanceAs <| DistribSMul G₀ M₀
+instance [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ M₀ᵒᵈ where
+  smul_add _ _ _ := by rw [← toDual_smul, ofDual_add, smul_add]; rfl
 
-instance [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] : DistribMulAction G₀ᵒᵈ M₀ :=
-  inferInstanceAs <| DistribMulAction G₀ M₀
+instance [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] : DistribMulAction G₀ᵒᵈ M₀ where
+  smul_zero _ := by rw [← ofDual_smul', smul_zero]
+  smul_add _ _ _ := by rw [← ofDual_smul', smul_add]; rfl
 
-instance [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] : DistribMulAction G₀ M₀ᵒᵈ :=
-  inferInstanceAs <| DistribMulAction G₀ M₀
+instance [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] : DistribMulAction G₀ M₀ᵒᵈ where
+  smul_zero _ := by rw [← toDual_smul, ofDual_zero, smul_zero]; rfl
+  smul_add _ _ _ := by rw [← toDual_smul, ofDual_add, smul_add]; rfl
 
 instance [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ᵒᵈ M₀ := inferInstanceAs <| MulActionWithZero G₀ M₀
+    MulActionWithZero G₀ᵒᵈ M₀ where
+  smul_zero _ := by rw [← ofDual_smul', smul_zero]
+  zero_smul _ := by rw [← toDual_zero, toDual_smul', zero_smul]
 
 instance [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ M₀ᵒᵈ := inferInstanceAs <| MulActionWithZero G₀ M₀
+    MulActionWithZero G₀ M₀ᵒᵈ where
+  smul_zero _ := by rw [← toDual_smul, ofDual_zero, smul_zero]; rfl
+  zero_smul _ := by rw [← toDual_smul, zero_smul]; rfl
 
 end OrderDual
 
