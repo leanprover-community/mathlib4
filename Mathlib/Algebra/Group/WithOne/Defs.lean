@@ -75,7 +75,7 @@ def coe : α → WithOne α :=
   WithOne.some
 
 @[to_additive]
-instance instCoe : Coe α (WithOne α) :=
+instance instCoeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
 @[to_additive]
@@ -126,8 +126,8 @@ lemma symm_toOption_comp_some : (toOption α).symm ∘ Option.some = (↑) := rf
 lemma toOption_eq_some_iff {x : WithOne α} {a : α} :
     toOption α x = Option.some a ↔ x = a := by
   cases x
-  · simp_rw [toOption_apply_bot, reduceCtorEq, false_iff]; nofun
-  · simp
+  · simp only [toOption_apply_bot, reduceCtorEq, false_iff]; nofun
+  · simp only [toOption_apply_coe, Option.some.injEq]
     rw [← some.injEq]
     rfl
 
@@ -135,10 +135,11 @@ lemma toOption_eq_some_iff {x : WithOne α} {a : α} :
 lemma symm_toOption_eq_coe_iff {x : Option α} {a : α} :
     (toOption α).symm x = a ↔ x = Option.some a := by
   cases x
-  · simp
+  · simp only [symm_toOption_apply_none, reduceCtorEq, iff_false]
     nofun
-  · simp
-    nth_rw 2 [← some.injEq]
+  · simp only [symm_toOption_apply_some, Option.some.injEq]
+    symm
+    rw [← some.injEq]
     rfl
 
 @[to_additive]
@@ -204,21 +205,23 @@ instance instCanLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
   prf _ := ne_one_iff_exists.1
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b := by simp
+theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b := by
+  symm
+  rw [← some.injEq]
+  rfl
 
 @[to_additive]
-lemma coe_injective : Function.Injective (coe : α → WithOne α) :=
-  Option.some_injective _
+lemma coe_injective : Function.Injective (coe : α → WithOne α) := fun _ _ ↦ by simp
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {motive : WithOne α → Prop} :
     ∀ x : WithOne α, (one : motive 1) → (coe : ∀ a : α, motive a) → motive x :=
-  Option.casesOn
+  casesOn
 
 @[to_additive]
 instance instMulOneClass [Mul α] : MulOneClass (WithOne α) where
-  one_mul := (Option.lawfulIdentity_merge _).left_id
-  mul_one := (Option.lawfulIdentity_merge _).right_id
+  one_mul x := by cases x <;> rfl
+  mul_one x := by cases x <;> rfl
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
