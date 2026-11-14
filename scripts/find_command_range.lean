@@ -3,6 +3,8 @@ Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
+
 import Lean.Parser.Module
 import Lean.Util.Path
 
@@ -83,4 +85,4 @@ partial def findRange (args : List String) : IO UInt32 := do
     IO.eprintln "usage: find_command_range <file> <line> <col>"
     return 1
 
-def main (args : List String) : IO UInt32 := findRange args
+public def main (args : List String) : IO UInt32 := findRange args

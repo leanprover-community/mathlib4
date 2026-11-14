@@ -3,8 +3,10 @@ Copyright (c) 2026 Adomas Baliuka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adomas Baliuka
 -/
-import Batteries
-import Mathlib.Data.String.Defs
+module
+
+public meta import Batteries
+public meta import Mathlib.Data.String.Defs
 
 /-!
 This script extracts all unique non-ascii characters from what is given via stdin
@@ -31,6 +33,8 @@ curl $URL | lake env lean --run scripts/extract-unique-nonascii.lean
 ```
 -/
 
+meta section
+
 /-- We deliberately exclude some characters, based on the reasons noted. -/
 def Char.manuallyExcluded (c : Char) : Bool :=
   c ∈ [
@@ -52,7 +56,7 @@ def reprCharsChunked (xs : List Char) (chunkSize : Nat := 16) : String :=
       |>.map (fun chunk => String.intercalate ", " chunk)
   "[" ++ String.intercalate ",\n" lines ++ "]"
 
-def main : IO Unit := do
+public def main : IO Unit := do
   let stdin ← IO.getStdin
   let allText ← stdin.readToEnd
   let manuallyExcluded := (allText.toList.filter Char.manuallyExcluded).eraseDups
