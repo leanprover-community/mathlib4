@@ -28,7 +28,6 @@ https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injective
 ## TODO
 
 * Reimplement `injectiveSeminorm`.
-
 -/
 
 @[expose] public section

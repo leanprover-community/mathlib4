@@ -22,7 +22,6 @@ As in other polynomial files, we typically use the notation:
 + `σ : Type*` (indexing the variables)
 
 + `R : Type*` `[CommSemiring R]` (the coefficients)
-
 -/
 
 @[expose] public section

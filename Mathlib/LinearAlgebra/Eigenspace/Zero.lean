@@ -27,7 +27,6 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
 * `LinearMap.finrank_maxGenEigenspace`:
   the dimension of the maximal generalized eigenspace of an endomorphism
   is the trailing degree of its characteristic polynomial
-
 -/
 
 public section

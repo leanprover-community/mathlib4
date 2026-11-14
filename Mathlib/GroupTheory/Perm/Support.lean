@@ -28,7 +28,6 @@ Assume `α` is a Fintype:
 * `Equiv.Perm.fixed_point_card_lt_of_ne_one f` says that `f` has
   strictly less than `Fintype.card α - 1` fixed points, unless `f = 1`.
   (Equivalently, `f.support` has at least 2 elements.)
-
 -/
 
 @[expose] public section

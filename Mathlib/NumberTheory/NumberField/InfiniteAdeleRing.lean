@@ -67,7 +67,8 @@ instance [NumberField K] : Nontrivial K∞ :=
   (inferInstance : Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
 
 @[simp] theorem algebraMap_apply (x : K) (v : InfinitePlace K) : algebraMap K K∞ x v = x :=
-  Completion.algebraMap_apply v x
+  (AbsoluteValue.Completion.algebraMap_def v.1 x).trans <| by
+    rw [WithAbs.algebraMap_right_apply, Algebra.algebraMap_self_apply]
 
 /-- The infinite adele ring is locally compact. -/
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace K∞ :=
@@ -110,8 +111,9 @@ theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ 
   have h : ⇑(algebraMap K K∞) = (Pi.map fun v (x : WithAbs v.1) => (x : v.Completion)) ∘
       algebraMap K ((v : InfinitePlace K) → WithAbs v.1) :=
     funext₂ (algebraMap_apply K)
-  exact h ▸ (DenseRange.piMap fun v => Completion.denseRange_coe v).comp
-    (InfinitePlace.denseRange_algebraMap_pi K) (.piMap fun v => Completion.continuous_coe v)
+  exact h ▸ (DenseRange.piMap fun v => AbsoluteValue.Completion.denseRange_coe v.1).comp
+    (InfinitePlace.denseRange_algebraMap_pi K)
+    (.piMap fun v => AbsoluteValue.Completion.continuous_coe v.1)
 
 /-- The norm on the infinite adele ring is given by the product of the normalized norms
 across infinite places. The normalized norm is the real norm at real places and the

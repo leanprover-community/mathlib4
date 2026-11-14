@@ -13,7 +13,6 @@ public import Mathlib.Analysis.Asymptotics.Defs
 This file establishes conversions, congruence and transitivity properties, behavior under filter
 operations, and norm simplification lemmas for the asymptotic relations defined in
 `Mathlib.Analysis.Asymptotics.Defs`.
-
 -/
 
 @[expose] public section

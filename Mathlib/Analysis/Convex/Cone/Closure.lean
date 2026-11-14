@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.Monoid.Defs
 
 We define the closures of convex and pointed cones. This construction is primarily needed for
 defining maps between proper cones. The current API is basic and should be extended as necessary.
-
 -/
 
 @[expose] public section

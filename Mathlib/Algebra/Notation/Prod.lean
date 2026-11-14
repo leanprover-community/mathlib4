@@ -15,7 +15,6 @@ This file provides only the notation for (componentwise) `0`, `1`, `+`, `*`, `â€
 (pairwise) product types. See `Mathlib/Algebra/Group/Prod.lean` for the `Monoid` and `Group`
 instances. There is also an instance of the `Star` notation typeclass, but no default notation is
 included.
-
 -/
 
 public section

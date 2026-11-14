@@ -15,7 +15,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 
 - `Smooth.of_smooth_fiberToSpecResidueField`: A flat morphism, locally of
   finite presentation and smooth fibers is smooth.
-
 -/
 
 public section

@@ -51,7 +51,6 @@ every finitely presented flat module is projective (`Module.Flat.projective_of_f
 
 * [Stacks: Flat modules and flat ring maps](https://stacks.math.columbia.edu/tag/00H9)
 * [Stacks: Characterizing flatness](https://stacks.math.columbia.edu/tag/058C)
-
 -/
 
 public section

@@ -38,7 +38,6 @@ some theory of _bounded_ power series over normed rings.
 ## References
 
 * [P. Colmez, *Fonctions d'une variable p-adique*][colmez2010], section II.2
-
 -/
 
 public noncomputable section

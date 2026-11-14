@@ -29,7 +29,6 @@ is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 ## Main Results
 * `ball_subset_range_iff_surjective` (and its variants) shows that a semi-linear map between normed
   spaces is surjective if and only if it contains a ball.
-
 -/
 
 @[expose] public section
@@ -83,7 +82,7 @@ variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontri
 theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
     (hr : 0 < r) : sphere x r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x hr.le,
+  grw [← (closedBall_subset_range_iff_surjective x hr), ← convexHull_sphere_eq_closedBall x r,
     convexHull_mono h, (convexHull_eq_self (𝕜 := ℝ) (s := Set.range ↑f)).mpr]
   exact Submodule.Convex.semilinear_range (E := F') (F' := E) (σ := τ) f
 

@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 # Submonoid of opposite monoids
 
 For every monoid `M`, we construct an equivalence between submonoids of `M` and that of `Mᵐᵒᵖ`.
-
 -/
 
 @[expose] public section

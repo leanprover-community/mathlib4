@@ -16,7 +16,6 @@ the datum `𝒰.Over S` contains `S`-scheme structures on the components of `�
 that the component maps are morphisms of `S`-schemes.
 
 We provide instances of `𝒰.Over S` for standard constructions on covers.
-
 -/
 
 @[expose] public section

@@ -23,7 +23,6 @@ public import Mathlib.Order.Interval.Set.Defs
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section

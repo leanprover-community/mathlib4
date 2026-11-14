@@ -19,7 +19,6 @@ the finite sets of that type.
 
 * `ofFinEmbEquiv` is the equivalence between `Fin n ↪o I` and `Set.powersetCard I n` when `I` is
   a linearly ordered type.
-
 -/
 
 @[expose] public noncomputable section
