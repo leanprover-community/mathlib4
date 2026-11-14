@@ -265,7 +265,7 @@ theorem IsConnected.biUnion_of_chain {s : β → Set α} {t : Set β} (hnt : t.N
 
 end SuccOrder
 
-/-- Theorem of bark and tree: if a set is within a preconnected set and its closure, then it is
+/-- Theorem of bark and tree: if a set lies between a preconnected set and its closure, then it is
 preconnected as well. See also `IsConnected.subset_closure`. -/
 protected theorem IsPreconnected.subset_closure {s : Set α} {t : Set α} (H : IsPreconnected s)
     (Kst : s ⊆ t) (Ktcs : t ⊆ closure s) : IsPreconnected t :=
@@ -275,7 +275,7 @@ protected theorem IsPreconnected.subset_closure {s : Set α} {t : Set α} (H : I
   let ⟨r, hrs, hruv⟩ := H u v hu hv (Subset.trans Kst htuv) ⟨p, hps, hpu⟩ ⟨q, hqs, hqv⟩
   ⟨r, Kst hrs, hruv⟩
 
-/-- Theorem of bark and tree: if a set is within a connected set and its closure, then it is
+/-- Theorem of bark and tree: if a set lies between a connected set and its closure, then it is
 connected as well. See also `IsPreconnected.subset_closure`. -/
 protected theorem IsConnected.subset_closure {s : Set α} {t : Set α} (H : IsConnected s)
     (Kst : s ⊆ t) (Ktcs : t ⊆ closure s) : IsConnected t :=
