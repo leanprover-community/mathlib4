@@ -116,13 +116,19 @@ theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
   ext; simp [mem_support]
 
+theorem support_map_subset (f : V → W) (G : SimpleGraph V) :
+    (G.map f).support ⊆ f '' G.support :=
+  fun _ ⟨_, _, u, v, hadj, hu, _⟩ ↦ ⟨u, ⟨v, hadj⟩, hu⟩
+
 @[simp]
 theorem map_top {f : V → W} (hf : f.Surjective) : SimpleGraph.map f ⊤ = ⊤ := by
   ext u v
-  refine ⟨And.left, fun h ↦ ⟨h, ?_⟩⟩
-  obtain ⟨u, rfl⟩ := hf u
-  obtain ⟨v, rfl⟩ := hf v
-  exact ⟨u, v, ne_of_apply_ne f h.ne, rfl, rfl⟩
+  exact ⟨And.left, fun h ↦ ⟨h, Relation.le_map_of_onFun_le hf (fun _ _ ↦ ne_of_apply_ne f) u v h⟩⟩
+
+@[simp]
+theorem map_bot (f : V → W) : (emptyGraph V).map f = emptyGraph W := by
+  ext
+  simp [map_adj']
 
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
@@ -379,6 +385,9 @@ theorem spanningCoe_induce_univ : (G.induce .univ).spanningCoe = G :=
 theorem spanningCoe_induce_eq_inf (s : Set V) :
     (G.induce s).spanningCoe = G ⊓ (⊤ : SimpleGraph s).spanningCoe :=
   G.map_comap_eq_inf _
+
+theorem spanningCoe_bot (s : Set V) : (emptyGraph s).spanningCoe = emptyGraph V :=
+  map_bot _
 
 open Set.Notation in
 theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u : Set V) :
