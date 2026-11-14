@@ -378,7 +378,7 @@ when the exponent is zero. The other cases are done in `evalRpow`. -/
 meta def evalRpowZero : PositivityExt where eval {u α} _ pα? e :=
   match pα? with | none => pure .none | some _ => do
   match u, α, e with
-  | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) => catchNone do
+  | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) => liftM <| catchNone do
     assertInstancesCommute
     pure (.positive q(Real.rpow_zero_pos $a))
   | _, _, _ => throwError "not Real.rpow"

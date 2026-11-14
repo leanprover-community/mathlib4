@@ -56,11 +56,11 @@ meta def evalIntFloor : PositivityExt where eval {u α} _zα pα? e :=
   | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
-      catchNone do
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.nonnegative q(int_floor_nonneg_of_pos (α := $α') $pa))
     | .nonnegative pa =>
-      catchNone do
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.nonnegative q(int_floor_nonneg (α := $α') $pa))
     | _ => pure .none
@@ -79,7 +79,7 @@ meta def evalNatCeil : PositivityExt where eval {u α} _zα pα? e :=
     let _i ← synthInstanceQ q(LinearOrder $α')
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
-      catchNone do
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.positive q(nat_ceil_pos (α := $α') $pa))
     | _ => pure .none
@@ -96,11 +96,11 @@ meta def evalIntCeil : PositivityExt where eval {u α} _zα pα? e :=
   | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
-      catchNone do
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.positive q(int_ceil_pos (α := $α') $pa))
     | .nonnegative pa =>
-      catchNone do
+      liftM <| catchNone do
         assertInstancesCommute
         pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
     | _ => pure .none

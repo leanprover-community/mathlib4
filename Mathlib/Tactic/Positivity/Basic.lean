@@ -619,13 +619,13 @@ meta def evalIntGCD : PositivityExt where eval {u α} _ pα? e :=
     let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
     let ra ← core z (some p) a
     match ra.toNonzero z with
-    | some na => catchNone do
+    | some na => liftM <| catchNone do
       assertInstancesCommute
       return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
     | none =>
       let rb ← core z (some p) b
       match rb.toNonzero z with
-      | some nb => catchNone do
+      | some nb => liftM <| catchNone do
         assertInstancesCommute
         return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
       | none => pure .none
@@ -642,7 +642,7 @@ meta def evalIntLCM : PositivityExt where eval {u α} _ pα? e :=
     match (← core z (some p) a).toNonzero z with
     | some na =>
       match (← core z (some p) b).toNonzero z with
-      | some nb => catchNone do
+      | some nb => liftM <| catchNone do
         assertInstancesCommute
         return .positive q(Int.lcm_pos $na $nb)
       | none => pure .none
