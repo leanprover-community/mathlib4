@@ -29,7 +29,6 @@ for example, the `smul` on the `GaloisField` `CharP` instance should be equal to
 its `SplittingField` structure); there is only one possible `ZMod p` algebra for any `p`, so this
 is not an issue mathematically. For this to be possible, however, we need `CharP.Lemmas` to be
 able to import some part of `ZMod`.
-
 -/
 
 @[expose] public section

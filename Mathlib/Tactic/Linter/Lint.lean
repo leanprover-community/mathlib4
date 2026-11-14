@@ -8,8 +8,8 @@ module
 -- This module imports all of `Batteries.Tactic.Lint`, not just `Batteries.Tactic.Lint.Basic`.
 -- It is responsible for making `#lint` available through `Mathlib.Init`.
 -- TODO: consider removing `-- shake: keep` after batteries#1613
-public import Batteries.Tactic.Lint -- shake: keep
-public import Lean.Linter.Deprecated
+public meta import Batteries.Tactic.Lint -- shake: keep
+public meta import Lean.Linter.Deprecated
 public import Mathlib.Tactic.DeclarationNames
 
 /-!

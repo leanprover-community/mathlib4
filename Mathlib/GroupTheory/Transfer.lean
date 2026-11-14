@@ -278,7 +278,7 @@ alias transferSylow_restrict_eq_pow := transferSylow_domRestrict_eq_pow
 complement. -/
 theorem ker_transferSylow_isComplement' : IsComplement' (transferSylow P hP).ker P := by
   have hf : Function.Bijective ((transferSylow P hP).domRestrict (P : Subgroup G)) :=
-    (transferSylow_domRestrict_eq_pow P hP).symm ▸ (P.2.powEquiv' P.not_dvd_index).bijective
+    (transferSylow_domRestrict_eq_pow P hP).symm ▸ (P.isPGroup.powEquiv' P.not_dvd_index).bijective
   rw [Function.Bijective, ← range_eq_top, domRestrict_range] at hf
   have := range_eq_top.mp (top_le_iff.mp (hf.2.ge.trans
     (map_le_range (transferSylow P hP) P)))
@@ -319,7 +319,7 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) :
   have key := card_dvd_of_injective _ (QuotientGroup.kerLift_injective P.normalizerMonoidHom)
   rw [normalizerMonoidHom_ker, ← index, ← relIndex] at key
   refine relIndex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
-  obtain ⟨k, hk⟩ := P.2.exists_card_eq
+  obtain ⟨k, hk⟩ := P.isPGroup.exists_card_eq
   rcases eq_zero_or_pos k with h0 | h0
   · rw [hP.card_mulAut, hk, h0, pow_zero, Nat.totient_one]
     apply Nat.coprime_one_right

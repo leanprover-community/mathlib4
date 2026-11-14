@@ -171,8 +171,6 @@ lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
 
 alias ⟨Colorable.isEmpty, _⟩ := colorable_zero_iff
 
-@[deprecated (since := "2026-04-24")] alias isEmpty_of_colorable_zero := Colorable.isEmpty
-
 @[simp]
 theorem colorable_one_iff : G.Colorable 1 ↔ G = ⊥ := by
   refine ⟨fun ⟨C⟩ ↦ eq_bot_iff_forall_not_adj.mpr fun u v h ↦ ?_, fun h ↦ h ▸ ⟨0, by simp⟩⟩
@@ -497,9 +495,6 @@ theorem chromaticNumber_eq_zero_iff : G.chromaticNumber = 0 ↔ IsEmpty V :=
 @[simp]
 theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
   simpa
-
-@[deprecated chromaticNumber_eq_zero_iff +typeChanged (since := "2026-04-24")]
-alias ⟨isEmpty_of_chromaticNumber_eq_zero, _⟩ := chromaticNumber_eq_zero_iff
 
 theorem chromaticNumber_eq_one_iff : G.chromaticNumber = 1 ↔ G = ⊥ ∧ Nonempty V := by
   rw [eq_iff_le_not_lt, Order.lt_one_iff_nonpos, ← not_isEmpty_iff, ← Nat.cast_one, ← Nat.cast_zero,

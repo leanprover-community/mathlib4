@@ -22,6 +22,8 @@ See `Mathlib/Analysis/SpecialFunctions/Integrals/PosLogEqCircleAverage.lean` for
 `log⁺` as a Circle Average.
 -/
 
+open scoped Finset
+
 @[expose] public section
 
 namespace Real
@@ -217,7 +219,7 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
 just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
-    log⁺ (∑ t ∈ s, f t) ≤ log (s.card) + ∑ t ∈ s, log⁺ (f t) := by
+    log⁺ (∑ t ∈ s, f t) ≤ log #s + ∑ t ∈ s, log⁺ (f t) := by
   -- Trivial case: empty sum
   by_cases! hs : s = ∅
   · simp [hs, posLog]
@@ -233,10 +235,10 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
     apply posLog_le_posLog (neg_one_lt_zero.le.trans (Finset.sum_nonneg fun _ _ ↦ abs_nonneg _))
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
-  _ = log⁺ (s.card * |f t_max|) := by
+  _ = log⁺ (#s * |f t_max|) := by
     simp [Finset.sum_const]
-  _ ≤ log s.card + log⁺ |f t_max| := posLog_nat_mul
-  _ ≤ log s.card + ∑ t ∈ s, log⁺ (f t) := by
+  _ ≤ log #s + log⁺ |f t_max| := posLog_nat_mul
+  _ ≤ log #s + ∑ t ∈ s, log⁺ (f t) := by
     gcongr
     rw [posLog_abs]
     apply Finset.single_le_sum (fun _ _ ↦ posLog_nonneg) ht_max.1
@@ -247,7 +249,7 @@ groups, using monotonicity of `log⁺` and the triangle inequality.
 -/
 lemma posLog_norm_sum_le {E : Type*} [SeminormedAddCommGroup E] {α : Type*} (s : Finset α)
     (f : α → E) :
-    log⁺ ‖∑ t ∈ s, f t‖ ≤ log s.card + ∑ t ∈ s, log⁺ ‖f t‖ := by
+    log⁺ ‖∑ t ∈ s, f t‖ ≤ log #s + ∑ t ∈ s, log⁺ ‖f t‖ := by
   grw [norm_sum_le, posLog_sum]
   exact neg_one_lt_zero.le.trans (norm_nonneg _)
 

@@ -11,6 +11,7 @@ public import Mathlib.Data.List.ToFinsupp
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+
 /-!
 # Multinomial
 
@@ -49,7 +50,6 @@ we define it in terms of `Finsupp.multinomial`, via lists:
 If `m : Multiset ℕ` is the multiset associated with a list `l : List ℕ`,
 then `m.multinomial = l.toFinsupp.multinomial`.
 Then we prove its invariance under permutation.
-
 -/
 
 @[expose] public section

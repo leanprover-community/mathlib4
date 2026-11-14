@@ -32,6 +32,7 @@ open Polynomial
 namespace Real
 
 /-- The golden ratio `φ := (1 + √5)/2`. -/
+@[oeis A001622 "decimal expansion"]
 abbrev goldenRatio : ℝ := (1 + √5) / 2
 
 /-- The conjugate of the golden ratio `ψ := (1 - √5)/2`. -/
@@ -200,7 +201,7 @@ theorem coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
 theorem coe_intFib_eq (n : ℤ) : (Int.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
   obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
   · exact coe_fib_eq n
-  · simp only [Int.fib_neg, Int.even_coe_nat, Int.fib_natCast, Int.cast_ite, Int.cast_neg,
+  · simp only [Int.fib_neg, Int.even_natCast, Int.fib_natCast, Int.cast_ite, Int.cast_neg,
       Int.cast_natCast, zpow_neg, zpow_natCast, ← inv_pow, inv_goldenRatio, inv_goldenConj,
       ← neg_one_mul ψ, ← neg_one_mul φ, mul_pow, neg_one_pow_eq_ite]
     grind [coe_fib_eq]

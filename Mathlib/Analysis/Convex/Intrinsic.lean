@@ -37,7 +37,7 @@ The main results are:
 ## References
 
 * Chapter 8 of [Barry Simon, *Convexity*][simon2011]
-* Chapter 1 of [Rolf Schneider, *Convex Bodies: The Brunn-Minkowski theory*][schneider2013].
+* Chapter 1 of [Rolf Schneider, *Convex Bodies: The Brunn-Minkowski theory*][schneider2014].
 
 ## TODO
 
@@ -406,7 +406,7 @@ theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
     obtain ⟨y, hyt, hys⟩ := h _ ht hx
     exact ⟨⟨_, subset_affineSpan 𝕜 s hys⟩, hyt, hys⟩
   · by_contra hc
-    obtain ⟨z, hz₁, hz₂⟩ := h _ (affineSpan 𝕜 s).closed_of_finiteDimensional.isOpen_compl hc
+    obtain ⟨z, hz₁, hz₂⟩ := h _ (affineSpan 𝕜 s).isClosed_of_finiteDimensional.isOpen_compl hc
     exact hz₁ (subset_affineSpan 𝕜 s hz₂)
 
 variable {𝕜}

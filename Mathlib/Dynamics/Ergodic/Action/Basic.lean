@@ -89,7 +89,7 @@ theorem ergodicSMul_iterateMulAct {f : α → α} (hf : Measurable f) :
   simp only [ergodicSMul_iff, smulInvariantMeasure_iterateMulAct, hf]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ .of_preimage_eq h₁ fun s htm hs ↦ ?_, fun h ↦ ⟨h.1, ?_⟩⟩
   · refine h₂ htm fun n ↦ ?_
-    exact (Function.IsFixedPt.preimage_iterate hs n.val).eventuallyEq
+    exact (Function.IsFixedPt.preimage_iterate hs n.val).eventuallyEqSet
   · intro s hm hs
     exact h.quasiErgodic.aeconst_set hm.nullMeasurableSet <| hs (.mk 1)
 

@@ -24,7 +24,6 @@ which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 * `Padic.withValUniformEquiv`: the uniform space isomorphism between
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
-
 -/
 
 @[expose] public section
@@ -68,7 +67,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
       · simp
       · simp only [H, ↓reduceIte, exp_lt_exp, neg_lt_neg_iff] at h
         simpa [hp0', zpow_pos, pow_pos, inv_le_inv₀] using
-          zpow_right_mono₀ (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
+          zpow_right_mono₀ (mod_cast (Nat.Prime.one_le Fact.out)) h.le
     · simp [Nat.Prime.ne_zero Fact.out]
   · intro γ
     use (log ((embedding γ.val) * exp (-1))).natAbs
@@ -176,7 +175,11 @@ theorem withValUniformEquiv_norm_le_one_iff {p : ℕ} [Fact p.Prime]
     ‖Padic.withValUniformEquiv x‖ ≤ 1 ↔ Valued.v x ≤ 1 := by
   induction x using UniformSpace.Completion.induction_on with
   | hp =>
-    rw [Set.ext fun _ ↦ Iff.comm]
+    have : {x : (Rat.padicValuation p).Completion |
+          ‖Padic.withValUniformEquiv x‖ ≤ 1 ↔ Valued.v x ≤ 1} =
+        {x | Valued.v x ≤ 1 ↔ ‖Padic.withValUniformEquiv x‖ ≤ 1} :=
+      Set.ext fun _ ↦ Iff.comm
+    rw [this]
     simp_rw [← Valuation.restrict_le_one_iff Valued.v]
     apply withValUniformEquiv.toHomeomorph.isClosed_setOfPred_iff (q := fun x ↦ ‖x‖ ≤ 1)
       (Valued.isClopen_closedBall _ one_ne_zero)

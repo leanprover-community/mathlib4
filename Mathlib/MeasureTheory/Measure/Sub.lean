@@ -82,7 +82,7 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
   -- Now, we demonstrate `μ - ν = measure_sub`, and apply it.
   have h_measure_sub_add : ν + measure_sub = μ := by
     ext1 t h_t_measurable_set
-    simp only [Pi.add_apply, coe_add]
+    simp only [add_apply]
     rw [MeasureTheory.Measure.ofMeasurable_apply _ h_t_measurable_set, add_comm,
       tsub_add_cancel_of_le (h₂ t)]
   have h_measure_sub_eq : μ - ν = measure_sub := by

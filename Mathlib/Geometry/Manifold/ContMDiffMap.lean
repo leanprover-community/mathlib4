@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `C^n` bundled maps
 

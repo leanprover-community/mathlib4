@@ -373,21 +373,17 @@ lemma tendsto_densityProcess_limitProcess (hκν : fst κ ≤ ν)
     ∀ᵐ x ∂(ν a), Tendsto (fun n ↦ densityProcess κ ν n a x s) atTop
       (𝓝 ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a) x)) := by
-  refine Submartingale.ae_tendsto_limitProcess (martingale_densityProcess hκν a hs).submartingale
-    (R := (ν a univ).toNNReal) (fun n ↦ ?_)
-  refine (eLpNorm_densityProcess_le hκν n a hs).trans_eq ?_
-  rw [ENNReal.coe_toNNReal]
-  exact measure_ne_top _ _
+  apply Submartingale.ae_tendsto_limitProcess (martingale_densityProcess hκν a hs).submartingale
+  apply (measure_ne_top (ν a) univ).lt_top.trans_le'
+  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a hs
 
 lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     MemLp ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a)) 1 (ν a) := by
-  refine Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
-    (R := (ν a univ).toNNReal) (fun n ↦ ?_)
-  refine (eLpNorm_densityProcess_le hκν n a hs).trans_eq ?_
-  rw [ENNReal.coe_toNNReal]
-  exact measure_ne_top _ _
+  apply Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
+  apply (measure_ne_top (ν a) univ).lt_top.trans_le'
+  exact iSup_le_iff.2 fun n ↦ eLpNorm_densityProcess_le hκν n a hs
 
 lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -403,7 +399,7 @@ lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [I
       ext x
       simp only [mem_ofPred_eq, mem_empty_iff_false, iff_false, not_le]
       refine (?_ : _ ≤ (1 : ℝ≥0)).trans_lt one_lt_two
-      rw [Real.nnnorm_of_nonneg (densityProcess_nonneg ..)]
+      rw [Real.nnNorm_of_nonneg (densityProcess_nonneg ..)]
       exact mod_cast (densityProcess_le_one hκν ..)
 
 lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel ν]
@@ -701,9 +697,7 @@ lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : Kernel α (γ × �
       simp only [this, h0, ENNReal.zero_div, tendsto_const_nhds_iff]
       suffices κ a (countablePartitionSet n x ×ˢ univ) = 0 by
         simp only [this, ENNReal.zero_div]
-      convert h0
-      ext x
-      simp only [mem_prod, mem_univ, and_true, mem_ofPred_eq]
+      simpa [Set.prod_eq, Set.preimage] using h0
     refine fun m ↦ measure_mono_null (fun x ↦ ?_) h0
     simp only [mem_prod, mem_ofPred_eq, and_imp]
     exact fun h _ ↦ h

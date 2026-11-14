@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Equivalence
 The inclusion functor `P.FullSubcategory ⥤ Q.FullSubcategory` induced
 by an inequality `P ≤ Q` in `ObjectProperty C` is an equivalence iff
 `Q ≤ P.isoClosure`.
-
 -/
 
 @[expose] public section
@@ -37,7 +36,6 @@ lemma isEquivalence_ιOfLE_iff : (ιOfLE h).IsEquivalence ↔ Q ≤ P.isoClosure
 
 instance : (ιOfLE P.le_isoClosure).IsEquivalence := by rw [isEquivalence_ιOfLE_iff]
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /-- The equivalence between the full subcategory `⊤` of a category `C` and `C` itself. -/
 @[simps]

@@ -12,6 +12,9 @@ import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`
 
@@ -48,9 +51,9 @@ theorem image_cast_int_Iio (a : ℕ) : (↑) '' Iio a = Ico (0 : ℤ) a := by
   rw [← Ico_bot, image_cast_int_Ico]; rfl
 
 theorem image_cast_int_Ici (a : ℕ) : (↑) '' Ici a = Ici (a : ℤ) :=
-  (castOrderEmbedding (α := ℤ)).image_Ici (by simp [isUpperSet_Ici]) a
+  (castOrderEmbedding (α := ℤ)).image_Ici (by simp [IsUpperSet.Ici]) a
 
 theorem image_cast_int_Ioi (a : ℕ) : (↑) '' Ioi a = Ioi (a : ℤ) :=
-  (castOrderEmbedding (α := ℤ)).image_Ioi (by simp [isUpperSet_Ici]) a
+  (castOrderEmbedding (α := ℤ)).image_Ioi (by simp [IsUpperSet.Ici]) a
 
 end Nat

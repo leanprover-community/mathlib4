@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 public import Mathlib.Tactic.Ring
 
 /-!
-
 # Study of face maps for the Dold-Kan correspondence
 
 In this file, we obtain the technical lemmas that are used in the file
@@ -22,7 +21,6 @@ on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 `HigherFacesVanish.comp_Hσ_eq_zero`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

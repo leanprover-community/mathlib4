@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 
 We define the complement of the integers in the complex plane and give some basic lemmas about it.
 We also show that the upper half plane embeds into the integer complement.
-
 -/
 
 @[expose] public section
@@ -41,13 +40,13 @@ lemma add_intCast_mem_integerComplement {x : ℂ} (a : ℤ) : x + (a : ℂ) ∈ 
     (Exists.elim · fun n hn ↦ ⟨n + a, by simp [hn]⟩)⟩
 
 lemma integerComplement.ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 0 :=
-  fun hx' ↦ hx ⟨0, by exact_mod_cast hx'.symm⟩
+  fun hx' ↦ hx ⟨0, mod_cast hx'.symm⟩
 
 lemma integerComplement_add_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (a : ℤ) : x + (a : ℂ) ≠ 0 :=
   integerComplement.ne_zero ((add_intCast_mem_integerComplement a).mpr hx)
 
 lemma integerComplement.ne_one {x : ℂ} (hx : x ∈ ℂ_ℤ) : x ≠ 1 :=
-  fun hx' ↦ hx ⟨1, by exact_mod_cast hx'.symm⟩
+  fun hx' ↦ hx ⟨1, mod_cast hx'.symm⟩
 
 lemma integerComplement_pow_two_ne_pow_two {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℤ) : x ^ 2 ≠ n ^ 2 := by
   have := not_exists.mp hx n

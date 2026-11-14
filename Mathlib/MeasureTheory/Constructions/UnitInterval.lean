@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The canonical measure on the unit interval
 

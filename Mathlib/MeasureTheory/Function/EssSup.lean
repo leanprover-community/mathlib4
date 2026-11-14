@@ -221,8 +221,6 @@ lemma essSup_eq_ciSup (hμ : ∀ a, μ {a} ≠ 0) (hf : BddAbove (Set.range f)) 
 lemma essInf_eq_ciInf (hμ : ∀ a, μ {a} ≠ 0) (hf : BddBelow (Set.range f)) :
     essInf f μ = ⨅ a, f a := by rw [essInf, ae_eq_top.2 hμ, liminf_top_eq_ciInf hf]
 
-variable [MeasurableSingletonClass α]
-
 @[simp] lemma essSup_count_eq_ciSup (hf : BddAbove (Set.range f)) :
     essSup f .count = ⨆ a, f a := essSup_eq_ciSup (by simp) hf
 
@@ -316,10 +314,10 @@ lemma essSup_le_iSup {f : α → β} : essSup f μ ≤ ⨆ i, f i :=
 lemma essInf_eq_iInf (hμ : ∀ a, μ {a} ≠ 0) (f : α → β) : essInf f μ = ⨅ i, f i := by
   rw [essInf, ae_eq_top.2 hμ, liminf_top_eq_iInf]
 
-@[simp] lemma essSup_count [MeasurableSingletonClass α] (f : α → β) : essSup f .count = ⨆ i, f i :=
+@[simp] lemma essSup_count (f : α → β) : essSup f .count = ⨆ i, f i :=
   essSup_eq_iSup (by simp) _
 
-@[simp] lemma essInf_count [MeasurableSingletonClass α] (f : α → β) : essInf f .count = ⨅ i, f i :=
+@[simp] lemma essInf_count (f : α → β) : essInf f .count = ⨅ i, f i :=
   essInf_eq_iInf (by simp) _
 
 end CompleteLattice
@@ -378,9 +376,9 @@ theorem essSup_liminf_le {ι} [Countable ι] [Preorder ι] (f : ι → α → �
 
 theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ) f) :
     ((essSup f μ : ℝ≥0) : ℝ≥0∞) = essSup (fun x => (f x : ℝ≥0∞)) μ :=
-  (ENNReal.coe_sInf hf).trans <|
+  (ENNReal.coe_sInf (s := {a | ∀ᶠ x in ae μ, f x ≤ a}) hf).trans <|
     eq_of_forall_le_iff fun r => by
-      simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
+      simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]
 
 lemma ofReal_essSup {f : α → ℝ} (h₁ : IsCoboundedUnder (· ≤ ·) (ae μ) f)
     (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) f) :

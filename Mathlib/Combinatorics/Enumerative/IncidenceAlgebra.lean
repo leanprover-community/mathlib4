@@ -341,7 +341,7 @@ lemma zeta_of_le (h : a ≤ b) : zeta 𝕜 a b = 1 := ite_eq_left h
 end Zeta
 
 lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableLE α]
-    (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
+    (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = #(Icc a b) := by
   rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
   refine sum_congr rfl fun x hx ↦ ?_
   rw [mem_Icc] at hx
@@ -358,10 +358,10 @@ private def muFun (a : α) : α → 𝕜
     else
       -∑ x ∈ (Ico a b).attach,
           let h := mem_Ico.1 x.2
-          have : (Icc a x).card < (Icc a b).card :=
+          have : #(Icc a x) < #(Icc a b) :=
             card_lt_card (Icc_ssubset_Icc_right (h.1.trans h.2.le) le_rfl h.2)
           muFun a x
-termination_by b => (Icc a b).card
+termination_by b => #(Icc a b)
 
 private lemma muFun_apply (a b : α) :
     muFun 𝕜 a b = if a = b then 1 else -∑ x ∈ (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
@@ -417,10 +417,10 @@ private def muFun' (b : α) : α → 𝕜
     else
       -∑ x ∈ (Ioc a b).attach,
           let h := mem_Ioc.1 x.2
-          have : (Icc ↑x b).card < (Icc a b).card :=
+          have : #(Icc ↑x b) < #(Icc a b) :=
             card_lt_card (Icc_ssubset_Icc_left (h.1.le.trans h.2) h.1 le_rfl)
           muFun' b x
-termination_by a => (Icc a b).card
+termination_by a => #(Icc a b)
 
 private lemma muFun'_apply (a b : α) :
     muFun' 𝕜 b a = if a = b then 1 else -∑ x ∈ (Ioc a b).attach, muFun' 𝕜 b x := by

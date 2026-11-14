@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ergodicity from minimality
 
@@ -154,7 +157,7 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
   refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
     MulAction.mem_aestabilizer, ← preimage_smul]
-  exact hs.eventuallyEq
+  exact .of_eq hs
 
 end MulActionGroup
 
@@ -192,7 +195,8 @@ theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
     simp only [s, preimage_iUnion, ← smul_eq_mul, preimage_smul]
     refine iUnion_congr_of_surjective _ (add_left_surjective (-1)) fun m ↦ ?_
     simp [zpow_add, mul_smul]
-  cases hg.measure_self_or_compl_eq_zero hso.measurableSet.nullMeasurableSet hgs.eventuallyEq with
+  cases hg.measure_self_or_compl_eq_zero hso.measurableSet.nullMeasurableSet
+    hgs.eventuallyEqSet with
   | inl h => exact hso.measure_ne_zero _ hsne h
   | inr h =>
     refine (hVo.smul a).measure_ne_zero μ (.image _ ⟨1, hV₁⟩) (measure_mono_null ?_ h)
@@ -236,16 +240,13 @@ theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1))
     (hqmp : QuasiMeasurePreserving f μ μ) :
-    PreErgodic f μ := by
-  refine .of_preimage_eq hqmp fun s hsm hs ↦
-    aeconst_of_dense_setOfPred_preimage_smul_eq (M := G) hsm.nullMeasurableSet ?_
-  refine hf.mono <| iUnion_subset fun n x hx ↦ ?_
-  have hsn : f^[n] ⁻¹' s = s := by
-    rw [preimage_iterate_eq, iterate_fixed hs]
-  rw [mem_preimage, Set.mem_one] at hx
-  rw [mem_ofPred, ← hsn]
-  ext y
-  simp [hx]
+    PreErgodic f μ where
+  aeconst_set s hsm hs := by
+    refine aeconst_of_dense_aestabilizer_smul (G := G) hsm ?_
+    refine hf.mono <| iUnion_subset fun n x hx ↦ ?_
+    rw [← MulAction.aestabilizer_congr (hqmp.preimage_iterate_ae_eq n hs)]
+    apply MulAction.stabilizer_le_aestabilizer
+    simp_all [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
 
 /-- Let `f : G →* G` be a continuous surjective group endomorphism
 of a compact topological group with second countable topology.

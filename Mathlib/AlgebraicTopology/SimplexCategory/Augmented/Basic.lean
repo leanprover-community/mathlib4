@@ -21,7 +21,6 @@ We prove that functors out of `AugmentedSimplexCategory` are equivalent to augme
 objects and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent to augmented simplicial
 objects, and we provide a translation of the main constructions on augmented (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
-
 -/
 
 @[expose] public section

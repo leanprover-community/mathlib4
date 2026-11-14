@@ -46,7 +46,6 @@ https://ncatlab.org/nlab/show/Nielsen-Schreier+theorem
 ## Tags
 
 free group, free groupoid, Nielsen-Schreier
-
 -/
 
 @[expose] public section
@@ -323,6 +322,16 @@ instance endIsFreeOfConnectedFree
 end IsFreeGroupoid
 
 /-- The Nielsen-Schreier theorem: a subgroup of a free group is free. -/
-instance subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
+instance Subgroup.isFreeGroupOfIsFreeGroup {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
     IsFreeGroup H :=
   IsFreeGroup.ofMulEquiv (endMulEquivSubgroup H)
+
+@[deprecated (since := "2026-10-05")]
+alias subgroupIsFreeOfIsFree := Subgroup.isFreeGroupOfIsFreeGroup
+
+/-- The Nielsen-Schreier theorem: an additive subgroup of an additive free group is free. -/
+instance AddSubgroup.isFreeAddGroupOfIsFreeAddGroup {G : Type u} [AddGroup G] [IsFreeAddGroup G]
+    (H : AddSubgroup G) : IsFreeAddGroup H :=
+  isFreeGroup_toSubgroup_iff.mp H.toSubgroup.isFreeGroupOfIsFreeGroup
+
+attribute [to_additive existing] Subgroup.isFreeGroupOfIsFreeGroup

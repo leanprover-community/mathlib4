@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Forall2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lists with no duplicates
 
@@ -101,7 +104,9 @@ theorem Nodup.getElem_inj_iff {l : List α} (h : Nodup l)
 
 theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l[i]? ≠ l[j]? := by
-  grind [List.pairwise_iff_getElem]
+  #adaptation_note /-- Since nightly-2026-09-29,
+  `grind` fails to identify `l[i] = l[j]` with `l[i]? = l[j]?` -/
+  constructor <;> grind [List.pairwise_iff_getElem]
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
@@ -138,8 +143,8 @@ theorem nodup_iff_count_le_one [BEq α] [LawfulBEq α] {l : List α} : Nodup l �
       have : replicate 2 a <+ l ↔ 1 < count a l := replicate_sublist_iff ..
       (not_congr this).trans Nat.not_lt
 
-theorem nodup_iff_count_eq_one [BEq α] [LawfulBEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
-  nodup_iff_count_le_one.trans <| forall_congr' fun x => by rw [← count_pos_iff]; grind
+theorem nodup_iff_count_eq_one [BEq α] [LawfulBEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 := by
+  grind
 
 theorem get_bijective_iff [BEq α] [LawfulBEq α] : l.get.Bijective ↔ ∀ a, l.count a = 1 :=
   ⟨fun h a ↦ (nodup_iff_count_eq_one.mp <| nodup_iff_injective_get.mpr h.injective)
@@ -224,6 +229,10 @@ protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
   grind
+
+@[simp]
+theorem nodup_attachWith {P : α → Prop} {h : ∀ x ∈ l, P x} : (l.attachWith P h).Nodup ↔ l.Nodup :=
+  ⟨(attachWith_map_subtype_val h ▸ ·.map Subtype.val_injective), .pmap <| by simp⟩
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
   simpa using! Pairwise.filter p

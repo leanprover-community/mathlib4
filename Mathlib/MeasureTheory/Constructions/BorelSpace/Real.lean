@@ -87,9 +87,7 @@ theorem borel_eq_generateFrom_Ici_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
 
 theorem isPiSystem_Ioo_rat :
     IsPiSystem (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) (b : ℝ)}) := by
-  convert isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
-  ext x
-  simp [eq_comm]
+  simpa [iUnion_ofPred, ← ofPred_eq_eq_singleton'] using isPiSystem_Ioo ((↑) : ℚ → ℝ) ((↑) : ℚ → ℝ)
 
 theorem isPiSystem_Iio_rat : IsPiSystem (⋃ a : ℚ, {Iio (a : ℝ)}) := by
   convert isPiSystem_image_Iio (((↑) : ℚ → ℝ) '' univ)
@@ -347,47 +345,6 @@ theorem Measurable.ennreal_toReal {f : α → ℝ≥0∞} (hf : Measurable f) :
 theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x => ENNReal.toReal (f x)) μ :=
   ENNReal.measurable_toReal.comp_aemeasurable hf
-
-@[fun_prop, deprecated
-  "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
-  (since := "2026-04-30")]
-theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
-    Measurable fun x => ∑' i, f i x := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum]
-  exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
-
-@[fun_prop, deprecated
-  "Use `Measurable.tsum'` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
-  (since := "2026-04-30")]
-theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
-    Measurable (∑' i, f i) := by
-  convert! Measurable.ennreal_tsum h with x
-  exact Pi.tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
-
-@[fun_prop, deprecated
-  "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
-  (since := "2026-04-30")]
-theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :
-    Measurable fun x => ∑' i, f i x := by
-  simp_rw [NNReal.tsum_eq_toNNReal_tsum]
-  exact (Measurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
-
-@[fun_prop, deprecated
-  "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
-  (since := "2026-04-30")]
-theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
-    (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum]
-  exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
-
-@[fun_prop, deprecated
-  "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` instead"
-  (since := "2026-04-30")]
-theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
-    {f : ι → α → NNReal} {μ : Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
-    AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
-  simp_rw [NNReal.tsum_eq_toNNReal_tsum]
-  exact (AEMeasurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
 
 @[fun_prop]
 theorem measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=

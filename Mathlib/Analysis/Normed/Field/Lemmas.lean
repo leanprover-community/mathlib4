@@ -20,7 +20,6 @@ In this file we continue building the theory of normed division rings and fields
 Some useful results that relate the topology of the normed field to the discrete topology include:
 * `discreteTopology_or_nontriviallyNormedField`
 * `discreteTopology_of_bddAbove_range_norm`
-
 -/
 
 @[expose] public section
@@ -244,10 +243,12 @@ section Densely
 
 variable (α) [DenselyNormedField α]
 
-theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
+theorem denseRange_nnNorm : DenseRange (nnNorm : α → ℝ≥0) :=
   dense_of_exists_between fun _ _ hr =>
-    let ⟨x, h⟩ := exists_lt_nnnorm_lt α hr
+    let ⟨x, h⟩ := exists_lt_nnNorm_lt α hr
     ⟨‖x‖₊, ⟨x, rfl⟩, h⟩
+
+@[deprecated (since := "2026-10-31")] alias denseRange_nnnorm := denseRange_nnNorm
 
 end Densely
 
