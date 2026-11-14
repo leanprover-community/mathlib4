@@ -136,7 +136,7 @@ lemma extendToSucc_obj_eq (i : J) (hi : i ≤ j) :
 /-- The isomorphism `(extendToSucc hj F τ).obj ⟨i, _⟩ ≅ F.obj i` when `i ≤ j` -/
 def extendToSuccObjIso (i : J) (hi : i ≤ j) :
     (extendToSucc hj F τ).obj ⟨i, hi.trans (Order.le_succ j)⟩ ≅ F.obj ⟨i, hi⟩ :=
-  extendToSucc.objIso F X ⟨i, hi⟩
+  eqToIso <| extendToSucc_obj_eq ..
 
 lemma extendToSucc_obj_succ_eq :
     (extendToSucc hj F τ).obj ⟨Order.succ j, by simp⟩ = X :=
@@ -145,7 +145,7 @@ lemma extendToSucc_obj_succ_eq :
 /-- The isomorphism `(extendToSucc hj F τ).obj ⟨Order.succ j, _⟩ ≅ X`. -/
 def extendToSuccObjSuccIso :
     (extendToSucc hj F τ).obj ⟨Order.succ j, by simp⟩ ≅ X :=
-  extendToSucc.objSuccIso hj F X
+  eqToIso <| extendToSucc_obj_succ_eq ..
 
 @[reassoc]
 lemma extendToSuccObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
@@ -154,7 +154,14 @@ lemma extendToSuccObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi
     (extendToSuccObjIso hj F τ i₂ hi₂).hom =
       (extendToSuccObjIso hj F τ i₁ (hi.trans hi₂)).hom ≫ F.map (homOfLE hi) := by
   dsimp [extendToSucc, extendToSuccObjIso]
-  rw [extendToSucc.map_eq _ _ _ _ _ _ hi₂, assoc, assoc, Iso.inv_hom_id, comp_id]
+  simp [extendToSucc.map_eq _ _ _ _ _ _ hi₂, assoc, assoc, Iso.inv_hom_id,
+    extendToSucc.obj, extendToSucc.objIso, comp_id]
+
+@[reassoc]
+lemma extendToSuccObjIso_inv_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
+    (extendToSuccObjIso hj F τ i₁ (hi.trans hi₂)).inv ≫ (extendToSucc hj F τ).map (homOfLE hi) =
+    F.map (homOfLE hi) ≫ (extendToSuccObjIso hj F τ i₂ hi₂).inv := by
+  simp [Eq.comm, Iso.comp_inv_eq, Category.assoc, extendToSuccObjIso_hom_naturality]
 
 /-- The isomorphism expressing that `extendToSucc hj F τ` extends `F`. -/
 @[simps!]
@@ -181,15 +188,14 @@ set_option backward.isDefEq.respectTransparency false in
 lemma arrowMap_extendToSucc (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     arrowMap (extendToSucc hj F τ) i₁ i₂ hi (hi₂.trans (Order.le_succ j)) =
       arrowMap F i₁ i₂ hi hi₂ := by
-  simp [arrowMap, extendToSucc_map hj F τ i₁ i₂ hi hi₂,
-    extendToSuccObjIso, extendToSucc.objIso]
+  simp [arrowMap, extendToSucc_map hj F τ i₁ i₂ hi hi₂, extendToSuccObjIso]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma arrowSucc_extendToSucc :
     arrowSucc (extendToSucc hj F τ) j (Order.lt_succ_of_not_isMax hj) =
       Arrow.mk τ := by
   simp [arrowSucc, arrowMap, extendToSucc_map_le_succ, extendToSuccObjIso,
-    extendToSucc.objIso, extendToSuccObjSuccIso, extendToSucc.objSuccIso]
+    extendToSuccObjSuccIso]
 
 end SuccStruct
 
