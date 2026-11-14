@@ -1162,6 +1162,7 @@ public import Mathlib.Algebra.Order.Star.Pi
 public import Mathlib.Algebra.Order.Star.Prod
 public import Mathlib.Algebra.Order.Star.Rat
 public import Mathlib.Algebra.Order.Star.Real
+public import Mathlib.Algebra.Order.Star.Unitization
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Algebra.Order.Sub.Prod
