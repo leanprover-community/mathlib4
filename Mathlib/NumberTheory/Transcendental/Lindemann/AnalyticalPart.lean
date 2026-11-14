@@ -115,8 +115,7 @@ theorem P_le (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
   refine (h' p).trans ?_
   simp_rw [mul_pow]
   have le_max_one_pow {x : ℝ} : x ≤ max x 1 ^ p :=
-    (max_cases x 1).elim (fun h ↦ h.1.symm ▸ le_self_pow₀ h.2 hp)
-      fun h ↦ by rw [h.1, one_pow]; exact h.2.le
+    (le_max_left _ _).trans (le_self_pow₀ (le_max_right _ _) hp)
   gcongr <;> exact le_max_one_pow
 
 /--
@@ -128,17 +127,12 @@ Note: Jacobson writes `h(x)` for `x ^ (q - 1) * p(x) ^ q` and `bⱼ` for its coe
 theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     ∃ c ≥ 0, ∀ p ≠ 0, ‖P (map (algebraMap ℤ ℂ) (X ^ (p - 1) * f ^ p)) s‖ ≤ c ^ p := by
   have : Bornology.IsBounded
-      ((fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1) := by
-    have h :
-      (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1 ⊆
-        (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Icc 0 1 :=
-      Set.image_mono Set.Ioc_subset_Icc_self
-    refine (IsCompact.image isCompact_Icc ?_).isBounded.subset h
-    fun_prop
+      ((fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Icc 0 1) :=
+    (isCompact_Icc.image (by fun_prop)).isBounded
   obtain ⟨c, h⟩ := this.exists_norm_le
   simp_rw [Real.norm_eq_abs] at h
   refine P_le _ s c (fun p x hx => ?_)
-  specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ hx)
+  specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ ⟨hx.1.le, hx.2⟩)
   grw [← h]
   simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, norm_mul,
     Complex.norm_pow, real_smul, norm_mul, norm_real, eval_map_algebraMap, abs_mul,
@@ -174,10 +168,7 @@ public theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
             ‖nₚ • exp r - p • aeval r gₚ‖ ≤ c ^ p / (p - 1)! := by
   simp_rw [nsmul_eq_mul, zsmul_eq_mul]
   choose c' c'0 abs_P_le using exp_polynomial_approx_aux f
-  by_cases h : f.aroots ℂ = 0
-  · refine ⟨0, fun p _ pp => ⟨p + 1, ?_, 0, ?_⟩⟩ <;> simp [pp.ne_one, Int.natCast_dvd, h]
-  replace h : ((f.aroots ℂ).map c').toFinset.Nonempty := by simpa
-  refine ⟨((f.aroots ℂ).map c').toFinset.max' h, fun p p_gt prime_p => ?_⟩
+  refine ⟨∑ r ∈ (f.aroots ℂ).toFinset, c' r, fun p p_gt prime_p => ?_⟩
   let h := X ^ (p - 1) * f ^ p
   obtain ⟨gₚ', -, gₚ'_eq⟩ := eval_sumIDeriv_of_pos h prime_p.pos
   refine ⟨f.eval 0 ^ p + p * gₚ'.eval 0, ?_, ?_⟩
@@ -210,7 +201,6 @@ public theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     rw [P_algebraMap, gₚ_eq, gₚ'_eq, eval_pow]
     push_cast
     ring_nf
-  · apply Finset.le_max'
-    simpa using Multiset.mem_map_of_mem _ hr
+  · exact Finset.single_le_sum (fun r _ ↦ c'0 r) (Multiset.mem_toFinset.mpr hr)
 
 end LindemannWeierstrass
