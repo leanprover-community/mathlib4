@@ -263,6 +263,12 @@ theorem star_right_conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     c * a * star c ≤ c * b * star c := by
   simpa only [star_star] using star_left_conjugate_le_conjugate hab (star c)
 
+lemma monotone_conjugate_star_left (r : R) : Monotone (fun x : R ↦ star r * x * r) :=
+  fun _ _ h ↦ star_left_conjugate_le_conjugate h r
+
+lemma monotone_conjugate_star_right (r : R) : Monotone (fun x : R ↦ r * x * star r) :=
+  fun _ _ h ↦ star_right_conjugate_le_conjugate h r
+
 protected theorem IsSelfAdjoint.conjugate_le_conjugate {a b : R} (hab : a ≤ b) {c : R}
     (hc : IsSelfAdjoint c) : c * a * c ≤ c * b * c := by
   simpa only [hc.star_eq] using star_left_conjugate_le_conjugate hab c
@@ -356,6 +362,18 @@ end NonUnitalRing
 
 section Semiring
 variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+
+protected theorem IsUnit.star_left_conjugate_le_conjugate {a b c : R} (hc : IsUnit c) :
+    star c * a * c ≤ star c * b * c ↔ a ≤ b := by
+  refine ⟨fun h ↦ ?_, (star_left_conjugate_le_conjugate · c)⟩
+  lift c to Rˣ using hc
+  have := star_left_conjugate_le_conjugate h (↑c⁻¹)
+  simp_rw [mul_assoc, Units.mul_inv, mul_one, ← mul_assoc, ← star_mul] at this
+  simpa
+
+protected theorem IsUnit.star_right_conjugate_le_conjugate {a b c : R} (hc : IsUnit c) :
+    c * a * star c ≤ c * b * star c ↔ a ≤ b := by
+  simpa using hc.star.star_left_conjugate_le_conjugate
 
 instance : ZeroLEOneClass R where
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
