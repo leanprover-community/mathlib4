@@ -162,6 +162,7 @@ protected theorem abs_smul {𝕜 : Type*} [RCLike 𝕜] [Module 𝕜 F] [Continu
   simp [mul_def, ← smul_assoc, Complex.mul_conj', map_smulₛₗ, sq, -algebraMap_smul]
   norm_cast
 
+@[simp]
 theorem abs_linearIsometry_comp {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℂ G]
     [CompleteSpace G] (U : F →ₗᵢ[ℂ] G) (T : E →L[ℂ] F) :
     (U.toContinuousLinearMap ∘L T).abs = T.abs := by
