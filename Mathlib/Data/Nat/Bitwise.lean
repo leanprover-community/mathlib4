@@ -213,10 +213,10 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
           convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
         exact bit_lt_bit b b' this
 
-theorem bitwise_swap {f : Bool → Bool → Bool} :
-    bitwise (Function.swap f) = Function.swap (bitwise f) := by
+theorem bitwise_dflip {f : Bool → Bool → Bool} :
+    bitwise (Function.dflip f) = Function.dflip (bitwise f) := by
   funext m n
-  simp only [Function.swap]
+  simp only [Function.dflip]
   induction m using Nat.binaryRec' generalizing n with
   | zero => simp
   | bit bm m hm ihm =>
@@ -224,14 +224,16 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
     | zero => simp
     | bit bn n hn => rw [bitwise_bit' _ _ _ _ hm hn, bitwise_bit' _ _ _ _ hn hm, ihm]
 
+@[deprecated (since := "2026-10-14")] alias bitwise_swap := bitwise_dflip
+
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
 is also commutative. -/
 theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b) (n m : ℕ) :
     bitwise f n m = bitwise f m n :=
-  suffices bitwise f = swap (bitwise f) by conv_lhs => rw [this]
+  suffices bitwise f = dflip (bitwise f) by conv_lhs => rw [this]
   calc
-    bitwise f = bitwise (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
-    _ = swap (bitwise f) := bitwise_swap
+    bitwise f = bitwise (dflip f) := congr_arg _ <| funext fun _ => funext <| hf _
+    _ = dflip (bitwise f) := bitwise_dflip
 
 theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
   bitwise_comm Bool.or_comm n m
