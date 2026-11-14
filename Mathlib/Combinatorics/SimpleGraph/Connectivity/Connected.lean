@@ -339,9 +339,9 @@ theorem Preconnected.infinite_support_iff_infinite (h : G.Preconnected) :
 variable {G} in
 theorem Preconnected.finite_edgeSet_iff_finite (h : G.Preconnected) :
     G.edgeSet.Finite ↔ Finite V := by
-  refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ G.edgeSet.toFinite⟩
   nontriviality V
-  exact finite_edgeSet_iff_finite_of_support_eq_univ h.support_eq_univ |>.mp hfin
+  rwa [← Set.finite_univ_iff, ← h.support_eq_univ, ← finite_edgeSet_iff_finite_support]
 
 variable {G} in
 theorem Preconnected.infinite_edgeSet_iff_infinite (h : G.Preconnected) :
