@@ -2907,6 +2907,7 @@ public import Mathlib.CategoryTheory.Generator.Abelian
 public import Mathlib.CategoryTheory.Generator.Basic
 public import Mathlib.CategoryTheory.Generator.HomologicalComplex
 public import Mathlib.CategoryTheory.Generator.Indization
+public import Mathlib.CategoryTheory.Generator.ModuleCat
 public import Mathlib.CategoryTheory.Generator.Preadditive
 public import Mathlib.CategoryTheory.Generator.Presheaf
 public import Mathlib.CategoryTheory.Generator.Sheaf
@@ -3467,6 +3468,7 @@ public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 public import Mathlib.CategoryTheory.Presentable.IsDiscrete
 public import Mathlib.CategoryTheory.Presentable.Limits
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Presentable.ModuleCat
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 public import Mathlib.CategoryTheory.Presentable.Presheaf
