@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.LinearAlgebra.Matrix.UpdateSubmatrix
 
 /-!
 # Block matrices and their determinant
@@ -310,7 +311,6 @@ theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B :
 
 /-! ### Determinant -/
 
-
 variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
 theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
@@ -320,7 +320,6 @@ theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] 
       (toSquareBlockProp M q)
         -- Removed `@[simp]` attribute,
         -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
-
 
 -- Removed `@[simp]` attribute,
 -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
@@ -358,6 +357,17 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
   · congr 1
     exact equiv_block_det _ fun _ => not_not.symm
   · simpa only [Classical.not_not] using h
+
+theorem det_extendedByOne (e : n ↪ m) (M : Matrix n n R) :
+    (M.extendedByOne e).det = M.det := by
+  rw [twoBlockTriangular_det _ (· ∈ Set.range e), toSquareBlockProp_extendedByOne_compl,
+    det_one, mul_one]
+  · have := det_submatrix_equiv_self (Equiv.ofInjective e e.injective)
+      ((M.extendedByOne e).toSquareBlockProp (· ∈ Set.range e))
+    rw [submatrix_toSquareBlockProp_updateSubmatrix] at this
+    convert this.symm
+  · intro _ hi _ hj
+    simp [hi, (ne_of_mem_of_not_mem hj hi).symm]
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :
     M.det = ∏ a ∈ univ.image b, (M.toSquareBlock b a).det := by
@@ -442,7 +452,6 @@ theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
   rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
 
 /-! ### Invertible -/
-
 
 theorem BlockTriangular.toBlock_inverse_mul_toBlock_eq_one [LinearOrder α] [Invertible M]
     (hM : BlockTriangular M b) (k : α) :
