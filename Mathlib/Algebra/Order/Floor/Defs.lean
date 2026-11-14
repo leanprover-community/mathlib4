@@ -215,7 +215,7 @@ def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] (ce
 
 open scoped Classical in
 private noncomputable def floorAux
-    {α} [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] {x : α}
+    {α} [Ring α] [PartialOrder α] [IsOrderedAddMonoid α] [ZeroLEOneClass α] [Nontrivial α] {x : α}
     (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
     {n : ℤ // n ≤ x ∧ ∀ m : ℤ, m ≤ x → m ≤ n} := by
   let n := Classical.indefiniteDescription _ above
@@ -225,7 +225,7 @@ private noncomputable def floorAux
 
 /-- See `exists_floor` for a variant which instead assumes an `Archimedean` ring. -/
 theorem exists_floor'
-    {α} [Ring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] (x : α)
+    {α} [Ring α] [PartialOrder α] [IsOrderedAddMonoid α] [ZeroLEOneClass α] [Nontrivial α] (x : α)
     (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
     ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
   refine ⟨_, fun n ↦ ⟨?_, (floorAux below above).2.2 _⟩⟩
@@ -236,7 +236,7 @@ theorem exists_floor'
 bounded above by a natural number. -/
 @[no_expose, instance_reducible]
 noncomputable def FloorRing.ofBounded
-    (α) [Ring α] [LinearOrder α] [IsOrderedRing α] [Nontrivial α]
+    (α) [Ring α] [LinearOrder α] [IsOrderedAddMonoid α] [ZeroLEOneClass α] [Nontrivial α]
     (bounded : ∀ x : α, ∃ n : ℕ, x ≤ n) : FloorRing α :=
   have below (x : α) : ∃ n : ℤ, n ≤ x := by
     obtain ⟨n, hn⟩ := bounded (-x)
