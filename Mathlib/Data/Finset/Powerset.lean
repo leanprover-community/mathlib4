@@ -11,6 +11,30 @@ public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # The powerset of a finset
+
+This file defines the powerset of a `Finset`. The powerset of a finite set `s`
+is the finset of all subsets of `s`.
+
+## Main definitions
+
+- `Finset.powerset`: The finset of all subsets of a finset.
+- `Finset.ssubsets`: The finset of all proper subsets of a finset.
+- `Finset.powersetCard`: The finset of all subsets of a given cardinality.
+
+## Main statements
+
+- `mem_powerset`: `s ∈ powerset t` if and only if `s ⊆ t`.
+- `card_powerset`: The cardinality of the powerset is `2 ^ #s`.
+- `card_powersetCard`: The number of `n`-element subsets of `s` is `Nat.choose #s n`.
+
+## Notation
+
+- `Finset α`: Finite set of α, internally a `Multiset α` with a proof of no duplicates.
+- `#s`: `Finset.card s`, the number of elements.
+
+## Tags
+
+powerset, finset, subset, cardinality, choose
 -/
 
 @[expose] public section
