@@ -116,22 +116,20 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 /--
 `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
 -/
-def acceptsFrom (s : σ) : Language α := {x | M.evalFrom s x ∈ M.accept}
+def acceptsFrom (s : σ) : Language α := .ofSet {x | M.evalFrom s x.toList ∈ M.accept}
 
-theorem mem_acceptsFrom {s : σ} {x : List α} :
-    x ∈ M.acceptsFrom s ↔ M.evalFrom s x ∈ M.accept := by rfl
+theorem mem_acceptsFrom {s : σ} {x : FreeMonoid α} :
+    x ∈ M.acceptsFrom s ↔ M.evalFrom s x.toList ∈ M.accept := by rfl
 
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
 def accepts : Language α := M.acceptsFrom M.start
 
-theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ M.eval x ∈ M.accept := by rfl
+theorem mem_accepts {x : FreeMonoid α} : x ∈ M.accepts ↔ M.eval x.toList ∈ M.accept := by rfl
 
 theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.card σ ≤ x.length)
     (hx : M.evalFrom s x = t) :
-    ∃ q a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card σ ∧
-          b ≠ [] ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t := by
+    ∃ q a b c, x = a ++ b ++ c ∧ a.length + b.length ≤ Fintype.card σ ∧
+      b ≠ [] ∧ M.evalFrom s a = q ∧ M.evalFrom q b = q ∧ M.evalFrom q c = t := by
   obtain ⟨n, m, hneq, heq⟩ :=
     Fintype.exists_ne_map_eq_of_card_lt
       (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
@@ -147,38 +145,37 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   rwa [← hq, ← evalFrom_of_append, ← evalFrom_of_append, ← List.append_assoc,
     List.take_append_drop, List.take_append_drop]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
-    (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
+    (hy : ⟨y⟩ ∈ ({⟨x⟩} : Language α)∗) : M.evalFrom s y = s := by
   rw [Language.mem_kstar] at hy
-  rcases hy with ⟨S, rfl, hS⟩
+  rcases hy with ⟨S, hS', hS⟩
+  rw [FreeMonoid.ext_iff, FreeMonoid.toList_ofList, FreeMonoid.toList_prod] at hS'
+  subst y
   induction S with
   | nil => rfl
   | cons a S ih =>
     have ha := hS a List.mem_cons_self
-    rw [Set.mem_singleton_iff] at ha
-    rw [List.flatten_cons, evalFrom_of_append, ha, hx]
+    rw [List.map_cons, List.flatten_cons, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)
 
-set_option backward.isDefEq.respectTransparency false in
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
+theorem pumping_lemma [Fintype σ] {x : List α} (hx : ⟨x⟩ ∈ M.accepts)
     (hlen : Fintype.card σ ≤ List.length x) :
-    ∃ a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
+    ∃ a b c, x = a ++ b ++ c ∧ a.length + b.length ≤ Fintype.card σ ∧
+      b ≠ [] ∧ {⟨a⟩} * {⟨b⟩}∗ * {⟨c⟩} ≤ M.accepts := by
   obtain ⟨_, a, b, c, hx, hlen, hnil, rfl, hb, hc⟩ := M.evalFrom_split (s := M.start) hlen rfl
   use a, b, c, hx, hlen, hnil
-  intro y hy
+  intro y (hy : y ∈ (_ : Language α))
+  change y ∈ (_ : Language α)
   rw [Language.mem_mul] at hy
   rcases hy with ⟨ab, hab, c', hc', rfl⟩
   rw [Language.mem_mul] at hab
   rcases hab with ⟨a', ha', b', hb', rfl⟩
-  rw [Set.mem_singleton_iff] at ha' hc'
   subst ha' hc'
   have h := M.evalFrom_of_pow hb hb'
-  rwa [mem_accepts, eval, evalFrom_of_append, evalFrom_of_append, h, hc]
+  rwa [mem_accepts, eval, FreeMonoid.toList_mul, evalFrom_of_append, FreeMonoid.toList_mul,
+    evalFrom_of_append, h, hc]
 
 section Maps
 
@@ -208,14 +205,10 @@ theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
 theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
   simp [eval]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem accepts_comap (f : α' → α) : (M.comap f).accepts = List.map f ⁻¹' M.accepts := by
-  ext x
-  conv =>
-    rhs
-    rw [Set.mem_preimage, mem_accepts]
-  simp [mem_accepts]
+theorem accepts_comap (f : α' → α) :
+    (M.comap f).accepts = .ofSet (FreeMonoid.map f ⁻¹' M.accepts.toSet) := by
+  ext; simp_rw [← SetSemiring.mem_toSet]; simp [mem_accepts]
 
 /-- Lifts an equivalence on states to an equivalence on DFAs. -/
 @[simps apply_step apply_start apply_accept]
@@ -292,17 +285,17 @@ def union (M1 : DFA α σ1) (M2 : DFA α σ2) : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∨ s.2 ∈ M2.accept}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_union (M1 : DFA α σ1) (M2 : DFA α σ2) (s1 : σ1) (s2 : σ2) :
     (M1.union M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 + M2.acceptsFrom s2 := by
   ext x
-  simp only [acceptsFrom]
-  rw [Language.add_def, Set.mem_union]
-  simp_rw [↑Set.mem_ofPred]
-  induction x generalizing s1 s2 with
-  | nil => simp
-  | cons a x ih => simp only [evalFrom_cons, union_step, ih]
+  simp_rw [acceptsFrom, SetSemiring.add_def, ← SetSemiring.mem_toSet, SetSemiring.toSet_ofSet,
+    Set.mem_union, Set.mem_ofPred]
+  induction x using FreeMonoid.mulRecOn generalizing s1 s2 with
+  | one => simp
+  | of_mul a x ih =>
+    simp only [FreeMonoid.toList_mul, FreeMonoid.toList_of, List.singleton_append, evalFrom_cons,
+      union_step, ih]
 
 @[simp]
 theorem accepts_union (M1 : DFA α σ1) (M2 : DFA α σ2) :
@@ -322,16 +315,17 @@ def inter : DFA α (σ1 × σ2) where
   start := (M1.start, M2.start)
   accept := {s : σ1 × σ2 | s.1 ∈ M1.accept ∧ s.2 ∈ M2.accept}
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem acceptsFrom_inter (s1 : σ1) (s2 : σ2) :
     (M1.inter M2).acceptsFrom (s1, s2) = M1.acceptsFrom s1 ⊓ M2.acceptsFrom s2 := by
   ext x
-  simp only [acceptsFrom, Language.mem_inf]
-  simp_rw [↑Set.mem_ofPred]
-  induction x generalizing s1 s2 with
-  | nil => simp
-  | cons a x ih => simp only [evalFrom_cons, inter_step, ih]
+  rw [Language.mem_inf]
+  simp_rw [acceptsFrom, ← SetSemiring.mem_toSet, SetSemiring.toSet_ofSet, Set.mem_ofPred]
+  induction x using FreeMonoid.mulRecOn generalizing s1 s2 with
+  | one => simp
+  | of_mul a x ih =>
+    simp only [FreeMonoid.toList_mul, FreeMonoid.toList_of, List.singleton_append, evalFrom_cons,
+      inter_step, ih]
 
 @[simp]
 theorem accepts_inter : (M1.inter M2).accepts = M1.accepts ⊓ M2.accepts := by
