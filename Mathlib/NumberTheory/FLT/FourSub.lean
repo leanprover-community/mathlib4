@@ -684,7 +684,7 @@ namespace Fermat42Sub
 open Int
 
 /-- **Parity reduction for Fermat42Double**: both `s` and `t` must be odd. -/
-theorem fermat42Double_parity {s t a : ℤ} (hs_ne : s ≠ 0) (ht_ne : t ≠ 0)
+theorem fermat42Double_parity {s t a : ℤ} (_hs_ne : s ≠ 0) (_ht_ne : t ≠ 0)
     (hst_coprime : IsCoprime s t)
     (ha_eq : 2 * a ^ 2 = s ^ 4 + t ^ 4) :
     s % 2 = 1 ∧ t % 2 = 1 := by
@@ -747,7 +747,7 @@ private lemma odd_sq_mod_eight (s : ℤ) (hs : s % 2 = 1) : s ^ 2 % 8 = 1 := by
 
 /-- **`u` mod-4 characterization**. -/
 theorem fermat42Double_u_mod_four {s t a : ℤ} (hs_odd : s % 2 = 1)
-    (ht_odd : t % 2 = 1) (ha_eq : 2 * a ^ 2 = s ^ 4 + t ^ 4) :
+    (ht_odd : t % 2 = 1) (_ha_eq : 2 * a ^ 2 = s ^ 4 + t ^ 4) :
     ∀ u : ℤ, 2 * u = s ^ 2 + t ^ 2 → u % 4 = 1 := by
   intro u hu_def
   have h_ssq_mod : s ^ 2 % 8 = 1 := odd_sq_mod_eight s hs_odd
@@ -1078,8 +1078,8 @@ from Stage 1, derive:
 These are the structural prerequisites for the UFD-split Fermat descent. -/
 private theorem fermat42Double_descent_factorization_facts
     (s t m k : ℤ) (hs_odd : s % 2 = 1) (ht_odd : t % 2 = 1)
-    (hk_pos : 0 < k) (hm_odd : m % 2 = 1)
-    (hmk_coprime : IsCoprime m k)
+    (_hk_pos : 0 < k) (hm_odd : m % 2 = 1)
+    (_hmk_coprime : IsCoprime m k)
     (hs_sq : s ^ 2 = (m - 2 * k) ^ 2 - 8 * k ^ 2)
     (ht_sq : t ^ 2 = (m + 2 * k) ^ 2 - 8 * k ^ 2) :
     (m - 2 * k - s) * (m - 2 * k + s) = 8 * k ^ 2 ∧
@@ -1107,7 +1107,7 @@ Proof chain:
 * Hence `d ∣ 8` (dividing 8k² and coprime to `k²`)
 * `d` odd (dividing `m - 2k` which is odd) forces `d ∣ gcd(8, odd) = 1`. -/
 private theorem fermat42Double_m2k_sub_s_coprime
-    (s m k : ℤ) (hs_odd : s % 2 = 1) (hk_pos : 0 < k) (hm_odd : m % 2 = 1)
+    (s m k : ℤ) (_hs_odd : s % 2 = 1) (_hk_pos : 0 < k) (hm_odd : m % 2 = 1)
     (hmk_coprime : IsCoprime m k)
     (hs_sq : s ^ 2 = (m - 2 * k) ^ 2 - 8 * k ^ 2) :
     IsCoprime (m - 2 * k) s := by
@@ -1158,7 +1158,7 @@ from `IsCoprime m k` + identity `t² = (m + 2k)² - 8k²`.
 Proof structure identical to `fermat42Double_m2k_sub_s_coprime` with
 `m - 2k → m + 2k` and `s → t`. -/
 private theorem fermat42Double_m2k_add_t_coprime
-    (t m k : ℤ) (ht_odd : t % 2 = 1) (hk_pos : 0 < k) (hm_odd : m % 2 = 1)
+    (t m k : ℤ) (_ht_odd : t % 2 = 1) (_hk_pos : 0 < k) (hm_odd : m % 2 = 1)
     (hmk_coprime : IsCoprime m k)
     (ht_sq : t ^ 2 = (m + 2 * k) ^ 2 - 8 * k ^ 2) :
     IsCoprime (m + 2 * k) t := by
@@ -1299,7 +1299,7 @@ private lemma coprime_mul_eq_sq_split_local {u v c : ℤ}
 produce `α, β` with `A = β²`, `B = 2α²`, `α·β = ±k`. -/
 private theorem fermat42Double_sq_split_two_odd_even
     (A B k : ℤ) (hA_nn : 0 ≤ A) (hB_nn : 0 ≤ B) (hA_odd : A % 2 = 1)
-    (hAB_cop : IsCoprime A B) (hAB : A * B = 2 * k ^ 2) (hk_ne : k ≠ 0) :
+    (hAB_cop : IsCoprime A B) (hAB : A * B = 2 * k ^ 2) (_hk_ne : k ≠ 0) :
     ∃ α β : ℤ, A = β ^ 2 ∧ B = 2 * α ^ 2 ∧ (α * β = k ∨ α * β = -k) := by
   have hB_even : B % 2 = 0 := by
     by_contra h
@@ -1348,7 +1348,7 @@ private theorem fermat42Double_m_gt_2k
 Follows from `m - 2k > 0` (`m > 2k`) and `(m - 2k)² > s²` (from `s² = (m - 2k)² - 8k²`
 with `k ≠ 0`), so `m - 2k > |s|`, hence both `m - 2k ± s > 0`. -/
 private theorem fermat42Double_half_factors_s_pos
-    (s m k A B : ℤ) (hs_ne : s ≠ 0) (hm_pos : 0 < m) (hk_pos : 0 < k)
+    (s m k A B : ℤ) (_hs_ne : s ≠ 0) (hm_pos : 0 < m) (hk_pos : 0 < k)
     (hu_pos : 0 < m ^ 2 - 4 * k ^ 2)
     (hs_sq : s ^ 2 = (m - 2 * k) ^ 2 - 8 * k ^ 2)
     (hA : m - 2 * k - s = 2 * A) (hB : m - 2 * k + s = 2 * B) :
@@ -1369,7 +1369,7 @@ private theorem fermat42Double_half_factors_s_pos
 
 /-- **Half-factor positivity (t-side)** — mirror of the s-side lemma. -/
 private theorem fermat42Double_half_factors_t_pos
-    (t m k C D : ℤ) (ht_ne : t ≠ 0) (hm_pos : 0 < m) (hk_pos : 0 < k)
+    (t m k C D : ℤ) (_ht_ne : t ≠ 0) (hm_pos : 0 < m) (hk_pos : 0 < k)
     (ht_sq : t ^ 2 = (m + 2 * k) ^ 2 - 8 * k ^ 2)
     (hC : m + 2 * k - t = 2 * C) (hD : m + 2 * k + t = 2 * D) :
     0 < C ∧ 0 < D := by
@@ -1457,7 +1457,7 @@ private theorem fermat42Double_t_side_split
 
 Standard integer UFD factorization via `Int.exists_gcd_one`. -/
 private theorem fermat42Double_four_way_split
-    (α β γ δ : ℤ) (hα_pos : 0 < α) (hβ_pos : 0 < β) (hγ_pos : 0 < γ) (hδ_pos : 0 < δ)
+    (α β γ δ : ℤ) (hα_pos : 0 < α) (hβ_pos : 0 < β) (hγ_pos : 0 < γ) (_hδ_pos : 0 < δ)
     (heq : α * β = γ * δ) :
     ∃ e α' γ' f : ℤ, 0 < e ∧ 0 < α' ∧ 0 < γ' ∧ 0 < f ∧
       IsCoprime α' γ' ∧
@@ -1617,7 +1617,7 @@ Proof chain:
 * `e'² = 2(b⁴ + c⁴)`.  `2 ∣ e'²` so `2 ∣ e'`.  Write `e' = 2e''`.
 * `4e''² = 2(b⁴ + c⁴)`, i.e., `2e''² = b⁴ + c⁴`. -/
 private theorem fermat42Double_smaller_equation
-    (a b c d : ℤ) (ha_pos : 0 < a) (hb_pos : 0 < b) (hc_pos : 0 < c) (hd_pos : 0 < d)
+    (a b c d : ℤ) (ha_pos : 0 < a) (_hb_pos : 0 < b) (_hc_pos : 0 < c) (_hd_pos : 0 < d)
     (h_key : 4 * (a * b * c * d) = (c ^ 2 - b ^ 2) * (2 * a ^ 2 - d ^ 2)) :
     ∃ e : ℤ, 2 * e ^ 2 = b ^ 4 + c ^ 4 := by
   -- Step 1: (2(c² - b²)d + 4abc)² = 8a²(b⁴ + c⁴).
