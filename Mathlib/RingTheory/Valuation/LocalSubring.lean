@@ -117,7 +117,7 @@ lemma LocalSubring.exists_le_valuationSubring (A : LocalSubring K) :
   refine zorn_le_nonempty_Ici₀ _ ?_ _ le_rfl
   intro s hs H y hys
   have inst : Nonempty s := ⟨⟨y, hys⟩⟩
-  have hdir := H.directed.mono_comp _ LocalSubring.toSubring_mono
+  have hdir := H.directed.mono_comp LocalSubring.toSubring_mono
   refine ⟨@LocalSubring.mk _ _ (⨆ i : s, i.1.toSubring) ⟨?_⟩, ?_⟩
   · intro ⟨a, ha⟩ ⟨b, hb⟩ e
     obtain ⟨A, haA : a ∈ A.1.toSubring⟩ := (Subring.mem_iSup_of_directed hdir).mp ha

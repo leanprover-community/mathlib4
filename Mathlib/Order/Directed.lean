@@ -85,12 +85,12 @@ lemma directed_comp_iff_of_surjective {f : ι → κ} (hf : f.Surjective) {g : �
 
 alias ⟨_, Directed.comp_of_surjective⟩ := directed_comp_iff_of_surjective
 
-theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b, r a b → s a b)
-    (h : Directed r f) : Directed s f := fun a b =>
+theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : r ≤ s) (h : Directed r f) :
+    Directed s f := fun a b =>
   let ⟨c, h₁, h₂⟩ := h a b
   ⟨c, H _ _ h₁, H _ _ h₂⟩
 
-theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
+theorem Directed.mono_comp {r : α → α → Prop} {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
     (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
   directed_comp.2 <| hf.mono hg
 
@@ -104,6 +104,10 @@ lemma directedOn_onFun_iff {r : α → α → Prop} {f : β → α} {s : Set β}
   obtain ⟨_, ⟨z, hz, rfl⟩, hz'⟩ := h (f x) (Set.mem_image_of_mem f hx) (f y)
     (Set.mem_image_of_mem f hy)
   grind
+
+theorem Monotone.directedOn_image [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
+    {s : Set α} (hs : DirectedOn (· ≤ ·) s) : DirectedOn (· ≤ ·) (f '' s) :=
+  hs.mono_comp hf
 
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
@@ -199,7 +203,7 @@ instance OrderDual.isDirected_ge [LE α] [IsDirectedOrder α] : IsCodirectedOrde
 /-- An antitone function on a downwards-directed type is directed. -/]
 theorem directed_of_isDirected_le [LE α] [IsDirectedOrder α] {f : α → β} {r : β → β → Prop}
     (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
-  directed_id.mono_comp _ H
+  directed_id.mono_comp H
 
 @[to_dual directed_ge]
 theorem Monotone.directed_le [Preorder α] [IsDirectedOrder α] [Preorder β] {f : α → β} :

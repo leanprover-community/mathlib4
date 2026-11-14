@@ -277,7 +277,7 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : 
     (hdt : Directed (· ⊇ ·) t) : ∃ i : ι, Disjoint s (t i) := by
   simp only [← subset_compl_iff_disjoint_right, compl_iInter] at hst ⊢
   exact hs.elim_directed_cover (compl ∘ t) (fun i ↦ (htc i).isOpen_compl) hst
-    (hdt.mono_comp _ fun _ _ ↦ compl_subset_compl.mpr)
+    (hdt.mono_comp fun _ _ ↦ compl_subset_compl.mpr)
 
 /-- For every family of closed sets whose intersection is disjoint from a compact set,
 there exists a finite subfamily whose intersection is disjoint from this compact set. -/

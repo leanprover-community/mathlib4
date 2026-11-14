@@ -46,13 +46,19 @@ theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
 
 theorem directed [FunLike F α β] [RelHomClass F r s] {ι : Sort*} {a : ι → α} {f : F}
     (ha : Directed r a) : Directed s (f ∘ a) :=
-  ha.mono_comp _ fun _ _ h ↦ map_rel f h
+  ha.mono_comp fun _ _ h ↦ map_rel f h
 
 theorem directedOn [FunLike F α β] [RelHomClass F r s] {f : F}
     {t : Set α} (hs : DirectedOn r t) : DirectedOn s (f '' t) :=
   hs.mono_comp fun _ _ h ↦ map_rel f h
 
 end RelHomClass
+
+theorem RelEmbedding.directedOn_image {f : r ↪r s} {t : Set α} :
+    DirectedOn s (f '' t) ↔ DirectedOn r t := by
+  refine ⟨fun hs a ha b hb ↦ ?_, fun hs ↦ hs.mono_comp fun _ _ ↦ f.map_rel_iff.mpr⟩
+  rcases hs _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ with ⟨_, ⟨c, hc, rfl⟩, hac, hbc⟩
+  exact ⟨c, hc, f.map_rel_iff.mp hac, f.map_rel_iff.mp hbc⟩
 
 namespace RelIso
 
