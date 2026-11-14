@@ -571,7 +571,7 @@ lemma prod_indicator_index_eq_prod_attach [Zero M] [CommMonoid N]
   refine Finset.prod_congr rfl (fun _ _ => ?_)
   rw [indicator_of_mem]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated prod_attach +typeChanged (since := "2026-11-10"))]
 lemma prod_attach_index [CommMonoid N] {s : Finset α} (f : α → M) {h : α → M → N} :
     ∏ x ∈ s.attach, h x (f x) = ∏ x ∈ s, h x (f x) :=
   prod_attach _ fun x ↦ h x (f x)
@@ -580,6 +580,7 @@ lemma prod_attach_index [CommMonoid N] {s : Finset α} (f : α → M) {h : α �
 lemma prod_indicator_index [Zero M] [CommMonoid N]
     {s : Finset α} (f : α → M) {h : α → M → N} (h_zero : ∀ a ∈ s, h a 0 = 1) :
     (indicator s (fun x _ ↦ f x)).prod h = ∏ x ∈ s, h x (f x) := by
+  rw [← prod_attach]
   simp +contextual [h_zero]
 
 @[to_additive]
