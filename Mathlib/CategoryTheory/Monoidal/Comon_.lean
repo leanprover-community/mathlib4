@@ -107,7 +107,7 @@ attribute [local instance] ComonObj.instTensorUnit in
 variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon C`.
 -/
-@[simps!]
+@[simps!, instance_reducible]
 def trivial : Comon C := mk (𝟙_ C)
 
 instance : Inhabited (Comon C) :=
@@ -189,7 +189,7 @@ section
 variable (C)
 
 /-- The forgetful functor from comonoid objects to the ambient category. -/
-@[simps]
+@[simps, implicit_reducible]
 def forget : Comon C ⥤ C where
   obj A := A.X
   map f := f.hom
@@ -222,8 +222,6 @@ def mkIso {M N : Comon C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ ε[N.X] = ε[M
   have : IsComonHom f.hom := ⟨f_counit, f_comul⟩
   ⟨⟨f.hom⟩, ⟨f.inv⟩, by cat_disch, by cat_disch⟩
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance uniqueHomToTrivial (A : Comon C) : Unique (A ⟶ trivial C) where
   default.hom := ε[A.X]
@@ -259,16 +257,15 @@ abbrev ComonToMonOpOpObjMon (A : Comon C) : MonObj (op A.X) where
 /--
 Turn a comonoid object into a monoid object in the opposite category.
 -/
-@[simps] def ComonToMonOpOpObj (A : Comon C) : Mon Cᵒᵖ where
+@[simps, instance_reducible] def ComonToMonOpOpObj (A : Comon C) : Mon Cᵒᵖ where
   X := op A.X
   mon := ComonToMonOpOpObjMon A
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C) in
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
 -/
-@[simps] def ComonToMonOpOp : Comon C ⥤ (Mon Cᵒᵖ)ᵒᵖ where
+@[simps, implicit_reducible] def ComonToMonOpOp : Comon C ⥤ (Mon Cᵒᵖ)ᵒᵖ where
   obj A := op (ComonToMonOpOpObj A)
   map := fun f => op
     { hom := f.hom.op
@@ -289,17 +286,16 @@ abbrev MonOpOpToComonObjComon (A : Mon Cᵒᵖ) : ComonObj (unop A.X) where
 /--
 Turn a monoid object in the opposite category into a comonoid object.
 -/
-@[simps] def MonOpOpToComonObj (A : Mon Cᵒᵖ) : Comon C where
+@[simps, instance_reducible] def MonOpOpToComonObj (A : Mon Cᵒᵖ) : Comon C where
   X := unop A.X
   comon := MonOpOpToComonObjComon A
 
 variable (C)
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 The contravariant functor turning monoid objects in the opposite category into comonoid objects.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
   obj A := MonOpOpToComonObj (unop A)
   map := fun f =>
@@ -307,11 +303,10 @@ def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
       isComonHom_hom.hom_counit := by apply Quiver.Hom.op_inj; simp
       isComonHom_hom.hom_comul := by apply Quiver.Hom.op_inj; simp [op_tensorHom] }
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def Comon_EquivMon_OpOp : Comon C ≌ (Mon Cᵒᵖ)ᵒᵖ where
   functor := ComonToMonOpOp C
   inverse := MonOpOpToComon C
@@ -373,13 +368,12 @@ theorem tensorObj_comul (A B : C) [ComonObj A] [ComonObj B] :
     Δ[A ⊗ B] = (Δ[A] ⊗ₘ Δ[B]) ≫ tensorμ A A B B := by
   simp [tensorObj_comul']
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `Comon C` to `C` is monoidal when `C` is monoidal. -/
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso := fun _ _ ↦ Iso.refl _
+}
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
@@ -435,7 +429,7 @@ instance map.instIsComon_Hom
 
 That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon C ⥤ Comon D where
   obj A :=
     { X := F.obj A.X }
