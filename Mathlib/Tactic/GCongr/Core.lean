@@ -702,7 +702,7 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
     -- there may be unassigned metavariables in the type.
     if bis[i]!.isInstImplicit then
       match ← trySynthInstance (← mvarId.getType) with
-      | .some inst => mvarId.assign inst; continue
+      | .some inst => mvarId.assign inst
       | .none => failure
       | .undef => sideGoals := sideGoals.push mvarId
     else

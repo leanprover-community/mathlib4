@@ -573,3 +573,29 @@ example (a : Set ℕ) (h : a ≤ ∅) : a = ∅ := by grw [h]
 example (a : Set ℕ) (h : a ≤ ∅) : ∅ = a := by grw [h]
 example (a : Set ℕ) (h : .univ ≤ a) : a = .univ := by grw [← h]
 example (a : Set ℕ) (h : .univ ≤ a) : .univ = a := by grw [← h]
+
+section badGCongrLemma
+
+def myId : Nat → Nat := id
+
+@[gcongr]
+axiom myId_le_myId (a b : Nat) {α : Type} [LE α] : a ≤ b → myId a ≤ myId b
+
+/--
+error: Tactic `grewrite` failed: Did not find a rewrite with
+  a ≤ _
+in the target expression
+  myId a ≤ myId b
+
+Use the command `set_option trace.Meta.grewrite true` to inspect this.
+
+a b : Nat
+h : a ≤ b
+⊢ myId a ≤ myId b
+-/
+#guard_msgs in
+example (a b : Nat) : a ≤ b → myId a ≤ myId b := by
+  intro h
+  grw [h]
+
+end badGCongrLemma
