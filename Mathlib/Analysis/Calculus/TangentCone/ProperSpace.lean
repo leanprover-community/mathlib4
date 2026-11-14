@@ -5,8 +5,11 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Tangent cone in a proper space

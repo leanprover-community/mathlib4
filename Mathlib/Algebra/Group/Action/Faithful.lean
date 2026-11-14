@@ -78,23 +78,6 @@ instance (R : Type*) [Mul R] [IsRightCancelMul R] : FaithfulSMul R R where
 instance (R : Type*) [Mul R] [IsLeftCancelMul R] : FaithfulSMul Rᵐᵒᵖ R where
   eq_of_smul_eq_smul {r₁ r₂} h := by simpa using h r₁.unop
 
-/-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
-@[to_additive (attr :=
-  deprecated "subsumed by `instFaithfulSMul` or `instFaithfulSMulOfIsRightCancelMul`"
-  (since := "2026-02-03"))
-  /-- `AddMonoid.toAddAction` is faithful on additive cancellative monoids. -/]
-lemma RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
-  inferInstance
-
-/-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
-@[to_additive (attr :=
-    deprecated "subsumed by `instFaithfulSMulMulOpposite` or \
-    `instFaithfulSMulMulOppositeOfIsLeftCancelMul`"
-    (since := "2026-02-03"))
-  /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
-lemma LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
-  inferInstance
-
 @[to_additive]
 lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
     [MulOneClass A] [SMul R A] [IsScalarTower R A A] :
@@ -113,13 +96,10 @@ theorem faithfulSMul_iff [Group G] [MulAction G α] :
     simpa only [mul_smul, inv_smul_eq_iff] using h'
 
 @[to_additive]
-lemma FaithfulSMul.tower_bot (R S T : Type*) [Monoid S] [MulOneClass T]
-    [SMul R S] [SMul R T] [MulAction S T]
-    [IsScalarTower R S S] [IsScalarTower R T T]
-    [IsScalarTower R S T] [FaithfulSMul R T] : FaithfulSMul R S := by
-  rw [faithfulSMul_iff_injective_smul_one]
-  refine .of_comp (f := (· • (1 : T))) ?_
-  simpa [Function.comp_def, one_smul, ← faithfulSMul_iff_injective_smul_one]
+lemma FaithfulSMul.tower_bot (R S T : Type*) [Monoid S]
+    [SMul R S] [SMul R T] [MulAction S T] [IsScalarTower R S T]
+    [h : FaithfulSMul R T] : FaithfulSMul R S where
+  eq_of_smul_eq_smul hr := h.eq_of_smul_eq_smul fun t ↦ by simpa using congrArg (· • t) (hr 1)
 
 @[to_additive]
 lemma FaithfulSMul.trans (R S T : Type*) [Monoid S] [MulOneClass T]

@@ -32,7 +32,7 @@ theorem domRestrict_ofUnitHom (f : Rˣ →* R'ˣ) (S : Submonoid R) : domRestric
       ofUnitHom ((f.domRestrict S.units).comp S.unitsEquivUnitsType.symm) := by
   ext x
   simp only [ofUnitHom_eq, domRestrict_apply, Units.isUnit, reduceIte, equivToUnitHom_symm_coe,
-    MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, MonoidHom.domRestrict_apply]
+    MonoidHom.coe_comp, MonoidHom.coe_ofClass, Function.comp_apply, MonoidHom.domRestrict_apply]
   rw [← Submonoid.val_unitsEquivUnitsType_symm_apply_coe S x, equivToUnitHom_symm_coe]
 
 @[deprecated (since := "2026-07-19")] alias restrict_ofUnitHom := domRestrict_ofUnitHom

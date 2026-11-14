@@ -24,8 +24,6 @@ open Asymptotics
 
 open scoped Topology
 
-noncomputable section
-
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

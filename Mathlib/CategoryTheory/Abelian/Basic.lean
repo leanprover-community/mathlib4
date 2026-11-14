@@ -5,12 +5,11 @@ Authors: Markus Himmel, Johan Commelin, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
 # Abelian categories
@@ -79,7 +78,6 @@ convention:
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 * [P. Aluffi, *Algebra: Chapter 0*][aluffi2016]
-
 -/
 
 @[expose] public section
@@ -594,7 +592,6 @@ abbrev pullbackToBiproductFork : KernelFork (biprod.desc f (-g)) :=
   KernelFork.ofι (pullbackToBiproduct f g) <| by
     rw [biprod.lift_desc, comp_neg, pullback.condition, add_neg_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` is a kernel of the map induced by
     `(f, -g)`. -/
 def isLimitPullbackToBiproduct : IsLimit (pullbackToBiproductFork f g) :=
@@ -626,7 +623,6 @@ abbrev biproductToPushoutCofork : CokernelCofork (biprod.lift f (-g)) :=
   CokernelCofork.ofπ (biproductToPushout f g) <| by
     rw [biprod.lift_desc, neg_comp, pushout.condition, add_neg_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cofork induced by the canonical map `Y ⊞ Z ⟶ pushout f g` is in fact a colimit cokernel
     cofork. -/
 def isColimitBiproductToPushout : IsColimit (biproductToPushoutCofork f g) :=
@@ -643,7 +639,7 @@ end BiproductToPushoutIsCokernel
 
 section EpiPullback
 
-variable [Limits.HasPullbacks C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism.
     Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
@@ -732,7 +728,7 @@ end EpiPullback
 
 section MonoPushout
 
-variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+variable {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by

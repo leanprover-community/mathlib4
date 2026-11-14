@@ -5,7 +5,6 @@ Authors: Anatole Dedecker, Patrick Massot
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!
@@ -59,15 +58,12 @@ about the need for a non-manifold version of `SmoothPartitionOfUnity`.
   vector bundle by smooth sections.
 - If needed, specialize to `M = U` an open subset of a normed space `E`
   (we currently do `M = E` only).
-
 -/
 
 public section
 
 open Set Function
 open scoped Topology ContDiff Manifold
-
-noncomputable section
 
 section Manifold
 

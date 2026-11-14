@@ -28,7 +28,7 @@ namespace Subgroup
 
 @[to_additive]
 instance (S : Subgroup G) : IsTopologicalGroup S :=
-  IsInducing.subtypeVal.topologicalGroup S.subtype
+  IsInducing.subtypeVal.isTopologicalGroup S.subtype
 
 end Subgroup
 
@@ -80,7 +80,7 @@ theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [
     (Subgroup.topologicalClosure N).Normal where
   conj_mem n hn g := by
     apply map_mem_closure (IsTopologicalGroup.continuous_conj g) hn
-    exact fun m hm => Subgroup.Normal.conj_mem inferInstance m hm g
+    exact fun m hm => Subgroup.Normal.conj_mem m hm g
 
 @[to_additive]
 theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneClass G]
@@ -124,7 +124,7 @@ open scoped IsMulCommutative in
 
 See note [reducible non-instances]. -/
 @[to_additive (attr := deprecated Subgroup.isMulCommutative_topologicalClosure
-(since := "2026-07-29"))
+  +typeChanged (since := "2026-07-29"))
   /-- If a subgroup of an additive topological group is commutative, then so is its
 topological closure.
 
@@ -158,9 +158,8 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       intro K L hK hL
       have H : Set.Finite _ := hS ((hL.prod hK).image continuous_div').compl_mem_cocompact
       rw [preimage_compl, compl_compl] at H
-      convert! H
-      ext x
-      simp only [image_smul, mem_ofPred_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
+      convert H
+      simp only [image_smul, mem_eq_mem, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_nonempty_iff' }
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
@@ -185,9 +184,9 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
       simp only [preimage_compl, compl_compl, coe_subtype, comp_apply] at H
       apply Finite.of_preimage _ (equivOp S).surjective
-      convert! H using 1
+      convert H using 1
       ext x
-      simp only [image_smul, mem_ofPred_eq, mem_preimage, mem_image, Prod.exists]
+      simp only [image_smul, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_nonempty_iff }
 
 end

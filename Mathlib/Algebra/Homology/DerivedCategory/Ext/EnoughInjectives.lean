@@ -22,7 +22,6 @@ to specify the universe explicitly almost everywhere, which would be an inconven
 Then, we must be very selective regarding `HasExt` instances.
 
 Note: this file dualizes the results in `HasEnoughProjectives.lean`.
-
 -/
 
 public section
@@ -38,7 +37,6 @@ namespace CochainComplex
 open HomologicalComplex
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma isSplitMono_from_singleFunctor_obj_of_injective
     {I : C} [Injective I] {L : CochainComplex C ℤ} {i : ℤ}
     (ι : (CochainComplex.singleFunctor C i).obj I ⟶ L) [L.IsStrictlyGE i] [QuasiIsoAt ι i] :

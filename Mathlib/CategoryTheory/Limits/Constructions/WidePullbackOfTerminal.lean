@@ -5,16 +5,15 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
 # Existence of wide pullbacks when the target object is terminal
 
 In this file, we show that the wide pullback of a family of arrows `objs j ⟶ B`
 exists when `B` is terminal and the product of the objects `objs j` exists.
-
 -/
 
 @[expose] public section

@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Determinant
 
 This file provides results about the determinants of maps in the complex numbers as a vector
 space over `ℝ`.
-
 -/
 
 public section

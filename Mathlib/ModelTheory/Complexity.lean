@@ -27,7 +27,6 @@ This file defines quantifier complexity of first-order formulas, and constructs 
 
 - `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
   formula has the same realization as the original formula.
-
 -/
 
 @[expose] public section

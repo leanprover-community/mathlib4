@@ -5,13 +5,14 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Data.NNReal.Basic
-public import Mathlib.Order.Fin.Tuple
-public import Mathlib.Order.Interval.Set.Monotone
-public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Topology.MetricSpace.Pseudo.Real
-public import Mathlib.Topology.Order.MonotoneConvergence
+
+import Mathlib.Order.Fin.Tuple
+import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Topology.MetricSpace.Pseudo.Real
+import Mathlib.Topology.Order.MonotoneConvergence
+
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -142,7 +143,7 @@ instance : LE (Box ι) :=
 
 theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
-theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
+theorem le_tfae : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
   tfae_have 1 ↔ 2 := Iff.rfl
   tfae_have 2 → 3
@@ -152,13 +153,15 @@ theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
   | h, x, hx, i => Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias le_TFAE := le_tfae
+
 variable {I J}
 
 @[simp, norm_cast]
 theorem coe_subset_coe : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := Iff.rfl
 
 theorem le_iff_bounds : I ≤ J ↔ J.lower ≤ I.lower ∧ I.upper ≤ J.upper :=
-  (le_TFAE I J).out 1 4
+  (le_tfae I J).out 1 4
 
 theorem injective_coe : Injective ((↑) : Box ι → Set (ι → ℝ)) := by
   rintro ⟨l₁, u₁, h₁⟩ ⟨l₂, u₂, h₂⟩ h
@@ -182,7 +185,7 @@ instance : PartialOrder (Box ι) :=
 
 /-- Closed box corresponding to `I : BoxIntegral.Box ι`. -/
 protected def Icc : Box ι ↪o Set (ι → ℝ) :=
-  OrderEmbedding.ofMapLEIff (fun I : Box ι ↦ Icc I.lower I.upper) fun I J ↦ (le_TFAE I J).out 3 1
+  OrderEmbedding.ofMapLEIff (fun I : Box ι ↦ Icc I.lower I.upper) fun I J ↦ (le_tfae I J).out 3 1
 
 theorem Icc_def : Box.Icc I = Icc I.lower I.upper := rfl
 
@@ -201,7 +204,7 @@ theorem Icc_eq_pi : Box.Icc I = pi univ fun i ↦ Icc (I.lower i) (I.upper i) :=
   (pi_univ_Icc _ _).symm
 
 theorem le_iff_Icc : I ≤ J ↔ Box.Icc I ⊆ Box.Icc J :=
-  (le_TFAE I J).out 1 3
+  (le_tfae I J).out 1 3
 
 theorem antitone_lower : Antitone fun I : Box ι ↦ I.lower :=
   fun _ _ H ↦ (le_iff_bounds.1 H).1
