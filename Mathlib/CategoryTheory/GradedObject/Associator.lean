@@ -25,7 +25,6 @@ satisfy suitable assumptions, we construct an isomorphism
 
 This construction shall be used in the definition of the monoidal category structure
 on graded objects indexed by an additive monoid.
-
 -/
 
 @[expose] public section

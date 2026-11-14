@@ -18,7 +18,6 @@ public import Mathlib.RingTheory.Polynomial.Basic
 * `Polynomial.expand R p f`: expand the polynomial `f` with coefficients in a
   commutative semiring `R` by a factor of p, so `expand R p (∑ aₙ xⁿ)` is `∑ aₙ xⁿᵖ`.
 * `Polynomial.contract p f`: the opposite of `expand`, so it sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`.
-
 -/
 
 @[expose] public section

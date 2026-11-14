@@ -25,7 +25,6 @@ and `Frac R` denotes the fraction field of a domain `R`.
   `A`-basis of `R₂`.
 * `IsDedekindDomain.range_sup_range_eq_top_of_isCoprime_differentIdeal`: `B` is generated
   (as an `A`-algebra) by `R₁` and `R₂`.
-
 -/
 
 @[expose] public section

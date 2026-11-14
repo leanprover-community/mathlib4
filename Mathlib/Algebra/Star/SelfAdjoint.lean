@@ -37,7 +37,6 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
 * Define `fun z x => z * x * star z` (i.e. conjugation by `z`) as a monoid action of `R` on `R`
   (similar to the existing `ConjAct` for groups), and then state the fact that `selfAdjoint R` is
   invariant under it.
-
 -/
 
 @[expose] public section
@@ -698,10 +697,14 @@ instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [Trivial
     {x : R} : IsStarNormal x :=
   ⟨by rw [star_trivial]⟩
 
--- see Note [lower instance priority]
-instance (priority := 100) CommMonoid.isStarNormal [CommMonoid R] [StarMul R] {x : R} :
-    IsStarNormal x :=
-  ⟨mul_comm _ _⟩
+/-- All elements of a commutative star magma are normal.
+
+See Note [lower instance priority] -/
+instance (priority := 100) IsStarNormal.all [CommMagma R] [StarMul R] (x : R) :
+    IsStarNormal x where
+  star_comm_self := .all _ _
+
+@[deprecated (since := "2026-10-30")] alias CommMonoid.isStarNormal := IsStarNormal.all
 
 theorem Commute.isStarNormal_add [NonUnitalNonAssocSemiring R] [StarRing R] {a b : R}
     (hab : Commute a (star b)) [ha : IsStarNormal a] [hb : IsStarNormal b] :

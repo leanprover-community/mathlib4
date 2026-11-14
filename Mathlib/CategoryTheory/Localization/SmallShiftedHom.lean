@@ -21,7 +21,6 @@ we define types `SmallShiftedHom.{w} W X Y m : Type w` for all `m : M`,
 and endow these with a composition which transports the composition
 on the types `ShiftedHom (L.obj X) (L.obj Y) m` when `L : C ⥤ D` is
 any localization functor for `W`.
-
 -/
 
 @[expose] public section

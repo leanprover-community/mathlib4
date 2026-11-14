@@ -23,7 +23,6 @@ In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this i
 
 * `HahnSeries.finiteArchimedeanClassOrderIsoLex`: `FiniteArchimedeanClass` of `Lex R⟦Γ⟧`
   can be decomposed by `Γ`.
-
 -/
 
 @[expose] public section

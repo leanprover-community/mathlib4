@@ -17,7 +17,6 @@ category of `ℤ`-indexed cochain complexes `C` that is indexed
 by the category `CochainComplex C ℤ`.
 (It follows that to any functor `ι ⥤ CochainComplex C ℤ` (e.g. a filtered
 complex), there is an associated spectral object indexed by `ι`.)
-
 -/
 
 @[expose] public section

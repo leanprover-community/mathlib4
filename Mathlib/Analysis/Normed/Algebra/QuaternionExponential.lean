@@ -20,7 +20,6 @@ This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
 * `Quaternion.exp_of_re_eq_zero`: the special case when the quaternion has a zero real part.
 * `Quaternion.norm_exp`: the norm of the quaternion exponential is the norm of the exponential of
   the real part.
-
 -/
 
 public section

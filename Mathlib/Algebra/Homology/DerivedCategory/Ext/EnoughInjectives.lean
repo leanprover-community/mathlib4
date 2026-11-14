@@ -22,7 +22,6 @@ to specify the universe explicitly almost everywhere, which would be an inconven
 Then, we must be very selective regarding `HasExt` instances.
 
 Note: this file dualizes the results in `HasEnoughProjectives.lean`.
-
 -/
 
 public section

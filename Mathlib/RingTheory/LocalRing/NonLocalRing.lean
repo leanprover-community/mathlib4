@@ -27,7 +27,6 @@ This file gathers some results about non-local rings.
     * `R` has two distinct maximal ideals.
 - `exists_surjective_of_not_isLocalRing`: there exists a surjective ring homomorphism from
   a non-local commutative ring onto a product of two fields.
-
 -/
 
 public section

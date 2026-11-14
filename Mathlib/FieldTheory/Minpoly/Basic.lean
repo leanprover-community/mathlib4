@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 This file defines the minimal polynomial of an element `x` of an `A`-algebra `B`,
 under the assumption that x is integral over `A`, and derives some basic properties
 such as irreducibility under the assumption `B` is a domain.
-
 -/
 
 @[expose] public section

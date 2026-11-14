@@ -32,7 +32,6 @@ results above that `F` is a prestack (resp. a stack) for the
 Grothendieck topology associated to `J` if `F` satisfies
 `F.IsPrestackFor R` (resp. `F.IsStackFor R`) for the presieves `R`
 that are part of `J`.
-
 -/
 
 set_option backward.defeqAttrib.useBackward true

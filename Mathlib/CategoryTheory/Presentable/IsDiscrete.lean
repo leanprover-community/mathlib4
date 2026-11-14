@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 The purpose of this file is to show that a category with a single
 object and a single morphism is locally presentable.
-
 -/
 
 @[expose] public section

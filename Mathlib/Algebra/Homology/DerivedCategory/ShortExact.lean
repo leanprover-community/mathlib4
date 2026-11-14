@@ -16,7 +16,6 @@ we construct a distinguished triangle
 `Q.obj S.X₁ ⟶ Q.obj S.X₂ ⟶ Q.obj S.X₃ ⟶ (Q.obj S.X₃)⟦1⟧`
 in the derived category of `C`.
 (See `triangleOfSES` and `triangleOfSES_distinguished`.)
-
 -/
 
 @[expose] public section

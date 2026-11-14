@@ -58,7 +58,6 @@ two maps `C : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ, Y₁, ..., Yₙ]` and
 
 The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, although they do
 not give an explicit bound on the complexity.
-
 -/
 
 @[expose] public section

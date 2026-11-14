@@ -38,7 +38,6 @@ where `F` is an exact functor between abelian categories.
 
 * `mapExactFunctor_comp_mk₀_natTransApp`: compatibility with a natural
 transformation between two exact functors
-
 -/
 
 @[expose] public section

@@ -61,7 +61,6 @@ map `M ≃ p × q`.
 Because the condition is symmetric, a lot of lemmas could have a left and a right variation.
 In general we only include the left version, the right one being accessible through
 `Submodule.IsTopCompl.symm`.
-
 -/
 
 @[expose] public section

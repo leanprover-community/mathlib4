@@ -344,7 +344,6 @@ end Mathlib.Tactic.TFAE
 
 This syntax and its implementation, which behaves like "Mathlib `have`" is deprecated; we preserve
 it here to provide graceful deprecation behavior.
-
 -/
 
 /-- Re-enables "goal-style" syntax for `tfae_have` when `true`. -/

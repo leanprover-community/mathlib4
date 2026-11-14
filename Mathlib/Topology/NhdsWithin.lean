@@ -24,7 +24,6 @@ to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continu
 * `𝓟 s`: the principal filter of a set `s`;
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
 * `𝓝ˢ[t] s`: the filter `nhdsSetWithin s t` of neighborhoods of a set `s` within a set `t`.
-
 -/
 
 public section

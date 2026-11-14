@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 Given `f : α → D ⥤ C`, we prove the isomorphisms
 `(∏ᶜ f).obj d ≅ ∏ᶜ (fun s => (f s).obj d)` and `(∐ f).obj d ≅ ∐ (fun s => (f s).obj d)`.
-
 -/
 
 @[expose] public section

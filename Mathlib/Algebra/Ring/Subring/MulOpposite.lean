@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Ring.Subsemiring.MulOpposite
 # Subring of opposite rings
 
 For every ring `R`, we construct an equivalence between subrings of `R` and that of `Rᵐᵒᵖ`.
-
 -/
 
 @[expose] public section
