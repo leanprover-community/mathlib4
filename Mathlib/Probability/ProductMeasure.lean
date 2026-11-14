@@ -379,24 +379,62 @@ instance : IsProbabilityMeasure (infinitePi μ) := by
   rw [← cylinder_univ ∅, cylinder, ← map_apply (measurable_restrict _) .univ,
     infinitePi_map_restrict, measure_univ]
 
+open MeasurableSpace in
+variable {μ} in
+private theorem eq_infinitePi_generateFrom_aux {ν : Measure (Π i, X i)}
+    {C : (i : ι) → Set (Set (X i))}
+    (hC1 : ∀ i, generateFrom (C i) = mX i) (hC2 : ∀ i, IsPiSystem (C i))
+    (hC3 : ∀ i, Set.univ ∈ C i)
+    (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
+      (∀ i ∈ s, (t i) ∈ C i) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
+    ν = infinitePi μ := by
+  refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
+  refine fun s ↦ (pi_eq_generateFrom (C := fun i : s ↦ C i)
+    (by grind) (by grind) (fun i ↦ ⟨_, fun _ ↦ hC3 i, by simp, by simp [Set.iUnion_const]⟩)
+    fun t ht ↦ ?_).symm
+  classical
+  rw [Measure.map_apply, restrict_preimage_univ, hν, ← prod_attach, univ_eq_attach]
+  · grind
+  · simp_all
+  · fun_prop
+  · refine .univ_pi (fun _ ↦ ?_)
+    rw [← hC1]
+    exact measurableSet_generateFrom (ht _)
+
+open MeasurableSpace in
+variable {μ} in
+/-- To prove that a measure is equal to the product measure it is enough to check that
+it gives the same measure to measurable boxes whose sides are in generating `π`-systems. -/
+theorem eq_infinitePi_generateFrom {ν : Measure (Π i, X i)} {C : (i : ι) → Set (Set (X i))}
+    (hC1 : ∀ i, generateFrom (C i) = mX i) (hC2 : ∀ i, IsPiSystem (C i))
+    (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
+      (∀ i ∈ s, (t i) ∈ C i) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
+    ν = infinitePi μ := by
+  refine eq_infinitePi_generateFrom_aux
+    (fun i ↦ le_antisymm ?_ ((hC1 i).symm.trans_le (generateFrom_mono (by simp))))
+    (fun i ↦ (hC2 i).insert_univ) (by simp) (fun s t ht ↦ ?_)
+  · refine generateFrom_le (fun t ht ↦ ?_)
+    · obtain rfl | ht := Set.mem_insert_iff.2 ht
+      · simp
+      · rw [← hC1]
+        exact measurableSet_generateFrom ht
+  · have : s.filter (t · = Set.univ) ⊆ s := by simp
+    classical
+    rw [← Finset.prod_sdiff this, ← hν]
+    · convert (mul_one _).symm using 3
+      · grind
+      · convert Finset.prod_const_one
+        simp_all
+    · grind
+
 /-- To prove that a measure is equal to the product measure it is enough to check that
 it gives the same measure to measurable boxes. -/
 theorem eq_infinitePi {ν : Measure (Π i, X i)}
     (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
-      (∀ i, MeasurableSet (t i)) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
-    ν = infinitePi μ := by
-  refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
-  refine fun s ↦ (pi_eq fun t ht ↦ ?_).symm
-  classical
-  rw [Measure.map_apply, restrict_preimage_univ, hν, ← prod_attach, univ_eq_attach]
-  · congr with i
-    rw [dite_eq_left i.2]
-  · rintro i
-    split_ifs with hi
-    · exact ht ⟨i, hi⟩
-    · exact .univ
-  · fun_prop
-  · exact .univ_pi ht
+      (∀ i ∈ s, MeasurableSet (t i)) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
+    ν = infinitePi μ :=
+  eq_infinitePi_generateFrom (fun _ ↦ MeasurableSpace.generateFrom_measurableSet)
+    (fun _ ↦ MeasurableSpace.isPiSystem_measurableSet) hν
 
 lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
@@ -408,6 +446,25 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · rw [univ_eq_attach, prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
+
+lemma infinitePi_prod_infinitePi {ν : (i : ι) → Measure (X i)} [∀ i, IsProbabilityMeasure (ν i)] :
+    ((infinitePi μ).prod (infinitePi ν)).map (fun p i ↦ (p.1 i, p.2 i)) =
+      infinitePi (fun i ↦ (μ i).prod (ν i)) := by
+  apply eq_infinitePi_generateFrom
+    (C := fun i ↦ Set.image2 (· ×ˢ ·) ({s : Set (X i) | MeasurableSet s})
+      ({s : Set (X i) | MeasurableSet s}))
+    (fun _ ↦ generateFrom_prod) (fun _ ↦ isPiSystem_prod) (fun s t ht ↦ ?_)
+  choose! u hu v hv ht using ht
+  have h1 : Set.pi s t = Set.pi s (fun i ↦ (u i) ×ˢ v i) := by grind
+  have h2 : (fun p i ↦ (p.1 i, p.2 i)) ⁻¹' (Set.pi s (fun i ↦ (u i) ×ˢ (v i))
+        : Set ((i : ι) → (X i × X i))) = (Set.pi s u) ×ˢ (Set.pi s v) := by grind
+  rw [map_apply (by fun_prop), h1, h2, prod_prod, infinitePi_pi _ hu, infinitePi_pi _ hv,
+    ← prod_mul_distrib]
+  · refine prod_congr rfl fun i hi ↦ ?_
+    rw [← ht i hi, ← prod_prod]
+  · refine .pi s.countable_toSet (fun i hi ↦ ?_)
+    rw [← ht i hi]
+    exact (hu i hi).prod (hv i hi)
 
 theorem infinitePi_map_restrict' {I : Set ι} :
     (infinitePi μ).map I.domRestrict = infinitePi fun i : I ↦ μ i := by
@@ -461,7 +518,11 @@ lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonCl
     (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by simp
 
 @[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
-  .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
+  .symm <| eq_infinitePi _ <| by
+  intro s t ht
+  rw [dirac_apply', Set.indicator_pi_one_apply]
+  · exact Finset.prod_congr rfl fun i hi ↦ (by simp_all)
+  · exact .pi s.countable_toSet (by simpa)
 
 lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     MeasurePreserving (Function.eval i) (infinitePi μ) (μ i) where
@@ -482,12 +543,12 @@ lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (
     (hf : ∀ i, Measurable (f i)) :
     (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
   refine eq_infinitePi _ fun s t ht ↦ ?_
-  rw [map_apply (by fun_prop) (.pi s.countable_toSet fun _ _ ↦ ht _)]
+  rw [map_apply (by fun_prop) (.pi s.countable_toSet (by simpa))]
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =
       (s : Set ι).pi (fun i ↦ (f i) ⁻¹' (t i)) := by ext x; simp
-  rw [this, infinitePi_pi _ (fun i _ ↦ hf i (ht i))]
+  rw [this, infinitePi_pi _ (fun i hi ↦ hf i (ht i hi))]
   congr! with i hi
-  rw [map_apply (by fun_prop) (ht i)]
+  rw [map_apply (by fun_prop) (ht i hi)]
 
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product. -/
@@ -524,10 +585,10 @@ lemma infinitePi_map_piCurry_symm :
   apply eq_infinitePi
   intro s t ht
   classical
-  rw [map_apply (by fun_prop) (.pi (countable_toSet _) fun _ _ ↦ ht _),
+  rw [map_apply (by fun_prop) (.pi (countable_toSet _) (by simpa)),
     ← Finset.sigma_image_fst_preimage_mk s, coe_piCurry_symm, Finset.coe_sigma,
     Set.uncurry_preimage_sigma_pi, infinitePi_pi, Finset.prod_sigma]
-  · exact Finset.prod_congr rfl (fun _ _ ↦ infinitePi_pi _ fun _ _ ↦ ht _)
+  · exact Finset.prod_congr rfl (fun i hi ↦ infinitePi_pi _ (by simp_all))
   · simp only [mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
     exact fun i j hij ↦ MeasurableSet.pi (countable_toSet _) fun k hk ↦ by simp_all
 
