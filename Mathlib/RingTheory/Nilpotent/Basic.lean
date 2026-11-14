@@ -215,6 +215,57 @@ end Ring
 
 end Commute
 
+section Semiring
+
+variable [Semiring R] {x y : R}
+
+/-- In a semiring, two elements whose sum is zero have equal even powers. -/
+theorem Even.pow_eq_pow_of_add_eq_zero {n : ℕ} (hn : Even n) (h : x + y = 0) :
+    x ^ n = y ^ n := by
+  obtain ⟨k, rfl⟩ := even_iff_two_dvd.mp hn
+  let u : AddUnits R := ⟨x, y, h, add_eq_zero_comm.mp h⟩
+  rw [pow_mul, pow_mul, sq, sq, ← AddUnits.neg_mul_neg (x := u) (y := u)]
+  rfl
+
+/-- In a semiring, two elements whose sum is zero have odd powers summing to zero. -/
+theorem Odd.pow_add_pow_eq_zero_of_add_eq_zero {n : ℕ} (hn : Odd n) (h : x + y = 0) :
+    x ^ n + y ^ n = 0 := by
+  obtain ⟨k, rfl⟩ := hn
+  rw [pow_succ, pow_succ, (even_two_mul k).pow_eq_pow_of_add_eq_zero h, ← mul_add, h, mul_zero]
+
+/-- If two elements of a semiring sum to zero and a power of the right one vanishes,
+then the same power of the left one vanishes. -/
+theorem pow_eq_zero_of_add_eq_zero_left {n : ℕ} (h : x + y = 0) (hy : y ^ n = 0) :
+    x ^ n = 0 := by
+  obtain hn | hn := Nat.even_or_odd n
+  · rwa [hn.pow_eq_pow_of_add_eq_zero h]
+  · rwa [eq_zero_iff_eq_zero_of_add_eq_zero (hn.pow_add_pow_eq_zero_of_add_eq_zero h)]
+
+/-- If two elements of a semiring sum to zero and a power of the left one vanishes,
+then the same power of the right one vanishes. -/
+theorem pow_eq_zero_of_add_eq_zero_right {n : ℕ} (h : x + y = 0) (hx : x ^ n = 0) :
+    y ^ n = 0 :=
+  pow_eq_zero_of_add_eq_zero_left (add_eq_zero_comm.mp h) hx
+
+/-- If two elements of a semiring sum to zero and the right one is nilpotent,
+then so is the left one. -/
+theorem IsNilpotent.of_add_eq_zero_left (h : x + y = 0) (hy : IsNilpotent y) :
+    IsNilpotent x := by
+  obtain ⟨n, hn⟩ := hy
+  exact ⟨n, pow_eq_zero_of_add_eq_zero_left h hn⟩
+
+/-- If two elements of a semiring sum to zero and the left one is nilpotent,
+then so is the right one. -/
+theorem IsNilpotent.of_add_eq_zero_right (h : x + y = 0) (hx : IsNilpotent x) :
+    IsNilpotent y :=
+  .of_add_eq_zero_left (add_eq_zero_comm.mp h) hx
+
+theorem isNilpotent_iff_of_add_eq_zero (h : x + y = 0) :
+    IsNilpotent x ↔ IsNilpotent y :=
+  ⟨.of_add_eq_zero_right h, .of_add_eq_zero_left h⟩
+
+end Semiring
+
 section CommSemiring
 
 variable [CommSemiring R]
