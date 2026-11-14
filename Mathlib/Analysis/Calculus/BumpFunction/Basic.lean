@@ -200,15 +200,19 @@ theorem _root_.ContDiff.contDiffBump {c g : X → E} {f : ∀ x, ContDiffBump (c
   rw [contDiff_iff_contDiffAt] at *
   exact fun x => (hc x).contDiffBump (hr x) (hR x) (hg x)
 
+@[fun_prop]
 protected theorem contDiff : ContDiff ℝ n f :=
   contDiff_const.contDiffBump contDiff_const contDiff_const contDiff_id
 
+@[fun_prop]
 protected theorem contDiffAt : ContDiffAt ℝ n f x :=
   f.contDiff.contDiffAt
 
+@[fun_prop]
 protected theorem contDiffWithinAt {s : Set E} : ContDiffWithinAt ℝ n f s x :=
   f.contDiffAt.contDiffWithinAt
 
+@[fun_prop]
 protected theorem continuous : Continuous f :=
   contDiff_zero.mp f.contDiff
 

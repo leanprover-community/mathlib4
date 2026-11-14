@@ -238,6 +238,40 @@ The iterated derivative of the sum of two functions is the sum of the iterated d
 
 end Add
 
+section AddConst
+
+theorem iteratedFDerivWithin_add_const_apply {i : ℕ} (hi : 1 ≤ i) {f : E → F}
+    (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (c : F) :
+    iteratedFDerivWithin 𝕜 i (fun x ↦ f x + c) s x = iteratedFDerivWithin 𝕜 i f s x := by
+  induction i generalizing x with
+  | zero => contradiction
+  | succ i IH =>
+    by_cases hi' : 1 ≤ i
+    · ext h
+      calc
+        iteratedFDerivWithin 𝕜 (i + 1) (fun x ↦ f x + c) s x h =
+            fderivWithin 𝕜 (iteratedFDerivWithin _ i (fun x ↦ f x + c) s) s x (h 0) (Fin.tail h) :=
+          iteratedFDerivWithin_succ_apply_left _
+        _ = fderivWithin _ (iteratedFDerivWithin _ i f s) s x (h 0) (Fin.tail h) := by
+          rw [fderivWithin_congr' _ hx]
+          intro y hy
+          apply IH hi' hy
+    · simp only [not_le, Order.lt_one_iff] at hi'
+      rw [hi']
+      ext m
+      simp [Nat.reduceAdd, iteratedFDerivWithin_one_apply (hu.uniqueDiffWithinAt hx)]
+
+theorem iteratedFDeriv_add_const_apply {i : ℕ} (hi : 1 ≤ i) {f : E → F} (c : F) :
+    iteratedFDeriv 𝕜 i (fun x ↦ f x + c) x = iteratedFDeriv 𝕜 i f x := by
+  simp_rw [← iteratedFDerivWithin_univ]
+  apply iteratedFDerivWithin_add_const_apply hi (by simp) (by simp)
+
+theorem iteratedFDeriv_add_const {i : ℕ} (hi : 1 ≤ i) {f : E → F} (c : F) :
+    iteratedFDeriv 𝕜 i (fun x ↦ f x + c) = iteratedFDeriv 𝕜 i f :=
+  funext fun _ ↦ iteratedFDeriv_add_const_apply hi c
+
+end AddConst
+
 /-! ### Negative -/
 
 section Neg
@@ -357,6 +391,25 @@ derivatives.
     (hg : ContDiff 𝕜 i g) :
     iteratedFDeriv 𝕜 i (f - g) = iteratedFDeriv 𝕜 i f - iteratedFDeriv 𝕜 i g :=
   funext fun _ ↦ iteratedFDeriv_sub_apply (ContDiff.contDiffAt hf) (ContDiff.contDiffAt hg)
+
+section SubConst
+
+theorem iteratedFDerivWithin_sub_const_apply {i : ℕ} (hi : 1 ≤ i) {f : E → F}
+    (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (c : F) :
+    iteratedFDerivWithin 𝕜 i (fun x ↦ f x - c) s x = iteratedFDerivWithin 𝕜 i f s x := by
+  simp_rw [sub_eq_add_neg]
+  apply iteratedFDerivWithin_add_const_apply hi hu hx
+
+theorem iteratedFDeriv_sub_const_apply {i : ℕ} (hi : 1 ≤ i) {f : E → F} (c : F) :
+    iteratedFDeriv 𝕜 i (fun x ↦ f x - c) x = iteratedFDeriv 𝕜 i f x := by
+  simp_rw [← iteratedFDerivWithin_univ]
+  apply iteratedFDerivWithin_sub_const_apply hi (by simp) (by simp)
+
+theorem iteratedFDeriv_sub_const {i : ℕ} (hi : 1 ≤ i) {f : E → F} (c : F) :
+    iteratedFDeriv 𝕜 i (fun x ↦ f x - c) = iteratedFDeriv 𝕜 i f :=
+  funext fun _ ↦ iteratedFDeriv_sub_const_apply hi c
+
+end SubConst
 
 /-! ### Sum of finitely many functions -/
 
