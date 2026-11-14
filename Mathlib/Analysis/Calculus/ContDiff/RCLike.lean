@@ -57,14 +57,21 @@ theorem ContDiffAt.hasStrictDerivAt {f : 𝕂 → F'} {f' : F'} {x : 𝕂} (hf :
   hf.hasStrictFDerivAt hf' hn
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, then the derivative of `f` at this point
-is also a strict derivative. -/
+is also a strict derivative.
+
+See also `ContDiffAt.hasStrictFDerivAt_fderiv_of_minSmoothness_le` for a version which works over
+any field (assuming analyticity if not on `ℝ` or `ℂ`). -/
 theorem ContDiffAt.hasStrictFDerivAt_fderiv
     {f : E' → F'} {x : E'} (hf : ContDiffAt 𝕂 n f x) (hn : n ≠ 0) :
     HasStrictFDerivAt f (fderiv 𝕂 f x) x :=
   hf.hasStrictFDerivAt (hf.differentiableAt hn).hasFDerivAt hn
 
 /-- If a function is `C^n` with `1 ≤ n` around a point, then the derivative of `f` at this point
-is also a strict derivative. -/
+is also a strict derivative.
+
+See also `ContDiffAt.hasStrictDerivAt_deriv_of_minSmoothness_le` for a version which works over
+any field (assuming analyticity if not on `ℝ` or `ℂ`).
+-/
 theorem ContDiffAt.hasStrictDerivAt_deriv
     {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiffAt 𝕂 n f x) (hn : n ≠ 0) :
     HasStrictDerivAt f (deriv f x) x :=
@@ -75,12 +82,20 @@ ContDiffAt.hasStrictFDerivAt' := ContDiffAt.hasStrictFDerivAt
 @[deprecated (since := "2026-10-13")] alias
 ContDiffAt.hasStrictDerivAt' := ContDiffAt.hasStrictDerivAt
 
-/-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative. -/
+/-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative.
+
+See also `ContDiffAt.hasStrictFDerivAt_of_minSmoothness_le` for a version which works over
+any field (assuming analyticity if not on `ℝ` or `ℂ`).
+-/
 theorem ContDiff.hasStrictFDerivAt {f : E' → F'} {x : E'} (hf : ContDiff 𝕂 n f) (hn : n ≠ 0) :
     HasStrictFDerivAt f (fderiv 𝕂 f x) x :=
   hf.contDiffAt.hasStrictFDerivAt_fderiv hn
 
-/-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative. -/
+/-- If a function is `C^n` with `1 ≤ n`, then the derivative of `f` is also a strict derivative.
+
+See also `ContDiffAt.hasStrictDerivAt_of_minSmoothness_le` for a version which works over
+any field (assuming analyticity if not on `ℝ` or `ℂ`).
+-/
 theorem ContDiff.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiff 𝕂 n f) (hn : n ≠ 0) :
     HasStrictDerivAt f (deriv f x) x :=
   hf.contDiffAt.hasStrictDerivAt_deriv hn
