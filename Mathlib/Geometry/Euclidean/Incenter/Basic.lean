@@ -302,6 +302,14 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
   · rw [Finset.mem_filter_univ] at h
     simp [excenterWeightsUnnorm, h]
 
+lemma sum_excenterWeightsUnnorm_pos_of_card_le_one [Nat.AtLeastTwo n] {signs : Finset (Fin (n + 1))}
+    (h : signs.card ≤ 1) :
+    0 < ∑ j, s.excenterWeightsUnnorm signs j := by
+  obtain ⟨i, hi⟩ := Finset.card_le_one_iff_subset_singleton.mp h
+  obtain rfl | rfl := Finset.subset_singleton_iff.mp hi
+  · exact s.sum_excenterWeightsUnnorm_empty_pos
+  · exact s.sum_excenterWeightsUnnorm_singleton_pos i
+
 lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     SignType.sign (s.excenterWeights {i} i) = -1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
