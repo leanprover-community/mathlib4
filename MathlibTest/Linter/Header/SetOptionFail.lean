@@ -21,12 +21,14 @@ set_option doc.verso true
 set_option doc.verso.suggestions true
 
 /- Test that the module header linter correctly complains about missing headers,
-even if we have a lot of `set_option`s above. -/
+even if we have a lot of `set_option`s above, and that it ignores & warns about `in` with
+`set_option ... in`. -/
 
 /--
 warning: The module doc-string for a file should be the first command after the imports
-and any necessary `set_option` commands.
-Please, add a module doc-string (`/-! ... -/`) before `def foo :=
+and any necessary `set_option` commands, and should not be preceded by `in`.
+Please, add a module doc-string (`/-! ... -/`) before `set_option linter.style.header false in
+def foo :=
   37`.
 
 Hint: Type `m(odule docstring) + [tab]` to insert a template via snippet.
@@ -34,7 +36,5 @@ Hint: Type `m(odule docstring) + [tab]` to insert a template via snippet.
 Note: This linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
-set_option linter.style.header true in
-set_option doc.verso true in
-
+set_option linter.style.header false in
 def foo := 37

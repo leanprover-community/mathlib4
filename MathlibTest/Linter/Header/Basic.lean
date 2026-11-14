@@ -11,6 +11,8 @@ import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadI
 import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Aliases
 
+set_option linter.style.header true
+
 /--
 warning: The module doc-string for a file should be the first command after the imports
 and any necessary `set_option` commands.
@@ -38,7 +40,6 @@ warning: Duplicate imports: `Mathlib.Tactic.Linter.Header` already imported
 Note: This linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
-set_option linter.style.header true in
 example := trivial
 
 /-!
