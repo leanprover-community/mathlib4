@@ -230,7 +230,9 @@ def insertTranslation (t : TranslateData) (src tgt : Name) (reorder : Reorder)
   if t.isDual && src != tgt && !unfold then
     /- In practice, `relevantArg` does not overlap with `reorder` for dual translations,
     so we don't bother applying the permutation to `relevantArg`. -/
-    -- TODO: error when there is omission information specified; cannot dualise that!
+    -- XXX: currently, this error branch is not tested at all
+    if !omitted.omission.isEmpty then
+      throwError "you cannot dualise declarations and omit arguments at the same time"
     insertTranslationAux tgt {
       translation := src, reorder := reorder.reverse, relevantArg }
 where
