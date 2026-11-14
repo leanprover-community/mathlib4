@@ -23,16 +23,18 @@ We also calculate the homology of a totally disconnected space as an example.
 
 noncomputable section
 
-namespace AlgebraicTopology
-
-open CategoryTheory Limits
-
 universe w v u
 
-variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C]
-variable [Preadditive C] (n : ℕ)
+open CategoryTheory Limits AlgebraicTopology Simplicial
+
+variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
+
+namespace AlgebraicTopology
+
+variable (n : ℕ)
 
 /-- The singular chain complex functor with coefficients in `C`. -/
+@[implicit_reducible]
 def singularChainComplexFunctor :
     C ⥤ TopCat.{w} ⥤ ChainComplex C ℕ :=
   SSet.chainComplexFunctor.{w} C ⋙ (Functor.whiskeringLeft _ _ _).obj TopCat.toSSet.{w}
@@ -48,6 +50,7 @@ instance [Limits.HasPullbacks C] {X : C} :
     infer_instance
 
 /-- The `n`-th singular homology functor with coefficients in `C`. -/
+@[implicit_reducible]
 def singularHomologyFunctor [CategoryWithHomology C] : C ⥤ TopCat.{w} ⥤ C :=
   singularChainComplexFunctor C ⋙
     (Functor.whiskeringRight _ _ _).obj (HomologicalComplex.homologyFunctor _ _ n)
@@ -64,18 +67,13 @@ def singularChainComplexFunctorAdjunction : (Functor.postcompose₂.obj (eval _ 
   ((SSet.chainComplexFunctorAdjunction C n).comp (sSetTopAdj.whiskerLeft _)).ofNatIsoRight
     ((evaluation TopCat C).mapIso (SSet.toTopSimplex.app _))
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
     (singularChainComplexFunctorAdjunction C n).unit.app R =
       Sigma.ι (fun _ ↦ R) ((stdSimplexToTop.app ⦋n⦌).app (.op ⦋n⦌)
         (SSet.stdSimplex.objEquiv.symm (𝟙 ⦋n⦌))) := by
-  dsimp [singularChainComplexFunctorAdjunction, Adjunction.ofNatIsoRight,
-    Adjunction.equivHomsetRightOfNatIso, Adjunction.homEquiv,
-    Adjunction.comp, singularChainComplexFunctor,
-    SSet.chainComplexFunctorAdjunction, SSet.chainComplexFunctor]
-  simp [stdSimplexToTop]
-  rfl
+  simp [singularChainComplexFunctorAdjunction,
+    singularChainComplexFunctor,
+    SSet.chainComplexFunctorAdjunction, SSet.chainComplexFunctor, stdSimplexToTop]
 
 lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C) (X : TopCat) (i) :
     Sigma.ι _ i ≫ ((singularChainComplexFunctorAdjunction C n).counit.app F).app X =
@@ -139,3 +137,67 @@ def singularHomologyFunctorZeroOfTotallyDisconnectedSpace [CategoryWithHomology 
 end TotallyDisconnectedSpace
 
 end AlgebraicTopology
+
+namespace TopCat
+
+variable {C}
+
+/-- The singular chain complex of a topological space with coefficients in `R`. -/
+noncomputable abbrev singularChainComplex (X : TopCat.{w}) (R : C) :
+    ChainComplex C ℕ :=
+  ((singularChainComplexFunctor C).obj R).obj X
+
+/-- The morphism of singular chain complexes that is induced by a morphism in `TopCat`. -/
+noncomputable abbrev singularChainComplexMap {X Y : TopCat.{w}} (f : X ⟶ Y) (R : C) :
+    X.singularChainComplex R ⟶ Y.singularChainComplex R :=
+  ((singularChainComplexFunctor C).obj R).map f
+
+/-- Inclusion of a summand of an object in the singular chain complex of
+a topological space. -/
+noncomputable abbrev ιSingularChainComplex
+    (X : TopCat.{w}) {R : C} {n : ℕ} (x : (toSSet.obj X) _⦋n⦌) :
+    R ⟶ (X.singularChainComplex R).X n :=
+  Sigma.ι (fun _ ↦ R) x
+
+lemma singularChainComplexX_hom_ext {X : TopCat.{w}} {R : C} {n : ℕ} {T : C}
+    {f g : (X.singularChainComplex R).X n ⟶ T}
+    (h : ∀ (x : (toSSet.obj X) _⦋n⦌),
+      X.ιSingularChainComplex x ≫ f = X.ιSingularChainComplex x ≫ g) :
+    f = g :=
+  Sigma.hom_ext _ _ h
+
+@[reassoc]
+lemma ι_singularChainComplex_d
+    (X : TopCat.{w}) {R : C} {n : ℕ} (x : (toSSet.obj X) _⦋n + 1⦌) :
+    X.ιSingularChainComplex (R := R) x ≫ (X.singularChainComplex R).d (n + 1) n =
+      ∑ (i : Fin (n + 2)), (-1 : ℤ) ^ (i : ℕ) • X.ιSingularChainComplex ((toSSet.obj X).δ i x) := by
+  simp [singularChainComplex, singularChainComplexFunctor, SSet.chainComplexFunctor,
+    Preadditive.comp_sum]
+
+/-- The universal element in `(toSSet.obj (SimplexCategory.toTop ^⦋n⦌)) _⦋n⦌`. -/
+@[simps]
+noncomputable def toSSet.univObj (n : ℕ) :
+    (toSSet.{w}.obj (SimplexCategory.toTop ^⦋n⦌)) _⦋n⦌ :=
+  ULift.up (𝟙 _)
+
+lemma toSSet.δ_univObj {n : ℕ} (i : Fin (n + 2)) :
+    (toSSet.{w}.obj (SimplexCategory.toTop ^⦋n + 1⦌)).δ i (univObj.{w} (n + 1)) =
+      (toSSet.map (SimplexCategory.toTop.{w}.map (SimplexCategory.δ i))).app _ (univObj.{w} n) :=
+  rfl
+
+lemma toSSet.exists_map_app_univObj_eq
+    {X : TopCat.{w}} {n : ℕ} (s : toSSet.obj X _⦋n⦌) :
+    ∃ (f : SimplexCategory.toTop ^⦋n⦌ ⟶ X),
+      (toSSet.map f).app _ (univObj n) = s := by
+  obtain ⟨s, rfl⟩ := (toSSetObjEquiv _ _).symm.surjective s
+  exact ⟨ofHom (s.comp ⟨ULift.down, by fun_prop⟩), rfl⟩
+
+@[reassoc (attr := simp)]
+lemma ι_singularChainComplexMap
+    {X Y : TopCat.{w}} (f : X ⟶ Y) {R : C} {n : ℕ} (x : (toSSet.obj X) _⦋n⦌) :
+    X.ιSingularChainComplex (R := R) x ≫ (singularChainComplexMap f R).f n =
+        Y.ιSingularChainComplex ((toSSet.map f).app _ x) := by
+  simp [singularChainComplexFunctor, singularChainComplexMap, ιSingularChainComplex,
+    SSet.chainComplexFunctor]
+
+end TopCat
