@@ -738,27 +738,27 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
   induction s using Trunc.induction_on with | _ s
   obtain ⟨s, H⟩ := s
   induction s using Multiset.induction_on generalizing f with
-  | empty =>
+  | zero =>
     have : f = 0 := funext fun i => (H i).resolve_left (Multiset.notMem_zero _)
     subst this
     exact h0
-  | cons i s ih => ?_
-  have H2 : p (erase i ⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩) := by
-    dsimp only [erase, Trunc.map, Trunc.bind, Trunc.liftOn, Trunc.lift_mk,
-      Function.comp, Subtype.coe_mk]
-    have H2 : ∀ j, j ∈ s ∨ ite (j = i) 0 (f j) = 0 := by grind
-    have H3 : ∀ aux, (⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨i ::ₘ s, aux⟩⟩ : Π₀ i, β i) =
-        ⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨s, H2⟩⟩ :=
-      fun _ ↦ ext fun _ => rfl
-    rw [H3]
-    apply ih
-  have H3 : single i _ + _ = (⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
-  rw [← H3]
-  change p (single i (f i) + _)
-  rcases Classical.em (f i = 0) with h | h
-  · rw [h, single_zero, zero_add]
-    exact H2
-  grind
+  | cons i s ih =>
+    have H2 : p (erase i ⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩) := by
+      dsimp only [erase, Trunc.map, Trunc.bind, Trunc.liftOn, Trunc.lift_mk,
+        Function.comp, Subtype.coe_mk]
+      have H2 : ∀ j, j ∈ s ∨ ite (j = i) 0 (f j) = 0 := by grind
+      have H3 : ∀ aux, (⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨i ::ₘ s, aux⟩⟩ : Π₀ i, β i) =
+          ⟨fun j : ι => ite (j = i) 0 (f j), Trunc.mk ⟨s, H2⟩⟩ :=
+        fun _ ↦ ext fun _ => rfl
+      rw [H3]
+      apply ih
+    have H3 : single i _ + _ = (⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
+    rw [← H3]
+    change p (single i (f i) + _)
+    rcases Classical.em (f i = 0) with h | h
+    · rw [h, single_zero, zero_add]
+      exact H2
+    grind
 
 theorem induction₂ {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (f + single i b)) : p f :=

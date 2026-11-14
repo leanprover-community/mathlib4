@@ -308,7 +308,7 @@ lemma Splits.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
   · clear hm
     refine .mul (.C _) ?_
     induction m using Multiset.induction_on with
-    | empty => simp
+    | zero => simp
     | cons a s IH =>
       rw [Multiset.map_cons, Multiset.prod_cons, mul_scaleRoots', X_add_C_scaleRoots]
       · exact .mul (.X_add_C _) IH

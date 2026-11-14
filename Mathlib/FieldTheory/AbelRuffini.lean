@@ -49,10 +49,8 @@ theorem gal_mul_isSolvable {p q : F[X]} (_ : Group.IsSolvable p.Gal) (_ : Group.
   Group.isSolvable_of_isSolvable_injective (Gal.restrictProd_injective p q)
 
 theorem gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, Group.IsSolvable (Gal p)) :
-    Group.IsSolvable s.prod.Gal := by
-  apply Multiset.induction_on' s
-  · exact gal_one_isSolvable
-  · intro p t hps _ ht
+    Group.IsSolvable s.prod.Gal :=
+  Multiset.induction_on' s gal_one_isSolvable fun {p} {t} hps _ ht => by
     rw [Multiset.insert_eq_cons, Multiset.prod_cons]
     exact gal_mul_isSolvable (hs p hps) ht
 

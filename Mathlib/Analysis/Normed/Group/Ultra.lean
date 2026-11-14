@@ -321,21 +321,20 @@ to `t` if `t` is nonempty, such that `‖(s.map f).prod‖ ≤ ‖f i‖`.
 `i : ι`, belonging to `t` if `t` is nonempty, such that `‖(s.map f).sum‖ ≤ ‖f i‖`. -/]
 theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι → M} :
     ∃ i : ι, (s ≠ 0 → i ∈ s) ∧ ‖(s.map f).prod‖ ≤ ‖f i‖ := by
-  inhabit ι
   induction s using Multiset.induction_on with
-  | empty => simp
+  | zero => simp
   | cons a t hM =>
-      obtain ⟨M, hMs, hM⟩ := hM
-      by_cases! hMa : ‖f M‖ ≤ ‖f a‖
-      · refine ⟨a, by simp, ?_⟩
+    obtain ⟨M, hMs, hM⟩ := hM
+    by_cases! hMa : ‖f M‖ ≤ ‖f a‖
+    · refine ⟨a, by simp, ?_⟩
+      rw [Multiset.map_cons, Multiset.prod_cons]
+      exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
+    · rcases eq_or_ne t 0 with rfl | ht
+      · exact ⟨a, by simp, by simp⟩
+      · refine ⟨M, ?_, ?_⟩
+        · simp [hMs ht]
         rw [Multiset.map_cons, Multiset.prod_cons]
-        exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
-      · rcases eq_or_ne t 0 with rfl | ht
-        · exact ⟨a, by simp, by simp⟩
-        · refine ⟨M, ?_, ?_⟩
-          · simp [hMs ht]
-          rw [Multiset.map_cons, Multiset.prod_cons]
-          exact le_trans (norm_mul_le_max _ _) (max_le hMa.le hM)
+        exact le_trans (norm_mul_le_max _ _) (max_le hMa.le hM)
 
 @[to_additive]
 lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := by

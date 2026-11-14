@@ -303,16 +303,13 @@ theorem monic_finprod_of_monic (α : Type*) (f : α → R[X])
 
 theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : ∀ i ∈ t, Monic (f i)) :
     nextCoeff (t.map f).prod = (t.map fun i => nextCoeff (f i)).sum := by
-  revert h
-  refine Multiset.induction_on t ?_ fun a t ih ht => ?_
-  · simp only [Multiset.notMem_zero, forall_prop_of_true, forall_prop_of_false, Multiset.map_zero,
-      Multiset.prod_zero, Multiset.sum_zero, not_false_iff, forall_true_iff]
-    rw [← C_1]
-    rw [nextCoeff_C_eq_zero]
-  · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons,
+  induction t using Multiset.induction_on with
+  | zero => simp [nextCoeff_eq_zero]
+  | cons a t ih =>
+    rw [Multiset.map_cons, Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons,
       Monic.nextCoeff_mul, ih]
-    exacts [fun i hi => ht i (Multiset.mem_cons_of_mem hi), ht a (Multiset.mem_cons_self _ _),
-      monic_multiset_prod_of_monic _ _ fun b bs => ht _ (Multiset.mem_cons_of_mem bs)]
+    exacts [fun i hi => h i (Multiset.mem_cons_of_mem hi), h a (Multiset.mem_cons_self _ _),
+      monic_multiset_prod_of_monic _ _ fun b bs => h _ (Multiset.mem_cons_of_mem bs)]
 
 theorem Monic.nextCoeff_prod (s : Finset ι) (f : ι → R[X]) (h : ∀ i ∈ s, Monic (f i)) :
     nextCoeff (∏ i ∈ s, f i) = ∑ i ∈ s, nextCoeff (f i) :=

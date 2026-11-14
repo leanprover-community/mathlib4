@@ -148,7 +148,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
 theorem prod_mahlerMeasure_eq_mahlerMeasure_prod (s : Multiset ℂ[X]) :
     (s.prod).mahlerMeasure = (s.map (fun p ↦ p.mahlerMeasure)).prod := by
   induction s using Multiset.induction_on with
-  | empty => simp
+  | zero => simp
   | cons _ _ ih => simp [mahlerMeasure_mul, ih]
 
 theorem logMahlerMeasure_mul_eq_add_logMahlerMeasure {p q : ℂ[X]} (hpq : p * q ≠ 0) :

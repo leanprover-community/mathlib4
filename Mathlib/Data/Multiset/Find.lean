@@ -74,7 +74,7 @@ variable {p} in
 theorem find?_eq_some_iff {a : α} {s : Multiset α} (hp) :
     s.find? p hp = some a ↔ a ∈ s ∧ p a := by
   induction s using Multiset.induction_on with
-  | empty => simp
+  | zero => simp
   | cons x s ih =>
     rw [find?_cons]
     split

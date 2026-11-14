@@ -109,20 +109,21 @@ lemma inter_le_left : s ∩ t ≤ s :=
 
 lemma inter_le_right : s ∩ t ≤ t := by
   induction s using Multiset.induction_on generalizing t with
-  | empty => exact (zero_inter t).symm ▸ zero_le _
+  | zero => exact (zero_inter t).symm ▸ zero_le _
   | cons a s IH =>
     by_cases h : a ∈ t
     · simpa [h] using cons_le_cons a (IH (t := t.erase a))
     · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
-  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intro s u h₁ h₂
-  · simpa only [zero_inter] using h₁
-  by_cases h : a ∈ u
-  · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
-    exact IH (erase_le_iff_le_cons.2 h₁) (erase_le_erase _ h₂)
-  · rw [cons_inter_of_neg _ h]
-    exact IH ((le_cons_of_notMem <| mt (mem_of_le h₂) h).1 h₁) h₂
+  induction t using Multiset.induction_on generalizing s u with
+  | zero => simpa using h₁
+  | cons a t IH =>
+    by_cases h : a ∈ u
+    · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
+      exact IH (erase_le_iff_le_cons.2 h₁) (erase_le_erase _ h₂)
+    · rw [cons_inter_of_neg _ h]
+      exact IH ((le_cons_of_notMem <| mt (mem_of_le h₂) h).1 h₁) h₂
 
 @[simp]
 lemma mem_inter : a ∈ s ∩ t ↔ a ∈ s ∧ a ∈ t :=
@@ -193,7 +194,7 @@ lemma union_add_inter (s t : Multiset α) : s ∪ t + s ∩ t = s + t := by
 
 lemma sub_add_inter (s t : Multiset α) : s - t + s ∩ t = s := by
   rw [inter_comm]
-  revert s; refine Multiset.induction_on t (by simp) fun a t IH s => ?_
+  induction t using Multiset.induction_on generalizing s with | zero => simp | cons a t IH
   by_cases h : a ∈ s
   · rw [cons_inter_of_pos _ h, sub_cons, add_cons, IH, cons_erase h]
   · rw [cons_inter_of_neg _ h, sub_cons, erase_of_notMem h, IH]
