@@ -182,11 +182,11 @@ theorem eRank_zero {m n : Type*} [Semiring R] [Nontrivial R] : eRank (0 : Matrix
 theorem rank_zero [Semiring R] [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   simp [rank]
 
-theorem rank_le_card_width [Fintype n] [CommSemiring R] [StrongRankCondition R] (A : Matrix m n R) :
+theorem rank_le_card_width [Fintype n] [Semiring R] [StrongRankCondition R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card n := by
-  grw [← finrank_range_mulVecLin, A.mulVecLin.finrank_range_le.trans_eq <| finrank_pi R]
+  simpa using toNat_le_toNat A.cRank_le_card_width
 
-theorem rank_le_width [CommSemiring R] [StrongRankCondition R] {m n : ℕ}
+theorem rank_le_width [Semiring R] [StrongRankCondition R] {m n : ℕ}
     (A : Matrix (Fin m) (Fin n) R) : A.rank ≤ n :=
   A.rank_le_card_width.trans (Fintype.card_fin n).le
 
