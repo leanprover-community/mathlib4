@@ -35,7 +35,7 @@ theorem IsOrderedRing.ofSubsemiring :
     IsOrderedRing R :=
   letI _ := PartialOrder.ofAddSubmonoid hS
   haveI := IsOrderedAddMonoid.ofAddSubmonoid hS
-  haveI : ZeroLEOneClass R := ⟨by simp⟩
+  haveI : ZeroLEOneClass R := ⟨by simp [PartialOrder.ofAddSubmonoid_le_iff]⟩
   .of_mul_nonneg fun x y xnn ynn ↦ show _ ∈ S by simpa using Subsemiring.mul_mem _ xnn ynn
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/

@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Unitization
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
@@ -42,7 +43,7 @@ continuous functional calculus, normal, selfadjoint
 
 public section
 
-open scoped NNReal CStarAlgebra
+open scoped NNReal CStarAlgebra ComplexOrder
 
 local notation "σₙ" => quasispectrum
 
@@ -87,45 +88,18 @@ open Unitization
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-noncomputable instance instPartialOrder : PartialOrder A⁺¹ :=
-    CStarAlgebra.spectralOrder _
-
-instance instStarOrderedRing : StarOrderedRing A⁺¹ :=
-    CStarAlgebra.spectralOrderedRing _
-
-@[simp, norm_cast]
-lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
-  -- TODO: prove the more general result for star monomorphisms and use it here.
-  simp [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
-    ← quasispectrumRestricts_iff_spectrumRestricts_inr']
-
-alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
-
-lemma inr_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) : 0 ≤ (a : A⁺¹) := ha.inr
-
-lemma nonneg_of_inr (a : A) (ha : 0 ≤ (a : A⁺¹) := by cfc_tac) : 0 ≤ a := inr_nonneg_iff.mp ha
-
-@[simp]
-lemma inr_le_inr_iff {a b : A} : (a : A⁺¹) ≤ (b : A⁺¹) ↔ a ≤ b := by
-  rw [← sub_nonneg, ← sub_nonneg (a := b), ← inr_sub ℂ b a, inr_nonneg_iff]
-
-@[deprecated (since := "2026-08-06")] alias inr_le_iff := inr_le_inr_iff
-
-alias ⟨le_of_inr, inr_mono⟩ := inr_le_inr_iff
-
-
 lemma convexOn_of_convexOn_inr_comp {f : A → A} {s : Set A}
     (hf : ConvexOn ℝ s (inr (R := ℂ) ∘ f)) : ConvexOn ℝ s f := by
   refine ⟨hf.1, ?_⟩
   intro x hx y hy a b ha hb hab
-  rw [← inr_le_inr_iff]
+  rw [← inr_le_inr_iff (R := ℂ)]
   simpa using hf.2 hx hy ha hb hab
 
 lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
     (hf₂ : ConcaveOn ℝ s (inr (R := ℂ) ∘ f)) : ConcaveOn ℝ s f := by
   refine ⟨hf₂.1, ?_⟩
   intro x hx y hy a b ha hb hab
-  rw [← inr_le_inr_iff]
+  rw [← inr_le_inr_iff (R := ℂ)]
   simpa using hf₂.2 hx hy ha hb hab
 
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
@@ -133,7 +107,7 @@ lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
   cfcₙ_eq_cfc_inr inr_nonneg_iff ..
 
 lemma sqrt_inr (a : A) : CFC.sqrt (a : A⁺¹) = (↑(CFC.sqrt a) : A⁺¹) := by
-  by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff] at ha
+  by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff (R := ℂ)] at ha
   · rw [CFC.sqrt_eq_iff .., ← inr_mul, CFC.sqrt_mul_sqrt_self a]
   · grind [CFC.sqrt, inr_zero]
 
@@ -470,7 +444,7 @@ lemma norm_le_norm_of_le_of_nonneg {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by
   suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
     have hb := ha.trans hab
     simpa only [ge_iff_le, Unitization.norm_inr] using
-      this a b (by simpa) (by rwa [Unitization.inr_le_inr_iff])
+      this a b (by sorry) (by simp only [PartialOrder.ofAddSubmonoid_le_iff])
   intro a b ha hab
   have hb : 0 ≤ b := ha.trans hab
   exact (norm_le_iff_le_algebraMap a (norm_nonneg _) ha).2 <| hab.trans <|
