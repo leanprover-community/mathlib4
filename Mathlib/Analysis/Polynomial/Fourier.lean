@@ -51,47 +51,51 @@ lemma toAddCircle.integrable :
     Integrable p.toAddCircle (haarAddCircle (T := 2 * π)) := by
   simpa using p.toAddCircle.continuous.continuousOn.integrableOn_compact isCompact_univ
 
-theorem toAddCircle_C_eq_smul_fourier_zero {c : ℂ} : (C c).toAddCircle = c • fourier 0 := by
+theorem toAddCircle_C_eq_smul_fourier_zero {c : ℂ} :
+    (C c).toAddCircle = c • AddCircle.fourier 0 := by
   ext θ; simp [toAddCircle]
 
-theorem toAddCircle_X_eq_fourier_one : (X : ℂ[X]).toAddCircle = fourier 1 := by
+theorem toAddCircle_X_eq_fourier_one : (X : ℂ[X]).toAddCircle = AddCircle.fourier 1 := by
   ext θ; simp [toAddCircle]
 
-theorem toAddCircle_X_pow_eq_fourier {n : ℕ} : (X ^ n : ℂ[X]).toAddCircle = fourier n := by
+theorem toAddCircle_X_pow_eq_fourier {n : ℕ} :
+    (X ^ n : ℂ[X]).toAddCircle = AddCircle.fourier n := by
   ext θ; simp [toAddCircle, AddCircle.toCircle_nsmul]
 
 theorem toAddCircle_monomial_eq_smul_fourier {n : ℕ} {c : ℂ} :
-    (monomial n c).toAddCircle = c • fourier n := by
+    (monomial n c).toAddCircle = c • AddCircle.fourier n := by
   ext θ; simp [toAddCircle, AddCircle.toCircle_nsmul]
 
 /-- The `n`th Fourier coefficient of a polynomial is the coefficient of `X ^ n`, or
 zero if `n < 0`. -/
 theorem fourierCoeff_toAddCircle (n : ℤ) :
-    fourierCoeff (T := 2 * π) p.toAddCircle n = if 0 ≤ n then p.coeff n.natAbs else 0 := by
+    AddCircle.fourierCoeff (T := 2 * π) p.toAddCircle n =
+      if 0 ≤ n then p.coeff n.natAbs else 0 := by
   have : n < 0 ∨ ∃ k : ℕ, n = k := lt_or_ge n 0 |>.imp_right Int.eq_ofNat_of_zero_le
   induction p using Polynomial.induction_on' with obtain (hn | ⟨k, rfl⟩) := this
   | add p q hp hq =>
-    simp_all [not_le_of_gt, fourierCoeff.add (toAddCircle.integrable p) (toAddCircle.integrable q)]
+    simp_all [not_le_of_gt,
+      AddCircle.fourierCoeff_add (toAddCircle.integrable p) (toAddCircle.integrable q)]
   | monomial m a =>
     simp_all [not_le_of_gt, toAddCircle_monomial_eq_smul_fourier,
-      fourierCoeff.const_smul, fourierCoeff_fourier, Pi.single_apply]
+      AddCircle.fourierCoeff_const_smul, AddCircle.fourierCoeff_fourier, Pi.single_apply]
     grind
 
 /-- The `n`th Fourier coefficient of a polynomial is the coefficient of `X ^ n` -/
 theorem fourierCoeff_toAddCircle_natCast (n : ℕ) :
-    fourierCoeff (T := 2 * π) p.toAddCircle n = p.coeff n := by
+    AddCircle.fourierCoeff (T := 2 * π) p.toAddCircle n = p.coeff n := by
   simp [fourierCoeff_toAddCircle]
 
 theorem fourierCoeff_toAddCircle_eq_zero_of_lt_zero (n : ℤ) (hn : n < 0) :
-    fourierCoeff (T := 2 * π) p.toAddCircle n = 0 := by
+    AddCircle.fourierCoeff (T := 2 * π) p.toAddCircle n = 0 := by
   simp [fourierCoeff_toAddCircle, hn]
 
 /-- **Parseval's Identity** for polynomials -/
 theorem sum_sq_norm_coeff_eq_circleAverage : ∑ i ∈ p.support, ‖p.coeff i‖ ^ 2 =
     Real.circleAverage (fun θ ↦ ‖p.eval θ‖ ^ 2) 0 1 := by
   -- Rewrite coefficients as Fourier coefficients
-  have := tsum_sq_fourierCoeff (T := 2 * π) (p.toAddCircle.toLp 2 haarAddCircle ℂ)
-  simp_rw [fourierCoeff_toLp, fourierCoeff_toAddCircle] at this
+  have := AddCircle.tsum_sq_fourierCoeff (T := 2 * π) (p.toAddCircle.toLp 2 haarAddCircle ℂ)
+  simp_rw [AddCircle.fourierCoeff_toLp, fourierCoeff_toAddCircle] at this
   rw [tsum_eq_sum (s := p.support.map ⟨_, Nat.cast_injective⟩) (fun b hb => ?eq_zero)] at this
   case eq_zero =>
     obtain h | h := le_or_gt 0 b
