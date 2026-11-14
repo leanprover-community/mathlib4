@@ -1511,10 +1511,10 @@ private theorem fermat42Double_four_way_split
   exact ⟨e, α', γ', f, he_pos, hα'_pos, hγ'_pos, hf_pos, h_cop_cop,
          hα_rw, hγ_rw, hf, hδ_eq⟩
 
+set_option maxHeartbeats 400000 in
 /-- **Quadruple extraction** — combines the s-side + t-side square splits
 with the four-way UFD split to produce positive `(a, b, c, d)` with
 `k = a·b·c·d` and the key identities. -/
-set_option maxHeartbeats 400000 in
 private theorem fermat42Double_quadruple_extraction
     (s t m k : ℤ) (hs_ne : s ≠ 0) (ht_ne : t ≠ 0)
     (hs_odd : s % 2 = 1) (ht_odd : t % 2 = 1)
@@ -1648,9 +1648,9 @@ private theorem fermat42Double_smaller_equation
   have h2 : 4 * e'' ^ 2 = 2 * (b ^ 4 + c ^ 4) := by linear_combination h1
   linarith
 
+set_option maxHeartbeats 400000 in
 /-- Core of the descent step — used by `fermat42Double_descent_step_holds`
 (declared below `Fermat42DoubleDescentStep` def). -/
-set_option maxHeartbeats 400000 in
 private theorem fermat42Double_descent_step_body
     (s t a m k : ℤ) (hs_ne : s ≠ 0) (ht_ne : t ≠ 0) (ha_pos : 0 < a)
     (_hst_coprime : IsCoprime s t) (_hst_lt : s ^ 2 < t ^ 2)
