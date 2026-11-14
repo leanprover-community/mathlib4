@@ -122,7 +122,7 @@ section OrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 
 instance instMul : Mul (Icc (0 : R) 1) where
-  mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
+  mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]⟩⟩
 
 instance instPow : Pow (Icc (0 : R) 1) ℕ where
   pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one₀ p.2.1 p.2.2⟩⟩
@@ -243,7 +243,7 @@ variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
 
 instance instMul : Mul (Ico (0 : R) 1) where
   mul p q :=
-    ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
+    ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ico (0 : R) 1) : ↑(x * y) = (x * y : R) :=
@@ -333,7 +333,7 @@ section OrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 instance instMul : Mul (Ioc (0 : R) 1) where
-  mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1.le⟩⟩
+  mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]⟩⟩
 
 instance instPow : Pow (Ioc (0 : R) 1) ℕ where
   pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one₀ (le_of_lt p.2.1) p.2.2⟩⟩
@@ -424,7 +424,7 @@ variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 
 instance instMul : Mul (Ioo (0 : R) 1) where
   mul p q :=
-    ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]; exact q.2.1⟩⟩
+    ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, by grw [p.2.2, one_mul, q.2.2]⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioo (0 : R) 1) : ↑(x * y) = (x * y : R) :=

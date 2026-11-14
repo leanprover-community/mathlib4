@@ -51,7 +51,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
   · gcongr
     · intro i hi
       rw [mem_range] at hi
-      have : (2 : ℤ) ^ i ≤ (2 : ℤ) ^ n := by gcongr; norm_num
+      have : (2 : ℤ) ^ i ≤ (2 : ℤ) ^ n := by gcongr
       linarith
     · apply sub_le_self
       positivity
