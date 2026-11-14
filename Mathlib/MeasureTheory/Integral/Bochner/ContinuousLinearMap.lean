@@ -193,6 +193,12 @@ theorem setIntegral_re_add_im {f : X → 𝕜} {i : Set X} (hf : IntegrableOn f 
       ∫ x in i, f x ∂μ :=
   integral_re_add_im hf
 
+open scoped ComplexConjugate in
+theorem enorm_integral_mul_conj_comm {f g : X → 𝕜} :
+    ‖∫ x, f x * conj (g x) ∂μ‖ₑ = ‖∫ x, g x * conj (f x) ∂μ‖ₑ := by
+  rw [← RCLike.enorm_conj, ← integral_conj]
+  simp [mul_comm]
+
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
 lemma swap_integral (f : X → E × F) : (∫ x, f x ∂μ).swap = ∫ x, (f x).swap ∂μ :=
