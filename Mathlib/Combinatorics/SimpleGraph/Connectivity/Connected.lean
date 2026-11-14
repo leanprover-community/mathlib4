@@ -326,7 +326,7 @@ theorem Preconnected.infinite_dart_iff_infinite (h : G.Preconnected) :
 variable {G} in
 theorem Preconnected.finite_support_iff_finite (h : G.Preconnected) :
     G.support.Finite ↔ Finite V := by
-  refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
+  refine ⟨fun hfin ↦ ?_, fun _ ↦ G.support.toFinite⟩
   nontriviality V
   rwa [h.support_eq_univ, Set.finite_univ_iff] at hfin
 
@@ -341,7 +341,7 @@ theorem Preconnected.finite_edgeSet_iff_finite (h : G.Preconnected) :
     G.edgeSet.Finite ↔ Finite V := by
   refine ⟨fun hfin ↦ ?_, fun _ ↦ G.edgeSet.toFinite⟩
   nontriviality V
-  rwa [← Set.finite_univ_iff, ← h.support_eq_univ, ← finite_edgeSet_iff_finite_support]
+  rwa [finite_edgeSet_iff_finite_support, h.finite_support_iff_finite] at hfin
 
 variable {G} in
 theorem Preconnected.infinite_edgeSet_iff_infinite (h : G.Preconnected) :
