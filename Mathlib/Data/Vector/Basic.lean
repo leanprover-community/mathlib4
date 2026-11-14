@@ -741,6 +741,29 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     · simp only [get_cons_succ, ih]
 
 @[simp]
+theorem toList_map₂ (f : α → β → γ) (x : Vector α n) (y : Vector β n) :
+    (map₂ f x y).toList = List.zipWith f x.toList y.toList :=
+  rfl
+
+@[simp]
+theorem tail_map₂ (f : α → β → γ) (x : Vector α n) (y : Vector β n) :
+    (map₂ f x y).tail = map₂ f x.tail y.tail :=
+  ext fun _ ↦ by simp [get_tail]
+
+@[to_additive]
+theorem prod_mul_prod_eq_prod_map₂ [CommMonoid α] (x y : Vector α n) :
+    x.toList.prod * y.toList.prod = (map₂ (· * ·) x y).toList.prod :=
+  List.prod_mul_prod_eq_prod_zipWith_of_length_eq _ _ <| by simp
+
+@[deprecated (since := "2026-10-07")] alias zipWith := map₂
+@[deprecated (since := "2026-10-07")] alias zipWith_toList := toList_map₂
+@[deprecated (since := "2026-10-07")] alias zipWith_get := get_map₂
+@[deprecated (since := "2026-10-07")] alias zipWith_tail := tail_map₂
+
+@[to_additive (attr := deprecated (since := "2026-10-07"))]
+alias prod_mul_prod_eq_prod_zipWith := prod_mul_prod_eq_prod_map₂
+
+@[simp]
 theorem mapAccumr_cons {f : α → σ → σ × β} :
     mapAccumr f (x ::ᵥ xs) s
     = let r := mapAccumr f xs s
