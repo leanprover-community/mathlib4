@@ -97,23 +97,97 @@ attribute [to_differentiable (reorder := 2 4) (omit := 2 3)] Foo
 
 end inputValidation
 
+-- Artificially simplified definitions (which hence contain unused variables).
+def ContDiff (R : Type*) [Group R] {E F : Type*} [Group E] [Group F] (_n : ℕ) (f : E → F) : Prop :=
+  ∀ x, f x = f x
+
+def Differentiable (R : Type*) [Group R] {E F : Type*} [Group E] [Group F] (f : E → F) : Prop :=
+  ∀ x, f x = f x
+
+attribute [to_differentiable existing (omit := 7) Differentiable] ContDiff
 
 variable {R : Type*} [Group R] {E F : Type*} [Group E] [Group F]
 
-set_option linter.unusedVariables false
-set_option linter.unusedSectionVars false
+-- Lemmas about a concrete function.
+def sin : R → R := @id R
 
--- Artificially simplified definitions (which hence contain unused variables).
-def ContDiff (n : ℕ) (f : E → F) : Prop := True
+lemma contDiff_sin : ContDiff R 2 (sin : R → R) := fun _ ↦ rfl
 
-def Differentiable (f : E → F) : Prop := True
+lemma differentiable_sin : Differentiable R (sin : R → R) := fun _ ↦ rfl
 
-attribute [to_differentiable existing (omit := 3) Differentiable] ContDiff
+attribute [to_differentiable existing differentiable_sin] contDiff_sin
 
-lemma ContDiff.add [Add F] (f g : E → F) (hf : ContDiff 2 f) (hg : ContDiff 2 g) :
-  ContDiff 2 (fun x ↦ f x + g x) := trivial
+variable {n : Nat}
 
-lemma Differentiable.add [Add F] (f g : E → F) (hf : Differentiable f) (hg : Differentiable g) :
-  Differentiable (fun x ↦ f x + g x) := trivial
+@[to_differentiable differentiable_sin']
+lemma contDiff_sin' : ContDiff R n (sin : R → R) := fun _ ↦ rfl
 
-attribute [to_differentiable existing] ContDiff.add
+@[to_differentiable differentiable_sin'']
+lemma contDiff_sin'' : ContDiff R 0 (sin : R → R) := fun _ ↦ rfl
+
+@[to_differentiable differentiable_sin''']
+lemma contDiff_sin''' : ContDiff R 0 (sin : R → R) := fun _ ↦ rfl
+
+@[to_differentiable]
+lemma ContDiff.add [Add F] {f g : E → F} (_hf : ContDiff R 2 f) (_hg : ContDiff R 2 g) :
+  ContDiff R 2 (fun x ↦ f x + g x) := fun _ ↦ rfl
+
+-- TODO: need to manually ask to omit the implicit argument `n`
+@[to_differentiable (omit := 7)]
+lemma ContDiff.add' [Add F] {f g : E → F} (_hf : ContDiff R n f) (_hg : ContDiff R n g) :
+  ContDiff R n (fun x ↦ f x + g x) := fun _ ↦ rfl
+
+-- TODO: is this because of translating numerals? investigate and fix!
+-- @[to_differentiable differentiable_one]
+-- lemma contDiff_one [One R] : ContDiff R 0 (fun (_ : R) ↦ (1 : R)) := fun _ ↦ rfl
+
+-- Translating a proof involving other lemmas.
+@[to_differentiable bar]
+lemma foo [Add R] {f : R → R} (hf : ContDiff R n f) : ContDiff R n (fun x ↦ f x + sin x) :=
+  hf.add contDiff_sin
+
+-- Matching lemmas with a different proof.
+lemma ContDiff.differentiable {f : R → R} (_hf : ContDiff R n f) (_hn : n ≠ 0) :
+    Differentiable R f :=
+  fun _ ↦ rfl
+
+def cos : R → R := @id R
+
+lemma contDiff_cos : ContDiff R n (cos : R → R) := fun _ ↦ rfl
+
+lemma differentiable_cos : Differentiable R (cos : R → R) :=
+  contDiff_cos.differentiable (n := 1) (by simp)
+
+-- TODO: need to manually specify the `n` argument to be removed!
+attribute [to_differentiable existing (omit := 3) differentiable_cos] contDiff_cos
+
+-- TODO: need to manually specify the `n` argument to be removed!
+@[to_differentiable (omit := 3) bar']
+lemma foo' [Add R] {f : R → R} (hf : ContDiff R n f) : ContDiff R n (fun x ↦ f x + cos x) :=
+  hf.add contDiff_cos
+
+-- TODO: why does this not fail when I comment `differentiable_cos`?
+/--
+info: Test.bar'.{u_1} {R : Type u_1} [Group R] [Add R] {f : R → R} (hf : Differentiable R f) :
+  Differentiable R fun x => f x + cos x
+-/
+#guard_msgs in
+#check bar'
+
+-- Translating a theorem with a hypothesis on `n`.
+-- TODO: currently, we translate both `n` and the hypothesis
+def aux : R → R := @id R
+
+@[to_differentiable differentiable_aux]
+lemma contDiff_aux (_hn : n ≠ 0) : ContDiff R n (aux : R → R) := fun _ ↦ rfl
+
+/--
+info: Test.differentiable_aux.{u_1} {R : Type u_1} [Group R] {n : ℕ} (_hn : n ≠ 0) : Differentiable R aux
+-/
+#guard_msgs in
+#check differentiable_aux
+
+-- TODO: add test for a typeclass argument involving n, and translating that to 1
+-- and implement that feature, most importantly!
+
+end Test
