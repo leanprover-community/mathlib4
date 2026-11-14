@@ -113,12 +113,12 @@ theorem support_sub_monomial_sub_monomial_subset [DecidableEq σ] (d d' : σ →
 section Degrees
 
 @[simp]
-theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
-  rw [degrees, support_neg]; rfl
+theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees :=
+  letI := Classical.decEq σ; p.supDegree_neg
 
 theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
-  simpa [degrees_def] using! AddMonoidAlgebra.supDegree_sub_le
+  simpa [degrees_def] using! p.supDegree_sub_le
 
 end Degrees
 
@@ -212,8 +212,7 @@ end DegreeOf
 section TotalDegree
 
 @[simp]
-theorem totalDegree_neg (a : MvPolynomial σ R) : (-a).totalDegree = a.totalDegree := by
-  simp only [totalDegree, support_neg]
+theorem totalDegree_neg (a : MvPolynomial σ R) : (-a).totalDegree = a.totalDegree := a.supDegree_neg
 
 theorem totalDegree_sub (a b : MvPolynomial σ R) :
     (a - b).totalDegree ≤ max a.totalDegree b.totalDegree :=
