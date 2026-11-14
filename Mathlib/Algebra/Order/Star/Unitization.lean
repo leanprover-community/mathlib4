@@ -74,6 +74,7 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid (Unitization R A) :=
 instance instStarOrderedRing : StarOrderedRing (Unitization R A) :=
   .of_nonneg_iff (by simp) (by simp [mem_starOrder_iff, PartialOrder.ofAddSubmonoid_le_iff])
 
+variable (R) in
 @[simp, norm_cast, grind =]
 lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization R A) ↔ 0 ≤ a := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -86,20 +87,28 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : Unitization R A) ↔ 0 ≤ a := by
     have := AddMonoidHom.map_mclosure φ (.range fun x ↦ star x * x) ▸ mem_map_of_mem φ h
     simpa [φ, ← Set.range_comp', Function.comp_def]
 
+variable (R) in
 @[simp, norm_cast, grind =]
 lemma inr_le_inr_iff {a b : A} : (a : Unitization R A) ≤ (b : Unitization R A) ↔ a ≤ b := by
-  rw [← sub_nonneg, ← sub_nonneg (a := b), ← inr_sub R b a, inr_nonneg_iff]
+  rw [← sub_nonneg, ← sub_nonneg (a := b), ← inr_sub R b a, inr_nonneg_iff R]
 
-alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
+lemma LE.le.of_inr {a : A} (ha : 0 ≤ (a : Unitization R A)) : 0 ≤ a :=
+  (inr_nonneg_iff R).mp ha
 
-lemma inr_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) : 0 ≤ (a : Unitization R A) := ha.inr
+alias ⟨_, LE.le.inr⟩ := inr_nonneg_iff
+
+variable (R) in
+lemma inr_nonneg (a : A) (ha : 0 ≤ a := by cfc_tac) : 0 ≤ (a : Unitization R A) := ha.inr R
 
 lemma nonneg_of_inr (a : A) (ha : 0 ≤ (a : Unitization R A) := by cfc_tac) :
     0 ≤ a :=
-  inr_nonneg_iff.mp ha
+  ha.of_inr
 
 @[deprecated (since := "2026-08-06")] alias inr_le_iff := inr_le_inr_iff
 
-alias ⟨le_of_inr, inr_mono⟩ := inr_le_inr_iff
+lemma le_of_inr {a b : A} (hab : (a : Unitization R A) ≤ (b : Unitization R A)) : a ≤ b :=
+  (inr_le_inr_iff R).mp hab
+
+alias ⟨_, inr_mono⟩ := inr_le_inr_iff
 
 end Unitization

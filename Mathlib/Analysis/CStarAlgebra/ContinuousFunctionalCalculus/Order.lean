@@ -92,22 +92,22 @@ lemma convexOn_of_convexOn_inr_comp {f : A → A} {s : Set A}
     (hf : ConvexOn ℝ s (inr (R := ℂ) ∘ f)) : ConvexOn ℝ s f := by
   refine ⟨hf.1, ?_⟩
   intro x hx y hy a b ha hb hab
-  rw [← inr_le_inr_iff (R := ℂ)]
+  rw [← inr_le_inr_iff ℂ]
   simpa using hf.2 hx hy ha hb hab
 
 lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
     (hf₂ : ConcaveOn ℝ s (inr (R := ℂ) ∘ f)) : ConcaveOn ℝ s f := by
   refine ⟨hf₂.1, ?_⟩
   intro x hx y hy a b ha hb hab
-  rw [← inr_le_inr_iff (R := ℂ)]
+  rw [← inr_le_inr_iff ℂ]
   simpa using hf₂.2 hx hy ha hb hab
 
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
-  cfcₙ_eq_cfc_inr inr_nonneg_iff ..
+  cfcₙ_eq_cfc_inr (inr_nonneg_iff ℂ) ..
 
 lemma sqrt_inr (a : A) : CFC.sqrt (a : A⁺¹) = (↑(CFC.sqrt a) : A⁺¹) := by
-  by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff (R := ℂ)] at ha
+  by_cases ha : 0 ≤ a <;> have ha' := by rwa [← Unitization.inr_nonneg_iff ℂ] at ha
   · rw [CFC.sqrt_eq_iff .., ← inr_mul, CFC.sqrt_mul_sqrt_self a]
   · grind [CFC.sqrt, inr_zero]
 
@@ -437,7 +437,7 @@ open ComplexOrder in
 instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x hx := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
-    exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
+    exact spectrum_nonneg_of_nonneg ((Unitization.inr_nonneg_iff ℂ).mpr ha) hx
 
 lemma norm_le_norm_of_le_of_nonneg {a b : A} (hab : a ≤ b) (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖ ≤ ‖b‖ := by
@@ -465,7 +465,7 @@ alias nnnorm_le_nnnorm_of_nonneg_of_le := nnNorm_le_nnNorm_of_le_of_nonneg
 lemma star_left_conjugate_le_norm_smul (a b : A) (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   suffices ∀ a b : A⁺¹, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
-    rw [← Unitization.inr_le_inr_iff (R := ℂ)]
+    rw [← Unitization.inr_le_inr_iff ℂ]
     simpa [Unitization.norm_inr] using this a b <| hb.inr ℂ
   intro a b hb
   calc
@@ -575,7 +575,7 @@ open Unitization Set Metric
 lemma inr_mem_Icc_iff_norm_le {x : A} :
     (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
   simp only [mem_Icc, inr_nonneg_iff, and_congr_right_iff]
-  rw [← norm_inr (𝕜 := ℂ), ← inr_nonneg_iff (R := ℂ), iff_comm]
+  rw [← norm_inr (𝕜 := ℂ), ← inr_nonneg_iff ℂ, iff_comm]
   exact (norm_le_one_iff_of_nonneg _ ·)
 
 lemma inr_mem_Icc_iff_nnNorm_le {x : A} :
@@ -591,7 +591,7 @@ lemma preimage_inr_Icc_zero_one :
 
 lemma inr_map_Ici_zero : inr '' (Ici (0 : A)) ⊆ Ici (0 : A⁺¹) := by
   rintro - ⟨a, ha, rfl⟩
-  exact Unitization.inr_nonneg_iff.mpr ha
+  exact (Unitization.inr_nonneg_iff ℂ).mpr ha
 
 end Icc
 
@@ -632,7 +632,7 @@ lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
   suffices a * e = a from
     ⟨this, by simpa [ha.star_eq, he.isSelfAdjoint.star_eq] using congr(star $this)⟩
   suffices ∀ a e : A⁺¹, IsStarProjection e → 0 ≤ a → a ≤ e → a * e = a from
-    mod_cast this a e he.inr ha.inr (inr_mono hae)
+    mod_cast this a e he.inr (ha.inr ℂ) (inr_mono ℂ hae)
   intro a e he ha hae
   suffices sqrt a * (1 - e : A⁺¹) = 0 by
     simpa [← mul_assoc, sqrt_mul_sqrt_self a, mul_sub, sub_eq_zero, eq_comm (a := a)]
