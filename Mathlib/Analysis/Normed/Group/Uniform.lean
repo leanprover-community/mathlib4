@@ -217,6 +217,26 @@ theorem uniformContinuous_nnNorm' : UniformContinuous fun a : E => ‖a‖₊ :=
 @[to_additive (attr := deprecated (since := "2026-10-31")) uniformContinuous_nnnorm]
 alias uniformContinuous_nnnorm' := uniformContinuous_nnNorm'
 
+@[to_additive LipschitzWith.norm]
+theorem LipschitzWith.norm' {f : E → F} {K : ℝ≥0} (hf : LipschitzWith K f) :
+    LipschitzWith K (fun x ↦ ‖f x‖) := by
+  simpa using! lipschitzWith_one_norm'.comp hf
+
+@[to_additive LipschitzOnWith.norm]
+theorem LipschitzOnWith.norm' {f : E → F} {K : ℝ≥0} (hf : LipschitzOnWith K f s) :
+    LipschitzOnWith K (fun x ↦ ‖f x‖) s := by
+  simpa using! lipschitzWith_one_norm'.comp_lipschitzOnWith hf
+
+@[to_additive LipschitzWith.nnNorm]
+theorem LipschitzWith.nnNorm' {f : E → F} {K : ℝ≥0} (hf : LipschitzWith K f) :
+    LipschitzWith K (fun x ↦ ‖f x‖₊) := by
+  simpa using! lipschitzWith_one_nnNorm'.comp hf
+
+@[to_additive LipschitzOnWith.nnNorm]
+theorem LipschitzOnWith.nnNorm' {f : E → F} {K : ℝ≥0} (hf : LipschitzOnWith K f s) :
+    LipschitzOnWith K (fun x ↦ ‖f x‖₊) s := by
+  simpa using! lipschitzWith_one_nnNorm'.comp_lipschitzOnWith hf
+
 end SeminormedGroup
 
 section SeminormedCommGroup
