@@ -15,7 +15,6 @@ and `K : HomologicalComplex C c`, we define `K.extend e : HomologicalComplex C c
 leads to a functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`.
 
 This construction first appeared in the Liquid Tensor Experiment.
-
 -/
 
 @[expose] public section
@@ -354,7 +353,7 @@ noncomputable def extendFunctor [HasZeroMorphisms C] :
 set_option backward.defeqAttrib.useBackward true in
 /-- Given an embedding `e : c.Embedding c'` of complex shapes, this is the isomorphism
 `e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i`
-when `e.f i = i'. -/
+when `e.f i = i'`. -/
 noncomputable def extendFunctorCompEvalIso
     [HasZeroMorphisms C] {i : ι} {i' : ι'} (h : e.f i = i') :
     e.extendFunctor C ⋙ HomologicalComplex.eval _ _ i' ≅ HomologicalComplex.eval _ _ i :=

@@ -72,7 +72,6 @@ Summing over all annuli (over `n`) gives a finite value for the integral.
 From the intermediate result `lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self`,
 we can deduce bounds on all the moments of the measure `μ` as function of powers of
 the first moment.
-
 -/
 
 @[expose] public section

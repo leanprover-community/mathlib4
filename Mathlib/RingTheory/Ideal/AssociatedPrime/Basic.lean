@@ -12,7 +12,6 @@ import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.MinimalPrime.Colon
 
 /-!
-
 # Associated primes of a module
 
 We provide the definition and related lemmas about associated primes of modules.

@@ -57,7 +57,6 @@ connection is a `C^n` connection.
 ## Tags
 
 Levi-Civita connection, metric, torsion-free, Koszul formula, musical isomorphism
-
 -/
 
 open Bundle FiberBundle Function NormedSpace VectorField

@@ -36,7 +36,6 @@ properties to computational properties of the matrix.
 * `SimpleGraph.adjMatrix_pow_apply_eq_card_walk`: each entry of the `n`th power of
   a graph's adjacency matrix counts the number of length-`n` walks between the corresponding
   pair of vertices.
-
 -/
 
 @[expose] public section
@@ -366,12 +365,12 @@ theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
   rw [← transpose_apply (adjMatrix α G) x v, transpose_adjMatrix]
 
 @[simp]
-theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
+theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V W α) (v : V) (w : W) :
     (G.adjMatrix α * M) v w = ∑ u ∈ G.neighborFinset v, M u w := by
   simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter]
 
 @[simp]
-theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
+theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix W V α) (v : W) (w : V) :
     (M * G.adjMatrix α) v w = ∑ u ∈ G.neighborFinset w, M v u := by
   simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 
@@ -414,7 +413,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
       rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
-      simp only [inf_eq_inter, mem_inter, mem_map] at hp
+      simp only [mem_inter, mem_map] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy

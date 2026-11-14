@@ -17,7 +17,6 @@ import Mathlib.Tactic.Abel
 # Nonsingular inverses over semirings
 
 This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
-
 -/
 
 @[expose] public section
@@ -172,7 +171,7 @@ alias ⟨_, Nonsingular.submatrix_equiv⟩ := nonsingular_submatrix_equiv_iff
 lemma detp_eq_of_row_eq {p q : n} (hpq : p ≠ q) (hrow : A.row p = A.row q)
     (s : ℤˣ := 1) (t : ℤˣ := -1) : A.detp s = A.detp t := by
   have : A.detp 1 = A.detp (-1) := sum_equiv (.mulRight <| swap p q) (by simp [hpq])
-    fun _ _ ↦ prod_equiv (swap p q) (by simp) (by aesop (add simp row))
+    fun _ _ ↦ prod_equiv (swap p q) (by simp) (by rw [coe_mulRight, coe_mul]; grind [row_apply'])
   obtain rfl | rfl := Int.units_eq_one_or s <;>
   obtain rfl | rfl := Int.units_eq_one_or t <;>
   first | rfl | rw [this]
@@ -319,7 +318,9 @@ lemma detp_option_expand_row_none (A : Matrix (Option n) (Option n) R) :
 
 variable {A B}
 
-theorem isAddUnit_mul {d : n → R} (hAB : A * B = diagonal d) (i j k : n) (hij : i ≠ j) :
+omit [Fintype m] [DecidableEq n] in
+theorem isAddUnit_mul {A : Matrix m n R} {B : Matrix n m R} {d : m → R}
+    (hAB : A * B = diagonal d) (i j : m) (k : n) (hij : i ≠ j) :
     IsAddUnit (A i k * B k j) := by
   revert k
   rw [← IsAddUnit.sum_univ_iff, ← Matrix.mul_apply, hAB, diagonal_apply_ne _ hij]

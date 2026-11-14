@@ -27,7 +27,6 @@ set_option linter.unusedVariables false
 This file contains tests for the flexible linter which require heavier imports, such as the
 mathlib tactics `norm_num`, `ring`, `group`, `positivity` or `module`.
 In essence, it verifies how certain mathlib tactics are treated.
-
 -/
 
 -- `norm_num` is allowed after `simp`.

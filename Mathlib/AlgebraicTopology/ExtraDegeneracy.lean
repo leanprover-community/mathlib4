@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
-
 # Augmented simplicial objects with an extra degeneracy
 
 In simplicial homotopy theory, in order to prove that the connected components
@@ -47,7 +46,6 @@ simplicial objects in any category.
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 * [M. Barr, J. Kennison, J. and R. Robert,
   *Contractible simplicial objects*][barr-kennison-robert-2019]
-
 -/
 
 set_option backward.defeqAttrib.useBackward true
@@ -142,7 +140,7 @@ lemma section_app_comp_hom_app (n : SimplexCategoryᵒᵖ) :
 lemma section_comp_hom : ed.section_ ≫ X.hom = 𝟙 _ := by cat_disch
 
 /-- If an augmented simplicial object has an extradegeneracy, then
-then augmentation is a split epimorphism. -/
+the augmentation is a split epimorphism. -/
 def splitEpi : SplitEpi X.hom where
   section_ := ed.section_
 
