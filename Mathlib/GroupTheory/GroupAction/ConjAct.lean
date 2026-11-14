@@ -30,7 +30,6 @@ The scalar action in defined in this file can also be written using `MulAut.conj
 has the advantage of not using the type alias `ConjAct`, but the downside of this approach
 is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
-
 -/
 
 @[expose] public section

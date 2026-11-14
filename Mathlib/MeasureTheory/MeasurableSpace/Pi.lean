@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.PiSystem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases of the indexed product σ-algebra
 

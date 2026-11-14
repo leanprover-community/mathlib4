@@ -30,7 +30,6 @@ characteristic 0 form a root system. We achieve this by studying root chains.
 - `LieAlgebra.IsKilling.rootSystem`: The root system of a finite-dimensional Lie algebra with
   non-degenerate Killing form over a field of characteristic zero,
   relative to a splitting Cartan subalgebra.
-
 -/
 
 @[expose] public section
@@ -79,7 +78,7 @@ lemma chainLength_nsmul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
   have h : x' ∈ rootSpace H (chainTop α β) ∧ x' ≠ 0 :=
     (chainTop α β).exists_ne_zero.choose_spec
   obtain ⟨k, rfl⟩ : ∃ k : K, k • x' = x := by
-    simpa using (finrank_eq_one_iff_of_nonzero' ⟨x', h.1⟩ (by simpa using h.2)).mp
+    simpa using (finrank_eq_one_iff_of_ne_zero' ⟨x', h.1⟩ (by simpa using h.2)).mp
       (finrank_rootSpace_eq_one _ (chainTop_isNonZero α β hα)) ⟨_, hx⟩
   rw [lie_smul, smul_comm, chainLength, dite_eq_right hα, (chainLength_aux α β hα h.1).choose_spec]
 
@@ -103,7 +102,8 @@ lemma apply_coroot_eq_cast' :
 lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength α β) :
     rootSpace H (-(n • α) + chainTop α β) ≠ ⊥ := by
   by_cases hα : α.IsZero
-  · simpa only [hα.eq, smul_zero, neg_zero, chainTop_zero, zero_add, ne_eq] using! β.2
+  · simpa only [hα.eq, smul_zero, neg_zero, chainTop_zero, zero_add, ne_eq]
+      using! β.genWeightSpace_ne_bot'
   obtain ⟨x, hx, x_ne0⟩ := (chainTop α β).exists_ne_zero
   obtain ⟨h, e, f, isSl2, he, hf⟩ := exists_isSl2Triple_of_weight_isNonZero hα
   obtain rfl := isSl2.h_eq_coroot hα he hf
@@ -238,7 +238,7 @@ lemma exists_mem_rootSpace_lie_ne_zero
     exact toEnd_pow_apply_mem hf hx (chainTopCoeff α β)
   · have hq₀ : 0 < chainTopCoeff α β := by
       have := (rootSpace_zsmul_add_ne_bot_iff α β hα 1).mp <| by rwa [one_smul]
-      exact_mod_cast this.1
+      exact mod_cast this.1
     obtain ⟨n, hn⟩ : ∃ n, chainTopCoeff α β = n + 1 := ⟨chainTopCoeff α β - 1, by lia⟩
     have h_prim : ef_sl2.HasPrimitiveVectorWith x (chainLength α β : K) :=
       { ne_zero := hx₀
@@ -248,7 +248,7 @@ lemma exists_mem_rootSpace_lie_ne_zero
           rwa [genWeightSpace_add_chainTop α β hα] at hmem }
     rw [hn, h_prim.lie_e_pow_succ_toEnd_f n]
     have : chainTopCoeff α β ≤ chainLength α β := chainTopCoeff_le_chainLength α β
-    refine smul_ne_zero (mul_ne_zero (by exact_mod_cast n.succ_ne_zero) ?_)
+    refine smul_ne_zero (mul_ne_zero (mod_cast n.succ_ne_zero) ?_)
       (h_prim.pow_toEnd_f_ne_zero_of_eq_nat rfl (by lia))
     rw [sub_ne_zero, Nat.cast_injective.ne_iff]
     lia
@@ -259,10 +259,10 @@ lemma chainTopCoeff_of_eq_zsmul_add
   apply le_antisymm
   · refine le_sub_iff_add_le.mpr ((rootSpace_zsmul_add_ne_bot_iff α β hα _).mp ?_).1
     rw [add_smul, add_assoc, ← hβ', ← coe_chainTop]
-    exact (chainTop α β').2
+    exact (chainTop α β').genWeightSpace_ne_bot'
   · refine ((rootSpace_zsmul_add_ne_bot_iff α β' hα _).mp ?_).1
     rw [hβ', ← add_assoc, ← add_smul, sub_add_cancel, ← coe_chainTop]
-    exact (chainTop α β).2
+    exact (chainTop α β).genWeightSpace_ne_bot'
 
 lemma chainBotCoeff_of_eq_zsmul_add
     (hα : α.IsNonZero) (β' : Weight K H L) (n : ℤ) (hβ' : (β' : H → K) = n • α + β) :
@@ -287,7 +287,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
   apply eq_of_le_of_not_lt
   · rw [Nat.one_le_iff_ne_zero]
     intro e
-    exact α.2 (by simpa [e] using!
+    exact α.genWeightSpace_ne_bot' (by simpa [e] using!
       genWeightSpace_chainTopCoeff_add_one_nsmul_add α (0 : Weight K H L) hα)
   obtain ⟨x, hx, x_ne0⟩ := (chainTop α (0 : Weight K H L)).exists_ne_zero
   obtain ⟨h, e, f, isSl2, he, hf⟩ := exists_isSl2Triple_of_weight_isNonZero hα
@@ -301,7 +301,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
       convert toEnd_pow_apply_mem hf hx (chainTopCoeff α (0 : Weight K H L) + 1)
       rw [coe_chainTop', FunLike.coe_zero, add_zero, succ_nsmul',
         add_assoc, smul_neg, neg_add_cancel, add_zero]
-    simpa using! (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simpa using! isSl2.f_ne_zero)).mp
+    simpa using! (finrank_eq_one_iff_of_ne_zero' ⟨f, hf⟩ (by simpa using! isSl2.f_ne_zero)).mp
       (finrank_rootSpace_eq_one _ hα.neg) ⟨_, this⟩
   apply_fun (⁅f, ·⁆) at hk
   simp only [lie_smul, lie_self, smul_zero, prim.lie_f_pow_toEnd_f] at hk
@@ -352,7 +352,8 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
       mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false] at H
     rw [← Int.cast_natCast, ← Int.cast_natCast (chainTopCoeff α β), ← Int.cast_sub] at H
     have := (rootSpace_zsmul_add_ne_bot_iff_mem α 0 hα (n - chainTopCoeff α β)).mp
-      (by rw [← Int.cast_smul_eq_zsmul K, ← H, ← h, FunLike.coe_zero, add_zero]; exact β.2)
+      (by rw [← Int.cast_smul_eq_zsmul K, ← H, ← h, FunLike.coe_zero,
+        add_zero]; exact β.genWeightSpace_ne_bot')
     rw [chainTopCoeff_zero_right α hα, chainBotCoeff_zero_right α hα, Nat.cast_one] at this
     set k' : ℤ := n - chainTopCoeff α β
     subst H

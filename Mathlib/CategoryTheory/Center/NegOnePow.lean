@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Center.Preadditive
 
 /-!
 # Powers of `-1` in the center of a preadditive category
-
 -/
 
 public section

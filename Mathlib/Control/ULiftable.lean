@@ -33,7 +33,6 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 ## Tags
 
 universe polymorphism functor
-
 -/
 
 @[expose] public section

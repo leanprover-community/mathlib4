@@ -14,7 +14,6 @@ If `F : C ⥤ D` is a functor and `R : Dᵒᵖ ⥤ CommRingCat` is a presheaf
 of commutative rings, then the pushforward functor from the category
 of presheaves of modules on `R` to the category of presheaves of
 modules on `F.op ⋙ R` is monoidal.
-
 -/
 
 public section

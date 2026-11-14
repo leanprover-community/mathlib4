@@ -21,7 +21,6 @@ monadicity theorem).
 
 This file has been adapted to `Mathlib/CategoryTheory/Monad/Equalizer.lean`.
 Please try to keep them in sync.
-
 -/
 
 @[expose] public section
@@ -84,7 +83,6 @@ def beckAlgebraCofork : Cofork (FreeCoequalizer.topMap X) (FreeCoequalizer.botto
   Cofork.ofπ _ (FreeCoequalizer.condition X)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The cofork constructed is a colimit. This shows that any algebra is a (reflexive) coequalizer of
 free algebras.
 -/

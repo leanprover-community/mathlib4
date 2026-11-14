@@ -23,7 +23,6 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
   for primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
   `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly the associated primes of `I`.
 - `Submodule.isLasker`: Every Noetherian module is Lasker.
-
 -/
 
 @[expose] public section
@@ -83,10 +82,10 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
     contrapose hIJ
     suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
-    · rw [← hI, colon_finsetInf,
-        radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
-      rw [hIJ, ← hJ, colon_finsetInf,
-        radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
+    rw [← hI, colon_finsetInf,
+      radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
+    rw [hIJ, ← hJ, colon_finsetInf,
+      radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
     {N : Submodule R M} {s : Finset (Submodule R M)}

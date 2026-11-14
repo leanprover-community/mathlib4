@@ -10,6 +10,9 @@ public import Lean.LocalContext
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additional methods about `LocalContext`
 -/

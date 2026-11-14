@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 
 /-!
-
 # Separable closure
 
 This file contains basics about the (relative) separable closure of a field extension.
@@ -58,7 +57,6 @@ This file contains basics about the (relative) separable closure of a field exte
 ## Tags
 
 separable degree, degree, separable closure
-
 -/
 
 @[expose] public section
@@ -180,6 +178,13 @@ theorem separableClosure.normalClosure_eq_self :
     have : Algebra.IsSeparable F i.fieldRange :=
       (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
+
+/-- If `K / F` is separable, then the normal closure of `K` over `F` in `E`
+is separable over `F`. -/
+instance IntermediateField.normalClosure.isSeparable [Algebra.IsSeparable F K] :
+    Algebra.IsSeparable F (normalClosure F K E) := by
+  simp_rw [← le_separableClosure_iff, normalClosure_le_iff, le_separableClosure_iff]
+  exact fun f ↦ AlgEquiv.Algebra.isSeparable f.equivFieldRange
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/

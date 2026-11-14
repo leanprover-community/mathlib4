@@ -32,7 +32,6 @@ The first-order theory of algebraically closed fields, along with the Lefschetz 
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
-
 -/
 
 @[expose] public section
@@ -182,7 +181,7 @@ theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
   rcases hp with hp | rfl
   · exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons
   · rw [ACF_zero_realize_iff_infinite_ACF_prime_realize]
-    convert Set.infinite_univ (α := Nat.Primes)
+    convert Set.infinite_univ (α := Nat.Primes) using 1
     rw [Set.eq_univ_iff_forall]
     intro ⟨p, hp⟩
     exact ACF_models_genericPolyMapSurjOnOfInjOn_of_prime hp φ mons

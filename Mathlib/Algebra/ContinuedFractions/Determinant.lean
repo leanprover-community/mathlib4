@@ -19,7 +19,6 @@ We derive the so-called *determinant formula* for `GenContFract`:
 ## References
 
 - https://en.wikipedia.org/wiki/Generalized_continued_fraction#The_determinant_formula
-
 -/
 
 public section

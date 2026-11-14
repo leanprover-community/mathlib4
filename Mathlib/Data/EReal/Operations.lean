@@ -309,7 +309,7 @@ lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y
 
 /-- Induction principle for `EReal`s splitting into cases `↑(x : ℝ≥0∞)` and `-↑(x : ℝ≥0∞)`.
 In the latter case, we additionally assume `0 < x`. -/
-@[elab_as_elim]
+@[elab_as_elim, no_expose]
 def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : EReal) : motive x :=
   if hx : 0 ≤ x then coe_toENNReal hx ▸ coe _
@@ -321,23 +321,19 @@ def recENNReal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
 @[simp]
 theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) (x : ℝ≥0∞) : recENNReal coe neg_coe x = coe x := by
-  suffices ∀ y : EReal, x = y → (recENNReal coe neg_coe y : motive y) ≍ coe x from
-    heq_iff_eq.mp (this x rfl)
-  intro y hy
-  have H₁ : 0 ≤ y := hy ▸ coe_ennreal_nonneg x
-  obtain rfl : y.toENNReal = x := by simp [← hy]
-  simp [recENNReal, H₁]
+  unfold recENNReal
+  rw [dite_eq_left (coe_ennreal_nonneg x)]
+  rw! [toENNReal_coe]
+  rfl
 
 @[simp]
 theorem recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
     recENNReal coe neg_coe (-x) = neg_coe x hx := by
-  have H₁ : ¬0 ≤ -(x : EReal) := by simpa using hx
-  have H₂ : ∀ {c : ℝ≥0∞}, c = x → ∀ {b : EReal} (hb : -c = b) (p : 0 < c),
-      (hb ▸ neg_coe c) p ≍ neg_coe x hx := by rintro _ rfl _ rfl _; rfl
-  apply eq_of_heq
-  simp only [recENNReal, dite_eq_right H₁]
-  exact H₂ (by simp) _ _
+  unfold recENNReal
+  rw [dite_eq_right (not_le.2 (EReal.neg_lt_zero.2 (coe_ennreal_pos.2 hx)))]
+  rw! [neg_neg, toENNReal_coe]
+  rfl
 
 /-!
 ### Subtraction
@@ -819,7 +815,7 @@ lemma right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   lift a to ℝ≥0∞ using ha
   lift b to ℝ≥0∞ using hb
   cases c using recENNReal with
-  | coe c => exact_mod_cast add_mul a b c
+  | coe c => exact mod_cast add_mul a b c
   | neg_coe c hc =>
     simp only [mul_neg, ← coe_ennreal_add, ← coe_ennreal_mul, add_mul]
     rw [coe_ennreal_add, EReal.neg_add (.inl (coe_ennreal_ne_bot _)) (.inr (coe_ennreal_ne_bot _)),

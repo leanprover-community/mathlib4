@@ -30,8 +30,6 @@ permissions:
 jobs:
   publish:
     name: Build and publish tools
-    # Only publish from the canonical repository. nightly-testing has no `master`
-    # branch and builds its tools from `nightly-testing-green` on demand instead.
     if: github.repository == 'leanprover-community/mathlib4'
     # Must run on the same kind of runner as the consumers (build_template's `pr`
     # runners), so the binary we build here will run on the machines that use it.
@@ -92,7 +90,7 @@ jobs:
           ls -l "${GITHUB_WORKSPACE}/tools-bin.tar.gz"
 
       - name: upload tools artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: tools-bin
           path: tools-bin.tar.gz

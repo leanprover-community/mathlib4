@@ -17,7 +17,6 @@ public import Mathlib.ModelTheory.Satisfiability
 
 ## TODO
 - Define the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
-
 -/
 
 @[expose] public section

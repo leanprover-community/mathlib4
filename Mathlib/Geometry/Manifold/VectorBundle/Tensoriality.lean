@@ -35,7 +35,6 @@ fibre `W x`), the construction produces a continuous linear map `V x →L[𝕜] 
 
 * `TensorialAt.mkHom₂`: An operation on sections of `V` and `V'` which is tensorial at `x` in both
   arguments defines a continuous bilinear map out of `V x` and `V' x`.
-
 -/
 
 open Bundle FiberBundle Module

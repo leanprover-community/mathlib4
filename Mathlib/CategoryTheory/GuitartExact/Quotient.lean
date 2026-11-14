@@ -33,7 +33,6 @@ between `f₀` and `f₁` for `P.map L`. The dual result is also obtained.
 This result shall be applied in the situation where `C₀` is a suitable
 full subcategory of a category `C` of homological complexes, and `H₀` and `H`
 are the corresponding homotopy categories (TODO @joelriou).
-
 -/
 
 public section
@@ -85,7 +84,6 @@ lemma quotient_of_nonempty_leftHomotopy (e : T ⋙ R ≅ L ⋙ B)
       CostructuredArrow.homMk (StructuredArrow.homMk P.i₁) (by simp [Z, Z', dsimp% h.h₁])
     Zigzag (Z s₁) A₁ := .of_hom f₁
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma quotient_of_nonempty_rightHomotopy (e : T ⋙ R ≅ L ⋙ B)
     (he : ∀ ⦃X : C⦄ ⦃Y₀ : C₀⦄ (f₀ f₁ : X ⟶ L.obj Y₀) (_ : B.map f₀ = B.map f₁),
       ∃ (P : PrepathObject Y₀), T.map P.p₀ = T.map P.p₁ ∧

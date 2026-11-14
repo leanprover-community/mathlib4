@@ -55,7 +55,6 @@ Note that some results, for example `IsCyclotomicExtension.trans`,
 `IsCyclotomicExtension.finiteDimensional`, `IsCyclotomicExtension.isGalois` and
 `CyclotomicField.algebraBase` are lemmas, but they can be made local instances. Some of them are
 included in the `Cyclotomic` locale.
-
 -/
 
 @[expose] public section
@@ -162,8 +161,8 @@ theorem subsingleton_iff [Subsingleton B] :
     obtain ⟨ζ, hζ⟩ := hprim hs hs'
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · refine ⟨fun {s} hs hs' ↦ ?_, fun x ↦ by convert (mem_top (R := A) : x ∈ ⊤)⟩
-    · have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
-      exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
+    have : s = 1 := (subset_pair_iff.mp hS s hs).resolve_left hs'
+    exact ⟨0, this ▸ IsPrimitiveRoot.of_subsingleton 0⟩
 
 /-- If `B` is a cyclotomic extension of `A` given by roots of unity of order in `S ∪ T`, then `B`
 is a cyclotomic extension of `adjoin A { b : B | ∃ a : ℕ, a ∈ S ∧ a ≠ 0 ∧ b ^ a = 1 }` given by
@@ -486,10 +485,11 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [
 
 variable {L} in
 theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
-    [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
+    {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
   change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.isAlgebraic ζ)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic
+    (hζ.isIntegral (NeZero.pos n)).tower_top.isAlgebraic]
   exact hζ.adjoin_isCyclotomicExtension K
 
 end

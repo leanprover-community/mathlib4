@@ -3,10 +3,12 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, David Renshaw, Heather Macbeth, Michael Rothgang
 -/
-import Mathlib.Basic.Real.Basic
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
 
 /-!
 # Tests for the `field_simp` and `field` tactics
@@ -707,7 +709,6 @@ example (x : ℚ) (h₀ : x ≠ 0) :
   fail_if_success field_simp (maxSteps := 0)
   field_simp (config := {})
   ring
-
 -/
 
 /-! ### check that `field_simp` closes goals when the equality reduces to an identity -/
@@ -945,7 +946,6 @@ example : a /ₚ (u₁ / u₂) = a * u₂ /ₚ u₁ := by field_simp
 example : a /ₚ u₁ /ₚ u₂ = a /ₚ (u₂ * u₁) := by field_simp
 
 end CommRing
-
 -/
 
 /-! ## Algebraic structures weaker than `Field` -/

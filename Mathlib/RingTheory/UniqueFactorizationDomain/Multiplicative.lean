@@ -32,7 +32,7 @@ variable {β : Type*} [CommMonoidWithZero β]
 
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)
-    (is_coprime : ∀ᵉ (q ∈ insert p s) (q' ∈ insert p s), q ∣ q' → q = q') :
+    (is_coprime : ∀ q ∈ insert p s, ∀ q' ∈ insert p s, q ∣ q' → q = q') :
     IsRelPrime (p ^ i p) (∏ p' ∈ s, p' ^ i p') := by
   have hp := is_prime _ (Finset.mem_insert_self _ _)
   refine (isRelPrime_iff_no_prime_factors <| pow_ne_zero _ hp.ne_zero).mpr ?_
@@ -52,7 +52,7 @@ and `P x ∧ P y` for coprime `x, y` implies `P (x * y)`,
 then `P` holds on a product of powers of distinct primes. -/
 @[elab_as_elim]
 theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → ℕ)
-    (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
+    (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ p ∈ s, ∀ q ∈ s, p ∣ q → p = q)
     (h1 : ∀ {x}, IsUnit x → P x) (hpr : ∀ {p} (i : ℕ), Prime p → P (p ^ i))
     (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) :
     P (∏ p ∈ s, p ^ i p) := by
@@ -91,7 +91,7 @@ theorem induction_on_coprime {P : α → Prop} (a : α) (h0 : P 0) (h1 : ∀ {x}
 /-- If `f` maps `p ^ i` to `(f p) ^ i` for primes `p`, and `f`
 is multiplicative on coprime elements, then `f` is multiplicative on all products of primes. -/
 theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α → ℕ)
-    (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q)
+    (is_prime : ∀ p ∈ s, Prime p) (is_coprime : ∀ p ∈ s, ∀ q ∈ s, p ∣ q → p = q)
     (h1 : ∀ {x y}, IsUnit y → f (x * y) = f x * f y)
     (hpr : ∀ {p} (i : ℕ), Prime p → f (p ^ i) = f p ^ i)
     (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
@@ -103,7 +103,7 @@ theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α →
     have hpr_p := is_prime _ (Finset.mem_insert_self _ _)
     have hpr_s : ∀ p ∈ s, Prime p := fun p hp => is_prime _ (Finset.mem_insert_of_mem hp)
     have hcp_p := fun i => prime_pow_coprime_prod_of_coprime_insert i p hps is_prime is_coprime
-    have hcp_s : ∀ᵉ (p ∈ s) (q ∈ s), p ∣ q → p = q := fun p hp q hq =>
+    have hcp_s : ∀ p ∈ s, ∀ q ∈ s, p ∣ q → p = q := fun p hp q hq =>
       is_coprime p (Finset.mem_insert_of_mem hp) q (Finset.mem_insert_of_mem hq)
     rw [Finset.prod_insert hps, Finset.prod_insert hps, Finset.prod_insert hps, hcp (hcp_p _),
       hpr _ hpr_p, hcp (hcp_p _), hpr _ hpr_p, hcp (hcp_p (fun p => i p + j p)), hpr _ hpr_p,

@@ -15,7 +15,6 @@ Given a successor structure `Φ : SuccStruct C`
 (see the file `Mathlib/CategoryTheory/SmallObject/Iteration/Basic.lean`)
 and a well-ordered type `J`, we define the iteration `Φ.iteration J : C`. It is
 defined as the colimit of a functor `Φ.iterationFunctor J : J ⥤ C`.
-
 -/
 
 @[expose] public section
@@ -98,7 +97,6 @@ instance : (Φ.iterationFunctor J).IsWellOrderContinuous where
 noncomputable def iterationFunctorObjBotIso : (Φ.iterationFunctor J).obj ⊥ ≅ Φ.X₀ :=
   eqToIso (Φ.iter ⊥).obj_bot
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural map `Φ.X₀ ⟶ (Φ.iterationFunctor J).obj j`. -/
 noncomputable def ιIterationFunctor :
     (Functor.const _).obj Φ.X₀ ⟶ Φ.iterationFunctor J where

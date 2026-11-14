@@ -179,10 +179,6 @@ instance : SetLike ZFSet.{u} ZFSet.{u} where
   coe := toSet
   coe_injective x y hxy := by apply ext_aux; intro z; congrm z ∈ $hxy
 
-/-- The membership relation for ZFC sets is inherited from the membership relation for pre-sets. -/
-@[deprecated "use `∈` notation" (since := "2026-03-16")]
-protected def Mem : ZFSet → ZFSet → Prop := (· ∈ ·)
-
 @[simp]
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
@@ -211,19 +207,8 @@ theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
 
 @[simp, norm_cast] lemma nonempty_coe : (x : Set ZFSet.{u}).Nonempty ↔ x.Nonempty := .rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
-lemma le_def : x ≤ y ↔ x ⊆ y := .rfl
-@[deprecated "This is now a syntactic equality" (since := "2026-03-18"), nolint synTaut]
-lemma lt_def : x < y ↔ x ⊂ y := .rfl
-
 theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z ∈ y :=
   Iff.rfl
-
-instance : @Std.Refl ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ => id⟩
-
-instance : IsTrans ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ _ hxy hyz _ ha => hyz (hxy ha)⟩
 
 @[simp]
 theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
@@ -234,12 +219,6 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
         ⟨b, za.trans ab⟩⟩
 
 lemma coe_subset_coe : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := SetLike.coe_subset_coe
-
-instance : @Std.Antisymm ZFSet (· ⊆ ·) :=
-  ⟨@le_antisymm ZFSet _⟩
-
-instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
@@ -528,10 +507,10 @@ protected def inter (x y : ZFSet.{u}) : ZFSet.{u} :=
 protected def diff (x y : ZFSet.{u}) : ZFSet.{u} :=
   ZFSet.sep (fun z => z ∉ y) x -- { z ∈ x | z ∉ y }
 
-instance : Union ZFSet :=
+instance : Max ZFSet :=
   ⟨ZFSet.union⟩
 
-instance : Inter ZFSet :=
+instance : Min ZFSet :=
   ⟨ZFSet.inter⟩
 
 instance : SDiff ZFSet :=

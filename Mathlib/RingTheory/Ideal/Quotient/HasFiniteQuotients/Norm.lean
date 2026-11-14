@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 For a ring with finite quotients, there are only finitely many ideals of bounded norm, see
 `Ring.HasFiniteQuotients.finite_cardQuot_le`. This file records the resulting `Northcott`
 instances.
-
 -/
 
 public section
@@ -25,7 +24,10 @@ variable {R : Type*} [CommRing R] [HasFiniteQuotients R]
 instance : Northcott fun p : Ideal R ↦ p.cardQuot :=
   ⟨Ring.HasFiniteQuotients.finite_cardQuot_le⟩
 
-instance [IsDedekindDomain R] [Infinite R] :
+instance [IsDedekindDomain R] : Northcott fun I : Ideal R ↦ I.absNorm :=
+  ⟨Ring.HasFiniteQuotients.finite_absNorm_le⟩
+
+instance [IsDedekindDomain R] :
     Northcott fun p : IsDedekindDomain.HeightOneSpectrum R ↦ p.asIdeal.absNorm :=
   ⟨Ring.HasFiniteQuotients.finite_absNorm_heightOneSpectrum_le⟩
 

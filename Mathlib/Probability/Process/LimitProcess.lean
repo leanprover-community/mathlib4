@@ -9,7 +9,6 @@ public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.Indistinguishable
 
 /-!
-
 # Limit of a stochastic process
 
 Under certain assumptions, classical familes of processes such as martingales converge as time
@@ -32,7 +31,6 @@ under continuous maps.
 Because several properties often rely on the fact that the limit exists, we also define a predicate
 `HasLimitProcess X 𝓕 P` which states that `X` does converge `P`-almost surely towards a
 `⨆ t, 𝓕 t`-strongly measurable function.
-
 -/
 
 public section
@@ -300,18 +298,16 @@ end Maps
 end Preserved
 
 /-- If a stochastic process is bounded in `Lp` then its limit is in `Lp`. -/
-theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [SeminormedAddGroup F]
+theorem memLp_limitProcess_of_eLpNorm_bdd {p : ℝ≥0∞} {F : Type*} [SeminormedAddGroup F]
     {𝓕 : Filtration ℕ mΩ} {X : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (X n) P)
-    (hbdd : ∀ n, eLpNorm (X n) p P ≤ R) : MemLp (limitProcess X 𝓕 P) p P := by
+    (hbdd : ⨆ n, eLpNorm (X n) p P < ∞) : MemLp (limitProcess X 𝓕 P) p P := by
   rw [limitProcess]
   split_ifs with h
   swap; · exact .zero
-  refine lt_of_le_of_lt (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ ?_ (Classical.choose_spec h).2)
-    (lt_of_le_of_lt ?_ (ENNReal.coe_lt_top : ↑R < ∞))
+  refine (Lp.eLpNorm_lim_le_liminf_eLpNorm hfm _ ?_ (Classical.choose_spec h).2).trans_lt ?_
   · exact StronglyMeasurable.aestronglyMeasurable
       ((Classical.choose_spec h).1.mono (sSup_le fun m ⟨n, hn⟩ ↦ hn ▸ 𝓕.le _))
-  · simp_rw [liminf_eq, eventually_atTop]
-    exact sSup_le fun b ⟨a, ha⟩ ↦ (ha a le_rfl).trans (hbdd _)
+  · grw [liminf_le_limsup, limsup_le_iSup, hbdd]
 
 end limitProcess
 

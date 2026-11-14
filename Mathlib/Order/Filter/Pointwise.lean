@@ -258,6 +258,18 @@ theorem inv_le_iff_le_inv : f⁻¹ ≤ g ↔ f ≤ g⁻¹ := by rw [← Filter.i
 theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
   ⟨fun h => h.antisymm <| inv_le_iff_le_inv.1 h, Eq.le⟩
 
+@[simp]
+theorem tendsto_comp_inv_filter_inv_iff
+    {m : α → β} {f₁ : Filter α} {f₂ : Filter β} :
+    Tendsto (fun x ↦ m x⁻¹) f₁⁻¹ f₂ ↔ Tendsto m f₁ f₂ := by
+  change Tendsto (m ∘ Inv.inv) f₁⁻¹ f₂ ↔ Tendsto m f₁ f₂
+  simp [tendsto_def, mem_inv, preimage_comp]
+
+theorem tendsto_filter_inv_iff
+    {m : α → β} {f₁ : Filter α} {f₂ : Filter β} :
+    Tendsto m f₁⁻¹ f₂ ↔ Tendsto (fun x ↦ m x⁻¹) f₁ f₂ := by
+  simpa using (tendsto_comp_inv_filter_inv_iff (f₁ := f₁⁻¹)).symm
+
 end InvolutiveInv
 
 @[to_additive (attr := simp)]

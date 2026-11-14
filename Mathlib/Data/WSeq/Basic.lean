@@ -657,7 +657,7 @@ theorem tail_ofSeq (s : Seq α) : tail (ofSeq s) = ofSeq s.tail := by
   simp only [tail, destruct_ofSeq, map_pure', flatten_pure]
   induction s using Seq.recOn <;> simp only [ofSeq, Seq.tail_nil, Seq.head_nil,
     Option.map_none, Seq.tail_cons, Seq.head_cons, Option.map_some]
-  · rfl
+  rfl
 
 @[simp]
 theorem dropn_ofSeq (s : Seq α) : ∀ n, drop (ofSeq s) n = ofSeq (s.drop n)

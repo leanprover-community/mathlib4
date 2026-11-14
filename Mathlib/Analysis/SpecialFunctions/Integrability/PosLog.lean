@@ -42,9 +42,6 @@ theorem MeromorphicOn.intervalIntegrable_posLog_norm (hf : MeromorphicOn f [[a, 
   · apply hf.intervalIntegrable_log_norm.const_mul
   · apply hf.intervalIntegrable_log_norm.abs.const_mul
 
-@[deprecated (since := "2026-03-28")]
-alias MeromorphicOn.intervalIntegrable_posLog_norm_meromorphicOn := intervalIntegrable_posLog_norm
-
 end IntervalIntegrable
 
 /-!
@@ -69,9 +66,6 @@ theorem MeromorphicOn.circleIntegrable_posLog_norm (hf : MeromorphicOn f (sphere
   · apply hf.circleIntegrable_log_norm.const_mul
   · apply hf.circleIntegrable_log_norm.abs.const_mul
 
-@[deprecated (since := "2026-03-28")]
-alias circleIntegrable_posLog_norm_meromorphicOn := MeromorphicOn.circleIntegrable_posLog_norm
-
 /--
 Variant of `MeromorphicOn.circleIntegrable_posLog_norm` for non-negative radii.
 -/
@@ -81,9 +75,5 @@ theorem MeromorphicOn.circleIntegrable_posLog_norm_of_nonneg (hf : MeromorphicOn
     CircleIntegrable (log⁺ ‖f ·‖) c R := by
   rw [← abs_of_nonneg hR] at hf
   exact hf.circleIntegrable_posLog_norm
-
-@[deprecated (since := "2026-03-28")]
-alias circleIntegrable_posLog_norm_meromorphicOn_of_nonneg :=
-    MeromorphicOn.circleIntegrable_posLog_norm_of_nonneg
 
 end CircleIntegrable

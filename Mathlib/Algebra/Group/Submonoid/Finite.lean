@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Data.Fintype.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoids
 

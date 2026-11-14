@@ -130,7 +130,7 @@ Examples:
   relevant argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. Its relevant argument contains the identifier
   `Prod`, but this is applied to `α` which is a free variable.
-* `@Mul.mul (α × Int) x y` will will change to `+`, since its relevant argument is `α × Int`,
+* `@Mul.mul (α × Int) x y` will change to `+`, since its relevant argument is `α × Int`,
   and in `Prod`, `α` is the first argument. This would be bad, because we don't want to translate
   the order on `Int`, so one should use `(dont_translate := α)` to ensure the `*` stays a `*`.
 
@@ -369,6 +369,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
   ("addExact", "Exact"),
   ("isMonHom", "IsAddMonHom"),
+  ("isPGroup", "IsAddPGroup"),
   ("mapMon", "MapAddMon"),
   ("monObj", "AddMonObj"),
   ("isModHom", "IsAddModHom"),

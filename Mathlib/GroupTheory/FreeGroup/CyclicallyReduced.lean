@@ -19,7 +19,6 @@ taking powers by every non-zero element `n : ℕ` is injective.
 ## Main declarations
 
 * `FreeGroup.IsCyclicallyReduced`: the predicate for cyclically reduced words
-
 -/
 
 @[expose] public section

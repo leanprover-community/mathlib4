@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Ring.Units
 
 import Mathlib.Algebra.Ring.Divisibility.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime elements in rings
 

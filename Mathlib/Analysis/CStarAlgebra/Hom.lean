@@ -121,8 +121,10 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
     _ = ‖star a * a‖ := ha.toReal_spectralRadius_eq_norm
 
 /-- A non-unital star algebra monomorphism of complex C⋆-algebras is isometric. -/
-lemma nnnorm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
+lemma nnNorm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_map φ hφ a
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
 
 lemma isometry (φ : F) (hφ : Function.Injective φ) : Isometry φ :=
   AddMonoidHomClass.isometry_of_norm φ (norm_map φ hφ)

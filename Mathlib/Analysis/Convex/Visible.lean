@@ -14,6 +14,9 @@ import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Topology.Order.Monotone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Points in sight
 

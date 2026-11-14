@@ -13,6 +13,9 @@ public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of topological modules
 

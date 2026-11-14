@@ -177,7 +177,6 @@ theorem comp_c_app {X Y Z : PresheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U)
     (α ≫ β).c.app U = β.c.app U ≫ α.c.app (op ((Opens.map β.base).obj (unop U))) :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) := by
   subst h
@@ -199,7 +198,6 @@ section Iso
 
 variable {X Y : PresheafedSpace C}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An isomorphism of `PresheafedSpace`s is a homeomorphism of the underlying space, and a
 natural transformation between the sheaves.
@@ -391,7 +389,6 @@ variable {D : Type*} [Category* D]
 
 namespace Functor
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
 giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
@@ -430,7 +427,6 @@ end Functor
 
 namespace NatTrans
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A natural transformation induces a natural transformation between the `map_presheaf` functors.
 -/

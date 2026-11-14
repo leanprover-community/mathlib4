@@ -20,7 +20,6 @@ objects in a pretriangulated category `C` indexed by the category `ι`.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
-
 -/
 
 @[expose] public section
@@ -133,7 +132,6 @@ section
 
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] Precomp.map Precomp.obj δ in
 /-- The precomposition of a spectral object with a functor. -/
 def precomp : SpectralObject C ι' where
@@ -293,7 +291,6 @@ namespace Functor
 
 variable {C}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor between categories of spectral objects that is induced by
 a triangulated functor. -/
 @[implicit_reducible, simps]

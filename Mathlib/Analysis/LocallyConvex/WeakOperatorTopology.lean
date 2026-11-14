@@ -218,8 +218,6 @@ lemma toCLM_apply {A : E →SWOT[σ] F} {x : E} : toCLM A x = A x := rfl
 @[simp]
 lemma ofCLM_apply {A : E →SL[σ] F} {x : E} : ofCLM A x = A x := rfl
 
-@[deprecated (since := "2026-04-10")] alias _root_.ContinuousLinearMap.toWOT_apply := ofCLM_apply
-
 @[ext]
 lemma ext {A B : E →SWOT[σ] F} (h : ∀ x, A x = B x) : A = B :=
   toCLM_injective <| ContinuousLinearMap.ext h
@@ -432,15 +430,10 @@ lemma continuous_ofCLM :
   ContinuousLinearMapWOT.continuous_of_dual_apply_continuous fun x y ↦
     y.cont.comp <| continuous_eval_const x
 
-@[deprecated (since := "2026-04-10")] alias ContinuousLinearMap.continuous_toWOT := continuous_ofCLM
-
 /-- The inclusion map from `E →[𝕜] F` to `E →WOT[𝕜] F`, bundled as a continuous linear map. -/
 def _root_.ContinuousLinearMap.WOTofCLM : (E →SL[σ] F) →L[𝕜₂] (E →SWOT[σ] F) where
   toLinearMap := linearEquiv 𝕜₂ |>.symm.toLinearMap
   cont := continuous_ofCLM
-
-@[deprecated (since := "2026-04-10")]
-alias ContinuousLinearMap.toWOTCLM := ContinuousLinearMap.WOTofCLM
 
 end toWOT_continuous
 

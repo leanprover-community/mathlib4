@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Data.List.Indexes
+
 /-!
 # Noether normalization lemma
 
@@ -46,7 +47,8 @@ Otherwise, `hom2` induces a map `φ` by quotient kernel.
 We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
 Composing `φ` and `g` we get the desired map since both `φ` and `g` are injective and integral.
 
-## Reference
+## References
+
 * <https://stacks.math.columbia.edu/tag/00OW>
 
 ## TODO
@@ -136,7 +138,7 @@ private lemma leadingCoeff_finSuccEquiv_varChange :
     have : ∀ j, ((finSuccEquiv k n) ((T1 f) 1 (X j))).leadingCoeff = 1 := fun j ↦ by
       by_cases h : j = 0
       · simp [h, finSuccEquiv_apply]
-      · simp only [aeval_eq_bind₁, bind₁_X_right, ite_eq_right h, one_smul, map_add, map_pow]
+      · simp only [MvPolynomial.aeval_X, ite_eq_right h, one_smul, map_add, map_pow]
         obtain ⟨i, rfl⟩ := Fin.exists_succ_eq.mpr h
         simp [finSuccEquiv_X_succ, finSuccEquiv_X_zero, add_comm]
     simp only [this, one_pow, Finset.prod_const_one, mul_one]

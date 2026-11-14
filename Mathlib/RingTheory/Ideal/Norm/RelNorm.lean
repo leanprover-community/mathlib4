@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Ideal.Int
 import Mathlib.RingTheory.NormalClosure
 
 /-!
-
 # Ideal norms
 
 This file defines the relative ideal norm `Ideal.spanNorm R (I : Ideal S) : Ideal S` as the ideal
@@ -31,7 +30,6 @@ spanned by the norms of elements in `I`.
 
 * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 * `relNorm_relNorm`: transitivity of the relative ideal norm
-
 -/
 
 @[expose] public section
@@ -435,7 +433,10 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 
-theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
+/-- The relative norm of a maximal ideal is the prime below it raised to the inertia degree,
+whenever the extension of fraction fields is separable. -/
+theorem relNorm_eq_pow_of_isMaximal [Algebra.IsSeparable (FractionRing R) (FractionRing S)]
+    [P.IsMaximal] [p.IsMaximal] :
     relNorm R P = p ^ P.inertiaDeg R := by
   let T := Ring.NormalClosure R S
   obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=

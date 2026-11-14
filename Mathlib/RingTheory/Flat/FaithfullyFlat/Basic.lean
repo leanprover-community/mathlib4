@@ -44,7 +44,6 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
   `M` is `R`-faithfully flat.
 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
-
 -/
 
 @[expose] public section
@@ -443,7 +442,6 @@ In this section we prove that an `R`-module `M` is faithfully flat iff the follo
 
 - `M` is flat
 - for any `R`-linear map `f : N → N'`, `f` = 0 iff `f ⊗ 𝟙M = 0` iff `𝟙M ⊗ f = 0`
-
 -/
 
 section arbitrary_universe
@@ -466,7 +464,7 @@ lemma zero_iff_lTensor_zero [h : FaithfullyFlat R M]
 /--
 If `M` is a faithfully flat module, then for all linear maps `f`, the map `f ⊗ id = 0`, if and only
 if `f = 0`. -/
-lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
+lemma zero_iff_rTensor_zero [h : FaithfullyFlat R M]
     {N : Type*} [AddCommGroup N] [Module R N]
     {N' : Type*} [AddCommGroup N'] [Module R N']
     (f : N →ₗ[R] N') :

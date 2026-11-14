@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Action.Basic
 
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group action on fields
 -/

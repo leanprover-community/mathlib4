@@ -49,7 +49,7 @@ If `f` isn't analytic at `z₀`, then `analyticOrderAt f z₀` returns a junk va
 noncomputable def analyticOrderAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ∞ :=
   if hf : AnalyticAt 𝕜 f z₀ then
     if h : ∀ᶠ z in 𝓝 z₀, f z = 0 then ⊤
-    else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
+    else ↑(hf.exists_eventuallyEq_pow_smul_ne_zero_iff.mpr h).choose
   else 0
 
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ`.
@@ -96,11 +96,11 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   split_ifs with h
   · simp only [ENat.top_ne_natCast, false_iff]
     contrapose h
-    rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
+    rw [← hf.exists_eventuallyEq_pow_smul_ne_zero_iff]
     exact ⟨n, h⟩
-  · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
+  · rw [← hf.exists_eventuallyEq_pow_smul_ne_zero_iff] at h
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
-    rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
+    rw [AnalyticAt.unique_eventuallyEq_pow_smul_ne_zero h.choose_spec h']
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
@@ -170,8 +170,8 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
   unfold analyticOrderAt
   split_ifs with h
   · simpa using ⟨0, analyticAt_const .., by simpa⟩
-  · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
-    obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose_spec
+  · let m := (hf.exists_eventuallyEq_pow_smul_ne_zero_iff.mpr h).choose
+    obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_ne_zero_iff.mpr h).choose_spec
     rw [ENat.natCast_le_natCast]
     refine ⟨fun hmn ↦ ⟨fun z ↦ (z - z₀) ^ (m - n) • g z, by fun_prop, ?_⟩, fun ⟨h, hh, hfh⟩ ↦ ?_⟩
     · filter_upwards [hm] with z hz using by rwa [← mul_smul, ← pow_add, Nat.add_sub_of_le hmn]
@@ -196,6 +196,22 @@ lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
     exact hfg.congr_left
   · rw [analyticOrderAt_of_not_analyticAt hf,
       analyticOrderAt_of_not_analyticAt fun hg ↦ hf <| hg.congr hfg.symm]
+
+/-- The order of a constant function is `⊤` if the constant is zero and `0` otherwise. -/
+@[simp] theorem analyticOrderAt_const (z₀ : 𝕜) (e : E) [Decidable (e = 0)] :
+    analyticOrderAt (fun _ ↦ e) z₀ = if e = 0 then ⊤ else 0 := by
+  split_ifs with he
+  · exact analyticOrderAt_eq_top.mpr (by simp [he])
+  · exact analyticAt_const.analyticOrderAt_eq_natCast.mpr ⟨(fun _ ↦ e), (by fun_prop), (by simpa)⟩
+
+@[simp] theorem analyticOrderAt_one (z₀ : 𝕜) : analyticOrderAt (fun _ ↦ (1 : 𝕜)) z₀ = 0 := by
+  classical
+  simp
+
+@[simp] theorem analyticOrderNatAt_const (z₀ : 𝕜) (e : E) :
+    analyticOrderNatAt (fun _ ↦ e) z₀ = 0 := by
+  classical
+  simp [analyticOrderNatAt, ne_or_eq e 0]
 
 @[simp] lemma analyticOrderAt_id : analyticOrderAt (𝕜 := 𝕜) id 0 = 1 :=
   analyticAt_id.analyticOrderAt_eq_natCast.mpr ⟨fun _ ↦ 1, by fun_prop, by simp, by simp⟩
@@ -254,6 +270,7 @@ lemma analyticOrderAt_smul_eq_top_of_right {f : 𝕜 → 𝕜} (hg : analyticOrd
   exact ⟨t, fun y hy ↦ by simp [h₁t y hy], h₂t, h₃t⟩
 
 /-- The order is additive when scalar multiplying analytic functions. -/
+@[to_fun analyticOrderAt_fun_smul]
 lemma analyticOrderAt_smul {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     analyticOrderAt (f • g) z₀ = analyticOrderAt f z₀ + analyticOrderAt g z₀ := by
   -- Trivial cases: one of the functions vanishes around z₀
@@ -273,6 +290,12 @@ lemma analyticOrderAt_smul {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg
     obtain ⟨s, h₁s, h₂s, h₃s⟩ := eventually_nhds_iff.1 h₃g'
     exact eventually_nhds_iff.2
       ⟨t ∩ s, fun y hy ↦ (by simp [h₁t y hy.1, h₁s y hy.2]; module), h₂t.inter h₂s, h₃t, h₃s⟩
+
+@[to_fun analyticOrderAt_fun_smul_const]
+lemma analyticOrderAt_smul_const {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (e : E) [Decidable (e = 0)] :
+    analyticOrderAt (f • fun _ ↦ e) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ := by
+  rw [analyticOrderAt_smul hf (by fun_prop), analyticOrderAt_const]
+  split_ifs with he <;> simp
 
 theorem AnalyticAt.analyticOrderAt_deriv_add_one {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
     [CompleteSpace E] [CharZero 𝕜] :
@@ -369,15 +392,20 @@ lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNorme
 
 lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
-    (hf : AnalyticAt 𝕜 f z₀) {k n : ℕ} [CharZero 𝕜] :
-    n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+    {k n : ℕ} [CharZero 𝕜] :
+    n = analyticOrderAt f z₀ → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
   induction k generalizing n with
-  | zero => exact fun Hn Hpos Hk ↦ Hn.symm
+  | zero => exact fun Hn Hk ↦ Hn.symm
   | succ n' hk =>
-    intro Hn Hpos Hk
+    intro Hn Hk
+    have hf : AnalyticAt 𝕜 f z₀ := by
+      by_contra h
+      have h0 : (n : ℕ∞) = 0 := Hn.trans (analyticOrderAt_eq_zero.mpr (.inl h))
+      norm_cast at h0
+      lia
     rw [Function.iterate_succ']
     have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by
-      refine (hk Hn Hpos (by lia)).trans ?_
+      refine (hk Hn (by lia)).trans ?_
       have : (n - n'.succ) + 1 = n - n' := by grind
       rw [← this]
       simp
@@ -521,15 +549,40 @@ lemma analyticOrderAt_mul_eq_top_of_right (hg : analyticOrderAt g z₀ = ⊤) :
     analyticOrderAt (f * g) z₀ = ⊤ := analyticOrderAt_smul_eq_top_of_right hg
 
 /-- The order is additive when multiplying analytic functions. -/
+@[to_fun analyticOrderAt_fun_mul]
 theorem analyticOrderAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     analyticOrderAt (f * g) z₀ = analyticOrderAt f z₀ + analyticOrderAt g z₀ :=
   analyticOrderAt_smul hf hg
 
+@[to_fun analyticOrderAt_fun_mul_const]
+theorem analyticOrderAt_mul_const (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Decidable (e = 0)] :
+    analyticOrderAt (f * (fun _ ↦ e)) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ :=
+  analyticOrderAt_smul_const hf e
+
+@[to_fun analyticOrderAt_fun_const_mul]
+theorem analyticOrderAt_const_mul (hf : AnalyticAt 𝕜 f z₀) (e : 𝕜) [Decidable (e = 0)] :
+    analyticOrderAt ((fun _ ↦ e) * f) z₀ = if e = 0 then ⊤ else analyticOrderAt f z₀ := by
+  rw [mul_comm]
+  exact analyticOrderAt_mul_const hf e
+
 /-- The order is additive when multiplying analytic functions. -/
+@[to_fun analyticOrderNatAt_fun_mul]
 theorem analyticOrderNatAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
     (hf' : analyticOrderAt f z₀ ≠ ⊤) (hg' : analyticOrderAt g z₀ ≠ ⊤) :
     analyticOrderNatAt (f * g) z₀ = analyticOrderNatAt f z₀ + analyticOrderNatAt g z₀ := by
   simp [analyticOrderNatAt, analyticOrderAt_mul, ENat.toNat_add, *]
+
+@[to_fun analyticOrderNatAt_fun_mul_const]
+theorem analyticOrderNatAt_mul_const (hf : AnalyticAt 𝕜 f z₀) {e : 𝕜} (he : e ≠ 0) :
+    analyticOrderNatAt (f * fun _ ↦ e) z₀ = analyticOrderNatAt f z₀ := by
+  classical
+  simp [analyticOrderNatAt, analyticOrderAt_mul_const hf, he]
+
+@[to_fun analyticOrderNatAt_fun_const_mul]
+theorem analyticOrderNatAt_const_mul (hf : AnalyticAt 𝕜 f z₀) {e : 𝕜} (he : e ≠ 0) :
+    analyticOrderNatAt ((fun _ ↦ e) * f) z₀ = analyticOrderNatAt f z₀ := by
+  rw [mul_comm]
+  exact analyticOrderNatAt_mul_const hf he
 
 /-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
 theorem analyticOrderAt_pow (hf : AnalyticAt 𝕜 f z₀) :

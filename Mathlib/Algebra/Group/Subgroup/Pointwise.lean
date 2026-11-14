@@ -105,6 +105,9 @@ theorem inv_subset_closure (S : Set G) : S⁻¹ ⊆ closure S := fun s hs => by
   rw [SetLike.mem_coe, ← Subgroup.inv_mem_iff]
   exact subset_closure (mem_inv.mp hs)
 
+@[to_additive (attr := simp)]
+theorem toSubmonoid_inv (H : Subgroup G) : H.toSubmonoid⁻¹ = H.toSubmonoid := by ext; simp
+
 @[to_additive]
 theorem closure_toSubmonoid (S : Set G) :
     (closure S).toSubmonoid = Submonoid.closure (S ∪ S⁻¹) := by
@@ -397,7 +400,7 @@ theorem sSup_normal (Hs : Set (Subgroup G)) (h : ∀ H ∈ Hs, H.Normal) : sSup 
 
 @[to_additive]
 theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {t : Set X}
-    (hs : ∀ g ∈ s, g⁻¹ ∈ s) (hst : ∀ᵉ (g ∈ s) (x ∈ t), g • x ∈ t) {g : G}
+    (hs : ∀ g ∈ s, g⁻¹ ∈ s) (hst : ∀ g ∈ s, ∀ x ∈ t, g • x ∈ t) {g : G}
     (hg : g ∈ Subgroup.closure s) {x : X} (hx : x ∈ t) : g • x ∈ t := by
   induction hg using Subgroup.closure_induction'' generalizing x with
   | one => simpa

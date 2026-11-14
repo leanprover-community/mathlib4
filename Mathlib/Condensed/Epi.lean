@@ -10,8 +10,8 @@ public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Module
 
 import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
-/-!
 
+/-!
 # Epimorphisms of condensed objects
 
 This file characterises epimorphisms of condensed sets and condensed `R`-modules for any ring `R`,

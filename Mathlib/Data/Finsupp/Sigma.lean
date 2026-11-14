@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finsupp.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Embedding a finitely supported function into a sigma type summand
 

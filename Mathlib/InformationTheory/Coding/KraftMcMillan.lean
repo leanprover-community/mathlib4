@@ -12,6 +12,9 @@ public import Mathlib.InformationTheory.Coding.UniquelyDecodable
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Analysis.SpecificLimits.Normed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kraft-McMillan Inequality
 
@@ -72,7 +75,7 @@ private lemma sum_pow_length_filter_eq_le_card_mul [Fintype α] {T : Finset (Lis
     _ = (T.filter fun x => x.length = s).card * (1 / Fintype.card α) ^ s := by
       simp only [Finset.sum_const, nsmul_eq_mul]
   gcongr
-  exact_mod_cast Finset.card_filter_length_eq_le
+  exact mod_cast Finset.card_filter_length_eq_le
 
 /-- Length of a concatenation of `r` codewords lies in `[r, r*sup length]`
 assuming `[] ∉ S`. -/

@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.Algebraic.LinearIndependent
 import Mathlib.RingTheory.Algebraic.MvPolynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank of multivariate rational function field
 -/

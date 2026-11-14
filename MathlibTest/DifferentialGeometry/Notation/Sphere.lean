@@ -1,5 +1,7 @@
-import Mathlib.Geometry.Manifold.Instances.Sphere
-import Mathlib.Geometry.Manifold.Notation
+module
+
+public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Geometry.Manifold.Notation
 
 /-! # Tests for the differential geometry elaborators for spheres in metric spaces
 
@@ -204,6 +206,9 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere
 [Elab.DiffGeo.MDiff] 💥️ ContinuousLinearMap
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] 💥️ ContinuousAlternatingMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Metric.sphere 0 1)` is not a space of continuous alternating maps
 [Elab.DiffGeo.MDiff] 💥️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Metric.sphere 0 1` is not a closed real interval

@@ -15,7 +15,6 @@ These are just copies of the definitions about `Submonoid` starting from `Submon
 
 ## Tags
 subgroup, subgroups
-
 -/
 
 public section

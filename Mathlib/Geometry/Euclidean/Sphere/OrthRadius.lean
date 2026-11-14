@@ -18,7 +18,6 @@ This file defines the affine subspace orthogonal to the radius vector at a point
 * `EuclideanGeometry.Sphere.orthRadius`: the affine subspace orthogonal to the radius vector at
   a point (the tangent space, if that point lies in the sphere; more generally, the polar of the
   inversion of that point in the sphere).
-
 -/
 
 @[expose] public section
@@ -315,7 +314,7 @@ lemma inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one [hf2 : Fact (Module.f
   have hf := finrank_orthRadius hpc
   rw [direction_orthRadius] at hf
   simp only [hf2.out, Nat.reduceEqDiff] at hf
-  rw [finrank_eq_one_iff_of_nonzero' ⟨v, hv⟩ (by simpa using hv0)] at hf
+  rw [finrank_eq_one_iff_of_ne_zero' ⟨v, hv⟩ (by simpa using hv0)] at hf
   have hvc : ∀ w ∈ (ℝ ∙ (p -ᵥ s.center))ᗮ, ∃ c : ℝ, c • v = w := by
     intro w hw
     simpa using hf ⟨w, hw⟩

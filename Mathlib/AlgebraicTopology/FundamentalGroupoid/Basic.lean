@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Homotopy.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fundamental groupoid of a space
 

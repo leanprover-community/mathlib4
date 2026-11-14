@@ -219,9 +219,8 @@ theorem convexBodyLT'_volume :
       simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
         ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
         ofReal_coe_nnreal, ← mul_assoc, show (2 : ℝ≥0∞) * 2 = 4 by norm_num]
-    · refine (MeasurableSet.inter ?_ ?_).nullMeasurableSet
-      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
-      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
+    · change NullMeasurableSet ({x : ℂ | |x.re| < 1} ∩ {x : ℂ | |x.im| < ↑B ^ 2}) volume
+      measurability
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
           ((∏ x ∈ Finset.univ.erase w₀, ENNReal.ofReal (f x.val) ^ 2 * pi) *
@@ -463,9 +462,8 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   classical
-  -- FIXME: Make `finiteness` work here
-  exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top <|
-    ENNReal.pow_lt_top ENNReal.ofNat_lt_top
+  -- FIXME: Make `finiteness` work all the way
+  exact ENNReal.mul_lt_top (fundamentalDomain_isBounded _).measure_lt_top (by finiteness)
 
 theorem minkowskiBound_pos : 0 < minkowskiBound K I :=
   -- TODO: The `NormedAddCommGroup (mixedSpace K)` instance should not need any decidability.

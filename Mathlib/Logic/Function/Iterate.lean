@@ -27,7 +27,6 @@ In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
 
 * `iterate_fixed`, `Function.Semiconj.iterate_*`, `Function.Semiconj₂.iterate`:
   if `f` fixes a point (resp., semiconjugates unary/binary operations), then so does `f^[n]`.
-
 -/
 
 @[expose] public section

@@ -35,7 +35,6 @@ We denote by `f⁻ x` the left limit of `f` at `x`, and by `f⁺ x` its right li
   version is `setIntegral_Icc_leftLim_smul_vectorMeasure_eq_sub`.
 * There are versions of all the previous statements using `f⁺` and `g⁻` instead. The names
   are the same, modulo the replacement of `leftLim` with `rightLim`.
-
 -/
 
 
@@ -72,9 +71,7 @@ theorem _root_.MeasureTheory.VectorMeasure.ext_of_Icc
     simp only [mem_iUnion, mem_Icc]
     exact ((tendsto_atBot.1 hv x).and (tendsto_atTop.1 hu x)).exists
   rw [← this]
-  have M : Monotone (fun n ↦ Icc (v n) (u n)) := by
-    intro m n hmn x hx
-    grind [Monotone, Antitone]
+  have M : Monotone (fun n ↦ Icc (v n) (u n)) := by grind [Monotone, Antitone]
   apply tendsto_nhds_unique (VectorMeasure.tendsto_vectorMeasure_iUnion_atTop_nat M (v := μ)
     (fun n ↦ measurableSet_Icc))
   have A a b : μ (Icc a b) = ν (Icc a b) := by
@@ -139,10 +136,8 @@ lemma setIntegral_Icc_rightLim_sub_leftLim_eq
     · filter_upwards with ⟨x, y⟩
       simp [indicator]
       grind
-    · apply Measurable.aestronglyMeasurable
-      simp only [indicator, mem_Icc, Pi.one_apply]
-      apply Measurable.piecewise ?_ (by fun_prop) (by fun_prop)
-      apply MeasurableSet.inter <;> exact measurableSet_le (by fun_prop) (by fun_prop)
+    · change AEStronglyMeasurable (({p : α × α | a ≤ p.1} ∩ {p | p.1 ≤ p.2}).indicator 1) _
+      measurability
   _ = ∫ᵛ y in Icc a b, (∫ᵛ x in Icc a b, (Icc y b).indicator 1 x ∂•hf.vectorMeasure)
       ∂[B; hg.vectorMeasure]:= by
     apply VectorMeasure.setIntegral_congr_ae

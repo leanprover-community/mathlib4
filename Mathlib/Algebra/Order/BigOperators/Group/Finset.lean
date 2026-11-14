@@ -17,6 +17,9 @@ public import Mathlib.Tactic.Bound.Attribute
 
 import Mathlib.Algebra.Order.Monoid.OrderDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on a finset in ordered groups
 
@@ -814,9 +817,6 @@ theorem finsetSum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β �
     simp_rw [← disjoint_finsetSum_left, ← disjoint_finsetSum_right, disjoint_comm, ← and_assoc,
       and_self_iff]
     exact add_eq_union_left_of_le (Finset.sup_le fun x hx => le_sum_of_mem (mem_map_of_mem f hx))
-
-@[deprecated (since := "2026-04-08")]
-alias finset_sum_eq_sup_iff_disjoint := finsetSum_eq_sup_iff_disjoint
 
 theorem sup_powerset_len [DecidableEq α] (x : Multiset α) :
     (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetCard k) = x.powerset := by

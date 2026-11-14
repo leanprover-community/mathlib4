@@ -14,7 +14,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 We show that if we have an infinite product of functions `f` that is locally uniformly convergent,
 then the logarithmic derivative of the product is the sum of the logarithmic derivatives of the
 individual functions.
-
 -/
 
 public section

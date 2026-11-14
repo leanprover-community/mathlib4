@@ -62,14 +62,13 @@ theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
   apply @SimpleFunc.induction _ _ m _ (fun f ↦ _)
     (fun c s hs ↦ ?_) (fun g₁ g₂ _ h_eq₁ h_eq₂ ↦ ?_) f
   · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-      SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
+      FunLike.coe_zero, Set.piecewise_eq_indicator]
     rw [this, this]
     refine (condExp_indicator ((B c).integrable_comp hg) hs).trans ?_
     filter_upwards [(B c).comp_condExp_comm hg (m := m)] with ω hω
     simp only [Function.comp_apply] at hω
     simp only [Set.indicator, hω, Function.comp_def]
-  · have h_add := @SimpleFunc.coe_add _ _ m _ g₁ g₂
-    calc
+  · calc
       μ[fun ω ↦ B (g₁ ω + g₂ ω) (g ω) | m] =ᵐ[μ]
           μ[fun ω ↦ B (g₁ ω) (g ω) | m] + μ[fun ω ↦ B (g₂ ω) (g ω) | m] := by
         simp_rw [B.map_add]

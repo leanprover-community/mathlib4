@@ -164,10 +164,6 @@ theorem toCoalgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toCoalgEquiv = f :=
 theorem toBialgHom_eq_coe (f : A ≃ₐc[R] B) : f.toBialgHom = f :=
   rfl
 
-@[deprecated "Now a syntactic tautology" (since := "2026-04-09"), nolint synTaut]
-theorem toAlgEquiv_eq_coe (f : A ≃ₐc[R] B) : f.toAlgEquiv = f :=
-  rfl
-
 @[simp]
 theorem coe_toCoalgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
   rfl
@@ -182,9 +178,6 @@ theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
 
 theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
   rfl
-
-@[deprecated "Now a syntactic equality" (since := "2026-04-30"), nolint synTaut]
-theorem toBialgHom_toAlgHom : ((e : A →ₐc[R] B) : A →ₐ[R] B) = e := rfl
 
 section
 

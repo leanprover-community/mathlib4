@@ -8,7 +8,6 @@ module
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
-
 # The exponent of purely inseparable extensions
 
 This file defines the exponent of a purely inseparable extension (if one exists) and
@@ -35,7 +34,6 @@ it gives cleaner API. To use the results in a context with `[ExpChar K p]`, cons
 ## Tags
 
 purely inseparable
-
 -/
 
 @[expose] public section

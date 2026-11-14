@@ -95,7 +95,6 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 
 * `Equiv.Perm.card_of_cycleType_mul_eq m` and `Equiv.Perm.card_of_cycleType m`
   compute this cardinality.
-
 -/
 
 @[expose] public section
@@ -653,8 +652,7 @@ theorem card_isConj_mul_eq :
   rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
   rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
   convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
-  · ext h
-    simp only [Set.mem_ofPred_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
+  · simp only [Set.mem_eq_mem, ConjAct.mem_orbit_conjAct, isConj_comm]
   · rw [ConjAct.card, Fintype.card_perm]
 
 /-- Cardinality of a conjugacy class in `Equiv.Perm α` of a given `cycleType` -/

@@ -34,7 +34,6 @@ left adjoint to the functor equipping a module with the trivial representation.
 * `Rep.coinvariantsTensorFreeLEquiv A α`: given a representation `A` and a type `α`, this is the
   `k`-linear equivalence between `(A ⊗ (α →₀ k[G]))_G` and `α →₀ A` sending
   `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a))`. This is useful for group homology.
-
 -/
 
 @[expose] public section
@@ -158,7 +157,7 @@ lemma Coinvariants.le_comap_ker (g : G) :
     ker (ρ.comp S.subtype) ≤ (ker <| ρ.comp S.subtype).comap (ρ g) :=
   Submodule.span_le.2 fun _ ⟨⟨s, x⟩, hs⟩ => by
     simpa [← hs] using mem_ker_of_eq
-      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s.1 s.2 g⟩ (ρ g x) _ <| by simp
+      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem s.1 s.2 g⟩ (ρ g x) _ <| by simp
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the kernel of the quotient map to the coinvariants of `ρ|_S`. -/
@@ -438,7 +437,7 @@ variable (k : Type u) {G : Type v} [CommRing k] [Group G]
 
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
-@[simps! obj_V map_hom_toLinearMap]
+@[implicit_reducible, simps! obj_V map_hom_toLinearMap]
 noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToCoinvariants S
@@ -452,7 +451,7 @@ section Finsupp
 
 open MonoidalCategory Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u) [DecidableEq α]
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G) (α : Type u)
 
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the map
 `(A ⊗ (α →₀ k[G]))_G →ₗ[k] (α →₀ A)` sending

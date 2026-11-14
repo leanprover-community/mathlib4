@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Whiskering
+
 /-!
 # Quadrifunctors obtained by composition of multifunctors
 

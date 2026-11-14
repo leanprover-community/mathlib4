@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+
 /-!
 # σ-algebra of sets invariant under a self-map
 

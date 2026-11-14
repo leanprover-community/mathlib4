@@ -149,11 +149,20 @@ alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeRea
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
   simp [isEdgeReachable_add_one, ← one_add_one_eq_two]
 
-/-- A graph is 2-edge-connected iff it has no bridge. -/
--- TODO: This should be `G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e` after
--- https://github.com/leanprover-community/mathlib4/pull/32583
-lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
+/-- A graph is 2-edge-connected iff it remains preconnected after removing any edge. -/
+lemma isEdgeConnected_two_iff_forall_preconnected :
+    G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one, ← one_add_one_eq_two]
+
+@[deprecated (since := "2026-10-01")]
+alias isEdgeConnected_two := isEdgeConnected_two_iff_forall_preconnected
+
+/-- A graph is 2-edge-connected iff it has no bridge. -/
+theorem isEdgeConnected_two_iff_forall_not_isBridge : G.IsEdgeConnected 2 ↔ ∀ e, ¬G.IsBridge e := by
+  rw [isEdgeConnected_two_iff_forall_preconnected]
+  refine ⟨fun h ↦ Sym2.ind (h _ · · |> ·), fun h ↦ Sym2.ind fun x y ↦ ?_⟩
+  have : G.Preconnected := (Not.imp_symm .of_not_reachable <| h s(·, ·))
+  exact this.connected_deleteEdges_of_not_isBridge (h s(x, y)) |>.preconnected
 
 lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
     ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
@@ -215,14 +224,6 @@ lemma IsTrail.isEdgeReachable_two_of_isEdgeReachable_two (hw : w.IsTrail)
     G.IsEdgeReachable 2 x y :=
   (hw.isEdgeReachable_two_of_isEdgeReachable_two_aux huv hx).symm.trans
     (hw.isEdgeReachable_two_of_isEdgeReachable_two_aux huv hy)
-
-/-- A trail doesn't go through a vertex that is not 2-edge-reachable from its 2-edge-reachable
-endpoints. -/
-@[deprecated IsTrail.isEdgeReachable_two_of_isEdgeReachable_two +typeChanged
-  (since := "2026-04-01")]
-lemma IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
-    (huv : G.IsEdgeReachable 2 u v) (huy : ¬ G.IsEdgeReachable 2 u x) : x ∉ w.support :=
-  mt (hw.isEdgeReachable_two_of_isEdgeReachable_two_aux huv) huy
 
 /-- Vertices of a closed trail are 2-edge reachable. -/
 lemma IsTrail.isEdgeReachable_two {w : G.Walk u u} (hw : w.IsTrail) (hx : x ∈ w.support)

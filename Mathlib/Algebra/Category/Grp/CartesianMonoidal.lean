@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chosen finite products in `GrpCat` and friends
 -/

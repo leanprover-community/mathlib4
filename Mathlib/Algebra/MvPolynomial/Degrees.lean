@@ -46,7 +46,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `p : MvPolynomial σ R`
-
 -/
 
 @[expose] public section
@@ -186,7 +185,7 @@ theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
   rintro ⟨d, hd, hi⟩
   obtain ⟨x, rfl, hx⟩ := coeff_rename_ne_zero _ _ _ hd
   simp only [Finsupp.mapDomain, Finsupp.mem_support_iff] at hi
-  rw [sum_apply, Finsupp.sum] at hi
+  rw [Finsupp.sum_apply, Finsupp.sum] at hi
   contrapose! hi
   rw [Finset.sum_eq_zero]
   intro j hj
@@ -542,8 +541,6 @@ theorem totalDegree_finsetProd {ι : Type*} (s : Finset ι) (f : ι → MvPolyno
     (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree :=
   s.apply_prod_le_sum_apply _ totalDegree_one.le totalDegree_mul
 
-@[deprecated (since := "2026-04-08")] alias totalDegree_finset_prod := totalDegree_finsetProd
-
 theorem totalDegree_finsetSum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by
   induction s using Finset.cons_induction with
@@ -551,8 +548,6 @@ theorem totalDegree_finsetSum {ι : Type*} (s : Finset ι) (f : ι → MvPolynom
   | cons a s has hind =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact (MvPolynomial.totalDegree_add _ _).trans (max_le_max le_rfl hind)
-
-@[deprecated (since := "2026-04-08")] alias totalDegree_finset_sum := totalDegree_finsetSum
 
 lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolynomial σ R} {d : ℕ}
     (hf : ∀ i ∈ s, (f i).totalDegree ≤ d) : (s.sum f).totalDegree ≤ d :=

@@ -44,6 +44,7 @@ namespace ArithmeticFunction
 
 /-- `λ` is the Carmichael function, also known as the reduced totient function,
 defined as the exponent of the unit group of `ZMod n`. -/
+@[oeis A002322 "the sequence skips `n = 0`"]
 def carmichael : ArithmeticFunction ℕ where
   toFun
     | 0 => 0
@@ -114,8 +115,6 @@ theorem carmichael_finsetProd {α : Type*} {s : Finset α} {f : α → ℕ}
     (h : Set.Pairwise s <| Coprime.onFun f) : carmichael (s.prod f) = s.lcm (carmichael ∘ f) :=
   s.lcm_eq_prod h ▸ carmichael_finset_lcm ..
 
-@[deprecated (since := "2026-04-08")] alias carmichael_finset_prod := carmichael_finsetProd
-
 theorem carmichael_factorization (n : ℕ) [NeZero n] :
     carmichael n = n.primeFactors.lcm fun p ↦ carmichael (p ^ n.factorization p) := by
   nth_rw 1 [← n.prod_factorization_pow_eq_self <| NeZero.ne _]
@@ -146,10 +145,8 @@ theorem carmichael_two_pow_of_ne_two {n : ℕ} (hn : n ≠ 2) :
     have ⟨k, hk, h⟩ := dvd_prime_pow prime_two |>.mp <| hcard ▸ Group.exponent_dvd_nat_card
     have := IsCyclic.iff_exponent_eq_card.not.mp <| ZMod.isCyclic_units_two_pow_iff n |>.not.mpr hn'
     exact h ▸ Nat.pow_dvd_pow 2 (by grind)
-  · let five : (ZMod (2 ^ n))ˣ := ZMod.unitOfCoprime 5 <| gcd_pow_right_of_gcd_eq_one rfl
-    rw [← ZMod.orderOf_five (n - 2), show n - 2 + 2 = n by lia,
-      show (5 : ZMod (2 ^ n)) = five by rfl, orderOf_units]
-    exact order_dvd_exponent five
+  · rw [← ZMod.orderOf_unitFive n]
+    exact order_dvd_exponent _
 
 theorem two_mul_carmichael_two_pow_of_three_le_eq_totient {n : ℕ} (hn : 3 ≤ n) :
     2 * carmichael (2 ^ n) = (2 ^ n).totient := by

@@ -15,7 +15,6 @@ public import Mathlib.Topology.Separation.GDelta
 We prove that metrizable spaces are T6.
 We prove that the continuity set of a function from a topological space to a metrizable space is a
 Gδ set.
-
 -/
 
 public section
@@ -36,7 +35,7 @@ instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X wh
     have := pseudoMetrizableSpaceUniformity_countably_generated X
     rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
     rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
-    refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
+    refine .iInter fun n ↦ .iInter fun _ ↦ IsOpen.isGδ ?_
     exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
 
 instance (priority := 100) [MetrizableSpace X] : T4Space X where
