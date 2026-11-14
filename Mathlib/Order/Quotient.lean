@@ -98,7 +98,10 @@ theorem mk_le_mk {x y : α} : Quotient.mk s x ≤ Quotient.mk s y ↔ x ≤ y �
     exact fun h ↦ ((H _).out h₁.symm rfl ⟨h₂, h.le⟩).symm
   · exact .inr (_root_.trans h₁ h₂)
 
-instance instLinearOrder [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient s) where
+instance [DecidableRel (· ≈ · : α → α → Prop)] : DecidableLE (Quotient s) :=
+  (Quotient.recOnSubsingleton₂ · · fun _ _ ↦ decidable_of_iff' _ mk_le_mk)
+
+instance : PartialOrder (Quotient s) where
   le_antisymm x y h₁ h₂ := by
     induction x using Quotient.inductionOn with | h x
     induction y using Quotient.inductionOn with | h y
@@ -109,8 +112,10 @@ instance instLinearOrder [DecidableRel (· ≈ · : α → α → Prop)] : Linea
       cases h₂ with
       | inr h => exact (Quotient.sound h).symm
       | inl h₂ => exact congrArg _ (h₁.antisymm h₂)
+
+instance instLinearOrder [DecidableRel (· ≈ · : α → α → Prop)] : LinearOrder (Quotient s) where
   le_total := total_of _
-  toDecidableLE x y := Quotient.recOnSubsingleton₂ x y fun x y ↦ decidable_of_iff' _ mk_le_mk
+  toDecidableLT := decidableLTOfDecidableLE
 
 theorem mk_lt_mk {x y : α} : Quotient.mk s x < Quotient.mk s y ↔ x < y ∧ ¬ x ≈ y := by
   classical

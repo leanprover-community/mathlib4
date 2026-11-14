@@ -66,6 +66,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
     toMax := maxOfLe,
+    toDecidableEq := decidableEqOfDecidableLE
     toDecidableLE := hD }
 
 /-! ### Order connection -/
