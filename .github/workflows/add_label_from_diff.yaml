@@ -50,6 +50,7 @@ jobs:
       run: |
         set +e
         "${GITHUB_WORKSPACE}/tools/.lake/build/bin/autolabel" \
+          --title "${{ env.PR_TITLE }}" \
           --pr "${PR_NUMBER}" \
           --curl "${GH_TOKEN}"
         code=$?
@@ -62,3 +63,4 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
