@@ -120,7 +120,7 @@ def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMu
   __ := WithLp.linearEquiv _ R _
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 attribute [simp] unitizationAlgEquiv_apply unitizationAlgEquiv_symm_apply
 

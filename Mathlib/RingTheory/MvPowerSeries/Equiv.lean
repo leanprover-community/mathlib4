@@ -54,7 +54,7 @@ def isEmptyEquiv [IsEmpty σ] : MvPowerSeries σ R ≃ₐ[R] R where
   __ := constantCoeff
   invFun := C
   left_inv _ := by ext x; simp [Subsingleton.eq_zero x]
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end isEmptyEquiv
 
@@ -122,9 +122,7 @@ def optionEquivLeft : MvPowerSeries (Option σ) R ≃ₐ[R] PowerSeries (MvPower
   right_inv _ := by ext; simp [coeff_optionInvFunLeft, coeff_coeff_optionFunLeft]
   map_mul' := optionFunLeft_mul
   map_add' _ _ := by ext; simp [coeff_coeff_optionFunLeft]
-  commutes' := by
-    simpa [MvPowerSeries.algebraMap_apply, PowerSeries.C] using
-      optionFunLeft_monomial (0 : Option σ →₀ ℕ)
+  map_smul' _ _ := by rfl
 
 lemma coeff_coeff_optionEquivLeft (p : MvPowerSeries (Option σ) R) (n : ℕ) (x : σ →₀ ℕ) :
     coeff x (PowerSeries.coeff n (optionEquivLeft σ R p)) = coeff (x.optionElim n) p :=
@@ -347,6 +345,7 @@ def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
   left_inv _ := by
     ext; simp [coeff_toAdicCompletionInv, coeff_toAdicCompletion_val_apply_out]
   right_inv _ := by ext; simpa using! mk_truncTotal_toAdicCompletionInv
+  map_smul' := by simp
 
 @[simp]
 lemma toAdicCompletionAlgEquiv_apply (p : MvPowerSeries σ R) :

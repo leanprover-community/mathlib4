@@ -46,7 +46,8 @@ lemma ulift_iff : WeaklyEtale (ULift.{u₁} R) (ULift.{u₂} S) ↔ WeaklyEtale 
   rw [weaklyEtale_iff, weaklyEtale_iff, Module.Flat.ulift_left_iff, Module.Flat.ulift_right_iff]
   congr!
   conv_rhs => rw [← RingHom.Flat.ulift_iff.{u₁, u₂}]
-  rw [TensorProduct.lmul'_ulift, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
+  rw [TensorProduct.lmul'_ulift, AlgHom.toRingHom_eq_coe]
+  erw [AlgHom.comp_toRingHom]
   exact RingHom.Flat.comp_iff_of_bijective_right (Equiv.bijective _)
 
 @[stacks 092N "(2)"]

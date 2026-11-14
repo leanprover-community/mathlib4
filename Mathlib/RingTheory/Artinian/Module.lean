@@ -602,8 +602,8 @@ a finite product of fields, namely the quotients by the maximal ideals. -/
 noncomputable def quotNilradicalEquivPi :
     (R ⧸ nilradical R) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
   (Ideal.quotientEquivAlgOfEq R (nilradical_eq_iInf R)).trans
-    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ I.isCoprime_of_ne
-      commutes' _ := rfl}
+    (.ofCommutes (Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ I.isCoprime_of_ne)
+      fun _ ↦ rfl)
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
@@ -614,8 +614,8 @@ a finite product of local rings, namely the quotients by the powers of the maxim
 noncomputable def quotNilradicalPowEquivPi (n : ℕ) :
     (R ⧸ nilradical R ^ n) ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal ^ n :=
   (Ideal.quotientEquivAlgOfEq R (nilradical_pow_eq_iInf R n)).trans
-    { __ := Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ .pow ∘ I.isCoprime_of_ne
-      commutes' _ := rfl}
+    (.ofCommutes (Ideal.quotientInfRingEquivPiQuotient _ fun I _ ↦ .pow ∘ I.isCoprime_of_ne)
+      fun _ ↦ rfl)
 
 /-- A reduced commutative Artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/

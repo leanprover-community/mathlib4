@@ -60,7 +60,7 @@ theorem pi_iff [Finite I] :
         fun _ ↦ Ideal.Quotient.mk_surjective _
     replace he' : ∀ i, Ideal.Quotient.mk J (e i) = g (Pi.single i 1) := congr_fun he'
     let iso : B ≃ₐ[R] ∀ i, B ⧸ Ideal.span {1 - e i} :=
-      { __ := AlgHom.pi fun i ↦ Ideal.Quotient.mkₐ R _
+      { __ := (AlgHom.pi fun i ↦ Ideal.Quotient.mkₐ R _).toNonUnitalAlgHom
         __ := Equiv.ofBijective _ he.bijective_pi }
     let J' := fun i ↦ J.map (Ideal.Quotient.mk (Ideal.span {1 - e i}))
     let ι : ∀ i, (B ⧸ J →ₐ[R] (B ⧸ _) ⧸ J' i) := fun i ↦ Ideal.quotientMapₐ _

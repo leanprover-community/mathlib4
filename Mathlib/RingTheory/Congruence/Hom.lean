@@ -452,9 +452,8 @@ variable (R) in
 /-- An isomorphism of algebras `e : M ≃ₐ[R] N` generates an isomorphism between quotient spaces,
 if it is compatible with the relations. -/
 protected def congrₐ {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) :
-    c.Quotient ≃ₐ[R] d.Quotient where
-  __ := RingCon.congr e h
-  commutes' r := by simp [← coe_algebraMap]
+    c.Quotient ≃ₐ[R] d.Quotient :=
+  .ofCommutes (RingCon.congr e h) fun r ↦ by simp [← coe_algebraMap]
 
 @[simp]
 theorem congrₐ_mk {c : RingCon M} {d : RingCon N} (e : M ≃ₐ[R] N) (h : c = d.comap e) (a : M) :
@@ -566,7 +565,7 @@ variable (c)
 /-- The **first isomorphism theorem for algebra morphisms**. -/
 noncomputable def quotientKerEquivRangeₐ (f : M →ₐ[R] P) :
     (ker (f : M →+* P)).Quotient ≃ₐ[R] f.range where
-  __ := AlgHom.codRestrict (kerLiftₐ f) _ _
+  __ := (AlgHom.codRestrict (kerLiftₐ f) _ _).toNonUnitalAlgHom
   __ := quotientKerEquivRangeS f.toRingHom
 
 theorem quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
@@ -606,8 +605,7 @@ variable (R)
 /-- The **third isomorphism theorem for algebras**. -/
 def quotientQuotientEquivQuotientₐ {c d : RingCon M} (h : c ≤ d) :
     (RingCon.ker (factorₐ R h : c.Quotient →+* d.Quotient)).Quotient ≃ₐ[R] d.Quotient :=
-  { quotientQuotientEquivQuotient c d h with
-    commutes' _ := by rfl }
+  .ofCommutes (quotientQuotientEquivQuotient c d h) fun _ ↦ by rfl
 
 @[simp]
 theorem quotientQuotientEquivQuotientₐ_mk_mk {c d : RingCon M} (h : c ≤ d) (x : M) :

@@ -143,12 +143,13 @@ noncomputable def withValEquiv (v : HeightOneSpectrum R) :
 /-- The continuous `ℚ`-algebra isomorphism between `v.adicCompletion ℚ` and `ℚ_[primesEquiv v]`. -/
 noncomputable def adicCompletion.padicEquiv (v : HeightOneSpectrum R) :
     v.adicCompletion ℚ ≃A[ℚ] ℚ_[primesEquiv v] where
-  __ := (adicCompletion.equiv ℚ v).trans <|
-    (mapRingEquiv _ (withValEquiv v).continuous
-      (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv
+  toAlgEquiv := .ofCommutes
+    ((adicCompletion.equiv ℚ v).trans <|
+      (mapRingEquiv _ (withValEquiv v).continuous
+        (withValEquiv v).symm.continuous).trans Padic.withValRingEquiv)
+    (by simp)
   __ := ((adicCompletion.uniformEquiv ℚ v).trans <|
     (mapEquiv (withValEquiv v)).trans Padic.withValUniformEquiv).toHomeomorph
-  commutes' := by simp
 
 /-- The continuous `ℤ`-algebra isomorphism between `v.adicCompletionIntegers ℚ` and
 `ℤ_[primesEquiv v]`. -/
@@ -169,7 +170,7 @@ noncomputable def adicCompletionIntegers.padicIntEquiv (v : HeightOneSpectrum R)
         let e := (mapEquiv (withValEquiv v)).subtype fun _ ↦ by
           simpa using! (valuation_equiv_padicValuation v).valuedCompletion_le_one_iff
         ((e0.trans e).trans withValIntegersUniformEquiv).toHomeomorph
-  commutes' := by simp
+  map_smul' := by simp
 
 /-- The diagram
 ```

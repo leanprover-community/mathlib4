@@ -122,7 +122,7 @@ def leastExt : ι → ι :=
       rw [adjoin_basis_eq_top, ← eq_top_iff] at this
       apply_fun Module.rank F at this
       refine ne_of_lt ?_ this
-      conv_rhs => rw [topEquiv.toLinearEquiv.rank_eq]
+      rw [IntermediateField.rank_top']
       have := mk_Iio_lt i (by simp)
       rw [mk_toType, card_ord] at this
       obtain eq | lt := rank_inf.out.eq_or_lt
@@ -130,9 +130,9 @@ def leastExt : ι → ι :=
         have : FiniteDimensional F (adjoin F s) :=
           finiteDimensional_adjoin fun x _ ↦ (IsAlgebraic.isAlgebraic x).isIntegral
         exact (Module.rank_lt_aleph0 _ _).trans_eq eq
-      · exact (Subalgebra.equivOfEq _ _ <| adjoin_toSubalgebra_of_isAlgebraic
-          fun x _ ↦ IsAlgebraic.isAlgebraic x) |>.toLinearEquiv.rank_eq.trans_lt <|
-          (Algebra.rank_adjoin_le _).trans_lt (max_lt (mk_range_le.trans_lt this) lt)
+      · rw [← IntermediateField.rank_eq_rank_subalgebra,
+          adjoin_toSubalgebra_of_isAlgebraic fun x _ ↦ IsAlgebraic.isAlgebraic x]
+        exact (Algebra.rank_adjoin_le _).trans_lt (max_lt (mk_range_le.trans_lt this) lt)
 
 local notation "φ" => leastExt F E
 

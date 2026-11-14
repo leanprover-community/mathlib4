@@ -221,9 +221,9 @@ ideals in `P` and in `P'`, which are both localizations of `R` at `S`. -/
 @[no_expose]
 noncomputable def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
   mapEquiv
-    { ringEquivOfRingEquiv P P' (RingEquiv.refl R)
-        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl', Submonoid.map_id]) with
-      commutes' := fun _ => ringEquivOfRingEquiv_eq _ _ }
+    (.ofCommutes (ringEquivOfRingEquiv P P' (RingEquiv.refl R)
+        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl', Submonoid.map_id]))
+      fun _ => ringEquivOfRingEquiv_eq _ _)
 
 @[simp]
 theorem mem_canonicalEquiv_apply {I : FractionalIdeal S P} {x : P'} :
@@ -491,7 +491,9 @@ protected theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] 
     (I / J).map (h : K →ₐ[R₁] K') = I.map h / J.map h := by
   by_cases H : J = 0
   · rw [H, div_zero, FractionalIdeal.map_zero, div_zero]
-  · simp [← coeToSubmodule_inj, div_of_ne_zero H, div_of_ne_zero (map_ne_zero _ H)]
+  · simp only [div_of_ne_zero H, div_of_ne_zero (map_ne_zero _ H), coe_map,
+      AlgEquiv.toAlgHom_toLinearMap, ← coeToSubmodule_inj, coeToSubmodule_mk]
+    exact Submodule.map_div _ _ _
 
 theorem map_one_div (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
     (1 / I).map (h : K →ₐ[R₁] K') = 1 / I.map h := by

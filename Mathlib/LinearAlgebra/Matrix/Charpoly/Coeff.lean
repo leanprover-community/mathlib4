@@ -306,7 +306,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
       map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
       ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
-    diagonal_one, invert.map_det]
+    diagonal_one, (invert (R := R)).map_det]
   simp [t_inv, map_sub, map_one, map_mul, t, smul_eq_diagonal_mul]
 
 theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :

@@ -193,6 +193,7 @@ def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ 
   invFun := rename e.symm
   left_inv _ := by simp
   right_inv _ := by simp
+  map_smul' := by simp
 
 @[simp]
 theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl := AlgEquiv.ext (by simp)

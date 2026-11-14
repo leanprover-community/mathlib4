@@ -222,7 +222,7 @@ to the quotient of a complex Banach algebra by a maximal ideal. In the case when
 noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0) :
     ℂ ≃ₐ[ℂ] A :=
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
-  { Algebra.ofId ℂ A with
+  { (Algebra.ofId ℂ A).toNonUnitalAlgHom with
     toFun := algebraMap ℂ A
     invFun := fun a => (@spectrum.nonempty _ _ _ _ nt a).some
     left_inv := fun z => by

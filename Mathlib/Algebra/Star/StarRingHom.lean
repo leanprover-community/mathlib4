@@ -305,6 +305,8 @@ instance : FunLike (A ≃⋆+* B) A B where
   coe f := f.toFun
   coe_injective := DFunLike.coe_injective
 
+@[simp] lemma coe_toRingEquiv (f : A ≃⋆+* B) : ⇑f.toRingEquiv = f := rfl
+
 section
 
 variable {A B : Type*} [NonUnitalSemiring A] [StarRing A] [NonUnitalSemiring B] [StarRing B]

@@ -313,7 +313,7 @@ See `localAlgEquiv'` for a variant where the base ring is also localized. -/
 noncomputable def localAlgEquiv [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
     (f : S ≃ₐ[R] P) (hIJ : I = J.comap f) :
     Localization.AtPrime I ≃ₐ[R] Localization.AtPrime J where
-  __ := localAlgHom I J f.toAlgHom hIJ
+  __ := (localAlgHom I J f.toAlgHom hIJ).toNonUnitalAlgHom
   __ := localRingEquiv I J f.toRingEquiv hIJ
 
 lemma localRingHom_bijective_of_saturated_inf_eq_top

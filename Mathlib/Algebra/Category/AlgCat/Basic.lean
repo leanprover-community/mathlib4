@@ -221,7 +221,7 @@ namespace CategoryTheory.Iso
 /-- Build an `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgCat.{v} R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
-  { i.hom.hom with
+  { i.hom.hom.toNonUnitalAlgHom with
     toFun := i.hom
     invFun := i.inv
     left_inv := fun x ↦ by simp
@@ -240,7 +240,7 @@ def algEquivIsoAlgebraIso {X Y : Type v} [Ring X] [Ring Y] [Algebra R X] [Algebr
 instance AlgCat.forget_reflects_isos : (forget (AlgCat.{v} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgCat.{v} R)).map f)
-    let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
+    let e : X ≃ₐ[R] Y := { f.hom.toNonUnitalAlgHom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
 
 namespace AlgCat
@@ -269,7 +269,7 @@ def restrictScalarsId' {R : Type*} [CommRing R] (f : R →+* R) (hf : f = .id R)
     AlgCat.restrictScalars.{v} f ≅ 𝟭 _ :=
   NatIso.ofComponents
     fun A ↦ AlgEquiv.toAlgebraIso <|
-      @AlgEquiv.ofRingEquiv (f := RingEquiv.refl _) _ _ _ _ _ _
+      @AlgEquiv.ofCommutes (e := RingEquiv.refl _) _ _ _ _ _ _
         ((restrictScalars f).obj A).isAlgebra _ fun _ ↦ by subst hf; rfl
 
 -- The option makes `simps` produce the correct lemmas
@@ -283,7 +283,7 @@ def restrictScalarsComp' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] 
       AlgCat.restrictScalars.{v} g ⋙ AlgCat.restrictScalars.{v} f :=
   NatIso.ofComponents
     fun A ↦ AlgEquiv.toAlgebraIso <|
-      @AlgEquiv.ofRingEquiv (f := RingEquiv.refl _) _ _ _ _ _ _
+      @AlgEquiv.ofCommutes (e := RingEquiv.refl _) _ _ _ _ _ _
         ((restrictScalars gf).obj A).isAlgebra
         ((restrictScalars f).obj ((restrictScalars g).obj A)).isAlgebra
         fun _ ↦ by subst hfg; rfl
@@ -314,7 +314,7 @@ def intEquivalence : AlgCat.{u} ℤ ≌ RingCat.{u} where
   inverse.obj A := ↧A
   inverse.map f := AlgCat.ofHom f.hom.toIntAlgHom
   unitIso := NatIso.ofComponents
-    fun A ↦ AlgEquiv.toAlgebraIso (@.ofRingEquiv (f := RingEquiv.refl _)
+    fun A ↦ AlgEquiv.toAlgebraIso (@.ofCommutes (e := RingEquiv.refl _)
       _ _ _ _ _ _ _ (Ring.toIntAlgebra _) fun _ ↦ by simp)
   counitIso := Iso.refl _
 

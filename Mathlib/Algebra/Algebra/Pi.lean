@@ -171,7 +171,7 @@ def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R]
   { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
     toFun := fun x j ↦ e j (x j)
     invFun := fun x j ↦ (e j).symm (x j)
-    commutes' := fun r ↦ by
+    map_smul' _ _ := by
       ext i
       simp }
 
@@ -195,7 +195,7 @@ variable (R A₁) in
 algebras. -/
 def piMulOpposite : (Π i, A₁ i)ᵐᵒᵖ ≃ₐ[R] Π i, (A₁ i)ᵐᵒᵖ where
   __ := RingEquiv.piMulOpposite A₁
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 variable (R A₁) in
 /--
@@ -205,7 +205,7 @@ This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
 -/
 def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) where
   __ := RingEquiv.piCongrLeft' A₁ e
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]
@@ -258,7 +258,7 @@ lemma funUnique_symm_apply [Unique ι] (x : S) :
 variable (α β R) in
 /-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
 def sumArrowEquivProdArrow : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
-  .ofRingEquiv (f := .sumArrowEquivProdArrow α β S) (by intro; ext <;> simp)
+  .ofCommutes (.sumArrowEquivProdArrow α β S) (by intro; ext <;> simp)
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]

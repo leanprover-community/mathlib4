@@ -607,7 +607,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 This is a computable alternative to `AlgEquiv.ofInjective`. -/
 def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) : A ≃ₐ[R] f.range :=
-  { f.rangeRestrict with
+  { f.rangeRestrict.toNonUnitalAlgHom with
     toFun := f.rangeRestrict
     invFun := g ∘ f.range.val
     left_inv := h
@@ -647,8 +647,8 @@ set_option backward.isDefEq.respectTransparency.types false in
 `subalgebraMap` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
-  { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by ext; exact e.commutes r }
+  .ofCommutes (e.toRingEquiv.subsemiringMap S.toSubsemiring)
+    fun r => by ext; exact e.commutes r
 
 end AlgEquiv
 
@@ -740,7 +740,6 @@ def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   toFun x := ⟨x, h ▸ x.2⟩
   invFun x := ⟨x, h.symm ▸ x.2⟩
   map_mul' _ _ := rfl
-  commutes' _ := rfl
 
 @[simp]
 theorem equivOfEq_symm (S T : Subalgebra R A) (h : S = T) :
@@ -939,7 +938,7 @@ theorem map_center_eq (f : A ≃ₐ[R] B) : map f (center R A) = center R B :=
 def centerCongr (e : A ≃ₐ[R] B) :
     center R A ≃ₐ[R] center R B where
   toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
-  commutes' r := Subtype.ext <| e.commutes r
+  map_smul' _ _ := Subtype.ext <| e.map_smul' _ _
 
 @[simp] lemma toRingEquiv_centerCongr (e : A ≃ₐ[R] B) :
     (centerCongr e).toRingEquiv = Subsemiring.centerCongr e.toRingEquiv := rfl

@@ -235,6 +235,10 @@ def autAdjoinRootXPowSubCHom :
   map_one' := algHom_ext <| by simp
   map_mul' := fun ε η ↦ algHom_ext <| by simp [mul_smul, smul_comm ((ε : Kˣ) : K)]
 
+-- I don't know why it's not being inferred w/o this instance
+-- even though it is being inferred?? so adding this for now
+noncomputable instance : Module K K[n√a] := inferInstance
+
 /-- The natural embedding of the roots of unity of `K` into `Gal(K[ⁿ√a]/K)`, by sending
 `η ↦ (ⁿ√a ↦ η • ⁿ√a)`. This is an isomorphism when `K` contains a primitive root of unity.
 See `autAdjoinRootXPowSubCEquiv`. -/
