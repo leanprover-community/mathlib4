@@ -643,6 +643,7 @@ theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
 protected theorem monotone : Monotone f :=
   OrderHomClass.monotone f
 
+@[gcongr]
 protected theorem strictMono : StrictMono f := fun _ _ => f.lt_iff_lt.2
 
 protected theorem acc (a : α) : Acc (· < ·) (f a) → Acc (· < ·) a :=
