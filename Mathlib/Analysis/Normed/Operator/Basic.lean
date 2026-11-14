@@ -421,6 +421,20 @@ instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) := { toNormedSpac
 
 end
 
+/-- If `f` has dense range and is `K`-antilipschitz, then the norm of a continuous linear map
+from the codomain of `f` is bounded by `K` multiplied by the norm of the precomposition with `f`.
+See `opNorm_le_mul_opNorm_comp_of_antilipschitz_liftQL` for a version which instead assumes the
+induced map `E ⧸ f.ker →SL[σ₁₂] F` is antilipschitz, rather than `f` itself. -/
+theorem opNorm_le_mul_opNorm_comp_of_antilipschitz [RingHomIsometric σ₁₃] (g : F →SL[σ₂₃] G)
+    {f : E →SL[σ₁₂] F} (hf : DenseRange f) {K : ℝ≥0} (hK : AntilipschitzWith K f) :
+    ‖g‖ ≤ K * ‖g.comp f‖ := by
+  refine g.opNorm_le_bound (mul_nonneg K.coe_nonneg (opNorm_nonneg _)) fun y ↦ ?_
+  refine hf.induction_on y (isClosed_le (by fun_prop) (by fun_prop)) fun x ↦ ?_
+  calc ‖g (f x)‖ ≤ ‖g.comp f‖ * ‖x‖ := (g.comp f).le_opNorm x
+    _ ≤ ‖g.comp f‖ * (K * ‖f x‖) :=
+      mul_le_mul_of_nonneg_left (f.bound_of_antilipschitz hK x) (opNorm_nonneg _)
+    _ = K * ‖g.comp f‖ * ‖f x‖ := by ring
+
 variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
 
 @[simp, nontriviality]

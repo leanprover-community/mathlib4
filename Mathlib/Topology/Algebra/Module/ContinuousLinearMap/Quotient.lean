@@ -77,6 +77,10 @@ theorem liftQL_apply (f : M →SL[σ] M₂) (h : S ≤ f.ker) (x : M ⧸ S) :
     S.liftQL f h x = S.liftQ f.toLinearMap h x := by
   simp
 
+@[simp]
+theorem liftQL_comp_mkQL (f : M →SL[σ] M₂) (h : S ≤ f.ker) : (S.liftQL f h).comp S.mkQL = f :=
+  rfl
+
 end Ring
 
 end Submodule
