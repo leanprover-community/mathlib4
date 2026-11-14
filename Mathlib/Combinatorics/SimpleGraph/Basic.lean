@@ -8,7 +8,7 @@ module
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Rel
 public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Data.Sym.Sym2.Card
 public import Mathlib.Order.CompleteBooleanAlgebra
 
 import Mathlib.Data.Set.Finite.Lattice
@@ -635,21 +635,20 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
   exact Set.fintypeDiff _ _
 
 variable {G} in
-theorem finite_edgeSet_iff_finite_of_support_eq_univ (h : G.support = .univ) :
-    G.edgeSet.Finite ↔ Finite V := by
-  refine ⟨fun hfin ↦ ?_, fun _ ↦ Subtype.finite⟩
-  rw [← Set.finite_univ_iff, ← h]
-  classical
+@[simp]
+theorem finite_edgeSet_iff_finite_support : G.edgeSet.Finite ↔ G.support.Finite := by
+  refine ⟨fun hfin ↦ ?_, (·.sym2.subset <| edgeSet_subset_sym2_iff.mpr subset_rfl)⟩
   have : Finite G.edgeSet := hfin
+  classical
   suffices G.support = ⋃ e : G.edgeSet, e.val.toFinset by rw [this]; apply Set.finite_iUnion; simp
   ext
   simp [mem_support, Sym2.mem_iff_exists]
 
 variable {G} in
-theorem infinite_edgeSet_iff_infinite_of_support_eq_univ (h : G.support = .univ) :
-    G.edgeSet.Infinite ↔ Infinite V := by
+@[simp]
+theorem infinite_edgeSet_iff_infinite_support : G.edgeSet.Infinite ↔ G.support.Infinite := by
   contrapose!
-  exact finite_edgeSet_iff_finite_of_support_eq_univ h
+  exact finite_edgeSet_iff_finite_support
 
 end EdgeSet
 
