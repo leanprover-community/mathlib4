@@ -57,14 +57,14 @@ assert_not_exists TrivialStar
 open Function
 
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r }
+def NNReal := Nonneg ℝ
 
 namespace NNReal
 
 @[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
-@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
+@[coe] def toReal : ℝ≥0 → ℝ := Nonneg.val
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
@@ -113,7 +113,7 @@ and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in pl
 it needs to be reducible(-with-instances).
 -/
 noncomputable instance : Semifield ℝ≥0 := fast_instance%
-  Function.Injective.semifield toReal Subtype.val_injective
+  Function.Injective.semifield toReal Nonneg.val_injective
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
@@ -137,21 +137,21 @@ theorem val_eq_coe (n : ℝ≥0) : n.val = n :=
   rfl
 
 instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
-  Subtype.canLift _
+  Nonneg.canLift
 
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=
-  Subtype.ext
+  Nonneg.ext
 
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
   not_congr NNReal.eq_iff.symm
 
 protected theorem «forall» {p : ℝ≥0 → Prop} :
     (∀ x : ℝ≥0, p x) ↔ ∀ (x : ℝ) (hx : 0 ≤ x), p (.mk x hx) :=
-  Subtype.forall
+  Nonneg.forall
 
 protected theorem «exists» {p : ℝ≥0 → Prop} :
     (∃ x : ℝ≥0, p x) ↔ ∃ (x : ℝ) (hx : 0 ≤ x), p (.mk x hx) :=
-  Subtype.exists
+  Nonneg.exists
 
 /-- Reinterpret a real number `r` as a non-negative real number. Returns `0` if `r < 0`. -/
 def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
@@ -194,7 +194,7 @@ example : Inhabited ℝ≥0 := by infer_instance
 
 example : Nontrivial ℝ≥0 := by infer_instance
 
-protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype.coe_injective
+protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Nonneg.val_injective
 
 @[simp, norm_cast, basify_simp ←] lemma coe_inj {r₁ r₂ : ℝ≥0} : (r₁ : ℝ) = r₂ ↔ r₁ = r₂ :=
   NNReal.coe_injective.eq_iff
@@ -417,27 +417,22 @@ instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
--- TODO: if we use `@[simps!]` it will look through the `NNReal = Subtype _` definition,
--- but if we use `@[simps]` it will not look through the `Equiv.Set.sep` definition.
--- Turning `NNReal` into a structure may be the best way to go here.
--- @[simps!? apply_coe_coe]
+@[simps symm_apply_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
-  toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
+  toFun x := ⟨⟨x, x.2.1⟩, x.2.2⟩
+  invFun x := ⟨x.1, x.1.2, x.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 @[simp]
-theorem orderIsoIccZeroCoe_apply_coe_coe (a : ℝ≥0) (b : Set.Icc (0 : ℝ) a) :
-    (orderIsoIccZeroCoe a b : ℝ) = b :=
-  rfl
-
-@[simp]
-theorem orderIsoIccZeroCoe_symm_apply_coe (a : ℝ≥0) (b : Set.Iic a) :
-    ((orderIsoIccZeroCoe a).symm b : ℝ) = b :=
+theorem orderIsoIccZeroCoe_apply_coe_coe (a : ℝ≥0) (x : Set.Icc (0 : ℝ) a) :
+    ((orderIsoIccZeroCoe a x : ℝ≥0) : ℝ) = x :=
   rfl
 
 theorem coe_image {s : Set ℝ≥0} :
     (↑) '' s = { x : ℝ | ∃ h : 0 ≤ x, .mk x h ∈ s } :=
-  Subtype.coe_image
+  Nonneg.coe_image
 
 theorem bddAbove_coe {s : Set ℝ≥0} : BddAbove (((↑) : ℝ≥0 → ℝ) '' s) ↔ BddAbove s :=
   Iff.intro
@@ -450,14 +445,14 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
   ⟨0, fun _ ⟨q, _, eq⟩ => eq ▸ q.2⟩
 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
-  fast_instance% Nonneg.conditionallyCompleteLinearOrderBot 0
+  fast_instance% Nonneg.conditionallyCompleteLinearOrderBot
 
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
   rcases Set.eq_empty_or_nonempty s with rfl | hs
   · simp
   by_cases H : BddAbove s
-  · exact @Set.OrdConnected.coe_sSup ℝ (Set.Ici 0) _ (_) _ s hs H
+  · exact Nonneg.coe_sSup hs H
   · simp only [csSup_of_not_bddAbove H, csSup_empty, bot_eq_zero', NNReal.coe_zero]
     apply (Real.sSup_of_not_bddAbove ?_).symm
     contrapose H
@@ -471,8 +466,8 @@ theorem coe_iSup {ι : Sort*} (s : ι → ℝ≥0) : (↑(⨆ i, s i) : ℝ) = �
 theorem coe_sInf (s : Set ℝ≥0) : (↑(sInf s) : ℝ) = sInf (((↑) : ℝ≥0 → ℝ) '' s) := by
   rcases Set.eq_empty_or_nonempty s with rfl | hs
   · simp only [Set.image_empty, Real.sInf_empty, coe_eq_zero]
-    exact @Set.OrdConnected.sInf_empty_of_noTopOrder ℝ (Set.Ici 0) _ (_) _ _
-  exact @Set.OrdConnected.coe_sInf ℝ (Set.Ici 0) _ (_) _ s hs (OrderBot.bddBelow s)
+    exact Nonneg.sInf_empty
+  · exact Nonneg.coe_sInf hs (OrderBot.bddBelow s)
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ≥0) = 0 := by
@@ -519,7 +514,7 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
 
 instance instIsStrictOrderedModule {M : Type*} [AddCommMonoid M] [PartialOrder M]
     [Module ℝ M] [IsStrictOrderedModule ℝ M] :
-    IsStrictOrderedModule ℝ≥0 M := inferInstanceAs <| IsStrictOrderedModule (Subtype _) M
+    IsStrictOrderedModule ℝ≥0 M := inferInstanceAs <| IsStrictOrderedModule (Nonneg ℝ) M
 
 end NNReal
 
@@ -824,7 +819,7 @@ end Inv
 
 @[simp]
 theorem abs_eq (x : ℝ≥0) : |(x : ℝ)| = x :=
-  abs_of_nonneg x.property
+  abs_of_nonneg x.val_nonneg
 
 section Csupr
 
@@ -835,8 +830,8 @@ variable {ι : Sort*} {f : ι → ℝ≥0}
 theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y.toNNReal :=
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 
-nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
-  grind [csSup_of_not_bddAbove, csSup_empty, bot_eq_zero']
+lemma sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 :=
+  Nonneg.sSup_of_not_bddAbove hs
 
 theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf

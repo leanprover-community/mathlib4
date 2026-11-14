@@ -1066,7 +1066,7 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.HolderConjugate q) {A B : �
   beta_reduce at *
   norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
-  refine ⟨C, C.prop, hC, ?_⟩
+  refine ⟨C, C.val_nonneg, hC, ?_⟩
   norm_cast
 
 /-- For `1 ≤ p`, the `p`-th power of the sum of `f i` is bounded above by a constant times the

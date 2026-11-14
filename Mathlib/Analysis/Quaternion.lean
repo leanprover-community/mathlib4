@@ -72,7 +72,7 @@ theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
 
 @[simp, norm_cast]
 theorem nnNorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
-  Subtype.ext <| norm_coe a
+  Nonneg.ext <| norm_coe a
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_coe := nnNorm_coe
 
@@ -82,7 +82,7 @@ theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
 
 -- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem nnNorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
-  Subtype.ext <| norm_star a
+  Nonneg.ext <| norm_star a
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_star := nnNorm_star
 

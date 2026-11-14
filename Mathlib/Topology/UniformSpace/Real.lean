@@ -44,11 +44,13 @@ All the instances are inherited from the corresponding structures on the reals.
 instance : TopologicalSpace ℝ≥0 := inferInstance
 
 instance : CompleteSpace ℝ≥0 :=
-  isClosed_Ici.completeSpace_coe
+  (completeSpace_iff_isComplete_range Nonneg.isUniformInducing_val).2 <| by
+    rw [Nonneg.range_val]
+    exact isClosed_Ici.isComplete
 
 @[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
-  continuous_subtype_val
+  Nonneg.continuous_val
 
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
 @[simps -fullyApplied]
@@ -60,7 +62,6 @@ lemma coeNNRealReal_zero : ContinuousMap.coeNNRealReal 0 = 0 := rfl
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
-  prf f hf :=
-    ⟨⟨fun x => .mk (f x) (hf x), Continuous.subtype_mk (by fun_prop) _⟩, DFunLike.ext' rfl⟩
+  prf f hf := ⟨⟨fun x => .mk (f x) (hf x), f.2.nonnegMk _⟩, DFunLike.ext' rfl⟩
 
 end NNReal

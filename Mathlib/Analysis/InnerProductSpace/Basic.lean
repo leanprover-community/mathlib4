@@ -503,7 +503,7 @@ theorem parallelogram_law_with_norm (x y : E) :
 include 𝕜 in
 theorem parallelogram_law_with_nnNorm_mul (x y : E) :
     ‖x + y‖₊ * ‖x + y‖₊ + ‖x - y‖₊ * ‖x - y‖₊ = 2 * (‖x‖₊ * ‖x‖₊ + ‖y‖₊ * ‖y‖₊) :=
-  Subtype.ext <| parallelogram_law_with_norm_mul 𝕜 x y
+  Nonneg.ext <| parallelogram_law_with_norm_mul 𝕜 x y
 
 @[deprecated (since := "2026-10-31")]
 alias parallelogram_law_with_nnnorm_mul := parallelogram_law_with_nnNorm_mul

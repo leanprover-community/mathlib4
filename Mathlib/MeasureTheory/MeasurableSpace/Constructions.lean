@@ -203,6 +203,14 @@ instance Subtype.instMeasurableSpace {α} {p : α → Prop} [m : MeasurableSpace
     MeasurableSpace (Subtype p) :=
   m.comap ((↑) : _ → α)
 
+instance Nonneg.instMeasurableSpace {M : Type*} [Zero M] [LE M] [m : MeasurableSpace M] :
+    MeasurableSpace (Nonneg M) :=
+  m.comap Nonneg.val
+
+@[fun_prop]
+lemma Nonneg.measurable_val {M : Type*} [Zero M] [LE M] [MeasurableSpace M] :
+    Measurable (Nonneg.val : Nonneg M → M) := comap_measurable _
+
 section
 
 variable [MeasurableSpace α]
@@ -241,6 +249,11 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
   hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
+
+@[fun_prop]
+lemma Measurable.nonnegMk {M : Type*} [Zero M] [LE M] {mM : MeasurableSpace M} {f : α → M}
+    (hf : Measurable f) (h : ∀ x, 0 ≤ f x) : Measurable fun x => (⟨f x, h x⟩ : Nonneg M) :=
+  fun t ⟨s, hs⟩ ↦ hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
 
 @[fun_prop]
 theorem Measurable.codRestrict {s : Set β} {f : α → β} (hf : Measurable f)

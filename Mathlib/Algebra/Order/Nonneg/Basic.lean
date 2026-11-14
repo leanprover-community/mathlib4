@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Nonneg.Order
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Data.Nat.Cast.Order.Basic
 
@@ -22,16 +25,6 @@ This file defines instances and prove some properties about the nonnegative elem
 Currently we only state instances and states some `simp`/`norm_cast` lemmas.
 
 When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
-
-## Implementation Notes
-
-Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
-However, using the explicit subtype has a big advantage: when writing an element explicitly
-with a proof of nonnegativity as `⟨x, hx⟩`, the `hx` is expected to have type `0 ≤ x`. If we would
-use `Ici 0`, then the type is expected to be `x ∈ Ici 0`. Although these types are definitionally
-equal, this often confuses the elaborator. Similar problems arise when doing cases on an element.
-
-The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
 
 @[expose] public section
@@ -42,17 +35,7 @@ assert_not_exists mem_upperBounds
 
 variable {α : Type*}
 
-/-- The subtype of nonnegative elements.
-
-TODO: `Nonneg` could be converted to a one-field or two-field structure, as discussed on Zulip:
-https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/585745328
--/
-abbrev Nonneg (α : Type*) [Zero α] [LE α] := { x : α // 0 ≤ x }
-
 namespace Nonneg
-
-instance inhabited [Preorder α] {a : α} : Inhabited { x : α // a ≤ x } :=
-  ⟨⟨a, le_rfl⟩⟩
 
 instance zero [Zero α] [Preorder α] : Zero (Nonneg α) :=
   ⟨⟨0, le_rfl⟩⟩
@@ -64,7 +47,7 @@ protected theorem coe_zero [Zero α] [Preorder α] : ((0 : Nonneg α) : α) = 0 
 @[simp]
 theorem mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
     (⟨x, hx⟩ : Nonneg α) = 0 ↔ x = 0 :=
-  Subtype.ext_iff
+  Nonneg.ext_iff
 
 instance add [AddZeroClass α] [Preorder α] [AddLeftMono α] : Add (Nonneg α) :=
   ⟨fun x y => ⟨x + y, add_nonneg x.2 y.2⟩⟩
@@ -82,17 +65,17 @@ protected theorem coe_add [AddZeroClass α] [Preorder α] [AddLeftMono α]
 
 instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsLeftCancelAdd α] :
     IsLeftCancelAdd (Nonneg α) where
-  add_left_cancel _ _ _ eq := Subtype.ext (add_left_cancel congr($eq))
+  add_left_cancel _ _ _ eq := Nonneg.ext (add_left_cancel congr($eq))
 
 instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsRightCancelAdd α] :
     IsRightCancelAdd (Nonneg α) where
-  add_right_cancel _ _ _ eq := Subtype.ext (add_right_cancel congr($eq))
+  add_right_cancel _ _ _ eq := Nonneg.ext (add_right_cancel congr($eq))
 
 instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsCancelAdd α] :
     IsCancelAdd (Nonneg α) where
 
 instance nsmul [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ (Nonneg α) :=
-  ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
+  ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.val_nonneg n⟩⟩
 
 @[simp]
 theorem nsmul_mk [AddMonoid α] [Preorder α] [AddLeftMono α] (n : ℕ) {x : α}
@@ -118,7 +101,7 @@ protected theorem coe_one : ((1 : Nonneg α) : α) = 1 :=
 @[simp]
 theorem mk_eq_one {x : α} (hx : 0 ≤ x) :
     (⟨x, hx⟩ : Nonneg α) = 1 ↔ x = 1 :=
-  Subtype.ext_iff
+  Nonneg.ext_iff
 
 end One
 
@@ -146,7 +129,7 @@ section AddMonoid
 variable [AddMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addMonoid : AddMonoid (Nonneg α) :=
-  fast_instance% Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Nonneg.val_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Coercion `Nonneg α → α` as an `AddMonoidHom`. -/
 @[simps]
@@ -168,7 +151,7 @@ variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCommMonoid : AddCommMonoid (Nonneg α) :=
   fast_instance%
-    Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+    Nonneg.val_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCommMonoid
 
@@ -177,7 +160,7 @@ variable [AddCancelCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCancelCommMonoid : AddCancelCommMonoid (Nonneg α) :=
   fast_instance%
-    Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+    Nonneg.val_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCancelCommMonoid
 
@@ -229,7 +212,7 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance semiring : Semiring (Nonneg α) :=
-  fast_instance% Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
+  fast_instance% Nonneg.val_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
@@ -251,7 +234,7 @@ variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance commSemiring : CommSemiring (Nonneg α) :=
-  fast_instance% Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
+  fast_instance% Nonneg.val_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 

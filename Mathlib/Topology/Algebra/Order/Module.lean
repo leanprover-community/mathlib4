@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Order.Nonneg
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -23,4 +24,4 @@ instance [ContinuousConstSMul R α] : ContinuousConstSMul (Nonneg R) α where
   continuous_const_smul r := continuous_const_smul r.1
 
 instance [TopologicalSpace R] [ContinuousSMul R α] : ContinuousSMul (Nonneg R) α where
-  continuous_smul := continuous_smul (M := R).comp <| continuous_subtype_val.prodMap continuous_id
+  continuous_smul := continuous_smul (M := R).comp <| Nonneg.continuous_val.prodMap continuous_id

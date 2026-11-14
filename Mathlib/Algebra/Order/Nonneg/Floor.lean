@@ -37,7 +37,7 @@ instance floorSemiring [Semiring α] [PartialOrder α] [IsOrderedRing α] [Floor
   floor a := ⌊(a : α)⌋₊
   ceil a := ⌈(a : α)⌉₊
   floor_of_neg ha := FloorSemiring.floor_of_neg ha
-  gc_floor ha := FloorSemiring.gc_floor (Subtype.coe_le_coe.2 ha)
+  gc_floor ha := FloorSemiring.gc_floor (Nonneg.coe_le_coe.2 ha)
   gc_ceil a n := FloorSemiring.gc_ceil (a : α) n
 
 @[norm_cast]

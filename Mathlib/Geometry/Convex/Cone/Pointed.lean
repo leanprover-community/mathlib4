@@ -196,7 +196,7 @@ lemma mem_hull_set {s : Set E} : x ∈ hull R s ↔
   rw [mem_span_set]
   constructor
   · rintro ⟨c, hc, rfl⟩
-    exact ⟨⟨c.support, Subtype.val ∘ c, by simp [← Subtype.val_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
+    exact ⟨⟨c.support, Nonneg.val ∘ c, by simp [← Nonneg.coe_inj]⟩, hc, fun y ↦ (c y).2, rfl⟩
   · rintro ⟨c, hc, hc₀, rfl⟩
     exact ⟨⟨c.support, fun y ↦ ⟨c y, hc₀ _⟩, by simp⟩, hc, rfl⟩
 
@@ -300,7 +300,7 @@ module. -/
 @[simps!]
 def positive : PointedCone R E where
   __ := AddSubmonoid.nonneg E
-  smul_mem' c _ hx := by simpa using smul_nonneg c.property hx
+  smul_mem' c _ hx := by simpa using smul_nonneg c.val_nonneg hx
 
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive R E ↔ 0 ≤ x :=

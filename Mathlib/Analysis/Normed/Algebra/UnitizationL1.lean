@@ -69,7 +69,7 @@ lemma unitization_norm_def (x : WithLp 1 (Unitization 𝕜 A)) :
 
 lemma unitization_nnNorm_def (x : WithLp 1 (Unitization 𝕜 A)) :
     ‖x‖₊ = ‖(ofLp x).fst‖₊ + ‖(ofLp x).snd‖₊ :=
-  Subtype.ext <| unitization_norm_def x
+  Nonneg.ext <| unitization_norm_def x
 
 @[deprecated (since := "2026-10-31")] alias unitization_nnnorm_def := unitization_nnNorm_def
 

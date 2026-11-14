@@ -286,7 +286,7 @@ theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * �
   exact norm_smul _ _
 
 theorem nnNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
-  Subtype.ext <| norm_algebraMap 𝕜' x
+  Nonneg.ext <| norm_algebraMap 𝕜' x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap := nnNorm_algebraMap
 
@@ -311,7 +311,7 @@ theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x •
 /-- This is a simpler version of `nnNorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem nnNorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
-  Subtype.ext <| norm_algebraMap' _ _
+  Nonneg.ext <| norm_algebraMap' _ _
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap' := nnNorm_algebraMap'
 
@@ -334,11 +334,11 @@ variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 
 @[simp]
 theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
-  (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
+  (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.val_nonneg
 
 @[simp]
 theorem nnNorm_algebraMap_nnReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
-  Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
+  Nonneg.ext <| norm_algebraMap_nnreal 𝕜' x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap_nnreal := nnNorm_algebraMap_nnReal
 

@@ -77,7 +77,7 @@ theorem hasConstantSpeedOnWith_iff_ordered :
   rcases le_total x y with (xy | yx)
   · exact h xs ys xy
   · rw [eVariationOn.subsingleton, ENNReal.ofReal_of_nonpos]
-    · exact mul_nonpos_of_nonneg_of_nonpos l.prop (sub_nonpos_of_le yx)
+    · exact mul_nonpos_of_nonneg_of_nonpos l.val_nonneg (sub_nonpos_of_le yx)
     · rintro z ⟨zs, xz, zy⟩ w ⟨ws, xw, wy⟩
       cases le_antisymm (zy.trans yx) xz
       cases le_antisymm (wy.trans yx) xw
@@ -91,9 +91,9 @@ theorem hasConstantSpeedOnWith_iff_variationOnFromTo_eq :
     rw [hasConstantSpeedOnWith_iff_ordered] at h
     rcases le_total x y with (xy | yx)
     · rw [variationOnFromTo.eq_of_le f s xy, h xs ys xy]
-      exact ENNReal.toReal_ofReal (mul_nonneg l.prop (sub_nonneg.mpr xy))
+      exact ENNReal.toReal_ofReal (mul_nonneg l.val_nonneg (sub_nonneg.mpr xy))
     · rw [variationOnFromTo.eq_of_ge f s yx, h ys xs yx]
-      have := ENNReal.toReal_ofReal (mul_nonneg l.prop (sub_nonneg.mpr yx))
+      have := ENNReal.toReal_ofReal (mul_nonneg l.val_nonneg (sub_nonneg.mpr yx))
       simp_all only [NNReal.val_eq_coe]; ring
   · rw [hasConstantSpeedOnWith_iff_ordered]
     rintro h x xs y ys xy
@@ -118,8 +118,8 @@ theorem HasConstantSpeedOnWith.union {t : Set ℝ} (hfs : HasConstantSpeedOnWith
       · rintro (⟨ws, zw, wx⟩ | ⟨wt, xw, wy⟩)
         exacts [⟨Or.inl ws, zw, wx.trans (ht.2 yt)⟩, ⟨Or.inr wt, (hs.2 zs).trans xw, wy⟩]
     rw [this, eVariationOn.union (f := f) (x := x), hfs zs hs.1 (hs.2 zs), hft ht.1 yt (ht.2 yt)]
-    · have q := ENNReal.ofReal_add (mul_nonneg l.prop (sub_nonneg.mpr (hs.2 zs)))
-        (mul_nonneg l.prop (sub_nonneg.mpr (ht.2 yt)))
+    · have q := ENNReal.ofReal_add (mul_nonneg l.val_nonneg (sub_nonneg.mpr (hs.2 zs)))
+        (mul_nonneg l.val_nonneg (sub_nonneg.mpr (ht.2 yt)))
       simp only [NNReal.val_eq_coe] at q
       rw [← q]
       ring_nf

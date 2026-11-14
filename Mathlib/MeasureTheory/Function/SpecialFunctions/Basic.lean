@@ -281,7 +281,8 @@ instance Complex.hasMeasurablePow : MeasurablePow ℂ ℂ :=
 
 instance Real.hasMeasurablePow : MeasurablePow ℝ ℝ := ⟨Complex.measurable_re.comp <| by fun_prop⟩
 
-instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ := ⟨Measurable.subtype_mk (by fun_prop)⟩
+instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=
+  ⟨.nonnegMk (by fun_prop) fun p ↦ Real.rpow_nonneg p.1.2 _⟩
 
 instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
   refine ⟨ENNReal.measurable_of_measurable_nnreal_prod ?_ ?_⟩

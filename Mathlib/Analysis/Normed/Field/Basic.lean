@@ -294,7 +294,7 @@ theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂
   DenselyNormedField.lt_norm_lt r₁ r₂ h₀ h
 
 theorem exists_lt_nnNorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ :=
-  mod_cast exists_lt_norm_lt α r₁.prop h
+  mod_cast exists_lt_norm_lt α r₁.val_nonneg h
 
 @[deprecated (since := "2026-10-31")] alias exists_lt_nnnorm_lt := exists_lt_nnNorm_lt
 

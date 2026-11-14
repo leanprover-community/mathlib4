@@ -204,7 +204,7 @@ lemma l2_opNorm_conjTranspose [DecidableEq m] (A : Matrix m n 𝕜) : ‖Aᴴ‖
   exact ContinuousLinearMap.adjoint.norm_map _
 
 lemma l2_opNNNorm_conjTranspose [DecidableEq m] (A : Matrix m n 𝕜) : ‖Aᴴ‖₊ = ‖A‖₊ :=
-  Subtype.ext <| l2_opNorm_conjTranspose _
+  Nonneg.ext <| l2_opNorm_conjTranspose _
 
 lemma l2_opNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = ‖A‖ * ‖A‖ := by
   classical
@@ -213,7 +213,7 @@ lemma l2_opNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = 
   exact ContinuousLinearMap.norm_adjoint_comp_self _
 
 lemma l2_opNNNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖₊ = ‖A‖₊ * ‖A‖₊ :=
-  Subtype.ext <| l2_opNorm_conjTranspose_mul_self _
+  Nonneg.ext <| l2_opNorm_conjTranspose_mul_self _
 
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
 lemma l2_opNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
@@ -257,7 +257,7 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
 
 @[simp]
 lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
-  Subtype.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
+  Nonneg.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/

@@ -91,6 +91,6 @@ theorem cast_mk {K} [DivisionRing K] (q : ℚ) (h : 0 ≤ q) :
 open OfScientific in
 theorem Nonneg.coe_ofScientific {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     (m : ℕ) (s : Bool) (e : ℕ) :
-    (ofScientific m s e : {x : K // 0 ≤ x}).val = ofScientific m s e := rfl
+    (ofScientific m s e : Nonneg K).val = ofScientific m s e := rfl
 
 end NNRat

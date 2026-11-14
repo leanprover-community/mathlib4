@@ -65,7 +65,7 @@ lemma norm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
 
 lemma nnNorm_cfcHom (a : A) (f : C(σ 𝕜 a, 𝕜)) (ha : p a := by cfc_tac) :
     ‖cfcHom (show p a from ha) f‖₊ = ‖f‖₊ :=
-  Subtype.ext <| norm_cfcHom a f ha
+  Nonneg.ext <| norm_cfcHom a f ha
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfcHom := nnNorm_cfcHom
 
@@ -286,7 +286,7 @@ lemma norm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cfc_
 
 lemma nnNorm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cfc_tac) :
     ‖cfcₙHom (show p a from ha) f‖₊ = ‖f‖₊ :=
-  Subtype.ext <| norm_cfcₙHom a f ha
+  Nonneg.ext <| norm_cfcₙHom a f ha
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_cfcₙHom := nnNorm_cfcₙHom
 
@@ -528,7 +528,7 @@ lemma IsGreatest.nnNorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a :
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   rw [← SpectrumRestricts] at ha'
   convert IsGreatest.nnNorm_cfc (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont
-  case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
+  case hf_cont => exact NNReal.continuous_coe.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 
@@ -617,7 +617,7 @@ lemma IsGreatest.nnNorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
   rw [cfcₙ_nnreal_eq_real ..]
   obtain ⟨-, ha'⟩ := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mp ha
   convert IsGreatest.nnNorm_cfcₙ (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont (by simpa)
-  case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
+  case hf_cont => exact NNReal.continuous_coe.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
   simp [Set.image_image, ← ha'.image]
 

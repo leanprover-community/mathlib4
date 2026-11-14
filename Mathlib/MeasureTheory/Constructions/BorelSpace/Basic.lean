@@ -189,6 +189,10 @@ instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace 
     [hα : BorelSpace α] (p : α → Prop) : BorelSpace (Subtype p) :=
   ⟨by borelize α; symm; apply borel_comap⟩
 
+instance Nonneg.borelSpace {α : Type*} [Zero α] [LE α] [TopologicalSpace α] [MeasurableSpace α]
+    [hα : BorelSpace α] : BorelSpace (Nonneg α) :=
+  ⟨by borelize α; symm; apply borel_comap⟩
+
 instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
     [TopologicalSpace α] [DiscreteTopology α] : BorelSpace α := by
   have : ∀ s, @MeasurableSet α inferInstance s := fun s ↦ s.to_countable.measurableSet
@@ -726,10 +730,10 @@ instance Real.borelSpace : BorelSpace ℝ :=
   ⟨rfl⟩
 
 instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
-  inferInstanceAs <| MeasurableSpace (Subtype _)
+  inferInstanceAs <| MeasurableSpace (Nonneg ℝ)
 
 instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
-  inferInstanceAs <| BorelSpace (Subtype _)
+  inferInstanceAs <| BorelSpace (Nonneg ℝ)
 
 instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
   borel ℝ≥0∞
