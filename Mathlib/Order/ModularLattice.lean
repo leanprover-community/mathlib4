@@ -91,6 +91,12 @@ class IsModularLattice (α : Type*) [Lattice α] : Prop where
 /-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)` -/
   sup_inf_le_assoc_of_le : ∀ {x : α} (y : α) {z : α}, x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z
 
+to_dual_for IsModularLattice.sup_inf_le_assoc_of_le :=
+  fun hzx => by grind [self.sup_inf_le_assoc_of_le y hzx]
+
+to_dual_for IsModularLattice.mk :=
+  { sup_inf_le_assoc_of_le {x} y {z} hxz := by grind [sup_inf_le_assoc_of_le y hxz] }
+
 section WeakUpperModular
 
 variable [Lattice α] [IsWeakUpperModularLattice α] {a b : α}
@@ -151,13 +157,9 @@ section IsModularLattice
 
 variable [Lattice α] [IsModularLattice α]
 
+@[to_dual]
 theorem sup_inf_le_assoc_of_le {x z : α} (y : α) : x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z :=
   IsModularLattice.sup_inf_le_assoc_of_le y
-
-@[to_dual existing]
-theorem inf_sup_le_assoc_of_le {x z : α} (y : α) : z ≤ x → x ⊓ (y ⊔ z) ≤ x ⊓ y ⊔ z := by
-  simp_rw [inf_comm x, sup_comm _ z]
-  exact sup_inf_le_assoc_of_le y
 
 @[to_dual]
 theorem sup_inf_assoc_of_le {x : α} (y : α) {z : α} (h : x ≤ z) : (x ⊔ y) ⊓ z = x ⊔ y ⊓ z :=
@@ -389,11 +391,8 @@ namespace IsModularLattice
 
 variable [Lattice α] [IsModularLattice α] {a b c : α}
 
+@[to_dual]
 instance isModularLattice_Iic : IsModularLattice (Set.Iic a) :=
-  ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
-
-@[to_dual existing]
-instance isModularLattice_Ici : IsModularLattice (Set.Ici a) :=
   ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
 
 section ComplementedLattice
