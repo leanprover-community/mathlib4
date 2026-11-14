@@ -41,7 +41,8 @@ lemma map_symm_dvd (e : M ≃* N) {b : N} : e.symm b ∣ a ↔ b ∣ e a := by s
 lemma dvd_map_symm (e : M ≃* N) {b : N} : a ∣ e.symm b ↔ e a ∣ b := by simp [← map_dvd_iff e]
 
 @[deprecated dvd_map_symm +typeChanged (since := "2026-11-14")]
-lemma map_dvd_iff_dvd_symm (e : M ≃* N) {b : N} : e a ∣ b ↔ a ∣ e.symm b := by simp
+lemma map_dvd_iff_dvd_symm (e : E) {b : N} : e a ∣ b ↔ a ∣ (MulEquivClass.toMulEquiv e).symm b :=
+  (dvd_map_symm <| MulEquivClass.toMulEquiv e).symm
 
 protected lemma MulHom.map_dvd (f : M →ₙ* N) : a ∣ b → f a ∣ f b := map_dvd f
 
