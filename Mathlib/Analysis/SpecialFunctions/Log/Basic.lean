@@ -364,7 +364,7 @@ theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp +unfoldPartialApp only [continuousOn_iff_continuous_domRestrict,
     domRestrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
-  exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
+  exact expOrderIso.symm.continuous.comp (continuous_subtypeVal.norm.subtype_mk _)
 
 /-- The real logarithm is continuous as a function from nonzero reals. -/
 @[fun_prop]

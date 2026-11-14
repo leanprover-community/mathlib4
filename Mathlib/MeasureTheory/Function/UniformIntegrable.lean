@@ -280,7 +280,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ) :
       exact nonpos_iff_eq_zero.2 hle
     rw [this, eLpNormEssSup_measure_zero]
   apply nullMeasurableSet_le aemeasurable_const
-  exact measurable_subtype_coe.comp_aemeasurable hf.aestronglyMeasurable.nnNorm.aemeasurable
+  exact measurable_subtypeVal.comp_aemeasurable hf.aestronglyMeasurable.nnNorm.aemeasurable
 
 /-- This lemma is slightly weaker than `MeasureTheory.MemLp.eLpNorm_indicator_norm_ge_pos_le` as the
 latter provides `0 < M`. -/

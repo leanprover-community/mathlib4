@@ -232,7 +232,7 @@ lemma ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
   · simp
   have : Nonempty (affineSpan ℝ C) := ⟨⟨p, subset_affineSpan ℝ C hp⟩⟩
   set ψ := (AffineIsometryEquiv.constVSub ℝ (⟨p, subset_affineSpan ℝ C hp⟩ : affineSpan ℝ C)).symm
-  have hiso : Isometry (Subtype.val ∘ ⇑ψ) := isometry_subtype_coe.comp ψ.isometry
+  have hiso : Isometry (Subtype.val ∘ ⇑ψ) := isometry_subtypeVal.comp ψ.isometry
   have hL := (hf.comp_affineMap
     ((affineSpan ℝ C).subtype.comp ψ.toAffineEquiv.toAffineMap)).locallyLipschitzOn_interior
   refine (hiso.locallyLipschitzOn_image (by simpa using hL)).mono ?_

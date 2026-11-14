@@ -136,7 +136,7 @@ theorem toTopCat_map (X : TopCat.{u}) {U V : Opens X} {f : U ⟶ V} {x} {h} :
 def inclusion' {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X :=
   TopCat.ofHom
   { toFun := _
-    continuous_toFun := continuous_subtype_val }
+    continuous_toFun := continuous_subtypeVal }
 
 @[simp]
 theorem coe_inclusion' {X : TopCat.{u}} {U : Opens X} :

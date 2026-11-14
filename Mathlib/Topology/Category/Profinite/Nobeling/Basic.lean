@@ -179,7 +179,7 @@ def iso_map : C(π C J, (IndexFunctor.obj C J)) :=
     ext ⟨i, hi⟩
     simp [precomp, Proj, hi]⟩, by
     refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
-    exact (continuous_apply i.val).comp continuous_subtype_val⟩
+    exact (continuous_apply i.val).comp continuous_subtypeVal⟩
 
 lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
   refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
@@ -294,7 +294,7 @@ def e (i : I) : LocallyConstant C ℤ where
   isLocallyConstant := by
     rw [IsLocallyConstant.iff_continuous]
     exact (continuous_of_discreteTopology (f := fun (a : Bool) ↦ (if a then (1 : ℤ) else 0))).comp
-      ((continuous_apply i).comp continuous_subtype_val)
+      ((continuous_apply i).comp continuous_subtypeVal)
 
 variable [LinearOrder I]
 

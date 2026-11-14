@@ -1197,7 +1197,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly
   lift f to α → s using hf with f' hf'
   rw [tendstoUniformly_iff_tendsto] at h
   have : Tendsto (fun q ↦ (f' q.2, F' q.1 q.2)) (p ×ˢ ⊤) (𝓤 s) :=
-    h.of_tendsto_comp isUniformEmbedding_subtype_val.comap_uniformity.le
+    h.of_tendsto_comp isUniformEmbedding_subtypeVal.comap_uniformity.le
   apply UniformContinuous.comp_tendstoUniformly hg ?_
   rwa [← tendstoUniformly_iff_tendsto] at this
 

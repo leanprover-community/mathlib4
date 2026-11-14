@@ -272,7 +272,7 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
-  exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by simp_all⟩
+  exact ⟨fun x ↦ f x, continuous_subtypeVal.comp f_cont, by simp_all⟩
 
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     SeparatesPoints {f : X → I | Continuous f} := by

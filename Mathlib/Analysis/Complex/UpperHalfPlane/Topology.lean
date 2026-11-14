@@ -208,7 +208,7 @@ lemma continuousOn_ofComplex_I_mul :
   simp only [ofComplex_apply_eq_ite, continuousOn_iff_continuous_domRestrict,
     continuous_induced_rng]
   have : Continuous (fun t : ℝ ↦ Complex.I * t) := by fun_prop
-  exact (this.comp continuous_subtype_val).congr (by simp +contextual)
+  exact (this.comp continuous_subtypeVal).congr (by simp +contextual)
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext

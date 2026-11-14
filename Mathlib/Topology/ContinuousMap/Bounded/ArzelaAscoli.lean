@@ -96,13 +96,13 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
     IsCompact A := by
   /- This version is deduced from the previous one by restricting to the compact type in the target,
   using compactness there and then lifting everything to the original space. -/
-  have M : LipschitzWith 1 Subtype.val := LipschitzWith.subtype_val s
+  have M : LipschitzWith 1 Subtype.val := LipschitzWith.subtypeVal s
   let F : (α →ᵇ s) → α →ᵇ β := comp (↑) M
   refine IsCompact.of_isClosed_subset ((?_ : IsCompact (F ⁻¹' A)).image (continuous_comp M)) closed
       fun f hf => ?_
   · have : CompactSpace s := isCompact_iff_compactSpace.1 hs
     refine arzela_ascoli₁ _ (continuous_iff_isClosed.1 (continuous_comp M) _ closed) ?_
-    rw [isUniformEmbedding_subtype_val.isUniformInducing.equicontinuous_iff]
+    rw [isUniformEmbedding_subtypeVal.isUniformInducing.equicontinuous_iff]
     exact H.comp (A.restrictPreimage F)
   · let g := codRestrict s f fun x => in_s f x hf
     rw [show f = F g by ext; rfl] at hf ⊢

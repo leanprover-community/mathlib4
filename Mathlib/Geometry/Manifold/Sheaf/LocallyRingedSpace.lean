@@ -74,7 +74,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have H : ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 := f.2.continuous.continuousAt.eventually_ne hf'
     rw [eventually_nhds_iff] at H
     obtain ⟨V₀, hV₀f, hV₀, hxV₀⟩ := H
-    let V : Opens M := ⟨Subtype.val '' V₀, U.2.isOpenMap_subtype_val V₀ hV₀⟩
+    let V : Opens M := ⟨Subtype.val '' V₀, U.2.isOpenMap_subtypeVal V₀ hV₀⟩
     have hUV : V ≤ U := Subtype.coe_image_subset (U : Set M) V₀
     have hV : V₀ = .range (Set.inclusion hUV) := by rw [Set.range_inclusion hUV]; simp [V]
     clear_value V
@@ -193,14 +193,14 @@ lemma ChartedSpace.locallyRingedSpace_comp {f : M → N} (hf : ContMDiff IM IN �
 -- is also a smooth immersion.
 instance (U : Opens M) :
     LocallyRingedSpace.IsOpenImmersion
-      (ChartedSpace.locallyRingedSpaceMap _ (contMDiff_subtype_val (I := IM) (U := U))) where
+      (ChartedSpace.locallyRingedSpaceMap _ (contMDiff_subtypeVal (I := IM) (U := U))) where
   base_open := U.isOpenEmbedding'
   c_iso V := by
     rw [ConcreteCategory.isIso_iff_bijective]
     refine ⟨fun a b hab ↦ Subtype.ext ?_, fun ⟨g, hg⟩ ↦ ?_⟩
     · ext ⟨x, y, hy, rfl⟩
       congrm $(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩
-    · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtype_val⟩
+    · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtypeVal⟩
       have ha : IsOpenEmbedding a.hom := U.isOpenEmbedding'
       let V' : Opens U := (Opens.map a).obj (ha.isOpenMap.functor.obj V)
       let b : V' ≃ₜ ha.isOpenMap.functor.obj V :=
@@ -208,7 +208,7 @@ instance (U : Opens M) :
       refine ⟨⟨g ∘ b.symm, ContMDiff.comp hg ?_⟩, Subtype.ext <| funext fun _ ↦ ?_⟩
       · refine (ContMDiff.subtypeVal_comp_iff V' _).mp ?_
         rw [← ContMDiff.subtypeVal_comp_iff]
-        convert contMDiff_subtype_val
+        convert contMDiff_subtypeVal
         ext x
         congrm $(b.apply_symm_apply x).1
       · change g _ = _
@@ -221,12 +221,12 @@ def ChartedSpace.restrictLocallyRingedSpaceIso (U : Opens M) :
     (locallyRingedSpace IM M).restrict U.isOpenEmbedding ≅
       locallyRingedSpace IM U where
   hom := LocallyRingedSpace.IsOpenImmersion.lift
-    (locallyRingedSpaceMap _ contMDiff_subtype_val)
+    (locallyRingedSpaceMap _ contMDiff_subtypeVal)
     (LocallyRingedSpace.ofRestrict _ _) (by rfl)
   inv := LocallyRingedSpace.IsOpenImmersion.lift
     ((locallyRingedSpace IM M).ofRestrict U.isOpenEmbedding)
-    (locallyRingedSpaceMap _ contMDiff_subtype_val) (by rfl)
+    (locallyRingedSpaceMap _ contMDiff_subtypeVal) (by rfl)
   hom_inv_id := by
     simp [← cancel_mono ((locallyRingedSpace IM M).ofRestrict U.isOpenEmbedding)]
   inv_hom_id := by
-    simp [← cancel_mono (locallyRingedSpaceMap _ contMDiff_subtype_val)]
+    simp [← cancel_mono (locallyRingedSpaceMap _ contMDiff_subtypeVal)]

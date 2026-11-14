@@ -206,7 +206,7 @@ theorem _root_.IsOpen.analyticSet_image {β : Type*} [TopologicalSpace β] [Poli
     {s : Set β} (hs : IsOpen s) {f : β → α} (f_cont : Continuous f) : AnalyticSet (f '' s) := by
   rw [image_eq_range]
   have : PolishSpace s := hs.polishSpace
-  exact analyticSet_range_of_polishSpace (f_cont.comp continuous_subtype_val)
+  exact analyticSet_range_of_polishSpace (f_cont.comp continuous_subtypeVal)
 
 /-- A set is analytic if and only if it is the continuous image of some Polish space. -/
 theorem analyticSet_iff_exists_polishSpace_range {s : Set α} :
@@ -259,7 +259,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
       isClosed_eq ((f_cont n).comp (continuous_apply n)) ((f_cont i₀).comp (continuous_apply i₀))
   have : PolishSpace t := t_closed.polishSpace
   let F : t → α := fun x => f i₀ ((x : γ) i₀)
-  have F_cont : Continuous F := (f_cont i₀).comp ((continuous_apply i₀).comp continuous_subtype_val)
+  have F_cont : Continuous F := (f_cont i₀).comp ((continuous_apply i₀).comp continuous_subtypeVal)
   have F_range : range F = ⋂ n : ι, s n := by
     apply Subset.antisymm
     · rintro y ⟨x, rfl⟩
@@ -301,7 +301,7 @@ theorem _root_.IsClosed.analyticSet [PolishSpace α] {s : Set α} (hs : IsClosed
     AnalyticSet s := by
   have : PolishSpace s := hs.polishSpace
   rw [← @Subtype.range_val α s]
-  exact analyticSet_range_of_polishSpace continuous_subtype_val
+  exact analyticSet_range_of_polishSpace continuous_subtypeVal
 
 /-- Given a Borel-measurable set in a Polish space, there exists a finer Polish topology making
 it clopen. This is in fact an equivalence, see `isClopenable_iff_measurableSet`. -/
@@ -346,7 +346,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
   refine ⟨t', t't, ?_, t'_polish⟩
   have : Continuous[t', _] (rangeFactorization f) :=
     hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
-  exact continuous_subtype_val.comp this
+  exact continuous_subtypeVal.comp this
 
 /-- The image of a measurable set in a standard Borel space under a measurable map
 is an analytic set. -/
@@ -590,7 +590,7 @@ theorem measurableSet_preimage_iff_inter_range {f : X → Z} [CountablySeparated
     (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
   rw [hf.measurableSet_preimage_iff_preimage_val, inter_comm,
-    ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
+    ← (MeasurableEmbedding.subtypeVal hr).measurableSet_image, Subtype.image_preimage_coe]
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space
 to a countably separated measurable space,
@@ -872,7 +872,7 @@ theorem ContinuousOn.measurableEmbedding [BorelSpace β]
     measurableSet_image' := by
       intro u hu
       have A : MeasurableSet (((↑) : s → γ) '' u) :=
-        (MeasurableEmbedding.subtype_coe hs).measurableSet_image.2 hu
+        (MeasurableEmbedding.subtypeVal hs).measurableSet_image.2 hu
       have B : MeasurableSet (f '' ((↑) : s → γ) '' u) :=
         A.image_of_continuousOn_injOn (f_cont.mono (Subtype.coe_image_subset s u))
           (f_inj.mono (Subtype.coe_image_subset s u))

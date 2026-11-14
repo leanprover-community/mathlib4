@@ -151,11 +151,11 @@ theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
     exists_measurePreserving_probabilityMeasure (hfcont.mapsToRestrict hfinv)
   let μ : ProbabilityMeasure K := ⟨μm, hμprob⟩
   have : (μ : Measure K).Regular := hμmreg
-  have hιmeas : Measurable ι :=  measurable_subtype_coe
+  have hιmeas : Measurable ι :=  measurable_subtypeVal
   let ν := μ.map ι
   use ν
   have : (ν : Measure X).InnerRegular :=
-    Measure.InnerRegular.map_of_continuous continuous_subtype_val
+    Measure.InnerRegular.map_of_continuous continuous_subtypeVal
   have hιmp : MeasurePreserving ι μ ν := ⟨hιmeas, by simp [ν]⟩
   have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
     intro

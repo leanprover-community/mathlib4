@@ -70,7 +70,7 @@ variable {L W : Type*} [DivisionRing L] [AddCommGroup W] [Module L W] [Topologic
 @[fun_prop]
 theorem continuous_map {σ : K →+* L} {f : V →ₛₗ[σ] W} (hf : Function.Injective f)
     (hfc : Continuous f) : Continuous (map f hf) :=
-  continuous_iff.2 <| continuous_mk (hfc.comp continuous_subtype_val) _
+  continuous_iff.2 <| continuous_mk (hfc.comp continuous_subtypeVal) _
 
 end Map
 

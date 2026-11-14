@@ -93,7 +93,7 @@ theorem IsOpen.smul_sphere {r : ℝ} (hr : r ≠ 0) {U : Set ℝ} {V : Set (Metr
     prod_mem_nhds (hV.mem_nhds hyV) (hU.preimage_val.mem_nhds hxU)
   replace := image_mem_map (m := Subtype.val ∘ (homeomorphSphereProd E r hr₀).symm) this
   rw [← Filter.map_map, (homeomorphSphereProd _ r hr₀).symm.map_nhds_eq,
-    map_nhds_subtype_val, IsOpen.nhdsWithin_eq, homeomorphSphereProd_symm_apply_coe] at this
+    map_nhds_subtypeVal, IsOpen.nhdsWithin_eq, homeomorphSphereProd_symm_apply_coe] at this
   · filter_upwards [this]
     rintro _ ⟨⟨a, b⟩, ⟨ha, hb⟩, rfl⟩
     rw [Function.comp_apply, homeomorphSphereProd_symm_apply_coe]

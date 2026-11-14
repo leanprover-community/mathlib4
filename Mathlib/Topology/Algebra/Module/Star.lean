@@ -97,7 +97,7 @@ theorem continuous_decomposeProdAdjoint [IsTopologicalAddGroup A] [ContinuousSta
 @[fun_prop]
 theorem continuous_decomposeProdAdjoint_symm [ContinuousAdd A] :
     Continuous (StarModule.decomposeProdAdjoint R A).symm :=
-  (continuous_subtype_val.comp continuous_fst).add (continuous_subtype_val.comp continuous_snd)
+  (continuous_subtypeVal.comp continuous_fst).add (continuous_subtypeVal.comp continuous_snd)
 
 /-- The self-adjoint part of an element of a star module, as a continuous linear map. -/
 @[simps! -isSimp]

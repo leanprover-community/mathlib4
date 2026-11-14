@@ -575,7 +575,7 @@ def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :
 
 theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ eball a r) :
     𝓝 x = map ((↑) : eball a r → β) (𝓝 ⟨x, h⟩) :=
-  (map_nhds_subtype_coe_eq_nhds _ <| isOpen_eball.mem_nhds h).symm
+  (map_nhds_subtypeVal_eq_nhds _ <| isOpen_eball.mem_nhds h).symm
 
 end
 

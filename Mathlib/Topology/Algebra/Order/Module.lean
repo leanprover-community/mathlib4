@@ -23,4 +23,4 @@ instance [ContinuousConstSMul R α] : ContinuousConstSMul (Nonneg R) α where
   continuous_const_smul r := continuous_const_smul r.1
 
 instance [TopologicalSpace R] [ContinuousSMul R α] : ContinuousSMul (Nonneg R) α where
-  continuous_smul := continuous_smul (M := R).comp <| continuous_subtype_val.prodMap continuous_id
+  continuous_smul := continuous_smul (M := R).comp <| continuous_subtypeVal.prodMap continuous_id

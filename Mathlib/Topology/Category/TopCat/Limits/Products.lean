@@ -292,7 +292,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
             · exact g.hom.continuous_toFun
             · apply Continuous.comp (by fun_prop)
               rw [IsEmbedding.subtypeVal.isInducing.continuous_iff]
-              exact continuous_subtype_val
+              exact continuous_subtypeVal
           · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
             exact h₂.isOpen_range

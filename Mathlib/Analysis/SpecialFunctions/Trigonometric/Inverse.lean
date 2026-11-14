@@ -93,7 +93,7 @@ theorem arcsin_inj {x y : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) (hy₁ : -1 
 
 @[continuity, fun_prop]
 theorem continuous_arcsin : Continuous arcsin :=
-  continuous_subtype_val.comp sinOrderIso.symm.continuous.Icc_extend'
+  continuous_subtypeVal.comp sinOrderIso.symm.continuous.Icc_extend'
 
 @[fun_prop]
 theorem continuousAt_arcsin {x : ℝ} : ContinuousAt arcsin x :=

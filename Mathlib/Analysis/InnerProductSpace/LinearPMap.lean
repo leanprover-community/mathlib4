@@ -113,8 +113,8 @@ variable {T}
 @[simp]
 theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
     (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
-  ContinuousLinearMap.extend_eq _ hT.denseRange_val
-    isUniformEmbedding_subtype_val.isUniformInducing _
+  ContinuousLinearMap.extend_eq _ hT.denseRange_subtypeVal
+    isUniformEmbedding_subtypeVal.isUniformInducing _
 
 variable [CompleteSpace E]
 

@@ -272,6 +272,6 @@ instance Metric.sphere.instContinuousMul [SeminormedRing 𝕜] [NormMulClass �
 
 instance Metric.sphere.instIsTopologicalGroup [NormedDivisionRing 𝕜] :
     IsTopologicalGroup (sphere (0 : 𝕜) 1) where
-  continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
+  continuous_inv := (continuous_subtypeVal.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 
 instance Metric.sphere.instCommGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) where

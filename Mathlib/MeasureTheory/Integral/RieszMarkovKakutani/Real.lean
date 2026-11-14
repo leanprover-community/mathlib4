@@ -481,7 +481,7 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
   convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
-    simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]
+    simp only [map_comap_subtypeVal hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]
   · rw [integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
     simp
 

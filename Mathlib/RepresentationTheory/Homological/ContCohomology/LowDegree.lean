@@ -78,9 +78,9 @@ def d₀kerIso : ((homogeneousCochains X).d 0 1).hom.ker ≃L[k] X.ρ.invariants
     simpa using DFunLike.ext_iff.1 (DFunLike.ext_iff.1 hx g) 1
   right_inv _ := rfl
   continuous_toFun := continuous_induced_rng.2 <| (continuous_eval_const 1).comp
-    (continuous_subtype_val.comp continuous_subtype_val)
+    (continuous_subtypeVal.comp continuous_subtypeVal)
   continuous_invFun := continuous_induced_rng.2 <| continuous_induced_rng.2 <|
-    ContinuousMap.continuous_const'.comp continuous_subtype_val
+    ContinuousMap.continuous_const'.comp continuous_subtypeVal
 
 /-- The isomorphism between the zeroth continuous cohomology group and
 the invariants of a representation. -/

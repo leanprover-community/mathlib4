@@ -716,7 +716,7 @@ theorem _root_.stronglyMeasurable_iff_measurable_separable {m : MeasurableSpace 
   refine ⟨fun H ↦ ⟨H.measurable, H.isSeparable_range⟩, fun ⟨Hm, Hsep⟩  ↦ ?_⟩
   have := Hsep.secondCountableTopology
   have Hm' : StronglyMeasurable (rangeFactorization f) := Hm.subtype_mk.stronglyMeasurable
-  exact continuous_subtype_val.comp_stronglyMeasurable Hm'
+  exact continuous_subtypeVal.comp_stronglyMeasurable Hm'
 
 /-- A continuous function is strongly measurable when either the source space or the target space
 is second-countable. -/
@@ -899,8 +899,8 @@ theorem _root_.stronglyMeasurable_of_stronglyMeasurable_union_cover {m : Measura
   nontriviality β; inhabit β
   suffices Function.extend Subtype.val (fun x : s ↦ f x)
       (Function.extend (↑) (fun x : t ↦ f x) fun _ ↦ default) = f from
-    this ▸ (MeasurableEmbedding.subtype_coe hs).stronglyMeasurable_extend hc <|
-      (MeasurableEmbedding.subtype_coe ht).stronglyMeasurable_extend hd stronglyMeasurable_const
+    this ▸ (MeasurableEmbedding.subtypeVal hs).stronglyMeasurable_extend hc <|
+      (MeasurableEmbedding.subtypeVal ht).stronglyMeasurable_extend hd stronglyMeasurable_const
   ext x
   by_cases hxs : x ∈ s
   · lift x to s using hxs

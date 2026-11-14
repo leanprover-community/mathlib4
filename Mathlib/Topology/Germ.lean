@@ -153,7 +153,7 @@ theorem sliceRight_coe [TopologicalSpace Y] {y : Y} (f : X × Y → Z) :
 lemma isConstant_comp_subtype {s : Set X} {f : X → Y} {x : s}
     (hf : (f : Germ (𝓝 (x : X)) Y).IsConstant) :
     ((f ∘ Subtype.val : s → Y) : Germ (𝓝 x) Y).IsConstant :=
-  isConstant_comp_tendsto hf continuousAt_subtype_val
+  isConstant_comp_tendsto hf continuousAt_subtypeVal
 
 end Filter.Germ
 

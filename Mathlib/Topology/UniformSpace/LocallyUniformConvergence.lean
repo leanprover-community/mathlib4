@@ -83,7 +83,7 @@ theorem tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe :
     TendstoLocallyUniformlyOn F f p s ↔
       TendstoLocallyUniformly (fun i (x : s) => F i x) (f ∘ (↑)) p := by
   simp only [tendstoLocallyUniformly_iff_forall_tendsto, Subtype.forall', tendsto_map'_iff,
-    tendstoLocallyUniformlyOn_iff_forall_tendsto, ← map_nhds_subtype_val, prod_map_right]; rfl
+    tendstoLocallyUniformlyOn_iff_forall_tendsto, ← map_nhds_subtypeVal, prod_map_right]; rfl
 
 protected theorem TendstoUniformlyOn.tendstoLocallyUniformlyOn (h : TendstoUniformlyOn F f p s) :
     TendstoLocallyUniformlyOn F f p s := fun u hu _ _ =>

@@ -877,7 +877,7 @@ theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} (hs : IsDiscrete s)
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
   rw [isDiscrete_iff_discreteTopology] at hs
   have : ({⟨x, hx⟩} : Set s) ∈ 𝓝 (⟨x, hx⟩ : s) := by simp [nhds_discrete]
-  simpa only [nhdsWithin_eq_map_subtype_coe hx, image_singleton] using
+  simpa only [nhdsWithin_eq_map_subtypeVal hx, image_singleton] using
     @image_mem_map _ _ _ ((↑) : s → X) _ this
 
 /-- The neighbourhoods filter of `x` within `s`, under the discrete topology, is equal to

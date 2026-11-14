@@ -903,7 +903,7 @@ Meromorphic functions are measurable.
   have h₁' := h₁.to_subtype
   have h₂ : IsOpen s := isOpen_analyticAt 𝕜 f
   have h₃ : ContinuousOn f s := fun z hz ↦ hz.continuousAt.continuousWithinAt
-  exact .of_union_range_cover (.subtype_coe h₂.measurableSet) (.subtype_coe h₁.measurableSet)
+  exact .of_union_range_cover (.subtypeVal h₂.measurableSet) (.subtypeVal h₁.measurableSet)
     (by simp [-mem_compl_iff]) h₃.domRestrict.measurable (measurable_of_countable _)
 
 /-- `Meromorphic` is invariant under translation. -/

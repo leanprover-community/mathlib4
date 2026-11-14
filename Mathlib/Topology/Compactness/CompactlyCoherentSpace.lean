@@ -102,7 +102,7 @@ lemma isOpen_iff_forall_compactSpace [CompactlyCoherentSpace X] (s : Set X) :
   refine ⟨fun hs _ _ _ _ hf ↦ hs.preimage hf, fun hs ↦ isOpen_iff |>.mpr ?_⟩
   intro K hK
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
-  exact hs K Subtype.val continuous_subtype_val
+  exact hs K Subtype.val continuous_subtypeVal
 
 /-- A topological space `X` is compactly coherent if a set `s` is open when `f ⁻¹' s?` is open for
 every continuous map `f : K → X`, where `K` is compact. -/
@@ -245,7 +245,7 @@ instance instCompactlyCoherentSpace : CompactlyCoherentSpace (𝐤X) := by
   refine .of_isOpen_forall_compactSpace fun U hU ↦ isOpen_iff.mpr fun K hK ↦ ?_
   rw [← preimage_comp]
   have : CompactSpace K := isCompact_iff_compactSpace.mp hK
-  exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtype_val)
+  exact hU K _ (continuous_rng_of_compactSpace.mpr continuous_subtypeVal)
 
 /-- The compact coherentification preserves the topology of k-spaces. -/
 protected def homeo [CompactlyCoherentSpace X] : X ≃ₜ 𝐤X where

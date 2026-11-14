@@ -220,7 +220,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
   nonempty_interior' := by
     rw [range_euclideanHalfSpace, interior_halfSpace]
     exact ⟨toLp 2 fun i ↦ 1, by simp⟩
-  continuous_toFun := continuous_subtype_val
+  continuous_toFun := continuous_subtypeVal
   continuous_invFun := by
     exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
       (PiLp.continuous_apply 2 _ 0).max continuous_const).subtype_mk _
@@ -248,7 +248,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   nonempty_interior' := by
     rw [range_euclideanQuadrant, interior_quadrant]
     exact ⟨toLp 2 fun i ↦ 1, by simp⟩
-  continuous_toFun := continuous_subtype_val
+  continuous_toFun := continuous_subtypeVal
   continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp
     (continuous_pi fun i ↦ ((PiLp.continuous_apply 2 _ i).max continuous_const))) _
 
@@ -368,12 +368,12 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     simp only [Fin.isValue, add_comm, A, inf_of_le_left, add_sub_cancel_left]
   open_source :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
-    this.preimage continuous_subtype_val
+    this.preimage continuous_subtypeVal
   open_target := by
     have : IsOpen { z : ℝ | z < y - x } := isOpen_Iio
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ => ℝ) _ 0)
-    exact this.preimage continuous_subtype_val
+    exact this.preimage continuous_subtypeVal
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
 
@@ -448,12 +448,12 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     simp only [Fin.isValue, A, sup_of_le_left, sub_sub_cancel]
   open_source :=
     haveI : IsOpen { z : ℝ | x < z } := isOpen_Ioi
-    this.preimage continuous_subtype_val
+    this.preimage continuous_subtypeVal
   open_target := by
     have : IsOpen { z : ℝ | z < y - x } := isOpen_Iio
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ ↦ ℝ) _ 0)
-    exact this.preimage continuous_subtype_val
+    exact this.preimage continuous_subtypeVal
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
 

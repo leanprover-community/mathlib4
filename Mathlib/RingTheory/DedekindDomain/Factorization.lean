@@ -80,7 +80,7 @@ theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
     maxPowDividing v I =
       v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
   rw [maxPowDividing, factors_mk _ hI, count_some (irreducible_mk.mpr v.irreducible),
-    ← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtype_coe_factors',
+    ← Multiset.count_map_eq_count' _ _ Subtype.val_injective, map_subtypeVal_factors',
     factors_eq_normalizedFactors, ← Multiset.count_map_eq_count' _ _ (mk_injective (M := Ideal R))]
 
 /-- Only finitely many maximal ideals of `R` divide a given nonzero ideal. -/

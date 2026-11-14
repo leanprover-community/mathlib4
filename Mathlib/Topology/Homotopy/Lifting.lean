@@ -249,7 +249,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
   · rw [closure_le_eq continuous_id' continuous_const] at h; exact ⟨h.1.1, h.2⟩
   · apply q.continuousOn_invFun.comp (by fun_prop)
     simp_rw [not_le, q.target_eq]; intro s h
-    exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
+    exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtypeVal h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
     exacts [eqOn ⟨hs.1, h⟩, q.proj_symm_apply' (t_sub ⟨le_of_not_ge h, hs.2⟩)]
   · dsimp only; rwa [ite_eq_left (t_0 ▸ t_mono n.zero_le)]

@@ -154,8 +154,11 @@ theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
     f ⁻¹' g ⁻¹' s = (fun x => g (f x)) ⁻¹' s :=
   preimage_comp.symm
 
-theorem eq_preimage_subtype_val_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
+theorem eq_preimage_subtypeVal_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
     s = Subtype.val ⁻¹' t ↔ ∀ (x) (h : p x), (⟨x, h⟩ : Subtype p) ∈ s ↔ x ∈ t := by grind
+
+@[deprecated (since := "2026-11-11")]
+alias eq_preimage_subtype_val_iff := eq_preimage_subtypeVal_iff
 
 theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻¹' s).Nonempty) :
     s.Nonempty :=
@@ -170,13 +173,16 @@ theorem nonempty_preimage_iff {s : Set β} {f : α → β} :
 
 @[simp] theorem preimage_singleton_false (p : α → Prop) : p ⁻¹' {False} = {a | ¬p a} := by ext; simp
 
-theorem preimage_subtype_coe_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
+theorem preimage_subtypeVal_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
     (H : s ∩ (u ∩ v) = ∅) : ((↑) : s → α) ⁻¹' u = ((↑) ⁻¹' v)ᶜ := by
   ext ⟨x, x_in_s⟩
   constructor
   · intro x_in_u x_in_v
     exact eq_empty_iff_forall_notMem.mp H x ⟨x_in_s, ⟨x_in_u, x_in_v⟩⟩
   · grind
+
+@[deprecated (since := "2026-11-10")]
+alias preimage_subtype_coe_eq_compl := preimage_subtypeVal_eq_compl
 
 lemma preimage_subset {s t} (hs : s ⊆ f '' t) (hf : Set.InjOn f (f ⁻¹' s)) : f ⁻¹' s ⊆ t := by
   rintro a ha

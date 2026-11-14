@@ -204,9 +204,9 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
       simp only [dist_eq, one_div] at hε
       have : Tendsto (fun y : s ↦ dist x.1 y.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist y.1 sᶜ)⁻¹|)
           (𝓝 x) (𝓝 (dist x.1 x.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist x.1 sᶜ)⁻¹|)) := by
-        refine (tendsto_const_nhds.dist continuous_subtype_val.continuousAt).add
+        refine (tendsto_const_nhds.dist continuous_subtypeVal.continuousAt).add
           (tendsto_const_nhds.sub <| ?_).abs
-        refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtype_val.continuousAt
+        refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtypeVal.continuousAt
         rw [s.isOpen.isClosed_compl.closure_eq, mem_compl_iff, not_not]
         exact x.2
       simp only [dist_self, sub_self, abs_zero, zero_add] at this
@@ -274,7 +274,7 @@ theorem inv_infEDist_compl_ne_top (hUo : ∀ i, IsOpen (U i)) (x : ↥(⋂ i, U 
   simpa [← mem_iff_infEDist_zero_of_closed (hUo i).isClosed_compl] using mem_iInter.mp x.2 i
 
 theorem continuous_gδEmbedding (hUo : ∀ i, IsOpen (U i)) : Continuous (gδEmbedding U) :=
-  continuous_subtype_val.prodMk <| continuous_pi fun i ↦
+  continuous_subtypeVal.prodMk <| continuous_pi fun i ↦
     ENNReal.continuousOn_toNNReal.comp_continuous (by fun_prop) (inv_infEDist_compl_ne_top hUo · i)
 
 /-- This characterization of the range of `gδEmbedding` as an intersection makes it easy to
@@ -347,7 +347,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   have hle : TopologicalSpace.coinduced f instTopologicalSpaceSum ≤ ‹_› := by
     simp only [instTopologicalSpaceSum, coinduced_sup, coinduced_compose, sup_le_iff,
       ← continuous_iff_coinduced_le]
-    exact ⟨continuous_subtype_val, continuous_subtype_val⟩
+    exact ⟨continuous_subtypeVal, continuous_subtypeVal⟩
   refine ⟨.coinduced f instTopologicalSpaceSum, hle, ?_, hs.mono hle, ?_⟩
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
