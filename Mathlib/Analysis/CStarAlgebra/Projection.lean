@@ -22,7 +22,7 @@ Here we collect results about projections specific to C⋆-algebras.
 
 public section
 
-open scoped CStarAlgebra StarRing
+open scoped CStarAlgebra
 
 section NonUnital
 variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A]
