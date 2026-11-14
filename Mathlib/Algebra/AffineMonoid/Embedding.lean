@@ -36,8 +36,8 @@ noncomputable abbrev dim := Module.finrank ℤ <| GrothendieckAddGroup M
 
 variable (M) in
 /-- An arbitrary embedding of an affine monoid `M` into `ℤ ^ dim M`. -/
-noncomputable def embedding : M →+ FreeAbelianGroup (Fin (dim M)) :=
-  .comp (FreeAbelianGroup.equivFinsupp _).symm.toAddMonoidHom <|
+noncomputable def embedding : M →+ FreeAddCommGroup (Fin (dim M)) :=
+  .comp (FreeAddCommGroup.equivFinsupp _).symm.toAddMonoidHom <|
     .comp (Module.finBasis ℤ _).repr.toAddMonoidHom
       (addMonoidOf ⊤).toAddMonoidHom
 
