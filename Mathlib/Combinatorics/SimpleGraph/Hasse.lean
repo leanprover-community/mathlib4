@@ -35,13 +35,13 @@ variable (α β : Type*)
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] [Preorder β]
 
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
 
-variable {α} {a b : α}
+variable {α β} {a b : α}
 
 @[simp]
 theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=
@@ -60,6 +60,18 @@ theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
 
 @[simp]
 theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
+  rfl
+
+/-- Lift an order embedding with an `OrdConnected` range to a graph embedding
+between Hasse diagrams -/
+@[simps toEmbedding]
+protected def Embedding.hasse (f : α ↪o β) (hf : (Set.range f).OrdConnected) :
+    hasse α ↪g hasse β where
+  toEmbedding := f.toEmbedding
+  map_rel_iff' := by simp [hf.apply_covBy_apply_iff]
+
+@[simp]
+theorem Embedding.coe_hasse (f : α ↪o β) (hf) : ⇑(Embedding.hasse f hf) = f :=
   rfl
 
 /-- The Hasse diagram of a preorder is triangle-free. This is the graph-theoretic formulation of
@@ -165,6 +177,30 @@ instance (n : ℕ) : DecidableRel (pathGraph n).Adj :=
 theorem pathGraph_le_cycleGraph {n : ℕ} : pathGraph n ≤ cycleGraph n := by
   intro u v h
   grind [pathGraph_adj, cycleGraph_adj', Fin.coe_sub_iff_le]
+
+/-- An embedding of the path graph in a larger path graph. -/
+protected def Embedding.pathGraph (n m : ℕ) (h : n ≤ m) : pathGraph n ↪g pathGraph m :=
+  .hasse (Fin.castLEOrderEmb h) <| by
+    simp_rw [Fin.castLEOrderEmb, OrderEmbedding.coe_ofStrictMono, Fin.range_castLE]
+    exact Set.ordConnected_Iio.preimage_mono Fin.val_strictMono.monotone
+
+@[simp]
+theorem Embedding.coe_pathGraph {n m : ℕ} (h : n ≤ m) :
+    ⇑(Embedding.pathGraph n m h) = Fin.castLE h :=
+  rfl
+
+@[simp]
+theorem Embedding.pathGraph_toEmbedding {n m : ℕ} (h : n ≤ m) :
+    (Embedding.pathGraph n m h).toEmbedding = Fin.castLEEmb h :=
+  rfl
+
+theorem pathGraph_isContained_iff {n m : ℕ} : pathGraph n ⊑ pathGraph m ↔ n ≤ m where
+  mp h := Fin.nonempty_embedding_iff.mp ⟨h.some.toEmbedding⟩
+  mpr h := Embedding.pathGraph n m h |>.isContained
+
+theorem pathGraph_isIndContained_iff {n m : ℕ} : pathGraph n ⊴ pathGraph m ↔ n ≤ m where
+  mp h := Fin.nonempty_embedding_iff.mp ⟨h.some.toEmbedding⟩
+  mpr h := Embedding.pathGraph n m h |>.isIndContained
 
 namespace Walk
 
