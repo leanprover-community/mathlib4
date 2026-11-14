@@ -27,3 +27,12 @@ lemma Algebra.norm_one_add_smul {A B} [CommRing A] [CommRing B] [Algebra A B]
   simp_rw [Algebra.norm_eq_matrix_det b, Algebra.trace_eq_matrix_trace b]
   simp only [map_add, map_one, map_smul, Matrix.det_one_add_smul a]
   exact ⟨_, rfl⟩
+
+/-- Let `B` be a finite free `ℤ`-algebra. If `1 + a • x` is a unit, where `a : ℤ` does not
+divide `2`, then its norm is `1`. -/
+lemma Algebra.norm_one_add_smul_eq_one_of_isUnit {B : Type*} [CommRing B] [Module.Free ℤ B]
+    [Module.Finite ℤ B] {a : ℤ} (ha : ¬ a ∣ 2) {x : B} (hx : IsUnit (1 + a • x)) :
+    Algebra.norm ℤ (1 + a • x) = 1 := by
+  obtain ⟨r, hr⟩ := Algebra.norm_one_add_smul a x
+  exact (Int.isUnit_iff.mp (hx.map (Algebra.norm ℤ))).resolve_right fun h ↦
+    ha ⟨-Algebra.trace ℤ B x - r * a, by grind⟩
