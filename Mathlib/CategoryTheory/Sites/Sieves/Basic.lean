@@ -112,8 +112,8 @@ instance : CompleteLattice (Sieve X) where
   bot :=
     { arrows := ⊥
       downward_closed := False.elim }
-  sup := Sieve.union
-  inf := Sieve.inter
+  max := Sieve.union
+  min := Sieve.inter
   sSup := Sieve.sup
   sInf := Sieve.inf
   isLUB_sSup _ := ⟨fun S hS _ _ hf ↦ ⟨S, hS, hf⟩, fun _ ha _ _ ⟨b, hb, hf⟩ ↦ ha hb _ hf⟩

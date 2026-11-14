@@ -477,7 +477,7 @@ variable [DecidableLE α]
 
 instance lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
-    inf := fun s t =>
+    min := fun s t =>
       match s, t with
       | ⊥, _ => ⊥
       | _, ⊥ => ⊥
