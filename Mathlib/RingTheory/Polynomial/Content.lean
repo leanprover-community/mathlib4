@@ -179,7 +179,7 @@ theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
   · rw [Finset.dvd_gcd_iff]
     intro i _
     apply content_dvd_coeff _
-  · exact Finset.gcd_mono (supp_subset_range h)
+  · exact Finset.gcd_mono (supp_subset_range (degree_le_natDegree.trans_lt (mod_cast h)))
 
 theorem content_eq_gcd_range_succ (p : R[X]) :
     p.content = (Finset.range p.natDegree.succ).gcd p.coeff :=

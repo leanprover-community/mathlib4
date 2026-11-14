@@ -98,7 +98,8 @@ theorem Submodule.span_range_natDegree_eq_adjoin {R A} [CommRing R] [Semiring A]
   rw [Subalgebra.mem_toSubmodule, Algebra.adjoin_singleton_eq_range_aeval] at hr
   rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
   rw [← modByMonic_add_div p f, map_add, map_mul, hfx,
-      zero_mul, add_zero, ← sum_C_mul_X_pow_eq (p %ₘ f), aeval_def, eval₂_sum, sum_def]
+      zero_mul, add_zero, ← sum_coeff_C_mul_X_pow (p %ₘ f), aeval_def, eval₂_finsuppSum,
+      Finsupp.sum]
   refine sum_mem fun k hkq ↦ ?_
   rw [C_mul_X_pow_eq_monomial, eval₂_monomial, ← Algebra.smul_def]
   exact smul_mem _ _ (subset_span <| Finset.mem_image_of_mem _ <| Finset.mem_range.mpr <|

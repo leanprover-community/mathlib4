@@ -232,11 +232,12 @@ lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α 
   · rw [hc, degree_mul, degree_cyclotomic, Nat.totient_prime hp] at hP'
     have : c.degree ≤ 0 := (WithBot.add_le_add_iff_left (x := ↑(p - 1)) (by simp)).mp (by simpa)
     obtain ⟨c, rfl⟩ := natDegree_eq_zero.mp (natDegree_eq_zero_iff_degree_le_zero.mpr this)
-    simp [hP, hc, cyclotomic_prime]
+    simp [Finsupp.single_apply, hP, hc, cyclotomic_prime]
   ext i
   by_cases h : i < p
-  · lift i to Fin p using h; simp [cyclotomic_prime, ← hP, H i 0]
-  · simp [cyclotomic_prime, P, h, Fin.forall_iff, @forall_comm _ (_ = _), Finset.sum_eq_zero]
+  · lift i to Fin p using h; simp [Finsupp.single_apply, cyclotomic_prime, ← hP, H i 0]
+  · simp [Finsupp.single_apply, cyclotomic_prime, P, h, Fin.forall_iff, @forall_comm _ (_ = _),
+      Finset.sum_eq_zero]
 
 /-- Variant of `sum_eq_zero_iff_forall_eq` with integer coefficients. -/
 lemma sum_eq_zero_iff_forall_eq_int (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℤ) :

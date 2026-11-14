@@ -264,9 +264,12 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
     refine fun a ham ↦ .mul (.multiset_prod ?_) ?_
     · simp only [Multiset.mem_map, Polynomial.isIntegral_iff_isIntegral_coeff, forall_exists_index,
         and_imp, forall_apply_eq_imp_iff₂, coeff_sub]
-      exact fun b hbm n ↦ .sub (by simp [coeff_X, apply_ite, isIntegral_one, isIntegral_zero])
-        (by simp [coeff_C, apply_ite, isIntegral_zero, hm' b (Multiset.mem_of_mem_erase hbm)])
-    · simpa [isIntegral_iff_isIntegral_coeff, coeff_C, apply_ite, isIntegral_zero] using H' a ham
+      exact fun b hbm n ↦
+        .sub (by simp [Finsupp.single_apply, apply_ite, isIntegral_one, isIntegral_zero])
+          (by simp [Finsupp.single_apply, apply_ite, isIntegral_zero,
+            hm' b (Multiset.mem_of_mem_erase hbm)])
+    · simpa [isIntegral_iff_isIntegral_coeff, Finsupp.single_apply, apply_ite, isIntegral_zero]
+        using H' a ham
   refine ⟨_, ?_, Polynomial.isIntegral_iff_isIntegral_coeff.mp H''⟩
   rw [modByMonic_eq_sub_mul_div, map_sub, map_mul, map_mul,
     show φ f = 0 from hfx.ge (Ideal.mem_span_singleton_self _), zero_mul, sub_zero]

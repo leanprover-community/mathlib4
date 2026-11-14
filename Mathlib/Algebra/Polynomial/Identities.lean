@@ -63,17 +63,18 @@ private def polyBinomAux1 (x y : R) (e : ℕ) (a : R) :
 
 private theorem poly_binom_aux2 (f : R[X]) (x y : R) :
     f.eval (x + y) =
-      f.sum fun e a => a * (x ^ e + e * x ^ (e - 1) * y + (polyBinomAux1 x y e a).val * y ^ 2) := by
-  unfold eval; rw [eval₂_eq_sum]; congr with (n z)
+      f.coeff.sum fun e a =>
+        a * (x ^ e + e * x ^ (e - 1) * y + (polyBinomAux1 x y e a).val * y ^ 2) := by
+  unfold eval; rw [eval₂_eq_sum_coeff]; congr with (n z)
   apply (polyBinomAux1 x y _ _).property
 
 set_option backward.privateInPublic true in
 private theorem poly_binom_aux3 (f : R[X]) (x y : R) :
     f.eval (x + y) =
-      ((f.sum fun e a => a * x ^ e) + f.sum fun e a => a * e * x ^ (e - 1) * y) +
-        f.sum fun e a => a * (polyBinomAux1 x y e a).val * y ^ 2 := by
+      ((f.coeff.sum fun e a => a * x ^ e) + f.coeff.sum fun e a => a * e * x ^ (e - 1) * y) +
+        f.coeff.sum fun e a => a * (polyBinomAux1 x y e a).val * y ^ 2 := by
   rw [poly_binom_aux2]
-  simp [left_distrib, sum_add, mul_assoc]
+  simp [left_distrib, mul_assoc]
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -83,10 +84,10 @@ plus some element `k : R` times `y^2`.
 -/
 def binomExpansion (f : R[X]) (x y : R) :
     { k : R // f.eval (x + y) = f.eval x + f.derivative.eval x * y + k * y ^ 2 } := by
-  exists f.sum fun e a => a * (polyBinomAux1 x y e a).val
+  exists f.coeff.sum fun e a => a * (polyBinomAux1 x y e a).val
   rw [poly_binom_aux3]
   congr
-  · rw [← eval_eq_sum]
+  · rw [← eval_eq_sum_coeff]
   · rw [derivative_eval]
     exact (Finset.sum_mul ..).symm
   · exact (Finset.sum_mul ..).symm
@@ -105,12 +106,9 @@ def powSubPowFactor (x y : R) : ∀ i : ℕ, { z : R // x ^ i - y ^ i = z * (x -
 for some `z` in the ring.
 -/
 def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x - y) } := by
-  refine ⟨f.sum fun i r => r * (powSubPowFactor x y i).val, ?_⟩
-  delta eval; rw [eval₂_eq_sum, eval₂_eq_sum]
-  simp only [sum, ← Finset.sum_sub_distrib, Finset.sum_mul]
-  dsimp
-  congr with i
-  rw [mul_assoc, ← (powSubPowFactor x y _).prop, mul_sub]
+  refine ⟨f.coeff.sum fun i r => r * (powSubPowFactor x y i).val, ?_⟩
+  simp [eval, eval₂_eq_sum_coeff, Finsupp.sum, ← Finset.sum_sub_distrib, Finset.sum_mul, mul_assoc,
+    (powSubPowFactor x y _).prop, ← mul_sub]
 
 end Identities
 

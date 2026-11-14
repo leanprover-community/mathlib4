@@ -68,7 +68,7 @@ lemma mem_ideal_map_adjoin [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (
     induction H using Submodule.span_induction with
     | mem a ha =>
       obtain ⟨a, ha, rfl⟩ := ha
-      exact ⟨C a, fun i ↦ by rw [coeff_C]; aesop, aeval_C _ _⟩
+      exact ⟨C a, fun i ↦ by rw [coeff_C_apply]; aesop, aeval_C _ _⟩
     | zero => exact ⟨0, by simp, aeval_zero _⟩
     | add a b ha hb ha' hb' =>
       obtain ⟨a, ha, ha'⟩ := ha'

@@ -85,21 +85,18 @@ theorem X_add_two_mul_X_add_two : (X + C 2 : N₃[X]) * (X + C 2) = (X + C 2) * 
   rw [← add_assoc, ← add_mul, ← C_add]
   rfl
 
+@[simp] lemma two_ne_three : (2 : N₃) ≠ 3 := nofun
+
 /-! The main example: multiplication by the polynomial `X + 2` is not injective,
 yet the polynomial is monic. -/
 
 theorem monic_X_add_two : Monic (X + C 2 : N₃[X]) := by
   unfold Monic leadingCoeff
   nontriviality
-  rw [natDegree_X_add_C 2]
-  simp only [coeff_C, coeff_add, coeff_X_one, ite_false, add_zero, reduceCtorEq]
+  simp
 
-theorem not_isLeftRegular_X_add_two : ¬ IsLeftRegular (X + C 2 : N₃[X]) := by
-  intro h
-  have H := h X_add_two_mul_X_add_two
-  apply_fun (·.coeff 0) at H
-  simp only [coeff_add, coeff_X_zero, zero_add, coeff_C, ite_true] at H
-  cases H
+theorem not_isLeftRegular_X_add_two : ¬ IsLeftRegular (X + C 2 : N₃[X]) :=
+  fun h ↦ by simpa using congr($(h X_add_two_mul_X_add_two).coeff 0)
 
 /-- The statement of the counterexample: not all monic polynomials over semirings are regular. -/
 theorem not_monic_implies_isLeftRegular :
