@@ -645,7 +645,7 @@ theorem isGLB_empty [OrderTop α] : IsGLB ∅ (⊤ : α) :=
 
 @[to_dual]
 theorem IsLUB.nonempty [NoBotOrder α] (hs : IsLUB s a) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h =>
+  ne_empty_iff_nonempty.1 fun h =>
     not_isBot a fun _ => hs.right <| by rw [h, upperBounds_empty]; exact mem_univ _
 
 @[to_dual]

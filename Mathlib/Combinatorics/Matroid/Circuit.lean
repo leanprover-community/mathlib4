@@ -666,7 +666,7 @@ lemma IsCircuit.isCocircuit_inter_nontrivial (hC : M.IsCircuit C) (hK : M.IsCoci
 
 lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
     (hK : M.IsCocircuit K) : Disjoint C K ∨ (C ∩ K).Nontrivial := by
-  rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]
+  rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ne_empty_iff_nonempty]
   exact hC.isCocircuit_inter_nontrivial hK
 
 lemma dual_rankPos_iff_exists_isCircuit : M✶.RankPos ↔ ∃ C, M.IsCircuit C := by

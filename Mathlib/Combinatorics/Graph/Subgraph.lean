@@ -390,7 +390,7 @@ instance : Inhabited (Graph α β) where
 
 lemma eq_bot_or_vertexSet_nonempty (G : Graph α β) : G = ⊥ ∨ V(G).Nonempty := by
   refine (em (V(G) = ∅)).elim (fun he ↦ .inl (Graph.ext he fun e x y ↦ ?_)) (Or.inr ∘
-    nonempty_iff_ne_empty.mpr)
+    ne_empty_iff_nonempty.mp)
   simp only [edgeSet_bot, mem_empty_iff_false, not_false_eq_true, not_isLink_of_notMem_edgeSet,
     iff_false]
   exact fun h ↦ by simpa [he] using h.left_mem

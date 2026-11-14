@@ -592,7 +592,7 @@ theorem principal_eq_bot_iff {s : Set α} : 𝓟 s = ⊥ ↔ s = ∅ :=
 
 @[simp]
 theorem principal_neBot_iff {s : Set α} : NeBot (𝓟 s) ↔ s.Nonempty :=
-  neBot_iff.trans <| (not_congr principal_eq_bot_iff).trans nonempty_iff_ne_empty.symm
+  neBot_iff.trans <| (not_congr principal_eq_bot_iff).trans ne_empty_iff_nonempty
 
 alias ⟨_, _root_.Set.Nonempty.principal_neBot⟩ := principal_neBot_iff
 

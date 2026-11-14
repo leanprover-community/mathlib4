@@ -158,7 +158,7 @@ theorem setOfPred_subset_eq_univ_iff (S : L[[α]].Theory) :
 
 theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
   rw [← isSatisfiable_onTheory_iff (lhomWithConstants_injective L α)]
-  rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne, not_iff_comm,
+  rw [nonempty_iff_univ_nonempty, ← ne_empty_iff_nonempty, Ne, not_iff_comm,
     ← union_empty ((L.lhomWithConstants α).onTheory T), ← setOfPred_subset_eq_empty_iff]
   simp
 

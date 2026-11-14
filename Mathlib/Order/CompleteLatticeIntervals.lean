@@ -201,7 +201,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   isLUB_sSup S := by
     split_ifs with hS
     · subst hS; simp only [isLUB_empty_iff, isBot_iff_eq_bot]; rfl
-    · exact .of_image Subtype.coe_le_coe <| isLUB_csSup ((Set.nonempty_iff_ne_empty.mpr hS).image _)
+    · exact .of_image Subtype.coe_le_coe <| isLUB_csSup ((Set.ne_empty_iff_nonempty.mp hS).image _)
         ((Subtype.mono_coe _).map_bddAbove (OrderTop.bddAbove S))
   sInf S := if hS : S = ∅ then ⟨b, Fact.out, le_rfl⟩ else ⟨sInf ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
@@ -211,7 +211,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   isGLB_sInf S := by
     split_ifs with hS
     · subst hS; simp only [isGLB_empty_iff, isTop_iff_eq_top]; rfl
-    · exact .of_image Subtype.coe_le_coe <| isGLB_csInf ((Set.nonempty_iff_ne_empty.mpr hS).image _)
+    · exact .of_image Subtype.coe_le_coe <| isGLB_csInf ((Set.ne_empty_iff_nonempty.mp hS).image _)
         ((Subtype.mono_coe _).map_bddBelow (OrderBot.bddBelow S))
 
 /-- Complete linear order structure on `Set.Icc` -/

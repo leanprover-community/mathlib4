@@ -764,8 +764,7 @@ instance : Nontrivial (AffineSubspace k P) :=
   ⟨⟨⊥, ⊤, bot_ne_top k V P⟩⟩
 
 theorem nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s.Nonempty := by
-  rw [Set.nonempty_iff_ne_empty]
-  rintro rfl
+  by_contra! rfl
   rw [AffineSubspace.span_empty] at h
   exact bot_ne_top k V P h
 
@@ -826,8 +825,7 @@ theorem coe_eq_univ_iff (Q : AffineSubspace k P) : (Q : Set P) = univ ↔ Q = �
   coe_injective.eq_iff' (top_coe _ _ _)
 
 theorem nonempty_iff_ne_bot (Q : AffineSubspace k P) : (Q : Set P).Nonempty ↔ Q ≠ ⊥ := by
-  rw [nonempty_iff_ne_empty]
-  exact not_congr Q.coe_eq_bot_iff
+  simp [← ne_empty_iff_nonempty]
 
 theorem eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).Nonempty := by
   rw [nonempty_iff_ne_bot]
@@ -1059,12 +1057,11 @@ instance (x : P) : Nonempty ({x} : AffineSubspace k P) :=
 @[simp]
 theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
   rw [← not_iff_not, ← Ne, ← Ne, ← nonempty_iff_ne_bot, affineSpan_nonempty,
-    nonempty_iff_ne_empty]
+    ← ne_empty_iff_nonempty]
 
 @[simp]
 theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
-  rw [bot_lt_iff_ne_bot, nonempty_iff_ne_empty]
-  exact (affineSpan_eq_bot _).not
+  simp [bot_lt_iff_ne_bot]
 
 @[simp]
 lemma affineSpan_eq_top_iff_nonempty_of_subsingleton [Subsingleton P] :

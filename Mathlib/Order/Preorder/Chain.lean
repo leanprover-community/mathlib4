@@ -272,7 +272,7 @@ protected theorem IsMaxChain.isEmpty_iff (h : IsMaxChain r s) : IsEmpty α ↔ s
   constructor
   intro x
   simp only [IsMaxChain, h', IsChain.empty, empty_subset, forall_const, true_and] at h
-  exact singleton_ne_empty x (h IsChain.singleton).symm
+  exact (singleton_nonempty x).ne_empty (h IsChain.singleton).symm
 
 protected theorem IsMaxChain.nonempty_iff (h : IsMaxChain r s) : Nonempty α ↔ s.Nonempty :=
   not_iff_not.mp <| by simpa [Set.not_nonempty_iff_eq_empty] using h.isEmpty_iff

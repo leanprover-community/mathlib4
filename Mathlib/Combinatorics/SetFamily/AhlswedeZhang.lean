@@ -374,7 +374,7 @@ lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
   refine sum_congr rfl fun s hs ↦ ?_
   rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
-  have := (nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs h𝒜₀).card_pos
+  have := (ne_empty_iff_nonempty.1 <| ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity
 
 variable [Nonempty α]

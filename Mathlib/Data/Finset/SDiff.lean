@@ -159,8 +159,8 @@ theorem sdiff_eq_empty_iff_subset : s \ t = ∅ ↔ s ⊆ t :=
   sdiff_eq_bot_iff
 
 @[grind =]
-theorem sdiff_nonempty : (s \ t).Nonempty ↔ ¬s ⊆ t :=
-  nonempty_iff_ne_empty.trans sdiff_eq_empty_iff_subset.not
+theorem sdiff_nonempty : (s \ t).Nonempty ↔ ¬s ⊆ t := by
+  simp [← ne_empty_iff_nonempty]
 
 @[simp]
 theorem empty_sdiff (s : Finset α) : ∅ \ s = ∅ :=

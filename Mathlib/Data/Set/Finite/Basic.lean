@@ -557,7 +557,7 @@ theorem finite_empty : (∅ : Set α).Finite :=
   toFinite _
 
 protected theorem Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 <| by
+  ne_empty_iff_nonempty.1 <| by
     rintro rfl
     exact h finite_empty
 

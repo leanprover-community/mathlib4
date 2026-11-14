@@ -123,7 +123,7 @@ lemma isCompactSystem_iff_nonempty_iInter_of_lt (S : Set (Set α)) :
   simp_rw [IsCompactSystem.iff_nonempty_iInter]
   refine ⟨fun h C hi h'↦ h C hi (fun n ↦ dissipate_eq_biInter_lt ▸ (h' (n + 1))),
     fun h C hi h' ↦ h C hi ?_⟩
-  simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
+  simp_rw [← Set.ne_empty_iff_nonempty] at h' ⊢
   refine fun n g ↦ h' n ?_
   simp_rw [← subset_empty_iff, dissipate] at g ⊢
   exact le_trans (fun x ↦ by simp; grind) g

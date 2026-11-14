@@ -37,7 +37,7 @@ theorem supDegree_eq_natDegree (p : R[X]) : p.supDegree id = p.natDegree := by
   rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,
     degree_eq_natDegree h, Nat.cast_withBot]
   change p.support.Nonempty
-  rwa [nonempty_iff_ne_empty, Ne, support_eq_empty]
+  exact support_nonempty.2 h
 
 theorem le_natDegree_of_mem_supp (a : ℕ) : a ∈ p.support → a ≤ natDegree p :=
   le_natDegree_of_ne_zero ∘ mem_support_iff.mp
@@ -109,7 +109,7 @@ theorem le_degree_of_mem_supp (a : ℕ) : a ∈ p.support → ↑a ≤ degree p 
   le_degree_of_ne_zero ∘ mem_support_iff.mp
 
 theorem nonempty_support_iff : p.support.Nonempty ↔ p ≠ 0 := by
-  rw [Ne, nonempty_iff_ne_empty, Ne, ← support_eq_empty]
+  simp
 
 end Semiring
 

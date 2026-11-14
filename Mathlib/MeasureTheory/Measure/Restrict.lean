@@ -1096,7 +1096,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     intro x hx
     simp_rw [Cs, Finset.mem_sdiff, mem_iUnion] at hx
     have ⟨C, ⟨_, C_nonempty⟩, hxC⟩ := hx
-    have ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.mpr <| Finset.notMem_singleton.mp C_nonempty
+    have ⟨i, hi⟩ := Finset.ne_empty_iff_nonempty.mp <| Finset.notMem_singleton.mp C_nonempty
     exact ⟨s i, ⟨i, rfl⟩, hxC.1 (s i) ⟨i, by simp [hi]⟩⟩
   have P_subset_s {i : ι} {C : Finset ι} (hiC : i ∈ C) : P C ⊆ s i := by
     intro x hx
@@ -1127,7 +1127,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       by_cases hPC : P C = ∅
       · simp [hPC]
       have hCM : (C : Set ι).encard ≤ M :=
-        have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
+        have ⟨x, hx⟩ := Set.ne_empty_iff_nonempty.mp hPC
         (encard_mono (b := {i | x ∈ s i}) (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left zero_le <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2

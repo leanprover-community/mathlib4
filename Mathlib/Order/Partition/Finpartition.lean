@@ -653,7 +653,7 @@ variable [DecidableEq α] {s t u : Finset α} (P : Finpartition s) {a : α}
 lemma subset {a : Finset α} (ha : a ∈ P.parts) : a ⊆ s := P.le ha
 
 theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty :=
-  nonempty_iff_ne_empty.2 <| P.ne_bot ha
+  ne_empty_iff_nonempty.1 <| P.ne_bot ha
 
 @[simp]
 theorem empty_notMem_parts : ∅ ∉ P.parts := P.bot_notMem
@@ -916,7 +916,7 @@ variable {F : Finset (Finset α)}
 theorem mem_atomise :
     t ∈ (atomise s F).parts ↔
       t.Nonempty ∧ ∃ Q ⊆ F, {i ∈ s | ∀ u ∈ F, u ∈ Q ↔ i ∈ u} = t := by
-  simp only [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, nonempty_iff_ne_empty,
+  simp only [atomise, ofErase, bot_eq_empty, mem_erase, mem_image, ← ne_empty_iff_nonempty,
     mem_powerset]
 
 theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
