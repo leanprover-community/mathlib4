@@ -48,7 +48,7 @@ theorem mem_binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β]
   | succ n ih => match I with
     | ⟨some l, some u⟩ =>
       let m := midpoint l u
-      by_cases hl : r ≤ Dyadic.toReal m
+      by_cases hl : r ≤ (m : ℝ)
       · exact Coarsen.mem_coarsen_left (ih ⟨hr.1, WithTop.coe_le_coe.mpr hl⟩)
       · exact Coarsen.mem_coarsen_right (ih ⟨WithBot.coe_le_coe.mpr (le_of_not_ge hl), hr.2⟩)
     | ⟨⊥, ⊤⟩ | ⟨⊥, some u⟩ | ⟨some l, ⊤⟩ => exact hy _ hr

@@ -51,12 +51,11 @@ def rat (x : ℚ) (prec : ℕ) : Interval Dyadic :=
 
 @[inclusion_op interval_dyadic_real]
 theorem ratCast_mem (q : ℚ) (prec : ℕ) : (q : ℝ) ∈ rat q prec := by
-  apply Interval.mem_map_Icc Dyadic.toReal
-  · exact Rat.cast_le.mpr Rat.toRat_toDyadic_le
+  apply Interval.mem_map_Icc ((↑) : Dyadic → ℝ)
+  · exact_mod_cast Rat.toRat_toDyadic_le
   · split_ifs with h
-    · rw [Dyadic.toReal, h]
-    · rw [← Dyadic.ofIntWithPrec_one]
-      exact Rat.cast_lt.mpr Rat.lt_toRat_toDyadic_add |>.le
+    · rw [h]
+    · exact_mod_cast Rat.lt_toRat_toDyadic_add.le
 
 /-- The interval `[(c - r) / d, (c + r) / d]`, rounded outward to precision `prec`. -/
 def ratBall (c r : ℤ) (d prec : ℕ) : Interval Dyadic :=
@@ -67,10 +66,8 @@ theorem ratBall_mem {x : ℝ} {c r : ℤ} {d : ℕ} (hx : |x - c / d| ≤ r / d)
   obtain ⟨h₁, h₂⟩ := abs_sub_le_iff.mp hx
   refine mem_iff_mem_map.mpr
     (Interval.mem_Icc_of_le (ratCast_mem _ prec) ?_ ?_ (ratCast_mem _ prec))
-  · push_cast [Rat.mkRat_eq_div, sub_div]
-    exact sub_le_comm.mp h₂
-  · push_cast [Rat.mkRat_eq_div, add_div]
-    exact sub_le_iff_le_add'.mp h₁
+  · simpa [Rat.mkRat_eq_div, sub_div] using sub_le_comm.mp h₂
+  · simpa [Rat.mkRat_eq_div, add_div] using sub_le_iff_le_add'.mp h₁
 
 /-- Efficiently enclose `m / d` in a dyadic interval with precision `prec`. -/
 def natDiv (m d prec : ℕ) : Interval Dyadic :=
@@ -105,7 +102,7 @@ theorem scientific_mem (m : ℕ) (s : Bool) (e prec : ℕ) :
     (OfScientific.ofScientific (α := ℝ) m s e) ∈ scientific m s e prec := by
   cases s
   · simpa [scientific, NNRatCast.ofScientific_eq_ite, mem_iff_mem_map] using
-      Interval.mem_map_singleton (m * (10 : Dyadic) ^ e) Dyadic.toReal
+      Interval.mem_map_singleton (m * (10 : Dyadic) ^ e) ((↑) : Dyadic → ℝ)
   · simpa [scientific, NNRatCast.ofScientific_eq_ite] using
       natDiv_mem m prec (Nat.pow_pos (by decide : 0 < 10))
 
