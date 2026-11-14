@@ -633,11 +633,6 @@ protected theorem reindex_reindex {ι'' : Type*} (b : HilbertBasis ι 𝕜 E) (e
   simp
 
 @[simp]
-protected theorem range_reindex (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
-    Set.range (b.reindex e) = Set.range b := by
-  rw [HilbertBasis.coe_reindex, e.symm.surjective.range_comp]
-
-@[simp]
 theorem reindex_toOrthonormalBasis [Fintype ι] [Fintype ι'] (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
     (b.reindex e).toOrthonormalBasis = b.toOrthonormalBasis.reindex e := by
   apply DFunLike.coe_injective
