@@ -79,7 +79,6 @@ section Padic
 
 variable (p : ℕ) [hp : Fact p.Prime]
 
-set_option backward.privateInPublic true in
 /-- The family `ℕ → ℚ_[p] → ℚ_[p]` given by `dpow n x = x ^ n / n!`. -/
 private noncomputable def dpow' : ℕ → ℚ_[p] → ℚ_[p] := fun m x => inverse (m ! : ℚ_[p]) * x ^ m
 
@@ -109,7 +108,6 @@ private lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
       norm_cast
       rwa [← PadicInt.mem_span_pow_iff_le_valuation x hx0, pow_one]
 
-set_option backward.privateInPublic true in
 private lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ_[p])}) :
     ‖dpow' p n x‖ ≤ 1 := by
   unfold dpow'
@@ -121,7 +119,6 @@ private lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ
     · exact mod_cast Nat.Prime.one_le hp.elim
     · simp
 
-set_option backward.privateInPublic true in
 private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ideal.span {↑p}) :
     ⟨dpow' p n x, dpow'_int p n hx⟩ ∈ Ideal.span {(p : ℤ_[p])} := by
   have hiff := PadicInt.norm_le_pow_iff_mem_span_pow ⟨dpow' p n x, dpow'_int p n hx⟩ 1
@@ -131,8 +128,6 @@ private theorem dpow'_mem {n : ℕ} {x : ℤ_[p]} (hm : n ≠ 0) (hx : x ∈ Ide
   exact dpow'_norm_le_of_ne_zero p hm hx
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The family `ℕ → Ideal.span {(p : ℤ_[p])} → ℤ_[p]` given by `dpow n x = x ^ n / n!` is a
   divided power structure on the `ℤ_[p]`-ideal `(p)`. -/
 noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := by
@@ -144,9 +139,9 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
     simp only [Ideal.span_singleton_eq_top, isUnit_iff_ne_zero, ne_eq, cast_eq_zero]
     exact Nat.Prime.ne_zero hp.elim
   · intro n x hx
-    exact ⟨⟨dpow' p n x, dpow'_int p n hx⟩, fun hn ↦ dpow'_mem p hn hx, by
+    exact private_decl% (⟨⟨dpow' p n x, dpow'_int p n hx⟩, fun hn ↦ dpow'_mem p hn hx, by
       simp [dpow', inverse_eq_inv', Coe.ringHom_apply, RatAlgebra.dpow_apply,
-        Submodule.mem_top, ↓reduceIte]⟩
+        Submodule.mem_top, ↓reduceIte]⟩)
 
 open Function
 
