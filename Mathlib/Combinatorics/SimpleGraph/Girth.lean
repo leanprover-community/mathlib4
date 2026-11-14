@@ -125,7 +125,7 @@ theorem natCast_girth_le_egirth : G.girth ≤ G.egirth :=
 theorem natCast_girth_eq_egirth_iff : G.girth = G.egirth ↔ ¬G.IsAcyclic :=
   G.egirth.natCast_toNat_eq_self.trans G.egirth_eq_top.not
 
-theorem girth_eq_iff {n : ℕ} : G.girth = n ↔ G.egirth = n ∨ n = 0 ∧ G.IsAcyclic := by
+theorem girth_eq_iff_egirth_eq {n : ℕ} : G.girth = n ↔ G.egirth = n ∨ n = 0 ∧ G.IsAcyclic := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp [girth_eq_toNat_egirth, (three_pos.trans_le <| G.three_le_egirth).ne']
   · simp [girth_eq_toNat_egirth, ENat.toNat_eq_iff, hn]
@@ -134,7 +134,7 @@ theorem girth_eq_iff_of_ne_zero {n : ℕ} (hn : n ≠ 0) : G.girth = n ↔ G.egi
   ENat.toNat_eq_iff hn
 
 theorem girth_eq_iff_of_not_isAcyclic {n : ℕ} (h : ¬G.IsAcyclic) : G.girth = n ↔ G.egirth = n := by
-  simp [girth_eq_iff, h]
+  simp [girth_eq_iff_egirth_eq, h]
 
 @[simp]
 theorem le_girth_iff_natCast_le_egirth {n : ℕ} :
