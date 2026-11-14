@@ -127,7 +127,7 @@ theorem map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (
 `I ≤ I₀`. -/
 @[simps]
 def restrict (f : ι →ᵇᵃ[I₀] M) (I : WithTop (Box ι)) (hI : I ≤ I₀) : ι →ᵇᵃ[I] M :=
-  ⟨f, fun J hJ => f.2 J (hJ.trans hI)⟩
+  ⟨f, fun J hJ => f.sum_partition_boxes' J (hJ.trans hI)⟩
 
 /-- If `f : Box ι → M` is box additive on partitions of the form `split I i x`, then it is box
 additive. -/

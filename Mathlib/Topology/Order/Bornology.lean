@@ -56,7 +56,7 @@ lemma isOrderBornology_iff_eq_orderBornology [Lattice α] [Nonempty α] :
     IsOrderBornology α ↔ ‹Bornology α› = orderBornology := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨fun s ↦ by rw [h, orderBornology_isBounded]⟩⟩
   ext s
-  exact isBounded_compl_iff.symm.trans (h.1 _)
+  exact isBounded_compl_iff.symm.trans (h.isBounded_iff_bddBelow_bddAbove _)
 
 section Preorder
 variable [Preorder α] [IsOrderBornology α]

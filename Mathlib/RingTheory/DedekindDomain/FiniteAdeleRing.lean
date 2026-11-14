@@ -176,7 +176,7 @@ theorem isUnit_iff {a : 𝔸ᶠ[R, K]} :
   simpa using! fun _ _ ↦ a.2
 
 theorem unitsEquiv_finite_valued_eq_one (a : 𝔸ᶠ[R, K]ˣ) :
-    ∀ᶠ v in Filter.cofinite, Valued.v (RestrictedProduct.unitsEquiv _ a v).1 = 1 := by
+    ∀ᶠ v in Filter.cofinite, Valued.v (RestrictedProduct.unitsEquiv _ a v).val = 1 := by
   filter_upwards [(RestrictedProduct.unitsEquiv _ a).2] using fun _ h ↦
     adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
 
@@ -187,7 +187,7 @@ theorem infinite_valued_ne_one_of_not_isUnit {a : 𝔸ᶠ[R, K]} (ha₀ : ∀ v,
   exact ⟨ha₀, ha⟩
 
 theorem hasFiniteMulSupport_valued (a : 𝔸ᶠ[R, K]ˣ) :
-    (fun v ↦ Valued.v (a.1 v)).HasFiniteMulSupport := by
+    (fun v ↦ Valued.v (a.val v)).HasFiniteMulSupport := by
   simp only [Function.HasFiniteMulSupport, Function.mulSupport, ne_eq]
   exact FiniteAdeleRing.unitsEquiv_finite_valued_eq_one _
 

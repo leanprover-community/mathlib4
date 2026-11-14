@@ -56,8 +56,8 @@ variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEM
 
 @[macro_inline]
 instance : EquivLike (X ≃ᵈ Y) X Y where
-  coe f := f.1
-  inv f := f.1.symm
+  coe f := f.toEquiv
+  inv f := f.toEquiv.symm
   left_inv f := f.left_inv'
   right_inv f := f.right_inv'
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact DFunLike.ext' h
@@ -73,7 +73,7 @@ protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
 
 /-- Inverse `DilationEquiv`. -/
 def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
-  toEquiv := e.1.symm
+  toEquiv := e.toEquiv.symm
   edist_eq' := by
     refine ⟨(ratio e)⁻¹, inv_ne_zero <| ratio_ne_zero e, e.surjective.forall₂.2 fun x y ↦ ?_⟩
     simp_rw [Equiv.toFun_as_coe, Equiv.symm_apply_apply, coe_toEquiv, edist_eq]
@@ -113,7 +113,7 @@ def refl (X : Type*) [PseudoEMetricSpace X] : X ≃ᵈ X where
 /-- Composition of `DilationEquiv`s. -/
 @[simps! -fullyApplied apply]
 def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
-  toEquiv := e₁.1.trans e₂.1
+  toEquiv := e₁.toEquiv.trans e₂.toEquiv
   __ := e₂.toDilation.comp e₁.toDilation
 
 @[simp] theorem refl_trans (e : X ≃ᵈ Y) : (refl X).trans e = e := rfl
@@ -125,9 +125,9 @@ def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
 @[simp] theorem self_trans_symm (e : X ≃ᵈ Y) : e.trans e.symm = refl X :=
   DilationEquiv.ext e.symm_apply_apply
 
-protected theorem surjective (e : X ≃ᵈ Y) : Surjective e := e.1.surjective
-protected theorem bijective (e : X ≃ᵈ Y) : Bijective e := e.1.bijective
-protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.1.injective
+protected theorem surjective (e : X ≃ᵈ Y) : Surjective e := e.toEquiv.surjective
+protected theorem bijective (e : X ≃ᵈ Y) : Bijective e := e.toEquiv.bijective
+protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.toEquiv.injective
 
 @[simp]
 theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
@@ -179,7 +179,7 @@ theorem ratio_zpow (e : X ≃ᵈ X) (n : ℤ) : ratio (e ^ n) = ratio e ^ n :=
 /-- `DilationEquiv.toEquiv` as a monoid homomorphism. -/
 @[simps]
 def toPerm : (X ≃ᵈ X) →* Equiv.Perm X where
-  toFun e := e.1
+  toFun e := e.toEquiv
   map_mul' _ _ := rfl
   map_one' := rfl
 

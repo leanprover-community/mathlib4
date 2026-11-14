@@ -186,7 +186,7 @@ theorem wittStructureRat_rec (Φ : MvPolynomial idx ℚ) (n : ℕ) :
     wittStructureRat p Φ n = C (1 / (p : ℚ) ^ n) * (wittStructureRat p Φ n * C ((p : ℚ) ^ n)) := ?_
     _ = _ := by rw [wittStructureRat_rec_aux]
   rw [mul_left_comm, ← C_mul, div_mul_cancel₀, C_1, mul_one]
-  exact pow_ne_zero _ (Nat.cast_ne_zero.2 hp.1.ne_zero)
+  exact pow_ne_zero _ (Nat.cast_ne_zero.2 hp.out.ne_zero)
 
 /-- `wittStructureInt Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℤ`
 that are uniquely characterised by the property that
@@ -286,7 +286,7 @@ theorem map_wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) :
     map_bind₁, ← map_sub, coeff_map]
   rw [show (p : ℚ) ^ n = ((↑(p ^ n) : ℤ) : ℚ) by norm_cast]
   rw [← Rat.den_eq_one_iff, eq_intCast, Rat.den_div_intCast_eq_one_iff]
-  swap; · exact mod_cast pow_ne_zero n hp.1.ne_zero
+  swap; · exact mod_cast pow_ne_zero n hp.out.ne_zero
   revert c; rw [← C_dvd_iff_dvd_coeff]
   exact C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum Φ n IH
 

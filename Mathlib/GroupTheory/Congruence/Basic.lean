@@ -123,7 +123,7 @@ variable [MulOneClass M] [MulOneClass N] [MulOneClass P] (c : Con M)
 relation on an `AddMonoid` `M`. -/]
 protected def submonoid : Submonoid (M × M) where
   carrier := { x | c x.1 x.2 }
-  one_mem' := c.iseqv.1 1
+  one_mem' := c.iseqv.refl 1
   mul_mem' := c.mul
 
 variable {c}

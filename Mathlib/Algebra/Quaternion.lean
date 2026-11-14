@@ -61,7 +61,7 @@ open Module
 /-- Quaternion algebra over a type with fixed coefficients where $i^2 = a + bi$ and $j^2 = c$,
 denoted as `ℍ[R,a,b]`.
 Implemented as a structure with four fields: `re`, `imI`, `imJ`, and `imK`. -/
-@[ext]
+@[ext, allow_numeric_proj]
 structure QuaternionAlgebra (R : Type*) (a b c : R) where
   /-- Real part of a quaternion. -/
   re : R

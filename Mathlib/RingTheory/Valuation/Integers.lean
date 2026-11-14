@@ -84,19 +84,19 @@ Let `O` be the integers of the valuation `v` on some commutative ring `R`. For e
 theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x))
     (hvx : v (algebraMap O R x) = 1) : IsUnit x :=
   let ⟨u, hu⟩ := hx
-  have h1 : v u ≤ 1 := hu.symm ▸ hv.2 x
+  have h1 : v u ≤ 1 := hu.symm ▸ hv.map_le_one x
   have h2 : v (u⁻¹ : Rˣ) ≤ 1 := by
     rw [← one_mul (v _), ← hvx, ← v.map_mul, ← hu, u.mul_inv, hu, hvx, v.map_one]
-  let ⟨r1, hr1⟩ := hv.3 h1
-  let ⟨r2, hr2⟩ := hv.3 h2
-  ⟨⟨r1, r2, hv.1 <| by rw [map_mul, map_one, hr1, hr2, Units.mul_inv],
-      hv.1 <| by rw [map_mul, map_one, hr1, hr2, Units.inv_mul]⟩,
-    hv.1 <| hr1.trans hu⟩
+  let ⟨r1, hr1⟩ := hv.exists_of_le_one h1
+  let ⟨r2, hr2⟩ := hv.exists_of_le_one h2
+  ⟨⟨r1, r2, hv.hom_inj <| by rw [map_mul, map_one, hr1, hr2, Units.mul_inv],
+      hv.hom_inj <| by rw [map_mul, map_one, hr1, hr2, Units.inv_mul]⟩,
+    hv.hom_inj <| hr1.trans hu⟩
 
 theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
     v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   obtain ⟨z, rfl⟩ := h
-  grw [← mul_one (v (algebraMap O R x)), map_mul, v.map_mul, hv.2 z]
+  grw [← mul_one (v (algebraMap O R x)), map_mul, v.map_mul, hv.map_le_one z]
 
 lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
   constructor <;> intro h
@@ -131,14 +131,15 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
   by_cases
     (fun hy : algebraMap O F y = 0 =>
       have hx : x = 0 :=
-        hv.1 <|
+        hv.hom_inj <|
           (algebraMap O F).map_zero.symm ▸ (v.zero_iff.1 <| le_zero_iff.1 (v.map_zero ▸ hy ▸ h))
       hx.symm ▸ dvd_zero y)
     fun hy : algebraMap O F y ≠ 0 =>
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       grw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul, h]
-    let ⟨z, hz⟩ := hv.3 this
-    ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
+    let ⟨z, hz⟩ := hv.exists_of_le_one this
+    ⟨z, hv.hom_inj <|
+      ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
 
 theorem dvd_iff_le (hv : Integers v O) {x y : O} :
     x ∣ y ↔ v (algebraMap O F y) ≤ v (algebraMap O F x) :=

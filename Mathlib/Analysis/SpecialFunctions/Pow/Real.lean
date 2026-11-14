@@ -1051,11 +1051,11 @@ namespace Mathlib.Meta.NormNum
 open Lean.Meta Qq
 
 theorem IsNat.rpow_eq_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a : ℝ) : a ^ b = a ^ n := by
-  rw [h.1, Real.rpow_natCast]
+  rw [h.out, Real.rpow_natCast]
 
 theorem IsInt.rpow_eq_inv_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ) :
     a ^ b = (a ^ n)⁻¹ := by
-  rw [h.1, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
+  rw [h.out, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
 
 /-- Given proofs
 - that `a` is a natural number `m`
@@ -1076,9 +1076,9 @@ theorem IsNNRat.rpow_isNNRat (a b : ℝ) (na da : ℕ) (ha : IsNNRat a na da)
     (nr dr : ℕ) (hnum : IsNat ((na : ℝ) ^ b) nr) (hden : IsNat ((da : ℝ) ^ b) dr) :
     IsNNRat (a ^ b) nr dr := by
   suffices IsNNRat (nr / dr : ℝ) nr dr by
-    simpa [ha.to_eq, Real.div_rpow, hnum.1, hden.1]
+    simpa [ha.to_eq, Real.div_rpow, hnum.out, hden.out]
   apply IsNNRat.of_raw
-  rw [← hden.1]
+  rw [← hden.out]
   apply (Real.rpow_pos_of_pos _ _).ne'
   exact lt_of_le_of_ne' da.cast_nonneg ha.den_nz
 

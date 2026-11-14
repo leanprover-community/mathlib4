@@ -115,8 +115,8 @@ end Const
 
 /-- Functor composition on polynomial functors -/
 def comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m where
-  A := Σ a₂ : P.1, ∀ i, P.2 a₂ i → (Q i).1
-  B a i := Σ (j : _) (b : P.2 a.1 j), (Q j).2 (a.snd j b) i
+  A := Σ a₂ : P.A, ∀ i, P.B a₂ i → (Q i).A
+  B a i := Σ (j : _) (b : P.B a.1 j), (Q j).B (a.snd j b) i
 
 variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
 

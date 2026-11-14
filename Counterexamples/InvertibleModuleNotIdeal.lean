@@ -21,7 +21,7 @@ variable (R : Type*) [CommRing R]
 
 /-- The trivial square-zero extension of a commutative ring R given by the direct sum
 R ⊕ ⨁ₘ R⧸m where m ranges over maximal ideals of R. -/
-abbrev SqZeroExtQuotMax := TrivSqZeroExt R (Π₀ m : MaximalSpectrum R, R ⧸ m.1)
+abbrev SqZeroExtQuotMax := TrivSqZeroExt R (Π₀ m : MaximalSpectrum R, R ⧸ m.asIdeal)
 
 instance : IsFractionRing (SqZeroExtQuotMax R) (SqZeroExtQuotMax R) :=
   IsFractionRing.self_iff_nonZeroDivisors_le_isUnit.mpr fun x hx ↦

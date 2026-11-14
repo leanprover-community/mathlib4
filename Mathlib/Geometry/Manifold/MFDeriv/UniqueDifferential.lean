@@ -138,7 +138,7 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
   suffices ((extChartAt I p.proj).symm ⁻¹' s ∩ range I) ×ˢ univ ⊆
       (extChartAt (I.prod 𝓘(𝕜, F)) p).symm ⁻¹' (TotalSpace.proj ⁻¹' s) ∩ range (I.prod 𝓘(𝕜, F)) by
     let w := (extChartAt (I.prod 𝓘(𝕜, F)) p p).2
-    have A : extChartAt (I.prod 𝓘(𝕜, F)) p p = (extChartAt I p.1 p.1, w) := by
+    have A : extChartAt (I.prod 𝓘(𝕜, F)) p p = (extChartAt I p.proj p.proj, w) := by
       ext
       · simp [FiberBundle.chartedSpace_chartAt]
       · rfl

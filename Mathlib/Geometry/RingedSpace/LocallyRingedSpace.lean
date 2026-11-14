@@ -61,7 +61,7 @@ abbrev toRingedSpace : RingedSpace :=
 /-- The underlying topological space of a locally ringed space. -/
 @[implicit_reducible]
 def toTopCat : TopCat :=
-  X.1.carrier
+  X.toSheafedSpace.carrier
 
 instance : CoeSort LocallyRingedSpace (Type u) :=
   ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
@@ -85,7 +85,7 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
-  X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.1
+  X.toSheafedSpace ⟶ Y.toSheafedSpace := InducedCategory.homMk f.toHom
 
 @[simp]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
@@ -103,13 +103,13 @@ instance : Quiver LocallyRingedSpace :=
 a local ring homomorphism from `Y.stalk (f x)` to `X.stalk x` for any `x : X`.
 -/
 noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
+    Y.presheaf.stalk (f.toHom.base x) ⟶ X.presheaf.stalk x :=
   f.toShHom.hom.stalkMap x
 
 @[instance]
 theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.stalkMap x).hom :=
-  f.2 x
+  f.prop x
 
 instance isLocalHomStalkMap' {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.toHom.stalkMap x).hom :=
@@ -118,7 +118,7 @@ instance isLocalHomStalkMap' {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X
 @[instance]
 theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : X) :
     IsLocalHom (f.stalkMap x).hom :=
-  f.2 x
+  f.prop x
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The identity morphism on a locally ringed space. -/
@@ -146,7 +146,7 @@ instance : Category LocallyRingedSpace.{u} where
 @[simps]
 def forgetToSheafedSpace : LocallyRingedSpace.{u} ⥤ SheafedSpace CommRingCat.{u} where
   obj X := X.toSheafedSpace
-  map f := InducedCategory.homMk f.1
+  map f := InducedCategory.homMk f.toHom
 
 /-- The canonical map `X ⟶ Spec Γ(X, ⊤)`. This is the unit of the `Γ-Spec` adjunction. -/
 instance : forgetToSheafedSpace.Faithful where

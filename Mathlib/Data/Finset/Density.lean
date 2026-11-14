@@ -107,7 +107,7 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   simp_rw [dens, card_map]
   gcongr
   · exact mod_cast Fintype.card_pos
-  · exact Fintype.card_le_of_injective _ f.2
+  · exact Fintype.card_le_of_injective _ f.inj'
 
 @[simp] lemma dens_map_equiv [Fintype β] (e : α ≃ β) : (s.map e.toEmbedding).dens = s.dens := by
   simp [dens, Fintype.card_congr e]

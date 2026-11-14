@@ -20,7 +20,7 @@ public section
 open Lean Elab.Tactic
 
 def Lean.PHashSet.toList.{u} {α : Type u} [BEq α] [Hashable α] (s : Lean.PHashSet α) : List α :=
-  s.1.toList.map (·.1)
+  s.set.toList.map (·.1)
 
 namespace Lean
 

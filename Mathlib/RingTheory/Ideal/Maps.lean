@@ -135,7 +135,7 @@ theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse 
   comap_le_map_of_inv_on _ _ _ <| h.leftInvOn _
 
 instance IsPrime.comap [hK : K.IsPrime] : (comap f K).IsPrime :=
-  ⟨comap_ne_top _ hK.1, fun {x y} => by simp only [mem_comap, map_mul]; apply hK.2⟩
+  ⟨comap_ne_top _ hK.ne_top', fun {x y} => by simp only [mem_comap, map_mul]; apply hK.mem_or_mem'⟩
 
 variable (I J K L)
 
@@ -369,7 +369,7 @@ theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass
 
 theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Ideal R) :
     I.map f = Submodule.map f.toSemilinearMap I :=
-  Submodule.ext fun _ => mem_map_iff_of_surjective f h.1
+  Submodule.ext fun _ => mem_map_iff_of_surjective f h.is_surjective
 
 instance (priority := low) (f : R →+* S) [RingHomSurjective f] (I : Ideal R) [I.IsTwoSided] :
     (I.map f).IsTwoSided where
@@ -409,7 +409,7 @@ def orderEmbeddingOfSurjective (hf : Function.Surjective f) : Ideal S ↪o Ideal
 theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : Ideal R}
     (H : IsMaximal I) : map f I = ⊤ ∨ IsMaximal (map f I) :=
   or_iff_not_imp_left.2 fun ne_top ↦ ⟨⟨ne_top, fun _J hJ ↦ comap_injective_of_surjective f hf <|
-    H.1.2 _ (le_comap_map.trans_lt <| (orderEmbeddingOfSurjective f hf).strictMono hJ)⟩⟩
+    H.out.2 _ (le_comap_map.trans_lt <| (orderEmbeddingOfSurjective f hf).strictMono hJ)⟩⟩
 
 end Surjective
 
@@ -626,14 +626,14 @@ def relIsoOfSurjective (hf : Function.Surjective f) :
 -- May not hold if `R` is a semiring: consider `ℕ →+* ZMod 2`.
 theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K] :
     IsMaximal (comap f K) := by
-  refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => ?_⟩⟩
+  refine ⟨⟨comap_ne_top _ H.out.1, fun J hJ => ?_⟩⟩
   suffices map f J = ⊤ by
     have := congr(comap f $this)
     rw [comap_top, comap_map_of_surjective _ hf, eq_top_iff] at this
     rw [eq_top_iff]
     exact le_trans this (sup_le (le_of_eq rfl) (le_trans (comap_mono bot_le) (le_of_lt hJ)))
   refine
-    H.1.2 (map f J)
+    H.out.2 (map f J)
       (lt_of_le_of_ne (le_map_of_comap_le_of_surjective _ hf (le_of_lt hJ)) fun h =>
         ne_of_lt hJ (_root_.trans congr(comap f $h) ?_))
   rw [comap_map_of_surjective _ hf, sup_eq_left]

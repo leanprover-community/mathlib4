@@ -402,9 +402,9 @@ theorem liftProp_of_locally_liftPropOn (h : ∀ x, ∃ u, IsOpen u ∧ x ∈ u �
 
 theorem liftPropWithinAt_congr_of_eventuallyEq (h : LiftPropWithinAt P g s x) (h₁ : g' =ᶠ[𝓝[s] x] g)
     (hx : g' x = g x) : LiftPropWithinAt P g' s x := by
-  refine ⟨h.1.congr_of_eventuallyEq h₁ hx, ?_⟩
+  refine ⟨h.continuousWithinAt.congr_of_eventuallyEq h₁ hx, ?_⟩
   refine hG.congr_nhdsWithin' ?_
-    (by simp_rw [Function.comp_apply, (chartAt H x).left_inv (mem_chart_source H x), hx]) h.2
+    (by simp_rw [Function.comp_apply, (chartAt H x).left_inv (mem_chart_source H x), hx]) h.prop
   simp_rw [EventuallyEq, Function.comp_apply]
   rw [(chartAt H x).eventually_nhdsWithin'
     (fun y ↦ chartAt H' (g' x) (g' y) = chartAt H' (g x) (g y)) (mem_chart_source H x)]
@@ -461,7 +461,7 @@ theorem liftPropWithinAt_mono_of_mem_nhdsWithin
 
 theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
-  refine ⟨h.1.mono hts, mono (fun y hy ↦ ?_) h.2⟩
+  refine ⟨h.continuousWithinAt.mono hts, mono (fun y hy ↦ ?_) h.prop⟩
   simp only [mfld_simps] at hy
   simp only [hy, hts _, mfld_simps]
 

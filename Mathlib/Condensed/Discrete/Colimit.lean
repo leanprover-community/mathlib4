@@ -197,7 +197,7 @@ def locallyConstantIsoFinYoneda :
       ⟨of PUnit.{u + 1}⟩))) ≅
     finYoneda F :=
   NatIso.ofComponents fun Y ↦ {
-    hom := ↾fun f ↦ f.1
+    hom := ↾fun f ↦ f.toFun
     inv := ↾fun f ↦ ⟨f, @IsLocallyConstant.of_discrete _ _ _ ⟨rfl⟩ _⟩ }
 
 /-- A finite set as a coproduct cocone in `Profinite` over itself. -/
@@ -226,7 +226,7 @@ def isoFinYonedaComponents (X : Profinite.{u}) [Finite X] :
     F.obj ⟨X⟩ ≅ (X → F.obj ⟨↧PUnit.{u + 1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
-      (Types.productLimitCone.{u, u + 1} fun _ ↦ F.obj ⟨↧PUnit.{u + 1}⟩).2
+      (Types.productLimitCone.{u, u + 1} fun _ ↦ F.obj ⟨↧PUnit.{u + 1}⟩).isLimit
 
 @[simp]
 lemma isoFinYonedaComponents_hom (X : Profinite.{u}) [Finite X] :
@@ -306,7 +306,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   rw [incl_of_counitAppApp.{u, u + 1}]
   simp only [counitAppAppImage]
   have : Finite (fiber.{u, u + 1} f x) :=
-    Finite.of_injective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
+    Finite.of_injective (sigmaIncl.{u, u + 1} f x).hom Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u + 1} f x)).hom
   ext y
   simp only [toProfinite_obj, isoFinYonedaComponents_hom, ConcreteCategory.hom_ofHom,
@@ -489,7 +489,7 @@ def finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type u where
 def locallyConstantIsoFinYoneda : toLightProfinite.op ⋙
     (locallyConstantPresheaf (F.obj (toLightProfinite.op.obj ⟨of PUnit.{u + 1}⟩))) ≅ finYoneda F :=
   NatIso.ofComponents fun Y ↦ {
-    hom := ↾fun f ↦ f.1
+    hom := ↾fun f ↦ f.toFun
     inv := ↾fun f ↦ ⟨f, @IsLocallyConstant.of_discrete _ _ _ ⟨rfl⟩ _⟩ }
 
 /-- A finite set as a coproduct cocone in `LightProfinite` over itself. -/
@@ -517,7 +517,7 @@ def isoFinYonedaComponents (X : LightProfinite.{u}) [Finite X] :
     F.obj ⟨X⟩ ≅ (X → F.obj ⟨↧PUnit.{u + 1}⟩) :=
   (isLimitFanMkObjOfIsLimit F _ _
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
-      (Types.productLimitCone.{u, u} fun _ ↦ F.obj ⟨↧PUnit.{u + 1}⟩).2
+      (Types.productLimitCone.{u, u} fun _ ↦ F.obj ⟨↧PUnit.{u + 1}⟩).isLimit
 
 @[simp]
 lemma isoFinYonedaComponents_hom (X : LightProfinite.{u}) [Finite X] :
@@ -595,7 +595,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   rw [incl_of_counitAppApp]
   simp only [counitAppAppImage]
   have : Finite (fiber.{u, u} f x) :=
-    Finite.of_injective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
+    Finite.of_injective (sigmaIncl.{u, u} f x).hom Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
   ext y
   simp only [toLightProfinite_obj, isoFinYonedaComponents_hom, TypeCat.hom_ofHom,

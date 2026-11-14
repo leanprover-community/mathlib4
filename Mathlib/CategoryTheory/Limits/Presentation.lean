@@ -98,7 +98,7 @@ def changeDiag (P : ColimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     ColimitPresentation J X where
   diag := F
   ι := e.hom ≫ P.ι
-  isColimit := (IsColimit.precomposeHomEquiv e _).2 P.isColimit
+  isColimit := (IsColimit.precomposeHomEquiv e _).invFun P.isColimit
 
 /-- Map a colimit presentation under an isomorphism. -/
 @[simps]
@@ -179,7 +179,7 @@ def changeDiag (P : LimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     LimitPresentation J X where
   diag := F
   π := P.π ≫ e.inv
-  isLimit := (IsLimit.postcomposeHomEquiv e.symm _).2 P.isLimit
+  isLimit := (IsLimit.postcomposeHomEquiv e.symm _).invFun P.isLimit
 
 /-- Map a limit presentation under an isomorphism. -/
 @[simps]

@@ -61,8 +61,8 @@ theorem IsQuasiSeparated.image_of_isEmbedding {s : Set α} (H : IsQuasiSeparated
     (h : IsEmbedding f) : IsQuasiSeparated (f '' s) := by
   intro U V hU hU' hU'' hV hV' hV''
   convert
-    (H (f ⁻¹' U) (f ⁻¹' V) ?_ (h.continuous.1 _ hU') ?_ ?_ (h.continuous.1 _ hV') ?_).image
-      h.continuous
+    (H (f ⁻¹' U) (f ⁻¹' V) ?_ (h.continuous.isOpen_preimage _ hU') ?_ ?_
+      (h.continuous.isOpen_preimage _ hV') ?_).image h.continuous
   · symm
     rw [← Set.preimage_inter, Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact Set.inter_subset_left.trans (hU.trans (Set.image_subset_range _ _))

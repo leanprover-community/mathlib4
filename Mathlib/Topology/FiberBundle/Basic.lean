@@ -502,7 +502,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
   source := Z.proj ⁻¹' Z.baseSet i
   target := Z.baseSet i ×ˢ univ
   invFun p := ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩
-  toFun p := ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩
+  toFun p := ⟨p.proj, Z.coordChange (Z.indexAt p.proj) i p.proj p.snd⟩
   map_source' p hp := by
     simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.prodMk_mem_set_prod_eq] using hp
   map_target' p hp := by
@@ -522,7 +522,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
 variable (i : ι)
 
 theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
-    p ∈ (Z.localTrivAsPartialEquiv i).source ↔ p.1 ∈ Z.baseSet i :=
+    p ∈ (Z.localTrivAsPartialEquiv i).source ↔ p.proj ∈ Z.baseSet i :=
   Iff.rfl
 
 theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
@@ -531,7 +531,7 @@ theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
   simp only [and_true, mem_univ]
 
 theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
-    (Z.localTrivAsPartialEquiv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
+    (Z.localTrivAsPartialEquiv i) p = ⟨p.proj, Z.coordChange (Z.indexAt p.proj) i p.proj p.snd⟩ :=
   rfl
 
 /-- The composition of two local trivializations is the trivialization change `Z.trivChange i j`. -/
@@ -612,7 +612,7 @@ theorem localTrivAt_def (b : B) : Z.localTriv (Z.indexAt b) = Z.localTrivAt b :=
   rfl
 
 theorem localTrivAt_snd (b : B) (p) :
-    (Z.localTrivAt b p).2 = Z.coordChange (Z.indexAt p.1) (Z.indexAt b) p.1 p.2 :=
+    (Z.localTrivAt b p).2 = Z.coordChange (Z.indexAt p.proj) (Z.indexAt b) p.proj p.snd :=
   rfl
 
 /-- If an element of `F` is invariant under all coordinate changes, then one can define a
@@ -658,14 +658,14 @@ theorem baseSet_at : Z.baseSet i = (Z.localTriv i).baseSet :=
 
 @[simp, mfld_simps]
 theorem localTriv_apply (p : Z.TotalSpace) :
-    (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
+    (Z.localTriv i) p = ⟨p.proj, Z.coordChange (Z.indexAt p.proj) i p.proj p.snd⟩ :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
-theorem localTrivAt_apply (p : Z.TotalSpace) : (Z.localTrivAt p.1) p = ⟨p.1, p.2⟩ := by
+theorem localTrivAt_apply (p : Z.TotalSpace) : (Z.localTrivAt p.proj) p = ⟨p.proj, p.snd⟩ := by
   rw [localTrivAt, localTriv_apply, coordChange_self]
-  exact Z.mem_baseSet_at p.1
+  exact Z.mem_baseSet_at p.proj
 
 @[simp, mfld_simps]
 theorem localTrivAt_apply_mk (b : B) (a : F) : (Z.localTrivAt b) ⟨b, a⟩ = ⟨b, a⟩ :=
@@ -673,12 +673,12 @@ theorem localTrivAt_apply_mk (b : B) (a : F) : (Z.localTrivAt b) ⟨b, a⟩ = �
 
 @[simp, mfld_simps]
 theorem mem_localTriv_source (p : Z.TotalSpace) :
-    p ∈ (Z.localTriv i).source ↔ p.1 ∈ (Z.localTriv i).baseSet :=
+    p ∈ (Z.localTriv i).source ↔ p.proj ∈ (Z.localTriv i).baseSet :=
   Iff.rfl
 
 @[simp, mfld_simps]
 theorem mem_localTrivAt_source (p : Z.TotalSpace) (b : B) :
-    p ∈ (Z.localTrivAt b).source ↔ p.1 ∈ (Z.localTrivAt b).baseSet :=
+    p ∈ (Z.localTrivAt b).source ↔ p.proj ∈ (Z.localTrivAt b).baseSet :=
   Iff.rfl
 
 @[simp, mfld_simps]

@@ -91,7 +91,7 @@ variable (F) in
 /-- The functor out of the category of elements which forgets the element. -/
 @[implicit_reducible, simps]
 def π : F.Elements ⥤ C where
-  obj X := X.1
+  obj X := X.obj
   map f := f.hom
 
 end Functor.Elements

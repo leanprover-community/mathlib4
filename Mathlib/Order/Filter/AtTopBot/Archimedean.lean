@@ -133,7 +133,7 @@ theorem atTop_hasAntitoneBasis_of_archimedean [Semiring R] [PartialOrder R] [IsO
 theorem atTop_hasCountableBasis_of_archimedean [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :
     (atTop : Filter R).HasCountableBasis (fun _ : ℕ => True) fun n => Ici n :=
-  ⟨atTop_hasAntitoneBasis_of_archimedean.1, to_countable _⟩
+  ⟨atTop_hasAntitoneBasis_of_archimedean.toHasBasis, to_countable _⟩
 
 theorem atBot_hasCountableBasis_of_archimedean [Ring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :

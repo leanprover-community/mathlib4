@@ -169,7 +169,7 @@ namespace Localization
 
 lemma localRingHom_injective_of_primesOver_eq_singleton
     [Algebra.IsIntegral R S] [FaithfulSMul R S] :
-    Function.Injective (localRingHom p q (algebraMap R S) (hq.ge rfl).2.1) := by
+    Function.Injective (localRingHom p q (algebraMap R S) (hq.ge rfl).2.over) := by
   rw [injective_iff_map_eq_zero]
   intro x hx
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x

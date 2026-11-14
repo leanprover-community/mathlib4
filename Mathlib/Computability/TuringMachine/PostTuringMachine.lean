@@ -155,7 +155,7 @@ instance Cfg.inhabited : Inhabited (Cfg Γ Λ) := ⟨⟨default, default⟩⟩
 
 /-- Execution semantics of the Turing machine. -/
 def step (M : Machine Γ Λ) : Cfg Γ Λ → Option (Cfg Γ Λ) :=
-  fun ⟨q, T⟩ ↦ (M q T.1).map fun ⟨q', a⟩ ↦ ⟨q', match a with
+  fun ⟨q, T⟩ ↦ (M q T.head).map fun ⟨q', a⟩ ↦ ⟨q', match a with
     | Stmt.move d => T.move d
     | Stmt.write a => T.write a⟩
 
@@ -227,7 +227,7 @@ theorem Machine.map_step {S : Set Λ} (f₂₁ : Function.RightInverse f₁ f₂
   | ⟨q, T⟩, h => by
     unfold step Machine.map Cfg.map
     simp only [Turing.Tape.map_fst, g₂₁ q h, f₂₁ _]
-    rcases M q T.1 with (_ | ⟨q', d | a⟩); · rfl
+    rcases M q T.head with (_ | ⟨q', d | a⟩); · rfl
     · simp only [Option.map_some, Tape.map_move f₁]
       rfl
     · simp only [Option.map_some, Tape.map_write]
@@ -337,10 +337,10 @@ variable {Γ Λ σ}
 /-- The semantics of TM1 evaluation. -/
 def stepAux [Inhabited Γ] : Stmt Γ Λ σ → σ → Tape Γ → Cfg Γ Λ σ
   | move d q, v, T => stepAux q v (T.move d)
-  | write a q, v, T => stepAux q v (T.write (a T.1 v))
-  | load s q, v, T => stepAux q (s T.1 v) T
-  | branch p q₁ q₂, v, T => cond (p T.1 v) (stepAux q₁ v T) (stepAux q₂ v T)
-  | goto l, v, T => ⟨some (l T.1 v), v, T⟩
+  | write a q, v, T => stepAux q v (T.write (a T.head v))
+  | load s q, v, T => stepAux q (s T.head v) T
+  | branch p q₁ q₂, v, T => cond (p T.head v) (stepAux q₁ v T) (stepAux q₂ v T)
+  | goto l, v, T => ⟨some (l T.head v), v, T⟩
   | halt, v, T => ⟨none, v, T⟩
 
 /-- The state transition function. -/
@@ -434,7 +434,7 @@ theorem step_supports (M : Λ → Stmt Γ Λ σ) {S : Finset Λ} (ss : Supports 
     simp only [step, Option.mem_def, Option.some.injEq] at h₁; subst c'
     revert h₂; induction M l₁ generalizing v T with intro hs
     | branch p q₁' q₂' IH₁ IH₂ =>
-      unfold stepAux; cases p T.1 v
+      unfold stepAux; cases p T.head v
       · exact IH₂ _ _ hs.2
       · exact IH₁ _ _ hs.1
     | goto => exact Finset.some_mem_insertNone.2 (hs _ _)
@@ -531,7 +531,7 @@ theorem tr_respects [Inhabited Γ] :
     | write _ _ IH => exact TransGen.head rfl (IH _ _)
     | load _ _ IH => exact (reaches₁_eq (by rfl)).2 (IH _ _)
     | branch p _ _ IH₁ IH₂ =>
-      unfold TM1.stepAux; cases e : p T.1 v
+      unfold TM1.stepAux; cases e : p T.head v
       · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₂ _ _)
       · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₁ _ _)
     | _ =>
@@ -639,7 +639,7 @@ theorem exists_enc_dec [Inhabited Γ] [Finite Γ] :
       Bool.of_decide_true <| congr($h b).trans <| Bool.decide_true rfl⟩
   let H := (e.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
   let enc := H.setValue default (List.Vector.replicate n false)
-  exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
+  exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.inj'⟩
 
 variable (Γ)
 variable (Λ σ : Type*)
@@ -992,11 +992,11 @@ def tr : Λ' Γ Λ → TM1.Stmt Γ (Λ' Γ Λ) Unit
 
 /-- The configuration translation. -/
 def trCfg : TM0.Cfg Γ Λ → TM1.Cfg Γ (Λ' Γ Λ) Unit
-  | ⟨q, T⟩ => ⟨cond (M q T.1).isSome (some (Λ'.normal q)) none, (), T⟩
+  | ⟨q, T⟩ => ⟨cond (M q T.head).isSome (some (Λ'.normal q)) none, (), T⟩
 
 theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg M a = b :=
   fun_respects.2 fun ⟨q, T⟩ ↦ by
-    rcases e : M q T.1 with - | val
+    rcases e : M q T.head with - | val
     · simp only [TM0.step, trCfg, e]; exact Eq.refl none
     obtain ⟨q', s⟩ := val
     simp only [FRespects, TM0.step, trCfg, e, Option.isSome, cond, Option.map_some]

@@ -163,7 +163,7 @@ end Preord
 -/
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
-  obj X := ↧X.1
+  obj X := ↧X.carrier
   map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where

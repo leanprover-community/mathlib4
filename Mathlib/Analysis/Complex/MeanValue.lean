@@ -72,10 +72,10 @@ theorem DiffContOnCl.circleAverage_smul_div (hf : DiffContOnCl ℂ f (ball c |R|
   by_cases hR : |R| ≤ 0
   · simp_all [ball_eq_empty.2 hR]
   apply circleAverage_sub_sub_inv_smul_of_differentiable_on_off_countable countable_empty _ _ hw
-  · simpa [← closure_ball _ (ne_of_not_ge hR).symm] using hf.2
+  · simpa [← closure_ball _ (ne_of_not_ge hR).symm] using hf.continuousOn
   · intro z hz
     rw [sdiff_empty] at hz
-    apply (hf.1 z hz).differentiableAt (isOpen_ball.mem_nhds hz)
+    apply (hf.differentiableOn z hz).differentiableAt (isOpen_ball.mem_nhds hz)
 
 /-!
 ## Classic Mean Value Properties
