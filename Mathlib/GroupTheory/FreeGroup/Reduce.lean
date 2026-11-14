@@ -402,7 +402,7 @@ theorem eq_of_of_zpow_eq_of_zpow {a b : α} (hab : a ≠ b) {n m : ℤ} (h : of 
 @[to_additive]
 theorem eq_of_of_pow_eq_of_pow {a b : α} (hab : a ≠ b) {n m : ℕ} (h : of a ^ n = of b ^ m) :
     n = 0 ∧ m = 0 := by
-  simpa [← Int.natCast_eq_zero] using eq_of_of_zpow_eq_of_zpow hab h
+  simpa only [← Int.natCast_eq_zero] using eq_of_of_zpow_eq_of_zpow hab h
 
 @[to_additive]
 theorem eq_of_commute_of_of {a b : α} (h : Commute (of a) (of b)) : a = b := by
