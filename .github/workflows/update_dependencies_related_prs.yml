@@ -1,0 +1,117 @@
+name: List PRs related to the dependency update
+
+# While the update-dependencies bot's PR is open, look for open PRs that may already adapt Mathlib
+# to its dependency changes, list them in a comment on the bot's PR, and post each new likely
+# adaptation on Zulip once. The rules are in mathlib-ci's `scripts/zulip/related_dependency_prs.py`.
+#
+# `update_dependencies.yml` updates the bot's PR once a day, but adaptation PRs often appear hours
+# after the bot's PR fails, so this runs every hour. It never pushes to the bot's branch: it reads
+# the GitHub API and the open PRs' `lake-manifest.json`, and writes one comment.
+
+on:
+  schedule:
+    - cron: '47 * * * *'  # Hourly, away from update_dependencies.yml's 00:17 UTC run
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  related-prs:
+    name: List related open PRs
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    # The PR heads the script fetches are only read as data (their `lake-manifest.json`), so
+    # nothing from them runs in this job.
+    permissions:
+      contents: read # the checkouts of this repository and mathlib-ci
+      pull-requests: read # finding the bot's PR
+      id-token: write # the app token for the comment
+    env:
+      # the bot's branch, set in update_dependencies.yml
+      BRANCH_NAME: update-dependencies-bot-use-only
+    steps:
+      - name: Find the open update PR
+        id: update-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          # `head=owner:branch` leaves out PRs from forks' branches of the same name. Once the PR
+          # is ready-to-merge, there is nothing left to point out.
+          number=$(gh api "repos/$REPO/pulls?state=open&head=$OWNER:$BRANCH_NAME" --jq '
+            [.[] | select(.user.login == "mathlib-update-dependencies[bot]"
+                          and all(.labels[]; .name != "ready-to-merge"))][0].number // ""')
+          echo "Update PR: ${number:-none}"
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      # The script compares PR heads with master, so it needs the commit graph, but it only reads
+      # `lake-manifest.json` blobs, which git fetches when they are first read. The sparse
+      # checkout means a blobless clone with only the root files and the local actions.
+      - name: Checkout repository
+        if: ${{ steps.update-pr.outputs.number != '' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          sparse-checkout: .github/actions
+          persist-credentials: false # the script's fetches are of this public repository
+
+      - name: Get mathlib-ci
+        if: ${{ steps.update-pr.outputs.number != '' }}
+        uses: ./.github/actions/get-mathlib-ci
+
+      - name: Find related open PRs
+        id: related
+        if: ${{ steps.update-pr.outputs.number != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.update-pr.outputs.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 "${CI_SCRIPTS_DIR}/zulip/related_dependency_prs.py" \
+            --repo "$REPO" --pr "$PR_NUMBER" --out-dir "${RUNNER_TEMP}/related-prs"
+
+      # Only when the comment changes. A new Zulip post always changes it, since the comment
+      # records what was posted.
+      - name: Generate app token
+        id: app-token
+        if: ${{ steps.related.outputs.comment == 'true' }}
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@d6393a535c054122e507b6c5e1b2f4c31c604121
+        with:
+          app-id: ${{ secrets.MATHLIB_UPDATE_DEPENDENCIES_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-update-dependencies-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      # Zulip first, then the comment that records what was posted, so a failed post is retried on
+      # the next run.
+      - name: Post likely adaptations on Zulip
+        if: ${{ steps.related.outputs.zulip != '' }}
+        uses: zulip/github-actions-zulip/send-message@f675f2b4eb2a95fae974215476dcb7ad8dfeff6b # v2.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing-mathlib'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: ${{ steps.related.outputs.zulip }}
+
+      # As the bot that opened the PR. The script looks for the comment by that author.
+      - name: Update the related-PR comment
+        if: ${{ steps.related.outputs.comment == 'true' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ steps.update-pr.outputs.number }}
+          COMMENT_ID: ${{ steps.related.outputs.comment_id }}
+          BODY_FILE: ${{ runner.temp }}/related-prs/comment.md
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$COMMENT_ID" -F "body=@$BODY_FILE" > /dev/null
+          else
+            gh api --method POST "repos/$REPO/issues/$PR_NUMBER/comments" -F "body=@$BODY_FILE" > /dev/null
+          fi
