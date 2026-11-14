@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Finset.NAry
 
 /-!
 # Basic properties of holors
@@ -47,7 +47,7 @@ def HolorIndex (ds : List ℕ) : Type :=
 
 namespace HolorIndex
 
-variable {ds₁ ds₂ ds₃ : List ℕ}
+variable {ds ds₁ ds₂ ds₃ : List ℕ}
 
 /-- Take the first elements of a `HolorIndex`. -/
 def take : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₁
@@ -78,6 +78,39 @@ theorem drop_take : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.d
 
 theorem drop_drop : ∀ t : HolorIndex (ds₁ ++ ds₂ ++ ds₃), t.assocRight.drop.drop = t.drop
   | ⟨is, h⟩ => Subtype.ext (by simp [assocRight, drop, cast_type, List.drop_drop])
+
+instance : DecidableEq (HolorIndex ds) := Subtype.instDecidableEq
+
+variable {d : ℕ}
+
+/-- Prepend a new dimension to a `HolorIndex`. -/
+def cons (i : Fin d) (is : HolorIndex ds) : HolorIndex (d :: ds) :=
+  ⟨i :: is.1, List.Forall₂.cons i.isLt is.2⟩
+
+/-- The finite set of all `HolorIndex`s for a given list of dimensions. -/
+private def univ' : (ds : List ℕ) → Finset (HolorIndex ds)
+  | [] => {⟨[], .nil⟩}
+  | d :: ds => Finset.image₂ cons (.univ : Finset (Fin d)) (univ' ds)
+
+@[no_expose]
+instance : Fintype (HolorIndex ds) where
+  elems := univ' ds
+  complete := by
+    induction ds with
+    | nil =>
+      rintro ⟨is, ⟨h⟩⟩
+      exact Finset.insert_eq_self.mp rfl
+    | cons d ds ih =>
+      rintro ⟨is, (h)⟩
+      cases h with
+      | @cons a _ l _ ha hl =>
+        dsimp [univ']
+        rw [Finset.image₂]
+        let a' : Fin d := ⟨a, ha⟩
+        have ha' : a' ∈ Finset.univ := Finset.mem_univ a'
+        let l' : HolorIndex ds := ⟨l, hl⟩
+        have hl' : l' ∈ univ' ds := Finset.mem_coe.mp (ih l')
+        exact Finset.mem_image.mpr ⟨⟨a', l'⟩, ⟨Finset.mk_mem_product ha' (ih l'), rfl⟩⟩
 
 end HolorIndex
 
@@ -125,6 +158,9 @@ instance [Mul α] : SMul α (Holor α ds) :=
 
 instance [Semiring α] : Module α (Holor α ds) :=
   inferInstanceAs <| Module α (HolorIndex ds → α)
+
+instance [DecidableEq α] : DecidableEq (Holor α ds) :=
+  Fintype.decidablePiFintype
 
 /-- The tensor product of two holors. -/
 def mul [Mul α] (x : Holor α ds₁) (y : Holor α ds₂) : Holor α (ds₁ ++ ds₂) := fun t =>
