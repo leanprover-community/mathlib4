@@ -4042,6 +4042,7 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ENat.SuccOrder
+public import Mathlib.Data.ENat.WithBot
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.BigOperators
 public import Mathlib.Data.EReal.DedekindCut
@@ -6946,6 +6947,7 @@ public import Mathlib.RingTheory.FractionalIdeal.Operations
 public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
+public import Mathlib.RingTheory.GlobalDimension
 public import Mathlib.RingTheory.GradedAlgebra.AlgHom
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
