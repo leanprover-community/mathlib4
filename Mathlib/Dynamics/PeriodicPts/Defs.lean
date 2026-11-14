@@ -453,7 +453,7 @@ theorem iterate_not_monotone_of_mem_periodicPts [PartialOrder α]
   refine hnfix <| le_antisymm ?_ (h (Nat.zero_le 1))
   simpa [hp] using h hn
 
-theorem exists_map_lt_of_mem_periodicPts [LinearOrder α]
+theorem exists_apply_lt_of_mem_periodicPts [LinearOrder α]
     (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
     ∃ b ∈ periodicOrbit f x, f b < b := by
   have h := iterate_not_monotone_of_mem_periodicPts hx hnfix
@@ -463,7 +463,7 @@ theorem exists_map_lt_of_mem_periodicPts [LinearOrder α]
   refine ⟨f^[n] x, iterate_mem_periodicOrbit hx n, ?_⟩
   rwa [iterate_succ'] at hn
 
-theorem exists_lt_map_of_mem_periodicPts [LinearOrder α]
+theorem exists_lt_apply_of_mem_periodicPts [LinearOrder α]
     (hx : x ∈ periodicPts f) (hnfix : ¬IsFixedPt f x) :
     ∃ b ∈ periodicOrbit f x, b < f b :=
   exists_map_lt_of_mem_periodicPts (α := αᵒᵈ) hx hnfix
