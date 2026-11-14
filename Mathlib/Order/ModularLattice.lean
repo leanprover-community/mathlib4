@@ -175,6 +175,17 @@ instance : IsModularLattice αᵒᵈ :=
         rw [inf_comm, sup_comm, eq_comm, inf_comm, sup_comm]
         exact @sup_inf_assoc_of_le α _ _ _ y _ xz)⟩
 
+instance WithBot.isModularLattice : IsModularLattice (WithBot α) where
+  sup_inf_le_assoc_of_le {x} y {z} := by
+    cases x <;> cases y <;> cases z <;>
+      simp +contextual [← coe_inf, ← coe_sup, sup_inf_le_assoc_of_le]
+
+@[to_dual existing]
+instance WithTop.isModularLattice : IsModularLattice (WithTop α) where
+  sup_inf_le_assoc_of_le {x} y {z} := by
+    cases x <;> cases y <;> cases z <;>
+      simp +contextual [← coe_inf, ← coe_sup, sup_inf_le_assoc_of_le]
+
 variable {x y z : α}
 
 @[to_dual]
