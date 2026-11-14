@@ -11,12 +11,11 @@ public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 # Constructor for natural transformations from singular chains
 
 Let `F : TopCat ⥤ C` be a functor to a preadditive category `C` with coproducts,
-`R : C` and `n : ℕ`, we show that there is a bijection between natural transformations
+`R : C` and `n : ℕ`. We show that there is a bijection between natural transformations
 `(singularChainComplexFunctor C).obj R ⋙ HomologicalComplex.eval _ _ n ⟶ F`
-(from the functors of singular `n`-chains) and morhisms
-`f : R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)` (the target object is the
-image by `F` of the `n`-dimensional topological simplex).
-See `singularChainComplexFunctor.natTransMk`and `singularChainComplexFunctor.natTransEquiv`.
+(from the functors of singular `n`-chains to `F`) and morphisms
+`f : R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)`, see
+`singularChainComplexFunctor.natTransMk` and `singularChainComplexFunctor.natTransEquiv`.
 
 -/
 
@@ -34,7 +33,7 @@ namespace singularChainComplexFunctor
 
 variable {R : C} {n : ℕ} {F : TopCat.{w} ⥤ C}
 
-/-- Constructor for natural transformations from the functor of `n`-singular chains. -/
+/-- Constructor for natural transformations from the functor of singular `n`-chains. -/
 noncomputable def natTransMk (f : R ⟶ F.obj (SimplexCategory.toTop.{w} ^⦋n⦌)) :
     (singularChainComplexFunctor C).obj R ⋙ HomologicalComplex.eval _ _ n ⟶ F where
   app X := Sigma.desc (fun s ↦ f ≫ F.map s.down)
