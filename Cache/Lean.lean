@@ -64,14 +64,25 @@ Find the source directory for a module. This could be `.`
 module is part of the current package, or something like `.lake/packages/mathlib` if the
 module is from a dependency.
 
-This is an exact copy of the first part of `Lean.SearchPath.findWithExt` which, in turn,
-is used by `Lean.findLean sp mod`. In the future, `findWithExt` could be refactored to
-expose this base path.
+The result is the first entry of `sp` that has the file `mod.<ext>`, or else the first entry
+that has the directory `mod/`.
+
+Dependencies come before the root package in `sp`. A dependency can have a top-level directory
+with the name of a downstream package, for example `DownstreamTest/` in Mathlib. Thus
+`findWithExtBase` selects the entry by the file of the module first.
 -/
-def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) : BaseIO (Option FilePath) := do
-  let pkg := mod.getRoot.toString (escape := false)
-  sp.findM? fun p =>
-    (p / pkg).isDir <||> ((p / pkg).addExtension ext).pathExists
+def findWithExtBase (sp : SearchPath) (ext : String) (mod : Name) :
+    BaseIO (Option FilePath) := do
+  if let some p ← sp.findM? (fun p => (modToFilePath p mod ext).pathExists) then return some p
+  sp.findM? fun p => (modToFilePath p mod "").isDir
+
+/-- The source file of `mod` in the entry of `sp` that `findWithExtBase` finds, if any. -/
+def findLeanSource? (sp : SearchPath) (mod : Name) : BaseIO (Option System.FilePath) :=
+  return (← sp.findWithExtBase "lean" mod).map (modToFilePath · mod "lean")
+
+/-- `findLeanSource?`, or else `Lean.findLean`, which throws for an unknown package. -/
+def findLeanSource (sp : SearchPath) (mod : Name) : IO System.FilePath := do
+  (← sp.findLeanSource? mod).getDM (findLean sp mod)
 
 end Lean.SearchPath
 

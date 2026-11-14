@@ -6,6 +6,7 @@ Authors: Marcelo Lynch
 module
 
 public import Cache.Cli
+public import Cache.Hashing
 public import Cache.Lean
 public import Cache.Location
 public import Cache.Marker
@@ -31,6 +32,10 @@ These tests cover the pure logic of the cache system, including:
 - The two retry-flag tiers (`curlRetryArgs`)
 - Failure-line diagnostics (`splitWriteOut`, `transferDiagnostics`)
 - Utility functions (URL extraction, filename hashing, etc.)
+- Module selection for `get` with a module of a downstream project
+  (`getHashMemo`, `filterByRootModules`)
+- Module arguments whose root is also a directory of a dependency
+  (`leanModulesFromSpec`)
 
 Anything that touches the network is left to CI, which exercises the
 `cache get`/`put` paths end-to-end on real containers. The unit tests spawn
@@ -488,6 +493,59 @@ def test_hash_roundtrip : IO Unit := do
     (hashFromFileName h2.asLTar == some h2)
 
 end RoundTrip
+
+section ModuleSelection
+
+open Cache.Hashing in
+/-- `get` with a downstream module `Down.Top` and the cache module `Archive.Foo`, which is
+outside the closure of `Mathlib`. The `partial` scenario of `Cache/test/downstream.sh` checks
+the common case against the real cache. Here, `Down.Top` imports:
+* through `Down.Mid`, `Batteries.X`, which is outside the closure of `Mathlib`, and its
+  import `Batteries.Z`, which is inside;
+* the unknown module `Nowhere.Y`. -/
+def test_filterByRootModules_downstream : IO Unit := do
+  IO.println "module selection (filterByRootModules):"
+  let dir ← IO.FS.createTempDir
+  try
+    for (path, content) in [("lakefile.lean", ""), ("lean-toolchain", ""),
+        ("lake-manifest.json", ""), ("Mathlib.lean", "import Mathlib.B\nimport Batteries.Z\n"),
+        ("Mathlib/B.lean", ""), ("Batteries/X.lean", "import Batteries.Z\n"),
+        ("Batteries/Z.lean", ""), ("Archive/Foo.lean", ""),
+        ("Down/Top.lean", "import Down.Mid\nimport Mathlib.B\n"),
+        ("Down/Mid.lean", "import Batteries.X\nimport Nowhere.Y\n")] do
+      let file := dir / path
+      if let some parent := file.parent then IO.FS.createDirAll parent
+      IO.FS.writeFile file content
+    let roots := [`Down.Top, `Archive.Foo]
+    let files := roots.map fun mod => (mod, Lean.modToFilePath dir mod "lean")
+    let memo ← withSuppressedOutput <| ReaderT.run (getHashMemo (.ofList files))
+      { mathlibDepPath := dir, srcSearchPath := [dir] }
+    let selected := memo.filterByRootModules roots
+    assertEq "get selects the closure of Archive.Foo and what both Down.Top and Mathlib import"
+      (toString ["Archive.Foo", "Batteries.Z", "Mathlib.B"])
+      (toString (selected.keys.map toString).mergeSort)
+  finally
+    IO.FS.removeDirAll dir
+
+/-- A glob resolves to the downstream package `Down` in `root`, also when the dependency `dep`
+before it in the search path has a directory `Down/` (see `findWithExtBase`). -/
+def test_leanModulesFromSpec_shadowedRoot : IO Unit := do
+  IO.println "module arguments (leanModulesFromSpec):"
+  let dir ← IO.FS.createTempDir
+  try
+    let (dep, root) := (dir / "dep", dir / "root")
+    for path in [dep / "Down" / "Down" / "Top.lean", root / "Down.lean",
+        root / "Down" / "Top.lean"] do
+      if let some parent := path.parent then IO.FS.createDirAll parent
+      IO.FS.writeFile path ""
+    let mods ← withSuppressedOutput <| Cache.IO.leanModulesFromSpec [dep, root] "Down.+"
+    assertEq "Down.+ walks the folder of the downstream package"
+      (toString [(`Down.Top, (root / "Down" / "Top.lean").toString)])
+      (toString (mods.toOption.getD #[] |>.toList.map fun (mod, file) => (mod, file.toString)))
+  finally
+    IO.FS.removeDirAll dir
+
+end ModuleSelection
 
 section Marker
 
@@ -1921,6 +1979,8 @@ def runAll : IO Unit := do
   test_isRemoteURL
   test_UInt64_asLTar
   test_hash_roundtrip
+  test_filterByRootModules_downstream
+  test_leanModulesFromSpec_shadowedRoot
   test_markerURL
   test_markerProbeURL
   test_getRepoScope
