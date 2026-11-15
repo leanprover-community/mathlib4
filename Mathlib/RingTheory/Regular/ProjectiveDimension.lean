@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
+public import Mathlib.Data.ENat.WithBot
+public import Mathlib.RingTheory.Regular.Free
 public import Mathlib.RingTheory.Regular.RegularSequence
 
 import Mathlib.Algebra.Category.Grp.Zero
@@ -31,11 +33,13 @@ public section
 
 universe v u
 
-variable {R : Type u} [CommRing R] [Small.{v} R]
+variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
 
 namespace ModuleCat
+
+variable [Small.{v} R]
 
 section
 
@@ -131,12 +135,10 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
       simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
+  | top => simp
   | bot =>
     simpa [projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton] using sub.symm
-  | coe N =>
-    induction N with
-    | top => simp
-    | coe n => simpa using aux n
+  | coe n => simpa using aux n
 
 lemma projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular (M : ModuleCat.{v} R)
     [Nontrivial M] [Module.Finite R M] (rs : List R) (reg : IsWeaklyRegular M rs)
@@ -176,5 +178,79 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
     projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular ↧(Shrink.{v} R) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
     ModuleCat.projectiveDimension_eq_zero_of_projective, zero_add]
+
+end ModuleCat
+
+namespace ModuleCat
+
+open Ideal in
+lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetherianRing R]
+    (M : ModuleCat.{v} R) [Module.Finite R M] (x : R)
+    (reg1 : IsSMulRegular R x) (reg2 : IsSMulRegular M x)
+    (mem : x ∈ maximalIdeal R) : projectiveDimension.{v} M =
+    projectiveDimension.{v} (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) := by
+  have aux (n : ℕ): projectiveDimension M ≤ n ↔
+    projectiveDimension.{v} (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) ≤ n := by
+    simp only [projectiveDimension_le_iff]
+    induction n generalizing M with
+    | zero =>
+      simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
+      rw [← IsProjective.iff_projective, ← IsProjective.iff_projective]
+      have := Module.finitePresentation_of_finite R M
+      have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
+      have mem' : x ∈ Ring.jacobson R := by simpa [IsLocalRing.ringJacobson_eq_maximalIdeal]
+      refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+      · have := (Module.free_quotSMulTop_iff_free R M mem' reg2).mpr
+          Module.free_of_flat_of_isLocalRing
+        exact Module.Projective.of_free
+      · have : IsLocalRing (R ⧸ Ideal.span {x}) :=
+          have : Nontrivial (R ⧸ Ideal.span {x}) :=
+            Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
+          IsLocalRing.of_surjective' _ Ideal.Quotient.mk_surjective
+        have := (Module.free_quotSMulTop_iff_free R M mem' reg2).mp
+          Module.free_of_flat_of_isLocalRing
+        exact Module.Projective.of_free
+    | succ n ih =>
+      obtain ⟨N, _, _, _, _, f, surjf⟩ := Module.exists_finite_presentation R M
+      let S := f.shortComplexKer
+      have S_exact := LinearMap.shortExact_shortComplexKer surjf
+      have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
+      have reg2'' : IsSMulRegular S.X₂ x := (isLeftRegular_iff_isRegular.mp reg1).isSMulRegular
+      have reg2' : IsSMulRegular S.X₁ x := reg2''.submodule _ _
+      have surj := Ideal.Quotient.mk_surjective (I := Ideal.span {x})
+      let g := (QuotSMulTop.map x (LinearMap.ker f).subtype).extendScalarsOfSurjective surj
+      let h := (QuotSMulTop.map x f).extendScalarsOfSurjective surj
+      have Sx_exact' : Function.Exact g h :=
+        QuotSMulTop.map_exact x f.exact_subtype_ker_map surjf
+      let Sx := ModuleCat.shortComplexOfCompEqZero g h Sx_exact'.linearMap_comp_eq_zero
+      have inj : Function.Injective (QuotSMulTop.map x (LinearMap.ker f).subtype) := by
+        rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
+        intro y hy
+        rcases Submodule.Quotient.mk_surjective _ y with ⟨y', rfl⟩
+        simp only [LinearMap.mem_ker, QuotSMulTop.map_apply_mk, Submodule.subtype_apply,
+          Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_top,
+          true_and] at hy
+        rcases hy with ⟨z, hz⟩
+        have := y'.2
+        rw [← hz, LinearMap.mem_ker, map_smul] at this
+        simp only [Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists,
+          Submodule.mem_top, true_and, Subtype.exists, SetLike.mk_smul_mk, LinearMap.mem_ker]
+        use z, reg2.right_eq_zero_of_smul this
+        exact Subtype.val_inj.mp hz
+      have Sx_exact := ModuleCat.shortComplex_shortExact Sx Sx_exact' inj
+        (QuotSMulTop.map_surjective x surjf)
+      have := Module.finitePresentation_of_finite R N
+      exact ((S_exact.hasProjectiveDimensionLT_X₃_iff n proj).trans (ih S.X₁ reg2')).trans
+        (Sx_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).symm
+  refine eq_of_forall_ge_iff (fun N ↦ ?_)
+  induction N with
+  | top => simp
+  | bot =>
+    simp only [le_bot_iff, projectiveDimension_eq_bot_iff,
+      projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
+    refine ⟨fun h ↦ (Submodule.Quotient.mk_surjective _).subsingleton, fun h ↦ ?_⟩
+    by_contra! ntr
+    exact (not_subsingleton_iff_nontrivial.mpr (nontrivial_quotSMulTop_of_mem_maximalIdeal M mem)) h
+  | coe n => exact aux n
 
 end ModuleCat
