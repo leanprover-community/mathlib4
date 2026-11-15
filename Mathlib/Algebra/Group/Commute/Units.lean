@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
 # Lemmas about commuting pairs of elements involving units.
-
 -/
 
 @[expose] public section

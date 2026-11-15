@@ -417,6 +417,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  profileitM Exception "headerLinter" (← getOptions) do
   let map ← getFileMap
   -- This is essentially the same as calling `parseImports'`, but we need access to `s.pos`.
   let s := allowedHeaderParser map.source (ParseImports.whitespace map.source {})

@@ -20,7 +20,6 @@ involved are abelian, or more generally, finitely (co)complete.
   Also provides the dual version.
 * `CategoryTheory.Limits.preservesFiniteLimitsIffFlat` :
   see `Mathlib/CategoryTheory/Functor/Flat.lean`.
-
 -/
 
 public section

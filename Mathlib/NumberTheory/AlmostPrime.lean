@@ -25,7 +25,6 @@ The terminology follows the standard definition of an
 * `Nat.IsAlmostPrime.mul`: the product of a `k`-almost-prime number and an
   `l`-almost-prime number is `(k + l)`-almost-prime.
 * `Nat.IsAtMostAlmostPrime.mul`: the analogous statement for at most `k` prime factors.
-
 -/
 
 @[expose] public section
@@ -39,11 +38,13 @@ prime factors, counted with multiplicity. The side condition excludes `0`, so `1
 `0`-almost prime. -/
 def IsAlmostPrime (k n : ℕ) : Prop :=
   n ≠ 0 ∧ Ω n = k
+deriving Decidable
 
 /-- `IsAtMostAlmostPrime k n` means that `n` has at most `k` prime factors,
 counted with multiplicity. -/
 def IsAtMostAlmostPrime (k n : ℕ) : Prop :=
   n ≠ 0 ∧ Ω n ≤ k
+deriving Decidable
 
 /-- A semiprime is a `2`-almost-prime number. -/
 @[oeis A001358]

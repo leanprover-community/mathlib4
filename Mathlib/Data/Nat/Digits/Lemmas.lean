@@ -286,18 +286,16 @@ theorem ofDigits_zmod (b : ℤ) (k : ℕ) (L : List ℕ) : ofDigits b L % k = of
 theorem modEq_digits_sum (b b' : ℕ) (h : b' % b = 1) (n : ℕ) : n ≡ (digits b' n).sum [MOD b] := by
   rw [← ofDigits_one]
   conv =>
-    congr
-    · skip
-    · rw [← ofDigits_digits b' n]
+    enter [2]
+    rw [← ofDigits_digits b' n]
   convert ofDigits_modEq b' b (digits b' n)
   exact h.symm
 
 theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n : ℕ) :
     n ≡ ofDigits c (digits b' n) [ZMOD b] := by
   conv =>
-    congr
-    · skip
-    · rw [← ofDigits_digits b' n]
+    enter [2]
+    rw [← ofDigits_digits b' n]
   rw [coe_ofDigits]
   apply ofDigits_zmodeq' _ _ _ h
 

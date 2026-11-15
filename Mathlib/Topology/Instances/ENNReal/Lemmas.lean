@@ -13,6 +13,9 @@ public import Mathlib.Topology.MetricSpace.Pseudo.Real
 public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Order.LiminfLimsup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on extended non-negative reals
 -/

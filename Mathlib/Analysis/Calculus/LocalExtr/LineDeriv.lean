@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local extremum and line derivatives
 

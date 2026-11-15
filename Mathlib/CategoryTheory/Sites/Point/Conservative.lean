@@ -27,7 +27,6 @@ and they are also jointly faithful.
 We provide a constructor `ObjectProperty.IsConservativeFamilyOfPoints.mk'`
 which allows to verify that a family of points is conservative
 using a condition involving covering sieves (SGA 4 IV 6.5 (a)).
-
 -/
 
 public section
@@ -180,7 +179,7 @@ private lemma mk'.isLocallySurjective
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
         S ∈ J X)
-    {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) [Mono f]
+    {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂)
     (hf : ∀ (Φ : P.FullSubcategory), Function.Surjective (Φ.obj.presheafFiber.map f)) :
     Presheaf.IsLocallySurjective J f := by
   wlog hF₂ : ∃ (U : C), F₂ = shrinkYoneda.obj U generalizing F₁ F₂

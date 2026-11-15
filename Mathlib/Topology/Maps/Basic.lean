@@ -43,7 +43,6 @@ This file introduces the following properties of a map `f : X → Y` between top
 ## Tags
 
 open map, closed map, embedding, quotient map, identification map
-
 -/
 
 public section

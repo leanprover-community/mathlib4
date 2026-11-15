@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Localization.Defs
 
 /-!
-
 # Extension of algebras
 
 ## Main definitions
@@ -29,7 +28,6 @@ public import Mathlib.RingTheory.Localization.Defs
 
 - `Algebra.Extension.Cotangent`:
   The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
-
 -/
 
 @[expose] public section

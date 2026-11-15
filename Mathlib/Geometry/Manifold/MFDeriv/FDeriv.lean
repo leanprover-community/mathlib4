@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 import Mathlib.Geometry.Manifold.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations between vector space derivative and manifold derivative
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences and sigma types
 -/

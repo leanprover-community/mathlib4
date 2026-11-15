@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Equiv
 
 import Mathlib.Algebra.Ring.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about mapping big operators across ring equivalences
 -/

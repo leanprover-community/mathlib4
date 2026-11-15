@@ -89,7 +89,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
   obtain ⟨y, hy, hxy⟩ := s_cover (Set.mem_image_of_mem _ hx)
   refine ⟨y, hy, dynEntourage_comp_subset _ _ _ _ ⟨_, hxy, ?_⟩⟩
   rw [φ_f _ (g_mem _ hy)]
-  exact g_rel _ hy
+  exact (dynEntourage T V n).symm (g_rel _ hy)
 
 lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] (n : ℕ) :
     coverMincard S F ((map φ φ) ⁻¹' (V ○ V)) n ≤ coverMincard T (φ '' F) V n := by

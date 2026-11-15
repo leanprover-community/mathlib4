@@ -5,6 +5,7 @@ Authors: Justus Springer
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.BinaryProductsClosure
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 import Mathlib.CategoryTheory.ObjectProperty.ClosureShift
@@ -46,7 +47,6 @@ This is not to be confused with `ObjectProperty.IsStrongGenerator` defined in
 * [Bondal and Van den Bergh, *Generators and representability of functors in commutative and
   noncommutative geometry*][bondal_vandenbergh_2003]
 * [Stacks 09SJ](https://stacks.math.columbia.edu/tag/09SJ)
-
 -/
 
 @[expose] public section

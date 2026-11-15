@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Group.Action.End
 public import Mathlib.Order.Preorder.Chain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action on flags
 

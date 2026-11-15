@@ -30,7 +30,6 @@ public import Mathlib.Data.Set.SymmDiff
 ## Tags
 
 set, sets, image, preimage, pre-image, range
-
 -/
 
 public section
@@ -375,6 +374,10 @@ theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' s�
 theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
+
+open scoped symmDiff in
+lemma subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t := by
+  grw [Set.symmDiff_def, Set.symmDiff_def, subset_image_sdiff, subset_image_sdiff, image_union]
 
 theorem image_sdiff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
@@ -1344,7 +1347,7 @@ theorem Disjoint.preimage (f : α → β) {s t : Set β} (h : Disjoint s t) :
 
 lemma Codisjoint.preimage (f : α → β) {s t : Set β} (h : Codisjoint s t) :
     Codisjoint (f ⁻¹' s) (f ⁻¹' t) := by
-  simp only [codisjoint_iff_le_sup, Set.sup_eq_union, top_le_iff, ← Set.preimage_union] at h ⊢
+  simp only [codisjoint_iff_le_sup, top_le_iff, ← Set.preimage_union] at h ⊢
   rw [h]; rfl
 
 lemma IsCompl.preimage (f : α → β) {s t : Set β} (h : IsCompl s t) :

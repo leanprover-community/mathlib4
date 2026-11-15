@@ -16,7 +16,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 * `WellFormedBasis basis`: a predicate meaning that all functions from `basis` tend to `atTop`,
   and `basis` is sorted such that if
   `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
-
 -/
 
 @[expose] public section
@@ -29,7 +28,7 @@ open Asymptotics Filter
 `basis` is sorted such that if
 `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
-We use two types `Basis` and `WellFormedBasis` instead of a single bundled one because it
+We use two types `Basis` and `WellFormedBasis` instead of a single bundled one because
 it lets us to use the `List` API for `Basis`. -/
 def WellFormedBasis (basis : Basis) : Prop :=
   basis.Pairwise (fun x y => (Real.log ∘ y) =o[atTop] (Real.log ∘ x)) ∧

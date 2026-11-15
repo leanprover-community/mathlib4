@@ -14,7 +14,6 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 ## Main definitions
 
 * `MeasureTheory.Measure.trim`: restriction of a measure to a sub-sigma algebra.
-
 -/
 
 @[expose] public section

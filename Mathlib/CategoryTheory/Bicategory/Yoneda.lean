@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Bicategory.Opposites
 # 2-Yoneda embedding
 
 In this file we define the bicategorical Yoneda embedding.
-
 -/
 
 @[expose] public section

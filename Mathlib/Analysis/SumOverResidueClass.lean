@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 import Mathlib.Analysis.Normed.Group.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums over residue classes
 

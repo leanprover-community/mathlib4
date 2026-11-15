@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Trace.Basic
 
 /-!
-
 # Normalized trace
 
 This file defines the *normalized trace* map; that is, an `F`-linear map from the algebraic closure
@@ -30,7 +29,6 @@ integral) extension of `F`.
   from `K` to `E` composed with the normalized trace from `E` to `F` equals the normalized trace
   from `K` to `F`.
 - `normalizedTrace_self`: `normalizedTrace F F` is the identity map.
-
 -/
 
 @[expose] public section

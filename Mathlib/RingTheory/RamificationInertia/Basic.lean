@@ -30,7 +30,6 @@ flat extension of an integral domain.
   and let `p` be prime ideal of `R`. Assume that `R` is the invariant subring of a finite group `G`
   acting on `S`. Then the sum over all prime ideals `q` of `S` lying over `p` of the ramification
   index of `q` times the inertia degree of `q` equals the cardinality of `G`.
-
 -/
 
 public section

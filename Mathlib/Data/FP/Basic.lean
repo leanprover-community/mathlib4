@@ -13,6 +13,9 @@ public import Mathlib.Data.Semiquot
 
 import Mathlib.Algebra.Ring.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Implementation of floating-point numbers (experimental).
 -/
@@ -43,6 +46,8 @@ attribute [nolint docBlame] FloatCfg.prec FloatCfg.emax FloatCfg.precPos FloatCf
 
 set_option linter.deprecated false
 variable [C : FloatCfg]
+
+set_option linter.concreteInstances false
 
 @[nolint docBlame, deprecated "no replacement" (since := "2026-10-02")]
 def prec :=

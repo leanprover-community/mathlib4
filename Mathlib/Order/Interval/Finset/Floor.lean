@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Data.Int.Interval
 public import Mathlib.Order.Interval.Finset.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Membership in intervals via `Int.floor` / `Nat.floor` / `Int.ceil` / `Nat.ceil`
 

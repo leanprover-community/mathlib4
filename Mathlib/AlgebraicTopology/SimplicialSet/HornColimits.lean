@@ -18,7 +18,6 @@ In this file, we express horns as colimits:
 * horns in `Δ[n]` are multicoequalizers of copies of the standard
   simplex of dimension `n-1` (a dedicated API is provided for inner
   horns in `Δ[3]`).
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Topology.EMetricSpace.Diam
 
 import Mathlib.Order.WellFoundedSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oscillation
 

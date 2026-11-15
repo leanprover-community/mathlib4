@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.ConstMulAction
 
 import Mathlib.GroupTheory.Complement
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properly discontinuous actions of subgroups
 -/

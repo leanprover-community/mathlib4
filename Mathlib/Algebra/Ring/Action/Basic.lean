@@ -31,7 +31,6 @@ defined in `Mathlib/Algebra/Ring/Action/Invariant.lean`.
 ## Tags
 
 group action
-
 -/
 
 @[expose] public section

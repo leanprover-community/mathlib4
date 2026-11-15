@@ -12,7 +12,6 @@ import Mathlib.MeasureTheory.Integral.Bochner.Set
 /-! # Integral against a kernel over a set
 
 This file contains lemmas about the integral against a kernel and over a set.
-
 -/
 
 public section

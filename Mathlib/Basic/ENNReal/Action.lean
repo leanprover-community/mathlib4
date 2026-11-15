@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Basic.ENNReal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar multiplication on `ℝ≥0∞`.
 

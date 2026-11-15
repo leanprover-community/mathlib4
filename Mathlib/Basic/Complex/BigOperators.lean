@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Balance
 public import Mathlib.Basic.Complex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite sums and products of complex numbers
 -/

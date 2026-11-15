@@ -53,7 +53,6 @@ need this assumption.
 
 ## Tags
 central algebra, center, simple ring, central simple algebra
-
 -/
 
 public section

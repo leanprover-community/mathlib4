@@ -330,7 +330,7 @@ theorem seminormFromBounded_of_mul_le (f_nonneg : 0 ≤ f) {x : R}
 
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then
   `seminormFromBounded' f` is nonzero. -/
-theorem seminormFromBounded_nonzero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
+theorem seminormFromBounded_ne_zero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     seminormFromBounded' f ≠ 0 := by
   obtain ⟨x, hx⟩ := Function.ne_iff.mp f_ne_zero
@@ -338,6 +338,9 @@ theorem seminormFromBounded_nonzero (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
   use x
   rw [ne_eq, Pi.zero_apply, seminormFromBounded_eq_zero_iff f_nonneg f_mul x]
   exact hx
+
+@[deprecated (since := "2026-10-13")]
+alias seminormFromBounded_nonzero := seminormFromBounded_ne_zero
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then the kernel of
   `seminormFromBounded' f` equals the kernel of `f`. -/

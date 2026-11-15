@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear upper or lower sets topologies are completely normal
 -/

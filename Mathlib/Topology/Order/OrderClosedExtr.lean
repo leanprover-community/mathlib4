@@ -20,7 +20,6 @@ and its dual.
   and antitone to the right of `x` then `f` has a local maximum at `x`.
 
 * `isLocalMin_of_anti_mono` : the dual statement for minima.
-
 -/
 
 public section

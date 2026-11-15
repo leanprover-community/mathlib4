@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Semiconj.Defs
 
 /-!
 # Lemmas about semiconjugate elements of a group
-
 -/
 
 public section

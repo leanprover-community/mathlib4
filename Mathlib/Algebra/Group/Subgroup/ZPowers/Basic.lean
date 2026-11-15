@@ -15,7 +15,6 @@ import Mathlib.Algebra.Divisibility.Basic
 
 ## Tags
 subgroup, subgroups
-
 -/
 
 @[expose] public section

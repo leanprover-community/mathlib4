@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.UniformConvergence
 public import Mathlib.Topology.UniformSpace.Equicontinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebra-related equicontinuity criteria
 -/

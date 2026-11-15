@@ -16,7 +16,6 @@ This file defines rotations by oriented angles in real inner product spaces.
 ## Main definitions
 
 * `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
-
 -/
 
 @[expose] public section

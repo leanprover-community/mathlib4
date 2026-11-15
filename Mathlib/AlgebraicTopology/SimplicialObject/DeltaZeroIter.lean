@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 
 This file introduces morphisms `δ₀Iter i` and `σ₀Iter i` for simplicial objects:
 they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
-
 -/
 
 @[expose] public section
@@ -151,14 +150,12 @@ namespace Augmented
 
 variable (Y : Augmented C)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma δ₀Iter_hom_app {n m : ℕ} (i : ℕ) (hi : n + i = m := by lia) :
     dsimp% Y.left.δ₀Iter i hi ≫ Y.hom.app (op ⦋n⦌) = Y.hom.app (op ⦋m⦌) := by
   simpa only [Functor.id_obj, Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id] using!
     Y.hom.naturality (SimplexCategory.δ₀Iter i hi).op
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma σ₀Iter_hom_app {n m : ℕ} (i : ℕ) (hi : n + i = m := by lia) :
     dsimp% Y.left.σ₀Iter i hi ≫ Y.hom.app (op ⦋m⦌) = Y.hom.app (op ⦋n⦌) := by

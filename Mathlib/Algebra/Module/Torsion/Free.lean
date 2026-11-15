@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Module.Opposite
 public import Mathlib.Algebra.Regular.Opposite
 public import Mathlib.Algebra.Regular.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion-free modules
 
@@ -47,8 +50,8 @@ class Module.IsTorsionFree where
 
 alias IsRegular.isSMulRegular := IsTorsionFree.isSMulRegular
 
-instance : IsTorsionFree R R where isSMulRegular _r hr := hr.1
-instance : IsTorsionFree Rᵐᵒᵖ R where isSMulRegular _r hr := hr.unop.2
+instance : IsTorsionFree R R where isSMulRegular _r hr := hr.left
+instance : IsTorsionFree Rᵐᵒᵖ R where isSMulRegular _r hr := hr.unop.right
 
 /-- Pullback an `IsTorsionFree` instance along an injective function. -/
 lemma Function.Injective.moduleIsTorsionFree [IsTorsionFree R N] (f : M → N) (hf : f.Injective)

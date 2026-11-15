@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.RingTheory.Bialgebra.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of commutative bialgebras over a commutative ring
 

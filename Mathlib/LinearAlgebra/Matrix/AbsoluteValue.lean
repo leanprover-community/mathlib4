@@ -55,7 +55,7 @@ theorem det_sum_le {ι : Type*} (s : Finset ι) {A : ι → Matrix n n R} {abv :
     abv (det (∑ k ∈ s, A k)) ≤ (Fintype.card n)! • (#s • x) ^ Fintype.card n :=
   det_le fun i j =>
     calc
-      abv ((∑ k ∈ s, A k) i j) = abv (∑ k ∈ s, A k i j) := by simp only [sum_apply]
+      abv ((∑ k ∈ s, A k) i j) = abv (∑ k ∈ s, A k i j) := by simp only [Matrix.sum_apply]
       _ ≤ ∑ k ∈ s, abv (A k i j) := abv.sum_le _ _
       _ ≤ ∑ _k ∈ s, x := by gcongr; apply hx
       _ = #s • x := sum_const _

@@ -14,7 +14,6 @@ public import Mathlib.Topology.Path
 This file introduces a structure `TopCat.Path` for paths between
 two points of an object `X : TopCat`. The data is defined using
 a morphism `I ⟶ X` in the category `TopCat`.
-
 -/
 
 @[expose] public section

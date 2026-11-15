@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.TransferInstance
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer algebraic structures across `Equiv`s or `AddEquiv`s
 

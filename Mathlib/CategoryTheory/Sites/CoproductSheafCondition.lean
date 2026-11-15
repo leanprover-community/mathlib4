@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
 
 import Mathlib.CategoryTheory.Limits.Final
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sheaf condition and universal coproducts
 

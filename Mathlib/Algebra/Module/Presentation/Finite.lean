@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Module.Presentation.Basic
 
 A module is finitely presented (in the sense of `Module.FinitePresentation`) iff
 it admits a presentation with finitely many generators and relations.
-
 -/
 
 public section

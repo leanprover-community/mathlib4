@@ -12,7 +12,6 @@ public import Mathlib.Init
 
 The tactic `nth_rewrite` and `nth_rw` are variants of `rewrite` and `rw` that only performs the
 `n`th possible rewrite.
-
 -/
 
 public meta section

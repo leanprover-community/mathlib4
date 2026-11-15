@@ -9,6 +9,9 @@ public import Mathlib.Basic.ENNReal.Basic
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Order.Hom.WithTopBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`
 

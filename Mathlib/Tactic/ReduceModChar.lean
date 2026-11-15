@@ -13,6 +13,9 @@ public import Mathlib.Tactic.ReduceModChar.Ext
 
 import Mathlib.Tactic.NormNum.DivMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `reduce_mod_char` tactic
 
@@ -185,7 +188,7 @@ match Expr.getAppFnArgs t with
 | (``Polynomial, #[(R : Q(Type u)), _]) => do match ← typeToCharP (expensive := expensive) R with
   | (.intLike n _ _) =>
     return .intLike n
-      (q(Polynomial.ring) : Q(Ring (Polynomial $R)))
+      (q(inferInstance) : Q(Ring (Polynomial $R)))
       (q(Polynomial.instCharP _) : Q(CharP (Polynomial $R) $n))
   | .failure => return .failure
 | _ => if ! expensive then return .failure else do

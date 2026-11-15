@@ -29,7 +29,6 @@ import Mathlib.Data.Set.Function
 
 - `image_smul_set`, `preimage_smul_set` and `Group.preimage_smul_set` are
   the variants when `σ` is the identity.
-
 -/
 
 public section

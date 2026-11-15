@@ -11,6 +11,9 @@ public meta import Lean.PrettyPrinter
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `#check` tactic
 

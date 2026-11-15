@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Manifold differentiability of the Jacobi theta function
 

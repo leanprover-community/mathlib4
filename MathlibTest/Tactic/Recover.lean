@@ -1,4 +1,6 @@
-import Mathlib.Tactic.Recover
+module
+
+public import Mathlib.Tactic.Recover
 
 set_option linter.unusedTactic false
 

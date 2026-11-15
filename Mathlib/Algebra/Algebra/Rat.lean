@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Data.Rat.Cast.CharZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further basic results about `Algebra`'s over `ℚ`.
 

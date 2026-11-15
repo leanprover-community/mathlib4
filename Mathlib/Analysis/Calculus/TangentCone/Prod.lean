@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.Monoid
 
 import Mathlib.Analysis.Calculus.TangentCone.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of sets with unique differentiability property
 

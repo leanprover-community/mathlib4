@@ -31,7 +31,6 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   expresses the universal property of the exterior power as a
   linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
   alternating maps and linear maps from the exterior power.
-
 -/
 
 @[expose] public section

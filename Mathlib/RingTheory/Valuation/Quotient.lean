@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Valuation.Basic
 The support of a valuation `v : Valuation R Γ₀` is `supp v`. If `J` is an ideal of `R`
 with `h : J ⊆ supp v` then the induced valuation
 on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
-
 -/
 
 @[expose] public section
