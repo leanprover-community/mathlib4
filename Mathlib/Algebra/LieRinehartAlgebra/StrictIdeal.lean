@@ -237,11 +237,11 @@ def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L
 
 @[simp]
 lemma coe_comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s : StrictLieRinehartIdeal A L₂) :
-    ↑(comap f s)  = f ⁻¹' ↑s := by rfl
+    ↑(comap f s) = f ⁻¹' ↑s := by rfl
 
 @[simp]
 lemma comap_toSubmodule (f : L₁ →ₗ⁅.id R A⁆ L₂) (s : StrictLieRinehartIdeal A L₂) :
-    (comap f s).toSubmodule = Submodule.comap f.toLinearMap' s.toSubmodule:= by rfl
+    (comap f s).toSubmodule = Submodule.comap f.toLinearMap' s.toSubmodule := by rfl
 
 @[simp]
 lemma mem_comap {s : StrictLieRinehartIdeal A L₂} {f : L₁ →ₗ⁅.id R A⁆ L₂} {x : L₁} :
