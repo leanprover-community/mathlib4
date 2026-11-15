@@ -68,6 +68,8 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 * `spectralAlgNorm_mul` : the spectral norm on `L` is multiplicative.
 * `spectralNorm.completeSpace` : if `L/K` is finite dimensional, then `L` is a complete space
   with respect to topology induced by the spectral norm.
+* `AlgebraicClosure.instDenselyNormedField` : the algebraic closure of a complete nontrivially
+  normed nonarchimedean field, equipped with the spectral norm, is a densely normed field.
 
 ## References
 * [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
@@ -912,5 +914,33 @@ end spectralNorm
 end CompleteSpace
 
 end NontriviallyNormedField
+
+section AlgebraicClosure
+
+variable (L : Type*) [NontriviallyNormedField L] [IsUltrametricDist L] [CompleteSpace L]
+
+/-- The spectral norm makes the algebraic closure a nontrivially normed field. -/
+local instance : NontriviallyNormedField (AlgebraicClosure L) :=
+  spectralNorm.nontriviallyNormedField L _
+
+/-- The algebraic closure equipped with the spectral norm is a densely normed field. -/
+instance AlgebraicClosure.instDenselyNormedField : DenselyNormedField (AlgebraicClosure L) where
+  lt_norm_lt a b ha hab := by
+    have hb : 0 < b := ha.trans_lt hab
+    obtain ⟨x, hx_pos, hx_lt_one⟩ := NormedField.exists_norm_lt_one (AlgebraicClosure L)
+    -- Choose a root of `x` with norm close enough to `1` that a power has norm in `(a, b)`.
+    obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hx_pos ((div_lt_one hb).2 hab)
+    have hn0 : n ≠ 0 := by
+      rintro rfl
+      simpa using hn.trans hx_lt_one
+    obtain ⟨z, rfl⟩ := IsAlgClosed.exists_pow_nat_eq x (Nat.pos_of_ne_zero hn0)
+    rw [norm_pow] at hn hx_lt_one
+    have hza : a / b < ‖z‖ := lt_of_pow_lt_pow_left₀ n (norm_nonneg z) hn
+    obtain ⟨m, hm⟩ := exists_zpow_btwn_of_lt_mul ((div_lt_iff₀' hb).mp hza) hb
+      ((div_nonneg ha hb.le).trans_lt hza)
+      ((pow_lt_one_iff_of_nonneg (norm_nonneg z) hn0).mp hx_lt_one)
+    exact ⟨z ^ m, by simpa using hm⟩
+
+end AlgebraicClosure
 
 end spectralNorm

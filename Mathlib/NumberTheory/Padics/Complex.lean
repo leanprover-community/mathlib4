@@ -126,26 +126,7 @@ instance : UniformContinuousConstSMul ℚ_[p] (PadicAlgCl p) :=
   uniformContinuousConstSMul_of_continuousConstSMul ℚ_[p] (PadicAlgCl p)
 
 /-- `PadicAlgCl p` is a densely normed field. -/
-instance denselyNormedField : DenselyNormedField (PadicAlgCl p) where
-  lt_norm_lt a b ha hab := by
-    have hb : 0 < b := ha.trans_lt hab
-    have hp1 : (1 : ℝ) < p := Nat.one_lt_cast.2 hp.out.one_lt
-    have hp_pos : 0 < ‖(p : PadicAlgCl p)‖ := (norm_p p) ▸ inv_pos.2 (zero_lt_one.trans hp1)
-    have hp_lt_one : ‖(p : PadicAlgCl p)‖ < 1 :=
-      (norm_p p) ▸ (inv_lt_one₀ (zero_lt_one.trans hp1)).2 hp1
-    -- Choose `n` with `(a / b) ^ n < ‖p‖`. An `n`-th root `z` of `p` then satisfies
-    -- `a / b < ‖z‖ < 1`, so some integer power of `z` has norm strictly between `a` and `b`.
-    obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hp_pos ((div_lt_one hb).2 hab)
-    have hn0 : n ≠ 0 := by
-      rintro rfl
-      simpa [pow_zero] using hn.asymm hp_lt_one
-    obtain ⟨z, hz⟩ := IsAlgClosed.exists_pow_nat_eq (p : PadicAlgCl p) (Nat.pos_of_ne_zero hn0)
-    have hzn : ‖z‖ ^ n = ‖(p : PadicAlgCl p)‖ := by rw [← norm_pow, hz]
-    have hza : a / b < ‖z‖ := lt_of_pow_lt_pow_left₀ n (norm_nonneg z) (hn.trans_eq hzn.symm)
-    obtain ⟨m, hm, hm'⟩ := exists_zpow_btwn_of_lt_mul ((div_lt_iff₀' hb).mp hza) hb
-      ((div_nonneg ha hb.le).trans_lt hza)
-      ((pow_lt_one_iff_of_nonneg (norm_nonneg z) hn0).mp (hzn.trans_lt hp_lt_one))
-    exact ⟨z ^ m, by rwa [norm_zpow], by rwa [norm_zpow]⟩
+instance denselyNormedField : DenselyNormedField (PadicAlgCl p) := inferInstance
 
 /-- The norm on `PadicAlgCl p` is nontrivial. -/
 instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) := inferInstance
