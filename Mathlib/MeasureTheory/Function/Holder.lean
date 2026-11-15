@@ -41,11 +41,15 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
     (B : E →L[𝕜] F →L[𝕜] G)
 
-theorem MeasureTheory.eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm {f : α → E} {g : α → F}
+theorem MeasureTheory.eLpNorm_le_eNorm_mul_eLpNorm_mul_eLpNorm {f : α → E} {g : α → F}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     eLpNorm (fun a ↦ B (f a) (g a)) r μ ≤ ‖B‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
-  eLpNorm_le_eLpNorm_mul_eLpNorm_of_enorm (B · ·) ‖B‖ₑ B.continuous₂.comp_aestronglyMeasurable₂
+  eLpNorm_le_eLpNorm_mul_eLpNorm_of_eNorm (B · ·) ‖B‖ₑ B.continuous₂.comp_aestronglyMeasurable₂
     hf hg (.of_forall fun _ ↦ B.le_opENorm₂ ..)
+
+@[deprecated (since := "2026-11-06")]
+alias MeasureTheory.eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm :=
+  MeasureTheory.eLpNorm_le_eNorm_mul_eLpNorm_mul_eLpNorm
 
 namespace ContinuousLinearMap
 
@@ -79,7 +83,7 @@ lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) :
 
 lemma nnNorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖B.holder r f g‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
-  simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← eNorm_eq_nnNorm, Lp.enorm_def]
+  simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← eNorm_eq_nnNorm, Lp.eNorm_def]
   apply eLpNorm_congr_ae (coeFn_holder B f g) |>.trans_le
   exact eLpNorm_le_eLpNorm_mul_eLpNorm (B · ·) ‖B‖₊ B.continuous₂
     (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g)

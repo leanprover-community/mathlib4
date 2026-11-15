@@ -27,7 +27,6 @@ For example, if `X` is irreducible then this will give back the original scheme 
 
 Prove that for affine schemes this subscheme structure is defined by the kernel of the
 localization away from the union of the other minimal prime ideals.
-
 -/
 
 @[expose] public section

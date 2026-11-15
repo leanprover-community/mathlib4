@@ -41,7 +41,6 @@ The result that the internal hom into a quasi-category is also a quasi-category 
 formalized by Jack McKoen for his master's thesis, following an approach outlined on
 Kerodon (https://kerodon.net/tag/0066). Specifically, this approach hinges on the lemma
 https://kerodon.net/tag/0079 which is avoided in the mathlib implementation.
-
 -/
 
 public section

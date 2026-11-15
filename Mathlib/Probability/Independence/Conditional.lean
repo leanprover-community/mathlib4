@@ -60,7 +60,6 @@ The definitions of conditional independence in this file are a particular case o
 respect to a kernel and a measure, as defined in the file
 `Mathlib/Probability/Independence/Kernel.lean`.
 The kernel used is `ProbabilityTheory.condExpKernel`.
-
 -/
 
 @[expose] public section
@@ -620,7 +619,6 @@ end FromPiSystemsToMeasurableSpaces
 section CondIndepSet
 
 /-! ### Conditional independence of measurable sets
-
 -/
 
 variable {m' m₁ m₂ : MeasurableSpace Ω} {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω]
@@ -649,7 +647,6 @@ end CondIndepSet
 section CondIndepFun
 
 /-! ### Conditional independence of random variables
-
 -/
 
 variable {β β' : Type*} {m' : MeasurableSpace Ω}

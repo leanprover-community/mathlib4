@@ -20,7 +20,6 @@ valuation at infinity `FunctionField.inftyValuation K`.
 
 ### TODO
 - Show that a nontrivial valuation `v`, trivial on `K`, is a rank one discrete valuation. (*)
-
 -/
 
 @[expose] public noncomputable section

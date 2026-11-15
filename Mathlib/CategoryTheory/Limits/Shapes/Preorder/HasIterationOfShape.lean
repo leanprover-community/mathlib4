@@ -18,7 +18,6 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 In this file, we introduce the typeclass `HasIterationOfShape J C` which is
 an assumption in order to do constructions by transfinite induction indexed by
 a well-ordered type `J` in a category `C` (see `CategoryTheory.SmallObject`).
-
 -/
 
 public section

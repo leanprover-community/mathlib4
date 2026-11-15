@@ -14,7 +14,7 @@ set_option doc.verso.suggestions false
 /-!
 # `norm_num` plugin for `abs`
 
-TODO: plugins for `mabs`, `norm`, `nnorm`, and `enorm`.
+TODO: plugins for `mabs`, `norm`, `nnorm`, and `eNorm`.
 -/
 
 public meta section

@@ -35,7 +35,6 @@ unnecessarily.
 * https://en.wikipedia.org/wiki/Pons_asinorum
 * https://en.wikipedia.org/wiki/Sum_of_angles_of_a_triangle
 * https://en.wikipedia.org/wiki/Law_of_sines
-
 -/
 
 public section

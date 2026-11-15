@@ -33,7 +33,6 @@ Depending on the order of the "composition" of the two isomorphisms
 two ways to identify `((shiftFunctor₁ C x).obj ((shiftFunctor₂ C y).obj K)).total (up ℤ)`
 and `(K.total (up ℤ))⟦x + y⟧`. The lemma `totalShift₁Iso_trans_totalShift₂Iso` shows that
 these two compositions of isomorphisms differ by the sign `(x * y).negOnePow`.
-
 -/
 
 @[expose] public section

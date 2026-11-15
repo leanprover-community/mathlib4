@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
+Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir, Osman Safa
 -/
 module
 
@@ -20,6 +20,8 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
   its commutator subgroup.
 * `Group.Abelianization.map`: lifts a group homomorphism to a homomorphism between the
   abelianizations.
+* `Group.Abelianization.quotientMulEquiv`: The abelianization of a quotient `G ⧸ N` is isomorphic
+  to the quotient of the abelianization of `G` by the image of `N`.
 * `MulEquiv.abelianizationCongr`: Isomorphic groups have isomorphic abelianizations.
 -/
 
@@ -59,10 +61,7 @@ variable {G}
 /-- `of` is the canonical projection from the group `G` to its abelianization. -/
 @[to_additive
 /-- `of` is the canonical projection from the additive group `G` to its abelianization. -/]
-def of : G →* Abelianization G where
-  toFun := QuotientGroup.mk
-  map_one' := rfl
-  map_mul' _ _ := rfl
+def of : G →* Abelianization G := QuotientGroup.mk' (commutator G)
 
 @[to_additive (attr := simp)]
 theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
@@ -72,6 +71,11 @@ variable (G) in
 @[to_additive (attr := simp)]
 theorem ker_of : of.ker = commutator G :=
   QuotientGroup.ker_mk' (commutator G)
+
+variable (G) in
+@[to_additive]
+lemma surjective_of : Function.Surjective (of : G →* Abelianization G) :=
+  QuotientGroup.mk'_surjective (commutator G)
 
 section lift
 
@@ -137,11 +141,31 @@ def map : Abelianization G →* Abelianization H :=
 /-- Use `map` as the preferred simp normal form. -/
 @[to_additive (attr := simp) /-- Use `map` as the preferred simp normal form. -/]
 theorem lift_of_comp :
-    Abelianization.lift (Abelianization.of.comp f) = Abelianization.map f := rfl
+    Abelianization.lift (Abelianization.of.comp f) = Abelianization.map f :=
+  rfl
 
 @[to_additive (attr := simp)]
 theorem map_of (x : G) : map f (of x) = of (f x) :=
   rfl
+
+@[to_additive (attr := simp)]
+theorem map_comp_of : (map f).comp of = of.comp f :=
+  rfl
+
+@[to_additive]
+lemma ker_map (f : G →* H) : (map f).ker = ((commutator H).comap f).map of := by
+  rw [← ker_of, MonoidHom.comap_ker, ← map_comp_of, ← MonoidHom.comap_ker,
+    Subgroup.map_comap_eq_self_of_surjective (surjective_of G)]
+
+@[to_additive]
+lemma map_ker_le_ker_map (f : G →* H) : f.ker.map of ≤ (Abelianization.map f).ker := by
+  grw [ker_map, Subgroup.ker_le_comap]
+
+@[to_additive]
+lemma map_ker_eq_ker_map (f : G →* H) (hf : Function.Surjective f) :
+    f.ker.map of = (map f).ker := by
+  rw [ker_map, ← map_commutator_of_surjective hf, Subgroup.comap_map_eq, Subgroup.map_sup,
+    ← ker_of, Subgroup.map_ker_self, bot_sup_eq]
 
 @[to_additive (attr := simp)]
 theorem map_id : map (MonoidHom.id G) = MonoidHom.id (Abelianization G) :=
@@ -157,6 +181,36 @@ theorem map_map_apply {I : Type w} [Group I] {g : H →* I} {x : Abelianization 
   congr($(map_comp _ _) x)
 
 end Map
+
+section Quotient
+
+variable (N : Subgroup G) [N.Normal]
+
+/-- Abelianizing a quotient `G ⧸ N` is the same as abelianizing `G`
+and then quotienting by the image of `N`. -/
+@[to_additive
+/-- Abelianizing a quotient `G ⧸ N` is the same as abelianizing `G`
+and then quotienting by the image of `N`. -/]
+def quotientMulEquiv : Abelianization (G ⧸ N) ≃* Abelianization G ⧸ N.map of :=
+ MonoidHom.toMulEquiv
+    (lift <| QuotientGroup.lift N ((QuotientGroup.mk' _).comp of) <|
+      by simp [← MonoidHom.comap_ker, Subgroup.le_comap_map])
+    (QuotientGroup.lift _ (map (QuotientGroup.mk' N)) <|
+      by simpa using map_ker_le_ker_map (QuotientGroup.mk' N))
+    (by ext; simp)
+    (by ext; simp)
+
+@[to_additive (attr := simp)]
+theorem quotientMulEquiv_of_mk (x : G) :
+    quotientMulEquiv N (of (x : G ⧸ N)) = (of x : Abelianization G ⧸ N.map of) :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem quotientMulEquiv_symm_mk (x : Abelianization G) :
+    (quotientMulEquiv N).symm x = map (QuotientGroup.mk' N) x :=
+  rfl
+
+end Quotient
 
 end Abelianization
 
@@ -215,6 +269,51 @@ instance [Unique G] :
   Unique (Abelianization G) := Quotient.instUniqueQuotient _
 
 end Group
+
+section AdditiveMultiplicativeEquiv
+
+/-- The abelianization of `Multiplicative A` is `Multiplicative` of the additive
+abelianization of `A`. -/
+def Group.Abelianization.abelianizationEquivMultiplicative (A : Type*) [AddGroup A] :
+    Group.Abelianization (Multiplicative A) ≃* Multiplicative (AddGroup.Abelianization A) :=
+  (lift AddGroup.Abelianization.of.toMultiplicative).toMulEquiv
+    (AddGroup.Abelianization.lift of.toAdditiveRight).toMultiplicativeLeft
+    (by ext; simp)
+    (by ext; simp)
+
+/-- The additive abelianization of `Additive G` is `Additive` of the abelianization of `G` -/
+def AddGroup.Abelianization.abelianizationEquivAdditive (G : Type*) [Group G] :
+    AddGroup.Abelianization (Additive G) ≃+ Additive (Group.Abelianization G) :=
+  (lift Group.Abelianization.of.toAdditive).toAddEquiv
+    (Group.Abelianization.lift of.toMultiplicativeRight).toAdditiveLeft
+    (by ext; simp)
+    (by ext; simp)
+
+@[simp]
+theorem Group.Abelianization.abelianizationEquivMultiplicative_of
+    {A : Type*} [AddGroup A] (x : Multiplicative A) :
+    abelianizationEquivMultiplicative A (of x) = .ofAdd (.of x.toAdd) :=
+  rfl
+
+@[simp]
+theorem Group.Abelianization.abelianizationEquivMultiplicative_symm_ofAdd_of
+    {A : Type*} [AddGroup A] (a : A) :
+    (abelianizationEquivMultiplicative A).symm (.ofAdd (.of a)) = of (.ofAdd a) :=
+  rfl
+
+@[simp]
+theorem AddGroup.Abelianization.abelianizationEquivAdditive_of
+    {G : Type*} [Group G] (a : Additive G) :
+    abelianizationEquivAdditive G (of a) = .ofMul (.of a.toMul) :=
+  rfl
+
+@[simp]
+theorem AddGroup.Abelianization.abelianizationEquivAdditive_symm_ofMul_of
+    {G : Type*} [Group G] (x : G) :
+    (abelianizationEquivAdditive G).symm (.ofMul (.of x)) = of (.ofMul x) :=
+  rfl
+
+end AdditiveMultiplicativeEquiv
 
 @[deprecated (since := "2026-11-03")] alias Abelianization := Group.Abelianization
 @[deprecated (since := "2026-11-03")]

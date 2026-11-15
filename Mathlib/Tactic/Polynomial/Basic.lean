@@ -108,7 +108,6 @@ example {P : ℚ[X] → Prop} (h : P (X ^ 2 + X + C 4⁻¹)) : P ((X + C 2⁻¹)
   polynomial_nf at h ⊢
   exact h
 ```
-
 -/
 elab (name := polynomial) "polynomial" tk:"!"? : tactic =>
   withMainContext do

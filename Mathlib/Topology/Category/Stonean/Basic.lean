@@ -38,7 +38,6 @@ can be lifted along epimorphisms).
 
 The category `Stonean` is defined using the structure `CompHausLike`. See the file
 `CompHausLike.Basic` for more information.
-
 -/
 
 @[expose] public section

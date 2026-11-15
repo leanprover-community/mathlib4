@@ -1188,6 +1188,8 @@ end Center
 
 section Centralizer
 
+open scoped Pointwise
+
 variable (R)
 variable [IsScalarTower R A A] [SMulCommClass R A A]
 
@@ -1227,6 +1229,7 @@ end Centralizer
 end NonUnitalStarSubalgebra
 
 -- TODO: this could potentially be moved earlier, but currently no file has enough imports.
+open scoped Pointwise in
 /-- `s ∪ star s` commutes pairwise if and only if all elements of `s` are normal, elements of `s`
 commute pairwise, and distinct elements of `s` commute with the `star` of the other. -/
 lemma Set.Pairwise.commute_union_star_self_iff {R : Type*} [Mul R] [StarMul R] {s : Set R} :

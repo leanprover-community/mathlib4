@@ -24,7 +24,6 @@ This file defines notions of two points being on the same or opposite sides of a
   subspace `s`.
 * `s.SOppSide x y`: The points `x` and `y` are strictly on opposite sides of the affine
   subspace `s`.
-
 -/
 
 @[expose] public section

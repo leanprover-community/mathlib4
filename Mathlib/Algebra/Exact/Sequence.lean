@@ -21,7 +21,6 @@ In this file we provide some API for handling exact sequences.
 Write a simproc to generate unrolled, universe-polymorphic versions of
 `Module.sum_neg_one_pow_finrank_eq_zero_of_exact` on the fly and so obviate the need for
 `Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six`.
-
 -/
 
 universe u₀ u₁ u₂ u₃ u₄ u₅

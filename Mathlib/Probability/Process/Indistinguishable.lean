@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
-
 # Indistinguishability of processes
 
 In Mathlib, `E`-valued stochastic processes over a probability space `Ω` and indexed by a type `ι`
@@ -24,7 +23,6 @@ In this file we introduce a predicate `Indistinguishable P X Y`, denoted `X ≡�
 that `∀ᵐ ω ∂P, ∀ t, X t ω = Y t ω`. The symbol `≡` can be typed with `\==`.
 
 The recommended spelling for `Indistinguishable` in names is `indist`.
-
 -/
 
 public section

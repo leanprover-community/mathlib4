@@ -32,7 +32,6 @@ neighborhood filters and so on.
 ## Tags
 
 product, sum, disjoint union
-
 -/
 
 @[expose] public section

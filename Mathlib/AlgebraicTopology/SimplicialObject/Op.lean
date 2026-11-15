@@ -14,7 +14,6 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 In this file, we define the covariant involution `SimplicialObject.opFunctor`
 of the category of simplicial objects that is induced by the
 covariant involution `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`.
-
 -/
 
 @[expose] public section

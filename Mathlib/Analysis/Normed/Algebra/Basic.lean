@@ -25,7 +25,6 @@ This file contains basic facts about normed algebras.
 ## Tags
 
 normed algebra, character space, continuous functional calculus
-
 -/
 
 public section

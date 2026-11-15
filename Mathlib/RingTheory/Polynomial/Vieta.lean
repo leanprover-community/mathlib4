@@ -89,11 +89,8 @@ theorem prod_X_sub_X_eq_sum_esymm (s : Multiset R) :
       ∑ j ∈ Finset.range (Multiset.card s + 1),
         (-1) ^ j * (C (s.esymm j) * X ^ (Multiset.card s - j)) := by
   conv_lhs =>
-    congr
-    congr
-    ext x
-    rw [sub_eq_add_neg]
-    rw [← map_neg C x]
+    enter [1, 1, x]
+    rw [sub_eq_add_neg, ← map_neg C x]
   convert prod_X_add_C_eq_sum_esymm (map (fun t => -t) s) using 1
   · rw [map_map]; rfl
   · simp only [esymm_neg, card_map, mul_assoc, map_mul, map_pow, map_neg, map_one]

@@ -15,7 +15,6 @@ public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
-
 # Extensive categories
 
 ## Main definitions
@@ -40,7 +39,6 @@ import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 ## References
 - https://ncatlab.org/nlab/show/extensive+category
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
-
 -/
 
 @[expose] public section

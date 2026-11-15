@@ -10,7 +10,6 @@ public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 
 /-!
-
 # The Fundamental Theorem of Infinite Galois Theory
 
 In this file, we prove the fundamental theorem of infinite Galois theory and the special case for
@@ -48,7 +47,6 @@ Special cases :
 
 * `normal_iff_isGalois` : The fixing subgroup of an intermediate field `L` is normal if and only if
   `L` is Galois.
-
 -/
 
 @[expose] public section

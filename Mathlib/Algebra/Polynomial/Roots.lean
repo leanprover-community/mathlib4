@@ -28,7 +28,6 @@ We define the multiset of roots of a polynomial, and prove basic results about i
 * `Polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C`: If a polynomial has as many roots as its
   degree, it can be written as the product of its leading coefficient with `∏ (X - a)` where `a`
   ranges through its roots.
-
 -/
 
 @[expose] public section
@@ -1034,5 +1033,19 @@ theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]
   roots_map_of_map_ne_zero_of_card_eq_natDegree f (map_monic_ne_zero hm) hroots
 
 end
+
+section Order
+
+open Filter
+
+variable [CommRing R] [IsDomain R] [Preorder R] {p : R[X]}
+
+theorem eventually_atTop_not_isRoot [NoTopOrder R] (hp : p ≠ 0) : ∀ᶠ x in atTop, ¬p.IsRoot x :=
+  atTop_le_cofinite (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+theorem eventually_atBot_not_isRoot [NoBotOrder R] (hp : p ≠ 0) : ∀ᶠ x in atBot, ¬p.IsRoot x :=
+  atBot_le_cofinite (finite_setOfPred_isRoot hp).compl_mem_cofinite
+
+end Order
 
 end Polynomial

@@ -31,7 +31,6 @@ TODO :
 * probably rename MonoidHom.CompTriple as MonoidHomCompTriple
   (or, on the opposite, rename RingHomCompTriple as RingHom.CompTriple)
 * does one need AddHom.CompTriple ?
-
 -/
 
 public section

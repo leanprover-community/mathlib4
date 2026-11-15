@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Unramified.Basic
 
@@ -40,7 +41,6 @@ Let `S/R` be formally unramified and essentially of finite type.
 ## References
 
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
 -/
 
 @[expose] public section
@@ -49,6 +49,7 @@ open Algebra Module
 open scoped TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable (L : Type*) [AddCommGroup L] [Module R L] [Module S L] [IsScalarTower R S L]
 variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
 variable (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
 
@@ -315,6 +316,65 @@ lemma flat_of_restrictScalars [Module.Flat R M] : Module.Flat S M :=
 /-- If `S` is an unramified `R`-algebra, then `R`-projective implies `S`-projective. -/
 lemma projective_of_restrictScalars [Module.Projective R M] : Module.Projective S M :=
   Module.Projective.of_split _ _ (comp_sec R S M)
+
+section extendScalars
+
+variable {R S L M N}
+
+variable (S) in
+/-- A left inverse of `LinearMap.restrictScalars`. -/
+noncomputable def extendScalars : (M →ₗ[R] N) →ₗ[S] (M →ₗ[S] N) :=
+  ((sec R S M).lcomp S N).comp (LinearMap.liftBaseChangeEquiv S).toLinearMap
+
+variable (S) in
+lemma extendScalars_apply (f : M →ₗ[R] N) :
+    extendScalars S f = (f.liftBaseChange S).comp (sec R S M) :=
+  rfl
+
+variable (R S M) in
+@[simp]
+lemma extendScalars_zero : extendScalars S (0 : M →ₗ[R] N) = 0 :=
+  map_zero (extendScalars S)
+
+variable (R S M) in
+@[simp]
+lemma extendScalars_one : extendScalars S (1 : M →ₗ[R] M) = 1 :=
+  comp_sec R S M
+
+variable (R S M) in
+@[simp]
+lemma extendScalars_id : extendScalars S (LinearMap.id : M →ₗ[R] M) = LinearMap.id :=
+  extendScalars_one R S M
+
+@[simp]
+lemma extendScalars_apply_comp_restrictScalars (f : M →ₗ[R] N) (g : L →ₗ[S] M) :
+    extendScalars S (f.comp (g.restrictScalars R)) = (extendScalars S f).comp g := by
+  simp [extendScalars_apply, LinearMap.liftBaseChange_comp, LinearMap.comp_assoc, sec_comp]
+
+@[simp]
+lemma extendScalars_apply_restrictScalars_comp (f : M →ₗ[S] N) (g : L →ₗ[R] M) :
+    extendScalars S ((f.restrictScalars R).comp g) = f.comp (extendScalars S g) := by
+  simp [extendScalars_apply, LinearMap.comp_liftBaseChange, ← LinearMap.comp_assoc]
+
+variable (R) in
+@[simp]
+lemma extendScalars_restrictScalars (f : M →ₗ[S] N) :
+    extendScalars S (f.restrictScalars R) = f := by
+  simpa using extendScalars_apply_restrictScalars_comp f (LinearMap.id (R := R))
+
+@[simp]
+lemma extendScalars_comp_mulLeft (f : S →ₗ[R] M) (x : S) :
+    extendScalars S (f.comp (LinearMap.mulLeft R x)) =
+      (extendScalars S f).comp (LinearMap.mulLeft S x) :=
+  extendScalars_apply_comp_restrictScalars f (LinearMap.mulLeft S x)
+
+@[simp]
+lemma extendScalars_mulLeft_comp (f : M →ₗ[R] S) (x : S) :
+    extendScalars S ((LinearMap.mulLeft R x).comp f) =
+      (LinearMap.mulLeft S x).comp (extendScalars S f) :=
+  extendScalars_apply_restrictScalars_comp (LinearMap.mulLeft S x) f
+
+end extendScalars
 
 section equalizer
 

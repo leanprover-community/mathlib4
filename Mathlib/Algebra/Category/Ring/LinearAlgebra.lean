@@ -17,7 +17,6 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 - `CommRingCat.nontrivial_of_isPushout_of_isField`: the pushout of non-trivial rings over a field
   is non-trivial.
-
 -/
 
 public section

@@ -37,7 +37,6 @@ and a proof obligation that the basis vectors are eigenvectors.
 ## Tags
 
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
-
 -/
 
 public section

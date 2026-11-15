@@ -530,8 +530,10 @@ theorem Pi.nnNorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i :
 
 @[deprecated (since := "2026-10-31")] alias Pi.nnnorm_single := Pi.nnNorm_single
 
-lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
-    ‖Pi.single i y‖ₑ = ‖y‖ₑ := by simp [enorm, Pi.nnNorm_single]
+lemma Pi.eNorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
+    ‖Pi.single i y‖ₑ = ‖y‖ₑ := by simp [eNorm, Pi.nnNorm_single]
+
+@[deprecated (since := "2026-11-06")] alias Pi.enorm_single := Pi.eNorm_single
 
 theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖ = ‖y‖ :=

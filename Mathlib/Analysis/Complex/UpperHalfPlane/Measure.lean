@@ -103,7 +103,7 @@ instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
   · simp [Set.image_image]
   · apply setLIntegral_congr_fun (measurableEmbedding_coe.measurableSet_image.mpr hs)
     rintro _ ⟨τ, -, rfl⟩
-    simp only [← Real.enorm_eq_ofReal_abs, eNorm_eq_nnNorm]
+    simp only [← Real.eNorm_eq_ofReal_abs, eNorm_eq_nnNorm]
     have : ‖(SignType.sign g.val.det : ℝ)‖₊ = 1 := by
       rcases g.det_ne_zero.lt_or_gt with h | h <;> simp [h]
     have := g.det_ne_zero

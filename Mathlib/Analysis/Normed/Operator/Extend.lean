@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 
 /-!
-
 # Extension of continuous linear maps on Banach spaces
 
 In this file we provide several different ways to extend a continuous linear map defined on a dense

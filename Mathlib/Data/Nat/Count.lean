@@ -16,7 +16,6 @@ This file defines the `count` function, which gives, for any predicate on the na
 "how many numbers under `k` satisfy this predicate?".
 We then prove several expected lemmas about `count`, relating it to the cardinality of other
 objects, and helping to evaluate it for specific `k`.
-
 -/
 
 @[expose] public section

@@ -25,7 +25,6 @@ algebras.
   construction is irreducible.
 * `RootPairing.GeckConstruction.instHasTrivialRadical`: the Geck construction yields semisimple
   Lie algebras.
-
 -/
 
 public section
