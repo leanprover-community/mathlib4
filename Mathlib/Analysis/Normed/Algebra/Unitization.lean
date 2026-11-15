@@ -261,10 +261,6 @@ lemma nnNorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
 lemma isometry_inr : Isometry ((↑) : A → Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm (inrNonUnitalAlgHom 𝕜 A) norm_inr
 
-@[fun_prop]
-theorem continuous_inr : Continuous (inr : A → Unitization 𝕜 A) :=
-  isometry_inr.continuous
-
 lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = dist a b :=
   isometry_inr.dist_eq a b
 
@@ -296,8 +292,16 @@ protected theorem continuous_snd : Continuous (fun x : Unitization 𝕜 A ↦ x.
   Unitization.uniformContinuous_snd.continuous
 
 protected theorem continuous_iff {X : Type*} [TopologicalSpace X] {f : X → Unitization 𝕜 A} :
-    Continuous f ↔ (Continuous fun x ↦ (f x).fst) ∧ (Continuous fun x ↦ (f x).snd) :=
+    Continuous f ↔ (Continuous fun x ↦ (f x).fst) ∧ Continuous fun x ↦ (f x).snd :=
   uniformEquivProd.toHomeomorph.comp_continuous_iff.symm.trans continuous_prodMk
+
+@[fun_prop]
+protected theorem continuous_inl : Continuous (inl : 𝕜 → Unitization 𝕜 A) :=
+  Unitization.continuous_iff.mpr ⟨by simpa using continuous_id', by simpa using continuous_const⟩
+
+@[fun_prop]
+protected theorem continuous_inr : Continuous (inr : A → Unitization 𝕜 A) :=
+  Unitization.continuous_iff.mpr ⟨by simpa using continuous_const, by simpa using continuous_id'⟩
 
 end
 
