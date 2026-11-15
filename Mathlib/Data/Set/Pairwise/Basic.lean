@@ -165,11 +165,10 @@ protected theorem Pairwise.insert (hs : s.Pairwise r) (h : ∀ b ∈ s, a ≠ b 
     (insert a s).Pairwise r :=
   pairwise_insert.2 ⟨hs, h⟩
 
-theorem Pairwise.insert_of_forall (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
+@[deprecated Pairwise.insert +typeChanged (since := "2026-11-04")]
+theorem Pairwise.insert_of_notMem (hs : s.Pairwise r) (h : ∀ b ∈ s, r a b ∧ r b a) :
     (insert a s).Pairwise r :=
   hs.insert fun b hb _ => h b hb
-
-@[deprecated (since := "2026-11-04")] alias Pairwise.insert_of_notMem := Pairwise.insert_of_forall
 
 theorem pairwise_insert_of_symm [Std.Symm r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
@@ -300,12 +299,10 @@ protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   pairwiseDisjoint_insert.2 ⟨hs, h⟩
 
-theorem PairwiseDisjoint.insert_of_forall (hs : s.PairwiseDisjoint f) {i : ι}
+@[deprecated PairwiseDisjoint.insert +typeChanged (since := "2026-11-04")]
+theorem PairwiseDisjoint.insert_of_notMem (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
   hs.insert fun j hj _ => h j hj
-
-@[deprecated (since := "2026-11-04")]
-alias PairwiseDisjoint.insert_of_notMem := PairwiseDisjoint.insert_of_forall
 
 theorem PairwiseDisjoint.image_of_le (hs : s.PairwiseDisjoint f) {g : ι → ι} (hg : f ∘ g ≤ f) :
     (g '' s).PairwiseDisjoint f := by
