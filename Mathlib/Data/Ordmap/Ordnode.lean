@@ -157,9 +157,9 @@ O(n). The dual of a tree is a tree with its left and right sides reversed throug
 The dual of a valid BST is valid under the dual order. This is convenient for exploiting
 symmetries in the algorithms. -/
 @[simp]
-def dual : Ordnode α → Ordnode αᵒᵈ
+def dual : Ordnode α → Ordnode α
   | nil => nil
-  | node s l x r => node s (dual r) (OrderDual.toDual x) (dual l)
+  | node s l x r => node s (dual r) x (dual l)
 
 /-- **Internal use only**
 
@@ -612,12 +612,6 @@ partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)
-
-@[simp]
-theorem map_id :
-    ∀ t : Ordnode α, t.map id = t
-  | nil => rfl
-  | node _ _ _ _ => by rw [map, map_id, map_id, id]
 
 /-- O(n). Fold a function across the structure of a tree.
 
