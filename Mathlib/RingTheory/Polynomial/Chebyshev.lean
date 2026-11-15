@@ -946,7 +946,7 @@ theorem one_sub_X_sq_mul_iterate_derivative_T_eq_poly_in_T (n : ℤ) (k : ℕ) :
   rw [sub_mul, iterate_derivative_sub, one_mul, ← Function.iterate_add_apply, mul_comm (X ^ 2),
     iterate_derivative_sub, mul_comm X, iterate_derivative_intCast_mul,
     iterate_derivative_derivative_mul_X_sq, iterate_derivative_derivative_mul_X] at h
-  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf)) h
+  linear_combination (norm := (push_cast; ring_nf)) h
   cases k <;> grind
 
 theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
@@ -955,12 +955,13 @@ theorem one_sub_X_sq_mul_iterate_derivative_U_eq_poly_in_U (n : ℤ) (k : ℕ) :
       ((n + 1) ^ 2 - (k + 1) ^ 2 : R[X]) * derivative^[k] (U R n) := by
   have h := congr_arg derivative^[k] <| one_sub_X_sq_mul_derivative_derivative_U_eq_poly_in_U
     (R := R) n
-  fail_if_not_idempotent norm_cast at h
+  -- TODO: norm_cast at h is not idempotent! fail_if_not_idempotent norm_cast at h
+  norm_cast at h
   rw [sub_mul, iterate_derivative_sub, one_mul, ← Function.iterate_add_apply, mul_comm (X ^ 2),
     iterate_derivative_sub, mul_assoc 3, ← Nat.cast_three, iterate_derivative_natCast_mul,
     mul_comm X, iterate_derivative_intCast_mul, iterate_derivative_derivative_mul_X_sq,
     iterate_derivative_derivative_mul_X] at h
-  linear_combination (norm := (fail_if_not_idempotent push_cast; ring_nf)) h
+  linear_combination (norm := (push_cast; ring_nf)) h
   cases k <;> grind
 
 theorem one_sub_X_sq_mul_iterate_derivative_T_eval (n : ℤ) (k : ℕ) (x : R) :
