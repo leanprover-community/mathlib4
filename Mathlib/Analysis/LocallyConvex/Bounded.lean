@@ -410,7 +410,7 @@ protected lemma isVonNBounded_pi_iff
 
 /-- If the topology on `E` is induced by a family of linear maps, then a set `s : Set E` is von
 Neumann bounded if its image under each map is von Neumann bounded. -/
-protected alias ⟨_, isVonNBounded_pi⟩ := Topology.IsInducing.isVonNBounded_iff
+protected alias ⟨_, isVonNBounded_pi⟩ := Topology.IsInducing.isVonNBounded_pi_iff
 
 end Topology.IsInducing
 
