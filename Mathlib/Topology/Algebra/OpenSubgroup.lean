@@ -385,7 +385,7 @@ alias isClosed_of_discrete := isClosed_of_discreteTopology
 /-- A locally compact subgroup of a Hausdorff topological group is closed. -/
 @[to_additive
 /-- A locally compact additive subgroup of a Hausdorff topological additive group is closed. -/]
-instance isClosed_of_locallyCompactSpace [T2Space G] {H : Subgroup G} [LocallyCompactSpace H] :
+theorem isClosed_of_locallyCompactSpace [T2Space G] {H : Subgroup G} [LocallyCompactSpace H] :
     IsClosed (H : Set G) := by
   -- It suffices to show that `H` is locally closed at `1`. Let `K` be a compact neighborhood of
   -- `1` in `H` and `U` an open neighborhood of `1` in `G` with `U ∩ H ⊆ K`. Since `K` is closed
