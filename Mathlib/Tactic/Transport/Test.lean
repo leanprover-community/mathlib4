@@ -38,170 +38,190 @@ section Class
 
 -/
 
-
-instance (priority := high) (α : Type*) : Transport (@Eq α) where
-
 variable {α β : Type*}
-
-class BiTransport (r : outParam <| α → β → Prop) where
-
-instance (priority := high) {r : α → β → Prop} [Transport r] : BiTransport r where
-
-instance {r : α → β → Prop} [BiTransport r] : BiTransport fun x y ↦ r y x where
 
 section
 
-class Total (α β : Type*) {r : α → β → Prop} [BiTransport r] where
-  total (β) (a : α) : ∃ b : β, r a b
+class LeftTotal (r : α → β → Prop) where
+  total (a : α) : ∃ b : β, r a b
 
-variable {r : α → β → Prop}
+class RightTotal (r : α → β → Prop) where
+  total (b : β) : ∃ a : α, r a b
 
-variable (β) in
-lemma total [BiTransport r] [Total α β] (a : α) : ∃ b : β, r a b := Total.total β a
+variable (r : α → β → Prop)
 
-instance : Total α α where total a := ⟨a, rfl⟩
+local instance [i : LeftTotal r] : RightTotal (flip r) := ⟨i.total⟩
+local instance [i : RightTotal r] : LeftTotal (flip r) := ⟨i.total⟩
+
+lemma leftTotal [LeftTotal r] (a : α) : ∃ b : β, r a b := LeftTotal.total a
+lemma rightTotal [RightTotal r] (b : β) : ∃ a : α, r a b := RightTotal.total b
 
 variable {p : α → Prop} {q : β → Prop}
 
 @[transport]
-theorem forall_transport [BiTransport r] [Total α β]
+theorem forall_transport [LeftTotal r]
     (h : ∀ {a b}, r a b → q b → p a) :
     (∀ b, q b) → (∀ a, p a) :=
-  fun h' a ↦ (total β a).rec fun b hb ↦ h hb (h' b)
+  fun h' a ↦ (leftTotal r a).rec fun b hb ↦ h hb (h' b)
+
+@[transport low]
+theorem forall_transport' [RightTotal r] (h : ∀ {a b}, r a b → p a → q b) :
+    (∀ a, p a) → (∀ b, q b) :=
+  forall_transport (flip r) h
 
 @[transport]
-theorem forall_transport_eq [Transport r] [Total α β] [Total β α]
-    (h : ∀ {a b}, r a b → p a = q b) :
+theorem forall_transport_eq [LeftTotal r] [RightTotal r] (h : ∀ {a b}, r a b → p a = q b) :
     (∀ a, p a) = (∀ b, q b) :=
-  propext ⟨forall_transport (h · |>.mp), forall_transport (h · |>.mpr)⟩
+  propext ⟨forall_transport' r (h · |>.mp), forall_transport r (h · |>.mpr)⟩
 
 @[transport]
-theorem exists_transport [BiTransport r] [Total α β]
-    (h : ∀ {a b}, r a b → p a → q b) :
+theorem exists_transport [LeftTotal r] (h : ∀ {a b}, r a b → p a → q b) :
     Exists p → Exists q :=
-  fun ⟨a, ha⟩ ↦ (total β a).rec fun b hb ↦ ⟨b, h hb ha⟩
+  fun ⟨a, ha⟩ ↦ (leftTotal r a).rec fun b hb ↦ ⟨b, h hb ha⟩
+
+@[transport low]
+theorem exists_transport' [RightTotal r] (h : ∀ {a b}, r a b → q b → p a) :
+    Exists q → Exists p :=
+  exists_transport (flip r) h
 
 @[transport]
-theorem exists_transport_eq [Transport r] [Total α β] [Total β α]
-    (h : ∀ {a b}, r a b → p a = q b) :
+theorem exists_transport_eq [LeftTotal r] [RightTotal r] (h : ∀ {a b}, r a b → p a = q b) :
     Exists p = Exists q :=
-  propext ⟨exists_transport (h · |>.mp), exists_transport (h · |>.mpr)⟩
+  propext ⟨exists_transport r (h · |>.mp), exists_transport' r (h · |>.mpr)⟩
 
 end
 
 section
 
-class Unique (α β : Type*) {r : α → β → Prop} [BiTransport r] where
+class RightUnique (r : α → β → Prop) where
   unique {a b b'} : r a b → r a b' → b = b'
+
+class LeftUnique (r : α → β → Prop) where
+  unique {a a' b} : r a b → r a' b → a = a'
 
 variable {r : α → β → Prop} {a a' : α} {b b' : β}
 
-lemma rightUnique [BiTransport r] [Unique α β] (h : r a b) (h' : r a b') : b = b' :=
-  Unique.unique h h'
+local instance [i : LeftUnique r] : RightUnique (flip r) := ⟨i.unique⟩
+local instance [i : RightUnique r] : LeftUnique (flip r) := ⟨i.unique⟩
 
-lemma leftUnique [BiTransport r] [Unique β α] (h : r a b) (h' : r a' b) : a = a' :=
-  Unique.unique (r := fun x y ↦ r y x) h h'
+lemma rightUnique [RightUnique r] (h : r a b) (h' : r a b') : b = b' :=
+  RightUnique.unique h h'
 
-instance : Unique α α where unique h h' := h.symm.trans h'
+lemma leftUnique [LeftUnique r] (h : r a b) (h' : r a' b) : a = a' :=
+  RightUnique.unique (r := flip r) h h'
 
 @[transport]
-theorem eq_transport [BiTransport r] [Unique α β]
+theorem eq_transport [RightUnique r]
     (h : r a b) (h' : r a' b') : a = a' → b = b' := by
   rintro rfl
   exact rightUnique h h'
 
 @[transport]
-theorem eq_transport_eq [Transport r] [Unique α β] [Unique β α]
-    (h : r a b) (h' : r a' b') : (a = a') = (b = b') :=
-  propext ⟨eq_transport h h', eq_transport h h'⟩
+theorem eq_transport' [LeftUnique r]
+    (h : r a b) (h' : r a' b') : b = b' → a = a' :=
+  eq_transport (r := flip r) h h'
 
 @[transport]
-theorem ne_transport [BiTransport r] [Unique α β]
+theorem eq_transport_eq [RightUnique r] [LeftUnique r]
+    (h : r a b) (h' : r a' b') : (a = a') = (b = b') :=
+  propext ⟨eq_transport h h', eq_transport' h h'⟩
+
+@[transport]
+theorem ne_transport [RightUnique r]
     (h : r a b) (h' : r a' b') : b ≠ b' → a ≠ a' := by
   contrapose
   exact eq_transport h h'
 
 @[transport]
-theorem ne_transport_eq [Transport r] [Unique α β] [Unique β α]
+theorem ne_transport' [LeftUnique r]
+    (h : r a b) (h' : r a' b') : a ≠ a' → b ≠ b' :=
+  ne_transport (r := flip r) h h'
+
+@[transport]
+theorem ne_transport_eq [RightUnique r] [LeftUnique r]
     (h : r a b) (h' : r a' b') : (a ≠ a') = (b ≠ b') :=
   (eq_transport_eq h h').to_iff.ne.eq
 
 end
 
-variable (α β : Type*) {r : α → β → Prop} {map : α → β}
+class MapTransport (r : α → β → Prop) (map : outParam <| α → β)
 
-instance (priority := high) : MapTransport (@Eq α) (·) where
-
-instance [MapTransport r map] : Transport r where
+variable (r : α → β → Prop) {map : α → β}
 
 class SemiMapClass [MapTransport r map] where
   rel_map (a) : r a (map a)
 
 variable [MapTransport r map]
 
-class MapClass extends SemiMapClass α β where
+class MapClass extends SemiMapClass r where
   map_eq_of_rel {a b} : r a b → map a = b
 
-class InjMapClass extends MapClass α β where
+class InjMapClass extends MapClass r where
   map_injective : Function.Injective map
 
-class SurjMapClass extends MapClass α β where
+class SurjMapClass extends MapClass r where
   map_surjective : Function.Surjective map
 
-class EquivMapClass extends InjMapClass α β, SurjMapClass α β
+class EquivMapClass extends InjMapClass r, SurjMapClass r
 
-variable {α β}
+lemma rel_map [SemiMapClass r] (a) : r a (map a) := SemiMapClass.rel_map a
+lemma map_eq_of_rel [MapClass r] {a b} : r a b → map a = b := MapClass.map_eq_of_rel
+lemma map_injective [InjMapClass r] : Function.Injective map := InjMapClass.map_injective r
+lemma map_surjective [SurjMapClass r] : Function.Surjective map := SurjMapClass.map_surjective r
+lemma map_bijective [EquivMapClass r] : Function.Bijective map :=
+  ⟨map_injective r, map_surjective r⟩
 
-lemma rel_map [SemiMapClass α β] (a) : r a (map a) := SemiMapClass.rel_map a
-lemma map_eq_of_rel [MapClass α β] {a b} : r a b → map a = b := MapClass.map_eq_of_rel
-lemma map_injective [InjMapClass α β] : Function.Injective map := InjMapClass.map_injective r
-variable (α) in
-lemma map_surjective [SurjMapClass α β] : Function.Surjective map := SurjMapClass.map_surjective r
-lemma map_bijective [EquivMapClass α β] : Function.Bijective map :=
-  ⟨map_injective, map_surjective α⟩
+instance [SemiMapClass r] : LeftTotal r where
+  total a := ⟨map a, rel_map r a⟩
 
-instance [SemiMapClass α β] : Total α β where
-  total a := ⟨map a, rel_map a⟩
+instance [SurjMapClass r] : RightTotal r where
+  total b := by rcases map_surjective r b with ⟨b, rfl⟩; use b, rel_map r b
 
-instance [SurjMapClass α β] : Total β α where
-  total b := by rcases map_surjective α b with ⟨b, rfl⟩; use b, rel_map b
+instance [MapClass r] : RightUnique r where
+  unique h h' := by rw [← map_eq_of_rel r h, ← map_eq_of_rel r h']
 
-instance [MapClass α β] : Unique α β where
-  unique h h' := by rw [← map_eq_of_rel h, ← map_eq_of_rel h']
+instance [InjMapClass r] : LeftUnique r where
+  unique h h' := map_injective r <| (map_eq_of_rel r h).trans (map_eq_of_rel r h').symm
 
-instance [InjMapClass α β] : Unique β α where
-  unique h h' := map_injective <| (map_eq_of_rel h).trans (map_eq_of_rel h').symm
-
-instance [MapClass α β] [Total β α] : SurjMapClass α β where
+instance [MapClass r] [RightTotal r] : SurjMapClass r where
   map_surjective b := by
-    rcases total α b with ⟨a, ha⟩
-    use a, map_eq_of_rel ha
+    rcases rightTotal r b with ⟨a, ha⟩
+    use a, map_eq_of_rel r ha
 
-instance [MapClass α β] [Unique β α] : InjMapClass α β where
+instance [MapClass r] [LeftUnique r] : InjMapClass r where
   map_injective a a' h :=
-    leftUnique (b := map a) (rel_map a) (h ▸ rel_map a')
+    leftUnique (b := map a) (rel_map r a) (h ▸ rel_map r a')
 
-instance : EquivMapClass α α where
+end Class
+
+section Eq
+
+variable (α : Type*)
+
+instance : MapTransport (@Eq α) (·) where
+
+instance : EquivMapClass (@Eq α) where
   rel_map _ := rfl
   map_eq_of_rel := id
   map_injective := Function.injective_id
   map_surjective := Function.surjective_id
 
-
-end Class
+end Eq
 
 namespace MapRel
 
-variable {α β : Type*} {map : α → β} [MapTransport (MapRel map) map]
+variable {α β : Type*} {map : α → β}
 
-instance : MapClass α β where
+instance : MapTransport (MapRel map) map where
+
+instance : MapClass (MapRel map) where
   rel_map _ := by rfl
   map_eq_of_rel := by exact id
 
-theorem instInjMapClass (h : Function.Injective map) : InjMapClass α β :=
+theorem instInjMapClass (h : Function.Injective map) : InjMapClass (MapRel map) :=
   ⟨by exact h⟩
 
-theorem instSurjMapClass (h : Function.Surjective map) : SurjMapClass α β :=
+theorem instSurjMapClass (h : Function.Surjective map) : SurjMapClass (MapRel map) :=
   ⟨by exact h⟩
 
 end MapRel
@@ -210,30 +230,29 @@ section Option
 
 variable {α β α' β' : Type*}
 
+@[transport]
 inductive OptionRel (r : α → β → Prop) : Option α → Option β → Prop where
   | none : OptionRel r none none
   | some {a b} : r a b → OptionRel r (some a) (some b)
 
 variable (r : α → β → Prop)
 
-instance [Transport r] : Transport (OptionRel r) where
-
-instance [Transport r] [Total α β] : Total (Option α) (Option β) where
+instance [LeftTotal r] : LeftTotal (OptionRel r) where
   total
     | none => ⟨none, .none⟩
-    | some a => (total β a).rec fun b hb ↦ ⟨some b, .some hb⟩
+    | some a => (leftTotal r a).rec fun b hb ↦ ⟨some b, .some hb⟩
 
-instance (r : β → α → Prop) [Transport r] [Total α β] : Total (Option α) (Option β) where
+instance [RightTotal r] : RightTotal (OptionRel r) where
   total
     | none => ⟨none, .none⟩
-    | some a => (total β a).rec fun b hb ↦ ⟨some b, .some hb⟩
+    | some a => (rightTotal r a).rec fun b hb ↦ ⟨some b, .some hb⟩
 
-instance [Transport r] [Unique α β] : Unique (Option α) (Option β) where
+instance [RightUnique r] : RightUnique (OptionRel r) where
   unique
     | .none, .none => congr(none)
     | .some h₁, .some h₂ => congr(some $(rightUnique h₁ h₂))
 
-instance (r : β → α → Prop) [Transport r] [Unique α β] : Unique (Option α) (Option β) where
+instance [LeftUnique r] : LeftUnique (OptionRel r) where
   unique
     | .none, .none => congr(none)
     | .some h₁, .some h₂ => congr(some $(leftUnique h₁ h₂))
@@ -242,12 +261,12 @@ instance (r : β → α → Prop) [Transport r] [Unique α β] : Unique (Option 
 
 -- instance [MapTransport r map] : MapTransport (OptionRel r) (.map map) where
 
--- instance [MapTransport r map] [SemiMapClass α β] : SemiMapClass (Option α) (Option β) where
+-- instance [MapTransport r map] [SemiMapClass r] : SemiMapClass (Option α) (Option β) where
 --   rel_map
 --     | none => .none
 --     | some a => .some (rel_map a)
 
--- instance [MapTransport r map] [MapClass α β] : MapClass (Option α) (Option β) where
+-- instance [MapTransport r map] [MapClass r] : MapClass (Option α) (Option β) where
 --   map_eq_of_rel
 --     | .none => congr(none)
 --     | .some h => congr(some $(map_eq_of_rel h))
@@ -267,34 +286,29 @@ section Prod
 
 variable {α α' β β' : Type*}
 
+@[transport]
 structure ProdRel (r : α → β → Prop) (r' : α' → β' → Prop) (a : α × α') (b : β × β') : Prop where
   left : r a.1 b.1
   right : r' a.2 b.2
 
 variable (r : α → β → Prop) (r' : α' → β' → Prop)
 
-instance [Transport r] [Transport r'] : Transport (ProdRel r r') where
-
-instance [Transport r] [Transport r']
-    [Total α β] [Total α' β'] : Total (α × α') (β × β') where
+instance [LeftTotal r] [LeftTotal r'] : LeftTotal (ProdRel r r') where
   total := fun (a, a') => by
-    rcases total β a with ⟨b, hb⟩
-    rcases total β' a' with ⟨b', hb'⟩
+    rcases leftTotal r a with ⟨b, hb⟩
+    rcases leftTotal r' a' with ⟨b', hb'⟩
     exact ⟨(b, b'), ⟨hb, hb'⟩⟩
 
-instance (r : β → α → Prop) (r' : β' → α' → Prop) [Transport r] [Transport r']
-    [Total α β] [Total α' β'] : Total (α × α') (β × β') where
+instance [RightTotal r] [RightTotal r'] : RightTotal (ProdRel r r') where
   total := fun (a, a') => by
-    rcases total β a with ⟨b, hb⟩
-    rcases total β' a' with ⟨b', hb'⟩
+    rcases rightTotal r a with ⟨b, hb⟩
+    rcases rightTotal r' a' with ⟨b', hb'⟩
     exact ⟨(b, b'), ⟨hb, hb'⟩⟩
 
-instance [Transport r] [Transport r']
-    [Unique α β] [Unique α' β'] : Unique (α × α') (β × β') where
+instance [RightUnique r] [RightUnique r'] : RightUnique (ProdRel r r') where
   unique := fun ⟨h₁, h₁'⟩ ⟨h₂, h₂'⟩ => congr(($(rightUnique h₁ h₂), $(rightUnique h₁' h₂')))
 
-instance (r : β → α → Prop) (r' : β' → α' → Prop) [Transport r] [Transport r']
-    [Unique α β] [Unique α' β'] : Unique (α × α') (β × β') where
+instance [LeftUnique r] [LeftUnique r'] : LeftUnique (ProdRel r r') where
   unique := fun ⟨h₁, h₁'⟩ ⟨h₂, h₂'⟩ => congr(($(leftUnique h₁ h₂), $(leftUnique h₁' h₂')))
 
 -- variable {map : α → β} {map' : α' → β'}
@@ -304,81 +318,76 @@ instance (r : β → α → Prop) (r' : β' → α' → Prop) [Transport r] [Tra
 
 -- variable [MapTransport r map] [MapTransport r' map']
 
--- instance [SemiMapClass α β] [SemiMapClass α' β'] : SemiMapClass (α × α') (β × β') where
+-- instance [SemiMapClass r] [SemiMapClass α' β'] : SemiMapClass (α × α') (β × β') where
 --   rel_map | (a, b) => ⟨rel_map a, rel_map b⟩
 
--- instance [MapClass α β] [MapClass α' β'] : MapClass (α × α') (β × β') where
+-- instance [MapClass r] [MapClass α' β'] : MapClass (α × α') (β × β') where
 --   map_eq_of_rel | ⟨h, h'⟩ => congr(⟨$(map_eq_of_rel h), $(map_eq_of_rel h')⟩)
 
 end Prod
 
 section Function
 
+attribute [transport] FunctionRel
+
 variable {α β : Type*} {γ : β → Type*} {δ : α → Type*}
-variable (r : α → β → Prop) (r' : ∀ {a b}, γ b → δ a → Prop)
+variable (r : α → β → Prop) (r' : ∀ {a b}, r a b → γ b → δ a → Prop)
 
-instance [Transport r] [∀ a b, Transport (@r' a b)] : Transport (FunctionRel r @r') where
-
-instance [Transport r] [∀ a b, Transport (@r' a b)]
-    [Unique α β] [Total α β] [∀ a b, Total (γ b) (δ a)] :
-    Total (Π b, γ b) (Π a, δ a) where
+instance [RightUnique r] [LeftTotal r] [∀ a b (h : r a b), LeftTotal (r' h)] :
+    LeftTotal (FunctionRel r r') where
   total g := by
-    choose x hx using fun a : α ↦ total β a
-    choose y hy using fun {a b} ↦ fun c : γ b ↦ total (δ a) c
+    choose x hx using fun a : α ↦ leftTotal r a
+    choose y hy using fun {a} ↦ fun c : γ (x a) ↦ leftTotal (r' (hx a)) c
     use (y <| g <| x ·)
     intro a b h
     dsimp
-    rw [rightUnique (hx a) h]
-    exact hy (g b)
+    obtain rfl := rightUnique (hx a) h
+    exact hy (g (x a))
 
-instance (r : β → α → Prop) (r' : ∀ {a b}, δ a → γ b → Prop)
-    [Transport r] [∀ a b, Transport (@r' a b)]
-    [Unique α β] [Total α β] [∀ a b, Total (γ b) (δ a)] :
-    Total (Π b, γ b) (Π a, δ a) where
+instance [LeftUnique r] [RightTotal r] [∀ a b (h : r a b), RightTotal (r' h)] :
+    RightTotal (FunctionRel r r') where
   total g := by
-    choose x hx using fun a : α ↦ total β a
-    choose y hy using fun {a b} ↦ fun c : γ b ↦ total (δ a) c
+    choose x hx using fun b : β ↦ rightTotal r b
+    choose y hy using fun {b} ↦ fun d : δ (x b) ↦ rightTotal (r' (hx b)) d
     use (y <| g <| x ·)
-    intro b a h
+    intro a b h
     dsimp
-    rw [leftUnique (hx a) h]
-    exact hy (g b)
+    obtain rfl := leftUnique (hx b) h
+    exact hy (g (x b))
 
-instance [Transport r] [∀ a b, Transport (@r' a b)]
-    [Total α β] [∀ a b, Unique (γ b) (δ a)] :
-    Unique (Π b, γ b) (Π a, δ a) where
+instance [LeftTotal r] [∀ a b (h : r a b), RightUnique (r' h)] :
+    RightUnique (FunctionRel r r') where
   unique h h' := by
     ext a
-    rcases total β a with ⟨b, hb⟩
+    rcases leftTotal r a with ⟨b, hb⟩
     apply rightUnique (h hb) (h' hb)
 
-instance (r : β → α → Prop) (r' : ∀ {a b}, δ a → γ b → Prop)
-    [Transport r] [∀ a b, Transport (@r' a b)]
-    [Total α β] [∀ a b, Unique (γ b) (δ a)] :
-    Unique (Π b, γ b) (Π a, δ a) where
+instance [RightTotal r] [∀ a b (h : r a b), LeftUnique (r' h)] :
+    LeftUnique (FunctionRel r r') where
   unique h h' := by
     ext a
-    rcases total β a with ⟨b, hb⟩
+    rcases rightTotal r a with ⟨b, hb⟩
     apply leftUnique (h hb) (h' hb)
 
 variable {map : α → β} {map' : ∀ {a b}, γ b → δ a}
 
-instance [MapTransport r map] [∀ a b, MapTransport (@r' a b) map'] :
+instance [MapTransport r map] [∀ a b (h : r a b), MapTransport (r' h) map'] :
     MapTransport (FunctionRel r @r') (fun f a ↦ map' (f (map a))) where
 
-variable [MapTransport r map] [∀ a b, MapTransport (@r' a b) map']
+variable [MapTransport r map] [∀ a b (h : r a b), MapTransport (r' h) map']
 
-instance [MapClass α β] [∀ a b, SemiMapClass (γ b) (δ a)] : SemiMapClass (Π b, γ b) (Π a, δ a) where
+instance [MapClass r] [∀ a b (h : r a b), SemiMapClass (r' h)] :
+    SemiMapClass (FunctionRel r r') where
   rel_map g := by
     intro a b h
     dsimp
-    rw [map_eq_of_rel h]
+    rw [map_eq_of_rel r h]
     apply rel_map
 
-instance [MapClass α β] [∀ a b, MapClass (γ b) (δ a)] : MapClass (Π b, γ b) (Π a, δ a) where
+instance [MapClass r] [∀ a b (h : r a b), MapClass (r' h)] : MapClass (FunctionRel r r') where
   map_eq_of_rel {g f} h := by
     ext a
-    exact map_eq_of_rel (h (rel_map a))
+    exact map_eq_of_rel (r' (rel_map r a)) (h (rel_map r a))
 
 end Function
 
@@ -386,39 +395,38 @@ section Set
 
 variable {α β : Type*}
 
+@[transport]
 def SetRel (r : α → β → Prop) (t : Set β) (s : Set α) : Prop :=
   ∀ {a b}, r a b → (a ∈ s) = (b ∈ t)
 
 variable (r : α → β → Prop)
 
-instance [Transport r] : Transport (SetRel r) where
-
-instance [Transport r] [Unique α β] [Total α β] : Total (Set β) (Set α) where
+instance [RightUnique r] [LeftTotal r] : LeftTotal (SetRel r) where
   total s := by
-    choose f hf using fun a : α ↦ total β a
+    choose f hf using fun a : α ↦ leftTotal r a
     use {x | f x ∈ s}
     intro a b h
     exact congr($(rightUnique (hf a) h) ∈ s)
 
-instance (r : β → α → Prop) [Transport r] [Unique α β] [Total α β] : Total (Set β) (Set α) where
+instance [LeftUnique r] [RightTotal r] : RightTotal (SetRel r) where
   total s := by
-    choose f hf using fun a : α ↦ total β a
+    choose f hf using fun b : β ↦ rightTotal r b
     use {x | f x ∈ s}
     intro b a h
     symm
     exact congr($(leftUnique (hf a) h) ∈ s)
 
-instance [Transport r] [Total α β] : Unique (Set β) (Set α) where
+instance [LeftTotal r] : RightUnique (SetRel r) where
   unique h h' := by
     ext a
-    rcases total β a with ⟨b, hb⟩
+    rcases leftTotal r a with ⟨b, hb⟩
     rw [h hb, h' hb]
 
-instance (r : β → α → Prop) [Transport r] [Total α β] : Unique (Set β) (Set α) where
+instance [RightTotal r] : LeftUnique (SetRel r) where
   unique h h' := by
-    ext a
-    rcases total β a with ⟨b, hb⟩
-    rw [← h hb, h' hb]
+    ext b
+    rcases rightTotal r b with ⟨a, ha⟩
+    rw [← h ha, h' ha]
 
 -- variable {map : α → β}
 
@@ -426,7 +434,7 @@ instance (r : β → α → Prop) [Transport r] [Total α β] : Unique (Set β) 
 
 -- variable [MapTransport r map]
 
--- instance [MapClass α β] : MapClass (Set β) (Set α) where
+-- instance [MapClass r] : MapClass (Set β) (Set α) where
 --   rel_map s := by
 --     intro a b h
 --     exact congr($(map_eq_of_rel h) ∈ s)
@@ -434,13 +442,13 @@ instance (r : β → α → Prop) [Transport r] [Total α β] : Unique (Set β) 
 --     ext a
 --     exact (h (rel_map a)).symm.to_iff
 
--- instance [SurjMapClass α β] : InjMapClass (Set β) (Set α) where
+-- instance [SurjMapClass r] : InjMapClass (Set β) (Set α) where
 --   map_injective g g' h := by
 --     ext b
 --     obtain ⟨a, rfl⟩ := map_surjective α b
 --     exact congr(a ∈ $h)
 
--- instance [EquivMapClass α β] : EquivMapClass (Set β) (Set α) where
+-- instance [EquivMapClass r] : EquivMapClass (Set β) (Set α) where
 --   map_surjective s := by
 --     use {x | (Equiv.ofBijective map map_bijective).symm x ∈ s}
 --     ext a
@@ -462,51 +470,49 @@ theorem Set.transport_mem' (hs : SetRel r s' s) {a a'} (ha : r a a') :
 @[transport] theorem Set.transport_univ : SetRel r .univ .univ := by simp [SetRel]
 @[transport] theorem Set.transport_empty : SetRel r ∅ ∅ := by simp [SetRel]
 
-@[transport] theorem Set.transport_singleton [Transport r] [Unique α β] [Unique β α]
+@[transport] theorem Set.transport_singleton [RightUnique r] [LeftUnique r]
     {a : α} {b : β} (h : r a b) : SetRel r {b} {a} := by
   intro _ _ h'
   simp only [Set.mem_singleton_iff]
-  transport [h, h', α to β]
+  transport [h, h', → r]
   rfl
 
 @[transport]
-theorem Set.transport_subset [Transport r] [Total α β] [Total β α]
+theorem Set.transport_subset [LeftTotal r] [RightTotal r]
     (hs : SetRel r s' s) (ht : SetRel r t' t) :
     (s ⊆ t) = (s' ⊆ t') := by
   simp_rw [Set.subset_def]
-  transport [hs, ht, α to β]
+  transport [hs, ht, → r]
   rfl
 
 @[transport]
-theorem Set.transport_ssubset [Transport r] [Total α β] [Total β α]
+theorem Set.transport_ssubset [LeftTotal r] [RightTotal r]
     (hs : SetRel r s' s) (ht : SetRel r t' t) :
     (s ⊂ t) = (s' ⊂ t') := by
   simp_rw [Set.ssubset_def]
-  transport [hs, ht, β to α]
+  transport [hs, ht, → r]
   rfl
 
 section
-variable {ι ι' : Type*} {r' : ι → ι' → Prop} [Transport r'] (s : ι → Set α) (t : ι' → Set β)
+variable {ι ι' : Type*} {r' : ι → ι' → Prop} (s : ι → Set α) (t : ι' → Set β)
 
 @[transport]
-theorem Set.transport_iUnion [Total ι ι'] [Total ι' ι]
+theorem Set.transport_iUnion [LeftTotal r'] [RightTotal r']
     (h : ∀ i i', r' i i' → SetRel r (t i') (s i)) :
     SetRel r (Set.iUnion t) (Set.iUnion s) := by
   intro a b hr
   push _ ∈ _
-  have : Transport r := ⟨⟩
-  transport [h, hr, α to β, ι to ι']
+  transport [h, hr, → r, → r']
   rfl
 
 @[transport]
-theorem Set.transport_iInter [Total ι ι'] [Total ι' ι]
+theorem Set.transport_iInter [LeftTotal r'] [RightTotal r']
     (h : ∀ i i', r' i i' → SetRel r (t i') (s i)) :
     SetRel r (Set.iInter t) (Set.iInter s) := by
   intro a b hr
   push _ ∈ _
-  apply forall_transport_eq
-  intro i i' hi
-  exact h i i' hi hr
+  transport [h, hr, → r, → r']
+  rfl
 
 end
 
@@ -518,8 +524,7 @@ theorem Set.transport_iUnion'
     SetRel r (Set.iUnion t) (Set.iUnion s) := by
   intro a b hr
   push _ ∈ _
-  have : Transport r := ⟨⟩
-  transport [h, hr, α to β]
+  transport [h, hr, → r]
   rfl
 
 @[transport low]
@@ -528,21 +533,23 @@ theorem Set.transport_iInter'
     SetRel r (Set.iInter t) (Set.iInter s) := by
   intro a b hr
   push _ ∈ _
-  have : Transport r := ⟨⟩
-  transport [h, hr, α to β]
+  transport [h, hr, → r]
   rfl
 
 end Set
 
 section Finset
 
+instance {A B : Type*} [SetLike A B] :
+  MapTransport (@MapRel A (Set B) SetLike.coe) SetLike.coe where
+
+instance {A B : Type*} [SetLike A B] : InjMapClass (@MapRel A (Set B) SetLike.coe) :=
+  MapRel.instInjMapClass SetLike.coe_injective
+
 variable {α : Type*}
 
+@[transport]
 abbrev FinsetToSetRel : Finset α → Set α → Prop := MapRel (↑)
-
--- variable {α β : Type*} (r : α → β → Prop)
-
--- abbrev FinsetToSetRel : Finset β → Set α → Prop := (SetRel r ↑· ·)
 
 variable {s t : Finset α} {s' t' : Set α}
 
@@ -588,10 +595,6 @@ theorem Finset.transport_inter (hs : FinsetToSetRel s s') (ht : FinsetToSetRel t
 
 -- TODO: Nonempty, membership, cardinality.
 
-instance : MapTransport (@FinsetToSetRel α) (↑) where
-
-instance : InjMapClass (Finset α) (Set α) := MapRel.instInjMapClass Finset.coe_injective
-
 end Finset
 
 
@@ -601,12 +604,12 @@ end Finset
 variable {α : Type*} (s t : Finset α) (s' t' : Set α)
 
 example [DecidableEq α] (a : α) : insert a (∅ : Finset α) = {a} := by
-  transport [Finset α to Set α]
+  transport [FinsetToSetRel]
   guard_target = insert a (∅ : Set α) = {a}
   rw [← Set.singleton_def]
 
 example [DecidableEq α] (a : α) : ∀ s : Finset α, s ∪ {a} = insert a s := by
-  transport [Finset α to Set α]
+  transport [FinsetToSetRel]
   intro s
   exact Set.union_singleton
 
@@ -620,7 +623,7 @@ a : α
 -/
 #guard_msgs(trace) in
 example [DecidableEq α] (a : α) : ¬ ∀ s : Set α, insert a ∅ = s := by
-  transport [Set α to Finset α]
+  transport [FinsetToSetRel]
   trace_state
   sorry
 
@@ -636,15 +639,15 @@ s : Option (Set α)
 -/
 #guard_msgs(trace) in
 example [DecidableEq α] (a : α) (s : Option (Finset α)) : s.elim {a} (fun s ↦ s.erase a) = ∅ := by
-  transport [Finset α to Set α] generalizing s
+  transport [FinsetToSetRel] generalizing s
   trace_state
   sorry
 
 -- In this example, transport cannot eliminate all occurrences of `s`, so it should fail.
-/-- error: transport made no progress on `p s✝` -/
+/-- error: transport made no progress on `∀ (s : Finset α), p s ∧ s = s` -/
 #guard_msgs(error) in
 example (p : Finset α → Prop) : ∀ s, p s ∧ s = s := by
-  transport [Finset α to Set α]
+  transport [FinsetToSetRel]
 
 
 
@@ -655,18 +658,18 @@ def MyCompact (X : Type) [TopologicalSpace X] :=
 variable {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
 
 @[transport]
-theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [MapTransport r map] [SemiMapClass X Y]
+theorem transport_IsOpen {r : X → Y → Prop} {map : X → Y} [MapTransport r map] [SemiMapClass r]
     (hf : Continuous map) {s : Set X} {t : Set Y} (h : SetRel r t s) : IsOpen t → IsOpen s := by
   convert IsOpen.preimage hf
   ext x
-  exact (h (rel_map x)).to_iff
+  exact (h (rel_map r x)).to_iff
 
 -- Yay, this now works!!!
 example (f : X → Y) (hf : f.Surjective) (hf_cont : Continuous f)
     (hX : MyCompact X) : MyCompact Y := by
   unfold MyCompact
-  have : MapTransport (MapRel f) f := ⟨⟩; have := MapRel.instSurjMapClass hf
-  transport [Y to X]
+  have := MapRel.instSurjMapClass hf
+  transport [MapRel f]
   exact hX
 
 end TransportTest
