@@ -35,7 +35,12 @@ hp : p
 example {p : Prop} (hp : p) : p := by
   fail_if_progress simp [hp]
 
+set_option linter.unusedTactic false
+
 example (a : Nat) : 2 + 0 = 4 := by
-  simp
+  fail_if_not_idempotent simp
   fail_if_progress norm_cast
-  sorry
+
+example : 1 + 1 = 2 := by
+  -- simp; fail_if_progress simp would error
+  fail_if_not_idempotent simp

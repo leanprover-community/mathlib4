@@ -89,4 +89,16 @@ elab_rules : tactic
   let l ← runAndFailIfProgress goal (evalTactic tacs)
   replaceMainGoal l
 
+/-- `fail_if_not_idempotent tacs` evaluates `tacs`, then evaluates `tacs` again on any remaining
+goals, and fails if progress is made in the second run (on the main goal
+or the local context at reducible transparency). -/
+syntax (name := failIfNotIdempotent) "fail_if_not_idempotent " tacticSeq : tactic
+
+elab_rules : tactic
+| `(tactic| fail_if_not_idempotent $tacs) => do
+  let goal ← getMainGoal
+  let middle ← run goal (evalTactic tacs)
+  for g in middle do
+    let _ ← runAndFailIfProgress g (evalTactic tacs)
+
 end Mathlib.Tactic
