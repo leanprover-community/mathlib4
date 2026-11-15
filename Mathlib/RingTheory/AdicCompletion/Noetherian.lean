@@ -122,7 +122,7 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
     apply Ideal.mem_map_of_mem
     have : g ⟨x, hx⟩ =
       ∑ j, ⟨monomial (deg ⟨⟨x, hx⟩, j⟩) (coeff ⟨⟨x, hx⟩, j⟩), monomial_mem ⟨⟨x, hx⟩, j⟩⟩ := by
-      apply SetCoe.ext
+      ext1
       simp only [Finset.univ_eq_attach, AddSubmonoidClass.coe_finsetSum, deg, coeff]
       rw [(g ⟨x, hx⟩).1.support.sum_attach (fun n ↦ (monomial n) ((g ⟨x, hx⟩).1.coeff n))]
       exact (sum_monomial_eq (g ⟨x, hx⟩).1).symm
