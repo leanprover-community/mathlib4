@@ -54,10 +54,10 @@ lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m
   congr! 2 with n hn
   apply dvd_iff_dvd_of_dvd_sub
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
-  norm_cast; fail_if_progress norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent fail_if_not_idempotent norm_cast
   simp_rw [Int.floor_sub_intCast, sub_sub_cancel_left]
   convert! condition_two_mul_int (-m) n hn
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   rw [Int.floor_intCast]
   simp
 

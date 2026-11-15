@@ -348,7 +348,7 @@ theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : 
     refine (hf' ?_).elim
     rw [EventuallyEq.deriv_eq h, deriv_const]
   | coe r =>
-    norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast
     obtain ⟨F, hFa, hFne, hfF⟩ := (analyticOrderAt_eq_natCast (by fun_prop)).mp h
     apply eq_of_ge_of_le
     · by_contra! hr

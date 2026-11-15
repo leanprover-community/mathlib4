@@ -160,11 +160,11 @@ theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
   cases k with
   | ofNat k =>
     rw [Int.ofNat_eq_natCast]
-    norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast
     simp [pow_add]
   | negSucc k =>
     simp_rw [Int.negSucc_eq, show 2 * -(↑k + 1) + (1 : ℤ) = - (1 + k*2) by grind, _root_.zpow_neg]
-    norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast
     simp [pow_add]
 
 theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]

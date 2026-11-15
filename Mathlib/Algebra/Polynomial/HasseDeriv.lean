@@ -143,7 +143,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
     add_right_comm n 1 k, ← cast_succ]
   rw [← (cast_commute (n + 1) (f.coeff (n + k + 1))).eq]
   simp only [← mul_assoc]
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   congr 2
   rw [mul_comm (k + 1) _, mul_assoc, mul_assoc]
   congr 1

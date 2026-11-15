@@ -90,7 +90,7 @@ abbrev seq (b x : ℝ) (m : ℕ) := ⌊b ^ m * x + 3 / 2⌋ / b ^ m
 theorem seq_mul_pow {b : ℝ} (hb : b ≠ 0) (x : ℝ) (m : ℕ) :
     seq b x m * b ^ m = ⌊b ^ m * x + 2⁻¹⌋ + 1 := by
   rw [seq, div_mul_cancel₀ _ (pow_ne_zero m hb)]
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← Int.floor_add_one, add_assoc]
   norm_num
 
@@ -187,7 +187,7 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
         ring_nf
       _ = ((-1) ^ b ^ n) ^ (⌊b ^ m * x + 2⁻¹⌋) * (-1) ^ b ^ n := by
         rw [cos_int_mul_pi, mul_add_one, zpow_add₀ (by simp), zpow_mul]
-        norm_cast; fail_if_progress norm_cast
+        fail_if_not_idempotent norm_cast
       _ = _ := by
         simp [Odd.neg_one_pow (show Odd (b ^ n) from hb.pow)]
   -- Show that the second cos in each term is always ±cos(...)
@@ -201,7 +201,7 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
       _ = ((-1) ^ b ^ n) ^ (⌊b ^ m * x + 2⁻¹⌋) *
           cos (b ^ n * (b ^ m * x - ⌊b ^ m * x + 2⁻¹⌋) * π) := by
         rw [cos_add_int_mul_pi, zpow_mul]
-        norm_cast; fail_if_progress norm_cast
+        fail_if_not_idempotent norm_cast
       _ = _ := by
         simp [Odd.neg_one_pow (show Odd (b ^ n) from hb.pow)]
   -- Show that all terms have the same sign, and the first term agrees with the one we previously

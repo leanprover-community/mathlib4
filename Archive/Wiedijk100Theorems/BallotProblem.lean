@@ -182,7 +182,7 @@ theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p 
     rw [counted_succ_succ, measure_union (disjoint_bits _ _) list_int_measurableSet,
       count_injective_image List.cons_injective, count_countedSequence _ _,
       count_injective_image List.cons_injective, count_countedSequence _ _]
-    norm_cast; fail_if_progress norm_cast; fail_if_progress norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent fail_if_not_idempotent norm_cast; fail_if_progress norm_cast
     rw [add_assoc, add_comm 1 q, ← Nat.choose_succ_succ, Nat.succ_eq_add_one, add_right_comm]
 
 theorem first_vote_pos :
@@ -216,7 +216,7 @@ theorem first_vote_pos :
         cond_apply list_int_measurableSet, hint, count_injective_image List.cons_injective,
         count_countedSequence, count_countedSequence, one_mul, zero_mul, add_zero,
         Nat.cast_add, Nat.cast_one, mul_comm, ← div_eq_mul_inv, ENNReal.div_eq_div_iff]
-      · norm_cast; fail_if_progress norm_cast
+      · fail_if_not_idempotent norm_cast
         rw [mul_comm _ (p + 1), add_right_comm, Nat.add_one_mul_choose_eq,
           mul_comm]
       all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le).ne']
@@ -333,11 +333,11 @@ theorem ballot_problem' :
         assumption_mod_cast
       have h₅ : (p + 1 : ℝ) + ↑q ≠ (0 : ℝ) := by
         apply ne_of_gt
-        norm_cast; fail_if_progress norm_cast
+        fail_if_not_idempotent norm_cast
         linarith
       have h₆ : ↑p + (q + 1 : ℝ) ≠ (0 : ℝ) := by
         apply ne_of_gt
-        norm_cast; fail_if_progress norm_cast
+        fail_if_not_idempotent norm_cast
         linarith
       simp [field, h₄, h₅, h₆] at *
       ring

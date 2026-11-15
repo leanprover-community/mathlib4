@@ -246,7 +246,7 @@ theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i ∈ rang
     ∑ i ∈ range n, x ^ i / i ! ≤ lim (cauSeqRe (exp' x)) := by
       refine le_lim (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
       simp only [const_apply, exp', cauSeqRe_apply, mk_apply, re_sum, div_natCast_re]
-      norm_cast; fail_if_progress norm_cast
+      fail_if_not_idempotent norm_cast
       gcongr
     _ = exp x := by rw [exp, Complex.exp, lim_re]
 
@@ -513,7 +513,7 @@ nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
     |exp x - ∑ m ∈ range n, x ^ m / m.factorial| ≤ |x| ^ n * (n.succ / (n.factorial * n)) := by
   have hxc : ‖(x : ℂ)‖ ≤ 1 := mod_cast hx
   convert exp_bound hxc hn <;>
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :
     Real.exp x ≤ (∑ m ∈ Finset.range n, x ^ m / m.factorial) +

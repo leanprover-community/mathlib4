@@ -109,7 +109,7 @@ theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
 @[simp]
 theorem round_sub_intCast (x : α) (y : ℤ) : round (x - y) = round x - y := by
   rw [sub_eq_add_neg]
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   rw [round_add_intCast, sub_eq_add_neg]
 
 @[simp]
@@ -166,7 +166,7 @@ theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
     conv_rhs => rw [← fract_add_floor x]
     rw [add_sub_assoc, add_comm, neg_add, neg_sub, le_add_neg_iff_add_le, sub_add_cancel,
       le_sub_comm]
-    norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast
     rwa [le_sub_one_iff, floor_lt]
 
 end LinearOrderedRing
@@ -203,7 +203,7 @@ theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   have hn' : 0 < (n : α) := by
-    norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast
   rw [abs_sub_round_eq_min, Nat.cast_min, ← min_div_div_right hn'.le,
     fract_div_natCast_eq_div_natCast_mod, Nat.cast_sub (m.mod_lt hn).le, sub_div, div_self hn'.ne']
 

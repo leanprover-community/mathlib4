@@ -521,7 +521,7 @@ lemma meromorphicOrderAt_finprod_ne_top {x : 𝕜} {ι : Type*} {F : ι → 𝕜
       Nat.cast_one]
     cases meromorphicOrderAt f x
     · aesop
-    · norm_cast; fail_if_progress norm_cast; fail_if_progress norm_cast
+    · fail_if_not_idempotent fail_if_not_idempotent norm_cast
       simp only [Nat.cast_add, Nat.cast_one]
       ring
 
@@ -1059,7 +1059,7 @@ theorem meromorphicOrderAt_logDeriv_eq_neg_one [CharZero 𝕜]
   rw [logDeriv, meromorphicOrderAt_div hf.deriv hf,
     meromorphicOrderAt_deriv_eq_sub_one (Int.cast_ne_zero.mpr (mod_cast h₁)) hn.symm,
     ← hn]
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   simp
 
 /--

@@ -83,7 +83,7 @@ instance : OrderedSub (WithTop α) := by
   · simp
   cases z
   · simp
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   exact tsub_le_iff_right
 
 end WithTop

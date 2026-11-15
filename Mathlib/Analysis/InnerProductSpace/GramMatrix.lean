@@ -141,7 +141,7 @@ theorem posSemidef_opNorm_smul_gram_sub_gram {F} [NormedAddCommGroup F] [InnerPr
   simp only [sub_mulVec, smul_mulVec, dotProduct_sub, dotProduct_smul,
     star_dotProduct_gram_mulVec, Function.comp_apply, ← map_smul, ← map_sum,
     inner_self_eq_norm_sq_to_K, sub_nonneg]
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   simpa only [smul_eq_mul, ← mul_pow] using pow_le_pow_left₀ (norm_nonneg _) (f.le_opNorm _) 2
 
 end NormedInnerProductSpace

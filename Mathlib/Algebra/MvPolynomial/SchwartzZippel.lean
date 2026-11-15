@@ -108,7 +108,7 @@ lemma schwartz_zippel_sup_sum :
           _ = #(S 0) * #{xₜ ∈ tail S ^^ n | eval xₜ pₖ = 0}
               / (#(S 0) * (∏ i, #(S (.succ i)) : ℚ≥0)) := by
             rw [card_consEquiv_filter_piFinset S fun x ↦ eval x pₖ = 0, prod_univ_succ, tail_def]
-            norm_cast; fail_if_progress norm_cast
+            fail_if_not_idempotent norm_cast
           _ ≤ #{xₜ ∈ tail S ^^ n | eval xₜ pₖ = 0} / ∏ i, (#(S (.succ i)) : ℚ≥0) :=
             mul_div_mul_left_le (by positivity)
           _ ≤ (pₖ.support.sup fun s ↦ ∑ i, (s i / #(S (.succ i)) : ℚ≥0)) :=

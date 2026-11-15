@@ -257,7 +257,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
       ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply,
       FormalMultilinearSeries.compContinuousLinearMap_apply]
     simp
-    norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast
   · simp
   · intro x hx
     have : |x| < 1 := by simpa [eNorm_eq_nnNorm] using! hx

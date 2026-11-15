@@ -359,7 +359,7 @@ lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       obtain ⟨z, hz₁, hz₂⟩ := h
       use ((z - l) / (u - l))
       constructor
-      · norm_cast; fail_if_progress norm_cast
+      · fail_if_not_idempotent norm_cast
         rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re]
         simp [hz₁]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
@@ -384,7 +384,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
       obtain ⟨z, hz₁, hz₂⟩ := h
       use ((z - l) / (u - l))
       constructor
-      · norm_cast; fail_if_progress norm_cast
+      · fail_if_not_idempotent norm_cast
         grind [Complex.div_re, Complex.normSq_ofReal, sub_re, ofReal_re, ofReal_im, mul_eq_zero]
       · rw [div_mul_comm, div_self (by norm_cast; linarith)]
         simp only [one_mul, add_sub_cancel, hz₂]
@@ -542,7 +542,7 @@ lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u
     sub_nonneg, tsub_le_iff_right, ofReal_re, ofReal_im, sub_im, sub_self, mul_zero, zero_div,
     add_zero]
   simp only [verticalClosedStrip] at hz
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   simp_rw [Complex.normSq_ofReal, mul_div_assoc, div_mul_eq_div_div_swap,
     div_self (by linarith : u - l ≠ 0), ← div_eq_mul_one_div]
   constructor
@@ -575,7 +575,7 @@ private lemma fun_arg_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
 /-- Another technical lemma needed in the proof. -/
 private lemma bound_exp_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
     (z / (↑u - ↑l)).re - ((l : ℂ) / (↑u - ↑l)).re = (z.re - l) / (u - l) := by
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re, Complex.ofReal_im, mul_div_assoc,
     div_mul_eq_div_div_swap, div_self (by norm_cast; linarith),
     ← div_eq_mul_one_div]

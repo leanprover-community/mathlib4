@@ -372,7 +372,7 @@ theorem div_modByMonic_unique {f g} (q r : R[X]) (hg : Monic g)
         calc
           degree g ≤ degree g + degree (q - f /ₘ g) := by
             rw [degree_eq_natDegree hg.ne_zero, degree_eq_natDegree hqf]
-            norm_cast; fail_if_progress norm_cast
+            fail_if_not_idempotent norm_cast
             exact Nat.le_add_right _ _
           _ = degree (r - f %ₘ g) := by rw [h₂, degree_mul']; simpa [Monic.def.1 hg]
   exact ⟨Eq.symm <| eq_of_sub_eq_zero h₅, Eq.symm <| eq_of_sub_eq_zero <| by simpa [h₅] using h₁⟩

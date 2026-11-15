@@ -45,7 +45,7 @@ protected lemma add_pow_prime_pow_eq' (h : Commute x y) (n : ℕ) :
     obtain ⟨hk₀, hk⟩ := mem_Ioo.1 hk
     -- The maths is over now. We just commute things to their place.
     rw [Nat.cast_comm, mul_assoc (_ * _)]
-    norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast
     rw [Nat.div_mul_cancel (hp.dvd_choose_pow _ _)] <;> lia
 
 protected lemma add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :

@@ -295,7 +295,7 @@ theorem w_nonneg (D : ℝ) (x : E) : 0 ≤ w D x := by
   apply mul_nonneg _ (u_nonneg _)
   apply inv_nonneg.2
   apply mul_nonneg (u_int_pos E).le
-  norm_cast; fail_if_progress norm_cast
+  fail_if_not_idempotent norm_cast
   apply pow_nonneg (abs_nonneg D)
 
 theorem w_mul_φ_nonneg (D : ℝ) (x y : E) : 0 ≤ w D y * φ (x - y) :=
@@ -314,7 +314,7 @@ theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 
   have B : D • ball (0 : E) 1 = ball 0 D := by
     rw [smul_unitBall Dpos.ne', Real.norm_of_nonneg Dpos.le]
   have C : D ^ finrank ℝ E ≠ 0 := by
-    norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast
     exact pow_ne_zero _ Dpos.ne'
   simp only [w_def, smul_eq_mul, support_mul, support_inv, univ_inter,
     support_comp_inv_smul₀ Dpos.ne', u_support, B, support_const (u_int_pos E).ne', support_const C,
@@ -444,7 +444,7 @@ theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : 
     exact this.le.trans hp.2.le
   · exact (locallyIntegrable_const _).indicator measurableSet_closedBall
   · apply ContDiffOn.mul
-    · norm_cast; fail_if_progress norm_cast
+    · fail_if_not_idempotent norm_cast
       refine
         (contDiffOn_const.mul ?_).inv fun x hx =>
           ne_of_gt (mul_pos (u_int_pos E) (pow_pos (abs_pos_of_pos hx.1.1) (finrank ℝ E)))

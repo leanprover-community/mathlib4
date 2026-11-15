@@ -92,7 +92,7 @@ lemma projectiveDimension_eq_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.t
     induction n with
     | top => simp
     | coe n =>
-      norm_cast; fail_if_progress norm_cast
+      fail_if_not_idempotent norm_cast
       simp only [projectiveDimension_le_iff]
       exact ⟨fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e e' n,
         fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e.symm e'.symm n⟩

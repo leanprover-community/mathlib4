@@ -143,7 +143,7 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
     split_ifs with hpn
     · rw [coeff_eq_zero_of_natDegree_lt]
       contrapose! hn
-      norm_cast; fail_if_progress norm_cast
+      fail_if_not_idempotent norm_cast
       rw [← Nat.div_mul_cancel hpn]
       exact Nat.mul_le_mul_right p hn
     · rfl
