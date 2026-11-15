@@ -561,7 +561,7 @@ instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
   have : HasUniqueDiv E := .of_module_rat _
   infer_instance
 
-@[deprecated Submodule.IsFullLattice.finrank +typeChanged (since := "2026-10-21")]
+@[deprecated Submodule.IsFullLattice.finrank_eq +typeChanged (since := "2026-10-21")]
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L

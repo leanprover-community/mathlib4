@@ -373,7 +373,7 @@ protected theorem finrank_eq_rank :
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
-  rw [← Units.finrank_eq_rank, Submodule.IsFullLattice.finrank ℝ]
+  rw [← Units.finrank_eq_rank, Submodule.IsFullLattice.finrank_eq ℝ]
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
 def logEmbeddingQuot :

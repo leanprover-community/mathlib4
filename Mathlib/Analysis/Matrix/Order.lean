@@ -32,7 +32,7 @@ Please `open scoped MatrixOrder` to use this.
 
 @[expose] public section
 
-variable {𝕜 n : Type*} [RCLike 𝕜]
+variable {𝕜 m n : Type*} [RCLike 𝕜]
 
 open scoped ComplexOrder
 open Matrix
@@ -124,9 +124,8 @@ end PartialOrder
 
 open scoped MatrixOrder
 
-variable [Fintype n]
-
 namespace PosSemidef
+variable [Fintype n]
 
 section sqrtDeprecated
 
@@ -149,6 +148,9 @@ theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
   grind
 
 end PosSemidef
+
+section
+variable [Fintype n]
 
 theorem IsHermitian.det_abs [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
     det (CFC.abs A) = ‖det A‖ := by
@@ -175,13 +177,9 @@ alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPo
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
 
+end
 
 section kronecker
-
-omit [Fintype n]
-
-variable {m : Type*}
-
 open scoped Kronecker
 
 /-- The kronecker product of two positive semi-definite matrices is positive semi-definite. -/
@@ -250,55 +248,60 @@ def tracePositiveLinearMap : Matrix n n 𝕜 →ₚ[α] 𝕜 :=
 
 end tracePositiveLinearMap
 
+section
+variable [Fintype m] [Fintype n]
+variable (m)
+
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toMatrixSeminormedAddCommGroup`, `Matrix.toMatrixNormedAddCommGroup`,
 and `Matrix.toMatrixInnerProductSpace`. -/
 private abbrev PosSemidef.matrixPreInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
-    PreInnerProductSpace.Core 𝕜 (Matrix n n 𝕜) where
+    PreInnerProductSpace.Core 𝕜 (Matrix m n 𝕜) where
   inner x y := (y * M * xᴴ).trace
   conj_inner_symm _ _ := by
-    simp only [mul_assoc, starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
+    simp only [Matrix.mul_assoc, starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
       conjTranspose_conjTranspose, hM.isHermitian.eq]
   re_inner_nonneg x := RCLike.nonneg_iff.mp (hM.mul_mul_conjTranspose_same x).trace_nonneg |>.1
-  add_left := by simp [mul_add]
+  add_left := by simp [Matrix.mul_add]
   smul_left := by simp
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
+/-- A positive definite matrix `M` induces a norm on `Matrix m n 𝕜`
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[instance_reducible]
 noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    SeminormedAddCommGroup (Matrix n n 𝕜) :=
-  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
+    SeminormedAddCommGroup (Matrix m n 𝕜) :=
+  @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ (hM.matrixPreInnerProductSpace m)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
+/-- A positive definite matrix `M` induces a norm on `Matrix m n 𝕜`:
 `‖x‖ = sqrt (x * M * xᴴ).trace`. -/
 @[instance_reducible]
 noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) :
-    NormedAddCommGroup (Matrix n n 𝕜) :=
-  letI : InnerProductSpace.Core 𝕜 (Matrix n n 𝕜) :=
-  { __ := hM.posSemidef.matrixPreInnerProductSpace
+    NormedAddCommGroup (Matrix m n 𝕜) :=
+  letI : InnerProductSpace.Core 𝕜 (Matrix m n 𝕜) :=
+  { __ := hM.posSemidef.matrixPreInnerProductSpace m
     definite x hx := by
       classical
       obtain ⟨y, hy, rfl⟩ := CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self.mp
         hM.isStrictlyPositive
       simp +instances only at hx
-      rw [← mul_assoc, ← conjTranspose_conjTranspose x, star_eq_conjTranspose, ← conjTranspose_mul,
-        conjTranspose_conjTranspose, mul_assoc, trace_conjTranspose_mul_self_eq_zero_iff] at hx
+      rw [← Matrix.mul_assoc, ← conjTranspose_conjTranspose x, star_eq_conjTranspose,
+        ← conjTranspose_mul, conjTranspose_conjTranspose, Matrix.mul_assoc,
+        trace_conjTranspose_mul_self_eq_zero_iff] at hx
       lift y to (Matrix n n 𝕜)ˣ using hy
-      simpa [← mul_assoc] using congr(y⁻¹ * $hx) }
+      simpa [← mul_assoc] using congr(y⁻¹.val * $hx) }
   this.toNormedAddCommGroup
 
-/-- A positive semi-definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
+/-- A positive semi-definite matrix `M` induces an inner product on `Matrix m n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
 @[instance_reducible]
 def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    letI : SeminormedAddCommGroup (Matrix n n 𝕜) := M.toMatrixSeminormedAddCommGroup hM
-    InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
+    letI : SeminormedAddCommGroup (Matrix m n 𝕜) := M.toMatrixSeminormedAddCommGroup m hM
+    InnerProductSpace 𝕜 (Matrix m n 𝕜) :=
   InnerProductSpace.ofCore _
 
 open scoped Norms.L2Operator in
@@ -322,5 +325,7 @@ instance instIsometricContinuousFunctionalCalculus [DecidableEq n] :
 
 scoped[Matrix.Norms.L2Operator] attribute [instance]
   Matrix.instIsometricContinuousFunctionalCalculus
+
+end
 
 end Matrix

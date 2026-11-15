@@ -140,8 +140,8 @@ theorem covolume_div_covolume_eq_relIndex (L₁ L₂ : Submodule ℤ E) [IsFullL
     [IsFullLattice ℝ L₂] (h : L₁ ≤ L₂) :
     L₁.covolume μ / L₂.covolume μ = L₁.toAddSubgroup.relIndex L₂.toAddSubgroup := by
   classical
-  let b₁ := Module.finBasisOfFinrankEq ℤ L₁ (IsFullLattice.finrank ℝ L₁)
-  let b₂ := Module.finBasisOfFinrankEq ℤ L₂ (IsFullLattice.finrank ℝ L₂)
+  let b₁ := Module.finBasisOfFinrankEq ℤ L₁ (IsFullLattice.finrank_eq ℝ L₁)
+  let b₂ := Module.finBasisOfFinrankEq ℤ L₂ (IsFullLattice.finrank_eq ℝ L₂)
   let b₀ := b₂.extendOfIsFullLattice ℝ
   rw [L₁.toAddSubgroup.relIndex_eq_natAbs_det L₂.toAddSubgroup h b₁ b₂,
     Nat.cast_natAbs, Int.cast_abs, covolume_eq_det_mul_measureReal L₁ μ b₁ b₀,
