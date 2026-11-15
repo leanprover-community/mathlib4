@@ -175,9 +175,8 @@ private lemma Polynomial.isReduced_quotient_of_separable' (S : Type*) [Field S] 
       (Ideal.isCoprime_span_singleton_iff p g).mpr (Ploynomial.isCoprime_of_mul_separable sep)
     have red1 : (Ideal.span {p}).IsPrime := (Ideal.span_singleton_prime irr.ne_zero).mpr irr.prime
     have red2 : IsReduced (S[X] ⧸ Ideal.span {g}) := by
-      have : p.natDegree > 0 := Irreducible.natDegree_pos irr
       have := deg.symm.trans (p.natDegree_mul irr.ne_zero (right_ne_zero_of_mul sep.ne_zero))
-      exact ih g.natDegree (by linarith) g sep.of_mul_right rfl
+      exact ih g.natDegree (by linarith [irr.natDegree_pos]) g sep.of_mul_right rfl
     exact isReduced_of_injective _ (Ideal.quotientMulEquivQuotientProd _ _ cop).injective
 
 variable (S : Type*) [CommRing S] [Algebra k S]
@@ -205,7 +204,7 @@ noncomputable def Polynomial.tensorScalarEquiv : K[X] ⊗[k] S ≃ₐ[K] (K ⊗[
           ((polyEquivTensor' k (K ⊗[k] S)).symm.restrictScalars K)
 
 lemma Polynomial.tensorScalarEquiv_algebraMap_eq_map_algebraMap (f : K[X]) :
-    (Polynomial.tensorScalarEquiv k K S) ((algebraMap K[X] (K[X] ⊗[k] S)) f) =
+    (Polynomial.tensorScalarEquiv k K S) (algebraMap K[X] (K[X] ⊗[k] S) f) =
       f.map (algebraMap K (K ⊗[k] S)) := by
   obtain ⟨g, rfl⟩ := (polyEquivTensor' k K).symm.surjective f
   induction g with
