@@ -130,7 +130,10 @@ It is computed in a single pass: if `k` outer pairs of letters cancel, drop `k` 
 end. This uses only structural recursion, so `decide` can evaluate it. -/
 @[to_additive /-- This function produces a subword of a word `L` by cancelling the first and last
 letters of `L` as long as possible. If `L` is reduced, the resulting word will be cyclically
-reduced. -/]
+reduced.
+
+It is computed in a single pass: if `k` outer pairs of letters cancel, drop `k` letters from each
+end. This uses only structural recursion, so `decide` can evaluate it. -/]
 def reduceCyclically [DecidableEq α] (L : List (α × Bool)) : List (α × Bool) :=
   let k := min (L.length / 2) (cancelPrefixLength L L.reverse)
   (L.drop k).take (L.length - 2 * k)
@@ -157,12 +160,12 @@ protected theorem cons_append {a b : α × Bool} (L : List (α × Bool)) :
   · generalize hk : min (L.length / 2) (cancelPrefixLength L L.reverse) = k
     have hk' : min ((L.length + 2) / 2)
         (cancelPrefixLength (L ++ [b]) (L.reverse ++ [a]) + 1) = k + 1 := by
-      rw [show (L.length + 2) / 2 = L.length / 2 + 1 by omega, Nat.add_min_add_right,
-        min_cancelPrefixLength_append _ _ (by omega) (by simp; omega), hk]
-    have hkle : 2 * k ≤ L.length := by omega
-    rw [hk', show L.length + 2 - 2 * (k + 1) = L.length - 2 * k by omega,
-      drop_succ_cons, drop_append_of_le_length (by omega),
-      take_append_of_le_length (by simp; omega)]
+      rw [show (L.length + 2) / 2 = L.length / 2 + 1 by lia, Nat.add_min_add_right,
+        min_cancelPrefixLength_append _ _ (by lia) (by simp; lia), hk]
+    have hkle : 2 * k ≤ L.length := by lia
+    rw [hk', show L.length + 2 - 2 * (k + 1) = L.length - 2 * k by lia,
+      drop_succ_cons, drop_append_of_le_length (by lia),
+      take_append_of_le_length (by simp; lia)]
   · simp
 
 

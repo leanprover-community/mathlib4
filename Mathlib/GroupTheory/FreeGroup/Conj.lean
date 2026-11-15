@@ -55,13 +55,8 @@ theorem isCyclicallyReduced_iff_isReduced_append_self :
 
 theorem isCyclicallyReduced_append_comm :
     IsCyclicallyReduced (L₁ ++ L₂) ↔ IsCyclicallyReduced (L₂ ++ L₁) := by
-  suffices ∀ {L₁ L₂ : List (α × Bool)}, IsCyclicallyReduced (L₁ ++ L₂) →
-      IsCyclicallyReduced (L₂ ++ L₁) from ⟨this, this⟩
-  intro L₁ L₂ h
-  rw [isCyclicallyReduced_iff_isReduced_append_self] at h ⊢
-  by_cases hn : L₁ ++ L₂ = []
-  · simp_all
-  exact (h.append_overlap h hn).infix ⟨L₁, L₂, by simp⟩
+  simp only [isCyclicallyReduced_iff_isReduced_append_self]
+  grind [IsReduced.append_overlap, IsReduced.infix]
 
 theorem IsCyclicallyReduced.rotate (h : IsCyclicallyReduced L) (n : ℕ) :
     IsCyclicallyReduced (L.rotate n) := by
@@ -91,12 +86,8 @@ theorem IsCyclicallyReduced.reduceCyclically_eq (h : IsCyclicallyReduced L) :
   | nil => simp
   | singleton => simp
   | cons_append a L b _ =>
-    rw [reduceCyclically.cons_append, ite_eq_right]
-    · simp
-    · rw [← cons_append, isCyclicallyReduced_cons_append_iff] at h
-      rintro ⟨h₁, h₂⟩
-      rw [h.2 h₁] at h₂
-      cases a.2 <;> simp at h₂
+    rw [← cons_append, isCyclicallyReduced_cons_append_iff] at h
+    grind [reduceCyclically.cons_append]
 
 theorem reduceCyclically.append_append_invRev (L₁ L₂ : List (α × Bool)) :
     reduceCyclically (L₁ ++ L₂ ++ invRev L₁) = reduceCyclically L₂ := by
@@ -143,7 +134,7 @@ private theorem isRotated_reduceCyclically_toWord_conj_letter (a : α × Bool) (
   have hcancel_right {b : α × Bool} : (b.1 = a'.1 → b.2 = a'.2) ↔ b ≠ a := by
     rw [ha']; exact noncancel_inv_iff_ne (a := a)
   rcases L.eq_nil_or_concat' with rfl | ⟨M, c, rfl⟩
-  · rw [← hinv, show mk ([] : List (α × Bool)) = 1 from rfl, mul_one, mul_inv_cancel]
+  · rw [← hinv, ← one_eq_mk, mul_one, mul_inv_cancel]
     simp
   rcases M with _ | ⟨b, M⟩
   · -- single letter
