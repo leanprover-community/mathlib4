@@ -283,7 +283,7 @@ instance instCommSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
 instance instMulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
   unop_injective.mulOneClass _ (by exact rfl) fun _ _ => rfl
 
-instance pow {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
+instance {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
 
 @[simp]
 theorem op_pow {β} [Pow α β] (a : α) (b : β) : op (a ^ b) = op a ^ b :=

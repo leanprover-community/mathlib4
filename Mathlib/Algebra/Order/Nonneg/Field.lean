@@ -58,7 +58,7 @@ section LinearOrderedDivisionSemiring
 
 variable [DivisionSemiring α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
-instance inv : Inv (Nonneg α) :=
+instance : Inv (Nonneg α) :=
   ⟨fun x => ⟨x⁻¹, inv_nonneg.2 x.2⟩⟩
 
 @[simp, norm_cast]
@@ -70,7 +70,7 @@ theorem inv_mk (hx : 0 ≤ x) :
     (⟨x, hx⟩ : Nonneg α)⁻¹ = ⟨x⁻¹, inv_nonneg.2 hx⟩ :=
   rfl
 
-instance div : Div (Nonneg α) :=
+instance : Div (Nonneg α) :=
   ⟨fun x y => ⟨x / y, div_nonneg x.2 y.2⟩⟩
 
 @[simp, norm_cast]
@@ -82,7 +82,7 @@ theorem mk_div_mk (hx : 0 ≤ x) (hy : 0 ≤ y) :
     (⟨x, hx⟩ : Nonneg α) / ⟨y, hy⟩ = ⟨x / y, div_nonneg hx hy⟩ :=
   rfl
 
-instance zpow : Pow (Nonneg α) ℤ :=
+instance : Pow (Nonneg α) ℤ :=
   ⟨fun a n => ⟨(a : α) ^ n, zpow_nonneg a.2 _⟩⟩
 
 @[simp, norm_cast]

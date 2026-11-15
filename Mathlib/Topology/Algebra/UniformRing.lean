@@ -47,10 +47,10 @@ open IsDenseInducing UniformSpace Function
 section one_and_mul
 variable (α : Type*) [Ring α] [UniformSpace α]
 
-instance one : One (Completion α) :=
+instance : One (Completion α) :=
   ⟨(1 : α)⟩
 
-instance mul : Mul (Completion α) :=
+instance : Mul (Completion α) :=
   ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]

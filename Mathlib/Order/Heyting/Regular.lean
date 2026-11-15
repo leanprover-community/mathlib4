@@ -115,13 +115,13 @@ theorem coe_injective : Injective ((↑) : Regular α → α) :=
 theorem coe_inj {a b : Regular α} : (a : α) = b ↔ a = b :=
   Subtype.coe_inj
 
-instance top : Top (Regular α) :=
+instance : Top (Regular α) :=
   ⟨⟨⊤, isRegular_top⟩⟩
 
-instance bot : Bot (Regular α) :=
+instance : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
-instance inf : Min (Regular α) :=
+instance : Min (Regular α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 instance himp : HImp (Regular α) :=

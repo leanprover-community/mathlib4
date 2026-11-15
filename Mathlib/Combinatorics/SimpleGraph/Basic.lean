@@ -249,7 +249,7 @@ theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ �
   Iff.rfl
 
 /-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
-instance sdiff : SDiff (SimpleGraph V) where
+instance : SDiff (SimpleGraph V) where
   sdiff x y :=
     { Adj := x.Adj \ y.Adj
       symm.symm v w h := by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }
@@ -258,12 +258,12 @@ instance sdiff : SDiff (SimpleGraph V) where
 theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w :=
   Iff.rfl
 
-instance supSet : SupSet (SimpleGraph V) where
+instance : SupSet (SimpleGraph V) where
   sSup s :=
     { Adj a b := ∃ G ∈ s, Adj G a b
       symm.symm _ _ := Exists.imp fun _ ↦ And.imp_right Adj.symm }
 
-instance infSet : InfSet (SimpleGraph V) where
+instance : InfSet (SimpleGraph V) where
   sInf s :=
     { Adj a b := (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
       symm.symm _ _  := And.imp (forall₂_imp fun _ _ ↦ Adj.symm) Ne.symm }

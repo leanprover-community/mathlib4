@@ -161,7 +161,7 @@ namespace InvMemClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an inverse. -/]
-instance inv {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
+instance {G S : Type*} [Inv G] [SetLike S G] [InvMemClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -188,7 +188,7 @@ theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits a subtraction. -/]
-instance div {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
+instance {G S : Type*} [DivInvMonoid G] [SetLike S G] [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 
 /-- A subgroup of a group inherits an integer power. -/
@@ -486,33 +486,27 @@ def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ x ∈ s, ∀ y ∈ s, x * y�
 
 /-- A subgroup of a group inherits a multiplication. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an addition. -/]
-instance mul : Mul H :=
-  H.toSubmonoid.mul
+instance : Mul H := inferInstance
 
 /-- A subgroup of a group inherits a 1. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a zero. -/]
-instance one : One H :=
-  H.toSubmonoid.one
+instance : One H := inferInstance
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an inverse. -/]
-instance inv : Inv H :=
-  ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
+instance : Inv H := inferInstance
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a subtraction. -/]
-instance div : Div H :=
-  ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
+instance : Div H := inferInstance
 
 /-- A subgroup of a group inherits a natural power -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/]
-protected instance npow : Pow H ℕ :=
-  ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
+instance : Pow H ℕ := inferInstance
 
 /-- A subgroup of a group inherits an integer power -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/]
-instance zpow : Pow H ℤ :=
-  ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
+instance : Pow H ℤ := inferInstance
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (x y : H) : (↑(x * y) : G) = ↑x * ↑y :=

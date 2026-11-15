@@ -147,7 +147,7 @@ def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
       cases (@decode α _ n) <;>
         simp [encode_ofEquiv] }
 
-instance empty : Primcodable Empty :=
+instance : Primcodable Empty :=
   ⟨zero⟩
 
 instance unit : Primcodable PUnit :=

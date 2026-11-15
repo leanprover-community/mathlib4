@@ -100,7 +100,7 @@ section One
 
 variable [One R]
 
-instance one : One (ArithmeticFunction R) :=
+instance : One (ArithmeticFunction R) :=
   ⟨⟨fun x => ite (x = 1) 1 0, rfl⟩⟩
 
 protected theorem one_apply {x : ℕ} : (1 : ArithmeticFunction R) x = ite (x = 1) 1 0 :=
@@ -188,7 +188,7 @@ section AddMonoid
 
 variable [AddMonoid R]
 
-instance add : Add (ArithmeticFunction R) where
+instance : Add (ArithmeticFunction R) where
   add f g := ⟨f + g, by simp⟩
 
 instance : IsAddApply (ArithmeticFunction R) where

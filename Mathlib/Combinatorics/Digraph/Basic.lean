@@ -143,16 +143,16 @@ instance : Compl (Digraph V) where
 @[simp] theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w := Iff.rfl
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
-instance sdiff : SDiff (Digraph V) where
+instance : SDiff (Digraph V) where
   sdiff x y := { Adj := x.Adj \ y.Adj }
 
 @[simp]
 theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w := Iff.rfl
 
-instance supSet : SupSet (Digraph V) where
+instance : SupSet (Digraph V) where
   sSup s := { Adj := fun a b ↦ ∃ G ∈ s, Adj G a b }
 
-instance infSet : InfSet (Digraph V) where
+instance : InfSet (Digraph V) where
   sInf s := { Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b) }
 
 @[simp]

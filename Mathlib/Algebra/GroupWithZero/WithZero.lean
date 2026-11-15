@@ -49,7 +49,7 @@ variable {M α β γ : Type*}
 section One
 variable [One α]
 
-instance one : One (WithZero α) where
+instance : One (WithZero α) where
   __ := ‹One α›
 
 @[simp, norm_cast] lemma coe_one : ((1 : α) : WithZero α) = 1 := rfl
@@ -201,7 +201,7 @@ end MulOneClass
 section Pow
 variable [One α] [Pow α ℕ]
 
-instance pow : Pow (WithZero α) ℕ where
+instance : Pow (WithZero α) ℕ where
   pow
     | none, 0 => 1
     | none, _ + 1 => 0
@@ -227,7 +227,7 @@ section Inv
 variable [Inv α]
 
 /-- Extend the inverse operation on `α` to `WithZero α` by sending `0` to `0`. -/
-instance inv : Inv (WithZero α) where inv a := Option.map (·⁻¹) a
+instance : Inv (WithZero α) where inv a := Option.map (·⁻¹) a
 
 @[simp, norm_cast] lemma coe_inv (a : α) : ((a⁻¹ : α) : WithZero α) = (↑a)⁻¹ := rfl
 
@@ -241,7 +241,7 @@ instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) where
 section Div
 variable [Div α]
 
-instance div : Div (WithZero α) where div := Option.map₂ (· / ·)
+instance : Div (WithZero α) where div := Option.map₂ (· / ·)
 
 @[norm_cast] lemma coe_div (a b : α) : ↑(a / b : α) = (a / b : WithZero α) := rfl
 

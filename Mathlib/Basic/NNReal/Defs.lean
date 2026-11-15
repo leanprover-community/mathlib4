@@ -105,7 +105,7 @@ noncomputable instance : Div ℝ≥0 where
 noncomputable instance : SMul ℚ≥0 ℝ≥0 where
   smul x y := .mk (x • (y : ℝ)) (by rw [NNRat.smul_def]; exact mul_nonneg x.cast_nonneg y.2)
 
-noncomputable instance zpow : Pow ℝ≥0 ℤ where
+noncomputable instance : Pow ℝ≥0 ℤ where
   pow x n := .mk ((x : ℝ) ^ n) (zpow_nonneg x.2 _)
 
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,

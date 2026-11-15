@@ -936,7 +936,7 @@ section NonAssocSemiring
 variable [NonAssocSemiring R']
 
 /-- The action by a subsemiring is the action by the underlying semiring. -/
-instance smul [SMul R' α] (S : Subsemiring R') : SMul S α :=
+instance [SMul R' α] (S : Subsemiring R') : SMul S α :=
   inferInstance
 
 theorem smul_def [SMul R' α] {S : Subsemiring R'} (g : S) (m : α) : g • m = (g : R') • m :=

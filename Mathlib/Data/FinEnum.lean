@@ -118,7 +118,7 @@ instance pempty : FinEnum PEmpty :=
 
 @[simp] lemma card_pempty : FinEnum.card PEmpty = 0 := rfl
 
-instance empty : FinEnum Empty :=
+instance : FinEnum Empty :=
   ofList [] fun x => Empty.elim x
 
 @[simp] lemma card_empty : FinEnum.card Empty = 0 := rfl

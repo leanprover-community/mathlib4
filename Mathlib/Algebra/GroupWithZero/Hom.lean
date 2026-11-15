@@ -215,7 +215,7 @@ instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
 
 /-- The trivial homomorphism between monoids with zero, sending 0 to 0 and all other elements to 1.
 -/
-protected instance one (M₀ N₀ : Type*) [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+instance (M₀ N₀ : Type*) [MulZeroOneClass M₀] [MulZeroOneClass N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
     One (M₀ →*₀ N₀) where
   one.toFun x := if x = 0 then 0 else 1
