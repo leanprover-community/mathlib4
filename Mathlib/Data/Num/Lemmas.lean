@@ -581,7 +581,7 @@ theorem cast_mul [NonAssocSemiring α] (m n) : ((m * n : PosNum) : α) = m * n :
 @[simp]
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
-  norm_cast at this
+  norm_cast at this; fail_if_progress norm_cast at this
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` is required.
   revert this; cases cmp m n <;> simp_all [LT.lt.ne, LT.lt.ne']
 
@@ -715,7 +715,7 @@ theorem cmp_swap (m n) : (cmp m n).swap = cmp n m := by
 
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
-  norm_cast at this
+  norm_cast at this; fail_if_progress norm_cast at this
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` is required.
   revert this; cases cmp m n <;> simp_all [LT.lt.ne, LT.lt.ne']
 

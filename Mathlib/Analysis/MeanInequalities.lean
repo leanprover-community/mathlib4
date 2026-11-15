@@ -975,7 +975,7 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   lift w to ι → ℝ≥0 using hw
   lift f to ι → ℝ≥0 using hf
   beta_reduce at *
-  norm_cast at *
+  norm_cast at *; fail_if_progress norm_cast at *
   exact NNReal.inner_le_weight_mul_Lp _ hp _ _
 
 /-- **Weighted Hölder inequality** in terms of `Finset.expect`. -/
@@ -1002,7 +1002,7 @@ theorem summable_and_Lr_rpow_le_Lp_mul_Lq_tsum_of_nonneg (hpqr : p.HolderTriple 
   lift g to ι → ℝ≥0 using hg
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce at *
-  norm_cast at *
+  norm_cast at *; fail_if_progress norm_cast at *
   exact NNReal.summable_and_Lr_rpow_le_Lp_mul_Lq_tsum hpqr hf_sum hg_sum
 
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
@@ -1065,6 +1065,7 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.HolderConjugate q) {A B : �
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce at *
   norm_cast at hf_sum hg_sum
+  fail_if_progress norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
   refine ⟨C, C.prop, hC, ?_⟩
   norm_cast
@@ -1127,7 +1128,7 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   lift B to ℝ≥0 using hB
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce at hfA hgB
-  norm_cast at hfA hgB
+  norm_cast at hfA hgB; fail_if_progress norm_cast at hfA hgB
   obtain ⟨C, hC₁, hC₂⟩ := NNReal.Lp_add_le_hasSum hp hfA hgB
   use C
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.

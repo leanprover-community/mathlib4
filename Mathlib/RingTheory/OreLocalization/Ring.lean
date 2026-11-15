@@ -149,7 +149,7 @@ def universalHom : R[S⁻¹] →+* T :=
       congr 1
       rw [← mul_assoc]
       congr 1
-      norm_cast at h₃
+      norm_cast at h₃; fail_if_progress norm_cast at h₃
       have h₃' := Subtype.coe_eq_of_eq_mk h₃
       rw [← Units.val_mul, ← mul_inv_rev, ← fS.map_mul, h₃']
       rw [Units.inv_mul_eq_iff_eq_mul, Units.eq_mul_inv_iff_mul_eq, ← hf, ← hf]

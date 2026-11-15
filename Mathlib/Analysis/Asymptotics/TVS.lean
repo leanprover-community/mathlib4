@@ -713,7 +713,7 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] : f =o[𝕜; l] (1 : α → 𝕜)
     rintro U ⟨hU, hUb⟩
     rcases hf U hU with ⟨r, hr₀, hr⟩
     lift r to ℝ≥0 using hr₀.le
-    norm_cast at hr₀
+    norm_cast at hr₀; fail_if_progress norm_cast at hr₀
     rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
     obtain ⟨ε, hε₀, hε⟩ : ∃ ε : ℝ≥0, 0 < ε ∧ (ε * ‖c‖₊ / r : ℝ≥0∞) < 1 := by
       apply Eventually.exists_gt
@@ -795,7 +795,7 @@ lemma isLittleOTVS_iff_isLittleO : f =o[𝕜; l] g ↔ f =o[l] g := by
   simp only [isLittleO_iff, nhds_basis_ball.isLittleOTVS_iff nhds_basis_ball]
   refine ⟨fun h ε hε ↦ ?_, fun h ε hε ↦ ⟨1, one_pos, fun δ hδ ↦ ?_⟩⟩
   · rcases h ε hε with ⟨δ, hδ₀, hδ⟩
-    lift ε to ℝ≥0 using hε.le; lift δ to ℝ≥0 using hδ₀.le; norm_cast at hε hδ₀
+    lift ε to ℝ≥0 using hε.le; lift δ to ℝ≥0 using hδ₀.le; norm_cast at hε hδ₀; fail_if_progress norm_cast at hε hδ₀
     filter_upwards [hδ (δ / ‖c‖₊) (div_pos hδ₀ hc₀).ne'] with x hx
     suffices (‖f x‖₊ / ε : ℝ≥0∞) ≤ ‖g x‖₊ by
       rw [← ENNReal.coe_div hε.ne'] at this
@@ -831,7 +831,7 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
     intro h
     rcases h 1 one_pos with ⟨r, hr₀, hr⟩
     lift r to ℝ≥0 using hr₀.le
-    norm_cast at hr₀
+    norm_cast at hr₀; fail_if_progress norm_cast at hr₀
     refine ⟨(‖c‖₊ / r : ℝ≥0), hr.mono fun x hx ↦ ?_⟩
     suffices ‖f x‖ₑ ≤ (‖c‖₊ / r : ℝ≥0) * ‖g x‖ₑ by
       simp only [eNorm_eq_nnNorm, ← coe_nnNorm] at this ⊢
@@ -846,8 +846,8 @@ lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
   · rw [nhds_basis_ball.isBigOTVS_iff nhds_basis_ball, isBigO_iff']
     have hc₀ : 0 < ‖c‖₊ := one_pos.trans hc
     rintro ⟨C, hC₀, hC⟩ r hr₀
-    lift C to ℝ≥0 using hC₀.le; norm_cast at hC₀
-    lift r to ℝ≥0 using hr₀.le; norm_cast at hr₀
+    lift C to ℝ≥0 using hC₀.le; norm_cast at hC₀; fail_if_progress norm_cast at hC₀
+    lift r to ℝ≥0 using hr₀.le; norm_cast at hr₀; fail_if_progress norm_cast at hr₀
     refine ⟨r / (C * ‖c‖₊), by positivity, hC.mono fun x hx ↦ ?_⟩
     calc
       egauge 𝕜 (ball 0 r) (f x) ≤ ‖c‖ₑ * ‖f x‖ₑ / r :=

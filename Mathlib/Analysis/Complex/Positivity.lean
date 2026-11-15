@@ -41,7 +41,7 @@ theorem nonneg_of_iteratedDeriv_nonneg {f : ℂ → ℂ} {c : ℂ} {r : ℝ}
   refine H ▸ tsum_nonneg fun n ↦ ?_
   rw [← ofReal_natCast, ← ofReal_pow, ← ofReal_inv, eq_re_of_ofReal_le (h n), ← ofReal_mul,
     ← ofReal_mul]
-  norm_cast at hz₁ ⊢
+  norm_cast at hz₁ ⊢; fail_if_progress norm_cast at hz₁ ⊢
   positivity [zero_re ▸ (Complex.le_def.mp (h n)).1]
 
 end DifferentiableOn

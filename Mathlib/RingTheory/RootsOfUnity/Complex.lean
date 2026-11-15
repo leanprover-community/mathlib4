@@ -53,7 +53,7 @@ theorem isPrimitiveRoot_exp_of_isCoprime (i : ℤ) (n : ℕ) (h0 : n ≠ 0) (hi 
     have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
     rintro l k hk
     field_simp at hk
-    norm_cast at hk
+    norm_cast at hk; fail_if_progress norm_cast at hk
     exact Int.natCast_dvd_natCast.mp <| hi.symm.dvd_of_dvd_mul_right <| hk ▸ dvd_mul_right ..
 
 theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprime n) :

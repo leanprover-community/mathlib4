@@ -98,7 +98,7 @@ theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (h
       MeasurableSet.univ rexp_neg_deriv_aux rexp_neg_injOn_aux] at hf
     replace hf : Integrable fun (x : ℝ) ↦ cexp (-↑σ * ↑x) • f (rexp (-x)) := by
       simpa [rexp_cexp_aux] using hf
-    norm_cast at hf
+    norm_cast at hf; fail_if_progress norm_cast at hf
   replace hFf : Integrable (𝓕 g) := by
     have h2π : 2 * π ≠ 0 := by simp
     have : Integrable (𝓕 (fun u ↦ rexp (-(σ * u)) • f (rexp (-u)))) := by

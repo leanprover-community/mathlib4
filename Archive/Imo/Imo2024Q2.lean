@@ -167,7 +167,7 @@ lemma ab_add_one_dvd_b_add_one : a * b + 1 ∣ b + 1 := by
     rw [dvd_pow_iff_of_dvd_sub a_coprime_ab_add_one h.dvd_large_n_0_sub_zero, zpow_zero] at this
     rw [← ZMod.natCast_eq_zero_iff]
     push_cast
-    norm_cast at this
+    norm_cast at this; fail_if_progress norm_cast at this
   exact h.ab_add_one_dvd_a_pow_large_n_0_add_b
 
 lemma a_eq_one : a = 1 := by

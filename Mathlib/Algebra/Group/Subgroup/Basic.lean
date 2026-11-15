@@ -223,7 +223,7 @@ instance [HasUniqueRoots G] : HasUniqueRoots H where
   pow_left_injective n hn a b := by
     have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
     dsimp at *
-    norm_cast at this
+    norm_cast at this; fail_if_progress norm_cast at this
 
 end Subgroup
 

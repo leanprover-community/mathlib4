@@ -403,7 +403,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
         have := hr.trans (Ideal.height_mono e)
         rw [Set.Finite.mem_toFinset] at hK
         rw [hK.2, ← not_lt] at this
-        norm_cast at this
+        norm_cast at this; fail_if_progress norm_cast at this
         exact this r.lt_succ_self
     simp_rw [Set.not_subset, Set.mem_iUnion, not_exists, Set.Finite.mem_toFinset] at this
     obtain ⟨x, hx₁, hx₂⟩ := this

@@ -92,7 +92,7 @@ theorem coeff_shiftedLegendre (n k : ℕ) :
   refine le_antisymm ?_ (le_degree_of_ne_zero ?_)
   · rw [degree_le_iff_coeff_zero]
     intro k h
-    norm_cast at h
+    norm_cast at h; fail_if_progress norm_cast at h
     simp [coeff_shiftedLegendre, choose_eq_zero_of_lt h]
   · simp [coeff_shiftedLegendre, (choose_pos (show n ≤ n + n by simp)).ne']
 

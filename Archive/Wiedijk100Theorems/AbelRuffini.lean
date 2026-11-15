@@ -82,7 +82,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
       exact mod_cast mt Nat.dvd_one.mp hp.ne_one
     · intro n hn
       rw [mem_span_singleton]
-      rw [degree_Phi] at hn; norm_cast at hn
+      rw [degree_Phi] at hn; norm_cast at hn; fail_if_progress norm_cast at hn
       interval_cases n <;>
       simp +decide only [Φ, coeff_X_pow, coeff_C, Int.natCast_dvd_natCast.mpr,
         hpb, ite_true, coeff_C_mul, ite_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero,

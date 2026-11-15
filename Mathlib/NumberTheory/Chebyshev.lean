@@ -109,7 +109,7 @@ theorem psi_eq_zero_of_lt_two {x : ℝ} (hx : x < 2) : ψ x = 0 := by
   simp only [mem_Ioc] at hn
   convert vonMangoldt_apply_one
   have := lt_of_le_of_lt (le_floor_iff' hn.1.ne' |>.mp hn.2) hx
-  norm_cast at this
+  norm_cast at this; fail_if_progress norm_cast at this
   linarith
 
 @[simp]

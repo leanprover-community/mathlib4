@@ -270,7 +270,7 @@ theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
     by_contra!
     rw [Nat.le_one_iff_eq_zero_or_eq_one] at this
     rw [ENat.card_eq_coe_natCard] at h2
-    norm_cast at h2
+    norm_cast at h2; fail_if_progress norm_cast at h2
     rcases this with h | h
     · rw [Nat.choose_eq_zero_iff] at h
       exact (lt_self_iff_false n).mp (lt_trans h2 h)

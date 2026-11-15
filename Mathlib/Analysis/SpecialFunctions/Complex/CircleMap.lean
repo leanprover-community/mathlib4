@@ -159,11 +159,11 @@ lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - 
   obtain ⟨n, hn⟩ := h
   simp only [show n * (2 * π * I) = (n * 2 * π) * I by ring, ← add_mul, mul_eq_mul_right_iff,
     I_ne_zero, or_false] at hn
-  norm_cast at hn
+  norm_cast at hn; fail_if_progress norm_cast at hn
   simp only [hn, Int.cast_mul, Int.cast_ofNat, mul_assoc, add_sub_cancel_left, abs_mul,
     Nat.abs_ofNat, abs_pi] at h_dist
   simp (disch := positivity) at h_dist
-  norm_cast at h_dist
+  norm_cast at h_dist; fail_if_progress norm_cast at h_dist
   simp [hn, Int.abs_lt_one_iff.mp h_dist]
 
 open scoped Interval in

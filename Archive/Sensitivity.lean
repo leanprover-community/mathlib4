@@ -400,7 +400,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       Cardinal.mk_fintype]
   rw [← finrank_eq_rank ℝ] at dim_le dim_add dimW ⊢
   rw [← finrank_eq_rank ℝ, ← finrank_eq_rank ℝ] at dim_add
-  norm_cast at dim_le dim_add dimW ⊢
+  norm_cast at dim_le dim_add dimW ⊢; fail_if_progress norm_cast at dim_le dim_add dimW ⊢
   rw [pow_succ'] at dim_le
   rw [Set.toFinset_card] at hH
   linarith

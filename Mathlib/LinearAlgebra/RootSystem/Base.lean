@@ -334,7 +334,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
     rcases this with rfl | rfl
     · left; simpa using hz
     · right; simpa [neg_eq_iff_eq_neg] using hz
-  norm_cast at this
+  norm_cast at this; fail_if_progress norm_cast at this
   rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at this
   tauto
 

@@ -401,7 +401,7 @@ lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNor
     have hf : AnalyticAt 𝕜 f z₀ := by
       by_contra h
       have h0 : (n : ℕ∞) = 0 := Hn.trans (analyticOrderAt_eq_zero.mpr (.inl h))
-      norm_cast at h0
+      norm_cast at h0; fail_if_progress norm_cast at h0
       lia
     rw [Function.iterate_succ']
     have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by
