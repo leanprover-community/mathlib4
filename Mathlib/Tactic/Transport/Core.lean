@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Tactic.Common
 
+import all Lean.Meta.DiscrTree.Main
+
 /-!
 ## haha
 -/
@@ -247,14 +249,19 @@ def findTransportLemmas? (rel : Rel) (e : Expr) (forward : Bool) :
     TransportM (Array TransportLemma) := do
   let lemmas := (← read).lemmas
   let some t := lemmas.get? { forward, relKind := rel.toKind } | return #[]
-  let key ←
-    if let .other rel := rel then
-      let mvar ← mkFreshExprMVar none
-      pure <| if forward then mkApp2 rel e mvar else mkApp2 rel mvar e
-    else
-      pure e
-  let candidates ← t.getMatch key
-  return candidates.insertionSort (·.prio > ·.prio)
+  let candidates ← if let .other rel := rel then getRelMatch t rel e else t.getMatch e
+  return candidates.reverse.insertionSort (·.prio > ·.prio)
+where
+  /-- Look up in a discrimination tree using both `rel` and `e`. -/
+  getRelMatch (d : DiscrTree TransportLemma) (rel e : Expr) : MetaM (Array TransportLemma) :=
+    withReducible do
+      let mut result := #[]
+      if let some c := d.root.find? .star then
+        result ← DiscrTree.getMatchLoop #[e] c #[]
+      let (k, args) ← DiscrTree.getMatchKeyArgs rel (root := true)
+      unless k matches .star do
+        result ← DiscrTree.getMatchRoot d k (#[e] ++ args) result
+      return result
 
 /-- If `e` is of the form `r a b`, return `(r, a, b)`.
 Note: we assume that `e` does not have an `Expr.mdata` annotation. -/
@@ -404,24 +411,27 @@ def mkTransportLemmaCore (hyps' : Array Expr) (target : Expr) (proof : Expr)
   if !lVars.isEmpty || !rVars.isEmpty then
     throwError "Could not find subgoal(s) relating \
       `{lVars.toList.map Expr.fvar}` and `{rVars.toList.map Expr.fvar}`"
-  let mvar ← mkFreshExprMVar none
-  let (lhsKey, rhsKey) :=
-    match rel with
-    | .other rel => (mkApp2 rel lhs mvar, mkApp2 rel mvar rhs)
-    | _ => (lhs, rhs)
-  let keys :=
-    match dir with
-    | some true => [(lhsKey, true)]
-    | some false => [(rhsKey, false)]
-    | none => [(lhsKey, true), (rhsKey, false)]
-  let relKind := rel.toKind
-  let keys ← keys.mapM fun (key, forward) ↦ do
-    let key ← Core.transform key (pre := fun e ↦ do
+  let mkKeys (e : Expr) : MetaM (Array DiscrTree.Key) := do
+    let e ← Core.transform e (pre := fun e ↦ do
       if let .fvar fvarId := e.getAppFn then
         if hyps.contains fvarId then
           return .done (DiscrTree.mkNoindexAnnotation e)
       return .continue e)
-    return ({ forward, relKind }, ← DiscrTree.mkPath key)
+    DiscrTree.mkPath e
+  let mut lhsKeys ← mkKeys lhs
+  let mut rhsKeys ← mkKeys rhs
+  if let .other rel := rel then
+    let keys ← mkKeys rel
+    lhsKeys := keys ++ lhsKeys
+    rhsKeys := keys ++ rhsKeys
+  let relKind := rel.toKind
+  let lhsKey := ({ forward := true, relKind }, lhsKeys)
+  let rhsKey := ({ forward := false, relKind }, rhsKeys)
+  let keys :=
+    match dir with
+    | some true => [lhsKey]
+    | some false => [rhsKey]
+    | none => [lhsKey, rhsKey]
   return {
     keys
     prio
