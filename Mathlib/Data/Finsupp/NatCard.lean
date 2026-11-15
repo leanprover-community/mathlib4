@@ -48,7 +48,7 @@ def Sym.equivNatSumLE (α : Type*) [DecidableEq α] (n : ℕ) :
     Sym (Option α) n ≃ {f : α →₀ ℕ // f.degree ≤ n} :=
   (Sym.equivNatSum (Option α) n).trans (Finsupp.optionSubtypeSumEquiv α ℕ n)
 
-/-- Stars and bars for finitely-supported functions with bounded total degree. -/
+/-- Stars and bars for finitely supported functions with bounded total degree. -/
 lemma Finsupp.natCard_degree_le (α : Type*) [Finite α] (n : ℕ) :
     Nat.card {f : α →₀ ℕ // f.degree ≤ n} = Nat.choose (Nat.card α + n) n := by
   classical
@@ -56,9 +56,11 @@ lemma Finsupp.natCard_degree_le (α : Type*) [Finite α] (n : ℕ) :
     Finite.card_option]
   grind
 
+/-- Fintype instance for finitely supported functions with bounded total degree. -/
 local instance (α : Type*) [Finite α] (n : ℕ) : Fintype {f : α →₀ ℕ // f.degree ≤ n} :=
   (Finsupp.finite_of_degree_le (σ := α) n).fintype
 
+/-- `Fintype.card` version of `Finsupp.natCard_degree_le`. -/
 lemma Finsupp.finCard_degree_le (α : Type*) [Fintype α] (n : ℕ) :
     Fintype.card {f : α →₀ ℕ // f.degree ≤ n} = Nat.choose (Fintype.card α + n) n := by
   simp [← Nat.card_eq_fintype_card, Finsupp.natCard_degree_le α n]
