@@ -181,33 +181,6 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
 
 end ModuleCat
 
-section
-
-variable (x : R) {M N L : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
-    [Module R M] [Module R N] [Module R L]
-
-/-- The linear map `M⧸xM →ₗ[R] N⧸xN` induced by a linear map `M →ₗ[R] N`. -/
-@[expose]
-def QuotSMulTopMap (f : M →ₗ[R] N) :
-    QuotSMulTop x M →ₗ[R ⧸ Ideal.span {x}] QuotSMulTop x N where
-  __ := Submodule.mapQ _ _ f (fun m hm ↦ by
-    rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hm with ⟨m', _, hm'⟩
-    simpa [← hm'] using Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
-  map_smul' r m := by
-    rcases Ideal.Quotient.mk_surjective r with ⟨s, rfl⟩
-    exact map_smul (Submodule.mapQ _ _ f _) s m
-
-lemma quotSMulTopMap_surjective {f : M →ₗ[R] N} (surj : Function.Surjective f) :
-    Function.Surjective (QuotSMulTopMap x f) :=
-  QuotSMulTop.map_surjective x surj
-
-lemma quotSMulTopMap_exact {f : M →ₗ[R] N} {g : N →ₗ[R] L} (exact : Function.Exact f g)
-    (surj : Function.Surjective g) :
-    Function.Exact (QuotSMulTopMap x f) (QuotSMulTopMap x g) :=
-  QuotSMulTop.map_exact x exact surj
-
-end
-
 lemma IsSMulRegular.of_free {x : R} (reg : IsSMulRegular R x) (M : Type*) [AddCommGroup M]
     [Module R M] [free : Module.Free R M] : IsSMulRegular M x := by
   rcases free with ⟨⟨I, ⟨e⟩⟩⟩
@@ -253,25 +226,28 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
       have reg2'' : IsSMulRegular S.X₂ x := reg1.of_free S.X₂
       have reg2' : IsSMulRegular S.X₁ x := reg2''.submodule _ _
-      have Sx_exact' := quotSMulTopMap_exact x f.exact_subtype_ker_map surjf
-      let Sx := ModuleCat.shortComplexOfCompEqZero (QuotSMulTopMap x (LinearMap.ker f).subtype)
-        (QuotSMulTopMap x f) Sx_exact'.linearMap_comp_eq_zero
-      have inj : Function.Injective (QuotSMulTopMap x (LinearMap.ker f).subtype) := by
+      have surj := Ideal.Quotient.mk_surjective (I := Ideal.span {x})
+      let g := (QuotSMulTop.map x (LinearMap.ker f).subtype).extendScalarsOfSurjective surj
+      let h := (QuotSMulTop.map x f).extendScalarsOfSurjective surj
+      have Sx_exact' : Function.Exact g h :=
+        QuotSMulTop.map_exact x f.exact_subtype_ker_map surjf
+      let Sx := ModuleCat.shortComplexOfCompEqZero g h Sx_exact'.linearMap_comp_eq_zero
+      have inj : Function.Injective (QuotSMulTop.map x (LinearMap.ker f).subtype) := by
         rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
         intro y hy
-        rcases Submodule.Quotient.mk_surjective _ y with ⟨y', hy'⟩
-        simp only [QuotSMulTopMap, ← hy', LinearMap.mem_ker, LinearMap.coe_mk,
-          LinearMap.coe_toAddHom, Submodule.mapQ_apply, Submodule.subtype_apply,
-          Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists] at hy
-        rcases hy with ⟨z, _, hz⟩
+        rcases Submodule.Quotient.mk_surjective _ y with ⟨y', rfl⟩
+        simp only [LinearMap.mem_ker, QuotSMulTop.map_apply_mk, Submodule.subtype_apply,
+          Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_top,
+          true_and] at hy
+        rcases hy with ⟨z, hz⟩
         have := y'.2
         rw [← hz, LinearMap.mem_ker, map_smul] at this
-        simp only [← hy', Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists,
+        simp only [Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists,
           Submodule.mem_top, true_and, Subtype.exists, SetLike.mk_smul_mk, LinearMap.mem_ker]
         use z, reg2.right_eq_zero_of_smul this
         exact Subtype.val_inj.mp hz
       have Sx_exact := ModuleCat.shortComplex_shortExact Sx Sx_exact' inj
-        (quotSMulTopMap_surjective x surjf)
+        (QuotSMulTop.map_surjective x surjf)
       have := Module.finitePresentation_of_finite R N
       exact ((S_exact.hasProjectiveDimensionLT_X₃_iff n proj).trans (ih S.X₁ reg2')).trans
         (Sx_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).symm
