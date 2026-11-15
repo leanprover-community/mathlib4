@@ -352,6 +352,15 @@ lemma IsSelfAdjoint.iff_of_le {a b : R} (hab : a ≤ b) :
 
 alias ⟨_, IsSelfAdjoint.of_le⟩ := IsSelfAdjoint.iff_of_le
 
+/-- A star-ordered ring with a proper star has injective scalar multiplication by natural
+numbers. -/
+lemma StarOrderedRing.hasUniqueDiv [IsProperStar R] : HasUniqueDiv R where
+  nsmul_right_injective n hn x y h := by
+    rw [← sub_eq_zero, ← star_mul_self_eq_zero]
+    apply le_antisymm ?_ (star_mul_self_nonneg _)
+    replace h : n • (star (x - y) * (x - y)) = 0 := by simp [← mul_smul_comm, smul_sub, h]
+    grw [le_self_nsmul (star_mul_self_nonneg _) hn, h]
+
 end NonUnitalRing
 
 section Semiring

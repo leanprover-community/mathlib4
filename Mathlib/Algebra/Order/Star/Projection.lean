@@ -24,16 +24,6 @@ public section
 
 open scoped StarRing
 
-/-- A star-ordered ring with a proper star has injective scalar multiplication by natural
-numbers. -/
-lemma StarOrderedRing.hasUniqueDiv {R : Type*} [NonUnitalRing R] [StarRing R] [PartialOrder R]
-    [StarOrderedRing R] [IsProperStar R] : HasUniqueDiv R where
-  nsmul_right_injective n hn x y h := by
-    rw [← sub_eq_zero, ← star_mul_self_eq_zero]
-    apply le_antisymm ?_ (star_mul_self_nonneg _)
-    replace h : n • (star (x - y) * (x - y)) = 0 := by simp [← mul_smul_comm, smul_sub, h]
-    grw [le_self_nsmul (star_mul_self_nonneg _) hn, h]
-
 namespace IsStarProjection
 
 variable {R : Type*} [NonUnitalRing R] [StarRing R]
@@ -127,19 +117,22 @@ lemma le_iff_mul_eq_left (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ p * q = p :=
   hp.le_tfae hq |>.out 1 6
 
-lemma le_iff_sub (hp : IsStarProjection p) (hq : IsStarProjection q) :
+lemma le_iff_isStarProjection_sub (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ IsStarProjection (q - p) :=
   hp.le_tfae hq |>.out 1 2
 
-lemma le_iff_idempotent_sub (hp : IsStarProjection p) (hq : IsStarProjection q) :
+lemma le_iff_isIdempotentElem_sub (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ IsIdempotentElem (q - p) :=
   hp.le_tfae hq |>.out 1 3
 
-lemma le_iff_mul_mul_eq (hp : IsStarProjection p) (hq : IsStarProjection q) :
+@[deprecated (since := "2026-11-15")] alias le_iff_sub := le_iff_isStarProjection_sub
+@[deprecated (since := "2026-11-15")] alias le_iff_idempotent_sub := le_iff_isIdempotentElem_sub
+
+lemma le_iff_conjugate_eq (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ q * p * q = p :=
   hp.le_tfae hq |>.out 1 7
 
-lemma le_iff_mul_mul_eq' (hp : IsStarProjection p) (hq : IsStarProjection q) :
+lemma le_iff_conjugate_eq' (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p ≤ q ↔ p * q * p = p :=
   hp.le_tfae hq |>.out 1 8
 
@@ -148,10 +141,10 @@ lemma le_iff_isStarOrtho_sub (hp : IsStarProjection p) (hq : IsStarProjection q)
   hp.le_tfae hq |>.out 1 4
 
 /-- If `p ≤ q` are star projections, then `q * p * q = p`. -/
-alias ⟨mul_mul_eq_of_le, _⟩ := le_iff_mul_mul_eq
+alias ⟨conjugate_eq_of_le, _⟩ := le_iff_conjugate_eq
 
 /-- If `p ≤ q` are star projections, then `p * q * p = p`. -/
-alias ⟨mul_mul_eq_of_le', _⟩ := le_iff_mul_mul_eq'
+alias ⟨conjugate_eq_of_le', _⟩ := le_iff_conjugate_eq'
 
 lemma commute_of_le (hp : IsStarProjection p) (hq : IsStarProjection q) (h : p ≤ q) :
     Commute p q := by
