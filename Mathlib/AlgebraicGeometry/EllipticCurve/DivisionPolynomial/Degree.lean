@@ -400,8 +400,9 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
     split_ifs <;> ring1
   have hd' : (n + 1 + 1) ^ 2 =
       expDegree (n + 3) + expDegree (n + 1) + if Even (n + 1) then 3 else 0 := by
-    fail_if_not_idempotent push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (_ ^ 2 : ℤ)) two_pos, mul_add,
-      expDegree_cast (n + 2).succ_ne_zero, expDegree_cast n.succ_ne_zero, Nat.even_add_one, ite_not]
+    fail_if_not_idempotent
+      push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (_ ^ 2 : ℤ)) two_pos, mul_add,
+        expDegree_cast (n + 2).succ_ne_zero, expDegree_cast n.succ_ne_zero, Nat.even_add_one, ite_not]
     split_ifs <;> ring1
   have hc : (1 : ℤ) = 1 * expCoeff (n + 2) ^ 2 * (if Even (n + 1) then 1 else 4) -
       expCoeff (n + 3) * expCoeff (n + 1) * (if Even (n + 1) then 4 else 1) := by
