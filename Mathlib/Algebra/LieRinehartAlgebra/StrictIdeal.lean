@@ -141,7 +141,7 @@ instance : Bracket s M where
   bracket x m := ⁅(x : L), m⁆
 
 @[simp]
-theorem coe_bracket_of_module (x : s) (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
+theorem bracket_coe (x : s) (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
   rfl
 
 instance : IsLieTower s L M where
