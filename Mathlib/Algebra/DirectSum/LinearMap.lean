@@ -5,10 +5,10 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.FreeModule.PID
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Trace
+
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Linear maps between direct sums
@@ -30,6 +30,7 @@ section IsInternal
 
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If a linear map `f : M₁ → M₂` respects direct sum decompositions of `M₁` and `M₂`, then it has a
 block diagonal matrix with respect to bases compatible with the direct sum decompositions. -/
 lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} [CommSemiring R]

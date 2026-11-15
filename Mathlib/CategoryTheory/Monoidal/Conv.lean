@@ -40,6 +40,7 @@ instance : Mul (Conv M N) where
 
 theorem mul_eq (f g : Conv M N) : f * g = Δ[M] ≫ f ▷ M ≫ N ◁ g ≫ μ[N] := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Monoid (Conv M N) where
   one_mul f := by simp [one_eq, mul_eq, ← whisker_exchange_assoc]
   mul_one f := by simp [one_eq, mul_eq, ← whisker_exchange_assoc]

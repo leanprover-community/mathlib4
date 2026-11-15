@@ -8,6 +8,9 @@ module
 public import Batteries.Data.DList.Basic
 public import Mathlib.Data.WSeq.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous definitions concerning weak sequences
 
@@ -22,8 +25,6 @@ universe u v w
 namespace Stream'.WSeq
 
 variable {α : Type u} {β : Type v} {γ : Type w}
-
-open Function
 
 /-- Get the length of `s` (if it is finite and completes in finite time). -/
 def length (s : WSeq α) : Computation ℕ :=

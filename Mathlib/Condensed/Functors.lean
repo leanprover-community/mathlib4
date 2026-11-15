@@ -5,8 +5,9 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.PreservesLimits
 public import Mathlib.Condensed.Explicit
+
+import Mathlib.CategoryTheory.Sites.PreservesLimits
 
 /-!
 # Functors from categories of topological spaces to condensed sets

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
+
 /-!
 
 # Restricting adjunctions
@@ -33,7 +34,6 @@ variable {iC : C ⥤ C'} {iD : D ⥤ D'}
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a full subcategory of `C'` and `D` is a full subcategory of `D'`, then we can restrict
 an adjunction `L' ⊣ R'` where `L' : C' ⥤ D'` and `R' : D' ⥤ C'` to `C` and `D`.
 The construction here is slightly more general, in that `C` is required only to have a full and
@@ -59,14 +59,12 @@ noncomputable def restrictFullyFaithful : L ⊣ R :=
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_unit_app (X : C) :
     iC.map ((adj.restrictFullyFaithful hiC hiD comm1 comm2).unit.app X) =
     adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫ comm2.hom.app (L.obj X) := by
   simp [restrictFullyFaithful]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_counit_app (X : D) :
     iD.map ((adj.restrictFullyFaithful hiC hiD comm1 comm2).counit.app X) =
@@ -74,7 +72,6 @@ lemma map_restrictFullyFaithful_counit_app (X : D) :
   dsimp [restrictFullyFaithful]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
     (adj.restrictFullyFaithful hiC hiD comm1 comm2).homEquiv X Y f =
       hiC.preimage (adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫

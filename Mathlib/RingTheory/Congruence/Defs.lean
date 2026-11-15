@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.GroupTheory.Congruence.Defs
-public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings
@@ -26,7 +25,6 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 
 ## TODO
 
-* Use this for `RingQuot` too.
 * Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
@@ -77,6 +75,7 @@ lemma toCon_injective : Injective fun c : RingCon R ↦ c.toCon := fun c d ↦ b
 @[simp] lemma toCon_inj : c.toCon = d.toCon ↔ c = d := toCon_injective.eq_iff
 
 /-- A coercion from a congruence relation to its underlying binary relation. -/
+@[macro_inline]
 instance : FunLike (RingCon R) R (R → Prop) where
   coe c := c.r
   coe_injective := DFunLike.coe_injective.comp toCon_injective
@@ -380,16 +379,14 @@ instance [AddCommMagma R] [Mul R] (c : RingCon R) : AddCommMagma c.Quotient :=
 instance [AddCommSemigroup R] [Mul R] (c : RingCon R) : AddCommSemigroup c.Quotient :=
   inferInstanceAs <| AddCommSemigroup c.toAddCon.Quotient
 
-instance [AddMonoid R] [Mul R] (c : RingCon R) : AddMonoid c.Quotient where
-  nsmul n x := n • x
-  __ : AddMonoid c.Quotient := inferInstanceAs <| AddMonoid c.toAddCon.Quotient
+instance [AddMonoid R] [Mul R] (c : RingCon R) : AddMonoid c.Quotient :=
+  inferInstanceAs <| AddMonoid c.toAddCon.Quotient
 
 instance [AddCommMonoid R] [Mul R] (c : RingCon R) : AddCommMonoid c.Quotient :=
   inferInstanceAs <| AddCommMonoid c.toAddCon.Quotient
 
-instance [AddGroup R] [Mul R] (c : RingCon R) : AddGroup c.Quotient where
-  zsmul n x := n • x
-  __ : AddGroup c.Quotient := inferInstanceAs <| AddGroup c.toAddCon.Quotient
+instance [AddGroup R] [Mul R] (c : RingCon R) : AddGroup c.Quotient :=
+  inferInstanceAs <| AddGroup c.toAddCon.Quotient
 
 instance [AddCommGroup R] [Mul R] (c : RingCon R) : AddCommGroup c.Quotient :=
   inferInstanceAs <| AddCommGroup c.toAddCon.Quotient

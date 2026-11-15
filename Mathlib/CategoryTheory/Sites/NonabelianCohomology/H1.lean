@@ -36,7 +36,7 @@ case, it would be a particular case of Čech cohomology (TODO).
 * take the colimit of `OneCohomology G U` over all covering families `U` (for
   a Grothendieck topology)
 
-# References
+## References
 
 * [J. Frenkel, *Cohomologie non abélienne et espaces fibrés*][frenkel1957]
 

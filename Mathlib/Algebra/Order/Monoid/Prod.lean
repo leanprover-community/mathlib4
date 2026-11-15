@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Data.Prod.Lex
+public import Mathlib.Order.Prod.Lex.Basic
 
 /-! # Products of ordered monoids -/
 

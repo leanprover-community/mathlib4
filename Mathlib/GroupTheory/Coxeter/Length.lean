@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.GroupTheory.Coxeter.Basic
 public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Zify
 
 /-!
 # The length function, reduced words, and descents
@@ -45,7 +44,7 @@ prove analogous results.
 
 ## References
 
-* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
+* [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*][bjorner2005]
 
 -/
 
@@ -55,7 +54,7 @@ assert_not_exists TwoSidedIdeal
 
 namespace CoxeterSystem
 
-open List Matrix Function
+open List Function
 
 variable {B W : Type*} [Group W]
 variable {M : CoxeterMatrix B} (cs : CoxeterSystem M W)
@@ -87,12 +86,9 @@ theorem exists_isReduced (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π �
   obtain ⟨ω, hω, rfl⟩ := Nat.find_spec (cs.exists_word_with_prod w)
   exact ⟨ω, hω, rfl⟩
 
-@[deprecated (since := "2026-03-25")] alias exists_reduced_word := exists_isReduced
-@[deprecated (since := "2026-03-25")] alias exists_reduced_word' := exists_isReduced
-
-open scoped Classical in
-theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
-  Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, rfl, rfl⟩
+theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length := by
+  classical
+  exact Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, rfl, rfl⟩
 
 @[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.length_wordProd_le [])
 
@@ -127,19 +123,6 @@ theorem length_le_length_mul_add_left (w₁ w₂ : W) : ℓ w₂ ≤ ℓ (w₁ *
 
 theorem length_le_length_mul_add_right (w₁ w₂ : W) : ℓ w₁ ≤ ℓ (w₁ * w₂) + ℓ w₂ := by
   simpa using cs.length_mul_le (w₁ * w₂) w₂⁻¹
-
-@[deprecated length_le_length_mul_add_right (since := "2026-03-25")]
-theorem length_mul_ge_length_sub_length (w₁ w₂ : W) : ℓ w₁ - ℓ w₂ ≤ ℓ (w₁ * w₂) := by
-  rw [Nat.sub_le_iff_le_add]; exact length_le_length_mul_add_right ..
-
-@[deprecated length_le_length_mul_add_left (since := "2026-03-25")]
-theorem length_mul_ge_length_sub_length' (w₁ w₂ : W) : ℓ w₂ - ℓ w₁ ≤ ℓ (w₁ * w₂) := by
-  rw [Nat.sub_le_iff_le_add]; exact length_le_length_mul_add_left ..
-
-@[deprecated "use `length_le_length_mul_add_left` and `length_le_length_mul_add_right"
-(since := "2026-03-25")]
-theorem length_mul_ge_max (w₁ w₂ : W) : max (ℓ w₁ - ℓ w₂) (ℓ w₂ - ℓ w₁) ≤ ℓ (w₁ * w₂) :=
-  max_le (length_mul_ge_length_sub_length ..) (length_mul_ge_length_sub_length' ..)
 
 /-- The homomorphism that sends each element `w : W` to the parity of the length of `w`.
 (See `lengthParity_eq_ofAdd_length`.) -/

@@ -24,7 +24,9 @@ Lambert series.
 
 @[expose] public section
 
-open Filter Complex ArithmeticFunction Nat Topology
+open Filter ArithmeticFunction Nat
+
+open scoped Topology
 
 /-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
 to `(a, b)`. -/
@@ -43,6 +45,7 @@ lemma divisorsAntidiagonalFactors_one (x : Nat.divisorsAntidiagonal 1) :
   simp only [mul_eq_one, ne_eq, one_ne_zero, not_false_eq_true, and_true] at h
   simp [divisorsAntidiagonalFactors, h.1, h.2]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence from the union over `n` of `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+`
 given by sending `n = a * b` to `(a, b)`. -/
 def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
@@ -138,6 +141,6 @@ lemma tendsto_zero_geometric_tsum_pnat {r : 𝕜} (hr : ‖r‖ < 1) :
     simp_rw [← this, pow_zero, add_sub_cancel_left, mul_comm, pow_mul]
   rw [funext h2, (by simp : 𝓝 (0 : 𝕜) = 𝓝 ((1 - 0)⁻¹ - 1)), tendsto_sub_const_iff,
     tendsto_inv_iff₀ (by simp), tendsto_const_sub_iff]
-  exact (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).comp <| tendsto_PNat_val_atTop_atTop
+  exact (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).comp tendsto_PNat_val_atTop_atTop
 
 end tsum

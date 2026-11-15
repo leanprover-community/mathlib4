@@ -7,7 +7,8 @@ module
 
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Norm
-public import Mathlib.RingTheory.FractionalIdeal.Operations
+
+import Mathlib.Algebra.CharZero.Infinite
 
 /-!
 

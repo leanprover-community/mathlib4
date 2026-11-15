@@ -17,7 +17,6 @@ In this file, we pull back the sigma-algebra on `V → V → Prop` to a sigma-al
 
 public section
 
-open MeasureTheory
 open scoped Finset
 
 namespace SimpleGraph

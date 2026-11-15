@@ -50,7 +50,7 @@ end ContinuousMap
 
 namespace ZeroAtInftyContinuousMap
 
-open ZeroAtInfty
+open scoped ZeroAtInfty
 
 instance [TopologicalSpace α] [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C₀(α, A) where
 

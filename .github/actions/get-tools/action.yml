@@ -8,8 +8,8 @@
 # about the download/verification fails, so this action can never make CI worse
 # than building from source.
 #
-# Requires (fast path only): `actions: read` permission. The `gh` CLI is provided
-# by the Hoskinson runner image. Any lookup/download failure falls through to the
+# Requires (fast path only): `actions: read` permission and the `gh` CLI, which the
+# self-hosted runner image provides. Any lookup/download failure falls through to the
 # source build, so the fast path can never make CI worse.
 name: Get CI tools
 description: Download prebuilt CI tools from master, or build them from source.
@@ -139,10 +139,11 @@ runs:
 
     - name: Checkout tools branch (source build)
       if: ${{ steps.finalize.outputs.result == 'build' }}
-      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         ref: ${{ inputs.tools_source_ref }}
         path: ${{ inputs.path }}
+        persist-credentials: false # no later step needs git credentials
 
     - name: Build tools from source
       if: ${{ steps.finalize.outputs.result == 'build' }}

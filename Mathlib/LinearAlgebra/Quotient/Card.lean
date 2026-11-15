@@ -7,15 +7,14 @@ module
 
 public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.GroupTheory.Coset.Basic
 
-/-! Results about the cardinality of a quotient module. -/
+import Mathlib.GroupTheory.Coset.Basic
+
+/-! # Results about the cardinality of a quotient module -/
 
 public section
 
 namespace Submodule
-
-open LinearMap QuotientAddGroup
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 

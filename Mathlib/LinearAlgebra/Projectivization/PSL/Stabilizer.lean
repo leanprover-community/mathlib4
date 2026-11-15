@@ -36,7 +36,7 @@ def Matrix.SpecialLinearGroup.lineStab (L : Submodule F (ι → F)) :
   carrier := {A | ∀ w : ι → F, A • w - w ∈ L}
   one_mem' := by simp
   mul_mem' {A B} hA hB := fun w ↦ by
-    simp only [Set.mem_setOf_eq, mul_smul] at hA hB ⊢
+    simp only [Set.mem_ofPred_eq, mul_smul] at hA hB ⊢
     rw [show A • B • w - w = ((A • (B • w) - A • w) - (B • w - w)) +
       (B • w - w) + (A • w - w) by abel, ← smul_sub]
     exact add_mem (add_mem (hA _) (hB w)) (hA w)

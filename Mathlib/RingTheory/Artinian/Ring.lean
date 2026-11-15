@@ -5,10 +5,11 @@ Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
 module
 
-public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Localization.Defs
+
+import Mathlib.Algebra.Field.Equiv
 
 /-!
 # Artinian rings
@@ -25,7 +26,7 @@ itself, or simply Artinian if it is both left and right Artinian.
 * `IsArtinianRing.localization_surjective`: the canonical homomorphism from a commutative Artinian
   ring to any localization of itself is surjective.
 
-* `IsArtinianRing.isNilpotent_jacobson_bot`: the Jacobson radical of a commutative Artinian ring
+* `IsArtinianRing.isNilpotent_jacobson`: the Jacobson radical of a commutative Artinian ring
   is a nilpotent ideal.
 
 ## Implementation Details
@@ -51,18 +52,24 @@ open Set Submodule IsArtinian
 namespace IsArtinianRing
 
 @[stacks 00J8]
+theorem isNilpotent_jacobson (R : Type*) [Ring R] [IsArtinianRing R] :
+    IsNilpotent (Ring.jacobson R) :=
+  IsSemiprimaryRing.isNilpotent
+
+@[deprecated isNilpotent_jacobson +typeChanged (since := "2026-10-12")]
 theorem isNilpotent_jacobson_bot {R} [Ring R] [IsArtinianRing R] :
-    IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) :=
-  Ideal.jacobson_bot (R := R) ▸ IsSemiprimaryRing.isNilpotent
+    IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
+  simpa only [Ideal.jacobson_bot] using isNilpotent_jacobson R
 
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
 lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
   simp_rw [Ideal.jacobson, Ideal.radical_eq_sInf, IsArtinianRing.isPrime_iff_isMaximal]
 
+variable (R) in
 theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
-  rw [nilradical, ← jacobson_eq_radical]
-  exact isNilpotent_jacobson_bot
+  rw [nilradical, ← jacobson_eq_radical, Ideal.zero_eq_bot, Ideal.jacobson_bot]
+  exact isNilpotent_jacobson R
 
 variable (R) in
 /-- Commutative Artinian reduced local ring is a field. -/

@@ -34,17 +34,7 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {S M G : Type*}
 
-/-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
-@[to_additive /-- `x` is additive semiconjugate to `y` by `a` if `a + x = y + a` -/]
-def SemiconjBy [Mul M] (a x y : M) : Prop :=
-  a * x = y * a
-
 namespace SemiconjBy
-
-/-- Equality behind `SemiconjBy a x y`; useful for rewriting. -/
-@[to_additive /-- Equality behind `AddSemiconjBy a x y`; useful for rewriting. -/]
-protected theorem eq [Mul S] {a x y : S} (h : SemiconjBy a x y) : a * x = y * a :=
-  h
 
 section Semigroup
 
@@ -75,11 +65,6 @@ additive semigroup is transitive. -/]
 protected theorem isTrans : IsTrans S fun a b ↦ ∃ c, SemiconjBy c a b :=
   ⟨fun _ _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨y * x, hy.mul_left hx⟩⟩
 
-@[deprecated (since := "2026-02-20")]
-protected alias _root_.AddSemiconjBy.transitive := AddSemiconjBy.isTrans
-@[to_additive existing, deprecated (since := "2026-02-20")]
-protected alias transitive := SemiconjBy.isTrans
-
 end Semigroup
 
 section MulOneClass
@@ -101,8 +86,6 @@ generally, on `MulOneClass` type) is reflexive. -/
 additive monoid (or, more generally, on an `AddZeroClass` type) is reflexive. -/]
 protected theorem refl : Std.Refl fun a b : M ↦ ∃ c, SemiconjBy c a b where
   refl a := ⟨1, one_left a⟩
-
-@[deprecated (since := "2026-03-27")] protected alias reflexive := SemiconjBy.refl
 
 end MulOneClass
 

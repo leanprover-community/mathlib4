@@ -9,7 +9,6 @@ public import Mathlib.Probability.BrownianMotion.GaussianProjectiveFamily
 public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 public import Mathlib.Probability.Independence.Process.HasIndepIncrements.Basic
 
-import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
@@ -54,7 +53,7 @@ pre-Brownian motion, Brownian motion, Markov property
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory.BrownianReal
 open scoped ENNReal NNReal Topology
@@ -77,7 +76,7 @@ structure IsPreBrownianReal (X : ℝ≥0 → Ω → ℝ) (P : Measure Ω := by v
   mk' ::
   hasLaw : ∀ I : Finset ℝ≥0, HasLaw (fun ω ↦ I.restrict (X · ω)) (projectiveFamily I) P
 
-/- A modification of a pre-Brownian is pre-Brownian. -/
+/-- A modification of a pre-Brownian process is pre-Brownian. -/
 lemma IsPreBrownianReal.congr {C : ℝ≥0 → Ω → ℝ} (hB : IsPreBrownianReal B P)
     (h : ∀ t, B t =ᵐ[P] C t) :
     IsPreBrownianReal C P where
@@ -133,7 +132,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
     (h2 : ∀ t, P[X t] = 0) (h3 : ∀ s t, s ≤ t → cov[X s, X t; P] = s) :
     IsPreBrownianReal X P where
   hasLaw I := by
-    refine ⟨aemeasurable_pi_lambda _ fun _ ↦ h1.aemeasurable _, ?_⟩
+    refine ⟨.of_eval fun _ ↦ h1.aemeasurable _, ?_⟩
     apply (MeasurableEquiv.toLp 2 (_ → ℝ)).map_measurableEquiv_injective
     rw [MeasurableEquiv.coe_toLp, ← PiLp.coe_symm_continuousLinearEquiv 2 ℝ]
     have := (h1.hasGaussianLaw I).isGaussian_map
@@ -149,7 +148,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
         · simpa using h2 _
         · exact fun _ ↦ (h1.hasGaussianLaw_eval _).integrable
       any_goals fun_prop
-      exact aemeasurable_pi_lambda _ fun _ ↦ h1.aemeasurable _
+      exact .of_eval fun _ ↦ h1.aemeasurable _
     · rw [← ContinuousLinearMap.toBilinForm_inj]
       refine LinearMap.BilinForm.ext_of_isSymm isPosSemidef_covarianceBilin.isSymm
         isPosSemidef_covarianceBilin.isSymm fun x ↦ ?_
@@ -162,7 +161,7 @@ theorem IsGaussianProcess.isPreBrownianReal_of_covariance (h1 : IsGaussianProces
           rw [min_eq_left hij]
           exact h3 i j hij
         any_goals exact Measurable.aestronglyMeasurable (by fun_prop)
-        exact aemeasurable_pi_lambda _ (fun _ ↦ h1.aemeasurable _)
+        exact .of_eval (fun _ ↦ h1.aemeasurable _)
       · exact fun i ↦ (IsGaussian.hasGaussianLaw_id.eval i).memLp_two
       · exact fun i ↦ ((h1.hasGaussianLaw I).isGaussian_map.hasGaussianLaw_id.eval i).memLp_two
 
@@ -266,13 +265,13 @@ lemma IsPreBrownianReal.indepFun_shift (hB : IsPreBrownianReal B P) (t₀ : ℝ�
           map_add' x y := by simp
           map_smul' c x := by simp }, by simp⟩
   any_goals fun_prop
-  · rintro s ⟨t, ht : t ≤ t₀⟩
-    have := hB.isGaussianProcess.isProbabilityMeasure
-    rw [covariance_fun_sub_left, hB.covariance_eval, hB.covariance_eval, min_eq_right, min_eq_right,
-      sub_self]
-    · grind
-    · simp [ht, le_add_right]
-    all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
+  rintro s ⟨t, ht : t ≤ t₀⟩
+  have := hB.isGaussianProcess.isProbabilityMeasure
+  rw [covariance_fun_sub_left, hB.covariance_eval, hB.covariance_eval, min_eq_right, min_eq_right,
+    sub_self]
+  · grind
+  · simp [ht, le_add_right]
+  all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
 
 /-- If `B` is a pre-Brownian motion then `t ↦ t * B (1 / t)` is a pre-Brownian motion. -/
 lemma IsPreBrownianReal.inv (hB : IsPreBrownianReal B P) :

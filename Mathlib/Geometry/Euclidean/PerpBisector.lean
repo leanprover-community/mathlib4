@@ -5,10 +5,9 @@ Authors: Yury Kudryashov, Joseph Myers
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Orthogonal
-public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.InnerProductSpace.Affine
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
 
 /-!
 # Perpendicular bisector of a segment
@@ -71,6 +70,8 @@ theorem midpoint_mem_perpBisector (p₁ p₂ : P) :
 
 theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
   ⟨_, midpoint_mem_perpBisector _ _⟩
+
+instance : Nonempty (perpBisector p₁ p₂) := perpBisector_nonempty.to_subtype
 
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :

@@ -5,11 +5,11 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
-public import Mathlib.Tactic.ProxyType
+public meta import Lean.Elab.Deriving.Util
 public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
-public meta import Lean.Elab.Deriving.Util
+public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
+public import Mathlib.Tactic.ProxyType
 
 /-!
 # The `Fintype` derive handler

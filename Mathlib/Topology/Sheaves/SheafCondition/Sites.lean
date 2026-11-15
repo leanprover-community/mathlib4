@@ -5,9 +5,8 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Spaces
-public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
 
@@ -147,7 +146,7 @@ variable {X Y : TopCat.{w}} {f : X ⟶ Y} {F : Y.Presheaf C}
 
 theorem Topology.IsOpenEmbedding.compatiblePreserving (hf : IsOpenEmbedding f) :
     CompatiblePreserving (Opens.grothendieckTopology Y) hf.functor := by
-  haveI : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
+  have : Mono f := (TopCat.mono_iff_injective f).mpr hf.injective
   apply compatiblePreservingOfDownwardsClosed
   intro U V i
   refine ⟨(Opens.map f).obj V, eqToIso <| Opens.ext <| Set.image_preimage_eq_of_subset fun x h ↦ ?_⟩
@@ -231,7 +230,7 @@ def isTerminalOfEmpty (F : Sheaf C X) : Limits.IsTerminal (F.obj.obj (op ⊥)) :
 /-- A variant of `isTerminalOfEmpty` that is easier to `apply`. -/
 def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
     Limits.IsTerminal (F.obj.obj (op U)) := by
-  convert! F.isTerminalOfEmpty
+  convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
 is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`

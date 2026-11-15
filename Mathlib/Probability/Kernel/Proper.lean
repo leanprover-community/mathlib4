@@ -29,7 +29,7 @@ Prove the `integral` versions of the `lintegral` lemmas below
 
 public section
 
-open MeasureTheory ENNReal NNReal Set
+open MeasureTheory ENNReal Set
 open scoped ProbabilityTheory
 
 namespace ProbabilityTheory.Kernel
@@ -128,14 +128,14 @@ lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf
   · rintro c A hA
     simp_rw [← smul_indicator_one_apply, smul_mul_assoc, smul_eq_mul]
     rw [lintegral_const_mul, hπ.lintegral_indicator_mul h𝓑𝓧 hf hA]
-    · measurability
+    measurability
   · rintro g₁ g₂ - _ hg₂_meas hg₁ hg₂
     simp only [Pi.add_apply, add_mul]
     rw [lintegral_add_right, hg₁, hg₂]
-    · exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
+    exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
   · rintro g' hg'_meas hg'_mono hg'
     simp_rw [ENNReal.iSup_mul]
-    rw [lintegral_iSup (fun n ↦ ((hg'_meas _).mono h𝓑𝓧 le_rfl).mul hf)
+    rw [lintegral_iSup (fun n ↦ ((hg'_meas _).mono h𝓑𝓧 le_rfl).fun_mul hf)
       (hg'_mono.mul_const zero_le)]
     simp_rw [hg']
 

@@ -1,22 +1,24 @@
-import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Bound
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.ComputeDegree
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Finiteness
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Group
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NoncommRing
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.TautoSet
+module
+
+public import Mathlib.Algebra.Order.Floor.Semifield
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Basic.ENNReal.Basic
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Bound
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.ComputeDegree
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Group
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Tactic.TautoSet
 
 /--
 info: Try these:
@@ -78,9 +80,6 @@ example : 37^2 - 35^2 = 72 * 2 := by hint
 info: Try these:
   [apply] 🎉️ decide
   [apply] norm_num
-  Remaining subgoals:
-  ⊢ Nat.Prime 37
-  [apply] ring_nf
   Remaining subgoals:
   ⊢ Nat.Prime 37
 -/
@@ -183,11 +182,11 @@ info: Try these:
   [apply] 🎉️ compute_degree
   [apply] norm_num
   Remaining subgoals:
-  ⊢ (X + 1).natDegree ≤ 1
+  ⊢ (X + 2).natDegree ≤ 1
 -/
 #guard_msgs in
 open Polynomial in
-example : natDegree ((X + 1) : Nat[X]) ≤ 1 := by hint
+example : natDegree ((X + 2) : Nat[X]) ≤ 1 := by hint
 end compute_degree
 
 section field_simp

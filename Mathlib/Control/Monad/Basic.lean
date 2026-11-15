@@ -5,10 +5,9 @@ Authors: Simon Hudon
 -/
 module
 
+public import Batteries.Data.Except
 public import Mathlib.Logic.Equiv.Defs
-public import Batteries.Lean.Except
 
-import Mathlib.Tactic.Attr.Register
 
 /-!
 # Monad

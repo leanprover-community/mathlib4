@@ -88,7 +88,7 @@ class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   protected r : R → R → Prop
   /-- The relation `r` must be well-founded.
     This ensures that the GCD algorithm always terminates. -/
-  r_wellFounded : WellFounded r
+  [r_wellFounded : WellFounded r]
   /-- The relation `r` satisfies `r (a % b) b`. -/
   protected remainder_lt : ∀ (a) {b}, b ≠ 0 → r (remainder a b) b
   /-- An additional constraint on `r`. -/
@@ -114,9 +114,6 @@ local infixl:50 " ≺ " => EuclideanDomain.r
 
 local instance wellFoundedRelation : WellFoundedRelation R where
   rel := EuclideanDomain.r
-  wf := r_wellFounded
-
-instance isWellFounded : IsWellFounded R (· ≺ ·) where
   wf := r_wellFounded
 
 -- see Note [lower instance priority]
@@ -190,7 +187,7 @@ termination_by a
 @[simp]
 theorem gcd_zero_left (a : R) : gcd 0 a = a := by
   rw [gcd]
-  exact if_pos rfl
+  exact ite_eq_left rfl
 
 /-- An implementation of the extended GCD algorithm.
 At each step we are computing a triple `(r, s, t)`, where `r` is the next value of the GCD
@@ -212,14 +209,14 @@ termination_by r
 @[simp]
 theorem xgcd_zero_left {s t r' s' t' : R} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
   unfold xgcdAux
-  exact if_pos rfl
+  exact ite_eq_left rfl
 
 theorem xgcdAux_rec {r s t r' s' t' : R} (h : r ≠ 0) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
   conv =>
     lhs
     rw [xgcdAux]
-  exact if_neg h
+  exact ite_eq_right h
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
   satisfying `gcd x y = x * a + y * b`. -/

@@ -3,7 +3,9 @@ Copyright (c) 2021 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen
 -/
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # IMO 1977 Q6
@@ -18,7 +20,7 @@ then we use it to prove the statement for positive naturals.
 
 namespace Imo1977Q6
 
-theorem imo1977_q6_nat (f : ℕ → ℕ) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
+public theorem imo1977_q6_nat (f : ℕ → ℕ) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
   have h' (k n : ℕ) (hk : k ≤ n) : k ≤ f n := by
     induction k generalizing n with
     | zero => exact Nat.zero_le _
@@ -36,7 +38,7 @@ end Imo1977Q6
 
 open Imo1977Q6
 
-theorem imo1977_q6 (f : ℕ+ → ℕ+) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
+public theorem imo1977_q6 (f : ℕ+ → ℕ+) (h : ∀ n, f (f n) < f (n + 1)) : ∀ n, f n = n := by
   intro n
   have := by
     refine imo1977_q6_nat (fun m => if 0 < m then f m.toPNat' else 0) ?_ n

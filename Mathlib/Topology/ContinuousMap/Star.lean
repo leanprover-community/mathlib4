@@ -5,8 +5,8 @@ Authors: Kim Morrison, Nicolò Cavalleri
 -/
 module
 
-public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Topology.Algebra.Star
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!

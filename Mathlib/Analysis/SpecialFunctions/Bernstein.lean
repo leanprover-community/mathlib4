@@ -5,12 +5,13 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.Convex.Gauge
-public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.RingTheory.Polynomial.Bernstein
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.ContinuousMap.Polynomial
+
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Analysis.Normed.Order.Lattice
 
 /-!
 # Bernstein approximations and Weierstrass' theorem
@@ -25,7 +26,7 @@ This statement directly applies to the cases when the codomain is a (semi)normed
 or, more generally, has a topology defined by a family of seminorms.
 
 Our proof follows [Richard Beals' *Analysis, an introduction*][beals-analysis], §7D.
-The original proof, due to [Bernstein](bernstein1912) in 1912, is probabilistic,
+The original proof, due to [Bernstein][bernstein1912] in 1912, is probabilistic,
 and relies on Bernoulli's theorem,
 which gives bounds for how quickly the observed frequencies in a
 Bernoulli trial approach the underlying probability.
@@ -82,7 +83,7 @@ open Lean Meta Qq Function
 @[positivity DFunLike.coe (bernstein _ _) _]
 meta def evalBernstein : PositivityExt where eval {_ _} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
+  let .app (.app _coe (.app (.app _ n) ν)) x ← whnf e | throwError "not bernstein polynomial"
   let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
   pure (.nonnegative p)
 
@@ -113,7 +114,7 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
 
 theorem variance {n : ℕ} (hn : n ≠ 0) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
-  convert! congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
+  convert congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
   · simp only [z, bernstein_apply, nsmul_eq_mul, bernsteinPolynomial, Finset.sum_range, map_sum,
       Polynomial.coe_aeval_eq_eval, Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_sub,
       Polynomial.eval_natCast, Polynomial.eval_X, Polynomial.eval_one]
@@ -181,7 +182,7 @@ and reproduced on wikipedia.
 -/
 theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) :
     Tendsto (fun n : ℕ => bernsteinApproximation n f) atTop (𝓝 f) := by
-  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
+  let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   /- Topology on a locally convex TVS is given by a family of seminorms `‖x‖_U = gauge U x`,
   where the open symmetric convex sets `U` form a basis of neighborhoods in this topology,
@@ -193,7 +194,8 @@ theorem bernsteinApproximation_uniform [LocallyConvexSpace ℝ E] (f : C(I, E)) 
       |>.compactConvergenceUniformity_of_compact |> nhds_basis_uniformity |>.tendsto_right_iff]
     rintro U ⟨hU₀, hcU⟩
     filter_upwards [this U hU₀ hcU] with n hn x
-    exact gauge_lt_one_subset_self hcU (mem_of_mem_nhds hU₀) (absorbent_nhds_zero hU₀) (hn x)
+    exact setOfPred_gauge_lt_one_subset_self hcU (mem_of_mem_nhds hU₀) (absorbent_nhds_zero hU₀)
+      (hn x)
   intro U hU₀ hUc
   /- Choose a constant `C` such that `‖f x - f y‖_U ≤ C` for all `x`, `y`.
   For a normed space, this would be twice the norm of `f`. -/

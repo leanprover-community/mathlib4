@@ -6,8 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Topology.Algebra.ContinuousAffineMap
-public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Smooth affine maps

@@ -169,7 +169,7 @@ lemma exists_good_cylinder {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
       i₁ := coprod.inr ≫ d.i
       π := d.p ≫ P.π }, ⟨by
         rw [cofibration_iff]
-        convert! d.hi
+        convert d.hi
         aesop⟩, ⟨{ h := d.p ≫ h.h }⟩⟩
 
 /-- The covering homotopy theorem: if `p : E ⟶ B` is a fibration,
@@ -267,7 +267,6 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsCofibrant X] :
   symm h := h.symm
   trans h h' := h.trans h'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma precomp [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyRel f g)
     {Z : C} (i : Z ⟶ X) : LeftHomotopyRel (i ≫ f) (i ≫ g) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_cylinder

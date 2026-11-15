@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Topology.Basic
+
 /-!
 # Induced and coinduced topologies
 
@@ -60,7 +61,7 @@ variable {X Y : Type*}
   the induced topology on `X` is the collection of sets
   that are preimages of some open set in `Y`.
   This is the coarsest topology that makes `f` continuous. -/
-@[implicit_reducible]
+@[instance_reducible, wikidata Q660730]
 def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
   IsOpen s := ∃ t, IsOpen t ∧ f ⁻¹' t = s
   isOpen_univ := ⟨univ, isOpen_univ, preimage_univ⟩
@@ -73,6 +74,7 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
     rw [preimage_sUnion, biUnion_image, sUnion_eq_biUnion]
     exact iUnion₂_congr hfg
 
+@[wikidata Q77613467]
 instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
     TopologicalSpace (Subtype p) :=
   induced (↑) t
@@ -81,7 +83,7 @@ instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpa
   the coinduced topology on `Y` is defined such that
   `s : Set Y` is open if the preimage of `s` is open.
   This is the finest topology that makes `f` continuous. -/
-@[implicit_reducible]
+@[instance_reducible]
 def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   IsOpen s := IsOpen (f ⁻¹' s)
   isOpen_univ := t.isOpen_univ

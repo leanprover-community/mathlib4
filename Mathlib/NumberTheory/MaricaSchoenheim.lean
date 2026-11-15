@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Combinatorics.SetFamily.FourFunctions
 public import Mathlib.Data.Nat.Squarefree
+
+import Mathlib.Combinatorics.SetFamily.FourFunctions
 
 /-!
 # The Marica-Schönheim special case of Graham's conjecture

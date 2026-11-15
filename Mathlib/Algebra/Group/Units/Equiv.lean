@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Units.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative and additive equivalence acting on units.
 -/
@@ -28,7 +31,7 @@ def toUnits [Group G] : G ≃* Gˣ where
 
 @[to_additive (attr := simp)]
 lemma toUnits_val_apply {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x := by
-  simp_rw [MulEquiv.apply_eq_iff_symm_apply, toUnits_symm_apply]
+  simp_rw [← MulEquiv.eq_symm_apply, toUnits_symm_apply]
 
 namespace Units
 

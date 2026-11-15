@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Filter
 public import Mathlib.Topology.Order.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on filters of a space with order topology
 
@@ -18,7 +21,7 @@ In this file we prove that `𝓝 (f x)` tends to `𝓝 Filter.atTop` provided th
 public section
 
 
-open Topology
+open scoped Topology
 
 namespace Filter
 

@@ -112,6 +112,15 @@ theorem restrict_trim (hm : m ≤ m0) (μ : Measure α) (hs : @MeasurableSet α 
     Measure.restrict_apply (hm t ht),
     trim_measurableSet_eq hm (@MeasurableSet.inter α m t s ht hs)]
 
+theorem measure_spanningSets_trim_lt_top (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
+    (n : ℕ) :
+    μ (spanningSets (μ.trim hm) n) < ⊤ :=
+  (le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)
+
+instance (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (n : ℕ) :
+    IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) :=
+  isFiniteMeasure_restrict.2 (measure_spanningSets_trim_lt_top hm μ n).ne
+
 instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.trim hm) where
   measure_univ_lt_top := by
     rw [trim_measurableSet_eq hm (@MeasurableSet.univ _ m)]
@@ -119,19 +128,12 @@ instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMea
 
 theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
     (hm₂ : m₂ ≤ m) [SigmaFinite (μ.trim (hm₂.trans hm))] : SigmaFinite (μ.trim hm) := by
-  refine ⟨⟨?_⟩⟩
-  refine
-    { set := spanningSets (μ.trim (hm₂.trans hm))
+  have : SigmaFinite ((μ.trim hm).trim hm₂) := by simpa [trim_trim]
+  exact ⟨⟨
+    { set := spanningSets ((μ.trim hm).trim hm₂)
       set_mem := fun _ => Set.mem_univ _
-      finite := fun i => ?_
-      spanning := iUnion_spanningSets _ }
-  calc
-    (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
-        ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
-      rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurableSet_spanningSets _ _)]
-    _ = (μ.trim (hm₂.trans hm)) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
-      rw [@trim_trim _ _ μ _ _ hm₂ hm]
-    _ < ∞ := measure_spanningSets_lt_top _ _
+      finite := fun i => measure_spanningSets_trim_lt_top hm₂ (μ.trim hm) i
+      spanning := iUnion_spanningSets _ }⟩⟩
 
 lemma SigmaFinite.of_trim {m m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
     [SigmaFinite (μ.trim hm)] : SigmaFinite μ := by

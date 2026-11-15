@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Center.Basic
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # The center of an additive category
@@ -22,6 +22,10 @@ namespace CategoryTheory
 namespace CatCenter
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
+
+@[simp]
+lemma app_zero (X : C) :
+    (0 : CatCenter C).app X = 0 := rfl
 
 @[simp]
 lemma app_add (z₁ z₂ : CatCenter C) (X : C) :

@@ -5,6 +5,7 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
+public import Mathlib.Tactic.GCongr  -- shake: keep (for the `@[gcongr]` lemmas that `grw` uses)
 public import Mathlib.Tactic.GRewrite.Elab
 
 /-!

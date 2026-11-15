@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Contrapose
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Equivalence between product types
@@ -78,6 +79,14 @@ theorem prodCongr_symm {α₁ α₂ β₁ β₂} (e₁ : α₁ ≃ α₂) (e₂ 
     (prodCongr e₁ e₂).symm = prodCongr e₁.symm e₂.symm :=
   rfl
 
+@[simp]
+lemma prodCongr_refl_refl {α β} : prodCongr (.refl α) (.refl β) = .refl (α × β) := rfl
+
+@[simp]
+lemma prodCongr_trans_prodCongr {α₁ α₂ α₃ β₁ β₂ β₃} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂)
+    (e₁' : α₂ ≃ α₃) (e₂' : β₂ ≃ β₃) :
+    (prodCongr e₁ e₂).trans (prodCongr e₁' e₂') = prodCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
+
 /-- Type product is commutative up to an equivalence: `α × β ≃ β × α`. This is `Prod.swap` as an
 equivalence. -/
 def prodComm (α β) : α × β ≃ β × α where
@@ -95,6 +104,12 @@ theorem prodComm_apply {α β} (x : α × β) : prodComm α β x = x.swap :=
 @[simp, grind =]
 theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm (α β) : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
+
+lemma prodComm_trans_prodCongr {α₁ α₂ β₁ β₂} (e₁ : α₁ ≃ α₂) (e₂ : β₁ ≃ β₂) :
+    (prodComm α₁ β₁).trans (prodCongr e₂ e₁) = (prodCongr e₁ e₂).trans (prodComm α₂ β₂) := rfl
 
 /-- Type product is associative up to an equivalence. -/
 @[simps (attr := grind =)]
@@ -142,36 +157,44 @@ def sigmaPUnit (α) : (_ : α) × PUnit ≃ α where
   toFun := fun p => p.1
   invFun := fun a => ⟨a, PUnit.unit⟩
 
+section Unique
+variable {α β : Type*} [Unique β]
+
+variable (α β) in
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
-def prodUnique (α β) [Unique β] : α × β ≃ α :=
-  ((Equiv.refl α).prodCongr <| equivPUnit.{_, 1} β).trans <| prodPUnit α
+def prodUnique : α × β ≃ α := ((Equiv.refl α).prodCongr <| equivPUnit.{_, 1} β).trans <| prodPUnit α
 
-@[simp]
-theorem coe_prodUnique {α β} [Unique β] : (⇑(prodUnique α β) : α × β → α) = Prod.fst :=
-  rfl
-
-theorem prodUnique_apply {α β} [Unique β] (x : α × β) : prodUnique α β x = x.1 :=
-  rfl
-
-@[simp]
-theorem prodUnique_symm_apply {α β} [Unique β] (x : α) : (prodUnique α β).symm x = (x, default) :=
-  rfl
-
+variable (α β) in
 /-- Any `Unique` type is a left identity for type product up to equivalence. -/
-def uniqueProd (α β) [Unique β] : β × α ≃ α :=
-  ((equivPUnit.{_, 1} β).prodCongr <| Equiv.refl α).trans <| punitProd α
+def uniqueProd : β × α ≃ α := ((equivPUnit.{_, 1} β).prodCongr <| .refl α).trans <| punitProd α
+
+@[simp] lemma coe_prodUnique : ⇑(prodUnique α β) = Prod.fst := rfl
+@[simp] lemma coe_uniqueProd : ⇑(uniqueProd α β) = Prod.snd := rfl
+
+@[grind =] lemma prodUnique_apply (x : α × β) : prodUnique α β x = x.1 := rfl
+@[grind =] lemma uniqueProd_apply (x : β × α) : uniqueProd α β x = x.2 := rfl
+
+@[simp, grind =]
+lemma prodUnique_symm_apply (x : α) : (prodUnique α β).symm x = (x, default) := rfl
+
+@[simp, grind =]
+lemma uniqueProd_symm_apply (x : α) : (uniqueProd α β).symm x = (default, x) := rfl
 
 @[simp]
-theorem coe_uniqueProd {α β} [Unique β] : (⇑(uniqueProd α β) : β × α → α) = Prod.snd :=
-  rfl
-
-theorem uniqueProd_apply {α β} [Unique β] (x : β × α) : uniqueProd α β x = x.2 :=
-  rfl
+lemma prodComm_trans_prodUnique : (prodComm β α).trans (prodUnique α β) = uniqueProd α β := rfl
 
 @[simp]
-theorem uniqueProd_symm_apply {α β} [Unique β] (x : α) :
-    (uniqueProd α β).symm x = (default, x) :=
-  rfl
+lemma prodComm_trans_uniqueProd : (prodComm α β).trans (uniqueProd α β) = prodUnique α β := rfl
+
+@[simp]
+lemma symm_prodUnique_trans_prodComm :
+    (prodUnique α β).symm.trans (prodComm α β) = (uniqueProd α β).symm := rfl
+
+@[simp]
+lemma symm_uniqueProd_trans_prodComm :
+    (uniqueProd α β).symm.trans (prodComm β α) = (prodUnique α β).symm := rfl
+
+end Unique
 
 /-- Any family of `Unique` types is a right identity for dependent type product up to
 equivalence. -/
@@ -317,11 +340,11 @@ def prodExtendRight : Perm (α₁ × β₁) where
 
 @[simp]
 theorem prodExtendRight_apply_eq (b : β₁) : prodExtendRight a e (a, b) = (a, e b) :=
-  if_pos rfl
+  ite_eq_left rfl
 
 theorem prodExtendRight_apply_ne {a a' : α₁} (h : a' ≠ a) (b : β₁) :
     prodExtendRight a e (a', b) = (a', b) :=
-  if_neg h
+  ite_eq_right h
 
 theorem eq_of_prodExtendRight_ne {e : Perm β₁} {a a' : α₁} {b : β₁}
     (h : prodExtendRight a e (a', b) ≠ (a', b)) : a' = a := by
@@ -441,6 +464,13 @@ end
 section
 
 open Subtype
+
+/-- A subtype of a `Sigma`-type defined by componentwise conditions
+is equivalent to a `Sigma`-type of subtypes. -/
+def subtypeSigmaEquivSigma {α} {β : α → Type*} {p : α → Prop} {q : (i : α) → β i → Prop} :
+    { c : Σ i : α, β i // p c.1 ∧ q c.1 c.2 } ≃ Σ i : { a // p a }, { b // q i b } where
+  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
 
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/

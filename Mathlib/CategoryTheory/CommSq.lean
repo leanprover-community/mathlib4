@@ -32,6 +32,7 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
 
+set_option linter.translate.warnInvalid false in
 /-- The proposition that a square
 ```
   W ---f---> X
@@ -49,24 +50,15 @@ structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y 
   /-- The square commutes. -/
   w : f ≫ h = g ≫ i := by cat_disch
 
+to_dual_for CommSq.w := self.w.symm
+to_dual_for CommSq.mk := ⟨w.symm⟩
+
 attribute [simp] CommSq.mk
+attribute [reassoc] CommSq.w
 
 namespace CommSq
 
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
-
-set_option linter.translateOverwrite false in
-@[to_dual existing w]
-lemma w' (self : CommSq f g h i) : g ≫ i = f ≫ h := self.w.symm
-
-set_option linter.translateOverwrite false in
-/-- `CommSq.mk'` is the dual of `CommSq.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-lemma mk' (w : g ≫ i = f ≫ h := by cat_disch) : CommSq f g h i :=
-  ⟨w.symm⟩
-
-attribute [reassoc] CommSq.w
 
 @[to_dual self]
 theorem flip (p : CommSq f g h i) : CommSq g f i h :=
@@ -159,7 +151,7 @@ variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {
 
 @[to_dual self]
 theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (F.map i) :=
-  ⟨by simpa using congr_arg (fun k : W ⟶ Z => F.map k) s.w⟩
+  ⟨by simpa using congr(F.map $s.w)⟩
 
 end Functor
 
@@ -171,6 +163,7 @@ namespace CommSq
 
 variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
+set_option linter.translate.warnInvalid false in
 /-- Now we consider a square:
 ```
   A ---f---> X
@@ -193,8 +186,6 @@ structure LiftStruct (sq : CommSq f i p g) where
   fac_right : l ≫ p = g := by cat_disch
 
 attribute [to_dual self] LiftStruct.ext
-set_option linter.translateOverwrite false in
-attribute [to_dual existing fac_left] LiftStruct.fac_right
 attribute [to_dual self (reorder := A Y, B X, f g, i p, fac_left fac_right)] LiftStruct.mk
 
 namespace LiftStruct

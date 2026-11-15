@@ -5,7 +5,11 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
+public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Forall2
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Lists with no duplicates
@@ -100,7 +104,9 @@ theorem Nodup.getElem_inj_iff {l : List α} (h : Nodup l)
 
 theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l[i]? ≠ l[j]? := by
-  grind [List.pairwise_iff_getElem]
+  #adaptation_note /-- Since nightly-2026-09-29,
+  `grind` fails to identify `l[i] = l[j]` with `l[i]? = l[j]?` -/
+  constructor <;> grind [List.pairwise_iff_getElem]
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
@@ -121,6 +127,10 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
+lemma Nodup.head_eq_getLast_iff (hne : l ≠ []) (hnd : l.Nodup) :
+    l.head hne = l.getLast hne ↔ ∃ x, l = [x] := by
+  cases l <;> grind
+
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
 theorem get_idxOf [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
@@ -133,8 +143,8 @@ theorem nodup_iff_count_le_one [BEq α] [LawfulBEq α] {l : List α} : Nodup l �
       have : replicate 2 a <+ l ↔ 1 < count a l := replicate_sublist_iff ..
       (not_congr this).trans Nat.not_lt
 
-theorem nodup_iff_count_eq_one [BEq α] [LawfulBEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
-  nodup_iff_count_le_one.trans <| forall_congr' fun x => by rw [← count_pos_iff]; grind
+theorem nodup_iff_count_eq_one [BEq α] [LawfulBEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 := by
+  grind
 
 theorem get_bijective_iff [BEq α] [LawfulBEq α] : l.get.Bijective ↔ ∀ a, l.count a = 1 :=
   ⟨fun h a ↦ (nodup_iff_count_eq_one.mp <| nodup_iff_injective_get.mpr h.injective)
@@ -251,6 +261,26 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
           simp [List.dropLast_eq_take],
         List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
+
+lemma Nodup.eq_of_head_mem_of_suffix (h : l₁ <:+ l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
+    (hnd : l₂.Nodup) : l₁ = l₂ := by
+  grind [List.IsSuffix]
+
+lemma Nodup.eq_of_getLast_mem_of_prefix (h : l₁ <+: l₂) {hne : l₂ ≠ []} (hl : l₂.getLast hne ∈ l₁)
+    (hnd : l₂.Nodup) : l₁ = l₂ := by
+  grind [List.IsPrefix]
+
+lemma Nodup.prefix_of_head_mem_of_infix (h : l₁ <:+: l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
+    (hnd : l₂.Nodup) : l₁ <+: l₂ := by
+  grind [List.IsInfix]
+
+lemma Nodup.suffix_of_getLast_mem_of_infix (h : l₁ <:+: l₂) {hne : l₂ ≠ []}
+    (hl : l₂.getLast hne ∈ l₁) (hnd : l₂.Nodup) : l₁ <:+ l₂ := by
+  grind [List.IsInfix]
+
+lemma Nodup.eq_of_head_mem_of_getLast_mem_of_infix (h : l₁ <:+: l₂) {hne : l₂ ≠ []}
+    (hlh : l₂.head hne ∈ l₁) (hlg : l₂.getLast hne ∈ l₁) (hnd : l₂.Nodup) : l₁ = l₂ := by
+  grind [List.IsInfix]
 
 theorem Nodup.erase_getElem [BEq α] [LawfulBEq α] {l : List α} (hl : l.Nodup)
     (i : Nat) (h : i < l.length) : l.erase l[i] = l.eraseIdx ↑i := by

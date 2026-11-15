@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
-public import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Cumulative distribution function of a real probability measure
@@ -105,7 +104,6 @@ lemma cdf_measure_stieltjesFunction (f : StieltjesFunction ℝ) (hf0 : Tendsto f
 open unitInterval in
 lemma unitInterval.cdf_eq_real (μ : Measure I) [IsProbabilityMeasure μ] (x : I) :
     cdf (μ.map Subtype.val) x.1 = μ.real (Icc 0 x) := by
-  haveI : IsProbabilityMeasure (μ.map Subtype.val) := isProbabilityMeasure_map (by fun_prop)
   rw [ProbabilityTheory.cdf_eq_real,
     map_measureReal_apply measurable_subtype_coe measurableSet_Iic, subtype_Iic_eq_Icc]
 

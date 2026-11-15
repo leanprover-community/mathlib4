@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Order.SuccPred.Archimedean
 public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Successor and predecessor on type tags

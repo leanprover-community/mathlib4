@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Group.Measure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lebesgue Integration on Groups
 

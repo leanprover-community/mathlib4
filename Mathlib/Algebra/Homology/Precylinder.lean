@@ -38,7 +38,7 @@ noncomputable def precylinder [K.HasCylinder] : Precylinder K where
   π := cylinder.π _
 
 /-- The pre-path object of a homological complex that is given by
- `HomologicalComplex.pathObject`. -/
+`HomologicalComplex.pathObject`. -/
 @[simps]
 noncomputable def prepathObject [K.HasPathObject] : PrepathObject K where
   P := K.pathObject

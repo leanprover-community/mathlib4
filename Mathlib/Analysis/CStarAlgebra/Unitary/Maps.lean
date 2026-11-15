@@ -19,6 +19,7 @@ variable {R A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [Ring R] [Modul
 section mulLeft
 variable [SMulCommClass R A A]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 /-- Left multiplication by a unitary as a linear isometric equivalence. -/
 noncomputable def mulLeft : unitary A →* A ≃ₗᵢ[R] A where

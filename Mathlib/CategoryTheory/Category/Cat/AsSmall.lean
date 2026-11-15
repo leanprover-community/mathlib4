@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.ULift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functorially embedding `Cat` into the category of small categories
 
@@ -30,7 +33,7 @@ namespace Cat
 /-- Assigning to each category `C` the small category `AsSmall C` induces a functor `Cat ⥤ Cat`. -/
 @[simps]
 def asSmallFunctor : Cat.{v, u} ⥤ Cat.{max w v u, max w v u} where
-  obj C := .of <| AsSmall C
+  obj C := ↧(AsSmall C)
   map F := (AsSmall.down ⋙ F.toFunctor ⋙ AsSmall.up).toCatHom
 
 end Cat

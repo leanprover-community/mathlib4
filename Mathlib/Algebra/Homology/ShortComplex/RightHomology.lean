@@ -64,7 +64,6 @@ initialize_simps_projections RightHomologyData (-hp, -hι)
 
 namespace RightHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The chosen cokernels and kernels of the limits API give a `RightHomologyData` -/
 @[simps]
 noncomputable def ofHasCokernelOfHasKernel
@@ -134,7 +133,6 @@ lemma isIso_p (hf : S.f = 0) : IsIso h.p :=
   ⟨h.descQ (𝟙 S.X₂) (by rw [hf, comp_id]), p_descQ _ _ _, by
     simp only [← cancel_epi h.p, p_descQ_assoc, id_comp, comp_id]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_ι (hg : S.g = 0) : IsIso h.ι := by
   have ⟨φ, hφ⟩ := KernelFork.IsLimit.lift' h.hι' (𝟙 _)
     (by rw [← cancel_epi h.p, id_comp, p_g', comp_zero, hg])
@@ -179,8 +177,6 @@ the chosen `kernel S.g` -/
 noncomputable def ofHasKernel [HasKernel S.g] (hf : S.f = 0) : S.RightHomologyData :=
 ofIsLimitKernelFork S hf _ (kernelIsKernel _)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- When the second map `S.g` is zero, this is the right homology data on `S` given
 by any colimit cokernel cofork of `S.g` -/
 @[simps]
@@ -225,7 +221,6 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).g' = 0 := by
   rw [← cancel_epi ((ofZeros S hf hg).p), comp_zero, p_g', hg]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {S} in
 /-- Given a right homology data `h` of a short complex `S`, we can construct another right homology
@@ -485,6 +480,7 @@ def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
 
 variable (S)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the right homology map
 data (for the identity of `S`) which relates the right homology data
 `RightHomologyData.ofIsLimitKernelFork` and `ofZeros` . -/
@@ -874,7 +870,6 @@ namespace RightHomologyMapData
 variable {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
   (γ : RightHomologyMapData φ h₁ h₂)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightHomologyMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
     rightHomologyMap φ = h₁.rightHomologyIso.hom ≫ γ.φH ≫ h₂.rightHomologyIso.inv := by
@@ -1148,6 +1143,7 @@ noncomputable def ofEpiOfIsIsoOfMono : RightHomologyData S₂ := by
 
 @[simp] lemma ofEpiOfIsIsoOfMono_H : (ofEpiOfIsIsoOfMono φ h).H = h.H := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma ofEpiOfIsIsoOfMono_p : (ofEpiOfIsIsoOfMono φ h).p = inv φ.τ₂ ≫ h.p := by
   simp [ofEpiOfIsIsoOfMono, opMap]
@@ -1179,6 +1175,7 @@ noncomputable def ofEpiOfIsIsoOfMono' : RightHomologyData S₁ := by
 
 @[simp] lemma ofEpiOfIsIsoOfMono'_H : (ofEpiOfIsIsoOfMono' φ h).H = h.H := rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma ofEpiOfIsIsoOfMono'_p : (ofEpiOfIsIsoOfMono' φ h).p = φ.τ₂ ≫ h.p := by
   simp [ofEpiOfIsIsoOfMono', opMap]
@@ -1240,7 +1237,7 @@ instance (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.Right
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (rightHomologyMap' φ h₁ h₂) := by
   let h₂' := RightHomologyData.ofEpiOfIsIsoOfMono φ h₁
-  haveI : IsIso (rightHomologyMap' φ h₁ h₂') := by
+  have : IsIso (rightHomologyMap' φ h₁ h₂') := by
     rw [(RightHomologyMapData.ofEpiOfIsIsoOfMono φ h₁).rightHomologyMap'_eq]
     dsimp
     infer_instance
@@ -1382,11 +1379,10 @@ namespace HasRightHomology
 lemma hasCokernel [S.HasRightHomology] : HasCokernel S.f :=
   ⟨⟨⟨_, S.rightHomologyData.hp⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
     HasKernel (cokernel.desc S.f S.g S.zero) := by
   let h := S.rightHomologyData
-  haveI : HasLimit (parallelPair h.g' 0) := ⟨⟨⟨_, h.hι'⟩⟩⟩
+  have : HasLimit (parallelPair h.g' 0) := ⟨⟨⟨_, h.hι'⟩⟩⟩
   let e : parallelPair (cokernel.desc S.f S.g S.zero) 0 ≅ parallelPair h.g' 0 :=
     parallelPair.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h.hp)
       (Iso.refl _) (coequalizer.hom_ext (by simp)) (by simp)

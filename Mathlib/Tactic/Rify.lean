@@ -5,10 +5,10 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
 module
 
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Rat.Cast.Order
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.Zify
 public import Mathlib.Tactic.Qify -- shake: keep (for `@[qify_simps]`)
+public import Mathlib.Tactic.Zify
 
 /-!
 # `rify` tactic
@@ -112,7 +112,7 @@ def rifyProof (proof : Expr) (prop : Expr) : MetaM (Expr × Expr) := do
 @[rify_simps] lemma ratCast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
 @[rify_simps] lemma ratCast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
 
-/- The following lemmas are included in `Mathlib.Data.NNReal.Basic` (so that they
+/- The following lemmas are included in `Mathlib.Basic.NNReal.Basic` (so that they
 don't need to be imported when using this tactic for `ℕ, ℤ`, or `ℚ`)
 
 `@[rify_simps] lemma toReal_eq (a b : ℝ≥0) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp`

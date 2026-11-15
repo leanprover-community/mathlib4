@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Topology.Constructions.SumProd
 
 /-!
 # Topological monoids - definitions
@@ -59,7 +59,7 @@ class SeparatelyContinuousAdd (M : Type*) [TopologicalSpace M] [Add M] : Prop wh
   continuous_const_add {a : M} : Continuous (a + ·)
   continuous_add_const {a : M} : Continuous (· + a)
 
-/-- A type class encoding that addition is continuous in each argument. This is weaker than
+/-- A type class encoding that multiplication is continuous in each argument. This is weaker than
 `ContinuousMul`. -/
 @[to_additive]
 class SeparatelyContinuousMul (M : Type*) [TopologicalSpace M] [Mul M] : Prop where
@@ -138,7 +138,7 @@ theorem Filter.Tendsto.mul_const {α : Type*} {f : α → M} {x : Filter α} {a 
     (b : M) (hf : Tendsto f x (𝓝 a)) : Tendsto (f · * b) x (𝓝 (a * b)) :=
   continuous_mul_const b |>.tendsto _ |>.comp hf
 
-variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
+variable {X : Type*} [TopologicalSpace X] {f : X → M} {s : Set X} {x : X}
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul_const (hf : Continuous f) (b : M) : Continuous (f · * b) :=

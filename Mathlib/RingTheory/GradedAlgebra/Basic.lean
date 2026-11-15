@@ -5,10 +5,8 @@ Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.DirectSum.Internal
-public import Mathlib.Algebra.DirectSum.Ring
 
 /-!
 # Internally-graded rings and algebras
@@ -227,7 +225,7 @@ open DirectSum
 
 /-- The projection maps of graded algebra -/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
-  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
+  (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 
 @[simp]
 theorem GradedAlgebra.proj_apply (i : ι) (r : A) :
@@ -259,14 +257,14 @@ is a ring homomorphism.
 def GradedRing.projZeroRingHom : A →+* A where
   toFun a := decompose 𝒜 a 0
   map_one' := decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
-  map_zero' := by rw [decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+  map_zero' := by rw [decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
   map_add' _ _ := by rw [decompose_add, add_apply, AddMemClass.coe_add]
   map_mul' := by
     refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
-    · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+    · simp only [zero_mul, decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
       refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
-      · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
+      · simp only [mul_zero, decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
         simp only
         by_cases h : i + j = 0
@@ -351,6 +349,7 @@ variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
 variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
 
 -- The following lines were given on Zulip by Adam Topaz
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical isomorphism of an internal direct sum with the ambient algebra -/
 noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
     (DirectSum ι fun i => ↥(M i)) ≃ₐ[R] A :=
@@ -362,7 +361,7 @@ and satisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
 such that `DirectSum.IsInternal M` (`A` is the direct sum of the `M i`),
 we endow `A` with the structure of a graded algebra.
 The submodules are the *homogeneous* parts. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M :=
   { (inferInstance : SetLike.GradedMonoid M) with
     decompose' := hM.coeAlgEquiv.symm

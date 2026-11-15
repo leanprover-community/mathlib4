@@ -45,7 +45,8 @@ class IsKInjective (L : CochainComplex C ℤ) : Prop where
 
 /-- A choice of homotopy to zero for a morphism from an acyclic
 cochain complex to a K-injective cochain complex. -/
-noncomputable irreducible_def IsKInjective.homotopyZero {K L : CochainComplex C ℤ} (f : K ⟶ L)
+@[no_expose]
+noncomputable def IsKInjective.homotopyZero {K L : CochainComplex C ℤ} (f : K ⟶ L)
     (hK : K.Acyclic) [L.IsKInjective] :
     Homotopy f 0 :=
   (IsKInjective.nonempty_homotopy_zero f hK).some
@@ -143,7 +144,7 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
     `isKInjective_of_injective_aux` in order to get better approximations,
     and we pass to the limit. -/
     let X (n : ℕ) : Set (Cochain K L (-1)) :=
-      setOf (fun α => (δ (-1) 0 α).EqUpTo (Cochain.ofHom f) (n + d - 1))
+      Set.ofPred (fun α => (δ (-1) 0 α).EqUpTo (Cochain.ofHom f) (n + d - 1))
     let x₀ : X 0 := ⟨0, fun p q hpq hp ↦
       IsZero.eq_of_tgt (L.isZero_of_isStrictlyGE d _ (by lia)) _ _⟩
     let φ (n : ℕ) (α : X n) : X (n + 1) :=
@@ -167,7 +168,6 @@ instance (K : CochainComplex C ℕ) [∀ n, Injective (K.X n)] :
   isKInjective_of_injective _ 0
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
     ∃ (α : Cochain K L m), δ m n α = z.1 := by

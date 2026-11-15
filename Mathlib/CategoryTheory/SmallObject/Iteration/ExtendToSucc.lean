@@ -44,7 +44,7 @@ def obj (i : Set.Iic (Order.succ j)) : C :=
   if hij : i.1 ≤ j then F.obj ⟨i.1, hij⟩ else X
 
 lemma obj_eq (i : Set.Iic j) :
-    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ = F.obj i := dif_pos i.2
+    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ = F.obj i := dite_eq_left i.2
 
 /-- The isomorphism `obj F X ⟨i, _⟩ ≅ F.obj i` when `i : Set.Iic j`. -/
 def objIso (i : Set.Iic j) :
@@ -53,7 +53,7 @@ def objIso (i : Set.Iic j) :
 
 include hj in
 lemma obj_succ_eq : obj F X ⟨Order.succ j, by simp⟩ = X :=
-  dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj)
+  dite_eq_right (by simpa only [Order.succ_le_iff_isMax] using hj)
 
 /-- The isomorphism `obj F X ⟨Order.succ j, _⟩ ≅ X`. -/
 def objSuccIso :
@@ -83,24 +83,24 @@ lemma map_eq (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     map hj F τ i₁ i₂ hi (hi₂.trans (Order.le_succ j)) =
       (objIso F X ⟨i₁, hi.trans hi₂⟩).hom ≫ F.map (homOfLE hi) ≫
         (objIso F X ⟨i₂, hi₂⟩).inv :=
-  dif_pos hi₂
+  dite_eq_left hi₂
 
 lemma map_self_succ :
     map hj F τ j (Order.succ j) (Order.le_succ j) (by rfl) =
       (objIso F X ⟨j, by simp⟩).hom ≫ τ ≫ (objSuccIso hj F X).inv := by
   dsimp [map]
-  rw [dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj),
-    dif_pos (by rfl), Functor.map_id, comp_id, id_comp]
+  rw [dite_eq_right (by simpa only [Order.succ_le_iff_isMax] using hj),
+    dite_eq_left (by rfl), Functor.map_id, comp_id, id_comp]
 
 @[simp]
 lemma map_id (i : J) (hi : i ≤ Order.succ j) :
     map hj F τ i i (by rfl) hi = 𝟙 _ := by
   dsimp [map]
   by_cases h₁ : i ≤ j
-  · rw [dif_pos h₁, CategoryTheory.Functor.map_id, id_comp, Iso.hom_inv_id]
+  · rw [dite_eq_left h₁, CategoryTheory.Functor.map_id, id_comp, Iso.hom_inv_id]
   · obtain rfl : i = Order.succ j := le_antisymm hi (Order.succ_le_of_lt (not_le.1 h₁))
-    rw [dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj),
-      dif_neg h₁]
+    rw [dite_eq_right (by simpa only [Order.succ_le_iff_isMax] using hj),
+      dite_eq_right h₁]
 
 lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ ≤ i₃) (h : i₃ ≤ Order.succ j) :
     map hj F τ i₁ i₃ (h₁₂.trans h₂₃) h =
@@ -114,8 +114,8 @@ lemma map_comp (i₁ i₂ i₃ : J) (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ �
     · rw [Order.lt_succ_iff_of_not_isMax hj] at h₂
       rw [map_eq hj F τ i₁ i₂ _ h₂]
       dsimp [map]
-      rw [dif_neg h₁, dif_pos (h₁₂.trans h₂), dif_neg h₁, dif_pos h₂, assoc, assoc,
-        Iso.inv_hom_id_assoc, comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
+      rw [dite_eq_right h₁, dite_eq_left (h₁₂.trans h₂), dite_eq_right h₁, dite_eq_left h₂, assoc,
+        assoc, Iso.inv_hom_id_assoc, comp_id, ← Functor.map_comp_assoc, homOfLE_comp]
     · rw [map_id, comp_id]
 
 end extendToSucc

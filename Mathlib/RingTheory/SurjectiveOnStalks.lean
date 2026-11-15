@@ -62,7 +62,7 @@ lemma surjective_localRingHom_iff (P : Ideal S) [P.IsPrime] :
         IsLocalization.mk'_eq_iff_eq, IsLocalization.eq_iff_exists P.primeCompl]
       refine ⟨⟨yc, hyc⟩ * ⟨yt, hyt⟩, ?_⟩
       simp only [Submonoid.coe_mul]
-      convert! congr($(ey.symm) * $(et)) using 1 <;> ring
+      convert! congr($ey.symm * $et) using 1 <;> ring
 
 lemma surjectiveOnStalks_iff_forall_ideal :
     f.SurjectiveOnStalks ↔
@@ -137,9 +137,6 @@ lemma SurjectiveOnStalks.exists_mul_eq_tmul
     ∃ (t : T) (r : R) (a : S), (r • t ∉ J) ∧
       (1 : S) ⊗ₜ[R] (r • t) * x = a ⊗ₜ[R] t := by
   induction x with
-  | zero =>
-    exact ⟨1, 1, 0, by rw [one_smul]; exact J.primeCompl.one_mem,
-      by rw [mul_zero, TensorProduct.zero_tmul]⟩
   | tmul x₁ x₂ =>
     obtain ⟨y, s, c, hs, hc, e⟩ := (surjective_localRingHom_iff _).mp (hf₂ J hJ) x₂
     simp_rw [Algebra.smul_def]
@@ -200,7 +197,7 @@ private lemma SurjectiveOnStalks.tensorProductMap_id
     {S' : Type*} [CommRing S'] [Algebra R S] [Algebra R T] [Algebra R S']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f (AlgHom.id R T)).SurjectiveOnStalks := by
-  letI := f.toRingHom.toAlgebra
+  let := f.toRingHom.toAlgebra
   have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
   change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).SurjectiveOnStalks
   convert_to ((Algebra.TensorProduct.cancelBaseChange R S S S' T).toAlgHom.comp
@@ -214,7 +211,7 @@ lemma SurjectiveOnStalks.tensorProductMap
     [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
     {f : S →ₐ[R] S'} (Hf : f.SurjectiveOnStalks) {g : T →ₐ[R] T'} (Hg : g.SurjectiveOnStalks) :
     (Algebra.TensorProduct.map f g).SurjectiveOnStalks := by
-  convert!
+  convert
     RingHom.SurjectiveOnStalks.tensorProductMap_id (T := T') Hf |>.comp <|
       (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
         RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|

@@ -5,9 +5,8 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
-public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 public import Mathlib.RepresentationTheory.Coinduced
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 public import Mathlib.RepresentationTheory.Induced
 
 /-!
@@ -43,7 +42,7 @@ universe u
 
 namespace groupHomology
 
-open CategoryTheory Finsupp TensorProduct Rep Representation
+open CategoryTheory Rep
 
 variable {k G : Type u} [CommRing k] [Group G] (S : Subgroup G) (A : Rep k S)
 
@@ -63,7 +62,7 @@ noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
 -- three times as slow.
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
-noncomputable def indIso [DecidableEq G] (A : Rep.{u} k S) (n : ℕ) :
+noncomputable def indIso (A : Rep.{u} k S) (n : ℕ) :
     groupHomology (ind S.subtype A) n ≅ groupHomology A n :=
   (HomologicalComplex.homologyFunctor (ModuleCat k) (ComplexShape.down ℕ) n).mapIso
   (inhomogeneousChainsIso (ind S.subtype A :) ≪≫

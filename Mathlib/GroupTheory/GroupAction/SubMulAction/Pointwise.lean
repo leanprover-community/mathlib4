@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!
 # Pointwise monoid structures on SubMulAction

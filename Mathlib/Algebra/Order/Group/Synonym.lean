@@ -6,8 +6,9 @@ Authors: Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Order.OrderDual
+public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Order.Lex
+public import Mathlib.Order.OrderDual
 
 /-!
 # Group structure on the order type synonyms
@@ -334,23 +335,17 @@ end Monoid
 
 namespace Colex
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [One α] : One (Colex α) := inferInstanceAs <| One α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Mul α] : Mul (Colex α) := inferInstanceAs <| Mul α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Inv α] : Inv (Colex α) := inferInstanceAs <| Inv α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive] instance [Div α] : Div (Colex α) := inferInstanceAs <| Div α
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul]
 instance [Pow α β] : Pow (Colex α) β := inferInstanceAs <| Pow α β
 
-set_option backward.inferInstanceAs.wrap.instances false in
 @[to_additive (attr := to_additive) (reorder := 1 2) instSMul']
 instance [Pow α β] : Pow α (Colex β) := inferInstanceAs <| Pow α β
 

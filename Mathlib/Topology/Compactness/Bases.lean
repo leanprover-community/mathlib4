@@ -6,7 +6,11 @@ Authors: Andrew Yang, Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Compactness.Compact
+
+import Mathlib.Topology.Compactness.Compact
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topological bases in compact sets and compact spaces

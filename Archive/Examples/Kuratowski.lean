@@ -3,9 +3,11 @@ Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Instances.Real.Lemmas
-import Archive.Kuratowski
+module
+
+public import Mathlib.Topology.Instances.Irrational
+public import Mathlib.Topology.Instances.Real.Lemmas
+public import Archive.Kuratowski
 
 /-!
 # Kuratowski's closure-complement theorem is sharp
@@ -42,6 +44,8 @@ There are characterizations and criteria for a set to be a 14-set in the paper
   for the defined `fourteenSet` in ℝ, there are exactly 14 distinct sets that can be obtained from
   `fourteenSet` using the closure and complement operations.
 -/
+
+@[expose] public section
 
 namespace Topology.ClosureCompl
 
@@ -101,29 +105,8 @@ theorem nodup_theClosedSix_theFourteen_iff : (theClosedSix s).Nodup ↔ TheSixIn
              not_or, nodup_singleton, and_true, ← ne_eq, and_assoc]
   -- The goal becomes 6 inequalities ↔ 15 inequalities.
   constructor -- Show both implications.
-  · -- One implication is almost trivial as the six inequalities are among the fifteen.
-    tauto
-  · intro h -- Introduce `TheSixIneq` as an assumption.
-    repeat obtain ⟨_, h⟩ := h -- Split the hypothesis into six different inequalities.
-    repeat refine .symm (.intro ?_ ?_) -- Split the goal into 15 inequalities.
-    any_goals
-      rw [ne_comm]
-      try assumption
-    -- Solve trivial goals (the six inequalities contained in `TheSixIneq`).
-    any_goals
-    /- Now eight other goals can be solved by simplifying
-      and then using one of the six given inequalities. -/
-      apply mt (congr_arg (k ·ᶜ))
-      first
-      | try repeat rw [kckckck_eq_kck, eq_comm]
-        assumption
-      | apply mt (congr_arg (k ·ᶜ))
-        try repeat rw [kckckck_eq_kck, eq_comm]
-        assumption
-    -- One last goal (`k (k (k sᶜ)ᶜ)ᶜ ≠ k s`) needs some other simplifying steps:
-    · apply mt (congr_arg fun s ↦ k (k sᶜ)ᶜ)
-      rw [kckckck_eq_kck]
-      assumption
+  · grind
+  · grind [kckckck_eq_kck]
 
 open Multiset in
 /-- `theFourteen s` contains no duplicates if and only if `theClosedSix s` has none,
@@ -179,7 +162,7 @@ theorem i_fourteenSet : i fourteenSet = Ioo 0 1 ∪ Ioo 1 2 := by
   · simp [(isOpen_Ioo.union isOpen_Ioo).interior_eq, this]
   all_goals
   · simp [k_Icc_4_5_inter_rat, -union_singleton, closure_union, disjoint_iff_inter_eq_empty,
-      union_inter_distrib_right, Icc_inter_Icc]
+    Icc_inter_Icc]
     norm_num
 
 theorem k_fourteenSet : k fourteenSet = Icc 0 2 ∪ {3} ∪ Icc 4 5 := by
@@ -193,7 +176,7 @@ theorem kck_fourteenSet : k (k fourteenSet)ᶜ = (Ioo 0 2 ∪ Ioo 4 5)ᶜ := by
   rw [closure_compl, k_fourteenSet,
     interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
   all_goals
-     simp [-union_singleton, disjoint_iff_inter_eq_empty, union_inter_distrib_right, Icc_inter_Icc]
+     simp [-union_singleton, disjoint_iff_inter_eq_empty, Icc_inter_Icc]
   all_goals norm_num
 
 theorem kckc_fourteenSet : k (k fourteenSetᶜ)ᶜ = Icc 0 2 := by
@@ -253,7 +236,7 @@ theorem nodup_theFourteen_fourteenSet : (theFourteen fourteenSet).Nodup :=
 
 /-- The number of distinct sets obtainable from `fourteenSet` is exactly 14. -/
 theorem ncard_isObtainable_fourteenSet : {t | IsObtainable fourteenSet t}.ncard = 14 := by
-  classical rw [← card_theFourteen fourteenSet, ← Multiset.toFinset_card_of_nodup
+  rw [← card_theFourteen fourteenSet, ← Multiset.toFinset_card_of_nodup
     nodup_theFourteen_fourteenSet, ← Set.ncard_coe_finset]
   congr; ext; simp [mem_theFourteen_iff_isObtainable]
 

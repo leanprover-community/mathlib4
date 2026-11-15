@@ -5,8 +5,10 @@ Authors: Kenny Lau, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Polynomial.AlgebraMap
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebra towers for polynomial

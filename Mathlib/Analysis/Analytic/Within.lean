@@ -6,7 +6,6 @@ Authors: Geoffrey Irving
 module
 
 public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set
@@ -24,8 +23,6 @@ ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a 
 -/
 
 public section
-
-noncomputable section
 
 open scoped Topology Filter ENNReal
 open Set Filter Metric

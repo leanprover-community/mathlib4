@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Sharvil Kesarwani
 -/
 module
 
+public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!

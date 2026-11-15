@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # Limits of degreewise eventually constant systems
@@ -25,7 +26,7 @@ public section
 open CategoryTheory Category Limits
 
 variable {C J ι : Type*} [Category C] [Category J]
-   {c : ComplexShape ι} [IsCofiltered J]
+  {c : ComplexShape ι} [IsCofiltered J]
 
 namespace HomologicalComplex
 

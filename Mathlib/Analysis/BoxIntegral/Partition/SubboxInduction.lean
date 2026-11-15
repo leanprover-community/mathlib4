@@ -35,7 +35,7 @@ namespace BoxIntegral
 
 open Set Metric
 
-open Topology
+open scoped Topology
 
 noncomputable section
 

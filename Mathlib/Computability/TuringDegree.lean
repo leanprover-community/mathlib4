@@ -6,7 +6,6 @@ Authors: Tanner Duve, Elan Roth
 module
 
 public import Mathlib.Computability.RecursiveIn
-public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Turing degrees
@@ -38,8 +37,6 @@ Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
 
 public section
-
-open Primrec
 
 variable {f g h : ℕ →. ℕ}
 

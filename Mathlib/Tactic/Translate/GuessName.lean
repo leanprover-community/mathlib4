@@ -5,8 +5,8 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
 module
 
-public meta import Std.Data.TreeMap.Basic
 public meta import Mathlib.Data.String.Defs
+public meta import Std.Data.TreeMap.Basic
 public import Mathlib.Init
 
 /-!
@@ -174,8 +174,23 @@ def guessName (g : GuessNameData) : String → String :=
   String.mapTokens '\'' <|
   fun s =>
     fixAbbreviation g <|
-    applyNameDict g <|
+    applyNameDict g
     s.splitCase
+
+/-- Rename binder names in a pi type. -/
+def renameBinderNames (g : GuessName.GuessNameData) (rename : NameMap Name)
+    (src : Expr) : Expr :=
+  src.mapForallBinderNames fun n => (rename.get? n).getD <|
+    match n with
+    | .str p s => .str p <|
+      let s' := GuessName.guessName g s
+      if s' != s then s' else
+      -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.
+      if let some suffix := s.dropPrefix? 'h' then
+        "h" ++ GuessName.guessName g suffix.toString
+      else
+        s
+    | n => n
 
 /-- Environment extension used for guessing the translation of a name. -/
 abbrev GuessNameExt := EnvExtension GuessNameData
@@ -191,8 +206,8 @@ def GuessNameExt.addTranslation (ext : GuessNameExt) (srcId tgtId : Ident) :
     Elab.Command.CommandElabM Unit := do
   let src := srcId.getId.toString
   let tgt := tgtId.getId.toString
-  unless src.front.isUpper do throwErrorAt srcId "`{src}` should be capitalized"
-  unless tgt.front.isUpper do throwErrorAt tgtId "`{tgt}` should be capitalized"
+  if src.front.isLower then throwErrorAt srcId "`{src}` should be capitalized"
+  if tgt.front.isLower then throwErrorAt tgtId "`{tgt}` should be capitalized"
   modifyEnv fun env ↦ ext.modifyState env fun data ↦
     let src := src.decapitalizeSeq
     if src.splitCase matches [_] then

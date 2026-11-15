@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Category.LightProfinite.Basic
+
 /-!
 # Light profinite sets as limits of finite sets.
 
@@ -68,7 +69,6 @@ def asLimitCone : Cone S.diagram where
       (Cone.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
     naturality := fun _ _ _ ↦ by simp only [Category.assoc, S.asLimitConeAux.w]; rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `S.asLimitCone` is indeed a limit cone. -/
 def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
   Cone.ext (lightToProfiniteFullyFaithful.preimageIso <|

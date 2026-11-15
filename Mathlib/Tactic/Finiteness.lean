@@ -45,7 +45,6 @@ public meta section
 open Aesop.BuiltinRules in
 attribute [aesop (rule_sets := [finiteness]) safe -50] assumption intros
 
-set_option linter.unusedTactic false in
 add_aesop_rules safe tactic (rule_sets := [finiteness]) (by positivity)
 
 /-- `finiteness` proves goals of the form `*** < ∞` and (equivalently) `*** ≠ ∞` in the extended
@@ -111,7 +110,7 @@ macro_rules
   `(tactic| · ($[have := $h];*); finiteness_nonterminal $c*)
 
 /-!
- We register `finiteness` with the `hint` tactic.
- -/
+We register `finiteness` with the `hint` tactic.
+-/
 register_hint 1000 finiteness
 register_try?_tactic (priority := 1000) finiteness

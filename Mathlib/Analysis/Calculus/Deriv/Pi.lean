@@ -5,8 +5,12 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Pi
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+
+import Mathlib.Analysis.Calculus.FDeriv.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # One-dimensional derivatives on pi-types.

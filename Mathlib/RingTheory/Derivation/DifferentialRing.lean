@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Derivation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differential and Algebras
 
@@ -93,8 +96,4 @@ lemma DifferentialAlgebra.equiv {A : Type*} [CommRing A] [Differential A]
   letI := Differential.equiv h.toRingEquiv
   ⟨fun a ↦ by
     change (LinearMap.comp ..) _ = _
-    simp only [RingHom.toAddMonoidHom_eq_coe,
-      RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, LinearMap.coe_comp,
-      AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_coe, RingHom.coe_coe, Derivation.coeFn_coe,
-      Function.comp_apply, AlgEquiv.commutes, deriv_algebraMap]
-    apply h.symm.commutes⟩
+    simp [deriv_algebraMap]⟩

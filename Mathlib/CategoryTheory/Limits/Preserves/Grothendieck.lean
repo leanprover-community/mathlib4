@@ -22,7 +22,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 namespace Limits
 
@@ -84,7 +84,7 @@ instance preservesLimitsOfShape_colim_grothendieck [HasColimitsOfShape C H] [Has
     _ ≅ limit (K ⋙ colim) :=
       HasLimit.isoOfNatIso
        (associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
-  haveI : IsIso (limit.post K colim) := by
+  have : IsIso (limit.post K colim) := by
     convert! Iso.isIso_hom i₂
     ext
     simp only [colim_obj, Functor.comp_obj, limit.post_π, colim_map, Iso.trans_def,
@@ -94,7 +94,7 @@ instance preservesLimitsOfShape_colim_grothendieck [HasColimitsOfShape C H] [Has
       preservesLimitIso_hom_π_assoc, i₂]
     ext
     simp only [ι_colimMap, Trans.trans, Iso.symm_hom, ι_colimitFiberwiseColimitIso_inv_assoc,
-      HasColimit.isoOfNatIso_ι_hom_assoc, fiberwiseColimit_obj, fiberwiseColimitLimitIso_hom_app,
+      HasColimit.ι_isoOfNatIso_hom_assoc, fiberwiseColimit_obj, fiberwiseColimitLimitIso_hom_app,
       ι_colimMap_assoc, Category.assoc, limitObjIsoLimitCompEvaluation_inv_π_app_assoc,
       Functor.comp_obj, fiberwiseColim_obj, HasLimit.isoOfNatIso_hom_π_assoc,
       whiskeringLeft_obj_obj, colim_obj, evaluation_obj_obj, Iso.trans_hom, isoWhiskerLeft_hom,

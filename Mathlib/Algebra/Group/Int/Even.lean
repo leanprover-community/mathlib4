@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Even
 public import Mathlib.Data.Int.Sqrt
 
+import Mathlib.Tactic.Attr.Core
+
 /-!
 # Parity of integers
 -/
@@ -70,8 +72,10 @@ lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by grind
 lemma even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m := by grind
 
 @[simp, norm_cast, grind =]
-lemma even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
+lemma even_natCast (n : ℕ) : Even (n : ℤ) ↔ Even n := by
   rw_mod_cast [even_iff, Nat.even_iff]
+
+@[deprecated (since := "2026-10-13")] alias even_coe_nat := even_natCast
 
 lemma two_mul_ediv_two_of_even : Even n → 2 * (n / 2) = n := by grind
 

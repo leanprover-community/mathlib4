@@ -5,14 +5,16 @@ Authors: Simon Hudon
 -/
 module
 
+public meta import Lean.Elab.DeclarationRange
+public meta import Lean.Meta.MatchUtil
 public meta import Lean.Meta.Tactic.Apply
 public meta import Lean.Meta.Tactic.Assumption
-public meta import Lean.Meta.MatchUtil
 public meta import Lean.Meta.Tactic.Intro
-public meta import Lean.Elab.DeclarationRange
-public import Lean.Meta.Tactic.Simp
+public meta import Lean.Meta.Tactic.Simp
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # HigherOrder attribute
@@ -32,7 +34,7 @@ syntax (name := higherOrder) "higher_order" (ppSpace ident)? : attr
 
 end Lean.Parser.Attr
 
-namespace Tactic
+namespace Mathlib.Tactic
 
 /-- `mkComp v e` checks whether `e` is a sequence of nested applications `f (g (h v))`, and if so,
 returns the expression `f ∘ g ∘ h`. If `e = v` it returns `id`. -/
@@ -124,4 +126,4 @@ Syntax: `[higher_order]` or `[higher_order name]`, where the given name is used 
 generated theorem.",
     getParam := higherOrderGetParam }
 
-end Tactic
+end Mathlib.Tactic

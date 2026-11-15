@@ -6,7 +6,6 @@ Authors: Michael Jendrusch, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # The category of types is a (symmetric) monoidal category

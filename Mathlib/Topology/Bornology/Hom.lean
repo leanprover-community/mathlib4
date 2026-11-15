@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Bornology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally bounded maps
 
@@ -77,6 +80,7 @@ namespace LocallyBoundedMap
 
 variable [Bornology α] [Bornology β] [Bornology γ] [Bornology δ]
 
+@[macro_inline]
 instance : FunLike (LocallyBoundedMap α β) α β where
   coe f := f.toFun
   coe_injective f g h := by

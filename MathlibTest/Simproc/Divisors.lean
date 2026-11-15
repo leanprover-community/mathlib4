@@ -1,5 +1,7 @@
-import Mathlib.Tactic.Simproc.Divisors
-import Mathlib.NumberTheory.Primorial
+module
+
+public import Mathlib.NumberTheory.Primorial
+public import Mathlib.Tactic.Simproc.Divisors
 
 open Nat
 

@@ -5,10 +5,10 @@ Authors: Anne Baanen, Edward van de Meent
 -/
 module
 
-public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Lean.Elab.Command
-public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Lean.Meta.Tactic.TryThis
+public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Util.ParseCommand
@@ -223,6 +223,29 @@ def omegaToLia :=
   terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := true) (reportFailure := false)
 
+/-- Suggest `rwa` for `rw` followed by `assumption`. -/
+register_option linter.tacticAnalysis.rwaSuggestion : Bool := {
+  defValue := true
+}
+@[tacticAnalysis linter.tacticAnalysis.rwaSuggestion,
+  inherit_doc linter.tacticAnalysis.rwaSuggestion]
+def Mathlib.TacticAnalysis.rwaSuggestion : TacticAnalysis.Config where
+  run seq := do
+    for first in seq.toList, second in seq.toList.tail do
+      -- `rwa` only supports no location or a single hypothesis, so we only suggest it in
+      -- those cases.
+      let suggestion? : Option (TSyntax `tactic) ← match first.tacI.stx, second.tacI.stx with
+        | `(tactic| rw $rws:rwRuleSeq), `(tactic| assumption) =>
+          some <$> `(tactic| rwa $rws:rwRuleSeq)
+        | `(tactic| rw $rws:rwRuleSeq at $h:term), `(tactic| assumption) =>
+          some <$> `(tactic| rwa $rws:rwRuleSeq at $h:term)
+        | _, _ => pure none
+      if let some suggestion := suggestion? then
+        if let some start := first.tacI.stx.getPos? then
+        if let some stop := second.tacI.stx.getTailPos? then
+          let span := Syntax.setInfo (SourceInfo.synthetic start stop) first.tacI.stx
+          Elab.Command.liftCoreM <| Tactic.TryThis.addSuggestion span suggestion
+
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
 register_option linter.tacticAnalysis.rwMerge : Bool := {
   defValue := false
@@ -239,15 +262,11 @@ def Mathlib.TacticAnalysis.rwMerge : TacticAnalysis.Config := .ofComplex {
   test ctxI i ctx goal := do
     let ctxT : Array (TSyntax `Lean.Parser.Tactic.rwRule) := ctx.flatten.map (⟨·⟩)
     let tac ← `(tactic| rw [$ctxT,*])
-    let oldMessages := (← get).messages
     try
       let goals ← ctxI.runTacticCode i goal tac
       return (goals, ctxT.map (↑·))
     catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
-    finally
-      -- Drop any messages, since they will appear as if they are genuine errors.
-      modify fun s => { s with messages := oldMessages }
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if new.1.isEmpty then
       m!"Try this: rw {new.2}"
@@ -437,7 +456,7 @@ def Mathlib.TacticAnalysis.tryAtEachStep
 /-- Run a tactic (given as a string) at each proof step, with optional timing.
 
 `label` is the human-readable name shown in output (e.g., "grind").
-`tacticStr` is the tactic syntax as a string (e.g., "grind +suggestions").
+`tacticStr` is the tactic syntax as a string (e.g., "grind").
 Tactic sequences like "simp; grind" are also supported.
 
 Reports elapsed time in milliseconds for each successful replacement
@@ -464,7 +483,7 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
 /-- Run a custom tactic at each proof step, configured via environment variables.
 
 Reads from environment variables:
-- `TRY_AT_EACH_STEP_TACTIC`: Tactic syntax to try (e.g., "grind +suggestions") - required
+- `TRY_AT_EACH_STEP_TACTIC`: Tactic syntax to try (e.g., "grind") - required
 - `TRY_AT_EACH_STEP_LABEL`: Human-readable label for output (optional, defaults to tactic)
 
 If `TRY_AT_EACH_STEP_TACTIC` is missing, this linter does nothing.
@@ -476,7 +495,7 @@ To enable, add to the `mathlibOnlyLinters` array in `lakefile.lean`:
 
 Then run with the environment variable:
 ```bash
-TRY_AT_EACH_STEP_TACTIC="grind +suggestions" lake build Mathlib
+TRY_AT_EACH_STEP_TACTIC="grind" lake build Mathlib
 ```
 
 This generic entry point is used by the hammer-bench benchmarking tool
@@ -676,13 +695,11 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
             then
               continue
 
-            -- Verify suggestion works (suppress any messages from verification)
-            let savedMessages2 := (← get).messages
+            -- Verify suggestion works
             let verifyGoals ← try
               i.runTacticCode goal suggestedTac
             catch _e =>
               pure [goal]  -- Treat exception as failure
-            modify fun s => { s with messages := savedMessages2 }
 
             if !verifyGoals.isEmpty then
               logWarningAt i.tacI.stx

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Ring.TransferInstance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer algebraic structures across `Equiv`s
 
@@ -22,6 +25,7 @@ variable {R α β : Type*} [CommSemiring R]
 namespace Equiv
 variable (e : α ≃ β)
 
+-- See note [instance transfer via equivalence]
 variable (R) in
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :
@@ -30,7 +34,7 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
   letI := Equiv.semiring e
   letI := e.smul R
   { algebraMap :=
-    { toFun r := e.symm (algebraMap R β r)
+    { toFun r := e.invFun (algebraMap R β r)
       __ := e.ringEquiv.symm.toRingHom.comp (algebraMap R β) }
     commutes' r x :=
       show e.symm ((e (e.symm (algebraMap R β r)) * e x)) =

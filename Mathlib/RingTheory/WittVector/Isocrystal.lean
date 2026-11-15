@@ -8,8 +8,7 @@ module
 public import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 
 /-!
-
-## F-isocrystals over a perfect field
+# F-isocrystals over a perfect field
 
 When `k` is an integral domain, so is `𝕎 k`, and we can consider its field of fractions `K(p, k)`.
 The endomorphism `WittVector.frobenius` lifts to `φ : K(p, k) → K(p, k)`; if `k` is perfect, `φ` is
@@ -166,7 +165,7 @@ variable [IsDomain k] [CharP k p] [PerfectRing k p]
 instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
   frob :=
     (FractionRing.frobenius p k).toSemilinearEquiv.trans
-      (LinearEquiv.smulOfNeZero _ _ _ (zpow_ne_zero m (WittVector.FractionRing.p_nonzero p k)))
+      (LinearEquiv.smulOfNeZero _ _ _ (zpow_ne_zero m (WittVector.FractionRing.p_ne_zero p k)))
 
 @[simp]
 theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
@@ -180,11 +179,11 @@ admits an isomorphism to one of the standard (indexed by `m : ℤ`) one-dimensio
 theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k p] (V : Type*)
     [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
-  haveI : Nontrivial V := Module.nontrivial_of_finrank_eq_succ h_dim
+  have : Nontrivial V := Module.nontrivial_of_finrank_eq_succ h_dim
   obtain ⟨x, hx⟩ : ∃ x : V, x ≠ 0 := exists_ne 0
   have : Φ(p, k) x ≠ 0 := by simpa only [map_zero] using Φ(p, k).injective.ne hx
   obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x := by
-    rw [finrank_eq_one_iff_of_nonzero' x hx] at h_dim
+    rw [finrank_eq_one_iff_of_ne_zero' x hx] at h_dim
     obtain ⟨a, ha⟩ := h_dim (Φ(p, k) x)
     refine ⟨a, ?_, ha.symm⟩
     intro ha'
@@ -199,7 +198,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     · rw [← LinearMap.ker_eq_bot]
       exact LinearMap.ker_toSpanSingleton K(p, k) hx
     · rw [← LinearMap.range_eq_top]
-      rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
+      rw [← (finrank_eq_one_iff_of_ne_zero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
   refine ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, fun c ↦ ?_⟩⟩
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,

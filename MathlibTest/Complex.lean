@@ -1,5 +1,7 @@
-import Mathlib.Data.Complex.Basic
-import Mathlib.Algebra.DualNumber
+module
+
+public meta import Mathlib.Algebra.DualNumber
+public meta import Mathlib.Basic.Complex.Basic
 
 open DualNumber
 

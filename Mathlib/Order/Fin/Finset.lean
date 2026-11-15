@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Data.Finset.Insert
 public import Mathlib.Order.Fin.Tuple
 public import Mathlib.Order.Hom.Set
-public import Mathlib.Data.Finset.Insert
 
 /-!
 # Order isomorphisms from Fin to finsets

@@ -153,7 +153,7 @@ lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
   simp only [isMinOn_univ_iff]
   refine (show Continuous fun z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖ by fun_prop)
     |>.exists_forall_le_of_isBounded 0 ?_
-  simpa [isBounded_def, compl_setOf, Ioi] using this (Ioi_mem_atTop ‖x - (0 : 𝕜) • 1‖)
+  simpa [isBounded_def, compl_ofPred, Ioi] using this (Ioi_mem_atTop ‖x - (0 : 𝕜) • 1‖)
 
 /-!
 ### The complex case
@@ -374,7 +374,7 @@ private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖�
   -- otherwise, use `tendsto_φ_cobounded`.
   simp only [isMinOn_univ_iff] at hu ⊢
   refine (continuous_φ x).norm.exists_forall_le_of_isBounded (0, 0) ?_
-  simpa [isBounded_def, compl_setOf, Ioi]
+  simpa [isBounded_def, compl_ofPred, Ioi]
     using tendsto_norm_cobounded_atTop.comp (tendsto_φ_cobounded hc₀ hu) (Ioi_mem_atTop _)
 
 open Algebra in
@@ -393,7 +393,7 @@ lemma exists_isMonicOfDegree_two_and_aeval_eq_zero (x : F) :
   have h' (r : ℝ) : √M ≤ ‖x - algebraMap ℝ F r‖ := by
     rw [← sq_le_sq₀ M.sqrt_nonneg (norm_nonneg _), Real.sq_sqrt (norm_nonneg _), ← norm_pow,
       Commute.sub_sq <| algebraMap_eq_smul_one (A := F) r ▸ commute_algebraMap_right r x]
-    convert! isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;>
+    convert isMinOn_univ_iff.mp h (2 * r, r ^ 2) using 4 <;>
       simp [two_mul, add_mul, ← commutes, smul_def, mul_add]
   have := tendsto_norm_atTop_iff_cobounded.mpr <| tendsto_φ_cobounded (by positivity) h'
   simp only [norm_φ_eq_norm_φ_of_isMinOn h (norm_ne_zero_iff.mpr H)] at this

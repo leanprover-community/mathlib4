@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Order.Lattice
 public import Mathlib.Topology.Order.ProjIcc
-public import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Bundled continuous maps into orders, with order-compatible topology

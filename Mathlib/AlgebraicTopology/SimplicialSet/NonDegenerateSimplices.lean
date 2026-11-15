@@ -7,7 +7,6 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
-public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
 /-!
 # The partially ordered type of non degenerate simplices of a simplicial set
@@ -26,7 +25,9 @@ non degenerate `x.toN : X.N` such that `x.toN.subcomplex = x.subcomplex`.
 
 universe u
 
-open CategoryTheory Simplicial
+open CategoryTheory
+
+open scoped Simplicial
 
 namespace SSet
 
@@ -245,7 +246,7 @@ lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
-  existsUnique_of_exists_of_unique (by
+  (Function.Injective.existsUnique_iff_exists (fun _ _ ↦ N.subcomplex_injective)).2 (by
     obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
     obtain ⟨m, f, _, y, rfl⟩ := X.exists_nonDegenerate x
     refine ⟨N.mk _ y.prop, le_antisymm ?_ ?_⟩
@@ -260,7 +261,6 @@ lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
         ← op_comp, ← op_comp, Category.assoc, IsSplitEpi.id, Category.comp_id]
     · simp only [Subcomplex.ofSimplex_le_iff]
       exact ⟨f.op, rfl⟩)
-    (fun y₁ y₂ h₁ h₂ ↦ N.subcomplex_injective (by rw [h₁, h₂]))
 
 /-- This is the non degenerate simplex of a simplicial set which
 generates the same subcomplex as a given simplex. -/

@@ -6,7 +6,8 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Delete
-public import Mathlib.Tactic.TautoSet
+
+import Mathlib.Tactic.TautoSet
 
 /-!
 # Matroid Contraction
@@ -46,7 +47,7 @@ to refer to the contraction `M ／ {e}` of a single element `e : α` from `M : M
 
 open Set
 
-variable {α : Type*} {M M' N : Matroid α} {e f : α} {I J R D B X Y Z K : Set α}
+variable {α : Type*} {M : Matroid α} {e : α} {I J R D B X Y K : Set α}
 
 namespace Matroid
 
@@ -198,7 +199,7 @@ lemma IsBasis'.contract_isBasis'_sdiff_sdiff_of_subset (hIX : M.IsBasis' I X) (h
     simpa +contextual [IsBasis', (hIX.indep.subset hJI).contract_indep_iff,
       subset_sdiff, maximal_subset_iff, disjoint_sdiff_left,
       union_eq_self_of_subset_right hJI, hIX.indep, sdiff_subset.trans hIX.subset,
-      sdiff_subset_iff, subset_antisymm_iff, union_comm J]
+      subset_antisymm_iff (a := I \ J), union_comm J]
   exact fun K hJK hKJi hKX hIJK ↦ by
     simp [hIX.eq_of_subset_indep hKJi hIJK (union_subset hKX (hJI.trans hIX.subset))]
 

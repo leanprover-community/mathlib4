@@ -34,7 +34,7 @@ namespace Matrix
 
 open Equiv Matrix
 
-variable {l m n o : Type*} {l' m' n' o' : Type*} {m'' n'' : Type*}
+variable {m n o : Type*} {m' n' o' : Type*} {m'' n'' : Type*}
 variable (R A : Type*)
 
 section Add
@@ -137,7 +137,7 @@ theorem toAddEquiv_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     reindexLinearEquiv R A eₘ eₙ = reindexAddEquiv A eₘ eₙ :=
   rfl
 
-@[deprecated coe_reindexLinearEquiv (since := "2026-06-06")]
+@[deprecated coe_reindexLinearEquiv +typeChanged (since := "2026-06-06")]
 theorem reindexLinearEquiv_apply (eₘ : m ≃ m') (eₙ : n ≃ n') (M : Matrix m n A) :
     reindexLinearEquiv R A eₘ eₙ M = reindex eₘ eₙ M := by
   simp
@@ -234,7 +234,7 @@ theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
     reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
   rfl
 
-@[deprecated coe_reindexAlgEquiv (since := "2026-06-06")]
+@[deprecated coe_reindexAlgEquiv +typeChanged (since := "2026-06-06")]
 theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
     reindexAlgEquiv R A e M = reindex e e M := by
   simp
@@ -255,7 +255,7 @@ theorem reindexAlgEquiv_trans_reindexAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexAlgEquiv R A e) (reindexAlgEquiv R A e') = reindexAlgEquiv R A (.trans e e') :=
   rfl
 
-@[deprecated map_mul (since := "2026-06-06")]
+@[deprecated map_mul +typeChanged (since := "2026-06-06")]
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
     reindexAlgEquiv R A e (M * N) = reindexAlgEquiv R A e M * reindexAlgEquiv R A e N :=
   map_mul ..

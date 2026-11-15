@@ -5,8 +5,9 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Union
 public import Mathlib.Data.Fintype.EquivFin
+
+import Mathlib.Data.Finset.Union
 
 /-!
 # Pigeonhole principles in finite types
@@ -32,7 +33,7 @@ open Function
 
 universe u v
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 open Finset
 

@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
-public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Smallness of a property of objects
@@ -40,6 +40,17 @@ instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
 lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
     ObjectProperty.Small.{w} P :=
   small_of_injective (Subtype.map_injective h Function.injective_id)
+
+lemma Small.exists_eq_ofObj (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
+    ∃ (ι : Type w) (X : ι → C), P = .ofObj X :=
+  ⟨Shrink.{w} (Subtype P), fun i ↦ ((equivShrink _).symm i).val,
+    le_antisymm (fun X hX ↦ by
+      rw [ofObj_iff]
+      exact ⟨equivShrink _ ⟨X, hX⟩, by simp⟩) (by
+      rw [ofObj_le_iff]
+      intro i
+      obtain ⟨X, rfl⟩ := (equivShrink _).surjective i
+      simpa using X.prop)⟩
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     ObjectProperty.Small.{w} P.op :=
@@ -140,6 +151,14 @@ lemma EssentiallySmall.exists_small (P : ObjectProperty C) [P.IsClosedUnderIsomo
     ∃ (P₀ : ObjectProperty C) (_ : ObjectProperty.Small.{w} P₀), P = P₀.isoClosure := by
   obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_small_le P
   exact ⟨Q, inferInstance, le_antisymm hQ₂ (by rwa [isoClosure_le_iff])⟩
+
+lemma EssentiallySmall.exists_eq_isoClosure_ofObj
+    (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms]
+    [ObjectProperty.EssentiallySmall.{w} P] :
+    ∃ (ι : Type w) (X : ι → C), P = (ObjectProperty.ofObj X).isoClosure := by
+  obtain ⟨P₀, _, h⟩ := exists_small.{w} P
+  obtain ⟨ι, X, rfl⟩ := Small.exists_eq_ofObj.{w} P₀
+  exact ⟨ι, X, h⟩
 
 lemma EssentiallySmall.of_le {P Q : ObjectProperty C}
     [ObjectProperty.EssentiallySmall.{w} Q] (h : P ≤ Q) :

@@ -46,6 +46,16 @@ HIDE_CURSOR = "\033[?25l"
 SHOW_CURSOR = "\033[?25h"
 
 
+def _kill_tree(proc: subprocess.Popen) -> None:
+    """Kill a build and all its children (`os.killpg` does not exist on Windows)."""
+    if hasattr(os, "killpg"):
+        os.killpg(proc.pid, signal.SIGKILL)
+    else:
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                       capture_output=True)
+        proc.kill()  # fallback if taskkill failed; no-op if already dead
+
+
 class ShutdownError(Exception):
     """Raised when a shutdown has been requested (e.g. Ctrl-C)."""
 
@@ -98,7 +108,7 @@ class DAGTraverser:
         with self._active_builds_lock:
             for proc in self._active_builds:
                 try:
-                    os.killpg(proc.pid, signal.SIGKILL)
+                    _kill_tree(proc)
                 except (ProcessLookupError, PermissionError):
                     try:
                         proc.kill()
@@ -130,7 +140,7 @@ class DAGTraverser:
         if self.shutdown_event.is_set():
             raise ShutdownError("shutdown requested")
         proc = subprocess.Popen(
-            ["lake", "build", module_name],
+            ["lake", "build", "--iofail", module_name],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -160,7 +170,7 @@ class DAGTraverser:
                 self._active_builds.discard(proc)
             if proc.poll() is None:
                 try:
-                    os.killpg(proc.pid, signal.SIGKILL)
+                    _kill_tree(proc)
                 except (ProcessLookupError, PermissionError):
                     proc.kill()
                 proc.wait()

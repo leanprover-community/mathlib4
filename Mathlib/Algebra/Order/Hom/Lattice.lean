@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Order.Hom.Basic
 public import Mathlib.Data.Fintype.Order
 
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+
 /-!
 # Results on order homomorphism classes and lattice operations
 -/

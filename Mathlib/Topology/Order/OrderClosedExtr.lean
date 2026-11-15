@@ -5,8 +5,8 @@ Authors: Bjørn Kjos-Hanssen, Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Local maxima from monotonicity and antitonicity

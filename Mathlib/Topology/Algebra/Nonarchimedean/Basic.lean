@@ -5,9 +5,7 @@ Authors: Kevin Buzzard, Johan Commelin, Ashwin Iyengar, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Topology.Algebra.OpenSubgroup
-public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Nonarchimedean Topology
@@ -63,7 +61,8 @@ variable {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
 variable {K : Type*} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
-@[to_additive]
+@[to_additive /-- If a topological additive group embeds into a nonarchimedean additive group, then
+it is nonarchimedean. -/]
 theorem nonarchimedean_of_emb (f : G →* H) (emb : IsOpenEmbedding f) : NonarchimedeanGroup H :=
   { is_nonarchimedean := fun U hU =>
       have h₁ : f ⁻¹' U ∈ 𝓝 (1 : G) := by

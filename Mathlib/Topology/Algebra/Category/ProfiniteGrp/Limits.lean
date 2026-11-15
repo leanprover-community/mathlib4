@@ -5,9 +5,10 @@ Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 public import Mathlib.Topology.Algebra.ClopenNhdofOne
+
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # A profinite group is the projective limit of finite groups
@@ -46,10 +47,10 @@ where `P : ProfiniteGrp`. -/
 @[to_additive /-- The functor from `OpenNormalAddSubgroup P` to `FiniteAddGrp` sending `U` to
 `P ⧸ U`, where `P : ProfiniteAddGrp`. -/]
 def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp where
-  obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
+  obj := fun H => ↧(P ⧸ H.toSubgroup)
   map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
   map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
-  map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
+  map_comp f g := ConcreteCategory.ext (QuotientGroup.map_comp_map
     _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
 
 /-- The diagram of finite quotients of `P` viewed in `ProfiniteGrp`. -/
@@ -73,13 +74,13 @@ lemma toLimitFun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimitFun P) :
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
   dsimp only [Functor.comp_obj, CompHausLike.coe_of, Functor.comp_map,
-    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq,
+    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_ofPred_eq,
     toLimitFun, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
   apply Continuous.mk
   intro s _
   rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
   refine isOpen_iUnion (fun i ↦ isOpen_iUnion (fun _ ↦ ?_))
-  convert! IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
+  convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
   ext x
   simp only [Set.mem_preimage, Set.mem_singleton_iff]
   nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
@@ -93,8 +94,9 @@ def toLimit (P : ProfiniteGrp.{u}) : P ⟶ limit (diagram P) :=
   ofHom { toLimitFun P with
   continuous_toFun := toLimitFun_continuous P }
 
-/-- An auxiliary result, superseded by `toLimit_surjective` -/
-theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
+-- An auxiliary result, superseded by `toLimit_surjective`
+@[to_additive]
+private theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
   simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
@@ -117,6 +119,7 @@ theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   rw [horigin]
   exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2
 
+@[to_additive]
 theorem toLimit_surjective (P : ProfiniteGrp.{u}) : Function.Surjective (toLimit P) := by
   have : IsClosed (Set.range P.toLimit) :=
     P.toLimit.hom.continuous_toFun.isClosedMap.isClosed_range
@@ -131,10 +134,13 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
   by_contra xne1
   rcases exist_openNormalSubgroup_sub_open_nhds_of_one (isOpen_compl_singleton)
     (Set.mem_compl_singleton_iff.mpr fun a => xne1 a.symm) with ⟨H, hH⟩
-  exact hH ((QuotientGroup.eq_one_iff x).mp (congrFun (Subtype.val_inj.mpr h) H)) rfl
+  exact hH ((QuotientGroup.eq_one_iff x).mp congr($(Subtype.val_inj.mpr h) H)) rfl
 
 /-- The topological group isomorphism between a profinite group and the projective limit of
-its quotients by open normal subgroups -/
+its quotients by open normal subgroups. -/
+@[to_additive
+/-- The topological group isomorphism between an additive profinite group and the projective limit
+of its quotients by open normal subgroups. -/]
 noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≃ₜ* (limit <| diagram P) := {
   (Continuous.homeoOfEquivCompactToT2
@@ -142,16 +148,21 @@ noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteG
     P.toLimit.hom.continuous_toFun) with
   map_mul' := (toLimit P).hom.map_mul' }
 
+@[to_additive]
 instance isIso_toLimit (P : ProfiniteGrp.{u}) : IsIso (toLimit P) := by
   rw [CategoryTheory.ConcreteCategory.isIso_iff_bijective]
   exact ⟨toLimit_injective P, toLimit_surjective P⟩
 
-/-- The isomorphism in the category of profinite group between a profinite group and
-the projective limit of its quotients by open normal subgroups -/
+/-- The isomorphism in the category of profinite groups between a profinite group and
+the projective limit of its quotients by open normal subgroups. -/
+@[to_additive
+/-- The isomorphism in the category of additive profinite groups between an additive profinite group
+and the projective limit of its quotients by open normal subgroups. -/]
 noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≅ (limit <| diagram P) :=
   ContinuousMulEquiv.toProfiniteGrpIso (continuousMulEquivLimittoFiniteQuotientFunctor P)
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The projection from `P` to the quotient by an open normal subgroup. -/
 @[to_additive /-- The projection from `P` to the quotient by an open normal subgroup. -/]
 def proj {P : ProfiniteGrp.{u}} (U : OpenNormalSubgroup P) : P ⟶ (diagram P).obj U :=
@@ -170,6 +181,7 @@ def cone (P : ProfiniteGrp.{u}) : Limits.Cone (diagram P) where
   π := { app := proj }
 
 /-- The canonical cone over `diagram P` is a limit cone. -/
+@[to_additive /-- The canonical cone over `diagram P` is a limit cone. -/]
 noncomputable def isLimitCone (P : ProfiniteGrp.{u}) : Limits.IsLimit P.cone :=
   Limits.IsLimit.ofIsoLimit (limitConeIsLimit _) <| .symm <|
     Limits.Cone.ext (isoLimittoFiniteQuotientFunctor _) fun _ => rfl

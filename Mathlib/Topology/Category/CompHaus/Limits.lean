@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Category.CompHausLike.Limits
+
 /-!
 
 # Explicit limits and colimits
@@ -35,7 +36,7 @@ example : FinitaryExtensive CompHaus.{u} := inferInstance
 abbrev isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) := CompHausLike.isTerminalPUnit
 
 /-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
-noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
+noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ ↧PUnit :=
   terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
 
 noncomputable example : PreservesFiniteCoproducts compHausToTop := inferInstance

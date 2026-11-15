@@ -19,7 +19,7 @@ in particular bounding the values of `f` in terms of bounds on the limit `g`.
 
 public section
 
-open Filter Function Finset Topology
+open Filter
 
 variable {α ι : Type*}
 

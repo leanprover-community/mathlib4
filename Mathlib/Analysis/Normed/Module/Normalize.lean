@@ -6,7 +6,10 @@ Authors: Ilmārs Cīrulis, Alex Meiburg
 module
 
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Sign.Defs
+public import Mathlib.Basic.Sign.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Normalized vector

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Extremal epimorphisms
@@ -47,7 +46,6 @@ lemma ExtremalEpi.subobject_eq_top [ExtremalEpi f]
   rw [← Subobject.isIso_arrow_iff_eq_top]
   exact isIso f (Subobject.factorThru A f hA) _ (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ExtremalEpi.mk_of_hasEqualizers [HasEqualizers C]
     (hf : ∀ ⦃Z : C⦄ (p : X ⟶ Z) (i : Z ⟶ Y) (_ : p ≫ i = f) [Mono i], IsIso i) :
     ExtremalEpi f where
@@ -61,7 +59,6 @@ instance [StrongEpi f] : ExtremalEpi f where
     have sq : CommSq p f i (𝟙 Y) := { }
     exact ⟨sq.lift, by simp [← cancel_mono i], by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma extremalEpi_iff_strongEpi_of_hasPullbacks [HasPullbacks C] :
     ExtremalEpi f ↔ StrongEpi f := by
   refine ⟨fun _ ↦ ⟨inferInstance, fun A B i _ ↦ ⟨fun {t b} sq ↦ ⟨⟨?_⟩⟩⟩⟩,

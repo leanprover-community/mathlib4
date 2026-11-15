@@ -6,11 +6,8 @@ Authors: Martin Dvorak, Kyle Miller, Eric Wieser
 module
 
 public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Cross products
@@ -100,6 +97,7 @@ theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ⨯₃ w =
   dsimp only [Matrix.cons_val]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triple product of `u`, `v`, and `w` is equal to the determinant of the matrix
 with those vectors as its rows. -/
 theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ⨯₃ w = Matrix.det ![u, v, w] := by

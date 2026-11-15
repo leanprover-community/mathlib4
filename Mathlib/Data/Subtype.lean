@@ -6,8 +6,12 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simps
+
+import Mathlib.Tactic.AdaptationNote
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Subtypes
@@ -34,8 +38,6 @@ namespace Subtype
 variable {α β γ : Sort*} {p q : α → Prop}
 
 attribute [coe] Subtype.val
-
-initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
   instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/
@@ -108,6 +110,7 @@ theorem _root_.Function.extend_val_apply' {p : β → Prop} {g : {x // p x} → 
   grind [Function.extend]
 
 /-- Restrict a (dependent) function to a subtype -/
+@[implicit_reducible]
 def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
   f x
 
@@ -135,6 +138,10 @@ def coind {α β} (f : α → β) {p : β → Prop} (h : ∀ a, p (f a)) : α �
 theorem coind_injective {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) (hf : Injective f) :
     Injective (coind f h) := fun x y hxy ↦ hf <| by apply congr_arg Subtype.val hxy
 
+@[simp] theorem coind_injective_iff {α β} {f : α → β} {p : β → Prop} (h : ∀ a, p (f a)) :
+    Injective (coind f h) ↔ Injective f :=
+  ⟨Subtype.coe_injective.comp, coind_injective h⟩
+
 /-- Restriction of a function to a function on subtypes. -/
 @[simps]
 def map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
@@ -152,6 +159,11 @@ theorem map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subt
 
 theorem map_id {p : α → Prop} {h : ∀ a, p a → p (id a)} : map (@id α) h = id :=
   funext fun _ ↦ rfl
+
+@[simp]
+theorem val_comp_map {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a)) :
+    val ∘ map f h = f ∘ val :=
+  rfl
 
 theorem map_injective {p : α → Prop} {q : β → Prop} {f : α → β} (h : ∀ a, p a → q (f a))
     (hf : Injective f) : Injective (map f h) :=

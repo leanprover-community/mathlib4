@@ -346,7 +346,7 @@ lemma expGrowthSup_add : expGrowthSup (u + v) = expGrowthSup u ⊔ expGrowthSup 
     exact sup_le (self_le_add_right (u n) (v n)) (self_le_add_left (v n) (u n))
 
 -- By lemma `expGrowthSup_add`, `expGrowthSup` is an `AddMonoidHom` from `ℕ → ℝ≥0∞` to
--- `Tropical ERealᵒᵈ`. Lemma `expGrowthSup_sum` is exactly `Finset.trop_inf`. We prove it from
+-- `MaxTropical EReal`. Lemma `expGrowthSup_sum` is exactly `Finset.trop_inf`. We prove it from
 -- scratch to reduce imports.
 lemma expGrowthSup_sum {α : Type*} (u : α → ℕ → ℝ≥0∞) (s : Finset α) :
     expGrowthSup (∑ x ∈ s, u x) = ⨆ x ∈ s, expGrowthSup (u x) := by

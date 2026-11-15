@@ -5,8 +5,8 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
 module
 
-public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Geometry.Manifold.Instances.Sphere
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 

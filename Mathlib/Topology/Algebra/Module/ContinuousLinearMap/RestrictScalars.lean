@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of scalars for continuous linear maps
 
@@ -75,7 +78,7 @@ theorem coe_restrictScalarsₗ : ⇑(restrictScalarsₗ A M₁ M₂ R S) = restr
 end Semiring
 
 section Ring
-variable {A R S M₁ M₂ : Type*} [Ring A] [Ring R] [Ring S]
+variable {A R M₁ M₂ : Type*} [Ring A] [Ring R]
   [AddCommGroup M₁] [Module A M₁] [Module R M₁] [TopologicalSpace M₁]
   [AddCommGroup M₂] [Module A M₂] [Module R M₂] [TopologicalSpace M₂]
   [LinearMap.CompatibleSMul M₁ M₂ R A] [IsTopologicalAddGroup M₂]

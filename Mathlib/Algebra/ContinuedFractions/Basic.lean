@@ -5,8 +5,8 @@ Authors: Kevin Kappelmann
 -/
 module
 
-public import Mathlib.Data.Seq.Defs
 public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Data.Seq.Defs
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions

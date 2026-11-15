@@ -5,8 +5,8 @@ Authors: Weiyi Wang
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.MongePoint
+
 import Mathlib.Geometry.Euclidean.Angle.Sphere
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
@@ -55,6 +55,14 @@ def ninePointCircle {n : ℕ} (s : Simplex ℝ P n) : Sphere P where
 
 theorem ninePointCircle_center {n : ℕ} (s : Simplex ℝ P n) : s.ninePointCircle.center =
     ((n + 1) / n : ℝ) • (s.centroid -ᵥ s.circumcenter) +ᵥ s.circumcenter := rfl
+
+theorem ninePointCircle_center_eq_lineMap_circumcenter_centroid {n : ℕ} (s : Simplex ℝ P n) :
+    s.ninePointCircle.center = AffineMap.lineMap s.circumcenter s.centroid ((n + 1) / n : ℝ) := by
+  rw [ninePointCircle_center, AffineMap.lineMap_apply]
+
+theorem ninePointCircle_center_eq_point (s : Simplex ℝ P 0) (i : Fin 1) :
+    s.ninePointCircle.center = s.points i := by
+  simp [ninePointCircle_center_eq_lineMap_circumcenter_centroid, s.circumcenter_eq_point i]
 
 theorem ninePointCircle_center_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
     s.ninePointCircle.center ∈ affineSpan ℝ (Set.range s.points) := by
@@ -113,6 +121,18 @@ theorem ninePointCircle_eq_circumsphere_medial {n : ℕ} [NeZero n] (s : Simplex
   · rw [Set.range_subset_iff]
     simpa [medial_points] using s.faceOppositeCentroid_mem_ninePointCircle
 
+theorem dist_ninePointCircle_center_sq {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
+    dist (s.points i) s.ninePointCircle.center ^ 2 =
+      (s.circumradius ^ 2 +
+        (n - 1) * ∑ j ∈ {i}ᶜ, dist (s.points i) (s.points j) ^ 2 -
+          (∑ j ∈ {i}ᶜ, ∑ k ∈ {i}ᶜ, dist (s.points j) (s.points k) ^ 2) / 2) / n ^ 2 := by
+  by_cases hn : n = 0
+  · rcases hn with rfl
+    simp [s.ninePointCircle_center_eq_point i]
+  rw [ninePointCircle_center_eq_lineMap_circumcenter_centroid,
+    dist_lineMap_circumcenter_centroid_sq]
+  field
+
 /-- Euler points are a set of points that the `ninePointCircle` passes through. They are defined as
 being $1/n$th of the way from the Monge point to a vertex. Specifically for triangles, these are
 the midpoints between the orthocenter and a given vertex
@@ -139,7 +159,6 @@ theorem eulerPoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace 
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).eulerPoint i = s.eulerPoint i := by
-  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   simp [eulerPoint]
 
 theorem points_vsub_eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :
@@ -147,15 +166,11 @@ theorem points_vsub_eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1))
   rw [eulerPoint, vsub_vadd_eq_vsub_sub]
   by_cases hn : n = 0
   · obtain rfl := hn
-    have : Subsingleton (Fin (0 + 1)) := inferInstanceAs (Subsingleton (Fin 1))
-    have hi : i = 0 := Subsingleton.eq_zero i
-    have hrange : Set.range s.points = {s.points i} := by simp [hi]
+    have hrange : Set.range s.points = {s.points i} := by simp [Subsingleton.eq_zero (α := Fin 1) i]
     obtain hmonge := s.mongePoint_mem_affineSpan
     rw [hrange, mem_affineSpan_singleton] at hmonge
     simp [hmonge]
-  have : ((n - 1) / n : ℝ) = 1 - (n : ℝ)⁻¹ := by
-    rw [sub_div, div_self (by simpa using hn), one_div]
-  rw [this, sub_smul, one_smul]
+  rw [sub_div, div_self (by simpa using hn), one_div, sub_smul, one_smul]
 
 theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) :
@@ -186,7 +201,7 @@ theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : 
       (((n + 1) / n : ℝ)) • (s.centroid -ᵥ s.circumcenter) := by
     rw [add_comm (n : ℝ) 1, add_div, div_self (by simpa using hn.out), add_smul, one_smul, one_div]
   rw [this, ← two_smul ℝ, smul_smul]
-  norm_num
+  simp
 
 theorem isDiameter_ninePointCircle {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) :
@@ -216,7 +231,7 @@ theorem eulerPoint_eq_midpoint (s : Triangle ℝ P) (i : Fin 3) :
 
 theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     s.altitudeFoot i ∈ s.ninePointCircle := by
-  convert! s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
+  convert s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
   rw [Simplex.altitudeFoot]
   unfold Simplex.orthogonalProjectionSpan
   congr 1
@@ -225,6 +240,20 @@ theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     ← orthocenter_eq_mongePoint, direction_affineSpan, Simplex.range_faceOpposite_points]
   refine Set.mem_of_mem_of_subset ?_ (s.vectorSpan_isOrtho_altitude_direction i).ge
   exact vsub_mem_direction (s.mem_altitude i) (s.orthocenter_mem_altitude)
+
+/-- In triangle $ABC$ with side length $a$, $b$, and $c$, nine-point circle center $N$ and
+circumradius $R$, we have $‖AN‖^2 = (R^2 + b^2 + c^2 - a^2) / 4$. -/
+theorem dist_ninePointCircle_center_sq (s : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
+    (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    dist (s.points i₁) s.ninePointCircle.center ^ 2 =
+      (s.circumradius ^ 2 + dist (s.points i₁) (s.points i₂) ^ 2 +
+        dist (s.points i₁) (s.points i₃) ^ 2 - dist (s.points i₂) (s.points i₃) ^ 2) / 4 := by
+  have : ({i₁}ᶜ : Finset (Fin 3)) = {i₂, i₃} := by
+    ext i
+    fin_cases i <;> simp <;> grind
+  simp [Simplex.dist_ninePointCircle_center_sq, this, Finset.sum_pair h₂₃,
+    dist_comm (s.points i₃) (s.points i₂)]
+  ring
 
 end Affine.Triangle
 

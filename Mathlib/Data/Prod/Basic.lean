@@ -5,13 +5,13 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Lean.PrettyPrinter.Delaborator.Builtins
-public import Mathlib.Logic.Function.Defs
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.Inhabit
-public import Batteries.Tactic.Trans
 
-import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Inhabit
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Extra facts about `Prod`
@@ -277,8 +277,8 @@ theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → �
 @[simp]
 theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ} :
     Bijective (map f g) ↔ Bijective f ∧ Bijective g := by
-  haveI := Nonempty.map f ‹_›
-  haveI := Nonempty.map g ‹_›
+  have := Nonempty.map f ‹_›
+  have := Nonempty.map g ‹_›
   exact (map_injective.and map_surjective).trans and_and_and_comm
 
 @[simp]

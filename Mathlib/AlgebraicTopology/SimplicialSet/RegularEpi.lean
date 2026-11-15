@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-public import Mathlib.CategoryTheory.Functor.RegularEpi
+
+import Mathlib.CategoryTheory.Functor.RegularEpi
 
 /-!
 # The category of simplicial sets is a regular epi category

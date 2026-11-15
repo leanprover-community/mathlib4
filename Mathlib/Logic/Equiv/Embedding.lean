@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Embedding.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences on embeddings
 
@@ -81,16 +84,6 @@ def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 
-/-- Embeddings from a single-member type are equivalent to members of the target type. -/
-def uniqueEmbeddingEquivResult {α β : Type*} [Unique α] :
-    (α ↪ β) ≃ β where
-  toFun f := f default
-  invFun x := ⟨fun _ => x, fun _ _ _ => Subsingleton.elim _ _⟩
-  left_inv _ := by
-    ext x
-    simp_rw [Function.Embedding.coeFn_mk]
-    congr 1
-    exact Subsingleton.elim _ x
-  right_inv _ := by simp
+@[deprecated (since := "2026-11-02")] alias uniqueEmbeddingEquivResult := embeddingUnique
 
 end Equiv

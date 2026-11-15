@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 import Mathlib.Analysis.Normed.Module.HahnBanach
-import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # The semivariation of a vector measure
@@ -72,9 +71,9 @@ lemma semivariation_le_variation : μ.semivariation s ≤ μ.variation s := by
   intro ℓ hℓ
   suffices (μ.mapRange (ℓ : E →+ ℝ) ℓ.continuous).variation ≤ μ.variation from this s
   apply variation_le_of_forall_enorm_le (fun t ht ↦ ?_)
-  simp only [mapRange_apply, AddMonoidHom.coe_coe]
+  simp only [mapRange_apply, AddMonoidHom.coe_ofClass]
   apply le_trans ?_ (enorm_measure_le_variation _ _)
-  exact (ContinuousLinearMap.le_opNorm_enorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
+  exact (ContinuousLinearMap.le_opENorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
 
 lemma enorm_apply_le_semivariation : ‖μ s‖ₑ ≤ μ.semivariation s := by
   by_cases hs : MeasurableSet s; swap
@@ -82,7 +81,7 @@ lemma enorm_apply_le_semivariation : ‖μ s‖ₑ ≤ μ.semivariation s := by
   obtain ⟨ℓ, ℓ_norm, hℓ⟩ : ∃ ℓ : StrongDual ℝ E, ‖ℓ‖ ≤ 1 ∧ ℓ (μ s) = ‖μ s‖ :=
     exists_dual_vector'' _ _
   have h'ℓ : ℓ ∈ {ℓ : StrongDual ℝ E | ‖ℓ‖ₑ ≤ 1} := by
-    simp [enorm_eq_nnnorm, ← NNReal.coe_le_one, ℓ_norm]
+    simp [eNorm_eq_nnNorm, ← NNReal.coe_le_one, ℓ_norm]
   calc ‖μ s‖ₑ
   _ = ‖(μ.mapRange (ℓ : E →+ ℝ) ℓ.continuous) s‖ₑ := by simp [← ofReal_norm, hℓ]
   _ ≤ (μ.mapRange (ℓ : E →+ ℝ) ℓ.continuous).variation s := enorm_measure_le_variation _ _
@@ -102,7 +101,7 @@ lemma exists_subset_lt_enorm_apply_of_lt_semivariation (hs : MeasurableSet s)
     SignedMeasure.exists_subset_lt_enorm_apply_of_lt_variation _ hs h'ℓ
   refine ⟨t, ts, t_meas, ht.trans_le ?_⟩
   gcongr
-  exact (ContinuousLinearMap.le_opNorm_enorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
+  exact (ContinuousLinearMap.le_opENorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
 
 private lemma exists_one_le_enorm_apply_of_semivariation_eq_top
     (hs : MeasurableSet s) (h's : μ.semivariation s = ∞) :
@@ -128,7 +127,7 @@ private lemma exists_one_le_enorm_apply_of_semivariation_eq_top
       exact enorm_sub_le
     rwa [ENNReal.add_le_add_iff_right (by simp)] at this
   · refine ⟨s \ t, hs.diff t_meas, sdiff_subset, hI, ?_⟩
-    simp only [_root_.sdiff_sdiff_right_self, le_eq_subset, ts, inf_of_le_right]
+    simp only [_root_.sdiff_sdiff_right_self, ts, inf_of_le_right]
     exact le_trans (by simp) h't
 
 private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
@@ -156,7 +155,7 @@ private lemma semivariation_univ_lt_top : μ.semivariation univ < ∞ := by
     apply (pairwise_disjoint_on _).2 (fun m n hmn ↦ ?_)
     have : Disjoint (u m) (s (m + 1)) := by simp [u, disjoint_sdiff_left]
     apply this.mono_right
-    simp only [sdiff_le_iff, sup_eq_union, le_eq_subset, u]
+    simp only [sdiff_le_iff, u]
     exact Subset.trans (s_anti (by grind)) subset_union_right
   have : HasSum (fun i => μ (u i)) (μ (⋃ i, u i)) :=
     hasSum_of_disjoint_iUnion (fun n ↦ (hs n).1.diff (hs (n + 1)).1) u_disj
@@ -177,11 +176,13 @@ lemma semivariation_apply_le_bound : μ.semivariation s ≤ μ.bound := by
 lemma enorm_apply_le_bound : ‖μ s‖ₑ ≤ μ.bound :=
   (enorm_apply_le_semivariation).trans semivariation_apply_le_bound
 
-lemma nnnorm_apply_le_bound : ‖μ s‖₊ ≤ μ.bound := by
-  rw [← ENNReal.coe_le_coe, ← enorm_eq_nnnorm]
+lemma nnNorm_apply_le_bound : ‖μ s‖₊ ≤ μ.bound := by
+  rw [← ENNReal.coe_le_coe, ← eNorm_eq_nnNorm]
   exact enorm_apply_le_bound
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_apply_le_bound := nnNorm_apply_le_bound
+
 lemma norm_apply_le_bound : ‖μ s‖ ≤ μ.bound := by
-  simpa [← coe_nnnorm] using nnnorm_apply_le_bound
+  simpa [← coe_nnNorm] using nnNorm_apply_le_bound
 
 end MeasureTheory.VectorMeasure

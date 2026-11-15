@@ -6,10 +6,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Algebra.Group.Commute.Hom
-public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.Subgroup.Lattice
-public import Mathlib.Order.Disjoint
 
 /-!
 # Canonical homomorphism from a pair of monoids
@@ -23,7 +20,7 @@ and whose composition with `inr M N` coincides with `g`.
 
 There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`s.
 
-## Main theorems:
+## Main statements
 
 * `noncommCoprod_comp_inr` and `noncommCoprod_comp_inl` prove that the compositions
   of `MonoidHom.noncommCoprod f g _` with `inl M N` and `inr M N` coincide with `f` and `g`.

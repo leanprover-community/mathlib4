@@ -5,9 +5,6 @@ Authors: Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
@@ -86,7 +83,7 @@ structure HasPrimitiveVectorWith (t : IsSl2Triple h e f) (m : M) (μ : R) : Prop
 
 /-- Given a representation of a Lie algebra with distinguished `sl₂` triple, a simultaneous
 eigenvector for the action of both `h` and `e` necessarily has eigenvalue zero for `e`. -/
-lemma HasPrimitiveVectorWith.mk' [IsAddTorsionFree M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
+lemma HasPrimitiveVectorWith.mk' [HasUniqueDiv M] (t : IsSl2Triple h e f) (m : M) (μ ρ : R)
     (hm : m ≠ 0) (hm' : ⁅h, m⁆ = μ • m) (he : ⁅e, m⁆ = ρ • m) :
     HasPrimitiveVectorWith t m μ where
   ne_zero := hm
@@ -162,7 +159,7 @@ lemma lie_h_pow_toEnd_f (n : ℕ) :
   induction n with
   | zero => simpa using P.lie_h
   | succ n ih =>
-    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+    rw [pow_succ', mul_apply_eq_comp, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
       leibniz_lie h, t.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
     congr
     ring
@@ -172,10 +169,10 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
   induction n with
   | zero =>
       simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
-        pow_zero, Module.End.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
+        pow_zero, one_apply_eq_self, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
         add_zero]
   | succ n ih =>
-    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
+    rw [pow_succ', mul_apply_eq_comp, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
       lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f P, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr
@@ -207,7 +204,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat [CharZero R] [IsDomain R] [IsTorsionFree R M
   · exact P.ne_zero (by simpa using H)
   · next i IH =>
     have : ((i + 1) * (n - i) : ℤ) • (toEnd R L M f ^ i) m = 0 := by
-      have := congr_arg (⁅e, ·⁆) H
+      have := congr(⁅e, $H⁆)
       simpa [← Int.cast_smul_eq_zsmul R, P.lie_e_pow_succ_toEnd_f, hn] using this
     rw [← Int.cast_smul_eq_zsmul R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
       Nat.cast_inj, ← @Nat.cast_one ℤ, ← Nat.cast_add, Nat.cast_eq_zero] at this
@@ -240,7 +237,7 @@ lemma lie_h_pow_toEnd_e (t : IsSl2Triple h e f)
   induction n with
   | zero => simpa using hm
   | succ n ih =>
-    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+    rw [pow_succ', mul_apply_eq_comp, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
       leibniz_lie h, IsSl2Triple.lie_h_e_smul R t, smul_lie, ih, lie_smul, ← add_smul]
     congr 1
     ring

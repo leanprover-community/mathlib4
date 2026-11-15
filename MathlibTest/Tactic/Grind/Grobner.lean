@@ -3,7 +3,9 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro, Kim Morrison
 -/
-import Mathlib
+module
+
+public import Mathlib
 
 /-!
 Mathlib used to have a tactic (`polyrith`) that communicated with a remote Sage server
@@ -99,7 +101,7 @@ example {K : Type*} [Field K] [Invertible 2] [Invertible 3]
   x ^ 3 + 3 * p * x - 2 * q =
     (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) := by
   have hs_nonzero : s ≠ 0 := by
-    contrapose! hp_nonzero with hs_nonzero
+    contrapose hp_nonzero with hs_nonzero
     grobner
   have H' : 2 * q = s ^ 3 - t ^ 3 := by
     rw [← mul_left_inj' (pow_ne_zero 3 hs_nonzero)]

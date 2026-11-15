@@ -5,8 +5,9 @@ Authors: Edward Ayers
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Exception
+
+import Mathlib.Init
 
 /-!
 # Additional methods for working with `Exception`s
@@ -17,7 +18,7 @@ This file contains two additional methods for working with `Exception`s
 
 -/
 
-@[expose] public section
+public section
 
 open Lean
 

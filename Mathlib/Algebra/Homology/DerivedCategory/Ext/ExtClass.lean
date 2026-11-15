@@ -50,12 +50,10 @@ local notation "qis" => CochainComplex.mappingCone.descShortComplex S'
 local notation "hqis" => CochainComplex.mappingCone.quasiIso_descShortComplex hS'
 local notation "δ" => Triangle.mor₃ (CochainComplex.mappingCone.triangle (ShortComplex.f S'))
 
-set_option backward.defeqAttrib.useBackward true in
 instance : HasSmallLocalizedShiftedHom.{w} W ℤ (S').X₃ (S').X₁ := by
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 include hS in
 private lemma hasSmallLocalizedHom_S'_X₃_K :
@@ -81,28 +79,20 @@ noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by
   change SmallHom W (S').X₃ ((S').X₁⟦(1 : ℤ)⟧)
   exact (SmallHom.mkInv qis hqis).comp (SmallHom.mk W δ)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ := by
   change SmallShiftedHom.equiv W Q hS.extClass = _
   dsimp [extClass, SmallShiftedHom.equiv]
   erw [SmallHom.equiv_comp]
-  rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
-  dsimp [-Q_obj_single_obj, singleδ, triangleOfSESδ]
-  rw [Category.assoc, Category.assoc, Category.assoc,
-    singleFunctorsPostcompQIso_hom_hom, singleFunctorsPostcompQIso_inv_hom,
-    NatTrans.id_app, Category.id_comp, NatTrans.id_app]
-  simp only [SingleFunctors.postcomp, Functor.comp_obj]
-  unfold CochainComplex.singleFunctors
-  rw [Functor.map_id, Category.comp_id]
+  rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk, Category.assoc]
   rfl
 
 end
 
 @[simp]
 lemma comp_extClass : (Ext.mk₀ S.g).comp hS.extClass (zero_add 1) = 0 := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   ext
   simp only [Ext.comp_hom, Ext.mk₀_hom, extClass_hom, Ext.zero_hom,
     ShiftedHom.mk₀_comp]
@@ -116,7 +106,7 @@ lemma comp_extClass_assoc {Y : C} {n : ℕ} (γ : Ext S.X₁ Y n) {n' : ℕ} (h 
 
 @[simp]
 lemma extClass_comp : hS.extClass.comp (Ext.mk₀ S.f) (add_zero 1) = 0 := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   ext
   simp only [Ext.comp_hom, Ext.mk₀_hom, extClass_hom, Ext.zero_hom,
     ShiftedHom.comp_mk₀]
@@ -132,7 +122,7 @@ lemma extClass_naturality {S₁ S₂ : ShortComplex C}
     (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
     h₁.extClass.comp (Ext.mk₀ f.τ₁) (add_zero 1) =
       (Ext.mk₀ f.τ₃).comp h₂.extClass (zero_add 1) := by
-  letI := HasDerivedCategory.standard C
+  let := HasDerivedCategory.standard C
   ext
   simpa [ShiftedHom.comp_mk₀, ShiftedHom.mk₀_comp] using! (singleTriangle.map h₁ h₂ f).comm₃
 

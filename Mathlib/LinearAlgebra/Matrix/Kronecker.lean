@@ -203,7 +203,7 @@ def kroneckerMapBilinear [Semiring S] [Semiring R]
     [Module R α] [Module R γ] [Module S β] [Module S γ] [SMulCommClass S R γ]
     (f : α →ₗ[R] β →ₗ[S] γ) :
     Matrix l m α →ₗ[R] Matrix n p β →ₗ[S] Matrix (l × n) (m × p) γ :=
-  LinearMap.mk₂' R S (kroneckerMap fun r s => f r s) (kroneckerMap_add_left _ <| f.map_add₂)
+  LinearMap.mk₂' R S (kroneckerMap fun r s => f r s) (kroneckerMap_add_left _ f.map_add₂)
     (fun _ => kroneckerMap_smul_left _ _ <| f.map_smul₂ _)
     (kroneckerMap_add_right _ fun a => (f a).map_add) fun r =>
     kroneckerMap_smul_right _ _ fun a => (f a).map_smul r
@@ -220,7 +220,7 @@ theorem kroneckerMapBilinear_mul_mul [Semiring S] [Semiring R] [Fintype m] [Fint
     kroneckerMapBilinear f (A * B) (A' * B') =
       kroneckerMapBilinear f A A' * kroneckerMapBilinear f B B' := by
   ext ⟨i, i'⟩ ⟨j, j'⟩
-  simp only [kroneckerMapBilinear_apply_apply, mul_apply, ← Finset.univ_product_univ,
+  simp only [kroneckerMapBilinear_apply_apply, Matrix.mul_apply, ← Finset.univ_product_univ,
     Finset.sum_product, kroneckerMap_apply]
   simp_rw [map_sum f, LinearMap.sum_apply, map_sum, h_comm]
 
@@ -277,7 +277,7 @@ def kronecker [Mul α] : Matrix l m α → Matrix n p α → Matrix (l × n) (m 
 @[inherit_doc Matrix.kroneckerMap]
 scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
 
-open Kronecker
+open scoped Kronecker
 
 @[simp]
 theorem kronecker_apply [Mul α] (A : Matrix l m α) (B : Matrix n p α) (i₁ i₂ j₁ j₂) :
@@ -444,7 +444,7 @@ scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (TensorProduct
 @[inherit_doc kroneckerTMul] scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 =>
   Matrix.kroneckerMap (TensorProduct.tmul R) x y
 
-open Kronecker
+open scoped Kronecker
 
 @[simp]
 theorem kroneckerTMul_apply (A : Matrix l m α) (B : Matrix n p β) (i₁ i₂ j₁ j₂) :
@@ -537,7 +537,7 @@ end Module
 
 section Algebra
 
-open Kronecker
+open scoped Kronecker
 
 open Algebra.TensorProduct
 

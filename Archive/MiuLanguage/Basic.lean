@@ -3,7 +3,9 @@ Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Tactic.Linarith
 
 /-!
 # An MIU Decision Procedure in Lean
@@ -60,6 +62,7 @@ miu, derivable strings
 
 -/
 
+@[expose] public section
 
 namespace Miu
 
@@ -178,7 +181,7 @@ example (h : Derivable "MIMIMUUIIM") : Derivable "MIMIMIIM" := by
 private theorem MIU_der : Derivable "MIU" := by
   change Derivable ([M] ++ [I, U])
   apply Derivable.r1 -- reduce to deriving `"MI"`,
-  constructor -- which is the base of the inductive construction.
+  constructor! -- which is the base of the inductive construction.
 
 example : Derivable "MIUIU" := by
   change Derivable (M :: [I, U] ++ [I, U])

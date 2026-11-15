@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.RCLike.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm properties of the extension of continuous `ℝ`-linear functionals to `𝕜`-linear functionals
 
@@ -103,12 +106,3 @@ lemma toContinuousLinearEquiv_extendRCLikeₗᵢ :
   rfl
 
 end StrongDual
-
-namespace ContinuousLinearMap
-open StrongDual
-
-@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜'_bound := norm_extendRCLike_bound
-@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜' := norm_extendRCLike
-@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜 := norm_extendRCLike
-
-end ContinuousLinearMap

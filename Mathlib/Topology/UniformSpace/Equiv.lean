@@ -6,8 +6,6 @@ Anatole Dedecker
 -/
 module
 
-public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 public import Mathlib.Topology.UniformSpace.Pi
 
 /-!
@@ -51,6 +49,7 @@ variable [UniformSpace α] [UniformSpace β] [UniformSpace γ] [UniformSpace δ]
 theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α ≃ β)
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 
+@[macro_inline]
 instance : EquivLike (α ≃ᵤ β) α β where
   coe h := h.toEquiv
   inv h := h.toEquiv.symm
@@ -170,7 +169,7 @@ def changeInv (f : α ≃ᵤ β) (g : β → α) (hg : Function.RightInverse g f
     left_inv := by convert! f.left_inv
     right_inv := by convert! f.right_inv using 1
     uniformContinuous_toFun := f.uniformContinuous
-    uniformContinuous_invFun := by convert! f.symm.uniformContinuous }
+    uniformContinuous_invFun := by convert f.symm.uniformContinuous }
 
 @[simp]
 theorem symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
@@ -222,7 +221,7 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
   uniformContinuous_toFun := uniformContinuous_subtype_val.subtype_mk _
   uniformContinuous_invFun := uniformContinuous_subtype_val.subtype_mk _
-  toEquiv := Equiv.setCongr h
+  toEquiv := Set.equivOfEq h
 
 /-- Product of two uniform isomorphisms. -/
 def prodCongr (h₁ : α ≃ᵤ β) (h₂ : γ ≃ᵤ δ) : α × γ ≃ᵤ β × δ where
@@ -261,6 +260,9 @@ theorem prodComm_symm : (prodComm α β).symm = prodComm β α :=
 theorem coe_prodComm : ⇑(prodComm α β) = Prod.swap :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm α β).trans (prodComm β α) = .refl _ := rfl
+
 /-- `(α × β) × γ` is uniformly isomorphic to `α × (β × γ)`. -/
 def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
   uniformContinuous_toFun :=
@@ -277,8 +279,6 @@ def prodPUnit : α × PUnit ≃ᵤ α where
   toEquiv := Equiv.prodPUnit α
   uniformContinuous_toFun := uniformContinuous_fst
   uniformContinuous_invFun := uniformContinuous_id.prodMk uniformContinuous_const
-
-@[deprecated (since := "2026-02-08")] alias prodPunit := prodPUnit
 
 /-- `{*} × α` is uniformly isomorphic to `α`. -/
 def punitProd : PUnit × α ≃ᵤ α :=
@@ -351,6 +351,24 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
       have hf : IsUniformInducing (@Equiv.ulift.{v, u} α).toFun := ⟨rfl⟩
       simp_rw [hf.uniformContinuous_iff]
       exact uniformContinuous_id }
+
+variable {α} in
+/-- `MulOpposite.op` as a uniform equivalence. -/
+@[to_additive (attr := simps! apply symm_apply toEquiv)
+/-- `AddOpposite.op` as a uniform equivalence. -/]
+def _root_.MulOpposite.opUniformEquiv : α ≃ᵤ αᵐᵒᵖ where
+  toEquiv := MulOpposite.opEquiv
+  uniformContinuous_toFun := MulOpposite.uniformContinuous_op
+  uniformContinuous_invFun := MulOpposite.uniformContinuous_unop
+
+variable {α} in
+@[to_additive (attr := simp)]
+theorem _root_.completeSpace_mulOpposite_iff : CompleteSpace αᵐᵒᵖ ↔ CompleteSpace α :=
+  MulOpposite.opUniformEquiv.symm.completeSpace_iff
+
+@[to_additive]
+instance _root_.CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ :=
+  completeSpace_mulOpposite_iff.2 ‹CompleteSpace α›
 
 end
 

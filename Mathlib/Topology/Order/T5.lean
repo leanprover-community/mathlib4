@@ -9,6 +9,9 @@ public import Mathlib.Order.Interval.Set.OrdConnectedComponent
 public import Mathlib.Topology.Order.Basic
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear order is a completely normal Hausdorff topological space
 
@@ -19,7 +22,9 @@ topological space.
 public section
 
 
-open Filter Set Function OrderDual Topology Interval
+open Filter Set OrderDual
+
+open scoped Topology
 
 variable {X : Type*} [LinearOrder X] [TopologicalSpace X] [OrderTopology X] {a : X} {s t : Set X}
 

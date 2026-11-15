@@ -49,11 +49,11 @@ usage() {
 Usage: runSkimmer.sh [[--no-update] [--on [tgts...]] | --lake-update | --init | -h | --help]
 
 Options:
-  [no arguments]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` on targets configured in \`runSkimmer.sh\`. (When refactoring mathlib, does not get mathlib's cache.)
-  --on [tgts...]  Run \`lake update\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` for \`tgt\` in the supplied \`tgts\`. Each `tgt` may be lake target syntax for the current package or a library or module therein. (When refactoring mathlib, does not get mathlib's cache.)
-  --no-update     Only run \`lake build <tgts>:applyCurrentTryThis\`, without first running \`lake update\` in \`SideSkimmer\`. Applies both the default targets and those supplied with \`--on\`.
+  [no arguments]  Run \`lake update skimmer\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` on targets configured in \`runSkimmer.sh\`. (When refactoring mathlib, does not get mathlib's cache.)
+  --on [tgts...]  Run \`lake update skimmer\` in \`SideSkimmer\`, then run \`lake build <tgt>:applyCurrentTryThis\` for \`tgt\` in the supplied \`tgts\`. Each `tgt` may be lake target syntax for the current package or a library or module therein. (When refactoring mathlib, does not get mathlib's cache.)
+  --no-update     Only run \`lake build <tgts>:applyCurrentTryThis\`, without first running \`lake update skimmer\` in \`SideSkimmer\`. Applies both the default targets and those supplied with \`--on\`.
   --init          Set up the \`SideSkimmer\` side package. This only needs to be done when first introducing \`runSkimmer.sh\` to a new repo.
-  --lake-update   Only run \`lake update -v\` in \`SideSkimmer\`, and if refactoring mathlib, do not get mathlib's cache while doing so.
+  --lake-update   Only run \`lake update skimmer -v\` in \`SideSkimmer\`, and if refactoring mathlib, do not get mathlib's cache while doing so.
 EOF
 }
 
@@ -117,18 +117,18 @@ EOF
 /lean-toolchain
 EOF
   # Creates toolchain, manifest, etc.
-  (cd "${pkg}" && lake update)
+  (cd "${pkg}" && lake update skimmer)
 else
   if [[ -f "${pkg}/lakefile.lean" && -f "${pkg}/.gitignore" ]]; then
     if [[ "${lakeUpdate}" ]]; then
-      echo "Only running \`lake update -v\` in \`SideSkimmer\`; skipping run."
-      (cd "${pkg}" && lake update -v)
+      echo "Only running \`lake update skimmer -v\` in \`SideSkimmer\`; skipping run."
+      (cd "${pkg}" && lake update skimmer -v)
       exit 0
     fi
-    # Only run `lake update` if `--no-update` is not present.
+    # Only run `lake update skimmer` if `--no-update` is not present.
     if [[ ! "${noUpdate}" ]]; then
-      echo "Running \`lake update\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this step."
-      (cd "${pkg}" && lake update)
+      echo "Running \`lake update skimmer\` in \`SideSkimmer\`. Use \`runSkimmer.sh --no-update\` to skip this step."
+      (cd "${pkg}" && lake update skimmer)
     elif [[ ! -f "${pkg}/lake-manifest.json" ]]; then
       echo "Expected manifest at \`${pkg}/lake-manifest.json\`."
       echo "Please exclude the \`--no-update\` flag to create one."

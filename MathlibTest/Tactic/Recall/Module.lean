@@ -1,5 +1,5 @@
 module
-public import Mathlib.Tactic.Recall
+public import Mathlib.Init
 
 @[expose] public section
 

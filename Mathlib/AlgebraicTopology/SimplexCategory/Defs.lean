@@ -6,7 +6,6 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Opposites
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Util.Superscript
 
