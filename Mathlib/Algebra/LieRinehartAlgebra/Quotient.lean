@@ -10,7 +10,7 @@ public import Mathlib.Algebra.LieRinehartAlgebra.StrictIdeal
 /-!
 # Quotients of Lie-Rinehart algebras by strict Lie-Rinehart ideals
 
-Given a Lie-Rinehart algebra `(R A L)` and an ideal `s ⊆ L`, the quotient `L ⧸ s` inherits the
+Given a Lie-Rinehart algebra `(R A L)` and a strict ideal `s ⊆ L`, the quotient `L ⧸ s` inherits the
 structure of a Lie-Rinehart algebra.
 
 ## Main statements:
