@@ -10,6 +10,10 @@ public meta import Lean.Meta.Tactic.Cases
 public meta import Mathlib.Lean.Meta
 public meta import Mathlib.Lean.Name
 public import Mathlib.Init
+public import Lean.Elab.Tactic.Basic
+public import Lean.Meta.Tactic.Apply
+public import Lean.Meta.Tactic.Cases
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # mk_iff_of_inductive_prop

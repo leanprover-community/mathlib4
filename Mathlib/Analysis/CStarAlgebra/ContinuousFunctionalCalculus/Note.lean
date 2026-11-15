@@ -8,6 +8,7 @@ module
 public import Batteries.Util.LibraryNote
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Documentation concerning the continuous functional calculus

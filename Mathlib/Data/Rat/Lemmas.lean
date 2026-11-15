@@ -9,6 +9,7 @@ public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.PNat.Defs
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Further lemmas for the Rational Numbers

@@ -5,10 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Comp
 public import Mathlib.Analysis.Convolution
 
 import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Differentiability of a convolution of functions

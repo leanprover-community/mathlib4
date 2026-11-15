@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+public import Mathlib.Algebra.Algebra.Equiv
 
 /-!
 # Tensor product of `R`-algebras and rings

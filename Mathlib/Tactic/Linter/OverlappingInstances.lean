@@ -8,6 +8,8 @@ module
 public meta import Batteries.Lean.Position
 public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.Elab.InfoTree
+public import Lean.Data.LOption
+public import Lean.Message
 
 /-!
 # A linter for declarations with local instances that overlap

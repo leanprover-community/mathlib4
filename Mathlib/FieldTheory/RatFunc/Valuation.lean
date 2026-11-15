@@ -6,6 +6,7 @@ Authors: Anne Baanen, Ashvni Narayanan
 module
 
 public import Mathlib.FieldTheory.RatFunc.Degree
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Valuations on F(t)

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # Limits of degreewise eventually constant systems

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 public import Mathlib.Topology.Algebra.Valued.WithVal
+public import Mathlib.Algebra.Group.Submonoid.Units
 
 /-!
 # Completions of Dedekind domains with respect to adic valuations

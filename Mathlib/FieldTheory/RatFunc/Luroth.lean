@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.RatFunc.IntermediateField
 
 import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.FieldTheory.Relrank
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Lüroth's theorem

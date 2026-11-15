@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public meta import Aesop
 public import Mathlib.Order.Monotone.Basic
+public import Aesop
 
 /-!
 # Inequalities on iterates

@@ -6,6 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Lean.Meta.CongrTheorems
+public import Batteries.Tactic.Lint
 
 /-! # `congr(...)` congruence quotations
 

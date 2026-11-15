@@ -8,6 +8,7 @@ module
 public meta import Lean.Util.Path
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Utility functions for finding all `.lean` files or modules in a project.

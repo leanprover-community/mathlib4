@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Vieta
 
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Vieta's Formula for polynomial of small degrees.

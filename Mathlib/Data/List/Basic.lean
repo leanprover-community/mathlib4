@@ -12,6 +12,7 @@ public import Mathlib.Data.List.Monad
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Basic properties of lists

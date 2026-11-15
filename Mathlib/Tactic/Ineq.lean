@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Data.Ineq
 public meta import Mathlib.Lean.Expr.Basic
+public import Mathlib.Init
 
 /-!
 # Parsing inequalities in expressions

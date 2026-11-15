@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.Order.Irreducible
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 
 /-!
 # Lasker ring

@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Tactic.Basic
 
 import Mathlib.Init
+public import Mathlib.Init
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -10,6 +10,7 @@ module
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 import Batteries.Util.ExtendedBinder
+public import Lean.Meta.TryThis
 
 /-!
 # Syntax based linters

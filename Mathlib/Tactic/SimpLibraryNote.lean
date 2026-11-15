@@ -9,6 +9,7 @@ module
 public import Batteries.Util.LibraryNote
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-! # Simp Lemmas With Weak Keys Library Note
 

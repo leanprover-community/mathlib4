@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Data.DFinsupp.Defs
 
 import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.Group.Pi.Hom
 
 /-!
 # Unique products and related notions

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Nat.Prime.Defs
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Prime numbers

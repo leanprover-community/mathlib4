@@ -5,7 +5,6 @@ Authors: Daniel Weber
 -/
 module
 
-public import Mathlib.Tactic.Peel
 public import Mathlib.Topology.Perfect
 
 /-!

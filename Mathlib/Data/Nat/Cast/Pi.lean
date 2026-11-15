@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Cast of natural numbers to function types

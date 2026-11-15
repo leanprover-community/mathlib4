@@ -7,6 +7,8 @@ module
 
 public meta import Lean.Meta.CoeAttr
 public import Mathlib.Init
+public import Lean.Meta.CoeAttr
+public import Mathlib.Tactic.TypeStar
 
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.

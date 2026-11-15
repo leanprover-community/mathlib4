@@ -9,6 +9,7 @@ public import Mathlib.FieldTheory.RatFunc.Defs
 public import Mathlib.RingTheory.Algebraic.Integral
 
 import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # The field structure of rational functions

@@ -6,8 +6,9 @@ Authors: Geoffrey Irving
 module
 
 public meta import Aesop
-public meta import Qq
 public import Mathlib.Tactic.Bound.Init
+public import Aesop
+public import Qq
 
 /-!
 # The `bound` attribute

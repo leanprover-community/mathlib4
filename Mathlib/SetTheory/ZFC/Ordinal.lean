@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.ZFC.Cardinal
 public import Mathlib.SetTheory.ZFC.Rank
+public import Mathlib.Order.SuccPred.CompleteLinearOrder
 
 /-!
 # Von Neumann ordinals

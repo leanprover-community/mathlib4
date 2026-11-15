@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 
-import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Integral elements of quadratic algebras

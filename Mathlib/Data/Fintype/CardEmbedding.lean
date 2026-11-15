@@ -6,7 +6,6 @@ Authors: Eric Rodriguez
 module
 
 public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Logic.Equiv.Embedding
 
 import Mathlib.Data.Set.Finite.Range
 

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.Algebra.Category.Ring.FilteredColimits
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
-import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!

@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.RCLike.Basic
 
 import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Analytic.Within
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

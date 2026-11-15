@@ -8,6 +8,7 @@ module
 public import Std.Data.DTreeMap.Internal.Operations
 
 import Mathlib.Tactic.Attr.Register
+public import Mathlib.Init
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

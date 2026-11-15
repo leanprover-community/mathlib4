@@ -6,6 +6,7 @@ Authors: Anne Baanen
 module
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `bdsimp` tactic

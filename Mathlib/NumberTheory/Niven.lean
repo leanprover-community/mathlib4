@@ -10,7 +10,6 @@ public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 import Mathlib.Analysis.Complex.IsIntegral
-import Mathlib.Tactic.Peel
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.Rify
 

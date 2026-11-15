@@ -5,7 +5,9 @@ Authors: Miguel Marco
 -/
 module
 
-public import Mathlib.Data.Set.Functor
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Notation
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Sets in subtypes

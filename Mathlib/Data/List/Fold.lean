@@ -6,6 +6,8 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Logic.OpClass
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Bird–Wadler duality of list folds

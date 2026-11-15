@@ -5,13 +5,16 @@ Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
-public meta import Batteries.Lean.Except
 public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Mathlib.Tactic.GCongr.ForwardAttr
 public import Batteries.Tactic.Exact
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
+public meta import Batteries.Data.Except
+public import Lean.Elab.Tactic.RCases
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

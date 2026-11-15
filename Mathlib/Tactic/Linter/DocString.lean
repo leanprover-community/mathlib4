@@ -13,6 +13,7 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public meta import Std.Data.Iterators.Combinators.Zip
 
 meta import Std.Data.Iterators.Producers.Range
+public import Lean.Parser.Command
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

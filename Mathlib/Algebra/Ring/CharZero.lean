@@ -11,6 +11,7 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Logic.Embedding.Basic
 
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Group.Torsion
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

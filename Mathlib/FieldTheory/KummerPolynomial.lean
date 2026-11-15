@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Irreducibility of X ^ p - a

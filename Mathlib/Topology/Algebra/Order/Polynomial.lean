@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Order.Filter.IsBounded
-public import Mathlib.Tactic.Field
 public import Mathlib.Topology.Algebra.Order.Field
 
 /-!

@@ -8,6 +8,8 @@ module
 public import Mathlib.Init
 
 import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -6,6 +6,7 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.Lemma
 
 /-!
 # Orders

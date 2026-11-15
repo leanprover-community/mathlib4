@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.Monoid
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 

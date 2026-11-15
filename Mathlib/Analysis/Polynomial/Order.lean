@@ -5,9 +5,10 @@ Authors: Yuval Filmus
 -/
 module
 
-public import Mathlib.Analysis.Polynomial.Basic
 
 import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Topology.Algebra.Order.Polynomial
 
 /-!
 # Eventual sign of polynomials

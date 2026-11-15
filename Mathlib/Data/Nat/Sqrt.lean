@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Properties of the natural number square root function.

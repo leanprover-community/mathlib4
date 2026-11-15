@@ -6,7 +6,6 @@ Authors: Calle Sönne
 module
 
 public meta import Mathlib.Tactic.ToAdditive
-public meta import Mathlib.Util.AddRelatedDecl
 public import Mathlib.CategoryTheory.Category.Cat
 
 /-!

@@ -5,9 +5,9 @@ Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 module
 
-public meta import Aesop
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.ToAdditive
+public import Aesop
 
 /-!
 # Partial values of a type

@@ -10,7 +10,6 @@ public meta import Lean.Elab.Command
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
-meta import Lean.Environment
 
 /-!
 # Private module linter

@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Stream.Init
 public import Mathlib.Logic.Relator
+public import Mathlib.Tactic.Linter.HaveILetI
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

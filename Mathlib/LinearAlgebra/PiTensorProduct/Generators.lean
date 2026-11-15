@@ -9,10 +9,7 @@ public import Mathlib.Data.SubtypeNeLift
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 
-import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Generators of multiple tensor products

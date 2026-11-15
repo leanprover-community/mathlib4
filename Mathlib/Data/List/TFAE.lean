@@ -6,6 +6,8 @@ Authors: Johan Commelin, Simon Hudon
 module
 
 import Mathlib.Init
+public import Mathlib.Init
+import Mathlib.Tactic.TypeStar
 
 /-!
 # The Following Are Equivalent

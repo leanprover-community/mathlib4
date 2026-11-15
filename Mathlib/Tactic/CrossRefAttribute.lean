@@ -8,6 +8,8 @@ module
 public meta import Batteries.Data.Char
 public meta import Lean.Elab.Command
 public import Mathlib.Init
+public import Batteries.Tactic.Lint
+public import Lean.DocString.Add
 
 /-!
 # Cross-reference attributes

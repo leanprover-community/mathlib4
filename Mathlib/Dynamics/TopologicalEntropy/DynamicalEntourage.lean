@@ -5,9 +5,10 @@ Authors: Damien Thomine, Pietro Monticone
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.Basic
 
 import Mathlib.Order.Lattice.Nat
+public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Dynamical entourages

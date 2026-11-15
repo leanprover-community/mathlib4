@@ -9,7 +9,6 @@ public import Mathlib.Topology.AlexandrovDiscrete
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Order.LowerUpperTopology
 
-import Mathlib.Basic.Logic.Lemmas
 
 /-!
 # Upper and lower sets topologies

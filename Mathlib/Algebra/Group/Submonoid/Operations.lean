@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Group.Pi.Hom
 
 /-!
 # Operations on `Submonoid`s

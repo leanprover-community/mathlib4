@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 
-meta import Lean.PrettyPrinter.Delaborator.Basic
 
 /-!
 # Notation for Galois group

@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # Definition of `Nat.nthRoot`

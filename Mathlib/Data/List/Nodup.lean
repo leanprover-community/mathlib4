@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Forall2
+public import Mathlib.Tactic.AdaptationNote
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

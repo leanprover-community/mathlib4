@@ -6,10 +6,10 @@ Authors: Mario Carneiro
 module
 
 public meta import Lean.Meta.Tactic.Simp.Types
-public meta import Qq
 public import Mathlib.Init
 
 meta import Qq.Typ
+public import Qq
 
 /-!
 # A monad for tracking and deduplicating atoms

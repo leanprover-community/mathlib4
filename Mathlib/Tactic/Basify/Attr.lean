@@ -8,6 +8,8 @@ module
 public meta import Lean.Meta.Tactic.ElimInfo
 public meta import Lean.Meta.Tactic.Simp.RegisterCommand
 public import Mathlib.Init
+public import Lean.Meta.Tactic.ElimInfo
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # Attributes for the `basify` tactic

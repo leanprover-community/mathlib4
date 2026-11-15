@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Ideal.GoingDown
 public import Mathlib.RingTheory.LocalProperties.Basic
 
-import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Flat ring homomorphisms

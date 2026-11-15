@@ -5,7 +5,9 @@ Authors: Aaron Liu
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Tactic.Common
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Dyadic rationals form an ordered ring

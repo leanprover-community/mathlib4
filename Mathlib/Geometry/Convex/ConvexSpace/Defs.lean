@@ -5,7 +5,6 @@ Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Tactic.Positivity.Core
 public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
@@ -14,6 +13,8 @@ public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Convex spaces

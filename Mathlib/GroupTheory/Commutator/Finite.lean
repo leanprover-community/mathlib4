@@ -8,7 +8,6 @@ module
 public import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.Rank
 
-import Mathlib.Algebra.Group.Subgroup.Finite
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

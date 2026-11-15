@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.Invertible
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Nonsingular inverses

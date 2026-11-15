@@ -5,9 +5,11 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Core.Extensions
-public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
+public import Mathlib.Tactic.Bound.Init
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.Inclusion.Core.Extensions
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Initialization for the integer interval extension family

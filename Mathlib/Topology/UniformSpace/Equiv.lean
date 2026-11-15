@@ -7,6 +7,7 @@ Anatole Dedecker
 module
 
 public import Mathlib.Topology.UniformSpace.Pi
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Uniform isomorphisms

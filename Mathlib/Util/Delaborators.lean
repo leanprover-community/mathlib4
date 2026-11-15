@@ -7,6 +7,7 @@ module
 
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Util.PPOptions
+public import Lean.PrettyPrinter
 
 /-! # Pi type notation
 

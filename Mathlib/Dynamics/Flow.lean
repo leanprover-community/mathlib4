@@ -5,7 +5,6 @@ Authors: Jean Lo
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.Tactic.Bound.Init

@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Calculus.LogDeriv
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
-import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Derivative and series expansion of real logarithm

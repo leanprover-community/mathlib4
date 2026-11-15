@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Order.Filter.EventuallyConst
 
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Tactic.Positivity
 
 /-!
 # Principle of isolated zeros

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Sub.Basic
 
 import Mathlib.Algebra.Order.Group.Nat
+public import Batteries.Tactic.SeqFocus
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -12,6 +12,7 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 import Mathlib.Analysis.Normed.Operator.Completeness
 import Mathlib.Topology.MetricSpace.PiNat
+public import Mathlib.Analysis.RCLike.Extend
 
 /-!
 # Weak dual of normed space

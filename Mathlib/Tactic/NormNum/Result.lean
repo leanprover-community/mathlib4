@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.Algebra.Ring.Nat
 
 import Mathlib.Data.Int.Cast.Basic
+public meta import Aesop
 
 /-!
 ## The `Result` type for `norm_num`

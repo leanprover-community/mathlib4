@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Jacobson.Radical
 public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.LinearAlgebra.DFinsupp
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

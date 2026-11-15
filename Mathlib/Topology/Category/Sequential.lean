@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Topology.Category.TopCat.Basic
-public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Topology.Sequences
 
 /-!

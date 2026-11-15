@@ -6,6 +6,7 @@ Authors: Simon Hudon
 module
 
 import Mathlib.Init
+public import Mathlib.Init
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

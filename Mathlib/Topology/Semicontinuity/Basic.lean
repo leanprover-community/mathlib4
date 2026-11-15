@@ -5,8 +5,10 @@ Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 public import Mathlib.Topology.Semicontinuity.Defs
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Lower and Upper Semicontinuity

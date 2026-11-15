@@ -6,9 +6,10 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.VectorField
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 /-!
 # Vector fields in manifolds

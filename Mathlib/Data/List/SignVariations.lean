@@ -5,8 +5,10 @@ Authors: Tomaz Mascarenhas
 -/
 module
 
-public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.List.Destutter
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Basic.Sign.Defs
 
 /-!
 # Sign variations of a list

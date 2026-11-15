@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Sets.Closeds
 
-import Mathlib.Topology.Compactness.Bases
 
 /-!
 # Clopen subsets in Cartesian products

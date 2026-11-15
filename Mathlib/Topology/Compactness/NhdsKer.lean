@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Tactic.Peel
 public import Mathlib.Topology.Compactness.Compact
 public import Mathlib.Topology.NhdsKer
 
