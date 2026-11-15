@@ -19,9 +19,9 @@ This can be defined independently of `R` and of most Lie-Rinehart algebra axioms
 * `StrictLieRinehartIdeal` as an `A`-submodule of `L` forming an ideal under the Lie bracket, and
 acting trivially on `A`.
 
-* The inverse image of an ideal under a Lie-Rinehart algebra homomorphism over
-`f : L₁ →ₗ⁅.id R A⁆ L₂` is a Lie-Rinehart ideal. In particular the kernel of such an `f`
-is an ideal.
+* The inverse image of a strict ideal under a Lie-Rinehart algebra homomorphism over
+`f : L₁ →ₗ⁅.id R A⁆ L₂` is a strict Lie-Rinehart ideal. In particular the kernel of such an `f`
+is a strict ideal.
 
 ## Remark on strictness
 
@@ -50,7 +50,7 @@ structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module 
 
 namespace StrictLieRinehartIdeal
 
-/-- Forgetting that a Lie-Rinehart ideal is also a Lie ideal. -/
+/-- Forgetting that a strict Lie-Rinehart ideal is also a Lie ideal. -/
 add_decl_doc StrictLieRinehartIdeal.toSubmodule
 
 variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
@@ -117,11 +117,12 @@ instance : Zero (StrictLieRinehartIdeal A L) where
 
 instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
 
-/- TODO: This might in future be modified to use a typeclass `[StrictLieRinehartIdealClass S A L]
-{s : S}` rather than the current {s : StrictLieRinehartIdeal A L}. This would be useful if
-restrictions of the notion of Lie-Rinehart ideal are needed.
+/- TODO: The below instance might in future be modified to use a typeclass
+`[StrictLieRinehartIdealClass S A L] {s : S}` rather than the current
+{s : StrictLieRinehartIdeal A L}. This would be useful if restrictions of the notion of
+strict Lie-Rinehart ideal are needed.
 -/
-/-- A Lie-Rinehart ideal forms a Lie ring. -/
+/-- A strict Lie-Rinehart ideal forms a Lie ring. -/
 instance lieRing {s : StrictLieRinehartIdeal A L} : LieRing s where
   bracket x y := ⟨⁅x.val, y.val⁆, lie_mem_of_left x.property _⟩
   lie_add _ _ _ := by simp
@@ -157,7 +158,7 @@ end LieModule
 
 variable [LieRinehartRing A L]
 
-/-- A Lie-Rinehart ideal of a Lie-Rinehart ring forms a new Lie-Rinehart ring. -/
+/-- A strict Lie-Rinehart ideal of a Lie-Rinehart ring forms a new Lie-Rinehart ring. -/
 instance {s : StrictLieRinehartIdeal A L} : LieRinehartRing A s where
   lie_smul_eq_mul' a b x := LieRinehartRing.lie_smul_eq_mul a b (x : L)
   leibniz_mul_right' x a b := LieRinehartRing.leibniz_mul_right (x : L) a b
@@ -165,12 +166,12 @@ instance {s : StrictLieRinehartIdeal A L} : LieRinehartRing A s where
 
 variable {R : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRinehartAlgebra R A L]
 
-/-- A Lie-Rinehart ideal forms a Lie algebra. -/
+/-- A strict Lie-Rinehart ideal forms a Lie algebra. -/
 instance lieAlgebra {s : StrictLieRinehartIdeal A L} : LieAlgebra R s where
   lie_smul _ _ _ := by ext; apply lie_smul
 
 variable (R) in
-/-- Converts a Lie-Rinehart ideal to the corresponding Lie ideal. -/
+/-- Converts a strict Lie-Rinehart ideal to the corresponding Lie ideal. -/
 @[expose] def toLieIdeal (s : StrictLieRinehartIdeal A L) : LieIdeal R L where
   toSubmodule := s.toSubmodule.restrictScalars R
   lie_mem {_ _} hy := lie_mem_of_right _ hy
@@ -193,7 +194,7 @@ section LieModule
 
 variable {M : Type*} [AddCommGroup M] [LieRingModule L M] [Module R M] [LieModule R L M]
 
-/-- Given a Lie-Rinehart algebra `L` containing a Lie-Rinehart ideal `s ⊆ L`, together with a
+/-- Given a Lie-Rinehart algebra `L` containing a strict Lie-Rinehart ideal `s ⊆ L`, together with a
 Lie module `M` of `L`, we may regard `M` as a Lie module of `s` by restriction. -/
 instance lieModule {s : StrictLieRinehartIdeal A L} : LieModule R s M where
   smul_lie t x m := by
@@ -202,13 +203,13 @@ instance lieModule {s : StrictLieRinehartIdeal A L} : LieModule R s M where
 
 end LieModule
 
-/-- A Lie-Rinehart ideal forms a new Lie-Rinehart algebra. -/
+/-- A strict Lie-Rinehart ideal forms a new Lie-Rinehart algebra. -/
 instance {s : StrictLieRinehartIdeal A L} : LieRinehartAlgebra R A s where
 
 open scoped LieRinehartAlgebra
 
 variable (R) in
-/-- The embedding of a Lie-Rinehart ideal into the ambient space as a morphism of
+/-- The embedding of a strict Lie-Rinehart ideal into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
 @[expose] def incl (s : StrictLieRinehartIdeal A L) : s →ₗ⁅.id R A⁆ L where
   __ := s.toSubmodule.subtype.restrictScalars R
@@ -222,8 +223,8 @@ theorem coe_incl {s : StrictLieRinehartIdeal A L} : ⇑(s.incl R) = ((↑) : s �
 variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ A] [LieAlgebra R L₁]
   [LieRing L₂] [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂]
 
-/-- The preimage of a strict Lie-Rinehart ideal under a homomorphism `f` (which lies over the
-identity of `A`) is a strict Lie-Rinehart ideal. -/
+/-- The preimage of a strict Lie-Rinehart ideal under a homomorphism `f`, which lies over the
+identity of `A`, is a strict Lie-Rinehart ideal. -/
 @[expose, simps! coe toSubmodule]
 def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
     StrictLieRinehartIdeal A L₁ where
@@ -250,8 +251,8 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
   [LieRingModule L₁ A] [LieAlgebra R L₁] [LieRing L₂] [Module A L₂] [LieRingModule L₂ A]
   [LieAlgebra R L₂] (f : L₁ →ₗ⁅.id R A⁆ L₂)
 
-/-- The kernel of a Lie-Rinehart homomorphism `f` (which lies over the
-identity of `A`) is a strict Lie-Rinehart ideal. -/
+/-- The kernel of a Lie-Rinehart homomorphism `f`, which lies over the
+identity of `A`, is a strict Lie-Rinehart ideal. -/
 @[expose] def ker : StrictLieRinehartIdeal A L₁ := .comap f 0
 
 @[simp] theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := .rfl
