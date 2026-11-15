@@ -306,7 +306,7 @@ theorem spectralRadius_le_liminf_pow_nnNorm_pow_one_div (a : A) :
   refine le_iInf fun n => ?_
   simp only [← add_assoc]
   refine (spectralRadius_le_pow_nnNorm_pow_one_div 𝕜 a (n + N)).trans ?_
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   grw [hN (n + N + 1) (by lia)]
 
 @[deprecated (since := "2026-10-31")]

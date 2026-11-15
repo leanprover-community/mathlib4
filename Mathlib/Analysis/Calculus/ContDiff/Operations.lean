@@ -933,7 +933,7 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
           exact contDiffAt_map_inverse _
         have h_deriv₂ : ContDiffAt 𝕜 n f.symm a := by
           refine IH (hf.of_le ?_)
-          norm_cast
+          norm_cast; fail_if_progress norm_cast
           exact Nat.le_succ n
         exact (h_deriv₁.comp _ hf').comp _ h_deriv₂
     | top Itop => exact contDiffAt_infty.mpr fun n ↦ Itop n (contDiffAt_infty.mp hf n)

@@ -447,7 +447,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       congr with x; simp
     _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
       refine (mul_le_mul_iff_left₀ H_q_pos).2 ?_
-      norm_cast
+      norm_cast; fail_if_progress norm_cast
       apply card_le_card
       rw [Set.toFinset_inter]
       convert! inter_subset_inter_right coeffs_support

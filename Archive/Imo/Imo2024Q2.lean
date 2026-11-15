@@ -43,7 +43,7 @@ lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
     convert! this
   rw [sub_eq_iff_eq_add] at hk
   rw [hk, zpow_add, zpow_mul]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast; fail_if_progress norm_cast; fail_if_progress norm_cast
   rw [ZMod.pow_totient, one_zpow, one_mul]
 
 namespace Condition
@@ -139,9 +139,9 @@ lemma ab_add_one_dvd_a_pow_large_n_add_b : a * b + 1 ∣ a ^ h.large_n + b := by
       ZMod (a * b + 1)) + (b : ZMod (a * b + 1))) = 0 from
       (IsUnit.mul_right_eq_zero (ZMod.unitOfCoprime _ a_coprime_ab_add_one).isUnit).1 this
   rw [mul_add]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   simp only [mul_inv_cancel, Units.val_one, ZMod.coe_unitOfCoprime]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   convert! ZMod.natCast_self (a * b + 1) using 2
   exact add_comm _ _
 

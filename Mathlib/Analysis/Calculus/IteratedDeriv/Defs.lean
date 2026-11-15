@@ -351,7 +351,7 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, mul_eq_mul_left_iff]
   left
   rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   positivity
 
 theorem iteratedDeriv_const {n : ℕ} {c : F} {x : 𝕜} :

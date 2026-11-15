@@ -237,7 +237,7 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
     gcongr
     suffices (s.card : ℝ) + 1 ≤ #ι by linarith
     rw [← card_add_card_compl s]
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     gcongr
     have hi' : sᶜ.Nonempty := ⟨i, by rwa [Finset.mem_compl]⟩
     rwa [← card_pos] at hi'
@@ -494,7 +494,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     · suffices (p' : ℝ) = n' by simpa using this
       rw [← inv_inj, hp']
       simp [field, n', NNReal.conjExponent, *]
-    · norm_cast
+    · norm_cast; fail_if_progress norm_cast
       simp_rw [n', n, eLpNormLESNormFDerivOfEqInnerConst]
       simp only [n, NNReal.coe_one] at hnp
       field_simp
@@ -691,7 +691,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
         rw [ENNReal.coe_rpow_of_nonneg]
         · simp [ENNReal.coe_toNNReal hs.measure_lt_top.ne]
         · rw [one_div, one_div]
-          norm_cast
+          norm_cast; fail_if_progress norm_cast; fail_if_progress norm_cast
           rw [hp']
           simpa using hpq
     _ = eLpNorm u p' μ * t := by

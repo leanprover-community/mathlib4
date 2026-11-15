@@ -86,7 +86,7 @@ theorem besselPotential_besselPotential_apply (s s' : ℝ) (f : 𝓢'(E, F)) :
   congr
   ext x
   simp only [Pi.mul_apply]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   calc
     _ = (1 + ‖x‖ ^ 2) ^ (s / 2 + s' / 2) := by
       rw [← Real.rpow_add (by positivity)]
@@ -252,7 +252,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
   have : MemLp (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) 2 := by
     rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top (by simp) (by simp) hmeas]
     suffices h : ∫⁻ a : E, ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖ < ⊤ by
-      norm_cast
+      norm_cast; fail_if_progress norm_cast
       simp_rw [ofReal_norm] at h
       simp_rw [← eNorm_pow]
       convert h
@@ -272,7 +272,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
     · congr
       ext x
       rw [Pi.mul_apply]
-      norm_cast
+      norm_cast; fail_if_progress norm_cast
       rw [← Real.rpow_add (by positivity)]
       ring_nf
       simp
@@ -327,7 +327,7 @@ theorem MemSobolev.lineDerivOp {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 
   simp only [Complex.ofReal_mul, Complex.norm_mul, Complex.norm_real, Real.norm_eq_abs, mul_pow]
   have h₁ : |(1 + ‖x‖ ^ 2) ^ (-1 / 2 : ℝ)| ^ 2 = (1 + ‖x‖ ^ 2)⁻¹ := by
     field_simp
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     rw [Real.rpow_neg (by positivity), sq_abs, inv_pow]
     field_simp
     calc
@@ -352,7 +352,7 @@ theorem MemSobolev.laplacian {s : ℝ} {f : 𝓢'(E, F)} (hf : MemSobolev s 2 f)
   use 1
   intro x
   rw [Real.rpow_neg (by positivity)]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   simp only [norm_mul, norm_pow, abs_norm, norm_inv, Real.norm_eq_abs]
   rw [abs_of_nonneg (by positivity), mul_inv_le_iff₀ (by positivity)]
   grind

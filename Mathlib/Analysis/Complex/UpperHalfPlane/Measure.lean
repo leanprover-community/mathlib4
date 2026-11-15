@@ -108,7 +108,7 @@ instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
       rcases g.det_ne_zero.lt_or_gt with h | h <;> simp [h]
     have := g.det_ne_zero
     have := denom_ne_zero g τ
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     ext
     simp [det_smulFDeriv, *, im_smul_eq_div_normSq, Complex.normSq_eq_norm_sq, field]
 

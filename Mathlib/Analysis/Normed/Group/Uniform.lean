@@ -286,7 +286,7 @@ theorem nndist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
 theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
     edist (a₁ * a₂) (b₁ * b₂) ≤ edist a₁ b₁ + edist a₂ b₂ := by
   simp only [edist_nndist]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   apply nndist_mul_mul_le
 
 section PseudoEMetricSpace

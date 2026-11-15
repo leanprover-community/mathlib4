@@ -50,7 +50,7 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
     ContinuousLinearMap.flip_apply, I_sq, neg_mul, one_mul, sub_neg_eq_add]
   rw [add_comm, sub_eq_add_neg]
   congr 1
-  · norm_cast
+  · norm_cast; fail_if_progress norm_cast
     apply h₁f.isSymmSndFDerivAt (by simp)
   · have h₂f := hf.2.eq_of_nhds
     simp only [laplacian_eq_iteratedFDeriv_complexPlane, iteratedFDeriv_two_apply, Fin.isValue,

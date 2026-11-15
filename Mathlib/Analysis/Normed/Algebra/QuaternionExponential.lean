@@ -50,7 +50,7 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
     push_cast
     rfl
   · rw [← coe_mul_eq_smul, div_eq_mul_inv]
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     ring_nf
 
 /-- The odd terms of `expSeries` are real, and correspond to the series for
@@ -70,7 +70,7 @@ theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ
     _ = ((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / k / ‖q‖) • q := ?_
   · congr 1
     rw [neg_pow, normSq_eq_norm_mul_self, pow_mul, sq, ← coe_mul_eq_smul]
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
   · rw [smul_smul]
     congr 1
     simp_rw [pow_succ, mul_div_assoc, div_div_cancel_left₀ hqn]

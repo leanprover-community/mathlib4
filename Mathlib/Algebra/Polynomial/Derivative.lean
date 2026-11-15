@@ -447,7 +447,7 @@ lemma derivative_ne_zero : p.derivative ≠ 0 ↔ p.natDegree ≠ 0 := derivativ
   by_cases hp : p.natDegree = 0
   · simp [hp]
   rw [leadingCoeff, leadingCoeff, coeff_derivative, natDegree_derivative]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   congr <;> lia
 
 @[deprecated derivative_eq_zero +typeChanged (since := "2026-06-03")]
@@ -548,7 +548,7 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
         (n.choose k * m.descFactorial k) • (derivative^[n - k] p * X ^ (m - k)) := by
     simp_rw [iterate_derivative_mul, iterate_derivative_X_pow_eq_smul, mul_smul]
     congr! 2 with k hk
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     ring
   rw [hsum]
   refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by simp_all) (by simp)

@@ -356,7 +356,7 @@ lemma Φ_ofNat (n : ℕ) : W.Φ (n + 1) =
     X * W.preΨ' (n + 1) ^ 2 * (if Even n then 1 else W.Ψ₂Sq) -
       W.preΨ' (n + 2) * W.preΨ' n * (if Even n then W.Ψ₂Sq else 1) := by
   rw [Φ, add_sub_cancel_right]
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   simp_rw [ΨSq_ofNat, Nat.even_add_one, ite_not, ← mul_assoc, preΨ_ofNat]
 
 @[simp]

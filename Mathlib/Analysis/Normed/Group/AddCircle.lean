@@ -205,7 +205,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
     (hu' : u ≠ 0) : p ≤ addOrderOf u • ‖u‖ := by
   obtain ⟨n, hn⟩ := exists_norm_eq_of_isOfFinAddOrder hu
   replace hu : (addOrderOf u : ℝ) ≠ 0 := by
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     exact (addOrderOf_pos_iff.mpr hu).ne'
   conv_lhs => rw [← mul_one p]
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel₀ _ hu,

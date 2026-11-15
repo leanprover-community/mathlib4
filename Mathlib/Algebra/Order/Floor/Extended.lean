@@ -98,7 +98,7 @@ lemma gc_ceil_toENNReal : GaloisConnection ceil (↑) := fun _ _ ↦ ceil_le
     norm_cast
     exact ENNReal.coe_lt_top
   · simp only [ne_eq, Nat.cast_eq_zero, ceil_coe, Nat.cast_le, toENNReal_coe] at hn₀ ⊢
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     rw [← Nat.add_one_le_ceil_iff, Nat.sub_add_cancel]
     lia
 

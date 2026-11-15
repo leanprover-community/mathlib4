@@ -31,11 +31,11 @@ lemma span_nonneg_inter_closedBall {r : ℝ} (hr : 0 < r) :
   · suffices (r * ‖x‖⁻¹ : ℂ)⁻¹ • ((r * ‖x‖⁻¹ : ℂ) • x) = x by
       rw [← this]
       refine smul_mem _ _ (subset_span <| Set.mem_inter ?_ ?_)
-      · norm_cast
+      · norm_cast; fail_if_progress norm_cast
         exact smul_nonneg (by positivity) hx
       · simp [mul_smul, norm_smul, abs_of_pos hr, inv_mul_cancel₀ hx_pos.ne']
     apply inv_smul_smul₀
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     positivity
 
 /-- A C⋆-algebra is spanned by nonnegative elements of norm less than `r`. -/

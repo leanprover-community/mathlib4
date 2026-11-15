@@ -45,7 +45,7 @@ theorem ContDiffAt.deriv_fderiv_add_smul (hf : ContDiffAt 𝕜 (n + 1) f (x + t 
     iteratedFDeriv 𝕜 (n + 1) f (x + t • y) (fun _ ↦ y) := by
   have hf' : DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 n f) (x + t • y) := by
     apply hf.differentiableAt_iteratedFDeriv
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     exact lt_add_one n
   convert (hf'.continuousMultilinear_apply_const _).deriv_comp_add_smul
   exact hf'.iteratedFDeriv_succ_apply_left'
@@ -123,7 +123,7 @@ theorem map_add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t 
       rw [← (hf t ht).deriv_fderiv_add_smul]
       have h_diff : DifferentiableAt ℝ (iteratedFDeriv ℝ (n + 1) f) (x + t • y) := by
         apply (hf t ht).differentiableAt_iteratedFDeriv
-        norm_cast
+        norm_cast; fail_if_progress norm_cast
         grind
       refine DifferentiableAt.hasDerivAt ?_
       fun_prop

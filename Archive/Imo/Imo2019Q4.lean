@@ -55,7 +55,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       linarith
     · apply sub_le_self
       positivity
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   calc ∏ _ ∈ range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
     _ < (∑ i ∈ range n, i)! := ?_
     _ ≤ k ! := by gcongr

@@ -1133,7 +1133,7 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   use C
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce
-  norm_cast
+  norm_cast; fail_if_progress norm_cast
   exact ⟨zero_le, hC₁, hC₂⟩
 
 end Real

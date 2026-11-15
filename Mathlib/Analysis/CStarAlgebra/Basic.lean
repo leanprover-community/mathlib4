@@ -210,7 +210,7 @@ instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
   norm_mul_self_le x := by
     refine le_of_eq (Eq.symm ?_)
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnNorm_star_mul_self, ← sq]
-    norm_cast
+    norm_cast; fail_if_progress norm_cast
     exact
       (Finset.apply_sup_eq_sup_comp_of_linearOrder (fun x : NNReal => x ^ 2)
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
