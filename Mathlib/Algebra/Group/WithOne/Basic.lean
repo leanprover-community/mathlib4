@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.WithOne.Defs
+public import Mathlib.Algebra.Group.WithOne.Map
 
 import Mathlib.Algebra.Group.Basic
 
@@ -35,7 +35,7 @@ namespace WithOne
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) where
-  inv_inv a := (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id]
+  inv_inv a := (WithOne.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, WithOne.map_id, id]
 
 section
 
@@ -108,7 +108,7 @@ theorem mapMulHom_id : mapMulHom (MulHom.id α) = MonoidHom.id (WithOne α) := b
 @[to_additive]
 theorem mapMulHom_injective {f : α →ₙ* β} (hf : Function.Injective f) :
     Function.Injective (mapMulHom f)
-  | none, none, _ => rfl
+  | one, one, _ => rfl
   | (a₁ : α), (a₂ : α), H => by simpa [hf.eq_iff] using H
 
 @[to_additive]

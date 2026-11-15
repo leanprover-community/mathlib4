@@ -157,9 +157,9 @@ O(n). The dual of a tree is a tree with its left and right sides reversed throug
 The dual of a valid BST is valid under the dual order. This is convenient for exploiting
 symmetries in the algorithms. -/
 @[simp]
-def dual : Ordnode α → Ordnode α
+def dual : Ordnode α → Ordnode αᵒᵈ
   | nil => nil
-  | node s l x r => node s (dual r) x (dual l)
+  | node s l x r => node s (dual r) (OrderDual.toDual x) (dual l)
 
 /-- **Internal use only**
 

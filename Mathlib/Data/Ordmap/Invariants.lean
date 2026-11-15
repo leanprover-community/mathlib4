@@ -116,10 +116,26 @@ theorem Sized.pos {s l x r} (h : Sized (@node α s l x r)) : 0 < s := by
 
 /-! `dual` -/
 
-
-theorem dual_dual : ∀ t : Ordnode α, dual (dual t) = t
+theorem map_map {β γ : Type*} (f : α → β) (g : β → γ) :
+    ∀ t : Ordnode α, (t.map f).map g = t.map (g ∘ f)
   | nil => rfl
-  | node s l x r => by rw [dual, dual, dual_dual l, dual_dual r]
+  | node s l x r => by rw [map, map, map, map_map, map_map, Function.comp_apply]
+
+theorem map_dual {β : Type*} (f : αᵒᵈ → β) :
+    ∀ t : Ordnode α, t.dual.map OrderDual.ofDual = t.switch
+  | nil => rfl
+  | node s l x r => by rw [dual, map, map, dual, map, map_dual, map_dual]; simp
+
+theorem dual_dual' :
+    ∀ t : Ordnode α, (dual (dual t)).map (OrderDual.ofDual ∘ OrderDual.ofDual) = t
+  | nil => rfl
+  | node s l x r => by rw [dual, dual, map, dual_dual' l, dual_dual' r]; simp
+
+
+theorem dual_dual :
+    ∀ t : Ordnode α, dual (dual t) = t.map (OrderDual.toDual ∘ OrderDual.toDual)
+  | nil => rfl
+  | node s l x r => by rw [dual, dual, map, dual_dual l, dual_dual r]; simp
 
 @[simp]
 theorem size_dual (t : Ordnode α) : size (dual t) = size t := by cases t <;> rfl
@@ -250,32 +266,32 @@ def balance' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
     else if size l > delta * size r then rotateR l x r else node' l x r
 
 theorem dual_node' (l : Ordnode α) (x : α) (r : Ordnode α) :
-    dual (node' l x r) = node' (dual r) x (dual l) := by simp [node', add_comm]
+    dual (node' l x r) = node' (dual r) (.toDual x) (dual l) := by simp [node', add_comm]
 
 theorem dual_node3L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
-    dual (node3L l x m y r) = node3R (dual r) y (dual m) x (dual l) := by
+    dual (node3L l x m y r) = node3R (dual r) (.toDual y) (dual m) (.toDual x) (dual l) := by
   simp [node3L, node3R, add_comm]
 
 theorem dual_node3R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
-    dual (node3R l x m y r) = node3L (dual r) y (dual m) x (dual l) := by
+    dual (node3R l x m y r) = node3L (dual r) (.toDual y) (dual m) (.toDual x) (dual l) := by
   simp [node3L, node3R, add_comm]
 
 theorem dual_node4L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
-    dual (node4L l x m y r) = node4R (dual r) y (dual m) x (dual l) := by
+    dual (node4L l x m y r) = node4R (dual r) (.toDual y) (dual m) (.toDual x) (dual l) := by
   cases m <;> simp [node4L, node4R, node3R, dual_node3L, add_comm]
 
 theorem dual_node4R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
-    dual (node4R l x m y r) = node4L (dual r) y (dual m) x (dual l) := by
+    dual (node4R l x m y r) = node4L (dual r) (.toDual y) (dual m) (.toDual x) (dual l) := by
   cases m <;> simp [node4L, node4R, node3L, dual_node3R, add_comm]
 
 theorem dual_rotateL (l : Ordnode α) (x : α) (r : Ordnode α) :
-    dual (rotateL l x r) = rotateR (dual r) x (dual l) := by
+    dual (rotateL l x r) = rotateR (dual r) (.toDual x) (dual l) := by
   cases r <;> simp [rotateL, rotateR]; split_ifs <;>
     simp [dual_node3L, dual_node4L, node3R]
 
 theorem dual_rotateR (l : Ordnode α) (x : α) (r : Ordnode α) :
-    dual (rotateR l x r) = rotateL (dual r) x (dual l) := by
-  rw [← dual_dual (rotateL _ _ _), dual_rotateL, dual_dual, dual_dual]
+    dual (rotateR l x r) = rotateL (dual r) (.toDual x) (dual l) := by
+  rw [← dual_dual' (rotateL _ _ _), dual_rotateL, dual_dual, dual_dual, ← map_map]
 
 theorem dual_balance' (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (balance' l x r) = balance' (dual r) x (dual l) := by
@@ -759,18 +775,18 @@ variable [Preorder α]
 property holds recursively in subtrees, making the full tree a BST. The bounds can be set to
 `lo = ⊥` and `hi = ⊤` if we care only about the internal ordering constraints. -/
 def Bounded : Ordnode α → WithBot α → WithTop α → Prop
-  | nil, some a, some b => a < b
+  | nil, WithBot.some a, WithTop.some b => a < b
   | nil, _, _ => True
   | node _ l x r, o₁, o₂ => Bounded l o₁ x ∧ Bounded r (↑x) o₂
 
 theorem Bounded.dual :
-    ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → @Bounded αᵒᵈ _ (dual t) o₂ o₁
+    ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → @Bounded αᵒᵈ _ (dual t) o₂.toDual o₁.toDual
   | nil, o₁, o₂, h => by cases o₁ <;> cases o₂ <;> trivial
   | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨Or.dual, ol.dual⟩
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
-    Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂ o₁ :=
+    Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂.toDual o₁.toDual :=
   ⟨Bounded.dual, fun h => by
     have := Bounded.dual h; rwa [dual_dual, OrderDual.Preorder.dual_dual] at this⟩
 
