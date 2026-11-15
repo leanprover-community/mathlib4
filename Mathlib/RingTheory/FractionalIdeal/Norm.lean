@@ -40,7 +40,7 @@ namespace FractionalIdeal
 variable {R : Type*} [CommRing R] [IsDedekindDomain R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
-section
+section HasFiniteQuotients
 
 variable [Ring.HasFiniteQuotients R]
 
@@ -104,7 +104,7 @@ theorem coeIdeal_absNorm (I₀ : Ideal R) :
   rw [absNorm_eq_absNorm_span' 1 I₀ (by rw [one_smul]; rfl), OneMemClass.coe_one,
     Ideal.span_singleton_one, Ideal.absNorm_top, Nat.cast_one, _root_.div_one]
 
-end
+end HasFiniteQuotients
 
 variable [Module.Free ℤ R] [Module.Finite ℤ R]
 
