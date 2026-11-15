@@ -768,10 +768,6 @@ theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ 
   · simp [sub_eq_zero]
   · exact X_pow_sub_X_ne_zero (Nat.Prime.one_lt Fact.out)
 
-theorem Polynomial.splits_X_pow_char_sub_X :
-    Splits ((X : F[X]) ^ p - X) := by
-  simpa using (Subfield.splits_bot F p).map (algebraMap _ F)
-
 end prime_subfield
 
 namespace FiniteField
