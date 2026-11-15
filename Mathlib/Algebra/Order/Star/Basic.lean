@@ -280,9 +280,10 @@ theorem conjugate_le_conjugate_of_nonneg {a b : R} (hab : a ≤ b) {c : R} (hc :
     c * a * c ≤ c * b * c :=
   IsSelfAdjoint.of_nonneg hc |>.conjugate_le_conjugate hab
 
-/-- If `0 ≤ a` and `star c * a * c = 0`, then `a * c = 0`. -/
-lemma mul_eq_zero_of_star_left_conjugate_eq_zero [IsProperStar R] {a c : R} (ha : 0 ≤ a)
-    (h : star c * a * c = 0) : a * c = 0 := by
+/-- If `0 ≤ a`, then `star c * a * c = 0` if and only if `a * c = 0`. -/
+lemma star_left_conjugate_eq_zero_iff [IsProperStar R] {a c : R} (ha : 0 ≤ a) :
+    star c * a * c = 0 ↔ a * c = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [mul_assoc, h]⟩
   induction ha using StarOrderedRing.induction_on with
   | star_mul_self x =>
     have : star (x * c) * (x * c) = 0 := by simpa [mul_assoc] using h
@@ -293,11 +294,18 @@ lemma mul_eq_zero_of_star_left_conjugate_eq_zero [IsProperStar R] {a c : R} (ha 
       (star_left_conjugate_nonneg hy c)] at h
     rw [add_mul, ihx h.1, ihy h.2, add_zero]
 
-/-- If `0 ≤ a` and `c * a * star c = 0`, then `c * a = 0`. -/
-lemma mul_eq_zero_of_star_right_conjugate_eq_zero [IsProperStar R] {a c : R} (ha : 0 ≤ a)
-    (h : c * a * star c = 0) : c * a = 0 := by
+/-- If `0 ≤ a` and `star c * a * c = 0`, then `a * c = 0`. -/
+alias ⟨mul_eq_zero_of_star_left_conjugate_eq_zero, _⟩ := star_left_conjugate_eq_zero_iff
+
+/-- If `0 ≤ a`, then `c * a * star c = 0` if and only if `c * a = 0`. -/
+lemma star_right_conjugate_eq_zero_iff [IsProperStar R] {a c : R} (ha : 0 ≤ a) :
+    c * a * star c = 0 ↔ c * a = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   simpa [ha.star_eq] using
     congr(star $(mul_eq_zero_of_star_left_conjugate_eq_zero ha (c := star c) (by simpa)))
+
+/-- If `0 ≤ a` and `c * a * star c = 0`, then `c * a = 0`. -/
+alias ⟨mul_eq_zero_of_star_right_conjugate_eq_zero, _⟩ := star_right_conjugate_eq_zero_iff
 
 @[simp]
 lemma star_le_star_iff {x y : R} : star x ≤ star y ↔ x ≤ y := by

@@ -19,13 +19,15 @@ This file develops the API for `IsStarOrtho` in a `StarOrderedRing` with `IsProp
 
 + `isStarOrtho_iff_of_nonneg`: if `0 ≤ a`, then `a ⋆⟂ b` if and only if
   `star b * a * b = 0` and `b * a * star b = 0`.
-+ `IsStarOrtho.mono`: if `0 ≤ a ≤ b` and `b ⋆⟂ c`, then `a ⋆⟂ c`.
-+ `IsStarOrtho.sum_iff`: a finite sum of nonnegative elements is star-orthogonal to `c` if and only
-  if each summand is.
++ `IsStarOrtho.anti_left`: if `0 ≤ a ≤ b` and `b ⋆⟂ c`, then `a ⋆⟂ c`.
++ `IsStarOrtho.sum_left_iff`: a finite sum of nonnegative elements is star-orthogonal to `c` if
+  and only if each summand is.
 + `isStarProjection_sum_iff`: a finite sum of star projections is a star projection if and only if
   they are pairwise star-orthogonal.
 + `IsStarProjection.isStarOrtho_of_add`: If the sum of a star projection and a nonnegative element
   is a star projection, then they are star-orthogonal.
++ `isStarProjection_add_iff_of_nonneg`: if `p` is a star projection and `0 ≤ q`, then `p + q` is a
+  star projection if and only if `q` is a star projection and `p ⋆⟂ q`.
 -/
 
 public section
@@ -40,10 +42,9 @@ variable [NonUnitalSemiring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 
 lemma isStarOrtho_iff_of_nonneg {a b : A} (ha : 0 ≤ a) :
     a ⋆⟂ b ↔ star b * a * b = 0 ∧ b * a * star b = 0 := by
-  rw [isStarOrtho_iff', (IsSelfAdjoint.of_nonneg ha).star_eq]
-  refine ⟨fun h ↦ ⟨by simp [mul_assoc, h.2], by simp [mul_assoc, h.1]⟩, fun h ↦ ⟨?_, ?_⟩⟩
-  all_goals apply mul_eq_zero_of_star_left_conjugate_eq_zero ha
-  exacts [by simpa using h.2, h.1]
+  rw [star_left_conjugate_eq_zero_iff ha, star_right_conjugate_eq_zero_iff ha,
+    ← star_eq_zero (x := b * a), star_mul, isStarOrtho_iff', (IsSelfAdjoint.of_nonneg ha).star_eq,
+    and_comm]
 
 lemma isStarOrtho_iff_of_nonneg_of_isSelfAdjoint {a b : A} (ha : 0 ≤ a) (hb : IsSelfAdjoint b) :
     a ⋆⟂ b ↔ b * a * b = 0 := by
@@ -116,7 +117,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A] [IsProperStar A]
 
-/-- If `p` and `p + q` are star projections and `0 ≤ q`, then `q ⋆⟂ p`. -/
+/-- If `p` and `p + q` are star projections and `0 ≤ q`, then `p ⋆⟂ q`. -/
 lemma IsStarProjection.isStarOrtho_of_add {p q : A} (hp : IsStarProjection p)
     (hq : 0 ≤ q) (hr : IsStarProjection (p + q)) : p ⋆⟂ q := by
   set r := p + q
@@ -140,6 +141,16 @@ star-orthogonal. -/
 lemma isStarProjection_add_iff {p q : A} (hp : IsStarProjection p) (hq : IsStarProjection q) :
     IsStarProjection (p + q) ↔ p ⋆⟂ q :=
   ⟨hp.isStarOrtho_of_add hq.nonneg, fun h ↦ hp.add hq (h.mul_eq_zero' hq.isSelfAdjoint)⟩
+
+/-- If `p` is a star projection and `0 ≤ q`, then `p + q` is a star projection if and only if
+`q` is a star projection and `p ⋆⟂ q`. -/
+lemma isStarProjection_add_iff_of_nonneg {p q : A} (hp : IsStarProjection p) (hq : 0 ≤ q) :
+    IsStarProjection (p + q) ↔ IsStarProjection q ∧ p ⋆⟂ q := by
+  refine ⟨fun hr ↦ ?_, fun h ↦ isStarProjection_add_iff hp h.1 |>.mpr h.2⟩
+  have hpq := hp.isStarOrtho_of_add hq hr
+  refine ⟨?_, hpq⟩
+  simpa using hp.sub_of_mul_eq_left hr <| by
+    rw [mul_add, hp.isIdempotentElem.eq, hpq.mul_eq_zero' (.of_nonneg hq), add_zero]
 
 /-- In a star-ordered ring with proper star (e.g., a C⋆-algebra), a finite sum of star
 projections is a star projection if and only if they are pairwise star-orthogonal. -/
