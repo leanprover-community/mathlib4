@@ -22,7 +22,7 @@ Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an in
 family. We define composition of paths and the action of prefunctors on paths.
 
 We also define `Quiver.Reachable a b`, the existence of a directed path from `a` to `b`,
-and establish monotonicity of functions along paths and the resulting cycle obstruction.
+and prove monotonicity along paths.
 -/
 
 @[expose] public section
