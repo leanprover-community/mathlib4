@@ -94,10 +94,8 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
   have : (J.toAssociatedGraded I).comap (reesAlgebraToAssociatedGraded I) = _ :=
     (Ideal.comap_map_of_surjective' (reesAlgebraToAssociatedGraded I) Ideal.Quotient.mk_surjective
       ((J.map Polynomial.C).comap (reesAlgebra I).val)).trans (sup_comm _ _)
-  let g : s → reesAlgebra I := fun x ↦ Classical.choose
-    (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
-  have g_spec (x : s) : g x ∈ _ ∧ reesAlgebraToAssociatedGraded I (g x) = x := Classical.choose_spec
-    (Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2))
+  choose g g_spec using fun (x : s) ↦
+    Ideal.exists_of_comap_eq_ker_sup _ Ideal.Quotient.mk_surjective this (smem x.1 x.2)
   let ι := Sigma (fun (x : s) ↦ (g x).1.support)
   let deg : ι → ℕ := fun ⟨i, j⟩ ↦ j
   let coeff : ι → R := fun ⟨i, j⟩ ↦ (g i).1.coeff j.1
@@ -149,9 +147,7 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
     · simp only [coeff_monomial_of_ne _ eq, zero_mem]
   rw [← span_eq, Ideal.map_span, ← Set.range_comp, Ideal.mem_span_range_iff_exists_fun] at this
   rcases this with ⟨c, hc⟩
-  let c' : ι → (reesAlgebra I) := fun i ↦ Classical.choose (Ideal.Quotient.mk_surjective (c i))
-  let c'_spec (i : ι) : (reesAlgebraToAssociatedGraded I) (c' i) = c i :=
-    Classical.choose_spec (Ideal.Quotient.mk_surjective (c i))
+  choose c' c'_spec using fun i ↦ (Ideal.Quotient.mk_surjective (c i))
   have : (reesAlgebraToAssociatedGraded I) ⟨monomial n r, reesAlgebra.monomial_mem.mpr rmem_pow⟩ =
     (reesAlgebraToAssociatedGraded I) (∑ i, c' i * f i) := by simp [← hc, c'_spec]
   rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, mem_map_algebraMap_reesAlgebra_iff] at this
@@ -223,9 +219,7 @@ lemma isNoetherianRing_of_isAdicComplete_of_fg [IsNoetherianRing (R ⧸ I)] (fg 
     simpa [← hi] using memJ i
   · intro j hj
     rcases exists_coeffs_isAdicCauchy I J ι f deg coeff memJ eq span_eq j hj with ⟨c, cauchy, hc⟩
-    let c_lim (i : ι) : R := Classical.choose (‹IsAdicComplete I R›.prec' (c i) (cauchy i))
-    have c_lim_spec (i : ι) : ∀ (n : ℕ), c i n ≡ c_lim i [SMOD I ^ n • (⊤ : Ideal R)] :=
-      Classical.choose_spec (‹IsAdicComplete I R›.prec' (c i) (cauchy i))
+    choose c_lim c_lim_spec using fun i ↦ ‹IsAdicComplete I R›.prec' (c i) (cauchy i)
     rw [Ideal.mem_span_range_iff_exists_fun]
     use c_lim
     rw [IsHausdorff.eq_iff_smodEq (I := I)]
