@@ -75,6 +75,14 @@ noncomputable abbrev Ideal.toAssociatedGraded (J I : Ideal R) :
     Ideal ((reesAlgebra I) ⧸ (I.map (algebraMap R (reesAlgebra I)))) :=
   ((J.map Polynomial.C).comap (reesAlgebra I).val).map (reesAlgebraToAssociatedGraded I)
 
+lemma Polynomial.monomial_mem_of_mem {J : Ideal R} {f : R[X]} (mem : f ∈ J.map C) (n : ℕ) :
+    monomial n (f.coeff n) ∈ J.map C := by
+  rw [Ideal.mem_map_C_iff]
+  intro m
+  by_cases eq : m = n
+  · simpa [eq] using Ideal.mem_map_C_iff.mp mem n
+  · simp only [coeff_monomial_of_ne _ eq, zero_mem]
+
 lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG) :
     ∃ (ι : Type u) (f : ι → reesAlgebra I) (deg : ι → ℕ) (coeff : ι → R), Finite ι ∧
       (∀ i : ι, (f i).1 = monomial (deg i) (coeff i)) ∧ (∀ i : ι, coeff i ∈ J) ∧
@@ -98,14 +106,7 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
     | ⟨i, j⟩ => exact reesAlgebra.monomial_mem.mpr ((mem_reesAlgebra_iff I _).mp (g i).2 j)
   have monomial_mem' (i : ι) : monomial (deg i) (coeff i) ∈ J.map C := by
     match i with
-    | ⟨i, j⟩ =>
-      rw [Ideal.mem_map_C_iff]
-      intro n
-      by_cases eq : n = deg ⟨i, j⟩
-      · have := (g_spec i).1
-        simp only [Ideal.mem_comap, Subalgebra.coe_val, Ideal.mem_map_C_iff] at this
-        simpa [eq, coeff] using this j
-      · simp only [coeff_monomial_of_ne _ eq, zero_mem]
+    | ⟨i, j⟩ => exact Polynomial.monomial_mem_of_mem (g_spec i).1 _
   let f : ι → reesAlgebra I := fun i ↦ ⟨monomial (deg i) (coeff i), monomial_mem i⟩
   use ι, f, deg, coeff
   refine ⟨inferInstance, fun i ↦ rfl, fun ⟨i, j⟩ ↦ ?_, le_antisymm ?_ ?_⟩
