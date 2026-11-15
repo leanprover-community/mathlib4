@@ -215,29 +215,21 @@ instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, Measur
   ⟨Measure.pi fun _ => volume⟩
 
 theorem pi_pi_le (s : ∀ i, Set (α i)) : Measure.pi μ (pi univ s) ≤ ∏ i, μ i (s i) := by
-  simp_rw [← measure_toMeasurable (s _)]
-  grw [pi_mono fun i _ ↦ subset_toMeasurable (μ i) (s i)]
-  rw [Measure.pi, toMeasure_apply _ _ (.univ_pi fun i ↦ measurableSet_toMeasurable _ _)]
-  exact OuterMeasure.pi_pi_le _ _
+  grw [pi_mono fun i _ ↦ subset_toMeasurable (μ i) (s i), Measure.pi,
+    toMeasure_apply _ _ (.univ_pi fun i ↦ measurableSet_toMeasurable ..), OuterMeasure.pi_pi_le]
+  simp
 
 theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
-  refine le_antisymm (pi_pi_le μ s) ?_
   have : Encodable ι := Fintype.toEncodable ι
-  simp_rw [← pi'_pi μ s, Measure.pi,
-    toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
-  suffices (pi' μ).toOuterMeasure ≤ OuterMeasure.pi fun i => (μ i).toOuterMeasure by exact this _
-  clear hs s
-  rw [OuterMeasure.le_pi]
-  intro s _
-  exact (pi'_pi μ s).le
+  refine le_antisymm (pi_pi_le μ s) ?_
+  rw [← pi'_pi μ s, Measure.pi, toMeasure_apply _ _ (.univ_pi hs)]
+  exact OuterMeasure.le_pi.mpr (fun s _ ↦ (pi'_pi μ s).le) _
 
 theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
   classical
-  rw [← univ_pi_update_univ, ← nonpos_iff_eq_zero]
-  grw [pi_pi_le]
-  exact Finset.prod_eq_zero (Finset.mem_univ i) (by simp [hs]) |>.le
+  grw [← univ_pi_update_univ, pi_pi_le, Finset.prod_eq_zero (Finset.mem_univ i) (by simp [hs])]
 
 theorem quasiMeasurePreserving_eval (i : ι) :
     QuasiMeasurePreserving (Function.eval i) (Measure.pi μ) (μ i) := by
@@ -246,7 +238,7 @@ theorem quasiMeasurePreserving_eval (i : ι) :
 
 theorem pi_hyperplane (i : ι) [NullSingletonClass (μ i)] (x : α i) :
     Measure.pi μ { f : ∀ i, α i | f i = x } = 0 :=
-  show Measure.pi μ (eval i ⁻¹' {x}) = 0 from pi_eval_preimage_null _ (measure_singleton x)
+  pi_eval_preimage_null _ (measure_singleton x)
 
 theorem ae_eval_ne (i : ι) [NullSingletonClass (μ i)] (x : α i) :
     ∀ᵐ y : ∀ i, α i ∂Measure.pi μ, y i ≠ x :=
@@ -352,7 +344,6 @@ alias pi_noAtoms' := pi_nullSingletonClass'
 def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
     (hμ : ∀ i, (μ i).FiniteSpanningSetsIn (C i)) :
     (Measure.pi μ).FiniteSpanningSetsIn (pi univ '' pi univ C) := by
-  haveI := fun i => (hμ i).sigmaFinite
   haveI := Fintype.toEncodable ι
   refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).getD default i),
     fun n => ?_, fun n => ?_, ?_⟩ <;>
@@ -361,15 +352,8 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
   -- computationally irrelevant. The `noncomputable section` doesn't help because all it does
   -- is insert `noncomputable` for you when necessary.
   let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).getD default
-  · refine mem_image_of_mem _ fun i _ => (hμ i).set_mem _
-  · calc
-      Measure.pi μ (Set.pi univ fun i => (hμ i).set (e n i)) ≤
-          Measure.pi μ (Set.pi univ fun i => toMeasurable (μ i) ((hμ i).set (e n i))) :=
-        measure_mono (pi_mono fun i _ => subset_toMeasurable _ _)
-      _ = ∏ i, μ i (toMeasurable (μ i) ((hμ i).set (e n i))) :=
-        (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
-      _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
-      _ < ∞ := ENNReal.prod_lt_top fun i _ => (hμ i).finite _
+  · exact mem_image_of_mem _ fun i _ => (hμ i).set_mem _
+  · exact (pi_pi_le μ _).trans_lt (ENNReal.prod_lt_top fun i _ ↦ (hμ i).finite (e n i))
   · simp_rw [(surjective_decode_getD (ι → ℕ) default).iUnion_comp fun x =>
         Set.pi univ fun i => (hμ i).set (x i),
       iUnion_univ_pi fun i => (hμ i).set, (hμ _).spanning, Set.pi_univ]
@@ -542,11 +526,10 @@ instance pi.isLocallyFiniteMeasure
   refine ⟨fun x => ?_⟩
   choose s hxs ho hμ using fun i => (μ i).exists_isOpen_measure_lt_top (x i)
   refine ⟨pi univ s, set_pi_mem_nhds finite_univ fun i _ => IsOpen.mem_nhds (ho i) (hxs i), ?_⟩
-  rw [pi_pi]
+  grw [pi_pi_le]
   exact ENNReal.prod_lt_top fun i _ => hμ i
 
 instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
-    [∀ i, SigmaFinite (volume : Measure (X i))]
     [∀ i, IsLocallyFiniteMeasure (volume : Measure (X i))] :
     IsLocallyFiniteMeasure (volume : Measure (∀ i, X i)) :=
   pi.isLocallyFiniteMeasure
@@ -637,12 +620,11 @@ instance pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
   intro K hK
   suffices Measure.pi μ (Set.univ.pi fun j => Function.eval j '' K) < ⊤ by
     exact lt_of_le_of_lt (measure_mono (univ.subset_pi_eval_image K)) this
-  rw [Measure.pi_pi]
+  grw [pi_pi_le]
   refine WithTop.prod_lt_top ?_
   exact fun i _ => IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i))
 
 instance {X : ι → Type*} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpace (X i)]
-    [∀ i, SigmaFinite (volume : Measure (X i))]
     [∀ i, IsFiniteMeasureOnCompacts (volume : Measure (X i))] :
     IsFiniteMeasureOnCompacts (volume : Measure (∀ i, X i)) :=
   pi.isFiniteMeasureOnCompacts _
