@@ -38,9 +38,9 @@ section Class
 
 -/
 
-variable {α β : Type*}
-
 section
+
+variable {α β : Sort*}
 
 class LeftTotal (r : α → β → Prop) where
   total (a : α) : ∃ b : β, r a b
@@ -64,7 +64,7 @@ theorem forall_transport [LeftTotal r]
     (∀ b, q b) → (∀ a, p a) :=
   fun h' a ↦ (leftTotal r a).rec fun b hb ↦ h hb (h' b)
 
-@[transport low]
+-- @[transport]
 theorem forall_transport' [RightTotal r] (h : ∀ {a b}, r a b → p a → q b) :
     (∀ a, p a) → (∀ b, q b) :=
   forall_transport (flip r) h
@@ -79,7 +79,7 @@ theorem exists_transport [LeftTotal r] (h : ∀ {a b}, r a b → p a → q b) :
     Exists p → Exists q :=
   fun ⟨a, ha⟩ ↦ (leftTotal r a).rec fun b hb ↦ ⟨b, h hb ha⟩
 
-@[transport low]
+@[transport]
 theorem exists_transport' [RightTotal r] (h : ∀ {a b}, r a b → q b → p a) :
     Exists q → Exists p :=
   exists_transport (flip r) h
@@ -92,6 +92,8 @@ theorem exists_transport_eq [LeftTotal r] [RightTotal r] (h : ∀ {a b}, r a b �
 end
 
 section
+
+variable {α β : Sort*}
 
 class RightUnique (r : α → β → Prop) where
   unique {a b b'} : r a b → r a b' → b = b'
@@ -110,13 +112,13 @@ lemma rightUnique [RightUnique r] (h : r a b) (h' : r a b') : b = b' :=
 lemma leftUnique [LeftUnique r] (h : r a b) (h' : r a' b) : a = a' :=
   RightUnique.unique (r := flip r) h h'
 
-@[transport]
+-- @[transport]
 theorem eq_transport [RightUnique r]
     (h : r a b) (h' : r a' b') : a = a' → b = b' := by
   rintro rfl
   exact rightUnique h h'
 
-@[transport]
+-- @[transport]
 theorem eq_transport' [LeftUnique r]
     (h : r a b) (h' : r a' b') : b = b' → a = a' :=
   eq_transport (r := flip r) h h'
@@ -143,6 +145,8 @@ theorem ne_transport_eq [RightUnique r] [LeftUnique r]
   (eq_transport_eq h h').to_iff.ne.eq
 
 end
+
+variable {α β : Type*}
 
 class MapTransport (r : α → β → Prop) (map : outParam <| α → β)
 
@@ -195,6 +199,13 @@ instance [MapClass r] [LeftUnique r] : InjMapClass r where
 end Class
 
 section Eq
+
+variable (α : Sort*)
+
+instance : LeftTotal (@Eq α) where total a := ⟨a, rfl⟩
+instance : RightTotal (@Eq α) where total a := ⟨a, rfl⟩
+instance : RightUnique (@Eq α) where unique h h' := h.symm.trans h'
+instance : LeftUnique (@Eq α) where unique h h' := h.trans h'.symm
 
 variable (α : Type*)
 
@@ -493,8 +504,7 @@ theorem Set.transport_ssubset [LeftTotal r] [RightTotal r]
   transport [hs, ht, → r]
   rfl
 
-section
-variable {ι ι' : Type*} {r' : ι → ι' → Prop} (s : ι → Set α) (t : ι' → Set β)
+variable {ι ι' : Sort*} {r' : ι → ι' → Prop} (s : ι → Set α) (t : ι' → Set β)
 
 @[transport]
 theorem Set.transport_iUnion [LeftTotal r'] [RightTotal r']
@@ -512,28 +522,6 @@ theorem Set.transport_iInter [LeftTotal r'] [RightTotal r']
   intro a b hr
   push _ ∈ _
   transport [h, hr, → r, → r']
-  rfl
-
-end
-
-variable {ι : Sort*} (s : ι → Set α) (t : ι → Set β)
-
-@[transport low]
-theorem Set.transport_iUnion'
-    (h : ∀ i, SetRel r (t i) (s i)) :
-    SetRel r (Set.iUnion t) (Set.iUnion s) := by
-  intro a b hr
-  push _ ∈ _
-  transport [h, hr, → r]
-  rfl
-
-@[transport low]
-theorem Set.transport_iInter'
-    (h : ∀ i, SetRel r (t i) (s i)) :
-    SetRel r (Set.iInter t) (Set.iInter s) := by
-  intro a b hr
-  push _ ∈ _
-  transport [h, hr, → r]
   rfl
 
 end Set
