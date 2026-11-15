@@ -45,7 +45,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
     simp only [zpow_natCast, Int.cast_natCast]
     convert hasStrictDerivAt_pow m x
     rw [← Int.ofNat_one, ← Int.ofNat_sub, zpow_natCast]
-    norm_cast at hm; fail_if_progress norm_cast at hm
+    fail_if_not_idempotent norm_cast at hm
   rcases lt_trichotomy m 0 with (hm | hm | hm)
   · have hx : x ≠ 0 := h.resolve_right hm.not_ge
     have := (hasStrictDerivAt_inv ?_).scomp _ (this (-m) (neg_pos.2 hm)) <;>

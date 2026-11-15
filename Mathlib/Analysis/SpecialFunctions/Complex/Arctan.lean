@@ -57,12 +57,12 @@ lemma cos_ne_zero_of_arctan_bounds {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π 
     (h₂ : z.re ≤ π / 2) : cos z ≠ 0 := by
   refine cos_ne_zero_iff.mpr (fun k ↦ ?_)
   rw [ne_eq, Complex.ext_iff, not_and_or] at h₀ ⊢
-  norm_cast at h₀ ⊢; fail_if_progress norm_cast at h₀ ⊢
+  fail_if_not_idempotent norm_cast at h₀ ⊢
   rcases h₀ with nr | ni
   · left; contrapose nr
     rw [nr, mul_div_assoc, neg_eq_neg_one_mul, mul_lt_mul_iff_of_pos_right (by positivity)] at h₁
     rw [nr, ← one_mul (π / 2), mul_div_assoc, mul_le_mul_iff_of_pos_right (by positivity)] at h₂
-    norm_cast at h₁ h₂; fail_if_progress norm_cast at h₁ h₂
+    fail_if_not_idempotent norm_cast at h₁ h₂
     change -1 < _ at h₁
     rwa [show 2 * k + 1 = 1 by lia, Int.cast_one, one_mul] at nr
   · exact Or.inr ni

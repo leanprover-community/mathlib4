@@ -386,10 +386,10 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     intro q hq
     refine (ha q.den (by positivity)).trans ?_
     rw [← le_sub_iff_add_le, div_le_iff₀ (by positivity), sub_mul, one_mul]
-    norm_cast at hq ⊢; fail_if_progress norm_cast at hq ⊢
+    fail_if_not_idempotent norm_cast at hq ⊢
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
-    norm_cast at hq ⊢; fail_if_progress norm_cast at hq ⊢
+    fail_if_not_idempotent norm_cast at hq ⊢
     lia
   use 2 * k ^ 2
   calc

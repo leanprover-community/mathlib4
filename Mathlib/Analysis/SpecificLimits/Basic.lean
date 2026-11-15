@@ -274,7 +274,7 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) := by
   rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
   rw [← ENNReal.coe_zero]
-  fail_if_not_idempotent norm_cast at *; fail_if_progress norm_cast at *
+  fail_if_not_idempotent fail_if_not_idempotent norm_cast at *
   apply NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one hr
 
 @[simp]

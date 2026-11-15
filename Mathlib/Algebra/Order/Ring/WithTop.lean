@@ -228,7 +228,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
       by_cases ha : a = 0
       · simp [ha]
       · have : a + b ≠ 0 := by
-          cases a <;> cases b <;> norm_cast at * <;> fail_if_progress norm_cast at * <;> simp [ha]
+          cases a <;> cases b <;> fail_if_not_idempotent norm_cast at *<;> simp [ha]
         simp [ha, this]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]
@@ -241,7 +241,7 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α]
       by_cases ha : a = 0
       · simp [ha]
       · have : a + b ≠ 0 := by
-          cases a <;> cases b <;> norm_cast at * <;> fail_if_progress norm_cast at * <;> simp [ha]
+          cases a <;> cases b <;> fail_if_not_idempotent norm_cast at * <;>  simp [ha]
         simp [ha, this]
     | coe c =>
       by_cases hc : c = 0; · simp [hc]

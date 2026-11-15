@@ -673,7 +673,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     · gcongr
   have : (q : ℝ≥0∞) ≤ p' := by
     have H : (p' : ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
-    norm_cast at H ⊢; fail_if_progress norm_cast at H ⊢
+    fail_if_not_idempotent norm_cast at H ⊢
     rwa [inv_le_inv₀] at H
     · have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
         simp only [tsub_pos_iff_lt]

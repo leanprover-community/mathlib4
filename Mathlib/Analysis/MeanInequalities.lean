@@ -1064,8 +1064,7 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.HolderConjugate q) {A B : �
   lift B to ℝ≥0 using hB
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce at *
-  norm_cast at hf_sum hg_sum
-  fail_if_progress norm_cast at hf_sum hg_sum
+  fail_if_not_idempotent norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
   refine ⟨C, C.prop, hC, ?_⟩
   fail_if_not_idempotent norm_cast
@@ -1128,7 +1127,7 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   lift B to ℝ≥0 using hB
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce at hfA hgB
-  norm_cast at hfA hgB; fail_if_progress norm_cast at hfA hgB
+  fail_if_not_idempotent norm_cast at hfA hgB
   obtain ⟨C, hC₁, hC₂⟩ := NNReal.Lp_add_le_hasSum hp hfA hgB
   use C
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.

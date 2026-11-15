@@ -152,7 +152,7 @@ lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
   have nr := eventually_cofinite_not_isRoot (ne_zero_of_degree_gt h)
   have key := o.eventuallyLT_norm_of_eventually_pos (nr.congr (.of_forall (by simp)))
   simp_rw [eventually_cofinite, not_lt, Int.norm_eq_abs] at key
-  norm_cast at key; fail_if_progress norm_cast at key
+  fail_if_not_idempotent norm_cast at key
 
 /-- If `Q(x) ∣ P(x)` at infinitely many integers `x` and `Q` is monic, `Q ∣ P`. -/
 theorem dvd_of_infinite_eval_dvd_eval
