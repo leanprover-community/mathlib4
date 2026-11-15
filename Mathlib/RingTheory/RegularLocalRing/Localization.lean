@@ -28,9 +28,8 @@ theorem IsRegularLocalRing.of_globalDimension_lt_top [IsLocalRing R] [IsNoetheri
     [Small.{v} R] (h : globalDimension.{v} R < ⊤) : IsRegularLocalRing R := by
   apply IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
   rw [← CategoryTheory.projectiveDimension_ne_top_iff]
-  by_contra eqtop
-  absurd h
-  simp only [globalDimension, ← eqtop, not_lt]
+  contrapose h
+  simp only [globalDimension, ← h, not_lt]
   exact le_iSup _ (ModuleCat.of R (Shrink.{v} (IsLocalRing.maximalIdeal R)))
 
 theorem Auslander_Buchsbaum_Serre [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R] :
