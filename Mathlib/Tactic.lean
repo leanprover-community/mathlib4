@@ -128,6 +128,7 @@ public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.FBinop
 public import Mathlib.Tactic.FailIfNoProgress
+public import Mathlib.Tactic.FailIfProgress
 public import Mathlib.Tactic.FastInstance
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.FieldSimp
