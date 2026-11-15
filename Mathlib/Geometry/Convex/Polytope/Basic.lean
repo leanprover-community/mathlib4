@@ -66,7 +66,6 @@ section Semiring
 
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
 variable [ConvexSpace R X]
-
 variable {P P₁ P₂ : Set X}
 
 theorem exists_finset_convexHull (hP : IsPolytope R P) :
