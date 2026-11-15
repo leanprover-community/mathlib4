@@ -64,8 +64,7 @@ initialize_simps_projections LieRinehartSubalgebra (carrier → coe, as_prefix c
 
 @[simps! top_toSubmodule top_coe]
 instance : Top (LieRinehartSubalgebra A L) where
-  top.toSubmodule := ⊤
-  top.lie_mem' _ _ := trivial
+  top := ⟨⊤, by simp⟩
 
 @[simp]
 theorem coe_eq_univ (L' : LieRinehartSubalgebra A L) : (L' : Set L) = Set.univ ↔ L' = ⊤ := by
