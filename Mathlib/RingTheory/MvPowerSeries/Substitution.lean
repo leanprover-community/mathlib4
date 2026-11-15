@@ -474,15 +474,20 @@ theorem IsNilpotent_substAlgHom (ha : HasSubst a)
     IsNilpotent (constantCoeff (substAlgHom ha f)) := by
   simpa using IsNilpotent_subst ha hf
 
-theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
-    HasSubst (fun s ↦ substAlgHom hb (a s)) where
-  const_coeff s := IsNilpotent_substAlgHom hb (ha.const_coeff s)
+theorem HasSubst.subst (ha : HasSubst a) (hb : HasSubst b) :
+    HasSubst (fun s ↦ subst b (a s)) where
+  const_coeff s := IsNilpotent_subst hb (ha.const_coeff s)
   coeff_zero := by
     let : UniformSpace S := ⊥
     let : UniformSpace T := ⊥
     rw [← coeff_zero_iff]
     apply Filter.Tendsto.comp _ (ha.hasEval.tendsto_zero)
     simpa [← map_zero (substAlgHom (R := S) hb)] using! (continuous_subst hb).continuousAt
+
+theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
+    HasSubst (fun s ↦ substAlgHom hb (a s)) where
+  const_coeff s := IsNilpotent_substAlgHom hb (ha.const_coeff s)
+  coeff_zero := by simpa [substAlgHom_apply] using (ha.subst hb).coeff_zero
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) := by
