@@ -24,7 +24,8 @@ public section
 
 open scoped StarRing
 
-/-- A star-ordered ring with a proper star has injective scalar multiplication by natural numbers. -/
+/-- A star-ordered ring with a proper star has injective scalar multiplication by natural
+numbers. -/
 lemma StarOrderedRing.hasUniqueDiv {R : Type*} [NonUnitalRing R] [StarRing R] [PartialOrder R]
     [StarOrderedRing R] [IsProperStar R] : HasUniqueDiv R where
   nsmul_right_injective n hn x y h := by
