@@ -51,7 +51,7 @@ variable (s) in
 abbrev mkQ : L → L ⧸ s := Submodule.Quotient.mk
 
 @[simp]
-theorem mk_eq_zero {l : L} : mkQ s l = 0 ↔ l ∈ s :=
+theorem mkQ_eq_zero {l : L} : mkQ s l = 0 ↔ l ∈ s :=
   Submodule.Quotient.mk_eq_zero s.toSubmodule
 
 theorem mk''_eq_mkQ (l : L) : Quotient.mk'' l = mkQ s l := rfl
