@@ -436,6 +436,12 @@ lemma rel_imp_eq_of_rel_imp_le [PartialOrder β] (r : α → α → Prop) [Std.S
     (h : ∀ a b, r a b → f a ≤ f b) {a b : α} : r a b → f a = f b := fun hab ↦
   le_antisymm (h a b hab) (h b a <| symm hab)
 
+theorem map_le_of_le_of_map_lt_of_lt [PartialOrder α] [Preorder β] {x y : α}
+    {f : α → β} (h : x < y → f x < f y) (hxy : x ≤ y) : f x ≤ f y := by
+  obtain rfl | h' := hxy.eq_or_lt
+  · rfl
+  · exact (h h').le
+
 /-! ### Extensionality lemmas -/
 
 @[ext]
