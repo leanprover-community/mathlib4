@@ -103,14 +103,14 @@ instance : LieAlgebra R (L ⧸ s) where
 variable (s R) in
 open LieRinehartAlgebra in
 /-- `StrictLieRinehartIdeal.Quotient.mk` as a Lie-Rinehart homomorphism. -/
-@[expose] def mk' : L →ₗ⁅.id R A⁆ L ⧸ s where
+def mk' : L →ₗ⁅.id R A⁆ L ⧸ s where
   __ := (s.toSubmodule.restrictScalars R).mkQ
   map_lie' {_ _} := rfl
   map_smul_apply' _ _ := rfl
   apply_lie' _ _ := rfl
 
 @[simp]
-lemma mk'_apply {l : L} : mk' s R l = mk l := rfl
+lemma mk'_apply {l : L} : mk' s R l = mk l := by rfl
 
 @[simp]
 theorem surjective_mk' : Function.Surjective (mk' s R) := Quot.mk_surjective

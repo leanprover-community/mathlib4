@@ -196,7 +196,7 @@ def map (f : L →ₗ⁅.id R A⁆ L₂) : LieRinehartSubalgebra A L₂ :=
         rw [LieHom.map_lie, hx2, hy2] }
 
 @[simp] lemma mem_map : x ∈ map L' f ↔ ∃ y ∈ L', f y = x := .rfl
-@[simp] lemma coe_map : (map L' f : Set L₂) = f '' L' := by rw [LieRinehartSubalgebra.map]; rfl
+@[simp] lemma coe_map : (map L' f : Set L₂) = f '' L' := by rfl
 
 variable [LieRinehartRing A L]
 
@@ -213,7 +213,7 @@ instance lieAlgebra : LieAlgebra R L' where
   lie_smul _ _ _ := by simp [ext_iff]
 
 /-- Converts a Lie-Rinehart subalgebra to the corresponding Lie subalgebra. -/
-@[expose] def toLieSubalgebra : LieSubalgebra R L where
+def toLieSubalgebra : LieSubalgebra R L where
   toSubmodule := L'.toSubmodule.restrictScalars R
   lie_mem' := L'.lie_mem'
 
@@ -228,7 +228,7 @@ theorem toLieSubalgebra_inj (L₁' L₂' : LieRinehartSubalgebra A L) :
     (L₁'.toLieSubalgebra R) = (L₂'.toLieSubalgebra R) ↔ L₁' = L₂' :=
   (toLieSubalgebra_injective R).eq_iff
 
-theorem coe_toLieSubalgebra : ((L'.toLieSubalgebra R) : Set L) = L' := rfl
+theorem coe_toLieSubalgebra : ((L'.toLieSubalgebra R) : Set L) = L' := by rfl
 
 section LieModule
 
@@ -248,14 +248,14 @@ instance : LieRinehartAlgebra R A L' where
 
 /-- The embedding of a Lie-Rinehart subalgebra into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
-@[expose] def incl : L' →ₗ⁅.id R A⁆ L where
+def incl : L' →ₗ⁅.id R A⁆ L where
   __ := L'.toSubmodule.subtype.restrictScalars R
   map_lie' {x y} := coe_bracket L' x y
   map_smul_apply' a x := L'.toSubmodule.subtype.map_smul a x
   apply_lie' a x := AlgHom.id_apply ⁅x, a⁆
 
 @[simp]
-theorem coe_incl : ⇑(L'.incl R) = ((↑) : L' → L) := rfl
+theorem coe_incl : ⇑(L'.incl R) = ((↑) : L' → L) := by rfl
 
 end LieRinehartSubalgebra
 

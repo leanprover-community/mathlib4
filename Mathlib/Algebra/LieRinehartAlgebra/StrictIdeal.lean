@@ -172,7 +172,7 @@ instance lieAlgebra {s : StrictLieRinehartIdeal A L} : LieAlgebra R s where
 
 variable (R) in
 /-- Converts a strict Lie-Rinehart ideal to the corresponding Lie ideal. -/
-@[expose] def toLieIdeal (s : StrictLieRinehartIdeal A L) : LieIdeal R L where
+def toLieIdeal (s : StrictLieRinehartIdeal A L) : LieIdeal R L where
   toSubmodule := s.toSubmodule.restrictScalars R
   lie_mem {_ _} hy := lie_mem_of_right _ hy
 
@@ -185,7 +185,8 @@ theorem toLieIdeal_inj {s t : StrictLieRinehartIdeal A L} :
     s.toLieIdeal R = t.toLieIdeal R ↔ s = t := toLieIdeal_injective.eq_iff
 
 @[simp]
-theorem coe_toLieIdeal {s : StrictLieRinehartIdeal A L} : ((s.toLieIdeal R) : Set L) = s := rfl
+theorem coe_toLieIdeal {s : StrictLieRinehartIdeal A L} : ((s.toLieIdeal R) : Set L) = s := by
+  rfl
 
 @[simp]
 theorem mem_toLieIdeal {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toLieIdeal R ↔ x ∈ s := .rfl
@@ -211,14 +212,14 @@ open scoped LieRinehartAlgebra
 variable (R) in
 /-- The embedding of a strict Lie-Rinehart ideal into the ambient space as a morphism of
 Lie-Rinehart algebras. -/
-@[expose] def incl (s : StrictLieRinehartIdeal A L) : s →ₗ⁅.id R A⁆ L where
+def incl (s : StrictLieRinehartIdeal A L) : s →ₗ⁅.id R A⁆ L where
   __ := s.toSubmodule.subtype.restrictScalars R
   map_lie' {_ _} := by simp
   map_smul_apply' a x := s.toSubmodule.subtype.map_smul a x
   apply_lie' a x := rfl
 
 @[simp]
-theorem coe_incl {s : StrictLieRinehartIdeal A L} : ⇑(s.incl R) = ((↑) : s → L) := rfl
+theorem coe_incl {s : StrictLieRinehartIdeal A L} : ⇑(s.incl R) = ((↑) : s → L) := by rfl
 
 variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ A] [LieAlgebra R L₁]
   [LieRing L₂] [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂]
@@ -253,11 +254,11 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
 
 /-- The kernel of a Lie-Rinehart homomorphism `f`, which lies over the
 identity of `A`, is a strict Lie-Rinehart ideal. -/
-@[expose] def ker : StrictLieRinehartIdeal A L₁ := .comap f 0
+ def ker : StrictLieRinehartIdeal A L₁ := .comap f 0
 
 @[simp] theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := .rfl
 
-@[simp] theorem coe_ker : (f.ker : Set L₁) = f⁻¹' {0} := rfl
+@[simp] theorem coe_ker : (f.ker : Set L₁) = f⁻¹' {0} := by rfl
 
 end Hom
 
