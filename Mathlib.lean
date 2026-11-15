@@ -2229,6 +2229,7 @@ public import Mathlib.Analysis.Normed.Algebra.Ultra
 public import Mathlib.Analysis.Normed.Algebra.Unitization
 public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 public import Mathlib.Analysis.Normed.Field.Approximation
+public import Mathlib.Analysis.Normed.Field.Baire
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Field.Instances
@@ -4747,6 +4748,7 @@ public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Laurent
 public import Mathlib.FieldTheory.LinearDisjoint
 public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.FieldTheory.Minpoly.Bounds
 public import Mathlib.FieldTheory.Minpoly.ConjRootClass
 public import Mathlib.FieldTheory.Minpoly.Field
 public import Mathlib.FieldTheory.Minpoly.Finite

@@ -5,11 +5,14 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+import Mathlib.Analysis.Normed.Field.Baire
+import Mathlib.Analysis.Normed.Field.Dense
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -129,6 +132,26 @@ instance nontriviallyNormedField : NontriviallyNormedField (PadicAlgCl p) where
 /-- `PadicAlgCl p` has characteristic zero. -/
 instance charZero : CharZero (PadicAlgCl p) :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] (PadicAlgCl p)).injective).mp inferInstance
+
+/-- The algebraic closure of `ℚ_[p]` is infinite-dimensional over `ℚ_[p]`. -/
+theorem not_finiteDimensional : ¬ FiniteDimensional ℚ_[p] (PadicAlgCl p) := by
+  intro h
+  obtain ⟨x, hx⟩ := IsAlgClosed.exists_pow_nat_eq (p : PadicAlgCl p)
+    (Nat.succ_pos (Module.finrank ℚ_[p] (PadicAlgCl p)))
+  apply_fun fun y ↦ (Algebra.norm ℚ_[p] y).valuation at hx
+  simp only [map_pow, Algebra.norm_natCast, Padic.valuation_pow, Padic.valuation_p, mul_one] at hx
+  exact Nat.not_dvd_of_pos_of_lt Module.finrank_pos (Nat.lt_succ_self _)
+    (Int.natCast_dvd_natCast.mp ⟨_, hx.symm⟩)
+
+open AlgebraicClosure
+
+/-- The algebraic closure of `ℚ_[p]` is not a Baire space with respect to the `p`-adic norm. -/
+theorem not_baireSpace : ¬ BaireSpace (PadicAlgCl p) :=
+  (baireSpace_iff_finiteDimensional ℚ_[p]).1.mt (not_finiteDimensional p)
+
+/-- The algebraic closure of `ℚ_[p]` is not complete with respect to the `p`-adic norm. -/
+theorem not_completeSpace : ¬ CompleteSpace (PadicAlgCl p) :=
+  (completeSpace_iff_finiteDimensional ℚ_[p]).1.mt (not_finiteDimensional p)
 
 end PadicAlgCl
 
