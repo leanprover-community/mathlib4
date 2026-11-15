@@ -217,7 +217,6 @@ def pushforwardEq {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Preshe
 theorem pushforward_eq' {X Y : TopCat.{w}} {f g : X ⟶ Y} (h : f = g) (ℱ : X.Presheaf C) :
     f _* ℱ = g _* ℱ := by rw [h]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem pushforwardEq_hom_app {X Y : TopCat.{w}} {f g : X ⟶ Y}
     (h : f = g) (ℱ : X.Presheaf C) (U) :
@@ -367,7 +366,6 @@ def pullbackObjIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.
     (fun {U V} i ↦ (pullbackObjObjOfImageOpen_hom_naturality f ℱ (hf (unop V).1 (unop V).2)
       (hf (unop U).1 (unop U).2) (leOfHom i.unop)))
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : X ⟶ Y` is an open map, this expresses the naturality of the isomorphism

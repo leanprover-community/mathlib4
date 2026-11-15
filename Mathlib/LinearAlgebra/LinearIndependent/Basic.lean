@@ -39,7 +39,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 public section
@@ -498,6 +497,10 @@ theorem linearIndepOn_id_union_iff {s t : Set M} (hdj : Disjoint s t) :
     LinearIndepOn R id (s ∪ t) ↔
     LinearIndepOn R id s ∧ LinearIndepOn R id t ∧ Disjoint (span R s) (span R t) := by
   rw [linearIndepOn_union_iff hdj, image_id, image_id]
+
+theorem disjoint_span_of_linearIndepOn_id_union {s t : Set M} (hdj : Disjoint s t)
+    (hli : LinearIndepOn R id (s ∪ t)) : Disjoint (span R s) (span R t) :=
+  ((linearIndepOn_id_union_iff hdj).mp hli).2.2
 
 open LinearMap
 

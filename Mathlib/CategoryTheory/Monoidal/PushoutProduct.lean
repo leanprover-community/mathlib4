@@ -23,8 +23,8 @@ diagram:
   A ⊗ Y --> B ⊗ Y
 ```
 
-In a monoidal closed category with pullbacks, the pullback-hom is the the Leibniz functor associated
-to the internal hom. This is the bifunctor of arrow categories that sends `f : A ⟶ B` and
+In a monoidal closed category with pullbacks, the pullback-hom is the Leibniz functor associated to
+the internal hom. This is the bifunctor of arrow categories that sends `f : A ⟶ B` and
 `g : X ⟶ Y` to the canonical map from `B ⟹ X` to the pullback of
 `(ihom A).map g : A ⟹ X ⟶ A ⟹ Y` and `(pre f).app Y : B ⟹ Y ⟶ A ⟹ Y`, induced by the
 following diagram:
@@ -37,7 +37,6 @@ following diagram:
 
 In `Mathlib.CategoryTheory.Monoidal.Arrow`, these constructions are used to define a
 monoidal (closed) structure on arrow categories.
-
 -/
 
 @[expose] public section

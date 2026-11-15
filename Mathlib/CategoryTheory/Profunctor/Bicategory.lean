@@ -26,7 +26,6 @@ universe w v u
 
 namespace CategoryTheory
 
-set_option linter.checkUnivs false in
 /-- The bicategory of categories where the 1-morphisms are profunctors. -/
 structure ProfCat where
   of ::

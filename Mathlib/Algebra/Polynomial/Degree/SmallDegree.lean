@@ -26,12 +26,12 @@ section Semiring
 
 variable [Semiring R] {p : R[X]}
 
-theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X + C (p.coeff 0) :=
-  ext fun n =>
-    Nat.casesOn n (by simp) fun n =>
-      Nat.casesOn n (by simp) fun m => by
-        have : degree p < m.succ.succ := lt_of_le_of_lt h Nat.one_lt_ofNat
-        simp [coeff_eq_zero_of_degree_lt this]
+theorem eq_X_add_C_of_degree_le_one (h : degree p ≤ 1) : p = C (p.coeff 1) * X + C (p.coeff 0) := by
+  ext (_ | _ | n)
+  · simp
+  · simp
+  · have : degree p < ↑(n + 1 + 1) := lt_of_le_of_lt h Nat.one_lt_ofNat
+    simp [coeff_eq_zero_of_degree_lt this]
 
 theorem eq_X_add_C_of_degree_eq_one (h : degree p = 1) :
     p = C p.leadingCoeff * X + C (p.coeff 0) :=

@@ -28,7 +28,6 @@ locally representable.
 
 ## References
 * https://stacks.math.columbia.edu/tag/01JJ
-
 -/
 
 @[expose] public section
@@ -113,14 +112,12 @@ lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
     NatTrans.comp_app_apply, yoneda_map_app]
   simpa using! GlueData.sheafValGluedMk_val _ _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
     dsimp% (yonedaGluedToSheaf hf).hom.app _ (toGlued hf i) = yonedaEquiv (f i) := by
   rw [← yoneda_toGlued_yonedaGluedToSheaf hf i, yonedaEquiv_comp,
     yonedaEquiv_yoneda_map]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
     dsimp% (yonedaGluedToSheaf hf).hom.app (op V) (γ ≫ α) =

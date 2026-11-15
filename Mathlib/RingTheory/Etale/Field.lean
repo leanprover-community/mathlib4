@@ -31,7 +31,6 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 ## References
 
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
 -/
 
 public section

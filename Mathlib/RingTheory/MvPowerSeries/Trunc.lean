@@ -11,7 +11,6 @@ public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-!
-
 # Formal (multivariate) power series - Truncation
 
 * `MvPowerSeries.truncFinset s p` restricts the support of a multivariate power series `p`
@@ -50,7 +49,6 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
 
 * `MvPowerSeries.truncTotal` : the truncation of a multivariate formal power series at
   a total degree `n` when the index `σ` is finite
-
 -/
 
 @[expose] public section
@@ -143,9 +141,11 @@ theorem coeff_truncFinset_mul_truncFinset_eq_coeff_mul (hs : IsLowerSet (s : Set
       (truncFinset R s f * truncFinset R s g).coeff x = coeff x (f * g) :=
   coeff_truncFinset_mul_truncFinset_eq_coeff_mul₂ hs hs f g hx hx
 
-theorem truncFinset_truncFinset_pow (hs : IsLowerSet (s : Set (σ →₀ ℕ))) {k : ℕ} (hk : 1 ≤ k)
+theorem truncFinset_truncFinset_pow (hs : IsLowerSet (s : Set (σ →₀ ℕ))) {k : ℕ}
     (p : MvPowerSeries σ R) : truncFinset R s ((truncFinset R s p) ^ k) =
       truncFinset R s (p ^ k) := by
+  rcases Nat.eq_zero_or_pos k with rfl | hk
+  · simp
   induction k, hk using Nat.le_induction with
   | base => simp [truncFinset_truncFinset]
   | succ n hmn ih =>
@@ -268,9 +268,9 @@ theorem coeff_trunc'_mul_trunc'_eq_coeff_mul (n : σ →₀ ℕ)
     (trunc' R n f * trunc' R n g).coeff m = coeff m (f * g) :=
   coeff_trunc'_mul_trunc'_eq_coeff_mul₂ n n f g h h
 
-theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (hk : 1 ≤ k) (φ : MvPowerSeries σ R) :
+theorem trunc'_trunc'_pow {n : σ →₀ ℕ} {k : ℕ} (φ : MvPowerSeries σ R) :
     trunc' R n ((trunc' R n φ) ^ k) = trunc' R n (φ ^ k) :=
-  truncFinset_truncFinset_pow (by intro; grind) hk φ
+  truncFinset_truncFinset_pow (by intro; grind) φ
 
 @[simp]
 theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
@@ -362,7 +362,7 @@ lemma truncTotal_pow_eq_truncTotal_truncTotal_pow :
   ext d
   by_cases hd : d.degree < n
   · simp_rw [coeff_truncTotal _ hd]
-    exact_mod_cast (coeff_truncTotal_pow _ hd).symm
+    exact mod_cast (coeff_truncTotal_pow _ hd).symm
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
 theorem totalDegree_truncTotal_lt (h : n ≠ 0) :

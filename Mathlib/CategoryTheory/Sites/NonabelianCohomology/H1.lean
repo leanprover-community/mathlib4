@@ -39,7 +39,6 @@ case, it would be a particular case of Čech cohomology (TODO).
 ## References
 
 * [J. Frenkel, *Cohomologie non abélienne et espaces fibrés*][frenkel1957]
-
 -/
 
 @[expose] public section

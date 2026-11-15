@@ -30,7 +30,6 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 ## References
 
 * https://en.wikipedia.org/wiki/Orientation_(vector_space)
-
 -/
 
 @[expose] public section

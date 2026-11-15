@@ -24,7 +24,6 @@ $$
 \frac{a}{\sqrt{a^2 + 8bc}} ≥
 \frac{a^{\frac43}}{a^{\frac43} + b^{\frac43} + c^{\frac43}}.
 $$
-
 -/
 
 public section

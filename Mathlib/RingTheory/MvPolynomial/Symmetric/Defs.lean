@@ -51,7 +51,6 @@ As in other polynomial files, we typically use the notation:
 + `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
 
 + `φ ψ : MvPolynomial σ R`
-
 -/
 
 @[expose] public section
@@ -83,7 +82,7 @@ theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ
   simp only [Function.comp_apply, Finset.prod_map_val, Finset.sum_map_val]
 
 lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
-    [SMulCommClass S R R] (s : S) (n : ℕ) (m : Multiset R) :
+    (s : S) (n : ℕ) (m : Multiset R) :
     s ^ n • m.esymm n = (m.map (s • ·)).esymm n := by
   rw [esymm, smul_sum, map_map]
   trans ((powersetCard n m).map (fun x : Multiset R ↦ s ^ card x • x.prod)).sum

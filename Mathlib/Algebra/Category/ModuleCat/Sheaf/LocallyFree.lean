@@ -20,7 +20,6 @@ A sheaf of modules is locally free if it is locally isomorphic to a free module.
 
 - `SheafOfModules.IsLocallyFree`: `M : SheafOfModules R` is locally free is there exists locally
   free data for it.
-
 -/
 
 public section

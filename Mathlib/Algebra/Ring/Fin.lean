@@ -16,7 +16,6 @@ This file collects some basic results involving rings and the `Fin` type
 ## Main results
 
 * `RingEquiv.piFinTwo`: The product over `Fin 2` of some rings is the Cartesian product
-
 -/
 
 @[expose] public section

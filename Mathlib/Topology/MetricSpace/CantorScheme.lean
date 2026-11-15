@@ -37,7 +37,6 @@ in this file. See instead `PiNat.res`.
 ## Tags
 
 scheme, cantor scheme, lusin scheme, approximation.
-
 -/
 
 @[expose] public section

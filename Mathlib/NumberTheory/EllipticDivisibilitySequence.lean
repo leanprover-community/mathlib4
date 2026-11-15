@@ -574,7 +574,7 @@ lemma preNormEDS_odd (m : ℤ) : preNormEDS b c d (2 * m + 1) =
   | nat m =>
     rcases m with _ | _ | _
     on_goal 1 2 => simp
-    simp_rw [Nat.cast_succ, Int.add_sub_cancel, Int.even_add_one, not_not, Int.even_coe_nat]
+    simp_rw [Nat.cast_succ, Int.add_sub_cancel, Int.even_add_one, not_not, Int.even_natCast]
     norm_cast
     simpa only [preNormEDS_ofNat] using preNormEDS'_odd ..
   | neg ih m =>

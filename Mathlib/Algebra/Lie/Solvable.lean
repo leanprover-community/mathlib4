@@ -6,8 +6,8 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Lie.BaseChange
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.Algebra.Lie.Quotient
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Solvable Lie algebras

@@ -16,6 +16,7 @@ In this file, we consider the full subcategory `CochainComplex.Plus C`
 of `CochainComplex C ℤ` consisting of bounded below cochain complexes
 in a category `C`.
 
+This file should be kept in sync with `Mathlib/Algebra/Homology/CochainComplexMinus.lean`.
 -/
 
 @[expose] public section
@@ -102,6 +103,16 @@ instance [HasLimitsOfShape WalkingCospan C] {X Y : Plus C} (f : X ⟶ Y) [Mono f
     Mono f.hom := by
   rwa [← mono_iff]
 
+variable {C} in
+lemma epi_iff [HasColimitsOfShape WalkingSpan C] {X Y : Plus C} (f : X ⟶ Y) :
+    Epi f ↔ Epi f.hom :=
+  ⟨fun _ ↦ inferInstanceAs (Epi ((ι C).map f)),
+    fun _ ↦ Functor.epi_of_epi_map (ι C) (by assumption)⟩
+
+instance [HasColimitsOfShape WalkingSpan C] {X Y : Plus C} (f : X ⟶ Y) [Epi f] :
+    Epi f.hom := by
+  rwa [← epi_iff]
+
 /-- The class of quasi-isomorphisms in the category of bounded
 below cochain complexes. -/
 def quasiIso [CategoryWithHomology C] : MorphismProperty (Plus C) :=
@@ -154,7 +165,7 @@ is induced by a functor (which preserves zero morphisms). -/
 @[implicit_reducible, simps! obj_obj map_hom]
 def mapCochainComplexPlus : CochainComplex.Plus C ⥤ CochainComplex.Plus D :=
   ObjectProperty.lift _ (CochainComplex.Plus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
-    obtain ⟨i, hi⟩ := K.2
+    obtain ⟨i, hi⟩ := K.property
     refine ⟨i, ?_⟩
     dsimp [CochainComplex.Plus.ι]
     infer_instance)

@@ -28,7 +28,6 @@ For free modules, we have
 
 Lemmas for ranks of submodules and subalgebras are also provided.
 We have `finrank` variants for most lemmas as well.
-
 -/
 
 @[expose] public section

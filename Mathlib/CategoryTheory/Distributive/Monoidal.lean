@@ -53,7 +53,6 @@ pointed types and the coproduct given by the wedge sum is distributive.
 * [Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
   monoids in monoidal categories, in: Operads: Proceedings of Renaissance
   Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][MR1268290]
-
 -/
 
 @[expose] public section
@@ -202,7 +201,6 @@ lemma whiskerRight_coprod_inr_rightDistrib_inv [IsMonoidalRightDistrib C] {X Y Z
   apply (cancel_iso_hom_right _ _ (∂R X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_rightDistrib_hom]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In a symmetric monoidal category, the left distributivity is equal to
 the right distributivity up to braiding isomorphisms. -/
 @[simp]
@@ -211,7 +209,6 @@ lemma coprodComparison_tensorLeft_braiding_hom [BraidedCategory C] {X Y Z : C} :
     (coprod.map (β_ X Y).hom (β_ X Z).hom) ≫ (coprodComparison (tensorRight X) Y Z) := by
   simp [coprodComparison]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- In a symmetric monoidal category, the right distributivity is equal to
 the left distributivity up to braiding isomorphisms. -/
 @[simp]

@@ -57,6 +57,14 @@ lemma convolveFunRight_apply_one (μ : D(G, R)) (f : C(G, R)) :
   congr with
   simp
 
+lemma convolveFunRight_eq_sum {ι : Type*} {s : Finset ι} (ν : D(G, R)) {f : C(G, R)}
+    {g h : ι → C(G, R)} (hf : ∀ x y, f (x * y) = ∑ i ∈ s, g i x * h i y) :
+    convolveFunRight ν f = ∑ i ∈ s, ν (h i) • g i := by
+  ext x
+  rw [convolveFunRight_apply, show (⟨fun y ↦ f (x * y), _⟩ : C(G, R)) = ∑ i ∈ s, g i x • h i by
+    ext; simp [hf]]
+  simp [mul_comm]
+
 /--
 We define `1 : D(G, R)` to be the Dirac measure at `1 : G` (since we are writing convolution as
 multiplication).
@@ -110,6 +118,12 @@ instance : Ring D(G, R) where
   mul_assoc _ _ _ := by ext; simp [mul_apply, convolveFunRight_mul]
   one_mul _ := by ext; simp [mul_apply]
   mul_one _ := by ext; simp [mul_apply]
+
+/-- `μ * ν` integrates a function with separated variables to a sum of products. -/
+lemma mul_apply_eq_sum {ι : Type*} {s : Finset ι} (μ ν : D(G, R))
+    {f : C(G, R)} {g h : ι → C(G, R)} (hf : ∀ x y, f (x * y) = ∑ i ∈ s, g i x * h i y) :
+    (μ * ν) f = ∑ i ∈ s, μ (g i) * ν (h i) := by
+  simp [mul_apply, convolveFunRight_eq_sum ν hf, mul_comm]
 
 /-- The Dirac map `G → D(G, R)`, packaged as a multiplicative homomorphism. -/
 def diracHom : G →* D(G, R) where

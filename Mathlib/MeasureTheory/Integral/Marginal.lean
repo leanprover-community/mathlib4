@@ -52,7 +52,6 @@ since there is no well-behaved measure on the domain of `f`.
 ## TODO
 
 * Define the marginal function for functions taking values in a Banach space.
-
 -/
 
 @[expose] public section

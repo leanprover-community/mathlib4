@@ -10,7 +10,6 @@ public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.SimpleGraph.Bipartite
-
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -97,14 +96,14 @@ lemma card_edgeFinset_between_verts_le (hr_pos : 0 < r) (ht'_pos : 0 < t') :
     _ = ∑ v ∈ K.vertsᶜ \ filter K t, ((G.between K.verts K.vertsᶜ).degree v : ℝ)
       + ∑ v ∈ filter K t, ((G.between K.verts K.vertsᶜ).degree v : ℝ) := by
         rw [ErdosStone.filter, sum_sdiff (filter_subset _ K.vertsᶜ), eq_comm]
-        exact_mod_cast isBipartiteWith_sum_degrees_eq_card_edges'
+        exact mod_cast isBipartiteWith_sum_degrees_eq_card_edges'
           (between_verts_isBipartiteWith K)
     _ ≤ ∑ _ ∈ K.vertsᶜ \ filter K t, (#K.verts - t' + t : ℝ)
       + ∑ _ ∈ filter K t, (#K.verts : ℝ) := by
         apply add_le_add <;> refine sum_le_sum (fun v hv ↦ ?_)
         · rw [← Nat.cast_sub ((Nat.le_mul_of_pos_left t' hr_pos).trans_eq K.card_verts.symm)]
-          exact_mod_cast (degree_between_verts_lt_of_mem_sdiff K hv ht'_pos).le
-        · exact_mod_cast isBipartiteWith_degree_le'
+          exact mod_cast (degree_between_verts_lt_of_mem_sdiff K hv ht'_pos).le
+        · exact mod_cast isBipartiteWith_degree_le'
             (between_verts_isBipartiteWith K) (filter_subset_compl_verts K hv)
     _ = (n - #K.verts) * (#K.verts - (t' - t))
       + #(filter K t) * (t' - t) := by
@@ -133,7 +132,7 @@ lemma mul_le_card_filter_mul (hr_pos : 0 < r) (ht'_pos : 0 < t')
         sub_left_le_of_le_add <| (le_card_edgeFinset_between_verts K).trans
           (card_edgeFinset_between_verts_le K hr_pos ht'_pos)
 
-/-- For `w ∈ ErdosStone.filter`, there exists a `r` subets of vertices of size `t < t'`
+/-- For `w ∈ ErdosStone.filter`, there exists a `r` subsets of vertices of size `t < t'`
 adjacent to `w`.
 
 This is an auxiliary definition for the Erdős-Stone theorem. -/
@@ -256,7 +255,7 @@ public theorem eventually_completeEquipartiteGraph_isContained_of_minDegree
       rw [← div_le_iff₀ (sub_pos_of_lt ht_lt_rt'ε)]
       trans (N : ℝ)
       · exact (Nat.le_ceil _).trans (Nat.cast_le.mpr <| le_max_right _ _)
-      · exact_mod_cast hn
+      · exact mod_cast hn
     rw [Finset.mem_pi] at hy
     have ⟨s, hs_subset, hcards⟩ := exists_subset_card_eq ht_le_card_filter
     -- identify the `t` vertices in each `K.parts` as a `CompleteEquipartiteSubgraph r t` in `K`

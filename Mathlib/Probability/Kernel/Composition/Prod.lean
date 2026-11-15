@@ -28,7 +28,6 @@ a kernel from `α` to `β × γ`.
 ## Notation
 
 * `κ ×ₖ η = ProbabilityTheory.Kernel.prod κ η`
-
 -/
 
 @[expose] public section

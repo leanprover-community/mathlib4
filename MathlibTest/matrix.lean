@@ -10,7 +10,9 @@ import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Tactic.Echelon.Zsqrtd
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NormDet
 meta import Mathlib.Data.Fin.VecNotation
@@ -172,7 +174,6 @@ example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
       Finset.card_singleton, one_smul]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 example {R : Type*} [Semiring R] {a b c d : R} :
     !![a, b] * (transpose !![c, d]) = !![a * c + b * d] := by
   ext i j
@@ -264,6 +265,10 @@ example : Matrix.det
   eval_det
 
 example : Matrix.det !![1, 2; 3, 4] = (-2 : ℤ × ℤ) := by
+  eval_det
+
+-- Through the registered `ℤ√d` model, an integer value comes back as a numeral.
+example : Matrix.det (!![1, 2; 3, 4] : Matrix (Fin 2) (Fin 2) GaussianInt) = -2 := by
   eval_det
 
 end NormDet

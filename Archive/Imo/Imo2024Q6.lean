@@ -186,7 +186,7 @@ lemma add_fExample (x y : ℚ) : x + fExample y = ⌊x⌋ + ⌊y⌋ + (Int.fract
 
 lemma fExample_intCast_add (x : ℤ) (y : ℚ) : fExample (x + y) = x + fExample y := by
   simp_rw [fExample, Int.floor_intCast_add, Int.fract_intCast_add, ← add_sub_assoc]
-  exact_mod_cast rfl
+  exact mod_cast rfl
 
 lemma fExample_of_mem_Ico {x : ℚ} (h : x ∈ Set.Ico 0 1) : fExample x = -x := by
   rw [fExample, Int.fract_eq_self.2 h, Int.floor_eq_zero_iff.2 h]
@@ -257,6 +257,6 @@ theorem _root_.imo2024q6 : (∀ f, Aquaesulian f → #(Set.range (fun x ↦ f x 
   refine ⟨fun _ ↦ Aquaesulian.card_le_two, fun c h ↦ ?_⟩
   replace h := h fExample aquaesulian_fExample
   rw [card_range_fExample] at h
-  exact_mod_cast h
+  exact mod_cast h
 
 end Imo2024Q6

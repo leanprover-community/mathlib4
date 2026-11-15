@@ -25,7 +25,6 @@ of the form `g a : A a ⟶ B a`, see `nonempty_attachCells_iff`.
 
 See the file `Mathlib/AlgebraicTopology/RelativeCellComplex/Basic.lean` for transfinite compositions
 of morphisms `f` with `AttachCells g f` structures.
-
 -/
 
 @[expose] public section

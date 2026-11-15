@@ -10,7 +10,6 @@ public import Mathlib.Data.Finset.Sigma
 
 /-!
 # Product and sums indexed by finite sets in sigma types.
-
 -/
 
 public section

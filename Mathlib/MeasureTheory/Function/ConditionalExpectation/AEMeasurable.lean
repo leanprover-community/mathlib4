@@ -31,7 +31,6 @@ sub-σ-algebra `m` in a normed space, it suffices to show that
 * is closed under addition;
 * the set of functions in `Lp` strongly measurable w.r.t. `m` for which the property holds is
   closed.
-
 -/
 
 @[expose] public section

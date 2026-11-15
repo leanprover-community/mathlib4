@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Properties of the order on a binary product of `Fin` types
-
 -/
 
 namespace Fin

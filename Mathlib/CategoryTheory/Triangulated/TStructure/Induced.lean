@@ -18,7 +18,6 @@ If `P` is a triangulated subcategory of `C`, we introduce a typeclass
 In particular, we show that the triangulated subcategory `t.plus`
 of `t`-bounded above objects can be endowed with a t-structure `t.onPlus`,
 and the same applies to `t.minus` and `t.bounded`.
-
 -/
 
 @[expose] public section
@@ -44,7 +43,6 @@ class HasInducedTStructure [P.IsTriangulated] : Prop where
 
 variable [P.IsTriangulated] [h : P.HasInducedTStructure t]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The t-structure induced on a full subcategory. -/
 noncomputable def tStructure : TStructure P.FullSubcategory where
   le n X := t.le n X.obj

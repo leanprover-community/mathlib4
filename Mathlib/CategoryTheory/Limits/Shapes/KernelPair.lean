@@ -28,7 +28,6 @@ is developed here.
 
 - Internal equivalence relations (or congruences) and the fact that every kernel pair induces one,
   and the converse in an effective regular category (WIP by b-mehta).
-
 -/
 
 @[expose] public section

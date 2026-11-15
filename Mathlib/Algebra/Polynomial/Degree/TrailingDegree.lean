@@ -26,7 +26,7 @@ end of a polynomial
 
 noncomputable section
 
-open Function Polynomial Finset
+open AddMonoidAlgebra Function Polynomial Finset
 
 open scoped Polynomial
 
@@ -250,11 +250,17 @@ theorem trailingCoeff_eq_zero : trailingCoeff p = 0 ↔ p = 0 :=
         (mem_of_min (trailingDegree_eq_natTrailingDegree hp)),
     fun h => h.symm ▸ leadingCoeff_zero⟩
 
-theorem trailingCoeff_nonzero_iff_nonzero : trailingCoeff p ≠ 0 ↔ p ≠ 0 :=
+theorem trailingCoeff_ne_zero : trailingCoeff p ≠ 0 ↔ p ≠ 0 :=
   not_congr trailingCoeff_eq_zero
 
-theorem natTrailingDegree_mem_support_of_nonzero : p ≠ 0 → natTrailingDegree p ∈ p.support :=
-  mem_support_iff.mpr ∘ trailingCoeff_nonzero_iff_nonzero.mpr
+@[deprecated (since := "2026-10-13")]
+alias trailingCoeff_nonzero_iff_nonzero := trailingCoeff_ne_zero
+
+theorem natTrailingDegree_mem_support_of_ne_zero : p ≠ 0 → natTrailingDegree p ∈ p.support :=
+  mem_support_iff.mpr ∘ trailingCoeff_ne_zero.mpr
+
+@[deprecated (since := "2026-10-13")]
+alias natTrailingDegree_mem_support_of_nonzero := natTrailingDegree_mem_support_of_ne_zero
 
 theorem natTrailingDegree_le_of_mem_supp (a : ℕ) : a ∈ p.support → natTrailingDegree p ≤ a :=
   natTrailingDegree_le_of_ne_zero ∘ mem_support_iff.mp
@@ -386,6 +392,10 @@ theorem natTrailingDegree_neg (p : R[X]) : natTrailingDegree (-p) = natTrailingD
   simp [natTrailingDegree]
 
 @[simp]
+theorem trailingCoeff_neg (p : R[X]) : (-p).trailingCoeff = -p.trailingCoeff := by
+  rw [trailingCoeff, natTrailingDegree_neg, coeff_neg, trailingCoeff]
+
+@[simp]
 theorem natTrailingDegree_intCast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
   simp only [← C_eq_intCast, natTrailingDegree_C]
 
@@ -394,6 +404,12 @@ end Ring
 section Semiring
 
 variable [Semiring R]
+
+@[simp]
+theorem trailingCoeff_X_pow (n : ℕ) :
+    (X ^ n : R[X]).trailingCoeff = 1 := by
+  nontriviality R
+  rw [trailingCoeff, natTrailingDegree_X_pow, coeff_X_pow_self]
 
 /-- The second-lowest coefficient, or 0 for constants -/
 def nextCoeffUp (p : R[X]) : R :=

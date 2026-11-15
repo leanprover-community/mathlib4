@@ -35,7 +35,6 @@ See e.g., [serre1965](Ch. V, §4, §6).
 
 * Show that every semisimple Lie algebra has a basis.
 * Define Weyl, Chevalley bases.
-
 -/
 
 @[expose] public section

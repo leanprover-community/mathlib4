@@ -1,5 +1,7 @@
-import Mathlib.Util.Qq
-import Mathlib.Data.Finset.Basic
+module
+
+public meta import Mathlib.Util.Qq
+public import Mathlib.Data.Finset.Basic
 
 
 open Qq Lean Elab Meta

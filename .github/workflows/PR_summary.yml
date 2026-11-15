@@ -68,13 +68,12 @@ jobs:
         fi
 
     - name: Set up Python
-      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
       with:
-        python-version: 3.12
+        python-version: 3.x
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
         sudo apt-get install -y jq
         # If you have additional dependencies, install them here
 
@@ -91,18 +90,18 @@ jobs:
         echo "Checking for added files..."
         git diff --name-only --diff-filter A origin/${{ github.base_ref }}... | tee added_files.txt
 
-        # Get all files which were removed or renamed.
+        # Get all Lean files which were removed or renamed.
         echo "Checking for removed files..."
 
         # Shows the `D`eleted files, one per line.
-        git diff --name-only --diff-filter D origin/${{ github.base_ref }}... | tee removed_files.txt
+        git diff --name-only --diff-filter D origin/${{ github.base_ref }}... -- '*.lean' | tee removed_files.txt
         echo "Checking for renamed files..."
 
         # Shows the `R`enamed files, in human-readable format
         # The `awk` pipe
         # * extracts into an array the old name as the key and the new name as the value
         # * eventually prints "`oldName` was renamed to `newName`" for each key-value pair.
-        git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}... |
+        git diff -p --summary --diff-filter=R origin/${{ github.base_ref }}... -- '*.lean' |
           awk '
             /^rename from / {
                 file=$0

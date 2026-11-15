@@ -19,7 +19,6 @@ category with respect to `W`. When `W` is compatible with `homRel`
 `hW : W = W'.inverseImage (Quotient.functor homRel)`),
 we show that `LocalizerMorphism.ofEq hW : LocalizerMorphism W W'`
 induces an equivalence on localized categories.
-
 -/
 
 @[expose] public section
