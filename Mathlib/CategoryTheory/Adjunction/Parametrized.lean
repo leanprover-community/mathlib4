@@ -32,7 +32,6 @@ left adjoints).
 
 ## References
 * https://ncatlab.org/nlab/show/two-variable+adjunction
-
 -/
 
 @[expose] public section

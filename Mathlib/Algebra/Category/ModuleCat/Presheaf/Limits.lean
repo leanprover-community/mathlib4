@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
 In this file, it is shown that under suitable assumptions,
 limits exist in the category `PresheafOfModules R`.
-
 -/
 
 @[expose] public section

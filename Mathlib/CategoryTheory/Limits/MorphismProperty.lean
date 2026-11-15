@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 /-!
 # (Co)limits in subcategories of comma categories defined by morphism properties
-
 -/
 
 @[expose] public section

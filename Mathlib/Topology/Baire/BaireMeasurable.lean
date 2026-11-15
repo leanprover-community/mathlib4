@@ -22,7 +22,6 @@ A set `s` in a topological space `α` is called a `BaireMeasurableSet` or said t
 
 * There is a *Borel* set `u` such that `s =ᵇ u`. (This is our definition)
 * There is an *open* set `u` such that `s =ᵇ u`. (See `BaireMeasurableSet.residual_eq_open`)
-
 -/
 
 @[expose] public section

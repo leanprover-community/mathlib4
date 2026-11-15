@@ -16,7 +16,6 @@ to parallel the API for conditionally complete lattices where possible. For the 
 theorems here are mostly protected within the `DirectedOn` namespace, unless such an assumption is
 unnecessary. Otherwise the names here share the same names as their counterparts in
 `Mathlib/Order/ConditionallyCompleteLattice/Basic.lean`.
-
 -/
 public section
 

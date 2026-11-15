@@ -13,7 +13,6 @@ public import Mathlib.Topology.Homotopy.Basic
 
 In this file, we define the type `TopCat.Homotopy` of homotopies
 between two morphisms in the category `TopCat`.
-
 -/
 
 @[expose] public section

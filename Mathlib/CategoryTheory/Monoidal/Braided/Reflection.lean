@@ -13,7 +13,6 @@ public import Mathlib.Tactic.TFAE
 import Mathlib.CategoryTheory.Monad.Adjunction
 
 /-!
-
 # Day's reflection theorem
 
 Let `D` be a symmetric monoidal closed category and let `C` be a reflective subcategory. Day's

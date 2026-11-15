@@ -27,7 +27,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 Redefine `Submodule.FG` to be in terms of `Module.FG` (rather than the other way around) to match
 finite generation in the group theory folder.
-
 -/
 
 @[expose] public section

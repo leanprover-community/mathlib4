@@ -24,7 +24,6 @@ the full subcategory `t.heart`.
 
 ## References
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
-
 -/
 
 @[expose] public section

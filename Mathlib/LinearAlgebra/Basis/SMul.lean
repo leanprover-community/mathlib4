@@ -6,14 +6,13 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Module.FunLike
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Bases and scalar multiplication
 
 This file defines the scalar multiplication of bases by multiplying each basis vector.
-
 -/
 
 @[expose] public section

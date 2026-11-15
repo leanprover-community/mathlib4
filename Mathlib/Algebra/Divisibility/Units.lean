@@ -16,7 +16,6 @@ public import Mathlib.Algebra.Group.Units.Basic
 
 * `IsRelPrime x y`: that `x` and `y` are relatively prime, defined to mean that the only common
   divisors of `x` and `y` are the units.
-
 -/
 
 @[expose] public section

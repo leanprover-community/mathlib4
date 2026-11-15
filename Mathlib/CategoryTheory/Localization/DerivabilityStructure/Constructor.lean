@@ -30,7 +30,6 @@ This statement is essentially Lemme 6.5 in
 ## References
 
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
-
 -/
 
 @[expose] public section

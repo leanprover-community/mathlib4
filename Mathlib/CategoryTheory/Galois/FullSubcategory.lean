@@ -16,7 +16,6 @@ import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 Given a Galois category `C`, we introduce a typeclass `P.IsGaloisSubcategory`
 which allows to show that `P.FullSubcategory` is also a Galois category.
-
 -/
 
 universe w v u

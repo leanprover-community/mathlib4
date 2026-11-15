@@ -15,7 +15,6 @@ We introduce the bundled category `CoalgCat` of coalgebras over a fixed commutat
 along with the forgetful functor to `ModuleCat`.
 
 This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
-
 -/
 
 @[expose] public section
@@ -167,8 +166,8 @@ variable {X Y Z : CoalgCat.{v} R}
 def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   { i.hom.toCoalgHom with
     invFun := i.inv.toCoalgHom
-    left_inv := fun x => congr($(i.3).toCoalgHom x)
-    right_inv := fun x => congr($(i.4).toCoalgHom x) }
+    left_inv := fun x => congr($(i.hom_inv_id).toCoalgHom x)
+    right_inv := fun x => congr($(i.inv_hom_id).toCoalgHom x) }
 
 @[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
     i.toCoalgEquiv = i.hom.toCoalgHom := rfl
@@ -191,4 +190,4 @@ instance CoalgCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (CoalgCat.{v} R)).map f)
     let e : X ≃ₗc[R] Y := { f.toCoalgHom, i.toEquiv with }
-    exact ⟨e.toCoalgIso.isIso_hom.1⟩
+    exact ⟨e.toCoalgIso.isIso_hom.out⟩

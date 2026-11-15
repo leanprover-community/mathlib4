@@ -18,7 +18,6 @@ we define `SmallHom.{w} W X Y : Type w` as the shrunk type. For any localization
 functor `L : C ⥤ D` for `W`, we provide a bijection
 `SmallHom.equiv.{w} W L : SmallHom.{w} W X Y ≃ (L.obj X ⟶ L.obj Y)` that is compatible
 with the composition of morphisms.
-
 -/
 
 @[expose] public section

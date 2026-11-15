@@ -29,9 +29,9 @@ variable (z : ℍ)
 namespace EisensteinSeries
 
 lemma norm_eq_max_natAbs (x : Fin 2 → ℤ) : ‖x‖ = max (x 0).natAbs (x 1).natAbs := by
-  rw [← coe_nnnorm, ← NNReal.coe_natCast, NNReal.coe_inj, Nat.cast_max]
+  rw [← coe_nnNorm, ← NNReal.coe_natCast, NNReal.coe_inj, Nat.cast_max]
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  simp only [pi_nnnorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
+  simp only [pi_nnNorm_le_iff, Fin.forall_fin_two, max_le_iff, NNReal.natCast_natAbs]
 
 lemma norm_symm (x y : ℤ) : ‖![x, y]‖ = ‖![y, x]‖ := by
   simp [EisensteinSeries.norm_eq_max_natAbs, max_comm]

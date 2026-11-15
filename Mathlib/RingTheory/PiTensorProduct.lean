@@ -177,7 +177,7 @@ lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
   have : Pi.mulSingle i (algebraMap R' (A i) r) = update (fun i ↦ 1) i (r • 1) := by
     rw [Algebra.algebraMap_eq_smul_one]; rfl
   rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_update_smul, update_eq_self,
-    smul_one_smul, Pi.one_def]
+    RingHom.id_apply, smul_one_smul, Pi.one_def]
 
 /--
 The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`

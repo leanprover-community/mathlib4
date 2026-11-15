@@ -18,7 +18,6 @@ The Bochner integral of a strongly measurable function against a kernel is stron
 * `MeasureTheory.StronglyMeasurable.integral_kernel_prod_right`: the function
   `a ↦ ∫ b, f a b ∂(κ a)` is measurable, for an s-finite kernel `κ : Kernel α β` and a function
   `f : α → β → E` such that `uncurry f` is measurable.
-
 -/
 
 public section
@@ -34,7 +33,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 theorem ProbabilityTheory.measurableSet_integrable ⦃f : β → E⦄ (hf : StronglyMeasurable f) :
     MeasurableSet {a | Integrable f (κ a)} := by
   simp_rw [Integrable, hf.aestronglyMeasurable, true_and]
-  exact measurableSet_lt hf.enorm.lintegral_kernel measurable_const
+  exact measurableSet_lt hf.eNorm.lintegral_kernel measurable_const
 
 variable [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η]
 
@@ -42,7 +41,7 @@ theorem ProbabilityTheory.measurableSet_kernel_integrable ⦃f : α → β → E
     (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
   simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
-  exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.enorm) measurable_const
+  exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.eNorm) measurable_const
 
 open ProbabilityTheory.Kernel
 

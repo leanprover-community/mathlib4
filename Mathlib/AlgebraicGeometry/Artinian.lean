@@ -34,7 +34,6 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
   Spec R is Artinian.
-
 -/
 
 public section

@@ -54,7 +54,6 @@ ordered index type `ι`.
 ## Tags
 
 basis, bases
-
 -/
 
 @[expose] public section

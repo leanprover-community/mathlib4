@@ -405,8 +405,10 @@ instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := fun x y => NormedAddGroup.dist_eq x y
 
 @[simp, push_cast]
-theorem nnnorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
+theorem nnNorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
     ‖x‖₊ = hammingNorm (ofHamming x) := rfl
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_hammingNorm := nnNorm_eq_hammingNorm
 
 end
 

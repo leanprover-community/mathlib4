@@ -195,22 +195,22 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
   suffices Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq']) ^ totient n <
       Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) by
     simp only [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
-      hq'.le, coe_nnnorm, NNReal.coe_pow, Real.coe_toNNReal', sub_nonneg, sup_of_le_left] at this
+      hq'.le, coe_nnNorm, NNReal.coe_pow, Real.coe_toNNReal', sub_nonneg, sup_of_le_left] at this
     convert this
     rw [eq_comm]
     simp [cyclotomic_nonneg n hq'.le]
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
-    nnnorm_prod, Units.mk0_prod]
+    nnNorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod (M := NNRealˣ) _ _
   swap; · exact fun _ => Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq'])
   · simp only [Complex.card_primitiveRoots, prod_const, card_attach]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, norm_nonneg, Units.val_mk0,
-      Real.coe_toNNReal', coe_nnnorm, max_le_iff, tsub_le_iff_right]
+      Real.coe_toNNReal', coe_nnNorm, max_le_iff, tsub_le_iff_right]
     intro x hx
     simpa only [and_true, tsub_le_iff_right] using hfor x hx
   · simp only [Finset.mem_attach, Subtype.exists, ←
-      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnnorm]
+      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnNorm]
     simpa [hq'.le, Real.coe_toNNReal', max_eq_left, sub_nonneg] using hex
 
 theorem sub_one_pow_totient_le_cyclotomic_eval {q : ℝ} (hq' : 1 < q) :
@@ -259,7 +259,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
   suffices Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) <
       Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith) ^ totient n by
     simp only [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
-      coe_nnnorm, NNReal.coe_pow,
+      coe_nnNorm, NNReal.coe_pow,
       Real.coe_toNNReal'] at this
     convert this using 2
     · rw [eq_comm]
@@ -267,18 +267,18 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
     rw [eq_comm, max_eq_left_iff]
     linarith
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
-    nnnorm_prod, Units.mk0_prod]
+    nnNorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod (M := NNRealˣ) _ _
   swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by positivity)
   · simp [Complex.card_primitiveRoots]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, Units.val_mk0,
-      coe_nnnorm]
+      coe_nnNorm]
     intro x hx
     have : ‖_‖ ≤ _ := hfor x hx
     simp [this]
   · simp only [Finset.mem_attach, Subtype.exists, ←
-      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnnorm]
+      NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnNorm]
     obtain ⟨ζ, hζ, hhζ : ‖_‖ < _⟩ := hex
     exact ⟨ζ, hζ, by simp [hhζ]⟩
 

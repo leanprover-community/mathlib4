@@ -17,7 +17,6 @@ import Mathlib.Tactic.Abel
 # Nonsingular inverses over semirings
 
 This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
-
 -/
 
 @[expose] public section
@@ -319,7 +318,9 @@ lemma detp_option_expand_row_none (A : Matrix (Option n) (Option n) R) :
 
 variable {A B}
 
-theorem isAddUnit_mul {d : n → R} (hAB : A * B = diagonal d) (i j k : n) (hij : i ≠ j) :
+omit [Fintype m] [DecidableEq n] in
+theorem isAddUnit_mul {A : Matrix m n R} {B : Matrix n m R} {d : m → R}
+    (hAB : A * B = diagonal d) (i j : m) (k : n) (hij : i ≠ j) :
     IsAddUnit (A i k * B k j) := by
   revert k
   rw [← IsAddUnit.sum_univ_iff, ← Matrix.mul_apply, hAB, diagonal_apply_ne _ hij]

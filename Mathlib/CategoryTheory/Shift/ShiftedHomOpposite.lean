@@ -18,7 +18,6 @@ We also introduce `ShiftedHom.opEquiv'` which produces a bijection
 The compatibilities that are obtained shall be used in order to study
 the homological functor `preadditiveYoneda.obj B : Cᵒᵖ ⥤ Type _` when `B` is an object
 in a pretriangulated category `C`.
-
 -/
 
 @[expose] public section

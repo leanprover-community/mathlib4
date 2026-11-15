@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!
 # Interactions between `∑, ∏` and two-sided ideals
-
 -/
 
 public section
