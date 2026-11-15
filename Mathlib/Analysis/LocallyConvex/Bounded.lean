@@ -388,7 +388,7 @@ variable {𝕜 E F ι : Type*} {Eι : ι → Type*} [NormedDivisionRing 𝕜]
     [∀ i, TopologicalSpace (Eι i)]
     {f : (i : ι) → E →ₗ[𝕜] Eι i}
 
-/-- If the topology on `E` is by a linear map, then a set `s : Set E` is von
+/-- If the topology on `E` is induced by a linear map, then a set `s : Set E` is von
 Neumann bounded if and only if its image is von Neumann bounded. -/
 protected lemma isVonNBounded_iff {f : E →ₗ[𝕜] F} (hf : Topology.IsInducing f) {s : Set E} :
     IsVonNBounded 𝕜 s ↔ IsVonNBounded 𝕜 (f '' s) := by
