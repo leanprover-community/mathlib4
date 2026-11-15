@@ -113,8 +113,7 @@ theorem toSubmodule_le_toSubmodule {s t : StrictLieRinehartIdeal A L} :
 
 instance : Zero (StrictLieRinehartIdeal A L) where
   zero.toSubmodule := 0
-  zero.lie_mem_of_left' {x y} hx := by
-    rw [(Submodule.mem_bot A).1 hx, zero_lie]; exact Submodule.zero_mem 0
+  zero.lie_mem_of_left' {x y} hx := by simp_all
   zero.isotropic' := by simp_all
 
 instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
