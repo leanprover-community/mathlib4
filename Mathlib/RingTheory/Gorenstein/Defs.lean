@@ -38,7 +38,7 @@ has finite injective dimension. -/
 class IsGorensteinLocalRing : Prop extends IsLocalRing R where
   injdim : injectiveDimension (ModuleCat.of R R) ≠ ⊤
 
-lemma isGorensteinLocalRing_def [IsLocalRing R] :
+lemma isGorensteinLocalRing_iff [IsLocalRing R] :
     IsGorensteinLocalRing R ↔ injectiveDimension (ModuleCat.of R R) ≠ ⊤ :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
@@ -49,29 +49,26 @@ lemma IsGorensteinLocalRing.of_ringEquiv {R' : Type v} [CommRing R'] (e : R ≃+
   let eR : (ModuleCat.of R R) ≃ₛₗ[RingHomClass.toRingHom e] (ModuleCat.of R' R') :=
     e.toSemilinearEquiv
   have : IsLocalRing R' := e.isLocalRing
-  have := (isGorensteinLocalRing_def R).mp ‹_›
+  have := (isGorensteinLocalRing_iff R).mp ‹_›
   rw [ModuleCat.injectiveDimension_eq_of_semiLinearEquiv e eR] at this
-  exact (isGorensteinLocalRing_def R').mpr this
+  exact (isGorensteinLocalRing_iff R').mpr this
 
 /-- A commutative ring is Gorenstein if its localization at every prime
 `IsGorensteinLocalRing`. -/
+@[mk_iff]
 class IsGorensteinRing : Prop where
   isGorenstein_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime),
     IsGorensteinLocalRing (Localization.AtPrime p)
 
-lemma isGorensteinRing_def : IsGorensteinRing R ↔
-    ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsGorensteinLocalRing (Localization.AtPrime p) :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
-
-lemma isGorensteinRing_def' : IsGorensteinRing R ↔
+lemma isGorensteinRing_iff' : IsGorensteinRing R ↔
     ∀ p : PrimeSpectrum R, IsGorensteinLocalRing (Localization.AtPrime p.1) :=
   ⟨fun ⟨h⟩ ↦ fun p ↦ h p.1 p.2, fun h ↦ ⟨fun p hp ↦ h ⟨p, hp⟩⟩⟩
 
 lemma isGorensteinRing_of_ringEquiv {R' : Type u} [CommRing R']
     (e : R ≃+* R') [G : IsGorensteinRing R] : IsGorensteinRing R' := by
-  apply (isGorensteinRing_def R').mpr (fun p' hp' ↦ ?_)
+  apply (isGorensteinRing_iff R').mpr (fun p' hp' ↦ ?_)
   let p := p'.comap e
-  have := (isGorensteinRing_def R).mp ‹_› p (Ideal.comap_isPrime e p')
+  have := (isGorensteinRing_iff R).mp ‹_› p (Ideal.comap_isPrime e p')
   have : p.primeCompl.map e.toMonoidHom = p'.primeCompl := by
     ext x
     have : (∃ y, e y ∉ p' ∧ e y = x) ↔ x ∉ p' := ⟨fun ⟨y, hy, eq⟩ ↦ eq ▸ hy,
