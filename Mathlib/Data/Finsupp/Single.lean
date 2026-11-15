@@ -97,7 +97,12 @@ theorem single_of_single_apply (a a' : α) (b : M) :
 @[simp] lemma support_single (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
   ite_eq_right hb
 
-@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
+theorem support_single_ne_empty (a : α) (h : b ≠ 0) : (single a b).support ≠ ∅ := by
+  simp [h]
+
+@[deprecated support_single_ne_empty +typeChanged (since := "2026-11-15")]
+theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ :=
+  support_single_ne_empty i h
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
   classical
@@ -156,9 +161,6 @@ theorem single_left_inj (h : b ≠ 0) : single a b = single a' b ↔ a = a' :=
 
 lemma apply_surjective (a : α) : Surjective fun f : α →₀ M ↦ f a :=
   RightInverse.surjective fun _ ↦ single_eq_same
-
-theorem support_single_ne_bot (i : α) (h : b ≠ 0) : (single i b).support ≠ ⊥ := by
-  simpa only [support_single _ h] using! singleton_ne_empty _
 
 theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : α} :
     Disjoint (single i b).support (single j b').support ↔ i ≠ j := by
