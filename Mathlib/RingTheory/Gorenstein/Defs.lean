@@ -67,12 +67,7 @@ lemma isGorensteinRing_iff' : IsGorensteinRing R ↔
 lemma isGorensteinRing_of_ringEquiv {R' : Type u} [CommRing R']
     (e : R ≃+* R') [G : IsGorensteinRing R] : IsGorensteinRing R' := by
   apply (isGorensteinRing_iff R').mpr (fun p' hp' ↦ ?_)
-  let p := p'.comap e
-  have := (isGorensteinRing_iff R).mp ‹_› p (Ideal.comap_isPrime e p')
-  have : p.primeCompl.map e.toMonoidHom = p'.primeCompl := by
-    ext x
-    have : (∃ y, e y ∉ p' ∧ e y = x) ↔ x ∉ p' := ⟨fun ⟨y, hy, eq⟩ ↦ eq ▸ hy,
-      fun h ↦ ⟨e.symm x, (RingEquiv.apply_symm_apply e x).symm ▸ h, RingEquiv.apply_symm_apply e x⟩⟩
-    simpa only [p]
+  have := (isGorensteinRing_iff R).mp ‹_› (p'.comap e) (Ideal.comap_isPrime e p')
   exact IsGorensteinLocalRing.of_ringEquiv
-    (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
+    (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime (p'.comap e))
+      (Localization.AtPrime p') e (e.map_primeCompl_comap_eq p'))
