@@ -729,7 +729,7 @@ def map : LieSubmodule R L M' :=
     lie_mem := fun {x m'} h ↦ by
       rcases h with ⟨m, hm, hfm⟩; use ⁅x, m⁆; constructor
       · apply N.lie_mem hm
-      · fail_if_not_idempotent norm_cast at hfm
+      · fail_if_not_idempotent norm_cast at hfm; simp [hfm] }
 
 @[simp] theorem coe_map : (N.map f : Set M') = f '' N := rfl
 
