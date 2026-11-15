@@ -183,7 +183,6 @@ variable {R L₂ : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRingMo
   [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂] {f : L →ₗ⁅.id R A⁆ L₂} {x : L₂}
 
 /-- The pushforward of a Lie-Rinehart subalgebra `L' ⊆ L` by `f : L → L₂`. -/
-@[expose]
 def map (f : L →ₗ⁅.id R A⁆ L₂) : LieRinehartSubalgebra A L₂ :=
   letI : RingHomSurjective (AlgHom.id R A).toRingHom := {is_surjective := Function.surjective_id}
   { L'.toSubmodule.map f.toLinearMap' with
@@ -196,7 +195,7 @@ def map (f : L →ₗ⁅.id R A⁆ L₂) : LieRinehartSubalgebra A L₂ :=
         rw [LieHom.map_lie, hx2, hy2] }
 
 @[simp] lemma mem_map : x ∈ map L' f ↔ ∃ y ∈ L', f y = x := .rfl
-@[simp] lemma coe_map : (map L' f : Set L₂) = f '' L' := rfl
+@[simp] lemma coe_map : (map L' f : Set L₂) = f '' L' := by rw [LieRinehartSubalgebra.map]; rfl
 
 variable [LieRinehartRing A L]
 
