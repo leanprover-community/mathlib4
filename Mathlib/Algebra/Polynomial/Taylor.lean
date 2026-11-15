@@ -126,6 +126,10 @@ section Ring
 
 variable {R : Type*} [Ring R]
 
+@[simp]
+theorem taylor_X_sub_C (r : R) : taylor r (X - C r) = X := by
+  rw [map_sub, taylor_X, taylor_C, add_sub_cancel_right]
+
 theorem taylor_injective (r : R) : Function.Injective (taylor r) :=
   (injective_iff_map_eq_zero' _).2 (taylor_eq_zero r)
 
@@ -158,6 +162,12 @@ theorem taylor_taylor (f : R[X]) (r s : R) : taylor r (taylor s f) = taylor (r +
 
 theorem taylor_eval (r : R) (f : R[X]) (s : R) : (taylor r f).eval s = f.eval (s + r) := by
   simp only [taylor_apply, eval_comp, eval_C, eval_X, eval_add]
+
+/-- Taylor expansion commutes with differentiation. -/
+theorem taylor_derivative (r : R) (p : R[X]) :
+    taylor r (derivative p) = derivative (taylor r p) := by
+  rw [taylor_apply, taylor_apply, derivative_comp, derivative_add, derivative_X, derivative_C,
+    add_zero, one_mul]
 
 theorem exists_mul_sq_add_linear_part_eq_eval_add (p : R[X]) (x y : R) :
     ∃ c : R, c * y ^ 2 + p.derivative.eval x * y + p.eval x = p.eval (x + y) := by

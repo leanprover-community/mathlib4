@@ -16,12 +16,12 @@ This file proves some results on the Gelfand radius of matrices with respect to 
 
 public section
 
-namespace Matrix
-
 open scoped Matrix.Norms.Operator
 
 variable {R m n : Type*} [SeminormedCommRing R] [Fintype m] [Fintype n]
   [DecidableEq m] [DecidableEq n]
+
+namespace Matrix
 
 private theorem gelfandRadius_mul_comm_le (A : Matrix m n R) (B : Matrix n m R) :
     gelfandRadius (A * B) ≤ gelfandRadius (B * A) := by
@@ -46,3 +46,9 @@ theorem gelfandRadius_blockDiagonal (M : n → Matrix m m R) :
   exact (h.gelfandRadius_map M).trans (Pi.gelfandRadius_eq M)
 
 end Matrix
+
+theorem LinearMap.gelfandRadius_toMatrix_eq {M : Type*} [AddCommMonoid M] [Module R M]
+    (f : M →ₗ[R] M) (b : Module.Basis m R M) (c : Module.Basis n R M) :
+    gelfandRadius (f.toMatrix b b) = gelfandRadius (f.toMatrix c c) := by
+  rw [← basis_toMatrix_mul_linearMap_toMatrix b b c,
+    Matrix.gelfandRadius_mul_comm, linearMap_toMatrix_mul_basis_toMatrix]

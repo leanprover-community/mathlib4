@@ -225,7 +225,7 @@ theorem integrableOn_Ioi_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs 
     refine (integrableOn_Ioi_cpow_of_lt ?_ ht).const_mul _
     rwa [Complex.sub_re, Complex.one_re, sub_lt_iff_lt_add, neg_add_cancel]
   refine h.congr_fun (fun x hx ↦ ?_) measurableSet_Ioi
-  rw [Complex.deriv_ofReal_cpow_const (ht.trans hx).ne' (fun h ↦ (Complex.zero_re ▸ h ▸ hs).false)]
+  rw [Complex.deriv_ofReal_cpow_const s (ht.trans hx).ne']
 
 theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re ≤ 0) :
     IntegrableOn (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Set.Ioi t) := by
