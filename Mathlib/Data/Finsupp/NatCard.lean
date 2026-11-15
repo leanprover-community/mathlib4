@@ -28,7 +28,7 @@ public noncomputable section
 
 def Finsupp.optionSubtypeSumEquiv (α β : Type*)
     [AddCommMonoid β] [LinearOrder β] [Sub β] [OrderedSub β] [CanonicallyOrderedAdd β]
-    [DecidableEq β] [AddLeftReflectLE β] (n : β) :
+    [AddLeftReflectLE β] (n : β) :
     {g : Option α →₀ β // g.sum (fun _ d ↦ d) = n} ≃ {f : α →₀ β // f.sum (fun _ d ↦ d) ≤ n} where
   toFun g := ⟨g.1.some, by grind [Finsupp.sum_option_index, le_add_left]⟩
   invFun f :=
