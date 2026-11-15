@@ -52,9 +52,11 @@ open Polynomial TopologicalSpace
 variable (L : Type*) [NontriviallyNormedField L] [CompleteSpace L] [IsUltrametricDist L]
   [SeparableSpace L]
 
+/-- The normed field structure on `AlgebraicClosure L` induced by the spectral norm. -/
 local instance : NormedField (AlgebraicClosure L) :=
   spectralNorm.normedField L (AlgebraicClosure L)
 
+/-- The normed `L`-algebra structure on `AlgebraicClosure L` induced by the spectral norm. -/
 local instance : NormedAlgebra L (AlgebraicClosure L) :=
   spectralNorm.normedAlgebra L (AlgebraicClosure L)
 
