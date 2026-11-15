@@ -836,6 +836,15 @@ lemma denseRange_ratCast : DenseRange ((↑) : ℚ → ℚ_[p]) := by
 
 end NormedSpace
 
+section SeparableSpace
+
+variable (p : ℕ) [Fact p.Prime]
+
+instance separableSpace : TopologicalSpace.SeparableSpace ℚ_[p] :=
+  ⟨Set.range ((↑) : ℚ → ℚ_[p]), Set.countable_range Rat.cast, denseRange_ratCast _⟩
+
+end SeparableSpace
+
 end Padic
 
 namespace Padic

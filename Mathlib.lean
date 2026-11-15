@@ -2232,6 +2232,7 @@ public import Mathlib.Analysis.Normed.Field.Instances
 public import Mathlib.Analysis.Normed.Field.Krasner
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Field.ProperSpace
+public import Mathlib.Analysis.Normed.Field.Separable
 public import Mathlib.Analysis.Normed.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Field.Ultra
 public import Mathlib.Analysis.Normed.Field.UnitBall

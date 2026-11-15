@@ -5,11 +5,14 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+import Mathlib.Analysis.Normed.Field.Dense
+import Mathlib.Analysis.Normed.Field.Separable
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -25,8 +28,6 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 ## Main Results
 
-* `Padic.separableSpace_of_isAlgebraic` : every algebraic normed field extension of `ℚ_[p]` is a
-  separable space.
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
 * `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
@@ -155,21 +156,11 @@ instance charZero : CharZero (PadicAlgCl p) :=
 
 end PadicAlgCl
 
-namespace Padic
-
-/-- Every algebraic normed field extension of `ℚ_[p]` is a separable space. -/
-theorem separableSpace_of_isAlgebraic (K : Type*) [NormedField K] [NormedAlgebra ℚ_[p] K]
-    [Algebra.IsAlgebraic ℚ_[p] K] :
-    TopologicalSpace.SeparableSpace K :=
-  Algebra.IsAlgebraic.separableSpace_of_denseRange (Padic.denseRange_ratCast p) _
-
-end Padic
-
 namespace PadicAlgCl
 
 /-- `PadicAlgCl p` is a separable space. -/
 instance separableSpace : TopologicalSpace.SeparableSpace (PadicAlgCl p) :=
-  Padic.separableSpace_of_isAlgebraic p (PadicAlgCl p)
+  inferInstance
 
 end PadicAlgCl
 

@@ -91,7 +91,6 @@ instance [NormedField A] [CompletableTopField A] :
 
 instance [hdnf : DenselyNormedField A] [CompletableTopField A] :
     DenselyNormedField (UniformSpace.Completion A) where
-  __ : NormedField (UniformSpace.Completion A) := inferInstance
   lt_norm_lt x y hx hxy := by
     obtain ⟨z, hz⟩ := hdnf.lt_norm_lt x y hx hxy
     exact ⟨z, by simpa using hz⟩
