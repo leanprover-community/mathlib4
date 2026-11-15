@@ -108,8 +108,7 @@ theorem toSubmodule_inj {s t : StrictLieRinehartIdeal A L} :
 
 @[simp]
 theorem toSubmodule_le_toSubmodule {s t : StrictLieRinehartIdeal A L} :
-    s.toSubmodule ≤ t.toSubmodule ↔ s ≤ t :=
-  Iff.rfl
+    s.toSubmodule ≤ t.toSubmodule ↔ s ≤ t := .rfl
 
 instance : Zero (StrictLieRinehartIdeal A L) where
   zero.toSubmodule := 0
