@@ -246,7 +246,7 @@ In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)`
 
 /-- The set underlying this box: `⊥` is mapped to `∅`. -/
 @[coe]
-def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
+def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.casesOn ∅ (↑)
 
 instance withBotCoe : CoeTC (WithBot (Box ι)) (Set (ι → ℝ)) :=
   ⟨withBotToSet⟩
@@ -257,13 +257,13 @@ theorem coe_bot : ((⊥ : WithBot (Box ι)) : Set (ι → ℝ)) = ∅ := rfl
 @[simp, norm_cast]
 theorem coe_coe : ((I : WithBot (Box ι)) : Set (ι → ℝ)) = I := rfl
 
-theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → ℝ)).Nonempty
-  | ⊥ => by
-    unfold Option.isSome
-    simp
-  | (I : Box ι) => by
-    unfold Option.isSome
-    simp [I.nonempty_coe]
+-- theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → ℝ)).Nonempty
+--   | ⊥ => by
+--     unfold Option.isSome
+--     simp
+--   | (I : Box ι) => by
+--     unfold Option.isSome
+--     simp [I.nonempty_coe]
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by

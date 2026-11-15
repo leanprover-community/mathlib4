@@ -319,7 +319,7 @@ lemma exists_mem_propSetWithTop (a : J.withTop.obj) :
     ∃ S, J.PropSetWithTop κ' S ∧ a ∈ S := by
   induction a with
   | some a => exact ⟨_, propSetWithTop_pair _ a, by aesop⟩
-  | none => exact ⟨_, propSetWithTop_pair _ (Classical.arbitrary _), by aesop⟩
+  | top => exact ⟨_, propSetWithTop_pair _ (Classical.arbitrary _), by aesop⟩
 
 /-- If `J : CardinalDirectedPoset κ` and `κ'` is any regular cardinal,
 this is a colimit cocone which exhibits `J.withTop` as the `κ'`-filtered
@@ -335,7 +335,7 @@ noncomputable def isColimitCoconeWithTop : IsColimit (coconeWithTop J κ') :=
   isColimitCoconeOfPredicateSet _ (fun a ↦ by
     induction a with
     | some a => exact ⟨_, propSetWithTop_pair _ a, by aesop⟩
-    | none => exact ⟨_, propSetWithTop_pair _ (Classical.arbitrary _), by aesop⟩)
+    | top => exact ⟨_, propSetWithTop_pair _ (Classical.arbitrary _), by aesop⟩)
 
 variable {κ'} in
 protected lemma isCardinalPresentable_iff (h : κ ≤ κ') :

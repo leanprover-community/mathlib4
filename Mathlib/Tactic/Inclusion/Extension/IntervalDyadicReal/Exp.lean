@@ -128,10 +128,10 @@ theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint 
 @[expose]
 def exp (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
   lb := match I.lb with
-    | some l => (expPoint l prec).lb
+    | .some l => (expPoint l prec).lb
     | ⊥ => 0
   ub := match I.ub with
-    | some u => (expPoint u prec).ub
+    | .some u => (expPoint u prec).ub
     | ⊤ => ⊤
 
 @[inclusion_op interval_dyadic_real]
