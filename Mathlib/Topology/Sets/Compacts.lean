@@ -181,7 +181,7 @@ theorem disjoint_coe_iff (K L : Compacts α) : Disjoint (K : Set α) L ↔ Disjo
 instance [Nonempty α] : Nontrivial (Compacts α) := by
   constructor
   obtain ⟨x⟩ := ‹Nonempty α›
-  exact ⟨⊥, {x}, ne_of_apply_ne SetLike.coe (Set.empty_ne_singleton x)⟩
+  exact ⟨⊥, {x}, ne_of_apply_ne SetLike.coe (by simp)⟩
 
 @[simp]
 theorem subsingleton_iff : Subsingleton (Compacts α) ↔ IsEmpty α := by

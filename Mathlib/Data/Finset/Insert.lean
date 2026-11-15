@@ -103,7 +103,7 @@ theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
 theorem singleton_ne_empty (a : α) : ({a} : Finset α) ≠ ∅ :=
   (singleton_nonempty a).ne_empty
 
-@[simp]
+@[deprecated singleton_nonempty +typeChanged (since := "2026-11-14")]
 theorem empty_ne_singleton (a : α) : ∅ ≠ ({a} : Finset α) := by simp
 
 theorem empty_ssubset_singleton : (∅ : Finset α) ⊂ {a} :=
