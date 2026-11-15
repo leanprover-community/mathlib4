@@ -571,6 +571,24 @@ instance {R : Type*} [NonUnitalRing R] [LinearOrder R] [StarRing R] [StarOrdered
     · exact hr.star_eq
     · simpa using hr.star_eq
 
+variable [IsProperStar R]
+
+/-- If `e` is a star projection and `0 ≤ a ≤ e`, then `a * e = a` and `e * a = a`. -/
+lemma mul_right_and_mul_left_of_nonneg_of_le {a e : R} (he : IsStarProjection e) (ha : 0 ≤ a)
+    (hae : a ≤ e) : a * e = a ∧ e * a = a := by
+  suffices a * e = a from
+    ⟨this, by simpa [ha.star_eq, he.isSelfAdjoint.star_eq] using congr(star $this)⟩
+  rw [eq_comm, ← sub_eq_zero, ← mul_star_self_eq_zero, sub_mul, mul_assoc, ← mul_sub]
+  apply mul_eq_zero_of_star_left_conjugate_eq_zero ha
+  refine le_antisymm ?_ <| star_left_conjugate_nonneg ha _
+  grw [star_left_conjugate_le_conjugate hae, mul_assoc, mul_sub, ← mul_assoc,
+    he.isIdempotentElem.eq, sub_self, mul_zero]
+
+/-- If `e` is a star projection and `0 ≤ a ≤ e`, then `e * a * e = a`. -/
+lemma conjugate_of_nonneg_of_le {a e : R} (he : IsStarProjection e) (ha : 0 ≤ a)
+    (hae : a ≤ e) : e * a * e = a := by
+  grind [he.mul_right_and_mul_left_of_nonneg_of_le ha hae]
+
 end NonUnitalRing
 
 end IsStarProjection

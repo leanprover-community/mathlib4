@@ -120,21 +120,9 @@ variable [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A] [Is
 /-- If `p` and `p + q` are star projections and `0 ≤ q`, then `p ⋆⟂ q`. -/
 lemma IsStarProjection.isStarOrtho_of_add {p q : A} (hp : IsStarProjection p)
     (hq : 0 ≤ q) (hr : IsStarProjection (p + q)) : p ⋆⟂ q := by
-  set r := p + q
-  have hpp : p * p = p := hp.isIdempotentElem.eq
-  /- `p * q * p = p * r * p - p`, and `p - p * r * p = (p - p * r) * star (p - p * r) ≥ 0`. -/
-  have h₁ : p * q * p = p * r * p - p := by
-    simp [r, mul_add, add_mul, hpp]
-  have h₂ : p - p * r * p = (p - p * r) * star (p - p * r) := by
-    have hrr : p * r * r * p = p * r * p := by rw [mul_assoc p r r, hr.isIdempotentElem.eq]
-    rw [star_sub, star_mul, hp.isSelfAdjoint.star_eq, hr.isSelfAdjoint.star_eq]
-    simp only [mul_sub, sub_mul, ← mul_assoc, hpp, hrr]
-    rw [sub_self, sub_zero]
-  have h : p * q * p ≤ 0 := by
-    rw [h₁, sub_nonpos, ← sub_nonneg, h₂]
-    exact mul_star_self_nonneg _
-  exact .symm <| .of_nonneg hq
-    (by rwa [hp.isSelfAdjoint.star_eq]) (by rwa [hp.isSelfAdjoint.star_eq])
+  have := hr.mul_right_and_mul_left_of_nonneg_of_le hp.nonneg (le_add_of_nonneg_right hq) |>.1
+  rw [mul_add, hp.isIdempotentElem.eq, add_eq_left] at this
+  exact hp.isSelfAdjoint.isStarOrtho_iff_mul_eq_zero (.of_nonneg hq) |>.mpr this
 
 /-- If `p` and `q` are star projections, their sum is a star projection if and only if they are
 star-orthogonal. -/

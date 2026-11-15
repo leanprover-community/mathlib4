@@ -653,25 +653,6 @@ lemma self_le_sqrt_of_nonneg_of_norm_le_one {e : A} (he0 : 0 ≤ e) (he1 : ‖e�
 
 end CStarAlgebra
 
-open CStarAlgebra Unitization CFC in
-lemma IsStarProjection.mul_right_and_mul_left_of_nonneg_of_le {a e : A}
-    (he : IsStarProjection e) (ha : 0 ≤ a) (hae : a ≤ e) : a * e = a ∧ e * a = a := by
-  suffices a * e = a from
-    ⟨this, by simpa [ha.star_eq, he.isSelfAdjoint.star_eq] using congr(star $this)⟩
-  suffices ∀ a e : A⁺¹, IsStarProjection e → 0 ≤ a → a ≤ e → a * e = a from
-    mod_cast this a e he.inr ha.inr (inr_mono hae)
-  intro a e he ha hae
-  suffices sqrt a * (1 - e : A⁺¹) = 0 by
-    simpa [← mul_assoc, sqrt_mul_sqrt_self a, mul_sub, sub_eq_zero, eq_comm (a := a)]
-      using congr(sqrt a * $this)
-  rw [← norm_eq_zero, ← sq_eq_zero_iff, ← norm_star_mul_mul_self_of_nonneg, norm_eq_zero]
-  refine le_antisymm ?_ <| star_left_conjugate_nonneg ha _
-  grw [star_left_conjugate_le_conjugate hae (1 - e), mul_assoc, he.mul_one_sub_self, mul_zero]
-
-lemma IsStarProjection.conjugate_of_nonneg_of_le {a e : A} (he : IsStarProjection e)
-    (ha : 0 ≤ a) (hae : a ≤ e) : e * a * e = a := by
-  grind [he.mul_right_and_mul_left_of_nonneg_of_le ha hae]
-
 end CStar_nonunital
 
 section Pow
