@@ -14,11 +14,9 @@ public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 The obvious non-unital star algebra homomorphism `C(X, R)₀ → C(X, R)` lifts to a map
 `fun (r, f) x ↦ r + f x : Unitization R C(X, R)₀ → C(X, R)`. This map is a star algebra isomorphism
 with inverse given by `fun f ↦ (f 0, fun x ↦ f x - f 0)`.
-`
+
 ## Main declarations
 
-+ `ContinuousMap.toContinuousMapZero`: the retraction `C(X, R) → C(X, R)₀` given by `g ↦ g - g 0`
-  of the coercion `C(X, R)₀ → C(X, R)`.
 + `ContinuousMapZero.unitizationStarAlgEquiv`: the star algebra isomorphism
   `Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R)`
 -/
@@ -26,47 +24,6 @@ with inverse given by `fun f ↦ (f 0, fun x ↦ f x - f 0)`.
 @[expose] public section
 
 open ContinuousMapZero Unitization
-
-namespace ContinuousMap
-
-variable {X R : Type*} [TopologicalSpace X] [Zero X] [TopologicalSpace R]
-variable [AddCommGroup R] [IsTopologicalAddGroup R]
-
-/-- This is the canonical retraction of the coercion `C(X, R)₀ → C(X, R)` given by
-`fun g x ↦ g x - g 0`. -/
-def toContinuousMapZero (g : C(X, R)) : C(X, R)₀ where
-  toContinuousMap := g - const X (g 0)
-  map_zero' := by simp
-
-@[simp]
-lemma toContinuousMapZero_apply (g : C(X, R)) (x : X) : g.toContinuousMapZero x = g x - g 0 := rfl
-
-@[simp]
-lemma coe_toContinuousMapZero (g : C(X, R)) :
-    (g.toContinuousMapZero : C(X, R)) = g - const X (g 0) :=
-  rfl
-
-@[simp]
-lemma toContinuousMapZero_const (r : R) : (const X r).toContinuousMapZero = 0 := by ext; simp
-
-@[simp]
-lemma toContinuousMapZero_zero : (0 : C(X, R)).toContinuousMapZero = 0 := by ext; simp
-
-@[simp]
-lemma toContinuousMapZero_coe (f : C(X, R)₀) : (f : C(X, R)).toContinuousMapZero = f := by
-  ext; simp
-
-lemma toContinuousMapZero_surjective :
-    Function.Surjective (toContinuousMapZero (X := X) (R := R)) :=
-  fun f ↦ ⟨f, toContinuousMapZero_coe f⟩
-
-@[fun_prop]
-lemma continuous_toContinuousMapZero :
-    Continuous (toContinuousMapZero : C(X, R) → C(X, R)₀) := by
-  rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
-  exact continuous_id.sub <| continuous_const'.comp <| continuous_eval_const 0
-
-end ContinuousMap
 
 namespace ContinuousMapZero
 
@@ -82,9 +39,8 @@ This is the map obtained by lifting the coercion `C(X, R)₀ → C(X, R)` to the
 def unitizationStarAlgEquiv : Unitization R C(X, R)₀ ≃⋆ₐ[R] C(X, R) where
   toFun := starLift (toContinuousMapHom (X := X) (R := R))
   invFun g := .mk (g 0, g.toContinuousMapZero)
-  left_inv f := Unitization.ext (by simp [starLift_apply, ← StarAlgHom.coe_toAlgHom])
-    (by ext x; simp [starLift_apply, ← StarAlgHom.coe_toAlgHom])
-  right_inv g := by ext x; simp [starLift_apply, ← StarAlgHom.coe_toAlgHom]
+  left_inv f := by ext <;> simp
+  right_inv g := by ext; simp
   map_add' := map_add _
   map_mul' := map_mul _
   map_smul' := map_smul _
@@ -106,7 +62,7 @@ lemma unitizationStarAlgEquiv_apply (f : Unitization R C(X, R)₀) :
     unitizationStarAlgEquiv X R f = .const X f.fst + f.snd := by
   ext; simp
 
-lemma unitizationStarAlgEquiv_symm_apply (g : C(X, R)) :
+lemma symm_unitizationStarAlgEquiv_apply (g : C(X, R)) :
     (unitizationStarAlgEquiv X R).symm g = .mk (g 0, g.toContinuousMapZero) :=
   rfl
 

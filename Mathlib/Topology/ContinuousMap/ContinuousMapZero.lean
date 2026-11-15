@@ -524,3 +524,46 @@ instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ w
 end Norm
 
 end ContinuousMapZero
+
+namespace ContinuousMap
+
+open ContinuousMapZero
+
+variable {X R : Type*} [TopologicalSpace X] [Zero X] [TopologicalSpace R]
+variable [AddCommGroup R] [IsTopologicalAddGroup R]
+
+/-- This is the canonical retraction of the coercion `C(X, R)₀ → C(X, R)` given by
+`fun g x ↦ g x - g 0`. -/
+def toContinuousMapZero (g : C(X, R)) : C(X, R)₀ where
+  toContinuousMap := g - const X (g 0)
+  map_zero' := by simp
+
+@[simp]
+lemma toContinuousMapZero_apply (g : C(X, R)) (x : X) : g.toContinuousMapZero x = g x - g 0 := rfl
+
+@[simp]
+lemma coe_toContinuousMapZero (g : C(X, R)) :
+    (g.toContinuousMapZero : C(X, R)) = g - const X (g 0) :=
+  rfl
+
+@[simp]
+lemma toContinuousMapZero_const (r : R) : (const X r).toContinuousMapZero = 0 := by ext; simp
+
+@[simp]
+lemma toContinuousMapZero_zero : (0 : C(X, R)).toContinuousMapZero = 0 := by ext; simp
+
+@[simp]
+lemma toContinuousMapZero_coe (f : C(X, R)₀) : (f : C(X, R)).toContinuousMapZero = f := by
+  ext; simp
+
+lemma toContinuousMapZero_surjective :
+    Function.Surjective (toContinuousMapZero (X := X) (R := R)) :=
+  fun f ↦ ⟨f, toContinuousMapZero_coe f⟩
+
+@[fun_prop]
+lemma continuous_toContinuousMapZero :
+    Continuous (toContinuousMapZero : C(X, R) → C(X, R)₀) := by
+  rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
+  exact continuous_id.sub <| continuous_const'.comp <| continuous_eval_const 0
+
+end ContinuousMap

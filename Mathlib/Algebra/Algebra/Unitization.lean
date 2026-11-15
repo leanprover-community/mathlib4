@@ -801,7 +801,7 @@ variable [StarModule R C]
 
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
-@[simps! apply symm_apply]
+@[simps! apply_apply symm_apply]
 def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
@@ -810,6 +810,16 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   invFun φ := φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv _ := by ext; simp,
   right_inv _ := by ext; simp }
+
+@[simp]
+theorem toAlgHom_starLift (φ : A →⋆ₙₐ[R] C) :
+    (starLift φ).toAlgHom = lift φ.toNonUnitalAlgHom :=
+  rfl
+
+@[deprecated toAlgHom_starLift +typeChanged (since := "2026-11-15")]
+theorem starLift_apply (φ : A →⋆ₙₐ[R] C) :
+    starLift φ = { toAlgHom := lift φ.toNonUnitalAlgHom, map_star' := (starLift φ).map_star' } :=
+  rfl
 
 @[simp] theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) :
     Unitization.starLift.symm φ a = φ a :=
