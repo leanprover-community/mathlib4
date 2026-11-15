@@ -16,7 +16,6 @@ import Mathlib.CategoryTheory.Limits.Types.Coproducts
 We define `GlueData` as a family of data needed to glue topological spaces, schemes, etc. We
 provide the API to realize it as a multispan diagram, and also state lemmas about its
 interaction with a functor that preserves certain pullbacks.
-
 -/
 
 @[expose] public section

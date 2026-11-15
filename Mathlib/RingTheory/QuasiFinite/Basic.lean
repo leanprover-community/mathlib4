@@ -33,7 +33,6 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
   `S` is quasi-finite if and only if `Spec S → Spec R` has finite fibers.
 - `Algebra.QuasiFiniteAt`: If `S` is an `R`-algebra and `p` a prime of `S`,
   we say that `S` is `R`-quasi-finite at `p` if `Sₚ` is `R`-quasi-finite.
-
 -/
 
 @[expose] public section

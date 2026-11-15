@@ -11,7 +11,6 @@ import Mathlib.CategoryTheory.Functor.RegularEpi
 
 /-!
 # The category of simplicial sets is a regular epi category
-
 -/
 
 public section

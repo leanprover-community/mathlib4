@@ -34,7 +34,6 @@ In order to apply in maximal generality (such as for `LaurentPolynomial`s), this
 the definition of `semigroupDvd`. The results in this file could be duplicated for
 `MonoidAlgebra` by using `g ∣ g'`, but this can't be done automatically, and in any case is not
 likely to be very useful.
-
 -/
 
 @[expose] public section

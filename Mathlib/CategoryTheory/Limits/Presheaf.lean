@@ -68,8 +68,6 @@ namespace Presheaf
 
 variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `restrictedULiftYonedaHomEquiv`. -/
 @[deprecated "use `restrictedShrinkYonedaHomEquivAux` instead." (since := "2026-08-17")]
 def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type max w v₁ v₂) (E : ℰ) :
@@ -286,8 +284,6 @@ def coconeApp {P : Cᵒᵖ ⥤ Type max w v₁ v₂} (x : P.Elements) :
     ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).app _
       ((φ.app x.1.unop).app _ (ULift.up (𝟙 _))))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated "No replacement." (since := "2026-08-23"), reassoc (attr := simp)]
 lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Elements} (f : x ⟶ y) :
     uliftYoneda.map f.1.unop ≫ coconeApp.{w} φ x = coconeApp φ y := by
@@ -336,7 +332,6 @@ lemma uliftYonedaEquiv_presheafHom_uliftYoneda_obj (X : C) :
       ((φ.app X).app (F.op.obj (Opposite.op X)) (ULift.up (𝟙 _))) := by
   simpa using! uliftYonedaEquiv_ι_presheafHom.{w} φ (uliftYoneda.obj X) (𝟙 _)
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc, deprecated "No replacement" (since := "2026-09-20")]
 lemma presheafHom_naturality {P Q : Cᵒᵖ ⥤ Type max w v₁ v₂} (f : P ⟶ Q) :
     presheafHom.{w} φ P ≫ Functor.whiskerLeft F.op (G.map f) = f ≫ presheafHom φ Q :=
@@ -461,8 +456,6 @@ noncomputable def coconeπOpCompShrinkYonedaObj (X : C) :
     obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
     simp [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
 `F.obj X` identifies to the colimit of
 `(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/

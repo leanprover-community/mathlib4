@@ -35,7 +35,6 @@ Prove that a preconnected and complete subset with finite one-dimensional Hausdo
 connected and locally path connected. In fact, any two points in such a set can be connected by an
 injective geodesic with constant speed whose length is bounded above by the one-dimensional
 Hausdorff measure of this set.
-
 -/
 
 open MeasureTheory Metric Set

@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Ideal.Operations
 * `exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul` is Nakayama's lemma, in the following form:
   if N is a finitely generated submodule of an ambient R-module M and I is an ideal of R
   such that N ⊆ IN, then there exists r ∈ 1 + I such that rN = 0.
-
 -/
 
 public section

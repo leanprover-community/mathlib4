@@ -12,17 +12,11 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 import Mathlib.RingTheory.Polynomial.Ideal
 
--- The copyright notice exceeds the maximum column width, but the `linter.style.header` linter
--- flags the copyright notice if "All rights reserved." is not on the same line as "Copyright".
-set_option linter.style.header false
-
 /-!
-
 # Valuation subrings are exactly the maximal local subrings
 
 See `LocalSubring.isMax_iff`.
 Note that the order on local subrings is not merely inclusion but domination.
-
 -/
 
 @[expose] public section

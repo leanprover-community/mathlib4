@@ -11,7 +11,6 @@ public import Mathlib.Topology.ContinuousMap.Star
 
 /-!
 # Star structures on bounded continuous functions
-
 -/
 
 @[expose] public section

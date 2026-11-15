@@ -17,7 +17,6 @@ of `CochainComplex C ℤ` consisting of bounded above cochain complexes
 in a category `C`.
 
 This file should be kept in sync with `Mathlib/Algebra/Homology/CochainComplexPlus.lean`.
-
 -/
 
 @[expose] public section
@@ -166,7 +165,7 @@ is induced by a functor (which preserves zero morphisms). -/
 @[implicit_reducible, simps! obj_obj map_hom]
 def mapCochainComplexMinus : CochainComplex.Minus C ⥤ CochainComplex.Minus D :=
   ObjectProperty.lift _ (CochainComplex.Minus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
-    obtain ⟨i, hi⟩ := K.2
+    obtain ⟨i, hi⟩ := K.property
     refine ⟨i, ?_⟩
     dsimp [CochainComplex.Minus.ι]
     infer_instance)

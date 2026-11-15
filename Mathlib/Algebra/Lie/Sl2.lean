@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
-
 # The Lie algebra `sl₂` and its representations
 
 The Lie algebra `sl₂` is the unique simple Lie algebra of minimal rank, 1, and as such occupies a
@@ -22,7 +21,6 @@ about `sl₂`.
   representation of a Lie algebra relative to a distinguished `sl₂` triple.
 * `IsSl2Triple.HasPrimitiveVectorWith.exists_nat`: the eigenvalue of a primitive vector must be a
   natural number if the representation is finite-dimensional.
-
 -/
 
 @[expose] public section

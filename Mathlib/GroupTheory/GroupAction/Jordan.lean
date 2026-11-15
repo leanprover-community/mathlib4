@@ -41,7 +41,6 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
   a cycle of *prime* order contains the alternating group (Wielandt, 13.9).
 
 - Prove the stronger versions of the technical lemmas of Jordan (Wielandt, 13.1').
-
 -/
 
 public section

@@ -12,7 +12,6 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 This file contains lemmas about the composition of measures and kernels that do not fit in any of
 the other files in this directory, because they involve several types of compositions/products.
-
 -/
 
 public section

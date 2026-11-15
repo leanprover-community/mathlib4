@@ -14,7 +14,6 @@ Given a morphism `φ : K ⟶ L` of cochain complexes, the mapping cone
 allows to obtain a triangle `K ⟶ L ⟶ mappingCone φ ⟶ ...`. In this
 file, we define the mapping cocone, which fits in a rotated triangle:
 `mappingCocone φ ⟶ K ⟶ L ⟶ ...`.
-
 -/
 
 @[expose] public section

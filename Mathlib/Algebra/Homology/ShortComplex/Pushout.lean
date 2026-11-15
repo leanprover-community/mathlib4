@@ -15,7 +15,6 @@ Given a short complex `S` and a morphism `f : S.X₁ ⟶ Y`, we construct the sh
 if the ambient category is abelian.
 
 This is dual to `ShortComplex.pull`, see `Mathlib/Algebra/Homology/ShortComplex/Pullback.lean`.
-
 -/
 
 @[expose] public section

@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
 
 In this file, we show that in a Grothendieck abelian category,
 monomorphisms are stable under transfinite composition.
-
 -/
 
 public section

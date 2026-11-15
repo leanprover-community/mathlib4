@@ -98,7 +98,6 @@ taking supremums completes the proof (see `iSup_edist_pairSet`).
 * [V. Krätschmer, M. Urusov, *A Kolmogorov–Chentsov Type Theorem on General Metric Spaces with
   Applications to Limit Theorems for Banach-Valued Processes*][kratschmer_urusov2023]
 * [M. Talagrand, *Upper and Lower Bounds for Stochastic Processes*][talagrand2014]
-
 -/
 
 @[expose] public section

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
-
 # Linear independence
 
 This file defines linear independence in a module or vector space.
@@ -71,7 +70,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 @[expose] public section

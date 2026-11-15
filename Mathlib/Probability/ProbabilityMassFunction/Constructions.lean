@@ -24,7 +24,6 @@ by allowing the "sum equals 1" constraint to be in terms of `Finset.sum` instead
 and `filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
 
 `bernoulliMeasure` represents the Bernoulli distribution on `Bool`.
-
 -/
 
 @[expose] public section

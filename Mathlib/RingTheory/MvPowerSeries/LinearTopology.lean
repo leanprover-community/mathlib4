@@ -34,7 +34,6 @@ whenever `M` is linearly topologized over `R`.
 To recover the ring case, it would remain to show that the isomorphism between
 `Rᵐᵒᵖ⟦X⟧` and `R⟦X⟧ᵐᵒᵖ` identifies their respective actions on `R⟦X⟧`.
 (And likewise in the multivariate case.)
-
 -/
 
 @[expose] public section

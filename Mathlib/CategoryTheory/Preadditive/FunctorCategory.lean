@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Preadditive.Basic
 
 If `C` and `D` are categories and `D` is preadditive,
 then `C ⥤ D` is also preadditive.
-
 -/
 
 @[expose] public section

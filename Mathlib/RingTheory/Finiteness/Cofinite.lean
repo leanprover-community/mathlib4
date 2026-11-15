@@ -17,7 +17,6 @@ generated (i.e. FG).
 ## Main declarations
 
 - `Submodule.CoFG` expresses that a submodule is co-finitely generated.
-
 -/
 
 public section

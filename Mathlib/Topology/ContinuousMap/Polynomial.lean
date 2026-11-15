@@ -21,7 +21,6 @@ public import Mathlib.Topology.UnitInterval
 * `polynomialFunctions (X : Set R) : Subalgebra R C(X, R)`: polynomial functions as a subalgebra.
 * `polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints`:
   the polynomial functions separate points.
-
 -/
 
 @[expose] public section

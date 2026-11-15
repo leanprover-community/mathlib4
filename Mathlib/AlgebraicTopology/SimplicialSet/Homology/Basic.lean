@@ -19,7 +19,6 @@ For any preadditive category `C` with coproducts of size `w` and any
 object `R : C`, the simplicial chain complex of a simplicial
 set `X` is denoted `X.chainComplex R`, and its homology
 in degree `n : ℕ` is `X.homology R n`.
-
 -/
 
 @[expose] public section

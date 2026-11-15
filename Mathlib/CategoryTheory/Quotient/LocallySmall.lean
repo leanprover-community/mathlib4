@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # Quotient categories are locally small
-
 -/
 
 public section

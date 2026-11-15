@@ -71,5 +71,4 @@ action output instead of duplicating the pinned SHA in the workflow:
   run: |
     echo "Resolved ref: ${{ steps.get_mathlib_ci.outputs.ref }}"
     echo "Scripts dir: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}"
-    echo "Raw URL: https://raw.githubusercontent.com/leanprover-community/mathlib-ci/${{ steps.get_mathlib_ci.outputs.ref }}/scripts/nightly/create-adaptation-pr.sh"
 ```

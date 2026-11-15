@@ -21,7 +21,6 @@ In this file, we define scheme-theoretically dominant morphisms as morphisms wit
   is equivalent to dominant.
 - `AlgebraicGeometry.IsSchemeTheoreticallyDominant.of_isPullback`:
   quasicompact + scheme-theoretically dominant is stable under flat base change.
-
 -/
 
 public section

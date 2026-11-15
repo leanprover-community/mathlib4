@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Ideal.Prime
 public import Mathlib.RingTheory.Ideal.Span
 
 /-!
-
 # Ideals over a ring
 
 This file contains an assortment of definitions and results for `Ideal R`,

@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Etale
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
-
 # Weakly étale morphisms
 
 A morphism of schemes is weakly étale if it is flat and its diagonal is flat. As
@@ -26,7 +25,6 @@ morphism of finite presentation is étale.
 - When weakly étale ring homomorphisms are in mathlib, show
   `HasRingHomProperty WeaklyEtale RingHom.WeaklyEtale` (@chrisflav).
 - Deduce from this that weakly étale morphisms of finite presentation are étale (@chrisflav).
-
 -/
 
 public section

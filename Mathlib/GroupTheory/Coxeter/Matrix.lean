@@ -58,7 +58,6 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
   pages 4--5, 13--15
 
 * [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
-
 -/
 
 @[expose] public section
@@ -108,7 +107,7 @@ protected def A : CoxeterMatrix (Fin n) where
   M := Matrix.of fun i j : Fin n ↦
     if i = j then 1
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
-  isSymm := by unfold Matrix.IsSymm; aesop
+  isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by aesop
 
@@ -125,7 +124,7 @@ protected def B : CoxeterMatrix (Fin n) where
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
-  isSymm := by unfold Matrix.IsSymm; aesop
+  isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by aesop
 
@@ -145,7 +144,7 @@ protected def D : CoxeterMatrix (Fin n) where
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
-  isSymm := by unfold Matrix.IsSymm; aesop
+  isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by aesop
 
@@ -159,7 +158,7 @@ The corresponding Coxeter-Dynkin diagram is:
 -/
 protected def I (m : ℕ) : CoxeterMatrix (Fin 2) where
   M := Matrix.of fun i j => if i = j then 1 else m + 2
-  isSymm := by unfold Matrix.IsSymm; aesop
+  isSymm := by grind [Matrix.IsSymm, Matrix.transpose_of]
   diagonal := by simp
   off_diagonal := by simp
 
