@@ -195,10 +195,14 @@ lemma charpoly_fromBlocks_zero₂₁ :
   simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
     det_fromBlocks_zero₂₁]
 
-lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
-    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a := by
+lemma charmatrix_submatrix (b : m → n) (hf : b.Injective) :
+    (M.submatrix b b).charmatrix = M.charmatrix.submatrix b b := by
   ext i j : 1
-  simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
+  simp [charmatrix_apply, diagonal_apply, hf.eq_iff]
+
+lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
+    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a :=
+  charmatrix_submatrix _ _ Subtype.val_injective
 
 lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by

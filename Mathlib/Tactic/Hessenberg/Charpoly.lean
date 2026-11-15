@@ -267,27 +267,45 @@ abbrev lastColMinor (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α) (i : Fin n) :
     Matrix (Fin n) (Fin n) α :=
   M.submatrix i.castSucc.succAbove Fin.castSucc
 
+
 /-- The leading block `Mᵢ` formed from the first `i` rows and columns of `M.lastColMinor i` is equal
 to the leading `i×i` block of `M`. -/
-theorem toSquareBlockProp_lastColMinor (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α) (i : Fin n) :
-    ((M.lastColMinor i).toSquareBlockProp (· < i)).submatrix
+theorem toBlock_lastColMinor (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α) (i : Fin n) :
+    ((M.lastColMinor i).toBlock (· < i) (· < i)).submatrix
       (Fin.castLEquiv i.isLt.le) (Fin.castLEquiv i.isLt.le) =
         M.leadingBlock i.castSucc.isLt.le := by
   have hrow (a : Fin i) :
       i.castSucc.succAbove (Fin.castLE i.isLt.le a) = (Fin.castLE i.isLt.le a).castSucc :=
     Fin.succAbove_castSucc_of_lt _ _ a.isLt
   ext a b
-  simp [toSquareBlockProp_def, hrow]
+  simp [hrow]
+
+/-- The leading block `Mᵢ` formed from the first `i` rows and columns of `M.lastColMinor i` is equal
+to the leading `i×i` block of `M`. -/
+@[deprecated toBlock_lastColMinor (since := "2026-11-15")]
+theorem toSquareBlockProp_lastColMinor (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α) (i : Fin n) :
+    ((M.lastColMinor i).toSquareBlockProp (· < i)).submatrix
+      (Fin.castLEquiv i.isLt.le) (Fin.castLEquiv i.isLt.le) =
+        M.leadingBlock i.castSucc.isLt.le :=
+  toBlock_lastColMinor _ _
 
 /-- The block `Tᵢ` formed from the last `n-1-i` rows and columns of `M.lastColMinor i` is equal to
 rows `[i+1 ... n-1]` and columns `[i ... n-2]` of `M`. -/
-theorem toSquareBlockProp_lastColMinor_not_lt (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α)
-    (i : Fin n) : (M.lastColMinor i).toSquareBlockProp (¬ · < i) =
+theorem toBlock_lastColMinor_not_lt (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α)
+    (i : Fin n) : (M.lastColMinor i).toBlock (¬ · < i) (¬ · < i) =
       of fun a b => M a.1.succ b.1.castSucc := by
   have hrow (a : {j : Fin n // ¬ j < i}) : i.castSucc.succAbove a = a.1.succ :=
     Fin.succAbove_castSucc_of_le _ _ (not_lt.mp a.2)
   ext a b
-  simp [toSquareBlockProp_def, hrow]
+  simp [hrow]
+
+/-- The block `Tᵢ` formed from the last `n-1-i` rows and columns of `M.lastColMinor i` is equal to
+rows `[i+1 ... n-1]` and columns `[i ... n-2]` of `M`. -/
+@[deprecated toBlock_lastColMinor_not_lt (since := "2026-11-15")]
+theorem toSquareBlockProp_lastColMinor_not_lt (M : Matrix (Fin (n + 1)) (Fin (n + 1)) α)
+    (i : Fin n) : (M.lastColMinor i).toSquareBlockProp (¬ · < i) =
+      of fun a b => M a.1.succ b.1.castSucc :=
+  toBlock_lastColMinor_not_lt _ _
 
 theorem charmatrix_leadingBlock [CommRing α] (M : Matrix (Fin n) (Fin n) α)
     (h : k ≤ n) : (M.leadingBlock h).charmatrix = M.charmatrix.leadingBlock h := by
@@ -327,14 +345,20 @@ theorem lastColMinor_eq_zero (hM : M.IsUpperHessenberg) {i a b : Fin k} (ha : i 
   simpa only [Fin.orderSucc_castSucc, Fin.succ_lt_succ_iff] using hab
 
 /-- `Tᵢ` is upper triangular, so its determinant is the product of its diagonal. -/
-theorem det_toSquareBlockProp_not_lt (hM : M.IsUpperHessenberg) (i : Fin k) :
-    ((M.lastColMinor i).toSquareBlockProp (¬ · < i)).det = ∏ j ∈ Ici i, M j.succ j.castSucc := by
-  rw [toSquareBlockProp_lastColMinor_not_lt, det_of_isUpperTriangular]
+theorem det_toBlock_not_lt (hM : M.IsUpperHessenberg) (i : Fin k) :
+    ((M.lastColMinor i).toBlock (¬ · < i) (¬ · < i)).det = ∏ j ∈ Ici i, M j.succ j.castSucc := by
+  rw [toBlock_lastColMinor_not_lt, det_of_isUpperTriangular]
   · simp only [of_apply]
     symm
     apply prod_subtype
     simp
   · exact fun a b hab => isUpperHessenberg_iff.mp hM (by simpa [Fin.orderSucc_castSucc] using hab)
+
+/-- `Tᵢ` is upper triangular, so its determinant is the product of its diagonal. -/
+@[deprecated det_toBlock_not_lt (since := "2026-11-15")]
+theorem det_toSquareBlockProp_not_lt (hM : M.IsUpperHessenberg) (i : Fin k) :
+    ((M.lastColMinor i).toSquareBlockProp (¬ · < i)).det = ∏ j ∈ Ici i, M j.succ j.castSucc :=
+  det_toBlock_not_lt _ hM _
 
 /-- `Hᵢ` is block triangular, so `det Hᵢ = det Mᵢ · det Tᵢ`. -/
 theorem det_lastColMinor (hM : M.IsUpperHessenberg) (i : Fin k) :
@@ -342,8 +366,8 @@ theorem det_lastColMinor (hM : M.IsUpperHessenberg) (i : Fin k) :
       (M.leadingBlock i.castSucc.isLt.le).det * ∏ j ∈ Ici i, M j.succ j.castSucc := by
   rw [twoBlockTriangular_det _ (· < i) fun a ha b hb =>
       lastColMinor_eq_zero M hM (not_lt.mp ha) (hb.trans_le (not_lt.mp ha)),
-    ← det_submatrix_equiv_self (Fin.castLEquiv i.isLt.le), toSquareBlockProp_lastColMinor,
-    det_toSquareBlockProp_not_lt M hM i]
+    ← det_submatrix_equiv_self (Fin.castLEquiv i.isLt.le), toBlock_lastColMinor,
+    det_toBlock_not_lt M hM i]
 
 /-- The determinant of an upper Hessenberg matrix, expanded along its last column. -/
 theorem det_eq_sum_of_isUpperHessenberg (hM : M.IsUpperHessenberg) :

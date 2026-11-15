@@ -310,17 +310,19 @@ theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B :
 
 /-! ### Determinant -/
 
-
 variable [CommRing R] [DecidableEq m] [Fintype m] [DecidableEq n] [Fintype n]
 
-theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
-    (e : ∀ x, q x ↔ p x) : (toSquareBlockProp M p).det = (toSquareBlockProp M q).det := by
-  convert!
-    Matrix.det_reindex_self (Equiv.subtypeEquivRight e)
-      (toSquareBlockProp M q)
-        -- Removed `@[simp]` attribute,
-        -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
+@[congr]
+theorem det_toBlock_congr (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
+    (e : ∀ x, p x ↔ q x) : (toBlock M p p).det = (toBlock M q q).det := by
+  have : q = p := by grind
+  subst this
+  congr!
 
+@[deprecated det_toBlock_congr +typeChanged (since := "2026-11-15")]
+theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] [DecidablePred q]
+    (e : ∀ x, q x ↔ p x) : (toSquareBlockProp M p).det = (toSquareBlockProp M q).det :=
+  det_toBlock_congr _ (e · |>.symm)
 
 -- Removed `@[simp]` attribute,
 -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
@@ -337,26 +339,23 @@ theorem det_toBlock (M : Matrix m m R) (p : m → Prop) [DecidablePred p] :
   congr; ext σ; congr; ext x
   generalize hy : σ x = y
   cases x <;> cases y <;>
-    simp only [Matrix.reindex_apply, toBlock_apply, Equiv.symm_symm, Equiv.sumCompl_apply_inr,
+    simp only [Matrix.reindex_apply, Equiv.symm_symm, Equiv.sumCompl_apply_inr,
       Equiv.sumCompl_apply_inl, fromBlocks_apply₁₁, fromBlocks_apply₁₂, fromBlocks_apply₂₁,
       fromBlocks_apply₂₂, Matrix.submatrix_apply]
 
 theorem twoBlockTriangular_det (M : Matrix m m R) (p : m → Prop) [DecidablePred p]
     (h : ∀ i, ¬p i → ∀ j, p j → M i j = 0) :
-    M.det = (toSquareBlockProp M p).det * (toSquareBlockProp M fun i => ¬p i).det := by
+    M.det = (toBlock M p p).det * (toBlock M (¬p ·) (¬p ·)).det := by
   rw [det_toBlock M p]
-  convert!
-    det_fromBlocks_zero₂₁ (toBlock M p p) (toBlock M p fun j => ¬p j)
-      (toBlock M (fun j => ¬p j) fun j => ¬p j)
+  convert! det_fromBlocks_zero₂₁ (toBlock M p p) (toBlock M p (¬p ·)) (toBlock M (¬p ·) (¬p ·))
   ext i j
   exact h (↑i) i.2 (↑j) j.2
 
 theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePred p]
     (h : ∀ i, p i → ∀ j, ¬p j → M i j = 0) :
-    M.det = (toSquareBlockProp M p).det * (toSquareBlockProp M fun i => ¬p i).det := by
+    M.det = (toBlock M p p).det * (toBlock M (¬p ·) (¬p ·)).det := by
   rw [M.twoBlockTriangular_det fun i => ¬p i, mul_comm]
-  · congr 1
-    exact equiv_block_det _ fun _ => not_not.symm
+  · simp_rw [not_not]
   · simpa only [Classical.not_not] using h
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :
@@ -376,7 +375,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     rw [this, prod_insert (notMem_erase _ _)]
     refine congr_arg _ ?_
     let b' := fun i : { a // b a ≠ k } => b ↑i
-    have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix
+    have h' : BlockTriangular (M.toBlock (b · ≠ k) (b · ≠ k)) b' := hM.submatrix
     have hb' : image b' univ = (image b univ).erase k := by
       convert image_subtype_ne_univ_eq_image_erase k b
     rw [ih _ (max'_mem _ _) h' hb']
