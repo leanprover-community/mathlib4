@@ -840,6 +840,7 @@ section SeparableSpace
 
 variable (p : ℕ) [Fact p.Prime]
 
+/-- `ℚ_[p]` is a separable topological space. -/
 instance separableSpace : TopologicalSpace.SeparableSpace ℚ_[p] :=
   ⟨Set.range ((↑) : ℚ → ℚ_[p]), Set.countable_range Rat.cast, denseRange_ratCast _⟩
 
