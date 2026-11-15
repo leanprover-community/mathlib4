@@ -222,7 +222,7 @@ theorem eventually_atTop_regularizedHGFunCoeff_ne_zero (h : ∀ j ∈ a, ∀ (k 
     calc
       -j.re ≤ ⌈-j.re⌉₊ := Nat.le_ceil (-j.re)
       _ ≤ b.toFinset.sup (⌈-re ·⌉₊) := mod_cast Finset.le_sup (by grind) (f := (⌈-re ·⌉₊))
-      _ < n := by norm_cast
+      _ < n := by fail_if_not_idempotent norm_cast
 
 variable (a) in
 private theorem tendsto_multiset_prod_div_add_one :
@@ -390,7 +390,7 @@ theorem regularizedHGFun_zero_singleton_neg_nat_add_one (n : ℕ) (z : ℂ) :
       congrm $(Finset.sum_eq_zero fun i hi ↦ mul_eq_zero_of_right _ ?_) + _
       refine regularizedHGFunCoeff_eq_zero_right _ _ _ (n - i - 1) ?_
       rw [Multiset.mem_singleton]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       grind
     _ = z ^ n * ∑' i, z ^ i * C 0 {-(n : ℂ) + 1} (i + n) := by
       simp_rw [zero_add, ← tsum_mul_left]

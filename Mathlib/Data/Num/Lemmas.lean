@@ -301,7 +301,7 @@ namespace PosNum
 theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
   | 1 => by
       simp only [cast_one, Num.ofNat'_one]
-      norm_cast
+      fail_if_not_idempotent norm_cast
   | bit0 p => by
       simpa only [Nat.bit_false, Bool.cond_false, two_mul, of_to_nat' p] using!
         Num.ofNat'_bit false p

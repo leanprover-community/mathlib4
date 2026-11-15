@@ -441,7 +441,7 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
     obtain ⟨_, _⟩ := odd
     rw [(by lia : (q + 1) / 2 = q / 2 + 1), pow_succ]
     have leg := legendreSym.eq_pow q 2
-    have : (2 : ZMod q) = ((2 : ℤ) : ZMod q) := by norm_cast
+    have : (2 : ZMod q) = ((2 : ℤ) : ZMod q) := by fail_if_not_idempotent norm_cast
     rw [this, ← leg, leg2]
     ring
   have := two_mul_ω_pow odd leg3
@@ -450,7 +450,7 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
   rw [coe, ← map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
   refine (IsUnit.of_mul_eq_one (M := X q) ↑((q + 1) / 2) ?_).mul_left_cancel this
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp [Nat.mul_div_cancel' odd.add_one.two_dvd]
 
 /-- The final evaluation needed to establish the Lucas-Lehmer necessity. -/

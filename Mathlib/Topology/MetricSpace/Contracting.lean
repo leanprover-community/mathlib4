@@ -56,7 +56,7 @@ theorem one_sub_K_ne_zero (hf : ContractingWith K f) : (1 : ℝ≥0∞) - K ≠ 
   ne_of_gt hf.one_sub_K_pos'
 
 theorem one_sub_K_ne_top : (1 : ℝ≥0∞) - K ≠ ∞ := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact ENNReal.coe_ne_top
 
 theorem edist_inequality (hf : ContractingWith K f) {x y} (h : edist x y ≠ ∞) :

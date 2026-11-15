@@ -396,7 +396,7 @@ variable (i : ι)
   rw [pairingIn_eq_add_of_root_eq_smul_add_smul (x := 2) (y := 1) (i := short P) (l := long P)]
   · simp
   · simp only [twoShortAddLongRoot_eq, one_smul, add_left_inj]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 @[simp] lemma pairingIn_twoShortAddLong_right :
     P.pairingIn ℤ i (twoShortAddLong P) =
@@ -426,7 +426,7 @@ omit [Finite ι] [IsDomain R] in
   rw [pairingIn_eq_add_of_root_eq_smul_add_smul (x := 3) (y := 1) (i := short P) (l := long P)]
   · simp
   · simp only [threeShortAddLongRoot_eq, one_smul, add_left_inj]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 @[simp] lemma pairingIn_threeShortAddLong_right :
     P.pairingIn ℤ i (threeShortAddLong P) =
@@ -456,7 +456,7 @@ omit [Finite ι] [IsDomain R] in
   rw [pairingIn_eq_add_of_root_eq_smul_add_smul (x := 3) (y := 2) (i := short P) (l := long P)]
   · simp
   · simp only [threeShortAddTwoLongRoot_eq]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 @[simp] lemma pairingIn_threeShortAddTwoLong_right :
     P.pairingIn ℤ i (threeShortAddTwoLong P) =

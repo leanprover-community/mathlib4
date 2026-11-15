@@ -163,7 +163,7 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     apply congr_arg₂ _ (congr_arg₂ _ _ _) rfl
     · rw [Nat.sub_sub_self (mem_range_le hx)]
     · rw [← choose_symm (mem_range_le hx)]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
 
 /-- Rearrangement of `Polynomial.sum_range_pow_eq_bernoulli_sub`. -/
 theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =

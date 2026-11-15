@@ -73,7 +73,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
     congr 1
     rw [add_comm, add_choose]
     simp only [Int.natCast_ediv, cast_mul, eq_intCast]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [mul_comm, ← Nat.mul_div_assoc]
     · rw [mul_comm, Nat.mul_div_mul_right _ _ (by positivity)]
     · simp only [factorial_mul_factorial_dvd_factorial_add]

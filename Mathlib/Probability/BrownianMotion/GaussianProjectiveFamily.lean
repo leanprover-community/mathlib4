@@ -175,7 +175,7 @@ lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t
       covariance_eval_projectiveFamily, integral_sub]
     · congr
       · simp
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [sub_add_eq_add_sub, ← NNReal.coe_add, ← NNReal.coe_sub, Real.toNNReal_coe]
       · wlog hst : (s : ℝ≥0) ≤ t generalizing s t
         · convert this t s (le_of_not_ge hst) using 1

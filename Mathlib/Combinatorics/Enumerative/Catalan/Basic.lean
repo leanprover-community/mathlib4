@@ -77,8 +77,8 @@ private def gosperCatalan (n j : ℕ) : ℚ :=
 private theorem gosper_trick {n i : ℕ} (h : i ≤ n) :
     gosperCatalan (n + 1) (i + 1) - gosperCatalan (n + 1) i =
       Nat.centralBinom i / (i + 1) * Nat.centralBinom (n - i) / (n - i + 1) := by
-  have l₁ : (i : ℚ) + 1 ≠ 0 := by norm_cast
-  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by norm_cast
+  have l₁ : (i : ℚ) + 1 ≠ 0 := by fail_if_not_idempotent norm_cast
+  have l₂ : (n : ℚ) - i + 1 ≠ 0 := by fail_if_not_idempotent norm_cast
   have h₁ := (mul_div_cancel_left₀ (↑(Nat.centralBinom (i + 1))) l₁).symm
   have h₂ := (mul_div_cancel_left₀ (↑(Nat.centralBinom (n - i + 1))) l₂).symm
   have h₃ : ((i : ℚ) + 1) * (i + 1).centralBinom = 2 * (2 * i + 1) * i.centralBinom :=
@@ -114,14 +114,14 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
       have m_le_d : x.val ≤ d := by lia
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     · trans (∑ i : Fin d.succ, (gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i))
       · refine sum_congr rfl fun i _ => ?_
         rw [gosper_trick i.is_le, mul_div]
       · rw [← sum_range fun i => gosperCatalan (d + 1) (i + 1) - gosperCatalan (d + 1) i,
             sum_range_sub, Nat.succ_eq_add_one]
         rw [gosper_catalan_sub_eq_central_binom_div d]
-        norm_cast
+        fail_if_not_idempotent norm_cast
 
 theorem succ_mul_catalan_eq_centralBinom (n : ℕ) : (n + 1) * catalan n = n.centralBinom :=
   (Nat.eq_mul_of_div_eq_right n.succ_dvd_centralBinom (catalan_eq_centralBinom_div n).symm).symm

@@ -149,7 +149,7 @@ theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
 
 -- See note [specialised high priority simp lemma]
 @[simp high]
-theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
+theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by fail_if_not_idempotent norm_cast
 
 theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
@@ -373,7 +373,7 @@ lemma mk_divInt (n d : ℕ) :
       divNat n d := rfl
 
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
-  rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast
+  rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; fail_if_not_idempotent norm_cast
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma divNat_zero (n : ℕ) : divNat n 0 = 0 := by simp [divNat]
@@ -414,10 +414,10 @@ lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) :
   ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
-  rw [← NNRat.coe_lt_coe, Rat.lt_iff]; norm_cast
+  rw [← NNRat.coe_lt_coe, Rat.lt_iff]; fail_if_not_idempotent norm_cast
 
 theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
-  rw [← NNRat.coe_le_coe, Rat.le_iff]; norm_cast
+  rw [← NNRat.coe_le_coe, Rat.le_iff]; fail_if_not_idempotent norm_cast
 
 end NNRat
 

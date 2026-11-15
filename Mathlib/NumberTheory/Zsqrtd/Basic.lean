@@ -895,7 +895,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
 of unitary elements. -/
 theorem norm_eq_one_iff_mem_unitary {d : ℤ} {a : ℤ√d} : a.norm = 1 ↔ a ∈ unitary (ℤ√d) := by
   rw [Unitary.mem_iff_self_mul_star, ← norm_eq_mul_conj]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 /-- The kernel of the norm map on `ℤ√d` equals the submonoid of unitary elements. -/
 theorem mker_norm_eq_unitary {d : ℤ} : MonoidHom.mker (@normMonoidHom d) = unitary (ℤ√d) :=

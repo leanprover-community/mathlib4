@@ -131,7 +131,7 @@ theorem exists_prime_of_theta_lt {a b} (hab : θ a < θ b) :
   obtain ⟨⟨hpb, hpp⟩, _⟩ := hp
   refine ⟨p, hpp, ?_, ?_⟩
   · grw [lt_floor_add_one a]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     grind
   · grind [le_floor_iff, one_le_floor_iff]
 

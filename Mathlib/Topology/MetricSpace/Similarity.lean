@@ -90,7 +90,7 @@ alias ⟨_, of_exists_pairwise_edist_eq⟩ := similar_iff_exists_pairwise_edist_
   rcases h with ⟨r, hr, h⟩
   refine ⟨r⁻¹, inv_ne_zero hr, fun _ _ => ?_⟩
   rw [ENNReal.coe_inv hr, ← ENNReal.div_eq_inv_mul, ENNReal.eq_div_iff _ ENNReal.coe_ne_top, h]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 lemma _root_.similar_comm : v₁ ∼ v₂ ↔ v₂ ∼ v₁ := ⟨Similar.symm, Similar.symm⟩
 

@@ -249,7 +249,7 @@ lemma termTSum_of_lt {s : ℝ} (hs : 1 < s) :
           linarith
         · apply le_of_eq
           rw [rpow_sub_one, ← div_mul, div_one, mul_comm, one_div, inv_rpow, ← div_eq_mul_inv]
-          · norm_cast
+          · fail_if_not_idempotent norm_cast
           all_goals positivity
 
 @[deprecated (since := "2026-05-27")] alias term_tsum_of_lt := termTSum_of_lt
@@ -325,7 +325,7 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
     rw [zeta_eq_tsum_one_div_nat_add_one_cpow (by simpa using hs)]
     congr 1 with n
     rw [Complex.ofReal_cpow (by positivity)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   suffices aux2 : Tendsto (fun s : ℝ ↦ (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1))
     (𝓝[>] 1) (𝓝 (1 - termTSum 1)) by
     have := term_tsum_one.tsum_eq
@@ -461,7 +461,7 @@ theorem riemannZeta_conj (s : ℂ) : riemannZeta (conj s) = conj (riemannZeta s)
   rcases eq_or_ne s 1 with rfl | hs
   · have h : riemannZeta 1 = ((γ - Real.log (4 * π)) / 2 : ℝ) := by
       rw [riemannZeta_one, ofReal_div, ofReal_sub, ofReal_log (by positivity : (0 : ℝ) ≤ 4 * π)]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     rw [map_one, h, conj_ofReal]
   · -- `conj ∘ ζ ∘ conj` is analytic on `{1}ᶜ` and agrees with `ζ` termwise on `1 < re z`, so
     -- the identity principle propagates the equality to the connected set `{1}ᶜ`.
@@ -535,7 +535,7 @@ theorem deriv_riemannZeta_zero :
   have h₃ : HasDerivAt (Gamma ∘ fun x => x / 2 + 1) (deriv Gamma (0 / 2 + 1) * (1 / 2 + 0)) 0 := by
     refine (differentiableAt_Gamma _ ?_).hasDerivAt.comp 0 ?_
     · simp only [zero_div]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp
     · exact ((hasDerivAt_id 0).div_const 2).add (hasDerivAt_const 0 1)
   suffices h : -(log (2 * π) * 2) = γ - log (2 * 2 * π) + (-log π + -γ) by

@@ -257,7 +257,7 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   simp only [EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, PiLp.inner_apply, RCLike.inner_apply,
     conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul, Finset.sum_neg_distrib,
     mul_assoc]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [sq_sqrt]
   · simp [Finset.mul_sum, mul_comm]
   · exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
@@ -299,7 +299,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   simp only [neg_mul]
   convert! integral_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 5 with _x y
   · simp only [EuclideanSpace.norm_eq, norm_eq_abs, sq_abs, neg_mul, neg_inj, mul_eq_mul_left_iff]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     left
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
@@ -308,7 +308,7 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     simp_rw [mul_comm]
   · simp only [EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, mul_pow, ← Finset.mul_sum]
     congr
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
 

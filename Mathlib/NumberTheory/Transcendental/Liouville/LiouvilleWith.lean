@@ -275,7 +275,7 @@ theorem ne_intCast (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := b
   have hn' : (0 : ℝ) < n := by simpa
   rw [rpow_neg_one, ← one_div, sub_div' hn'.ne', abs_div, Nat.abs_cast]
   gcongr
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
   rw [Ne, eq_div_iff hn'.ne'] at hne
   exact mod_cast hne

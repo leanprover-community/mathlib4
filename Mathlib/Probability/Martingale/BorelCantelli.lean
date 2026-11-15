@@ -280,7 +280,7 @@ theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω
 
 theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
     |process s (n + 1) ω - process s n ω| ≤ (1 : ℝ≥0) := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [process, process, Finset.sum_apply, Finset.sum_apply,
     Finset.sum_range_succ_sub_sum, ← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
   refine Set.indicator_le' (fun _ _ => ?_) (fun _ _ => zero_le_one) _

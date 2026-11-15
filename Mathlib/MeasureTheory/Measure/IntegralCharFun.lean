@@ -54,7 +54,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
       fun_prop
     ext p
     rw [← Prod.mk.eta (p := p)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp only [Function.uncurry_apply_pair, norm_exp_ofReal_mul_I]
   calc ∫ t in -r..r, charFun μ t
   _ = ∫ x in -r..r, ∫ y, cexp (x * y * I) ∂μ := by simp_rw [charFun_apply_real]
@@ -76,7 +76,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     simp only [Function.comp_apply, ofReal_mul, real_smul, intervalIntegral.integral_const_mul,
       mul_neg] at h
     rw [← h, ← mul_assoc]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp [mul_comm _ y, mul_inv_cancel₀ hy]
   _ = ∫ x, 2 * (r : ℂ) * sinc (r * x) ∂μ := by
     congr with y
@@ -84,10 +84,10 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     split_ifs with hry
     · simp [hry]
     have hy : y ≠ 0 := fun hy ↦ hry (by simp [hy])
-    norm_cast
+    fail_if_not_idempotent norm_cast
     field_simp
   _ = 2 * r * ∫ x, sinc (r * x) ∂μ := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← integral_const_mul]
 
 /-- A bound on the measure of the set `{x | r < |x|}` in terms of the integral of
@@ -133,7 +133,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
     exact Real.le_norm_self _
   _ = 2⁻¹ * r *
       ‖2 * (r : ℂ)⁻¹ + 2 * r⁻¹ - 2 * (2 * r⁻¹) * ∫ x, sinc (2 * r⁻¹ * x) ∂μ‖ := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← two_mul, mul_assoc 2, ← mul_sub, norm_mul, Real.norm_ofNat, ← mul_assoc,
       ← mul_one_sub, norm_mul, Real.norm_of_nonneg (r := 2 * r⁻¹) (by positivity), ← mul_assoc]
     congr

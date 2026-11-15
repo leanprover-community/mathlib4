@@ -147,7 +147,7 @@ theorem niven_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) = q)
     (h_bnd : r ∈ Set.Icc 0 1) : r ∈ ({0, 1 / 3, 1 / 2, 2 / 3, 1} : Set ℚ) := by
   apply smul_left_injective ℚ pi_ne_zero |>.mem_set_image.mp
   replace h_bnd : (r : ℝ) * π ∈ Set.Icc (0 * π) (1 * π) := by
-    obtain ⟨hr, hr'⟩ := h_bnd; constructor <;> gcongr <;> norm_cast
+    obtain ⟨hr, hr'⟩ := h_bnd; constructor <;> gcongr <;> fail_if_not_idempotent norm_cast
   generalize h : (r : ℝ) * π = θ at *
   have := niven_angle_eq ⟨r, h.symm⟩ hcos (by simpa using h_bnd)
   simp_all [Rat.smul_def]

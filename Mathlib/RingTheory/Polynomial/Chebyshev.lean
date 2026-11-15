@@ -169,7 +169,7 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
     simp only [T_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
   | neg_add_one n ih1 ih2 =>
@@ -208,9 +208,9 @@ theorem degree_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) : (T R n).degree = n.na
   | add_two n ih1 ih2 =>
     have : (2 * X * T R (n + 1)).degree = ↑(n + 2) := by
       rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih1]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     rw [T_add_two, degree_sub_eq_left_of_degree_lt]
-    · rw [this]; norm_cast
+    · rw [this]; fail_if_not_idempotent norm_cast
     · rw [ih2, this]; tauto
   | neg n ih => simp [ih]
 
@@ -344,14 +344,14 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     simp only [U_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [U_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
 
@@ -382,15 +382,15 @@ theorem degree_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) : (U R n).degre
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one =>
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [U_one, ← C_ofNat, degree_C_mul_X two_ne_zero]
   | more n ih1 ih2 =>
     push_cast; push_cast at ih2
     have : (2 * X * U R (n + 1)).degree = ↑(n + 2) := by
       rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X, ih2]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     rw [U_add_two, degree_sub_eq_left_of_degree_lt]
-    · rw [this]; norm_cast
+    · rw [this]; fail_if_not_idempotent norm_cast
     · rw [ih1, this]; norm_cast; omega
 
 @[simp]
@@ -404,7 +404,7 @@ theorem natDegree_U_neg_one : (U R (-1)).natDegree = 0 := by simp
 theorem degree_U_of_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n ≠ -1) :
     (U R n).degree = ↑((n + 1).natAbs - 1) := by
   obtain ⟨m, rfl | rfl⟩ := n.eq_nat_or_neg
-  case inl => rw [degree_U_natCast R m]; norm_cast
+  case inl => rw [degree_U_natCast R m]; fail_if_not_idempotent norm_cast
   case inr =>
     rw [U_neg, degree_neg]
     cases m with
@@ -415,7 +415,7 @@ theorem degree_U_of_ne_neg_one [IsDomain R] [NeZero (2 : R)] (n : ℤ) (hn : n �
       | succ m =>
         trans (U R m).degree
         · congr; omega
-        · rw [degree_U_natCast R m]; norm_cast
+        · rw [degree_U_natCast R m]; fail_if_not_idempotent norm_cast
 
 theorem natDegree_U [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
     (U R n).natDegree = (n + 1).natAbs - 1 := by
@@ -436,7 +436,7 @@ theorem leadingCoeff_U_natCast [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     rw [U_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih2,
       leadingCoeff_mul, leadingCoeff_X, this]
     · norm_cast; rw [pow_add, pow_add]; ring_nf
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       rw [mul_assoc, ← C_ofNat, degree_C_mul two_ne_zero, mul_comm, degree_mul_X,
         degree_U_natCast R n, degree_U_natCast R (n + 1)]
       norm_cast; omega
@@ -506,10 +506,10 @@ theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T
   induction n using Nat.twoStepInduction with
   | zero => simp
   | one =>
-    rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; norm_cast
+    rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨1, by simp⟩)
   | more n h₀ _ =>
-    push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; norm_cast
+    push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
@@ -601,7 +601,7 @@ theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
     simp only [C_add_two, eval_sub, eval_mul, eval_X, mul_neg, mul_one, ih1,
       Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
       Int.negOnePow_def 2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
   | neg_add_one n ih1 ih2 =>
@@ -710,14 +710,14 @@ theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := 
     simp only [S_add_two, eval_sub, eval_mul, eval_X, ih1,
       Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
       Int.negOnePow_def 2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
   | neg_add_one n ih1 ih2 =>
     simp only [S_sub_one, eval_sub, eval_mul, eval_X, mul_neg, ih1,
       Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
       Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
     ring
 
@@ -870,7 +870,7 @@ theorem T_derivative_mem_span_T (n : ℕ) :
     derivative (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Ico 0 n) := by
   by_cases! hn : n = 0
   · simp [hn]
-  rw [T_derivative_eq_U, ← smul_eq_mul]; norm_cast
+  rw [T_derivative_eq_U, ← smul_eq_mul]; fail_if_not_idempotent norm_cast
   refine Submodule.smul_of_tower_mem _ n ?_
   convert U_mem_span_T R (n - 1) using 2 <;> grind
 

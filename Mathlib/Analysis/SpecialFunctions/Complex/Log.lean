@@ -183,7 +183,7 @@ theorem exp_two_pi_mul_I_mul_div_eq_one_iff {k N : ℕ} (hN : N ≠ 0) :
   rw [exp_eq_one_iff]
   conv in _ = _ => rw [← mul_comm (2 * π * I), mul_div_assoc, mul_right_inj' (by simp)]
   field_simp [Nat.cast_ne_zero.mpr hN]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp [← dvd_def, Int.ofNat_dvd]
 
 theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y) = 1 := by

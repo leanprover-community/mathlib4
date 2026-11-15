@@ -178,7 +178,7 @@ lemma netMaxcard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) : netMaxca
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F U 0).2 h)
   intro s ⟨_, s_net⟩
   simp only [dynEntourage_zero, SetRel.inv_univ] at s_net
-  norm_cast
+  fail_if_not_idempotent norm_cast
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
@@ -186,7 +186,7 @@ lemma netMaxcard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : netMaxcard T F 
   apply (iSup₂_le _).antisymm ((one_le_netMaxcard_iff T F univ n).2 h)
   intro s ⟨_, s_net⟩
   simp only [dynEntourage_univ, SetRel.inv_univ] at s_net
-  norm_cast
+  fail_if_not_idempotent norm_cast
   refine Finset.card_le_one.2 fun x x_s y y_s ↦ ?_
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 

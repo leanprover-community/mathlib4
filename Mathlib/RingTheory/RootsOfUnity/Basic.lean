@@ -75,7 +75,7 @@ theorem ker_zpowGroupHom_eq_rootsOfUnity {k : ℤ} :
 
 /-- A variant of `mem_rootsOfUnity` using `ζ : Mˣ`. -/
 theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ k = 1 := by
-  rw [mem_rootsOfUnity]; norm_cast
+  rw [mem_rootsOfUnity]; fail_if_not_idempotent norm_cast
 
 @[simp]
 theorem rootsOfUnity_one (M : Type*) [CommMonoid M] : rootsOfUnity 1 M = ⊥ := by

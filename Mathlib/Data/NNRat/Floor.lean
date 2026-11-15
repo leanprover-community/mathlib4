@@ -33,8 +33,8 @@ instance : FloorSemiring ℚ≥0 where
   floor q := ⌊q.val⌋₊
   ceil q := ⌈q.val⌉₊
   floor_of_neg h := by simpa using h.trans zero_lt_one
-  gc_floor {a n} h := by rw [← NNRat.coe_le_coe, Nat.le_floor_iff] <;> norm_cast
-  gc_ceil {a b} := by rw [← NNRat.coe_le_coe, Nat.ceil_le]; norm_cast
+  gc_floor {a n} h := by rw [← NNRat.coe_le_coe, Nat.le_floor_iff] <;> fail_if_not_idempotent norm_cast
+  gc_ceil {a b} := by rw [← NNRat.coe_le_coe, Nat.ceil_le]; fail_if_not_idempotent norm_cast
 
 @[simp, norm_cast]
 theorem floor_coe (q : ℚ≥0) : ⌊(q : ℚ)⌋₊ = ⌊q⌋₊ := rfl
@@ -74,8 +74,8 @@ variable {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 @[simp, norm_cast]
 theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by
   rw [Int.floor_eq_iff, ← coe_floor]
-  norm_cast
-  norm_cast
+  fail_if_not_idempotent norm_cast
+  fail_if_not_idempotent norm_cast
   rw [Nat.cast_add_one, ← Nat.floor_eq_iff zero_le]
 
 @[simp, norm_cast]

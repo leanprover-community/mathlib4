@@ -290,7 +290,7 @@ private lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k
   rw [h2, Nat.cast_mul 2 (m + 1), Nat.cast_two, riemannZeta_two_mul_nat (show m + 1 ≠ 0 by grind),
     show (2 * (m + 1))! = 2 * (m + 1) * (2 * m + 1)! by grind [Nat.factorial_succ],
     show 2 * (m + 1) - 1 = 2 * m + 1 by grind, mul_pow, mul_pow, pow_mul I, I_sq]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp [field]
   grind
 

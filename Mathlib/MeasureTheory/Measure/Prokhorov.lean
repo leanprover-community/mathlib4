@@ -637,7 +637,7 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
       refine (ofReal_le_ofReal_iff (by rw [sub_nonneg]; exact hεbound)).mp ?_
       rw [ofReal_coe_nnreal]
       apply le_trans (hcontradiction (sub c))
-      norm_cast
+      fail_if_not_idempotent norm_cast
   have accumulation : Tendsto (fun n ↦ μlim (⋃ i ≤ n, U i)) atTop (𝓝 (μlim (⋃ i, U i))) := by
     simp_rw [← Set.accumulate_def, ProbabilityMeasure.tendsto_measure_iUnion_accumulate]
   rw [Cov, coeFn_univ, ← NNReal.tendsto_coe] at accumulation

@@ -98,12 +98,12 @@ protected theorem inv_pow : ∀ {a : ℝ≥0∞} {n : ℕ}, (a ^ n)⁻¹ = a⁻�
     rcases eq_or_ne a 0 with (rfl | ha)
     · simp [top_pow]
     · have := pow_ne_zero (n + 1) ha
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [inv_pow]
 
 protected theorem mul_inv_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a * a⁻¹ = 1 := by
   lift a to ℝ≥0 using ht
-  norm_cast at h0; norm_cast
+  norm_cast at h0; fail_if_not_idempotent norm_cast
   exact mul_inv_cancel₀ h0
 
 protected theorem inv_mul_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a⁻¹ * a = 1 :=
@@ -675,7 +675,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
   rcases exists_inv_nat_lt ha with ⟨n, hn⟩
   refine ⟨n, lt_trans ?_ hn⟩
   rw [← ENNReal.inv_pow, ENNReal.inv_lt_inv]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact n.lt_two_pow_self
 
 @[simp, norm_cast]

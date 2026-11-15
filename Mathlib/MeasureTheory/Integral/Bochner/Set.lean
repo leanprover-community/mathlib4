@@ -218,7 +218,7 @@ theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι �
   congr with x
   convert! Finset.indicator_biUnion_eq_sum_powerset t s f x with u hu
   rw [indicator_smul_apply]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpace X}
     {μ : Measure X} {s : Set X} (hs : μ s ≠ ∞ := by finiteness) :

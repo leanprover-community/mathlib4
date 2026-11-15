@@ -390,7 +390,7 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     convert! eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono |>.symm
     · simp
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
   -- The variation of `f` on any subinterval `[x, y]` of `[a, b]` of length `< δ` is `≤ 1`.
   have v_each (x y : ℝ) (_ : a ≤ x) (_ : x ≤ y) (_ : y < x + δ) (_ : y ≤ b) :
       eVariationOn f (Icc x y) ≤ 1 := by
@@ -434,10 +434,10 @@ theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
   -- Verify that `[a + i * δ', a + (i + 1) * δ']` is indeed a subinterval of `[a, b]`
   apply v_each
   · convert h_mono (show 0 ≤ i by lia); simp
-  · convert h_mono (show i ≤ i + 1 by lia); norm_cast
+  · convert h_mono (show i ≤ i + 1 by lia); fail_if_not_idempotent norm_cast
   · rw [add_mul, ← add_assoc]; simpa
   · convert h_mono (show i + 1 ≤ n + 1 by lia)
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
     · simp only [Nat.cast_add, Nat.cast_one, δ']; field
 
 /-- If `f` is absolute continuous on `uIcc a b`, then `f'` exists a.e. on `uIcc a b`. -/

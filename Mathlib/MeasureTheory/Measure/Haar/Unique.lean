@@ -503,7 +503,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · refine fun n ↦ Eventually.of_forall (fun x ↦ ?_)
       by_cases hx : x ∈ tsupport f
       · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, indicator_of_mem]
-        norm_cast
+        fail_if_not_idempotent norm_cast
         exact thickenedIndicator_le_one _ _ _
       · simp only [v, Real.norm_eq_abs, NNReal.abs_eq, hx, not_false_eq_true, indicator_of_notMem]
         rw [thickenedIndicator_zero]

@@ -954,7 +954,7 @@ lemma RelCWComplex.skeletonLT_union_iUnion_closedCell_eq_skeletonLT_succ [RelCWC
     (skeletonLT C n : Set X) ∪ ⋃ (j : cell C n), closedCell n j = skeletonLT C (n + 1) := by
   rw [coe_skeletonLT, coe_skeletonLT, union_assoc]
   congr
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact (biUnion_lt_succ _ _).symm
 
 @[alias_in CWComplex]

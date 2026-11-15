@@ -156,7 +156,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
         m ∣ (f a).natAbs ^ 2 + (f b).natAbs ^ 2 + (f c).natAbs ^ 2 + (f d).natAbs ^ 2 := by
       simp only [← Int.natCast_dvd_natCast, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
       push_cast [hf_mod, sq_abs]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [habcd]
     -- The quotient `r` is not zero, because otherwise `f a = f b = f c = f d = 0`, hence
     -- `m` divides each `a`, `b`, `c`, `d`, thus `m ∣ p` which is impossible.
@@ -193,7 +193,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     · suffices ((a : ZMod m) ^ 2 + (b : ZMod m) ^ 2 + (c : ZMod m) ^ 2 + (d : ZMod m) ^ 2) = 0 by
         simpa [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, sq, add_comm, add_assoc,
           add_left_comm] using this
-      norm_cast
+      fail_if_not_idempotent norm_cast
       simp [habcd]
     · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
     · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]

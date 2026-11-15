@@ -189,7 +189,7 @@ nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
 
 nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
     HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by
-  rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
+  rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; fail_if_not_idempotent norm_cast
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
     ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=

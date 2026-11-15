@@ -577,7 +577,7 @@ theorem coe_inj {q r : ℚ} : (↑q : ℚ_[p]) = ↑r ↔ q = r :=
 instance : CharZero ℚ_[p] :=
   ⟨fun m n ↦ by
     rw [← Rat.cast_natCast]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact id⟩
 
 @[norm_cast]
@@ -918,12 +918,12 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [eq_padicNorm]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_ne_zero hnz', padicValRat, neg_sub,
         multiplicity_eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
       apply inv_le_one_of_one_le₀
-      norm_cast
+      fail_if_not_idempotent norm_cast
       apply one_le_pow
       exact hp.1.pos
 
@@ -939,7 +939,7 @@ theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
     apply le_of_eq
     rw [eq_comm]
     calc
-      ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by norm_cast
+      ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by fail_if_not_idempotent norm_cast
       _ = padicNorm p k := eq_padicNorm _
       _ = 1 := mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
@@ -974,7 +974,7 @@ theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
     ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k := by
   have : (p : ℝ) ^ (-n : ℤ) = (p : ℚ) ^ (-n : ℤ) := by simp
   rw [show (k : ℚ_[p]) = ((k : ℚ) : ℚ_[p]) by norm_cast, eq_padicNorm, this]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
 
 theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=

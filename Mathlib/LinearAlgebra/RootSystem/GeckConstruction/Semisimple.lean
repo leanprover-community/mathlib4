@@ -154,7 +154,7 @@ omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
   suffices ∑ j, P.pairingIn ℤ j i = 0 by
     simp only [h_eq_diagonal, Matrix.trace_diagonal, Fintype.sum_sum_type, Finset.univ_eq_attach,
       Sum.elim_inl, Pi.zero_apply, Finset.sum_const_zero, Sum.elim_inr, zero_add]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   suffices ∑ j, P.pairingIn ℤ (-j) i = ∑ j, P.pairingIn ℤ j i from
     eq_zero_of_neg_eq <| by simpa using this
   let σ : ι ≃ ι := Function.Involutive.toPerm _ neg_involutive

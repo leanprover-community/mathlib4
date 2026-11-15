@@ -53,7 +53,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
       _ = #P.parts.offDiag := Nat.smul_one_eq_cast _
       _ ≤ _ := by
         rw [offDiag_card, one_mul]
-        norm_cast
+        fail_if_not_idempotent norm_cast
         rw [sq]
         exact tsub_le_self
 
@@ -61,6 +61,6 @@ theorem energy_le_one : P.energy G ≤ 1 :=
 theorem coe_energy {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] :
     (P.energy G : 𝕜) =
       (∑ uv ∈ P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (#P.parts : 𝕜) ^ 2 := by
-  rw [energy]; norm_cast
+  rw [energy]; fail_if_not_idempotent norm_cast
 
 end Finpartition

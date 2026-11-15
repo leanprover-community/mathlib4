@@ -179,12 +179,12 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     | zero => norm_num
     | succ pn hpn =>
       calc
-        ↑(pn + 2) * f x = (↑pn + 1 + 1) * f x := by norm_cast
+        ↑(pn + 2) * f x = (↑pn + 1 + 1) * f x := by fail_if_not_idempotent norm_cast
         _ = (↑pn + 1) * f x + f x := by ring
         _ ≤ f (↑pn.succ * x) + f x := by norm_cast; grw [hpn pn.succ_pos]
         _ ≤ f ((↑pn + 1) * x + x) := by exact_mod_cast H2 _ _ (mul_pos pn.cast_add_one_pos hx) hx
         _ = f ((↑pn + 1 + 1) * x) := by ring_nf
-        _ = f (↑(pn + 2) * x) := by norm_cast
+        _ = f (↑(pn + 2) * x) := by fail_if_not_idempotent norm_cast
   have H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n := by
     intro n hn
     have hf1 : 1 ≤ f 1 := by
@@ -245,6 +245,6 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
       = f (x2denom * x) := (h_f_commutes_with_pos_nat_mul x2denom hx2pos x hx).symm
     _ = f x2num := by congr; linear_combination H
     _ = x2num := fixed_point_of_gt_1 hx2num_gt_one H1 H2 H4 H5 ha1 hae
-    _ = ((x2num : ℚ) : ℝ) := by norm_cast
+    _ = ((x2num : ℚ) : ℝ) := by fail_if_not_idempotent norm_cast
     _ = (↑(x2denom * x) : ℝ) := by congr; linear_combination -H
     _ = x2denom * x := by push_cast; rfl

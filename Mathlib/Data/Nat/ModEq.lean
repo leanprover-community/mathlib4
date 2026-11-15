@@ -445,20 +445,20 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
         rw [modEq_iff_dvd, modEq_iff_dvd,
           Int.toNat_of_nonneg (Int.emod_nonneg _ (Int.natCast_ne_zero.2 (lcm_ne_zero hn hm)))]
         have hnonzero : (gcd n m : ℤ) ≠ 0 := by
-          norm_cast
+          fail_if_not_idempotent norm_cast
           rw [Nat.gcd_eq_zero_iff, not_and]
           exact fun _ => hm
         have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t => h.dvd.mul_left _
         have := gcd_eq_gcd_ab n m
         constructor <;> rw [Int.emod_def, ← sub_add] <;>
             refine Int.dvd_add ?_ (dvd_mul_of_dvd_left ?_ _) <;>
-          try norm_cast
+          try fail_if_not_idempotent norm_cast
         · rw [← sub_eq_iff_eq_add'] at this
           rw [← this, Int.sub_mul, ← add_sub_assoc, add_comm, add_sub_assoc, ← Int.mul_sub,
             Int.add_ediv_of_dvd_left, Int.mul_ediv_cancel_left _ hnonzero,
             Int.mul_ediv_assoc _ h.dvd, ← sub_sub, sub_self, zero_sub, Int.dvd_neg, mul_assoc]
           · exact dvd_mul_right _ _
-          norm_cast
+          fail_if_not_idempotent norm_cast
           exact dvd_mul_right _ _
         · exact dvd_lcm_left n m
         · rw [← sub_eq_iff_eq_add] at this

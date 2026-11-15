@@ -273,6 +273,6 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_lt
   rw [Metric.tendsto_nhdsWithin_nhds] at h ⊢
   convert! h
   simp_rw [Function.comp_apply, dist_eq_norm]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 end Real

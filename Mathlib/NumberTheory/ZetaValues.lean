@@ -368,7 +368,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         enter [1, 2]
         rw [pow_mul, I_sq]
       ring
-  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
+  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by fail_if_not_idempotent norm_cast
   convert! ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
@@ -404,7 +404,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         enter [1, 2]
         rw [pow_add, pow_one, pow_mul, I_sq]
       ring
-  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
+  have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by fail_if_not_idempotent norm_cast
   convert! ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr

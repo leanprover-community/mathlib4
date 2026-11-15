@@ -297,7 +297,7 @@ lemma cpow_ofReal (x : ℂ) (y : ℝ) :
   rcases eq_or_ne x 0 with rfl | hx
   · simp [ofReal_cpow le_rfl]
   · rw [cpow_def_of_ne_zero hx, exp_eq_exp_re_mul_sin_add_cos, mul_comm (log x)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [re_ofReal_mul, im_ofReal_mul, log_re, log_im, mul_comm y, mul_comm y, Real.exp_mul,
       Real.exp_log]
     rwa [norm_pos_iff]

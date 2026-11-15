@@ -174,7 +174,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   | ⊤ => exact Iff.rfl
   | (⊤ : ℕ∞) => simp
   | (n : ℕ) =>
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp only [natCast_ne_top]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun

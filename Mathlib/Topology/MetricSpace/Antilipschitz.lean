@@ -51,7 +51,7 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α →
 theorem antilipschitzWith_iff_le_mul_nndist :
     AntilipschitzWith K f ↔ ∀ x y, nndist x y ≤ K * nndist (f x) (f y) := by
   simp only [AntilipschitzWith, edist_nndist]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 alias ⟨AntilipschitzWith.le_mul_nndist, AntilipschitzWith.of_le_mul_nndist⟩ :=
   antilipschitzWith_iff_le_mul_nndist
@@ -59,7 +59,7 @@ alias ⟨AntilipschitzWith.le_mul_nndist, AntilipschitzWith.of_le_mul_nndist⟩ 
 theorem antilipschitzWith_iff_le_mul_dist :
     AntilipschitzWith K f ↔ ∀ x y, dist x y ≤ K * dist (f x) (f y) := by
   simp only [antilipschitzWith_iff_le_mul_nndist, dist_nndist]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
   antilipschitzWith_iff_le_mul_dist

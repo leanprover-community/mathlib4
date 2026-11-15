@@ -559,7 +559,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (hr : ‖r�
         apply isBigO_iff.2 ⟨2 ^ k, ?_⟩
         filter_upwards [Ioi_mem_atTop k] with n (hn : k < n)
         simp only [Real.norm_eq_abs, abs_cast, cast_pow, norm_pow]
-        norm_cast
+        fail_if_not_idempotent norm_cast
         calc (n + k).choose k
           _ ≤ (2 * n).choose k := choose_le_choose k (by lia)
           _ ≤ (2 * n) ^ k := Nat.choose_le_pow _ _

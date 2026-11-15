@@ -286,7 +286,7 @@ theorem IsRat.isInt_round {R : Type*} [Field R] [LinearOrder R] [IsStrictOrdered
   subst res
   constructor
   rw [invOf_eq_inv, ← div_eq_mul_inv]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 /-- local copy tagged `meta` for evaluation of `round` below -/
 private meta local instance : FloorRing ℚ :=

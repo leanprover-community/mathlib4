@@ -190,7 +190,7 @@ theorem theta_eq_log_primorial (x : ℝ) : θ x = log (primorial ⌊x⌋₊) := 
 theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   rw [theta_eq_log_primorial]
   trans log (4 ^ ⌊x⌋₊)
-  · gcongr <;> norm_cast
+  · gcongr <;> fail_if_not_idempotent norm_cast
     exacts [primorial_pos _, primorial_le_four_pow _]
   rw [Real.log_pow, mul_comm]
   gcongr
@@ -460,7 +460,7 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
       · linarith
       · exact floor_le (by bound)
     apply le_floor
-    norm_cast
+    fail_if_not_idempotent norm_cast
     apply one_le_div _ |>.mpr <;> bound
   _ = (log 4 / log 2) * x.sqrt * x.log := by field
   _ = _ := by
@@ -638,7 +638,7 @@ theorem psi_sub_theta_le_mul_sqrt : ∃ C, ∀ x, ψ x - θ x ≤ C * x.sqrt := 
   rcases le_total x 1 with h | h
   · rw [theta_eq_zero_of_le_one h, psi_eq_zero_of_le_one h, sub_self]; positivity
   have (n : ℕ) (hn : 2 ≤ n) : ψ (x ^ (1 / (n : ℝ))) ≤ (log 4 + 4) * x.sqrt := by
-    grw [psi_le_const_mul_self (by positivity), sqrt_eq_rpow x]; gcongr; norm_cast
+    grw [psi_le_const_mul_self (by positivity), sqrt_eq_rpow x]; gcongr; fail_if_not_idempotent norm_cast
   linarith [psi_sub_theta_le_psi_add_psi_add_psi x, this 2 (le_refl _), this 3 (by simp),
     this 5 (by simp)]
 
@@ -883,7 +883,7 @@ lemma pi_ge_of_four_le {n : ℕ} (hn : 4 ≤ n) : n * log 2 / log n ≤ π n := 
   · grw [psi_ge_of_seven_le hn', ← psi_le_primeCounting_mul_log]
   rw [← exp_le_exp]
   iterate 2 rw [mul_comm, exp_mul, exp_log (by positivity)]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   decide +revert
 
 theorem theta_le_pi_mul_log (n : ℕ) : θ n ≤ (π n) * log n :=
@@ -908,7 +908,7 @@ private theorem pi_mul_log_sqrt_le {x : ℝ} (hx : 1 ≤ x) :
     gcongr
     · exact log_nonneg (one_le_sqrt.mpr hx)
     refine le_trans ?_ <| floor_le (sqrt_nonneg x)
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [show ⌊√x⌋₊ = #(Icc 1 ⌊√x⌋₊) by simp]
     refine card_le_card fun p hp ↦ ?_
     simp only [mem_filter, mem_Icc, mem_primesLE] at hp ⊢

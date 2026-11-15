@@ -546,7 +546,7 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
           (ENNReal.zpow_ne_top t_ne_zero ht' n)
         rw [zpow_neg_one]
         exact ENNReal.inv_lt_one.2 ht
-      _ ≤ (t ^ 2 • ρ) (s ∩ f ⁻¹' I) := by norm_cast
+      _ ≤ (t ^ 2 • ρ) (s ∩ f ⁻¹' I) := by fail_if_not_idempotent norm_cast
   calc
     ν s =
       ν (s ∩ f ⁻¹' {0}) + ν (s ∩ f ⁻¹' {∞}) +
@@ -593,7 +593,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0∞} 
         apply v.measure_le_mul_of_subset_limRatioMeas_lt hρ
         intro x hx
         apply hx.2.2.trans_le (le_of_eq _)
-        norm_cast
+        fail_if_not_idempotent norm_cast
       _ = ∫⁻ _ in s ∩ f ⁻¹' I, t ^ (n + 1) ∂μ := by
         simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
       _ ≤ ∫⁻ x in s ∩ f ⁻¹' I, t * f x ∂μ := by

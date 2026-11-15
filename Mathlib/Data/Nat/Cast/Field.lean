@@ -46,7 +46,7 @@ lemma cast_div_charZero (hnm : n ∣ m) : (↑(m / n) : K) = m / n := by
 lemma cast_div_div_div_cancel_right (hn : d ∣ n) (hm : d ∣ m) :
     (↑(m / d) : K) / (↑(n / d) : K) = (m : K) / n := by
   rcases eq_or_ne d 0 with (rfl | hd); · simp [Nat.zero_dvd.1 hm]
-  replace hd : (d : K) ≠ 0 := by norm_cast
+  replace hd : (d : K) ≠ 0 := by fail_if_not_idempotent norm_cast
   rw [cast_div hm, cast_div hn, div_div_div_cancel_right₀ hd] <;> exact hd
 
 end Nat

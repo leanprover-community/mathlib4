@@ -86,7 +86,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
 theorem ofReal_arctan (x : ℝ) : (Real.arctan x : ℂ) = arctan x := by
   conv_rhs => rw [← Real.tan_arctan x]
   rw [ofReal_tan, arctan_tan]
-  all_goals norm_cast
+  all_goals fail_if_not_idempotent norm_cast
   · rw [← ne_eq]; exact (Real.arctan_lt_pi_div_two _).ne
   · exact Real.neg_pi_div_two_lt_arctan _
   · exact (Real.arctan_lt_pi_div_two _).le

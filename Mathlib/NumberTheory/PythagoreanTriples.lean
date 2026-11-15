@@ -169,7 +169,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
     ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
   have hk : (k : ℤ) ≠ 0 := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rwa [pos_iff_ne_zero] at k0
   rw [Int.gcd_mul_right, h2, Int.natAbs_natCast, one_mul] at h ⊢
   rw [mul_comm x0, mul_comm y0, mul_iff k hk] at h
@@ -322,7 +322,7 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
   rw [← Int.natCast_dvd] at hp1 hp2
   have hnp : ¬(p : ℤ) ∣ Int.gcd m n := by
     rw [h]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact mt Nat.dvd_one.mp (Nat.Prime.ne_one hp)
   rcases Int.Prime.dvd_mul hp hp2 with hp2m | hpn
   · rw [Int.natAbs_mul] at hp2m
@@ -405,13 +405,13 @@ theorem isPrimitiveClassified_aux (hc : x.gcd y = 1) (hzpos : 0 < z) {m n : ℤ}
   have h2 : y = m ^ 2 - n ^ 2 ∧ z = m ^ 2 + n ^ 2 := by
     apply Rat.div_int_inj hzpos hm2n2 (h.coprime_of_coprime hc) H
     rw [hw2]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   use m, n
   apply And.intro _ (And.intro co pp)
   right
   refine ⟨?_, h2.left⟩
   rw [← Rat.intCast_inj, ← div_left_inj₀ (mt Rat.intCast_inj.mp hz), hv2, h2.right]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (hyo : y % 2 = 1)
     (hzpos : 0 < z) : h.IsPrimitiveClassified := by
@@ -422,7 +422,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   have hq : v ^ 2 + w ^ 2 = 1 := by
     simp [field, v, w]
     simp only [sq]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   have hvz : v ≠ 0 := by simp [field, v, -mul_eq_zero, -div_eq_zero_iff, h0]
   have hw1 : w ≠ -1 := by
     contrapose hvz with hw1
@@ -445,7 +445,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     -- One might try `zeta := true` in `Tactic.NormCast.derive`,
     -- but that seems to break many other things.
     unfold m
-    norm_cast
+    fail_if_not_idempotent norm_cast
     apply Rat.den_nz q
   have hq2 : q = n / m := (Rat.num_div_den q).symm
   have hm2n2 : 0 < m ^ 2 + n ^ 2 := by positivity
@@ -493,7 +493,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
       · change w = _
         rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by simp : (2 : ℤ) ≠ 0)]
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
-        norm_cast
+        fail_if_not_idempotent norm_cast
       · lia
     simp [h2.1, h1.2.2.1] at hyo
 

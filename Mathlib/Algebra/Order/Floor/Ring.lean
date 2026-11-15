@@ -601,7 +601,7 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   have hn' : 0 < (n : k) := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
   refine fract_eq_iff.mpr ⟨?_, ?_, m / n, ?_⟩
   · positivity
   · simpa only [div_lt_one hn', Nat.cast_lt] using m.mod_lt hn
@@ -614,7 +614,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
-  replace hn : 0 < (n : k) := by norm_cast
+  replace hn : 0 < (n : k) := by fail_if_not_idempotent norm_cast
   have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
     intro l hl
     obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg

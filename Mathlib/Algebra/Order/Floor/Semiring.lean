@@ -210,7 +210,7 @@ theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsOrderedAddMonoid R]
     ⌈(z : R)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by
     simp only [ceil_le, Int.toNat_le]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 @[simp]
 theorem ceil_natCast (n : ℕ) : ⌈(n : R)⌉₊ = n :=

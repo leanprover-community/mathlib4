@@ -142,7 +142,7 @@ variable [AddCommGroup α] [LinearOrder α] {a b : WithTop α}
     (min a b).untop₀ = min a.untop₀ b.untop₀ := by
   lift a to α using ha
   lift b to α using hb
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 end LinearOrderedAddCommGroup
 

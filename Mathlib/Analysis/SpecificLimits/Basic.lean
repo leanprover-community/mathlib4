@@ -690,7 +690,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
         rw [Finset.mem_range] at hx
       · positivity
       · refine (div_le_one <| mod_cast hn).mpr ?_
-        norm_cast
+        fail_if_not_idempotent norm_cast
         lia)
 
 /-!

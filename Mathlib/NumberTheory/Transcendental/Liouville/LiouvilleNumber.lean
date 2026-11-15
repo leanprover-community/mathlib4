@@ -163,7 +163,7 @@ theorem partialSum_eq_rat {m : ℕ} (hm : 0 < m) (k : ℕ) :
     rcases h with ⟨p_k, h_k⟩
     use p_k * m ^ ((k + 1)! - k !) + 1
     rw [partialSum_succ, h_k, div_add_div, div_eq_div_iff, add_mul]
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       rw [add_mul, one_mul, Nat.factorial_succ, add_mul, one_mul, add_tsub_cancel_right, pow_add]
       simp [mul_assoc]
     all_goals positivity
@@ -174,8 +174,8 @@ open LiouvilleNumber
 
 theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvilleNumber m) := by
   -- two useful inequalities
-  have mZ1 : 1 < (m : ℤ) := by norm_cast
-  have m1 : 1 < (m : ℝ) := by norm_cast
+  have mZ1 : 1 < (m : ℤ) := by fail_if_not_idempotent norm_cast
+  have m1 : 1 < (m : ℝ) := by fail_if_not_idempotent norm_cast
   intro n
   -- the first `n` terms sum to `p / m ^ k!`
   rcases partialSum_eq_rat (zero_lt_two.trans_le hm) n with ⟨p, hp⟩

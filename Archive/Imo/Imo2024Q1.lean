@@ -91,7 +91,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
     · calc ⌈α⁻¹⌉₊ * α
         _ < (α⁻¹ + 1) * α := by gcongr; exact Nat.ceil_lt_add_one (inv_nonneg.2 h0.le)
         _ = 1 + α := by field
-        _ ≤ (1 : ℕ) + 1 := by gcongr; norm_cast
+        _ ≤ (1 : ℕ) + 1 := by gcongr; fail_if_not_idempotent norm_cast
   · apply Finset.sum_eq_zero
     intro x hx
     rw [Int.floor_eq_zero_iff]

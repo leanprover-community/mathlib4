@@ -207,7 +207,7 @@ lemma weierstrassP_bound (r : ℝ) (hr : 0 < r) (s : ℂ) (hs : ‖s‖ < r) (l 
       simp only [Complex.norm_mul, Complex.norm_ofNat]
       linarith
     _ = 10 * r / ‖l‖ ^ 3 := by field
-    _ = _ := by norm_cast
+    _ = _ := by fail_if_not_idempotent norm_cast
 
 section weierstrassPExcept
 
@@ -350,7 +350,7 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
   simp only [Complex.norm_div, norm_neg, Complex.norm_ofNat, norm_pow]
   rw [Real.rpow_neg (by positivity), ← div_eq_mul_inv, div_le_div_iff₀, norm_sub_rev]
   · refine LE.le.trans_eq (b := 2 * (2 * ‖l - s‖) ^ 3) ?_ (by ring)
-    norm_cast
+    fail_if_not_idempotent norm_cast
     gcongr
     refine le_trans ?_ (mul_le_mul le_rfl (norm_sub_norm_le _ _) (by linarith) (by linarith))
     fail_if_not_idempotent norm_cast at *
@@ -704,7 +704,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
         simp [hpx, zpow_sub₀, div_pow]; field
       _ ≤ (p.1 + 2) * (κ ^ p.1)⁻¹ * ((‖p.2 - x‖ ^ 3)⁻¹ * ‖z - x‖) := by
         gcongr
-        · norm_cast
+        · fail_if_not_idempotent norm_cast
         · exact (le_div_iff₀ (by simpa [sub_eq_zero])).mpr ((mul_comm _ _).trans_le (hκ' p.2 hp).le)
       _ = _ := by simp [zpow_ofNat]
 

@@ -108,7 +108,7 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
       Int.cast_sub]
     apply Subtype.coe_injective
     simp only [coe_mul, coe_natCast]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
   exact norm_sub_modPart_aux r h
 
@@ -333,7 +333,7 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     rw [← sub_zero x] at h
     dsimp [toZMod, toZModHom]
     convert zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
     · apply sub_zmodRepr_mem
 
 @[simp]
@@ -564,7 +564,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   -- Need to do beta reduction first, as `norm_cast` doesn't.
   -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
   beta_reduce
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
   exact mod_cast pow_dvd_nthHom_sub f_compat r k j hj
 
@@ -630,7 +630,7 @@ theorem limNthHom_spec (r : R) :
   intro n hn
   apply _root_.lt_trans _ hε'
   change (padicNormE _ : ℝ) < _
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact hN _ hn
 
 theorem limNthHom_zero : limNthHom f_compat 0 = 0 := by simp [limNthHom]; rfl

@@ -467,7 +467,7 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   rw [← ofReal_inj, ofReal_mul, ← Gamma_ofReal, ofReal_cpow (by positivity), ofReal_div]
   convert integral_cpow_mul_exp_neg_mul_Ioi (by rwa [ofReal_re] : 0 < (a : ℂ).re) hr
   refine integral_ofReal.symm.trans <| setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp_rw [← ofReal_cpow ht.le, RCLike.ofReal_mul, coe_algebraMap]
 
 open Lean.Meta Qq Mathlib.Meta.Positivity in

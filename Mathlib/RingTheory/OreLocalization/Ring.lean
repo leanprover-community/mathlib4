@@ -47,7 +47,7 @@ protected theorem add_smul (y z : R[S⁻¹]) (x : X[S⁻¹]) :
   clear q
   have hs₃rasb : sb * ra * s₃ ∈ S := by
     rw [mul_assoc, ← ha]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     apply SetLike.coe_mem
   rw [OreLocalization.expand _ _ _ hs₃rasb]
   have ha' : ↑((sb * sa) * s₂) = sb * ra * s₃ := by simp [ha, mul_assoc]

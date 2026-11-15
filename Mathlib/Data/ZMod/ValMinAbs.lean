@@ -151,7 +151,7 @@ theorem natAbs_valMinAbs_eq_natAbs_valMinAbs :
 theorem abs_valMinAbs_eq_abs_valMinAbs :
     |a.valMinAbs| = |b.valMinAbs| ↔ a = b ∨ a = -b := by
   rw [← natAbs_valMinAbs_eq_natAbs_valMinAbs, Int.abs_eq_natAbs, Int.abs_eq_natAbs]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 lemma val_eq_ite_valMinAbs [NeZero n] (a : ZMod n) :
     (a.val : ℤ) = a.valMinAbs + if a.val ≤ n / 2 then 0 else n := by

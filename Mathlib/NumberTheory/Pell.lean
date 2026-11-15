@@ -367,7 +367,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     rw [← Int.natAbs_dvd, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
     push_cast
     rw [hq1, hq2, ← sq, ← sq]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [ZMod.intCast_zmod_eq_zero_iff_dvd, Int.natAbs_dvd, Nat.cast_pow, ← h₂]
   have hd₂ : m ∣ q₁.num * q₂.den - q₂.num * q₁.den := by
     rw [← Int.natAbs_dvd, ← ZMod.intCast_eq_intCast_iff_dvd_sub]
@@ -378,7 +378,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
       ?_, ?_⟩
   · qify [hd₁, hd₂]
     field_simp
-    norm_cast
+    fail_if_not_idempotent norm_cast
     grind
   · qify [hd₂]
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩

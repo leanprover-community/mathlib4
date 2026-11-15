@@ -76,11 +76,11 @@ theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
 theorem toENNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
   toENNRealOrderEmbedding.lt_iff_lt
 
-@[simp] lemma toENNReal_le_natCast {m : ℕ∞} {n : ℕ} : toENNReal m ≤ n ↔ m ≤ n := by norm_cast
-@[simp] lemma toENNReal_lt_natCast {m : ℕ∞} {n : ℕ} : toENNReal m < n ↔ m < n := by norm_cast
+@[simp] lemma toENNReal_le_natCast {m : ℕ∞} {n : ℕ} : toENNReal m ≤ n ↔ m ≤ n := by fail_if_not_idempotent norm_cast
+@[simp] lemma toENNReal_lt_natCast {m : ℕ∞} {n : ℕ} : toENNReal m < n ↔ m < n := by fail_if_not_idempotent norm_cast
 
-@[simp] lemma natCast_le_toENNReal {m : ℕ} {n : ℕ∞} : m ≤ toENNReal n ↔ m ≤ n := by norm_cast
-@[simp] lemma natCast_lt_toENNReal {m : ℕ} {n : ℕ∞} : m < toENNReal n ↔ m < n := by norm_cast
+@[simp] lemma natCast_le_toENNReal {m : ℕ} {n : ℕ∞} : m ≤ toENNReal n ↔ m ≤ n := by fail_if_not_idempotent norm_cast
+@[simp] lemma natCast_lt_toENNReal {m : ℕ} {n : ℕ∞} : m < toENNReal n ↔ m < n := by fail_if_not_idempotent norm_cast
 
 @[simp, norm_cast]
 lemma toENNReal_lt_top : (n : ℝ≥0∞) < ∞ ↔ n < ⊤ := by simp [← toENNReal_lt]

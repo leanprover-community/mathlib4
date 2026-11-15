@@ -139,7 +139,7 @@ theorem mul_polyOfInterest_aux3 (p n : ℕ) : wittPolyProd p (n + 1) =
     (p : 𝕄) ^ (n + 1) * X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
     remainder p n := by
   -- a useful auxiliary fact
-  have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by norm_cast
+  have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by fail_if_not_idempotent norm_cast
   rw [wittPolyProd, wittPolynomial, map_sum, map_sum]
   conv_lhs =>
     arg 1
@@ -190,7 +190,7 @@ theorem polyOfInterest_vars_eq (n : ℕ) : (polyOfInterest p n).vars =
     ((p : 𝕄) ^ (n + 1) * (wittMul p (n + 1) + (p : 𝕄) ^ (n + 1) * X (0, n + 1) * X (1, n + 1) -
       X (0, n + 1) * rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ (n + 1)) -
       X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)))).vars := by
-  have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by norm_cast
+  have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by fail_if_not_idempotent norm_cast
   rw [polyOfInterest, this, vars_C_mul]
   apply pow_ne_zero
   exact mod_cast hp.out.ne_zero

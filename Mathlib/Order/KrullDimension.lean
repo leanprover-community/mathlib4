@@ -206,7 +206,7 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
       simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.natCast_sub,
         Nat.cast_one, p'] at this
       convert this
-      norm_cast
+      fail_if_not_idempotent norm_cast
       lia
     refine le_iSup₂_of_le p' ?_ le_rfl
     simp [p']
@@ -429,7 +429,7 @@ lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ ∀ y < x, heigh
   congr! 2 with y _
   cases height y
   · simp
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
 
 lemma coheight_le_coe_iff {x : α} {n : ℕ} : coheight x ≤ n ↔ ∀ y > x, coheight y < n :=
   height_le_coe_iff (α := αᵒᵈ)
@@ -779,7 +779,7 @@ lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
     height (LTSeries.longestOf α).last = krullDim α := by
   refine le_antisymm (height_le_krullDim _) ?_
   rw [krullDim_eq_length_of_finiteDimensionalOrder, height]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact le_iSup_iff.mpr <| fun _ h ↦ iSup_le_iff.mp (h _) le_rfl
 
 /--
@@ -1072,7 +1072,7 @@ lemma coheight_zero_of_coheight_one_of_strictMono
 
 @[simp] lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp_rw [WithTop.lt_top_iff_ne_top]
   rw [ENat.iSup_add, iSup_subtype']
   symm

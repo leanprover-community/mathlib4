@@ -363,7 +363,7 @@ lemma add_sub_add_eq_sub_right (hc : c ≠ ∞ := by finiteness) : (a + c) - (b 
   · simp
   · simp
   · simp
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     rw [add_tsub_add_eq_tsub_right]
 
 lemma add_sub_add_eq_sub_left (hc : c ≠ ∞ := by finiteness) : (c + a) - (c + b) = a - b := by
@@ -458,7 +458,7 @@ lemma sub_sub_sub_cancel_left (ha : a ≠ ∞) (h : b ≤ a) : a - c - (a - b) =
   lift b to ℝ≥0 using hb
   cases c
   · simp
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     rw [tsub_tsub_tsub_cancel_left]
     exact mod_cast h
 

@@ -118,7 +118,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
     exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.add_one_mul_choose_eq n ν).symm
   · rw [← tsub_add_eq_tsub_tsub, ← mul_assoc, ← mul_assoc]; congr 1
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
-    norm_cast
+    fail_if_not_idempotent norm_cast
     congr 1
     convert (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
     · convert mul_comm _ _ using 2
@@ -185,7 +185,7 @@ theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n)
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 ≠ 0 := by
   simp only [bernsteinPolynomial.iterate_derivative_at_0, Ne]
   simp only [← ascPochhammer_eval_cast]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   apply ne_of_gt
   obtain rfl | h' := Nat.eq_zero_or_pos ν
   · simp
@@ -213,7 +213,7 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
     eval_sub, eval_X, sub_self, iterate_derivative_at_0]
   obtain rfl | h' := h.eq_or_lt
   · simp
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     congr
     lia
 

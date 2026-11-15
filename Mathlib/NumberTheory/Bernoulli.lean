@@ -149,7 +149,7 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k ∈ range n, (n.choose k : ℚ) * bern
   simp_rw [mul_sum, ← mul_assoc]
   refine sum_congr rfl fun k hk => ?_
   congr
-  have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by norm_cast
+  have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by fail_if_not_idempotent norm_cast
   simp only [← cast_sub (mem_range.1 hk).le, succ_eq_add_one, field, mul_comm]
   rw_mod_cast [tsub_add_eq_add_tsub (mem_range.1 hk).le, choose_mul_succ_eq]
 
@@ -369,7 +369,7 @@ theorem sum_Ico_pow (n p : ℕ) :
     this
   -- prove some algebraic facts that will make things easier for us later on
   have hle := Nat.le_add_left 1 n
-  have hne : (p + 1 + 1 : ℚ) ≠ 0 := by norm_cast
+  have hne : (p + 1 + 1 : ℚ) ≠ 0 := by fail_if_not_idempotent norm_cast
   have h1 : ∀ r : ℚ, r * (p + 1 + 1) * (n : ℚ) ^ p.succ / (p + 1 + 1 : ℚ) = r * (n : ℚ) ^ p.succ :=
       fun r => by rw [mul_div_right_comm, mul_div_cancel_right₀ _ hne]
   have h2 : f 1 + (n : ℚ) ^ p.succ = 1 / 2 * (n : ℚ) ^ p.succ := by
@@ -485,7 +485,7 @@ private lemma pow_div_mem_pIntegrals {p M N : ℕ} [Fact p.Prime] (hM : M ≠ 0)
     congr 1
     rw [div_eq_iff (pow_ne_zero e hp_ne), ← pow_add, Nat.sub_add_cancel hv]
   have hM'_eq : ((p : ℚ) ^ (N - e) / (M' : ℚ)) = Rat.divInt (p ^ (N - e) : ℤ) (M' : ℤ) := by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp
   rw [hrw]
   exact mem_pIntegrals_iff_not_dvd_den.2 ((Nat.Prime.coprime_iff_not_dvd Fact.out).1

@@ -284,7 +284,7 @@ lemma IsPreBrownianReal.inv (hB : IsPreBrownianReal B P) :
     · simp
     have : 0 < t := (pos_of_ne_zero hs).trans_le hst
     rw [min_eq_right]
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       field_simp
     exact one_div_le_one_div_of_le (pos_of_ne_zero hs) hst
 

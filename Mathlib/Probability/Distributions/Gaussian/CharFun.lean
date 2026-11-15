@@ -75,7 +75,7 @@ lemma isGaussian_iff_gaussian_charFunDual [IsFiniteMeasure μ] :
   ext t
   simp_rw [charFun_map_eq_charFunDual_smul, h, charFun_gaussianReal,
     smul_apply, map_smul, smul_apply, smul_eq_mul]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   congrm exp (_ - ofReal ?_)
   rw [Real.coe_toNNReal]
   · ring

@@ -407,7 +407,7 @@ theorem image_subset_image {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₁.im
 
 theorem image_subset_iff : s.image f ⊆ t ↔ ∀ x ∈ s, f x ∈ t :=
   calc
-    s.image f ⊆ t ↔ f '' ↑s ⊆ ↑t := by norm_cast
+    s.image f ⊆ t ↔ f '' ↑s ⊆ ↑t := by fail_if_not_idempotent norm_cast
     _ ↔ _ := Set.image_subset_iff
 
 lemma mapsTo_iff_image_subset : Set.MapsTo f s t ↔ s.image f ⊆ t := by
@@ -417,7 +417,7 @@ alias ⟨_root_.Set.MapsTo.finsetImage_subset, _⟩ := mapsTo_iff_image_subset
 
 lemma surjOn_iff_subset_image : Set.SurjOn f s t ↔ t ⊆ s.image f := by
   simp only [Set.SurjOn]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 alias ⟨_root_.Set.SurjOn.subset_finsetImage, _⟩ := surjOn_iff_subset_image
 

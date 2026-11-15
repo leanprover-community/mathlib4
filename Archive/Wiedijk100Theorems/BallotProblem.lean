@@ -182,7 +182,7 @@ theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p 
     rw [counted_succ_succ, measure_union (disjoint_bits _ _) list_int_measurableSet,
       count_injective_image List.cons_injective, count_countedSequence _ _,
       count_injective_image List.cons_injective, count_countedSequence _ _]
-    fail_if_not_idempotent fail_if_not_idempotent norm_cast; fail_if_progress norm_cast
+    fail_if_not_idempotent norm_cast; fail_if_progress fail_if_not_idempotent norm_cast
     rw [add_assoc, add_comm 1 q, ← Nat.choose_succ_succ, Nat.succ_eq_add_one, add_right_comm]
 
 theorem first_vote_pos :

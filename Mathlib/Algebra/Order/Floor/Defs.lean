@@ -307,9 +307,9 @@ theorem floor_lt : ⌊a⌋ < z ↔ a < z :=
 theorem floor_le (a : α) : (⌊a⌋ : α) ≤ a :=
   gc_coe_floor.l_u_le a
 
-theorem floor_le_iff : ⌊a⌋ ≤ z ↔ a < z + 1 := by rw [← lt_add_one_iff, floor_lt]; norm_cast
+theorem floor_le_iff : ⌊a⌋ ≤ z ↔ a < z + 1 := by rw [← lt_add_one_iff, floor_lt]; fail_if_not_idempotent norm_cast
 
-theorem lt_floor_iff : z < ⌊a⌋ ↔ z + 1 ≤ a := by rw [← add_one_le_iff, le_floor]; norm_cast
+theorem lt_floor_iff : z < ⌊a⌋ ↔ z + 1 ≤ a := by rw [← add_one_le_iff, le_floor]; fail_if_not_idempotent norm_cast
 
 theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_zero]
 
@@ -330,9 +330,9 @@ theorem lt_ceil : z < ⌈a⌉ ↔ (z : α) < a :=
 theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
-lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
+lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; fail_if_not_idempotent norm_cast
 
-lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
+lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; fail_if_not_idempotent norm_cast
 
 theorem ceil_nonpos : ⌈a⌉ ≤ 0 ↔ a ≤ 0 := by rw [ceil_le, cast_zero]
 

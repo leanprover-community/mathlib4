@@ -180,7 +180,7 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       refine
         LinearMap.GeneralLinearGroup.generalLinearEquiv ℝ (Fin 2 → ℝ)
           (GeneralLinearGroup.toLin (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) ?_))
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 

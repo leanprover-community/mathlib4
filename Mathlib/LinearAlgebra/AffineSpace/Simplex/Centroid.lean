@@ -108,7 +108,7 @@ theorem smul_centroid_vsub_point_eq_sum_vsub [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
     ((n : k) + 1) • (s.centroid -ᵥ s.points i) = ∑ x, (s.points x -ᵥ s.points i) := by
   rw [centroid_eq_smul_sum_vsub_vadd s i, vadd_vsub, smul_smul, mul_inv_cancel₀, one_smul]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 /-- The sum of vectors from the centroid to each vertex is zero. -/
 theorem centroid_weighted_vsub_eq_zero [CharZero k] (s : Simplex k P n) :
@@ -133,7 +133,7 @@ theorem eq_centroid_iff_sum_vsub_eq_zero [CharZero k] {s : Simplex k P n} {p : P
       rw [vsub_sub_vsub_cancel_right _ _ s.centroid]
     rw [this, sum_sub_distrib, centroid_weighted_vsub_eq_zero] at h
     simp only [sum_const, card_univ, Fintype.card_fin, zero_sub, neg_eq_zero] at h
-    have h' : ((n : k) + 1) • (p -ᵥ s.centroid) = 0 := by norm_cast
+    have h' : ((n : k) + 1) • (p -ᵥ s.centroid) = 0 := by fail_if_not_idempotent norm_cast
     rw [smul_eq_zero_iff_right (by norm_cast)] at h'
     exact h'
 

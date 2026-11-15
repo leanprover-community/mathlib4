@@ -167,7 +167,7 @@ theorem one_div_one_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ (a + 1))
       (.ofScalars ℂ (𝕜 := ℂ) fun n ↦ ↑(Nat.choose (a + n) a)) 0 1 := by
   convert one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a + 1) with z n
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
   · rw [eq_comm, add_right_comm, add_sub_cancel_right, ← Nat.cast_add,
       Ring.choose_natCast, Nat.choose_symm_add]
 
@@ -240,7 +240,7 @@ theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
   convert (Complex.reCLM.comp_hasFPowerSeriesOnBall this.compContinuousLinearMap).congr ?_
   · ext; simp [Function.comp_def]
   · simp
-  · intro x hx; simp_all; norm_cast
+  · intro x hx; simp_all; fail_if_not_idempotent norm_cast
 
 theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
     HasFPowerSeriesAt (fun x ↦ (1 + x) ^ a) (binomialSeries ℝ a) 0 :=

@@ -341,7 +341,7 @@ theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
   induction s using Finset.cons_induction_on with
   | empty =>
     rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   | cons a s ha ih =>
     rw [Finset.sup_cons, Finset.sup_cons, coe_sup, Pi.sup_apply, NNReal.coe_max, NNReal.coe_mk, ih]
 

@@ -263,7 +263,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
       rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' hξ₀.ne', abs_div, abs_of_pos hξ₀,
         div_lt_iff₀ hξ₀, div_mul_comm, mul_one] at h
       refine Nat.cast_le.mp ((one_lt_div hq₀).mp <| lt_of_le_of_lt ?_ h).le
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [mul_comm _ q.num]
       exact Int.one_le_abs (sub_ne_zero_of_ne <| mt Rat.eq_iff_mul_eq_mul.mpr H)
   · obtain ⟨h₁, h₂⟩ :=
@@ -309,7 +309,7 @@ theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
   contrapose! h
   convert! Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [h, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 /-!
 ### Legendre's Theorem on Rational Approximation
@@ -420,7 +420,7 @@ private theorem aux₁ : 0 < fract ξ := by
     refine (mul_lt_iff_lt_one_right hv₀).1 ((inv_lt_inv₀ hv₀ (mul_pos hv₁ hv₂)).1 (h.trans_le' ?_))
     have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field
     rw [h', abs_div, abs_of_pos hv₀, ← one_div, div_le_div_iff_of_pos_right hv₀]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← zero_add (1 : ℤ), add_one_le_iff, abs_pos, sub_ne_zero]
     rintro rfl
     cases isUnit_iff.mp (isCoprime_self.mp (IsCoprime.mul_left_iff.mp hcop).2) <;> lia

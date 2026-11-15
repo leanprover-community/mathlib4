@@ -282,7 +282,7 @@ theorem padicValRat_le_padicValRat_iff {n₁ n₂ d₁ d₂ : ℤ} (hn₁ : n₁
     rw [padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₁ hd₁) rfl,
       padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₂ hd₂) rfl, sub_le_iff_le_add', ←
       add_sub_assoc, le_sub_iff_add_le]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf1, add_comm,
         ← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf2,
         hf1.multiplicity_le_multiplicity_iff hf2]

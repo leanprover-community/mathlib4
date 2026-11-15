@@ -253,7 +253,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
           simp [hx.1.le]
       _ = ∫ x in 0..N, x + 1 ∂ρ := by
         rw [intervalIntegral.sum_integral_adjacent_intervals fun k _ => ?_]
-        · norm_cast
+        · fail_if_not_idempotent norm_cast
         · exact (continuous_id.add continuous_const).intervalIntegrable _ _
       _ = ∫ x in 0..N, x ∂ρ + ∫ x in 0..N, 1 ∂ρ := by
         rw [intervalIntegral.integral_add]
@@ -325,7 +325,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
       congr 1 with j
       congr 1
       rw [intervalIntegral.sum_integral_adjacent_intervals]
-      · norm_cast
+      · fail_if_not_idempotent norm_cast
       intro k _
       exact (continuous_id.pow _).intervalIntegrable _ _
     _ = ∑ k ∈ range K, (∑ j ∈ Ioo k K, ((j : ℝ) ^ 2)⁻¹) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
@@ -356,7 +356,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
       rw [intervalIntegral.sum_integral_adjacent_intervals fun k _ => ?_]
       swap; · exact (continuous_const.mul continuous_id').intervalIntegrable _ _
       rw [intervalIntegral.integral_const_mul]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     _ ≤ 2 * 𝔼[X] := mul_le_mul_of_nonneg_left (by
       rw [← integral_truncation_eq_intervalIntegral_of_nonneg hint.1 hnonneg]
       exact integral_truncation_le_integral_of_nonneg hint hnonneg) zero_le_two

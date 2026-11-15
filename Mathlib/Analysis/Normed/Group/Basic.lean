@@ -1093,7 +1093,7 @@ theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
 theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ ball (b ^ n) (n • r) := by
   simp only [mem_ball, dist_eq_norm_inv_mul, ← inv_pow, ← mul_pow] at h ⊢
   refine lt_of_le_of_lt norm_pow_le_mul_norm ?_
-  replace hn : 0 < (n : ℝ) := by norm_cast
+  replace hn : 0 < (n : ℝ) := by fail_if_not_idempotent norm_cast
   rw [nsmul_eq_mul]
   nlinarith
 

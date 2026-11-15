@@ -217,7 +217,7 @@ theorem embedReal_one : (embedReal M) 1 = 1 := by
   · apply csSup_le (ratLt'_nonempty 1)
     suffices ∀ (x : ℚ), x.num • (1 : M) < (x.den : ℤ) • (1 : M) → (x : ℝ) ≤ 1 by simpa using this
     intro x hx
-    suffices x ≤ 1 by norm_cast
+    suffices x ≤ 1 by fail_if_not_idempotent norm_cast
     simpa [Rat.le_iff] using ((smul_lt_smul_iff_of_pos_right zero_lt_one).mp hx).le
   · rw [le_csSup_iff (ratLt'_bddAbove (1 : M)) (ratLt'_nonempty 1)]
     simp_rw [mem_upperBounds]

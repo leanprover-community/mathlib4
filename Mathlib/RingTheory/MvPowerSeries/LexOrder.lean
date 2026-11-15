@@ -127,10 +127,10 @@ theorem coeff_mul_of_add_lexOrder {φ ψ : MvPowerSeries σ R}
   · exact False.elim (h' (by simp [h''.1, h''.2]))
   · rw [coeff_eq_zero_of_lt_lexOrder (d := u), zero_mul]
     rw [hp]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   · rw [coeff_eq_zero_of_lt_lexOrder (d := v), mul_zero]
     rw [hq]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 theorem le_lexOrder_mul (φ ψ : MvPowerSeries σ R) :
     lexOrder φ + lexOrder ψ ≤ lexOrder (φ * ψ) := by

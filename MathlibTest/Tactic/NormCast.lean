@@ -1,5 +1,5 @@
 /-
-Tests for norm_cast
+Tests for fail_if_not_idempotent norm_cast
 -/
 module
 
@@ -18,28 +18,28 @@ variable (ar br cr dr : ℝ) (ac bc cc dc : ℂ)
 
 example : (an : ℤ) = bn → an = bn := by intro h; exact mod_cast h
 example : an = bn → (an : ℤ) = bn := by intro h; exact mod_cast h
-example : az = bz ↔ (az : ℚ) = bz := by norm_cast
+example : az = bz ↔ (az : ℚ) = bz := by fail_if_not_idempotent norm_cast
 
-example : (aq : ℝ) = br ↔ (aq : ℂ) = br := by norm_cast
-example : (an : ℚ) = bz ↔ (an : ℂ) = bz := by norm_cast
-example : (((an : ℤ) : ℚ) : ℝ) = bq ↔ ((an : ℚ) : ℂ) = (bq : ℝ) := by norm_cast
+example : (aq : ℝ) = br ↔ (aq : ℂ) = br := by fail_if_not_idempotent norm_cast
+example : (an : ℚ) = bz ↔ (an : ℂ) = bz := by fail_if_not_idempotent norm_cast
+example : (((an : ℤ) : ℚ) : ℝ) = bq ↔ ((an : ℚ) : ℂ) = (bq : ℝ) := by fail_if_not_idempotent norm_cast
 
-example : (an : ℤ) < bn ↔ an < bn := by norm_cast
-example : (an : ℚ) < bz ↔ (an : ℝ) < bz := by norm_cast
-example : ((an : ℤ) : ℝ) < bq ↔ (an : ℚ) < bq := by norm_cast
-example : (an : ℤ) ≠ (bn : ℤ) ↔ an ≠ bn := by norm_cast
+example : (an : ℤ) < bn ↔ an < bn := by fail_if_not_idempotent norm_cast
+example : (an : ℚ) < bz ↔ (an : ℝ) < bz := by fail_if_not_idempotent norm_cast
+example : ((an : ℤ) : ℝ) < bq ↔ (an : ℚ) < bq := by fail_if_not_idempotent norm_cast
+example : (an : ℤ) ≠ (bn : ℤ) ↔ an ≠ bn := by fail_if_not_idempotent norm_cast
 
 -- zero and one cause special problems
-example : 0 < (bq : ℝ) ↔ 0 < bq := by norm_cast
-example : az > (1 : ℕ) ↔ az > 1 := by norm_cast
-example : az > (0 : ℕ) ↔ az > 0 := by norm_cast
-example : (an : ℤ) ≠ 0 ↔ an ≠ 0 := by norm_cast
-example : aq < (1 : ℕ) ↔ (aq : ℚ) < (1 : ℤ) := by norm_cast
-example : aq < (1 : ℕ) ↔ (aq : ℝ) < (1 : ℤ) := by norm_cast
+example : 0 < (bq : ℝ) ↔ 0 < bq := by fail_if_not_idempotent norm_cast
+example : az > (1 : ℕ) ↔ az > 1 := by fail_if_not_idempotent norm_cast
+example : az > (0 : ℕ) ↔ az > 0 := by fail_if_not_idempotent norm_cast
+example : (an : ℤ) ≠ 0 ↔ an ≠ 0 := by fail_if_not_idempotent norm_cast
+example : aq < (1 : ℕ) ↔ (aq : ℚ) < (1 : ℤ) := by fail_if_not_idempotent norm_cast
+example : aq < (1 : ℕ) ↔ (aq : ℝ) < (1 : ℤ) := by fail_if_not_idempotent norm_cast
 
-example : (an : ℤ) + bn = (an + bn : ℕ) := by norm_cast
-example : (an : ℂ) + bq = ((an + bq) : ℚ) := by norm_cast
-example : (((an : ℤ) : ℚ) : ℝ) + bn = (an + (bn : ℤ)) := by norm_cast
+example : (an : ℤ) + bn = (an + bn : ℕ) := by fail_if_not_idempotent norm_cast
+example : (an : ℂ) + bq = ((an + bq) : ℚ) := by fail_if_not_idempotent norm_cast
+example : (((an : ℤ) : ℚ) : ℝ) + bn = (an + (bn : ℤ)) := by fail_if_not_idempotent norm_cast
 
 example (h : ((an + bn : ℕ) : ℤ) = (an : ℤ) + (bn : ℤ)) : True := by
   push_cast at h
@@ -52,19 +52,19 @@ example (h : ((an * bn : ℕ) : ℤ) = (an : ℤ) * (bn : ℤ)) : True := by
   trivial
 
 example : (((((an : ℚ) : ℝ) * bq) + (cq : ℝ) ^ dn) : ℂ) = (an : ℂ) * (bq : ℝ) + cq ^ dn := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
 example : ((an : ℤ) : ℝ) < bq ∧ (cr : ℂ) ^ 2 = dz ↔ (an : ℚ) < bq ∧ ((cr ^ 2) : ℂ) = dz := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 --testing numerals
-example : ((42 : ℕ) : ℤ) = 42 := by norm_cast
-example : ((42 : ℕ) : ℂ) = 42 := by norm_cast
-example : ((42 : ℤ) : ℚ) = 42 := by norm_cast
-example : ((42 : ℚ) : ℝ) = 42 := by norm_cast
+example : ((42 : ℕ) : ℤ) = 42 := by fail_if_not_idempotent norm_cast
+example : ((42 : ℕ) : ℂ) = 42 := by fail_if_not_idempotent norm_cast
+example : ((42 : ℤ) : ℚ) = 42 := by fail_if_not_idempotent norm_cast
+example : ((42 : ℚ) : ℝ) = 42 := by fail_if_not_idempotent norm_cast
 
 structure p (n : ℤ)
 example : p 42 := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
   guard_target = p 42
   exact ⟨⟩
 
@@ -75,7 +75,7 @@ example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := mod_cast h
 example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := mod_cast h
 
 -- testing the heuristic
-example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 := by norm_cast
+example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 := by fail_if_not_idempotent norm_cast
 example (h : (cz : ℚ) = az / bz) : (cz : ℝ) = az / bz := by assumption_mod_cast
 
 namespace hidden
@@ -136,7 +136,7 @@ lemma half_lt_self_bis {a : ℝ≥0∞} (hz : a ≠ 0) (ht : a ≠ ⊤) : a / 2 
   exact NNReal.half_lt_self hz
 
 example (x : NNReal) : (x : ENNReal) / 3 = ↑(x / 3) := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 end ENNReal
 

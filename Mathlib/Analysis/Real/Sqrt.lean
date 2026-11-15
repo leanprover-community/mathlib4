@@ -410,12 +410,12 @@ theorem lt_sq_of_sqrt_lt (h : √x < y) : x < y ^ 2 := by
 /-- The natural square root is at most the real square root -/
 theorem nat_sqrt_le_real_sqrt {a : ℕ} : ↑(Nat.sqrt a) ≤ √(a : ℝ) := by
   rw [Real.le_sqrt (Nat.cast_nonneg _) (Nat.cast_nonneg _)]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact Nat.sqrt_le' a
 
 /-- The real square root is less than the natural square root plus one -/
 theorem real_sqrt_lt_nat_sqrt_succ {a : ℕ} : √(a : ℝ) < Nat.sqrt a + 1 := by
-  rw [sqrt_lt (by simp)] <;> norm_cast
+  rw [sqrt_lt (by simp)] <;> fail_if_not_idempotent norm_cast
   · exact Nat.lt_succ_sqrt' a
   · exact Nat.le_add_left 0 (Nat.sqrt a + 1)
 

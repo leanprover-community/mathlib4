@@ -228,7 +228,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
         simp_rw [s, Set.toFinset_ofPred, mem_filter_univ, h, List.toFinset_cons, List.toFinset_nil,
           insert_empty_eq, mem_insert, mem_singleton]
         exact sq_eq_sq_iff_eq_or_eq_neg
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]
       exact card_pair (Ne.symm (mt (Ring.eq_self_iff_eq_zero_of_char_ne_two hF).mp h₀))
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]

@@ -170,7 +170,7 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
         · simp only [hy, dite_eq_left]
           have hm : (hx.mul hy).unit = hx.unit * hy.unit := Units.ext rfl
           rw [hm, map_mul]
-          norm_cast
+          fail_if_not_idempotent norm_cast
         · simp only [hy, not_false_iff, dite_eq_right, mul_zero]
       · simp only [hx, IsUnit.mul_iff, false_and, not_false_iff, dite_eq_right, zero_mul]
   map_nonunit' := by

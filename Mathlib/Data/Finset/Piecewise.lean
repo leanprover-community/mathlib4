@@ -45,7 +45,7 @@ lemma piecewise_empty [∀ i : ι, Decidable (i ∈ (∅ : Finset ι))] : piecew
 
 variable [∀ j, Decidable (j ∈ s)]
 
--- TODO: fix this in norm_cast
+-- TODO: fix this in fail_if_not_idempotent norm_cast
 @[norm_cast move]
 lemma piecewise_coe : (s : Set ι).piecewise f g = s.piecewise f g := by
   ext

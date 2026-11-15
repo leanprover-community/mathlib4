@@ -148,7 +148,7 @@ theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mu
 theorem toNat_add (hc : c < ℵ₀) (hd : d < ℵ₀) : toNat (c + d) = toNat c + toNat d := by
   lift c to ℕ using hc
   lift d to ℕ using hd
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem toNat_lift_add_lift {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < ℵ₀) (hb : b < ℵ₀) :
     toNat (lift.{v} a + lift.{u} b) = toNat a + toNat b := by

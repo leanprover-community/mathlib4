@@ -95,7 +95,7 @@ lemma gc_ceil_toENNReal : GaloisConnection ceil (↑) := fun _ _ ↦ ceil_le
   lift n to ℕ using hn
   cases r
   · simp only [ceil_top, le_top, toENNReal_coe, true_iff]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact ENNReal.coe_lt_top
   · simp only [ne_eq, Nat.cast_eq_zero, ceil_coe, Nat.cast_le, toENNReal_coe] at hn₀ ⊢
     fail_if_not_idempotent norm_cast

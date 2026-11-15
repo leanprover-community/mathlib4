@@ -60,7 +60,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
   rw [derivative_apply]
   simp only [coeff_X_pow, coeff_sum, coeff_C_mul]
   rw [sum, Finset.sum_eq_single (n + 1)]
-  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, ite_true]; norm_cast
+  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, ite_true]; fail_if_not_idempotent norm_cast
   · intro b
     cases b
     · intros

@@ -326,7 +326,7 @@ lemma Ideal.height_le_iff_exists_minimalPrimes (p : Ideal R) [p.IsPrime]
   · intro h
     obtain ⟨I, hI, e₁, e₂⟩ := exists_spanRank_eq_and_height_eq p (IsPrime.ne_top ‹_›)
     refine ⟨I, Ideal.mem_minimalPrimes_of_height_le hI e₂.ge, e₁.symm ▸ ?_⟩
-    norm_cast
+    fail_if_not_idempotent norm_cast
   · rintro ⟨I, hp, hI⟩
     exact le_trans
       (Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes I p hp)
@@ -366,7 +366,7 @@ lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (
   let t : Finset R := o ∪ (Submodule.FG.finite_generators hI).toFinset
   suffices h : p.height ≤ t.card by
     refine le_trans h (hs ▸ ?_)
-    norm_cast
+    fail_if_not_idempotent norm_cast
     have : (Submodule.FG.finite_generators hI).toFinset.card = I.spanFinrank := by
       rw [← Set.ncard_eq_toFinset_card (hs := Submodule.FG.finite_generators hI)]
       exact Submodule.FG.generators_ncard hI
@@ -431,7 +431,7 @@ lemma ringKrullDim_le_ringKrullDim_quotient_add_card (s : Finset R)
     (hs : (s : Set R) ⊆ Ring.jacobson R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (s : Set R)) + s.card := by
   convert ringKrullDim_le_ringKrullDim_quotient_add_encard s hs
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 section Algebra
 
@@ -465,7 +465,7 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
   suffices h : P.height ≤ t.card by
     rw [← heq, ← heq']
     apply le_trans h
-    norm_cast
+    fail_if_not_idempotent norm_cast
     refine le_trans (Finset.card_union_le _ _) (add_le_add Finset.card_image_le ?_)
     rw [← himgo, Finset.card_image_of_injOn hinj]
   refine Ideal.height_le_card_of_mem_minimalPrimes_span_finset ?_

@@ -32,7 +32,7 @@ theorem ratSqrt_nonneg (x prec : ℕ) : 0 ≤ ratSqrt x prec := by
 theorem ratSqrt_sq_le (x : ℕ) {prec : ℕ} (h : 0 < prec) : (ratSqrt x prec) ^ 2 ≤ x := by
   unfold ratSqrt
   rw [div_pow, div_le_iff₀ (by positivity)]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact sqrt_le' (x * prec ^ 2)
 
 theorem lt_ratSqrt_add_inv_prec_sq (x : ℕ) {prec : ℕ} (h : 0 < prec) :
@@ -41,7 +41,7 @@ theorem lt_ratSqrt_add_inv_prec_sq (x : ℕ) {prec : ℕ} (h : 0 < prec) :
   rw [← mul_lt_mul_iff_of_pos_right (a := (prec ^ 2 : ℚ)) (by positivity)]
   rw [← mul_pow, add_mul]
   rw [div_mul_cancel₀, div_mul_cancel₀]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     exact lt_succ_sqrt' (x * prec ^ 2)
   all_goals norm_cast; positivity
 

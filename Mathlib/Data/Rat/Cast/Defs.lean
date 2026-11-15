@@ -66,7 +66,7 @@ set_option backward.isDefEq.respectTransparency false in
   rw [cast_def]
   dsimp
   rw [Commute.div_eq_div_iff _ hd hb]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     rw [e]
   exact b.commute_cast _
 

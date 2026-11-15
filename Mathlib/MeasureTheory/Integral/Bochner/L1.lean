@@ -559,7 +559,7 @@ theorem integral_eq' (f : α →₁[μ] E) : integral f = integralCLM' 𝕜 f :=
     (isClosed_eq _ (integralCLM' 𝕜).continuous) _ f
   · exact (integralCLM (E := E)).continuous
   intro f
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 variable (α E)
 
@@ -628,7 +628,7 @@ theorem integral_eq_norm_posPart_sub (f : α →₁[μ] ℝ) :
       (continuous_norm.comp Lp.continuous_negPart)
   -- Show that the property holds for all simple functions in the `L¹` space.
   · intro s
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact SimpleFunc.integral_eq_norm_posPart_sub _
 
 end PosPart

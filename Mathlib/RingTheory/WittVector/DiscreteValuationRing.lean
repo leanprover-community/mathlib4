@@ -65,8 +65,8 @@ def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
       nthRemainder p n (truncateFun (n + 1) A) fun i : Fin (n + 1) => inverseCoeff a A i
     have H := Units.mul_inv (a ^ p ^ (n + 1))
     linear_combination (norm := skip) -H_coeff * H
-    have ha : (a : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1)) := by norm_cast
-    have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast
+    have ha : (a : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1)) := by fail_if_not_idempotent norm_cast
+    have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by fail_if_not_idempotent norm_cast
     simp only [nthRemainder_spec, inverseCoeff, succNthValUnits, hA,
       one_coeff_eq_of_pos, Nat.succ_pos', ha_inv, ha, inv_pow]
     ring!)

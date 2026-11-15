@@ -743,7 +743,7 @@ theorem map_lt_of_translationNumber_lt_nat {n : ℕ} (h : τ f < n) (x : ℝ) : 
 
 theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f⌋ + 1 := by
   rw [add_assoc]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   refine map_lt_of_translationNumber_lt_int _ ?_ _
   push_cast
   exact lt_floor_add_one _

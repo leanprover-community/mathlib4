@@ -217,7 +217,7 @@ private lemma natDegree_coeff_preΨ' (n : ℕ) :
     · nth_rw 1 [preΨ'_even, coeff_sub, (expDegree_rec m).1.1, cm (dm (dp h₂.1) h₃.1) h₅.1,
         cm (dp h₂.1) h₃.1, cp h₂.1, h₂.2, h₃.2, h₅.2, (expDegree_rec m).1.2,
         cm (dm h₁.1 h₃.1) (dp h₄.1), cm h₁.1 h₃.1, h₁.2, cp h₄.1, h₃.2, h₄.2, (expCoeff_rec m).1]
-      norm_cast
+      fail_if_not_idempotent norm_cast
   | odd m h₁ h₂ h₃ h₄ =>
     rw [preΨ'_odd]
     constructor
@@ -230,7 +230,7 @@ private lemma natDegree_coeff_preΨ' (n : ℕ) :
         cm (dm h₁.1 (dp h₃.1)), cm h₁.1 (dp h₃.1), h₁.2, cp h₃.1, h₃.2,
         apply_ite₂ (fun p : R[X] ↦ p.coeff), cp W.natDegree_Ψ₂Sq_le,
         AddMonoidAlgebra.coeff_one_zero, coeff_Ψ₂Sq, (expCoeff_rec m).2]
-      · norm_cast
+      · fail_if_not_idempotent norm_cast
       all_goals split_ifs <;> simp only [natDegree_one.le, dp W.natDegree_Ψ₂Sq_le]
 
 lemma natDegree_preΨ'_le (n : ℕ) : (W.preΨ' n).natDegree ≤ (n ^ 2 - if Even n then 4 else 1) / 2 :=
@@ -341,7 +341,7 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
     split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
   · rw [coeff_mul_add_eq_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2,
       apply_ite₂ (fun p : R[X] ↦ p.coeff), coeff_Ψ₂Sq, AddMonoidAlgebra.coeff_one_zero, hc]
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
     split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
 
 lemma natDegree_ΨSq_le (n : ℤ) : (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 := by
@@ -417,7 +417,7 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
       AddMonoidAlgebra.coeff_one_zero, coeff_Ψ₂Sq, cm (dm h.1 h.1), cm h.1 h.1, h.2, h.2,
       apply_ite₂ (fun p : R[X] ↦ p.coeff), AddMonoidAlgebra.coeff_one_zero, coeff_Ψ₂Sq]
     · conv_rhs => rw [← Int.cast_one, hc]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     all_goals split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
 
 lemma natDegree_Φ_le (n : ℤ) : (W.Φ n).natDegree ≤ n.natAbs ^ 2 := by

@@ -358,7 +358,7 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
       exact ⟨u, u.prop, rfl⟩
     · exact ⟨y, hxy⟩
     · refine hf_mono (le_trans ?_ hyq.le)
-      norm_cast
+      fail_if_not_idempotent norm_cast
 
 theorem not_bddAbove_coe : ¬ (BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
   dsimp only [BddAbove, upperBounds]

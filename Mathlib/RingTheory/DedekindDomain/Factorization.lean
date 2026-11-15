@@ -952,7 +952,7 @@ lemma emultiplicity_sup :
     FiniteMultiplicity.of_prime_left (prime p) h
   rw [(H this).emultiplicity_eq_multiplicity, (H hI).emultiplicity_eq_multiplicity,
     (H hJ).emultiplicity_eq_multiplicity, multiplicity_sup _ hI hJ]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 variable {ι : Type*} [Finite ι]
 

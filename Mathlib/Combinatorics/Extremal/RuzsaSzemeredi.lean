@@ -218,10 +218,10 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
     · simp only [cast_add, cast_ofNat, cast_mul, cast_one, tsub_le_iff_right]
       rw [← div_add_one (three_ne_zero' ℝ), ← le_sub_iff_add_le, div_le_iff₀ (zero_lt_three' ℝ),
         add_assoc, add_sub_assoc, add_mul, mul_right_comm, add_sub_cancel_left]
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [← mul_add_one]
       exact (Nat.lt_mul_div_succ _ <| by simp).le
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
       exact rothNumberNat_le_ruzsaSzemerediNumberNat _
 
 /-- Explicit lower bound on the **Ruzsa-Szemerédi problem**.

@@ -320,7 +320,7 @@ theorem chromaticNumber_bddBelow : BddBelow { n : ℕ | G.Colorable n } :=
 
 theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
   rw [hc.chromaticNumber_eq_sInf]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   apply csInf_le chromaticNumber_bddBelow
   exact hc
 

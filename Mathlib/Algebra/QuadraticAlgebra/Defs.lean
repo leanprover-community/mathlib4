@@ -304,7 +304,7 @@ variable [AddCommGroupWithOne R]
 
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
   intCast n := .C n
-  intCast_ofNat n := by norm_cast
+  intCast_ofNat n := by fail_if_not_idempotent norm_cast
   intCast_negSucc n := by ext <;> simp [Int.negSucc_eq]
 
 @[simp, norm_cast]

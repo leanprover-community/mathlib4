@@ -44,7 +44,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 theorem lipschitzWith_iff_dist_le_mul [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} : LipschitzWith K f ↔ ∀ x y, dist (f x) (f y) ≤ K * dist x y := by
   simp only [LipschitzWith, edist_nndist, dist_nndist]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitzWith_iff_dist_le_mul
 
@@ -52,7 +52,7 @@ theorem lipschitzOnWith_iff_dist_le_mul [PseudoMetricSpace α] [PseudoMetricSpac
     {s : Set α} {f : α → β} :
     LipschitzOnWith K f s ↔ ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ K * dist x y := by
   simp only [LipschitzOnWith, edist_nndist, dist_nndist]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 alias ⟨LipschitzOnWith.dist_le_mul, LipschitzOnWith.of_dist_le_mul⟩ :=
   lipschitzOnWith_iff_dist_le_mul

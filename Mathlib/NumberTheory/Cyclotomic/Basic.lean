@@ -194,7 +194,7 @@ theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
     rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk]
   · convert mem_top (R := A) (x := b)
     rw [← adjoin_adjoin_coe_preimage, preimage_ofPred_eq]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 variable {n}
 

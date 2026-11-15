@@ -146,7 +146,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
   · rw [LinearMap.sum_apply, Finset.sum_apply]
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
-              = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
+              = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by fail_if_not_idempotent norm_cast
     rw [mul_assoc, mul_apply_eq_comp, this, intCast_apply_eq_smul, map_smul, Pi.smul_apply,
       shiftₗ_pow_apply]
 

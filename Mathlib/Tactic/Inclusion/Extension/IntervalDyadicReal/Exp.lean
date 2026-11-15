@@ -70,7 +70,7 @@ theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ 
     (prec : ℕ) : Real.exp (a / b) ∈ expRatTaylor a b n prec := by
   have hy : |(a : ℝ) / b| ≤ 1 := by
     rw [abs_div, Nat.abs_cast, div_le_one (by positivity), ← Int.cast_abs, ← Int.natCast_natAbs]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   refine ratBall_mem ?_ prec
   push_cast
   rw [mul_div_mul_left _ _ (by positivity), expPartialSumNum_div a hb n]

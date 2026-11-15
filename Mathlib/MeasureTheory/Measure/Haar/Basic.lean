@@ -265,14 +265,14 @@ theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set 
 @[to_additive add_prehaar_le_addIndex]
 theorem prehaar_le_index (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G)
     (hU : (interior U).Nonempty) : prehaar (K₀ : Set G) U K ≤ index (K : Set G) K₀ := by
-  unfold prehaar; rw [div_le_iff₀] <;> norm_cast
+  unfold prehaar; rw [div_le_iff₀] <;> fail_if_not_idempotent norm_cast
   · apply le_index_mul K₀ K hU
   · exact index_pos K₀ hU
 
 @[to_additive]
 theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).Nonempty) {K : Set G}
     (h1K : IsCompact K) (h2K : (interior K).Nonempty) : 0 < prehaar (K₀ : Set G) U ⟨K, h1K⟩ := by
-  apply div_pos <;> norm_cast
+  apply div_pos <;> fail_if_not_idempotent norm_cast
   · apply index_pos ⟨⟨K, h1K⟩, h2K⟩ hU
   · exact index_pos K₀ hU
 

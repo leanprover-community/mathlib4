@@ -403,7 +403,7 @@ the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 r) := by
   rw [← ENNReal.hasSum_coe, ENNReal.hasSum_iff_tendsto_nat]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem not_summable_iff_tendsto_nat_atTop {f : ℕ → ℝ≥0} :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
@@ -461,7 +461,7 @@ assumption on `f`, as otherwise all sums are zero. -/
 theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
   rw [← tendsto_coe]
   convert! _root_.tendsto_sum_nat_add fun i => (f i : ℝ)
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 nonrec theorem hasSum_lt {f g : α → ℝ≥0} {sf sg : ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g a)
     (hi : f i < g i) (hf : HasSum f sf) (hg : HasSum g sg) : sf < sg := by

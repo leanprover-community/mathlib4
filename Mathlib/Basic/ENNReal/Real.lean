@@ -61,7 +61,7 @@ theorem ofReal_add_le {p q : ℝ} : ENNReal.ofReal (p + q) ≤ ENNReal.ofReal p 
 theorem toReal_le_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal ≤ b.toReal ↔ a ≤ b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 @[gcongr]
 theorem toReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toReal ≤ b.toReal :=
@@ -78,7 +78,7 @@ theorem toReal_mono_of_top_imp_top (h : a ≤ b) (ht : b = ∞ → a = ∞) : a.
 theorem toReal_lt_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal < b.toReal ↔ a < b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 @[gcongr]
 theorem toReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toReal < b.toReal :=

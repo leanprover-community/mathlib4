@@ -133,7 +133,7 @@ theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     exact (neg_one_pow_eq_one_iff_even (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
     rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_even k ((Int.even_natCast k).mpr hk₂)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 theorem eval_T_real_eq_neg_one_iff (n : ℕ) (x : ℝ) :
     (T ℝ n).eval x = -1 ↔ ∃ k ≤ n, Odd k ∧ x = cos (k * π / n) := by
@@ -149,7 +149,7 @@ theorem eval_T_real_eq_neg_one_iff (n : ℕ) (x : ℝ) :
     exact (neg_one_pow_eq_neg_one_iff_odd (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
     rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_odd k ((Int.odd_natCast k).mpr hk₂)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 theorem roots_T_real_nodup (n : ℕ) :
     (Multiset.map (fun k : ℕ ↦ cos ((2 * k + 1) * π / (2 * n))) (.range n)).Nodup := by
@@ -158,7 +158,7 @@ theorem roots_T_real_nodup (n : ℕ) :
   refine (Finset.range n).nodup_map_iff_injOn.mpr ?_
   refine injOn_cos.comp (by aesop) fun k hk => Set.mem_Icc.mpr ⟨by positivity, ?_⟩
   field_simp
-  norm_cast
+  fail_if_not_idempotent norm_cast
   grind
 
 theorem roots_T_real (n : ℕ) :
@@ -171,7 +171,7 @@ theorem roots_T_real (n : ℕ) :
     rw [← hx, T_real_cos, cos_eq_zero_iff]
     use k
     field_simp
-    norm_cast
+    fail_if_not_idempotent norm_cast
   · rw [Finset.card_image_of_injOn, Finset.card_range, degree_T, Int.natAbs_natCast]
     exact (Finset.range n).nodup_map_iff_injOn.mp (roots_T_real_nodup n)
 
@@ -189,7 +189,7 @@ theorem roots_U_real_nodup (n : ℕ) :
     aesop
   · refine fun k hk => Set.mem_Icc.mpr ⟨by positivity, ?_⟩
     field_simp
-    norm_cast
+    fail_if_not_idempotent norm_cast
     grind
 
 theorem roots_U_real (n : ℕ) :
@@ -202,12 +202,12 @@ theorem roots_U_real (n : ℕ) :
     suffices (U ℝ n).eval x * sin ((k + 1) * π / (n + 1)) = 0 by
       refine (mul_eq_zero_iff_right (ne_of_gt (sin_pos_of_pos_of_lt_pi (by positivity) ?_))).mp this
       field_simp
-      norm_cast
+      fail_if_not_idempotent norm_cast
       grind
     rw [← hx, U_real_cos, sin_eq_zero_iff]
     use k + 1
     field_simp
-    norm_cast
+    fail_if_not_idempotent norm_cast
     ring
   · rw [Finset.card_image_of_injOn, Finset.card_range, degree_U_natCast]
     exact (Finset.range n).nodup_map_iff_injOn.mp (roots_U_real_nodup n)
@@ -272,7 +272,7 @@ theorem isLocalExtr_T_real_iff {n : ℕ} (hn : 2 ≤ n) (x : ℝ) :
     obtain ⟨k, hk₁, hx⟩ := Finset.mem_image.mp hx
     refine ⟨k + 1, Finset.mem_Ioo.mpr ⟨k.zero_lt_succ, by grind⟩, ?_⟩
     rw [← hx]
-    congr <;> norm_cast
+    congr <;> fail_if_not_idempotent norm_cast
     exact Nat.sub_add_cancel (Nat.one_le_of_lt hn)
   · rintro ⟨k, hk, hx⟩
     rw [hx]

@@ -275,7 +275,7 @@ theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
   simp only [Fin.val_add_eq_ite, Int.natCast_succ]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   split_ifs with h
   · rw [Nat.cast_sub h]
     congr

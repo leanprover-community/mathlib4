@@ -272,7 +272,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
       rw [mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
         ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial,
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
-      norm_cast
+      fail_if_not_idempotent norm_cast
 
 attribute [local instance] HasUniqueDiv.of_module_nnrat
 

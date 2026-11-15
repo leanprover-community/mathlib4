@@ -271,7 +271,7 @@ lemma integral_exp_mul_I_eq_sinc (r : ℝ) :
   by_cases hr : r = 0
   · simp [hr]
   rw [sinc_of_ne_zero hr]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   field
 
 private lemma integral_log_from_zero_aux {b : ℝ} (ht : 0 < b) :
@@ -435,7 +435,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     refine continuous_ofReal.mul ?_
     apply Continuous.cpow (by fun_prop) continuous_const
     intro a
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
 
 theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
@@ -443,7 +443,7 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
       (↑1 + b ^ 2) ^ (t + 1) / (↑2 * (t + ↑1)) - (↑1 + a ^ 2) ^ (t + 1) / (↑2 * (t + ↑1)) := by
   have : ∀ x s : ℝ, (((↑1 + x ^ 2) ^ s : ℝ) : ℂ) = (1 + (x : ℂ) ^ 2) ^ (s : ℂ) := by
     intro x s
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [ofReal_cpow, ofReal_add, ofReal_pow, ofReal_one]
     exact add_nonneg zero_le_one (sq_nonneg x)
   rw [← ofReal_inj]
@@ -504,7 +504,7 @@ theorem integral_sin_pow_odd :
   | zero => norm_num
   | succ k ih =>
     rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     field_simp
     simp
 
@@ -514,7 +514,7 @@ theorem integral_sin_pow_even :
   | zero => simp
   | succ k ih =>
     rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     field_simp
     simp
 

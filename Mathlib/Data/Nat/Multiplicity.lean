@@ -247,7 +247,7 @@ theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤
   rw [← emultiplicity_choose_prime_pow_add_emultiplicity hp hkn hk0,
     (finiteMultiplicity_iff.2 ⟨hp.ne_one, Nat.pos_of_ne_zero hk0⟩).emultiplicity_eq_multiplicity,
     (finiteMultiplicity_iff.2 ⟨hp.ne_one, choose_pos hkn⟩).emultiplicity_eq_multiplicity]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [Nat.add_sub_cancel_right]
 
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by

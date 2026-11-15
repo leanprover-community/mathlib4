@@ -45,7 +45,7 @@ lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSe
   have h_re_of_mem n t (ht' : t ∈ interior (integrableExpSet X μ)) :
       (∫ ω, X ω ^ n * Complex.exp (t * X ω) ∂μ).re = ∫ ω, X ω ^ n * exp (t * X ω) ∂μ := by
     rw [← RCLike.re_eq_complex_re, ← integral_re]
-    · norm_cast
+    · fail_if_not_idempotent norm_cast
     · refine integrable_pow_mul_cexp_of_re_mem_interior_integrableExpSet ?_ n
       simpa using ht'
   have h_re n : ∀ᶠ t' : ℝ in 𝓝 t, (∫ ω, X ω ^ n * Complex.exp (t' * X ω) ∂μ).re

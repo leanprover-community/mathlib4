@@ -177,7 +177,7 @@ theorem isLittleO_cpow_mul_exp {b₁ b₂ : ℝ} (hl : IsExpCmpFilter l) (hb : b
         hl.isLittleO_cpow_exp _ (sub_pos.2 hb))
     _ =ᶠ[l] fun z => z ^ a₂ * exp (b₂ * z) := by
       simp only [ofReal_sub, sub_mul, mul_assoc, ← exp_add, add_sub_cancel]
-      norm_cast
+      fail_if_not_idempotent norm_cast
 
 /-- If `l : Filter ℂ` is an "exponential comparison filter", then for any complex `a` and any
 negative real `b`, we have `(fun z ↦ exp (b * z)) =o[l] (fun z ↦ z ^ a)`. -/

@@ -97,7 +97,7 @@ lemma norm_complexMGF_le_mgf : ‖complexMGF X μ z‖ ≤ mgf X μ z.re := by
 
 lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
   rw [complexMGF, mgf]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 lemma re_complexMGF_ofReal (x : ℝ) : (complexMGF X μ x).re = mgf X μ x := by
   simp [complexMGF_ofReal]

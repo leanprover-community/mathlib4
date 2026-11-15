@@ -53,7 +53,7 @@ theorem stepBound_pos_iff {n : ℕ} : 0 < stepBound n ↔ 0 < n :=
 alias ⟨_, stepBound_pos⟩ := stepBound_pos_iff
 
 @[norm_cast] lemma coe_stepBound {α : Type*} [Semiring α] (n : ℕ) :
-    (stepBound n : α) = n * 4 ^ n := by unfold stepBound; norm_cast
+    (stepBound n : α) = n * 4 ^ n := by unfold stepBound; fail_if_not_idempotent norm_cast
 
 end SzemerediRegularity
 
@@ -122,7 +122,7 @@ theorem eps_pos (hPε : 100 ≤ (4 : ℝ) ^ #P.parts * ε ^ 5) : 0 < ε :=
 theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)
     (hPε : 100 ≤ (4 : ℝ) ^ #P.parts * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
   (div_le_of_le_mul₀ (eps_pow_five_pos hPε).le (by positivity) hPε).trans <| by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rwa [Nat.le_div_iff_mul_le (stepBound_pos (P.parts_nonempty
       univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow]
 
@@ -156,7 +156,7 @@ theorem card_aux₂ (hP : P.IsEquipartition) (hu : u ∈ P.parts) (hucard : #u �
 
 theorem pow_mul_m_le_card_part (hP : P.IsEquipartition) (hu : u ∈ P.parts) :
     (4 : ℝ) ^ #P.parts * m ≤ #u := by
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [stepBound, ← Nat.div_div_eq_div_mul]
   exact (Nat.mul_div_le _ _).trans (hP.average_le_card_part hu)
 

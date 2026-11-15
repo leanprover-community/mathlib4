@@ -284,7 +284,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
           (Valued.continuous_extension.comp continuous_snd)
       exact isClosed_eq c1 c2
     · intro x y
-      norm_cast
+      fail_if_not_idempotent norm_cast
       exact Valuation.map_mul _ _ _
   map_add_le_max' x y := by
     simp_rw [le_max_iff, Function.comp_apply]
@@ -295,7 +295,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
       exact (isClosed_le (by fun_prop) <| cont.comp continuous_fst).union
           (isClosed_le (by fun_prop) <| cont.comp continuous_snd)
     · intro x y
-      norm_cast
+      fail_if_not_idempotent norm_cast
       exact le_max_iff.mp (v.restrict.map_add x y)
 
 lemma extensionValuation_toFun (x : hat K) : Valued.extensionValuation x =

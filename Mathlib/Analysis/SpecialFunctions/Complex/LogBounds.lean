@@ -254,7 +254,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
     · simp
     conv => enter [2]; rw [← div_one (‖z‖ ^ n)]
     gcongr
-    norm_cast
+    fail_if_not_idempotent norm_cast
   · rw [← tendsto_sub_nhds_zero_iff]
     conv => enter [1, x]; rw [← div_one (_ - _), ← logTaylor]
     rw [← isLittleO_iff_tendsto fun _ h ↦ (one_ne_zero h).elim]

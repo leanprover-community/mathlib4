@@ -255,7 +255,7 @@ lemma measure_gt_normThreshold_le_exp [IsProbabilityMeasure μ]
   rw [← Real.log_inv, mul_comm (Real.log _), ← Real.log_rpow (by positivity),
     Real.exp_log (by positivity), ← ENNReal.ofReal_rpow_of_nonneg (by positivity) (by positivity),
     ENNReal.toReal_div, inv_div, ← ENNReal.toReal_div, ENNReal.ofReal_toReal]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
   · exact ENNReal.div_ne_top (by finiteness) (lt_trans (by simp) ha_gt).ne'
 
 /-- A quantity that appears in exponentials in the proof of Fernique's theorem. -/
@@ -363,7 +363,7 @@ lemma lintegral_closedBall_sdiff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ
   _ = c * .ofReal (rexp (-2⁻¹ * Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
     congr
-    norm_cast
+    fail_if_not_idempotent norm_cast
     simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div]
     ring
 

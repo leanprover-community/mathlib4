@@ -139,7 +139,7 @@ lemma isOfFinOrder_iff_eq_one [IsMulTorsionFree G] (a : G) : IsOfFinOrder a ↔ 
 theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
     IsOfFinOrder (x : G) ↔ IsOfFinOrder x := by
   rw [isOfFinOrder_iff_pow_eq_one, isOfFinOrder_iff_pow_eq_one]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem IsConj.isOfFinOrder (h : IsConj x y) : IsOfFinOrder x → IsOfFinOrder y := by
   simp_rw [isOfFinOrder_iff_pow_eq_one]

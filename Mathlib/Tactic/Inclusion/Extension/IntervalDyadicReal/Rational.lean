@@ -86,7 +86,7 @@ theorem natDiv_eq_rat (m : ℕ) {d : ℕ} (prec : ℕ) (hd : 0 < d) :
   congr 2 <;>
     simp [Rat.toDyadic_mkRat, Dyadic.toRat_ofIntWithPrec_eq_mkRat, Rat.mkRat_eq_iff,
       Int.shiftLeft_eq, Nat.shiftLeft_eq, hd.ne']
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem natDiv_mem (m : ℕ) {d : ℕ} (prec : ℕ) (hd : 0 < d) :
     (m : ℝ) / d ∈ natDiv m d prec := by

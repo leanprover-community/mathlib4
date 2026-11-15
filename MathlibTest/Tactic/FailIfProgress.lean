@@ -39,7 +39,7 @@ set_option linter.unusedTactic false
 
 example (a : Nat) : 2 + 0 = 4 := by
   fail_if_not_idempotent simp
-  fail_if_progress norm_cast
+  fail_if_progress fail_if_not_idempotent norm_cast
 
 example : 1 + 1 = 2 := by
   -- simp; fail_if_progress simp would error

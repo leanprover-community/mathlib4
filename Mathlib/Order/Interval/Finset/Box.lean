@@ -95,7 +95,7 @@ attribute [norm_cast] toNat_natCast
 lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
   | n + 1, _ => by
     simp_rw [Prod.card_box_succ, card_Icc, sub_neg_eq_add]
-    norm_cast
+    fail_if_not_idempotent norm_cast
     refine tsub_eq_of_eq_add ?_
     zify
     ring

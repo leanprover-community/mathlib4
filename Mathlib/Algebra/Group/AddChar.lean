@@ -484,7 +484,7 @@ theorem pow_mulShift (ψ : AddChar R M) (n : ℕ) : ψ ^ n = mulShift ψ n := by
 theorem mulShift_mul (ψ : AddChar R M) (r s : R) :
     mulShift ψ r * mulShift ψ s = mulShift ψ (r + s) := by
   ext
-  rw [mulShift_apply, right_distrib, map_add_eq_mul]; norm_cast
+  rw [mulShift_apply, right_distrib, map_add_eq_mul]; fail_if_not_idempotent norm_cast
 
 lemma mulShift_mulShift (ψ : AddChar R M) (r s : R) :
     mulShift (mulShift ψ r) s = mulShift ψ (r * s) := by

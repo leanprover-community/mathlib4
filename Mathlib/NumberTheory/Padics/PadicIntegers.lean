@@ -181,7 +181,7 @@ def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n => seq n) : �
   ⟨⟦⟨_, h⟩⟧,
     show (PadicSeq.norm _) ≤ (1 : ℝ) by
       simp only [PadicSeq.norm]
-      split_ifs with hne <;> norm_cast
+      split_ifs with hne <;> fail_if_not_idempotent norm_cast
       apply padicNorm.of_int⟩
 
 /-! ### Instances
@@ -285,7 +285,7 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
   rw [← inv_lt_inv₀ hε (zpow_pos _ _)]
   · rw [zpow_neg, inv_inv, zpow_natCast]
     apply lt_of_lt_of_le hk
-    norm_cast
+    fail_if_not_idempotent norm_cast
     apply le_of_lt
     convert Nat.lt_pow_self _ using 1
     exact hp.1.one_lt

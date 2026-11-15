@@ -74,7 +74,7 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
 
 theorem commProb_le_one : commProb M ≤ 1 := by
   refine div_le_one_of_le₀ ?_ (sq_nonneg (Nat.card M : ℚ))
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
 
@@ -198,7 +198,7 @@ theorem commProb_reciprocal (n : ℕ) :
     norm_num
   · rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
     have hn : Odd (n % 4) := by grind
-    rw [commProb_odd (hn.mul h2), div_mul_div_comm, div_eq_div_iff] <;> norm_cast
+    rw [commProb_odd (hn.mul h2), div_mul_div_comm, div_eq_div_iff] <;> fail_if_not_idempotent norm_cast
     · grind [Nat.div_add_mod n 4, Odd]
     · positivity [hn.pos.ne']
 

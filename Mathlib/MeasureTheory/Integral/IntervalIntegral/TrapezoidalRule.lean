@@ -53,7 +53,7 @@ theorem trapezoidal_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N
   congr 2
   apply sum_congr rfl
   intro k hk
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [tsub_tsub, add_comm 1, Nat.cast_add, Nat.cast_sub (mem_range.mp hk), Nat.cast_sub N_nonzero]
   apply congr_arg
   field
@@ -110,7 +110,7 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
       = trapezoidal_error f N a (a + N * h) := by
   unfold trapezoidal_error
   rw [sum_sub_distrib, sum_trapezoidal_integral_adjacent_intervals N_nonzero]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [sum_integral_adjacent_intervals]
   · simp
   · intro k hk
@@ -196,7 +196,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
     (hb ▸ h_df.continuousOn.intervalIntegrable_of_Icc a_lt_b.le)]
   grw [abs_sum_le_sum_abs]
   suffices ∀ k ∈ range N, |trapezoidal_error f 1 (ak k) (ak (k + 1))| ≤ (ζ / 12) * h ^ 3 by
-    norm_cast
+    fail_if_not_idempotent norm_cast
     calc
       _ ≤ ∑ k ∈ range N, ζ / 12 * h ^ 3 := sum_le_sum this
       _ = N * (ζ / 12 * h ^ 3)          := by simp [sum_const]

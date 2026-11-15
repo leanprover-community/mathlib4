@@ -98,7 +98,7 @@ instance (B : IntermediateField F K)
         apply logDeriv_algebraMap (u x)
       · apply deriv_algebraMap v
     simp_rw [IsScalarTower.algebraMap_apply F B K]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 
 /--

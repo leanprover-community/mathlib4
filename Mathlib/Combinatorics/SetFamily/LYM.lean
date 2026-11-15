@@ -98,7 +98,7 @@ theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
   replace h𝒜 := local_lubell_yamamoto_meshalkin_inequality_mul h𝒜
-  rw [div_le_div_iff₀] <;> norm_cast
+  rw [div_le_div_iff₀] <;> fail_if_not_idempotent norm_cast
   · rcases r with - | r
     · exact (hr rfl).elim
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
@@ -205,7 +205,7 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
   classical
     rw [← sum_flip]
     refine (le_card_falling_div_choose le_rfl h𝒜).trans ?_
-    rw [div_le_iff₀] <;> norm_cast
+    rw [div_le_iff₀] <;> fail_if_not_idempotent norm_cast
     · simpa only [Nat.sub_self, one_mul, Nat.choose_zero_right, falling] using
         Set.Sized.card_le (sized_falling 0 𝒜)
     · rw [tsub_self, choose_zero_right]

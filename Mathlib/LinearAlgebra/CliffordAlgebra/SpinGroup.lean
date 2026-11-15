@@ -144,7 +144,7 @@ theorem coe_mem_iff_mem {x : (CliffordAlgebra Q)ˣ} :
     ↑x ∈ (lipschitzGroup Q).toSubmonoid.map (Units.coeHom <| CliffordAlgebra Q) ↔
     x ∈ lipschitzGroup Q := by
   simp only [Submonoid.mem_map, Subgroup.mem_toSubmonoid, Units.coeHom_apply]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   exact exists_eq_right
 
 end lipschitzGroup

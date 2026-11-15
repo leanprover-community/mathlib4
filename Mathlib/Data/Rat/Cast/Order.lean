@@ -52,13 +52,13 @@ def castOrderEmbedding : ℚ ↪o K :=
 
 @[simp, norm_cast] lemma cast_lt : (p : K) < q ↔ p < q := cast_strictMono.lt_iff_lt
 
-@[simp] lemma cast_nonneg : 0 ≤ (q : K) ↔ 0 ≤ q := by norm_cast
+@[simp] lemma cast_nonneg : 0 ≤ (q : K) ↔ 0 ≤ q := by fail_if_not_idempotent norm_cast
 
-@[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by norm_cast
+@[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by fail_if_not_idempotent norm_cast
 
-@[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by norm_cast
+@[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by fail_if_not_idempotent norm_cast
 
-@[simp] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by norm_cast
+@[simp] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by fail_if_not_idempotent norm_cast
 
 @[simp, norm_cast]
 theorem cast_le_natCast {m : ℚ} {n : ℕ} : (m : K) ≤ n ↔ m ≤ (n : ℚ) := by
@@ -166,14 +166,14 @@ def castOrderEmbedding : ℚ≥0 ↪o K :=
 
 @[simp, norm_cast] lemma cast_le : (p : K) ≤ q ↔ p ≤ q := castOrderEmbedding.le_iff_le
 @[simp, norm_cast] lemma cast_lt : (p : K) < q ↔ p < q := cast_strictMono.lt_iff_lt
-@[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by norm_cast
-@[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by norm_cast
-@[norm_cast] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by norm_cast
+@[simp] lemma cast_nonpos : (q : K) ≤ 0 ↔ q ≤ 0 := by fail_if_not_idempotent norm_cast
+@[simp] lemma cast_pos : (0 : K) < q ↔ 0 < q := by fail_if_not_idempotent norm_cast
+@[norm_cast] lemma cast_lt_zero : (q : K) < 0 ↔ q < 0 := by fail_if_not_idempotent norm_cast
 @[simp] lemma not_cast_lt_zero : ¬(q : K) < 0 := mod_cast not_lt_zero
-@[simp] lemma cast_le_one : (p : K) ≤ 1 ↔ p ≤ 1 := by norm_cast
-@[simp] lemma one_le_cast : 1 ≤ (p : K) ↔ 1 ≤ p := by norm_cast
-@[simp] lemma cast_lt_one : (p : K) < 1 ↔ p < 1 := by norm_cast
-@[simp] lemma one_lt_cast : 1 < (p : K) ↔ 1 < p := by norm_cast
+@[simp] lemma cast_le_one : (p : K) ≤ 1 ↔ p ≤ 1 := by fail_if_not_idempotent norm_cast
+@[simp] lemma one_le_cast : 1 ≤ (p : K) ↔ 1 ≤ p := by fail_if_not_idempotent norm_cast
+@[simp] lemma cast_lt_one : (p : K) < 1 ↔ p < 1 := by fail_if_not_idempotent norm_cast
+@[simp] lemma one_lt_cast : 1 < (p : K) ↔ 1 < p := by fail_if_not_idempotent norm_cast
 
 section ofNat
 variable {n : ℕ} [n.AtLeastTwo]

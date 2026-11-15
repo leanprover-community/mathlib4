@@ -66,7 +66,7 @@ theorem intDegree_polynomial {p : K[X]} :
 theorem intDegree_mul {x y : K⟮X⟯} (hx : x ≠ 0) (hy : y ≠ 0) :
     intDegree (x * y) = intDegree x + intDegree y := by
   simp only [intDegree, add_sub, sub_add, sub_sub_eq_add_sub, sub_sub, sub_eq_sub_iff_add_eq_add]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [← Polynomial.natDegree_mul x.denom_ne_zero y.denom_ne_zero, ←
     Polynomial.natDegree_mul (RatFunc.num_ne_zero (mul_ne_zero hx hy))
       (mul_ne_zero x.denom_ne_zero y.denom_ne_zero),

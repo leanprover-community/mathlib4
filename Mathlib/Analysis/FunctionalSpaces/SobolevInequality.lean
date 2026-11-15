@@ -325,7 +325,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
         -- express the left-hand integrand as a product of identical factors
         congr! 2 with x
         simp_rw [prod_const]
-        norm_cast
+        fail_if_not_idempotent norm_cast
     _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
     _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖ₑ) ^ p := by
         -- apply the grid-lines lemma
@@ -717,7 +717,7 @@ theorem eLpNorm_le_eLpNorm_fderiv [FiniteDimensional ℝ F]
     {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) (hs : Bornology.IsBounded s) :
     eLpNorm u p μ ≤ eLpNormLESNormFDerivOfLeConst F μ s p p * eLpNorm (fderiv ℝ u) p μ := by
   refine eLpNorm_le_eLpNorm_fderiv_of_le μ hu h2u hp h2p ?_ hs
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   positivity
 

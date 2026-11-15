@@ -145,7 +145,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     _ = 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range n, (↑(k + 1) : ℝ) ^ (d - 1 + r) := by
         congr with k
         rw [← Real.rpow_natCast, ← Real.rpow_add (by positivity), Nat.cast_sub hd]
-        norm_cast
+        fail_if_not_idempotent norm_cast
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range (n + 1), (k : ℝ) ^ (d - 1 + r) := by
         grw [Finset.sum_range_succ', Nat.cast_zero, ← Real.rpow_nonneg le_rfl, add_zero]
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑' k : ℕ, (k : ℝ) ^ (d - 1 + r) := by

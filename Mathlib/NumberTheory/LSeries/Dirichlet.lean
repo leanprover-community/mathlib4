@@ -70,7 +70,7 @@ lemma LSeriesSummable_moebius_iff {s : ℂ} : LSeriesSummable ↗μ s ↔ 1 < s.
   refine ⟨fun H ↦ ?_, LSeriesSummable_of_bounded_of_one_lt_re (m := 1) fun n _ ↦ ?_⟩
   · by_contra! h
     exact not_LSeriesSummable_moebius_at_one <| LSeriesSummable.of_re_le_re (by simpa) H
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     exact abs_moebius_le_one
 
 /-- The abscissa of absolute convergence of the L-series of the Möbius function is `1`. -/

@@ -203,7 +203,7 @@ theorem abundant_iff_two_lt_abundancyIndex : Abundant n ↔ 2 < n.abundancyIndex
   by_cases h : n = 0
   · simp [h, Abundant, abundancyIndex]
   · rw [abundant_iff_sum_divisors, abundancyIndex, lt_div_iff₀ (by positivity)]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 theorem abundancyIndex_le_of_dvd (hn : n ≠ 0) (hd : m ∣ n) :
     m.abundancyIndex ≤ n.abundancyIndex := by

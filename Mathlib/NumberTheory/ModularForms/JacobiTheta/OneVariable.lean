@@ -38,7 +38,7 @@ theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • �
   suffices (ModularGroup.T ^ 2 • τ :) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
   have : ModularGroup.T ^ (2 : ℕ) = ModularGroup.T ^ (2 : ℤ) := rfl
   simp_rw [this, UpperHalfPlane.modular_T_zpow_smul, UpperHalfPlane.coe_vadd]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem jacobiTheta_S_smul (τ : ℍ) :
     jacobiTheta ↑(ModularGroup.S • τ) = (-I * τ) ^ (1 / 2 : ℂ) * jacobiTheta τ := by
@@ -47,7 +47,7 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl <| mul_ne_zero (neg_ne_zero.mpr I_ne_zero) h0
   simp_rw [UpperHalfPlane.modular_S_smul, jacobiTheta_eq_jacobiTheta₂, ← ofReal_zero]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   simp_rw [jacobiTheta₂_functional_equation 0 τ, zero_pow two_ne_zero, mul_zero, zero_div,
     Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div, div_self h1, one_mul,
     inv_neg, neg_div, one_div]

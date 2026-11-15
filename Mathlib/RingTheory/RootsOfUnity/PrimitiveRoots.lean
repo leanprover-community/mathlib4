@@ -164,7 +164,7 @@ theorem one_left_iff : IsPrimitiveRoot (1 : M) k ↔ k = 1 :=
 theorem coe_submonoidClass_iff {M B : Type*} [CommMonoid M] [SetLike B M] [SubmonoidClass B M]
     {N : B} {ζ : N} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoot ζ k := by
   simp_rw [iff_def]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 @[simp]
 theorem coe_units_iff {ζ : Mˣ} : IsPrimitiveRoot (ζ : M) k ↔ IsPrimitiveRoot ζ k := by
@@ -358,7 +358,7 @@ theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 �
   · have : 0 ≤ -l := (Int.neg_pos_of_neg <| Int.lt_of_not_ge h0).le
     lift -l to ℕ using this with l' hl'
     rw [← dvd_neg, ← hl']
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← h.pow_eq_one_iff_dvd, ← inv_inj, ← zpow_neg, ← hl', zpow_natCast, inv_one]
 
 theorem inv (h : IsPrimitiveRoot ζ k) : IsPrimitiveRoot ζ⁻¹ k :=
@@ -494,7 +494,7 @@ alias zmodEquivZPowers_apply_coe_int := zmodEquivZPowers_apply_intCast
 @[simp]
 theorem zmodEquivZPowers_apply_natCast (i : ℕ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
-  have : (i : ZMod k) = (i : ℤ) := by norm_cast
+  have : (i : ZMod k) = (i : ℤ) := by fail_if_not_idempotent norm_cast
   simp only [this, zmodEquivZPowers_apply_intCast, zpow_natCast]
 
 @[deprecated (since := "2026-10-13")]

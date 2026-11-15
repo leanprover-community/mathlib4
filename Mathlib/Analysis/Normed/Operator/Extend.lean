@@ -192,7 +192,7 @@ def extendOfIsometry (h_dense : DenseRange e) (h_norm : ∀ x, ‖f x‖ = ‖e 
   norm_map' := by
     refine h_dense.induction ?_ (isClosed_eq (by fun_prop) continuous_norm)
     rintro x ⟨y, rfl⟩
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [LinearMap.extendOfNorm_eq h_dense (by use 1; simp [h_norm]), h_norm y]
 
 theorem extendOfIsometry_apply (h_dense : DenseRange e)

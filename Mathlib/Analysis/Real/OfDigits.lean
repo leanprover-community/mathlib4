@@ -122,7 +122,7 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
     rw [Finset.sum_range_succ, mul_add, pow_succ', mul_assoc, ih, ofDigitsTerm, digits, ← pow_succ',
       mul_left_comm, mul_inv_cancel₀ (by positivity), mul_one, mul_comm x, pow_succ', mul_assoc]
     set y := (b : ℝ) ^ n * x
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by lia),
       Fin.val_ofNat, Nat.div_add_mod]
 

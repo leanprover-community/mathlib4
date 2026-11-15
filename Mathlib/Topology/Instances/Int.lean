@@ -33,7 +33,7 @@ instance : Dist ℤ :=
 
 theorem dist_eq (x y : ℤ) : dist x y = |(x : ℝ) - y| := rfl
 
-theorem dist_eq' (m n : ℤ) : dist m n = |m - n| := by rw [dist_eq]; norm_cast
+theorem dist_eq' (m n : ℤ) : dist m n = |m - n| := by rw [dist_eq]; fail_if_not_idempotent norm_cast
 
 @[norm_cast, simp]
 theorem dist_cast_real (x y : ℤ) : dist (x : ℝ) y = dist x y :=

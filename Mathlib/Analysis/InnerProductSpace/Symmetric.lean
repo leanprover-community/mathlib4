@@ -209,7 +209,7 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
       ring
     rw [← re_add_im ⟪T y, x⟫]
     simp_rw [h, mul_zero, add_zero]
-    norm_cast
+    fail_if_not_idempotent norm_cast
   · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
       map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub, sub_sub,
       ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]

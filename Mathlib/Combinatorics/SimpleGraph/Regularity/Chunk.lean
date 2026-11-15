@@ -206,7 +206,7 @@ private theorem sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
     (#(𝒜.sup id) : ℝ) ≤ #𝒜 * #s * ((m + 1) / m) := by
   rw [sup_eq_biUnion, mul_div_assoc', le_div_iff₀ m_pos, mul_right_comm]
   gcongr
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     refine card_biUnion_le_card_mul _ _ _ fun x hx => ?_
     apply card_le_m_add_one_of_mem_chunk_parts (h𝒜 hx)
   · exact mod_cast m_le_card_of_mem_chunk_parts (h𝒜 hs)
@@ -358,7 +358,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α] (hP)
       refine (le_trans ?_ <| density_sub_eps_le_sum_density_div_card hPα hPε rflU rflV).trans ?_
       · rw [biUnion_parts, biUnion_parts]
       · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← cast_mul, ← mul_pow, cast_pow]
-        norm_cast
+        fail_if_not_idempotent norm_cast
 
 private theorem abs_density_star_sub_density_le_eps (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5)
     (hε₁ : ε ≤ 1) {hU : U ∈ P.parts} {hV : V ∈ P.parts} (hUV' : U ≠ V) (hUV : ¬G.IsUniform ε U V) :
@@ -508,7 +508,7 @@ theorem edgeDensity_chunk_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts
   apply (edgeDensity_chunk_aux (hP := hP) hPα hPε hU hV).trans
   have key : (16 : ℝ) ^ #P.parts = #((chunk hP G ε hU).parts ×ˢ (chunk hP G ε hV).parts) := by
     rw [card_product, cast_mul, card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ←
-      cast_mul, ← mul_pow]; norm_cast
+      cast_mul, ← mul_pow]; fail_if_not_idempotent norm_cast
   simp_rw [key]
   convert sum_div_card_sq_le_sum_sq_div_card (α := ℝ)
 

@@ -795,7 +795,7 @@ theorem norm_eq_of_L2 (x : PiLp 2 β) :
     ‖x‖ = √(∑ i : ι, ‖x i‖ ^ 2) := by
   rw [norm_eq_of_nat 2 (by norm_cast) _]
   rw [Real.sqrt_eq_rpow]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem nnNorm_eq_of_L2 (x : PiLp 2 β) :
     ‖x‖₊ = NNReal.sqrt (∑ i : ι, ‖x i‖₊ ^ 2) :=
@@ -937,7 +937,7 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
     obtain rfl | hp := p.dichotomy
     · simp_rw [PiLp.norm_toLp, Pi.norm_def, LinearEquiv.piCongrRight_apply,
         LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnNorm_map]
-    · have : 0 < p.toReal := zero_lt_one.trans_le <| by norm_cast
+    · have : 0 < p.toReal := zero_lt_one.trans_le <| by fail_if_not_idempotent norm_cast
       simp only [PiLp.norm_eq_sum this, LinearEquiv.piCongrRight_apply,
         LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.norm_map, one_div]
 

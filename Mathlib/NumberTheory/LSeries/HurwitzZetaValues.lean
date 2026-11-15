@@ -57,7 +57,7 @@ theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
       congr(ofReal $((hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq)).trans ?_
     · rw [ofReal_tsum]
       refine tsum_congr fun n ↦ ?_
-      norm_cast
+      fail_if_not_idempotent norm_cast
       ring_nf
     · push_cast
       congr 1
@@ -65,7 +65,7 @@ theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
         (Polynomial.map_map (algebraMap ℚ ℝ) ofRealHom _).symm
       rw [this, ← ofRealHom_eq_coe, ← ofRealHom_eq_coe]
       apply Polynomial.map_aeval_eq_aeval_map (by simp)
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     lia
 
 /--
@@ -83,7 +83,7 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
       congr(ofReal $((hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq)).trans ?_
     · rw [ofReal_tsum]
       refine tsum_congr fun n ↦ ?_
-      norm_cast
+      fail_if_not_idempotent norm_cast
       ring_nf
     · push_cast
       congr 1
@@ -91,7 +91,7 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
         (Polynomial.map_map (algebraMap ℚ ℝ) ofRealHom _).symm
       rw [this, ← ofRealHom_eq_coe, ← ofRealHom_eq_coe]
       apply Polynomial.map_aeval_eq_aeval_map (by simp)
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
     lia
 
 /-- Reformulation of `cosZeta_two_mul_nat` using `Gammaℂ`. -/
@@ -105,7 +105,7 @@ theorem cosZeta_two_mul_nat' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
       ← Nat.cast_add_one, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.sub_add_cancel (by lia)]
   simp_rw [this, Gammaℂ, cpow_neg, ← div_div, div_inv_eq_mul, div_mul_eq_mul_div, div_div,
     mul_right_comm (2 : ℂ) (k : ℂ)]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 /-- Reformulation of `sinZeta_two_mul_nat_add_one` using `Gammaℂ`. -/
 theorem sinZeta_two_mul_nat_add_one' (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
@@ -207,7 +207,7 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
   convert congr(($((hasSum_zeta_nat hk).tsum_eq) : ℂ))
   · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by lia)]
     simp [push_cast]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
 
 /-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ`, in terms of the Bernoulli number
 `bernoulli (2 * k)`. Compare `riemannZeta_two_mul_nat` which avoids a cast in an exponent
@@ -225,14 +225,14 @@ theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
   convert congr(($hasSum_zeta_two.tsum_eq : ℂ))
   · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two]
     simp [push_cast]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
   convert congr(($hasSum_zeta_four.tsum_eq : ℂ))
   · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by simp,
       zeta_nat_eq_tsum_of_gt_one (by simp : 1 < 4)]
     simp only [push_cast]
-  · norm_cast
+  · fail_if_not_idempotent norm_cast
 
 /-- Value of Riemann zeta at `-ℕ` in terms of `bernoulli'`. -/
 theorem riemannZeta_neg_nat_eq_bernoulli' (k : ℕ) :

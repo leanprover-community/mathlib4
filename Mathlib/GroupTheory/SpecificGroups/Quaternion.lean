@@ -181,7 +181,7 @@ theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
   | succ k IH =>
     rw [pow_succ, IH, a_mul_a]
     congr 1
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 theorem a_one_pow_n : (a 1 : QuaternionGroup n) ^ (2 * n) = 1 := by
   simp

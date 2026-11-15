@@ -73,14 +73,14 @@ lemma ofENat_lt_ofENat {m n : ℕ∞} : (m : Cardinal) < n ↔ m < n :=
 lemma ofENat_lt_aleph0 {m : ℕ∞} : (m : Cardinal) < ℵ₀ ↔ m < ⊤ :=
   ofENat_lt_ofENat (n := ⊤)
 
-@[simp] lemma ofENat_lt_nat {m : ℕ∞} {n : ℕ} : ofENat m < n ↔ m < n := by norm_cast
+@[simp] lemma ofENat_lt_nat {m : ℕ∞} {n : ℕ} : ofENat m < n ↔ m < n := by fail_if_not_idempotent norm_cast
 
 @[simp] lemma ofENat_lt_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
     ofENat m < ofNat(n) ↔ m < OfNat.ofNat n := ofENat_lt_nat
 
-@[simp] lemma nat_lt_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) < n ↔ m < n := by norm_cast
-@[simp] lemma ofENat_pos {m : ℕ∞} : 0 < (m : Cardinal) ↔ 0 < m := by norm_cast
-@[simp] lemma one_lt_ofENat {m : ℕ∞} : 1 < (m : Cardinal) ↔ 1 < m := by norm_cast
+@[simp] lemma nat_lt_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) < n ↔ m < n := by fail_if_not_idempotent norm_cast
+@[simp] lemma ofENat_pos {m : ℕ∞} : 0 < (m : Cardinal) ↔ 0 < m := by fail_if_not_idempotent norm_cast
+@[simp] lemma one_lt_ofENat {m : ℕ∞} : 1 < (m : Cardinal) ↔ 1 < m := by fail_if_not_idempotent norm_cast
 
 @[simp, norm_cast] lemma ofNat_lt_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
     (ofNat(m) : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
@@ -93,14 +93,14 @@ lemma ofENat_le_ofENat {m n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := ofEN
 @[gcongr, mono] alias ⟨_, ofENat_le_ofENat_of_le⟩ := ofENat_le_ofENat
 
 @[simp] lemma ofENat_le_aleph0 (n : ℕ∞) : ↑n ≤ ℵ₀ := ofENat_le_ofENat.2 le_top
-@[simp] lemma ofENat_le_nat {m : ℕ∞} {n : ℕ} : ofENat m ≤ n ↔ m ≤ n := by norm_cast
-@[simp] lemma ofENat_le_one {m : ℕ∞} : ofENat m ≤ 1 ↔ m ≤ 1 := by norm_cast
+@[simp] lemma ofENat_le_nat {m : ℕ∞} {n : ℕ} : ofENat m ≤ n ↔ m ≤ n := by fail_if_not_idempotent norm_cast
+@[simp] lemma ofENat_le_one {m : ℕ∞} : ofENat m ≤ 1 ↔ m ≤ 1 := by fail_if_not_idempotent norm_cast
 
 @[simp] lemma ofENat_le_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
     ofENat m ≤ ofNat(n) ↔ m ≤ OfNat.ofNat n := ofENat_le_nat
 
-@[simp] lemma nat_le_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := by norm_cast
-@[simp] lemma one_le_ofENat {n : ℕ∞} : 1 ≤ (n : Cardinal) ↔ 1 ≤ n := by norm_cast
+@[simp] lemma nat_le_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := by fail_if_not_idempotent norm_cast
+@[simp] lemma one_le_ofENat {n : ℕ∞} : 1 ≤ (n : Cardinal) ↔ 1 ≤ n := by fail_if_not_idempotent norm_cast
 
 @[simp]
 lemma ofNat_le_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
@@ -111,13 +111,13 @@ lemma ofENat_injective : Injective ofENat := ofENat_strictMono.injective
 @[simp, norm_cast]
 lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injective.eq_iff
 
-@[simp] lemma ofENat_eq_nat {m : ℕ∞} {n : ℕ} : (m : Cardinal) = n ↔ m = n := by norm_cast
-@[simp] lemma nat_eq_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) = n ↔ m = n := by norm_cast
+@[simp] lemma ofENat_eq_nat {m : ℕ∞} {n : ℕ} : (m : Cardinal) = n ↔ m = n := by fail_if_not_idempotent norm_cast
+@[simp] lemma nat_eq_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) = n ↔ m = n := by fail_if_not_idempotent norm_cast
 
-@[simp] lemma ofENat_eq_zero {m : ℕ∞} : (m : Cardinal) = 0 ↔ m = 0 := by norm_cast
+@[simp] lemma ofENat_eq_zero {m : ℕ∞} : (m : Cardinal) = 0 ↔ m = 0 := by fail_if_not_idempotent norm_cast
 @[simp] lemma zero_eq_ofENat {m : ℕ∞} : 0 = (m : Cardinal) ↔ m = 0 := by norm_cast; apply eq_comm
 
-@[simp] lemma ofENat_eq_one {m : ℕ∞} : (m : Cardinal) = 1 ↔ m = 1 := by norm_cast
+@[simp] lemma ofENat_eq_one {m : ℕ∞} : (m : Cardinal) = 1 ↔ m = 1 := by fail_if_not_idempotent norm_cast
 @[simp] lemma one_eq_ofENat {m : ℕ∞} : 1 = (m : Cardinal) ↔ m = 1 := by norm_cast; apply eq_comm
 
 @[simp] lemma ofENat_eq_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :

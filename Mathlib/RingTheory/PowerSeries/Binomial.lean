@@ -91,6 +91,6 @@ lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
       zsmul_eq_mul, mul_one]
     rw [show (-1 : ℤ) + -d = -(d + 1) by abel, Ring.choose_neg, Nat.choose_symm_add, Units.smul_def,
       show (d : ℤ) + 1 + n - 1 = d + n by lia, ← Nat.cast_add, Ring.choose_natCast]
-    norm_cast
+    fail_if_not_idempotent norm_cast
 
 end PowerSeries

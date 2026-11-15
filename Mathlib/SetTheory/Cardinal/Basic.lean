@@ -279,13 +279,13 @@ lemma lt_natCast_add_one_iff {n : ℕ} {c : Cardinal} : c < n + 1 ↔ c ≤ n :=
 
 lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
   convert natCast_add_one_le_iff
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 @[simp]
-theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
+theorem succ_zero : succ (0 : Cardinal) = 1 := by fail_if_not_idempotent norm_cast
 
 -- This works generally to prove inequalities between numeric cardinals.
-theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
+theorem one_lt_two : (1 : Cardinal) < 2 := by fail_if_not_idempotent norm_cast
 
 theorem exists_finset_eq_card {α} {n : ℕ} (h : n ≤ #α) :
     ∃ s : Finset α, n = s.card := by

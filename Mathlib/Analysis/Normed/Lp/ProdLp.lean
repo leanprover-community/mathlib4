@@ -766,7 +766,7 @@ theorem prod_nnNorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
 
 theorem prod_nnNorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔ ‖f.snd‖₊ := by
   ext
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 @[deprecated (since := "2026-10-31")] alias prod_nnnorm_eq_sup := prod_nnNorm_eq_sup
 
@@ -823,7 +823,7 @@ section L2
 theorem prod_norm_eq_of_L2 (x : WithLp 2 (α × β)) :
     ‖x‖ = √(‖x.fst‖ ^ 2 + ‖x.snd‖ ^ 2) := by
   rw [prod_norm_eq_of_nat 2 (by norm_cast) _, Real.sqrt_eq_rpow]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem prod_nnNorm_eq_of_L2 (x : WithLp 2 (α × β)) :
     ‖x‖₊ = NNReal.sqrt (‖x.fst‖₊ ^ 2 + ‖x.snd‖₊ ^ 2) :=

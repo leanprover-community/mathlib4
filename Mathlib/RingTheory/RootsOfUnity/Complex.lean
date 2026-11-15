@@ -208,7 +208,7 @@ lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n]
     (hζ : ζ ∈ rootsOfUnity n ℂ) :
     ‖(ζ : ℂ)‖ = 1 := by
   refine norm_eq_one_of_pow_eq_one ?_ <| NeZero.ne n
-  norm_cast
+  fail_if_not_idempotent norm_cast
   rw [_root_.mem_rootsOfUnity] at hζ
   rw [hζ, Units.val_one]
 

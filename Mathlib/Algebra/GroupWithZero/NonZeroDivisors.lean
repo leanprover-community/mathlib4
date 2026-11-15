@@ -382,7 +382,7 @@ def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
     by simp, by simp⟩
 
 @[simp, norm_cast] lemma nonZeroDivisors.associated_coe : Associated (a : M₀) b ↔ Associated a b :=
-  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans <| by simp [Associated]; norm_cast
+  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans <| by simp [Associated]; fail_if_not_idempotent norm_cast
 
 end MonoidWithZero
 

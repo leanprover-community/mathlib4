@@ -75,7 +75,7 @@ lemma exp_eq_exp {x y : ℝ} : exp x = exp y ↔ ∃ m : ℤ, x = y + m * (2 * �
   rw [Subtype.ext_iff, coe_exp, coe_exp, exp_eq_exp_iff_exists_int]
   refine exists_congr fun n => ?_
   rw [← mul_assoc, ← add_mul, mul_left_inj' I_ne_zero]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 lemma periodic_exp : Periodic exp (2 * π) := fun z ↦ exp_eq_exp.2 ⟨1, by rw [Int.cast_one, one_mul]⟩
 

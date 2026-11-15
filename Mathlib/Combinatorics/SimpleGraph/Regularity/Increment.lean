@@ -173,7 +173,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ #P.parts)
     _ ≤ #P.parts.offDiag * ε ^ 5 * (22 / 75) := by
         gcongr ?_ * _ * ?_
         · rw [← mul_div_right_comm, div_le_iff₀ (by simp), offDiag_card]
-          norm_cast
+          fail_if_not_idempotent norm_cast
           rw [tsub_mul]
           refine le_tsub_of_add_le_left ?_
           nlinarith

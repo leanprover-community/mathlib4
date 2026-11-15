@@ -198,7 +198,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   apply lt_irrefl (1 : ℝ)
   calc
   1 = f 1 := (map_one f).symm
-  _ = f (a * p ^ k + b * m ^ k) := by rw_mod_cast [bezout]; norm_cast
+  _ = f (a * p ^ k + b * m ^ k) := by rw_mod_cast [bezout]; fail_if_not_idempotent norm_cast
   _ ≤ f (a * p ^ k) + f (b * m ^ k) := f.add_le' ..
   _ ≤ 1 * (f p) ^ k + 1 * (f m) ^ k := by
     simp only [map_mul, map_pow]

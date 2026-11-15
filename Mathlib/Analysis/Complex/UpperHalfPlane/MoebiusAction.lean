@@ -334,9 +334,9 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
   ext1 ⟨z, hz⟩; ext1
   suffices (↑a * z + b) / (↑c * z + d) = a / c - (c * d + ↑c * ↑c * z)⁻¹ by
     simpa [modular_S_smul, coe_specialLinearGroup_apply]
-  replace hc : (c : ℂ) ≠ 0 := by norm_cast
+  replace hc : (c : ℂ) ≠ 0 := by fail_if_not_idempotent norm_cast
   replace h_denom : ↑c * z + d ≠ 0 := by simpa using! h_denom ⟨z, hz⟩
-  replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
+  replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by fail_if_not_idempotent norm_cast
   grind
 
 end SLAction

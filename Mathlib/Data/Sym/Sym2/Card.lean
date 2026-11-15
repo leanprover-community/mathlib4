@@ -63,7 +63,7 @@ theorem ncard_mk_fiber_eq_card_toFinset [DecidableEq α] {z : Sym2 α} :
 theorem encard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard ≤ 2 := by
   classical
   rw [← z.finite_mk_fiber.cast_ncard_eq, z.ncard_mk_fiber]
-  split_ifs <;> norm_cast
+  split_ifs <;> fail_if_not_idempotent norm_cast
 
 variable (α) in
 @[simp]

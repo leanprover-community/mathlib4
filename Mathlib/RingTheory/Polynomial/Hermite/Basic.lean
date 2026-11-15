@@ -77,7 +77,7 @@ theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (
 theorem coeff_hermite_succ_succ (n k : ℕ) : coeff (hermite (n + 1)) (k + 1) =
     coeff (hermite n) k - (k + 2) * coeff (hermite n) (k + 2) := by
   rw [hermite_succ, coeff_sub, coeff_X_mul, coeff_derivative, mul_comm]
-  norm_cast
+  fail_if_not_idempotent norm_cast
 
 theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hnk
@@ -163,7 +163,7 @@ theorem coeff_hermite_explicit :
       simp only [mul_assoc, ← mul_add, pow_succ']
       congr 2
       -- Factor out double factorials.
-      norm_cast
+      fail_if_not_idempotent norm_cast
       rw [(by grind : 2 * (n + 1) - 1 = 2 * n + 1),
         Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]

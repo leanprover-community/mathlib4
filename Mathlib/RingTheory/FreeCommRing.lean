@@ -245,17 +245,17 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
     refine Subring.InClosure.recOn hx ?_ ?_ ?_ ?_
     · use 1
       rw [map_one]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     · use -1
       rw [map_neg, map_one, Int.cast_neg, Int.cast_one]
     · rintro _ ⟨z, hzs, rfl⟩ _ _
       use 0
       rw [map_mul, lift_of, ite_eq_left hzs, zero_mul]
-      norm_cast
+      fail_if_not_idempotent norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
       refine ⟨q + r, ?_⟩
       rw [map_add, hq, hr]
-      norm_cast
+      fail_if_not_idempotent norm_cast
   specialize this (of p) hps
   rw [lift_of] at this
   split_ifs at this with h

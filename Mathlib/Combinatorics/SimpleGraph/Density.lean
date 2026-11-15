@@ -208,7 +208,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
     simpa [edgeDensity, (nonpos_of_mul_nonpos_right ht₂ hδ₁).antisymm (Nat.cast_nonneg _)] using hδ'
   have hr : 2 * δ - δ ^ 2 = 1 - (1 - δ) * (1 - δ) := by ring
   rw [hr]
-  norm_cast
+  fail_if_not_idempotent norm_cast
   refine
     (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans ?_
   push_cast

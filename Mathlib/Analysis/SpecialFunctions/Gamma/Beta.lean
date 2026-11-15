@@ -71,7 +71,7 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
     intro x hx
     rw [uIcc_of_le (by positivity : (0 : ℝ) ≤ 1 / 2)] at hx
     apply ContinuousAt.cpow (by fun_prop) (by fun_prop)
-    norm_cast
+    fail_if_not_idempotent norm_cast
     exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
 
 /-- The Beta integral is convergent for all `u, v` of positive real part. -/

@@ -140,7 +140,7 @@ theorem roth_3ap_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε 
       _ = card G * (ε * card G) := by ring
       _ ≤ card G * #A := by gcongr
       _ = #B := ?_
-    norm_cast
+    fail_if_not_idempotent norm_cast
     rw [← card_univ, ← card_product]
     exact card_equiv ((Equiv.refl _).prodShear fun a ↦ Equiv.addLeft a) (by simp [B])
   obtain ⟨x₁, y₁, x₂, y₂, hx₁y₁, hx₁y₂, hx₂y₁, hxy, hx₁x₂⟩ :
