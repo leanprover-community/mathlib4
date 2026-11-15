@@ -83,6 +83,13 @@ def Sized : Ordnode α → Prop
   | nil => True
   | node s l _ r => s = size l + size r + 1 ∧ Sized l ∧ Sized r
 
+@[simp]
+theorem map_nil {β} (f : α → β) : nil.map f = nil := rfl
+
+@[simp]
+theorem map_node {β} (s l x r) (f : α → β) :
+    (node s l x r).map f = node s (l.map f) (f x) (r.map f) := rfl
+
 theorem Sized.node' {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (node' l x r) :=
   ⟨rfl, hl, hr⟩
 
@@ -92,6 +99,19 @@ theorem Sized.eq_node' {s l x r} (h : @Sized α (node s l x r)) : node s l x r =
 theorem Sized.size_eq {s l x r} (H : Sized (@node α s l x r)) :
     size (@node α s l x r) = size l + size r + 1 :=
   H.1
+
+@[simp]
+theorem map_size {β : Type*} (f : α → β) :
+    ∀ t : Ordnode α, (t.map f).size = t.size
+  | nil => rfl
+  | node _ _ _ _ => by simp [map]
+
+theorem Sized.map {β} (f : α → β) (t : Ordnode α) (ht : t.Sized) : (t.map f).Sized := by
+  induction t with
+  | nil => simp [Sized]
+  | node _ _ _ _ h1 h2 =>
+    simp only [Sized] at ht h1 h2
+    simp_all [Sized]
 
 @[elab_as_elim]
 theorem Sized.induction {t} (hl : @Sized α t) {C : Ordnode α → Prop} (H0 : C nil)
@@ -202,12 +222,6 @@ def node3L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) 
 /-- Build a tree from three nodes, right associated (ignores the invariants). -/
 def node3R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) : Ordnode α :=
   node' l x (node' m y r)
-
-@[simp]
-theorem map_size {β : Type*} (f : α → β) :
-    ∀ t : Ordnode α, (t.map f).size = t.size
-  | nil => rfl
-  | node _ _ _ _ => by simp [map]
 
 theorem map_node3R {β : Type*}
     (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) (f : α → β) :
@@ -342,9 +356,31 @@ theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
     dsimp only [dual, id]
     split_ifs with h <;> simp [add_comm]
 
+theorem map_balanceR {β} (l : Ordnode α) (x : α) (r : Ordnode α) (f : α → β) :
+    (balanceR l x r).map f = balanceR (l.map f) (f x) (r.map f) := by
+  unfold balanceR
+  obtain - | ⟨ls, ll, lx, lr⟩ := l
+  · obtain - | ⟨rs, rl, rx, rr⟩ := r; · rfl
+    obtain - | ⟨rls, rll, rlx, rlr⟩ := rl <;> obtain - | ⟨rrs, rrl, rrx, rrr⟩ := rr <;> try rfl
+    simp only [id_eq, gt_iff_lt]
+    split_ifs with h <;> simp [add_comm, map]
+    grind
+    grind
+  · obtain - | ⟨rs, rl, rx, rr⟩ := r; · rfl
+    dsimp only [id_eq, gt_iff_lt, map]
+    split_ifs; swap; · rfl
+    obtain - | ⟨rls, rll, rlx, rlr⟩ := rl <;> obtain - | ⟨rrs, rrl, rrx, rrr⟩ := rr <;> try rfl
+    simp only [id_eq, gt_iff_lt]
+    split_ifs with h <;> simp [add_comm, map]
+    grind
+    grind
+
 theorem dual_balanceR (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (balanceR l x r) = balanceL (dual r) (.toDual x) (dual l) := by
-  rw [← dual_dual' (balanceL _ _ _), dual_balanceL, dual_dual, dual_dual]
+  rw [← dual_dual' (balanceL _ _ _), dual_balanceL, dual_dual, dual_dual, ← map_map,
+    ← Function.comp_apply (f := OrderDual.toDual), ← map_balanceR, ← map_map, map_dual, map_dual,
+    map_map, map_map, map_map]
+  simp [Function.comp_assoc]
 
 theorem Sized.node3L {l x m y r} (hl : @Sized α l) (hm : Sized m) (hr : Sized r) :
     Sized (node3L l x m y r) :=
@@ -376,7 +412,7 @@ theorem Sized.dual : ∀ {t : Ordnode α}, Sized t → Sized (dual t)
   | node _ l _ r, ⟨rfl, sl, sr⟩ => ⟨by simp [size_dual, add_comm], Sized.dual sr, Sized.dual sl⟩
 
 theorem Sized.dual_iff {t : Ordnode α} : Sized (.dual t) ↔ Sized t :=
-  ⟨fun h => by rw [← dual_dual t]; exact h.dual, Sized.dual⟩
+  ⟨fun h => by rw [← dual_dual' t]; exact (h.dual.map _), Sized.dual⟩
 
 theorem Sized.rotateL {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (rotateL l x r) := by
   cases r; · exact hl.node' hr
@@ -429,11 +465,19 @@ theorem all_singleton {P : α → Prop} {x : α} : All P (singleton x) ↔ P x :
 theorem any_singleton {P : α → Prop} {x : α} : Any P (singleton x) ↔ P x :=
   ⟨by rintro (⟨⟨⟩⟩ | h | ⟨⟨⟩⟩); exact h, fun h => Or.inr (Or.inl h)⟩
 
-theorem all_dual {P : α → Prop} : ∀ {t : Ordnode α}, All P (dual t) ↔ All P t
+theorem all_dual {P : α → Prop} : ∀ {t : Ordnode α}, All P (dual t) ↔ All P (t.map OrderDual.toDual)
   | nil => Iff.rfl
   | node _ _l _x _r =>
     ⟨fun ⟨hr, hx, hl⟩ => ⟨all_dual.1 hl, hx, all_dual.1 hr⟩, fun ⟨hl, hx, hr⟩ =>
       ⟨all_dual.2 hr, hx, all_dual.2 hl⟩⟩
+
+theorem all_dual' {P : α → Prop} :
+    ∀ {t : Ordnode α}, All P ((dual t).map OrderDual.ofDual) ↔ All P t
+  | nil => Iff.rfl
+  | node _ _l _x _r => by
+    rw [dual, map_node, All, all_dual', all_dual']
+    simp [All]
+    grind
 
 theorem all_iff_forall {P : α → Prop} : ∀ {t}, All P t ↔ ∀ x, Emem x t → P x
   | nil => (iff_true_intro <| by rintro _ ⟨⟩).symm
@@ -470,7 +514,7 @@ theorem all_rotateL {P l x r} : @All α P (rotateL l x r) ↔ All P l ∧ P x �
     simp [all_node3L, all_node4L, All]
 
 theorem all_rotateR {P l x r} : @All α P (rotateR l x r) ↔ All P l ∧ P x ∧ All P r := by
-  rw [← all_dual, dual_rotateR, all_rotateL]; simp [all_dual, and_comm, and_left_comm, and_assoc]
+  rw [← all_dual', dual_rotateR, map_dual, all_rotateL]; simp [all_dual, and_comm, and_left_comm, and_assoc]
 
 theorem all_balance' {P l x r} : @All α P (balance' l x r) ↔ All P l ∧ P x ∧ All P r := by
   rw [balance']; split_ifs <;> simp [all_node', all_rotateL, all_rotateR]
