@@ -352,7 +352,7 @@ variable [Fintype ι] [∀ i, DecidableEq (β i)]
 instance : Dist (Hamming β) :=
   ⟨fun x y => hammingDist (ofHamming x) (ofHamming y)⟩
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 theorem dist_eq_hammingDist (x y : Hamming β) :
     dist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
@@ -382,7 +382,7 @@ instance : PseudoMetricSpace (Hamming β) where
     refine iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => ?_⟩
     exact mod_cast hammingDist_le_card_fintype
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 theorem nndist_eq_hammingDist (x y : Hamming β) :
     nndist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
@@ -394,7 +394,7 @@ instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
 instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
   ⟨fun x => hammingNorm (ofHamming x)⟩
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = hammingNorm (ofHamming x) :=
   rfl
 
@@ -404,7 +404,7 @@ instance [∀ i, AddGroup (β i)] : NormedAddGroup (Hamming β) where
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := fun x y => NormedAddGroup.dist_eq x y
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 theorem nnNorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :
     ‖x‖₊ = hammingNorm (ofHamming x) := rfl
 

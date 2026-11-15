@@ -144,21 +144,21 @@ instance instCategory {X Y : Cat.{v, u}} : Category (X ⟶ Y) where
   assoc η₁ η₂ η₃ :=
     congrArg (NatTrans.toCatHom₂) (Category.assoc η₁.toNatTrans η₂.toNatTrans η₃.toNatTrans)
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma _root_.CategoryTheory.NatTrans.toCatHom₂_id {C D : Type u} [Category.{v} C] [Category.{v} D]
     (F : C ⥤ D) :
     (𝟙 F : F ⟶ F).toCatHom₂ = 𝟙 F.toCatHom := rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma _root_.CategoryTheory.NatTrans.toCatHom₂_comp {C D : Type u} [Category.{v} C] [Category.{v} D]
     {F G H : C ⥤ D} (η₁ : F ⟶ G) (η₂ : G ⟶ H) :
     (η₁ ≫ η₂).toCatHom₂ = η₁.toCatHom₂ ≫ η₂.toCatHom₂ := rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma toNatTrans_id {C D : Cat.{v, u}} (F : C ⟶ D) :
   (𝟙 F : F ⟶ F).toNatTrans = 𝟙 (F.toFunctor) := rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma toNatTrans_comp {C D : Cat.{v, u}} {F G H : C ⟶ D} (η₁ : F ⟶ G) (η₂ : G ⟶ H) :
   (η₁ ≫ η₂).toNatTrans = η₁.toNatTrans ≫ η₂.toNatTrans := rfl
 
@@ -245,7 +245,7 @@ instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma Hom.id_toFunctor {C : Cat.{v, u}} : (𝟙 C : C ⟶ C).toFunctor = 𝟭 C := rfl
 
 @[simp]
@@ -256,7 +256,7 @@ theorem Hom.id_obj {C : Cat.{v, u}} (X : C) : (𝟙 C : C ⟶ C).toFunctor.obj X
 theorem Hom.id_map {C : Cat.{v, u}} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⟶ C).toFunctor.map f = f := by
   simp
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma Hom.comp_toFunctor {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) :
   (F ≫ G).toFunctor = F.toFunctor ⋙ G.toFunctor := rfl
 
@@ -286,29 +286,29 @@ theorem eqToHom_app {C D : Cat.{v, u}} (F G : C ⟶ D) (h : F = G) (X : C) :
     (eqToHom h).toNatTrans.app X = eqToHom congr(($h).toFunctor.obj X) := by
   simp
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma whiskerLeft_toNatTrans {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) :
   (F ◁ η).toNatTrans = F.toFunctor.whiskerLeft η.toNatTrans := rfl
 
 lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).toNatTrans.app X = η.toNatTrans.app (F.toFunctor.obj X) := by simp
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma whiskerRight_toNatTrans {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) :
     (η ▷ H).toNatTrans = Functor.whiskerRight η.toNatTrans H.toFunctor := rfl
 
 lemma whiskerRight_app {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).toNatTrans.app X = H.toFunctor.map (η.toNatTrans.app X) := by simp
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma Hom.toNatIso_leftUnitor {B C : Cat.{v, u}} (F : B ⟶ C) :
     Hom.toNatIso (λ_ F) = F.toFunctor.leftUnitor := rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma leftUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (λ_ F).hom.toNatTrans = (F.toFunctor.leftUnitor).hom := rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma leftUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (λ_ F).inv.toNatTrans = (F.toFunctor.leftUnitor).inv := rfl
 
@@ -318,15 +318,15 @@ lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) :
 lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) :
     (λ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma Hom.toNatIso_rightUnitor {B C : Cat.{v, u}} (F : B ⟶ C) :
     Hom.toNatIso (ρ_ F) = eqToIso rfl ≪≫ F.toFunctor.rightUnitor ≪≫ eqToIso rfl := by simp; rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma rightUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (ρ_ F).hom.toNatTrans = (F.toFunctor.rightUnitor).hom := rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma rightUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (ρ_ F).inv.toNatTrans = (F.toFunctor.rightUnitor).inv := rfl
 
@@ -336,15 +336,15 @@ lemma rightUnitor_hom_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
 lemma rightUnitor_inv_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
     (ρ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma Hom.toNatIso_associator {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
     Hom.toNatIso (α_ F G H) = Functor.associator F.toFunctor G.toFunctor H.toFunctor := rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma associator_hom_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
     (α_ F G H).hom.toNatTrans = (Functor.associator F.toFunctor G.toFunctor H.toFunctor).hom := rfl
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma associator_inv_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
     (α_ F G H).inv.toNatTrans = (Functor.associator F.toFunctor G.toFunctor H.toFunctor).inv := rfl
 

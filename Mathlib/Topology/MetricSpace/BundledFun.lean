@@ -105,7 +105,7 @@ instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
       apply add_le_add <;> simp
   }
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma coe_sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R]
     (d d' : PseudoMetric X R) :
     ((d ⊔ d' : PseudoMetric X R) : X → X → R) = (d : X → X → R) ⊔ d' := rfl
@@ -138,7 +138,7 @@ protected lemma nonneg (d : PseudoMetric X R) (x y : X) : 0 ≤ d x y := by
 instance : OrderBot (PseudoMetric X R) where
   bot_le f _ _ := f.nonneg _ _
 
-@[simp, fail_if_not_idempotent push_cast]
+@[simp, push_cast]
 lemma coe_finsetSup [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R} {s : Finset Y}
     (hs : s.Nonempty) :
     ⇑(s.sup f) = s.sup' hs (f ·) := by

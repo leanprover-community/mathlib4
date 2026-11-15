@@ -348,7 +348,7 @@ instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
   coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
-@[simp, fail_if_not_idempotent push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
+@[simp, push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
 @[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.map_add_const' = f := rfl
 @[simp] theorem toFun_eq_coe (f : G →+c[a, b] H) : f.toFun = f := rfl
 

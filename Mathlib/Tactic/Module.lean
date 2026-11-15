@@ -706,7 +706,7 @@ instance. If the goal contains a scalar multiplication `(a : R) • (x : M)`, th
 The scalar type for the goals produced by the `match_scalars` tactic is the largest scalar type
 encountered; for example, if `ℕ`, `ℚ` and a characteristic-zero field `K` all occur as scalars, then
 the goals produced are equalities in `K` with the appropriate casts (from `ℕ`, `ℤ`, `ℚ`) and
-`algebraMap`s (otherwise) inserted. Inserted casts are simplified by lemmas tagged `@[fail_if_not_idempotent push_cast]`.
+`algebraMap`s (otherwise) inserted. Inserted casts are simplified by lemmas tagged `@[push_cast]`.
 If the set of scalar types encountered is not totally ordered (in the sense that for all rings `R`,
 `S` encountered, it holds that either `Algebra R S` or `Algebra S R`), then `match_scalars` fails.
 
