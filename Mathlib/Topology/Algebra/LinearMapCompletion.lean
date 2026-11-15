@@ -74,7 +74,7 @@ variable [T0Space β] [CompleteSpace β]
 linear version of `UniformSpace.Completion.extension`. -/
 noncomputable def fromCompletion (f : α →SL[σ] β) :
     Completion α →SL[σ] β where
-  __ := f.toAddMonoidHom.extension f.continuous
+  __ := f.toAddMonoidHom.extension (id f.continuous)
   map_smul' c a := induction_on a
       (isClosed_eq (continuous_extension.comp (continuous_const_smul c)) (by dsimp; fun_prop)) <| by
     simp [← Completion.coe_smul, AddMonoidHom.extension_coe f.toAddMonoidHom f.continuous]

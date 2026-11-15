@@ -398,13 +398,13 @@ end RightInvariant
 section QuasiMeasurePreserving
 
 /-- The map `(x, y) ↦ x * y` is quasi-measure-preserving. -/
-@[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ x + y` is quasi-measure-preserving. -/]
+@[to_additive /-- The map `(x, y) ↦ x + y` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_mul [IsMulLeftInvariant ν] :
     QuasiMeasurePreserving (fun p ↦ p.1 * p.2) (μ.prod ν) ν :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_mul _ _).quasiMeasurePreserving
 
 /-- The map `(x, y) ↦ y * x` is quasi-measure-preserving. -/
-@[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ y + x` is quasi-measure-preserving. -/]
+@[to_additive /-- The map `(x, y) ↦ y + x` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_mul_swap [IsMulLeftInvariant μ] :
     QuasiMeasurePreserving (fun p ↦ p.2 * p.1) (μ.prod ν) μ :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_mul_swap _ _).quasiMeasurePreserving
@@ -414,13 +414,13 @@ section MeasurableInv
 variable [MeasurableInv G]
 
 /-- The map `(x, y) ↦ x⁻¹ * y` is quasi-measure-preserving. -/
-@[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ -x + y` is quasi-measure-preserving. -/]
+@[to_additive /-- The map `(x, y) ↦ -x + y` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_inv_mul [IsMulLeftInvariant ν] :
     QuasiMeasurePreserving (fun p ↦ p.1⁻¹ * p.2) (μ.prod ν) ν :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_inv_mul _ _).quasiMeasurePreserving
 
 /-- The map `(x, y) ↦ y⁻¹ * x` is quasi-measure-preserving. -/
-@[to_additive (attr := fun_prop) /-- The map `(x, y) ↦ -y + x` is quasi-measure-preserving. -/]
+@[to_additive /-- The map `(x, y) ↦ -y + x` is quasi-measure-preserving. -/]
 theorem quasiMeasurePreserving_inv_mul_swap [IsMulLeftInvariant μ] :
     QuasiMeasurePreserving (fun p ↦ p.2⁻¹ * p.1) (μ.prod ν) μ :=
   quasiMeasurePreserving_snd.comp (measurePreserving_prod_inv_mul_swap _ _).quasiMeasurePreserving
