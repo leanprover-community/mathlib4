@@ -76,7 +76,7 @@ lemma linearYonedaObjXIso_hom_apply
     (m n : ℤ) (k : ℕ) (f : K.X k ⟶ Y) (hn : k = n := by lia) (hm : m + n = 0) :
     dsimp% (K.linearYonedaObjXIso R Y n k hn).hom f =
       ((n * (n + 1)) / 2).negOnePow • Cochain.toSingleMk
-        ((K.extendXIso ComplexShape.embeddingDownNat (by simp; lia)).hom≫ f) hm := by
+        ((K.extendXIso ComplexShape.embeddingDownNat (by simp; lia)).hom ≫ f) hm := by
   obtain rfl : m = -n := by lia
   simp [linearYonedaObjXIso, Linear.homCongr]
   rfl
