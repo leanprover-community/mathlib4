@@ -660,11 +660,12 @@ theorem algebraMap_eq_inlRingHom : algebraMap R (Unitization R A) = inlRingHom R
 variable {S R A}
 
 @[simp]
-theorem fst_algebraMap (s : S) : (algebraMap S (Unitization R A) s).fst = algebraMap S R s :=
+protected theorem fst_algebraMap (s : S) :
+    (algebraMap S (Unitization R A) s).fst = algebraMap S R s :=
   rfl
 
 @[simp]
-theorem snd_algebraMap (s : S) : (algebraMap S (Unitization R A) s).snd = 0 :=
+protected theorem snd_algebraMap (s : S) : (algebraMap S (Unitization R A) s).snd = 0 :=
   rfl
 
 variable (S R A)
@@ -858,10 +859,10 @@ lemma starMap_inl (φ : A →⋆ₙₐ[R] B) (r : R) :
   simp
 
 lemma fst_starMap (φ : A →⋆ₙₐ[R] B) (x : Unitization R A) : (starMap φ x).fst = x.fst := by
-  simp [starMap_apply, algebraMap_eq_inl]
+  simp
 
 lemma snd_starMap (φ : A →⋆ₙₐ[R] B) (x : Unitization R A) : (starMap φ x).snd = φ x.snd := by
-  simp [starMap_apply, algebraMap_eq_inl]
+  simp
 
 /-- If `φ : A →⋆ₙₐ[R] B` is injective, the lift `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B`
 is also injective. -/
@@ -894,6 +895,22 @@ lemma starMap_id : starMap (NonUnitalStarAlgHom.id R B) = StarAlgHom.id R (Uniti
   ext; all_goals simp
 
 end StarMap
+
+section IsSelfAdjointInl
+
+variable {R A : Type*} [Star R] [AddMonoid A] [StarAddMonoid A] {r : R}
+
+@[simp]
+lemma isSelfAdjoint_inl : IsSelfAdjoint (inl r : Unitization R A) ↔ IsSelfAdjoint r := by
+  simp only [isSelfAdjoint_iff, ← inl_star, inl_injective.eq_iff]
+
+alias ⟨_root_.IsSelfAdjoint.of_inl, _⟩ := isSelfAdjoint_inl
+
+variable (A) in
+lemma _root_.IsSelfAdjoint.inl (hr : IsSelfAdjoint r) : IsSelfAdjoint (inl r : Unitization R A) :=
+  isSelfAdjoint_inl.mpr hr
+
+end IsSelfAdjointInl
 
 section StarNormal
 
@@ -937,16 +954,11 @@ end StarNormal
 
 section StarNormalSnd
 
-variable {R A : Type*} [CommSemiring R] [StarRing R] [NonUnitalRing A] [StarRing A]
-variable [Module R A]
+variable {R A : Type*} [CommMagma R] [Star R] [NonUnitalNonAssocRing A] [Star A] [SMul R A]
 
 @[simp]
 lemma isStarNormal_iff_snd {x : Unitization R A} : IsStarNormal x ↔ IsStarNormal x.snd := by
-  simp only [isStarNormal_iff, commute_iff_eq]
-  refine ⟨fun h ↦ ?_, fun h ↦ Unitization.ext (by simp [mul_comm]) ?_⟩
-  · have := congr($(h).snd)
-    simpa [add_comm, add_left_comm] using this
-  · simpa [add_comm, add_left_comm] using h
+  simp [isStarNormal_iff, commute_iff_eq, Unitization.ext_iff, mul_comm, add_comm]
 
 end StarNormalSnd
 
