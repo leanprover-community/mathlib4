@@ -99,7 +99,7 @@ theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α →
   Ordinal.lift_iSup_lt_of_lt_cof (by simp)
 
 @[stacks 05N3]
-theorem _root_.Ordinal.exists_cof_gt (c : Cardinal) : ∃ o : Ordinal, c < o.cof := by
+theorem _root_.Ordinal.exists_lt_cof (c : Cardinal) : ∃ o : Ordinal, c < o.cof := by
   use (succ (max c ℵ₀)).ord
   rw [(isRegular_succ _).cof_ord] <;> simp
 
