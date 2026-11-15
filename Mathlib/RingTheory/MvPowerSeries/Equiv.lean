@@ -65,11 +65,9 @@ variable (R σ) in
 private def optionFunLeft (p : MvPowerSeries (Option σ) R) : PowerSeries (MvPowerSeries σ R) :=
   .mk fun n ↦ fun x ↦ p.coeff (x.optionElim n)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma coeff_coeff_optionFunLeft (p : MvPowerSeries (Option σ) R) (n : ℕ) (x : σ →₀ ℕ) :
-    coeff x (PowerSeries.coeff n (optionFunLeft σ R p)) = coeff (x.optionElim n) p := by
-  rw [optionFunLeft, PowerSeries.coeff_mk]
-  exact LinearMap.proj_apply ..
+    coeff x (PowerSeries.coeff n (optionFunLeft σ R p)) = coeff (x.optionElim n) p :=
+  congrArg (coeff x) (PowerSeries.coeff_mk n _)
 
 private theorem optionFunLeft_monomial (x : Option σ →₀ ℕ) (r : R) :
     optionFunLeft σ R (monomial x r) = PowerSeries.monomial (x none) (monomial x.some r) := by
@@ -300,13 +298,11 @@ theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSer
       Ideal.Quotient.mk_out]
   exact hx
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem toAdicCompletion_coe (p : MvPolynomial σ R) :
     toAdicCompletion σ R p = .of (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) p := by
   symm; ext n
-  suffices p - (truncTotal n) p ∈ MvPolynomial.idealOfVars σ R ^ n by
-    simpa [toAdicCompletion, AdicCompletion.liftAlgHom, AdicCompletion.liftRingHom,
-      Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+  rw [toAdicCompletion_apply_eq_mk_truncTotal, AdicCompletion.of_apply, Submodule.mkQ_apply,
+    Ideal.Quotient.mk_eq_mk, Ideal.Quotient.eq, smul_eq_mul, Ideal.mul_top]
   exact (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr fun x hx ↦ by simp [coeff_truncTotal _ hx]
 
 /-- An inverse function of `toAdicCompletion`. -/

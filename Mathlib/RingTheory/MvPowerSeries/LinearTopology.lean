@@ -110,7 +110,6 @@ variable [TopologicalSpace R]
 -- We endow MvPowerSeries σ R with the product topology.
 open WithPiTopology
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the ring `R` is endowed with a linear topology, then the sets `↑basis σ R (J, d)`,
 for `J : TwoSidedIdeal R` which are neighborhoods of `0 : R` and `d : σ →₀ ℕ`,
 constitute a basis of neighborhoods of `0 : MvPowerSeries σ R` for the product topology. -/
@@ -119,12 +118,12 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
       (fun Id : TwoSidedIdeal R × (σ →₀ ℕ) ↦ (Id.1 : Set R) ∈ 𝓝 0)
       (fun Id ↦ basis _ _ Id) := by
   classical
-  rw [nhds_pi]
+  have : 𝓝 (0 : MvPowerSeries σ R) = Filter.pi fun _ ↦ 𝓝 0 := nhds_pi
+  rw [this]
   refine IsLinearTopology.hasBasis_twoSidedIdeal.pi_self.to_hasBasis ?_ ?_
   · intro ⟨D, I⟩ ⟨hD, hI⟩
     refine ⟨⟨I, Finset.sup hD.toFinset id⟩, hI, fun f hf d hd ↦ ?_⟩
-    rw [SetLike.mem_coe, mem_basis_iff] at hf
-    convert! hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
+    exact mem_basis_iff.mp hf _ (Finset.le_sup (f := id) (hD.mem_toFinset.mpr hd))
   · intro ⟨I, d⟩ hI
     refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩
     simpa [basis, coeff_apply, Iic, Set.pi] using! subset_rfl

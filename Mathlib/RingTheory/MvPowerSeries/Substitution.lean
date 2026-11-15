@@ -531,7 +531,6 @@ theorem le_weightedOrder_subst_of_forall_ne_zero
   refine fun i hi ↦ (weightedOrder_le _ hi).trans ?_
   simp [Finsupp.weight_apply, Finsupp.sum, (ne_zero_iff_weightedOrder_finite _).mp (ha0 _)]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     (⨅ i, (a i).order) * f.order ≤ (f.subst a).order := by
   refine .trans ?_ (MvPowerSeries.le_weightedOrder_subst _ ha _)
@@ -539,7 +538,7 @@ theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
   intro i hi
   trans (⨅ (i : σ), (order ∘ a) i) * ↑i.degree
   · refine mul_le_mul_right (order_le hi) _
-  · simp only [Function.comp_apply, order, Finsupp.degree, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
+  · simp only [Function.comp_apply, order, Finsupp.degree_apply,
       Nat.cast_sum, Finset.mul_sum, Finsupp.weight_apply, nsmul_eq_mul]
     exact Finset.sum_le_sum fun j hj => by
       simp [mul_comm, mul_le_mul_right (iInf_le_iff.mpr fun _ a ↦ a j)]
@@ -570,7 +569,6 @@ theorem truncTotal_subst_eq_truncTotal_subst_truncTotal_of_le (ha : HasSubst a)
     · exact ha.truncTotal
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem truncTotal_subst_eq_truncTotal_subst_sum (ha : HasSubst a)
     (ha₁ : ∀ i, (a i).constantCoeff = 0) :
     truncTotal k (f.subst a) =
@@ -578,30 +576,16 @@ theorem truncTotal_subst_eq_truncTotal_subst_sum (ha : HasSubst a)
   ext d
   by_cases hd : d.degree < k
   · simp_rw [coeff_truncTotal _ hd, coeff_subst ha]
-    have h1 := coeff_subst_finite ha f d
-    have h2 := coeff_subst_finite ha (∑ i ∈ range k, (homogeneousComponent i) f) d
-    rw [finsum_eq_sum _ h1, finsum_eq_sum _ h2]
-    have : h2.toFinset ⊆ h1.toFinset := by simp +contextual [coeff_homogeneousComponent]
-    have aux {n : σ →₀ ℕ} : coeff d (n.prod fun s e ↦ a s ^ e) ≠ 0 → n.degree ≤ d.degree := by
-      contrapose!
-      intro hc
-      rw [Finsupp.prod]
-      refine coeff_of_lt_order (lt_of_lt_of_le (Nat.cast_lt.mpr hc)
-        (.trans ?_ (le_order_prod _ n.support)))
-      exact mod_cast sum_le_sum fun i hi => le_order_pow_of_constantCoeff_eq_zero _ (ha₁ i)
-    rw [← Finset.sum_subset this]
-    · congr! 2 with n hn
-      simp only [map_sum, coeff_homogeneousComponent, sum_ite_eq, mem_range, left_eq_ite_iff,
-        not_lt]
-      have : n.degree ≤ d.degree := by
-        simp only [map_sum, Set.Finite.mem_toFinset, Function.mem_support, ne_eq] at hn
-        exact aux (right_ne_zero_of_smul hn)
-      grind
-    · simp +contextual only [Set.Finite.mem_toFinset, Function.mem_support, ne_eq, map_sum,
-        coeff_homogeneousComponent, sum_ite_eq, mem_range, ite_smul, zero_smul, ite_eq_right_iff,
-        imp_false, not_lt, not_le]
-      grind [right_ne_zero_of_smul]
-  simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
+    refine finsum_congr fun n ↦ ?_
+    by_cases hn : n.degree < k
+    · simp [coeff_homogeneousComponent, hn]
+    · have hz : coeff d (n.prod fun s e ↦ a s ^ e) = 0 := by
+        refine coeff_of_lt_order ((Nat.cast_lt.mpr (hd.trans_le (not_lt.mp hn))).trans_le ?_)
+        rw [Finsupp.prod]
+        refine .trans ?_ (le_order_prod _ n.support)
+        exact mod_cast sum_le_sum fun i _ ↦ le_order_pow_of_constantCoeff_eq_zero _ (ha₁ i)
+      simp [hz]
+  · simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
 theorem truncTotal_subst_eq_truncTotal_sum_subst (ha : HasSubst a)
     (ha₁ : ∀ i, (a i).constantCoeff = 0) :
@@ -656,69 +640,46 @@ variable {R : Type*} [CommSemiring R]
 -- To match the `PowerSeries.rescale` API which holds for `CommSemiring`,
 -- we redo it by hand.
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring homomorphism taking a multivariate power series `f(X)` to `f(aX)`. -/
 noncomputable def rescale (a : σ → R) : MvPowerSeries σ R →+* MvPowerSeries σ R where
   toFun f := fun n ↦ (n.prod fun s m ↦ a s ^ m) * f.coeff n
   map_zero' := by
-    ext
-    simp [map_zero, coeff_apply]
+    ext n
+    exact (coeff_apply _ n).trans (by simp)
   map_one' := by
-    ext1 n
     classical
-    simp only [coeff_one, mul_ite, mul_one, mul_zero]
-    split_ifs with h
-    · simp [h, coeff_apply]
-    · simp only [coeff_apply, ite_eq_right_iff]
-      exact fun a_1 ↦ False.elim (h a_1)
+    ext n
+    refine (coeff_apply _ n).trans ?_
+    rw [coeff_one]
+    split_ifs with h <;> simp [h]
   map_add' := by
     intros
     ext
     exact mul_add _ _ _
   map_mul' f g := by
-    ext n
     classical
-    rw [coeff_apply, coeff_mul, coeff_mul, Finset.mul_sum]
-    apply Finset.sum_congr rfl
-    intro x hx
-    simp only [Finset.mem_antidiagonal] at hx
-    rw [← hx]
-    simp only [coeff_apply]
-    rw [Finsupp.prod_of_support_subset _ Finsupp.support_add,
-      Finsupp.prod_of_support_subset x.1 Finset.subset_union_left,
-      Finsupp.prod_of_support_subset x.2 Finset.subset_union_right]
-    · simp only [← mul_assoc]
-      congr 1
-      rw [mul_assoc, mul_comm (f x.1), ← mul_assoc]
-      congr 1
-      rw [← Finset.prod_mul_distrib]
-      apply Finset.prod_congr rfl
-      simp [pow_add]
-    all_goals {simp}
+    ext n
+    refine (coeff_apply _ n).trans (.trans ?_ (coeff_mul _ _ _).symm)
+    rw [coeff_mul, Finset.mul_sum]
+    refine Finset.sum_congr rfl fun p hp ↦ ?_
+    rw [← Finset.mem_antidiagonal.mp hp,
+      Finsupp.prod_add_index' (fun _ ↦ pow_zero _) (fun _ _ _ ↦ pow_add _ _ _)]
+    exact mul_mul_mul_comm _ _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem coeff_rescale (f : MvPowerSeries σ R) (a : σ → R) (n : σ →₀ ℕ) :
-    coeff n (rescale a f) = (n.prod fun s m ↦ a s ^ m) * f.coeff n := by
-  simp [rescale, coeff_apply]
+    coeff n (rescale a f) = (n.prod fun s m ↦ a s ^ m) * f.coeff n := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem rescale_zero :
     (rescale 0 : MvPowerSeries σ R →+* MvPowerSeries σ R) = C.comp constantCoeff := by
   classical
   ext x n
-  simp only [rescale, Pi.zero_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    RingHom.coe_comp, Function.comp_apply, coeff_C]
-  split_ifs with h
-  · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
-  · simp only [coeff_apply]
-    convert zero_mul _
-    simp only [DFunLike.ext_iff, not_forall, Finsupp.coe_zero, Pi.zero_apply] at h
-    obtain ⟨s, h⟩ := h
-    simp only [Finsupp.prod]
-    apply Finset.prod_eq_zero (i := s) _ (zero_pow h)
-    simpa using h
+  rw [coeff_rescale, RingHom.comp_apply, coeff_C]
+  split_ifs with hn
+  · simp [hn]
+  · obtain ⟨s, hs⟩ := Finsupp.support_nonempty_iff.mpr hn
+    rw [Finsupp.prod, Finset.prod_eq_zero hs (zero_pow (Finsupp.mem_support_iff.mp hs)), zero_mul]
 
 theorem rescale_zero_apply (f : MvPowerSeries σ R) :
     rescale 0 f = C (constantCoeff f) := by simp
@@ -737,7 +698,6 @@ theorem rescale_mul (a b : σ → R) : rescale (a * b) = (rescale b).comp (resca
   ext
   simp [← rescale_rescale]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Rescaling a homogeneous power series -/
 lemma rescale_homogeneous_eq_smul {n : ℕ} {r : R} {f : MvPowerSeries σ R}
     (hf : ∀ d ∈ f.support, d.degree = n) :
@@ -747,8 +707,8 @@ lemma rescale_homogeneous_eq_smul {n : ℕ} {r : R} {f : MvPowerSeries σ R}
     Finset.prod_pow_eq_pow_sum, smul_eq_mul]
   by_cases he : e ∈ f.support
   · rw [← hf e he, Finsupp.degree_apply]
-  · simp only [Function.mem_support, ne_eq, not_not] at he
-    simp [he, mul_zero, coeff_apply]
+  · have he : coeff e f = 0 := not_not.mp he
+    simp [he]
 
 /-- Rescale a multivariate power series, as a `MonoidHom` in the scaling parameters. -/
 noncomputable def rescaleMonoidHom :

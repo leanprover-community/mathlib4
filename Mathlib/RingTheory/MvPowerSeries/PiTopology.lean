@@ -93,11 +93,9 @@ variable (R) in
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
   inferInstanceAs <| TopologicalSpace ((σ →₀ ℕ) → R)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} {t u : TopologicalSpace R} (htu : t ≤ u) :
-    @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
-  change ⨅ i, _ ≤ ⨅ i, _
-  gcongr
+    @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u :=
+  iInf_mono fun _ ↦ induced_mono htu
 
 /-- `MvPowerSeries` on a `T0Space` form a `T0Space` -/
 @[scoped instance]
@@ -119,14 +117,12 @@ variable (R) in
 theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff (σ := σ) (R := R)) :=
   continuous_coeff (R := R) 0
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A family of power series converges iff it converges coefficientwise -/
 theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (u : Filter ι) (g : MvPowerSeries σ R) :
     Tendsto f u (nhds g) ↔
-    ∀ d : σ →₀ ℕ, Tendsto (fun i => coeff d (f i)) u (nhds (coeff d g)) := by
-  rw [nhds_pi, tendsto_pi]
-  exact forall_congr' (fun d => Iff.rfl)
+    ∀ d : σ →₀ ℕ, Tendsto (fun i => coeff d (f i)) u (nhds (coeff d g)) :=
+  tendsto_pi_nhds
 
 theorem tendsto_trunc'_atTop [DecidableEq σ] [CommSemiring R] (f : MvPowerSeries σ R) :
     Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
@@ -232,12 +228,10 @@ theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
 
 variable [Semiring R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
-  rw [Pi.hasSum]
-  intro d
+  refine Pi.hasSum.mpr fun d ↦ ?_
   simpa using! hasSum_single d (fun d' h ↦ coeff_monomial_ne h.symm _)
 
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/

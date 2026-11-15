@@ -148,18 +148,15 @@ theorem ext {φ ψ : MvPowerSeries σ R} (h : ∀ n : σ →₀ ℕ, coeff n φ 
 if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
-set_option backward.isDefEq.respectTransparency false in
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
-  rw [monomial]
   -- unify the `Decidable` arguments
-  convert rfl
+  rw [monomial, Subsingleton.elim (Classical.decEq σ) ‹_›]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff m (monomial n a) = if m = n then a else 0 := by
-  dsimp only [coeff, MvPowerSeries]
-  rw [monomial_def, LinearMap.proj_apply (i := m), LinearMap.single_apply, Pi.single_apply]
+  rw [monomial_def]
+  exact Pi.single_apply n a m
 
 @[simp]
 theorem coeff_monomial_same (n : σ →₀ ℕ) (a : R) : coeff n (monomial n a) = a := by
@@ -507,7 +504,6 @@ section Map
 variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map between multivariate formal power series induced by a map on the coefficients. -/
 def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   toFun φ n := f <| coeff n φ
@@ -526,7 +522,8 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
     ext fun n =>
       show f _ = _ by
         classical
-        rw [coeff_mul, map_sum, coeff_mul]
+        rw [coeff_mul, map_sum]
+        refine .trans ?_ (coeff_mul _ _ _).symm
         apply Finset.sum_congr rfl
         rintro ⟨i, j⟩ _; rw [f.map_mul]; rfl
 
@@ -599,7 +596,6 @@ section Semiring
 
 variable [Semiring R]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     (X s : MvPowerSeries σ R) ^ n ∣ φ ↔ ∀ m : σ →₀ ℕ, m s < n → coeff m φ = 0 := by
   classical
@@ -615,7 +611,8 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
     exact Nat.le_add_right n _
   · intro h
-    refine ⟨fun m => coeff (m + single s n) φ, ?_⟩
+    let ψ : MvPowerSeries σ R := fun m => coeff (m + single s n) φ
+    refine ⟨ψ, ?_⟩
     ext m
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
@@ -669,7 +666,6 @@ open Finset.HasAntidiagonal Finset
 
 variable {R : Type*} [CommSemiring R] {ι : Type*}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
@@ -685,7 +681,8 @@ theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
   | insert a s ha ih =>
     rw [finsuppAntidiag_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
-      simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
+      simp only [mem_antidiagonal, sum_map, ← Function.Embedding.toFun_eq_coe, coe_update,
+        Prod.forall]
       rintro u v rfl
       rw [ih, Finset.mul_sum, ← Finset.sum_attach]
       apply Finset.sum_congr rfl
@@ -697,9 +694,9 @@ theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
       rw [Function.update_of_ne]
       exact ne_of_mem_of_not_mem hi ha
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
-        disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
-        exists_prop, not_exists, not_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-        Prod.forall, Prod.mk.injEq]
+        disjoint_left, mem_map, mem_attach, ← Function.Embedding.toFun_eq_coe, true_and,
+        Subtype.exists, exists_prop, not_exists, not_and, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂, Prod.forall, Prod.mk.injEq]
       rintro u v rfl u' v' huv h k - l - hkl
       obtain rfl : u' = u := by
         simpa only [Finsupp.coe_update, Function.update_self] using congr($hkl a)
