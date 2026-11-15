@@ -7,8 +7,7 @@ Authors: Robert Shlyakhtenko
 module
 
 public import Mathlib.Data.Finsupp.Weight
-public import Mathlib.Data.Sym.NatCard
-public import Mathlib.SetTheory.Cardinal.NatCard
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 
@@ -25,25 +24,24 @@ public section
 
 noncomputable section
 
+noncomputable def Finsupp.optionSubtypeSumEquiv (α β : Type*)
+    [AddCommMonoid β] [LinearOrder β] [Sub β] [OrderedSub β] [CanonicallyOrderedAdd β] [DecidableEq β] [AddLeftReflectLE β] (n : β) :
+    {g : Option α →₀ β // g.sum (fun _ d ↦ d) = n} ≃
+        {f : α →₀ β // f.sum (fun _ d ↦ d) ≤ n} where
+  toFun g := ⟨g.1.some, by grind [Finsupp.sum_option_index, le_add_left]⟩
+  invFun f :=
+    ⟨f.1.optionElim (n - f.1.sum (fun _ d ↦ d)), by
+      grind [Finsupp.sum_option_index, Finsupp.optionElim_apply_none,Finsupp.some_optionElim,
+      tsub_add_cancel_of_le f.2]⟩
+  left_inv f := by
+    grind [Finsupp.optionElim_some, Finsupp.sum_option_index, tsub_eq_of_eq_add]
+  right_inv g := Subtype.ext (Finsupp.some_optionElim _ _)
+
 /-- The `n`th symmetric power of a type `Option α` is equivalent to the subtype of
 finitely supported maps `α →₀ ℕ` with degree less than or equal to `n`. -/
 def Sym.equivNatSumLE (α : Type*) [DecidableEq α] (n : ℕ) :
-    Sym (Option α) n ≃ {f : α →₀ ℕ // f.degree ≤ n} := by
-  have sum_option_eq (g : Option α →₀ ℕ) :
-      g.sum (fun _ d ↦ d) = g none + g.some.sum (fun _ d ↦ d) :=
-    Finsupp.sum_option_index g (fun _ d ↦ d) (fun _ => rfl) (fun _ _ _ => rfl)
-  let e :
-      {g : Option α →₀ ℕ // g.sum (fun _ d ↦ d) = n} ≃
-        {f : α →₀ ℕ // f.sum (fun _ d ↦ d) ≤ n} :=
-    { toFun := fun g => ⟨g.1.some, by grind⟩
-      invFun := fun f =>
-        ⟨f.1.optionElim (n - f.1.sum (fun _ d ↦ d)), by
-          rw [sum_option_eq, Finsupp.optionElim_apply_none, Finsupp.some_optionElim,
-            Nat.sub_add_cancel f.2]⟩
-      left_inv := fun f => by
-        grind [Finsupp.optionElim_some]
-      right_inv := fun g => Subtype.ext (Finsupp.some_optionElim _ _) }
-  exact (Sym.equivNatSum (Option α) n).trans e
+    Sym (Option α) n ≃ {f : α →₀ ℕ // f.degree ≤ n} :=
+  (Sym.equivNatSum (Option α) n).trans (Finsupp.optionSubtypeSumEquiv α ℕ n)
 
 /-- Stars and bars for finitely-supported functions with bounded total degree. -/
 lemma Finsupp.natCard_degree_le (α : Type*) [Finite α] (n : ℕ) :
