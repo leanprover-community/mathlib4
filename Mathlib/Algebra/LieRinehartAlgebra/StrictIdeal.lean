@@ -197,8 +197,8 @@ variable {M : Type*} [AddCommGroup M] [LieRingModule L M] [Module R M] [LieModul
 Lie module `M` of `L`, we may regard `M` as a Lie module of `s` by restriction. -/
 instance lieModule {s : StrictLieRinehartIdeal A L} : LieModule R s M where
   smul_lie t x m := by
-    rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]
-  lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
+    rw [bracket_coe, Submodule.coe_smul_of_tower, smul_lie, bracket_coe]
+  lie_smul t x m := by simp only [bracket_coe, lie_smul]
 
 end LieModule
 
