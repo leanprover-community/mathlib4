@@ -485,10 +485,11 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [
 
 variable {L} in
 theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
-    [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
+    {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
   change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.isAlgebraic ζ)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic
+    (hζ.isIntegral (NeZero.pos n)).tower_top.isAlgebraic]
   exact hζ.adjoin_isCyclotomicExtension K
 
 end

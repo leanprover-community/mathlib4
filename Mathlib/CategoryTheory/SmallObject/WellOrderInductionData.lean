@@ -283,47 +283,40 @@ lemma surjective :
 
 variable (t : J) in
 /-- Given a `F.WellOrderInductionData`, and a non-limit element, construct a
-`WellOrderInductionData` on the restriction of `F` to elemets `≥ t`.
-This is used as a way to construct sections of `F` from non-bot elements. -/
+`WellOrderInductionData` on the restriction of `F` to elements `≥ t`.
+This is used as a way to construct sections of `F` from non-minimal elements. -/
 private noncomputable def restrictIci (d : F.WellOrderInductionData)
     (t : J) (ht : ¬ Order.IsSuccLimit t) :
-    ((Set.Ici t).mono_coe.functor.op ⋙ F).WellOrderInductionData where
-  succ j hj p :=
-    (F.map (homOfLE (by dsimp; rw [coe_succ_of_mem (by grind [Order.le_succ])])).op)
-      (d.succ j.val (fun h ↦ hj (fun _ h' ↦ h h')) p)
-  map_succ u hu v := by
-    dsimp
-    rw [← ConcreteCategory.comp_apply, ← F.map_comp, ← op_comp]
-    apply d.map_succ
-  lift j hj s :=
-    /- The idea is to use that F and F restricted to `Ici t` have the same sections because
-    the inclusion Set.Iio j →o Set.Iio j.val is final -/
-    haveI hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
-    letI φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
-    haveI hφ : Monotone φ := by tauto
-    haveI hφ' : hφ.functor.Final := by
-      simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
-        Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
-      refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
-      all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
-    d.lift j (Set.Ici.isSuccLimit_coe _ hj)
-      ((sectionsEquivOfInitial hφ.functor.op _).symm s)
-  map_lift j hj s i hi := by
-    have hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
-    let φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
-    have hφ : Monotone φ := by tauto
-    have hφ' : hφ.functor.Final := by
-      simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
-        Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
-      refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
-      all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
-    dsimp
-    rw [dsimp% d.map_lift j (Set.Ici.isSuccLimit_coe _ hj)
-      ((sectionsEquivOfInitial hφ.functor.op _).symm s) i hi]
-    obtain ⟨t, rfl⟩ := (sectionsEquivOfInitial hφ.functor.op
-      ((Set.mono_coe _).functor.op ⋙ F)).surjective s
-    simp [dsimp% (sectionsEquivOfInitial hφ.functor.op
-      ((Set.mono_coe _).functor.op ⋙ F)).symm_apply_apply t, φ]
+    ((Set.Ici t).mono_coe.functor.op ⋙ F).WellOrderInductionData :=
+  have hj' (j : Set.Ici t) (hj : Order.IsSuccLimit j) :
+      Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
+  letI φ (j : Set.Ici t) : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
+  haveI hφ (j : Set.Ici t) : Monotone (φ j) := by tauto
+  haveI hφ' (j : Set.Ici t) (hj : Order.IsSuccLimit j) : (hφ j).functor.Final := by
+    simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
+      Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
+    refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
+    all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
+  { succ j hj p :=
+      (F.map (homOfLE (by dsimp; rw [coe_succ_of_mem (by grind [Order.le_succ])])).op)
+        (d.succ j.val (fun h ↦ hj (fun _ h' ↦ h h')) p)
+    map_succ u hu v := by
+      dsimp
+      rw [← ConcreteCategory.comp_apply, ← F.map_comp, ← op_comp]
+      apply d.map_succ
+    lift j hj s :=
+      haveI := hφ' j hj
+      d.lift j (Set.Ici.isSuccLimit_coe _ hj)
+        ((sectionsEquivOfInitial (hφ j).functor.op _).symm s)
+    map_lift j hj s i hi := by
+      have := hφ' j hj
+      dsimp
+      rw [dsimp% d.map_lift j (Set.Ici.isSuccLimit_coe _ hj)
+        ((sectionsEquivOfInitial (hφ j).functor.op _).symm s) i hi]
+      obtain ⟨t, rfl⟩ := (sectionsEquivOfInitial (hφ j).functor.op
+        ((Set.mono_coe _).functor.op ⋙ F)).surjective s
+      simp [dsimp% (sectionsEquivOfInitial (hφ j).functor.op
+        ((Set.mono_coe _).functor.op ⋙ F)).symm_apply_apply t, φ] }
 
 omit [OrderBot J] in
 include d in
