@@ -613,6 +613,12 @@ def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)
 
+@[simp]
+theorem map_id :
+    ∀ t : Ordnode α, t.map id = t
+  | nil => rfl
+  | node _ _ _ _ => by rw [map, map_id, map_id, id]
+
 /-- O(n). Fold a function across the structure of a tree.
 
 ```

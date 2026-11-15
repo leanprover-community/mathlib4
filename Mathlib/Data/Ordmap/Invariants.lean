@@ -121,10 +121,10 @@ theorem map_map {β γ : Type*} (f : α → β) (g : β → γ) :
   | nil => rfl
   | node s l x r => by rw [map, map, map, map_map, map_map, Function.comp_apply]
 
-theorem map_dual {β : Type*} (f : αᵒᵈ → β) :
-    ∀ t : Ordnode α, t.dual.map OrderDual.ofDual = t.switch
+theorem map_dual :
+    ∀ t : Ordnode α, (t.map OrderDual.toDual).dual = t.dual.map OrderDual.toDual
   | nil => rfl
-  | node s l x r => by rw [dual, map, map, dual, map, map_dual, map_dual]; simp
+  | node s l x r => by rw [dual, map, dual, map, map_dual, map_dual]
 
 theorem dual_dual' :
     ∀ t : Ordnode α, (dual (dual t)).map (OrderDual.ofDual ∘ OrderDual.ofDual) = t
@@ -203,6 +203,17 @@ def node3L (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) 
 def node3R (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) : Ordnode α :=
   node' l x (node' m y r)
 
+@[simp]
+theorem map_size {β : Type*} (f : α → β) :
+    ∀ t : Ordnode α, (t.map f).size = t.size
+  | nil => rfl
+  | node _ _ _ _ => by simp [map]
+
+theorem map_node3R {β : Type*}
+    (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) (f : α → β) :
+    (node3R l x m y r).map f = node3R (l.map f) (f x) (m.map f) (f y) (r.map f) := by
+  simp [map, node3R]
+
 /-- Build a tree from three nodes, with `a () b -> (a ()) b` and `a (b c) d -> ((a b) (c d))`. -/
 def node4L : Ordnode α → α → Ordnode α → α → Ordnode α → Ordnode α
   | l, x, node _ ml y mr, z, r => node' (node' l x ml) y (node' mr z r)
@@ -213,6 +224,13 @@ def node4L : Ordnode α → α → Ordnode α → α → Ordnode α → Ordnode 
 def node4R : Ordnode α → α → Ordnode α → α → Ordnode α → Ordnode α
   | l, x, node _ ml y mr, z, r => node' (node' l x ml) y (node' mr z r)
   | l, x, nil, z, r => node3R l x nil z r
+
+theorem map_node4R {β : Type*}
+    (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) (f : α → β) :
+    (node4R l x m y r).map f = node4R (l.map f) (f x) (m.map f) (f y) (r.map f) := by
+  cases m with
+  | nil => simp [node4R, map_node3R, map]
+  | node _ _ _ _ => simp [node4R, map]
 
 -- should not happen
 /-- Concatenate two nodes, performing a left rotation `x (y z) -> ((x y) z)`
@@ -243,6 +261,12 @@ theorem rotateR_node (sz : ℕ) (l : Ordnode α) (x : α) (m : Ordnode α) (y : 
 
 theorem rotateR_nil (y : α) (r : Ordnode α) : rotateR nil y r = node' nil y r :=
   rfl
+
+theorem map_rotateR {β : Type*} (l r : Ordnode α) (x : α) (f : α → β) :
+    (rotateR l x r).map f = rotateR (l.map f) (f x) (r.map f) := by
+  cases l with
+  | nil => simp [rotateR, map]
+  | node _ a b c => simp [rotateR, apply_ite (map f), map_node3R, map_node4R, map]
 
 -- should not happen
 /-- A left balance operation. This will rebalance a concatenation, assuming the original nodes are
@@ -291,16 +315,20 @@ theorem dual_rotateL (l : Ordnode α) (x : α) (r : Ordnode α) :
 
 theorem dual_rotateR (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (rotateR l x r) = rotateL (dual r) (.toDual x) (dual l) := by
-  rw [← dual_dual' (rotateL _ _ _), dual_rotateL, dual_dual, dual_dual, ← map_map]
+  rw [← dual_dual' (rotateL _ _ _), dual_rotateL, dual_dual, dual_dual,
+    ← Function.comp_apply (f := OrderDual.toDual), ← map_rotateR, ← map_map, ← map_map,
+    map_dual, map_dual, map_map, map_map, map_map]
+  simp [Function.comp_assoc]
+
 
 theorem dual_balance' (l : Ordnode α) (x : α) (r : Ordnode α) :
-    dual (balance' l x r) = balance' (dual r) x (dual l) := by
+    dual (balance' l x r) = balance' (dual r) (.toDual x) (dual l) := by
   simp [balance', add_comm]; split_ifs with h h_1 h_2 <;>
     simp [dual_rotateL, dual_rotateR, add_comm]
   cases delta_lt_false h_1 h_2
 
 theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
-    dual (balanceL l x r) = balanceR (dual r) x (dual l) := by
+    dual (balanceL l x r) = balanceR (dual r) (.toDual x) (dual l) := by
   unfold balanceL balanceR
   obtain - | ⟨rs, rl, rx, rr⟩ := r
   · obtain - | ⟨ls, ll, lx, lr⟩ := l; · rfl
@@ -315,8 +343,8 @@ theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
     split_ifs with h <;> simp [add_comm]
 
 theorem dual_balanceR (l : Ordnode α) (x : α) (r : Ordnode α) :
-    dual (balanceR l x r) = balanceL (dual r) x (dual l) := by
-  rw [← dual_dual (balanceL _ _ _), dual_balanceL, dual_dual, dual_dual]
+    dual (balanceR l x r) = balanceL (dual r) (.toDual x) (dual l) := by
+  rw [← dual_dual' (balanceL _ _ _), dual_balanceL, dual_dual, dual_dual]
 
 theorem Sized.node3L {l x m y r} (hl : @Sized α l) (hm : Sized m) (hr : Sized r) :
     Sized (node3L l x m y r) :=
