@@ -116,12 +116,12 @@ theorem bernoulli'_zero : bernoulli' 0 = 1 := by
   simp
 
 @[simp]
-theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
+theorem bernoulli'_one : bernoulli' 1 = 2⁻¹ := by
   rw [bernoulli'_def]
   norm_num
 
 @[simp]
-theorem bernoulli'_two : bernoulli' 2 = 1 / 6 := by
+theorem bernoulli'_two : bernoulli' 2 = 6⁻¹ := by
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 
@@ -131,10 +131,23 @@ theorem bernoulli'_three : bernoulli' 3 = 0 := by
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero]
 
 @[simp]
-theorem bernoulli'_four : bernoulli' 4 = -1 / 30 := by
-  have : Nat.choose 4 2 = 6 := by decide -- shrug
+theorem bernoulli'_four : bernoulli' 4 = -30⁻¹ := by
+  have : Nat.choose 4 2 = 6 := rfl
   rw [bernoulli'_def]
   norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
+
+@[simp]
+theorem bernoulli'_five : bernoulli' 5 = 0 := by
+  have : Nat.choose 5 2 = 10 := rfl
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero, this]
+
+@[simp]
+theorem bernoulli'_six : bernoulli' 6 = 42⁻¹ := by
+  have H₁ : Nat.choose 6 2 = 15 := rfl
+  have H₂ : Nat.choose 6 4 = 15 := rfl
+  rw [bernoulli'_def]
+  norm_num [sum_range_succ, sum_range_succ, sum_range_zero, H₁, H₂]
 
 end Examples
 
@@ -204,11 +217,27 @@ theorem bernoulli'_eq_bernoulli (n : ℕ) : bernoulli' n = (-1) ^ n * bernoulli 
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 
 @[simp]
-theorem bernoulli_one : bernoulli 1 = -1 / 2 := by norm_num [bernoulli]
+theorem bernoulli_one : bernoulli 1 = -2⁻¹ := by norm_num [bernoulli]
 
 @[simp]
 theorem bernoulli_two : bernoulli 2 = 6⁻¹ := by
   simp [bernoulli]
+
+@[simp]
+theorem bernoulli_three : bernoulli 3 = 0 := by
+  simp [bernoulli]
+
+@[simp]
+theorem bernoulli_four : bernoulli 4 = -30⁻¹ := by
+  norm_num [bernoulli]
+
+@[simp]
+theorem bernoulli_five : bernoulli 5 = 0 := by
+  simp [bernoulli]
+
+@[simp]
+theorem bernoulli_six : bernoulli 6 = 42⁻¹ := by
+  norm_num [bernoulli]
 
 @[simp]
 theorem bernoulli_eq_zero_of_odd {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli n = 0 := by
