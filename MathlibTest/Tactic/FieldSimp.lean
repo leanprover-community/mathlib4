@@ -709,7 +709,6 @@ example (x : ℚ) (h₀ : x ≠ 0) :
   fail_if_success field_simp (maxSteps := 0)
   field_simp (config := {})
   ring
-
 -/
 
 /-! ### check that `field_simp` closes goals when the equality reduces to an identity -/
@@ -947,7 +946,6 @@ example : a /ₚ (u₁ / u₂) = a * u₂ /ₚ u₁ := by field_simp
 example : a /ₚ u₁ /ₚ u₂ = a /ₚ (u₂ * u₁) := by field_simp
 
 end CommRing
-
 -/
 
 /-! ## Algebraic structures weaker than `Field` -/

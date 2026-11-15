@@ -18,7 +18,6 @@ part of a Galois connection, with "dual" construction
 `ObjectProperty.isLocal : ObjectProperty C → MorphismProperty C`.)
 
 We also introduce the dual notion `W.isColocal : ObjectProperty C`.
-
 -/
 
 @[expose] public section

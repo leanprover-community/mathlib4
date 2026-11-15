@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Antidiag.Prod
 public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Data.Multiset.NatAntidiagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonals in ℕ × ℕ as finsets
 

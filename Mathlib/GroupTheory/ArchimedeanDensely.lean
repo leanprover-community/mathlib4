@@ -12,6 +12,9 @@ public import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 import Mathlib.Data.Int.Interval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Archimedean groups are either discrete or densely ordered
 

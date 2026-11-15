@@ -11,6 +11,9 @@ public import Mathlib.Data.ENat.Lattice
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.WithTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sum of suprema in `ENat`
 -/

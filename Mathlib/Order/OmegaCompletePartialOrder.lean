@@ -387,23 +387,29 @@ end Inst
 end Part
 
 section Pi
+variable {β : α → Type*} [∀ a, OmegaCompletePartialOrder (β a)]
 
-variable {β : α → Type*}
+namespace Pi
 
-instance [∀ a, OmegaCompletePartialOrder (β a)] :
-    OmegaCompletePartialOrder (∀ a, β a) where
+instance instOmegaCompletePartialOrder : OmegaCompletePartialOrder (∀ a, β a) where
   ωSup c a := ωSup (c.map (Pi.evalOrderHom a))
-  ωSup_le _ _ hf a :=
-    ωSup_le _ _ <| by
-      rintro i
-      apply hf
+  ωSup_le _ _ hf _ := ωSup_le _ _ fun _ => hf _ _
   le_ωSup _ _ _ := le_ωSup_of_le _ le_rfl
 
-namespace OmegaCompletePartialOrder
+@[simp]
+theorem ωSup_def (c : OmegaCompletePartialOrder.Chain (∀ a, β a)) :
+    ωSup c = fun a ↦ ωSup (c.map (Pi.evalOrderHom a)) :=
+  rfl
 
-variable [∀ x, OmegaCompletePartialOrder <| β x]
-variable [OmegaCompletePartialOrder γ]
-variable {f : γ → ∀ x, β x}
+@[simp]
+theorem ωSup_apply (c : OmegaCompletePartialOrder.Chain (∀ a, β a)) (a : α) :
+    ωSup c a = ωSup (c.map (Pi.evalOrderHom a)) :=
+  rfl
+
+end Pi
+
+namespace OmegaCompletePartialOrder
+variable [OmegaCompletePartialOrder γ] {f : γ → ∀ x, β x}
 
 lemma ωScottContinuous.apply₂ (hf : ωScottContinuous f) (a : α) : ωScottContinuous (f · a) :=
   ωScottContinuous.of_monotone_map_ωSup
@@ -426,21 +432,19 @@ end OmegaCompletePartialOrder
 end Pi
 
 namespace Prod
+variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] [OmegaCompletePartialOrder γ]
 
-variable [OmegaCompletePartialOrder α]
-variable [OmegaCompletePartialOrder β]
-variable [OmegaCompletePartialOrder γ]
-
-/-- The supremum of a chain in the product `ω`-CPO. -/
-@[simps]
-protected def ωSupImpl (c : Chain (α × β)) : α × β :=
-  (ωSup (c.map OrderHom.fst), ωSup (c.map OrderHom.snd))
-
-@[simps! ωSup_fst ωSup_snd]
 instance : OmegaCompletePartialOrder (α × β) where
-  ωSup := Prod.ωSupImpl
+  ωSup c := (ωSup (c.map OrderHom.fst), ωSup (c.map OrderHom.snd))
   ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
+
+@[simp] theorem fst_ωSup (c : Chain (α × β)) : (ωSup c).fst = ωSup (c.map OrderHom.fst) := rfl
+
+@[simp] theorem snd_ωSup (c : Chain (α × β)) : (ωSup c).snd = ωSup (c.map OrderHom.snd) := rfl
+
+@[deprecated (since := "2026-10-26")] alias ωSup_fst := fst_ωSup
+@[deprecated (since := "2026-10-26")] alias ωSup_snd := snd_ωSup
 
 theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := rfl
 

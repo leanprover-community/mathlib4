@@ -14,7 +14,6 @@ import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 
 /-!
 # The category of presheaves of modules is Grothendieck abelian
-
 -/
 
 universe u

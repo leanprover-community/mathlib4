@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 In this file, we show that the external product of two Guitart exact
 squares is a Guitart exact square.
-
 -/
 
 @[expose] public section

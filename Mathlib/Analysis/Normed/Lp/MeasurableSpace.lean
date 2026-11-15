@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurable space structure on `WithLp`
 

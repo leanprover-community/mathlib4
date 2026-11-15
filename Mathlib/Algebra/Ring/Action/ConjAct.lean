@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Action.Basic
 public import Mathlib.GroupTheory.GroupAction.ConjAct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugation action of a ring on itself
 -/

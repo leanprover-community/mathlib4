@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.Homology
 This file introduces the typeclass `QuasiIso φ` for a morphism `φ : S₁ ⟶ S₂`
 of short complexes (which have homology): the condition is that the induced
 morphism `homologyMap φ` in homology is an isomorphism.
-
 -/
 
 public section
@@ -163,7 +162,6 @@ lemma quasiIso_opMap (φ : S₁ ⟶ S₂) [QuasiIso φ] :
   infer_instance
 
 lemma quasiIso_unopMap {S₁ S₂ : ShortComplex Cᵒᵖ} [S₁.HasHomology] [S₂.HasHomology]
-    [S₁.unop.HasHomology] [S₂.unop.HasHomology]
     (φ : S₁ ⟶ S₂) [QuasiIso φ] : QuasiIso (unopMap φ) := by
   rw [← quasiIso_opMap_iff]
   change QuasiIso φ

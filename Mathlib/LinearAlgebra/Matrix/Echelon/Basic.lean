@@ -25,7 +25,6 @@ This file defines the row echelon form of matrices and the leading entries of th
 ## Tags
 
 matrix, echelon form
-
 -/
 
 @[expose] public section

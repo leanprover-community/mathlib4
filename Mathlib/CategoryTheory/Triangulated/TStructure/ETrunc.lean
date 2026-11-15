@@ -15,7 +15,6 @@ Let `t` be a t-structure on a triangulated category `C`.
 In this file, we extend the definition of the truncation functors
 `truncLT` and `truncGE` for indices in `ℤ` to `EInt`,
 as `t.eTruncLT : EInt ⥤ C ⥤ C` and `t.eTruncGE : EInt ⥤ C ⥤ C`.
-
 -/
 
 @[expose] public section

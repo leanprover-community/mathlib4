@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local properties of modules and submodules
 

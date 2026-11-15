@@ -24,7 +24,6 @@ which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 * `Padic.withValUniformEquiv`: the uniform space isomorphism between
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
-
 -/
 
 @[expose] public section
@@ -68,7 +67,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
       · simp
       · simp only [H, ↓reduceIte, exp_lt_exp, neg_lt_neg_iff] at h
         simpa [hp0', zpow_pos, pow_pos, inv_le_inv₀] using
-          zpow_right_mono₀ (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
+          zpow_right_mono₀ (mod_cast (Nat.Prime.one_le Fact.out)) h.le
     · simp [Nat.Prime.ne_zero Fact.out]
   · intro γ
     use (log ((embedding γ.val) * exp (-1))).natAbs

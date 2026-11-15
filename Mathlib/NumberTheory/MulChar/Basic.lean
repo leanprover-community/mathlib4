@@ -220,6 +220,9 @@ theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
     χ a = 0 ↔ ¬ IsUnit a := by
   simpa using χ.apply_ne_zero_iff.not
 
+instance [Nontrivial R'] (χ : MulChar R R') : IsLocalHom χ where
+  map_nonunit _ h := apply_ne_zero_iff.mp h.ne_zero
+
 /-!
 ### Commutative group structure on multiplicative characters
 

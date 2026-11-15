@@ -24,7 +24,6 @@ closed under subobjects.
 
 * show that `isNoetherian` is a Serre class when `C` is an abelian category
   (TODO @joelriou)
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public meta import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.SetTheory.Ordinal.Exponential
 public import Mathlib.Tactic.NormNum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` extensions for Ordinals
 

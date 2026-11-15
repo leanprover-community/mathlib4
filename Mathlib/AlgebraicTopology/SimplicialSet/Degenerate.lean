@@ -18,7 +18,6 @@ Any simplex `x : X _⦋n⦌` can be written in a unique way as `X.map f.op y`
 for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y`
 (see lemmas `exists_nonDegenerate`, `unique_nonDegenerate_dim`,
 `unique_nonDegenerate_simplex` and `unique_nonDegenerate_map`).
-
 -/
 
 @[expose] public section
@@ -304,11 +303,11 @@ lemma degenerate_eq_top_iff (n : ℕ) :
   constructor
   · intro h
     ext x
-    simp only [Set.inf_eq_inter, Set.mem_inter_iff, and_iff_right_iff_imp]
+    simp only [Set.mem_inter_iff, and_iff_right_iff_imp]
     intro hx
     simp [← A.mem_degenerate_iff ⟨x, hx⟩, h, Set.top_eq_univ, Set.mem_univ]
   · intro h
-    simp only [Set.inf_eq_inter, Set.inter_eq_right] at h
+    simp only [Set.inter_eq_right] at h
     ext x
     simpa [A.mem_degenerate_iff] using h x.prop
 

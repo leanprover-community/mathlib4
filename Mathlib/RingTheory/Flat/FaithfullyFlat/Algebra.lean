@@ -34,7 +34,6 @@ Conversely, let `B` be a flat `A`-algebra:
 - `Module.FaithfullyFlat.of_comap_surjective`: `B` is faithfully flat over `A`,
   if the induced map on prime spectra is surjective.
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
-
 -/
 
 public section
@@ -65,7 +64,7 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
   by_contra eqt
   have : Submodule.restrictScalars A (Ideal.map (algebraMap A B) (IsLocalRing.maximalIdeal A)) ≤
       Submodule.restrictScalars A (IsLocalRing.maximalIdeal B) :=
-    ((IsLocalRing.local_hom_TFAE (algebraMap A B)).out 1 3).mp ‹_›
+    ((IsLocalRing.local_hom_tfae (algebraMap A B)).out 1 3).mp ‹_›
   rw [eqt, top_le_iff, Submodule.restrictScalars_eq_top_iff] at this
   exact Ideal.IsPrime.ne_top' this
 

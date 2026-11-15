@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
-
 # The Rees theorem
 
 In this file we prove the Rees theorem for depth, which relates the vanishing of
@@ -35,7 +34,6 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 ## References
 
 * [Commutative Algebra, Theorem 28][matsumuraCommAlg]
-
 -/
 
 public section

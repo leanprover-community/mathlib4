@@ -11,7 +11,6 @@ public import Mathlib.Probability.Kernel.Deterministic
 public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
 /-!
-
 # Posterior kernel
 
 For `μ : Measure Ω` (called prior measure), seen as a measure on a parameter, and a kernel
@@ -48,7 +47,6 @@ and data can be recovered from the distribution of the data and the posterior.
 
 This notation emphasizes that the posterior is a kind of inverse of `κ`, which we would want to
 denote `κ†`, but we have to also specify the measure `μ`.
-
 -/
 
 @[expose] public section

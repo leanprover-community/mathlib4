@@ -21,7 +21,7 @@ open scoped Topology
 -- see Note [lower instance priority]
 instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
     T1Space X := by
-  rw [((t1Space_TFAE X).out 1 2 :)]
+  rw [((t1Space_tfae X).out 1 2 :)]
   intro x
   rw [← totallyDisconnectedSpace_iff_connectedComponent_singleton.mp h x]
   exact isClosed_connectedComponent

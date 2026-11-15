@@ -12,7 +12,6 @@ public import Mathlib.Order.SetNotation
 
 /-!
 # Interactions between embeddings and sets.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Abelian.Images
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of coimage-image comparisons
 
@@ -33,7 +36,7 @@ variable {X Y : C} (f : X ⟶ Y)
 section Images
 
 variable [HasCokernel f] [HasKernel (cokernel.π f)] [PreservesColimit (parallelPair f 0) F]
-  [PreservesLimit (parallelPair (cokernel.π f) 0) F] [HasCokernel (F.map f)]
+  [PreservesLimit (parallelPair (cokernel.π f) 0) F]
   [HasKernel (cokernel.π (F.map f))]
 
 /-- If a functor preserves kernels and cokernels, it preserves abelian images. -/
@@ -67,7 +70,7 @@ end Images
 section Coimages
 
 variable [HasKernel f] [HasCokernel (kernel.ι f)] [PreservesLimit (parallelPair f 0) F]
-  [PreservesColimit (parallelPair (kernel.ι f) 0) F] [HasKernel (F.map f)]
+  [PreservesColimit (parallelPair (kernel.ι f) 0) F]
   [HasCokernel (kernel.ι (F.map f))]
 
 /-- If a functor preserves kernels and cokernels, it preserves abelian coimages. -/

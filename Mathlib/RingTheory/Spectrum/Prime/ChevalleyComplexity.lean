@@ -58,7 +58,6 @@ two maps `C : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ, Y₁, ..., Yₙ]` and
 
 The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, although they do
 not give an explicit bound on the complexity.
-
 -/
 
 @[expose] public section
@@ -75,7 +74,7 @@ namespace ChevalleyThm
 
 namespace PolynomialC
 
-local notation3 "coeff("p")" => Set.range (Polynomial.coeff p)
+local notation3 "coeff("p")" => Set.range (AddMonoidAlgebra.coeff p)
 
 variable (n) in
 /-- The codomain of the measure that will decrease during the induction in the `C : R → R[X]` case

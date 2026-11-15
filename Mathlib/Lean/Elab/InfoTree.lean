@@ -14,6 +14,9 @@ import Lean.Elab.Term.TermElabM
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additions to `Lean.Elab.InfoTree.Main`
 -/

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 
 /-!
-
 # Induced bicategories
 
 In this file we develop API for constructing a full sub-bicategory of a bicategory `C`, given a

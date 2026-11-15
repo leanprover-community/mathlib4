@@ -18,7 +18,6 @@ Note also that using the results in the file `Mathlib/CategoryTheory/Presentable
 in order to show that a functor preserves filtered colimits, it would be
 sufficient to check that it preserves colimits indexed by nonempty directed
 types.
-
 -/
 
 public section

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
-
 # The opposite category of an enriched category
 
 When a monoidal category `V` is braided, we may define the opposite `V`-category of a
@@ -22,7 +21,6 @@ equivalence between
 We also show that if `C` is an enriched ordinary category (i.e. a category enriched in `V`
 equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then `Cᵒᵖ` is again
 an enriched ordinary category.
-
 -/
 
 @[expose] public section

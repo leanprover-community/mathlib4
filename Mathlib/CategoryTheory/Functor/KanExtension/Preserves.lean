@@ -18,7 +18,6 @@ When the Kan extension is pointwise, it suffices that `G` preserves (co)limits o
 diagrams.
 
 We introduce the dual typeclass `G.PreservesRightKanExtension`.
-
 -/
 
 @[expose] public section

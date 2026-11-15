@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 
 import Mathlib.RingTheory.FiniteStability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chevalley's theorem
 

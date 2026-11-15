@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.Limits.Types.Products
 
 import Mathlib.Basic.Finite.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)limits in the category of finite types
 

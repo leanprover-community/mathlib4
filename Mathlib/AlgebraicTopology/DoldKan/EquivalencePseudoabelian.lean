@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 
 /-!
-
 # The Dold-Kan correspondence for pseudoabelian categories
 
 In this file, for any idempotent complete additive category `C`,
@@ -31,7 +30,6 @@ the composition of `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 `Γ₀` introduced in `FunctorGamma.lean`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

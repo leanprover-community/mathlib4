@@ -28,7 +28,6 @@ It is a finite field with `p ^ n` elements.
 - `card_algHom_of_finrank_dvd`: if `[K:F] ∣ [L:F]` then `#(K →ₐ[F] L) = [K:F]`
 - `nonempty_algHom_iff_finrank_dvd`: `(K →ₐ[F] L)` is nonempty iff `[K:F] ∣ [L:F]`. This and the
   above result helps to classify the category of finite fields.
-
 -/
 
 @[expose] public section

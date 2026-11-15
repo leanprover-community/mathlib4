@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 # Asymptotic statements about the operator norm
 
 This file contains lemmas about how operator norm on continuous linear maps interacts with `IsBigO`.
-
 -/
 
 public section

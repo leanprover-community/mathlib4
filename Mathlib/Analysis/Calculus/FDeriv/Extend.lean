@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.MeanValue
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending differentiability to the boundary
 

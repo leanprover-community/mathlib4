@@ -69,9 +69,7 @@ private theorem MonotoneOn.eventually_le_two_mul' {S : ℝ → ℝ} {a : ℝ}
     refine mem_iUnion.2 ⟨Nat.find h₄, hr, ?_, Nat.find_spec h₄⟩
     rcases Nat.eq_zero_or_pos (Nat.find h₄) with h₅ | h₅
     · simpa [h₅] using h₃
-    · have h₆ := Nat.find_min h₄ (Nat.sub_lt h₅ one_pos)
-      rw [show Nat.find h₄ - 1 + 1 = Nat.find h₄ by omega] at h₆
-      exact not_lt.1 h₆
+    · grind only [Nat.find_min h₄ (Nat.sub_lt h₅ one_pos)]
   -- Two points of a slice are at distance at most `(2 ^ n * S a)⁻¹`
   have hkey {n : ℕ} {x y : ℝ} (hx : x ∈ En n) (hy : y ∈ En n) : y - x ≤ (2 ^ n * S a)⁻¹ := by
     obtain ⟨⟨h₁x, h₂x⟩, h₃x, -⟩ := hx

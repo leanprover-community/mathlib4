@@ -105,7 +105,8 @@ lemma choose_one_right (n : ℕ) : choose n 1 = n := by induction n <;> simp [*,
 -- The `n + 1`-st triangle number is `n` more than the `n`-th triangle number
 theorem triangle_succ (n : ℕ) : (n + 1) * (n + 1 - 1) / 2 = n * (n - 1) / 2 + n := by
   rw [← add_mul_div_left, Nat.mul_comm 2 n, ← Nat.mul_add, Nat.add_sub_cancel, Nat.mul_comm]
-  cases n <;> rfl; apply zero_lt_succ
+  · cases n <;> rfl
+  · apply zero_lt_succ
 
 /-- `choose n 2` is the `n`-th triangle number. -/
 theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
@@ -372,7 +373,6 @@ i.e. ways to select `k` items (up to permutation) from `n` items with replacemen
 
 Note that `multichoose` is *not* the multinomial coefficient, although it can be computed
 in terms of multinomial coefficients. For details see https://mathworld.wolfram.com/Multichoose.html
-
 -/
 
 /--

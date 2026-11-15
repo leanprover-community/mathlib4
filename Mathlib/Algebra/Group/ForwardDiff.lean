@@ -93,7 +93,7 @@ def fwdDiffₗ : Module.End ℤ (M → G) where
 lemma coe_fwdDiffₗ : ↑(fwdDiffₗ M G h) = fwdDiff h := rfl
 
 lemma coe_fwdDiffₗ_pow (n : ℕ) : ↑(fwdDiffₗ M G h ^ n) = (fwdDiff h)^[n] := by
-  ext; rw [Module.End.pow_apply, coe_fwdDiffₗ]
+  ext; rw [pow_apply_eq_iterate, coe_fwdDiffₗ]
 
 variable (M G) in
 /-- Linear-endomorphism version of the shift-by-1 operator. -/
@@ -138,7 +138,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     Δ_[h]^[n] f y = ∑ k ∈ range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • f (y + k • h) := by
   -- rewrite in terms of `(shiftₗ - 1) ^ n`
   have : fwdDiffₗ M G h = shiftₗ M G h - 1 := by simp only [shiftₗ, add_sub_cancel_right]
-  rw [← coe_fwdDiffₗ, this, ← Module.End.pow_apply]
+  rw [← coe_fwdDiffₗ, this, ← pow_apply_eq_iterate]
   -- use binomial theorem `Commute.add_pow` to expand this
   have : Commute (shiftₗ M G h) (-1) := (Commute.one_right _).neg_right
   convert congr($(this.add_pow n) f y)
@@ -147,8 +147,8 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
               = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
-    rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, map_smul,
-      Pi.smul_apply, shiftₗ_pow_apply]
+    rw [mul_assoc, mul_apply_eq_comp, this, intCast_apply_eq_smul, map_smul, Pi.smul_apply,
+      shiftₗ_pow_apply]
 
 lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :
     Δ_[h]^[n] (fun r ↦ f (r + m)) y = (Δ_[h]^[n] f) (y + m) := by
@@ -167,7 +167,7 @@ theorem shift_eq_sum_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) :
   convert!
     congr($((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f y) using 1
   · rw [← shiftₗ_pow_apply h f, shiftₗ]
-  · simp [Module.End.pow_apply, coe_fwdDiffₗ]
+  · simp [coe_fwdDiffₗ, pow_apply_eq_iterate]
 
 end newton_formulae
 

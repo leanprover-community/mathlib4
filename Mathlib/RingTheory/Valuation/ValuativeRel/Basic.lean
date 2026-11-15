@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.Tactic.Continuity
 
 /-!
-
 # Valuative Relations
 
 In this file we introduce a class called `ValuativeRel R` for a ring `R`.

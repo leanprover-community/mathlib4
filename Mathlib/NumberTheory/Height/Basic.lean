@@ -59,7 +59,6 @@ We define the following variants.
 ## Tags
 
 Height, absolute value
-
 -/
 
 @[expose] public noncomputable section

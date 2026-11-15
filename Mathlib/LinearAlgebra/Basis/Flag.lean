@@ -9,6 +9,9 @@ public import Mathlib.Data.Fin.FlagRange
 public import Mathlib.LinearAlgebra.Basis.Fin
 public import Mathlib.LinearAlgebra.Dual.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flag of submodules defined by a basis
 

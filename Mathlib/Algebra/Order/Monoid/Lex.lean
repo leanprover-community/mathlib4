@@ -21,7 +21,6 @@ and projections, making it the coproduct as well.
 ## TODO
 
 Create the "OrdCommMon" category.
-
 -/
 
 @[expose] public section

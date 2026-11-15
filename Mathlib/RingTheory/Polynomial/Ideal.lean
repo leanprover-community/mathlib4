@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.RingDivision
 public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals in polynomial rings
 -/
@@ -102,6 +105,8 @@ lemma exists_aeval_invOf_eq_zero_of_idealMap_adjoin_sup_span_eq_top [CommRing R]
   dsimp at eq
   rw [reverse_leadingCoeff, trailingCoeff_eq_coeff_zero]
   · exact ⟨this, (eval₂_reverse_eq_zero_iff ..).mpr <| by simp [← aeval_def, hp.2, hq, ← eq, hw]⟩
-  · exact fun h ↦ hI <| by simpa [h, Ideal.eq_top_iff_one]
+  · refine fun h ↦ hI <| (Ideal.eq_top_iff_one I).2 ?_
+    rw [h] at this
+    simpa using neg_mem this
 
 end Algebra

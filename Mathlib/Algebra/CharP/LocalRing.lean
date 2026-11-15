@@ -18,7 +18,6 @@ import Mathlib.Data.Nat.Factorization.Basic
 
 - `charP_zero_or_prime_power`: In a commutative local ring the characteristic is either
   zero or a prime power.
-
 -/
 
 public section

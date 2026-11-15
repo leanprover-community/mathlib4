@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Sym.Sym2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sorting the elements of `Sym2`
 

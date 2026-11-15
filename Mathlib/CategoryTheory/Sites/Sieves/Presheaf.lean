@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Sieves.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The presheaf associated to a sieve
 
@@ -119,7 +122,6 @@ def uliftFunctorInclusion (S : Sieve X) :
     S.uliftFunctor ⟶ uliftYoneda.{w}.obj X :=
   Functor.whiskerRight S.functorInclusion CategoryTheory.uliftFunctor
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A variant of `Sieve.toFunctor` with universe lifting. -/
 @[simps]
 def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :

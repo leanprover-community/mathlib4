@@ -11,6 +11,9 @@ public import Mathlib.SetTheory.Cardinal.Pigeonhole
 
 import Mathlib.LinearAlgebra.Span.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results relating bases and cardinality.
 -/

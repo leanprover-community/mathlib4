@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Equivalence between subobjects and quotients in an abelian category
-
 -/
 
 @[expose] public section

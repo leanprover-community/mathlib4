@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.ProdComparison
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preserving binary products
 

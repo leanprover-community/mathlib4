@@ -29,7 +29,6 @@ equalizer diagrams.
 * [MM92]: *Sheaves in geometry and logic*, Saunders MacLane, and Ieke Moerdijk:
   Chapter III, Section 4.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
-
 -/
 
 @[expose] public section

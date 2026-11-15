@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.ExtendFrom
 public import Mathlib.Topology.Order.DenselyOrdered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `extendFrom` in an order topology.
 -/

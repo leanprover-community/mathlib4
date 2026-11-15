@@ -340,7 +340,7 @@ theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
 
 theorem mk_Iic_lt {α : Type*} [LinearOrder α] [WellFoundedLT α] (i : α)
     (h : ord #α = typeLT α) (hα : ℵ₀ ≤ #α) : #(Iic i) < #α := by
-  rw [← Iio_insert, mk_insert self_notMem_Iio]
+  rw [← insert_Iio, mk_insert self_notMem_Iio]
   exact add_one_lt_of_lt hα (mk_Iio_lt i h)
 
 theorem mk_Ici_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α)

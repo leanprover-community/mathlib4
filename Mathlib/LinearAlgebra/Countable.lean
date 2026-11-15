@@ -19,8 +19,6 @@ public section
 
 noncomputable section
 
-namespace Finsupp
-
 variable {M : Type*} {R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- If `R` is countable, then any `R`-submodule spanned by a countable family of vectors is
@@ -41,4 +39,8 @@ theorem Uncountable.of_moduleFinite [hM : Uncountable M] [Module.Finite R M] : U
   by_contra!
   exact (uncountable_iff_not_countable _).mp hM <| Countable.of_moduleFinite (R := R)
 
-end Finsupp
+@[deprecated (since := "2026-10-24")]
+alias Finsupp.Countable.of_moduleFinite := Countable.of_moduleFinite
+
+@[deprecated (since := "2026-10-24")]
+alias Finsupp.Uncountable.of_moduleFinite := Uncountable.of_moduleFinite

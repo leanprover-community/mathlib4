@@ -10,6 +10,9 @@ public import Mathlib.Data.Sym.Sym2
 
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of `Sym2`
 

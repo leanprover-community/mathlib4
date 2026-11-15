@@ -10,7 +10,6 @@ public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Lifting groups with zero along injective/surjective maps
-
 -/
 
 @[expose] public section

@@ -63,7 +63,7 @@ for the category of types. -/
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
 
-/-- Unification hint for `(uliftYoneda.obj X).obj (op Y) ≃ ULift (Y ⟶ X)`. -/
+/-- Unification hint for `(uliftYoneda.obj X).obj (op Y) = ULift (Y ⟶ X)`. -/
 unif_hint uliftYoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
@@ -103,17 +103,17 @@ for the category of types. -/
 @[pp_with_univ]
 abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.{w}.flip
 
-/-- Unification hint for `(uliftCoyoneda.{w}.obj (op X)).obj Y = ULift (Y ⟶ X)`. -/
+/-- Unification hint for `(uliftCoyoneda.{w}.obj (op X)).obj Y = ULift (X ⟶ Y)`. -/
 unif_hint uliftCoyoneda_obj_obj_eq_hom (X X' Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
-  (uliftCoyoneda.{w}.obj (op X)).obj Y ≟ ULift (Y' ⟶ X')
+  (uliftCoyoneda.{w}.obj (op X)).obj Y ≟ ULift (X' ⟶ Y')
 
-/-- Unification hint for `(uliftCoyoneda.{w}.obj X).obj Y = ULift (unop Y ⟶ X)`. -/
+/-- Unification hint for `(uliftCoyoneda.{w}.obj X).obj Y = ULift (unop X ⟶ Y)`. -/
 unif_hint uliftCoyoneda_obj_obj_eq_hom' (X X' : Cᵒᵖ) (Y Y' : C) where
   X ≟ X'
   Y ≟ Y' ⊢
-  (uliftCoyoneda.{w}.obj X).obj Y ≟ ULift (Y' ⟶ unop X')
+  (uliftCoyoneda.{w}.obj X).obj Y ≟ ULift (unop X' ⟶ Y')
 
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftCoyoneda.{w} (C := C) ≅ coyoneda`. -/
@@ -936,6 +936,13 @@ lemma uliftYonedaEquiv_symm_comp
     {F G : Cᵒᵖ ⥤ Type max w v₁} {X : Cᵒᵖ} (x : F.obj X) (f : F ⟶ G) :
     uliftYonedaEquiv.symm x ≫ f = uliftYonedaEquiv.symm (f.app _ x) :=
   uliftYonedaEquiv.injective (by rw [uliftYonedaEquiv_comp]; simp)
+
+@[reassoc]
+lemma uliftYonedaEquiv_symm_naturality_left
+    {X X' : C} (f : X' ⟶ X) (F : Cᵒᵖ ⥤ Type max w v₁) (x : F.obj ⟨X⟩) :
+    uliftYoneda.{w}.map f ≫ uliftYonedaEquiv.symm x =
+      uliftYonedaEquiv.symm ((F.map f.op) x) :=
+  uliftYonedaEquiv.injective (by simp [uliftYonedaEquiv])
 
 @[simp]
 lemma uliftYonedaEquiv_uliftYoneda_map {X Y : C} (f : X ⟶ Y) :

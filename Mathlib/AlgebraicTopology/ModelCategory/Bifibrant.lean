@@ -14,7 +14,6 @@ In this file, we introduce the full subcategories `CofibrantObject C`,
 `FibrantObject C` and `BifibrantObject C` of a model category `C` which
 respectively consist of cofibrant objects, fibrant objects,
 and bifibrant objects, where "bifibrant" means both cofibrant and fibrant.
-
 -/
 
 @[expose] public section

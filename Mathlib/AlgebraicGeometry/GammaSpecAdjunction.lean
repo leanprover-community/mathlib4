@@ -29,7 +29,6 @@ case the unit and the counit would switch to each other.
   `CommRingᵒᵖ` to `LocallyRingedSpace`.
 * `AlgebraicGeometry.ΓSpec.adjunction` : The adjunction `Γ ⊣ Spec` from
   `CommRingᵒᵖ` to `Scheme`.
-
 -/
 
 @[expose] public section

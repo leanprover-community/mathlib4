@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.GroupWithZero.WithZero
 public import Mathlib.CategoryTheory.Category.Bipointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of groups with zero
 

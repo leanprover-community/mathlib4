@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Covering.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covering maps to quotients by free and properly discontinuous group actions
 -/

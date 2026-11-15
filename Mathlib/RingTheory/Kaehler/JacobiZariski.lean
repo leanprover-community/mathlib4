@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.SnakeLemma
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
-
 # The Jacobi-Zariski exact sequence
 
 Given algebras $R \to S \to T$, the Jacobi-Zariski exact sequence is a long exact sequence
@@ -46,7 +45,6 @@ The flatness assumption in `Algebra.H1Cotangent.exact_liftBaseChange_map_of_flat
 is stronger than the `Tor`-vanishing conditions required in the full statement of
 [Stacks Project, 00S2], this should be refactored and generalized once more API
 for `Tor` modules is available.
-
 -/
 
 @[expose] public section

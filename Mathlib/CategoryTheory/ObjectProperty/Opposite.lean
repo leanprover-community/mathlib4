@@ -10,7 +10,6 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # The opposite of a property of objects
-
 -/
 
 @[expose] public section

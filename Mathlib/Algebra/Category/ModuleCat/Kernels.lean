@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.
 -/

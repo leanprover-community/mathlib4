@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Neighborhoods
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on cluster and accumulation points
 

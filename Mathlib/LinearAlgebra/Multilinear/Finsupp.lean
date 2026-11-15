@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.Multilinear.DFinsupp
 
 * `freeFinsuppEquiv` is an equivalence of multilinear maps over free modules with finitely
   supported maps.
-
 -/
 
 @[expose] public section
@@ -36,7 +35,7 @@ the domain and `ι'` on the codomain and the finitely supported maps from
 This is the `Finsupp` version of `MultilinearMap.freeDFinsuppEquiv`.
 -/
 noncomputable def freeFinsuppEquiv :
-    (((Π i, κ i) × ι') →₀ R) ≃ₗ[R] MultilinearMap R (fun i => (κ i →₀ R)) (ι' →₀ R) :=
+    (((Π i, κ i) × ι') →₀ R) ≃ₗ[R] (Π i, (κ i →₀ R)) →ₘₗ[R] ι' →₀ R :=
   (finsuppLequivDFinsupp R) ≪≫ₗ freeDFinsuppEquiv ≪≫ₗ
   ((finsuppLequivDFinsupp R).multilinearMapCongrRight R).symm ≪≫ₗ
   LinearEquiv.multilinearMapCongrLeft (fun _ => finsuppLequivDFinsupp R)

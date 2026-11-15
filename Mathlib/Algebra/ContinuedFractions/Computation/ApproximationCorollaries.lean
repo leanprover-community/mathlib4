@@ -67,8 +67,6 @@ We next show that `(GenContFract.of v).convs n` converges to `v`.
 -/
 
 
-variable [Archimedean K]
-
 open Nat
 
 theorem of_convergence_epsilon :

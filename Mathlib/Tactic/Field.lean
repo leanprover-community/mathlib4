@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Ring.Basic
 
 This file contains the `field` tactic, a finishing tactic which roughly consists of running
 `field_simp; ring1`.
-
 -/
 
 public meta section
@@ -61,7 +60,6 @@ example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
   ring_nf at *
   field
 ```
-
 -/
 elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : tactic =>
     withMainContext do

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis of an opposite space
 

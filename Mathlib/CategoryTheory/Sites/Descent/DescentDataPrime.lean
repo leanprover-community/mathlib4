@@ -17,7 +17,6 @@ and threefold wide pullbacks `sq₃` for these morphisms, we define a
 category `F.DescentData' sq sq₃` of objects over the `X i`
 equipped with a descent data relative to the morphisms `f i : X i ⟶ S`, where
 the data and compatibilities are expressed using the chosen pullbacks.
-
 -/
 
 @[expose] public section

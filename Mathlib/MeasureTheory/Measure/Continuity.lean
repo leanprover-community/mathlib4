@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Basic
 
 import Mathlib.Topology.Order.AtTopBotIxx
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity of measures
 
@@ -151,7 +154,6 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
   let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
   have hst (i : ι) : s i =ᵐ[μ] t i := by
     filter_upwards [hs] with ω hω
-    suffices ω ∈ s i ↔ ω ∈ t i from propext this
     simpa [t] using fun _ ↦ hω
   have hMono : Monotone t := fun i j hij ω hω ↦ ⟨hω.2 hij hω.1, hω.2⟩
   rw [iInf_congr <| fun i ↦ measure_congr <| hst i,

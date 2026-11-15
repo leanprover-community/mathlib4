@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.WeakLimits.Basic
 # Weak equalizers
 
 These are weak limits for diagrams of shape `WalkingParallelPair`.
-
 -/
 
 @[expose] public section

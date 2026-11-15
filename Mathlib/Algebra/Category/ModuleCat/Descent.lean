@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Monad.Comonadicity
 public import Mathlib.RingTheory.Flat.CategoryTheory
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Faithfully flat descent for modules
 

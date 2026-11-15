@@ -23,7 +23,6 @@ when suitable coproducts exist).
 In particular, we construct an instance of `TotalComplexShape c c c` when `c : ComplexShape I`
 and `I` is an additive monoid equipped with a group homomorphism `ε' : Multiplicative I → ℤˣ`
 satisfying certain properties (see `ComplexShape.TensorSigns`).
-
 -/
 
 @[expose] public section

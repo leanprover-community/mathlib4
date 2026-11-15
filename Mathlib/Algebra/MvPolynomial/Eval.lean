@@ -38,7 +38,6 @@ In the definitions below, we use the following notation:
   coefficient semiring corresponding to `f`
 * `aeval (g : σ → S₁) p` : evaluates the multivariate polynomial obtained from `p` by the change
   of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
-
 -/
 
 @[expose] public section

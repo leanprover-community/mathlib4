@@ -13,7 +13,6 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
-
 # Local structure of unramified algebras
 
 In this file, we will prove that if `S` is a finite type `R`-algebra unramified at `Q`, then
@@ -35,7 +34,6 @@ As a corollary, we also obtain results about the local structure of etale and sm
   If `S` is a finitely presented `R`-algebra that is smooth at a prime `p`, then
   there exists some `f ∉ p` such that `S[1/f]` is `R`-isomorphic to a standard etale algebra
   over `R[x₁,...,xₙ]`.
-
 -/
 
 @[expose] public section

@@ -17,7 +17,6 @@ correspond to the notion of left t-exact, right t-exact and t-exact functors.
 
 ## References
 * [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*, 1.2][bbd-1982]
-
 -/
 
 @[expose] public section

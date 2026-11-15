@@ -182,7 +182,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
       rw [intervalIntegral.integral_sub, intervalIntegral.integral_const_mul] <;>
       [skip; apply IntervalIntegrable.const_mul] <;>
       · refine intervalIntegral.intervalIntegrable_rpow (Or.inr <| notMem_uIcc_of_lt ?_ ?_)
-        · exact_mod_cast hn
+        · exact mod_cast hn
         · linarith
     _ = 1 / (s - 1) * (1 / n ^ (s - 1) - 1 / (n + 1) ^ (s - 1))
           - n / s * (1 / n ^ s - 1 / (n + 1) ^ s) := by
@@ -234,7 +234,7 @@ lemma termTSum_of_lt {s : ℝ} (hs : 1 < s) :
     exact tendsto_atTop_add_const_right _ _ tendsto_natCast_atTop_atTop
   · rw [← sub_zero (tsum _)]
     apply (((Summable.hasSum ?_).tendsto_sum_nat).sub ?_).const_mul
-    · exact_mod_cast (summable_nat_add_iff 1).mpr (summable_one_div_nat_rpow.mpr hs)
+    · exact mod_cast (summable_nat_add_iff 1).mpr (summable_one_div_nat_rpow.mpr hs)
     · apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
               (h := fun n : ℕ ↦ (1 / ↑(n + 1) : ℝ) ^ (s - 1))
       · rw [show 𝓝 (0 : ℝ) = 𝓝 (0 ^ (s - 1)) by rw [zero_rpow]; linarith]
@@ -283,11 +283,11 @@ lemma continuousOn_term (n : ℕ) :
     have : 1 < x := lt_of_le_of_lt (by simp) hx.1
     rw [norm_of_nonneg (div_nonneg (sub_nonneg.mpr hx.1.le) (by positivity)), Nat.cast_add_one]
     gcongr
-    · exact_mod_cast sub_nonneg.mpr hx.1.le
+    · exact mod_cast sub_nonneg.mpr hx.1.le
     · exact this.le
     · linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
-    exact_mod_cast term_welldef (by lia : 0 < (n + 1)) zero_lt_one
+    exact mod_cast term_welldef (by lia : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
     refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)

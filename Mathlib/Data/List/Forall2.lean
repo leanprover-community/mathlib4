@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 public import Mathlib.Util.CompileInductive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Double universal quantification on a list
 
