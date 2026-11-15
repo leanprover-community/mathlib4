@@ -42,7 +42,6 @@ open Lean Meta Elab Tactic
 or the local context at reducible transparency. -/
 syntax (name := failIfProgress) "fail_if_progress " tacticSeq : tactic
 
--- copied from FailIfNoProgress, TODO share implementation
 /-- `lctxIsDefEq l₁ l₂` compares two lists of `Option LocalDecl`s (as returned from e.g.
 `(← (← getMainGoal).getDecl).lctx.decls.toList`). It returns `true` if they have the same
 local declarations in the same order (up to defeq, without setting mvars), and `false` otherwise.
